@@ -29,7 +29,8 @@ PolicyContainerHost::CreatePolicyContainerForBlink() {
   policy_container_host_receiver_.reset();
   return blink::mojom::PolicyContainer::New(
       blink::mojom::PolicyContainerDocumentPolicies::New(
-          document_policies_.referrer_policy),
+          document_policies_.referrer_policy,
+          document_policies_.ip_address_space),
       policy_container_host_receiver_.BindNewEndpointAndPassRemote());
 }
 

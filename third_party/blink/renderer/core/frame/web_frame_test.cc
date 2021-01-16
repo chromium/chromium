@@ -7478,7 +7478,9 @@ TEST_F(WebFrameTest, IPAddressSpace) {
     params->navigation_timings.navigation_start = base::TimeTicks::Now();
     params->navigation_timings.fetch_start = base::TimeTicks::Now();
     params->is_browser_initiated = true;
-    params->ip_address_space = value;
+    params->policy_container = std::make_unique<WebPolicyContainer>(
+        WebPolicyContainerDocumentPolicies(), mojo::NullAssociatedRemote());
+    params->policy_container->policies.ip_address_space = value;
     web_view_helper.LocalMainFrame()->CommitNavigation(std::move(params),
                                                        nullptr);
     frame_test_helpers::PumpPendingRequestsForFrameToLoad(

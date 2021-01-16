@@ -190,7 +190,6 @@ struct SameSizeAsDocumentLoader
   KURL unreachable_url;
   KURL pre_redirect_url_for_failed_navigations;
   std::unique_ptr<WebNavigationBodyLoader> body_loader;
-  network::mojom::IPAddressSpace ip_address_space;
   bool grant_load_local_resources;
   base::Optional<blink::mojom::FetchCacheMode> force_fetch_cache_mode;
   FramePolicy frame_policy;
@@ -284,7 +283,6 @@ DocumentLoader::DocumentLoader(
       unreachable_url_(params_->unreachable_url),
       pre_redirect_url_for_failed_navigations_(
           params_->pre_redirect_url_for_failed_navigations),
-      ip_address_space_(params_->ip_address_space),
       grant_load_local_resources_(params_->grant_load_local_resources),
       force_fetch_cache_mode_(params_->force_fetch_cache_mode),
       frame_policy_(params_->frame_policy.value_or(FramePolicy())),
@@ -461,7 +459,6 @@ DocumentLoader::CreateWebNavigationParamsToCloneDocument() {
   params->http_body = http_body_;
   params->pre_redirect_url_for_failed_navigations =
       pre_redirect_url_for_failed_navigations_;
-  params->ip_address_space = ip_address_space_;
   params->force_fetch_cache_mode = force_fetch_cache_mode_;
   params->service_worker_network_provider =
       std::move(service_worker_network_provider_);
@@ -1840,12 +1837,14 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
     for (auto to_upgrade : parent_context->InsecureNavigationsToUpgrade())
       security_context.AddInsecureNavigationUpgrade(to_upgrade);
   }
-  frame_->DomWindow()->SetAddressSpace(ip_address_space_);
 
   if (base::FeatureList::IsEnabled(blink::features::kPolicyContainer)) {
     frame_->DomWindow()->SetReferrerPolicy(
         frame_->GetPolicyContainer()->GetReferrerPolicy());
+    frame_->DomWindow()->SetAddressSpace(
+        frame_->GetPolicyContainer()->GetIPAddressSpace());
   }
+
   String referrer_policy_header =
       response_.HttpHeaderField(http_names::kReferrerPolicy);
   if (!referrer_policy_header.IsNull()) {

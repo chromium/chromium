@@ -4,10 +4,12 @@
 
 module blink.mojom;
 
+import "services/network/public/mojom/ip_address_space.mojom";
 import "services/network/public/mojom/referrer_policy.mojom";
 
 struct PolicyContainerDocumentPolicies {
   network.mojom.ReferrerPolicy referrer_policy = network.mojom.ReferrerPolicy.kDefault;
+  network.mojom.IPAddressSpace ip_address_space = network.mojom.IPAddressSpace.kUnknown;
 };
 
 // This interface is implemented in the browser process. It defines methods to
