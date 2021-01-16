@@ -196,7 +196,10 @@ public class WebContentsAccessibilityTest {
         return waitForNodeMatching(provider, new AccessibilityNodeInfoMatcher() {
             @Override
             public boolean matches(AccessibilityNodeInfo node) {
-                return text.equals(node.getText()) && node.isVisibleToUser();
+                if (node.getText() == null) {
+                    return false;
+                }
+                return text.equals(node.getText().toString()) && node.isVisibleToUser();
             }
         });
     }
@@ -210,7 +213,11 @@ public class WebContentsAccessibilityTest {
         return waitForNodeMatching(provider, new AccessibilityNodeInfoMatcher() {
             @Override
             public boolean matches(AccessibilityNodeInfo node) {
-                return text.equals(node.getText()) || text.equals(node.getContentDescription());
+                if (node.getText() == null) {
+                    return text.equals(node.getContentDescription());
+                }
+                return text.equals(node.getText().toString())
+                        || text.equals(node.getContentDescription());
             }
         });
     }
@@ -223,7 +230,10 @@ public class WebContentsAccessibilityTest {
         return waitForNodeMatching(provider, new AccessibilityNodeInfoMatcher() {
             @Override
             public boolean matches(AccessibilityNodeInfo node) {
-                return text.equals(node.getText());
+                if (node.getText() == null) {
+                    return false;
+                }
+                return text.equals(node.getText().toString());
             }
         });
     }
