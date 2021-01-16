@@ -176,24 +176,47 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
     moduleElement.$.cartItemRepeat.render();
 
     // Act.
-    const waitForDismissEvent = eventToPromise('dismiss-module', moduleElement);
-    const dismissButton =
-        moduleElement.shadowRoot.querySelector('ntp-module-header')
-            .shadowRoot.querySelector('#dismissButton');
-    dismissButton.click();
-    const dismissEvent = await waitForDismissEvent;
-    const toastMessage = dismissEvent.detail.message;
-    const restoreCallback = dismissEvent.detail.restoreCallback;
+    let waitForDismissEvent = eventToPromise('dismiss-module', moduleElement);
+    const moduleActionMenu = $$(moduleElement, '#moduleActionMenu');
+    assertFalse(moduleActionMenu.open);
+    $$(moduleElement, 'ntp-module-header')
+        .dispatchEvent(new CustomEvent('menu-button-click', {bubbles: true}));
+    assertTrue(moduleActionMenu.open);
+    moduleActionMenu.querySelector('#hideModuleButton').click();
+    const hideEvent = await waitForDismissEvent;
+    const hideToastMessage = hideEvent.detail.message;
+    const hideRestoreCallback = hideEvent.detail.restoreCallback;
 
     // Assert.
-    assertEquals('Your carts', toastMessage);
-    assertEquals(1, testProxy.handler.getCallCount('dismissCartModule'));
+    assertEquals(
+        loadTimeData.getString('modulesCartModuleMenuHideToastMessage'),
+        hideToastMessage);
+    assertEquals(1, testProxy.handler.getCallCount('hideCartModule'));
 
     // Act.
-    restoreCallback();
+    hideRestoreCallback();
 
     // Assert.
-    assertEquals(1, testProxy.handler.getCallCount('restoreCartModule'));
+    assertEquals(1, testProxy.handler.getCallCount('restoreHiddenCartModule'));
+
+    // Act.
+    waitForDismissEvent = eventToPromise('dismiss-module', moduleElement);
+    moduleActionMenu.querySelector('#removeModuleButton').click();
+    const removeEvent = await waitForDismissEvent;
+    const removeToastMessage = removeEvent.detail.message;
+    const removeRestoreCallback = removeEvent.detail.restoreCallback;
+
+    // Assert.
+    assertEquals(
+        loadTimeData.getString('modulesCartModuleMenuRemoveToastMessage'),
+        removeToastMessage);
+    assertEquals(1, testProxy.handler.getCallCount('removeCartModule'));
+
+    // Act.
+    removeRestoreCallback();
+
+    // Assert.
+    assertEquals(1, testProxy.handler.getCallCount('restoreRemovedCartModule'));
   });
 
   test('show and hide action menu', async () => {
@@ -222,7 +245,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
     assertEquals(1, cartItems.length);
     let menuButton = cartItems[0].querySelector('.icon-more-vert');
     assertStyle(menuButton, 'opacity', '0');
-    const actionMenu = $$(moduleElement, '#actionMenu');
+    const actionMenu = $$(moduleElement, '#cartActionMenu');
     assertFalse(actionMenu.open);
 
     // Act

@@ -6,6 +6,7 @@ import '../../img.js';
 import '../module_header.js';
 import 'chrome://resources/cr_elements/hidden_style_css.m.js';
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ModuleDescriptor} from '../module_descriptor.js';
 import {TaskModuleHandlerProxy} from './task_module_handler_proxy.js';
@@ -115,7 +116,8 @@ class TaskModuleElement extends PolymerElement {
       bubbles: true,
       composed: true,
       detail: {
-        message: this.task.name,
+        message: loadTimeData.getStringF(
+            'dismissModuleToastMessage', this.task.name),
         restoreCallback: this.onRestore_.bind(this),
       },
     }));

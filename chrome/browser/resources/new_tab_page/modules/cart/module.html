@@ -193,7 +193,7 @@
 </style>
 <ntp-module-header
     chip-text="$i18n{modulesCartHeaderNew}"
-    show-dismiss-button on-dismiss-button-click="onDismissButtonClick_">
+    show-menu-button on-menu-button-click="onModuleMenuButtonClick_">
   $i18n{modulesCartTitle}
 </ntp-module-header>
 <div id="moduleContent">
@@ -209,7 +209,7 @@
       <a class="cart-item" title="[[item.merchant]]"
           href="[[item.cartUrl.url]]">
         <cr-icon-button class="icon-more-vert"
-            title="$i18n{moreActions}" on-click="onMenuButtonClick_">
+            title="$i18n{moreActions}" on-click="onCartMenuButtonClick_">
         </cr-icon-button>
         <img class="favicon-image" is="ntp-img"
             auto-src="[[getFaviconUrl_(item.cartUrl.url)]]"></img>
@@ -244,7 +244,17 @@
     </template>
     <div id="rightProbe" class="probe"></div>
   </div>
-  <cr-action-menu id="actionMenu"></cr-action-menu>
+  <cr-action-menu id="cartActionMenu"></cr-action-menu>
+  <cr-action-menu id="moduleActionMenu">
+    <button id="hideModuleButton" class="dropdown-item"
+        on-click="onModuleHide_">
+      $i18n{modulesCartModuleMenuHide}
+    </button>
+    <button id="removeModuleButton" class="dropdown-item"
+        on-click="onModuleRemove_">
+      $i18n{modulesCartModuleMenuRemove}
+    </button>
+  </cr-action-menu>
   <template is="dom-if" if="[[showRightScrollButton_]]">
     <div id="rightScrollShadow" class="side-scroll-shadow"> </div>
     <cr-icon-button id="rightScrollButton"

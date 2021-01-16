@@ -537,8 +537,7 @@ suite('NewTabPageAppTest', () => {
       // Assert.
       assertTrue($$(app, '#dismissModuleToast').open);
       assertEquals(
-          'Removed Foo',
-          $$(app, '#dismissModuleToastMessage').textContent.trim());
+          'Foo', $$(app, '#dismissModuleToastMessage').textContent.trim());
       assertNotStyle($$(app, '#undoDismissModuleButton'), 'display', 'none');
       assertEquals(
           'foo', await testProxy.handler.whenCalled('onDismissModule'));

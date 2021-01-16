@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CART_CART_HANDLER_H_
 #define CHROME_BROWSER_CART_CART_HANDLER_H_
 
+#include "chrome/browser/cart/cart_service.h"
 #include "chrome/browser/cart/chrome_cart.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -20,12 +21,14 @@ class CartHandler : public chrome_cart::mojom::CartHandler {
 
   // chrome_cart::mojom::CartHandler:
   void GetMerchantCarts(GetMerchantCartsCallback callback) override;
-  void DismissCartModule() override;
-  void RestoreCartModule() override;
+  void HideCartModule() override;
+  void RestoreHiddenCartModule() override;
+  void RemoveCartModule() override;
+  void RestoreRemovedCartModule() override;
 
  private:
   mojo::Receiver<chrome_cart::mojom::CartHandler> handler_;
-  Profile* profile_;
+  CartService* cart_service_;
 };
 
 #endif  // CHROME_BROWSER_CART_CART_HANDLER_H_
