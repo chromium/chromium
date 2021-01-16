@@ -163,7 +163,6 @@ void Scheduler::DidSubmitCompositorFrame(uint32_t frame_token,
 
 void Scheduler::DidReceiveCompositorFrameAck() {
   DCHECK_GT(state_machine_.pending_submit_frames(), 0);
-  compositor_timing_history_->DidReceiveCompositorFrameAck();
   state_machine_.DidReceiveCompositorFrameAck();
   ProcessScheduledActions();
 }
@@ -225,7 +224,6 @@ void Scheduler::DidCreateAndInitializeLayerTreeFrameSink() {
   DCHECK(!observing_begin_frame_source_);
   DCHECK(begin_impl_frame_deadline_task_.IsCancelled());
   state_machine_.DidCreateAndInitializeLayerTreeFrameSink();
-  compositor_timing_history_->DidCreateAndInitializeLayerTreeFrameSink();
   UpdateCompositorTimingHistoryRecordingEnabled();
   ProcessScheduledActions();
 }

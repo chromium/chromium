@@ -70,7 +70,6 @@ class CC_EXPORT CompositorTimingHistory {
 
   // State that affects when events should be expected/recorded/reported.
   void SetRecordingEnabled(bool enabled);
-  void DidCreateAndInitializeLayerTreeFrameSink();
 
   // Events to be timed.
   void WillBeginImplFrame(const viz::BeginFrameArgs& args,
@@ -99,7 +98,6 @@ class CC_EXPORT CompositorTimingHistory {
       EventMetricsSet events_metrics);
   void DidNotProduceFrame(const viz::BeginFrameId& id,
                           FrameSkippedReason skip_reason);
-  void DidReceiveCompositorFrameAck();
   void DidPresentCompositorFrame(uint32_t frame_token,
                                  const viz::FrameTimingDetails& details);
   void WillInvalidateOnImplSide();
@@ -157,7 +155,6 @@ class CC_EXPORT CompositorTimingHistory {
   base::TimeTicks prepare_tiles_start_time_;
   base::TimeTicks activate_start_time_;
   base::TimeTicks draw_start_time_;
-  base::TimeTicks submit_start_time_;
 
   bool pending_tree_is_impl_side_;
 
