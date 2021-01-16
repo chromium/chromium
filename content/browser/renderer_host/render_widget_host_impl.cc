@@ -1062,8 +1062,12 @@ blink::VisualProperties RenderWidgetHostImpl::GetVisualProperties() {
   return visual_properties;
 }
 
+bool RenderWidgetHostImpl::UpdateVisualProperties(bool propagate) {
+  return SynchronizeVisualProperties(false, propagate);
+}
+
 bool RenderWidgetHostImpl::SynchronizeVisualProperties() {
-  return SynchronizeVisualProperties(false);
+  return SynchronizeVisualProperties(false, true);
 }
 
 bool RenderWidgetHostImpl::SynchronizeVisualPropertiesIgnoringPendingAck() {
@@ -1072,7 +1076,8 @@ bool RenderWidgetHostImpl::SynchronizeVisualPropertiesIgnoringPendingAck() {
 }
 
 bool RenderWidgetHostImpl::SynchronizeVisualProperties(
-    bool scroll_focused_node_into_view) {
+    bool scroll_focused_node_into_view,
+    bool propagate) {
   // If the RenderViewHost is inactive, then there is no RenderWidget that can
   // receive visual properties yet, even though we are setting them on the
   // browser side. Wait until there is a local main frame with a RenderWidget
@@ -1125,7 +1130,8 @@ bool RenderWidgetHostImpl::SynchronizeVisualProperties(
   visual_properties->scroll_focused_node_into_view =
       scroll_focused_node_into_view;
 
-  blink_widget_->UpdateVisualProperties(*visual_properties);
+  if (propagate)
+    blink_widget_->UpdateVisualProperties(*visual_properties);
 
   bool width_changed =
       !old_visual_properties_ || old_visual_properties_->new_size.width() !=
@@ -2939,7 +2945,7 @@ RenderWidgetHostImpl::GetFrameWidgetInputHandler() {
 }
 
 base::Optional<blink::VisualProperties>
-RenderWidgetHostImpl::GetLastVisualPropertiesSentToRendererForTesting() {
+RenderWidgetHostImpl::LastComputedVisualProperties() const {
   if (!old_visual_properties_)
     return base::nullopt;
   return *old_visual_properties_;

@@ -52,7 +52,8 @@ void FakeRemoteFrameHost::PrintCrossProcessSubframe(const gfx::Rect& rect,
 void FakeRemoteFrameHost::Detach() {}
 
 void FakeRemoteFrameHost::UpdateViewportIntersection(
-    blink::mojom::blink::ViewportIntersectionStatePtr intersection_state) {}
+    blink::mojom::blink::ViewportIntersectionStatePtr intersection_state,
+    const base::Optional<FrameVisualProperties>& visual_properties) {}
 
 void FakeRemoteFrameHost::SynchronizeVisualProperties(
     const blink::FrameVisualProperties& properties) {}

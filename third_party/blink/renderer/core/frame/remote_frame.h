@@ -116,8 +116,11 @@ class CORE_EXPORT RemoteFrame final : public Frame,
   void FrameRectsChanged(const IntRect& local_frame_rect,
                          const IntRect& screen_space_rect);
   void InitializeFrameVisualProperties(const FrameVisualProperties& properties);
-  void SynchronizeVisualProperties();
+  // If 'propagate' is true, updated properties will be sent to the browser.
+  // Returns true if visual properties have changed.
+  bool SynchronizeVisualProperties(bool propagate = true);
   void ResendVisualProperties();
+  void SetViewportIntersection(const mojom::blink::ViewportIntersectionState&);
 
   // Called when the local root's screen info changes.
   void DidChangeScreenInfo(const ScreenInfo& screen_info);
@@ -228,6 +231,7 @@ class CORE_EXPORT RemoteFrame final : public Frame,
   // Returns false if detaching child frames reentrantly detached `this`.
   bool DetachChildren();
   void ApplyReplicatedFeaturePolicyHeader();
+  void RecordSentVisualProperties();
 
   static void BindToReceiver(
       RemoteFrame* frame,

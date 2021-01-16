@@ -138,7 +138,8 @@ interface FrameWidget {
   // intersection with the parent's viewport, primarily for use by the
   // IntersectionObserver API. Also see 'UpdateViewportIntersection' in
   // third_party/blink/public/mojom/frame/viewport_intersection_state.mojom
-  SetViewportIntersection(ViewportIntersectionState intersection_state);
+  SetViewportIntersection(ViewportIntersectionState intersection_state,
+                          VisualProperties? visual_properties);
 };
 
 // Implemented in Browser, this interface defines frame-widget-specific methods that

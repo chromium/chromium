@@ -429,7 +429,8 @@ void RenderWidgetHostViewChildFrame::UnregisterFrameSinkId() {
 }
 
 void RenderWidgetHostViewChildFrame::UpdateViewportIntersection(
-    const blink::mojom::ViewportIntersectionState& intersection_state) {
+    const blink::mojom::ViewportIntersectionState& intersection_state,
+    const base::Optional<blink::VisualProperties>& visual_properties) {
   if (host()) {
     host()->SetIntersectsViewport(
         !intersection_state.viewport_intersection.IsEmpty());
@@ -437,7 +438,7 @@ void RenderWidgetHostViewChildFrame::UpdateViewportIntersection(
     // Do not send viewport intersection to main frames.
     if (!host()->owner_delegate()) {
       host()->GetAssociatedFrameWidget()->SetViewportIntersection(
-          intersection_state.Clone());
+          intersection_state.Clone(), visual_properties);
     }
   }
 }
@@ -739,7 +740,10 @@ void RenderWidgetHostViewChildFrame::WillSendScreenRects() {
   // spammy way to do this, but triggering on SendScreenRects() is reasonable
   // until somebody figures that out. RWHVCF::Init() is too early.
   if (frame_connector_) {
-    UpdateViewportIntersection(frame_connector_->intersection_state());
+    if (!frame_connector_->IsProcessingViewportIntersection()) {
+      UpdateViewportIntersection(frame_connector_->intersection_state(),
+                                 base::nullopt);
+    }
     SetIsInert();
     UpdateInheritedEffectiveTouchAction();
     UpdateRenderThrottlingStatus();

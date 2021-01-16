@@ -780,7 +780,8 @@ interface RemoteFrameHost {
   // intersection with the parent's viewport, primarily for use by the
   // IntersectionObserver API.
   UpdateViewportIntersection(
-      ViewportIntersectionState intersection_state);
+      ViewportIntersectionState intersection_state,
+      FrameVisualProperties? visual_properties);
 
   // Tells the browser that a child's visual properties have changed.
   SynchronizeVisualProperties(

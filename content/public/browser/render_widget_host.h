@@ -219,7 +219,7 @@ class CONTENT_EXPORT RenderWidgetHost {
   virtual bool IsCurrentlyUnresponsive() = 0;
 
   // Called to propagate updated visual properties to the renderer. Returns
-  // whether the renderer has been informed of updated properties.
+  // true if visual properties have changed since last call.
   virtual bool SynchronizeVisualProperties() = 0;
 
   // Access to the implementation's IPC::Listener::OnMessageReceived. Intended

@@ -745,9 +745,10 @@ void RenderFrameProxyHost::OpenURL(mojom::OpenURLParamsPtr params) {
 }
 
 void RenderFrameProxyHost::UpdateViewportIntersection(
-    blink::mojom::ViewportIntersectionStatePtr intersection_state) {
+    blink::mojom::ViewportIntersectionStatePtr intersection_state,
+    const base::Optional<blink::FrameVisualProperties>& visual_properties) {
   cross_process_frame_connector_->UpdateViewportIntersection(
-      *intersection_state);
+      *intersection_state, visual_properties);
 }
 
 void RenderFrameProxyHost::DidChangeOpener(

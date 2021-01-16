@@ -1716,11 +1716,24 @@ void WebFrameWidgetImpl::ShowContextMenu(
 }
 
 void WebFrameWidgetImpl::SetViewportIntersection(
-    mojom::blink::ViewportIntersectionStatePtr intersection_state) {
+    mojom::blink::ViewportIntersectionStatePtr intersection_state,
+    const base::Optional<VisualProperties>& visual_properties) {
   // Remote viewports are only applicable to local frames with remote ancestors.
   // TODO(https://crbug.com/1148960): Should this deal with portals?
   DCHECK(ForSubframe());
 
+  if (visual_properties.has_value())
+    UpdateVisualProperties(visual_properties.value());
+  ApplyViewportIntersection(std::move(intersection_state));
+}
+
+void WebFrameWidgetImpl::ApplyViewportIntersectionForTesting(
+    mojom::blink::ViewportIntersectionStatePtr intersection_state) {
+  ApplyViewportIntersection(std::move(intersection_state));
+}
+
+void WebFrameWidgetImpl::ApplyViewportIntersection(
+    mojom::blink::ViewportIntersectionStatePtr intersection_state) {
   child_data().compositor_visible_rect =
       intersection_state->compositor_visible_rect;
   widget_base_->LayerTreeHost()->SetVisualDeviceViewportIntersectionRect(

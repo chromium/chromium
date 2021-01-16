@@ -845,9 +845,9 @@ void RemoteFrame::ApplyReplicatedFeaturePolicyHeader() {
       feature_policy_header_, container_policy, parent_feature_policy);
 }
 
-void RemoteFrame::SynchronizeVisualProperties() {
+bool RemoteFrame::SynchronizeVisualProperties(bool propagate) {
   if (!GetFrameSinkId().is_valid() || Client()->RemoteProcessGone())
-    return;
+    return false;
 
   bool capture_sequence_number_changed =
       sent_visual_properties_ &&
@@ -903,14 +903,19 @@ void RemoteFrame::SynchronizeVisualProperties() {
   bool visual_properties_changed = synchronized_props_changed || rect_changed;
 
   if (!visual_properties_changed)
-    return;
+    return false;
 
-  // Let the browser know about the updated view rect.
-  GetRemoteFrameHostRemote().SynchronizeVisualProperties(
-      pending_visual_properties_);
+  if (propagate) {
+    GetRemoteFrameHostRemote().SynchronizeVisualProperties(
+        pending_visual_properties_);
+    RecordSentVisualProperties();
+  }
 
+  return true;
+}
+
+void RemoteFrame::RecordSentVisualProperties() {
   sent_visual_properties_ = pending_visual_properties_;
-
   TRACE_EVENT_WITH_FLOW2(
       TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"),
       "RenderFrameProxy::SynchronizeVisualProperties Send Message",
@@ -924,6 +929,17 @@ void RemoteFrame::SynchronizeVisualProperties() {
 void RemoteFrame::ResendVisualProperties() {
   sent_visual_properties_ = base::nullopt;
   SynchronizeVisualProperties();
+}
+
+void RemoteFrame::SetViewportIntersection(
+    const mojom::blink::ViewportIntersectionState& intersection_state) {
+  base::Optional<FrameVisualProperties> visual_properties;
+  if (SynchronizeVisualProperties(/*propagate=*/false)) {
+    visual_properties.emplace(pending_visual_properties_);
+    RecordSentVisualProperties();
+  }
+  GetRemoteFrameHostRemote().UpdateViewportIntersection(
+      intersection_state.Clone(), visual_properties);
 }
 
 void RemoteFrame::DidChangeScreenInfo(const ScreenInfo& screen_info) {

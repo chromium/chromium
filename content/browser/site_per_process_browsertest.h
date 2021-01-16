@@ -33,6 +33,10 @@ class SitePerProcessBrowserTestBase : public ContentBrowserTest {
     return static_cast<WebContentsImpl*>(shell()->web_contents());
   }
 
+  static void ForceUpdateViewportIntersection(
+      FrameTreeNode* frame_tree_node,
+      const blink::mojom::ViewportIntersectionState& intersection_state);
+
  private:
   FrameTreeVisualizer visualizer_;
   base::test::ScopedFeatureList feature_list_;

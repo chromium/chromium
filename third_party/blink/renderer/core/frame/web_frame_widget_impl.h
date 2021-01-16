@@ -289,6 +289,8 @@ class CORE_EXPORT WebFrameWidgetImpl
   bool ScrollFocusedEditableElementIntoView() override;
   void ApplyViewportChangesForTesting(
       const ApplyViewportChangesArgs& args) override;
+  void ApplyViewportIntersectionForTesting(
+      mojom::blink::ViewportIntersectionStatePtr intersection_state);
   void NotifySwapAndPresentationTime(
       WebReportTimeCallback swap_callback,
       WebReportTimeCallback presentation_callback) override;
@@ -375,7 +377,8 @@ class CORE_EXPORT WebFrameWidgetImpl
   void ShowContextMenu(ui::mojom::MenuSourceType source_type,
                        const gfx::Point& location) override;
   void SetViewportIntersection(
-      mojom::blink::ViewportIntersectionStatePtr intersection_state) override;
+      mojom::blink::ViewportIntersectionStatePtr intersection_state,
+      const base::Optional<VisualProperties>& visual_properties) override;
   void DragSourceEndedAt(const gfx::PointF& point_in_viewport,
                          const gfx::PointF& screen_point,
                          ui::mojom::blink::DragOperation) override;
@@ -803,6 +806,9 @@ class CORE_EXPORT WebFrameWidgetImpl
                          const gfx::Size& min_size_before_dsf,
                          const gfx::Size& max_size_before_dsf,
                          float device_scale_factor);
+
+  void ApplyViewportIntersection(
+      mojom::blink::ViewportIntersectionStatePtr intersection_state);
 
   // Called when a gesture event has been processed.
   void DidHandleGestureEvent(const WebGestureEvent& event);

@@ -748,11 +748,12 @@ void TestWebRemoteFrameClient::FrameDetached(DetachType type) {
 }
 
 viz::FrameSinkId TestWebRemoteFrameClient::GetFrameSinkId() const {
-  return viz::FrameSinkId();
+  return viz::FrameSinkId(1u, 1u);
 }
 
 const viz::LocalSurfaceId& TestWebRemoteFrameClient::GetLocalSurfaceId() const {
-  DEFINE_STATIC_LOCAL(viz::LocalSurfaceId, dummy_local_surface_id, ());
+  DEFINE_STATIC_LOCAL(viz::LocalSurfaceId, dummy_local_surface_id,
+                      (1u, base::UnguessableToken::Create()));
   return dummy_local_surface_id;
 }
 

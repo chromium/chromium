@@ -307,6 +307,10 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void SetPopupBounds(const gfx::Rect& bounds,
                       SetPopupBoundsCallback callback) override;
 
+  // Update the stored set of visual properties for the renderer. If 'propagate'
+  // is true, the new properties will be sent to the renderer process.
+  bool UpdateVisualProperties(bool propagate);
+
   // Notification that the screen info has changed.
   void NotifyScreenInfoChanged();
 
@@ -665,7 +669,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
 
   // Pushes updated visual properties to the renderer as well as whether the
   // focused node should be scrolled into view.
-  bool SynchronizeVisualProperties(bool scroll_focused_node_into_view);
+  bool SynchronizeVisualProperties(bool scroll_focused_node_into_view,
+                                   bool propagate = true);
 
   // Similar to SynchronizeVisualProperties(), but performed even if
   // |visual_properties_ack_pending_| is set.  Used to guarantee that the
@@ -822,6 +827,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // Returns the visual properties that were last sent to the renderer.
   base::Optional<blink::VisualProperties>
   GetLastVisualPropertiesSentToRendererForTesting();
+
+  base::Optional<blink::VisualProperties> LastComputedVisualProperties() const;
 
  protected:
   // |routing_id| must not be MSG_ROUTING_NONE.

@@ -7298,7 +7298,7 @@ TEST_F(WebFrameTest, MainFrameIntersectionChanged) {
   auto intersection_state = blink::mojom::blink::ViewportIntersectionState::New(
       viewport_intersection, mainframe_intersection, gfx::Rect(),
       occlusion_state, gfx::Size(), gfx::Point(), transform);
-  static_cast<WebFrameWidgetImpl*>(widget)->SetViewportIntersection(
+  static_cast<WebFrameWidgetImpl*>(widget)->ApplyViewportIntersectionForTesting(
       std::move(intersection_state));
   EXPECT_EQ(client.MainFrameIntersection(), blink::WebRect(100, 100, 200, 140));
 }
@@ -10664,7 +10664,8 @@ class TestViewportIntersection : public FakeRemoteFrameHost {
 
   // FakeRemoteFrameHost:
   void UpdateViewportIntersection(
-      mojom::blink::ViewportIntersectionStatePtr intersection_state) override {
+      mojom::blink::ViewportIntersectionStatePtr intersection_state,
+      const base::Optional<FrameVisualProperties>& visual_properties) override {
     intersection_state_ = std::move(intersection_state);
   }
 
@@ -13516,7 +13517,7 @@ TEST_F(WebFrameTest, RemoteViewportAndMainframeIntersections) {
   blink::mojom::FrameOcclusionState occlusion_state =
       blink::mojom::FrameOcclusionState::kUnknown;
 
-  static_cast<WebFrameWidgetImpl*>(widget)->SetViewportIntersection(
+  static_cast<WebFrameWidgetImpl*>(widget)->ApplyViewportIntersectionForTesting(
       blink::mojom::blink::ViewportIntersectionState::New(
           viewport_intersection, mainframe_intersection, viewport_intersection,
           occlusion_state, gfx::Size(), gfx::Point(), viewport_transform));

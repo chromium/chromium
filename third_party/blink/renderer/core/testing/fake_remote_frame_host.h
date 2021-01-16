@@ -49,8 +49,8 @@ class FakeRemoteFrameHost : public mojom::blink::RemoteFrameHost {
                                  int document_cookie) override;
   void Detach() override;
   void UpdateViewportIntersection(
-      blink::mojom::blink::ViewportIntersectionStatePtr intersection_state)
-      override;
+      blink::mojom::blink::ViewportIntersectionStatePtr intersection_state,
+      const base::Optional<FrameVisualProperties>& visual_properties) override;
 
   void SynchronizeVisualProperties(
       const blink::FrameVisualProperties& properties) override;

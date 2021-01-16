@@ -107,8 +107,7 @@ void RemoteFrameView::SetViewportIntersection(
   if (!last_intersection_state_.Equals(new_state)) {
     last_intersection_state_ = new_state;
     GetFrame().SynchronizeVisualProperties();
-    remote_frame_->GetRemoteFrameHostRemote().UpdateViewportIntersection(
-        new_state.Clone());
+    remote_frame_->SetViewportIntersection(new_state);
   } else if (needs_frame_rect_propagation_) {
     PropagateFrameRects();
   }

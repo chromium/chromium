@@ -42,7 +42,8 @@ FakeFrameWidget::GetIntersectionState() const {
 }
 
 void FakeFrameWidget::SetViewportIntersection(
-    blink::mojom::ViewportIntersectionStatePtr intersection_state) {
+    blink::mojom::ViewportIntersectionStatePtr intersection_state,
+    const base::Optional<blink::VisualProperties>& visual_properties) {
   intersection_state_ = std::move(intersection_state);
 }
 
