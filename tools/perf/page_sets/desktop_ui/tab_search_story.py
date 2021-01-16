@@ -2,63 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import logging
 import py_utils
-from telemetry.page import page
+from page_sets.desktop_ui.js_utils import MEASURE_JS_MEMORY
+from page_sets.desktop_ui.multitab_story import MultiTabStory
+from page_sets.desktop_ui.url_list import TOP_URL
 from telemetry.internal.actions.action_runner import ActionRunner
-
-TOP_URL = [
-    'google.com',
-    'youtube.com',
-    'amazon.com',
-    'facebook.com',
-    'zoom.us',
-    'yahoo.com',
-    'reddit.com',
-    'wikipedia.org',
-    'myshopify.com',
-    'ebay.com',
-    'instructure.com',
-    'office.com',
-    'netflix.com',
-    'bing.com',
-    'live.com',
-    'microsoft.com',
-    'espn.com',
-    'www.indeed.com',
-    'blogger.com',
-    'instagram.com',
-    'mozilla.org',
-    'cnn.com',
-    'apple.com',
-    'zillow.com',
-    'etsy.com',
-    'chase.com',
-    'nytimes.com',
-    'linkedin.com',
-    'dropbox.com',
-    'adobe.com',
-    'okta.com',
-    'craigslist.org',
-    'twitter.com',
-    'walmart.com',
-    'aliexpress.com',
-    'github.com',
-    'vimeo.com',
-    'quizlet.com',
-    'cnbc.com',
-    'imgur.com',
-    'wellsfargo.com',
-    'hulu.com',
-    'imdb.com',
-    'salesforce.com',
-    'homedepot.com',
-    'indeed.com',
-    'foxnews.com',
-    'msn.com',
-    'spotify.com',
-    'whatsapp.com',
-]
 
 TAB_SEARCH_BENCHMARK_UMA = [
     'Tabs.TabSearch.CloseAction',
@@ -80,30 +28,8 @@ TAB_SEARCH_BENCHMARK_UMA = [
 TAB_SEARCH_URL = 'chrome://tab-search/'
 
 
-class TabSearchStory(page.Page):
+class TabSearchStory(MultiTabStory):
   """Base class for tab search stories"""
-
-  def __init__(self, story_set, extra_browser_args=None):
-    super(TabSearchStory, self).__init__(url=self.URL,
-                                         name=self.NAME,
-                                         page_set=story_set,
-                                         extra_browser_args=extra_browser_args)
-
-  def RunNavigateSteps(self, action_runner):
-    url_list = self.URL_LIST
-    tabs = action_runner.tab.browser.tabs
-    if len(url_list) > 0:
-      tabs[0].Navigate('https://' + url_list[0])
-    for url in url_list[1:]:
-      new_tab = tabs.New()
-      new_tab.Navigate('https://' + url)
-    if self.WAIT_FOR_NETWORK_QUIESCENCE:
-      for i, url in enumerate(url_list):
-        try:
-          tabs[i].action_runner.WaitForNetworkQuiescence()
-        except py_utils.TimeoutException:
-          logging.warning('WaitForNetworkQuiescence() timeout, url[%d]: %s' %
-                          (i, url))
 
   def RunPageInteractions(self, action_runner):
     tabs = action_runner.tab.browser.tabs
@@ -192,20 +118,9 @@ class TabSearchStory(page.Page):
     self.StopMeasuringFrameTime(action_runner)
     action_runner.Wait(1)
 
-  def StartMeasuringFrameTime(self, action_runner, name):
-    action_runner.ExecuteJavaScript(MEASURE_FRAME_TIME_SCRIPT)
-    action_runner.ExecuteJavaScript(START_MEASURING_FRAME_TIME % name)
-
-  def StopMeasuringFrameTime(self, action_runner):
-    action_runner.ExecuteJavaScript(STOP_MEASURING_FRAME_TIME)
-
   def WillStartTracing(self, chrome_trace_config):
+    super(TabSearchStory, self).WillStartTracing(chrome_trace_config)
     chrome_trace_config.EnableUMAHistograms(*TAB_SEARCH_BENCHMARK_UMA)
-    chrome_trace_config.category_filter.AddIncludedCategory('browser')
-    chrome_trace_config.category_filter.AddIncludedCategory('blink.user_timing')
-
-  def GetExtraTracingMetrics(self):
-    return ['webuiMetric']
 
 
 class TabSearchStoryTop10(TabSearchStory):
@@ -329,48 +244,4 @@ class TabSearchStoryMeasureMemoryAfter(TabSearchStoryMeasureMemory):
 
 SCROLL_ELEMENT_FUNCTION = '''
 document.querySelector('tab-search-app').shadowRoot.getElementById('tabsList')
-'''
-
-MEASURE_FRAME_TIME_SCRIPT = '''
-window.__webui_startMeasuringFrameTime = function(name) {
-  if (window.__webui_onRequestAnimationFrame) {
-    window.__webui_stopMeasuringFrameTime();
-  }
-  window.__webui_onRequestAnimationFrame = function() {
-    const now = performance.now();
-    if (window.__webui_lastAnimationFrameTime) {
-      performance.mark(
-          `${name}:${now - window.__webui_lastAnimationFrameTime}:benchmark_value`);
-    }
-    window.__webui_lastAnimationFrameTime = now;
-    if (window.__webui_onRequestAnimationFrame) {
-      window.__webui_lastRequestId = requestAnimationFrame(
-          window.__webui_onRequestAnimationFrame);
-    }
-  }
-  window.__webui_lastRequestId = requestAnimationFrame(
-      window.__webui_onRequestAnimationFrame);
-}
-
-window.__webui_stopMeasuringFrameTime = function() {
-  if (window.__webui_lastRequestId) {
-    cancelAnimationFrame(window.__webui_lastRequestId);
-  }
-  window.__webui_lastRequestId = null;
-  window.__webui_onRequestAnimationFrame = null;
-  window.__webui_lastAnimationFrameTime = null;
-}
-'''
-
-START_MEASURING_FRAME_TIME = '''
-window.__webui_startMeasuringFrameTime('%s')
-'''
-
-STOP_MEASURING_FRAME_TIME = '''
-window.__webui_stopMeasuringFrameTime()
-'''
-
-MEASURE_JS_MEMORY = '''
-performance.mark(
-    `%s:${performance.memory.usedJSHeapSize}:benchmark_value`);
 '''

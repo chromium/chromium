@@ -42,7 +42,7 @@ tools/perf/run_benchmark run desktop_ui --browser-executable=out/Default/chrome 
 
 There are 3 ways to add metrics to the benchmarking code
 
-1. Add UMA metrics to your code and include them in the [story definition](../../../../tools/perf/page_sets/tab_search_story.py). The listed UMA metrics will show up on the result page automatically.
+1. Add UMA metrics to your code and include them in the [story definition](../../../../tools/perf/page_sets/desktop_ui/tab_search_story.py). The listed UMA metrics will show up on the result page automatically.
 2. Add C++ trace with name starts with "webui_metric:". Make sure your trace has category "browser" or add other categories that you use to the story definition. For example:
    ```c++
    void Foo::DoWork() {
