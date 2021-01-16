@@ -4,13 +4,14 @@
 
 // clang-format off
 // #import {getESimManagerRemote} from 'chrome://resources/cr_components/chromeos/cellular_setup/mojo_interface_provider.m.js';
+// #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 // clang-format on
 
 cr.define('cellular_setup', function() {
   /**
    * Fetches the EUICC's eSIM profiles with status 'Pending'.
    * @param {!chromeos.cellularSetup.mojom.EuiccRemote} euicc
-   * @return {!Promise<Array<!chromeos.cellularSetup.mojom.ESimProfileRemote>>}
+   * @return {!Promise<!Array<!chromeos.cellularSetup.mojom.ESimProfileRemote>>}
    */
   /* #export */ function getPendingESimProfiles(euicc) {
     return euicc.getProfileList().then(response => {
@@ -40,8 +41,29 @@ cr.define('cellular_setup', function() {
     });
   }
 
+  /**
+   * Returns the Euicc that should be used for eSim operations or null
+   * if there is none available.
+   * @return {!Promise<?chromeos.cellularSetup.mojom.EuiccRemote>}
+   */
+  /* #export */ async function getEuicc() {
+    const eSimManagerRemote = cellular_setup.getESimManagerRemote();
+    const response = await eSimManagerRemote.getAvailableEuiccs();
+    if (!response || !response.euiccs) {
+      return null;
+    }
+    // Onboard Euicc always appears at index 0. If useExternalEuicc flag
+    // is set, use the next available Euicc.
+    const euiccIndex = loadTimeData.getBoolean('useExternalEuicc') ? 1 : 0;
+    if (euiccIndex >= response.euiccs.length) {
+      return null;
+    }
+    return response.euiccs[euiccIndex];
+  }
+
   // #cr_define_end
   return {
+    getEuicc,
     getPendingESimProfiles,
   };
 });

@@ -61,8 +61,11 @@ Polymer({
 
   /** @private */
   async init_() {
-    const response = await this.eSimManagerRemote_.getAvailableEuiccs();
-    const euicc = response.euiccs[0];
+    const euicc = await cellular_setup.getEuicc();
+    if (!euicc) {
+      console.error('No Euiccs found');
+      return;
+    }
 
     const esimProfilesRemotes = await euicc.getProfileList();
 

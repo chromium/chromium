@@ -139,42 +139,41 @@ cr.define('cellular_setup', function() {
     },
 
     /** @private */
-    fetchProfiles_() {
-      let euicc;
-      this.eSimManagerRemote_.getAvailableEuiccs()
-          .then(response => {
-            // TODO(crbug.com/1093185) User should have at least 1 EUICC or
-            // we shouldn't have gotten to this flow. Add check for this in
-            // cellular_setup.
-            euicc = response.euiccs[0];
-            this.euicc_ = euicc;
-            return euicc.requestPendingProfiles();
-          })
-          .then(response => {
-            if (response.result ===
-                chromeos.cellularSetup.mojom.ESimOperationResult.kFailure) {
-              console.error('Error requesting pending profiles: ' + response);
-            }
-            return cellular_setup.getPendingESimProfiles(euicc);
-          })
-          .then(profiles => {
-            this.pendingProfiles_ = profiles;
-            switch (profiles.length) {
-              case 0:
-                this.state_ = ESimUiState.ACTIVATION_CODE_ENTRY;
-                break;
-              case 1:
-                this.selectedProfile_ = profiles[0];
-                // Assume installing the profile doesn't require a confirmation
-                // code, send an empty string.
-                this.selectedProfile_.installProfile('').then(
-                    this.handleProfileInstallResponse_.bind(this));
-                break;
-              default:
-                this.state_ = ESimUiState.PROFILE_SELECTION;
-                break;
-            }
-          });
+    async fetchProfiles_() {
+      const euicc = await cellular_setup.getEuicc();
+      if (!euicc) {
+        // TODO(crbug.com/1093185) User should have at least 1 EUICC or
+        // we shouldn't have gotten to this flow. Add check for this in
+        // cellular_setup.
+        console.error('No Euiccs found');
+        return;
+      }
+      this.euicc_ = euicc;
+      const requestPendingProfilesResponse =
+          await euicc.requestPendingProfiles();
+      if (requestPendingProfilesResponse.result ===
+          chromeos.cellularSetup.mojom.ESimOperationResult.kFailure) {
+        console.error(
+            'Error requesting pending profiles: ',
+            requestPendingProfilesResponse);
+      }
+      this.pendingProfiles_ =
+          await cellular_setup.getPendingESimProfiles(euicc);
+      switch (this.pendingProfiles_.length) {
+        case 0:
+          this.state_ = ESimUiState.ACTIVATION_CODE_ENTRY;
+          break;
+        case 1:
+          this.selectedProfile_ = this.pendingProfiles_[0];
+          // Assume installing the profile doesn't require a confirmation
+          // code, send an empty string.
+          this.selectedProfile_.installProfile('').then(
+              this.handleProfileInstallResponse_.bind(this));
+          break;
+        default:
+          this.state_ = ESimUiState.PROFILE_SELECTION;
+          break;
+      }
     },
 
     /**

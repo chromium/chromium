@@ -161,17 +161,13 @@ Polymer({
 
   /** @private */
   fetchESimPendingProfileList_() {
-    cellular_setup.getESimManagerRemote()
-        .getAvailableEuiccs()
-        .then(response => {
-          if (response.euiccs.length > 0) {
-            // Use first available euicc as current. Only single Euicc modules are
-            // currently supported.
-            this.euicc_ = response.euiccs[0];
-            return this.fetchESimPendingProfileListForEuicc_(this.euicc_);
-          }
-          this.euicc_ = null;
-        });
+    cellular_setup.getEuicc().then(euicc => {
+      if (!euicc) {
+        return;
+      }
+      this.euicc_ = euicc;
+      this.fetchESimPendingProfileListForEuicc_(euicc);
+    });
   },
 
   /**

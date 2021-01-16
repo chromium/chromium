@@ -223,6 +223,7 @@ js_library("cellular_networks_list") {
 
 js_library("esim_rename_dialog") {
   deps = [
+    "//ui/webui/resources/cr_components/chromeos/cellular_setup:esim_manager_utils",
     "//ui/webui/resources/cr_components/chromeos/cellular_setup:mojo_interface_provider",
     "//ui/webui/resources/cr_components/chromeos/network:mojo_interface_provider",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
@@ -233,6 +234,7 @@ js_library("esim_rename_dialog") {
 
 js_library("esim_remove_profile_dialog") {
   deps = [
+    "//ui/webui/resources/cr_components/chromeos/cellular_setup:esim_manager_utils",
     "//ui/webui/resources/cr_components/chromeos/cellular_setup:mojo_interface_provider",
     "//ui/webui/resources/cr_components/chromeos/network:mojo_interface_provider",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
@@ -542,6 +544,7 @@ js_library("cellular_networks_list.m") {
 js_library("esim_rename_dialog.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/internet_page/esim_rename_dialog.m.js" ]
   deps = [
+    "//ui/webui/resources/cr_components/chromeos/cellular_setup:esim_manager_utils.m",
     "//ui/webui/resources/cr_components/chromeos/cellular_setup:mojo_interface_provider.m",
     "//ui/webui/resources/cr_components/chromeos/network:mojo_interface_provider.m",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
@@ -554,6 +557,7 @@ js_library("esim_rename_dialog.m") {
 js_library("esim_remove_profile_dialog.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/internet_page/esim_remove_profile_dialog.m.js" ]
   deps = [
+    "//ui/webui/resources/cr_components/chromeos/cellular_setup:esim_manager_utils.m",
     "//ui/webui/resources/cr_components/chromeos/cellular_setup:mojo_interface_provider.m",
     "//ui/webui/resources/cr_components/chromeos/network:mojo_interface_provider.m",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
