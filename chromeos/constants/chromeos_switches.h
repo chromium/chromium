@@ -85,7 +85,6 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const char kDisableLoginAnimations[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const char kDisableMachineCertRequest[];
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kDisableNewZIPUnpacker[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const char kDisableOOBEChromeVoxHintTimerForTesting[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
@@ -100,8 +99,6 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kEnableArc[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kEnableArcVm[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kEnableCastReceiver[];
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-extern const char kEnableChromevoxDeveloperOption[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kEnableConsumerKiosk[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const char kEnableTabletFormFactor[];
