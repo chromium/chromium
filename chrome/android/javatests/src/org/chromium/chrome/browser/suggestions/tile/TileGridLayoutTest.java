@@ -132,7 +132,7 @@ public class TileGridLayoutTest {
     @Feature({"NewTabPage", "RenderTest"})
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     // TODO(https://crbug.com/906151): Add new goldens and enable ExploreSites.
-    @DisableFeatures(ChromeFeatureList.EXPLORE_SITES)
+    @DisableFeatures({ChromeFeatureList.EXPLORE_SITES, ChromeFeatureList.QUERY_TILES})
     public void testTileGridAppearance(boolean nightModeEnabled) throws Exception {
         NewTabPage ntp = setUpFakeDataToShowOnNtp(FAKE_MOST_VISITED_URLS.length);
         mRenderTestRule.render(getTileGridLayout(ntp), "ntp_tile_grid_layout");
@@ -296,7 +296,7 @@ public class TileGridLayoutTest {
             activity.setContentView(contentView);
 
             SiteSectionViewHolder viewHolder = SiteSection.createViewHolder(
-                    SiteSection.inflateSiteSection(contentView), uiConfig);
+                    SiteSection.inflateSiteSection(contentView), uiConfig, 2);
 
             uiConfig.updateDisplayStyle();
 
@@ -345,7 +345,7 @@ public class TileGridLayoutTest {
         };
 
         SiteSection siteSection =
-                new SiteSection(uiDelegate, null, delegate, offlinePageBridge, uiConfig);
+                new SiteSection(uiDelegate, null, delegate, offlinePageBridge, uiConfig, 2);
 
         siteSection.addObserver(new ListObservable.ListObserver<PartialBindCallback>() {
             @Override
