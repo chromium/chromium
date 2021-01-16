@@ -63,15 +63,11 @@ const char kUsageMessage[] =
     "  --audio-pipe-name=<pipe> - Sets the pipe name to capture audio on "
     "Linux.\n"
     "  --console                - Runs the daemon interactively.\n"
-    "  --daemon-pipe=<pipe>     - Specifies the pipe to connect to the "
-    "daemon.\n"
     "  --elevate=<binary>       - Runs <binary> elevated.\n"
     "  --host-config=<config>   - Specifies the host configuration.\n"
     "  --help, -?               - Prints this message.\n"
     "  --type                   - Specifies process type.\n"
     "  --version                - Prints the host version and exits.\n"
-    "  --window-id=<id>         - Specifies a window to remote,"
-    " instead of the whole desktop.\n"
     "  --evaluate-type=<type>   - Evaluates the capability of the host.\n";
 
 void Usage(const base::FilePath& program_name) {
