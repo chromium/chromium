@@ -207,6 +207,9 @@ String LayoutListMarker::TextAlternative() const {
   // order.
 
   if (RuntimeEnabledFeatures::CSSAtRuleCounterStyleEnabled()) {
+    if (GetListStyleCategory() == ListMarker::ListStyleCategory::kNone)
+      return "";
+
     const CounterStyle& counter_style = GetCounterStyle();
     return counter_style.GetPrefix() + text_ + counter_style.GetSuffix();
   }
