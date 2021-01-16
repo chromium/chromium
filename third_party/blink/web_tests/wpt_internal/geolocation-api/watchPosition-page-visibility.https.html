@@ -22,10 +22,15 @@ let mockLatitude = 51.478;
 let mockLongitude = -0.166;
 const mockAccuracy = 100.0;
 
+function generateNextPosition() {
+  ++mockLatitude;
+  ++mockLongitude;
+  return mock.makeGeoposition(mockLatitude, mockLongitude, mockAccuracy);
+}
+
 function updatePosition() {
-    ++mockLatitude;
-    ++mockLongitude;
-    mock.setGeolocationPosition(mockLatitude, mockLongitude, mockAccuracy);
+  const p = generateNextPosition();
+  mock.setGeolocationPosition(p.latitude, p.longitude, p.accuracy);
 }
 
 function setMainWindowHidden(hidden) {
@@ -58,14 +63,6 @@ function checkPosition(p) {
     assert_equals(position.coords.longitude, mockLongitude);
 }
 
-async function showPageAndUpdatePosition() {
-    assert_false(isPageVisible);
-    state++;
-    await setMainWindowHidden(false);
-    isPageVisible = true;
-    updatePosition();
-}
-
 navigator.geolocation.watchPosition(async p => {
     assert_true(isPageVisible);
     state++;
@@ -75,13 +72,28 @@ navigator.geolocation.watchPosition(async p => {
             updatePosition();
             break;
         case 2: {
+            // Make sure we stall the next queryNextPosition() request so we
+            // can defer its reply until the window is hidden.
+            let interception = mock.interceptQueryNextPosition();
             await setMainWindowHidden(true);
+            let respond = await interception;
+
             isPageVisible = false;
-            // This should not be received.
-            updatePosition();
-            // Wait for it to not be received, then continue.
+
+            // This should not be received. If it is, this enclosing function
+            // will run with `isPageVisible` still `false` and the assertion at
+            // the top of the function will fail.
+            respond(generateNextPosition());
+
+            // Wait for it to not be received, then continue. We also defer the
+            // next queryNextPosition() here to stall until we've shown the
+            // window again.
+            interception = mock.interceptQueryNextPosition();
             await roundTripToBrowser();
-            showPageAndUpdatePosition();
+            await setMainWindowHidden(false);
+            isPageVisible = true;
+            respond = await interception;
+            respond(generateNextPosition());
             break;
         }
         case 3:

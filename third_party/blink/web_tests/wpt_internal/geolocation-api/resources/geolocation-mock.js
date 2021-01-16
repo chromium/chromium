@@ -81,9 +81,8 @@ export class GeolocationMock {
     }
     return new Promise(resolve => {
       this.queryNextPositionIntercept_ = resolver => {
-        resolve(geoposition => {
-          resolver({geoposition});
-        });
+        this.queryNextPositionIntercept_ = null;
+        resolve(geoposition => { resolver({geoposition}); });
       };
     });
   }

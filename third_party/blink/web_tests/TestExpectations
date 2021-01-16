@@ -1456,7 +1456,6 @@ crbug.com/944583 [ Mac ] fast/events/platform-wheelevent-paging-x-in-scrolling-p
 crbug.com/944583 [ Mac ] fast/events/platform-wheelevent-paging-y-in-scrolling-page.html [ Pass Failure Timeout ]
 # Sheriff: 2020-05-18
 crbug.com/1083820 [ Mac ] fast/scrolling/document-level-wheel-event-listener-passive-by-default.html [ Pass Failure ]
-crbug.com/1083824 wpt_internal/geolocation-api/watchPosition-page-visibility.https.html [ Pass Failure Timeout ]
 
 # In external/wpt/html/, we prefer checking in failure
 # expectation files. The following tests with [ Failure ] don't have failure
