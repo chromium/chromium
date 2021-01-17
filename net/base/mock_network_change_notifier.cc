@@ -93,12 +93,20 @@ void MockNetworkChangeNotifier::SetConnectionTypeAndNotifyObservers(
   base::RunLoop().RunUntilIdle();
 }
 
+MockNetworkChangeNotifier::ConnectionCost
+MockNetworkChangeNotifier::GetCurrentConnectionCost() {
+  if (use_default_connection_cost_implementation_)
+    return NetworkChangeNotifier::GetCurrentConnectionCost();
+  return connection_cost_;
+}
+
 MockNetworkChangeNotifier::MockNetworkChangeNotifier(
     std::unique_ptr<SystemDnsConfigChangeNotifier> dns_config_notifier)
     : NetworkChangeNotifier(NetworkChangeCalculatorParams(),
                             dns_config_notifier.get()),
       force_network_handles_supported_(false),
       connection_type_(CONNECTION_UNKNOWN),
+      connection_cost_(CONNECTION_COST_UNKNOWN),
       dns_config_notifier_(std::move(dns_config_notifier)) {}
 
 ScopedMockNetworkChangeNotifier::ScopedMockNetworkChangeNotifier()

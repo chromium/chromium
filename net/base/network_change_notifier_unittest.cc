@@ -198,7 +198,7 @@ TEST(NetworkChangeNotifierTest, GetConnectionSubtype) {
 }
 
 class NetworkChangeNotifierMockedTest : public TestWithTaskEnvironment {
- private:
+ protected:
   test::ScopedMockNetworkChangeNotifier mock_notifier_;
 };
 
@@ -224,6 +224,94 @@ TEST_F(NetworkChangeNotifierMockedTest, TriggerNonSystemDnsChange) {
   EXPECT_EQ(1, observer.dns_changed_calls());
 
   NetworkChangeNotifier::RemoveDNSObserver(&observer);
+}
+
+class TestConnectionCostObserver
+    : public NetworkChangeNotifier::ConnectionCostObserver {
+ public:
+  void OnConnectionCostChanged(
+      NetworkChangeNotifier::ConnectionCost cost) override {
+    cost_changed_inputs_.push_back(cost);
+    ++cost_changed_calls_;
+  }
+
+  int cost_changed_calls() const { return cost_changed_calls_; }
+  std::vector<NetworkChangeNotifier::ConnectionCost> cost_changed_inputs()
+      const {
+    return cost_changed_inputs_;
+  }
+
+ private:
+  int cost_changed_calls_ = 0;
+  std::vector<NetworkChangeNotifier::ConnectionCost> cost_changed_inputs_;
+};
+
+TEST_F(NetworkChangeNotifierMockedTest, TriggerConnectionCostChange) {
+  TestConnectionCostObserver observer;
+  NetworkChangeNotifier::AddConnectionCostObserver(&observer);
+
+  ASSERT_EQ(0, observer.cost_changed_calls());
+
+  NetworkChangeNotifier::NotifyObserversOfConnectionCostChangeForTests(
+      NetworkChangeNotifier::CONNECTION_COST_METERED);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(1, observer.cost_changed_calls());
+  EXPECT_EQ(NetworkChangeNotifier::CONNECTION_COST_METERED,
+            observer.cost_changed_inputs()[0]);
+
+  NetworkChangeNotifier::RemoveConnectionCostObserver(&observer);
+  NetworkChangeNotifier::NotifyObserversOfConnectionCostChangeForTests(
+      NetworkChangeNotifier::CONNECTION_COST_UNMETERED);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(1, observer.cost_changed_calls());
+}
+
+TEST_F(NetworkChangeNotifierMockedTest, ConnectionCostDefaultsToCellular) {
+  mock_notifier_.mock_network_change_notifier()
+      ->SetUseDefaultConnectionCostImplementation(true);
+
+  mock_notifier_.mock_network_change_notifier()->SetConnectionType(
+      NetworkChangeNotifier::CONNECTION_4G);
+  EXPECT_TRUE(NetworkChangeNotifier::IsConnectionCellular(
+      NetworkChangeNotifier::GetConnectionType()));
+  EXPECT_EQ(NetworkChangeNotifier::CONNECTION_COST_METERED,
+            NetworkChangeNotifier::GetConnectionCost());
+
+  mock_notifier_.mock_network_change_notifier()->SetConnectionType(
+      NetworkChangeNotifier::CONNECTION_WIFI);
+  EXPECT_FALSE(NetworkChangeNotifier::IsConnectionCellular(
+      NetworkChangeNotifier::GetConnectionType()));
+  EXPECT_EQ(NetworkChangeNotifier::CONNECTION_COST_UNMETERED,
+            NetworkChangeNotifier::GetConnectionCost());
+}
+
+class NetworkChangeNotifierConnectionCostTest : public TestWithTaskEnvironment {
+ public:
+  void SetUp() override {
+    network_change_notifier_ = NetworkChangeNotifier::CreateIfNeeded();
+  }
+
+ private:
+  // Allows creating a new NetworkChangeNotifier.  Must be created before
+  // |network_change_notifier_| and destroyed after it to avoid DCHECK failures.
+  NetworkChangeNotifier::DisableForTest disable_for_test_;
+  std::unique_ptr<NetworkChangeNotifier> network_change_notifier_;
+};
+
+TEST_F(NetworkChangeNotifierConnectionCostTest, GetConnectionCost) {
+  EXPECT_NE(NetworkChangeNotifier::ConnectionCost::CONNECTION_COST_UNKNOWN,
+            NetworkChangeNotifier::GetConnectionCost());
+}
+
+TEST_F(NetworkChangeNotifierConnectionCostTest, AddObserver) {
+  TestConnectionCostObserver observer;
+  EXPECT_NO_FATAL_FAILURE(
+      NetworkChangeNotifier::AddConnectionCostObserver(&observer));
+  // RunUntilIdle because the secondary work resulting from adding an observer
+  // may be posted to a task queue.
+  base::RunLoop().RunUntilIdle();
 }
 
 }  // namespace net
