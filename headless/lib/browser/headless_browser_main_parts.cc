@@ -9,7 +9,22 @@
 #include "headless/lib/browser/headless_devtools.h"
 #include "headless/lib/browser/headless_screen.h"
 
+#if defined(HEADLESS_USE_PREFS)
+#include "components/os_crypt/os_crypt.h"
+#include "components/prefs/json_pref_store.h"
+#include "components/prefs/pref_service_factory.h"
+#endif
+
 namespace headless {
+
+namespace {
+
+#if defined(HEADLESS_USE_PREFS)
+const base::FilePath::CharType kLocalStateFilename[] =
+    FILE_PATH_LITERAL("Local State");
+#endif
+
+}  // namespace
 
 HeadlessBrowserMainParts::HeadlessBrowserMainParts(
     const content::MainFunctionParams& parameters,
@@ -19,6 +34,9 @@ HeadlessBrowserMainParts::HeadlessBrowserMainParts(
 HeadlessBrowserMainParts::~HeadlessBrowserMainParts() = default;
 
 void HeadlessBrowserMainParts::PreMainMessageLoopRun() {
+#if defined(HEADLESS_USE_PREFS)
+  CreatePrefService();
+#endif
   if (browser_->options()->DevtoolsServerEnabled()) {
     StartLocalDevToolsHttpHandler(browser_);
     devtools_http_handler_started_ = true;
@@ -47,11 +65,44 @@ void HeadlessBrowserMainParts::PostMainMessageLoopRun() {
     StopLocalDevToolsHttpHandler();
     devtools_http_handler_started_ = false;
   }
+#if defined(HEADLESS_USE_PREFS)
+  if (local_state_)
+    local_state_->CommitPendingWrite();
+#endif
 }
 
 void HeadlessBrowserMainParts::QuitMainMessageLoop() {
   if (quit_main_message_loop_)
     std::move(quit_main_message_loop_).Run();
 }
+
+#if defined(HEADLESS_USE_PREFS)
+void HeadlessBrowserMainParts::CreatePrefService() {
+  if (browser_->options()->user_data_dir.empty()) {
+    LOG(WARNING) << "Cannot create Pref Service with no user data dir.";
+    return;
+  }
+
+  base::FilePath local_state_file =
+      browser_->options()->user_data_dir.Append(kLocalStateFilename);
+  auto pref_store = base::MakeRefCounted<JsonPrefStore>(local_state_file);
+  auto result = pref_store->ReadPrefs();
+  CHECK(result == JsonPrefStore::PREF_READ_ERROR_NONE ||
+        result == JsonPrefStore::PREF_READ_ERROR_NO_FILE);
+
+  auto pref_registry = base::MakeRefCounted<PrefRegistrySimple>();
+#if defined(OS_WIN)
+  OSCrypt::RegisterLocalPrefs(pref_registry.get());
+#endif
+
+  PrefServiceFactory factory;
+  factory.set_user_prefs(pref_store);
+  local_state_ = factory.Create(std::move(pref_registry));
+
+#if defined(OS_WIN)
+  CHECK(OSCrypt::Init(local_state_.get()));
+#endif
+}
+#endif  // defined(HEADLESS_USE_PREFS)
 
 }  // namespace headless
