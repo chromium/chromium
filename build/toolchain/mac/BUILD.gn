@@ -264,17 +264,28 @@ template("mac_toolchain") {
 
     tool("alink") {
       rspfile = "{{output}}.rsp"
-      rspfile_content = "{{inputs}}"
 
       if (!use_lld) {
+        # Note about -filelist: Apple's linker reads the file list file and
+        # interprets each newline-separated chunk of text as a file name. It
+        # doesn't do the things one would expect from the shell like unescaping
+        # or handling quotes. In contrast, when Ninja finds a file name with
+        # spaces, it single-quotes them in $inputs_newline as it would normally
+        # do for command-line arguments. Thus any source names with spaces, or
+        # label names with spaces (which GN bases the output paths on) will be
+        # corrupted by this process. Don't use spaces for source files or
+        # labels.
+        rspfile_content = "{{inputs_newline}}"
+
         script = rebase_path("//build/toolchain/mac/filter_libtool.py",
                              root_build_dir)
 
         # Specify explicit path for libtool.
         libtool = mac_bin_path + "libtool"
-        command = "rm -f {{output}} && TOOL_VERSION=${tool_versions.filter_libtool} python $script $libtool -static -D {{arflags}} -o {{output}} \"@$rspfile\""
+        command = "rm -f {{output}} && TOOL_VERSION=${tool_versions.filter_libtool} python $script $libtool -static -D {{arflags}} -o {{output}} -filelist $rspfile"
         description = "LIBTOOL-STATIC {{output}}"
       } else {
+        rspfile_content = "{{inputs}}"
         ar = "${prefix}llvm-ar"
         command = "\"$ar\" {{arflags}} -r -c -s -D {{output}} \"@$rspfile\""
 
