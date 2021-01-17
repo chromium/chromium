@@ -7026,28 +7026,6 @@
             ]
         }
     ],
-    "TrustedTypes": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows",
-                "android_weblayer",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "TrustedDOMTypes"
-                    ]
-                }
-            ]
-        }
-    ],
     "TurnOffStreamingMediaCaching": [
         {
             "platforms": [
