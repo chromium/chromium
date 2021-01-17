@@ -770,10 +770,6 @@ const char kEnableGpuServiceLoggingName[] = "Enable gpu service logging";
 const char kEnableGpuServiceLoggingDescription[] =
     "Enable printing the actual GL driver calls.";
 
-const char kGuestOsExternalProtocolName[] = "Guest OS External Protocol";
-const char kGuestOsExternalProtocolDescription[] =
-    "Enable Guest OS external protocol handlers";
-
 const char kEnablePreviewsCoinFlipName[] = "Enable Previews Coin Flip";
 const char kEnablePreviewsCoinFlipDescription[] =
     "Enable coin flip experimentation of Previews.";

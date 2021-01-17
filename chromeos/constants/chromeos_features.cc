@@ -400,10 +400,6 @@ const base::Feature kFsNosymfollow{"FsNosymfollow",
 const base::Feature kGesturePropertiesDBusService{
     "GesturePropertiesDBusService", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enable Guest OS external protocol handling.
-const base::Feature kGuestOsExternalProtocol{"GuestOsExternalProtocol",
-                                             base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables editing with handwriting gestures within the virtual keyboard.
 const base::Feature kHandwritingGestureEditing{
     "HandwritingGestureEditing", base::FEATURE_DISABLED_BY_DEFAULT};

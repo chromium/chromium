@@ -4,7 +4,6 @@
 
 #include "chrome/browser/chromeos/external_protocol_dialog.h"
 
-#include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/chromeos/arc/intent_helper/arc_external_protocol_dialog.h"
 #include "chrome/browser/chromeos/guest_os/guest_os_external_protocol_handler.h"
@@ -15,7 +14,6 @@
 #include "chrome/browser/ui/views/external_protocol_dialog.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
@@ -44,20 +42,16 @@ void OnArcHandled(const GURL& url,
       tab_util::GetWebContentsByID(render_process_host_id, routing_id);
 
   // Display the standard ExternalProtocolDialog if Guest OS has a handler.
-  if (web_contents && base::FeatureList::IsEnabled(
-                          chromeos::features::kGuestOsExternalProtocol)) {
-    base::Optional<guest_os::GuestOsRegistryService::Registration>
-        registration = guest_os::GetHandler(
-            Profile::FromBrowserContext(web_contents->GetBrowserContext()),
-            url);
-    if (registration) {
-      new ExternalProtocolDialog(web_contents, url,
-                                 base::UTF8ToUTF16(registration->Name()),
-                                 initiating_origin);
-      return;
-    }
+  base::Optional<guest_os::GuestOsRegistryService::Registration> registration =
+      guest_os::GetHandler(
+          Profile::FromBrowserContext(web_contents->GetBrowserContext()), url);
+  if (registration) {
+    new ExternalProtocolDialog(web_contents, url,
+                               base::UTF8ToUTF16(registration->Name()),
+                               initiating_origin);
+  } else {
+    new ExternalProtocolNoHandlersDialog(web_contents, url);
   }
-  new ExternalProtocolNoHandlersDialog(web_contents, url);
 }
 
 }  // namespace
