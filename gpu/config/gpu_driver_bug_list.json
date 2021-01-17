@@ -3490,21 +3490,6 @@
       ]
     },
     {
-      "id": 349,
-      "cr_bugs": [1126058],
-      "description": "VP8 decoding hangs on Intel Broadwell",
-      "os": {
-        "type": "chromeos"
-      },
-      "vendor_id": "0x8086",
-      "intel_gpu_series": [
-        "broadwell"
-      ],
-      "features": [
-        "disable_accelerated_vp8_decode"
-      ]
-    },
-    {
       "id": 352,
       "cr_bugs": [1038006],
       "description": "Intel device 0x1066 can't use d3d11 video decoder",

@@ -142,13 +142,17 @@ GpuVideoDecodeAcceleratorFactory::CreateVDA(
 #if defined(OS_WIN)
     &GpuVideoDecodeAcceleratorFactory::CreateDXVAVDA,
 #endif
-#if BUILDFLAG(USE_VAAPI)
-    &GpuVideoDecodeAcceleratorFactory::CreateVaapiVDA,
-#endif
+  // Usually only one of USE_VAAPI or USE_V4L2_CODEC is defined on ChromeOS,
+  // except for Chromeboxes with companion video acceleration chips, which have
+  // both. In those cases prefer the V4L2 creation function.
 #if BUILDFLAG(USE_V4L2_CODEC)
     &GpuVideoDecodeAcceleratorFactory::CreateV4L2VDA,
     &GpuVideoDecodeAcceleratorFactory::CreateV4L2SVDA,
 #endif
+#if BUILDFLAG(USE_VAAPI)
+    &GpuVideoDecodeAcceleratorFactory::CreateVaapiVDA,
+#endif
+
 #if defined(OS_MAC)
     &GpuVideoDecodeAcceleratorFactory::CreateVTVDA,
 #endif

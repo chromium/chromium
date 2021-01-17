@@ -27,14 +27,17 @@ namespace {
 
 // Gets a list of the available functions for creating VideoDecoders.
 VideoDecoderPipeline::CreateDecoderFunctions GetCreateDecoderFunctions() {
+  // Usually only one of USE_VAAPI or USE_V4L2_CODEC is defined on ChromeOS,
+  // except for Chromeboxes with companion video acceleration chips, which have
+  // both. In those cases prefer the V4L2 creation function.
   constexpr VideoDecoderPipeline::CreateDecoderFunction kCreateVDFuncs[] = {
-#if BUILDFLAG(USE_VAAPI)
-    &VaapiVideoDecoder::Create,
-#endif  // BUILDFLAG(USE_VAAPI)
-
 #if BUILDFLAG(USE_V4L2_CODEC)
     &V4L2VideoDecoder::Create,
 #endif  // BUILDFLAG(USE_V4L2_CODEC)
+
+#if BUILDFLAG(USE_VAAPI)
+    &VaapiVideoDecoder::Create,
+#endif  // BUILDFLAG(USE_VAAPI)
   };
 
   return VideoDecoderPipeline::CreateDecoderFunctions(
