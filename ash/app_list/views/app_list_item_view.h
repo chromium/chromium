@@ -12,7 +12,6 @@
 
 #include "ash/app_list/app_list_export.h"
 #include "ash/app_list/model/app_list_item_observer.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string16.h"
 #include "base/timer/timer.h"
@@ -41,13 +40,14 @@ class APP_LIST_EXPORT AppListItemView : public views::Button,
                                         public AppListItemObserver,
                                         public ui::ImplicitAnimationObserver {
  public:
-  // Internal class name.
-  static const char kViewClassName[];
+  METADATA_HEADER(AppListItemView);
 
   AppListItemView(AppsGridView* apps_grid_view,
                   AppListItem* item,
                   AppListViewDelegate* delegate,
                   bool is_in_folder);
+  AppListItemView(const AppListItemView&) = delete;
+  AppListItemView& operator=(const AppListItemView&) = delete;
   ~AppListItemView() override;
 
   // Sets the icon of this image.
@@ -214,7 +214,6 @@ class APP_LIST_EXPORT AppListItemView : public views::Button,
   void PaintButtonContents(gfx::Canvas* canvas) override;
 
   // views::View overrides:
-  const char* GetClassName() const override;
   void Layout() override;
   gfx::Size CalculatePreferredSize() const override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
@@ -312,8 +311,6 @@ class APP_LIST_EXPORT AppListItemView : public views::Button,
   const bool is_notification_indicator_enabled_;
 
   base::WeakPtrFactory<AppListItemView> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AppListItemView);
 };
 
 }  // namespace ash

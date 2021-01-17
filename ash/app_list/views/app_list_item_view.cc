@@ -49,6 +49,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/drag_controller.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace ash {
 
@@ -280,9 +281,6 @@ class AppListItemView::IconImageView : public views::ImageView {
 
   DISALLOW_COPY_AND_ASSIGN(IconImageView);
 };
-
-// static
-const char AppListItemView::kViewClassName[] = "ui/app_list/AppListItemView";
 
 AppListItemView::AppListItemView(AppsGridView* apps_grid_view,
                                  AppListItem* item,
@@ -735,10 +733,6 @@ bool AppListItemView::OnMousePressed(const ui::MouseEvent& event) {
   return true;
 }
 
-const char* AppListItemView::GetClassName() const {
-  return kViewClassName;
-}
-
 void AppListItemView::Layout() {
   gfx::Rect rect(GetContentsBounds());
   if (rect.IsEmpty())
@@ -1130,5 +1124,8 @@ void AppListItemView::AdaptBoundsForSelectionHighlight(gfx::Rect* bounds) {
   // match the grid focus size set in the app list config.
   bounds->Inset(gfx::Insets(kFocusRingWidth / 2));
 }
+
+BEGIN_METADATA(AppListItemView, views::Button)
+END_METADATA
 
 }  // namespace ash
