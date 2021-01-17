@@ -683,6 +683,10 @@ TEST_F(OopImagePixelTest, DrawRecordShaderTranslatedTileRect) {
   sk_sp<PaintShader> paint_record_shader = PaintShader::MakePaintRecord(
       shader_buffer, tile_rect, SkTileMode::kRepeat, SkTileMode::kRepeat,
       nullptr, PaintShader::ScalingBehavior::kRasterAtScale);
+  // Force paint_flags to convert this to kFixedScale, so we can safely compare
+  // pixels between direct and oop-r modes (since oop will convert to
+  // kFixedScale no matter what.
+  paint_record_shader->set_has_animated_images(true);
 
   gfx::Size output_size(10, 10);
 
@@ -1712,7 +1716,12 @@ class OopRecordShaderPixelTest : public OopPixelTest,
         BuildTextBlob(SkTypeface::MakeDefault(), UseLcdText()), 0u, 0u, flags);
     auto paint_record_shader = PaintShader::MakePaintRecord(
         paint_record, SkRect::MakeWH(25, 25), SkTileMode::kRepeat,
-        SkTileMode::kRepeat, nullptr);
+        SkTileMode::kRepeat, nullptr,
+        PaintShader::ScalingBehavior::kRasterAtScale);
+    // Force paint_flags to convert this to kFixedScale, so we can safely
+    // compare pixels between direct and oop-r modes (since oop will convert to
+    // kFixedScale no matter what.
+    paint_record_shader->set_has_animated_images(true);
 
     auto display_item_list = base::MakeRefCounted<DisplayItemList>();
     display_item_list->StartPaint();
