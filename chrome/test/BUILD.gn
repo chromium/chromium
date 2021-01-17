@@ -1643,23 +1643,6 @@ if (!is_android) {
       ]
     }
 
-    if (is_chromeos_ash) {
-      sources += [
-        "../browser/chrome_main_browsertest.cc",
-        "../browser/chromeos/login/saml/test_client_cert_saml_idp_mixin.cc",
-        "../browser/chromeos/login/saml/test_client_cert_saml_idp_mixin.h",
-        "../browser/chromeos/scoped_test_system_nss_key_slot_mixin.cc",
-        "../browser/chromeos/scoped_test_system_nss_key_slot_mixin.h",
-        "../browser/process_singleton_browsertest.cc",
-        "../browser/sessions/session_restore_browsertest_chromeos.cc",
-        "../browser/ui/browser_navigator_browsertest_chromeos.cc",
-        "../browser/ui/settings_window_manager_browsertest_chromeos.cc",
-        "../browser/ui/webui/chromeos/bluetooth_pairing_dialog_browsertest-inl.h",
-        "../browser/ui/webui/chromeos/machine_learning/machine_learning_internals_browsertest.cc",
-        "../browser/ui/webui/chromeos/machine_learning/machine_learning_internals_browsertest.h",
-      ]
-    }
-
     if (is_win) {
       sources += [
         "../browser/chrome_main_browsertest.cc",
@@ -2401,6 +2384,7 @@ if (!is_android) {
           [ "../browser/chromeos/crosapi/screen_manager_ash_browsertest.cc" ]
     }
 
+    # NOTE: This is the main "browser_tests" section for |is_chromeos_ash|.
     if (is_chromeos_ash) {
       sources += [
         "../browser/apps/platform_apps/app_window_interactive_uitest_base.cc",
@@ -2417,6 +2401,7 @@ if (!is_android) {
         "../browser/ash/accessibility/sticky_keys_browsertest.cc",
         "../browser/ash/accessibility/switch_access_browsertest.cc",
         "../browser/ash/accessibility/touch_exploration_controller_browsertest.cc",
+        "../browser/chrome_main_browsertest.cc",
         "../browser/chromeos/account_manager/account_manager_policy_controller_browsertest.cc",
         "../browser/chromeos/app_mode/arc/arc_kiosk_app_manager_browsertest.cc",
         "../browser/chromeos/app_mode/kiosk_app_manager_browsertest.cc",
@@ -2571,6 +2556,8 @@ if (!is_android) {
         "../browser/chromeos/login/saml/password_change_success_detection_browsertest.cc",
         "../browser/chromeos/login/saml/saml_browsertest.cc",
         "../browser/chromeos/login/saml/security_token_saml_browsertest.cc",
+        "../browser/chromeos/login/saml/test_client_cert_saml_idp_mixin.cc",
+        "../browser/chromeos/login/saml/test_client_cert_saml_idp_mixin.h",
         "../browser/chromeos/login/screens/app_downloading_screen_browsertest.cc",
         "../browser/chromeos/login/screens/assistant_optin_flow_screen_browsertest.cc",
         "../browser/chromeos/login/screens/edu_coexistence_login_browsertest.cc",
@@ -2747,6 +2734,8 @@ if (!is_android) {
         "../browser/chromeos/profiles/profile_helper_browsertest.cc",
         "../browser/chromeos/remote_apps/remote_apps_impl_browsertest.cc",
         "../browser/chromeos/remote_apps/remote_apps_manager_browsertest.cc",
+        "../browser/chromeos/scoped_test_system_nss_key_slot_mixin.cc",
+        "../browser/chromeos/scoped_test_system_nss_key_slot_mixin.h",
         "../browser/chromeos/shutdown_policy_browsertest.cc",
         "../browser/chromeos/startup_settings_cache_browsertest.cc",
         "../browser/chromeos/system/device_disabling_browsertest.cc",
@@ -2774,7 +2763,9 @@ if (!is_android) {
         "../browser/metrics/family_user_metrics_provider_browsertest.cc",
         "../browser/metrics/majority_age_user_metrics_provider_browsertest.cc",
         "../browser/notifications/notification_platform_bridge_chromeos_browsertest.cc",
+        "../browser/process_singleton_browsertest.cc",
         "../browser/resources/chromeos/zip_archiver/test/zip_archiver_jstest.cc",
+        "../browser/sessions/session_restore_browsertest_chromeos.cc",
         "../browser/signin/chromeos_mirror_account_consistency_browsertest.cc",
         "../browser/ui/app_list/app_list_client_impl_browsertest.cc",
         "../browser/ui/app_list/app_service/app_service_app_item_browsertest.cc",
@@ -2811,6 +2802,8 @@ if (!is_android) {
         "../browser/ui/ash/tablet_mode_page_behavior_browsertest.cc",
         "../browser/ui/ash/volume_controller_browsertest.cc",
         "../browser/ui/browser_finder_chromeos_browsertest.cc",
+        "../browser/ui/browser_navigator_browsertest_chromeos.cc",
+        "../browser/ui/settings_window_manager_browsertest_chromeos.cc",
         "../browser/ui/views/apps/app_dialog/app_dialog_view_browsertest.cc",
         "../browser/ui/views/apps/app_dialog/app_uninstall_dialog_view_browsertest.cc",
         "../browser/ui/views/apps/chrome_native_app_window_views_aura_ash_browsertest.cc",
@@ -2840,12 +2833,15 @@ if (!is_android) {
         "../browser/ui/web_applications/web_share_target_browsertest.cc",
         "../browser/ui/webui/chromeos/add_supervision/add_supervision_metrics_recorder_browsertest.cc",
         "../browser/ui/webui/chromeos/add_supervision/add_supervision_ui_browsertest.cc",
+        "../browser/ui/webui/chromeos/bluetooth_pairing_dialog_browsertest-inl.h",
         "../browser/ui/webui/chromeos/crostini_upgrader/crostini_upgrader_dialog_browsertest.cc",
         "../browser/ui/webui/chromeos/edu_coexistence_login_handler_browsertest.cc",
         "../browser/ui/webui/chromeos/login/js_calls_container_test_api.cc",
         "../browser/ui/webui/chromeos/login/js_calls_container_test_api.h",
         "../browser/ui/webui/chromeos/login/oobe_display_chooser_browsertest.cc",
         "../browser/ui/webui/chromeos/login/testapi/oobe_test_api_browsertest.cc",
+        "../browser/ui/webui/chromeos/machine_learning/machine_learning_internals_browsertest.cc",
+        "../browser/ui/webui/chromeos/machine_learning/machine_learning_internals_browsertest.h",
         "../browser/ui/webui/chromeos/smb_shares/smb_credentials_dialog_browsertest.cc",
         "../browser/ui/webui/chromeos/system_web_dialog_browsertest.cc",
         "../browser/ui/webui/settings/chromeos/account_manager_handler_browsertest.cc",
@@ -2858,22 +2854,20 @@ if (!is_android) {
         "base/interactive_test_utils_views.cc",
       ]
       data += [ "../browser/resources/chromeos/accessibility/switch_access/test_support.js" ]
-      if (is_chromeos_ash && !is_official_build) {
+      if (!is_official_build) {
         sources += [
           "../browser/chromeos/web_applications/sample_system_web_app_integration_browsertest.cc",
           "../browser/chromeos/web_applications/telemetry_extension_integration_browsertest.cc",
         ]
       }
       if (use_cups) {
-        if (is_chromeos_ash) {
-          sources += [
-            "../browser/chromeos/extensions/printing/fake_print_job_controller.cc",
-            "../browser/chromeos/extensions/printing/fake_print_job_controller.h",
-            "../browser/chromeos/extensions/printing/printing_apitest.cc",
-            "../browser/chromeos/extensions/printing_metrics/print_job_finished_event_dispatcher_apitest.cc",
-            "../browser/chromeos/extensions/printing_metrics/printing_metrics_apitest.cc",
-          ]
-        }
+        sources += [
+          "../browser/chromeos/extensions/printing/fake_print_job_controller.cc",
+          "../browser/chromeos/extensions/printing/fake_print_job_controller.h",
+          "../browser/chromeos/extensions/printing/printing_apitest.cc",
+          "../browser/chromeos/extensions/printing_metrics/print_job_finished_event_dispatcher_apitest.cc",
+          "../browser/chromeos/extensions/printing_metrics/printing_metrics_apitest.cc",
+        ]
         deps += [ "//printing:test_support" ]
       }
       if (enable_assistant_integration_tests) {
