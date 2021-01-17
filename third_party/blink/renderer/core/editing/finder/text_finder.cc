@@ -968,9 +968,12 @@ void TextFinder::IncreaseMarkerVersion() {
   // subframes as well.
   for (Frame* frame = GetFrame()->Tree().TraverseNext(GetFrame()); frame;
        frame = frame->Tree().TraverseNext(GetFrame())) {
+    // TODO(https://crbug.com/1147796) In OOPIFs mode, the text finder
+    // corresponding to the remote frame also needs to be notified, the
+    // match rects are invalid and need to be recalculated.
     auto* web_local_frame_impl =
-        WebLocalFrameImpl::FromFrame(To<LocalFrame>(frame));
-    if (web_local_frame_impl->GetTextFinder() &&
+        WebLocalFrameImpl::FromFrame(DynamicTo<LocalFrame>(frame));
+    if (web_local_frame_impl && web_local_frame_impl->GetTextFinder() &&
         web_local_frame_impl->GetTextFinder()->TotalMatchCount() > 0) {
       web_local_frame_impl->GetTextFinder()->InvalidateFindMatchRects();
     }
