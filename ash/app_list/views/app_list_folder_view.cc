@@ -41,6 +41,7 @@
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/painter.h"
 #include "ui/views/view_model.h"
 #include "ui/views/view_model_utils.h"
@@ -569,10 +570,6 @@ bool AppListFolderView::OnKeyPressed(const ui::KeyEvent& event) {
   return false;
 }
 
-const char* AppListFolderView::GetClassName() const {
-  return "AppListFolderView";
-}
-
 void AppListFolderView::OnAppListItemWillBeDeleted(AppListItem* item) {
   if (item == folder_item_) {
     items_grid_view_->OnFolderItemRemoved();
@@ -897,5 +894,8 @@ void AppListFolderView::CreateOpenOrCloseFolderAccessibilityEvent(bool open) {
                : IDS_APP_LIST_FOLDER_CLOSE_FOLDER_ACCESSIBILE_NAME));
   announcement_view->NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
 }
+
+BEGIN_METADATA(AppListFolderView, views::View)
+END_METADATA
 
 }  // namespace ash

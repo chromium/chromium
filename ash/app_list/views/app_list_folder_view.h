@@ -13,10 +13,10 @@
 #include "ash/app_list/views/apps_grid_view_folder_delegate.h"
 #include "ash/app_list/views/folder_header_view.h"
 #include "ash/app_list/views/folder_header_view_delegate.h"
-#include "base/macros.h"
 #include "base/optional.h"
 #include "ui/compositor/throughput_tracker.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/view_model.h"
 
@@ -35,9 +35,13 @@ class APP_LIST_EXPORT AppListFolderView : public views::View,
                                           public AppListModelObserver,
                                           public AppsGridViewFolderDelegate {
  public:
+  METADATA_HEADER(AppListFolderView);
+
   AppListFolderView(AppsContainerView* container_view,
                     AppListModel* model,
                     ContentsView* contents_view);
+  AppListFolderView(const AppListFolderView&) = delete;
+  AppListFolderView& operator=(const AppListFolderView&) = delete;
   ~AppListFolderView() override;
 
   // An interface for the folder opening and closing animations.
@@ -69,7 +73,6 @@ class APP_LIST_EXPORT AppListFolderView : public views::View,
   gfx::Size CalculatePreferredSize() const override;
   void Layout() override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
-  const char* GetClassName() const override;
 
   // AppListModelObserver
   void OnAppListItemWillBeDeleted(AppListItem* item) override;
@@ -193,8 +196,6 @@ class APP_LIST_EXPORT AppListFolderView : public views::View,
 
   // Records smoothness of the folder show/hide animation.
   base::Optional<ui::ThroughputTracker> show_hide_metrics_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppListFolderView);
 };
 
 }  // namespace ash
