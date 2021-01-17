@@ -4145,7 +4145,7 @@
   },
   {
     "name": "record-snapshot-size",
-    "owners": ["eugenebut","bling-flags@google.com"],
+    "owners": ["edchin","bling-flags@google.com"],
     "expiry_milestone": 91
   },
   {
