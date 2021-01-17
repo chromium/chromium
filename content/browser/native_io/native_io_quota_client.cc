@@ -19,8 +19,6 @@ NativeIOQuotaClient::~NativeIOQuotaClient() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void NativeIOQuotaClient::OnQuotaManagerDestroyed() {}
-
 void NativeIOQuotaClient::GetOriginUsage(const url::Origin& origin,
                                          blink::mojom::StorageType type,
                                          GetOriginUsageCallback callback) {

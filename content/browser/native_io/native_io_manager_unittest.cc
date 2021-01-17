@@ -178,7 +178,6 @@ class NativeIOManagerTest : public testing::Test {
 
   void TearDown() override {
     // Let the client go away before dropping a ref of the quota manager proxy.
-    quota_manager_proxy()->SimulateQuotaManagerDestroyed();
     quota_manager_ = nullptr;
     quota_manager_proxy_ = nullptr;
   }

@@ -11,6 +11,8 @@
 #include "content/browser/native_io/native_io_host.h"
 #include "content/browser/native_io/native_io_quota_client.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
@@ -35,11 +37,13 @@ NativeIOManager::NativeIOManager(
     : root_path_(GetNativeIORootPath(profile_root)),
       special_storage_policy_(std::move(special_storage_policy)),
       quota_manager_proxy_(std::move(quota_manager_proxy)) {
-  if (quota_manager_proxy_) {
-    // TODO(crbug.com/1163048): Use mojo and switch to RegisterClient().
-    quota_manager_proxy_->RegisterLegacyClient(
-        base::MakeRefCounted<NativeIOQuotaClient>(),
-        storage::QuotaClientType::kNativeIO,
+  if (quota_manager_proxy) {
+    // Quota client assumes all backends have registered.
+    mojo::PendingRemote<storage::mojom::QuotaClient> quota_client;
+    mojo::MakeSelfOwnedReceiver(std::make_unique<NativeIOQuotaClient>(),
+                                quota_client.InitWithNewPipeAndPassReceiver());
+    quota_manager_proxy->RegisterClient(
+        std::move(quota_client), storage::QuotaClientType::kNativeIO,
         {blink::mojom::StorageType::kTemporary});
   }
 }
