@@ -598,7 +598,7 @@ void ArcInputMethodManagerService::OnInputContextHandlerChanged() {
 void ArcInputMethodManagerService::OnAccessibilityStatusChanged(
     const chromeos::AccessibilityStatusEventDetails& event_details) {
   if (event_details.notification_type !=
-      chromeos::ACCESSIBILITY_TOGGLE_VIRTUAL_KEYBOARD) {
+      chromeos::AccessibilityNotificationType::kToggleVirtualKeyboard) {
     // This class is not interested in a11y events except toggling virtual
     // keyboard event.
     return;

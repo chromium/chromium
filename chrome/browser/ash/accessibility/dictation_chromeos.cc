@@ -149,7 +149,7 @@ void DictationChromeos::DictationOff() {
   }
 
   chromeos::AccessibilityStatusEventDetails details(
-      chromeos::AccessibilityNotificationType::ACCESSIBILITY_TOGGLE_DICTATION,
+      chromeos::AccessibilityNotificationType::kToggleDictation,
       false /* enabled */);
   chromeos::AccessibilityManager::Get()->NotifyAccessibilityStatusChanged(
       details);

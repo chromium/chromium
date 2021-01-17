@@ -695,17 +695,17 @@ ArcAccessibilityHelperBridge::OnGetTextLocationDataResultInternal(
 void ArcAccessibilityHelperBridge::OnAccessibilityStatusChanged(
     const chromeos::AccessibilityStatusEventDetails& event_details) {
   if (event_details.notification_type !=
-          chromeos::ACCESSIBILITY_TOGGLE_FOCUS_HIGHLIGHT &&
+          chromeos::AccessibilityNotificationType::kToggleFocusHighlight &&
       event_details.notification_type !=
-          chromeos::ACCESSIBILITY_TOGGLE_SELECT_TO_SPEAK &&
+          chromeos::AccessibilityNotificationType::kToggleSelectToSpeak &&
       event_details.notification_type !=
-          chromeos::ACCESSIBILITY_TOGGLE_SPOKEN_FEEDBACK &&
+          chromeos::AccessibilityNotificationType::kToggleSpokenFeedback &&
       event_details.notification_type !=
-          chromeos::ACCESSIBILITY_TOGGLE_SWITCH_ACCESS &&
+          chromeos::AccessibilityNotificationType::kToggleSwitchAccess &&
       event_details.notification_type !=
-          chromeos::ACCESSIBILITY_TOGGLE_DOCKED_MAGNIFIER &&
+          chromeos::AccessibilityNotificationType::kToggleDockedMagnifier &&
       event_details.notification_type !=
-          chromeos::ACCESSIBILITY_TOGGLE_SCREEN_MAGNIFIER) {
+          chromeos::AccessibilityNotificationType::kToggleScreenMagnifier) {
     return;
   }
 
@@ -713,7 +713,7 @@ void ArcAccessibilityHelperBridge::OnAccessibilityStatusChanged(
   UpdateWindowProperties(GetActiveWindow());
 
   if (event_details.notification_type ==
-      chromeos::ACCESSIBILITY_TOGGLE_SPOKEN_FEEDBACK) {
+      chromeos::AccessibilityNotificationType::kToggleSpokenFeedback) {
     SetExploreByTouchEnabled(event_details.enabled);
   }
 }

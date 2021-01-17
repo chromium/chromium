@@ -228,11 +228,12 @@ void TtsEngineExtensionObserverChromeOS::OnExtensionUnloaded(
 
 void TtsEngineExtensionObserverChromeOS::OnAccessibilityStatusChanged(
     const chromeos::AccessibilityStatusEventDetails& details) {
-  if (details.notification_type != chromeos::AccessibilityNotificationType::
-                                       ACCESSIBILITY_TOGGLE_SPOKEN_FEEDBACK &&
-      details.notification_type != chromeos::AccessibilityNotificationType::
-                                       ACCESSIBILITY_TOGGLE_SELECT_TO_SPEAK)
+  if (details.notification_type !=
+          chromeos::AccessibilityNotificationType::kToggleSpokenFeedback &&
+      details.notification_type !=
+          chromeos::AccessibilityNotificationType::kToggleSelectToSpeak) {
     return;
+  }
 
   // Google speech synthesis might not be loaded yet. If it isn't, the call in
   // |OnExtensionLoaded| will do the increment. If it is, the call below will

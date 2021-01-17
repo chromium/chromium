@@ -133,7 +133,8 @@ class MockMagnificationObserver {
  private:
   void OnAccessibilityStatusChanged(
       const AccessibilityStatusEventDetails& details) {
-    if (details.notification_type == ACCESSIBILITY_TOGGLE_SCREEN_MAGNIFIER) {
+    if (details.notification_type ==
+        AccessibilityNotificationType::kToggleScreenMagnifier) {
       observed_enabled_ = details.enabled;
       observed_ = true;
     }

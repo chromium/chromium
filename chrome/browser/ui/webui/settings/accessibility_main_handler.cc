@@ -83,7 +83,7 @@ void AccessibilityMainHandler::SendScreenReaderStateChanged() {
 void AccessibilityMainHandler::OnAccessibilityStatusChanged(
     const chromeos::AccessibilityStatusEventDetails& details) {
   if (details.notification_type ==
-      chromeos::ACCESSIBILITY_TOGGLE_SPOKEN_FEEDBACK) {
+      chromeos::AccessibilityNotificationType::kToggleSpokenFeedback) {
     SendScreenReaderStateChanged();
   }
 }

@@ -299,8 +299,9 @@ void MagnificationManager::UpdateMagnifierFromPrefs() {
     SetMagnifierEnabledInternal(enabled);
   }
 
-  AccessibilityStatusEventDetails details(ACCESSIBILITY_TOGGLE_SCREEN_MAGNIFIER,
-                                          fullscreen_magnifier_enabled_);
+  AccessibilityStatusEventDetails details(
+      AccessibilityNotificationType::kToggleScreenMagnifier,
+      fullscreen_magnifier_enabled_);
 
   if (!AccessibilityManager::Get())
     return;
@@ -315,8 +316,8 @@ void MagnificationManager::UpdateDockedMagnifierFromPrefs() {
 
   PrefService* prefs = profile_->GetPrefs();
   const bool enabled = prefs->GetBoolean(ash::prefs::kDockedMagnifierEnabled);
-  AccessibilityStatusEventDetails details(ACCESSIBILITY_TOGGLE_DOCKED_MAGNIFIER,
-                                          enabled);
+  AccessibilityStatusEventDetails details(
+      AccessibilityNotificationType::kToggleDockedMagnifier, enabled);
 
   if (!AccessibilityManager::Get())
     return;

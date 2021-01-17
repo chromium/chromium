@@ -311,10 +311,12 @@ void WelcomeScreenHandler::HandleRecordChromeVoxHintSpokenSuccess() {
 
 void WelcomeScreenHandler::OnAccessibilityStatusChanged(
     const AccessibilityStatusEventDetails& details) {
-  if (details.notification_type == ACCESSIBILITY_MANAGER_SHUTDOWN)
+  if (details.notification_type ==
+      AccessibilityNotificationType::kManagerShutdown) {
     accessibility_subscription_ = {};
-  else
+  } else {
     UpdateA11yState();
+  }
 }
 
 void WelcomeScreenHandler::UpdateA11yState() {

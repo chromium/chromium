@@ -602,7 +602,7 @@ bool TopControlsSlideControllerChromeOS::CanEnable(
 void TopControlsSlideControllerChromeOS::OnAccessibilityStatusChanged(
     const chromeos::AccessibilityStatusEventDetails& event_details) {
   if (event_details.notification_type !=
-      chromeos::ACCESSIBILITY_TOGGLE_SPOKEN_FEEDBACK) {
+      chromeos::AccessibilityNotificationType::kToggleSpokenFeedback) {
     return;
   }
 

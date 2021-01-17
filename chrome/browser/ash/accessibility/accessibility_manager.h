@@ -54,22 +54,22 @@ class DictationChromeos;
 class SelectToSpeakEventHandlerDelegate;
 enum class Sound;
 
-enum AccessibilityNotificationType {
-  ACCESSIBILITY_MANAGER_SHUTDOWN,
-  ACCESSIBILITY_TOGGLE_HIGH_CONTRAST_MODE,
-  ACCESSIBILITY_TOGGLE_LARGE_CURSOR,
-  ACCESSIBILITY_TOGGLE_STICKY_KEYS,
-  ACCESSIBILITY_TOGGLE_SCREEN_MAGNIFIER,
-  ACCESSIBILITY_TOGGLE_SPOKEN_FEEDBACK,
-  ACCESSIBILITY_TOGGLE_SELECT_TO_SPEAK,
-  ACCESSIBILITY_TOGGLE_SWITCH_ACCESS,
-  ACCESSIBILITY_TOGGLE_VIRTUAL_KEYBOARD,
-  ACCESSIBILITY_TOGGLE_MONO_AUDIO,
-  ACCESSIBILITY_TOGGLE_CARET_HIGHLIGHT,
-  ACCESSIBILITY_TOGGLE_CURSOR_HIGHLIGHT,
-  ACCESSIBILITY_TOGGLE_FOCUS_HIGHLIGHT,
-  ACCESSIBILITY_TOGGLE_DICTATION,
-  ACCESSIBILITY_TOGGLE_DOCKED_MAGNIFIER,
+enum class AccessibilityNotificationType {
+  kManagerShutdown,
+  kToggleHighContrastMode,
+  kToggleLargeCursor,
+  kToggleStickyKeys,
+  kToggleScreenMagnifier,
+  kToggleSpokenFeedback,
+  kToggleSelectToSpeak,
+  kToggleSwitchAccess,
+  kToggleVirtualKeyboard,
+  kToggleMonoAudio,
+  kToggleCaretHighlight,
+  kToggleCursorHighlight,
+  kToggleFocusHighlight,
+  kToggleDictation,
+  kToggleDockedMagnifier,
 };
 
 struct AccessibilityStatusEventDetails {

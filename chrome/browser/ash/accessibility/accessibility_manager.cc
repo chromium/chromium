@@ -365,8 +365,8 @@ AccessibilityManager::AccessibilityManager() {
 
 AccessibilityManager::~AccessibilityManager() {
   CHECK(this == g_accessibility_manager);
-  AccessibilityStatusEventDetails details(ACCESSIBILITY_MANAGER_SHUTDOWN,
-                                          false);
+  AccessibilityStatusEventDetails details(
+      AccessibilityNotificationType::kManagerShutdown, false);
   NotifyAccessibilityStatusChanged(details);
   CrasAudioHandler::Get()->RemoveAudioObserver(this);
   user_manager::UserManager::Get()->RemoveSessionStateObserver(this);
@@ -432,8 +432,9 @@ void AccessibilityManager::EnableLargeCursor(bool enabled) {
 }
 
 void AccessibilityManager::OnLargeCursorChanged() {
-  AccessibilityStatusEventDetails details(ACCESSIBILITY_TOGGLE_LARGE_CURSOR,
-                                          IsLargeCursorEnabled());
+  AccessibilityStatusEventDetails details(
+      AccessibilityNotificationType::kToggleLargeCursor,
+      IsLargeCursorEnabled());
   NotifyAccessibilityStatusChanged(details);
 }
 
@@ -457,8 +458,8 @@ bool AccessibilityManager::IsStickyKeysEnabled() const {
 }
 
 void AccessibilityManager::OnStickyKeysChanged() {
-  AccessibilityStatusEventDetails details(ACCESSIBILITY_TOGGLE_STICKY_KEYS,
-                                          IsStickyKeysEnabled());
+  AccessibilityStatusEventDetails details(
+      AccessibilityNotificationType::kToggleStickyKeys, IsStickyKeysEnabled());
   NotifyAccessibilityStatusChanged(details);
 }
 
@@ -497,8 +498,8 @@ void AccessibilityManager::OnSpokenFeedbackChanged() {
 
   spoken_feedback_enabled_ = enabled;
 
-  AccessibilityStatusEventDetails details(ACCESSIBILITY_TOGGLE_SPOKEN_FEEDBACK,
-                                          enabled);
+  AccessibilityStatusEventDetails details(
+      AccessibilityNotificationType::kToggleSpokenFeedback, enabled);
   NotifyAccessibilityStatusChanged(details);
 
   if (enabled) {
@@ -533,7 +534,8 @@ bool AccessibilityManager::IsHighContrastEnabled() const {
 
 void AccessibilityManager::OnHighContrastChanged() {
   AccessibilityStatusEventDetails details(
-      ACCESSIBILITY_TOGGLE_HIGH_CONTRAST_MODE, IsHighContrastEnabled());
+      AccessibilityNotificationType::kToggleHighContrastMode,
+      IsHighContrastEnabled());
   NotifyAccessibilityStatusChanged(details);
 }
 
@@ -751,8 +753,9 @@ bool AccessibilityManager::IsVirtualKeyboardEnabled() const {
 }
 
 void AccessibilityManager::OnVirtualKeyboardChanged() {
-  AccessibilityStatusEventDetails details(ACCESSIBILITY_TOGGLE_VIRTUAL_KEYBOARD,
-                                          IsVirtualKeyboardEnabled());
+  AccessibilityStatusEventDetails details(
+      AccessibilityNotificationType::kToggleVirtualKeyboard,
+      IsVirtualKeyboardEnabled());
   NotifyAccessibilityStatusChanged(details);
 }
 
@@ -771,8 +774,8 @@ bool AccessibilityManager::IsMonoAudioEnabled() const {
 }
 
 void AccessibilityManager::OnMonoAudioChanged() {
-  AccessibilityStatusEventDetails details(ACCESSIBILITY_TOGGLE_MONO_AUDIO,
-                                          IsMonoAudioEnabled());
+  AccessibilityStatusEventDetails details(
+      AccessibilityNotificationType::kToggleMonoAudio, IsMonoAudioEnabled());
   NotifyAccessibilityStatusChanged(details);
 }
 
@@ -796,8 +799,9 @@ bool AccessibilityManager::IsCaretHighlightEnabled() const {
 }
 
 void AccessibilityManager::OnCaretHighlightChanged() {
-  AccessibilityStatusEventDetails details(ACCESSIBILITY_TOGGLE_CARET_HIGHLIGHT,
-                                          IsCaretHighlightEnabled());
+  AccessibilityStatusEventDetails details(
+      AccessibilityNotificationType::kToggleCaretHighlight,
+      IsCaretHighlightEnabled());
   NotifyAccessibilityStatusChanged(details);
 }
 
@@ -817,8 +821,9 @@ bool AccessibilityManager::IsCursorHighlightEnabled() const {
 }
 
 void AccessibilityManager::OnCursorHighlightChanged() {
-  AccessibilityStatusEventDetails details(ACCESSIBILITY_TOGGLE_CURSOR_HIGHLIGHT,
-                                          IsCursorHighlightEnabled());
+  AccessibilityStatusEventDetails details(
+      AccessibilityNotificationType::kToggleCursorHighlight,
+      IsCursorHighlightEnabled());
   NotifyAccessibilityStatusChanged(details);
 }
 
@@ -849,8 +854,8 @@ void AccessibilityManager::OnFocusHighlightChanged() {
   // ChromeVox does its own focus highlighting.
   if (IsSpokenFeedbackEnabled())
     enabled = false;
-  AccessibilityStatusEventDetails details(ACCESSIBILITY_TOGGLE_FOCUS_HIGHLIGHT,
-                                          enabled);
+  AccessibilityStatusEventDetails details(
+      AccessibilityNotificationType::kToggleFocusHighlight, enabled);
   NotifyAccessibilityStatusChanged(details);
 
   // TODO(crbug.com/1096759): Load or unload the AccessibilityCommon extension
@@ -913,8 +918,8 @@ void AccessibilityManager::OnSelectToSpeakChanged() {
 
   select_to_speak_enabled_ = enabled;
 
-  AccessibilityStatusEventDetails details(ACCESSIBILITY_TOGGLE_SELECT_TO_SPEAK,
-                                          enabled);
+  AccessibilityStatusEventDetails details(
+      AccessibilityNotificationType::kToggleSelectToSpeak, enabled);
   NotifyAccessibilityStatusChanged(details);
 
   if (enabled) {
@@ -973,8 +978,8 @@ void AccessibilityManager::OnSwitchAccessChanged() {
     return;
   switch_access_enabled_ = enabled;
 
-  AccessibilityStatusEventDetails details(ACCESSIBILITY_TOGGLE_SWITCH_ACCESS,
-                                          enabled);
+  AccessibilityStatusEventDetails details(
+      AccessibilityNotificationType::kToggleSwitchAccess, enabled);
   NotifyAccessibilityStatusChanged(details);
 
   if (enabled) {
@@ -1241,7 +1246,8 @@ void AccessibilityManager::NotifyAccessibilityStatusChanged(
     const AccessibilityStatusEventDetails& details) {
   callback_list_.Notify(details);
 
-  if (details.notification_type == ACCESSIBILITY_TOGGLE_DICTATION) {
+  if (details.notification_type ==
+      AccessibilityNotificationType::kToggleDictation) {
     ash::AccessibilityController::Get()->SetDictationActive(details.enabled);
     ash::AccessibilityController::Get()->NotifyAccessibilityStatusChanged();
     return;
@@ -1250,8 +1256,11 @@ void AccessibilityManager::NotifyAccessibilityStatusChanged(
   // Update system tray menu visibility. Prefs tracked inside ash handle their
   // own updates to avoid race conditions (pref updates are asynchronous between
   // chrome and ash).
-  if (details.notification_type == ACCESSIBILITY_TOGGLE_SCREEN_MAGNIFIER ||
-      details.notification_type == ACCESSIBILITY_TOGGLE_DICTATION) {
+  // TODO(hferreiro): repeated condition
+  if (details.notification_type ==
+          AccessibilityNotificationType::kToggleScreenMagnifier ||
+      details.notification_type ==
+          AccessibilityNotificationType::kToggleDictation) {
     ash::AccessibilityController::Get()->NotifyAccessibilityStatusChanged();
   }
 }

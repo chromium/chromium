@@ -1928,10 +1928,11 @@ void WizardController::ShowErrorScreen() {
 void WizardController::OnAccessibilityStatusChanged(
     const AccessibilityStatusEventDetails& details) {
   enum AccessibilityNotificationType type = details.notification_type;
-  if (type == ACCESSIBILITY_MANAGER_SHUTDOWN) {
+  if (type == AccessibilityNotificationType::kManagerShutdown) {
     accessibility_subscription_ = {};
     return;
-  } else if (type != ACCESSIBILITY_TOGGLE_SPOKEN_FEEDBACK || !details.enabled) {
+  } else if (type != AccessibilityNotificationType::kToggleSpokenFeedback ||
+             !details.enabled) {
     return;
   }
 
