@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/web_database_host_impl.h"
+#include "content/browser/web_database/web_database_host_impl.h"
 
 #include <string>
 #include <utility>
@@ -27,8 +27,8 @@
 #include "url/origin.h"
 
 using storage::DatabaseUtil;
-using storage::VfsBackend;
 using storage::QuotaManager;
+using storage::VfsBackend;
 
 namespace content {
 namespace {
