@@ -813,7 +813,7 @@ const base::Feature kWebAppEnableProtocolHandlers{
 // without conversion to I420.
 const base::Feature kWebRtcLibvpxEncodeNV12 {
   "WebRtcLibvpxEncodeNV12",
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       base::FEATURE_DISABLED_BY_DEFAULT
 #else
       base::FEATURE_ENABLED_BY_DEFAULT

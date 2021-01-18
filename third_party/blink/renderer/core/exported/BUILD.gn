@@ -83,6 +83,7 @@ blink_core_sources("exported") {
   }
 
   deps = [
+    "//build:chromeos_buildflags",
     "//third_party/blink/renderer/core:core_generated",
     "//third_party/blink/renderer/core/probe",
     "//third_party/blink/renderer/core/typed_arrays:typed_arrays",

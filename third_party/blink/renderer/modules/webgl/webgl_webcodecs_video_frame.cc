@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/webgl/webgl_webcodecs_video_frame.h"
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "media/base/wait_and_replace_sync_token_client.h"
 #include "media/video/gpu_memory_buffer_video_frame_pool.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_color_space.h"
@@ -26,7 +27,7 @@ namespace {
 const char kRequiredExtension[] = "GL_NV_EGL_stream_consumer_external";
 #elif defined(OS_MAC)
 const char kRequiredExtension[] = "GL_ANGLE_texture_rectangle";
-#elif defined(OS_ANDROID) || defined(OS_CHROMEOS)
+#elif defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
 const char kRequiredExtension[] = "GL_OES_EGL_image_external";
 #else
 const char kRequiredExtension[] = "";
@@ -216,7 +217,7 @@ WebGLWebCodecsVideoFrame::WebGLWebCodecsVideoFrame(
   auto& components_nv12 = format_to_components_map_[media::PIXEL_FORMAT_NV12];
   components_nv12[media::VideoFrame::kYPlane] = "r";
   components_nv12[media::VideoFrame::kUPlane] = "rg";
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
   formats_supported[media::PIXEL_FORMAT_ABGR] = true;
   auto& components_abgr = format_to_components_map_[media::PIXEL_FORMAT_ABGR];
   components_abgr[media::VideoFrame::kYPlane] = "rgb";
@@ -235,7 +236,9 @@ WebGLExtensionName WebGLWebCodecsVideoFrame::GetName() const {
 }
 
 bool WebGLWebCodecsVideoFrame::Supported(WebGLRenderingContextBase* context) {
-#if defined(OS_LINUX) || defined(OS_FUCHSIA)
+// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
+// complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS) || defined(OS_FUCHSIA)
   // TODO(jie.a.chen@intel.com): Add Linux support.
   return false;
 #else
@@ -270,7 +273,7 @@ WebGLWebCodecsVideoFrameHandle* WebGLWebCodecsVideoFrame::importVideoFrame(
   sampler_type = "sampler2DRect";
   sampler_func = "texture2DRect";
   pixel_format = media::PIXEL_FORMAT_XRGB;
-#elif defined(OS_ANDROID) || defined(OS_CHROMEOS)
+#elif defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
   sampler_type = "samplerExternalOES";
   pixel_format = media::PIXEL_FORMAT_ABGR;
   src_color_space = gfx::ColorSpace::CreateSRGB();
