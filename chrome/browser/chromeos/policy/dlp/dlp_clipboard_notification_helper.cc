@@ -16,10 +16,12 @@
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_clipboard_bubble_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/text_input_client.h"
@@ -31,6 +33,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_utils.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -72,18 +75,6 @@ constexpr int kLineHeight = 20;
 // The insets of the bubble borders.
 constexpr gfx::Insets kBubbleBorderInsets(1);
 
-// Clipboard ARC toast ID.
-constexpr char kClipboardArcToastId[] = "clipboard_dlp_block_arc";
-
-// Clipboard Crostini toast ID.
-constexpr char kClipboardCrostiniToastId[] = "clipboard_dlp_block_crostini";
-
-// Clipboard Plugin VM toast ID.
-constexpr char kClipboardPluginVmToastId[] = "clipboard_dlp_block_plugin_vm";
-
-// The duration of the clipboard toast.
-constexpr int kToastDurationMs = 2500;
-
 // The font name of the text used in the bubble.
 constexpr char kTextFontName[] = "Roboto";
 
@@ -102,13 +93,11 @@ constexpr int kButtonLabelSpacing = 8;
 constexpr base::TimeDelta kBubbleBoundsAnimationTime =
     base::TimeDelta::FromMilliseconds(250);
 
-class DismissButton : public views::LabelButton {
+class Button : public views::LabelButton {
  public:
-  DismissButton() {
+  explicit Button(const base::string16& button_label) {
     SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
 
-    const base::string16 button_label(l10n_util::GetStringUTF16(
-        IDS_POLICY_DLP_CLIPBOARD_BLOCK_DISMISS_BUTTON));
     SetText(button_label);
 
     const gfx::FontList font_list = GetFontList();
@@ -130,10 +119,10 @@ class DismissButton : public views::LabelButton {
                          gfx::Font::Weight::MEDIUM);
   }
 
-  DismissButton(const DismissButton&) = delete;
-  DismissButton& operator=(const DismissButton&) = delete;
+  Button(const Button&) = delete;
+  Button& operator=(const Button&) = delete;
 
-  ~DismissButton() override = default;
+  ~Button() override = default;
 };
 
 // This inline bubble shown for disabled copy/paste.
@@ -151,12 +140,12 @@ class ClipboardBubbleView : public views::View {
     // Add the managed icon.
     SkColor icon_color = color_provider->GetContentLayerColor(
         ash::ColorProvider::ContentLayerType::kIconColorPrimary);
-    clipboard_icon_ = AddChildView(std::make_unique<views::ImageView>());
-    clipboard_icon_->SetPaintToLayer();
-    clipboard_icon_->layer()->SetFillsBoundsOpaquely(false);
-    clipboard_icon_->SetBounds(kBubblePadding, kBubblePadding, kManagedIconSize,
-                               kManagedIconSize);
-    clipboard_icon_->SetImage(gfx::CreateVectorIcon(
+    managed_icon_ = AddChildView(std::make_unique<views::ImageView>());
+    managed_icon_->SetPaintToLayer();
+    managed_icon_->layer()->SetFillsBoundsOpaquely(false);
+    managed_icon_->SetBounds(kBubblePadding, kBubblePadding, kManagedIconSize,
+                             kManagedIconSize);
+    managed_icon_->SetImage(gfx::CreateVectorIcon(
         vector_icons::kBusinessIcon, kManagedIconSize, icon_color));
 
     // Add the bubble text.
@@ -192,22 +181,54 @@ class ClipboardBubbleView : public views::View {
     shadow_border->set_insets(kBubbleBorderInsets);
     border_->SetSize({kBubbleWidth, INT_MAX});
     border_->SetBorder(std::move(shadow_border));
+  }
 
+  ~ClipboardBubbleView() override = default;
+
+  virtual gfx::Size GetBubbleSize() = 0;
+
+ protected:
+  // This function should get called if the view got updated e.g. AddChildView.
+  void UpdateBorderSize(const gfx::Size& size) { border_->SetSize(size); }
+
+  views::Label* label_ = nullptr;
+  views::ImageView* managed_icon_ = nullptr;
+  views::ImageView* border_ = nullptr;
+};
+
+class ClipboardBlockBubble : public ClipboardBubbleView {
+ public:
+  explicit ClipboardBlockBubble(const base::string16& text)
+      : ClipboardBubbleView(text) {
     // Add "Got it" button.
-    button_ = AddChildView(std::make_unique<DismissButton>());
+    base::string16 button_label = l10n_util::GetStringUTF16(
+        IDS_POLICY_DLP_CLIPBOARD_BLOCK_DISMISS_BUTTON);
+    button_ = AddChildView(std::make_unique<Button>(button_label));
     button_->SetPaintToLayer();
     button_->layer()->SetFillsBoundsOpaquely(false);
     button_->SetPosition(
         gfx::Point(kBubbleWidth - kBubblePadding - button_->width(),
                    kBubblePadding + label_->height() + kButtonLabelSpacing));
+
+    UpdateBorderSize(GetBubbleSize());
   }
 
-  ~ClipboardBubbleView() override = default;
+  ~ClipboardBlockBubble() override = default;
 
-  views::Label* label_ = nullptr;
-  views::ImageView* clipboard_icon_ = nullptr;
-  views::ImageView* border_ = nullptr;
-  DismissButton* button_ = nullptr;
+  gfx::Size GetBubbleSize() override {
+    DCHECK(label_);
+    DCHECK(button_);
+    return {kBubbleWidth, 2 * kBubblePadding + label_->bounds().height() +
+                              kButtonLabelSpacing + button_->height()};
+  }
+
+  void SetDismissCallback(base::RepeatingCallback<void()> cb) {
+    DCHECK(button_);
+    button_->SetCallback(std::move(cb));
+  }
+
+ private:
+  Button* button_ = nullptr;
 };
 
 bool IsRectContainedByAnyDisplay(const gfx::Rect& rect) {
@@ -243,21 +264,16 @@ void CalculateAndSetWidgetBounds(views::Widget* widget,
   // display bounds.
   const bool caret_bounds_are_valid = caret_bounds.size() != gfx::Size() &&
                                       IsRectContainedByAnyDisplay(caret_bounds);
-
   if (!caret_bounds_are_valid) {
     caret_bounds.set_origin(
         display::Screen::GetScreen()->GetCursorScreenPoint());
   }
 
   // Calculate the bubble size to ensure the label text accurately fits.
-  const int bubble_height =
-      2 * kBubblePadding + bubble_view->label_->bounds().height() +
-      kButtonLabelSpacing + bubble_view->button_->height();
-
-  bubble_view->border_->SetSize({kBubbleWidth, bubble_height});
-
-  const gfx::Rect widget_bounds = gfx::Rect(caret_bounds.x(), caret_bounds.y(),
-                                            kBubbleWidth, bubble_height);
+  const gfx::Size bubble_size = bubble_view->GetBubbleSize();
+  const gfx::Rect widget_bounds =
+      gfx::Rect(caret_bounds.x(), caret_bounds.y(), bubble_size.width(),
+                bubble_size.height());
 
   std::unique_ptr<ui::ScopedLayerAnimationSettings> settings;
   if (widget->GetWindowBoundsInScreen().size() != gfx::Size()) {
@@ -274,6 +290,14 @@ void CalculateAndSetWidgetBounds(views::Widget* widget,
 
 }  // namespace
 
+DlpClipboardNotificationHelper::DlpClipboardNotificationHelper() {
+  ui::ClipboardMonitor::GetInstance()->AddObserver(this);
+}
+
+DlpClipboardNotificationHelper::~DlpClipboardNotificationHelper() {
+  ui::ClipboardMonitor::GetInstance()->RemoveObserver(this);
+}
+
 void DlpClipboardNotificationHelper::NotifyBlockedPaste(
     const ui::DataTransferEndpoint* const data_src,
     const ui::DataTransferEndpoint* const data_dst) {
@@ -285,7 +309,7 @@ void DlpClipboardNotificationHelper::NotifyBlockedPaste(
   if (data_dst) {
     if (data_dst->type() == ui::EndpointType::kCrostini) {
       ShowClipboardBlockToast(
-          kClipboardCrostiniToastId,
+          kClipboardDlpCrostiniToastId,
           l10n_util::GetStringFUTF16(
               IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_COPY_VM, host_name,
               l10n_util::GetStringUTF16(IDS_CROSTINI_LINUX)));
@@ -293,7 +317,7 @@ void DlpClipboardNotificationHelper::NotifyBlockedPaste(
     }
     if (data_dst->type() == ui::EndpointType::kPluginVm) {
       ShowClipboardBlockToast(
-          kClipboardPluginVmToastId,
+          kClipboardDlpPluginVmToastId,
           l10n_util::GetStringFUTF16(
               IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_COPY_VM, host_name,
               l10n_util::GetStringUTF16(IDS_PLUGIN_VM_APP_NAME)));
@@ -301,7 +325,7 @@ void DlpClipboardNotificationHelper::NotifyBlockedPaste(
     }
     if (data_dst->type() == ui::EndpointType::kArc) {
       ShowClipboardBlockToast(
-          kClipboardArcToastId,
+          kClipboardDlpArcToastId,
           l10n_util::GetStringFUTF16(
               IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_COPY_VM, host_name,
               l10n_util::GetStringUTF16(IDS_POLICY_DLP_ANDROID_APPS)));
@@ -327,14 +351,14 @@ void DlpClipboardNotificationHelper::ShowClipboardBlockBubble(
   params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
 
   widget_->Init(std::move(params));
-  auto* bubble_view =
-      widget_->SetContentsView(std::make_unique<ClipboardBubbleView>(text));
+  ClipboardBlockBubble* block_bubble =
+      widget_->SetContentsView(std::make_unique<ClipboardBlockBubble>(text));
 
-  bubble_view->button_->SetCallback(
+  block_bubble->SetDismissCallback(
       base::BindRepeating(&DlpClipboardNotificationHelper::OnWidgetClosing,
                           base::Unretained(this), widget_.get()));
 
-  CalculateAndSetWidgetBounds(widget_.get(), bubble_view);
+  CalculateAndSetWidgetBounds(widget_.get(), block_bubble);
 
   widget_->Show();
 
@@ -344,13 +368,13 @@ void DlpClipboardNotificationHelper::ShowClipboardBlockBubble(
                      base::Unretained(this),
                      widget_.get()),  // Safe as DlpClipboardNotificationHelper
                                       // owns `widget_` and outlives it.
-      base::TimeDelta::FromMilliseconds(kToastDurationMs));
+      base::TimeDelta::FromMilliseconds(kClipboardDlpToastDurationMs));
 }
 
 void DlpClipboardNotificationHelper::ShowClipboardBlockToast(
     const std::string& id,
     const base::string16& text) {
-  ash::ToastData toast(id, text, kToastDurationMs,
+  ash::ToastData toast(id, text, kClipboardDlpToastDurationMs,
                        /*dismiss_text=*/base::nullopt);
   toast.is_managed = true;
   ash::ToastManager::Get()->Show(toast);
@@ -364,6 +388,10 @@ void DlpClipboardNotificationHelper::OnWidgetClosing(views::Widget* widget) {
 void DlpClipboardNotificationHelper::OnWidgetDestroyed(views::Widget* widget) {
   if (widget == widget_.get())
     widget_.reset();
+}
+
+void DlpClipboardNotificationHelper::OnClipboardDataChanged() {
+  OnWidgetClosing(widget_.get());
 }
 
 }  // namespace policy

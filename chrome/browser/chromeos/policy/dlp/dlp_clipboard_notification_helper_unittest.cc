@@ -9,6 +9,7 @@
 #include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_clipboard_bubble_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -105,13 +106,13 @@ INSTANTIATE_TEST_SUITE_P(
     DlpClipboard,
     DlpClipboardToastTest,
     ::testing::Values(ToastTest(ui::EndpointType::kCrostini,
-                                "clipboard_dlp_block_crostini",
+                                kClipboardDlpCrostiniToastId,
                                 IDS_CROSTINI_LINUX),
                       ToastTest(ui::EndpointType::kPluginVm,
-                                "clipboard_dlp_block_plugin_vm",
+                                kClipboardDlpPluginVmToastId,
                                 IDS_PLUGIN_VM_APP_NAME),
                       ToastTest(ui::EndpointType::kArc,
-                                "clipboard_dlp_block_arc",
+                                kClipboardDlpArcToastId,
                                 IDS_POLICY_DLP_ANDROID_APPS)));
 
 }  // namespace policy

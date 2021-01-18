@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_CLIPBOARD_NOTIFICATION_HELPER_H_
 
 #include "base/strings/string16.h"
+#include "ui/base/clipboard/clipboard_observer.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
@@ -17,10 +18,11 @@ class DataTransferEndpoint;
 
 namespace policy {
 
-class DlpClipboardNotificationHelper : public views::WidgetObserver {
+class DlpClipboardNotificationHelper : public views::WidgetObserver,
+                                       public ui::ClipboardObserver {
  public:
-  DlpClipboardNotificationHelper() = default;
-  ~DlpClipboardNotificationHelper() override = default;
+  DlpClipboardNotificationHelper();
+  ~DlpClipboardNotificationHelper() override;
 
   DlpClipboardNotificationHelper(const DlpClipboardNotificationHelper&) =
       delete;
@@ -40,6 +42,9 @@ class DlpClipboardNotificationHelper : public views::WidgetObserver {
   // views::WidgetObserver
   void OnWidgetClosing(views::Widget* widget) override;
   void OnWidgetDestroyed(views::Widget* widget) override;
+
+  // ui::ClipboardObserver
+  void OnClipboardDataChanged() override;
 
   views::UniqueWidgetPtr widget_;
 };

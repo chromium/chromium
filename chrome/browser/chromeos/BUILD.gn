@@ -2258,6 +2258,7 @@ source_set("chromeos") {
     "policy/display_settings_handler.h",
     "policy/dlp/data_transfer_dlp_controller.cc",
     "policy/dlp/data_transfer_dlp_controller.h",
+    "policy/dlp/dlp_clipboard_bubble_constants.h",
     "policy/dlp/dlp_clipboard_notification_helper.cc",
     "policy/dlp/dlp_clipboard_notification_helper.h",
     "policy/dlp/dlp_content_manager.cc",
