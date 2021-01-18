@@ -1064,7 +1064,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Enterprise.PolicyUpdatePeriod.Device" units="days"
-    expires_after="M90">
+    expires_after="M95">
   <owner>rbock@google.com</owner>
   <owner>igorcov@chromium.org</owner>
   <summary>Time since last device policy fetch.</summary>
@@ -1078,7 +1078,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Enterprise.PolicyUpdatePeriod.User" units="days"
-    expires_after="M90">
+    expires_after="M95">
   <owner>rbock@google.com</owner>
   <owner>igorcov@chromium.org</owner>
   <summary>Time since last user policy fetch.</summary>
