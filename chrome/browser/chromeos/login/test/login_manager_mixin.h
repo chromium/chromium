@@ -161,4 +161,8 @@ class LoginManagerMixin : public InProcessBrowserTestMixin,
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
+// source migration is finished.
+using chromeos::LoginManagerMixin;
+
 #endif  // CHROME_BROWSER_CHROMEOS_LOGIN_TEST_LOGIN_MANAGER_MIXIN_H_

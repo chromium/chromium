@@ -28,8 +28,8 @@ SwitchAccessE2ETest = class extends E2ETestBase {
     super.testGenPreamble();
     GEN(`
   base::Closure load_cb =
-      base::Bind(&chromeos::AccessibilityManager::SetSwitchAccessEnabled,
-          base::Unretained(chromeos::AccessibilityManager::Get()),
+      base::Bind(&AccessibilityManager::SetSwitchAccessEnabled,
+          base::Unretained(AccessibilityManager::Get()),
           true);
   WaitForExtension(extension_misc::kSwitchAccessExtensionId, load_cb);
     `);

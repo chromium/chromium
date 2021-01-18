@@ -14,8 +14,6 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/notification_types.h"
 
-namespace chromeos {
-
 class AccessibilityCommonTest : public InProcessBrowserTest {
  public:
   bool DoesComponentExtensionExist(const std::string& id) {
@@ -90,5 +88,3 @@ IN_PROC_BROWSER_TEST_F(AccessibilityCommonTest, ToggleFeatures) {
   EXPECT_TRUE(
       DoesComponentExtensionExist(extension_misc::kChromeVoxExtensionId));
 }
-
-}  // namespace chromeos

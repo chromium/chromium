@@ -28,8 +28,6 @@
 #include "ui/views/accessibility/ax_event_manager.h"
 #include "ui/views/accessibility/view_accessibility.h"
 
-namespace chromeos {
-
 namespace {
 
 // The duration of time to ignore focus changes after the last mouse event.
@@ -366,5 +364,3 @@ void MagnificationManager::HandleFocusChanged(const gfx::Rect& bounds_in_screen,
   ash::DockedMagnifierController::Get()->CenterOnPoint(
       bounds_in_screen.CenterPoint());
 }
-
-}  // namespace chromeos

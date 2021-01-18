@@ -129,4 +129,11 @@ struct AudioDeviceCompare {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::AudioDevice;
+using ::chromeos::AudioDeviceType;
+}  // namespace ash
+
 #endif  // CHROMEOS_AUDIO_AUDIO_DEVICE_H_

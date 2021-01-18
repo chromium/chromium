@@ -386,4 +386,12 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool ShouldUseV2DeviceSync();
 }  // namespace features
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+namespace features {
+using namespace ::chromeos::features;
+}
+}  // namespace ash
+
 #endif  // CHROMEOS_CONSTANTS_CHROMEOS_FEATURES_H_

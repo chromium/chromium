@@ -26,8 +26,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
-namespace chromeos {
-
 namespace {
 
 const char kDataURIPrefix[] = "data:text/html;charset=utf-8,";
@@ -187,5 +185,3 @@ IN_PROC_BROWSER_TEST_F(MagnificationControllerTest,
   EXPECT_TRUE(view_port_after_focus.Contains(button_bounds));
   EXPECT_EQ(view_port_before_focus, view_port_after_focus);
 }
-
-}  // namespace chromeos

@@ -101,7 +101,7 @@ class TopControlsSlideControllerChromeOS : public TopControlsSlideController,
   // be disabled. This is important for users who want to touch explore and need
   // this to be consistent.
   void OnAccessibilityStatusChanged(
-      const chromeos::AccessibilityStatusEventDetails& event_details);
+      const AccessibilityStatusEventDetails& event_details);
 
   void OnEnabledStateChanged(bool new_state);
 

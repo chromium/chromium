@@ -10,7 +10,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/tts_controller.h"
 
-namespace chromeos {
 namespace test {
 
 namespace {
@@ -268,4 +267,3 @@ void SpeechMonitor::MaybePrintExpectations() {
 }
 
 }  // namespace test
-}  // namespace chromeos

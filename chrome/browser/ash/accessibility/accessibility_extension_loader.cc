@@ -11,8 +11,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "extensions/browser/extension_system.h"
 
-namespace chromeos {
-
 AccessibilityExtensionLoader::AccessibilityExtensionLoader(
     const std::string& extension_id,
     const base::FilePath& extension_path,
@@ -138,5 +136,3 @@ void AccessibilityExtensionLoader::ReinstallExtensionForKiosk(
   if (done_cb)
     done_cb.Run();
 }
-
-}  // namespace chromeos

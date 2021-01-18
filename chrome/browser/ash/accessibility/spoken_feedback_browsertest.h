@@ -14,8 +14,6 @@
 
 using extensions::api::braille_display_private::StubBrailleController;
 
-namespace chromeos {
-
 // Spoken feedback tests only in a logged in user's window.
 class LoggedInSpokenFeedbackTest : public InProcessBrowserTest {
  public:
@@ -58,7 +56,5 @@ class LoggedInSpokenFeedbackTest : public InProcessBrowserTest {
 
   DISALLOW_COPY_AND_ASSIGN(LoggedInSpokenFeedbackTest);
 };
-
-}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_ACCESSIBILITY_SPOKEN_FEEDBACK_BROWSERTEST_H_

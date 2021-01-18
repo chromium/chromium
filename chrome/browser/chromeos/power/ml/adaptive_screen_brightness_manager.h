@@ -22,15 +22,14 @@
 #include "ui/base/user_activity/user_activity_detector.h"
 #include "ui/base/user_activity/user_activity_observer.h"
 
+class AccessibilityManager;
+class MagnificationManager;
+
 namespace base {
 class RepeatingTimer;
 }  // namespace base
 
 namespace chromeos {
-
-class AccessibilityManager;
-class MagnificationManager;
-
 namespace power {
 namespace ml {
 

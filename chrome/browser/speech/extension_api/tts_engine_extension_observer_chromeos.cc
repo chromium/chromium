@@ -63,12 +63,12 @@ void UpdateGoogleSpeechSynthesisKeepAliveCount(content::BrowserContext* context,
 
 void UpdateGoogleSpeechSynthesisKeepAliveCountOnReload(
     content::BrowserContext* browser_context) {
-  if (chromeos::AccessibilityManager::Get()->IsSpokenFeedbackEnabled()) {
+  if (AccessibilityManager::Get()->IsSpokenFeedbackEnabled()) {
     UpdateGoogleSpeechSynthesisKeepAliveCount(browser_context,
                                               true /* increment */);
   }
 
-  if (chromeos::AccessibilityManager::Get()->IsSelectToSpeakEnabled()) {
+  if (AccessibilityManager::Get()->IsSelectToSpeakEnabled()) {
     UpdateGoogleSpeechSynthesisKeepAliveCount(browser_context,
                                               true /* increment */);
   }
@@ -135,10 +135,9 @@ TtsEngineExtensionObserverChromeOS::TtsEngineExtensionObserverChromeOS(
   event_router->RegisterObserver(this, tts_engine_events::kOnStop);
 
   accessibility_status_subscription_ =
-      chromeos::AccessibilityManager::Get()->RegisterCallback(
-          base::BindRepeating(
-              &TtsEngineExtensionObserverChromeOS::OnAccessibilityStatusChanged,
-              base::Unretained(this)));
+      AccessibilityManager::Get()->RegisterCallback(base::BindRepeating(
+          &TtsEngineExtensionObserverChromeOS::OnAccessibilityStatusChanged,
+          base::Unretained(this)));
 }
 
 TtsEngineExtensionObserverChromeOS::~TtsEngineExtensionObserverChromeOS() =
@@ -227,11 +226,11 @@ void TtsEngineExtensionObserverChromeOS::OnExtensionUnloaded(
 }
 
 void TtsEngineExtensionObserverChromeOS::OnAccessibilityStatusChanged(
-    const chromeos::AccessibilityStatusEventDetails& details) {
+    const AccessibilityStatusEventDetails& details) {
   if (details.notification_type !=
-          chromeos::AccessibilityNotificationType::kToggleSpokenFeedback &&
+          AccessibilityNotificationType::kToggleSpokenFeedback &&
       details.notification_type !=
-          chromeos::AccessibilityNotificationType::kToggleSelectToSpeak) {
+          AccessibilityNotificationType::kToggleSelectToSpeak) {
     return;
   }
 

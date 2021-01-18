@@ -58,8 +58,8 @@ MagnifierE2ETest = class extends E2ETestBase {
     super.testGenPreamble();
     GEN(`
     base::Closure load_cb =
-        base::Bind(&chromeos::MagnificationManager::SetMagnifierEnabled,
-            base::Unretained(chromeos::MagnificationManager::Get()),
+        base::Bind(&MagnificationManager::SetMagnifierEnabled,
+            base::Unretained(MagnificationManager::Get()),
             true);
     WaitForExtension(extension_misc::kAccessibilityCommonExtensionId, load_cb);
       `);

@@ -189,7 +189,7 @@ CrostiniUnsupportedActionNotifier::Delegate::GetLocalizedDisplayName(
 }
 
 int CrostiniUnsupportedActionNotifier::Delegate::ToastTimeoutMs() {
-  auto* manager = chromeos::MagnificationManager::Get();
+  auto* manager = MagnificationManager::Get();
   if (manager &&
       (manager->IsMagnifierEnabled() || manager->IsDockedMagnifierEnabled())) {
     return 60 * 1000;

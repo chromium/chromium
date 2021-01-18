@@ -37,7 +37,7 @@ class AccessibilityLabelsBrowserTest : public InProcessBrowserTest {
   void EnableScreenReader(bool enabled) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // Enable Chromevox.
-    chromeos::AccessibilityManager::Get()->EnableSpokenFeedback(enabled);
+    AccessibilityManager::Get()->EnableSpokenFeedback(enabled);
 #else
     // Spoof a screen reader.
     if (enabled) {

@@ -34,8 +34,8 @@ AccessibilityCommonE2ETest = class extends E2ETestBase {
     // have a place to be injected.
     GEN(`
   base::Closure load_cb =
-      base::Bind(&chromeos::AccessibilityManager::EnableAutoclick,
-          base::Unretained(chromeos::AccessibilityManager::Get()),
+      base::Bind(&AccessibilityManager::EnableAutoclick,
+          base::Unretained(AccessibilityManager::Get()),
           true);
   WaitForExtension(extension_misc::kAccessibilityCommonExtensionId, load_cb);
     `);

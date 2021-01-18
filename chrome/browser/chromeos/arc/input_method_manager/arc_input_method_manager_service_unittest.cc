@@ -766,7 +766,7 @@ TEST_F(ArcInputMethodManagerServiceTest,
       ash::prefs::kAccessibilityVirtualKeyboardEnabled, true);
   // Notify ArcInputMethodManagerService.
   service()->OnAccessibilityStatusChanged(
-      {chromeos::AccessibilityNotificationType::kToggleVirtualKeyboard, true});
+      {AccessibilityNotificationType::kToggleVirtualKeyboard, true});
 
   // ARC IME is not allowed when a11y keyboard is enabled.
   EXPECT_EQ(1u, imm()->state()->removed_input_method_extensions_.size());
@@ -785,7 +785,7 @@ TEST_F(ArcInputMethodManagerServiceTest,
       ash::prefs::kAccessibilityVirtualKeyboardEnabled, false);
   // Notify ArcInputMethodManagerService.
   service()->OnAccessibilityStatusChanged(
-      {chromeos::AccessibilityNotificationType::kToggleVirtualKeyboard, false});
+      {AccessibilityNotificationType::kToggleVirtualKeyboard, false});
 
   // ARC IME can be enabled.
   EXPECT_EQ(1u, imm()->state()->added_input_method_extensions_.size());

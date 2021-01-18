@@ -15,7 +15,6 @@
 
 // TODO(katie): This may need to move into Content as part of the TTS refactor.
 
-namespace chromeos {
 namespace test {
 
 struct SpeechMonitorUtterance {
@@ -131,6 +130,5 @@ class SpeechMonitor : public content::TtsPlatform {
 };
 
 }  // namespace test
-}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_ACCESSIBILITY_SPEECH_MONITOR_H_

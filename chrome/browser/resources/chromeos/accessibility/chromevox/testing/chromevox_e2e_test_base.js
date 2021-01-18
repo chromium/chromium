@@ -34,8 +34,8 @@ ChromeVoxE2ETest = class extends E2ETestBase {
     GEN(`
     auto allow = extension_l10n_util::AllowGzippedMessagesAllowedForTest();
     base::Closure load_cb =
-        base::Bind(&chromeos::AccessibilityManager::EnableSpokenFeedback,
-            base::Unretained(chromeos::AccessibilityManager::Get()),
+        base::Bind(&AccessibilityManager::EnableSpokenFeedback,
+            base::Unretained(AccessibilityManager::Get()),
             true);
     WaitForExtension(extension_misc::kChromeVoxExtensionId, load_cb);
       `);

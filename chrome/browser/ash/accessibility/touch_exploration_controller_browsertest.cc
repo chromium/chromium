@@ -57,7 +57,7 @@ class TouchExplorationTest : public InProcessBrowserTest {
   }
 
   void SwitchTouchExplorationMode(bool on) {
-    chromeos::AccessibilityManager::Get()->EnableSpokenFeedback(on);
+    AccessibilityManager::Get()->EnableSpokenFeedback(on);
   }
 
   base::TimeTicks Now() { return simulated_clock_->NowTicks(); }

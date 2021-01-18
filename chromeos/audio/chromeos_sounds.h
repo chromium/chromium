@@ -31,4 +31,10 @@ enum class Sound {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::Sound;
+}
+
 #endif  // CHROMEOS_AUDIO_CHROMEOS_SOUNDS_H_

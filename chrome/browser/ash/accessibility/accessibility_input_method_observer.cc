@@ -10,8 +10,6 @@
 #include "ui/base/ime/text_input_type.h"
 #include "ui/gfx/geometry/rect.h"
 
-using chromeos::AccessibilityManager;
-
 AccessibilityInputMethodObserver::AccessibilityInputMethodObserver(
     ui::InputMethod* input_method)
     : input_method_(input_method) {

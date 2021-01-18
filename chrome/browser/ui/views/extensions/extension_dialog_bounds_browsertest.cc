@@ -43,11 +43,10 @@ class ExtensionDialogBoundsTest
   void EnableDockedMagnifier() const {
     extensions::TestExtensionRegistryObserver registry_observer(
         extensions::ExtensionRegistry::Get(
-            chromeos::AccessibilityManager::Get()->profile()));
-    chromeos::MagnificationManager::Get()->SetDockedMagnifierEnabled(true);
+            AccessibilityManager::Get()->profile()));
+    MagnificationManager::Get()->SetDockedMagnifierEnabled(true);
     registry_observer.WaitForExtensionLoaded();
-    ASSERT_TRUE(
-        chromeos::MagnificationManager::Get()->IsDockedMagnifierEnabled());
+    ASSERT_TRUE(MagnificationManager::Get()->IsDockedMagnifierEnabled());
   }
 
  private:

@@ -21,8 +21,6 @@
 #include "ui/events/test/event_generator.h"
 #include "url/url_constants.h"
 
-namespace chromeos {
-
 class AccessibilityLiveSiteTest : public InProcessBrowserTest {
  protected:
   void SetUpOnMainThread() override {
@@ -102,5 +100,3 @@ IN_PROC_BROWSER_TEST_F(AccessibilityLiveSiteTest,
   speech_monitor_.ExpectSpeech(kTextFoundInGoogleDoc);
   speech_monitor_.Replay();
 }
-
-}  // namespace chromeos

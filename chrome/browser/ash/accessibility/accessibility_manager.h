@@ -21,6 +21,7 @@
 #include "chrome/browser/extensions/api/braille_display_private/braille_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
+#include "chromeos/audio/chromeos_sounds.h"
 #include "chromeos/audio/cras_audio_handler.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/user_manager/user_manager.h"
@@ -47,12 +48,9 @@ namespace gfx {
 class Rect;
 }  // namespace gfx
 
-namespace chromeos {
-
 class AccessibilityExtensionLoader;
 class DictationChromeos;
 class SelectToSpeakEventHandlerDelegate;
-enum class Sound;
 
 enum class AccessibilityNotificationType {
   kManagerShutdown,
@@ -105,8 +103,8 @@ class AccessibilityManager
       public extensions::api::braille_display_private::BrailleObserver,
       public extensions::ExtensionRegistryObserver,
       public user_manager::UserManager::UserSessionStateObserver,
-      public input_method::InputMethodManager::Observer,
-      public CrasAudioHandler::AudioObserver,
+      public chromeos::input_method::InputMethodManager::Observer,
+      public ash::CrasAudioHandler::AudioObserver,
       public ProfileObserver {
  public:
   // Creates an instance of AccessibilityManager, this should be called once,
@@ -263,7 +261,7 @@ class AccessibilityManager
   // Plays an earcon. Earcons are brief and distinctive sounds that indicate
   // the their mapped event has occurred. The |sound_key| enums can be found in
   // chromeos/audio/chromeos_sounds.h.
-  bool PlayEarcon(Sound sound_key, PlaySoundOption option);
+  bool PlayEarcon(ash::Sound sound_key, PlaySoundOption option);
 
   // Forward an accessibility gesture from the touch exploration controller
   // to ChromeVox.
@@ -424,7 +422,7 @@ class AccessibilityManager
   void OnShutdown(extensions::ExtensionRegistry* registry) override;
 
   // InputMethodManager::Observer
-  void InputMethodChanged(input_method::InputMethodManager* manager,
+  void InputMethodChanged(chromeos::input_method::InputMethodManager* manager,
                           Profile* profile,
                           bool show_message) override;
 
@@ -478,7 +476,7 @@ class AccessibilityManager
 
   std::unique_ptr<AccessibilityExtensionLoader> select_to_speak_loader_;
 
-  std::unique_ptr<chromeos::SelectToSpeakEventHandlerDelegate>
+  std::unique_ptr<SelectToSpeakEventHandlerDelegate>
       select_to_speak_event_handler_delegate_;
 
   std::unique_ptr<AccessibilityExtensionLoader> switch_access_loader_;
@@ -508,7 +506,5 @@ class AccessibilityManager
 
   DISALLOW_COPY_AND_ASSIGN(AccessibilityManager);
 };
-
-}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_ACCESSIBILITY_ACCESSIBILITY_MANAGER_H_

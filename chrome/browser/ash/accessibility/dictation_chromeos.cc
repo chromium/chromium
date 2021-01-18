@@ -21,8 +21,6 @@
 #include "ui/base/ime/chromeos/input_method_util.h"
 #include "ui/base/ime/composition_text.h"
 
-namespace chromeos {
-
 namespace {
 
 const char kDefaultProfileLanguage[] = "en-US";
@@ -33,7 +31,7 @@ std::string GetUserLanguage(Profile* profile) {
   input_method_ids.push_back(
       profile->GetPrefs()->GetString(prefs::kLanguageCurrentInputMethod));
   std::vector<std::string> languages;
-  input_method::InputMethodManager::Get()
+  chromeos::input_method::InputMethodManager::Get()
       ->GetInputMethodUtil()
       ->GetLanguageCodesFromInputMethodIds(input_method_ids, &languages);
 
@@ -107,7 +105,8 @@ void DictationChromeos::OnSpeechSoundLevelChanged(int16_t level) {}
 void DictationChromeos::OnSpeechRecognitionStateChanged(
     SpeechRecognizerStatus new_state) {
   if (new_state == SPEECH_RECOGNIZER_RECOGNIZING)
-    audio::SoundsManager::Get()->Play(static_cast<int>(Sound::kDictationStart));
+    audio::SoundsManager::Get()->Play(
+        static_cast<int>(ash::Sound::kDictationStart));
   else if (new_state == SPEECH_RECOGNIZER_READY)
     // This state is only reached when nothing has been said for a fixed time.
     // In this case, the expected behavior is for dictation to terminate.
@@ -134,7 +133,8 @@ void DictationChromeos::DictationOff() {
     return;
 
   if (!composition_->text.empty()) {
-    audio::SoundsManager::Get()->Play(static_cast<int>(Sound::kDictationEnd));
+    audio::SoundsManager::Get()->Play(
+        static_cast<int>(ash::Sound::kDictationEnd));
 
     ui::IMEInputContextHandlerInterface* input_context = GetInputContext();
     if (input_context)
@@ -145,15 +145,11 @@ void DictationChromeos::DictationOff() {
     composition_->text = base::string16();
   } else {
     audio::SoundsManager::Get()->Play(
-        static_cast<int>(Sound::kDictationCancel));
+        static_cast<int>(ash::Sound::kDictationCancel));
   }
 
-  chromeos::AccessibilityStatusEventDetails details(
-      chromeos::AccessibilityNotificationType::kToggleDictation,
-      false /* enabled */);
-  chromeos::AccessibilityManager::Get()->NotifyAccessibilityStatusChanged(
-      details);
+  AccessibilityStatusEventDetails details(
+      AccessibilityNotificationType::kToggleDictation, false /* enabled */);
+  AccessibilityManager::Get()->NotifyAccessibilityStatusChanged(details);
   speech_recognizer_.reset();
 }
-
-}  // namespace chromeos

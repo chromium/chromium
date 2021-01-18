@@ -2614,12 +2614,11 @@ IN_PROC_BROWSER_TEST_F(HotseatShelfAppBrowserTest,
 // the accessibility focus.
 IN_PROC_BROWSER_TEST_F(HotseatShelfAppBrowserTest, EnableChromeVox) {
   ash::Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-  chromeos::test::SpeechMonitor speech_monitor;
+  test::SpeechMonitor speech_monitor;
 
   // Enable ChromeVox.
-  ASSERT_FALSE(
-      chromeos::AccessibilityManager::Get()->IsSpokenFeedbackEnabled());
-  chromeos::AccessibilityManager::Get()->EnableSpokenFeedback(true);
+  ASSERT_FALSE(AccessibilityManager::Get()->IsSpokenFeedbackEnabled());
+  AccessibilityManager::Get()->EnableSpokenFeedback(true);
 
   // Wait for ChromeVox to start reading anything.
   speech_monitor.ExpectSpeechPattern("*");

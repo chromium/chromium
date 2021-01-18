@@ -29,8 +29,6 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/native_widget_types.h"
 
-namespace chromeos {
-
 class StickyKeysBrowserTest : public InProcessBrowserTest {
  protected:
   StickyKeysBrowserTest() = default;
@@ -226,5 +224,3 @@ IN_PROC_BROWSER_TEST_F(StickyKeysBrowserTest, OverlayShown) {
     EXPECT_FALSE(controller->GetOverlayForTest());
   }
 }
-
-}  // namespace chromeos

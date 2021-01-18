@@ -39,8 +39,6 @@
 #include "ui/events/test/event_generator.h"
 #include "url/url_constants.h"
 
-namespace chromeos {
-
 class SelectToSpeakTest : public InProcessBrowserTest {
  public:
   void OnFocusRingChanged() {
@@ -209,8 +207,7 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, DISABLED_SpeakStatusTray) {
 IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, ActivatesWithTapOnSelectToSpeakTray) {
   base::RepeatingCallback<void()> callback = base::BindRepeating(
       &SelectToSpeakTest::SetSelectToSpeakState, GetWeakPtr());
-  chromeos::AccessibilityManager::Get()->SetSelectToSpeakStateObserverForTest(
-      callback);
+  AccessibilityManager::Get()->SetSelectToSpeakStateObserverForTest(callback);
   // Click in the tray bounds to start 'selection' mode.
   TapSelectToSpeakTray();
 
@@ -232,8 +229,7 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, ActivatesWithTapOnSelectToSpeakTray) {
 IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, SelectToSpeakTrayNotSpoken) {
   base::RepeatingCallback<void()> callback = base::BindRepeating(
       &SelectToSpeakTest::SetSelectToSpeakState, GetWeakPtr());
-  chromeos::AccessibilityManager::Get()->SetSelectToSpeakStateObserverForTest(
-      callback);
+  AccessibilityManager::Get()->SetSelectToSpeakStateObserverForTest(callback);
 
   // Tap it once to enter selection mode.
   TapSelectToSpeakTray();
@@ -358,11 +354,10 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, FocusRingMovesWithMouse) {
   // Create a callback for the focus ring observer.
   base::RepeatingCallback<void()> callback =
       base::BindRepeating(&SelectToSpeakTest::OnFocusRingChanged, GetWeakPtr());
-  chromeos::AccessibilityManager::Get()->SetFocusRingObserverForTest(callback);
+  AccessibilityManager::Get()->SetFocusRingObserverForTest(callback);
 
-  std::string focus_ring_id =
-      chromeos::AccessibilityManager::Get()->GetFocusRingId(
-          extension_misc::kSelectToSpeakExtensionId, "");
+  std::string focus_ring_id = AccessibilityManager::Get()->GetFocusRingId(
+      extension_misc::kSelectToSpeakExtensionId, "");
 
   ash::AccessibilityFocusRingControllerImpl* controller =
       ash::Shell::Get()->accessibility_focus_ring_controller();
@@ -504,5 +499,3 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTestWithNavigationControl,
   // Tray bubble menu should remain open.
   ASSERT_TRUE(tray_test_api_->IsTrayBubbleOpen());
 }
-
-}  // namespace chromeos

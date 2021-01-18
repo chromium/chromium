@@ -83,8 +83,8 @@ AccessibilityEventRewriterDelegate::~AccessibilityEventRewriterDelegate() {
 void AccessibilityEventRewriterDelegate::DispatchKeyEventToChromeVox(
     std::unique_ptr<ui::Event> event,
     bool capture) {
-  extensions::ExtensionHost* host = chromeos::GetAccessibilityExtensionHost(
-      extension_misc::kChromeVoxExtensionId);
+  extensions::ExtensionHost* host =
+      GetAccessibilityExtensionHost(extension_misc::kChromeVoxExtensionId);
   if (!host)
     return;
 
@@ -93,7 +93,7 @@ void AccessibilityEventRewriterDelegate::DispatchKeyEventToChromeVox(
   host->host_contents()->SetDelegate(capture ? this : nullptr);
 
   // Forward the event to ChromeVox's background page.
-  chromeos::ForwardKeyToExtension(*(event->AsKeyEvent()), host);
+  ForwardKeyToExtension(*(event->AsKeyEvent()), host);
 }
 
 void AccessibilityEventRewriterDelegate::DispatchMouseEvent(
@@ -107,8 +107,8 @@ void AccessibilityEventRewriterDelegate::DispatchMouseEvent(
 
 void AccessibilityEventRewriterDelegate::SendSwitchAccessCommand(
     ash::SwitchAccessCommand command) {
-  extensions::EventRouter* event_router = extensions::EventRouter::Get(
-      chromeos::AccessibilityManager::Get()->profile());
+  extensions::EventRouter* event_router =
+      extensions::EventRouter::Get(AccessibilityManager::Get()->profile());
 
   auto event_args = std::make_unique<base::ListValue>();
   event_args->AppendString(ToString(command));
@@ -124,8 +124,8 @@ void AccessibilityEventRewriterDelegate::SendSwitchAccessCommand(
 
 void AccessibilityEventRewriterDelegate::SendPointScanPoint(
     const gfx::PointF& point) {
-  extensions::EventRouter* event_router = extensions::EventRouter::Get(
-      chromeos::AccessibilityManager::Get()->profile());
+  extensions::EventRouter* event_router =
+      extensions::EventRouter::Get(AccessibilityManager::Get()->profile());
 
   auto event_args = std::make_unique<base::ListValue>();
   auto point_dict = std::make_unique<base::DictionaryValue>();
@@ -146,8 +146,8 @@ void AccessibilityEventRewriterDelegate::SendPointScanPoint(
 
 void AccessibilityEventRewriterDelegate::SendMagnifierCommand(
     ash::MagnifierCommand command) {
-  extensions::EventRouter* event_router = extensions::EventRouter::Get(
-      chromeos::AccessibilityManager::Get()->profile());
+  extensions::EventRouter* event_router =
+      extensions::EventRouter::Get(AccessibilityManager::Get()->profile());
 
   auto event_args = std::make_unique<base::ListValue>();
   event_args->AppendString(ToString(command));

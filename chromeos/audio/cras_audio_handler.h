@@ -675,4 +675,10 @@ class COMPONENT_EXPORT(CHROMEOS_AUDIO) CrasAudioHandler
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::CrasAudioHandler;
+}
+
 #endif  // CHROMEOS_AUDIO_CRAS_AUDIO_HANDLER_H_

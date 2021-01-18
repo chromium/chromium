@@ -99,23 +99,22 @@ void AccessibilityControllerClient::TriggerAccessibilityAlertWithMessage(
 }
 
 void AccessibilityControllerClient::PlayEarcon(chromeos::Sound sound_key) {
-  chromeos::AccessibilityManager::Get()->PlayEarcon(
-      sound_key, chromeos::PlaySoundOption::kOnlyIfSpokenFeedbackEnabled);
+  AccessibilityManager::Get()->PlayEarcon(
+      sound_key, PlaySoundOption::kOnlyIfSpokenFeedbackEnabled);
 }
 
 base::TimeDelta AccessibilityControllerClient::PlayShutdownSound() {
-  return chromeos::AccessibilityManager::Get()->PlayShutdownSound();
+  return AccessibilityManager::Get()->PlayShutdownSound();
 }
 
 void AccessibilityControllerClient::HandleAccessibilityGesture(
     ax::mojom::Gesture gesture,
     gfx::PointF location) {
-  chromeos::AccessibilityManager::Get()->HandleAccessibilityGesture(gesture,
-                                                                    location);
+  AccessibilityManager::Get()->HandleAccessibilityGesture(gesture, location);
 }
 
 bool AccessibilityControllerClient::ToggleDictation() {
-  return chromeos::AccessibilityManager::Get()->ToggleDictation();
+  return AccessibilityManager::Get()->ToggleDictation();
 }
 
 void AccessibilityControllerClient::SilenceSpokenFeedback() {
@@ -123,47 +122,43 @@ void AccessibilityControllerClient::SilenceSpokenFeedback() {
 }
 
 void AccessibilityControllerClient::OnTwoFingerTouchStart() {
-  chromeos::AccessibilityManager::Get()->OnTwoFingerTouchStart();
+  AccessibilityManager::Get()->OnTwoFingerTouchStart();
 }
 
 void AccessibilityControllerClient::OnTwoFingerTouchStop() {
-  chromeos::AccessibilityManager::Get()->OnTwoFingerTouchStop();
+  AccessibilityManager::Get()->OnTwoFingerTouchStop();
 }
 
 bool AccessibilityControllerClient::ShouldToggleSpokenFeedbackViaTouch() const {
-  return chromeos::AccessibilityManager::Get()
-      ->ShouldToggleSpokenFeedbackViaTouch();
+  return AccessibilityManager::Get()->ShouldToggleSpokenFeedbackViaTouch();
 }
 
 void AccessibilityControllerClient::PlaySpokenFeedbackToggleCountdown(
     int tick_count) {
-  chromeos::AccessibilityManager::Get()->PlaySpokenFeedbackToggleCountdown(
-      tick_count);
+  AccessibilityManager::Get()->PlaySpokenFeedbackToggleCountdown(tick_count);
 }
 
 void AccessibilityControllerClient::RequestSelectToSpeakStateChange() {
-  chromeos::AccessibilityManager::Get()->RequestSelectToSpeakStateChange();
+  AccessibilityManager::Get()->RequestSelectToSpeakStateChange();
 }
 
 void AccessibilityControllerClient::RequestAutoclickScrollableBoundsForPoint(
     gfx::Point& point_in_screen) {
-  chromeos::AccessibilityManager::Get()
-      ->RequestAutoclickScrollableBoundsForPoint(point_in_screen);
+  AccessibilityManager::Get()->RequestAutoclickScrollableBoundsForPoint(
+      point_in_screen);
 }
 
 void AccessibilityControllerClient::MagnifierBoundsChanged(
     const gfx::Rect& bounds_in_screen) {
-  chromeos::AccessibilityManager::Get()->MagnifierBoundsChanged(
-      bounds_in_screen);
+  AccessibilityManager::Get()->MagnifierBoundsChanged(bounds_in_screen);
 }
 
 void AccessibilityControllerClient::OnSwitchAccessDisabled() {
-  chromeos::AccessibilityManager::Get()->OnSwitchAccessDisabled();
+  AccessibilityManager::Get()->OnSwitchAccessDisabled();
 }
 
 void AccessibilityControllerClient::OnSelectToSpeakPanelAction(
     ash::SelectToSpeakPanelAction action,
     double value) {
-  chromeos::AccessibilityManager::Get()->OnSelectToSpeakPanelAction(action,
-                                                                    value);
+  AccessibilityManager::Get()->OnSelectToSpeakPanelAction(action, value);
 }

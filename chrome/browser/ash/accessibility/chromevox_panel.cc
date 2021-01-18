@@ -36,7 +36,7 @@ class ChromeVoxPanel::ChromeVoxPanelWebContentsObserver
     // to this panel host.
     std::string fragment = web_contents()->GetLastCommittedURL().ref();
     if (fragment == kDisableSpokenFeedbackURLFragment)
-      chromeos::AccessibilityManager::Get()->EnableSpokenFeedback(false);
+      AccessibilityManager::Get()->EnableSpokenFeedback(false);
     else if (fragment == kFullscreenURLFragment)
       panel_->EnterFullscreen();
     else if (fragment == kFocusURLFragment)

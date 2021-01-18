@@ -57,8 +57,7 @@ class ArcAccessibilityHelperBridgeBrowserTest : public InProcessBrowserTest {
     WaitForInstanceReady(
         ArcServiceManager::Get()->arc_bridge_service()->accessibility_helper());
 
-    chromeos::AccessibilityManager::Get()->SetProfileForTest(
-        browser()->profile());
+    AccessibilityManager::Get()->SetProfileForTest(browser()->profile());
 
     wm_helper_ = std::make_unique<exo::WMHelperChromeOS>();
     wm_helper_->RegisterAppPropertyResolver(
@@ -122,7 +121,7 @@ IN_PROC_BROWSER_TEST_F(ArcAccessibilityHelperBridgeBrowserTest,
       test_window_2.shell_surface->GetWidget()->GetNativeWindow()->GetProperty(
           aura::client::kAccessibilityTouchExplorationPassThrough));
 
-  chromeos::AccessibilityManager::Get()->EnableSpokenFeedback(true);
+  AccessibilityManager::Get()->EnableSpokenFeedback(true);
 
   // Confirm that filter type is updated with preference change.
   EXPECT_EQ(mojom::AccessibilityFilterType::ALL,
@@ -166,7 +165,7 @@ IN_PROC_BROWSER_TEST_F(ArcAccessibilityHelperBridgeBrowserTest,
   activation_client->ActivateWindow(
       test_window_1.shell_surface->GetWidget()->GetNativeWindow());
 
-  chromeos::AccessibilityManager::Get()->EnableSpokenFeedback(true);
+  AccessibilityManager::Get()->EnableSpokenFeedback(true);
 
   exo::SetShellClientAccessibilityId(
       test_window_1.shell_surface->GetWidget()->GetNativeWindow(), 10);
@@ -201,18 +200,18 @@ IN_PROC_BROWSER_TEST_F(ArcAccessibilityHelperBridgeBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ArcAccessibilityHelperBridgeBrowserTest,
                        ExploreByTouchMode) {
-  chromeos::AccessibilityManager::Get()->EnableSpokenFeedback(true);
+  AccessibilityManager::Get()->EnableSpokenFeedback(true);
   EXPECT_TRUE(fake_accessibility_helper_instance_->explore_by_touch_enabled());
 
   // Check that explore by touch doesn't get disabled as long as ChromeVox
   // remains enabled.
-  chromeos::AccessibilityManager::Get()->SetSelectToSpeakEnabled(true);
+  AccessibilityManager::Get()->SetSelectToSpeakEnabled(true);
   EXPECT_TRUE(fake_accessibility_helper_instance_->explore_by_touch_enabled());
 
-  chromeos::AccessibilityManager::Get()->EnableSpokenFeedback(false);
+  AccessibilityManager::Get()->EnableSpokenFeedback(false);
   EXPECT_FALSE(fake_accessibility_helper_instance_->explore_by_touch_enabled());
 
-  chromeos::AccessibilityManager::Get()->SetSelectToSpeakEnabled(false);
+  AccessibilityManager::Get()->SetSelectToSpeakEnabled(false);
   EXPECT_FALSE(fake_accessibility_helper_instance_->explore_by_touch_enabled());
 }
 

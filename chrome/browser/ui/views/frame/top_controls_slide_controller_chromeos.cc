@@ -39,8 +39,7 @@ bool IsTabletModeEnabled() {
 }
 
 bool IsSpokenFeedbackEnabled() {
-  chromeos::AccessibilityManager* accessibility_manager =
-      chromeos::AccessibilityManager::Get();
+  AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
   return accessibility_manager &&
          accessibility_manager->IsSpokenFeedbackEnabled();
 }
@@ -283,8 +282,7 @@ TopControlsSlideControllerChromeOS::TopControlsSlideControllerChromeOS(
   browser_view_->browser()->tab_strip_model()->AddObserver(this);
   display::Screen::GetScreen()->AddObserver(this);
 
-  chromeos::AccessibilityManager* accessibility_manager =
-      chromeos::AccessibilityManager::Get();
+  AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
   if (accessibility_manager) {
     accessibility_status_subscription_ =
         accessibility_manager->RegisterCallback(base::BindRepeating(
@@ -600,9 +598,9 @@ bool TopControlsSlideControllerChromeOS::CanEnable(
 }
 
 void TopControlsSlideControllerChromeOS::OnAccessibilityStatusChanged(
-    const chromeos::AccessibilityStatusEventDetails& event_details) {
+    const AccessibilityStatusEventDetails& event_details) {
   if (event_details.notification_type !=
-      chromeos::AccessibilityNotificationType::kToggleSpokenFeedback) {
+      AccessibilityNotificationType::kToggleSpokenFeedback) {
     return;
   }
 

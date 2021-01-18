@@ -47,8 +47,8 @@ import('/accessibility_common/accessibility_common_loader.js').then(reinit);
   testGenPreamble() {
     GEN(`
   base::Closure load_cb =
-      base::Bind(&chromeos::AccessibilityManager::EnableAutoclick,
-          base::Unretained(chromeos::AccessibilityManager::Get()),
+      base::Bind(&AccessibilityManager::EnableAutoclick,
+          base::Unretained(AccessibilityManager::Get()),
           true);
   WaitForExtension(extension_misc::kAccessibilityCommonExtensionId, load_cb);
     `);

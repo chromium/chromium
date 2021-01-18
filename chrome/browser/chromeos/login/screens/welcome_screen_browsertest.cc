@@ -557,7 +557,7 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest, LaptopClick) {
   OobeScreenWaiter(WelcomeView::kScreenId).Wait();
   TtsExtensionEngine::GetInstance()->DisableBuiltInTTSEngineForTesting();
   test::ExecuteOobeJS(kSetAvailableVoices);
-  test::SpeechMonitor monitor;
+  ::test::SpeechMonitor monitor;
   test::OobeJS().ExpectAttributeEQ("open", kChromeVoxHintDialog, false);
   welcome_screen()->GiveChromeVoxHintForTesting();
   monitor.ExpectSpeech(kChromeVoxHintLaptopSpokenString);
@@ -585,7 +585,7 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest, LaptopSpaceBar) {
   OobeScreenWaiter(WelcomeView::kScreenId).Wait();
   TtsExtensionEngine::GetInstance()->DisableBuiltInTTSEngineForTesting();
   test::ExecuteOobeJS(kSetAvailableVoices);
-  test::SpeechMonitor monitor;
+  ::test::SpeechMonitor monitor;
   test::OobeJS().ExpectAttributeEQ("open", kChromeVoxHintDialog, false);
   welcome_screen()->GiveChromeVoxHintForTesting();
   monitor.ExpectSpeech(kChromeVoxHintLaptopSpokenString);
@@ -615,7 +615,7 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest, Tablet) {
   TtsExtensionEngine::GetInstance()->DisableBuiltInTTSEngineForTesting();
   test::ExecuteOobeJS(kSetAvailableVoices);
   ash::ShellTestApi().SetTabletModeEnabledForTest(true);
-  test::SpeechMonitor monitor;
+  ::test::SpeechMonitor monitor;
   welcome_screen()->GiveChromeVoxHintForTesting();
   monitor.ExpectSpeech(
       "Do you want to activate ChromeVox, the built-in screenreader for Chrome "
@@ -634,7 +634,7 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest, VoicesChanged) {
       callback([{'lang': 'fr-FR', 'voiceName': 'Chrome OS français'}]);
     };)";
   test::ExecuteOobeJS(set_no_english_voice);
-  test::SpeechMonitor monitor;
+  ::test::SpeechMonitor monitor;
   test::OobeJS().ExpectAttributeEQ("open", kChromeVoxHintDialog, false);
   welcome_screen()->GiveChromeVoxHintForTesting();
   // Wait for voiceschanged listener to register.
@@ -778,7 +778,7 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenInternationalChromeVoxHintTest, SpeakHint) {
   OobeScreenWaiter(WelcomeView::kScreenId).Wait();
   TtsExtensionEngine::GetInstance()->DisableBuiltInTTSEngineForTesting();
   test::ExecuteOobeJS(kSetAvailableVoices);
-  test::SpeechMonitor monitor;
+  ::test::SpeechMonitor monitor;
   welcome_screen()->GiveChromeVoxHintForTesting();
   monitor.ExpectSpeechPatternWithLocale("*", "fr");
   monitor.Replay();
@@ -802,7 +802,7 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenInternationalChromeVoxHintTest,
     )";
   test::ExecuteOobeJS(set_default_hint_timeout_ms);
   test::ExecuteOobeJS(set_no_french_voice);
-  test::SpeechMonitor monitor;
+  ::test::SpeechMonitor monitor;
   test::OobeJS().ExpectAttributeEQ("open", kChromeVoxHintDialog, false);
   welcome_screen()->GiveChromeVoxHintForTesting();
   // Expect speech in English, even though the system locale is French.

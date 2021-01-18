@@ -19,8 +19,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/browsertest_util.h"
 
-namespace chromeos {
-
 namespace {
 constexpr char kTestSupportPath[] =
     "chrome/browser/resources/chromeos/accessibility/switch_access/"
@@ -240,4 +238,3 @@ IN_PROC_BROWSER_TEST_F(SwitchAccessTest, NavigateButtonsInTextFieldMenu) {
   WaitForFocusRing("primary", "button", "Keyboard");
 }
 
-}  // namespace chromeos

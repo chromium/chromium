@@ -90,7 +90,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityLabelsMenuObserverTest,
                        AccessibilityLabelsShowWithScreenReaderEnabled) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Enable Chromevox.
-  chromeos::AccessibilityManager::Get()->EnableSpokenFeedback(true);
+  AccessibilityManager::Get()->EnableSpokenFeedback(true);
 #else
   // Spoof a screen reader.
   content::BrowserAccessibilityState::GetInstance()->AddAccessibilityModeFlags(

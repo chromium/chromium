@@ -21,8 +21,6 @@ class TextInputClient;
 class Profile;
 class SpeechRecognizer;
 
-namespace chromeos {
-
 // Provides global dictation (type what you speak) on Chrome OS.
 class DictationChromeos : public SpeechRecognizerDelegate,
                           public ui::InputMethodObserver {
@@ -64,7 +62,5 @@ class DictationChromeos : public SpeechRecognizerDelegate,
 
   DISALLOW_COPY_AND_ASSIGN(DictationChromeos);
 };
-
-}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_ACCESSIBILITY_DICTATION_CHROMEOS_H_

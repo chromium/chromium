@@ -1415,8 +1415,8 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
   // Enable Chromevox (spoken feedback) and expect that top-chrome will be fully
   // shown, and sliding top-chrome is no longer enabled.
   TopControlsShownRatioWaiter waiter(top_controls_slide_controller());
-  chromeos::AccessibilityManager::Get()->EnableSpokenFeedback(true);
-  EXPECT_TRUE(chromeos::AccessibilityManager::Get()->IsSpokenFeedbackEnabled());
+  AccessibilityManager::Get()->EnableSpokenFeedback(true);
+  EXPECT_TRUE(AccessibilityManager::Get()->IsSpokenFeedbackEnabled());
   waiter.WaitForRatio(1.f);
   EXPECT_FLOAT_EQ(top_controls_slide_controller()->GetShownRatio(), 1.f);
   EXPECT_TRUE(
@@ -1426,10 +1426,9 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
   // gesture scrolling.
   content::RenderFrameSubmissionObserver compositor_frame_waiter(
       active_contents);
-  chromeos::AccessibilityManager::Get()->EnableSpokenFeedback(false);
+  AccessibilityManager::Get()->EnableSpokenFeedback(false);
   compositor_frame_waiter.WaitForAnyFrameSubmission();
-  EXPECT_FALSE(
-      chromeos::AccessibilityManager::Get()->IsSpokenFeedbackEnabled());
+  EXPECT_FALSE(AccessibilityManager::Get()->IsSpokenFeedbackEnabled());
   EXPECT_FLOAT_EQ(top_controls_slide_controller()->GetShownRatio(), 1.f);
   CheckBrowserLayout(browser_view(), TopChromeShownState::kFullyShown);
 

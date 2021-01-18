@@ -113,8 +113,8 @@ class ASH_EXPORT DockedMagnifierControllerImpl
   // exclusive (i.e. only one can be on at the same time).
   // Note: We can't use the ash::MagnificationController since it's not hooked
   // to the associated user-prefs except when Chrome is running (via
-  // chromeos::MagnificationManager), so we can't assert this behavior in
-  // ash_unittests. Keep them public for now.
+  // MagnificationManager), so we can't assert this behavior in ash_unittests.
+  // Keep them public for now.
   // TODO(afakhry): Refactor the Fullscreen Magnifier and remove these
   // functions. https://crbug.com/817157.
   bool GetFullscreenMagnifierEnabled() const;

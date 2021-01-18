@@ -20,8 +20,6 @@
 #include "ui/events/blink/web_input_event.h"
 #include "ui/events/event.h"
 
-namespace chromeos {
-
 SelectToSpeakEventHandlerDelegate::SelectToSpeakEventHandlerDelegate() {
   // Set this object as the SelectToSpeakEventHandlerDelegate.
   ash::AccessibilityController::Get()->SetSelectToSpeakEventHandlerDelegate(
@@ -39,13 +37,13 @@ void SelectToSpeakEventHandlerDelegate::DispatchKeyEvent(
   // don't ever try to run this code on some other thread.
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 
-  extensions::ExtensionHost* host = chromeos::GetAccessibilityExtensionHost(
-      extension_misc::kSelectToSpeakExtensionId);
+  extensions::ExtensionHost* host =
+      GetAccessibilityExtensionHost(extension_misc::kSelectToSpeakExtensionId);
   if (!host)
     return;
 
   const ui::KeyEvent* key_event = event.AsKeyEvent();
-  chromeos::ForwardKeyToExtension(*key_event, host);
+  ForwardKeyToExtension(*key_event, host);
 }
 
 void SelectToSpeakEventHandlerDelegate::DispatchMouseEvent(
@@ -58,8 +56,8 @@ void SelectToSpeakEventHandlerDelegate::DispatchMouseEvent(
   if (event.type() == ui::EventType::ET_MOUSEWHEEL)
     return;
 
-  extensions::ExtensionHost* host = chromeos::GetAccessibilityExtensionHost(
-      extension_misc::kSelectToSpeakExtensionId);
+  extensions::ExtensionHost* host =
+      GetAccessibilityExtensionHost(extension_misc::kSelectToSpeakExtensionId);
   if (!host)
     return;
 
@@ -69,5 +67,3 @@ void SelectToSpeakEventHandlerDelegate::DispatchMouseEvent(
 
   rvh->GetWidget()->ForwardMouseEvent(ui::MakeWebMouseEvent(event));
 }
-
-}  // namespace chromeos

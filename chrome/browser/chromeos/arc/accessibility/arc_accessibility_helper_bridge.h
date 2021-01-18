@@ -156,7 +156,7 @@ class ArcAccessibilityHelperBridge
       const base::Optional<gfx::Rect>& result_rect) const;
 
   void OnAccessibilityStatusChanged(
-      const chromeos::AccessibilityStatusEventDetails& event_details);
+      const AccessibilityStatusEventDetails& event_details);
   void UpdateEnabledFeature();
   void UpdateWindowProperties(aura::Window* window);
   void SetExploreByTouchEnabled(bool enabled);

@@ -9,9 +9,6 @@
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
 
-using chromeos::AccessibilityManager;
-using chromeos::MagnificationManager;
-
 ChromeAccessibilityDelegate::ChromeAccessibilityDelegate() = default;
 
 ChromeAccessibilityDelegate::~ChromeAccessibilityDelegate() = default;

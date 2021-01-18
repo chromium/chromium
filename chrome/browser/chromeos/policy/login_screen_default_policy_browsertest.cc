@@ -169,14 +169,12 @@ void LoginScreenDefaultPolicyLoginScreenBrowsertest::SetUpOnMainThread() {
   LoginScreenDefaultPolicyBrowsertestBase::SetUpOnMainThread();
 
   // Set the login screen profile.
-  chromeos::AccessibilityManager* accessibility_manager =
-      chromeos::AccessibilityManager::Get();
+  AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
   ASSERT_TRUE(accessibility_manager);
   accessibility_manager->SetProfileForTest(
       chromeos::ProfileHelper::GetSigninProfile());
 
-  chromeos::MagnificationManager* magnification_manager =
-      chromeos::MagnificationManager::Get();
+  MagnificationManager* magnification_manager = MagnificationManager::Get();
   ASSERT_TRUE(magnification_manager);
   magnification_manager->SetProfileForTest(
       chromeos::ProfileHelper::GetSigninProfile());
@@ -244,8 +242,7 @@ IN_PROC_BROWSER_TEST_F(LoginScreenDefaultPolicyLoginScreenBrowsertest,
                                   base::Value(true));
 
   // Verify that the large cursor is enabled.
-  chromeos::AccessibilityManager* accessibility_manager =
-      chromeos::AccessibilityManager::Get();
+  AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
   ASSERT_TRUE(accessibility_manager);
   EXPECT_TRUE(accessibility_manager->IsLargeCursorEnabled());
 }
@@ -269,8 +266,7 @@ IN_PROC_BROWSER_TEST_F(LoginScreenDefaultPolicyLoginScreenBrowsertest,
       ash::prefs::kAccessibilitySpokenFeedbackEnabled, base::Value(true));
 
   // Verify that spoken feedback is enabled.
-  chromeos::AccessibilityManager* accessibility_manager =
-      chromeos::AccessibilityManager::Get();
+  AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
   ASSERT_TRUE(accessibility_manager);
   EXPECT_TRUE(accessibility_manager->IsSpokenFeedbackEnabled());
 }
@@ -294,8 +290,7 @@ IN_PROC_BROWSER_TEST_F(LoginScreenDefaultPolicyLoginScreenBrowsertest,
                                   base::Value(true));
 
   // Verify that high contrast mode is enabled.
-  chromeos::AccessibilityManager* accessibility_manager =
-      chromeos::AccessibilityManager::Get();
+  AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
   ASSERT_TRUE(accessibility_manager);
   EXPECT_TRUE(accessibility_manager->IsHighContrastEnabled());
 }
@@ -319,8 +314,7 @@ IN_PROC_BROWSER_TEST_F(LoginScreenDefaultPolicyLoginScreenBrowsertest,
       ash::prefs::kAccessibilityScreenMagnifierEnabled, base::Value(true));
 
   // Verify that the full-screen magnifier is enabled.
-  chromeos::MagnificationManager* magnification_manager =
-      chromeos::MagnificationManager::Get();
+  MagnificationManager* magnification_manager = MagnificationManager::Get();
   ASSERT_TRUE(magnification_manager);
   EXPECT_TRUE(magnification_manager->IsMagnifierEnabled());
 }
@@ -344,8 +338,7 @@ IN_PROC_BROWSER_TEST_F(LoginScreenDefaultPolicyInSessionBrowsertest,
   VerifyPrefFollowsDefault(ash::prefs::kAccessibilityLargeCursorEnabled);
 
   // Verify that the large cursor is disabled.
-  chromeos::AccessibilityManager* accessibility_manager =
-      chromeos::AccessibilityManager::Get();
+  AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
   ASSERT_TRUE(accessibility_manager);
   EXPECT_FALSE(accessibility_manager->IsLargeCursorEnabled());
 }
@@ -369,8 +362,7 @@ IN_PROC_BROWSER_TEST_F(LoginScreenDefaultPolicyInSessionBrowsertest,
   VerifyPrefFollowsDefault(ash::prefs::kAccessibilitySpokenFeedbackEnabled);
 
   // Verify that spoken feedback is disabled.
-  chromeos::AccessibilityManager* accessibility_manager =
-      chromeos::AccessibilityManager::Get();
+  AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
   ASSERT_TRUE(accessibility_manager);
   EXPECT_FALSE(accessibility_manager->IsSpokenFeedbackEnabled());
 }
@@ -394,8 +386,7 @@ IN_PROC_BROWSER_TEST_F(LoginScreenDefaultPolicyInSessionBrowsertest,
   VerifyPrefFollowsDefault(ash::prefs::kAccessibilityHighContrastEnabled);
 
   // Verify that high contrast mode is disabled.
-  chromeos::AccessibilityManager* accessibility_manager =
-      chromeos::AccessibilityManager::Get();
+  AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
   ASSERT_TRUE(accessibility_manager);
   EXPECT_FALSE(accessibility_manager->IsHighContrastEnabled());
 }
@@ -418,8 +409,7 @@ IN_PROC_BROWSER_TEST_F(LoginScreenDefaultPolicyInSessionBrowsertest,
   VerifyPrefFollowsDefault(ash::prefs::kAccessibilityScreenMagnifierEnabled);
 
   // Verify that the screen magnifier is disabled.
-  chromeos::MagnificationManager* magnification_manager =
-      chromeos::MagnificationManager::Get();
+  MagnificationManager* magnification_manager = MagnificationManager::Get();
   ASSERT_TRUE(magnification_manager);
   EXPECT_FALSE(magnification_manager->IsMagnifierEnabled());
 }
@@ -443,8 +433,7 @@ IN_PROC_BROWSER_TEST_F(LoginScreenDefaultPolicyLoginScreenBrowsertest,
       ash::prefs::kAccessibilityVirtualKeyboardEnabled, base::Value(true));
 
   // Verify that the on-screen keyboard is enabled.
-  chromeos::AccessibilityManager* accessibility_manager =
-      chromeos::AccessibilityManager::Get();
+  AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
   ASSERT_TRUE(accessibility_manager);
   EXPECT_TRUE(accessibility_manager->IsVirtualKeyboardEnabled());
 }

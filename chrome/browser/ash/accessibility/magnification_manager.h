@@ -18,8 +18,6 @@
 
 class PrefChangeRegistrar;
 
-namespace chromeos {
-
 // MagnificationManager controls the Fullscreen and Docked magnifier from
 // chrome-browser side (not ash side).
 //
@@ -128,7 +126,5 @@ class MagnificationManager
 
   DISALLOW_COPY_AND_ASSIGN(MagnificationManager);
 };
-
-}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_ACCESSIBILITY_MAGNIFICATION_MANAGER_H_

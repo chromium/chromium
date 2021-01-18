@@ -181,12 +181,12 @@ class VolumeControllerSoundsTest : public VolumeControllerTest {
 IN_PROC_BROWSER_TEST_F(VolumeControllerSoundsTest, Simple) {
   audio_handler_->SetOutputVolumePercent(50);
 
-  chromeos::AccessibilityManager::Get()->EnableSpokenFeedback(false);
+  AccessibilityManager::Get()->EnableSpokenFeedback(false);
   VolumeUp();
   VolumeDown();
   EXPECT_EQ(0, num_play_requests());
 
-  chromeos::AccessibilityManager::Get()->EnableSpokenFeedback(true);
+  AccessibilityManager::Get()->EnableSpokenFeedback(true);
   VolumeUp();
   VolumeDown();
   EXPECT_EQ(2, num_play_requests());
@@ -194,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(VolumeControllerSoundsTest, Simple) {
 
 IN_PROC_BROWSER_TEST_F(VolumeControllerSoundsTest, EdgeCases) {
   EXPECT_TRUE(is_sound_initialized());
-  chromeos::AccessibilityManager::Get()->EnableSpokenFeedback(true);
+  AccessibilityManager::Get()->EnableSpokenFeedback(true);
 
   // Check that sound is played on volume up and volume down.
   audio_handler_->SetOutputVolumePercent(50);

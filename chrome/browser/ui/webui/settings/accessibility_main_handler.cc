@@ -40,10 +40,9 @@ void AccessibilityMainHandler::RegisterMessages() {
 void AccessibilityMainHandler::OnJavascriptAllowed() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   accessibility_subscription_ =
-      chromeos::AccessibilityManager::Get()->RegisterCallback(
-          base::BindRepeating(
-              &AccessibilityMainHandler::OnAccessibilityStatusChanged,
-              base::Unretained(this)));
+      AccessibilityManager::Get()->RegisterCallback(base::BindRepeating(
+          &AccessibilityMainHandler::OnAccessibilityStatusChanged,
+          base::Unretained(this)));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
@@ -81,9 +80,9 @@ void AccessibilityMainHandler::SendScreenReaderStateChanged() {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void AccessibilityMainHandler::OnAccessibilityStatusChanged(
-    const chromeos::AccessibilityStatusEventDetails& details) {
+    const AccessibilityStatusEventDetails& details) {
   if (details.notification_type ==
-      chromeos::AccessibilityNotificationType::kToggleSpokenFeedback) {
+      AccessibilityNotificationType::kToggleSpokenFeedback) {
     SendScreenReaderStateChanged();
   }
 }

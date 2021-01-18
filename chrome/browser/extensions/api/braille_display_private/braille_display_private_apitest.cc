@@ -168,7 +168,7 @@ class BrailleDisplayPrivateApiTest : public ExtensionApiTest {
   // steal events.  Some tests override this to keep the normal behaviour
   // of the accessibility manager.
   virtual void DisableAccessibilityManagerBraille() {
-    chromeos::AccessibilityManager::SetBrailleControllerForTest(
+    AccessibilityManager::SetBrailleControllerForTest(
         &stub_braille_controller_);
   }
 

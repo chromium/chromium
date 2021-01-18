@@ -334,11 +334,10 @@ void PinnedLauncherAppsPolicyHandler::ApplyList(base::Value filtered_list,
 }
 
 ScreenMagnifierPolicyHandler::ScreenMagnifierPolicyHandler()
-    : IntRangePolicyHandlerBase(
-          key::kScreenMagnifierType,
-          static_cast<int>(chromeos::MagnifierType::kDisabled),
-          static_cast<int>(chromeos::MagnifierType::kDocked),
-          false) {}
+    : IntRangePolicyHandlerBase(key::kScreenMagnifierType,
+                                static_cast<int>(MagnifierType::kDisabled),
+                                static_cast<int>(MagnifierType::kDocked),
+                                false) {}
 
 ScreenMagnifierPolicyHandler::~ScreenMagnifierPolicyHandler() {
 }
@@ -349,12 +348,11 @@ void ScreenMagnifierPolicyHandler::ApplyPolicySettings(
   const base::Value* value = policies.GetValue(policy_name());
   int value_in_range;
   if (value && EnsureInRange(value, &value_in_range, nullptr)) {
-    prefs->SetBoolean(
-        ash::prefs::kAccessibilityScreenMagnifierEnabled,
-        value_in_range == static_cast<int>(chromeos::MagnifierType::kFull));
+    prefs->SetBoolean(ash::prefs::kAccessibilityScreenMagnifierEnabled,
+                      value_in_range == static_cast<int>(MagnifierType::kFull));
     prefs->SetBoolean(
         ash::prefs::kDockedMagnifierEnabled,
-        value_in_range == static_cast<int>(chromeos::MagnifierType::kDocked));
+        value_in_range == static_cast<int>(MagnifierType::kDocked));
   }
 }
 

@@ -40,6 +40,7 @@
 #include "ui/base/ime/chromeos/input_method_manager.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 
+namespace extension_ime_util = chromeos::extension_ime_util;
 using chromeos::input_method::InputMethodManager;
 using chromeos::input_method::InputMethodUtil;
 using chromeos::input_method::InputMethodDescriptors;
@@ -49,8 +50,6 @@ using extensions::api::braille_display_private::DisplayState;
 using extensions::api::braille_display_private::KeyEvent;
 using extensions::api::braille_display_private::MockBrailleController;
 using testing::WithParamInterface;
-
-namespace chromeos {
 
 namespace {
 
@@ -701,8 +700,8 @@ class AccessibilityManagerUserTypeTest
     if (GetParam() == user_manager::USER_TYPE_GUEST) {
       guest_session_ = std::make_unique<GuestSessionMixin>(&mixin_host_);
     } else if (GetParam() == user_manager::USER_TYPE_CHILD) {
-      logged_in_user_mixin_ = std::make_unique<LoggedInUserMixin>(
-          &mixin_host_, LoggedInUserMixin::LogInType::kChild,
+      logged_in_user_mixin_ = std::make_unique<chromeos::LoggedInUserMixin>(
+          &mixin_host_, chromeos::LoggedInUserMixin::LogInType::kChild,
           embedded_test_server(), this);
     }
   }
@@ -726,7 +725,7 @@ class AccessibilityManagerUserTypeTest
 
   std::unique_ptr<GuestSessionMixin> guest_session_;
 
-  std::unique_ptr<LoggedInUserMixin> logged_in_user_mixin_;
+  std::unique_ptr<chromeos::LoggedInUserMixin> logged_in_user_mixin_;
 
   MockBrailleController braille_controller_;
 
@@ -785,5 +784,3 @@ IN_PROC_BROWSER_TEST_P(AccessibilityManagerUserTypeTest, BrailleWhenLoggedIn) {
   EXPECT_TRUE(IsSpokenFeedbackEnabled());
   EXPECT_TRUE(IsBrailleImeActive());
 }
-
-}  // namespace chromeos

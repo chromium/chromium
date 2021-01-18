@@ -14,8 +14,6 @@
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "ui/events/blink/web_input_event.h"
 
-namespace chromeos {
-
 extensions::ExtensionHost* GetAccessibilityExtensionHost(
     const std::string& extension_id) {
   if (!AccessibilityManager::Get())
@@ -83,4 +81,3 @@ void ForwardMouseToExtension(const ui::MouseEvent& mouse_event,
   // Don't forward latency info, as these are getting forwarded to an extension.
   rvh->GetWidget()->ForwardMouseEvent(web_event);
 }
-}  // namespace chromeos

@@ -48,7 +48,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityPrivateApiTest,
 #define MAYBE_OpenSettingsSubpage OpenSettingsSubpage
 #endif
 IN_PROC_BROWSER_TEST_F(AccessibilityPrivateApiTest, MAYBE_OpenSettingsSubpage) {
-  Profile* profile = chromeos::AccessibilityManager::Get()->profile();
+  Profile* profile = AccessibilityManager::Get()->profile();
 
   // Install the Settings App.
   web_app::WebAppProvider::Get(profile)
@@ -76,7 +76,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityPrivateApiTest, MAYBE_OpenSettingsSubpage) {
 
 IN_PROC_BROWSER_TEST_F(AccessibilityPrivateApiTest,
                        OpenSettingsSubpage_InvalidSubpage) {
-  Profile* profile = chromeos::AccessibilityManager::Get()->profile();
+  Profile* profile = AccessibilityManager::Get()->profile();
 
   // Install the Settings App.
   web_app::WebAppProvider::Get(profile)

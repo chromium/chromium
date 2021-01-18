@@ -17,8 +17,8 @@ namespace accessibility_state_utils {
 
 bool IsScreenReaderEnabled() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  return chromeos::AccessibilityManager::Get() &&
-         chromeos::AccessibilityManager::Get()->IsSpokenFeedbackEnabled();
+  return AccessibilityManager::Get() &&
+         AccessibilityManager::Get()->IsSpokenFeedbackEnabled();
 #else
   // TODO(katie): Can we use AXMode in Chrome OS as well? May need to stop
   // Switch Access and Select-to-Speak from setting kScreenReader.

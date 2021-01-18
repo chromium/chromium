@@ -30,8 +30,6 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-
 namespace {
 
 constexpr char kTestUserName[] = "owner@invalid.domain";
@@ -154,8 +152,8 @@ class MagnificationManagerTest : public InProcessBrowserTest {
   ~MagnificationManagerTest() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(switches::kLoginManager);
-    command_line->AppendSwitchASCII(switches::kLoginProfile,
+    command_line->AppendSwitch(ash::switches::kLoginManager);
+    command_line->AppendSwitchASCII(ash::switches::kLoginProfile,
                                     TestingProfile::kTestUserProfileDir);
   }
 
@@ -422,5 +420,3 @@ IN_PROC_BROWSER_TEST_F(MagnificationManagerTest, MagnificationObserver) {
   EXPECT_FALSE(observer.observed());
   observer.reset();
 }
-
-}  // namespace chromeos

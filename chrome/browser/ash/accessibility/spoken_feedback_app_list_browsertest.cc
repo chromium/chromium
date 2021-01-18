@@ -31,8 +31,6 @@
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
 
-namespace chromeos {
-
 namespace {
 
 void SendKeyPressWithShiftAndControl(ui::KeyboardCode key) {
@@ -87,12 +85,12 @@ class SpokenFeedbackAppListTest
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     if (GetParam() == kTestAsGuestUser) {
-      command_line->AppendSwitch(chromeos::switches::kGuestSession);
+      command_line->AppendSwitch(ash::switches::kGuestSession);
       command_line->AppendSwitch(::switches::kIncognito);
-      command_line->AppendSwitchASCII(chromeos::switches::kLoginProfile,
-                                      "user");
+      command_line->AppendSwitchASCII(ash::switches::kLoginProfile, "user");
       command_line->AppendSwitchASCII(
-          switches::kLoginUser, user_manager::GuestAccountId().GetUserEmail());
+          ash::switches::kLoginUser,
+          user_manager::GuestAccountId().GetUserEmail());
     }
   }
 
@@ -656,5 +654,3 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest,
   sm_.ExpectSpeech("Launcher");
   sm_.Replay();
 }
-
-}  // namespace chromeos

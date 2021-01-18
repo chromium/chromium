@@ -8,8 +8,6 @@
 #include "ash/public/cpp/select_to_speak_event_handler_delegate.h"
 #include "base/macros.h"
 
-namespace chromeos {
-
 // SelectToSpeakEventHandlerDelegate receives mouse and key events from Ash's
 // event handler and forwards them to the Select-to-Speak extension in Chrome.
 class SelectToSpeakEventHandlerDelegate
@@ -25,7 +23,5 @@ class SelectToSpeakEventHandlerDelegate
 
   DISALLOW_COPY_AND_ASSIGN(SelectToSpeakEventHandlerDelegate);
 };
-
-}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_ACCESSIBILITY_SELECT_TO_SPEAK_EVENT_HANDLER_DELEGATE_H_

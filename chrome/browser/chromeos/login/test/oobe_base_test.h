@@ -90,4 +90,8 @@ class OobeBaseTest : public MixinBasedInProcessBrowserTest {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
+// source migration is finished.
+using chromeos::OobeBaseTest;
+
 #endif  // CHROME_BROWSER_CHROMEOS_LOGIN_TEST_OOBE_BASE_TEST_H_

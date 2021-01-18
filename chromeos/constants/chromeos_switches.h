@@ -280,4 +280,12 @@ bool IsOOBEChromeVoxHintTimerDisabledForTesting();
 }  // namespace switches
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+namespace switches {
+using namespace ::chromeos::switches;
+}
+}  // namespace ash
+
 #endif  // CHROMEOS_CONSTANTS_CHROMEOS_SWITCHES_H_

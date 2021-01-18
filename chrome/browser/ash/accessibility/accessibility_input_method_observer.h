@@ -13,8 +13,8 @@ class InputMethod;
 }
 
 // Observes an input method for text input caret changes. Forwards the caret
-// bounds to ash over mojo (via chromeos::AccessibilityManager) so that ash can
-// show the caret highlight ring.
+// bounds to ash over mojo (via AccessibilityManager) so that ash can show the
+// caret highlight ring.
 class AccessibilityInputMethodObserver : public ui::InputMethodObserver {
  public:
   // |input_method| must outlive this object.

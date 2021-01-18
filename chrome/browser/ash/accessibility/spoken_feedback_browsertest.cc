@@ -58,8 +58,6 @@ namespace {
 const double kExpectedPhoneticSpeechAndHintDelayMS = 1000;
 }  // namespace
 
-namespace chromeos {
-
 LoggedInSpokenFeedbackTest::LoggedInSpokenFeedbackTest()
     : animation_mode_(ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {}
 LoggedInSpokenFeedbackTest::~LoggedInSpokenFeedbackTest() = default;
@@ -292,12 +290,12 @@ class SpokenFeedbackTest
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     if (GetParam() == kTestAsGuestUser) {
-      command_line->AppendSwitch(chromeos::switches::kGuestSession);
+      command_line->AppendSwitch(ash::switches::kGuestSession);
       command_line->AppendSwitch(::switches::kIncognito);
-      command_line->AppendSwitchASCII(chromeos::switches::kLoginProfile,
-                                      "user");
+      command_line->AppendSwitchASCII(ash::switches::kLoginProfile, "user");
       command_line->AppendSwitchASCII(
-          switches::kLoginUser, user_manager::GuestAccountId().GetUserEmail());
+          ash::switches::kLoginUser,
+          user_manager::GuestAccountId().GetUserEmail());
     }
   }
 };
@@ -532,7 +530,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
   app->paused = apps::mojom::OptionalBool::kTrue;
   apps.push_back(std::move(app));
   apps::AppServiceProxyFactory::GetForProfile(
-      chromeos::AccessibilityManager::Get()->profile())
+      AccessibilityManager::Get()->profile())
       ->AppRegistryCache()
       .OnApps(std::move(apps));
 
@@ -580,7 +578,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
   app->readiness = apps::mojom::Readiness::kDisabledByPolicy;
   apps.push_back(std::move(app));
   apps::AppServiceProxyFactory::GetForProfile(
-      chromeos::AccessibilityManager::Get()->profile())
+      AccessibilityManager::Get()->profile())
       ->AppRegistryCache()
       .OnApps(std::move(apps));
 
@@ -1059,7 +1057,7 @@ class OobeSpokenFeedbackTest : public OobeBaseTest {
     // Many bots don't have keyboard/mice which triggers the HID detection
     // dialog in the OOBE.  Avoid confusing the tests with that.
     command_line->AppendSwitch(
-        chromeos::switches::kDisableHIDDetectionOnOOBEForTesting);
+        ash::switches::kDisableHIDDetectionOnOOBEForTesting);
   }
 
   test::SpeechMonitor sm_;
@@ -1128,7 +1126,7 @@ class SigninToUserProfileSwitchTest : public OobeSpokenFeedbackTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     OobeSpokenFeedbackTest::SetUpCommandLine(command_line);
     // Force the help app to launch in the background.
-    command_line->AppendSwitch(switches::kForceFirstRunUI);
+    command_line->AppendSwitch(ash::switches::kForceFirstRunUI);
   }
 
  protected:
@@ -1146,7 +1144,7 @@ IN_PROC_BROWSER_TEST_F(SigninToUserProfileSwitchTest, LoginAsNewUser) {
   sm_.ExpectSpeechPattern("*");
 
   sm_.Call([this]() {
-    ASSERT_EQ(chromeos::AccessibilityManager::Get()->profile(),
+    ASSERT_EQ(AccessibilityManager::Get()->profile(),
               ProfileHelper::GetSigninProfile());
     login_manager_.LoginAsNewRegularUser();
   });
@@ -1159,16 +1157,15 @@ IN_PROC_BROWSER_TEST_F(SigninToUserProfileSwitchTest, LoginAsNewUser) {
         nullptr, ui::VKEY_ESCAPE, false, false, false, false));
   });
 
-  std::string button_title =
-      features::IsSplitSettingsSyncEnabled() ? "Got it" : "Accept and continue";
+  std::string button_title = ash::features::IsSplitSettingsSyncEnabled()
+                                 ? "Got it"
+                                 : "Accept and continue";
   sm_.ExpectSpeech(button_title);
 
   // Check that profile switched to the active user.
   sm_.Call([]() {
-    ASSERT_EQ(chromeos::AccessibilityManager::Get()->profile(),
+    ASSERT_EQ(AccessibilityManager::Get()->profile(),
               ProfileManager::GetActiveUserProfile());
   });
   sm_.Replay();
 }
-
-}  // namespace chromeos
