@@ -57,6 +57,7 @@ config("weston_config") {
     "-Wno-return-type",
     "-Wno-shift-negative-value",
     "-Wno-string-conversion",
+    "-Wno-non-literal-null-conversion",
   ]
 
   ldflags = [ "-Wl,-rpath=\$ORIGIN" ]
@@ -214,6 +215,7 @@ shared_library("gl_renderer") {
   ]
 
   sources = [
+    "src/libweston/renderer-gl/egl-glue.c",
     "src/libweston/renderer-gl/gl-renderer.c",
     "src/libweston/vertex-clipping.c",
   ]
@@ -256,6 +258,7 @@ shared_library("wayland_backend") {
   deps = [
     ":cairo_shared",
     ":libweston",
+    "//build/config/linux/libdrm",
     "//third_party/wayland:wayland_client",
     "//third_party/wayland-protocols:fullscreen_shell_protocol",
     "//third_party/wayland-protocols:presentation_time_protocol",
@@ -289,6 +292,7 @@ shared_library("headless_backend") {
 
   deps = [
     ":libweston",
+    "//build/config/linux/libdrm",
     "//third_party/wayland-protocols:presentation_time_protocol",
   ]
 
@@ -332,6 +336,7 @@ shared_library("compositor") {
   include_dirs = [ "src/shared" ]
 
   sources = [
+    "src/compositor/executable.c",
     "src/compositor/main.c",
     "src/compositor/text-backend.c",
     "src/compositor/weston-screenshooter.c",
@@ -363,6 +368,7 @@ static_library("toytoolkit") {
     "//third_party/wayland:wayland_client",
     "//third_party/wayland-protocols:pointer_constraints_protocol",
     "//third_party/wayland-protocols:relative_pointer_protocol",
+    "//third_party/wayland-protocols:viewporter_protocol",
     "//third_party/wayland-protocols:xdg_shell_protocol",
   ]
 
