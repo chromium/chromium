@@ -1315,6 +1315,12 @@ crbug.com/1158554 external/wpt/css/css-conditional/css-supports-040.xht [ Failur
 crbug.com/1158554 external/wpt/css/css-conditional/css-supports-041.xht [ Failure ]
 crbug.com/1158554 external/wpt/css/css-conditional/css-supports-042.xht [ Failure ]
 
+# @container
+# These tests are only valid when the runtime flag CSSContainerQueries is
+# enabled.
+crbug.com/1145970 wpt_internal/css/css-conditional/container-queries/* [ Failure ]
+crbug.com/1145970 virtual/container-queries/* [ Pass ]
+
 # ====== Style team owned tests to here ======
 
 

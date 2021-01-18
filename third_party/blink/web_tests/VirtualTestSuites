@@ -588,6 +588,11 @@
              "--enable-features=EyeDropper"]
   },
   {
+    "prefix": "container-queries",
+    "bases": ["wpt_internal/css/css-conditional/container-queries"],
+    "args": ["--enable-blink-features=CSSContainerQueries"]
+  },
+  {
     "prefix": "appcache-origin-trial",
     "bases": ["http/tests/appcache"],
     "args": ["--enable-features=AppCacheRequireOriginTrial",
