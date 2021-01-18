@@ -2490,6 +2490,7 @@ if (!is_android) {
         "../browser/chromeos/file_manager/video_player_browsertest.cc",
         "../browser/chromeos/file_manager/video_player_jstest.cc",
         "../browser/chromeos/first_run/drive_first_run_browsertest.cc",
+        "../browser/chromeos/full_restore/app_launch_handler_browsertest.cc",
         "../browser/chromeos/input_method/input_method_engine_browsertests.cc",
         "../browser/chromeos/input_method/native_input_method_engine_browsertest.cc",
         "../browser/chromeos/input_method/textinput_browsertest.cc",

@@ -607,9 +607,9 @@ void WebAppsChromeOs::SetIconEffect(const std::string& app_id) {
 
 content::WebContents* WebAppsChromeOs::LaunchAppWithParams(
     AppLaunchParams params) {
-  AppLaunchParams params_for_restore(params.app_id, params.container,
-                                     params.disposition, params.display_id,
-                                     params.launch_files, params.intent);
+  AppLaunchParams params_for_restore(
+      params.app_id, params.container, params.disposition, params.source,
+      params.display_id, params.launch_files, params.intent);
 
   auto* web_contents = WebAppsBase::LaunchAppWithParams(std::move(params));
 
