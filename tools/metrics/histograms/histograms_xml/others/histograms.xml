@@ -2602,7 +2602,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Clipboard.X11StoreCopyPasteDuration" units="ms"
-    expires_after="M90">
+    expires_after="M95">
   <owner>dcheng@chromium.org</owner>
   <owner>pkotwicz@chromium.org</owner>
   <summary>
