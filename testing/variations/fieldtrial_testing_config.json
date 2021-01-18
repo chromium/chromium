@@ -7658,25 +7658,6 @@
             ]
         }
     ],
-    "WebRTC-Bwe-MaxRttLimit": [
-        {
-            "platforms": [
-                "windows",
-                "mac",
-                "chromeos",
-                "linux",
-                "ios",
-                "android",
-                "android_weblayer",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "persist,limit:3s,fraction:.8,interval:1s"
-                }
-            ]
-        }
-    ],
     "WebRTC-CongestionWindow": [
         {
             "platforms": [
