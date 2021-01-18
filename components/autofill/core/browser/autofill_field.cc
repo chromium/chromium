@@ -30,7 +30,8 @@ AutofillField::AutofillField(const FormFieldData& field,
                              const base::string16& unique_name)
     : FormFieldData(field),
       unique_name_(unique_name),
-      parseable_name_(field.name) {
+      parseable_name_(field.name),
+      parseable_label_(field.label) {
   field_signature_ =
       CalculateFieldSignatureByNameAndType(name, form_control_type);
 }

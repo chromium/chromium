@@ -523,6 +523,10 @@ class FormStructure {
   // Extracts the parseable field name by removing a common affix.
   void ExtractParseableFieldNames();
 
+  // Extract parseable field labels by potentially splitting labels between
+  // adjacent fields.
+  void ExtractParseableFieldLabels();
+
   // The language detected for this form's page, before any translations
   // performed by Chrome.
   LanguageCode current_page_language_;

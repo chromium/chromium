@@ -39,6 +39,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/field_candidates.h"
 #include "components/autofill/core/browser/form_parsing/form_field.h"
+#include "components/autofill/core/browser/form_processing/label_processing_util.h"
 #include "components/autofill/core/browser/form_processing/name_processing_util.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/randomized_encoder.h"
@@ -2385,11 +2386,47 @@ void FormStructure::ProcessExtractedFields() {
   // Extracts the |parseable_name_| by removing common affixes from the
   // field names.
   ExtractParseableFieldNames();
+
+  // Extracts the |parsable_label_| for each field.
+  ExtractParseableFieldLabels();
+}
+
+void FormStructure::ExtractParseableFieldLabels() {
+  std::vector<base::StringPiece16> field_labels;
+  field_labels.reserve(field_count());
+  for (const auto& field : *this) {
+    // Skip fields that are not a text input or not visible.
+    if (!field->IsTextInputElement() || !field->IsVisible()) {
+      continue;
+    }
+    field_labels.push_back(field->label);
+  }
+
+  // Determine the parsable labels and write them back.
+  base::Optional<std::vector<base::string16>> parsable_labels =
+      GetParseableLabels(field_labels);
+  // If not single label was split, the function can return, because the
+  // |parsable_label_| is assigned to |label| by default.
+  if (!parsable_labels.has_value()) {
+    return;
+  }
+
+  size_t idx = 0;
+  for (auto& field : *this) {
+    if (!field->IsTextInputElement() || !field->IsVisible()) {
+      // For those fields, set the original label.
+      field->set_parseable_label(field->label);
+      continue;
+    }
+    DCHECK(idx < parsable_labels->size());
+    field->set_parseable_label(parsable_labels->at(idx++));
+  }
 }
 
 void FormStructure::ExtractParseableFieldNames() {
   // Create a vector of string pieces containing the field names.
   std::vector<base::StringPiece16> names;
+  names.reserve(field_count());
   for (const auto& field : *this) {
     names.push_back(base::StringPiece16(field->name));
   }

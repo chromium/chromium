@@ -74,6 +74,7 @@ class AutofillField : public FormFieldData {
   PhonePart phone_part() const { return phone_part_; }
   bool previously_autofilled() const { return previously_autofilled_; }
   const base::string16& parseable_name() const { return parseable_name_; }
+  const base::string16& parseable_label() const { return parseable_label_; }
   bool only_fill_when_focused() const { return only_fill_when_focused_; }
 
   // Setters for the detected types.
@@ -106,6 +107,9 @@ class AutofillField : public FormFieldData {
   }
   void set_parseable_name(const base::string16& parseable_name) {
     parseable_name_ = parseable_name;
+  }
+  void set_parseable_label(const base::string16& parseable_label) {
+    parseable_label_ = parseable_label;
   }
 
   void set_only_fill_when_focused(bool fill_when_focused) {
@@ -273,6 +277,10 @@ class AutofillField : public FormFieldData {
   // a common prefix shared with other fields). Will be used for heuristics
   // parsing.
   base::string16 parseable_name_;
+
+  // The parseable label attribute is potentially only a part of the original
+  // label when the label is divided between subsequent fields.
+  base::string16 parseable_label_;
 
   // The type of password generation event, if it happened.
   AutofillUploadContents::Field::PasswordGenerationType generation_type_ =
