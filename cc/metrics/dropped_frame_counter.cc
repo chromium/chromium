@@ -93,6 +93,9 @@ void DroppedFrameCounter::OnBeginFrame(const viz::BeginFrameArgs& args) {
 
 void DroppedFrameCounter::OnEndFrame(const viz::BeginFrameArgs& args,
                                      bool is_dropped) {
+  if (!args.interval.is_zero())
+    total_frames_in_window_ = kSlidingWindowInterval / args.interval;
+
   if (is_dropped) {
     if (fcp_received_)
       ++total_smoothness_dropped_;
@@ -195,7 +198,8 @@ void DroppedFrameCounter::NotifyFrameResult(const viz::BeginFrameArgs& args,
   DCHECK_GE(sliding_window_.size(), dropped_frame_count_in_window_);
 
   double percent_dropped_frame =
-      (dropped_frame_count_in_window_ * 100.0) / sliding_window_.size();
+      fmin((dropped_frame_count_in_window_ * 100.0) / total_frames_in_window_,
+           100.0);
   sliding_window_max_percent_dropped_ =
       fmax(sliding_window_max_percent_dropped_, percent_dropped_frame);
   sliding_window_histogram_.AddPercentDroppedFrame(percent_dropped_frame);
