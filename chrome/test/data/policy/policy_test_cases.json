@@ -8019,6 +8019,17 @@
       }
     ]
   },
+  "WindowOcclusionEnabled":  {
+    "os":  ["win"],
+    "policy_pref_mapping_tests":  [
+      {
+        "policies":  {
+          "WindowOcclusionEnabled":  true
+        },
+        "prefs": { "policy.native_window_occlusion_enabled":  {"location":  "local_state"} }
+      }
+    ]
+  },
   "TabFreezingEnabled":  {},
   "AccessibilityImageLabelsEnabled": {
     "os": ["win", "linux", "mac", "chromeos"],

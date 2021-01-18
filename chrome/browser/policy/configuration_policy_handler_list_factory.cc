@@ -1152,9 +1152,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kBrowserSwitcherChromeParameters,
     browser_switcher::prefs::kChromeParameters,
     base::Value::Type::LIST },
-  { key::kNativeWindowOcclusionEnabled,
-    policy::policy_prefs::kNativeWindowOcclusionEnabled,
-    base::Value::Type::BOOLEAN },
   { key::kPrintRasterizationMode,
     prefs::kPrintRasterizationMode,
     base::Value::Type::INTEGER },
@@ -1453,7 +1450,15 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       std::make_unique<SimplePolicyHandler>(
           key::kAuthNegotiateDelegateAllowlist,
           prefs::kAuthNegotiateDelegateAllowlist, base::Value::Type::STRING)));
-
+  handlers->AddHandler(std::make_unique<SimpleDeprecatingPolicyHandler>(
+      std::make_unique<SimplePolicyHandler>(
+          key::kNativeWindowOcclusionEnabled,
+          policy::policy_prefs::kNativeWindowOcclusionEnabled,
+          base::Value::Type::BOOLEAN),
+      std::make_unique<SimplePolicyHandler>(
+          key::kWindowOcclusionEnabled,
+          policy::policy_prefs::kNativeWindowOcclusionEnabled,
+          base::Value::Type::BOOLEAN)));
   handlers->AddHandler(std::make_unique<SimplePolicyHandler>(
       key::kSafeBrowsingAllowlistDomains, prefs::kSafeBrowsingWhitelistDomains,
       base::Value::Type::LIST));

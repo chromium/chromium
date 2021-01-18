@@ -23194,6 +23194,7 @@ Called by update_document_policy_enum.py.-->
   <int value="814" label="RemoteAccessHostMaximumSessionDurationMinutes"/>
   <int value="815" label="EnableDeprecatedPrivetPrinting"/>
   <int value="816" label="BrowserLabsEnabled"/>
+  <int value="817" label="WindowOcclusionEnabled"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

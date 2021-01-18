@@ -1394,11 +1394,50 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
+      'deprecated': True,
       'example_value': True,
       'id': 675,
       'caption': '''Enable Native Window Occlusion''',
       'tags': [],
-      'desc': '''Enables native window occlusion in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
+      'desc': '''This policy is deprecated, please use the '<ph name="WINDOW_OCCLUSION_ENABLED_POLICY_NAME">WindowOcclusionEnabled</ph>' policy instead.
+
+      Enables native window occlusion in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
+
+      If you enable this setting, to reduce CPU and power consumption <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will detect when a window is covered by other windows, and will suspend work painting pixels.
+
+      If you disable this setting <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will not detect when a window is covered by other windows.
+
+      If this policy is left not set, occlusion detection will be enabled.''',
+    },
+    {
+      'name': 'WindowOcclusionEnabled',
+      'owners': ['file://components/policy/resources/OWNERS'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': [
+        'chrome.win:89-',
+      ],
+      'features': {
+        'can_be_recommended': False,
+        'dynamic_refresh': True,
+        'per_profile': False,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Detect covered window and suspend its painting',
+        },
+        {
+          'value': False,
+          'caption': 'Do not detect covered window',
+        },
+      ],
+      'default': True,
+      'example_value': True,
+      'id': 817,
+      'caption': '''Enable Window Occlusion''',
+      'tags': [],
+      'desc': '''Enables window occlusion in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
 
       If you enable this setting, to reduce CPU and power consumption <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will detect when a window is covered by other windows, and will suspend work painting pixels.
 
@@ -25220,6 +25259,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 816,
+  'highest_id_currently_used': 817,
   'highest_atomic_group_id_currently_used': 40
 }
