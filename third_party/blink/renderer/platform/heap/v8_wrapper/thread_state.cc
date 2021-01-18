@@ -43,4 +43,8 @@ ThreadState::~ThreadState() {
   DCHECK(IsCreationThread());
 }
 
+void ThreadState::RunTerminationGC() {
+  cpp_heap_.Terminate();
+}
+
 }  // namespace blink

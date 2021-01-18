@@ -91,6 +91,8 @@ class ThreadState final {
     // TODO(1056170): Remove when removing Oilpan from Blink.
   }
 
+  void RunTerminationGC();
+
  private:
   // Main-thread ThreadState avoids TLS completely by using a regular global.
   // The object is manually managed and should not rely on global ctor/dtor.
