@@ -1124,6 +1124,9 @@ const GUI = {
   },
 
   translateArtifactsIntoResult: function(artifacts, result, test){
+    if (artifacts.hasOwnProperty('command'))
+      test.command = artifacts.command;
+
     if (result != 'FAIL')
       return result;
     // Check detailed failure type based on artifacts.
@@ -1137,9 +1140,6 @@ const GUI = {
 
     if (artifacts.hasOwnProperty('reference_file_mismatch'))
       test.reference = artifacts.reference_file_mismatch;
-
-    if (artifacts.hasOwnProperty('command'))
-      test.command = artifacts.command;
 
     if (is_image && is_text)
       return 'IMAGE+TEXT';
