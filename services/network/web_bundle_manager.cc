@@ -21,7 +21,8 @@ WebBundleManager::CreateWebBundleURLLoaderFactory(
     const GURL& bundle_url,
     const ResourceRequest::WebBundleTokenParams& web_bundle_token_params,
     const mojom::URLLoaderFactoryParamsPtr& factory_params) {
-  DCHECK(factories_.find(web_bundle_token_params.token) == factories_.end());
+  DCHECK(factories_.find({factory_params->process_id,
+                          web_bundle_token_params.token}) == factories_.end());
 
   mojo::Remote<mojom::WebBundleHandle> remote(
       web_bundle_token_params.CloneHandle());
@@ -32,21 +33,25 @@ WebBundleManager::CreateWebBundleURLLoaderFactory(
   remote.set_disconnect_handler(
       base::BindOnce(&WebBundleManager::DisconnectHandler,
                      // |this| outlives |remote|.
-                     base::Unretained(this), web_bundle_token_params.token));
+                     base::Unretained(this), web_bundle_token_params.token,
+                     factory_params->process_id));
 
   auto factory = std::make_unique<WebBundleURLLoaderFactory>(
       bundle_url, std::move(remote),
       factory_params->request_initiator_origin_lock);
   auto weak_factory = factory->GetWeakPtr();
-  factories_.insert({web_bundle_token_params.token, std::move(factory)});
+  factories_.insert({std::make_pair(factory_params->process_id,
+                                    web_bundle_token_params.token),
+                     std::move(factory)});
 
   return weak_factory;
 }
 
 base::WeakPtr<WebBundleURLLoaderFactory>
 WebBundleManager::GetWebBundleURLLoaderFactory(
-    const base::UnguessableToken& web_bundle_token) {
-  auto it = factories_.find(web_bundle_token);
+    const base::UnguessableToken& web_bundle_token,
+    int32_t process_id) {
+  auto it = factories_.find({process_id, web_bundle_token});
   if (it == factories_.end()) {
     return nullptr;
   }
@@ -54,8 +59,9 @@ WebBundleManager::GetWebBundleURLLoaderFactory(
 }
 
 void WebBundleManager::DisconnectHandler(
-    base::UnguessableToken web_bundle_token) {
-  factories_.erase(web_bundle_token);
+    base::UnguessableToken web_bundle_token,
+    int32_t process_id) {
+  factories_.erase({process_id, web_bundle_token});
 }
 
 }  // namespace network

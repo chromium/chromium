@@ -33,14 +33,15 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleManager {
       const mojom::URLLoaderFactoryParamsPtr& factory_params);
 
   base::WeakPtr<WebBundleURLLoaderFactory> GetWebBundleURLLoaderFactory(
-      const base::UnguessableToken& token);
+      const base::UnguessableToken& token,
+      int32_t process_id);
 
  private:
-  void DisconnectHandler(base::UnguessableToken token);
+  void DisconnectHandler(base::UnguessableToken token, int32_t process_id);
 
-  // Maps a WebBundle token to a WebBundleURLLoaderFactory.
-  // TODO(crbug.com/1149255): Use a tuple of (PID, token) as a key.
-  std::map<base::UnguessableToken, std::unique_ptr<WebBundleURLLoaderFactory>>
+  // Maps a tuple (PID, WebBundle token) to a WebBundleURLLoaderFactory.
+  std::map<std::pair<int32_t, base::UnguessableToken>,
+           std::unique_ptr<WebBundleURLLoaderFactory>>
       factories_;
 };
 
