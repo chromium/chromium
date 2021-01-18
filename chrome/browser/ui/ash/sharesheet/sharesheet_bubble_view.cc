@@ -18,6 +18,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sharesheet/sharesheet_metrics.h"
 #include "chrome/browser/sharesheet/sharesheet_service_delegate.h"
+#include "chrome/browser/ui/ash/sharesheet/sharesheet_content_previews.h"
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_expand_button.h"
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_target_button.h"
 #include "chrome/common/chrome_features.h"
@@ -183,6 +184,9 @@ void SharesheetBubbleView::ShowBubble(
     file_title->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     file_title->SetProperty(views::kMarginsKey,
                             gfx::Insets(3, kSpacing, kSpacing, kSpacing));
+
+    main_view_->AddChildView(
+        std::make_unique<SharesheetContentPreviews>(intent_->Clone()));
   }
 
   if (targets.empty()) {
