@@ -162,7 +162,7 @@ class WebTestControlHost : public WebContentsObserver,
   void RenderViewHostChanged(RenderViewHost* old_host,
                              RenderViewHost* new_host) override;
   void RenderViewDeleted(RenderViewHost* render_view_host) override;
-  void DidFinishNavigation(NavigationHandle* navigation_handle) override;
+  void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override;
 
   // RenderProcessHostObserver implementation.
   void RenderProcessHostDestroyed(

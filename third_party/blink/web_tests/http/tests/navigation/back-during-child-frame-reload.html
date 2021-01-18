@@ -1,5 +1,5 @@
 <script>
-function onload() {
+onpageshow = () => {
   debugger;
   if (!localStorage['state']) {
     localStorage['state'] = 'one';
@@ -29,7 +29,7 @@ function onload() {
   }
 }
 </script>
-<body onload="onload()">
+<body>
   <p>
     Navigation initiated by history.back() should overwrite child frame reload,
     which was started eralier and did not finish yet.

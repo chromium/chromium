@@ -1091,7 +1091,7 @@ void WebTestControlHost::RenderViewDeleted(RenderViewHost* render_view_host) {
   main_window_render_view_hosts_.erase(render_view_host);
 }
 
-void WebTestControlHost::DidFinishNavigation(
+void WebTestControlHost::ReadyToCommitNavigation(
     NavigationHandle* navigation_handle) {
   NavigationRequest* request = NavigationRequest::From(navigation_handle);
   RenderFrameHostImpl* rfh = request->rfh_restored_from_back_forward_cache();
