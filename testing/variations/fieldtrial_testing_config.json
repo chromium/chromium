@@ -999,28 +999,6 @@
             ]
         }
     ],
-    "AutofillPruneSuggestions": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillPruneSuggestions"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillRefillWithRendererIds": [
         {
             "platforms": [
@@ -1037,82 +1015,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AutofillRefillWithRendererIds"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AutofillRefreshStyleAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillRefreshStyleAndroid"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AutofillTokenPrefixMatching": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillTokenPrefixMatching"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AutofillUseImprovedLabelDisambiguation": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillUseImprovedLabelDisambiguation"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AutofillUseMobileLabelDisambiguation": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_ShowAll",
-                    "params": {
-                        "variant": "show-all"
-                    },
-                    "enable_features": [
-                        "AutofillUseMobileLabelDisambiguation"
                     ]
                 }
             ]
