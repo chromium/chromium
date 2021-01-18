@@ -23,6 +23,13 @@
     if (message.startsWith('backend')) {
       continue;
     }
+    // TODO(crbug.com/1166710): Flexbox tooling is currently experimental so we skip
+    // the corresponding message to allow turning the experiment on and off easily.
+    // Once the experiment flag is removed, this check should be removed and test
+    // expectations have to be updated.
+    if (message.includes('setShowFlexOverlays')) {
+      continue;
+    }
     message = message.replace(/"id":\d+,/, '"id":<number>,');
     TestRunner.addResult(message);
   }
