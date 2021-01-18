@@ -35,6 +35,7 @@ data:
   - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/mig
   - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/nm
   - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/otool
+  - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/otool-classic
   - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/size
   - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/size-classic
   - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/strip

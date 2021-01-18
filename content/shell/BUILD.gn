@@ -798,11 +798,13 @@ group("content_shell_crash_test") {
   ]
   if (is_mac && !use_system_xcode) {
     data += [
-      # Scripts call otool, which is a symlink to llvm-otool, so we need both.
+      # Scripts call otool, which calls either a llvm-otool or otool-classic,
+      # so we all three.
       # llvm-otool shells out to llvm-objdump, so that's needed as well.
       mac_bin_path + "llvm-objdump",
       mac_bin_path + "llvm-otool",
       mac_bin_path + "otool",
+      mac_bin_path + "otool-classic",
     ]
   }
   if (is_posix) {
