@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
 namespace blink {
 
@@ -493,22 +494,14 @@ int MouseEvent::layerX() {
   if (!has_cached_relative_position_)
     ComputeRelativePosition();
 
-  // TODO(mustaq): Remove the PointerEvent specific code when mouse has
-  // fractional coordinates. See crbug.com/655786.
-
-  return IsPointerEvent() ? layer_location_.X()
-                          : static_cast<int>(layer_location_.X());
+  return clampTo<int, double>(layer_location_.X());
 }
 
 int MouseEvent::layerY() {
   if (!has_cached_relative_position_)
     ComputeRelativePosition();
 
-  // TODO(mustaq): Remove the PointerEvent specific code when mouse has
-  // fractional coordinates. See crbug.com/655786.
-
-  return IsPointerEvent() ? layer_location_.Y()
-                          : static_cast<int>(layer_location_.Y());
+  return clampTo<int, double>(layer_location_.Y());
 }
 
 double MouseEvent::offsetX() const {
