@@ -869,5 +869,10 @@ const base::Feature kDocumentPolicyRuntimeFlag1ForTest{
 const base::Feature kDocumentPolicyRuntimeFlag2ForTest{
     "kDocumentPolicyRuntimeFlag2ForTest", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Changes the default background color of the Text Fragment from
+// bright yellow rgb(255, 255, 0) to light purple rgb(233, 210, 253)
+const base::Feature kTextFragmentColorChange{"TextFragmentColorChange",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink

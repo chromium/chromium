@@ -1345,6 +1345,9 @@ extern const char kTabHoverCardImagesDescription[];
 extern const char kTabOutlinesInLowContrastThemesName[];
 extern const char kTabOutlinesInLowContrastThemesDescription[];
 
+extern const char kTextFragmentColorChangeName[];
+extern const char kTextFragmentColorChangeDescription[];
+
 extern const char kTintCompositedContentName[];
 extern const char kTintCompositedContentDescription[];
 

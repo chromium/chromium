@@ -380,6 +380,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"StorageAccessAPI", blink::features::kStorageAccessAPI},
           {"TargetBlankImpliesNoOpener",
            blink::features::kTargetBlankImpliesNoOpener},
+          {"TextFragmentColorChange",
+           blink::features::kTextFragmentColorChange},
           {"TrustedDOMTypes", features::kTrustedDOMTypes},
           {"UserAgentClientHint", features::kUserAgentClientHint},
           {"WebAppManifestDisplayOverride",

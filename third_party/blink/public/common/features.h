@@ -362,6 +362,8 @@ BLINK_COMMON_EXPORT extern const base::Feature
 BLINK_COMMON_EXPORT extern const base::Feature
     kDocumentPolicyRuntimeFlag2ForTest;
 
+BLINK_COMMON_EXPORT extern const base::Feature kTextFragmentColorChange;
+
 }  // namespace features
 }  // namespace blink
 

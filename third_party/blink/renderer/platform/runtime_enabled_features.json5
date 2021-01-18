@@ -1847,7 +1847,7 @@
       name: "ShadowDOMV0",
       status: "test",
     },
-      {
+    {
       name: "SharedArrayBuffer",
       status: "stable",
     },
@@ -1948,6 +1948,10 @@
     {
       name: "TextDetector",
       status: "experimental",
+    },
+    {
+      name: "TextFragmentColorChange",
+      status: "test",
     },
     {
       name: "TextFragmentIdentifiers",
