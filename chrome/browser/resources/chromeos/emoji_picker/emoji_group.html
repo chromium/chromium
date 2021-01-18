@@ -19,7 +19,7 @@
   <div class="emoji-group-heading">[[data.group]]</div>
   <div class="emoji-group-emoji">
     <template is="dom-repeat" items="[[data.emoji]]">
-      <div class$="[[_className(item.alternates)]]">
+      <div class$="[[_className(item.alternates)]]" on-click="onClickEmoji">
         [[_renderEmoji(item.base)]]
       </div>
     </template>

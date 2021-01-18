@@ -14,6 +14,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 
 #include "chrome/browser/ui/webui/chromeos/emoji/emoji_dialog.h"
+#include "chrome/browser/ui/webui/chromeos/emoji/emoji_handler.h"
 
 namespace chromeos {
 
@@ -34,6 +35,9 @@ EmojiPicker::EmojiPicker(content::WebUI* web_ui)
       html_source.get(),
       base::make_span(kEmojiPickerResources, kEmojiPickerResourcesSize),
       IDR_EMOJI_PICKER_INDEX_HTML);
+
+  // Attach message handler to handle emoji click events.
+  web_ui->AddMessageHandler(std::make_unique<EmojiHandler>());
 
   content::BrowserContext* browser_context =
       web_ui->GetWebContents()->GetBrowserContext();

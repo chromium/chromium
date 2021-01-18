@@ -4,6 +4,7 @@
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {EMOJI_BUTTON_EVENT, EmojiButtonEvent} from './events.js';
 import {EmojiGroup} from './types.js';
 
 class EmojiGroupComponent extends PolymerElement {
@@ -24,6 +25,16 @@ class EmojiGroupComponent extends PolymerElement {
 
   constructor() {
     super();
+  }
+
+  onClickEmoji(ev) {
+    /** @type {EmojiButtonEvent} */
+    const event = new CustomEvent(EMOJI_BUTTON_EVENT, {
+      bubbles: true,
+      composed: true,
+      detail: {emoji: ev.path[0].textContent.trim()}
+    });
+    this.dispatchEvent(event);
   }
 
   _renderEmoji(codepoints) {

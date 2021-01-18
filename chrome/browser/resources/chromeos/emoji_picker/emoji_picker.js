@@ -9,7 +9,7 @@ import './emoji_group_button.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {GROUP_BUTTON_EVENT} from './events.js';
+import {EMOJI_BUTTON_EVENT, GROUP_BUTTON_EVENT} from './events.js';
 import {EmojiData, EmojiGroup} from './types.js';
 
 const EMOJI_ORDERING_JSON = '/emoji_13_1_ordering.json';
@@ -80,6 +80,8 @@ class EmojiPicker extends PolymerElement {
 
     this.addEventListener(
         GROUP_BUTTON_EVENT, ev => this.selectGroup(ev.detail.group));
+    this.addEventListener(
+        EMOJI_BUTTON_EVENT, ev => this.insertEmoji(ev.detail.emoji));
   }
 
   /**
@@ -99,6 +101,13 @@ class EmojiPicker extends PolymerElement {
     // scroll to selected group's element.
     this.shadowRoot.getElementById(`group-${activeGroup.group}`)
         .scrollIntoView();
+  }
+
+  /**
+   * @param {string} emoji
+   */
+  insertEmoji(emoji) {
+    chrome.send('insertEmoji', [emoji]);
   }
 
   _formatEmojiData(emojiData) {
