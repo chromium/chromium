@@ -16,7 +16,7 @@
 // #import {strf, util, str} from '../../common/js/util.m.js';
 // #import {FileTasks} from './file_tasks.m.js';
 // #import {FileSelectionHandler, FileSelection} from './file_selection.m.js';
-// #import {Command as CrUiCommand} from 'chrome://resources/js/cr/ui/command.m.js';
+// #import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
 // #import {assert, assertInstanceof, assertNotReached} from 'chrome://resources/js/assert.m.js';
 // #import {TaskHistory} from './task_history.m.js';
 // #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';

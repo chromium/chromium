@@ -2127,7 +2127,6 @@ js_modulizer("modulize") {
                          "cr.ui.MultiMenu|MultiMenu",
                          "cr.ui.ComboButton|ComboButton",
                          "cr.filebrowser.DefaultTaskDialog|DefaultTaskDialog",
-                         "cr.ui.Command|CrUiCommand",
                          "window.importElementsPromise|importElements",
                        ]
 }
