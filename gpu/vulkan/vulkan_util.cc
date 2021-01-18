@@ -169,7 +169,6 @@ bool CheckVulkanCompabilities(const VulkanInfo& vulkan_info,
       return true;
   }
 
-  constexpr uint32_t kVendorARM = 0x13b5;
   if (device_info.properties.vendorID == kVendorARM) {
     // https://crbug.com/1096222: Display problem with Huawei and Honor devices
     // with Mali GPU. The Mali driver version is < 19.0.0.
@@ -198,14 +197,12 @@ bool CheckVulkanCompabilities(const VulkanInfo& vulkan_info,
   }
 
   // https:://crbug.com/1165783: Performance is not yet as good as GL.
-  constexpr uint32_t kVendorQualcomm = 0x5143;
   if (device_info.properties.vendorID == kVendorQualcomm) {
     return false;
   }
 
   // https://crbug.com/1122650: Poor performance and untriaged crashes with
   // Imagination GPUs.
-  constexpr uint32_t kVendorImagination = 0x1010;
   if (device_info.properties.vendorID == kVendorImagination)
     return false;
 #endif  // defined(OS_ANDROID)

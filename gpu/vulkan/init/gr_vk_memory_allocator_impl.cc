@@ -5,24 +5,37 @@
 #include "gpu/vulkan/init/gr_vk_memory_allocator_impl.h"
 
 #include <vk_mem_alloc.h>
+#include <vulkan/vulkan_core.h>
 
 #include "base/feature_list.h"
 #include "base/trace_event/trace_event.h"
 #include "gpu/vulkan/vma_wrapper.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
+#include "gpu/vulkan/vulkan_util.h"
 
 namespace gpu {
 
 namespace {
 
-const base::Feature kCpuWritesGpuReadsCached{"CpuWritesGpuReadsCached",
-                                             base::FEATURE_ENABLED_BY_DEFAULT};
-
 class GrVkMemoryAllocatorImpl : public GrVkMemoryAllocator {
  public:
-  explicit GrVkMemoryAllocatorImpl(VmaAllocator allocator)
-      : allocator_(allocator) {}
+  explicit GrVkMemoryAllocatorImpl(const VkPhysicalDeviceProperties& properties,
+                                   VmaAllocator allocator)
+      : allocator_(allocator) {
+    // On mobile GPUs we avoid using cached cpu memory. The memory is shared
+    // between the gpu and cpu and there probably isn't any win keeping a cached
+    // copy local on the CPU. We have seen examples on ARM where coherent
+    // non-cached memory writes are faster on the cpu than using cached
+    // non-coherent memory. Additionally we don't do a lot of read and writes to
+    // cpu memory in between GPU usues. Our uses are mostly write on CPU then
+    // read on GPU.
+    const auto& vendor_id = properties.vendorID;
+    if (kVendorQualcomm == vendor_id || kVendorARM == vendor_id ||
+        kVendorImagination == vendor_id) {
+      prefer_cached_memory_ = false;
+    }
+  }
   ~GrVkMemoryAllocatorImpl() override = default;
 
   GrVkMemoryAllocatorImpl(const GrVkMemoryAllocatorImpl&) = delete;
@@ -88,7 +101,7 @@ class GrVkMemoryAllocatorImpl : public GrVkMemoryAllocator {
         break;
       case BufferUsage::kCpuWritesGpuReads:
         info.requiredFlags = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
-        if (base::FeatureList::IsEnabled(kCpuWritesGpuReadsCached))
+        if (prefer_cached_memory_)
           info.requiredFlags |= VK_MEMORY_PROPERTY_HOST_CACHED_BIT;
 
         info.preferredFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
@@ -214,13 +227,16 @@ class GrVkMemoryAllocatorImpl : public GrVkMemoryAllocator {
   }
 
   const VmaAllocator allocator_;
+  bool prefer_cached_memory_ = true;
 };
 
 }  // namespace
 
 sk_sp<GrVkMemoryAllocator> CreateGrVkMemoryAllocator(
     VulkanDeviceQueue* device_queue) {
-  return sk_make_sp<GrVkMemoryAllocatorImpl>(device_queue->vma_allocator());
+  return sk_make_sp<GrVkMemoryAllocatorImpl>(
+      device_queue->vk_physical_device_properties(),
+      device_queue->vma_allocator());
 }
 
 }  // namespace gpu
