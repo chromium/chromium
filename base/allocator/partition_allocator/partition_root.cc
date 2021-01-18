@@ -314,7 +314,9 @@ static void PartitionDumpBucketStats(
 
 #if DCHECK_IS_ON()
 void DCheckIfManagedByPartitionAllocNormalBuckets(const void* ptr) {
-  PA_DCHECK(IsManagedByPartitionAllocNormalBuckets(ptr));
+  if (features::IsPartitionAllocGigaCageEnabled()) {
+    PA_DCHECK(IsManagedByPartitionAllocNormalBuckets(ptr));
+  }
 }
 #endif
 

@@ -697,7 +697,7 @@ ALWAYS_INLINE void* PartitionAllocGetSlotStart(void* ptr) {
 // TODO(glazunov): Simplify the function once the non-thread-safe PartitionRoot
 // is no longer used.
 ALWAYS_INLINE void PartitionAllocFreeForRefCounting(void* slot_start) {
-  PA_DCHECK(!internal::PartitionRefCountPointerNoDCheck(slot_start)->IsAlive());
+  PA_DCHECK(!internal::PartitionRefCountPointer(slot_start)->IsAlive());
 
   auto* slot_span =
       SlotSpanMetadata<ThreadSafe>::FromPointerNoAlignmentCheck(slot_start);
@@ -892,7 +892,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
 #if ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
   if (allow_ref_count) {
     if (LIKELY(!slot_span->bucket->is_direct_mapped())) {
-      auto* ref_count = internal::PartitionRefCountPointerNoDCheck(slot_start);
+      auto* ref_count = internal::PartitionRefCountPointer(slot_start);
       // If we are holding the last reference to the allocation, it can be freed
       // immediately. Otherwise, defer the operation and zap the memory to turn
       // potential use-after-free issues into unexploitable crashes.

@@ -118,11 +118,6 @@ ALWAYS_INLINE PartitionRefCount* PartitionRefCountPointer(void* slot_start) {
   return reinterpret_cast<PartitionRefCount*>(slot_start);
 }
 
-ALWAYS_INLINE PartitionRefCount* PartitionRefCountPointerNoDCheck(
-    void* slot_start) {
-  return reinterpret_cast<PartitionRefCount*>(slot_start);
-}
-
 #else  // ENABLE_REF_COUNTER_FOR_BACKUP_REF_PTR
 
 static constexpr size_t kInSlotRefCountBufferSize = 0;
