@@ -11,6 +11,7 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
+#include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -25,7 +26,6 @@ class Browser;
 
 namespace base {
 class DictionaryValue;
-class FilePath;
 class ListValue;
 }
 

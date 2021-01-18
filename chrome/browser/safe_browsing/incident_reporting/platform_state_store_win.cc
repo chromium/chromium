@@ -10,6 +10,7 @@
 
 #include <windows.h>
 
+#include "base/files/file_path.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/win/registry.h"
 #include "chrome/browser/profiles/profile.h"
