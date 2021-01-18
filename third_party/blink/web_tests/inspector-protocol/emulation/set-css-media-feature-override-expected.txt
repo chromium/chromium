@@ -17,6 +17,14 @@ matchMedia("(prefers-reduced-motion: reduce)").matches: true
 matchMedia("(prefers-reduced-motion: reduce)").matches applied: 3px x 3px
 matchMedia("(prefers-reduced-motion: __invalid__)").matches: false
 matchMedia("(prefers-reduced-motion: __invalid__)").matches applied: 3px x 2px
+matchMedia("(color-gamut: __invalid__)").matches: false
+matchMedia("(color-gamut: __invalid__)").matches applied: 3px x 2px
+matchMedia("(color-gamut: p3)").matches: true
+matchMedia("(color-gamut: p3)").matches applied: 6px x 6px
+matchMedia("(color-gamut: rec2020)").matches: true
+matchMedia("(color-gamut: rec2020)").matches applied: 7px x 7px
+matchMedia("(color-gamut: __invalid__)").matches: false
+matchMedia("(color-gamut: __invalid__)").matches applied: 3px x 2px
 matchMedia("(prefers-color-scheme: dark) and (prefers-reduced-motion: reduce)").matches: true
 matchMedia("(prefers-color-scheme: dark) and (prefers-reduced-motion: reduce)").matches applied: 999px x 999px
 matchMedia("(prefers-color-scheme: __invalid__)").matches: false

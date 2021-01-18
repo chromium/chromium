@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/css/media_values.h"
 #include "third_party/blink/renderer/core/css/media_values_cached.h"
 #include "third_party/blink/renderer/core/css/media_values_dynamic.h"
+#include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -179,6 +180,19 @@ int MediaValues::CalculateAvailableHoverTypes(LocalFrame* frame) {
 ColorSpaceGamut MediaValues::CalculateColorGamut(LocalFrame* frame) {
   DCHECK(frame);
   DCHECK(frame->GetPage());
+  if (const auto* overrides = frame->GetPage()->GetMediaFeatureOverrides()) {
+    MediaQueryExpValue value = overrides->GetOverride("color-gamut");
+    if (value.IsValid()) {
+      if (value.id == CSSValueID::kSRGB)
+        return ColorSpaceGamut::SRGB;
+      if (value.id == CSSValueID::kP3)
+        return ColorSpaceGamut::P3;
+      // Rec. 2020 is also known as ITU-R-Empfehlung BT.2020.
+      if (value.id == CSSValueID::kRec2020)
+        return ColorSpaceGamut::BT2020;
+      NOTREACHED();
+    }
+  }
   return color_space_utilities::GetColorSpaceGamut(
       frame->GetPage()->GetChromeClient().GetScreenInfo(*frame));
 }
