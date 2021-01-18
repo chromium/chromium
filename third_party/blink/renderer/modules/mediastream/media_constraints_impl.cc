@@ -112,7 +112,6 @@ const char kIceRestart[] = "IceRestart";
 const char kUseRtpMux[] = "googUseRtpMUX";
 // Below constraints should be used during PeerConnection construction.
 const char kEnableDtlsSrtp[] = "DtlsSrtpKeyAgreement";
-const char kEnableRtpDataChannels[] = "RtpDataChannels";
 // Google-specific constraint keys.
 // TODO(hta): These need to be made standard or deleted. crbug.com/605673
 const char kEnableDscp[] = "googDscp";
@@ -367,16 +366,6 @@ static void ParseOldStyleNames(
                           WebFeature::kRTCConstraintEnableDtlsSrtpFalse);
       }
       result.enable_dtls_srtp.SetExact(ToBoolean(constraint.value_));
-    } else if (constraint.name_.Equals(kEnableRtpDataChannels)) {
-      bool value = ToBoolean(constraint.value_);
-      if (value) {
-        Deprecation::CountDeprecation(
-            context, WebFeature::kRTCConstraintEnableRtpDataChannelsTrue);
-      } else {
-        UseCounter::Count(context,
-                          WebFeature::kRTCConstraintEnableRtpDataChannelsFalse);
-      }
-      result.enable_rtp_data_channels.SetExact(ToBoolean(constraint.value_));
     } else if (constraint.name_.Equals(kEnableDscp)) {
       result.enable_dscp.SetExact(ToBoolean(constraint.value_));
     } else if (constraint.name_.Equals(kEnableIPv6)) {
