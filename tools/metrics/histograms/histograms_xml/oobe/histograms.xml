@@ -44,7 +44,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>raleksandrov@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
-    Time spent on error screens during enrollment or autoenrollment.
+    Time spent on error screens during enrollment or autoenrollment. Recorded
+    when user leaves error screen.
   </summary>
 </histogram>
 
@@ -52,7 +53,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     expires_after="2021-08-01">
   <owner>raleksandrov@google.com</owner>
   <owner>cros-oac@google.com</owner>
-  <summary>Time spent on error screens during signin.</summary>
+  <summary>
+    Time spent on error screens during signin. Recorded when user leaves error
+    screen.
+  </summary>
 </histogram>
 
 <histogram name="OOBE.ErrorScreensTime.Supervised" units="ms"
@@ -60,19 +64,23 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>raleksandrov@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
-    Time spent on error screens during supervised user creation.
+    Time spent on error screens during supervised user creation. Recorded when
+    user leaves error screen.
   </summary>
 </histogram>
 
 <histogram name="OOBE.ErrorScreensTime.Update" units="ms"
-    expires_after="2021-02-07">
+    expires_after="2021-08-01">
   <owner>raleksandrov@google.com</owner>
   <owner>cros-oac@google.com</owner>
-  <summary>Time spent on error screens during update.</summary>
+  <summary>
+    Time spent on error screens during update. Recorded when user leaves error
+    screen.
+  </summary>
 </histogram>
 
 <histogram name="OOBE.EulaScreen.UserActions" enum="EulaScreenUserAction"
-    expires_after="2021-02-02">
+    expires_after="2021-08-01">
   <owner>raleksandrov@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
