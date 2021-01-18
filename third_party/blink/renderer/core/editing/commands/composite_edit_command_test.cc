@@ -144,7 +144,7 @@ TEST_F(CompositeEditCommandTest,
 }
 
 TEST_F(CompositeEditCommandTest,
-       MoveParagraphContentsToNewBlockWithUAShadowDOM) {
+       MoveParagraphContentsToNewBlockWithUAShadowDOM1) {
   SetBodyContent("<object contenteditable><input></object>");
   base::RunLoop().RunUntilIdle();
 
@@ -157,6 +157,23 @@ TEST_F(CompositeEditCommandTest,
   sample.MoveParagraphContentsToNewBlockIfNecessary(pos, &editing_state);
   EXPECT_FALSE(editing_state.IsAborted());
   EXPECT_EQ("<object contenteditable=\"\"><div><input></div></object>",
+            GetDocument().body()->innerHTML());
+}
+
+TEST_F(CompositeEditCommandTest,
+       MoveParagraphContentsToNewBlockWithUAShadowDOM2) {
+  GetDocument().setDesignMode("on");
+  SetBodyContent("<span></span><button><meter></meter></button>");
+
+  SampleCommand& sample = *MakeGarbageCollected<SampleCommand>(GetDocument());
+  Element* button = GetDocument().QuerySelector("button");
+  Position pos = Position(button, 0);
+  EditingState editing_state;
+
+  // Should not crash
+  sample.MoveParagraphContentsToNewBlockIfNecessary(pos, &editing_state);
+  EXPECT_FALSE(editing_state.IsAborted());
+  EXPECT_EQ("<div></div><span></span><button><meter></meter></button>",
             GetDocument().body()->innerHTML());
 }
 
