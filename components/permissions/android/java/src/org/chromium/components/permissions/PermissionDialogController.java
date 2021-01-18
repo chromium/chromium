@@ -12,8 +12,10 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ObserverList;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -48,14 +50,26 @@ public class PermissionDialogController
         int REQUEST_ANDROID_PERMISSIONS = 5;
     }
 
+    /**
+     * Interface for a class that wants to receive updates from this controller.
+     */
+    public interface Observer {
+        /**
+         * Notifies the observer that the user has just completed a permissions prompt.
+         * @param permissions An array of ContentSettingsType, indicating the last dialog
+         *         permissions.
+         * @param result A ContentSettingValues type, indicating the last dialog result.
+         */
+        void onDialogResult(
+                @ContentSettingsType int[] permissions, @ContentSettingValues int result);
+    }
+
+    private final ObserverList<Observer> mObservers;
+
     private PropertyModel mDialogModel;
     private PropertyModel mOverlayDetectedDialogModel;
     private PermissionDialogDelegate mDialogDelegate;
     private ModalDialogManager mModalDialogManager;
-
-    // Array with ints of type {@link ContentSettingsType}.
-    private int[] mLastPermissions;
-    private @ContentSettingValues int mLastResult;
 
     // As the PermissionRequestManager handles queueing for a tab and only shows prompts for active
     // tabs, we typically only have one request. This class only handles multiple requests at once
@@ -82,6 +96,7 @@ public class PermissionDialogController
     private PermissionDialogController() {
         mRequestQueue = new LinkedList<>();
         mState = State.NOT_SHOWING;
+        mObservers = new ObserverList<>();
     }
 
     /**
@@ -95,19 +110,17 @@ public class PermissionDialogController
     }
 
     /**
-     * Returns whether this PropertyModel is for the permission dialog.
-     * @param model The PropertyModel to be checked.
+     * @param observer An observer to be notified of changes.
      */
-    public static boolean isPermissionDialogModel(PropertyModel model) {
-        return model.get(ModalDialogProperties.CONTROLLER) instanceof PermissionDialogController;
+    public void addObserver(Observer observer) {
+        mObservers.addObserver(observer);
     }
 
-    public int[] getLastDialogPermissions() {
-        return mLastPermissions.clone();
-    }
-
-    public @ContentSettingValues int getLastDialogResult() {
-        return mLastResult;
+    /**
+     * @param observer The observer to remove.
+     */
+    public void removeObserver(Observer observer) {
+        mObservers.removeObserver(observer);
     }
 
     /**
@@ -150,7 +163,9 @@ public class PermissionDialogController
             mState = State.NOT_SHOWING;
         } else {
             mDialogDelegate.onDismiss();
-            destroyDelegate(ContentSettingValues.BLOCK);
+            // The user accepted the site-level prompt but denied the app-level prompt.
+            // No content setting should be set.
+            destroyDelegate(ContentSettingValues.DEFAULT);
         }
         scheduleDisplay();
     }
@@ -307,8 +322,9 @@ public class PermissionDialogController
 
     private void destroyDelegate(@ContentSettingValues int result) {
         if (result != ContentSettingValues.DEFAULT) {
-            mLastPermissions = mDialogDelegate.getContentSettingsTypes();
-            mLastResult = result;
+            for (Observer obs : mObservers) {
+                obs.onDialogResult(mDialogDelegate.getContentSettingsTypes().clone(), result);
+            }
         }
         mDialogDelegate.destroy();
         mDialogDelegate = null;
