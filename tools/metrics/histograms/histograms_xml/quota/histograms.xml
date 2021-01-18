@@ -41,8 +41,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Quota.AvailableDiskSpace" units="MB"
-    expires_after="2021-01-31">
+    expires_after="2021-12-21">
   <owner>jarrydg@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
   <summary>
     Amount of free disk space for the storage directory. Logged at irregular
     intervals.
@@ -162,8 +163,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Quota.PercentDiskAvailable" units="%"
-    expires_after="2021-01-31">
+    expires_after="2021-12-21">
   <owner>jarrydg@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
   <summary>
     Percentage of the storage device that is free. Logged at irregular
     intervals.
