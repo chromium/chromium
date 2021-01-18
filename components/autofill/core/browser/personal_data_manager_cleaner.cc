@@ -38,10 +38,16 @@ PersonalDataManagerCleaner::PersonalDataManagerCleaner(
 PersonalDataManagerCleaner::~PersonalDataManagerCleaner() = default;
 
 void PersonalDataManagerCleaner::CleanupDataAndNotifyPersonalDataObservers() {
+  // The profile de-duplication is run once every major chrome version. If the
+  // profile de-duplication has not run for the |CHROME_VERSION_MAJOR| yet,
+  // |AlternativeStateNameMap| needs to be populated first. Otherwise,
+  // defer the insertion to when the observers are notified.
   if (!alternative_state_name_map_updater_
            ->is_alternative_state_name_map_populated() &&
       base::FeatureList::IsEnabled(
-          features::kAutofillUseAlternativeStateNameMap)) {
+          features::kAutofillUseAlternativeStateNameMap) &&
+      pref_service_->GetInteger(prefs::kAutofillLastVersionDeduped) <
+          CHROME_VERSION_MAJOR) {
     alternative_state_name_map_updater_->PopulateAlternativeStateNameMap(
         base::BindOnce(&PersonalDataManagerCleaner::
                            CleanupDataAndNotifyPersonalDataObservers,
@@ -68,10 +74,16 @@ void PersonalDataManagerCleaner::CleanupDataAndNotifyPersonalDataObservers() {
 }
 
 void PersonalDataManagerCleaner::SyncStarted(syncer::ModelType model_type) {
+  // The profile de-duplication is run once every major chrome version. If the
+  // profile de-duplication has not run for the |CHROME_VERSION_MAJOR| yet,
+  // |AlternativeStateNameMap| needs to be populated first. Otherwise,
+  // defer the insertion to when the observers are notified.
   if (!alternative_state_name_map_updater_
            ->is_alternative_state_name_map_populated() &&
       base::FeatureList::IsEnabled(
-          features::kAutofillUseAlternativeStateNameMap)) {
+          features::kAutofillUseAlternativeStateNameMap) &&
+      pref_service_->GetInteger(prefs::kAutofillLastVersionDeduped) <
+          CHROME_VERSION_MAJOR) {
     alternative_state_name_map_updater_->PopulateAlternativeStateNameMap(
         base::BindOnce(&PersonalDataManagerCleaner::SyncStarted,
                        weak_ptr_factory_.GetWeakPtr(), model_type));
