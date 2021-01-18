@@ -7,10 +7,9 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/message_center/message_center_style.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace message_center {
-
-const char ProportionalImageView::kViewClassName[] = "ProportionalImageView";
 
 ProportionalImageView::ProportionalImageView(const gfx::Size& view_size) {
   SetPreferredSize(view_size);
@@ -43,10 +42,6 @@ void ProportionalImageView::OnPaint(gfx::Canvas* canvas) {
   canvas->DrawImageInt(image, draw_bounds.x(), draw_bounds.y());
 }
 
-const char* ProportionalImageView::GetClassName() const {
-  return kViewClassName;
-}
-
 gfx::Size ProportionalImageView::GetImageDrawingSize() {
   if (!GetVisible())
     return gfx::Size();
@@ -55,5 +50,8 @@ gfx::Size ProportionalImageView::GetImageDrawingSize() {
   max_size.SetToMin(GetContentsBounds().size());
   return GetImageSizeForContainerSize(max_size, image_.size());
 }
+
+BEGIN_METADATA(ProportionalImageView, views::View)
+END_METADATA
 
 }  // namespace message_center
