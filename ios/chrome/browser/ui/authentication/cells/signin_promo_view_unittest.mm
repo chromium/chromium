@@ -34,6 +34,13 @@ TEST_F(SigninPromoViewTest, ChromiumLogoImage) {
   // The image should be different than the one set, since a circular background
   // should have been added.
   EXPECT_NE(customImage, view.imageView.image);
+  view.mode = IdentityPromoViewModeSyncWithPrimaryAccount;
+  EXPECT_NE(nil, view.imageView.image);
+  // The image should has been changed from the logo.
+  EXPECT_NE(chromiumLogo, view.imageView.image);
+  // The image should be different than the one set, since a circular background
+  // should have been added.
+  EXPECT_NE(customImage, view.imageView.image);
 }
 
 TEST_F(SigninPromoViewTest, SecondaryButtonVisibility) {
@@ -45,4 +52,6 @@ TEST_F(SigninPromoViewTest, SecondaryButtonVisibility) {
   EXPECT_TRUE(view.secondaryButton.hidden);
   view.mode = IdentityPromoViewModeSigninWithAccount;
   EXPECT_FALSE(view.secondaryButton.hidden);
+  view.mode = IdentityPromoViewModeSyncWithPrimaryAccount;
+  EXPECT_TRUE(view.secondaryButton.hidden);
 }

@@ -168,6 +168,7 @@ using chrome_test_util::SignOutAccountsButton;
       assertWithMatcher:grey_notNil()];
   switch (mode) {
     case IdentityPromoViewModeNoAccounts:
+    case IdentityPromoViewModeSyncWithPrimaryAccount:
       [[EarlGrey
           selectElementWithMatcher:grey_allOf(SecondarySignInButton(),
                                               grey_sufficientlyVisible(), nil)]

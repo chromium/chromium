@@ -115,10 +115,10 @@ using chrome_test_util::SecondarySignInButton;
   [BookmarkEarlGrey verifyPromoAlreadySeen:YES];
 }
 
-// Tests the tapping on the primary button of sign-in promo view in a cold
-// state makes the sign-in sheet appear, and the promo still appears after
-// dismissing the sheet.
-- (void)testSignInPromoWithColdStateUsingPrimaryButton {
+// Tests the tapping on the primary button of sign-in promo view with no
+// identities on device makes the sign-in sheet appear, and the promo still
+// appears after dismissing the sheet.
+- (void)testSignInPromoWithNoIdentitiesUsingPrimaryButton {
   [BookmarkEarlGreyUI openBookmarks];
 
   // Check that sign-in promo view are visible.
@@ -142,10 +142,10 @@ using chrome_test_util::SecondarySignInButton;
       verifySigninPromoVisibleWithMode:IdentityPromoViewModeNoAccounts];
 }
 
-// Tests the tapping on the primary button of sign-in promo view in a warm
-// state makes the confirmaiton sheet appear, and the promo still appears after
-// dismissing the sheet.
-- (void)testSignInPromoWithWarmStateUsingPrimaryButton {
+// Tests the tapping on the primary button of sign-in promo view with identities
+// on device makes the confirmaiton sheet appear, and the promo still appears
+// after dismissing the sheet.
+- (void)testSignInPromoWithIdentitiesUsingPrimaryButton {
   [BookmarkEarlGrey setupStandardBookmarks];
   [BookmarkEarlGreyUI openBookmarks];
 
@@ -175,10 +175,10 @@ using chrome_test_util::SecondarySignInButton;
   [BookmarkEarlGrey verifyPromoAlreadySeen:NO];
 }
 
-// Tests the tapping on the secondary button of sign-in promo view in a warm
-// state makes the sign-in sheet appear, and the promo still appears after
-// dismissing the sheet.
-- (void)testSignInPromoWithWarmStateUsingSecondaryButton {
+// Tests the tapping on the secondary button of sign-in promo view with
+// identities on device makes the sign-in sheet appear, and the promo still
+// appears after dismissing the sheet.
+- (void)testSignInPromoWithIdentitiesUsingSecondaryButton {
   [BookmarkEarlGrey setupStandardBookmarks];
   [BookmarkEarlGreyUI openBookmarks];
 

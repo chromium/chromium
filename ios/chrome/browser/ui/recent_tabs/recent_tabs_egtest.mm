@@ -290,7 +290,7 @@ GURL TestPageURL() {
   }
 }
 
-// Tests that the Cold Mode Signin promo is visible in the Other Devices section
+// Tests that the Signin promo is visible in the Other Devices section
 // (and with illustrated-empty-states enabled, there is the illustrated cell)
 - (void)testOtherDevicesDefaultEmptyState {
   OpenRecentTabsPanel();

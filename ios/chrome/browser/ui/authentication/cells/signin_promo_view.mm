@@ -216,6 +216,9 @@ const CGFloat kImageViewWidthHeight = 32;
     case IdentityPromoViewModeSigninWithAccount:
       [self activateSigninWithAccountMode];
       return;
+    case IdentityPromoViewModeSyncWithPrimaryAccount:
+      [self activateSyncWithPrimaryAccountMode];
+      return;
   }
   NOTREACHED();
 }
@@ -238,8 +241,13 @@ const CGFloat kImageViewWidthHeight = 32;
   _secondaryButton.hidden = NO;
 }
 
+- (void)activateSyncWithPrimaryAccountMode {
+  DCHECK_EQ(_mode, IdentityPromoViewModeSyncWithPrimaryAccount);
+  _secondaryButton.hidden = YES;
+}
+
 - (void)setProfileImage:(UIImage*)image {
-  DCHECK_EQ(IdentityPromoViewModeSigninWithAccount, _mode);
+  DCHECK_NE(_mode, IdentityPromoViewModeNoAccounts);
   self.imageView.image = CircularImageFromImage(image, kProfileImageFixedSize);
 }
 
@@ -267,6 +275,9 @@ const CGFloat kImageViewWidthHeight = 32;
       break;
     case IdentityPromoViewModeSigninWithAccount:
       [_delegate signinPromoViewDidTapSigninWithDefaultAccount:self];
+      break;
+    case IdentityPromoViewModeSyncWithPrimaryAccount:
+      [_delegate signinPromoViewDidTapSyncWithDefaultAccount:self];
       break;
   }
 }

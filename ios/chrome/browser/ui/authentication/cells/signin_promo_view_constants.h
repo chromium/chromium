@@ -13,6 +13,8 @@ typedef NS_ENUM(NSInteger, IdentityPromoViewMode) {
   // At least one identity is available on the device and the user can sign in
   // without entering their credentials.
   IdentityPromoViewModeSigninWithAccount,
+  // The user is signed in to Chrome and can enable Sync on the primary account.
+  IdentityPromoViewModeSyncWithPrimaryAccount,
 };
 
 extern NSString* const kSigninPromoViewId;

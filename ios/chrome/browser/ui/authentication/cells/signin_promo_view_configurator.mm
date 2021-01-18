@@ -64,6 +64,9 @@ using l10n_util::GetNSStringF;
   signinPromoView.closeButton.hidden = !self.hasCloseButton;
   signinPromoView.mode = self.identityPromoViewMode;
 
+  NSString* name =
+      self.userFullName.length ? self.userFullName : self.userEmail;
+  base::string16 name16 = SysNSStringToUTF16(name);
   switch (self.identityPromoViewMode) {
     case IdentityPromoViewModeNoAccounts: {
       NSString* signInString =
@@ -71,12 +74,9 @@ using l10n_util::GetNSStringF;
       signinPromoView.accessibilityLabel = signInString;
       [signinPromoView.primaryButton setTitle:signInString
                                      forState:UIControlStateNormal];
-      break;
+      return;
     }
     case IdentityPromoViewModeSigninWithAccount: {
-      NSString* name =
-          self.userFullName.length ? self.userFullName : self.userEmail;
-      base::string16 name16 = SysNSStringToUTF16(name);
       [signinPromoView.primaryButton
           setTitle:GetNSStringF(IDS_IOS_SIGNIN_PROMO_CONTINUE_AS, name16)
           forState:UIControlStateNormal];
@@ -85,16 +85,26 @@ using l10n_util::GetNSStringF;
       [signinPromoView.secondaryButton
           setTitle:GetNSString(IDS_IOS_SIGNIN_PROMO_CHANGE_ACCOUNT)
           forState:UIControlStateNormal];
-      UIImage* image = self.userImage;
-      if (!image) {
-        image = ios::GetChromeBrowserProvider()
-                    ->GetSigninResourcesProvider()
-                    ->GetDefaultAvatar();
-      }
-      [signinPromoView setProfileImage:image];
+      break;
+    }
+    case IdentityPromoViewModeSyncWithPrimaryAccount: {
+      [signinPromoView.primaryButton
+          setTitle:GetNSString(IDS_IOS_TAB_SWITCHER_ENABLE_SYNC_BUTTON)
+          forState:UIControlStateNormal];
+      signinPromoView.accessibilityLabel =
+          GetNSStringF(IDS_IOS_SIGNIN_PROMO_ACCESSIBILITY_LABEL, name16);
       break;
     }
   }
+
+  DCHECK_NE(self.identityPromoViewMode, IdentityPromoViewModeNoAccounts);
+  UIImage* image = self.userImage;
+  if (!image) {
+    image = ios::GetChromeBrowserProvider()
+                ->GetSigninResourcesProvider()
+                ->GetDefaultAvatar();
+  }
+  [signinPromoView setProfileImage:image];
 }
 
 @end

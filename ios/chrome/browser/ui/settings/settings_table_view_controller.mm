@@ -392,63 +392,9 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 
   TableViewModel<TableViewItem*>* model = self.tableViewModel;
 
-  AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForBrowserState(_browserState);
-  // If sign-in is disabled by policy, replace the sign-in / account section
-  // with an info button view item.
-  if (!signin::IsSigninAllowed(_browserState->GetPrefs())) {
-    [model addSectionWithIdentifier:SettingsSectionIdentifierSignIn];
-    [model addItem:[self signinDisabledTextItem]
-        toSectionWithIdentifier:SettingsSectionIdentifierSignIn];
-  } else if (!authService->IsAuthenticated()) {
-    // Sign in section
-    [model addSectionWithIdentifier:SettingsSectionIdentifierSignIn];
-    if ([SigninPromoViewMediator
-            shouldDisplaySigninPromoViewWithAccessPoint:
-                signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS
-                                           browserState:_browserState]) {
-      if (!_signinPromoViewMediator) {
-        _signinPromoViewMediator = [[SigninPromoViewMediator alloc]
-            initWithBrowserState:_browserState
-                     accessPoint:signin_metrics::AccessPoint::
-                                     ACCESS_POINT_SETTINGS
-                       presenter:self /* id<SigninPresenter> */];
-        _signinPromoViewMediator.consumer = self;
-      }
-    } else {
-      [_signinPromoViewMediator signinPromoViewIsRemoved];
-      _signinPromoViewMediator = nil;
-    }
-    [model addItem:[self signInTextItem]
-        toSectionWithIdentifier:SettingsSectionIdentifierSignIn];
-  } else {
-    // Account section
-    [model addSectionWithIdentifier:SettingsSectionIdentifierAccount];
-    _hasRecordedSigninImpression = NO;
-    [_signinPromoViewMediator signinPromoViewIsRemoved];
-    _signinPromoViewMediator = nil;
-    [model addItem:[self accountCellItem]
-        toSectionWithIdentifier:SettingsSectionIdentifierAccount];
-  }
-  if (![model
-          hasSectionForSectionIdentifier:SettingsSectionIdentifierAccount]) {
-    // Add the Account section for the Sync & Google services cell, if the user
-    // is signed-out.
-    [model addSectionWithIdentifier:SettingsSectionIdentifierAccount];
-  }
-
-  // Adds experimental Google Services item separate from Sync.
-  if (base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency)) {
-    if (authService->IsAuthenticated()) {
-      [model addItem:[self googleSyncDetailItem]
-          toSectionWithIdentifier:SettingsSectionIdentifierAccount];
-    }
-    [model addItem:[self googleServicesCellItem]
-        toSectionWithIdentifier:SettingsSectionIdentifierAccount];
-  } else {
-    [model addItem:[self syncAndGoogleServicesCellItem]
-        toSectionWithIdentifier:SettingsSectionIdentifierAccount];
-  }
+  [self addPromoToIdentitySection];
+  [self addAccountProfileToIdentitySection];
+  [self addSyncAndGoogleServicesToIdentitySection];
 
   // Defaults section.
   if (@available(iOS 14, *)) {
@@ -529,6 +475,138 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   [model addItem:[self tableViewCatalogDetailItem]
       toSectionWithIdentifier:SettingsSectionIdentifierDebug];
 #endif  // BUILDFLAG(CHROMIUM_BRANDING) && !defined(NDEBUG)
+}
+
+// Adds the identity promo to promote the sign-in or sync state.
+- (void)addPromoToIdentitySection {
+  TableViewModel<TableViewItem*>* model = self.tableViewModel;
+  [model addSectionWithIdentifier:SettingsSectionIdentifierSignIn];
+  AuthenticationService* authService =
+      AuthenticationServiceFactory::GetForBrowserState(_browserState);
+  if ((authService->IsAuthenticated() && self.shouldDisplaySyncPromo) ||
+      (!authService->IsAuthenticated() && self.shouldDisplaySigninPromo)) {
+    if (!_signinPromoViewMediator) {
+      _signinPromoViewMediator = [[SigninPromoViewMediator alloc]
+          initWithBrowserState:_browserState
+                   accessPoint:signin_metrics::AccessPoint::
+                                   ACCESS_POINT_SETTINGS
+                     presenter:self /* id<SigninPresenter> */];
+      _signinPromoViewMediator.consumer = self;
+    }
+
+    TableViewSigninPromoItem* identityPromoItem =
+        [[TableViewSigninPromoItem alloc]
+            initWithType:SettingsItemTypeSigninPromo];
+    identityPromoItem.text =
+        l10n_util::GetNSString(IDS_IOS_SIGNIN_PROMO_SETTINGS_WITH_UNITY);
+    identityPromoItem.configurator =
+        [_signinPromoViewMediator createConfigurator];
+    identityPromoItem.delegate = _signinPromoViewMediator;
+    [_signinPromoViewMediator signinPromoViewIsVisible];
+
+    [model addItem:identityPromoItem
+        toSectionWithIdentifier:SettingsSectionIdentifierSignIn];
+  } else if (!authService->IsAuthenticated()) {
+    [_signinPromoViewMediator signinPromoViewIsRemoved];
+    _signinPromoViewMediator = nil;
+
+    if (!_hasRecordedSigninImpression) {
+      // Once the Settings are open, this button impression will at most be
+      // recorded once until they are closed.
+      signin_metrics::RecordSigninImpressionUserActionForAccessPoint(
+          signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
+      _hasRecordedSigninImpression = YES;
+    }
+  }
+}
+
+// Adds the account profile to the Identity section if the user is signed in and
+// sign-in is not disabled by policy.
+- (void)addAccountProfileToIdentitySection {
+  // If sign-in is disabled by policy, replace the sign-in / account section
+  // with an info button view item.
+  TableViewModel<TableViewItem*>* model = self.tableViewModel;
+  if (!signin::IsSigninAllowed(_browserState->GetPrefs())) {
+    [model addItem:[self signinDisabledTextItem]
+        toSectionWithIdentifier:SettingsSectionIdentifierSignIn];
+    return;
+  }
+
+  AuthenticationService* authService =
+      AuthenticationServiceFactory::GetForBrowserState(_browserState);
+  if (authService->IsAuthenticated()) {
+    // Account profile item.
+    [model addSectionWithIdentifier:SettingsSectionIdentifierAccount];
+    [model addItem:[self accountCellItem]
+        toSectionWithIdentifier:SettingsSectionIdentifierAccount];
+    _hasRecordedSigninImpression = NO;
+  } else if (!authService->IsAuthenticated() &&
+             !self.shouldDisplaySigninPromo) {
+    // Signed-out default
+    AccountSignInItem* signInTextItem =
+        [[AccountSignInItem alloc] initWithType:SettingsItemTypeSignInButton];
+    signInTextItem.accessibilityIdentifier = kSettingsSignInCellId;
+    signInTextItem.detailText =
+        l10n_util::GetNSString(IDS_IOS_SIGN_IN_TO_CHROME_SETTING_SUBTITLE);
+    [model addItem:signInTextItem
+        toSectionWithIdentifier:SettingsSectionIdentifierSignIn];
+  }
+}
+
+// Adds the Sync & Google Services options to the Identity section.
+- (void)addSyncAndGoogleServicesToIdentitySection {
+  // Add the Account section for the Sync & Google services cell, if the
+  // user is signed-out.
+  TableViewModel<TableViewItem*>* model = self.tableViewModel;
+  if (![model
+          hasSectionForSectionIdentifier:SettingsSectionIdentifierAccount]) {
+    [model addSectionWithIdentifier:SettingsSectionIdentifierAccount];
+  }
+
+  if (base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency)) {
+    AuthenticationService* authService =
+        AuthenticationServiceFactory::GetForBrowserState(_browserState);
+    // Sync item.
+    if (authService->IsAuthenticated()) {
+      [model addItem:[self googleSyncDetailItem]
+          toSectionWithIdentifier:SettingsSectionIdentifierAccount];
+    }
+    // Google Services item.
+    [model addItem:[self googleServicesCellItem]
+        toSectionWithIdentifier:SettingsSectionIdentifierAccount];
+  } else {
+    // Sync & Google Services item.
+    [model addItem:[self syncAndGoogleServicesCellItem]
+        toSectionWithIdentifier:SettingsSectionIdentifierAccount];
+  }
+}
+
+#pragma mark - Properties
+
+// Returns YES if the sign-in promo has not previously been closed or seen
+// too many times by a single user account (as defined in
+// SigninPromoViewMediator).
+- (BOOL)shouldDisplaySigninPromo {
+  return [SigninPromoViewMediator
+      shouldDisplaySigninPromoViewWithAccessPoint:signin_metrics::AccessPoint::
+                                                      ACCESS_POINT_SETTINGS
+                                     browserState:_browserState];
+}
+
+// Returns YES if the Sync service is available and all promos have not been
+// previously closed or seen too many times by a single user account.
+- (BOOL)shouldDisplaySyncPromo {
+  syncer::SyncService* syncService =
+      ProfileSyncServiceFactory::GetForBrowserState(_browserState);
+  return base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency) &&
+         // TODO(crbug.com/1166232): Replace with Sync specific metrics.
+         [SigninPromoViewMediator
+             shouldDisplaySigninPromoViewWithAccessPoint:
+                 signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS
+                                            browserState:_browserState] &&
+         (!syncService->IsSyncFeatureActive() &&
+          syncService->GetTransportState() !=
+              syncer::SyncService::TransportState::INITIALIZING);
 }
 
 #pragma mark - Model Items
