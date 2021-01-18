@@ -25,9 +25,9 @@ from blinkpy.web_tests.port.android import PRODUCTS_TO_EXPECTATION_FILE_PATHS
 
 MOCK_WEB_TESTS = '/mock-checkout/' + RELATIVE_WEB_TESTS
 MANIFEST_INSTALL_CMD = [
-    'python',
+    'python3',
     '/mock-checkout/third_party/blink/tools/blinkpy/third_party/wpt/wpt/wpt',
-    '--py2', 'manifest', '-v', '--no-download', '--tests-root',
+    'manifest', '-v', '--no-download', '--tests-root',
     MOCK_WEB_TESTS + 'external/wpt'
 ]
 
