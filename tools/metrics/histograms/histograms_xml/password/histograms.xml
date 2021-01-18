@@ -1206,7 +1206,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.HttpCredentials"
-    enum="PasswordManagerHttpCredentialType" expires_after="M90">
+    enum="PasswordManagerHttpCredentialType" expires_after="M95">
   <owner>jdoerrie@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -1218,9 +1218,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.HttpPasswordMigrationCount"
-    units="saved credentials" expires_after="M90">
-  <owner>vasilii@chromium.org</owner>
+    units="saved credentials" expires_after="M95">
   <owner>jdoerrie@chromium.org</owner>
+  <owner>vasilii@chromium.org</owner>
   <summary>
     Number of HTTP saved passwords that were migrated to HTTPS. Recorded on
     HTTPS password form load when there are no credentials saved.
@@ -1228,7 +1228,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.HttpPasswordMigrationMode"
-    enum="HttpPasswordMigrationMode" expires_after="M90">
+    enum="HttpPasswordMigrationMode" expires_after="M95">
   <owner>jdoerrie@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
