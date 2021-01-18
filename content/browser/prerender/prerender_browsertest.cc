@@ -318,66 +318,86 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, LinkRelPrerender_Duplicate) {
   }
 }
 
-// Makes sure that activations on navigations for iframes don't happen.
+// Makes sure that activation on navigation for an iframes doesn't happen.
 IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, Activation_iFrame) {
-  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
-  const GURL kPrerenderingUrl = GetUrl("/empty.html");
-
   // Navigate to an initial page.
+  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-  ASSERT_EQ(shell()->web_contents()->GetURL(), kInitialUrl);
 
-  // Add <link rel=prerender> that will prerender `kPrerenderingUrl`.
-  ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 0);
+  // Start a prerender.
+  const GURL kPrerenderingUrl = GetUrl("/empty.html");
   AddPrerender(kPrerenderingUrl);
-  EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
-
-  // A prerender host for the URL should be registered.
   PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
   PrerenderHost* prerender_host =
       registry.FindHostByUrlForTesting(kPrerenderingUrl);
-  EXPECT_TRUE(prerender_host);
+  ASSERT_TRUE(prerender_host);
 
   // Attempt to activate the prerendered page for an iframe. This should fail
   // and fallback to network request.
+  ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 1);
   EXPECT_EQ("LOADED", EvalJs(shell()->web_contents(),
                              JsReplace("add_iframe($1)", kPrerenderingUrl)));
-
-  // Activation shouldn't happen, so the prerender host should not be consumed,
-  // and navigation for the iframe should issue a request again.
-  EXPECT_EQ(registry.FindHostByUrlForTesting(kPrerenderingUrl), prerender_host);
   EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 2);
+
+  // Activation shouldn't happen, so the prerender host should not be consumed.
+  EXPECT_EQ(registry.FindHostByUrlForTesting(kPrerenderingUrl), prerender_host);
 }
 
-// Makes sure that activations on navigations for pop-up windows don't happen.
+// Makes sure that activation on navigation for a pop-up window doesn't happen.
 IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, Activation_PopUpWindow) {
-  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
-  const GURL kPrerenderingUrl = GetUrl("/empty.html");
-
   // Navigate to an initial page.
+  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-  ASSERT_EQ(shell()->web_contents()->GetURL(), kInitialUrl);
 
-  // Add <link rel=prerender> that will prerender `kPrerenderingUrl`.
-  ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 0);
+  // Start a prerender.
+  const GURL kPrerenderingUrl = GetUrl("/empty.html");
   AddPrerender(kPrerenderingUrl);
-  EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
-
-  // A prerender host for the URL should be registered.
   PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
   PrerenderHost* prerender_host =
       registry.FindHostByUrlForTesting(kPrerenderingUrl);
-  EXPECT_TRUE(prerender_host);
+  ASSERT_TRUE(prerender_host);
 
   // Attempt to activate the prerendered page for a pop-up window. This should
   // fail and fallback to network request.
+  ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 1);
   EXPECT_EQ("LOADED", EvalJs(shell()->web_contents(),
                              JsReplace("open_window($1)", kPrerenderingUrl)));
-
-  // Activation shouldn't happen, so the prerender host should not be consumed,
-  // and navigation for the pop-up window should issue a request again.
-  EXPECT_EQ(registry.FindHostByUrlForTesting(kPrerenderingUrl), prerender_host);
   EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 2);
+
+  // Activation shouldn't happen, so the prerender host should not be consumed.
+  EXPECT_EQ(registry.FindHostByUrlForTesting(kPrerenderingUrl), prerender_host);
+}
+
+// Makes sure that activation on navigation for a page that has a pop-up window
+// doesn't happen.
+IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, Activation_PageWithPopUpWindow) {
+  // Navigate to an initial page.
+  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Start a prerender.
+  const GURL kPrerenderingUrl = GetUrl("/empty.html?next");
+  AddPrerender(kPrerenderingUrl);
+  PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
+  ASSERT_TRUE(registry.FindHostByUrlForTesting(kPrerenderingUrl));
+
+  // Open a pop-up window.
+  const GURL kWindowUrl = GetUrl("/empty.html?window");
+  EXPECT_EQ("LOADED", EvalJs(shell()->web_contents(),
+                             JsReplace("open_window($1)", kWindowUrl)));
+
+  // Attempt to activate the prerendered page for the top-level frame. This
+  // should fail and fallback to network request because the pop-up window
+  // exists.
+  ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 1);
+  NavigateWithLocation(kPrerenderingUrl);
+  EXPECT_EQ(shell()->web_contents()->GetURL(), kPrerenderingUrl);
+  EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 2);
+
+  // Activation shouldn't happen, so the prerender host should not be consumed.
+  // However, we don't check the existence of the prerender host here unlike
+  // other activation tests because navigating the frame that triggered
+  // prerendering abandons the prerendered page regardless of activation.
 }
 
 // Tests that back-forward history is preserved after activation.
