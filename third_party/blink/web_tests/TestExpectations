@@ -5888,3 +5888,7 @@ crbug.com/1060837 virtual/plz-dedicated-worker/external/wpt/html/cross-origin-em
 crbug.com/1167210 [ Mac ] virtual/forced-high-contrast-colors/fast/css/forced-colors-mode/forced-colors-mode-15.html [ Pass Failure ]
 crbug.com/1167222 http/tests/websocket/multiple-connections-throttled.html [ Pass Failure ]
 crbug.com/1167309 fast/canvas/canvas-createImageBitmap-drawImage.html [ Pass Failure ]
+
+# DevTools roll
+crbug.com/1050549 http/tests/devtools/network/network-search.js [ Skip ]
+crbug.com/1050549 http/tests/devtools/tracing/timeline-misc/timeline-aggregated-details.js [ Skip ]
