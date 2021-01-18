@@ -184,6 +184,9 @@ void BaseRenderingContext2D::reset() {
     DCHECK(c->getDeviceClipBounds(&clip_bounds));
     DCHECK(clip_bounds == c->imageInfo().bounds());
 #endif
+    // We only want to clear the backing buffer if the surface exists because
+    // this function is also used when the context is lost.
+    clearRect(0, 0, Width(), Height());
   }
   ValidateStateStack();
   origin_tainted_by_content_ = false;
