@@ -53,6 +53,7 @@ import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.url.GURL;
 
 import java.util.Calendar;
 import java.util.List;
@@ -267,6 +268,11 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
     public int loadUrl(String url) throws IllegalArgumentException {
         return loadUrlInTab(url, PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR,
                 getActivity().getActivityTab());
+    }
+
+    /** {@link #loadUrl(String) */
+    public int loadUrl(GURL url) throws IllegalArgumentException {
+        return loadUrl(url.getSpec());
     }
 
     /**

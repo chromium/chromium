@@ -101,7 +101,7 @@ public class BookmarkEditActivity extends SynchronousInitializationActivity {
         // While the user is editing the bookmark, do not override user's input.
         if (!modelChanged) {
             mTitleEditText.getEditText().setText(bookmarkItem.getTitle());
-            mUrlEditText.getEditText().setText(bookmarkItem.getUrl());
+            mUrlEditText.getEditText().setText(bookmarkItem.getUrl().getSpec());
         }
         mFolderTextView.setText(mModel.getBookmarkTitle(bookmarkItem.getParentId()));
         mTitleEditText.setEnabled(bookmarkItem.isEditable());
@@ -138,7 +138,7 @@ public class BookmarkEditActivity extends SynchronousInitializationActivity {
     @Override
     protected void onStop() {
         if (mModel.doesBookmarkExist(mBookmarkId)) {
-            final GURL originalUrl = new GURL(mModel.getBookmarkById(mBookmarkId).getUrl());
+            final GURL originalUrl = mModel.getBookmarkById(mBookmarkId).getUrl();
             final String title = mTitleEditText.getTrimmedText();
             final String url = mUrlEditText.getTrimmedText();
 
@@ -150,7 +150,7 @@ public class BookmarkEditActivity extends SynchronousInitializationActivity {
                     && mModel.getBookmarkById(mBookmarkId).isUrlEditable()) {
                 GURL fixedUrl = UrlFormatter.fixupUrl(url);
                 if (fixedUrl.isValid() && !fixedUrl.equals(originalUrl)) {
-                    mModel.setBookmarkUrl(mBookmarkId, fixedUrl.getSpec());
+                    mModel.setBookmarkUrl(mBookmarkId, fixedUrl);
                 }
             }
         }

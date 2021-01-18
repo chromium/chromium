@@ -1551,7 +1551,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             BookmarkItem currentBookmarkItem = null;
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.READ_LATER)) {
                 currentBookmarkItem =
-                        bookmarkModel.getReadingListItem(tabToBookmark.getOriginalUrl().getSpec());
+                        bookmarkModel.getReadingListItem(tabToBookmark.getOriginalUrl());
             }
 
             if (currentBookmarkItem == null) {

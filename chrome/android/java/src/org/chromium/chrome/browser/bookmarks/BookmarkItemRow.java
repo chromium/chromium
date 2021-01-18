@@ -16,13 +16,13 @@ import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.favicon.IconType;
 import org.chromium.components.favicon.LargeIconBridge.LargeIconCallback;
+import org.chromium.url.GURL;
 
 /**
  * A row view that shows bookmark info in the bookmarks UI.
  */
 public class BookmarkItemRow extends BookmarkRow implements LargeIconCallback {
-
-    private String mUrl;
+    private GURL mUrl;
     private RoundedIconGenerator mIconGenerator;
     private final int mMinIconSize;
     private final int mDisplayedIconSize;
@@ -63,7 +63,7 @@ public class BookmarkItemRow extends BookmarkRow implements LargeIconCallback {
         mStartIconView.setImageDrawable(null);
         mTitleView.setText(item.getTitle());
         mDescriptionView.setText(item.getUrlForDisplay());
-        mDelegate.getLargeIconBridge().getLargeIconForStringUrl(mUrl, mMinIconSize, this);
+        mDelegate.getLargeIconBridge().getLargeIconForUrl(mUrl, mMinIconSize, this);
         return item;
     }
 
@@ -72,8 +72,8 @@ public class BookmarkItemRow extends BookmarkRow implements LargeIconCallback {
     @Override
     public void onLargeIconAvailable(Bitmap icon, int fallbackColor, boolean isFallbackColorDefault,
             @IconType int iconType) {
-        Drawable iconDrawable = FaviconUtils.getIconDrawableWithoutFilter(
-                icon, mUrl, fallbackColor, mIconGenerator, getResources(), mDisplayedIconSize);
+        Drawable iconDrawable = FaviconUtils.getIconDrawableWithoutFilter(icon, mUrl.getSpec(),
+                fallbackColor, mIconGenerator, getResources(), mDisplayedIconSize);
         setStartIconDrawable(iconDrawable);
     }
 }

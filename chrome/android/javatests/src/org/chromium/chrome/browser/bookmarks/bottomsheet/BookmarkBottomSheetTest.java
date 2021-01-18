@@ -66,8 +66,8 @@ public class BookmarkBottomSheetTest {
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     private static final String TITLE = "bookmark title";
-    private static final String TEST_URL_A = "http://a.com";
-    private static final String TEST_URL_B = "http://b.com";
+    private static final GURL TEST_URL_A = new GURL("http://a.com");
+    private static final GURL TEST_URL_B = new GURL("http://b.com");
     private static final String READING_LIST_TITLE = "Reading list ";
     private static final String READING_LIST_TITLE_NEW = "Reading list New";
 
@@ -188,7 +188,7 @@ public class BookmarkBottomSheetTest {
         // Add 1 bookmark and 1 unread page.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mBookmarkModel.addBookmark(mBookmarkModel.getMobileFolderId(), 0, TITLE, TEST_URL_A);
-            mBookmarkModel.addToReadingList(TITLE, new GURL(TEST_URL_A));
+            mBookmarkModel.addToReadingList(TITLE, TEST_URL_A);
         });
 
         showBottomSheet();
@@ -206,8 +206,8 @@ public class BookmarkBottomSheetTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mBookmarkModel.addBookmark(mBookmarkModel.getMobileFolderId(), 0, TITLE, TEST_URL_A);
             mBookmarkModel.addBookmark(mBookmarkModel.getMobileFolderId(), 0, TITLE, TEST_URL_B);
-            mBookmarkModel.addToReadingList(TITLE, new GURL(TEST_URL_A));
-            mBookmarkModel.addToReadingList(TITLE, new GURL(TEST_URL_B));
+            mBookmarkModel.addToReadingList(TITLE, TEST_URL_A);
+            mBookmarkModel.addToReadingList(TITLE, TEST_URL_B);
         });
 
         showBottomSheet();

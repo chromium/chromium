@@ -63,6 +63,7 @@ if (is_android) {
       "//components/sync",
       "//components/sync:test_support_nigori",
       "//testing/gtest",
+      "//url:gurl_android",
       "//url:url",
     ]
   }

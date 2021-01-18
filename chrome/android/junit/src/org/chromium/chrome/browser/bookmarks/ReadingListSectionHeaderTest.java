@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
 import org.chromium.chrome.browser.bookmarks.BookmarkListEntry.ViewType;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkType;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -145,8 +146,8 @@ public class ReadingListSectionHeaderTest {
 
     private BookmarkListEntry createReadingListEntry(long id, boolean read) {
         BookmarkId bookmarkId = new BookmarkId(id, BookmarkType.READING_LIST);
-        BookmarkItem bookmarkItem =
-                new BookmarkItem(bookmarkId, null, null, false, null, false, false, 0, read);
+        BookmarkItem bookmarkItem = new BookmarkItem(
+                bookmarkId, null, GURL.emptyGURL(), false, null, false, false, 0, read);
         return BookmarkListEntry.createBookmarkEntry(bookmarkItem);
     }
 }

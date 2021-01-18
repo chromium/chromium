@@ -14,6 +14,7 @@ import org.chromium.content_public.browser.navigation_controller.UserAgentOverri
 import org.chromium.content_public.common.Referrer;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
 import java.util.Locale;
@@ -56,6 +57,14 @@ public class LoadUrlParams {
      */
     public LoadUrlParams(String url) {
         this(url, PageTransition.LINK);
+    }
+
+    /**
+     * Creates an instance with default page transition type.
+     * @param url the url to be loaded
+     */
+    public LoadUrlParams(GURL url) {
+        this(url.getSpec(), PageTransition.LINK);
     }
 
     /**

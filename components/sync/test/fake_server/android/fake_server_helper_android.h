@@ -89,7 +89,7 @@ class FakeServerHelperAndroid {
       const base::android::JavaParamRef<jobject>& obj,
       jlong fake_server,
       const base::android::JavaParamRef<jstring>& title,
-      const base::android::JavaParamRef<jstring>& url,
+      const base::android::JavaParamRef<jobject>& url,
       const base::android::JavaParamRef<jstring>& parent_id);
 
   // Injects a bookmark folder entity into |fake_server|.
@@ -107,7 +107,7 @@ class FakeServerHelperAndroid {
       jlong fake_server,
       const base::android::JavaParamRef<jstring>& entity_id,
       const base::android::JavaParamRef<jstring>& title,
-      const base::android::JavaParamRef<jstring>& url,
+      const base::android::JavaParamRef<jobject>& url,
       const base::android::JavaParamRef<jstring>& parent_id);
 
   // Modify the bookmark folder with |entity_id| on |fake_server|.
@@ -165,7 +165,7 @@ class FakeServerHelperAndroid {
   std::unique_ptr<syncer::LoopbackServerEntity> CreateBookmarkEntity(
       JNIEnv* env,
       jstring title,
-      jstring url,
+      const base::android::JavaRef<jobject>& url,
       jstring parent_id);
 };
 

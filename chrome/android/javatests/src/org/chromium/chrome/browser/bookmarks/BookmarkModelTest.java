@@ -23,6 +23,7 @@ import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -37,6 +38,11 @@ import java.util.concurrent.atomic.AtomicReference;
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class BookmarkModelTest {
+    public static final GURL A_COM = new GURL("http://a.com");
+    public static final GURL B_COM = new GURL("http://b.com");
+    public static final GURL C_COM = new GURL("http://c.com");
+    public static final GURL AA_COM = new GURL("http://aa.com");
+
     @Rule
     public final ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
 
@@ -74,28 +80,28 @@ public class BookmarkModelTest {
     public void testBookmarkPropertySetters() {
         BookmarkId folderA = mBookmarkModel.addFolder(mMobileNode, 0, "a");
 
-        BookmarkId bookmarkA = addBookmark(mDesktopNode, 0, "a", "http://a.com");
-        BookmarkId bookmarkB = addBookmark(mMobileNode, 0, "a", "http://a.com");
-        BookmarkId bookmarkC = addBookmark(mOtherNode, 0, "a", "http://a.com");
-        BookmarkId bookmarkD = addBookmark(folderA, 0, "a", "http://a.com");
+        BookmarkId bookmarkA = addBookmark(mDesktopNode, 0, "a", A_COM);
+        BookmarkId bookmarkB = addBookmark(mMobileNode, 0, "a", A_COM);
+        BookmarkId bookmarkC = addBookmark(mOtherNode, 0, "a", A_COM);
+        BookmarkId bookmarkD = addBookmark(folderA, 0, "a", A_COM);
 
         mBookmarkModel.setBookmarkTitle(folderA, "hauri");
         Assert.assertEquals("hauri", mBookmarkModel.getBookmarkTitle(folderA));
 
         mBookmarkModel.setBookmarkTitle(bookmarkA, "auri");
-        mBookmarkModel.setBookmarkUrl(bookmarkA, "http://auri.org/");
+        mBookmarkModel.setBookmarkUrl(bookmarkA, new GURL("http://auri.org/"));
         verifyBookmark(bookmarkA, "auri", "http://auri.org/", false, mDesktopNode);
 
         mBookmarkModel.setBookmarkTitle(bookmarkB, "lauri");
-        mBookmarkModel.setBookmarkUrl(bookmarkB, "http://lauri.org/");
+        mBookmarkModel.setBookmarkUrl(bookmarkB, new GURL("http://lauri.org/"));
         verifyBookmark(bookmarkB, "lauri", "http://lauri.org/", false, mMobileNode);
 
         mBookmarkModel.setBookmarkTitle(bookmarkC, "mauri");
-        mBookmarkModel.setBookmarkUrl(bookmarkC, "http://mauri.org/");
+        mBookmarkModel.setBookmarkUrl(bookmarkC, new GURL("http://mauri.org/"));
         verifyBookmark(bookmarkC, "mauri", "http://mauri.org/", false, mOtherNode);
 
         mBookmarkModel.setBookmarkTitle(bookmarkD, "kauri");
-        mBookmarkModel.setBookmarkUrl(bookmarkD, "http://kauri.org/");
+        mBookmarkModel.setBookmarkUrl(bookmarkD, new GURL("http://kauri.org/"));
         verifyBookmark(bookmarkD, "kauri", "http://kauri.org/", false, folderA);
     }
 
@@ -104,13 +110,13 @@ public class BookmarkModelTest {
     @UiThreadTest
     @Feature({"Bookmark"})
     public void testMoveBookmarks() {
-        BookmarkId bookmarkA = addBookmark(mDesktopNode, 0, "a", "http://a.com");
-        BookmarkId bookmarkB = addBookmark(mOtherNode, 0, "b", "http://b.com");
-        BookmarkId bookmarkC = addBookmark(mMobileNode, 0, "c", "http://c.com");
+        BookmarkId bookmarkA = addBookmark(mDesktopNode, 0, "a", A_COM);
+        BookmarkId bookmarkB = addBookmark(mOtherNode, 0, "b", B_COM);
+        BookmarkId bookmarkC = addBookmark(mMobileNode, 0, "c", C_COM);
         BookmarkId folderA = mBookmarkModel.addFolder(mOtherNode, 0, "fa");
         BookmarkId folderB = mBookmarkModel.addFolder(mDesktopNode, 0, "fb");
         BookmarkId folderC = mBookmarkModel.addFolder(mMobileNode, 0, "fc");
-        BookmarkId bookmarkAA = addBookmark(folderA, 0, "aa", "http://aa.com");
+        BookmarkId bookmarkAA = addBookmark(folderA, 0, "aa", AA_COM);
         BookmarkId folderAA = mBookmarkModel.addFolder(folderA, 0, "faa");
 
         HashSet<BookmarkId> movedBookmarks = new HashSet<BookmarkId>(6);
@@ -132,8 +138,8 @@ public class BookmarkModelTest {
     @Feature({"Bookmark"})
     public void testMoveBookmarksToSameFolder() {
         BookmarkId folder = mBookmarkModel.addFolder(mMobileNode, 0, "fc");
-        BookmarkId bookmarkA = addBookmark(folder, 0, "a", "http://a.com");
-        BookmarkId bookmarkB = addBookmark(folder, 1, "b", "http://b.com");
+        BookmarkId bookmarkA = addBookmark(folder, 0, "a", A_COM);
+        BookmarkId bookmarkB = addBookmark(folder, 1, "b", B_COM);
 
         HashSet<BookmarkId> movedBookmarks = new HashSet<BookmarkId>(2);
         movedBookmarks.add(bookmarkA);
@@ -149,9 +155,9 @@ public class BookmarkModelTest {
     @UiThreadTest
     @Feature({"Bookmark"})
     public void testDeleteBookmarks() {
-        BookmarkId bookmarkA = addBookmark(mDesktopNode, 0, "a", "http://a.com");
-        BookmarkId bookmarkB = addBookmark(mOtherNode, 0, "b", "http://b.com");
-        BookmarkId bookmarkC = addBookmark(mMobileNode, 0, "c", "http://c.com");
+        BookmarkId bookmarkA = addBookmark(mDesktopNode, 0, "a", A_COM);
+        BookmarkId bookmarkB = addBookmark(mOtherNode, 0, "b", B_COM);
+        BookmarkId bookmarkC = addBookmark(mMobileNode, 0, "c", C_COM);
 
         // Dete a single bookmark
         mBookmarkModel.deleteBookmarks(bookmarkA);
@@ -181,9 +187,9 @@ public class BookmarkModelTest {
     @UiThreadTest
     @Feature({"Bookmark"})
     public void testDeleteBookmarksRepeatedly() {
-        BookmarkId bookmarkA = addBookmark(mDesktopNode, 0, "a", "http://a.com");
-        BookmarkId bookmarkB = addBookmark(mOtherNode, 0, "b", "http://b.com");
-        BookmarkId bookmarkC = addBookmark(mMobileNode, 0, "c", "http://c.com");
+        BookmarkId bookmarkA = addBookmark(mDesktopNode, 0, "a", A_COM);
+        BookmarkId bookmarkB = addBookmark(mOtherNode, 0, "b", B_COM);
+        BookmarkId bookmarkC = addBookmark(mMobileNode, 0, "c", C_COM);
 
         mBookmarkModel.deleteBookmarks(bookmarkA);
 
@@ -209,10 +215,10 @@ public class BookmarkModelTest {
     public void testGetChildIDs() {
         BookmarkId folderA = mBookmarkModel.addFolder(mMobileNode, 0, "fa");
         HashSet<BookmarkId> expectedChildren = new HashSet<>();
-        expectedChildren.add(addBookmark(folderA, 0, "a", "http://a.com"));
-        expectedChildren.add(addBookmark(folderA, 0, "a", "http://a.com"));
-        expectedChildren.add(addBookmark(folderA, 0, "a", "http://a.com"));
-        expectedChildren.add(addBookmark(folderA, 0, "a", "http://a.com"));
+        expectedChildren.add(addBookmark(folderA, 0, "a", A_COM));
+        expectedChildren.add(addBookmark(folderA, 0, "a", A_COM));
+        expectedChildren.add(addBookmark(folderA, 0, "a", A_COM));
+        expectedChildren.add(addBookmark(folderA, 0, "a", A_COM));
         BookmarkId folderAA = mBookmarkModel.addFolder(folderA, 0, "faa");
         // folders and urls
         expectedChildren.add(folderAA);
@@ -225,13 +231,13 @@ public class BookmarkModelTest {
     @UiThreadTest
     @Feature({"Bookmark"})
     public void testAddBookmarksAndFolders() {
-        BookmarkId bookmarkA = addBookmark(mDesktopNode, 0, "a", "http://a.com");
+        BookmarkId bookmarkA = addBookmark(mDesktopNode, 0, "a", A_COM);
         verifyBookmark(bookmarkA, "a", "http://a.com/", false, mDesktopNode);
 
-        BookmarkId bookmarkB = addBookmark(mOtherNode, 0, "b", "http://b.com");
+        BookmarkId bookmarkB = addBookmark(mOtherNode, 0, "b", B_COM);
         verifyBookmark(bookmarkB, "b", "http://b.com/", false, mOtherNode);
 
-        BookmarkId bookmarkC = addBookmark(mMobileNode, 0, "c", "http://c.com");
+        BookmarkId bookmarkC = addBookmark(mMobileNode, 0, "c", C_COM);
         verifyBookmark(bookmarkC, "c", "http://c.com/", false, mMobileNode);
 
         BookmarkId folderA = mBookmarkModel.addFolder(mOtherNode, 0, "fa");
@@ -243,7 +249,7 @@ public class BookmarkModelTest {
         BookmarkId folderC = mBookmarkModel.addFolder(mMobileNode, 0, "fc");
         verifyBookmark(folderC, "fc", null, true, mMobileNode);
 
-        BookmarkId bookmarkAA = addBookmark(folderA, 0, "aa", "http://aa.com");
+        BookmarkId bookmarkAA = addBookmark(folderA, 0, "aa", AA_COM);
         verifyBookmark(bookmarkAA, "aa", "http://aa.com/", false, folderA);
 
         BookmarkId folderAA = mBookmarkModel.addFolder(folderA, 0, "faa");
@@ -251,12 +257,12 @@ public class BookmarkModelTest {
     }
 
     private BookmarkId addBookmark(
-            final BookmarkId parent, final int index, final String title, final String url) {
+            final BookmarkId parent, final int index, final String title, final GURL url) {
         return addBookmark(mBookmarkModel, parent, index, title, url);
     }
 
     public static BookmarkId addBookmark(BookmarkModel model, final BookmarkId parent,
-            final int index, final String title, final String url) {
+            final int index, final String title, final GURL url) {
         final AtomicReference<BookmarkId> result = new AtomicReference<BookmarkId>();
         final Semaphore semaphore = new Semaphore(0);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -280,7 +286,7 @@ public class BookmarkModelTest {
         BookmarkItem item = mBookmarkModel.getBookmarkById(idToVerify);
         Assert.assertEquals(expectedTitle, item.getTitle());
         Assert.assertEquals(isFolder, item.isFolder());
-        if (!isFolder) Assert.assertEquals(expectedUrl, item.getUrl());
+        if (!isFolder) Assert.assertEquals(expectedUrl, item.getUrl().getSpec());
         Assert.assertEquals(expectedParent, item.getParentId());
     }
 

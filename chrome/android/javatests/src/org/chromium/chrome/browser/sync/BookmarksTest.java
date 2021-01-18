@@ -31,6 +31,7 @@ import org.chromium.components.sync.ModelType;
 import org.chromium.components.sync.protocol.BookmarkSpecifics;
 import org.chromium.components.sync.protocol.SyncEntity;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +51,7 @@ public class BookmarksTest {
 
     private static final String BOOKMARKS_TYPE_STRING = "Bookmarks";
 
-    private static final String URL = "http://chromium.org/";
+    private static final GURL URL = new GURL("http://chromium.org/");
     private static final String TITLE = "Chromium";
     private static final String MODIFIED_TITLE = "Chromium2";
     private static final String FOLDER_TITLE = "Tech";
@@ -106,7 +107,8 @@ public class BookmarksTest {
                 "Only the injected bookmark should exist on the client.", 1, bookmarks.size());
         Bookmark bookmark = bookmarks.get(0);
         Assert.assertEquals("The wrong title was found for the bookmark.", TITLE, bookmark.title);
-        Assert.assertEquals("The wrong URL was found for the bookmark.", URL, bookmark.url);
+        Assert.assertEquals(
+                "The wrong URL was found for the bookmark.", URL.getSpec(), bookmark.url);
     }
 
     // Test syncing a bookmark modification from server to client.
@@ -383,7 +385,7 @@ public class BookmarksTest {
         assertServerBookmarkCountWithName(0, TITLE);
     }
 
-    private BookmarkId addClientBookmark(final String title, final String url) {
+    private BookmarkId addClientBookmark(final String title, final GURL url) {
         BookmarkId id =
                 TestThreadUtils.runOnUiThreadBlockingNoException(new Callable<BookmarkId>() {
                     @Override
@@ -409,7 +411,7 @@ public class BookmarksTest {
         return id;
     }
 
-    private void addServerBookmark(String title, String url) {
+    private void addServerBookmark(String title, GURL url) {
         mSyncTestRule.getFakeServerHelper().injectBookmarkEntity(
                 title, url, mSyncTestRule.getFakeServerHelper().getBookmarkBarFolderId());
     }
@@ -419,7 +421,7 @@ public class BookmarksTest {
                 title, mSyncTestRule.getFakeServerHelper().getBookmarkBarFolderId());
     }
 
-    private void modifyServerBookmark(String bookmarkId, String title, String url) {
+    private void modifyServerBookmark(String bookmarkId, String title, GURL url) {
         mSyncTestRule.getFakeServerHelper().modifyBookmarkEntity(bookmarkId, title, url,
                 mSyncTestRule.getFakeServerHelper().getBookmarkBarFolderId());
     }

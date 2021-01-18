@@ -23,6 +23,7 @@ import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -69,11 +70,14 @@ public class BookmarkBridgeTest {
     @UiThreadTest
     @Feature({"Bookmark"})
     public void testAddBookmarksAndFolders() {
-        BookmarkId bookmarkA = mBookmarkBridge.addBookmark(mDesktopNode, 0, "a", "http://a.com");
+        BookmarkId bookmarkA =
+                mBookmarkBridge.addBookmark(mDesktopNode, 0, "a", new GURL("http://a.com"));
         verifyBookmark(bookmarkA, "a", "http://a.com/", false, mDesktopNode);
-        BookmarkId bookmarkB = mBookmarkBridge.addBookmark(mOtherNode, 0, "b", "http://b.com");
+        BookmarkId bookmarkB =
+                mBookmarkBridge.addBookmark(mOtherNode, 0, "b", new GURL("http://b.com"));
         verifyBookmark(bookmarkB, "b", "http://b.com/", false, mOtherNode);
-        BookmarkId bookmarkC = mBookmarkBridge.addBookmark(mMobileNode, 0, "c", "http://c.com");
+        BookmarkId bookmarkC =
+                mBookmarkBridge.addBookmark(mMobileNode, 0, "c", new GURL("http://c.com"));
         verifyBookmark(bookmarkC, "c", "http://c.com/", false, mMobileNode);
         BookmarkId folderA = mBookmarkBridge.addFolder(mOtherNode, 0, "fa");
         verifyBookmark(folderA, "fa", null, true, mOtherNode);
@@ -81,7 +85,8 @@ public class BookmarkBridgeTest {
         verifyBookmark(folderB, "fb", null, true, mDesktopNode);
         BookmarkId folderC = mBookmarkBridge.addFolder(mMobileNode, 0, "fc");
         verifyBookmark(folderC, "fc", null, true, mMobileNode);
-        BookmarkId bookmarkAA = mBookmarkBridge.addBookmark(folderA, 0, "aa", "http://aa.com");
+        BookmarkId bookmarkAA =
+                mBookmarkBridge.addBookmark(folderA, 0, "aa", new GURL("http://aa.com"));
         verifyBookmark(bookmarkAA, "aa", "http://aa.com/", false, folderA);
         BookmarkId folderAA = mBookmarkBridge.addFolder(folderA, 0, "faa");
         verifyBookmark(folderAA, "faa", null, true, folderA);
@@ -93,7 +98,7 @@ public class BookmarkBridgeTest {
         BookmarkItem item = mBookmarkBridge.getBookmarkById(idToVerify);
         Assert.assertEquals(expectedTitle, item.getTitle());
         Assert.assertEquals(item.isFolder(), isFolder);
-        if (!isFolder) Assert.assertEquals(expectedUrl, item.getUrl());
+        if (!isFolder) Assert.assertEquals(expectedUrl, item.getUrl().getSpec());
         Assert.assertEquals(item.getParentId(), expectedParent);
     }
 
@@ -110,10 +115,10 @@ public class BookmarkBridgeTest {
         BookmarkId folderAAA = mBookmarkBridge.addFolder(folderAA, 0, "aaa");
         BookmarkId folderAAAA = mBookmarkBridge.addFolder(folderAAA, 0, "aaaa");
 
-        mBookmarkBridge.addBookmark(mMobileNode, 0, "ua", "http://www.google.com");
-        mBookmarkBridge.addBookmark(mDesktopNode, 0, "ua", "http://www.google.com");
-        mBookmarkBridge.addBookmark(mOtherNode, 0, "ua", "http://www.google.com");
-        mBookmarkBridge.addBookmark(folderA, 0, "ua", "http://www.medium.com");
+        mBookmarkBridge.addBookmark(mMobileNode, 0, "ua", new GURL("http://www.google.com"));
+        mBookmarkBridge.addBookmark(mDesktopNode, 0, "ua", new GURL("http://www.google.com"));
+        mBookmarkBridge.addBookmark(mOtherNode, 0, "ua", new GURL("http://www.google.com"));
+        mBookmarkBridge.addBookmark(folderA, 0, "ua", new GURL("http://www.medium.com"));
 
         // Map folders to depths as expected results
         HashMap<BookmarkId, Integer> idToDepth = new HashMap<BookmarkId, Integer>();
@@ -146,10 +151,10 @@ public class BookmarkBridgeTest {
         BookmarkId folderBA = mBookmarkBridge.addFolder(folderB, 0, "ba");
         BookmarkId folderAAA = mBookmarkBridge.addFolder(folderAA, 0, "aaa");
 
-        mBookmarkBridge.addBookmark(mMobileNode, 0, "ua", "http://www.google.com");
-        mBookmarkBridge.addBookmark(mDesktopNode, 0, "ua", "http://www.google.com");
-        mBookmarkBridge.addBookmark(mOtherNode, 0, "ua", "http://www.google.com");
-        mBookmarkBridge.addBookmark(folderA, 0, "ua", "http://www.medium.com");
+        mBookmarkBridge.addBookmark(mMobileNode, 0, "ua", new GURL("http://www.google.com"));
+        mBookmarkBridge.addBookmark(mDesktopNode, 0, "ua", new GURL("http://www.google.com"));
+        mBookmarkBridge.addBookmark(mOtherNode, 0, "ua", new GURL("http://www.google.com"));
+        mBookmarkBridge.addBookmark(folderA, 0, "ua", new GURL("http://www.medium.com"));
 
         // Map folders to depths as expected results
         HashMap<BookmarkId, Integer> idToDepth = new HashMap<BookmarkId, Integer>();
@@ -235,19 +240,23 @@ public class BookmarkBridgeTest {
     @UiThreadTest
     @Feature({"Bookmark"})
     public void testReorderBookmarks() {
-        mBookmarkBridge.addFolder(mMobileNode, 0, "a"); // ID 5
-        mBookmarkBridge.addFolder(mMobileNode, 0, "b"); // ID 6
-        mBookmarkBridge.addBookmark(mMobileNode, 0, "a", "http://a.com"); // ID 7
-        mBookmarkBridge.addBookmark(mMobileNode, 0, "b", "http://b.com"); // ID 8
+        long kAFolder = mBookmarkBridge.addFolder(mMobileNode, 0, "a").getId();
+        long kBFolder = mBookmarkBridge.addFolder(mMobileNode, 0, "b").getId();
+        long kAUrl =
+                mBookmarkBridge.addBookmark(mMobileNode, 0, "a", new GURL("http://a.com")).getId();
+        long kBUrl =
+                mBookmarkBridge.addBookmark(mMobileNode, 0, "b", new GURL("http://b.com")).getId();
+        // Magic folder for partner bookmarks. See fake loading of partner bookmarks in setUp.
+        long kPartnerBookmarks = 0;
 
-        long[] startingIdsArray = new long[] {8, 7, 6, 5, 0};
+        long[] startingIdsArray = new long[] {kBUrl, kAUrl, kBFolder, kAFolder, kPartnerBookmarks};
         Assert.assertArrayEquals(
                 startingIdsArray, getIdArray(mBookmarkBridge.getChildIDs(mMobileNode)));
 
-        long[] reorderedIdsArray = new long[] {7, 6, 8, 5};
+        long[] reorderedIdsArray = new long[] {kAUrl, kBFolder, kBUrl, kAFolder};
         mBookmarkBridge.reorderBookmarks(mMobileNode, reorderedIdsArray);
 
-        long[] endingIdsArray = new long[] {7, 6, 8, 5, 0};
+        long[] endingIdsArray = new long[] {kAUrl, kBFolder, kBUrl, kAFolder, kPartnerBookmarks};
         Assert.assertArrayEquals(
                 endingIdsArray, getIdArray(mBookmarkBridge.getChildIDs(mMobileNode)));
     }

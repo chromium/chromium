@@ -41,6 +41,7 @@ import org.chromium.components.favicon.IconType;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridge.LargeIconCallback;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -116,7 +117,7 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
      */
     private static class Bookmark {
         public String title;
-        public String url;
+        public GURL url;
         public BookmarkId id;
         public BookmarkId parentId;
         public boolean isFolder;
@@ -239,7 +240,7 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
                         boolean isFallbackColorDefault, @IconType int iconType) {
                     if (icon == null) {
                         mIconGenerator.setBackgroundColor(fallbackColor);
-                        icon = mIconGenerator.generateIconForUrl(bookmark.url);
+                        icon = mIconGenerator.generateIconForUrl(bookmark.url.getSpec());
                     } else {
                         icon = Bitmap.createScaledBitmap(
                                 icon, mDisplayedIconSize, mDisplayedIconSize, true);
@@ -248,7 +249,7 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
                     taskFinished();
                 }
             };
-            mLargeIconBridge.getLargeIconForStringUrl(bookmark.url, mMinIconSizeDp, callback);
+            mLargeIconBridge.getLargeIconForUrl(bookmark.url, mMinIconSizeDp, callback);
         }
 
         @UiThread
@@ -466,7 +467,7 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
             }
 
             String title = bookmark.title;
-            String url = bookmark.url;
+            String url = bookmark.url.getSpec();
             BookmarkId id =
                     (bookmark == mCurrentFolder.folder) ? mCurrentFolder.parent.id : bookmark.id;
 

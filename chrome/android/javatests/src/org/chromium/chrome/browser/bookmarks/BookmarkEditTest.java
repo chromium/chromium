@@ -35,6 +35,7 @@ import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.url.GURL;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -83,7 +84,8 @@ public class BookmarkEditTest {
             mMobileNode = mBookmarkModel.getMobileFolderId();
             mOtherNode = mBookmarkModel.getOtherFolderId();
         });
-        mBookmarkId = BookmarkModelTest.addBookmark(mBookmarkModel, mMobileNode, 0, TITLE_A, URL_A);
+        mBookmarkId = BookmarkModelTest.addBookmark(
+                mBookmarkModel, mMobileNode, 0, TITLE_A, new GURL(URL_A));
 
         mModelObserver = new BookmarkModelObserver() {
             @Override
@@ -124,7 +126,7 @@ public class BookmarkEditTest {
 
         BookmarkItem bookmarkItem = getBookmarkItem(mBookmarkId);
         Assert.assertEquals("Incorrect title after edit.", TITLE_B, bookmarkItem.getTitle());
-        Assert.assertEquals("Incorrect url after edit.", URL_B, bookmarkItem.getUrl());
+        Assert.assertEquals("Incorrect url after edit.", URL_B, bookmarkItem.getUrl().getSpec());
     }
 
     @Test
@@ -145,7 +147,7 @@ public class BookmarkEditTest {
 
         BookmarkItem bookmarkItem = getBookmarkItem(mBookmarkId);
         Assert.assertEquals("Incorrect title after edit.", TITLE_A, bookmarkItem.getTitle());
-        Assert.assertEquals("Incorrect url after edit.", URL_A, bookmarkItem.getUrl());
+        Assert.assertEquals("Incorrect url after edit.", URL_A, bookmarkItem.getUrl().getSpec());
     }
 
     @Test
@@ -162,7 +164,7 @@ public class BookmarkEditTest {
         mDestroyedCallback.waitForCallback(0);
 
         BookmarkItem bookmarkItem = getBookmarkItem(mBookmarkId);
-        Assert.assertEquals("Incorrect url after edit.", URL_A, bookmarkItem.getUrl());
+        Assert.assertEquals("Incorrect url after edit.", URL_A, bookmarkItem.getUrl().getSpec());
     }
 
     @Test

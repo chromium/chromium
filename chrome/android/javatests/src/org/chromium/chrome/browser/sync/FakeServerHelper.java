@@ -12,6 +12,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.components.sync.protocol.EntitySpecifics;
 import org.chromium.components.sync.protocol.SyncEntity;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -254,7 +255,7 @@ public class FakeServerHelper {
      *            class, so it must be a valid URL under its definition.
      * @param parentId the ID of the desired parent bookmark folder
      */
-    public void injectBookmarkEntity(final String title, final String url, final String parentId) {
+    public void injectBookmarkEntity(final String title, final GURL url, final String parentId) {
         checkFakeServerInitialized("useFakeServer must be called before data injection.");
         TestThreadUtils.runOnUiThreadBlockingNoException(new Callable<Void>() {
             @Override
@@ -294,7 +295,7 @@ public class FakeServerHelper {
      * @param parentId the ID of the new desired parent bookmark folder
      */
     public void modifyBookmarkEntity(
-            final String bookmarkId, final String title, final String url, final String parentId) {
+            final String bookmarkId, final String title, final GURL url, final String parentId) {
         checkFakeServerInitialized("useFakeServer must be called before data injection.");
         TestThreadUtils.runOnUiThreadBlockingNoException(new Callable<Void>() {
             @Override
@@ -419,11 +420,11 @@ public class FakeServerHelper {
     private native void nativeModifyEntitySpecifics(long nativeFakeServerHelperAndroid,
             long nativeFakeServer, String id, byte[] serializedEntitySpecifics);
     private native void nativeInjectBookmarkEntity(long nativeFakeServerHelperAndroid,
-            long nativeFakeServer, String title, String url, String parentId);
+            long nativeFakeServer, String title, GURL url, String parentId);
     private native void nativeInjectBookmarkFolderEntity(long nativeFakeServerHelperAndroid,
             long nativeFakeServer, String title, String parentId);
     private native void nativeModifyBookmarkEntity(long nativeFakeServerHelperAndroid,
-            long nativeFakeServer, String bookmarkId, String title, String url, String parentId);
+            long nativeFakeServer, String bookmarkId, String title, GURL url, String parentId);
     private native void nativeModifyBookmarkFolderEntity(long nativeFakeServerHelperAndroid,
             long nativeFakeServer, String bookmarkId, String title, String parentId);
     private native String nativeGetBookmarkBarFolderId(

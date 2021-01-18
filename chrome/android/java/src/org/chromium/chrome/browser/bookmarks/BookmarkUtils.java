@@ -222,9 +222,8 @@ public class BookmarkUtils {
                 || !parentItem.isFolder()) {
             parent = bookmarkModel.getDefaultFolder();
         }
-        // TODO(crbug/783819): Migrate BookmarkModel to GURL.
-        BookmarkId bookmarkId = bookmarkModel.addBookmark(
-                parent, bookmarkModel.getChildCount(parent), title, url.getSpec());
+        BookmarkId bookmarkId =
+                bookmarkModel.addBookmark(parent, bookmarkModel.getChildCount(parent), title, url);
 
         // TODO(lazzzis): remove log after bookmark sync is fixed, crbug.com/986978
         if (bookmarkId == null) {
@@ -388,9 +387,9 @@ public class BookmarkUtils {
         if (bookmarkItem.getId().getType() == BookmarkType.READING_LIST
                 && !bookmarkItem.isFolder()) {
             model.setReadStatusForReadingList(bookmarkItem.getUrl(), true);
-            openUrlInCustomTab(context, bookmarkItem.getUrl());
+            openUrlInCustomTab(context, bookmarkItem.getUrl().getSpec());
         } else {
-            openUrl(context, bookmarkItem.getUrl(), openBookmarkComponentName);
+            openUrl(context, bookmarkItem.getUrl().getSpec(), openBookmarkComponentName);
         }
         return true;
     }
