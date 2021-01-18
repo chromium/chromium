@@ -13,7 +13,16 @@ namespace machine_learning {
 
 // Encapsulates a connection to the Chrome OS ML Service daemon via its Mojo
 // interface.
-// Usage for Built-in models:
+//
+// Usage for BindMachineLearningService:
+//   mojo::Remote<mojom::MachineLearningService> ml_service;
+//   chromeos::machine_learning::ServiceConnection::GetInstance()
+//       ->BindMachineLearningService(
+//             ml_service.BindNewPipeAndPassReceiver());
+//   // Use ml_service to LoadBuiltinModel(), LoadFlatBufferModel() etc. e.g
+//   ml_service->LoadBuiltinModel(...);
+//
+// Usage for Built-in models (will be deprecated soon):
 //   mojo::Remote<chromeos::machine_learning::mojom::Model> model;
 //   chromeos::machine_learning::mojom::BuiltinModelSpecPtr spec =
 //       chromeos::machine_learning::mojom::BuiltinModelSpec::New();
@@ -22,7 +31,7 @@ namespace machine_learning {
 //       ->LoadBuiltinModel(std::move(spec), model.BindNewPipeAndPassReceiver(),
 //                          base::BindOnce(&MyCallBack));
 //   // Use |model| or wait for |MyCallBack|.
-// Usage for Flatbuffer models:
+// Usage for Flatbuffer models (will be deprecated soon):
 //   mojo::Remote<chromeos::machine_learning::mojom::Model> model;
 //   chromeos::machine_learning::mojom::FlatBufferModelSpecPtr spec =
 //       chromeos::machine_learning::mojom::FlatBufferModelSpec::New();
@@ -35,7 +44,7 @@ namespace machine_learning {
 //                             model.BindNewPipeAndPassReceiver(),
 //                             base::BindOnce(&MyCallBack));
 //
-// Sequencing: Must be used on a single sequence (may be created on another).
+// Sequencing: can be called from any sequence.
 class ServiceConnection {
  public:
   static ServiceConnection* GetInstance();
@@ -43,6 +52,10 @@ class ServiceConnection {
   // Does not take ownership of |fake_service_connection|.
   static void UseFakeServiceConnectionForTesting(
       ServiceConnection* fake_service_connection);
+
+  // Binds the receiver to the implementation in the ml_service daemon.
+  virtual void BindMachineLearningService(
+      mojo::PendingReceiver<mojom::MachineLearningService> receiver) = 0;
 
   // Instruct ML daemon to load the builtin model specified in |spec|, binding a
   // Model implementation to |receiver|. Bootstraps the initial Mojo connection

@@ -94,6 +94,14 @@ TEST_F(ServiceConnectionTest, LoadHandwritingModelWithSpec) {
       base::BindOnce([](mojom::LoadModelResult result) {}));
 }
 
+// Tests that LoadGrammarChecker runs OK (no crash) in a basic Mojo environment.
+TEST_F(ServiceConnectionTest, LoadGrammarModel) {
+  mojo::Remote<mojom::GrammarChecker> grammar_checker;
+  ServiceConnection::GetInstance()->LoadGrammarChecker(
+      grammar_checker.BindNewPipeAndPassReceiver(),
+      base::BindOnce([](mojom::LoadModelResult result) {}));
+}
+
 class TestSodaClient : public mojom::SodaClient {};
 
 // Tests that LoadSpeechRecognizer runs OK without a crash in a basic Mojo
@@ -118,14 +126,6 @@ TEST_F(ServiceConnectionTest, LoadSpeechRecognizerAndCallback) {
       }));
   run_loop.Run();
   ASSERT_TRUE(callback_done);
-}
-
-// Tests that LoadGrammarChecker runs OK (no crash) in a basic Mojo environment.
-TEST_F(ServiceConnectionTest, LoadGrammarModel) {
-  mojo::Remote<mojom::GrammarChecker> grammar_checker;
-  ServiceConnection::GetInstance()->LoadGrammarChecker(
-      grammar_checker.BindNewPipeAndPassReceiver(),
-      base::BindOnce([](mojom::LoadModelResult result) {}));
 }
 
 // Tests the fake ML service for builtin model.
@@ -541,6 +541,37 @@ TEST_F(ServiceConnectionTest, FakeGrammarChecker) {
           &infer_callback_done));
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(infer_callback_done);
+}
+
+// Tests the fake ML service for binding ml_service receiver.
+TEST_F(ServiceConnectionTest, BindMachineLearningService) {
+  FakeServiceConnectionImpl fake_service_connection;
+  ServiceConnection::UseFakeServiceConnectionForTesting(
+      &fake_service_connection);
+
+  mojo::Remote<mojom::MachineLearningService> ml_service;
+  ServiceConnection::GetInstance()->BindMachineLearningService(
+      ml_service.BindNewPipeAndPassReceiver());
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(ml_service.is_bound());
+
+  // Check the bound ml_service remote can be used to call
+  // MachineLearningService methods.
+  mojo::Remote<mojom::Model> model;
+  bool callback_done = false;
+
+  ml_service->LoadBuiltinModel(
+      mojom::BuiltinModelSpec::New(mojom::BuiltinModelId::TEST_MODEL),
+      model.BindNewPipeAndPassReceiver(),
+      base::BindOnce(
+          [](bool* callback_done, mojom::LoadModelResult result) {
+            EXPECT_EQ(result, mojom::LoadModelResult::OK);
+            *callback_done = true;
+          },
+          &callback_done));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(callback_done);
+  EXPECT_TRUE(model.is_bound());
 }
 
 }  // namespace

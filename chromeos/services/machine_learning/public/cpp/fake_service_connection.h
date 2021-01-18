@@ -14,6 +14,7 @@
 #include "chromeos/services/machine_learning/public/mojom/grammar_checker.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/graph_executor.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/handwriting_recognizer.mojom.h"
+#include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/model.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/tensor.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/text_classifier.mojom.h"
@@ -34,6 +35,7 @@ namespace machine_learning {
 // specified by a previous call to SetOutputSelection.
 // For use with ServiceConnection::UseFakeServiceConnectionForTesting().
 class FakeServiceConnectionImpl : public ServiceConnection,
+                                  public mojom::MachineLearningService,
                                   public mojom::Model,
                                   public mojom::TextClassifier,
                                   public mojom::HandwritingRecognizer,
@@ -44,6 +46,15 @@ class FakeServiceConnectionImpl : public ServiceConnection,
   FakeServiceConnectionImpl();
   ~FakeServiceConnectionImpl() override;
 
+  // ServiceConnection:
+  void BindMachineLearningService(
+      mojo::PendingReceiver<mojom::MachineLearningService> receiver) override;
+
+  // mojom::MachineLearningService:
+  void Clone(
+      mojo::PendingReceiver<mojom::MachineLearningService> receiver) override;
+
+  // mojom::MachineLearningService and ServiceConnection:
   // It's safe to execute LoadBuiltinModel, LoadFlatBufferModel and
   // LoadTextClassifier for multi times, but all the receivers will be bound to
   // the same instance.
@@ -227,6 +238,9 @@ class FakeServiceConnectionImpl : public ServiceConnection,
   void HandleStopCall();
   void HandleStartCall();
   void HandleMarkDoneCall();
+
+  // Additional receivers bound via `Clone`.
+  mojo::ReceiverSet<mojom::MachineLearningService> clone_ml_service_receivers_;
 
   mojo::ReceiverSet<mojom::Model> model_receivers_;
   mojo::ReceiverSet<mojom::GraphExecutor> graph_receivers_;

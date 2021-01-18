@@ -28,6 +28,9 @@ class ServiceConnectionImpl : public ServiceConnection {
   ServiceConnectionImpl();
   ~ServiceConnectionImpl() override = default;
 
+  void BindMachineLearningService(
+      mojo::PendingReceiver<mojom::MachineLearningService> receiver) override;
+
   void LoadBuiltinModel(mojom::BuiltinModelSpecPtr spec,
                         mojo::PendingReceiver<mojom::Model> receiver,
                         mojom::MachineLearningService::LoadBuiltinModelCallback
@@ -41,8 +44,8 @@ class ServiceConnectionImpl : public ServiceConnection {
 
   void LoadTextClassifier(
       mojo::PendingReceiver<mojom::TextClassifier> receiver,
-      mojom::MachineLearningService::LoadTextClassifierCallback
-          result_callback) override;
+      mojom::MachineLearningService::LoadTextClassifierCallback result_callback)
+      override;
 
   void LoadHandwritingModel(
       mojom::HandwritingRecognizerSpecPtr spec,
@@ -82,17 +85,40 @@ class ServiceConnectionImpl : public ServiceConnection {
   void OnBootstrapMojoConnectionResponse(bool success);
 
   mojo::Remote<mojom::MachineLearningService> machine_learning_service_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
   DISALLOW_COPY_AND_ASSIGN(ServiceConnectionImpl);
 };
 
+void ServiceConnectionImpl::BindMachineLearningService(
+    mojo::PendingReceiver<mojom::MachineLearningService> receiver) {
+  if (!task_runner_->RunsTasksInCurrentSequence()) {
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ServiceConnectionImpl::BindMachineLearningService,
+                       base::Unretained(this), std::move(receiver)));
+    return;
+  }
+
+  BindMachineLearningServiceIfNeeded();
+  machine_learning_service_->Clone(std::move(receiver));
+}
+
 void ServiceConnectionImpl::LoadBuiltinModel(
     mojom::BuiltinModelSpecPtr spec,
     mojo::PendingReceiver<mojom::Model> receiver,
     mojom::MachineLearningService::LoadBuiltinModelCallback result_callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!task_runner_->RunsTasksInCurrentSequence()) {
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ServiceConnectionImpl::LoadBuiltinModel,
+                       base::Unretained(this), std::move(spec),
+                       std::move(receiver), std::move(result_callback)));
+    return;
+  }
+
   BindMachineLearningServiceIfNeeded();
   machine_learning_service_->LoadBuiltinModel(
       std::move(spec), std::move(receiver), std::move(result_callback));
@@ -103,7 +129,15 @@ void ServiceConnectionImpl::LoadFlatBufferModel(
     mojo::PendingReceiver<mojom::Model> receiver,
     mojom::MachineLearningService::LoadFlatBufferModelCallback
         result_callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!task_runner_->RunsTasksInCurrentSequence()) {
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ServiceConnectionImpl::LoadFlatBufferModel,
+                       base::Unretained(this), std::move(spec),
+                       std::move(receiver), std::move(result_callback)));
+    return;
+  }
+
   BindMachineLearningServiceIfNeeded();
   machine_learning_service_->LoadFlatBufferModel(
       std::move(spec), std::move(receiver), std::move(result_callback));
@@ -112,7 +146,14 @@ void ServiceConnectionImpl::LoadFlatBufferModel(
 void ServiceConnectionImpl::LoadTextClassifier(
     mojo::PendingReceiver<mojom::TextClassifier> receiver,
     mojom::MachineLearningService::LoadTextClassifierCallback result_callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!task_runner_->RunsTasksInCurrentSequence()) {
+    task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&ServiceConnectionImpl::LoadTextClassifier,
+                                  base::Unretained(this), std::move(receiver),
+                                  std::move(result_callback)));
+    return;
+  }
+
   BindMachineLearningServiceIfNeeded();
   machine_learning_service_->LoadTextClassifier(std::move(receiver),
                                                 std::move(result_callback));
@@ -123,7 +164,15 @@ void ServiceConnectionImpl::LoadHandwritingModel(
     mojo::PendingReceiver<mojom::HandwritingRecognizer> receiver,
     mojom::MachineLearningService::LoadHandwritingModelCallback
         result_callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!task_runner_->RunsTasksInCurrentSequence()) {
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ServiceConnectionImpl::LoadHandwritingModel,
+                       base::Unretained(this), std::move(spec),
+                       std::move(receiver), std::move(result_callback)));
+    return;
+  }
+
   BindMachineLearningServiceIfNeeded();
   machine_learning_service_->LoadHandwritingModel(
       std::move(spec), std::move(receiver), std::move(result_callback));
@@ -134,7 +183,15 @@ void ServiceConnectionImpl::LoadHandwritingModelWithSpec(
     mojo::PendingReceiver<mojom::HandwritingRecognizer> receiver,
     mojom::MachineLearningService::LoadHandwritingModelWithSpecCallback
         result_callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!task_runner_->RunsTasksInCurrentSequence()) {
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ServiceConnectionImpl::LoadHandwritingModelWithSpec,
+                       base::Unretained(this), std::move(spec),
+                       std::move(receiver), std::move(result_callback)));
+    return;
+  }
+
   BindMachineLearningServiceIfNeeded();
   machine_learning_service_->LoadHandwritingModelWithSpec(
       std::move(spec), std::move(receiver), std::move(result_callback));
@@ -143,7 +200,14 @@ void ServiceConnectionImpl::LoadHandwritingModelWithSpec(
 void ServiceConnectionImpl::LoadGrammarChecker(
     mojo::PendingReceiver<mojom::GrammarChecker> receiver,
     mojom::MachineLearningService::LoadGrammarCheckerCallback result_callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!task_runner_->RunsTasksInCurrentSequence()) {
+    task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&ServiceConnectionImpl::LoadGrammarChecker,
+                                  base::Unretained(this), std::move(receiver),
+                                  std::move(result_callback)));
+    return;
+  }
+
   BindMachineLearningServiceIfNeeded();
   machine_learning_service_->LoadGrammarChecker(std::move(receiver),
                                                 std::move(result_callback));
@@ -154,7 +218,16 @@ void ServiceConnectionImpl::LoadSpeechRecognizer(
     mojo::PendingRemote<mojom::SodaClient> soda_client,
     mojo::PendingReceiver<mojom::SodaRecognizer> soda_recognizer,
     mojom::MachineLearningService::LoadSpeechRecognizerCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!task_runner_->RunsTasksInCurrentSequence()) {
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ServiceConnectionImpl::LoadSpeechRecognizer,
+                       base::Unretained(this), std::move(soda_config),
+                       std::move(soda_client), std::move(soda_recognizer),
+                       std::move(callback)));
+    return;
+  }
+
   BindMachineLearningServiceIfNeeded();
   machine_learning_service_->LoadSpeechRecognizer(
       std::move(soda_config), std::move(soda_client),
@@ -194,7 +267,8 @@ void ServiceConnectionImpl::BindMachineLearningServiceIfNeeded() {
                      base::Unretained(this)));
 }
 
-ServiceConnectionImpl::ServiceConnectionImpl() {
+ServiceConnectionImpl::ServiceConnectionImpl()
+    : task_runner_(base::SequencedTaskRunnerHandle::Get()) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 

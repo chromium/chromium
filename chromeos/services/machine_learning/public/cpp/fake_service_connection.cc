@@ -24,6 +24,16 @@ FakeServiceConnectionImpl::FakeServiceConnectionImpl()
 
 FakeServiceConnectionImpl::~FakeServiceConnectionImpl() {}
 
+void FakeServiceConnectionImpl::BindMachineLearningService(
+    mojo::PendingReceiver<mojom::MachineLearningService> receiver) {
+  Clone(std::move(receiver));
+}
+
+void FakeServiceConnectionImpl::Clone(
+    mojo::PendingReceiver<mojom::MachineLearningService> receiver) {
+  clone_ml_service_receivers_.Add(this, std::move(receiver));
+}
+
 void FakeServiceConnectionImpl::LoadBuiltinModel(
     mojom::BuiltinModelSpecPtr spec,
     mojo::PendingReceiver<mojom::Model> receiver,
@@ -279,9 +289,9 @@ void FakeServiceConnectionImpl::SetOutputGrammarCheckerResult(
 void FakeServiceConnectionImpl::Annotate(
     mojom::TextAnnotationRequestPtr request,
     mojom::TextClassifier::AnnotateCallback callback) {
-    ScheduleCall(base::BindOnce(
-      &FakeServiceConnectionImpl::HandleAnnotateCall,
-      base::Unretained(this), std::move(request), std::move(callback)));
+  ScheduleCall(base::BindOnce(&FakeServiceConnectionImpl::HandleAnnotateCall,
+                              base::Unretained(this), std::move(request),
+                              std::move(callback)));
 }
 
 void FakeServiceConnectionImpl::SuggestSelection(
@@ -295,9 +305,9 @@ void FakeServiceConnectionImpl::SuggestSelection(
 void FakeServiceConnectionImpl::FindLanguages(
     const std::string& text,
     mojom::TextClassifier::FindLanguagesCallback callback) {
-  ScheduleCall(base::BindOnce(
-      &FakeServiceConnectionImpl::HandleFindLanguagesCall,
-      base::Unretained(this), text, std::move(callback)));
+  ScheduleCall(
+      base::BindOnce(&FakeServiceConnectionImpl::HandleFindLanguagesCall,
+                     base::Unretained(this), text, std::move(callback)));
 }
 
 void FakeServiceConnectionImpl::Recognize(
