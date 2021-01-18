@@ -1671,7 +1671,7 @@ objects of [Certificate](#Certificate-type) type.
     * (required if **Type** is
         *Client*, otherwise ignored) - **string**
     * For certificates with
-      private keys, this is the base64 encoding of the a PKCS#12 file.
+      private keys, this is the base64 encoding of a PKCS#12 file.
 
 * **Remove**
     * (optional, defaults to *false*) - **boolean**
