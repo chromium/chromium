@@ -256,7 +256,7 @@ void PopulateNumericCapabilities(Capabilities* caps,
     glGetIntegerv(GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT,
                   &caps->uniform_buffer_offset_alignment);
     caps->major_version = 3;
-    if (feature_info->IsWebGL2ComputeContext()) {
+    if (feature_info->IsES31ForTestingContext()) {
       glGetIntegerv(GL_MAX_ATOMIC_COUNTER_BUFFER_BINDINGS,
                     &caps->max_atomic_counter_buffer_bindings);
       glGetIntegerv(GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS,
@@ -286,7 +286,7 @@ bool CheckUniqueAndNonNullIds(GLsizei n, const GLuint* client_ids) {
 const char* GetServiceVersionString(const FeatureInfo* feature_info) {
   if (feature_info->IsWebGL2OrES3Context())
     return "OpenGL ES 3.0 Chromium";
-  else if (feature_info->IsWebGL2ComputeContext()) {
+  else if (feature_info->IsES31ForTestingContext()) {
     return "OpenGL ES 3.1 Chromium";
   } else
     return "OpenGL ES 2.0 Chromium";
@@ -296,7 +296,7 @@ const char* GetServiceShadingLanguageVersionString(
     const FeatureInfo* feature_info) {
   if (feature_info->IsWebGL2OrES3Context())
     return "OpenGL ES GLSL ES 3.0 Chromium";
-  else if (feature_info->IsWebGL2ComputeContext()) {
+  else if (feature_info->IsES31ForTestingContext()) {
     return "OpenGL ES GLSL ES 3.1 Chromium";
   } else
     return "OpenGL ES GLSL ES 1.0 Chromium";

@@ -66,10 +66,7 @@ gl::GLContextAttribs GenerateGLContextAttribs(
     attribs.robust_buffer_access = true;
 
     // Request a specific context version instead of always 3.0
-    if (IsWebGL2ComputeContextType(attribs_helper.context_type)) {
-      attribs.client_major_es_version = 3;
-      attribs.client_minor_es_version = 1;
-    } else if (IsWebGL2OrES3ContextType(attribs_helper.context_type)) {
+    if (IsWebGL2OrES3ContextType(attribs_helper.context_type)) {
       attribs.client_major_es_version = 3;
       attribs.client_minor_es_version = 0;
     } else {
@@ -85,6 +82,13 @@ gl::GLContextAttribs GenerateGLContextAttribs(
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableES3GLContext)) {
     // Forcefully disable ES3 contexts
+    attribs.client_major_es_version = 2;
+    attribs.client_minor_es_version = 0;
+  }
+
+  if (IsES31ForTestingContextType(attribs_helper.context_type)) {
+    // Forcefully disable ES 3.1 contexts. Tests create contexts by initializing
+    // the attributes directly.
     attribs.client_major_es_version = 2;
     attribs.client_minor_es_version = 0;
   }

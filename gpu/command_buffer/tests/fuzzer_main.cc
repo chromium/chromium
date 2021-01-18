@@ -243,8 +243,13 @@ struct Config {
     ALLOW_UNUSED_LOCAL(es3);
     attrib_helper.context_type = CONTEXT_TYPE_OPENGLES2;
 #else
-    attrib_helper.context_type =
-        es3 ? CONTEXT_TYPE_OPENGLES3 : CONTEXT_TYPE_OPENGLES2;
+    bool es31 = it.GetBit();
+    if (es3) {
+      attrib_helper.context_type =
+          es31 ? CONTEXT_TYPE_OPENGLES31_FOR_TESTING : CONTEXT_TYPE_OPENGLES3;
+    } else {
+      attrib_helper.context_type = CONTEXT_TYPE_OPENGLES2;
+    }
 #endif
     attrib_helper.enable_oop_rasterization = it.GetBit();
 
@@ -280,8 +285,9 @@ struct Config {
     gl_context_attribs.robust_resource_initialization = true;
     gl_context_attribs.robust_buffer_access = true;
     gl_context_attribs.client_major_es_version =
-        IsWebGL2OrES3ContextType(attrib_helper.context_type) ? 3 : 2;
-    gl_context_attribs.client_minor_es_version = 0;
+        IsWebGL2OrES3OrHigherContextType(attrib_helper.context_type) ? 3 : 2;
+    gl_context_attribs.client_minor_es_version =
+        IsES31ForTestingContextType(attrib_helper.context_type) ? 1 : 0;
 #endif
 
     return it.consumed_bytes();

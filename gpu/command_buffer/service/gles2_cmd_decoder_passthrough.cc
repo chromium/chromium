@@ -1066,12 +1066,11 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
                    "missing  GL_ANGLE_request_extension");
   FAIL_INIT_IF_NOT(feature_info_->feature_flags().khr_debug,
                    "missing GL_KHR_debug");
-  FAIL_INIT_IF_NOT(
-      !IsWebGL2ComputeContextType(attrib_helper.context_type) ||
-          feature_info_->feature_flags().khr_robust_buffer_access_behavior,
-      "missing GL_KHR_robust_buffer_access_behavior");
   FAIL_INIT_IF_NOT(!attrib_helper.enable_oop_rasterization,
                    "oop rasterization not supported");
+  FAIL_INIT_IF_NOT(!IsES31ForTestingContextType(attrib_helper.context_type) ||
+                       feature_info_->gl_version_info().IsAtLeastGLES(3, 1),
+                   "ES 3.1 context type requires an ES 3.1 ANGLE context");
 
 #undef FAIL_INIT_IF_NOT
 

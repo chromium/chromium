@@ -127,7 +127,7 @@ error::Error GLES2DecoderPassthroughImpl::HandleDrawArrays(
 error::Error GLES2DecoderPassthroughImpl::HandleDrawArraysIndirect(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {
-  if (!feature_info_->IsWebGL2ComputeContext()) {
+  if (!feature_info_->IsES31ForTestingContext()) {
     return error::kUnknownCommand;
   }
   const volatile gles2::cmds::DrawArraysIndirect& c =
@@ -156,7 +156,7 @@ error::Error GLES2DecoderPassthroughImpl::HandleDrawElements(
 error::Error GLES2DecoderPassthroughImpl::HandleDrawElementsIndirect(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {
-  if (!feature_info_->IsWebGL2ComputeContext()) {
+  if (!feature_info_->IsES31ForTestingContext()) {
     return error::kUnknownCommand;
   }
   const volatile gles2::cmds::DrawElementsIndirect& c =
@@ -516,7 +516,7 @@ error::Error GLES2DecoderPassthroughImpl::HandleGetProgramInfoLog(
 error::Error GLES2DecoderPassthroughImpl::HandleGetProgramResourceiv(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {
-  if (!feature_info_->IsWebGL2ComputeContext()) {
+  if (!feature_info_->IsES31ForTestingContext()) {
     return error::kUnknownCommand;
   }
   const volatile gles2::cmds::GetProgramResourceiv& c =
@@ -564,7 +564,7 @@ error::Error GLES2DecoderPassthroughImpl::HandleGetProgramResourceiv(
 error::Error GLES2DecoderPassthroughImpl::HandleGetProgramResourceIndex(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {
-  if (!feature_info_->IsWebGL2ComputeContext()) {
+  if (!feature_info_->IsES31ForTestingContext()) {
     return error::kUnknownCommand;
   }
   const volatile gles2::cmds::GetProgramResourceIndex& c =
@@ -599,7 +599,7 @@ error::Error GLES2DecoderPassthroughImpl::HandleGetProgramResourceIndex(
 error::Error GLES2DecoderPassthroughImpl::HandleGetProgramResourceLocation(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {
-  if (!feature_info_->IsWebGL2ComputeContext()) {
+  if (!feature_info_->IsES31ForTestingContext()) {
     return error::kUnknownCommand;
   }
   const volatile gles2::cmds::GetProgramResourceLocation& c =
@@ -634,7 +634,7 @@ error::Error GLES2DecoderPassthroughImpl::HandleGetProgramResourceLocation(
 error::Error GLES2DecoderPassthroughImpl::HandleGetProgramResourceName(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {
-  if (!feature_info_->IsWebGL2ComputeContext()) {
+  if (!feature_info_->IsES31ForTestingContext()) {
     return error::kUnknownCommand;
   }
   const volatile gles2::cmds::GetProgramResourceName& c =
