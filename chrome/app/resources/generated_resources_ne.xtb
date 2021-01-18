@@ -336,6 +336,7 @@
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{अरूले कुनै पनि पासवर्ड देखेका छैनन्}=1{अरूले देखेका एउटा पासवर्ड फेला पर्‍यो}other{अरूले देखेका {NUM_COMPROMISED} वटा पासवर्ड फेला परे}}</translation>
 <translation id="1380028686461971526">नेटवर्कमा स्वतः कनेक्ट गर्नुहोस्</translation>
 <translation id="1380436189840894976">जे भए पनि इन्कोग्निटो मोड छाडेर बाहिरिने हो?</translation>
+<translation id="1383597849754832576">बोलीसम्बन्धी फाइलहरू डाउनलोड गर्न सकिएन। पछि फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="1383861834909034572">पूरा भएपछि खुल्ने</translation>
 <translation id="1383876407941801731">खोज्नुहोस्</translation>
 <translation id="1386791642444521222">SIM कार्ड सक्रिय पार्नुहोस्</translation>
@@ -897,6 +898,7 @@
 <translation id="1984417487208496350">सुरक्षारहित मोड (सिफारिस गरिँदैन)</translation>
 <translation id="1987317783729300807">खाताहरू</translation>
 <translation id="1989112275319619282">ब्राउज गर्नुहोस्</translation>
+<translation id="1990046457226896323">बोलीसम्बन्धी फाइलहरू डाउनलोड गरिए</translation>
 <translation id="1990512225220753005">यस पृष्ठमा सर्टकटहरू नदेखाउनुहोस्</translation>
 <translation id="1992397118740194946">सेट गरिएको छैन</translation>
 <translation id="1992924914582925289">यन्त्रबाट हटाउनुहोस्</translation>
@@ -1259,6 +1261,7 @@
 <translation id="2399699884460174994">सूचनाहरू अन गरिए</translation>
 <translation id="2399939490305346086">सुरक्षा साँचोको साइन इनसम्बन्धी डेटा</translation>
 <translation id="2400664245143453337">तत्काल अद्यावधिक गर्न आवश्यक छ</translation>
+<translation id="2406153734066939945">यो प्रोफाइल र यसका डेटा मेटाउने हो?</translation>
 <translation id="2408018932941436077">कार्ड सुरक्षित गर्दै</translation>
 <translation id="2408955596600435184">आफ्नो PIN प्रविष्टि गर्नुहोस्</translation>
 <translation id="241082044617551207">अज्ञात प्लगइन</translation>
@@ -1353,7 +1356,6 @@
 <translation id="2501920221385095727">स्टिकी कुञ्जीहरू</translation>
 <translation id="2502441965851148920">स्वचालित अद्यावधिकहरू सक्रिय गरिएका छन्। म्यानुअल अद्यावधिकहरू तपाईँको प्रशासकद्वारा असक्षम गरिएको छ।</translation>
 <translation id="2502719318159902502">पूर्ण पहुँच</translation>
-<translation id="2505127913256479918">सुपरिवेक्षण गरिएको यो खाता चाँडै नै हटाइने छ</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{स्क्रिन #}other{स्क्रिन #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> को <ph name="TOTAL_SIZE" /></translation>
 <translation id="250704661983564564">डिस्प्लेका सेटिङ</translation>
@@ -1377,6 +1379,7 @@
 <translation id="2526590354069164005">डेस्कटप</translation>
 <translation id="2526619973349913024">अद्यावधिकको लागि जाँच गर्नुहोस्</translation>
 <translation id="2527167509808613699">कुनै पनि प्रकारको जडान</translation>
+<translation id="2530166226437958497">समस्या निवारण</translation>
 <translation id="2532589005999780174">उच्च कन्ट्रास्ट मोड:</translation>
 <translation id="253434972992662860">&amp;पज गर्नुहोस्</translation>
 <translation id="2534460670861217804">सुरक्षित HTTP को प्रोक्सी</translation>
@@ -2096,7 +2099,6 @@
 <translation id="337920581046691015"><ph name="PRODUCT_NAME" /> स्थापना हुनेछ।</translation>
 <translation id="3380365263193509176">अज्ञात त्रुटि</translation>
 <translation id="3382073616108123819">ओहो! यस यन्त्रको लागि प्रणालीले यन्त्र परिचयकर्ताहरू ठम्याउन असफल भयो।</translation>
-<translation id="3382086682569279540">तपाईंले व्यवस्थापन गर्ने खाता चाँडै नै हटाइने छ</translation>
 <translation id="3382200254148930874">सुपरिवेक्षण रोक्दै...</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="338583716107319301">विभाजक</translation>
@@ -2554,6 +2556,7 @@
 <translation id="3857807444929313943">औँला उठाई फेरि छुनुहोस्</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: सिंक गर्ने कार्य पज गरियो</translation>
 <translation id="3861638017150647085">युजरनेम "<ph name="USERNAME" />" उपलब्ध छैन</translation>
+<translation id="3861977424605124250">ब्राउजर खोल्दा देखाइयोस्</translation>
 <translation id="3862693525629180217">अन्तर्निर्मित सेन्सरद्वारा पुष्टि गर्नुहोस्</translation>
 <translation id="3862788408946266506">'Kiosk_only" नामक म्यानिफेस्ट विशेषता भएको एप अनिवार्य रूपमा ChromeOS को किओस्क मोडमा स्थापना गर्नु पर्छ</translation>
 <translation id="3865414814144988605">रिजोलुसन</translation>
@@ -3193,6 +3196,7 @@
 <translation id="4627442949885028695">अर्को यन्त्रबाट जारी राख्नुहोस्</translation>
 <translation id="4628757576491864469">यन्त्रहरू</translation>
 <translation id="4628762811416793313">Linux कन्टेनर सेटअप गर्ने कार्य पूरा भएन। कृपया फेरि प्रयास गर्नुहोस्।</translation>
+<translation id="4629521233550547305"><ph name="PROFILE_NAME" /> नामक प्रोफाइल खोल्नुहोस्</translation>
 <translation id="4633003931260532286">विस्तारलाई कम्तीमा "<ph name="IMPORT_VERSION" />" संस्करणको "<ph name="IMPORT_NAME" />" आवश्यक पर्छ तर स्थापना संस्करण भने केवल "<ph name="INSTALLED_VERSION" />" हो</translation>
 <translation id="4633757335284074492">Google ड्राइभमा ब्याकअप गर्नुहोस् जुनसुकै बेला सजिलैसँग डेटा पुनर्स्थापना गर्नुहोस् वा यन्त्र बदल्नुहोस्। यो ब्याकअपमा एपको डेटा समावेश हुन्छ। ब्याकअपहरू Google मा अपलोड गरी तपाईंका बच्चाको Google खाताको पासवर्ड प्रयोग गरेर इन्क्रिप्ट गरिन्छन्।</translation>
 <translation id="4634575639321169635">कार्यसम्बन्धी वा व्यक्तिगत प्रयोगका लागि यो यन्त्र सेटअप गर्नुहोस्</translation>
@@ -3667,7 +3671,6 @@
 <translation id="5213891612754844763">प्रोक्सी सम्बन्धी सेटिङहरू देखाउनुहोस्‌</translation>
 <translation id="5215502535566372932">देश छनौट गर्नुहोस्</translation>
 <translation id="521582610500777512">तस्बिर नष्ट गरिएको थियो</translation>
-<translation id="5217189792977407501">डेस्कमा हाल्नुहोस्</translation>
 <translation id="5222403284441421673">असुरक्षित सामग्री डाउनलोड गर्ने कार्यलाई रोक लगाइएको छ</translation>
 <translation id="5222676887888702881">साइन आउट गर्नुहोस्</translation>
 <translation id="52232769093306234">प्याकिङ गर्न सकिएन।</translation>
@@ -3854,7 +3857,6 @@
 <translation id="5435779377906857208"><ph name="HOST" /> लाई सधैँ आफ्नो स्थानसम्बन्धी जानकारी प्रयोग गर्न दिनुहोस्</translation>
 <translation id="5436492226391861498">प्रोक्सी टनलको लागि प्रतिक्षा गर्दै...</translation>
 <translation id="5436510242972373446">खोज <ph name="SITE_NAME" />:</translation>
-<translation id="543806387003274181">कृपया अहिले नै आफ्ना फाइलहरू सुरक्षित गरी नयाँ खाता सिर्जना गर्नुहोस्।</translation>
 <translation id="5439680044267106777">यो चरण स्किप गर्नुहोस् र नयाँ प्रोफाइल सेटअप गर्नुहोस्</translation>
 <translation id="544083962418256601">सर्टकटहरू सिर्जना गर्नुहोस्...</translation>
 <translation id="5442228125690314719">डिस्कको छवि सिर्जना गर्ने क्रममा त्रुटि भयो। कृपया फेरि प्रयास गर्नुहोस्।</translation>
@@ -5449,6 +5451,7 @@
 <translation id="7280649757394340890">पाठवाचकका आवाजका सेटिङहरू</translation>
 <translation id="7280877790564589615">अनुमति अनुरोध गरियो</translation>
 <translation id="7282992757463864530">जानकारीपट्टी</translation>
+<translation id="7283555985781738399">गेस्ट मोड</translation>
 <translation id="7284411326658527427">हरेक व्यक्ति आफ्नो खाता आफूले चाहेअनुसारको बनाउन र आफ्ना डेटा गोप्य राख्न सक्छन्।</translation>
 <translation id="7287143125007575591">पहुँच अस्वीकार गरियो।</translation>
 <translation id="7287411021188441799">पूर्वनिर्धारित पृष्ठभूमि पुनर्स्थापना गर्नुहोस्</translation>
@@ -5828,6 +5831,7 @@
 <translation id="7716781361494605745">नेटस्केप प्रमाणीकरण प्राधिकरण नीति URL</translation>
 <translation id="7717014941119698257">डाउनलोड गर्दै: <ph name="STATUS" /></translation>
 <translation id="7717134585801378441">साइटहरूले तपाईंको स्थानसम्बन्धी जानकारी प्रयोग गर्ने अनुमति माग्न सक्छन् (सिफारिस गरिएको)</translation>
+<translation id="771721654176725387">तपाईंले यो प्रोफाइल हटाउनुभयो भने यो यन्त्रबाट तपाईंको ब्राउजिङ डेटा सदाका लागि मेटाइने छ। उक्त डेटा रिकभर गर्न निम्न व्यक्तिका नामबाट साइन इन गरी सिंक गर्ने सुविधा अन गर्नुहोस्</translation>
 <translation id="7717845620320228976">अद्यावधिकहरू उपलब्ध छन् वा छैनन् भनी जाँच्नुहोस्</translation>
 <translation id="7719367874908701697">पृष्ठ जुम</translation>
 <translation id="7719588063158526969">यन्त्रको नाम धेरै लामो भयो</translation>
@@ -6108,6 +6112,7 @@
 <translation id="8016266267177410919">अस्थायी भण्डारण</translation>
 <translation id="8017176852978888182">Linux बाट सेयर गरिएका डिरेक्टरीहरू</translation>
 <translation id="8017679124341497925">सर्टकट सम्पादन गरियो</translation>
+<translation id="8018298733481692628">यो प्रोफाइल मेटाउने हो?</translation>
 <translation id="8018313076035239964">वेबसाइटहरूले प्रयोग गर्ने जानकारी र तपाईंलाई देखाउने सामग्रीको सम्बन्धमा रहेका कुराहरूलाई नियन्त्रण गर्नुहोस्।</translation>
 <translation id="8023801379949507775">एक्स्टेन्सनहरूलाई अहिले नै अपडेट गर्नुहोस्</translation>
 <translation id="8026334261755873520">ब्राउजिङ लगत खालि गर्नुहोस्</translation>
@@ -6465,7 +6470,6 @@
 <translation id="8438566539970814960">खोज तथा ब्राउजिङलाई अझ राम्रो बनाउनुहोस्</translation>
 <translation id="8439506636278576865">यस भाषामा पृष्ठहरू अनुवाद प्रस्ताव गर्नुहोस्</translation>
 <translation id="8440630305826533614">Linux का एपहरू</translation>
-<translation id="8443338615972234259">कृपया सुपरिवेक्षण गरिएको आफ्नो प्रयोगकर्ताका लागि अहिले नै नयाँ खाता सिर्जना गर्नुहोस्।</translation>
 <translation id="8446884382197647889">थप जान्नुहोस्</translation>
 <translation id="8447409163267621480">Ctrl वा Alt कुञ्जी समावेश गर्नुहोस्</translation>
 <translation id="8448729345478502352">तपाईंको स्क्रिनमा भएका वस्तुहरूलाई अझ ठुलो वा सानो पार्नुहोस्</translation>
@@ -6944,6 +6948,7 @@
 <translation id="8973596347849323817">तपाईं यस यन्त्रलाई आफ्ना आवश्यकताहरू अनुसार आफू अनुकूल पार्न सक्नुहुन्छ। पछि सेटिङहरूमा गई यी पहुँच सम्बन्धी सुविधाहरूलाई परिवर्तन गर्न सकिन्छ।</translation>
 <translation id="897414447285476047">कुनै इन्टरनेटसम्बन्धी समस्याले गर्दा गन्तव्यको फाइल अपूर्ण रह्यो।</translation>
 <translation id="897525204902889653">अलग्गै राख्ने सेवा</translation>
+<translation id="8975396729541388937">तपाईंले प्राप्त गर्ने इमेलमा भएको लिंकमा क्लिक गरी जुनसुकै बेला सदस्यता रद्द गर्नुहोस्।</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" र अरू १ ट्याब}other{"<ph name="TAB_TITLE" />" र अरू # ट्याबहरू}}</translation>
 <translation id="8977811652087512276">गलत पासवर्ड वा बिग्रिएको फाइल</translation>
 <translation id="8978154919215542464">सक्रिय - सबै सिंक गर्नुहोस्</translation>

@@ -12,7 +12,6 @@
 <translation id="10614374240317010">Aldrig sparad</translation>
 <translation id="1067922213147265141">Andra Google-tjänster</translation>
 <translation id="107147699690128016">Om du ändrar filnamnstillägget kanske filen öppnas i ett annat program vilket kan utgöra en fara för enheten.</translation>
-<translation id="1094515529340404628">Web Crowd och mätningar av annonser</translation>
 <translation id="1100066534610197918">Öppna i en ny flik i en grupp</translation>
 <translation id="1105960400813249514">Skärmavbildning</translation>
 <translation id="1111673857033749125">Här visas bokmärken som du har sparat på andra enheter.</translation>
@@ -225,7 +224,6 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="2536728043171574184">En offlinekopia av sidan visas</translation>
 <translation id="2537178555904266562">Det gick inte att synkronisera lösenord</translation>
 <translation id="2546283357679194313">Cookies och webbplatsdata</translation>
-<translation id="2562889244313180139">Tillåt att webbplatser och appar ger dig en anpassad upplevelse med ett icke identifierbart alias.</translation>
 <translation id="2567385386134582609">BILD</translation>
 <translation id="2571711316400087311">Erbjud att skicka sidor på andra språk till Google Översätt</translation>
 <translation id="2581165646603367611">Det här alternativet rensar cookies, cacheminnet och annan data från webbplatser som bedöms vara oviktiga.</translation>
@@ -711,7 +709,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="6005538289190791541">Föreslaget lösenord</translation>
 <translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Det finns <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> sida i listan}other{Det finns <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> sidor i listan}}</translation>
 <translation id="6014293228235665243">Olästa</translation>
-<translation id="6018309500671889594">Tillåt att annonsörer analyserar annonskampanjer med icke identifierbar information.</translation>
 <translation id="6036057147555329831">Extra ICU</translation>
 <translation id="6039379616847168523">Hoppa till nästa flik</translation>
 <translation id="6040143037577758943">Stäng</translation>
@@ -916,7 +913,6 @@ Data från inkognitosessionen rensas bara från Chrome om du <ph name="BEGIN_BOL
 <translation id="7403691278183511381">Första körningen av Chrome</translation>
 <translation id="741204030948306876">Ja</translation>
 <translation id="7413229368719586778">Startdatum <ph name="DATE" /></translation>
-<translation id="7416941666639889592">Genom att gå med i en Web Crowd tillåter du att webbplatser anpassar användarupplevelsen utan att använda uppgifter som kan kopplas till en specifik individ. Ungefär som vid en konsert får arrangören, dvs webbplatsen och annonsörerna, bara veta att tusentals användare har ett gemensamt intresse.</translation>
 <translation id="7431991332293347422">Styr hur webbhistoriken får användas för att anpassa Sök med mera</translation>
 <translation id="7435356471928173109">Inaktiverat av administratören</translation>
 <translation id="7437998757836447326">Logga ut från Chrome</translation>

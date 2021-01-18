@@ -1360,7 +1360,6 @@
 <translation id="2501920221385095727">고정키</translation>
 <translation id="2502441965851148920">자동 업데이트가 사용 설정되었습니다. 관리자가 수동 업데이트를 사용 중지했습니다.</translation>
 <translation id="2502719318159902502">전체 액세스</translation>
-<translation id="2505127913256479918">이 감독 대상 계정이 곧 삭제됩니다</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{화면 #}other{화면 #}}</translation>
 <translation id="2505402373176859469"><ph name="TOTAL_SIZE" />중 <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="250704661983564564">디스플레이 배치</translation>
@@ -2103,7 +2102,6 @@
 <translation id="337920581046691015"><ph name="PRODUCT_NAME" />이(가) 설치됩니다.</translation>
 <translation id="3380365263193509176">알 수 없는 오류가 발생했습니다.</translation>
 <translation id="3382073616108123819">시스템에서 이 기기의 기기 식별자를 확인하지 못했습니다.</translation>
-<translation id="3382086682569279540">관리 중인 계정이 곧 삭제됩니다</translation>
 <translation id="3382200254148930874">감독 기능 중지...</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="338583716107319301">구분자</translation>
@@ -3675,7 +3673,6 @@
 <translation id="5213891612754844763">프록시 설정 표시</translation>
 <translation id="5215502535566372932">국가 선택</translation>
 <translation id="521582610500777512">사진이 삭제되었습니다.</translation>
-<translation id="5217189792977407501">데스크에 할당</translation>
 <translation id="5222403284441421673">안전하지 않은 다운로드가 차단됨</translation>
 <translation id="5222676887888702881">로그아웃</translation>
 <translation id="52232769093306234">압축에 실패했습니다.</translation>
@@ -3862,7 +3859,6 @@
 <translation id="5435779377906857208"><ph name="HOST" />의 위치 액세스 항상 허용</translation>
 <translation id="5436492226391861498">프록시 터널을 기다리는 중...</translation>
 <translation id="5436510242972373446"><ph name="SITE_NAME" /> 검색:</translation>
-<translation id="543806387003274181">지금 파일을 저장하고 새 계정을 만드세요.</translation>
 <translation id="5439680044267106777">건너뛰고 새 프로필 설정</translation>
 <translation id="544083962418256601">바로가기 만들기...</translation>
 <translation id="5442228125690314719">디스크 이미지를 생성하는 중 오류가 발생했습니다. 다시 시도해 주세요.</translation>
@@ -6479,7 +6475,6 @@
 <translation id="8438566539970814960">검색 및 탐색 기능 개선</translation>
 <translation id="8439506636278576865">이 언어로 된 페이지에 대한 번역 옵션 제공</translation>
 <translation id="8440630305826533614">Linux 앱</translation>
-<translation id="8443338615972234259">지금 관리 대상 사용자용 계정을 새로 만드세요.</translation>
 <translation id="8446884382197647889">자세히 알아보기</translation>
 <translation id="8447409163267621480">Ctrl 또는 Alt 중 하나를 포함해야 합니다</translation>
 <translation id="8448729345478502352">화면에 표시되는 항목을 축소 또는 확대합니다.</translation>

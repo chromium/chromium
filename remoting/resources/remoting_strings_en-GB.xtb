@@ -72,6 +72,7 @@ If '<ph name="SERVICE_SCRIPT_NAME" />' is already ticked, untick it and then tic
 <translation id="4405930547258349619">Core Library</translation>
 <translation id="443560535555262820">Open Accessibility Preferences</translation>
 <translation id="4450893287417543264">Don't show again</translation>
+<translation id="4512952200932940229">Copyright 2021 The Chromium Authors. All rights reserved.</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="4563926062592110512">Client disconnected: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="4635770493235256822">Remote devices</translation>
@@ -173,6 +174,7 @@ If '<ph name="SERVICE_SCRIPT_NAME" />' is already ticked, untick it and then tic
 <translation id="8743328882720071828">Would you like to allow <ph name="CLIENT_USERNAME" /> to see and control your computer?</translation>
 <translation id="8747048596626351634">Session crashed or failed to start. If ~/.chrome-remote-desktop-session exists on the remote computer, make sure that it starts a long-running foreground process such as a desktop environment or window manager.</translation>
 <translation id="8804164990146287819">Privacy Policy</translation>
+<translation id="8906511416443321782">Microphone access is required to capture audio and stream it to the Chrome Remote Desktop client.</translation>
 <translation id="9111855907838866522">You are connected to your remote device. To open the menu, please tap the screen with four fingers.</translation>
 <translation id="9126115402994542723">Don't ask for a PIN again when connecting to this host from this device.</translation>
 <translation id="916856682307586697">Launch the default XSession</translation>

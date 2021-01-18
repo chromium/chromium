@@ -1357,7 +1357,6 @@
 <translation id="2501920221385095727">സ്‌റ്റിക്കി കീകൾ</translation>
 <translation id="2502441965851148920">സ്വയമേവയുള്ള അപ്‌ഡേറ്റുകൾ പ്രവർത്തനക്ഷമമാക്കി. സ്വമേധയാ ഉള്ള അപ്‌ഡേറ്റുകൾ നിങ്ങളുടെ അഡ്‌മിനി‌സ്‌ട്രേറ്റർ പ്രവർത്തനരഹിതമാക്കി.</translation>
 <translation id="2502719318159902502">പൂർണ്ണമായ ആക്സസ്</translation>
-<translation id="2505127913256479918">മേൽനോട്ടം വഹിക്കപ്പെടുന്ന ഈ അക്കൗണ്ട് വൈകാതെ നീക്കം ചെയ്യപ്പെടും</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{സ്‌ക്രീൻ #}other{സ്‌ക്രീൻ #}}</translation>
 <translation id="2505402373176859469"><ph name="TOTAL_SIZE" /> ന്റെ <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="250704661983564564">ഡിസ്പ്ലേ ക്രമീകരണം</translation>
@@ -2100,7 +2099,6 @@
 <translation id="337920581046691015"><ph name="PRODUCT_NAME" /> ഇന്‍സ്റ്റാള്‍ ചെയ്യും.</translation>
 <translation id="3380365263193509176">അജ്ഞാതമായ പിശക്</translation>
 <translation id="3382073616108123819">ക്ഷമിക്കണം!  ഈ ഉപകരണത്തിന് ഉപകരണ ഐഡന്റിഫയറുകൾ കണ്ടെത്തുന്നതിൽ ഈ സി‌സ്‌റ്റം പരാജയപ്പെട്ടു.</translation>
-<translation id="3382086682569279540">നിങ്ങൾ മാനേജ് ചെയ്യുന്ന അക്കൗണ്ട് വൈകാതെ നീക്കം ചെയ്യപ്പെടും</translation>
 <translation id="3382200254148930874">മേൽനോട്ടം നിർത്തുന്നു...</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="338583716107319301">സെപ്പറേറ്റര്‍</translation>
@@ -3673,7 +3671,6 @@
 <translation id="5213891612754844763">പ്രോക്‌സി ക്രമീകരണങ്ങൾ കാണിക്കുക</translation>
 <translation id="5215502535566372932">രാജ്യം തിരഞ്ഞെടുക്കുക</translation>
 <translation id="521582610500777512">ഫോട്ടോ നിരസിച്ചു</translation>
-<translation id="5217189792977407501">ഡെസ്‌ക്കിലേക്ക് അസൈൻ ചെയ്തു</translation>
 <translation id="5222403284441421673">സുരക്ഷിതമല്ലാത്ത ഡൗൺലോഡ് ബ്ലോക്ക് ചെയ്‌തു</translation>
 <translation id="5222676887888702881">സൈൻ ഔട്ട് ചെയ്യുക</translation>
 <translation id="52232769093306234">പായ്ക്ക് ചെയ്യുന്നത് പരാജയപ്പെട്ടു.</translation>
@@ -3860,7 +3857,6 @@
 <translation id="5435779377906857208">നിങ്ങളുടെ ലൊക്കേഷൻ ആക്‌സസ് ചെയ്യാൻ <ph name="HOST" /> -നെ എല്ലായ്‌പ്പോഴും അനുവദിക്കുക</translation>
 <translation id="5436492226391861498">പ്രോക്സി ടണലിനായി കാത്തിരിക്കുന്നു...</translation>
 <translation id="5436510242972373446"><ph name="SITE_NAME" /> തിരയുക:</translation>
-<translation id="543806387003274181">നിങ്ങളുടെ ഫയലുകൾ സംരക്ഷിച്ച് ഇപ്പോൾ പുതിയൊരു അക്കൗണ്ട് സൃഷ്‌ടിക്കുക.</translation>
 <translation id="5439680044267106777">ഒഴിവാക്കുക, പുതിയൊരു പ്രൊഫൈൽ സജ്ജീകരിക്കുക</translation>
 <translation id="544083962418256601">കുറുക്കുവഴികൾ സൃഷ്‌ടിക്കുക...</translation>
 <translation id="5442228125690314719">ഡിസ്‌ക് ഇമേജ് സൃഷ്‌ടിക്കുന്നതിൽ പിശക്. വീണ്ടും ശ്രമിക്കുക.</translation>
@@ -6479,7 +6475,6 @@
 <translation id="8438566539970814960">തിരയലുകളും ബ്രൗസിംഗും മികച്ചതാക്കുക</translation>
 <translation id="8439506636278576865">പേജുകൾ ഈ ഭാഷയിലേക്ക് വിവർത്തനം ചെയ്യാനുള്ള ഓഫർ</translation>
 <translation id="8440630305826533614">Linux ആപ്പുകൾ</translation>
-<translation id="8443338615972234259">ഇപ്പോൾ നിങ്ങളുടെ മേൽനോട്ടത്തിലുള്ള ഉപയോക്താവിനായി പുതിയൊരു അക്കൗണ്ട് സൃഷ്ടിക്കുക.</translation>
 <translation id="8446884382197647889">കൂടുതലറിയുക</translation>
 <translation id="8447409163267621480">ഒന്നുകിൽ Ctrl അല്ലെങ്കിൽ, Alt ഉൾപ്പെടുത്തുക</translation>
 <translation id="8448729345478502352">സ്ക്രീനിലെ ഇനങ്ങൾ കൂടുതൽ ചെറുതോ വലുതോ ആക്കുക</translation>

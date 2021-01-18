@@ -1357,7 +1357,6 @@
 <translation id="2501920221385095727">Оставащи клавиши</translation>
 <translation id="2502441965851148920">Автоматичните актуализации са активирани. Ръчните са деактивирани от администратора ви.</translation>
 <translation id="2502719318159902502">Пълен достъп</translation>
-<translation id="2505127913256479918">Този контролиран профил скоро ще бъде премахнат</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Екран #}other{Екран #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> от <ph name="TOTAL_SIZE" /></translation>
 <translation id="250704661983564564">Позициониране на дисплеите</translation>
@@ -2100,7 +2099,6 @@
 <translation id="337920581046691015"><ph name="PRODUCT_NAME" /> ще се инсталира.</translation>
 <translation id="3380365263193509176">Неизвестна грешка</translation>
 <translation id="3382073616108123819">Ами сега! Системата не успя да определи идентификаторите за това устройство.</translation>
-<translation id="3382086682569279540">Профилът, който управлявате, скоро ще бъде премахнат</translation>
 <translation id="3382200254148930874">Контролирането се прекратява...</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="338583716107319301">Разделител</translation>
@@ -3675,7 +3673,6 @@
 <translation id="5213891612754844763">Показване на настройките за прокси сървъра</translation>
 <translation id="5215502535566372932">Изберете държава</translation>
 <translation id="521582610500777512">Снимката бе отхвърлена</translation>
-<translation id="5217189792977407501">Прехвърляне към работен кът</translation>
 <translation id="5222403284441421673">Незащитеното изтегляне е блокирано</translation>
 <translation id="5222676887888702881">Изход</translation>
 <translation id="52232769093306234">Пакетирането не бе успешно.</translation>
@@ -3862,7 +3859,6 @@
 <translation id="5435779377906857208">Достъпът на <ph name="HOST" /> до местоположението ви да е разрешен винаги</translation>
 <translation id="5436492226391861498">Изчаква се прокси тунел...</translation>
 <translation id="5436510242972373446">Търсене с <ph name="SITE_NAME" />:</translation>
-<translation id="543806387003274181">Моля, запазете файловете си и създайте нов профил сега.</translation>
 <translation id="5439680044267106777">Пропускане и настройване на нов потребителски профил</translation>
 <translation id="544083962418256601">Създаване на преки пътища...</translation>
 <translation id="5442228125690314719">Грешка при създаването на образ на диска. Моля, опитайте отново.</translation>
@@ -6480,7 +6476,6 @@
 <translation id="8438566539970814960">Подобряване на търсенията и сърфирането</translation>
 <translation id="8439506636278576865">Предлагане страниците на този език да се превеждат</translation>
 <translation id="8440630305826533614">Приложения за Linux</translation>
-<translation id="8443338615972234259">Моля, създайте нов профил за контролирания потребител сега.</translation>
 <translation id="8446884382197647889">Научете повече</translation>
 <translation id="8447409163267621480">Използвайте или Ctrl, или Alt</translation>
 <translation id="8448729345478502352">Смаляване или уголемяване на елементите на екрана</translation>

@@ -12,7 +12,6 @@
 <translation id="10614374240317010">ไม่เคยบันทึก</translation>
 <translation id="1067922213147265141">บริการอื่นๆ ของ Google</translation>
 <translation id="107147699690128016">หากคุณเปลี่ยนนามสกุลไฟล์ ไฟล์นั้นอาจเปิดในแอปพลิเคชันอื่นและเป็นอันตรายต่ออุปกรณ์ของคุณ</translation>
-<translation id="1094515529340404628">Web Crowd และการวัดผลโฆษณา</translation>
 <translation id="1100066534610197918">เปิดในแท็บใหม่ในกลุ่ม</translation>
 <translation id="1105960400813249514">จับภาพหน้าจอ</translation>
 <translation id="1111673857033749125">บุ๊กมาร์กที่บันทึกไว้ในอุปกรณ์เครื่องอื่นๆ ของคุณจะปรากฏที่นี่</translation>
@@ -225,7 +224,6 @@
 <translation id="2536728043171574184">ดูสำเนาแบบออฟไลน์ของหน้านี้</translation>
 <translation id="2537178555904266562">เกิดข้อผิดพลาดในการซิงค์รหัสผ่าน</translation>
 <translation id="2546283357679194313">คุกกี้และข้อมูลเว็บไซต์</translation>
-<translation id="2562889244313180139">อนุญาตให้เว็บไซต์และแอปนำเสนอประสบการณ์การใช้งานที่เกี่ยวข้องมากขึ้นโดยใช้ชื่อแทนที่ระบุตัวบุคคลนั้นไม่ได้</translation>
 <translation id="2567385386134582609">รูปภาพ</translation>
 <translation id="2571711316400087311">เสนอการส่งหน้าในภาษาอื่นๆ ไปยัง Google แปลภาษา</translation>
 <translation id="2581165646603367611">การดำเนินการนี้จะล้างคุกกี้ แคช และข้อมูลอื่นๆ ของเว็บไซต์ที่ Chrome คิดว่าไม่สำคัญ</translation>
@@ -459,7 +457,7 @@
 <translation id="4320177379694898372">ไม่มีการเชื่อมต่ออินเทอร์เน็ต</translation>
 <translation id="4321739720395210191">เปิดกล้องไม่ได้ รีสตาร์ทอุปกรณ์และลองอีกครั้ง</translation>
 <translation id="4335835283689002019">Google Safe Browsing ปิดอยู่</translation>
-<translation id="4351244548802238354">ปิดหน้าต่างโต้ตอบ</translation>
+<translation id="4351244548802238354">ปิดข้อความโต้ตอบ</translation>
 <translation id="4378154925671717803">โทรศัพท์</translation>
 <translation id="4384468725000734951">กำลังใช้ Sogou ในการค้นหา</translation>
 <translation id="4404568932422911380">ไม่มีบุ๊กมาร์ก</translation>
@@ -711,7 +709,6 @@
 <translation id="6005538289190791541">รหัสผ่านที่แนะนำ</translation>
 <translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{คุณมี <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> หน้า}other{คุณมี <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> หน้า}}</translation>
 <translation id="6014293228235665243">ยังไม่อ่าน</translation>
-<translation id="6018309500671889594">อนุญาตให้ผู้ลงโฆษณาศึกษาแคมเปญโฆษณาโดยใช้ข้อมูลที่ระบุตัวบุคคลนั้นไม่ได้</translation>
 <translation id="6036057147555329831">ICU เพิ่มเติม</translation>
 <translation id="6039379616847168523">ข้ามไปยังแท็บถัดไป</translation>
 <translation id="6040143037577758943">ปิด</translation>
@@ -916,7 +913,6 @@
 <translation id="7403691278183511381">ประสบการณ์กับ First Run บน Chrome</translation>
 <translation id="741204030948306876">ได้สิ ตกลง</translation>
 <translation id="7413229368719586778">วันที่เริ่มต้น <ph name="DATE" /></translation>
-<translation id="7416941666639889592">การเข้าร่วม Web Crowd แสดงว่าคุณอนุญาตให้เว็บไซต์นำเสนอประสบการณ์การใช้งานเว็บที่เกี่ยวข้องโดยไม่ใช้ข้อมูลส่วนบุคคลที่ระบุตัวบุคคลนั้นได้ เว็บไซต์และผู้ลงโฆษณาจะทราบแต่เพียงว่าผู้ใช้หลายพันรายมีความสนใจที่คล้ายกัน เช่นเดียวกับฝูงชนในคอนเสิร์ตที่ชอบดนตรีแนวเดียวกัน</translation>
 <translation id="7431991332293347422">ควบคุมการใช้ประวัติการท่องเว็บเพื่อปรับเปลี่ยน Search และบริการอื่นๆ ในแบบของคุณ</translation>
 <translation id="7435356471928173109">ปิดโดยผู้ดูแลระบบ</translation>
 <translation id="7437998757836447326">ออกจากระบบ Chrome</translation>

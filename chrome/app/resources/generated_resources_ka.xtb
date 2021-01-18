@@ -1359,7 +1359,6 @@
 <translation id="2501920221385095727">კლავიშების ფიქსაცია</translation>
 <translation id="2502441965851148920">ავტომატური განახლებები ჩართულია. მექანიკური განახლებები გათიშულია თქვენი ადმინისტრატორის მიერ.</translation>
 <translation id="2502719318159902502">სრული წვდომა</translation>
-<translation id="2505127913256479918">ზედამხედველობის ქვეშ მყოფი ანგარიში მალე ამოიშლება</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{ეკრანი #}other{ეკრანი #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> სულ: <ph name="TOTAL_SIZE" /></translation>
 <translation id="250704661983564564">ჩვენების მოწყობა</translation>
@@ -2102,7 +2101,6 @@
 <translation id="337920581046691015"><ph name="PRODUCT_NAME" /> დაინსტალირდება.</translation>
 <translation id="3380365263193509176">უცნობი შეცდომა</translation>
 <translation id="3382073616108123819">უი! სისტემამ ვერ დაადგინა მოწყობილობის იდენტიფიკატორები ამ მოწყობილობისთვის.</translation>
-<translation id="3382086682569279540">თქვენ მიერ მართული ანგარიში მალე ამოიშლება</translation>
 <translation id="3382200254148930874">მიმდინარეობს ზედამხედველობის შეწყვეტა…</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="338583716107319301">გამყოფი</translation>
@@ -3676,7 +3674,6 @@
 <translation id="5213891612754844763">პროქსი-სერვერის პარამეტრების ჩვენება</translation>
 <translation id="5215502535566372932">აირჩიეთ ქვეყანა</translation>
 <translation id="521582610500777512">ფოტო გაუქმდა</translation>
-<translation id="5217189792977407501">სამუშაო მაგისთვის მინიჭება</translation>
 <translation id="5222403284441421673">არაუსაფრთხო ჩამოტვირთვა დაბლოკილია</translation>
 <translation id="5222676887888702881">გამოსვლა</translation>
 <translation id="52232769093306234">შეფუთვა ვერ მოხერხდა.</translation>
@@ -3863,7 +3860,6 @@
 <translation id="5435779377906857208"><ph name="HOST" />-ისთვის თქვენს მდებარეობაზე წვდომის ყოველთვის დაშვება</translation>
 <translation id="5436492226391861498">პროქსი გვირაბის მოლოდინი…</translation>
 <translation id="5436510242972373446"><ph name="SITE_NAME" />-ის ძებნა:</translation>
-<translation id="543806387003274181">გთხოვთ, შეინახოთ თქვენი ფაილები და ახლავე შექმნათ ახალი ანგარიში.</translation>
 <translation id="5439680044267106777">გამოტოვება და ახალი პროფილის დაყენება</translation>
 <translation id="544083962418256601">მალსახმობების შექმნა…</translation>
 <translation id="5442228125690314719">დისკის იმიჯის შექმნა ვერ მოხერხდა. გთხოვთ, ცადოთ ხელახლა.</translation>
@@ -6477,7 +6473,6 @@
 <translation id="8438566539970814960">გააუმჯობესეთ ძიებები და ვებსაიტების დათვალიერება</translation>
 <translation id="8439506636278576865">გვერდის ამ ენაზე გადათარგმნის შემოთავაზება</translation>
 <translation id="8440630305826533614">Linux აპები</translation>
-<translation id="8443338615972234259">გთხოვთ, ახლავე შექმნათ ახალი ანგარიში თქვენი კონტროლის ქვეშ მყოფი მომხმარებლისთვის.</translation>
 <translation id="8446884382197647889">შეიტყვეთ მეტი</translation>
 <translation id="8447409163267621480">დაურთეთ Ctrl ან Alt</translation>
 <translation id="8448729345478502352">ეკრანზე ერთეულების დაპატარავება ან გადიდება</translation>
