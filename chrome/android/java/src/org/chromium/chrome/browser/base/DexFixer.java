@@ -20,6 +20,7 @@ import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.JavaExceptionReporter;
 import org.chromium.base.Log;
+import org.chromium.base.annotations.UsedByReflection;
 import org.chromium.base.compat.ApiHelperForM;
 import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.base.library_loader.NativeLibraries;
@@ -43,6 +44,8 @@ public class DexFixer {
     private static final String TAG = "DexFixer";
     private static boolean sHasIsolatedSplits;
 
+    // TODO(crbug.com/1152970): Remove once debugged.
+    @UsedByReflection("Disable rename for PiiElider")
     private static class DexFixerException extends Exception {
         DexFixerException(String reason, Throwable causedBy) {
             super(reason, causedBy);
@@ -85,7 +88,7 @@ public class DexFixer {
         int reason = needsDexCompile(appInfo);
         if (reason > DexFixerReason.NOT_NEEDED) {
             Log.w(TAG, "Triggering dex compile. Reason=%d", reason);
-            String cmd = "cmd package compile -r shared ";
+            String cmd = "/system/bin/cmd package compile -r shared ";
             if (reason == DexFixerReason.NOT_READABLE && BuildConfig.ISOLATED_SPLITS_ENABLED) {
                 // Isolated processes need only access the base split.
                 String apkBaseName = new File(appInfo.sourceDir).getName();
@@ -95,14 +98,25 @@ public class DexFixer {
             try {
                 runtime.exec(cmd);
             } catch (IOException e) {
-                DexFixerException dfException =
-                        new DexFixerException(String.format("Reason: %s Name: %s", reason,
-                                                      new File(appInfo.sourceDir).getName()),
-                                e);
-                // TODO(agrieve): Remove reportException() once some data is collected.
-                PostTask.postTask(UiThreadTaskTraits.BEST_EFFORT,
-                        () -> JavaExceptionReporter.reportException(dfException));
-                reason = DexFixerReason.FAILED_TO_RUN;
+                // Maybe a retry will help?
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException interruptedException) {
+                }
+                try {
+                    runtime.exec(cmd);
+                } catch (IOException e2) {
+                    // TODO(agrieve): Remove reportException() once some data is collected.
+                    DexFixerException dfException = new DexFixerException(
+                            String.format("Reason: %s apkName: %s exists: %s canExecute: %s",
+                                    reason, new File(appInfo.sourceDir).getName(),
+                                    new File("/system/bin/cmd").exists(),
+                                    new File("/system/bin/cmd").canExecute()),
+                            e2);
+                    PostTask.postTask(UiThreadTaskTraits.BEST_EFFORT,
+                            () -> JavaExceptionReporter.reportException(dfException));
+                    reason = DexFixerReason.FAILED_TO_RUN;
+                }
             }
         }
         RecordHistogram.recordEnumeratedHistogram("Android.DexFixer", reason, DexFixerReason.COUNT);
@@ -190,8 +204,16 @@ public class DexFixer {
             }
         } catch (ErrnoException e) {
             // TODO(agrieve): Remove reportException() once some data is collected.
+            String arm64Path = oatPath.replace("arm/", "arm64/");
+            Boolean dexoptNeeded = null;
+            try {
+                dexoptNeeded = DexFile.isDexOptNeeded(appInfo.sourceDir);
+            } catch (IOException ioException) {
+            }
             DexFixerException dfException = new DexFixerException(
-                    String.format("Path: %s exists: %s", oatPath, new File(oatPath).exists()), e);
+                    String.format("Path: %s exists: %s arm64_exists: %s dexopt: %s", oatPath,
+                            new File(oatPath).exists(), new File(arm64Path).exists(), dexoptNeeded),
+                    e);
             PostTask.postTask(UiThreadTaskTraits.BEST_EFFORT,
                     () -> JavaExceptionReporter.reportException(dfException));
             return DexFixerReason.STAT_FAILED;

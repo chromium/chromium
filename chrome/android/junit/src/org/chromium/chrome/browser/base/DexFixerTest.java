@@ -93,7 +93,8 @@ public class DexFixerTest {
 
     private void verifyDexOpt() {
         try {
-            verify(mMockRuntime).exec(Mockito.matches("cmd package compile -r shared \\S+"));
+            verify(mMockRuntime)
+                    .exec(Mockito.matches("/system/bin/cmd package compile -r shared \\S+"));
         } catch (IOException e) {
             // Mocks don't actually throw...
         }

@@ -196,6 +196,10 @@ public class PiiElider {
      */
     @UsedByReflection("jni_android.cc")
     public static String sanitizeStacktrace(String stacktrace) {
+        // TODO(crbug.com/1152970): Remove once debugged.
+        if (stacktrace.contains("DexFixerException")) {
+            return stacktrace;
+        }
         String[] frames = stacktrace.split("\\n");
         // Sanitize first stacktrace line which contains the exception message.
         frames[0] = elideUrl(frames[0]);
