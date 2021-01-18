@@ -1552,8 +1552,8 @@ void NavigationRequest::BeginNavigation() {
         storage_partition_impl->GetPrerenderHostRegistry();
     DCHECK(prerender_host_registry);
     std::unique_ptr<PrerenderHost> prerender_host =
-        prerender_host_registry->SelectForNavigation(common_params_->url,
-                                                     *frame_tree_node_);
+        prerender_host_registry->FindHostToActivate(common_params_->url,
+                                                    *frame_tree_node_);
     switch (blink::features::kPrerender2Param.Get()) {
       case blink::features::Prerender2ActivationMode::kEnabled:
         // If `prerender_host_` exists, this navigation will activate the

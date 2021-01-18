@@ -41,7 +41,7 @@ void PrerenderHostRegistry::AbandonHost(const GURL& prerendering_url) {
   prerender_host_by_url_.erase(prerendering_url);
 }
 
-std::unique_ptr<PrerenderHost> PrerenderHostRegistry::SelectForNavigation(
+std::unique_ptr<PrerenderHost> PrerenderHostRegistry::FindHostToActivate(
     const GURL& navigation_url,
     FrameTreeNode& frame_tree_node) {
   RenderFrameHostImpl* render_frame_host = frame_tree_node.current_frame_host();

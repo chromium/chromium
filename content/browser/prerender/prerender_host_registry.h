@@ -47,7 +47,7 @@ class CONTENT_EXPORT PrerenderHostRegistry {
 
   // Selects the host to activate for a navigation for the given FrameTreeNode.
   // Returns nullptr if it's not found or not ready for activation yet.
-  std::unique_ptr<PrerenderHost> SelectForNavigation(
+  std::unique_ptr<PrerenderHost> FindHostToActivate(
       const GURL& navigation_url,
       FrameTreeNode& frame_tree_node);
 
