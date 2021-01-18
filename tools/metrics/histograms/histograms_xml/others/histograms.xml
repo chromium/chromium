@@ -12587,6 +12587,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="RecurrenceRanker.InitializationStatus"
     enum="RecurrenceRankerInitializationStatus" expires_after="2021-02-01">
+  <obsolete>
+    Removed January 2021.
+  </obsolete>
 <!-- Name completed by histogram_suffixes
        name="RecurrenceRankerModel" -->
 
@@ -12600,6 +12603,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="RecurrenceRanker.JsonConfigConversionStatus"
     enum="BooleanSuccess" expires_after="2021-02-01">
+  <obsolete>
+    Removed January 2021.
+  </obsolete>
 <!-- Name completed by histogram_suffixes
        name="RecurrenceRankerModel" -->
 
@@ -12613,6 +12619,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="RecurrenceRanker.SerializationStatus"
     enum="RecurrenceRankerSerializationStatus" expires_after="2021-02-01">
+  <obsolete>
+    Removed January 2021.
+  </obsolete>
 <!-- Name completed by histogram_suffixes
        name="RecurrenceRankerModel" -->
 
@@ -12625,6 +12634,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="RecurrenceRanker.Usage"
     enum="RecurrenceRankerUsage" expires_after="2021-02-01">
+  <obsolete>
+    Removed January 2021.
+  </obsolete>
 <!-- Name completed by histogram_suffixes
        name="RecurrenceRankerModel" -->
 

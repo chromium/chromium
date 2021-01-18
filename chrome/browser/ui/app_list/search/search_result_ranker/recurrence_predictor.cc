@@ -25,19 +25,11 @@ RecurrencePredictor::RecurrencePredictor(const std::string& model_identifier)
 
 FakePredictor::FakePredictor(const std::string& model_identifier)
     : RecurrencePredictor(model_identifier) {
-  // The fake predictor should only be used for testing, not in production.
-  // Record an error so we know if it is being used.
-  LogInitializationStatus(model_identifier_,
-                          InitializationStatus::kFakePredictorUsed);
 }
 
 FakePredictor::FakePredictor(const FakePredictorConfig& config,
                              const std::string& model_identifier)
     : RecurrencePredictor(model_identifier) {
-  // The fake predictor should only be used for testing, not in production.
-  // Record an error so we know if it is being used.
-  LogInitializationStatus(model_identifier_,
-                          InitializationStatus::kFakePredictorUsed);
 }
 
 FakePredictor::~FakePredictor() = default;
@@ -75,8 +67,6 @@ void FakePredictor::ToProto(RecurrencePredictorProto* proto) const {
 
 void FakePredictor::FromProto(const RecurrencePredictorProto& proto) {
   if (!proto.has_fake_predictor()) {
-    LogSerializationStatus(model_identifier_,
-                           SerializationStatus::kFakePredictorLoadingError);
     return;
   }
 
@@ -212,9 +202,6 @@ void ConditionalFrequencyPredictor::ToProto(
 void ConditionalFrequencyPredictor::FromProto(
     const RecurrencePredictorProto& proto) {
   if (!proto.has_conditional_frequency_predictor()) {
-    LogSerializationStatus(
-        model_identifier_,
-        SerializationStatus::kConditionalFrequencyPredictorLoadingError);
     return;
   }
 
@@ -287,8 +274,6 @@ void FrecencyPredictor::ToProto(RecurrencePredictorProto* proto) const {
 
 void FrecencyPredictor::FromProto(const RecurrencePredictorProto& proto) {
   if (!proto.has_frecency_predictor()) {
-    LogSerializationStatus(model_identifier_,
-                           SerializationStatus::kFrecencyPredictorLoadingError);
     return;
   }
   const auto& predictor = proto.frecency_predictor();
@@ -396,8 +381,6 @@ void HourBinPredictor::ToProto(RecurrencePredictorProto* proto) const {
 
 void HourBinPredictor::FromProto(const RecurrencePredictorProto& proto) {
   if (!proto.has_hour_bin_predictor()) {
-    LogSerializationStatus(model_identifier_,
-                           SerializationStatus::kHourBinPredictorLoadingError);
     return;
   }
 
@@ -479,8 +462,6 @@ void MarkovPredictor::ToProto(RecurrencePredictorProto* proto) const {
 
 void MarkovPredictor::FromProto(const RecurrencePredictorProto& proto) {
   if (!proto.has_markov_predictor()) {
-    LogSerializationStatus(model_identifier_,
-                           SerializationStatus::kMarkovPredictorLoadingError);
     return;
   }
 
@@ -571,9 +552,6 @@ void ExponentialWeightsEnsemble::ToProto(
 void ExponentialWeightsEnsemble::FromProto(
     const RecurrencePredictorProto& proto) {
   if (!proto.has_exponential_weights_ensemble()) {
-    LogSerializationStatus(
-        model_identifier_,
-        SerializationStatus::kExponentialWeightsEnsembleLoadingError);
     return;
   }
   const auto& ensemble = proto.exponential_weights_ensemble();
@@ -637,9 +615,6 @@ void FrequencyPredictor::ToProto(RecurrencePredictorProto* proto) const {
 
 void FrequencyPredictor::FromProto(const RecurrencePredictorProto& proto) {
   if (!proto.has_frequency_predictor()) {
-    LogSerializationStatus(
-        model_identifier_,
-        SerializationStatus::kFrequencyPredictorLoadingError);
     return;
   }
 
