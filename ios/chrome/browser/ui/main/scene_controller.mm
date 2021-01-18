@@ -14,6 +14,7 @@
 #include "components/infobars/core/infobar_manager.h"
 #include "components/prefs/pref_service.h"
 #import "components/previous_session_info/previous_session_info.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/url_formatter/url_formatter.h"
 #include "components/web_resource/web_resource_pref_names.h"
@@ -50,7 +51,10 @@
 #import "ios/chrome/browser/main/browser_list_factory.h"
 #import "ios/chrome/browser/main/browser_util.h"
 #include "ios/chrome/browser/ntp/features.h"
+#import "ios/chrome/browser/policy/policy_watcher_browser_agent.h"
 #include "ios/chrome/browser/screenshot/screenshot_delegate.h"
+#import "ios/chrome/browser/signin/authentication_service.h"
+#import "ios/chrome/browser/signin/authentication_service_factory.h"
 #include "ios/chrome/browser/signin/constants.h"
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
@@ -646,6 +650,14 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   // Ensure the main browser is created. This also creates the BVC.
   [self.browserViewWrangler createMainBrowser];
 
+  // Now that the main browser's command dispatcher is fully configured, inject
+  // it into the PolicyWatcherBrowserAgent so it can start monitoring
+  // UI-impacting policy changes.
+  id<ApplicationCommands> handler = HandlerForProtocol(
+      self.mainInterface.browser->GetCommandDispatcher(), ApplicationCommands);
+  PolicyWatcherBrowserAgent::FromBrowser(self.mainInterface.browser)
+      ->SetApplicationCommandsHandler(handler);
+
   // Add Scene Agent that requires CommandDispatcher.
   [self.sceneState
       addAgent:[[DefaultBrowserSceneAgent alloc]
@@ -1209,6 +1221,23 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
       break;
   }
   [self startSigninCoordinatorWithCompletion:command.callback];
+}
+
+- (void)forceSignOut {
+  AuthenticationService* service =
+      AuthenticationServiceFactory::GetForBrowserState(
+          self.mainInterface.browser->GetBrowserState());
+  auto signOut = ^{
+    service->SignOut(signin_metrics::ProfileSignout::SIGNOUT_PREF_CHANGED,
+                     /*force_clear_browsing_data=*/true,
+                     /*completion=*/nil);
+  };
+
+  if (self.signinCoordinator) {
+    [self interruptSigninCoordinatorAnimated:YES completion:signOut];
+  } else {
+    signOut();
+  }
 }
 
 - (void)showAdvancedSigninSettingsFromViewController:
