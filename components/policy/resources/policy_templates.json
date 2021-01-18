@@ -10993,6 +10993,7 @@
             'camera',
             'scanning',
             'web_store',
+            'canvas',
           ],
         },
       },
@@ -11022,6 +11023,11 @@
           'value': 'web_store',
           'caption': '''Web Store (supported since version 89)''',
         },
+        {
+          'name': 'canvas',
+          'value': 'canvas',
+          'caption': '''Canvas (supported since version 90)''',
+        },
       ],
       'supported_on': ['chrome_os:84-'],
       'features': {
@@ -11029,9 +11035,9 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
-      'example_value': ['camera', 'browser_settings', 'os_settings', 'scanning', 'web_store'],
+      'example_value': ['camera', 'browser_settings', 'os_settings', 'scanning', 'web_store', 'canvas'],
       'id': 689,
-      'caption': '''Configure the camera, browser settings, os settings, scanning and web store features to be disabled''',
+      'caption': '''Configure the camera, browser settings, os settings, scanning, web store and canvas features to be disabled''',
       'tags': [],
       'desc': '''Allows you to set a list of <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> features to be disabled.
 

@@ -70,6 +70,9 @@ TEST_F(SystemFeaturesDisableListPolicyHandlerTest, ApplyListTest) {
   histogram_tester_.ExpectBucketCount(kSystemFeaturesDisableListHistogram,
                                       SystemFeature::kWebStore,
                                       /*amount*/ 0);
+  histogram_tester_.ExpectBucketCount(kSystemFeaturesDisableListHistogram,
+                                      SystemFeature::kCanvas,
+                                      /*amount*/ 0);
 
   features_list.ClearList();
   features_list.Append("camera");
@@ -77,6 +80,7 @@ TEST_F(SystemFeaturesDisableListPolicyHandlerTest, ApplyListTest) {
   features_list.Append("scanning");
   features_list.Append("gallery");
   features_list.Append("web_store");
+  features_list.Append("canvas");
 
   policy_map.Set(policy::key::kSystemFeaturesDisableList,
                  policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
@@ -93,11 +97,12 @@ TEST_F(SystemFeaturesDisableListPolicyHandlerTest, ApplyListTest) {
   expected_list.Append(SystemFeature::kScanning);
   expected_list.Append(SystemFeature::kUnknownSystemFeature);
   expected_list.Append(SystemFeature::kWebStore);
+  expected_list.Append(SystemFeature::kCanvas);
 
   EXPECT_TRUE(prefs.GetValue(policy_prefs::kSystemFeaturesDisableList, &value));
   EXPECT_EQ(expected_list, *value);
 
-  histogram_tester_.ExpectTotalCount(kSystemFeaturesDisableListHistogram, 6);
+  histogram_tester_.ExpectTotalCount(kSystemFeaturesDisableListHistogram, 7);
   histogram_tester_.ExpectBucketCount(kSystemFeaturesDisableListHistogram,
                                       SystemFeature::kCamera,
                                       /*amount*/ 1);
@@ -115,6 +120,9 @@ TEST_F(SystemFeaturesDisableListPolicyHandlerTest, ApplyListTest) {
                                       /*amount*/ 1);
   histogram_tester_.ExpectBucketCount(kSystemFeaturesDisableListHistogram,
                                       SystemFeature::kWebStore,
+                                      /*amount*/ 1);
+  histogram_tester_.ExpectBucketCount(kSystemFeaturesDisableListHistogram,
+                                      SystemFeature::kCanvas,
                                       /*amount*/ 1);
 }
 }  // namespace policy
