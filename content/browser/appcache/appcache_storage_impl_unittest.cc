@@ -27,7 +27,6 @@
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread.h"
-#include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "content/browser/appcache/appcache.h"
 #include "content/browser/appcache/appcache_database.h"
 #include "content/browser/appcache/appcache_entry.h"
@@ -59,7 +58,7 @@
 #include "third_party/blink/public/mojom/appcache/appcache.mojom.h"
 #include "third_party/blink/public/mojom/appcache/appcache_info.mojom.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
-#include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
+#include "third_party/blink/public/mojom/quota/quota_types.mojom-shared.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -202,10 +201,6 @@ class AppCacheStorageImplTest : public testing::Test {
     // Not needed for our tests.
     void RegisterClient(
         mojo::PendingRemote<storage::mojom::QuotaClient> client,
-        storage::QuotaClientType client_type,
-        const std::vector<blink::mojom::StorageType>& storage_types) override {}
-    void RegisterLegacyClient(
-        scoped_refptr<storage::QuotaClient> client,
         storage::QuotaClientType quota_client_type,
         const std::vector<blink::mojom::StorageType>& storage_types) override {}
     void NotifyOriginInUse(const url::Origin& origin) override {}

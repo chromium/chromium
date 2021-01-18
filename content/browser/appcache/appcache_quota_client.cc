@@ -51,12 +51,13 @@ AppCacheQuotaClient::AppCacheQuotaClient(
     : service_(std::move(service)) {}
 
 AppCacheQuotaClient::~AppCacheQuotaClient() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(pending_batch_requests_.empty());
   DCHECK(pending_serial_requests_.empty());
   DCHECK(current_delete_request_callback_.is_null());
 }
 
-void AppCacheQuotaClient::OnQuotaManagerDestroyed() {
+void AppCacheQuotaClient::OnMojoDisconnect() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DeletePendingRequests();
@@ -79,8 +80,10 @@ void AppCacheQuotaClient::GetOriginUsage(const url::Origin& origin,
   }
 
   if (!appcache_is_ready_) {
+    // base::Unretained usage is safe here because the callbacks are stored
+    // in a collection owned by this object.
     pending_batch_requests_.push_back(base::BindOnce(
-        &AppCacheQuotaClient::GetOriginUsage, base::RetainedRef(this), origin,
+        &AppCacheQuotaClient::GetOriginUsage, base::Unretained(this), origin,
         type, std::move(callback)));
     return;
   }
@@ -143,8 +146,10 @@ void AppCacheQuotaClient::DeleteOriginData(const url::Origin& origin,
   }
 
   if (!appcache_is_ready_ || !current_delete_request_callback_.is_null()) {
+    // base::Unretained usage is safe here because the callbacks are stored
+    // in a collection owned by this object.
     pending_serial_requests_.push_back(base::BindOnce(
-        &AppCacheQuotaClient::DeleteOriginData, base::RetainedRef(this), origin,
+        &AppCacheQuotaClient::DeleteOriginData, base::Unretained(this), origin,
         type, std::move(callback)));
     return;
   }
@@ -158,8 +163,9 @@ void AppCacheQuotaClient::DeleteOriginData(const url::Origin& origin,
                                     GetServiceDeleteCallback()->callback())));
 }
 
-void AppCacheQuotaClient::PerformStorageCleanup(blink::mojom::StorageType type,
-                                                base::OnceClosure callback) {
+void AppCacheQuotaClient::PerformStorageCleanup(
+    blink::mojom::StorageType type,
+    PerformStorageCleanupCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(type, blink::mojom::StorageType::kTemporary);
   DCHECK(!callback.is_null());
@@ -191,9 +197,11 @@ void AppCacheQuotaClient::GetOriginsHelper(const std::string& opt_host,
   }
 
   if (!appcache_is_ready_) {
+    // base::Unretained usage is safe here because the callbacks are stored
+    // in a collection owned by this object.
     pending_batch_requests_.push_back(
         base::BindOnce(&AppCacheQuotaClient::GetOriginsHelper,
-                       base::RetainedRef(this), opt_host, std::move(callback)));
+                       base::Unretained(this), opt_host, std::move(callback)));
     return;
   }
 
@@ -240,11 +248,13 @@ AppCacheQuotaClient::GetServiceDeleteCallback() {
   // Lazily created due to base::CancelableRepeatingCallback's threading
   // restrictions, there is no way to detach from the thread created on.
   if (!service_delete_callback_) {
+    // base::Unretained usage is safe here because the callback is stored in a
+    // member of this object.
     service_delete_callback_ =
         std::make_unique<net::CancelableCompletionRepeatingCallback>(
             base::BindRepeating(
                 &AppCacheQuotaClient::DidDeleteAppCachesForOrigin,
-                base::RetainedRef(this)));
+                base::Unretained(this)));
   }
   return service_delete_callback_.get();
 }
