@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ManageProfilesBrowserProxyImpl, ProfileState} from 'chrome://profile-picker/profile_picker.js';
-
+import {ManageProfilesBrowserProxyImpl, ProfileState, Statistics, StatisticsResult} from 'chrome://profile-picker/profile_picker.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
-import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
+
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../chai_assert.js';
 import {waitBeforeNextRender} from '../test_util.m.js';
 
 import {TestManageProfilesBrowserProxy} from './test_manage_profiles_browser_proxy.js';
@@ -17,10 +17,15 @@ suite('ProfileCardMenuTest', function() {
   /** @type {!TestManageProfilesBrowserProxy} */
   let browserProxy;
 
+  /** @enum {number} */
   const menuButtonIndex = {
     CUSTOMIZE: 0,
     DELETE: 1,
   };
+
+  /** @type {!Array<string>} */
+  const statisticsDataTypes =
+      ['BrowsingHistory', 'Passwords', 'Bookmarks', 'Autofill'];
 
   setup(function() {
     browserProxy = new TestManageProfilesBrowserProxy();
@@ -98,5 +103,76 @@ suite('ProfileCardMenuTest', function() {
     await browserProxy.whenCalled('removeProfile');
     webUIListenerCallback('profile-removed', 'profilePath');
     assertFalse(dialog.open);
+  });
+
+  // The profile info in the remove confirmation dialog is displayed correctly.
+  test('RemoveConfirmationDialogProfileCard', async function() {
+    const dialog = profileCardMenuElement.$$('#removeConfirmationDialog');
+    dialog.showModal();
+    assertTrue(dialog.open);
+
+    assertEquals(dialog.querySelector('#profileName').innerText, 'profile');
+    assertEquals(dialog.querySelector('#gaiaName').innerText, 'User');
+
+    const updatedProfileState = /** @type {!ProfileState} */
+        (Object.assign({}, profileCardMenuElement.profileState));
+    updatedProfileState.localProfileName = 'updatedProfile';
+    updatedProfileState.gaiaName = 'updatedUser';
+    profileCardMenuElement.profileState = updatedProfileState;
+
+    assertEquals(
+        dialog.querySelector('#profileName').innerText, 'updatedProfile');
+    assertEquals(dialog.querySelector('#gaiaName').innerText, 'updatedUser');
+  });
+
+  // The profile statistics in the remove confirmation dialog are displayed
+  // correctly.
+  test('RemoveConfirmationDialogStatistics', async function() {
+    const dialog = profileCardMenuElement.$$('#removeConfirmationDialog');
+    dialog.showModal();
+    assertTrue(dialog.open);
+
+    const statistics = /** @type {!Statistics} */ ({
+      BrowsingHistory: 1,
+      Passwords: 2,
+      Bookmarks: 3,
+      Autofill: 4,
+    });
+    const statisticsResult = /** @type {!StatisticsResult} */ ({
+      profilePath: 'profilePath',
+      statistics: statistics,
+    });
+    webUIListenerCallback('profile-statistics-received', statisticsResult);
+
+    const statisticsCountElements =
+        dialog.querySelector('.statistics').querySelectorAll('.count');
+    for (let i = 0; i < statisticsDataTypes.length; i++) {
+      assertEquals(
+          statisticsCountElements[i].innerText,
+          statistics[statisticsDataTypes[i]].toString());
+    }
+  });
+
+  // The profile statistics of another profile aren't displayed.
+  test('RemoveConfirmationDialogStatisticsWrongProfile', async function() {
+    const dialog = profileCardMenuElement.$$('#removeConfirmationDialog');
+    dialog.showModal();
+    assertTrue(dialog.open);
+
+    const statistics = /** @type {!Statistics} */ ({
+      BrowsingHistory: 1,
+    });
+    const statisticsResult = /** @type {!StatisticsResult} */ ({
+      profilePath: 'anotherProfilePath',
+      statistics: statistics,
+    });
+    webUIListenerCallback('profile-statistics-received', statisticsResult);
+
+    const statisticsCountElements =
+        dialog.querySelector('.statistics').querySelectorAll('.count');
+    assertNotEquals(
+        statisticsCountElements[statisticsDataTypes.indexOf('BrowsingHistory')]
+            .innerText,
+        '1');
   });
 });

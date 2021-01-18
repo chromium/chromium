@@ -27,7 +27,7 @@ import {ManageProfilesBrowserProxy, ManageProfilesBrowserProxyImpl, ProfileState
  *   Autofill: number,
  * }}
  */
-let Statistics;
+export let Statistics;
 
 /**
  * This is the data structure sent back and forth between C++ and JS.
@@ -36,7 +36,7 @@ let Statistics;
  *   statistics: Statistics,
  * }}
  */
-let StatisticsResult;
+export let StatisticsResult;
 
 
 /**
