@@ -46,6 +46,10 @@
 <translation id="5862307444128926510">Willkommen bei Chromium</translation>
 <translation id="5945387852661427312">Sie melden sich mit einem von <ph name="DOMAIN" /> verwalteten Konto an und geben dem Administrator der Domain Kontrolle über Ihre Chromium-Daten. Die Daten werden diesem Konto dauerhaft zugeordnet. Wenn Sie sich von Chromium abmelden, werden Ihre Daten auf dem Gerät gelöscht, bleiben jedoch in Ihrem Google-Konto erhalten.</translation>
 <translation id="602807004951640891">Wenn Sie Chromium nutzen, stimmen Sie damit den <ph name="BEGIN_LINK_TOS" />Nutzungsbedingungen<ph name="END_LINK_TOS" /> zu.</translation>
+<translation id="6119647025869519954">So legen Sie Chromium als Standardbrowser fest:
+1. Öffnen Sie die Einstellungen
+2. Tippen Sie auf „Standard-Browser-App“
+3. Wählen Sie Chromium aus.</translation>
 <translation id="6268381023930128611">Von Chromium abmelden?</translation>
 <translation id="6424492062988593837">Chromium ist jetzt noch besser! Es ist eine neue Version verfügbar.</translation>
 <translation id="6604711459180487467">Profitieren Sie von einer besseren Nutzererfahrung in Chromium auf Grundlage Ihres Standorts.</translation>

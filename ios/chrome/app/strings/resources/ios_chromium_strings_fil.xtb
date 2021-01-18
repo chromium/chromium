@@ -48,8 +48,8 @@
 <translation id="5945387852661427312">Nag-sign in ka gamit ang account na pinamamahalaan ng <ph name="DOMAIN" /> at binibigyan mo ang administrator nito ng kontrol sa iyong data sa Chromium. Permanenteng mauugnay ang data mo sa account na ito. Made-delete ang data mo sa device na ito kapag nag-sign out ka sa Chromium, ngunit mananatili itong naka-store sa Google Account mo.</translation>
 <translation id="602807004951640891">Sa paggamit ng Chromium, sumasang-ayon ka sa <ph name="BEGIN_LINK_TOS" />Mga Tuntunin ng Serbisyo<ph name="END_LINK_TOS" />.</translation>
 <translation id="6119647025869519954">Para itakda ang Chromium bilang iyong default:
-1. Buksan ang Mga Setting
-2. I-tap ang Default na Browser App
+1. Buksan ang Settings
+2. I-tap ang Default Browser App
 3. Piliin ang Chromium.</translation>
 <translation id="6268381023930128611">Mag-sign out sa Chromium?</translation>
 <translation id="6424492062988593837">Naging mas mahusay na ang Chromium! Available na ang bagong bersyon.</translation>

@@ -29,13 +29,13 @@
 <translation id="1243314992276662751">업로드</translation>
 <translation id="1249250836236328755">장르</translation>
 <translation id="1293556467332435079">파일</translation>
-<translation id="1297922636971898492">현재 Google 드라이브를 사용할 수 없습니다. Google 드라이브를 다시 사용할 수 있게 되면 자동으로 업로드가 다시 시작됩니다.</translation>
+<translation id="1297922636971898492">현재 Google Drive를 사용할 수 없습니다. Google Drive를 다시 사용할 수 있게 되면 자동으로 업로드가 다시 시작됩니다.</translation>
 <translation id="1307931752636661898">Linux 파일을 볼 수 없음</translation>
 <translation id="1346748346194534595">오른쪽</translation>
 <translation id="1351692861129622852">파일 <ph name="FILE_COUNT" />개를 가져오는 중...</translation>
 <translation id="1358735829858566124">파일 또는 디렉터리를 사용할 수 없습니다.</translation>
 <translation id="1363028406613469049">트랙</translation>
-<translation id="1378727793141957596">Google 드라이브에 오신 것을 환영합니다.</translation>
+<translation id="1378727793141957596">Google Drive에 오신 것을 환영합니다.</translation>
 <translation id="1383876407941801731">검색</translation>
 <translation id="1395262318152388157">탐색 슬라이더</translation>
 <translation id="1404323374378969387">노르웨이어</translation>
@@ -43,7 +43,7 @@
 <translation id="1435838927755162558">Parallels Desktop과 폴더 공유</translation>
 <translation id="1467432559032391204">왼쪽</translation>
 <translation id="1471718551822868769">슬로바키아어</translation>
-<translation id="1474339897586437869">'<ph name="FILENAME" />'이(가) 업로드되지 않았습니다. Google 드라이브에 충분한 여유 공간이 없습니다.</translation>
+<translation id="1474339897586437869">'<ph name="FILENAME" />'이(가) 업로드되지 않았습니다. Google Drive에 충분한 여유 공간이 없습니다.</translation>
 <translation id="1482884275703521657">핀란드어</translation>
 <translation id="148466539719134488">스위스어</translation>
 <translation id="1497522201463361063">'<ph name="FILE_NAME" />'의 이름을 변경할 수 없습니다. <ph name="ERROR_MESSAGE" /></translation>
@@ -146,8 +146,8 @@
 <translation id="2578394532502990878">타밀어(표음)</translation>
 <translation id="2579959351793446050">오리야어</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> 동영상</translation>
-<translation id="2620090360073999360">현재 Google 드라이브에 연결할 수 없습니다.</translation>
-<translation id="2638942478653899953">Google 드라이브에 연결할 수 없습니다. <ph name="BEGIN_LINK" />로그아웃<ph name="END_LINK" />한 후 다시 로그인하세요.</translation>
+<translation id="2620090360073999360">현재 Google Drive에 연결할 수 없습니다.</translation>
+<translation id="2638942478653899953">Google Drive에 연결할 수 없습니다. <ph name="BEGIN_LINK" />로그아웃<ph name="END_LINK" />한 후 다시 로그인하세요.</translation>
 <translation id="2649120831653069427">구피</translation>
 <translation id="2661146741306740526">16x9</translation>
 <translation id="2663066752008346276">버마어(미얀마, 미얀산 키보드)</translation>
@@ -222,8 +222,8 @@
 <translation id="3437801641691368414">만든 시간</translation>
 <translation id="3455931012307786678">에스토니아어</translation>
 <translation id="3466147780910026086">미디어 기기 스캔 중...</translation>
-<translation id="3468522857997926824">사진 <ph name="FILE_COUNT" />장을 <ph name="BEGIN_LINK" />Google 드라이브<ph name="END_LINK" />에 백업</translation>
-<translation id="3475447146579922140">Google 스프레드시트</translation>
+<translation id="3468522857997926824">사진 <ph name="FILE_COUNT" />장을 <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" />에 백업</translation>
+<translation id="3475447146579922140">Google Sheets</translation>
 <translation id="3486821258960016770">몽골어</translation>
 <translation id="3495304270784461826">오류가 <ph name="COUNT" />개 있습니다.</translation>
 <translation id="3522708245912499433">포르투갈어</translation>
@@ -242,11 +242,11 @@
 <translation id="3644896802912593514">너비</translation>
 <translation id="3645233063072417428">항목 <ph name="NUMBER_OF_ITEMS" />개를 이동했습니다.</translation>
 <translation id="3645531960514756307">폴더 고정 해제</translation>
-<translation id="3685122418104378273">모바일 데이터를 사용할 때는 Google 드라이브 동기화가 기본적으로 사용 중지됩니다.</translation>
+<translation id="3685122418104378273">모바일 데이터를 사용할 때는 Google Drive 동기화가 기본적으로 사용 중지됩니다.</translation>
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> 작업을 취소합니다.</translation>
 <translation id="3691184985318546178">싱할라어</translation>
 <translation id="3726463242007121105">파일 시스템이 지원되지 않아 이 기기를 열 수 없습니다.</translation>
-<translation id="3741243925913727067">Google 드라이브에 미디어 기기의 사진과 동영상을 백업합니다.</translation>
+<translation id="3741243925913727067">Google Drive에 미디어 기기의 사진과 동영상을 백업합니다.</translation>
 <translation id="3749289110408117711">파일 이름</translation>
 <translation id="3780536599611287598">파일을 '<ph name="FOLDER_NAME" />'(으)로 이동할 권한이 없습니다.</translation>
 <translation id="3786301125658655746">오프라인 상태입니다.</translation>
@@ -279,7 +279,7 @@
 <translation id="4124935795427217608">유니콘</translation>
 <translation id="4158739975813877944">재생목록 열기</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> 항목을 이동했습니다.</translation>
-<translation id="4193154014135846272">Google 문서</translation>
+<translation id="4193154014135846272">Google Docs</translation>
 <translation id="4197674956721858839">선택항목 압축하기</translation>
 <translation id="4202378258276439759">스페인어(라틴아메리카)</translation>
 <translation id="4202977638116331303">조지아어</translation>
@@ -339,7 +339,7 @@
 <translation id="4779136857077979611">오니기리</translation>
 <translation id="4784330909746505604">PowerPoint 프레젠테이션</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" />KB</translation>
-<translation id="4789067489790477934">Parallels Desktop이 Google 드라이브의 파일에 액세스하도록 허용합니다. 변경사항은 다른 기기에 동기화됩니다.</translation>
+<translation id="4789067489790477934">Parallels Desktop이 Google Drive의 파일에 액세스하도록 허용합니다. 변경사항은 다른 기기에 동기화됩니다.</translation>
 <translation id="4801956050125744859">모두 보관</translation>
 <translation id="4804827417948292437">아보카도</translation>
 <translation id="4823651846660089135">읽기 전용 기기</translation>
@@ -393,7 +393,7 @@
    사용 중인 기기를 분리하면 데이터가 삭제될 수 있습니다. 작업이 끝날 때까지 기다린 다음 파일 앱을 사용하여 기기를 꺼내세요.</translation>
 <translation id="5163869187418756376">공유하지 못했습니다. 인터넷 연결을 확인하고 나중에 다시 시도해 주세요.</translation>
 <translation id="516592729076796170">미국 프로그래머 드보락</translation>
-<translation id="5170477580121653719">Google 드라이브에 남은 공간: <ph name="SPACE_AVAILABLE" />.</translation>
+<translation id="5170477580121653719">Google Drive에 남은 공간: <ph name="SPACE_AVAILABLE" />.</translation>
 <translation id="5177526793333269655">미리보기 이미지 보기</translation>
 <translation id="5194713942430106590">열을 오름차순으로 정렬하려면 클릭하세요.</translation>
 <translation id="5211614973734216083">페로어</translation>
@@ -402,12 +402,12 @@
 <translation id="5253070652067921974">만든 사람</translation>
 <translation id="5257456363153333584">잠자리</translation>
 <translation id="5262311848634918433"><ph name="MARKUP_1" />오프라인을 비롯하여 어디에서나 파일에 액세스하세요.<ph name="MARKUP_2" />
-    Google 드라이브에 있는 파일은 최신 상태이며 모든 기기에서 사용할 수 있습니다.<ph name="MARKUP_3" />
+    Google Drive에 있는 파일은 최신 상태이며 모든 기기에서 사용할 수 있습니다.<ph name="MARKUP_3" />
     <ph name="MARKUP_4" />파일을 안전하게 보관하세요.<ph name="MARKUP_5" />
-    기기에 어떤 일이 일어나더라도 파일은 Google 드라이브에 안전하게 저장됩니다.<ph name="MARKUP_6" />
+    기기에 어떤 일이 일어나더라도 파일은 Google Drive에 안전하게 저장됩니다.<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />다른 사용자와 한 곳에서 파일을<ph name="MARKUP_8" />
     공유하고 만들고 공동작업하세요.<ph name="MARKUP_9" /></translation>
-<translation id="5275973617553375938">Google 드라이브에서 복구된 파일</translation>
+<translation id="5275973617553375938">Google Drive에서 복구된 파일</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">저장</translation>
 <translation id="5318819489018851358">Linux로 공유</translation>
@@ -415,7 +415,7 @@
 <translation id="5327248766486351172">이름</translation>
 <translation id="5330145655348521461">파일이 다른 데스크톱에서 열려 있습니다. 파일을 보려면 <ph name="USER_NAME" />(<ph name="MAIL_ADDRESS" />)(으)로 이동하세요.</translation>
 <translation id="5330512191124428349">정보 보기</translation>
-<translation id="5335458522276292100"><ph name="BEGIN_LINK" />Google 드라이브<ph name="END_LINK" />에 파일 <ph name="FILE_COUNT" />개 백업 중</translation>
+<translation id="5335458522276292100"><ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" />에 파일 <ph name="FILE_COUNT" />개 백업 중</translation>
 <translation id="5358764674931277">프레임 속도</translation>
 <translation id="5368191757080475556">Linux와 폴더 공유</translation>
 <translation id="5402367795255837559">점자</translation>
@@ -518,11 +518,11 @@
 <translation id="6556866813142980365">다시실행</translation>
 <translation id="6558280019477628686">오류가 발생했습니다. 일부 항목이 삭제되지 않았을 수 있습니다.</translation>
 <translation id="656398493051028875">'<ph name="FILENAME" />' 삭제 중...</translation>
-<translation id="6581162200855843583">Google 드라이브 링크</translation>
+<translation id="6581162200855843583">Google Drive 링크</translation>
 <translation id="6594855146910089723">Linux 및 Parallels Desktop과 공유된 폴더</translation>
 <translation id="6607272825297743757">파일 정보</translation>
 <translation id="6609332149380188670">폴더 <ph name="NUMBER_OF_ITEMS" />개가 Parallels Desktop과 공유됨</translation>
-<translation id="6629841649550503054">모두 <ph name="BEGIN_LINK" />Google 드라이브<ph name="END_LINK" />에 백업했습니다.</translation>
+<translation id="6629841649550503054">모두 <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" />에 백업했습니다.</translation>
 <translation id="6643016212128521049">삭제</translation>
 <translation id="6650726141019353908">분홍 나비</translation>
 <translation id="6657585470893396449">비밀번호</translation>
@@ -561,7 +561,7 @@
 <translation id="6970230597523682626">불가리아어</translation>
 <translation id="6973630695168034713">폴더</translation>
 <translation id="6978611942794658017">이 파일은 Windows 소프트웨어를 사용하는 PC용으로 설계되었으며 Chrome OS를 실행하는 기기와 호환되지 않습니다. 적합한 대체 앱을 찾으려면 Chrome 웹 스토어를 검색하세요.</translation>
-<translation id="6979158407327259162">Google 드라이브</translation>
+<translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">스웨덴어</translation>
 <translation id="6990081529015358884">저장 공간이 부족합니다.</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" />개의 폴더가 선택됨</translation>
@@ -584,7 +584,7 @@
 <translation id="7238097264433196391">드라이브 이름</translation>
 <translation id="7248671827512403053">애플리케이션</translation>
 <translation id="7268659760406822741">사용 가능한 서비스</translation>
-<translation id="7283041136720745563">Google 드라이브 용량이 부족합니다.</translation>
+<translation id="7283041136720745563">Google Drive 용량이 부족합니다.</translation>
 <translation id="7294063083760278948">텔루구어(음역)</translation>
 <translation id="7295662345261934369">다른 사용자와 공유</translation>
 <translation id="7309413087278791451">독일어(벨기에)</translation>
@@ -598,13 +598,13 @@
 <translation id="7460898608667578234">우크라이나어</translation>
 <translation id="7489215562877293245">파일 <ph name="FILE_COUNT" />개 있음
     <ph name="LINE_BREAK1" />
-    <ph name="BEGIN_LINK" />Google 드라이브<ph name="END_LINK" /> 백업 준비 완료</translation>
+    <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> 백업 준비 완료</translation>
 <translation id="7495372004724182530">말라얄람어(표음)</translation>
 <translation id="7505167922889582512">숨긴 파일 표시</translation>
 <translation id="7508545000531937079">슬라이드쇼</translation>
 <translation id="751507702149411736">벨로루시어</translation>
 <translation id="7532029025027028521">페르시아어(음역)</translation>
-<translation id="7544830582642184299">Linux 앱이 Google 드라이브의 파일에 액세스하도록 허용합니다. 변경사항은 다른 기기에 동기화됩니다.</translation>
+<translation id="7544830582642184299">Linux 앱이 Google Drive의 파일에 액세스하도록 허용합니다. 변경사항은 다른 기기에 동기화됩니다.</translation>
 <translation id="7544853251252956727">셔플</translation>
 <translation id="7547780573915868306">리투아니아어</translation>
 <translation id="7547811415869834682">네덜란드어</translation>
@@ -644,7 +644,7 @@
 <translation id="78104721049218340">태국어(케드마니 키보드)</translation>
 <translation id="7821462174190887129">파일 <ph name="FILE_COUNT" />개가 있습니다.
     <ph name="LINE_BREAK1" />
-    Google 드라이브 용량이 부족합니다. <ph name="FILE_SIZE" />가 더 필요합니다.
+    Google Drive 용량이 부족합니다. <ph name="FILE_SIZE" />가 더 필요합니다.
     <ph name="LINE_BREAK2" />
     사진을 더 적게 선택해 보세요.</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" />TB</translation>
@@ -710,7 +710,7 @@
 <translation id="8461467696380332069">파일을 마우스 오른쪽 버튼으로 클릭하고 실행기에서 파일에 빠르게 액세스할 수 있도록 '실행기에 고정'을 선택합니다.</translation>
 <translation id="8463494891489624050">베트남어(VIQR)</translation>
 <translation id="8466234950814670489">Tar 압축 파일</translation>
-<translation id="8475647382427415476">Google 드라이브에서 '<ph name="FILENAME" />'을(를) 동기화하지 못했습니다. Google 드라이브에서 나중에 다시 시도합니다.</translation>
+<translation id="8475647382427415476">Google Drive에서 '<ph name="FILENAME" />'을(를) 동기화하지 못했습니다. Google Drive에서 나중에 다시 시도합니다.</translation>
 <translation id="8477649328507734757">회전</translation>
 <translation id="8487700953926739672">오프라인으로 사용 가능</translation>
 <translation id="8521441079177373948">영어(영국)</translation>
