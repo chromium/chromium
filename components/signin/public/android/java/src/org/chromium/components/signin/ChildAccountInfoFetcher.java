@@ -17,12 +17,15 @@ import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.components.signin.ChildAccountStatus.Status;
+import org.chromium.components.signin.base.CoreAccountId;
+import org.chromium.components.signin.base.CoreAccountInfo;
 
 /**
  * ChildAccountInfoFetcher for the Android platform.
  * Checks whether an account is a child account from the AccountManager.
  */
-public final class ChildAccountInfoFetcher {
+final class ChildAccountInfoFetcher {
     private static final String TAG = "signin";
 
     private static final String ACCOUNT_SERVICES_CHANGED_FILTER =
@@ -34,15 +37,13 @@ public final class ChildAccountInfoFetcher {
     private static final String ACCOUNT_KEY = "account";
 
     private final long mNativeAccountFetcherService;
-    private final String mAccountId;
-    private final Account mAccount;
+    private final CoreAccountInfo mCoreAccountInfo;
     private final BroadcastReceiver mAccountFlagsChangedReceiver;
 
     private ChildAccountInfoFetcher(
-            long nativeAccountFetcherService, String accountId, String accountName) {
+            long nativeAccountFetcherService, CoreAccountInfo coreAccountInfo) {
         mNativeAccountFetcherService = nativeAccountFetcherService;
-        mAccountId = accountId;
-        mAccount = AccountUtils.createAccountFromName(accountName);
+        mCoreAccountInfo = coreAccountInfo;
 
         // Register for notifications about flag changes in the future.
         mAccountFlagsChangedReceiver = new BroadcastReceiver() {
@@ -52,9 +53,9 @@ public final class ChildAccountInfoFetcher {
                 Account changedAccount = intent.getParcelableExtra(ACCOUNT_KEY);
                 Log.d(TAG, "Received account flag change broadcast for %s", changedAccount.name);
 
-                if (!mAccount.equals(changedAccount)) return;
-
-                fetch();
+                if (mCoreAccountInfo.getEmail().equals(changedAccount.name)) {
+                    fetch();
+                }
             }
         };
         ContextUtils.getApplicationContext().registerReceiver(mAccountFlagsChangedReceiver,
@@ -66,26 +67,28 @@ public final class ChildAccountInfoFetcher {
 
     @CalledByNative
     private static ChildAccountInfoFetcher create(
-            long nativeAccountFetcherService, String accountId, String accountName) {
-        return new ChildAccountInfoFetcher(nativeAccountFetcherService, accountId, accountName);
+            long nativeAccountFetcherService, CoreAccountInfo coreAccountInfo) {
+        return new ChildAccountInfoFetcher(nativeAccountFetcherService, coreAccountInfo);
     }
 
     private void fetch() {
-        Log.d(TAG, "Checking child account status for %s", mAccount.name);
+        Log.d(TAG, "Checking child account status for %s", mCoreAccountInfo.getEmail());
         AccountManagerFacadeProvider.getInstance().checkChildAccountStatus(
-                mAccount, status -> setIsChildAccount(ChildAccountStatus.isChild(status)));
+                CoreAccountInfo.getAndroidAccountFrom(mCoreAccountInfo),
+                this::onChildAccountStatusReady);
+    }
+
+    private void onChildAccountStatusReady(@Status int status) {
+        final boolean isChild = ChildAccountStatus.isChild(status);
+        Log.d(TAG, "Setting child account status for %s to %s", mCoreAccountInfo.getEmail(),
+                isChild);
+        ChildAccountInfoFetcherJni.get().setIsChildAccount(
+                mNativeAccountFetcherService, mCoreAccountInfo.getId(), isChild);
     }
 
     @CalledByNative
     private void destroy() {
         ContextUtils.getApplicationContext().unregisterReceiver(mAccountFlagsChangedReceiver);
-    }
-
-    private void setIsChildAccount(boolean isChildAccount) {
-        Log.d(TAG, "Setting child account status for %s to %s", mAccount.name,
-                Boolean.toString(isChildAccount));
-        ChildAccountInfoFetcherJni.get().setIsChildAccount(
-                mNativeAccountFetcherService, mAccountId, isChildAccount);
     }
 
     @VisibleForTesting
@@ -98,6 +101,6 @@ public final class ChildAccountInfoFetcher {
     @NativeMethods
     interface Natives {
         void setIsChildAccount(
-                long accountFetcherServicePtr, String accountId, boolean isChildAccount);
+                long accountFetcherServicePtr, CoreAccountId accountId, boolean isChildAccount);
     }
 }

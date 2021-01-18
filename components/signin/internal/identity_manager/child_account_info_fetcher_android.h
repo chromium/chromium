@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/android/scoped_java_ref.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "google_apis/gaia/core_account_id.h"
 
 class AccountFetcherService;
@@ -24,8 +25,7 @@ class ChildAccountInfoFetcherAndroid {
 
  private:
   ChildAccountInfoFetcherAndroid(AccountFetcherService* service,
-                                 const CoreAccountId& account_id,
-                                 const std::string& account_name);
+                                 const CoreAccountInfo& account_info);
 
   base::android::ScopedJavaGlobalRef<jobject> j_child_account_info_fetcher_;
 
