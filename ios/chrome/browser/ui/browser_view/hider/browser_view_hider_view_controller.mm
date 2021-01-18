@@ -30,6 +30,7 @@
 - (void)viewDidLoad {
   [super viewDidLoad];
   self.view.backgroundColor = [UIColor colorNamed:kBackgroundDarkColor];
+  self.view.accessibilityIdentifier = @"BrowserViewHiderView";
   self.view.layer.cornerRadius = kTopCornerRadius;
   self.view.hidden = YES;
 

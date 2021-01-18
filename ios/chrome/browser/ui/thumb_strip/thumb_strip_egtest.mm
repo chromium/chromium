@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/ios/ios_util.h"
+#import "base/mac/foundation_util.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_features.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h"
@@ -25,7 +26,9 @@ using base::test::ios::kWaitForPageLoadTimeout;
 using base::test::ios::kWaitForJSCompletionTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
 
+using chrome_test_util::ContentSuggestionCollectionView;
 using chrome_test_util::PrimaryToolbar;
+using chrome_test_util::WebStateScrollViewMatcher;
 
 namespace {
 
@@ -40,6 +43,23 @@ std::unique_ptr<net::test_server::HttpResponse> HandleQueryTitle(
                              "</title></head><body>" +
                              request.GetURL().query() + "</body></html>");
   return std::move(http_response);
+}
+
+// Returns a matcher that matches anything, but also fills |value| with the
+// accessbilityValue of the matched view.
+id<GREYMatcher> GetAccessibilityValue(__strong NSString** value) {
+  GREYMatchesBlock matches = ^BOOL(UIView* view) {
+    if (value) {
+      *value = view.accessibilityValue;
+    }
+    return YES;
+  };
+  GREYDescribeToBlock describe = ^void(id<GREYDescription> description) {
+    [description appendText:@"View is correct"];
+  };
+
+  return [[GREYElementMatcherBlock alloc] initWithMatchesBlock:matches
+                                              descriptionBlock:describe];
 }
 
 }  // namespace
@@ -102,6 +122,139 @@ std::unique_ptr<net::test_server::HttpResponse> HandleQueryTitle(
                                           grey_kindOfClassName(@"GridCell"),
                                           grey_minimumVisiblePercent(1), nil)]
       assertWithMatcher:grey_notNil()];
+}
+
+// Tests that the web content ends up covered when in revealed state.
+- (void)testWebContentCoveredInRevealedState {
+  // The feature only works on iPad.
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Thumb strip is not enabled on iPhone");
+  }
+
+  // See crbug.com/1143299.
+  if (!base::ios::IsRunningOnIOS13OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Fails on iOS 12 devices.");
+  }
+
+  [self setUpTestServer];
+
+  const GURL URL = self.testServer->GetURL("/querytitle?Hello");
+
+  [ChromeEarlGrey loadURL:URL];
+  [ChromeEarlGrey waitForWebStateContainingText:"Hello"];
+
+  // Save the text in the location bar because the hider view should have the
+  // same text.
+  NSString* locationBarAccessibilityValue;
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_kindOfClassName(
+                                              @"LocationBarSteadyButton"),
+                                          grey_minimumVisiblePercent(1), nil)]
+      assertWithMatcher:GetAccessibilityValue(&locationBarAccessibilityValue)];
+
+  // Swipe down twice to reveal the thumb strip.
+  [[EarlGrey selectElementWithMatcher:PrimaryToolbar()]
+      performAction:grey_swipeSlowInDirection(kGREYDirectionDown)];
+  [[EarlGrey selectElementWithMatcher:PrimaryToolbar()]
+      performAction:grey_swipeSlowInDirection(kGREYDirectionDown)];
+
+  // Make sure that the hider view is visible, and the toolbar is not.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(PrimaryToolbar(),
+                                          grey_minimumVisiblePercent(1), nil)]
+      assertWithMatcher:grey_nil()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(@"BrowserViewHiderView")]
+      assertWithMatcher:grey_notNil()];
+
+  // Make sure that the text on the hider view is the location bar text.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_kindOfClassName(
+                                       @"LocationBarSteadyView"),
+                                   grey_descendant(grey_accessibilityValue(
+                                       locationBarAccessibilityValue)),
+                                   grey_minimumVisiblePercent(1), nil)]
+      assertWithMatcher:grey_notNil()];
+}
+
+// Tests that scrolling the web content can open and close the thumb strip.
+- (void)testScrollingInWebContent {
+  // The feature only works on iPad.
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Thumb strip is not enabled on iPhone");
+  }
+
+  // See crbug.com/1143299.
+  if (!base::ios::IsRunningOnIOS13OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Fails on iOS 12 devices.");
+  }
+
+  [self setUpTestServer];
+
+  const GURL URL = self.testServer->GetURL("/querytitle?Hello");
+
+  [ChromeEarlGrey loadURL:URL];
+  [ChromeEarlGrey waitForWebStateContainingText:"Hello"];
+
+  // Scroll the web content to reveal the thumb strip.
+  [[EarlGrey selectElementWithMatcher:WebStateScrollViewMatcher()]
+      performAction:grey_swipeSlowInDirection(kGREYDirectionDown)];
+
+  // Make sure that the entire tab thumbnail is fully visible and not covered.
+  // This acts as a good proxy to the entire thumbstrip being visible.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(@"Hello"),
+                                          grey_kindOfClassName(@"GridCell"),
+                                          grey_minimumVisiblePercent(1), nil)]
+      assertWithMatcher:grey_notNil()];
+
+  // Scroll the web content the other way to close the thumb strip.
+  [[EarlGrey selectElementWithMatcher:WebStateScrollViewMatcher()]
+      performAction:grey_swipeSlowInDirection(kGREYDirectionUp)];
+
+  // Make sure that the tab thumbnail is not visible.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(@"Hello"),
+                                          grey_kindOfClassName(@"GridCell"),
+                                          grey_minimumVisiblePercent(1), nil)]
+      assertWithMatcher:grey_nil()];
+}
+
+// Tests that scrolling the web content can open and close the thumb strip.
+- (void)testScrollingOnNTP {
+  // The feature only works on iPad.
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Thumb strip is not enabled on iPhone");
+  }
+
+  // See crbug.com/1143299.
+  if (!base::ios::IsRunningOnIOS13OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Fails on iOS 12 devices.");
+  }
+
+  // Scroll the NTP to reveal the thumb strip.
+  [[EarlGrey selectElementWithMatcher:ContentSuggestionCollectionView()]
+      performAction:grey_swipeSlowInDirection(kGREYDirectionDown)];
+
+  // Make sure that the entire tab thumbnail is fully visible and not covered.
+  // This acts as a good proxy to the entire thumbstrip being visible.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(@"New Tab"),
+                                          grey_kindOfClassName(@"GridCell"),
+                                          grey_minimumVisiblePercent(1), nil)]
+      assertWithMatcher:grey_notNil()];
+
+  // Scroll the NTP the other way to close the thumb strip.
+  [[EarlGrey selectElementWithMatcher:ContentSuggestionCollectionView()]
+      performAction:grey_swipeSlowInDirection(kGREYDirectionUp)];
+
+  // Make sure that the tab thumbnail is not visible.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(@"New Tab"),
+                                          grey_kindOfClassName(@"GridCell"),
+                                          grey_minimumVisiblePercent(1), nil)]
+      assertWithMatcher:grey_nil()];
 }
 
 @end
