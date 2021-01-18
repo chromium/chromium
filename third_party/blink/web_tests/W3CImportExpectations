@@ -452,3 +452,8 @@ external/wpt/css/css-page/page-size-009.xht [ Skip ]
 external/wpt/css/css-page/page-size-010.xht [ Skip ]
 external/wpt/css/css-page/page-size-011.xht [ Skip ]
 external/wpt/css/css-page/page-size-012.xht [ Skip ]
+
+# This test includes arbitrary html in unit test names (via parametrize) which
+# is currently not well handled in WebDriverExpectations, and causes Lint error
+# crbug.com/1167318
+external/wpt/webdriver/tests/find_elements_from_shadow_root/find.py [ Skip ]
