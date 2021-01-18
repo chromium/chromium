@@ -672,9 +672,9 @@ base::Value ProfilePickerHandler::GetProfilesList() {
         "isSyncing", entry->GetSigninState() ==
                          SigninState::kSignedInWithConsentedPrimaryAccount);
     profile_entry->SetBoolPath("needsSignin", entry->IsSigninRequired());
-    // GAIA name/user name can be empty, if the profile is not signed in to
+    // GAIA full name/user name can be empty, if the profile is not signed in to
     // chrome.
-    profile_entry->SetString("gaiaName", entry->GetGAIANameToDisplay());
+    profile_entry->SetString("gaiaName", entry->GetGAIAName());
     profile_entry->SetString("userName", entry->GetUserName());
     profile_entry->SetBoolPath(
         "isManaged", AccountInfo::IsManaged(entry->GetHostedDomain()));

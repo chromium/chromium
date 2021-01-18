@@ -34,15 +34,24 @@
     .profile-card-info {
       --profile-card-info-height: 52px;
       color: var(--cr-primary-text-color);
-      font-size: var(--text-font-size);
       height: 20px;
       overflow: hidden;
-      padding: 16px;
       position: absolute;
       text-align: center;
       text-overflow: ellipsis;
       white-space: nowrap;
+    }
+
+    .profile-card-info.prominent-text {
+      font-size: var(--text-font-size);
+      font-weight: 500;
+      padding: 16px;
       width: 130px;
+    }
+
+    .profile-card-info.secondary-text {
+      padding: 10px 10px 16px 16px;
+      width: 142px;
     }
 
     .footer {
