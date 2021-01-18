@@ -615,10 +615,6 @@ const base::Feature kShowBluetoothDeviceBattery{
 const base::Feature kShowPlayInDemoMode{"ShowPlayInDemoMode",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Shows individual steps during Demo Mode setup.
-const base::Feature kShowStepsInDemoModeSetup{"ShowStepsInDemoModeSetup",
-                                              base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Uses experimental component version for smart dim.
 const base::Feature kSmartDimExperimentalComponent{
     "SmartDimExperimentalComponent", base::FEATURE_DISABLED_BY_DEFAULT};

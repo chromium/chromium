@@ -58,15 +58,6 @@ Polymer({
       type: Boolean,
       value: false,
     },
-
-    /** Feature flag to display progress bar instead of spinner during setup. */
-    showStepsInDemoModeSetup_: {
-      type: Boolean,
-      readonly: true,
-      value() {
-        return loadTimeData.getBoolean('showStepsInDemoModeSetup');
-      }
-    }
   },
 
   defaultUIStep() {

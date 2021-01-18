@@ -281,8 +281,6 @@ extern const base::Feature kShowBluetoothDeviceBattery;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kShowPlayInDemoMode;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-extern const base::Feature kShowStepsInDemoModeSetup;
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kSmartDimExperimentalComponent;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kSmartDimNewMlAgent;

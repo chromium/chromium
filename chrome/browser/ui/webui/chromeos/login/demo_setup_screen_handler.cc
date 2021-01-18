@@ -83,10 +83,6 @@ void DemoSetupScreenHandler::DeclareLocalizedValues(
 
 void DemoSetupScreenHandler::GetAdditionalParameters(
     base::DictionaryValue* parameters) {
-  parameters->SetBoolKey(
-      "showStepsInDemoModeSetup",
-      base::FeatureList::IsEnabled(features::kShowStepsInDemoModeSetup));
-
   parameters->SetPath("demoSetupSteps",
                       DemoSetupController::GetDemoSetupSteps());
 }

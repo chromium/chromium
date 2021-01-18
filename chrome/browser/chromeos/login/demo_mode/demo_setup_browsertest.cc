@@ -67,6 +67,8 @@ namespace chromeos {
 
 namespace {
 
+const test::UIPath kDemoSetupDialog = {"demo-setup", "demoSetupProgressDialog"};
+
 constexpr char kDefaultNetworkServicePath[] = "/service/eth1";
 constexpr char kDefaultNetworkName[] = "eth1";
 
@@ -1247,49 +1249,24 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
 
 class DemoSetupProgressStepsTest : public DemoSetupTestBase {
  public:
-  DemoSetupProgressStepsTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kShowStepsInDemoModeSetup);
-  }
+  DemoSetupProgressStepsTest() = default;
   ~DemoSetupProgressStepsTest() override = default;
 
   // Checks how many steps have been rendered in the demo setup screen.
   int CountNumberOfStepsInUi() {
     const std::string query =
-        "$('demo-setup').$$('oobe-dialog').querySelectorAll('progress-"
-        "list-item').length";
-
+        base::StrCat({test::GetOobeElementPath(kDemoSetupDialog),
+                      ".querySelectorAll('progress-list-item').length"});
     return test::OobeJS().GetInt(query);
   }
 
-  // Checks how many steps are marked as pending in the demo setup screen.
-  int CountPendingStepsInUi() {
-    const std::string query =
-        "Object.values($('demo-setup').$$('oobe-dialog')."
-        "querySelectorAll('progress-list-item')).filter(node => "
-        "node.shadowRoot.querySelector('#icon-pending:not([hidden])')).length";
-
-    return test::OobeJS().GetInt(query);
-  }
-
-  // Checks how many steps are marked as active in the demo setup screen.
-  int CountActiveStepsInUi() {
-    const std::string query =
-        "Object.values($('demo-setup').$$('oobe-dialog')."
-        "querySelectorAll('progress-list-item')).filter(node => "
-        "node.shadowRoot.querySelector('#icon-active:not([hidden])')).length";
-
-    return test::OobeJS().GetInt(query);
-  }
-
-  // Checks how many steps are marked as complete in the demo setup screen.
-  int CountCompletedStepsInUi() {
-    const std::string query =
-        "Object.values($('demo-setup').$$('oobe-dialog')."
-        "querySelectorAll('progress-list-item')).filter(node => "
-        "node.shadowRoot.querySelector('#icon-completed:not([hidden])'))."
-        "length";
-
+  // Checks how many steps are marked as given status in the demo setup screen.
+  int CountStepsInUi(const std::string& status) {
+    const std::string query = base::StrCat(
+        {"Object.values(", test::GetOobeElementPath(kDemoSetupDialog),
+         ".querySelectorAll('progress-list-item')).filter(node => "
+         "node.shadowRoot.querySelector('#icon-",
+         status, ":not([hidden])')).length"});
     return test::OobeJS().GetInt(query);
   }
 
@@ -1320,9 +1297,9 @@ IN_PROC_BROWSER_TEST_F(DemoSetupProgressStepsTest,
 
   for (int i = 0; i < numSteps; i++) {
     demoSetupScreen->SetCurrentSetupStepForTest(orderedSteps[i]);
-    ASSERT_EQ(CountPendingStepsInUi(), numSteps - i - 1);
-    ASSERT_EQ(CountActiveStepsInUi(), 1);
-    ASSERT_EQ(CountCompletedStepsInUi(), i);
+    ASSERT_EQ(CountStepsInUi("pending"), numSteps - i - 1);
+    ASSERT_EQ(CountStepsInUi("active"), 1);
+    ASSERT_EQ(CountStepsInUi("completed"), i);
   }
 }
 
