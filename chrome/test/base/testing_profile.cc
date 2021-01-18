@@ -67,9 +67,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/history_service_test_util.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/refcounted_keyed_service.h"
-#include "components/keyed_service/core/simple_dependency_manager.h"
 #include "components/keyed_service/core/simple_factory_key.h"
 #include "components/keyed_service/core/simple_key_map.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
@@ -152,9 +150,6 @@ using testing::Return;
 
 namespace {
 
-// Default profile name
-const char kTestingProfile[] = "testing_profile";
-
 void TestProfileErrorCallback(WebDataServiceWrapper::ErrorType error_type,
                               sql::InitStatus status,
                               const std::string& diagnostics) {
@@ -178,6 +173,9 @@ std::unique_ptr<KeyedService> BuildPersonalDataManagerInstanceFor(
 }
 
 }  // namespace
+
+// static
+const char TestingProfile::kDefaultProfileUserName[] = "testing_profile";
 
 // static
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -216,22 +214,7 @@ TestingProfile::TestingProfile(const base::FilePath& path)
     : TestingProfile(path, nullptr) {}
 
 TestingProfile::TestingProfile(const base::FilePath& path, Delegate* delegate)
-    : start_time_(Time::Now()),
-      testing_prefs_(nullptr),
-      original_profile_(nullptr),
-      guest_session_(false),
-      allows_browser_windows_(true),
-      is_new_profile_(false),
-      last_session_exited_cleanly_(true),
-      profile_path_(path),
-      simple_dependency_manager_(SimpleDependencyManager::GetInstance()),
-      browser_context_dependency_manager_(
-          BrowserContextDependencyManager::GetInstance()),
-      resource_context_(nullptr),
-      delegate_(delegate),
-      profile_name_(kTestingProfile),
-      override_policy_connector_is_managed_(base::nullopt),
-      otr_profile_id_(base::nullopt) {
+    : profile_path_(path), delegate_(delegate) {
   if (profile_path_.empty()) {
     profile_path_ = base::CreateUniqueTempDirectoryScopedToTest();
   }
@@ -267,23 +250,16 @@ TestingProfile::TestingProfile(
     const std::string& profile_name,
     base::Optional<bool> override_policy_connector_is_managed,
     base::Optional<OTRProfileID> otr_profile_id)
-    : start_time_(Time::Now()),
-      prefs_(std::move(prefs)),
-      testing_prefs_(nullptr),
+    : prefs_(std::move(prefs)),
       original_profile_(parent),
       guest_session_(guest_session),
       allows_browser_windows_(allows_browser_windows),
       is_new_profile_(is_new_profile),
       supervised_user_id_(supervised_user_id),
-      last_session_exited_cleanly_(true),
 #if BUILDFLAG(ENABLE_EXTENSIONS)
       extension_special_storage_policy_(extension_policy),
 #endif
       profile_path_(path),
-      simple_dependency_manager_(SimpleDependencyManager::GetInstance()),
-      browser_context_dependency_manager_(
-          BrowserContextDependencyManager::GetInstance()),
-      resource_context_(nullptr),
       user_cloud_policy_manager_(std::move(policy_manager)),
       delegate_(delegate),
       profile_name_(profile_name),
@@ -1022,16 +998,9 @@ Profile::ExitType TestingProfile::GetLastSessionExitType() const {
   return last_session_exited_cleanly_ ? EXIT_NORMAL : EXIT_CRASHED;
 }
 
-TestingProfile::Builder::Builder()
-    : build_called_(false),
-      delegate_(nullptr),
-      guest_session_(false),
-      allows_browser_windows_(true),
-      is_new_profile_(false),
-      profile_name_(kTestingProfile) {}
+TestingProfile::Builder::Builder() = default;
 
-TestingProfile::Builder::~Builder() {
-}
+TestingProfile::Builder::~Builder() = default;
 
 void TestingProfile::Builder::SetPath(const base::FilePath& path) {
   path_ = path;
@@ -1113,7 +1082,7 @@ std::unique_ptr<TestingProfile> TestingProfile::Builder::Build() {
   DCHECK(!build_called_);
   build_called_ = true;
 
-  return std::unique_ptr<TestingProfile>(new TestingProfile(
+  return std::make_unique<TestingProfile>(
       path_, delegate_,
 #if BUILDFLAG(ENABLE_EXTENSIONS)
       extension_policy_,
@@ -1122,7 +1091,7 @@ std::unique_ptr<TestingProfile> TestingProfile::Builder::Build() {
       allows_browser_windows_, is_new_profile_, supervised_user_id_,
       std::move(user_cloud_policy_manager_), std::move(policy_service_),
       std::move(testing_factories_), profile_name_,
-      override_policy_connector_is_managed_, base::Optional<OTRProfileID>()));
+      override_policy_connector_is_managed_, base::Optional<OTRProfileID>());
 }
 
 TestingProfile* TestingProfile::Builder::BuildOffTheRecord(

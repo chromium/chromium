@@ -15,12 +15,15 @@
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/buildflags.h"
 #include "components/domain_reliability/clear_mode.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "components/keyed_service/core/simple_dependency_manager.h"
 #include "components/keyed_service/core/simple_factory_key.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/buildflags/buildflags.h"
@@ -34,8 +37,6 @@
 #include "chrome/browser/chromeos/settings/scoped_cros_settings_test_helper.h"
 #endif
 
-class BrowserContextDependencyManager;
-class SimpleDependencyManager;
 class ExtensionSpecialStoragePolicy;
 class HostContentSettingsMap;
 class TestingPrefStore;
@@ -74,6 +75,8 @@ class TestingPrefServiceSyncable;
 
 class TestingProfile : public Profile {
  public:
+  static const char kDefaultProfileUserName[];
+
   // Profile directory name for the test user. This is "Default" on most
   // platforms but must be different on ChromeOS because a logged-in user cannot
   // use "Default" as profile directory.
@@ -185,7 +188,7 @@ class TestingProfile : public Profile {
 
    private:
     // If true, Build() has already been called.
-    bool build_called_;
+    bool build_called_ = false;
 
     // Various staging variables where values are held until Build() is invoked.
     std::unique_ptr<sync_preferences::PrefServiceSyncable> pref_service_;
@@ -193,10 +196,10 @@ class TestingProfile : public Profile {
     scoped_refptr<ExtensionSpecialStoragePolicy> extension_policy_;
 #endif
     base::FilePath path_;
-    Delegate* delegate_;
-    bool guest_session_;
-    bool allows_browser_windows_;
-    bool is_new_profile_;
+    Delegate* delegate_ = nullptr;
+    bool guest_session_ = false;
+    bool allows_browser_windows_ = true;
+    bool is_new_profile_ = false;
     std::string supervised_user_id_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     std::unique_ptr<policy::UserCloudPolicyManagerChromeOS>
@@ -206,7 +209,7 @@ class TestingProfile : public Profile {
 #endif
     std::unique_ptr<policy::PolicyService> policy_service_;
     TestingFactories testing_factories_;
-    std::string profile_name_;
+    std::string profile_name_{kDefaultProfileUserName};
     base::Optional<bool> override_policy_connector_is_managed_;
   };
 
@@ -411,7 +414,7 @@ class TestingProfile : public Profile {
   ProfileDestructionCallback profile_destruction_callback_;
 
  protected:
-  base::Time start_time_;
+  base::Time start_time_{base::Time::Now()};
 
   // The key to index KeyedService instances created by
   // SimpleKeyedServiceFactory.
@@ -419,7 +422,7 @@ class TestingProfile : public Profile {
 
   std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs_;
   // ref only for right type, lifecycle is managed by prefs_
-  sync_preferences::TestingPrefServiceSyncable* testing_prefs_;
+  sync_preferences::TestingPrefServiceSyncable* testing_prefs_ = nullptr;
 
   // Profile implementation.
   bool IsSignedIn() override;
@@ -451,18 +454,18 @@ class TestingProfile : public Profile {
       extensions_cookie_store_;
 
   std::map<OTRProfileID, std::unique_ptr<Profile>> otr_profiles_;
-  TestingProfile* original_profile_;
+  TestingProfile* original_profile_ = nullptr;
 
-  bool guest_session_;
+  bool guest_session_ = false;
 
-  bool allows_browser_windows_;
+  bool allows_browser_windows_ = true;
 
-  bool is_new_profile_;
+  bool is_new_profile_ = false;
 
   std::string supervised_user_id_;
 
-  // Did the last session exit cleanly? Default is true.
-  bool last_session_exited_cleanly_;
+  // Whether the last session exited cleanly.
+  bool last_session_exited_cleanly_ = true;
 
   scoped_refptr<HostContentSettingsMap> host_content_settings_map_;
 
@@ -482,12 +485,14 @@ class TestingProfile : public Profile {
   // We keep a weak pointer to the dependency manager we want to notify on our
   // death. Defaults to the Singleton implementation but overridable for
   // testing.
-  SimpleDependencyManager* simple_dependency_manager_;
-  BrowserContextDependencyManager* browser_context_dependency_manager_;
+  SimpleDependencyManager* simple_dependency_manager_{
+      SimpleDependencyManager::GetInstance()};
+  BrowserContextDependencyManager* browser_context_dependency_manager_{
+      BrowserContextDependencyManager::GetInstance()};
 
   // Owned, but must be deleted on the IO thread so not placing in a
   // std::unique_ptr<>.
-  content::MockResourceContext* resource_context_;
+  content::MockResourceContext* resource_context_ = nullptr;
 
   std::unique_ptr<policy::SchemaRegistryService> schema_registry_service_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -499,9 +504,9 @@ class TestingProfile : public Profile {
   std::unique_ptr<policy::ProfilePolicyConnector> profile_policy_connector_;
 
   // Weak pointer to a delegate for indicating that a profile was created.
-  Delegate* delegate_;
+  Delegate* delegate_ = nullptr;
 
-  std::string profile_name_;
+  std::string profile_name_{kDefaultProfileUserName};
 
   base::Optional<bool> override_policy_connector_is_managed_;
   base::Optional<OTRProfileID> otr_profile_id_;
