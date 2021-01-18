@@ -38,6 +38,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/field_candidates.h"
 #include "components/autofill/core/browser/form_parsing/form_field.h"
+#include "components/autofill/core/browser/form_processing/name_processing_util.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/randomized_encoder.h"
 #include "components/autofill/core/browser/rationalization_util.h"
@@ -70,29 +71,6 @@ constexpr char kShippingMode[] = "shipping";
 
 // Default section name for the fields.
 constexpr char kDefaultSection[] = "-default";
-
-// Only removing common name prefixes if we have a minimum number of fields and
-// a minimum prefix length. These values are chosen to avoid cases such as two
-// fields with "address1" and "address2" and be effective against web frameworks
-// which prepend prefixes such as "ctl01$ctl00$MainContentRegion$" on all
-// fields.
-constexpr int kCommonNamePrefixRemovalFieldThreshold = 3;
-constexpr int kMinCommonNamePrefixLength = 16;
-
-// Affix removal configuration. Only remove short affixes if they are common
-// to all field names and there is at least the minimum number of fields.
-// If no affix common to all field names is found, search for a long
-// prefix common to a subset of the fields. This case helps include cases of
-// prefixes prepended by web frameworks.
-//
-// Minimum required number of available fields for trying to remove affixes.
-constexpr int kCommonNameAffixRemovalFieldNumberThreshold = 3;
-// Minimum required length for affixes common to all field names.
-constexpr int kMinCommonNameAffixLength = 3;
-// Minimum required length for prefixes common to a subset of the field names.
-constexpr int kMinCommonNameLongPrefixLength = 16;
-// Regex for checking if |parseable_name| is valid after stripping affixes.
-constexpr char kParseableNameValidationRe[] = "\\D";
 
 // Returns true if the scheme given by |url| is one for which autofill is
 // allowed to activate. By default this only returns true for HTTP and HTTPS.
@@ -2404,176 +2382,25 @@ bool FormStructure::ShouldSkipField(const FormFieldData& field) const {
 }
 
 void FormStructure::ProcessExtractedFields() {
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillLabelAffixRemoval)) {
-    // Updates the field name parsed by heuristics if several criteria are met.
-    // Several fields must be present in the form.
-    if (field_count() < kCommonNameAffixRemovalFieldNumberThreshold)
-      return;
+  // Extracts the |parseable_name_| by removing common affixes from the
+  // field names.
+  ExtractParseableFieldNames();
+}
 
-    std::vector<base::StringPiece16> names;
-    names.reserve(field_count());
-    for (const auto& field : *this)
-      names.push_back(field->name);
-
-    int longest_prefix_length = FindLongestCommonAffixLength(names, false);
-    int longest_suffix_length = FindLongestCommonAffixLength(names, true);
-
-    // Don't remove the common affix if it's not long enough.
-    if (longest_prefix_length < kMinCommonNameAffixLength)
-      longest_prefix_length = 0;
-
-    if (longest_suffix_length < kMinCommonNameAffixLength)
-      longest_suffix_length = 0;
-
-    bool success =
-        SetStrippedParseableNames(longest_prefix_length, longest_suffix_length);
-
-    // Don't search for inconsistent prefix if valid affixes are found.
-    if (success && longest_prefix_length + longest_suffix_length > 0)
-      return;
-
-    // Functionality for stripping a prefix only common to a subset
-    // of field names.
-    // This is needed because an exceptional field may be missing a prefix
-    // which is otherwise consistently applied--for instance, a framework
-    // may only apply a prefix to those fields which are bound when POSTing.
-    names.clear();
-    for (const auto& field : *this)
-      if (field->name.size() > kMinCommonNameLongPrefixLength)
-        names.push_back(field->name);
-
-    if (names.size() < kCommonNamePrefixRemovalFieldThreshold)
-      return;
-
-    const int longest_long_prefix_length =
-        FindLongestCommonAffixLength(names, false);
-
-    if (longest_long_prefix_length >= kMinCommonNameLongPrefixLength)
-      SetStrippedParseableNames(longest_long_prefix_length, 0);
-
-    return;
+void FormStructure::ExtractParseableFieldNames() {
+  // Create a vector of string pieces containing the field names.
+  std::vector<base::StringPiece16> names;
+  for (const auto& field : *this) {
+    names.push_back(base::StringPiece16(field->name));
   }
 
-  // Update the field name parsed by heuristics if several criteria are met.
-  // Several fields must be present in the form.
-  if (field_count() < kCommonNamePrefixRemovalFieldThreshold)
-    return;
-
-  // Find the longest common prefix within all the field names.
-  std::vector<base::string16> names;
-  names.reserve(field_count());
-  for (const auto& field : *this)
-    names.push_back(field->name);
-
-  const base::string16 longest_prefix = FindLongestCommonPrefix(names);
-  if (longest_prefix.size() < kMinCommonNamePrefixLength)
-    return;
-
-  // The name without the prefix will be used for heuristics parsing.
+  // Determine the parseable names and write them into the corresponding field.
+  std::vector<base::string16> parseable_names = GetParseableNames(names);
+  DCHECK_EQ(parseable_names.size(), field_count());
+  size_t idx = 0;
   for (auto& field : *this) {
-    if (field->name.size() > longest_prefix.size()) {
-      field->set_parseable_name(
-          field->name.substr(longest_prefix.size(), field->name.size()));
-    }
+    field->set_parseable_name(parseable_names.at(idx++));
   }
-}
-
-bool FormStructure::SetStrippedParseableNames(size_t offset_left,
-                                              size_t offset_right) {
-  // Keeps track if all stripped strings are valid according to
-  // |IsValidParseableName()|. If at least one string is invalid,
-  // all |parseable_name| are reset to |name|.
-  bool should_keep = true;
-  for (auto& field : *this) {
-    // This check allows to only strip affixes from long enough strings.
-    if (field->name.size() > offset_right + offset_left) {
-      field->set_parseable_name(field->name.substr(
-          offset_left, field->name.size() - offset_right - offset_left));
-    } else {
-      field->set_parseable_name(field->name);
-    }
-
-    should_keep &= IsValidParseableName(field->parseable_name());
-    if (!should_keep)
-      break;
-  }
-
-  // Reset if some stripped string was invalid.
-  if (!should_keep) {
-    for (auto& field : *this)
-      field->set_parseable_name(field->name);
-  }
-
-  return should_keep;
-}
-
-bool FormStructure::IsValidParseableName(
-    base::string16 candidateParseableName) {
-  static const base::string16 kParseableNameValidationPattern =
-      base::UTF8ToUTF16(kParseableNameValidationRe);
-  if (MatchesPattern(candidateParseableName, kParseableNameValidationPattern))
-    return true;
-
-  return false;
-}
-
-// static
-size_t FormStructure::FindLongestCommonAffixLength(
-    const std::vector<base::StringPiece16>& strings,
-    bool findCommonSuffix) {
-  if (strings.empty())
-    return 0;
-
-  // Go through each character of the first string until there is a mismatch at
-  // the same position in any other string. Adapted from http://goo.gl/YGukMM.
-  for (size_t affix_len = 0; affix_len < strings[0].size(); affix_len++) {
-    size_t base_string_index =
-        findCommonSuffix ? strings[0].size() - affix_len - 1 : affix_len;
-    for (size_t i = 1; i < strings.size(); i++) {
-      size_t compared_string_index =
-          findCommonSuffix ? strings[i].size() - affix_len - 1 : affix_len;
-      if (affix_len >= strings[i].size() ||
-          strings[i][compared_string_index] != strings[0][base_string_index]) {
-        // Mismatch found.
-        return affix_len;
-      }
-    }
-  }
-  return strings[0].size();
-}
-
-// static
-base::string16 FormStructure::FindLongestCommonPrefix(
-    const std::vector<base::string16>& strings) {
-  if (strings.empty())
-    return base::string16();
-
-  std::vector<base::string16> filtered_strings;
-
-  // Any strings less than kMinCommonNamePrefixLength are neither modified
-  // nor considered when processing for a common prefix.
-  std::copy_if(
-      strings.begin(), strings.end(), std::back_inserter(filtered_strings),
-      [](base::string16 s) { return s.size() >= kMinCommonNamePrefixLength; });
-
-  if (filtered_strings.empty())
-    return base::string16();
-
-  // Go through each character of the first string until there is a mismatch at
-  // the same position in any other string. Adapted from http://goo.gl/YGukMM.
-  for (size_t prefix_len = 0; prefix_len < filtered_strings[0].size();
-       prefix_len++) {
-    for (size_t i = 1; i < filtered_strings.size(); i++) {
-      if (prefix_len >= filtered_strings[i].size() ||
-          filtered_strings[i].at(prefix_len) !=
-              filtered_strings[0].at(prefix_len)) {
-        // Mismatch found.
-        return filtered_strings[i].substr(0, prefix_len);
-      }
-    }
-  }
-  return filtered_strings[0];
 }
 
 std::set<FormType> FormStructure::GetFormTypes() const {
