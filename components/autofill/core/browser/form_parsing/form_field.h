@@ -36,7 +36,7 @@ struct RegExLogging {
 // name, phone number, or address field.
 class FormField {
  public:
-  virtual ~FormField() {}
+  virtual ~FormField() = default;
 
   // Classifies each field in |fields| with its heuristically detected type.
   // Each field has a derived unique name that is used as the key into the
@@ -46,6 +46,14 @@ class FormField {
       const LanguageCode& page_language,
       bool is_form_tag,
       LogManager* log_manager = nullptr);
+
+#if defined(UNIT_TEST)
+  // Assign types to the fields for the testing purposes.
+  void AddClassificationsForTesting(
+      FieldCandidatesMap* field_candidates_for_testing) const {
+    AddClassifications(field_candidates_for_testing);
+  }
+#endif
 
  protected:
   // Initial values assigned to FieldCandidates by their corresponding parsers.

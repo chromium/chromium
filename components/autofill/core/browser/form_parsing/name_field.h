@@ -28,14 +28,6 @@ class NameField : public FormField {
                                           const LanguageCode& page_language,
                                           LogManager* log_manager);
 
-#ifdef UNIT_TEST
-  // Calls the protected method |AddClassification| for testing.
-  void AddClassificationsForTesting(
-      FieldCandidatesMap* field_candidates) const {
-    AddClassifications(field_candidates);
-  }
-#endif
-
  protected:
   NameField() = default;
 

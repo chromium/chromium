@@ -29,13 +29,6 @@ class AddressField : public FormField {
                                           const LanguageCode& page_language,
                                           LogManager* log_manager);
 
-#if defined(UNIT_TEST)
-  // Assign types to the fields for the testing purposes.
-  void AddClassificationsForTesting(
-      FieldCandidatesMap* field_candidates_for_testing) const {
-    AddClassifications(field_candidates_for_testing);
-  }
-#endif
 
  protected:
   void AddClassifications(FieldCandidatesMap* field_candidates) const override;

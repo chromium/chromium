@@ -653,6 +653,8 @@ source_set("unit_tests") {
     "form_parsing/field_candidates_unittest.cc",
     "form_parsing/form_field_unittest.cc",
     "form_parsing/name_field_unittest.cc",
+    "form_parsing/parsing_test_utils.cc",
+    "form_parsing/parsing_test_utils.h",
     "form_parsing/phone_field_unittest.cc",
     "form_parsing/price_field_unittest.cc",
     "form_parsing/search_field_unittest.cc",
