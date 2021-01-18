@@ -27,6 +27,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/widget/widget.h"
 
@@ -75,8 +76,6 @@ bool ShouldShowAeroShadowBorder() {
 }  // namespace
 
 // static
-const char MessageView::kViewClassName[] = "MessageView";
-
 MessageView::HighlightPathGenerator::HighlightPathGenerator() = default;
 
 SkPath MessageView::HighlightPathGenerator::GetHighlightPath(
@@ -279,10 +278,6 @@ void MessageView::OnBlur() {
   views::View::OnBlur();
   // We paint a focus indicator.
   SchedulePaint();
-}
-
-const char* MessageView::GetClassName() const {
-  return kViewClassName;
 }
 
 void MessageView::OnGestureEvent(ui::GestureEvent* event) {
@@ -491,5 +486,8 @@ void MessageView::SetDrawBackgroundAsActive(bool active) {
                                              : kNotificationBackgroundColor);
   SchedulePaint();
 }
+
+BEGIN_METADATA(MessageView, views::View)
+END_METADATA
 
 }  // namespace message_center

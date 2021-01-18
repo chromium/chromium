@@ -43,6 +43,8 @@ class MESSAGE_CENTER_EXPORT NotificationMdTextButton
   NotificationMdTextButton(PressedCallback callback,
                            const base::string16& label,
                            const base::Optional<base::string16>& placeholder);
+  NotificationMdTextButton(const NotificationMdTextButton&) = delete;
+  NotificationMdTextButton& operator=(const NotificationMdTextButton&) = delete;
   ~NotificationMdTextButton() override;
 
   // views::MdTextButton:
@@ -70,10 +72,12 @@ class MESSAGE_CENTER_EXPORT NotificationMdTextButton
 // line. This view is used for NOTIFICATION_TYPE_PROGRESS.
 class CompactTitleMessageView : public views::View {
  public:
-  CompactTitleMessageView();
-  ~CompactTitleMessageView() override;
+  METADATA_HEADER(CompactTitleMessageView);
 
-  const char* GetClassName() const override;
+  CompactTitleMessageView();
+  CompactTitleMessageView(const CompactTitleMessageView&) = delete;
+  CompactTitleMessageView& operator=(const CompactTitleMessageView&) = delete;
+  ~CompactTitleMessageView() override;
 
   gfx::Size CalculatePreferredSize() const override;
   void Layout() override;
@@ -84,19 +88,20 @@ class CompactTitleMessageView : public views::View {
  private:
   views::Label* title_ = nullptr;
   views::Label* message_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(CompactTitleMessageView);
 };
 
 class LargeImageView : public views::View {
  public:
+  METADATA_HEADER(LargeImageView);
+
   explicit LargeImageView(const gfx::Size& max_size);
+  LargeImageView(const LargeImageView&) = delete;
+  LargeImageView& operator=(const LargeImageView&) = delete;
   ~LargeImageView() override;
 
   void SetImage(const gfx::ImageSkia& image);
 
   void OnPaint(gfx::Canvas* canvas) override;
-  const char* GetClassName() const override;
   void OnThemeChanged() override;
 
  private:
@@ -105,8 +110,6 @@ class LargeImageView : public views::View {
   gfx::Size max_size_;
   gfx::Size min_size_;
   gfx::ImageSkia image_;
-
-  DISALLOW_COPY_AND_ASSIGN(LargeImageView);
 };
 
 class NotificationInputDelegate {
@@ -119,7 +122,12 @@ class NotificationInputDelegate {
 class NotificationInputContainerMD : public views::InkDropHostView,
                                      public views::TextfieldController {
  public:
+  METADATA_HEADER(NotificationInputContainerMD);
+
   explicit NotificationInputContainerMD(NotificationInputDelegate* delegate);
+  NotificationInputContainerMD(const NotificationInputContainerMD&) = delete;
+  NotificationInputContainerMD& operator=(const NotificationInputContainerMD&) =
+      delete;
   ~NotificationInputContainerMD() override;
 
   void AnimateBackground(const ui::Event& event);
@@ -149,8 +157,6 @@ class NotificationInputContainerMD : public views::InkDropHostView,
 
   views::Textfield* const textfield_;
   views::ImageButton* const button_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationInputContainerMD);
 };
 
 // View that displays all current types of notification (web, basic, image, and
@@ -162,6 +168,8 @@ class MESSAGE_CENTER_EXPORT NotificationViewMD
       public views::InkDropObserver,
       public NotificationInputDelegate {
  public:
+  METADATA_HEADER(NotificationViewMD);
+
   // This defines an enumeration of IDs that can uniquely identify a view within
   // the scope of NotificationViewMD.
   enum ViewId {
@@ -174,6 +182,9 @@ class MESSAGE_CENTER_EXPORT NotificationViewMD
   };
 
   explicit NotificationViewMD(const Notification& notification);
+
+  NotificationViewMD(const NotificationViewMD&) = delete;
+  NotificationViewMD& operator=(const NotificationViewMD&) = delete;
   ~NotificationViewMD() override;
 
   void Activate();
@@ -347,8 +358,6 @@ class MESSAGE_CENTER_EXPORT NotificationViewMD
   base::TimeTicks last_mouse_pressed_timestamp_;
 
   base::WeakPtrFactory<NotificationViewMD> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationViewMD);
 };
 
 }  // namespace message_center

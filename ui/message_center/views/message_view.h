@@ -51,7 +51,7 @@ class MESSAGE_CENTER_EXPORT MessageView
       public views::SlideOutControllerDelegate,
       public views::FocusChangeListener {
  public:
-  static const char kViewClassName[];
+  METADATA_HEADER(MessageView);
 
   class Observer : public base::CheckedObserver {
    public:
@@ -83,6 +83,8 @@ class MESSAGE_CENTER_EXPORT MessageView
   };
 
   explicit MessageView(const Notification& notification);
+  MessageView(const MessageView&) = delete;
+  MessageView& operator=(const MessageView&) = delete;
   ~MessageView() override;
 
   // Updates this view with the new data contained in the notification.
@@ -129,7 +131,6 @@ class MESSAGE_CENTER_EXPORT MessageView
   void OnGestureEvent(ui::GestureEvent* event) override;
   void RemovedFromWidget() override;
   void AddedToWidget() override;
-  const char* GetClassName() const final;
   void OnThemeChanged() override;
 
   // views::SlideOutControllerDelegate:
@@ -238,7 +239,6 @@ class MESSAGE_CENTER_EXPORT MessageView
   int top_radius_ = 0;
   int bottom_radius_ = 0;
 
-  DISALLOW_COPY_AND_ASSIGN(MessageView);
 };
 
 }  // namespace message_center

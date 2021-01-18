@@ -188,10 +188,6 @@ std::unique_ptr<ui::Event> ConvertToBoundedLocatedEvent(const ui::Event& event,
 
 CompactTitleMessageView::~CompactTitleMessageView() = default;
 
-const char* CompactTitleMessageView::GetClassName() const {
-  return "CompactTitleMessageView";
-}
-
 CompactTitleMessageView::CompactTitleMessageView() {
   title_ = AddChildView(std::make_unique<views::Label>(
       base::string16(), views::style::CONTEXT_DIALOG_BODY_TEXT));
@@ -240,6 +236,9 @@ void CompactTitleMessageView::set_message(const base::string16& message) {
   message_->SetText(message);
 }
 
+BEGIN_METADATA(CompactTitleMessageView, views::View)
+END_METADATA
+
 // LargeImageView //////////////////////////////////////////////////////////////
 
 LargeImageView::LargeImageView(const gfx::Size& max_size)
@@ -276,10 +275,6 @@ void LargeImageView::OnPaint(gfx::Canvas* canvas) {
   canvas->DrawImageInt(drawn_image, drawn_bounds.x(), drawn_bounds.y());
 }
 
-const char* LargeImageView::GetClassName() const {
-  return "LargeImageView";
-}
-
 void LargeImageView::OnThemeChanged() {
   View::OnThemeChanged();
   SetBackground(views::CreateSolidBackground(GetNativeTheme()->GetSystemColor(
@@ -301,6 +296,9 @@ gfx::Size LargeImageView::GetResizedImageSize() {
   resized_size.SetSize(max_size_.width(), max_size_.width() * proportion);
   return resized_size;
 }
+
+BEGIN_METADATA(LargeImageView, views::View)
+END_METADATA
 
 // NotificationMDTextButton ////////////////////////////////////////////////
 
@@ -460,6 +458,9 @@ void NotificationInputContainerMD::SetButtonImage() {
           kNotificationInlineReplyIcon, kInputReplyButtonSize,
           GetNativeTheme()->GetSystemColor(placeholder_icon_color_id)));
 }
+
+BEGIN_METADATA(NotificationInputContainerMD, views::InkDropHostView)
+END_METADATA
 
 // InlineSettingsRadioButton ///////////////////////////////////////////////////
 
@@ -1489,5 +1490,8 @@ void NotificationViewMD::InkDropRippleAnimationEnded(
   if (ink_drop_state == views::InkDropState::HIDDEN)
     header_row_->SetSubpixelRenderingEnabled(true);
 }
+
+BEGIN_METADATA(NotificationViewMD, MessageView)
+END_METADATA
 
 }  // namespace message_center
