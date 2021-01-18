@@ -129,6 +129,12 @@ id ExecuteJavaScript(NSString* javascript, NSError** out_error);
 // Waits for the matcher to return an element that is sufficiently visible.
 - (void)waitForSufficientlyVisibleElementWithMatcher:(id<GREYMatcher>)matcher;
 
+// Waits for the matcher to return an element.
+- (void)waitForUIElementToAppearWithMatcher:(id<GREYMatcher>)matcher;
+
+// Waits for the matcher to not return any elements.
+- (void)waitForUIElementToDisappearWithMatcher:(id<GREYMatcher>)matcher;
+
 // Waits for there to be |count| number of non-incognito tabs within a timeout,
 // or a GREYAssert is induced.
 - (void)waitForMainTabCount:(NSUInteger)count;

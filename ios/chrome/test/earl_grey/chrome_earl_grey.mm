@@ -358,6 +358,40 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeEarlGreyAppInterface)
   EG_TEST_HELPER_ASSERT_TRUE(matchedElement, errorDescription);
 }
 
+- (void)waitForUIElementToAppearWithMatcher:(id<GREYMatcher>)matcher {
+  NSString* errorDescription = [NSString
+      stringWithFormat:@"Failed waiting for element with matcher %@ to appear",
+                       matcher];
+
+  ConditionBlock condition = ^{
+    NSError* error = nil;
+    [[EarlGrey selectElementWithMatcher:matcher] assertWithMatcher:grey_notNil()
+                                                             error:&error];
+    return error == nil;
+  };
+
+  bool matched =
+      WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, condition);
+  GREYAssert(matched, errorDescription);
+}
+
+- (void)waitForUIElementToDisappearWithMatcher:(id<GREYMatcher>)matcher {
+  NSString* errorDescription = [NSString
+      stringWithFormat:
+          @"Failed waiting for element with matcher %@ to disappear", matcher];
+
+  ConditionBlock condition = ^{
+    NSError* error = nil;
+    [[EarlGrey selectElementWithMatcher:matcher] assertWithMatcher:grey_nil()
+                                                             error:&error];
+    return error == nil;
+  };
+
+  bool matched =
+      WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, condition);
+  GREYAssert(matched, errorDescription);
+}
+
 - (NSString*)currentTabTitle {
   return [ChromeEarlGreyAppInterface currentTabTitle];
 }

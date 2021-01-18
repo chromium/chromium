@@ -204,16 +204,21 @@ source_set("eg2_tests") {
     "//build/config/ios:xctest_config",
   ]
   testonly = true
+  sources = [ "password_controller_egtest.mm" ]
   deps = [
     ":eg_test_support+eg2",
     "//base",
     "//base/test:test_support",
     "//components/password_manager/core/common",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/ui/infobars/banners:public",
+    "//ios/chrome/test:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/third_party/earl_grey2:test_lib",
     "//ios/web/public/test/http_server",
     "//net:test_support",
+    "//ui/base:base",
   ]
   frameworks = [ "UIKit.framework" ]
 }
@@ -232,6 +237,7 @@ source_set("eg_app_support+eg2") {
   deps = [
     ":passwords",
     "//base",
+    "//base/test:test_support",
     "//components/autofill/core/common",
     "//components/keyed_service/core",
     "//components/password_manager/core/browser",
