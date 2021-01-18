@@ -32,7 +32,7 @@ class MODULES_EXPORT ScreenOrientationController final
       public Supplement<LocalDOMWindow> {
  public:
   explicit ScreenOrientationController(LocalDOMWindow&);
-  ~ScreenOrientationController();
+  ~ScreenOrientationController() override;
 
   void SetOrientation(ScreenOrientation*);
   void NotifyOrientationChanged();

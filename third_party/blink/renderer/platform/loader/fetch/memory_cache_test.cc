@@ -104,12 +104,12 @@ class MemoryCacheTest : public testing::Test {
     global_memory_cache_ = ReplaceMemoryCacheForTesting(
         MakeGarbageCollected<MemoryCache>(platform_->test_task_runner()));
     auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
+    lifecycle_notifier_ = MakeGarbageCollected<MockContextLifecycleNotifier>();
     fetcher_ = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
         properties->MakeDetachable(), MakeGarbageCollected<MockFetchContext>(),
         base::MakeRefCounted<scheduler::FakeTaskRunner>(),
         base::MakeRefCounted<scheduler::FakeTaskRunner>(),
-        MakeGarbageCollected<TestLoaderFactory>(),
-        MakeGarbageCollected<MockContextLifecycleNotifier>()));
+        MakeGarbageCollected<TestLoaderFactory>(), lifecycle_notifier_));
   }
 
   void TearDown() override {
@@ -118,6 +118,7 @@ class MemoryCacheTest : public testing::Test {
 
   Persistent<MemoryCache> global_memory_cache_;
   Persistent<ResourceFetcher> fetcher_;
+  Persistent<MockContextLifecycleNotifier> lifecycle_notifier_;
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform_;
 };

@@ -59,7 +59,7 @@ class CORE_EXPORT Fullscreen final : public GarbageCollected<Fullscreen>,
   static const char kSupplementName[];
 
   explicit Fullscreen(LocalDOMWindow&);
-  virtual ~Fullscreen();
+  ~Fullscreen() override;
 
   static Element* FullscreenElementFrom(Document&);
   static Element* FullscreenElementForBindingFrom(TreeScope&);

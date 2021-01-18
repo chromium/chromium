@@ -42,7 +42,7 @@ class ClipboardPromise final : public GarbageCollected<ClipboardPromise>,
                                           const String&);
 
   ClipboardPromise(ExecutionContext*, ScriptState*);
-  virtual ~ClipboardPromise();
+  ~ClipboardPromise() override;
 
   // Completes current write and starts next write.
   void CompleteWriteRepresentation();

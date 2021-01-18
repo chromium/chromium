@@ -61,7 +61,7 @@ class CORE_EXPORT InputMethodController final
   };
 
   explicit InputMethodController(LocalDOMWindow&, LocalFrame&);
-  virtual ~InputMethodController();
+  ~InputMethodController() override;
   void Trace(Visitor*) const override;
 
   // international text input composition

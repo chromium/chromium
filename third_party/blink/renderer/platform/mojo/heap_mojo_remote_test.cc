@@ -35,7 +35,7 @@ class MockContext final : public GarbageCollected<MockContext>,
 
   void NotifyContextDestroyed() {
     observers_.ForEachObserver([](ContextLifecycleObserver* observer) {
-      observer->ContextDestroyed();
+      observer->NotifyContextDestroyed();
     });
   }
 

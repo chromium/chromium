@@ -148,8 +148,7 @@ void ExecutionContext::NotifyContextDestroyed() {
   is_context_destroyed_ = true;
   context_lifecycle_observer_set_.ForEachObserver(
       [](ContextLifecycleObserver* observer) {
-        observer->ContextDestroyed();
-        observer->ObserverSetWillBeCleared();
+        observer->NotifyContextDestroyed();
       });
   context_lifecycle_observer_set_.Clear();
 }

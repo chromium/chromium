@@ -115,7 +115,7 @@ class MODULES_EXPORT UserMediaRequest final
                    MediaConstraints video,
                    Callbacks*,
                    IdentifiableSurface surface);
-  virtual ~UserMediaRequest();
+  ~UserMediaRequest() override;
 
   LocalDOMWindow* GetWindow();
 

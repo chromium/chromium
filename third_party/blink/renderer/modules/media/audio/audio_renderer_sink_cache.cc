@@ -39,7 +39,7 @@ class AudioRendererSinkCache::WindowObserver final
   explicit WindowObserver(LocalDOMWindow& window)
       : Supplement<LocalDOMWindow>(window),
         ExecutionContextLifecycleObserver(&window) {}
-  ~WindowObserver() = default;
+  ~WindowObserver() override = default;
 
   void Trace(Visitor* visitor) const final {
     Supplement<LocalDOMWindow>::Trace(visitor);

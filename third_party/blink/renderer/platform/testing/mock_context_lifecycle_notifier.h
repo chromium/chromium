@@ -28,7 +28,7 @@ class MockContextLifecycleNotifier final
 
   void NotifyContextDestroyed() {
     observers_.ForEachObserver([](ContextLifecycleObserver* observer) {
-      observer->ContextDestroyed();
+      observer->NotifyContextDestroyed();
     });
   }
 

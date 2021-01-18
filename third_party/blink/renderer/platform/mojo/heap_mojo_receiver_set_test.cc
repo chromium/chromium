@@ -38,7 +38,7 @@ class FakeContextNotifier final : public GarbageCollected<FakeContextNotifier>,
 
   void NotifyContextDestroyed() {
     observers_.ForEachObserver([](ContextLifecycleObserver* observer) {
-      observer->ContextDestroyed();
+      observer->NotifyContextDestroyed();
     });
   }
 

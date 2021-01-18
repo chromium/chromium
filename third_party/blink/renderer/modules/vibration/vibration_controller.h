@@ -52,7 +52,7 @@ class MODULES_EXPORT VibrationController final
   static bool vibrate(Navigator&, const VibrationPattern&);
 
   explicit VibrationController(Navigator&);
-  virtual ~VibrationController();
+  ~VibrationController() override;
 
   static VibrationPattern SanitizeVibrationPattern(
       const UnsignedLongOrUnsignedLongSequence&);
