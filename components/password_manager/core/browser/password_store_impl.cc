@@ -266,16 +266,6 @@ PasswordStoreImpl::GetMatchingCompromisedCredentialsImpl(
   return compromised_credentials;
 }
 
-bool PasswordStoreImpl::RemoveCompromisedCredentialsByUrlAndTimeImpl(
-    const base::RepeatingCallback<bool(const GURL&)>& url_filter,
-    base::Time remove_begin,
-    base::Time remove_end) {
-  DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
-  return login_db_ &&
-         login_db_->insecure_credentials_table().RemoveRowsByUrlAndTime(
-             url_filter, remove_begin, remove_end);
-}
-
 void PasswordStoreImpl::AddFieldInfoImpl(const FieldInfo& field_info) {
   if (login_db_)
     login_db_->field_info_table().AddRow(field_info);

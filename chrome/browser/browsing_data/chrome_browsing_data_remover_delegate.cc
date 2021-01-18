@@ -822,13 +822,11 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
         profile_, ServiceAccessType::EXPLICIT_ACCESS);
 
     if (password_store) {
+      // TODO:(crbug.com/1167715) - Test that associated compromised credentials
+      // are removed.
       password_store->RemoveLoginsByURLAndTime(
           filter, delete_begin_, delete_end_,
           CreateTaskCompletionClosure(TracingDataType::kPasswords));
-      password_store->RemoveCompromisedCredentialsByUrlAndTime(
-          nullable_filter, delete_begin_, delete_end_,
-          CreateTaskCompletionClosure(
-              TracingDataType::kCompromisedCredentials));
     }
 
     BrowserContext::GetDefaultStoragePartition(profile_)
@@ -868,15 +866,13 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
         profile_, ServiceAccessType::EXPLICIT_ACCESS);
 
     if (account_store) {
+      // TODO:(crbug.com/1167715) - Test that associated compromised credentials
+      // are removed.
       account_store->RemoveLoginsByURLAndTime(
           filter, delete_begin_, delete_end_,
           CreateTaskCompletionClosure(TracingDataType::kAccountPasswords),
           CreateTaskCompletionCallback(TracingDataType::kAccountPasswordsSynced,
                                        constants::DATA_TYPE_ACCOUNT_PASSWORDS));
-      account_store->RemoveCompromisedCredentialsByUrlAndTime(
-          nullable_filter, delete_begin_, delete_end_,
-          CreateTaskCompletionClosure(
-              TracingDataType::kAccountCompromisedCredentials));
     }
   }
 

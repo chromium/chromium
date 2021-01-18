@@ -370,20 +370,6 @@ TestPasswordStore::GetMatchingCompromisedCredentialsImpl(
   return result;
 }
 
-bool TestPasswordStore::RemoveCompromisedCredentialsByUrlAndTimeImpl(
-    const base::RepeatingCallback<bool(const GURL&)>& url_filter,
-    base::Time remove_begin,
-    base::Time remove_end) {
-  const size_t old_size = compromised_credentials_.size();
-  base::EraseIf(compromised_credentials_, [&](const auto& credential) {
-    return remove_begin <= credential.create_time &&
-           credential.create_time < remove_end &&
-           (!url_filter || url_filter.Run(GURL(credential.signon_realm)));
-  });
-
-  return old_size != compromised_credentials_.size();
-}
-
 void TestPasswordStore::AddFieldInfoImpl(const FieldInfo& field_info) {
   NOTIMPLEMENTED();
 }

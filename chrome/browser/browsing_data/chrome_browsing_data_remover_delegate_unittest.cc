@@ -2016,41 +2016,6 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
       false);
 }
 
-TEST_F(ChromeBrowsingDataRemoverDelegateTest,
-       RemoveCompromisedCredentialsByTimeOnly) {
-  RemovePasswordsTester tester(GetProfile());
-  base::RepeatingCallback<bool(const GURL&)> empty_filter;
-
-  EXPECT_CALL(
-      *tester.profile_store(),
-      RemoveCompromisedCredentialsByUrlAndTimeImpl(
-          ProbablySameFilter(empty_filter), base::Time(), base::Time::Max()));
-  BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
-                                constants::DATA_TYPE_PASSWORDS, false);
-}
-
-TEST_F(ChromeBrowsingDataRemoverDelegateTest,
-       RemoveCompromisedAccountCredentialsByTimeOnly_WithAccountStore) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_manager::features::kEnablePasswordsAccountStorage);
-
-  RemovePasswordsTester tester(GetProfile());
-  base::RepeatingCallback<bool(const GURL&)> empty_filter;
-
-  EXPECT_CALL(*tester.profile_store(),
-              RemoveCompromisedCredentialsByUrlAndTimeImpl(_, _, _))
-      .Times(0);
-
-  EXPECT_CALL(
-      *tester.account_store(),
-      RemoveCompromisedCredentialsByUrlAndTimeImpl(
-          ProbablySameFilter(empty_filter), base::Time(), base::Time::Max()));
-
-  BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
-                                constants::DATA_TYPE_ACCOUNT_PASSWORDS, false);
-}
-
 // TODO(crbug.com/589586): Disabled, since history is not yet marked as
 // a filterable datatype.
 TEST_F(ChromeBrowsingDataRemoverDelegateTest,

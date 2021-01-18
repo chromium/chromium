@@ -298,17 +298,6 @@ class PasswordStore : protected PasswordStoreSync,
       const std::string& signon_realm,
       CompromisedCredentialsConsumer* consumer);
 
-  // Removes all compromised credentials in the given date range. If
-  // |url_filter| is not null, only compromised credentials for matching urls
-  // are removed. If |completion| is not null, it will be posted to the
-  // |main_task_runner_| after deletions have been completed. Should be called
-  // on the UI thread.
-  void RemoveCompromisedCredentialsByUrlAndTime(
-      base::RepeatingCallback<bool(const GURL&)> url_filter,
-      base::Time remove_begin,
-      base::Time remove_end,
-      base::OnceClosure completion);
-
   // Adds information about field. If the record for given form_signature and
   // field_signature already exists, the new one will be ignored.
   void AddFieldInfo(const FieldInfo& field_info);
@@ -563,10 +552,6 @@ class PasswordStore : protected PasswordStoreSync,
   GetAllCompromisedCredentialsImpl() = 0;
   virtual std::vector<CompromisedCredentials>
   GetMatchingCompromisedCredentialsImpl(const std::string& signon_realm) = 0;
-  virtual bool RemoveCompromisedCredentialsByUrlAndTimeImpl(
-      const base::RepeatingCallback<bool(const GURL&)>& url_filter,
-      base::Time remove_begin,
-      base::Time remove_end) = 0;
 
   // Synchronous implementation for manipulating with information about field
   // info.

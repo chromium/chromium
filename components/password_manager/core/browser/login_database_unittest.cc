@@ -2604,6 +2604,28 @@ TEST_F(LoginDatabaseTest, GetLoginsEncryptedPassword) {
   ASSERT_FALSE(forms[0]->encrypted_password.empty());
 }
 
+TEST_F(LoginDatabaseTest, RemovingLoginRemovesCompromisedCredentials) {
+  PasswordForm form;
+  GenerateExamplePasswordForm(&form);
+
+  ignore_result(db().AddLogin(form));
+  CompromisedCredentials credential1{form.signon_realm, form.username_value,
+                                     base::Time(), CompromiseType::kLeaked,
+                                     IsMuted(false)};
+  CompromisedCredentials credential2 = credential1;
+  credential2.compromise_type = CompromiseType::kPhished;
+
+  db().insecure_credentials_table().AddRow(credential1);
+  db().insecure_credentials_table().AddRow(credential2);
+
+  EXPECT_THAT(db().insecure_credentials_table().GetAllRows(),
+              testing::ElementsAre(credential1, credential2));
+
+  EXPECT_TRUE(db().RemoveLogin(form, nullptr));
+  EXPECT_THAT(db().insecure_credentials_table().GetAllRows(),
+              testing::IsEmpty());
+}
+
 class LoginDatabaseForAccountStoreTest : public testing::Test {
  protected:
   void SetUp() override {
