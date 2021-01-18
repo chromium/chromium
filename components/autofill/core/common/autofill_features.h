@@ -95,6 +95,8 @@ bool IsMacViewsAutofillPopupExperimentEnabled();
 
 #if defined(OS_IOS)
 extern const base::Feature kAutofillUseUniqueRendererIDsOnIOS;
+extern const base::Feature
+    kAutofillEnableNewAddressProfileCreationInSettingsOnIOS;
 #endif  // OS_IOS
 
 #if defined(OS_ANDROID)
