@@ -118,6 +118,8 @@ void ManualFillingControllerImpl::RefreshSuggestions(
 
 void ManualFillingControllerImpl::NotifyFocusedInputChanged(
     autofill::mojom::FocusedFieldType focused_field_type) {
+  TRACE_EVENT0("passwords",
+               "ManualFillingControllerImpl::NotifyFocusedInputChanged");
   focused_field_type_ = focused_field_type;
 
   // Ensure warnings and filling state is updated according to focused field.
@@ -275,6 +277,7 @@ bool ManualFillingControllerImpl::ShouldShowAccessory() const {
 }
 
 void ManualFillingControllerImpl::UpdateVisibility() {
+  TRACE_EVENT0("passwords", "ManualFillingControllerImpl::UpdateVisibility");
   if (ShouldShowAccessory()) {
     for (const FillingSource& source : available_sources_) {
       if (!available_sheets_.contains(source))
