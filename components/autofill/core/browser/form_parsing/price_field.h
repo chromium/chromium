@@ -26,7 +26,7 @@ class PriceField : public FormField {
   static std::unique_ptr<FormField> Parse(AutofillScanner* scanner,
                                           const LanguageCode& page_language,
                                           LogManager* log_manager);
-  PriceField(const AutofillField* field);
+  explicit PriceField(const AutofillField* field);
 
  protected:
   void AddClassifications(FieldCandidatesMap* field_candidates) const override;

@@ -30,12 +30,12 @@ class AddressFieldTest : public FormFieldTest {
 };
 
 TEST_F(AddressFieldTest, Empty) {
-  ClassifyAndVerify(/*parsed=*/false);
+  ClassifyAndVerify(ParseResult::NOT_PARSED);
 }
 
 TEST_F(AddressFieldTest, NonParse) {
   AddTextFormFieldData("", "", UNKNOWN_TYPE);
-  ClassifyAndVerify(/*parsed=*/false);
+  ClassifyAndVerify(ParseResult::NOT_PARSED);
 }
 
 TEST_F(AddressFieldTest, ParseOneLineAddress) {
@@ -117,7 +117,7 @@ TEST_F(AddressFieldTest, NotParseHouseNumberWithoutStreetName) {
       features::kAutofillEnableSupportForMoreStructureInAddresses);
 
   AddTextFormFieldData("house-number", "House number", UNKNOWN_TYPE);
-  ClassifyAndVerify(/*parsed=*/false);
+  ClassifyAndVerify(ParseResult::NOT_PARSED);
 }
 
 // Tests that the dependent locality is correctly classified with
@@ -209,20 +209,20 @@ TEST_F(AddressFieldTest, ParseTurkishCityStateWithLabelPrecedence) {
 
   AddTextFormFieldData("city", "Il", ADDRESS_HOME_STATE);
   AddTextFormFieldData("county", "Ilce", ADDRESS_HOME_CITY);
-  ClassifyAndVerify(/*parsed=*/true, LanguageCode("tr"));
+  ClassifyAndVerify(ParseResult::PARSED, LanguageCode("tr"));
 }
 
 // Tests that address name is not misclassified as address.
 TEST_F(AddressFieldTest, NotParseAddressName) {
   AddTextFormFieldData("address", "Adres Başlığı", UNKNOWN_TYPE);
-  ClassifyAndVerify(/*parsed=*/false, LanguageCode("tr"));
+  ClassifyAndVerify(ParseResult::NOT_PARSED, LanguageCode("tr"));
 }
 
 // Tests that the address components sequence in a label is classified
 // as |ADDRESS_HOME_LINE1|.
 TEST_F(AddressFieldTest, ParseAddressComponentsSequenceAsAddressLine1) {
   AddTextFormFieldData("detail", "Улица, дом, квартира", ADDRESS_HOME_LINE1);
-  ClassifyAndVerify(/*parsed=*/true, LanguageCode("ru"));
+  ClassifyAndVerify(ParseResult::PARSED, LanguageCode("ru"));
 }
 
 // Tests that the address components sequence in a label is classified
@@ -231,7 +231,7 @@ TEST_F(AddressFieldTest, ParseAddressComponentsSequenceAsStreetAddress) {
   AddFormFieldData("textarea", "detail",
                    "Mahalle, sokak, cadde ve diğer bilgilerinizi girin",
                    ADDRESS_HOME_STREET_ADDRESS);
-  ClassifyAndVerify(/*parsed=*/true, LanguageCode("tr"));
+  ClassifyAndVerify(ParseResult::PARSED, LanguageCode("tr"));
 }
 
 }  // namespace autofill
