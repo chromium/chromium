@@ -762,6 +762,121 @@ TEST_P(FormDataImporterTest, ImportAddressProfiles_TwoDifferentEmails) {
   ASSERT_EQ(0U, personal_data_manager_->GetProfiles().size());
 }
 
+// Tests that multiple phone numbers do not block profile import and the first
+// one is saved.
+TEST_P(FormDataImporterTest, ImportAddressProfiles_MultiplePhoneNumbers) {
+  base::test::ScopedFeatureList enable_import_when_multiple_phones_feature;
+  enable_import_when_multiple_phones_feature.InitAndEnableFeature(
+      features::kAutofillEnableImportWhenMultiplePhoneNumbers);
+
+  FormData form;
+  form.url = GURL("https://wwww.foo.com");
+
+  FormFieldData field;
+  test::CreateTestFormField("First name:", "first_name", "George", "text",
+                            &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("Last name:", "last_name", "Washington", "text",
+                            &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("Address:", "address1", "21 Laussat St", "text",
+                            &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("City:", "city", "San Francisco", "text", &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("State:", "state", "California", "text", &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("Zip:", "zip", "94102", "text", &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("Phone 1:", "phone1", "+16505550000", "text",
+                            &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("Phone 2:", "phone2", "+14155551234", "text",
+                            &field);
+  form.fields.push_back(field);
+
+  FormStructure form_structure(form);
+  form_structure.DetermineHeuristicTypes();
+  ImportAddressProfiles(/*extraction_successful=*/true, form_structure);
+
+  AutofillProfile expected(base::GenerateGUID(), test::kEmptyOrigin);
+  test::SetProfileInfo(&expected, "George", nullptr, "Washington", nullptr,
+                       nullptr, "21 Laussat St", nullptr, "San Francisco",
+                       "California", "94102", nullptr, "1 650-555-0000");
+
+  const std::vector<AutofillProfile*>& results =
+      personal_data_manager_->GetProfiles();
+  ASSERT_EQ(1U, results.size());
+  EXPECT_EQ(0, expected.Compare(*results[0]));
+}
+
+// Tests that multiple phone numbers do not block profile import and the first
+// one is saved.
+TEST_P(FormDataImporterTest,
+       ImportAddressProfiles_MultiplePhoneNumbersSplitAcrossMultipleFields) {
+  base::test::ScopedFeatureList enable_import_when_multiple_phones_feature;
+  enable_import_when_multiple_phones_feature.InitAndEnableFeature(
+      features::kAutofillEnableImportWhenMultiplePhoneNumbers);
+
+  FormData form;
+  form.url = GURL("https://wwww.foo.com");
+
+  FormFieldData field;
+  test::CreateTestFormField("First name:", "first_name", "George", "text",
+                            &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("Last name:", "last_name", "Washington", "text",
+                            &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("Address:", "address1", "21 Laussat St", "text",
+                            &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("City:", "city", "San Francisco", "text", &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("State:", "state", "California", "text", &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("Zip:", "zip", "94102", "text", &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("Phone 1:", "home_phone_area_code1", "650", "text",
+                            &field);
+  field.max_length = 3;
+  form.fields.push_back(field);
+  test::CreateTestFormField("Phone 1:", "home_phone_prefix1", "555", "text",
+                            &field);
+  field.max_length = 3;
+  form.fields.push_back(field);
+  test::CreateTestFormField("Phone 1:", "home_phone_suffix1", "0000", "text",
+                            &field);
+  field.max_length = 4;
+  form.fields.push_back(field);
+  test::CreateTestFormField("Phone 2:", "home_phone_area_code2", "202", "text",
+                            &field);
+  field.max_length = 3;
+  form.fields.push_back(field);
+  test::CreateTestFormField("Phone 2:", "home_phone_prefix2", "555", "text",
+                            &field);
+  field.max_length = 3;
+  form.fields.push_back(field);
+  test::CreateTestFormField("Phone 2:", "home_phone_suffix2", "1234", "text",
+                            &field);
+  field.max_length = 4;
+  form.fields.push_back(field);
+
+  FormStructure form_structure(form);
+  form_structure.DetermineHeuristicTypes();
+  ImportAddressProfiles(/*extraction_successful=*/true, form_structure);
+
+  AutofillProfile expected(base::GenerateGUID(), test::kEmptyOrigin);
+  test::SetProfileInfo(&expected, "George", nullptr, "Washington", nullptr,
+                       nullptr, "21 Laussat St", nullptr, "San Francisco",
+                       "California", "94102", nullptr, "(650) 555-0000");
+
+  const std::vector<AutofillProfile*>& results =
+      personal_data_manager_->GetProfiles();
+  ASSERT_EQ(1U, results.size());
+  EXPECT_EQ(0, expected.Compare(*results[0]));
+}
+
 // Tests that not enough filled fields will result in not importing an address.
 TEST_P(FormDataImporterTest, ImportAddressProfiles_NotEnoughFilledFields) {
   FormData form;

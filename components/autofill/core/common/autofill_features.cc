@@ -98,6 +98,13 @@ const base::Feature kAutofillEnableDependentLocalityParsing{
 const base::Feature kAutofillEnableHideSuggestionsUI{
     "AutofillEnableHideSuggestionsUI", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls whether to save the first number in a form with multiple phone
+// numbers instead of aborting the import.
+// TODO(crbug.com/1167484) Remove once launched
+const base::Feature kAutofillEnableImportWhenMultiplePhoneNumbers{
+    "AutofillEnableImportWhenMultiplePhoneNumbers",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // When enabled and user has single account, a footer indicating user's e-mail
 // address and profile picture will appear at the bottom of InfoBars which has
 // corresponding account indication footer flags on.

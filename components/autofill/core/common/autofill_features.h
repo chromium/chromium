@@ -33,6 +33,7 @@ extern const base::Feature kAutofillEnableAccountWalletStorage;
 extern const base::Feature kAutofillEnableAugmentedPhoneCountryCode;
 extern const base::Feature kAutofillEnableDependentLocalityParsing;
 extern const base::Feature kAutofillEnableHideSuggestionsUI;
+extern const base::Feature kAutofillEnableImportWhenMultiplePhoneNumbers;
 extern const base::Feature
     kAutofillEnableInfoBarAccountIndicationFooterForSingleAccountUsers;
 extern const base::Feature

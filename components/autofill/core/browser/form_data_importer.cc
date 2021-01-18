@@ -58,11 +58,21 @@ bool IsValidFieldTypeAndValue(const std::set<ServerFieldType>& types_seen,
                               LogBuffer* import_log_buffer) {
   // Abandon the import if two fields of the same type are encountered.
   // This indicates ambiguous data or miscategorization of types.
-  // Make an exception for PHONE_HOME_NUMBER however as both prefix and
-  // suffix are stored against this type, and for EMAIL_ADDRESS because it is
-  // common to see second 'confirm email address' fields on forms.
-  if (types_seen.count(field_type) && field_type != PHONE_HOME_NUMBER &&
-      field_type != EMAIL_ADDRESS) {
+  // Make an exception for:
+  // - EMAIL_ADDRESS because it is common to see second 'confirm email address'
+  // field;
+  // - PHONE_HOME_NUMBER because it is used to store both prefix and suffix of a
+  // single number;
+  // - phone number components because a form might request several phone
+  // numbers.
+  // TODO(crbug.com/1156315) Remove feature & PHONE_HOME_NUMBER checks when
+  // launched.
+  auto field_type_group = AutofillType(field_type).group();
+  if (types_seen.count(field_type) && field_type != EMAIL_ADDRESS &&
+      (base::FeatureList::IsEnabled(
+           features::kAutofillEnableImportWhenMultiplePhoneNumbers)
+           ? field_type_group != PHONE_BILLING && field_type_group != PHONE_HOME
+           : field_type != PHONE_HOME_NUMBER)) {
     if (import_log_buffer) {
       *import_log_buffer << LogMessage::kImportAddressProfileFromFormFailed
                          << "Multiple fields of type "
@@ -529,6 +539,10 @@ bool FormDataImporter::ImportAddressProfileForSection(
   // Tracks if the form section contains an invalid country.
   bool has_invalid_country = false;
 
+  // Tracks if subsequent phone number fields should be ignored,
+  // since they do not belong to the first phone number in the form.
+  bool ignore_phone_number_fields = false;
+
   // Go through each |form| field and attempt to constitute a valid profile.
   for (const auto& field : form) {
     // Reject fields that are not within the specified |section|.
@@ -576,6 +590,27 @@ bool FormDataImporter::ImportAddressProfileForSection(
     if (!IsValidFieldTypeAndValue(types_seen, server_field_type, value,
                                   import_log_buffer))
       has_invalid_field_types = true;
+
+    // Found phone number component field.
+    // TODO(crbug.com/1156315) Remove feature check when launched.
+    if ((field_type.group() == PHONE_BILLING ||
+         field_type.group() == PHONE_HOME) &&
+        base::FeatureList::IsEnabled(
+            features::kAutofillEnableImportWhenMultiplePhoneNumbers)) {
+      if (ignore_phone_number_fields)
+        continue;
+      // PHONE_HOME_NUMBER is used for both prefix and suffix, so it might occur
+      // multiple times for a single number. Duplication of any other phone
+      // component means it belongs to a new number. Since Autofill currently
+      // supports storing only one phone number per profile, ignore this and all
+      // subsequent phone number fields.
+      if (server_field_type != PHONE_HOME_NUMBER &&
+          types_seen.count(server_field_type)) {
+        ignore_phone_number_fields = true;
+        continue;
+      }
+    }
+
     types_seen.insert(server_field_type);
 
     // We need to store phone data in the variables, before building the whole
