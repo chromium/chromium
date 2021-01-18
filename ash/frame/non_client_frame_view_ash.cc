@@ -32,6 +32,7 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/view_targeter.h"
 #include "ui/views/widget/widget.h"
@@ -71,6 +72,10 @@ class NonClientFrameViewAshImmersiveHelper : public WindowStateObserver,
     custom_frame_view->InitImmersiveFullscreenControllerForView(
         immersive_fullscreen_controller_.get());
   }
+  NonClientFrameViewAshImmersiveHelper(
+      const NonClientFrameViewAshImmersiveHelper&) = delete;
+  NonClientFrameViewAshImmersiveHelper& operator=(
+      const NonClientFrameViewAshImmersiveHelper&) = delete;
 
   ~NonClientFrameViewAshImmersiveHelper() override {
     if (Shell::Get()->tablet_mode_controller())
@@ -143,8 +148,6 @@ class NonClientFrameViewAshImmersiveHelper : public WindowStateObserver,
   WindowState* window_state_;
   std::unique_ptr<ImmersiveFullscreenController>
       immersive_fullscreen_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(NonClientFrameViewAshImmersiveHelper);
 };
 
 // View which takes up the entire widget and contains the HeaderView. HeaderView
@@ -154,6 +157,8 @@ class NonClientFrameViewAsh::OverlayView : public views::View,
                                            public views::ViewTargeterDelegate {
  public:
   explicit OverlayView(HeaderView* header_view);
+  OverlayView(const OverlayView&) = delete;
+  OverlayView& operator=(const OverlayView&) = delete;
   ~OverlayView() override;
 
   // views::View:
@@ -166,8 +171,6 @@ class NonClientFrameViewAsh::OverlayView : public views::View,
                          const gfx::Rect& rect) const override;
 
   HeaderView* header_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(OverlayView);
 };
 
 NonClientFrameViewAsh::OverlayView::OverlayView(HeaderView* header_view)
@@ -204,9 +207,6 @@ bool NonClientFrameViewAsh::OverlayView::DoesIntersectRect(
   // can be handled by the client view.
   return header_view_->HitTestRect(rect);
 }
-
-// static
-const char NonClientFrameViewAsh::kViewClassName[] = "NonClientFrameViewAsh";
 
 NonClientFrameViewAsh::NonClientFrameViewAsh(views::Widget* frame)
     : frame_(frame),
@@ -331,10 +331,6 @@ void NonClientFrameViewAsh::Layout() {
                             NonClientTopBorderHeight());
 }
 
-const char* NonClientFrameViewAsh::GetClassName() const {
-  return kViewClassName;
-}
-
 gfx::Size NonClientFrameViewAsh::GetMinimumSize() const {
   if (!GetEnabled())
     return gfx::Size();
@@ -424,5 +420,8 @@ void NonClientFrameViewAsh::PaintAsActiveChanged() {
   header_view_->GetFrameHeader()->SetPaintAsActive(ShouldPaintAsActive());
   frame_->non_client_view()->Layout();
 }
+
+BEGIN_METADATA(NonClientFrameViewAsh, views::NonClientFrameView)
+END_METADATA
 
 }  // namespace ash
