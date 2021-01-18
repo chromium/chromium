@@ -216,7 +216,10 @@ class CertProvisioningWorkerImpl : public CertProvisioningWorker {
   void OnCleanUpDone();
 
   // Returns true if there are no errors and the flow can be continued.
+  // |request_type| is the type of the request to which the DM server has
+  // responded with the given |status|.
   bool ProcessResponseErrors(
+      DeviceManagementServerRequestType request_type,
       policy::DeviceManagementStatus status,
       base::Optional<CertProvisioningResponseErrorType> error,
       base::Optional<int64_t> try_later);

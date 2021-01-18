@@ -237,6 +237,21 @@ void VerifyDeleteKeyCalledOnce(CertScope cert_scope) {
             /*data_to_sign=*/""));                                           \
   }
 
+#define EXPECT_START_CSR_SERVICE_ACTIVATION_PENDING(START_CSR_FUNC)            \
+  {                                                                            \
+    EXPECT_CALL(cloud_policy_client_, START_CSR_FUNC)                          \
+        .Times(1)                                                              \
+        .WillOnce(RunOnceCallback<4>(policy::DeviceManagementStatus::          \
+                                         DM_STATUS_SERVICE_ACTIVATION_PENDING, \
+                                     /*response_error=*/base::nullopt,         \
+                                     /*try_again_later_ms=*/base::nullopt,     \
+                                     /*invalidation_topic=*/"",                \
+                                     /*va_challenge=*/"",                      \
+                                     enterprise_management::HashingAlgorithm:: \
+                                         HASHING_ALGORITHM_UNSPECIFIED,        \
+                                     /*data_to_sign=*/""));                    \
+  }
+
 #define EXPECT_START_CSR_INCONSISTENT_DATA(START_CSR_FUNC)                   \
   {                                                                          \
     EXPECT_CALL(cloud_policy_client_, START_CSR_FUNC)                        \
@@ -273,6 +288,15 @@ void VerifyDeleteKeyCalledOnce(CertScope cert_scope) {
             /*try_again_later_ms=*/(DELAY_MS)));                              \
   }
 
+#define EXPECT_FINISH_CSR_SERVICE_ACTIVATION_PENDING(FINISH_CSR_FUNC)          \
+  {                                                                            \
+    EXPECT_CALL(cloud_policy_client_, FINISH_CSR_FUNC)                         \
+        .Times(1)                                                              \
+        .WillOnce(RunOnceCallback<6>(policy::DeviceManagementStatus::          \
+                                         DM_STATUS_SERVICE_ACTIVATION_PENDING, \
+                                     base::nullopt, base::nullopt));           \
+  }
+
 #define EXPECT_DOWNLOAD_CERT_OK(DOWNLOAD_CERT_FUNC)                           \
   {                                                                           \
     EXPECT_CALL(cloud_policy_client_, DOWNLOAD_CERT_FUNC)                     \
@@ -281,6 +305,17 @@ void VerifyDeleteKeyCalledOnce(CertScope cert_scope) {
             policy::DeviceManagementStatus::DM_STATUS_SUCCESS, base::nullopt, \
             base::nullopt, kFakeCertificate));                                \
   }
+
+#define EXPECT_DOWNLOAD_CERT_SERVICE_ACTIVATION_PENDING(DOWNLOAD_CERT_FUNC)    \
+  {                                                                            \
+    EXPECT_CALL(cloud_policy_client_, DOWNLOAD_CERT_FUNC)                      \
+        .Times(1)                                                              \
+        .WillOnce(RunOnceCallback<4>(policy::DeviceManagementStatus::          \
+                                         DM_STATUS_SERVICE_ACTIVATION_PENDING, \
+                                     base::nullopt, base::nullopt,             \
+                                     kFakeCertificate));                       \
+  }
+
 #define EXPECT_DOWNLOAD_CERT_TRY_LATER(DOWNLOAD_CERT_FUNC, DELAY_MS)          \
   {                                                                           \
     EXPECT_CALL(cloud_policy_client_, DOWNLOAD_CERT_FUNC)                     \
@@ -944,6 +979,136 @@ TEST_F(CertProvisioningWorkerTest, TryLaterWait) {
                 Callback(cert_profile, CertProvisioningWorkerState::kSucceeded))
         .Times(1);
     FastForwardBy(download_cert_real_delay + small_delay);
+    EXPECT_EQ(worker.GetState(), CertProvisioningWorkerState::kSucceeded);
+  }
+}
+
+// Checks that when the device management server returns a
+// DM_STATUS_SERVICE_ACTIVATION_PENDING status error (which is 412 pending
+// approval) the server retries the request after the expected delay depending
+// on the request.
+TEST_F(CertProvisioningWorkerTest, ServiceActivationPendingResponse) {
+  CertProfile cert_profile(kCertProfileId, kCertProfileName,
+                           kCertProfileVersion,
+                           /*is_va_enabled=*/true, kCertProfileRenewalPeriod);
+
+  MockTpmChallengeKeySubtle* mock_tpm_challenge_key = PrepareTpmChallengeKey();
+  CertProvisioningWorkerImpl worker(
+      CertScope::kUser, GetProfile(), &testing_pref_service_, cert_profile,
+      &cloud_policy_client_, MakeInvalidator(), GetStateChangeCallback(),
+      GetResultCallback());
+
+  const TimeDelta kSmallDelay = TimeDelta::FromMilliseconds(500);
+  const TimeDelta kExpectedStartCsrDelay = TimeDelta::FromHours(1);
+  const TimeDelta kExpectedFinishCsrDelay = TimeDelta::FromHours(1);
+  const TimeDelta kExpectedDownloadCsrDelay = TimeDelta::FromHours(8);
+
+  EXPECT_CALL(state_change_callback_observer_, StateChangeCallback)
+      .Times(AtLeast(1));
+  {
+    testing::InSequence seq;
+
+    EXPECT_PREPARE_KEY_OK(
+        *mock_tpm_challenge_key,
+        StartPrepareKeyStep(attestation::AttestationKeyType::KEY_USER,
+                            /*will_register_key=*/true,
+                            GetKeyName(kCertProfileId),
+                            /*profile=*/_,
+                            /*callback=*/_));
+
+    EXPECT_START_CSR_SERVICE_ACTIVATION_PENDING(ClientCertProvisioningStartCsr(
+        kCertScopeStrUser, kCertProfileId, kCertProfileVersion, GetPublicKey(),
+        /*callback=*/_));
+
+    worker.DoStep();
+    EXPECT_EQ(worker.GetState(),
+              CertProvisioningWorkerState::kKeypairGenerated);
+  }
+
+  {
+    testing::InSequence seq;
+
+    // Verify that nothing happens after half of the expected StartCsr delay.
+    FastForwardBy(kExpectedStartCsrDelay / 2);
+    Mock::VerifyAndClearExpectations(&cloud_policy_client_);
+
+    EXPECT_START_CSR_OK(
+        ClientCertProvisioningStartCsr(kCertScopeStrUser, kCertProfileId,
+                                       kCertProfileVersion, GetPublicKey(),
+                                       /*callback=*/_),
+        em::HashingAlgorithm::SHA256);
+
+    EXPECT_SIGN_CHALLENGE_OK(*mock_tpm_challenge_key,
+                             StartSignChallengeStep(kChallenge,
+                                                    /*callback=*/_));
+
+    EXPECT_REGISTER_KEY_OK(*mock_tpm_challenge_key, StartRegisterKeyStep);
+
+    EXPECT_CALL(
+        *key_permissions_manager_,
+        AllowKeyForUsage(/*callback=*/_, platform_keys::KeyUsage::kCorporate,
+                         GetPublicKey()));
+
+    EXPECT_SET_ATTRIBUTE_FOR_KEY_OK(SetAttributeForKey(
+        platform_keys::TokenId::kUser, GetPublicKey(),
+        platform_keys::KeyAttributeType::kCertificateProvisioningId,
+        kCertProfileId, _));
+
+    EXPECT_SIGN_RSAPKC1_DIGEST_OK(SignRSAPKCS1Digest(
+        ::testing::Optional(platform_keys::TokenId::kUser), kDataToSign,
+        GetPublicKey(), platform_keys::HashAlgorithm::HASH_ALGORITHM_SHA256,
+        /*callback=*/_));
+
+    EXPECT_FINISH_CSR_SERVICE_ACTIVATION_PENDING(
+        ClientCertProvisioningFinishCsr(
+            kCertScopeStrUser, kCertProfileId, kCertProfileVersion,
+            GetPublicKey(), kChallengeResponse, kSignature, /*callback=*/_));
+
+    FastForwardBy(kExpectedStartCsrDelay / 2 + kSmallDelay);
+    EXPECT_EQ(worker.GetState(), CertProvisioningWorkerState::kSignCsrFinished);
+  }
+
+  {
+    testing::InSequence seq;
+
+    // Verify that nothing happens after half of the expected FinishCsr delay.
+    FastForwardBy(kExpectedFinishCsrDelay / 2);
+    Mock::VerifyAndClearExpectations(&cloud_policy_client_);
+
+    EXPECT_FINISH_CSR_OK(ClientCertProvisioningFinishCsr(
+        kCertScopeStrUser, kCertProfileId, kCertProfileVersion, GetPublicKey(),
+        kChallengeResponse, kSignature, /*callback=*/_));
+
+    EXPECT_DOWNLOAD_CERT_SERVICE_ACTIVATION_PENDING(
+        ClientCertProvisioningDownloadCert(kCertScopeStrUser, kCertProfileId,
+                                           kCertProfileVersion, GetPublicKey(),
+                                           /*callback=*/_));
+
+    FastForwardBy(kExpectedFinishCsrDelay / 2 + kSmallDelay);
+    EXPECT_EQ(worker.GetState(),
+              CertProvisioningWorkerState::kFinishCsrResponseReceived);
+  }
+
+  {
+    testing::InSequence seq;
+
+    // Verify that nothing happens after half of the expected DownloadCert
+    // delay.
+    FastForwardBy(kExpectedDownloadCsrDelay / 2);
+    Mock::VerifyAndClearExpectations(&cloud_policy_client_);
+
+    EXPECT_DOWNLOAD_CERT_OK(ClientCertProvisioningDownloadCert);
+
+    EXPECT_IMPORT_CERTIFICATE_OK(ImportCertificate(
+        platform_keys::TokenId::kUser, /*certificate=*/_, /*callback=*/_));
+
+    EXPECT_EQ(worker.GetState(),
+              CertProvisioningWorkerState::kFinishCsrResponseReceived);
+
+    EXPECT_CALL(callback_observer_,
+                Callback(cert_profile, CertProvisioningWorkerState::kSucceeded))
+        .Times(1);
+    FastForwardBy(kExpectedDownloadCsrDelay / 2 + kSmallDelay);
     EXPECT_EQ(worker.GetState(), CertProvisioningWorkerState::kSucceeded);
   }
 }

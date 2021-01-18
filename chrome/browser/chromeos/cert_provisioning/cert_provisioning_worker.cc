@@ -39,6 +39,23 @@ constexpr unsigned int kNonVaKeyModulusLengthBits = 2048;
 constexpr base::TimeDelta kMinumumTryAgainLaterDelay =
     base::TimeDelta::FromSeconds(10);
 
+// The delay after which a StartCsr request can be resent after a 412 Pending
+// Approval has been returned by the DM server.
+constexpr base::TimeDelta kRetryStartCsrRequestDelay =
+    base::TimeDelta::FromHours(1);
+// The delay after which a FinishCsr request can be resent after a 412 Pending
+// Approval has been returned by the DM server.
+constexpr base::TimeDelta kRetryFinishCsrRequestDelay =
+    base::TimeDelta::FromHours(1);
+// The delay after which a DownloadCsr request can be resent after a 412 Pending
+// Approval has been returned by the DM server.
+// Note: This request retry delay is more than other delays as a DownloadCsr
+// request may not only fail because of a DM server or a CES server problem but
+// also because of a problem with the Google Certificate Connecter which may
+// take more time to solve.
+constexpr base::TimeDelta kRetryDownloadCsrRequestDelay =
+    base::TimeDelta::FromHours(8);
+
 constexpr net::BackoffEntry::Policy kBackoffPolicy{
     /*num_errors_to_ignore=*/0,
     /*initial_delay_ms=*/30 * 1000 /* (30 seconds) */,
@@ -134,6 +151,18 @@ void MarkKeyAsCorporate(CertScope scope,
       ->AllowKeyForUsage(base::BindOnce(&OnAllowKeyForUsageDone),
                          platform_keys::KeyUsage::kCorporate,
                          public_key_spki_der);
+}
+
+base::TimeDelta GetTryLaterDelayForRequestType(
+    DeviceManagementServerRequestType request_type) {
+  switch (request_type) {
+    case DeviceManagementServerRequestType::kStartCsr:
+      return kRetryStartCsrRequestDelay;
+    case DeviceManagementServerRequestType::kFinishCsr:
+      return kRetryFinishCsrRequestDelay;
+    case DeviceManagementServerRequestType::kDownloadCert:
+      return kRetryDownloadCsrRequestDelay;
+  }
 }
 
 }  // namespace
@@ -439,7 +468,8 @@ void CertProvisioningWorkerImpl::OnStartCsrDone(
     const std::string& data_to_sign) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!ProcessResponseErrors(status, error, try_later)) {
+  if (!ProcessResponseErrors(DeviceManagementServerRequestType::kStartCsr,
+                             status, error, try_later)) {
     return;
   }
 
@@ -622,7 +652,8 @@ void CertProvisioningWorkerImpl::OnFinishCsrDone(
     base::Optional<int64_t> try_later) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!ProcessResponseErrors(status, error, try_later)) {
+  if (!ProcessResponseErrors(DeviceManagementServerRequestType::kFinishCsr,
+                             status, error, try_later)) {
     return;
   }
 
@@ -647,7 +678,8 @@ void CertProvisioningWorkerImpl::OnDownloadCertDone(
     const std::string& pem_encoded_certificate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!ProcessResponseErrors(status, error, try_later)) {
+  if (!ProcessResponseErrors(DeviceManagementServerRequestType::kDownloadCert,
+                             status, error, try_later)) {
     return;
   }
 
@@ -695,6 +727,7 @@ void CertProvisioningWorkerImpl::OnImportCertDone(
 }
 
 bool CertProvisioningWorkerImpl::ProcessResponseErrors(
+    DeviceManagementServerRequestType request_type,
     policy::DeviceManagementStatus status,
     base::Optional<CertProvisioningResponseErrorType> error,
     base::Optional<int64_t> try_later) {
@@ -707,6 +740,18 @@ bool CertProvisioningWorkerImpl::ProcessResponseErrors(
     LOG(WARNING) << "Connection to DM Server failed, error: " << status;
     request_backoff_.InformOfRequest(false);
     ScheduleNextStep(request_backoff_.GetTimeUntilRelease());
+    return false;
+  }
+
+  if (status ==
+      policy::DeviceManagementStatus::DM_STATUS_SERVICE_ACTIVATION_PENDING) {
+    const base::TimeDelta try_later_delay =
+        GetTryLaterDelayForRequestType(request_type);
+    LOG(ERROR) << "A device management server request of type: "
+               << static_cast<int>(request_type)
+               << " will be retried after: " << try_later_delay;
+
+    ScheduleNextStep(std::move(try_later_delay));
     return false;
   }
 

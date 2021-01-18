@@ -65,6 +65,14 @@ enum class CertProvisioningWorkerState {
   kMaxValue = kCanceled,
 };
 
+// Types of the requests sent from the certificate provisioning client to the
+// device management server.
+enum class DeviceManagementServerRequestType {
+  kStartCsr = 0,
+  kFinishCsr = 1,
+  kDownloadCert = 2,
+};
+
 // Returns true if the |state| is one of final states, i. e. worker should
 // finish its task in one of them.
 bool IsFinalState(CertProvisioningWorkerState state);
