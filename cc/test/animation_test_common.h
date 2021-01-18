@@ -42,7 +42,6 @@ class FakeTransformTransition : public TransformAnimationCurve {
 
   base::TimeDelta Duration() const override;
   TransformOperations GetValue(base::TimeDelta time) const override;
-  bool IsTranslation() const override;
   bool PreservesAxisAlignment() const override;
   bool MaximumScale(float* max_scale) const override;
 

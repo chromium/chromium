@@ -117,8 +117,8 @@ class CC_ANIMATION_EXPORT KeyframeEffect {
   bool AnimationsPreserveAxisAlignment() const;
 
   // Returns the maximum scale along any dimension at any destination in active
-  // scale animations, or kNotScaled if there is no active scale animation or
-  // the scales cannot be computed.
+  // scale animations, or kInvalidScale if there is no active transform
+  // animation or the scale cannot be computed.
   float MaximumScale(ElementListType) const;
 
   // Returns true if there is a keyframe_model that is either currently

@@ -253,7 +253,6 @@ class CC_ANIMATION_EXPORT KeyframedTransformAnimationCurve
   // TransformAnimationCurve implementation
   TransformOperations GetValue(base::TimeDelta t) const override;
   bool PreservesAxisAlignment() const override;
-  bool IsTranslation() const override;
   bool MaximumScale(float* max_scale) const override;
 
  private:

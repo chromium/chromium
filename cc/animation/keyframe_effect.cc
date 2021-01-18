@@ -506,7 +506,7 @@ bool KeyframeEffect::AnimationsPreserveAxisAlignment() const {
 }
 
 float KeyframeEffect::MaximumScale(ElementListType list_type) const {
-  float maximum_scale = kNotScaled;
+  float maximum_scale = kInvalidScale;
   for (const auto& keyframe_model : keyframe_models_) {
     if (keyframe_model->is_finished() ||
         keyframe_model->target_property_type() != TargetProperty::TRANSFORM)
@@ -520,12 +520,9 @@ float KeyframeEffect::MaximumScale(ElementListType list_type) const {
 
     const TransformAnimationCurve* transform_animation_curve =
         keyframe_model->curve()->ToTransformAnimationCurve();
-    if (transform_animation_curve->IsTranslation())
-      continue;
-
-    float curve_maximum_scale = kNotScaled;
+    float curve_maximum_scale = kInvalidScale;
     if (!transform_animation_curve->MaximumScale(&curve_maximum_scale))
-      return kNotScaled;
+      return kInvalidScale;
     maximum_scale = std::max(maximum_scale, curve_maximum_scale);
   }
   return maximum_scale;

@@ -108,8 +108,8 @@ class CC_ANIMATION_EXPORT ElementAnimations
   bool AnimationsPreserveAxisAlignment() const;
 
   // Returns the maximum scale along any dimension at any destination in active
-  // scale animations, or kNotScaled if there is no active scale animation or
-  // the scale cannot be computed.
+  // scale animations, or kInvalidScale if there is no active transform
+  // animation or the scale cannot be computed.
   float MaximumScale(ElementListType list_type) const;
 
   bool ScrollOffsetAnimationWasInterrupted() const;

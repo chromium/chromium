@@ -67,7 +67,7 @@ class DrawPropertiesTestBase : public LayerTreeImplTestBase {
           layer_impl->element_id());
   }
 
-  static float GetMaximumAnimationScale(LayerImpl* layer_impl) {
+  static float MaximumAnimationToScreenScale(LayerImpl* layer_impl) {
     return layer_impl->layer_tree_impl()
         ->property_trees()
         ->MaximumAnimationToScreenScale(layer_impl->transform_tree_index());
@@ -5472,10 +5472,10 @@ TEST_F(DrawPropertiesTest, MaximumAnimationScaleFactor) {
   UpdateActiveTreeDrawProperties();
 
   // No layers have animations.
-  EXPECT_EQ(kNotScaled, GetMaximumAnimationScale(grand_parent));
-  EXPECT_EQ(kNotScaled, GetMaximumAnimationScale(parent));
-  EXPECT_EQ(kNotScaled, GetMaximumAnimationScale(child));
-  EXPECT_EQ(kNotScaled, GetMaximumAnimationScale(grand_child));
+  EXPECT_EQ(1.f, MaximumAnimationToScreenScale(grand_child));
+  EXPECT_EQ(1.f, MaximumAnimationToScreenScale(child));
+  EXPECT_EQ(1.f, MaximumAnimationToScreenScale(parent));
+  EXPECT_EQ(1.f, MaximumAnimationToScreenScale(grand_parent));
 
   TransformOperations translation;
   translation.AppendTranslate(1.f, 2.f, 3.f);
@@ -5504,10 +5504,10 @@ TEST_F(DrawPropertiesTest, MaximumAnimationScaleFactor) {
                                   TransformOperations(), translation);
 
   // No layers have scale-affecting animations.
-  EXPECT_EQ(kNotScaled, GetMaximumAnimationScale(grand_parent));
-  EXPECT_EQ(kNotScaled, GetMaximumAnimationScale(parent));
-  EXPECT_EQ(kNotScaled, GetMaximumAnimationScale(child));
-  EXPECT_EQ(kNotScaled, GetMaximumAnimationScale(grand_child));
+  EXPECT_EQ(1.f, MaximumAnimationToScreenScale(grand_child));
+  EXPECT_EQ(1.f, MaximumAnimationToScreenScale(child));
+  EXPECT_EQ(1.f, MaximumAnimationToScreenScale(parent));
+  EXPECT_EQ(1.f, MaximumAnimationToScreenScale(grand_parent));
 
   TransformOperations scale;
   scale.AppendScale(5.f, 4.f, 3.f);
@@ -5517,32 +5517,32 @@ TEST_F(DrawPropertiesTest, MaximumAnimationScaleFactor) {
   UpdateActiveTreeDrawProperties();
 
   // Only |child| has a scale-affecting animation.
-  EXPECT_EQ(kNotScaled, GetMaximumAnimationScale(grand_parent));
-  EXPECT_EQ(kNotScaled, GetMaximumAnimationScale(parent));
-  EXPECT_EQ(5.f, GetMaximumAnimationScale(child));
-  EXPECT_EQ(5.f, GetMaximumAnimationScale(grand_child));
+  EXPECT_EQ(5.f, MaximumAnimationToScreenScale(grand_child));
+  EXPECT_EQ(5.f, MaximumAnimationToScreenScale(child));
+  EXPECT_EQ(1.f, MaximumAnimationToScreenScale(parent));
+  EXPECT_EQ(1.f, MaximumAnimationToScreenScale(grand_parent));
 
   AddAnimatedTransformToAnimation(grand_parent_animation.get(), 1.0,
                                   TransformOperations(), scale);
   UpdateActiveTreeDrawProperties();
 
   // |grand_parent| and |child| have scale-affecting animations.
-  EXPECT_EQ(5.f, GetMaximumAnimationScale(grand_parent));
-  EXPECT_EQ(5.f, GetMaximumAnimationScale(parent));
   // We don't support combining animated scales from two nodes;
-  // kNotScaled means that the maximum scale could not be computed.
-  EXPECT_EQ(kNotScaled, GetMaximumAnimationScale(child));
-  EXPECT_EQ(kNotScaled, GetMaximumAnimationScale(grand_child));
+  // kInvalidScale means that the maximum scale could not be computed.
+  EXPECT_EQ(kInvalidScale, MaximumAnimationToScreenScale(grand_child));
+  EXPECT_EQ(kInvalidScale, MaximumAnimationToScreenScale(child));
+  EXPECT_EQ(5.f, MaximumAnimationToScreenScale(parent));
+  EXPECT_EQ(5.f, MaximumAnimationToScreenScale(grand_parent));
 
   AddAnimatedTransformToAnimation(parent_animation.get(), 1.0,
                                   TransformOperations(), scale);
   UpdateActiveTreeDrawProperties();
 
   // |grand_parent|, |parent|, and |child| have scale-affecting animations.
-  EXPECT_EQ(5.f, GetMaximumAnimationScale(grand_parent));
-  EXPECT_EQ(kNotScaled, GetMaximumAnimationScale(parent));
-  EXPECT_EQ(kNotScaled, GetMaximumAnimationScale(child));
-  EXPECT_EQ(kNotScaled, GetMaximumAnimationScale(grand_child));
+  EXPECT_EQ(kInvalidScale, MaximumAnimationToScreenScale(grand_child));
+  EXPECT_EQ(kInvalidScale, MaximumAnimationToScreenScale(child));
+  EXPECT_EQ(kInvalidScale, MaximumAnimationToScreenScale(parent));
+  EXPECT_EQ(5.f, MaximumAnimationToScreenScale(grand_parent));
 
   grand_parent_animation->AbortKeyframeModelsWithProperty(
       TargetProperty::TRANSFORM, false);
@@ -5560,10 +5560,10 @@ TEST_F(DrawPropertiesTest, MaximumAnimationScaleFactor) {
 
   // |child| has a scale-affecting animation but computing the maximum of this
   // animation is not supported.
-  EXPECT_EQ(kNotScaled, GetMaximumAnimationScale(grand_parent));
-  EXPECT_EQ(kNotScaled, GetMaximumAnimationScale(parent));
-  EXPECT_EQ(kNotScaled, GetMaximumAnimationScale(child));
-  EXPECT_EQ(kNotScaled, GetMaximumAnimationScale(grand_child));
+  EXPECT_EQ(kInvalidScale, MaximumAnimationToScreenScale(grand_child));
+  EXPECT_EQ(kInvalidScale, MaximumAnimationToScreenScale(child));
+  EXPECT_EQ(1.f, MaximumAnimationToScreenScale(parent));
+  EXPECT_EQ(1.f, MaximumAnimationToScreenScale(grand_parent));
 
   child_animation->AbortKeyframeModelsWithProperty(TargetProperty::TRANSFORM,
                                                    false);
@@ -5579,10 +5579,10 @@ TEST_F(DrawPropertiesTest, MaximumAnimationScaleFactor) {
 
   // |grand_parent| and |parent| each have scale 2.f. |parent| has a scale
   // animation with maximum scale 5.f.
-  EXPECT_EQ(kNotScaled, GetMaximumAnimationScale(grand_parent));
-  EXPECT_EQ(10.f, GetMaximumAnimationScale(parent));
-  EXPECT_EQ(10.f, GetMaximumAnimationScale(child));
-  EXPECT_EQ(10.f, GetMaximumAnimationScale(grand_child));
+  EXPECT_EQ(10.f, MaximumAnimationToScreenScale(grand_child));
+  EXPECT_EQ(10.f, MaximumAnimationToScreenScale(child));
+  EXPECT_EQ(10.f, MaximumAnimationToScreenScale(parent));
+  EXPECT_EQ(2.f, MaximumAnimationToScreenScale(grand_parent));
 
   gfx::Transform perspective_matrix;
   perspective_matrix.ApplyPerspectiveDepth(2.f);
@@ -5590,20 +5590,20 @@ TEST_F(DrawPropertiesTest, MaximumAnimationScaleFactor) {
   UpdateActiveTreeDrawProperties();
 
   // |child| has a transform that's neither a translation nor a scale.
-  EXPECT_EQ(kNotScaled, GetMaximumAnimationScale(grand_parent));
-  EXPECT_EQ(10.f, GetMaximumAnimationScale(parent));
-  EXPECT_EQ(kNotScaled, GetMaximumAnimationScale(child));
-  EXPECT_EQ(kNotScaled, GetMaximumAnimationScale(grand_child));
+  EXPECT_EQ(kInvalidScale, MaximumAnimationToScreenScale(grand_child));
+  EXPECT_EQ(kInvalidScale, MaximumAnimationToScreenScale(child));
+  EXPECT_EQ(10.f, MaximumAnimationToScreenScale(parent));
+  EXPECT_EQ(2.f, MaximumAnimationToScreenScale(grand_parent));
 
   SetTransform(parent, perspective_matrix);
   UpdateActiveTreeDrawProperties();
 
   // |parent| and |child| have transforms that are neither translations nor
   // scales.
-  EXPECT_EQ(kNotScaled, GetMaximumAnimationScale(grand_parent));
-  EXPECT_EQ(kNotScaled, GetMaximumAnimationScale(parent));
-  EXPECT_EQ(kNotScaled, GetMaximumAnimationScale(child));
-  EXPECT_EQ(kNotScaled, GetMaximumAnimationScale(grand_child));
+  EXPECT_EQ(kInvalidScale, MaximumAnimationToScreenScale(grand_child));
+  EXPECT_EQ(kInvalidScale, MaximumAnimationToScreenScale(child));
+  EXPECT_EQ(kInvalidScale, MaximumAnimationToScreenScale(parent));
+  EXPECT_EQ(2.f, MaximumAnimationToScreenScale(grand_parent));
 
   SetTransform(parent, gfx::Transform());
   SetTransform(child, gfx::Transform());
@@ -5611,10 +5611,10 @@ TEST_F(DrawPropertiesTest, MaximumAnimationScaleFactor) {
   UpdateActiveTreeDrawProperties();
 
   // |grand_parent| has a transform that's neither a translation nor a scale.
-  EXPECT_EQ(kNotScaled, GetMaximumAnimationScale(grand_parent));
-  EXPECT_EQ(kNotScaled, GetMaximumAnimationScale(parent));
-  EXPECT_EQ(kNotScaled, GetMaximumAnimationScale(child));
-  EXPECT_EQ(kNotScaled, GetMaximumAnimationScale(grand_child));
+  EXPECT_EQ(kInvalidScale, MaximumAnimationToScreenScale(grand_child));
+  EXPECT_EQ(kInvalidScale, MaximumAnimationToScreenScale(child));
+  EXPECT_EQ(kInvalidScale, MaximumAnimationToScreenScale(parent));
+  EXPECT_EQ(kInvalidScale, MaximumAnimationToScreenScale(grand_parent));
 }
 
 static void GatherDrawnLayers(LayerTreeImpl* tree_impl,
@@ -5874,9 +5874,9 @@ TEST_F(DrawPropertiesTestWithLayerTree, DrawPropertyDeviceScale) {
   EXPECT_FLOAT_EQ(3.f, ImplOf(mask)->GetIdealContentsScale());
   EXPECT_FLOAT_EQ(5.f, ImplOf(child2)->GetIdealContentsScale());
 
-  EXPECT_FLOAT_EQ(kNotScaled, GetMaximumAnimationScale(ImplOf(root)));
-  EXPECT_FLOAT_EQ(kNotScaled, GetMaximumAnimationScale(ImplOf(child1)));
-  EXPECT_FLOAT_EQ(8.f, GetMaximumAnimationScale(ImplOf(child2)));
+  EXPECT_FLOAT_EQ(8.f, MaximumAnimationToScreenScale(ImplOf(child2)));
+  EXPECT_FLOAT_EQ(3.f, MaximumAnimationToScreenScale(ImplOf(child1)));
+  EXPECT_FLOAT_EQ(1.f, MaximumAnimationToScreenScale(ImplOf(root)));
 
   // Changing device-scale would affect ideal_contents_scale and
   // maximum_animation_contents_scale.
@@ -5889,9 +5889,9 @@ TEST_F(DrawPropertiesTestWithLayerTree, DrawPropertyDeviceScale) {
   EXPECT_FLOAT_EQ(12.f, ImplOf(mask)->GetIdealContentsScale());
   EXPECT_FLOAT_EQ(20.f, ImplOf(child2)->GetIdealContentsScale());
 
-  EXPECT_FLOAT_EQ(kNotScaled, GetMaximumAnimationScale(ImplOf(root)));
-  EXPECT_FLOAT_EQ(kNotScaled, GetMaximumAnimationScale(ImplOf(child1)));
-  EXPECT_FLOAT_EQ(32.f, GetMaximumAnimationScale(ImplOf(child2)));
+  EXPECT_FLOAT_EQ(32.f, MaximumAnimationToScreenScale(ImplOf(child2)));
+  EXPECT_FLOAT_EQ(12.f, MaximumAnimationToScreenScale(ImplOf(child1)));
+  EXPECT_FLOAT_EQ(4.f, MaximumAnimationToScreenScale(ImplOf(root)));
 }
 
 TEST_F(DrawPropertiesTest, DrawPropertyScales) {
@@ -5943,10 +5943,10 @@ TEST_F(DrawPropertiesTest, DrawPropertyScales) {
   EXPECT_FLOAT_EQ(3.f, ImplOf(child1)->GetIdealContentsScale());
   EXPECT_FLOAT_EQ(5.f, ImplOf(child2)->GetIdealContentsScale());
 
-  EXPECT_FLOAT_EQ(kNotScaled, GetMaximumAnimationScale(ImplOf(root)));
-  EXPECT_FLOAT_EQ(kNotScaled, GetMaximumAnimationScale(ImplOf(page_scale)));
-  EXPECT_FLOAT_EQ(kNotScaled, GetMaximumAnimationScale(ImplOf(child1)));
-  EXPECT_FLOAT_EQ(8.f, GetMaximumAnimationScale(ImplOf(child2)));
+  EXPECT_FLOAT_EQ(8.f, MaximumAnimationToScreenScale(ImplOf(child2)));
+  EXPECT_FLOAT_EQ(3.f, MaximumAnimationToScreenScale(ImplOf(child1)));
+  EXPECT_FLOAT_EQ(1.f, MaximumAnimationToScreenScale(ImplOf(page_scale)));
+  EXPECT_FLOAT_EQ(1.f, MaximumAnimationToScreenScale(ImplOf(root)));
 
   // Changing page-scale would affect ideal_contents_scale and
   // maximum_animation_contents_scale.
@@ -5960,10 +5960,10 @@ TEST_F(DrawPropertiesTest, DrawPropertyScales) {
   EXPECT_FLOAT_EQ(9.f, ImplOf(child1)->GetIdealContentsScale());
   EXPECT_FLOAT_EQ(15.f, ImplOf(child2)->GetIdealContentsScale());
 
-  EXPECT_FLOAT_EQ(kNotScaled, GetMaximumAnimationScale(ImplOf(root)));
-  EXPECT_FLOAT_EQ(kNotScaled, GetMaximumAnimationScale(ImplOf(page_scale)));
-  EXPECT_FLOAT_EQ(kNotScaled, GetMaximumAnimationScale(ImplOf(child1)));
-  EXPECT_FLOAT_EQ(24.f, GetMaximumAnimationScale(ImplOf(child2)));
+  EXPECT_FLOAT_EQ(24.f, MaximumAnimationToScreenScale(ImplOf(child2)));
+  EXPECT_FLOAT_EQ(9.f, MaximumAnimationToScreenScale(ImplOf(child1)));
+  EXPECT_FLOAT_EQ(3.f, MaximumAnimationToScreenScale(ImplOf(page_scale)));
+  EXPECT_FLOAT_EQ(1.f, MaximumAnimationToScreenScale(ImplOf(root)));
 
   // Changing device-scale would affect ideal_contents_scale and
   // maximum_animation_contents_scale.
@@ -5976,10 +5976,10 @@ TEST_F(DrawPropertiesTest, DrawPropertyScales) {
   EXPECT_FLOAT_EQ(36.f, ImplOf(child1)->GetIdealContentsScale());
   EXPECT_FLOAT_EQ(60.f, ImplOf(child2)->GetIdealContentsScale());
 
-  EXPECT_FLOAT_EQ(kNotScaled, GetMaximumAnimationScale(ImplOf(root)));
-  EXPECT_FLOAT_EQ(kNotScaled, GetMaximumAnimationScale(ImplOf(page_scale)));
-  EXPECT_FLOAT_EQ(kNotScaled, GetMaximumAnimationScale(ImplOf(child1)));
-  EXPECT_FLOAT_EQ(96.f, GetMaximumAnimationScale(ImplOf(child2)));
+  EXPECT_FLOAT_EQ(96.f, MaximumAnimationToScreenScale(ImplOf(child2)));
+  EXPECT_FLOAT_EQ(36.f, MaximumAnimationToScreenScale(ImplOf(child1)));
+  EXPECT_FLOAT_EQ(12.f, MaximumAnimationToScreenScale(ImplOf(page_scale)));
+  EXPECT_FLOAT_EQ(4.f, MaximumAnimationToScreenScale(ImplOf(root)));
 }
 
 TEST_F(DrawPropertiesTest, AnimationScales) {
@@ -6008,16 +6008,16 @@ TEST_F(DrawPropertiesTest, AnimationScales) {
       child2->element_id(), timeline_impl(), 1.0, TransformOperations(), scale);
   UpdateActiveTreeDrawProperties();
 
-  EXPECT_FLOAT_EQ(kNotScaled, GetMaximumAnimationScale(root));
-  EXPECT_FLOAT_EQ(kNotScaled, GetMaximumAnimationScale(child1));
-  EXPECT_FLOAT_EQ(24.f, GetMaximumAnimationScale(child2));
+  EXPECT_FLOAT_EQ(24.f, MaximumAnimationToScreenScale(child2));
+  EXPECT_FLOAT_EQ(3.f, MaximumAnimationToScreenScale(child1));
+  EXPECT_FLOAT_EQ(1.f, MaximumAnimationToScreenScale(root));
 
   // Correctly updates animation scale when layer property changes.
   SetTransform(child1, gfx::Transform());
   root->layer_tree_impl()->SetTransformMutated(child1->element_id(),
                                                gfx::Transform());
   UpdateActiveTreeDrawProperties();
-  EXPECT_FLOAT_EQ(8.f, GetMaximumAnimationScale(child2));
+  EXPECT_FLOAT_EQ(8.f, MaximumAnimationToScreenScale(child2));
 
   // Do not update animation scale if already updated.
   host_impl()
@@ -6025,7 +6025,7 @@ TEST_F(DrawPropertiesTest, AnimationScales) {
       ->property_trees()
       ->SetMaximumAnimationToScreenScaleForTesting(
           child2->transform_tree_index(), 100.f);
-  EXPECT_FLOAT_EQ(100.f, GetMaximumAnimationScale(child2));
+  EXPECT_FLOAT_EQ(100.f, MaximumAnimationToScreenScale(child2));
 }
 
 TEST_F(DrawPropertiesTest, VisibleContentRectInChildRenderSurface) {

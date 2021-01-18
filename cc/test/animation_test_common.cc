@@ -199,8 +199,6 @@ TransformOperations FakeTransformTransition::GetValue(
   return TransformOperations();
 }
 
-bool FakeTransformTransition::IsTranslation() const { return true; }
-
 bool FakeTransformTransition::PreservesAxisAlignment() const {
   return true;
 }

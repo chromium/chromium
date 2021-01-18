@@ -77,9 +77,6 @@ class CC_ANIMATION_EXPORT TransformAnimationCurve : public AnimationCurve {
 
   virtual TransformOperations GetValue(base::TimeDelta t) const = 0;
 
-  // Returns true if this animation is a translation.
-  virtual bool IsTranslation() const = 0;
-
   // Returns true if this animation preserves axis alignment.
   virtual bool PreservesAxisAlignment() const = 0;
 

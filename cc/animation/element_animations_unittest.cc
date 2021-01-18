@@ -2224,20 +2224,20 @@ TEST_F(ElementAnimationsTest, MaximumAnimationScaleNotScaled) {
   AttachTimelineAnimationLayer();
   CreateImplTimelineAndAnimation();
 
-  EXPECT_EQ(kNotScaled, animation_impl_->keyframe_effect()->MaximumScale(
-                            ElementListType::PENDING));
-  EXPECT_EQ(kNotScaled, animation_impl_->keyframe_effect()->MaximumScale(
-                            ElementListType::ACTIVE));
+  EXPECT_EQ(kInvalidScale, animation_impl_->keyframe_effect()->MaximumScale(
+                               ElementListType::PENDING));
+  EXPECT_EQ(kInvalidScale, animation_impl_->keyframe_effect()->MaximumScale(
+                               ElementListType::ACTIVE));
 
   animation_impl_->AddKeyframeModel(CreateKeyframeModel(
       std::unique_ptr<AnimationCurve>(new FakeFloatTransition(1.0, 0.f, 1.f)),
       1, TargetProperty::OPACITY));
 
   // Opacity animations aren't non-translation transforms.
-  EXPECT_EQ(kNotScaled, animation_impl_->keyframe_effect()->MaximumScale(
-                            ElementListType::PENDING));
-  EXPECT_EQ(kNotScaled, animation_impl_->keyframe_effect()->MaximumScale(
-                            ElementListType::ACTIVE));
+  EXPECT_EQ(kInvalidScale, animation_impl_->keyframe_effect()->MaximumScale(
+                               ElementListType::PENDING));
+  EXPECT_EQ(kInvalidScale, animation_impl_->keyframe_effect()->MaximumScale(
+                               ElementListType::ACTIVE));
 
   std::unique_ptr<KeyframedTransformAnimationCurve> curve1(
       KeyframedTransformAnimationCurve::Create());
@@ -2255,10 +2255,10 @@ TEST_F(ElementAnimationsTest, MaximumAnimationScaleNotScaled) {
   animation_impl_->AddKeyframeModel(std::move(keyframe_model));
 
   // The only transform animation we've added is a translation.
-  EXPECT_EQ(kNotScaled, animation_impl_->keyframe_effect()->MaximumScale(
-                            ElementListType::PENDING));
-  EXPECT_EQ(kNotScaled, animation_impl_->keyframe_effect()->MaximumScale(
-                            ElementListType::ACTIVE));
+  EXPECT_EQ(1.f, animation_impl_->keyframe_effect()->MaximumScale(
+                     ElementListType::PENDING));
+  EXPECT_EQ(1.f, animation_impl_->keyframe_effect()->MaximumScale(
+                     ElementListType::ACTIVE));
 }
 
 TEST_F(ElementAnimationsTest, MaximumScale) {
@@ -2285,8 +2285,8 @@ TEST_F(ElementAnimationsTest, MaximumScale) {
 
   EXPECT_EQ(5.f, animation_impl_->keyframe_effect()->MaximumScale(
                      ElementListType::PENDING));
-  EXPECT_EQ(kNotScaled, animation_impl_->keyframe_effect()->MaximumScale(
-                            ElementListType::ACTIVE));
+  EXPECT_EQ(kInvalidScale, animation_impl_->keyframe_effect()->MaximumScale(
+                               ElementListType::ACTIVE));
 
   animation_impl_->ActivateKeyframeModels();
   EXPECT_EQ(5.f, animation_impl_->keyframe_effect()->MaximumScale(
@@ -2336,8 +2336,8 @@ TEST_F(ElementAnimationsTest, MaximumScale) {
 
   EXPECT_EQ(6.f, animation_impl_->keyframe_effect()->MaximumScale(
                      ElementListType::PENDING));
-  EXPECT_EQ(kNotScaled, animation_impl_->keyframe_effect()->MaximumScale(
-                            ElementListType::ACTIVE));
+  EXPECT_EQ(kInvalidScale, animation_impl_->keyframe_effect()->MaximumScale(
+                               ElementListType::ACTIVE));
 
   animation_impl_->ActivateKeyframeModels();
   EXPECT_EQ(6.f, animation_impl_->keyframe_effect()->MaximumScale(

@@ -403,14 +403,6 @@ bool KeyframedTransformAnimationCurve::PreservesAxisAlignment() const {
   return true;
 }
 
-bool KeyframedTransformAnimationCurve::IsTranslation() const {
-  for (const auto& keyframe : keyframes_) {
-    if (!keyframe->Value().IsTranslation() && !keyframe->Value().IsIdentity())
-      return false;
-  }
-  return true;
-}
-
 bool KeyframedTransformAnimationCurve::MaximumScale(float* max_scale) const {
   DCHECK_GE(keyframes_.size(), 2ul);
   *max_scale = 0.f;
