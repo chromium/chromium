@@ -23,18 +23,18 @@ namespace autofill {
 // representation.
 //
 // The lower and upper bounds of elements storable in a container are
-// [T(0), kEnd).
+// [T(0), kMaxValue]. By default, kMaxValue is T::kMaxValue.
 //
 // Internally, the set is represented as a std::bitset.
 //
 // Time and space complexity depend on std::bitset:
 // - insert(), erase(), contains() should run in time O(1)
-// - empty(), size(), iteration should run in time O(kEnd)
-// - sizeof(DenseSet) should be ceil(kEnd / 8) bytes.
+// - empty(), size(), iteration should run in time O(kMaxValue)
+// - sizeof(DenseSet) should be ceil(kMaxValue / 8) bytes.
 //
 // Iterators are invalidated when the owning container is destructed or moved,
 // or when the element the iterator points to is erased from the container.
-template <typename T, T kEnd>
+template <typename T, T kMaxValue = T::kMaxValue>
 class DenseSet {
  private:
   using Index = std::make_unsigned_t<T>;
@@ -194,6 +194,9 @@ class DenseSet {
     return {find(x), !contained};
   }
 
+  // Inserts all values of |xs| into the present set.
+  void insert_all(const DenseSet& xs) { bitset_ |= xs.bitset_; }
+
   // Erases the element whose index matches the index of |x| and returns the
   // number of erased elements (0 or 1).
   size_t erase(T x) {
@@ -220,6 +223,9 @@ class DenseSet {
     return last;
   }
 
+  // Erases all values of |xs| into the present set.
+  void erase_all(const DenseSet& xs) { bitset_ &= ~xs.bitset_; }
+
   // Lookup.
 
   // Returns 1 if |x| is an element, otherwise 0.
@@ -232,6 +238,21 @@ class DenseSet {
 
   // Returns true if |x| is an element, else |false|.
   bool contains(T x) const { return bitset_.test(value_to_index(x)); }
+
+  // Returns true if some element of |xs| is an element, else |false|.
+  bool contains_none(const DenseSet& xs) const {
+    return (bitset_ & xs.bitset_).none();
+  }
+
+  // Returns true if some element of |xs| is an element, else |false|.
+  bool contains_any(const DenseSet& xs) const {
+    return (bitset_ & xs.bitset_).any();
+  }
+
+  // Returns true if every elements of |xs| is an element, else |false|.
+  bool contains_all(const DenseSet& xs) const {
+    return (bitset_ & xs.bitset_) == xs.bitset_;
+  }
 
   // Returns an iterator to the first element not less than the |x|, or end().
   const_iterator lower_bound(T x) const {
@@ -255,12 +276,12 @@ class DenseSet {
   };
 
   static constexpr Index value_to_index(T x) {
-    DCHECK(index_to_value(0) <= x && x < kEnd);
+    DCHECK(index_to_value(0) <= x && x <= kMaxValue);
     return base::checked_cast<Index>(x);
   }
 
   static constexpr T index_to_value(Index i) {
-    DCHECK_LT(i, base::checked_cast<Index>(kEnd));
+    DCHECK_LE(i, base::checked_cast<Index>(kMaxValue));
     using UnderlyingType =
         typename std::conditional_t<std::is_enum<T>::value,
                                     std::underlying_type<T>, Wrapper>::type;
@@ -268,9 +289,9 @@ class DenseSet {
   }
 
   static_assert(std::is_integral<T>::value || std::is_enum<T>::value, "");
-  static_assert(index_to_value(0) <= kEnd, "");
+  static_assert(0 <= base::checked_cast<Index>(kMaxValue) + 1, "");
 
-  std::bitset<base::checked_cast<Index>(kEnd)> bitset_{};
+  std::bitset<base::checked_cast<Index>(kMaxValue) + 1> bitset_{};
 };
 
 }  // namespace autofill
