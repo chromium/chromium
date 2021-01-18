@@ -89,17 +89,6 @@ void ChromeSubresourceFilterClient::ShowNotification() {
   }
 }
 
-void ChromeSubresourceFilterClient::OnAdsViolationTriggered(
-    content::RenderFrameHost* rfh,
-    subresource_filter::mojom::AdsViolation triggered_violation) {
-  // TODO(crbug.com/1116095): Once ContentSubresourceFilterThrottleManager knows
-  // about ProfileInteractionManager, it can invoke the
-  // ProfileInteractionManager directly and
-  // SubresourceFilterClient::OnAdsViolationTriggered() can be eliminated.
-  profile_interaction_manager_->OnAdsViolationTriggered(rfh,
-                                                        triggered_violation);
-}
-
 const scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
 ChromeSubresourceFilterClient::GetSafeBrowsingDatabaseManager() {
   safe_browsing::SafeBrowsingService* safe_browsing_service =

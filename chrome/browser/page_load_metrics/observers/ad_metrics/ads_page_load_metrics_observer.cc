@@ -23,7 +23,6 @@
 #include "chrome/browser/heavy_ad_intervention/heavy_ad_helper.h"
 #include "chrome/browser/heavy_ad_intervention/heavy_ad_service.h"
 #include "chrome/browser/heavy_ad_intervention/heavy_ad_service_factory.h"
-#include "chrome/browser/subresource_filter/chrome_subresource_filter_client.h"
 #include "chrome/common/chrome_features.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
@@ -667,16 +666,17 @@ void AdsPageLoadMetricsObserver::CheckForAdDensityViolation() {
   const int kMaxMobileAdDensityByHeight = 30;
   if (page_ad_density_tracker_.MaxPageAdDensityByHeight() >
       kMaxMobileAdDensityByHeight) {
-    auto* client = ChromeSubresourceFilterClient::FromWebContents(
-        GetDelegate().GetWebContents());
+    auto* throttle_manager =
+        subresource_filter::ContentSubresourceFilterThrottleManager::
+            FromWebContents(GetDelegate().GetWebContents());
     // AdsPageLoadMetricsObserver is not created unless there is a
-    // ChromeSubresourceFilterClient
-    DCHECK(client);
+    // throttle manager.
+    DCHECK(throttle_manager);
 
     // Violations can be triggered multiple times for the same page as
     // violations after the first are ignored. Ad frame violations are
     // attributed to the main frame url.
-    client->OnAdsViolationTriggered(
+    throttle_manager->OnAdsViolationTriggered(
         GetDelegate().GetWebContents()->GetMainFrame(),
         subresource_filter::mojom::AdsViolation::
             kMobileAdDensityByHeightAbove30);
@@ -1256,16 +1256,17 @@ void AdsPageLoadMetricsObserver::MaybeTriggerStrictHeavyAdIntervention() {
       blocklist::BlocklistReason::kUserOptedOutOfHost)
     return;
 
-  auto* client = ChromeSubresourceFilterClient::FromWebContents(
-      GetDelegate().GetWebContents());
+  auto* throttle_manager =
+      subresource_filter::ContentSubresourceFilterThrottleManager::
+          FromWebContents(GetDelegate().GetWebContents());
   // AdsPageLoadMetricsObserver is not created unless there is a
-  // ChromeSubresourceFilterClient
-  DCHECK(client);
+  // throttle manager.
+  DCHECK(throttle_manager);
 
   // Violations can be triggered multiple times for the same page as
   // violations after the first are ignored. Ad frame violations are
   // attributed to the main frame url.
-  client->OnAdsViolationTriggered(
+  throttle_manager->OnAdsViolationTriggered(
       GetDelegate().GetWebContents()->GetMainFrame(),
       subresource_filter::mojom::AdsViolation::
           kHeavyAdsInterventionAtHostLimit);

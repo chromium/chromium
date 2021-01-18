@@ -497,6 +497,16 @@ void ContentSubresourceFilterThrottleManager::OnReloadRequested() {
     profile_interaction_manager->OnReloadRequested();
 }
 
+void ContentSubresourceFilterThrottleManager::OnAdsViolationTriggered(
+    content::RenderFrameHost* rfh,
+    mojom::AdsViolation triggered_violation) {
+  if (auto* profile_interaction_manager =
+          client_->GetProfileInteractionManager()) {
+    profile_interaction_manager->OnAdsViolationTriggered(rfh,
+                                                         triggered_violation);
+  }
+}
+
 // static
 void ContentSubresourceFilterThrottleManager::LogAction(
     SubresourceFilterAction action) {
@@ -641,8 +651,8 @@ void ContentSubresourceFilterThrottleManager::SetDocumentLoadStatistics(
 
 void ContentSubresourceFilterThrottleManager::OnAdsViolationTriggered(
     mojom::AdsViolation violation) {
-  client_->OnAdsViolationTriggered(
-      receiver_.GetCurrentTargetFrame()->GetMainFrame(), violation);
+  OnAdsViolationTriggered(receiver_.GetCurrentTargetFrame()->GetMainFrame(),
+                          violation);
 }
 
 }  // namespace subresource_filter

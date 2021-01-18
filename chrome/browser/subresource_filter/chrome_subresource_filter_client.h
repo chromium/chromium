@@ -45,9 +45,6 @@ class ChromeSubresourceFilterClient
 
   // SubresourceFilterClient:
   void ShowNotification() override;
-  void OnAdsViolationTriggered(
-      content::RenderFrameHost* rfh,
-      subresource_filter::mojom::AdsViolation triggered_violation) override;
   const scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
   GetSafeBrowsingDatabaseManager() override;
   subresource_filter::ProfileInteractionManager* GetProfileInteractionManager()

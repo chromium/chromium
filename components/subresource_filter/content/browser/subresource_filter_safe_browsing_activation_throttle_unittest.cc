@@ -112,9 +112,6 @@ class MockSubresourceFilterClient : public SubresourceFilterClient {
   ~MockSubresourceFilterClient() override = default;
 
   MOCK_METHOD0(ShowNotification, void());
-  MOCK_METHOD2(OnAdsViolationTriggered,
-               void(content::RenderFrameHost*,
-                    subresource_filter::mojom::AdsViolation));
   MOCK_METHOD0(
       GetSafeBrowsingDatabaseManager,
       const scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>());

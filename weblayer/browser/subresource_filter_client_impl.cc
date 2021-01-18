@@ -88,10 +88,6 @@ void SubresourceFilterClientImpl::ShowNotification() {
 #endif
 }
 
-void SubresourceFilterClientImpl::OnAdsViolationTriggered(
-    content::RenderFrameHost* rfh,
-    subresource_filter::mojom::AdsViolation triggered_violation) {}
-
 const scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
 SubresourceFilterClientImpl::GetSafeBrowsingDatabaseManager() {
   return database_manager_;

@@ -183,9 +183,6 @@ class TestSubresourceFilterClient : public SubresourceFilterClient {
 
   // SubresourceFilterClient:
   void ShowNotification() override { ++disallowed_notification_count_; }
-  void OnAdsViolationTriggered(
-      content::RenderFrameHost* rfh,
-      mojom::AdsViolation triggered_violation) override {}
   const scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
   GetSafeBrowsingDatabaseManager() override {
     return database_manager_;

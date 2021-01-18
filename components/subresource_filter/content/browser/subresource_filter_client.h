@@ -6,8 +6,6 @@
 #define COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_SUBRESOURCE_FILTER_CLIENT_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
-#include "content/public/browser/render_frame_host.h"
 
 namespace safe_browsing {
 class SafeBrowsingDatabaseManager;
@@ -24,11 +22,6 @@ class SubresourceFilterClient {
   // Informs the embedder to show some UI indicating that resources are being
   // blocked. This method will be called at most once per main-frame navigation.
   virtual void ShowNotification() = 0;
-
-  // Called on the subresource filter client when an ads violation is detected.
-  virtual void OnAdsViolationTriggered(
-      content::RenderFrameHost* rfh,
-      mojom::AdsViolation triggered_violation) = 0;
 
   // Returns the SafeBrowsingDatabaseManager instance associated with this
   // client, or null if there is no such instance.
