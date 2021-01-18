@@ -3666,9 +3666,8 @@ TEST_P(GPURendererPixelTest, TrilinearFiltering) {
   blue->SetNew(blue_shared_state, child_pass_rect, child_pass_rect,
                SK_ColorBLUE, false);
 
-  gfx::Transform child_to_root_transform(SkMatrix::MakeRectToRect(
-      RectToSkRect(child_pass_rect), RectToSkRect(viewport_rect),
-      SkMatrix::kFill_ScaleToFit));
+  gfx::Transform child_to_root_transform(SkMatrix::RectToRect(
+      RectToSkRect(child_pass_rect), RectToSkRect(viewport_rect)));
   SharedQuadState* child_pass_shared_state = CreateTestSharedQuadState(
       child_to_root_transform, child_pass_rect, root_pass.get(), gfx::RRectF());
   auto* child_pass_quad =

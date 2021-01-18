@@ -381,11 +381,9 @@ void SoftwareRenderer::DrawDebugBorderQuad(const DebugBorderDrawQuad* quad) {
 }
 
 void SoftwareRenderer::DrawPictureQuad(const PictureDrawQuad* quad) {
-  SkMatrix content_matrix;
-  content_matrix.setRectToRect(gfx::RectFToSkRect(quad->tex_coord_rect),
-                               gfx::RectFToSkRect(QuadVertexRect()),
-                               SkMatrix::kFill_ScaleToFit);
-  current_canvas_->concat(content_matrix);
+  current_canvas_->concat(
+      SkMatrix::RectToRect(gfx::RectFToSkRect(quad->tex_coord_rect),
+                           gfx::RectFToSkRect(QuadVertexRect())));
 
   const bool needs_transparency =
       SkScalarRoundToInt(quad->shared_quad_state->opacity * 255) < 255;
@@ -545,9 +543,7 @@ void SoftwareRenderer::DrawRenderPassQuad(
     }
   }
 
-  SkMatrix content_mat;
-  content_mat.setRectToRect(content_rect, dest_rect,
-                            SkMatrix::kFill_ScaleToFit);
+  SkMatrix content_mat = SkMatrix::RectToRect(content_rect, dest_rect);
 
   sk_sp<SkShader> shader;
   SkSamplingOptions sampling(current_paint_.getFilterQuality());
@@ -568,8 +564,7 @@ void SoftwareRenderer::DrawRenderPassQuad(
         gfx::ScaleRect(quad->mask_uv_rect, quad->mask_texture_size.width(),
                        quad->mask_texture_size.height()));
 
-    SkMatrix mask_mat;
-    mask_mat.setRectToRect(mask_rect, dest_rect, SkMatrix::kFill_ScaleToFit);
+    SkMatrix mask_mat = SkMatrix::RectToRect(mask_rect, dest_rect);
 
     current_paint_.setMaskFilter(SkShaderMaskFilter::Make(
         mask_lock.sk_image()->makeShader(sampling, mask_mat)));

@@ -20,8 +20,7 @@ void PaintGeneratedImage::Draw(cc::PaintCanvas* canvas,
                                ImageDecodingMode) {
   PaintCanvasAutoRestore ar(canvas, true);
   canvas->clipRect(dest_rect);
-  canvas->concat(SkMatrix::MakeRectToRect(src_rect, dest_rect,
-                                          SkMatrix::kFill_ScaleToFit));
+  canvas->concat(SkMatrix::RectToRect(src_rect, dest_rect));
   SkRect bounds = src_rect;
   canvas->saveLayer(&bounds, &flags);
   canvas->drawPicture(record_);

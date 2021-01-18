@@ -519,9 +519,8 @@ size_t DrawImageRectOp::Serialize(const PaintOp* base_op,
   helper.Write(*serialized_flags);
 
   // This adjustment mirrors DiscardableImageMap::GatherDiscardableImage logic.
-  SkMatrix matrix = options.canvas->getTotalMatrix();
-  matrix.postConcat(
-      SkMatrix::MakeRectToRect(op->src, op->dst, SkMatrix::kFill_ScaleToFit));
+  SkMatrix matrix =
+      SkMatrix::RectToRect(op->src, op->dst) * options.canvas->getTotalMatrix();
   // Note that we don't request subsets here since the GpuImageCache has no
   // optimizations for using subsets.
   SkSize scale_adjustment = SkSize::Make(1.f, 1.f);
@@ -1572,8 +1571,7 @@ void DrawImageRectOp::RasterWithFlags(const DrawImageRectOp* op,
 
     DCHECK(IsScaleAdjustmentIdentity(op->scale_adjustment));
     SkAutoCanvasRestore save_restore(canvas, true);
-    canvas->concat(
-        SkMatrix::MakeRectToRect(op->src, op->dst, SkMatrix::kFill_ScaleToFit));
+    canvas->concat(SkMatrix::RectToRect(op->src, op->dst));
     canvas->clipRect(op->src);
     canvas->saveLayer(&op->src, &paint);
     // Compositor thread animations can cause PaintWorklet jobs to be dispatched
@@ -1598,9 +1596,8 @@ void DrawImageRectOp::RasterWithFlags(const DrawImageRectOp* op,
     return;
   }
 
-  SkMatrix matrix;
-  matrix.setRectToRect(op->src, op->dst, SkMatrix::kFill_ScaleToFit);
-  matrix.postConcat(canvas->getTotalMatrix());
+  SkMatrix matrix =
+      canvas->getTotalMatrix() * SkMatrix::RectToRect(op->src, op->dst);
 
   SkIRect int_src_rect;
   op->src.roundOut(&int_src_rect);

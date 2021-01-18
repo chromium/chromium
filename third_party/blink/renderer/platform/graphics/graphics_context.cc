@@ -316,8 +316,7 @@ void GraphicsContext::CompositeRecord(sk_sp<PaintRecord> record,
   flags.setFilterQuality(
       static_cast<SkFilterQuality>(ImageInterpolationQuality()));
   canvas_->save();
-  canvas_->concat(
-      SkMatrix::MakeRectToRect(src, dest, SkMatrix::kFill_ScaleToFit));
+  canvas_->concat(SkMatrix::RectToRect(src, dest));
   canvas_->drawImage(PaintImageBuilder::WithDefault()
                          .set_paint_record(record, RoundedIntRect(src),
                                            PaintImage::GetNextContentId())
@@ -830,8 +829,8 @@ void GraphicsContext::DrawImageRRect(
                     (respect_orientation == kDoNotRespectImageOrientation ||
                      image->HasDefaultOrientation());
   if (use_shader) {
-    const SkMatrix local_matrix = SkMatrix::MakeRectToRect(
-        visible_src, dest.Rect(), SkMatrix::kFill_ScaleToFit);
+    const SkMatrix local_matrix =
+        SkMatrix::RectToRect(visible_src, dest.Rect());
     use_shader = image->ApplyShader(image_flags, local_matrix);
   }
 

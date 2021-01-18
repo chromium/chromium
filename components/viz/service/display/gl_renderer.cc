@@ -1711,9 +1711,8 @@ void GLRenderer::UpdateRPDQUniforms(DrawRenderPassDrawQuadParams* params) {
                          params->quad->mask_texture_size.height());
     }
 
-    SkMatrix tex_to_mask = SkMatrix::MakeRectToRect(RectFToSkRect(tex_rect),
-                                                    RectFToSkRect(mask_uv_rect),
-                                                    SkMatrix::kFill_ScaleToFit);
+    SkMatrix tex_to_mask = SkMatrix::RectToRect(RectFToSkRect(tex_rect),
+                                                RectFToSkRect(mask_uv_rect));
 
     if (params->source_needs_flip) {
       // Mask textures are oriented vertically flipped relative to the

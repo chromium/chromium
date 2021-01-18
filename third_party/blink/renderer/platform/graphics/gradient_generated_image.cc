@@ -43,8 +43,7 @@ void GradientGeneratedImage::Draw(cc::PaintCanvas* canvas,
           SkRect::MakeWH(size_.Width(), size_.Height())))
     return;
 
-  const SkMatrix transform =
-      SkMatrix::MakeRectToRect(src_rect, dest_rect, SkMatrix::kFill_ScaleToFit);
+  const SkMatrix transform = SkMatrix::RectToRect(src_rect, dest_rect);
   SkRect visible_dest_rect;
   transform.mapRect(&visible_dest_rect, visible_src_rect);
 

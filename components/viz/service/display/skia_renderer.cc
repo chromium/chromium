@@ -1531,9 +1531,9 @@ SkCanvas::SrcRectConstraint SkiaRenderer::ResolveTextureConstraints(
   }
 
   // Preserve the src-to-dst transformation for the padded texture coords
-  SkMatrix src_to_dst = SkMatrix::MakeRectToRect(
-      gfx::RectFToSkRect(params->vis_tex_coords),
-      gfx::RectFToSkRect(params->visible_rect), SkMatrix::kFill_ScaleToFit);
+  SkMatrix src_to_dst =
+      SkMatrix::RectToRect(gfx::RectFToSkRect(params->vis_tex_coords),
+                           gfx::RectFToSkRect(params->visible_rect));
   params->visible_rect = gfx::SkRectToRectF(
       src_to_dst.mapRect(gfx::RectFToSkRect(valid_texel_bounds)));
   params->vis_tex_coords = valid_texel_bounds;
@@ -1803,9 +1803,8 @@ void SkiaRenderer::DrawPictureQuad(const PictureDrawQuad* quad,
   // Treat all subnormal values as zero for performance.
   cc::ScopedSubnormalFloatDisabler disabler;
 
-  raster_canvas->concat(SkMatrix::MakeRectToRect(
-      gfx::RectFToSkRect(quad->tex_coord_rect), gfx::RectToSkRect(quad->rect),
-      SkMatrix::kFill_ScaleToFit));
+  raster_canvas->concat(SkMatrix::RectToRect(
+      gfx::RectFToSkRect(quad->tex_coord_rect), gfx::RectToSkRect(quad->rect)));
 
   raster_canvas->translate(-quad->content_rect.x(), -quad->content_rect.y());
   raster_canvas->clipRect(gfx::RectToSkRect(quad->content_rect));
@@ -2341,8 +2340,8 @@ SkiaRenderer::DrawRPDQParams SkiaRenderer::CalculateRPDQParams(
         gfx::ScaleRect(quad->mask_uv_rect, quad->mask_texture_size.width(),
                        quad->mask_texture_size.height()));
     // Map to full quad rect so that mask coordinates don't change with clipping
-    SkMatrix mask_to_quad_matrix = SkMatrix::MakeRectToRect(
-        mask_rect, gfx::RectToSkRect(quad->rect), SkMatrix::kFill_ScaleToFit);
+    SkMatrix mask_to_quad_matrix =
+        SkMatrix::RectToRect(mask_rect, gfx::RectToSkRect(quad->rect));
 
     rpdq_params.mask_shader = mask_image->makeShader(
         SkTileMode::kClamp, SkTileMode::kClamp,
