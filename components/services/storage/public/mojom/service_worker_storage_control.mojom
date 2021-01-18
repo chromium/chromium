@@ -81,10 +81,11 @@ interface ServiceWorkerResourceReader {
       (int32 status,
        network.mojom.URLResponseHead? response_head,
        mojo_base.mojom.BigBuffer? metadata);
-  // Reads the content of the resource associated with this reader.
+  // Reads the content of the resource associated with this reader. `pipe`
+  // can be empty when creating a data pipe fails.
   ReadData(int64 size,
            pending_remote<ServiceWorkerDataPipeStateNotifier> notifier) =>
-      (handle<data_pipe_consumer> pipe);
+      (handle<data_pipe_consumer>? pipe);
 };
 
 // An interface that writes a service worker script (resource) to storage.
