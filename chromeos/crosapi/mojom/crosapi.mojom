@@ -200,9 +200,12 @@ enum ExoImeSupport {
   // Note that this is an approach consistent with ARC's behavior.
   kConsumedByImeWorkaround = 1,
 
-  // TODO(crbug.com/1093194): For long term, we're looking at a way to remove
-  // the above workaround. It will be exclusive state, so on implementing
-  // ash-chrome's fix, it is necessary to add a new value here, too, atomically.
+  // Exo sends keysym events to a client using a separate API.
+  // Once the client (lacros-chrome) gets ready to handle wl_keyboard::key and
+  // zwp_text_input_v1::keysym properly in separate paths, exo can send each
+  // each event without the ConsumedByIme() workaround above and tell the client
+  // that it dropped the workaround using kSupported flag.
+  [MinVersion=1] kSupported = 2,
 };
 
 // LacrosInitParams is a set of parameters for initialization of lacros-chrome,

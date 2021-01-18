@@ -74,9 +74,8 @@ bool IsImeEnabled() {
   // world becomes new enough.
   const crosapi::mojom::LacrosInitParams* init_params =
       lacros_chrome_service->init_params();
-  if (init_params &&
-      init_params->exo_ime_support ==
-          crosapi::mojom::ExoImeSupport::kConsumedByImeWorkaround) {
+  if (init_params && init_params->exo_ime_support !=
+                         crosapi::mojom::ExoImeSupport::kUnsupported) {
     return true;
   }
 #endif
