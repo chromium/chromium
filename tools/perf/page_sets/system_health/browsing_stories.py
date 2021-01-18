@@ -194,13 +194,13 @@ class InstagramMobileStory2019(_ArticleBrowsingStory):
     action_runner.NavigateBack()
 
 
-class FlipboardDesktopStory2018(_ArticleBrowsingStory):
-  NAME = 'browse:news:flipboard:2018'
+class FlipboardDesktopStory2020(_ArticleBrowsingStory):
+  NAME = 'browse:news:flipboard:2020'
   URL = 'https://flipboard.com/explore'
   IS_SINGLE_PAGE_APP = True
   ITEM_SELECTOR = '.cover-image'
   SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
-  TAGS = [story_tags.YEAR_2018]
+  TAGS = [story_tags.YEAR_2020]
 
 
 class HackerNewsDesktopStory2020(_ArticleBrowsingStory):

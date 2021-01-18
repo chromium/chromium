@@ -3420,10 +3420,6 @@
         "name": "system_health.common_desktop/browse:news:cnn:2020"
     },
     {
-        "duration": "54.0",
-        "name": "system_health.common_desktop/browse:news:flipboard:2018"
-    },
-    {
         "duration": "11.0",
         "name": "system_health.common_desktop/browse:news:hackernews:2020"
     },
@@ -3734,10 +3730,6 @@
     {
         "duration": "51.0",
         "name": "system_health.memory_desktop/browse:news:cnn:2020"
-    },
-    {
-        "duration": "46.0",
-        "name": "system_health.memory_desktop/browse:news:flipboard:2018"
     },
     {
         "duration": "52.0",
@@ -4092,10 +4084,6 @@
         "name": "v8.browsing_desktop-future/browse:news:cnn:2020"
     },
     {
-        "duration": "68.0",
-        "name": "v8.browsing_desktop-future/browse:news:flipboard:2018"
-    },
-    {
         "duration": "22.0",
         "name": "v8.browsing_desktop-future/browse:news:hackernews:2020"
     },
@@ -4198,10 +4186,6 @@
     {
         "duration": "80.0",
         "name": "v8.browsing_desktop/browse:news:cnn:2020"
-    },
-    {
-        "duration": "69.0",
-        "name": "v8.browsing_desktop/browse:news:flipboard:2018"
     },
     {
         "duration": "24.0",

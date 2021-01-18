@@ -61,7 +61,7 @@ _DISABLED_TESTS = frozenset({
     'system_health.memory_mobile/browse:news:cnn:2018',
 
     # crbug.com/978358
-    'system_health.memory_desktop/browse:news:flipboard:2018',
+    'system_health.memory_desktop/browse:news:flipboard:2020',
 
     # crbug.com/1008001
     'system_health.memory_desktop/browse:tools:sheets:2019',

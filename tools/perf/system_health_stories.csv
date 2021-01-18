@@ -21,7 +21,7 @@ browse:media:youtubetv:2019,Load a typical YouTube TV video then navigate to a n
 browse:media:youtubetv_watch:2020,Load a typical YouTube TV video then navigate to a next few videos. Stop,desktop,2020
 browse:news:cnn:2020,The second top website in http://www.alexa.com/topsites/category/News,"desktop,mobile","2020,health_check,javascript_heavy"
 browse:news:cricbuzz:2019,,mobile,"2019,emerging_market"
-browse:news:flipboard:2018,,desktop,2018
+browse:news:flipboard:2020,,desktop,2020
 browse:news:globo:2019,,mobile,"2019,emerging_market"
 browse:news:hackernews:2020,,desktop,2020
 browse:news:nytimes:2019,The third top website in http://www.alexa.com/topsites/category/News,mobile,2019

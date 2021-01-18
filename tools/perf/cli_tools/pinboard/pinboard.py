@@ -87,7 +87,7 @@ ACTIVE_STORIES = set([
 
     # v8.browsing_desktop.
     'browse:news:nytimes:2020',
-    'browse:news:flipboard:2018',
+    'browse:news:flipboard:2020',
     'browse:social:facebook_infinite_scroll:2018',
     'browse:tools:sheets:2019',
     'browse:media:tumblr:2018',
