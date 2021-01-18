@@ -15,6 +15,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
@@ -209,6 +210,24 @@ AppsNavigationThrottle::CaptureWebAppScopeNavigations(
     case blink::mojom::CaptureLinks::kNone:
       return base::nullopt;
 
+    case blink::mojom::CaptureLinks::kExistingClientNavigate: {
+      for (Browser* open_browser : *BrowserList::GetInstance()) {
+        if (web_app::AppBrowserController::IsForWebApp(open_browser, *app_id)) {
+          open_browser->OpenURL(
+              content::OpenURLParams::FromNavigationHandle(handle));
+
+          // If |web_contents| hasn't loaded yet or has only loaded about:blank
+          // we should remove it to avoid leaving behind a blank tab.
+          if (tab_helper && !tab_helper->HasLoadedNonAboutBlankPage())
+            web_contents->Close();
+
+          return content::NavigationThrottle::CANCEL_AND_IGNORE;
+        }
+      }
+      // Fall back to new-client if there are no existing clients to navigate.
+      FALLTHROUGH;
+    }
+
     case blink::mojom::CaptureLinks::kNewClient: {
       // If |web_contents| hasn't loaded yet or has only loaded about:blank we
       // should reparent it into the app window to avoid leaving behind a blank
@@ -228,10 +247,6 @@ AppsNavigationThrottle::CaptureWebAppScopeNavigations(
           ->LaunchAppWithParams(std::move(launch_params));
       return content::NavigationThrottle::CANCEL_AND_IGNORE;
     }
-
-    case blink::mojom::CaptureLinks::kExistingClientNavigate:
-      // TODO(crbug.com/1163398): Implement.
-      return base::nullopt;
   }
 }
 

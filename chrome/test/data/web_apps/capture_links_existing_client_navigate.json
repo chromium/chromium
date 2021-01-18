@@ -1,0 +1,6 @@
+{
+  "name": "\"capture_links\": \"existing-client-navigate\"",
+  "start_url": "capture_links_existing_client_navigate.html",
+  "display": "standalone",
+  "capture_links": "existing-client-navigate"
+}
