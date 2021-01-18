@@ -5268,21 +5268,6 @@
             ]
         }
     ],
-    "PermissionPromptUICocoa": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "BlockPromptsEnabled",
-                    "enable_features": [
-                        "BlockPromptsIfDismissedOften"
-                    ]
-                }
-            ]
-        }
-    ],
     "PersistentHistograms": [
         {
             "platforms": [
