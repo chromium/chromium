@@ -805,7 +805,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.SiriShortcuts.Count" units="shortcuts"
-    expires_after="2021-02-28">
+    expires_after="2021-07-31">
   <owner>gujen@google.com</owner>
   <owner>sebsg@chromium.org</owner>
   <summary>
