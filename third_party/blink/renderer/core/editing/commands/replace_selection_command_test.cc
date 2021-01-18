@@ -185,4 +185,25 @@ TEST_F(ReplaceSelectionCommandTest, SmartPlainTextPaste) {
             GetSelectionTextFromBody());
 }
 
+// http://crbug.com/1155687
+TEST_F(ReplaceSelectionCommandTest, TableAndImages) {
+  GetDocument().setDesignMode("on");
+  SetBodyContent("<table>&#x20;<tbody></tbody>&#x20;</table>");
+  Element* tbody = GetDocument().QuerySelector("tbody");
+  tbody->AppendChild(GetDocument().CreateRawElement(html_names::kImgTag));
+  Selection().SetSelection(
+      SelectionInDOMTree::Builder().Collapse(Position(tbody, 1)).Build(),
+      SetSelectionOptions());
+
+  DocumentFragment* fragment = GetDocument().createDocumentFragment();
+  fragment->AppendChild(GetDocument().CreateRawElement(html_names::kImgTag));
+  auto& command = *MakeGarbageCollected<ReplaceSelectionCommand>(
+      GetDocument(), fragment, ReplaceSelectionCommand::kPreventNesting,
+      InputEvent::InputType::kNone);
+
+  // Should not crash
+  EXPECT_TRUE(command.Apply());
+  EXPECT_EQ("<table> <tbody><img><img></tbody><br><img>|<br> </table>",
+            GetSelectionTextFromBody());
+}
 }  // namespace blink
