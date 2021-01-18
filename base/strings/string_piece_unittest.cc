@@ -269,12 +269,13 @@ TYPED_TEST(CommonStringPieceTest, CheckFind) {
   ASSERT_EQ(e.find(d, 4), std::string().find(std::string(), 4));
   ASSERT_EQ(e.find(e, 4), std::string().find(std::string(), 4));
 
+  constexpr typename TypeParam::value_type kNul = '\0';
   ASSERT_EQ(a.find('a'), 0U);
   ASSERT_EQ(a.find('c'), 2U);
   ASSERT_EQ(a.find('z'), 25U);
   ASSERT_EQ(a.find('$'), Piece::npos);
-  ASSERT_EQ(a.find('\0'), Piece::npos);
-  ASSERT_EQ(f.find('\0'), 3U);
+  ASSERT_EQ(a.find(kNul), Piece::npos);
+  ASSERT_EQ(f.find(kNul), 3U);
   ASSERT_EQ(f.find('3'), 2U);
   ASSERT_EQ(f.find('5'), 5U);
   ASSERT_EQ(g.find('o'), 4U);
@@ -282,14 +283,43 @@ TYPED_TEST(CommonStringPieceTest, CheckFind) {
   ASSERT_EQ(g.find('o', 5), 8U);
   ASSERT_EQ(a.find('b', 5), Piece::npos);
   // empty string nonsense
-  ASSERT_EQ(d.find('\0'), Piece::npos);
-  ASSERT_EQ(e.find('\0'), Piece::npos);
-  ASSERT_EQ(d.find('\0', 4), Piece::npos);
-  ASSERT_EQ(e.find('\0', 7), Piece::npos);
+  ASSERT_EQ(d.find(kNul), Piece::npos);
+  ASSERT_EQ(e.find(kNul), Piece::npos);
+  ASSERT_EQ(d.find(kNul, 4), Piece::npos);
+  ASSERT_EQ(e.find(kNul, 7), Piece::npos);
   ASSERT_EQ(d.find('x'), Piece::npos);
   ASSERT_EQ(e.find('x'), Piece::npos);
   ASSERT_EQ(d.find('x', 4), Piece::npos);
   ASSERT_EQ(e.find('x', 7), Piece::npos);
+
+  ASSERT_EQ(a.find(b.data(), 1, 0), 1U);
+  ASSERT_EQ(a.find(c.data(), 9, 0), 9U);
+  ASSERT_EQ(a.find(c.data(), Piece::npos, 0), Piece::npos);
+  ASSERT_EQ(b.find(c.data(), Piece::npos, 0), Piece::npos);
+  ASSERT_EQ(a.find(d.data(), 12, 0), 12U);
+  ASSERT_EQ(a.find(e.data(), 17, 0), 17U);
+  // empty string nonsense
+  ASSERT_EQ(d.find(b.data(), 4, 0), Piece::npos);
+  ASSERT_EQ(e.find(b.data(), 7, 0), Piece::npos);
+
+  ASSERT_EQ(a.find(b.data(), 1), Piece::npos);
+  ASSERT_EQ(a.find(c.data(), 9), 23U);
+  ASSERT_EQ(a.find(c.data(), Piece::npos), Piece::npos);
+  ASSERT_EQ(b.find(c.data(), Piece::npos), Piece::npos);
+  ASSERT_EQ(a.find(d.data(), 12), 12U);
+  ASSERT_EQ(a.find(e.data(), 17), 17U);
+  // empty string nonsense
+  ASSERT_EQ(d.find(b.data(), 4), Piece::npos);
+  ASSERT_EQ(e.find(b.data(), 7), Piece::npos);
+
+  ASSERT_EQ(d.find(d.data(), 4, 0),
+            std::string().find(std::string().data(), 4, 0));
+  ASSERT_EQ(d.find(e.data(), 4, 1),
+            std::string().find(std::string().data(), 4, 1));
+  ASSERT_EQ(e.find(d.data(), 4, 2),
+            std::string().find(std::string().data(), 4, 2));
+  ASSERT_EQ(e.find(e.data(), 4, 3),
+            std::string().find(std::string().data(), 4, 3));
 
   ASSERT_EQ(a.rfind(b), 0U);
   ASSERT_EQ(a.rfind(b, 1), 0U);
@@ -325,8 +355,8 @@ TYPED_TEST(CommonStringPieceTest, CheckFind) {
   ASSERT_EQ(g.rfind('o', 8), 8U);
   ASSERT_EQ(g.rfind('o', 7), 4U);
   ASSERT_EQ(g.rfind('o', 3), Piece::npos);
-  ASSERT_EQ(f.rfind('\0'), 3U);
-  ASSERT_EQ(f.rfind('\0', 12), 3U);
+  ASSERT_EQ(f.rfind(kNul), 3U);
+  ASSERT_EQ(f.rfind(kNul, 12), 3U);
   ASSERT_EQ(f.rfind('3'), 2U);
   ASSERT_EQ(f.rfind('5'), 5U);
   // empty string nonsense
@@ -334,6 +364,22 @@ TYPED_TEST(CommonStringPieceTest, CheckFind) {
   ASSERT_EQ(e.rfind('o'), Piece::npos);
   ASSERT_EQ(d.rfind('o', 4), Piece::npos);
   ASSERT_EQ(e.rfind('o', 7), Piece::npos);
+
+  ASSERT_EQ(a.rfind(b.data(), 1, 0), 1U);
+  ASSERT_EQ(a.rfind(c.data(), 22U, 0), 22U);
+  ASSERT_EQ(a.rfind(c.data(), 1U, 0), 1U);
+  ASSERT_EQ(a.rfind(c.data(), 0U, 0), 0U);
+  ASSERT_EQ(b.rfind(c.data(), 0U, 0), 0U);
+  ASSERT_EQ(a.rfind(d.data(), 12, 0), 12U);
+  ASSERT_EQ(a.rfind(e.data(), 17, 0), 17U);
+  ASSERT_EQ(d.rfind(b.data(), 4, 0), 0U);
+  ASSERT_EQ(e.rfind(b.data(), 7, 0), 0U);
+
+  // empty string nonsense
+  ASSERT_EQ(d.rfind(d.data(), 4), std::string().rfind(std::string()));
+  ASSERT_EQ(e.rfind(d.data(), 7), std::string().rfind(std::string()));
+  ASSERT_EQ(d.rfind(e.data(), 4), std::string().rfind(std::string()));
+  ASSERT_EQ(e.rfind(e.data(), 7), std::string().rfind(std::string()));
 
   TypeParam one_two_three_four(TestFixture::as_string("one,two:three;four"));
   TypeParam comma_colon(TestFixture::as_string(",:"));
@@ -382,16 +428,16 @@ TYPED_TEST(CommonStringPieceTest, CheckFind) {
   Piece h(equals);
   ASSERT_EQ(h.find_first_not_of('='), Piece::npos);
   ASSERT_EQ(h.find_first_not_of('=', 3), Piece::npos);
-  ASSERT_EQ(h.find_first_not_of('\0'), 0U);
+  ASSERT_EQ(h.find_first_not_of(kNul), 0U);
   ASSERT_EQ(g.find_first_not_of('x'), 2U);
-  ASSERT_EQ(f.find_first_not_of('\0'), 0U);
-  ASSERT_EQ(f.find_first_not_of('\0', 3), 4U);
-  ASSERT_EQ(f.find_first_not_of('\0', 2), 2U);
+  ASSERT_EQ(f.find_first_not_of(kNul), 0U);
+  ASSERT_EQ(f.find_first_not_of(kNul, 3), 4U);
+  ASSERT_EQ(f.find_first_not_of(kNul, 2), 2U);
   // empty string nonsense
   ASSERT_EQ(d.find_first_not_of('x'), Piece::npos);
   ASSERT_EQ(e.find_first_not_of('x'), Piece::npos);
-  ASSERT_EQ(d.find_first_not_of('\0'), Piece::npos);
-  ASSERT_EQ(e.find_first_not_of('\0'), Piece::npos);
+  ASSERT_EQ(d.find_first_not_of(kNul), Piece::npos);
+  ASSERT_EQ(e.find_first_not_of(kNul), Piece::npos);
 
   //  Piece g("xx not found bb");
   TypeParam fifty_six(TestFixture::as_string("56"));
@@ -465,13 +511,14 @@ TYPED_TEST(CommonStringPieceTest, CheckFind) {
   // empty string nonsense
   ASSERT_EQ(d.find_last_not_of('x'), Piece::npos);
   ASSERT_EQ(e.find_last_not_of('x'), Piece::npos);
-  ASSERT_EQ(d.find_last_not_of('\0'), Piece::npos);
-  ASSERT_EQ(e.find_last_not_of('\0'), Piece::npos);
+  ASSERT_EQ(d.find_last_not_of(kNul), Piece::npos);
+  ASSERT_EQ(e.find_last_not_of(kNul), Piece::npos);
 
   ASSERT_EQ(a.substr(0, 3), b);
   ASSERT_EQ(a.substr(23), c);
   ASSERT_EQ(a.substr(23, 3), c);
   ASSERT_EQ(a.substr(23, 99), c);
+  ASSERT_EQ(a.substr(), a);
   ASSERT_EQ(a.substr(0), a);
   ASSERT_EQ(a.substr(3, 2), TestFixture::as_string("de"));
   ASSERT_EQ(d.substr(0, 99), e);
@@ -677,6 +724,11 @@ TEST(StringPieceTest, OutOfBoundsDeath) {
 
   {
     StringPiece piece;
+    ASSERT_DEATH_IF_SUPPORTED(piece.copy(nullptr, 0, 1), "");
+  }
+
+  {
+    StringPiece piece;
     ASSERT_DEATH_IF_SUPPORTED(piece.substr(1), "");
   }
 }
@@ -738,6 +790,57 @@ TEST(StringPieceTest, Compare) {
   static_assert(piece.compare("gh") == -1, "");
   static_assert(piece.compare("ghi") == -1, "");
   static_assert(piece.compare("ghij") == -1, "");
+
+  static_assert(piece.compare(0, 0, "") == 0, "");
+  static_assert(piece.compare(0, 1, "d") == 0, "");
+  static_assert(piece.compare(0, 2, "de") == 0, "");
+  static_assert(piece.compare(0, 3, "def") == 0, "");
+  static_assert(piece.compare(1, 0, "") == 0, "");
+  static_assert(piece.compare(1, 1, "e") == 0, "");
+  static_assert(piece.compare(1, 2, "ef") == 0, "");
+  static_assert(piece.compare(1, 3, "ef") == 0, "");
+  static_assert(piece.compare(2, 0, "") == 0, "");
+  static_assert(piece.compare(2, 1, "f") == 0, "");
+  static_assert(piece.compare(2, 2, "f") == 0, "");
+  static_assert(piece.compare(2, 3, "f") == 0, "");
+  static_assert(piece.compare(3, 0, "") == 0, "");
+  static_assert(piece.compare(3, 1, "") == 0, "");
+  static_assert(piece.compare(3, 2, "") == 0, "");
+  static_assert(piece.compare(3, 3, "") == 0, "");
+
+  static_assert(piece.compare(0, 0, "def", 0) == 0, "");
+  static_assert(piece.compare(0, 1, "def", 1) == 0, "");
+  static_assert(piece.compare(0, 2, "def", 2) == 0, "");
+  static_assert(piece.compare(0, 3, "def", 3) == 0, "");
+  static_assert(piece.compare(1, 0, "ef", 0) == 0, "");
+  static_assert(piece.compare(1, 1, "ef", 1) == 0, "");
+  static_assert(piece.compare(1, 2, "ef", 2) == 0, "");
+  static_assert(piece.compare(1, 3, "ef", 2) == 0, "");
+  static_assert(piece.compare(2, 0, "f", 0) == 0, "");
+  static_assert(piece.compare(2, 1, "f", 1) == 0, "");
+  static_assert(piece.compare(2, 2, "f", 1) == 0, "");
+  static_assert(piece.compare(2, 3, "f", 1) == 0, "");
+  static_assert(piece.compare(3, 0, "", 0) == 0, "");
+  static_assert(piece.compare(3, 1, "", 0) == 0, "");
+  static_assert(piece.compare(3, 2, "", 0) == 0, "");
+  static_assert(piece.compare(3, 3, "", 0) == 0, "");
+
+  static_assert(piece.compare(0, 0, "def", 0, 0) == 0, "");
+  static_assert(piece.compare(0, 1, "def", 0, 1) == 0, "");
+  static_assert(piece.compare(0, 2, "def", 0, 2) == 0, "");
+  static_assert(piece.compare(0, 3, "def", 0, 3) == 0, "");
+  static_assert(piece.compare(1, 0, "def", 1, 0) == 0, "");
+  static_assert(piece.compare(1, 1, "def", 1, 1) == 0, "");
+  static_assert(piece.compare(1, 2, "def", 1, 2) == 0, "");
+  static_assert(piece.compare(1, 3, "def", 1, 3) == 0, "");
+  static_assert(piece.compare(2, 0, "def", 2, 0) == 0, "");
+  static_assert(piece.compare(2, 1, "def", 2, 1) == 0, "");
+  static_assert(piece.compare(2, 2, "def", 2, 2) == 0, "");
+  static_assert(piece.compare(2, 3, "def", 2, 3) == 0, "");
+  static_assert(piece.compare(3, 0, "def", 3, 0) == 0, "");
+  static_assert(piece.compare(3, 1, "def", 3, 1) == 0, "");
+  static_assert(piece.compare(3, 2, "def", 3, 2) == 0, "");
+  static_assert(piece.compare(3, 3, "def", 3, 3) == 0, "");
 }
 
 TEST(StringPieceTest, Substr) {
@@ -751,6 +854,7 @@ TEST(StringPieceTest, Substr) {
   static_assert(piece.substr(23) == "xyz", "");
   static_assert(piece.substr(23, 3) == "xyz", "");
   static_assert(piece.substr(23, 99) == "xyz", "");
+  static_assert(piece.substr() == piece, "");
   static_assert(piece.substr(0) == piece, "");
   static_assert(piece.substr(0, 99) == piece, "");
 }

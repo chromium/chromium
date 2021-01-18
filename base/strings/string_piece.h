@@ -48,86 +48,45 @@ namespace base {
 // template internal to the .cc file.
 namespace internal {
 
-BASE_EXPORT size_t copy(const StringPiece& self,
-                        char* buf,
-                        size_t n,
-                        size_t pos);
-BASE_EXPORT size_t copy(const StringPiece16& self,
-                        char16* buf,
-                        size_t n,
-                        size_t pos);
+BASE_EXPORT size_t find(StringPiece self, StringPiece s, size_t pos);
+BASE_EXPORT size_t find(StringPiece16 self, StringPiece16 s, size_t pos);
+BASE_EXPORT size_t find(StringPiece self, char c, size_t pos);
+BASE_EXPORT size_t find(StringPiece16 self, char16 c, size_t pos);
 
-BASE_EXPORT size_t find(const StringPiece& self,
-                        const StringPiece& s,
-                        size_t pos);
-BASE_EXPORT size_t find(const StringPiece16& self,
-                        const StringPiece16& s,
-                        size_t pos);
-BASE_EXPORT size_t find(const StringPiece& self,
-                        char c,
-                        size_t pos);
-BASE_EXPORT size_t find(const StringPiece16& self,
-                        char16 c,
-                        size_t pos);
+BASE_EXPORT size_t rfind(StringPiece self, StringPiece s, size_t pos);
+BASE_EXPORT size_t rfind(StringPiece16 self, StringPiece16 s, size_t pos);
+BASE_EXPORT size_t rfind(StringPiece self, char c, size_t pos);
+BASE_EXPORT size_t rfind(StringPiece16 self, char16 c, size_t pos);
 
-BASE_EXPORT size_t rfind(const StringPiece& self,
-                         const StringPiece& s,
-                         size_t pos);
-BASE_EXPORT size_t rfind(const StringPiece16& self,
-                         const StringPiece16& s,
-                         size_t pos);
-BASE_EXPORT size_t rfind(const StringPiece& self,
-                         char c,
-                         size_t pos);
-BASE_EXPORT size_t rfind(const StringPiece16& self,
-                         char16 c,
-                         size_t pos);
-
-BASE_EXPORT size_t find_first_of(const StringPiece& self,
-                                 const StringPiece& s,
-                                 size_t pos);
-BASE_EXPORT size_t find_first_of(const StringPiece16& self,
-                                 const StringPiece16& s,
+BASE_EXPORT size_t find_first_of(StringPiece self, StringPiece s, size_t pos);
+BASE_EXPORT size_t find_first_of(StringPiece16 self,
+                                 StringPiece16 s,
                                  size_t pos);
 
-BASE_EXPORT size_t find_first_not_of(const StringPiece& self,
-                                     const StringPiece& s,
+BASE_EXPORT size_t find_first_not_of(StringPiece self,
+                                     StringPiece s,
                                      size_t pos);
-BASE_EXPORT size_t find_first_not_of(const StringPiece16& self,
-                                     const StringPiece16& s,
+BASE_EXPORT size_t find_first_not_of(StringPiece16 self,
+                                     StringPiece16 s,
                                      size_t pos);
-BASE_EXPORT size_t find_first_not_of(const StringPiece& self,
-                                     char c,
-                                     size_t pos);
-BASE_EXPORT size_t find_first_not_of(const StringPiece16& self,
-                                     char16 c,
-                                     size_t pos);
+BASE_EXPORT size_t find_first_not_of(StringPiece self, char c, size_t pos);
+BASE_EXPORT size_t find_first_not_of(StringPiece16 self, char16 c, size_t pos);
 
-BASE_EXPORT size_t find_last_of(const StringPiece& self,
-                                const StringPiece& s,
+BASE_EXPORT size_t find_last_of(StringPiece self, StringPiece s, size_t pos);
+BASE_EXPORT size_t find_last_of(StringPiece16 self,
+                                StringPiece16 s,
                                 size_t pos);
-BASE_EXPORT size_t find_last_of(const StringPiece16& self,
-                                const StringPiece16& s,
-                                size_t pos);
-BASE_EXPORT size_t find_last_of(const StringPiece& self,
-                                char c,
-                                size_t pos);
-BASE_EXPORT size_t find_last_of(const StringPiece16& self,
-                                char16 c,
-                                size_t pos);
+BASE_EXPORT size_t find_last_of(StringPiece self, char c, size_t pos);
+BASE_EXPORT size_t find_last_of(StringPiece16 self, char16 c, size_t pos);
 
-BASE_EXPORT size_t find_last_not_of(const StringPiece& self,
-                                    const StringPiece& s,
+BASE_EXPORT size_t find_last_not_of(StringPiece self,
+                                    StringPiece s,
                                     size_t pos);
-BASE_EXPORT size_t find_last_not_of(const StringPiece16& self,
-                                    const StringPiece16& s,
+BASE_EXPORT size_t find_last_not_of(StringPiece16 self,
+                                    StringPiece16 s,
                                     size_t pos);
-BASE_EXPORT size_t find_last_not_of(const StringPiece16& self,
-                                    char16 c,
-                                    size_t pos);
-BASE_EXPORT size_t find_last_not_of(const StringPiece& self,
-                                    char c,
-                                    size_t pos);
+BASE_EXPORT size_t find_last_not_of(StringPiece16 self, char16 c, size_t pos);
+BASE_EXPORT size_t find_last_not_of(StringPiece self, char c, size_t pos);
 
 }  // namespace internal
 
@@ -226,16 +185,6 @@ template <typename STRING_TYPE> class BasicStringPiece {
     length_ -= n;
   }
 
-  constexpr int compare(BasicStringPiece x) const noexcept {
-    int r = CharTraits<value_type>::compare(
-        ptr_, x.ptr_, (length_ < x.length_ ? length_ : x.length_));
-    if (r == 0) {
-      if (length_ < x.length_) r = -1;
-      else if (length_ > x.length_) r = +1;
-    }
-    return r;
-  }
-
   // This is the style of conversion preferred by std::string_view in C++17.
   explicit operator STRING_TYPE() const {
     return empty() ? STRING_TYPE() : STRING_TYPE(data(), size());
@@ -261,72 +210,187 @@ template <typename STRING_TYPE> class BasicStringPiece {
   size_type max_size() const { return length_; }
   size_type capacity() const { return length_; }
 
-  size_type copy(value_type* buf, size_type n, size_type pos = 0) const {
-    return internal::copy(*this, buf, n, pos);
+  // String operations, see https://wg21.link/string.view.ops.
+  constexpr size_type copy(value_type* s,
+                           size_type n,
+                           size_type pos = 0) const {
+    CHECK_LE(pos, size());
+    size_type rlen = std::min(n, size() - pos);
+    traits_type::copy(s, data() + pos, rlen);
+    return rlen;
   }
 
+  constexpr BasicStringPiece substr(size_type pos = 0,
+                                    size_type n = npos) const {
+    CHECK_LE(pos, size());
+    return {data() + pos, std::min(n, size() - pos)};
+  }
+
+  constexpr int compare(BasicStringPiece str) const noexcept {
+    size_type rlen = std::min(size(), str.size());
+    int result = CharTraits<value_type>::compare(data(), str.data(), rlen);
+    if (result == 0)
+      result = size() == str.size() ? 0 : (size() < str.size() ? -1 : 1);
+    return result;
+  }
+
+  constexpr int compare(size_type pos,
+                        size_type n,
+                        BasicStringPiece str) const {
+    return substr(pos, n).compare(str);
+  }
+
+  constexpr int compare(size_type pos1,
+                        size_type n1,
+                        BasicStringPiece str,
+                        size_type pos2,
+                        size_type n2) const {
+    return substr(pos1, n1).compare(str.substr(pos2, n2));
+  }
+
+  constexpr int compare(const value_type* s) const {
+    return compare(BasicStringPiece(s));
+  }
+
+  constexpr int compare(size_type pos, size_type n, const value_type* s) const {
+    return substr(pos, n).compare(BasicStringPiece(s));
+  }
+
+  constexpr int compare(size_type pos,
+                        size_type n1,
+                        const value_type* s,
+                        size_type n2) const {
+    return substr(pos, n1).compare(BasicStringPiece(s, n2));
+  }
+
+  // Searching, see https://wg21.link/string.view.find.
+
   // find: Search for a character or substring at a given offset.
-  size_type find(const BasicStringPiece<STRING_TYPE>& s,
-                 size_type pos = 0) const {
+  constexpr size_type find(BasicStringPiece s,
+                           size_type pos = 0) const noexcept {
     return internal::find(*this, s, pos);
   }
-  size_type find(value_type c, size_type pos = 0) const {
+
+  constexpr size_type find(value_type c, size_type pos = 0) const noexcept {
     return internal::find(*this, c, pos);
   }
 
+  constexpr size_type find(const value_type* s,
+                           size_type pos,
+                           size_type n) const {
+    return find(BasicStringPiece(s, n), pos);
+  }
+
+  constexpr size_type find(const value_type* s, size_type pos = 0) const {
+    return find(BasicStringPiece(s), pos);
+  }
+
   // rfind: Reverse find.
-  size_type rfind(const BasicStringPiece& s,
-                  size_type pos = BasicStringPiece::npos) const {
+  constexpr size_type rfind(BasicStringPiece s,
+                            size_type pos = npos) const noexcept {
     return internal::rfind(*this, s, pos);
   }
-  size_type rfind(value_type c, size_type pos = BasicStringPiece::npos) const {
+
+  constexpr size_type rfind(value_type c, size_type pos = npos) const noexcept {
     return internal::rfind(*this, c, pos);
   }
 
-  // find_first_of: Find the first occurence of one of a set of characters.
-  size_type find_first_of(const BasicStringPiece& s,
-                          size_type pos = 0) const {
+  constexpr size_type rfind(const value_type* s,
+                            size_type pos,
+                            size_type n) const {
+    return rfind(BasicStringPiece(s, n), pos);
+  }
+
+  constexpr size_type rfind(const value_type* s, size_type pos = npos) const {
+    return rfind(BasicStringPiece(s), pos);
+  }
+
+  // find_first_of: Find the first occurrence of one of a set of characters.
+  constexpr size_type find_first_of(BasicStringPiece s,
+                                    size_type pos = 0) const noexcept {
     return internal::find_first_of(*this, s, pos);
   }
-  size_type find_first_of(value_type c, size_type pos = 0) const {
+
+  constexpr size_type find_first_of(value_type c,
+                                    size_type pos = 0) const noexcept {
     return find(c, pos);
   }
 
-  // find_first_not_of: Find the first occurence not of a set of characters.
-  size_type find_first_not_of(const BasicStringPiece& s,
-                              size_type pos = 0) const {
-    return internal::find_first_not_of(*this, s, pos);
-  }
-  size_type find_first_not_of(value_type c, size_type pos = 0) const {
-    return internal::find_first_not_of(*this, c, pos);
+  constexpr size_type find_first_of(const value_type* s,
+                                    size_type pos,
+                                    size_type n) const {
+    return find_first_of(BasicStringPiece(s, n), pos);
   }
 
-  // find_last_of: Find the last occurence of one of a set of characters.
-  size_type find_last_of(const BasicStringPiece& s,
-                         size_type pos = BasicStringPiece::npos) const {
+  constexpr size_type find_first_of(const value_type* s,
+                                    size_type pos = 0) const {
+    return find_first_of(BasicStringPiece(s), pos);
+  }
+
+  // find_last_of: Find the last occurrence of one of a set of characters.
+  constexpr size_type find_last_of(BasicStringPiece s,
+                                   size_type pos = npos) const noexcept {
     return internal::find_last_of(*this, s, pos);
   }
-  size_type find_last_of(value_type c,
-                         size_type pos = BasicStringPiece::npos) const {
+
+  constexpr size_type find_last_of(value_type c,
+                                   size_type pos = npos) const noexcept {
     return rfind(c, pos);
   }
 
-  // find_last_not_of: Find the last occurence not of a set of characters.
-  size_type find_last_not_of(const BasicStringPiece& s,
-                             size_type pos = BasicStringPiece::npos) const {
+  constexpr size_type find_last_of(const value_type* s,
+                                   size_type pos,
+                                   size_type n) const {
+    return find_last_of(BasicStringPiece(s, n), pos);
+  }
+
+  constexpr size_type find_last_of(const value_type* s,
+                                   size_type pos = npos) const {
+    return find_last_of(BasicStringPiece(s), pos);
+  }
+
+  // find_first_not_of: Find the first occurrence not of a set of characters.
+  constexpr size_type find_first_not_of(BasicStringPiece s,
+                                        size_type pos = 0) const noexcept {
+    return internal::find_first_not_of(*this, s, pos);
+  }
+
+  constexpr size_type find_first_not_of(value_type c,
+                                        size_type pos = 0) const noexcept {
+    return internal::find_first_not_of(*this, c, pos);
+  }
+
+  constexpr size_type find_first_not_of(const value_type* s,
+                                        size_type pos,
+                                        size_type n) const {
+    return find_first_not_of(BasicStringPiece(s, n), pos);
+  }
+
+  constexpr size_type find_first_not_of(const value_type* s,
+                                        size_type pos = 0) const {
+    return find_first_not_of(BasicStringPiece(s), pos);
+  }
+
+  // find_last_not_of: Find the last occurrence not of a set of characters.
+  constexpr size_type find_last_not_of(BasicStringPiece s,
+                                       size_type pos = npos) const noexcept {
     return internal::find_last_not_of(*this, s, pos);
   }
-  size_type find_last_not_of(value_type c,
-                             size_type pos = BasicStringPiece::npos) const {
+
+  constexpr size_type find_last_not_of(value_type c,
+                                       size_type pos = npos) const noexcept {
     return internal::find_last_not_of(*this, c, pos);
   }
 
-  // substr.
-  constexpr BasicStringPiece substr(
-      size_type pos,
-      size_type n = BasicStringPiece::npos) const {
-    CHECK_LE(pos, size());
-    return {data() + pos, std::min(n, size() - pos)};
+  constexpr size_type find_last_not_of(const value_type* s,
+                                       size_type pos,
+                                       size_type n) const {
+    return find_last_not_of(BasicStringPiece(s, n), pos);
+  }
+
+  constexpr size_type find_last_not_of(const value_type* s,
+                                       size_type pos = npos) const {
+    return find_last_not_of(BasicStringPiece(s), pos);
   }
 
  protected:
