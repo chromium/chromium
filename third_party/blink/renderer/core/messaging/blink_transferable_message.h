@@ -39,6 +39,8 @@ struct CORE_EXPORT BlinkTransferableMessage : BlinkCloneableMessage {
 
   mojom::blink::UserActivationSnapshotPtr user_activation;
 
+  bool delegate_payment_request = false;
+
  private:
   DISALLOW_COPY_AND_ASSIGN(BlinkTransferableMessage);
 };

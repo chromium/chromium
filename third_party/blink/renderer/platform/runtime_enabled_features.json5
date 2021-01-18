@@ -326,6 +326,13 @@
       status: "experimental",
     },
     {
+      name: "CapabilityDelegation",
+      implied_by: ["CapabilityDelegationPaymentRequest"],
+    },
+    {
+      name: "CapabilityDelegationPaymentRequest",
+    },
+    {
       name: "CaptureTimeInCsrc",
       status: "stable",
     },

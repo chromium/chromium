@@ -3275,7 +3275,8 @@ void LocalFrame::PostMessageEvent(
   }
   message_event->initMessageEvent(
       "message", false, false, std::move(message.message), source_origin,
-      "" /*lastEventId*/, window, ports, user_activation);
+      "" /*lastEventId*/, window, ports, user_activation,
+      message.delegate_payment_request);
 
   // If the agent cluster id had a value it means this was locked when it
   // was serialized.

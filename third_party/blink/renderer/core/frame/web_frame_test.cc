@@ -116,6 +116,7 @@
 #include "third_party/blink/renderer/core/css/resolver/viewport_style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/editing/editor.h"
@@ -126,6 +127,7 @@
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/idle_spell_check_controller.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_checker.h"
+#include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/events/message_event.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
@@ -682,6 +684,98 @@ TEST_F(WebFrameTest, IframeScriptRemovesSelf) {
   RunPendingTasks();
   EXPECT_TRUE(callback_helper.DidComplete());
   EXPECT_EQ(String(), callback_helper.StringValue());
+}
+
+namespace {
+
+class CapabilityDelegationMessageListener final : public NativeEventListener {
+ public:
+  void Invoke(ExecutionContext*, Event* event) override {
+    delegate_payment_request_ =
+        static_cast<MessageEvent*>(event)->delegatePaymentRequest();
+  }
+
+  bool DelegatePaymentRequest() {
+    bool value = delegate_payment_request_.value();
+    delegate_payment_request_.reset();
+    return value;
+  }
+
+ private:
+  base::Optional<bool> delegate_payment_request_;
+};
+
+}  // namespace
+
+TEST_F(WebFrameTest, CapabilityDelegationMessageEventTest) {
+  RuntimeEnabledFeatures::SetCapabilityDelegationPaymentRequestEnabled(true);
+
+  RegisterMockedHttpURLLoad("single_iframe.html");
+  RegisterMockedHttpURLLoad("visible_iframe.html");
+
+  frame_test_helpers::WebViewHelper web_view_helper;
+  web_view_helper.InitializeAndLoad(base_url_ + "single_iframe.html");
+
+  auto* main_frame =
+      To<LocalFrame>(web_view_helper.GetWebView()->GetPage()->MainFrame());
+  auto* child_frame = To<LocalFrame>(main_frame->FirstChild());
+  DCHECK(main_frame);
+  DCHECK(child_frame);
+
+  auto* message_event_listener =
+      MakeGarbageCollected<CapabilityDelegationMessageListener>();
+  child_frame->GetDocument()->domWindow()->addEventListener(
+      event_type_names::kMessage, message_event_listener);
+
+  v8::HandleScope scope(v8::Isolate::GetCurrent());
+  ScriptExecutionCallbackHelper callback_helper(
+      web_view_helper.LocalMainFrame()->MainWorldScriptContext());
+
+  WebScriptSource post_message_wo_payment_request(
+      WebString("window.frames[0].postMessage('0', {targetOrigin: '*'});"));
+  WebScriptSource post_message_w_payment_request(
+      WebString("window.frames[0].postMessage("
+                "'1', {targetOrigin: '*', createToken: 'paymentrequest'});"));
+
+  // The delegation info is not passed through a postMessage that is sent
+  // without either user activation or the delegation option.
+  web_view_helper.GetWebView()
+      ->MainFrameImpl()
+      ->RequestExecuteScriptAndReturnValue(post_message_wo_payment_request,
+                                           false, &callback_helper);
+  RunPendingTasks();
+  EXPECT_TRUE(callback_helper.DidComplete());
+  EXPECT_FALSE(message_event_listener->DelegatePaymentRequest());
+
+  // The delegation info is not passed through a postMessage that is sent
+  // without user activation but with the delegation option.
+  web_view_helper.GetWebView()
+      ->MainFrameImpl()
+      ->RequestExecuteScriptAndReturnValue(post_message_w_payment_request,
+                                           false, &callback_helper);
+  RunPendingTasks();
+  EXPECT_TRUE(callback_helper.DidComplete());
+  EXPECT_FALSE(message_event_listener->DelegatePaymentRequest());
+
+  // The delegation info is not passed through a postMessage that is sent with
+  // user activation but without the delegation option.
+  web_view_helper.GetWebView()
+      ->MainFrameImpl()
+      ->RequestExecuteScriptAndReturnValue(post_message_wo_payment_request,
+                                           true, &callback_helper);
+  RunPendingTasks();
+  EXPECT_TRUE(callback_helper.DidComplete());
+  EXPECT_FALSE(message_event_listener->DelegatePaymentRequest());
+
+  // The delegation info is passed through a postMessage that is sent with both
+  // user activation and the delegation option.
+  web_view_helper.GetWebView()
+      ->MainFrameImpl()
+      ->RequestExecuteScriptAndReturnValue(post_message_w_payment_request, true,
+                                           &callback_helper);
+  RunPendingTasks();
+  EXPECT_TRUE(callback_helper.DidComplete());
+  EXPECT_TRUE(message_event_listener->DelegatePaymentRequest());
 }
 
 TEST_F(WebFrameTest, FormWithNullFrame) {
