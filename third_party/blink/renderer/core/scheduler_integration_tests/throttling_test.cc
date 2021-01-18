@@ -195,13 +195,7 @@ TEST_F(BackgroundPageThrottlingTest, NestedSetTimeoutZero) {
                      console_message.Utf8().c_str()));
   GetDocument().GetPage()->GetPageScheduler()->SetPageVisible(false);
 
-  platform_->RunForPeriod(base::TimeDelta::FromMilliseconds(1));
-  EXPECT_THAT(FilteredConsoleMessages(), Vector<String>(1, console_message));
-  platform_->RunForPeriod(base::TimeDelta::FromMilliseconds(1));
-  EXPECT_THAT(FilteredConsoleMessages(), Vector<String>(2, console_message));
-  platform_->RunForPeriod(base::TimeDelta::FromMilliseconds(1));
-  EXPECT_THAT(FilteredConsoleMessages(), Vector<String>(3, console_message));
-  platform_->RunForPeriod(base::TimeDelta::FromMilliseconds(1));
+  platform_->RunForPeriod(base::TimeDelta::FromMilliseconds(4));
   EXPECT_THAT(FilteredConsoleMessages(), Vector<String>(4, console_message));
   platform_->RunForPeriod(base::TimeDelta::FromMilliseconds(995));
   EXPECT_THAT(FilteredConsoleMessages(), Vector<String>(4, console_message));
