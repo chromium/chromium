@@ -36,6 +36,10 @@ constexpr char kGoogleDocsAppId[] = "mpnpojknpmmopombnjdcgaaiekajbnjb";
 constexpr char kGoogleDriveAppId[] = "aghbiahbpaijignceidepookljebhfak";
 
 // Generated as: web_app::GenerateAppIdFromURL(GURL(
+//     "https://keep.google.com/?usp=installed_webapp"))
+constexpr char kGoogleKeepAppId[] = "eilembjdkfgodjkcjnpgpaenohkicgjd";
+
+// Generated as: web_app::GenerateAppIdFromURL(GURL(
 //     "https://www.google.com/maps?force=tt&source=ttpwa"))
 constexpr char kGoogleMapsAppId[] = "mnhkaebcjjhencmpkapnbdaogjamfbcj";
 
