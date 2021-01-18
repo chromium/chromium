@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.view.WindowManager;
 
 import androidx.annotation.Nullable;
@@ -13,7 +15,6 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.UnownedUserData;
 import org.chromium.base.UnownedUserDataKey;
 import org.chromium.base.annotations.CheckDiscard;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
@@ -36,6 +37,7 @@ import javax.inject.Inject;
  */
 @ActivityScope
 public class CustomTabIncognitoManager implements NativeInitObserver, Destroyable, UnownedUserData {
+    @SuppressLint("StaticFieldLeak") // This is for test only.
     private static CustomTabIncognitoManager sCustomTabIncognitoManagerUsedForTesting;
 
     private static final String TAG = "CctIncognito";
@@ -43,19 +45,19 @@ public class CustomTabIncognitoManager implements NativeInitObserver, Destroyabl
     private static final UnownedUserDataKey<CustomTabIncognitoManager> KEY =
             new UnownedUserDataKey<>(CustomTabIncognitoManager.class);
 
-    private final ChromeActivity<?> mChromeActivity;
+    private final Activity mActivity;
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
     private final WindowAndroid mWindowAndroid;
 
     private OTRProfileID mOTRProfileID;
 
     @Inject
-    public CustomTabIncognitoManager(ChromeActivity<?> customTabActivity,
-            WindowAndroid windowAndroid, BrowserServicesIntentDataProvider intentDataProvider,
+    public CustomTabIncognitoManager(Activity activity, WindowAndroid windowAndroid,
+            BrowserServicesIntentDataProvider intentDataProvider,
             CustomTabActivityNavigationController navigationController,
             CustomTabActivityTabProvider tabProvider,
             ActivityLifecycleDispatcher lifecycleDispatcher) {
-        mChromeActivity = customTabActivity;
+        mActivity = activity;
         mWindowAndroid = windowAndroid;
         mIntentDataProvider = intentDataProvider;
 
@@ -135,7 +137,7 @@ public class CustomTabIncognitoManager implements NativeInitObserver, Destroyabl
         if (!CommandLine.getInstance().hasSwitch(
                     ChromeSwitches.ENABLE_INCOGNITO_SNAPSHOTS_IN_ANDROID_RECENTS)) {
             // Disable taking screenshots and seeing snapshots in recents.
-            mChromeActivity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
+            mActivity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
         }
     }
 }

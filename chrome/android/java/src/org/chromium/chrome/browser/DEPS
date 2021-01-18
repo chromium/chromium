@@ -115,9 +115,6 @@ specific_include_rules = {
   "CustomTabDelegateFactory\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
-  "CustomTabIncognitoManager\.java": [
-    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
-  ],
   "CustomTabTabPersistencePolicy\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
