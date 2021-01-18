@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/accessibility/dictation_chromeos.h"
+#include "chrome/browser/ash/accessibility/dictation.h"
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
@@ -56,18 +56,18 @@ ui::IMEInputContextHandlerInterface* GetInputContext() {
 
 }  // namespace
 
-DictationChromeos::DictationChromeos(Profile* profile)
+Dictation::Dictation(Profile* profile)
     : composition_(std::make_unique<ui::CompositionText>()), profile_(profile) {
   if (GetInputContext() && GetInputContext()->GetInputMethod())
     GetInputContext()->GetInputMethod()->AddObserver(this);
 }
 
-DictationChromeos::~DictationChromeos() {
+Dictation::~Dictation() {
   if (GetInputContext() && GetInputContext()->GetInputMethod())
     GetInputContext()->GetInputMethod()->RemoveObserver(this);
 }
 
-bool DictationChromeos::OnToggleDictation() {
+bool Dictation::OnToggleDictation() {
   if (speech_recognizer_) {
     DictationOff();
     return false;
@@ -83,8 +83,7 @@ bool DictationChromeos::OnToggleDictation() {
   return true;
 }
 
-void DictationChromeos::OnSpeechResult(const base::string16& query,
-                                       bool is_final) {
+void Dictation::OnSpeechResult(const base::string16& query, bool is_final) {
   composition_->text = query;
 
   if (!is_final) {
@@ -100,9 +99,9 @@ void DictationChromeos::OnSpeechResult(const base::string16& query,
   DictationOff();
 }
 
-void DictationChromeos::OnSpeechSoundLevelChanged(int16_t level) {}
+void Dictation::OnSpeechSoundLevelChanged(int16_t level) {}
 
-void DictationChromeos::OnSpeechRecognitionStateChanged(
+void Dictation::OnSpeechRecognitionStateChanged(
     SpeechRecognizerStatus new_state) {
   if (new_state == SPEECH_RECOGNIZER_RECOGNIZING)
     audio::SoundsManager::Get()->Play(
@@ -113,11 +112,10 @@ void DictationChromeos::OnSpeechRecognitionStateChanged(
     DictationOff();
 }
 
-void DictationChromeos::GetSpeechAuthParameters(std::string* auth_scope,
-                                                std::string* auth_token) {}
+void Dictation::GetSpeechAuthParameters(std::string* auth_scope,
+                                        std::string* auth_token) {}
 
-void DictationChromeos::OnTextInputStateChanged(
-    const ui::TextInputClient* client) {
+void Dictation::OnTextInputStateChanged(const ui::TextInputClient* client) {
   if (!client)
     return;
 
@@ -128,7 +126,7 @@ void DictationChromeos::OnTextInputStateChanged(
   DictationOff();
 }
 
-void DictationChromeos::DictationOff() {
+void Dictation::DictationOff() {
   if (!speech_recognizer_)
     return;
 

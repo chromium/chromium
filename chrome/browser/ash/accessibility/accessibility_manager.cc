@@ -37,7 +37,7 @@
 #include "base/values.h"
 #include "chrome/browser/accessibility/accessibility_extension_api.h"
 #include "chrome/browser/ash/accessibility/accessibility_extension_loader.h"
-#include "chrome/browser/ash/accessibility/dictation_chromeos.h"
+#include "chrome/browser/ash/accessibility/dictation.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/browser/ash/accessibility/select_to_speak_event_handler_delegate.h"
 #include "chrome/browser/browser_process.h"
@@ -1555,7 +1555,7 @@ bool AccessibilityManager::ToggleDictation() {
     return false;
 
   if (!dictation_.get())
-    dictation_ = std::make_unique<DictationChromeos>(profile_);
+    dictation_ = std::make_unique<Dictation>(profile_);
 
   return dictation_->OnToggleDictation();
 }

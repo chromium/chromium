@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_ACCESSIBILITY_DICTATION_CHROMEOS_H_
-#define CHROME_BROWSER_ASH_ACCESSIBILITY_DICTATION_CHROMEOS_H_
+#ifndef CHROME_BROWSER_ASH_ACCESSIBILITY_DICTATION_H_
+#define CHROME_BROWSER_ASH_ACCESSIBILITY_DICTATION_H_
 
 #include <memory>
 #include <string>
@@ -22,11 +22,11 @@ class Profile;
 class SpeechRecognizer;
 
 // Provides global dictation (type what you speak) on Chrome OS.
-class DictationChromeos : public SpeechRecognizerDelegate,
-                          public ui::InputMethodObserver {
+class Dictation : public SpeechRecognizerDelegate,
+                  public ui::InputMethodObserver {
  public:
-  explicit DictationChromeos(Profile* profile);
-  ~DictationChromeos() override;
+  explicit Dictation(Profile* profile);
+  ~Dictation() override;
 
   // User-initiated dictation.
   bool OnToggleDictation();
@@ -58,9 +58,9 @@ class DictationChromeos : public SpeechRecognizerDelegate,
 
   Profile* profile_;
 
-  base::WeakPtrFactory<DictationChromeos> weak_ptr_factory_{this};
+  base::WeakPtrFactory<Dictation> weak_ptr_factory_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(DictationChromeos);
+  DISALLOW_COPY_AND_ASSIGN(Dictation);
 };
 
-#endif  // CHROME_BROWSER_ASH_ACCESSIBILITY_DICTATION_CHROMEOS_H_
+#endif  // CHROME_BROWSER_ASH_ACCESSIBILITY_DICTATION_H_

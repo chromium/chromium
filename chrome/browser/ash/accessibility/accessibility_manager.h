@@ -49,7 +49,7 @@ class Rect;
 }  // namespace gfx
 
 class AccessibilityExtensionLoader;
-class DictationChromeos;
+class Dictation;
 class SelectToSpeakEventHandlerDelegate;
 
 enum class AccessibilityNotificationType {
@@ -486,7 +486,7 @@ class AccessibilityManager
 
   bool app_terminating_ = false;
 
-  std::unique_ptr<DictationChromeos> dictation_;
+  std::unique_ptr<Dictation> dictation_;
 
   base::RepeatingCallback<void()> focus_ring_observer_for_test_;
   base::RepeatingCallback<void()> select_to_speak_state_observer_for_test_;
