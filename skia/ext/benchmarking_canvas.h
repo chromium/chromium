@@ -53,9 +53,17 @@ protected:
 
   void onDrawPicture(const SkPicture*, const SkMatrix*, const SkPaint*) override;
 
-  void onDrawImage(const SkImage*, SkScalar left, SkScalar top, const SkPaint*) override;
-  void onDrawImageRect(const SkImage*, const SkRect* src, const SkRect& dst,
-                       const SkPaint*, SrcRectConstraint) override;
+  void onDrawImage2(const SkImage*,
+                    SkScalar left,
+                    SkScalar top,
+                    const SkSamplingOptions&,
+                    const SkPaint*) override;
+  void onDrawImageRect2(const SkImage*,
+                        const SkRect& src,
+                        const SkRect& dst,
+                        const SkSamplingOptions&,
+                        const SkPaint*,
+                        SrcRectConstraint) override;
 
   void onDrawTextBlob(const SkTextBlob* blob, SkScalar x, SkScalar y,
                       const SkPaint& paint) override;

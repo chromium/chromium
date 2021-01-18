@@ -22,6 +22,25 @@ class SK_API OpacityFilterCanvas : public SkPaintFilterCanvas {
  protected:
   bool onFilter(SkPaint& paint) const override;
 
+  void onDrawImage2(const SkImage*,
+                    SkScalar dx,
+                    SkScalar dy,
+                    const SkSamplingOptions&,
+                    const SkPaint*) override;
+  void onDrawImageRect2(const SkImage*,
+                        const SkRect& src,
+                        const SkRect& dst,
+                        const SkSamplingOptions&,
+                        const SkPaint*,
+                        SrcRectConstraint) override;
+  void onDrawEdgeAAImageSet2(const ImageSetEntry imageSet[],
+                             int count,
+                             const SkPoint dstClips[],
+                             const SkMatrix preViewMatrices[],
+                             const SkSamplingOptions&,
+                             const SkPaint*,
+                             SrcRectConstraint) override;
+
   void onDrawPicture(const SkPicture* picture,
                      const SkMatrix* matrix,
                      const SkPaint* paint) override;

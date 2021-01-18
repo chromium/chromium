@@ -562,30 +562,34 @@ void BenchmarkingCanvas::onDrawPicture(const SkPicture* picture,
   INHERITED::onDrawPicture(picture, matrix, op.paint());
 }
 
-void BenchmarkingCanvas::onDrawImage(const SkImage* image,
-                                     SkScalar left,
-                                     SkScalar top,
-                                     const SkPaint* paint) {
+void BenchmarkingCanvas::onDrawImage2(const SkImage* image,
+                                      SkScalar left,
+                                      SkScalar top,
+                                      const SkSamplingOptions& sampling,
+                                      const SkPaint* paint) {
   DCHECK(image);
   AutoOp op(this, "DrawImage", paint);
   op.addParam("image", AsValue(*image));
   op.addParam("left", AsValue(left));
   op.addParam("top", AsValue(top));
 
-  INHERITED::onDrawImage(image, left, top, op.paint());
+  INHERITED::onDrawImage2(image, left, top, sampling, op.paint());
 }
 
-void BenchmarkingCanvas::onDrawImageRect(const SkImage* image, const SkRect* src,
-                                         const SkRect& dst, const SkPaint* paint,
-                                         SrcRectConstraint constraint) {
+void BenchmarkingCanvas::onDrawImageRect2(const SkImage* image,
+                                          const SkRect& src,
+                                          const SkRect& dst,
+                                          const SkSamplingOptions& sampling,
+                                          const SkPaint* paint,
+                                          SrcRectConstraint constraint) {
   DCHECK(image);
   AutoOp op(this, "DrawImageRect", paint);
   op.addParam("image", AsValue(*image));
-  if (src)
-    op.addParam("src", AsValue(*src));
+  op.addParam("src", AsValue(src));
   op.addParam("dst", AsValue(dst));
 
-  INHERITED::onDrawImageRect(image, src, dst, op.paint(), constraint);
+  INHERITED::onDrawImageRect2(image, src, dst, sampling, op.paint(),
+                              constraint);
 }
 
 void BenchmarkingCanvas::onDrawTextBlob(const SkTextBlob* blob, SkScalar x, SkScalar y,

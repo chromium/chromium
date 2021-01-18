@@ -5,4 +5,7 @@
 # Need a Vulkan native specific baseline.
 crbug.com/1096568 compositing/masks/mask-with-added-filters.html [ Skip ]
 crbug.com/1096568 compositing/masks/mask-with-removed-filters.html [ Skip ]
-
+images/color-profile-background-image-space.html [ Skip ]
+images/color-profile-border-image.html [ Skip ]
+images/color-profile-group.html [ Skip ]
+images/color-profile-svg-fill-text.html [ Skip ]
