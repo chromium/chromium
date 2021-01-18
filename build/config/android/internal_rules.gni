@@ -1115,13 +1115,6 @@ if (enable_java_templates) {
           # The full classpath is required for annotation checks like @IntDef.
           "--classpath=@FileArg($_rebased_build_config:deps_info:javac_full_interface_classpath)",
         ]
-
-        if (defined(invoker.lint_expected_warnings)) {
-          args += [
-            "--expected-warnings",
-            invoker.lint_expected_warnings,
-          ]
-        }
       }
 
       outputs = [ _stamp_path ]

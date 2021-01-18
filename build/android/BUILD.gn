@@ -16,27 +16,6 @@ if (enable_java_templates) {
     create_cache = true
   }
 
-  android_library("lint_test_java") {
-    sources = [ "java/test/LintTest.java" ]
-  }
-
-  android_apk("lint_test_apk") {
-    # This cannot be marked testonly since lint has special ignores for testonly
-    # targets. We need to test linting a normal apk target.
-    apk_name = "LintTest"
-    deps = [ ":lint_test_java" ]
-    android_manifest = "//build/android/AndroidManifest.xml"
-  }
-
-  android_lint("android_lint_test") {
-    lint_expected_warnings = "DefaultLocale,NewApi"
-    _test_apk_target = ":lint_test_apk"
-    deps = [ "${_test_apk_target}__java" ]
-    build_config_dep = "$_test_apk_target$build_config_target_suffix"
-    build_config = get_label_info(_test_apk_target, "target_gen_dir") + "/" +
-                   get_label_info(_test_apk_target, "name") + ".build_config"
-  }
-
   if (enable_jdk_library_desugaring) {
     dex_jdk_libs("all_jdk_libs") {
       output = "$target_out_dir/$target_name.l8.dex"

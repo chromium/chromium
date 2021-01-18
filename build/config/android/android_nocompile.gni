@@ -24,7 +24,7 @@ declare_args() {
 #     'target': The GN target which should not compile when
 #       enable_android_nocompile_tests=true The target should compile when
 #       enable_android_nocompile_tests=false.
-#     'expected_compile_output': Error message to test for when compile fails.
+#     'expected_compile_output_regex': Error message regex to search for when compile fails.
 #     'nocompile_sources': Source files which do not compile. This ensures that
 #       the test suite is re-run when one of these files change (as the test
 #       targets might not depend of the files when
@@ -48,7 +48,17 @@ template("android_nocompile_test_suite") {
 
     deps = []
     if (defined(invoker.deps)) {
-      deps = invoker.deps
+      deps += invoker.deps
+    }
+
+    inputs = []
+    if (defined(invoker.pydeps)) {
+      foreach(_pydeps_file, invoker.pydeps) {
+        _pydeps_file_lines = read_file(_pydeps_file, "list lines")
+        _pydeps_entries = filter_exclude(_pydeps_file_lines, [ "#*" ])
+        _pydeps_file_dir = get_path_info(_pydeps_file, "dir")
+        inputs += rebase_path(_pydeps_entries, ".", _pydeps_file_dir)
+      }
     }
 
     sources = []
@@ -62,7 +72,7 @@ template("android_nocompile_test_suite") {
       _json_test_configs += [
         {
           target = "${_dep_dir}:${_dep_name}"
-          expect = _test_config["expected_compile_output"]
+          expect_regex = _test_config["expected_compile_output_regex"]
         },
       ]
     }
@@ -82,6 +92,7 @@ template("android_nocompile_test_suite") {
       "--stamp",
       rebase_path(_stamp_path, root_build_dir),
     ]
+    inputs += [ _config_path ]
     outputs = [ _stamp_path ]
   }
 }

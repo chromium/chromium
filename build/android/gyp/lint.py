@@ -190,17 +190,6 @@ def _WriteXmlFile(root, path):
             root, encoding='utf-8')).toprettyxml(indent='  '))
 
 
-def _CheckLintWarning(expected_warnings, lint_output):
-  for expected_warning in expected_warnings.split(','):
-    expected_str = '[{}]'.format(expected_warning)
-    if expected_str not in lint_output:
-      raise Exception('Expected {!r} warning in lint output:\n{}.'.format(
-          expected_str, lint_output))
-
-  # Do not print warning
-  return ''
-
-
 def _RunLint(lint_binary_path,
              backported_methods_path,
              config_path,
@@ -218,7 +207,6 @@ def _RunLint(lint_binary_path,
              android_sdk_root,
              lint_gen_dir,
              baseline,
-             expected_warnings,
              testonly_target=False,
              warnings_as_errors=False):
   logging.info('Lint starting')
@@ -330,8 +318,6 @@ def _RunLint(lint_binary_path,
   # This filter is necessary for JDK11.
   stderr_filter = build_utils.FilterReflectiveAccessJavaWarnings
   stdout_filter = lambda x: build_utils.FilterLines(x, 'No issues found')
-  if expected_warnings:
-    stdout_filter = functools.partial(_CheckLintWarning, expected_warnings)
 
   start = time.time()
   logging.debug('Lint command %s', ' '.join(cmd))
@@ -426,9 +412,6 @@ def _ParseArgs(argv):
   parser.add_argument('--baseline',
                       help='Baseline file to ignore existing errors and fail '
                       'on new errors.')
-  parser.add_argument('--expected-warnings',
-                      help='Comma separated list of warnings to test for in '
-                      'the output, failing if not found.')
 
   args = parser.parse_args(build_utils.ExpandFileArgs(argv))
   args.java_sources = build_utils.ParseGnList(args.java_sources)
@@ -476,7 +459,6 @@ def main():
            args.android_sdk_root,
            args.lint_gen_dir,
            args.baseline,
-           args.expected_warnings,
            testonly_target=args.testonly,
            warnings_as_errors=args.warnings_as_errors)
   logging.info('Creating stamp file')

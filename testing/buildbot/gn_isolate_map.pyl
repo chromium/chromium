@@ -93,7 +93,7 @@
     "type": "windowed_test_launcher",
   },
   "android_lint_test": {
-    "label": "//build/android:android_lint_test",
+    "label": "//build/android/test:android_lint_test",
     "type": "additional_compile_target",
   },
   "android_sync_integration_tests": {
