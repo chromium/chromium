@@ -166,7 +166,7 @@ emitted.
 
 In order to record UKM events, your code needs a UkmRecorder object, defined by [//services/metrics/public/cpp/ukm_recorder.h](https://cs.chromium.org/chromium/src/services/metrics/public/cpp/ukm_recorder.h)
 
-There are two main ways of getting a UkmRecorder instance.
+There are three main ways of getting a UkmRecorder instance.
 
 1) Use `ukm::UkmRecorder::Get()`.  This currently only works from the Browser process.
 
@@ -179,6 +179,8 @@ ukm::builders::MyEvent(source_id)
     .SetMyMetric(metric_value)
     .Record(ukm_recorder.get());
 ```
+
+3) Within blink/renderer, use `blink::Document::UkmRecorder()`.
 
 ### Get A ukm::SourceId
 
