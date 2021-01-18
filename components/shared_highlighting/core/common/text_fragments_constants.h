@@ -20,6 +20,9 @@ extern const char kFragmentTextStartKey[];
 extern const char kFragmentTextEndKey[];
 extern const char kFragmentSuffixKey[];
 
+// Default highlight color.
+extern const int kSharedHighlightingColorRGB[];
+
 }  // namespace shared_highlighting
 
 #endif  // COMPONENTS_SHARED_HIGHLIGHTING_CORE_COMMON_TEXT_FRAGMENTS_CONSTANTS_H_
