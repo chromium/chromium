@@ -379,14 +379,18 @@ void WebAppMetrics::UpdateUkmData(WebContents* web_contents,
 void WebAppMetrics::UpdateForegroundWebContents(WebContents* web_contents) {
   if (web_contents == foreground_web_contents_)
     return;
-  app_banner_manager_observer_.RemoveAll();
+  if (web_contents && web_contents->IsBeingDestroyed()) {
+    base::debug::DumpWithoutCrashing();
+    web_contents = nullptr;
+  }
+  app_banner_manager_observer_.Reset();
   foreground_web_contents_ = web_contents;
   WebContentsObserver::Observe(web_contents);
   if (web_contents) {
     auto* app_banner_manager =
         webapps::AppBannerManager::FromWebContents(web_contents);
     DCHECK(app_banner_manager);
-    app_banner_manager_observer_.Add(app_banner_manager);
+    app_banner_manager_observer_.Observe(app_banner_manager);
   }
 }
 

@@ -7,7 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/power_monitor/power_observer.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/banners/app_banner_manager.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -96,7 +96,8 @@ class WebAppMetrics : public KeyedService,
   Profile* const profile_;
 
   BrowserTabStripTracker browser_tab_strip_tracker_;
-  ScopedObserver<webapps::AppBannerManager, webapps::AppBannerManager::Observer>
+  base::ScopedObservation<webapps::AppBannerManager,
+                          webapps::AppBannerManager::Observer>
       app_banner_manager_observer_{this};
 
   base::WeakPtrFactory<WebAppMetrics> weak_ptr_factory_{this};
