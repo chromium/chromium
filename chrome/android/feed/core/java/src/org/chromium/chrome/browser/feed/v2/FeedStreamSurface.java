@@ -766,12 +766,8 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
 
     @Override
     public void processViewAction(byte[] data) {
-        // TODO(crbug.com/1117586): The caller should be calling on the Ui thread.
-        // assert ThreadUtils.runningOnUiThread();
-        PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
-            FeedStreamSurfaceJni.get().processViewAction(
-                    mNativeFeedStreamSurface, FeedStreamSurface.this, data);
-        });
+        FeedStreamSurfaceJni.get().processViewAction(
+                mNativeFeedStreamSurface, FeedStreamSurface.this, data);
     }
 
     @Override
