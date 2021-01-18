@@ -52,3 +52,10 @@ message StructuredEventProto {
   }
   repeated Metric metrics = 3;
 }
+
+// The top-level proto for structured metrics. One StructuredDataProto is
+// uploaded per UMA upload containing structured metrics. Contains all
+// structured events for that upload, and any other metadata.
+message StructuredDataProto {
+  repeated StructuredEventProto events = 1;
+}

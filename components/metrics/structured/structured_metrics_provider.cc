@@ -48,7 +48,7 @@ void PopulateUmaProto(const base::Value* events,
                       ChromeUserMetricsExtension* uma_proto) {
   DCHECK(events->is_list());
   for (const auto& event : events->GetList()) {
-    auto* event_proto = uma_proto->add_structured_event();
+    auto* event_proto = uma_proto->add_deprecated_structured_event();
 
     const auto event_name_hash = StringValueToUint(event.FindKey("name"));
     if (!event_name_hash)

@@ -25,7 +25,7 @@ _proto_files = [
   "printer_event.proto",
   "reporting_info.proto",
   "sampled_profile.proto",
-  "structured_event.proto",
+  "structured_data.proto",
   "system_profile.proto",
   "trace_log.proto",
   "translate_event.proto",

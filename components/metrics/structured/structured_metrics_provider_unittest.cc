@@ -183,7 +183,7 @@ TEST_F(StructuredMetricsProviderTest, EventsNotReportedWhenRecordingDisabled) {
   Init();
   OnRecordingDisabled();
   events::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
-  EXPECT_EQ(GetProvidedEvents().structured_event_size(), 0);
+  EXPECT_EQ(GetProvidedEvents().deprecated_structured_event_size(), 0);
   ExpectOnlyFileReadError();
 }
 
@@ -237,7 +237,7 @@ TEST_F(StructuredMetricsProviderTest, RecordedEventAppearsInReport) {
       .SetTestMetricTwo(12345)
       .Record();
 
-  EXPECT_EQ(GetProvidedEvents().structured_event_size(), 3);
+  EXPECT_EQ(GetProvidedEvents().deprecated_structured_event_size(), 3);
   ExpectOnlyFileReadError();
 }
 
@@ -254,10 +254,10 @@ TEST_F(StructuredMetricsProviderTest, EventsReportedCorrectly) {
       .Record();
 
   const auto uma = GetProvidedEvents();
-  ASSERT_EQ(uma.structured_event_size(), 2);
+  ASSERT_EQ(uma.deprecated_structured_event_size(), 2);
 
   {  // First event
-    const auto& event = uma.structured_event(0);
+    const auto& event = uma.deprecated_structured_event(0);
     EXPECT_EQ(event.event_name_hash(), kEventOneHash);
     EXPECT_EQ(HashToHex(event.profile_event_id()), kProjectOneId);
     ASSERT_EQ(event.metrics_size(), 2);
@@ -279,7 +279,7 @@ TEST_F(StructuredMetricsProviderTest, EventsReportedCorrectly) {
   }
 
   {  // Second event
-    const auto& event = uma.structured_event(1);
+    const auto& event = uma.deprecated_structured_event(1);
     EXPECT_EQ(event.event_name_hash(), kEventTwoHash);
     EXPECT_EQ(HashToHex(event.profile_event_id()), kProjectTwoId);
     ASSERT_EQ(event.metrics_size(), 1);
@@ -307,11 +307,11 @@ TEST_F(StructuredMetricsProviderTest, EventsWithinProjectReportedWithSameID) {
   events::test_project_two::TestEventThree().Record();
 
   const auto uma = GetProvidedEvents();
-  ASSERT_EQ(uma.structured_event_size(), 3);
+  ASSERT_EQ(uma.deprecated_structured_event_size(), 3);
 
-  const auto& event_one = uma.structured_event(0);
-  const auto& event_two = uma.structured_event(1);
-  const auto& event_three = uma.structured_event(2);
+  const auto& event_one = uma.deprecated_structured_event(0);
+  const auto& event_two = uma.deprecated_structured_event(1);
+  const auto& event_three = uma.deprecated_structured_event(2);
 
   // Check events are in the right order.
   EXPECT_EQ(event_one.event_name_hash(), kEventOneHash);
@@ -336,14 +336,14 @@ TEST_F(StructuredMetricsProviderTest, EventsClearedAfterReport) {
   events::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
   events::test_project_one::TestEventOne().SetTestMetricTwo(2).Record();
   // Should provide both the previous events.
-  EXPECT_EQ(GetProvidedEvents().structured_event_size(), 2);
+  EXPECT_EQ(GetProvidedEvents().deprecated_structured_event_size(), 2);
 
   // But the previous events shouldn't appear in the second report.
-  EXPECT_EQ(GetProvidedEvents().structured_event_size(), 0);
+  EXPECT_EQ(GetProvidedEvents().deprecated_structured_event_size(), 0);
 
   events::test_project_one::TestEventOne().SetTestMetricTwo(3).Record();
   // The third request should only contain the third event.
-  EXPECT_EQ(GetProvidedEvents().structured_event_size(), 1);
+  EXPECT_EQ(GetProvidedEvents().deprecated_structured_event_size(), 1);
 
   ExpectOnlyFileReadError();
 }
@@ -362,9 +362,9 @@ TEST_F(StructuredMetricsProviderTest, EventsFromPreviousSessionAreReported) {
   // Start a second session and ensure the event is reported.
   Init();
   const auto uma = GetProvidedEvents();
-  ASSERT_EQ(uma.structured_event_size(), 1);
-  ASSERT_EQ(uma.structured_event(0).metrics_size(), 1);
-  EXPECT_EQ(uma.structured_event(0).metrics(0).value_int64(), 1234);
+  ASSERT_EQ(uma.deprecated_structured_event_size(), 1);
+  ASSERT_EQ(uma.deprecated_structured_event(0).metrics_size(), 1);
+  EXPECT_EQ(uma.deprecated_structured_event(0).metrics(0).value_int64(), 1234);
 
   ExpectOnlyFileReadError();
 }
@@ -384,7 +384,7 @@ TEST_F(StructuredMetricsProviderTest, EventsNotRecordedBeforeInitialization) {
   // done, because the provider hasn't finished loading the keys from disk.
   events::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
   Wait();
-  EXPECT_EQ(GetProvidedEvents().structured_event_size(), 0);
+  EXPECT_EQ(GetProvidedEvents().deprecated_structured_event_size(), 0);
 
   ExpectOnlyFileReadError();
 }
@@ -399,7 +399,7 @@ TEST_F(StructuredMetricsProviderTest,
   events::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
   OnRecordingDisabled();
   events::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
-  EXPECT_EQ(GetProvidedEvents().structured_event_size(), 0);
+  EXPECT_EQ(GetProvidedEvents().deprecated_structured_event_size(), 0);
 
   ExpectOnlyFileReadError();
 }
@@ -416,7 +416,7 @@ TEST_F(StructuredMetricsProviderTest, ReportingResumesWhenEnabled) {
   OnRecordingEnabled();
   events::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
   events::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
-  EXPECT_EQ(GetProvidedEvents().structured_event_size(), 2);
+  EXPECT_EQ(GetProvidedEvents().deprecated_structured_event_size(), 2);
 
   ExpectOnlyFileReadError();
 }
@@ -426,11 +426,11 @@ TEST_F(StructuredMetricsProviderTest, ReportingResumesWhenEnabled) {
 TEST_F(StructuredMetricsProviderTest,
        ReportsNothingBeforeInitializationComplete) {
   provider_ = std::make_unique<StructuredMetricsProvider>();
-  EXPECT_EQ(GetProvidedEvents().structured_event_size(), 0);
+  EXPECT_EQ(GetProvidedEvents().deprecated_structured_event_size(), 0);
   OnRecordingEnabled();
-  EXPECT_EQ(GetProvidedEvents().structured_event_size(), 0);
+  EXPECT_EQ(GetProvidedEvents().deprecated_structured_event_size(), 0);
   OnProfileAdded(TempDirPath());
-  EXPECT_EQ(GetProvidedEvents().structured_event_size(), 0);
+  EXPECT_EQ(GetProvidedEvents().deprecated_structured_event_size(), 0);
 }
 
 // Ensure an old structured_metrics.json file correctly migrates to the new

@@ -21,14 +21,14 @@ import "perf_data.proto";
 import "printer_event.proto";
 import "reporting_info.proto";
 import "sampled_profile.proto";
-import "structured_event.proto";
+import "structured_data.proto";
 import "system_profile.proto";
 import "trace_log.proto";
 import "translate_event.proto";
 import "user_action_event.proto";
 import "user_demographics.proto";
 
-// Next tag: 23
+// Next tag: 24
 message ChromeUserMetricsExtension {
   // The product (i.e. end user application) for a given UMA log.
   enum Product {
@@ -89,7 +89,10 @@ message ChromeUserMetricsExtension {
   repeated PrinterEventProto printer_event = 16;
   repeated ChromeOSAppListLaunchEventProto chrome_os_app_list_launch_event = 20;
 
-  repeated StructuredEventProto structured_event = 22;
+  repeated StructuredEventProto deprecated_structured_event = 22
+      [deprecated = true];
+
+  optional StructuredDataProto structured_data = 23;
 
   // Deprecated: use |sampled_profile| instead.
   repeated PerfDataProto perf_data = 8 [deprecated = true];
