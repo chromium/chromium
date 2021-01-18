@@ -191,7 +191,6 @@ class PaymentRequestShippingAddressEditorTest
     WaitForObservedEvent();
   }
 
-  PersonalDataLoadedObserverMock personal_data_observer_;
   autofill::TestRegionDataLoader test_region_data_loader_;
 
  private:
@@ -222,16 +221,18 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestShippingAddressEditorTest, SyncData) {
                                DialogEvent::PROCESSING_SPINNER_HIDDEN});
 
   // Verifying the data is in the DB.
+  PersonalDataLoadedObserverMock personal_data_observer;
   autofill::PersonalDataManager* personal_data_manager = GetDataManager();
-  personal_data_manager->AddObserver(&personal_data_observer_);
+  personal_data_manager->AddObserver(&personal_data_observer);
 
   // Wait until the web database has been updated and the notification sent.
   base::RunLoop data_loop;
-  EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged())
+  EXPECT_CALL(personal_data_observer, OnPersonalDataChanged())
       .WillOnce(QuitMessageLoop(&data_loop));
   ClickOnDialogViewAndWait(DialogViewID::SAVE_ADDRESS_BUTTON);
   data_loop.Run();
 
+  personal_data_manager->RemoveObserver(&personal_data_observer);
   ASSERT_EQ(1UL, personal_data_manager->GetProfiles().size());
   autofill::AutofillProfile* profile = personal_data_manager->GetProfiles()[0];
   DCHECK(profile);
@@ -269,12 +270,13 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestShippingAddressEditorTest,
                                DialogEvent::PROCESSING_SPINNER_HIDDEN});
 
   // Verifying the data is in the DB.
+  PersonalDataLoadedObserverMock personal_data_observer;
   autofill::PersonalDataManager* personal_data_manager = GetDataManager();
-  personal_data_manager->AddObserver(&personal_data_observer_);
+  personal_data_manager->AddObserver(&personal_data_observer);
 
   // Wait until the web database has been updated and the notification sent.
   base::RunLoop data_loop;
-  EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged())
+  EXPECT_CALL(personal_data_observer, OnPersonalDataChanged())
       .WillOnce(QuitMessageLoop(&data_loop));
   views::View* editor_sheet = dialog_view()->GetViewByID(
       static_cast<int>(DialogViewID::SHIPPING_ADDRESS_EDITOR_SHEET));
@@ -282,6 +284,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestShippingAddressEditorTest,
       ui::Accelerator(ui::VKEY_RETURN, ui::EF_NONE));
   data_loop.Run();
 
+  personal_data_manager->RemoveObserver(&personal_data_observer);
   ASSERT_EQ(1UL, personal_data_manager->GetProfiles().size());
   autofill::AutofillProfile* profile = personal_data_manager->GetProfiles()[0];
   DCHECK(profile);
@@ -319,16 +322,18 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestShippingAddressEditorTest,
                                DialogEvent::PROCESSING_SPINNER_HIDDEN});
 
   // Verifying the data is in the DB.
+  PersonalDataLoadedObserverMock personal_data_observer;
   autofill::PersonalDataManager* personal_data_manager = GetDataManager();
-  personal_data_manager->AddObserver(&personal_data_observer_);
+  personal_data_manager->AddObserver(&personal_data_observer);
 
   // Wait until the web database has been updated and the notification sent.
   base::RunLoop data_loop;
-  EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged())
+  EXPECT_CALL(personal_data_observer, OnPersonalDataChanged())
       .WillOnce(QuitMessageLoop(&data_loop));
   ClickOnDialogViewAndWait(DialogViewID::SAVE_ADDRESS_BUTTON);
   data_loop.Run();
 
+  personal_data_manager->RemoveObserver(&personal_data_observer);
   ASSERT_EQ(1UL, personal_data_manager->GetProfiles().size());
   autofill::AutofillProfile* profile = personal_data_manager->GetProfiles()[0];
   DCHECK(profile);
@@ -477,16 +482,18 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestShippingAddressEditorTest,
                                DialogEvent::PROCESSING_SPINNER_HIDDEN});
 
   // Verifying the data is in the DB.
+  PersonalDataLoadedObserverMock personal_data_observer;
   autofill::PersonalDataManager* personal_data_manager = GetDataManager();
-  personal_data_manager->AddObserver(&personal_data_observer_);
+  personal_data_manager->AddObserver(&personal_data_observer);
 
   // Wait until the web database has been updated and the notification sent.
   base::RunLoop data_loop;
-  EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged())
+  EXPECT_CALL(personal_data_observer, OnPersonalDataChanged())
       .WillOnce(QuitMessageLoop(&data_loop));
   ClickOnDialogViewAndWait(DialogViewID::SAVE_ADDRESS_BUTTON);
   data_loop.Run();
 
+  personal_data_manager->RemoveObserver(&personal_data_observer);
   ASSERT_EQ(1UL, personal_data_manager->GetProfiles().size());
   autofill::AutofillProfile* profile = personal_data_manager->GetProfiles()[0];
   DCHECK(profile);
@@ -520,16 +527,18 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestShippingAddressEditorTest,
                                DialogEvent::PROCESSING_SPINNER_HIDDEN});
 
   // Verifying the data is in the DB.
+  PersonalDataLoadedObserverMock personal_data_observer;
   autofill::PersonalDataManager* personal_data_manager = GetDataManager();
-  personal_data_manager->AddObserver(&personal_data_observer_);
+  personal_data_manager->AddObserver(&personal_data_observer);
 
   // Wait until the web database has been updated and the notification sent.
   base::RunLoop data_loop;
-  EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged())
+  EXPECT_CALL(personal_data_observer, OnPersonalDataChanged())
       .WillOnce(QuitMessageLoop(&data_loop));
   ClickOnDialogViewAndWait(DialogViewID::SAVE_ADDRESS_BUTTON);
   data_loop.Run();
 
+  personal_data_manager->RemoveObserver(&personal_data_observer);
   ASSERT_EQ(1UL, personal_data_manager->GetProfiles().size());
   autofill::AutofillProfile* profile = personal_data_manager->GetProfiles()[0];
   DCHECK(profile);
@@ -580,8 +589,9 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestShippingAddressEditorTest,
                           autofill::PHONE_HOME_WHOLE_NUMBER);
 
   // Verifying the data is in the DB.
+  PersonalDataLoadedObserverMock personal_data_observer;
   autofill::PersonalDataManager* personal_data_manager = GetDataManager();
-  personal_data_manager->AddObserver(&personal_data_observer_);
+  personal_data_manager->AddObserver(&personal_data_observer);
 
   ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
                                DialogEvent::BACK_TO_PAYMENT_SHEET_NAVIGATION,
@@ -589,11 +599,12 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestShippingAddressEditorTest,
 
   // Wait until the web database has been updated and the notification sent.
   base::RunLoop data_loop;
-  EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged())
+  EXPECT_CALL(personal_data_observer, OnPersonalDataChanged())
       .WillOnce(QuitMessageLoop(&data_loop));
   ClickOnDialogViewAndWait(DialogViewID::SAVE_ADDRESS_BUTTON);
   data_loop.Run();
 
+  personal_data_manager->RemoveObserver(&personal_data_observer);
   ASSERT_EQ(1UL, personal_data_manager->GetProfiles().size());
   autofill::AutofillProfile* saved_profile =
       personal_data_manager->GetProfiles()[0];
@@ -766,16 +777,18 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestShippingAddressEditorTest,
                                DialogEvent::PROCESSING_SPINNER_HIDDEN});
 
   // Verifying the data is in the DB.
+  PersonalDataLoadedObserverMock personal_data_observer;
   autofill::PersonalDataManager* personal_data_manager = GetDataManager();
-  personal_data_manager->AddObserver(&personal_data_observer_);
+  personal_data_manager->AddObserver(&personal_data_observer);
 
   // Wait until the web database has been updated and the notification sent.
   base::RunLoop data_loop;
-  EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged())
+  EXPECT_CALL(personal_data_observer, OnPersonalDataChanged())
       .WillOnce(QuitMessageLoop(&data_loop));
   ClickOnDialogViewAndWait(DialogViewID::SAVE_ADDRESS_BUTTON);
   data_loop.Run();
 
+  personal_data_manager->RemoveObserver(&personal_data_observer);
   ASSERT_EQ(1UL, personal_data_manager->GetProfiles().size());
   autofill::AutofillProfile* profile = personal_data_manager->GetProfiles()[0];
   DCHECK(profile);
@@ -1250,12 +1263,14 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestShippingAddressEditorTest,
                                DialogEvent::PROCESSING_SPINNER_HIDDEN});
 
   // Verifying the data is in the DB.
+  PersonalDataLoadedObserverMock personal_data_observer;
   autofill::PersonalDataManager* personal_data_manager = GetDataManager();
-  personal_data_manager->AddObserver(&personal_data_observer_);
+  personal_data_manager->AddObserver(&personal_data_observer);
 
-  EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged()).Times(0);
+  EXPECT_CALL(personal_data_observer, OnPersonalDataChanged()).Times(0);
   ClickOnDialogViewAndWait(DialogViewID::SAVE_ADDRESS_BUTTON);
 
+  personal_data_manager->RemoveObserver(&personal_data_observer);
   // In incognito, the profile should be available in shipping_profiles but it
   // shouldn't be saved to the PersonalDataManager.
   ASSERT_EQ(0UL, personal_data_manager->GetProfiles().size());

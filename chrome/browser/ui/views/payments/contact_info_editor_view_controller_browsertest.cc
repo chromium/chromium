@@ -33,8 +33,6 @@ class PaymentRequestContactInfoEditorTest
     : public PaymentRequestBrowserTestBase {
  protected:
   PaymentRequestContactInfoEditorTest() {}
-
-  PersonalDataLoadedObserverMock personal_data_observer_;
 };
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestContactInfoEditorTest, HappyPath) {
@@ -48,16 +46,18 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestContactInfoEditorTest, HappyPath) {
   SetEditorTextfieldValue(base::ASCIIToUTF16(kEmailAddress),
                           autofill::EMAIL_ADDRESS);
 
+  PersonalDataLoadedObserverMock personal_data_observer;
   autofill::PersonalDataManager* personal_data_manager = GetDataManager();
-  personal_data_manager->AddObserver(&personal_data_observer_);
+  personal_data_manager->AddObserver(&personal_data_observer);
 
   // Wait until the web database has been updated and the notification sent.
   base::RunLoop data_loop;
-  EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged())
+  EXPECT_CALL(personal_data_observer, OnPersonalDataChanged())
       .WillOnce(QuitMessageLoop(&data_loop));
   ClickOnDialogViewAndWait(DialogViewID::EDITOR_SAVE_BUTTON);
   data_loop.Run();
 
+  personal_data_manager->RemoveObserver(&personal_data_observer);
   ASSERT_EQ(1UL, personal_data_manager->GetProfiles().size());
   autofill::AutofillProfile* profile = personal_data_manager->GetProfiles()[0];
   DCHECK(profile);
@@ -91,12 +91,13 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestContactInfoEditorTest,
   SetEditorTextfieldValue(base::ASCIIToUTF16(kEmailAddress),
                           autofill::EMAIL_ADDRESS);
 
+  PersonalDataLoadedObserverMock personal_data_observer;
   autofill::PersonalDataManager* personal_data_manager = GetDataManager();
-  personal_data_manager->AddObserver(&personal_data_observer_);
+  personal_data_manager->AddObserver(&personal_data_observer);
 
   // Wait until the web database has been updated and the notification sent.
   base::RunLoop data_loop;
-  EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged())
+  EXPECT_CALL(personal_data_observer, OnPersonalDataChanged())
       .WillOnce(QuitMessageLoop(&data_loop));
   views::View* editor_sheet = dialog_view()->GetViewByID(
       static_cast<int>(DialogViewID::CONTACT_INFO_EDITOR_SHEET));
@@ -104,6 +105,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestContactInfoEditorTest,
       ui::Accelerator(ui::VKEY_RETURN, ui::EF_NONE));
   data_loop.Run();
 
+  personal_data_manager->RemoveObserver(&personal_data_observer);
   ASSERT_EQ(1UL, personal_data_manager->GetProfiles().size());
   autofill::AutofillProfile* profile = personal_data_manager->GetProfiles()[0];
   DCHECK(profile);
@@ -148,16 +150,18 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestContactInfoEditorTest, Validation) {
   EXPECT_FALSE(IsEditorTextfieldInvalid(autofill::PHONE_HOME_WHOLE_NUMBER));
   EXPECT_FALSE(IsEditorTextfieldInvalid(autofill::EMAIL_ADDRESS));
 
+  PersonalDataLoadedObserverMock personal_data_observer;
   autofill::PersonalDataManager* personal_data_manager = GetDataManager();
-  personal_data_manager->AddObserver(&personal_data_observer_);
+  personal_data_manager->AddObserver(&personal_data_observer);
 
   // Wait until the web database has been updated and the notification sent.
   base::RunLoop data_loop;
-  EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged())
+  EXPECT_CALL(personal_data_observer, OnPersonalDataChanged())
       .WillOnce(QuitMessageLoop(&data_loop));
   ClickOnDialogViewAndWait(DialogViewID::EDITOR_SAVE_BUTTON);
   data_loop.Run();
 
+  personal_data_manager->RemoveObserver(&personal_data_observer);
   ASSERT_EQ(1UL, personal_data_manager->GetProfiles().size());
   autofill::AutofillProfile* profile = personal_data_manager->GetProfiles()[0];
   DCHECK(profile);
@@ -176,8 +180,9 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestContactInfoEditorTest, Validation) {
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestContactInfoEditorTest, ModifyExisting) {
   NavigateTo("/payment_request_contact_details_test.html");
+  PersonalDataLoadedObserverMock personal_data_observer;
   autofill::PersonalDataManager* personal_data_manager = GetDataManager();
-  personal_data_manager->AddObserver(&personal_data_observer_);
+  personal_data_manager->AddObserver(&personal_data_observer);
 
   autofill::AutofillProfile incomplete_profile;
   incomplete_profile.SetInfo(autofill::NAME_FULL, base::ASCIIToUTF16(kNameFull),
@@ -202,11 +207,12 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestContactInfoEditorTest, ModifyExisting) {
 
   // Wait until the web database has been updated and the notification sent.
   base::RunLoop save_data_loop;
-  EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged())
+  EXPECT_CALL(personal_data_observer, OnPersonalDataChanged())
       .WillOnce(QuitMessageLoop(&save_data_loop));
   ClickOnDialogViewAndWait(DialogViewID::EDITOR_SAVE_BUTTON);
   save_data_loop.Run();
 
+  personal_data_manager->RemoveObserver(&personal_data_observer);
   ASSERT_EQ(1UL, personal_data_manager->GetProfiles().size());
   autofill::AutofillProfile* profile = personal_data_manager->GetProfiles()[0];
   DCHECK(profile);
@@ -226,8 +232,9 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestContactInfoEditorTest, ModifyExisting) {
 IN_PROC_BROWSER_TEST_F(PaymentRequestContactInfoEditorTest,
                        ModifyExistingSelectsIt) {
   NavigateTo("/payment_request_contact_details_test.html");
+  PersonalDataLoadedObserverMock personal_data_observer;
   autofill::PersonalDataManager* personal_data_manager = GetDataManager();
-  personal_data_manager->AddObserver(&personal_data_observer_);
+  personal_data_manager->AddObserver(&personal_data_observer);
 
   autofill::AutofillProfile incomplete_profile;
   incomplete_profile.SetInfo(autofill::NAME_FULL, base::ASCIIToUTF16(kNameFull),
@@ -259,11 +266,12 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestContactInfoEditorTest,
 
   // Wait until the web database has been updated and the notification sent.
   base::RunLoop save_data_loop;
-  EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged())
+  EXPECT_CALL(personal_data_observer, OnPersonalDataChanged())
       .WillOnce(QuitMessageLoop(&save_data_loop));
   ClickOnDialogViewAndWait(DialogViewID::EDITOR_SAVE_BUTTON);
   save_data_loop.Run();
 
+  personal_data_manager->RemoveObserver(&personal_data_observer);
   autofill::AutofillProfile* profile =
       request->state()->selected_contact_profile();
   DCHECK(profile);
@@ -294,12 +302,14 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestContactInfoEditorTest,
   SetEditorTextfieldValue(base::ASCIIToUTF16(kEmailAddress),
                           autofill::EMAIL_ADDRESS);
 
+  PersonalDataLoadedObserverMock personal_data_observer;
   autofill::PersonalDataManager* personal_data_manager = GetDataManager();
-  personal_data_manager->AddObserver(&personal_data_observer_);
+  personal_data_manager->AddObserver(&personal_data_observer);
 
-  EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged()).Times(0);
+  EXPECT_CALL(personal_data_observer, OnPersonalDataChanged()).Times(0);
   ClickOnDialogViewAndWait(DialogViewID::EDITOR_SAVE_BUTTON);
 
+  personal_data_manager->RemoveObserver(&personal_data_observer);
   // In incognito, the profile should be available in contact_profiles but it
   // shouldn't be saved to the PersonalDataManager.
   ASSERT_EQ(0UL, personal_data_manager->GetProfiles().size());
