@@ -21,26 +21,23 @@ FakeSensorService::~FakeSensorService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-bool FakeSensorService::is_bound() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  return receiver_.is_bound();
-}
-
-void FakeSensorService::Bind(
+void FakeSensorService::AddReceiver(
     mojo::PendingReceiver<mojom::SensorService> pending_receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!is_bound());
 
-  receiver_.Bind(std::move(pending_receiver));
-  receiver_.set_disconnect_handler(base::BindOnce(
-      &FakeSensorService::OnServiceDisconnect, base::Unretained(this)));
+  receiver_set_.Add(this, std::move(pending_receiver));
 }
 
-void FakeSensorService::OnServiceDisconnect() {
+void FakeSensorService::ClearReceivers() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  receiver_.reset();
+  receiver_set_.Clear();
+}
+
+bool FakeSensorService::HasReceivers() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  return !receiver_set_.empty();
 }
 
 void FakeSensorService::SetDevice(

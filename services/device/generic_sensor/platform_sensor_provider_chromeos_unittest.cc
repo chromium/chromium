@@ -343,7 +343,7 @@ TEST_F(PlatformSensorProviderChromeOSTest, Reconnect) {
   EXPECT_TRUE(CreateSensor(mojom::SensorType::GYROSCOPE));
 
   // Simulate a disconnection of IIO Service.
-  sensor_hal_server_->GetSensorService()->OnServiceDisconnect();
+  sensor_hal_server_->GetSensorService()->ClearReceivers();
   sensor_hal_server_->OnServerDisconnect();
   // Remove the stored Mojo remote of the ambient light sensor.
   sensor_devices_.back()->ClearReceivers();

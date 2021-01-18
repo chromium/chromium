@@ -13,8 +13,7 @@ FakeSensorHalServer::~FakeSensorHalServer() = default;
 
 void FakeSensorHalServer::CreateChannel(
     mojo::PendingReceiver<mojom::SensorService> sensor_service_receiver) {
-  DCHECK(!sensor_service_->is_bound());
-  sensor_service_->Bind(std::move(sensor_service_receiver));
+  sensor_service_->AddReceiver(std::move(sensor_service_receiver));
 }
 
 mojo::PendingRemote<mojom::SensorHalServer> FakeSensorHalServer::PassRemote() {
