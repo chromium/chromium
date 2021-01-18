@@ -244,6 +244,10 @@ LayoutUnit NGLineTruncator::TruncateLineInTheMiddle(
     // |line_width| and/or InlineOffset() might be saturated.
     if (line_width <= item.InlineOffset())
       return line_width;
+    // We can do nothing if the right-side static item sticks out to the both
+    // sides.
+    if (item.InlineOffset() < 0)
+      return line_width;
     static_width_right =
         line_width - item.InlineOffset() + item.margin_line_left;
   }
