@@ -470,5 +470,33 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, FeatureRestriction_WindowOpen) {
   EXPECT_EQ(registry.FindHostByUrlForTesting(kPrerenderingUrl), prerender_host);
 }
 
+// Tests that Clients#matchAll() on ServiceWorkerGlobalScope exposes clients in
+// the prerendering state.
+// TODO(https://crbug.com/1166470): This can be a tentative behavior. We may
+// stop exposing the clients.
+IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest,
+                       FeatureRestriction_ClientsMatchAll) {
+  // Navigate to an initial page.
+  const GURL kInitialUrl = GetUrl("/prerender/clients_matchall.html");
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Start a prerender.
+  const GURL kPrerenderingUrl = GetUrl("/empty.html");
+  AddPrerender(kPrerenderingUrl);
+  PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
+  PrerenderHost* prerender_host =
+      registry.FindHostByUrlForTesting(kPrerenderingUrl);
+  ASSERT_TRUE(prerender_host);
+
+  // Make sure the prerendering page is exposed via Clients#matchAll().
+  EvalJsResult results =
+      EvalJs(shell()->web_contents(), "get_exposed_client_urls()");
+  std::vector<std::string> client_urls;
+  for (auto& result : results.ExtractList())
+    client_urls.push_back(result.GetString());
+  EXPECT_TRUE(base::Contains(client_urls, kInitialUrl));
+  EXPECT_TRUE(base::Contains(client_urls, kPrerenderingUrl));
+}
+
 }  // namespace
 }  // namespace content
