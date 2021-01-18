@@ -464,8 +464,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
         if (toolbarLayout instanceof CustomTabToolbar) {
             CustomTabToolbar customTabToolbar = ((CustomTabToolbar) toolbarLayout);
-            mLocationBar = customTabToolbar.createLocationBar(
-                    mLocationBarModel, mActionModeController.getActionModeCallback());
+            mLocationBar = customTabToolbar.createLocationBar(mLocationBarModel,
+                    mActionModeController.getActionModeCallback(), modalDialogManagerSupplier);
         } else {
             OverrideUrlLoadingDelegate overrideUrlLoadingDelegate =
                     (url, transition, postDataType, postData, incognito)

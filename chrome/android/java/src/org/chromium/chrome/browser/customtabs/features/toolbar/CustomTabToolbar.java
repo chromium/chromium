@@ -9,6 +9,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
@@ -43,9 +44,9 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.native_page.NativePageFactory;
 import org.chromium.chrome.browser.ntp.FakeboxDelegate;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
@@ -76,6 +77,7 @@ import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.interpolators.BakedBezierInterpolator;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 import org.chromium.ui.util.ColorUtils;
@@ -250,11 +252,12 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
      * @param actionModeCallback Callback to handle changes in contextual action Modes.
      * @return The LocationBar implementation for this CustomTabToolbar.
      */
-    public LocationBar createLocationBar(
-            LocationBarModel locationBarModel, ActionMode.Callback actionModeCallback) {
+    public LocationBar createLocationBar(LocationBarModel locationBarModel,
+            ActionMode.Callback actionModeCallback,
+            Supplier<ModalDialogManager> modalDialogManagerSupplier) {
         mLocationBarModel = locationBarModel;
-        mLocationBar =
-                new CustomTabLocationBar(locationBarModel, actionModeCallback, (UrlBar) mUrlBar);
+        mLocationBar = new CustomTabLocationBar(
+                locationBarModel, modalDialogManagerSupplier, actionModeCallback, (UrlBar) mUrlBar);
         return mLocationBar;
     }
 
@@ -654,12 +657,15 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     private class CustomTabLocationBar
             implements LocationBar, UrlBar.UrlBarDelegate, LocationBarDataProvider.Observer {
         private LocationBarDataProvider mLocationBarDataProvider;
+        private Supplier<ModalDialogManager> mModalDialogManagerSupplier;
         private UrlBarCoordinator mUrlCoordinator;
 
         public CustomTabLocationBar(LocationBarDataProvider locationBarDataProvider,
+                Supplier<ModalDialogManager> modalDialogManagerSupplier,
                 ActionMode.Callback actionModeCallback, UrlBar urlBar) {
             mLocationBarDataProvider = locationBarDataProvider;
             mLocationBarDataProvider.addObserver(this);
+            mModalDialogManagerSupplier = modalDialogManagerSupplier;
             mUrlCoordinator =
                     new UrlBarCoordinator(urlBar, /*windowDelegate=*/null, actionModeCallback,
                             /*focusChangeCallback=*/
@@ -676,13 +682,12 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 if (currentTab == null) return;
                 WebContents webContents = currentTab.getWebContents();
                 if (webContents == null) return;
-                ChromeActivity activity =
-                        (ChromeActivity) currentTab.getWindowAndroid().getActivity().get();
+                Activity activity = currentTab.getWindowAndroid().getActivity().get();
                 if (activity == null) return;
                 PageInfoController.show(activity, webContents, getContentPublisher(),
                         PageInfoController.OpenedFromSource.TOOLBAR,
                         new ChromePageInfoControllerDelegate(activity, webContents,
-                                activity::getModalDialogManager,
+                                mModalDialogManagerSupplier,
                                 /*offlinePageLoadUrlDelegate=*/
                                 new OfflinePageUtils.TabOfflinePageLoadUrlDelegate(currentTab)),
                         new ChromePermissionParamsListBuilderDelegate());
