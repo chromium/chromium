@@ -13,7 +13,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.banners.AppBannerManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
@@ -24,6 +23,7 @@ import org.chromium.chrome.browser.webapps.PwaBottomSheetControllerProvider;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -100,9 +100,11 @@ public class AddToHomescreenCoordinator {
         if (windowAndroid == null) return 0;
 
         Activity activity = windowAndroid.getActivity().get();
-        if (activity == null || !(activity instanceof ChromeActivity)) return 0;
+        if (!(activity instanceof ModalDialogManagerHolder)) return 0;
 
-        ModalDialogManager modalDialogManager = ((ChromeActivity) activity).getModalDialogManager();
+        ModalDialogManager modalDialogManager =
+                ((ModalDialogManagerHolder) activity).getModalDialogManager();
+
         if (modalDialogManager == null) return 0;
 
         AddToHomescreenCoordinator coordinator =
