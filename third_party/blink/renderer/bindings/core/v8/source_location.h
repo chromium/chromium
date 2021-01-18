@@ -76,8 +76,7 @@ class CORE_EXPORT SourceLocation {
 
  private:
   static std::unique_ptr<SourceLocation> CreateFromNonEmptyV8StackTrace(
-      std::unique_ptr<v8_inspector::V8StackTrace>,
-      int script_id);
+      std::unique_ptr<v8_inspector::V8StackTrace>);
 
   String url_;
   unsigned line_number_;

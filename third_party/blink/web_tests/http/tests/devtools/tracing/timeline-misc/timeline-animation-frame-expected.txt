@@ -13,7 +13,7 @@ RequestAnimationFrame Properties:
     startTime : <number>
     type : "RequestAnimationFrame"
 }
-Text details for RequestAnimationFrame: timeline-animation-frame.js:14
+Text details for RequestAnimationFrame: test://evaluations/0/timeline-animation-frame.js:14
 FireAnimationFrame Properties:
 {
     data : {
@@ -25,7 +25,7 @@ FireAnimationFrame Properties:
     startTime : <number>
     type : "FireAnimationFrame"
 }
-Text details for FireAnimationFrame: timeline-animation-frame.js:14
+Text details for FireAnimationFrame: test://evaluations/0/timeline-animation-frame.js:14
 CancelAnimationFrame Properties:
 {
     data : {
@@ -39,5 +39,5 @@ CancelAnimationFrame Properties:
     startTime : <number>
     type : "CancelAnimationFrame"
 }
-Text details for CancelAnimationFrame: timeline-animation-frame.js:17
+Text details for CancelAnimationFrame: test://evaluations/0/timeline-animation-frame.js:17
 
