@@ -310,7 +310,7 @@ class AutofillAgent : public content::RenderFrameObserver,
 
   // When dealing with forms that don't use a <form> tag, we keep track of the
   // elements the user has modified so we can determine when submission occurs.
-  std::set<blink::WebFormControlElement> formless_elements_user_edited_;
+  std::set<FieldRendererId> formless_elements_user_edited_;
 
   // The form user interacted, it is used if last_interacted_form_ or formless
   // form can't be converted to FormData at the time of form submission.

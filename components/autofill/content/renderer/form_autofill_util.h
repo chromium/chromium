@@ -96,6 +96,11 @@ bool IsFormControlVisible(blink::WebLocalFrame* frame,
 bool IsSomeControlElementVisible(
     const blink::WebVector<blink::WebFormControlElement>& control_elements);
 
+// Returns true if at least one element from |control_elements| is visible.
+bool IsSomeControlElementVisible(
+    blink::WebLocalFrame* frame,
+    const std::set<FieldRendererId>& control_elements);
+
 // Returns true if some control elements of |form| are visible.
 bool AreFormContentsVisible(const blink::WebFormElement& form);
 

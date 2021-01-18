@@ -1018,15 +1018,17 @@ void AutofillAgent::OnProvisionallySaveForm(
       UpdateLastInteractedForm(element.Form());
     } else {
       // Remove invisible elements
+      WebLocalFrame* frame = render_frame()->GetWebFrame();
       for (auto it = formless_elements_user_edited_.begin();
            it != formless_elements_user_edited_.end();) {
-        if (form_util::IsWebElementVisible(*it)) {
+        if (form_util::IsFormControlVisible(frame, *it)) {
           it = formless_elements_user_edited_.erase(it);
         } else {
           ++it;
         }
       }
-      formless_elements_user_edited_.insert(element);
+      formless_elements_user_edited_.insert(
+          FieldRendererId(element.UniqueRendererFormControlId()));
       provisionally_saved_form_ = base::make_optional<FormData>();
       if (!CollectFormlessElements(&provisionally_saved_form_.value())) {
         provisionally_saved_form_.reset();
@@ -1126,6 +1128,7 @@ base::Optional<FormData> AutofillAgent::GetSubmittedForm() const {
     }
   } else if (formless_elements_user_edited_.size() != 0 &&
              !form_util::IsSomeControlElementVisible(
+                 render_frame()->GetWebFrame(),
                  formless_elements_user_edited_)) {
     // we check if all the elements the user has interacted with are gone,
     // to decide if submission has occurred, and use the

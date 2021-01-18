@@ -1580,6 +1580,32 @@ bool IsSomeControlElementVisible(
   return false;
 }
 
+bool IsSomeControlElementVisible(
+    blink::WebLocalFrame* frame,
+    const std::set<FieldRendererId>& control_elements) {
+  // This is basically a set intersection of |control_elements| and the form
+  // controls on the website. We don't call IsFormControlVisible() on each
+  // element in |control_elements| as that would be O(N * M). Iterating over
+  // all form controls on the website and checking their existence in
+  // control_lements makes this O(N log M), where N is the number of form
+  // controls on the website and M the number of elements in |control_elements|.
+  WebDocument doc = frame->GetDocument();
+  if (doc.IsNull())
+    return false;
+  WebElementCollection elements = doc.All();
+
+  for (WebElement element = elements.FirstItem(); !element.IsNull();
+       element = elements.NextItem()) {
+    if (!element.IsFormControlElement() || !IsWebElementVisible(element))
+      continue;
+    WebFormControlElement control = element.To<WebFormControlElement>();
+    FieldRendererId field_renderer_id(control.UniqueRendererFormControlId());
+    if (control_elements.find(field_renderer_id) != control_elements.end())
+      return true;
+  }
+  return false;
+}
+
 bool AreFormContentsVisible(const WebFormElement& form) {
   return IsSomeControlElementVisible(form.GetFormControlElements());
 }
