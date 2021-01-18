@@ -17,12 +17,6 @@
 
 namespace safe_browsing {
 
-namespace {
-
-const char kAPIScope[] = "https://www.googleapis.com/auth/chrome-safe-browsing";
-
-}  // namespace
-
 SafeBrowsingPrimaryAccountTokenFetcher::SafeBrowsingPrimaryAccountTokenFetcher(
     signin::IdentityManager* identity_manager)
     : identity_manager_(identity_manager),
