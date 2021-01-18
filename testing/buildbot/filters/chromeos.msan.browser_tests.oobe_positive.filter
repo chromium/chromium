@@ -71,6 +71,7 @@ HidDetectionSkipTest.*
 HidDetectionTest.*
 InitialEnrollmentTest.*
 InterruptedAutoStartEnrollmentTest.*
+InvalidPendingScreenTest.*
 KioskEnrollmentTest.*
 KioskEnterpriseTest.*
 KioskHiddenWebUITest.*

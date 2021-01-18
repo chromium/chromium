@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/update_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/welcome_screen_handler.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -159,5 +160,21 @@ INSTANTIATE_TEST_SUITE_P(All,
                          PendingUpdateScreenTest,
                          testing::Values("update" /* old value */,
                                          "oobe-update" /* actual value */));
+
+// Checks that invalid (not existing) pending screen is handled gracefully.
+class InvalidPendingScreenTest : public OobeBaseTest,
+                                 public LocalStateMixin::Delegate {
+ protected:
+  // LocalStateMixin::Delegate:
+  void SetUpLocalState() final {
+    PrefService* prefs = g_browser_process->local_state();
+    prefs->SetString(prefs::kOobeScreenPending, "not_existing_screen");
+  }
+  LocalStateMixin local_state_mixin_{&mixin_host_, this};
+};
+
+IN_PROC_BROWSER_TEST_F(InvalidPendingScreenTest, WelcomeScreenShown) {
+  OobeScreenWaiter(WelcomeView::kScreenId).Wait();
+}
 
 }  // namespace chromeos

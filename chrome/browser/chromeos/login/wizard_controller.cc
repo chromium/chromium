@@ -472,7 +472,7 @@ void WizardController::AdvanceToScreenAfterHIDDetection(
     // Use the saved screen preference from Local State.
     const std::string screen_pref =
         GetLocalState()->GetString(prefs::kOobeScreenPending);
-    if (!screen_pref.empty())
+    if (!screen_pref.empty() && HasScreen(PrefToScreenId(screen_pref)))
       actual_first_screen = PrefToScreenId(screen_pref);
     else
       actual_first_screen = WelcomeView::kScreenId;
