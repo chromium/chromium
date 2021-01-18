@@ -5489,9 +5489,8 @@ TEST_P(AutofillManagerStructuredProfileTest, FormSubmittedWithDefaultValues) {
 
 struct ProfileMatchingTypesTestCase {
   const char* input_value;  // The value to input in the field.
-  std::set<ServerFieldType>
-      field_types;  // The expected field types to be determined.
-  std::set<ServerFieldType>
+  ServerFieldTypeSet field_types;  // The expected field types to be determined.
+  ServerFieldTypeSet
       structured_field_types;  // The expected field types to be determined.
 };
 
@@ -5655,7 +5654,7 @@ TEST_P(ProfileMatchingTypesTest, DeterminePossibleFieldTypesForUpload) {
 
   // Take the field types depending on the state of the structured names
   // feature.
-  const std::set<ServerFieldType>& expected_possible_types =
+  const ServerFieldTypeSet& expected_possible_types =
       StructuredNames() ? test_case.structured_field_types
                         : test_case.field_types;
 

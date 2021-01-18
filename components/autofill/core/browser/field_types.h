@@ -10,6 +10,7 @@
 
 #include "base/strings/string16.h"
 #include "base/strings/string_piece_forward.h"
+#include "components/autofill/core/common/dense_set.h"
 
 namespace autofill {
 
@@ -340,7 +341,7 @@ enum FieldTypeGroup {
   UNFILLABLE,
 };
 
-typedef std::set<ServerFieldType> ServerFieldTypeSet;
+using ServerFieldTypeSet = DenseSet<ServerFieldType, MAX_VALID_FIELD_TYPE>;
 
 // Returns whether the field can be filled with data.
 bool IsFillableFieldType(ServerFieldType field_type);

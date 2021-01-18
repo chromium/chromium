@@ -16,6 +16,7 @@
 
 #include "base/base64.h"
 #include "base/command_line.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/logging.h"
@@ -50,6 +51,7 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_tick_clock.h"
 #include "components/autofill/core/common/autofill_util.h"
+#include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_predictions.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -558,14 +560,12 @@ void EncodeFieldMetadataForQuery(const FormFieldData& field,
 // For example, for Autofill to support fields of type
 // "PHONE_HOME_COUNTRY_CODE", there would need to be at least one other field
 // of type "PHONE_HOME_NUMBER" or "PHONE_HOME_CITY_AND_NUMBER".
-const std::unordered_map<ServerFieldType, ServerFieldTypeSet>&
-GetTypeRelationshipMap() {
-  // Initialized and cached on first use.
-  static const auto* const rules =
-      new std::unordered_map<ServerFieldType, ServerFieldTypeSet>(
+const auto& GetTypeRelationshipMap() {
+  static const auto rules =
+      base::MakeFixedFlatMap<ServerFieldType, ServerFieldTypeSet>(
           {{PHONE_HOME_COUNTRY_CODE,
             {PHONE_HOME_NUMBER, PHONE_HOME_CITY_AND_NUMBER}}});
-  return *rules;
+  return rules;
 }
 
 }  // namespace
@@ -2092,7 +2092,7 @@ void FormStructure::IdentifySectionsWithNewMethod() {
   base::string16 current_section = get_section_name(*fields_.front());
 
   // Keep track of the types we've seen in this section.
-  std::set<ServerFieldType> seen_types;
+  ServerFieldTypeSet seen_types;
   ServerFieldType previous_type = UNKNOWN_TYPE;
 
   // Boolean flag that is set to true when a field in the current section
@@ -2269,7 +2269,7 @@ void FormStructure::IdentifySections(bool has_author_specified_sections) {
     base::string16 current_section = get_section_name(*fields_.front());
 
     // Keep track of the types we've seen in this section.
-    std::set<ServerFieldType> seen_types;
+    ServerFieldTypeSet seen_types;
     ServerFieldType previous_type = UNKNOWN_TYPE;
 
     bool is_hidden_section = false;
@@ -2429,7 +2429,7 @@ void FormStructure::set_randomized_encoder(
 
 void FormStructure::RationalizeTypeRelationships() {
   // Create a local set of all the types for faster lookup.
-  std::unordered_set<ServerFieldType> types;
+  ServerFieldTypeSet types;
   for (const auto& field : fields_) {
     types.insert(field->Type().GetStorableType());
   }
@@ -2438,21 +2438,11 @@ void FormStructure::RationalizeTypeRelationships() {
 
   for (const auto& field : fields_) {
     ServerFieldType field_type = field->Type().GetStorableType();
-    const auto& ruleset_iterator = type_relationship_rules.find(field_type);
+    const auto* ruleset_iterator = type_relationship_rules.find(field_type);
     if (ruleset_iterator != type_relationship_rules.end()) {
       // We have relationship rules for this type. Verify that at least one of
       // the required related type is present.
-      bool found = false;
-      for (ServerFieldType required_type : ruleset_iterator->second) {
-        if (types.find(required_type) != types.end()) {
-          // Found a required type, we can break as we only need one required
-          // type to respect the rule.
-          found = true;
-          break;
-        }
-      }
-
-      if (!found) {
+      if (!types.contains_any(ruleset_iterator->second)) {
         // No required type was found, the current field failed the relationship
         // requirements for its type. Disabling Autofill for this field.
         field->SetTypeTo(AutofillType(UNKNOWN_TYPE));

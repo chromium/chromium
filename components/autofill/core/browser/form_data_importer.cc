@@ -52,7 +52,7 @@ using AddressImportRequirement =
 
 // Return true if the |field_type| and |value| are valid within the context
 // of importing a form.
-bool IsValidFieldTypeAndValue(const std::set<ServerFieldType>& types_seen,
+bool IsValidFieldTypeAndValue(const ServerFieldTypeSet types_seen,
                               ServerFieldType field_type,
                               const base::string16& value,
                               LogBuffer* import_log_buffer) {
@@ -525,7 +525,7 @@ bool FormDataImporter::ImportAddressProfileForSection(
 
   // Used to detect and discard address forms with multiple fields of the same
   // type.
-  std::set<ServerFieldType> types_seen;
+  ServerFieldTypeSet types_seen;
 
   // Tracks if the form section contains multiple distinct email addresses.
   bool has_multiple_distinct_email_addresses = false;
@@ -845,7 +845,7 @@ CreditCard FormDataImporter::ExtractCreditCardFromForm(
 
   CreditCard candidate_credit_card;
 
-  std::set<ServerFieldType> types_seen;
+  ServerFieldTypeSet types_seen;
   for (const auto& field : form) {
     base::string16 value;
     base::TrimWhitespace(field->value, base::TRIM_ALL, &value);
