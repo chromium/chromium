@@ -17,6 +17,7 @@
 #include "chromecast/browser/webview/webview_navigation_throttle.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browsing_data_remover.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -127,9 +128,7 @@ void WebviewController::ProcessRequest(const webview::WebviewRequest& request) {
   switch (request.type_case()) {
     case webview::WebviewRequest::kNavigate:
       if (request.has_navigate()) {
-        LOG(INFO) << "Navigate webview to " << request.navigate().url();
-        stopped_ = false;
-        cast_web_contents_->LoadUrl(GURL(request.navigate().url()));
+        HandleLoadUrl(request.navigate());
       } else {
         client_->OnError("navigate() not supplied");
       }
@@ -172,6 +171,16 @@ void WebviewController::ProcessRequest(const webview::WebviewRequest& request) {
       WebContentController::ProcessRequest(request);
       break;
   }
+}
+
+void WebviewController::HandleLoadUrl(const webview::NavigateRequest& request) {
+  LOG(INFO) << "Navigate webview to " << request.url();
+  stopped_ = false;
+
+  content::NavigationController::LoadURLParams params(GURL(request.url()));
+  params.transition_type = ui::PAGE_TRANSITION_TYPED;
+  params.override_user_agent = content::NavigationController::UA_OVERRIDE_TRUE;
+  GetWebContents()->GetController().LoadURLWithParams(params);
 }
 
 void WebviewController::HandleUpdateSettings(

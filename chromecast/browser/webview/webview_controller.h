@@ -64,11 +64,13 @@ class WebviewController : public CastWebContents::Delegate,
 
  protected:
   FRIEND_TEST_ALL_PREFIXES(WebviewTest, SetInsets);
+  FRIEND_TEST_ALL_PREFIXES(WebviewTest, UserDataOverrideOnFirstRequest);
   FRIEND_TEST_ALL_PREFIXES(WebviewTest, UserDataOverride);
 
   content::WebContents* GetWebContents() override;
 
  private:
+  void HandleLoadUrl(const webview::NavigateRequest& request);
   void HandleUpdateSettings(const webview::UpdateSettingsRequest& request);
   void HandleSetAutoMediaPlaybackPolicy(
       const webview::SetAutoMediaPlaybackPolicyRequest& request);
