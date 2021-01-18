@@ -380,16 +380,24 @@ bool InputMethodChromeOS::SetComposingRange(
   const auto ordered_range = std::minmax(start, end);
   const gfx::Range composition_range(ordered_range.first, ordered_range.second);
 
+  // Use a default text span that spans across the whole composition range.
+  auto non_empty_text_spans =
+      !text_spans.empty()
+          ? text_spans
+          : std::vector<ui::ImeTextSpan>{ui::ImeTextSpan(
+                ui::ImeTextSpan::Type::kComposition,
+                /*start_offset=*/0, /*end_offset=*/composition_range.length())};
+
   // If we have pending key events, then delay the operation until
   // |ProcessKeyEventPostIME|. Otherwise, process it immediately.
   if (handling_key_event_) {
     composition_changed_ = true;
     pending_composition_range_ =
-        PendingSetCompositionRange{composition_range, text_spans};
+        PendingSetCompositionRange{composition_range, non_empty_text_spans};
     return true;
   } else {
     return client->SetCompositionFromExistingText(composition_range,
-                                                  text_spans);
+                                                  non_empty_text_spans);
   }
 }
 

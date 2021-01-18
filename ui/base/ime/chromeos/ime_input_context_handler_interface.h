@@ -30,6 +30,8 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) IMEInputContextHandlerInterface {
 
   // Called when the engine changes the composition range.
   // Returns true if the operation was successful.
+  // If |text_spans| is empty, then this function uses a default span that
+  // spans across the new composition range.
   virtual bool SetCompositionRange(
       uint32_t before,
       uint32_t after,

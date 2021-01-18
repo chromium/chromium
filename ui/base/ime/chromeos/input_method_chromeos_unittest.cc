@@ -951,6 +951,24 @@ TEST_F(InputMethodChromeOSTest, SetCompositionRange_InvalidRange) {
   EXPECT_EQ(0U, composition_text_.text.length());
 }
 
+TEST_F(InputMethodChromeOSTest,
+       SetCompositionRangeWithSelectedTextAccountsForSelection) {
+  FakeTextInputClient fake_text_input_client(TEXT_INPUT_TYPE_TEXT);
+  fake_text_input_client.SetTextAndSelection(base::ASCIIToUTF16("01234"),
+                                             gfx::Range(1, 4));
+  InputMethodChromeOS ime(this);
+  ime.SetFocusedTextInputClient(&fake_text_input_client);
+
+  // before/after are relative to the selection start/end, respectively.
+  EXPECT_TRUE(ime.SetCompositionRange(/*before=*/1, /*after=*/1, {}));
+
+  EXPECT_EQ(fake_text_input_client.composition_range(), gfx::Range(0, 5));
+  EXPECT_THAT(fake_text_input_client.ime_text_spans(),
+              testing::ElementsAre(
+                  ui::ImeTextSpan(ui::ImeTextSpan::Type::kComposition,
+                                  /*start_offset=*/0, /*end_offset=*/5)));
+}
+
 TEST_F(InputMethodChromeOSTest, ConfirmCompositionText_NoComposition) {
   // Focus on a text field.
   input_type_ = TEXT_INPUT_TYPE_TEXT;

@@ -25,8 +25,14 @@ class FakeTextInputClient : public TextInputClient {
   ~FakeTextInputClient() override;
 
   void set_text_input_type(TextInputType text_input_type);
+  void SetTextAndSelection(const base::string16& text, gfx::Range selection);
+
   const base::string16& text() const { return text_; }
   const gfx::Range& selection() const { return selection_; }
+  const gfx::Range& composition_range() const { return composition_range_; }
+  const std::vector<ui::ImeTextSpan>& ime_text_spans() const {
+    return ime_text_spans_;
+  }
 
   // TextInputClient:
   void SetCompositionText(const CompositionText& composition) override;
@@ -86,6 +92,8 @@ class FakeTextInputClient : public TextInputClient {
   TextInputType text_input_type_;
   base::string16 text_;
   gfx::Range selection_;
+  gfx::Range composition_range_;
+  std::vector<ui::ImeTextSpan> ime_text_spans_;
 };
 
 }  // namespace ui

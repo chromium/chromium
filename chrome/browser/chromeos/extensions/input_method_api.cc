@@ -449,13 +449,6 @@ InputMethodPrivateSetCompositionRangeFunction::Run() {
       }
       segments.push_back(segment_info);
     }
-  } else {
-    // Default to a single segment that spans the entire range.
-    InputMethodEngineBase::SegmentInfo segment_info;
-    segment_info.start = 0;
-    segment_info.end = params.selection_before + params.selection_after;
-    segment_info.style = InputMethodEngineBase::SEGMENT_STYLE_UNDERLINE;
-    segments.push_back(segment_info);
   }
 
   if (!engine->SetCompositionRange(params.context_id, params.selection_before,
@@ -499,13 +492,6 @@ InputMethodPrivateSetComposingRangeFunction::Run() {
       }
       segments.push_back(segment_info);
     }
-  } else {
-    // Default to a single segment that spans the entire composing range.
-    InputMethodEngineBase::SegmentInfo segment_info;
-    segment_info.start = 0;
-    segment_info.end = params.end - params.start;
-    segment_info.style = InputMethodEngineBase::SEGMENT_STYLE_UNDERLINE;
-    segments.push_back(segment_info);
   }
 
   if (!engine->SetComposingRange(params.context_id, params.start, params.end,

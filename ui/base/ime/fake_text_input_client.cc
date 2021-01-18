@@ -4,6 +4,7 @@
 
 #include "ui/base/ime/fake_text_input_client.h"
 
+#include "base/check_op.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/events/event_constants.h"
 #include "ui/gfx/geometry/rect.h"
@@ -17,6 +18,13 @@ FakeTextInputClient::~FakeTextInputClient() = default;
 
 void FakeTextInputClient::set_text_input_type(TextInputType text_input_type) {
   text_input_type_ = text_input_type;
+}
+
+void FakeTextInputClient::SetTextAndSelection(const base::string16& text,
+                                              gfx::Range selection) {
+  DCHECK_LE(selection_.end(), text.length());
+  text_ = text;
+  selection_ = selection;
 }
 
 void FakeTextInputClient::SetCompositionText(
@@ -80,7 +88,8 @@ ui::TextInputClient::FocusReason FakeTextInputClient::GetFocusReason() const {
 }
 
 bool FakeTextInputClient::GetTextRange(gfx::Range* range) const {
-  return false;
+  *range = gfx::Range(0, text_.length());
+  return true;
 }
 
 bool FakeTextInputClient::GetCompositionTextRange(gfx::Range* range) const {
@@ -88,7 +97,8 @@ bool FakeTextInputClient::GetCompositionTextRange(gfx::Range* range) const {
 }
 
 bool FakeTextInputClient::GetEditableSelectionRange(gfx::Range* range) const {
-  return false;
+  *range = selection_;
+  return true;
 }
 
 bool FakeTextInputClient::SetEditableSelectionRange(const gfx::Range& range) {
@@ -136,7 +146,12 @@ bool FakeTextInputClient::ShouldDoLearning() {
 bool FakeTextInputClient::SetCompositionFromExistingText(
     const gfx::Range& range,
     const std::vector<ui::ImeTextSpan>& ui_ime_text_spans) {
-  return false;
+  if (range.start() < 0 || range.end() > text_.length())
+    return false;
+
+  composition_range_ = range;
+  ime_text_spans_ = ui_ime_text_spans;
+  return true;
 }
 #endif
 
