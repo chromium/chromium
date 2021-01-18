@@ -1062,6 +1062,9 @@ void AddFileManagerFeatureStrings(const std::string& locale,
                    base::FeatureList::IsEnabled(
                        chromeos::features::kFilesSinglePartitionFormat));
   dict->SetBoolean(
+      "FILES_JS_MODULES_ENABLED",
+      base::FeatureList::IsEnabled(chromeos::features::kFilesJsModules));
+  dict->SetBoolean(
       "AUDIO_PLAYER_JS_MODULES_ENABLED",
       base::FeatureList::IsEnabled(chromeos::features::kAudioPlayerJsModules));
   dict->SetBoolean(

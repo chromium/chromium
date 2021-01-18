@@ -1495,6 +1495,14 @@ util.isSinglePartitionFormatEnabled = () => {
  * Returns true if  flag is enabled.
  * @return {boolean}
  */
+util.isFilesJsModulesEnabled = () => {
+  return loadTimeData.getBoolean('FILES_JS_MODULES_ENABLED');
+};
+
+/**
+ * Returns true if  flag is enabled.
+ * @return {boolean}
+ */
 util.isAudioPlayerJsModulesEnabled = () => {
   return loadTimeData.getBoolean('AUDIO_PLAYER_JS_MODULES_ENABLED');
 };
