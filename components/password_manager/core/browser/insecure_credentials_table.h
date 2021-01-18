@@ -43,7 +43,9 @@ enum class RemoveCompromisedCredentialsReason {
   kRemove = 1,
   // If a password was considered phished on a site later marked as legitimate.
   kMarkSiteAsLegitimate = 2,
-  kMaxValue = kMarkSiteAsLegitimate
+  // If the compromised credentials was updated via sync.
+  kSyncUpdate = 3,
+  kMaxValue = kSyncUpdate
 };
 
 // Represents information about the particular compromised credentials.

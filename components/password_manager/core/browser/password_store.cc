@@ -727,6 +727,15 @@ PasswordStoreChangeList PasswordStore::UpdateLoginSync(
   return UpdateLoginImpl(form, error);
 }
 
+bool PasswordStore::UpdateCompromisedCredentialsSync(
+    const PasswordForm& form,
+    base::span<const CompromisedCredentials> credentials) {
+  RemoveCompromisedCredentialsImpl(
+      form.signon_realm, form.username_value,
+      RemoveCompromisedCredentialsReason::kSyncUpdate);
+  return AddCompromisedCredentialsSync(credentials);
+}
+
 PasswordStoreChangeList PasswordStore::RemoveLoginSync(
     const PasswordForm& form) {
   return RemoveLoginImpl(form);
