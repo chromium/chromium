@@ -143,8 +143,11 @@ void WMHelperChromeOS::OnDragExited() {
 int WMHelperChromeOS::OnPerformDrop(const ui::DropTargetEvent& event,
                                     std::unique_ptr<ui::OSExchangeData> data) {
   int valid_operation = ui::DragDropTypes::DRAG_NONE;
-  for (DragDropObserver& observer : drag_drop_observers_)
-    valid_operation = valid_operation | observer.OnPerformDrop(event);
+  for (DragDropObserver& observer : drag_drop_observers_) {
+    int observer_op = observer.OnPerformDrop(event);
+    if (observer_op != ui::DragDropTypes::DRAG_NONE)
+      valid_operation = observer_op;
+  }
   return valid_operation;
 }
 

@@ -320,6 +320,7 @@ source_set("unit_tests") {
       "//ui/base:test_support",
       "//ui/base/cursor/mojom:cursor_type",
       "//ui/base/dragdrop/mojom:mojom_shared",
+      "//ui/gfx/geometry",
     ]
   }
 

@@ -3,12 +3,46 @@
 // found in the LICENSE file.
 
 #include "components/exo/wm_helper_chromeos.h"
+
+#include <memory>
+
 #include "ash/frame_throttler/frame_throttling_controller.h"
 #include "ash/shell.h"
 #include "components/exo/mock_vsync_timing_observer.h"
 #include "components/exo/test/exo_test_base.h"
+#include "components/exo/wm_helper.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "ui/aura/client/drag_drop_delegate.h"
+#include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/dragdrop/drop_target_event.h"
+#include "ui/base/dragdrop/os_exchange_data.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace exo {
+
+namespace {
+
+class MockDragDropObserver : public WMHelper::DragDropObserver {
+ public:
+  MockDragDropObserver(int drop_result) : drop_result_(drop_result) {}
+  ~MockDragDropObserver() override = default;
+
+  // WMHelper::DragDropObserver:
+  void OnDragEntered(const ui::DropTargetEvent& event) override {}
+  aura::client::DragUpdateInfo OnDragUpdated(
+      const ui::DropTargetEvent& event) override {
+    return aura::client::DragUpdateInfo();
+  }
+  void OnDragExited() override {}
+  int OnPerformDrop(const ui::DropTargetEvent& event) override {
+    return drop_result_;
+  }
+
+ private:
+  int drop_result_;
+};
+
+}  // namespace
 
 using WMHelperChromeOSTest = test::ExoTestBase;
 
@@ -56,4 +90,28 @@ TEST_F(WMHelperChromeOSTest, FrameThrottling) {
   vsync_timing_manager.RemoveObserver(&observer);
   wm_helper_chromeos->RemoveFrameThrottlingObserver();
 }
+
+TEST_F(WMHelperChromeOSTest, MultipleDragDropObservers) {
+  WMHelperChromeOS* wm_helper_chromeos =
+      static_cast<WMHelperChromeOS*>(wm_helper());
+  MockDragDropObserver observer_no_drop(ui::DragDropTypes::DRAG_NONE);
+  MockDragDropObserver observer_copy_drop(ui::DragDropTypes::DRAG_COPY);
+
+  wm_helper_chromeos->AddDragDropObserver(&observer_no_drop);
+
+  ui::DropTargetEvent target_event(ui::OSExchangeData(), gfx::PointF(),
+                                   gfx::PointF(), ui::DragDropTypes::DRAG_NONE);
+  int op = wm_helper_chromeos->OnPerformDrop(
+      target_event, std::make_unique<ui::OSExchangeData>());
+  EXPECT_EQ(op, ui::DragDropTypes::DRAG_NONE);
+
+  wm_helper_chromeos->AddDragDropObserver(&observer_copy_drop);
+  op = wm_helper_chromeos->OnPerformDrop(
+      target_event, std::make_unique<ui::OSExchangeData>());
+  EXPECT_NE(op, ui::DragDropTypes::DRAG_NONE);
+
+  wm_helper_chromeos->RemoveDragDropObserver(&observer_no_drop);
+  wm_helper_chromeos->RemoveDragDropObserver(&observer_copy_drop);
+}
+
 }  // namespace exo
