@@ -10,6 +10,7 @@
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 
 namespace performance_monitor {
+class ProcessMonitor;
 class SystemMonitor;
 }  // namespace performance_monitor
 
@@ -25,9 +26,12 @@ class ChromeBrowserMainExtraPartsPerformanceMonitor
       const ChromeBrowserMainExtraPartsPerformanceMonitor&) = delete;
 
   // ChromeBrowserMainExtraParts:
+  void PreMainMessageLoopStart() override;
   void PostMainMessageLoopStart() override;
 
  private:
+  std::unique_ptr<performance_monitor::ProcessMonitor> process_monitor_;
+
   // The system monitor instance, used by some subsystems to collect the system
   // metrics they need.
   std::unique_ptr<performance_monitor::SystemMonitor> system_monitor_;

@@ -37,8 +37,8 @@ namespace {
 // collections.
 constexpr base::TimeDelta kGatherInterval = base::TimeDelta::FromSeconds(120);
 
-base::LazyInstance<ProcessMonitor>::DestructorAtExit g_monitor =
-    LAZY_INSTANCE_INITIALIZER;
+// The global instance.
+ProcessMonitor* g_process_monitor = nullptr;
 
 void GatherMetricsForRenderProcess(content::RenderProcessHost* host,
                                    ProcessMetricsMetadata* data) {
@@ -74,19 +74,52 @@ void GatherMetricsForRenderProcess(content::RenderProcessHost* host,
 
 }  // namespace
 
-ProcessMonitor::ProcessMonitor() = default;
-
-ProcessMonitor::~ProcessMonitor() = default;
+// static
+std::unique_ptr<ProcessMonitor> ProcessMonitor::Create() {
+  DCHECK(!g_process_monitor);
+  return base::WrapUnique(new ProcessMonitor());
+}
 
 // static
-ProcessMonitor* ProcessMonitor::GetInstance() {
-  return g_monitor.Pointer();
+ProcessMonitor* ProcessMonitor::Get() {
+  return g_process_monitor;
+}
+
+ProcessMonitor::~ProcessMonitor() {
+  DCHECK(g_process_monitor);
+  g_process_monitor = nullptr;
 }
 
 void ProcessMonitor::StartGatherCycle() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   repeating_timer_.Start(FROM_HERE, kGatherInterval, this,
                          &ProcessMonitor::GatherMetricsMapOnUIThread);
+}
+
+ProcessMonitor::ProcessMonitor() {
+  DCHECK(!g_process_monitor);
+  g_process_monitor = this;
+}
+
+void ProcessMonitor::MarkProcessAsAlive(
+    const ProcessMetricsMetadata& process_data,
+    int current_update_sequence) {
+  const base::ProcessHandle& handle = process_data.handle;
+  if (handle == base::kNullProcessHandle) {
+    // Process may not be valid yet.
+    return;
+  }
+
+  auto process_metrics_iter = metrics_map_.find(handle);
+  if (process_metrics_iter == metrics_map_.end()) {
+    // If we're not already watching the process, let's initialize it.
+    metrics_map_[handle] = std::make_unique<ProcessMetricsHistory>();
+    metrics_map_[handle]->Initialize(process_data, current_update_sequence);
+  } else {
+    // If we are watching the process, touch it to keep it alive.
+    ProcessMetricsHistory* process_metrics = process_metrics_iter->second.get();
+    process_metrics->set_last_update_sequence(current_update_sequence);
+  }
 }
 
 void ProcessMonitor::GatherMetricsMapOnUIThread() {
@@ -114,27 +147,6 @@ void ProcessMonitor::GatherMetricsMapOnUIThread() {
       FROM_HERE,
       base::BindOnce(&ProcessMonitor::GatherMetricsMapOnIOThread,
                      base::Unretained(this), current_update_sequence));
-}
-
-void ProcessMonitor::MarkProcessAsAlive(
-    const ProcessMetricsMetadata& process_data,
-    int current_update_sequence) {
-  const base::ProcessHandle& handle = process_data.handle;
-  if (handle == base::kNullProcessHandle) {
-    // Process may not be valid yet.
-    return;
-  }
-
-  auto process_metrics_iter = metrics_map_.find(handle);
-  if (process_metrics_iter == metrics_map_.end()) {
-    // If we're not already watching the process, let's initialize it.
-    metrics_map_[handle] = std::make_unique<ProcessMetricsHistory>();
-    metrics_map_[handle]->Initialize(process_data, current_update_sequence);
-  } else {
-    // If we are watching the process, touch it to keep it alive.
-    ProcessMetricsHistory* process_metrics = process_metrics_iter->second.get();
-    process_metrics->set_last_update_sequence(current_update_sequence);
-  }
 }
 
 void ProcessMonitor::GatherMetricsMapOnIOThread(int current_update_sequence) {

@@ -1727,7 +1727,11 @@ bool ChromeBrowserMainParts::MainMessageLoopRun(int* result_code) {
 
   DCHECK(base::CurrentUIThread::IsSet());
 
-  performance_monitor::ProcessMonitor::GetInstance()->StartGatherCycle();
+  // The ProcessMonitor is responsible for gathering important processes
+  // metrics.
+  // TODO(1167290): Can this be moved to PreMainMessageLoopStart() without
+  //                impacting those metrics?
+  performance_monitor::ProcessMonitor::Get()->StartGatherCycle();
 
   g_run_loop->Run();
 

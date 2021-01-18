@@ -4,6 +4,7 @@
 
 #include "chrome/browser/performance_monitor/chrome_browser_main_extra_parts_performance_monitor.h"
 
+#include "chrome/browser/performance_monitor/process_monitor.h"
 #include "chrome/browser/performance_monitor/system_monitor.h"
 
 ChromeBrowserMainExtraPartsPerformanceMonitor::
@@ -11,6 +12,10 @@ ChromeBrowserMainExtraPartsPerformanceMonitor::
 
 ChromeBrowserMainExtraPartsPerformanceMonitor::
     ~ChromeBrowserMainExtraPartsPerformanceMonitor() = default;
+
+void ChromeBrowserMainExtraPartsPerformanceMonitor::PreMainMessageLoopStart() {
+  process_monitor_ = performance_monitor::ProcessMonitor::Create();
+}
 
 void ChromeBrowserMainExtraPartsPerformanceMonitor::PostMainMessageLoopStart() {
   system_monitor_ = performance_monitor::SystemMonitor::Create();

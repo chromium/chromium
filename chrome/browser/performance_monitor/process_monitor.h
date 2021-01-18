@@ -21,13 +21,19 @@ class ProcessMetricsHistory;
 // ProcessMonitor is a tool which periodically monitors performance metrics
 // of all the Chrome processes for histogram logging and possibly taking action
 // upon noticing serious performance degradation.
-//
-// TODO(sebmarchand): Make this class not a singleton.
 class ProcessMonitor {
  public:
-  // Returns the current ProcessMonitor instance if one exists; otherwise
-  // constructs a new ProcessMonitor.
-  static ProcessMonitor* GetInstance();
+  // Creates and returns the application-wide ProcessMonitor. Can only be called
+  // if no ProcessMonitor instances exists in the current process. The caller
+  // owns the created instance. The current process' instance can be retrieved
+  // with Get().
+  static std::unique_ptr<ProcessMonitor> Create();
+
+  // Returns the application-wide ProcessMonitor if one exists; otherwise
+  // returns nullptr.
+  static ProcessMonitor* Get();
+
+  ~ProcessMonitor();
 
   // Start the cycle of metrics gathering.
   void StartGatherCycle();
@@ -39,7 +45,6 @@ class ProcessMonitor {
       std::map<base::ProcessHandle, std::unique_ptr<ProcessMetricsHistory>>;
 
   ProcessMonitor();
-  ~ProcessMonitor();
 
   // Mark the given process as alive in the current update iteration.
   // This means adding an entry to the map of watched processes if it's not
