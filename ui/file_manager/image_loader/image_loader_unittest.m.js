@@ -2,6 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assertEquals} from 'chrome://test/chai_assert.js';
+import {ImageOrientation} from '../file_manager/foreground/js/metadata/image_orientation.m.js';
+import {ImageLoaderUtil} from './image_loader_util.m.js';
+import {LoadImageRequest} from './load_image_request.m.js';
+
+
 /**
  * Casts a map of options as an incoming load request to test CopyParameters.
  *
@@ -19,7 +25,7 @@ function calculateCopyParametersFromOptions(source, options) {
  * - Source image: 200x50
  * - Target: max size is 100x100
  */
-function testNormalImage() {
+export function testNormalImage() {
   const source = new Image();
   source.width = 200;
   source.height = 50;
@@ -46,7 +52,7 @@ function testNormalImage() {
  * - Source image: 50x200 90 deg clock-wise rotated image.
  * - Target: max size is 100x100
  */
-function testRotatedImage() {
+export function testRotatedImage() {
   const source = new Image();
   source.width = 50;
   source.height = 200;
@@ -73,7 +79,7 @@ function testRotatedImage() {
  * - Source image: 800x100
  * - Target: 50x50 cropped image.
  */
-function testCroppedImage() {
+export function testCroppedImage() {
   const source = new Image();
   source.width = 800;
   source.height = 100;
@@ -101,7 +107,7 @@ function testCroppedImage() {
  * - Source image: 200x25
  * - Target: 50x50 cropped image.
  */
-function testCroppedImageWithResize() {
+export function testCroppedImageWithResize() {
   const source = new Image();
   source.width = 200;
   source.height = 25;
@@ -129,7 +135,7 @@ function testCroppedImageWithResize() {
  * - Source image: 20x10
  * - Target: 50x50 cropped image.
  */
-function testCroppedTinyImage() {
+export function testCroppedTinyImage() {
   const source = new Image();
   source.width = 20;
   source.height = 10;
@@ -157,7 +163,7 @@ function testCroppedTinyImage() {
  * - Source image: 100x400 90 degree clock-wise rotated.
  * - Target: 50x50 cropped image
  */
-function testCroppedRotatedImage() {
+export function testCroppedRotatedImage() {
   const source = new Image();
   source.width = 100;
   source.height = 400;

@@ -2,14 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+import {assertEquals} from 'chrome://test/chai_assert.js';
+import {ImageRequestTask} from './image_request_task.m.js';
+import {Scheduler} from './scheduler.m.js';
+
 
 /**
  * Fake global clock used to record the "time" at which a task was run.
  */
 let globalTime = 0;
 
-function setUp() {
+export function setUp() {
   globalTime = 0;
 }
 
@@ -55,7 +58,7 @@ function newTask(taskId, priority) {
 /**
  * Checks that adding and removing tasks before the scheduler is started works.
  */
-function testIdleSchedulerAddRemove() {
+export function testIdleSchedulerAddRemove() {
   const scheduler = new Scheduler();
   const fakeTask = newTask('task-1', 0);
   scheduler.add(/** @type {!ImageRequestTask} */ (fakeTask));
@@ -71,7 +74,7 @@ function testIdleSchedulerAddRemove() {
  * tasks when scheduler is started. They also should be executed in the
  * order of their priorities.
  */
-function testNewTasksMovedAndRunInPriorityOrder() {
+export function testNewTasksMovedAndRunInPriorityOrder() {
   const fakeTask1 = newTask('task-1', 1);
   const fakeTask2 = newTask('task-2', 0);
 
@@ -87,7 +90,7 @@ function testNewTasksMovedAndRunInPriorityOrder() {
 /**
  * Checks that the scheduler only launches MAXIMUM_IN_PARALLEL tasks.
  */
-function testParallelTasks() {
+export function testParallelTasks() {
   const scheduler = new Scheduler();
   const taskList = [];
   for (let i = 0; i <= Scheduler.MAXIMUM_IN_PARALLEL; ++i) {

@@ -2,6 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {ImageCache} from './cache.m.js';
+// #import {ImageLoaderUtil} from './image_loader_util.m.js';
+// #import {ImageOrientation} from '../file_manager/foreground/js/metadata/image_orientation.m.js';
+// #import {PiexLoader} from './piex_loader.m.js';
+// #import {FileType} from '../file_manager/common/js/file_type.m.js';
+// #import {LoadImageRequest, LoadImageResponse, LoadImageResponseStatus} from './load_image_request.m.js';
+// #import {assert, assertInstanceof} from 'chrome://resources/js/assert.m.js';
+// clang-format on
+
 /**
  * Creates and starts downloading and then resizing of the image. Finally,
  * returns the image using the callback.
@@ -12,7 +22,7 @@
  * @param {function(!LoadImageResponse)} callback Response handler.
  * @constructor
  */
-function ImageRequestTask(id, cache, request, callback) {
+/* #export */ function ImageRequestTask(id, cache, request, callback) {
   /**
    * Global ID (concatenated client ID and client request ID).
    * @type {string}

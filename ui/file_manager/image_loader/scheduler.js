@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// #import {ImageRequestTask} from './image_request_task.m.js';
+
 /**
  * Scheduler for ImageRequestTask objects. Fetches tasks from a queue and
  * processes them synchronously, taking into account priorities. The highest
  * priority is 0.
  * @constructor
  */
-function Scheduler() {
+/* #export */ function Scheduler() {
   /**
    * List of tasks waiting to be checked. If these items are available in
    * cache, then they are processed immediately after starting the scheduler.
