@@ -18,6 +18,8 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/loader/fetch/script_fetch_options.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/wtf/text/text_position.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
 
@@ -135,17 +137,29 @@ Vector<ModuleRequest> ModuleRecord::ModuleRequests(
   int length = v8_module_requests->Length();
   Vector<ModuleRequest> requests;
   requests.ReserveInitialCapacity(length);
+  bool needs_text_position =
+      !WTF::IsMainThread() ||
+      probe::ToCoreProbeSink(ExecutionContext::From(script_state))
+          ->HasDevToolsSessions();
 
   for (int i = 0; i < length; ++i) {
     v8::Local<v8::ModuleRequest> v8_module_request =
         v8_module_requests->Get(script_state->GetContext(), i)
             .As<v8::ModuleRequest>();
     v8::Local<v8::String> v8_specifier = v8_module_request->GetSpecifier();
-    int source_offset = v8_module_request->GetSourceOffset();
-    v8::Location v8_loc = record->SourceOffsetToLocation(source_offset);
-    TextPosition position(
-        OrdinalNumber::FromZeroBasedInt(v8_loc.GetLineNumber()),
-        OrdinalNumber::FromZeroBasedInt(v8_loc.GetColumnNumber()));
+    TextPosition position = TextPosition::MinimumPosition();
+    if (needs_text_position) {
+      // The source position is only used by DevTools for module requests and
+      // only visible if devtools is open when the request is initiated.
+      // Calculating the source position is not free and V8 has to initialize
+      // the line end information for the complete module, thus we try to
+      // avoid this additional work here if DevTools is closed.
+      int source_offset = v8_module_request->GetSourceOffset();
+      v8::Location v8_loc = record->SourceOffsetToLocation(source_offset);
+      position = TextPosition(
+          OrdinalNumber::FromZeroBasedInt(v8_loc.GetLineNumber()),
+          OrdinalNumber::FromZeroBasedInt(v8_loc.GetColumnNumber()));
+    }
     Vector<ImportAssertion> import_assertions =
         ModuleRecord::ToBlinkImportAssertions(
             script_state->GetContext(), record,
