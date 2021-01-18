@@ -2251,6 +2251,10 @@ component("base") {
     } else {
       data += [ "//third_party/llvm-build/Release+Asserts/bin/llvm-symbolizer" ]
     }
+    if (is_linux) {
+      # llvm-symbolizer uses libstdc++ from the clang package.
+      data += [ "//third_party/llvm-build/Release+Asserts/lib/libstdc++.so.6" ]
+    }
   }
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
