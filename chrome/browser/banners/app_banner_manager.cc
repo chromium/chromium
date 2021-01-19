@@ -209,6 +209,7 @@ AppBannerManager::AppBannerManager(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
       SiteEngagementObserver(site_engagement::SiteEngagementService::Get(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()))),
+      has_maskable_primary_icon_(false),
       state_(State::INACTIVE),
       manager_(InstallableManager::FromWebContents(web_contents)),
       has_sufficient_engagement_(false),
