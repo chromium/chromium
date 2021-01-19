@@ -7750,17 +7750,9 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteTest,
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID)
-// Quite flaky: https://crbug.com/1156218
-#define MAYBE_StorageModificationAfterPagehideHistogram \
-  DISABLED_StorageModificationAfterPagehideHistogram
-#else
-#define MAYBE_StorageModificationAfterPagehideHistogram \
-  StorageModificationAfterPagehideHistogram
-#endif
-
+// Flaky on all major platforms: https://crbug.com/1156218
 IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteTest,
-                       MAYBE_StorageModificationAfterPagehideHistogram) {
+                       DISABLED_StorageModificationAfterPagehideHistogram) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a1(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_a2(embedded_test_server()->GetURL("a.com", "/title2.html"));
