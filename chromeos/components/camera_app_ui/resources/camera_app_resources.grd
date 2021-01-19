@@ -33,7 +33,6 @@
       <structure name="IDR_CAMERA_COMLINK_JS" file="js/lib/comlink.js" type="chrome_html" />
       <structure name="IDR_CAMERA_CONSTRAINTS_PREFERRER_JS" file="js/device/constraints_preferrer.js" type="chrome_html" />
       <structure name="IDR_CAMERA_DEVICE_INFO_UPDATER_JS" file="js/device/device_info_updater.js" type="chrome_html" />
-      <structure name="IDR_CAMERA_STREAM_MANAGER_JS" file="js/device/stream_manager.js" type="chrome_html" />
       <structure name="IDR_CAMERA_DEVICE_OPERATOR_JS" file="js/mojo/device_operator.js" type="chrome_html" />
       <structure name="IDR_CAMERA_DIALOG_JS" file="js/views/dialog.js" type="chrome_html" />
       <structure name="IDR_CAMERA_DOM_JS" file="js/dom.js" type="chrome_html" />

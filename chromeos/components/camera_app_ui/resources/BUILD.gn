@@ -121,7 +121,6 @@ copy("chrome_camera_app_js_device") {
     "js/device/camera3_device_info.js",
     "js/device/constraints_preferrer.js",
     "js/device/device_info_updater.js",
-    "js/device/stream_manager.js",
   ]
 
   outputs = [ "$out_camera_app_dir/js/device/{{source_file_part}}" ]

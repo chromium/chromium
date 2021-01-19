@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {browserProxy} from '../browser_proxy/browser_proxy.js';
+import {DeviceOperator} from '../mojo/device_operator.js';
 // eslint-disable-next-line no-unused-vars
+import {ResolutionList, VideoConfig} from '../type.js';
+
 import {Camera3DeviceInfo} from './camera3_device_info.js';
 import {
   PhotoConstraintsPreferrer,  // eslint-disable-line no-unused-vars
   VideoConstraintsPreferrer,  // eslint-disable-line no-unused-vars
 } from './constraints_preferrer.js';
-import {
-  DeviceInfo,  // eslint-disable-line no-unused-vars
-  StreamManager,
-} from './stream_manager.js';
 
 /**
  * Contains information of all cameras on the device and will updates its value
@@ -59,45 +59,44 @@ export class DeviceInfoUpdater {
 
     /**
      * MediaDeviceInfo of all available video devices.
-     * @type {!Array<!MediaDeviceInfo>}
+     * @type {!Promise<!Array<!MediaDeviceInfo>>}
      * @private
      */
-    this.devicesInfo_ = [];
+    this.devicesInfo_ = this.enumerateDevices_();
+
+    /**
+     * Got the permission to run enumerateDevices() or not.
+     * @type {boolean}
+     * @private
+     */
+    this.canEnumerateDevices_ = false;
 
     /**
      * Camera3DeviceInfo of all available video devices. Is null on HALv1 device
      * without mojo api support.
-     * @type {!Array<!Camera3DeviceInfo>}
+     * @type {!Promise<?Array<!Camera3DeviceInfo>>}
      * @private
      */
-    this.camera3DevicesInfo_ = [];
+    this.camera3DevicesInfo_ = this.queryMojoDevicesInfo_();
 
     /**
-     * Pending device Information.
-     * @type {!Array<!DeviceInfo>}
+     * Filter out lagging 720p on grunt. See https://crbug.com/1122852.
+     * @const {!Promise<function(!VideoConfig): boolean>}
      * @private
      */
-    this.pendingDevicesInfo_ = [];
+    this.videoConfigFilter_ = (async () => {
+      const board = await browserProxy.getBoard();
+      return board === 'grunt' ? ({height}) => height < 720 : () => true;
+    })();
 
     /**
      * Promise of first update.
      * @type {!Promise}
-     * @private
      */
-    this.firstUpdate_ = StreamManager.getInstance().deviceUpdate();
+    this.firstUpdate_ = this.update_();
 
-    StreamManager.getInstance().addRealDeviceChangeListener(
-        this.deviceUpdate_.bind(this));
-  }
-
-  /**
-   * Handling function for device update
-   * @param {!Array<!DeviceInfo>} devicesInfo devices information
-   * @private
-   */
-  async deviceUpdate_(devicesInfo) {
-    this.pendingDevicesInfo_ = devicesInfo;
-    await this.update_();
+    navigator.mediaDevices.addEventListener(
+        'devicechange', this.update_.bind(this));
   }
 
   /**
@@ -135,13 +134,60 @@ export class DeviceInfoUpdater {
    * @private
    */
   async doUpdate_() {
-    this.devicesInfo_ = this.pendingDevicesInfo_.map((d) => d.v1Info);
-    this.camera3DevicesInfo_ = this.pendingDevicesInfo_.map((d) => d.v3Info);
-    if (this.camera3DevicesInfo_.length) {
-      this.photoPreferrer_.updateDevicesInfo(this.camera3DevicesInfo_);
-      this.videoPreferrer_.updateDevicesInfo(this.camera3DevicesInfo_);
+    this.devicesInfo_ = this.enumerateDevices_();
+    this.camera3DevicesInfo_ = this.queryMojoDevicesInfo_();
+    try {
+      await this.devicesInfo_;
+      const devices = await this.camera3DevicesInfo_;
+      if (devices) {
+        this.photoPreferrer_.updateDevicesInfo(devices);
+        this.videoPreferrer_.updateDevicesInfo(devices);
+      }
       await Promise.all(this.deviceChangeListeners_.map((l) => l(this)));
+    } catch (e) {
+      console.error(e);
     }
+  }
+
+  /**
+   * Enumerates all available devices and gets their MediaDeviceInfo.
+   * @return {!Promise<!Array<!MediaDeviceInfo>>}
+   * @throws {!Error}
+   * @private
+   */
+  async enumerateDevices_() {
+    if (!this.canEnumerateDevices_) {
+      this.canEnumerateDevices_ =
+          await browserProxy.requestEnumerateDevicesPermission();
+      if (!this.canEnumerateDevices_) {
+        throw new Error('Failed to get the permission for enumerateDevices()');
+      }
+    }
+    const devices = (await navigator.mediaDevices.enumerateDevices())
+                        .filter((device) => device.kind === 'videoinput');
+    if (devices.length === 0) {
+      throw new Error('Device list empty.');
+    }
+    return devices;
+  }
+
+  /**
+   * Queries Camera3DeviceInfo of available devices through private mojo API.
+   * @return {!Promise<?Array<!Camera3DeviceInfo>>} Camera3DeviceInfo
+   *     of available devices. Maybe null on HALv1 devices without supporting
+   *     private mojo api.
+   * @throws {!Error} Thrown when camera unplugging happens between enumerating
+   *     devices and querying mojo APIs with current device info results.
+   * @private
+   */
+  async queryMojoDevicesInfo_() {
+    if (!await DeviceOperator.isSupported()) {
+      return null;
+    }
+    const deviceInfos = await this.devicesInfo_;
+    const videoConfigFilter = await this.videoConfigFilter_;
+    return Promise.all(
+        deviceInfos.map((d) => Camera3DeviceInfo.create(d, videoConfigFilter)));
   }
 
   /**

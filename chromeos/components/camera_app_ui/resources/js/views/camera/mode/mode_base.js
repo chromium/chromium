@@ -79,18 +79,10 @@ export class ModeBase {
   async addMetadataObserver() {}
 
   /**
-   * Removes the observer that saves metadata.
+   * Remove the observer that saves metadata.
    * @return {!Promise} Promise for the operation.
    */
   async removeMetadataObserver() {}
-
-  /**
-   * Clears everything when mode is not needed anymore.
-   * @return {!Promise}
-   */
-  async clear() {
-    await this.stopCapture();
-  }
 
   /**
    * Initiates video/photo capture operation under this mode.
@@ -146,6 +138,13 @@ export class ModeFactory {
   }
 
   /**
+   * @param {!Resolution} resolution
+   */
+  setCaptureResolution(resolution) {
+    this.captureResolution_ = resolution;
+  }
+
+  /**
    * @param {!Facing} facing
    */
   setFacing(facing) {
@@ -165,11 +164,10 @@ export class ModeFactory {
    *     capture device.
    * @param {!MediaStreamConstraints} constraints Constraints for preview
    *     stream.
-   * @param {!Resolution} resolution Capture resolution
    * @return {!Promise}
    * @abstract
    */
-  prepareDevice(deviceOperator, constraints, resolution) {}
+  prepareDevice(deviceOperator, constraints) {}
 
   /**
    * @return {!ModeBase}

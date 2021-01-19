@@ -527,9 +527,6 @@ export class Camera extends View {
           await this.endTake_();
         }
       } finally {
-        // Stopping preview will wait device close. Therefore, we clear
-        // mode before stopping preview to close extra stream first.
-        await this.modes_.clear();
         await this.preview_.close();
       }
       return this.start_();
@@ -565,8 +562,9 @@ export class Camera extends View {
         }
         const factory = this.modes_.getModeFactory(mode);
         try {
+          factory.setCaptureResolution(captureR);
           if (deviceOperator !== null) {
-            factory.prepareDevice(deviceOperator, constraints, captureR);
+            factory.prepareDevice(deviceOperator, constraints);
           }
           const stream = await this.preview_.open(constraints);
           this.facingMode_ = await this.options_.updateValues(stream);
@@ -578,10 +576,7 @@ export class Camera extends View {
           nav.close(ViewName.WARNING, WarningType.NO_CAMERA);
           return true;
         } catch (e) {
-          // Stopping preview will wait device close. Therefore, we clear
-          // mode before stopping preview to close extra stream first.
-          await factory.clear();
-          await this.modes_.clear();
+          factory.clear();
           this.preview_.close();
           console.error(e);
         }
