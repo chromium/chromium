@@ -61,6 +61,7 @@ source_set("internal") {
     ":fake_input_device",
     "//build/util:webkit_version",
     "//chromeos/assistant/internal",
+    "//chromeos/assistant/internal:libassistant",
     "//chromeos/assistant/internal/proto/google3",
     "//chromeos/dbus",
     "//chromeos/services/assistant/public/cpp",
