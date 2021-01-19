@@ -87,12 +87,14 @@ MockPosixSystemProducer::MockPosixSystemProducer(
     bool check_sdk_level,
     uint32_t num_data_sources,
     base::OnceClosure data_source_enabled_callback,
-    base::OnceClosure data_source_disabled_callback)
+    base::OnceClosure data_source_disabled_callback,
+    bool sandbox_forbids_socket_connection)
     : PosixSystemProducer(socket.c_str(),
                           PerfettoTracedProcess::Get()->GetTaskRunner()),
       num_data_sources_expected_(num_data_sources),
       data_source_enabled_callback_(std::move(data_source_enabled_callback)),
-      data_source_disabled_callback_(std::move(data_source_disabled_callback)) {
+      data_source_disabled_callback_(std::move(data_source_disabled_callback)),
+      sandbox_forbids_socket_connection_(sandbox_forbids_socket_connection) {
   // We want to set the SystemProducer to this mock, but that 'requires' passing
   // ownership of ourselves to PerfettoTracedProcess. Since someone else manages
   // our deletion we need to be careful in the deconstructor to not double free
@@ -141,6 +143,10 @@ void MockPosixSystemProducer::SetDataSourceEnabledCallback(
 void MockPosixSystemProducer::SetDataSourceDisabledCallback(
     base::OnceClosure data_source_disabled_callback) {
   data_source_disabled_callback_ = std::move(data_source_disabled_callback);
+}
+
+bool MockPosixSystemProducer::SandboxForbidsSocketConnection() {
+  return sandbox_forbids_socket_connection_;
 }
 
 }  // namespace tracing

@@ -153,6 +153,12 @@ target(tracing_lib_type, "cpp") {
         "perfetto/posix_system_producer.cc",
         "perfetto/posix_system_producer.h",
       ]
+      if (!is_android) {
+        sources += [
+          "system_tracing_service.cc",
+          "system_tracing_service.h",
+        ]
+      }
     }
 
     if (is_android && can_unwind_with_cfi_table && is_official_build) {

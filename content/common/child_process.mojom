@@ -8,6 +8,7 @@ import "ipc/ipc.mojom";
 import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/generic_pending_receiver.mojom";
 import "services/tracing/public/mojom/background_tracing_agent.mojom";
+import "services/tracing/public/mojom/system_tracing_service.mojom";
 
 // The primordial interface child processes use to push requests to their
 // browser-side host object.
@@ -35,6 +36,18 @@ interface ChildProcess {
   // Used to configure triggering for background tracing of child processes.
   GetBackgroundTracingAgentProvider(
       pending_receiver<tracing.mojom.BackgroundTracingAgentProvider> receiver);
+
+  // Used for connecting to the Perfetto system tracing service in the child
+  // process. The child process uses |remote| to request the browser process
+  // to make the socket connection and pass the connection back to the child.
+  // This interface only accesses the producer socket. A child process
+  // should never access the consumer socket.
+  //
+  // Enabled on POSIX platforms except Android: Android child processes connects
+  // to the system tracing service directly.
+  [EnableIf=is_non_android_posix]
+  EnableSystemTracingService(
+      pending_remote<tracing.mojom.SystemTracingService> remote);
 
   // Force the child process to crash immediately (i.e. a hard crash, no
   // cleanup, generating a crash report).

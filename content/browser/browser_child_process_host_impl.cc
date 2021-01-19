@@ -58,6 +58,10 @@
 #include "content/common/sandbox_support_mac.mojom.h"
 #endif
 
+#if defined(OS_POSIX) && !defined(OS_ANDROID)
+#include "services/tracing/public/cpp/system_tracing_service.h"
+#endif
+
 #if defined(OS_WIN)
 #include "content/browser/renderer_host/dwrite_font_proxy_impl_win.h"
 #include "content/public/common/font_cache_dispatcher_win.h"
@@ -656,6 +660,12 @@ void BrowserChildProcessHostImpl::OnProcessLaunched() {
   BackgroundTracingManagerImpl::ActivateForProcess(
       GetData().id,
       static_cast<ChildProcessHostImpl*>(GetHost())->child_process());
+
+#if defined(OS_POSIX) && !defined(OS_ANDROID)
+  system_tracing_service_ = std::make_unique<tracing::SystemTracingService>();
+  child_process()->EnableSystemTracingService(
+      system_tracing_service_->BindAndPassPendingRemote());
+#endif
 }
 
 void BrowserChildProcessHostImpl::RegisterCoordinatorClient(

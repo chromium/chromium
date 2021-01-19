@@ -37,6 +37,10 @@ namespace base {
 class CommandLine;
 }
 
+namespace tracing {
+class SystemTracingService;
+}
+
 namespace content {
 
 class BrowserChildProcessHostIterator;
@@ -229,6 +233,11 @@ class CONTENT_EXPORT BrowserChildProcessHostImpl
   // Keeps this process registered with the tracing subsystem.
   std::unique_ptr<TracingServiceController::ClientRegistration>
       tracing_registration_;
+
+#if defined(OS_POSIX) && !defined(OS_ANDROID)
+  // For child process to connect to the system tracing service.
+  std::unique_ptr<tracing::SystemTracingService> system_tracing_service_;
+#endif
 
   base::WeakPtrFactory<BrowserChildProcessHostImpl> weak_factory_{this};
 };
