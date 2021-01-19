@@ -60,8 +60,17 @@ const char kUsageMessage[] =
     "Usage: %s [options]\n"
     "\n"
     "Options:\n"
+
+#if defined(OS_LINUX)
     "  --audio-pipe-name=<pipe> - Sets the pipe name to capture audio on "
     "Linux.\n"
+#endif  // defined(OS_LINUX)
+
+#if defined(OS_APPLE)
+    "  --list-audio-devices     - List all audio devices and their device "
+    "UID.\n"
+#endif  // defined(OS_APPLE)
+
     "  --console                - Runs the daemon interactively.\n"
     "  --daemon-pipe=<pipe>     - Specifies the pipe to connect to the "
     "daemon.\n"

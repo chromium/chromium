@@ -71,6 +71,9 @@ extern const char kCheckAccessibilityPermissionSwitchName[];
 
 // Command line switch to check for Screen Recording permission.
 extern const char kCheckScreenRecordingPermissionSwitchName[];
+
+// Command line switch to list all audio devices and their UID.
+extern const char kListAudioDevicesSwitchName[];
 #endif  // defined OS_APPLE
 
 }  // namespace remoting

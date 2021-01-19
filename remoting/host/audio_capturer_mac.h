@@ -8,6 +8,7 @@
 #include <AudioToolbox/AudioToolbox.h>
 
 #include <string>
+#include <vector>
 
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
@@ -26,6 +27,17 @@ namespace remoting {
 // audio on Mac through the loopback device.
 class AudioCapturerMac : public AudioCapturer {
  public:
+  struct AudioDeviceInfo {
+    // Human readable name for the device. Might not be unique.
+    std::string device_name;
+
+    // A unique ID for the device.
+    std::string device_uid;
+  };
+
+  // Gets information about all available audio devices.
+  static std::vector<AudioDeviceInfo> GetAudioDevices();
+
   explicit AudioCapturerMac(const std::string& audio_device_uid);
   ~AudioCapturerMac() override;
 

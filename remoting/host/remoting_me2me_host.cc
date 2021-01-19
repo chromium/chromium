@@ -115,6 +115,7 @@
 #if defined(OS_APPLE)
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
+#include "remoting/host/audio_capturer_mac.h"
 #include "remoting/host/desktop_capturer_checker.h"
 #include "remoting/host/mac/permission_utils.h"
 #endif  // defined(OS_APPLE)
@@ -513,6 +514,17 @@ bool HostProcess::InitWithCommandLine(const base::CommandLine* cmd_line) {
     }
     checking_permission_state_ = true;
     permission_granted_ = mac::CanRecordScreen();
+    return false;
+  }
+  if (cmd_line->HasSwitch(kListAudioDevicesSwitchName)) {
+    std::vector<AudioCapturerMac::AudioDeviceInfo> audio_devices =
+        AudioCapturerMac::GetAudioDevices();
+    printf("Audio devices:\n");
+    for (const auto& audio_device : audio_devices) {
+      printf("\n");
+      printf("  Device name: %s\n", audio_device.device_name.c_str());
+      printf("  Device UID: %s\n", audio_device.device_uid.c_str());
+    }
     return false;
   }
 #endif  // defined(OS_APPLE)
