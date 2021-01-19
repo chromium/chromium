@@ -58,6 +58,15 @@ bool ResemblesMulticastDNSName(const std::string& hostname) {
          base::EndsWith(hostname, ".local.");
 }
 
+bool ContainNonPubliclyRoutableAddress(const net::AddressList& addresses) {
+  DCHECK(!addresses.empty());
+  for (auto ip : addresses) {
+    if (!ip.address().IsPubliclyRoutable())
+      return true;
+  }
+  return false;
+}
+
 }  // namespace
 
 DirectSocketsServiceImpl::DirectSocketsServiceImpl(RenderFrameHost& frame_host)
@@ -112,6 +121,10 @@ class DirectSocketsServiceImpl::ResolveHostAndOpenSocket final
     DCHECK(!receiver_.is_bound());
     DCHECK(!resolver_.is_bound());
 
+    if (net::IPAddress().AssignFromIPLiteral(*options_->remote_hostname)) {
+      is_raw_address_ = true;
+    }
+
     mojo::PendingRemote<network::mojom::HostResolver> pending_host_resolver;
     network_context_->CreateHostResolver(
         base::nullopt, pending_host_resolver.InitWithNewPipeAndPassReceiver());
@@ -120,8 +133,10 @@ class DirectSocketsServiceImpl::ResolveHostAndOpenSocket final
     network::mojom::ResolveHostParametersPtr parameters =
         network::mojom::ResolveHostParameters::New();
 #if BUILDFLAG(ENABLE_MDNS)
-    if (ResemblesMulticastDNSName(*options_->remote_hostname))
+    if (ResemblesMulticastDNSName(*options_->remote_hostname)) {
       parameters->source = net::HostResolverSource::MULTICAST_DNS;
+      is_mdns_name_ = true;
+    }
 #endif  // !BUILDFLAG(ENABLE_MDNS)
     resolver_->ResolveHost(
         net::HostPortPair(*options_->remote_hostname, options_->remote_port),
@@ -139,6 +154,12 @@ class DirectSocketsServiceImpl::ResolveHostAndOpenSocket final
       int result,
       const net::ResolveErrorInfo& resolve_error_info,
       const base::Optional<net::AddressList>& resolved_addresses) override {
+    // Reject hostnames that resolve to non-public exception unless a raw IP
+    // address or a *.local hostname is entered by the user.
+    if (!is_raw_address_ && !is_mdns_name_ && resolved_addresses &&
+        ContainNonPubliclyRoutableAddress(*resolved_addresses)) {
+      result = net::Error::ERR_NETWORK_ACCESS_DENIED;
+    }
     protocol_ == ProtocolType::kTcp ? OpenTCPSocket(result, resolved_addresses)
                                     : OpenUDPSocket(result, resolved_addresses);
   }
@@ -203,6 +224,9 @@ class DirectSocketsServiceImpl::ResolveHostAndOpenSocket final
     }
     NOTIMPLEMENTED();
   }
+
+  bool is_mdns_name_ = false;
+  bool is_raw_address_ = false;
 
   const ProtocolType protocol_;
   network::mojom::NetworkContext* const network_context_;
@@ -328,8 +352,6 @@ net::Error DirectSocketsServiceImpl::ValidateOptions(
   // ValidateOptions() will need to become asynchronous:
   // TODO(crbug.com/1119597): Show connection dialog.
   // TODO(crbug.com/1119597): Use the hostname provided by the user.
-  // TODO(crbug.com/1119661): Reject hostnames that resolve to non-public
-  // addresses.
   if (!options.remote_hostname)
     return net::ERR_NAME_NOT_RESOLVED;
 

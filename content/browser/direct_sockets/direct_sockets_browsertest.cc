@@ -497,6 +497,26 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest, OpenTcp_CannotEvadeCors) {
             EvalJs(shell(), script));
 }
 
+IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest,
+                       OpenTcp_CannotConnectNonPublic) {
+  EXPECT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
+
+  const char kExampleHostname[] = "mail.example.com";
+  const char kExampleAddress[] = "127.0.0.1";
+  const std::string mapping_rules =
+      base::StringPrintf("MAP %s %s", kExampleHostname, kExampleAddress);
+
+  MockNetworkContext mock_network_context(net::OK);
+  mock_network_context.set_host_mapping_rules(mapping_rules);
+  DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
+
+  const std::string script = base::StringPrintf(
+      "openTcp({remoteAddress: '%s', remotePort: 993})", kExampleHostname);
+
+  EXPECT_EQ("openTcp failed: NotAllowedError: Permission denied",
+            EvalJs(shell(), script));
+}
+
 IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest, OpenTcp_OptionsOne) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
 
@@ -669,6 +689,26 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest, OpenUdp_CannotEvadeCors) {
   // QUIC uses port 443.
   const std::string script =
       "openUdp({remoteAddress: '127.0.0.1', remotePort: 443})";
+
+  EXPECT_EQ("openUdp failed: NotAllowedError: Permission denied",
+            EvalJs(shell(), script));
+}
+
+IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest,
+                       OpenUdp_CannotConnectNonPublic) {
+  EXPECT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
+
+  const char kExampleHostname[] = "mail.example.com";
+  const char kExampleAddress[] = "127.0.0.1";
+  const std::string mapping_rules =
+      base::StringPrintf("MAP %s %s", kExampleHostname, kExampleAddress);
+
+  MockNetworkContext mock_network_context(net::OK);
+  mock_network_context.set_host_mapping_rules(mapping_rules);
+  DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
+
+  const std::string script = base::StringPrintf(
+      "openUdp({remoteAddress: '%s', remotePort: 993})", kExampleHostname);
 
   EXPECT_EQ("openUdp failed: NotAllowedError: Permission denied",
             EvalJs(shell(), script));
