@@ -67,7 +67,6 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
 
         SearchWidgetProvider.updateCachedVoiceSearchAvailability(
                 voiceRecognitionHandler.isVoiceSearchEnabled());
-        if (isVoiceSearchIntent && mUrlBar.isFocused()) onUrlFocusChange(true);
 
         assert !LocaleManager.getInstance().needToCheckForSearchEnginePromo();
         mPendingSearchPromoDecision = false;
@@ -126,12 +125,6 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
         super.updateButtonVisibility();
         updateMicButtonVisibility();
         findViewById(R.id.url_action_container).setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    public void onUrlFocusChange(boolean hasFocus) {
-        super.onUrlFocusChange(hasFocus);
-        if (hasFocus) setUrlFocusChangeInProgress(false);
     }
 
     // TODO(tedchoc): Investigate focusing regardless of the search promo state and just ensure

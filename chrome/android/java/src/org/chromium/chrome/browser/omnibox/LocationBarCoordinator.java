@@ -423,6 +423,14 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
         mUrlCoordinator.setAllowFocus(focusable);
     }
 
+    /**
+     * Triggers a url focus change to begin or end, depending on the value of inProgress.
+     * @param inProgress Whether a focus change is in progress.
+     */
+    public void setUrlFocusChangeInProgress(boolean inProgress) {
+        mLocationBarMediator.setUrlFocusChangeInProgress(inProgress);
+    }
+
     public void setVoiceRecognitionHandlerForTesting(
             VoiceRecognitionHandler voiceRecognitionHandler) {
         mLocationBarMediator.setVoiceRecognitionHandlerForTesting(voiceRecognitionHandler);

@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.init.SingleWindowKeyboardVisibilityDelegate;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.omnibox.BackKeyBehaviorDelegate;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
+import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -60,8 +61,8 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
 
 /** Queries the user's default search engine and shows autocomplete suggestions. */
-public class SearchActivity
-        extends AsyncInitializationActivity implements SnackbarManageable, BackKeyBehaviorDelegate {
+public class SearchActivity extends AsyncInitializationActivity
+        implements SnackbarManageable, BackKeyBehaviorDelegate, UrlFocusChangeListener {
     // Shared with other org.chromium.chrome.browser.searchwidget classes.
     protected static final String TAG = "searchwidget";
 
@@ -180,6 +181,7 @@ public class SearchActivity
                 },
                 /*backKeyBehavior=*/this);
         mLocationBarCoordinator.setUrlBarFocusable(true);
+        mLocationBarCoordinator.getFakeboxDelegate().addUrlFocusChangeListener(this);
 
         // Kick off everything needed for the user to type into the box.
         beginQuery();
@@ -352,12 +354,23 @@ public class SearchActivity
     @Override
     protected void onDestroy() {
         if (mTab != null && mTab.isInitialized()) mTab.destroy();
+        if (mLocationBarCoordinator != null
+                && mLocationBarCoordinator.getFakeboxDelegate() != null) {
+            mLocationBarCoordinator.getFakeboxDelegate().removeUrlFocusChangeListener(this);
+        }
         super.onDestroy();
     }
 
     @Override
     public boolean shouldStartGpuProcess() {
         return true;
+    }
+
+    @Override
+    public void onUrlFocusChange(boolean hasFocus) {
+        if (hasFocus) {
+            mLocationBarCoordinator.setUrlFocusChangeInProgress(false);
+        }
     }
 
     /* package */ void loadUrl(String url, @PageTransition int transition,

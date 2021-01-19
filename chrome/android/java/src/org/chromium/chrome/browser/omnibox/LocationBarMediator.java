@@ -399,6 +399,10 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
                 VoiceRecognitionHandler.VoiceInteractionSource.OMNIBOX);
     }
 
+    /* package */ void setUrlFocusChangeInProgress(boolean inProgress) {
+        mLocationBarLayout.setUrlFocusChangeInProgress(inProgress);
+    }
+
     // Private methods
 
     private void setProfile(Profile profile) {
