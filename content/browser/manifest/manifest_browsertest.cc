@@ -12,6 +12,7 @@
 #include "base/strings/string16.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
@@ -359,7 +360,13 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, FileHandlerManifest) {
 // If a page's manifest lives in a different origin, it should follow the CORS
 // rules and requesting the manifest should return an empty manifest (unless the
 // response contains CORS headers).
-IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, CorsManifest) {
+// Flaky on linux: crbug.com/1122546
+#if defined(OS_LINUX)
+#define MAYBE_CorsManifest DISABLED_CorsManifest
+#else
+#define MAYBE_CorsManifest CorsManifest
+#endif
+IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, MAYBE_CorsManifest) {
   ASSERT_TRUE(cors_embedded_test_server()->Start());
   ASSERT_NE(embedded_test_server()->port(),
             cors_embedded_test_server()->port());
