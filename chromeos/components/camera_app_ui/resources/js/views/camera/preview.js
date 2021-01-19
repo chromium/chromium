@@ -470,20 +470,24 @@ export class Preview {
     const y = event.offsetY / this.video_.offsetHeight;
     const constraints = {advanced: [{pointsOfInterest: [{x, y}]}]};
     const track = this.video_.srcObject.getVideoTracks()[0];
-    const focus =
-        track.applyConstraints(constraints)
-            .then(() => {
-              if (focus !== this.focus_) {
-                return;  // Focus was cancelled.
-              }
-              const aim = dom.get('#preview-focus-aim', HTMLObjectElement);
-              const clone = aim.cloneNode(true);
-              clone.style.left = `${event.offsetX + this.video_.offsetLeft}px`;
-              clone.style.top = `${event.offsetY + this.video_.offsetTop}px`;
-              clone.hidden = false;
-              aim.parentElement.replaceChild(clone, aim);
-            })
-            .catch(console.error);
+    const focus = (async () => {
+      try {
+        await track.applyConstraints(constraints);
+      } catch {
+        // The device might not support setting pointsOfInterest. Ignore the
+        // error and return.
+        return;
+      }
+      if (focus !== this.focus_) {
+        return;  // Focus was cancelled.
+      }
+      const aim = dom.get('#preview-focus-aim', HTMLObjectElement);
+      const clone = aim.cloneNode(true);
+      clone.style.left = `${event.offsetX + this.video_.offsetLeft}px`;
+      clone.style.top = `${event.offsetY + this.video_.offsetTop}px`;
+      clone.hidden = false;
+      aim.parentElement.replaceChild(clone, aim);
+    })();
     this.focus_ = focus;
   }
 
