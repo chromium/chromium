@@ -23,6 +23,10 @@ namespace {
 
 constexpr int kNewDeskButtonAndNameSpacing = 8;
 
+constexpr int kBorderCornerRadius = 6;
+
+constexpr int kCornerRadius = 4;
+
 // The new desk button in expand desks bar in Bento has the same size as the
 // desk preview, which is proportional to the size of the display on which it
 // resides.
@@ -37,7 +41,8 @@ gfx::Rect GetExpandedStateNewDeskButtonBounds(aura::Window* root_window) {
 // The button belongs to ExpandedStateNewDeskButton.
 class ASH_EXPORT InnerNewDeskButton : public DeskButtonBase {
  public:
-  InnerNewDeskButton() : DeskButtonBase(base::string16()) {
+  InnerNewDeskButton()
+      : DeskButtonBase(base::string16(), kBorderCornerRadius, kCornerRadius) {
     paint_contents_only_ = true;
   }
   InnerNewDeskButton(const InnerNewDeskButton&) = delete;
