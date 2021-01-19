@@ -747,13 +747,36 @@ class CONTENT_EXPORT ContentBrowserClient {
   // "1812:e, 00001800-0000-1000-8000-00805f9b34fb:w, ignored:1, alsoignored."
   virtual std::string GetWebBluetoothBlocklist();
 
-  // Allows the embedder to control the conversion measurement API.
-  // This gates the following behaviors:
-  // - Impression registration
-  // - Conversion registration
-  // - Conversion reports
-  virtual bool AllowConversionMeasurement(
+  // Returns whether conversion measurement is allowed anywhere in
+  // |browser_context|. Returns false if Conversion Measurement is not allowed
+  // by default on any origin.
+  virtual bool IsConversionMeasurementAllowed(
       content::BrowserContext* browser_context);
+
+  enum class ConversionMeasurementOperation {
+    kImpression,
+    kConversion,
+    kReport,
+  };
+
+  // Allows the embedder to control if conversion measurement API operations can
+  // happen in a given context. Origins must be provided for a given operation
+  // as follows:
+  //   - kImpression must provide a non-null `impression_origin` and
+  //   `reporting_origin`
+  //   - kConversion must provide a non-null `conversion_origin` and
+  //   `reporting_origin`
+  //   - kReport must provide all non-null origins
+  //
+  // When gating an operation, this should not be checked in conjunction with
+  // `IsConversionMeasurementAllowed()`, as the API may not be allowed by
+  // default, but allowed in a specific context due to an exception rule.
+  virtual bool IsConversionMeasurementOperationAllowed(
+      content::BrowserContext* browser_context,
+      ConversionMeasurementOperation operation,
+      const url::Origin* impression_origin,
+      const url::Origin* conversion_origin,
+      const url::Origin* reporting_origin);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Notification that a trust anchor was used by the given user.

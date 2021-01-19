@@ -64,13 +64,17 @@ void ConversionReporterImpl::SendNextReport() {
   // Send the next report and remove it from the queue. Bind the conversion id
   // to the sent callback so we know which conversion report has finished
   // sending.
-  if (GetContentClient()->browser()->AllowConversionMeasurement(
-          partition_->browser_context())) {
+  ConversionReport* report = report_queue_.top().get();
+  if (GetContentClient()->browser()->IsConversionMeasurementOperationAllowed(
+          partition_->browser_context(),
+          ContentBrowserClient::ConversionMeasurementOperation::kReport,
+          &report->impression.impression_origin(),
+          &report->impression.conversion_origin(),
+          &report->impression.reporting_origin())) {
     network_sender_->SendReport(
         report_queue_.top().get(),
         base::BindOnce(&ConversionReporterImpl::OnReportSent,
-                       base::Unretained(this),
-                       *report_queue_.top()->conversion_id));
+                       base::Unretained(this), report->conversion_id.value()));
   } else {
     // If measurement is disallowed, just drop the report on the floor. We need
     // to make sure we forward that the report was "sent" to ensure it is

@@ -118,7 +118,7 @@ bool PrivacySandboxSettings::ShouldSendConversionReport(
   return IsPrivacySandboxAllowedForContext(
              reporting_origin.GetURL(), impression_origin, cookie_settings) &&
          IsPrivacySandboxAllowedForContext(reporting_origin.GetURL(),
-                                           reporting_origin, cookie_settings);
+                                           conversion_origin, cookie_settings);
 }
 
 bool PrivacySandboxSettings::IsPrivacySandboxAllowed() {
