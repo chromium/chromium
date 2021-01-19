@@ -237,10 +237,7 @@ export class Viewport {
   /** @return {boolean} Whether viewport is in two-up view mode. */
   twoUpViewEnabled() {
     const options = this.getLayoutOptions();
-    if (options === undefined) {
-      return false;
-    }
-    return options.twoUpViewEnabled;
+    return !!options && options.twoUpViewEnabled;
   }
 
   /**

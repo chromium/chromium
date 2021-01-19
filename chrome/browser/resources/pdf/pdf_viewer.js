@@ -544,7 +544,6 @@ export class PDFViewerElement extends PDFViewerBaseElement {
   onResetView_() {
     if (this.twoUpViewEnabled_) {
       this.currentController.setTwoUpView(false);
-      this.twoUpViewEnabled_ = false;
     }
 
     const rotations = this.viewport.getClockwiseRotations();
@@ -777,12 +776,12 @@ export class PDFViewerElement extends PDFViewerBaseElement {
    * @private
    */
   onTwoUpViewChanged_(e) {
-    this.twoUpViewEnabled_ = e.detail;
-    this.currentController.setTwoUpView(this.twoUpViewEnabled_);
+    const twoUpViewEnabled = e.detail;
+    this.currentController.setTwoUpView(twoUpViewEnabled);
     if (!this.pdfViewerUpdateEnabled_) {
       this.toolbarManager_.forceHideTopToolbar();
     }
-    recordTwoUpViewEnabled(this.twoUpViewEnabled_);
+    recordTwoUpViewEnabled(twoUpViewEnabled);
   }
 
   /**
@@ -848,12 +847,9 @@ export class PDFViewerElement extends PDFViewerBaseElement {
     }
 
     // Update toolbar elements.
-    if (this.toolbarEnabled_) {
-      const visiblePage = this.viewport.getMostVisiblePage();
-      this.pageNo_ = visiblePage + 1;
-
-      this.clockwiseRotations_ = this.viewport.getClockwiseRotations();
-    }
+    this.clockwiseRotations_ = this.viewport.getClockwiseRotations();
+    this.pageNo_ = this.viewport.getMostVisiblePage() + 1;
+    this.twoUpViewEnabled_ = this.viewport.twoUpViewEnabled();
 
     this.currentController.viewportChanged();
   }
