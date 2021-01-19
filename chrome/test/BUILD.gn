@@ -3551,7 +3551,7 @@ test("unit_tests") {
     "../browser/metrics/process_memory_metrics_emitter_unittest.cc",
     "../browser/metrics/tab_footprint_aggregator_unittest.cc",
     "../browser/metrics/thread_watcher_unittest.cc",
-    "../browser/metrics/usage_scenario_data_store_unittest.cc",
+    "../browser/metrics/usage_scenario/usage_scenario_data_store_unittest.cc",
     "../browser/navigation_predictor/navigation_predictor_renderer_warmup_client_unittest.cc",
     "../browser/navigation_predictor/navigation_predictor_unittest.cc",
     "../browser/net/chrome_network_delegate_unittest.cc",

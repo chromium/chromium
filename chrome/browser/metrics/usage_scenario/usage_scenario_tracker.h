@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_METRICS_USAGE_SCENARIO_TRACKER_H_
-#define CHROME_BROWSER_METRICS_USAGE_SCENARIO_TRACKER_H_
+#ifndef CHROME_BROWSER_METRICS_USAGE_SCENARIO_USAGE_SCENARIO_TRACKER_H_
+#define CHROME_BROWSER_METRICS_USAGE_SCENARIO_USAGE_SCENARIO_TRACKER_H_
 
 #include "base/sequence_checker.h"
-#include "chrome/browser/metrics/usage_scenario_data_store.h"
+#include "chrome/browser/metrics/usage_scenario/usage_scenario_data_store.h"
 
 // Registers as an observer to various components to maintain a
 // UsageScenarioDataStore.
@@ -28,4 +28,4 @@ class UsageScenarioTracker {
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
-#endif  // CHROME_BROWSER_METRICS_USAGE_SCENARIO_TRACKER_H_
+#endif  // CHROME_BROWSER_METRICS_USAGE_SCENARIO_USAGE_SCENARIO_TRACKER_H_

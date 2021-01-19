@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_METRICS_USAGE_SCENARIO_DATA_STORE_H_
-#define CHROME_BROWSER_METRICS_USAGE_SCENARIO_DATA_STORE_H_
+#ifndef CHROME_BROWSER_METRICS_USAGE_SCENARIO_USAGE_SCENARIO_DATA_STORE_H_
+#define CHROME_BROWSER_METRICS_USAGE_SCENARIO_USAGE_SCENARIO_DATA_STORE_H_
 
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -124,4 +124,4 @@ class UsageScenarioDataStoreImpl : public UsageScenarioDataStore {
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
-#endif  // CHROME_BROWSER_METRICS_USAGE_SCENARIO_DATA_STORE_H_
+#endif  // CHROME_BROWSER_METRICS_USAGE_SCENARIO_USAGE_SCENARIO_DATA_STORE_H_

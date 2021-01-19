@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/metrics/usage_scenario_tracker.h"
+#include "chrome/browser/metrics/usage_scenario/usage_scenario_tracker.h"
 
 UsageScenarioTracker::UsageScenarioTracker() = default;
 UsageScenarioTracker::~UsageScenarioTracker() = default;
