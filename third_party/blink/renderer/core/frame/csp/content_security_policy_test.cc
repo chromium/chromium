@@ -230,24 +230,6 @@ TEST_F(ContentSecurityPolicyTest, SandboxInMeta) {
             csp->GetSandboxMask());
 }
 
-// Tests that report-uri directives are discarded from policies
-// delivered in <meta> elements.
-TEST_F(ContentSecurityPolicyTest, ReportURIInMeta) {
-  String policy = "img-src 'none'; report-uri http://foo.test";
-  Vector<UChar> characters;
-  policy.AppendTo(characters);
-  const UChar* begin = characters.data();
-  const UChar* end = begin + characters.size();
-  CSPDirectiveList* directive_list(CSPDirectiveList::Create(
-      csp, begin, end, ContentSecurityPolicyType::kEnforce,
-      ContentSecurityPolicySource::kMeta));
-  EXPECT_TRUE(directive_list->ReportEndpoints().IsEmpty());
-  directive_list = CSPDirectiveList::Create(csp, begin, end,
-                                            ContentSecurityPolicyType::kEnforce,
-                                            ContentSecurityPolicySource::kHTTP);
-  EXPECT_FALSE(directive_list->ReportEndpoints().IsEmpty());
-}
-
 // Tests that object-src directives are applied to a request to load a
 // plugin, but not to subresource requests that the plugin itself
 // makes. https://crbug.com/603952

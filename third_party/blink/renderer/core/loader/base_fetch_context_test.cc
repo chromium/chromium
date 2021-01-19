@@ -70,7 +70,7 @@ class MockBaseFetchContext final : public BaseFetchContext {
                                const FetchInitiatorInfo&,
                                ResourceRequestBlockedReason,
                                ResourceType) const override {}
-  const ContentSecurityPolicy* GetContentSecurityPolicyForWorld(
+  ContentSecurityPolicy* GetContentSecurityPolicyForWorld(
       const DOMWrapperWorld* world) const override {
     return GetContentSecurityPolicy();
   }
@@ -101,7 +101,7 @@ class MockBaseFetchContext final : public BaseFetchContext {
   const SecurityOrigin* GetParentSecurityOrigin() const override {
     return nullptr;
   }
-  const ContentSecurityPolicy* GetContentSecurityPolicy() const override {
+  ContentSecurityPolicy* GetContentSecurityPolicy() const override {
     return execution_context_->GetContentSecurityPolicy();
   }
   void AddConsoleMessage(ConsoleMessage*) const override {}

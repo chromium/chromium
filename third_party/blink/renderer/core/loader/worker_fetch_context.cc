@@ -101,8 +101,7 @@ void WorkerFetchContext::DispatchDidBlockRequest(
                          fetch_initiator_info, blocked_reason, resource_type);
 }
 
-const ContentSecurityPolicy*
-WorkerFetchContext::GetContentSecurityPolicyForWorld(
+ContentSecurityPolicy* WorkerFetchContext::GetContentSecurityPolicyForWorld(
     const DOMWrapperWorld* world) const {
   // Worker threads don't support per-world CSP. Hence just return the default
   // CSP.
@@ -189,8 +188,7 @@ const SecurityOrigin* WorkerFetchContext::GetParentSecurityOrigin() const {
   return nullptr;
 }
 
-const ContentSecurityPolicy* WorkerFetchContext::GetContentSecurityPolicy()
-    const {
+ContentSecurityPolicy* WorkerFetchContext::GetContentSecurityPolicy() const {
   return content_security_policy_;
 }
 

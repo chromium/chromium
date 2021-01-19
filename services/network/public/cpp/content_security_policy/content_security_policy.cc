@@ -44,71 +44,6 @@ bool IsDirectiveValueCharacter(char c) {
          base::IsAsciiPrintable(c);  // Whitespace + VCHAR
 }
 
-static CSPDirectiveName CSPFallback(CSPDirectiveName directive,
-                                    CSPDirectiveName original_directive) {
-  switch (directive) {
-    case CSPDirectiveName::ConnectSrc:
-    case CSPDirectiveName::FontSrc:
-    case CSPDirectiveName::ImgSrc:
-    case CSPDirectiveName::ManifestSrc:
-    case CSPDirectiveName::MediaSrc:
-    case CSPDirectiveName::PrefetchSrc:
-    case CSPDirectiveName::ObjectSrc:
-    case CSPDirectiveName::ScriptSrc:
-    case CSPDirectiveName::StyleSrc:
-      return CSPDirectiveName::DefaultSrc;
-
-    case CSPDirectiveName::ScriptSrcAttr:
-    case CSPDirectiveName::ScriptSrcElem:
-      return CSPDirectiveName::ScriptSrc;
-
-    case CSPDirectiveName::StyleSrcAttr:
-    case CSPDirectiveName::StyleSrcElem:
-      return CSPDirectiveName::StyleSrc;
-
-    case CSPDirectiveName::FrameSrc:
-    case CSPDirectiveName::WorkerSrc:
-      return CSPDirectiveName::ChildSrc;
-
-    // Because the fallback chain of child-src can be different if we are
-    // checking a worker or a frame request, we need to know the original type
-    // of the request to decide. These are the fallback chains for worker-src
-    // and frame-src specifically.
-
-    // worker-src > child-src > script-src > default-src
-    // frame-src > child-src > default-src
-
-    // Since there are some situations and tests that will operate on the
-    // `child-src` directive directly (like for example the EE subsumption
-    // algorithm), we consider the child-src > default-src fallback path as the
-    // "default" and the worker-src fallback path as an exception.
-    case CSPDirectiveName::ChildSrc:
-      if (original_directive == CSPDirectiveName::WorkerSrc)
-        return CSPDirectiveName::ScriptSrc;
-
-      return CSPDirectiveName::DefaultSrc;
-
-    case CSPDirectiveName::BaseURI:
-    case CSPDirectiveName::BlockAllMixedContent:
-    case CSPDirectiveName::DefaultSrc:
-    case CSPDirectiveName::FormAction:
-    case CSPDirectiveName::FrameAncestors:
-    case CSPDirectiveName::NavigateTo:
-    case CSPDirectiveName::PluginTypes:
-    case CSPDirectiveName::ReportTo:
-    case CSPDirectiveName::ReportURI:
-    case CSPDirectiveName::RequireTrustedTypesFor:
-    case CSPDirectiveName::Sandbox:
-    case CSPDirectiveName::TreatAsPublicAddress:
-    case CSPDirectiveName::TrustedTypes:
-    case CSPDirectiveName::UpgradeInsecureRequests:
-      return CSPDirectiveName::Unknown;
-    case CSPDirectiveName::Unknown:
-      NOTREACHED();
-      return CSPDirectiveName::Unknown;
-  }
-}
-
 std::string ElideURLForReportViolation(const GURL& url) {
   // TODO(arthursonzogni): the url length should be limited to 1024 char. Find
   // a function that will not break the utf8 encoding while eliding the string.
@@ -1036,7 +971,8 @@ std::pair<CSPDirectiveName, const mojom::CSPSourceList*> GetSourceList(
     const mojom::ContentSecurityPolicy& policy) {
   for (CSPDirectiveName effective_directive = directive;
        effective_directive != CSPDirectiveName::Unknown;
-       effective_directive = CSPFallback(effective_directive, directive)) {
+       effective_directive =
+           CSPFallbackDirective(effective_directive, directive)) {
     auto value = policy.directives.find(effective_directive);
     if (value != policy.directives.end())
       return std::make_pair(effective_directive, value->second.get());
@@ -1095,6 +1031,71 @@ bool PluginTypesSubsumes(
 }
 
 }  // namespace
+
+CSPDirectiveName CSPFallbackDirective(CSPDirectiveName directive,
+                                      CSPDirectiveName original_directive) {
+  switch (directive) {
+    case CSPDirectiveName::ConnectSrc:
+    case CSPDirectiveName::FontSrc:
+    case CSPDirectiveName::ImgSrc:
+    case CSPDirectiveName::ManifestSrc:
+    case CSPDirectiveName::MediaSrc:
+    case CSPDirectiveName::PrefetchSrc:
+    case CSPDirectiveName::ObjectSrc:
+    case CSPDirectiveName::ScriptSrc:
+    case CSPDirectiveName::StyleSrc:
+      return CSPDirectiveName::DefaultSrc;
+
+    case CSPDirectiveName::ScriptSrcAttr:
+    case CSPDirectiveName::ScriptSrcElem:
+      return CSPDirectiveName::ScriptSrc;
+
+    case CSPDirectiveName::StyleSrcAttr:
+    case CSPDirectiveName::StyleSrcElem:
+      return CSPDirectiveName::StyleSrc;
+
+    case CSPDirectiveName::FrameSrc:
+    case CSPDirectiveName::WorkerSrc:
+      return CSPDirectiveName::ChildSrc;
+
+    // Because the fallback chain of child-src can be different if we are
+    // checking a worker or a frame request, we need to know the original type
+    // of the request to decide. These are the fallback chains for worker-src
+    // and frame-src specifically.
+
+    // worker-src > child-src > script-src > default-src
+    // frame-src > child-src > default-src
+
+    // Since there are some situations and tests that will operate on the
+    // `child-src` directive directly (like for example the EE subsumption
+    // algorithm), we consider the child-src > default-src fallback path as the
+    // "default" and the worker-src fallback path as an exception.
+    case CSPDirectiveName::ChildSrc:
+      if (original_directive == CSPDirectiveName::WorkerSrc)
+        return CSPDirectiveName::ScriptSrc;
+
+      return CSPDirectiveName::DefaultSrc;
+
+    case CSPDirectiveName::BaseURI:
+    case CSPDirectiveName::BlockAllMixedContent:
+    case CSPDirectiveName::DefaultSrc:
+    case CSPDirectiveName::FormAction:
+    case CSPDirectiveName::FrameAncestors:
+    case CSPDirectiveName::NavigateTo:
+    case CSPDirectiveName::PluginTypes:
+    case CSPDirectiveName::ReportTo:
+    case CSPDirectiveName::ReportURI:
+    case CSPDirectiveName::RequireTrustedTypesFor:
+    case CSPDirectiveName::Sandbox:
+    case CSPDirectiveName::TreatAsPublicAddress:
+    case CSPDirectiveName::TrustedTypes:
+    case CSPDirectiveName::UpgradeInsecureRequests:
+      return CSPDirectiveName::Unknown;
+    case CSPDirectiveName::Unknown:
+      NOTREACHED();
+      return CSPDirectiveName::Unknown;
+  }
+}
 
 void AddContentSecurityPolicyFromHeaders(
     const net::HttpResponseHeaders& headers,
@@ -1178,7 +1179,7 @@ bool CheckContentSecurityPolicy(const mojom::ContentSecurityPolicyPtr& policy,
   for (CSPDirectiveName effective_directive_name = directive_name;
        effective_directive_name != CSPDirectiveName::Unknown;
        effective_directive_name =
-           CSPFallback(effective_directive_name, directive_name)) {
+           CSPFallbackDirective(effective_directive_name, directive_name)) {
     const auto& directive = policy->directives.find(effective_directive_name);
     if (directive == policy->directives.end())
       continue;

@@ -192,7 +192,7 @@ bool IsWebSocketAllowedInWorker(const WorkerFetchContext& fetch_context,
                                 const KURL& url) {
   fetch_context.CountUsage(WebFeature::kMixedContentPresent);
   fetch_context.CountUsage(WebFeature::kMixedContentWebSocket);
-  if (const ContentSecurityPolicy* policy =
+  if (ContentSecurityPolicy* policy =
           fetch_context.GetContentSecurityPolicy()) {
     policy->ReportMixedContent(url,
                                ResourceRequest::RedirectStatus::kNoRedirect);

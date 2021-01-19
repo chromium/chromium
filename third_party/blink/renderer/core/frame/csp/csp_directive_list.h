@@ -7,10 +7,6 @@
 
 #include "base/macros.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
-#include "third_party/blink/renderer/core/frame/csp/media_list_directive.h"
-#include "third_party/blink/renderer/core/frame/csp/require_trusted_types_for_directive.h"
-#include "third_party/blink/renderer/core/frame/csp/source_list_directive.h"
-#include "third_party/blink/renderer/core/frame/csp/trusted_types_directive.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/network/content_security_policy_parsers.h"
@@ -23,273 +19,159 @@
 
 namespace blink {
 
-class ContentSecurityPolicy;
 enum class ResourceType : uint8_t;
 
-struct CSPOperativeDirective {
+struct CORE_EXPORT CSPOperativeDirective {
   CSPDirectiveName type;
   const network::mojom::blink::CSPSourceList* source_list;
 };
 
-class CORE_EXPORT CSPDirectiveList final
-    : public GarbageCollected<CSPDirectiveList> {
- public:
-  static CSPDirectiveList* Create(ContentSecurityPolicy*,
-                                  const UChar* begin,
-                                  const UChar* end,
-                                  network::mojom::ContentSecurityPolicyType,
-                                  network::mojom::ContentSecurityPolicySource,
-                                  bool should_parse_wasm_eval = false);
+CORE_EXPORT
+network::mojom::blink::ContentSecurityPolicyPtr CSPDirectiveListParse(
+    ContentSecurityPolicy*,
+    const UChar* begin,
+    const UChar* end,
+    network::mojom::ContentSecurityPolicyType,
+    network::mojom::ContentSecurityPolicySource,
+    bool should_parse_wasm_eval = false);
 
-  explicit CSPDirectiveList(ContentSecurityPolicy*);
+CORE_EXPORT
+bool CSPDirectiveListIsReportOnly(
+    const network::mojom::blink::ContentSecurityPolicy& csp);
 
-  void Parse(const UChar* begin,
-             const UChar* end,
-             bool should_parse_wasm_eval = false);
+CORE_EXPORT
+bool CSPDirectiveListAllowFromSource(
+    const network::mojom::blink::ContentSecurityPolicy& csp,
+    ContentSecurityPolicy* policy,
+    CSPDirectiveName type,
+    const KURL& url,
+    const KURL& url_before_redirects,
+    ResourceRequest::RedirectStatus redirect_status,
+    ReportingDisposition reporting_disposition,
+    const String& nonce = String(),
+    const IntegrityMetadataSet& hashes = IntegrityMetadataSet(),
+    ParserDisposition parser_disposition = kParserInserted);
 
-  const String& Header() const { return header_->header_value; }
-  network::mojom::ContentSecurityPolicyType HeaderType() const {
-    return header_->type;
-  }
-  network::mojom::ContentSecurityPolicySource HeaderSource() const {
-    return header_->source;
-  }
+CORE_EXPORT
+bool CSPDirectiveListAllowTrustedTypeAssignmentFailure(
+    const network::mojom::blink::ContentSecurityPolicy& csp,
+    ContentSecurityPolicy* policy,
+    const String& message,
+    const String& sample,
+    const String& sample_prefix);
 
-  bool AllowInline(ContentSecurityPolicy::InlineType,
-                   Element*,
-                   const String& content,
-                   const String& nonce,
-                   const String& context_url,
-                   const WTF::OrdinalNumber& context_line,
-                   ReportingDisposition) const;
+CORE_EXPORT
+bool CSPDirectiveListAllowTrustedTypePolicy(
+    const network::mojom::blink::ContentSecurityPolicy& csp,
+    ContentSecurityPolicy* policy,
+    const String& policy_name,
+    bool is_duplicate,
+    ContentSecurityPolicy::AllowTrustedTypePolicyDetails& violation_details);
 
-  // Returns whether or not the Javascript code generation should call back the
-  // CSP checker before any script evaluation from a string is being made.
-  bool ShouldCheckEval() const;
+CORE_EXPORT
+bool CSPDirectiveListRequiresTrustedTypes(
+    const network::mojom::blink::ContentSecurityPolicy& csp);
 
-  bool AllowEval(ReportingDisposition,
-                 ContentSecurityPolicy::ExceptionStatus,
-                 const String& script_content) const;
-  bool AllowWasmEval(ReportingDisposition,
-                     ContentSecurityPolicy::ExceptionStatus,
-                     const String& script_content) const;
-  bool AllowPluginType(const String& type,
-                       const String& type_attribute,
-                       const KURL&,
-                       ReportingDisposition) const;
+CORE_EXPORT
+bool CSPDirectiveListAllowInline(
+    const network::mojom::blink::ContentSecurityPolicy& csp,
+    ContentSecurityPolicy* policy,
+    ContentSecurityPolicy::InlineType inline_type,
+    Element* element,
+    const String& content,
+    const String& nonce,
+    const String& context_url,
+    const WTF::OrdinalNumber& context_line,
+    ReportingDisposition reporting_disposition);
 
-  bool AllowFromSource(CSPDirectiveName,
-                       const KURL&,
-                       const KURL& url_before_redirects,
-                       ResourceRequest::RedirectStatus,
-                       ReportingDisposition,
-                       const String& nonce = String(),
-                       const IntegrityMetadataSet& = IntegrityMetadataSet(),
-                       ParserDisposition = kParserInserted) const;
+// Returns whether or not the Javascript code generation should call back the
+// CSP checker before any script evaluation from a string is being made.
+CORE_EXPORT
+bool CSPDirectiveListShouldCheckEval(
+    const network::mojom::blink::ContentSecurityPolicy& csp);
 
-  bool AllowTrustedTypePolicy(
-      const String& policy_name,
-      bool is_duplicate,
-      ContentSecurityPolicy::AllowTrustedTypePolicyDetails& violation_details)
-      const;
+CORE_EXPORT
+bool CSPDirectiveListAllowEval(
+    const network::mojom::blink::ContentSecurityPolicy& csp,
+    ContentSecurityPolicy* policy,
+    ReportingDisposition reporting_disposition,
+    ContentSecurityPolicy::ExceptionStatus exception_status,
+    const String& content);
 
-  bool AllowDynamic(CSPDirectiveName) const;
-  bool AllowDynamicWorker() const;
+CORE_EXPORT
+bool CSPDirectiveListAllowWasmEval(
+    const network::mojom::blink::ContentSecurityPolicy& csp,
+    ContentSecurityPolicy* policy,
+    ReportingDisposition reporting_disposition,
+    ContentSecurityPolicy::ExceptionStatus exception_status,
+    const String& content);
 
-  bool AllowTrustedTypeAssignmentFailure(const String& message,
-                                         const String& sample,
-                                         const String& sample_prefix) const;
+CORE_EXPORT
+bool CSPDirectiveListShouldDisableEval(
+    const network::mojom::blink::ContentSecurityPolicy& csp,
+    String& error_message);
 
-  bool StrictMixedContentChecking() const { return block_all_mixed_content_; }
-  void ReportMixedContent(const KURL& blocked_url,
-                          ResourceRequest::RedirectStatus) const;
+CORE_EXPORT
+bool CSPDirectiveListAllowPluginType(
+    const network::mojom::blink::ContentSecurityPolicy& csp,
+    ContentSecurityPolicy* policy,
+    const String& type,
+    const String& type_attribute,
+    const KURL& url,
+    ReportingDisposition reporting_disposition);
 
-  bool ShouldDisableEval(String& error_message) const;
-  bool IsReportOnly() const {
-    return header_->type == network::mojom::ContentSecurityPolicyType::kReport;
-  }
-  bool IsActiveForConnections() const {
-    return OperativeDirective(CSPDirectiveName::ConnectSrc).source_list;
-  }
-  const Vector<String>& ReportEndpoints() const { return report_endpoints_; }
-  bool UseReportingApi() const { return use_reporting_api_; }
+CORE_EXPORT
+bool CSPDirectiveListAllowDynamic(
+    const network::mojom::blink::ContentSecurityPolicy& csp,
+    CSPDirectiveName directive_type);
 
-  // Used to copy plugin-types into a plugin document in a nested
-  // browsing context.
-  bool HasPluginTypes() const { return plugin_types_.has_value(); }
-  String PluginTypesText() const;
+CORE_EXPORT
+bool CSPDirectiveListAllowHash(
+    const network::mojom::blink::ContentSecurityPolicy& csp,
+    const network::mojom::blink::CSPHashSource& hash_value,
+    const ContentSecurityPolicy::InlineType inline_type);
 
-  bool ShouldSendCSPHeader(ResourceType) const;
+// Used to copy plugin-types into a plugin document in a nested
+// browsing context.
+CORE_EXPORT
+String CSPDirectiveListPluginTypesText(
+    const network::mojom::blink::ContentSecurityPolicy& csp);
 
-  bool AllowHash(const network::mojom::blink::CSPHashSource& hash_value,
-                 const ContentSecurityPolicy::InlineType inline_type) const;
+// We consider `object-src` restrictions to be reasonable iff they're
+// equivalent to `object-src 'none'`.
+CORE_EXPORT
+bool CSPDirectiveListIsObjectRestrictionReasonable(
+    const network::mojom::blink::ContentSecurityPolicy& csp);
 
-  // Export the policies. The primary goal of this method is to make
-  // the embedders aware of the directives that affect navigation, as the
-  // embedder is responsible for navigational enforcement.
-  network::mojom::blink::ContentSecurityPolicyPtr ExposeForNavigationalChecks()
-      const;
+// We consider `base-uri` restrictions to be reasonable iff they're equivalent
+// to `base-uri 'none'` or `base-uri 'self'`.
+CORE_EXPORT
+bool CSPDirectiveListIsBaseRestrictionReasonable(
+    const network::mojom::blink::ContentSecurityPolicy& csp);
 
-  // We consider `object-src` restrictions to be reasonable iff they're
-  // equivalent to `object-src 'none'`.
-  bool IsObjectRestrictionReasonable() const;
+// We consider `script-src` restrictions to be reasonable iff they're not
+// URL-based (e.g. they contain only nonces and hashes, or they use
+// 'strict-dynamic'). Neither `'unsafe-eval'` nor `'unsafe-hashes'` affect
+// this judgement.
+CORE_EXPORT
+bool CSPDirectiveListIsScriptRestrictionReasonable(
+    const network::mojom::blink::ContentSecurityPolicy& csp);
 
-  // We consider `base-uri` restrictions to be reasonable iff they're equivalent
-  // to `base-uri 'none'` or `base-uri 'self'`.
-  bool IsBaseRestrictionReasonable() const;
+CORE_EXPORT
+bool CSPDirectiveListIsActiveForConnections(
+    const network::mojom::blink::ContentSecurityPolicy& csp);
 
-  // We consider `script-src` restrictions to be reasonable iff they're not
-  // URL-based (e.g. they contain only nonces and hashes, or they use
-  // 'strict-dynamic'). Neither `'unsafe-eval'` nor `'unsafe-hashes'` affect
-  // this judgement.
-  bool IsScriptRestrictionReasonable() const;
-
-  bool RequiresTrustedTypes() const;
-
-  bool TrustedTypesAllowDuplicates() const {
-    return trusted_types_ && trusted_types_->allow_duplicates;
-  }
-
-  void Trace(Visitor*) const;
-
- private:
-  FRIEND_TEST_ALL_PREFIXES(CSPDirectiveListTest, IsMatchingNoncePresent);
-  FRIEND_TEST_ALL_PREFIXES(CSPDirectiveListTest, OperativeDirectiveGivenType);
-
-  void ApplyParsedDirectives();
-  bool ParseDirective(const UChar* begin,
-                      const UChar* end,
-                      String* name,
-                      String* value);
-  void ParseReportURI(const String& name, const String& value);
-  void ParseReportTo(const String& name, const String& value);
-  void ParseAndAppendReportEndpoints(const String& value);
-  void ParsePluginTypes(const String& name, const String& value);
-  void AddDirective(const String& name, const String& value);
-  void ParseSandboxPolicy(const String& name, const String& sandbox_policy);
-  void ParseTreatAsPublicAddress();
-  void ParseBlockAllMixedContent(const String& name, const String& value);
-  void ParseUpgradeInsecureRequests(const String& name, const String& value);
-
-  CSPDirectiveName FallbackDirective(CSPDirectiveName current_directive,
-                                     CSPDirectiveName original_directive) const;
-  void ReportViolation(
-      const String& directive_text,
-      CSPDirectiveName,
-      const String& console_message,
-      const KURL& blocked_url,
-      ResourceRequest::RedirectStatus,
-      ContentSecurityPolicy::ContentSecurityPolicyViolationType violation_type =
-          ContentSecurityPolicy::kURLViolation,
-      const String& sample = String(),
-      const String& sample_prefix = String()) const;
-  void ReportViolationWithLocation(const String& directive_text,
-                                   CSPDirectiveName,
-                                   const String& console_message,
-                                   const KURL& blocked_url,
-                                   const String& context_url,
-                                   const WTF::OrdinalNumber& context_line,
-                                   Element*,
-                                   const String& source) const;
-  void ReportEvalViolation(const String& directive_text,
-                           CSPDirectiveName,
-                           const String& message,
-                           const KURL& blocked_url,
-                           const ContentSecurityPolicy::ExceptionStatus,
-                           const String& content) const;
-
-  bool CheckEval(const network::mojom::blink::CSPSourceList* directive) const;
-  bool CheckWasmEval(
-      const network::mojom::blink::CSPSourceList* directive) const;
-  bool CheckDynamic(const network::mojom::blink::CSPSourceList* directive,
-                    CSPDirectiveName effective_type) const;
-  bool IsMatchingNoncePresent(
-      const network::mojom::blink::CSPSourceList* directive,
-      const String&) const;
-  bool AreAllMatchingHashesPresent(
-      const network::mojom::blink::CSPSourceList* directive,
-      const IntegrityMetadataSet&) const;
-  bool CheckHash(const network::mojom::blink::CSPSourceList* directive,
-                 const network::mojom::blink::CSPHashSource&) const;
-  bool CheckUnsafeHashesAllowed(
-      const network::mojom::blink::CSPSourceList* directive) const;
-  bool CheckSource(const network::mojom::blink::CSPSourceList*,
-                   const KURL&,
-                   ResourceRequest::RedirectStatus) const;
-  bool CheckMediaType(const Vector<String>& plugin_types,
-                      const String& type,
-                      const String& type_attribute) const;
-
-  bool CheckEvalAndReportViolation(const String& console_message,
-                                   ContentSecurityPolicy::ExceptionStatus,
-                                   const String& script_content) const;
-  bool CheckWasmEvalAndReportViolation(const String& console_message,
-                                       ContentSecurityPolicy::ExceptionStatus,
-                                       const String& script_content) const;
-  bool CheckInlineAndReportViolation(CSPOperativeDirective directive,
-                                     const String& console_message,
-                                     Element*,
-                                     const String& source,
-                                     const String& context_url,
-                                     const WTF::OrdinalNumber& context_line,
-                                     bool is_script,
-                                     const String& hash_value,
-                                     CSPDirectiveName effective_type) const;
-
-  bool CheckSourceAndReportViolation(CSPOperativeDirective directive,
-                                     const KURL&,
-                                     CSPDirectiveName,
-                                     const KURL& url_before_redirects,
-                                     ResourceRequest::RedirectStatus) const;
-  bool CheckMediaTypeAndReportViolation(const Vector<String>& plugin_types,
-                                        const String& type,
-                                        const String& type_attribute,
-                                        const String& console_message) const;
-
-  bool DenyIfEnforcingPolicy() const { return IsReportOnly(); }
-
-  // Return the operative directive name and CSPSourceList for a given directive
-  // name, falling back to generic directives according to Content Security
-  // Policies rules. For example, if 'default-src' is defined but 'media-src' is
-  // not, OperativeDirective(CSPDirectiveName::MediaSrc) will return type
-  // CSPDirectiveName::DefaultSrc and the corresponding CSPSourceList. If no
-  // operative directive for the given type is defined, this will return
-  // CSPDirectiveName::Unknown and nullptr.
-  CSPOperativeDirective OperativeDirective(
-      CSPDirectiveName type,
-      CSPDirectiveName original_type = CSPDirectiveName::Unknown) const;
-
-  Member<ContentSecurityPolicy> policy_;
-
-  network::mojom::blink::ContentSecurityPolicyHeaderPtr header_;
-
-  HashMap<CSPDirectiveName, String> raw_directives_;
-
-  network::mojom::blink::WebSandboxFlags sandbox_flags_;
-
-  bool block_all_mixed_content_;
-
-  bool upgrade_insecure_requests_;
-
-  base::Optional<Vector<String>> plugin_types_;
-  HashMap<CSPDirectiveName, network::mojom::blink::CSPSourceListPtr>
-      directives_;
-  network::mojom::blink::CSPTrustedTypesPtr trusted_types_;
-  network::mojom::blink::CSPRequireTrustedTypesFor require_trusted_types_for_;
-
-  // If a "report-to" directive is used:
-  // - |report_endpoints_| is a list of token parsed from the "report-to"
-  //   directive's value, and
-  // - |use_reporting_api_| is true.
-  // Otherwise,
-  // - |report_endpoints_| is a list of uri-reference parsed from a
-  //   "report-uri" directive's value if any, and
-  // - |use_reporting_api_| is false.
-  Vector<String> report_endpoints_;
-  bool use_reporting_api_;
-
-  DISALLOW_COPY_AND_ASSIGN(CSPDirectiveList);
-};
+// Return the operative directive name and CSPSourceList for a given directive
+// name, falling back to generic directives according to Content Security
+// Policies rules. For example, if 'default-src' is defined but 'media-src' is
+// not, OperativeDirective(CSPDirectiveName::MediaSrc) will return type
+// CSPDirectiveName::DefaultSrc and the corresponding CSPSourceList. If no
+// operative directive for the given type is defined, this will return
+// CSPDirectiveName::Unknown and nullptr.
+CORE_EXPORT
+CSPOperativeDirective CSPDirectiveListOperativeDirective(
+    const network::mojom::blink::ContentSecurityPolicy& csp,
+    CSPDirectiveName type);
 
 }  // namespace blink
 

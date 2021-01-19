@@ -18,6 +18,14 @@ class HttpResponseHeaders;
 namespace network {
 class CSPContext;
 
+// Return the next Content Security Policy directive after |directive| in
+// |original_directive|'s fallback list:
+// https://w3c.github.io/webappsec-csp/#directive-fallback-list.
+COMPONENT_EXPORT(NETWORK_CPP)
+mojom::CSPDirectiveName CSPFallbackDirective(
+    mojom::CSPDirectiveName directive,
+    mojom::CSPDirectiveName original_directive);
+
 // Parses the Content-Security-Policy headers specified in |headers| and appends
 // the results into |out|.
 //

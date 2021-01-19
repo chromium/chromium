@@ -183,7 +183,7 @@ mojom::FetchCacheMode DetermineFrameCacheMode(Frame* frame) {
 struct FrameFetchContext::FrozenState final : GarbageCollected<FrozenState> {
   FrozenState(const KURL& url,
               scoped_refptr<const SecurityOrigin> parent_security_origin,
-              const ContentSecurityPolicy* content_security_policy,
+              ContentSecurityPolicy* content_security_policy,
               net::SiteForCookies site_for_cookies,
               scoped_refptr<const SecurityOrigin> top_frame_origin,
               const ClientHintsPreferences& client_hints_preferences,
@@ -204,7 +204,7 @@ struct FrameFetchContext::FrozenState final : GarbageCollected<FrozenState> {
 
   const KURL url;
   const scoped_refptr<const SecurityOrigin> parent_security_origin;
-  const Member<const ContentSecurityPolicy> content_security_policy;
+  const Member<ContentSecurityPolicy> content_security_policy;
   const net::SiteForCookies site_for_cookies;
   const scoped_refptr<const SecurityOrigin> top_frame_origin;
   const ClientHintsPreferences client_hints_preferences;
@@ -567,8 +567,7 @@ void FrameFetchContext::DispatchDidBlockRequest(
                          fetch_initiator_info, blocked_reason, resource_type);
 }
 
-const ContentSecurityPolicy*
-FrameFetchContext::GetContentSecurityPolicyForWorld(
+ContentSecurityPolicy* FrameFetchContext::GetContentSecurityPolicyForWorld(
     const DOMWrapperWorld* world) const {
   if (GetResourceFetcherProperties().IsDetached())
     return frozen_state_->content_security_policy;
@@ -686,8 +685,7 @@ const SecurityOrigin* FrameFetchContext::GetParentSecurityOrigin() const {
   return parent->GetSecurityContext()->GetSecurityOrigin();
 }
 
-const ContentSecurityPolicy* FrameFetchContext::GetContentSecurityPolicy()
-    const {
+ContentSecurityPolicy* FrameFetchContext::GetContentSecurityPolicy() const {
   if (GetResourceFetcherProperties().IsDetached())
     return frozen_state_->content_security_policy;
   return document_->domWindow()->GetContentSecurityPolicy();

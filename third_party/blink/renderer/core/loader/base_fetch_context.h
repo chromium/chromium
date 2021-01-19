@@ -127,7 +127,7 @@ class CORE_EXPORT BaseFetchContext : public FetchContext {
                                        const FetchInitiatorInfo&,
                                        ResourceRequestBlockedReason,
                                        ResourceType) const = 0;
-  virtual const ContentSecurityPolicy* GetContentSecurityPolicyForWorld(
+  virtual ContentSecurityPolicy* GetContentSecurityPolicyForWorld(
       const DOMWrapperWorld* world) const = 0;
 
   virtual bool IsSVGImageChromeClient() const = 0;
@@ -141,7 +141,7 @@ class CORE_EXPORT BaseFetchContext : public FetchContext {
                                                          const KURL&) const = 0;
   virtual const KURL& Url() const = 0;
   virtual const SecurityOrigin* GetParentSecurityOrigin() const = 0;
-  virtual const ContentSecurityPolicy* GetContentSecurityPolicy() const = 0;
+  virtual ContentSecurityPolicy* GetContentSecurityPolicy() const = 0;
 
   // TODO(yhirano): Remove this.
   virtual void AddConsoleMessage(ConsoleMessage*) const = 0;

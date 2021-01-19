@@ -574,4 +574,28 @@ TEST_F(SourceListDirectiveTest, AllowHostMixedCase) {
   }
 }
 
+TEST_F(SourceListDirectiveTest, AllowNonce) {
+  struct TestCase {
+    const char* directive_value;
+    const char* nonce;
+    bool expected;
+  } cases[] = {
+      {"'self'", "yay", false},
+      {"'self'", "boo", false},
+      {"'nonce-yay'", "yay", true},
+      {"'nonce-yay'", "boo", false},
+      {"'nonce-yay' 'nonce-boo'", "yay", true},
+      {"'nonce-yay' 'nonce-boo'", "boo", true},
+  };
+
+  for (const auto& test : cases) {
+    network::mojom::blink::CSPSourceListPtr source_list =
+        CSPSourceListParse("script-src", test.directive_value, csp.Get());
+    EXPECT_EQ(test.expected, CSPSourceListAllowNonce(*source_list, test.nonce));
+    // Empty/null strings are always not present.
+    EXPECT_FALSE(CSPSourceListAllowNonce(*source_list, ""));
+    EXPECT_FALSE(CSPSourceListAllowNonce(*source_list, String()));
+  }
+}
+
 }  // namespace blink
