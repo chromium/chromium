@@ -807,7 +807,6 @@ class DatabaseTracker_TestHelper_Test {
           tracker->DatabaseModified(kOriginId, kEmptyName);
           EXPECT_TRUE(tracker->GetAllOriginsInfo(&infos));
           EXPECT_EQ(1u, infos.size());
-          EXPECT_EQ(kDescription, infos[0].GetDatabaseDescription(kEmptyName));
           EXPECT_FALSE(
               tracker->GetFullDBFilePath(kOriginId, kEmptyName).empty());
           tracker->DatabaseOpened(kOriginId, kEmptyName, kChangedDescription, 0,
@@ -815,8 +814,6 @@ class DatabaseTracker_TestHelper_Test {
           infos.clear();
           EXPECT_TRUE(tracker->GetAllOriginsInfo(&infos));
           EXPECT_EQ(1u, infos.size());
-          EXPECT_EQ(kChangedDescription,
-                    infos[0].GetDatabaseDescription(kEmptyName));
           tracker->DatabaseClosed(kOriginId, kEmptyName);
           tracker->DatabaseClosed(kOriginId, kEmptyName);
 

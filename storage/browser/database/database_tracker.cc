@@ -66,14 +66,6 @@ int64_t OriginInfo::GetDatabaseSize(const base::string16& database_name) const {
   return 0;
 }
 
-base::string16 OriginInfo::GetDatabaseDescription(
-    const base::string16& database_name) const {
-  auto it = database_info_.find(database_name);
-  if (it != database_info_.end())
-    return it->second.description;
-  return base::string16();
-}
-
 base::Time OriginInfo::GetDatabaseLastModified(
     const base::string16& database_name) const {
   auto it = database_info_.find(database_name);
@@ -595,7 +587,6 @@ DatabaseTracker::CachedOriginInfo* DatabaseTracker::MaybeGetCachedOriginInfo(
         db_file_size = GetDBFileSize(origin_identifier, db.database_name);
       }
       origin_info.SetDatabaseSize(db.database_name, db_file_size);
-      origin_info.SetDatabaseDescription(db.database_name, db.description);
 
       base::FilePath path =
           GetFullDBFilePath(origin_identifier, db.database_name);
@@ -634,7 +625,6 @@ int64_t DatabaseTracker::SeedOpenDatabaseInfo(
   CachedOriginInfo* info = MaybeGetCachedOriginInfo(origin_id, false);
   if (info) {
     info->SetDatabaseSize(name, size);
-    info->SetDatabaseDescription(name, description);
   }
   return size;
 }
@@ -648,8 +638,6 @@ int64_t DatabaseTracker::UpdateOpenDatabaseInfoAndNotify(
   int64_t new_size = GetDBFileSize(origin_id, name);
   int64_t old_size = database_connections_.GetOpenDatabaseSize(origin_id, name);
   CachedOriginInfo* info = MaybeGetCachedOriginInfo(origin_id, false);
-  if (info && opt_description)
-    info->SetDatabaseDescription(name, *opt_description);
   if (old_size != new_size) {
     database_connections_.SetOpenDatabaseSize(origin_id, name, new_size);
     if (info)

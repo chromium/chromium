@@ -57,13 +57,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) OriginInfo {
   base::Time LastModified() const { return last_modified_; }
   void GetAllDatabaseNames(std::vector<base::string16>* databases) const;
   int64_t GetDatabaseSize(const base::string16& database_name) const;
-  base::string16 GetDatabaseDescription(
-      const base::string16& database_name) const;
   base::Time GetDatabaseLastModified(const base::string16& database_name) const;
 
  protected:
   struct DBInfo {
-    base::string16 description;
     int64_t size;
     base::Time last_modified;
   };
@@ -201,10 +198,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) DatabaseTracker
       database_info_[database_name].size = new_size;
       if (new_size != old_size)
         total_size_ += new_size - old_size;
-    }
-    void SetDatabaseDescription(const base::string16& database_name,
-                                const base::string16& description) {
-      database_info_[database_name].description = description;
     }
     void SetDatabaseLastModified(const base::string16& database_name,
                                  const base::Time& last_modified) {
