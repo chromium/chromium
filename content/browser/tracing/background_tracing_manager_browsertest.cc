@@ -1586,8 +1586,9 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
 
 // This tests that reactive mode only terminates with a repeated trigger
 // if the config specifies that it should.
+// Flaky on all major platforms: crbug.com/1156793.
 IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
-                       ReactiveSecondTriggerIgnored) {
+                       DISABLED_ReactiveSecondTriggerIgnored) {
   TestBackgroundTracingHelper background_tracing_helper;
   TestTraceReceiverHelper trace_receiver_helper;
 
