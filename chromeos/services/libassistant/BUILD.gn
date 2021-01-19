@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
 import("//chromeos/assistant/assistant.gni")
 
 assert(enable_cros_libassistant)
@@ -56,6 +57,8 @@ source_set("internal") {
   ]
 
   deps = [
+    ":buildflags",
+    ":fake_input_device",
     "//build/util:webkit_version",
     "//chromeos/assistant/internal",
     "//chromeos/assistant/internal/proto/google3",
@@ -74,6 +77,20 @@ source_set("internal") {
   ]
 
   defines = [ "IS_LIBASSISTANT_SERVICE_IMPL" ]
+}
+
+source_set("fake_input_device") {
+  visibility = [ ":*" ]
+
+  sources = [
+    "audio/fake_input_device.cc",
+    "audio/fake_input_device.h",
+  ]
+
+  deps = [
+    "//base",
+    "//media",
+  ]
 }
 
 source_set("unit_tests") {
@@ -100,4 +117,11 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+}
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+
+  flags =
+      [ "ENABLE_FAKE_ASSISTANT_MICROPHONE=$enable_fake_assistant_microphone" ]
 }

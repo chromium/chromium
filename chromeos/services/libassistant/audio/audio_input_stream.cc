@@ -5,7 +5,12 @@
 #include "chromeos/services/libassistant/audio/audio_input_stream.h"
 
 #include "base/notreached.h"
+#include "chromeos/services/libassistant/buildflags.h"
 #include "chromeos/services/libassistant/public/mojom/audio_input_controller.mojom.h"
+
+#if BUILDFLAG(ENABLE_FAKE_ASSISTANT_MICROPHONE)
+#include "chromeos/services/libassistant/audio/fake_input_device.h"
+#endif  // BUILDFLAG(ENABLE_FAKE_ASSISTANT_MICROPHONE)
 
 namespace chromeos {
 namespace libassistant {
@@ -48,9 +53,13 @@ void AudioInputStream::OnAudioSteamFactoryReady(
   if (!audio_stream_factory.is_valid())
     return;
 
+#if BUILDFLAG(ENABLE_FAKE_ASSISTANT_MICROPHONE)
+  source_ = CreateFakeInputDevice();
+#else
   source_ =
       audio::CreateInputDevice(std::move(audio_stream_factory), device_id(),
                                ToDeadStreamDetection(detect_dead_stream_));
+#endif  // BUILDFLAG(ENABLE_FAKE_ASSISTANT_MICROPHONE)
 
   source_->Initialize(GetAudioParameters(), capture_callback_);
   source_->Start();
