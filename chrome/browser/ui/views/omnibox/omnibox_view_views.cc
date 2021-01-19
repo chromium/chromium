@@ -789,16 +789,9 @@ void OmniboxViewViews::ExecuteCommand(int command_id, int event_flags) {
   DestroyTouchSelection();
   switch (command_id) {
     // These commands don't invoke the popup via OnBefore/AfterPossibleChange().
-    case IDC_PASTE_AND_GO: {
-      auto weak_this = weak_factory_.GetWeakPtr();
-      base::string16 text = GetClipboardText(/*notify_if_restricted=*/true);
-      // Because ReadText() in GetClipboardText() runs a nested message loop,
-      // |this| may be deleted before it returns. See https://crbug.com/1161149.
-      if (!weak_this)
-        return;
-      model()->PasteAndGo(text);
+    case IDC_PASTE_AND_GO:
+      model()->PasteAndGo(GetClipboardText(/*notify_if_restricted=*/true));
       return;
-    }
     case IDC_SHOW_FULL_URLS:
     case IDC_EDIT_SEARCH_ENGINES:
       location_bar_view_->command_updater()->ExecuteCommand(command_id);
@@ -940,12 +933,8 @@ base::string16 OmniboxViewViews::GetSelectedText() const {
 }
 
 void OmniboxViewViews::OnOmniboxPaste() {
-  auto weak_this = weak_factory_.GetWeakPtr();
-  base::string16 text = GetClipboardText(/*notify_if_restricted=*/true);
-  // Because ReadText() in GetClipboardText() runs a nested message loop, |this|
-  // may be deleted before it returns. See https://crbug.com/1161149.
-  if (!weak_this)
-    return;
+  const base::string16 text(GetClipboardText(/*notify_if_restricted=*/true));
+
   if (text.empty() ||
       // When the fakebox is focused, ignore pasted whitespace because if the
       // fakebox is hidden and there's only whitespace in the omnibox, it's
@@ -1476,9 +1465,10 @@ base::string16 OmniboxViewViews::GetLabelForCommandId(int command_id) const {
 
   // Don't paste-and-go data that was marked by its originator as confidential.
   constexpr size_t kMaxSelectionTextLength = 50;
-  const base::string16 clipboard_text = IsClipboardDataMarkedAsConfidential()
-                                            ? base::string16()
-                                            : clipboard_text_;
+  const base::string16 clipboard_text =
+      IsClipboardDataMarkedAsConfidential()
+          ? base::string16()
+          : GetClipboardText(/*notify_if_restricted=*/false);
 
   if (clipboard_text.empty())
     return l10n_util::GetStringUTF16(IDS_PASTE_AND_GO_EMPTY);
@@ -1986,10 +1976,12 @@ void OmniboxViewViews::OnBlur() {
 
 bool OmniboxViewViews::IsCommandIdEnabled(int command_id) const {
   if (command_id == Textfield::kPaste)
-    return !GetReadOnly() && !clipboard_text_.empty();
+    return !GetReadOnly() &&
+           !GetClipboardText(/*notify_if_restricted=*/false).empty();
   if (command_id == IDC_PASTE_AND_GO) {
     return !GetReadOnly() && !IsClipboardDataMarkedAsConfidential() &&
-           model()->CanPasteAndGo(clipboard_text_);
+           model()->CanPasteAndGo(
+               GetClipboardText(/*notify_if_restricted=*/false));
   }
 
   // Menu item is only shown when it is valid.
@@ -1998,35 +1990,6 @@ bool OmniboxViewViews::IsCommandIdEnabled(int command_id) const {
 
   return Textfield::IsCommandIdEnabled(command_id) ||
          location_bar_view_->command_updater()->IsCommandEnabled(command_id);
-}
-
-void OmniboxViewViews::ShowContextMenu(const gfx::Point& p,
-                                       ui::MenuSourceType source_type) {
-  // Because ReadText() in GetClipboardText() runs a nested message loop, |this|
-  // may be deleted before it returns. See https://crbug.com/1161149.
-  auto weak_this = weak_factory_.GetWeakPtr();
-
-  // We shouldn't notify the user if the clipboard is restricted because they're
-  // not necessarily trying to access the clipboard here. This value is only
-  // used to enable/disable and populate the text of context menu entries.
-  base::string16 text = GetClipboardText(/*notify_if_restricted=*/false);
-
-  // Avoid running any of the Views menu code by returning early if |this| has
-  // been deleted.
-  if (!weak_this)
-    return;
-
-  // Save the clipboard text for use in GetLabelForCommandId() and
-  // IsCommandIdEnabled(). It would be possible to access the clipboard again in
-  // those methods, similarly protected by checking a weak pointer to |this|.
-  // But saving it here avoids that additional complexity while also serving as
-  // an optimization in the case where the clipboard contains a very large
-  // amount of data and reading it can take seconds.
-  clipboard_text_ = text;
-
-  View::ShowContextMenu(p, source_type);
-
-  clipboard_text_.clear();
 }
 
 void OmniboxViewViews::DidStartNavigation(
@@ -2147,8 +2110,10 @@ bool OmniboxViewViews::IsTextEditCommandEnabled(
   switch (command) {
     case ui::TextEditCommand::MOVE_UP:
     case ui::TextEditCommand::MOVE_DOWN:
-    case ui::TextEditCommand::PASTE:
       return !GetReadOnly();
+    case ui::TextEditCommand::PASTE:
+      return !GetReadOnly() &&
+             !GetClipboardText(show_rejection_ui_if_any_).empty();
     default:
       return Textfield::IsTextEditCommandEnabled(command);
   }
@@ -2159,6 +2124,8 @@ void OmniboxViewViews::ExecuteTextEditCommand(ui::TextEditCommand command) {
   // executed. Since we are not always calling the base class implementation
   // here, we need to deactivate touch text selection here, too.
   DestroyTouchSelection();
+
+  base::AutoReset<bool> show_rejection_ui(&show_rejection_ui_if_any_, true);
 
   if (!IsTextEditCommandEnabled(command))
     return;
@@ -2216,6 +2183,11 @@ bool OmniboxViewViews::HandleKeyEvent(views::Textfield* textfield,
   // Otherwise, if num-lock is off, the events are handled as [Up], [Down], etc.
   if (event.IsUnicodeKeyCode())
     return false;
+
+  // Show a notification if the clipboard is restricted by the rules of the
+  // data leak prevention policy. This state is used by the
+  // IsTextEditCommandEnabled(ui::TextEditCommand::PASTE) cases below.
+  base::AutoReset<bool> show_rejection_ui(&show_rejection_ui_if_any_, true);
 
   const bool shift = event.IsShiftDown();
   const bool control = event.IsControlDown();
