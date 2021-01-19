@@ -72,6 +72,8 @@ WebThemeEngine::State GetWebThemeState(const Element& element) {
 }
 
 class DirectionFlippingScope {
+  STACK_ALLOCATED();
+
  public:
   DirectionFlippingScope(const LayoutObject&, const PaintInfo&, const IntRect&);
   ~DirectionFlippingScope();

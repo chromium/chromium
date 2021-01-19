@@ -53,7 +53,7 @@ namespace blink {
 class LayoutBoxModelObject;
 
 struct CORE_EXPORT PaintInfo {
-  USING_FAST_MALLOC(PaintInfo);
+  STACK_ALLOCATED();
 
  public:
   PaintInfo(GraphicsContext& context,
