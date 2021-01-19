@@ -21,5 +21,6 @@ const char kCdmDataDirectory[] = "cdm-data-directory";
 const char kCdmDataQuotaBytes[] = "cdm-data-quota-bytes";
 const char kUseLegacyAndroidUserAgent[] = "use-legacy-android-user-agent";
 const char kDataQuotaBytes[] = "data-quota-bytes";
+const char kGoogleApiKey[] = "google-api-key";
 
 }  // namespace switches

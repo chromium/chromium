@@ -168,6 +168,7 @@ bool MaybeAddCommandLineArgsFromConfig(const base::Value& config,
       switches::kForceGpuMemAvailableMb,
       switches::kForceGpuMemDiscardableLimitMb,
       switches::kForceMaxTextureSize,
+      switches::kGoogleApiKey,
       switches::kMaxDecodedImageSizeMb,
       switches::kRendererProcessLimit,
       switches::kUseLegacyAndroidUserAgent,
@@ -613,6 +614,13 @@ void ContextProviderImpl::Create(
     ignore_result(channel.release());
   ignore_result(data_directory_channel.release());
   ignore_result(cdm_data_directory_channel.release());
+
+  // Set the Google API key to use Google services.
+  if (launch_command.HasSwitch(switches::kGoogleApiKey)) {
+    AppendFeature(switches::kGoogleApiKey,
+                  launch_command.GetSwitchValueASCII(switches::kGoogleApiKey),
+                  &launch_command);
+  }
 }
 
 void ContextProviderImpl::SetLaunchCallbackForTest(

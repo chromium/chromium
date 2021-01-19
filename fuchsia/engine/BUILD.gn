@@ -226,9 +226,11 @@ source_set("switches") {
 
 executable("web_engine_exe") {
   deps = [
+    ":switches",
     ":web_engine_core",
     "//base",
     "//content/public/app",
+    "//google_apis",
   ]
   sources = [ "web_engine_main.cc" ]
   visibility = [ ":*" ]

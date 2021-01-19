@@ -9,6 +9,8 @@
 // google_api_keys_unittest.cc.
 #include <string>
 
+#include "build/build_config.h"
+
 // These functions enable you to retrieve keys to use for Google APIs
 // such as Translate and Safe Browsing.
 //
@@ -87,9 +89,10 @@ std::string GetSodaAPIKey();
 // this functionality.
 std::string GetDevtoolsSurveysAPIKey();
 
-#if defined(OS_IOS)
+#if defined(OS_IOS) || defined(OS_FUCHSIA)
 // Sets the API key. This should be called as early as possible before this
-// API key is even accessed.
+// API key is even accessed. It must be called before GetAPIKey.
+// TODO(https://crbug.com/1166007): Enforce this is called before GetAPIKey.
 void SetAPIKey(const std::string& api_key);
 #endif
 
