@@ -130,29 +130,6 @@ html[dir=rtl] .user-image-pane {
   display: block;
 }
 
-.pod .badge-container {
-  background: #FFF;
-  border-radius: 50%;
-  bottom: 0;
-  display: none;
-  height: 27px;
-  position: absolute;
-  right: 0;
-  width: 27px;
-}
-
-.pod .badge-container iron-icon {
-  --iron-icon-height: 25px;
-  --iron-icon-width: 25px;
-  display: none;
-  padding: 0;
-}
-
-.pod.legacy-supervised .badge-container,
-.pod.legacy-supervised .legacy-supervised-badge {
-  display: block;
-}
-
 /* TODO(noms): Refactor this out into a CrOS-specific file and simplify the
  style rule once it is included on CrOS only. crbug.com/397638 */
 html:not([screen=login-add-user]) .pod .user-image {
@@ -597,11 +574,6 @@ html[dir=rtl] .user-type-icon-area {
   width: 16px;
 }
 
-.user-type-icon-area.legacySupervised .user-type-icon-image {
-  background-image: url(../../webui/resources/images/supervisor_account.svg);
-  background-size: 18px;
-}
-
 .user-type-icon-area.child .user-type-icon-image {
   background-image: url(../../webui/resources/images/account_child_invert.svg);
   background-size: 18px;
@@ -751,11 +723,6 @@ html[dir=rtl] .user-type-icon-area {
 
 /* Hide dialog elements not in a correct category. Only combinations currently
    in use are included here. */
-.pod.legacy-supervised .non-sync,
-.pod.legacy-supervised .action-box-remove-user-warning-text,
-.pod.legacy-supervised .action-box-remove-non-owner-user-warning-text,
-.pod:not(.legacy-supervised)
-    .action-box-remove-legacy-supervised-user-warning-text,
 .pod.synced .non-sync {
   display: none;
 }

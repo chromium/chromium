@@ -375,6 +375,7 @@ bool ProfileAttributesEntry::IsChild() const {
 #endif
 }
 
+// TODO(crbug/1164090): Remove this function because it should always be false.
 bool ProfileAttributesEntry::IsLegacySupervised() const {
   return IsSupervised() && !IsChild();
 }

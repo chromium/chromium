@@ -521,11 +521,6 @@ html[dir=rtl] .user-type-icon-area {
   width: 16px;
 }
 
-.user-type-icon-area.legacySupervised .user-type-icon-image {
-  background-image: url(../../webui/resources/images/supervisor_account.svg);
-  background-size: 18px;
-}
-
 .user-type-icon-area.child .user-type-icon-image {
   background-image: url(../../webui/resources/images/account_child_invert.svg);
   background-size: 18px;

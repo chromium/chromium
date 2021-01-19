@@ -98,7 +98,6 @@ class ASH_EXPORT LockContentsView
     LoginErrorBubble* auth_error_bubble() const;
     LoginErrorBubble* detachable_base_error_bubble() const;
     LoginErrorBubble* warning_banner_bubble() const;
-    LoginErrorBubble* supervised_user_deprecation_bubble() const;
     views::View* user_adding_screen_indicator() const;
     views::View* system_info() const;
     views::View* bottom_status_indicator() const;
@@ -469,9 +468,6 @@ class ASH_EXPORT LockContentsView
   views::View* user_adding_screen_indicator_ = nullptr;
   // Bubble for displaying warning banner message.
   LoginErrorBubble* warning_banner_bubble_;
-  // Bubble for displaying supervised user deprecation message.
-  // TODO(crbug/1164090): Remove this.
-  LoginErrorBubble* supervised_user_deprecation_bubble_;
 
   // Bottom status indicator displaying entreprise domain or ADB enabled alert
   BottomStatusIndicator* bottom_status_indicator_;

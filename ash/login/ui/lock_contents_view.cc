@@ -472,11 +472,6 @@ LoginErrorBubble* LockContentsView::TestApi::warning_banner_bubble() const {
   return view_->warning_banner_bubble_;
 }
 
-LoginErrorBubble*
-LockContentsView::TestApi::supervised_user_deprecation_bubble() const {
-  return view_->supervised_user_deprecation_bubble_;
-}
-
 views::View* LockContentsView::TestApi::user_adding_screen_indicator() const {
   return view_->user_adding_screen_indicator_;
 }
@@ -639,10 +634,6 @@ LockContentsView::LockContentsView(
           base::BindRepeating(&LockContentsView::SetDisplayStyle,
                               base::Unretained(this), DisplayStyle::kAll)));
   expanded_view_->SetVisible(false);
-
-  supervised_user_deprecation_bubble_ =
-      AddChildView(std::make_unique<LoginErrorBubble>());
-  supervised_user_deprecation_bubble_->set_persistent(true);
 
   detachable_base_error_bubble_ =
       AddChildView(std::make_unique<LoginErrorBubble>());
@@ -1992,22 +1983,6 @@ void LockContentsView::OnBigUserChanged() {
 
   Shell::Get()->login_screen_controller()->OnFocusPod(big_user_account_id);
   UpdateEasyUnlockIconForUser(big_user_account_id);
-
-  // TODO(crbug/1164090): After Supervised Users are deprecated, remove this.
-  if (big_user.basic_user_info.type ==
-      user_manager::USER_TYPE_SUPERVISED_DEPRECATED) {
-    // TODO(crbug/1164090): Remove this string and the associated screenshot.
-    base::string16 message = l10n_util::GetStringUTF16(
-        IDS_ASH_LOGIN_POD_LEGACY_SUPERVISED_EXPIRATION_WARNING);
-    // Shows supervised user deprecation message as a persistent error bubble.
-
-    supervised_user_deprecation_bubble_->SetTextContent(message);
-    supervised_user_deprecation_bubble_->SetAnchorView(
-        CurrentBigUserView()->auth_user()->GetActiveInputView());
-    supervised_user_deprecation_bubble_->Show();
-  } else if (supervised_user_deprecation_bubble_->GetVisible()) {
-    supervised_user_deprecation_bubble_->Hide();
-  }
 
   // The new auth user might have different last used detachable base - make
   // sure the detachable base pairing error is updated if needed.

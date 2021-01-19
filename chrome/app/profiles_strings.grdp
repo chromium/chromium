@@ -2,17 +2,11 @@
 <!-- Profiles specific strings (included from generated_resources.grd). -->
 <grit-part>
   <!-- Supervised User (Legacy and Accounts for Kids) Avatar Menu -->
-  <message name="IDS_LEGACY_SUPERVISED_USER_INFO" desc="Text which explains that a supervised user is managed by a custodian.">
-    Usage and history can be reviewed by the manager (<ph name="CUSTODIAN_EMAIL">$1<ex>Jane.Doe@gmail.com</ex></ph>) on chrome.com.
-  </message>
   <message name="IDS_CHILD_INFO_ONE_CUSTODIAN" desc="Text which explains that a child user is managed by a single parent.">
     This is an account for kids managed by <ph name="CUSTODIAN_EMAIL">$1<ex>Jane.Doe@gmail.com</ex></ph>.
   </message>
   <message name="IDS_CHILD_INFO_TWO_CUSTODIANS" desc="Text which explains that a child user is managed by two parents.">
     This is an account for kids managed by <ph name="CUSTODIAN_EMAIL">$1<ex>John.Doe@gmail.com</ex></ph> and <ph name="SECOND_CUSTODIAN_EMAIL">$2<ex>Jane.Doe@gmail.com</ex></ph>.
-  </message>
-  <message name="IDS_LEGACY_SUPERVISED_USER_AVATAR_LABEL" desc="A label for the supervised user which is used in the avatar menu and as a label in the titlebar.">
-    Supervised user
   </message>
   <message name="IDS_GENERIC_USER_AVATAR_LABEL" desc="Label shown for the user that is currently active, when there are multiple user accounts.">
     Current user
@@ -58,9 +52,6 @@
   </message>
   <message name="IDS_AVATAR_BUTTON_SYNC_PAUSED_TOOLTIP" desc="Tooltip for the avatar button when sync is paused for the current profile.">
     <ph name="PROFILE_NAME">$1<ex>User</ex></ph>: Sync paused
-  </message>
-  <message name="IDS_LEGACY_SUPERVISED_USER_NEW_AVATAR_LABEL" desc="Label shown in the new avatar menu for a supervised user.">
-    <ph name="PROFILE_DISPLAY_NAME">$1<ex>Markus</ex></ph> (Supervised)
   </message>
   <message name="IDS_CHILD_AVATAR_LABEL" desc="Label shown in the new avatar menu for a child user.">
     <ph name="PROFILE_DISPLAY_NAME">$1<ex>Markus</ex></ph> (Account for kids)
@@ -504,20 +495,6 @@
     <message name="IDS_PROFILES_CREATE_SUPERVISED_JUST_SIGNED_IN" desc="Warning message shown in the create-profile dialog when the custodian signed in recently, sync has not yet finished initializing, and so the creation process is likely to take extra time.">
       Creating your supervised user. This may take a few moments.
     </message>
-
-    <!-- Import existing supervised user dialog -->
-    <message name="IDS_IMPORT_EXISTING_LEGACY_SUPERVISED_USER_TITLE" desc="Title for the dialog used to import existing supervised users. The dialog appears when the custodian clicks on 'Import existing supervised user' during the user creation flow. The dialog displays a list of existing supervised users for the custodian to choose from">
-      Import an existing supervised user
-    </message>
-    <message name="IDS_IMPORT_EXISTING_LEGACY_SUPERVISED_USER_TEXT" desc="Text that instructs the user to choose one of the displayed supervised users to import to this device.">
-      Choose a supervised user to add to this device.
-    </message>
-    <message name="IDS_CREATE_NEW_LEGACY_SUPERVISED_USER_LINK" desc="The text for the link button that takes the user back from the dialog for importing an existing supervised user to the user creation dialog.">
-      Create a new supervised user
-    </message>
-    <message name="IDS_IMPORT_EXISTING_LEGACY_SUPERVISED_USER_OK" desc="Text on the button to confirm importing an existing supervised user.">
-      Import supervised user
-    </message>
   </if>
 
   <if expr="not is_android">
@@ -530,16 +507,10 @@
         <message name="IDS_LOGIN_POD_USER_REMOVE_WARNING_BUTTON" desc="Text shown on a button that confirms removal of a user.">
           Remove This Person
         </message>
-        <message name="IDS_CREATE_LEGACY_SUPERVISED_USER_MENU_LABEL" desc="Text shown on a menu option that creates a legacy supervised user.">
-          Add Supervised Person
-        </message>
       </if>
       <if expr="chromeos">
         <message name="IDS_LOGIN_POD_USER_REMOVE_WARNING_BUTTON" desc="Text shown on a button that confirms removal of a user.">
           Remove This User
-        </message>
-        <message name="IDS_CREATE_LEGACY_SUPERVISED_USER_MENU_LABEL" desc="Text shown on a menu option that creates a legacy supervised user.">
-          Add Supervised User
         </message>
       </if>
       <message name="IDS_SCREEN_LOCK_SIGN_OUT">
@@ -554,16 +525,10 @@
         <message name="IDS_LOGIN_POD_USER_REMOVE_WARNING_BUTTON" desc="Text shown on a button that confirms removal of a user.">
           Remove this person
         </message>
-        <message name="IDS_CREATE_LEGACY_SUPERVISED_USER_MENU_LABEL" desc="Text shown on a menu option that creates a legacy supervised user.">
-          Add supervised person
-        </message>
       </if>
       <if expr="chromeos">
         <message name="IDS_LOGIN_POD_USER_REMOVE_WARNING_BUTTON" desc="Text shown on a button that confirms removal of a user.">
           Remove this user
-        </message>
-        <message name="IDS_CREATE_LEGACY_SUPERVISED_USER_MENU_LABEL" desc="Text shown on a menu option that creates a legacy supervised user.">
-          Add supervised user
         </message>
       </if>
       <message name="IDS_SCREEN_LOCK_SIGN_OUT">
@@ -633,9 +598,6 @@
     </message>
     <message name="IDS_LOGIN_POD_MENU_REMOVE_ITEM_ACCESSIBLE_NAME" desc="Text to be spoken when 'Remove user' item is selected on the pod menu.">
       Remove this user
-    </message>
-    <message name="IDS_LOGIN_POD_LEGACY_SUPERVISED_USER_REMOVE_WARNING" desc="Text shown as a warning when attempting to remove legacy supervised user.">
-      All files and local data associated with the supervised user will be permanently deleted once this supervised user is removed. Visited websites and settings for this supervised user may still be visible by the manager at <ph name="MANAGEMENT_URL">$1<ex>www.example.com</ex></ph>.
     </message>
     <message name="IDS_LOGIN_POD_NON_OWNER_USER_REMOVE_WARNING" desc="Text shown as a warning when attempting to remove non-owner user.">
       All files and local data associated with this user will be permanently deleted once this user is removed. <ph name="USER_EMAIL">$1<ex>john.doe@example.com</ex></ph> can still sign in later.

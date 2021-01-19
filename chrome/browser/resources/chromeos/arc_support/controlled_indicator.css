@@ -45,10 +45,6 @@
   background-image: url(../../../../../ui/webui/resources/images/account_child_invert.svg);
 }
 
-.controlled-setting-indicator[controlled-by='supervised-user-custodian'] > div {
-  background-image: url(../../../../../ui/webui/resources/images/supervisor_account.svg);
-}
-
 .controlled-setting-bubble-action {
   padding: 0 !important;
 }
@@ -82,7 +78,7 @@ html[dir='rtl'] .controlled-setting-bubble-extension-name {
 }
 
 .controlled-setting-bubble-extension-manage-link {
-  margin-left: -0.35em;
+  margin-inline-start: -0.35em;
   margin-top: -0.30em;
   position: absolute;
   top: 50%;

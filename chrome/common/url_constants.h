@@ -172,11 +172,6 @@ extern const char kGooglePhotosURL[];
 // first run dialog.
 extern const char kLearnMoreReportingURL[];
 
-// Management URL for Chrome Supervised Users - version without scheme, used
-// for display.
-// TODO(crbug/1164090): Remove this.
-extern const char kLegacySupervisedUserManagementDisplayURL[];
-
 // The URL for the Learn More page about policies and enterprise enrollment.
 extern const char kManagedUiLearnMoreUrl[];
 

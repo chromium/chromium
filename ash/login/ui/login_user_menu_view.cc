@@ -22,9 +22,6 @@
 
 namespace ash {
 namespace {
-constexpr char kLegacySupervisedUserManagementDisplayURL[] =
-    "www.chrome.com/manage";
-
 // Vertical margin between username and mail.
 constexpr int kUserMenuVerticalMarginUsernameMailDp = 8;
 
@@ -203,12 +200,6 @@ LoginUserMenuView::LoginUserMenuView(
     user_manager::UserType type = user.basic_user_info.type;
     base::string16 part1 = l10n_util::GetStringUTF16(
         IDS_ASH_LOGIN_POD_NON_OWNER_USER_REMOVE_WARNING_PART_1);
-    // TODO(crbug/1164090): Remove this section and the strings.
-    if (type == user_manager::UserType::USER_TYPE_SUPERVISED_DEPRECATED) {
-      part1 = l10n_util::GetStringFUTF16(
-          IDS_ASH_LOGIN_POD_LEGACY_SUPERVISED_USER_REMOVE_WARNING,
-          base::UTF8ToUTF16(kLegacySupervisedUserManagementDisplayURL));
-    }
     base::string16 part2 = l10n_util::GetStringFUTF16(
         type == user_manager::UserType::USER_TYPE_CHILD
             ? IDS_ASH_LOGIN_POD_NON_OWNER_USER_REMOVE_WARNING_PART_2_SUPERVISED_USER

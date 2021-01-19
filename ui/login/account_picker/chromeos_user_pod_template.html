@@ -22,9 +22,6 @@
       <g id="dropdown" stroke="none" stroke-width="1" fill-rule="evenodd">
         <polygon points="16.59 8.59 12 13.17 7.41 8.59 6 10 12 16 18 10"></polygon>
       </g>
-      <g id="legacy-supervised-badge">
-        <path d="M16.5,13.5 C17.42,13.5 18.16,12.7533333 18.16,11.8333333 C18.16,10.9133333 17.42,10.1666667 16.5,10.1666667 C15.58,10.1666667 14.8333333,10.9133333 14.8333333,11.8333333 C14.8333333,12.7533333 15.58,13.5 16.5,13.5 Z M11.5,12.8333333 C12.6066667,12.8333333 13.4933333,11.94 13.4933333,10.8333333 C13.4933333,9.72666667 12.6066667,8.83333333 11.5,8.83333333 C10.3933333,8.83333333 9.5,9.72666667 9.5,10.8333333 C9.5,11.94 10.3933333,12.8333333 11.5,12.8333333 Z M16.5,14.8333333 C15.28,14.8333333 12.8333333,15.4466667 12.8333333,16.6666667 L12.8333333,18.1666667 L20.1666667,18.1666667 L20.1666667,16.6666667 C20.1666667,15.4466667 17.72,14.8333333 16.5,14.8333333 Z M11.5,14.1666667 C9.94666667,14.1666667 6.83333333,14.9466667 6.83333333,16.5 L6.83333333,18.1666667 L11.5,18.1666667 L11.5,16.6666667 C11.5,16.1 11.72,15.1066667 13.08,14.3533333 C12.5,14.2333333 11.94,14.1666667 11.5,14.1666667 Z" id="Shape" fill="#000000" fill-rule="nonzero" opacity="0.34"></path>
-      </g>
       <g id="caps-lock">
         <path d="M2.5,4.49188419 C2.5,3.39179693 3.39339733,2.5 4.49188419,2.5 L15.5081158,2.5 C16.6082031,2.5 17.5,3.39339733 17.5,4.49188419 L17.5,15.5081158 C17.5,16.6082031 16.6066027,17.5 15.5081158,17.5 L4.49188419,17.5 C3.39179693,17.5 2.5,16.6066027 2.5,15.5081158 L2.5,4.49188419 Z M10,7.47368421 L13.825,11.5 L15,10.2631579 L10,5 L5,10.2631579 L6.175,11.5 L10,7.47368421 Z M5,15 L15,15 L15,13.5 L5,13.5 L5,15 Z" id="Combined-Shape" fill="#FFFFFF"></path>
       </g>
@@ -42,11 +39,6 @@
       <div class="user-image-container">
         <img class="user-image" alt>
         <img class="user-image animated-image" alt>
-      </div>
-      <div class="badge-container">
-        <iron-icon class="legacy-supervised-badge"
-            icon="user-pod:legacy-supervised-badge">
-        </iron-icon>
       </div>
     </div>
 <if expr="chromeos">
@@ -150,9 +142,6 @@
                 </tr>
               </tbody>
             </table>
-            <div class="action-box-remove-legacy-supervised-user-warning-text">
-              $i18n{removeLegacySupervisedUserWarningText}
-            </div>
             <div class="action-box-remove-non-owner-user-warning-text"></div>
             <!-- cr-button is imported inside user_manager.html -->
             <cr-button class="remove-warning-button action-button" noink>

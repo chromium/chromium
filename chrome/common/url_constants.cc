@@ -168,9 +168,6 @@ const char kGooglePhotosURL[] = "https://photos.google.com";
 const char kLearnMoreReportingURL[] =
     "https://support.google.com/chrome/?p=ui_usagestat";
 
-const char kLegacySupervisedUserManagementDisplayURL[] =
-    "www.chrome.com/manage";
-
 const char kManagedUiLearnMoreUrl[] =
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     "https://support.google.com/chromebook/?p=is_chrome_managed";

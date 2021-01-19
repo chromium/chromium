@@ -138,10 +138,6 @@ base::string16 GetAvatarNameForProfile(const base::FilePath& profile_path) {
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 base::string16 GetProfileSwitcherTextForItem(const AvatarMenu::Item& item) {
-  if (item.legacy_supervised) {
-    return l10n_util::GetStringFUTF16(
-        IDS_LEGACY_SUPERVISED_USER_NEW_AVATAR_LABEL, item.name);
-  }
   if (item.child_account)
     return l10n_util::GetStringFUTF16(IDS_CHILD_AVATAR_LABEL, item.name);
   return item.name;
