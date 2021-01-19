@@ -82,7 +82,7 @@ void TelemetryLog::UpdateCpuUsage(mojom::CpuUsagePtr latest_cpu_usage) {
   latest_cpu_usage_ = std::move(latest_cpu_usage);
 }
 
-std::string TelemetryLog::GetTelemetryLog() const {
+std::string TelemetryLog::GetContents() const {
   std::stringstream output;
   if (latest_system_info_) {
     output << kSystemInfoSectionName << kNewline << kSystemInfoBoardNameTitle

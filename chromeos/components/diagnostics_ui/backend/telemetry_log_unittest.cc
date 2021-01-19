@@ -69,7 +69,7 @@ TEST_F(TelemetryLogTest, DetailedLogContents) {
 
   log.UpdateSystemInfo(test_info.Clone());
 
-  const std::string log_as_string = log.GetTelemetryLog();
+  const std::string log_as_string = log.GetContents();
   const std::vector<std::string> log_lines = GetLogLines(log_as_string);
 
   // Expect one title line and 8 content lines.
@@ -116,7 +116,7 @@ TEST_F(TelemetryLogTest, ChangeContents) {
 
   log.UpdateSystemInfo(test_info.Clone());
 
-  const std::string log_as_string = log.GetTelemetryLog();
+  const std::string log_as_string = log.GetContents();
   const std::vector<std::string> log_lines = GetLogLines(log_as_string);
 
   EXPECT_EQ("Board Name: new board_name", log_lines[1]);

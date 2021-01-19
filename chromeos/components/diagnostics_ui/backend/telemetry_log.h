@@ -28,7 +28,7 @@ class TelemetryLog {
   void UpdateCpuUsage(mojom::CpuUsagePtr latest_cpu_usage);
 
   // Returns the telemetry log as a string.
-  std::string GetTelemetryLog() const;
+  std::string GetContents() const;
 
  private:
   mojom::SystemInfoPtr latest_system_info_;
