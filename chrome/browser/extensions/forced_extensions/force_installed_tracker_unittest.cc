@@ -58,9 +58,9 @@ TEST_F(ForceInstalledTrackerTest, BeforeForceInstallPolicy) {
 TEST_F(ForceInstalledTrackerTest, AllExtensionsInstalled) {
   SetupForceList(true /*is_from_store */);
   scoped_refptr<const Extension> ext1 = CreateNewExtension(
-      kExtensionName1, kExtensionId1, ExtensionStatus::PENDING);
+      kExtensionName1, kExtensionId1, ExtensionStatus::kPending);
   scoped_refptr<const Extension> ext2 = CreateNewExtension(
-      kExtensionName2, kExtensionId2, ExtensionStatus::PENDING);
+      kExtensionName2, kExtensionId2, ExtensionStatus::kPending);
   EXPECT_FALSE(loaded_called_);
   EXPECT_FALSE(ready_called_);
   EXPECT_FALSE(force_installed_tracker()->IsDoneLoading());
@@ -85,7 +85,7 @@ TEST_F(ForceInstalledTrackerTest, AllExtensionsInstalled) {
 TEST_F(ForceInstalledTrackerTest, ExtensionPendingInstall) {
   SetupForceList(true /*is_from_store */);
   scoped_refptr<const Extension> ext1 = CreateNewExtension(
-      kExtensionName1, kExtensionId1, ExtensionStatus::LOADED);
+      kExtensionName1, kExtensionId1, ExtensionStatus::kLoaded);
   EXPECT_FALSE(loaded_called_);
   EXPECT_FALSE(ready_called_);
   EXPECT_FALSE(force_installed_tracker()->IsDoneLoading());
@@ -104,9 +104,9 @@ TEST_F(ForceInstalledTrackerTest, ObserversOnlyCalledOnce) {
   // observer.
   SetupForceList(true /*is_from_store */);
   scoped_refptr<const Extension> ext1 = CreateNewExtension(
-      kExtensionName1, kExtensionId1, ExtensionStatus::LOADED);
+      kExtensionName1, kExtensionId1, ExtensionStatus::kLoaded);
   scoped_refptr<const Extension> ext2 = CreateNewExtension(
-      kExtensionName2, kExtensionId2, ExtensionStatus::LOADED);
+      kExtensionName2, kExtensionId2, ExtensionStatus::kLoaded);
   EXPECT_TRUE(loaded_called_);
 
   force_installed_tracker()->OnExtensionReady(profile(), ext1.get());
@@ -123,7 +123,7 @@ TEST_F(ForceInstalledTrackerTest, ObserversOnlyCalledOnce) {
 TEST_F(ForceInstalledTrackerTest, ExtensionsInstallationFailed) {
   SetupForceList(true /*is_from_store */);
   scoped_refptr<const Extension> ext1 = CreateNewExtension(
-      kExtensionName1, kExtensionId1, ExtensionStatus::LOADED);
+      kExtensionName1, kExtensionId1, ExtensionStatus::kLoaded);
   force_installed_tracker()->OnExtensionInstallationFailed(
       kExtensionId2, InstallStageTracker::FailureReason::INVALID_ID);
   EXPECT_TRUE(loaded_called_);
@@ -137,22 +137,22 @@ TEST_F(ForceInstalledTrackerTest, ExtensionsInstallationFailed) {
 TEST_F(ForceInstalledTrackerTest, ExtensionsStatus) {
   SetupForceList(true /*is_from_store */);
   EXPECT_EQ(force_installed_tracker()->extensions().at(kExtensionId1).status,
-            ExtensionStatus::PENDING);
+            ExtensionStatus::kPending);
   EXPECT_EQ(force_installed_tracker()->extensions().at(kExtensionId2).status,
-            ExtensionStatus::PENDING);
+            ExtensionStatus::kPending);
 
   scoped_refptr<const Extension> ext1 = CreateNewExtension(
-      kExtensionName1, kExtensionId1, ExtensionStatus::LOADED);
+      kExtensionName1, kExtensionId1, ExtensionStatus::kLoaded);
   force_installed_tracker()->OnExtensionInstallationFailed(
       kExtensionId2, InstallStageTracker::FailureReason::INVALID_ID);
   EXPECT_EQ(force_installed_tracker()->extensions().at(kExtensionId1).status,
-            ExtensionStatus::LOADED);
+            ExtensionStatus::kLoaded);
   EXPECT_EQ(force_installed_tracker()->extensions().at(kExtensionId2).status,
-            ExtensionStatus::FAILED);
+            ExtensionStatus::kFailed);
 
   force_installed_tracker()->OnExtensionReady(profile(), ext1.get());
   EXPECT_EQ(force_installed_tracker()->extensions().at(kExtensionId1).status,
-            ExtensionStatus::READY);
+            ExtensionStatus::kReady);
 }
 
 // This test verifies that resetting the policy before all force installed
@@ -169,7 +169,7 @@ TEST_F(ForceInstalledTrackerTest, ExtensionsInstallationCancelled) {
 TEST_F(ForceInstalledTrackerTest, AllExtensionsReady) {
   SetupForceList(true /*is_from_store */);
   scoped_refptr<const Extension> ext1 = CreateNewExtension(
-      kExtensionName1, kExtensionId1, ExtensionStatus::READY);
+      kExtensionName1, kExtensionId1, ExtensionStatus::kReady);
   force_installed_tracker()->OnExtensionInstallationFailed(
       kExtensionId2, InstallStageTracker::FailureReason::INVALID_ID);
   EXPECT_TRUE(loaded_called_);

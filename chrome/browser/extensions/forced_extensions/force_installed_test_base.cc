@@ -111,13 +111,13 @@ scoped_refptr<const Extension> ForceInstalledTestBase::CreateNewExtension(
     const ForceInstalledTracker::ExtensionStatus& status) {
   auto ext = ExtensionBuilder(extension_name).SetID(extension_id).Build();
   switch (status) {
-    case ForceInstalledTracker::ExtensionStatus::PENDING:
-    case ForceInstalledTracker::ExtensionStatus::FAILED:
+    case ForceInstalledTracker::ExtensionStatus::kPending:
+    case ForceInstalledTracker::ExtensionStatus::kFailed:
       break;
-    case ForceInstalledTracker::ExtensionStatus::LOADED:
+    case ForceInstalledTracker::ExtensionStatus::kLoaded:
       force_installed_tracker()->OnExtensionLoaded(profile(), ext.get());
       break;
-    case ForceInstalledTracker::ExtensionStatus::READY:
+    case ForceInstalledTracker::ExtensionStatus::kReady:
       force_installed_tracker()->OnExtensionLoaded(profile(), ext.get());
       force_installed_tracker()->OnExtensionReady(profile(), ext.get());
   }

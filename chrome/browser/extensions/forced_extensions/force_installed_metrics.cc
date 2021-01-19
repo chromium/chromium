@@ -274,13 +274,13 @@ ForceInstalledMetrics::~ForceInstalledMetrics() = default;
 
 bool ForceInstalledMetrics::IsStatusGood(ExtensionStatus status) {
   switch (status) {
-    case ExtensionStatus::PENDING:
+    case ExtensionStatus::kPending:
       return false;
-    case ExtensionStatus::LOADED:
+    case ExtensionStatus::kLoaded:
       return true;
-    case ExtensionStatus::READY:
+    case ExtensionStatus::kReady:
       return true;
-    case ExtensionStatus::FAILED:
+    case ExtensionStatus::kFailed:
       return false;
     default:
       NOTREACHED();
@@ -300,7 +300,7 @@ void ForceInstalledMetrics::ReportDisableReason(
 
 void ForceInstalledMetrics::ReportMetricsOnExtensionsReady() {
   for (const auto& extension : tracker_->extensions()) {
-    if (extension.second.status != ExtensionStatus::READY)
+    if (extension.second.status != ExtensionStatus::kReady)
       return;
   }
   base::UmaHistogramLongTimes("Extensions.ForceInstalledReadyTime",
