@@ -182,7 +182,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, CorrectDataSent) {
 // Batching is performed when the number of nodes to send or delete exceeds the
 // maximum, as set on the Fuchsia side. Check that all nodes are received by the
 // Semantic Tree when batching is performed.
-IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, DataSentWithBatching) {
+// TODO(1168126): Number of commit calls is not deterministic in general,
+// leading to flakiness.
+IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, DISABLED_DataSentWithBatching) {
   LoadPage(kPage2Path, kPage2Title);
 
   // Run until we expect more than a batch's worth of nodes to be present.
@@ -197,7 +199,10 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, DataSentWithBatching) {
 
 // Check that semantics information is correctly sent when navigating from page
 // to page.
-IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, TestNavigation) {
+// TODO(1168126): Number of commit calls is not deterministic in general,
+// leading to flakiness.
+IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest,
+                       DISABLED_NavigateFromPageToPage) {
   LoadPage(kPage1Path, kPage1Title);
 
   semantics_manager_.semantic_tree()->RunUntilNodeCountAtLeast(kPage1NodeCount);
@@ -406,7 +411,10 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, Slider) {
 
 // This test makes sure that when semantic updates toggle on / off / on, the
 // full semantic tree is sent in the first update when back on.
-IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, TogglesSemanticsUpdates) {
+// TODO(1168126): Number of commit calls is not deterministic in general,
+// leading to flakiness.
+IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest,
+                       DISABLED_TogglesSemanticsUpdates) {
   LoadPage(kPage1Path, kPage1Title);
   semantics_manager_.semantic_tree()->RunUntilCommitCountIs(1);
 
@@ -435,7 +443,10 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, TogglesSemanticsUpdates) {
 // also forward the nodes in a way that leaves the tree in the Fuchsia side in a
 // valid state. Note that every time that a new tree is sent to Fuchsia, the
 // FakeSemantiTree checks if the tree is valid.
-IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, TreeModificationsAreForwarded) {
+// TODO(1168126): Number of commit calls is not deterministic in general,
+// leading to flakiness.
+IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest,
+                       DISABLED_TreeModificationsAreForwarded) {
   // Loads a page, so a real frame is created for this test. Then, several tree
   // operations are applied on top of it, using the AXTreeID that corresponds to
   // that frame.
@@ -616,7 +627,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, TreeModificationsAreForwarded) {
   }
 }
 
-// TODO(crbug.com/1167266): Flaky test.
+// TODO(crbug.com/1167266): Number of commit calls is not deterministic in
+// general, leading to flakiness. Hard-wired wait for 200ms may also lead to
+// expectations failures if the system running tests is overloaded.
 IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, DISABLED_OutOfProcessIframe) {
   constexpr int64_t kBindingsId = 1234;
 
