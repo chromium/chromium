@@ -8,6 +8,7 @@ import com.android.tools.r8.CompilationFailedException;
 import com.android.tools.r8.D8;
 import com.android.tools.r8.D8Command;
 import com.android.tools.r8.DesugarGraphConsumer;
+import com.android.tools.r8.internal.FlagFile;
 import com.android.tools.r8.origin.Origin;
 
 import java.io.IOException;
@@ -15,7 +16,9 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class CustomD8 {
     private static class CommandLineOrigin extends Origin {
@@ -29,32 +32,33 @@ public class CustomD8 {
         }
     }
 
+    private static String parseAndRemoveArg(List<String> args, String name)
+            throws CompilationFailedException {
+        int idx = args.indexOf(name);
+        if (idx == -1) {
+            return null;
+        }
+        if (idx == args.size() - 1) {
+            throw new CompilationFailedException("Missing argument to '" + name + "'");
+        }
+        String value = args.get(idx + 1);
+        args.subList(idx, idx + 2).clear();
+        return value;
+    }
+
     // Entry point for D8 compilation with support for --desugar-dependencies option
     // as well.
     public static void main(String[] args) throws CompilationFailedException, IOException {
-        String desugarDependenciesOptions = "--desugar-dependencies";
-        String desugarDependenciesPath = null;
-        String[] d8Args = null;
-
-        int desugarDepIdx = Arrays.asList(args).indexOf(desugarDependenciesOptions);
-        if (desugarDepIdx != -1) {
-            int numRemainingArgs = args.length - (desugarDepIdx + 2);
-            if (numRemainingArgs < 0) {
-                throw new CompilationFailedException(
-                        "Missing argument to '" + desugarDependenciesOptions + "'");
-            }
-            desugarDependenciesPath = args[desugarDepIdx + 1];
-            d8Args = new String[args.length - 2];
-            // Copy over all other args before and after the desugar dependencies arg.
-            System.arraycopy(args, 0, d8Args, 0, desugarDepIdx);
-            System.arraycopy(args, desugarDepIdx + 2, d8Args, desugarDepIdx, numRemainingArgs);
-        } else {
-            d8Args = args;
-        }
+        // Need to expand argfile arg in case our custom command line args are in the file.
+        String[] expandedArgs = FlagFile.expandFlagFiles(args, null);
+        List<String> argList = new ArrayList<>(Arrays.asList(expandedArgs));
+        String desugarDependenciesPath = parseAndRemoveArg(argList, "--desugar-dependencies");
+        String fileTmpPrefix = parseAndRemoveArg(argList, "--file-tmp-prefix");
 
         // Use D8 command line parser to handle the normal D8 command line.
-        D8Command.Builder builder = D8Command.parse(d8Args, new CommandLineOrigin());
-        // If additional options was passed amend the D8 command builder.
+        D8Command.Builder builder =
+                D8Command.parse(argList.toArray(new String[0]), new CommandLineOrigin());
+
         if (desugarDependenciesPath != null) {
             final Path desugarDependencies = Paths.get(desugarDependenciesPath);
             PrintWriter desugarDependenciesPrintWriter =
@@ -63,13 +67,25 @@ public class CustomD8 {
                 throw new CompilationFailedException("Too many desugar graph consumers.");
             }
             builder.setDesugarGraphConsumer(new DesugarGraphConsumer() {
+                private String formatOrigin(Origin origin) {
+                    String path = origin.toString();
+                    // Class files are extracted to a temporary directory for incremental dexing.
+                    // Remove the prefix of the path corresponding to the temporary directory so
+                    // that these paths are consistent between builds.
+                    if (fileTmpPrefix != null && path.startsWith(fileTmpPrefix)) {
+                        return path.substring(fileTmpPrefix.length());
+                    }
+                    return path;
+                }
+
                 @Override
                 public void accept(Origin dependent, Origin dependency) {
-                    // The target's class files have root as their parent.
-                    if (dependency.parent().equals(Origin.root())) {
-                        return;
+                    String dependentPath = formatOrigin(dependent);
+                    String dependencyPath = formatOrigin(dependency);
+                    synchronized (desugarDependenciesPrintWriter) {
+                        desugarDependenciesPrintWriter.println(
+                                dependentPath + " -> " + dependencyPath);
                     }
-                    desugarDependenciesPrintWriter.println(dependency.parent());
                 }
 
                 @Override

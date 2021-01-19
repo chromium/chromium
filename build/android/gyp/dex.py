@@ -5,6 +5,7 @@
 # found in the LICENSE file.
 
 import argparse
+import collections
 import logging
 import os
 import re
@@ -423,11 +424,39 @@ def _DeleteStaleIncrementalDexFiles(dex_dir, dex_files):
       os.unlink(path)
 
 
-def _ExtractClassFiles(changes, tmp_dir, class_inputs):
+def _ParseDesugarDeps(desugar_dependencies_file):
+  dependents_from_dependency = collections.defaultdict(set)
+  if desugar_dependencies_file and os.path.exists(desugar_dependencies_file):
+    with open(desugar_dependencies_file, 'r') as f:
+      for line in f:
+        dependent, dependency = line.rstrip().split(' -> ')
+        dependents_from_dependency[dependency].add(dependent)
+  return dependents_from_dependency
+
+
+def _ComputeRequiredDesugarClasses(changes, desugar_dependencies_file,
+                                   class_inputs, classpath):
+  dependents_from_dependency = _ParseDesugarDeps(desugar_dependencies_file)
+  required_classes = set()
+  # Gather classes that need to be re-desugared from changes in the classpath.
+  for jar in classpath:
+    for subpath in changes.IterChangedSubpaths(jar):
+      dependency = '{}:{}'.format(jar, subpath)
+      required_classes.update(dependents_from_dependency[dependency])
+
+  for jar in class_inputs:
+    for subpath in changes.IterChangedSubpaths(jar):
+      required_classes.update(dependents_from_dependency[subpath])
+
+  return required_classes
+
+
+def _ExtractClassFiles(changes, tmp_dir, class_inputs, required_classes_set):
   classes_list = []
   for jar in class_inputs:
     if changes:
-      changed_class_list = set(changes.IterChangedSubpaths(jar))
+      changed_class_list = (set(changes.IterChangedSubpaths(jar))
+                            | required_classes_set)
       predicate = lambda x: x in changed_class_list and x.endswith('.class')
     else:
       predicate = lambda x: x.endswith('.class')
@@ -442,9 +471,10 @@ def _CreateIntermediateDexFiles(changes, options, tmp_dir, dex_cmd):
   tmp_extract_dir = os.path.join(tmp_dir, 'tmp_extract_dir')
   os.mkdir(tmp_extract_dir)
 
-  # Do a full rebuild when changes are to classpath or other non-input files.
+  # Do a full rebuild when changes occur in non-input files.
   allowed_changed = set(options.class_inputs)
   allowed_changed.update(options.dex_inputs)
+  allowed_changed.update(options.classpath)
   strings_changed = changes.HasStringChanges()
   non_direct_input_changed = next(
       (p for p in changes.IterChangedPaths() if p not in allowed_changed), None)
@@ -453,14 +483,26 @@ def _CreateIntermediateDexFiles(changes, options, tmp_dir, dex_cmd):
     logging.debug('Full dex required: strings_changed=%s path_changed=%s',
                   strings_changed, non_direct_input_changed)
     changes = None
+
+  if changes:
+    required_desugar_classes_set = _ComputeRequiredDesugarClasses(
+        changes, options.desugar_dependencies, options.class_inputs,
+        options.classpath)
+    logging.debug('Class files needing re-desugar: %d',
+                  len(required_desugar_classes_set))
+  else:
+    required_desugar_classes_set = set()
   class_files = _ExtractClassFiles(changes, tmp_extract_dir,
-                                   options.class_inputs)
+                                   options.class_inputs,
+                                   required_desugar_classes_set)
   logging.debug('Extracted class files: %d', len(class_files))
 
   # If the only change is deleting a file, class_files will be empty.
   if class_files:
     # Dex necessary classes into intermediate dex files.
     dex_cmd = dex_cmd + ['--intermediate', '--file-per-class-file']
+    if options.desugar_dependencies:
+      dex_cmd += ['--file-tmp-prefix', tmp_extract_dir]
     _RunD8(dex_cmd, class_files, options.incremental_dir,
            options.warnings_as_errors,
            options.show_desugar_default_interface_warnings)
@@ -510,14 +552,14 @@ def main(args):
 
   output_paths = [options.output]
 
+  track_subpaths_allowlist = []
   if options.incremental_dir:
     final_dex_inputs = _IntermediateDexFilePathsFromInputJars(
         options.class_inputs, options.incremental_dir)
     output_paths += final_dex_inputs
-    track_subpaths_allowlist = options.class_inputs
+    track_subpaths_allowlist += options.class_inputs
   else:
     final_dex_inputs = list(options.class_inputs)
-    track_subpaths_allowlist = None
   final_dex_inputs += options.dex_inputs
 
   dex_cmd = build_utils.JavaCmd(options.warnings_as_errors) + [
@@ -534,18 +576,12 @@ def main(args):
     dex_cmd += ['--no-desugaring']
   elif options.classpath:
     # The classpath is used by D8 to for interface desugaring.
-    classpath_paths = options.classpath
     if options.desugar_dependencies:
       dex_cmd += ['--desugar-dependencies', options.desugar_dependencies]
-      if os.path.exists(options.desugar_dependencies):
-        with open(options.desugar_dependencies, 'r') as f:
-          lines = [line.strip() for line in f.readlines()]
-          # Use a set to deduplicate entries.
-          desugar_dependencies = set(dep for dep in lines if dep)
-        # Desugar dependencies are a subset of classpath.
-        classpath_paths = list(desugar_dependencies)
-    depfile_deps += classpath_paths
-    input_paths += classpath_paths
+      if track_subpaths_allowlist:
+        track_subpaths_allowlist += options.classpath
+    depfile_deps += options.classpath
+    input_paths += options.classpath
     dex_cmd += ['--lib', build_utils.JAVA_HOME]
     for path in options.bootclasspath:
       dex_cmd += ['--lib', path]
