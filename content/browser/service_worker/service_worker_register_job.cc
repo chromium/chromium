@@ -53,7 +53,6 @@ ServiceWorkerRegisterJob::ServiceWorkerRegisterJob(
       outside_fetch_client_settings_object_(
           std::move(outside_fetch_client_settings_object)),
       phase_(INITIAL),
-      is_shutting_down_(false),
       is_promise_resolved_(false),
       should_uninstall_on_failure_(false),
       force_bypass_cache_(false),
@@ -77,7 +76,6 @@ ServiceWorkerRegisterJob::ServiceWorkerRegisterJob(
       outside_fetch_client_settings_object_(
           std::move(outside_fetch_client_settings_object)),
       phase_(INITIAL),
-      is_shutting_down_(false),
       is_promise_resolved_(false),
       should_uninstall_on_failure_(false),
       force_bypass_cache_(force_bypass_cache),
@@ -89,8 +87,7 @@ ServiceWorkerRegisterJob::ServiceWorkerRegisterJob(
 }
 
 ServiceWorkerRegisterJob::~ServiceWorkerRegisterJob() {
-  DCHECK(is_shutting_down_ || phase_ == INITIAL || phase_ == COMPLETE ||
-         phase_ == ABORT)
+  DCHECK(phase_ == INITIAL || phase_ == COMPLETE || phase_ == ABORT)
       << "Jobs should only be interrupted during shutdown.";
 }
 
@@ -150,10 +147,6 @@ void ServiceWorkerRegisterJob::Abort() {
   CompleteInternal(blink::ServiceWorkerStatusCode::kErrorAbort, std::string());
   // Don't have to call FinishJob() because the caller takes care of removing
   // the jobs from the queue.
-}
-
-void ServiceWorkerRegisterJob::WillShutDown() {
-  is_shutting_down_ = true;
 }
 
 bool ServiceWorkerRegisterJob::Equals(ServiceWorkerRegisterJobBase* job) const {

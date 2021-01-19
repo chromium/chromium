@@ -325,7 +325,7 @@ ServiceWorkerContextCore::~ServiceWorkerContextCore() {
   for (const auto& it : live_versions_)
     it.second->RemoveObserver(this);
 
-  job_coordinator_->ClearForShutdown();
+  job_coordinator_->AbortAll();
 }
 
 std::unique_ptr<ServiceWorkerContextCore::ContainerHostIterator>

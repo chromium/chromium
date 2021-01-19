@@ -46,7 +46,6 @@ class ServiceWorkerUnregisterJob : public ServiceWorkerRegisterJobBase {
   // ServiceWorkerRegisterJobBase implementation:
   void Start() override;
   void Abort() override;
-  void WillShutDown() override;
   bool Equals(ServiceWorkerRegisterJobBase* job) const override;
   RegistrationJobType GetType() const override;
 
@@ -65,7 +64,7 @@ class ServiceWorkerUnregisterJob : public ServiceWorkerRegisterJobBase {
   const GURL scope_;
   const bool is_immediate_;
   std::vector<UnregistrationCallback> callbacks_;
-  bool is_promise_resolved_;
+  bool is_promise_resolved_ = false;
   base::WeakPtrFactory<ServiceWorkerUnregisterJob> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ServiceWorkerUnregisterJob);

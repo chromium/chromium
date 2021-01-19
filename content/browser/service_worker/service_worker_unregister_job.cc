@@ -24,14 +24,11 @@ ServiceWorkerUnregisterJob::ServiceWorkerUnregisterJob(
     ServiceWorkerContextCore* context,
     const GURL& scope,
     bool is_immediate)
-    : context_(context),
-      scope_(scope),
-      is_immediate_(is_immediate),
-      is_promise_resolved_(false) {
+    : context_(context), scope_(scope), is_immediate_(is_immediate) {
   DCHECK(context_);
 }
 
-ServiceWorkerUnregisterJob::~ServiceWorkerUnregisterJob() {}
+ServiceWorkerUnregisterJob::~ServiceWorkerUnregisterJob() = default;
 
 void ServiceWorkerUnregisterJob::AddCallback(UnregistrationCallback callback) {
   callbacks_.emplace_back(std::move(callback));
@@ -47,8 +44,6 @@ void ServiceWorkerUnregisterJob::Abort() {
   CompleteInternal(blink::mojom::kInvalidServiceWorkerRegistrationId,
                    blink::ServiceWorkerStatusCode::kErrorAbort);
 }
-
-void ServiceWorkerUnregisterJob::WillShutDown() {}
 
 bool ServiceWorkerUnregisterJob::Equals(
     ServiceWorkerRegisterJobBase* job) const {
@@ -109,6 +104,7 @@ void ServiceWorkerUnregisterJob::ResolvePromise(
   is_promise_resolved_ = true;
   for (UnregistrationCallback& callback : callbacks_)
     std::move(callback).Run(registration_id, status);
+  callbacks_.clear();
 }
 
 }  // namespace content

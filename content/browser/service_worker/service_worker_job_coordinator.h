@@ -52,10 +52,6 @@ class CONTENT_EXPORT ServiceWorkerJobCoordinator {
   void Abort(const GURL& scope);
   void AbortAll();
 
-  // Marks that the ServiceWorkerContextCore is shutting down, so jobs may be
-  // destroyed before finishing.
-  void ClearForShutdown();
-
   // Removes the job. A job that was not aborted must call FinishJob when it is
   // done.
   void FinishJob(const GURL& scope, ServiceWorkerRegisterJobBase* job);
@@ -83,10 +79,6 @@ class CONTENT_EXPORT ServiceWorkerJobCoordinator {
 
     // Aborts all jobs in the queue and removes them.
     void AbortAll();
-
-    // Marks that the browser is shutting down, so jobs may be destroyed before
-    // finishing.
-    void ClearForShutdown();
 
    private:
     base::circular_deque<std::unique_ptr<ServiceWorkerRegisterJobBase>> jobs_;

@@ -69,7 +69,6 @@ class ServiceWorkerRegisterJob : public ServiceWorkerRegisterJobBase {
   // ServiceWorkerRegisterJobBase implementation:
   void Start() override;
   void Abort() override;
-  void WillShutDown() override;
   bool Equals(ServiceWorkerRegisterJobBase* job) const override;
   RegistrationJobType GetType() const override;
 
@@ -184,7 +183,6 @@ class ServiceWorkerRegisterJob : public ServiceWorkerRegisterJobBase {
       outside_fetch_client_settings_object_;
   std::vector<RegistrationCallback> callbacks_;
   Phase phase_;
-  bool is_shutting_down_;
   Internal internal_;
   bool is_promise_resolved_;
   bool should_uninstall_on_failure_;
