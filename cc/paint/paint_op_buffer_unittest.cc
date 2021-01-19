@@ -5,10 +5,6 @@
 #include "cc/paint/paint_op_buffer.h"
 
 #include <algorithm>
-#include <memory>
-#include <utility>
-#include <vector>
-
 #include "base/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/stl_util.h"
@@ -2044,7 +2040,7 @@ TEST_P(PaintOpSerializationTest, UsesOverridenFlags) {
           base::AlignedAlloc(deserialized_size, PaintOpBuffer::PaintOpAlign)));
   for (const auto* op : PaintOpBuffer::Iterator(&buffer_)) {
     options_provider.mutable_serialize_options().flags_to_serialize =
-        &static_cast<const PaintOpWithFlags*>(op)->flags;
+        &(static_cast<const PaintOpWithFlags*>(op))->flags;
 
     size_t bytes_written = op->Serialize(output_.get(), output_size_,
                                          options_provider.serialize_options());
@@ -2870,7 +2866,7 @@ class MockImageProvider : public ImageProvider {
     sk_sp<SkImage> image = SkImage::MakeFromBitmap(bitmap);
     size_t i = index_++;
     return ScopedResult(DecodedDrawImage(image, nullptr, src_rect_offset_[i],
-                                         scale_[i], quality_[i]));
+                                         scale_[i], quality_[i], true));
   }
 
   void SetRecord(sk_sp<PaintRecord> record) { record_ = std::move(record); }

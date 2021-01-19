@@ -5,7 +5,6 @@
 #include "cc/paint/scoped_raster_flags.h"
 
 #include <utility>
-
 #include "base/bind.h"
 #include "base/callback.h"
 #include "cc/paint/paint_op_buffer.h"
@@ -31,7 +30,8 @@ class MockImageProvider : public ImageProvider {
 
     return ScopedResult(
         DecodedDrawImage(image, nullptr, SkSize::MakeEmpty(),
-                         SkSize::Make(1.0f, 1.0f), draw_image.filter_quality()),
+                         SkSize::Make(1.0f, 1.0f), draw_image.filter_quality(),
+                         true),
         base::BindOnce(&MockImageProvider::UnrefImage, base::Unretained(this)));
   }
 
