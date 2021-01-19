@@ -173,8 +173,6 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kLoginProfile[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kLoginUser[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kMarketingOptInUrl[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kNaturalScrollDefault[];
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-extern const char kNeedArcMigrationPolicyCheck[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kNoteTakingAppIds[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kOobeEulaUrlForTests[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)

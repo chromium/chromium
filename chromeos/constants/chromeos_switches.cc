@@ -459,12 +459,6 @@ const char kMarketingOptInUrl[] = "marketing-opt-in-url";
 // Enables natural scroll by default.
 const char kNaturalScrollDefault[] = "enable-natural-scroll-default";
 
-// If present, the device needs to check the policy to see if the migration to
-// ext4 for ARC is allowed. It should be present only on devices that have been
-// initially issued with ecrypfs encryption and have ARC (N+) available. For the
-// devices in other categories this flag must be missing.
-const char kNeedArcMigrationPolicyCheck[] = "need-arc-migration-policy-check";
-
 // An optional comma-separated list of IDs of apps that can be used to take
 // notes. If unset, a hardcoded list is used instead.
 const char kNoteTakingAppIds[] = "note-taking-app-ids";
