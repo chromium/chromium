@@ -4187,11 +4187,6 @@ void RenderFrameImpl::DidCommitNavigation(
   NotifyObserversOfNavigationCommit(transition);
 }
 
-void RenderFrameImpl::DidCreateInitialEmptyDocument() {
-  for (auto& observer : observers_)
-    observer.DidCreateNewDocument();
-}
-
 void RenderFrameImpl::DidCommitDocumentReplacementNavigation(
     blink::WebDocumentLoader* document_loader) {
   // TODO(https://crbug.com/855189): figure out which of the following observer

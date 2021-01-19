@@ -567,7 +567,6 @@ class CONTENT_EXPORT RenderFrameImpl
       network::mojom::WebSandboxFlags sandbox_flags,
       const blink::ParsedFeaturePolicy& feature_policy_header,
       const blink::DocumentPolicyFeatureState& document_policy_header) override;
-  void DidCreateInitialEmptyDocument() override;
   void DidCommitDocumentReplacementNavigation(
       blink::WebDocumentLoader* document_loader) override;
   void DidClearWindowObject() override;

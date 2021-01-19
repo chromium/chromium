@@ -2034,7 +2034,7 @@ void DocumentLoader::CommitNavigation() {
     // Notify the browser process about the commit.
     FrameNavigationDisabler navigation_disabler(*frame_);
     if (commit_reason_ == CommitReason::kInitialization) {
-      GetLocalFrameClient().DidCreateInitialEmptyDocument();
+      // There's no observers yet so nothing to notify.
     } else if (IsJavaScriptURLOrXSLTCommit()) {
       GetLocalFrameClient().DidCommitDocumentReplacementNavigation(this);
     } else {

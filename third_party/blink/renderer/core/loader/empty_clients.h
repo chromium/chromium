@@ -326,7 +326,6 @@ class CORE_EXPORT EmptyLocalFrameClient : public LocalFrameClient {
   WebRemotePlaybackClient* CreateWebRemotePlaybackClient(
       HTMLMediaElement&) override;
 
-  void DidCreateInitialEmptyDocument() override {}
   void DidCommitDocumentReplacementNavigation(DocumentLoader*) override {}
   void DispatchDidClearWindowObjectInMainWorld() override {}
   void DocumentElementAvailable() override {}

@@ -43,11 +43,6 @@ class CallTrackingTestWebLocalFrameClient
         feature_policy_header, document_policy_header);
   }
 
-  void DidCreateInitialEmptyDocument() override {
-    calls_.push_back("DidCreateInitialEmptyDocument");
-    TestWebFrameClient::DidCreateInitialEmptyDocument();
-  }
-
   void DidCreateDocumentElement() override {
     calls_.push_back("DidCreateDocumentElement");
     TestWebFrameClient::DidCreateDocumentElement();
@@ -98,7 +93,6 @@ TEST(WebLocalFrameClientTest, Basic) {
   web_view_helper.Initialize(&client);
   EXPECT_THAT(client.TakeCalls(),
               testing::ElementsAre("DidCreateDocumentLoader",
-                                   "DidCreateInitialEmptyDocument",
                                    "DidCreateDocumentElement",
                                    "RunScriptsAtDocumentElementAvailable"));
 

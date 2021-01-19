@@ -368,9 +368,6 @@ class BLINK_EXPORT WebLocalFrameClient {
       const ParsedFeaturePolicy& feature_policy_header,
       const DocumentPolicyFeatureState& document_policy_header) {}
 
-  // The frame's initial empty document has just been initialized.
-  virtual void DidCreateInitialEmptyDocument() {}
-
   // A new document has just been committed as a result of evaluating
   // javascript url or XSLT. This document inherited everything from the
   // previous document (url, origin, global object, etc.).

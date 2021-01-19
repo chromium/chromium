@@ -252,11 +252,6 @@ WebContentCaptureClient* LocalFrameClientImpl::GetWebContentCaptureClient()
   return web_frame_->ContentCaptureClient();
 }
 
-void LocalFrameClientImpl::DidCreateInitialEmptyDocument() {
-  if (web_frame_->Client())
-    web_frame_->Client()->DidCreateInitialEmptyDocument();
-}
-
 void LocalFrameClientImpl::DidCommitDocumentReplacementNavigation(
     DocumentLoader* loader) {
   if (web_frame_->Client()) {
