@@ -14,11 +14,15 @@ import org.chromium.weblayer_private.interfaces.IWebMessageReplyProxy;
 /**
  * Used to post a message to a page. WebMessageReplyProxy is created when a page posts a message to
  * the JavaScript object that was created by way of {@link Tab#registerWebMessageCallback}.
+ *
+ * Each {@link WebMessageReplyProxy} represents a single endpoint. Multiple messages sent to the
+ * same endpoint use the same {@link WebMessageReplyProxy}.
  */
 public class WebMessageReplyProxy {
     private final IWebMessageReplyProxy mIReplyProxy;
     private final boolean mIsMainFrame;
     private final String mSourceOrigin;
+    private boolean mIsClosed;
 
     // Constructor for test mocking.
     protected WebMessageReplyProxy() {
@@ -64,5 +68,18 @@ public class WebMessageReplyProxy {
         } catch (RemoteException e) {
             throw new APICallException(e);
         }
+    }
+
+    /**
+     * Returns whether the reply proxy has been closed. Any messages sent when the channel is closed
+     * are dropped.
+     */
+    public boolean isClosed() {
+        ThreadCheck.ensureOnUiThread();
+        return mIsClosed;
+    }
+
+    void markClosed() {
+        mIsClosed = true;
     }
 }

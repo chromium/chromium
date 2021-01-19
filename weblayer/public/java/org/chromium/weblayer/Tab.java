@@ -798,8 +798,11 @@ public class Tab {
         @Override
         public void onReplyProxyDestroyed(int proxyId) {
             StrictModeWorkaround.apply();
-            assert mProxyIdToProxy.get(proxyId) != null;
+            WebMessageReplyProxy proxy = mProxyIdToProxy.get(proxyId);
+            assert proxy != null;
+            proxy.markClosed();
             mProxyIdToProxy.remove(proxyId);
+            mCallback.onWebMessageReplyProxyClosed(proxy);
         }
     }
 

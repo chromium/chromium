@@ -5,7 +5,10 @@
 package org.chromium.weblayer.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
@@ -39,6 +42,8 @@ public class WebMessageTest {
         public WebMessageReplyProxy mLastProxy;
         public WebMessage mLastMessage;
         public CallbackHelper mCallbackHelper;
+        public CallbackHelper mClosedCallbackHelper;
+        public WebMessageReplyProxy mProxyClosed;
 
         WebMessageCallbackImpl(CallbackHelper callbackHelper) {
             mCallbackHelper = callbackHelper;
@@ -53,6 +58,13 @@ public class WebMessageTest {
         public void reset() {
             mLastProxy = null;
             mLastMessage = null;
+            mProxyClosed = null;
+        }
+
+        @Override
+        public void onWebMessageReplyProxyClosed(WebMessageReplyProxy replyProxy) {
+            mProxyClosed = replyProxy;
+            if (mClosedCallbackHelper != null) mClosedCallbackHelper.notifyCalled();
         }
     }
 
@@ -86,6 +98,42 @@ public class WebMessageTest {
         assertNotNull(webMessageCallback.mLastMessage);
         assertEquals("bouncing Z", webMessageCallback.mLastMessage.getContents());
         assertEquals(lastProxy, webMessageCallback.mLastProxy);
+
+        runOnUiThreadBlocking(() -> { activity.getTab().unregisterWebMessageCallback("x"); });
+    }
+
+    @Test
+    @SmallTest
+    public void testOnWebMessageReplyProxyClosed() throws Exception {
+        // Load a page with a form.
+        InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl("about:blank");
+        assertNotNull(activity);
+        CallbackHelper callbackHelper = new CallbackHelper();
+        WebMessageCallbackImpl webMessageCallback = new WebMessageCallbackImpl(callbackHelper);
+        runOnUiThreadBlocking(() -> {
+            activity.getTab().registerWebMessageCallback(
+                    webMessageCallback, "x", Arrays.asList("*"));
+        });
+
+        mActivityTestRule.navigateAndWait(
+                mActivityTestRule.getTestDataURL("web_message_test.html"));
+        // web_message_test.html posts a message, wait for it.
+        callbackHelper.waitForCallback(0);
+        assertNotNull(webMessageCallback.mLastMessage);
+        assertNotNull(webMessageCallback.mLastProxy);
+        WebMessageReplyProxy proxy = webMessageCallback.mLastProxy;
+        assertNull(webMessageCallback.mProxyClosed);
+        assertFalse(
+                runOnUiThreadBlocking(() -> { return webMessageCallback.mLastProxy.isClosed(); }));
+        webMessageCallback.reset();
+        webMessageCallback.mClosedCallbackHelper = new CallbackHelper();
+
+        // Navigate to a new page. The proxy should be closed.
+        mActivityTestRule.navigateAndWait("about:blank");
+        webMessageCallback.mClosedCallbackHelper.waitForFirst();
+        assertNotNull(webMessageCallback.mProxyClosed);
+        assertEquals(webMessageCallback.mProxyClosed, proxy);
+        assertTrue(runOnUiThreadBlocking(() -> { return proxy.isClosed(); }));
 
         runOnUiThreadBlocking(() -> { activity.getTab().unregisterWebMessageCallback("x"); });
     }

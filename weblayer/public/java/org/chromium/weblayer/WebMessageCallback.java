@@ -14,9 +14,23 @@ public abstract class WebMessageCallback {
     /**
      * Called when a message is received from the page.
      *
+     * Each {@link WebMessageReplyProxy} represents a single endpoint. Multiple messages sent to the
+     * same endpoint use the same {@link WebMessageReplyProxy}.
+     *
      * @param replyProxy An object that may be used to post a message back to the page.
      * @param message The message from the page.
      */
     public void onWebMessageReceived(
             @NonNull WebMessageReplyProxy replyProxy, @NonNull WebMessage message) {}
+
+    /**
+     * Called when a {@link WebMessageReplyProxy} is closed. This typically happens when navigating
+     * to another page. If the page goes into the back forward cache, then message channels are left
+     * open (and this is not called). In that case this method will be called either when the page
+     * is evicted from the cache or when the user goes back to it and then navigates away and it
+     * doesn't go into the back forward cache again.
+     *
+     * @param replyProxy The proxy that has been closed.
+     */
+    public void onWebMessageReplyProxyClosed(@NonNull WebMessageReplyProxy replyProxy) {}
 }
