@@ -986,7 +986,8 @@ TEST_F(ParkableStringTest, AgingTicksStopsWithNoProgress) {
   CheckOnlyCpuCostTaskRemains();
 }
 
-TEST_F(ParkableStringTest, OnlyOneAgingTask) {
+// Flaky on a few platforms: crbug.com/1168170.
+TEST_F(ParkableStringTest, DISABLED_OnlyOneAgingTask) {
   ParkableString parkable1(MakeLargeString('a').ReleaseImpl());
   ParkableString parkable2(MakeLargeString('b').ReleaseImpl());
 
