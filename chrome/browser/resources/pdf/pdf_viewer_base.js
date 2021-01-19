@@ -640,14 +640,12 @@ export class PDFViewerBaseElement extends PolymerElement {
   /** @protected */
   rotateClockwise() {
     record(UserAction.ROTATE);
-    this.viewport_.rotateClockwise();
     this.currentController.rotateClockwise();
   }
 
   /** @protected */
   rotateCounterclockwise() {
     record(UserAction.ROTATE);
-    this.viewport_.rotateCounterclockwise();
     this.currentController.rotateCounterclockwise();
   }
 

@@ -149,9 +149,6 @@ export class Viewport {
     /** @private {?Point} */
     this.firstPinchCenterInFrame_ = null;
 
-    /** @private {number} */
-    this.rotations_ = 0;
-
     /** @private {?Point} */
     this.oldCenterInContent_ = null;
 
@@ -228,28 +225,13 @@ export class Viewport {
     this.userInitiatedCallback_ = userInitiatedCallback;
   }
 
-  rotateClockwise() {
-    this.rotateBySteps_(1);
-  }
-
-  rotateCounterclockwise() {
-    this.rotateBySteps_(3);
-  }
-
-  /**
-   * @param {number} n The number of clockwise 90-degree rotations to increment
-   *     by.
-   */
-  rotateBySteps_(n) {
-    this.rotations_ = (this.rotations_ + n) % 4;
-  }
-
   /**
    * @return {number} The number of clockwise 90-degree rotations that have been
    *     applied.
    */
   getClockwiseRotations() {
-    return this.rotations_;
+    const options = this.getLayoutOptions();
+    return options ? options.defaultPageOrientation : 0;
   }
 
   /** @return {boolean} Whether viewport is in two-up view mode. */
@@ -299,7 +281,7 @@ export class Viewport {
 
     const matrix = new DOMMatrix();
 
-    const rotation = this.rotations_ * 90;
+    const rotation = this.getClockwiseRotations() * 90;
     // Set origin for rotation.
     if (rotation === 90) {
       matrix.translateSelf(width, 0);

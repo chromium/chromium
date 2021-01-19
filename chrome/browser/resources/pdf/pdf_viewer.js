@@ -546,21 +546,24 @@ export class PDFViewerElement extends PDFViewerBaseElement {
       this.currentController.setTwoUpView(false);
       this.twoUpViewEnabled_ = false;
     }
-    if (this.isRotated_()) {
-      const rotations = this.viewport.getClockwiseRotations();
-      switch (rotations) {
-        case 1:
-          super.rotateCounterclockwise();
-          break;
-        case 2:
-          super.rotateCounterclockwise();
-          super.rotateCounterclockwise();
-          break;
-        case 3:
-          super.rotateClockwise();
-          break;
-      }
-      this.clockwiseRotations_ = 0;
+
+    const rotations = this.viewport.getClockwiseRotations();
+    switch (rotations) {
+      case 0:
+        break;
+      case 1:
+        this.rotateCounterclockwise();
+        break;
+      case 2:
+        this.rotateCounterclockwise();
+        this.rotateCounterclockwise();
+        break;
+      case 3:
+        this.rotateClockwise();
+        break;
+      default:
+        assertNotReached('Invalid rotations count: ' + rotations);
+        break;
     }
   }
 
@@ -844,10 +847,12 @@ export class PDFViewerElement extends PDFViewerBaseElement {
           this.viewport.documentHasScrollbars(), this.viewport.scrollbarWidth);
     }
 
-    // Update the page indicator.
+    // Update toolbar elements.
     if (this.toolbarEnabled_) {
       const visiblePage = this.viewport.getMostVisiblePage();
       this.pageNo_ = visiblePage + 1;
+
+      this.clockwiseRotations_ = this.viewport.getClockwiseRotations();
     }
 
     this.currentController.viewportChanged();
@@ -1332,18 +1337,6 @@ export class PDFViewerElement extends PDFViewerBaseElement {
    */
   isRotated_() {
     return this.clockwiseRotations_ !== 0;
-  }
-
-  /** @override */
-  rotateClockwise() {
-    super.rotateClockwise();
-    this.clockwiseRotations_ = this.viewport.getClockwiseRotations();
-  }
-
-  /** @override */
-  rotateCounterclockwise() {
-    super.rotateCounterclockwise();
-    this.clockwiseRotations_ = this.viewport.getClockwiseRotations();
   }
 }
 
