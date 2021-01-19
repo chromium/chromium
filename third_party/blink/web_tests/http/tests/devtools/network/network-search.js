@@ -81,7 +81,8 @@
     const link = lastResult.listItemElement.getElementsByClassName('devtools-link')[0];
     link.click();
     const requestNode = await networkItemSelected();
-    TestRunner.addResult(`Selected Node Name: ${requestNode._request.name().trimMiddle(100)}, URL: ${requestNode._request.url()}`);
+    const requestName = requestNode._request.name();
+    TestRunner.addResult(`Selected Node Name: ${requestName.substr(requestName.length - 100)}, URL: ${requestNode._request.url()}`);
     TestRunner.completeTest();
   }
 })();

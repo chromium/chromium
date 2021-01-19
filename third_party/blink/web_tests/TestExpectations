@@ -5896,5 +5896,4 @@ crbug.com/1167222 http/tests/websocket/multiple-connections-throttled.html [ Pas
 crbug.com/1167309 fast/canvas/canvas-createImageBitmap-drawImage.html [ Pass Failure ]
 
 # DevTools roll
-crbug.com/1050549 http/tests/devtools/network/network-search.js [ Skip ]
-crbug.com/1050549 http/tests/devtools/tracing/timeline-misc/timeline-aggregated-details.js [ Skip ]
+crbug.com/1050549 http/tests/devtools/network/preview-searchable.js [ Pass Failure ]
