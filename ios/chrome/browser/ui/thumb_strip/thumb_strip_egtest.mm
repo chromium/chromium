@@ -257,4 +257,58 @@ id<GREYMatcher> GetAccessibilityValue(__strong NSString** value) {
       assertWithMatcher:grey_nil()];
 }
 
+// Tests that switching tabs in the peeked state doesn't close the thumb strip.
+- (void)testSwitchTabInPeekedState {
+  // The feature only works on iPad.
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Thumb strip is not enabled on iPhone");
+  }
+
+  // See crbug.com/1143299.
+  if (!base::ios::IsRunningOnIOS13OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Fails on iOS 12 devices.");
+  }
+
+  [self setUpTestServer];
+
+  const GURL URL1 = self.testServer->GetURL("/querytitle?Page1");
+  [ChromeEarlGrey loadURL:URL1];
+  [ChromeEarlGrey waitForWebStateContainingText:"Page1"];
+
+  // Open and load second tab.
+  [ChromeEarlGrey openNewTab];
+
+  const GURL URL2 = self.testServer->GetURL("/querytitle?Page2");
+
+  [ChromeEarlGrey loadURL:URL2];
+  [ChromeEarlGrey waitForWebStateContainingText:"Page2"];
+
+  // Swipe down to reveal the thumb strip.
+  [[EarlGrey selectElementWithMatcher:PrimaryToolbar()]
+      performAction:grey_swipeSlowInDirection(kGREYDirectionDown)];
+
+  // Make sure that the entire tab thumbnail is fully visible and not covered.
+  // This acts as a good proxy to the entire thumbstrip being visible.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(@"Page2"),
+                                          grey_kindOfClassName(@"GridCell"),
+                                          grey_minimumVisiblePercent(1), nil)]
+      assertWithMatcher:grey_notNil()];
+
+  // Switch back to tab one by pressing its thumbnail.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(@"Page1"),
+                                          grey_kindOfClassName(@"GridCell"),
+                                          nil)] performAction:grey_tap()];
+
+  [ChromeEarlGrey waitForWebStateContainingText:"Page1"];
+
+  // The thumbstrip should still be visible
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(@"Page2"),
+                                          grey_kindOfClassName(@"GridCell"),
+                                          grey_minimumVisiblePercent(1), nil)]
+      assertWithMatcher:grey_notNil()];
+}
+
 @end
