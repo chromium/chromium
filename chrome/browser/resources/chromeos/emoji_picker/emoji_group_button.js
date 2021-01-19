@@ -7,7 +7,7 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {GROUP_BUTTON_EVENT, GroupButtonEvent} from './events.js';
+import {createCustomEvent, GROUP_BUTTON_EVENT} from './events.js';
 
 class EmojiGroupButton extends PolymerElement {
   static get is() {
@@ -32,11 +32,8 @@ class EmojiGroupButton extends PolymerElement {
   }
 
   handleClick(ev) {
-    /** @type {GroupButtonEvent} */
-    const event = new CustomEvent(
-        GROUP_BUTTON_EVENT,
-        {bubbles: true, composed: true, detail: {group: this.group}});
-    this.dispatchEvent(event);
+    this.dispatchEvent(
+        createCustomEvent(GROUP_BUTTON_EVENT, {group: this.group}));
   }
 
   _className(active) {
