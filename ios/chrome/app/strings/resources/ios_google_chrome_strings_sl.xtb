@@ -78,6 +78,10 @@
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Vse pravice pridržane.</translation>
 <translation id="840168496893712993">Nekateri dodatki povzročajo zrušitve Chroma. Poskusite jih odstraniti.</translation>
 <translation id="8459495907675268833">Izbrani podatki so bili odstranjeni iz Chroma in sinhroniziranih naprav. V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in dejavnosti iz drugih Googlovih storitev, na history.google.com.</translation>
+<translation id="850555388806794946">Chrome nastavite kot privzeti iskalnik tako:
+  1. Odprite nastavitve.
+  2. Dotaknite se možnosti za privzeto aplikacijo za brskanje.
+  3. Izberite Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="9135668017386497357">Če Chromu omogočite dostop do podatkov o lokaciji, jih Chrome pošlje v privzeti iskalnik in na spletna mesta, ki jim podelite dovoljenje. Spletna mesta morda zahtevajo podatke o lokaciji, ko želijo prikazati lokalne informacije, na primer trgovine v bližini ali novice.</translation>
 </translationbundle>

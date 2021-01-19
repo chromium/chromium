@@ -1773,6 +1773,7 @@
 <translation id="79859296434321399">अग्मेन्टेड रियालिटी सामग्री हेर्न ARCore स्थापना गर्नुहोस्</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="799149739215780103">बाइन्ड</translation>
+<translation id="7992044431894087211"><ph name="APPLICATION_TITLE" /> सँग स्क्रिन सेयर गर्ने कार्य सुचारु भएको छ</translation>
 <translation id="7995512525968007366">निर्दिष्ट नभएको</translation>
 <translation id="800218591365569300">मेमोरी खाली गर्न अन्य ट्याब वा प्रोग्रामहरू बन्द गरी हेर्नुहोस्।</translation>
 <translation id="8004582292198964060">ब्राउजर</translation>
@@ -2046,6 +2047,7 @@
 <translation id="9103872766612412690"><ph name="SITE" /> ले सामान्यतया तपाईंको जानकारीको सुरक्षा गर्न इन्क्रिप्सन प्रयोग गर्दछ। Chromium ले यस समयमा <ph name="SITE" /> मा जडान गर्ने प्रयास गर्दा वेबसाइटले असामान्य र गलत प्रमाणहरू फिर्ता पठायो। यस्तो आक्रमणकारीले <ph name="SITE" /> भएको बहाना गर्ने प्रयास गर्दा वा Wi-Fi साइन इन स्क्रिनले जडानलाई अवरोध पुर्याउँदा हुन सक्छ। कुनै पनि डेटा आदानप्रदान हुन पूर्व Chromium ले जडान रोकेका कारण तपाईंको जानकारी अझै पनि सुरक्षित छ।</translation>
 <translation id="9106062320799175032">बिल पठाउने ठेगाना थप्नुहोस्</translation>
 <translation id="9107467864910557787"><ph name="MANAGER" /> ले तपाईंको ब्राउजर व्यवस्थापन गर्छ</translation>
+<translation id="91108059142052966">तपाईंको स्क्रिनमा गोप्य सामग्री देखिएका बेला एड्मिनले तोक्नुभएको नीतिअनुसार <ph name="APPLICATION_TITLE" /> सँग स्क्रिन सेयर गर्ने सुविधा अफ गरिन्छ</translation>
 <translation id="9114524666733003316">कार्डको पुष्टि गर्दै...</translation>
 <translation id="9114581008513152754">कुनै कम्पनी वा अन्य सङ्गठनले यो ब्राउजर व्यवस्थापन गर्दैन। यो यन्त्रका क्रियाकलाप Chrome बाहिरबाट व्यवस्थापन गर्न सकिन्छ। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">अपलोड गरिएको</translation>

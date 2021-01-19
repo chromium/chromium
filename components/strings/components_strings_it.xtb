@@ -80,6 +80,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
     &lt;li&gt;Contatta il proprietario del sito web.&lt;/li&gt;
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Hai inserito la password su un sito non gestito dalla tua organizzazione. Per proteggere il tuo account, non riutilizzare la password su altri siti e app.</translation>
+<translation id="1259144770381827039">Visualizza i dettagli.</translation>
 <translation id="1263231323834454256">Elenco di lettura</translation>
 <translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
         Attività che non verranno salvate sul dispositivo:
@@ -326,6 +327,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2164510882479075877">Controlla eventuali errori di battitura in <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">Accesso amministrativo completo</translation>
 <translation id="2166378884831602661">Il sito non può fornire una connessione protetta</translation>
+<translation id="2168151236314517198">La stampa di questi contenuti è stata bloccata dal criterio dell'amministratore</translation>
 <translation id="2169984857010174799">Kaku2 (Envelope)</translation>
 <translation id="2181821976797666341">Criteri</translation>
 <translation id="2183608646556468874">Numero di telefono</translation>
@@ -1356,6 +1358,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6290238015253830360">Gli articoli suggeriti vengono visualizzati qui</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">Interruzione dell'Assistente Google in Chrome</translation>
+<translation id="6304463939629872728">Effettua il pagamento con</translation>
 <translation id="6305205051461490394"><ph name="URL" /> non è raggiungibile.</translation>
 <translation id="6312113039770857350">Pagina web non disponibile</translation>
 <translation id="6321917430147971392">Controlla le impostazioni DNS</translation>
@@ -1385,6 +1388,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6406765186087300643">C0 (Envelope)</translation>
 <translation id="6409754798200046165">Hai appena inserito la tua password su un sito ingannevole. Chrome consiglia di cambiare subito la password.</translation>
 <translation id="6410264514553301377">Inserisci la data di scadenza e il codice CVC della carta <ph name="CREDIT_CARD" /></translation>
+<translation id="6410774864568266108">Non dimenticare la tua offerta di Google Pay</translation>
 <translation id="6415778972515849510">Chromium può aiutarti a proteggere il tuo Account Google e a modificare la password.</translation>
 <translation id="6423385022588644828">Verifica più velocemente le tue carte usando Touch ID d'ora in poi</translation>
 <translation id="6425092077175753609">Material</translation>
@@ -1773,6 +1777,7 @@ Ulteriori dettagli:
 <translation id="79859296434321399">Per visualizzare i contenuti di realtà aumentata, installa ARCore</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="799149739215780103">Rilegatura</translation>
+<translation id="7992044431894087211">La condivisione dello schermo con <ph name="APPLICATION_TITLE" /> è stata ripristinata</translation>
 <translation id="7995512525968007366">Non specificato</translation>
 <translation id="800218591365569300">Prova a chiudere altri programmi o schede per liberare spazio in memoria.</translation>
 <translation id="8004582292198964060">Browser</translation>
@@ -2046,6 +2051,7 @@ Ulteriori dettagli:
 <translation id="9103872766612412690"><ph name="SITE" /> in genere utilizza la crittografia per proteggere le tue informazioni. Questa volta, quando Chromium ha provato a connettersi a <ph name="SITE" />, il sito web ha restituito credenziali insolite e sbagliate. È possibile che un malintenzionato stia cercando di spacciarsi per il sito <ph name="SITE" /> oppure che una schermata di accesso alla rete Wi-Fi abbia interrotto la connessione. Le tue informazioni sono ancora al sicuro perché Chromium ha interrotto la connessione prima che avvenissero scambi di dati.</translation>
 <translation id="9106062320799175032">Aggiungi indirizzo di fatturazione</translation>
 <translation id="9107467864910557787">Il browser in uso è gestito da <ph name="MANAGER" /></translation>
+<translation id="91108059142052966">Il criterio dell'amministratore disattiva la condivisione dello schermo con <ph name="APPLICATION_TITLE" /> quando sono visibili contenuti riservati</translation>
 <translation id="9114524666733003316">Conferma della carta...</translation>
 <translation id="9114581008513152754">Questo browser non è gestito da un'azienda o da un'altra organizzazione. L'attività svolta su questo dispositivo potrebbe essere gestita al di fuori di Chrome. <ph name="BEGIN_LINK" />Ulteriori informazioni<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">Caricato</translation>

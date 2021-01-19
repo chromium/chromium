@@ -112,6 +112,7 @@
 <translation id="1951012854035635156">اسسٹنٹ</translation>
 <translation id="1957803754585243749">0°</translation>
 <translation id="1957958912175573503">اپنی زبان سیٹ کریں</translation>
+<translation id="1961832440516943645"><ph name="DATE" />، <ph name="TIME" /></translation>
 <translation id="1962969542251276847">مقفل اسکرین</translation>
 <translation id="1969011864782743497">‎<ph name="DEVICE_NAME" /> (USB)‎</translation>
 <translation id="1972950159383891558">ہائے، <ph name="USERNAME" /></translation>
@@ -232,6 +233,7 @@
 <translation id="3090989381251959936"><ph name="FEATURE_NAME" /> کو ٹوگل کریں۔ <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">کرسر منتقل کریں</translation>
 <translation id="3098580329624789136">"<ph name="QUERY" />" کیلئے <ph name="INTENT" /> حاصل کریں</translation>
+<translation id="3105917916468784889">اسکرین شاٹ لیں</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (بلوٹوتھ)</translation>
 <translation id="3126069444801937830">اپ ڈیٹ کرنے کیلئے دوبارہ شروع کریں</translation>
 <translation id="3139942575505304791">ڈیسک 1</translation>
@@ -241,6 +243,7 @@
 <translation id="3153444934357957346">آپ متعدد سائن ان میں صرف <ph name="MULTI_PROFILE_USER_LIMIT" /> اکاؤنٹس تک رکھ سکتے ہیں۔</translation>
 <translation id="3154351730702813399">آلہ کا منتظم آپ کی براؤزنگ سرگرمی کو مانیٹر کر سکتا ہے۔</translation>
 <translation id="3181441307743005334">ری سٹارٹ کرنے میں کچھ وقت لگ سکتا ہے</translation>
+<translation id="3190230207529484457">جب محفوظ مواد موجود ہو تو اسکرین کیپچر کی اجازت نہیں ہے</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{ایک آلہ سے منسلک ہے}other{# آلات سے منسلک ہے}}</translation>
 <translation id="320207200541803018">ٹائمر سیٹ کریں</translation>
 <translation id="3203405173652969239">سوئچ رسائی فعال ہو گئی</translation>
@@ -366,7 +369,6 @@
 <translation id="4296136865091727875">تمام <ph name="COUNT" /> اطلاعات صاف کریں</translation>
 <translation id="4302592941791324970">دستیاب نہیں ہے</translation>
 <translation id="4303223480529385476">اسٹیٹس ایریا کو پھیلائیں</translation>
-<translation id="4315586716182276649">‏اپنے فون کے انٹرنیٹ کنکشن کو بڑھائیں، 'ڈسٹرب نہ کریں' کو کنٹرول کریں اور اپنے آلے کا پتہ لگائیں۔ اپنے <ph name="DEVICE_TYPE" /> پر اپنے فون سے فعال Chrome ٹیبز دیکھیں۔</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">آپ نے اعلی تناسب امتزاج کیلئے کی بورڈ شارٹ کٹ دبایا ہے۔ کیا آپ اسے آن کرنا چاہتے ہیں؟</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
@@ -560,6 +562,7 @@
 <translation id="6054305421211936131">اپنے اسمارٹ کارڈ سے سائن ان کریں</translation>
 <translation id="6059276912018042191">‏حالیہ Chrome ٹیبز</translation>
 <translation id="6062360702481658777">آپ <ph name="LOGOUT_TIME_LEFT" /> میں خود بخود سائن آؤٹ ہو جائیں گے۔</translation>
+<translation id="6073451960410192870">ریکارڈنگ روکیں</translation>
 <translation id="607652042414456612">آپ کا کمپیوٹر قریبی بلوٹوتھ آلات کے ذریعہ قابل دریافت ہے اور "<ph name="NAME" />" کے بطور پتہ <ph name="ADDRESS" /> کے ساتھ ظاہر ہوگا</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />۔ <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">‏Google اسسٹنٹ مہمان سیشن میں دستیاب نہیں ہے۔</translation>
@@ -725,7 +728,6 @@
 <translation id="7654687942625752712">صوتی تاثرات کو غیر فعال کرنے کیلئے پانچ منٹ تک والیوم کی دونوں کلیدوں کو دبائے رکھیں۔</translation>
 <translation id="7658239707568436148">منسوخ کریں</translation>
 <translation id="7662283695561029522">کنفیگر کرنے کیلئے تھپتھپائیں</translation>
-<translation id="7683326293741220026">ایسا لگتا ہے کہ آپ کے فون پر بلوٹوتھ آف ہے۔ فون ہب کا استعمال کرنے کیلئے براہ کرم اپنے فون پر بلوٹوتھ آن کریں۔</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 اطلاع}other{# اطلاعات}}</translation>
 <translation id="7724603315864178912">کٹ کریں</translation>
@@ -773,7 +775,6 @@
 <translation id="8054466585765276473">بیٹری کے وقت کا حساب لگایا جا رہا ہے۔</translation>
 <translation id="8061464966246066292">اعلی تناسب امتزاج</translation>
 <translation id="8098591350844501178">اسکرین کو <ph name="RECEIVER_NAME" /> پر کاسٹ کرنا بند کریں</translation>
-<translation id="8108657971283652031">‏اپنے فون کے انٹرنیٹ کنکشن کو بڑھائیں، 'ڈسٹرب نہ کریں' کو کنٹرول کریں اور اپنے فون کا پتہ لگائیں۔ اپنے <ph name="DEVICE_TYPE" /> پر اپنے فون سے فعال Chrome ٹیبز دیکھیں۔</translation>
 <translation id="8113423164597455979">آن، سبھی ایپس</translation>
 <translation id="8129620843620772246">C °<ph name="TEMPERATURE_C" /></translation>
 <translation id="8131740175452115882">تصدیق کریں</translation>
@@ -822,6 +823,7 @@
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> کو سپورٹ نہیں کرتا ہے۔ ریزولیوشن کو تبدیل کر کے <ph name="FALLBACK_RESOLUTION" /> کر دیا گیا تھا۔ تبدیلیاں باقی رکھنے کے لیے تصدیق کریں پر کلک کریں۔ گزشتہ تبدیلیوں کو <ph name="TIMEOUT_SECONDS" /> میں بحال کر دیا جائے گا۔</translation>
 <translation id="8513108775083588393">خودکار گھمائیں</translation>
 <translation id="8517041960877371778">ہو سکتا ہے کہ آپ کا <ph name="DEVICE_TYPE" /> آن ہونے کی صورت میں چارج نہ ہو۔</translation>
+<translation id="8553395910833293175">پہلے ہی تمام ڈیسکس کو تفویض کر دیا گیا۔</translation>
 <translation id="8563862697512465947">اطلاع کی ترتیبات</translation>
 <translation id="857201607579416096">مینو کو اسکرین کے نچلے دائیں کونے میں منتقل کر دیا گیا۔</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>

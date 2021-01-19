@@ -339,6 +339,7 @@
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Aucun mot de passe compromis}=1{1 mot de passe compromis}one{{NUM_COMPROMISED} mot de passe compromis}other{{NUM_COMPROMISED} mots de passe compromis}}</translation>
 <translation id="1380028686461971526">Connexion automatique à un réseau</translation>
 <translation id="1380436189840894976">Quitter le mode de navigation privée malgré tout?</translation>
+<translation id="1383597849754832576">Impossible de télécharger les fichiers de synthèse textuelle. Réessayez plus tard.</translation>
 <translation id="1383861834909034572">Ouverture à la fin du téléchargement</translation>
 <translation id="1383876407941801731">Rechercher</translation>
 <translation id="1386791642444521222">Activer une carte SIM</translation>
@@ -877,7 +878,6 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="1954813140452229842">Erreur lors du partage. Veuillez vérifier vos authentifiants et réessayer.</translation>
 <translation id="1956050014111002555">Le fichier contenait plusieurs certificats, mais aucun d'entre eux n'a pu être importé :</translation>
 <translation id="1956390763342388273">Cette opération téléversera tous les fichiers à partir de « <ph name="FOLDER_PATH" /> ». Effectuez cette opération uniquement si vous faites confiance au site.</translation>
-<translation id="1960158217849594135">Enregistrer le nom d'utilisateur dans votre compte Google?</translation>
 <translation id="196040970347962278">Établissez une connexion Internet pour commencer</translation>
 <translation id="1962233722219655970">Cette page utilise une application cliente native qui n'est pas compatible avec votre ordinateur.</translation>
 <translation id="1963227389609234879">Tout supprimer</translation>
@@ -903,6 +903,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="1984417487208496350">Aucune protection (non recommandé)</translation>
 <translation id="1987317783729300807">Comptes</translation>
 <translation id="1989112275319619282">Parcourir</translation>
+<translation id="1990046457226896323">Les fichiers de synthèse textuelle ont été téléchargés</translation>
 <translation id="1990512225220753005">Ne pas afficher les raccourcis sur cette page</translation>
 <translation id="1992397118740194946">Non défini</translation>
 <translation id="1992924914582925289">Retirer de l'appareil</translation>
@@ -1048,7 +1049,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2157474325782140681">Pour obtenir des fonctionnalités supplémentaires, servez-vous d'une station d'accueil Dell conçue pour être utilisée avec ce Chromebook.</translation>
 <translation id="215753907730220065">Quitter le mode plein écran</translation>
 <translation id="2157875535253991059">Cette page est maintenant en mode plein écran.</translation>
-<translation id="2160589599612868242">Recevez les notifications de votre téléphone sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="216169395504480358">Ajouter un réseau Wi-Fi…</translation>
 <translation id="2162155940152307086">La synchronisation commencera dès que vous quitterez les paramètres de synchronisation</translation>
 <translation id="2162838847352058695">Empêcher les sites de télécharger automatiquement plusieurs fichiers</translation>
@@ -1266,6 +1266,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2399699884460174994">Notifications activées</translation>
 <translation id="2399939490305346086">Données de connexion de la clé de sécurité</translation>
 <translation id="2400664245143453337">Une mise à jour immédiate est requise</translation>
+<translation id="2406153734066939945">Supprimer ce profil et les données qui y sont associées?</translation>
 <translation id="2408018932941436077">Enregistrement de la carte en cours…</translation>
 <translation id="2408955596600435184">Entrez votre NIP</translation>
 <translation id="241082044617551207">Plugiciel inconnu</translation>
@@ -1384,6 +1385,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2526590354069164005">Ordinateur de bureau</translation>
 <translation id="2526619973349913024">Rechercher des mises à jour</translation>
 <translation id="2527167509808613699">Tout type de connexion</translation>
+<translation id="2530166226437958497">Dépannage</translation>
 <translation id="2532589005999780174">Mode de contraste élevé</translation>
 <translation id="253434972992662860">Sus&amp;pendre</translation>
 <translation id="2534460670861217804">Mandataire HTTP sécurisé</translation>
@@ -1702,7 +1704,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2885729872133513017">Un problème est survenu lors du décodage de la réponse du serveur.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="2889064240420137087">Ouvrir le lien avec...</translation>
-<translation id="2889481634493693121">Activer les notifications sur votre téléphone</translation>
 <translation id="2889925978073739256">Continuer à bloquer l'exécution des plugiciels en dehors du carré de sable</translation>
 <translation id="2893168226686371498">Navigateur par défaut</translation>
 <translation id="2893917546370257247">{COUNT,plural, =1{1 élément de texte}one{# élément de texte}other{# éléments de texte}}</translation>
@@ -2562,6 +2563,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3857807444929313943">Relever le doigt et toucher le capteur de nouveau</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" /> : synchronisation interrompue</translation>
 <translation id="3861638017150647085">Le nom d'utilisateur « <ph name="USERNAME" /> » n'est pas disponible</translation>
+<translation id="3861977424605124250">Afficher au démarrage</translation>
 <translation id="3862693525629180217">Vérifier par l'intermédiaire d'un capteur intégré</translation>
 <translation id="3862788408946266506">L'application dont le fichier de configuration comporte un attribut « kiosk_only » doit être installée en mode Kiosque pour Chrome OS</translation>
 <translation id="3865414814144988605">Résolution</translation>
@@ -2804,7 +2806,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="412730574613779332">Superhéros</translation>
 <translation id="4130199216115862831">Journal de l’appareil</translation>
 <translation id="4130207949184424187">L'extension a modifié la page qui s'affiche lorsque vous effectuez des recherches depuis l'omnibox.</translation>
-<translation id="4130344535649650885">Enregistrer le mot de passe dans votre compte Google?</translation>
 <translation id="4130750466177569591">J'accepte</translation>
 <translation id="413121957363593859">Composants</translation>
 <translation id="4131410914670010031">Noir et blanc</translation>
@@ -3203,6 +3204,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4627442949885028695">Continuer à partir d'un autre appareil</translation>
 <translation id="4628757576491864469">Appareils</translation>
 <translation id="4628762811416793313">Échec de la configuration du conteneur Linux. Veuillez réessayer.</translation>
+<translation id="4629521233550547305">Ouvrir le profil <ph name="PROFILE_NAME" /></translation>
 <translation id="4633003931260532286">L'extension requiert « <ph name="IMPORT_NAME" /> » avec au moins une version « <ph name="IMPORT_VERSION" /> », mais seule la version « <ph name="INSTALLED_VERSION" /> » est installée</translation>
 <translation id="4633757335284074492">Sauvegarder sur Google Disque. Restaurez facilement vos données ou changez d'appareil à tout moment. Les données des applications sont également sauvegardées. Les sauvegardes sont téléversées dans les serveurs de Google et sont chiffrées en utilisant le mot de passe du compte Google de votre enfant.</translation>
 <translation id="4634575639321169635">Configurer cet appareil pour le travail ou pour un usage personnel</translation>
@@ -3931,7 +3933,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Échec de réception de <ph name="ATTACHMENTS" /> de l'appareil <ph name="DEVICE_NAME" />}one{Échec de réception de <ph name="ATTACHMENTS" /> de l'appareil <ph name="DEVICE_NAME" />}other{Échec de réception de <ph name="ATTACHMENTS" /> de l'appareil <ph name="DEVICE_NAME" />}}</translation>
 <translation id="5502500733115278303">Importés de Firefox</translation>
 <translation id="5502915260472117187">Un enfant</translation>
-<translation id="5503858713116291452">Assurez-vous que votre téléphone est à proximité, qu'il est déverrouillé et que le Bluetooth et le Wi-Fi sont activés. Suivez les étapes indiquées sur votre téléphone pour terminer la configuration.</translation>
 <translation id="5503982651688210506">Continuer d'autoriser <ph name="HOST" /> à utiliser et à déplacer votre caméra et à utiliser votre microphone</translation>
 <translation id="5505264765875738116">Les sites ne peuvent pas vous demander l'autorisation d'envoyer des notifications</translation>
 <translation id="5505307013568720083">À court d'encre</translation>
@@ -3992,6 +3993,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5565735124758917034">Actif</translation>
 <translation id="5567989639534621706">Caches des applications</translation>
 <translation id="5568069709869097550">Impossible de se connecter</translation>
+<translation id="5571832155627049070">Personnaliser votre profil</translation>
 <translation id="5572851009514199876">Veuillez démarrer Chrome et vous connecter pour que Chrome puisse vérifier si vous pouvez accéder à ce site.</translation>
 <translation id="5575473780076478375">Extension en mode de navigation privée : <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Un problème avec la demande d'enregistrement du mode démo s'est produit.</translation>
@@ -5460,6 +5462,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7280649757394340890">Paramètres vocaux de synthèse vocale</translation>
 <translation id="7280877790564589615">Autorisation demandée</translation>
 <translation id="7282992757463864530">Barre d'information</translation>
+<translation id="7283555985781738399">Mode Invité</translation>
 <translation id="7284411326658527427">Et chaque personne peut personnaliser son compte et garder ses données privées.</translation>
 <translation id="7287143125007575591">Accès refusé.</translation>
 <translation id="7287411021188441799">Rétablir l'arrière-plan par défaut</translation>
@@ -5839,6 +5842,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7716781361494605745">URL de la politique de l'autorité de certification Netscape</translation>
 <translation id="7717014941119698257">Téléchargement : <ph name="STATUS" /></translation>
 <translation id="7717134585801378441">Les sites peuvent demander votre position (recommandé)</translation>
+<translation id="771721654176725387">Cette action entraînera la suppression définitive de vos données de navigation sur cet appareil. Pour récupérer les données, activez la synchronisation en tant que</translation>
 <translation id="7717845620320228976">Rechercher des mises à jour</translation>
 <translation id="7719367874908701697">Zoom de la page</translation>
 <translation id="7719588063158526969">Le nom de l'appareil est trop long</translation>
@@ -5875,6 +5879,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7765158879357617694">Déplacer</translation>
 <translation id="7765507180157272835">Le Bluetooth et le Wi-Fi sont nécessaires</translation>
 <translation id="7766082757934713382">Aide à réduire l'utilisation de données réseau en interrompant les mises à jour automatiques des applications et des systèmes</translation>
+<translation id="7766807826975222231">Visite guidée</translation>
 <translation id="7766838926148951335">Accepter les autorisations</translation>
 <translation id="7768507955883790804">Les sites respectent automatiquement ce paramètre quand vous les visitez</translation>
 <translation id="7768770796815395237">Changer</translation>
@@ -6118,6 +6123,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8016266267177410919">Stockage temporaire</translation>
 <translation id="8017176852978888182">Répertoires partagés de Linux</translation>
 <translation id="8017679124341497925">Raccourci modifié</translation>
+<translation id="8018298733481692628">Supprimer ce profil?</translation>
 <translation id="8018313076035239964">Contrôlez les renseignements que les sites Web peuvent utiliser et le contenu qu'ils peuvent vous montrer</translation>
 <translation id="8023801379949507775">Mettre à jour les extensions maintenant</translation>
 <translation id="8026334261755873520">Effacer les données de navigation</translation>
@@ -6288,7 +6294,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8211551284753798479">Code PUK incorrect. Il vous reste <ph name="RETRIES" /> tentatives.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Téléchargement en cours…}one{Téléchargement en cours…}other{Téléchargements en cours…}}</translation>
 <translation id="8213449224684199188">Mode photo activé</translation>
-<translation id="8213866992824776555"><ph name="DOMAIN" /> souhaite reconnaître votre appareil afin qu'il puisse lire des contenus vidéo et audio protégés de la meilleure qualité possible.</translation>
 <translation id="8214489666383623925">Ouvrir...</translation>
 <translation id="8214962590150211830">Supprimer cette personne</translation>
 <translation id="8216351761227087153">Visionner</translation>
@@ -6767,7 +6772,6 @@ Appuyez sur un commutateur attribué pour retirer l'attribution.</translation>
 <translation id="8774379074441005279">Confirmez la restauration</translation>
 <translation id="8774934320277480003">Marge supérieure</translation>
 <translation id="8775144690796719618">URL non valide</translation>
-<translation id="8775163630211761057">Faites profiter votre <ph name="DEVICE_TYPE" /> du meilleur de votre téléphone Android</translation>
 <translation id="8775653927968399786">{0,plural, =1{Votre <ph name="DEVICE_TYPE" /> sera automatiquement verrouillé dans # seconde.
 <ph name="DOMAIN" /> vous demande de laisser votre carte à puce insérée.}one{Votre <ph name="DEVICE_TYPE" /> sera automatiquement verrouillé dans # seconde.
 <ph name="DOMAIN" /> vous demande de laisser votre carte à puce insérée.}other{Votre <ph name="DEVICE_TYPE" /> sera automatiquement verrouillé dans # secondes.
@@ -6957,6 +6961,7 @@ Appuyez sur un commutateur attribué pour retirer l'attribution.</translation>
 <translation id="8973596347849323817">Vous pouvez personnaliser cet appareil en fonction de vos besoins. Il est possible de modifier ces fonctionnalités d'accessibilité plus tard dans les paramètres.</translation>
 <translation id="897414447285476047">Le téléchargement du fichier de destination n'a pas été terminé en raison d'un problème de connexion.</translation>
 <translation id="897525204902889653">Service de mise en quarantaine</translation>
+<translation id="8975396729541388937">Vous pouvez vous désabonner en tout temps en cliquant sur le lien à cet effet dans les courriels que vous recevez.</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{« <ph name="TAB_TITLE" /> »}=1{« <ph name="TAB_TITLE" /> » et 1 autre onglet}one{« <ph name="TAB_TITLE" /> » et # autre onglet}other{« <ph name="TAB_TITLE" /> » et # autres onglets}}</translation>
 <translation id="8977811652087512276">Mot de passe incorrect ou fichier corrompu</translation>
 <translation id="8978154919215542464">Activé - tout synchroniser</translation>

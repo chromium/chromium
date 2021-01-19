@@ -112,6 +112,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1951012854035635156">Padėjėjas</translation>
 <translation id="1957803754585243749">0°</translation>
 <translation id="1957958912175573503">Kalbos nustatymas</translation>
+<translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Užrakinti ekraną</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Sveiki, <ph name="USERNAME" />!</translation>
@@ -232,6 +233,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="3090989381251959936">Perjungti „<ph name="FEATURE_NAME" />“. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">Perkelti žymeklį</translation>
 <translation id="3098580329624789136">Gaukite „<ph name="QUERY" />“ <ph name="INTENT" /></translation>
+<translation id="3105917916468784889">Padaryti ekrano kopiją</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> („Bluetooth“)</translation>
 <translation id="3126069444801937830">Paleisti iš naujo, kad būtų atnaujinta</translation>
 <translation id="3139942575505304791">1 pultas</translation>
@@ -241,6 +243,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="3153444934357957346">Naudodami kelių paskyrų funkciją, galite turėti iki <ph name="MULTI_PROFILE_USER_LIMIT" /> paskyr.</translation>
 <translation id="3154351730702813399">Įrenginio administratorius gali stebėti jūsų naršymo veiklą.</translation>
 <translation id="3181441307743005334">Paleidimas iš naujo gali šiek tiek užtrukti</translation>
+<translation id="3190230207529484457">Neleidžiama naudoti ekrano fiksavimo, kol rodomas apsaugotas turinys</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Prisijungta prie įrenginio}one{Prisijungta prie # įrenginio}few{Prisijungta prie # įrenginių}many{Prisijungta prie # įrenginio}other{Prisijungta prie # įrenginių}}</translation>
 <translation id="320207200541803018">Nustatyk laikmatį</translation>
 <translation id="3203405173652969239">Prieiga jungikliu įgalinta</translation>
@@ -366,7 +369,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="4296136865091727875">Išvalykite visus pranešimus (<ph name="COUNT" />)</translation>
 <translation id="4302592941791324970">Nepasiekiama</translation>
 <translation id="4303223480529385476">Išskleisti būsenos sritį</translation>
-<translation id="4315586716182276649">Išplėskite telefono interneto ryšį, valdykite netrukdymo režimą ir suraskite įrenginį. Peržiūrėkite aktyvius „Chrome“ skirtukus telefonu „<ph name="DEVICE_TYPE" />“ įrenginyje.</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Paspaudėte didelio kontrasto spartųjį klavišą. Ar norite jį įjungti?</translation>
 <translation id="4331809312908958774">„Chrome“ OS</translation>
@@ -560,6 +562,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="6054305421211936131">Prisijungti naudojant išmaniąją kortelę</translation>
 <translation id="6059276912018042191">Pastarieji „Chrome“ skirtukai</translation>
 <translation id="6062360702481658777">Būsite automatiškai atjungti po <ph name="LOGOUT_TIME_LEFT" />.</translation>
+<translation id="6073451960410192870">Sustabdyti įrašymą</translation>
 <translation id="607652042414456612">Jūsų kompiuterį galima aptikti netoliese esančiais „Bluetooth“ įrenginiais ir jis rodomas kaip „<ph name="NAME" />“ su adresu <ph name="ADDRESS" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">„Google Assistant“ nepasiekiamas svečio sesijoje.</translation>
@@ -725,7 +728,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="7654687942625752712">Paspauskite ir penkias sekundes palaikykite garsumo klavišus, kad išjungtumėte ekrano skaitymo balsu funkciją.</translation>
 <translation id="7658239707568436148">Atšaukti</translation>
 <translation id="7662283695561029522">Palieskite, kad konfigūruotumėte</translation>
-<translation id="7683326293741220026">Panašu, kad „Bluetooth“ išjungta jūsų telefone. Įjunkite „Bluetooth“ telefone, kad galėtumėte naudoti „Phone Hub“.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 pranešimas}one{# pranešimas}few{# pranešimai}many{# pranešimo}other{# pranešimų}}</translation>
 <translation id="7724603315864178912">Iškirpti</translation>
@@ -773,7 +775,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="8054466585765276473">Apskaičiuojamas laikas, likęs iki akumuliatoriaus išsikrovimo.</translation>
 <translation id="8061464966246066292">Didelis kontrastas</translation>
 <translation id="8098591350844501178">Sustabdyti ekrano perdavimą į: <ph name="RECEIVER_NAME" /></translation>
-<translation id="8108657971283652031">Išplėskite telefono interneto ryšį, valdykite netrukdymo režimą ir suraskite telefoną. Peržiūrėkite aktyvius „Chrome“ skirtukus telefonu „<ph name="DEVICE_TYPE" />“ įrenginyje.</translation>
 <translation id="8113423164597455979">Visų programų pranešimai įjungti</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Patvirtinti</translation>
@@ -822,6 +823,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="8492573885090281069">„<ph name="DISPLAY_NAME" />“ nepalaiko <ph name="SPECIFIED_RESOLUTION" />. Skyra buvo pakeista į <ph name="FALLBACK_RESOLUTION" />. Spustelėkite „Patvirtinti“ ir išsaugokite pakeitimus. Ankstesni nustatymai bus atkurti už <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="8513108775083588393">Auto. pasukti</translation>
 <translation id="8517041960877371778">„<ph name="DEVICE_TYPE" />“ gali nebūti kraunamas, kai yra įjungtas.</translation>
+<translation id="8553395910833293175">Jau priskirta visiems darbalaukiams.</translation>
 <translation id="8563862697512465947">Pranešimų nustatymai</translation>
 <translation id="857201607579416096">Meniu perkeltas į apatinį dešinįjį ekrano kampą.</translation>
 <translation id="8594115950068821369">–<ph name="FORMATTED_TIME" /></translation>

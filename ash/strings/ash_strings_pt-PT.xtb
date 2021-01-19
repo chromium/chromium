@@ -112,6 +112,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1951012854035635156">Assistente</translation>
 <translation id="1957803754585243749">0°</translation>
 <translation id="1957958912175573503">Definir o idioma</translation>
+<translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Bloqueio de Ecrã</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Olá, <ph name="USERNAME" /></translation>
@@ -232,6 +233,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3090989381251959936">Ative/desative a funcionalidade <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">Mover o cursor</translation>
 <translation id="3098580329624789136">Obtenha a intenção <ph name="INTENT" /> de "<ph name="QUERY" />"</translation>
+<translation id="3105917916468784889">Tirar captura de ecrã</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3126069444801937830">Reiniciar para atualizar</translation>
 <translation id="3139942575505304791">Secretária 1</translation>
@@ -241,6 +243,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3153444934357957346">Apenas pode ter, no máximo, <ph name="MULTI_PROFILE_USER_LIMIT" /> contas no início de sessão integrado.</translation>
 <translation id="3154351730702813399">O gestor do dispositivo pode monitorizar a sua atividade de navegação:</translation>
 <translation id="3181441307743005334">O reinício poderá demorar algum tempo</translation>
+<translation id="3190230207529484457">A captura de ecrã não é permitida enquanto estiver presente conteúdo protegido.</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Ligado a um dispositivo}other{Ligado a # dispositivos}}</translation>
 <translation id="320207200541803018">Define um temporizador</translation>
 <translation id="3203405173652969239">Acesso por comutador ativado</translation>
@@ -366,7 +369,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="4296136865091727875">Limpar todas as <ph name="COUNT" /> notificações</translation>
 <translation id="4302592941791324970">Não disponível</translation>
 <translation id="4303223480529385476">Expandir área de estado</translation>
-<translation id="4315586716182276649">Expanda a ligação à Internet do telemóvel, controle a funcionalidade Não incomodar e localize o dispositivo. Veja os separadores do Chrome ativos a partir do telemóvel no <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Premiu o atalho de teclado de alto contraste. Pretende ativá-lo?</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
@@ -560,6 +562,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="6054305421211936131">Iniciar sessão com cartão inteligente</translation>
 <translation id="6059276912018042191">Separadores do Chrome recentes</translation>
 <translation id="6062360702481658777">A sessão será terminada automaticamente dentro de <ph name="LOGOUT_TIME_LEFT" />.</translation>
+<translation id="6073451960410192870">Parar gravação</translation>
 <translation id="607652042414456612">O seu computador é detetável para os dispositivos Bluetooth nas proximidades e aparecerá como "<ph name="NAME" />" com o endereço <ph name="ADDRESS" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">O Assistente Google não está disponível em sessões de convidado.</translation>
@@ -725,7 +728,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="7654687942625752712">Prima sem soltar ambas as teclas de volume durante cinco segundos para desativar os feedback de voz.</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7662283695561029522">Toque para configurar</translation>
-<translation id="7683326293741220026">O Bluetooth está desativado no seu telemóvel. Ative o Bluetooth no seu telemóvel para utilizar o Phone Hub.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notificação}other{# notificações}}</translation>
 <translation id="7724603315864178912">Cortar</translation>
@@ -773,7 +775,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="8054466585765276473">A calcular tempo da bateria.</translation>
 <translation id="8061464966246066292">Alto contraste</translation>
 <translation id="8098591350844501178">Parar a transmissão do ecrã para <ph name="RECEIVER_NAME" /></translation>
-<translation id="8108657971283652031">Expanda a ligação à Internet do telemóvel, controle a funcionalidade Não incomodar e localize o telemóvel. Veja os separadores do Chrome ativos a partir do telemóvel no <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8113423164597455979">Ativado, todas as aplicações</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Confirmar</translation>
@@ -822,6 +823,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="8492573885090281069">O <ph name="DISPLAY_NAME" /> não suporta a resolução <ph name="SPECIFIED_RESOLUTION" />. A resolução foi alterada para <ph name="FALLBACK_RESOLUTION" />. Clique em confirmar para manter as alterações. As definições anteriores serão restauradas dentro de <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="8513108775083588393">Rotação auto.</translation>
 <translation id="8517041960877371778">O <ph name="DEVICE_TYPE" /> pode não carregar enquanto estiver ligado.</translation>
+<translation id="8553395910833293175">Já atribuído a todos os espaços de trabalho.</translation>
 <translation id="8563862697512465947">Definições de notificação</translation>
 <translation id="857201607579416096">O menu foi movido para o canto inferior direito do ecrã.</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>

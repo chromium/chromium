@@ -155,7 +155,6 @@ Jika '<ph name="SERVICE_SCRIPT_NAME" />' sudah dicentang, hapus centangnya, lalu
 <translation id="8073845705237259513">Untuk menggunakan Chrome Desktop Jarak Jauh, Anda perlu menambahkan Akun Google ke perangkat.</translation>
 <translation id="809687642899217504">Komputer Saya</translation>
 <translation id="8116630183974937060">Terjadi kesalahan jaringan. Periksa bahwa perangkat Anda online dan coba lagi.</translation>
-<translation id="8187079423890319756">Hak Cipta 2013 Pengarang Chromium. Semua Hak Dilindungi Undang-Undang.</translation>
 <translation id="8295077433896346116">Untuk menggunakan <ph name="PRODUCT_NAME" />, Anda harus memberikan izin ke 'Aksesibilitas' agar input dari perangkat jarak jauh dapat dimasukkan ke Mac ini.
 
 Untuk memberikan izin ini, klik '<ph name="BUTTON_NAME" />' di bawah. Di panel preferensi 'Aksesibilitas' yang terbuka, centang kotak di samping '<ph name="SERVICE_SCRIPT_NAME" />'.

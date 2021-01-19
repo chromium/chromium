@@ -47,6 +47,10 @@
 <translation id="5862307444128926510">Üdvözli a Chromium!</translation>
 <translation id="5945387852661427312">Egy <ph name="DOMAIN" /> által felügyelt fiókkal jelentkezik be, és engedélyezi az adminisztrátor számára a Chromium-adatok kezelését. Adatai állandó jelleggel ehhez a fiókhoz lesznek társítva. A Chromiumból való kijelentkezéssel törli adatait erről az eszközről, de azok továbbra is megmaradnak Google-fiókjában.</translation>
 <translation id="602807004951640891">A Chromium használatával elfogadja az <ph name="BEGIN_LINK_TOS" />általános szerződési feltételeket<ph name="END_LINK_TOS" />.</translation>
+<translation id="6119647025869519954">A Chromium beállítása alapértelmezett böngészőként:
+1. Nyissa meg a Beállításokat.
+2. Koppintson az Alapértelmezett böngésző lehetőségre.
+3. Válassza ki a Chromium böngészőt.</translation>
 <translation id="6268381023930128611">Kijelentkezik a Chromiumból?</translation>
 <translation id="6424492062988593837">A Chromium most még jobb lett! Új verzió áll rendelkezésre.</translation>
 <translation id="6604711459180487467">A helyadatokkal jobb felhasználói élményben lehet része a Chromium használatakor.</translation>

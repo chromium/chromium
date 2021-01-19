@@ -1775,6 +1775,7 @@
 <translation id="79859296434321399">‏برای مشاهده محتوای واقعیت افزوده، ARCore را نصب کنید</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="799149739215780103">به‌هم چسباندن</translation>
+<translation id="7992044431894087211">هم‌رسانی صفحه‌نمایش با <ph name="APPLICATION_TITLE" /> ازسر گرفته شد</translation>
 <translation id="7995512525968007366">تعیین نشده</translation>
 <translation id="800218591365569300">سعی کنید برگه‌ها یا برنامه‌های دیگر را ببندید تا حافظه آزاد شود.</translation>
 <translation id="8004582292198964060">مرورگر</translation>
@@ -2048,6 +2049,7 @@
 <translation id="9103872766612412690">‏<ph name="SITE" /> معمولاً برای محافظت از اطلاعات شما از رمزگذاری استفاده می‌کند. اما این بار که Chromium تلاش کرد به <ph name="SITE" /> متصل شود، وب‌سایت اعتبارنامه‌ای نامعمول و نادرست را برگرداند. ممکن است مهاجمی در تلاش باشد خود را به‌جای <ph name="SITE" /> معرفی کند یا یک صفحه ورود به سیستم Wi-Fi در ارتباط اختلال ایجاد کرده باشد. اطلاعات شما همچنان ایمن است، زیرا Chromium قبل از هرگونه تبادل داده، اتصال را متوقف کرد.</translation>
 <translation id="9106062320799175032">افزودن نشانی صورت‌حساب</translation>
 <translation id="9107467864910557787">مرورگرتان توسط <ph name="MANAGER" /> مدیریت می‌شود</translation>
+<translation id="91108059142052966">هروقت محتوای محرمانه نمایان باشد، خط‌مشی سرپرست هم‌رسانی صفحه‌نمایش با <ph name="APPLICATION_TITLE" /> را غیرفعال می‌کند</translation>
 <translation id="9114524666733003316">درحال تأیید کردن کارت…</translation>
 <translation id="9114581008513152754">‏این مرورگر را شرکت یا سازمان دیگری مدیریت نمی‌کند. فعالیت در این دستگاه ممکن است خارج از Chrome مدیریت شود. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">بارگذاری‌شده</translation>

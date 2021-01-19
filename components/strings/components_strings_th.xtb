@@ -80,6 +80,7 @@
     &lt;li&gt;ติดต่อเจ้าของเว็บไซต์&lt;/li&gt;
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">คุณป้อนรหัสผ่านในเว็บไซต์ที่องค์กรไม่ได้จัดการ เพื่อปกป้องบัญชี โปรดอย่าใช้รหัสผ่านซ้ำในแอปและเว็บไซต์อื่นๆ</translation>
+<translation id="1259144770381827039">ดูรายละเอียด</translation>
 <translation id="1263231323834454256">เรื่องรออ่าน</translation>
 <translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
         กิจกรรมที่จะไม่บันทึกไว้ในอุปกรณ์นี้ ได้แก่
@@ -322,6 +323,7 @@
 <translation id="2164510882479075877">ตรวจสอบว่ามีการพิมพ์ผิดใน <ph name="HOST_NAME" /> ไหม</translation>
 <translation id="2166049586286450108">การเข้าถึงระดับผู้ดูแลระบบโดยสมบูรณ์</translation>
 <translation id="2166378884831602661">เว็บไซต์นี้ไม่สามารถให้การเชื่อมต่อที่ปลอดภัย</translation>
+<translation id="2168151236314517198">นโยบายของผู้ดูแลระบบบล็อกการพิมพ์เนื้อหานี้ไว้</translation>
 <translation id="2169984857010174799">Kaku2 (ซองจดหมาย)</translation>
 <translation id="2181821976797666341">นโยบาย</translation>
 <translation id="2183608646556468874">หมายเลขโทรศัพท์</translation>
@@ -1348,6 +1350,7 @@
 <translation id="6290238015253830360">บทความที่แนะนำจะปรากฏที่นี่</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">Google Assistant ใน Chrome หยุดทำงาน</translation>
+<translation id="6304463939629872728">ชำระเงินด้วย</translation>
 <translation id="6305205051461490394">ไม่สามารถเข้าถึง <ph name="URL" /></translation>
 <translation id="6312113039770857350">หน้าเว็บไม่พร้อมใช้งาน</translation>
 <translation id="6321917430147971392">ตรวจสอบการตั้งค่า DNS</translation>
@@ -1377,6 +1380,7 @@
 <translation id="6406765186087300643">C0 (ซองจดหมาย)</translation>
 <translation id="6409754798200046165">คุณเพิ่งใส่รหัสผ่านในเว็บไซต์ที่มีการหลอกลวง Chrome ขอแนะนำให้เปลี่ยนรหัสผ่านตอนนี้เลย</translation>
 <translation id="6410264514553301377">ป้อนวันหมดอายุและ CVC ของ <ph name="CREDIT_CARD" /></translation>
+<translation id="6410774864568266108">อย่าลืมใช้ข้อเสนอจาก Google Pay</translation>
 <translation id="6415778972515849510">Chromium ช่วยคุณปกป้องบัญชี Google และเปลี่ยนรหัสผ่านได้</translation>
 <translation id="6423385022588644828">ยืนยันบัตรได้เร็วขึ้นโดยใช้ Touch ID จากนี้ไป</translation>
 <translation id="6425092077175753609">วัสดุ</translation>
@@ -1765,6 +1769,7 @@
 <translation id="79859296434321399">ติดตั้ง ARCore เพื่อดูเนื้อหา Augmented Reality</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="799149739215780103">เย็บเล่ม</translation>
+<translation id="7992044431894087211">กลับมาแชร์หน้าจอกับ <ph name="APPLICATION_TITLE" /> อีกครั้ง</translation>
 <translation id="7995512525968007366">ไม่ได้ระบุ</translation>
 <translation id="800218591365569300">ลองปิดแท็บหรือโปรแกรมอื่นๆ เพื่อเพิ่มหน่วยความจำ</translation>
 <translation id="8004582292198964060">เบราว์เซอร์</translation>
@@ -2039,6 +2044,7 @@
 <translation id="9103872766612412690">โดยทั่วไป <ph name="SITE" /> จะใช้การเข้ารหัสเพื่อปกป้องข้อมูลของคุณ เมื่อ Chromium พยายามเชื่อมต่อกับ <ph name="SITE" /> ในครั้งนี้ เว็บไซต์ดังกล่าวส่งข้อมูลรับรองที่ผิดปกติและไม่ถูกต้องกลับมา เหตุการณ์นี้อาจเกิดขึ้นเมื่อผู้บุกรุกพยายามปลอมเป็น <ph name="SITE" /> หรือหน้าจอการลงชื่อเข้าใช้ Wi-Fi รบกวนการเชื่อมต่อ ข้อมูลของคุณยังปลอดภัยอยู่เนื่องจาก Chromium หยุดการเชื่อมต่อก่อนมีการแลกเปลี่ยนข้อมูล</translation>
 <translation id="9106062320799175032">เพิ่มที่อยู่สำหรับการเรียกเก็บเงิน</translation>
 <translation id="9107467864910557787">เบราว์เซอร์ของคุณจัดการโดย <ph name="MANAGER" /></translation>
+<translation id="91108059142052966">นโยบายของผู้ดูแลระบบปิดใช้การแชร์หน้าจอกับ <ph name="APPLICATION_TITLE" /> เมื่อมีเนื้อหาลับแสดงอยู่</translation>
 <translation id="9114524666733003316">กำลังยืนยันบัตร…</translation>
 <translation id="9114581008513152754">เบราว์เซอร์นี้ไม่ได้จัดการโดยบริษัทหรือองค์กรอื่นๆ กิจกรรมในอุปกรณ์นี้อาจมีการจัดการภายนอก Chrome <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">อัปโหลดแล้ว</translation>

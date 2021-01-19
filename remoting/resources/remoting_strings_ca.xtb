@@ -155,7 +155,6 @@ Si la casella <ph name="SERVICE_SCRIPT_NAME" /> ja està marcada, desmarca-la i 
 <translation id="8073845705237259513">Per utilitzar l'escriptori remot de Chrome, haureu d'afegir un compte de Google al dispositiu.</translation>
 <translation id="809687642899217504">Els meus ordinadors</translation>
 <translation id="8116630183974937060">S'ha produït un error de la xarxa. Comproveu que el dispositiu estigui en línia i torneu-ho a provar.</translation>
-<translation id="8187079423890319756">Copyright 2013 Els autors de Chromium. Tots els drets reservats.</translation>
 <translation id="8295077433896346116">Per poder utilitzar <ph name="PRODUCT_NAME" />, has de concedir el permís Accessibilitat, que permet inserir dades de l'ordinador remot en aquest Mac.
 
 Per concedir el permís, fes clic a <ph name="BUTTON_NAME" /> més avall. Al tauler de preferències Accessibilitat que s'obre, marca la casella corresponent a <ph name="SERVICE_SCRIPT_NAME" />.

@@ -70,6 +70,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="328888136576916638">Les clés API Google sont manquantes. Certaines fonctionnalités de Chromium vont être désactivées.</translation>
 <translation id="3296368748942286671">Poursuivre l'exécution des applications en arrière-plan après la fermeture de Chromium</translation>
 <translation id="331951419404882060">Impossible de synchroniser vos données dans Chromium OS, car une erreur s'est produite lors de la connexion.</translation>
+<translation id="3430503420100763906">Utilisez les profils Chromium pour dissocier toutes vos données Chromium. Créez des profils pour vos amis et votre famille, ou créez un profil pour travailler et un autre pour vous divertir.</translation>
 <translation id="347328004046849135">Chromium vous avertira si vous vous connectez avec un mot de passe compromis</translation>
 <translation id="3474745554856756813">Cette action aura pour effet de supprimer <ph name="ITEMS_COUNT" /> éléments de cet appareil. Pour récupérer vos données ultérieurement, connectez-vous à Chromium en tant que <ph name="USER_EMAIL" />.</translation>
 <translation id="3509308970982693815">Veuillez fermer toutes les fenêtres de Chromium, puis réessayer.</translation>
@@ -164,6 +165,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="6373523479360886564">Voulez-vous vraiment désinstaller Chromium ?</translation>
 <translation id="6403826409255603130">Chromium est un navigateur Web qui exécute les pages Web et les applications à une vitesse fulgurante. Il est rapide, stable et simple d'utilisation. Naviguez sur le Web en toute sécurité tout en bénéficiant de la protection offerte par Chromium contre les logiciels malveillants et de phishing.</translation>
 <translation id="6434250628340475518">Système Chromium OS</translation>
+<translation id="6455857529632101747">Bienvenue sur la page de profils Chromium</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium va redémarrer dans 1 seconde}one{Chromium va redémarrer dans # seconde}other{Chromium va redémarrer dans # secondes}}</translation>
 <translation id="6475912303565314141">Elle contrôle également la page qui s'affiche au démarrage de Chromium.</translation>
 <translation id="6510925080656968729">Désinstaller Chromium</translation>

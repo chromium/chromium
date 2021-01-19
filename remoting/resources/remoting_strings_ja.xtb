@@ -155,7 +155,6 @@
 <translation id="8073845705237259513">Chrome リモート デスクトップを使用するには、お使いのデバイスに Google アカウントを追加する必要があります。</translation>
 <translation id="809687642899217504">マイ コンピュータ</translation>
 <translation id="8116630183974937060">ネットワーク エラーが発生しました。デバイスがインターネットに接続されているか確認して、もう一度お試しください。</translation>
-<translation id="8187079423890319756">Copyright 2013 The Chromium Authors. All rights reserved.</translation>
 <translation id="8295077433896346116"><ph name="PRODUCT_NAME" />を使用するには、「アクセシビリティ」権限を付与して、リモートマシンからの入力をこの Mac に反映できるようにする必要があります。
 
 この権限を付与するには、下の [<ph name="BUTTON_NAME" />] をクリックして [アクセシビリティ] 設定パネルを開き、[<ph name="SERVICE_SCRIPT_NAME" />] の横にあるチェックボックスをオンにします。

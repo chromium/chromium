@@ -399,6 +399,7 @@ Bu politikayı devre dışı bırakırsanız web sayfasını URL yoluyla belirli
 <translation id="1561424797596341174">Politika, uzaktan erişim ana makinesinin Hata Ayıklama yapılarını geçersiz kılar</translation>
 <translation id="1561967320164410511">Bağımsız doğrulama için U2F plus uzantıları</translation>
 <translation id="1575015449587326319">OnFileDownloaded Chrome Enterprise Bağlayıcı için yapılandırma politikası</translation>
+<translation id="1576684007051137182">Devre dışı bırakılacak kamera, tarayıcı ayarları, OS ayarları, tarama ve web mağazası özellikleri yapılandırması</translation>
 <translation id="1583248206450240930">Varsayılan olarak <ph name="PRODUCT_FRAME_NAME" /> ürününü kullan</translation>
 <translation id="1588240398285670601">Tarayıcı Ayarları</translation>
 <translation id="1593245608325508847">Politika ayarlanırsa G Suite'te Chrome'un kısıtlı oturum açma özelliği etkinleştirilir ve kullanıcılar bu ayarı değiştiremezler. Kullanıcılar sadece belirtilen alan adlarındaki hesapları kullanarak Google araçlarına erişebilirler (gmail veya googlemail hesaplarına izin vermek için alan adı listesine consumer_accounts öğesini ekleyin). Bu ayar, kullanıcıların Google kimlik doğrulaması gerektiren yönetilen bir cihazda oturum açmalarını ve açıkça izin verilen alan adlarından birine ait olmadığı sürece İkincil Hesap eklemelerini engeller.
@@ -2282,6 +2283,7 @@ Bu politika False (Yanlış) değerine ayarlanırsa <ph name="PRODUCT_NAME" /> y
 <translation id="4138655880188755661">Zaman Limiti</translation>
 <translation id="4147818922357566987">Yalnızca önemli düzeltmelerle ilgili varyasyonları etkinleştir</translation>
 <translation id="4150201353443180367">Ekran</translation>
+<translation id="415445772247959702">Web Mağazası (sürüm 89'dan beri destekleniyor)</translation>
 <translation id="4157003184375321727">İşletim sistemi ve donanım yazılımı sürümünü rapor et</translation>
 <translation id="4157594634940419685">Yerel CUPS yazıcılarına erişim izni ver</translation>
 <translation id="4160962198980004898">Yuvaya yerleştirildiğinde cihaz MAC adresi kaynağı</translation>

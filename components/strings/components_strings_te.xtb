@@ -138,7 +138,7 @@
 <translation id="1413809658975081374">గోప్యతా ఎర్రర్</translation>
 <translation id="1426410128494586442">అవును</translation>
 <translation id="1428146450423315676">స్టాకర్ 7</translation>
-<translation id="1430915738399379752">ముద్రించు</translation>
+<translation id="1430915738399379752">ప్రింట్</translation>
 <translation id="1442386063175183758">కుడివైపు గేట్ ఫోల్డ్</translation>
 <translation id="1442987760062738829">రంధ్రం</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
@@ -1777,6 +1777,7 @@
 <translation id="79859296434321399">మెరుగైన వాస్తవిక అనుభవ కంటెంట్‌ను చూడడానికి, ARCoreని ఇన్‌స్టాల్ చేయండి</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="799149739215780103">బైండ్</translation>
+<translation id="7992044431894087211"><ph name="APPLICATION_TITLE" />తో స్క్రీన్ షేరింగ్ కొనసాగించబడింది</translation>
 <translation id="7995512525968007366">పేర్కొనబడలేదు</translation>
 <translation id="800218591365569300">మెమరీని ఖాళీ చేయడానికి ఇతర ట్యాబ్‌లు లేదా ప్రోగ్రామ్‌లను మూసివేయడాన్ని ప్రయత్నించండి.</translation>
 <translation id="8004582292198964060">బ్రౌజర్</translation>
@@ -2050,6 +2051,7 @@
 <translation id="9103872766612412690"><ph name="SITE" /> సాధారణంగా మీ సమాచారాన్ని రక్షించడానికి ఎన్‌క్రిప్ష‌న్‌ను ఉపయోగిస్తుంది. Chromium ఈసారి <ph name="SITE" />‌ను కనెక్ట్ చేయడానికి ప్రయత్నించినప్పుడు, వెబ్‌సైట్ అసాధారణ మరియు తప్పు ఆధారాలు అని ప్రతిస్పందించింది. దాడి చేసే వ్యక్తి <ph name="SITE" />గా వ్యవహరించి మోసగించడానికి ప్రయత్నిస్తున్నప్పుడు లేదా Wi-Fi సైన్-ఇన్ స్క్రీన్ కనెక్షన్‌కు అంతరాయం కలిగించినప్పుడు ఇలా జరగవచ్చు. ఎలాంటి డేటా వినిమయం సంభవించక ముందే Chromium, కనెక్షన్‌ను ఆపివేసినందున మీ సమాచారం ఇప్పటికీ సురక్షితంగానే ఉంది.</translation>
 <translation id="9106062320799175032">బిల్లింగ్ చిరునామాను జోడించండి</translation>
 <translation id="9107467864910557787"><ph name="MANAGER" />, మీ బ్రౌజర్‌ను మేనేజ్ చేస్తోంది</translation>
+<translation id="91108059142052966">గోప్యమైన కంటెంట్ కనిపించినప్పుడు <ph name="APPLICATION_TITLE" />తో స్క్రీన్ షేర్ చేయడాన్ని అడ్మినిస్ట్రేటర్ పాలసీ డిజేబుల్ చేస్తుంది</translation>
 <translation id="9114524666733003316">కార్డ్‌ నిర్ధారించబడుతోంది...</translation>
 <translation id="9114581008513152754">ఈ బ్రౌజర్ ఒక కంపెనీ లేదా ఇతర సంస్థ ద్వారా మేనేజ్ చేయబడదు. ఈ పరికరంలోని యాక్టివిటీని Chrome వెలుపల మేనేజ్ చేస్తుండవచ్చు. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">అప్‌లోడ్ చేయబడింది</translation>

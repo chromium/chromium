@@ -1776,6 +1776,7 @@
 <translation id="79859296434321399">Да бисте видели садржај проширене реалности, инсталирајте ARCore</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="799149739215780103">Повезивање</translation>
+<translation id="7992044431894087211">Настављено је дељење садржаја екрана са апликацијом <ph name="APPLICATION_TITLE" /></translation>
 <translation id="7995512525968007366">Није наведено</translation>
 <translation id="800218591365569300">Пробајте да затворите друге картице или програме да бисте ослободили меморију.</translation>
 <translation id="8004582292198964060">Прегледач</translation>
@@ -2050,6 +2051,7 @@
 <translation id="9103872766612412690"><ph name="SITE" /> обично користи шифровање да би заштитио информације. Када је Chromium овог пута покушао да се повеже са <ph name="SITE" />, веб-сајт је вратио необичне и нетачне акредитиве. Или нападач покушава да се представи као <ph name="SITE" /> или је екран за WiFi пријављивање прекинуо везу. Информације су и даље безбедне зато што је Chromium прекинуо везу пре него што су размењени било какви подаци.</translation>
 <translation id="9106062320799175032">Додајте адресу за обрачун</translation>
 <translation id="9107467864910557787">Прегледачем управља <ph name="MANAGER" /></translation>
+<translation id="91108059142052966">Смернице за администраторе онемогућавају дељење садржаја екрана са апликацијом <ph name="APPLICATION_TITLE" /> када је видљив поверљиви садржај</translation>
 <translation id="9114524666733003316">Картица се потврђује...</translation>
 <translation id="9114581008513152754">Овим прегледачем не управља компанија нити друга организација. Активностима на овом уређају се можда управља ван Chrome-а. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">Отпремљено</translation>

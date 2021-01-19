@@ -112,6 +112,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1951012854035635156">Asistent</translation>
 <translation id="1957803754585243749">0°</translation>
 <translation id="1957958912175573503">Nastavit jazyk</translation>
+<translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Zamknout obrazovku</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Dobrý den, <ph name="USERNAME" /></translation>
@@ -232,6 +233,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="3090989381251959936">Zapnout nebo vypnout funkci <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">Přesunout kurzor</translation>
 <translation id="3098580329624789136">Získání <ph name="INTENT" /> pro dotaz „<ph name="QUERY" />“</translation>
+<translation id="3105917916468784889">Pořídit snímek obrazovky</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3126069444801937830">Restartovat a aktualizovat</translation>
 <translation id="3139942575505304791">Plocha 1</translation>
@@ -241,6 +243,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="3153444934357957346">Počet účtů, které lze v rámci vícenásobného přihlášení používat, je omezen na <ph name="MULTI_PROFILE_USER_LIMIT" />.</translation>
 <translation id="3154351730702813399">Správce zařízení může sledovat vaši aktivitu při procházení.</translation>
 <translation id="3181441307743005334">Restartování může chvíli trvat</translation>
+<translation id="3190230207529484457">Za přítomnosti chráněného obsahu je záznam obrazovky zakázán</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Připojeno k zařízení}few{Připojeno k # zařízením}many{Připojeno k # zařízení}other{Připojeno k # zařízením}}</translation>
 <translation id="320207200541803018">Nastavit časovač</translation>
 <translation id="3203405173652969239">Je zapnutý přístup pomocí přepínačů</translation>
@@ -366,7 +369,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4296136865091727875">Vymazat všechna oznámení (<ph name="COUNT" />)</translation>
 <translation id="4302592941791324970">Nedostupné</translation>
 <translation id="4303223480529385476">Rozbalit stavovou oblast</translation>
-<translation id="4315586716182276649">Zpřístupněte internetové připojení telefonu, ovládejte režim Nerušit a zjistěte polohu zařízení. Zobrazte v zařízení <ph name="DEVICE_TYPE" /> aktivní karty Chromu z telefonu.</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Stiskli jste klávesovou zkratku pro vysoký kontrast. Chcete ho zapnout?</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
@@ -560,6 +562,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="6054305421211936131">Přihlásit se pomocí chytré karty</translation>
 <translation id="6059276912018042191">Nedávno použité karty Chromu</translation>
 <translation id="6062360702481658777">Za <ph name="LOGOUT_TIME_LEFT" /> budete automaticky odhlášeni.</translation>
+<translation id="6073451960410192870">Zastavit nahrávání</translation>
 <translation id="607652042414456612">Váš počítač mohou objevit okolní zařízení Bluetooth, ve kterých se bude zobrazovat s názvem „<ph name="NAME" />“ a adresou <ph name="ADDRESS" />.</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Asistent Google v relaci hosta není k dispozici.</translation>
@@ -725,7 +728,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="7654687942625752712">Hlasovou odezvu vypnete podržením obou tlačítek hlasitosti po dobu pěti sekund.</translation>
 <translation id="7658239707568436148">Zrušit</translation>
 <translation id="7662283695561029522">Klepnutím zahájíte konfiguraci</translation>
-<translation id="7683326293741220026">Na telefonu je pravděpodobně vypnuté rozhraní Bluetooth. Pokud chcete používat Telefonní centrum, zapněte Bluetooth.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 oznámení}few{# oznámení}many{# oznámení}other{# oznámení}}</translation>
 <translation id="7724603315864178912">Vyjmout</translation>
@@ -773,7 +775,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="8054466585765276473">Výpočet doby výdrže baterie.</translation>
 <translation id="8061464966246066292">Vysoký kontrast</translation>
 <translation id="8098591350844501178">Ukončit odesílání obrazovky do přijímače <ph name="RECEIVER_NAME" /></translation>
-<translation id="8108657971283652031">Zpřístupněte internetové připojení telefonu, ovládejte režim Nerušit a zjistěte polohu telefonu. Zobrazte v zařízení <ph name="DEVICE_TYPE" /> aktivní karty Chromu z telefonu.</translation>
 <translation id="8113423164597455979">Zap., všechny</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Potvrdit</translation>
@@ -822,6 +823,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> rozlišení <ph name="SPECIFIED_RESOLUTION" /> nepodporuje. Rozlišení bylo změněno na <ph name="FALLBACK_RESOLUTION" />. Chcete-li změny ponechat, potvrďte je. Předchozí nastavení bude obnoveno za <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="8513108775083588393">Autom. otáčení</translation>
 <translation id="8517041960877371778">Je možné, že když bude zařízení <ph name="DEVICE_TYPE" /> zapnuté, nebude se nabíjet.</translation>
+<translation id="8553395910833293175">Již přiřazeno ke všem plochám.</translation>
 <translation id="8563862697512465947">Nastavení oznámení</translation>
 <translation id="857201607579416096">Nabídka byla přesunuta do pravého dolního rohu obrazovky.</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>

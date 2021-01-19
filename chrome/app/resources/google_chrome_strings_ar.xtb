@@ -34,12 +34,14 @@
 <translation id="174539241580958092">‏تعذر على Google Chrome مزامنة البيانات نظرًا لوجود خطأ في تسجيل الدخول.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">‏يُرجى التأكُّد من تسجيل الدخول إلى متصفِّح Chrome على جهازك <ph name="TARGET_DEVICE_NAME" /> ثم محاولة الإرسال مرة أخرى.</translation>
+<translation id="1807517590912578995">‏هل تريد الحصول على تجربة تصفّح منفصلة باستخدام ملف شخصي على Chrome؟</translation>
 <translation id="1812689907177901597">‏من خلال إيقاف هذا الإعداد، يمكنك تسجيل الدخول إلى "مواقع Google" مثل Gmail بدون الحاجة إلى تسجيل الدخول إلى Chrome</translation>
 <translation id="1860536484129686729">‏يحتاج Chrome إلى إذن للوصول إلى الكاميرا من أجل الموقع الإلكتروني هذا.</translation>
 <translation id="1873233029667955273">‏Google Chrome ليس متصفحك التلقائي.</translation>
 <translation id="1874309113135274312">‏الإصدار التجريبي من Google Chrome‏ (mDNS-In)</translation>
 <translation id="1877026089748256423">‏إصدار Chrome قديم</translation>
 <translation id="1919130412786645364">‏السماح بتسجيل الدخول إلى Chrome</translation>
+<translation id="2018528049276128029">‏يحتفظ كل ملف شخصي بالمعلومات الخاصة به على Chrome، مثل الإشارات المرجعية والسجلّ وكلمات المرور وغير ذلك.</translation>
 <translation id="2063848847527508675">‏يلزم إعادة تشغيل نظام التشغيل Chrome حتى يتم تطبيق التحديث.</translation>
 <translation id="2094919256425865063">‏هل تريد الخروج من Chrome على أي حال؟</translation>
 <translation id="2120620239521071941">‏سيعمل هذا على حذف <ph name="ITEMS_COUNT" /> من العناصر من هذا الجهاز. لاسترداد بياناتك لاحقًا، سجّل الدخول إلى Chrome كـ <ph name="USER_EMAIL" />.</translation>
@@ -53,9 +55,11 @@
 <translation id="234869673307233423">‏يتعذّر على Chrome التحقّق من كلمات المرور. يُرجى إعادة المحاولة.</translation>
 <translation id="235650106824528204">‏يمكن لمشرف الملف الشخصي للعمل إزالة أي بيانات مرتبطة بمتصفِّح Chrome والتي يتم إنشاؤها أثناء استخدام هذا الملف الشخصي (مثل إنشاء الإشارات المرجعية والسجلّ وكلمات المرور والإعدادات الأخرى).<ph name="LEARN_MORE" /></translation>
 <translation id="2429317896000329049">‏تعذر على Google Chrome مزامنة البيانات نظرًا لأن المزامنة غير متاحة في نطاقك.</translation>
+<translation id="245659736593643560">‏أصبح نظام التشغيل Chrome متاحًا من خلال <ph name="BEGIN_LINK_CROS_OSS" />برنامج إضافي مفتوح المصدر<ph name="END_LINK_CROS_OSS" />، كما هو الحال في <ph name="BEGIN_LINK_LINUX_OSS" />بيئة تطوير أدوات Linux (إصدار تجريبي)<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2467438592969358367">‏يرغب Google Chrome في تصدير كلمات مرورك، لذا يُرجى كتابة كلمة مرور Windows للسماح بذلك.</translation>
 <translation id="2485422356828889247">إزالة التثبيت</translation>
 <translation id="2534507159460261402">‏Google Pay (تم النسخ إلى Chrome)</translation>
+<translation id="2574930892358684005">‏سبَق تسجيل دخول <ph name="EXISTING_USER" /> إلى هذا الملف الشخصي على Chrome. للحصول على تجربة تصفّح منفصلة، يمكن لمتصفِّح Chrome إنشاء ملف شخصي خاص بك.</translation>
 <translation id="2580411288591421699">‏لا يمكن تثبيت نفس الإصدار المثبت من Google Chrome والذي يتم تشغيله حاليًا. يُرجى إغلاق Google Chrome وإعادة المحاولة.</translation>
 <translation id="2586406160782125153">‏سيؤدي هذا إلى حذف بيانات التصفح من هذا الجهاز. لاسترداد بياناتك لاحقًا، سجّل الدخول إلى Chrome كـ <ph name="USER_EMAIL" />.</translation>
 <translation id="2588634262982826227">‏بإمكان "نظام التشغيل Chrome" في أي وقت استعادة تطبيقاتك وصفحاتك بعد إعادة التشغيل بدون السؤال كل مرة.</translation>
@@ -70,6 +74,7 @@
 <translation id="2799223571221894425">إعادة تشغيل</translation>
 <translation id="2847461019998147611">‏عرض Google Chrome بهذه اللغة</translation>
 <translation id="2857540653560290388">‏جارٍ إطلاق Chrome...</translation>
+<translation id="2857972467023607093">‏يتوفّر ملف شخصي بهذا الحساب حاليًا على Chrome.</translation>
 <translation id="2871893339301912279">‏تم تسجيل دخولك إلى Chrome!</translation>
 <translation id="2885378588091291677">إدارة المهام</translation>
 <translation id="2888126860611144412">‏لمحة عن Chrome</translation>
@@ -139,6 +144,7 @@
 <translation id="4600710005438004015">‏تعذّرت إعادة التحميل Chrome إلى آخر إصدار، لذلك قد تفوتك الميزات وعمليات إصلاح الأمان الجديدة.</translation>
 <translation id="4631713731678262610">‏الإخفاء في قائمة Chrome</translation>
 <translation id="4633000520311261472">‏لجعل Chrome أكثر أمانًا، تم إيقاف بعض الإضافات غير المدرجة في <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> والتي ربما تمت إضافتها بدون علمك.</translation>
+<translation id="4666328473657283332">‏للوصول من خلال جميع أجهزتك إلى بياناتك في Chrome، عليك تسجيل الدخول كي تتمكّن من تفعيل المزامنة.</translation>
 <translation id="4728575227883772061">‏فشلت عملية التثبيت بسبب خطأ غير محدد. إذا كان Google Chrome في حالة التشغيل حاليًا، يُرجى إغلاقه وإعادة المحاولة.</translation>
 <translation id="4750550185319565338">‏إعادة تشغيل Chrome لتفعيل <ph name="PLUGIN_NAME" /></translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
@@ -148,6 +154,7 @@
 <translation id="4895437082222824641">‏فتح الرابط في علامة تبويب جديدة في Chrome</translation>
 <translation id="4953650215774548573">‏تحديد Google Chrome المتصفح التلقائي</translation>
 <translation id="495931528404527476">‏في Chrome</translation>
+<translation id="4970761609246024540">‏مرحبًا بك في الملفات الشخصية على Chrome</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5062123544085870375">‏إعادة تشغيل نظام التشغيل Chrome</translation>
 <translation id="5132929315877954718">‏يمكنك اكتشاف تطبيقات، وألعاب، وإضافات، ومظاهر رائعة لمتصفح Google Chrome.</translation>
@@ -157,6 +164,7 @@
 
 قد تكون بعض الميزات غير متاحة. يُرجى تحديد دليل ملف شخصي مختلف أو استخدام إصدار أحدث من Chrome.</translation>
 <translation id="5193136243808726294">‏يتعذر على نظام التشغيل Google Chrome فتح هذه الصفحة.</translation>
+<translation id="521447420733633466">‏في حال مشاركة جهاز مع الأصدقاء والعائلة، يمكنهم الحصول على تجربة تصفّح منفصلة وإعداد Chrome على النحو المفضّل لديهم.</translation>
 <translation id="5251420635869119124">‏يمكن للضيف استخدام Chrome بدون أن يترك أي أثر وراءه.</translation>
 <translation id="532046782124376502">‏تحذير: يتعذّر على Google Chrome منع الإضافات من تسجيل سجل تصفحك. لإيقاف هذه الإضافة في وضع التصفح المتخفي، ألغِ تحديد هذا الخيار.</translation>
 <translation id="5386244825306882791">‏كما أنها تتحكم في الصفحة التي تظهر عند تشغيل Chrome أو إجراء بحث من المربع متعدد الاستخدامات.</translation>
@@ -192,12 +200,14 @@
 <translation id="6291549208091401781">‏تم تثبيت Google Chrome من قبل لجميع المستخدمين على الكمبيوتر.</translation>
 <translation id="6338556085225130112">‏تحديث Google Chrome</translation>
 <translation id="6368958679917195344">‏أصبح نظام التشغيل Chrome متاحًا من خلال <ph name="BEGIN_LINK_CROS_OSS" />برنامج مفتوح المصدر<ph name="END_LINK_CROS_OSS" /> إضافي.</translation>
+<translation id="6418662306461808273">‏هل لديك رغبة في الانتقال إلى ملف شخصي حالي على Chrome؟</translation>
 <translation id="6515495397637126556">‏<ph name="PAGE_TITLE" /> - إصدار قناة مطوري البرامج من Google Chrome</translation>
 <translation id="6566149418543181476">‏جارٍ تحديث Google Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">‏نظام التشغيل Chrome</translation>
 <translation id="6650333065969705433">‏يجب إعادة تشغيل متصفِّح Chrome لاستخدام برنامج Rosetta والسماح له بتشغيل الوسائط المحمية</translation>
 <translation id="6676384891291319759">الدخول إلى الإنترنت</translation>
 <translation id="6679975945624592337">‏السماح بتشغيل Google Chrome في الخلفية</translation>
+<translation id="6739177684496155661">‏هل لديك رغبة في المتابعة باستخدام ملف شخصي جديد على Chrome؟</translation>
 <translation id="6750954913813541382">‏لإصلاح الأخطاء الإملائية، يرسِل Chrome النص الذي تكتبه في المتصفّح إلى Google.</translation>
 <translation id="6755885556185485672">‏لم يتم إيقاف "نظام التشغيل Chrome" بشكلٍ صحيح.</translation>
 <translation id="677276454032249905">‏هل تريد الخروج من Chrome على أي حال؟</translation>
@@ -215,6 +225,7 @@
 <translation id="7242029209006116544">‏إنك تسجل الدخول باستخدام حساب مُدار وتمنح المشرف إمكانية التحكم في ملفك الشخصي في Google Chrome. وسيتم ربط بيانات Chrome التابعة لك، مثل التطبيقات والإشارات المرجعية والسجلّ وكلمات المرور والإعدادات الأخرى بالمستخدم <ph name="USER_NAME" />. وستتمكن من حذف هذه البيانات عبر لوحة تحكم حسابات Google، ولكنك لن تتمكن من إقران هذه البيانات بحساب آخر. ويُمكنك اختيار إنشاء ملف شخصي جديد للإبقاء على بياناتك الحالية في Chrome بشكل مستقل. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">‏يتم استخدام هذه اللغة لعرض واجهة مستخدم Google Chrome</translation>
 <translation id="7296210096911315575">معلومات مهمّة حول الأمان والاستخدام</translation>
+<translation id="7303916856901595720">‏هل لديك رغبة في نقل الحساب إلى ملف شخصي جديد على Chrome؟</translation>
 <translation id="7308322188646931570">‏يحتاج Chrome للوصول إلى مساحة التخزين لتنزيل الملفات.</translation>
 <translation id="7339898014177206373">نافذة جديدة</translation>
 <translation id="7398801000654795464">‏تم تسجيل دخولك إلى Chrome باعتبارك <ph name="USER_EMAIL_ADDRESS" />. يُرجى استخدام الحساب نفسه لتسجيل الدخول مرة أخرى.</translation>
@@ -243,6 +254,7 @@
 <translation id="7930071585467473040">‏يحاول Google Chrome نسخ كلمات المرور.</translation>
 <translation id="7962410387636238736">‏لن يستلم جهاز الكمبيوتر هذا تحديثات Google Chrome لأن Windows XP وWindows Vista أصبحا غير مدعومين.</translation>
 <translation id="8008534537613507642">‏إعادة تثبيت Chrome</translation>
+<translation id="8009904340233602924">‏استخدام Chrome بدون حساب</translation>
 <translation id="8013993649590906847">‏في حال لم تتضمن صورة ما وصفًا مفيدًا، سيحاول Chrome توفير وصف لك. لإنشاء الأوصاف، سيتم إرسال الصور إلى Google.</translation>
 <translation id="8129812357326543296">‏&amp;حول Google Chrome</translation>
 <translation id="8255190535488645436">‏يستخدم Google Chrome الكاميرا والميكروفون.</translation>
@@ -265,6 +277,7 @@
 <translation id="8641606876632989680">‏في حال تسجيل الدخول باستخدام كلمة مرور محتمَل تعرّضها للاختراق، سيرسل Chrome إشعارات إليك.</translation>
 <translation id="8669527147644353129">‏مساعد Google Chrome</translation>
 <translation id="8679801911857917785">‏كما أنها تتحكم في الصفحة التي تظهر عند تشغيل Chrome.</translation>
+<translation id="8686817260976772516">‏باستخدام الملفات الشخصية على Chrome، يمكنك الفصل بين جميع بيانات Chrome. ويمكنك إنشاء ملفات شخصية للأصدقاء والعائلة أو تقسيمها للعمل وأغراض الترفيه.</translation>
 <translation id="870251953148363156">‏&amp;تحديث Google Chrome</translation>
 <translation id="873133009373065397">‏يتعذَّر على Google Chrome تحديد المتصفح التلقائي أو تعيينه</translation>
 <translation id="8823341990149967727">‏إصدار Chrome قديم</translation>
@@ -281,6 +294,7 @@
 <translation id="911206726377975832">هل تريد أيضًا حذف بيانات التصفح؟</translation>
 <translation id="9138603949443464873">‏لتطبيق التغييرات، يُرجى إعادة تشغيل Chrome</translation>
 <translation id="919706545465235479">‏تحديث Chrome لبدء المزامنة</translation>
+<translation id="940313311831216333">‏للوصول من خلال جميع أجهزتك إلى بياناتك في Chrome، عليك تسجيل الدخول وتفعيل المزامنة.</translation>
 <translation id="94743460404517794">‏إذا كانت لديك حسابات متعددة على Google، يمكنك إضافتها إلى جهاز <ph name="DEVICE_TYPE" />. وستكون حساباتك متوفّرة في متصفِّح Chrome و"متجر Play"، بالإضافة إلى خدمات مثل Gmail وDrive وYouTube. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="989369509083708165">‏Google Chrome هو متصفحك التلقائي</translation>
 </translationbundle>

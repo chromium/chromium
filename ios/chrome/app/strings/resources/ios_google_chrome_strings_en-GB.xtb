@@ -78,6 +78,10 @@
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>
 <translation id="840168496893712993">Some add-ons cause Chrome to crash. Please try uninstalling them.</translation>
 <translation id="8459495907675268833">The selected data has been removed from Chrome and synced devices. Your Google Account may have other forms of browsing history like searches and activity from other Google services at history.google.com.</translation>
+<translation id="850555388806794946">To make Chrome your default:
+  1. Open settings
+  2. Tap the default browser app
+  3. Select Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="9135668017386497357">If you allow Chrome to know your location, Chrome sends it to your default search engine and any sites that you allow. Sites may ask for your location when they have local info to show you, like nearby shops or news.</translation>
 </translationbundle>

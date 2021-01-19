@@ -69,6 +69,7 @@
 <translation id="328888136576916638">Nedostaju ključevi Google API-ja. Neke funkcije Chromiuma bit će onemogućene.</translation>
 <translation id="3296368748942286671">Nastavi izvršavati ​​pozadinske aplikacije po zatvaranju preglednika Chromium</translation>
 <translation id="331951419404882060">OS Chromium nije mogao sinkronizirati vaše podatke zbog pogreške prilikom prijave.</translation>
+<translation id="3430503420100763906">Pomoću Chromiumovih profila možete razdvojiti sve svoje sadržaje u Chromiumu. Izradite profile za prijatelje i obitelj ili odvojite posao i zabavu.</translation>
 <translation id="347328004046849135">Chrome će vas obavijestiti kada se prijavite ugroženom zaporkom</translation>
 <translation id="3474745554856756813">Time će se izbrisati sljedeći broj stavki s uređaja: <ph name="ITEMS_COUNT" />. TDa biste kasnije dohvatili svoje podatke, prijavite se na Chromium kao <ph name="USER_EMAIL" />.</translation>
 <translation id="3509308970982693815">Zatvorite sve prozore preglednika Chromium i pokušajte ponovo.</translation>
@@ -163,6 +164,7 @@
 <translation id="6373523479360886564">Jeste li sigurni da želite deinstalirati Chromium?</translation>
 <translation id="6403826409255603130">Chromium je web-preglednik koji munjevitom brzinom prikazuje web-stranice i aplikacije. Brz je, stabilan i jednostavan za upotrebu. Pregledavajte web sigurnije jer je zaštita od zlonamjernog softvera i krađe identiteta ugrađena u Chromium.</translation>
 <translation id="6434250628340475518">OS Chromium</translation>
+<translation id="6455857529632101747">Dobro došli u Chromiumove profile</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium će se ponovo pokrenuti za 1 sekundu}one{Chromium će se ponovo pokrenuti za # sekundu}few{Chromium će se ponovo pokrenuti za # sekunde}other{Chromium će se ponovo pokrenuti za # sekundi}}</translation>
 <translation id="6475912303565314141">Upravlja i time koja se stranica prikazuje prilikom pokretanja Chromiuma.</translation>
 <translation id="6510925080656968729">Deinstaliranje Chromiuma</translation>

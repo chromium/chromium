@@ -78,6 +78,10 @@
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. 保留所有權利。</translation>
 <translation id="840168496893712993">部分外掛程式造成 Chrome 當機，請解除安裝這些外掛程式。</translation>
 <translation id="8459495907675268833">系統已將您所選取的資料從 Chrome 和其他同步的裝置中移除。您的 Google 帳戶仍可能保留了其他類型的瀏覽記錄，例如其他 Google 服務中的搜尋和活動記錄 (可前往 history.google.com 查詢)。</translation>
+<translation id="850555388806794946">如何將 Chrome 設為預設瀏覽器：
+  1. 開啟「設定」
+  2. 輕觸 [預設瀏覽器 App]
+  3. 選取 [Chrome]</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="9135668017386497357">如果允許 Chrome 取得位置資訊，Chrome 會將該資訊傳送至你的預設搜尋引擎，以及你允許存取這項資訊的網站。當網站要向你顯示當地資訊時 (例如附近商家或新聞)，可能會要求你提供位置資訊。</translation>
 </translationbundle>

@@ -155,7 +155,6 @@ Dacă opțiunea „<ph name="SERVICE_SCRIPT_NAME" />” este deja bifată, debif
 <translation id="8073845705237259513">Pentru a folosi Desktop la distanță Chrome, va trebui să adăugați un Cont Google pe dispozitiv.</translation>
 <translation id="809687642899217504">Computerele mele</translation>
 <translation id="8116630183974937060">A apărut o eroare de rețea. Verificați dacă dispozitivul este online și încercați din nou.</translation>
-<translation id="8187079423890319756">Copyright 2013 The Chromium Authors. Toate drepturile rezervate.</translation>
 <translation id="8295077433896346116">Ca să folosești <ph name="PRODUCT_NAME" />, trebuie să acorzi permisiunea „Accesibilitate”, astfel încât intrările de la dispozitivul la distanță să poată fi introduse pe acest computer Mac.
 
 Ca să acorzi această permisiune, dă clic pe butonul „<ph name="BUTTON_NAME" />” de mai jos. În panoul de preferințe pentru „Accesibilitate” care se deschide, bifează caseta de lângă „<ph name="SERVICE_SCRIPT_NAME" />”.

@@ -47,6 +47,10 @@
 <translation id="5862307444128926510">Tervetuloa Chromiumiin</translation>
 <translation id="5945387852661427312">Olet kirjautumassa sisään verkkotunnuksen <ph name="DOMAIN" /> hallitsemalla tilillä ja antamassa sen järjestelmänvalvojalle oikeuden hallita Chromium-tietojasi. Tietosi liitetään pysyvästi tähän tiliin. Chromiumista uloskirjautuminen poistaa tietosi tältä laitteelta, mutta ne säilyvät Google-tililläsi.</translation>
 <translation id="602807004951640891">Käyttämällä Chromiumia hyväksyt <ph name="BEGIN_LINK_TOS" />käyttöehdot<ph name="END_LINK_TOS" />.</translation>
+<translation id="6119647025869519954">Näin teet Chromiumista oletusselaimesi:
+1. Avaa asetukset
+2. Valitse Oletusselain
+3. Valitse Chromium.</translation>
 <translation id="6268381023930128611">Kirjaudutaanko ulos?</translation>
 <translation id="6424492062988593837">Chromiumista tuli juuri entistä parempi! Uusi versio on saatavilla.</translation>
 <translation id="6604711459180487467">Parannamme Chromium-käyttökokemustasi sijaintisi perusteella.</translation>

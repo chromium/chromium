@@ -338,6 +338,7 @@
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{不正使用されたパスワードはありません}=1{不正使用されたパスワード: 1 件}other{不正使用されたパスワード: {NUM_COMPROMISED} 件}}</translation>
 <translation id="1380028686461971526">自動接続するネットワーク</translation>
 <translation id="1380436189840894976">シークレット モードを終了してもよろしいですか？</translation>
+<translation id="1383597849754832576">読み上げファイルをダウンロードできません。しばらくしてからもう一度お試しください。</translation>
 <translation id="1383861834909034572">ダウンロードが完了したら開きます</translation>
 <translation id="1383876407941801731">検索</translation>
 <translation id="1386791642444521222">物理的な SIM を有効にする</translation>
@@ -876,7 +877,6 @@
 <translation id="1954813140452229842">共有フォルダのマウントエラー。認証情報を確認してもう一度お試しください。</translation>
 <translation id="1956050014111002555">ファイルに含まれる複数の証明書のうち、いずれもインポートできませんでした:</translation>
 <translation id="1956390763342388273">「<ph name="FOLDER_PATH" />」のすべてのファイルがアップロードされます。この操作は、サイトを信頼できる場合にのみ行ってください。</translation>
-<translation id="1960158217849594135">Google アカウントにユーザー名を保存しますか？</translation>
 <translation id="196040970347962278">まずインターネット接続を確立してください</translation>
 <translation id="1962233722219655970">このページは、お使いのパソコンでは動作しないネイティブ クライアント アプリを使用しています。</translation>
 <translation id="1963227389609234879">すべて削除</translation>
@@ -902,6 +902,7 @@
 <translation id="1984417487208496350">保護なし（推奨されません）</translation>
 <translation id="1987317783729300807">アカウント</translation>
 <translation id="1989112275319619282">閲覧</translation>
+<translation id="1990046457226896323">読み上げファイルをダウンロードしました</translation>
 <translation id="1990512225220753005">このページではショートカットを表示しません</translation>
 <translation id="1992397118740194946">未設定</translation>
 <translation id="1992924914582925289">デバイスから削除</translation>
@@ -1047,7 +1048,6 @@
 <translation id="2157474325782140681">すべての機能を利用できるようにするには、この Chromebook に対応した Dell のドッキング ステーションを使用してください。</translation>
 <translation id="215753907730220065">全画面表示を終了</translation>
 <translation id="2157875535253991059">現在このページは全画面表示です。</translation>
-<translation id="2160589599612868242">スマートフォンの通知を <ph name="DEVICE_TYPE" /> で受信できます</translation>
 <translation id="216169395504480358">Wi-Fi を追加...</translation>
 <translation id="2162155940152307086">同期設定を閉じると同期が開始します</translation>
 <translation id="2162838847352058695">サイトが複数のファイルを自動的にダウンロードできないようにする</translation>
@@ -1265,6 +1265,7 @@
 <translation id="2399699884460174994">通知をオンにしました</translation>
 <translation id="2399939490305346086">セキュリティ キーのログインデータ</translation>
 <translation id="2400664245143453337">今すぐ更新が必要です</translation>
+<translation id="2406153734066939945">このプロフィールとデータを削除しますか？</translation>
 <translation id="2408018932941436077">カードを保存しています</translation>
 <translation id="2408955596600435184">PIN を入力してください</translation>
 <translation id="241082044617551207">不明なプラグイン</translation>
@@ -1383,6 +1384,7 @@
 <translation id="2526590354069164005">デスクトップ</translation>
 <translation id="2526619973349913024">アップデートを確認</translation>
 <translation id="2527167509808613699">あらゆる種類の接続</translation>
+<translation id="2530166226437958497">トラブルシューティング</translation>
 <translation id="2532589005999780174">ハイコントラスト モード</translation>
 <translation id="253434972992662860">一時停止(&amp;P)</translation>
 <translation id="2534460670861217804">保護された HTTP プロキシ</translation>
@@ -1700,7 +1702,6 @@
 <translation id="2885729872133513017">サーバーの応答をデコード中に問題が発生しました。</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="2889064240420137087">次のプログラムでリンクを開く...</translation>
-<translation id="2889481634493693121">スマートフォンからの通知をオンにする</translation>
 <translation id="2889925978073739256">サンドボックスの無効化プラグインを引き続きブロックする</translation>
 <translation id="2893168226686371498">既定のブラウザ</translation>
 <translation id="2893917546370257247">{COUNT,plural, =1{1 個のテキスト}other{# 個のテキスト}}</translation>
@@ -2560,6 +2561,7 @@
 <translation id="3857807444929313943">指を放して、もう一度タッチ</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: 同期が一時停止されています</translation>
 <translation id="3861638017150647085">ユーザー名「<ph name="USERNAME" />」は使用できません</translation>
+<translation id="3861977424605124250">起動時に表示する</translation>
 <translation id="3862693525629180217">内蔵センサーを使って確認</translation>
 <translation id="3862788408946266506">「kiosk_only」のマニフェスト属性が指定されているアプリは、Chrome OS キオスクモードでインストールする必要があります。</translation>
 <translation id="3865414814144988605">解像度</translation>
@@ -2802,7 +2804,6 @@
 <translation id="412730574613779332">スパンデックス</translation>
 <translation id="4130199216115862831">デバイスログ</translation>
 <translation id="4130207949184424187">この拡張機能により、アドレスバーから検索したときに表示されるページが変更されました。</translation>
-<translation id="4130344535649650885">Google アカウントにパスワードを保存しますか？</translation>
 <translation id="4130750466177569591">同意する</translation>
 <translation id="413121957363593859">コンポーネント</translation>
 <translation id="4131410914670010031">白黒</translation>
@@ -3201,6 +3202,7 @@
 <translation id="4627442949885028695">他のデバイスで開いたタブ</translation>
 <translation id="4628757576491864469">デバイス</translation>
 <translation id="4628762811416793313">Linux コンテナの設定を完了できませんでした。もう一度お試しください。</translation>
+<translation id="4629521233550547305"><ph name="PROFILE_NAME" /> のプロフィールを開く</translation>
 <translation id="4633003931260532286">拡張機能には「<ph name="IMPORT_NAME" />」のバージョン「<ph name="IMPORT_VERSION" />」以上が必要ですが、インストールされているのはバージョン「<ph name="INSTALLED_VERSION" />」のみです</translation>
 <translation id="4633757335284074492">Google ドライブにデータをバックアップします。これにより、いつでも簡単にデータを復元したりデバイスを切り替えたりできます。バックアップ内容にはアプリのデータが含まれます。バックアップ データは Google にアップロードされ、お子様の Google アカウントのパスワードを使って暗号化されます。</translation>
 <translation id="4634575639321169635">このデバイスを仕事または個人で使用する</translation>
@@ -3929,7 +3931,6 @@
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> から <ph name="ATTACHMENTS" />を受け取れませんでした}other{<ph name="DEVICE_NAME" /> から <ph name="ATTACHMENTS" />を受け取れませんでした}}</translation>
 <translation id="5502500733115278303">Firefox ブックマーク</translation>
 <translation id="5502915260472117187">お子様</translation>
-<translation id="5503858713116291452">Bluetooth 搭載のスマートフォンが近くにあり、Wi-Fi がオンになっていて、ロックも解除されていることを確認してください。スマートフォンの手順に沿って設定を完了します。</translation>
 <translation id="5503982651688210506"><ph name="HOST" /> によるカメラの使用と移動、およびマイクの使用を引き続き許可する</translation>
 <translation id="5505264765875738116">通知を送信するかどうかの確認をサイトに許可しない</translation>
 <translation id="5505307013568720083">インクがありません</translation>
@@ -3990,6 +3991,7 @@
 <translation id="5565735124758917034">有効</translation>
 <translation id="5567989639534621706">アプリケーション キャッシュ</translation>
 <translation id="5568069709869097550">ログインできない</translation>
+<translation id="5571832155627049070">プロファイルのカスタマイズ</translation>
 <translation id="5572851009514199876">このサイトへのアクセス権があるかどうかを Chrome で確認できるように、Chrome を起動してログインしてください。</translation>
 <translation id="5575473780076478375">シークレット モード拡張機能: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">デモ登録リクエストで問題が発生しました。</translation>
@@ -5459,6 +5461,7 @@
 <translation id="7280649757394340890">テキスト読み上げの音声の設定</translation>
 <translation id="7280877790564589615">許可の要求</translation>
 <translation id="7282992757463864530">情報バー</translation>
+<translation id="7283555985781738399">ゲストモード</translation>
 <translation id="7284411326658527427">ユーザーごとにアカウントをカスタマイズして、データのプライバシーを確保できます。</translation>
 <translation id="7287143125007575591">アクセスが拒否されました。</translation>
 <translation id="7287411021188441799">デフォルトの背景に戻す</translation>
@@ -5838,6 +5841,7 @@
 <translation id="7716781361494605745">Netscape 認証局ポリシー URL</translation>
 <translation id="7717014941119698257">ダウンロード: <ph name="STATUS" /></translation>
 <translation id="7717134585801378441">サイトが位置情報を要求できるようにする（推奨）</translation>
+<translation id="771721654176725387">このデバイスから閲覧データを完全に削除します。データを復元するには、次のユーザーとして同期を有効にしてください:</translation>
 <translation id="7717845620320228976">アップデートを確認</translation>
 <translation id="7719367874908701697">ページのズーム</translation>
 <translation id="7719588063158526969">デバイス名が長すぎます</translation>
@@ -5874,6 +5878,7 @@
 <translation id="7765158879357617694">移動</translation>
 <translation id="7765507180157272835">Bluetooth と Wi-Fi が必要です</translation>
 <translation id="7766082757934713382">アプリとシステムの自動アップデートを一時的に停止することで、ネットワークのデータ使用量を減らします。</translation>
+<translation id="7766807826975222231">使い方ガイド</translation>
 <translation id="7766838926148951335">権限を許可</translation>
 <translation id="7768507955883790804">サイトにアクセスしたときにこの設定の動作を自動的に行います</translation>
 <translation id="7768770796815395237">変更</translation>
@@ -6118,6 +6123,7 @@
 <translation id="8017176852978888182">Linux の共有ディレクトリ</translation>
 <translation id="8017335670460187064"><ph name="LABEL" /></translation>
 <translation id="8017679124341497925">ショートカットを編集しました</translation>
+<translation id="8018298733481692628">このプロフィールを削除しますか？</translation>
 <translation id="8018313076035239964">ウェブサイトに使用を許可する情報や、表示してもよいコンテンツを管理します</translation>
 <translation id="8023801379949507775">拡張機能を今すぐ更新</translation>
 <translation id="8026334261755873520">閲覧履歴データの削除</translation>
@@ -6288,7 +6294,6 @@
 <translation id="8211551284753798479">無効な PUK です。入力できるのはあと <ph name="RETRIES" /> 回です。</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{ダウンロードが進行中です}other{ダウンロードが進行中です}}</translation>
 <translation id="8213449224684199188">写真モードに切り替えました</translation>
-<translation id="8213866992824776555">保護された最高品質の動画とオーディオを再生するために、<ph name="DOMAIN" /> がデバイスの確認を求めています。</translation>
 <translation id="8214489666383623925">ファイルを開く...</translation>
 <translation id="8214962590150211830">このユーザーを削除</translation>
 <translation id="8216351761227087153">見る</translation>
@@ -6767,7 +6772,6 @@
 <translation id="8774379074441005279">復元を実行</translation>
 <translation id="8774934320277480003">上余白</translation>
 <translation id="8775144690796719618">無効なURL</translation>
-<translation id="8775163630211761057">Android スマートフォンの機能を <ph name="DEVICE_TYPE" /> で利用できるようにします</translation>
 <translation id="8775653927968399786">{0,plural, =1{<ph name="DEVICE_TYPE" /> は # 秒後に自動的にロックされます。
 <ph name="DOMAIN" /> では必ずスマートカードを挿入した状態にしてください。}other{<ph name="DEVICE_TYPE" /> は # 秒後に自動的にロックされます。
 <ph name="DOMAIN" /> では必ずスマートカードを挿入した状態にしてください。}}</translation>
@@ -6956,6 +6960,7 @@
 <translation id="8973596347849323817">このデバイスを必要に応じてカスタマイズできます。このユーザー補助機能は後から [設定] で変更できます。</translation>
 <translation id="897414447285476047">接続の問題により、ダウンロードされたファイルは不完全です。</translation>
 <translation id="897525204902889653">検疫サービス</translation>
+<translation id="8975396729541388937">配信登録は、このメールのリンクをクリックして、いつでも解除できます。</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{「<ph name="TAB_TITLE" />」}=1{「<ph name="TAB_TITLE" />」と他 1 個のタブ}other{「<ph name="TAB_TITLE" />」と他 # 個のタブ}}</translation>
 <translation id="8977811652087512276">パスワードが間違っているか、ファイルが壊れています</translation>
 <translation id="8978154919215542464">オン - すべて同期</translation>

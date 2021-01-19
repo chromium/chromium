@@ -410,6 +410,7 @@ Nếu bạn tắt chính sách này, thì việc cuộn trang web đến các ph
 <translation id="1561424797596341174">Chính sách ghi đè dành cho bản dựng Gỡ lỗi của máy chủ truy cập từ xa</translation>
 <translation id="1561967320164410511">Tiện ích U2F+ để chứng thực cá nhân</translation>
 <translation id="1575015449587326319">Chính sách cấu hình dành cho Trình kết nối OnFileDownloaded của Chrome Enterprise</translation>
+<translation id="1576684007051137182">Định cấu hình để tắt máy ảnh, các chế độ cài đặt của trình duyệt, chế độ cài đặt của hệ điều hành, tính năng quét và tính năng của cửa hàng trực tuyến</translation>
 <translation id="1583248206450240930">Sử dụng <ph name="PRODUCT_FRAME_NAME" /> theo mặc định</translation>
 <translation id="1588240398285670601">Cài đặt của trình duyệt</translation>
 <translation id="1593245608325508847">Khi bạn đặt chính sách này, tính năng đăng nhập có giới hạn của Chrome sẽ được bật trong G Suite và người dùng sẽ không thể thay đổi tùy chọn cài đặt này. Người dùng chỉ có thể truy cập vào các công cụ của Google bằng tài khoản thuộc miền được chỉ định (để cho phép tài khoản gmail hoặc googlemail, hãy thêm consumer_accounts vào danh sách miền). Tùy chọn cài đặt này ngăn người dùng đăng nhập và thêm Tài khoản phụ trên một thiết bị được quản lý có yêu cầu quy trình xác thực của Google, nếu tài khoản đó không thuộc một trong những miền được cho phép rõ ràng.
@@ -2307,6 +2308,7 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 <translation id="4138655880188755661">Giới hạn thời gian</translation>
 <translation id="4147818922357566987">Chỉ bật các biến thể liên quan đến những bản sửa lỗi quan trọng</translation>
 <translation id="4150201353443180367">Hiển thị</translation>
+<translation id="415445772247959702">Cửa hàng trực tuyến (được hỗ trợ kể từ phiên bản 89)</translation>
 <translation id="4157003184375321727">Báo cáo phiên bản hệ điều hành và chương trình cơ sở</translation>
 <translation id="4157594634940419685">Cho phép truy cập vào các máy in gốc sử dụng hệ thống in Unix chung (CUPS)</translation>
 <translation id="4160962198980004898">Nguồn địa chỉ MAC của thiết bị khi được gắn vào đế sạc</translation>

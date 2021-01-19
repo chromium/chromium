@@ -80,6 +80,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
     &lt;li&gt;Kontaktujte vlastníka príslušného webu.&lt;/li&gt;
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Zadali ste heslo na webe, ktorý nie je spravovaný vašou organizáciou. Ak chcete, aby bol váš účet chránený, nepoužívajte dané heslo pre iné aplikácie a weby.</translation>
+<translation id="1259144770381827039">Zobraziť podrobnosti</translation>
 <translation id="1263231323834454256">Čitateľský zoznam</translation>
 <translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
         Aktivita, ktorá nezostane v tomto zariadení:
@@ -322,6 +323,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2164510882479075877">Skontrolujte, či nie je v názve <ph name="HOST_NAME" /> preklep.</translation>
 <translation id="2166049586286450108">Úplný správcovský prístup</translation>
 <translation id="2166378884831602661">Tento web nedokáže poskytnúť zabezpečené pripojenie</translation>
+<translation id="2168151236314517198">Tlač tohto obsahu je zablokovaná pravidlom správcu</translation>
 <translation id="2169984857010174799">Kaku2 (obálka)</translation>
 <translation id="2181821976797666341">Pravidlá</translation>
 <translation id="2183608646556468874">Telefónne číslo</translation>
@@ -1344,6 +1346,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6290238015253830360">Tu sa zobrazia vaše navrhované články</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">Zastavuje sa Asistent Google v Chrome</translation>
+<translation id="6304463939629872728">Zaplatiť u obchodníka</translation>
 <translation id="6305205051461490394">Web <ph name="URL" /> je nedostupný.</translation>
 <translation id="6312113039770857350">Webová stránka nie je k dispozícii</translation>
 <translation id="6321917430147971392">Skontrolujte nastavenia DNS</translation>
@@ -1373,6 +1376,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6406765186087300643">C0 (obálka)</translation>
 <translation id="6409754798200046165">Práve ste zadali svoje heslo na podvodnom webe. Chrome odporúča, aby ste si ihneď zmenili heslo.</translation>
 <translation id="6410264514553301377">Zadajte dátum vypršania platnosti a kód CVC karty <ph name="CREDIT_CARD" /></translation>
+<translation id="6410774864568266108">Nezabudnite na svoju ponuku Google Pay</translation>
 <translation id="6415778972515849510">Chromium vám pomôže ochrániť účet Google a zmeniť heslo.</translation>
 <translation id="6423385022588644828">Odteraz môžete potvrdzovať karty rýchlejšie pomocou funkcie Touch ID</translation>
 <translation id="6425092077175753609">Material</translation>
@@ -1761,6 +1765,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="79859296434321399">Ak chcete zobraziť obsah v rozšírenej realite, nainštalujte si ARCore</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="799149739215780103">Zviazať</translation>
+<translation id="7992044431894087211">Zdieľanie obrazovky pomocou aplikácie <ph name="APPLICATION_TITLE" /> bolo obnovené</translation>
 <translation id="7995512525968007366">Nie je upresnené</translation>
 <translation id="800218591365569300">Skúste zavrieť ostatné karty alebo programy a uvoľniť tak miesto v pamäti.</translation>
 <translation id="8004582292198964060">Prehliadač</translation>
@@ -2035,6 +2040,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="9103872766612412690">Web <ph name="SITE" /> zvyčajne chráni vaše informácie pomocou šifrovania. Keď sa prehliadač Chromium tentokrát pokúsil pripojiť k webu <ph name="SITE" />, odoslal späť nezvyčajné a nesprávne poverenia. Môže sa to stať vtedy, keď sa za web <ph name="SITE" /> snaží vydávať útočník alebo keď pripojenie preruší prihlasovacia obrazovka siete Wi‑Fi. Vaše informácie sú stále zabezpečené, pretože prehliadač Chromium zastavil pripojenie ešte pred výmenou dát.</translation>
 <translation id="9106062320799175032">Pridanie fakturačnej adresy</translation>
 <translation id="9107467864910557787">Váš prehliadač spravuje <ph name="MANAGER" /></translation>
+<translation id="91108059142052966">Keď je viditeľný dôverný obsah, pravidlá správcu deaktivujú zdieľanie obrazovky pomocou aplikácie <ph name="APPLICATION_TITLE" /></translation>
 <translation id="9114524666733003316">Overuje sa karta…</translation>
 <translation id="9114581008513152754">Tento prehliadač nespravuje firma ani iná organizácia. Aktivita v tomto zariadení môže byť spravovaná mimo Chromu. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">Nahrané</translation>

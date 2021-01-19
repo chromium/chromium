@@ -78,6 +78,10 @@
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Alle rettigheder forbeholdes.</translation>
 <translation id="840168496893712993">Nogle tilføjelser får Chrome til at gå ned. Prøv at afinstallere dem.</translation>
 <translation id="8459495907675268833">De valgte data er fjernet fra Chrome og synkroniserede enheder. Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og aktivitet fra andre Google-tjenester, på history.google.com.</translation>
+<translation id="850555388806794946">Sådan gør du Chrome til din standardbrowser:
+  1. Åbn Indstillinger
+  2. Tryk på Standardbrowserapp
+  3. Vælg Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="9135668017386497357">Hvis du giver Chrome tilladelse til at kende din placering, sender Chrome den til din standardsøgemaskine og de websites, du giver tilladelse til. Websites kan anmode om adgang til din placering, når de vil vise dig lokale oplysninger, f.eks. butikker i nærheden eller nyheder.</translation>
 </translationbundle>

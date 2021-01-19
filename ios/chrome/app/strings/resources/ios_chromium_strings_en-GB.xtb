@@ -47,6 +47,10 @@
 <translation id="5862307444128926510">Welcome to Chromium</translation>
 <translation id="5945387852661427312">You are signing in with an account managed by <ph name="DOMAIN" /> and giving its administrator control over your Chromium data. Your data will become permanently tied to this account. Signing out of Chromium will delete your data from this device, but it will remain stored in your Google Account.</translation>
 <translation id="602807004951640891">By using Chromium, you agree to the <ph name="BEGIN_LINK_TOS" />Terms of Service<ph name="END_LINK_TOS" />.</translation>
+<translation id="6119647025869519954">To make Chromium your default:
+1. Open settings
+2. Tap the default browser app
+3. Select Chromium.</translation>
 <translation id="6268381023930128611">Sign out of Chromium?</translation>
 <translation id="6424492062988593837">Chromium just got better! A new version is available.</translation>
 <translation id="6604711459180487467">Get a better experience in Chromium based on your location.</translation>

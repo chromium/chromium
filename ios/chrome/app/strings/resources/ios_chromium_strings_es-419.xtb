@@ -47,6 +47,10 @@
 <translation id="5862307444128926510">Bienvenido a Chromium</translation>
 <translation id="5945387852661427312">Estás accediendo con una cuenta que administra <ph name="DOMAIN" /> y dándole permiso a su administrador para que controle tus datos de Chromium. Tus datos se vincularán de forma permanente a esta cuenta. Si sales de Chromium, los datos se borrarán de este dispositivo, pero quedarán almacenados en tu cuenta de Google.</translation>
 <translation id="602807004951640891">Al usar Chromium, aceptas las <ph name="BEGIN_LINK_TOS" />Condiciones del Servicio<ph name="END_LINK_TOS" />.</translation>
+<translation id="6119647025869519954">Para establecer Chromium como navegador predeterminado, haz lo siguiente:
+1. Abre Ajustes.
+2. Presiona App de navegador predeterminada
+3. Selecciona Chromium.</translation>
 <translation id="6268381023930128611">¿Salir de Chromium?</translation>
 <translation id="6424492062988593837">¡Chromium mejoró! Hay una nueva versión disponible.</translation>
 <translation id="6604711459180487467">Disfruta de una mejor experiencia en Chromium según tu ubicación.</translation>

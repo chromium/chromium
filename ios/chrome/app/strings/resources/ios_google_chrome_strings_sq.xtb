@@ -77,6 +77,10 @@
 <translation id="8370517070665726704">Të drejtat e autorit <ph name="YEAR" /> Google LLC. Të gjitha të drejtat e rezervuara.</translation>
 <translation id="840168496893712993">Disa shtesa bëjnë që Chrome të ndërpritet aksidentalisht. Provo t'i çinstalosh ato.</translation>
 <translation id="8459495907675268833">Të dhënat e zgjedhura janë hequr nga Chrome dhe nga pajisjet e sinkronizuara. Llogaria jote e Google mund të ketë forma të tjera të historikut të shfletimit, si kërkimet dhe aktivitetet nga shërbimet e tjera të Google, në history.google.com.</translation>
+<translation id="850555388806794946">Për ta bërë Chrome shfletuesin e parazgjedhur:
+  1. Hap "Cilësimet"
+  2. Trokit tek "Aplikacioni i parazgjedhur i shfletuesit"
+  3. Zgjidh Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="9135668017386497357">Nëse lejon që Chrome të dijë vendndodhjen tënde, Chrome e dërgon atë te motori i parazgjedhur i kërkimit dhe çdo sajt që ti lejon. Sajtet mund të kërkojnë për vendndodhjen tënde kur ato kanë informacione lokale për të të shfaqur, si dyqanet në afërsi ose lajme.</translation>
 </translationbundle>

@@ -47,6 +47,10 @@
 <translation id="5862307444128926510">Selamat Datang di Chromium</translation>
 <translation id="5945387852661427312">Anda masuk dengan akun yang dikelola oleh <ph name="DOMAIN" /> dan memberikan kontrol data Chromium kepada administrator. Data Anda akan terikat dengan akun ini secara permanen. Bila Anda keluar dari Chromium, data akan dihapus dari perangkat ini, namun tetap disimpan di Akun Google.</translation>
 <translation id="602807004951640891">Dengan menggunakan Chromium, Anda menyetujui <ph name="BEGIN_LINK_TOS" />Persyaratan Layanan<ph name="END_LINK_TOS" />.</translation>
+<translation id="6119647025869519954">Untuk menjadikan Chromium sebagai default:
+1. Buka Setelan
+2. Ketuk Aplikasi Browser Default
+3. Pilih Chromium.</translation>
 <translation id="6268381023930128611">Keluar dari Chromium?</translation>
 <translation id="6424492062988593837">Chromium jadi semakin baik! Versi baru telah tersedia.</translation>
 <translation id="6604711459180487467">Dapatkan pengalaman yang lebih baik di Chromium berdasarkan lokasi Anda.</translation>

@@ -47,6 +47,10 @@
 <translation id="5862307444128926510">歡迎使用 Chromium</translation>
 <translation id="5945387852661427312">你即將使用由 <ph name="DOMAIN" /> 所管理的帳戶登入，並授權該網域的管理員控管你的 Chromium 資料。你的資料會與這個帳戶建立永久連結。登出 Chromium 後，系統會將你的資料從這個裝置上刪除，但繼續保留在你的 Google 帳戶中。</translation>
 <translation id="602807004951640891">使用 Chromium 即表示你同意《<ph name="BEGIN_LINK_TOS" />服務條款<ph name="END_LINK_TOS" />》。</translation>
+<translation id="6119647025869519954">如何將 Chromium 設為預設瀏覽器：
+1. 開啟「設定」
+2. 輕觸 [預設瀏覽器 App]
+3. 選取 [Chromium]</translation>
 <translation id="6268381023930128611">要登出 Chromium 嗎？</translation>
 <translation id="6424492062988593837">Chromium 現在變得更進步了！歡迎你升級使用新版本。</translation>
 <translation id="6604711459180487467">Chromium 可根據你的位置資訊提供更優質的體驗。</translation>

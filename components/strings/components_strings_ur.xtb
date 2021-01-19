@@ -1781,6 +1781,7 @@
 <translation id="79859296434321399">‏افزودہ حقیقت کا مواد دیکھنے کیلئے، ARCore کو انسٹال کریں</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="799149739215780103">باندھیں</translation>
+<translation id="7992044431894087211"><ph name="APPLICATION_TITLE" /> کے ساتھ اسکرین کے اشتراک کو دوبارہ شروع کر دیا گیا</translation>
 <translation id="7995512525968007366">متعین نہیں ہے</translation>
 <translation id="800218591365569300">میموری خالی کرنے کیلئے دیگر ٹیبز یا پروگرامز کو بند کرنے کی کوشش کریں۔</translation>
 <translation id="8004582292198964060">براؤزر</translation>
@@ -2055,6 +2056,7 @@
 نے خلاف معمول اور غلط اسناد واپس بھیجے۔ یہ اس وقت ہو سکتا ہے جب کوئی حملہ آور <ph name="SITE" /> بننے کا بھیس بنا رہا ہو یا ایک Wi-Fi سائن ان اسکرین نے کنکشن میں خلل ڈالا ہو۔ آپ کی معلومات اب بھی محفوظ ہے کیونکہ Chromium نے کسی ڈیٹا کا تبادلہ ہونے سے پہلے کنکشن روک دیا۔</translation>
 <translation id="9106062320799175032">بلنگ پتہ شامل کریں</translation>
 <translation id="9107467864910557787">آپ کا براؤزر <ph name="MANAGER" /> کے زیر انتظام ہے</translation>
+<translation id="91108059142052966">رازدارانہ مواد کے مرئی ہونے پر منتظم کی پالیسی <ph name="APPLICATION_TITLE" /> کے ساتھ اسکرین کے اشتراک کو غیر فعال کرتی ہے</translation>
 <translation id="9114524666733003316">کارڈ کی توثیق کی جا رہی ہے…</translation>
 <translation id="9114581008513152754">‏یہ براؤزر کسی کمپنی یا دوسری تنظیم کے زیر انتظام نہیں ہے۔ اس آلے پر ہونے والی سرگرمی کا Chrome سے باہر نظم کیا جا سکتا ہے۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">اپ لوڈ ہو گیا</translation>

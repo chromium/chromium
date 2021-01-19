@@ -47,6 +47,10 @@
 <translation id="5862307444128926510">‏ברוכים הבאים ל-Chromium‏</translation>
 <translation id="5945387852661427312">‏הכניסה שלך נעשית באמצעות חשבון המנוהל על-ידי <ph name="DOMAIN" /> ומעניק למנהל שלו שליטה על הנתונים שלך ב-Chromium. הנתונים שלך ישויכו לצמיתות אל החשבון הזה. יציאה מ-Chromium תמחק את הנתונים שלך מהמכשיר הזה, אבל הם יישארו בחשבון Google שלך.</translation>
 <translation id="602807004951640891">‏השימוש ב-Chromium מהווה הסכמה ל<ph name="BEGIN_LINK_TOS" />תנאים ולהגבלות<ph name="END_LINK_TOS" />.</translation>
+<translation id="6119647025869519954">‏כדי להגדיר את Chromium כדפדפן ברירת המחדל:
+1. פותחים את ההגדרות
+2. מקישים על אפליקציית הדפדפן שמוגדרת כברירת מחדל
+3. בוחרים את Chromium.</translation>
 <translation id="6268381023930128611">‏האם לצאת מ-Chromium?</translation>
 <translation id="6424492062988593837">‏‫Chromium ממשיך להשתפר! קיימת גרסה חדשה.</translation>
 <translation id="6604711459180487467">‏גישה אל המיקום שלך תאפשר לך ליהנות מחוויה משופרת ב-Chromium.</translation>

@@ -78,6 +78,10 @@
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos os direitos reservados.</translation>
 <translation id="840168496893712993">Alguns complementos causam a falha do Google Chrome. Tente desinstalá-los.</translation>
 <translation id="8459495907675268833">Os dados selecionados foram removidos do Chrome e dos dispositivos sincronizados. É possível que sua Conta do Google tenha outras formas de histórico de navegação, como pesquisas e atividades de outros serviços do Google em history.google.com.</translation>
+<translation id="850555388806794946">Para tornar o Chrome seu navegador padrão:
+  1. Abra as Configurações.
+  2. Toque em "App do navegador padrão".
+  3. Selecione o Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="9135668017386497357">Se você permitir que o Chrome saiba sua localização, ele a enviará para o mecanismo de pesquisa padrão e para os sites aos quais você concedeu permissão. Os sites podem solicitar sua localização para enviar informações locais para você, como notícias ou lojas próximas.</translation>
 </translationbundle>

@@ -390,6 +390,7 @@
 <translation id="1561424797596341174">針對遠端存取主機的偵錯版本覆寫政策</translation>
 <translation id="1561967320164410511">用於個人認證的 U2F 和擴充功能</translation>
 <translation id="1575015449587326319">OnFileDownloaded Chrome Enterprise Connector 的配置政策</translation>
+<translation id="1576684007051137182">設定要停用的攝影機、瀏覽器設定、OS 設定、掃描功能和線上應用程式商店功能</translation>
 <translation id="1583248206450240930">根據預設使用 <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="1588240398285670601">瀏覽器設定</translation>
 <translation id="1593245608325508847">設定這項政策會開啟 Chrome 在 G Suite 中的限制登入功能，並防止使用者變更這項設定。使用者只能透過指定網域的帳戶存取 Google 工具，如要允許 gmail 或 googlemail 帳戶，請將 consumer_accounts 新增至網域清單。這項設定可防止使用者在需要 Google 授權的受管理裝置上，使用不屬於明確允許網域的帳戶登入及新增次要帳戶。
@@ -1376,7 +1377,7 @@
           另請參閲 <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> 和 <ph name="COOKIES_SESSIONS_ONLY_FOR_URLS" /> 政策。請注意，這三項政策的網址模式不可發生衝突，否則系統將無法判斷應優先採用哪項政策。
 
           想進一步瞭解有效的網址模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是這項政策許可的值。</translation>
-<translation id="3000238720665173643">布林值旗標，表示螢幕小鍵盤是否能提供自動更正功能。</translation>
+<translation id="3000238720665173643">布林值標記，表示螢幕小鍵盤是否能提供自動更正功能。</translation>
 <translation id="3001285126226650303">允許 <ph name="PRODUCT_NAME" /> 載入實驗性政策。
 
         警告：實驗性政策不受支援，且在未來的瀏覽器版本中如有變動或遭到移除，恕不另行通知。
@@ -2250,6 +2251,7 @@
 <translation id="4138655880188755661">時間限制</translation>
 <translation id="4147818922357566987">僅啟用與重大修正項目相關的變化版本</translation>
 <translation id="4150201353443180367">顯示設定</translation>
+<translation id="415445772247959702">線上應用程式商店 (自 89 版開始支援)</translation>
 <translation id="4157003184375321727">回報作業系統和韌體版本</translation>
 <translation id="4157594634940419685">允許存取原生 CUPS 印表機</translation>
 <translation id="4160962198980004898">裝置插入座架時的 MAC 位址來源</translation>
@@ -2733,7 +2735,7 @@
       如果設定這項政策，使用者將無法變更。如果未設定這項政策，則使用者可自行決定是否要傳送報告。
 
       如要進一步瞭解「安全瀏覽」功能，請前往 https://developers.google.com/safe-browsing。</translation>
-<translation id="4960597185231686653">布林值旗標，表示螢幕小鍵盤是否能提供語音輸入功能。</translation>
+<translation id="4960597185231686653">布林值標記，表示螢幕小鍵盤是否能提供語音輸入功能。</translation>
 <translation id="4962262530309732070">如果將這項政策設為 True 或未設定，<ph name="PRODUCT_NAME" /> 將允許從使用者管理工具新增使用者。
 
       如果將這項政策設為 False，<ph name="PRODUCT_NAME" /> 就無法讓使用者從使用者管理工具建立新設定檔。</translation>
@@ -2881,7 +2883,7 @@
 
           如果不設定這項政策，使用者將可自行選擇 Proxy 設定。</translation>
 <translation id="5177260184597743704">OnSecurityEvent Chrome Enterprise Connector 的配置政策</translation>
-<translation id="5178479074002209469">布林值旗標，表示這項政策要求進行更新時，是否要讓未受管理的使用者工作階段接收通知並強制登出。</translation>
+<translation id="5178479074002209469">布林值標記，表示這項政策要求進行更新時，是否要讓未受管理的使用者工作階段接收通知並強制登出。</translation>
 <translation id="5182055907976889880">設定在 <ph name="PRODUCT_OS_NAME" /> 中使用 Google 雲端硬碟。</translation>
 <translation id="5182483318861266793">將檔案櫃放在畫面的右側</translation>
 <translation id="5190426551516379357">如果設定這項政策，系統會在 YouTube 上強制執行低度的嚴格篩選模式，並禁止使用者選擇更寬鬆的模式。這項政策可設定的選項如下：
@@ -3154,12 +3156,12 @@
       如果這份清單未包含任何內容，系統就不會分階段安裝更新，而會依其他裝置政策套用更新。
 
       版本切換不適用這項政策。</translation>
-<translation id="5519331583722582543">布林值旗標，表示螢幕小鍵盤是否能透過手寫辨識技術提供輸入功能。</translation>
+<translation id="5519331583722582543">布林值標記，表示螢幕小鍵盤是否能透過手寫辨識技術提供輸入功能。</translation>
 <translation id="5526184558582921522">允許向 Quirks Server 發送查詢，並有機會下載硬體專屬設定檔</translation>
 <translation id="5526701598901867718">全部 (不安全)</translation>
 <translation id="5530347722229944744">封鎖有安全疑慮的下載作業</translation>
 <translation id="5535973522252703021">Kerberos 委派伺服器許可清單</translation>
-<translation id="553806128266843748">布林值旗標，表示是否已啟用節流功能。</translation>
+<translation id="553806128266843748">布林值標記，表示是否已啟用節流功能。</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="555022085242359084">在登入畫面上啟用高對比模式</translation>
 <translation id="555077880566103058">允許所有網站自動執行 <ph name="FLASH_PLUGIN_NAME" /> 外掛程式</translation>
@@ -3881,7 +3883,7 @@
       如要進行隔離並降低對使用者的影響，請使用 <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> 列出要隔離的網站。
 
       注意：目前 Android 的網站隔離支援可能會導致效能問題，但日後將會改善。執行 Chrome 的 Android 系統必須運行於 RAM 實際超過 1 GB 的裝置上，才適用這項政策。如要在非 Android 平台上套用這項政策，請使用 <ph name="SITE_PER_PROCESS_POLICY_NAME" />。</translation>
-<translation id="6625136649067113817">布林值旗標，表示螢幕小鍵盤是否能提供拼字檢查功能。</translation>
+<translation id="6625136649067113817">布林值標記，表示螢幕小鍵盤是否能提供拼字檢查功能。</translation>
 <translation id="66265932317331474">回報 CPU 資訊</translation>
 <translation id="6628120204569232711">回報儲存空間狀態</translation>
 <translation id="663685822663765995">限制列印色彩模式</translation>
@@ -4210,7 +4212,7 @@
        注意：如需詳細範例，請前往 Chromium 計畫 (網址為 https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett )。</translation>
 <translation id="7002040773317582266">已啟用主頁框網址的即時檢查功能。</translation>
 <translation id="7003746348783715221"><ph name="PRODUCT_NAME" /> 偏好設定</translation>
-<translation id="7007283257527015835">布林值旗標，表示是否應將通訊協定處理常式設為預設值。</translation>
+<translation id="7007283257527015835">布林值標記，表示是否應將通訊協定處理常式設為預設值。</translation>
 <translation id="7008308728445338159">已啟用 DNS 攔截檢查功能</translation>
 <translation id="7016736684656067099">如果將這項政策設為 1，所有網站皆可顯示圖片。如果將這項政策設為 2，所有網站都無法顯示圖片。
 
@@ -4537,7 +4539,7 @@
       這項功能取決於要啟用的 Chrome 同步功能中的 <ph name="WIFI_CONFIGURATIONS_DATATYPE_NAME" /> 資料類型。如果在 <ph name="SYNC_TYPES_LIST_DISABLED_POLICY_NAME" /> 政策中停用 <ph name="WIFI_CONFIGURATIONS_DATATYPE_NAME" />，或是在 <ph name="SYNC_DISABLED_POLICY_NAME" /> 政策中停用 Chrome 同步功能，使用者將無法啟用這項功能。
 
       如果未設定這項政策，在預設情況下，受管理的使用者將無法使用這項功能。</translation>
-<translation id="7477149584454865826">布林值旗標，表示是否要使用 IPP Everywhere 設定印表機。</translation>
+<translation id="7477149584454865826">布林值標記，表示是否要使用 IPP Everywhere 設定印表機。</translation>
 <translation id="7477231245051133709">啟用單聲道音訊無障礙功能</translation>
 <translation id="7477239290070847560">可支援無須調整設定 (mDNS 和 DNS-SD) 的通訊協定目的地</translation>
 <translation id="7485481791539008776">預設印表機選取規則</translation>
@@ -4933,7 +4935,7 @@
 <translation id="8078297389450285582">如果將這項政策設為啟用或不設定，系統會開啟智慧調光模式，並可延後螢幕調暗時間。一旦延後螢幕調暗時間，螢幕關閉、螢幕鎖定和閒置狀態的延遲時間也會隨之調整，以維持與原先設定相同的間隔時間。
 
       如果將這項政策設為停用，智慧調光模式並不會影響螢幕調暗設定。</translation>
-<translation id="8091982561085048989">布林值旗標，表示是否要使用 IPP Everywhere 設定印表機。<ph name="PRODUCT_OS_NAME" /> 76 以上版本支援這個旗標。</translation>
+<translation id="8091982561085048989">布林值標記，表示是否要使用 IPP Everywhere 設定印表機。<ph name="PRODUCT_OS_NAME" /> 76 以上版本支援這個標記。</translation>
 <translation id="8099880303030573137">在電池供電環境下執行時的閒置延遲時間</translation>
 <translation id="8101381354936029836">政策不可部分完成的群組：</translation>
 <translation id="8102913158860568230">預設媒體串流設定</translation>
@@ -5054,7 +5056,7 @@
 <translation id="8214600119442850823">設定密碼管理員</translation>
 <translation id="8220023426952118761">理想的下載速率 (kbit/秒)。</translation>
 <translation id="8220156281401380422">設定內建訊息傳遞許可清單</translation>
-<translation id="8238421250255592181">布林值旗標，表示螢幕小鍵盤是否能提供自動完成功能。</translation>
+<translation id="8238421250255592181">布林值標記，表示螢幕小鍵盤是否能提供自動完成功能。</translation>
 <translation id="8244171102276095471">在傳輸層安全標準 (TLS) 中啟用 RC4 加密套件</translation>
 <translation id="8244525275280476362">政策失效後的最大擷取延遲</translation>
 <translation id="8251411417369363637">如果將這項政策設為 True，系統會在允許 <ph name="FLASH_PLUGIN_NAME" /> 的網站上執行所有內嵌的 <ph name="FLASH_PLUGIN_NAME" /> 內容，包括來自其他來源的內容或檔案較小的內容。

@@ -155,7 +155,6 @@
 <translation id="8073845705237259513">Chrome 원격 데스크톱을 사용하려면 기기에 Google 계정을 추가해야 합니다.</translation>
 <translation id="809687642899217504">내 컴퓨터</translation>
 <translation id="8116630183974937060">네트워크 오류가 발생했습니다. 기기가 온라인 상태인지 확인하고 다시 시도하세요.</translation>
-<translation id="8187079423890319756">Copyright 2013 The Chromium Authors. All rights reserved.</translation>
 <translation id="8295077433896346116"><ph name="PRODUCT_NAME" />을(를) 사용하려면 원격 기기에서 입력한 내용이 이 Mac에 삽입될 수 있도록 ‘접근성’ 권한을 부여해야 합니다.
 
 권한을 부여하려면 아래의 ‘<ph name="BUTTON_NAME" />’ 버튼을 클릭합니다. ‘접근성’ 환경설정 창이 열리면 ‘<ph name="SERVICE_SCRIPT_NAME" />’ 옆의 체크박스를 선택하세요.

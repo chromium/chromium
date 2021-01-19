@@ -111,6 +111,7 @@
 <translation id="1951012854035635156">ਸਹਾਇਕ</translation>
 <translation id="1957803754585243749">0°</translation>
 <translation id="1957958912175573503">ਆਪਣੀ ਭਾਸ਼ਾ ਸੈੱਟ ਕਰੋ</translation>
+<translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">ਲੌਕ ਸਕ੍ਰੀਨ</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ, <ph name="USERNAME" /></translation>
@@ -230,6 +231,7 @@
 <translation id="3090989381251959936"><ph name="FEATURE_NAME" /> ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">ਕਰਸਰ ਹਿਲਾਓ</translation>
 <translation id="3098580329624789136">"<ph name="QUERY" />" ਲਈ <ph name="INTENT" /> ਪ੍ਰਾਪਤ ਕਰੋ</translation>
+<translation id="3105917916468784889">ਸਕ੍ਰੀਨਸ਼ਾਟ ਲਵੋ</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (ਬਲੂਟੁੱਥ)</translation>
 <translation id="3126069444801937830">ਅੱਪਡੇਟ ਕਰਨ ਲਈ ਮੁੜ-ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="3139942575505304791">ਡੈਸਕ 1</translation>
@@ -239,6 +241,7 @@
 <translation id="3153444934357957346">ਤੁਸੀਂ ਬਹੁ-ਗਿਣਤੀ ਸਾਈਨ-ਇਨ ਵਿੱਚ ਸਿਰਫ਼ <ph name="MULTI_PROFILE_USER_LIMIT" /> ਤੱਕ ਖਾਤੇ ਰੱਖ ਸਕਦੇ ਹੋ।</translation>
 <translation id="3154351730702813399">ਡੀਵਾਈਸ ਪ੍ਰਸ਼ਾਸਕ ਤੁਹਾਡੀ ਬ੍ਰਾਊਜ਼ਿੰਗ ਸਰਗਰਮੀ ਦੀ ਨਿਗਰਾਨੀ ਕਰ ਸਕਦਾ ਹੈ।</translation>
 <translation id="3181441307743005334">ਮੁੜ-ਸ਼ੁਰੂ ਕਰਨ ਵਿੱਚ ਕੁਝ ਸਮਾਂ ਲੱਗ ਸਕਦਾ ਹੈ</translation>
+<translation id="3190230207529484457">ਸੁਰੱਖਿਅਤ ਸਮੱਗਰੀ ਮੌਜੂਦ ਹੋਣ ਦੌਰਾਨ ਸਕ੍ਰੀਨ ਕੈਪਚਰ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{ਇੱਕ ਡੀਵਾਈਸ ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ}one{# ਡੀਵਾਈਸ ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ}other{# ਡੀਵਾਈਸਾਂ ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ}}</translation>
 <translation id="320207200541803018">ਟਾਈਮਰ ਸੈੱਟ ਕਰੋ</translation>
 <translation id="3203405173652969239">ਸਵਿੱਚ ਪਹੁੰਚ ਚਾਲੂ ਹੈ</translation>
@@ -364,7 +367,6 @@
 <translation id="4296136865091727875">ਸਾਰੀਆਂ <ph name="COUNT" /> ਸੂਚਨਾਵਾਂ ਕਲੀਅਰ ਕਰੋ</translation>
 <translation id="4302592941791324970">ਉਪਲਬਧ ਨਹੀਂ</translation>
 <translation id="4303223480529385476">ਸਥਿਤੀ ਖੇਤਰ ਦਾ ਵਿਸਤਾਰ ਕਰੋ</translation>
-<translation id="4315586716182276649">ਆਪਣੇ ਫ਼ੋਨ ਦੇ ਇੰਟਰਨੈੱਟ ਕਨੈਕਸ਼ਨ ਦਾ ਵਿਸਤਾਰ ਕਰੋ, ਪਰੇਸ਼ਾਨ ਨਾ ਕਰੋ ਨੂੰ ਕੰਟਰੋਲ ਕਰੋ ਅਤੇ ਆਪਣੇ ਡੀਵਾਈਸ ਦਾ ਪਤਾ ਲਗਾਓ। ਆਪਣੇ <ph name="DEVICE_TYPE" /> 'ਤੇ ਆਪਣੇ ਫ਼ੋਨ ਤੋਂ ਕਿਰਿਆਸ਼ੀਲ Chrome ਟੈਬਾਂ ਦੇਖੋ।</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">ਤੁਸੀਂ ਉੱਚ ਕੰਟ੍ਰਾਸਟ ਲਈ ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਦਬਾਇਆ ਹੈ। ਕੀ ਤੁਸੀਂ ਇਸਨੂੰ ਚਾਲੂ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
@@ -558,6 +560,7 @@
 <translation id="6054305421211936131">ਸਮਾਰਟ ਕਾਰਡ ਨਾਲ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="6059276912018042191">ਹਾਲੀਆ Chrome ਟੈਬਾਂ</translation>
 <translation id="6062360702481658777">ਤੁਹਾਨੂੰ <ph name="LOGOUT_TIME_LEFT" /> ਆਟੋਮੈਟਿਕਲੀ ਸਾਈਨ ਆਉਟ ਕੀਤਾ ਜਾਏਗਾ।</translation>
+<translation id="6073451960410192870">ਰਿਕਾਰਡਿੰਗ ਬੰਦ ਕਰੋ</translation>
 <translation id="607652042414456612">ਨੇੜਲੇ ਬਲੂਟੁੱਥ ਡੀਵਾਈਸ ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ ਨੂੰ ਖੋਜ ਸਕਦੇ ਹਨ ਅਤੇ ਇਹ ਪਤੇ <ph name="ADDRESS" /> ਨਾਲ "<ph name="NAME" />" ਦੇ ਤੌਰ 'ਤੇ ਦਿਖਾਈ ਦੇਵੇਗਾ।</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />। <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">'Google ਅਸਿਸਟੈਂਟ' ਮਹਿਮਾਨ ਸੈਸ਼ਨ ਵਿੱਚ ਉਪਲਬਧ ਨਹੀਂ ਹੈ।</translation>
@@ -723,7 +726,6 @@
 <translation id="7654687942625752712">ਬੋਲੀ ਪ੍ਰਤੀਕਰਮ ਬੰਦ ਕਰਨ ਲਈ ਦੋਵੇਂ ਅਵਾਜ਼ ਕੁੰਜੀਆਂ ਨੂੰ 5 ਸਕਿੰਟ ਤੱਕ ਦਬਾਈ ਰੱਖੋ।</translation>
 <translation id="7658239707568436148">ਰੱਦ ਕਰੋ</translation>
 <translation id="7662283695561029522">ਸੰਰੂਪਣ ਕਰਨ ਲਈ ਟੈਪ ਕਰੋ</translation>
-<translation id="7683326293741220026">ਇੰਝ ਲੱਗਦਾ ਹੈ ਕਿ ਤੁਹਾਡੇ ਫ਼ੋਨ 'ਤੇ ਬਲੂਟੁੱਥ ਬੰਦ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਫ਼ੋਨ ਹੱਬ ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ ਆਪਣੇ ਫ਼ੋਨ 'ਤੇ ਬਲੂਟੁੱਥ ਨੂੰ ਚਾਲੂ ਕਰੋ।</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 ਸੂਚਨਾ}one{# ਸੂਚਨਾ}other{# ਸੂਚਨਾਵਾਂ}}</translation>
 <translation id="7724603315864178912">ਕੱਟੋ</translation>
@@ -771,7 +773,6 @@
 <translation id="8054466585765276473">ਬੈਟਰੀ ਸਮੇਂ ਦਾ ਅਨੁਮਾਨ ਲਗਾ ਰਿਹਾ ਹੈ।</translation>
 <translation id="8061464966246066292">ਉੱਚ ਕੰਟ੍ਰਾਸਟ</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" /> 'ਤੇ ਸਕ੍ਰੀਨ ਕਾਸਟ ਕਰਨੀ ਬੰਦ ਕਰੋ</translation>
-<translation id="8108657971283652031">ਆਪਣੇ ਫ਼ੋਨ ਦੇ ਇੰਟਰਨੈੱਟ ਕਨੈਕਸ਼ਨ ਦਾ ਵਿਸਤਾਰ ਕਰੋ, ਪਰੇਸ਼ਾਨ ਨਾ ਕਰੋ ਨੂੰ ਕੰਟਰੋਲ ਕਰੋ ਅਤੇ ਆਪਣੇ ਫ਼ੋਨ ਦਾ ਪਤਾ ਲਗਾਓ। ਆਪਣੇ <ph name="DEVICE_TYPE" /> 'ਤੇ ਆਪਣੇ ਫ਼ੋਨ ਤੋਂ ਕਿਰਿਆਸ਼ੀਲ Chrome ਟੈਬਾਂ ਦੇਖੋ।</translation>
 <translation id="8113423164597455979">ਚਾਲੂ, ਸਭ ਐਪਾਂ</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">ਪੁਸ਼ਟੀ ਕਰੋ</translation>
@@ -820,6 +821,7 @@
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦਾ। ਰੈਜ਼ੋਲਿਊਸ਼ਨ <ph name="FALLBACK_RESOLUTION" /> ਵਿੱਚ ਬਦਲਿਆ ਗਿਆ ਸੀ। ਤਬਦੀਲੀਆਂ ਨੂੰ ਬਣਾਈ ਰੱਖਣ ਲਈ 'ਤਸਦੀਕ ਕਰੋ' 'ਤੇ ਕਲਿੱਕ ਕਰੋ। ਪਿਛਲੀਆਂ ਸੈਟਿੰਗਾਂ ਨੂੰ <ph name="TIMEOUT_SECONDS" /> ਵਿੱਚ ਮੁੜ-ਬਹਾਲ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="8513108775083588393">ਸਵੈ-ਘੁੰਮਾਓ</translation>
 <translation id="8517041960877371778">ਤੁਹਾਡੀ <ph name="DEVICE_TYPE" /> ਚਾਲੂ ਹੋਣ ਵੇਲੇ ਚਾਰਜ ਨਹੀਂ ਹੋ ਸਕਦੀ।</translation>
+<translation id="8553395910833293175">ਪਹਿਲਾਂ ਹੀ ਸਾਰੇ ਡੈਸਕਾਂ ਦੇ ਜ਼ਿੰਮੇ ਲਗਾਇਆ ਗਿਆ।</translation>
 <translation id="8563862697512465947">ਸੂਚਨਾ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="857201607579416096">ਮੀਨੂ ਨੂੰ ਸਕ੍ਰੀਨ ਦੇ ਹੇਠਲੇ ਸੱਜੇ ਕੋਨੇ ਵਿੱਚ ਲਿਜਾਇਆ ਗਿਆ।</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>

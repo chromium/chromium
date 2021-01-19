@@ -112,6 +112,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1951012854035635156">Pomoćnik</translation>
 <translation id="1957803754585243749">0°</translation>
 <translation id="1957958912175573503">Podesite jezik</translation>
+<translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Zaključaj ekran</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Zdravo, <ph name="USERNAME" /></translation>
@@ -232,6 +233,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="3090989381251959936">Uključite/isključite funkciju <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">Pomerite kursor</translation>
 <translation id="3098580329624789136">Potražite <ph name="INTENT" /> za „<ph name="QUERY" />“</translation>
+<translation id="3105917916468784889">Snimi ekran</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3126069444801937830">Pokrenite ponovo da biste ažurirali</translation>
 <translation id="3139942575505304791">Radna površina 1</translation>
@@ -241,6 +243,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="3153444934357957346">Možete da imate najviše <ph name="MULTI_PROFILE_USER_LIMIT" /> naloga za višestruko prijavljivanje.</translation>
 <translation id="3154351730702813399">Administrator uređaja može da prati aktivnosti pregledanja.</translation>
 <translation id="3181441307743005334">Restartovanje može da potraje</translation>
+<translation id="3190230207529484457">Snimanje ekrana nije dozvoljeno kada je prisutan zaštićeni sadržaj</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Povezani ste sa jednim uređajem}one{Povezani ste sa # uređajem}few{Povezani ste sa # uređaja}other{Povezani ste sa # uređaja}}</translation>
 <translation id="320207200541803018">Podesi tajmer</translation>
 <translation id="3203405173652969239">Pristup pomoću prekidača je omogućen</translation>
@@ -366,7 +369,6 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="4296136865091727875">Obrišite sva obaveštenja (<ph name="COUNT" />)</translation>
 <translation id="4302592941791324970">Nije dostupno</translation>
 <translation id="4303223480529385476">Proširite oblast statusa</translation>
-<translation id="4315586716182276649">Proširite internet vezu telefona, kontrolišite režim Ne uznemiravaj i pronađite uređaj. Pregledajte aktivne Chrome kartice sa telefona na uređaju <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Pritisnuli ste tastersku prečicu za visoki kontrast. Želite li da je uključite?</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
@@ -560,6 +562,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="6054305421211936131">Prijavite se pomoću pametne kartice</translation>
 <translation id="6059276912018042191">Nedavne Chrome kartice</translation>
 <translation id="6062360702481658777">Automatski ćete biti odjavljeni za <ph name="LOGOUT_TIME_LEFT" />.</translation>
+<translation id="6073451960410192870">Zaustavi snimanje</translation>
 <translation id="607652042414456612">Obližnji Bluetooth uređaji mogu da otkriju računar i on će se prikazivati kao „<ph name="NAME" />“ sa adresom <ph name="ADDRESS" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google pomoćnik nije dostupan u sesiji gosta.</translation>
@@ -725,7 +728,6 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="7654687942625752712">Pritisnite oba tastera za jačinu zvuka i zadržite ih pet sekundi da biste onemogućili povratni govor.</translation>
 <translation id="7658239707568436148">Otkaži</translation>
 <translation id="7662283695561029522">Dodirnite da biste konfigurisali</translation>
-<translation id="7683326293741220026">Izgleda da je isključen Bluetooth na telefonu. Uključite Bluetooth na telefonu da biste koristili Phone Hub.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 obaveštenje}one{# obaveštenje}few{# obaveštenja}other{# obaveštenja}}</translation>
 <translation id="7724603315864178912">Iseci</translation>
@@ -773,7 +775,6 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="8054466585765276473">Izračunavanje vremena trajanja baterije.</translation>
 <translation id="8061464966246066292">Visoki kontrast</translation>
 <translation id="8098591350844501178">Zaustavi prebacivanje ekrana na <ph name="RECEIVER_NAME" /></translation>
-<translation id="8108657971283652031">Proširite internet vezu telefona, kontrolišite režim Ne uznemiravaj i pronađite telefon. Pregledajte aktivne Chrome kartice sa telefona na uređaju <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8113423164597455979">Uključeno, sve</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Potvrdi</translation>
@@ -822,6 +823,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> ne podržava rezoluciju <ph name="SPECIFIED_RESOLUTION" />. Rezolucija je promenjena u <ph name="FALLBACK_RESOLUTION" />. Kliknite na Potvrdi da biste zadržali promene. Prethodna podešavanja će biti vraćena za <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="8513108775083588393">Autom. rotir.</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> se možda neće puniti dok je uključen.</translation>
+<translation id="8553395910833293175">Već je dodeljeno svim radnim površinama.</translation>
 <translation id="8563862697512465947">Podešavanja obaveštenja</translation>
 <translation id="857201607579416096">Meni je premešten u donji desni ugao ekrana.</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>

@@ -8,7 +8,7 @@
 
 Es posible que algunas funciones no estén disponibles y que no se guarden los cambios que hagas en las preferencias.</translation>
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" /> usaba Chrome anteriormente</translation>
-<translation id="1097330777386562916">Borrar las cookies y los datos de sitios web al salir de Chrome</translation>
+<translation id="1097330777386562916">Borrar las cookies y los datos de sitios al salir de Chrome</translation>
 <translation id="110877069173485804">Este es tu navegador Chrome</translation>
 <translation id="1142745911746664600">No se puede actualizar Chrome</translation>
 <translation id="1154147086299354128">&amp;Abrir en Chrome</translation>
@@ -150,6 +150,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="4895437082222824641">Abrir enlace en una pes&amp;taña nueva de Chrome</translation>
 <translation id="4953650215774548573">Establecer Google Chrome como navegador predeterminado</translation>
 <translation id="495931528404527476">En Chrome</translation>
+<translation id="4970761609246024540">Te damos la bienvenida a los perfiles de Chrome</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5062123544085870375">Reiniciar Chrome OS</translation>
 <translation id="5132929315877954718">Descubre formidables aplicaciones, juegos, extensiones y temas para Google Chrome.</translation>
@@ -211,7 +212,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="6967962315388095737">Regla entrante para que Google Chrome Beta permita tráfico mDNS.</translation>
 <translation id="6989339256997917931">Google Chrome se ha actualizado, pero llevas al menos 30 días sin utilizarlo.</translation>
 <translation id="7054640471403081847">Este ordenador dejará de recibir actualizaciones de Google Chrome dentro de poco porque su hardware ya no es compatible.</translation>
-<translation id="7062128746136194023">Tus padres han desactivado "Permisos de sitios web, aplicaciones y extensiones" en Chrome. No se permite añadir <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
+<translation id="7062128746136194023">Tus padres han desactivado "Permisos de sitios, aplicaciones y extensiones" en Chrome. No se permite añadir <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="7098166902387133879">Google Chrome está utilizando el micrófono.</translation>
 <translation id="7106741999175697885">Administrador de tareas de Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Hay una nueva actualización de Chrome disponible que se aplicará cuando reinicies el dispositivo.}=1{Hay una nueva actualización de Chrome disponible que se aplicará cuando reinicies el dispositivo. La ventana de incógnito no se volverá a abrir.}other{Hay una nueva actualización de Chrome disponible que se aplicará cuando reinicies el dispositivo. Las # ventanas de incógnito no se volverán a abrir.}}</translation>
@@ -251,7 +252,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="8129812357326543296">Información de &amp;Google Chrome</translation>
 <translation id="8255190535488645436">Google Chrome está utilizando la cámara y el micrófono.</translation>
 <translation id="8286862437124483331">Google Chrome está intentando mostrar contraseñas. Para permitirlo, escribe tu contraseña de Windows.</translation>
-<translation id="828798499196665338">Tus padres han desactivado "Permisos de sitios web, aplicaciones y extensiones" en Chrome. No se permite habilitar <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
+<translation id="828798499196665338">Tus padres han desactivado "Permisos de sitios, aplicaciones y extensiones" en Chrome. No se permite habilitar <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8290100596633877290">¡Vaya! Se ha producido un fallo en Google Chrome. ¿Quieres reiniciar el navegador ahora?</translation>
 <translation id="8342675569599923794">Este archivo es peligroso, por lo que Chrome lo ha bloqueado.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos los derechos reservados.</translation>
@@ -269,6 +270,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="8641606876632989680">Chrome te enviará una notificación cuando inicies sesión con una contraseña vulnerada</translation>
 <translation id="8669527147644353129">Ayudante de Google Chrome</translation>
 <translation id="8679801911857917785">También controla qué página se muestra al iniciar Chrome.</translation>
+<translation id="8686817260976772516">Con los perfiles de Chrome, puedes separar todos tus elementos de Chrome. Crea perfiles para amigos y familiares, o un perfil de trabajo y otro de ocio.</translation>
 <translation id="870251953148363156">Actualizar &amp;Google Chrome</translation>
 <translation id="873133009373065397">Google Chrome no puede determinar ni establecer el navegador predeterminado</translation>
 <translation id="8823341990149967727">Chrome no está actualizado</translation>

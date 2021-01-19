@@ -80,6 +80,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
     &lt;li&gt;Obrnite se na lastnika spletnega mesta.&lt;/li&gt;
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Vnesli ste geslo na spletnem mestu, ki ga ne upravlja vaša organizacija. Zaradi zaščite računa gesla ne uporabljajte za druge aplikacije in spletna mesta.</translation>
+<translation id="1259144770381827039">Oglejte si podrobnosti.</translation>
 <translation id="1263231323834454256">Bralni seznam</translation>
 <translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
         Dejavnost, ki se ne shrani v tej napravi:
@@ -326,6 +327,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2164510882479075877">Preverite, ali so v <ph name="HOST_NAME" /> tipkarske napake.</translation>
 <translation id="2166049586286450108">Polni skrbniški dostop</translation>
 <translation id="2166378884831602661">To spletno mesto ne more zagotoviti varne povezave</translation>
+<translation id="2168151236314517198">Tiskanje te vsebine je blokiral pravilnik skrbnika.</translation>
 <translation id="2169984857010174799">Kaku2 (Envelope)</translation>
 <translation id="2181821976797666341">Pravilniki</translation>
 <translation id="2183608646556468874">Telefonska številka</translation>
@@ -1360,6 +1362,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6290238015253830360">Tu so prikazani predlagani članki</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">Pomočnik Google v Chromu se ustavlja</translation>
+<translation id="6304463939629872728">Dokončanje nakupa z</translation>
 <translation id="6305205051461490394">Naslov <ph name="URL" /> je nedosegljiv.</translation>
 <translation id="6312113039770857350">Spletna stran ni na voljo</translation>
 <translation id="6321917430147971392">Preverite nastavitve za DNS</translation>
@@ -1389,6 +1392,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6406765186087300643">C0 (Envelope)</translation>
 <translation id="6409754798200046165">Pravkar ste vnesli geslo na zavajajočem spletnem mestu. Chrome priporoča, da takoj spremenite geslo.</translation>
 <translation id="6410264514553301377">Vnesite datum poteka veljavnosti in kodo CVC za kartico <ph name="CREDIT_CARD" /></translation>
+<translation id="6410774864568266108">Ne pozabite na ponudbo Googla Pay</translation>
 <translation id="6415778972515849510">Chromium vam lahko pomaga zaščititi račun za Google in spremeniti geslo.</translation>
 <translation id="6423385022588644828">Od zdaj naprej lahko uporabljate Touch ID in kartice potrjujete hitreje</translation>
 <translation id="6425092077175753609">Materialno</translation>
@@ -1777,6 +1781,7 @@ Dodatne podrobnosti:
 <translation id="79859296434321399">Če si želite ogledati vsebino v razširjeni resničnosti, namestite ARCore</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="799149739215780103">Vezava</translation>
+<translation id="7992044431894087211">Deljenje zaslona z aplikacijo <ph name="APPLICATION_TITLE" /> se nadaljuje.</translation>
 <translation id="7995512525968007366">Ni navedeno</translation>
 <translation id="800218591365569300">Poskusite zapreti druge zavihke ali programe, da boste tako sprostili pomnilnik.</translation>
 <translation id="8004582292198964060">Brskalnik</translation>
@@ -2050,6 +2055,7 @@ Dodatne podrobnosti:
 <translation id="9103872766612412690">Spletno mesto <ph name="SITE" /> za zaščito vaših podatkov običajno uporablja šifriranje. Ko se je Chromium tokrat poskusil povezati s spletnim mestom <ph name="SITE" />, je to vrnilo nenavadne in nepravilne poverilnice. Do tega lahko pride, če se napadalec lažno predstavlja za spletno mesto <ph name="SITE" /> ali če je povezavo prekinil zaslon za prijavo v omrežje Wi-Fi. Vaši podatki so še vedno varni, saj je Chromium pred izmenjavo podatkov prekinil povezavo.</translation>
 <translation id="9106062320799175032">Dodajanje naslova za izstavitev računa</translation>
 <translation id="9107467864910557787">Vaš brskalnik upravlja domena <ph name="MANAGER" /></translation>
+<translation id="91108059142052966">Pravilnik skrbnika onemogoča deljenje zaslona z aplikacijo <ph name="APPLICATION_TITLE" />, če je vidna zaupna vsebina.</translation>
 <translation id="9114524666733003316">Potrjevanje kartice …</translation>
 <translation id="9114581008513152754">Tega brskalnika ne upravlja podjetje ali druga organizacija. Dejavnost v tej napravi morda upravljajo zunaj Chroma. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">Naloženo</translation>

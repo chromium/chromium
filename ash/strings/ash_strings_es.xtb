@@ -112,6 +112,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1951012854035635156">Asistente</translation>
 <translation id="1957803754585243749">0°</translation>
 <translation id="1957958912175573503">Elegir el idioma</translation>
+<translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Bloquear pantalla</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Hola, <ph name="USERNAME" />:</translation>
@@ -232,6 +233,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="3090989381251959936">Activar o desactivar <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">Mover cursor</translation>
 <translation id="3098580329624789136">Obtener <ph name="INTENT" /> de "<ph name="QUERY" />"</translation>
+<translation id="3105917916468784889">Hacer una captura de pantalla</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3126069444801937830">Reinicia el sistema para actualizarlo.</translation>
 <translation id="3139942575505304791">Escritorio 1</translation>
@@ -241,6 +243,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="3153444934357957346">Solo puedes tener un máximo de <ph name="MULTI_PROFILE_USER_LIMIT" /> cuentas en el inicio de sesión múltiple.</translation>
 <translation id="3154351730702813399">Es posible que el administrador del dispositivo supervise tu actividad de navegación.</translation>
 <translation id="3181441307743005334">El reinicio puede tardar un poco</translation>
+<translation id="3190230207529484457">No está permitido hacer capturas de pantalla cuando se muestra contenido protegido</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Conectado a 1 dispositivo}other{Conectado a # dispositivos}}</translation>
 <translation id="320207200541803018">Poner un temporizador</translation>
 <translation id="3203405173652969239">Accesibilidad con interruptores habilitada</translation>
@@ -367,7 +370,6 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="4296136865091727875">Borrar las <ph name="COUNT" /> notificaciones</translation>
 <translation id="4302592941791324970">No disponible</translation>
 <translation id="4303223480529385476">Ampliar área de estado</translation>
-<translation id="4315586716182276649">Amplía la conexión a Internet de tu teléfono, controla la función No molestar y localiza tu dispositivo. Visualiza las pestañas de Chrome activas de tu teléfono en tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Has pulsado la combinación de teclas que activa el contraste alto. ¿Quieres activarlo?</translation>
 <translation id="4331809312908958774">SO de Chrome</translation>
@@ -561,6 +563,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="6054305421211936131">Iniciar sesión con tarjeta inteligente</translation>
 <translation id="6059276912018042191">Pestañas de Chrome recientes</translation>
 <translation id="6062360702481658777">Tu sesión se cerrará automáticamente en <ph name="LOGOUT_TIME_LEFT" />.</translation>
+<translation id="6073451960410192870">Detener grabación</translation>
 <translation id="607652042414456612">Tu ordenador es visible para dispositivos Bluetooth cercanos y aparecerá como "<ph name="NAME" />" con la dirección <ph name="ADDRESS" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">El Asistente de Google no está disponible en las sesiones de invitado.</translation>
@@ -726,7 +729,6 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="7654687942625752712">Mantén pulsadas ambas teclas de volumen durante cinco segundos para inhabilitar los mensajes de voz.</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7662283695561029522">Toca para configurar</translation>
-<translation id="7683326293741220026">Parece que el Bluetooth de tu teléfono está desactivado. Activa el Bluetooth para usar la función Mi teléfono.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notificación}other{# notificaciones}}</translation>
 <translation id="7724603315864178912">Cortar</translation>
@@ -774,7 +776,6 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="8054466585765276473">Calculando duración de la batería...</translation>
 <translation id="8061464966246066292">Contraste alto</translation>
 <translation id="8098591350844501178">Dejar de enviar la pantalla a <ph name="RECEIVER_NAME" /></translation>
-<translation id="8108657971283652031">Amplía la conexión a Internet de tu teléfono, controla la función No molestar y localiza tu teléfono. Visualiza las pestañas de Chrome activas de tu teléfono en tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8113423164597455979">Sí, todas</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Confirmar</translation>
@@ -823,6 +824,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="8492573885090281069">La pantalla <ph name="DISPLAY_NAME" /> no admite <ph name="SPECIFIED_RESOLUTION" />. Se ha cambiado la resolución a <ph name="FALLBACK_RESOLUTION" />. Haz clic en Confirmar para mantener los cambios. La configuración anterior se restaurará en <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="8513108775083588393">Girar autom.</translation>
 <translation id="8517041960877371778">Es posible que tu <ph name="DEVICE_TYPE" /> no se cargue mientras esté encendido.</translation>
+<translation id="8553395910833293175">Ya está asignado a todos los escritorios.</translation>
 <translation id="8563862697512465947">Configuración de notificaciones</translation>
 <translation id="857201607579416096">Se ha movido el menú a la esquina inferior derecha de la pantalla.</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>

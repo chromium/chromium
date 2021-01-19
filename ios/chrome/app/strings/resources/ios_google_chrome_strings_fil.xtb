@@ -78,6 +78,10 @@
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Nakalaan ang lahat ng karapatan.</translation>
 <translation id="840168496893712993">Nagiging dahilan ang ilang add-on ng pag-crash ng Chrome. Pakisubukang i-uninstall ang mga ito.</translation>
 <translation id="8459495907675268833">Inalis ang piniling data mula sa Chrome at mga naka-sync na device. Maaaring mayroong ibang mga uri ng history ng pag-browse ang iyong Google Account gaya ng mga paghahanap at aktibidad mula sa iba pang mga serbisyo ng Google sa history.google.com.</translation>
+<translation id="850555388806794946">Para itakda ang Chrome bilang iyong default:
+  1. Buksan ang Mga Setting
+  2. I-tap ang Default na Browser App
+  3. Piliin ang Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="9135668017386497357">Kung papayagan mo ang Chrome na alamin ang iyong lokasyon, ipapadala ito ng Chrome sa default na search engine mo at sa anumang site na papayagan mo. Posibleng hingin ng mga site ang iyong lokasyon kapag may lokal na impormasyong ipapakita sa iyo ang mga ito, tulad ng mga shop sa malapit o balita.</translation>
 </translationbundle>

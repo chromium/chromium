@@ -155,7 +155,6 @@ Nëse "<ph name="SERVICE_SCRIPT_NAME" />" është e zgjedhur tashmë, anulo zgje
 <translation id="8073845705237259513">Për të përdorur "Desktopin në distancë" të Chrome, duhet të shtosh një llogari të Google në pajisjen tënde.</translation>
 <translation id="809687642899217504">Kompjuterët e mi</translation>
 <translation id="8116630183974937060">Ndodhi një gabim me rrjetin. Kontrollo që pajisja jote është në linjë dhe provo përsëri.</translation>
-<translation id="8187079423890319756">Të drejtat e autorit 2013 të "Autorët e Chromium". Të gjitha të drejtat janë të rezervuara.</translation>
 <translation id="8295077433896346116">Për të përdorur <ph name="PRODUCT_NAME" />, duhet t'i japësh autorizim "Qasshmërisë" në mënyrë që të dhënat nga makineria në distancë të mund të injektohen në këtë Mac.
 
 Për të dhënë këtë autorizim, kliko "<ph name="BUTTON_NAME" />" më poshtë. Në panelin e preferencave të "Qasshmërisë" që hapet, zgjidh kutinë pranë "<ph name="SERVICE_SCRIPT_NAME" />".

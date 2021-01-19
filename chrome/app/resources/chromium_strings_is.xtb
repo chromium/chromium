@@ -71,6 +71,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="328888136576916638">Lykla vantar fyrir forritaskil Google. Sumir eiginleikar Chromium verða óvirkir.</translation>
 <translation id="3296368748942286671">Halda áfram að keyra bakgrunnsforrit þegar Chromium er lokað</translation>
 <translation id="331951419404882060">Chromium OS gat ekki samstillt gögnin þín vegna innskráningarvillu.</translation>
+<translation id="3430503420100763906">Þú getur aðskilið allt efnið þitt á Chromium með Chromium prófílum. Stofnaðu prófíla fyrir vini og fjölskyldu eða skiptu á milli vinnu og afþreyingar.</translation>
 <translation id="347328004046849135">Chromium lætur þig vita þegar þú skráir þig inn með aðgangsorði sem er í hættu</translation>
 <translation id="3474745554856756813">Þetta mun eyða <ph name="ITEMS_COUNT" /> atriðum úr þessu tæki. Skráðu þig inn í Chromium sem <ph name="USER_EMAIL" /> til að endurheimta gögnin síðar.</translation>
 <translation id="3509308970982693815">Lokaðu öllum gluggum Chromium og reyndu aftur.</translation>
@@ -165,6 +166,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="6373523479360886564">Viltu örugglega fjarlægja Chromium?</translation>
 <translation id="6403826409255603130">Chromium er vafri sem keyrir vefsíður og forrit með ótrúlegum hraða. Hann er hraðvirkur, stöðugur og einfaldur í notkun. Notaðu vefinn á öruggari hátt með innbyggðri vernd Chromium gegn spilliforritum og vefveiðum.</translation>
 <translation id="6434250628340475518">Chromium OS kerfi</translation>
+<translation id="6455857529632101747">Velkomin(n) í Chromium prófíla</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium verður endurræst eftir eina sekúndu}one{Chromium verður endurræst eftir # sekúndu}other{Chromium verður endurræst eftir # sekúndur}}</translation>
 <translation id="6475912303565314141">Stýrir því einnig hvaða síða birtist þegar þú ræsir Chromium.</translation>
 <translation id="6510925080656968729">Fjarlægja Chromium</translation>

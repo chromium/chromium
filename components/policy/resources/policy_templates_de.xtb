@@ -394,6 +394,7 @@ Wenn Sie diese Richtlinie deaktivieren, wird das Scrollen zu bestimmten Textfrag
 <translation id="1561424797596341174">Überschreiben von Richtlinien für Fehlerbehebungs-Builds des Hosts für den Remotezugriff</translation>
 <translation id="1561967320164410511">U2F plus Erweiterungen zur individuellen Bestätigung</translation>
 <translation id="1575015449587326319">Konfigurationsrichtlinie für den Chrome Enterprise-Connector "OnFileDownloaded"</translation>
+<translation id="1576684007051137182">Deaktiviert die Kamera, Browser- und Betriebssystemeinstellungen sowie Scan- und Web Store-Funktionen</translation>
 <translation id="1583248206450240930">Standardmäßig <ph name="PRODUCT_FRAME_NAME" /> verwenden</translation>
 <translation id="1588240398285670601">Browsereinstellungen</translation>
 <translation id="1593245608325508847">Wenn die Richtlinie konfiguriert ist, sind die eingeschränkten Anmeldefunktionen von Chrome in der G Suite aktiviert und es wird verhindert, dass Nutzer diese Einstellung ändern. Nutzer können nur über Konten der angegebenen Domains auf Tools von Google zugreifen. Möchten Sie gmail.com- oder googlemail.com-Konten zulassen, müssen Sie der Domainliste "consumer_accounts" (ohne Anführungszeichen) hinzufügen. Diese Einstellung verhindert, dass Nutzer sich auf einem verwalteten Gerät, für das eine Authentifizierung durch Google notwendig ist, anmelden und ein zweites Konto hinzufügen können, wenn dieses Konto nicht zu einer der Domains in der Zulassungsliste gehört.
@@ -868,7 +869,7 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
       Diese Richtlinie wird nur angewendet, wenn das Gerät für <ph name="PRODUCT_NAME" /> mit <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> registriert ist.
       Für <ph name="PRODUCT_OS_NAME" /> wird diese Richtlinie immer angewendet.</translation>
 <translation id="2289688405312849186">Hauptkonto des Nutzers: „user@realm“. Der Platzhalter „<ph name="LOGIN_ID_PLACEHOLDER" />“ wird durch den Nutzernamen „Nutzer“ ersetzt. Der Platzhalter „<ph name="LOGIN_EMAIL_PLACEHOLDER" />“ wird durch den vollständigen Namen des Hauptkontos „user@realm“ ersetzt.</translation>
-<translation id="229322770310505679">Atomische Richtlinien-Gruppen aktivieren</translation>
+<translation id="229322770310505679">Gruppen aus Einzelrichtlinien aktivieren</translation>
 <translation id="22941467117331786">Wenn die Richtlinie auf "True" gesetzt ist, wird während aktiver Sitzungen in der Taskleiste eine große rote Schaltfläche zum Abmelden angezeigt, solange das Display nicht gesperrt ist.
 
       Ist sie auf "False" gesetzt oder nicht konfiguriert, wird keine Schaltfläche angezeigt.</translation>
@@ -2270,6 +2271,7 @@ Ist die Richtlinie deaktiviert oder nicht konfiguriert, werden Nutzer durch den 
 <translation id="4138655880188755661">Zeitlimit</translation>
 <translation id="4147818922357566987">Nur Variationen für wichtige Fehlerbehebungen aktivieren</translation>
 <translation id="4150201353443180367">Display</translation>
+<translation id="415445772247959702">Web Store (wird seit Version 89 unterstützt)</translation>
 <translation id="4157003184375321727">Betriebssystem- und Firmware-Version melden</translation>
 <translation id="4157594634940419685">Zugriff auf native CUPS-Drucker erlauben</translation>
 <translation id="4160962198980004898">Quelle für die Geräte-MAC-Adresse bei angedocktem Gerät</translation>

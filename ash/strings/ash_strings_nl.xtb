@@ -112,6 +112,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1951012854035635156">Assistent</translation>
 <translation id="1957803754585243749">0°</translation>
 <translation id="1957958912175573503">Je taal instellen</translation>
+<translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Vergrendelscherm</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Hallo, <ph name="USERNAME" /></translation>
@@ -232,6 +233,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3090989381251959936"><ph name="FEATURE_NAME" /> in-/uitschakelen. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">Cursor verplaatsen</translation>
 <translation id="3098580329624789136">De <ph name="INTENT" /> voor '<ph name="QUERY" />' ophalen</translation>
+<translation id="3105917916468784889">Screenshot maken</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3126069444801937830">Opnieuw starten om updates uit te voeren</translation>
 <translation id="3139942575505304791">Bureau 1</translation>
@@ -241,6 +243,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3153444934357957346">Je kunt maximaal <ph name="MULTI_PROFILE_USER_LIMIT" /> accounts hebben in Toegang tot meerdere accounts.</translation>
 <translation id="3154351730702813399">De apparaatbeheerder kan je browseactiviteit controleren.</translation>
 <translation id="3181441307743005334">Opnieuw opstarten kan even duren</translation>
+<translation id="3190230207529484457">Schermopname is niet toegestaan als er beschermde content zichtbaar is</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Verbonden met een apparaat}other{Verbonden met # apparaten}}</translation>
 <translation id="320207200541803018">Timer instellen</translation>
 <translation id="3203405173652969239">'Toegang via schakelaar' ingeschakeld</translation>
@@ -366,7 +369,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="4296136865091727875">Alle <ph name="COUNT" /> meldingen wissen</translation>
 <translation id="4302592941791324970">Niet beschikbaar</translation>
 <translation id="4303223480529385476">Statusgedeelte uitvouwen</translation>
-<translation id="4315586716182276649">Breid de internetverbinding van je telefoon uit, beheer Niet storen en vind je apparaat. Bekijk actieve Chrome-tabbladen van je telefoon op je <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Je hebt op de sneltoets voor hoog contrast gedrukt. Wil je deze functie inschakelen?</translation>
 <translation id="4331809312908958774">Besturingssysteem Chrome</translation>
@@ -560,6 +562,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="6054305421211936131">Inloggen met smartkaart</translation>
 <translation id="6059276912018042191">Recente Chrome-tabbladen</translation>
 <translation id="6062360702481658777">Je wordt automatisch uitgelogd over <ph name="LOGOUT_TIME_LEFT" />.</translation>
+<translation id="6073451960410192870">Opname stoppen</translation>
 <translation id="607652042414456612">Je computer is vindbaar voor Bluetooth-apparaten in de buurt en wordt weergegeven als '<ph name="NAME" />' met adres <ph name="ADDRESS" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>
 <translation id="612734058257491180">De Google Assistent is niet beschikbaar in een gastsessie.</translation>
@@ -725,7 +728,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="7654687942625752712">Houd beide volumetoetsen gedurende vijf seconden ingedrukt om gesproken feedback uit te schakelen.</translation>
 <translation id="7658239707568436148">Annuleren</translation>
 <translation id="7662283695561029522">Tik om te configureren</translation>
-<translation id="7683326293741220026">Zo te zien staat bluetooth uit op je telefoon. Zet bluetooth aan op je telefoon om Telefoonhub te gebruiken.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{Eén melding}other{# meldingen}}</translation>
 <translation id="7724603315864178912">Knip</translation>
@@ -773,7 +775,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="8054466585765276473">Accuduur berekenen.</translation>
 <translation id="8061464966246066292">Hoog contrast</translation>
 <translation id="8098591350844501178">Schermcast naar <ph name="RECEIVER_NAME" /> stopzetten</translation>
-<translation id="8108657971283652031">Breid de internetverbinding van je telefoon uit, beheer Niet storen en vind je telefoon. Bekijk actieve Chrome-tabbladen van je telefoon op je <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8113423164597455979">Aan, alle apps</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Bevestigen</translation>
@@ -822,6 +823,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> ondersteunt <ph name="SPECIFIED_RESOLUTION" /> niet. De resolutie is gewijzigd in <ph name="FALLBACK_RESOLUTION" />. Klik op 'Bevestigen' om de wijzigingen te behouden. De vorige instellingen worden over <ph name="TIMEOUT_SECONDS" /> hersteld.</translation>
 <translation id="8513108775083588393">Autom. draaien</translation>
 <translation id="8517041960877371778">Je <ph name="DEVICE_TYPE" /> wordt mogelijk niet opgeladen terwijl deze is ingeschakeld.</translation>
+<translation id="8553395910833293175">Al toegewezen aan alle bureaus.</translation>
 <translation id="8563862697512465947">Meldingsinstellingen</translation>
 <translation id="857201607579416096">Menu verplaatst naar rechtsonder in het scherm.</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>

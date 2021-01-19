@@ -12,7 +12,7 @@
 <translation id="1010498023906173788">이 탭은 직렬 포트에 연결되어 있습니다.</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{응답 없는 페이지}other{응답 없는 페이지}}</translation>
 <translation id="1011355516189274711">텍스트 음성 변환 볼륨</translation>
-<translation id="1012794136286421601">문서, 스프레드시트, 프레젠테이션, 드로잉 파일을 동기화하는 중입니다. Google 드라이브 앱을 열어 온라인이든 오프라인이든 관계없이 파일에 액세스할 수 있습니다.</translation>
+<translation id="1012794136286421601">문서, 스프레드시트, 프레젠테이션, 드로잉 파일을 동기화하는 중입니다. Google Drive 앱을 열어 온라인이든 오프라인이든 관계없이 파일에 액세스할 수 있습니다.</translation>
 <translation id="1012876632442809908">USB-C 기기(전면 포트)</translation>
 <translation id="1013707859758800957">이 페이지에서 샌드박스 처리되지 않은 플러그인 실행을 허용했습니다.</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
@@ -256,7 +256,7 @@
 <translation id="1280820357415527819">모바일 네트워크 검색 중</translation>
 <translation id="1280965841156951489">파일 수정</translation>
 <translation id="1285320974508926690">이 사이트 번역 안함</translation>
-<translation id="1285484354230578868">Google 드라이브 계정에 데이터 저장</translation>
+<translation id="1285484354230578868">Google Drive 계정에 데이터 저장</translation>
 <translation id="1285625592773741684">현재 데이터 사용 설정은 모바일 데이터입니다.</translation>
 <translation id="1288037062697528143">일몰 시 야간 조명이 자동으로 켜짐</translation>
 <translation id="1288300545283011870">음성 속성</translation>
@@ -332,12 +332,13 @@
 <translation id="1374844444528092021">네트워크 '<ph name="NETWORK_NAME" />'에 필요한 인증서가 설치되지 않았거나 더 이상 유효하지 않습니다. 새로운 인증서를 받아 다시 연결하세요.</translation>
 <translation id="1375321115329958930">저장된 비밀번호</translation>
 <translation id="137651782282853227">저장한 주소가 여기 표시됩니다.</translation>
-<translation id="1376771218494401509">창 이름 지정(&amp;W)...</translation>
+<translation id="1376771218494401509">창 이름 지정...</translation>
 <translation id="1377600615067678409">건너뛰기</translation>
 <translation id="1378613616312864539"><ph name="NAME" />이(가) 이 설정을 제어함</translation>
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{유출된 비밀번호 없음}=1{유출된 비밀번호 1개}other{유출된 비밀번호 {NUM_COMPROMISED}개}}</translation>
 <translation id="1380028686461971526">네트워크 자동 연결</translation>
 <translation id="1380436189840894976">시크릿 모드를 종료하시겠습니까?</translation>
+<translation id="1383597849754832576">음성 파일을 다운로드할 수 없습니다. 나중에 다시 시도해 보세요.</translation>
 <translation id="1383861834909034572">완료되면 열기</translation>
 <translation id="1383876407941801731">검색</translation>
 <translation id="1386791642444521222">실제 SIM 활성화</translation>
@@ -876,7 +877,6 @@
 <translation id="1954813140452229842">공유를 마운트하는 중에 오류가 발생했습니다. 사용자 인증 정보를 확인한 후 다시 시도해 주세요.</translation>
 <translation id="1956050014111002555">파일에 여러 인증서가 있지만 가져올 수 있는 인증서가 없습니다.</translation>
 <translation id="1956390763342388273">'<ph name="FOLDER_PATH" />'의 모든 파일이 업로드됩니다. 사이트를 신뢰할 수 있을 때만 실행하세요.</translation>
-<translation id="1960158217849594135">Google 계정에 사용자 이름을 저장하시겠습니까?</translation>
 <translation id="196040970347962278">먼저 인터넷에 연결하세요.</translation>
 <translation id="1962233722219655970">이 페이지에서 사용자 컴퓨터에서 작동하지 않는 Native Client 앱을 사용합니다.</translation>
 <translation id="1963227389609234879">모두 삭제</translation>
@@ -902,6 +902,7 @@
 <translation id="1984417487208496350">보호되지 않음(권장되지 않음)</translation>
 <translation id="1987317783729300807">계정</translation>
 <translation id="1989112275319619282">찾아보기</translation>
+<translation id="1990046457226896323">음성 파일 다운로드됨</translation>
 <translation id="1990512225220753005">이 페이지에 바로가기를 표시하지 않습니다.</translation>
 <translation id="1992397118740194946">설정 안됨</translation>
 <translation id="1992924914582925289">기기에서 삭제</translation>
@@ -1047,7 +1048,6 @@
 <translation id="2157474325782140681">추가 기능을 사용하려면 이 Chromebook과 호환되는 Dell 도킹 스테이션을 사용하세요.</translation>
 <translation id="215753907730220065">전체화면 종료</translation>
 <translation id="2157875535253991059">페이지가 현재 전체화면으로 전환되었습니다.</translation>
-<translation id="2160589599612868242"><ph name="DEVICE_TYPE" />에서 휴대전화 알림을 받아 봅니다.</translation>
 <translation id="216169395504480358">Wi-Fi 추가</translation>
 <translation id="2162155940152307086">동기화 설정을 종료하면 동기화가 시작됩니다.</translation>
 <translation id="2162838847352058695">사이트에서 여러 파일을 자동으로 다운로드하지 못하도록 차단</translation>
@@ -1265,6 +1265,7 @@
 <translation id="2399699884460174994">알림 사용 설정됨</translation>
 <translation id="2399939490305346086">보안 키 로그인 데이터</translation>
 <translation id="2400664245143453337">즉시 업데이트 필요</translation>
+<translation id="2406153734066939945">프로필과 데이터를 삭제하시겠습니까?</translation>
 <translation id="2408018932941436077">카드 저장 중</translation>
 <translation id="2408955596600435184">PIN 입력</translation>
 <translation id="241082044617551207">알 수 없는 플러그인</translation>
@@ -1383,6 +1384,7 @@
 <translation id="2526590354069164005">데스크톱</translation>
 <translation id="2526619973349913024">업데이트 상태 확인</translation>
 <translation id="2527167509808613699">모든 종류의 연결</translation>
+<translation id="2530166226437958497">문제 해결</translation>
 <translation id="2532589005999780174">고대비 모드</translation>
 <translation id="253434972992662860">일시중지(&amp;P)</translation>
 <translation id="2534460670861217804">보안 HTTP 프록시</translation>
@@ -1700,7 +1702,6 @@
 <translation id="2885729872133513017">서버 응답을 디코딩하는 동안 문제가 발생했습니다.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="2889064240420137087">다음으로 링크 열기...</translation>
-<translation id="2889481634493693121">휴대전화에서 알림 사용 설정</translation>
 <translation id="2889925978073739256">샌드박스 처리되지 않은 플러그인 계속 차단</translation>
 <translation id="2893168226686371498">기본 브라우저</translation>
 <translation id="2893917546370257247">{COUNT,plural, =1{텍스트 1개}other{텍스트 #개}}</translation>
@@ -2530,7 +2531,7 @@
 <translation id="3828029223314399057">북마크 검색</translation>
 <translation id="3829765597456725595">SMB 파일 공유</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{관리자가 1개의 잠재적으로 위험한 확장 프로그램을 다시 설정했습니다.}other{관리자가 {NUM_EXTENSIONS}개의 잠재적으로 위험한 확장 프로그램을 다시 설정했습니다.}}</translation>
-<translation id="3831436149286513437">Google 드라이브 검색 추천어</translation>
+<translation id="3831436149286513437">Google Drive 검색 추천어</translation>
 <translation id="383161972796689579">이 기기의 소유자가 새로운 사용자를 추가하지 못하도록 설정함</translation>
 <translation id="3834728400518755610">마이크 설정을 변경하려면 Linux를 종료해야 합니다. 계속하려면 Linux를 종료하세요.</translation>
 <translation id="3834775135533257713">애플리케이션 '<ph name="TO_INSTALL_APP_NAME" />'이(가) '<ph name="INSTALLED_APP_NAME" />'와(과) 충돌하기 때문에 추가하지 못했습니다.</translation>
@@ -2560,6 +2561,7 @@
 <translation id="3857807444929313943">손가락을 뗀 후 다시 터치</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: 동기화 중지됨</translation>
 <translation id="3861638017150647085">사용자 이름 ‘<ph name="USERNAME" />’은(는) 사용할 수 없습니다.</translation>
+<translation id="3861977424605124250">시작 시 표시</translation>
 <translation id="3862693525629180217">내장 센서를 통해 인증</translation>
 <translation id="3862788408946266506">'kiosk_only' 매니페스트 속성을 사용하는 앱은 Chrome OS 키오스크 모드에 설치해야 합니다</translation>
 <translation id="3865414814144988605">해상도</translation>
@@ -2800,7 +2802,6 @@
 <translation id="412730574613779332">스판덱스</translation>
 <translation id="4130199216115862831">기기 로그</translation>
 <translation id="4130207949184424187">검색주소창에서 검색하면 표시되는 페이지가 이 확장 프로그램으로 인해 변경되었습니다.</translation>
-<translation id="4130344535649650885">Google 계정에 비밀번호를 저장하시겠습니까?</translation>
 <translation id="4130750466177569591">동의함</translation>
 <translation id="413121957363593859">컴포넌트</translation>
 <translation id="4131410914670010031">흑백</translation>
@@ -3199,8 +3200,9 @@
 <translation id="4627442949885028695">다른 기기에서 계속</translation>
 <translation id="4628757576491864469">기기</translation>
 <translation id="4628762811416793313">Linux 컨테이너 설정이 완료되지 않았습니다. 다시 시도해 주세요.</translation>
+<translation id="4629521233550547305"><ph name="PROFILE_NAME" /> 프로필 열기</translation>
 <translation id="4633003931260532286">확장 프로그램은 최소 버전 '<ph name="IMPORT_VERSION" />'의 '<ph name="IMPORT_NAME" />'을(를) 요구하지만 '<ph name="INSTALLED_VERSION" />' 버전만 설치되었습니다</translation>
-<translation id="4633757335284074492">Google 드라이브에 백업합니다. 언제든지 간편하게 데이터를 복원하거나 다른 기기로 전환할 수 있습니다. 앱 데이터도 백업에 포함됩니다. 백업 항목은 Google에 업로드되며 자녀의 Google 계정 비밀번호를 사용하여 암호화됩니다.</translation>
+<translation id="4633757335284074492">Google Drive에 백업합니다. 언제든지 간편하게 데이터를 복원하거나 다른 기기로 전환할 수 있습니다. 앱 데이터도 백업에 포함됩니다. 백업 항목은 Google에 업로드되며 자녀의 Google 계정 비밀번호를 사용하여 암호화됩니다.</translation>
 <translation id="4634575639321169635">기기를 업무용 또는 개인용으로 설정합니다.</translation>
 <translation id="4634771451598206121">다시 로그인...</translation>
 <translation id="4635072447747973225">Crostini 제거</translation>
@@ -3476,7 +3478,7 @@
 <translation id="4964455510556214366">배열</translation>
 <translation id="496446150016900060">휴대전화와 Wi-Fi 네트워크 동기화</translation>
 <translation id="4965808351167763748">이 기기를 설정하여 행아웃 Meet를 실행하시겠습니까?</translation>
-<translation id="496888482094675990">파일 앱을 사용하면 Google 드라이브, 외부 저장소, Chrome OS 기기에 저장한 파일에 신속하게 액세스할 수 있습니다.</translation>
+<translation id="496888482094675990">파일 앱을 사용하면 Google Drive, 외부 저장소, Chrome OS 기기에 저장한 파일에 신속하게 액세스할 수 있습니다.</translation>
 <translation id="4971412780836297815">완료되면 열기</translation>
 <translation id="4971735654804503942">위험한 웹사이트, 다운로드 항목 및 확장 프로그램에 더 빠르게 대응하여 선제적 보호 조치를 취합니다. 비밀번호 유출에 관해 알립니다. Google에 인터넷 사용 기록을 전송해야 합니다.</translation>
 <translation id="4972129977812092092">프린터 수정</translation>
@@ -3927,7 +3929,6 @@
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="DEVICE_NAME" />에서 <ph name="ATTACHMENTS" /> 수신 실패}other{<ph name="DEVICE_NAME" />에서 <ph name="ATTACHMENTS" /> 수신 실패}}</translation>
 <translation id="5502500733115278303">Firefox에서 가져온 북마크</translation>
 <translation id="5502915260472117187">자녀</translation>
-<translation id="5503858713116291452">휴대전화가 근처에 있고, 잠금이 해제되어 있으며, 블루투스와 Wi-Fi가 켜져 있는지 확인하세요. 휴대전화에 표시된 단계에 따라 설정을 완료하세요.</translation>
 <translation id="5503982651688210506"><ph name="HOST" />의 카메라 사용 및 이동과 마이크 사용을 계속 허용</translation>
 <translation id="5505264765875738116">사이트에서 알림 전송 허용을 요청할 수 없음</translation>
 <translation id="5505307013568720083">잉크 부족</translation>
@@ -3988,6 +3989,7 @@
 <translation id="5565735124758917034">활성</translation>
 <translation id="5567989639534621706">애플리케이션 캐시</translation>
 <translation id="5568069709869097550">로그인할 수 없음</translation>
+<translation id="5571832155627049070">프로필 맞춤설정</translation>
 <translation id="5572851009514199876">이 사이트에 액세스할 수 있는지 확인할 수 있도록 Chrome을 시작하고 로그인하세요.</translation>
 <translation id="5575473780076478375">시크릿 모드 확장 프로그램: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">데모 등록 요청에 문제가 발생했습니다.</translation>
@@ -4773,7 +4775,7 @@
 <translation id="6472893788822429178">홈 버튼 표시</translation>
 <translation id="6473842110411557830">파워워시 일러스트레이션</translation>
 <translation id="6474498546677193336">다른 애플리케이션에서 폴더를 사용 중이므로 공유를 취소할 수 없습니다. 다음번에 Linux가 종료되면 폴더 공유가 취소됩니다.</translation>
-<translation id="6474884162850599008">Google 드라이브 계정 연결 해제</translation>
+<translation id="6474884162850599008">Google Drive 계정 연결 해제</translation>
 <translation id="6475697075626596525"><ph name="APP_NAME" />에서 내 화면의 콘텐츠를 공유하려고 합니다. 공유할 항목을 선택하세요.</translation>
 <translation id="6477822444490674459">직장 프로필을 사용하는 경우 휴대전화에서 알림 동기화가 지원되지 않습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">위험한 파일을 보관하시겠습니까?</translation>
@@ -4816,7 +4818,7 @@
 <translation id="652948702951888897">Chrome 방문 기록</translation>
 <translation id="6530186581263215931">이 설정은 관리자가 시행합니다.</translation>
 <translation id="6531282281159901044">위험한 파일 보관</translation>
-<translation id="6532101170117367231">Google 드라이브에 저장</translation>
+<translation id="6532101170117367231">Google Drive에 저장</translation>
 <translation id="6532106788206463496">변경사항 저장</translation>
 <translation id="6532206849875187177">보안 및 로그인</translation>
 <translation id="6532527800157340614">액세스 토큰을 검색할 수 없어 로그인에 실패했습니다. 네트워크 연결을 확인한 다음 다시 시도해 보세요.</translation>
@@ -5379,7 +5381,7 @@
 <translation id="7193051357671784796">조직에서 추가한 앱입니다. 설치를 완료하려면 앱을 다시 시작하세요.</translation>
 <translation id="7193374945610105795"><ph name="ORIGIN" />의 비밀번호가 저장되지 않음</translation>
 <translation id="7196020411877309443">이 메시지가 표시되는 이유</translation>
-<translation id="7196913789568937443">Google 드라이브에 백업합니다. 언제든지 간편하게 데이터를 복원하거나 다른 기기로 전환하세요. 백업에는 앱 데이터가 포함됩니다. 백업 항목은 Google에 업로드되며 내 Google 계정 비밀번호를 사용하여 암호화됩니다. <ph name="BEGIN_LINK1" />자세히 알아보기<ph name="END_LINK1" /></translation>
+<translation id="7196913789568937443">Google Drive에 백업합니다. 언제든지 간편하게 데이터를 복원하거나 다른 기기로 전환하세요. 백업에는 앱 데이터가 포함됩니다. 백업 항목은 Google에 업로드되며 내 Google 계정 비밀번호를 사용하여 암호화됩니다. <ph name="BEGIN_LINK1" />자세히 알아보기<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Google 검색을 비롯한 Google 제품으로 스마트하게 탐색하세요</translation>
 <translation id="7197632491113152433">이 기기에서 사용할 수 있는 앱을 계정에서 <ph name="NUMBER_OF_APPS" />개 찾았습니다.</translation>
 <translation id="7199158086730159431">도움말 보기</translation>
@@ -5457,6 +5459,7 @@
 <translation id="7280649757394340890">TTS 음성 설정</translation>
 <translation id="7280877790564589615">권한 요청됨</translation>
 <translation id="7282992757463864530">정보 표시줄</translation>
+<translation id="7283555985781738399">게스트 모드</translation>
 <translation id="7284411326658527427">모든 사용자는 자신의 계정을 맞춤설정하고 데이터를 비공개로 유지할 수 있습니다.</translation>
 <translation id="7287143125007575591">액세스가 거부되었습니다.</translation>
 <translation id="7287411021188441799">기본 배경 복원</translation>
@@ -5729,7 +5732,7 @@
 <translation id="7609148976235050828">인터넷에 연결한 다음 다시 시도하세요.</translation>
 <translation id="7612655942094160088">연결된 휴대전화 기능 사용 설정.</translation>
 <translation id="7614260613810441905">사이트에서 기기의 파일 또는 폴더를 수정하려는 경우 확인 메시지 표시(권장)</translation>
-<translation id="761530003705945209">Google 드라이브에 백업합니다. 언제든지 간편하게 데이터를 복원하거나 다른 기기로 전환할 수 있습니다. 앱 데이터도 백업에 포함됩니다. 백업 항목은 Google에 업로드되며 내 Google 계정 비밀번호를 사용하여 암호화됩니다.</translation>
+<translation id="761530003705945209">Google Drive에 백업합니다. 언제든지 간편하게 데이터를 복원하거나 다른 기기로 전환할 수 있습니다. 앱 데이터도 백업에 포함됩니다. 백업 항목은 Google에 업로드되며 내 Google 계정 비밀번호를 사용하여 암호화됩니다.</translation>
 <translation id="7615365294369022248">계정 추가 중 오류 발생</translation>
 <translation id="7616214729753637086">기기 등록 중...</translation>
 <translation id="7617263010641145920">Play 스토어 사용 설정</translation>
@@ -5836,6 +5839,7 @@
 <translation id="7716781361494605745">Netscape 인증 기관 정책 URL</translation>
 <translation id="7717014941119698257">다운로드: <ph name="STATUS" /></translation>
 <translation id="7717134585801378441">사이트에서 위치를 요청할 수 있음(권장)</translation>
+<translation id="771721654176725387">기기에서 인터넷 사용 기록이 완전히 삭제됩니다. 데이터를 복구하려면 다음 계정으로 동기화를 사용 설정하세요.</translation>
 <translation id="7717845620320228976">업데이트 확인</translation>
 <translation id="7719367874908701697">페이지 확대/축소</translation>
 <translation id="7719588063158526969">기기 이름이 너무 깁니다.</translation>
@@ -5872,6 +5876,7 @@
 <translation id="7765158879357617694">이동</translation>
 <translation id="7765507180157272835">블루투스 및 Wi-Fi 필요</translation>
 <translation id="7766082757934713382">자동 앱 및 시스템 업데이트를 일시중지하여 네트워크 데이터 사용량을 줄일 수 있습니다.</translation>
+<translation id="7766807826975222231">둘러보기</translation>
 <translation id="7766838926148951335">권한 수락</translation>
 <translation id="7768507955883790804">사이트를 방문할 때 이 설정을 자동으로 따릅니다.</translation>
 <translation id="7768770796815395237">변경</translation>
@@ -6116,6 +6121,7 @@
 <translation id="8017176852978888182">Linux 공유 디렉터리</translation>
 <translation id="8017335670460187064"><ph name="LABEL" /></translation>
 <translation id="8017679124341497925">바로가기 수정됨</translation>
+<translation id="8018298733481692628">프로필을 삭제하시겠습니까?</translation>
 <translation id="8018313076035239964">웹사이트에서 사용할 수 있는 정보와 나에게 표시할 수 있는 콘텐츠를 컨트롤합니다.</translation>
 <translation id="8023801379949507775">지금 확장 프로그램 업데이트</translation>
 <translation id="8026334261755873520">인터넷 사용 기록 삭제</translation>
@@ -6181,7 +6187,7 @@
 <translation id="808894953321890993">비밀번호 변경</translation>
 <translation id="8090234456044969073">가장 자주 방문한 웹사이트 목록 보기</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" />이(가) 응답하지 않습니다</translation>
-<translation id="8095105960962832018"><ph name="BEGIN_PARAGRAPH1" />Google 드라이브에 백업합니다. 언제든지 간편하게 데이터를 복원하거나 다른 기기로 전환하세요. 백업에는 앱 데이터가 포함됩니다.<ph name="END_PARAGRAPH1" />
+<translation id="8095105960962832018"><ph name="BEGIN_PARAGRAPH1" />Google Drive에 백업합니다. 언제든지 간편하게 데이터를 복원하거나 다른 기기로 전환하세요. 백업에는 앱 데이터가 포함됩니다.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />백업 항목은 Google에 업로드되며 내 Google 계정 비밀번호를 사용하여 암호화됩니다.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />앱 데이터에는 연락처, 메시지, 사진 등 앱에서 개발자 설정에 따라 저장한 모든 데이터가 포함될 수 있습니다.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />백업 데이터는 드라이브 스토리지 용량에 포함되지 않습니다.<ph name="END_PARAGRAPH4" />
@@ -6251,7 +6257,7 @@
 <translation id="8168943654413034772">선택 작업에 할당된 유일한 스위치는 삭제할 수 없습니다. 종료하려면 아무 키나 누르세요.</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{읽기 목록에 탭 추가}other{읽기 목록에 탭 추가}}</translation>
 <translation id="8174047975335711832">기기 정보</translation>
-<translation id="8174876712881364124">Google 드라이브에 백업합니다. 언제든지 간편하게 데이터를 복원하거나 다른 기기로 전환하세요. 백업에는 앱 데이터가 포함됩니다. 백업 항목은 Google에 업로드되며 자녀의 Google 계정 비밀번호를 사용하여 암호화됩니다. <ph name="BEGIN_LINK1" />자세히 알아보기<ph name="END_LINK1" /></translation>
+<translation id="8174876712881364124">Google Drive에 백업합니다. 언제든지 간편하게 데이터를 복원하거나 다른 기기로 전환하세요. 백업에는 앱 데이터가 포함됩니다. 백업 항목은 Google에 업로드되며 자녀의 Google 계정 비밀번호를 사용하여 암호화됩니다. <ph name="BEGIN_LINK1" />자세히 알아보기<ph name="END_LINK1" /></translation>
 <translation id="8176332201990304395">분홍색 및 흰색</translation>
 <translation id="8177196903785554304">네트워크 세부정보</translation>
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{탭을 새 창으로 이동}other{탭을 새 창으로 이동}}</translation>
@@ -6286,7 +6292,6 @@
 <translation id="8211551284753798479">잘못된 PUK입니다. 기회가 <ph name="RETRIES" />번 남았습니다.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{다운로드 진행 중}other{다운로드 진행 중}}</translation>
 <translation id="8213449224684199188">사진 모드 시작됨</translation>
-<translation id="8213866992824776555"><ph name="DOMAIN" />에서 보호되는 고품질 동영상 및 오디오를 재생할 수 있도록 기기를 확인하고자 합니다.</translation>
 <translation id="8214489666383623925">파일 열기...</translation>
 <translation id="8214962590150211830">이 사용자 삭제</translation>
 <translation id="8216351761227087153">보기</translation>
@@ -6444,7 +6449,7 @@
 <translation id="8398877366907290961">무시하고 계속하기</translation>
 <translation id="8400146488506985033">사용자 관리</translation>
 <translation id="8401432541486058167">스마트 카드와 연결된 PIN을 입력하세요.</translation>
-<translation id="8403562727702715619">Google 드라이브의 최근 항목</translation>
+<translation id="8403562727702715619">Google Drive의 최근 항목</translation>
 <translation id="8407199357649073301">로그 수준:</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> 네트워크, 연결 중</translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -6765,7 +6770,6 @@
 <translation id="8774379074441005279">복원 확인</translation>
 <translation id="8774934320277480003">상단 여백</translation>
 <translation id="8775144690796719618">URL이 올바르지 않습니다.</translation>
-<translation id="8775163630211761057">Android 휴대전화의 유용한 기능을 <ph name="DEVICE_TYPE" /> 기기로 확장합니다.</translation>
 <translation id="8775653927968399786">{0,plural, =1{<ph name="DEVICE_TYPE" /> 기기가 #초 후 자동으로 잠깁니다.
 <ph name="DOMAIN" />에서 스마트 카드를 삽입해 둔 상태로 둘 것을 요청합니다.}other{<ph name="DEVICE_TYPE" /> 기기가 #초 후 자동으로 잠깁니다.
 <ph name="DOMAIN" />에서 스마트 카드를 삽입해 둔 상태로 둘 것을 요청합니다.}}</translation>
@@ -6954,6 +6958,7 @@
 <translation id="8973596347849323817">필요에 따라 기기를 맞춤설정할 수 있습니다. 다음 접근성 기능은 나중에 설정에서 변경할 수 있습니다.</translation>
 <translation id="897414447285476047">연결 문제로 인해 대상 파일 다운로드를 완료하지 못했습니다.</translation>
 <translation id="897525204902889653">격리 서비스</translation>
+<translation id="8975396729541388937">수신한 이메일의 링크를 클릭하여 언제든지 수신 거부할 수 있습니다.</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{‘<ph name="TAB_TITLE" />’}=1{‘<ph name="TAB_TITLE" />’ 외 탭 1개}other{‘<ph name="TAB_TITLE" />’ 외 탭 #개}}</translation>
 <translation id="8977811652087512276">잘못된 비밀번호이거나 손상된 파일입니다.</translation>
 <translation id="8978154919215542464">사용 - 모든 항목 동기화</translation>
@@ -6989,7 +6994,7 @@
 <translation id="9011393886518328654">출시 노트</translation>
 <translation id="9013037634206938463">Linux를 설치하려면 <ph name="INSTALL_SIZE" />의 여유 공간이 있어야 합니다. 여유 공간을 늘리려면 기기에서 파일을 삭제하세요.</translation>
 <translation id="9013707997379828817">관리자가 이 기기를 롤백했습니다. 중요한 파일을 저장한 후 다시 시작하세요. 기기의 모든 데이터가 삭제됩니다.</translation>
-<translation id="901668144954885282">Google 드라이브에 백업</translation>
+<translation id="901668144954885282">Google Drive에 백업</translation>
 <translation id="9018218886431812662">설치 완료</translation>
 <translation id="901834265349196618">이메일</translation>
 <translation id="9019062154811256702">자동 완성 설정을 읽고 변경하기</translation>
@@ -7010,7 +7015,7 @@
 <translation id="9030515284705930323">조직에서 내 계정이 Google Play 스토어를 사용하도록 설정하지 않았습니다. 자세한 정보는 관리자에게 문의하세요.</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269"><ph name="PLUGIN_NAME" /> 플러그인이 더 이상 지원되지 않습니다.</translation>
-<translation id="9031549947500880805">Google 드라이브에 백업합니다. 언제든지 간편하게 데이터를 복원하거나 다른 기기로 전환할 수 있습니다. 앱 데이터도 백업에 포함됩니다.</translation>
+<translation id="9031549947500880805">Google Drive에 백업합니다. 언제든지 간편하게 데이터를 복원하거나 다른 기기로 전환할 수 있습니다. 앱 데이터도 백업에 포함됩니다.</translation>
 <translation id="9033765790910064284">무시하고 계속</translation>
 <translation id="9033857511263905942">붙여넣기(&amp;P)</translation>
 <translation id="9037818663270399707">연결이 일부 네트워크 트래픽에 비공개로 설정되어 있지 않습니다.</translation>
@@ -7073,7 +7078,7 @@
 <translation id="9102610709270966160">확장 프로그램 사용</translation>
 <translation id="9103479157856427471">키보드 포커스를 따라 확대된 화면 이동</translation>
 <translation id="9103868373786083162">돌아가려면 뒤로 버튼을 누르고, 방문 기록을 보려면 컨텍스트 메뉴 키를 누릅니다.</translation>
-<translation id="9108035152087032312">창 이름 지정(&amp;W)...</translation>
+<translation id="9108035152087032312">창 이름 지정...</translation>
 <translation id="9108072915170399168">현재 데이터 사용 설정은 인터넷 사용 안함입니다</translation>
 <translation id="9108692355621501797"><ph name="LINK_BEGIN" />G Suite for Education 개인정보처리방침<ph name="LINK_END" />은 G Suite for Education 사용자와 부모가 제품에서 수집하는 데이터의 유형과 데이터를 수집하는 이유, 데이터의 용도를 이해할 수 있도록 돕기 위한 것입니다.</translation>
 <translation id="9108808586816295166">보안 DNS가 항상 제공되지는 않을 수도 있습니다.</translation>

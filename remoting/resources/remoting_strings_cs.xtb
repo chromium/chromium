@@ -155,7 +155,6 @@ Pokud je položka <ph name="SERVICE_SCRIPT_NAME" /> již zaškrtnutá, zrušte j
 <translation id="8073845705237259513">Chcete-li používat Vzdálenou plochu Chrome, budete do zařízení muset přidat účet Google.</translation>
 <translation id="809687642899217504">Mé počítače</translation>
 <translation id="8116630183974937060">Došlo k chybě sítě. Zkontrolujte prosím, zda je zařízení online a zkuste to znovu.</translation>
-<translation id="8187079423890319756">Copyright 2013 Autoři prohlížeče Chromium. Všechna práva vyhrazena.</translation>
 <translation id="8295077433896346116">Chcete-li používat službu <ph name="PRODUCT_NAME" />, musíte jí udělit oprávnění Přístupnost, aby do tohoto počítače Mac bylo možné vkládat obsah ze vzdáleného počítače.
 
 Chcete-li udělit toto oprávnění, klikněte na tlačítko <ph name="BUTTON_NAME" /> níže. Na panelu Přístupnost, který se otevře, pak zaškrtněte políčko vedle položky <ph name="SERVICE_SCRIPT_NAME" />.

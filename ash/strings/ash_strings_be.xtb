@@ -112,6 +112,7 @@
 <translation id="1951012854035635156">Памочнік</translation>
 <translation id="1957803754585243749">0°</translation>
 <translation id="1957958912175573503">Задайце мову</translation>
+<translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Экран блакіроўкі</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Вітаем, <ph name="USERNAME" />!</translation>
@@ -232,6 +233,7 @@
 <translation id="3090989381251959936">Уключыць або выключыць функцыю "<ph name="FEATURE_NAME" />". <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">Перамясціць курсор</translation>
 <translation id="3098580329624789136">Атрымаць <ph name="INTENT" /> для "<ph name="QUERY" />"</translation>
+<translation id="3105917916468784889">Зрабіць здымак экрана</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3126069444801937830">Перазапусціце для абнаўлення</translation>
 <translation id="3139942575505304791">Стол 1</translation>
@@ -241,6 +243,7 @@
 <translation id="3153444934357957346">Максімальная колькасць уліковых запісаў для функцыі ўваходу ў некалькі ўліковых запісаў: <ph name="MULTI_PROFILE_USER_LIMIT" />.</translation>
 <translation id="3154351730702813399">Адміністратар прылады можа сачыць за вашымі дзеяннямі ў браўзеры.</translation>
 <translation id="3181441307743005334">Перазапуск можа заняць некаторы час</translation>
+<translation id="3190230207529484457">Здыманне экрана забаронена, калі на ім ёсць абароненае змесціва</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Падключана да прылады}one{Падключана да # прылады}few{Падключана да # прылад}many{Падключана да # прылад}other{Падключана да # прылады}}</translation>
 <translation id="320207200541803018">Задаць таймер</translation>
 <translation id="3203405173652969239">Доступ праз пераключальнікі ўключаны</translation>
@@ -366,7 +369,6 @@
 <translation id="4296136865091727875">Выдаліць усе апавяшчэнні (<ph name="COUNT" />)</translation>
 <translation id="4302592941791324970">Недаступна</translation>
 <translation id="4303223480529385476">Разгарнуць панэль стану</translation>
-<translation id="4315586716182276649">Абагульвайце інтэрнэт-падключэнне тэлефона, кіруйце рэжымам "Не турбаваць" і вызначайце месцазнаходжанне прылады. Праглядайце актыўныя ўкладкі Chrome з тэлефона на прыладзе <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Вы націснулі спалучэнне клавіш для рэжыму высокай кантраснасці. Уключыць высокую кантраснасць?</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
@@ -560,6 +562,7 @@
 <translation id="6054305421211936131">Увайсці з дапамогай разумнай карткі</translation>
 <translation id="6059276912018042191">Нядаўна адкрытыя ўкладкі Chrome</translation>
 <translation id="6062360702481658777">Праз <ph name="LOGOUT_TIME_LEFT" /> будзе выкананы аўтаматычны выхад.</translation>
+<translation id="6073451960410192870">Спыніць запіс</translation>
 <translation id="607652042414456612">Ваш камп'ютар бачны для прылад Bluetooth паблізу, ён будзе адлюстроўвацца як "<ph name="NAME" />" з адрасам <ph name="ADDRESS" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Памочнік Google недаступны ў гасцявым сеансе.</translation>
@@ -725,7 +728,6 @@
 <translation id="7654687942625752712">Каб выключыць галасавую зваротную сувязь, націсніце і ўтрымлівайце на працягу пяці секунд абедзве клавішы гучнасці.</translation>
 <translation id="7658239707568436148">Скасаваць</translation>
 <translation id="7662283695561029522">Дакраніцеся, каб сканфігураваць</translation>
-<translation id="7683326293741220026">Здаецца, на тэлефоне выключана падключэнне па Bluetooth. Уключыце яго, каб выкарыстоўваць функцыю "Тэлефонны цэнтр".</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 апавяшчэнне}one{# апавяшчэнне}few{# апавяшчэнні}many{# апавяшчэнняў}other{# апавяшчэння}}</translation>
 <translation id="7724603315864178912">Выразаць</translation>
@@ -773,7 +775,6 @@
 <translation id="8054466585765276473">Разлічваецца час да разрадкі акумулятара.</translation>
 <translation id="8061464966246066292">Высокая кантраснасць</translation>
 <translation id="8098591350844501178">Спыніць трансляцыю экрана на прыёмнік "<ph name="RECEIVER_NAME" />"</translation>
-<translation id="8108657971283652031">Абагульвайце інтэрнэт-падключэнне тэлефона, кіруйце рэжымам "Не турбаваць" і вызначайце месцазнаходжанне тэлефона. Праглядайце актыўныя ўкладкі Chrome з тэлефона на прыладзе <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8113423164597455979">Уключана, усе праграмы</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Пацвердзіць</translation>
@@ -822,6 +823,7 @@
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> не падтрымлівае раздзяляльнасць <ph name="SPECIFIED_RESOLUTION" />. Прыменена раздзяляльнасць <ph name="FALLBACK_RESOLUTION" />. Каб захаваць змяненні, націсніце "Пацвердзіць". Папярэднія налады будуць адноўлены праз <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="8513108775083588393">Аўтапаварот</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> можа не зараджацца ва ўключаным стане.</translation>
+<translation id="8553395910833293175">Акно ўжо даступнае на ўсіх працоўных сталах.</translation>
 <translation id="8563862697512465947">Налады апавяшчэнняў</translation>
 <translation id="857201607579416096">Меню перамешчана ў правы ніжні вугал экрана.</translation>
 <translation id="8594115950068821369">–<ph name="FORMATTED_TIME" /></translation>

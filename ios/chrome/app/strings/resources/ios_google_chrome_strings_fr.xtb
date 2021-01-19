@@ -78,6 +78,10 @@
 <translation id="8370517070665726704">© <ph name="YEAR" /> Google LLC. Tous droits réservés.</translation>
 <translation id="840168496893712993">Certains modules complémentaires entraînent le plantage de Chrome. Veuillez essayer de les désinstaller.</translation>
 <translation id="8459495907675268833">Les données sélectionnées ont été supprimées de Chrome et des appareils synchronisés. Votre compte Google conserve peut-être d'autres formes d'historique de navigation sur la page history.google.com concernant, par exemple, vos recherches ou vos activités via d'autres services Google.</translation>
+<translation id="850555388806794946">Pour définir Chrome comme votre navigateur par défaut, procédez comme suit :
+  1. Accédez à "Réglages"
+  2. Appuyez sur "Navigateur par défaut"
+  3. Sélectionnez "Chrome".</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="9135668017386497357">Si vous l'autorisez à connaître votre position, Chrome la communique à votre moteur de recherche par défaut ainsi qu'à tous les sites que vous autorisez. Certains sites peuvent demander votre position lorsqu'ils souhaitent vous montrer des informations locales, comme des magasins à proximité ou des actualités.</translation>
 </translationbundle>

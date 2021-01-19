@@ -69,6 +69,7 @@
 <translation id="328888136576916638">Google এপিআই কীগুলি অনুপস্থিত৷ Chromium-এর কিছু বৈশিষ্ট্য নিষ্ক্রিয় হয়ে যাবে৷</translation>
 <translation id="3296368748942286671"> Chromium বন্ধ হলে পটভূমির অ্যাপ্লিকেশন চালু রাখুন</translation>
 <translation id="331951419404882060">সাইন ইনে ত্রুটির কারণে Chromium OS আপনার ডেটা সিঙ্ক করতে পারেনি৷</translation>
+<translation id="3430503420100763906">Chromium প্রোফাইল থেকে আপনার সব Chromium স্টাফ আলাদা করতে পারবেন। বন্ধু এবং পরিবারের জন্য প্রোফাইল তৈরি করুন অথবা অফিস এবং বিনোদনের প্রোফাইল আলাদা আলাদা রাখুন।</translation>
 <translation id="347328004046849135">কোনও চুরি হয়ে যাওয়া পাসওয়ার্ড দিয়ে আপনি সাইন-ইন করলে আপনাকে Chromium বিজ্ঞপ্তি দিয়ে জানাবে</translation>
 <translation id="3474745554856756813">এটি এই ডিভাইস থেকে <ph name="ITEMS_COUNT" />টি আইটেম মুছে দেবে। আপনার ডেটা পরে পুনরুদ্ধার করার জন্য, Chromium-এ <ph name="USER_EMAIL" /> হিসেবে সাইন-ইন করুন।</translation>
 <translation id="3509308970982693815">দয়া করে সব Chromium উইন্ডো বন্ধ করুন ও আবার চেষ্টা করুন৷</translation>
@@ -163,6 +164,7 @@
 <translation id="6373523479360886564">আপনি কি Chromium আনইনস্টল করার ব্যাপারে নিশ্চিত?</translation>
 <translation id="6403826409255603130">Chromium হল একটি ওয়েব ব্রাউজার যা ওয়েব পৃষ্ঠার গতি এবং অ্যাপগুলিকে বিদ্যুৎ গতিতে সঞ্চালিত করে৷ এটা দ্রুত, স্থিতিশীল এবং সহজে ব্যবহারের যোগ্য৷ Chromium নির্মিত ম্যালওয়ার এবং ফিশিং সুরক্ষার সাহায্যে আরও সুরক্ষিত ভাবে ওয়েব ব্রাউজ করুন৷</translation>
 <translation id="6434250628340475518">Chromium OS সিস্টেম</translation>
+<translation id="6455857529632101747">Chromium প্রোফাইল-এ স্বাগতম</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium ১ সেকেন্ডের মধ্যে রিস্টার্ট হবে}one{Chromium # সেকেন্ডের মধ্যে রিস্টার্ট হবে}other{Chromium # সেকেন্ডের মধ্যে রিস্টার্ট হবে}}</translation>
 <translation id="6475912303565314141">আপনি Chromium শুরু করলে কোন পৃষ্ঠাটি দেখানো হবে তাও এটি নিয়ন্ত্রণ করে।</translation>
 <translation id="6510925080656968729">Chromium আনইনস্টল করুন</translation>

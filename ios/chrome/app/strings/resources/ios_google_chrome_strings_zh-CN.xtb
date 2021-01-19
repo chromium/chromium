@@ -78,6 +78,10 @@
 <translation id="8370517070665726704">版权所有 <ph name="YEAR" /> Google LLC. 保留所有权利。</translation>
 <translation id="840168496893712993">部分插件导致 Chrome 崩溃，请尝试卸载这些插件。</translation>
 <translation id="8459495907675268833">所选数据已从 Chrome 和同步的设备中移除。不过，您的 Google 帐号在 history.google.com 上可能有其他形式的浏览记录（例如，在其他 Google 服务中的搜索记录和活动记录）。</translation>
+<translation id="850555388806794946">若要将 Chrome 设为默认浏览器，请执行以下操作：
+  1. 打开“设置”
+  2. 点按“默认浏览器应用”
+  3. 选择“Chrome”。</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="9135668017386497357">如果您允许 Chrome 获取您的位置信息，Chrome 便会将该信息发送到您的默认搜索引擎和已获您授权的所有网站。网站可能会请求使用您的位置信息以便为您显示本地信息（例如附近的商店或新闻）。</translation>
 </translationbundle>

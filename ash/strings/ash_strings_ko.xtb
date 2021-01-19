@@ -112,6 +112,7 @@
 <translation id="1951012854035635156">어시스턴트</translation>
 <translation id="1957803754585243749">0°</translation>
 <translation id="1957958912175573503">언어 설정</translation>
+<translation id="1961832440516943645"><ph name="DATE" /> <ph name="TIME" /></translation>
 <translation id="1962969542251276847">화면 잠금</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" />(USB)</translation>
 <translation id="1972950159383891558"><ph name="USERNAME" />님, 안녕하세요.</translation>
@@ -232,6 +233,7 @@
 <translation id="3090989381251959936"><ph name="FEATURE_NAME" /> 기능을 켜거나 끕니다. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">커서 이동</translation>
 <translation id="3098580329624789136">‘<ph name="QUERY" />’의 <ph name="INTENT" /> 확인하기</translation>
+<translation id="3105917916468784889">스크린샷 찍기</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" />(블루투스)</translation>
 <translation id="3126069444801937830">업데이트하려면 다시 시작</translation>
 <translation id="3139942575505304791">데스크 1</translation>
@@ -241,6 +243,7 @@
 <translation id="3153444934357957346">멀티 로그인에는 계정을 <ph name="MULTI_PROFILE_USER_LIMIT" />개까지만 사용할 수 있습니다.</translation>
 <translation id="3154351730702813399">기기 관리자가 탐색 활동을 모니터링할 수 있습니다.</translation>
 <translation id="3181441307743005334">다시 시작하는 데 시간이 다소 걸릴 수 있습니다</translation>
+<translation id="3190230207529484457">보호된 콘텐츠가 보일 때는 화면 캡처를 할 수 없습니다.</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{기기 1개에 연결됨}other{기기 #개에 연결됨}}</translation>
 <translation id="320207200541803018">타이머 설정</translation>
 <translation id="3203405173652969239">스위치 제어 사용 중</translation>
@@ -366,7 +369,6 @@
 <translation id="4296136865091727875">알림 <ph name="COUNT" />개 모두 지우기</translation>
 <translation id="4302592941791324970">사용할 수 없음</translation>
 <translation id="4303223480529385476">상태 영역 확장</translation>
-<translation id="4315586716182276649">휴대전화의 인터넷 연결을 확장하고, 방해 금지 모드를 제어하며, 기기를 찾으세요. 또한 <ph name="DEVICE_TYPE" />에서 휴대전화의 활성 Chrome 탭을 볼 수도 있습니다.</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">고대비 단축키를 누르셨습니다. 사용 설정할까요?</translation>
 <translation id="4331809312908958774">크롬 OS</translation>
@@ -560,6 +562,7 @@
 <translation id="6054305421211936131">스마트 카드로 로그인</translation>
 <translation id="6059276912018042191">최근 Chrome 탭</translation>
 <translation id="6062360702481658777"><ph name="LOGOUT_TIME_LEFT" /> 후 자동으로 로그아웃됩니다.</translation>
+<translation id="6073451960410192870">녹화 중지</translation>
 <translation id="607652042414456612">내 컴퓨터가 근처 블루투스 기기에서 검색할 수 있도록 설정되어 있으며 주소(<ph name="ADDRESS" />)와 함께 '<ph name="NAME" />'(으)로 표시됩니다.</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />, <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">게스트 세션에서는 Google 어시스턴트를 사용할 수 없습니다.</translation>
@@ -725,7 +728,6 @@
 <translation id="7654687942625752712">음성 피드백을 사용 중지하려면 두 볼륨 키를 5초 동안 길게 누르세요.</translation>
 <translation id="7658239707568436148">취소</translation>
 <translation id="7662283695561029522">설정하려면 탭하세요.</translation>
-<translation id="7683326293741220026">휴대전화의 블루투스가 꺼져 있는 것 같습니다. 휴대전화 허브를 사용하려면 휴대전화에서 블루투스를 사용 설정하세요.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{알림 1개}other{알림 #개}}</translation>
 <translation id="7724603315864178912">잘라내기</translation>
@@ -773,7 +775,6 @@
 <translation id="8054466585765276473">배터리 시간 계산 중</translation>
 <translation id="8061464966246066292">고대비</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" />에 화면 전송 중지</translation>
-<translation id="8108657971283652031">휴대전화의 인터넷 연결을 확장하고, 방해 금지 모드를 제어하며, 휴대전화를 찾으세요. 또한 <ph name="DEVICE_TYPE" />에서 휴대전화의 활성 Chrome 탭을 볼 수도 있습니다.</translation>
 <translation id="8113423164597455979">모든 앱에서 사용 중</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8131740175452115882">확인</translation>
@@ -822,6 +823,7 @@
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" />에서 <ph name="SPECIFIED_RESOLUTION" />을(를) 지원하지 않습니다. 해상도가 <ph name="FALLBACK_RESOLUTION" />(으)로 변경되었습니다. 변경사항을 유지하려면 확인을 클릭하세요. <ph name="TIMEOUT_SECONDS" /> 후 이전 설정으로 복원됩니다.</translation>
 <translation id="8513108775083588393">자동 회전</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" />이(가) 켜져 있는 동안에는 충전되지 않을 수 있습니다.</translation>
+<translation id="8553395910833293175">이미 모든 데스크에 할당되어 있습니다.</translation>
 <translation id="8563862697512465947">알림 설정</translation>
 <translation id="857201607579416096">메뉴가 화면 오른쪽 하단으로 이동했습니다.</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>

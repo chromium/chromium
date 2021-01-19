@@ -47,6 +47,10 @@
 <translation id="5862307444128926510">‏مرحبًا بك في Chromium</translation>
 <translation id="5945387852661427312">‏إنك تسجل الدخول باستخدام حساب تتم إدارته من خلال <ph name="DOMAIN" /> وتمنح مشرفه الحق في التحكم في بياناتك على Chromium. سيؤدي ذلك إلى جعل بياناتك مرتبطة دائمًا بهذا الحساب. كما سيؤدي الخروج من Chromium إلى حذف بياناتك من هذا الجهاز، ولكن ستظل هذه البيانات مخزَّنة على حسابك في Google.</translation>
 <translation id="602807004951640891">‏يعني استخدامك لمتصفّح Chromium موافقتك على <ph name="BEGIN_LINK_TOS" />بنود الخدمة<ph name="END_LINK_TOS" />.</translation>
+<translation id="6119647025869519954">‏لجعل Chromium المتصفِّح التلقائي، اتّبِع الخطوات التالية:
+1. افتح Settings (الإعدادات).
+2. انقر على Default Browser App (تطبيق المتصفِّح التلقائي).
+3. اختَر Chromium.</translation>
 <translation id="6268381023930128611">‏هل تريد الخروج من Chromium؟</translation>
 <translation id="6424492062988593837">‏لقد أصبح Chromium أفضل من ذي قبل! يتوفر إصدار جديد.</translation>
 <translation id="6604711459180487467">‏استمتع بتجربة أفضل في Chromium حسب موقعك.</translation>

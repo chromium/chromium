@@ -103,7 +103,7 @@
       仅当 <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> 设为 False 时，设置 <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> 才会产生影响。</translation>
 <translation id="1147732569915511430">相应头像图片的 SHA-256 哈希值。</translation>
 <translation id="1151353063931113432">在这些网站上允许图片</translation>
-<translation id="1151987132434751822">可对哪些身份验证方案应用政策凭据。可设为下列值之一：
+<translation id="1151987132434751822">可对哪些身份验证方案采用政策凭据。可设为下列值之一：
             * basic
             * digest
             * ntlm
@@ -341,7 +341,7 @@
       如果此政策设为 False 或未设置，系统会阻止扩展程序使用该 API。
 
       请注意：此政策也适用于组件扩展程序，例如 Hangout Services 扩展程序。</translation>
-<translation id="148194404518916594">允许用户使用“触摸搜索”功能</translation>
+<translation id="148194404518916594">允许用户使用“轻触搜索”功能</translation>
 <translation id="1486021504508098388">报告背光信息</translation>
 <translation id="1487916040416013623">通过设置此政策，您可以指定应允许哪些服务器进行集成身份验证。仅当收到由此许可名单中的代理服务器或服务器发出的身份验证请求时，<ph name="PRODUCT_NAME" /> 才会启用集成式身份验证机制。
 
@@ -397,6 +397,7 @@
 <translation id="1561424797596341174">覆盖与远程访问主机的调试版本号相关的政策</translation>
 <translation id="1561967320164410511">用于个人认证的 U2F 和扩展程序</translation>
 <translation id="1575015449587326319">OnFileDownloaded Chrome Enterprise Connector 的配置政策</translation>
+<translation id="1576684007051137182">配置要停用的摄像头、浏览器设置、操作系统设置、扫描功能和网上应用店功能</translation>
 <translation id="1583248206450240930">默认情况下使用“<ph name="PRODUCT_FRAME_NAME" />”</translation>
 <translation id="1588240398285670601">浏览器设置</translation>
 <translation id="1593245608325508847">通过设置此政策，您可以启用 Chrome 的 G Suite 受限登录功能，并禁止用户更改此设置。用户只能通过来自指定网域的帐号使用 Google 工具（若要允许使用 gmail 或 googlemail 帐号，请将 consumer_accounts 添加到网域列表中）。在需要通过 Google 身份验证的受管理设备上，这项设置会禁止用户登录帐号并添加辅助帐号（如果该帐号不属于某个明确允许的网域）。
@@ -681,7 +682,7 @@
 
       连接到 <ph name="CLOUD_PRINT_NAME" />的打印机会被视为<ph name="PRINTER_TYPE_CLOUD" />打印机，其余打印机则会归类为<ph name="PRINTER_TYPE_LOCAL" />打印机。
       注意：如果您未在某个字段中输入值，则意味着所有打印机都符合此项属性。例如，如果不指定网络连接状态，那么进行打印预览时，系统将会查找所有类型的打印机（<ph name="PRINTER_TYPE_LOCAL" />和<ph name="PRINTER_TYPE_CLOUD" />）。正则表达式的格式必须遵循 JavaScript RegExp 语法，并在匹配时区分大小写。</translation>
-<translation id="2005506794355327448">当设备盖合上后应执行的操作</translation>
+<translation id="2005506794355327448">当设备的盖子合上后应执行的操作</translation>
 <translation id="2006530844219044261">电源管理</translation>
 <translation id="2013285471046373727">指定相应应用的安装方式。OPTIONAL：系统不会自动安装该应用，但用户可以安装它。如果您未指定此政策，这即是默认设置。PRELOAD：系统会自动安装该应用，但用户可以卸载它。FORCE_INSTALLED：系统会自动安装该应用，而且用户无法卸载它。BLOCKED：该应用已被屏蔽且无法安装。如果已根据先前的政策安装了该应用，系统会卸载它。</translation>
 <translation id="2014757022750736514">控制登录屏幕（用户会从这里登录帐号）的行为。设置包括：谁可以登录、允许使用什么类型的帐号、应该使用什么样的身份验证方法，以及常规的无障碍设置、输入法设置和语言区域设置。</translation>
@@ -803,8 +804,8 @@
 <translation id="2168397434410358693">使用交流电源供电时的闲置延迟时间</translation>
 <translation id="217013996107840632">用于从替代浏览器切换至 Chrome 的命令行参数。</translation>
 <translation id="2170233653554726857">启用WPAD优化</translation>
-<translation id="2171952274731262470">延迟时间以及当设备闲置且使用电池供电时应执行的操作</translation>
-<translation id="2175353308236295184">包含一系列键值对的应用专用型 JSON 配置对象，例如“"managedConfiguration": { "key1": value1, "key2": value2 }”。这些键是在应用清单中定义的。</translation>
+<translation id="2171952274731262470">当设备闲置且使用电池供电时应执行的操作以及相应延迟时间</translation>
+<translation id="2175353308236295184">包含一系列键值对的应用专属 JSON 配置对象，例如“"managedConfiguration": { "key1": value1, "key2": value2 }”。这些键是在应用清单中定义的。</translation>
 <translation id="2178899310296064282">至少强制启用 YouTube“适中”受限模式</translation>
 <translation id="2182291258410176649">用户可决定是否启用备份和恢复服务</translation>
 <translation id="219297066914002620">指示 <ph name="PRODUCT_OS_NAME" />启用或停用虚拟机管理控制台工具。
@@ -996,7 +997,7 @@
 
       此政策的值应以天为单位。</translation>
 <translation id="2466131534462628618">进行强制门户身份验证时忽略代理服务器</translation>
-<translation id="2467896267442150508">持续时间不超过 1 周的间隔时段。如果开始时间晚于结束时间，该间隔时段会跨日。</translation>
+<translation id="2467896267442150508">持续时间不超过 1 周的间隔时段。如果开始时间晚于结束时间，该间隔时段会跨周。</translation>
 <translation id="247658312644322296">“另存为 PDF”目的地</translation>
 <translation id="2478756867046106663">允许那些提供误导性体验的网站打开新的窗口或标签页</translation>
 <translation id="2480971699591919564">启用“点击通话”功能，以允许已登录的 Chrome 用户从桌面设备向 Android 设备发送电话号码。若想了解详情，请参阅这篇帮助中心文章：https://support.google.com/chrome/answer/9430554?hl=zh-CN。
@@ -1807,7 +1808,7 @@
           如果此政策未设置，“随选朗读”在登录屏幕上最初会处于停用状态，但用户可以随时启用它。</translation>
 <translation id="348495353354674884">启用虚拟键盘</translation>
 <translation id="3485200437120267231">停用登录拦截功能</translation>
-<translation id="3487651201232258606">本地消息传递</translation>
+<translation id="3487651201232258606">原生消息传递</translation>
 <translation id="3492834335089638487">此政策用于控制设备对来源不受信任（不是来自 Google Play 商店）的 Android 应用的使用。
 
       不设置此政策的值等同于禁止使用此功能。
@@ -1974,7 +1975,7 @@
 <translation id="3762520180381586267">如果此政策已启用，<ph name="PRODUCT_OS_NAME" />会在用户将设备关机后触发重启。<ph name="PRODUCT_OS_NAME" />会将界面中的所有关机按钮替换为重启按钮。如果用户通过电源按钮将设备关机，设备将不会自动重启，即使开启了此政策也是如此。
 
       如果此政策已停用或未设置，<ph name="PRODUCT_OS_NAME" />会允许用户将设备关机。</translation>
-<translation id="3763515772647897871">应在每周的哪一天（以设备的本地时区表示）检查是否有可用更新。仅在“频率”设为“每周”时使用。</translation>
+<translation id="3763515772647897871">应在每周的哪一天（以设备的本地时区表示）检查是否有可用更新。仅在“频率”设为“WEEKLY”时使用。</translation>
 <translation id="3765260570442823273">待机退出警告讯息的持续时间</translation>
 <translation id="3770407495263198786">通过设置此政策，管理员可以为用户配置打印机列表。当用户首次尝试打印时，需要选择打印机。
 
@@ -2239,7 +2240,7 @@
 
       如果您设置了此政策，用户便无法更改该功能的状态。如果您未设置此政策，放大镜最初会处于关闭状态，但用户可随时开启它。</translation>
 <translation id="410068710490553233">允许登录其他 Google 帐号</translation>
-<translation id="4101282687722389021">时间戳（采用世界协调时间），用于表明此条目的上次更新时间。将以字符串的形式发送，因为时间戳不会是整数</translation>
+<translation id="4101282687722389021">时间戳（采用世界协调时间），用于表明此条目的上次更新时间。将以字符串的形式发送，因为该时间戳不能表示为整数</translation>
 <translation id="4103177213841380258">此政策用于控制对本地设备发现界面 (<ph name="CHROME_DEVICES_LINK" />) 中的可控制功能的访问权限，该界面会显示可在用户附近发现的设备以及已注册到这些设备的云端设备。在除 <ph name="PRODUCT_OS_NAME" />之外的所有其他操作系统中，本地设备发现界面还允许用户将与其计算机相连的传统打印机添加到 <ph name="CLOUD_PRINT_NAME" />。
 
       如果您未设置此政策，该功能会保持启用状态。</translation>
@@ -2263,6 +2264,7 @@
 <translation id="4138655880188755661">时限</translation>
 <translation id="4147818922357566987">仅启用与重要修复程序有关的变体</translation>
 <translation id="4150201353443180367">显示</translation>
+<translation id="415445772247959702">网上应用店（在 89 版及更高版本中受支持）</translation>
 <translation id="4157003184375321727">报告操作系统和固件版本</translation>
 <translation id="4157594634940419685">允许访问本机 CUPS 打印机</translation>
 <translation id="4160962198980004898">插入基座后的设备 MAC 地址来源</translation>
@@ -2439,7 +2441,7 @@
 
       如需详细了解有效的<ph name="URL_LABEL" />格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是此政策可接受的值。</translation>
 <translation id="4480694116501920047">强制使用安全搜索</translation>
-<translation id="4481202456143946404">派生自 Google3 cl（已推出新的《服务条款》版本）的有效《服务条款》版本。</translation>
+<translation id="4481202456143946404">派生自引入新《服务条款》版本的 Google3 cl 的有效《服务条款》版本。</translation>
 <translation id="4483649828988077221">停用自动更新功能</translation>
 <translation id="4485425108474077672">配置“打开新的标签页”页面网址</translation>
 <translation id="4492287494009043413">停用截取屏幕截图功能</translation>
@@ -3006,7 +3008,7 @@
 <translation id="5306186200045823863">信任 Symantec Corporation 的旧版 PKI 基础架构</translation>
 <translation id="5307432759655324440">无痕模式的可用性</translation>
 <translation id="5311275381462687162">默认旧版 <ph name="ATTRIBUTE_SAMESITE_NAME" /> Cookie 行为设置</translation>
-<translation id="5312253627576569499">当在屏幕变暗后或在屏幕关闭不久后察觉到用户活动时，系统会对屏幕变暗延迟时间应用的调整幅度（百分比）</translation>
+<translation id="5312253627576569499">在屏幕变暗后或在屏幕关闭不久后察觉到用户活动时，系统会对屏幕变暗延迟时间采取的调整幅度（百分比）</translation>
 <translation id="5315367501385698459">通过设置此政策，您可以罗列一些网址格式，从而指定自动授权哪些网站在登录屏幕上访问具有给定供应商 ID 和产品 ID 的 USB 设备。列表中的每项内容都必须同时包含“<ph name="DEVICES_FIELD_NAME" />”和“<ph name="URLS_FIELD_NAME" />”字段，此政策才有效。“<ph name="DEVICES_FIELD_NAME" />”字段中的每项内容都可以包含“<ph name="VENDOR_ID_FIELD_NAME" />”和“<ph name="PRODUCT_ID_FIELD_NAME" />”字段。如果您省略“<ph name="VENDOR_ID_FIELD_NAME" />”字段，系统将会创建一项与所有设备都匹配的政策。如果您省略“<ph name="PRODUCT_ID_FIELD_NAME" />”字段，系统将会创建一项与所有具有给定供应商 ID 的设备都匹配的政策。包含“<ph name="PRODUCT_ID_FIELD_NAME" />”字段但不含“<ph name="VENDOR_ID_FIELD_NAME" />”字段的政策无效。
 
       USB 权限模型会使用请求网址和嵌入网址来授权请求网址访问相应 USB 设备。如果发出请求的网站是在 iframe 中加载的，请求网址可能会与嵌入网址不同。因此，“<ph name="URLS_FIELD_NAME" />”字段最多可包含 2 个以英文逗号分隔的网址字符串，以分别指定请求网址和嵌入网址。如果仅指定了 1 个网址，那么无论嵌入状态为何，系统都会在发出请求的网站的网址与这个网址相符时授权该网站访问相应 USB 设备。这些网址必须有效，否则系统会忽略此政策。
@@ -3197,7 +3199,7 @@
       请注意，我们不建议启用此设置，因为这可能会允许绕过 nameConstraints 扩展项（用于限制可针对哪些主机名授权指定的证书）。
 
       如果此政策未设置或设为 false，系统将不会信任包含 DNS 名称或 IP 地址但缺少 subjectAlternativeName 扩展项的服务器证书。</translation>
-<translation id="5577475143148445339">包含天数以及应在这些天数过后更新的设备所占的百分比。</translation>
+<translation id="5577475143148445339">包含天数，以及应在此天数过后更新的设备所占的百分比。</translation>
 <translation id="5579179012798142131">除非暂存模式或多帐号登录在用户会话期间保持开启状态，否则将 ArcEnabled 设为 True 会为用户开启 ARC。将此政策设为 False 或不设置意味着企业用户无法使用 ARC。</translation>
 <translation id="5582429816116769246">让您能够控制用户能否访问非企业打印机。
 
@@ -3414,7 +3416,7 @@
       “<ph name="WARNING_PERIOD_PROPERTY_NAME" />”和“<ph name="AUE_WARNING_PERIOD_PROPERTY_NAME" />”都是可选值，在使用时应以天数为单位指定。这两个期限的默认值都是 0 天，表示没有警告期。
       <ph name="UNMANAGED_USER_RESTRICTED_PROPERTY_NAME" /> 是一项可选属性，默认值为 False。</translation>
 <translation id="5879014913445067283">控制网络文件共享功能是否通过“<ph name="NETBIOS_NAME" />”来搜索共享文件</translation>
-<translation id="588135807064822874">启用“触摸搜索”功能</translation>
+<translation id="588135807064822874">启用“轻触搜索”功能</translation>
 <translation id="5882345429632338713">在启动替代浏览器之前的延迟时间（以毫秒为单位）</translation>
 <translation id="5883015257301027298">默认 Cookie 设置</translation>
 <translation id="5883754873839596178">通过设置此政策，您可以指定可同时连接到代理服务器的连接数上限。某些代理服务器无法处理由同一客户端同时发出的大量连接，您只需将此政策设为较小的值即可解决该问题。此政策的值应大于 6 且小于 100。众所周知，某些 Web 应用采用了挂起 GET，这样会消耗大量连接，因此如果打开的此类 Web 应用过多，将政策值设为小于 32 就可能会导致浏览器网络连接挂起。如果所设的政策值小于默认值，您需自担风险。
@@ -3497,7 +3499,7 @@
 <translation id="603410445099326293">在使用 POST 的建议网址中所需的参数</translation>
 <translation id="6034341625190551415">控制公用自助终端和自助服务终端帐号类型。</translation>
 <translation id="6034603289689965535">允许页面在取消加载的过程中显示弹出式窗口</translation>
-<translation id="6036459377708946958">应在每月的哪一天 [1-31]（以设备的本地时区表示）检查是否有可用更新。仅在“频率”设为“每月”时使用。如果此值超出给定月份的天数上限，系统将选择该月的最后一天。</translation>
+<translation id="6036459377708946958">应在每月的哪一天 [1-31]（以设备的本地时区表示）检查是否有可用更新。仅在“频率”设为“MONTHLY”时使用。如果此值超出给定月份的天数上限，系统将选择该月的最后一天。</translation>
 <translation id="6036523166753287175">支持通过远程访问主机穿越防火墙</translation>
 <translation id="603768430528561926">如果此政策已启用或未设置，企业设备用户便可通过 <ph name="PRODUCT_OS_NAME" />注册流程来兑换优惠。
 
@@ -4226,7 +4228,7 @@
       注意：如需查看详细示例，请访问 Chromium 项目 ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett )。</translation>
 <translation id="7002040773317582266">已为主帧网址启用实时检查功能。</translation>
 <translation id="7003746348783715221">“<ph name="PRODUCT_NAME" />”偏好设置</translation>
-<translation id="7007283257527015835">一个布尔值标记，用于表明协议处理程序是否应设为默认值。</translation>
+<translation id="7007283257527015835">一个布尔值标记，用于表明是否应将该协议处理程序设为默认处理程序。</translation>
 <translation id="7008308728445338159">启用 DNS 拦截检查功能</translation>
 <translation id="7016736684656067099">如果此政策设为 1，系统会允许所有网站显示图片。如果此政策设为 2，系统会禁止网站显示图片。
 
@@ -4969,9 +4971,9 @@
 <translation id="8118665053362250806">设置媒体磁盘缓存大小</translation>
 <translation id="8124468781472887384">设备打印机配置访问政策。</translation>
 <translation id="8128192446158421884">AutoOpenFileTypes 可应用到的网址</translation>
-<translation id="8133152694354699657">如果此政策设为 True 或未设置，用户将能够使用“触摸搜索”功能，并能够开启或关闭该功能。
+<translation id="8133152694354699657">如果此政策设为 True 或未设置，用户将能够使用“轻触搜索”功能，并能够开启或关闭该功能。
 
-      如果此政策设为 False，系统会彻底关闭“触摸搜索”功能。</translation>
+      如果此政策设为 False，系统会彻底关闭“轻触搜索”功能。</translation>
 <translation id="8135271712389620651">以列表形式配置一系列规则，防止 <ph name="PRODUCT_OS_NAME" />上发生数据泄露。
       复制并粘贴数据、传输文件、打印、共享屏幕或截屏等操作都可能会导致数据泄露。
 
@@ -5027,7 +5029,7 @@
       如果用户已启用同步功能，所有这些数据都会保留在其同步个人资料中，就像常规个人资料一样。如果此政策并未明确停用隐身模式，那么用户还可以使用隐身模式。
 
       如果此政策设为停用或未设置，用户登录时系统会使用常规个人资料。</translation>
-<translation id="8151299379693359769">允许根据远程认证进行额外的安全检查（可选，默认为 True）。</translation>
+<translation id="8151299379693359769">允许根据远程认证结果进行额外的安全检查（可选，默认为 True）。</translation>
 <translation id="8158758865057576716">允许创建 <ph name="PRODUCT_NAME" /> 个人资料数据的漫游副本。</translation>
 <translation id="8158897487095710470">如果此政策设为 True，<ph name="PRODUCT_NAME" /> 中会显示书签栏。如果此政策设为 False，用户一律不会看到书签栏。
 
@@ -5383,7 +5385,7 @@
        默认情况下，<ph name="PRODUCT_NAME" /> 不会自动播放媒体。但是，对于某些网址格式，您可以使用 <ph name="AUTOPLAY_ALLOWLIST_POLICY_NAME" /> 政策来更改此设置。
 
       如果此政策在 <ph name="PRODUCT_NAME" /> 运行期间发生了更改，相应更改将仅适用于新打开的标签页。</translation>
-<translation id="8685748277907759932">阻止用户使用“触摸搜索”功能</translation>
+<translation id="8685748277907759932">阻止用户使用“轻触搜索”功能</translation>
 <translation id="8687958770985542440">重新启用 Web Components v0 API 直至 M84。</translation>
 <translation id="8693243869659262736">使用内置 DNS 客户端</translation>
 <translation id="8698286761337647563">用于指定提前多少天通知密码快要到期的 SAML 用户</translation>
@@ -5531,7 +5533,7 @@
 <translation id="8887709920496070892">系统应在设备闲置多久（以毫秒为单位）后显示警告对话框</translation>
 <translation id="8890438048579188548">隐藏 <ph name="CLOUD_PRINT_NAME" />弃用警告</translation>
 <translation id="8892286064305622118"><ph name="PLUGIN_VM_NAME" /> 所需的可用磁盘空间</translation>
-<translation id="8892783613915541293">延迟时间以及当设备闲置且使用交流电源供电时应执行的操作</translation>
+<translation id="8892783613915541293">当设备闲置且使用交流电源供电时应执行的操作以及相应延迟时间</translation>
 <translation id="8903283771634816230">如果此政策已启用，<ph name="PRODUCT_NAME" /> 会在进行打印预览时将操作系统默认打印机用作默认目标。
 
       如果此政策已停用或未设置，<ph name="PRODUCT_NAME" /> 会在进行打印预览时将上次使用的打印机用作默认目标。</translation>

@@ -78,6 +78,10 @@
 <translation id="8370517070665726704">Telif hakkı <ph name="YEAR" /> Google LLC. Tüm hakları saklıdır.</translation>
 <translation id="840168496893712993">Bazı eklentiler Chrome'un kilitlenmesine neden oluyor. Lütfen bunların yüklemesini kaldırmayı deneyin.</translation>
 <translation id="8459495907675268833">Seçilen veriler Chrome'dan ve senkronize edilen cihazlardan kaldırıldı. Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google Hesabınızla ilişkili başka biçimlerde tarama geçmişi history.google.com adresinde bulunabilir.</translation>
+<translation id="850555388806794946">Chrome'u varsayılan tarayıcınız yapmak için:
+  1. Ayarlar'ı açın
+  2. Varsayılan Tarayıcı Uygulaması'na dokunun
+  3. Chrome'u seçin.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="9135668017386497357">Chrome'un konumunuzu bilmesine izin verirseniz Chrome, konumunuzu varsayılan arama motorunuza ve izin verdiğiniz tüm sitelere gönderir. Siteler, yakındaki mağazalar veya haberler gibi size gösterecek yerel bilgileri olduğunda konumunuza erişmek isteyebilir.</translation>
 </translationbundle>

@@ -62,7 +62,7 @@
 <translation id="1509960214886564027">Es posible que las funciones de muchos sitios no funcionen correctamente.</translation>
 <translation id="152234381334907219">Contraseñas que nunca se guardan</translation>
 <translation id="1523341279170789507">Permitir todas las cookies</translation>
-<translation id="1535268707340844072">Tu configuración actual puede provocar que algunos sitios web fallen. Para gestionar las cookies de todos los sitios web, ve a <ph name="BEGIN_LINK" />Configuración de cookies<ph name="END_LINK" />.</translation>
+<translation id="1535268707340844072">Tu configuración actual puede provocar que algunos sitios fallen. Para gestionar las cookies de todos los sitios, ve a <ph name="BEGIN_LINK" />Configuración de cookies<ph name="END_LINK" />.</translation>
 <translation id="1540800554400757039">Dirección 1</translation>
 <translation id="1545749641540134597">Escanea el código QR</translation>
 <translation id="1552525382687785070">El administrador ha inhabilitado la sincronización</translation>
@@ -136,9 +136,9 @@
 <translation id="2359043044084662842">Traducir</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2360196772093551345">Solicitar sitio web móvil</translation>
-<translation id="236977714248711277">Los sitios web no pueden usar cookies para mejorar tu experiencia de navegación; por ejemplo, para mantener tu sesión iniciada o recordar los artículos de tu carrito de la compra.
+<translation id="236977714248711277">Los sitios no pueden usar cookies para mejorar tu experiencia de navegación; por ejemplo, para mantener tu sesión iniciada o recordar los artículos de tu carrito de la compra.
 
-Los sitios web no pueden usar cookies para ver tu actividad de navegación en otros sitios web con el objetivo de, por ejemplo, personalizar anuncios.</translation>
+Los sitios no pueden usar cookies para ver tu actividad de navegación en otros sitios con el objetivo de, por ejemplo, personalizar anuncios.</translation>
 <translation id="2381405137052800939">Configuración básica</translation>
 <translation id="2386793615875593361">1 foto seleccionada</translation>
 <translation id="2419661687355878017">Tu organización ha desactivado el modo de incógnito</translation>
@@ -210,11 +210,11 @@ Los sitios web no pueden usar cookies para ver tu actividad de navegación en ot
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3175081911749765310">Servicios web</translation>
 <translation id="3178650076442119961">Activo hoy</translation>
-<translation id="3181954750937456830">Navegación segura (te protege a ti y a tu dispositivo frente a sitios web peligrosos)</translation>
+<translation id="3181954750937456830">Navegación segura (te protege a ti y a tu dispositivo frente a sitios peligrosos)</translation>
 <translation id="3184767182050912705">Desbloquear con <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
-<translation id="3196681740617426482">Los sitios web pueden usar cookies para mejorar tu experiencia de navegación; por ejemplo, para mantener tu sesión iniciada o recordar los artículos de tu carrito de la compra.
+<translation id="3196681740617426482">Los sitios pueden usar cookies para mejorar tu experiencia de navegación; por ejemplo, para mantener tu sesión iniciada o recordar los artículos de tu carrito de la compra.
 
-Mientras estás en modo de incógnito, los sitios web no pueden usar cookies para ver tu actividad de navegación en otros sitios web con el objetivo de, por ejemplo, personalizar tus anuncios.</translation>
+Mientras estás en modo de incógnito, los sitios no pueden usar cookies para ver tu actividad de navegación en otros sitios con el objetivo de, por ejemplo, personalizar tus anuncios.</translation>
 <translation id="3207960819495026254">Añadido a marcadores</translation>
 <translation id="3224641773458703735">Debes establecer primero un bloqueo de pantalla en tu dispositivo para poder exportar las contraseñas.</translation>
 <translation id="3240426699337459095">Enlace copiado</translation>
@@ -361,7 +361,7 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="4805759445554688327">El número de tarjeta no es válido</translation>
 <translation id="4808744395915275922">Actualizaciones</translation>
 <translation id="4818522717893377262">Añadir idioma...</translation>
-<translation id="481968316161811770">Cookies y datos de sitios web</translation>
+<translation id="481968316161811770">Cookies y datos de sitios</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} y 1 más}other{{domain} y {count} más}}</translation>
 <translation id="4826218269716039351">Bloquear cookies de terceros</translation>
 <translation id="48274138579728272">Marcar como leído</translation>
@@ -420,7 +420,7 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="5443952882982198570">Tarjetas de crédito</translation>
 <translation id="5457226814769348910">Abrir versión sin conexión</translation>
 <translation id="5457907402803865181">No se han podido sincronizar las contraseñas.</translation>
-<translation id="5489208564673669003">Para gestionar las cookies de todos los sitios web, ve a <ph name="BEGIN_LINK" />Configuración de cookies<ph name="END_LINK" />.</translation>
+<translation id="5489208564673669003">Para gestionar las cookies de todos los sitios, ve a <ph name="BEGIN_LINK" />Configuración de cookies<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Bloquear todas las cookies (no recomendado)</translation>
 <translation id="5508435575041083207">Cerrar sesión y borrar los datos de este dispositivo</translation>
 <translation id="5525269841082836315">Crear frase de contraseña</translation>
@@ -525,9 +525,9 @@ Tus datos se cifraron con tu frase de contraseña de sincronización el <ph name
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6453018583485750254">Comprobación no ejecutada.</translation>
 <translation id="6464071786529933911">Abrir en pestaña incógnito</translation>
-<translation id="6464397691496239022">Los sitios web pueden usar cookies para mejorar tu experiencia de navegación; por ejemplo, para mantener tu sesión iniciada o recordar los artículos de tu carrito de la compra.
+<translation id="6464397691496239022">Los sitios pueden usar cookies para mejorar tu experiencia de navegación; por ejemplo, para mantener tu sesión iniciada o recordar los artículos de tu carrito de la compra.
 
-Los sitios web no pueden usar cookies para ver tu actividad de navegación en otros sitios web con el objetivo de, por ejemplo, personalizar anuncios.</translation>
+Los sitios no pueden usar cookies para ver tu actividad de navegación en otros sitios con el objetivo de, por ejemplo, personalizar anuncios.</translation>
 <translation id="6476800141292307438">La página se está traduciendo al <ph name="LANGUAGE" />. Encontrarás opciones disponibles cerca de la parte inferior de la pantalla.</translation>
 <translation id="648164694371393720">Error de autenticación</translation>
 <translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> elementos eliminados</translation>
@@ -600,7 +600,7 @@ Se recomienda usar una contraseña única en cada sitio.</translation>
 <translation id="7189598951263744875">Compartir...</translation>
 <translation id="7192050974311852563">Iniciar registro</translation>
 <translation id="7203585745079012652">Decir las respuestas</translation>
-<translation id="7207383424303353046">Novedad: Abre sitios web en Chrome automáticamente configurándolo como tu aplicación de navegador predeterminada. <ph name="BEGIN_LINK" />Abrir Configuración<ph name="END_LINK" /></translation>
+<translation id="7207383424303353046">Novedad: Abre sitios en Chrome automáticamente configurándolo como tu aplicación de navegador predeterminada. <ph name="BEGIN_LINK" />Abrir Configuración<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Nombre de la tarjeta no válido</translation>
 <translation id="7265758999917665941">Jamás para este sitio web</translation>
 <translation id="7272437679830969316">No se puede verificar tu identidad. No se ha copiado la contraseña.</translation>
@@ -621,7 +621,7 @@ Se recomienda usar una contraseña única en cada sitio.</translation>
 <translation id="7435356471928173109">Desactivada por tu administrador</translation>
 <translation id="7454057999980797137">Región</translation>
 <translation id="7456847797759667638">Abrir ubicación...</translation>
-<translation id="7464701184726199289">Se borrarán los datos sincronizados de todos los dispositivos. No se eliminará la configuración guardada de los sitios web, lo cual puede reflejar tus hábitos de navegación. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
+<translation id="7464701184726199289">Se borrarán los datos sincronizados de todos los dispositivos. No se eliminará la configuración guardada de los sitios, lo cual puede reflejar tus hábitos de navegación. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="746684838091935575">3. Selecciona Chrome.</translation>
 <translation id="7472734401283673885">Nombre de empresa</translation>
 <translation id="7473891865547856676">No, gracias</translation>
@@ -665,9 +665,9 @@ Tu cuenta está gestionada por <ph name="HOSTED_DOMAIN" />, por lo que tus datos
 <translation id="794799177247607889">Detener registro</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{No hay contraseñas vulneradas}=1{{COUNT} contraseña vulnerada}other{{COUNT} contraseñas vulneradas}}</translation>
 <translation id="7961015016161918242">Nunca</translation>
-<translation id="7966516440812255683">Los sitios web pueden usar cookies para mejorar tu experiencia de navegación; por ejemplo, para mantener tu sesión iniciada o recordar los artículos de tu carrito de la compra.
+<translation id="7966516440812255683">Los sitios pueden usar cookies para mejorar tu experiencia de navegación; por ejemplo, para mantener tu sesión iniciada o recordar los artículos de tu carrito de la compra.
 
-Los sitios web pueden usar cookies para ver tu actividad de navegación en otros sitios web con el objetivo de, por ejemplo, personalizar anuncios.</translation>
+Los sitios pueden usar cookies para ver tu actividad de navegación en otros sitios con el objetivo de, por ejemplo, personalizar anuncios.</translation>
 <translation id="7971521879845308059">Bloquear pop-ups</translation>
 <translation id="7982789257301363584">Red</translation>
 <translation id="7993619969781047893">Es posible que las funciones de algunos sitios no funcionen correctamente</translation>
@@ -682,7 +682,7 @@ Los sitios web pueden usar cookies para ver tu actividad de navegación en otros
 <translation id="806745655614357130">Mantener mis datos separados</translation>
 <translation id="8073670137947914548">Descarga finalizada</translation>
 <translation id="8073872304774253879">Mejorar las búsquedas y la navegación</translation>
-<translation id="8076014560081431679">No se eliminará la configuración guardada de los sitios web, lo cual puede reflejar tus hábitos de navegación. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
+<translation id="8076014560081431679">No se eliminará la configuración guardada de los sitios, lo cual puede reflejar tus hábitos de navegación. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">Este ajuste está gestionado. Toca dos veces para obtener más información.</translation>
 <translation id="8105368624971345109">Desactivar</translation>
 <translation id="8114753159095730575">La descarga de archivos está disponible. Hay opciones disponibles en la parte inferior de la pantalla.</translation>

@@ -47,6 +47,10 @@ Buning uchun kompyuteringizda Chromium brauzerini oching va menyudan “Chromium
 <translation id="5862307444128926510">Chromium brauzeriga xush kelibsiz</translation>
 <translation id="5945387852661427312"><ph name="DOMAIN" /> domenida boshqariladigan hisobga kirish bilan siz administratorga Chromium ma’lumotlaringizni boshqarishiga rozilik bildirasiz. Barcha Chromium ma’lumotlaringiz bu hisobga butunlay bog‘langan. Agar hisobdan chiqadigan bo‘lsangiz, bu qurilmadagi barcha ma’lumotlaringiz o‘chib ketadi, lekin Google hisobingizda saqlanib qoladi.</translation>
 <translation id="602807004951640891">Chromium ishlatish orqali siz <ph name="BEGIN_LINK_TOS" />Xizmat shartlariga<ph name="END_LINK_TOS" /> rozilik bildirgan hisoblanasiz.</translation>
+<translation id="6119647025869519954">Chromium brauzerini asosiy deb belgilash uchun:
+1. Sozlamalarni oching
+2. Standart brauzer ilovasi ustiga bosing
+3. Chromium brauzerini tanlang.</translation>
 <translation id="6268381023930128611">Chromium’dan chiqmoqchimisiz?</translation>
 <translation id="6424492062988593837">Chromium ancha yaxshilandi! Yangi versiya mavjud.</translation>
 <translation id="6604711459180487467">Joylashuv axboroti bilan Chromium yanada ko‘proq imkoniyatlarga ega bo‘ladi.</translation>

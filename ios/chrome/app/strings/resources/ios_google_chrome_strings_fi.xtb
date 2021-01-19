@@ -78,6 +78,10 @@
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Kaikki oikeudet pidätetään.</translation>
 <translation id="840168496893712993">Jokin laajennus kaataa Chromen. Kokeile poistaa laajennuksia.</translation>
 <translation id="8459495907675268833">Valitut tiedot on poistettu Chromesta ja synkronoiduilta laitteilta. Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toimintaa muista Google-palveluista, osoitteessa history.google.com.</translation>
+<translation id="850555388806794946">Näin teet Chromesta oletusselaimesi:
+  1. Avaa Asetukset
+  2. Valitse Oletusselain
+  3. Valitse Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="9135668017386497357">Jos Chrome saa nähdä sijaintisi, sijainti lähetetään oletushakukoneellesi ja sivustoille, jotka sallit. Sivustot voivat kysyä sijaintiasi, jos niillä on sinulle paikallisia tietoja, esim. uutisia tai lähistöllä olevia kauppoja.</translation>
 </translationbundle>

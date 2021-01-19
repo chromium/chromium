@@ -78,6 +78,10 @@
 <translation id="8370517070665726704">Autorska prava <ph name="YEAR" />. Google LLC. Sva prava zadržana.</translation>
 <translation id="840168496893712993">Neki programski dodaci izazivaju otkazivanje Chrome-a. Pokušajte da ih deinstalirate.</translation>
 <translation id="8459495907675268833">Izabrani podaci su uklonjeni iz Chrome-a i sa sinhronizovanih uređaja. Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i aktivnosti u drugim Google uslugama na history.google.com.</translation>
+<translation id="850555388806794946">Da biste postavili Chrome za podrazumevani pregledač:
+  1. Otvorite podešavanja
+  2. Dodirnite Podrazumevana aplikacija za pregledanje
+  3. Izaberite Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="9135668017386497357">Ako dozvolite da Chrome sazna lokaciju, Chrome je šalje podrazumevanom pretraživaču i svim sajtovima za koje date dozvolu. Sajtovi mogu da zatraže lokaciju kada imaju da vam prikažu lokalne informacije, poput radnji ili vesti u blizini.</translation>
 </translationbundle>

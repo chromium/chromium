@@ -1777,6 +1777,7 @@
 <translation id="79859296434321399">ເພື່ອເບິ່ງເນື້ອຫາອາກິວເມັນ ຣີອາລິຕີ, ກະລຸນາຕິດຕັ້ງ ARCore ກ່ອນ</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="799149739215780103">ຫບິບເຫຼັ້ມ</translation>
+<translation id="7992044431894087211">ສືບຕໍ່ການແບ່ງປັນໜ້າຈໍກັບ <ph name="APPLICATION_TITLE" /> ແລ້ວ</translation>
 <translation id="7995512525968007366">ບໍ່​ໄດ້ລະ​ບຸ</translation>
 <translation id="800218591365569300">ລອງປິດແຖບ ຫຼື ໂປຣແກຣມອື່ນເພື່ອຂະຫຍາຍຄວາມຈຳ.</translation>
 <translation id="8004582292198964060">ບຣາວ​ເຊີ</translation>
@@ -2050,6 +2051,7 @@
 <translation id="9103872766612412690">ໂດຍປົກກະຕິ <ph name="SITE" /> ໃຊ້ການເຂົ້າລະຫັດເພື່ອປົກປ້ອງຂໍ້ມູນຂອງທ່ານ. ເມື່ອ Chromium ພະຍາຍາມເຊື່ອມຕໍ່ກັບ <ph name="SITE" /> ໃນເທື່ອນີ້, ເວັບໄຊໄດ້ມີການສົ່ງຂໍ້ມູນປະຈຳຕົວທີ່ຜິດປົກກະຕິ ແລະບໍ່ຖືກຕ້ອງກັບຄືນ. ນີ້ອາດຈະເກີດຂຶ້ນເມື່ອຜູ້ໂຈມຕີພະຍາຍາມປອມເປັນ <ph name="SITE" /> ຫຼື ໜ້າຈໍການເຂົ້າສູ່ລະບົບ Wi-Fi ໄດ້ຂັດຈັງຫວະການເຊື່ອມຕໍ່. ຂໍ້ມູນຂອງທ່ານຍັງປອດໄພຢູ່ເພາະວ່າ Chromium ໄດ້ຢຸດການເຊື່ອມຕໍ່ກ່ອນທີ່ຈະມີການແລກປ່ຽນຂໍ້ມູນ.</translation>
 <translation id="9106062320799175032">ເພີ່ມທີ່ຢູ່ການຮຽກເກັບເງິນ</translation>
 <translation id="9107467864910557787">ໂປຣແກຣມທ່ອງເວັບຂອງທ່ານຖືກຈັດໂດຍ <ph name="MANAGER" /></translation>
+<translation id="91108059142052966">ນະໂຍບາຍຂອງຜູ້ເບິ່ງແຍງລະບົບປິດການນຳໃຊ້ການແບ່ງປັນໜ້າຈໍກັບ <ph name="APPLICATION_TITLE" /> ເມື່ອມີເນື້ອຫາສະແດງຢູ່</translation>
 <translation id="9114524666733003316">ກຳລັງຢືນຢັນບັດ...</translation>
 <translation id="9114581008513152754">ໂປຣແກຣມທ່ອງເວັບນີ້ບໍ່ໄດ້ຖືກຈັດການໂດຍບໍລິສັດ ຫຼື ອົງການຈັດຕັ້ງອື່ນ. ການເຄື່ອນໄຫວໃນອຸປະກອນນີ້ອາດຈະຖືກຈັດການຢູ່ນອກ Chrome ໄດ້. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">ອັບໂຫລດແລ້ວ</translation>
