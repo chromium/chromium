@@ -84,7 +84,8 @@ class GTestsApp(object):
                test_args=None,
                env_vars=None,
                release=False,
-               host_app_path=None):
+               host_app_path=None,
+               inserted_libs=None):
     """Initialize Egtests.
 
     Args:
@@ -99,6 +100,7 @@ class GTestsApp(object):
         launching.
       env_vars: List of environment variables to pass to the test itself.
       release: (bool) Whether the app is release build.
+      inserted_libs: List of libraries to insert when running the test.
 
     Raises:
       AppNotFoundError: If the given app does not exist
@@ -118,6 +120,7 @@ class GTestsApp(object):
     self.module_name = os.path.splitext(os.path.basename(test_app))[0]
     self.release = release
     self.host_app_path = host_app_path
+    self.inserted_libs = inserted_libs or []
 
   def fill_xctest_run(self, out_dir):
     """Fills xctestrun file by egtests.
@@ -174,6 +177,10 @@ class GTestsApp(object):
                 'Developer/Library/Frameworks' % dyld_path,
         }
     }
+
+    if self.inserted_libs:
+      module_data['TestingEnvironmentVariables'][
+          'DYLD_INSERT_LIBRARIES'] = ':'.join(self.inserted_libs)
 
     xctestrun_data = {module: module_data}
     kif_filter = []
@@ -284,7 +291,8 @@ class EgtestsApp(GTestsApp):
                test_args=None,
                env_vars=None,
                release=False,
-               host_app_path=None):
+               host_app_path=None,
+               inserted_libs=None):
     """Initialize Egtests.
 
     Args:
@@ -299,13 +307,17 @@ class EgtestsApp(GTestsApp):
         launching.
       env_vars: List of environment variables to pass to the test itself.
       host_app_path: (str) full path to host app.
+      inserted_libs: List of libraries to insert when running the test.
 
     Raises:
       AppNotFoundError: If the given app does not exist
     """
+    inserted_libs = list(inserted_libs or [])
+    inserted_libs.append('__PLATFORMS__/iPhoneSimulator.platform/Developer/'
+                         'usr/lib/libXCTestBundleInject.dylib')
     super(EgtestsApp,
           self).__init__(egtests_app, included_tests, excluded_tests, test_args,
-                         env_vars, release, host_app_path)
+                         env_vars, release, host_app_path, inserted_libs)
 
   def _xctest_path(self):
     """Gets xctest-file from egtests/PlugIns folder.
@@ -337,10 +349,6 @@ class EgtestsApp(GTestsApp):
     """
     xctestrun_data = super(EgtestsApp, self).fill_xctestrun_node()
     module_data = xctestrun_data[self.module_name + '_module']
-
-    module_data['TestingEnvironmentVariables']['DYLD_INSERT_LIBRARIES'] = (
-        '__PLATFORMS__/iPhoneSimulator.platform/Developer/'
-        'usr/lib/libXCTestBundleInject.dylib')
     module_data['TestBundlePath'] = '__TESTHOST__/%s' % self._xctest_path()
     module_data['TestingEnvironmentVariables'][
         'XCInjectBundleInto'] = '__TESTHOST__/%s' % self.module_name

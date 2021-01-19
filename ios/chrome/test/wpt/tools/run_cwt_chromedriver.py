@@ -36,6 +36,9 @@ parser.add_argument('--out-dir', default='/tmp/cwt_chromedriver',
     help='Output directory for CWTChromeDriver\'s dummy test case')
 parser.add_argument('--os', default='14.3', help='iOS version')
 parser.add_argument('--device', default='iPhone 11 Pro', help='Device type')
+parser.add_argument('--asan-build', help='Use ASan-related libraries',
+    dest='asan_build', action='store_true')
+parser.set_defaults(asan_build=False)
 args=parser.parse_args()
 
 test_app = os.path.join(
@@ -51,9 +54,14 @@ if not os.path.exists(args.out_dir):
 # skipped, meaning that CWTChromeDriver's http server won't get launched.
 output_directory = os.path.join(args.out_dir, 'run%d' %  int(time.time()))
 
+inserted_libs = []
+if args.asan_build:
+  inserted_libs = [os.path.join(args.build_dir,
+      'libclang_rt.asan_iossim_dynamic.dylib')]
+
 egtests_app = test_apps.EgtestsApp(
     egtests_app=test_app, test_args=['--port %s' % args.port],
-    host_app_path=host_app)
+    host_app_path=host_app, inserted_libs=inserted_libs)
 
 launch_command = xcodebuild_runner.LaunchCommand(egtests_app, destination,
     shards=1, retries=1, out_dir=output_directory)
