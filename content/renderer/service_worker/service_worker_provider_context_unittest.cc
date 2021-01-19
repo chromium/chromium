@@ -23,11 +23,11 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/test/test_url_loader_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom.h"
-#include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_container.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_container_type.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_error_type.mojom.h"
@@ -291,8 +291,7 @@ class ServiceWorkerProviderContextTest : public testing::Test {
                     const GURL& url) {
     network::ResourceRequest request;
     request.url = url;
-    request.resource_type =
-        static_cast<int>(blink::mojom::ResourceType::kSubResource);
+    request.destination = network::mojom::RequestDestination::kEmpty;
     mojo::PendingRemote<network::mojom::URLLoader> loader;
     network::TestURLLoaderClient loader_client;
     factory->CreateLoaderAndStart(
@@ -829,8 +828,7 @@ TEST_F(ServiceWorkerProviderContextTest,
 
   network::ResourceRequest request;
   request.url = GURL("https://www.example.com/random.js");
-  request.resource_type =
-      static_cast<int>(blink::mojom::ResourceType::kSubResource);
+  request.destination = network::mojom::RequestDestination::kEmpty;
   mojo::PendingRemote<network::mojom::URLLoader> loader;
   network::TestURLLoaderClient loader_client;
   wrapped_loader_factory->CreateLoaderAndStart(

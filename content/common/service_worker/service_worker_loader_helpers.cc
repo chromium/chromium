@@ -17,9 +17,9 @@
 #include "net/url_request/redirect_util.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/resource_request_body.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
-#include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
 
 namespace content {
@@ -135,8 +135,8 @@ ServiceWorkerLoaderHelpers::ComputeRedirectInfo(
   // If the request is a MAIN_FRAME request, the first-party URL gets
   // updated on redirects.
   const net::RedirectInfo::FirstPartyURLPolicy first_party_url_policy =
-      original_request.resource_type ==
-              static_cast<int>(blink::mojom::ResourceType::kMainFrame)
+      original_request.destination ==
+              network::mojom::RequestDestination::kDocument
           ? net::RedirectInfo::FirstPartyURLPolicy::UPDATE_URL_ON_REDIRECT
           : net::RedirectInfo::FirstPartyURLPolicy::NEVER_CHANGE_URL;
   return net::RedirectInfo::ComputeRedirectInfo(
