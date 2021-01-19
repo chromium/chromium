@@ -25,6 +25,17 @@ group("updater") {
   }
 }
 
+group("all") {
+  testonly = true
+
+  if (is_win || is_mac) {
+    deps = [
+      ":updater",
+      "//chrome/updater/test/test_app",
+    ]
+  }
+}
+
 # Conditional build is needed, otherwise the analyze script on Linux
 # requires all targets and it is going to include the targets below.
 if (is_win || is_mac) {
