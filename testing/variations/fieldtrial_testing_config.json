@@ -7383,21 +7383,6 @@
             ]
         }
     ],
-    "WebRTC-Audio-NetEqDelayHistogram": [
-        {
-            "platforms": [
-                "windows",
-                "mac",
-                "chromeos",
-                "linux"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled-95-0.9993"
-                }
-            ]
-        }
-    ],
     "WebRTC-Audio-NetEqDelayManagerConfig": [
         {
             "platforms": [
