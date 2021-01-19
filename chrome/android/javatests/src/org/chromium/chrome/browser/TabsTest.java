@@ -874,7 +874,7 @@ public class TabsTest {
 
         // This is about as fast as you can ever click.
         final long fastestUserInput = 20; // ms
-        for (int i = 0; i < 200; i++) {
+        for (int i = 0; i < 50; i++) {
             // Show overview
             InstrumentationRegistry.getInstrumentation().runOnMainSync(
                     new ClickOptionButtonOnMainThread());
