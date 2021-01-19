@@ -131,8 +131,8 @@ class TetherComponentImplTest : public testing::Test {
     fake_tether_disconnector_ = std::make_unique<FakeTetherDisconnector>();
 
     fake_synchronous_container_ = new FakeSynchronousShutdownObjectContainer(
-        base::Bind(&TetherComponentImplTest::OnSynchronousContainerDeleted,
-                   base::Unretained(this)));
+        base::BindOnce(&TetherComponentImplTest::OnSynchronousContainerDeleted,
+                       base::Unretained(this)));
     fake_synchronous_container_->set_active_host(fake_active_host_.get());
     fake_synchronous_container_->set_host_scan_scheduler(
         fake_host_scan_scheduler_.get());
@@ -145,8 +145,8 @@ class TetherComponentImplTest : public testing::Test {
         fake_synchronous_container_factory_.get());
 
     fake_asynchronous_container_ = new FakeAsynchronousShutdownObjectContainer(
-        base::Bind(&TetherComponentImplTest::OnAsynchronousContainerDeleted,
-                   base::Unretained(this)));
+        base::BindOnce(&TetherComponentImplTest::OnAsynchronousContainerDeleted,
+                       base::Unretained(this)));
     fake_asynchronous_container_factory_ =
         base::WrapUnique(new FakeAsynchronousShutdownObjectContainerFactory(
             fake_asynchronous_container_));
@@ -173,17 +173,17 @@ class TetherComponentImplTest : public testing::Test {
   }
 
   void InvokeCrashRecoveryCallback() {
-    base::Closure& on_restoration_finished_callback =
-        fake_crash_recovery_manager_->on_restoration_finished_callback();
+    base::OnceClosure on_restoration_finished_callback =
+        fake_crash_recovery_manager_->TakeOnRestorationFinishedCallback();
     EXPECT_FALSE(on_restoration_finished_callback.is_null());
-    on_restoration_finished_callback.Run();
+    std::move(on_restoration_finished_callback).Run();
   }
 
   void InvokeAsynchronousShutdownCallback() {
-    base::Closure& shutdown_complete_callback =
-        fake_asynchronous_container_->shutdown_complete_callback();
+    base::OnceClosure shutdown_complete_callback =
+        fake_asynchronous_container_->TakeShutdownCompleteCallback();
     EXPECT_FALSE(shutdown_complete_callback.is_null());
-    shutdown_complete_callback.Run();
+    std::move(shutdown_complete_callback).Run();
   }
 
   void OnSynchronousContainerDeleted() {
@@ -294,7 +294,7 @@ TEST_F(TetherComponentImplTest, TestShutdown_BeforeCrashRecoveryComplete) {
   EXPECT_FALSE(was_synchronous_container_deleted_);
   EXPECT_FALSE(was_asynchronous_container_deleted_);
   EXPECT_TRUE(
-      fake_asynchronous_container_->shutdown_complete_callback().is_null());
+      fake_asynchronous_container_->TakeShutdownCompleteCallback().is_null());
 
   InvokeCrashRecoveryCallback();
   EXPECT_TRUE(was_synchronous_container_deleted_);

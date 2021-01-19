@@ -21,11 +21,11 @@ class FakeAsynchronousShutdownObjectContainer
  public:
   // |deletion_callback| will be invoked when the object is deleted.
   FakeAsynchronousShutdownObjectContainer(
-      const base::Closure& deletion_callback = base::DoNothing());
+      base::OnceClosure deletion_callback = base::DoNothing());
   ~FakeAsynchronousShutdownObjectContainer() override;
 
-  base::Closure& shutdown_complete_callback() {
-    return shutdown_complete_callback_;
+  base::OnceClosure TakeShutdownCompleteCallback() {
+    return std::move(shutdown_complete_callback_);
   }
 
   void set_tether_host_fetcher(TetherHostFetcher* tether_host_fetcher) {
@@ -48,7 +48,7 @@ class FakeAsynchronousShutdownObjectContainer
   }
 
   // AsynchronousShutdownObjectContainer:
-  void Shutdown(const base::Closure& shutdown_complete_callback) override;
+  void Shutdown(base::OnceClosure shutdown_complete_callback) override;
   TetherHostFetcher* tether_host_fetcher() override;
   DisconnectTetheringRequestSender* disconnect_tethering_request_sender()
       override;
@@ -56,8 +56,8 @@ class FakeAsynchronousShutdownObjectContainer
   WifiHotspotDisconnector* wifi_hotspot_disconnector() override;
 
  private:
-  base::Closure deletion_callback_;
-  base::Closure shutdown_complete_callback_;
+  base::OnceClosure deletion_callback_;
+  base::OnceClosure shutdown_complete_callback_;
 
   TetherHostFetcher* tether_host_fetcher_ = nullptr;
   DisconnectTetheringRequestSender* disconnect_tethering_request_sender_ =

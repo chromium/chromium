@@ -26,7 +26,7 @@ class CrashRecoveryManager {
   // This function should only be called during the initialization of
   // TetherComponent.
   virtual void RestorePreCrashStateIfNecessary(
-      const base::Closure& on_restoration_finished) = 0;
+      base::OnceClosure on_restoration_finished) = 0;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(CrashRecoveryManager);

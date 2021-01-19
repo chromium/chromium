@@ -67,7 +67,7 @@ void HostScannerImpl::StartScan() {
     return;
 
   is_fetching_hosts_ = true;
-  tether_host_fetcher_->FetchAllTetherHosts(base::Bind(
+  tether_host_fetcher_->FetchAllTetherHosts(base::BindOnce(
       &HostScannerImpl::OnTetherHostsFetched, weak_ptr_factory_.GetWeakPtr()));
 }
 

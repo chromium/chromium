@@ -116,8 +116,8 @@ class NetworkConnectionHandlerTetherDelegateTest : public testing::Test {
         guid,
         base::BindOnce(&NetworkConnectionHandlerTetherDelegateTest::OnSuccess,
                        base::Unretained(this)),
-        base::Bind(&NetworkConnectionHandlerTetherDelegateTest::OnError,
-                   base::Unretained(this)));
+        base::BindOnce(&NetworkConnectionHandlerTetherDelegateTest::OnError,
+                       base::Unretained(this)));
   }
 
   void CallTetherDisconnect(const std::string& guid) {
@@ -125,8 +125,8 @@ class NetworkConnectionHandlerTetherDelegateTest : public testing::Test {
         guid,
         base::BindOnce(&NetworkConnectionHandlerTetherDelegateTest::OnSuccess,
                        base::Unretained(this)),
-        base::Bind(&NetworkConnectionHandlerTetherDelegateTest::OnError,
-                   base::Unretained(this)));
+        base::BindOnce(&NetworkConnectionHandlerTetherDelegateTest::OnError,
+                       base::Unretained(this)));
   }
 
   void OnSuccess() { result_ = kSuccessResult; }

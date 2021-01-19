@@ -109,9 +109,9 @@ void TetherConnectorImpl::ConnectToNetwork(
 
   tether_host_fetcher_->FetchTetherHost(
       device_id_pending_connection_,
-      base::Bind(&TetherConnectorImpl::OnTetherHostToConnectFetched,
-                 weak_ptr_factory_.GetWeakPtr(),
-                 device_id_pending_connection_));
+      base::BindOnce(&TetherConnectorImpl::OnTetherHostToConnectFetched,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     device_id_pending_connection_));
 }
 
 bool TetherConnectorImpl::CancelConnectionAttempt(
@@ -201,8 +201,8 @@ void TetherConnectorImpl::OnSuccessfulConnectTetheringResponse(
 
   wifi_hotspot_connector_->ConnectToWifiHotspot(
       ssid_copy, password_copy, active_host_->GetTetherNetworkGuid(),
-      base::Bind(&TetherConnectorImpl::OnWifiConnection,
-                 weak_ptr_factory_.GetWeakPtr(), remote_device_id));
+      base::BindOnce(&TetherConnectorImpl::OnWifiConnection,
+                     weak_ptr_factory_.GetWeakPtr(), remote_device_id));
 }
 
 void TetherConnectorImpl::OnConnectTetheringFailure(
@@ -351,7 +351,7 @@ void TetherConnectorImpl::OnWifiConnection(
     // crbug.com/761171.
     wifi_hotspot_disconnector_->DisconnectFromWifiHotspot(
         wifi_network_guid, base::DoNothing(),
-        base::Bind(&OnDisconnectFromWifiFailure, device_id));
+        base::BindOnce(&OnDisconnectFromWifiFailure, device_id));
     return;
   }
 

@@ -141,8 +141,8 @@ class WifiHotspotDisconnectorImplTest : public testing::Test {
         wifi_network_guid,
         base::BindOnce(&WifiHotspotDisconnectorImplTest::SuccessCallback,
                        base::Unretained(this)),
-        base::Bind(&WifiHotspotDisconnectorImplTest::ErrorCallback,
-                   base::Unretained(this)));
+        base::BindOnce(&WifiHotspotDisconnectorImplTest::ErrorCallback,
+                       base::Unretained(this)));
   }
 
   void OnNetworkConnectionManagerDisconnect() {

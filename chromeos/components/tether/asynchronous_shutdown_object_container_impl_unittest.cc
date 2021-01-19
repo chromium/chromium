@@ -91,7 +91,7 @@ class AsynchronousShutdownObjectContainerImplTest : public testing::Test {
   }
 
   void CallShutdown() {
-    container_->Shutdown(base::Bind(
+    container_->Shutdown(base::BindOnce(
         &AsynchronousShutdownObjectContainerImplTest::OnShutdownComplete,
         base::Unretained(this)));
   }
