@@ -679,12 +679,6 @@ size_t OmniboxFieldTrial::RichAutocompletionAutocompleteTitlesMinChar() {
       kRichAutocompletionAutocompleteTitlesMinCharParam, 0);
 }
 
-bool OmniboxFieldTrial::RichAutocompletionTwoLineOmnibox() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      omnibox::kRichAutocompletion, kRichAutocompletionTwoLineOmniboxParam,
-      false);
-}
-
 bool OmniboxFieldTrial::RichAutocompletionAutocompleteNonPrefixAll() {
   return base::GetFieldTrialParamByFeatureAsBool(
       omnibox::kRichAutocompletion,
@@ -939,8 +933,6 @@ const char OmniboxFieldTrial::kRichAutocompletionAutocompleteTitlesParam[] =
 const char
     OmniboxFieldTrial::kRichAutocompletionAutocompleteTitlesMinCharParam[] =
         "RichAutocompletionAutocompleteTitlesMinChar";
-const char OmniboxFieldTrial::kRichAutocompletionTwoLineOmniboxParam[] =
-    "RichAutocompletionTwoLineOmnibox";
 const char
     OmniboxFieldTrial::kRichAutocompletionAutocompleteNonPrefixAllParam[] =
         "RichAutocompletionAutocompleteNonPrefixAll";

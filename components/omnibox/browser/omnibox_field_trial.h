@@ -401,7 +401,6 @@ bool IsRefinedFocusStateEnabled();
 bool IsRichAutocompletionEnabled();
 bool RichAutocompletionAutocompleteTitles();
 size_t RichAutocompletionAutocompleteTitlesMinChar();
-bool RichAutocompletionTwoLineOmnibox();
 bool RichAutocompletionAutocompleteNonPrefixAll();
 bool RichAutocompletionAutocompleteNonPrefixShortcutProvider();
 size_t RichAutocompletionAutocompleteNonPrefixMinChar();
@@ -538,7 +537,6 @@ extern int kDefaultMinimumTimeBetweenSuggestQueriesMs;
 // Parameter names used for rich autocompletion variations.
 extern const char kRichAutocompletionAutocompleteTitlesParam[];
 extern const char kRichAutocompletionAutocompleteTitlesMinCharParam[];
-extern const char kRichAutocompletionTwoLineOmniboxParam[];
 extern const char kRichAutocompletionAutocompleteNonPrefixAllParam[];
 extern const char
     kRichAutocompletionAutocompleteNonPrefixShortcutProviderParam[];

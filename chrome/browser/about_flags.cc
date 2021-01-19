@@ -958,13 +958,7 @@ const FeatureEntry::FeatureVariation kOmniboxDocumentProviderVariations[] = {
     {"server and client scores", kOmniboxDocumentProviderServerAndClientScoring,
      base::size(kOmniboxDocumentProviderServerAndClientScoring), nullptr}};
 
-// The variations include 5 of the 8 possible permutations of "2-Line UI",
-// "Title AC", and "Non-Prefix AC". The remaining 3 permutations would
-// effectively be no-ops.
-// - 2-Line UI: Stretches the omnibox vertically to fit 2 lines and displays
-//   titles on a 2nd line
-//   E.g. en.wikipe | [dia.org/wiki/Space_Shuttle]
-//        Space Shuttle - Wikipedia
+// 3 permutations of the 2 rich autocompletion params:
 // - Title AC: Autocompletes suggestions when the input matches the title.
 //   E.g. Space Sh | [ttle - Wikipedia] (en.wikipedia.org/wiki/Space_Shuttle)
 // - Non-Prefix AC: Autocompletes suggestions when the input is not necessarily
@@ -980,36 +974,18 @@ const FeatureEntry::FeatureVariation kOmniboxRichAutocompletionVariations[] = {
         nullptr,
     },
     {
-        "2-Line UI & Title AC",
-        (FeatureEntry::FeatureParam[]){
-            {"RichAutocompletionTwoLineOmnibox", "true"},
-            {"RichAutocompletionAutocompleteTitles", "true"}},
-        2,
-        nullptr,
-    },
-    {
         "Non-Prefix AC",
         (FeatureEntry::FeatureParam[]){
             {"RichAutocompletionAutocompleteNonPrefixAll", "true"}},
         1,
         nullptr,
     },
-    // Skipping "2-Line UI & Non-Prefix AC" as that would be a no-op
     {
         "Title AC & Non-Prefix AC",
         (FeatureEntry::FeatureParam[]){
             {"RichAutocompletionAutocompleteTitles", "true"},
             {"RichAutocompletionAutocompleteNonPrefixAll", "true"}},
         2,
-        nullptr,
-    },
-    {
-        "2-Line UI, Title AC, & Non-Prefix AC",
-        (FeatureEntry::FeatureParam[]){
-            {"RichAutocompletionTwoLineOmnibox", "true"},
-            {"RichAutocompletionAutocompleteTitles", "true"},
-            {"RichAutocompletionAutocompleteNonPrefixAll", "true"}},
-        3,
         nullptr,
     }};
 

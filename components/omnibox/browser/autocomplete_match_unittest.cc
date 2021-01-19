@@ -603,7 +603,6 @@ TEST(AutocompleteMatchTest, TryRichAutocompletion) {
         omnibox::kRichAutocompletion,
         {
             {"RichAutocompletionAutocompleteTitles", "true"},
-            {"RichAutocompletionTwoLineOmnibox", "true"},
             {"RichAutocompletionAutocompleteNonPrefixAll", "true"},
             {"RichAutocompletionAutocompleteTitlesMinChar", "3"},
             {"RichAutocompletionAutocompleteNonPrefixMinChar", "2"},
@@ -649,7 +648,6 @@ TEST(AutocompleteMatchTest, TryRichAutocompletion) {
         omnibox::kRichAutocompletion,
         {
             {"RichAutocompletionAutocompleteTitles", "true"},
-            {"RichAutocompletionTwoLineOmnibox", "true"},
             {"RichAutocompletionAutocompleteNonPrefixAll", "true"},
             {"RichAutocompletionAutocompleteTitlesMinChar", "3"},
             {"RichAutocompletionAutocompleteNonPrefixMinChar", "2"},

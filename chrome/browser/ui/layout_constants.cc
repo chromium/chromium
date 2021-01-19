@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/layout_constants.h"
 
 #include "base/notreached.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 
@@ -56,9 +55,6 @@ int GetLayoutConstant(LayoutConstant constant) {
     case LOCATION_BAR_ELEMENT_PADDING:
       return touch_ui ? 3 : 2;
     case LOCATION_BAR_HEIGHT:
-      if (OmniboxFieldTrial::RichAutocompletionShowAdditionalText() &&
-          OmniboxFieldTrial::RichAutocompletionTwoLineOmnibox())
-        return touch_ui ? 52 : 40;
       return touch_ui ? 36 : 28;
     case LOCATION_BAR_ICON_SIZE:
       return touch_ui ? 20 : 16;

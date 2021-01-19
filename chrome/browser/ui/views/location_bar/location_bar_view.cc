@@ -593,17 +593,12 @@ void LocationBarView::Layout() {
   int location_needed_width = omnibox_view_->GetTextWidth();
   if (OmniboxFieldTrial::RichAutocompletionShowAdditionalText()) {
     // Calculate location_needed_width based on the omnibox view and omnibox
-    // additional text widths. If RichAutocompletionTwoLineOmnibox is enabled,
-    // location_needed_width only needs to be large enough to contain the
-    // larger; otherwise, it must be large enough to contain both in addition to
-    // the padding in between.
+    // additional text widths. |location_needed_width| must be large enough to
+    // contain both in addition to the padding in between.
     int omnibox_additional_text_needed_width =
         omnibox_additional_text_view_->CalculatePreferredSize().width();
     location_needed_width =
-        OmniboxFieldTrial::RichAutocompletionTwoLineOmnibox()
-            ? std::max(location_needed_width,
-                       omnibox_additional_text_needed_width)
-            : location_needed_width + omnibox_additional_text_needed_width + 10;
+        location_needed_width + omnibox_additional_text_needed_width + 10;
     // TODO (manukh): If we launch rich autocompletion with the current
     //  iteration of 1 line UI, the padding (10) should  be moved to
     //  layout_constants.cc. Likewise below.
@@ -642,23 +637,10 @@ void LocationBarView::Layout() {
         std::min(width, entry_width), location_bounds.height());
   }
 
-  // If rich autocompletion is enabled, split |location_bounds| for the
-  // |omnibox_view_| and |omnibox_additional_text_view_|.
+  // If rich autocompletion is enabled, split |location_bounds| horizontally for
+  // the |omnibox_view_| and |omnibox_additional_text_view_|.
   if (OmniboxFieldTrial::RichAutocompletionShowAdditionalText() &&
-      OmniboxFieldTrial::RichAutocompletionTwoLineOmnibox()) {
-    // Split vertically.
-    auto omnibox_bounds = location_bounds;
-    omnibox_bounds.set_height(location_bounds.height() / 2);
-    omnibox_view_->SetBoundsRect(omnibox_bounds);
-    auto omnibox_additional_text_bounds = omnibox_bounds;
-    omnibox_additional_text_bounds.set_x(location_bounds.x() + 3);
-    omnibox_additional_text_bounds.set_y(omnibox_bounds.bottom());
-    omnibox_additional_text_view_->SetBoundsRect(
-        omnibox_additional_text_bounds);
-
-  } else if (OmniboxFieldTrial::RichAutocompletionShowAdditionalText() &&
              !omnibox_view_->GetText().empty()) {
-    // Split horizontally.
     auto omnibox_bounds = location_bounds;
     omnibox_bounds.set_width(std::min(
         omnibox_view_->GetUnelidedTextWidth() + 10, location_bounds.width()));
