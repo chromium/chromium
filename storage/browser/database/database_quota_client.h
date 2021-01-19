@@ -11,7 +11,9 @@
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/sequence_checker.h"
 #include "base/single_thread_task_runner.h"
+#include "base/thread_annotations.h"
 #include "storage/browser/quota/quota_client.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
@@ -28,6 +30,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) DatabaseQuotaClient
     : public QuotaClient {
  public:
   explicit DatabaseQuotaClient(scoped_refptr<DatabaseTracker> tracker);
+
+  DatabaseQuotaClient(const DatabaseQuotaClient&) = delete;
+  DatabaseQuotaClient& operator=(const DatabaseQuotaClient&) = delete;
 
   // QuotaClient method overrides
   void OnQuotaManagerDestroyed() override;
@@ -48,9 +53,13 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) DatabaseQuotaClient
  private:
   ~DatabaseQuotaClient() override;
 
-  scoped_refptr<DatabaseTracker> db_tracker_;  // only used on its sequence
+  SEQUENCE_CHECKER(sequence_checker_);
 
-  DISALLOW_COPY_AND_ASSIGN(DatabaseQuotaClient);
+  // The scoped_refptr is only be dereferenced on the QuotaClient's sequence.
+  // However, the DatabaseTracker it points to must only be used on the database
+  // sequence.
+  scoped_refptr<DatabaseTracker> db_tracker_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 }  // namespace storage
