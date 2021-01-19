@@ -133,6 +133,7 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class ForceFieldTrialsBrowserTest;
   friend class MetricsReportingStateTest;
   friend class metrics::UkmConsentParamBrowserTest;
+  friend class ClonedInstallClientIdResetBrowserTest;
   FRIEND_TEST_ALL_PREFIXES(ChromeMetricsServiceAccessorTest,
                            MetricsReportingEnabled);
   FRIEND_TEST_ALL_PREFIXES(ChromeMetricsServicesManagerClientTest,

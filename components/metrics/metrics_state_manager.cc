@@ -360,6 +360,12 @@ void MetricsStateManager::BackUpCurrentClientInfo() {
 }
 
 std::unique_ptr<ClientInfo> MetricsStateManager::LoadClientInfo() {
+  // If a cloned install was detected, loading ClientInfo from backup will be
+  // a race condition with clearing the backup. Skip all backup reads for this
+  // session.
+  if (metrics_ids_were_reset_)
+    return nullptr;
+
   std::unique_ptr<ClientInfo> client_info = load_client_info_.Run();
 
   // The GUID retrieved should be valid unless retrieval failed.
@@ -406,7 +412,8 @@ void MetricsStateManager::ResetMetricsIDsIfNecessary() {
   local_state_->ClearPref(prefs::kMetricsClientID);
   EntropyState::ClearPrefs(local_state_);
 
-  // Also clear the backed up client info.
+  // Also clear the backed up client info. This is asynchronus; any reads
+  // shortly after may retrieve the old ClientInfo from the backup.
   store_client_info_.Run(ClientInfo());
 }
 

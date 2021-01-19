@@ -1126,6 +1126,7 @@ if (!is_android) {
       "../browser/media_galleries/fileapi/media_file_validator_browsertest.cc",
       "../browser/media_galleries/media_galleries_dialog_controller_mock.cc",
       "../browser/media_galleries/media_galleries_dialog_controller_mock.h",
+      "../browser/metrics/cloned_install_client_id_reset_browsertest.cc",
       "../browser/metrics/desktop_session_duration/audible_contents_tracker_browsertest.cc",
       "../browser/metrics/metrics_reporting_state_browsertest.cc",
       "../browser/metrics/metrics_service_browsertest.cc",
