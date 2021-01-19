@@ -315,9 +315,8 @@ Polymer({
 
   /** @private */
   onPrivacySandboxClick_() {
-    // TODO(crbug/1159942): Replace this with an ordinary OpenWindowProxy call
-    // once crbug/1159942 is fixed.
-    window.location = 'chrome://settings/privacySandbox';
+    // TODO(crbug/1159942): Replace this with an ordinary OpenWindowProxy call.
+    this.shadowRoot.getElementById('privacySandboxLink').click();
   },
 
   /** @private */
