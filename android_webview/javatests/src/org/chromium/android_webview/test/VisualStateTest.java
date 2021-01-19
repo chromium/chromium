@@ -442,7 +442,7 @@ public class VisualStateTest {
         };
 
         InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
-            JavascriptInjector.fromWebContents(awContents.getWebContents())
+            JavascriptInjector.fromWebContents(awContents.getWebContents(), false)
                     .addPossiblyUnsafeInterface(pageChangeNotifier, "pageChangeNotifier", null);
             awContents.loadUrl(WAIT_FOR_JS_DETACHED_TEST_URL);
         });

@@ -109,5 +109,7 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(UiFeatures.SWIPE_TO_MOVE_CURSOR,
                     "Enables swipe to move cursor feature."
                             + "This flag will only take effect on Android 11 and above."),
+            Flag.baseFeature(AwFeatures.WEBVIEW_JAVA_JS_BRIDGE_MOJO,
+                    "Enables the new Java/JS Bridge code path with mojo implementation."),
     };
 }

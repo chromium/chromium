@@ -23,6 +23,7 @@ extern const base::Feature kWebViewMeasureScreenCoverage;
 extern const base::Feature kWebViewMixedContentAutoupgrades;
 extern const base::Feature kWebViewTestFeature;
 extern const base::Feature kWebViewWideColorGamutSupport;
+extern const base::Feature kWebViewJavaJsBridgeMojo;
 
 }  // namespace features
 }  // namespace android_webview

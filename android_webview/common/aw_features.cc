@@ -59,5 +59,9 @@ const base::Feature kWebViewTestFeature{"WebViewTestFeature",
 const base::Feature kWebViewWideColorGamutSupport{
     "WebViewWideColorGamutSupport", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enable the new Java/JS Bridge code path with mojo implementation.
+const base::Feature kWebViewJavaJsBridgeMojo{"WebViewJavaJsBridgeMojo",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace android_webview
