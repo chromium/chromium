@@ -8,10 +8,12 @@
 #include "base/cancelable_callback.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
 #include "chrome/browser/ui/profile_picker.h"
 #include "chrome/browser/ui/views/profiles/user_manager_profile_dialog_host.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
@@ -34,7 +36,9 @@ class WebContents;
 // Dialog widget that contains the Desktop Profile picker webui.
 class ProfilePickerView : public views::WidgetDelegateView,
                           public content::WebContentsDelegate,
-                          public signin::IdentityManager::Observer {
+                          public signin::IdentityManager::Observer,
+                          public ChromeWebModalDialogManagerDelegate,
+                          public web_modal::WebContentsModalDialogHost {
  public:
   using BrowserOpenedCallback = base::OnceCallback<void(Browser*)>;
 
@@ -107,6 +111,17 @@ class ProfilePickerView : public views::WidgetDelegateView,
   void OnRefreshTokenUpdatedForAccount(
       const CoreAccountInfo& account_info) override;
   void OnExtendedAccountInfoUpdated(const AccountInfo& account_info) override;
+
+  // ChromeWebModalDialogManagerDelegate
+  web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()
+      override;
+
+  // web_modal::WebContentsModalDialogHost
+  gfx::NativeView GetHostView() const override;
+  gfx::Point GetDialogPosition(const gfx::Size& size) override;
+  gfx::Size GetMaximumDialogSize() override;
+  void AddObserver(web_modal::ModalDialogHostObserver* observer) override;
+  void RemoveObserver(web_modal::ModalDialogHostObserver* observer) override;
 
   // Builds the views hieararchy.
   void BuildLayout();
