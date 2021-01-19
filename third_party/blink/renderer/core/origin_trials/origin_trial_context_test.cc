@@ -93,6 +93,9 @@ class OriginTrialContextTest : public testing::Test {
         ->SetTrialTokenValidatorForTesting(
             std::unique_ptr<MockTokenValidator>(token_validator_));
   }
+  ~OriginTrialContextTest() override {
+    execution_context_->NotifyContextDestroyed();
+  }
 
   MockTokenValidator* TokenValidator() { return token_validator_; }
 

@@ -21,6 +21,7 @@ class DOMFileSystemBaseTest : public testing::Test {
     GetFileMetadata(file_path_, *context_, file_metadata_);
     file_metadata_.platform_path = file_path_;
   }
+  ~DOMFileSystemBaseTest() override { context_->NotifyContextDestroyed(); }
 
  protected:
   Persistent<ExecutionContext> context_ =

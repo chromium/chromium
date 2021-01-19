@@ -73,7 +73,9 @@ ExecutionContext::ExecutionContext(v8::Isolate* isolate, Agent* agent)
   DCHECK(agent_);
 }
 
-ExecutionContext::~ExecutionContext() = default;
+ExecutionContext::~ExecutionContext() {
+  DCHECK(is_context_destroyed_);
+}
 
 // static
 ExecutionContext* ExecutionContext::From(const ScriptState* script_state) {

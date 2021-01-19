@@ -19,6 +19,7 @@ class SourceListDirectiveTest : public testing::Test {
  public:
   SourceListDirectiveTest()
       : csp(MakeGarbageCollected<ContentSecurityPolicy>()) {}
+  ~SourceListDirectiveTest() override { context->NotifyContextDestroyed(); }
 
  protected:
   struct Source {

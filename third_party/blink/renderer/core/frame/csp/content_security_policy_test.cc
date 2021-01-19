@@ -39,16 +39,20 @@ class ContentSecurityPolicyTest : public testing::Test {
       : csp(MakeGarbageCollected<ContentSecurityPolicy>()),
         secure_url("https://example.test/image.png"),
         secure_origin(SecurityOrigin::Create(secure_url)) {}
+  ~ContentSecurityPolicyTest() override {
+    execution_context->NotifyContextDestroyed();
+  }
 
  protected:
-  void SetUp() override { execution_context = CreateExecutionContext(); }
+  void SetUp() override { CreateExecutionContext(); }
 
-  NullExecutionContext* CreateExecutionContext() {
-    NullExecutionContext* context =
-        MakeGarbageCollected<NullExecutionContext>();
-    context->SetUpSecurityContextForTesting();
-    context->GetSecurityContext().SetSecurityOriginForTesting(secure_origin);
-    return context;
+  void CreateExecutionContext() {
+    if (execution_context)
+      execution_context->NotifyContextDestroyed();
+    execution_context = MakeGarbageCollected<NullExecutionContext>();
+    execution_context->SetUpSecurityContextForTesting();
+    execution_context->GetSecurityContext().SetSecurityOriginForTesting(
+        secure_origin);
   }
 
   Persistent<ContentSecurityPolicy> csp;
@@ -113,7 +117,7 @@ TEST_F(ContentSecurityPolicyTest, ParseInsecureRequestPolicy) {
     EXPECT_EQ(mojom::blink::InsecureRequestPolicy::kLeaveInsecureRequestsAlone,
               csp->GetInsecureRequestPolicy());
 
-    execution_context = CreateExecutionContext();
+    CreateExecutionContext();
     execution_context->GetSecurityContext().SetSecurityOrigin(secure_origin);
     csp->BindToDelegate(execution_context->GetContentSecurityPolicyDelegate());
     EXPECT_EQ(
@@ -636,7 +640,7 @@ TEST_F(ContentSecurityPolicyTest, DirectiveType) {
 
 TEST_F(ContentSecurityPolicyTest, RequestsAllowedWhenBypassingCSP) {
   const KURL base;
-  execution_context = CreateExecutionContext();
+  CreateExecutionContext();
   execution_context->GetSecurityContext().SetSecurityOrigin(
       secure_origin);                     // https://example.com
   execution_context->SetURL(secure_url);  // https://example.com
@@ -683,7 +687,7 @@ TEST_F(ContentSecurityPolicyTest, RequestsAllowedWhenBypassingCSP) {
 }
 TEST_F(ContentSecurityPolicyTest, FilesystemAllowedWhenBypassingCSP) {
   const KURL base;
-  execution_context = CreateExecutionContext();
+  CreateExecutionContext();
   execution_context->GetSecurityContext().SetSecurityOrigin(
       secure_origin);                     // https://example.com
   execution_context->SetURL(secure_url);  // https://example.com
@@ -731,7 +735,7 @@ TEST_F(ContentSecurityPolicyTest, FilesystemAllowedWhenBypassingCSP) {
 
 TEST_F(ContentSecurityPolicyTest, BlobAllowedWhenBypassingCSP) {
   const KURL base;
-  execution_context = CreateExecutionContext();
+  CreateExecutionContext();
   execution_context->GetSecurityContext().SetSecurityOrigin(
       secure_origin);                     // https://example.com
   execution_context->SetURL(secure_url);  // https://example.com
@@ -779,7 +783,7 @@ TEST_F(ContentSecurityPolicyTest, BlobAllowedWhenBypassingCSP) {
 
 TEST_F(ContentSecurityPolicyTest, CSPBypassDisabledWhenSchemeIsPrivileged) {
   const KURL base;
-  execution_context = CreateExecutionContext();
+  CreateExecutionContext();
   execution_context->GetSecurityContext().SetSecurityOrigin(secure_origin);
   execution_context->SetURL(BlankURL());
   csp->BindToDelegate(execution_context->GetContentSecurityPolicyDelegate());
@@ -1274,7 +1278,7 @@ TEST_F(ContentSecurityPolicyTest, OpaqueOriginBeforeBind) {
   // are applied. This shouldn't change the application of the 'self'
   // determination.
   secure_origin = secure_origin->DeriveNewOpaqueOrigin();
-  execution_context = CreateExecutionContext();
+  CreateExecutionContext();
   csp->BindToDelegate(execution_context->GetContentSecurityPolicyDelegate());
   csp->DidReceiveHeader("default-src 'self';",
                         ContentSecurityPolicyType::kEnforce,
