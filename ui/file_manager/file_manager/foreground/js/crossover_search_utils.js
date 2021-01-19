@@ -60,8 +60,7 @@ crossoverSearchUtils.findQueryMatchedDirectoryEntry =
 
     const scanner = dirModel.createScannerFactory(dirEntry, searchQuery)();
     await new Promise(
-        resolve => scanner.scan(
-            entriesCallback.bind(this), resolve, errorCallback.bind(this)));
+        resolve => scanner.scan(entriesCallback, resolve, errorCallback));
     if (isMatchedEntryFound) {
       return dirEntry;
     }

@@ -35,6 +35,7 @@
 // #import {metrics} from '../../common/js/metrics.m.js';
 // #import {assert} from 'chrome://resources/js/assert.m.js';
 // #import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
+// #import './webui_command_extender.m.js';
 // clang-format on
 
 

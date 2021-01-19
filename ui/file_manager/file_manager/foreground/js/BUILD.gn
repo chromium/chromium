@@ -934,6 +934,7 @@ js_library("file_manager_commands.m") {
     ":file_tasks.m",
     ":holding_space_util.m",
     ":path_component.m",
+    ":webui_command_extender.m",
     "ui:directory_tree.m",
     "ui:files_confirm_dialog.m",
     "ui:suggest_apps_dialog.m",
