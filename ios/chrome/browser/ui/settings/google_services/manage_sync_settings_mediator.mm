@@ -220,9 +220,9 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
   self.encryptionItem.accessoryType =
       hasDisclosureIndicator ? UITableViewCellAccessoryDisclosureIndicator
                              : UITableViewCellAccessoryNone;
+  [self updateEncryptionItem:NO];
   [model addItem:self.encryptionItem
       toSectionWithIdentifier:AdvancedSettingsSectionIdentifier];
-  [self updateEncryptionItem:NO];
 
   // GoogleActivityControlsItemType.
   TableViewImageItem* googleActivityControlsItem =
@@ -285,7 +285,7 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
     self.encryptionItem.textColor = UIColor.cr_secondaryLabelColor;
   }
   if (needsUpdate && notifyConsumer) {
-    [self.consumer reloadItem:self.self.encryptionItem];
+    [self.consumer reloadItem:self.encryptionItem];
   }
 }
 
@@ -561,7 +561,8 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
 // Updates the sync errors section. If |notifyConsumer| is YES, the consumer is
 // notified about model changes.
 - (void)updateSyncErrorsSection:(BOOL)notifyConsumer {
-  if (!base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency)) {
+  if (!base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency) ||
+      !self.syncSetupService->HasFinishedInitialSetup()) {
     return;
   }
   BOOL needsSyncErrorItemsUpdate = [self updateSyncErrorItems];
