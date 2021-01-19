@@ -16,7 +16,6 @@
 #include "chrome/browser/flags/jni_headers/ChromeFeatureList_jni.h"
 #include "chrome/browser/notifications/chime/android/features.h"
 #include "chrome/browser/performance_hints/performance_hints_features.h"
-#include "chrome/browser/share/features.h"
 #include "chrome/browser/sharing/shared_clipboard/feature_flags.h"
 #include "chrome/browser/video_tutorials/switches.h"
 #include "chrome/browser/webapps/android/features.h"
@@ -209,7 +208,6 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &kShareButtonInTopToolbar,
     &kShareByDefaultInCCT,
     &kSharedClipboardUI,
-    &kSharingQrCodeAndroid,
     &kShoppingAssist,
     &kSpannableInlineAutocomplete,
     &kSpecialLocaleWrapper,

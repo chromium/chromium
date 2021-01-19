@@ -10,8 +10,6 @@ source_set("share") {
   sources = [
     "bitmap_download_request.cc",
     "editor_screenshot_task.cc",
-    "features.cc",
-    "features.h",
     "link_to_text_bridge.cc",
     "qr_code_generation_request.cc",
     "qr_code_generation_request.h",
