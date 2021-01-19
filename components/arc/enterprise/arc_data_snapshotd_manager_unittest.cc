@@ -20,6 +20,7 @@
 #include "components/arc/enterprise/arc_data_snapshotd_bridge.h"
 #include "components/arc/enterprise/snapshot_session_controller.h"
 #include "components/arc/test/fake_apps_tracker.h"
+#include "components/arc/test/fake_snapshot_reboot_notification.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/fake_user_manager.h"
@@ -71,6 +72,11 @@ class FakeDelegate : public ArcDataSnapshotdManager::Delegate {
   }
 
   PrefService* GetProfilePrefService() override { return &pref_service_; }
+
+  std::unique_ptr<ArcSnapshotRebootNotification> CreateRebootNotification()
+      override {
+    return std::make_unique<FakeSnapshotRebootNotification>();
+  }
 
   bool stopped_callback_num() const { return stopped_callback_num_; }
 

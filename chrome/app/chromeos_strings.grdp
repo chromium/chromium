@@ -4038,6 +4038,15 @@
   <message name="IDS_ARC_POPUP_HELP_LOADING" desc="Loading message of the Arc popup help.">
     Loading...
   </message>
+  <message name="IDS_ARC_SNAPSHOT_RESTART_NOTIFICATION_TITLE" desc="Title of the notification shown to the user when ARC data snapshot must be updated">
+    Restart requested
+  </message>
+  <message name="IDS_ARC_SNAPSHOT_RESTART_NOTIFICATION_MESSAGE" desc="Message in the notification shown to the user when ARC data snapshot must be updated">
+    You Administrator requested to restart your device to update apps. This may take several minutes to complete
+  </message>
+  <message name="IDS_ARC_SNAPSHOT_RESTART_NOTIFICATION_RESTART_BUTTON" desc="Label on button in the notification shown to the user when ARC data snapshot must be updated">
+    Restart
+  </message>
   <message name="IDS_LOW_DISK_NOTIFICATION_TITLE" desc="Title of the notification warning users that they are low on disk space.">
     Device is low on disk space
   </message>

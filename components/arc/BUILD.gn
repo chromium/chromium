@@ -352,6 +352,8 @@ static_library("arc_test_support") {
     "test/fake_policy_instance.h",
     "test/fake_power_instance.cc",
     "test/fake_power_instance.h",
+    "test/fake_snapshot_reboot_notification.cc",
+    "test/fake_snapshot_reboot_notification.h",
     "test/fake_timer_instance.cc",
     "test/fake_timer_instance.h",
     "test/fake_wake_lock_instance.cc",

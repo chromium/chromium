@@ -510,7 +510,8 @@ void ArcDataSnapshotdManager::OnSnapshotUpdateEndTimeChanged() {
       snapshot_.Sync();
 
       // Request  device to be reboot in a blocked UI mode.
-      reboot_controller_ = std::make_unique<SnapshotRebootController>();
+      reboot_controller_ = std::make_unique<SnapshotRebootController>(
+          delegate_->CreateRebootNotification());
       return;
     case State::kBlockedUi:
     case State::kMgsToLaunch:

@@ -7,6 +7,7 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/account_id/account_id.h"
+#include "components/arc/test/fake_snapshot_reboot_notification.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -62,7 +63,6 @@ class SnapshotRebootControllerTest : public testing::Test {
   }
 
   user_manager::FakeUserManager* user_manager() { return fake_user_manager_; }
-
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -75,31 +75,62 @@ class SnapshotRebootControllerTest : public testing::Test {
 TEST_F(SnapshotRebootControllerTest, UserLoggedIn) {
   LoginUserSession();
   EXPECT_TRUE(user_manager()->IsUserLoggedIn());
-  SnapshotRebootController controller;
+
+  auto notification_ptr = std::make_unique<FakeSnapshotRebootNotification>();
+  auto* notification = notification_ptr.get();
+  SnapshotRebootController controller(std::move(notification_ptr));
+
   EXPECT_FALSE(controller.get_timer_for_testing()->IsRunning());
   EXPECT_EQ(0, client()->num_request_restart_calls());
+  EXPECT_TRUE(notification->shown());
 }
 
 TEST_F(SnapshotRebootControllerTest, BasicReboot) {
-  SnapshotRebootController controller;
+  auto notification_ptr = std::make_unique<FakeSnapshotRebootNotification>();
+  auto* notification = notification_ptr.get();
+  SnapshotRebootController controller(std::move(notification_ptr));
+
+  EXPECT_FALSE(notification->shown());
   EXPECT_EQ(0, client()->num_request_restart_calls());
   for (int i = 0; i < kMaxRebootAttempts; i++) {
     EXPECT_TRUE(controller.get_timer_for_testing()->IsRunning());
     FastForwardAttempt();
     EXPECT_EQ(i + 1, client()->num_request_restart_calls());
+    EXPECT_FALSE(notification->shown());
   }
   EXPECT_FALSE(controller.get_timer_for_testing()->IsRunning());
 }
 
 TEST_F(SnapshotRebootControllerTest, OnSessionStateChangedLogin) {
-  SnapshotRebootController controller;
+  auto notification_ptr = std::make_unique<FakeSnapshotRebootNotification>();
+  auto* notification = notification_ptr.get();
+  SnapshotRebootController controller(std::move(notification_ptr));
+
   EXPECT_TRUE(controller.get_timer_for_testing()->IsRunning());
 
   LoginUserSession();
   controller.OnSessionStateChanged();
   EXPECT_FALSE(controller.get_timer_for_testing()->IsRunning());
   EXPECT_EQ(0, client()->num_request_restart_calls());
+  EXPECT_TRUE(notification->shown());
 }
 
+TEST_F(SnapshotRebootControllerTest, UserConsentReboot) {
+  LoginUserSession();
+  EXPECT_TRUE(user_manager()->IsUserLoggedIn());
+
+  auto notification_ptr = std::make_unique<FakeSnapshotRebootNotification>();
+  auto* notification = notification_ptr.get();
+  SnapshotRebootController controller(std::move(notification_ptr));
+
+  EXPECT_FALSE(controller.get_timer_for_testing()->IsRunning());
+  EXPECT_EQ(0, client()->num_request_restart_calls());
+  EXPECT_TRUE(notification->shown());
+
+  // The reboot is requested immediately once user consents to reboot.
+  notification->Click();
+  EXPECT_EQ(1, client()->num_request_restart_calls());
+  EXPECT_TRUE(controller.get_timer_for_testing()->IsRunning());
+}
 }  // namespace data_snapshotd
 }  // namespace arc

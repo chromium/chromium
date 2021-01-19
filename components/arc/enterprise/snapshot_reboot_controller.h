@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
+#include "components/arc/enterprise/arc_snapshot_reboot_notification.h"
 #include "components/session_manager/core/session_manager_observer.h"
 
 namespace arc {
@@ -23,7 +24,8 @@ extern const base::TimeDelta kRebootAttemptDelay;
 class SnapshotRebootController
     : public session_manager::SessionManagerObserver {
  public:
-  SnapshotRebootController();
+  SnapshotRebootController(
+      std::unique_ptr<ArcSnapshotRebootNotification> notification);
   SnapshotRebootController(const SnapshotRebootController&) = delete;
   ~SnapshotRebootController() override;
 
@@ -39,9 +41,14 @@ class SnapshotRebootController
   void SetRebootTimer();
   void StopRebootTimer();
   void OnRebootTimer();
+  // This callback is called once user consents to restart a device.
+  // The device is requested to be restarted immediately.
+  void HandleUserConsent();
 
   base::OneShotTimer reboot_timer_;
   int reboot_attempts_ = 0;
+
+  std::unique_ptr<ArcSnapshotRebootNotification> notification_;
 
   base::WeakPtrFactory<SnapshotRebootController> weak_ptr_factory_{this};
 };

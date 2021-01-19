@@ -31,10 +31,15 @@ bool IsUserLoggedIn() {
 const int kMaxRebootAttempts = 3;
 const base::TimeDelta kRebootAttemptDelay = base::TimeDelta::FromMinutes(5);
 
-SnapshotRebootController::SnapshotRebootController() {
+SnapshotRebootController::SnapshotRebootController(
+    std::unique_ptr<ArcSnapshotRebootNotification> notification)
+    : notification_(std::move(notification)) {
+  notification_->SetUserConsentCallback(
+      base::BindRepeating(&SnapshotRebootController::HandleUserConsent,
+                          weak_ptr_factory_.GetWeakPtr()));
   session_manager::SessionManager::Get()->AddObserver(this);
   if (IsUserLoggedIn()) {
-    // TODO (pbond): show notification.
+    notification_->Show();
   } else {
     // The next operation after reboot is blocking, ensure no one uses device
     // during the next 5 mins.
@@ -49,10 +54,11 @@ SnapshotRebootController::~SnapshotRebootController() {
 void SnapshotRebootController::OnSessionStateChanged() {
   if (IsUserLoggedIn()) {
     StopRebootTimer();
-    // TODO(pbond): show notification.
+    notification_->Show();
   } else {
     // The next operation after reboot is blocking, ensure no one uses device
     // during the next 5 mins.
+    notification_->Hide();
     StartRebootTimer();
   }
 }
@@ -85,6 +91,11 @@ void SnapshotRebootController::OnRebootTimer() {
     return;
   }
   SetRebootTimer();
+}
+
+void SnapshotRebootController::HandleUserConsent() {
+  RequestReboot();
+  StartRebootTimer();
 }
 
 }  // namespace data_snapshotd

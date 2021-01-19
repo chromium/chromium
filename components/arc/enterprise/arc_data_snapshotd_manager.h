@@ -71,6 +71,10 @@ class ArcDataSnapshotdManager final
     // Returns a current profile pref service. Should be called only when ARC
     // session is up and running.
     virtual PrefService* GetProfilePrefService() = 0;
+
+    // Creates a snapshot reboot notification.
+    virtual std::unique_ptr<ArcSnapshotRebootNotification>
+    CreateRebootNotification() = 0;
   };
 
   // This class operates with a snapshot related info either last or

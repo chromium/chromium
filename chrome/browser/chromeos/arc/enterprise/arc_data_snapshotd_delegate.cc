@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/arc/enterprise/arc_data_snapshotd_delegate.h"
 #include "chrome/browser/chromeos/arc/arc_util.h"
+#include "chrome/browser/chromeos/arc/enterprise/arc_snapshot_reboot_notification_impl.h"
 #include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
 
 namespace arc {
@@ -60,6 +61,11 @@ void ArcDataSnapshotdDelegate::RequestStopArcInstance(
 PrefService* ArcDataSnapshotdDelegate::GetProfilePrefService() {
   DCHECK(arc_session_manager_->profile());
   return arc_session_manager_->profile()->GetPrefs();
+}
+
+std::unique_ptr<ArcSnapshotRebootNotification>
+ArcDataSnapshotdDelegate::CreateRebootNotification() {
+  return std::make_unique<ArcSnapshotRebootNotificationImpl>();
 }
 
 void ArcDataSnapshotdDelegate::OnArcSessionStopped(arc::ArcStopReason reason) {
