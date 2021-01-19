@@ -939,6 +939,23 @@ can be compared for the same population). -->
 </histogram>
 
 <histogram name="Sync.Startup.PolicyLoadTimeout" enum="Boolean"
+    expires_after="2021-02-01">
+  <obsolete>
+    Deprecated in 02/2021 for having wrong data. Use
+    Sync.Startup.PolicyLoadTimeout2.
+  </obsolete>
+  <owner>ydago@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    Use Sync.Startup.PolicyLoadTimeout2 to Records the sync engine timed out
+    while waiting for policy load before starting. In case of a timeout, the
+    sync engine attempts to start ignoring potential policy restrictions. This
+    histogram contains wrong data, please use Sync.Startup.PolicyLoadTimeout2
+    instead.
+  </summary>
+</histogram>
+
+<histogram name="Sync.Startup.PolicyLoadTimeout2" enum="Boolean"
     expires_after="2021-11-01">
   <owner>ydago@chromium.org</owner>
   <owner>treib@chromium.org</owner>
