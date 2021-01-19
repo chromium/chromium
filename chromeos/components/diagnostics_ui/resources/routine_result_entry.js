@@ -115,7 +115,6 @@ Polymer({
    * @private
    */
   entryStatusChanged_() {
-    // TODO(michaelcheco): Display "STOPPED" state when routines are cancelled.
     switch (this.item.progress) {
       case ExecutionProgress.kNotStarted:
         this.setBadgeTypeAndText_(
@@ -124,6 +123,10 @@ Polymer({
       case ExecutionProgress.kRunning:
         this.setBadgeTypeAndText_(
             BadgeType.RUNNING, loadTimeData.getString('testRunningBadgeText'));
+        break;
+      case ExecutionProgress.kCancelled:
+        this.setBadgeTypeAndText_(
+            BadgeType.STOPPED, loadTimeData.getString('testStoppedBadgeText'));
         break;
       case ExecutionProgress.kCompleted:
         const testPassed = this.item.result &&

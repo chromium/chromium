@@ -194,6 +194,25 @@ export function routineResultEntryTestSuite() {
     });
   });
 
+  test('StoppedTest', () => {
+    const item = createIncompleteStatus(
+        chromeos.diagnostics.mojom.RoutineType.kCpuStress,
+        ExecutionProgress.kCancelled);
+    return initializeEntryWithItem(item).then(() => {
+      assertEquals(
+          getNameText(),
+          loadTimeData.getStringF(
+              'routineEntryText',
+              loadTimeData.getString('cpuStressRoutineText')));
+
+      // Status should show that the test was stopped.
+      assertEquals(
+          getStatusBadge().value,
+          loadTimeData.getString('testStoppedBadgeText'));
+      assertEquals(getStatusBadge().badgeType, BadgeType.STOPPED);
+    });
+  });
+
   test('PowerTest', () => {
     const item = createCompletedStatus(
         chromeos.diagnostics.mojom.RoutineType.kBatteryCharge,

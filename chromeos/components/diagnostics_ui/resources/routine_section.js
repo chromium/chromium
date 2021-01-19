@@ -9,7 +9,7 @@ import './routine_result_list.js';
 import './text_badge.js';
 import './strings.m.js';
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -97,7 +97,27 @@ Polymer({
       type: String,
       value: '',
     },
+
+    /** @private {!BadgeType} */
+    badgeType_: {
+      type: String,
+      value: BadgeType.RUNNING,
+    },
+
+    /** @private {string} */
+    badgeText_: {
+      type: String,
+      value: '',
+    },
+
+    /** @private {string} */
+    statusText_: {
+      type: String,
+      value: '',
+    },
   },
+
+  observers: ['routineStatusChanged_(executionStatus_, currentTestName_)'],
 
   /** @private */
   getResultListElem_() {
@@ -125,8 +145,9 @@ Polymer({
           .runRoutines(
               filteredRoutines,
               (status) => {
-                this.currentTestName_ = loadTimeData.getStringF(
-                    'routineNameText', getRoutineType(status.routine));
+                if (status.result && status.result.powerResult) {
+                  this.powerRoutineResult_ = status.result.powerResult;
+                }
 
                 if (status.result &&
                     getSimpleResult(status.result) !==
@@ -135,11 +156,9 @@ Polymer({
                   this.hasTestFailure_ = true;
                 }
 
-                resultListElem.onStatusUpdate.call(resultListElem, status);
+                this.currentTestName_ = getRoutineType(status.routine);
 
-                if (status.result && status.result.powerResult) {
-                  this.powerRoutineResult_ = status.result.powerResult;
-                }
+                resultListElem.onStatusUpdate.call(resultListElem, status);
               })
           .then(() => {
             this.executionStatus_ = ExecutionProgress.kCompleted;
@@ -197,40 +216,46 @@ Polymer({
   },
 
   /** @protected */
-  getBadgeType_() {
-    if (this.executionStatus_ === ExecutionProgress.kCompleted) {
-      if (this.hasTestFailure_) {
-        return BadgeType.ERROR;
-      }
-      return BadgeType.SUCCESS;
+  routineStatusChanged_() {
+    switch (this.executionStatus_) {
+      case ExecutionProgress.kNotStarted:
+        // Do nothing since status is hidden when tests have not been started.
+        break;
+      case ExecutionProgress.kRunning:
+        this.setBadgeAndStatusText_(
+            BadgeType.RUNNING, loadTimeData.getString('testRunning'),
+            loadTimeData.getStringF('routineNameText', this.currentTestName_));
+        break;
+      case ExecutionProgress.kCancelled:
+        this.setBadgeAndStatusText_(
+            BadgeType.STOPPED, loadTimeData.getString('testStoppedBadgeText'),
+            loadTimeData.getStringF(
+                'testCancelledText', this.currentTestName_));
+        break;
+      case ExecutionProgress.kCompleted:
+        const isPowerRoutine = this.isPowerRoutine || this.powerRoutineResult_;
+        if (this.hasTestFailure_) {
+          this.setBadgeAndStatusText_(
+              BadgeType.ERROR, loadTimeData.getString('testFailedBadgeText'),
+              loadTimeData.getString('testFailure'));
+        } else {
+          this.setBadgeAndStatusText_(
+              BadgeType.SUCCESS,
+              loadTimeData.getString('testSucceededBadgeText'),
+              isPowerRoutine ? this.getPowerRoutineString_() :
+                               loadTimeData.getString('testSuccess'));
+        }
+        break;
+      default:
+        assertNotReached();
     }
-    return BadgeType.RUNNING;
   },
 
-  /** @protected */
-  getBadgeText_() {
-    if (this.executionStatus_ === ExecutionProgress.kRunning) {
-      return loadTimeData.getString('testRunning');
-    }
-    return loadTimeData.getString(
-        this.hasTestFailure_ ? 'testFailedBadgeText' :
-                               'testSucceededBadgeText');
-  },
-
-  /** @protected */
-  getTextStatus_() {
-    if (this.executionStatus_ === ExecutionProgress.kRunning) {
-      return this.currentTestName_;
-    }
-
-    if (this.hasTestFailure_) {
-      return loadTimeData.getString('testFailure');
-    }
-
-    if (this.isPowerRoutine === false || this.powerRoutineResult_ === null) {
-      return loadTimeData.getString('testSuccess');
-    }
-
+  /**
+   * @private
+   * @return {string}
+   */
+  getPowerRoutineString_() {
     const stringId =
         this.routines.includes(
             chromeos.diagnostics.mojom.RoutineType.kBatteryCharge) ?
@@ -239,10 +264,21 @@ Polymer({
     const percentText = loadTimeData.getStringF(
         'percentageLabel', this.powerRoutineResult_.percentChange.toFixed(2));
     return loadTimeData.getStringF(
-        stringId,
-        percentText,
-        this.powerRoutineResult_.timeElapsedSeconds
-    );
+        stringId, percentText, this.powerRoutineResult_.timeElapsedSeconds);
+  },
+
+  /**
+   * @param {!BadgeType} badgeType
+   * @param {string} badgeText
+   * @param {string} statusText
+   * @private
+   */
+  setBadgeAndStatusText_(badgeType, badgeText, statusText) {
+    this.setProperties({
+      badgeType_: badgeType,
+      badgeText_: badgeText,
+      statusText_: statusText
+    });
   },
 
   /** @override */

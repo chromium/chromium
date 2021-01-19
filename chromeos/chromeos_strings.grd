@@ -746,6 +746,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_DIAGNOSTICS_TEST_QUEUED_BADGE_TEXT" desc="The text displayed to indicate that a test is currently queued.">
         QUEUED
       </message>
+      <message name="IDS_DIAGNOSTICS_TEST_STOPPED_BADGE_TEXT" desc="The text displayed to indicate that a test has been stopped.">
+        STOPPED
+      </message>
       <message name="IDS_DIAGNOSTICS_TEST_RUNNING_TEXT" desc="The text displayed while a test is running.">
         Test running
       </message>
@@ -781,6 +784,9 @@ Try tapping the mic to ask me anything.
       </message>
       <message name="IDS_DIAGNOSTICS_MEMORY_AVAILABLE_TEXT" desc="The text that displays the amount of memory available on a users' device.">
         <ph name="AVAILABLE_MEMORY">$1<ex>13.12</ex></ph> GB of <ph name="TOTAL_MEMORY">$2<ex>16</ex></ph> GB available.
+      </message>
+      <message name="IDS_DIAGNOSTICS_CANCELLED_TEST_TEXT" desc="The text that displays the test that was cancelled.">
+        <ph name="TEST_NAME">$1<ex>Stress</ex></ph> Test has been cancelled
       </message>
 
       <!-- Quick Answers -->

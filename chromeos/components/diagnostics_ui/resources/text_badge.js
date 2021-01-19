@@ -15,6 +15,7 @@ export const BadgeType = {
   ERROR: 'error',
   QUEUED: 'queued',
   RUNNING: 'running',
+  STOPPED: 'stopped',
   SUCCESS: 'success',
 };
 
