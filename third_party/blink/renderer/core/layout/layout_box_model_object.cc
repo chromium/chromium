@@ -1133,32 +1133,6 @@ void LayoutBoxModelObject::UpdateStickyPositionConstraints() const {
   scrollable_area->AddStickyConstraints(Layer(), constraints);
 }
 
-bool LayoutBoxModelObject::IsSlowRepaintConstrainedObject() const {
-  NOT_DESTROYED();
-  if (!HasLayer() || (StyleRef().GetPosition() != EPosition::kFixed &&
-                      StyleRef().GetPosition() != EPosition::kSticky)) {
-    return false;
-  }
-
-  PaintLayer* layer = Layer();
-
-  // Whether the Layer sticks to the viewport is a tree-depenent
-  // property and our viewportConstrainedObjects collection is maintained
-  // with only LayoutObject-level information.
-  if (!layer->FixedToViewport() && !layer->SticksToScroller())
-    return false;
-
-  // If the whole subtree is invisible, there's no reason to scroll on
-  // the main thread because we don't need to generate invalidations
-  // for invisible content.
-  if (layer->SubtreeIsInvisible())
-    return false;
-
-  // We're only smart enough to scroll viewport-constrainted objects
-  // in the compositor if they are directly composited.
-  return !layer->CanBeCompositedForDirectReasons();
-}
-
 PhysicalRect LayoutBoxModelObject::ComputeStickyConstrainingRect() const {
   NOT_DESTROYED();
   LayoutBox* scroll_container_box =

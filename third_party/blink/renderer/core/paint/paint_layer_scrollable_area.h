@@ -685,8 +685,6 @@ class CORE_EXPORT PaintLayerScrollableArea final
 
   void ScrollControlWasSetNeedsPaintInvalidation() override;
 
-  bool HasNonCompositedStickyDescendants() const;
-
   IntSize PixelSnappedBorderBoxSize() const;
 
   using BackgroundPaintLocation = uint8_t;

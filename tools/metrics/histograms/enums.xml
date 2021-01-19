@@ -47665,7 +47665,7 @@ from previous Chrome versions.
 <enum name="MainThreadScrollingReason">
   <int value="0" label="Not scrolling on main"/>
   <int value="1" label="Background attachment fixed"/>
-  <int value="2" label="Non layer viewport constrained"/>
+  <int value="2" label="Non layer viewport constrained (obsolete)"/>
   <int value="3" label="Threaded scrolling disabled"/>
   <int value="4" label="Scrollbar scrolling"/>
   <int value="5" label="Frame overlay"/>

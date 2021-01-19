@@ -26,7 +26,6 @@ struct CC_EXPORT MainThreadScrollingReason {
 
     // Non-transient scrolling reasons.
     kHasBackgroundAttachmentFixedObjects = 1 << 0,
-    kHasNonLayerViewportConstrainedObjects = 1 << 1,
     kThreadedScrollingDisabled = 1 << 2,
     kScrollbarScrolling = 1 << 3,
     kFrameOverlay = 1 << 4,
@@ -73,8 +72,8 @@ struct CC_EXPORT MainThreadScrollingReason {
   static bool MainThreadCanSetScrollReasons(uint32_t reasons) {
     uint32_t reasons_set_by_main_thread =
         kNotScrollingOnMain | kHasBackgroundAttachmentFixedObjects |
-        kHasNonLayerViewportConstrainedObjects | kThreadedScrollingDisabled |
-        kScrollbarScrolling | kFrameOverlay | kHandlingScrollFromMainThread;
+        kThreadedScrollingDisabled | kScrollbarScrolling | kFrameOverlay |
+        kHandlingScrollFromMainThread;
     return (reasons & reasons_set_by_main_thread) == reasons;
   }
 

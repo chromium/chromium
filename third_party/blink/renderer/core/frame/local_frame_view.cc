@@ -4647,20 +4647,6 @@ int LocalFrameView::InitialViewportHeight() const {
   return initial_viewport_size_.Height();
 }
 
-bool LocalFrameView::HasVisibleSlowRepaintViewportConstrainedObjects() const {
-  if (!ViewportConstrainedObjects())
-    return false;
-  for (const LayoutObject* layout_object : *ViewportConstrainedObjects()) {
-    DCHECK(layout_object->HasLayer());
-    DCHECK(layout_object->StyleRef().GetPosition() == EPosition::kFixed ||
-           layout_object->StyleRef().GetPosition() == EPosition::kSticky);
-    if (To<LayoutBoxModelObject>(layout_object)
-            ->IsSlowRepaintConstrainedObject())
-      return true;
-  }
-  return false;
-}
-
 MainThreadScrollingReasons LocalFrameView::MainThreadScrollingReasonsPerFrame()
     const {
   MainThreadScrollingReasons reasons =
@@ -4672,18 +4658,6 @@ MainThreadScrollingReasons LocalFrameView::MainThreadScrollingReasonsPerFrame()
   if (RequiresMainThreadScrollingForBackgroundAttachmentFixed()) {
     reasons |=
         cc::MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects;
-  }
-
-  // Force main-thread scrolling if the frame has uncomposited position: fixed
-  // elements.  Note: we care about this not only for input-scrollable frames
-  // but also for overflow: hidden frames, because script can run composited
-  // smooth-scroll animations.  For this reason, we use HasOverflow instead of
-  // ScrollsOverflow (which is false for overflow: hidden).
-  if (LayoutViewport()->HasOverflow() &&
-      GetLayoutView()->StyleRef().VisibleToHitTesting() &&
-      HasVisibleSlowRepaintViewportConstrainedObjects()) {
-    reasons |=
-        cc::MainThreadScrollingReason::kHasNonLayerViewportConstrainedObjects;
   }
   return reasons;
 }

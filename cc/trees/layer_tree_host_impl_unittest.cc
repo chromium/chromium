@@ -14620,7 +14620,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, MainThreadFallback) {
   // InputHandlerPointerResult should return a zero offset. This will cause the
   // main thread to handle the scroll.
   GetScrollNode(scroll_layer)->main_thread_scrolling_reasons =
-      MainThreadScrollingReason::kHasNonLayerViewportConstrainedObjects;
+      MainThreadScrollingReason::kThreadedScrollingDisabled;
   compositor_threaded_scrolling_result = GetInputHandler().MouseDown(
       gfx::PointF(350, 500), /*jump_key_modifier*/ false);
   GetInputHandler().MouseUp(gfx::PointF(350, 500));

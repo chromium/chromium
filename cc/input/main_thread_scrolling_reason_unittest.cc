@@ -14,7 +14,6 @@ TEST_F(MainThreadScrollingReasonTest, AsText) {
   EXPECT_EQ("", MainThreadScrollingReason::AsText(0));
   EXPECT_EQ(
       "Has background-attachment:fixed, "
-      "Has non-layer viewport-constrained objects, "
       "Threaded scrolling is disabled, "
       "Scrollbar scrolling, "
       "Frame overlay, "

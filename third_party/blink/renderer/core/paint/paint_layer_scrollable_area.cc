@@ -2145,16 +2145,6 @@ void PaintLayerScrollableArea::InvalidateStickyConstraintsFor(
   }
 }
 
-bool PaintLayerScrollableArea::HasNonCompositedStickyDescendants() const {
-  if (const PaintLayerScrollableAreaRareData* d = RareData()) {
-    for (const PaintLayer* sticky_layer : d->sticky_constraints_map_.Keys()) {
-      if (sticky_layer->GetLayoutObject().IsSlowRepaintConstrainedObject())
-        return true;
-    }
-  }
-  return false;
-}
-
 void PaintLayerScrollableArea::InvalidatePaintForStickyDescendants() {
   if (PaintLayerScrollableAreaRareData* d = RareData()) {
     for (PaintLayer* sticky_layer : d->sticky_constraints_map_.Keys())
@@ -2495,8 +2485,6 @@ bool PaintLayerScrollableArea::ShouldScrollOnMainThread() const {
     if (frame->View()->GetMainThreadScrollingReasons())
       return true;
   }
-  if (HasNonCompositedStickyDescendants())
-    return true;
 
   // Property tree state is not available until the PrePaint lifecycle stage.
   DCHECK_GE(GetDocument()->Lifecycle().GetState(),

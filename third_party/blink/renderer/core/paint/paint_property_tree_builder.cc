@@ -1975,37 +1975,6 @@ static MainThreadScrollingReasons GetMainThreadScrollingReasons(
     // setting is only for testing.
     if (!object.GetFrame()->GetSettings()->GetThreadedScrollingEnabled())
       reasons |= cc::MainThreadScrollingReason::kThreadedScrollingDisabled;
-
-    // LocalFrameView::HasVisibleSlowRepaintViewportConstrainedObjects depends
-    // on compositing (LayoutBoxModelObject::IsSlowRepaintConstrainedObject
-    // calls PaintLayer::GetCompositingState, and PaintLayer::SticksToScroller
-    // depends on the ancestor overflow layer) so CompositeAfterPaint cannot
-    // use LocalFrameView::HasVisibleSlowRepaintViewportConstrainedObjects.
-    if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-      // Force main-thread scrolling if the frame has uncomposited position:
-      // fixed elements. Note: we care about this not only for input-scrollable
-      // frames but also for overflow: hidden frames, because script can run
-      // composited smooth-scroll animations. For this reason, we use
-      // HasOverflow instead of ScrollsOverflow (which is false for overflow:
-      // hidden).
-      if (To<LayoutBox>(object).GetScrollableArea()->HasOverflow() &&
-          object.StyleRef().VisibleToHitTesting() &&
-          object.GetFrameView()
-              ->HasVisibleSlowRepaintViewportConstrainedObjects()) {
-        reasons |= cc::MainThreadScrollingReason::
-            kHasNonLayerViewportConstrainedObjects;
-      }
-    } else {
-      // TODO(pdr): CompositeAfterPaint should use an approach like
-      // CompositingReasonFinder::RequiresCompositingForScrollDependentPosition,
-      // adding main thread reasons if compositing was not required. This has
-      // a small behavior change because main thread reasons will be added in
-      // the case where a non-scroll compositing trigger (e.g., transform)
-      // requires compositing, even though a main thread reason is not needed.
-      // CompositingReasonFinder::RequiresCompositingForScrollDependentPosition
-      // will need to be changed to not query
-      // PaintLayer::AncestorScrollContainerLayer.
-    }
   }
   return reasons;
 }

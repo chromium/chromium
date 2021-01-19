@@ -666,8 +666,6 @@ class CORE_EXPORT LocalFrameView final
   // see: mainThreadScrollingReasons().
   MainThreadScrollingReasons MainThreadScrollingReasonsPerFrame() const;
 
-  bool HasVisibleSlowRepaintViewportConstrainedObjects() const;
-
   bool MapToVisualRectInRemoteRootFrame(PhysicalRect& rect,
                                         bool apply_overflow_clip = true);
 

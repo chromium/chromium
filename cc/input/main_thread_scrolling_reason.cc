@@ -32,8 +32,6 @@ void MainThreadScrollingReason::AddToTracedValue(
 
   if (reasons & kHasBackgroundAttachmentFixedObjects)
     traced_value.AppendString("Has background-attachment:fixed");
-  if (reasons & kHasNonLayerViewportConstrainedObjects)
-    traced_value.AppendString("Has non-layer viewport-constrained objects");
   if (reasons & kThreadedScrollingDisabled)
     traced_value.AppendString("Threaded scrolling is disabled");
   if (reasons & kScrollbarScrolling)
