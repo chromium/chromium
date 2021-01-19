@@ -11,6 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string16.h"
 #include "base/version.h"
+#include "components/variations/proto/study.pb.h"
 #include "components/version_info/version_info.h"
 
 namespace network {
@@ -49,6 +50,9 @@ class VariationsServiceClient {
   // If that switch is not set, it will return the embedder-provided channel,
   // (which could be UNKNOWN).
   version_info::Channel GetChannelForVariations();
+
+  // Returns the current form factor of the device.
+  virtual Study::FormFactor GetCurrentFormFactor();
 
   // Returns whether the client is enterprise.
   // TODO(manukh): crbug.com/1003025. This is inconsistent with UMA which

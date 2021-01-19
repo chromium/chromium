@@ -69,6 +69,7 @@ std::unique_ptr<metrics::ClientInfo> StubLoadClientInfo() {
   return std::unique_ptr<metrics::ClientInfo>();
 }
 
+// TODO(crbug.com/1167566): Remove when fake VariationsServiceClient created.
 class TestVariationsServiceClient : public VariationsServiceClient {
  public:
   TestVariationsServiceClient() {

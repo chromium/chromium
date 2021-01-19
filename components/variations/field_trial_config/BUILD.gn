@@ -67,7 +67,7 @@ static_library("field_trial_config") {
     ":field_trial_testing_config_action",
     "//base",
     "//components/variations",
-    "//components/variations/proto:proto",
+    "//components/variations/proto",
     "//net",
     "//ui/base",
   ]
@@ -83,6 +83,8 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/variations",
+    "//components/variations/service",
+    "//services/network/public/cpp",
     "//testing/gtest",
     "//ui/base",
   ]

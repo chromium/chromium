@@ -57,21 +57,6 @@ enum VariationsSeedExpiry {
   VARIATIONS_SEED_EXPIRY_ENUM_SIZE,
 };
 
-// Gets current form factor and converts it from enum DeviceFormFactor to enum
-// Study_FormFactor.
-Study::FormFactor GetCurrentFormFactor() {
-  switch (ui::GetDeviceFormFactor()) {
-    case ui::DEVICE_FORM_FACTOR_PHONE:
-      return Study::PHONE;
-    case ui::DEVICE_FORM_FACTOR_TABLET:
-      return Study::TABLET;
-    case ui::DEVICE_FORM_FACTOR_DESKTOP:
-      return Study::DESKTOP;
-  }
-  NOTREACHED();
-  return Study::DESKTOP;
-}
-
 // Returns the date that should be used by the VariationsSeedProcessor to do
 // expiry and start date checks.
 base::Time GetReferenceDateForExpiryChecks(PrefService* local_state) {
@@ -238,7 +223,7 @@ VariationsFieldTrialCreator::GetClientFilterableStateForVersion(
   state->os_version = ClientFilterableState::GetOSVersion();
   state->channel =
       ConvertProductChannelToStudyChannel(client_->GetChannelForVariations());
-  state->form_factor = GetCurrentFormFactor();
+  state->form_factor = client_->GetCurrentFormFactor();
   state->platform = GetPlatform();
   // TODO(crbug/1111131): Expand to other platforms.
 #if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID)
@@ -518,7 +503,7 @@ bool VariationsFieldTrialCreator::SetupFieldTrials(
     AssociateDefaultFieldTrialConfig(
         base::BindRepeating(&VariationsFieldTrialCreator::OverrideUIString,
                             base::Unretained(this)),
-        GetPlatform(), feature_list.get());
+        GetPlatform(), client_->GetCurrentFormFactor(), feature_list.get());
     used_testing_config = true;
   }
 #endif  // BUILDFLAG(FIELDTRIAL_TESTING_ENABLED)

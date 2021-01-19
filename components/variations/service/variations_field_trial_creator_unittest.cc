@@ -152,6 +152,7 @@ class MockSafeSeedManager : public SafeSeedManager {
   DISALLOW_COPY_AND_ASSIGN(MockSafeSeedManager);
 };
 
+// TODO(crbug.com/1167566): Remove when fake VariationsServiceClient created.
 class TestVariationsServiceClient : public VariationsServiceClient {
  public:
   TestVariationsServiceClient() = default;
