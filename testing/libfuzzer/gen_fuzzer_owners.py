@@ -24,7 +24,7 @@ THIRD_PARTY_SEARCH_STRING = 'third_party' + os.sep
 
 def GetAuthorFromGitBlame(blame_output):
   """Return author from git blame output."""
-  for line in blame_output.splitlines():
+  for line in blame_output.decode('utf-8').splitlines():
     m = AUTHOR_REGEX.match(line)
     if m:
       return m.group(1)
