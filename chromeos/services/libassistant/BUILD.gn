@@ -41,6 +41,10 @@ source_set("internal") {
     "audio/audio_input_stream.h",
     "audio_input_controller.cc",
     "audio_input_controller.h",
+    "chromium_api_delegate.cc",
+    "chromium_api_delegate.h",
+    "chromium_http_connection.cc",
+    "chromium_http_connection.h",
     "conversation_controller.cc",
     "conversation_controller.h",
     "platform_api.cc",
@@ -66,6 +70,7 @@ source_set("internal") {
     "//libassistant/shared/public:export",
     "//media",
     "//services/audio/public/cpp",
+    "//services/network/public/cpp",
   ]
 
   defines = [ "IS_LIBASSISTANT_SERVICE_IMPL" ]
@@ -90,6 +95,8 @@ source_set("unit_tests") {
     "//chromeos/services/libassistant/public/mojom",
     "//libassistant/shared/internal_api:assistant_manager_internal",
     "//services/audio/public/cpp:test_support",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
   ]

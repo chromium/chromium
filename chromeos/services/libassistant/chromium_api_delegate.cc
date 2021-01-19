@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/assistant/chromium_api_delegate.h"
+#include "chromeos/services/libassistant/chromium_api_delegate.h"
 
 #include <utility>
 
@@ -10,7 +10,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace chromeos {
-namespace assistant {
+namespace libassistant {
 
 ChromiumApiDelegate::ChromiumApiDelegate(
     std::unique_ptr<network::PendingSharedURLLoaderFactory>
@@ -24,5 +24,5 @@ ChromiumApiDelegate::GetHttpConnectionFactory() {
   return &http_connection_factory_;
 }
 
-}  // namespace assistant
+}  // namespace libassistant
 }  // namespace chromeos

@@ -4,7 +4,7 @@
 
 // The file comes from Google Home(cast) implementation.
 
-#include "chromeos/services/assistant/chromium_http_connection.h"
+#include "chromeos/services/libassistant/chromium_http_connection.h"
 
 #include <algorithm>
 #include <memory>
@@ -33,7 +33,7 @@ using network::SharedURLLoaderFactory;
   }
 
 namespace chromeos {
-namespace assistant {
+namespace libassistant {
 
 namespace {
 
@@ -176,6 +176,7 @@ void ChromiumHttpConnection::Start() {
 
   auto factory =
       SharedURLLoaderFactory::Create(std::move(pending_url_loader_factory_));
+
   if (handle_partial_response_) {
     url_loader_->SetOnResponseStartedCallback(
         base::BindOnce(&ChromiumHttpConnection::OnResponseStarted, this));
@@ -407,5 +408,5 @@ HttpConnection* ChromiumHttpConnectionFactory::Create(
   return new ChromiumHttpConnection(url_loader_factory_->Clone(), delegate);
 }
 
-}  // namespace assistant
+}  // namespace libassistant
 }  // namespace chromeos

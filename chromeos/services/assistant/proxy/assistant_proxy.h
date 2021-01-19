@@ -18,6 +18,10 @@ class LibassistantService;
 }  // namespace libassistant
 }  // namespace chromeos
 
+namespace network {
+class PendingSharedURLLoaderFactory;
+}  // namespace network
+
 namespace chromeos {
 namespace assistant {
 
@@ -34,7 +38,9 @@ class AssistantProxy {
   AssistantProxy& operator=(AssistantProxy&) = delete;
   ~AssistantProxy();
 
-  void Initialize(LibassistantServiceHost* host);
+  void Initialize(LibassistantServiceHost* host,
+                  std::unique_ptr<network::PendingSharedURLLoaderFactory>
+                      pending_url_loader_factory);
 
   // Returns the controller that manages starting and stopping of the Assistant
   // service.
@@ -67,7 +73,9 @@ class AssistantProxy {
   void StopLibassistantService();
   void StopLibassistantServiceOnBackgroundThread();
 
-  void BindControllers(LibassistantServiceHost* host);
+  void BindControllers(LibassistantServiceHost* host,
+                       std::unique_ptr<network::PendingSharedURLLoaderFactory>
+                           pending_url_loader_factory);
 
   // Owned by |AssistantManagerServiceImpl|.
   LibassistantServiceHost* libassistant_service_host_ = nullptr;

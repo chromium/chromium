@@ -37,6 +37,8 @@ class AssistantManagerServiceDelegate;
 namespace chromeos {
 namespace libassistant {
 
+class ChromiumApiDelegate;
+
 // Component managing the lifecycle of Libassistant,
 // exposing methods to start/stop and configure Libassistant.
 // Note: to access the Libassistant objects from //chromeos/services/assistant,
@@ -63,7 +65,9 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ServiceController
   void SetInitializeCallback(InitializeCallback callback);
 
   // mojom::ServiceController implementation:
-  void Initialize(mojom::BootupConfigPtr libassistant_config) override;
+  void Initialize(mojom::BootupConfigPtr libassistant_config,
+                  mojo::PendingRemote<network::mojom::URLLoaderFactory>
+                      url_loader_factory) override;
   void Start() override;
   void Stop() override;
   void AddAndFireStateObserver(
@@ -88,6 +92,11 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ServiceController
  private:
   void SetStateAndInformObservers(mojom::ServiceState new_state);
 
+  void CreateAndRegisterChromiumApiDelegate(
+      mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory);
+  void CreateChromiumApiDelegate(
+      mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory);
+
   mojom::ServiceState state_ = mojom::ServiceState::kStopped;
 
   // Owned by |AssistantManagerServiceImpl| which indirectly owns us.
@@ -101,6 +110,7 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ServiceController
   std::unique_ptr<assistant_client::AssistantManager> assistant_manager_;
   assistant_client::AssistantManagerInternal* assistant_manager_internal_ =
       nullptr;
+  std::unique_ptr<ChromiumApiDelegate> chromium_api_delegate_;
   std::unique_ptr<assistant::LibassistantV1Api> libassistant_v1_api_;
 
   mojo::Receiver<mojom::ServiceController> receiver_;

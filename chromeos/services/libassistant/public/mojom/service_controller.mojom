@@ -4,6 +4,8 @@
 
 module chromeos.libassistant.mojom;
 
+import "services/network/public/mojom/url_loader_factory.mojom";
+
 enum ServiceState {
   // The service has been started but is not ready yet to handle queries.
   kStarted,
@@ -22,7 +24,8 @@ interface ServiceController {
   // Note that calling Initialize() will not cause any change in the service
   // state, as the service will remain in state |kStopped| until Start() is
   // called.
-  Initialize(BootupConfig bootup_config);
+  Initialize(BootupConfig bootup_config,
+      pending_remote<network.mojom.URLLoaderFactory> url_loading_factory);
 
   // Start the service. Can be called multiple times, and will be a noop if
   // the service is already started or running.

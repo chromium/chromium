@@ -178,7 +178,6 @@ AssistantManagerServiceImpl::AssistantManagerServiceImpl(
           this,
           features::IsAppSupportEnabled(),
           features::IsWaitSchedulingEnabled())),
-      chromium_api_delegate_(std::move(pending_url_loader_factory)),
       assistant_settings_(
           std::make_unique<AssistantSettingsImpl>(context, this)),
       assistant_proxy_(std::make_unique<AssistantProxy>()),
@@ -207,7 +206,8 @@ AssistantManagerServiceImpl::AssistantManagerServiceImpl(
   // |libassistant_service_host| which requires |platform_api_| in its
   // constructor.
   // To solve this chicken-and-egg problem, we need a separe Initialize() call.
-  assistant_proxy_->Initialize(libassistant_service_host_.get());
+  assistant_proxy_->Initialize(libassistant_service_host_.get(),
+                               std::move(pending_url_loader_factory));
 
   audio_input_host_ = delegate_->CreateAudioInputHost();
 
@@ -1025,7 +1025,7 @@ void AssistantManagerServiceImpl::InitAssistant(
   DCHECK(!IsServiceStarted());
 
   service_controller().Start(
-      action_module_.get(), &chromium_api_delegate_,
+      action_module_.get(),
       /*assistant_manager_delegate=*/this,
       /*conversation_state_listener=*/this,
       /*device_state_listener=*/this,

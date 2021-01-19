@@ -28,6 +28,6 @@ source_set("proxy") {
     "//chromeos/services/assistant/public/cpp",
     "//chromeos/services/assistant/public/cpp/migration",
     "//chromeos/services/libassistant",
-    "//libassistant/shared/internal_api:fuchsia_api_helper",
+    "//services/network/public/cpp",
   ]
 }

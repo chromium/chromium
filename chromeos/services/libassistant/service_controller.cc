@@ -11,8 +11,11 @@
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/assistant/public/cpp/migration/assistant_manager_service_delegate.h"
 #include "chromeos/services/assistant/public/cpp/migration/libassistant_v1_api.h"
+#include "chromeos/services/libassistant/chromium_api_delegate.h"
 #include "chromeos/services/libassistant/util.h"
 #include "libassistant/shared/internal_api/assistant_manager_internal.h"
+#include "services/network/public/cpp/cross_thread_pending_shared_url_loader_factory.h"
+#include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 
 namespace chromeos {
 namespace libassistant {
@@ -35,6 +38,23 @@ std::string ToLibassistantConfig(const mojom::BootupConfig& bootup_config) {
   return CreateLibAssistantConfig(bootup_config.s3_server_uri_override,
                                   bootup_config.device_id_override,
                                   bootup_config.log_in_home_dir);
+}
+
+std::unique_ptr<network::PendingSharedURLLoaderFactory>
+CreatePendingURLLoaderFactory(
+    mojo::PendingRemote<network::mojom::URLLoaderFactory>
+        url_loader_factory_remote) {
+  // First create a wrapped factory that can accept the pending remote.
+  auto pending_url_loader_factory =
+      std::make_unique<network::WrapperPendingSharedURLLoaderFactory>(
+          std::move(url_loader_factory_remote));
+  auto wrapped_factory = network::SharedURLLoaderFactory::Create(
+      std::move(pending_url_loader_factory));
+
+  // Then move it into a cross thread factory, as the url loader factory will be
+  // used from internal Libassistant threads.
+  return std::make_unique<network::CrossThreadPendingSharedURLLoaderFactory>(
+      std::move(wrapped_factory));
 }
 
 }  // namespace
@@ -60,7 +80,9 @@ void ServiceController::SetInitializeCallback(InitializeCallback callback) {
   initialize_callback_ = std::move(callback);
 }
 
-void ServiceController::Initialize(mojom::BootupConfigPtr config) {
+void ServiceController::Initialize(
+    mojom::BootupConfigPtr config,
+    mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory) {
   if (assistant_manager_ != nullptr) {
     LOG(ERROR) << "Initialize() should only be called once.";
     return;
@@ -70,6 +92,8 @@ void ServiceController::Initialize(mojom::BootupConfigPtr config) {
       platform_api_, ToLibassistantConfig(*config));
   assistant_manager_internal_ =
       delegate_->UnwrapAssistantManagerInternal(assistant_manager_.get());
+
+  CreateAndRegisterChromiumApiDelegate(std::move(url_loader_factory));
 
   for (auto& observer : assistant_manager_observers_) {
     observer.OnAssistantManagerCreated(assistant_manager(),
@@ -115,6 +139,7 @@ void ServiceController::Stop() {
   libassistant_v1_api_ = nullptr;
   assistant_manager_ = nullptr;
   assistant_manager_internal_ = nullptr;
+  chromium_api_delegate_ = nullptr;
 }
 
 void ServiceController::AddAndFireStateObserver(
@@ -205,6 +230,25 @@ void ServiceController::SetStateAndInformObservers(
 
   for (auto& observer : state_observers_)
     observer->OnStateChanged(state_);
+}
+
+void ServiceController::CreateAndRegisterChromiumApiDelegate(
+    mojo::PendingRemote<network::mojom::URLLoaderFactory>
+        url_loader_factory_remote) {
+  CreateChromiumApiDelegate(std::move(url_loader_factory_remote));
+
+  assistant_manager_internal()
+      ->GetFuchsiaApiHelperOrDie()
+      ->SetFuchsiaApiDelegate(chromium_api_delegate_.get());
+}
+
+void ServiceController::CreateChromiumApiDelegate(
+    mojo::PendingRemote<network::mojom::URLLoaderFactory>
+        url_loader_factory_remote) {
+  DCHECK(!chromium_api_delegate_);
+
+  chromium_api_delegate_ = std::make_unique<ChromiumApiDelegate>(
+      CreatePendingURLLoaderFactory(std::move(url_loader_factory_remote)));
 }
 
 }  // namespace libassistant

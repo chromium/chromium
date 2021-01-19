@@ -75,7 +75,9 @@ class FakeServiceController : public libassistant::mojom::ServiceController {
   std::string gaia_id();
 
   // mojom::ServiceController implementation:
-  void Initialize(libassistant::mojom::BootupConfigPtr config) override;
+  void Initialize(libassistant::mojom::BootupConfigPtr config,
+                  mojo::PendingRemote<network::mojom::URLLoaderFactory>
+                      url_loader_factory) override;
   void Start() override;
   void Stop() override;
   void AddAndFireStateObserver(

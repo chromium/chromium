@@ -23,9 +23,13 @@ class AssistantManagerDelegate;
 class AssistantManagerInternal;
 class ConversationStateListener;
 class DeviceStateListener;
-class FuchsiaApiDelegate;
 
 }  // namespace assistant_client
+
+namespace network {
+class PendingSharedURLLoaderFactory;
+class SharedURLLoaderFactory;
+}  // namespace network
 
 namespace chromeos {
 namespace assistant {
@@ -45,6 +49,8 @@ class ServiceControllerProxy : private libassistant::mojom::StateObserver {
 
   ServiceControllerProxy(
       LibassistantServiceHost* host,
+      std::unique_ptr<network::PendingSharedURLLoaderFactory>
+          pending_url_loader_factory,
       mojo::PendingRemote<chromeos::libassistant::mojom::ServiceController>
           client);
 
@@ -65,7 +71,6 @@ class ServiceControllerProxy : private libassistant::mojom::StateObserver {
   // Start() can only be called when the service is stopped.
   void Start(
       assistant_client::ActionModule* action_module,
-      assistant_client::FuchsiaApiDelegate* fuchsia_api_delegate,
       assistant_client::AssistantManagerDelegate* assistant_manager_delegate,
       assistant_client::ConversationStateListener* conversation_state_listener,
       assistant_client::DeviceStateListener* device_state_listener,
@@ -118,11 +123,15 @@ class ServiceControllerProxy : private libassistant::mojom::StateObserver {
 
   void OnAssistantStarted(base::OnceClosure done_callback);
 
+  mojo::PendingRemote<network::mojom::URLLoaderFactory> BindURLLoaderFactory();
+
   // Used internally for consistency checks.
   State state_ = State::kStopped;
 
   // Owned by |AssistantManagerServiceImpl| which (indirectly) also owns us.
   LibassistantServiceHost* const host_;
+
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   mojo::Remote<chromeos::libassistant::mojom::ServiceController>
       service_controller_remote_;

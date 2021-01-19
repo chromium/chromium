@@ -18,6 +18,8 @@
 #include "chromeos/services/libassistant/public/mojom/service_controller.mojom.h"
 #include "libassistant/shared/internal_api/assistant_manager_internal.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -87,10 +89,9 @@ class AssistantManagerObserverMock : public AssistantManagerObserver {
 class AssistantServiceControllerTest : public testing::Test {
  public:
   AssistantServiceControllerTest()
-      : service_controller_(std::make_unique<ServiceController>(
-
-            &delegate_,
-            /*platform_api=*/nullptr)) {
+      : service_controller_(
+            std::make_unique<ServiceController>(&delegate_,
+                                                /*platform_api=*/nullptr)) {
     service_controller_->Bind(client_.BindNewPipeAndPassReceiver());
   }
 
@@ -126,7 +127,7 @@ class AssistantServiceControllerTest : public testing::Test {
   }
 
   void Initialize(mojom::BootupConfigPtr config = mojom::BootupConfig::New()) {
-    service_controller().Initialize(std::move(config));
+    service_controller().Initialize(std::move(config), BindURLLoaderFactory());
   }
 
   void Start() {
@@ -150,7 +151,16 @@ class AssistantServiceControllerTest : public testing::Test {
   }
 
  private:
+  mojo::PendingRemote<network::mojom::URLLoaderFactory> BindURLLoaderFactory() {
+    mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_remote;
+    url_loader_factory_.Clone(pending_remote.InitWithNewPipeAndPassReceiver());
+    return pending_remote;
+  }
+
   base::test::SingleThreadTaskEnvironment environment_;
+
+  network::TestURLLoaderFactory url_loader_factory_;
+
   assistant::FakeAssistantManagerServiceDelegate delegate_;
   mojo::Remote<mojom::ServiceController> client_;
   std::unique_ptr<ServiceController> service_controller_;

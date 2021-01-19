@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SERVICES_ASSISTANT_CHROMIUM_API_DELEGATE_H_
-#define CHROMEOS_SERVICES_ASSISTANT_CHROMIUM_API_DELEGATE_H_
+#ifndef CHROMEOS_SERVICES_LIBASSISTANT_CHROMIUM_API_DELEGATE_H_
+#define CHROMEOS_SERVICES_LIBASSISTANT_CHROMIUM_API_DELEGATE_H_
 
-#include "chromeos/services/assistant/chromium_http_connection.h"
+#include "chromeos/services/libassistant/chromium_http_connection.h"
 
 #include <memory>
 
@@ -17,7 +17,7 @@ class PendingSharedURLLoaderFactory;
 }  // namespace network
 
 namespace chromeos {
-namespace assistant {
+namespace libassistant {
 
 class ChromiumHttpConnectionFactory;
 
@@ -35,7 +35,7 @@ class ChromiumApiDelegate : public assistant_client::FuchsiaApiDelegate {
   DISALLOW_COPY_AND_ASSIGN(ChromiumApiDelegate);
 };
 
-}  // namespace assistant
+}  // namespace libassistant
 }  // namespace chromeos
 
-#endif  // CHROMEOS_SERVICES_ASSISTANT_CHROMIUM_API_DELEGATE_H_
+#endif  // CHROMEOS_SERVICES_LIBASSISTANT_CHROMIUM_API_DELEGATE_H_

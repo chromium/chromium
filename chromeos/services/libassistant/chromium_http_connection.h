@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SERVICES_ASSISTANT_CHROMIUM_HTTP_CONNECTION_H_
-#define CHROMEOS_SERVICES_ASSISTANT_CHROMIUM_HTTP_CONNECTION_H_
+#ifndef CHROMEOS_SERVICES_LIBASSISTANT_CHROMIUM_HTTP_CONNECTION_H_
+#define CHROMEOS_SERVICES_LIBASSISTANT_CHROMIUM_HTTP_CONNECTION_H_
 
 #include <stdint.h>
 
@@ -29,7 +29,7 @@ class PendingSharedURLLoaderFactory;
 }  // namespace network
 
 namespace chromeos {
-namespace assistant {
+namespace libassistant {
 
 // Implements libassistant's HttpConnection.
 class ChromiumHttpConnection
@@ -148,7 +148,7 @@ class ChromiumHttpConnectionFactory
   DISALLOW_COPY_AND_ASSIGN(ChromiumHttpConnectionFactory);
 };
 
-}  // namespace assistant
+}  // namespace libassistant
 }  // namespace chromeos
 
-#endif  // CHROMEOS_SERVICES_ASSISTANT_CHROMIUM_HTTP_CONNECTION_H_
+#endif  // CHROMEOS_SERVICES_LIBASSISTANT_CHROMIUM_HTTP_CONNECTION_H_

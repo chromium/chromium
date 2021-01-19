@@ -64,7 +64,8 @@ std::string FakeServiceController::gaia_id() {
 }
 
 void FakeServiceController::Initialize(
-    libassistant::mojom::BootupConfigPtr config) {
+    libassistant::mojom::BootupConfigPtr config,
+    mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory) {
   libassistant_config_ = std::move(*config);
 }
 

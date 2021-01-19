@@ -23,7 +23,6 @@
 #include "chromeos/assistant/internal/internal_util.h"
 #include "chromeos/services/assistant/assistant_manager_service.h"
 #include "chromeos/services/assistant/assistant_settings_impl.h"
-#include "chromeos/services/assistant/chromium_api_delegate.h"
 #include "chromeos/services/assistant/proxy/assistant_proxy.h"
 #include "chromeos/services/assistant/proxy/conversation_controller_proxy.h"
 #include "chromeos/services/assistant/proxy/libassistant_service_host.h"
@@ -321,7 +320,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   std::unique_ptr<AssistantMediaSession> media_session_;
   std::unique_ptr<CrosPlatformApi> platform_api_;
   std::unique_ptr<action::CrosActionModule> action_module_;
-  ChromiumApiDelegate chromium_api_delegate_;
   std::unique_ptr<AssistantSettingsImpl> assistant_settings_;
 
   std::unique_ptr<AssistantProxy> assistant_proxy_;

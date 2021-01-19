@@ -18,7 +18,7 @@
 #include "chromeos/services/libassistant/libassistant_service.h"
 #include "chromeos/services/libassistant/public/mojom/service_controller.mojom-forward.h"
 #include "libassistant/shared/internal_api/assistant_manager_internal.h"
-#include "libassistant/shared/internal_api/fuchsia_api_helper.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace chromeos {
 namespace assistant {
@@ -45,7 +45,6 @@ struct StartArguments {
   ~StartArguments() = default;
 
   assistant_client::ActionModule* action_module;
-  assistant_client::FuchsiaApiDelegate* fuchsia_api_delegate;
   assistant_client::AssistantManagerDelegate* assistant_manager_delegate;
   assistant_client::ConversationStateListener* conversation_state_listener;
   assistant_client::DeviceStateListener* device_state_listener;
@@ -87,8 +86,6 @@ void InitializeAssistantManager(
   assistant_manager_internal->RegisterActionModule(arguments.action_module);
   assistant_manager_internal->SetAssistantManagerDelegate(
       arguments.assistant_manager_delegate);
-  assistant_manager_internal->GetFuchsiaApiHelperOrDie()->SetFuchsiaApiDelegate(
-      arguments.fuchsia_api_delegate);
   assistant_manager->AddConversationStateListener(
       arguments.conversation_state_listener);
   assistant_manager->AddDeviceStateListener(arguments.device_state_listener);
@@ -112,9 +109,13 @@ ToMojomAuthenticationTokens(const ServiceControllerProxy::AuthTokens& tokens) {
 
 ServiceControllerProxy::ServiceControllerProxy(
     LibassistantServiceHost* host,
+    std::unique_ptr<network::PendingSharedURLLoaderFactory>
+        pending_url_loader_factory,
     mojo::PendingRemote<chromeos::libassistant::mojom::ServiceController>
         client)
     : host_(host),
+      url_loader_factory_(network::SharedURLLoaderFactory::Create(
+          std::move(pending_url_loader_factory))),
       service_controller_remote_(std::move(client)),
       state_observer_receiver_(this) {
   service_controller_remote_->AddAndFireStateObserver(
@@ -125,7 +126,6 @@ ServiceControllerProxy::~ServiceControllerProxy() = default;
 
 void ServiceControllerProxy::Start(
     assistant_client::ActionModule* action_module,
-    assistant_client::FuchsiaApiDelegate* fuchsia_api_delegate,
     assistant_client::AssistantManagerDelegate* assistant_manager_delegate,
     assistant_client::ConversationStateListener* conversation_state_listener,
     assistant_client::DeviceStateListener* device_state_listener,
@@ -145,7 +145,8 @@ void ServiceControllerProxy::Start(
       assistant::features::IsMediaSessionIntegrationEnabled());
 
   // The mojom service will create the |AssistantManager|.
-  service_controller_remote_->Initialize(std::move(bootup_config));
+  service_controller_remote_->Initialize(std::move(bootup_config),
+                                         BindURLLoaderFactory());
   service_controller_remote_->SetLocaleOverride(locale_override);
   UpdateInternalOptions(locale, spoken_feedback_enabled);
   SetAuthTokens(auth_tokens);
@@ -155,7 +156,6 @@ void ServiceControllerProxy::Start(
   // it's started, so we register a callback to do just that.
   StartArguments arguments;
   arguments.action_module = action_module;
-  arguments.fuchsia_api_delegate = fuchsia_api_delegate;
   arguments.assistant_manager_delegate = assistant_manager_delegate;
   arguments.conversation_state_listener = conversation_state_listener;
   arguments.device_state_listener = device_state_listener;
@@ -239,6 +239,13 @@ void ServiceControllerProxy::FinishCreatingAssistant() {
   state_ = State::kStarted;
   display_connection_ = std::move(pending_display_connection_);
   std::move(on_start_done_callback_.value()).Run();
+}
+
+mojo::PendingRemote<network::mojom::URLLoaderFactory>
+ServiceControllerProxy::BindURLLoaderFactory() {
+  mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_remote;
+  url_loader_factory_->Clone(pending_remote.InitWithNewPipeAndPassReceiver());
+  return pending_remote;
 }
 
 }  // namespace assistant
