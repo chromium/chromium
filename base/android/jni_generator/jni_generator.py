@@ -140,21 +140,22 @@ class NativeMethod(object):
       self.name = self.name[0].upper() + self.name[1:]
 
     self.proxy_name = kwargs.get('proxy_name', self.name)
-    # Non-hashed proxy name if applicable.
-    self.proxy_name_orig = None
+    self.hashed_proxy_name = kwargs.get('hashed_proxy_name', None)
 
     if self.params:
       assert type(self.params) is list
       assert type(self.params[0]) is Param
 
-
-    if (self.params
-        and self.params[0].datatype == kwargs.get('ptr_type', 'int')
+    ptr_type = kwargs.get('ptr_type', 'int')
+    if (self.params and self.params[0].datatype == ptr_type
         and self.params[0].name.startswith('native')):
+      self.ptr_type = ptr_type
       self.type = 'method'
-      self.p0_type = self.params[0].name[len('native'):]
-      if kwargs.get('native_class_name'):
-        self.p0_type = kwargs['native_class_name']
+      self.p0_type = kwargs.get('p0_type')
+      if self.p0_type is None:
+        self.p0_type = self.params[0].name[len('native'):]
+        if kwargs.get('native_class_name'):
+          self.p0_type = kwargs['native_class_name']
     else:
       self.type = 'function'
     self.method_id_var_name = kwargs.get('method_id_var_name', None)
@@ -900,10 +901,7 @@ class ProxyHelpers(object):
     return EscapeClassName(fully_qualified_class + '/' + old_name)
 
   @staticmethod
-  def ExtractStaticProxyNatives(fully_qualified_class,
-                                contents,
-                                ptr_type,
-                                use_hash=False):
+  def ExtractStaticProxyNatives(fully_qualified_class, contents, ptr_type):
     methods = []
     for match in _NATIVE_PROXY_EXTRACTION_REGEX.finditer(contents):
       interface_body = match.group('interface_body')
@@ -911,8 +909,11 @@ class ProxyHelpers(object):
         name = method.group('name')
         params = JniParams.Parse(method.group('params'), use_proxy_types=True)
         return_type = JavaTypeToProxyCast(method.group('return_type'))
-        unescaped_proxy_name = ProxyHelpers.CreateProxyMethodName(
-            fully_qualified_class, name, use_hash)
+        proxy_name = ProxyHelpers.CreateProxyMethodName(fully_qualified_class,
+                                                        name,
+                                                        use_hash=False)
+        hashed_proxy_name = ProxyHelpers.CreateProxyMethodName(
+            fully_qualified_class, name, use_hash=True)
         native = NativeMethod(
             static=True,
             java_class_name=None,
@@ -921,11 +922,9 @@ class ProxyHelpers(object):
             native_class_name=method.group('native_class_name'),
             params=params,
             is_proxy=True,
-            proxy_name=unescaped_proxy_name,
+            proxy_name=proxy_name,
+            hashed_proxy_name=hashed_proxy_name,
             ptr_type=ptr_type)
-        if use_hash:
-          native.proxy_name_orig = ProxyHelpers.CreateProxyMethodName(
-              fully_qualified_class, name, False)
         methods.append(native)
 
     return methods
@@ -943,9 +942,9 @@ class JNIFromJavaSource(object):
     called_by_natives = ExtractCalledByNatives(self.jni_params, contents,
                                                options.always_mangle)
 
-    natives += ProxyHelpers.ExtractStaticProxyNatives(
-        fully_qualified_class, contents, options.ptr_type,
-        options.use_proxy_hash)
+    natives += ProxyHelpers.ExtractStaticProxyNatives(fully_qualified_class,
+                                                      contents,
+                                                      options.ptr_type)
 
     if len(natives) == 0 and len(called_by_natives) == 0:
       raise SyntaxError(
@@ -987,7 +986,10 @@ class HeaderFileGeneratorHelper(object):
       A string with the stub function name (used by the JVM).
     """
     if native.is_proxy:
-      method_name = EscapeClassName(native.proxy_name)
+      if self.use_proxy_hash:
+        method_name = EscapeClassName(native.hashed_proxy_name)
+      else:
+        method_name = EscapeClassName(native.proxy_name)
       return 'Java_%s_%s' % (EscapeClassName(
           ProxyHelpers.GetQualifiedClass(self.use_proxy_hash)), method_name)
 

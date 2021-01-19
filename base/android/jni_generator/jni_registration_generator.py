@@ -117,8 +117,7 @@ def _DictForPath(path, use_proxy_hash=False):
   natives += jni_generator.ProxyHelpers.ExtractStaticProxyNatives(
       fully_qualified_class=fully_qualified_class,
       contents=contents,
-      ptr_type='long',
-      use_hash=use_proxy_hash)
+      ptr_type='long')
   if len(natives) == 0:
     return None
   namespace = jni_generator.ExtractJNINamespace(contents)
@@ -339,8 +338,9 @@ class HeaderGenerator(object):
     self._AddRegisterNativesCalls()
     self._AddRegisterNativesFunctions()
 
-    self.registration_dict['PROXY_NATIVE_SIGNATURES'] = ('\n'.join(
-        _MakeProxySignature(n) for n in self.proxy_natives))
+    self.registration_dict['PROXY_NATIVE_SIGNATURES'] = (''.join(
+        _MakeProxySignature(n, self.use_proxy_hash)
+        for n in self.proxy_natives))
     if self.use_proxy_hash:
       self.registration_dict['FORWARDING_PROXY_METHODS'] = ('\n'.join(
           _MakeForwardingProxy(n) for n in self.proxy_natives))
@@ -432,7 +432,10 @@ ${KMETHODS}
     if native.is_proxy:
       # Literal name of the native method in the class that contains the actual
       # native declaration.
-      name = native.proxy_name
+      if self.use_proxy_hash:
+        name = native.hashed_proxy_name
+      else:
+        name = native.proxy_name
     values = {
         'NAME':
         name,
@@ -537,8 +540,8 @@ ${NATIVES}\
 
 def _MakeForwardingProxy(proxy_native):
   template = string.Template("""
-    public static ${RETURN_TYPE} ${ORIG_NAME}(${PARAMS_WITH_TYPES}) {
-        ${MAYBE_RETURN}${PROXY_CLASS}.${NAME}($PARAM_NAMES);
+    public static ${RETURN_TYPE} ${METHOD_NAME}(${PARAMS_WITH_TYPES}) {
+        ${MAYBE_RETURN}${PROXY_CLASS}.${HASHED_NAME}($PARAM_NAMES);
     }""")
 
   params_with_types = ', '.join(
@@ -549,32 +552,44 @@ def _MakeForwardingProxy(proxy_native):
   return template.substitute({
       'RETURN_TYPE':
       proxy_native.return_type,
-      'ORIG_NAME':
-      proxy_native.proxy_name_orig,
+      'METHOD_NAME':
+      proxy_native.proxy_name,
       'PARAMS_WITH_TYPES':
       params_with_types,
       'MAYBE_RETURN':
       '' if proxy_native.return_type == 'void' else 'return ',
       'PROXY_CLASS':
       proxy_class.replace('/', '.'),
-      'NAME':
-      proxy_native.proxy_name,
+      'HASHED_NAME':
+      proxy_native.hashed_proxy_name,
       'PARAM_NAMES':
       param_names,
   })
 
 
-def _MakeProxySignature(proxy_native):
-  signature_template = string.Template("""
-    public static native ${RETURN_TYPE} ${NAME}(${PARAMS_WITH_TYPES});""")
+def _MakeProxySignature(proxy_native, use_proxy_hash):
+  if use_proxy_hash:
+    signature_template = string.Template("""
+      // Original name: ${ALT_NAME}
+      public static native ${RETURN_TYPE} ${NAME}(${PARAMS_WITH_TYPES});""")
+  else:
+    signature_template = string.Template("""
+      // Hashed name: ${ALT_NAME}
+      public static native ${RETURN_TYPE} ${NAME}(${PARAMS_WITH_TYPES});""")
 
   params_with_types = ', '.join(
       '%s %s' % (p.datatype, p.name) for p in proxy_native.params)
-  return signature_template.substitute({
+  args = {
       'RETURN_TYPE': proxy_native.return_type,
-      'NAME': proxy_native.proxy_name,
       'PARAMS_WITH_TYPES': params_with_types,
-  })
+  }
+  if use_proxy_hash:
+    args['NAME'] = proxy_native.hashed_proxy_name
+    args['ALT_NAME'] = proxy_native.proxy_name
+  else:
+    args['NAME'] = proxy_native.proxy_name
+    args['ALT_NAME'] = proxy_native.hashed_proxy_name
+  return signature_template.substitute(args)
 
 
 class ProxyOptions:
