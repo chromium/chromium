@@ -58,6 +58,7 @@ enum class Channel;
 namespace autofill {
 
 class AddressNormalizer;
+class AutofillProfile;
 class AutocompleteHistoryManager;
 class AutofillOfferManager;
 class AutofillPopupDelegate;
@@ -132,6 +133,12 @@ class AutofillClient : public RiskDataLoader {
     CVC = 1,
     // Suggest use of FIDO authenticator for card unmasking.
     FIDO = 2,
+  };
+
+  enum class SaveAddressProfileOfferUserDecision {
+    kAccepted,
+    kDeclined,
+    kIgnored,
   };
 
   // Used for explicitly requesting the user to enter/confirm cardholder name,
@@ -234,6 +241,10 @@ class AutofillClient : public RiskDataLoader {
   // Webauthn dialog is clicked.
   typedef base::RepeatingCallback<void(WebauthnDialogCallbackType)>
       WebauthnDialogCallback;
+
+  using AddressProfileSavePromptCallback =
+      base::OnceCallback<void(SaveAddressProfileOfferUserDecision,
+                              autofill::AutofillProfile profile)>;
 
   ~AutofillClient() override = default;
 
@@ -433,6 +444,12 @@ class AutofillClient : public RiskDataLoader {
   // Will run |callback| on success.
   virtual void ConfirmCreditCardFillAssist(const CreditCard& card,
                                            base::OnceClosure callback) = 0;
+
+  // Shows the offer-to-save address profile bubble. Runs |callback| once the
+  // user makes a decision with respect to the offer-to-save prompt.
+  virtual void ConfirmSaveAddressProfile(
+      const AutofillProfile& profile,
+      AddressProfileSavePromptCallback callback) = 0;
 
   // Returns true if both the platform and the device support scanning credit
   // cards. Should be called before ScanCreditCard().

@@ -311,6 +311,12 @@ void ChromeAutofillClientIOS::ConfirmCreditCardFillAssist(
   }
 }
 
+void ChromeAutofillClientIOS::ConfirmSaveAddressProfile(
+    const AutofillProfile& profile,
+    AddressProfileSavePromptCallback callback) {
+  // TODO(crbug.com/1167062): Implement.
+}
+
 bool ChromeAutofillClientIOS::HasCreditCardScanFeature() {
   return false;
 }

@@ -497,6 +497,16 @@ void ChromeAutofillClient::ConfirmCreditCardFillAssist(
 #endif
 }
 
+void ChromeAutofillClient::ConfirmSaveAddressProfile(
+    const AutofillProfile& profile,
+    AddressProfileSavePromptCallback callback) {
+#if defined(OS_ANDROID)
+  // TODO(crbug.com/1167061): Implement.
+#else
+  // TODO(crbug.com/1167060): Implement.
+#endif
+}
+
 bool ChromeAutofillClient::HasCreditCardScanFeature() {
   return CreditCardScannerController::HasCreditCardScanFeature();
 }

@@ -203,6 +203,12 @@ void AutofillClientImpl::ConfirmCreditCardFillAssist(
   NOTREACHED();
 }
 
+void AutofillClientImpl::ConfirmSaveAddressProfile(
+    const autofill::AutofillProfile& profile,
+    AddressProfileSavePromptCallback callback) {
+  NOTREACHED();
+}
+
 bool AutofillClientImpl::HasCreditCardScanFeature() {
   NOTREACHED();
   return false;

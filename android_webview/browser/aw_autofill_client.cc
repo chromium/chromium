@@ -165,6 +165,12 @@ void AwAutofillClient::ConfirmCreditCardFillAssist(
   NOTIMPLEMENTED();
 }
 
+void AwAutofillClient::ConfirmSaveAddressProfile(
+    const autofill::AutofillProfile& profile,
+    AddressProfileSavePromptCallback callback) {
+  NOTIMPLEMENTED();
+}
+
 bool AwAutofillClient::HasCreditCardScanFeature() {
   return false;
 }

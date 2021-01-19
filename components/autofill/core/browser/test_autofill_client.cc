@@ -211,6 +211,10 @@ void TestAutofillClient::ConfirmCreditCardFillAssist(
   std::move(callback).Run();
 }
 
+void TestAutofillClient::ConfirmSaveAddressProfile(
+    const AutofillProfile& profile,
+    AddressProfileSavePromptCallback callback) {}
+
 bool TestAutofillClient::HasCreditCardScanFeature() {
   return false;
 }
