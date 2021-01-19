@@ -34,7 +34,7 @@ class AwGLSurface : public gl::GLSurface {
               bool has_alpha) override;
 
   void SetSize(const gfx::Size& size);
-  void MaybeDidPresent(gfx::PresentationFeedback feedback);
+  void MaybeDidPresent(const gfx::PresentationFeedback& feedback);
 
   virtual void RecalculateClipAndTransform(gfx::Size* viewport,
                                            gfx::Rect* clip_rect,

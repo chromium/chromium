@@ -12,10 +12,6 @@
 
 namespace android_webview {
 
-namespace internal {
-class ScopedAppGLStateRestoreImpl;
-}
-
 struct StencilState {
   unsigned char stencil_test_enabled;
   int stencil_front_func;
@@ -51,8 +47,21 @@ class ScopedAppGLStateRestore {
   StencilState stencil_state() const;
   int framebuffer_binding_ext() const;
 
+  class Impl {
+   public:
+    Impl();
+    virtual ~Impl();
+
+    const StencilState& stencil_state() const { return stencil_state_; }
+    int framebuffer_binding_ext() const { return framebuffer_binding_ext_; }
+
+   protected:
+    StencilState stencil_state_{};
+    int framebuffer_binding_ext_ = 0;
+  };
+
  private:
-  std::unique_ptr<internal::ScopedAppGLStateRestoreImpl> impl_;
+  std::unique_ptr<Impl> impl_;
 
   DISALLOW_COPY_AND_ASSIGN(ScopedAppGLStateRestore);
 };

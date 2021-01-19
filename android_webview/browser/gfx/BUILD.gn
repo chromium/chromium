@@ -60,6 +60,8 @@ source_set("gfx") {
     "root_frame_sink_proxy.h",
     "scoped_app_gl_state_restore.cc",
     "scoped_app_gl_state_restore.h",
+    "scoped_app_gl_state_restore_impl.cc",
+    "scoped_app_gl_state_restore_impl.h",
     "skia_output_surface_dependency_webview.cc",
     "skia_output_surface_dependency_webview.h",
     "surfaces_instance.cc",

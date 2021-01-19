@@ -59,10 +59,10 @@ void AwGLSurface::SetSize(const gfx::Size& size) {
   size_ = size;
 }
 
-void AwGLSurface::MaybeDidPresent(gfx::PresentationFeedback feedback) {
+void AwGLSurface::MaybeDidPresent(const gfx::PresentationFeedback& feedback) {
   if (!pending_presentation_callback_)
     return;
-  std::move(pending_presentation_callback_).Run(std::move(feedback));
+  std::move(pending_presentation_callback_).Run(feedback);
 }
 
 }  // namespace android_webview
