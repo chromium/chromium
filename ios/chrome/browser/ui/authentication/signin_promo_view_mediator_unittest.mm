@@ -7,7 +7,6 @@
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#import "base/test/scoped_command_line.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -16,7 +15,6 @@
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/chrome_switches.h"
 #import "ios/chrome/browser/prefs/browser_prefs.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
@@ -420,9 +418,6 @@ TEST_F(SigninPromoViewMediatorTest,
 // Tests that promos aren't shown if browser sign-in is disabled by policy
 TEST_F(SigninPromoViewMediatorTest,
        ShouldNotDisplaySigninPromoViewIfDisabledByPolicy) {
-  base::test::ScopedCommandLine scoped_command_line;
-  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
-      switches::kInstallBrowserSigninHandler);
   CreateMediator(signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS);
   TestChromeBrowserState::Builder builder;
   builder.SetPrefService(CreatePrefService());

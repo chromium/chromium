@@ -10,7 +10,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/policy/policy_features.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -34,8 +33,7 @@ void PolicyWatcherBrowserAgent::SetApplicationCommandsHandler(
   // BrowserSignin policy: start observing the kSigninAllowed pref for non-OTR
   // browsers. When the pref becomes false, send a UI command to sign the user
   // out. This requires the given command dispatcher to be fully configured.
-  if (!ShouldInstallBrowserSigninPolicyHandler() ||
-      browser_->GetBrowserState()->IsOffTheRecord()) {
+  if (browser_->GetBrowserState()->IsOffTheRecord()) {
     return;
   }
   prefs_change_observer_->Add(

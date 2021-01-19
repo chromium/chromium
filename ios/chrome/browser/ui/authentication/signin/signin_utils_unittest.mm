@@ -9,15 +9,12 @@
 #include <memory>
 
 #import "base/bind.h"
-#import "base/command_line.h"
-#import "base/test/scoped_command_line.h"
 #import "base/version.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/chrome_switches.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/prefs/browser_prefs.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
@@ -243,10 +240,6 @@ TEST_F(SigninUtilsTest, TestWillNotShowNewAccountUntilTwoVersionBis) {
 
 // Should not show the sign-in upgrade if sign-in is disabled by policy.
 TEST_F(SigninUtilsTest, TestWillNotShowIfDisabledByPolicy) {
-  base::test::ScopedCommandLine scoped_command_line;
-  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
-      switches::kInstallBrowserSigninHandler);
-
   ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
       ->AddIdentities(@[ @"foo1" ]);
   chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
@@ -257,10 +250,6 @@ TEST_F(SigninUtilsTest, TestWillNotShowIfDisabledByPolicy) {
 
 // signin::IsSigninAllowed should respect the kSigninAllowed pref.
 TEST_F(SigninUtilsTest, TestSigninAllowedPref) {
-  base::test::ScopedCommandLine scoped_command_line;
-  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
-      switches::kInstallBrowserSigninHandler);
-
   // Sign-in is allowed by default.
   EXPECT_TRUE(signin::IsSigninAllowed(chrome_browser_state_.get()->GetPrefs()));
 

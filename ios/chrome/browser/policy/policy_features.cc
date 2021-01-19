@@ -63,10 +63,6 @@ bool IsManagedBookmarksEnabled() {
   return base::FeatureList::IsEnabled(kManagedBookmarksIOS);
 }
 
-bool ShouldInstallBrowserSigninPolicyHandler() {
-  return HasSwitch(switches::kInstallBrowserSigninHandler);
-}
-
 bool ShouldInstallURLBlocklistPolicyHandlers() {
   return HasSwitch(switches::kInstallURLBlocklistHandlers);
 }

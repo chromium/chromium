@@ -4,14 +4,12 @@
 
 #include "ios/chrome/browser/policy/policy_watcher_browser_agent.h"
 
-#import "base/test/scoped_command_line.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/chrome_switches.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/prefs/browser_prefs.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
@@ -57,10 +55,7 @@ class PolicyWatcherBrowserAgentTest : public PlatformTest {
 // Tests that the browser agent monitors the kSigninAllowed pref and dispatches
 // the appropriate command when the pref becomes false.
 TEST_F(PolicyWatcherBrowserAgentTest, observesSigninAllowed) {
-  // Set up the policy handler and the initial pref value.
-  base::test::ScopedCommandLine scoped_command_line;
-  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
-      switches::kInstallBrowserSigninHandler);
+  // Set the initial pref value.
   chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowed, true);
 
   // Set up the test browser and attach the browser agent under test.

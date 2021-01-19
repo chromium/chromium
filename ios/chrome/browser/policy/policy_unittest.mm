@@ -38,8 +38,6 @@ class PolicyTest : public PlatformTest {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kEnableEnterprisePolicy);
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kInstallBrowserSigninHandler);
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kInstallURLBlocklistHandlers);
   }
 

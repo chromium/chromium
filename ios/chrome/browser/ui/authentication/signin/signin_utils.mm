@@ -13,7 +13,6 @@
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
-#import "ios/chrome/browser/policy/policy_features.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/user_signin_constants.h"
@@ -134,9 +133,7 @@ void SetCurrentVersionForTesting(Version* version) {
 }
 
 bool IsSigninAllowed(const PrefService* prefs) {
-  // Sign-in is always allowed if the policy handler isn't installed.
-  return !ShouldInstallBrowserSigninPolicyHandler() ||
-         prefs->GetBoolean(prefs::kSigninAllowed);
+  return prefs->GetBoolean(prefs::kSigninAllowed);
 }
 
 }  // namespace signin
