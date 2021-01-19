@@ -36,7 +36,6 @@ Cq-Include-Trybots: chromium/try:dawn-win10-x86-deps-rel
 Cq-Include-Trybots: chromium/try:linux-chromeos-dbg
 Cq-Include-Trybots: chromium/try:linux_angle_deqp_rel_ng
 Cq-Include-Trybots: chromium/try:linux_chromium_cfi_rel_ng
-Cq-Include-Trybots: chromium/try:linux_chromium_chromeos_asan_rel_ng
 Cq-Include-Trybots: chromium/try:linux_chromium_chromeos_msan_rel_ng
 Cq-Include-Trybots: chromium/try:linux_chromium_compile_dbg_32_ng
 Cq-Include-Trybots: chromium/try:linux_chromium_msan_rel_ng
