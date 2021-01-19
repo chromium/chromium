@@ -371,7 +371,7 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
      */
     @CalledByNative
     @Override
-    public final boolean hasPermission(String permission) {
+    public boolean hasPermission(String permission) {
         if (mPermissionDelegate != null) return mPermissionDelegate.hasPermission(permission);
 
         return ApiCompatibilityUtils.checkPermission(ContextUtils.getApplicationContext(),
@@ -393,7 +393,7 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
      */
     @CalledByNative
     @Override
-    public final boolean canRequestPermission(String permission) {
+    public boolean canRequestPermission(String permission) {
         if (mPermissionDelegate != null) {
             return mPermissionDelegate.canRequestPermission(permission);
         }
@@ -412,7 +412,7 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
      * @return Whether the permission is revoked by policy and the user has no ability to change it.
      */
     @Override
-    public final boolean isPermissionRevokedByPolicy(String permission) {
+    public boolean isPermissionRevokedByPolicy(String permission) {
         if (mPermissionDelegate != null) {
             return mPermissionDelegate.isPermissionRevokedByPolicy(permission);
         }
@@ -430,7 +430,7 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
      * @param callback The callback to be notified whether the permissions were granted.
      */
     @Override
-    public final void requestPermissions(String[] permissions, PermissionCallback callback) {
+    public void requestPermissions(String[] permissions, PermissionCallback callback) {
         if (mPermissionDelegate != null) {
             mPermissionDelegate.requestPermissions(permissions, callback);
             return;

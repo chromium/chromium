@@ -257,8 +257,11 @@ public class SearchActivityTest {
         final SearchActivityLocationBarLayout locationBar =
                 (SearchActivityLocationBarLayout) searchActivity.findViewById(
                         R.id.search_location_bar);
-        locationBar.setVoiceRecognitionHandlerForTesting(mHandler);
-        locationBar.beginQuery(/* isVoiceSearchIntent= */ true, /* optionalText= */ null);
+
+        LocationBarCoordinator locationBarCoordinator =
+                searchActivity.getLocationBarCoordinatorForTesting();
+        locationBarCoordinator.setVoiceRecognitionHandlerForTesting(mHandler);
+        locationBar.beginQuery(/* isVoiceSearchIntent= */ true, /* optionalText= */ null, mHandler);
         verify(mHandler, times(0))
                 .startVoiceRecognition(
                         VoiceRecognitionHandler.VoiceInteractionSource.SEARCH_WIDGET);

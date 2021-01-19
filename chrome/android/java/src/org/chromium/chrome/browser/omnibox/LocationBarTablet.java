@@ -17,16 +17,13 @@ import android.view.View;
 import androidx.annotation.NonNull;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.WindowDelegate;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
-import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.top.ToolbarTablet;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.ui.base.LocalizationUtils;
-import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.interpolators.BakedBezierInterpolator;
 
 import java.util.ArrayList;
@@ -115,11 +112,9 @@ class LocationBarTablet extends LocationBarLayout {
     @Override
     public void initialize(@NonNull AutocompleteCoordinator autocompleteCoordinator,
             @NonNull UrlBarCoordinator urlCoordinator, @NonNull StatusCoordinator statusCoordinator,
-            @NonNull LocationBarDataProvider locationBarDataProvider,
-            @NonNull WindowDelegate windowDelegate, @NonNull WindowAndroid windowAndroid,
-            @NonNull VoiceRecognitionHandler voiceRecognitionHandler) {
+            @NonNull LocationBarDataProvider locationBarDataProvider) {
         super.initialize(autocompleteCoordinator, urlCoordinator, statusCoordinator,
-                locationBarDataProvider, windowDelegate, windowAndroid, voiceRecognitionHandler);
+                locationBarDataProvider);
         mStatusCoordinator.setShowIconsWhenUrlFocused(true);
         if (SearchEngineLogoUtils.shouldShowSearchEngineLogo(
                     mLocationBarDataProvider.isIncognito())) {

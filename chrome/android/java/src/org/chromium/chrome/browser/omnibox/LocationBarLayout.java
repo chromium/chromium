@@ -13,7 +13,6 @@ import android.util.AttributeSet;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
@@ -29,18 +28,15 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.WindowDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBar.ScrollType;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
 import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.status.StatusView;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
-import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.widget.CompositeTouchDelegate;
-import org.chromium.ui.base.WindowAndroid;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,8 +45,7 @@ import java.util.List;
  * This class represents the location bar where the user types in URLs and
  * search terms.
  */
-public class LocationBarLayout extends FrameLayout implements OnClickListener {
-
+public class LocationBarLayout extends FrameLayout {
     protected ImageButton mDeleteButton;
     protected ImageButton mMicButton;
     private boolean mShouldShowMicButtonWhenUnfocused;
@@ -67,8 +62,6 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
 
     protected StatusCoordinator mStatusCoordinator;
 
-    private WindowAndroid mWindowAndroid;
-
     private boolean mUrlFocusChangeInProgress;
     protected boolean mNativeInitialized;
     private boolean mUrlHasFocus;
@@ -79,8 +72,6 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
 
     protected float mUrlFocusChangeFraction;
     protected LinearLayout mUrlActionContainer;
-
-    private VoiceRecognitionHandler mVoiceRecognitionHandler;
 
     protected CompositeTouchDelegate mCompositeTouchDelegate;
 
@@ -141,21 +132,15 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
      * @param urlCoordinator The coordinator for interacting with the url bar.
      * @param statusCoordinator The coordinator for interacting with the status icon.
      * @param locationBarDataProvider Provider of LocationBar data, e.g. url and title.
-     * @param windowDelegate {@link WindowDelegate} that will provide {@link Window} related info.
-     * @param windowAndroid {@link WindowAndroid} that is used by the owning {@link Activity}.
      */
     @CallSuper
     public void initialize(@NonNull AutocompleteCoordinator autocompleteCoordinator,
             @NonNull UrlBarCoordinator urlCoordinator, @NonNull StatusCoordinator statusCoordinator,
-            @NonNull LocationBarDataProvider locationBarDataProvider,
-            @NonNull WindowDelegate windowDelegate, @NonNull WindowAndroid windowAndroid,
-            @NonNull VoiceRecognitionHandler voiceRecognitionHandler) {
+            @NonNull LocationBarDataProvider locationBarDataProvider) {
         mAutocompleteCoordinator = autocompleteCoordinator;
         mUrlCoordinator = urlCoordinator;
         mStatusCoordinator = statusCoordinator;
-        mWindowAndroid = windowAndroid;
         mLocationBarDataProvider = locationBarDataProvider;
-        mVoiceRecognitionHandler = voiceRecognitionHandler;
 
         updateButtonVisibility();
         updateShouldAnimateIconChanges();
@@ -171,10 +156,6 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
      */
     public void onFinishNativeInitialization() {
         mNativeInitialized = true;
-
-        updateMicButtonState();
-        mDeleteButton.setOnClickListener(this);
-        mMicButton.setOnClickListener(this);
 
         for (Runnable deferredRunnable : mDeferredNativeRunnables) {
             post(deferredRunnable);
@@ -236,31 +217,12 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
         // When we restore tabs, we focus the selected tab so the URL of the page shows.
     }
 
-    @Override
-    public void onClick(View v) {
-        if (v == mDeleteButton) {
-            setUrlBarTextEmpty();
-            updateButtonVisibility();
-
-            RecordUserAction.record("MobileOmniboxDeleteUrl");
-            return;
-        } else if (v == mMicButton) {
-            RecordUserAction.record("MobileOmniboxVoiceSearch");
-            mVoiceRecognitionHandler.startVoiceRecognition(
-                    VoiceRecognitionHandler.VoiceInteractionSource.OMNIBOX);
-        }
-    }
-
     /* package */ boolean isUrlBarFocused() {
         return mUrlHasFocus;
     }
 
     /* package */ boolean isUrlBarFocusedWithoutAnimations() {
         return mUrlFocusedWithoutAnimations;
-    }
-
-    protected VoiceRecognitionHandler getVoiceRecognitionHandler() {
-        return mVoiceRecognitionHandler;
     }
 
     /* package */ void addUrlFocusChangeListener(UrlFocusChangeListener listener) {
@@ -271,12 +233,6 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
         mUrlFocusChangeListeners.removeObserver(listener);
     }
 
-    @Override
-    protected void onWindowVisibilityChanged(int visibility) {
-        super.onWindowVisibilityChanged(visibility);
-        if (visibility == View.VISIBLE) updateMicButtonState();
-    }
-
     protected void onNtpStartedLoading() {}
 
     public View getContainerView() {
@@ -285,20 +241,6 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
 
     public View getSecurityIconView() {
         return mStatusCoordinator.getSecurityIconView();
-    }
-
-    protected WindowAndroid getWindowAndroid() {
-        return mWindowAndroid;
-    }
-
-    /**
-     * Call to notify the location bar that the state of the voice search microphone button may
-     * need to be updated.
-     */
-    /* package */ void updateMicButtonState() {
-        mVoiceSearchEnabled =
-                mVoiceRecognitionHandler != null && mVoiceRecognitionHandler.isVoiceSearchEnabled();
-        updateButtonVisibility();
     }
 
     @CallSuper
@@ -645,11 +587,10 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
         updateShouldAnimateIconChanges();
     }
 
+    /* package */ void setVoiceSearchEnabled(boolean isEnabled) {
+        mVoiceSearchEnabled = isEnabled;
+    }
+
     /** Update the status visibility according to the current state held in LocationBar. */
     /* package */ void updateStatusVisibility() {}
-
-    public void setVoiceRecognitionHandlerForTesting(
-            VoiceRecognitionHandler voiceRecognitionHandler) {
-        mVoiceRecognitionHandler = voiceRecognitionHandler;
-    }
 }

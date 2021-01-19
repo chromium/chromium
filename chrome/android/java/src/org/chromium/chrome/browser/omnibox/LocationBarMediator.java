@@ -85,6 +85,7 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
     private TemplateUrl mSearchEngine;
     private final Context mContext;
     private final BackKeyBehaviorDelegate mBackKeyBehavior;
+    private final WindowAndroid mWindowAndroid;
     private String mOriginalUrl = "";
 
     private boolean mNativeInitialized;
@@ -97,7 +98,8 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
             @NonNull OverrideUrlLoadingDelegate overrideUrlLoadingDelegate,
             @NonNull LocaleManager localeManager,
             @NonNull OneshotSupplier<TemplateUrlService> templateUrlServiceSupplier,
-            @NonNull BackKeyBehaviorDelegate backKeyBehavior) {
+            @NonNull BackKeyBehaviorDelegate backKeyBehavior,
+            @NonNull WindowAndroid windowAndroid) {
         mContext = context;
         mLocationBarLayout = locationBarLayout;
         mLocationBarDataProvider = locationBarDataProvider;
@@ -111,6 +113,7 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
         mPrivacyPreferencesManager = privacyPreferencesManager;
         mTemplateUrlServiceSupplier = templateUrlServiceSupplier;
         mBackKeyBehavior = backKeyBehavior;
+        mWindowAndroid = windowAndroid;
     }
 
     /**
@@ -174,6 +177,7 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
             mLocationBarLayout.post(deferredRunnable);
         }
         mDeferredNativeRunnables.clear();
+        updateMicButtonState();
     }
 
     /*package */ void setUrlFocusChangeFraction(float fraction) {
@@ -187,7 +191,6 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
     /* package */ void setVoiceRecognitionHandlerForTesting(
             VoiceRecognitionHandler voiceRecognitionHandler) {
         mVoiceRecognitionHandler = voiceRecognitionHandler;
-        mLocationBarLayout.setVoiceRecognitionHandlerForTesting(voiceRecognitionHandler);
     }
 
     /* package */ void setAssistantVoiceSearchServiceForTesting(
@@ -382,6 +385,20 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
                 urlBarData, UrlBar.ScrollType.SCROLL_TO_TLD, SelectionState.SELECT_ALL);
     }
 
+    /* package */ void deleteButtonClicked(View view) {
+        if (!mNativeInitialized) return;
+        RecordUserAction.record("MobileOmniboxDeleteUrl");
+        mLocationBarLayout.setUrlBarTextEmpty();
+        updateButtonVisibility();
+    }
+
+    /* package */ void micButtonClicked(View view) {
+        if (!mNativeInitialized) return;
+        RecordUserAction.record("MobileOmniboxVoiceSearch");
+        mVoiceRecognitionHandler.startVoiceRecognition(
+                VoiceRecognitionHandler.VoiceInteractionSource.OMNIBOX);
+    }
+
     // Private methods
 
     private void setProfile(Profile profile) {
@@ -460,7 +477,7 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
 
     @Override
     public void onIncognitoStateChanged() {
-        mLocationBarLayout.updateMicButtonState();
+        updateMicButtonState();
     }
 
     @Override
@@ -591,7 +608,9 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
 
     @Override
     public void updateMicButtonState() {
-        mLocationBarLayout.updateMicButtonState();
+        mLocationBarLayout.setVoiceSearchEnabled(mVoiceRecognitionHandler != null
+                && mVoiceRecognitionHandler.isVoiceSearchEnabled());
+        updateButtonVisibility();
     }
 
     @Override
@@ -620,12 +639,12 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
 
     @Override
     public AutocompleteCoordinator getAutocompleteCoordinator() {
-        return mLocationBarLayout.getAutocompleteCoordinator();
+        return mAutocompleteCoordinator;
     }
 
     @Override
     public WindowAndroid getWindowAndroid() {
-        return mLocationBarLayout.getWindowAndroid();
+        return mWindowAndroid;
     }
 
     // UrlBarDelegate implementation.

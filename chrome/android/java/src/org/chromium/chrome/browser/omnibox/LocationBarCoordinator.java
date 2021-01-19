@@ -69,6 +69,8 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
     private View mAutocompleteAnchorView;
     private LocationBarMediator mLocationBarMediator;
     private View mUrlBar;
+    private View mDeleteButton;
+    private View mMicButton;
     private final OneshotSupplierImpl<TemplateUrlService> mTemplateUrlServiceSupplier =
             new OneshotSupplierImpl<>();
     private CallbackController mCallbackController = new CallbackController();
@@ -124,7 +126,8 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
         mLocationBarMediator = new LocationBarMediator(mLocationBarLayout.getContext(),
                 mLocationBarLayout, locationBarDataProvider, profileObservableSupplier,
                 PrivacyPreferencesManagerImpl.getInstance(), overrideUrlLoadingDelegate,
-                LocaleManager.getInstance(), mTemplateUrlServiceSupplier, backKeyBehavior);
+                LocaleManager.getInstance(), mTemplateUrlServiceSupplier, backKeyBehavior,
+                windowAndroid);
         mUrlCoordinator =
                 new UrlBarCoordinator((UrlBar) mUrlBar, windowDelegate, actionModeCallback,
                         mCallbackController.makeCancelable(mLocationBarMediator::onUrlFocusChange),
@@ -138,6 +141,11 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
         mLocationBarMediator.setCoordinators(
                 mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
         mUrlBar.setOnKeyListener(mLocationBarMediator);
+
+        mDeleteButton = mLocationBarLayout.findViewById(R.id.delete_button);
+        mMicButton = mLocationBarLayout.findViewById(R.id.mic_button);
+        mDeleteButton.setOnClickListener(mLocationBarMediator::deleteButtonClicked);
+        mMicButton.setOnClickListener(mLocationBarMediator::micButtonClicked);
 
         mUrlCoordinator.addUrlTextChangeListener(mAutocompleteCoordinator);
 
@@ -153,8 +161,7 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
         mLocationBarLayout.addUrlFocusChangeListener(mAutocompleteCoordinator);
         mLocationBarLayout.addUrlFocusChangeListener(mUrlCoordinator);
         mLocationBarLayout.initialize(mAutocompleteCoordinator, mUrlCoordinator, mStatusCoordinator,
-                locationBarDataProvider, windowDelegate, windowAndroid,
-                mLocationBarMediator.getVoiceRecognitionHandler());
+                locationBarDataProvider);
 
         if (locationBarLayout instanceof LocationBarPhone) {
             mSubCoordinator = new LocationBarCoordinatorPhone(
@@ -175,6 +182,10 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
         }
         mUrlBar.setOnKeyListener(null);
         mUrlBar = null;
+        mDeleteButton.setOnClickListener(null);
+        mDeleteButton = null;
+        mMicButton.setOnClickListener(null);
+        mMicButton = null;
         mUrlCoordinator.destroy();
         mUrlCoordinator = null;
         mLocationBarLayout.getContext().unregisterComponentCallbacks(mLocationBarMediator);

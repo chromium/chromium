@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.init.SingleWindowKeyboardVisibilityDelegate;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.omnibox.BackKeyBehaviorDelegate;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
+import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBuilder;
@@ -309,7 +310,9 @@ public class SearchActivity
         //                will navigate to Tabbed mode.  Investigate whether this can inflate
         //                the tabbed mode layout in the background instead of CCTs.
         CustomTabsConnection.getInstance().warmup(0);
-        mSearchBox.onDeferredStartup(isVoiceSearchIntent());
+        VoiceRecognitionHandler voiceRecognitionHandler =
+                mLocationBarCoordinator.getVoiceRecognitionHandler();
+        mSearchBox.onDeferredStartup(isVoiceSearchIntent(), voiceRecognitionHandler);
         RecordUserAction.record("SearchWidget.WidgetSelected");
 
         getActivityDelegate().onFinishDeferredInitialization();
@@ -342,7 +345,8 @@ public class SearchActivity
     }
 
     private void beginQuery() {
-        mSearchBox.beginQuery(isVoiceSearchIntent(), getOptionalIntentQuery());
+        mSearchBox.beginQuery(isVoiceSearchIntent(), getOptionalIntentQuery(),
+                mLocationBarCoordinator.getVoiceRecognitionHandler());
     }
 
     @Override

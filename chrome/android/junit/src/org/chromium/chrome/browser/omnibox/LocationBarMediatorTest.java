@@ -70,6 +70,7 @@ import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.ui.base.WindowAndroid;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -139,6 +140,8 @@ public class LocationBarMediatorTest {
     private TemplateUrl mNonGoogleSearchEngine;
     @Mock
     private BackKeyBehaviorDelegate mOverrideBackKeyBehaviorDelegate;
+    @Mock
+    private WindowAndroid mWindowAndroid;
 
     @Captor
     private ArgumentCaptor<Runnable> mRunnableCaptor;
@@ -154,11 +157,10 @@ public class LocationBarMediatorTest {
         mJniMocker.mock(ProfileJni.TEST_HOOKS, mProfileNativesJniMock);
         mJniMocker.mock(OmniboxPrerenderJni.TEST_HOOKS, mPrerenderJni);
         SearchEngineLogoUtils.setDelegateForTesting(mSearchEngineDelegate);
-
         mMediator = new LocationBarMediator(/* context= */ RuntimeEnvironment.application,
                 mLocationBarLayout, mLocationBarDataProvider, mProfileSupplier,
                 mPrivacyPreferencesManager, mOverrideUrlLoadingDelegate, mLocaleManager,
-                mTemplateUrlServiceSupplier, mOverrideBackKeyBehaviorDelegate);
+                mTemplateUrlServiceSupplier, mOverrideBackKeyBehaviorDelegate, mWindowAndroid);
         mMediator.setCoordinators(mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
         SearchEngineLogoUtils.setDelegateForTesting(mSearchEngineDelegate);
     }
