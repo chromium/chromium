@@ -11,7 +11,7 @@
 #include <set>
 #include <vector>
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "ui/accessibility/ax_event_intent.h"
 #include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/ax_tree.h"
@@ -315,7 +315,7 @@ class AX_EXPORT AXEventGenerator : public AXTreeObserver {
 
   // Please make sure that this ScopedObserver is always declared last in order
   // to prevent any use-after-free.
-  ScopedObserver<AXTree, AXTreeObserver> tree_event_observer_{this};
+  base::ScopedObservation<AXTree, AXTreeObserver> tree_event_observation_{this};
 };
 
 AX_EXPORT std::ostream& operator<<(std::ostream& os,

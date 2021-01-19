@@ -9,7 +9,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/dummy_text_input_client.h"
@@ -172,8 +172,8 @@ class MockInputMethodObserver : public InputMethodObserver {
   DISALLOW_COPY_AND_ASSIGN(MockInputMethodObserver);
 };
 
-typedef ScopedObserver<InputMethod, InputMethodObserver>
-    InputMethodScopedObserver;
+typedef base::ScopedObservation<InputMethod, InputMethodObserver>
+    InputMethodScopedObservation;
 
 void SetFocusedTextInputClient(InputMethod* input_method,
                                TextInputClient* text_input_client) {
@@ -187,8 +187,8 @@ TEST_F(InputMethodBaseTest, SetFocusedTextInputClient) {
   ClientChangeVerifier verifier;
   MockInputMethodBase input_method(&verifier);
   MockInputMethodObserver input_method_observer(&verifier);
-  InputMethodScopedObserver scoped_observer(&input_method_observer);
-  scoped_observer.Add(&input_method);
+  InputMethodScopedObservation scoped_observation(&input_method_observer);
+  scoped_observation.Observe(&input_method);
 
   // Assume that the top-level-widget gains focus.
   input_method.OnFocus();
@@ -246,8 +246,8 @@ TEST_F(InputMethodBaseTest, DetachTextInputClient) {
   ClientChangeVerifier verifier;
   MockInputMethodBase input_method(&verifier);
   MockInputMethodObserver input_method_observer(&verifier);
-  InputMethodScopedObserver scoped_observer(&input_method_observer);
-  scoped_observer.Add(&input_method);
+  InputMethodScopedObservation scoped_observation(&input_method_observer);
+  scoped_observation.Observe(&input_method);
 
   // Assume that the top-level-widget gains focus.
   input_method.OnFocus();

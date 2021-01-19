@@ -5,7 +5,7 @@
 #ifndef UI_MESSAGE_CENTER_VIEWS_MESSAGE_POPUP_VIEW_H_
 #define UI_MESSAGE_CENTER_VIEWS_MESSAGE_POPUP_VIEW_H_
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "ui/message_center/message_center_export.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -89,7 +89,8 @@ class MESSAGE_CENTER_EXPORT MessagePopupView : public views::WidgetDelegateView,
   bool is_hovered_ = false;
   bool is_active_ = false;
 
-  ScopedObserver<views::Widget, views::WidgetObserver> observer_{this};
+  base::ScopedObservation<views::Widget, views::WidgetObserver> observation_{
+      this};
 };
 
 }  // namespace message_center

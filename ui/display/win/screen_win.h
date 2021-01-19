@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "ui/display/display_change_notifier.h"
 #include "ui/display/display_export.h"
 #include "ui/display/screen.h"
@@ -266,8 +266,8 @@ class DISPLAY_EXPORT ScreenWin : public Screen,
   // advanced color" setting.
   bool hdr_enabled_ = false;
 
-  ScopedObserver<UwpTextScaleFactor, UwpTextScaleFactor::Observer>
-      scale_factor_observer_{this};
+  base::ScopedObservation<UwpTextScaleFactor, UwpTextScaleFactor::Observer>
+      scale_factor_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ScreenWin);
 };

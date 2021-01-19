@@ -224,8 +224,8 @@ void WindowOcclusionTracker::Track(Window* window) {
   if (!insert_result.second)
     return;
 
-  if (!window_observer_.IsObserving(window))
-    window_observer_.Add(window);
+  if (!window_observations_.IsObservingSource(window))
+    window_observations_.AddObservation(window);
   if (window->GetRootWindow())
     TrackedWindowAddedToRoot(window);
 }
@@ -723,10 +723,10 @@ void WindowOcclusionTracker::TrackedWindowRemovedFromRoot(Window* window) {
 void WindowOcclusionTracker::RemoveObserverFromWindowAndDescendants(
     Window* window) {
   if (WindowIsTracked(window)) {
-    DCHECK(window_observer_.IsObserving(window));
+    DCHECK(window_observations_.IsObservingSource(window));
   } else {
-    if (window_observer_.IsObserving(window))
-      window_observer_.Remove(window);
+    if (window_observations_.IsObservingSource(window))
+      window_observations_.RemoveObservation(window);
     window->layer()->GetAnimator()->RemoveObserver(this);
     animated_windows_.erase(window);
   }
@@ -736,10 +736,10 @@ void WindowOcclusionTracker::RemoveObserverFromWindowAndDescendants(
 
 void WindowOcclusionTracker::AddObserverToWindowAndDescendants(Window* window) {
   if (WindowIsTracked(window)) {
-    DCHECK(window_observer_.IsObserving(window));
+    DCHECK(window_observations_.IsObservingSource(window));
   } else {
-    DCHECK(!window_observer_.IsObserving(window));
-    window_observer_.Add(window);
+    DCHECK(!window_observations_.IsObservingSource(window));
+    window_observations_.AddObservation(window);
   }
   for (Window* child_window : window->children())
     AddObserverToWindowAndDescendants(child_window);
@@ -819,7 +819,7 @@ void WindowOcclusionTracker::OnWindowHierarchyChanged(
   Window* const window = params.target;
   Window* const root_window = window->GetRootWindow();
   if (root_window && base::Contains(root_windows_, root_window) &&
-      !window_observer_.IsObserving(window)) {
+      !window_observations_.IsObservingSource(window)) {
     AddObserverToWindowAndDescendants(window);
   }
 }
@@ -918,7 +918,7 @@ void WindowOcclusionTracker::OnWindowStackingChanged(Window* window) {
 void WindowOcclusionTracker::OnWindowDestroyed(Window* window) {
   DCHECK(!window->GetRootWindow() || (window == window->GetRootWindow()));
   tracked_windows_.erase(window);
-  window_observer_.Remove(window);
+  window_observations_.RemoveObservation(window);
   // Animations should be completed or aborted before a window is destroyed.
   DCHECK(!window->layer()->GetAnimator()->IsAnimatingOnePropertyOf(
       kOcclusionCanChangeWhenPropertyAnimationEnds));

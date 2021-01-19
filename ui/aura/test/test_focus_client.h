@@ -8,7 +8,7 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/window_observer.h"
 
@@ -34,7 +34,7 @@ class TestFocusClient : public client::FocusClient,
 
   Window* root_window_;
   Window* focused_window_ = nullptr;
-  ScopedObserver<Window, WindowObserver> observer_manager_{this};
+  base::ScopedObservation<Window, WindowObserver> observation_manager_{this};
   base::ObserverList<aura::client::FocusChangeObserver>::Unchecked
       focus_observers_;
 

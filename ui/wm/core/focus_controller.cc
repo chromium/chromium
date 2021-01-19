@@ -84,8 +84,7 @@ bool FocusController::CanActivateWindow(const aura::Window* window) const {
 ////////////////////////////////////////////////////////////////////////////////
 // FocusController, aura::client::FocusClient implementation:
 
-void FocusController::AddObserver(
-    aura::client::FocusChangeObserver* observer) {
+void FocusController::AddObserver(aura::client::FocusChangeObserver* observer) {
   focus_observers_.AddObserver(observer);
 }
 
@@ -114,8 +113,7 @@ aura::Window* FocusController::GetFocusedWindow() {
 
 ////////////////////////////////////////////////////////////////////////////////
 // FocusController, ui::EventHandler implementation:
-void FocusController::OnKeyEvent(ui::KeyEvent* event) {
-}
+void FocusController::OnKeyEvent(ui::KeyEvent* event) {}
 
 void FocusController::OnMouseEvent(ui::MouseEvent* event) {
   if (event->type() == ui::ET_MOUSE_PRESSED && !event->handled())
@@ -123,16 +121,13 @@ void FocusController::OnMouseEvent(ui::MouseEvent* event) {
                                 event);
 }
 
-void FocusController::OnScrollEvent(ui::ScrollEvent* event) {
-}
+void FocusController::OnScrollEvent(ui::ScrollEvent* event) {}
 
-void FocusController::OnTouchEvent(ui::TouchEvent* event) {
-}
+void FocusController::OnTouchEvent(ui::TouchEvent* event) {}
 
 void FocusController::OnGestureEvent(ui::GestureEvent* event) {
   if (event->type() == ui::ET_GESTURE_BEGIN &&
-      event->details().touch_points() == 1 &&
-      !event->handled()) {
+      event->details().touch_points() == 1 && !event->handled()) {
     WindowFocusedFromInputEvent(static_cast<aura::Window*>(event->target()),
                                 event);
   }
@@ -159,16 +154,17 @@ void FocusController::OnWindowDestroying(aura::Window* window) {
 
   // We may have already stopped observing |window| if `SetActiveWindow()` was
   // called inside `WindowLostFocusFromDispositionChange()`.
-  if (observer_manager_.IsObserving(window))
-    observer_manager_.Remove(window);
+  if (observation_manager_.IsObservingSource(window))
+    observation_manager_.RemoveObservation(window);
 }
 
 void FocusController::OnWindowHierarchyChanging(
     const HierarchyChangeParams& params) {
   if (params.receiver == active_window_ &&
-      params.target->Contains(params.receiver) && (!params.new_parent ||
-      aura::client::GetFocusClient(params.new_parent) !=
-          aura::client::GetFocusClient(params.receiver))) {
+      params.target->Contains(params.receiver) &&
+      (!params.new_parent ||
+       aura::client::GetFocusClient(params.new_parent) !=
+           aura::client::GetFocusClient(params.receiver))) {
     WindowLostFocusFromDispositionChange(params.receiver, params.old_parent);
   }
 }
@@ -176,9 +172,10 @@ void FocusController::OnWindowHierarchyChanging(
 void FocusController::OnWindowHierarchyChanged(
     const HierarchyChangeParams& params) {
   if (params.receiver == focused_window_ &&
-      params.target->Contains(params.receiver) && (!params.new_parent ||
-      aura::client::GetFocusClient(params.new_parent) !=
-          aura::client::GetFocusClient(params.receiver))) {
+      params.target->Contains(params.receiver) &&
+      (!params.new_parent ||
+       aura::client::GetFocusClient(params.new_parent) !=
+           aura::client::GetFocusClient(params.receiver))) {
     WindowLostFocusFromDispositionChange(params.receiver, params.old_parent);
   }
 }
@@ -262,13 +259,15 @@ void FocusController::SetFocusedWindow(aura::Window* window) {
   aura::WindowTracker window_tracker;
   if (lost_focus)
     window_tracker.Add(lost_focus);
-  if (focused_window_ && observer_manager_.IsObserving(focused_window_) &&
+  if (focused_window_ &&
+      observation_manager_.IsObservingSource(focused_window_) &&
       focused_window_ != active_window_) {
-    observer_manager_.Remove(focused_window_);
+    observation_manager_.RemoveObservation(focused_window_);
   }
   focused_window_ = window;
-  if (focused_window_ && !observer_manager_.IsObserving(focused_window_))
-    observer_manager_.Add(focused_window_);
+  if (focused_window_ &&
+      !observation_manager_.IsObservingSource(focused_window_))
+    observation_manager_.AddObservation(focused_window_);
 
   for (auto& observer : focus_observers_) {
     observer.OnWindowFocused(
@@ -330,8 +329,8 @@ bool FocusController::SetActiveWindow(
 
   // Start observing the window gaining activation at this point since it maybe
   // destroyed at an early stage, e.g. the activating phase.
-  if (window && !observer_manager_.IsObserving(window))
-    observer_manager_.Add(window);
+  if (window && !observation_manager_.IsObservingSource(window))
+    observation_manager_.AddObservation(window);
 
   for (auto& observer : activation_observers_) {
     observer.OnWindowActivating(reason, window, active_window_);
@@ -339,9 +338,10 @@ bool FocusController::SetActiveWindow(
     MAYBE_ACTIVATION_INTERRUPTED();
   }
 
-  if (active_window_ && observer_manager_.IsObserving(active_window_) &&
+  if (active_window_ &&
+      observation_manager_.IsObservingSource(active_window_) &&
       focused_window_ != active_window_) {
-    observer_manager_.Remove(active_window_);
+    observation_manager_.RemoveObservation(active_window_);
   }
 
   active_window_ = window;
@@ -387,9 +387,8 @@ void FocusController::StackActiveWindow() {
   }
 }
 
-void FocusController::WindowLostFocusFromDispositionChange(
-    aura::Window* window,
-    aura::Window* next) {
+void FocusController::WindowLostFocusFromDispositionChange(aura::Window* window,
+                                                           aura::Window* next) {
   // TODO(beng): See if this function can be replaced by a call to
   //             FocusWindow().
   // Activation adjustments are handled first in the event of a disposition

@@ -11,7 +11,7 @@
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/strings/string_piece.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/window_observer.h"
@@ -138,7 +138,8 @@ class WM_CORE_EXPORT FocusController : public ActivationClient,
   base::ObserverList<aura::client::FocusChangeObserver>::Unchecked
       focus_observers_;
 
-  ScopedObserver<aura::Window, aura::WindowObserver> observer_manager_{this};
+  base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
+      observation_manager_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FocusController);
 };
