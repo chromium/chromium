@@ -35,6 +35,7 @@
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker_mode.mojom-blink-forward.h"
+#include "third_party/blink/public/platform/mojo_binding_context.h"
 #include "third_party/blink/public/platform/web_url_loader.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
@@ -58,6 +59,7 @@ class DetachableResourceFetcherProperties;
 class FetchContext;
 class FrameOrWorkerScheduler;
 class MHTMLArchive;
+class MojoBindingContext;
 class KURL;
 class Resource;
 class ResourceError;
@@ -537,14 +539,14 @@ struct PLATFORM_EXPORT ResourceFetcherInit final {
       scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
       ResourceFetcher::LoaderFactory* loader_factory,
-      ContextLifecycleNotifier* context_lifecycle_notifier);
+      MojoBindingContext* mojo_binding_context);
 
   DetachableResourceFetcherProperties* const properties;
   FetchContext* const context;
   const scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner;
   const scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner;
   ResourceFetcher::LoaderFactory* const loader_factory;
-  ContextLifecycleNotifier* const context_lifecycle_notifier;
+  MojoBindingContext* const mojo_binding_context;
   DetachableUseCounter* use_counter = nullptr;
   DetachableConsoleLogger* console_logger = nullptr;
   ResourceLoadScheduler::ThrottlingPolicy initial_throttling_policy =

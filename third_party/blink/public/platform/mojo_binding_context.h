@@ -16,6 +16,7 @@ class SingleThreadTaskRunner;
 namespace blink {
 
 class BrowserInterfaceBrokerProxy;
+class ContextLifecycleObserver;
 
 // This class encapsulates the necessary information for binding Mojo
 // interfaces, to enable interfaces provided by the platform to be aware of the
@@ -26,6 +27,9 @@ class BLINK_PLATFORM_EXPORT MojoBindingContext {
       const = 0;
   virtual scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(
       TaskType) = 0;
+
+  virtual void AddContextLifecycleObserver(ContextLifecycleObserver*) = 0;
+  virtual void RemoveContextLifecycleObserver(ContextLifecycleObserver*) = 0;
 };
 
 }  // namespace blink

@@ -11,6 +11,7 @@
 #include "base/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "third_party/blink/public/platform/mojo_binding_context.h"
 #include "third_party/blink/renderer/platform/context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/mojo/features.h"
@@ -37,8 +38,8 @@ class HeapMojoRemoteSet {
       typename mojo::RemoteSet<Interface>::DisconnectHandler;
   using Iterator = typename mojo::RemoteSet<Interface>::Iterator;
 
-  explicit HeapMojoRemoteSet(ContextLifecycleNotifier* notifier)
-      : wrapper_(MakeGarbageCollected<Wrapper>(notifier)) {}
+  explicit HeapMojoRemoteSet(MojoBindingContext* context)
+      : wrapper_(MakeGarbageCollected<Wrapper>(context)) {}
   HeapMojoRemoteSet(const HeapMojoRemoteSet&) = delete;
   HeapMojoRemoteSet& operator=(const HeapMojoRemoteSet&) = delete;
   HeapMojoRemoteSet(HeapMojoRemoteSet&&) = default;
@@ -88,9 +89,7 @@ class HeapMojoRemoteSet {
   class Wrapper final : public GarbageCollected<Wrapper>,
                         public ContextLifecycleObserver {
    public:
-    explicit Wrapper(ContextLifecycleNotifier* notifier) {
-      SetContextLifecycleNotifier(notifier);
-    }
+    explicit Wrapper(MojoBindingContext* context) { SetContext(context); }
     Wrapper(const Wrapper&) = delete;
     Wrapper& operator=(const Wrapper&) = delete;
     Wrapper(Wrapper&&) = default;

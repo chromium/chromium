@@ -9,19 +9,18 @@
 
 namespace blink {
 
-class ContextLifecycleNotifier;
+class MojoBindingContext;
 
 // Observer that gets notified when the context is destroyed. Used to observe
 // ExecutionContext from platform/.
 class PLATFORM_EXPORT ContextLifecycleObserver : public GarbageCollectedMixin {
  public:
   virtual ~ContextLifecycleObserver();
+
   void NotifyContextDestroyed();
 
-  ContextLifecycleNotifier* GetContextLifecycleNotifier() const {
-    return notifier_;
-  }
-  void SetContextLifecycleNotifier(ContextLifecycleNotifier*);
+  MojoBindingContext* GetContext() const { return context_; }
+  void SetContext(MojoBindingContext*);
 
   virtual bool IsExecutionContextLifecycleObserver() const { return false; }
 
@@ -33,10 +32,9 @@ class PLATFORM_EXPORT ContextLifecycleObserver : public GarbageCollectedMixin {
   virtual void ContextDestroyed() = 0;
 
  private:
-  WeakMember<ContextLifecycleNotifier> notifier_;
-#if DCHECK_IS_ON()
-  bool waiting_for_context_destroyed_ = false;
-#endif
+  // `context_` is reset in `NotifyContextDestroyed()`, which is guaranteed to
+  // be called, so this will never cause a use-after-free.
+  MojoBindingContext* context_;
 };
 
 }  // namespace blink

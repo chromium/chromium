@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "third_party/blink/public/platform/mojo_binding_context.h"
 #include "third_party/blink/renderer/platform/context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/mojo/features.h"
@@ -30,8 +31,8 @@ class HeapMojoAssociatedRemote {
   DISALLOW_NEW();
 
  public:
-  explicit HeapMojoAssociatedRemote(ContextLifecycleNotifier* notifier)
-      : wrapper_(MakeGarbageCollected<Wrapper>(notifier)) {}
+  explicit HeapMojoAssociatedRemote(MojoBindingContext* context)
+      : wrapper_(MakeGarbageCollected<Wrapper>(context)) {}
   HeapMojoAssociatedRemote(const HeapMojoAssociatedRemote&) = delete;
   HeapMojoAssociatedRemote& operator=(const HeapMojoAssociatedRemote&) = delete;
   HeapMojoAssociatedRemote(HeapMojoAssociatedRemote&&) = default;
@@ -85,9 +86,7 @@ class HeapMojoAssociatedRemote {
   class Wrapper final : public GarbageCollected<Wrapper>,
                         public ContextLifecycleObserver {
    public:
-    explicit Wrapper(ContextLifecycleNotifier* notifier) {
-      SetContextLifecycleNotifier(notifier);
-    }
+    explicit Wrapper(MojoBindingContext* context) { SetContext(context); }
     Wrapper(const Wrapper&) = delete;
     Wrapper& operator=(const Wrapper&) = delete;
     Wrapper(Wrapper&&) = default;

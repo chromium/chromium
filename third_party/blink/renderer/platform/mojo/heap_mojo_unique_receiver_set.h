@@ -5,8 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_MOJO_HEAP_MOJO_UNIQUE_RECEIVER_SET_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_MOJO_HEAP_MOJO_UNIQUE_RECEIVER_SET_H_
 
+#include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
+#include "third_party/blink/public/platform/mojo_binding_context.h"
 #include "third_party/blink/renderer/platform/context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/mojo/features.h"
@@ -31,7 +33,7 @@ class HeapMojoUniqueReceiverSet {
       Interface,
       mojo::UniquePtrImplRefTraits<Interface, Deleter>>::ImplPointerType;
 
-  explicit HeapMojoUniqueReceiverSet(ContextLifecycleNotifier* context)
+  explicit HeapMojoUniqueReceiverSet(MojoBindingContext* context)
       : wrapper_(MakeGarbageCollected<Wrapper>(context)) {}
   HeapMojoUniqueReceiverSet(const HeapMojoUniqueReceiverSet&) = delete;
   HeapMojoUniqueReceiverSet& operator=(const HeapMojoUniqueReceiverSet&) =
@@ -62,9 +64,7 @@ class HeapMojoUniqueReceiverSet {
   class Wrapper final : public GarbageCollected<Wrapper>,
                         public ContextLifecycleObserver {
    public:
-    explicit Wrapper(ContextLifecycleNotifier* notifier) {
-      SetContextLifecycleNotifier(notifier);
-    }
+    explicit Wrapper(MojoBindingContext* context) { SetContext(context); }
 
     void Trace(Visitor* visitor) const override {
       ContextLifecycleObserver::Trace(visitor);

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "third_party/blink/public/platform/mojo_binding_context.h"
 #include "third_party/blink/renderer/platform/context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/mojo/features.h"
@@ -32,7 +33,7 @@ class HeapMojoAssociatedReceiver {
   DISALLOW_NEW();
 
  public:
-  HeapMojoAssociatedReceiver(Owner* owner, ContextLifecycleNotifier* context)
+  HeapMojoAssociatedReceiver(Owner* owner, MojoBindingContext* context)
       : wrapper_(MakeGarbageCollected<Wrapper>(owner, context)) {
     static_assert(std::is_base_of<Interface, Owner>::value,
                   "Owner should implement Interface");
@@ -82,9 +83,9 @@ class HeapMojoAssociatedReceiver {
     USING_PRE_FINALIZER(Wrapper, Dispose);
 
    public:
-    Wrapper(Owner* owner, ContextLifecycleNotifier* notifier)
+    Wrapper(Owner* owner, MojoBindingContext* context)
         : owner_(owner), associated_receiver_(owner) {
-      SetContextLifecycleNotifier(notifier);
+      SetContext(context);
     }
 
     void Trace(Visitor* visitor) const override {

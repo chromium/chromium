@@ -45,6 +45,7 @@
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
+#include "third_party/blink/public/platform/mojo_binding_context.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
 #include "third_party/blink/public/platform/web_url.h"
@@ -341,18 +342,18 @@ ResourceFetcherInit::ResourceFetcherInit(
     scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
     ResourceFetcher::LoaderFactory* loader_factory,
-    ContextLifecycleNotifier* context_lifecycle_notifier)
+    MojoBindingContext* mojo_binding_context)
     : properties(&properties),
       context(context),
       freezable_task_runner(std::move(freezable_task_runner)),
       unfreezable_task_runner(std::move(unfreezable_task_runner)),
       loader_factory(loader_factory),
-      context_lifecycle_notifier(context_lifecycle_notifier) {
+      mojo_binding_context(mojo_binding_context) {
   DCHECK(context);
   DCHECK(this->freezable_task_runner);
   DCHECK(this->unfreezable_task_runner);
   DCHECK(loader_factory || properties.IsDetached());
-  DCHECK(context_lifecycle_notifier || properties.IsDetached());
+  DCHECK(mojo_binding_context || properties.IsDetached());
 }
 
 mojom::blink::RequestContextType ResourceFetcher::DetermineRequestContext(
@@ -580,7 +581,7 @@ ResourceFetcher::ResourceFetcher(const ResourceFetcherInit& init)
           init.frame_or_worker_scheduler
               ? init.frame_or_worker_scheduler->GetWeakPtr()
               : nullptr),
-      blob_registry_remote_(init.context_lifecycle_notifier),
+      blob_registry_remote_(init.mojo_binding_context),
       auto_load_images_(true),
       images_enabled_(true),
       allow_stale_resources_(false),
