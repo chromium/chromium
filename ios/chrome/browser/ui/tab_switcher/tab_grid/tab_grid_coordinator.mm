@@ -251,6 +251,7 @@
         viewController;
     [self.baseViewController setNeedsStatusBarAppearanceUpdate];
     if (shouldCloseTabGrid) {
+      [self.baseViewController contentWillDisappearAnimated:YES];
       [self.thumbStripCoordinator.panHandler setState:ViewRevealState::Hidden
                                              animated:YES];
 
