@@ -2893,8 +2893,6 @@ static_library("browser") {
       "android/signin/signin_manager_android.cc",
       "android/signin/signin_manager_android.h",
       "android/signin/signin_metrics_utils.cc",
-      "android/signin/signin_promo_util_android.cc",
-      "android/signin/signin_promo_util_android.h",
       "android/signin/unified_consent_service_bridge.cc",
       "android/signin/web_signin_bridge.cc",
       "android/signin/web_signin_bridge.h",

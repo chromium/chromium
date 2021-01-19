@@ -8,6 +8,7 @@
 #include <string>
 
 #include "components/signin/core/browser/signin_header_helper.h"
+#include "components/signin/public/base/signin_metrics.h"
 
 namespace ui {
 class WindowAndroid;
@@ -16,8 +17,12 @@ class WindowAndroid;
 // The glue for Java-side implementation of SigninBridge.
 class SigninBridge {
  public:
+  // Opens a signin flow with the specified |access_point| for metrics.
+  static void LaunchSigninActivity(ui::WindowAndroid* window,
+                                   signin_metrics::AccessPoint access_point);
+
   // Opens the account management screen.
-  static void OpenAccountManagementScreen(ui::WindowAndroid* profile,
+  static void OpenAccountManagementScreen(ui::WindowAndroid* window,
                                           signin::GAIAServiceType service_type);
 
   // Opens the account picker bottomsheet

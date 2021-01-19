@@ -70,7 +70,7 @@
 
 #if defined(OS_ANDROID)
 #include "chrome/browser/android/preferences/autofill/autofill_profile_bridge.h"
-#include "chrome/browser/android/signin/signin_promo_util_android.h"
+#include "chrome/browser/android/signin/signin_bridge.h"
 #include "chrome/browser/autofill/android/internal_authenticator_android.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/infobars/infobar_service.h"
@@ -657,7 +657,7 @@ void ChromeAutofillClient::ExecuteCommand(int id) {
   if (id == POPUP_ITEM_ID_CREDIT_CARD_SIGNIN_PROMO) {
     auto* window = web_contents()->GetNativeView()->GetWindowAndroid();
     if (window) {
-      chrome::android::SigninPromoUtilAndroid::StartSigninActivityForPromo(
+      SigninBridge::LaunchSigninActivity(
           window, signin_metrics::AccessPoint::ACCESS_POINT_AUTOFILL_DROPDOWN);
     }
   }

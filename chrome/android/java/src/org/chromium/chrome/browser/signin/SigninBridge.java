@@ -10,12 +10,27 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.browser.sync.settings.AccountManagementFragment;
 import org.chromium.components.signin.GAIAServiceType;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
  * The bridge regroups methods invoked by native code to interact with Android Signin UI.
  */
 final class SigninBridge {
+    /**
+     * Launches {@link SigninActivity}.
+     * @param windowAndroid WindowAndroid from which to get the Context.
+     * @param accessPoint for metrics purposes.
+     */
+    @CalledByNative
+    private static void launchSigninActivity(
+            WindowAndroid windowAndroid, @SigninAccessPoint int accessPoint) {
+        final Context context = windowAndroid.getContext().get();
+        if (context != null) {
+            SigninActivityLauncherImpl.get().launchActivityIfAllowed(context, accessPoint);
+        }
+    }
+
     /**
      * Opens account management screen.
      */

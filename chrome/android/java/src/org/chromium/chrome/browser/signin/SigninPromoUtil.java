@@ -12,7 +12,6 @@ import android.view.View;
 import androidx.annotation.VisibleForTesting;
 import androidx.collection.ArraySet;
 
-import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -29,7 +28,6 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.ui.base.WindowAndroid;
 
 import java.util.Collections;
 import java.util.List;
@@ -152,19 +150,5 @@ public class SigninPromoUtil {
 
         view.getPrimaryButton().setText(R.string.sync_promo_turn_on_sync);
         view.getSecondaryButton().setVisibility(View.GONE);
-    }
-
-    /**
-     * A convenience method to create an SigninActivity, passing the access point as an
-     * intent extra.
-     * @param window WindowAndroid from which to get the Activity/Context.
-     * @param accessPoint for metrics purposes.
-     */
-    @CalledByNative
-    private static void openSigninActivityForPromo(WindowAndroid window, int accessPoint) {
-        Activity activity = window.getActivity().get();
-        if (activity != null) {
-            SigninActivityLauncherImpl.get().launchActivityIfAllowed(activity, accessPoint);
-        }
     }
 }
