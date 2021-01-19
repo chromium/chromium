@@ -74,6 +74,24 @@ class ProfilePickerInteractiveUiTest : public ProfilePickerTestBase {
         widget()->GetNativeWindow(), ui::VKEY_W, control, shift, /*alt=*/false,
         command));
   }
+
+  void SendBackKeyboardCommand() {
+    // Close window using keyboard.
+#if defined(OS_MAC)
+    // Use Cmd-[ on Mac.
+    bool alt = false;
+    bool command = true;
+    ui::KeyboardCode key = ui::VKEY_OEM_4;
+#else
+    // Use Ctrl-left on other platforms.
+    bool alt = true;
+    bool command = false;
+    ui::KeyboardCode key = ui::VKEY_LEFT;
+#endif
+    ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
+        widget()->GetNativeWindow(), key, /*control=*/false,
+        /*shift=*/false, alt, command));
+  }
 };
 
 // Checks that the main picker view can be closed with keyboard shortcut.
@@ -164,4 +182,45 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
   EXPECT_TRUE(ProfilePicker::IsOpen());
   SendCloseWindowKeyboardCommand();
   WaitForPickerClosed();
+}
+
+// Checks that both the signin web view and the main picker view are able to
+// process a back keyboard event.
+IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
+                       NavigateBackWithKeyboard) {
+  // Simulate walking through the flow starting at the picker so that navigating
+  // back to the picker makes sense.
+  ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuManageProfiles);
+  WaitForLayoutWithoutToolbar();
+  WaitForFirstPaint(web_contents(), GURL("chrome://profile-picker"));
+  web_contents()->GetController().LoadURL(
+      GURL("chrome://profile-picker/new-profile"), content::Referrer(),
+      ui::PAGE_TRANSITION_AUTO_TOPLEVEL, std::string());
+  WaitForFirstPaint(web_contents(),
+                    GURL("chrome://profile-picker/new-profile"));
+
+  // Simulate a click on the signin button.
+  base::MockCallback<base::OnceCallback<void(bool)>> switch_finished_callback;
+  EXPECT_CALL(switch_finished_callback, Run(true));
+  ProfilePicker::SwitchToSignIn(SK_ColorRED, switch_finished_callback.Get());
+
+  // Switch to the signin webview.
+  WaitForLayoutWithToolbar();
+  WaitForFirstPaint(web_contents(),
+                    GaiaUrls::GetInstance()->signin_chrome_sync_dice());
+
+  // Navigate back with the keyboard.
+  SendBackKeyboardCommand();
+
+  WaitForLayoutWithoutToolbar();
+  WaitForFirstPaint(web_contents(),
+                    GURL("chrome://profile-picker/new-profile"));
+
+  // Navigate again back with the keyboard.
+  SendBackKeyboardCommand();
+  WaitForFirstPaint(web_contents(), GURL("chrome://profile-picker"));
+
+  // Navigating back once again does nothing.
+  SendBackKeyboardCommand();
+  EXPECT_EQ(web_contents()->GetController().GetPendingEntry(), nullptr);
 }
