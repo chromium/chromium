@@ -889,13 +889,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.CleanedUpPasswords" units="units"
-    expires_after="M90">
+    expires_after="M95">
   <owner>vasilii@chromium.org</owner>
   <owner>src/components/password_manager/OWNERS</owner>
   <summary>
     Collects positive number of undecryptable passwords that were successfully
-    deleted when syncing was enabled. Called for sync user for each profile if
-    there is at least one password deleted when merging logins from Sync and
+    deleted when syncing was enabled. Recorded for sync users for each profile
+    if there is at least one password deleted when merging logins from Sync and
     local database.
   </summary>
 </histogram>
@@ -1238,19 +1238,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.ImportedPasswordsPerUserInCSV" units="units"
-    expires_after="M90">
+    expires_after="M95">
   <owner>vasilii@chromium.org</owner>
   <owner>src/components/password_manager/OWNERS</owner>
-  <summary>The number of passwords imported in CSV format per user</summary>
+  <summary>
+    The number of passwords imported in CSV format per user. Recorded when the
+    user imports passwords within the password settings.
+  </summary>
 </histogram>
 
 <histogram name="PasswordManager.ImportPasswordFromCSVResult"
-    enum="PasswordImportFromCSVResult" expires_after="M90">
+    enum="PasswordImportFromCSVResult" expires_after="M95">
   <owner>vasilii@chromium.org</owner>
   <owner>src/components/password_manager/OWNERS</owner>
   <summary>
     The response code of successful or failed password import attempt from a CSV
-    file.
+    file. Recorded when the user imports passwords within the password settings.
   </summary>
 </histogram>
 
@@ -1820,7 +1823,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.PasswordStoreInitResult" enum="BooleanSuccess"
-    expires_after="M90">
+    expires_after="M95">
   <owner>vasilii@chromium.org</owner>
   <owner>src/components/password_manager/OWNERS</owner>
   <summary>
