@@ -2052,6 +2052,9 @@ extern const char kEnableIncognitoShortcutOnDesktopDescription[];
 extern const char kEnableMediaFoundationVideoCaptureName[];
 extern const char kEnableMediaFoundationVideoCaptureDescription[];
 
+extern const char kRawAudioCaptureName[];
+extern const char kRawAudioCaptureDescription[];
+
 extern const char kRunVideoCaptureServiceInBrowserProcessName[];
 extern const char kRunVideoCaptureServiceInBrowserProcessDescription[];
 

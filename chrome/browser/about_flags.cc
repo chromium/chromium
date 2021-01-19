@@ -6998,6 +6998,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTextFragmentColorChangeDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kTextFragmentColorChange)},
 
+#if defined(OS_WIN)
+    {"raw-audio-capture", flag_descriptions::kRawAudioCaptureName,
+     flag_descriptions::kRawAudioCaptureDescription, kOsWin,
+     FEATURE_VALUE_TYPE(media::kWasapiRawAudioCapture)},
+#endif  // defined(OS_MAC)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

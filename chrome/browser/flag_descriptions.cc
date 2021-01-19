@@ -3568,6 +3568,13 @@ const char kEnableMediaFoundationVideoCaptureDescription[] =
     "Enable/Disable the usage of MediaFoundation for video capture. Fall back "
     "to DirectShow if disabled.";
 
+const char kRawAudioCaptureName[] = "Raw audio capture";
+const char kRawAudioCaptureDescription[] =
+    "Enable/Disable the usage of WASAPI raw audio capture. When enabled, the "
+    "audio stream is a 'raw' stream that bypasses all signal processing except "
+    "for endpoint specific, always-on processing in the Audio Processing Object"
+    " (APO), driver, and hardware.";
+
 const char kRunVideoCaptureServiceInBrowserProcessName[] =
     "Run video capture service in browser";
 const char kRunVideoCaptureServiceInBrowserProcessDescription[] =
