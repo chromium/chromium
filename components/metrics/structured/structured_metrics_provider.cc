@@ -47,8 +47,9 @@ base::Optional<uint64_t> StringValueToUint(const base::Value* string_value) {
 void PopulateUmaProto(const base::Value* events,
                       ChromeUserMetricsExtension* uma_proto) {
   DCHECK(events->is_list());
+  auto* data_proto = uma_proto->mutable_structured_data();
   for (const auto& event : events->GetList()) {
-    auto* event_proto = uma_proto->add_deprecated_structured_event();
+    auto* event_proto = data_proto->add_events();
 
     const auto event_name_hash = StringValueToUint(event.FindKey("name"));
     if (!event_name_hash)
