@@ -2612,7 +2612,7 @@ enum WebFeature {
   kOBSOLETE_LocationFragmentDirectiveAccessed = 3283,
   kCanvasRenderingContext = 3284,
   kSchemefulSameSiteContextDowngrade = 3285,
-  kOriginIsolationHeader = 3286,
+  kOriginAgentClusterHeader = 3286,
   kV8WasmSimdOpcodes = 3287,
   kGridRowGapPercent = 3288,
   kGridRowGapPercentIndefinite = 3289,

@@ -92,12 +92,12 @@ IN_PROC_BROWSER_TEST_F(OriginAgentClusterBrowserTest, Navigations) {
       std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
           web_contents);
   web_feature_waiter->AddWebFeatureExpectation(
-      blink::mojom::WebFeature::kOriginIsolationHeader);
+      blink::mojom::WebFeature::kOriginAgentClusterHeader);
 
   ui_test_utils::NavigateToURL(browser(), start_url);
 
   EXPECT_FALSE(web_feature_waiter->DidObserveWebFeature(
-      blink::mojom::WebFeature::kOriginIsolationHeader));
+      blink::mojom::WebFeature::kOriginAgentClusterHeader));
 
   EXPECT_TRUE(NavigateIframeToURL(web_contents, "test", origin_keyed_url));
 

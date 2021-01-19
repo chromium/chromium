@@ -30492,7 +30492,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3283" label="OBSOLETE_LocationFragmentDirectiveAccessed"/>
   <int value="3284" label="CanvasRenderingContext"/>
   <int value="3285" label="SchemefulSameSiteContextDowngrade"/>
-  <int value="3286" label="OriginIsolationHeader"/>
+  <int value="3286" label="OriginAgentClusterHeader"/>
   <int value="3287" label="V8WasmSimdOpcodes"/>
   <int value="3288" label="GridRowGapPercent"/>
   <int value="3289" label="GridRowGapPercentIndefinite"/>

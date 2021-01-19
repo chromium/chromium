@@ -2154,7 +2154,8 @@ void NavigationRequest::ProcessOriginAgentClusterEndResult() {
       origin_agent_cluster_end_result_ ==
           OriginAgentClusterEndResult::kRequestedButNotOriginKeyed)
     GetContentClient()->browser()->LogWebFeatureForCurrentPage(
-        render_frame_host_, blink::mojom::WebFeature::kOriginIsolationHeader);
+        render_frame_host_,
+        blink::mojom::WebFeature::kOriginAgentClusterHeader);
 
   const url::Origin origin = url::Origin::Create(GetURL());
 
