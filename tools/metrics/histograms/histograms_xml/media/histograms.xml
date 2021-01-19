@@ -3913,7 +3913,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.VideoCapture.Mac.Device.RequestedPixelFormat"
-    enum="VideoResolutionDesignation" expires_after="M92">
+    enum="VideoPixelFormatUnion" expires_after="M92">
   <owner>eshr@google.com</owner>
   <owner>handellm@google.com</owner>
   <summary>
