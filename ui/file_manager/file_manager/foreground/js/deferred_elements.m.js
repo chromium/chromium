@@ -14,8 +14,6 @@ import '../elements/files_spinner.m.js';
 import '../elements/files_toast.m.js';
 import '../elements/files_toggle_ripple.m.js';
 import '../elements/files_tooltip.m.js';
-// TODO(lucmult): Figure out if icons.html is needed here.
-// import '../elements/icons.m.js';
 import '../elements/xf_button.m.js';
 import '../elements/xf_circular_progress.m.js';
 import '../elements/xf_display_panel.m.js';

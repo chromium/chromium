@@ -14,8 +14,15 @@ group("elements") {
   visibility += [ "//ui/file_manager/*" ]
   public_deps = [
     "//ui/file_manager/file_manager/foreground/elements:files_icon_button_module",
+    "//ui/file_manager/file_manager/foreground/elements:files_metadata_box_module",
+    "//ui/file_manager/file_manager/foreground/elements:files_metadata_entry_module",
+    "//ui/file_manager/file_manager/foreground/elements:files_quick_view_module",
     "//ui/file_manager/file_manager/foreground/elements:files_ripple_module",
+    "//ui/file_manager/file_manager/foreground/elements:files_safe_media_module",
+    "//ui/file_manager/file_manager/foreground/elements:files_toast_module",
     "//ui/file_manager/file_manager/foreground/elements:files_toggle_ripple_module",
+    "//ui/file_manager/file_manager/foreground/elements:files_tooltip_module",
+    "//ui/file_manager/file_manager/foreground/elements:icons_module",
   ]
 }
 
@@ -430,6 +437,12 @@ js_unittest("files_xf_elements_unittest.m") {
   ]
 
   externs_list = [ "$externs_path/file_manager_private.js" ]
+}
+
+polymer_modulizer("icons") {
+  js_file = "icons.m.js"
+  html_file = "icons.html"
+  html_type = "iron-iconset"
 }
 
 js_library("xf_button") {
