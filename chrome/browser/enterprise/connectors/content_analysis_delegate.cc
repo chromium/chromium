@@ -479,10 +479,6 @@ bool ContentAnalysisDelegate::UploadData() {
   for (const base::FilePath& path : data_.paths)
     PrepareFileRequest(path);
 
-  data_uploaded_ = true;
-  // Do not add code under this comment. The above line should be the last thing
-  // this function does before the return statement.
-
   return !text_request_complete_ || file_result_count_ != data_.paths.size();
 }
 
@@ -588,9 +584,8 @@ void ContentAnalysisDelegate::MaybeCompleteScanRequest() {
   if (final_result_ != FinalResult::WARNING)
     RunCallback();
 
-  if (!UpdateDialog() && data_uploaded_) {
-    // No UI was shown.  Delete |this| to cleanup, unless UploadData isn't done
-    // yet.
+  if (!UpdateDialog()) {
+    // No UI was shown.  Delete |this| to cleanup.
     delete this;
   }
 }
