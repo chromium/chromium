@@ -339,6 +339,10 @@ crbug.com/916825 external/wpt/css/filter-effects/filter-subregion-01.html [ Fail
 crbug.com/910537 external/wpt/svg/painting/marker-006.svg [ Failure ]
 crbug.com/910537 external/wpt/svg/painting/marker-005.svg [ Failure ]
 
+# We don't yet implement context-fill and context-stroke
+crbug.com/367737 external/wpt/svg/painting/reftests/paint-context-001.svg [ Failure ]
+crbug.com/367737 external/wpt/svg/painting/reftests/paint-context-002.svg [ Failure ]
+
 # ==== Regressions introduced by BlinkGenPropertyTrees =====
 # Reflection / mask ordering issue
 crbug.com/767318 compositing/reflections/nested-reflection-mask-change.html [ Failure ]
@@ -2945,8 +2949,6 @@ crbug.com/366559 external/wpt/svg/text/reftests/textpath-side-001.svg [ Failure 
 crbug.com/366559 external/wpt/svg/text/reftests/textpath-shape-001.svg [ Failure ]
 crbug.com/626703 external/wpt/svg/rendering/order/z-index.svg [ Failure ]
 crbug.com/626703 external/wpt/web-animations/timing-model/timelines/update-and-send-events.html [ Failure ]
-crbug.com/626703 external/wpt/svg/painting/reftests/paint-context-001.svg [ Failure ]
-crbug.com/626703 external/wpt/svg/painting/reftests/paint-context-002.svg [ Failure ]
 crbug.com/626703 external/wpt/screen-orientation/orientation-reading.html [ Timeout ]
 crbug.com/626703 external/wpt/html/browsers/browsing-the-web/unloading-documents/prompt-and-unload-script-closeable.html [ Failure ]
 crbug.com/626703 external/wpt/html/infrastructure/urls/resolving-urls/query-encoding/navigation.sub.html?encoding=x-cp1251 [ Timeout ]
