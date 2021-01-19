@@ -113,7 +113,7 @@ generate_grd("build_grd") {
     "index.html",
     "main.js",
   ]
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     input_files += [
       "ink/index.html",
       "ink/ink_api.js",
