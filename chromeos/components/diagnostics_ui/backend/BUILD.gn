@@ -18,6 +18,8 @@ static_library("backend") {
     "power_manager_client_conversions.h",
     "routine_log.cc",
     "routine_log.h",
+    "session_log_handler.cc",
+    "session_log_handler.h",
     "system_data_provider.cc",
     "system_data_provider.h",
     "system_routine_controller.cc",
