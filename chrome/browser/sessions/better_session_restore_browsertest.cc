@@ -154,10 +154,8 @@ class BetterSessionRestoreTest : public InProcessBrowserTest {
 
  protected:
   void SetUpOnMainThread() override {
-    SessionServiceTestHelper helper(
-        SessionServiceFactory::GetForProfile(browser()->profile()));
+    SessionServiceTestHelper helper(browser()->profile());
     helper.SetForceBrowserNotAliveWithNoWindows(true);
-    helper.ReleaseService();
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
     g_browser_process->set_background_mode_manager_for_test(
         std::unique_ptr<BackgroundModeManager>(new FakeBackgroundModeManager));
@@ -291,11 +289,8 @@ class BetterSessionRestoreTest : public InProcessBrowserTest {
     else
       CloseBrowserSynchronously(browser);
 
-    SessionServiceTestHelper helper;
-    helper.SetService(
-        SessionServiceFactory::GetForProfileForSessionRestore(profile));
+    SessionServiceTestHelper helper(profile);
     helper.SetForceBrowserNotAliveWithNoWindows(true);
-    helper.ReleaseService();
 
     // Create a new window, which may trigger session restore.
     size_t count = BrowserList::GetInstance()->size();

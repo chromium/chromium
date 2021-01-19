@@ -438,10 +438,8 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest,
   Profile* profile = browser()->profile();
   SessionStartupPref::SetStartupPref(profile, pref);
 
-  SessionServiceTestHelper helper(
-      SessionServiceFactory::GetForProfile(profile));
+  SessionServiceTestHelper helper(profile);
   helper.SetForceBrowserNotAliveWithNoWindows(true);
-  helper.ReleaseService();
 
   // Do not exit from test when last browser is closed.
   ScopedKeepAlive keep_alive(KeepAliveOrigin::SESSION_RESTORE,

@@ -51,10 +51,8 @@ class SessionRestoreInteractiveTest : public InProcessBrowserTest {
 
     // Ensure the session service factory is started, even if it was explicitly
     // shut down.
-    SessionServiceTestHelper helper(
-        SessionServiceFactory::GetForProfileForSessionRestore(profile));
+    SessionServiceTestHelper helper(profile);
     helper.SetForceBrowserNotAliveWithNoWindows(true);
-    helper.ReleaseService();
 
     // Create a new window, which should trigger session restore.
     chrome::NewEmptyWindow(profile);

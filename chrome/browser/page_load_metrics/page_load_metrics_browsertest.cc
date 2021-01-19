@@ -1937,10 +1937,8 @@ class SessionRestorePageLoadMetricsBrowserTest
     SessionStartupPref::SetStartupPref(
         profile, SessionStartupPref(SessionStartupPref::LAST));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    SessionServiceTestHelper helper(
-        SessionServiceFactory::GetForProfile(profile));
+    SessionServiceTestHelper helper(profile);
     helper.SetForceBrowserNotAliveWithNoWindows(true);
-    helper.ReleaseService();
 #endif
 
     std::unique_ptr<ScopedKeepAlive> keep_alive(new ScopedKeepAlive(

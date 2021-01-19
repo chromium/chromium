@@ -116,7 +116,6 @@ class SessionRestoreObserverTest : public InProcessBrowserTest {
     SessionServiceTestHelper helper(
         SessionServiceFactory::GetForProfile(browser()->profile()));
     helper.SetForceBrowserNotAliveWithNoWindows(true);
-    helper.ReleaseService();
 #endif
     ASSERT_TRUE(embedded_test_server()->Start());
   }

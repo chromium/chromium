@@ -5,6 +5,7 @@
 #include "chrome/browser/sessions/session_service_test_helper.h"
 
 #include "chrome/browser/sessions/session_service.h"
+#include "chrome/browser/sessions/session_service_factory.h"
 #include "components/sessions/core/command_storage_backend.h"
 #include "components/sessions/core/command_storage_manager_test_helper.h"
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
@@ -16,7 +17,12 @@
 
 using base::Time;
 
-SessionServiceTestHelper::SessionServiceTestHelper() {}
+SessionServiceTestHelper::SessionServiceTestHelper()
+    : SessionServiceTestHelper(static_cast<SessionService*>(nullptr)) {}
+
+SessionServiceTestHelper::SessionServiceTestHelper(Profile* profile)
+    : SessionServiceTestHelper(
+          SessionServiceFactory::GetForProfileForSessionRestore(profile)) {}
 
 SessionServiceTestHelper::SessionServiceTestHelper(SessionService* service)
     : service_(service) {}
@@ -27,29 +33,29 @@ void SessionServiceTestHelper::PrepareTabInWindow(const SessionID& window_id,
                                                   const SessionID& tab_id,
                                                   int visual_index,
                                                   bool select) {
-  service()->SetTabWindow(window_id, tab_id);
-  service()->SetTabIndexInWindow(window_id, tab_id, visual_index);
+  service_->SetTabWindow(window_id, tab_id);
+  service_->SetTabIndexInWindow(window_id, tab_id, visual_index);
   if (select)
-    service()->SetSelectedTabInWindow(window_id, visual_index);
+    service_->SetSelectedTabInWindow(window_id, visual_index);
 }
 
 void SessionServiceTestHelper::SetTabExtensionAppID(
     const SessionID& window_id,
     const SessionID& tab_id,
     const std::string& extension_app_id) {
-  service()->SetTabExtensionAppID(window_id, tab_id, extension_app_id);
+  service_->SetTabExtensionAppID(window_id, tab_id, extension_app_id);
 }
 
 void SessionServiceTestHelper::SetTabUserAgentOverride(
     const SessionID& window_id,
     const SessionID& tab_id,
     const sessions::SerializedUserAgentOverride& user_agent_override) {
-  service()->SetTabUserAgentOverride(window_id, tab_id, user_agent_override);
+  service_->SetTabUserAgentOverride(window_id, tab_id, user_agent_override);
 }
 
 void SessionServiceTestHelper::SetForceBrowserNotAliveWithNoWindows(
     bool force_browser_not_alive_with_no_windows) {
-  service()->force_browser_not_alive_with_no_windows_ =
+  service_->force_browser_not_alive_with_no_windows_ =
       force_browser_not_alive_with_no_windows;
 }
 
@@ -62,7 +68,7 @@ void SessionServiceTestHelper::ReadWindows(
   std::vector<std::unique_ptr<sessions::SessionCommand>> read_commands =
       test_helper.ReadLastSessionCommands();
   RestoreSessionFromCommands(read_commands, windows, active_window_id);
-  service()->RemoveUnusedRestoreWindows(windows);
+  service_->RemoveUnusedRestoreWindows(windows);
 }
 
 void SessionServiceTestHelper::AssertTabEquals(
@@ -105,13 +111,9 @@ void SessionServiceTestHelper::AssertSingleWindowWithSingleTab(
 }
 
 void SessionServiceTestHelper::SetService(SessionService* service) {
-  service_.reset(service);
+  service_ = service;
   // Execute IO tasks posted by the SessionService.
   content::RunAllTasksUntilIdle();
-}
-
-SessionService* SessionServiceTestHelper::ReleaseService() {
-  return service_.release();
 }
 
 void SessionServiceTestHelper::RunTaskOnBackendThread(

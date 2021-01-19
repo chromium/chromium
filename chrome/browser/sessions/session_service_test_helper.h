@@ -13,10 +13,10 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/sessions/core/session_id.h"
 
+class Profile;
 class SessionService;
 
 namespace base {
@@ -36,7 +36,10 @@ struct SessionWindow;
 class SessionServiceTestHelper {
  public:
   SessionServiceTestHelper();
+  explicit SessionServiceTestHelper(Profile* profile);
   explicit SessionServiceTestHelper(SessionService* service);
+  SessionServiceTestHelper(const SessionServiceTestHelper&) = delete;
+  SessionServiceTestHelper& operator=(const SessionServiceTestHelper&) = delete;
   ~SessionServiceTestHelper();
 
   void PrepareTabInWindow(const SessionID& window_id,
@@ -82,8 +85,7 @@ class SessionServiceTestHelper {
       size_t nav_count);
 
   void SetService(SessionService* service);
-  SessionService* ReleaseService();
-  SessionService* service() { return service_.get(); }
+  SessionService* service() { return service_; }
 
   void RunTaskOnBackendThread(const base::Location& from_here,
                               base::OnceClosure task);
@@ -100,9 +102,7 @@ class SessionServiceTestHelper {
   void SetIsOnlyOneTabLeft(bool is_only_one_tab_left);
 
  private:
-  std::unique_ptr<SessionService> service_;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionServiceTestHelper);
+  SessionService* service_;
 };
 
 #endif  // CHROME_BROWSER_SESSIONS_SESSION_SERVICE_TEST_HELPER_H_

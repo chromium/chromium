@@ -249,10 +249,8 @@ IN_PROC_BROWSER_TEST_F(WebUIJSErrorReportingTest,
     mock_processor.reset();
     mock_processor =
         std::make_unique<ScopedMockChromeJsErrorReportProcessor>(endpoint);
-    SessionServiceTestHelper helper(
-        SessionServiceFactory::GetForProfileForSessionRestore(profile));
+    SessionServiceTestHelper helper(profile);
     helper.SetForceBrowserNotAliveWithNoWindows(true);
-    helper.ReleaseService();
     chrome::NewEmptyWindow(profile);
 
     // ScopedKeepAlive goes out of scope, so the new browser will return to

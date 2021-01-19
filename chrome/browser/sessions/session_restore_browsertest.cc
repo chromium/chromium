@@ -121,10 +121,8 @@ class SessionRestoreTest : public InProcessBrowserTest {
     if (strcmp(test_info->name(), "NoSessionRestoreNewWindowChromeOS") != 0) {
       // Undo the effect of kBrowserAliveWithNoWindows in defaults.cc so that we
       // can get these test to work without quitting.
-      SessionServiceTestHelper helper(
-          SessionServiceFactory::GetForProfile(browser()->profile()));
+      SessionServiceTestHelper helper(browser()->profile());
       helper.SetForceBrowserNotAliveWithNoWindows(true);
-      helper.ReleaseService();
     }
 #endif
   }
@@ -164,10 +162,8 @@ class SessionRestoreTest : public InProcessBrowserTest {
 
     // Ensure the session service factory is started, even if it was explicitly
     // shut down.
-    SessionServiceTestHelper helper(
-        SessionServiceFactory::GetForProfileForSessionRestore(profile));
+    SessionServiceTestHelper helper(profile);
     helper.SetForceBrowserNotAliveWithNoWindows(true);
-    helper.ReleaseService();
 
     // Create a new window, which should trigger session restore.
     if (url.is_empty()) {
@@ -534,7 +530,6 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, NormalAndPopup) {
       SessionServiceFactory::GetForProfile(browser()->profile());
   SessionServiceTestHelper test_helper(session_service);
   auto backend_task_runner = test_helper.GetBackendTaskRunner();
-  test_helper.ReleaseService();
 
   // Simulate an exit by shutting down the session service. If we don't do this
   // the first window close is treated as though the user closed the window
@@ -1346,10 +1341,8 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, CloseSingleTabRestoresNothing) {
 
   // Ensure the session service factory is started, even if it was explicitly
   // shut down.
-  SessionServiceTestHelper helper(
-      SessionServiceFactory::GetForProfileForSessionRestore(profile));
+  SessionServiceTestHelper helper(profile);
   helper.SetForceBrowserNotAliveWithNoWindows(true);
-  helper.ReleaseService();
 
   chrome::NewEmptyWindow(profile);
 
@@ -1386,10 +1379,8 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest,
 
   // Ensure the session service factory is started, even if it was explicitly
   // shut down.
-  SessionServiceTestHelper helper(
-      SessionServiceFactory::GetForProfileForSessionRestore(profile));
+  SessionServiceTestHelper helper(profile);
   helper.SetForceBrowserNotAliveWithNoWindows(true);
-  helper.ReleaseService();
 
   // Create a new browser by navigating to the test page.
   GURL url = ui_test_utils::GetTestUrl(

@@ -65,10 +65,10 @@ class SessionServiceTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::SetUp();
 
     Profile* profile = browser()->profile();
-    SessionService* session_service = new SessionService(profile);
+    session_service_ = std::make_unique<SessionService>(profile);
     path_ = profile->GetPath();
 
-    helper_.SetService(session_service);
+    helper_.SetService(session_service_.get());
 
     service()->SetWindowType(window_id, Browser::TYPE_NORMAL);
     service()->SetWindowBounds(window_id,
@@ -78,8 +78,15 @@ class SessionServiceTest : public BrowserWithTestWindowTest {
   }
 
   void TearDown() override {
-    helper_.SetService(nullptr);
+    DestroySessionService();
     BrowserWithTestWindowTest::TearDown();
+  }
+
+  void DestroySessionService() {
+    // Destroy the SessionService first as it may post tasks.
+    session_service_.reset();
+    // This flushes tasks.
+    helper_.SetService(nullptr);
   }
 
   void UpdateNavigation(
@@ -107,11 +114,10 @@ class SessionServiceTest : public BrowserWithTestWindowTest {
   void ReadWindows(
       std::vector<std::unique_ptr<sessions::SessionWindow>>* windows,
       SessionID* active_window_id) {
-    // Forces closing the file.
-    helper_.SetService(nullptr);
+    DestroySessionService();
 
-    SessionService* session_service = new SessionService(path_);
-    helper_.SetService(session_service);
+    session_service_ = std::make_unique<SessionService>(path_);
+    helper_.SetService(session_service_.get());
 
     SessionID* non_null_active_window_id = active_window_id;
     SessionID dummy_active_window_id = SessionID::InvalidValue();
@@ -184,6 +190,7 @@ class SessionServiceTest : public BrowserWithTestWindowTest {
   base::ScopedTempDir temp_dir_;
   base::FilePath path_;
 
+  std::unique_ptr<SessionService> session_service_;
   SessionServiceTestHelper helper_;
 };
 
@@ -1327,7 +1334,9 @@ TEST_F(SessionServiceTest, GetSessionsAndDestroy) {
       base::BindOnce(&SimulateWaitForTesting, base::Unretained(&flag)));
   service()->GetLastSession(base::BindOnce(&OnGotPreviousSession));
   helper_.RunTaskOnBackendThread(FROM_HERE, run_loop.QuitClosure());
-  delete helper_.ReleaseService();
+  // Don't use DestroySessionService() as that runs the MessageLoop, which
+  // this test needs to control.
+  session_service_.reset();
   flag.Set();
   run_loop.Run();
 }
