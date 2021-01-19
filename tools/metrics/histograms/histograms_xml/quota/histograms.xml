@@ -174,7 +174,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Quota.PercentDiskAvailable2" units="%"
-    expires_after="2021-02-10">
+    expires_after="2022-01-18">
   <owner>jarrydg@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
