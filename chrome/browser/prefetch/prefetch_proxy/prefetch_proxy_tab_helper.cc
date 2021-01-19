@@ -556,7 +556,8 @@ void PrefetchProxyTabHelper::DidFinishNavigation(
     return;
   }
 
-  DCHECK(!PrefetchingActive());
+  // Ensure there's no ongoing prefetches.
+  page_->url_loaders_.clear();
 
   GURL url = navigation_handle->GetURL();
 
