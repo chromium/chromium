@@ -53,7 +53,7 @@ class EasyUnlockServiceSignin
       const AccountId& account_id,
       const std::string& device_public_key,
       const std::string& channel_binding_data,
-      base::Callback<void(const std::string& wraped_challenge)> callback);
+      base::OnceCallback<void(const std::string& wraped_challenge)> callback);
 
  private:
   // The load state of a user's cryptohome key data.

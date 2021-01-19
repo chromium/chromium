@@ -22,8 +22,10 @@ namespace chromeos {
 
 EasyUnlockGetKeysOperation::EasyUnlockGetKeysOperation(
     const UserContext& user_context,
-    const GetKeysCallback& callback)
-    : user_context_(user_context), callback_(callback), key_index_(0) {}
+    GetKeysCallback callback)
+    : user_context_(user_context),
+      callback_(std::move(callback)),
+      key_index_(0) {}
 
 EasyUnlockGetKeysOperation::~EasyUnlockGetKeysOperation() {}
 
@@ -37,7 +39,7 @@ void EasyUnlockGetKeysOperation::Start() {
 void EasyUnlockGetKeysOperation::OnCryptohomeAvailable(bool available) {
   if (!available) {
     PA_LOG(ERROR) << "Failed to wait for cryptohome to become available";
-    callback_.Run(false, EasyUnlockDeviceKeyDataList());
+    std::move(callback_).Run(false, EasyUnlockDeviceKeyDataList());
     return;
   }
 
@@ -81,12 +83,12 @@ void EasyUnlockGetKeysOperation::OnGetKeyData(
       if (devices_.size() == 1)
         devices_[0].unlock_key = true;
 
-      callback_.Run(true, devices_);
+      std::move(callback_).Run(true, devices_);
       return;
     }
 
     PA_LOG(ERROR) << "Easy unlock failed to get key data, code=" << return_code;
-    callback_.Run(false, EasyUnlockDeviceKeyDataList());
+    std::move(callback_).Run(false, EasyUnlockDeviceKeyDataList());
     return;
   }
 

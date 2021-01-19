@@ -33,8 +33,8 @@ EasyUnlockChallengeWrapper::EasyUnlockChallengeWrapper(
 EasyUnlockChallengeWrapper::~EasyUnlockChallengeWrapper() {}
 
 void EasyUnlockChallengeWrapper::WrapChallenge(
-    const WrappedChallengeCallback& callback) {
-  callback_ = callback;
+    WrappedChallengeCallback callback) {
+  callback_ = std::move(callback);
 
   // Because the TPM is used to sign the channel binding data, we need to
   // construct the SecureMessage by hand instead of using the
@@ -54,14 +54,14 @@ void EasyUnlockChallengeWrapper::WrapChallenge(
 
   SignUsingTpmKey(
       data_to_sign,
-      base::Bind(&EasyUnlockChallengeWrapper::OnChannelBindingDataSigned,
-                 weak_ptr_factory_.GetWeakPtr(), signature_metadata));
+      base::BindOnce(&EasyUnlockChallengeWrapper::OnChannelBindingDataSigned,
+                     weak_ptr_factory_.GetWeakPtr(), signature_metadata));
 }
 
 void EasyUnlockChallengeWrapper::SignUsingTpmKey(
     const std::string& data_to_sign,
-    const base::Callback<void(const std::string&)>& callback) {
-  key_manager_->SignUsingTpmKey(account_id_, data_to_sign, callback);
+    base::OnceCallback<void(const std::string&)> callback) {
+  key_manager_->SignUsingTpmKey(account_id_, data_to_sign, std::move(callback));
 }
 
 void EasyUnlockChallengeWrapper::OnChannelBindingDataSigned(
@@ -77,7 +77,7 @@ void EasyUnlockChallengeWrapper::OnChannelBindingDataSigned(
   wrapped_challenge.set_signature(signature_container.SerializeAsString());
 
   PA_LOG(VERBOSE) << "Finished wrapping challenge.";
-  callback_.Run(wrapped_challenge.SerializeAsString());
+  std::move(callback_).Run(wrapped_challenge.SerializeAsString());
 }
 
 }  // namespace chromeos

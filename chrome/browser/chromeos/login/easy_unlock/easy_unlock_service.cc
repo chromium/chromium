@@ -397,8 +397,9 @@ void EasyUnlockService::CheckCryptohomeKeysAndMaybeHardlock() {
   DCHECK(user);
   key_manager->GetDeviceDataList(
       UserContext(*user),
-      base::Bind(&EasyUnlockService::OnCryptohomeKeysFetchedForChecking,
-                 weak_ptr_factory_.GetWeakPtr(), account_id, paired_devices));
+      base::BindOnce(&EasyUnlockService::OnCryptohomeKeysFetchedForChecking,
+                     weak_ptr_factory_.GetWeakPtr(), account_id,
+                     paired_devices));
 }
 
 void EasyUnlockService::Shutdown() {
@@ -685,7 +686,7 @@ void EasyUnlockService::EnsureTpmKeyPresentIfNeeded() {
   // TODO(tbarzic): Set check_private_key only if previous sign-in attempt
   // failed.
   EasyUnlockTpmKeyManagerFactory::GetInstance()->Get(profile_)->PrepareTpmKey(
-      true /* check_private_key */, base::Closure());
+      /*check_private_key=*/true, base::OnceClosure());
 
   tpm_key_checked_ = true;
 }

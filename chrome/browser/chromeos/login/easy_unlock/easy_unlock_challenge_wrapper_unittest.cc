@@ -37,7 +37,7 @@ class TestableEasyUnlockChallengeWrapper : public EasyUnlockChallengeWrapper {
  private:
   void SignUsingTpmKey(
       const std::string& data_to_sign,
-      const base::Callback<void(const std::string&)>& callback) override {
+      base::OnceCallback<void(const std::string&)> callback) override {
     std::string expected_salt = std::string(kSalt);
     std::string expected_channel_binding_data =
         std::string(kChannelBindingData);
@@ -54,7 +54,7 @@ class TestableEasyUnlockChallengeWrapper : public EasyUnlockChallengeWrapper {
     securemessage::HeaderAndBody proto;
     EXPECT_TRUE(proto.ParseFromString(header_and_body));
 
-    callback.Run(kSignature);
+    std::move(callback).Run(kSignature);
   }
 
   DISALLOW_COPY_AND_ASSIGN(TestableEasyUnlockChallengeWrapper);
@@ -65,7 +65,7 @@ class TestableEasyUnlockChallengeWrapper : public EasyUnlockChallengeWrapper {
 TEST(EasyUnlockChallengeWrapperTest, TestWrapChallenge) {
   TestableEasyUnlockChallengeWrapper wrapper;
   std::string wrapped_challenge;
-  wrapper.WrapChallenge(base::Bind(&SaveResult, &wrapped_challenge));
+  wrapper.WrapChallenge(base::BindOnce(&SaveResult, &wrapped_challenge));
 
   securemessage::SecureMessage challenge_secure_message;
   ASSERT_TRUE(challenge_secure_message.ParseFromString(wrapped_challenge));

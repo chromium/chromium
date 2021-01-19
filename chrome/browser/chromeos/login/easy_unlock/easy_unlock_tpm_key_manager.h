@@ -58,7 +58,7 @@ class EasyUnlockTpmKeyManager : public KeyedService {
   //     signin does not remain permanently broken if something goes wrong.
   // `callback`: If the method cannot return immediately, called when the key
   //     pair presence is confirmed (or a key pair for the user is created).
-  bool PrepareTpmKey(bool check_private_key, const base::Closure& callback);
+  bool PrepareTpmKey(bool check_private_key, base::OnceClosure callback);
 
   // If called, posts a delayed task that cancels `PrepareTpmKey` and all other
   // started timeouts in case getting system slot takes more than `timeout_ms`.
@@ -75,7 +75,7 @@ class EasyUnlockTpmKeyManager : public KeyedService {
   void SignUsingTpmKey(
       const AccountId& account_id,
       const std::string& data,
-      const base::Callback<void(const std::string& data)> callback);
+      base::OnceCallback<void(const std::string& data)> callback);
 
   bool StartedCreatingTpmKeys() const;
 
@@ -117,7 +117,7 @@ class EasyUnlockTpmKeyManager : public KeyedService {
   void SignDataWithSystemSlot(
       const std::string& public_key,
       const std::string& data,
-      const base::Callback<void(const std::string& data)> callback,
+      base::OnceCallback<void(const std::string& data)> callback,
       crypto::ScopedPK11Slot system_slot);
 
   // Called when a RSA key pair is created for a user in TPM system slot.
@@ -128,7 +128,7 @@ class EasyUnlockTpmKeyManager : public KeyedService {
   // Called when data signing requested in `SignUsingTpmKey` is done.
   // It runs `callback` with the created `signature`. On error the callback will
   // be run with an empty string.
-  void OnDataSigned(const base::Callback<void(const std::string&)>& callback,
+  void OnDataSigned(base::OnceCallback<void(const std::string&)> callback,
                     const std::string& signature);
 
   const AccountId account_id_;
@@ -142,7 +142,7 @@ class EasyUnlockTpmKeyManager : public KeyedService {
   CreateTpmKeyState create_tpm_key_state_;
 
   // Queued up `PrepareTpmKey` callbacks.
-  std::vector<base::Closure> prepare_tpm_key_callbacks_;
+  std::vector<base::OnceClosure> prepare_tpm_key_callbacks_;
 
   base::WeakPtrFactory<EasyUnlockTpmKeyManager> get_tpm_slot_weak_ptr_factory_{
       this};

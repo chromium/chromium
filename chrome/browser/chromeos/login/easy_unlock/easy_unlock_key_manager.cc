@@ -25,24 +25,26 @@ EasyUnlockKeyManager::~EasyUnlockKeyManager() {}
 
 void EasyUnlockKeyManager::RefreshKeys(const UserContext& user_context,
                                        const base::ListValue& remote_devices,
-                                       const RefreshKeysCallback& callback) {
-  base::Closure do_refresh_keys =
-      base::Bind(&EasyUnlockKeyManager::RefreshKeysWithTpmKeyPresent,
-                 weak_ptr_factory_.GetWeakPtr(), user_context,
-                 base::Owned(remote_devices.DeepCopy()), callback);
-
+                                       RefreshKeysCallback callback) {
   EasyUnlockTpmKeyManager* tpm_key_manager =
       EasyUnlockTpmKeyManagerFactory::GetInstance()->GetForUser(
           user_context.GetAccountId().GetUserEmail());
   if (!tpm_key_manager) {
     PA_LOG(ERROR) << "No TPM key manager.";
-    callback.Run(false);
+    std::move(callback).Run(false);
     return;
   }
 
+  // This callback will only be executed once but must be marked repeating
+  // because it could be discarded by PrepareTpmKey() and invoked here instead.
+  auto do_refresh_keys = base::BindRepeating(
+      &EasyUnlockKeyManager::RefreshKeysWithTpmKeyPresent,
+      weak_ptr_factory_.GetWeakPtr(), user_context,
+      base::Owned(remote_devices.DeepCopy()), base::Passed(&callback));
+
   // Private TPM key is needed only when adding new keys.
   if (remote_devices.empty() ||
-      tpm_key_manager->PrepareTpmKey(false /* check_private_key */,
+      tpm_key_manager->PrepareTpmKey(/*check_private_key=*/false,
                                      do_refresh_keys)) {
     do_refresh_keys.Run();
   } else {
@@ -59,7 +61,7 @@ void EasyUnlockKeyManager::RefreshKeys(const UserContext& user_context,
 void EasyUnlockKeyManager::RefreshKeysWithTpmKeyPresent(
     const UserContext& user_context,
     base::ListValue* remote_devices,
-    const RefreshKeysCallback& callback) {
+    RefreshKeysCallback callback) {
   EasyUnlockTpmKeyManager* tpm_key_manager =
       EasyUnlockTpmKeyManagerFactory::GetInstance()->GetForUser(
           user_context.GetAccountId().GetUserEmail());
@@ -73,17 +75,18 @@ void EasyUnlockKeyManager::RefreshKeysWithTpmKeyPresent(
   write_operation_queue_.push_back(
       std::make_unique<EasyUnlockRefreshKeysOperation>(
           user_context, tpm_public_key, devices,
-          base::Bind(&EasyUnlockKeyManager::OnKeysRefreshed,
-                     weak_ptr_factory_.GetWeakPtr(), callback)));
+          base::BindOnce(&EasyUnlockKeyManager::OnKeysRefreshed,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
   RunNextOperation();
 }
 
 void EasyUnlockKeyManager::GetDeviceDataList(
     const UserContext& user_context,
-    const GetDeviceDataListCallback& callback) {
+    GetDeviceDataListCallback callback) {
   read_operation_queue_.push_back(std::make_unique<EasyUnlockGetKeysOperation>(
-      user_context, base::Bind(&EasyUnlockKeyManager::OnKeysFetched,
-                               weak_ptr_factory_.GetWeakPtr(), callback)));
+      user_context,
+      base::BindOnce(&EasyUnlockKeyManager::OnKeysFetched,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
   RunNextOperation();
 }
 
@@ -205,10 +208,10 @@ void EasyUnlockKeyManager::RunNextOperation() {
   }
 }
 
-void EasyUnlockKeyManager::OnKeysRefreshed(const RefreshKeysCallback& callback,
+void EasyUnlockKeyManager::OnKeysRefreshed(RefreshKeysCallback callback,
                                            bool refresh_success) {
   if (!callback.is_null())
-    callback.Run(refresh_success);
+    std::move(callback).Run(refresh_success);
 
   DCHECK(pending_write_operation_);
   pending_write_operation_.reset();
@@ -216,11 +219,11 @@ void EasyUnlockKeyManager::OnKeysRefreshed(const RefreshKeysCallback& callback,
 }
 
 void EasyUnlockKeyManager::OnKeysFetched(
-    const GetDeviceDataListCallback& callback,
+    GetDeviceDataListCallback callback,
     bool fetch_success,
     const EasyUnlockDeviceKeyDataList& fetched_data) {
   if (!callback.is_null())
-    callback.Run(fetch_success, fetched_data);
+    std::move(callback).Run(fetch_success, fetched_data);
 
   DCHECK(pending_read_operation_);
   pending_read_operation_.reset();

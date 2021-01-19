@@ -188,10 +188,10 @@ void IncreaseCount(int* count) {
 // Sets `*result` to `value` and runs `callback`.
 // Used as a callback to EasyUnlockTpmKeyManager::SignUsingTpmKey in tests.
 void RecordStringAndRunClosure(std::string* result,
-                               const base::Closure& callback,
+                               base::OnceClosure callback,
                                const std::string& value) {
   *result = value;
-  callback.Run();
+  std::move(callback).Run();
 }
 
 class EasyUnlockTpmKeyManagerTest : public testing::Test {
@@ -380,7 +380,7 @@ TEST_F(EasyUnlockTpmKeyManagerTest, CreateKeyPair) {
             signin_key_manager()->GetPublicTpmKey(test_account_id_));
 
   EXPECT_TRUE(user_key_manager()->PrepareTpmKey(
-      false /* check_private_key */, base::Bind(&ExpectNotCalledCallback)));
+      /*check_private_key=*/false, base::BindOnce(&ExpectNotCalledCallback)));
 }
 
 TEST_F(EasyUnlockTpmKeyManagerTest, CreateKeyPairMultipleCallbacks) {
@@ -392,14 +392,14 @@ TEST_F(EasyUnlockTpmKeyManagerTest, CreateKeyPairMultipleCallbacks) {
   ASSERT_FALSE(user_key_manager()->PrepareTpmKey(false /* check_private_key */,
                                                  run_loop.QuitClosure()));
   EXPECT_FALSE(user_key_manager()->PrepareTpmKey(
-      false /* check_private_key */,
-      base::Bind(&IncreaseCount, &callback_count)));
+      /*check_private_key=*/false,
+      base::BindOnce(&IncreaseCount, &callback_count)));
   EXPECT_FALSE(user_key_manager()->PrepareTpmKey(
-      false /* check_private_key */,
-      base::Bind(&IncreaseCount, &callback_count)));
+      /*check_private_key=*/false,
+      base::BindOnce(&IncreaseCount, &callback_count)));
   // Verify that the method works with empty callback.
-  EXPECT_FALSE(user_key_manager()->PrepareTpmKey(false /* check_private_key */,
-                                                 base::Closure()));
+  EXPECT_FALSE(user_key_manager()->PrepareTpmKey(/*check_private_key=*/false,
+                                                 base::OnceClosure()));
 
   ASSERT_TRUE(SetUpTestSystemSlot());
   VerifyKeyGenerationNotStartedAndFinalizeTestNssUser();
@@ -413,7 +413,7 @@ TEST_F(EasyUnlockTpmKeyManagerTest, CreateKeyPairMultipleCallbacks) {
             signin_key_manager()->GetPublicTpmKey(test_account_id_));
 
   EXPECT_TRUE(user_key_manager()->PrepareTpmKey(
-      false /* check_private_key */, base::Bind(&ExpectNotCalledCallback)));
+      /*check_private_key=*/false, base::BindOnce(&ExpectNotCalledCallback)));
 }
 
 TEST_F(EasyUnlockTpmKeyManagerTest, PublicKeySetInPrefs) {
@@ -422,7 +422,7 @@ TEST_F(EasyUnlockTpmKeyManagerTest, PublicKeySetInPrefs) {
       std::string(kTestPublicKey, base::size(kTestPublicKey)));
 
   EXPECT_TRUE(user_key_manager()->PrepareTpmKey(
-      false /* check_private_key */, base::Bind(&ExpectNotCalledCallback)));
+      /*check_private_key=*/false, base::BindOnce(&ExpectNotCalledCallback)));
 
   EXPECT_FALSE(user_key_manager()->GetPublicTpmKey(test_account_id_).empty());
   EXPECT_EQ(user_key_manager()->GetPublicTpmKey(test_account_id_),
@@ -468,8 +468,8 @@ TEST_F(EasyUnlockTpmKeyManagerTest, PublicKeySetInPrefsCheckPrivateKey_OK) {
                                                  run_loop.QuitClosure()));
 
   EXPECT_FALSE(user_key_manager()->PrepareTpmKey(
-      false /* check_private_key */,
-      base::Bind(&IncreaseCount, &callback_count)));
+      /*check_private_key=*/false,
+      base::BindOnce(&IncreaseCount, &callback_count)));
 
   run_loop.Run();
 
@@ -481,7 +481,7 @@ TEST_F(EasyUnlockTpmKeyManagerTest, PublicKeySetInPrefsCheckPrivateKey_OK) {
             signin_key_manager()->GetPublicTpmKey(test_account_id_));
 
   EXPECT_TRUE(user_key_manager()->PrepareTpmKey(
-      true /* check_private_key */, base::Bind(&ExpectNotCalledCallback)));
+      /*check_private_key=*/true, base::BindOnce(&ExpectNotCalledCallback)));
 }
 
 TEST_F(EasyUnlockTpmKeyManagerTest, GetSystemSlotTimeoutTriggers) {
@@ -559,7 +559,8 @@ TEST_F(EasyUnlockTpmKeyManagerTest, SignData) {
   std::string signed_data;
   signin_key_manager()->SignUsingTpmKey(
       test_account_id_, "data",
-      base::Bind(&RecordStringAndRunClosure, &signed_data, loop.QuitClosure()));
+      base::BindOnce(&RecordStringAndRunClosure, &signed_data,
+                     loop.QuitClosure()));
   loop.Run();
 
   EXPECT_FALSE(signed_data.empty());
@@ -570,7 +571,8 @@ TEST_F(EasyUnlockTpmKeyManagerTest, SignNoPublicKeySet) {
   std::string signed_data;
   signin_key_manager()->SignUsingTpmKey(
       test_account_id_, "data",
-      base::Bind(&RecordStringAndRunClosure, &signed_data, loop.QuitClosure()));
+      base::BindOnce(&RecordStringAndRunClosure, &signed_data,
+                     loop.QuitClosure()));
   loop.Run();
 
   EXPECT_TRUE(signed_data.empty());
@@ -585,7 +587,8 @@ TEST_F(EasyUnlockTpmKeyManagerTest, SignDataNoPrivateKeyPresent) {
   std::string signed_data;
   signin_key_manager()->SignUsingTpmKey(
       test_account_id_, "data",
-      base::Bind(&RecordStringAndRunClosure, &signed_data, loop.QuitClosure()));
+      base::BindOnce(&RecordStringAndRunClosure, &signed_data,
+                     loop.QuitClosure()));
 
   ASSERT_TRUE(SetUpTestSystemSlot());
 

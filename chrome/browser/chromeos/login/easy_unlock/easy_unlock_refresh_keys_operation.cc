@@ -13,11 +13,11 @@ EasyUnlockRefreshKeysOperation::EasyUnlockRefreshKeysOperation(
     const UserContext& user_context,
     const std::string& tpm_public_key,
     const EasyUnlockDeviceKeyDataList& devices,
-    const RefreshKeysCallback& callback)
+    RefreshKeysCallback callback)
     : user_context_(user_context),
       tpm_public_key_(tpm_public_key),
       devices_(devices),
-      callback_(callback) {}
+      callback_(std::move(callback)) {}
 
 EasyUnlockRefreshKeysOperation::~EasyUnlockRefreshKeysOperation() {}
 
@@ -30,14 +30,14 @@ void EasyUnlockRefreshKeysOperation::Start() {
 
   create_keys_operation_.reset(new EasyUnlockCreateKeysOperation(
       user_context_, tpm_public_key_, devices_,
-      base::Bind(&EasyUnlockRefreshKeysOperation::OnKeysCreated,
-                 weak_ptr_factory_.GetWeakPtr())));
+      base::BindOnce(&EasyUnlockRefreshKeysOperation::OnKeysCreated,
+                     weak_ptr_factory_.GetWeakPtr())));
   create_keys_operation_->Start();
 }
 
 void EasyUnlockRefreshKeysOperation::OnKeysCreated(bool success) {
   if (!success) {
-    callback_.Run(false);
+    std::move(callback_).Run(false);
     return;
   }
 
@@ -56,13 +56,13 @@ void EasyUnlockRefreshKeysOperation::RemoveKeysStartingFromIndex(
     size_t key_index) {
   remove_keys_operation_.reset(new EasyUnlockRemoveKeysOperation(
       user_context_, key_index,
-      base::Bind(&EasyUnlockRefreshKeysOperation::OnKeysRemoved,
-                 weak_ptr_factory_.GetWeakPtr())));
+      base::BindOnce(&EasyUnlockRefreshKeysOperation::OnKeysRemoved,
+                     weak_ptr_factory_.GetWeakPtr())));
   remove_keys_operation_->Start();
 }
 
 void EasyUnlockRefreshKeysOperation::OnKeysRemoved(bool success) {
-  callback_.Run(success);
+  std::move(callback_).Run(success);
 }
 
 }  // namespace chromeos

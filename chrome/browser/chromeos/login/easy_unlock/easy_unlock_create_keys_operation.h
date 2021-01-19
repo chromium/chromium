@@ -24,11 +24,11 @@ class UserContext;
 // A class to create Easy unlock cryptohome keys for the given user and devices.
 class EasyUnlockCreateKeysOperation {
  public:
-  typedef base::Callback<void(bool success)> CreateKeysCallback;
+  using CreateKeysCallback = base::OnceCallback<void(bool success)>;
   EasyUnlockCreateKeysOperation(const UserContext& user_context,
                                 const std::string& tpm_public_key,
                                 const EasyUnlockDeviceKeyDataList& devices,
-                                const CreateKeysCallback& callback);
+                                CreateKeysCallback callback);
   ~EasyUnlockCreateKeysOperation();
 
   void Start();

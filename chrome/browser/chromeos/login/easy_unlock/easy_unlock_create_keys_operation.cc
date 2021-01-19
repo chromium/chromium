@@ -47,12 +47,12 @@ const int kEasyUnlockKeyPrivileges =
 
 class EasyUnlockCreateKeysOperation::ChallengeCreator {
  public:
-  typedef base::Callback<void(bool success)> ChallengeCreatedCallback;
+  using ChallengeCreatedCallback = base::OnceCallback<void(bool success)>;
   ChallengeCreator(const std::string& user_key,
                    const std::string& session_key,
                    const std::string& tpm_pub_key,
                    EasyUnlockDeviceKeyData* device,
-                   const ChallengeCreatedCallback& callback);
+                   ChallengeCreatedCallback callback);
   ~ChallengeCreator();
 
   void Start();
@@ -95,12 +95,12 @@ EasyUnlockCreateKeysOperation::ChallengeCreator::ChallengeCreator(
     const std::string& session_key,
     const std::string& tpm_pub_key,
     EasyUnlockDeviceKeyData* device,
-    const ChallengeCreatedCallback& callback)
+    ChallengeCreatedCallback callback)
     : user_key_(user_key),
       session_key_(session_key),
       tpm_pub_key_(tpm_pub_key),
       device_(device),
-      callback_(callback),
+      callback_(std::move(callback)),
       easy_unlock_client_(DBusThreadManager::Get()->GetEasyUnlockClient()) {}
 
 EasyUnlockCreateKeysOperation::ChallengeCreator::~ChallengeCreator() {}
@@ -115,7 +115,7 @@ void EasyUnlockCreateKeysOperation::ChallengeCreator::OnEcKeyPairGenerated(
     const std::string& ec_public_key) {
   if (ec_private_key.empty() || ec_public_key.empty()) {
     PA_LOG(ERROR) << "Easy unlock failed to generate ec key pair.";
-    callback_.Run(false);
+    std::move(callback_).Run(false);
     return;
   }
 
@@ -124,7 +124,7 @@ void EasyUnlockCreateKeysOperation::ChallengeCreator::OnEcKeyPairGenerated(
                              base::Base64UrlDecodePolicy::REQUIRE_PADDING,
                              &device_pub_key)) {
     PA_LOG(ERROR) << "Easy unlock failed to decode device public key.";
-    callback_.Run(false);
+    std::move(callback_).Run(false);
     return;
   }
 
@@ -139,7 +139,7 @@ void EasyUnlockCreateKeysOperation::ChallengeCreator::OnEskGenerated(
     const std::string& esk) {
   if (esk.empty()) {
     PA_LOG(ERROR) << "Easy unlock failed to generate challenge esk.";
-    callback_.Run(false);
+    std::move(callback_).Run(false);
     return;
   }
 
@@ -158,7 +158,7 @@ void EasyUnlockCreateKeysOperation::ChallengeCreator::OnTPMPublicKeyWrapped(
     const std::string& wrapped_key) {
   if (wrapped_key.empty()) {
     PA_LOG(ERROR) << "Unable to wrap RSA key";
-    callback_.Run(false);
+    std::move(callback_).Run(false);
     return;
   }
   wrapped_tpm_pub_key_ = wrapped_key;
@@ -196,7 +196,7 @@ void EasyUnlockCreateKeysOperation::ChallengeCreator::OnPayloadGenerated(
     const std::string& payload) {
   if (payload.empty()) {
     PA_LOG(ERROR) << "Easy unlock failed to generate challenge payload.";
-    callback_.Run(false);
+    std::move(callback_).Run(false);
     return;
   }
 
@@ -216,12 +216,12 @@ void EasyUnlockCreateKeysOperation::ChallengeCreator::OnChallengeGenerated(
     const std::string& challenge) {
   if (challenge.empty()) {
     PA_LOG(ERROR) << "Easy unlock failed to generate challenge.";
-    callback_.Run(false);
+    std::move(callback_).Run(false);
     return;
   }
 
   device_->challenge = challenge;
-  callback_.Run(true);
+  std::move(callback_).Run(true);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -231,11 +231,11 @@ EasyUnlockCreateKeysOperation::EasyUnlockCreateKeysOperation(
     const UserContext& user_context,
     const std::string& tpm_public_key,
     const EasyUnlockDeviceKeyDataList& devices,
-    const CreateKeysCallback& callback)
+    CreateKeysCallback callback)
     : user_context_(user_context),
       tpm_public_key_(tpm_public_key),
       devices_(devices),
-      callback_(callback),
+      callback_(std::move(callback)),
       key_creation_index_(0) {
   // Must have the secret and callback.
   DCHECK(!user_context_.GetKey()->GetSecret().empty());
@@ -252,7 +252,7 @@ void EasyUnlockCreateKeysOperation::Start() {
 void EasyUnlockCreateKeysOperation::CreateKeyForDeviceAtIndex(size_t index) {
   DCHECK_GE(index, 0u);
   if (index == devices_.size()) {
-    callback_.Run(true);
+    std::move(callback_).Run(true);
     return;
   }
 
@@ -268,21 +268,21 @@ void EasyUnlockCreateKeysOperation::CreateKeyForDeviceAtIndex(size_t index) {
   crypto::Encryptor encryptor;
   if (!encryptor.Init(session_key.get(), crypto::Encryptor::CBC, iv)) {
     PA_LOG(ERROR) << "Easy unlock failed to init encryptor for key creation.";
-    callback_.Run(false);
+    std::move(callback_).Run(false);
     return;
   }
 
   EasyUnlockDeviceKeyData* device = &devices_[index];
   if (!encryptor.Encrypt(user_key, &device->wrapped_secret)) {
     PA_LOG(ERROR) << "Easy unlock failed to encrypt user key for key creation.";
-    callback_.Run(false);
+    std::move(callback_).Run(false);
     return;
   }
 
   challenge_creator_.reset(new ChallengeCreator(
       user_key, session_key->key(), tpm_public_key_, device,
-      base::Bind(&EasyUnlockCreateKeysOperation::OnChallengeCreated,
-                 weak_ptr_factory_.GetWeakPtr(), index)));
+      base::BindOnce(&EasyUnlockCreateKeysOperation::OnChallengeCreated,
+                     weak_ptr_factory_.GetWeakPtr(), index)));
   challenge_creator_->Start();
 }
 
@@ -292,7 +292,7 @@ void EasyUnlockCreateKeysOperation::OnChallengeCreated(size_t index,
 
   if (!success) {
     PA_LOG(ERROR) << "Easy unlock failed to create challenge for key creation.";
-    callback_.Run(false);
+    std::move(callback_).Run(false);
     return;
   }
 
@@ -307,7 +307,7 @@ void EasyUnlockCreateKeysOperation::OnGetSystemSalt(
   DCHECK_EQ(key_creation_index_, index);
   if (system_salt.empty()) {
     PA_LOG(ERROR) << "Easy unlock failed to get system salt for key creation.";
-    callback_.Run(false);
+    std::move(callback_).Run(false);
     return;
   }
 
@@ -367,7 +367,7 @@ void EasyUnlockCreateKeysOperation::OnKeyCreated(
 
   if (!success) {
     PA_LOG(ERROR) << "Easy unlock failed to create key, code=" << return_code;
-    callback_.Run(false);
+    std::move(callback_).Run(false);
     return;
   }
 

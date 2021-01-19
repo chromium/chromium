@@ -24,11 +24,11 @@ class UserContext;
 // remove keys operations.
 class EasyUnlockRefreshKeysOperation {
  public:
-  typedef base::Callback<void(bool success)> RefreshKeysCallback;
+  using RefreshKeysCallback = base::OnceCallback<void(bool success)>;
   EasyUnlockRefreshKeysOperation(const UserContext& user_context,
                                  const std::string& tpm_public_key,
                                  const EasyUnlockDeviceKeyDataList& devices,
-                                 const RefreshKeysCallback& callback);
+                                 RefreshKeysCallback callback);
   ~EasyUnlockRefreshKeysOperation();
 
   void Start();

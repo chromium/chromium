@@ -33,9 +33,9 @@ class UserContext;
 // A class to manage Easy unlock cryptohome keys.
 class EasyUnlockKeyManager {
  public:
-  typedef EasyUnlockRefreshKeysOperation::RefreshKeysCallback
-      RefreshKeysCallback;
-  typedef EasyUnlockGetKeysOperation::GetKeysCallback GetDeviceDataListCallback;
+  using RefreshKeysCallback =
+      EasyUnlockRefreshKeysOperation::RefreshKeysCallback;
+  using GetDeviceDataListCallback = EasyUnlockGetKeysOperation::GetKeysCallback;
 
   EasyUnlockKeyManager();
   ~EasyUnlockKeyManager();
@@ -45,12 +45,12 @@ class EasyUnlockKeyManager {
   // secret to allow keys to be created.
   void RefreshKeys(const UserContext& user_context,
                    const base::ListValue& remote_devices,
-                   const RefreshKeysCallback& callback);
+                   RefreshKeysCallback callback);
 
   // Retrieves the remote device data from cryptohome keys for the given
   // `user_context`.
   void GetDeviceDataList(const UserContext& user_context,
-                         const GetDeviceDataListCallback& callback);
+                         GetDeviceDataListCallback callback);
 
   // Helpers to convert between DeviceData and remote device dictionary.
   // DeviceDataToRemoteDeviceDictionary fills the remote device dictionary and
@@ -88,14 +88,13 @@ class EasyUnlockKeyManager {
   // challenges.
   void RefreshKeysWithTpmKeyPresent(const UserContext& user_context,
                                     base::ListValue* remote_devices,
-                                    const RefreshKeysCallback& callback);
+                                    RefreshKeysCallback callback);
 
   // Callback invoked after refresh keys operation.
-  void OnKeysRefreshed(const RefreshKeysCallback& callback,
-                       bool create_success);
+  void OnKeysRefreshed(RefreshKeysCallback callback, bool create_success);
 
   // Callback invoked after get keys op.
-  void OnKeysFetched(const GetDeviceDataListCallback& callback,
+  void OnKeysFetched(GetDeviceDataListCallback callback,
                      bool fetch_success,
                      const EasyUnlockDeviceKeyDataList& fetched_data);
 

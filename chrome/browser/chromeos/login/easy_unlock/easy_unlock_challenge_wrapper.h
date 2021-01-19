@@ -36,16 +36,16 @@ class EasyUnlockChallengeWrapper {
 
   // Wraps the challenge and invokes `callback` with the `wrapped_challenge`
   // that will be send directly to the remote device.
-  typedef base::Callback<void(const std::string& wrapped_challenge)>
-      WrappedChallengeCallback;
-  void WrapChallenge(const WrappedChallengeCallback& callback);
+  using WrappedChallengeCallback =
+      base::OnceCallback<void(const std::string& wrapped_challenge)>;
+  void WrapChallenge(WrappedChallengeCallback callback);
 
  protected:
   // Signs `data_to_sign` with the TPM. `callback` will be invoked upon
   // completion. Exposed for testing.
   virtual void SignUsingTpmKey(
       const std::string& data_to_sign,
-      const base::Callback<void(const std::string&)>& callback);
+      base::OnceCallback<void(const std::string&)> callback);
 
  private:
   // Called when the channel binding data is signed by the TPM and completes the

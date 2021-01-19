@@ -326,8 +326,9 @@ void EasyUnlockServiceRegular::InitializeInternal() {
   registrar_.Init(profile()->GetPrefs());
   registrar_.Add(
       proximity_auth::prefs::kProximityAuthIsChromeOSLoginEnabled,
-      base::Bind(&EasyUnlockServiceRegular::CheckCryptohomeKeysAndMaybeHardlock,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindRepeating(
+          &EasyUnlockServiceRegular::CheckCryptohomeKeysAndMaybeHardlock,
+          weak_ptr_factory_.GetWeakPtr()));
 
   // If `device_sync_client_` is not ready yet, wait for it to call back on
   // OnReady().

@@ -21,11 +21,11 @@ namespace chromeos {
 
 class EasyUnlockGetKeysOperation {
  public:
-  typedef base::Callback<void(bool success,
-                              const EasyUnlockDeviceKeyDataList& data_list)>
-      GetKeysCallback;
+  using GetKeysCallback =
+      base::OnceCallback<void(bool success,
+                              const EasyUnlockDeviceKeyDataList& data_list)>;
   EasyUnlockGetKeysOperation(const UserContext& user_context,
-                             const GetKeysCallback& callback);
+                             GetKeysCallback callback);
   ~EasyUnlockGetKeysOperation();
 
   // Starts the operation. If the cryptohome service is not yet available, the
