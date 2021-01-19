@@ -48,9 +48,9 @@ public class TileRenderer {
     private static final String TAG = "TileRenderer";
 
     private final Resources mResources;
-    private final ImageFetcher mImageFetcher;
     private final RoundedIconGenerator mIconGenerator;
     private final Resources.Theme mTheme;
+    private ImageFetcher mImageFetcher;
 
     @TileStyle
     private final int mStyle;
@@ -121,6 +121,10 @@ public class TileRenderer {
         }
     }
 
+    public void setImageFetcher(ImageFetcher imageFetcher) {
+        mImageFetcher = imageFetcher;
+    }
+
     /**
      * Record that a tile was clicked for IPH reasons.
      */
@@ -166,7 +170,7 @@ public class TileRenderer {
 
         // Note: It is important that the callbacks below don't keep a reference to the tile or
         // modify them as there is no guarantee that the same tile would be used to update the view.
-        if (tile.getSource() != TileSource.EXPLORE) {
+        if (mImageFetcher != null && tile.getSource() != TileSource.EXPLORE) {
             fetchIcon(tile.getData(), setupDelegate.createIconLoadCallback(tile));
         }
 

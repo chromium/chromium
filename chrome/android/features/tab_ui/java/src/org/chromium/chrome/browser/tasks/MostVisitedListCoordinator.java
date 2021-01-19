@@ -49,6 +49,7 @@ class MostVisitedListCoordinator implements TileGroup.Observer, TileGroup.TileSe
     private TileGroup mTileGroup;
     private TileRenderer mRenderer;
     private SuggestionsUiDelegate mSuggestionsUiDelegate;
+    private boolean mInitializationComplete;
 
     public MostVisitedListCoordinator(ChromeActivity activity, ViewGroup parent,
             PropertyModel propertyModel, Supplier<Tab> parentTabSupplier) {
@@ -60,16 +61,25 @@ class MostVisitedListCoordinator implements TileGroup.Observer, TileGroup.TileSe
     }
 
     public void initialize() {
+        mRenderer =
+                new TileRenderer(mActivity, SuggestionsConfig.TileStyle.MODERN, TITLE_LINES, null);
+    }
+
+    public void initWithNative() {
         Profile profile = Profile.getLastUsedRegularProfile();
         SnackbarManager snackbarManager = mActivity.getSnackbarManager();
-        if (mRenderer == null) {
-            // This function is never called in incognito mode.
+        if (!mInitializationComplete) {
             ImageFetcher imageFetcher = new ImageFetcher(profile);
-            mRenderer = new TileRenderer(
-                    mActivity, SuggestionsConfig.TileStyle.MODERN, TITLE_LINES, imageFetcher);
-
             mSuggestionsUiDelegate = new MostVisitedSuggestionsUiDelegate(profile, snackbarManager);
+            if (mRenderer == null) {
+                // This function is never called in incognito mode.
+                mRenderer = new TileRenderer(
+                        mActivity, SuggestionsConfig.TileStyle.MODERN, TITLE_LINES, imageFetcher);
+            } else {
+                mRenderer.setImageFetcher(imageFetcher);
+            }
         }
+
         OfflinePageBridge offlinePageBridge =
                 SuggestionsDependencyFactory.getInstance().getOfflinePageBridge(profile);
         TileGroupDelegateImpl tileGroupDelegate =
@@ -77,6 +87,7 @@ class MostVisitedListCoordinator implements TileGroup.Observer, TileGroup.TileSe
         mTileGroup = new TileGroup(mRenderer, mSuggestionsUiDelegate, null, tileGroupDelegate, this,
                 offlinePageBridge);
         mTileGroup.startObserving(MAX_RESULTS);
+        mInitializationComplete = true;
     }
 
     private void updateTileIcon(Tile tile) {

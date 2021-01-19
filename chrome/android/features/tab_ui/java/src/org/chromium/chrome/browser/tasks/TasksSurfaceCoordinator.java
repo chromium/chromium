@@ -96,6 +96,7 @@ public class TasksSurfaceCoordinator implements TasksSurface {
             LinearLayout mvTilesLayout = mView.findViewById(R.id.mv_tiles_layout);
             mMostVisitedList = new MostVisitedListCoordinator(
                     activity, mvTilesLayout, mPropertyModel, parentTabSupplier);
+            mMostVisitedList.initialize();
         }
     }
 
@@ -104,7 +105,7 @@ public class TasksSurfaceCoordinator implements TasksSurface {
     public void initialize() {
         assert LibraryLoader.getInstance().isInitialized();
 
-        if (mMostVisitedList != null) mMostVisitedList.initialize();
+        if (mMostVisitedList != null) mMostVisitedList.initWithNative();
         mMediator.initialize();
     }
 
