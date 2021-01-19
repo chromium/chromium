@@ -74,12 +74,6 @@ constexpr char kDefaultNetworkName[] = "eth1";
 
 constexpr int kInvokeDemoModeGestureTapsCount = 10;
 
-constexpr char kArcTosID[] = "arc-tos";
-
-const test::UIPath kArcTosAcceptButton = {kArcTosID, "arcTosAcceptButton"};
-const test::UIPath kArcTosBackButton = {kArcTosID, "arcTosBackButton"};
-const test::UIPath kArcTosNextButton = {kArcTosID, "arcTosNextButton"};
-
 // How js query is executed.
 enum class JSExecution { kSync, kAsync };
 
@@ -612,9 +606,10 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
       ArcTermsOfServiceScreenView::kScreenId, DemoSetupDialog::kArcTos,
       "#arcTosMetricsDemoApps"));
 
-  test::OobeJS().CreateVisibilityWaiter(true, kArcTosNextButton)->Wait();
-  test::OobeJS().ClickOnPath(kArcTosNextButton);
-  test::OobeJS().ClickOnPath(kArcTosAcceptButton);
+  ClickOobeButtonWithSelector(ArcTermsOfServiceScreenView::kScreenId,
+                              "#arcTosNextButton", JSExecution::kSync);
+  ClickOobeButtonWithSelector(ArcTermsOfServiceScreenView::kScreenId,
+                              "#arcTosAcceptButton", JSExecution::kAsync);
 
   OobeScreenWaiter(DemoSetupScreenView::kScreenId).Wait();
   EXPECT_TRUE(DemoSetupController::GetSubOrganizationEmail().empty());
@@ -699,9 +694,10 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   EXPECT_TRUE(IsScreenShown(ArcTermsOfServiceScreenView::kScreenId));
 
   SetPlayStoreTermsForTesting();
-  test::OobeJS().CreateVisibilityWaiter(true, kArcTosNextButton)->Wait();
-  test::OobeJS().ClickOnPath(kArcTosNextButton);
-  test::OobeJS().ClickOnPath(kArcTosAcceptButton);
+  ClickOobeButtonWithSelector(ArcTermsOfServiceScreenView::kScreenId,
+                              "#arcTosNextButton", JSExecution::kSync);
+  ClickOobeButtonWithSelector(ArcTermsOfServiceScreenView::kScreenId,
+                              "#arcTosAcceptButton", JSExecution::kAsync);
 
   OobeScreenWaiter(DemoSetupScreenView::kScreenId).Wait();
   // Verify the email corresponds to France.
@@ -750,9 +746,10 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, OnlineSetupFlowErrorDefault) {
   EXPECT_TRUE(IsScreenShown(ArcTermsOfServiceScreenView::kScreenId));
 
   SetPlayStoreTermsForTesting();
-  test::OobeJS().CreateVisibilityWaiter(true, kArcTosNextButton)->Wait();
-  test::OobeJS().ClickOnPath(kArcTosNextButton);
-  test::OobeJS().ClickOnPath(kArcTosAcceptButton);
+  ClickOobeButtonWithSelector(ArcTermsOfServiceScreenView::kScreenId,
+                              "#arcTosNextButton", JSExecution::kSync);
+  ClickOobeButtonWithSelector(ArcTermsOfServiceScreenView::kScreenId,
+                              "#arcTosAcceptButton", JSExecution::kAsync);
 
   OobeScreenWaiter(DemoSetupScreenView::kScreenId).Wait();
   // TODO(agawronska): Progress dialog transition is async - extra work is
@@ -820,9 +817,10 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   EXPECT_TRUE(IsScreenShown(ArcTermsOfServiceScreenView::kScreenId));
 
   SetPlayStoreTermsForTesting();
-  test::OobeJS().CreateVisibilityWaiter(true, kArcTosNextButton)->Wait();
-  test::OobeJS().ClickOnPath(kArcTosNextButton);
-  test::OobeJS().ClickOnPath(kArcTosAcceptButton);
+  ClickOobeButtonWithSelector(ArcTermsOfServiceScreenView::kScreenId,
+                              "#arcTosNextButton", JSExecution::kSync);
+  ClickOobeButtonWithSelector(ArcTermsOfServiceScreenView::kScreenId,
+                              "#arcTosAcceptButton", JSExecution::kAsync);
 
   OobeScreenWaiter(DemoSetupScreenView::kScreenId).Wait();
   // TODO(agawronska): Progress dialog transition is async - extra work is
@@ -884,9 +882,10 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   EXPECT_TRUE(IsScreenShown(ArcTermsOfServiceScreenView::kScreenId));
 
   SetPlayStoreTermsForTesting();
-  test::OobeJS().CreateVisibilityWaiter(true, kArcTosNextButton)->Wait();
-  test::OobeJS().ClickOnPath(kArcTosNextButton);
-  test::OobeJS().ClickOnPath(kArcTosAcceptButton);
+  ClickOobeButtonWithSelector(ArcTermsOfServiceScreenView::kScreenId,
+                              "#arcTosNextButton", JSExecution::kSync);
+  ClickOobeButtonWithSelector(ArcTermsOfServiceScreenView::kScreenId,
+                              "#arcTosAcceptButton", JSExecution::kAsync);
 
   OobeScreenWaiter(DemoSetupScreenView::kScreenId).Wait();
   // TODO(agawronska): Progress dialog transition is async - extra work is
@@ -964,9 +963,10 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, OfflineSetupFlowSuccess) {
       ArcTermsOfServiceScreenView::kScreenId, DemoSetupDialog::kArcTos,
       "#arcTosMetricsDemoApps"));
 
-  test::OobeJS().CreateVisibilityWaiter(true, kArcTosNextButton)->Wait();
-  test::OobeJS().ClickOnPath(kArcTosNextButton);
-  test::OobeJS().ClickOnPath(kArcTosAcceptButton);
+  ClickOobeButtonWithSelector(ArcTermsOfServiceScreenView::kScreenId,
+                              "#arcTosNextButton", JSExecution::kSync);
+  ClickOobeButtonWithSelector(ArcTermsOfServiceScreenView::kScreenId,
+                              "#arcTosAcceptButton", JSExecution::kAsync);
 
   OobeScreenWaiter(DemoSetupScreenView::kScreenId).Wait();
   // TODO(agawronska): Progress dialog transition is async - extra work is
@@ -1024,9 +1024,10 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   EXPECT_TRUE(IsScreenShown(ArcTermsOfServiceScreenView::kScreenId));
 
   SetPlayStoreTermsForTesting();
-  test::OobeJS().CreateVisibilityWaiter(true, kArcTosNextButton)->Wait();
-  test::OobeJS().ClickOnPath(kArcTosNextButton);
-  test::OobeJS().ClickOnPath(kArcTosAcceptButton);
+  ClickOobeButtonWithSelector(ArcTermsOfServiceScreenView::kScreenId,
+                              "#arcTosNextButton", JSExecution::kSync);
+  ClickOobeButtonWithSelector(ArcTermsOfServiceScreenView::kScreenId,
+                              "#arcTosAcceptButton", JSExecution::kAsync);
 
   OobeScreenWaiter(DemoSetupScreenView::kScreenId).Wait();
   // TODO(agawronska): Progress dialog transition is async - extra work is
@@ -1089,9 +1090,10 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   EXPECT_TRUE(IsScreenShown(ArcTermsOfServiceScreenView::kScreenId));
 
   SetPlayStoreTermsForTesting();
-  test::OobeJS().CreateVisibilityWaiter(true, kArcTosNextButton)->Wait();
-  test::OobeJS().ClickOnPath(kArcTosNextButton);
-  test::OobeJS().ClickOnPath(kArcTosAcceptButton);
+  ClickOobeButtonWithSelector(ArcTermsOfServiceScreenView::kScreenId,
+                              "#arcTosNextButton", JSExecution::kSync);
+  ClickOobeButtonWithSelector(ArcTermsOfServiceScreenView::kScreenId,
+                              "#arcTosAcceptButton", JSExecution::kAsync);
 
   OobeScreenWaiter(DemoSetupScreenView::kScreenId).Wait();
   // TODO(agawronska): Progress dialog transition is async - extra work is
@@ -1183,8 +1185,8 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, MAYBE_BackOnArcTermsScreen) {
 
   SkipToScreen(ArcTermsOfServiceScreenView::kScreenId);
 
-  test::OobeJS().CreateVisibilityWaiter(true, kArcTosBackButton)->Wait();
-  test::OobeJS().ClickOnPath(kArcTosBackButton);
+  ClickOobeButton(ArcTermsOfServiceScreenView::kScreenId, OobeButton::kBack,
+                  JSExecution::kSync);
 
   OobeScreenWaiter(NetworkScreenView::kScreenId).Wait();
 }

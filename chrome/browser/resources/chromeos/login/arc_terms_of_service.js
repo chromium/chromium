@@ -6,21 +6,11 @@
  * @fileoverview Polymer element for displaying material design for ARC Terms Of
  * Service screen.
  */
-'use strict';
-
-(function() {
-
-// Enum that describes the current state of the Arc Terms Of Service screen
-const UIState = {
-  LOADING: 'loading',
-  LOADED: 'loaded',
-  ERROR: 'error',
-};
 
 Polymer({
   is: 'arc-tos-element',
 
-  behaviors: [OobeI18nBehavior, MultiStepBehavior, LoginScreenBehavior],
+  behaviors: [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
 
   EXTERNAL_API: [
     'setMetricsMode',
@@ -190,13 +180,6 @@ Polymer({
    */
   termsOfServiceHostName_: 'https://play.google.com',
 
-
-  defaultUIStep() {
-    return UIState.LOADING;
-  },
-
-  UI_STEPS: UIState,
-
   /** @override */
   ready() {
     this.initializeLoginScreen('ArcTermsOfServiceScreen', {
@@ -218,6 +201,7 @@ Polymer({
    * Event handler that is invoked just before the screen is shown.
    */
   onBeforeShow() {
+    this.focusButton_();
     this.is_shown_ = true;
     window.setTimeout(this.applyOobeConfiguration_.bind(this), 0);
 
@@ -281,6 +265,20 @@ Polymer({
   reset_() {
     this.showFullDialog = false;
     this.$.arcTosNextButton.focus();
+  },
+
+  focusButton_() {
+    var id;
+    if (this.hasClass_('arc-tos-loaded')) {
+      id = 'arcTosNextButton';
+    } else if (this.hasClass_('error')) {
+      id = 'arcTosRetryButton';
+    }
+
+    if (typeof id === 'undefined')
+      return;
+
+    Polymer.RenderStatus.afterNextRender(this, () => this.$[id].focus());
   },
 
   /**
@@ -412,7 +410,7 @@ Polymer({
     countryCode = countryCode.toLowerCase();
 
     if (this.language_ && this.language_ == language && this.countryCode_ &&
-        this.countryCode_ == countryCode && this.uiStep != UIState.ERROR &&
+        this.countryCode_ == countryCode && !this.classList.contains('error') &&
         !this.usingOfflineTerms_ && this.tosContent_) {
       this.enableButtons_(true);
       return;
@@ -438,7 +436,7 @@ Polymer({
 
     // Try to use currently loaded document first.
     var self = this;
-    if (termsView.src != '' && this.isLoaded_()) {
+    if (termsView.src != '' && this.classList.contains('arc-tos-loaded')) {
       var navigateScript = 'processLangZoneTerms(true, \'' + language +
           '\', \'' + countryCode + '\');';
       termsView.executeScript({code: navigateScript}, function(results) {
@@ -491,7 +489,7 @@ Polymer({
    * @param {boolean} child whether current account is a child account.
    */
   setArcManaged(managed, child) {
-    this.$.arcTosView.hidden = managed;
+    this.$.arcTosViewContainer.hidden = managed;
     this.isChild = child;
   },
 
@@ -533,7 +531,9 @@ Polymer({
     this.usingOfflineTerms_ = false;
     var termsView = this.$.arcTosView;
     termsView.src = this.termsOfServiceHostName_ + '/about/play-terms.html';
-    this.setUIStep(UIState.LOADING);
+    this.removeClass_('arc-tos-loaded');
+    this.removeClass_('error');
+    this.addClass_('arc-tos-loading');
     this.enableButtons_(false);
   },
 
@@ -549,6 +549,36 @@ Polymer({
    */
   clearDemoMode() {
     this.demoMode = false;
+  },
+
+  /**
+   * Adds new class to the list of classes of root OOBE style.
+   * @param {string} className class to remove.
+   *
+   * @private
+   */
+  addClass_(className) {
+    this.$.arcTosDialog.classList.add(className);
+  },
+
+  /**
+   * Removes class from the list of classes of root OOBE style.
+   * @param {string} className class to remove.
+   *
+   * @private
+   */
+  removeClass_(className) {
+    this.$.arcTosDialog.classList.remove(className);
+  },
+
+  /**
+   * Checks if class exists in the list of classes of root OOBE style.
+   * @param {string} className class to check.
+   *
+   * @private
+   */
+  hasClass_(className) {
+    return this.$.arcTosDialog.classList.contains(className);
   },
 
   /**
@@ -612,7 +642,10 @@ Polymer({
    * @private
    */
   setTermsViewContentLoadedState_() {
-    this.setUIStep(UIState.LOADED);
+    this.removeClass_('arc-tos-loading');
+    this.removeClass_('error');
+    this.addClass_('arc-tos-loaded');
+
     this.enableButtons_(true);
     this.showFullDialog = false;
     this.$.arcTosNextButton.focus();
@@ -640,7 +673,9 @@ Polymer({
    */
   showError_() {
     this.termsError = true;
-    this.setUIStep(UIState.ERROR);
+    this.removeClass_('arc-tos-loading');
+    this.removeClass_('arc-tos-loaded');
+    this.addClass_('error');
 
     this.enableButtons_(true);
     this.$.arcTosRetryButton.focus();
@@ -671,7 +706,9 @@ Polymer({
    * Shows loading screen for debugging purpose
    */
   showLoadingScreenForTesting() {
-    this.setUIStep(UIState.LOADING);
+    this.removeClass_('arc-tos-loaded');
+    this.removeClass_('error');
+    this.addClass_('arc-tos-loading');
     this.enableButtons_(false);
   },
 
@@ -777,6 +814,5 @@ Polymer({
       this.lastFocusedElement_.focus();
       this.lastFocusedElement_ = null;
     }
-  },
+  }
 });
-})();
