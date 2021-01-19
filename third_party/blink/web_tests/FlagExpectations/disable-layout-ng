@@ -386,7 +386,7 @@ crbug.com/1012289 external/wpt/css/css-lists/list-style-type-string-006.html [ F
 crbug.com/591099 external/wpt/css/css-content/quotes-033.html [ Failure ]
 
 ### external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/flexbox/
-crbug.com/886592 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/align3/flex-abspos-staticpos-margin-002.html [ Failure ]
+crbug.com/886592 external/wpt/css/css-flexbox/abspos/flex-abspos-staticpos-margin-002.html [ Failure ]
 
 ### external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/ib-split/
 crbug.com/591099 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/ib-split/emptyspan-1.html [ Failure ]
@@ -739,8 +739,8 @@ crbug.com/591099 external/wpt/appmanifest/start_url-member/start_url-member-pass
 
 ### external/wpt/css/css-flexbox/
 crbug.com/591099 external/wpt/css/css-flexbox/percentage-size-quirks-002.html [ Failure ]
-crbug.com/591099 external/wpt/css/css-flexbox/position-absolute-014.html [ Failure ]
-crbug.com/591099 external/wpt/css/css-flexbox/position-absolute-015.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-flexbox/abspos/position-absolute-014.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-flexbox/abspos/position-absolute-015.html [ Failure ]
 
 ### external/wpt/css/css-grid/
 crbug.com/591099 external/wpt/css/css-grid/grid-items/percentage-size-indefinite-replaced.html [ Failure ]

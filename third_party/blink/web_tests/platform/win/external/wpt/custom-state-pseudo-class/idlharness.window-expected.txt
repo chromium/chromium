@@ -1,0 +1,22 @@
+This is a testharness.js-based test.
+PASS idl_test setup
+PASS idl_test validation
+PASS Partial interface ElementInternals: original interface defined
+PASS Partial interface ElementInternals: member names are unique
+PASS ElementInternals includes ARIAMixin: member names are unique
+FAIL CustomStateSet interface: existence and properties of interface object assert_own_property: self does not have own property "CustomStateSet" expected property "CustomStateSet" missing
+FAIL CustomStateSet interface object length assert_own_property: self does not have own property "CustomStateSet" expected property "CustomStateSet" missing
+FAIL CustomStateSet interface object name assert_own_property: self does not have own property "CustomStateSet" expected property "CustomStateSet" missing
+FAIL CustomStateSet interface: existence and properties of interface prototype object assert_own_property: self does not have own property "CustomStateSet" expected property "CustomStateSet" missing
+FAIL CustomStateSet interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "CustomStateSet" expected property "CustomStateSet" missing
+FAIL CustomStateSet interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "CustomStateSet" expected property "CustomStateSet" missing
+FAIL CustomStateSet interface: operation add(DOMString) assert_own_property: self does not have own property "CustomStateSet" expected property "CustomStateSet" missing
+FAIL CustomStateSet must be primary interface of customStateSet assert_own_property: self does not have own property "CustomStateSet" expected property "CustomStateSet" missing
+FAIL Stringification of customStateSet assert_class_string: class string of customStateSet expected "[object CustomStateSet]" but got "[object DOMTokenList]"
+PASS CustomStateSet interface: customStateSet must inherit property "add(DOMString)" with the proper type
+FAIL CustomStateSet interface: calling add(DOMString) on customStateSet with too few arguments must throw TypeError assert_throws_js: Called with 0 arguments function "function() {
+            fn.apply(obj, args);
+        }" did not throw
+PASS ElementInternals interface: attribute states
+Harness: the test ran to completion.
+
