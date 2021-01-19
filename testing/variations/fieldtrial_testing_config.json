@@ -4757,21 +4757,6 @@
             ]
         }
     ],
-    "OutOfProcessQuarantine": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "OutOfProcessQuarantine"
-                    ]
-                }
-            ]
-        }
-    ],
     "OverlayPrioritizationTesting": [
         {
             "platforms": [
