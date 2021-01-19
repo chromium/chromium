@@ -166,4 +166,54 @@ TEST_F(AXLayoutObjectTest, AccessibilityHitTestShadowDOM) {
   run_test(ShadowRootType::kClosed);
 }
 
+// https://crbug.com/1167596
+TEST_F(AXLayoutObjectTest, GetListStyleDecimalLeadingZero) {
+  ScopedCSSAtRuleCounterStyleForTest scope(false);
+
+  using ListStyle = ax::mojom::blink::ListStyle;
+
+  SetBodyInnerHTML(R"HTML(
+  <ul>
+    <li id="target" style="list-style-type: decimal-leading-zero"></li>
+  </ul>
+  )HTML");
+
+  EXPECT_EQ(ListStyle::kNumeric,
+            GetAXObjectByElementId("target")->GetListStyle());
+}
+
+// https://crbug.com/1167596
+TEST_F(AXLayoutObjectTest, GetListStyleDecimalLeadingZeroAsCustomCounterStyle) {
+  ScopedCSSAtRuleCounterStyleForTest scope(true);
+
+  using ListStyle = ax::mojom::blink::ListStyle;
+
+  SetBodyInnerHTML(R"HTML(
+  <ul>
+    <li id="target" style="list-style-type: decimal-leading-zero"></li>
+  </ul>
+  )HTML");
+
+  EXPECT_EQ(ListStyle::kNumeric,
+            GetAXObjectByElementId("target")->GetListStyle());
+}
+// https://crbug.com/1167596
+TEST_F(AXLayoutObjectTest, GetListStyleOverriddenDecimalLeadingZero) {
+  ScopedCSSAtRuleCounterStyleForTest scope(true);
+
+  using ListStyle = ax::mojom::blink::ListStyle;
+
+  SetBodyInnerHTML(R"HTML(
+  <style>
+  @counter-style decimal-leading-zero { system: extends upper-roman; }
+  </style>
+  <ul>
+    <li id="target" style="list-style-type: decimal-leading-zero"></li>
+  </ul>
+  )HTML");
+
+  EXPECT_EQ(ListStyle::kOther,
+            GetAXObjectByElementId("target")->GetListStyle());
+}
+
 }  // namespace blink
