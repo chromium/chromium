@@ -23,7 +23,6 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/subresource_filter/content/browser/ruleset_service.h"
-#include "components/subresource_filter/content/common/subresource_filter_messages.h"
 #include "components/subresource_filter/core/common/test_ruleset_creator.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
@@ -64,13 +63,6 @@ std::string ReadFileContentsToString(base::File* file) {
   return contents;
 }
 
-// Extracts and takes ownership of the ruleset file handle in the IPC message.
-base::File ExtractRulesetFromMessage(const IPC::Message* message) {
-  std::tuple<IPC::PlatformFileForTransit> arg;
-  SubresourceFilterMsg_SetRulesetForProcess::Read(message, &arg);
-  return IPC::PlatformFileForTransitToFile(std::get<0>(arg));
-}
-
 }  // namespace
 
 class SubresourceFilterRulesetPublisherImplTest : public ::testing::Test {
@@ -91,15 +83,11 @@ class SubresourceFilterRulesetPublisherImplTest : public ::testing::Test {
     return scoped_temp_dir_.GetPath().AppendASCII("data");
   }
 
-  void AssertSetRulesetForProcessMessageWithContent(
-      const IPC::Message* message,
-      const std::string& expected_contents) {
-    ASSERT_EQ(
-        static_cast<uint32_t>(SubresourceFilterMsg_SetRulesetForProcess::ID),
-        message->type());
-    base::File ruleset_file = ExtractRulesetFromMessage(message);
-    ASSERT_TRUE(ruleset_file.IsValid());
-    ASSERT_EQ(expected_contents, ReadFileContentsToString(&ruleset_file));
+  void AssertSetRulesetFileWithContent(base::File* ruleset_file,
+                                       const std::string& expected_contents) {
+    ASSERT_TRUE(ruleset_file);
+    ASSERT_TRUE(ruleset_file->IsValid());
+    ASSERT_EQ(expected_contents, ReadFileContentsToString(ruleset_file));
   }
 
  private:
@@ -111,13 +99,39 @@ class SubresourceFilterRulesetPublisherImplTest : public ::testing::Test {
   DISALLOW_COPY_AND_ASSIGN(SubresourceFilterRulesetPublisherImplTest);
 };
 
+class MockRulesetPublisherImpl : public RulesetPublisherImpl {
+ public:
+  template <typename... Args>
+  explicit MockRulesetPublisherImpl(Args&&... args)
+      : RulesetPublisherImpl(std::forward<Args>(args)...) {}
+  void SendRulesetToRenderProcess(
+      base::File* file,
+      content::RenderProcessHost* process) override {
+    last_file_[process] = file;
+    sent_count_++;
+  }
+
+  size_t RulesetSent() const { return sent_count_; }
+
+  base::File* RulesetFileForProcess(content::RenderProcessHost* process) {
+    auto it = last_file_.find(process);
+    if (it == last_file_.end())
+      return nullptr;
+    return it->second;
+  }
+
+ private:
+  size_t sent_count_ = 0;
+  std::map<content::RenderProcessHost*, base::File*> last_file_;
+};
+
 TEST_F(SubresourceFilterRulesetPublisherImplTest, NoRuleset_NoIPCMessages) {
   NotifyingMockRenderProcessHost existing_renderer(browser_context());
-  RulesetPublisherImpl service(nullptr, base::ThreadTaskRunnerHandle::Get());
+  MockRulesetPublisherImpl service(nullptr,
+                                   base::ThreadTaskRunnerHandle::Get());
   NotifyingMockRenderProcessHost new_renderer(browser_context());
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(0u, existing_renderer.sink().message_count());
-  EXPECT_EQ(0u, new_renderer.sink().message_count());
+  EXPECT_EQ(0u, service.RulesetSent());
 }
 
 TEST_F(SubresourceFilterRulesetPublisherImplTest,
@@ -132,7 +146,8 @@ TEST_F(SubresourceFilterRulesetPublisherImplTest,
 
   NotifyingMockRenderProcessHost existing_renderer(browser_context());
   MockClosureTarget publish_callback_target;
-  RulesetPublisherImpl service(nullptr, base::ThreadTaskRunnerHandle::Get());
+  MockRulesetPublisherImpl service(nullptr,
+                                   base::ThreadTaskRunnerHandle::Get());
   service.SetRulesetPublishedCallbackForTesting(base::BindOnce(
       &MockClosureTarget::Call, base::Unretained(&publish_callback_target)));
   EXPECT_CALL(publish_callback_target, Call()).Times(1);
@@ -140,16 +155,16 @@ TEST_F(SubresourceFilterRulesetPublisherImplTest,
   base::RunLoop().RunUntilIdle();
   ::testing::Mock::VerifyAndClearExpectations(&publish_callback_target);
 
-  ASSERT_EQ(1u, existing_renderer.sink().message_count());
-  ASSERT_NO_FATAL_FAILURE(AssertSetRulesetForProcessMessageWithContent(
-      existing_renderer.sink().GetMessageAt(0), kTestFileContents));
+  ASSERT_EQ(2u, service.RulesetSent());
+  ASSERT_NO_FATAL_FAILURE(AssertSetRulesetFileWithContent(
+      service.RulesetFileForProcess(&existing_renderer), kTestFileContents));
 
   NotifyingMockRenderProcessHost second_renderer(browser_context());
   base::RunLoop().RunUntilIdle();
 
-  ASSERT_EQ(1u, second_renderer.sink().message_count());
-  ASSERT_NO_FATAL_FAILURE(AssertSetRulesetForProcessMessageWithContent(
-      second_renderer.sink().GetMessageAt(0), kTestFileContents));
+  ASSERT_EQ(3u, service.RulesetSent());
+  ASSERT_NO_FATAL_FAILURE(AssertSetRulesetFileWithContent(
+      service.RulesetFileForProcess(&second_renderer), kTestFileContents));
 }
 
 TEST_F(SubresourceFilterRulesetPublisherImplTest,
@@ -192,9 +207,10 @@ TEST_F(SubresourceFilterRulesetPublisherImplTest,
   NotifyingMockRenderProcessHost renderer_host(browser_context());
   base::RunLoop callback_waiter;
   auto content_service =
-      std::make_unique<RulesetPublisherImpl>(nullptr, blocking_task_runner);
+      std::make_unique<MockRulesetPublisherImpl>(nullptr, blocking_task_runner);
   content_service->SetRulesetPublishedCallbackForTesting(
       callback_waiter.QuitClosure());
+  auto* mock_publisher = content_service.get();
 
   // |RulesetService| constructor should read the last indexed ruleset version
   // and post ruleset setup on |blocking_task_runner|.
@@ -211,11 +227,11 @@ TEST_F(SubresourceFilterRulesetPublisherImplTest,
   callback_waiter.Run();
 
   // Check that the ruleset data is delivered to the renderer.
-  EXPECT_EQ(1u, renderer_host.sink().message_count());
+  ASSERT_EQ(2u, mock_publisher->RulesetSent());
   const std::string expected_data(ruleset.indexed.contents.begin(),
                                   ruleset.indexed.contents.end());
-  ASSERT_NO_FATAL_FAILURE(AssertSetRulesetForProcessMessageWithContent(
-      renderer_host.sink().GetMessageAt(0), expected_data));
+  ASSERT_NO_FATAL_FAILURE(AssertSetRulesetFileWithContent(
+      mock_publisher->RulesetFileForProcess(&renderer_host), expected_data));
 
   //
   // |RulesetPublisherImpl| destruction requires additional tricks. Its member

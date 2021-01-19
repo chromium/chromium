@@ -32,7 +32,6 @@ enum IPCMessageStart {
   GuestViewMsgStart,
   MediaPlayerDelegateMsgStart,
   ExtensionWorkerMsgStart,
-  SubresourceFilterMsgStart,
   LastIPCMsgStart  // Must come last.
 };
 

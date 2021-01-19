@@ -18,6 +18,7 @@
 #include "components/subresource_filter/content/browser/verified_ruleset_dealer.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
+#include "content/public/browser/render_process_host.h"
 
 namespace subresource_filter {
 
@@ -50,6 +51,10 @@ class RulesetPublisherImpl : public RulesetPublisher,
   // Forwards calls to the underlying ruleset_service_.
   void IndexAndStoreAndPublishRulesetIfNeeded(
       const UnindexedRulesetInfo& unindex_ruleset_info);
+
+ protected:
+  virtual void SendRulesetToRenderProcess(base::File* file,
+                                          content::RenderProcessHost* rph);
 
  private:
   // content::NotificationObserver:
