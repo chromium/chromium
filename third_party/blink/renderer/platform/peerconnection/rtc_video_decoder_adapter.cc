@@ -426,8 +426,12 @@ int32_t RTCVideoDecoderAdapter::Release() {
                     : WEBRTC_VIDEO_CODEC_OK;
 }
 
-const char* RTCVideoDecoderAdapter::ImplementationName() const {
-  return "ExternalDecoder";
+webrtc::VideoDecoder::DecoderInfo RTCVideoDecoderAdapter::GetDecoderInfo()
+    const {
+  DecoderInfo info;
+  info.implementation_name = "ExternalDecoder";
+  info.is_hardware_accelerated = true;
+  return info;
 }
 
 void RTCVideoDecoderAdapter::InitializeOnMediaThread(

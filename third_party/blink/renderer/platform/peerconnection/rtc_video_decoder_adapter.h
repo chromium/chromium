@@ -83,7 +83,7 @@ class PLATFORM_EXPORT RTCVideoDecoderAdapter : public webrtc::VideoDecoder {
   // Called on the worker thread and on the DecodingThread.
   int32_t Release() override;
   // Called on the worker thread and on the DecodingThread.
-  const char* ImplementationName() const override;
+  DecoderInfo GetDecoderInfo() const override;
 
  private:
   using CreateVideoDecoderCB =

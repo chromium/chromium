@@ -280,6 +280,8 @@ RTCVideoDecoderStreamAdapter::RTCVideoDecoderStreamAdapter(
       config_(config),
       max_pending_buffer_count_(kAbsoluteMaxPendingBuffers) {
   DVLOG(1) << __func__;
+  decoder_info_.implementation_name = "unknown";
+  decoder_info_.is_hardware_accelerated = false;
   DETACH_FROM_SEQUENCE(decoding_sequence_checker_);
   weak_this_ = weak_this_factory_.GetWeakPtr();
 }
@@ -509,9 +511,10 @@ int32_t RTCVideoDecoderStreamAdapter::Release() {
                     : WEBRTC_VIDEO_CODEC_OK;
 }
 
-const char* RTCVideoDecoderStreamAdapter::ImplementationName() const {
+webrtc::VideoDecoder::DecoderInfo RTCVideoDecoderStreamAdapter::GetDecoderInfo()
+    const {
   base::AutoLock auto_lock(lock_);
-  return decoder_name_.c_str();
+  return decoder_info_;
 }
 
 void RTCVideoDecoderStreamAdapter::InitializeOnMediaThread(
@@ -777,7 +780,8 @@ void RTCVideoDecoderStreamAdapter::OnDecoderChanged(
   base::AutoLock auto_lock(lock_);
 
   if (decoder->IsPlatformDecoder()) {
-    decoder_name_ = "ExternalDecoder";
+    decoder_info_.implementation_name = "ExternalDecoder";
+    decoder_info_.is_hardware_accelerated = true;
     return;
   }
 
@@ -786,17 +790,18 @@ void RTCVideoDecoderStreamAdapter::OnDecoderChanged(
   switch (demuxer_stream_->video_decoder_config().codec()) {
     case media::VideoCodec::kCodecVP8:
     case media::VideoCodec::kCodecVP9:
-      decoder_name_ = "libvpx (DecoderStream)";
+      decoder_info_.implementation_name = "libvpx (DecoderStream)";
       break;
     case media::VideoCodec::kCodecAV1:
-      decoder_name_ = "libaom (DecoderStream)";
+      decoder_info_.implementation_name = "libaom (DecoderStream)";
       break;
     case media::VideoCodec::kCodecH264:
-      decoder_name_ = "FFmpeg (DecoderStream)";
+      decoder_info_.implementation_name = "FFmpeg (DecoderStream)";
       break;
     default:
-      decoder_name_ = "unknown";
+      decoder_info_.implementation_name = "unknown";
   }
+  decoder_info_.is_hardware_accelerated = false;
 }
 
 }  // namespace blink

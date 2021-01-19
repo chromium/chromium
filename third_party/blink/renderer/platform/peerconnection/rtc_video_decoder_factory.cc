@@ -157,8 +157,8 @@ class ScopedVideoDecoder : public webrtc::VideoDecoder {
     return decoder_->Decode(input_image, missing_frames, render_time_ms);
   }
 
-  const char* ImplementationName() const override {
-    return decoder_->ImplementationName();
+  DecoderInfo GetDecoderInfo() const override {
+    return decoder_->GetDecoderInfo();
   }
 
   // Runs on Chrome_libJingle_WorkerThread. The child thread is blocked while

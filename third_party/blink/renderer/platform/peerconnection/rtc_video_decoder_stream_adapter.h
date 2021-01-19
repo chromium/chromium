@@ -87,7 +87,7 @@ class PLATFORM_EXPORT RTCVideoDecoderStreamAdapter
   // Called on the worker thread and on the DecodingThread.
   int32_t Release() override;
   // Called on the worker thread and on the DecodingThread.
-  const char* ImplementationName() const override;
+  DecoderInfo GetDecoderInfo() const override;
 
  private:
   class InternalDemuxerStream;
@@ -172,8 +172,8 @@ class PLATFORM_EXPORT RTCVideoDecoderStreamAdapter
   bool init_decode_complete_ GUARDED_BY(lock_) = false;
   // Have we logged init status yet?
   bool logged_init_status_ GUARDED_BY(lock_) = false;
-  // Current decoder name, as reported by ImplementationName().
-  std::string decoder_name_ GUARDED_BY(lock_) = "ExternalDecoder";
+  // Current decoder info, as reported by GetDecoderInfo().
+  webrtc::VideoDecoder::DecoderInfo decoder_info_ GUARDED_BY(lock_);
 
   // Do we have an outstanding `DecoderStream::Read()`?
   // Media thread only.
