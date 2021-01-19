@@ -37,12 +37,13 @@ class ThemeManagerTest : public cr_fuchsia::WebEngineBrowserTest,
 
  protected:
   void SetUpOnMainThread() override {
+    component_context_.emplace(
+        base::TestComponentContextForProcess::InitialState::kCloneAll);
+    display_binding_.emplace(component_context_->additional_services(), this);
+
     ASSERT_TRUE(embedded_test_server()->Start());
     cr_fuchsia::WebEngineBrowserTest::SetUpOnMainThread();
 
-    component_context_.emplace(
-        base::TestComponentContextForProcess::InitialState::kEmpty);
-    display_binding_.emplace(component_context_->additional_services(), this);
     frame_ = WebEngineBrowserTest::CreateFrame(&navigation_listener_);
     base::RunLoop().RunUntilIdle();
     frame_->GetNavigationController(controller_.NewRequest());
