@@ -15,6 +15,7 @@
 #include "base/stl_util.h"
 #include "base/time/tick_clock.h"
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/traced_value.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/common/resources/transferable_resource.h"
@@ -267,6 +268,15 @@ Surface::QueueFrameResult Surface::QueueFrame(
     if (deadline_->HasDeadlinePassed()) {
       ActivatePendingFrameForDeadline();
     } else {
+      auto traced_value = std::make_unique<base::trace_event::TracedValue>();
+      traced_value->BeginArray("Pending");
+      for (auto& it : activation_dependencies_)
+        traced_value->AppendString(it.ToString());
+      traced_value->EndArray();
+      TRACE_EVENT_NESTABLE_ASYNC_BEGIN2(
+          "viz", "SurfaceQueuedPending", TRACE_ID_LOCAL(this), "LocalSurfaceId",
+          surface_info_.id().ToString(), "ActivationDependencies",
+          std::move(traced_value));
       result = QueueFrameResult::ACCEPTED_PENDING;
     }
   }
@@ -333,6 +343,11 @@ void Surface::OnActivationDependencyResolved(
 void Surface::ActivatePendingFrameForDeadline() {
   if (!pending_frame_data_)
     return;
+
+  if (!activation_dependencies_.empty()) {
+    TRACE_EVENT_NESTABLE_ASYNC_END0("viz", "SurfaceQueuedPending",
+                                    TRACE_ID_LOCAL(this));
+  }
 
   // If a frame is being activated because of a deadline, then clear its set
   // of blockers.
@@ -433,8 +448,8 @@ void Surface::RecomputeActiveReferencedSurfaces() {
 // A frame is activated if all its Surface ID dependencies are active or a
 // deadline has hit and the frame was forcibly activated.
 void Surface::ActivateFrame(FrameData frame_data) {
-  TRACE_EVENT1("viz", "Surface::ActivateFrame", "FrameSinkId",
-               surface_id().frame_sink_id().ToString());
+  TRACE_EVENT1("viz", "Surface::ActivateFrame", "SurfaceId",
+               surface_id().ToString());
 
   // Save root pass copy requests.
   std::vector<std::unique_ptr<CopyOutputRequest>> old_copy_requests;

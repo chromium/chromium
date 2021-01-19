@@ -8,10 +8,10 @@
 #include <inttypes.h>
 
 #include <iosfwd>
+#include <limits>
 #include <string>
 #include <tuple>
 
-#include "base/hash/hash.h"
 #include "base/unguessable_token.h"
 #include "components/viz/common/viz_common_export.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
@@ -111,11 +111,11 @@ class VIZ_COMMON_EXPORT LocalSurfaceId {
 
   // The |embed_trace_id| is used as the id for trace events associated with
   // embedding this LocalSurfaceId.
-  uint64_t embed_trace_id() const { return hash() << 1; }
+  uint64_t embed_trace_id() const { return persistent_hash() << 1; }
 
   // The |submission_trace_id| is used as the id for trace events associated
   // with submission of a CompositorFrame to a surface with this LocalSurfaceId.
-  uint64_t submission_trace_id() const { return (hash() << 1) | 1; }
+  uint64_t submission_trace_id() const { return (persistent_hash() << 1) | 1; }
 
   bool operator==(const LocalSurfaceId& other) const {
     return parent_sequence_number_ == other.parent_sequence_number_ &&
@@ -127,13 +127,14 @@ class VIZ_COMMON_EXPORT LocalSurfaceId {
     return !(*this == other);
   }
 
-  size_t hash() const {
-    DCHECK(is_valid()) << ToString();
-    return base::HashInts(
-        static_cast<uint64_t>(
-            base::HashInts(parent_sequence_number_, child_sequence_number_)),
-        static_cast<uint64_t>(base::UnguessableTokenHash()(embed_token_)));
-  }
+  // This implementation is fast and appropriate for a hash table lookup.
+  // However the hash differs per process, and is inappropriate for tracing.
+  size_t hash() const;
+
+  // This implementation is slow and not appropriate for a hash table lookup.
+  // However the hash is consistent across processes and can be used for
+  // tracing.
+  size_t persistent_hash() const;
 
   std::string ToString() const;
 
@@ -183,10 +184,6 @@ inline bool operator<=(const LocalSurfaceId& lhs, const LocalSurfaceId& rhs) {
 inline bool operator>=(const LocalSurfaceId& lhs, const LocalSurfaceId& rhs) {
   return !operator<(lhs, rhs);
 }
-
-struct LocalSurfaceIdHash {
-  size_t operator()(const LocalSurfaceId& key) const { return key.hash(); }
-};
 
 }  // namespace viz
 

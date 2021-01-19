@@ -1228,6 +1228,13 @@ void LayerTreeHost::SetViewportRectAndScale(
       local_surface_id_from_parent_;
   SetLocalSurfaceIdFromParent(local_surface_id_from_parent);
 
+  TRACE_EVENT_NESTABLE_ASYNC_END0("cc", "LayerTreeHostSize",
+                                  TRACE_ID_LOCAL(this));
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN2("cc", "LayerTreeHostSize",
+                                    TRACE_ID_LOCAL(this), "size",
+                                    device_viewport_rect.ToString(), "lsid",
+                                    local_surface_id_from_parent.ToString());
+
   bool device_viewport_rect_changed = false;
   if (device_viewport_rect_ != device_viewport_rect) {
     device_viewport_rect_ = device_viewport_rect;
