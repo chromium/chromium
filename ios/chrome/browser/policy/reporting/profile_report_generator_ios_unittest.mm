@@ -141,7 +141,7 @@ TEST_F(ProfileReportGeneratorIOSTest, SignedInProfile) {
   EXPECT_TRUE(report->has_chrome_signed_in_user());
   EXPECT_EQ(kAccount + "@gmail.com", report->chrome_signed_in_user().email());
   EXPECT_EQ(kAccount + "_hashID",
-            report->chrome_signed_in_user().obfudscated_gaia_id());
+            report->chrome_signed_in_user().obfuscated_gaia_id());
 }
 
 TEST_F(ProfileReportGeneratorIOSTest, PoliciesReportedOnlyWhenEnabled) {

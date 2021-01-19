@@ -1621,7 +1621,7 @@ message ChromeSignedInUser {
   // The email of the signed in user.
   optional string email = 1;
   // The obfuscated GaiaID of the signed in user.
-  optional string obfudscated_gaia_id = 2;
+  optional string obfuscated_gaia_id = 2;
 }
 
 // Extension request information.
