@@ -3845,48 +3845,6 @@
             ]
         }
     ],
-    "LoadingPredictorDisregardAlwaysAccessesNetwork": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "LoadingPredictorDisregardAlwaysAccessesNetwork"
-                    ]
-                }
-            ]
-        }
-    ],
-    "LoadingPredictorTableConfig": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_300_10",
-                    "params": {
-                        "max_hosts_to_track": "300",
-                        "max_origins_per_entry": "10"
-                    },
-                    "enable_features": [
-                        "LoadingPredictorTableConfig"
-                    ]
-                }
-            ]
-        }
-    ],
     "LoadingPredictorUseOptimizationGuideM86": [
         {
             "platforms": [
