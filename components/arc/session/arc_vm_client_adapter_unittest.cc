@@ -909,7 +909,6 @@ TEST_F(ArcVmClientAdapterTest,
 TEST_F(ArcVmClientAdapterTest,
        UpgradeArc_StartArcVmPostVmStartServicesFailure) {
   SetValidUserInfo();
-  EnableAdbOverUsbForTesting();
   StartMiniArc();
 
   // Inject failure to FakeUpstartClient.

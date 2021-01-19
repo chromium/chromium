@@ -26,10 +26,6 @@ namespace arc {
 
 namespace {
 
-// TODO(shuanghu): Remove this flag after Android code check in. This flag is
-// for disabling adb-over-usb feature temporarily.
-constexpr const bool g_disable_adb_over_usb = true;
-
 // The "_2d" in job names below corresponds to "-". Upstart escapes characters
 // that aren't valid in D-Bus object paths with underscore followed by its
 // ascii code in hex. So "arc_2dcreate_2ddata" becomes "arc-create-data".
@@ -86,7 +82,6 @@ bool IsAdbOverUsbEnabled() {
   bool is_host_on_vm =
       chromeos::system::StatisticsProvider::GetInstance()->IsRunningOnVm();
   bool is_adb_over_usb_enabled =
-      g_disable_adb_over_usb &&
       ShouldStartAdbd(is_dev_mode, is_host_on_vm, has_adbd_json, udc_disabled);
   return g_enable_adb_over_usb_for_testing || is_adb_over_usb_enabled;
 }
