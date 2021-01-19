@@ -22,6 +22,7 @@
 #include "base/strings/string16.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/blocklist.h"
+#include "chrome/browser/extensions/extension_allowlist.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/forced_extensions/force_installed_metrics.h"
 #include "chrome/browser/extensions/forced_extensions/force_installed_tracker.h"
@@ -263,6 +264,11 @@ class ExtensionService : public ExtensionServiceInterface,
   // nothing.
   void EnableExtension(const std::string& extension_id);
 
+  // Removes the disable reason and enable the extension if there are no disable
+  // reasons left and is not blocked for another reason.
+  void RemoveDisableReasonAndMaybeEnable(const std::string& extension_id,
+                                         disable_reason::DisableReason reason);
+
   // Performs action based on Omaha attributes for the extension.
   void PerformActionBasedOnOmahaAttributes(const std::string& extension_id,
                                            const base::Value& attributes);
@@ -405,6 +411,8 @@ class ExtensionService : public ExtensionServiceInterface,
     return &force_installed_tracker_;
   }
 
+  ExtensionAllowlist* allowlist() { return &allowlist_; }
+
   //////////////////////////////////////////////////////////////////////////////
   // For Testing
 
@@ -544,6 +552,10 @@ class ExtensionService : public ExtensionServiceInterface,
   // Helper method to determine if an extension can be blocked.
   bool CanBlockExtension(const Extension* extension) const;
 
+  // Handles the malware omaha attribute for remotely disabled extensions.
+  void HandleMalwareOmahaAttribute(const std::string& extension_id,
+                                   const base::Value& attributes);
+
   // Enables an extension that was only previously disabled remotely.
   void MaybeEnableRemotelyDisabledExtension(const std::string& extension_id);
 
@@ -607,6 +619,8 @@ class ExtensionService : public ExtensionServiceInterface,
 
   // Blocklist for the owning profile.
   Blocklist* blocklist_ = nullptr;
+
+  ExtensionAllowlist allowlist_;
 
   // Sets of enabled/disabled/terminated/blocklisted extensions. Not owned.
   ExtensionRegistry* registry_ = nullptr;
@@ -736,6 +750,10 @@ class ExtensionService : public ExtensionServiceInterface,
                            CanAddDisableReasonToBlocklistedExtension);
   FRIEND_TEST_ALL_PREFIXES(::BlocklistedExtensionSyncServiceTest,
                            SyncBlocklistedExtension);
+  FRIEND_TEST_ALL_PREFIXES(ExtensionAllowlistUnitTest,
+                           ExtensionsNotAllowlistedThenBlocklisted);
+  FRIEND_TEST_ALL_PREFIXES(ExtensionAllowlistUnitTest,
+                           ExtensionsBlocklistedThenNotAllowlisted);
   friend class ::BlocklistedExtensionSyncServiceTest;
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionService);

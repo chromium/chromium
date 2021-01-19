@@ -15,8 +15,8 @@ enum BlocklistState {
   BLOCKLISTED_SECURITY_VULNERABILITY = 2,
   BLOCKLISTED_CWS_POLICY_VIOLATION = 3,
   BLOCKLISTED_POTENTIALLY_UNWANTED = 4,
-  BLOCKLISTED_UNKNOWN  // Used when we couldn't connect to server,
-                       // e.g. when offline.
+  BLOCKLISTED_UNKNOWN = 5  // Used when we couldn't connect to server,
+                           // e.g. when offline.
 };
 
 }  // namespace extensions

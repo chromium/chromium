@@ -12,10 +12,12 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/debug/alias.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
@@ -76,6 +78,8 @@
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
+#include "extensions/browser/blocklist_state.h"
+#include "extensions/browser/disable_reason.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_host.h"
@@ -94,6 +98,7 @@
 #include "extensions/browser/updater/extension_cache.h"
 #include "extensions/browser/updater/extension_downloader.h"
 #include "extensions/browser/updater/manifest_fetch_data.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/feature_switch.h"
@@ -385,6 +390,7 @@ ExtensionService::ExtensionService(Profile* profile,
       system_(ExtensionSystem::Get(profile)),
       extension_prefs_(extension_prefs),
       blocklist_(blocklist),
+      allowlist_(profile_, extension_prefs, this),
       registry_(ExtensionRegistry::Get(profile)),
       pending_extension_manager_(profile),
       install_directory_(install_directory),
@@ -515,6 +521,9 @@ void ExtensionService::Init() {
   CheckForExternalUpdates();
 
   LoadGreylistFromPrefs();
+
+  // Must be called after extensions are loaded.
+  allowlist_.Init();
 }
 
 void ExtensionService::EnabledReloadableExtensions() {
@@ -866,8 +875,17 @@ void ExtensionService::PerformActionBasedOnOmahaAttributes(
     const std::string& extension_id,
     const base::Value& attributes) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  HandleMalwareOmahaAttribute(extension_id, attributes);
+  allowlist_.PerformActionBasedOnOmahaAttributes(extension_id, attributes);
+}
+
+void ExtensionService::HandleMalwareOmahaAttribute(
+    const std::string& extension_id,
+    const base::Value& attributes) {
   const base::Value* malware_value = attributes.FindKey("_malware");
-  if (malware_value == nullptr || !malware_value->GetBool()) {
+  if (!base::FeatureList::IsEnabled(
+          extensions_features::kDisableMalwareExtensionsRemotely) ||
+      malware_value == nullptr || !malware_value->GetBool()) {
     ReportNoUpdateCheckKeys();
     // Omaha attributes may have previously have the "_malware" key.
     MaybeEnableRemotelyDisabledExtension(extension_id);
@@ -909,6 +927,20 @@ void ExtensionService::MaybeEnableRemotelyDisabledExtension(
   // Remove the extension from the blocklist.
   UpdateBlocklistedExtensions({}, unchanged);
   ReportReenableExtensionFromMalware();
+}
+
+void ExtensionService::RemoveDisableReasonAndMaybeEnable(
+    const std::string& extension_id,
+    disable_reason::DisableReason reason_to_remove) {
+  auto disable_reason = extension_prefs_->GetDisableReasons(extension_id);
+  if ((disable_reason & reason_to_remove) == 0)
+    return;
+
+  if (disable_reason == reason_to_remove) {
+    EnableExtension(extension_id);
+  } else {
+    extension_prefs_->RemoveDisableReason(extension_id, reason_to_remove);
+  }
 }
 
 void ExtensionService::EnableExtension(const std::string& extension_id) {
@@ -2274,9 +2306,8 @@ void ExtensionService::UpdateGreylistedExtensions(
     greylist_.Remove(*it);
     extension_prefs_->SetExtensionBlocklistState(extension->id(),
                                                  NOT_BLOCKLISTED);
-    if (extension_prefs_->GetDisableReasons(extension->id()) &
-        disable_reason::DISABLE_GREYLIST)
-      EnableExtension(*it);
+    RemoveDisableReasonAndMaybeEnable(extension->id(),
+                                      disable_reason::DISABLE_GREYLIST);
   }
 
   for (auto it = not_yet_greylisted.begin(); it != not_yet_greylisted.end();
@@ -2291,8 +2322,7 @@ void ExtensionService::UpdateGreylistedExtensions(
     greylist_.Insert(extension);
     extension_prefs_->SetExtensionBlocklistState(extension->id(),
                                                  state_map.find(*it)->second);
-    if (registry_->enabled_extensions().Contains(extension->id()))
-      DisableExtension(*it, disable_reason::DISABLE_GREYLIST);
+    DisableExtension(*it, disable_reason::DISABLE_GREYLIST);
   }
 }
 

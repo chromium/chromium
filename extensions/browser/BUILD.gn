@@ -46,6 +46,7 @@ source_set("browser_sources") {
   sources = [
     "activity.cc",
     "activity.h",
+    "allowlist_state.h",
     "api_activity_monitor.cc",
     "api_activity_monitor.h",
     "app_sorting.h",

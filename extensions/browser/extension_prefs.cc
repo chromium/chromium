@@ -24,8 +24,10 @@
 #include "components/crx_file/id_util.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "extensions/browser/allowlist_state.h"
 #include "extensions/browser/api/declarative_net_request/utils.h"
 #include "extensions/browser/app_sorting.h"
+#include "extensions/browser/blocklist_state.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_pref_store.h"
 #include "extensions/browser/extension_prefs_factory.h"
@@ -73,6 +75,9 @@ constexpr const char kPrefManifestVersion[] = "manifest.version";
 
 // Indicates whether an extension is blocklisted.
 constexpr const char kPrefBlocklist[] = "blacklist";
+
+// Indicates whether an extension is included in the Safe Browsing allowlist.
+constexpr const char kPrefAllowlist[] = "allowlist";
 
 // If extension is greylisted.
 constexpr const char kPrefBlocklistState[] = "blacklist_state";
@@ -1074,6 +1079,25 @@ std::set<std::string> ExtensionPrefs::GetBlocklistedExtensions() const {
 bool ExtensionPrefs::IsExtensionBlocklisted(const std::string& id) const {
   const base::DictionaryValue* ext_prefs = GetExtensionPref(id);
   return ext_prefs && IsBlocklistBitSet(ext_prefs);
+}
+
+AllowlistState ExtensionPrefs::GetExtensionAllowlistState(
+    const std::string& extension_id) const {
+  int value;
+  if (!ReadPrefAsInteger(extension_id, kPrefAllowlist, &value))
+    return ALLOWLIST_UNDEFINED;
+
+  return static_cast<AllowlistState>(value);
+}
+
+void ExtensionPrefs::SetExtensionAllowlistState(const std::string& extension_id,
+                                                AllowlistState state) {
+  DCHECK_NE(state, ALLOWLIST_UNDEFINED);
+
+  if (state != GetExtensionAllowlistState(extension_id)) {
+    UpdateExtensionPref(extension_id, kPrefAllowlist,
+                        std::make_unique<base::Value>(state));
+  }
 }
 
 namespace {
