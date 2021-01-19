@@ -379,6 +379,7 @@
     { "name": "stats.g.doubleclick.net", "policy": "google", "mode": "force-https", "include_subdomains": true, "pins": "google" },
     { "name": "chromiumbugs.appspot.com", "policy": "google", "mode": "force-https", "include_subdomains": true, "pins": "google" },
     { "name": "youtube.com", "policy": "google", "mode": "force-https", "include_subdomains": true, "pins": "google" },
+    { "name": "ua5v.com", "policy": "google", "mode": "force-https", "include_subdomains": true, "pins": "google" },
 
     { "name": "webfilings.appspot.com", "policy": "google", "mode": "force-https", "include_subdomains": true, "pins": "google" },
     { "name": "webfilings-eu.appspot.com", "policy": "google", "mode": "force-https", "include_subdomains": true, "pins": "google" },
