@@ -214,6 +214,10 @@ class LocalCardMigrationBrowserTest
     personal_data_ =
         PersonalDataManagerFactory::GetForProfile(browser()->profile());
 
+    // Wait for Personal Data Manager to be fully loaded to prevent that
+    // spurious notifications deceive the tests.
+    WaitForPersonalDataManagerToBeLoaded(browser()->profile());
+
     // Set up the fake geolocation data.
     geolocation_overrider_ =
         std::make_unique<device::ScopedGeolocationOverrider>(

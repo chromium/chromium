@@ -30,6 +30,10 @@ class CreditCardAccessManagerBrowserTest : public InProcessBrowserTest {
     embedded_test_server()->ServeFilesFromSourceDirectory(
         "components/test/data/autofill");
     embedded_test_server()->StartAcceptingConnections();
+
+    // Wait for Personal Data Manager to be fully loaded to prevent that
+    // spurious notifications deceive the tests.
+    WaitForPersonalDataManagerToBeLoaded(browser()->profile());
   }
 
   CreditCardAccessManager* GetCreditCardAccessManager() {

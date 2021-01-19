@@ -212,6 +212,10 @@ class SaveCardBubbleViewsFullFormBrowserTest
         ->GetPaymentsClient()
         ->set_url_loader_factory_for_testing(test_shared_loader_factory_);
 
+    // Wait for Personal Data Manager to be fully loaded to prevent that
+    // spurious notifications deceive the tests.
+    WaitForPersonalDataManagerToBeLoaded(browser()->profile());
+
     // Set up this class as the ObserverForTest implementation.
     credit_card_save_manager_ = ContentAutofillDriver::GetForRenderFrameHost(
                                     GetActiveWebContents()->GetMainFrame())
