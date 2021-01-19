@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/files/file_util.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
@@ -53,6 +54,10 @@
 
 namespace {
 
+#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+const char kEphemeralProfilePath[] = "Ephemeral profile";
+#endif
+
 const ProfileManager::CreateCallback kOnProfileSwitchDoNothing;
 
 // An observer that returns back to test code after a new profile is
@@ -64,14 +69,16 @@ void OnUnblockOnProfileCreation(base::RunLoop* run_loop,
     run_loop->Quit();
 }
 
-void ProfileCreationComplete(Profile* profile, Profile::CreateStatus status) {
+void ProfileCreationComplete(base::OnceClosure completion_callback,
+                             Profile* profile,
+                             Profile::CreateStatus status) {
   ASSERT_NE(status, Profile::CREATE_STATUS_LOCAL_FAIL);
   ASSERT_NE(status, Profile::CREATE_STATUS_REMOTE_FAIL);
   // No browser should have been created for this profile yet.
   EXPECT_EQ(chrome::GetBrowserCount(profile), 0U);
   EXPECT_EQ(chrome::GetTotalBrowserCount(), 1U);
   if (status == Profile::CREATE_STATUS_INITIALIZED)
-    base::RunLoop::QuitCurrentWhenIdleDeprecated();
+    std::move(completion_callback).Run();
 }
 
 // An observer that returns back to test code after one or more profiles was
@@ -147,11 +154,12 @@ class MultipleProfileDeletionObserver
   DISALLOW_COPY_AND_ASSIGN(MultipleProfileDeletionObserver);
 };
 
-void EphemeralProfileCreationComplete(Profile* profile,
+void EphemeralProfileCreationComplete(base::OnceClosure completion_callback,
+                                      Profile* profile,
                                       Profile::CreateStatus status) {
   if (status == Profile::CREATE_STATUS_INITIALIZED)
     profile->GetPrefs()->SetBoolean(prefs::kForceEphemeralProfiles, true);
-  ProfileCreationComplete(profile, status);
+  ProfileCreationComplete(std::move(completion_callback), profile, status);
 }
 
 class ProfileRemovalObserver : public ProfileAttributesStorage::Observer {
@@ -483,12 +491,13 @@ IN_PROC_BROWSER_TEST_F(ProfileManagerBrowserTest,
 
   // Create a profile, make sure callback is invoked before any callbacks are
   // invoked (so they can do things like sign in the profile, etc).
+  base::RunLoop run_loop;
   ProfileManager::CreateMultiProfileAsync(
       base::string16(),  // name
       std::string(),     // icon url
-      base::BindRepeating(ProfileCreationComplete));
-  // Wait for profile to finish loading.
-  content::RunMessageLoop();
+      base::BindRepeating(&ProfileCreationComplete,
+                          run_loop.QuitWhenIdleClosure()));
+  run_loop.Run();
   EXPECT_EQ(profile_manager->GetNumberOfProfiles(), 2U);
   EXPECT_EQ(chrome::GetTotalBrowserCount(), 2U);
 
@@ -621,12 +630,13 @@ IN_PROC_BROWSER_TEST_F(ProfileManagerBrowserTest, MAYBE_EphemeralProfile) {
   // Create an ephemeral profile.
   base::FilePath path_profile2 =
       profile_manager->GenerateNextProfileDirectoryPath();
+  base::RunLoop run_loop;
   profile_manager->CreateProfileAsync(
-      path_profile2, base::BindRepeating(&EphemeralProfileCreationComplete),
+      path_profile2,
+      base::BindRepeating(&EphemeralProfileCreationComplete,
+                          run_loop.QuitWhenIdleClosure()),
       base::string16(), std::string());
-
-  // Spin to allow profile creation to take place.
-  content::RunMessageLoop();
+  run_loop.Run();
 
   BrowserList* browser_list = BrowserList::GetInstance();
   ASSERT_EQ(initial_profile_count + 1U, storage.GetNumberOfProfiles());
@@ -754,6 +764,94 @@ IN_PROC_BROWSER_TEST_F(ProfileManagerBrowserTest, IncognitoProfile) {
 }
 
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+
+class ProfileManagerEphemeralGuestProfileBrowserTest
+    : public ProfileManagerBrowserTest {
+ public:
+  ProfileManagerEphemeralGuestProfileBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kEnableEphemeralGuestProfilesOnDesktop);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ProfileManagerEphemeralGuestProfileBrowserTest,
+                       PRE_CleanUpEphemeralProfilesOnStartup) {
+  // If multiprofile mode is not enabled, you can't switch between profiles.
+  if (!profiles::IsMultipleProfilesEnabled())
+    return;
+
+  // Force the number of guest profiles created so that we have the same guest
+  // profile name in the post test.
+  // It's important to call this early in the test, before the guest profile
+  // path is computed for the first time.
+  g_browser_process->local_state()->SetInteger(prefs::kGuestProfilesNumCreated,
+                                               1u);
+
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  ProfileAttributesStorage& storage =
+      profile_manager->GetProfileAttributesStorage();
+  EXPECT_EQ(1u, storage.GetNumberOfProfiles(true));
+
+  // Create an ephemeral profile.
+  base::FilePath ephemeral_profile_path =
+      profile_manager->user_data_dir().AppendASCII(kEphemeralProfilePath);
+  base::RunLoop run_loop;
+  profile_manager->CreateProfileAsync(
+      ephemeral_profile_path,
+      base::BindRepeating(&EphemeralProfileCreationComplete,
+                          run_loop.QuitWhenIdleClosure()),
+      base::string16(), std::string());
+  run_loop.Run();
+
+  // Create an ephemeral guest profile.
+  base::FilePath guest_path = profile_manager->GetGuestProfilePath();
+  base::RunLoop run_loop2;
+  profile_manager->CreateProfileAsync(
+      guest_path,
+      base::BindRepeating(&ProfileCreationComplete,
+                          run_loop2.QuitWhenIdleClosure()),
+      base::string16(), std::string());
+  run_loop2.Run();
+  Profile* guest = profile_manager->GetProfileByPath(guest_path);
+  EXPECT_TRUE(guest->IsEphemeralGuestProfile());
+
+  BrowserList* browser_list = BrowserList::GetInstance();
+  ASSERT_EQ(3U, storage.GetNumberOfProfiles(true));
+  EXPECT_EQ(1U, browser_list->size());
+
+  // Do not open browser windows for ephemeral profiles so that they don't
+  // get deleted in this session.
+}
+
+IN_PROC_BROWSER_TEST_F(ProfileManagerEphemeralGuestProfileBrowserTest,
+                       CleanUpEphemeralProfilesOnStartup) {
+  // If multiprofile mode is not enabled, you can't switch between profiles.
+  if (!profiles::IsMultipleProfilesEnabled())
+    return;
+
+  // It's important to call this early in the test, before the guest profile
+  // path is computed for the first time.
+  g_browser_process->local_state()->SetInteger(prefs::kGuestProfilesNumCreated,
+                                               1u);
+
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  ProfileAttributesStorage& storage =
+      profile_manager->GetProfileAttributesStorage();
+  base::FilePath ephemeral_profile_path =
+      profile_manager->user_data_dir().AppendASCII(kEphemeralProfilePath);
+  g_browser_process->local_state()->SetInteger(prefs::kGuestProfilesNumCreated,
+                                               0u);
+  base::FilePath guest_profile_path = profile_manager->GetGuestProfilePath();
+  // Check that ephemeral profiles got deleted.
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  EXPECT_FALSE(base::DirectoryExists(guest_profile_path));
+  EXPECT_FALSE(base::DirectoryExists(ephemeral_profile_path));
+  EXPECT_EQ(1u, storage.GetNumberOfProfiles(true));
+}
+
 class EphemeralGuestProfilePolicyTest
     : public policy::PolicyTest,
       public ::testing::WithParamInterface<bool> {
