@@ -113,6 +113,12 @@ js_library("fake_system_routine_controller") {
   deps = [ "//ui/webui/resources/js:cr.m" ]
 }
 
+js_library("icons") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
 js_library("memory_card") {
   deps = [
     ":data_point",
@@ -205,6 +211,7 @@ html_to_js("web_components") {
     "diagnostics_card.js",
     "diagnostics_fonts_css.js",
     "diagnostics_shared_css.js",
+    "icons.js",
     "memory_card.js",
     "overview_card.js",
     "percent_bar_chart.js",

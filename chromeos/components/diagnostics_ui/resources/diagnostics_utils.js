@@ -12,3 +12,12 @@
 export function convertKibToGibDecimalString(value, numDecimalPlaces) {
   return (value / 2 ** 20).toFixed(numDecimalPlaces);
 }
+
+/**
+ * Returns an icon from the diagnostics icon set.
+ * @param {string} id
+ * @return {string}
+ */
+export function getDiagnosticsIcon(id) {
+  return `diagnostics:${id}`;
+}

@@ -16,7 +16,8 @@ export const fakeBatteryChargeStatus = [
   {
     chargeNowMilliampHours: 4500,
     currentNowMilliamps: 1123,
-    powerAdapterStatus: chromeos.diagnostics.mojom.ExternalPowerSource.kAc,
+    powerAdapterStatus:
+        chromeos.diagnostics.mojom.ExternalPowerSource.kDisconnected,
     powerTime: stringToMojoString16('3h 01m'),
   },
   {
@@ -26,6 +27,25 @@ export const fakeBatteryChargeStatus = [
         chromeos.diagnostics.mojom.ExternalPowerSource.kDisconnected,
     powerTime: stringToMojoString16('2h 45m'),
   }
+];
+
+/** @type {!Array<!BatteryChargeStatus>} */
+export const fakeBatteryChargeStatus2 = [{
+  chargeNowMilliampHours: 4200,
+  currentNowMilliamps: 1123,
+  powerAdapterStatus:
+      chromeos.diagnostics.mojom.ExternalPowerSource.kDisconnected,
+  powerTime: stringToMojoString16('3h 15m'),
+}];
+
+/** @type {!Array<!BatteryHealth>} */
+export const fakeBatteryHealth2 = [
+  {
+    batteryWearPercentage: 7,
+    chargeFullDesignMilliampHours: 6000,
+    chargeFullNowMilliampHours: 5700,
+    cycleCount: 73,
+  },
 ];
 
 /** @type {!Array<!BatteryHealth>} */

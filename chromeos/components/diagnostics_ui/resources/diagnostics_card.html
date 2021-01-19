@@ -1,15 +1,21 @@
 <style include="diagnostics-shared diagnostics-fonts">
+  ::slotted([slot=chip]) {
+    background-color: var(--google-grey-100);
+    border-radius: 16px;
+    color: var(--diagnostics-overview-text-color);
+    padding: 4px 8px;
+  }
+
   ::slotted([slot=icon]) {
+    --iron-icon-fill-color: var(--google-blue-600);
+    --iron-icon-height: 20px;
+    --iron-icon-stroke-color: var(--google-blue-600);
+    --iron-icon-width: 20px;
     background-color: var(--google-blue-50);
     border-radius: 50%;
-    color: var(--google-blue-600);
-    height: 26px;
-    left: 5px;
-    margin-left: 20px;
-    margin-right: 28px;
-    padding: 2px;
+    margin: 0 20px;
+    padding: 8px;
     position: relative;
-    width: 20px;
   }
 
   ::slotted([slot=left-panel]) {

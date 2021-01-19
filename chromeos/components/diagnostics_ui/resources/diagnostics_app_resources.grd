@@ -26,6 +26,7 @@
       <include name="IDR_DIAGNOSTICS_FAKE_SYSTEM_DATA_PROVIDER_JS" file="fake_system_data_provider.js" type="BINDATA"/>
       <include name="IDR_DIAGNOSTICS_FAKE_SYSTEM_ROUTINE_CONTROLLER_JS" file="fake_system_routine_controller.js" type="BINDATA"/>
       <include name="IDR_DIAGNOSTICS_FONTS_CSS_JS" file="${root_gen_dir}/chromeos/components/diagnostics_ui/resources/diagnostics_fonts_css.js" use_base_dir="false" type="BINDATA"/>
+      <include name="IDR_DIAGNOSTICS_ICONS_JS" file="${root_gen_dir}/chromeos/components/diagnostics_ui/resources/icons.js" use_base_dir="false" type="BINDATA"/>
       <include name="IDR_DIAGNOSTICS_MEMORY_CARD_JS" file="${root_gen_dir}/chromeos/components/diagnostics_ui/resources/memory_card.js" use_base_dir="false" type="BINDATA"/>
       <include name="IDR_DIAGNOSTICS_MOJO_INTERFACE_PROVIDER_JS" file="mojo_interface_provider.js" type="BINDATA"/>
       <include name="IDR_DIAGNOSTICS_MOJO_UTILS_JS" file="mojo_utils.js" type="BINDATA"/>
