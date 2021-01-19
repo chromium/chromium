@@ -260,10 +260,12 @@ ash::SearchResultType OmniboxResult::GetSearchResultType() const {
       return ash::OMNIBOX_SUGGEST_PERSONALIZED;
     case AutocompleteMatchType::BOOKMARK_TITLE:
       return ash::OMNIBOX_BOOKMARK;
+    case AutocompleteMatchType::SEARCH_SUGGEST_ENTITY:
+      return ash::OMNIBOX_SEARCH_SUGGEST_ENTITY;
+    case AutocompleteMatchType::NAVSUGGEST:
+      return ash::OMNIBOX_NAVSUGGEST;
 
     case AutocompleteMatchType::HISTORY_KEYWORD:
-    case AutocompleteMatchType::NAVSUGGEST:
-    case AutocompleteMatchType::SEARCH_SUGGEST_ENTITY:
     case AutocompleteMatchType::SEARCH_SUGGEST_TAIL:
     case AutocompleteMatchType::SEARCH_SUGGEST_PROFILE:
     case AutocompleteMatchType::SEARCH_OTHER_ENGINE:
@@ -284,8 +286,6 @@ ash::SearchResultType OmniboxResult::GetSearchResultType() const {
     case AutocompleteMatchType::TILE_SUGGESTION:
     case AutocompleteMatchType::TILE_NAVSUGGEST:
     case AutocompleteMatchType::NUM_TYPES:
-      // TODO(crbug.com/1028447): Add a NOTREACHED here once we are confident we
-      // know all possible types for this result.
       return ash::SEARCH_RESULT_TYPE_BOUNDARY;
   }
 }

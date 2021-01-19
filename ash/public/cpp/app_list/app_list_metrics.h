@@ -94,6 +94,10 @@ enum SearchResultType {
   BOREALIS_APP,
   // A Help App (aka Explore) Result.
   HELP_APP,
+  // A result from omnibox for query suggestion.
+  OMNIBOX_SEARCH_SUGGEST_ENTITY,
+  // A result from omnibox for suggested navigation.
+  OMNIBOX_NAVSUGGEST,
   // Boundary is always last.
   SEARCH_RESULT_TYPE_BOUNDARY
 };

@@ -3007,7 +3007,7 @@ Unknown properties are collapsed to zero. -->
   <int value="25" label="Omnibox, Assistant"/>
   <int value="26" label="Omnibox, Search History"/>
   <int value="27" label="Omnibox, Search Suggest"/>
-  <int value="28" label="Omnibox, Personalzied Suggestion"/>
+  <int value="28" label="Omnibox, Personalized Suggestion"/>
   <int value="29" label="Zero State Local File"/>
   <int value="30" label="Drive Quick Access"/>
   <int value="31" label="Assistant"/>
@@ -3017,6 +3017,8 @@ Unknown properties are collapsed to zero. -->
   <int value="35" label="Remote App"/>
   <int value="36" label="Borealis App"/>
   <int value="37" label="Help App"/>
+  <int value="38" label="Omnibox, Search Suggest Entity"/>
+  <int value="39" label="Omnibox, Navsuggest"/>
 </enum>
 
 <enum name="AppListSearchResultDisplayType">
