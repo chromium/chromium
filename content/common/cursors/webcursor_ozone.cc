@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/check_op.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/cursor_factory.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
@@ -32,7 +33,7 @@ void WebCursor::SetDisplayInfo(const display::Display& display) {
       maximum_cursor_size_ == display.maximum_cursor_size())
     return;
   device_scale_factor_ = display.device_scale_factor();
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // The cursor should use the panel's physical rotation instead of
   // rotation. They can be different on ChromeOS but the same on
   // other platforms.

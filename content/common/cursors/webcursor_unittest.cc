@@ -5,6 +5,7 @@
 #include <stddef.h>
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/common/cursors/webcursor.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -62,14 +63,14 @@ TEST(WebCursorTest, WebCursorCursorConstructorCustom) {
 #if defined(USE_OZONE)
   // Test if the rotating custom cursor works correctly.
   display::Display display;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   display.set_panel_rotation(display::Display::ROTATE_90);
 #endif
   webcursor.SetDisplayInfo(display);
   EXPECT_FALSE(webcursor.has_custom_cursor_for_test());
   native_cursor = webcursor.GetNativeCursor();
   EXPECT_TRUE(webcursor.has_custom_cursor_for_test());
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Hotspot should be scaled & rotated.  We're using the icon created for 2.0,
   // on the display with dsf=1.0, so the host spot should be
   // ((32 - 20) / 2, 10 / 2) = (6, 5).

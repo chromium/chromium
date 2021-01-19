@@ -125,7 +125,7 @@
 #include "ui/base/ime/virtual_keyboard_controller.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/base/ime/chromeos/extension_ime_util.h"
 #include "ui/base/ime/chromeos/input_method_manager.h"
 #endif
@@ -1505,7 +1505,7 @@ bool RenderWidgetHostViewAura::SetAutocorrectRange(
         "InputMethod.Assistive.Autocorrect.Count",
         TextInputClient::SubClass::kRenderWidgetHostViewAura);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     auto* input_method_manager =
         chromeos::input_method::InputMethodManager::Get();
     if (input_method_manager &&

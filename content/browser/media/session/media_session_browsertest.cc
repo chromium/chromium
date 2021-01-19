@@ -12,6 +12,7 @@
 #include "base/synchronization/lock.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -275,7 +276,9 @@ IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest, MAYBE_SimplePlayPause) {
 
 // Flaky on Linux and Android. http://crbug.com/1157239,
 // http://crbug.com/1157319
-#if defined(OS_LINUX) || defined(OS_ANDROID)
+// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
+// complete.
+#if (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || defined(OS_ANDROID)
 #define MAYBE_MultiplePlayersPlayPause DISABLED_MultiplePlayersPlayPause
 #else
 #define MAYBE_MultiplePlayersPlayPause MultiplePlayersPlayPause
