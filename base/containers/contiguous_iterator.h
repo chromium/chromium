@@ -26,13 +26,19 @@ struct PointsToObject : std::is_object<iter_value_t<T>> {};
 template <typename T>
 struct IsPointer : std::is_pointer<T> {};
 
+template <typename T, typename StringT = std::basic_string<iter_value_t<T>>>
+struct IsStringIterImpl
+    : disjunction<std::is_same<T, typename StringT::const_iterator>,
+                  std::is_same<T, typename StringT::iterator>> {};
+
 // An iterator to std::basic_string is contiguous.
 // Reference: https://wg21.link/basic.string.general#2
-template <typename T, typename StringT = std::basic_string<iter_value_t<T>>>
+//
+// Note: Requires indirection via `IsStringIterImpl` to avoid triggering a
+// `static_assert(is_trivial_v<value_type>)` inside libc++'s std::basic_string.
+template <typename T>
 struct IsStringIter
-    : conjunction<std::is_trivial<iter_value_t<T>>,
-                  disjunction<std::is_same<T, typename StringT::const_iterator>,
-                              std::is_same<T, typename StringT::iterator>>> {};
+    : conjunction<std::is_trivial<iter_value_t<T>>, IsStringIterImpl<T>> {};
 
 // An iterator to std::array is contiguous.
 // Reference: https://wg21.link/array.overview#1
