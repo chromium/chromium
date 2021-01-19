@@ -2738,8 +2738,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kUseHDRTransferFunctionName,
      flag_descriptions::kUseHDRTransferFunctionDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(display::features::kUseHDRTransferFunction)},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     {"account-management-flows-v2",
      flag_descriptions::kAccountManagementFlowsV2Name,
      flag_descriptions::kAccountManagementFlowsV2Description, kOsCrOS,
@@ -2909,6 +2907,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"system-tray-mic-gain", flag_descriptions::kSystemTrayMicGainName,
      flag_descriptions::kSystemTrayMicGainDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kSystemTrayMicGainSetting)},
+    {"deprecate-low-usage-codecs",
+     flag_descriptions::kDeprecateLowUsageCodecsName,
+     flag_descriptions::kDeprecateLowUsageCodecsDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(media::kDeprecateLowUsageCodecs)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && !defined(OS_ANDROID)

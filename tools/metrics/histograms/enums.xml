@@ -43139,6 +43139,7 @@ from previous Chrome versions.
       label="OverrideLanguagePrefsForHrefTranslate:enabled"/>
   <int value="-1473878093" label="HideArcMediaNotifications:disabled"/>
   <int value="-1473668019" label="token-binding:disabled"/>
+  <int value="-1473537658" label="DeprecateLowUsageCodecs:disabled"/>
   <int value="-1473136627" label="enable-web-payments"/>
   <int value="-1472825316" label="ContextualSearchLongpressResolve:enabled"/>
   <int value="-1471021059"
@@ -45158,6 +45159,7 @@ from previous Chrome versions.
   <int value="414937629" label="MediaNotificationsCounter:enabled"/>
   <int value="415154056" label="enable-physical-keyboard-autocorrect"/>
   <int value="415395210" label="TrimOnMemoryPressure:enabled"/>
+  <int value="416116189" label="DeprecateLowUsageCodecs:enabled"/>
   <int value="416691040" label="SendTabToSelfOmniboxSendingAnimation:disabled"/>
   <int value="416887895" label="enable-password-change-support"/>
   <int value="417709910"

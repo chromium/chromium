@@ -3811,6 +3811,11 @@ const char kCameraSystemWebAppName[] = "Camera System Web App";
 const char kCameraSystemWebAppDescription[] =
     "Run the Chrome Camera App as a System Web App.";
 
+const char kDeprecateLowUsageCodecsName[] = "Deprecates low usage media codecs";
+const char kDeprecateLowUsageCodecsDescription[] =
+    "Deprecates low usage codecs. Disable this feature to allow playback of "
+    "AMR and GSM.";
+
 const char kPreferConstantFrameRateName[] = "Prefer Constant Frame Rate";
 const char kPreferConstantFrameRateDescription[] =
     "Enables this flag to prefer using constant frame rate for camera when "

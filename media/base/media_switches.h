@@ -240,6 +240,10 @@ MEDIA_EXPORT extern const base::Feature kAVFoundationCaptureV2ZeroCopy;
 MEDIA_EXPORT extern const base::Feature kVideoToolboxVp9Decoding;
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+MEDIA_EXPORT extern const base::Feature kDeprecateLowUsageCodecs;
+#endif
+
 // Based on a |command_line| and the current platform, returns the effective
 // autoplay policy. In other words, it will take into account the default policy
 // if none is specified via the command line and options passed for testing.

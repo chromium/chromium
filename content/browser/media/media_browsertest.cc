@@ -54,6 +54,10 @@ void MediaBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
     // failures. http://crbug.com/986021
     features::kAudioServiceOutOfProcess,
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    media::kDeprecateLowUsageCodecs,
+#endif
   };
 
   scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);

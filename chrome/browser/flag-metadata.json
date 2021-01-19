@@ -850,6 +850,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "deprecate-low-usage-codecs",
+    "owners": [ "dalecurtis", "sweyn" ],
+    "expiry_milestone": 92
+  },
+  {
     "name": "desktop-in-product-help-snooze",
     "owners": [ "collinbaker", "kerenzhu", "chrome-desktop-ui@google.com" ],
     "expiry_milestone": 90

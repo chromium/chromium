@@ -2200,6 +2200,9 @@ extern const char kBluetoothWbsDogfoodDescription[];
 extern const char kCameraSystemWebAppName[];
 extern const char kCameraSystemWebAppDescription[];
 
+extern const char kDeprecateLowUsageCodecsName[];
+extern const char kDeprecateLowUsageCodecsDescription[];
+
 extern const char kPreferConstantFrameRateName[];
 extern const char kPreferConstantFrameRateDescription[];
 

@@ -715,6 +715,11 @@ const base::Feature MEDIA_EXPORT kVideoToolboxVp9Decoding{
     "VideoToolboxVp9Decoding", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // defined(OS_MAC)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const base::Feature MEDIA_EXPORT kDeprecateLowUsageCodecs{
+    "DeprecateLowUsageCodecs", base::FEATURE_ENABLED_BY_DEFAULT};
+#endif  // defined(IS_CHROMEOS_ASH)
+
 std::string GetEffectiveAutoplayPolicy(const base::CommandLine& command_line) {
   // Return the autoplay policy set in the command line, if any.
   if (command_line.HasSwitch(switches::kAutoplayPolicy))
