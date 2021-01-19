@@ -172,7 +172,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Settings.SafetyCheck.ExtensionsResult"
-    enum="SafetyCheckExtensionsStatus" expires_after="M90">
+    enum="SafetyCheckExtensionsStatus" expires_after="2021-06-20">
   <owner>andzaytsev@google.com</owner>
   <owner>msramek@chromium.org</owner>
   <summary>Resulting state of the safety check extensions check.</summary>
