@@ -82,17 +82,13 @@ Add `target_os = "win"` to your args.gn.  Then just build, e.g.
 
 ## Goma
 
-*** note
-**Warning:** This is unsupported and known to not work at times.
-***
-
-This should be supported by the default (rbe) backend. However, there may be
-issues with arbitrary toolchain support on Linux. This can be disabled via:
+This should be supported by the default (Goma RBE) backend. However, there may
+be issues with arbitrary toolchain support on Linux (b/177871873).
+This can be disabled via:
 
 ```shell
 GOMA_ARBITRARY_TOOLCHAIN_SUPPORT=false goma_ctl restart
 ```
-
 
 ## Copying and running chrome
 
