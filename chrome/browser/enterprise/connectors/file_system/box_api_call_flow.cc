@@ -4,16 +4,23 @@
 
 #include "chrome/browser/enterprise/connectors/file_system/box_api_call_flow.h"
 
+#include <string>
+
+#include "base/files/file_util.h"
 #include "base/json/json_writer.h"
+#include "base/task/post_task.h"
 #include "base/values.h"
 #include "chrome/browser/enterprise/connectors/file_system/box_api_call_endpoints.h"
 #include "net/base/escape.h"
+#include "net/base/mime_util.h"
 #include "net/http/http_status_code.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace {
 
-static const char kParentFolderId[] = "0";  // Create folder at root.
+// Create folder at root.
+static const char kParentFolderId[] = "0";
 
 std::string ExtractFolderId(const base::Value& entry) {
   const base::Value* folder_id = entry.FindPath("id");
@@ -34,9 +41,38 @@ std::string ExtractFolderId(const base::Value& entry) {
   return id;
 }
 
+std::string GetMimeType(base::FilePath file_path) {
+  auto ext = file_path.FinalExtension();
+  if (ext.front() == '.') {
+    ext.erase(ext.begin());
+  }
+
+  DCHECK(file_path.FinalExtension() != FILE_PATH_LITERAL("crdownload"));
+
+  std::string file_type;
+  bool result = net::GetMimeTypeFromExtension(ext, &file_type);
+  DCHECK(result || file_type.empty());
+  return file_type;
+}
+
+base::Value CreateSingleFieldDict(const std::string& key,
+                                  const std::string& value) {
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetStringKey(key, value);
+  return dict;
+}
+
 }  // namespace
 
 namespace enterprise_connectors {
+
+// File size limit according to https://developer.box.com/guides/uploads/:
+// - Chucked upload APIs is only supported for file size >= 20 MB;
+// - Whole file upload API is only supported for file size <= 50 MB.
+const size_t BoxApiCallFlow::kChunkFileUploadMinSize =
+    20 * 1024 * 1024;  // 20 MB
+const size_t BoxApiCallFlow::kWholeFileUploadMaxSize =
+    50 * 1024 * 1024;  // 50 MB
 
 BoxApiCallFlow::BoxApiCallFlow() = default;
 BoxApiCallFlow::~BoxApiCallFlow() = default;
@@ -208,8 +244,173 @@ void BoxCreateUpstreamFolderApiCallFlow::OnJsonParsed(
                 << result.error->data();
   }
   // TODO(1157641): store folder_id in profile pref to handle indexing latency.
-  std::move(callback_).Run(!folder_id.empty(), net::HTTP_OK, folder_id);
+  std::move(callback_).Run(!folder_id.empty(), net::HTTP_CREATED, folder_id);
   return;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// WholeFileUpload
+////////////////////////////////////////////////////////////////////////////////
+// BoxApiCallFlow interface.
+// API reference:
+// https://developer.box.com/reference/post-files-content/
+
+BoxWholeFileUploadApiCallFlow::BoxWholeFileUploadApiCallFlow(
+    TaskCallback callback,
+    const std::string& folder_id,
+    const base::FilePath& target_file_name,
+    const base::FilePath& local_file_path)
+    : folder_id_(folder_id),
+      target_file_name_(target_file_name),
+      local_file_path_(local_file_path),
+      file_mime_type_(GetMimeType(target_file_name)),
+      multipart_boundary_(net::GenerateMimeMultipartBoundary()),
+      callback_(std::move(callback)) {}
+
+BoxWholeFileUploadApiCallFlow::~BoxWholeFileUploadApiCallFlow() = default;
+
+void BoxWholeFileUploadApiCallFlow::Start(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    const std::string& access_token) {
+  // Ensure that file extension was valid and file type was obtained.
+  if (file_mime_type_.empty()) {
+    DLOG(ERROR) << "Couldn't obtain proper file type for " << target_file_name_;
+    std::move(callback_).Run(false, 0);
+  }
+
+  // Forward the arguments via PostReadFileTask() then OnFileRead() into
+  // OAuth2CallFlow::Start().
+  PostReadFileTask(url_loader_factory, access_token);
+}
+
+void BoxWholeFileUploadApiCallFlow::PostReadFileTask(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    const std::string& access_token) {
+  auto read_file_task = base::BindOnce(&BoxWholeFileUploadApiCallFlow::ReadFile,
+                                       local_file_path_);
+  auto read_file_reply =
+      base::BindOnce(&BoxWholeFileUploadApiCallFlow::OnFileRead,
+                     factory_.GetWeakPtr(), url_loader_factory, access_token);
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
+      std::move(read_file_task), std::move(read_file_reply));
+}
+
+base::Optional<std::string> BoxWholeFileUploadApiCallFlow::ReadFile(
+    const base::FilePath& path) {
+  std::string content;
+  return base::ReadFileToStringWithMaxSize(path, &content,
+                                           kWholeFileUploadMaxSize)
+             ? base::Optional<std::string>(std::move(content))
+             : base::nullopt;
+}
+
+void BoxWholeFileUploadApiCallFlow::OnFileRead(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    const std::string& access_token,
+    base::Optional<std::string> file_read) {
+  if (!file_read) {
+    DLOG(ERROR) << "[BoxApiCallFlow] WholeFileUpload read file failed";
+    std::move(callback_).Run(false, 0);  // TODO(1165972): error handling
+    return;
+  }
+  DCHECK_LE(file_read->size(), kWholeFileUploadMaxSize);
+  file_content_ = std::move(*file_read);
+
+  // Continue to the original call flow after file has been read.
+  OAuth2ApiCallFlow::Start(url_loader_factory, access_token);
+}
+
+GURL BoxWholeFileUploadApiCallFlow::CreateApiCallUrl() {
+  return GURL(kFileSystemBoxEndpointWholeFileUpload);
+}
+
+std::string BoxWholeFileUploadApiCallFlow::CreateApiCallBody() {
+  CHECK(!folder_id_.empty());
+  CHECK(!target_file_name_.empty());
+  CHECK(!file_mime_type_.empty());
+  CHECK(!multipart_boundary_.empty());
+
+  base::Value attr(base::Value::Type::DICTIONARY);
+  attr.SetStringKey("name", target_file_name_.MaybeAsASCII());
+  attr.SetKey("parent", CreateSingleFieldDict("id", folder_id_));
+
+  std::string attr_json;
+  base::JSONWriter::Write(attr, &attr_json);
+
+  std::string body;
+  net::AddMultipartValueForUpload("attributes", attr_json, multipart_boundary_,
+                                  "application/json", &body);
+
+  net::AddMultipartValueForUploadWithFileName(
+      "file", target_file_name_.MaybeAsASCII(), file_content_,
+      multipart_boundary_, file_mime_type_, &body);
+  net::AddMultipartFinalDelimiterForUpload(multipart_boundary_, &body);
+
+  return body;
+}
+
+// Header format for multipart/form-data reference:
+// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type
+std::string BoxWholeFileUploadApiCallFlow::CreateApiCallBodyContentType() {
+  std::string content_type = "multipart/form-data; boundary=";
+  content_type.append(multipart_boundary_);
+  return content_type;
+}
+
+bool BoxWholeFileUploadApiCallFlow::IsExpectedSuccessCode(int code) const {
+  return code == net::HTTP_CREATED;
+}
+
+void BoxWholeFileUploadApiCallFlow::ProcessApiCallSuccess(
+    const network::mojom::URLResponseHead* head,
+    std::unique_ptr<std::string> body) {
+  if (!base::PathExists(local_file_path_)) {
+    // If the file is deleted by some other thread, how can we be sure what we
+    // read and uploaded was correct?! So report as error. Otherwise, it is
+    // considered successful to
+    // attempt to delete a file that does not exist by base::DeleteFile().
+    DLOG(ERROR) << "[BoxApiCallFlow] Whole File Upload: temporary local file "
+                   "no longer exists!";
+    OnFileDeleted(false);
+    return;
+  }
+
+  PostDeleteFileTask();
+}
+
+void BoxWholeFileUploadApiCallFlow::PostDeleteFileTask() {
+  auto delete_file_task = base::BindOnce(&base::DeleteFile, local_file_path_);
+  auto delete_file_reply = base::BindOnce(
+      &BoxWholeFileUploadApiCallFlow::OnFileDeleted, factory_.GetWeakPtr());
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
+      std::move(delete_file_task), std::move(delete_file_reply));
+}
+
+void BoxWholeFileUploadApiCallFlow::OnFileDeleted(bool success) {
+  if (!success) {
+    DLOG(ERROR) << "[BoxApiCallFlow] WholeFileUpload failed to delete "
+                   "temporary local file "
+                << local_file_path_;
+  }
+  std::move(callback_).Run(success, net::HTTP_CREATED);
+}
+
+void BoxWholeFileUploadApiCallFlow::ProcessApiCallFailure(
+    int net_error,
+    const network::mojom::URLResponseHead* head,
+    std::unique_ptr<std::string> body) {
+  auto response_code = head->headers->response_code();
+  DLOG(ERROR) << "[BoxApiCallFlow] WholeFileUpload failed. Error code "
+              << response_code << " header: " << head->headers->raw_headers();
+  if (!body->empty()) {
+    DLOG(ERROR) << "Body: " << *body;
+  }
+  // TODO(1165972): decide whether to queue up the file to retry later, or also
+  // delete like in ProcessApiCallSuccess()
+  std::move(callback_).Run(false, response_code);
 }
 
 }  // namespace enterprise_connectors

@@ -7,6 +7,7 @@
 
 namespace enterprise_connectors {
 extern const char kFileSystemBoxEndpointApi[];
+extern const char kFileSystemBoxEndpointWholeFileUpload[];
 }  // namespace enterprise_connectors
 
 #endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_FILE_SYSTEM_BOX_API_CALL_ENDPOINTS_H_

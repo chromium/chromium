@@ -6,4 +6,6 @@
 
 namespace enterprise_connectors {
 const char kFileSystemBoxEndpointApi[] = "https://api.box.com/";
+const char kFileSystemBoxEndpointWholeFileUpload[] =
+    "https://upload.box.com/api/2.0/files/content";
 }  // namespace enterprise_connectors
