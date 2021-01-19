@@ -123,9 +123,6 @@ const base::Feature kNavigationPredictor {
 #endif
 };
 
-const base::Feature kParentNodeReplaceChildren{
-    "ParentNodeReplaceChildren", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enable browser-initiated dedicated worker script loading
 // (PlzDedicatedWorker). https://crbug.com/906991
 const base::Feature kPlzDedicatedWorker{"PlzDedicatedWorker",

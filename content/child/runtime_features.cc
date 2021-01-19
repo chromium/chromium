@@ -374,8 +374,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            blink::features::kLinkDisabledNewSpecBehavior},
           {"OriginPolicy", features::kOriginPolicy},
           {"OriginIsolationHeader", features::kOriginIsolationHeader},
-          {"ParentNodeReplaceChildren",
-           blink::features::kParentNodeReplaceChildren},
           {"RawClipboard", blink::features::kRawClipboard},
           {"StorageAccessAPI", blink::features::kStorageAccessAPI},
           {"TargetBlankImpliesNoOpener",
