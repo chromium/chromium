@@ -67,14 +67,6 @@ int64_t OriginInfo::GetDatabaseSize(const base::string16& database_name) const {
   return 0;
 }
 
-base::Time OriginInfo::GetDatabaseLastModified(
-    const base::string16& database_name) const {
-  auto it = database_info_.find(database_name);
-  if (it != database_info_.end())
-    return it->second.last_modified;
-  return base::Time();
-}
-
 OriginInfo::OriginInfo(const std::string& origin_identifier, int64_t total_size)
     : origin_identifier_(origin_identifier), total_size_(total_size) {}
 
@@ -594,8 +586,7 @@ DatabaseTracker::CachedOriginInfo* DatabaseTracker::MaybeGetCachedOriginInfo(
       // TODO(jsbell): Avoid duplicate base::GetFileInfo calls between this and
       // the GetDBFileSize() call above.
       if (base::GetFileInfo(path, &file_info)) {
-        origin_info.SetDatabaseLastModified(db.database_name,
-                                            file_info.last_modified);
+        origin_info.UpdateLastModified(file_info.last_modified);
       }
     }
   }
