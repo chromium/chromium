@@ -384,6 +384,10 @@ class AddressComponent {
   // Sets the merge mode for testing purposes.
   void SetMergeModeForTesting(int merge_mode) { merge_mode_ = merge_mode; }
 
+  // Returns the value used for comparison for testing purposes.
+  base::string16 ValueForComparisonForTesting() const {
+    return ValueForComparison();
+  }
 #endif
 
  protected:

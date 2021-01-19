@@ -819,7 +819,13 @@ bool AddressComponent::IsMergeableWithComponent(
 
   if ((merge_mode_ & kRecursivelyMergeSingleTokenSubset) &&
       token_comparison_result.IsSingleTokenSuperset()) {
-    return true;
+    // This strategy is only applicable if also the unnormalized values have a
+    // single-token-superset relation.
+    SortedTokenComparisonResult unnormalized_token_comparison_result =
+        CompareSortedTokens(GetValue(), newer_component.GetValue());
+    if (unnormalized_token_comparison_result.IsSingleTokenSuperset()) {
+      return true;
+    }
   }
 
   if (merge_mode_ == kUseNewerIfDifferent)
@@ -924,9 +930,14 @@ bool AddressComponent::MergeWithComponent(
       token_comparison_result.IsSingleTokenSuperset()) {
     // For the merging of subset token, the tokenization must be done without
     // prior normalization of the values.
-    SortedTokenComparisonResult token_comparison_result =
+    SortedTokenComparisonResult unnormalized_token_comparison_result =
         CompareSortedTokens(GetValue(), newer_component.GetValue());
-    return MergeSubsetComponent(newer_component, token_comparison_result);
+    // The merging strategy can only be applied when the comparison of the
+    // unnormalized tokens still yields a single token superset.
+    if (unnormalized_token_comparison_result.IsSingleTokenSuperset()) {
+      return MergeSubsetComponent(newer_component,
+                                  unnormalized_token_comparison_result);
+    }
   }
 
   // Replace the older value with the newer one if the corresponding mode is

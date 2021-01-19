@@ -731,6 +731,76 @@ TEST(AutofillStructuredName, MergeSubsetLastname) {
   VerifyTestValues(&name, name_values);
 }
 
+TEST(AutofillStructuredName, MergeSubsetLastname_WithNonSpaceSeparators) {
+  NameFull name;
+  NameFull subset_name;
+  name.SetMergeModeForTesting(kRecursivelyMergeSingleTokenSubset |
+                              kRecursivelyMergeTokenEquivalentValues);
+
+  AddressComponentTestValues name_values = {
+      {.type = NAME_FULL,
+       .value = "Thomas-Neo-Anderson",
+       .status = VerificationStatus::kUserVerified},
+      {.type = NAME_FIRST,
+       .value = "Thomas",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_MIDDLE,
+       .value = "Thomas",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_LAST,
+       .value = "Anderson",
+       .status = VerificationStatus::kObserved},
+  };
+
+  AddressComponentTestValues subset_name_values = {
+      {.type = NAME_FULL,
+       .value = "Thomas-Anderson",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_FIRST,
+       .value = "Thomas",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_LAST,
+       .value = "Anderson",
+       .status = VerificationStatus::kObserved},
+  };
+
+  AddressComponentTestValues expectation = {
+      {.type = NAME_FULL,
+       .value = "Thomas-Neo-Anderson",
+       .status = VerificationStatus::kUserVerified},
+      {.type = NAME_FIRST,
+       .value = "Thomas",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_MIDDLE,
+       .value = "Thomas",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_LAST,
+       .value = "Anderson",
+       .status = VerificationStatus::kObserved},
+  };
+
+  SetTestValues(&name, name_values);
+  SetTestValues(&subset_name, subset_name_values);
+
+  // After normalization, the two names should have a single-token-superset
+  // relation.
+  SortedTokenComparisonResult token_comparison_result =
+      CompareSortedTokens(name.ValueForComparisonForTesting(),
+                          subset_name.ValueForComparisonForTesting());
+  EXPECT_TRUE(token_comparison_result.IsSingleTokenSuperset());
+
+  // Without normalization, the two names should be considered distinct.
+  token_comparison_result =
+      CompareSortedTokens(name.GetValue(), subset_name.GetValue());
+  EXPECT_TRUE(token_comparison_result.status == DISTINCT);
+
+  // Verify that those two names are not considered mergeable.
+  EXPECT_FALSE(name.IsMergeableWithComponent(subset_name));
+  EXPECT_FALSE(name.MergeWithComponent(subset_name));
+
+  VerifyTestValues(&name, expectation);
+}
+
 TEST(AutofillStructuredName, MergeSubsetLastname2) {
   NameFull name;
   NameFull subset_name;
