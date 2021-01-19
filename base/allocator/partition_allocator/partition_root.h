@@ -315,7 +315,8 @@ struct BASE_EXPORT PartitionRoot {
   ALWAYS_INLINE void RawFree(void* ptr);
   ALWAYS_INLINE void RawFree(void* ptr, SlotSpan* slot_span);
 
-  ALWAYS_INLINE void RawFreeWithThreadCache(void* ptr, SlotSpan* slot_span);
+  ALWAYS_INLINE void RawFreeWithThreadCache(void* slot_start,
+                                            SlotSpan* slot_span);
 
   internal::ThreadCache* thread_cache_for_testing() const {
     return with_thread_cache ? internal::ThreadCache::Get() : nullptr;
@@ -646,6 +647,7 @@ PartitionAllocGetSlotSpanForSizeQuery(void* ptr) {
 // but the .cc file won't be linked. Exclude the code that relies on it.
 #if BUILDFLAG(USE_PARTITION_ALLOC)
 // Gets the offset from the beginning of the allocated slot.
+//
 // CAUTION! Use only for normal buckets. Using on direct-mapped allocations may
 // lead to undefined behavior.
 //
@@ -671,6 +673,14 @@ ALWAYS_INLINE size_t PartitionAllocGetSlotOffset(void* ptr) {
   return slot_span->bucket->GetSlotOffset(offset_in_slot_span);
 }
 
+// Gets the pointer to the beginning of the allocated slot.
+//
+// CAUTION! Use only for normal buckets. Using on direct-mapped allocations may
+// lead to undefined behavior.
+//
+// This function is not a template, and can be used on either variant
+// (thread-safe or not) of the allocator. This relies on the two PartitionRoot<>
+// having the same layout, which is enforced by static_assert().
 ALWAYS_INLINE void* PartitionAllocGetSlotStart(void* ptr) {
   internal::DCheckIfManagedByPartitionAllocNormalBuckets(ptr);
   auto* slot_span =
@@ -739,8 +749,8 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFromBucket(
   PA_DCHECK(slot_span);
   PA_DCHECK(slot_span->num_allocated_slots >= 0);
 
-  void* ret = slot_span->freelist_head;
-  if (LIKELY(ret)) {
+  void* slot_start = slot_span->freelist_head;
+  if (LIKELY(slot_start)) {
     *is_already_zeroed = false;
     *utilized_slot_size = bucket->slot_size;
 
@@ -759,14 +769,16 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFromBucket(
 
     PA_DCHECK(slot_span->bucket == bucket);
   } else {
-    ret = bucket->SlowPathAlloc(this, flags, raw_size, is_already_zeroed);
+    slot_start =
+        bucket->SlowPathAlloc(this, flags, raw_size, is_already_zeroed);
     // TODO(palmer): See if we can afford to make this a CHECK.
-    PA_DCHECK(!ret || IsValidSlotSpan(SlotSpan::FromPointer(ret)));
+    PA_DCHECK(!slot_start ||
+              IsValidSlotSpan(SlotSpan::FromPointer(slot_start)));
 
-    if (UNLIKELY(!ret))
+    if (UNLIKELY(!slot_start))
       return nullptr;
 
-    slot_span = SlotSpan::FromPointer(ret);
+    slot_span = SlotSpan::FromPointer(slot_start);
     // For direct mapped allocations, |bucket| is the sentinel.
     PA_DCHECK((slot_span->bucket == bucket) ||
               (slot_span->bucket->is_direct_mapped() &&
@@ -775,7 +787,7 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFromBucket(
     *utilized_slot_size = slot_span->GetUtilizedSlotSize();
   }
 
-  return ret;
+  return slot_start;
 }
 
 // static
@@ -876,7 +888,6 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
 #if ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR || DCHECK_IS_ON()
   const size_t usable_size = AdjustSizeForExtrasSubtract(utilized_slot_size);
 #endif
-
   void* slot_start = AdjustPointerForExtrasSubtract(ptr);
 
 #if DCHECK_IS_ON()
@@ -905,21 +916,18 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
   }
 #endif  // ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
 
-  // Shift `ptr` to the beginning of the slot.
-  ptr = slot_start;
-
 #if DCHECK_IS_ON()
-  memset(ptr, kFreedByte, utilized_slot_size);
+  memset(slot_start, kFreedByte, utilized_slot_size);
 #elif ZERO_RANDOMLY_ON_FREE
   // `memset` only once in a while: we're trading off safety for time
   // efficiency.
   if (UNLIKELY(internal::RandomPeriod()) &&
       !slot_span->bucket->is_direct_mapped()) {
-    internal::SecureZero(ptr, utilized_slot_size);
+    internal::SecureZero(slot_start, utilized_slot_size);
   }
 #endif
 
-  RawFreeWithThreadCache(ptr, slot_span);
+  RawFreeWithThreadCache(slot_start, slot_span);
 }
 
 template <bool thread_safe>
@@ -941,7 +949,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::RawFree(void* ptr,
 
 template <bool thread_safe>
 ALWAYS_INLINE void PartitionRoot<thread_safe>::RawFreeWithThreadCache(
-    void* ptr,
+    void* slot_start,
     SlotSpan* slot_span) {
   // TLS access can be expensive, do a cheap local check first.
   //
@@ -957,12 +965,12 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::RawFreeWithThreadCache(
     size_t bucket_index = slot_span->bucket - this->buckets;
     auto* thread_cache = internal::ThreadCache::Get();
     if (LIKELY(thread_cache &&
-               thread_cache->MaybePutInCache(ptr, bucket_index))) {
+               thread_cache->MaybePutInCache(slot_start, bucket_index))) {
       return;
     }
   }
 
-  RawFree(ptr, slot_span);
+  RawFree(slot_start, slot_span);
 }
 
 template <bool thread_safe>
@@ -1145,7 +1153,7 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
   uint16_t bucket_index = SizeToBucketIndex(raw_size);
   size_t utilized_slot_size;
   bool is_already_zeroed;
-  void* ret = nullptr;
+  void* slot_start = nullptr;
 
   // !thread_safe => !with_thread_cache, but adding the condition allows the
   // compiler to statically remove this branch for the thread-unsafe variant.
@@ -1177,14 +1185,14 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
       tcache = internal::ThreadCache::Create(this);
       with_thread_cache = true;
     }
-    ret = tcache->GetFromCache(bucket_index, &utilized_slot_size);
+    slot_start = tcache->GetFromCache(bucket_index, &utilized_slot_size);
     is_already_zeroed = false;
 
 #if DCHECK_IS_ON()
     // Make sure that the allocated pointer comes from the same place it would
     // for a non-thread cache allocation.
-    if (ret) {
-      SlotSpan* slot_span = SlotSpan::FromPointerNoAlignmentCheck(ret);
+    if (slot_start) {
+      SlotSpan* slot_span = SlotSpan::FromPointer(slot_start);
       PA_DCHECK(IsValidSlotSpan(slot_span));
       PA_DCHECK(slot_span->bucket == &bucket_at(bucket_index));
       // All large allocations must go through the RawAlloc path to correctly
@@ -1195,16 +1203,16 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
 #endif
 
     // UNLIKELY: median hit rate in the thread cache is 95%, from metrics.
-    if (UNLIKELY(!ret)) {
-      ret = RawAlloc(buckets + bucket_index, flags, raw_size,
-                     &utilized_slot_size, &is_already_zeroed);
+    if (UNLIKELY(!slot_start)) {
+      slot_start = RawAlloc(buckets + bucket_index, flags, raw_size,
+                            &utilized_slot_size, &is_already_zeroed);
     }
   } else {
-    ret = RawAlloc(buckets + bucket_index, flags, raw_size, &utilized_slot_size,
-                   &is_already_zeroed);
+    slot_start = RawAlloc(buckets + bucket_index, flags, raw_size,
+                          &utilized_slot_size, &is_already_zeroed);
   }
 
-  if (UNLIKELY(!ret))
+  if (UNLIKELY(!slot_start))
     return nullptr;
 
   // Layout inside the slot:
@@ -1237,12 +1245,9 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
   //   to save raw_size, i.e. only for large allocations. For small allocations,
   //   we have no other choice than putting the cookie at the very end of the
   //   slot, thus creating the "empty" space.
-#if ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
-  void* slot_start = ret;
-#endif  // ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
   size_t usable_size = AdjustSizeForExtrasSubtract(utilized_slot_size);
   // The value given to the application is just after the ref-count and cookie.
-  ret = AdjustPointerForExtrasAdd(ret);
+  void* ret = AdjustPointerForExtrasAdd(slot_start);
 
 #if DCHECK_IS_ON()
   // Surround the region with 2 cookies.

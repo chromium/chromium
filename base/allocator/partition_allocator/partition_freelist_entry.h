@@ -24,9 +24,9 @@ class PartitionFreelistEntry {
 
   // Creates a new entry, with |next| following it.
   static ALWAYS_INLINE PartitionFreelistEntry* InitForThreadCache(
-      void* ptr,
+      void* slot_start,
       PartitionFreelistEntry* next) {
-    auto* entry = reinterpret_cast<PartitionFreelistEntry*>(ptr);
+    auto* entry = reinterpret_cast<PartitionFreelistEntry*>(slot_start);
     entry->SetNextForThreadCache(next);
     return entry;
   }

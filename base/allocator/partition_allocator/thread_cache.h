@@ -172,17 +172,17 @@ class BASE_EXPORT ThreadCache {
   ThreadCache(const ThreadCache&&) = delete;
   ThreadCache& operator=(const ThreadCache&) = delete;
 
-  // Tries to put a memory block at |address| into the cache.
-  // The block comes from the bucket at index |bucket_index| from the partition
+  // Tries to put a slot at |slot_start| into the cache.
+  // The slot comes from the bucket at index |bucket_index| from the partition
   // this cache is for.
   //
-  // Returns true if the memory was put in the cache, and false otherwise. This
+  // Returns true if the slot was put in the cache, and false otherwise. This
   // can happen either because the cache is full or the allocation was too
   // large.
-  ALWAYS_INLINE bool MaybePutInCache(void* address, size_t bucket_index);
+  ALWAYS_INLINE bool MaybePutInCache(void* slot_start, size_t bucket_index);
 
-  // Tries to allocate memory from the cache.
-  // Returns nullptr for failure.
+  // Tries to allocate a memory slot from the cache.
+  // Returns nullptr on failure.
   //
   // Has the same behavior as RawAlloc(), that is: no cookie nor ref-count
   // handling. Sets |slot_size| to the allocated size upon success.
@@ -227,7 +227,7 @@ class BASE_EXPORT ThreadCache {
   void FillBucket(size_t bucket_index);
   // Empties the |bucket| until there are at most |limit| objects in it.
   void ClearBucket(Bucket& bucket, size_t limit);
-  ALWAYS_INLINE void PutInBucket(Bucket& bucket, void* ptr);
+  ALWAYS_INLINE void PutInBucket(Bucket& bucket, void* slot_start);
   void HandleNonNormalMode();
   void ResetForTesting();
 
@@ -266,7 +266,7 @@ class BASE_EXPORT ThreadCache {
   FRIEND_TEST_ALL_PREFIXES(ThreadCacheTest, MultipleThreadCachesAccounting);
 };
 
-ALWAYS_INLINE bool ThreadCache::MaybePutInCache(void* address,
+ALWAYS_INLINE bool ThreadCache::MaybePutInCache(void* slot_start,
                                                 size_t bucket_index) {
   PA_REENTRANCY_GUARD(is_in_thread_cache_);
   INCREMENT_COUNTER(stats_.cache_fill_count);
@@ -280,7 +280,7 @@ ALWAYS_INLINE bool ThreadCache::MaybePutInCache(void* address,
 
   PA_DCHECK(bucket.count != 0 || bucket.freelist_head == nullptr);
 
-  PutInBucket(bucket, address);
+  PutInBucket(bucket, slot_start);
   INCREMENT_COUNTER(stats_.cache_fill_hits);
 
   // Batched deallocation, amortizing lock acquisitions.
@@ -333,9 +333,9 @@ ALWAYS_INLINE void* ThreadCache::GetFromCache(size_t bucket_index,
   return result;
 }
 
-ALWAYS_INLINE void ThreadCache::PutInBucket(Bucket& bucket, void* ptr) {
-  auto* entry =
-      PartitionFreelistEntry::InitForThreadCache(ptr, bucket.freelist_head);
+ALWAYS_INLINE void ThreadCache::PutInBucket(Bucket& bucket, void* slot_start) {
+  auto* entry = PartitionFreelistEntry::InitForThreadCache(
+      slot_start, bucket.freelist_head);
   bucket.freelist_head = entry;
   bucket.count++;
 }

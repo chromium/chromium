@@ -387,16 +387,17 @@ ALWAYS_INLINE void* SlotSpanMetadata<thread_safe>::ToPointer(
   return ret;
 }
 
-// Converts from a pointer inside a slot span into a pointer to the
-// SlotSpanMetadata object (within super pages's metadata).
+// Converts from a pointer to the beginning of a slot into a pointer to the
+// SlotSpanMetadata object (within super pages's metadata) that describes the
+// slot span containing that slot.
 template <bool thread_safe>
 ALWAYS_INLINE SlotSpanMetadata<thread_safe>*
-SlotSpanMetadata<thread_safe>::FromPointer(void* ptr) {
+SlotSpanMetadata<thread_safe>::FromPointer(void* slot_start) {
   SlotSpanMetadata* slot_span =
-      SlotSpanMetadata::FromPointerNoAlignmentCheck(ptr);
+      SlotSpanMetadata::FromPointerNoAlignmentCheck(slot_start);
   // Checks that the pointer is a multiple of slot size.
   PA_DCHECK(
-      !((reinterpret_cast<uintptr_t>(ptr) -
+      !((reinterpret_cast<uintptr_t>(slot_start) -
          reinterpret_cast<uintptr_t>(SlotSpanMetadata::ToPointer(slot_span))) %
         slot_span->bucket->slot_size));
   return slot_span;
