@@ -12,8 +12,6 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/subresource_filter/content/browser/subresource_filter_client.h"
 
-class GURL;
-
 namespace content {
 class WebContents;
 }  // namespace content
@@ -51,8 +49,6 @@ class ChromeSubresourceFilterClient
       override;
 
  private:
-  void ShowUI(const GURL& url);
-
   content::WebContents* web_contents_;
 
   std::unique_ptr<subresource_filter::ContentSubresourceFilterThrottleManager>

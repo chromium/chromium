@@ -82,7 +82,24 @@ void ChromeSubresourceFilterClient::ShowNotification() {
   const GURL& top_level_url = web_contents_->GetLastCommittedURL();
   if (profile_context_->settings_manager()->ShouldShowUIForSite(
           top_level_url)) {
-    ShowUI(top_level_url);
+#if defined(OS_ANDROID)
+    InfoBarService* infobar_service =
+        InfoBarService::FromWebContents(web_contents_);
+    subresource_filter::AdsBlockedInfobarDelegate::Create(infobar_service);
+#endif
+
+    // TODO(https://crbug.com/1103176): Plumb the actual frame reference here
+    // (it comes from
+    // ContentSubresourceFilterThrottleManager::DidDisallowFirstSubresource,
+    // which comes from a specific frame).
+    content_settings::PageSpecificContentSettings* content_settings =
+        content_settings::PageSpecificContentSettings::GetForFrame(
+            web_contents_->GetMainFrame());
+    content_settings->OnContentBlocked(ContentSettingsType::ADS);
+
+    subresource_filter::ContentSubresourceFilterThrottleManager::LogAction(
+        subresource_filter::SubresourceFilterAction::kUIShown);
+    profile_context_->settings_manager()->OnDidShowUI(top_level_url);
   } else {
     subresource_filter::ContentSubresourceFilterThrottleManager::LogAction(
         subresource_filter::SubresourceFilterAction::kUISuppressed);
@@ -100,24 +117,4 @@ ChromeSubresourceFilterClient::GetSafeBrowsingDatabaseManager() {
 subresource_filter::ProfileInteractionManager*
 ChromeSubresourceFilterClient::GetProfileInteractionManager() {
   return profile_interaction_manager_.get();
-}
-
-void ChromeSubresourceFilterClient::ShowUI(const GURL& url) {
-#if defined(OS_ANDROID)
-  InfoBarService* infobar_service =
-      InfoBarService::FromWebContents(web_contents_);
-  subresource_filter::AdsBlockedInfobarDelegate::Create(infobar_service);
-#endif
-  // TODO(https://crbug.com/1103176): Plumb the actual frame reference here
-  // (it comes  from
-  // ContentSubresourceFilterThrottleManager::DidDisallowFirstSubresource, which
-  // comes from a specific frame).
-  content_settings::PageSpecificContentSettings* content_settings =
-      content_settings::PageSpecificContentSettings::GetForFrame(
-          web_contents_->GetMainFrame());
-  content_settings->OnContentBlocked(ContentSettingsType::ADS);
-
-  subresource_filter::ContentSubresourceFilterThrottleManager::LogAction(
-      subresource_filter::SubresourceFilterAction::kUIShown);
-  profile_context_->settings_manager()->OnDidShowUI(url);
 }
