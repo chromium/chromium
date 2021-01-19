@@ -3438,8 +3438,11 @@ void WebViewImpl::ApplyViewportChanges(const ApplyViewportChangesArgs& args) {
                                    args.elastic_overscroll_delta.y());
   UpdateBrowserControlsConstraint(args.browser_controls_constraint);
 
-  if (args.scroll_gesture_did_end)
+  if (args.scroll_gesture_did_end) {
+    // TODO(https://crbug.com/1160652): Figure out if MainFrameImpl is null.
+    CHECK(MainFrameImpl());
     MainFrameImpl()->GetFrame()->GetEventHandler().MarkHoverStateDirty();
+  }
 }
 
 Node* WebViewImpl::FindNodeFromScrollableCompositorElementId(
