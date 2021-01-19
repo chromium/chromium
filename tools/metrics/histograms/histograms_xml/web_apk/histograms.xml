@@ -28,7 +28,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </variants>
 
 <histogram name="WebApk.Install.AvailableSpace.Fail" units="MB"
-    expires_after="2021-02-01">
+    expires_after="2022-02-01">
   <owner>hartmanng@chromium.org</owner>
   <owner>
     src/chrome/android/java/src/org/chromium/chrome/browser/webapps/OWNERS
@@ -43,7 +43,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebApk.Install.AvailableSpaceAfterFreeUpCache.Fail" units="MB"
-    expires_after="2021-02-01">
+    expires_after="2022-02-01">
   <owner>hartmanng@chromium.org</owner>
   <owner>
     src/chrome/android/java/src/org/chromium/chrome/browser/webapps/OWNERS
@@ -58,7 +58,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebApk.Install.GooglePlayErrorCode"
-    enum="WebApkInstallGooglePlayErrorCode" expires_after="2021-02-01">
+    enum="WebApkInstallGooglePlayErrorCode" expires_after="2022-02-01">
   <owner>hartmanng@chromium.org</owner>
   <owner>
     src/chrome/android/java/src/org/chromium/chrome/browser/webapps/OWNERS
@@ -137,7 +137,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebApk.Launch.NetworkError" enum="NetErrorCodes"
-    expires_after="2021-02-01">
+    expires_after="2022-02-01">
   <owner>hartmanng@chromium.org</owner>
   <owner>
     src/chrome/android/java/src/org/chromium/chrome/browser/webapps/OWNERS
@@ -288,7 +288,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebApk.Update.NumStaleUpdateRequestFiles" units="files"
-    expires_after="2021-02-01">
+    expires_after="2022-02-01">
   <owner>hartmanng@chromium.org</owner>
   <owner>
     src/chrome/android/java/src/org/chromium/chrome/browser/webapps/OWNERS
@@ -301,7 +301,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebApk.Update.RequestQueued" enum="WebApkUpdateRequestQueued"
-    expires_after="2021-02-01">
+    expires_after="2022-02-01">
   <owner>hartmanng@chromium.org</owner>
   <owner>
     src/chrome/android/java/src/org/chromium/chrome/browser/webapps/OWNERS
@@ -313,7 +313,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebApk.Update.RequestSent" enum="WebApkUpdateRequestSent"
-    expires_after="2021-02-01">
+    expires_after="2022-02-01">
   <owner>hartmanng@chromium.org</owner>
   <owner>
     src/chrome/android/java/src/org/chromium/chrome/browser/webapps/OWNERS
