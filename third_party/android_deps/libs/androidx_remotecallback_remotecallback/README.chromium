@@ -1,0 +1,13 @@
+Name: Remote Callback
+Short Name: remotecallback
+URL: https://developer.android.com/jetpack/androidx/releases/remotecallback#1.0.0-SNAPSHOT
+Version: 1.0.0-SNAPSHOT
+License: Apache Version 2.0
+License File: LICENSE
+Security Critical: yes
+
+Description:
+Wraps PendingIntents in a friendly and easier way to handle remote callbacks
+
+Local Modifications:
+No modifications.

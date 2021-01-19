@@ -159,6 +159,7 @@ resources = [
   "res/layout/lb_picker_column.xml",
   "res/layout/lb_picker_item.xml",
   "res/layout/lb_picker_separator.xml",
+  "res/layout/lb_pinpicker_item.xml",
   "res/layout/lb_playback_controls.xml",
   "res/layout/lb_playback_controls_row.xml",
   "res/layout/lb_playback_fragment.xml",

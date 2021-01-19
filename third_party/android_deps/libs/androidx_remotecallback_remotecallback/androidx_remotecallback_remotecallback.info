@@ -5,12 +5,10 @@ aidl = []
 assets = []
 has_classes_jar = true
 has_native_libraries = false
-has_proguard_flags = true
-has_r_text_file = true
-is_manifest_empty = true
-manifest_package = "androidx.lifecycle.runtime"
-resources = [
-  "res/values/values.xml"
-]
+has_proguard_flags = false
+has_r_text_file = false
+is_manifest_empty = false
+manifest_package = "androidx.remotecallback"
+resources = []
 subjar_tuples = []
 subjars = []

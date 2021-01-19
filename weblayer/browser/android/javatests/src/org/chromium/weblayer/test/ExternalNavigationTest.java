@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
-import androidx.fragment.app.Fragment;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -120,8 +119,7 @@ public class ExternalNavigationTest {
         private CallbackHelper mCallbackHelper = new CallbackHelper();
 
         @Override
-        public void interceptIntent(
-                Fragment fragment, Intent intent, int requestCode, Bundle options) {
+        public void interceptIntent(Intent intent, int requestCode, Bundle options) {
             mLastIntent = intent;
             mCallbackHelper.notifyCalled();
         }

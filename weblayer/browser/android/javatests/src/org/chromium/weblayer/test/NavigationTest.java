@@ -18,7 +18,6 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.webkit.WebResourceResponse;
 
-import androidx.fragment.app.Fragment;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
@@ -87,8 +86,7 @@ public class NavigationTest {
     // with running of tests.
     private class IntentInterceptor implements InstrumentationActivity.IntentInterceptor {
         @Override
-        public void interceptIntent(
-                Fragment fragment, Intent intent, int requestCode, Bundle options) {}
+        public void interceptIntent(Intent intent, int requestCode, Bundle options) {}
     }
 
     private class Callback extends NavigationCallback {

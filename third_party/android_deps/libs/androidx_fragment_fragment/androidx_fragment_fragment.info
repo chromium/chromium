@@ -10,14 +10,14 @@ has_r_text_file = true
 is_manifest_empty = true
 manifest_package = "androidx.fragment"
 resources = [
-  "res/anim/fragment_close_enter.xml",
-  "res/anim/fragment_close_exit.xml",
-  "res/anim/fragment_fade_enter.xml",
-  "res/anim/fragment_fade_exit.xml",
   "res/anim/fragment_fast_out_extra_slow_in.xml",
-  "res/anim/fragment_open_enter.xml",
-  "res/anim/fragment_open_exit.xml",
   "res/anim-v21/fragment_fast_out_extra_slow_in.xml",
+  "res/animator/fragment_close_enter.xml",
+  "res/animator/fragment_close_exit.xml",
+  "res/animator/fragment_fade_enter.xml",
+  "res/animator/fragment_fade_exit.xml",
+  "res/animator/fragment_open_enter.xml",
+  "res/animator/fragment_open_exit.xml",
   "res/values/values.xml"
 ]
 subjar_tuples = []

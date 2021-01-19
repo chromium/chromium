@@ -8,6 +8,7 @@ import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.ClipData;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -18,7 +19,6 @@ import android.os.Parcelable;
 import android.provider.MediaStore;
 
 import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.Fragment;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
@@ -29,6 +29,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.Function;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -60,10 +61,10 @@ public class InputTypesTest {
         private CallbackHelper mCallbackHelper = new CallbackHelper();
 
         @Override
-        public void interceptIntent(
-                Fragment fragment, Intent intent, int requestCode, Bundle options) {
+        public void interceptIntent(Intent intent, int requestCode, Bundle options) {
             new Handler().post(() -> {
-                fragment.onActivityResult(requestCode, mResultCode, mResponseIntent);
+                mActivityTestRule.getActivity().getActivityResultRegistry().dispatchResult(
+                        requestCode, mResultCode, mResponseIntent);
                 mLastIntent = intent;
                 mCallbackHelper.notifyCalled();
             });
@@ -129,19 +130,23 @@ public class InputTypesTest {
         Bundle extras = new Bundle();
         // We need to override the context with which to create WebLayer.
         extras.putBoolean(InstrumentationActivity.EXTRA_CREATE_WEBLAYER, false);
+
+        Function<Context, Context> applicationContextBuilder = (baseContext) -> {
+            return new InMemorySharedPreferencesContext(baseContext) {
+                @Override
+                public int checkPermission(String permission, int pid, int uid) {
+                    if (permission.equals(Manifest.permission.CAMERA)) {
+                        return mCameraPermission;
+                    }
+                    return getBaseContext().checkPermission(permission, pid, uid);
+                }
+            };
+        };
+        InstrumentationActivity.setActivityContextBuilder(applicationContextBuilder);
+
         InstrumentationActivity activity = mActivityTestRule.launchShell(extras);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            activity.loadWebLayerSync(
-                    new InMemorySharedPreferencesContext(activity.getApplication()) {
-                        @Override
-                        public int checkPermission(String permission, int pid, int uid) {
-                            if (permission.equals(Manifest.permission.CAMERA)) {
-                                return mCameraPermission;
-                            }
-                            return getBaseContext().checkPermission(permission, pid, uid);
-                        }
-                    });
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { activity.loadWebLayerSync(activity.getApplicationContext()); });
         mActivityTestRule.navigateAndWait(mActivityTestRule.getTestDataURL("input_types.html"));
         mTempFile = File.createTempFile("file", null);
         activity.setIntentInterceptor(mIntentInterceptor);

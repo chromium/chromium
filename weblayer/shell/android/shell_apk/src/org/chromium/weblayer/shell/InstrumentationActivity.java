@@ -24,6 +24,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Function;
 import org.chromium.components.strictmode.ThreadStrictModeInterceptor;
 import org.chromium.weblayer.Browser;
 import org.chromium.weblayer.FullscreenCallback;
@@ -71,6 +72,8 @@ public class InstrumentationActivity extends FragmentActivity {
 
     private static OnCreatedCallback sOnCreatedCallback;
 
+    private static Function<Context, Context> sContextBuilder;
+
     // If true, multiple fragments may be created. Only the first is attached. This is useful for
     // tests that need to create multiple BrowserFragments.
     public static boolean sAllowMultipleFragments;
@@ -90,6 +93,18 @@ public class InstrumentationActivity extends FragmentActivity {
     private boolean mIgnoreRendererCrashes;
     private TabListCallback mTabListCallback;
     private List<Tab> mPreviousTabList = new ArrayList<>();
+
+    public static void setActivityContextBuilder(Function<Context, Context> contextBuilder) {
+        sContextBuilder = contextBuilder;
+    }
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        if (sContextBuilder != null) {
+            base = sContextBuilder.apply(base);
+        }
+        super.attachBaseContext(base);
+    }
 
     private static boolean isJaCoCoEnabled() {
         // Nothing is set at runtime indicating jacoco is being used. This looks for the existence
@@ -150,7 +165,7 @@ public class InstrumentationActivity extends FragmentActivity {
 
     /** Interface used to intercept intents for testing. */
     public static interface IntentInterceptor {
-        void interceptIntent(Fragment fragment, Intent intent, int requestCode, Bundle options);
+        void interceptIntent(Intent intent, int requestCode, Bundle options);
     }
 
     public void setIntentInterceptor(IntentInterceptor interceptor) {
@@ -161,7 +176,7 @@ public class InstrumentationActivity extends FragmentActivity {
     public void startActivityFromFragment(
             Fragment fragment, Intent intent, int requestCode, Bundle options) {
         if (mIntentInterceptor != null) {
-            mIntentInterceptor.interceptIntent(fragment, intent, requestCode, options);
+            mIntentInterceptor.interceptIntent(intent, requestCode, options);
             return;
         }
         super.startActivityFromFragment(fragment, intent, requestCode, options);
@@ -170,7 +185,7 @@ public class InstrumentationActivity extends FragmentActivity {
     @Override
     public void startActivity(Intent intent) {
         if (mIntentInterceptor != null) {
-            mIntentInterceptor.interceptIntent(null, intent, 0, null);
+            mIntentInterceptor.interceptIntent(intent, 0, null);
             return;
         }
         super.startActivity(intent);
@@ -179,10 +194,19 @@ public class InstrumentationActivity extends FragmentActivity {
     @Override
     public boolean startActivityIfNeeded(Intent intent, int requestCode) {
         if (mIntentInterceptor != null) {
-            mIntentInterceptor.interceptIntent(null, intent, requestCode, null);
+            mIntentInterceptor.interceptIntent(intent, requestCode, null);
             return true;
         }
         return super.startActivityIfNeeded(intent, requestCode);
+    }
+
+    @Override
+    public void startActivityForResult(Intent intent, int requestCode, Bundle options) {
+        if (mIntentInterceptor != null) {
+            mIntentInterceptor.interceptIntent(intent, requestCode, options);
+            return;
+        }
+        super.startActivityForResult(intent, requestCode, options);
     }
 
     public View getTopContentsContainer() {

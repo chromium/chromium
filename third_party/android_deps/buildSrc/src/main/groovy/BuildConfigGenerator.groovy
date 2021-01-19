@@ -352,15 +352,9 @@ class BuildConfigGenerator extends DefaultTask {
                 sb.append("""\
                 |  deps += [
                 |    "//third_party/android_deps/utils:java",
-                |    "//third_party/android_deps/local_modifications/androidx_fragment_fragment:androidx_fragment_fragment_prebuilt_java",
-                |  ]
-                |  # Omit this file since we use our own copy, included above.
-                |  # We can remove this once we migrate to AndroidX master for all libraries.
-                |  jar_excluded_patterns = [
-                |    "androidx/fragment/app/DialogFragment*",
                 |  ]
                 |
-                |  ignore_proguard_configs = true
+                |  proguard_configs = ["androidx_fragment.flags"]
                 |
                 |  bytecode_rewriter_target = "//build/android/bytecode:fragment_activity_replacer"
                 |""".stripMargin())
@@ -505,14 +499,6 @@ class BuildConfigGenerator extends DefaultTask {
                 break
             case 'androidx_preference_preference':
                 sb.append("""\
-                |  deps += [ "//third_party/android_deps/local_modifications/androidx_preference_preference:androidx_preference_preference_prebuilt_java" ]
-                |  # Omit these files since we use our own copy from AndroidX master, included above.
-                |  # We can remove this once we migrate to AndroidX master for all libraries.
-                |  jar_excluded_patterns = [
-                |    "androidx/preference/PreferenceDialogFragmentCompat*",
-                |    "androidx/preference/PreferenceFragmentCompat*",
-                |  ]
-                |
                 |  bytecode_rewriter_target = "//build/android/bytecode:fragment_activity_replacer"
                 |""".stripMargin())
                 // Replace broad library -keep rules with a more limited set in

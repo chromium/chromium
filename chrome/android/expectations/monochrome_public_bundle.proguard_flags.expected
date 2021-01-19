@@ -1,3 +1,19 @@
+# File: ../../third_party/android_deps/androidx_fragment.flags
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Help R8 to remove debug related coded. All of these static constants are
+# initialized to: Log.isLoggable(DEBUG, TAG).
+
+-assumevalues class androidx.fragment.** {
+  static boolean DEBUG return false;
+}
+
+-assumenosideeffects class androidx.fragment.app.FragmentManager {
+  static boolean isLoggingEnabled(...) return false;
+}
+
 # File: ../../third_party/android_deps/androidx_mediarouter.flags
 # Copyright 2019 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -515,6 +531,27 @@
 # Never inline methods, but allow shrinking and obfuscation.
 -keepclassmembernames,allowobfuscation,allowshrinking class androidx.appcompat.widget.AppCompatTextViewAutoSizeHelper$Impl* {
   <methods>;
+}
+
+# File: obj/third_party/android_deps/androidx_fragment_fragment_java/proguard.txt
+# Copyright (C) 2020 The Android Open Source Project
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# The default FragmentFactory creates Fragment instances using reflection
+-if public class ** extends androidx.fragment.app.Fragment
+-keepclasseswithmembers,allowobfuscation public class <1> {
+    public <init>();
 }
 
 # File: obj/third_party/android_deps/androidx_lifecycle_lifecycle_viewmodel_savedstate_java/proguard.txt

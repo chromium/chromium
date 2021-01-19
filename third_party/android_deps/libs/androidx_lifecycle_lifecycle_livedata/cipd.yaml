@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 
 # To create CIPD package run the following command.
-# cipd create --pkg-def cipd.yaml -tag version:2.0.0-cr0
+# cipd create --pkg-def cipd.yaml -tag version:2.4.0-SNAPSHOT-cr0
 package: chromium/third_party/android_deps/libs/androidx_lifecycle_lifecycle_livedata
 description: "Android Lifecycle LiveData"
 data:
-- file: lifecycle-livedata-2.0.0.aar
+- file: lifecycle-livedata-2.4.0-SNAPSHOT.aar
