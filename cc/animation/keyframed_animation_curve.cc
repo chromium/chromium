@@ -409,10 +409,10 @@ bool KeyframedTransformAnimationCurve::MaximumScale(float* max_scale) const {
   for (auto& keyframe : keyframes_) {
     float keyframe_scale = 0.f;
     if (!keyframe->Value().ScaleComponent(&keyframe_scale))
-      return false;
-    *max_scale = fmax(*max_scale, keyframe_scale);
+      continue;
+    *max_scale = std::max(*max_scale, keyframe_scale);
   }
-  return true;
+  return *max_scale > 0.f;
 }
 
 std::unique_ptr<KeyframedFilterAnimationCurve>

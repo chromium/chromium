@@ -631,7 +631,8 @@ TEST(KeyframedAnimationCurveTest, MaximumScale) {
       CubicBezierTimingFunction::CreatePreset(
           CubicBezierTimingFunction::EaseType::EASE)));
 
-  float maximum_scale = 0.f;
+  constexpr float kArbitraryScale = 12345.f;
+  float maximum_scale = kArbitraryScale;
   EXPECT_TRUE(curve->MaximumScale(&maximum_scale));
   EXPECT_EQ(3.f, maximum_scale);
 
@@ -642,6 +643,7 @@ TEST(KeyframedAnimationCurveTest, MaximumScale) {
       CubicBezierTimingFunction::CreatePreset(
           CubicBezierTimingFunction::EaseType::EASE)));
 
+  maximum_scale = kArbitraryScale;
   EXPECT_TRUE(curve->MaximumScale(&maximum_scale));
   EXPECT_EQ(6.f, maximum_scale);
 
@@ -652,17 +654,9 @@ TEST(KeyframedAnimationCurveTest, MaximumScale) {
       CubicBezierTimingFunction::CreatePreset(
           CubicBezierTimingFunction::EaseType::EASE)));
 
+  maximum_scale = kArbitraryScale;
   EXPECT_TRUE(curve->MaximumScale(&maximum_scale));
   EXPECT_EQ(6.f, maximum_scale);
-
-  TransformOperations operations4;
-  operations4.AppendPerspective(3.f);
-  curve->AddKeyframe(TransformKeyframe::Create(
-      base::TimeDelta::FromSecondsD(4.f), operations4,
-      CubicBezierTimingFunction::CreatePreset(
-          CubicBezierTimingFunction::EaseType::EASE)));
-
-  EXPECT_FALSE(curve->MaximumScale(&maximum_scale));
 
   // All scales are used in computing the max.
   std::unique_ptr<KeyframedTransformAnimationCurve> curve2(
@@ -681,8 +675,40 @@ TEST(KeyframedAnimationCurveTest, MaximumScale) {
       CubicBezierTimingFunction::CreatePreset(
           CubicBezierTimingFunction::EaseType::EASE)));
 
+  maximum_scale = kArbitraryScale;
   EXPECT_TRUE(curve2->MaximumScale(&maximum_scale));
   EXPECT_EQ(0.8f, maximum_scale);
+}
+
+TEST(KeyframeAnimationCurveTest, NonCalculatableMaximumScale) {
+  auto curve = KeyframedTransformAnimationCurve::Create();
+  TransformOperations operations4;
+  operations4.AppendPerspective(3.f);
+  curve->AddKeyframe(TransformKeyframe::Create(
+      base::TimeDelta::FromSecondsD(1.f), operations4,
+      CubicBezierTimingFunction::CreatePreset(
+          CubicBezierTimingFunction::EaseType::EASE)));
+  curve->AddKeyframe(TransformKeyframe::Create(
+      base::TimeDelta::FromSecondsD(1.f), operations4,
+      CubicBezierTimingFunction::CreatePreset(
+          CubicBezierTimingFunction::EaseType::EASE)));
+
+  constexpr float kArbitraryScale = 12345.f;
+  float maximum_scale = kArbitraryScale;
+  EXPECT_FALSE(curve->MaximumScale(&maximum_scale));
+
+  // If the scale of any keyframe can be calculated, the keyframes with
+  // non-calculatable scale will be ignored.
+  TransformOperations operations;
+  operations.AppendScale(0.4f, 0.2f, 0.6f);
+  curve->AddKeyframe(TransformKeyframe::Create(
+      base::TimeDelta(), operations,
+      CubicBezierTimingFunction::CreatePreset(
+          CubicBezierTimingFunction::EaseType::EASE)));
+
+  maximum_scale = kArbitraryScale;
+  EXPECT_TRUE(curve->MaximumScale(&maximum_scale));
+  EXPECT_EQ(0.6f, maximum_scale);
 }
 
 // Tests that an animation with a curve timing function works as expected.

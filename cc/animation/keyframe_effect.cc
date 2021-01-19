@@ -521,9 +521,8 @@ float KeyframeEffect::MaximumScale(ElementListType list_type) const {
     const TransformAnimationCurve* transform_animation_curve =
         keyframe_model->curve()->ToTransformAnimationCurve();
     float curve_maximum_scale = kInvalidScale;
-    if (!transform_animation_curve->MaximumScale(&curve_maximum_scale))
-      return kInvalidScale;
-    maximum_scale = std::max(maximum_scale, curve_maximum_scale);
+    if (transform_animation_curve->MaximumScale(&curve_maximum_scale))
+      maximum_scale = std::max(maximum_scale, curve_maximum_scale);
   }
   return maximum_scale;
 }

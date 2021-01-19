@@ -191,11 +191,8 @@ bool ElementAnimations::AnimationsPreserveAxisAlignment() const {
 float ElementAnimations::MaximumScale(ElementListType list_type) const {
   float maximum_scale = kInvalidScale;
   for (auto& keyframe_effect : keyframe_effects_list_) {
-    float keyframe_effect_maximum_scale =
-        keyframe_effect.MaximumScale(list_type);
-    if (keyframe_effect_maximum_scale == kInvalidScale)
-      return kInvalidScale;
-    maximum_scale = std::max(maximum_scale, keyframe_effect_maximum_scale);
+    maximum_scale =
+        std::max(maximum_scale, keyframe_effect.MaximumScale(list_type));
   }
   return maximum_scale;
 }

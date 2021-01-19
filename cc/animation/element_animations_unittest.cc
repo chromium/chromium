@@ -2224,20 +2224,20 @@ TEST_F(ElementAnimationsTest, MaximumAnimationScaleNotScaled) {
   AttachTimelineAnimationLayer();
   CreateImplTimelineAndAnimation();
 
-  EXPECT_EQ(kInvalidScale, animation_impl_->keyframe_effect()->MaximumScale(
-                               ElementListType::PENDING));
-  EXPECT_EQ(kInvalidScale, animation_impl_->keyframe_effect()->MaximumScale(
-                               ElementListType::ACTIVE));
+  EXPECT_EQ(kInvalidScale,
+            element_animations_impl_->MaximumScale(ElementListType::PENDING));
+  EXPECT_EQ(kInvalidScale,
+            element_animations_impl_->MaximumScale(ElementListType::ACTIVE));
 
   animation_impl_->AddKeyframeModel(CreateKeyframeModel(
       std::unique_ptr<AnimationCurve>(new FakeFloatTransition(1.0, 0.f, 1.f)),
       1, TargetProperty::OPACITY));
 
   // Opacity animations aren't non-translation transforms.
-  EXPECT_EQ(kInvalidScale, animation_impl_->keyframe_effect()->MaximumScale(
-                               ElementListType::PENDING));
-  EXPECT_EQ(kInvalidScale, animation_impl_->keyframe_effect()->MaximumScale(
-                               ElementListType::ACTIVE));
+  EXPECT_EQ(kInvalidScale,
+            element_animations_impl_->MaximumScale(ElementListType::PENDING));
+  EXPECT_EQ(kInvalidScale,
+            element_animations_impl_->MaximumScale(ElementListType::ACTIVE));
 
   std::unique_ptr<KeyframedTransformAnimationCurve> curve1(
       KeyframedTransformAnimationCurve::Create());
@@ -2255,10 +2255,69 @@ TEST_F(ElementAnimationsTest, MaximumAnimationScaleNotScaled) {
   animation_impl_->AddKeyframeModel(std::move(keyframe_model));
 
   // The only transform animation we've added is a translation.
-  EXPECT_EQ(1.f, animation_impl_->keyframe_effect()->MaximumScale(
-                     ElementListType::PENDING));
-  EXPECT_EQ(1.f, animation_impl_->keyframe_effect()->MaximumScale(
-                     ElementListType::ACTIVE));
+  EXPECT_EQ(1.f,
+            element_animations_impl_->MaximumScale(ElementListType::PENDING));
+  EXPECT_EQ(1.f,
+            element_animations_impl_->MaximumScale(ElementListType::ACTIVE));
+}
+
+TEST_F(ElementAnimationsTest, MaximumAnimationNonCalculatableScale) {
+  CreateTestLayer(true, false);
+  AttachTimelineAnimationLayer();
+  CreateImplTimelineAndAnimation();
+
+  std::unique_ptr<KeyframedTransformAnimationCurve> curve1(
+      KeyframedTransformAnimationCurve::Create());
+
+  TransformOperations operations1;
+  operations1.AppendScale(2.0, 2.0, 2.0);
+  operations1.AppendPerspective(100);
+  curve1->AddKeyframe(
+      TransformKeyframe::Create(base::TimeDelta(), operations1, nullptr));
+  operations1.AppendTranslate(10.0, 15.0, 0.0);
+  curve1->AddKeyframe(TransformKeyframe::Create(
+      base::TimeDelta::FromSecondsD(1.0), operations1, nullptr));
+
+  std::unique_ptr<KeyframeModel> keyframe_model(KeyframeModel::Create(
+      std::move(curve1), 2, 2,
+      KeyframeModel::TargetPropertyId(TargetProperty::TRANSFORM)));
+  animation_impl_->AddKeyframeModel(std::move(keyframe_model));
+
+  // All keyframes have perspective, so the ElementAnimations' scale is not
+  // calculatable.
+  EXPECT_EQ(kInvalidScale,
+            element_animations_impl_->MaximumScale(ElementListType::PENDING));
+  EXPECT_EQ(kInvalidScale,
+            element_animations_impl_->MaximumScale(ElementListType::ACTIVE));
+}
+
+TEST_F(ElementAnimationsTest, MaximumAnimationPartialNonCalculatableScale) {
+  CreateTestLayer(true, false);
+  AttachTimelineAnimationLayer();
+  CreateImplTimelineAndAnimation();
+
+  std::unique_ptr<KeyframedTransformAnimationCurve> curve1(
+      KeyframedTransformAnimationCurve::Create());
+
+  TransformOperations operations1;
+  operations1.AppendScale(2.0, 2.0, 2.0);
+  curve1->AddKeyframe(
+      TransformKeyframe::Create(base::TimeDelta(), operations1, nullptr));
+  operations1.AppendPerspective(100);
+  curve1->AddKeyframe(TransformKeyframe::Create(
+      base::TimeDelta::FromSecondsD(1.0), operations1, nullptr));
+
+  std::unique_ptr<KeyframeModel> keyframe_model(KeyframeModel::Create(
+      std::move(curve1), 2, 2,
+      KeyframeModel::TargetPropertyId(TargetProperty::TRANSFORM)));
+  animation_impl_->AddKeyframeModel(std::move(keyframe_model));
+
+  // Though some keyframes have perspective and the scale is not calculatable,
+  // we use the other keyframes to calculate the ElementAnimations' scale.
+  EXPECT_EQ(2.f,
+            element_animations_impl_->MaximumScale(ElementListType::PENDING));
+  EXPECT_EQ(2.f,
+            element_animations_impl_->MaximumScale(ElementListType::ACTIVE));
 }
 
 TEST_F(ElementAnimationsTest, MaximumScale) {
@@ -2283,16 +2342,16 @@ TEST_F(ElementAnimationsTest, MaximumScale) {
   keyframe_model->set_affects_active_elements(false);
   animation_impl_->AddKeyframeModel(std::move(keyframe_model));
 
-  EXPECT_EQ(5.f, animation_impl_->keyframe_effect()->MaximumScale(
-                     ElementListType::PENDING));
-  EXPECT_EQ(kInvalidScale, animation_impl_->keyframe_effect()->MaximumScale(
-                               ElementListType::ACTIVE));
+  EXPECT_EQ(5.f,
+            element_animations_impl_->MaximumScale(ElementListType::PENDING));
+  EXPECT_EQ(kInvalidScale,
+            element_animations_impl_->MaximumScale(ElementListType::ACTIVE));
 
   animation_impl_->ActivateKeyframeModels();
-  EXPECT_EQ(5.f, animation_impl_->keyframe_effect()->MaximumScale(
-                     ElementListType::PENDING));
-  EXPECT_EQ(5.f, animation_impl_->keyframe_effect()->MaximumScale(
-                     ElementListType::ACTIVE));
+  EXPECT_EQ(5.f,
+            element_animations_impl_->MaximumScale(ElementListType::PENDING));
+  EXPECT_EQ(5.f,
+            element_animations_impl_->MaximumScale(ElementListType::ACTIVE));
 
   std::unique_ptr<KeyframedTransformAnimationCurve> curve2(
       KeyframedTransformAnimationCurve::Create());
@@ -2334,25 +2393,25 @@ TEST_F(ElementAnimationsTest, MaximumScale) {
   keyframe_model->set_affects_active_elements(false);
   animation_impl_->AddKeyframeModel(std::move(keyframe_model));
 
-  EXPECT_EQ(6.f, animation_impl_->keyframe_effect()->MaximumScale(
-                     ElementListType::PENDING));
-  EXPECT_EQ(kInvalidScale, animation_impl_->keyframe_effect()->MaximumScale(
-                               ElementListType::ACTIVE));
+  EXPECT_EQ(6.f,
+            element_animations_impl_->MaximumScale(ElementListType::PENDING));
+  EXPECT_EQ(kInvalidScale,
+            element_animations_impl_->MaximumScale(ElementListType::ACTIVE));
 
   animation_impl_->ActivateKeyframeModels();
-  EXPECT_EQ(6.f, animation_impl_->keyframe_effect()->MaximumScale(
-                     ElementListType::PENDING));
-  EXPECT_EQ(6.f, animation_impl_->keyframe_effect()->MaximumScale(
-                     ElementListType::ACTIVE));
+  EXPECT_EQ(6.f,
+            element_animations_impl_->MaximumScale(ElementListType::PENDING));
+  EXPECT_EQ(6.f,
+            element_animations_impl_->MaximumScale(ElementListType::ACTIVE));
 
   animation_impl_->keyframe_effect()->GetKeyframeModelById(2)->SetRunState(
       KeyframeModel::FINISHED, TicksFromSecondsF(0.0));
 
   // Only unfinished animations should be considered by MaximumAnimationScale.
-  EXPECT_EQ(5.f, animation_impl_->keyframe_effect()->MaximumScale(
-                     ElementListType::PENDING));
-  EXPECT_EQ(5.f, animation_impl_->keyframe_effect()->MaximumScale(
-                     ElementListType::ACTIVE));
+  EXPECT_EQ(5.f,
+            element_animations_impl_->MaximumScale(ElementListType::PENDING));
+  EXPECT_EQ(5.f,
+            element_animations_impl_->MaximumScale(ElementListType::ACTIVE));
 }
 
 TEST_F(ElementAnimationsTest, MaximumAnimationScaleWithDirection) {
@@ -2381,61 +2440,61 @@ TEST_F(ElementAnimationsTest, MaximumAnimationScaleWithDirection) {
 
   // NORMAL direction with positive playback rate.
   keyframe_model->set_direction(KeyframeModel::Direction::NORMAL);
-  EXPECT_EQ(6.f, animation_impl_->keyframe_effect()->MaximumScale(
-                     ElementListType::PENDING));
-  EXPECT_EQ(6.f, animation_impl_->keyframe_effect()->MaximumScale(
-                     ElementListType::ACTIVE));
+  EXPECT_EQ(6.f,
+            element_animations_impl_->MaximumScale(ElementListType::PENDING));
+  EXPECT_EQ(6.f,
+            element_animations_impl_->MaximumScale(ElementListType::ACTIVE));
 
   // ALTERNATE direction with positive playback rate.
   keyframe_model->set_direction(KeyframeModel::Direction::ALTERNATE_NORMAL);
-  EXPECT_EQ(6.f, animation_impl_->keyframe_effect()->MaximumScale(
-                     ElementListType::PENDING));
-  EXPECT_EQ(6.f, animation_impl_->keyframe_effect()->MaximumScale(
-                     ElementListType::ACTIVE));
+  EXPECT_EQ(6.f,
+            element_animations_impl_->MaximumScale(ElementListType::PENDING));
+  EXPECT_EQ(6.f,
+            element_animations_impl_->MaximumScale(ElementListType::ACTIVE));
 
   // REVERSE direction with positive playback rate.
   keyframe_model->set_direction(KeyframeModel::Direction::REVERSE);
-  EXPECT_EQ(6.f, animation_impl_->keyframe_effect()->MaximumScale(
-                     ElementListType::PENDING));
-  EXPECT_EQ(6.f, animation_impl_->keyframe_effect()->MaximumScale(
-                     ElementListType::ACTIVE));
+  EXPECT_EQ(6.f,
+            element_animations_impl_->MaximumScale(ElementListType::PENDING));
+  EXPECT_EQ(6.f,
+            element_animations_impl_->MaximumScale(ElementListType::ACTIVE));
 
   // ALTERNATE reverse direction.
   keyframe_model->set_direction(KeyframeModel::Direction::REVERSE);
-  EXPECT_EQ(6.f, animation_impl_->keyframe_effect()->MaximumScale(
-                     ElementListType::PENDING));
-  EXPECT_EQ(6.f, animation_impl_->keyframe_effect()->MaximumScale(
-                     ElementListType::ACTIVE));
+  EXPECT_EQ(6.f,
+            element_animations_impl_->MaximumScale(ElementListType::PENDING));
+  EXPECT_EQ(6.f,
+            element_animations_impl_->MaximumScale(ElementListType::ACTIVE));
 
   keyframe_model->set_playback_rate(-1.0);
 
   // NORMAL direction with negative playback rate.
   keyframe_model->set_direction(KeyframeModel::Direction::NORMAL);
-  EXPECT_EQ(6.f, animation_impl_->keyframe_effect()->MaximumScale(
-                     ElementListType::PENDING));
-  EXPECT_EQ(6.f, animation_impl_->keyframe_effect()->MaximumScale(
-                     ElementListType::ACTIVE));
+  EXPECT_EQ(6.f,
+            element_animations_impl_->MaximumScale(ElementListType::PENDING));
+  EXPECT_EQ(6.f,
+            element_animations_impl_->MaximumScale(ElementListType::ACTIVE));
 
   // ALTERNATE direction with negative playback rate.
   keyframe_model->set_direction(KeyframeModel::Direction::ALTERNATE_NORMAL);
-  EXPECT_EQ(6.f, animation_impl_->keyframe_effect()->MaximumScale(
-                     ElementListType::PENDING));
-  EXPECT_EQ(6.f, animation_impl_->keyframe_effect()->MaximumScale(
-                     ElementListType::ACTIVE));
+  EXPECT_EQ(6.f,
+            element_animations_impl_->MaximumScale(ElementListType::PENDING));
+  EXPECT_EQ(6.f,
+            element_animations_impl_->MaximumScale(ElementListType::ACTIVE));
 
   // REVERSE direction with negative playback rate.
   keyframe_model->set_direction(KeyframeModel::Direction::REVERSE);
-  EXPECT_EQ(6.f, animation_impl_->keyframe_effect()->MaximumScale(
-                     ElementListType::PENDING));
-  EXPECT_EQ(6.f, animation_impl_->keyframe_effect()->MaximumScale(
-                     ElementListType::ACTIVE));
+  EXPECT_EQ(6.f,
+            element_animations_impl_->MaximumScale(ElementListType::PENDING));
+  EXPECT_EQ(6.f,
+            element_animations_impl_->MaximumScale(ElementListType::ACTIVE));
 
   // ALTERNATE reverse direction with negative playback rate.
   keyframe_model->set_direction(KeyframeModel::Direction::REVERSE);
-  EXPECT_EQ(6.f, animation_impl_->keyframe_effect()->MaximumScale(
-                     ElementListType::PENDING));
-  EXPECT_EQ(6.f, animation_impl_->keyframe_effect()->MaximumScale(
-                     ElementListType::ACTIVE));
+  EXPECT_EQ(6.f,
+            element_animations_impl_->MaximumScale(ElementListType::PENDING));
+  EXPECT_EQ(6.f,
+            element_animations_impl_->MaximumScale(ElementListType::ACTIVE));
 }
 
 TEST_F(ElementAnimationsTest, NewlyPushedAnimationWaitsForActivation) {

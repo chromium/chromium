@@ -81,7 +81,8 @@ class CC_ANIMATION_EXPORT TransformAnimationCurve : public AnimationCurve {
   virtual bool PreservesAxisAlignment() const = 0;
 
   // Set |max_scale| to the maximum scale along any dimension during the
-  // animation. Returns false if the maximum scale cannot be computed.
+  // animation, of all steps (keyframes) with calculatable scale. Returns
+  // false if none of the steps can calculate a scale.
   virtual bool MaximumScale(float* max_scale) const = 0;
 
   CurveType Type() const override;

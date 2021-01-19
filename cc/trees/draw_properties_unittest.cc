@@ -5551,11 +5551,17 @@ TEST_F(DrawPropertiesTest, MaximumAnimationScaleFactor) {
   child_animation->AbortKeyframeModelsWithProperty(TargetProperty::TRANSFORM,
                                                    false);
 
+  // Recreate child_animation containing keyframes with perspective.
+  timeline_impl()->DetachAnimation(child_animation);
+  child_animation = Animation::Create(AnimationIdProvider::NextAnimationId());
+  timeline_impl()->AttachAnimation(child_animation);
+  child_animation->AttachElement(child->element_id());
+
   TransformOperations perspective;
   perspective.AppendPerspective(10.f);
 
-  AddAnimatedTransformToAnimation(child_animation.get(), 1.0,
-                                  TransformOperations(), perspective);
+  AddAnimatedTransformToAnimation(child_animation.get(), 1.0, perspective,
+                                  perspective);
   UpdateActiveTreeDrawProperties();
 
   // |child| has a scale-affecting animation but computing the maximum of this
