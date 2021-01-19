@@ -121,6 +121,15 @@
       "use_libfuzzer": true
     }
   },
+  "Linux Builder (reclient)": {
+    "gn_args": {
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "use_rbe": true
+    }
+  },
   "Linux Viz": {
     "gn_args": {
       "dcheck_always_on": true,
