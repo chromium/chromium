@@ -114,7 +114,7 @@ TEST(ChromeExtensionPolicyMigratorTest, DeprecatedWarnings) {
   base::RepeatingCallback<base::string16(int)> l10nlookup =
       base::BindRepeating(&l10n_util::GetStringUTF16);
   EXPECT_FALSE(
-      chrome_map.Get(kNewPolicy1)->GetLocalizedErrors(l10nlookup).empty());
+      chrome_map.Get(kNewPolicy1)->GetLocalizedWarnings(l10nlookup).empty());
 }
 
 }  // namespace policy

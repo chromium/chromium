@@ -60,7 +60,7 @@ TEST(LegacyChromePolicyMigratorTest, CopyPolicyIfUnset) {
   EXPECT_FALSE(
       chrome_map.Get(kOldPolicy)->GetLocalizedErrors(l10nlookup).empty());
   EXPECT_FALSE(
-      chrome_map.Get(kNewPolicy)->GetLocalizedErrors(l10nlookup).empty());
+      chrome_map.Get(kNewPolicy)->GetLocalizedWarnings(l10nlookup).empty());
 }
 
 TEST(LegacyChromePolicyMigratorTest, TransformPolicy) {
@@ -100,6 +100,8 @@ TEST(LegacyChromePolicyMigratorTest, IgnoreOldIfNewIsSet) {
   EXPECT_FALSE(
       chrome_map.Get(kOldPolicy)->GetLocalizedErrors(l10nlookup).empty());
   // No warnings on new policy because it was unchanged.
+  EXPECT_TRUE(
+      chrome_map.Get(kNewPolicy)->GetLocalizedWarnings(l10nlookup).empty());
   EXPECT_TRUE(
       chrome_map.Get(kNewPolicy)->GetLocalizedErrors(l10nlookup).empty());
 }
