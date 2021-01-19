@@ -378,7 +378,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest,
   EXPECT_FALSE(is_offscreen);
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, Slider) {
+// TODO(1168167): Test sets node-updated callback only after triggering node
+// update, making it flaky.
+IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, DISABLED_Slider) {
   LoadPage(kPage1Path, kPage1Title);
 
   semantics_manager_.semantic_tree()->RunUntilNodeCountAtLeast(kPage1NodeCount);
