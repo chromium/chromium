@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+HTMLImports.whenReady(() => {
 // <include src="../login/components/multi_step_behavior.js">
 // <include src="../login/components/oobe_types.js">
 // <include src="../login/components/oobe_buttons.js">
@@ -64,6 +65,12 @@ cr.define('login.AssistantOptInFlowScreen', function() {
   };
 });
 
-document.addEventListener('DOMContentLoaded', function() {
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', function() {
+    login.AssistantOptInFlowScreen.show();
+  });
+} else {
   login.AssistantOptInFlowScreen.show();
+}
+
 });
