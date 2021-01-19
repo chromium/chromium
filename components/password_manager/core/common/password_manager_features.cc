@@ -89,7 +89,7 @@ const base::Feature kPasswordScriptsFetching = {
 
 // Enables checking credentials for weakness in Password Check.
 const base::Feature kPasswordsWeaknessCheck = {
-    "PasswordsWeaknessCheck", base::FEATURE_DISABLED_BY_DEFAULT};
+    "PasswordsWeaknessCheck", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables showing UI which allows users to easily revert their choice to
 // never save passwords on a certain website.
