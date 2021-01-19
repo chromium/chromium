@@ -85,7 +85,6 @@ void PerformanceEventTiming::BuildJSONValue(V8ObjectBuilder& builder) const {
   builder.AddNumber("processingStart", processingStart());
   builder.AddNumber("processingEnd", processingEnd());
   builder.AddBoolean("cancelable", cancelable_);
-  builder.Add("target", target());
 }
 
 void PerformanceEventTiming::Trace(Visitor* visitor) const {
