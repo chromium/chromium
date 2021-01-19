@@ -80,6 +80,7 @@
     &lt;li&gt;Вебсайтыг эзэмшигчтэй холбогдоно уу.&lt;/li&gt;
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Та нууц үгээ танай байгууллагын удирддаггүй сайтад оруулсан байна. Бүртгэлээ хамгаалахын тулд бусад апп болон сайтад нууц үгээ дахин бүү ашиглана уу.</translation>
+<translation id="1259144770381827039">Дэлгэрэнгүйг харна уу.</translation>
 <translation id="1263231323834454256">Унших жагсаалт</translation>
 <translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
         Энэ төхөөрөмж дээр үлдэхгүй үйл ажиллагаа:
@@ -326,6 +327,7 @@
 <translation id="2164510882479075877"><ph name="HOST_NAME" /> үг үсгийн алдаатай бичигдсэн эсэхийг шалгана уу.</translation>
 <translation id="2166049586286450108">Админы бүрэн хандалт</translation>
 <translation id="2166378884831602661">Энэ сайтад холбогдоход аюултай</translation>
+<translation id="2168151236314517198">Энэ контентыг хэвлэх сонголтыг администраторын бодлогоор блоклосон байна</translation>
 <translation id="2169984857010174799">Kaku2 (Дугтуй)</translation>
 <translation id="2181821976797666341">Тохиргоонууд</translation>
 <translation id="2183608646556468874">Утасны дугаар</translation>
@@ -1360,6 +1362,7 @@
 <translation id="6290238015253830360">Таны санал болгосон нийтлэл энд харагдана</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">Chrome-н Google Туслахыг зогсоож байна</translation>
+<translation id="6304463939629872728">Дараахаар тооцоо хийх</translation>
 <translation id="6305205051461490394"><ph name="URL" />-г ашиглах боломжгүй байна.</translation>
 <translation id="6312113039770857350">Веб хуудас боломжгүй байна</translation>
 <translation id="6321917430147971392">DNS тохиргоогоо шалгана уу</translation>
@@ -1389,6 +1392,7 @@
 <translation id="6406765186087300643">C0 (Дугтуй)</translation>
 <translation id="6409754798200046165">Та дөнгөж сая сэжигтэй сайтад нууц үгээ орууллаа. Нууц үгээ одоо өөрчлөхийг Chrome зөвлөж байна.</translation>
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" />-н дуусах огноо, карт баталгаажуулалтын кодыг оруулна уу</translation>
+<translation id="6410774864568266108">Google Pay-н саналаа бүү мартаарай</translation>
 <translation id="6415778972515849510">Chromium танд Google Бүртгэлээ хамгаалах болон нууц үгээ солиход туслах боломжтой.</translation>
 <translation id="6423385022588644828">Одооноос Touch ID ашиглан картуудаа илүү хурдан баталгаажуулаарай</translation>
 <translation id="6425092077175753609">Material</translation>

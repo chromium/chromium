@@ -1645,6 +1645,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="281504910091592009">Bekijk en beheer opgeslagen wachtwoorden in je <ph name="BEGIN_LINK" />Google-account<ph name="END_LINK" /></translation>
 <translation id="2815693974042551705">Bookmark voor map toevoegen</translation>
 <translation id="2816319641769218778">Schakel synchronisatie in om wachtwoorden op te slaan op je Google-account.</translation>
+<translation id="2816628817680324566">Deze site toestaan je beveiligingssleutel te identificeren?</translation>
 <translation id="2818476747334107629">Printergegevens</translation>
 <translation id="2820957248982571256">Scannen…</translation>
 <translation id="2822634587701817431">Verkleinen/vergroten</translation>
@@ -3749,6 +3750,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="5300287940468717207">Sitemachtigingen resetten?</translation>
 <translation id="5300589172476337783">Weergeven</translation>
 <translation id="5300719150368506519">URL's van pagina's die je bezoekt naar Google sturen</translation>
+<translation id="5300814202279832142">Venster verplaatsen naar bureau</translation>
 <translation id="5301751748813680278">Aangemeld als gast.</translation>
 <translation id="5301954838959518834">OK, begrepen</translation>
 <translation id="5302048478445481009">Taal</translation>
@@ -5431,6 +5433,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="7250616558727237648">Het apparaat waarmee je deelt, reageert niet. Probeer het opnieuw.</translation>
 <translation id="725109152065019550">Je beheerder heeft externe opslag uitgeschakeld voor je account.</translation>
 <translation id="7251346854160851420">Standaardachtergrond</translation>
+<translation id="7251979364707973467"><ph name="WEBSITE" /> heeft je beveiligingssleutel uitgegeven en wil de bijbehorende ID weten. De site weet dan precies welke beveiligingssleutel je gebruikt.</translation>
 <translation id="7253521419891527137">&amp;Meer informatie</translation>
 <translation id="7254951428499890870">Weet je zeker dat je '<ph name="APP_NAME" />' in diagnostische modus wilt starten?</translation>
 <translation id="725497546968438223">Knop voor bookmarkmap</translation>

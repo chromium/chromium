@@ -72,6 +72,7 @@
 <translation id="4405930547258349619">المكتبة الأساسية</translation>
 <translation id="443560535555262820">فتح إعدادات "أدوات تمكين الوصول" المفضّلة</translation>
 <translation id="4450893287417543264">عدم الإظهار مرة أخرى</translation>
+<translation id="4512952200932940229">‏حقوق الطبع والنشر The Chromium Authors لعام 2021. جميع الحقوق محفوظة.</translation>
 <translation id="4513946894732546136">ملاحظات</translation>
 <translation id="4563926062592110512">تم إلغاء ربط العميل: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="4635770493235256822">الأجهزة عن بُعد</translation>
@@ -173,6 +174,7 @@
 <translation id="8743328882720071828">هل تريد السماح لـ <ph name="CLIENT_USERNAME" /> برؤية جهاز الكمبيوتر والتحكم فيه؟</translation>
 <translation id="8747048596626351634">‏تعطلت الجلسة أو تعذّر بدء تشغيلها. في حال وجود ~/.chrome-remote-desktop-session على جهاز الكمبيوتر البعيد، تأكد من بدء تشغيلها لعملية مقدمة لفترة زمنية طويلة، مثل بيئة سطح المكتب أو مدير النوافذ.</translation>
 <translation id="8804164990146287819">سياسة الخصوصية</translation>
+<translation id="8906511416443321782">‏مطلوب منح إمكانية الوصول إلى الميكروفون لتسجيل الصوت وبثه إلى برنامج "سطح المكتب البعيد من Chrome".</translation>
 <translation id="9111855907838866522">أنت متصل بجهازك البعيد. ولفتح القائمة، يُرجى النقر على الشاشة باستخدام أربعة أصابع.</translation>
 <translation id="9126115402994542723">عدم المطالبة برقم التعريف الشخصي مرة أخرى عند الاتصال بهذا المضيف من هذا الجهاز.</translation>
 <translation id="916856682307586697">‏إطلاق جلسة Xsession التلقائية</translation>

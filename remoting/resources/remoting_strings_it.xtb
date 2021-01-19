@@ -72,6 +72,7 @@ Se la casella "<ph name="SERVICE_SCRIPT_NAME" />" è già selezionata, deselezio
 <translation id="4405930547258349619">Core Library</translation>
 <translation id="443560535555262820">Apri preferenze Accessibilità</translation>
 <translation id="4450893287417543264">Non mostrare più</translation>
+<translation id="4512952200932940229">Copyright 2021 The Chromium Authors. Tutti i diritti riservati.</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="4563926062592110512">Client scollegato: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="4635770493235256822">Dispositivi remoti</translation>
@@ -173,6 +174,7 @@ Se la casella "<ph name="SERVICE_SCRIPT_NAME" />" è già selezionata, deselezio
 <translation id="8743328882720071828">Vuoi consentire a <ph name="CLIENT_USERNAME" /> di visualizzare e controllare il tuo computer?</translation>
 <translation id="8747048596626351634">La sessione si è arrestata in modo anomalo o non si è avviata. Se sul computer remoto esiste la sessione ~/.chrome-remote-desktop-session, assicurati che avvii un processo in primo piano con esecuzione prolungata come un ambiente desktop o gestione finestre.</translation>
 <translation id="8804164990146287819">Norme sulla privacy</translation>
+<translation id="8906511416443321782">È richiesto l'accesso al microfono per acquisire l'audio e trasmetterlo in streaming al client Chrome Remote Desktop.</translation>
 <translation id="9111855907838866522">Sei connesso al tuo dispositivo remoto. Per aprire il menu, tocca lo schermo con quattro dita.</translation>
 <translation id="9126115402994542723">Non chiedere di nuovo il PIN per il collegamento a questo host da questo dispositivo.</translation>
 <translation id="916856682307586697">Viene avviata la XSession predefinita</translation>
