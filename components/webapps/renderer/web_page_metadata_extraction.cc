@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/renderer/web_page_metadata_extraction.h"
+#include "components/webapps/renderer/web_page_metadata_extraction.h"
 
 #include <stddef.h>
 
 #include <string>
 #include <vector>
 
-#include "chrome/common/web_page_metadata.mojom.h"
+#include "components/webapps/common/web_page_metadata.mojom.h"
 #include "third_party/blink/public/platform/web_icon_sizes_parser.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
@@ -25,7 +25,7 @@ using blink::WebLocalFrame;
 using blink::WebNode;
 using blink::WebString;
 
-namespace chrome {
+namespace webapps {
 namespace {
 
 void AddInstallIcon(const WebElement& link,
@@ -115,4 +115,4 @@ mojom::WebPageMetadataPtr ExtractWebPageMetadata(WebLocalFrame* frame) {
   return metadata;
 }
 
-}  // namespace chrome
+}  // namespace webapps

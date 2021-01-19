@@ -19,7 +19,6 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/common/chrome_constants.h"
 #include "components/dom_distiller/core/url_utils.h"
 #include "components/favicon/content/large_favicon_provider_getter.h"
 #include "components/favicon/core/large_favicon_provider.h"
@@ -27,6 +26,7 @@
 #include "components/webapps/browser/android/webapps_icon_utils.h"
 #include "components/webapps/browser/android/webapps_utils.h"
 #include "components/webapps/browser/installable/installable_manager.h"
+#include "components/webapps/common/constants.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -128,31 +128,29 @@ AddToHomescreenDataFetcher::AddToHomescreenDataFetcher(
   DCHECK(shortcut_info_.url.is_valid());
 
   // Send a message to the renderer to retrieve information about the page.
-  mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame> chrome_render_frame;
+  mojo::AssociatedRemote<mojom::WebPageMetadataAgent> metadata_agent;
   web_contents->GetMainFrame()->GetRemoteAssociatedInterfaces()->GetInterface(
-      &chrome_render_frame);
+      &metadata_agent);
   // Bind the InterfacePtr into the callback so that it's kept alive until
   // there's either a connection error or a response.
-  auto* web_page_metadata_proxy = chrome_render_frame.get();
+  auto* web_page_metadata_proxy = metadata_agent.get();
   web_page_metadata_proxy->GetWebPageMetadata(base::BindOnce(
       &AddToHomescreenDataFetcher::OnDidGetWebPageMetadata,
-      weak_ptr_factory_.GetWeakPtr(), base::Passed(&chrome_render_frame)));
+      weak_ptr_factory_.GetWeakPtr(), base::Passed(&metadata_agent)));
 }
 
 AddToHomescreenDataFetcher::~AddToHomescreenDataFetcher() = default;
 
 void AddToHomescreenDataFetcher::OnDidGetWebPageMetadata(
-    mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>
-        chrome_render_frame,
-    chrome::mojom::WebPageMetadataPtr web_page_metadata) {
+    mojo::AssociatedRemote<mojom::WebPageMetadataAgent> metadata_agent,
+    mojom::WebPageMetadataPtr web_page_metadata) {
   if (!web_contents())
     return;
 
   // Note, the title should have already been clipped on the renderer side.
   // TODO(https://crbug.com/673422): Would be nice if this constraint could be
   // specified directly in the mojom file and enforced automatically.
-  if (web_page_metadata->application_name.size() >
-      chrome::kMaxMetaTagAttributeLength) {
+  if (web_page_metadata->application_name.size() > kMaxMetaTagAttributeLength) {
     mojo::ReportBadMessage("application_name is too long");
     return;
   }
@@ -165,9 +163,9 @@ void AddToHomescreenDataFetcher::OnDidGetWebPageMetadata(
   shortcut_info_.name = shortcut_info_.user_title;
 
   if (web_page_metadata->mobile_capable ==
-          chrome::mojom::WebPageMobileCapable::ENABLED ||
+          mojom::WebPageMobileCapable::ENABLED ||
       web_page_metadata->mobile_capable ==
-          chrome::mojom::WebPageMobileCapable::ENABLED_APPLE) {
+          mojom::WebPageMobileCapable::ENABLED_APPLE) {
     shortcut_info_.display = blink::mojom::DisplayMode::kStandalone;
     shortcut_info_.UpdateSource(
         ShortcutInfo::SOURCE_ADD_TO_HOMESCREEN_STANDALONE);
@@ -175,15 +173,15 @@ void AddToHomescreenDataFetcher::OnDidGetWebPageMetadata(
 
   // Record what type of shortcut was added by the user.
   switch (web_page_metadata->mobile_capable) {
-    case chrome::mojom::WebPageMobileCapable::ENABLED:
+    case mojom::WebPageMobileCapable::ENABLED:
       base::RecordAction(
           base::UserMetricsAction("webapps.AddShortcut.AppShortcut"));
       break;
-    case chrome::mojom::WebPageMobileCapable::ENABLED_APPLE:
+    case mojom::WebPageMobileCapable::ENABLED_APPLE:
       base::RecordAction(
           base::UserMetricsAction("webapps.AddShortcut.AppShortcutApple"));
       break;
-    case chrome::mojom::WebPageMobileCapable::UNSPECIFIED:
+    case mojom::WebPageMobileCapable::UNSPECIFIED:
       base::RecordAction(
           base::UserMetricsAction("webapps.AddShortcut.Bookmark"));
       break;

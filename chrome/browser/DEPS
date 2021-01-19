@@ -326,6 +326,7 @@ include_rules = [
   "+components/web_modal",
   "+components/web_resource",
   "+components/webapps/browser",
+  "+components/webapps/common",
   "+components/webdata/common",
   "+components/webdata_services",
   "+components/webrtc_logging/browser",

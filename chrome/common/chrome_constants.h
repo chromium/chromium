@@ -118,9 +118,6 @@ extern const char kLockScreenProfile[];
 // Used to identify the application to the system AV function in Windows.
 extern const char kApplicationClientIDStringForAVScanning[];
 
-// The largest reasonable length we'd assume for a meta tag attribute.
-extern const size_t kMaxMetaTagAttributeLength;
-
 }  // namespace chrome
 
 #endif  // CHROME_COMMON_CHROME_CONSTANTS_H_

@@ -717,7 +717,6 @@ mojom("mojo_bindings") {
     "renderer_configuration.mojom",
     "subresource_redirect_service.mojom",
     "sync_encryption_keys_extension.mojom",
-    "web_page_metadata.mojom",
   ]
 
   deps = []

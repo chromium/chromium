@@ -15,8 +15,8 @@
 #include "base/containers/flat_set.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
-#include "chrome/common/web_page_metadata.mojom-forward.h"
 #include "components/services/app_service/public/cpp/share_target.h"
+#include "components/webapps/common/web_page_metadata.mojom-forward.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-shared.h"
@@ -94,7 +94,7 @@ struct WebApplicationInfo {
 
   WebApplicationInfo();
   WebApplicationInfo(const WebApplicationInfo& other);
-  explicit WebApplicationInfo(const chrome::mojom::WebPageMetadata& metadata);
+  explicit WebApplicationInfo(const webapps::mojom::WebPageMetadata& metadata);
   ~WebApplicationInfo();
 
   // Title of the application.

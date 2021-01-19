@@ -22,7 +22,6 @@
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/history/history_service_factory.h"
-#include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/webapps/browser/installable/installable_manager.h"
@@ -241,13 +240,13 @@ class AddToHomescreenDataFetcherTest : public ChromeRenderViewHostTestHarness {
                   const char* expected_name,
                   blink::mojom::DisplayMode display_mode,
                   bool is_webapk_compatible) {
-    chrome::mojom::WebPageMetadataPtr web_page_metadata(
-        chrome::mojom::WebPageMetadata::New());
+    webapps::mojom::WebPageMetadataPtr web_page_metadata(
+        webapps::mojom::WebPageMetadata::New());
     web_page_metadata->application_name =
         base::ASCIIToUTF16(kWebApplicationInfoTitle);
 
     fetcher->OnDidGetWebPageMetadata(
-        mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>(),
+        mojo::AssociatedRemote<webapps::mojom::WebPageMetadataAgent>(),
         std::move(web_page_metadata));
     waiter.WaitForDataAvailable();
 

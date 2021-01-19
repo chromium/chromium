@@ -10,8 +10,8 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/common/chrome_render_frame.mojom.h"
 #include "components/webapps/browser/android/shortcut_info.h"
+#include "components/webapps/common/web_page_metadata_agent.mojom.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -58,9 +58,8 @@ class AddToHomescreenDataFetcher : public content::WebContentsObserver {
 
   // IPC message received when the initialization is finished.
   void OnDidGetWebPageMetadata(
-      mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>
-          chrome_render_frame,
-      chrome::mojom::WebPageMetadataPtr web_page_metadata);
+      mojo::AssociatedRemote<mojom::WebPageMetadataAgent> webapps_render_frame,
+      mojom::WebPageMetadataPtr web_page_metadata);
 
   // Accessors, etc.
   const SkBitmap& primary_icon() const { return primary_icon_; }

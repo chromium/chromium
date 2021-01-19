@@ -110,6 +110,7 @@
 #include "components/version_info/version_info.h"
 #include "components/visitedlink/renderer/visitedlink_reader.h"
 #include "components/web_cache/renderer/web_cache_impl.h"
+#include "components/webapps/renderer/web_page_metadata_agent.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -520,6 +521,9 @@ void ChromeContentRendererClient::RenderFrameCreated(
     SyncEncryptionKeysExtension::Create(render_frame);
   }
 #endif
+
+  if (render_frame->IsMainFrame())
+    new webapps::WebPageMetadataAgent(render_frame);
 
   new NetErrorHelper(render_frame);
 
