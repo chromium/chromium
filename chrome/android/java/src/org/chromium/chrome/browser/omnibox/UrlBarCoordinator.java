@@ -173,6 +173,14 @@ public class UrlBarCoordinator implements UrlBarEditingTextStateProvider, UrlFoc
         return mUrlBar.hasFocus();
     }
 
+    /* package */ void requestFocus() {
+        mUrlBar.requestFocus();
+    }
+
+    /* package */ void clearFocus() {
+        mUrlBar.clearFocus();
+    }
+
     /**
      * Controls keyboard visibility.
      *

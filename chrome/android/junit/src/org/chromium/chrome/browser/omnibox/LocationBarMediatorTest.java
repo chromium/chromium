@@ -11,7 +11,6 @@ import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyObject;
@@ -320,7 +319,7 @@ public class LocationBarMediatorTest {
         mMediator.onFinishNativeInitialization();
         mMediator.setSearchQuery(query);
 
-        verify(mLocationBarLayout).setUrlBarFocus(true, null, OmniboxFocusReason.SEARCH_QUERY);
+        verify(mUrlCoordinator).requestFocus();
         verify(mLocationBarLayout)
                 .setUrlBarText(argThat(matchesUrlBarDataForQuery(query)),
                         eq(UrlBar.ScrollType.NO_SCROLL), eq(SelectionState.SELECT_ALL));
@@ -331,14 +330,14 @@ public class LocationBarMediatorTest {
     @Test
     public void testSetSearchQuery_empty() {
         mMediator.setSearchQuery("");
-        verify(mLocationBarLayout, never()).setUrlBarFocus(anyBoolean(), anyString(), anyInt());
+        verify(mUrlCoordinator, never()).requestFocus();
         verify(mLocationBarLayout, never()).post(any());
 
         mMediator.onFinishNativeInitialization();
-        verify(mLocationBarLayout, never()).setUrlBarFocus(anyBoolean(), anyString(), anyInt());
+        verify(mUrlCoordinator, never()).requestFocus();
 
         mMediator.setSearchQuery("");
-        verify(mLocationBarLayout, never()).setUrlBarFocus(anyBoolean(), anyString(), anyInt());
+        verify(mUrlCoordinator, never()).requestFocus();
         verify(mLocationBarLayout, never()).post(any());
     }
 
@@ -351,7 +350,7 @@ public class LocationBarMediatorTest {
         verify(mLocationBarLayout).post(mRunnableCaptor.capture());
         mRunnableCaptor.getValue().run();
 
-        verify(mLocationBarLayout).setUrlBarFocus(true, null, OmniboxFocusReason.SEARCH_QUERY);
+        verify(mUrlCoordinator).requestFocus();
         verify(mLocationBarLayout)
                 .setUrlBarText(argThat(matchesUrlBarDataForQuery(query)),
                         eq(UrlBar.ScrollType.NO_SCROLL), eq(SelectionState.SELECT_ALL));
@@ -379,14 +378,14 @@ public class LocationBarMediatorTest {
     @Test
     public void testPerformSearchQuery_empty() {
         mMediator.performSearchQuery("", Collections.emptyList());
-        verify(mLocationBarLayout, never()).setUrlBarFocus(anyBoolean(), anyString(), anyInt());
+        verify(mUrlCoordinator, never()).requestFocus();
         verify(mLocationBarLayout, never()).post(any());
 
         mMediator.onFinishNativeInitialization();
-        verify(mLocationBarLayout, never()).setUrlBarFocus(anyBoolean(), anyString(), anyInt());
+        verify(mUrlCoordinator, never()).requestFocus();
 
         mMediator.setSearchQuery("");
-        verify(mLocationBarLayout, never()).setUrlBarFocus(anyBoolean(), anyString(), anyInt());
+        verify(mUrlCoordinator, never()).requestFocus();
         verify(mLocationBarLayout, never()).post(any());
     }
 
@@ -398,7 +397,7 @@ public class LocationBarMediatorTest {
         doReturn("").when(mTemplateUrlService).getUrlForSearchQuery("example search", params);
         mMediator.performSearchQuery(query, params);
 
-        verify(mLocationBarLayout).setUrlBarFocus(true, null, OmniboxFocusReason.SEARCH_QUERY);
+        verify(mUrlCoordinator).requestFocus();
         verify(mLocationBarLayout)
                 .setUrlBarText(argThat(matchesUrlBarDataForQuery(query)),
                         eq(UrlBar.ScrollType.NO_SCROLL), eq(SelectionState.SELECT_ALL));
@@ -414,7 +413,7 @@ public class LocationBarMediatorTest {
         newConfig.keyboard = Configuration.KEYBOARD_QWERTY;
         mMediator.onConfigurationChanged(newConfig);
 
-        verify(mLocationBarLayout, never()).setUrlBarFocus(anyBoolean(), anyString(), anyInt());
+        verify(mUrlCoordinator, never()).clearFocus();
     }
 
     @Test
@@ -424,15 +423,15 @@ public class LocationBarMediatorTest {
         Configuration newConfig = new Configuration();
         newConfig.keyboard = Configuration.KEYBOARD_NOKEYS;
         mMediator.onConfigurationChanged(newConfig);
-        verify(mLocationBarLayout, never()).setUrlBarFocus(anyBoolean(), anyString(), anyInt());
+        verify(mUrlCoordinator, never()).clearFocus();
 
         doReturn(true).when(mLocationBarLayout).isUrlBarFocused();
         mMediator.onConfigurationChanged(newConfig);
-        verify(mLocationBarLayout, never()).setUrlBarFocus(anyBoolean(), anyString(), anyInt());
+        verify(mUrlCoordinator, never()).clearFocus();
 
         doReturn(true).when(mLocationBarLayout).isUrlBarFocusedWithoutAnimations();
         mMediator.onConfigurationChanged(newConfig);
-        verify(mLocationBarLayout).setUrlBarFocus(false, null, OmniboxFocusReason.UNFOCUS);
+        verify(mUrlCoordinator).clearFocus();
     }
 
     @Test
@@ -619,7 +618,46 @@ public class LocationBarMediatorTest {
         doReturn(true).when(mLocationBarLayout).isUrlBarFocusedWithoutAnimations();
         mMediator.setUrl(url, urlBarData);
 
-        verify(mLocationBarLayout).setUrlBarFocus(false, null, OmniboxFocusReason.UNFOCUS);
+        verify(mUrlCoordinator).clearFocus();
+    }
+
+    @Test
+    public void testSetUrlBarFocus_focusedFromFakebox() {
+        mMediator.setUrlBarFocus(true, null, OmniboxFocusReason.FAKE_BOX_TAP);
+        verify(mLocationBarLayout).setUrlFocusedFromFakebox(true);
+        verify(mUrlCoordinator).requestFocus();
+    }
+
+    @Test
+    public void testSetUrlBarFocus_focusedFromQueryTiles() {
+        mMediator.setUrlBarFocus(true, null, OmniboxFocusReason.QUERY_TILES_NTP_TAP);
+        verify(mLocationBarLayout).setUrlFocusedFromQueryTiles(true);
+        verify(mLocationBarLayout).setUrlFocusedFromFakebox(true);
+        verify(mUrlCoordinator).requestFocus();
+    }
+
+    @Test
+    public void testSetUrlBarFocus_triggersAnimation() {
+        doReturn(true).when(mLocationBarLayout).isUrlBarFocused();
+        doReturn(true).when(mLocationBarLayout).isUrlBarFocusedWithoutAnimations();
+        mMediator.setUrlBarFocus(true, null, OmniboxFocusReason.QUERY_TILES_NTP_TAP);
+        verify(mLocationBarLayout).handleUrlFocusAnimation(true);
+    }
+
+    @Test
+    public void testSetUrlBarFocus_notFocused() {
+        mMediator.setUrlBarFocus(false, null, OmniboxFocusReason.FAKE_BOX_TAP);
+        verify(mUrlCoordinator).clearFocus();
+    }
+
+    @Test
+    public void testSetUrlBarFocus_pastedText() {
+        mMediator.setUrlBarFocus(true, "pastedText", OmniboxFocusReason.OMNIBOX_TAP);
+        verify(mUrlCoordinator)
+                .setUrlBarData(argThat(matchesUrlBarDataForQuery("pastedText")),
+                        eq(UrlBar.ScrollType.NO_SCROLL),
+                        eq(UrlBarCoordinator.SelectionState.SELECT_END));
+        verify(mLocationBarLayout).forceOnTextChanged();
     }
 
     private ArgumentMatcher<UrlBarData> matchesUrlBarDataForQuery(String query) {

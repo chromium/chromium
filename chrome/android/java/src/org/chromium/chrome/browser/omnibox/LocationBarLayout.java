@@ -22,13 +22,11 @@ import android.widget.LinearLayout;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.MarginLayoutParamsCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ObserverList;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.WindowDelegate;
@@ -190,8 +188,16 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
         return mUrlFocusedFromFakebox;
     }
 
+    /* package */ void setUrlFocusedFromFakebox(boolean focusedFromFakebox) {
+        mUrlFocusedFromFakebox = focusedFromFakebox;
+    }
+
     /* package */ boolean didFocusUrlFromQueryTiles() {
         return mUrlFocusedFromQueryTiles;
+    }
+
+    /* package */ void setUrlFocusedFromQueryTiles(boolean focusedFromQueryTiles) {
+        mUrlFocusedFromQueryTiles = focusedFromQueryTiles;
     }
 
     /* package */ void setIsUrlFocusedWithoutAnimations(boolean isUrlFocusedWithoutAnimations) {
@@ -242,40 +248,6 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
             RecordUserAction.record("MobileOmniboxVoiceSearch");
             mVoiceRecognitionHandler.startVoiceRecognition(
                     VoiceRecognitionHandler.VoiceInteractionSource.OMNIBOX);
-        }
-    }
-
-    /* package */ void setUrlBarFocus(
-            boolean shouldBeFocused, @Nullable String pastedText, @OmniboxFocusReason int reason) {
-        if (shouldBeFocused) {
-            if (!mUrlHasFocus) recordOmniboxFocusReason(reason);
-            if (reason == OmniboxFocusReason.FAKE_BOX_TAP
-                    || reason == OmniboxFocusReason.FAKE_BOX_LONG_PRESS
-                    || reason == OmniboxFocusReason.TASKS_SURFACE_FAKE_BOX_LONG_PRESS
-                    || reason == OmniboxFocusReason.TASKS_SURFACE_FAKE_BOX_TAP) {
-                mUrlFocusedFromFakebox = true;
-            }
-
-            if (reason == OmniboxFocusReason.QUERY_TILES_NTP_TAP) {
-                mUrlFocusedFromFakebox = true;
-                mUrlFocusedFromQueryTiles = true;
-            }
-
-            if (mUrlHasFocus && mUrlFocusedWithoutAnimations) {
-                handleUrlFocusAnimation(mUrlHasFocus);
-            } else {
-                mUrlBar.requestFocus();
-            }
-        } else {
-            assert pastedText == null;
-            mUrlBar.clearFocus();
-        }
-
-        if (pastedText != null) {
-            // This must be happen after requestUrlFocus(), which changes the selection.
-            mUrlCoordinator.setUrlBarData(UrlBarData.forNonUrlText(pastedText),
-                    UrlBar.ScrollType.NO_SCROLL, UrlBarCoordinator.SelectionState.SELECT_END);
-            forceOnTextChanged();
         }
     }
 
@@ -652,15 +624,10 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
         return mStatusCoordinator;
     }
 
-    private void forceOnTextChanged() {
+    /* package */ void forceOnTextChanged() {
         String textWithoutAutocomplete = mUrlCoordinator.getTextWithoutAutocomplete();
         String textWithAutocomplete = mUrlCoordinator.getTextWithAutocomplete();
         mAutocompleteCoordinator.onTextChanged(textWithoutAutocomplete, textWithAutocomplete);
-    }
-
-    /* package */ void recordOmniboxFocusReason(@OmniboxFocusReason int reason) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "Android.OmniboxFocusReason", reason, OmniboxFocusReason.NUM_ENTRIES);
     }
 
     /**

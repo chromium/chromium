@@ -496,11 +496,12 @@ public class LocationBarLayoutTest {
     @SmallTest
     public void testSetUrlBarFocus() {
         final LocationBarLayout locationBar = getLocationBar();
+        LocationBarMediator locationBarMediator = getLocationBarMediator();
 
         Assert.assertEquals(
                 0, RecordHistogram.getHistogramTotalCountForTesting("Android.OmniboxFocusReason"));
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            locationBar.setUrlBarFocus(
+            locationBarMediator.setUrlBarFocus(
                     true, SEARCH_TERMS_URL, OmniboxFocusReason.FAKE_BOX_LONG_PRESS);
         });
         Assert.assertTrue(locationBar.isUrlBarFocused());
@@ -510,7 +511,7 @@ public class LocationBarLayoutTest {
                 1, RecordHistogram.getHistogramTotalCountForTesting("Android.OmniboxFocusReason"));
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            locationBar.setUrlBarFocus(true, SEARCH_TERMS, OmniboxFocusReason.SEARCH_QUERY);
+            locationBarMediator.setUrlBarFocus(true, SEARCH_TERMS, OmniboxFocusReason.SEARCH_QUERY);
         });
         Assert.assertTrue(locationBar.isUrlBarFocused());
         Assert.assertTrue(locationBar.didFocusUrlFromFakebox());
@@ -518,15 +519,17 @@ public class LocationBarLayoutTest {
         Assert.assertEquals(
                 1, RecordHistogram.getHistogramTotalCountForTesting("Android.OmniboxFocusReason"));
 
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { locationBar.setUrlBarFocus(false, null, OmniboxFocusReason.UNFOCUS); });
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            locationBarMediator.setUrlBarFocus(false, null, OmniboxFocusReason.UNFOCUS);
+        });
         Assert.assertFalse(locationBar.isUrlBarFocused());
         Assert.assertFalse(locationBar.didFocusUrlFromFakebox());
         Assert.assertEquals(
                 1, RecordHistogram.getHistogramTotalCountForTesting("Android.OmniboxFocusReason"));
 
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { locationBar.setUrlBarFocus(true, null, OmniboxFocusReason.OMNIBOX_TAP); });
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            locationBarMediator.setUrlBarFocus(true, null, OmniboxFocusReason.OMNIBOX_TAP);
+        });
         Assert.assertTrue(locationBar.isUrlBarFocused());
         Assert.assertFalse(locationBar.didFocusUrlFromFakebox());
         Assert.assertEquals(

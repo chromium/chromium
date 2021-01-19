@@ -19,6 +19,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.CommandLine;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -448,6 +449,11 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
         }
     }
 
+    private void recordOmniboxFocusReason(@OmniboxFocusReason int reason) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.OmniboxFocusReason", reason, OmniboxFocusReason.NUM_ENTRIES);
+    }
+
     // LocationBarData.Observer implementation
     // Using the default empty onSecurityStateChanged.
     // Using the default empty onTitleChanged.
@@ -492,7 +498,37 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
 
     @Override
     public void setUrlBarFocus(boolean shouldBeFocused, @Nullable String pastedText, int reason) {
-        mLocationBarLayout.setUrlBarFocus(shouldBeFocused, pastedText, reason);
+        boolean urlHasFocus = mLocationBarLayout.isUrlBarFocused();
+        if (shouldBeFocused) {
+            if (!urlHasFocus) recordOmniboxFocusReason(reason);
+            if (reason == OmniboxFocusReason.FAKE_BOX_TAP
+                    || reason == OmniboxFocusReason.FAKE_BOX_LONG_PRESS
+                    || reason == OmniboxFocusReason.TASKS_SURFACE_FAKE_BOX_LONG_PRESS
+                    || reason == OmniboxFocusReason.TASKS_SURFACE_FAKE_BOX_TAP) {
+                mLocationBarLayout.setUrlFocusedFromFakebox(true);
+            }
+
+            if (reason == OmniboxFocusReason.QUERY_TILES_NTP_TAP) {
+                mLocationBarLayout.setUrlFocusedFromFakebox(true);
+                mLocationBarLayout.setUrlFocusedFromQueryTiles(true);
+            }
+
+            if (urlHasFocus && mLocationBarLayout.isUrlBarFocusedWithoutAnimations()) {
+                mLocationBarLayout.handleUrlFocusAnimation(true);
+            } else {
+                mUrlCoordinator.requestFocus();
+            }
+        } else {
+            assert pastedText == null;
+            mUrlCoordinator.clearFocus();
+        }
+
+        if (pastedText != null) {
+            // This must be happen after requestUrlFocus(), which changes the selection.
+            mUrlCoordinator.setUrlBarData(UrlBarData.forNonUrlText(pastedText),
+                    UrlBar.ScrollType.NO_SCROLL, UrlBarCoordinator.SelectionState.SELECT_END);
+            mLocationBarLayout.forceOnTextChanged();
+        }
     }
 
     @Override
@@ -569,7 +605,7 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
 
         // Ensure the UrlBar has focus before entering text. If the UrlBar is not focused,
         // autocomplete text will be updated but the visible text will not.
-        mLocationBarLayout.setUrlBarFocus(
+        setUrlBarFocus(
                 /*shouldBeFocused=*/true, /*pastedText=*/null, OmniboxFocusReason.SEARCH_QUERY);
         mLocationBarLayout.setUrlBarText(UrlBarData.forNonUrlText(query),
                 UrlBar.ScrollType.NO_SCROLL, SelectionState.SELECT_ALL);
@@ -621,9 +657,8 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
 
     @Override
     public void gestureDetected(boolean isLongPress) {
-        mLocationBarLayout.recordOmniboxFocusReason(isLongPress
-                        ? OmniboxFocusReason.OMNIBOX_LONG_PRESS
-                        : OmniboxFocusReason.OMNIBOX_TAP);
+        recordOmniboxFocusReason(isLongPress ? OmniboxFocusReason.OMNIBOX_LONG_PRESS
+                                             : OmniboxFocusReason.OMNIBOX_TAP);
     }
 
     // OnKeyListener implementation.
