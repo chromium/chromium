@@ -1039,6 +1039,10 @@ FileGrid.Item = class extends cr.ui.ListItem {
     return this.querySelector('filename-label').textContent;
   }
 
+  set label(newLabel) {
+    // no-op setter. cr.ui.List calls this setter but Files app doesn't need it.
+  }
+
   /**
    * @override
    */
