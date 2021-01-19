@@ -51664,7 +51664,7 @@
     "isolated_scripts": [
       {
         "args": [
-          "--child-processes=3"
+          "--child-processes=20"
         ],
         "isolate_name": "wpt_tests_isolate",
         "merge": {
