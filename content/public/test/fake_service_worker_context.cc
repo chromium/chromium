@@ -59,21 +59,12 @@ bool FakeServiceWorkerContext::MaybeHasRegistrationForOrigin(
     const url::Origin& origin) {
   return registered_origins_.find(origin) != registered_origins_.end();
 }
-void FakeServiceWorkerContext::GetInstalledRegistrationOrigins(
-    base::Optional<std::string> host_filter,
-    GetInstalledRegistrationOriginsCallback callback) {
-  NOTREACHED();
-}
 void FakeServiceWorkerContext::GetAllOriginsInfo(
     GetUsageInfoCallback callback) {
   NOTREACHED();
 }
 void FakeServiceWorkerContext::DeleteForOrigin(const url::Origin& origin,
                                                ResultCallback callback) {
-  NOTREACHED();
-}
-void FakeServiceWorkerContext::PerformStorageCleanup(
-    base::OnceClosure callback) {
   NOTREACHED();
 }
 void FakeServiceWorkerContext::CheckHasServiceWorker(

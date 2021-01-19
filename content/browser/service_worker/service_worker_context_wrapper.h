@@ -84,8 +84,6 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
       ServiceWorkerRegistry::GetUserDataForAllRegistrationsCallback;
   using GetInstalledRegistrationOriginsCallback =
       base::OnceCallback<void(const std::vector<url::Origin>& origins)>;
-  using GetStorageUsageForOriginCallback =
-      ServiceWorkerRegistry::GetStorageUsageForOriginCallback;
 
   explicit ServiceWorkerContextWrapper(BrowserContext* browser_context);
 
@@ -165,13 +163,9 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
       const std::string& request_uuid) override;
   size_t CountExternalRequestsForTest(const url::Origin& origin) override;
   bool MaybeHasRegistrationForOrigin(const url::Origin& origin) override;
-  void GetInstalledRegistrationOrigins(
-      base::Optional<std::string> host_filter,
-      GetInstalledRegistrationOriginsCallback callback) override;
   void GetAllOriginsInfo(GetUsageInfoCallback callback) override;
   void DeleteForOrigin(const url::Origin& origin,
                        ResultCallback callback) override;
-  void PerformStorageCleanup(base::OnceClosure callback) override;
   void CheckHasServiceWorker(const GURL& url,
                              CheckHasServiceWorkerCallback callback) override;
   void CheckOfflineCapability(const GURL& url,
@@ -314,12 +308,6 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   void ClearUserDataForAllRegistrationsByKeyPrefix(
       const std::string& key_prefix,
       StatusCallback callback);
-
-  // Returns total resource size stored in the storage for |origin|.
-  // This can be called from any thread and the callback is called on that
-  // thread.
-  void GetStorageUsageForOrigin(const url::Origin& origin,
-                                GetStorageUsageForOriginCallback callback);
 
   // Returns a list of ServiceWorkerRegistration for |origin|. The list includes
   // stored registrations and installing (not stored yet) registrations.
@@ -523,9 +511,6 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
       base::Optional<std::string> host_filter,
       GetInstalledRegistrationOriginsCallback callback,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner_for_callback);
-  void GetStorageUsageForOriginOnUIThread(
-      const url::Origin& origin,
-      GetStorageUsageForOriginCallback callback);
 
   // Observers of |context_core_| which live within content's implementation
   // boundary. Shared with |context_core_|.

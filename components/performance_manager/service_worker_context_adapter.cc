@@ -143,12 +143,6 @@ bool ServiceWorkerContextAdapter::MaybeHasRegistrationForOrigin(
   return false;
 }
 
-void ServiceWorkerContextAdapter::GetInstalledRegistrationOrigins(
-    base::Optional<std::string> host_filter,
-    GetInstalledRegistrationOriginsCallback callback) {
-  NOTIMPLEMENTED();
-}
-
 void ServiceWorkerContextAdapter::GetAllOriginsInfo(
     GetUsageInfoCallback callback) {
   NOTIMPLEMENTED();
@@ -156,11 +150,6 @@ void ServiceWorkerContextAdapter::GetAllOriginsInfo(
 
 void ServiceWorkerContextAdapter::DeleteForOrigin(const url::Origin& origin_url,
                                                   ResultCallback callback) {
-  NOTIMPLEMENTED();
-}
-
-void ServiceWorkerContextAdapter::PerformStorageCleanup(
-    base::OnceClosure callback) {
   NOTIMPLEMENTED();
 }
 
