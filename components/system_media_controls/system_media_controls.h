@@ -26,8 +26,9 @@ class COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS) SystemMediaControls {
     kStopped,
   };
 
-  // Returns the singleton instance, creating if necessary.
-  static SystemMediaControls* GetInstance();
+  static std::unique_ptr<SystemMediaControls> Create();
+
+  virtual ~SystemMediaControls() = default;
 
   virtual void AddObserver(SystemMediaControlsObserver* observer) = 0;
   virtual void RemoveObserver(SystemMediaControlsObserver* observer) = 0;
@@ -52,9 +53,6 @@ class COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS) SystemMediaControls {
   virtual void ClearThumbnail() = 0;
   virtual void ClearMetadata() = 0;
   virtual void UpdateDisplay() = 0;
-
- protected:
-  virtual ~SystemMediaControls() = default;
 };
 
 }  // namespace system_media_controls

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_MEDIA_HARDWARE_KEY_MEDIA_CONTROLLER_H_
-#define CONTENT_BROWSER_MEDIA_HARDWARE_KEY_MEDIA_CONTROLLER_H_
+#ifndef CONTENT_BROWSER_MEDIA_ACTIVE_MEDIA_SESSION_CONTROLLER_H_
+#define CONTENT_BROWSER_MEDIA_ACTIVE_MEDIA_SESSION_CONTROLLER_H_
 
 #include <utility>
 #include <vector>
@@ -19,13 +19,17 @@
 
 namespace content {
 
-// HardwareKeyMediaController controls media sessions via hardware media keys.
-class CONTENT_EXPORT HardwareKeyMediaController
+// Intakes media events (such as media key presses) and controls the active
+// media session.
+class CONTENT_EXPORT ActiveMediaSessionController
     : public media_session::mojom::MediaControllerObserver,
       public ui::MediaKeysListener::Delegate {
  public:
-  HardwareKeyMediaController();
-  ~HardwareKeyMediaController() override;
+  ActiveMediaSessionController();
+  ActiveMediaSessionController(const ActiveMediaSessionController&) = delete;
+  ActiveMediaSessionController& operator=(const ActiveMediaSessionController&) =
+      delete;
+  ~ActiveMediaSessionController() override;
 
   // media_session::mojom::MediaControllerObserver:
   void MediaSessionInfoChanged(
@@ -43,6 +47,14 @@ class CONTENT_EXPORT HardwareKeyMediaController
   // ui::MediaKeysListener::Delegate:
   void OnMediaKeysAccelerator(const ui::Accelerator& accelerator) override;
 
+  // Receives events from the SystemMediaControls.
+  void OnNext();
+  void OnPrevious();
+  void OnPlay();
+  void OnPause();
+  void OnPlayPause();
+  void OnStop();
+
   void FlushForTesting();
   void SetMediaControllerForTesting(
       mojo::Remote<media_session::mojom::MediaController> controller) {
@@ -59,6 +71,7 @@ class CONTENT_EXPORT HardwareKeyMediaController
   base::Optional<ui::KeyboardCode> MediaSessionActionToKeyCode(
       media_session::mojom::MediaSessionAction action) const;
 
+  void MaybePerformAction(media_session::mojom::MediaSessionAction action);
   bool SupportsAction(media_session::mojom::MediaSessionAction action) const;
   void PerformAction(media_session::mojom::MediaSessionAction action);
 
@@ -75,10 +88,8 @@ class CONTENT_EXPORT HardwareKeyMediaController
   // Used to receive updates to the active media controller.
   mojo::Receiver<media_session::mojom::MediaControllerObserver>
       media_controller_observer_receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HardwareKeyMediaController);
 };
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_MEDIA_HARDWARE_KEY_MEDIA_CONTROLLER_H_
+#endif  // CONTENT_BROWSER_MEDIA_ACTIVE_MEDIA_SESSION_CONTROLLER_H_

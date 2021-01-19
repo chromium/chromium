@@ -46,8 +46,6 @@ class COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS) SystemMediaControlsLinux
   SystemMediaControlsLinux();
   ~SystemMediaControlsLinux() override;
 
-  static SystemMediaControlsLinux* GetInstance();
-
   // Starts the DBus service.
   void StartService();
 

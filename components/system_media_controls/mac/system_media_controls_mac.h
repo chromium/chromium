@@ -27,8 +27,6 @@ class API_AVAILABLE(macos(10.12.2)) SystemMediaControlsMac
   SystemMediaControlsMac& operator=(const SystemMediaControlsMac&) = delete;
   ~SystemMediaControlsMac() override;
 
-  static SystemMediaControlsMac* GetInstance();
-
   // SystemMediaControls implementation.
   void AddObserver(SystemMediaControlsObserver* observer) override;
   void RemoveObserver(SystemMediaControlsObserver* observer) override;

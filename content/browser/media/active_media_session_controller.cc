@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/media/hardware_key_media_controller.h"
+#include "content/browser/media/active_media_session_controller.h"
 
 #include <algorithm>
 #include <utility>
@@ -21,7 +21,7 @@ namespace content {
 
 using media_session::mojom::MediaSessionAction;
 
-HardwareKeyMediaController::HardwareKeyMediaController() {
+ActiveMediaSessionController::ActiveMediaSessionController() {
   // Connect to the MediaControllerManager and create a MediaController that
   // controls the active session.
   mojo::Remote<media_session::mojom::MediaControllerManager>
@@ -37,9 +37,9 @@ HardwareKeyMediaController::HardwareKeyMediaController() {
       media_controller_observer_receiver_.BindNewPipeAndPassRemote());
 }
 
-HardwareKeyMediaController::~HardwareKeyMediaController() = default;
+ActiveMediaSessionController::~ActiveMediaSessionController() = default;
 
-void HardwareKeyMediaController::MediaSessionInfoChanged(
+void ActiveMediaSessionController::MediaSessionInfoChanged(
     media_session::mojom::MediaSessionInfoPtr session_info) {
   MediaKeysListenerManagerImpl* media_keys_listener_manager_impl =
       BrowserMainLoop::GetInstance()->media_keys_listener_manager();
@@ -51,7 +51,7 @@ void HardwareKeyMediaController::MediaSessionInfoChanged(
                            media_session::mojom::MediaPlaybackState::kPlaying);
 }
 
-void HardwareKeyMediaController::MediaSessionActionsChanged(
+void ActiveMediaSessionController::MediaSessionActionsChanged(
     const std::vector<MediaSessionAction>& actions) {
   MediaKeysListenerManager* media_keys_listener_manager =
       MediaKeysListenerManager::GetInstance();
@@ -87,19 +87,50 @@ void HardwareKeyMediaController::MediaSessionActionsChanged(
   }
 }
 
-void HardwareKeyMediaController::FlushForTesting() {
-  media_controller_remote_.FlushForTesting();
+void ActiveMediaSessionController::FlushForTesting() {
+  media_controller_remote_.FlushForTesting();  // IN-TEST
 }
 
-void HardwareKeyMediaController::OnMediaKeysAccelerator(
+void ActiveMediaSessionController::OnMediaKeysAccelerator(
     const ui::Accelerator& accelerator) {
   // Ignore key released events.
   if (accelerator.key_state() == ui::Accelerator::KeyState::RELEASED)
     return;
 
-  MediaSessionAction action =
-      KeyCodeToMediaSessionAction(accelerator.key_code());
+  MaybePerformAction(KeyCodeToMediaSessionAction(accelerator.key_code()));
+}
 
+void ActiveMediaSessionController::OnNext() {
+  MaybePerformAction(MediaSessionAction::kNextTrack);
+}
+
+void ActiveMediaSessionController::OnPrevious() {
+  MaybePerformAction(MediaSessionAction::kPreviousTrack);
+}
+
+void ActiveMediaSessionController::OnPlay() {
+  MaybePerformAction(MediaSessionAction::kPlay);
+}
+
+void ActiveMediaSessionController::OnPause() {
+  MaybePerformAction(MediaSessionAction::kPause);
+}
+
+void ActiveMediaSessionController::OnPlayPause() {
+  if (session_info_ && session_info_->playback_state ==
+                           media_session::mojom::MediaPlaybackState::kPlaying) {
+    MaybePerformAction(MediaSessionAction::kPause);
+    return;
+  }
+  MaybePerformAction(MediaSessionAction::kPlay);
+}
+
+void ActiveMediaSessionController::OnStop() {
+  MaybePerformAction(MediaSessionAction::kStop);
+}
+
+void ActiveMediaSessionController::MaybePerformAction(
+    MediaSessionAction action) {
   // Ignore if we don't support the action.
   if (!SupportsAction(action))
     return;
@@ -107,12 +138,12 @@ void HardwareKeyMediaController::OnMediaKeysAccelerator(
   PerformAction(action);
 }
 
-bool HardwareKeyMediaController::SupportsAction(
+bool ActiveMediaSessionController::SupportsAction(
     MediaSessionAction action) const {
   return actions_.contains(action);
 }
 
-void HardwareKeyMediaController::PerformAction(MediaSessionAction action) {
+void ActiveMediaSessionController::PerformAction(MediaSessionAction action) {
   DCHECK(SupportsAction(action));
   switch (action) {
     case MediaSessionAction::kPreviousTrack:
@@ -149,7 +180,7 @@ void HardwareKeyMediaController::PerformAction(MediaSessionAction action) {
   }
 }
 
-MediaSessionAction HardwareKeyMediaController::KeyCodeToMediaSessionAction(
+MediaSessionAction ActiveMediaSessionController::KeyCodeToMediaSessionAction(
     ui::KeyboardCode key_code) const {
   switch (key_code) {
     case ui::KeyboardCode::VKEY_MEDIA_PLAY_PAUSE:
@@ -172,7 +203,7 @@ MediaSessionAction HardwareKeyMediaController::KeyCodeToMediaSessionAction(
 }
 
 base::Optional<ui::KeyboardCode>
-HardwareKeyMediaController::MediaSessionActionToKeyCode(
+ActiveMediaSessionController::MediaSessionActionToKeyCode(
     MediaSessionAction action) const {
   switch (action) {
     case MediaSessionAction::kPlay:

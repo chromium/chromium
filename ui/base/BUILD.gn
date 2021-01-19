@@ -12,7 +12,6 @@ import("//build/config/ozone.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/ui.gni")
 import("//build/util/branding.gni")
-import("//components/system_media_controls/linux/buildflags/buildflags.gni")
 import("//testing/test.gni")
 import("//tools/grit/grit_rule.gni")
 import("//ui/base/ui_features.gni")
@@ -334,8 +333,6 @@ component("base") {
       "accelerators/media_keys_util.h",
       "accelerators/menu_label_accelerator_util.cc",
       "accelerators/menu_label_accelerator_util.h",
-      "accelerators/system_media_controls_media_keys_listener.cc",
-      "accelerators/system_media_controls_media_keys_listener.h",
       "base_window.cc",
       "base_window.h",
       "emoji/emoji_panel_helper.h",
@@ -390,8 +387,6 @@ component("base") {
       "accelerators/global_media_keys_listener_win.h",
       "accelerators/media_keys_listener_win.cc",
     ]
-  } else if (use_mpris) {
-    sources += [ "accelerators/media_keys_listener_linux.cc" ]
   } else {
     sources += [ "accelerators/media_keys_listener_stub.cc" ]
   }
@@ -492,8 +487,6 @@ component("base") {
       deps += [ "//ui/gfx/x" ]
     }
   }
-
-  deps += [ "//components/system_media_controls" ]
 
   if (use_x11 && use_aura) {
     sources += [
@@ -971,7 +964,6 @@ test("ui_base_unittests") {
       "accelerators/accelerator_manager_unittest.cc",
       "accelerators/accelerator_unittest.cc",
       "accelerators/menu_label_accelerator_util_unittest.cc",
-      "accelerators/system_media_controls_media_keys_listener_unittest.cc",
       "models/dialog_model_unittest.cc",
       "models/list_model_unittest.cc",
       "models/list_selection_model_unittest.cc",
@@ -979,7 +971,6 @@ test("ui_base_unittests") {
       "text/bytes_formatting_unittest.cc",
       "webui/web_ui_util_unittest.cc",
     ]
-    deps += [ "//components/system_media_controls:test_support" ]
 
     if (is_linux || is_chromeos) {
       sources +=

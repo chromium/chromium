@@ -33,7 +33,6 @@ class COMPONENT_EXPORT(UI_BASE) GlobalMediaKeysListenerWin
   // MediaKeysListener implementation.
   bool StartWatchingMediaKey(KeyboardCode key_code) override;
   void StopWatchingMediaKey(KeyboardCode key_code) override;
-  void SetIsMediaPlaying(bool is_playing) override {}
 
  private:
   // Called by SingletonHwndObserver.

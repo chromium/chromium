@@ -7,7 +7,7 @@
 namespace system_media_controls {
 
 // static
-SystemMediaControls* SystemMediaControls::GetInstance() {
+std::unique_ptr<SystemMediaControls> SystemMediaControls::Create() {
   return nullptr;
 }
 

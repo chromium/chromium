@@ -4,25 +4,18 @@
 
 #include "components/system_media_controls/mac/system_media_controls_mac.h"
 
-#include "base/memory/singleton.h"
-
 namespace system_media_controls {
 
 // static
-SystemMediaControls* SystemMediaControls::GetInstance() {
+std::unique_ptr<SystemMediaControls> SystemMediaControls::Create() {
   // The required APIs for interacting with the Now Playing Info Center only
   // exist on 10.12.2 or later.
   if (@available(macOS 10.12.2, *))
-    return internal::SystemMediaControlsMac::GetInstance();
+    return std::make_unique<internal::SystemMediaControlsMac>();
   return nullptr;
 }
 
 namespace internal {
-
-// static
-SystemMediaControlsMac* SystemMediaControlsMac::GetInstance() {
-  return base::Singleton<SystemMediaControlsMac>::get();
-}
 
 SystemMediaControlsMac::SystemMediaControlsMac() = default;
 

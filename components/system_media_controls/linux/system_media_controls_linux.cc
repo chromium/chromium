@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/memory/singleton.h"
 #include "base/process/process.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -28,11 +27,10 @@
 namespace system_media_controls {
 
 // static
-SystemMediaControls* SystemMediaControls::GetInstance() {
-  internal::SystemMediaControlsLinux* service =
-      internal::SystemMediaControlsLinux::GetInstance();
+std::unique_ptr<SystemMediaControls> SystemMediaControls::Create() {
+  auto service = std::make_unique<internal::SystemMediaControlsLinux>();
   service->StartService();
-  return service;
+  return std::move(service);
 }
 
 namespace internal {
@@ -53,11 +51,6 @@ const char kMprisAPIServiceNamePrefix[] =
 const char kMprisAPIObjectPath[] = "/org/mpris/MediaPlayer2";
 const char kMprisAPIInterfaceName[] = "org.mpris.MediaPlayer2";
 const char kMprisAPIPlayerInterfaceName[] = "org.mpris.MediaPlayer2.Player";
-
-// static
-SystemMediaControlsLinux* SystemMediaControlsLinux::GetInstance() {
-  return base::Singleton<SystemMediaControlsLinux>::get();
-}
 
 SystemMediaControlsLinux::SystemMediaControlsLinux()
     : service_name_(std::string(kMprisAPIServiceNamePrefix) +

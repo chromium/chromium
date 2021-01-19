@@ -19,11 +19,10 @@
 namespace system_media_controls {
 
 // static
-SystemMediaControls* SystemMediaControls::GetInstance() {
-  internal::SystemMediaControlsWin* service =
-      internal::SystemMediaControlsWin::GetInstance();
+std::unique_ptr<SystemMediaControls> SystemMediaControls::Create() {
+  auto service = std::make_unique<internal::SystemMediaControlsWin>();
   if (service->Initialize())
-    return service;
+    return std::move(service);
   return nullptr;
 }
 
@@ -43,12 +42,16 @@ using ABI::Windows::Storage::Streams::IRandomAccessStreamReferenceStatics;
 
 // static
 SystemMediaControlsWin* SystemMediaControlsWin::GetInstance() {
-  // We use a base::Singleton here instead of a base::NoDestruct so that we can
-  // clean up external listeners against the Windows platform at exit.
-  return base::Singleton<SystemMediaControlsWin>::get();
+  return instance_;
 }
 
-SystemMediaControlsWin::SystemMediaControlsWin() = default;
+// static
+SystemMediaControlsWin* SystemMediaControlsWin::instance_ = nullptr;
+
+SystemMediaControlsWin::SystemMediaControlsWin() {
+  DCHECK(!instance_);
+  instance_ = this;
+}
 
 SystemMediaControlsWin::~SystemMediaControlsWin() {
   if (has_valid_registration_token_) {
@@ -56,6 +59,9 @@ SystemMediaControlsWin::~SystemMediaControlsWin() {
     system_media_controls_->remove_ButtonPressed(registration_token_);
     ClearMetadata();
   }
+
+  DCHECK_EQ(instance_, this);
+  instance_ = nullptr;
 }
 
 bool SystemMediaControlsWin::Initialize() {

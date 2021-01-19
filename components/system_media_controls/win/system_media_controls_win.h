@@ -9,7 +9,6 @@
 #include <windows.media.control.h>
 #include <wrl/client.h>
 
-#include "base/memory/singleton.h"
 #include "base/observer_list.h"
 #include "components/system_media_controls/system_media_controls.h"
 
@@ -51,12 +50,12 @@ class SystemMediaControlsWin : public SystemMediaControls {
   void UpdateDisplay() override;
 
  private:
-  friend struct base::DefaultSingletonTraits<SystemMediaControlsWin>;
-
   static HRESULT ButtonPressed(
       ABI::Windows::Media::ISystemMediaTransportControls* sender,
       ABI::Windows::Media::ISystemMediaTransportControlsButtonPressedEventArgs*
           args);
+
+  static SystemMediaControlsWin* instance_;
 
   // Called by ButtonPressed when the particular key is pressed.
   void OnPlay();
