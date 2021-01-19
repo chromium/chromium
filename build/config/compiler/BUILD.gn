@@ -616,10 +616,11 @@ config("compiler") {
       lto_opt_level = 0
     }
 
+    # Limit the size of the ThinLTO cache to the lesser of 10% of
+    # available disk space, 10GB and 100000 files.
+    cache_policy = "cache_size=10%:cache_size_bytes=10g:cache_size_files=100000"
+
     if (is_win) {
-      # This is a straight translation of the non-Windows flags below,
-      # except we do not use the ThinLTO cache, which leaks temporary
-      # files on Windows (https://crbug.com/871962).
       ldflags += [
         "/opt:lldlto=" + lto_opt_level,
         "/opt:lldltojobs=all",
@@ -627,6 +628,10 @@ config("compiler") {
         # Experimentally determined to yield a reasonable trade-off between
         # build time, run-time performance, and binary size.
         "-mllvm:-import-instr-limit=10",
+
+        "/lldltocache:" +
+            rebase_path("$root_out_dir/thinlto-cache", root_build_dir),
+        "/lldltocachepolicy:$cache_policy",
       ]
     } else {
       ldflags += [ "-flto=thin" ]
@@ -641,10 +646,6 @@ config("compiler") {
       # of "all" which means number of hardware threads) is faster.
       ldflags += [ "-Wl,--thinlto-jobs=all" ]
 
-      # Limit the size of the ThinLTO cache to the lesser of 10% of
-      # available disk space, 10GB and 100000 files.
-      cache_policy =
-          "cache_size=10%:cache_size_bytes=10g:cache_size_files=100000"
       ldflags += [
         "-Wl,--thinlto-cache-dir=" +
             rebase_path("$root_out_dir/thinlto-cache", root_build_dir),
