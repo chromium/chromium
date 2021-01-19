@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/browser/resources/tools/optimize_webui.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//third_party/closure_compiler/js_unit_tests.gni")
 import("//ui/file_manager/base/gn/js_test_gen_html.gni")
@@ -10,6 +11,7 @@ import("//ui/webui/resources/tools/js_modulizer.gni")
 js_type_check("closure_compile_jsmodules") {
   uses_js_modules = true
   deps = [
+    ":background.m",
     ":cache.m",
     ":image_loader.m",
     ":image_loader_client.m",
@@ -24,7 +26,6 @@ js_type_check("closure_compile_jsmodules") {
 js_type_check("closure_compile_module") {
   closure_flags = default_closure_args + [ "jscomp_error=strictCheckTypes" ]
   deps = [
-    ":background",
     ":cache",
     ":image_loader",
     ":image_loader_client",
@@ -36,8 +37,8 @@ js_type_check("closure_compile_module") {
   ]
 }
 
-js_library("background") {
-  deps = [ ":image_loader" ]
+js_library("background.m") {
+  deps = [ ":image_loader.m" ]
 }
 
 js_library("cache") {
@@ -258,5 +259,24 @@ js_modulizer("modulize") {
     "scheduler.js",
     "image_request_task.js",
     "image_loader.js",
+  ]
+}
+
+preprocess_folder =
+    rebase_path("$target_gen_dir/../preprocessed/image_loader", root_build_dir)
+
+optimize_webui("build") {
+  host = "image_loader"
+
+  input = preprocess_folder
+  js_module_in_files = [ "background.m.js" ]
+
+  js_out_files = [ "background.m.rollup.js" ]
+
+  deps = [
+    ":background.m",
+    "//ui/file_manager:preprocess_generated",
+    "//ui/file_manager:preprocess_static",
+    "//ui/webui/resources:preprocess",
   ]
 }

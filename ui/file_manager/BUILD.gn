@@ -87,6 +87,7 @@ preprocess_if_expr("preprocess_static") {
     "file_manager/background/js/main_background.m.js",
     "file_manager/foreground/js/elements_importer.m.js",
     "file_manager/foreground/js/main.m.js",
+    "image_loader/background.m.js",
     "video_player/js/main.m.js",
     "video_player/js/main_background.m.js",
   ]
@@ -96,6 +97,7 @@ preprocess_if_expr("preprocess_static") {
     "//ui/file_manager/audio_player/js:main_background.m",
     "//ui/file_manager/file_manager/background/js:main_background.m",
     "//ui/file_manager/file_manager/foreground/js:main.m",
+    "//ui/file_manager/image_loader:background.m",
     "//ui/file_manager/video_player/js:main.m",
     "//ui/file_manager/video_player/js:main_background.m",
   ]
@@ -315,8 +317,14 @@ preprocess_if_expr("preprocess_generated") {
     "file_manager/cws_widget/cws_widget_container_platform_delegate.m.js",
 
     # Image Loader:
+    "image_loader/cache.m.js",
+    "image_loader/image_loader.m.js",
     "image_loader/image_loader_client.m.js",
+    "image_loader/image_loader_util.m.js",
+    "image_loader/image_request_task.m.js",
     "image_loader/load_image_request.m.js",
+    "image_loader/piex_loader.m.js",
+    "image_loader/scheduler.m.js",
 
     # Metadata:
     "file_manager/foreground/js/metadata/byte_reader.m.js",
@@ -383,6 +391,8 @@ generate_grd("build_grd") {
     "audio_player/js/main_background.m.rollup.js",
     "audio_player/js/metadata_worker.m.rollup.js",
 
+    "image_loader/background.m.rollup.js",
+
     "file_manager/background/js/main_background.m.rollup.js",
     "file_manager/foreground/elements/files_icon_button.m.js",
     "file_manager/foreground/elements/files_toggle_ripple.m.js",
@@ -396,6 +406,7 @@ generate_grd("build_grd") {
     "audio_player/js/main.m.rollup.js|audio_player/js/main.m.js",
     "audio_player/js/main_background.m.rollup.js|audio_player/js/main_background.m.js",
     "audio_player/js/metadata_worker.m.rollup.js|audio_player/js/metadata_worker.m.js",
+    "image_loader/background.m.rollup.js|image_loader/background.m.js",
     "file_manager/background/js/main_background.m.rollup.js|file_manager/background/js/main_background.m.js",
     "video_player/js/main.m.rollup.js|video_player/js/main.m.js",
     "video_player/js/main_background.m.rollup.js|video_player/js/main_background.m.js",
@@ -414,6 +425,7 @@ generate_grd("build_grd") {
     "//ui/file_manager/audio_player/js:build_worker",
     "//ui/file_manager/file_manager/background/js:build",
     "//ui/file_manager/file_manager/foreground/elements:elements",
+    "//ui/file_manager/image_loader:build",
     "//ui/file_manager/video_player/js:build",
     "//ui/file_manager/video_player/js:build_background",
   ]
