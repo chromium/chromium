@@ -3403,33 +3403,6 @@
     'name': 'chromium.goma.fyi',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
-      'Linux Builder Goma Canary': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'mixins': [
-          'linux-xenial',
-        ],
-        'test_suites': {
-          'gtest_tests': 'goma_gtests',
-        },
-      },
-      'Mac Builder (dbg) Goma Canary': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'test_suites': {
-          'gtest_tests': 'goma_mac_gtests',
-        },
-      },
-      'Mac Builder (dbg) Goma Canary (clobber)': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'test_suites': {
-          'gtest_tests': 'goma_mac_gtests',
-        },
-      },
       'Mac Builder (dbg) Goma RBE Canary (clobber)': {
         'additional_compile_targets': [
           'all',
@@ -3445,44 +3418,6 @@
         'test_suites': {
           'gtest_tests': 'goma_mac_gtests',
         },
-      },
-      'Mac Builder Goma Canary': {
-        'additional_compile_targets': [
-          'all',
-          'pdf_fuzzers',
-        ],
-        'test_suites': {
-          'gtest_tests': 'goma_mac_gtests',
-        },
-      },
-      'Win Builder (dbg) Goma Canary': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'test_suites': {
-          'gtest_tests': 'goma_gtests',
-        },
-      },
-      'Win Builder Goma Canary': {
-        'additional_compile_targets': [
-          'all',
-          'pdf_fuzzers',
-        ],
-        'test_suites': {
-          'gtest_tests': 'goma_gtests',
-        },
-      },
-      'android-archive-dbg-goma-canary': {
-        'additional_compile_targets': [
-          'all',
-          # This was copied over from recipe config, 'all' was already present
-          'chromedriver_webview_shell_apk',
-        ],
-      },
-      'android-archive-dbg-goma-latest': {
-        'additional_compile_targets': [
-          'chromedriver_webview_shell_apk',
-        ],
       },
       'android-archive-dbg-goma-rbe-ats-canary': {
         'additional_compile_targets': [
@@ -3507,16 +3442,6 @@
       # Note:
       # chromeos-amd64-generic-rel-goma-* builders mirror targets of
       # chromeos-amd64-generic-rel.
-      'chromeos-amd64-generic-rel-goma-canary': {
-        'additional_compile_targets': [
-          'chromiumos_preflight',
-        ],
-      },
-      'chromeos-amd64-generic-rel-goma-latest': {
-        'additional_compile_targets': [
-          'chromiumos_preflight',
-        ],
-      },
       'chromeos-amd64-generic-rel-goma-rbe-canary': {
         'additional_compile_targets': [
           'chromiumos_preflight',
@@ -3527,16 +3452,6 @@
           'chromiumos_preflight',
         ],
       },
-      'ios-device-goma-canary-clobber': {
-        'additional_compile_targets': [
-          'all',
-        ]
-      },
-      'ios-device-goma-latest-clobber': {
-        'additional_compile_targets': [
-          'all',
-        ]
-      },
       'ios-device-goma-rbe-canary-clobber': {
         'additional_compile_targets': [
           'all',
@@ -3546,28 +3461,6 @@
         'additional_compile_targets': [
           'all',
         ]
-      },
-      'linux-archive-rel-goma-canary': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'mixins': [
-          'linux-xenial',
-        ],
-        'test_suites': {
-          'gtest_tests': 'goma_gtests',
-        },
-      },
-      'linux-archive-rel-goma-canary-localoutputcache': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'mixins': [
-          'linux-xenial',
-        ],
-        'test_suites': {
-          'gtest_tests': 'goma_gtests',
-        },
       },
       'linux-archive-rel-goma-rbe-ats-canary': {
         'additional_compile_targets': [
@@ -3613,31 +3506,6 @@
           'gtest_tests': 'goma_gtests',
         },
       },
-      'mac-archive-rel-goma-canary': {
-        'additional_compile_targets': [
-          # Due to disk shortage, we build 'chrome' instead of 'all'.
-          # See crbug.com/899425
-          'chrome',
-        ],
-        'test_suites': {
-          'gtest_tests': 'goma_mac_gtests',
-        },
-      },
-      'mac-archive-rel-goma-canary-localoutputcache': {
-        'additional_compile_targets': [
-          # Due to disk shortage, we build 'chrome' instead of 'all'.
-          # See crbug.com/825536
-          'chrome',
-        ],
-        'test_suites': {
-          'gtest_tests': 'goma_mac_gtests',
-        },
-      },
-      'mac-archive-rel-goma-latest-localoutputcache': {
-        'additional_compile_targets': [
-          'chrome',
-        ],
-      },
       'mac-archive-rel-goma-rbe-canary': {
         'additional_compile_targets': [
           # Due to disk shortage, we build 'chrome' instead of 'all'.
@@ -3656,14 +3524,6 @@
         ],
         'test_suites': {
           'gtest_tests': 'goma_mac_gtests',
-        },
-      },
-      'win32-archive-rel-goma-canary-localoutputcache': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'test_suites': {
-          'gtest_tests': 'goma_gtests',
         },
       },
     },
