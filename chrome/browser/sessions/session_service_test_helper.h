@@ -14,12 +14,14 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/sessions/core/session_id.h"
 
 class SessionService;
 
 namespace base {
 class Location;
+class SequencedTaskRunner;
 }
 
 namespace sessions {
@@ -85,6 +87,8 @@ class SessionServiceTestHelper {
 
   void RunTaskOnBackendThread(const base::Location& from_here,
                               base::OnceClosure task);
+
+  scoped_refptr<base::SequencedTaskRunner> GetBackendTaskRunner();
 
   void SetAvailableRange(const SessionID& tab_id,
                          const std::pair<int, int>& range);

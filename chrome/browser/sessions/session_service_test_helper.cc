@@ -122,6 +122,13 @@ void SessionServiceTestHelper::RunTaskOnBackendThread(
   test_helper.RunTaskOnBackendThread(from_here, std::move(task));
 }
 
+scoped_refptr<base::SequencedTaskRunner>
+SessionServiceTestHelper::GetBackendTaskRunner() {
+  return sessions::CommandStorageManagerTestHelper(
+             service_->GetCommandStorageManagerForTest())
+      .GetBackendTaskRunner();
+}
+
 void SessionServiceTestHelper::SetAvailableRange(
     const SessionID& tab_id,
     const std::pair<int, int>& range) {

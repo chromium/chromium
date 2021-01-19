@@ -524,18 +524,29 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, MaximizedApps) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Creates a tabbed browser and popup and makes sure we restore both.
-// Disabled for mac-arm64 bot stabilization: https://crbug.com/1154345
-// Also disabled for Mac flakiness in general: https://crbug.com/1158715
-// Also disabled for cross-platform flakiness in general: https://crbug.com/1166756
-IN_PROC_BROWSER_TEST_F(SessionRestoreTest, DISABLED_NormalAndPopup) {
+// NOTE: If this flakes, please disable and update https://crbug.com/1166756.
+IN_PROC_BROWSER_TEST_F(SessionRestoreTest, NormalAndPopup) {
   // Open a popup.
   Browser* popup = CreateBrowserForPopup(browser()->profile());
   ASSERT_EQ(2u, active_browser_list_->size());
+
+  SessionService* session_service =
+      SessionServiceFactory::GetForProfile(browser()->profile());
+  SessionServiceTestHelper test_helper(session_service);
+  auto backend_task_runner = test_helper.GetBackendTaskRunner();
+  test_helper.ReleaseService();
 
   // Simulate an exit by shutting down the session service. If we don't do this
   // the first window close is treated as though the user closed the window
   // and won't be restored.
   SessionServiceFactory::ShutdownForProfile(browser()->profile());
+
+  // Ensure the session service finishes writing. This is necessary as the
+  // code following this creates a new SessionService, which will use a
+  // different task runner for reading/writing to the same files.
+  base::RunLoop run_loop;
+  backend_task_runner->PostNonNestableTask(FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
 
   // Restart and make sure we have two windows.
   CloseBrowserSynchronously(popup);
