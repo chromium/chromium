@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_embedder_graph_builder.h"
 
 #include <memory>
+#include <sstream>
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_node.h"
@@ -65,10 +66,19 @@ class EmbedderNode : public Graph::Node {
   Graph::Node* WrapperNode() override { return wrapper_; }
   Detachedness GetDetachedness() override { return detachedness_; }
 
+  void AddEdgeName(std::unique_ptr<char[]> edge_name) {
+    edge_names_.push_back(std::move(edge_name));
+  }
+
  private:
   const char* name_;
   Graph::Node* wrapper_;
   const Detachedness detachedness_;
+  // V8's API uses raw strings for edge names and expect the underlying memory
+  // to be retained until the end of graph building where strings are copied
+  // into its internal storage. The following vector retains those edge names
+  // until a node is freed which is at the end of graph building.
+  Vector<std::unique_ptr<char[]>> edge_names_;
 };
 
 class EmbedderRootNode : public EmbedderNode {
@@ -77,14 +87,6 @@ class EmbedderRootNode : public EmbedderNode {
       : EmbedderNode(name, nullptr, Detachedness::kUnknown) {}
   // Graph::Node override.
   bool IsRootNode() override { return true; }
-
-  void AddEdgeName(std::unique_ptr<const char> edge_name) {
-    edge_names_.insert(std::move(edge_name));
-  }
-
- private:
-  // Storage to hold edge names until they have been internalized by V8.
-  HashSet<std::unique_ptr<const char>> edge_names_;
 };
 
 class NodeBuilder final {
@@ -183,13 +185,17 @@ class GC_PLUGIN_IGNORE(
 
    public:
     ParentScope(V8EmbedderGraphBuilder* visitor, Traceable traceable)
-        : visitor_(visitor) {
+        : visitor_(visitor), old_parent_(visitor->current_parent_) {
       visitor->current_parent_ = traceable;
     }
-    ~ParentScope() { visitor_->current_parent_ = nullptr; }
+    ~ParentScope() { visitor_->current_parent_ = old_parent_; }
+
+    ParentScope(const ParentScope&) = delete;
+    ParentScope& operator=(const ParentScope&) = delete;
 
    private:
     V8EmbedderGraphBuilder* const visitor_;
+    Traceable old_parent_;
   };
 
   class State final {
@@ -217,12 +223,12 @@ class GC_PLUGIN_IGNORE(
       return node_;
     }
 
-    void AddEdge(State* destination, std::string edge_name) {
+    void AddEdgeName(State* destination, std::string edge_name) {
       auto result = named_edges_.insert(destination, std::move(edge_name));
       DCHECK(result.is_new_entry);
     }
 
-    void AddRootEdge(State* destination, std::string edge_name) {
+    void AddRootEdgeName(State* destination, std::string edge_name) {
       // State may represent root groups in which case there may exist multiple
       // references to the same |destination|.
       named_edges_.insert(destination, std::move(edge_name));
@@ -307,10 +313,12 @@ class GC_PLUGIN_IGNORE(
 
   class EphemeronItem final {
    public:
-    EphemeronItem(Traceable key,
+    EphemeronItem(Traceable backing,
+                  Traceable key,
                   Traceable value,
                   TraceCallback value_tracing_callback)
-        : key_(key),
+        : backing_(backing),
+          key_(key),
           value_(value),
           value_tracing_callback_(value_tracing_callback) {}
 
@@ -322,13 +330,16 @@ class GC_PLUGIN_IGNORE(
       if (!builder->StateExists(key_))
         return false;
       {
-        TraceValuesScope scope(builder, key_);
+        ParentScope scope(builder, key_);
+        builder->current_ephemeron_backing_ = backing_;
         value_tracing_callback_(builder, const_cast<void*>(value_));
+        builder->current_ephemeron_backing_ = nullptr;
       }
       return true;
     }
 
    private:
+    Traceable backing_;
     Traceable key_;
     Traceable value_;
     TraceCallback value_tracing_callback_;
@@ -365,6 +376,7 @@ class GC_PLUGIN_IGNORE(
   }
 
   void AddEdge(State*, State*);
+  void AddEphemeronEdgeName(Traceable backing, State* parent, State* current);
 
   void VisitPersistentHandleInternal(v8::Local<v8::Object>, uint16_t);
   void VisitPendingActivities();
@@ -390,27 +402,12 @@ class GC_PLUGIN_IGNORE(
     }
   }
 
-  class TraceValuesScope final {
-    STACK_ALLOCATED();
-    DISALLOW_COPY_AND_ASSIGN(TraceValuesScope);
-
-   public:
-    explicit TraceValuesScope(V8EmbedderGraphBuilder* graph_builder,
-                              Traceable key)
-        : graph_builder_(graph_builder) {
-      graph_builder_->current_parent_ = key;
-    }
-    ~TraceValuesScope() { graph_builder_->current_parent_ = nullptr; }
-
-   private:
-    V8EmbedderGraphBuilder* const graph_builder_;
-  };
-
   v8::Isolate* const isolate_;
   Graph* const graph_;
   NodeBuilder* const node_builder_;
 
   Traceable current_parent_ = nullptr;
+  Traceable current_ephemeron_backing_ = nullptr;
   HashMap<Traceable, State*> states_;
   // Worklist that is used to visit transitive closure.
   Deque<std::unique_ptr<WorklistItemBase>> worklist_;
@@ -519,9 +516,40 @@ void V8EmbedderGraphBuilder::VisitRoot(const void* object,
     State* const current = GetOrCreateState(
         traceable, HeapObjectHeader::FromPayload(traceable)->Name(),
         Detachedness::kUnknown);
-    parent->AddRootEdge(current, location.ToString());
+    parent->AddRootEdgeName(current, location.ToString());
   }
   Visit(object, wrapper_descriptor);
+}
+
+void V8EmbedderGraphBuilder::AddEphemeronEdgeName(Traceable backing,
+                                                  State* parent,
+                                                  State* current) {
+  const GCInfo& backing_info = GCInfo::From(
+      HeapObjectHeader::FromPayload(current_ephemeron_backing_)->GcInfoIndex());
+  HeapObjectName backing_name = backing_info.name(current_ephemeron_backing_);
+  std::stringstream ss;
+  ss << "part of key -> value pair in ephemeron table";
+  if (!backing_name.name_is_hidden) {
+    const std::string backing_name_str(backing_name.value);
+    const auto kvp_pos = backing_name_str.find("WTF::KeyValuePair");
+    // Ephemerons are defined through WTF::KeyValuePair.
+    CHECK_NE(std::string::npos, kvp_pos);
+    // Extracting the pair TYPE from for WTF::KeyValuePair<TYPE>.
+    ss << " (<";
+    size_t current_pos = kvp_pos + sizeof("WTF::KeyValuePair");
+    CHECK_EQ('<', backing_name_str[current_pos - 1]);
+    size_t nesting = 0;
+    while (backing_name_str[current_pos] != '>' || (nesting > 0)) {
+      if (backing_name_str[current_pos] == '<')
+        nesting++;
+      if (backing_name_str[current_pos] == '>')
+        nesting--;
+      ss << backing_name_str[current_pos];
+      current_pos++;
+    }
+    ss << ">)";
+  }
+  parent->AddEdgeName(current, ss.str());
 }
 
 void V8EmbedderGraphBuilder::Visit(const void* object,
@@ -534,6 +562,10 @@ void V8EmbedderGraphBuilder::Visit(const void* object,
   State* const parent = GetStateNotNull(current_parent_);
   State* const current =
       GetOrCreateState(traceable, name.value, Detachedness::kUnknown);
+  if (current_ephemeron_backing_) {
+    // Just records an edge name in case the state gets later on materialized.
+    AddEphemeronEdgeName(current_ephemeron_backing_, parent, current);
+  }
   if (current->IsPending()) {
     if (parent->HasNode()) {
       // Backedge in currently processed graph.
@@ -561,21 +593,17 @@ void V8EmbedderGraphBuilder::Visit(const void* object,
 void V8EmbedderGraphBuilder::AddEdge(State* parent, State* current) {
   EmbedderNode* parent_node = parent->GetOrCreateNode(node_builder_);
   EmbedderNode* current_node = current->GetOrCreateNode(node_builder_);
-  if (parent_node->IsRootNode()) {
-    const std::string edge_name = parent->EdgeName(current);
-    if (!edge_name.empty()) {
-      // V8's API is based on raw C strings. Allocate and temporarily keep the
-      // edge name alive from the corresponding node.
-      const size_t len = edge_name.length();
-      char* raw_location_string = new char[len + 1];
-      strncpy(raw_location_string, edge_name.c_str(), len);
-      raw_location_string[len] = 0;
-      std::unique_ptr<const char> holder(raw_location_string);
-      graph_->AddEdge(parent_node, current_node, holder.get());
-      static_cast<EmbedderRootNode*>(parent_node)
-          ->AddEdgeName(std::move(holder));
-      return;
-    }
+  if (!parent->EdgeName(current).empty()) {
+    std::string edge_name = parent->EdgeName(current);
+    // V8's API is based on raw C strings. Allocate and temporarily keep the
+    // edge name alive from the corresponding node.
+    const size_t len = edge_name.length();
+    auto holder = std::make_unique<char[]>(len + 1);
+    strncpy(holder.get(), edge_name.c_str(), len);
+    holder[len] = 0;
+    graph_->AddEdge(parent_node, current_node, holder.get());
+    parent_node->AddEdgeName(std::move(holder));
+    return;
   }
   graph_->AddEdge(parent_node, current_node);
 }
@@ -590,9 +618,14 @@ void V8EmbedderGraphBuilder::VisitWeakContainer(
   // Only ephemerons have weak callbacks.
   if (ephemeron_iteration.callback) {
     // Heap snapshot is always run after a GC so we know there are no dead
-    // entries in the backing store, thus it safe to trace it strongly.
+    // entries in the backing store. Using the weak descriptor here ensures that
+    // the key is not held alive from the backing store but rather from the
+    // object. A named edge ensures that we make the fact that value was held
+    // alive via ephemeron visible.
     if (object) {
-      Visit(object, strong_desc);
+      ParentScope parent(this, ephemeron_iteration.base_object_payload);
+      ephemeron_iteration.callback(this,
+                                   ephemeron_iteration.base_object_payload);
     }
   }
 }
@@ -600,8 +633,10 @@ void V8EmbedderGraphBuilder::VisitWeakContainer(
 void V8EmbedderGraphBuilder::VisitEphemeron(
     const void* key,
     TraceDescriptor value_trace_descriptor) {
+  // During regular visitation of ephemerons, current_parent_ refers to the
+  // backing store.
   ephemeron_worklist_.push_back(std::make_unique<EphemeronItem>(
-      key, value_trace_descriptor.base_object_payload,
+      current_parent_, key, value_trace_descriptor.base_object_payload,
       value_trace_descriptor.callback));
 }
 
