@@ -41,6 +41,8 @@ function getCategoryItemMap() {
     return categoryItemMap;
   }
 
+  const redesignEnabled =
+      loadTimeData.getBoolean('enableContentSettingsRedesign');
   // The following list is ordered alphabetically by |id|. The order in which
   // these appear in the UI is determined elsewhere in this file.
   const categoryList = [
@@ -49,8 +51,10 @@ function getCategoryItemMap() {
       id: Id.ADS,
       label: 'siteSettingsAds',
       icon: 'settings:ads',
-      enabledLabel: 'siteSettingsAllowed',
-      disabledLabel: 'siteSettingsAdsBlock',
+      enabledLabel: redesignEnabled ? 'siteSettingsAdsAllowed' :
+                                      'siteSettingsAllowed',
+      disabledLabel: redesignEnabled ? 'siteSettingsAdsBlocked' :
+                                       'siteSettingsAdsBlock',
       shouldShow: () =>
           loadTimeData.getBoolean('enableSafeBrowsingSubresourceFilter'),
     },
@@ -59,24 +63,30 @@ function getCategoryItemMap() {
       id: Id.AR,
       label: 'siteSettingsAr',
       icon: 'settings:vr-headset',
-      enabledLabel: 'siteSettingsArAsk',
-      disabledLabel: 'siteSettingsArBlock',
+      enabledLabel: redesignEnabled ? 'siteSettingsArAllowed' :
+                                      'siteSettingsArAsk',
+      disabledLabel: redesignEnabled ? 'siteSettingsArBlocked' :
+                                       'siteSettingsArBlock',
     },
     {
       route: routes.SITE_SETTINGS_AUTOMATIC_DOWNLOADS,
       id: Id.AUTOMATIC_DOWNLOADS,
       label: 'siteSettingsAutomaticDownloads',
       icon: 'cr:file-download',
-      enabledLabel: 'siteSettingsAutoDownloadAsk',
-      disabledLabel: 'siteSettingsAutoDownloadBlock',
+      enabledLabel: redesignEnabled ? 'siteSettingsAutomaticDownloadsAllowed' :
+                                      'siteSettingsAutoDownloadAsk',
+      disabledLabel: redesignEnabled ? 'siteSettingsAutomaticDownloadsBlocked' :
+                                       'siteSettingsAutoDownloadBlock',
     },
     {
       route: routes.SITE_SETTINGS_BACKGROUND_SYNC,
       id: Id.BACKGROUND_SYNC,
       label: 'siteSettingsBackgroundSync',
       icon: 'cr:sync',
-      enabledLabel: 'siteSettingsAllowRecentlyClosedSites',
-      disabledLabel: 'siteSettingsBackgroundSyncBlocked',
+      enabledLabel: redesignEnabled ? 'siteSettingsBackgroundSyncAllowed' :
+                                      'siteSettingsAllowRecentlyClosedSites',
+      disabledLabel: redesignEnabled ? 'siteSettingsBackgroundSyncBlocked' :
+                                       'siteSettingsBackgroundSyncBlocked',
     },
     {
       route: routes.SITE_SETTINGS_BLUETOOTH_DEVICES,
@@ -103,16 +113,20 @@ function getCategoryItemMap() {
       id: Id.CAMERA,
       label: 'siteSettingsCamera',
       icon: 'cr:videocam',
-      enabledLabel: 'siteSettingsAskBeforeAccessing',
-      disabledLabel: 'siteSettingsBlocked',
+      enabledLabel: redesignEnabled ? 'siteSettingsCameraAllowed' :
+                                      'siteSettingsAskBeforeAccessing',
+      disabledLabel: redesignEnabled ? 'siteSettingsCameraBlocked' :
+                                       'siteSettingsBlocked',
     },
     {
       route: routes.SITE_SETTINGS_CLIPBOARD,
       id: Id.CLIPBOARD,
       label: 'siteSettingsClipboard',
       icon: 'settings:clipboard',
-      enabledLabel: 'siteSettingsAskBeforeAccessing',
-      disabledLabel: 'siteSettingsBlocked',
+      enabledLabel: redesignEnabled ? 'siteSettingsClipboardAllowed' :
+                                      'siteSettingsAskBeforeAccessing',
+      disabledLabel: redesignEnabled ? 'siteSettingsClipboardBlocked' :
+                                       'siteSettingsBlocked',
     },
     {
       route: routes.COOKIES,
@@ -128,8 +142,10 @@ function getCategoryItemMap() {
       id: Id.GEOLOCATION,
       label: 'siteSettingsLocation',
       icon: 'cr:location-on',
-      enabledLabel: 'siteSettingsAskBeforeAccessing',
-      disabledLabel: 'siteSettingsBlocked',
+      enabledLabel: redesignEnabled ? 'siteSettingsLocationAllowed' :
+                                      'siteSettingsAskBeforeAccessing',
+      disabledLabel: redesignEnabled ? 'siteSettingsLocationBlocked' :
+                                       'siteSettingsBlocked',
     },
     {
       route: routes.SITE_SETTINGS_HID_DEVICES,
@@ -152,32 +168,40 @@ function getCategoryItemMap() {
       id: Id.IMAGES,
       label: 'siteSettingsImages',
       icon: 'settings:photo',
-      enabledLabel: 'siteSettingsShowAll',
-      disabledLabel: 'siteSettingsDontShowImages',
+      enabledLabel: redesignEnabled ? 'siteSettingsImagesAllowed' :
+                                      'siteSettingsShowAll',
+      disabledLabel: redesignEnabled ? 'siteSettingsImagesBlocked' :
+                                       'siteSettingsDontShowImages',
     },
     {
       route: routes.SITE_SETTINGS_JAVASCRIPT,
       id: Id.JAVASCRIPT,
       label: 'siteSettingsJavascript',
       icon: 'settings:code',
-      enabledLabel: 'siteSettingsAllowed',
-      disabledLabel: 'siteSettingsBlocked',
+      enabledLabel: redesignEnabled ? 'siteSettingsJavascriptAllowed' :
+                                      'siteSettingsAllowed',
+      disabledLabel: redesignEnabled ? 'siteSettingsJavascriptBlocked' :
+                                       'siteSettingsBlocked',
     },
     {
       route: routes.SITE_SETTINGS_MICROPHONE,
       id: Id.MIC,
       label: 'siteSettingsMic',
       icon: 'cr:mic',
-      enabledLabel: 'siteSettingsAskBeforeAccessing',
-      disabledLabel: 'siteSettingsBlocked',
+      enabledLabel: redesignEnabled ? 'siteSettingsMicAllowed' :
+                                      'siteSettingsAskBeforeAccessing',
+      disabledLabel: redesignEnabled ? 'siteSettingsMicBlocked' :
+                                       'siteSettingsBlocked',
     },
     {
       route: routes.SITE_SETTINGS_MIDI_DEVICES,
       id: Id.MIDI_DEVICES,
       label: 'siteSettingsMidiDevices',
       icon: 'settings:midi',
-      enabledLabel: 'siteSettingsMidiDevicesAsk',
-      disabledLabel: 'siteSettingsMidiDevicesBlock',
+      enabledLabel: redesignEnabled ? 'siteSettingsMidiAllowed' :
+                                      'siteSettingsMidiDevicesAsk',
+      disabledLabel: redesignEnabled ? 'siteSettingsMidiBlocked' :
+                                       'siteSettingsMidiDevicesBlock',
     },
     {
       route: routes.SITE_SETTINGS_MIXEDSCRIPT,
@@ -191,8 +215,10 @@ function getCategoryItemMap() {
       id: Id.FILE_SYSTEM_WRITE,
       label: 'siteSettingsFileSystemWrite',
       icon: 'settings:save-original',
-      enabledLabel: 'siteSettingsFileSystemWriteAsk',
-      disabledLabel: 'siteSettingsFileSystemWriteBlock',
+      enabledLabel: redesignEnabled ? 'siteSettingsFileSystemWriteAllowed' :
+                                      'siteSettingsFileSystemWriteAsk',
+      disabledLabel: redesignEnabled ? 'siteSettingsFileSystemWriteBlocked' :
+                                       'siteSettingsFileSystemWriteBlock',
     },
     {
       route: routes.SITE_SETTINGS_FONT_ACCESS,
@@ -217,8 +243,10 @@ function getCategoryItemMap() {
       id: Id.PAYMENT_HANDLER,
       label: 'siteSettingsPaymentHandler',
       icon: 'settings:payment-handler',
-      enabledLabel: 'siteSettingsPaymentHandlerAllow',
-      disabledLabel: 'siteSettingsPaymentHandlerBlock',
+      enabledLabel: redesignEnabled ? 'siteSettingsPaymentHandlersAllowed' :
+                                      'siteSettingsPaymentHandlerAllow',
+      disabledLabel: redesignEnabled ? 'siteSettingsPaymentHandlersBlocked' :
+                                       'siteSettingsPaymentHandlerBlock',
       shouldShow: () =>
           loadTimeData.getBoolean('enablePaymentHandlerContentSetting'),
     },
@@ -233,8 +261,10 @@ function getCategoryItemMap() {
       id: Id.POPUPS,
       label: 'siteSettingsPopups',
       icon: 'cr:open-in-new',
-      enabledLabel: 'siteSettingsAllowed',
-      disabledLabel: 'siteSettingsBlocked',
+      enabledLabel: redesignEnabled ? 'siteSettingsPopupsAllowed' :
+                                      'siteSettingsAllowed',
+      disabledLabel: redesignEnabled ? 'siteSettingsPopupsBlocked' :
+                                       'siteSettingsBlocked',
     },
     {
       route: routes.SITE_SETTINGS_PROTECTED_CONTENT,
@@ -256,40 +286,50 @@ function getCategoryItemMap() {
       id: Id.SENSORS,
       label: 'siteSettingsSensors',
       icon: 'settings:sensors',
-      enabledLabel: 'siteSettingsSensorsAllow',
-      disabledLabel: 'siteSettingsSensorsBlock',
+      enabledLabel: redesignEnabled ? 'siteSettingsMotionSensorsAllowed' :
+                                      'siteSettingsSensorsAllow',
+      disabledLabel: redesignEnabled ? 'siteSettingsMotionSensorsBlocked' :
+                                       'siteSettingsSensorsBlock',
     },
     {
       route: routes.SITE_SETTINGS_SERIAL_PORTS,
       id: Id.SERIAL_PORTS,
       label: 'siteSettingsSerialPorts',
       icon: 'settings:serial-port',
-      enabledLabel: 'siteSettingsSerialPortsAsk',
-      disabledLabel: 'siteSettingsSerialPortsBlock',
+      enabledLabel: redesignEnabled ? 'siteSettingsSerialPortsAllowed' :
+                                      'siteSettingsSerialPortsAsk',
+      disabledLabel: redesignEnabled ? 'siteSettingsSerialPortsBlocked' :
+                                       'siteSettingsSerialPortsBlock',
     },
     {
       route: routes.SITE_SETTINGS_SOUND,
       id: Id.SOUND,
       label: 'siteSettingsSound',
       icon: 'settings:volume-up',
-      enabledLabel: 'siteSettingsSoundAllow',
-      disabledLabel: 'siteSettingsSoundBlock',
+      enabledLabel: redesignEnabled ? 'siteSettingsSoundAllowed' :
+                                      'siteSettingsSoundAllow',
+      disabledLabel: redesignEnabled ? 'siteSettingsSoundBlocked' :
+                                       'siteSettingsSoundBlock',
     },
     {
       route: routes.SITE_SETTINGS_USB_DEVICES,
       id: Id.USB_DEVICES,
       label: 'siteSettingsUsbDevices',
       icon: 'settings:usb',
-      enabledLabel: 'siteSettingsUsbDevicesAsk',
-      disabledLabel: 'siteSettingsUsbDevicesBlock',
+      enabledLabel: redesignEnabled ? 'siteSettingsUsbAllowed' :
+                                      'siteSettingsUsbDevicesAsk',
+      disabledLabel: redesignEnabled ? 'siteSettingsUsbBlocked' :
+                                       'siteSettingsUsbDevicesBlock',
     },
     {
       route: routes.SITE_SETTINGS_VR,
       id: Id.VR,
       label: 'siteSettingsVr',
       icon: 'settings:vr-headset',
-      enabledLabel: 'siteSettingsVrAsk',
-      disabledLabel: 'siteSettingsVrBlock',
+      enabledLabel: redesignEnabled ? 'siteSettingsVrAllowed' :
+                                      'siteSettingsVrAsk',
+      disabledLabel: redesignEnabled ? 'siteSettingsVrBlocked' :
+                                       'siteSettingsVrBlock',
     },
     {
       route: routes.SITE_SETTINGS_WINDOW_PLACEMENT,
