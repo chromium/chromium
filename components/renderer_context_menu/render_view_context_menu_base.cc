@@ -18,8 +18,8 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/menu_item.h"
 #include "ppapi/buildflags/buildflags.h"
+#include "third_party/blink/public/common/context_menu_data/menu_item.h"
 #include "ui/base/models/image_model.h"
 
 using blink::WebString;
@@ -37,7 +37,7 @@ namespace {
 int content_context_custom_first = -1;
 int content_context_custom_last = -1;
 
-bool IsCustomItemEnabledInternal(const std::vector<content::MenuItem>& items,
+bool IsCustomItemEnabledInternal(const std::vector<blink::MenuItem>& items,
                                  int id) {
   DCHECK(RenderViewContextMenuBase::IsContentCustomCommandId(id));
   for (size_t i = 0; i < items.size(); ++i) {
@@ -45,7 +45,7 @@ bool IsCustomItemEnabledInternal(const std::vector<content::MenuItem>& items,
         items[i].action);
     if (action_id == id)
       return items[i].enabled;
-    if (items[i].type == content::MenuItem::SUBMENU) {
+    if (items[i].type == blink::MenuItem::SUBMENU) {
       if (IsCustomItemEnabledInternal(items[i].submenu, id))
         return true;
     }
@@ -53,7 +53,7 @@ bool IsCustomItemEnabledInternal(const std::vector<content::MenuItem>& items,
   return false;
 }
 
-bool IsCustomItemCheckedInternal(const std::vector<content::MenuItem>& items,
+bool IsCustomItemCheckedInternal(const std::vector<blink::MenuItem>& items,
                                  int id) {
   DCHECK(RenderViewContextMenuBase::IsContentCustomCommandId(id));
   for (size_t i = 0; i < items.size(); ++i) {
@@ -61,7 +61,7 @@ bool IsCustomItemCheckedInternal(const std::vector<content::MenuItem>& items,
         items[i].action);
     if (action_id == id)
       return items[i].checked;
-    if (items[i].type == content::MenuItem::SUBMENU) {
+    if (items[i].type == blink::MenuItem::SUBMENU) {
       if (IsCustomItemCheckedInternal(items[i].submenu, id))
         return true;
     }
@@ -73,7 +73,7 @@ const size_t kMaxCustomMenuDepth = 5;
 const size_t kMaxCustomMenuTotalItems = 1000;
 
 void AddCustomItemsToMenu(
-    const std::vector<content::MenuItem>& items,
+    const std::vector<blink::MenuItem>& items,
     size_t depth,
     size_t* total_items,
     std::vector<std::unique_ptr<ui::SimpleMenuModel>>* submenus,
@@ -96,26 +96,26 @@ void AddCustomItemsToMenu(
     }
     (*total_items)++;
     switch (items[i].type) {
-      case content::MenuItem::OPTION:
+      case blink::MenuItem::OPTION:
         menu_model->AddItem(
             RenderViewContextMenuBase::ConvertToContentCustomCommandId(
                 items[i].action),
             items[i].label);
         break;
-      case content::MenuItem::CHECKABLE_OPTION:
+      case blink::MenuItem::CHECKABLE_OPTION:
         menu_model->AddCheckItem(
             RenderViewContextMenuBase::ConvertToContentCustomCommandId(
                 items[i].action),
             items[i].label);
         break;
-      case content::MenuItem::GROUP:
+      case blink::MenuItem::GROUP:
         // TODO(viettrungluu): I don't know what this is supposed to do.
         NOTREACHED();
         break;
-      case content::MenuItem::SEPARATOR:
+      case blink::MenuItem::SEPARATOR:
         menu_model->AddSeparator(ui::NORMAL_SEPARATOR);
         break;
-      case content::MenuItem::SUBMENU: {
+      case blink::MenuItem::SUBMENU: {
         ui::SimpleMenuModel* submenu = new ui::SimpleMenuModel(delegate);
         submenus->push_back(base::WrapUnique(submenu));
         AddCustomItemsToMenu(items[i].submenu, depth + 1, total_items, submenus,

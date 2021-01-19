@@ -295,19 +295,19 @@ void ChromePluginPlaceholder::ShowContextMenu(
   content::UntrustworthyContextMenuParams params;
 
   if (!title_.empty()) {
-    content::MenuItem name_item;
+    blink::MenuItem name_item;
     name_item.label = title_;
     params.custom_items.push_back(name_item);
 
-    content::MenuItem separator_item;
-    separator_item.type = content::MenuItem::SEPARATOR;
+    blink::MenuItem separator_item;
+    separator_item.type = blink::MenuItem::SEPARATOR;
     params.custom_items.push_back(separator_item);
   }
 
   bool flash_hidden =
       status_ == chrome::mojom::PluginStatus::kFlashHiddenPreferHtml;
   if (!GetPluginInfo().path.value().empty() && !flash_hidden) {
-    content::MenuItem run_item;
+    blink::MenuItem run_item;
     run_item.action = MENU_COMMAND_PLUGIN_RUN;
     // Disable this menu item if the plugin is blocked by policy.
     run_item.enabled = LoadingAllowed();
@@ -316,7 +316,7 @@ void ChromePluginPlaceholder::ShowContextMenu(
   }
 
   if (flash_hidden) {
-    content::MenuItem enable_flash_item;
+    blink::MenuItem enable_flash_item;
     enable_flash_item.action = MENU_COMMAND_ENABLE_FLASH;
     enable_flash_item.enabled = true;
     enable_flash_item.label =
@@ -324,7 +324,7 @@ void ChromePluginPlaceholder::ShowContextMenu(
     params.custom_items.push_back(enable_flash_item);
   }
 
-  content::MenuItem hide_item;
+  blink::MenuItem hide_item;
   hide_item.action = MENU_COMMAND_PLUGIN_HIDE;
   bool is_main_frame_plugin_document =
       render_frame()->IsMainFrame() &&

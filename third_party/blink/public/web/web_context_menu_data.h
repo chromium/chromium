@@ -33,6 +33,7 @@
 
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "third_party/blink/public/common/context_menu_data/input_field_type.h"
+#include "third_party/blink/public/common/context_menu_data/menu_item_info.h"
 #include "third_party/blink/public/common/input/web_menu_source_type.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom-shared.h"
 #include "third_party/blink/public/platform/web_impression.h"
@@ -40,7 +41,6 @@
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_vector.h"
-#include "third_party/blink/public/web/web_menu_item_info.h"
 #include "ui/gfx/geometry/point.h"
 
 namespace blink {
@@ -139,7 +139,7 @@ struct WebContextMenuData {
   network::mojom::ReferrerPolicy referrer_policy;
 
   // Custom context menu items provided by the WebCore internals.
-  WebVector<WebMenuItemInfo> custom_items;
+  WebVector<MenuItemInfo> custom_items;
 
   // Selection in viewport coordinates.
   WebRect selection_rect;

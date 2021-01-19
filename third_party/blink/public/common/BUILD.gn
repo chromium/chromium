@@ -69,6 +69,8 @@ source_set("headers") {
     "client_hints/client_hints.h",
     "context_menu_data/edit_flags.h",
     "context_menu_data/input_field_type.h",
+    "context_menu_data/menu_item.h",
+    "context_menu_data/menu_item_info.h",
     "css/forced_colors.h",
     "css/navigation_controls.h",
     "css/page_orientation.h",

@@ -28,20 +28,20 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_MENU_ITEM_INFO_H_
-#define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_MENU_ITEM_INFO_H_
+#ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_CONTEXT_MENU_DATA_MENU_ITEM_INFO_H_
+#define THIRD_PARTY_BLINK_PUBLIC_COMMON_CONTEXT_MENU_DATA_MENU_ITEM_INFO_H_
+
+#include <vector>
 
 #include "base/i18n/rtl.h"
-#include "third_party/blink/public/platform/web_common.h"
-#include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/platform/web_vector.h"
+#include "base/strings/string16.h"
 
 namespace blink {
 
-struct WebMenuItemInfo {
+struct MenuItemInfo {
   enum Type { kOption, kCheckableOption, kGroup, kSeparator, kSubMenu };
 
-  WebMenuItemInfo()
+  MenuItemInfo()
       : type(kOption),
         action(0),
         text_direction(base::i18n::TextDirection::UNKNOWN_DIRECTION),
@@ -49,12 +49,12 @@ struct WebMenuItemInfo {
         enabled(false),
         checked(false) {}
 
-  WebString label;
-  WebString tool_tip;
+  base::string16 label;
+  base::string16 tool_tip;
   Type type;
   unsigned action;
   base::i18n::TextDirection text_direction;
-  WebVector<WebMenuItemInfo> sub_menu_items;
+  std::vector<MenuItemInfo> sub_menu_items;
   bool has_text_direction_override;
   bool enabled;
   bool checked;
@@ -62,4 +62,4 @@ struct WebMenuItemInfo {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_CONTEXT_MENU_DATA_MENU_ITEM_INFO_H_

@@ -15,8 +15,8 @@
 #include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
-#include "content/public/common/menu_item.h"
 #include "services/network/public/mojom/referrer_policy.mojom.h"
+#include "third_party/blink/public/common/context_menu_data/menu_item.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/web/web_context_menu_data.h"
 #include "ui/base/ui_base_types.h"
@@ -139,7 +139,7 @@ struct CONTENT_EXPORT UntrustworthyContextMenuParams {
   network::mojom::ReferrerPolicy referrer_policy;
 
   CustomContextMenuContext custom_context;
-  std::vector<MenuItem> custom_items;
+  std::vector<blink::MenuItem> custom_items;
 
   ui::MenuSourceType source_type;
 

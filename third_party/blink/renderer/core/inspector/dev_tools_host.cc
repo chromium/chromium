@@ -29,7 +29,7 @@
 
 #include "third_party/blink/renderer/core/inspector/dev_tools_host.h"
 
-#include "third_party/blink/public/web/web_menu_item_info.h"
+#include "third_party/blink/public/common/context_menu_data/menu_item_info.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
@@ -62,7 +62,7 @@ namespace blink {
 class FrontendMenuProvider final : public ContextMenuProvider {
  public:
   FrontendMenuProvider(DevToolsHost* devtools_host,
-                       WebVector<WebMenuItemInfo> items)
+                       WebVector<MenuItemInfo> items)
       : devtools_host_(devtools_host), items_(std::move(items)) {}
   ~FrontendMenuProvider() override {
     // Verify that this menu provider has been detached.
@@ -85,7 +85,7 @@ class FrontendMenuProvider final : public ContextMenuProvider {
     items_.Clear();
   }
 
-  WebVector<WebMenuItemInfo> PopulateContextMenu() override {
+  WebVector<MenuItemInfo> PopulateContextMenu() override {
     return std::move(items_);
   }
 
@@ -98,7 +98,7 @@ class FrontendMenuProvider final : public ContextMenuProvider {
 
  private:
   Member<DevToolsHost> devtools_host_;
-  WebVector<WebMenuItemInfo> items_;
+  WebVector<MenuItemInfo> items_;
 };
 
 DevToolsHost::DevToolsHost(InspectorFrontendClient* client,
@@ -192,7 +192,7 @@ void DevToolsHost::sendMessageToEmbedder(const String& message) {
 void DevToolsHost::ShowContextMenu(LocalFrame* target_frame,
                                    float x,
                                    float y,
-                                   WebVector<WebMenuItemInfo> items) {
+                                   WebVector<MenuItemInfo> items) {
   DCHECK(frontend_frame_);
   auto* menu_provider =
       MakeGarbageCollected<FrontendMenuProvider>(this, std::move(items));

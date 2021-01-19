@@ -57,6 +57,7 @@
 #include "v8/include/v8.h"
 
 using blink::DragOperationsMask;
+using blink::MenuItemInfo;
 using blink::WebContextMenuData;
 using blink::WebDragData;
 using blink::WebGestureEvent;
@@ -64,7 +65,6 @@ using blink::WebInputEvent;
 using blink::WebInputEventResult;
 using blink::WebKeyboardEvent;
 using blink::WebLocalFrame;
-using blink::WebMenuItemInfo;
 using blink::WebMouseEvent;
 using blink::WebMouseWheelEvent;
 using blink::WebPagePopup;
@@ -415,7 +415,7 @@ bool OutsideRadius(const gfx::PointF& a, const gfx::PointF& b, float radius) {
           (a.y() - b.y()) * (a.y() - b.y())) > radius * radius;
 }
 
-void PopulateCustomItems(const WebVector<WebMenuItemInfo>& customItems,
+void PopulateCustomItems(const WebVector<MenuItemInfo>& customItems,
                          const std::string& prefix,
                          std::vector<std::string>* strings) {
   for (size_t i = 0; i < customItems.size(); ++i) {
@@ -424,15 +424,15 @@ void PopulateCustomItems(const WebVector<WebMenuItemInfo>& customItems,
       prefixCopy = kDisabledIdentifier + prefix;
     if (customItems[i].checked)
       prefixCopy = kCheckedIdentifier + prefix;
-    if (customItems[i].type == blink::WebMenuItemInfo::kSeparator) {
+    if (customItems[i].type == blink::MenuItemInfo::kSeparator) {
       strings->push_back(prefixCopy + kSeparatorIdentifier);
-    } else if (customItems[i].type == blink::WebMenuItemInfo::kSubMenu) {
-      strings->push_back(prefixCopy + customItems[i].label.Utf8() +
+    } else if (customItems[i].type == blink::MenuItemInfo::kSubMenu) {
+      strings->push_back(prefixCopy + base::UTF16ToUTF8(customItems[i].label) +
                          kSubMenuIdentifier);
       PopulateCustomItems(customItems[i].sub_menu_items,
                           prefixCopy + kSubMenuDepthIdentifier, strings);
     } else {
-      strings->push_back(prefixCopy + customItems[i].label.Utf8());
+      strings->push_back(prefixCopy + base::UTF16ToUTF8(customItems[i].label));
     }
   }
 }

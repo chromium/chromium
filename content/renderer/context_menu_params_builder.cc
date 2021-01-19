@@ -8,7 +8,7 @@
 
 #include "content/public/common/untrustworthy_context_menu_params.h"
 #include "content/public/renderer/content_renderer_client.h"
-#include "content/renderer/menu_item_builder.h"
+#include "third_party/blink/public/common/context_menu_data/menu_item.h"
 #include "third_party/blink/public/platform/impression_conversions.h"
 
 namespace content {
@@ -47,7 +47,8 @@ UntrustworthyContextMenuParams ContextMenuParamsBuilder::Build(
 
   params.custom_context.is_pepper_menu = false;
   for (size_t i = 0; i < data.custom_items.size(); ++i)
-    params.custom_items.push_back(MenuItemBuilder::Build(data.custom_items[i]));
+    params.custom_items.push_back(
+        blink::MenuItemBuilder::Build(data.custom_items[i]));
 
   params.link_text = data.link_text.Utf16();
 

@@ -1,0 +1,5 @@
+specific_include_rules = {
+  "v8_dev_tools_host_custom.cc": [
+    "+base/strings/utf_string_conversions.h",
+  ],
+}

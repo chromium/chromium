@@ -13,12 +13,12 @@
 #include "content/common/content_export.h"
 #include "content/common/content_param_traits.h"
 #include "content/common/navigation_gesture.h"
-#include "content/public/common/menu_item.h"
 #include "content/public/common/page_visibility_state.h"
 #include "content/public/common/page_zoom.h"
 #include "content/public/common/three_d_api_types.h"
 #include "ipc/ipc_message_macros.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "third_party/blink/public/common/context_menu_data/menu_item.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
@@ -52,7 +52,7 @@ IPC_STRUCT_TRAITS_BEGIN(viz::Selection<gfx::SelectionBound>)
   IPC_STRUCT_TRAITS_MEMBER(end)
 IPC_STRUCT_TRAITS_END()
 
-IPC_ENUM_TRAITS_MAX_VALUE(content::MenuItem::Type, content::MenuItem::TYPE_LAST)
+IPC_ENUM_TRAITS_MAX_VALUE(blink::MenuItem::Type, blink::MenuItem::TYPE_LAST)
 IPC_ENUM_TRAITS_MAX_VALUE(content::NavigationGesture,
                           content::NavigationGestureLast)
 IPC_ENUM_TRAITS_MIN_MAX_VALUE(content::PageZoom,
@@ -69,7 +69,7 @@ IPC_ENUM_TRAITS_MAX_VALUE(blink::ScrollerStyle, blink::kScrollerStyleOverlay)
 IPC_ENUM_TRAITS_MAX_VALUE(ui::NativeTheme::SystemThemeColor,
                           ui::NativeTheme::SystemThemeColor::kMaxValue)
 
-IPC_STRUCT_TRAITS_BEGIN(content::MenuItem)
+IPC_STRUCT_TRAITS_BEGIN(blink::MenuItem)
   IPC_STRUCT_TRAITS_MEMBER(label)
   IPC_STRUCT_TRAITS_MEMBER(tool_tip)
   IPC_STRUCT_TRAITS_MEMBER(type)
