@@ -586,6 +586,7 @@
       'android-cfi-builder-perf-fyi': 'official_goma_minimal_symbols_android_thin_lto_opt',
       'android_arm64-cfi-builder-perf-fyi': 'official_goma_minimal_symbols_android_thin_lto_opt_arm64',
       'chromeos-kevin-builder-perf-fyi': 'chromeos_kevin_include_unwind_tables_official',
+      'fuchsia-builder-perf-fyi': 'official_goma_fuchsia_arm64_perf',
     },
 
     'chromium.swangle': {
@@ -2365,6 +2366,10 @@
 
     'official_goma_linux_perf': [
       'official', 'goma', 'no_gnome_keyring', 'minimal_symbols',
+    ],
+
+    'official_goma_fuchsia_arm64_perf': [
+      'official', 'goma', 'minimal_symbols', 'fuchsia', 'arm64',
     ],
 
     'official_goma_linux_pgo': [
