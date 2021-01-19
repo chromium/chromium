@@ -84,6 +84,12 @@ void StreamingSearchPrefetchURLLoader::SetUpForwardingClient(
     resource_response_->raw_request_response_info = nullptr;
   }
 
+  // We are serving, so if the request is complete before serving, mark the
+  // request completion time as now.
+  if (status_) {
+    status_->completion_time = base::TimeTicks::Now();
+  }
+
   forwarding_client_->OnReceiveResponse(std::move(resource_response_));
   RunEventQueue();
 }
