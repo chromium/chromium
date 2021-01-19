@@ -1067,21 +1067,28 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     expires_after="M95">
   <owner>rbock@google.com</owner>
   <owner>igorcov@chromium.org</owner>
-  <summary>Time since last device policy fetch.</summary>
+  <summary>
+    Time since last device policy fetch. Emitted when policies are loaded.
+  </summary>
 </histogram>
 
 <histogram name="Enterprise.PolicyUpdatePeriod.MachineLevelUser" units="days"
     expires_after="M95">
   <owner>zmin@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
-  <summary>Time since last machine level user policy fetch.</summary>
+  <summary>
+    Time since last machine level user policy fetch.. Emitted when policies are
+    loaded.
+  </summary>
 </histogram>
 
 <histogram name="Enterprise.PolicyUpdatePeriod.User" units="days"
     expires_after="M95">
   <owner>rbock@google.com</owner>
   <owner>igorcov@chromium.org</owner>
-  <summary>Time since last user policy fetch.</summary>
+  <summary>
+    Time since last user policy fetch. Emitted when policies are loaded.
+  </summary>
 </histogram>
 
 <histogram name="Enterprise.PolicyUserVerification"
