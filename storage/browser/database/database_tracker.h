@@ -138,12 +138,14 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) DatabaseTracker
   bool IsDatabaseScheduledForDeletion(const std::string& origin_identifier,
                                       const base::string16& database_name);
 
-  // Deletes a single database. Returns net::OK on success, net::FAILED on
-  // failure, or net::ERR_IO_PENDING and |callback| is invoked upon completion,
-  // if non-null.
-  int DeleteDatabase(const std::string& origin_identifier,
-                     const base::string16& database_name,
-                     net::CompletionOnceCallback callback);
+  // Deletes a single database.
+  //
+  // `callback` must be non-null, and is invoked upon completion with a
+  // net::Error, which will most likely be net::OK or net::FAILED. `callback`
+  // may be called before this method returns.
+  void DeleteDatabase(const std::string& origin_identifier,
+                      const base::string16& database_name,
+                      net::CompletionOnceCallback callback);
 
   // Delete any databases that have been touched since the cutoff date that's
   // supplied, omitting any that match IDs within |protected_origins|.

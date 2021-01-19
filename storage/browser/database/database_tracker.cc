@@ -9,6 +9,7 @@
 #include <algorithm>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -176,8 +177,7 @@ void DatabaseTracker::HandleSqliteError(
   // Note: the client-side filters out all but these two errors as
   // a small optimization, see WebDatabaseObserverImpl::HandleSqliteError.
   if (error == SQLITE_CORRUPT || error == SQLITE_NOTADB) {
-    DeleteDatabase(origin_identifier, database_name,
-                   net::CompletionOnceCallback());
+    DeleteDatabase(origin_identifier, database_name, base::DoNothing());
   }
 }
 
@@ -677,25 +677,27 @@ void DatabaseTracker::ScheduleDatabasesForDeletion(
   }
 }
 
-int DatabaseTracker::DeleteDatabase(const std::string& origin_identifier,
-                                    const base::string16& database_name,
-                                    net::CompletionOnceCallback callback) {
+void DatabaseTracker::DeleteDatabase(const std::string& origin_identifier,
+                                     const base::string16& database_name,
+                                     net::CompletionOnceCallback callback) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  if (!LazyInit())
-    return net::ERR_FAILED;
+  DCHECK(!callback.is_null());
+  if (!LazyInit()) {
+    std::move(callback).Run(net::ERR_FAILED);
+    return;
+  }
 
   if (database_connections_.IsDatabaseOpened(origin_identifier,
                                              database_name)) {
-    if (!callback.is_null()) {
-      DatabaseSet set;
-      set[origin_identifier].insert(database_name);
-      deletion_callbacks_.emplace_back(std::move(callback), set);
-    }
+    DatabaseSet set;
+    set[origin_identifier].insert(database_name);
+    deletion_callbacks_.emplace_back(std::move(callback), std::move(set));
     ScheduleDatabaseForDeletion(origin_identifier, database_name);
-    return net::ERR_IO_PENDING;
+    return;
   }
+
   DeleteClosedDatabase(origin_identifier, database_name);
-  return net::OK;
+  std::move(callback).Run(net::OK);
 }
 
 int DatabaseTracker::DeleteDataModifiedSince(
