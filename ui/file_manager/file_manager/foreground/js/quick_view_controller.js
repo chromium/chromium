@@ -190,7 +190,7 @@
       const quickView = document.querySelector('#quick-view');
       // Workaround: Polymer.Base is only defined on Polymer2.
       // For Polymer3 the QuickView is already imported at the top.
-      if (Polymer.Base) {
+      if (window.Polymer && window.Polymer.Base) {
         /* #ignore */ Polymer.Base.importHref(
             /* #ignore */ constants.FILES_QUICK_VIEW_HTML,
             /* #ignore */ () => resolve(quickView), reject);
