@@ -71,8 +71,10 @@ class CanvasCaptureHandlerTest
   // Necessary callbacks and MOCK_METHODS for VideoCapturerSource.
   MOCK_METHOD2(DoOnDeliverFrame,
                void(scoped_refptr<media::VideoFrame>, base::TimeTicks));
-  void OnDeliverFrame(scoped_refptr<media::VideoFrame> video_frame,
-                      base::TimeTicks estimated_capture_time) {
+  void OnDeliverFrame(
+      scoped_refptr<media::VideoFrame> video_frame,
+      std::vector<scoped_refptr<media::VideoFrame>> scaled_video_frames,
+      base::TimeTicks estimated_capture_time) {
     DoOnDeliverFrame(std::move(video_frame), estimated_capture_time);
   }
 
@@ -93,11 +95,13 @@ class CanvasCaptureHandlerTest
         SkImage::MakeFromBitmap(testBitmap));
   }
 
-  void OnVerifyDeliveredFrame(bool opaque,
-                              int expected_width,
-                              int expected_height,
-                              scoped_refptr<media::VideoFrame> video_frame,
-                              base::TimeTicks estimated_capture_time) {
+  void OnVerifyDeliveredFrame(
+      bool opaque,
+      int expected_width,
+      int expected_height,
+      scoped_refptr<media::VideoFrame> video_frame,
+      std::vector<scoped_refptr<media::VideoFrame>> scaled_video_frames,
+      base::TimeTicks estimated_capture_time) {
     if (opaque)
       EXPECT_EQ(media::PIXEL_FORMAT_I420, video_frame->format());
     else

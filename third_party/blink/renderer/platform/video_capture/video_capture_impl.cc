@@ -756,8 +756,12 @@ void VideoCaptureImpl::OnVideoFrameReady(
 
   // TODO(qiangchen): Dive into the full code path to let frame metadata hold
   // reference time rather than using an extra parameter.
-  for (const auto& client : clients_)
-    client.second.deliver_frame_cb.Run(frame, reference_time);
+  for (const auto& client : clients_) {
+    // TODO(https://crbug.com/1157072): When scaled video frames are passed from
+    // the Capturer to the Renderer, pass these frames along here to the
+    // consumers of video frames.
+    client.second.deliver_frame_cb.Run(frame, {}, reference_time);
+  }
 }
 
 void VideoCaptureImpl::OnBufferDestroyed(int32_t buffer_id) {

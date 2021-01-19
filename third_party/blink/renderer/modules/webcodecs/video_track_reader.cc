@@ -72,6 +72,7 @@ void VideoTrackReader::StopInternal() {
 
 void VideoTrackReader::OnFrameFromVideoTrack(
     scoped_refptr<media::VideoFrame> media_frame,
+    std::vector<scoped_refptr<media::VideoFrame>> scaled_media_frames,
     base::TimeTicks estimated_capture_time) {
   // The value of estimated_capture_time here seems to almost always be the
   // system clock and most implementations of this callback ignore it.
@@ -81,11 +82,13 @@ void VideoTrackReader::OnFrameFromVideoTrack(
       *real_time_media_task_runner_.get(), FROM_HERE,
       CrossThreadBindOnce(&VideoTrackReader::ExecuteCallbackOnMainThread,
                           WrapCrossThreadPersistent(this),
-                          std::move(media_frame)));
+                          std::move(media_frame),
+                          std::move(scaled_media_frames)));
 }
 
 void VideoTrackReader::ExecuteCallbackOnMainThread(
-    scoped_refptr<media::VideoFrame> media_frame) {
+    scoped_refptr<media::VideoFrame> media_frame,
+    std::vector<scoped_refptr<media::VideoFrame>> /*scaled_media_frames*/) {
   DCHECK(real_time_media_task_runner_->BelongsToCurrentThread());
 
   if (!callback_) {
@@ -103,6 +106,7 @@ void VideoTrackReader::ExecuteCallbackOnMainThread(
   if (!context)
     return;
 
+  // Scaled media frames are currently ignored.
   callback_->InvokeAndReportException(
       nullptr,
       MakeGarbageCollected<VideoFrame>(std::move(media_frame), context));

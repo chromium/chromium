@@ -152,8 +152,10 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
     // encode the frame. If the |frame|'s data is not directly available (e.g.
     // it's a texture) then RetrieveFrameOnEncoderThread() is called, and if
     // even that fails, black frames are sent instead.
-    void StartFrameEncode(scoped_refptr<media::VideoFrame> frame,
-                          base::TimeTicks capture_timestamp);
+    void StartFrameEncode(
+        scoped_refptr<media::VideoFrame> video_frame,
+        std::vector<scoped_refptr<media::VideoFrame>> scaled_video_frames,
+        base::TimeTicks capture_timestamp);
     void RetrieveFrameOnEncodingTaskRunner(
         scoped_refptr<media::VideoFrame> video_frame,
         base::TimeTicks capture_timestamp);
@@ -329,12 +331,14 @@ class MODULES_EXPORT VideoTrackRecorderImpl : public VideoTrackRecorder {
 
  private:
   friend class VideoTrackRecorderTest;
-  void InitializeEncoder(CodecProfile codec,
-                         const OnEncodedVideoCB& on_encoded_video_cb,
-                         int32_t bits_per_second,
-                         bool allow_vea_encoder,
-                         scoped_refptr<media::VideoFrame> frame,
-                         base::TimeTicks capture_time);
+  void InitializeEncoder(
+      CodecProfile codec,
+      const OnEncodedVideoCB& on_encoded_video_cb,
+      int32_t bits_per_second,
+      bool allow_vea_encoder,
+      scoped_refptr<media::VideoFrame> video_frame,
+      std::vector<scoped_refptr<media::VideoFrame>> scaled_video_frames,
+      base::TimeTicks capture_time);
   void InitializeEncoderOnEncoderSupportKnown(
       CodecProfile codec_profile,
       const OnEncodedVideoCB& on_encoded_video_cb,
@@ -356,9 +360,11 @@ class MODULES_EXPORT VideoTrackRecorderImpl : public VideoTrackRecorder {
   // Inner class to encode using whichever codec is configured.
   scoped_refptr<Encoder> encoder_;
 
-  base::RepeatingCallback<void(bool allow_vea_encoder,
-                               scoped_refptr<media::VideoFrame> frame,
-                               base::TimeTicks capture_time)>
+  base::RepeatingCallback<void(
+      bool allow_vea_encoder,
+      scoped_refptr<media::VideoFrame> video_frame,
+      std::vector<scoped_refptr<media::VideoFrame>> scaled_video_frames,
+      base::TimeTicks capture_time)>
       initialize_encoder_cb_;
 
   bool should_pause_encoder_on_initialization_;

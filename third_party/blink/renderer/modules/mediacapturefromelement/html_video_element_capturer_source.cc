@@ -132,6 +132,7 @@ void HtmlVideoElementCapturerSource::sendNewFrame() {
     PostCrossThreadTask(
         *io_task_runner_, FROM_HERE,
         CrossThreadBindOnce(new_frame_callback_, std::move(new_frame),
+                            std::vector<scoped_refptr<media::VideoFrame>>(),
                             current_time));
   }
 

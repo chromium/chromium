@@ -221,6 +221,7 @@ void MediaStreamVideoSource::StopForRestart(RestartCallback callback,
         *io_task_runner(), FROM_HERE,
         CrossThreadBindOnce(&VideoTrackAdapter::DeliverFrameOnIO,
                             GetTrackAdapter(), black_frame,
+                            std::vector<scoped_refptr<media::VideoFrame>>(),
                             base::TimeTicks::Now()));
   }
 

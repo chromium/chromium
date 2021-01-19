@@ -47,13 +47,16 @@ class MODULES_EXPORT VideoTrackReader final
   void OnReadyStateChanged(WebMediaStreamSource::ReadyState) override;
 
   // Callback For MediaStreamVideoSink::ConnectToTrack.
-  void OnFrameFromVideoTrack(scoped_refptr<media::VideoFrame> media_frame,
-                             base::TimeTicks estimated_capture_time);
+  void OnFrameFromVideoTrack(
+      scoped_refptr<media::VideoFrame> media_frame,
+      std::vector<scoped_refptr<media::VideoFrame>> scaled_media_frames,
+      base::TimeTicks estimated_capture_time);
 
   void StopInternal();
 
   void ExecuteCallbackOnMainThread(
-      scoped_refptr<media::VideoFrame> media_frame);
+      scoped_refptr<media::VideoFrame> media_frame,
+      std::vector<scoped_refptr<media::VideoFrame>> scaled_media_frames);
 
   // Whether we are connected to |track_| and using |callback_| to deliver
   // frames.

@@ -32,9 +32,10 @@ constexpr base::TimeDelta kLowerBoundRefreshInterval =
     base::TimeDelta::FromHz(media::limits::kMaxFramesPerSecond);
 
 // This alias mimics the definition of VideoCaptureDeliverFrameCB.
-using VideoCaptureDeliverFrameInternalCallback =
-    WTF::CrossThreadFunction<void(scoped_refptr<media::VideoFrame> video_frame,
-                                  base::TimeTicks estimated_capture_time)>;
+using VideoCaptureDeliverFrameInternalCallback = WTF::CrossThreadFunction<void(
+    scoped_refptr<media::VideoFrame> video_frame,
+    std::vector<scoped_refptr<media::VideoFrame>> scaled_video_frames,
+    base::TimeTicks estimated_capture_time)>;
 
 // Mimics blink::EncodedVideoFrameCB
 using EncodedVideoFrameInternalCallback =
@@ -107,8 +108,10 @@ class MediaStreamVideoTrack::FrameDeliverer
 
   // Triggers all registered callbacks with |frame| and |estimated_capture_time|
   // as parameters. Must be called on the IO-thread.
-  void DeliverFrameOnIO(scoped_refptr<media::VideoFrame> frame,
-                        base::TimeTicks estimated_capture_time);
+  void DeliverFrameOnIO(
+      scoped_refptr<media::VideoFrame> frame,
+      std::vector<scoped_refptr<media::VideoFrame>> scaled_video_frames,
+      base::TimeTicks estimated_capture_time);
 
   // Triggers all encoded callbacks with |frame| and |estimated_capture_time|.
   // Must be called on the IO-thread.
@@ -323,6 +326,7 @@ void MediaStreamVideoTrack::FrameDeliverer::SetIsRefreshingForMinFrameRateOnIO(
 
 void MediaStreamVideoTrack::FrameDeliverer::DeliverFrameOnIO(
     scoped_refptr<media::VideoFrame> frame,
+    std::vector<scoped_refptr<media::VideoFrame>> scaled_video_frames,
     base::TimeTicks estimated_capture_time) {
   DCHECK(io_task_runner_->BelongsToCurrentThread());
   if (!enabled_ && main_render_task_runner_ && emit_frame_drop_events_) {
@@ -338,9 +342,17 @@ void MediaStreamVideoTrack::FrameDeliverer::DeliverFrameOnIO(
             media::VideoCaptureFrameDropReason::
                 kVideoTrackFrameDelivererNotEnabledReplacingWithBlackFrame));
   }
-  auto video_frame = enabled_ ? std::move(frame) : GetBlackFrame(*frame);
+  scoped_refptr<media::VideoFrame> video_frame;
+  if (enabled_) {
+    video_frame = std::move(frame);
+  } else {
+    // When disabled, a black video frame is passed along instead. The original
+    // frames are dropped.
+    video_frame = GetBlackFrame(*frame);
+    scaled_video_frames.clear();
+  }
   for (const auto& entry : callbacks_)
-    entry.second.Run(video_frame, estimated_capture_time);
+    entry.second.Run(video_frame, scaled_video_frames, estimated_capture_time);
 
   // The delay on refresh timer is reset each time a frame is received so that
   // it will not fire for at least an additional period. This means refresh

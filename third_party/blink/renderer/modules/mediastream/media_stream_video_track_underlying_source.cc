@@ -90,7 +90,9 @@ void MediaStreamVideoTrackUnderlyingSource::Close() {
 
 void MediaStreamVideoTrackUnderlyingSource::OnFrameFromTrack(
     scoped_refptr<media::VideoFrame> media_frame,
+    std::vector<scoped_refptr<media::VideoFrame>> /*scaled_media_frames*/,
     base::TimeTicks estimated_capture_time) {
+  // The scaled video frames are currently ignored.
   PostCrossThreadTask(
       *main_task_runner_, FROM_HERE,
       CrossThreadBindOnce(

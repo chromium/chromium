@@ -275,6 +275,7 @@ VideoTrackRecorderImpl::Encoder::~Encoder() {
 
 void VideoTrackRecorderImpl::Encoder::StartFrameEncode(
     scoped_refptr<media::VideoFrame> video_frame,
+    std::vector<scoped_refptr<media::VideoFrame>> /*scaled_video_frames*/,
     base::TimeTicks capture_timestamp) {
   // Cache the thread sending frames on first frame arrival.
   if (!origin_task_runner_.get())
@@ -284,6 +285,7 @@ void VideoTrackRecorderImpl::Encoder::StartFrameEncode(
   if (paused_)
     return;
 
+  // The recorder currently does not consider scaled versions of the frame.
   const bool is_format_supported =
       video_frame->format() == media::PIXEL_FORMAT_I420 ||
       video_frame->format() == media::PIXEL_FORMAT_ARGB ||
@@ -599,10 +601,11 @@ void VideoTrackRecorderImpl::OnVideoFrameForTesting(
 
   if (!encoder_) {
     DCHECK(!initialize_encoder_cb_.is_null());
-    initialize_encoder_cb_.Run(true /* allow_vea_encoder */, frame, timestamp);
+    initialize_encoder_cb_.Run(/*allow_vea_encoder=*/true, frame, {},
+                               timestamp);
   }
 
-  encoder_->StartFrameEncode(std::move(frame), timestamp);
+  encoder_->StartFrameEncode(std::move(frame), {}, timestamp);
 }
 
 void VideoTrackRecorderImpl::InitializeEncoder(
@@ -610,15 +613,17 @@ void VideoTrackRecorderImpl::InitializeEncoder(
     const OnEncodedVideoCB& on_encoded_video_cb,
     int32_t bits_per_second,
     bool allow_vea_encoder,
-    scoped_refptr<media::VideoFrame> frame,
+    scoped_refptr<media::VideoFrame> video_frame,
+    std::vector<scoped_refptr<media::VideoFrame>> /*scaled_video_frames*/,
     base::TimeTicks capture_time) {
-  DVLOG(3) << __func__ << frame->visible_rect().size().ToString();
+  DVLOG(3) << __func__ << video_frame->visible_rect().size().ToString();
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
 
+  // Scaled video frames are currently ignored.
   auto on_encoder_support_known_cb = WTF::Bind(
       &VideoTrackRecorderImpl::InitializeEncoderOnEncoderSupportKnown,
       weak_factory_.GetWeakPtr(), codec_profile, on_encoded_video_cb,
-      bits_per_second, allow_vea_encoder, std::move(frame), capture_time);
+      bits_per_second, allow_vea_encoder, std::move(video_frame), capture_time);
 
   if (!allow_vea_encoder) {
     // If HW encoding is not being used, no need to wait for encoder
