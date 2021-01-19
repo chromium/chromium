@@ -7,7 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/single_thread_task_runner.h"
 #include "base/trace_event/process_memory_dump.h"
-#include "third_party/blink/renderer/platform/graphics/deferred_image_decoder.h"
+#include "third_party/blink/renderer/platform/graphics/parkable_image.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
@@ -41,14 +41,14 @@ ParkableImageManager::Statistics ParkableImageManager::ComputeStatistics()
     const {
   Statistics stats;
 
-  for (auto* image : image_decoders_) {
-    stats.total_size += image->ByteSize();
+  for (auto* image : images_) {
+    stats.total_size += image->size();
   }
 
   return stats;
 }
 
-void ParkableImageManager::Add(DeferredImageDecoder* image) {
+void ParkableImageManager::Add(ParkableImage* image) {
   DCHECK(IsMainThread());
 
   if (!has_posted_accounting_task_) {
@@ -64,13 +64,13 @@ void ParkableImageManager::Add(DeferredImageDecoder* image) {
     has_posted_accounting_task_ = true;
   }
 
-  image_decoders_.insert(image);
+  images_.insert(image);
 }
 
-void ParkableImageManager::Remove(DeferredImageDecoder* image) {
+void ParkableImageManager::Remove(ParkableImage* image) {
   DCHECK(IsMainThread());
 
-  image_decoders_.erase(image);
+  images_.erase(image);
 }
 
 void ParkableImageManager::RecordStatisticsAfter5Minutes() const {

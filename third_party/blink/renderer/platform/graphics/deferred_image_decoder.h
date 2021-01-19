@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
+#include "third_party/blink/renderer/platform/graphics/parkable_image.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
@@ -104,7 +105,7 @@ class PLATFORM_EXPORT DeferredImageDecoder final {
 
   // Copy of the data that is passed in, used by deferred decoding.
   // Allows creating readonly snapshots that may be read in another thread.
-  std::unique_ptr<RWBuffer> rw_buffer_;
+  std::unique_ptr<ParkableImage> parkable_image_;
   std::unique_ptr<ImageDecoder> metadata_decoder_;
 
   String filename_extension_;

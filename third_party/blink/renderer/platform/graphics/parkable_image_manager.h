@@ -8,11 +8,10 @@
 #include "base/trace_event/memory_dump_provider.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
 
-class DeferredImageDecoder;
+class ParkableImage;
 
 // Manages parkable images, which are used in blink::BitmapImage. Currently,
 // only records metrics for this. In the future we will park eligible images
@@ -30,13 +29,13 @@ class PLATFORM_EXPORT ParkableImageManager
  private:
   struct Statistics;
 
-  friend class DeferredImageDecoder;
+  friend class ParkableImage;
   friend class base::NoDestructor<ParkableImageManager>;
 
   ParkableImageManager() = default;
 
-  void Add(DeferredImageDecoder* image);
-  void Remove(DeferredImageDecoder* image);
+  void Add(ParkableImage* image);
+  void Remove(ParkableImage* image);
 
   Statistics ComputeStatistics() const;
 
@@ -44,7 +43,7 @@ class PLATFORM_EXPORT ParkableImageManager
 
   constexpr static const char* kAllocatorDumpName = "parkable_images";
 
-  WTF::HashSet<DeferredImageDecoder*> image_decoders_;
+  WTF::HashSet<ParkableImage*> images_;
   bool has_posted_accounting_task_ = false;
 };
 

@@ -171,11 +171,9 @@ DeferredImageDecoder::DeferredImageDecoder(
       has_hot_spot_(false),
       image_is_high_bit_depth_(false),
       complete_frame_content_id_(PaintImage::GetNextContentId()) {
-  ParkableImageManager::Instance().Add(this);
 }
 
 DeferredImageDecoder::~DeferredImageDecoder() {
-  ParkableImageManager::Instance().Remove(this);
 }
 
 String DeferredImageDecoder::FilenameExtension() const {
@@ -195,9 +193,8 @@ sk_sp<PaintImageGenerator> DeferredImageDecoder::CreateGenerator() {
   DCHECK_GT(decoded_size.width(), 0);
   DCHECK_GT(decoded_size.height(), 0);
 
-  scoped_refptr<ROBuffer> ro_buffer(rw_buffer_->MakeROBufferSnapshot());
   scoped_refptr<SegmentReader> segment_reader =
-      SegmentReader::CreateFromROBuffer(std::move(ro_buffer));
+      parkable_image_->MakeROSnapshot();
 
   SkImageInfo info =
       SkImageInfo::MakeN32(decoded_size.width(), decoded_size.height(),
@@ -254,15 +251,7 @@ sk_sp<PaintImageGenerator> DeferredImageDecoder::CreateGenerator() {
 }
 
 scoped_refptr<SharedBuffer> DeferredImageDecoder::Data() {
-  if (!rw_buffer_)
-    return nullptr;
-  scoped_refptr<ROBuffer> ro_buffer(rw_buffer_->MakeROBufferSnapshot());
-  scoped_refptr<SharedBuffer> shared_buffer = SharedBuffer::Create();
-  ROBuffer::Iter it(ro_buffer.get());
-  do {
-    shared_buffer->Append(static_cast<const char*>(it.data()), it.size());
-  } while (it.Next());
-  return shared_buffer;
+  return parkable_image_ ? parkable_image_->Data() : nullptr;
 }
 
 void DeferredImageDecoder::SetData(scoped_refptr<SharedBuffer> data,
@@ -283,16 +272,14 @@ void DeferredImageDecoder::SetDataInternal(scoped_refptr<SharedBuffer> data,
   }
 
   if (frame_generator_) {
-    if (!rw_buffer_)
-      rw_buffer_ = std::make_unique<RWBuffer>(data->size());
+    if (!parkable_image_)
+      parkable_image_ = ParkableImage::Create(data->size());
 
-    for (auto it = data->GetIteratorAt(rw_buffer_->size()); it != data->cend();
-         ++it) {
-      DCHECK_GE(data->size(), rw_buffer_->size() + it->size());
-      const size_t remaining = data->size() - rw_buffer_->size() - it->size();
-      rw_buffer_->Append(it->data(), it->size(), remaining);
-    }
+    parkable_image_->Append(data.get(), parkable_image_->size());
   }
+
+  if (all_data_received && parkable_image_)
+    parkable_image_->Freeze();
 }
 
 bool DeferredImageDecoder::IsSizeAvailable() {
@@ -383,7 +370,7 @@ IntSize DeferredImageDecoder::DensityCorrectedSizeAtIndex(size_t index) const {
 
 
 size_t DeferredImageDecoder::ByteSize() const {
-  return rw_buffer_ ? rw_buffer_->size() : 0u;
+  return parkable_image_ ? parkable_image_->size() : 0u;
 }
 
 void DeferredImageDecoder::ActivateLazyDecoding() {
