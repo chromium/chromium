@@ -2456,24 +2456,6 @@
             ]
         }
     ],
-    "DisableMalwareExtensionsRemotely": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DisableMalwareExtensionsRemotely"
-                    ]
-                }
-            ]
-        }
-    ],
     "DisableOffSequenceTaskCancelation": [
         {
             "platforms": [
