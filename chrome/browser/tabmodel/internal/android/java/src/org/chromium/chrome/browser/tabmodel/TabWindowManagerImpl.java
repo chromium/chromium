@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.tabmodel;
 
 import android.app.Activity;
-import android.util.Pair;
 import android.util.SparseArray;
 
 import org.chromium.base.ActivityState;
@@ -44,18 +43,10 @@ public class TabWindowManagerImpl implements ActivityStateListener, TabWindowMan
     }
 
     @Override
-    public Pair<Integer, TabModelSelector> requestSelector(Activity activity,
-            TabCreatorManager tabCreatorManager, NextTabPolicySupplier nextTabPolicySupplier,
-            int index) {
+    public TabModelSelector requestSelector(Activity activity, TabCreatorManager tabCreatorManager,
+            NextTabPolicySupplier nextTabPolicySupplier, int index) {
         if (mAssignments.get(activity) != null) {
-            TabModelSelector assignedSelector = mAssignments.get(activity);
-            for (int i = 0; i < mSelectors.size(); i++) {
-                if (mSelectors.get(i) == assignedSelector) {
-                    return Pair.create(i, assignedSelector);
-                }
-            }
-            throw new IllegalStateException(
-                    "TabModelSelector is assigned to an Activity but has no index.");
+            return mAssignments.get(activity);
         }
 
         if (index < 0 || index >= mSelectors.size()) index = 0;
@@ -77,7 +68,7 @@ public class TabWindowManagerImpl implements ActivityStateListener, TabWindowMan
         mSelectors.set(index, selector);
         mAssignments.put(activity, selector);
 
-        return Pair.create(index, selector);
+        return selector;
     }
 
     @Override

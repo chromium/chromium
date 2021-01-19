@@ -24,7 +24,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeApplication;
 import org.chromium.chrome.browser.KeyboardShortcuts;
 import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
 import org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.TrustedWebActivityCoordinator;
@@ -46,6 +45,7 @@ import org.chromium.chrome.browser.night_mode.SystemNightModeMonitor;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tabmodel.ChromeTabCreator;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
@@ -293,20 +293,8 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     }
 
     @Override
-    protected TabModelOrchestrator createTabModelOrchestrator() {
-        return mTabFactory.createTabModelOrchestrator();
-    }
-
-    @Override
-    protected void destroyTabModels() {
-        if (mTabFactory != null) {
-            mTabFactory.destroyTabModelOrchestrator();
-        }
-    }
-
-    @Override
-    protected void createTabModels() {
-        mTabFactory.createTabModels();
+    protected TabModelSelector createTabModelSelector() {
+        return mTabFactory.createTabModelSelector();
     }
 
     @Override
