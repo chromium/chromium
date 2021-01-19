@@ -85,7 +85,7 @@ void PaintedScrollbarLayer::PushPropertiesTo(LayerImpl* layer) {
   else
     scrollbar_layer->set_thumb_ui_resource_id(0);
 
-  scrollbar_layer->set_scrollbar_painted_opacity(painted_opacity_);
+  scrollbar_layer->SetScrollbarPaintedOpacity(painted_opacity_);
 
   scrollbar_layer->set_is_overlay_scrollbar(is_overlay_);
 }

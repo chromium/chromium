@@ -77,7 +77,7 @@ void PaintedScrollbarLayerImpl::PushPropertiesTo(LayerImpl* layer) {
   scrollbar_layer->set_track_ui_resource_id(track_ui_resource_id_);
   scrollbar_layer->set_thumb_ui_resource_id(thumb_ui_resource_id_);
 
-  scrollbar_layer->set_scrollbar_painted_opacity(painted_opacity_);
+  scrollbar_layer->SetScrollbarPaintedOpacity(painted_opacity_);
 }
 
 float PaintedScrollbarLayerImpl::OverlayScrollbarOpacity() const {
@@ -274,6 +274,13 @@ void PaintedScrollbarLayerImpl::SetTrackRect(gfx::Rect track_rect) {
   if (track_rect_ == track_rect)
     return;
   track_rect_ = track_rect;
+  NoteLayerPropertyChanged();
+}
+
+void PaintedScrollbarLayerImpl::SetScrollbarPaintedOpacity(float opacity) {
+  if (painted_opacity_ == opacity)
+    return;
+  painted_opacity_ = opacity;
   NoteLayerPropertyChanged();
 }
 

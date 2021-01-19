@@ -45,16 +45,13 @@ class CC_EXPORT PaintedScrollbarLayerImpl : public ScrollbarLayerImplBase {
   void SetThumbThickness(int thumb_thickness);
   void SetThumbLength(int thumb_length);
   void SetTrackRect(gfx::Rect track_rect);
+  void SetScrollbarPaintedOpacity(float opacity);
 
   void set_track_ui_resource_id(UIResourceId uid) {
     track_ui_resource_id_ = uid;
   }
   void set_thumb_ui_resource_id(UIResourceId uid) {
     thumb_ui_resource_id_ = uid;
-  }
-
-  void set_scrollbar_painted_opacity(float opacity) {
-    painted_opacity_ = opacity;
   }
   float OverlayScrollbarOpacity() const override;
 
