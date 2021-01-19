@@ -39,6 +39,7 @@ component("mirroring_service") {
   public_deps = [ "//base" ]
 
   deps = [
+    "//build:chromeos_buildflags",
     "//components/mirroring/mojom:service",
     "//components/openscreen_platform",
     "//components/openscreen_platform:openscreen_platform_network_service",

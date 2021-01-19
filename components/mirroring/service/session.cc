@@ -11,10 +11,12 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/cpu.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/rand_util.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -27,6 +29,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/mirroring/service/captured_audio_input.h"
 #include "components/mirroring/service/udp_socket_client.h"
 #include "components/mirroring/service/video_capture_client.h"
@@ -152,6 +155,15 @@ bool IsHardwareVP8EncodingSupported(
 bool IsHardwareH264EncodingSupported(
     const std::vector<media::VideoEncodeAccelerator::SupportedProfile>&
         profiles) {
+// TODO(b/169533953): Look into chromecast fails to decode bitstreams produced
+// by the AMD HW encoder.
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  static const base::NoDestructor<base::CPU> cpuid;
+  static const bool is_amd = cpuid->vendor_name() == "AuthenticAMD";
+  if (is_amd)
+    return false;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+
 // TODO(crbug.com/1015482): Look into why H.264 hardware encoder on MacOS is
 // broken.
 // TODO(crbug.com/1015482): Look into HW encoder initialization issues on Win.
