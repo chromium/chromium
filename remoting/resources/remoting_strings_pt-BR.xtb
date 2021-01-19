@@ -72,6 +72,7 @@ Se a opção "<ph name="SERVICE_SCRIPT_NAME" />" já estiver marcada, desmarque-
 <translation id="4405930547258349619">Biblioteca principal</translation>
 <translation id="443560535555262820">Abrir preferências de acessibilidade</translation>
 <translation id="4450893287417543264">Não mostrar novamente</translation>
+<translation id="4512952200932940229">Copyright 2021 Autores do Chromium. Todos os direitos reservados.</translation>
 <translation id="4513946894732546136">Comentários</translation>
 <translation id="4563926062592110512">Cliente desconectado: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="4635770493235256822">Dispositivos remotos</translation>
@@ -173,6 +174,7 @@ Se "<ph name="SERVICE_SCRIPT_NAME" />" já estiver marcada, desmarque-a e marque
 <translation id="8743328882720071828">Quer permitir que <ph name="CLIENT_USERNAME" /> veja e controle seu computador?</translation>
 <translation id="8747048596626351634">Ocorreu uma falha na sessão ou não foi possível iniciá-la. Se ~/.chrome-remote-desktop-session existe no computador remoto, verifique se ele inicia um processo de execução longa em primeiro plano, como um ambiente de área de trabalho ou um gerenciador de janelas.</translation>
 <translation id="8804164990146287819">Política de Privacidade</translation>
+<translation id="8906511416443321782">O acesso ao microfone é necessário para capturar áudio e transmiti-lo ao cliente da Área de trabalho remota do Google Chrome.</translation>
 <translation id="9111855907838866522">Você está conectado ao seu dispositivo remoto. Para abrir o menu, toque na tela com quatro dedos.</translation>
 <translation id="9126115402994542723">Não pedir um PIN novamente ao se conectar a este host neste dispositivo.</translation>
 <translation id="916856682307586697">Abrir a XSession padrão</translation>

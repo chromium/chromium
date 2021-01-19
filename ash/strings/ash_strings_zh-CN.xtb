@@ -112,6 +112,7 @@
 <translation id="1951012854035635156">智能助理</translation>
 <translation id="1957803754585243749">0°</translation>
 <translation id="1957958912175573503">设置语言</translation>
+<translation id="1961832440516943645"><ph name="DATE" /> <ph name="TIME" /></translation>
 <translation id="1962969542251276847">锁定屏幕</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558"><ph name="USERNAME" />，您好！</translation>
@@ -820,6 +821,7 @@
 <translation id="8492573885090281069">“<ph name="DISPLAY_NAME" />”不支持 <ph name="SPECIFIED_RESOLUTION" />。分辨率已改为 <ph name="FALLBACK_RESOLUTION" />。点击“确认”即可保留更改。将在 <ph name="TIMEOUT_SECONDS" />后恢复以前的设置。</translation>
 <translation id="8513108775083588393">自动旋转屏幕</translation>
 <translation id="8517041960877371778">您的 <ph name="DEVICE_TYPE" /> 在开启时可能无法充电。</translation>
+<translation id="8553395910833293175">此前就已分配至所有桌面。</translation>
 <translation id="8563862697512465947">通知设置</translation>
 <translation id="857201607579416096">菜单已移至屏幕的右下角。</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>

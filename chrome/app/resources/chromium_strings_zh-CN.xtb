@@ -69,6 +69,7 @@
 <translation id="328888136576916638">缺少 Google API 密钥，因此 Chromium 的部分功能将无法使用。</translation>
 <translation id="3296368748942286671">关闭 Chromium 后继续运行后台应用</translation>
 <translation id="331951419404882060">登录时出现错误，Chromium操作系统无法同步您的数据。</translation>
+<translation id="3430503420100763906">借助 Chromium 个人资料，您可将自己的所有 Chromium 内容分门别类。比如，您可为朋友和家人创建专属个人资料，或者将工作内容和娱乐内容分开。</translation>
 <translation id="347328004046849135">当您使用已泄露的密码登录时，Chromium 会通知您</translation>
 <translation id="3474745554856756813">这会从这台设备上删除 <ph name="ITEMS_COUNT" /> 项内容。如果日后想要检索您的数据，届时请以 <ph name="USER_EMAIL" /> 的身份登录 Chromium。</translation>
 <translation id="3509308970982693815">请关闭所有 Chromium 窗口并重试。</translation>
@@ -163,6 +164,7 @@
 <translation id="6373523479360886564">确定要卸载 Chromium 吗？</translation>
 <translation id="6403826409255603130">Chromium 是一款可高速运行网页和应用的网络浏览器。它快捷、稳定且易于使用。Chromium 内置的防护恶意软件和网上诱骗的功能可让您更安全地浏览网页。</translation>
 <translation id="6434250628340475518">Chromium 操作系统</translation>
+<translation id="6455857529632101747">欢迎使用 Chromium 个人资料</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium 将在 1 秒后重新启动}other{Chromium 将在 # 秒后重新启动}}</translation>
 <translation id="6475912303565314141">它还能够控制Chromium启动后显示的页面。</translation>
 <translation id="6510925080656968729">卸载 Chromium</translation>

@@ -112,7 +112,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1951012854035635156">Laguntzailea</translation>
 <translation id="1957803754585243749">0°</translation>
 <translation id="1957958912175573503">Zehaztu hizkuntza</translation>
-<translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
+<translation id="1961832440516943645"><ph name="DATE" /> (<ph name="TIME" />)</translation>
 <translation id="1962969542251276847">Pantaila blokeatua</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Kaixo, <ph name="USERNAME" />:</translation>

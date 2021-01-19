@@ -252,7 +252,7 @@
 <translation id="1842969606798536927">결제</translation>
 <translation id="1871208020102129563">프록시가 .pac 스크립트 URL이 아닌 고정 프록시 서버를 사용하도록 설정됩니다.</translation>
 <translation id="1871284979644508959">필수 입력란</translation>
-<translation id="1875512691959384712">Google 설문지</translation>
+<translation id="1875512691959384712">Google Forms</translation>
 <translation id="187918866476621466">시작 페이지 열기</translation>
 <translation id="1883255238294161206">접기 목록</translation>
 <translation id="1898423065542865115">필터링</translation>
@@ -925,7 +925,7 @@
 <translation id="4675657451653251260">게스트 모드에서는 Chrome 프로필 정보를 볼 수 없습니다. 비밀번호 및 결제 수단과 같은 Google 계정 정보를 보려면 <ph name="LINK_BEGIN" />로그인<ph name="LINK_END" />하세요.</translation>
 <translation id="467662567472608290">이 서버가 <ph name="DOMAIN" />임을 입증할 수 없으며 서버의 보안 인증서에 오류가 있습니다. 서버를 잘못 설정했거나 불법 사용자가 연결을 가로채고 있기 때문일 수 있습니다.</translation>
 <translation id="4677585247300749148"><ph name="URL" />에서 접근성 이벤트에 응답하려고 합니다</translation>
-<translation id="467809019005607715">Google 설문지</translation>
+<translation id="467809019005607715">Google Slides</translation>
 <translation id="4680804919228900307">사기성 사이트에 비밀번호를 입력했습니다. 지금 바로 <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> 등 동일한 비밀번호를 사용한 사이트에 저장된 비밀번호를 확인하는 것이 좋습니다.</translation>
 <translation id="4690462567478992370">유효하지 않은 인증서 사용 중단</translation>
 <translation id="4691835149146451662">Architecture-A(봉투)</translation>

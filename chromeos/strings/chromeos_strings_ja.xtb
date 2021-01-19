@@ -182,7 +182,7 @@
 <translation id="5719918614880940190">コア CPU 全体の使用状況を測定します</translation>
 <translation id="5760715441271661976">ポータル状態</translation>
 <translation id="5781694279199921985">セッションログを保存</translation>
-<translation id="5797428682393400134">完了</translation>
+<translation id="5797428682393400134">成功</translation>
 <translation id="5832805196449965646">ユーザーを追加</translation>
 <translation id="5895138241574237353">再起動</translation>
 <translation id="5916084858004523819">禁止</translation>
@@ -285,7 +285,7 @@
 <translation id="8798441408945964110">プロバイダ名</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">ヘルプ</translation>
-<translation id="8881098542468797602">テストが完了しました</translation>
+<translation id="8881098542468797602">テストが成功しました</translation>
 <translation id="8898840733695078011">電波強度</translation>
 <translation id="8910721771319628100">デフォルトのネットワークの応答時間がしきい値を超えています</translation>
 <translation id="8919837981463578619">失敗 - トレイがありません</translation>

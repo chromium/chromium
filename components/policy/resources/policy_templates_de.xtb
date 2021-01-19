@@ -868,7 +868,7 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
       Diese Richtlinie wird nur angewendet, wenn das Gerät für <ph name="PRODUCT_NAME" /> mit <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> registriert ist.
       Für <ph name="PRODUCT_OS_NAME" /> wird diese Richtlinie immer angewendet.</translation>
 <translation id="2289688405312849186">Hauptkonto des Nutzers: „user@realm“. Der Platzhalter „<ph name="LOGIN_ID_PLACEHOLDER" />“ wird durch den Nutzernamen „Nutzer“ ersetzt. Der Platzhalter „<ph name="LOGIN_EMAIL_PLACEHOLDER" />“ wird durch den vollständigen Namen des Hauptkontos „user@realm“ ersetzt.</translation>
-<translation id="229322770310505679">Atomische Richtlinien-Gruppen aktivieren</translation>
+<translation id="229322770310505679">Gruppen aus Einzelrichtlinien aktivieren</translation>
 <translation id="22941467117331786">Wenn die Richtlinie auf "True" gesetzt ist, wird während aktiver Sitzungen in der Taskleiste eine große rote Schaltfläche zum Abmelden angezeigt, solange das Display nicht gesperrt ist.
 
       Ist sie auf "False" gesetzt oder nicht konfiguriert, wird keine Schaltfläche angezeigt.</translation>
@@ -2270,6 +2270,7 @@ Ist die Richtlinie deaktiviert oder nicht konfiguriert, werden Nutzer durch den 
 <translation id="4138655880188755661">Zeitlimit</translation>
 <translation id="4147818922357566987">Nur Variationen für wichtige Fehlerbehebungen aktivieren</translation>
 <translation id="4150201353443180367">Display</translation>
+<translation id="415445772247959702">Web Store (wird seit Version 89 unterstützt)</translation>
 <translation id="4157003184375321727">Betriebssystem- und Firmware-Version melden</translation>
 <translation id="4157594634940419685">Zugriff auf native CUPS-Drucker erlauben</translation>
 <translation id="4160962198980004898">Quelle für die Geräte-MAC-Adresse bei angedocktem Gerät</translation>

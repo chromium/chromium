@@ -338,7 +338,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Ez dago pasahitzik arriskuan}=1{1 pasahitz dago arriskuan}other{{NUM_COMPROMISED} pasahitz daude arriskuan}}</translation>
 <translation id="1380028686461971526">Konektatu sarera automatikoki</translation>
 <translation id="1380436189840894976">Ezkutuko modutik irten nahi duzu hala ere?</translation>
-<translation id="1383597849754832576">Ezin dira deskargatu ahotsa testu bihurtzen duen kodearen fitxategiak. Saiatu geroago.</translation>
+<translation id="1383597849754832576">Ezin dira deskargatu ahotsa testu bihurtzeko fitxategiak. Saiatu berriro geroago.</translation>
 <translation id="1383861834909034572">Osatzen denean irekiko da</translation>
 <translation id="1383876407941801731">Bilaketa</translation>
 <translation id="1386791642444521222">Aktibatu SIM txartel fisikoa</translation>
@@ -902,7 +902,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1984417487208496350">Babesik gabe (ez da gomendatzen)</translation>
 <translation id="1987317783729300807">Kontuak</translation>
 <translation id="1989112275319619282">Arakatu</translation>
-<translation id="1990046457226896323">Deskargatu dira ahotsa testu bihurtzen duen kodearen fitxategiak</translation>
+<translation id="1990046457226896323">Deskargatu dira ahotsa testu bihurtzeko fitxategiak</translation>
 <translation id="1990512225220753005">Ez erakutsi lasterbideak orri honetan</translation>
 <translation id="1992397118740194946">Ezarri gabe</translation>
 <translation id="1992924914582925289">Kendu gailutik</translation>
@@ -1383,7 +1383,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2526590354069164005">Ordenagailua</translation>
 <translation id="2526619973349913024">Egiaztatu eguneratzeak dauden</translation>
 <translation id="2527167509808613699">Edozein motatako konexioa</translation>
-<translation id="2530166226437958497">Arazo-konpontzailea</translation>
+<translation id="2530166226437958497">Irtenbideak</translation>
 <translation id="2532589005999780174">Kontraste handiko modua</translation>
 <translation id="253434972992662860">&amp;Pausatu</translation>
 <translation id="2534460670861217804">HTTP proxy segurua</translation>
@@ -3200,7 +3200,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="4627442949885028695">Jarraitu beste gailu batetik</translation>
 <translation id="4628757576491864469">Gailuak</translation>
 <translation id="4628762811416793313">Ez da osatu Linux edukiontziaren konfigurazioa. Saiatu berriro.</translation>
-<translation id="4629521233550547305">Ireki <ph name="PROFILE_NAME" /> profila</translation>
+<translation id="4629521233550547305">Ireki <ph name="PROFILE_NAME" /> erabiltzailearen profila</translation>
 <translation id="4633003931260532286">Luzapenak "<ph name="IMPORT_NAME" />" eskatzen du, gutxienez "<ph name="IMPORT_VERSION" />" bertsiokoa, baina "<ph name="INSTALLED_VERSION" />" bertsioa baino ez dago instalatuta</translation>
 <translation id="4633757335284074492">Egin babeskopiak Google Drive-n. Leheneratu gailu honen datuak edo aldatu gailua edonoiz. Aplikazioetako datuak ere sartzen dira babeskopietan. Babeskopiak Google-ra kargatzen dira eta enkriptatu egiten dira haurraren Google-ko kontuaren pasahitza erabilita.</translation>
 <translation id="4634575639321169635">Konfiguratu gailua lanerako edo erabilera pertsonalerako</translation>

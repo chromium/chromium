@@ -1761,6 +1761,7 @@
 <translation id="79859296434321399">要查看增强现实内容，请安装 ARCore</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="799149739215780103">装订</translation>
+<translation id="7992044431894087211">已继续与<ph name="APPLICATION_TITLE" />共享屏幕</translation>
 <translation id="7995512525968007366">未指定</translation>
 <translation id="800218591365569300">请尝试关闭其他标签页或程序以释放内存。</translation>
 <translation id="8004582292198964060">浏览器</translation>
@@ -2035,6 +2036,7 @@
 <translation id="9103872766612412690"><ph name="SITE" /> 通常会使用加密技术来保护您的信息。Chromium 此次尝试连接到 <ph name="SITE" /> 时，此网站发回了异常的错误凭据。这可能是因为有攻击者在试图冒充 <ph name="SITE" />，或 Wi-Fi 登录屏幕中断了此次连接。请放心，您的信息仍然是安全的，因为 Chromium 尚未进行任何数据交换便停止了连接。</translation>
 <translation id="9106062320799175032">添加帐单邮寄地址</translation>
 <translation id="9107467864910557787">您的浏览器由 <ph name="MANAGER" /> 管理</translation>
+<translation id="91108059142052966">管理员政策禁止在屏幕显示机密内容时与<ph name="APPLICATION_TITLE" />共享屏幕</translation>
 <translation id="9114524666733003316">正在确认信用卡…</translation>
 <translation id="9114581008513152754">此浏览器并未由某个公司或其他组织管理。此设备上的活动可能在接受 Chrome 外部的管理。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">已上传</translation>

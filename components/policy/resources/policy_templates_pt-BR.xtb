@@ -850,6 +850,16 @@ Se você desativar a política, essa rolagem será desativada.</translation>
       Definir <ph name="CRITICAL_VARIATIONS_ONLY_OPTION_NAME" /> (valor 1) permite que apenas as variações consideradas como correções críticas de segurança ou estabilidade sejam aplicadas ao <ph name="PRODUCT_OS_NAME" />.
 
       Definir <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (valor 2) impede que qualquer variação seja aplicada ao navegador na tela de login. Esse modo não é recomendado, porque pode impedir que os desenvolvedores do <ph name="PRODUCT_OS_NAME" /> forneçam correções críticas de segurança de maneira rápida.</translation>
+<translation id="2221850122314326571">Quando esta configuração estiver ativada, o <ph name="PRODUCT_NAME" /> verificará os certificados do servidor usando o verificador integrado de certificados.
+      Quando ela estiver desativada, o <ph name="PRODUCT_NAME" /> verificará os certificados do servidor usando o verificador legado disponibilizado pela plataforma.
+      Quando esta configuração não for definida, tanto o verificador de certificados integrado quanto o legado poderão ser usados.
+
+      Esta política será removida na versão 81 do <ph name="PRODUCT_OS_NAME" />, quando a compatibilidade com o verificador de certificados legado no <ph name="PRODUCT_OS_NAME" /> também será removida.
+
+      Esta política será removida do <ph name="PRODUCT_NAME" /> na versão 83 do Linux, quando a compatibilidade com o verificador de certificados legado nesse SO também será removida.
+
+      Esta política será removida do <ph name="PRODUCT_NAME" /> na versão 92 do Mac OS X, quando a compatibilidade com o verificador de certificados legado nesse SO também será removida.
+      </translation>
 <translation id="2223582957891074498">Se a política for definida como verdadeira, não será permitido fazer capturas de tela com os atalhos do teclado ou APIs de extensão. Se ela for definida como falsa, as capturas de tela serão permitidas.</translation>
 <translation id="2223598546285729819">Configuração padrão de notificações</translation>
 <translation id="2231817271680715693">Importar histórico de navegação do navegador padrão na primeira execução</translation>
@@ -863,6 +873,7 @@ Se você desativar a política, essa rolagem será desativada.</translation>
 <translation id="2261329877420573811">Se <ph name="PRINTERS_WHITELIST" /> for escolhida para <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, a definição de <ph name="DEVICE_NATIVE_PRINTERS_WHITELIST_POLICY_NAME" /> especificará quais impressoras os usuários não podem usar. Apenas as impressoras com IDs correspondentes aos valores desta política estão disponíveis para os usuários. Os IDs precisam corresponder aos campos <ph name="ID_FIELD" /> ou <ph name="GUID_FIELD" /> no arquivo especificado na <ph name="DEVICE_PRINTERS_POLICY_NAME" />.
 
       Esta política está suspensa. Use a <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" />.</translation>
+<translation id="2261648512244797294">Desativar a impressão com o protocolo Privet suspenso</translation>
 <translation id="2266422599396179941">Permitir que os usuários enviem feedback</translation>
 <translation id="2269319728625047531">Ativa a exibição do consentimento de sincronização durante o login</translation>
 <translation id="2270747976331889601">Ativa um recurso de segurança TLS 1.3 para âncoras de confiança locais.</translation>
@@ -2613,6 +2624,11 @@ Esta política afeta apenas os usuários que autenticam usando SAML.</translatio
       Quando essa política não for definida ou estiver ativada, as verificações de interceptação de DNS são executadas. Quando a política é desativada explicitamente, elas não são executadas.</translation>
 <translation id="4700190441681139987">Não permitir o acesso de nenhum site aos sensores</translation>
 <translation id="4703402283970867140">Ativar modelo de escurecimento inteligente para aumentar o tempo que a tela permanece ativa</translation>
+<translation id="4715026656747891013">Lista de configurações para os serviços do Chrome Enterprise Connectors que serão aplicadas ao conector <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" />, que é acionado quando há uma ocorrência de segurança no Chrome. Isso inclui vereditos negativos do Enterprise Connectors, reutilização de senha, navegação para páginas não seguras e outras ações do usuário relacionadas à segurança.
+
+      O campo <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> identifica o provedor de serviços de relatório ao qual as configurações correspondem. O campo <ph name="ENTERPRISE_CONNECTOR_ENABLED_EVENT_NAMES_FIELD" /> identifica os eventos ativados por esse provedor.
+
+      Esta política só pode ser definida pelo Google Admin Console.</translation>
 <translation id="4722122254122249791">Ativar o isolamento de sites para origens específicas</translation>
 <translation id="4723122879352880315">Esta configuração permite que os usuários autentiquem para um proxy gerenciado com autenticação NTLM usando as credenciais de login do <ph name="PRODUCT_OS_NAME" />.
 
@@ -2881,6 +2897,7 @@ Esta política afeta apenas os usuários que autenticam usando SAML.</translatio
 <translation id="5148753489738115745">Permite especificar os parâmetros adicionais que são usados quando o <ph name="PRODUCT_FRAME_NAME" /> inicia o <ph name="PRODUCT_NAME" />. Se essa política não for configurada, será usada a linha de comando padrão.</translation>
 <translation id="5152393033264257734">Permitir verificações de interceptação de DNS e barras de informações oferecendo "http://intranetsite/" como alternativa.</translation>
 <translation id="5152787786897382519">O Chromium e o Google Chrome têm alguns grupos de políticas que dependem umas das outras para oferecer controle sobre um recurso. Esses conjuntos são representados pelos seguintes grupos de políticas. Como essas políticas podem ter diversas fontes, apenas os valores da fonte de maior prioridade serão aplicados. Os valores de uma fonte de menor prioridade presente no mesmo grupo serão ignorados. A ordem da prioridade está definida em <ph name="POLICY_PRIORITY_DOC_URL" />.</translation>
+<translation id="5153187201534281749">Ícone dos experimentos do navegador na barra de ferramentas</translation>
 <translation id="515816885693899426">Esta política está obsoleta. Use a <ph name="URL_BLOCKLIST_POLICY_NAME" />.
 
       A definição da política impede que páginas da Web com URLs proibidos sejam carregadas. Ela fornece uma lista de padrões de URL que especificam URLs proibidos. Deixar a política sem definição significa que nenhum URL será proibido no navegador. Formate o padrão de URL da maneira descrita em https://www.chromium.org/administrators/url-blacklist-filter-format. Até 1.000 exceções podem ser definidas na <ph name="URL_ALLOWLIST_POLICY_NAME" />.
@@ -4028,6 +4045,11 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
 <translation id="6789422336869764846">Se a política for definida como "Ativada" ou não for definida, o estado da chave do desenvolvedor dos dispositivos registrados durante a inicialização será informado.
 
       Se a política for definida como "Desativada", o estado da chave do desenvolvedor dos dispositivos registrados não será informado.</translation>
+<translation id="6789441722870183939">Se a política for definida como "Ativada" ou não for definida, o usuário poderá acessar recursos experimentais do navegador pelo ícone da barra de ferramentas
+
+      Se a política for definida como "Desativada", o ícone de recursos experimentais do navegador será removido da barra de ferramentas.
+
+      chrome://flags e todas as outras formas de desativar e ativar os recursos do navegador ainda funcionarão como esperado, independentemente de a política ser definida como "Ativada" ou "Desativada".</translation>
 <translation id="6793420507738858152">Quando a política está ativada, o recurso "<ph name="PRODUCT_NAME" />" enviará cabeçalhos de solicitação granulares fornecendo informações sobre o ambiente e o navegador do usuário.
 
       Esse é um recurso complementar, mas os novos cabeçalhos podem corromper alguns sites que restringem os caracteres contidos em algumas solicitações.
@@ -4765,6 +4787,7 @@ Se esta política não for definida, o renderizador padrão será usado para tod
 
       Se a política for definida como "Desativada", os usuários serão impedidos de ignorar as páginas de aviso.</translation>
 <translation id="7750991880413385988">Abrir Nova guia</translation>
+<translation id="7753678409577376761">Ativar o ponto de entrada da barra de ferramentas de recursos experimentais do navegador</translation>
 <translation id="7754704193130578113">Perguntar onde salvar cada arquivo antes de fazer download</translation>
 <translation id="7754893969683595513">A definição da política especifica um período em milissegundos em que o serviço de gerenciamento do dispositivo recebe consultas sobre informações de políticas do usuário. O intervalo válido de valores é de 1.800.000 (30 minutos) até 86.400.000 (1 dia). Valores fora desse intervalo serão ajustados para o respectivo limite.
 
@@ -4865,6 +4888,9 @@ Se esta política não for definida, o renderizador padrão será usado para tod
 <translation id="791267408364877739">Exibir avisos de segurança quando sinalizações de linha de comando potencialmente perigosas forem usadas</translation>
 <translation id="7922358664346625612">Mantém a última guia aberta no Chrome.</translation>
 <translation id="7924321157669251966">Porcentagem de brilho da tela quando em funcionamento com energia da bateria.</translation>
+<translation id="7925224837072026018">Se a política for definida, as extensões ou os apps Android terão acesso a chaves corporativas. Apenas chaves geradas usando a API chrome.enterprise.platformKeys em uma conta gerenciada são designadas para uso corporativo. O usuário não poderá conceder ou revogar o acesso de extensões ou apps Android a chaves corporativas.
+
+      Por padrão, uma extensão ou um app Android não pode usar uma chave designada como corporativa. Isso é equivalente a definir allowCorporateKeyUsage como "Falsa" para a política. Uma extensão ou um app Android só poderá usar chaves de plataforma marcadas como corporativas para assinar dados arbitrários se allowCorporateKeyUsage for definida como "Verdadeira" para eles. Conceda essa permissão apenas se você confiar que a extensão ou o app Android protegerá a chave contra o acesso de invasores.</translation>
 <translation id="793134539373873765">Especifica se p2p deve ser usado para cargas de atualização do sistema operacional. Se for definido como verdadeiro, os dispositivos compartilharão e tentarão consumir as cargas de atualização na LAN, possivelmente reduzindo o uso de largura de banda de Internet e o congestionamento. Se a carga de atualização não estiver disponível na LAN, o dispositivo voltará a fazer download a partir de um servidor de atualização. Se for definido como falso ou não for configurado, o p2p não será usado.</translation>
 <translation id="7933141401888114454">Ativar a criação de usuários supervisionados</translation>
 <translation id="793473937901685727">Definir a disponibilidade do certificado para apps ARC</translation>
@@ -4891,6 +4917,9 @@ Se a política não for definida, a configuração ficará ativada, mas o usuár
 <translation id="7956210013490975468">Configura o serviço de proxy do sistema para o <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="7958537754689366707">A senha precisa ser digitada a cada 12 horas</translation>
 <translation id="7961779417826583251">Desativar a aplicação da Transparência dos certificados para uma lista de Autoridades de certificação de legado</translation>
+<translation id="7962093600142350905">Esta política controla se as impressoras de protocolo Privet disponíveis serão exibidas ao usuário na caixa de diálogo de visualização de impressão.
+      Se a política for definida como "Ativada", as impressoras com protocolo Privet disponíveis serão exibidas.
+      Se ela for definida como "Desativada" ou deixada sem definição, as impressoras com protocolo Privet não serão exibidas na visualização de impressão, já que esse método de impressão está suspenso.</translation>
 <translation id="7973609468423251675">Esta política está obsoleta e será removida na versão 85 do <ph name="PRODUCT_OS_NAME" />. Por isso, passe a usar <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
 
           Especifica o tempo sem entrada do usuário para que a tela seja apagada quando o dispositivo estiver funcionando com energia da bateria.
@@ -4929,6 +4958,7 @@ Se a política não for definida, a configuração ficará ativada, mas o usuár
 <translation id="8011935490612940798">Controlar o recurso de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="802147957407376460">Girar tela em 0 graus</translation>
 <translation id="802776363472387903">Hash SHA-256 da imagem do <ph name="PLUGIN_VM_NAME" />.</translation>
+<translation id="8029201909194194377">Duração máxima da seção permitida por conexões de acesso remoto</translation>
 <translation id="8033913082323846868">O uso desta política foi suspenso no M70. Em vez dela, use AutofillAddressEnabled e AutofillCreditCardEnabled.
 
       Ativa o recurso Preenchimento automático do <ph name="PRODUCT_NAME" /> e permite que os usuários preencham formulários da Web automaticamente usando informações previamente armazenadas, como dados de endereço ou cartão de crédito.
@@ -4966,6 +4996,7 @@ Se a política não for definida, a configuração ficará ativada, mas o usuár
 <translation id="8078297389450285582">Se a política for definida como "Ativada" ou não for definida, o modelo de escurecimento inteligente será ativado e poderá aumentar o tempo de tela ativa. Se ocorrer esse aumento, os intervalos de desligamento, bloqueio e descanso da tela serão ajustados para manter as mesmas distâncias do intervalo de escurecimento da tela de acordo com a configuração original.
 
       Se a política for definida como "Desativada", o modelo de escurecimento inteligente não influenciará a luminosidade da tela.</translation>
+<translation id="8089200718228084417">Ativar a impressão com o protocolo Privet suspenso</translation>
 <translation id="8091982561085048989">Sinalização booleana indicando se o IPP Everywhere deve ser usado ou não para configurar a impressora. Essa sinalização é compatível com o <ph name="PRODUCT_OS_NAME" /> 76 ou versão mais recente.</translation>
 <translation id="8099880303030573137">Intervalo de inatividade no funcionamento com energia da bateria</translation>
 <translation id="8101381354936029836">Grupo atômico de políticas:</translation>
@@ -5054,6 +5085,7 @@ Se a política não for definida, a tela de privacidade ficará inicialmente des
           Se você definir esta política, o usuário não poderá alterá-la ou modificá-la.
 
           Se esta política não for definida, o destaque do cursor ficará desativado inicialmente, mas poderá ser ativado pelo usuário a qualquer momento.</translation>
+<translation id="8164144100557223371">Desativar o ponto de entrada da barra de ferramentas de recursos experimentais do navegador</translation>
 <translation id="8164687848393015214">Se a política estiver definida como "Ativada", ela enviará pacotes de monitoramento de rede (<ph name="HEARTBEATS_TERM" />) para o servidor de gerenciamento. Com isso, o status de conexão é monitorado e o servidor consegue detectar se o dispositivo está off-line.
 
       Se a política for definida como "Desativada" ou não for definida, nenhum pacote será enviado.</translation>
@@ -5462,6 +5494,9 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 
       Se a política não for definida, ela será ativada e não poderá ser desativada pelos usuários.</translation>
 <translation id="8798099450830957504">Padrão</translation>
+<translation id="8799492680917278474">Se esta política for definida, as conexões de acesso remoto serão encerradas automaticamente quando o número de minutos definido na política for excedido. Isso não impede que o cliente se reconecte após a duração máxima da sessão ter sido alcançada. Se a política for definida com um valor que não está no intervalo mínimo/máximo, o host poderá não ser iniciado. Esta política não afeta situações de suporte remoto.
+
+          Esta política não terá efeito se não for definida. Nesse caso, as conexões de acesso remoto não terão uma duração máxima nesta máquina.</translation>
 <translation id="8800453707696044281">Configurar a parada personalizada do carregamento da bateria, em porcentagem</translation>
 <translation id="8801680448782904838">Notifica um usuário de que a reinicialização do navegador ou do dispositivo é recomendada ou obrigatória</translation>
 <translation id="8816671955985738552">Não permitir mudanças de senha do SAML durante a sessão em chrome://password-change</translation>
@@ -5799,6 +5834,7 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 <translation id="9194447412184412480">Controla as configurações para usuários autenticados por SAML com um IdP externo</translation>
 <translation id="9197740283131855199">Percentual pelo qual calcular o intervalo de escurecimento da tela se o usuário ficar ativo após o escurecimento</translation>
 <translation id="9200828125069750521">Parâmetros para URL de imagens que usa POST</translation>
+<translation id="9204863016826119209">Chaves corporativas poderão ser usadas por apps Android instalados e listados nesta política.</translation>
 <translation id="9213751049772256263">Desativar todas as variações</translation>
 <translation id="9217154963008402249">Frequência de pacotes de monitoramento de rede</translation>
 <translation id="922540222991413931">Configurar extensão, aplicativo e origens de instalação do script do usuário</translation>

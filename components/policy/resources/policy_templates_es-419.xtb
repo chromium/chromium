@@ -2910,7 +2910,7 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
 
       Nota: Si bloqueas las URL internas de chrome://*, se pueden generar errores inesperados.</translation>
 <translation id="5163002264923337812">Habilitar la forma de acceso antigua basada en la Web</translation>
-<translation id="516520353995300280">Si estableces la política, se inhabilitará la aplicación de los requisitos de divulgación del Certificado de transparencia en una lista de autoridades certificadas (CA) heredadas para las cadenas que contengan certificados con uno de los hash de <ph name="SUBJECT_PUBLIC_KEY_INFO" /> especificados. Los hosts empresariales podrán seguir usando los certificados que no sean de confianza (porque no se divulgaron públicamente de forma correcta). Para inhabilitar la aplicación, los hash de <ph name="SUBJECT_PUBLIC_KEY_INFO" /> deben aparecer en un certificado de CA reconocido como CA heredada. Una CA heredada cuenta con la confianza pública de uno o más sistemas operativos compatibles con <ph name="PRODUCT_NAME" />, pero no del Proyecto de código abierto de Android o <ph name="PRODUCT_OS_NAME" />.
+<translation id="516520353995300280">Si estableces la política, se inhabilitará la aplicación de los requisitos de divulgación del Certificado de transparencia en una lista de autoridades certificadoras (CA) heredadas para las cadenas que contengan certificados con uno de los hash de <ph name="SUBJECT_PUBLIC_KEY_INFO" /> especificados. Los hosts empresariales podrán seguir usando los certificados que no sean de confianza (porque no se divulgaron públicamente de forma correcta). Para inhabilitar la aplicación, los hash de <ph name="SUBJECT_PUBLIC_KEY_INFO" /> deben aparecer en un certificado de CA reconocido como CA heredada. Una CA heredada cuenta con la confianza pública de uno o más sistemas operativos compatibles con <ph name="PRODUCT_NAME" />, pero no del Proyecto de código abierto de Android o <ph name="PRODUCT_OS_NAME" />.
 
       Para especificar un hash de <ph name="SUBJECT_PUBLIC_KEY_INFO" />, se debe vincular el nombre del algoritmo del hash, una barra y la codificación de Base64 de ese algoritmo aplicada al campo <ph name="SUBJECT_PUBLIC_KEY_INFO" /> codificado con DER del certificado específico. Esta codificación de Base64 tiene el mismo formato que una SPKI Fingerprint. El único algoritmo de hash compatible es sha256; se ignorarán los demás.
 
@@ -3991,7 +3991,7 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 
       * El hash pertenece al campo <ph name="SUBJECT_PUBLIC_KEY_INFO" /> del certificado del servidor.
 
-      * El hash pertenece a un campo <ph name="SUBJECT_PUBLIC_KEY_INFO" /> que aparece en un certificado de autoridad certificada (CA) en la cadena de certificados; ese certificado de CA está limitado por la extensión X.509v3 nameConstraints; uno o más directoryName nameConstraints están presentes en permittedSubtrees; y directoryName contiene un atributo organizationName.
+      * El hash pertenece a un campo <ph name="SUBJECT_PUBLIC_KEY_INFO" /> que aparece en un certificado de autoridad certificadora (CA) en la cadena de certificados; ese certificado de CA está limitado por la extensión X.509v3 nameConstraints; uno o más directoryName nameConstraints están presentes en permittedSubtrees; y directoryName contiene un atributo organizationName.
 
       * El hash pertenece a un campo <ph name="SUBJECT_PUBLIC_KEY_INFO" /> que aparece en un certificado de CA en la cadena de certificados; ese certificado de CA tiene uno o más atributos organizationName en el asunto del certificado; y el certificado del servidor contiene la misma cantidad de atributos organizationName, en el mismo orden y con los mismos valores, byte por byte.
 
@@ -4912,7 +4912,7 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
       Si inhabilitas la política, no se desactivará el acceso remoto, pero solo se permitirán conexiones de la misma red (no se permitirán retransmisiones ni NAT traversal).</translation>
 <translation id="7956210013490975468">Configura el servicio de proxy del sistema para <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="7958537754689366707">Se requiere el ingreso de la contraseña cada doce horas.</translation>
-<translation id="7961779417826583251">Inhabilitar la aplicación del Certificado de transparencia para una lista de autoridades certificadas heredadas</translation>
+<translation id="7961779417826583251">Inhabilitar la aplicación del Certificado de transparencia para una lista de autoridades certificadoras heredadas</translation>
 <translation id="7973609468423251675">Ten en cuenta que esta política es obsoleta y se quitará en la versión 85 de <ph name="PRODUCT_OS_NAME" />. En su lugar, utiliza <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
 
           Especifica el período sin intervención del usuario después del cual se atenuará la pantalla cuando el dispositivo esté funcionando con batería.

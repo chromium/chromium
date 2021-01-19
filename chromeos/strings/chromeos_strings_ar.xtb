@@ -111,7 +111,7 @@
 <translation id="4170700058716978431">تعذّر إجراء الاختبار.</translation>
 <translation id="4176463684765177261">غير مفعّل</translation>
 <translation id="4227825898293920515">تنتهي صلاحية كلمة المرور في <ph name="TIME" /></translation>
-<translation id="4228041325992544252">يتم استخدام <ph name="AVAILABLE_MEMORY" /> غيغابايت من سعة التخزين المتاحة التي تبلغ <ph name="TOTAL_MEMORY" /> غيغابايت.</translation>
+<translation id="4228041325992544252">يتم استخدام <ph name="AVAILABLE_MEMORY" /> غيغابايت من مساحة التخزين المتاحة التي تبلغ <ph name="TOTAL_MEMORY" /> غيغابايت.</translation>
 <translation id="4238516577297848345">ما من مهام قيد الطباعة.</translation>
 <translation id="4297501883039923494">توقّفت الطابعة - خطأ غير معروف</translation>
 <translation id="4378373042927530923">لم يتم التشغيل</translation>
@@ -241,7 +241,7 @@
 <translation id="7502658306369382406">‏عنوان IPv6</translation>
 <translation id="7561454561030345039">يتولّى مشرفك إدارة هذا الإجراء.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
-<translation id="7620771111601174153">مزيد من المعلومات في مركز المساعدة</translation>
+<translation id="7620771111601174153">مزيد من المعلومات في "مركز المساعدة"</translation>
 <translation id="7648838807254605802">‏وقت استجابة بروتوكول HTTPS طويل.</translation>
 <translation id="7658239707568436148">إلغاء</translation>
 <translation id="7690294790491645610">تأكيد كلمة المرور الجديدة</translation>

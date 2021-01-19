@@ -39,7 +39,7 @@
 <translation id="1792647875738159689">Eskaneatzeko prozesua bertan behera uzten</translation>
 <translation id="1851218745569890714">Bideo-konferentziak</translation>
 <translation id="1905710495812624430">Saiakera-muga gainditu da.</translation>
-<translation id="1908234395526491708">UDP protokoloaren bidezko eskaeren hutsegiteak</translation>
+<translation id="1908234395526491708">UDP bidezko eskaeren hutsegiteak</translation>
 <translation id="1930797645656624981">Chrome OS sistemako idazketa-metodoaren zerbitzua</translation>
 <translation id="1947737735496445907">Inprimatuta</translation>
 <translation id="1979103255016296513">Pasahitza iraungita dago eta aldatu egin behar da</translation>
@@ -88,7 +88,7 @@
 <translation id="3369013195428705271">Ziur inprimatze-historia guztia garbitu nahi duzula? Ez dira garbituko abian dauden inprimatze-lanak.</translation>
 <translation id="3435738964857648380">Segurtasuna</translation>
 <translation id="3456078764689556234"><ph name="PRINTED_PAGES" />/<ph name="TOTAL_PAGES" /> orria inprimatu da.</translation>
-<translation id="345898999683440380"><ph name="PAGE_NUM" />. orria eskaneatzen. % <ph name="PERCENTAGE_VALUE" /> osatuta.</translation>
+<translation id="345898999683440380"><ph name="PAGE_NUM" />garren orria eskaneatzen. % <ph name="PERCENTAGE_VALUE" /> osatuta.</translation>
 <translation id="3459509316159669723">Inprimaketa</translation>
 <translation id="3515615323037921860">Inprimatze-lanak</translation>
 <translation id="3527036260304016759">Hutsegitea - Errore ezezaguna</translation>
@@ -164,7 +164,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="5275828089655680674">Berrabiarazi ohiturak</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5317780077021120954">Gorde</translation>
-<translation id="5318334351163689047">TCP protokoloaren bidezko eskaeren hutsegiteak</translation>
+<translation id="5318334351163689047">TCP bidezko eskaeren hutsegiteak</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" /> (<ph name="CREATION_TIME" />), <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Aukeratu beste bat</translation>
 <translation id="5333530671332546086">Ez da ezagutzen atariaren egoera</translation>
