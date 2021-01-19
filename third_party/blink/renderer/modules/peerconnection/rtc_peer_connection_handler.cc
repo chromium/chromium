@@ -2493,7 +2493,9 @@ void RTCPeerConnectionHandler::OnModifyTransceivers(
           previous_state.stopped() != transceiver_states[i].stopped() ||
           previous_state.direction() != transceiver_states[i].direction() ||
           previous_state.current_direction() !=
-              transceiver_states[i].current_direction();
+              transceiver_states[i].current_direction() ||
+          previous_state.header_extensions_negotiated() !=
+              transceiver_states[i].header_extensions_negotiated();
     }
 
     // Update the transceiver.

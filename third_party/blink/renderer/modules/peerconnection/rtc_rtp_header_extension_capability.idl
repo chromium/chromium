@@ -5,4 +5,5 @@
 // https://w3c.github.io/webrtc-pc/#rtcrtpheaderextensioncapability*
 dictionary RTCRtpHeaderExtensionCapability {
     DOMString uri;
+    RTCRtpTransceiverDirection direction = "sendrecv";
 };

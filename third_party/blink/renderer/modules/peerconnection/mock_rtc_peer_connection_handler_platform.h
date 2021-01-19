@@ -139,7 +139,6 @@ class MockRTCPeerConnectionHandlerPlatform : public RTCPeerConnectionHandler {
   void TrackIceConnectionStateChange(
       RTCPeerConnectionHandler::IceConnectionStateVersion version,
       webrtc::PeerConnectionInterface::IceConnectionState state) override;
-
  private:
   class DummyRTCRtpTransceiverPlatform;
 

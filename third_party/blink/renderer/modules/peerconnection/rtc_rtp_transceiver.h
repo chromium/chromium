@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_rtp_codec_capability.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_rtp_transceiver_init.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_header_extension_capability.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -67,6 +68,15 @@ class RTCRtpTransceiver final : public ScriptWrappable {
   bool DirectionHasSend() const;
   bool DirectionHasRecv() const;
   bool FiredDirectionHasRecv() const;
+
+  void setOfferedRtpHeaderExtensions(
+      const HeapVector<Member<RTCRtpHeaderExtensionCapability>>&
+          header_extensions_to_offer,
+      ExceptionState& exception_state);
+  HeapVector<Member<RTCRtpHeaderExtensionCapability>> headerExtensionsToOffer()
+      const;
+  HeapVector<Member<RTCRtpHeaderExtensionCapability>>
+  headerExtensionsNegotiated() const;
 
   void Trace(Visitor*) const override;
 
