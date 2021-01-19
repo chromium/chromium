@@ -48,7 +48,16 @@ TabLoadingFrameNavigationThrottlesParams::GetParams() {
 }
 
 const base::Feature kServiceWorkerRelationshipsInGraph{
-    "ServiceWorkerRelationshipsInGraph", base::FEATURE_ENABLED_BY_DEFAULT};
+  "ServiceWorkerRelationshipsInGraph",
+#if DCHECK_IS_ON()
+      // Enable service worker relationships by default under debug builds in
+      // order to get DCHECK failures from Alabatross.
+      // TODO(https://crbug.com/1143281): Revert once there's sufficient data.
+      base::FEATURE_ENABLED_BY_DEFAULT
+#else
+      base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+};
 
 }  // namespace features
 }  // namespace performance_manager
