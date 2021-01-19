@@ -462,7 +462,7 @@ void TraceGLXApi::glXBindTexImageEXTFn(Display* dpy,
                                        GLXDrawable drawable,
                                        int buffer,
                                        int* attribList) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXBindTexImageEXT")
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXBindTexImageEXT");
   glx_api_->glXBindTexImageEXTFn(dpy, drawable, buffer, attribList);
 }
 
@@ -470,14 +470,14 @@ GLXFBConfig* TraceGLXApi::glXChooseFBConfigFn(Display* dpy,
                                               int screen,
                                               const int* attribList,
                                               int* nitems) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXChooseFBConfig")
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXChooseFBConfig");
   return glx_api_->glXChooseFBConfigFn(dpy, screen, attribList, nitems);
 }
 
 XVisualInfo* TraceGLXApi::glXChooseVisualFn(Display* dpy,
                                             int screen,
                                             int* attribList) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXChooseVisual")
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXChooseVisual");
   return glx_api_->glXChooseVisualFn(dpy, screen, attribList);
 }
 
@@ -485,7 +485,7 @@ void TraceGLXApi::glXCopyContextFn(Display* dpy,
                                    GLXContext src,
                                    GLXContext dst,
                                    unsigned long mask) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXCopyContext")
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXCopyContext");
   glx_api_->glXCopyContextFn(dpy, src, dst, mask);
 }
 
@@ -495,7 +495,7 @@ void TraceGLXApi::glXCopySubBufferMESAFn(Display* dpy,
                                          int y,
                                          int width,
                                          int height) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXCopySubBufferMESA")
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXCopySubBufferMESA");
   glx_api_->glXCopySubBufferMESAFn(dpy, drawable, x, y, width, height);
 }
 
@@ -503,7 +503,7 @@ GLXContext TraceGLXApi::glXCreateContextFn(Display* dpy,
                                            XVisualInfo* vis,
                                            GLXContext shareList,
                                            int direct) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXCreateContext")
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXCreateContext");
   return glx_api_->glXCreateContextFn(dpy, vis, shareList, direct);
 }
 
@@ -513,7 +513,7 @@ GLXContext TraceGLXApi::glXCreateContextAttribsARBFn(Display* dpy,
                                                      int direct,
                                                      const int* attrib_list) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu",
-                                "TraceGLXAPI::glXCreateContextAttribsARB")
+                                "TraceGLXAPI::glXCreateContextAttribsARB");
   return glx_api_->glXCreateContextAttribsARBFn(dpy, config, share_context,
                                                 direct, attrib_list);
 }
@@ -521,7 +521,7 @@ GLXContext TraceGLXApi::glXCreateContextAttribsARBFn(Display* dpy,
 GLXPixmap TraceGLXApi::glXCreateGLXPixmapFn(Display* dpy,
                                             XVisualInfo* visual,
                                             Pixmap pixmap) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXCreateGLXPixmap")
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXCreateGLXPixmap");
   return glx_api_->glXCreateGLXPixmapFn(dpy, visual, pixmap);
 }
 
@@ -530,7 +530,7 @@ GLXContext TraceGLXApi::glXCreateNewContextFn(Display* dpy,
                                               int renderType,
                                               GLXContext shareList,
                                               int direct) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXCreateNewContext")
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXCreateNewContext");
   return glx_api_->glXCreateNewContextFn(dpy, config, renderType, shareList,
                                          direct);
 }
@@ -538,7 +538,7 @@ GLXContext TraceGLXApi::glXCreateNewContextFn(Display* dpy,
 GLXPbuffer TraceGLXApi::glXCreatePbufferFn(Display* dpy,
                                            GLXFBConfig config,
                                            const int* attribList) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXCreatePbuffer")
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXCreatePbuffer");
   return glx_api_->glXCreatePbufferFn(dpy, config, attribList);
 }
 
@@ -546,7 +546,7 @@ GLXPixmap TraceGLXApi::glXCreatePixmapFn(Display* dpy,
                                          GLXFBConfig config,
                                          Pixmap pixmap,
                                          const int* attribList) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXCreatePixmap")
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXCreatePixmap");
   return glx_api_->glXCreatePixmapFn(dpy, config, pixmap, attribList);
 }
 
@@ -554,37 +554,37 @@ GLXWindow TraceGLXApi::glXCreateWindowFn(Display* dpy,
                                          GLXFBConfig config,
                                          Window win,
                                          const int* attribList) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXCreateWindow")
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXCreateWindow");
   return glx_api_->glXCreateWindowFn(dpy, config, win, attribList);
 }
 
 void TraceGLXApi::glXDestroyContextFn(Display* dpy, GLXContext ctx) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXDestroyContext")
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXDestroyContext");
   glx_api_->glXDestroyContextFn(dpy, ctx);
 }
 
 void TraceGLXApi::glXDestroyGLXPixmapFn(Display* dpy, GLXPixmap pixmap) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXDestroyGLXPixmap")
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXDestroyGLXPixmap");
   glx_api_->glXDestroyGLXPixmapFn(dpy, pixmap);
 }
 
 void TraceGLXApi::glXDestroyPbufferFn(Display* dpy, GLXPbuffer pbuf) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXDestroyPbuffer")
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXDestroyPbuffer");
   glx_api_->glXDestroyPbufferFn(dpy, pbuf);
 }
 
 void TraceGLXApi::glXDestroyPixmapFn(Display* dpy, GLXPixmap pixmap) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXDestroyPixmap")
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXDestroyPixmap");
   glx_api_->glXDestroyPixmapFn(dpy, pixmap);
 }
 
 void TraceGLXApi::glXDestroyWindowFn(Display* dpy, GLXWindow window) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXDestroyWindow")
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXDestroyWindow");
   glx_api_->glXDestroyWindowFn(dpy, window);
 }
 
 const char* TraceGLXApi::glXGetClientStringFn(Display* dpy, int name) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXGetClientString")
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXGetClientString");
   return glx_api_->glXGetClientStringFn(dpy, name);
 }
 
@@ -592,27 +592,28 @@ int TraceGLXApi::glXGetConfigFn(Display* dpy,
                                 XVisualInfo* visual,
                                 int attrib,
                                 int* value) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXGetConfig")
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXGetConfig");
   return glx_api_->glXGetConfigFn(dpy, visual, attrib, value);
 }
 
 GLXContext TraceGLXApi::glXGetCurrentContextFn(void) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXGetCurrentContext")
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXGetCurrentContext");
   return glx_api_->glXGetCurrentContextFn();
 }
 
 Display* TraceGLXApi::glXGetCurrentDisplayFn(void) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXGetCurrentDisplay")
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXGetCurrentDisplay");
   return glx_api_->glXGetCurrentDisplayFn();
 }
 
 GLXDrawable TraceGLXApi::glXGetCurrentDrawableFn(void) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXGetCurrentDrawable")
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXGetCurrentDrawable");
   return glx_api_->glXGetCurrentDrawableFn();
 }
 
 GLXDrawable TraceGLXApi::glXGetCurrentReadDrawableFn(void) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXGetCurrentReadDrawable")
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu",
+                                "TraceGLXAPI::glXGetCurrentReadDrawable");
   return glx_api_->glXGetCurrentReadDrawableFn();
 }
 
@@ -620,7 +621,7 @@ int TraceGLXApi::glXGetFBConfigAttribFn(Display* dpy,
                                         GLXFBConfig config,
                                         int attribute,
                                         int* value) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXGetFBConfigAttrib")
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXGetFBConfigAttrib");
   return glx_api_->glXGetFBConfigAttribFn(dpy, config, attribute, value);
 }
 
@@ -628,14 +629,14 @@ GLXFBConfig TraceGLXApi::glXGetFBConfigFromVisualSGIXFn(
     Display* dpy,
     XVisualInfo* visualInfo) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu",
-                                "TraceGLXAPI::glXGetFBConfigFromVisualSGIX")
+                                "TraceGLXAPI::glXGetFBConfigFromVisualSGIX");
   return glx_api_->glXGetFBConfigFromVisualSGIXFn(dpy, visualInfo);
 }
 
 GLXFBConfig* TraceGLXApi::glXGetFBConfigsFn(Display* dpy,
                                             int screen,
                                             int* nelements) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXGetFBConfigs")
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXGetFBConfigs");
   return glx_api_->glXGetFBConfigsFn(dpy, screen, nelements);
 }
 
@@ -643,14 +644,14 @@ bool TraceGLXApi::glXGetMscRateOMLFn(Display* dpy,
                                      GLXDrawable drawable,
                                      int32_t* numerator,
                                      int32_t* denominator) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXGetMscRateOML")
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXGetMscRateOML");
   return glx_api_->glXGetMscRateOMLFn(dpy, drawable, numerator, denominator);
 }
 
 void TraceGLXApi::glXGetSelectedEventFn(Display* dpy,
                                         GLXDrawable drawable,
                                         unsigned long* mask) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXGetSelectedEvent")
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXGetSelectedEvent");
   glx_api_->glXGetSelectedEventFn(dpy, drawable, mask);
 }
 
@@ -659,18 +660,18 @@ bool TraceGLXApi::glXGetSyncValuesOMLFn(Display* dpy,
                                         int64_t* ust,
                                         int64_t* msc,
                                         int64_t* sbc) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXGetSyncValuesOML")
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXGetSyncValuesOML");
   return glx_api_->glXGetSyncValuesOMLFn(dpy, drawable, ust, msc, sbc);
 }
 
 XVisualInfo* TraceGLXApi::glXGetVisualFromFBConfigFn(Display* dpy,
                                                      GLXFBConfig config) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXGetVisualFromFBConfig")
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXGetVisualFromFBConfig");
   return glx_api_->glXGetVisualFromFBConfigFn(dpy, config);
 }
 
 int TraceGLXApi::glXIsDirectFn(Display* dpy, GLXContext ctx) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXIsDirect")
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXIsDirect");
   return glx_api_->glXIsDirectFn(dpy, ctx);
 }
 
@@ -678,14 +679,14 @@ int TraceGLXApi::glXMakeContextCurrentFn(Display* dpy,
                                          GLXDrawable draw,
                                          GLXDrawable read,
                                          GLXContext ctx) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXMakeContextCurrent")
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXMakeContextCurrent");
   return glx_api_->glXMakeContextCurrentFn(dpy, draw, read, ctx);
 }
 
 int TraceGLXApi::glXMakeCurrentFn(Display* dpy,
                                   GLXDrawable drawable,
                                   GLXContext ctx) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXMakeCurrent")
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXMakeCurrent");
   return glx_api_->glXMakeCurrentFn(dpy, drawable, ctx);
 }
 
@@ -693,7 +694,7 @@ int TraceGLXApi::glXQueryContextFn(Display* dpy,
                                    GLXContext ctx,
                                    int attribute,
                                    int* value) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXQueryContext")
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXQueryContext");
   return glx_api_->glXQueryContextFn(dpy, ctx, attribute, value);
 }
 
@@ -701,82 +702,82 @@ void TraceGLXApi::glXQueryDrawableFn(Display* dpy,
                                      GLXDrawable draw,
                                      int attribute,
                                      unsigned int* value) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXQueryDrawable")
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXQueryDrawable");
   glx_api_->glXQueryDrawableFn(dpy, draw, attribute, value);
 }
 
 int TraceGLXApi::glXQueryExtensionFn(Display* dpy, int* errorb, int* event) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXQueryExtension")
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXQueryExtension");
   return glx_api_->glXQueryExtensionFn(dpy, errorb, event);
 }
 
 const char* TraceGLXApi::glXQueryExtensionsStringFn(Display* dpy, int screen) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXQueryExtensionsString")
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXQueryExtensionsString");
   return glx_api_->glXQueryExtensionsStringFn(dpy, screen);
 }
 
 const char* TraceGLXApi::glXQueryServerStringFn(Display* dpy,
                                                 int screen,
                                                 int name) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXQueryServerString")
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXQueryServerString");
   return glx_api_->glXQueryServerStringFn(dpy, screen, name);
 }
 
 int TraceGLXApi::glXQueryVersionFn(Display* dpy, int* maj, int* min) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXQueryVersion")
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXQueryVersion");
   return glx_api_->glXQueryVersionFn(dpy, maj, min);
 }
 
 void TraceGLXApi::glXReleaseTexImageEXTFn(Display* dpy,
                                           GLXDrawable drawable,
                                           int buffer) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXReleaseTexImageEXT")
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXReleaseTexImageEXT");
   glx_api_->glXReleaseTexImageEXTFn(dpy, drawable, buffer);
 }
 
 void TraceGLXApi::glXSelectEventFn(Display* dpy,
                                    GLXDrawable drawable,
                                    unsigned long mask) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXSelectEvent")
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXSelectEvent");
   glx_api_->glXSelectEventFn(dpy, drawable, mask);
 }
 
 void TraceGLXApi::glXSwapBuffersFn(Display* dpy, GLXDrawable drawable) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXSwapBuffers")
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXSwapBuffers");
   glx_api_->glXSwapBuffersFn(dpy, drawable);
 }
 
 void TraceGLXApi::glXSwapIntervalEXTFn(Display* dpy,
                                        GLXDrawable drawable,
                                        int interval) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXSwapIntervalEXT")
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXSwapIntervalEXT");
   glx_api_->glXSwapIntervalEXTFn(dpy, drawable, interval);
 }
 
 void TraceGLXApi::glXSwapIntervalMESAFn(unsigned int interval) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXSwapIntervalMESA")
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXSwapIntervalMESA");
   glx_api_->glXSwapIntervalMESAFn(interval);
 }
 
 void TraceGLXApi::glXUseXFontFn(Font font, int first, int count, int list) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXUseXFont")
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXUseXFont");
   glx_api_->glXUseXFontFn(font, first, count, list);
 }
 
 void TraceGLXApi::glXWaitGLFn(void) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXWaitGL")
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXWaitGL");
   glx_api_->glXWaitGLFn();
 }
 
 int TraceGLXApi::glXWaitVideoSyncSGIFn(int divisor,
                                        int remainder,
                                        unsigned int* count) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXWaitVideoSyncSGI")
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXWaitVideoSyncSGI");
   return glx_api_->glXWaitVideoSyncSGIFn(divisor, remainder, count);
 }
 
 void TraceGLXApi::glXWaitXFn(void) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXWaitX")
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLXAPI::glXWaitX");
   glx_api_->glXWaitXFn();
 }
 

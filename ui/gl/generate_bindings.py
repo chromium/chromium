@@ -3418,7 +3418,7 @@ void DriverEGL::InitializeExtensionBindings() {
     file.write('%s Trace%sApi::%sFn(%s) {\n' %
         (return_type, set_name.upper(), function_name, arguments))
     argument_names = MakeArgNames(arguments)
-    file.write('  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "Trace%sAPI::%s")\n' %
+    file.write('  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "Trace%sAPI::%s");\n' %
                (set_name.upper(), function_name))
     if return_type == 'void':
       file.write('  %s_api_->%sFn(%s);\n' %

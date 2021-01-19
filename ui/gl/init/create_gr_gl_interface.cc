@@ -169,13 +169,13 @@ GrGLFunction<R GR_GL_FUNCTION_TYPE(Args...)> bind_with_flush_on_mac(
           base::mac::GetCPUType() == base::mac::CPUType::kIntel;
       if (needs_flush) {
         TRACE_EVENT0(
-            "gpu", "CreateGrGLInterface - bind_with_flush_on_mac - beforefunc")
+            "gpu", "CreateGrGLInterface - bind_with_flush_on_mac - beforefunc");
         glFlush();
       }
       func(args...);
       if (needs_flush) {
-        TRACE_EVENT0("gpu",
-                     "CreateGrGLInterface - bind_with_flush_on_mac - afterfunc")
+        TRACE_EVENT0(
+            "gpu", "CreateGrGLInterface - bind_with_flush_on_mac - afterfunc");
         glFlush();
       }
     }
