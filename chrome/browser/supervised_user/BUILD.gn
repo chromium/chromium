@@ -21,6 +21,7 @@ static_library("test_support") {
   ]
   deps = [
     "//chrome/browser",
+    "//chrome/browser/profiles:profile",
     "//chrome/common:constants",
     "//components/prefs",
   ]

@@ -1449,8 +1449,6 @@ static_library("browser") {
     "profiles/off_the_record_profile_impl.h",
     "profiles/pref_service_builder_utils.cc",
     "profiles/pref_service_builder_utils.h",
-    "profiles/profile.cc",
-    "profiles/profile.h",
     "profiles/profile_attributes_entry.cc",
     "profiles/profile_attributes_entry.h",
     "profiles/profile_attributes_storage.cc",
@@ -1483,7 +1481,6 @@ static_library("browser") {
     "profiles/profile_manager_observer.h",
     "profiles/profile_metrics.cc",
     "profiles/profile_metrics.h",
-    "profiles/profile_observer.h",
     "profiles/profiles_state.cc",
     "profiles/profiles_state.h",
     "profiles/renderer_updater.cc",
@@ -1995,6 +1992,7 @@ static_library("browser") {
     "//chrome/browser/persisted_state_db:persisted_state_db_content_proto",
     "//chrome/browser/policy:path_parser",
     "//chrome/browser/privacy_budget",
+    "//chrome/browser/profiles:profile",
     "//chrome/browser/profiling_host",
     "//chrome/browser/promo_browser_command:mojo_bindings",
     "//chrome/browser/push_messaging:budget_proto",
@@ -5755,7 +5753,7 @@ static_library("browser") {
       "//chrome/browser/extensions",
       "//chrome/browser/web_applications",
 
-      # TODO(loyso): Erase these.crbug.com / 877898.
+      # TODO(crbug.com/877898): Erase these.
       "//chrome/browser/web_applications:web_applications_on_extensions",
       "//chrome/browser/web_applications/components",
       "//chrome/browser/web_applications/extensions",
@@ -6704,13 +6702,13 @@ static_library("test_support") {
 
   public_deps = [
     ":browser",
+    "//chrome/browser/profiles:profile",
     "//chrome/browser/safe_browsing:test_support",
     "//chrome/browser/ui:test_support",
   ]
   deps = [
     "//build:chromeos_buildflags",
     "//chrome/app/theme:theme_resources",
-    "//chrome/browser",
     "//chrome/browser:browser_process",
     "//chrome/common",
     "//chrome/common/safe_browsing:proto",
@@ -6979,6 +6977,7 @@ if (!is_android) {
       ":browser",
       "//chrome:browser_tests_pak",
       "//chrome/browser:browser_process",
+      "//chrome/browser/profiles:profile",
       "//chrome/common:mojo_bindings",
       "//chrome/test/data:web_ui_test_bindings",
       "//components/metrics:test_support",

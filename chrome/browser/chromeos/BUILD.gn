@@ -92,6 +92,7 @@ source_set("chromeos") {
     "//chrome/browser/extensions",
     "//chrome/browser/image_decoder",
     "//chrome/browser/nearby_sharing/logging",
+    "//chrome/browser/profiles:profile",
     "//chrome/browser/resource_coordinator:tab_metrics_event_proto",
     "//chrome/browser/resources/settings:settings_resources_grit",
     "//chrome/browser/ui/webui/bluetooth_internals:mojo_bindings",

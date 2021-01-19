@@ -59,6 +59,7 @@ static_library("chrome_cleaner") {
     ":public",
     "//chrome/browser:browser_process",
     "//chrome/browser/extensions",
+    "//chrome/browser/profiles:profile",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/ui",
     "//chrome/common",
