@@ -13,10 +13,6 @@
 @class SessionIOS;
 @class SessionIOSFactory;
 
-namespace session_constants {
-NSString* const kSessionsDirectory = @"Sessions";
-}
-
 // A singleton service for saving the current session. Can either save on a
 // delay or immediately. Saving is always performed on a separate thread.
 @interface SessionServiceIOS : NSObject
