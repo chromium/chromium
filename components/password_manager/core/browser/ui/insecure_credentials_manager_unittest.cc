@@ -179,6 +179,9 @@ std::ostream& operator<<(std::ostream& out,
 // Tests whether adding and removing an observer works as expected.
 TEST_F(InsecureCredentialsManagerTest,
        NotifyObserversAboutCompromisedCredentialChanges) {
+  store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1, kPassword1));
+  RunUntilIdle();
+
   std::vector<CompromisedCredentials> credentials = {
       MakeCompromised(kExampleCom, kUsername1)};
 

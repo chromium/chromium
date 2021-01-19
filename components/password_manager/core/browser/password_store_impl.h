@@ -71,9 +71,9 @@ class PasswordStoreImpl : public PasswordStore {
   std::vector<InteractionsStats> GetAllSiteStatsImpl() override;
   std::vector<InteractionsStats> GetSiteStatsImpl(
       const GURL& origin_domain) override;
-  bool AddCompromisedCredentialsImpl(
+  PasswordStoreChangeList AddCompromisedCredentialsImpl(
       const CompromisedCredentials& compromised_credentials) override;
-  bool RemoveCompromisedCredentialsImpl(
+  PasswordStoreChangeList RemoveCompromisedCredentialsImpl(
       const std::string& signon_realm,
       const base::string16& username,
       RemoveCompromisedCredentialsReason reason) override;

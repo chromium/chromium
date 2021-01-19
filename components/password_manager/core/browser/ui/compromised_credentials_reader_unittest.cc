@@ -31,6 +31,16 @@ class MockCompromisedCredentialsReaderObserver
               (override));
 };
 
+PasswordForm MakeTestPassword(base::StringPiece username) {
+  PasswordForm form;
+  form.signon_realm = std::string(kTestWebRealm);
+  form.url = GURL(kTestWebRealm);
+  form.username_value = base::ASCIIToUTF16(username);
+  form.password_value = base::ASCIIToUTF16("password");
+  form.username_element = base::ASCIIToUTF16("username_element");
+  return form;
+}
+
 class CompromisedCredentialsReaderTest : public ::testing::Test {
  protected:
   CompromisedCredentialsReaderTest() {
@@ -63,6 +73,11 @@ class CompromisedCredentialsReaderTest : public ::testing::Test {
 }  // namespace
 
 TEST_F(CompromisedCredentialsReaderTest, AddCredentialsToBothStores) {
+  profile_store().AddLogin(MakeTestPassword("profile@gmail.com"));
+  account_store().AddLogin(MakeTestPassword("account1@gmail.com"));
+  account_store().AddLogin(MakeTestPassword("account2@gmail.com"));
+  RunUntilIdle();
+
   CompromisedCredentials profile_cred;
   profile_cred.signon_realm = kTestWebRealm;
   profile_cred.username = base::ASCIIToUTF16("profile@gmail.com");

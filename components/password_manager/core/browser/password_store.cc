@@ -689,7 +689,7 @@ PasswordStoreChangeList PasswordStore::AddLoginSync(const PasswordForm& form,
 bool PasswordStore::AddCompromisedCredentialsSync(
     base::span<const CompromisedCredentials> issues) {
   return base::ranges::all_of(issues, [this](const auto& issue) {
-    return AddCompromisedCredentialsImpl(issue);
+    return !AddCompromisedCredentialsImpl(issue).empty();
   });
 }
 
@@ -774,14 +774,17 @@ void PasswordStore::NotifyDeletionsHaveSynced(bool success) {
 }
 
 void PasswordStore::InvokeAndNotifyAboutCompromisedPasswordsChange(
-    base::OnceCallback<bool()> callback) {
+    base::OnceCallback<PasswordStoreChangeList()> callback) {
   DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
-  if (std::move(callback).Run()) {
+  PasswordStoreChangeList changes = std::move(callback).Run();
+  if (!changes.empty()) {
     compromised_credentials_observers_->Notify(
         FROM_HERE,
         &DatabaseCompromisedCredentialsObserver::
             OnCompromisedCredentialsChangedIn,
         base::RetainedRef(this));
+    if (sync_bridge_)
+      sync_bridge_->ActOnPasswordStoreChanges(changes);
   }
 }
 
