@@ -1338,22 +1338,40 @@ export class Viewport {
   }
 
   /**
+   * Retrieves the in-screen coordinates of the current viewport position.
+   * @return {!Point} The current viewport position.
+   * @private
+   */
+  retrieveCurrentScreenCoordinates_() {
+    const currentPage = this.getMostVisiblePage();
+    const dimension = this.pageDimensions_[currentPage];
+    let toolbarOffset = 0;
+    if (!this.isPagedMode_()) {
+      toolbarOffset = this.topToolbarHeight_;
+    }
+    const x = this.position.x / this.getZoom() - dimension.x;
+    const y = (this.position.y + toolbarOffset) / this.getZoom() - dimension.y;
+    return {x: x, y: y};
+  }
+
+  /**
    * Handles a navigation request to a destination from the current controller.
    * @param {number} page
-   * @param {number} x
-   * @param {number} y
+   * @param {number|undefined} x The in-screen x coordinate for the destination.
+   *     If `x` is undefined, retain current x coordinate value.
+   * @param {number|undefined} y The in-screen y coordinate for the destination.
+   *     If `y` is undefined, retain current y coordinate value.
    * @param {number} zoom
    */
   handleNavigateToDestination(page, x, y, zoom) {
     if (zoom) {
       this.setZoom(zoom);
     }
-
-    if (x || y) {
-      this.goToPageAndXY(page, x ? x : 0, y ? y : 0);
-    } else {
-      this.goToPage(page);
-    }
+    const currentCoords =
+        /** @type {!Point} */ (this.retrieveCurrentScreenCoordinates_());
+    this.goToPageAndXY(
+        page, x === undefined ? currentCoords.x : x,
+        y === undefined ? currentCoords.y : y);
   }
 
   /**

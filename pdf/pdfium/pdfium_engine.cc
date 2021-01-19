@@ -398,20 +398,6 @@ void SetFitRParamsInScreenCoords(PDFiumPage* page, float* params) {
   params[3] = point_2.y();
 }
 
-void SetFitVParamsInScreenCoords(PDFiumPage* page, float* params) {
-  // FitV/FitBV only has 1 parameter for x coordinate.
-  gfx::PointF screen_coords =
-      page->TransformPageToScreenXY(gfx::PointF(params[0], 0));
-  params[0] = screen_coords.x();
-}
-
-void SetFitHParamsInScreenCoords(PDFiumPage* page, float* params) {
-  // FitH/FitBH only has 1 parameter for y coordinate.
-  gfx::PointF screen_coords =
-      page->TransformPageToScreenXY(gfx::PointF(0, params[0]));
-  params[0] = screen_coords.y();
-}
-
 // A helper function that transforms the in-page coordinates in `params` to
 // in-screen coordinates depending on the view's fit type. `params` is both an
 // input and a output parameter.
@@ -428,11 +414,13 @@ void ParamsTransformPageToScreen(unsigned long view_fit_type,
       break;
     case PDFDEST_VIEW_FITBH:
     case PDFDEST_VIEW_FITH:
-      SetFitHParamsInScreenCoords(page, params);
+      // FitH/FitBH only has 1 parameter for y coordinate.
+      params[0] = page->TransformPageToScreenY(params[0]);
       break;
     case PDFDEST_VIEW_FITBV:
     case PDFDEST_VIEW_FITV:
-      SetFitVParamsInScreenCoords(page, params);
+      // FitV/FitBV only has 1 parameter for x coordinate.
+      params[0] = page->TransformPageToScreenX(params[0]);
       break;
     case PDFDEST_VIEW_FITR:
       SetFitRParamsInScreenCoords(page, params);
@@ -2372,16 +2360,17 @@ base::Value PDFiumEngine::TraverseBookmarks(FPDF_BOOKMARK bookmark,
     if (PageIndexInBounds(page_index)) {
       dict.SetIntKey("page", page_index);
 
-      base::Optional<gfx::PointF> xy;
+      base::Optional<float> x;
+      base::Optional<float> y;
       base::Optional<float> zoom;
-      pages_[page_index]->GetPageDestinationTarget(dest, &xy, &zoom);
-      if (xy) {
-        dict.SetIntKey("x", static_cast<int>(xy.value().x()));
-        dict.SetIntKey("y", static_cast<int>(xy.value().y()));
-      }
-      if (zoom) {
+      pages_[page_index]->GetPageDestinationTarget(dest, &x, &y, &zoom);
+
+      if (x)
+        dict.SetIntKey("x", static_cast<int>(x.value()));
+      if (y)
+        dict.SetIntKey("y", static_cast<int>(y.value()));
+      if (zoom)
         dict.SetDoubleKey("zoom", zoom.value());
-      }
     }
   } else {
     // Extract URI for bookmarks linking to an external page.

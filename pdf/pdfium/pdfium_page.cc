@@ -849,21 +849,23 @@ PDFiumPage::Area PDFiumPage::GetDestinationTarget(FPDF_DEST destination,
 
   target->page = page_index;
 
-  base::Optional<gfx::PointF> xy;
-  GetPageDestinationTarget(destination, &xy, &target->zoom);
-  if (xy) {
-    gfx::PointF point = TransformPageToScreenXY(xy.value());
-    target->x_in_pixels = point.x();
-    target->y_in_pixels = point.y();
-  }
+  base::Optional<float> x;
+  base::Optional<float> y;
+  GetPageDestinationTarget(destination, &x, &y, &target->zoom);
+  if (x)
+    target->x_in_pixels = TransformPageToScreenX(x.value());
+  if (y)
+    target->y_in_pixels = TransformPageToScreenY(y.value());
 
   return DOCLINK_AREA;
 }
 
 void PDFiumPage::GetPageDestinationTarget(FPDF_DEST destination,
-                                          base::Optional<gfx::PointF>* xy,
+                                          base::Optional<float>* dest_x,
+                                          base::Optional<float>* dest_y,
                                           base::Optional<float>* zoom_value) {
-  *xy = base::nullopt;
+  *dest_x = base::nullopt;
+  *dest_y = base::nullopt;
   *zoom_value = base::nullopt;
   if (!available_)
     return;
@@ -880,9 +882,10 @@ void PDFiumPage::GetPageDestinationTarget(FPDF_DEST destination,
   if (!success)
     return;
 
-  if (has_x_coord && has_y_coord)
-    *xy = gfx::PointF(x, y);
-
+  if (has_x_coord)
+    *dest_x = x;
+  if (has_y_coord)
+    *dest_y = y;
   if (has_zoom)
     *zoom_value = zoom;
 }
@@ -894,6 +897,14 @@ gfx::PointF PDFiumPage::TransformPageToScreenXY(const gfx::PointF& xy) {
   gfx::RectF page_rect(xy.x(), xy.y(), 0, 0);
   gfx::RectF pixel_rect(FloatPageRectToPixelRect(GetPage(), page_rect));
   return gfx::PointF(pixel_rect.x(), pixel_rect.y());
+}
+
+float PDFiumPage::TransformPageToScreenX(float x) {
+  return TransformPageToScreenXY(gfx::PointF(x, 0)).x();
+}
+
+float PDFiumPage::TransformPageToScreenY(float y) {
+  return TransformPageToScreenXY(gfx::PointF(0, y)).y();
 }
 
 PDFiumPage::Area PDFiumPage::GetURITarget(FPDF_ACTION uri_action,

@@ -111,14 +111,21 @@ class PDFiumPage {
   // NONSELECTABLE_AREA if link detection failed.
   Area GetLinkTarget(FPDF_LINK link, LinkTarget* target);
 
-  // Fills the output params with the (x, y) position in page coordinates and
-  // zoom value of a destination.
+  // Fills the output params with the in-page coordinates and the zoom value of
+  // the destination.
   void GetPageDestinationTarget(FPDF_DEST destination,
-                                base::Optional<gfx::PointF>* xy,
+                                base::Optional<float>* dest_x,
+                                base::Optional<float>* dest_y,
                                 base::Optional<float>* zoom_value);
 
   // Transforms an (x, y) position in page coordinates to screen coordinates.
   gfx::PointF TransformPageToScreenXY(const gfx::PointF& xy);
+
+  // Transforms an in-page x coordinate to its value in screen coordinates.
+  float TransformPageToScreenX(float x);
+
+  // Transforms an in-page y coordinate to its value in screen coordinates.
+  float TransformPageToScreenY(float y);
 
   // Given a point in the document that's in this page, returns its character
   // index if it's near a character, and also the type of text.
