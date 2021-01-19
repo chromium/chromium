@@ -351,12 +351,13 @@ base::Value NetLogIPv6AvailableParams(bool ipv6_available, bool cached) {
 
 //-----------------------------------------------------------------------------
 
-// Maximum of 6 concurrent resolver threads (excluding retries).
-// Some routers (or resolvers) appear to start to provide host-not-found if
-// too many simultaneous resolutions are pending.  This number needs to be
-// further optimized, but 8 is what FF currently does. We found some routers
-// that limit this to 6, so we're temporarily holding it at that level.
-const size_t kDefaultMaxProcTasks = 6u;
+// Maximum of 64 concurrent resolver threads (excluding retries).
+// Between 2010 and 2020, the limit was set to 6 because of a report of a broken
+// home router that would fail in the presence of more simultaneous queries.
+// In 2020, we conducted an experiment to see if this kind of router was still
+// present on the Internet, and found no evidence of any remaining issues, so
+// we increased the limit to 64 at that time.
+const size_t kDefaultMaxProcTasks = 64u;
 
 PrioritizedDispatcher::Limits GetDispatcherLimits(
     const HostResolver::ManagerOptions& options) {
