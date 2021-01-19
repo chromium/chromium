@@ -5,9 +5,12 @@
 #ifndef CHROME_BROWSER_METRICS_USAGE_SCENARIO_USAGE_SCENARIO_DATA_STORE_H_
 #define CHROME_BROWSER_METRICS_USAGE_SCENARIO_USAGE_SCENARIO_DATA_STORE_H_
 
+#include "base/containers/flat_map.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
+#include "url/origin.h"
 
 // Stores the data necessary to analyze the usage pattern during a given
 // interval of time. There are 2 types of data tracked by this class:
@@ -31,6 +34,7 @@ class UsageScenarioDataStore {
   // Used to store data between 2 calls to ResetIntervalData.
   struct IntervalData {
     IntervalData();
+    IntervalData(const IntervalData& rhs);
 
     // The uptime at the end of the interval.
     base::TimeDelta uptime_at_interval_end;
@@ -48,6 +52,23 @@ class UsageScenarioDataStore {
     base::TimeDelta time_playing_video_full_screen_single_monitor;
     // The time spent with at least one opened WebRTC connection.
     base::TimeDelta time_with_open_webrtc_connection;
+
+    // The SourceID that has been visible for the longest period of time for the
+    // origin that has been visible for the longest period of time during the
+    // interval. E.g.:
+    //   - SourceID 1 and 2 are for the same origin and are visible respectively
+    //     for 2 and 3 seconds each during the interval.
+    //   - SourceID 3 is for a different origin and is visible for 4 second.
+    //   - This will report Source ID 2 with a duration of 3 seconds.
+    //
+    // In case of equality for an interval a SourceID will be randomly picked.
+    // In case of equality between origins this will report the data for the
+    // origin that contains the sourceID that has been visible the longest (or
+    // a random one in case of equality).
+    ukm::SourceId source_id_for_longest_visible_origin = ukm::kInvalidSourceId;
+
+    // The visibility time for |source_id_for_longest_visible_origin|.
+    base::TimeDelta source_id_for_longest_visible_origin_duration;
   };
 
   // Reset the interval data with the current state information and returns the
@@ -90,11 +111,29 @@ class UsageScenarioDataStoreImpl : public UsageScenarioDataStore {
   void OnWebRTCConnectionOpened();
   void OnWebRTCConnectionClosed();
 
+  void OnUkmSourceBecameVisible(const ukm::SourceId& source,
+                                const url::Origin& origin);
+  void OnUkmSourceBecameHidden(const ukm::SourceId& source,
+                               const url::Origin& origin);
+
   const IntervalData& GetIntervalDataForTesting() { return interval_data_; }
 
  private:
+  // Information about a ukm::SourceId that has been visible during an interval
+  // of time.
+  struct SourceIdData {
+    // The timestamp when the SourceID became visible, null if the sourceID
+    // isn't visible.
+    base::TimeTicks visible_timestamp;
+    // The total visible time during the interval.
+    base::TimeDelta cumulative_visible_time;
+  };
+  using OriginData = base::flat_map<ukm::SourceId, SourceIdData>;
+  using OriginInfoMap = base::flat_map<url::Origin, OriginData>;
+
   // Finalize the interval data based on the data contained in
-  // |interval_details_|.
+  // |interval_details_| and |origin_info_map_| and remove the SourceIdData that
+  // don't need to be tracked anymore.
   void FinalizeIntervalData(base::TimeTicks now);
 
   // The current tab count.
@@ -118,6 +157,9 @@ class UsageScenarioDataStoreImpl : public UsageScenarioDataStore {
 
   // The application start time.
   const base::TimeTicks start_time_;
+
+  // Information about the origins that have been visible during the interval.
+  OriginInfoMap origin_info_map_;
 
   IntervalData interval_data_;
 

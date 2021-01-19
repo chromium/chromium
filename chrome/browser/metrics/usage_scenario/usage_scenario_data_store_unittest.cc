@@ -9,7 +9,10 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace {
 constexpr base::TimeDelta kShortDelay = base::TimeDelta::FromSeconds(1);
@@ -270,4 +273,144 @@ TEST_F(UsageScenarioDataStoreTest, WebRTCUsageInMultipleTabsMultipleInterval) {
 
   data = ResetIntervalData();
   EXPECT_EQ(base::TimeDelta(), data.time_with_open_webrtc_connection);
+}
+
+TEST_F(UsageScenarioDataStoreTest, VisibleSourceIDsDuringIntervalSingleURL) {
+  data_store()->OnTabAdded();
+  data_store()->OnTabAdded();
+  data_store()->OnTabAdded();
+
+  const url::Origin kOrigin = url::Origin::Create(GURL("https://foo.com"));
+
+  // Interval with no visible SourceID.
+  task_environment_.FastForwardBy(kShortDelay);
+  auto data = ResetIntervalData();
+  EXPECT_EQ(ukm::kInvalidSourceId, data.source_id_for_longest_visible_origin);
+  EXPECT_TRUE(data.source_id_for_longest_visible_origin_duration.is_zero());
+
+  // Interval with one SourceID visible the entire time.
+  const ukm::SourceId kSource1 = 42;
+  data_store()->OnUkmSourceBecameVisible(kSource1, kOrigin);
+  task_environment_.FastForwardBy(kShortDelay);
+  data = ResetIntervalData();
+  EXPECT_EQ(kSource1, data.source_id_for_longest_visible_origin);
+  EXPECT_EQ(kShortDelay, data.source_id_for_longest_visible_origin_duration);
+
+  // Interval with 2 different visible SourceID, |kSource1| is visible the
+  // longest.
+  const ukm::SourceId kSource2 = 43;
+  task_environment_.FastForwardBy(2 * kShortDelay);
+  data_store()->OnUkmSourceBecameHidden(kSource1, kOrigin);
+  data_store()->OnUkmSourceBecameVisible(kSource2, kOrigin);
+  task_environment_.FastForwardBy(kShortDelay);
+  data = ResetIntervalData();
+  EXPECT_EQ(kSource1, data.source_id_for_longest_visible_origin);
+  EXPECT_EQ(2 * kShortDelay,
+            data.source_id_for_longest_visible_origin_duration);
+
+  // Interval with 3 different visible SourceID, |kSource1| and |kSource2| are
+  // visible for the same amount of time.
+  data_store()->OnUkmSourceBecameVisible(kSource1, kOrigin);
+  const ukm::SourceId kSource3 = 44;
+  task_environment_.FastForwardBy(kShortDelay);
+  data_store()->OnUkmSourceBecameVisible(kSource3, kOrigin);
+  task_environment_.FastForwardBy(kShortDelay);
+  data = ResetIntervalData();
+  EXPECT_TRUE(data.source_id_for_longest_visible_origin == kSource1 ||
+              data.source_id_for_longest_visible_origin == kSource2);
+  EXPECT_EQ(2 * kShortDelay,
+            data.source_id_for_longest_visible_origin_duration);
+
+  // Interval with only |kSource3| being visible.
+  data_store()->OnUkmSourceBecameHidden(kSource1, kOrigin);
+  data_store()->OnUkmSourceBecameHidden(kSource2, kOrigin);
+  task_environment_.FastForwardBy(kShortDelay);
+  data = ResetIntervalData();
+  EXPECT_EQ(kSource3, data.source_id_for_longest_visible_origin);
+  EXPECT_EQ(kShortDelay, data.source_id_for_longest_visible_origin_duration);
+
+  // Back to no visible SourceID.
+  data_store()->OnUkmSourceBecameHidden(kSource3, kOrigin);
+  task_environment_.FastForwardBy(kShortDelay);
+  data = ResetIntervalData();
+  EXPECT_EQ(ukm::kInvalidSourceId, data.source_id_for_longest_visible_origin);
+  EXPECT_TRUE(data.source_id_for_longest_visible_origin_duration.is_zero());
+}
+
+TEST_F(UsageScenarioDataStoreTest, SourceIDVisibleMultipleTimesDuringInterval) {
+  data_store()->OnTabAdded();
+
+  const url::Origin kOrigin = url::Origin::Create(GURL("https://foo.com"));
+
+  const ukm::SourceId kSource1 = 42;
+  data_store()->OnUkmSourceBecameVisible(kSource1, kOrigin);
+  task_environment_.FastForwardBy(kShortDelay);
+  data_store()->OnUkmSourceBecameHidden(kSource1, kOrigin);
+  task_environment_.FastForwardBy(kShortDelay);
+  data_store()->OnUkmSourceBecameVisible(kSource1, kOrigin);
+  task_environment_.FastForwardBy(kShortDelay);
+  data_store()->OnUkmSourceBecameHidden(kSource1, kOrigin);
+  task_environment_.FastForwardBy(kShortDelay);
+  data_store()->OnUkmSourceBecameVisible(kSource1, kOrigin);
+  auto data = ResetIntervalData();
+  EXPECT_EQ(kSource1, data.source_id_for_longest_visible_origin);
+  EXPECT_EQ(2 * kShortDelay,
+            data.source_id_for_longest_visible_origin_duration);
+}
+
+TEST_F(UsageScenarioDataStoreTest, VisibleSourceIDsMultipleOrigins) {
+  data_store()->OnTabAdded();
+  data_store()->OnTabAdded();
+  data_store()->OnTabAdded();
+
+  const url::Origin kOrigin1 = url::Origin::Create(GURL("https://foo.com"));
+  const url::Origin kOrigin2 = url::Origin::Create(GURL("https://bar.com"));
+  const url::Origin kOrigin3 = url::Origin::Create(GURL("https://baz.com"));
+
+  const ukm::SourceId kOrigin1SourceId1 = 42;
+  const ukm::SourceId kOrigin1SourceId2 = 43;
+  const ukm::SourceId kOrigin2SourceId = 44;
+  const ukm::SourceId kOrigin3SourceId = 45;
+
+  // |kOrigin1SourceId1| and |kOrigin1SourceId2| visible for 2 time units each,
+  // |kOrigin2SourceId| visible for 3 time units. The sourceID reported should
+  // be one associated with |kOrigin1| as the cumulative visibility time for its
+  // sourceIDs is the greatest.
+
+  data_store()->OnUkmSourceBecameVisible(kOrigin1SourceId1, kOrigin1);
+  data_store()->OnUkmSourceBecameVisible(kOrigin1SourceId2, kOrigin1);
+  data_store()->OnUkmSourceBecameVisible(kOrigin2SourceId, kOrigin2);
+  task_environment_.FastForwardBy(kShortDelay);
+  auto data = ResetIntervalData();
+  EXPECT_TRUE(data.source_id_for_longest_visible_origin == kOrigin1SourceId1 ||
+              data.source_id_for_longest_visible_origin == kOrigin1SourceId2);
+  EXPECT_EQ(kShortDelay, data.source_id_for_longest_visible_origin_duration);
+
+  // All the sourceIDs associated with |kOrigin2| and |kOrigin3| visible for the
+  // same time, which is greater than the cumulative visibility time for the
+  // sourceIDs associated with |kOrigin1|.
+  data_store()->OnUkmSourceBecameHidden(kOrigin1SourceId1, kOrigin1);
+  data_store()->OnUkmSourceBecameVisible(kOrigin3SourceId, kOrigin3);
+  task_environment_.FastForwardBy(kShortDelay);
+  data_store()->OnUkmSourceBecameHidden(kOrigin1SourceId2, kOrigin1);
+  task_environment_.FastForwardBy(kShortDelay);
+  data = ResetIntervalData();
+  EXPECT_TRUE(data.source_id_for_longest_visible_origin == kOrigin2SourceId ||
+              data.source_id_for_longest_visible_origin == kOrigin3SourceId);
+  EXPECT_EQ(2 * kShortDelay,
+            data.source_id_for_longest_visible_origin_duration);
+
+  // The sourceID associated with |kOrigin2| is visible for 5 time units, the
+  // cumulative time for the source ID associated with |kOrigin1| is also equal
+  // to 5 time units.
+  data_store()->OnUkmSourceBecameHidden(kOrigin3SourceId, kOrigin3);
+  data_store()->OnUkmSourceBecameVisible(kOrigin1SourceId1, kOrigin1);
+  task_environment_.FastForwardBy(3 * kShortDelay);
+  data_store()->OnUkmSourceBecameHidden(kOrigin1SourceId1, kOrigin1);
+  data_store()->OnUkmSourceBecameVisible(kOrigin1SourceId2, kOrigin1);
+  task_environment_.FastForwardBy(2 * kShortDelay);
+  data = ResetIntervalData();
+  EXPECT_TRUE(data.source_id_for_longest_visible_origin == kOrigin2SourceId);
+  EXPECT_EQ(5 * kShortDelay,
+            data.source_id_for_longest_visible_origin_duration);
 }
