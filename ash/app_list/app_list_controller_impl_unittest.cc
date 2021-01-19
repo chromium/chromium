@@ -108,11 +108,6 @@ aura::Window* GetAppListViewNativeWindow() {
   return GetAppListView()->GetWidget()->GetNativeView();
 }
 
-void SetSearchText(AppListControllerImpl* controller, const std::string& text) {
-  controller->GetSearchModel()->search_box()->Update(base::ASCIIToUTF16(text),
-                                                     false);
-}
-
 }  // namespace
 
 class AppListControllerImplTest : public AshTestBase {
@@ -1113,39 +1108,6 @@ class AppListControllerImplMetricsTest : public AshTestBase {
  private:
   DISALLOW_COPY_AND_ASSIGN(AppListControllerImplMetricsTest);
 };
-
-TEST_F(AppListControllerImplMetricsTest, LogSingleResultListClick) {
-  histogram_tester_.ExpectTotalCount(kAppListResultLaunchIndexAndQueryLength,
-                                     0);
-  SetSearchText(controller_, "");
-  controller_->LogResultLaunchHistogram(SearchResultLaunchLocation::kResultList,
-                                        4);
-  histogram_tester_.ExpectUniqueSample(kAppListResultLaunchIndexAndQueryLength,
-                                       4, 1);
-}
-
-TEST_F(AppListControllerImplMetricsTest, LogOneClickInEveryBucket) {
-  histogram_tester_.ExpectTotalCount(kAppListResultLaunchIndexAndQueryLength,
-                                     0);
-  for (int query_length = 0; query_length < 11; ++query_length) {
-    const std::string query(query_length, 'a');
-    for (int click_index = 0; click_index < 7; ++click_index) {
-      SetSearchText(controller_, query);
-      controller_->LogResultLaunchHistogram(
-          SearchResultLaunchLocation::kResultList, click_index);
-    }
-  }
-
-  histogram_tester_.ExpectTotalCount(kAppListResultLaunchIndexAndQueryLength,
-                                     77);
-  for (int query_length = 0; query_length < 11; ++query_length) {
-    for (int click_index = 0; click_index < 7; ++click_index) {
-      histogram_tester_.ExpectBucketCount(
-          kAppListResultLaunchIndexAndQueryLength,
-          7 * query_length + click_index, 1);
-    }
-  }
-}
 
 // One edge case may do harm to the presentation metrics reporter for tablet
 // mode: the user may keep pressing on launcher while exiting the tablet mode by

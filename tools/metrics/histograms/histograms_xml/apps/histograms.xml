@@ -938,6 +938,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Apps.AppListResultLaunchIndexAndQueryLength" units="units"
     expires_after="2021-01-31">
+  <obsolete>
+    Removed January 2021.
+  </obsolete>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -949,6 +952,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Apps.AppListResultLaunchIsEmptyQuery" enum="Boolean"
     expires_after="2021-11-15">
+  <obsolete>
+    Removed January 2021.
+  </obsolete>
   <owner>thanhdng@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <summary>

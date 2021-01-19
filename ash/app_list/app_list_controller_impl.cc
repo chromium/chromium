@@ -1114,13 +1114,6 @@ void AppListControllerImpl::OpenSearchResult(const std::string& result_id,
   ResetHomeLauncherIfShown();
 }
 
-void AppListControllerImpl::LogResultLaunchHistogram(
-    SearchResultLaunchLocation launch_location,
-    int suggestion_index) {
-  RecordSearchLaunchIndexAndQueryLength(launch_location, GetLastQueryLength(),
-                                        suggestion_index);
-}
-
 void AppListControllerImpl::LogSearchAbandonHistogram() {
   RecordSearchAbandonWithQueryLengthHistogram(GetLastQueryLength());
 }

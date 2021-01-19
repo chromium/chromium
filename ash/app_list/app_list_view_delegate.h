@@ -75,16 +75,6 @@ class ASH_PUBLIC_EXPORT AppListViewDelegate {
                                 int suggestion_index,
                                 bool launch_as_default) = 0;
 
-  // Called to log UMA metrics for the launch of an item either in the app tile
-  // list or the search result list. The |launch_location| argument determines
-  // which histogram to log to. |suggestion_index| represents the index of the
-  // launched item in its list view, not the overall position in the suggestion
-  // window. For instance, the first launcher result item is index 0, regardless
-  // of if there is an answer card above it.
-  virtual void LogResultLaunchHistogram(
-      SearchResultLaunchLocation launch_location,
-      int suggestion_index) = 0;
-
   // Logs the UMA histogram metrics for user's abandonment of launcher search.
   virtual void LogSearchAbandonHistogram() = 0;
 

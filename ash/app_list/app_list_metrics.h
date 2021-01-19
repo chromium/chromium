@@ -64,16 +64,6 @@ constexpr char kAppListPeekingToFullscreenHistogram[] =
 // The UMA histogram that logs how the app list is shown.
 constexpr char kAppListToggleMethodHistogram[] = "Apps.AppListShowSource";
 
-// The UMA histogram that logs the index launched item in the results list and
-// the query length.
-constexpr char kAppListResultLaunchIndexAndQueryLength[] =
-    "Apps.AppListResultLaunchIndexAndQueryLength";
-
-// The UMA histogram that logs if the query that introduces a launch of an item
-// in the results list is empty or not.
-constexpr char kAppListResultLaunchIsEmptyQuery[] =
-    "Apps.AppListResultLaunchIsEmptyQuery";
-
 // The UMA histogram that logs the presence or absence of Drive QuickAccess
 // search results in the zero-state results list. Differentiates between results
 // existing in the model's results list, but not being displayed in the view.

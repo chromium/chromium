@@ -173,8 +173,6 @@ class ASH_EXPORT AppListControllerImpl
                         AppListLaunchType launch_type,
                         int suggestion_index,
                         bool launch_as_default) override;
-  void LogResultLaunchHistogram(SearchResultLaunchLocation launch_location,
-                                int suggestion_index) override;
   void LogSearchAbandonHistogram() override;
   void InvokeSearchResultAction(const std::string& result_id,
                                 int action_index) override;

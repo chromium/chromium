@@ -179,8 +179,6 @@ void SearchResultListView::SearchResultActivated(SearchResultView* view,
 
   RecordSearchResultOpenSource(result, view_delegate_->GetModel(),
                                view_delegate_->GetSearchModel());
-  view_delegate_->LogResultLaunchHistogram(
-      SearchResultLaunchLocation::kResultList, view->index_in_container());
   view_delegate_->NotifySearchResultsForLogging(
       view_delegate_->GetSearchModel()->search_box()->text(),
       GetSearchResultsForLogging(search_result_views_),
