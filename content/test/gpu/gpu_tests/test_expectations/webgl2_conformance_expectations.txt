@@ -386,10 +386,6 @@ crbug.com/835364 [ angle-opengl win passthrough ] conformance/renderbuffers/dept
 crbug.com/766918 [ angle-opengl linux passthrough nvidia ] conformance2/textures/image_bitmap_from_video/* [ RetryOnFailure ]
 crbug.com/965648 [ angle-opengl linux passthrough nvidia ] deqp/functional/gles3/shaderstruct.html [ RetryOnFailure ]
 
-# Flaky direct composition failure on Windows 10 1909 Intel UHD 630 GPUs w/ 26.20.100.8141
-crbug.com/1087993 [ win10 intel-0x5912 angle-d3d11 ] conformance2/textures/image_data/tex-2d-rgb8ui-rgb_integer-unsigned_byte.html [ RetryOnFailure ]
-crbug.com/1087993 [ win10 intel-0x5912 angle-d3d11 ] conformance2/textures/image_data/tex-2d-srgb8_alpha8-rgba-unsigned_byte.html [ RetryOnFailure ]
-
 ####################
 # Mac failures     #
 ####################
