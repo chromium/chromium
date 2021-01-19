@@ -5,6 +5,7 @@
 #include "ui/compositor/transform_animation_curve_adapter.h"
 
 #include "base/memory/ptr_util.h"
+#include "cc/base/math_util.h"
 
 namespace ui {
 
@@ -69,58 +70,16 @@ bool TransformAnimationCurveAdapter::PreservesAxisAlignment() const {
 }
 
 bool TransformAnimationCurveAdapter::MaximumScale(float* max_scale) const {
-  return false;
-}
-
-InverseTransformCurveAdapter::InverseTransformCurveAdapter(
-    TransformAnimationCurveAdapter base_curve,
-    gfx::Transform initial_value,
-    base::TimeDelta duration)
-    : base_curve_(base_curve),
-      initial_value_(initial_value),
-      initial_wrapped_value_(WrapTransform(initial_value)),
-      duration_(duration) {
-  effective_initial_value_ =
-      base_curve_.GetValue(base::TimeDelta()).Apply() * initial_value_;
-}
-
-InverseTransformCurveAdapter::~InverseTransformCurveAdapter() {
-}
-
-base::TimeDelta InverseTransformCurveAdapter::Duration() const {
-  return duration_;
-}
-
-std::unique_ptr<cc::AnimationCurve> InverseTransformCurveAdapter::Clone()
-    const {
-  return base::WrapUnique(
-      new InverseTransformCurveAdapter(base_curve_, initial_value_, duration_));
-}
-
-cc::TransformOperations InverseTransformCurveAdapter::GetValue(
-    base::TimeDelta t) const {
-  if (t <= base::TimeDelta())
-    return initial_wrapped_value_;
-
-  gfx::Transform base_transform = base_curve_.GetValue(t).Apply();
-  // Invert base
-  gfx::Transform to_return(gfx::Transform::kSkipInitialization);
-  bool is_invertible = base_transform.GetInverse(&to_return);
-  DCHECK(is_invertible);
-
-  to_return.PreconcatTransform(effective_initial_value_);
-
-  return WrapTransform(to_return);
-}
-
-bool InverseTransformCurveAdapter::PreservesAxisAlignment() const {
-  return (initial_value_.IsIdentity() ||
-          initial_value_.IsScaleOrTranslation()) &&
-         (base_curve_.PreservesAxisAlignment());
-}
-
-bool InverseTransformCurveAdapter::MaximumScale(float* max_scale) const {
-  return false;
+  constexpr float kInvalidScale = 0.f;
+  gfx::Vector2dF initial_scales =
+      cc::MathUtil::ComputeTransform2dScaleComponents(initial_value_,
+                                                      kInvalidScale);
+  gfx::Vector2dF target_scales =
+      cc::MathUtil::ComputeTransform2dScaleComponents(target_value_,
+                                                      kInvalidScale);
+  *max_scale = std::max({initial_scales.x(), initial_scales.y(),
+                         target_scales.x(), target_scales.y()});
+  return *max_scale != kInvalidScale;
 }
 
 }  // namespace ui
