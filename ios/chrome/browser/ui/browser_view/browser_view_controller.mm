@@ -2959,33 +2959,33 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 }
 
 - (void)animateViewReveal:(ViewRevealState)nextViewRevealState {
+  CGFloat tabStripHeight = self.tabStripView.frame.size.height;
+  CGFloat hideHeight = tabStripHeight + self.headerOffset;
   switch (nextViewRevealState) {
     case ViewRevealState::Hidden:
-      self.view.superview.transform = CGAffineTransformIdentity;
       self.view.transform = CGAffineTransformIdentity;
-      if (!base::FeatureList::IsEnabled(kModernTabStrip))
+      if (!base::FeatureList::IsEnabled(kModernTabStrip)) {
         self.tabStripSnapshot.transform =
             [self.tabStripView adjustTransformForRTL:CGAffineTransformIdentity];
+      }
       break;
     case ViewRevealState::Peeked:
-      self.view.superview.transform = CGAffineTransformMakeTranslation(
-          0, self.thumbStripPanHandler.peekedHeight);
-      self.view.transform = CGAffineTransformMakeTranslation(
-          0, -self.tabStripView.frame.size.height - self.headerOffset);
-      if (!base::FeatureList::IsEnabled(kModernTabStrip))
-        self.tabStripSnapshot.transform = [self.tabStripView
-            adjustTransformForRTL:CGAffineTransformMakeTranslation(
-                                      0, self.tabStripView.frame.size.height)];
+      self.view.transform = CGAffineTransformMakeTranslation(0, -hideHeight);
+      if (!base::FeatureList::IsEnabled(kModernTabStrip)) {
+        CGAffineTransform transform =
+            CGAffineTransformMakeTranslation(0, tabStripHeight);
+        self.tabStripSnapshot.transform =
+            [self.tabStripView adjustTransformForRTL:transform];
+      }
       break;
     case ViewRevealState::Revealed:
-      self.view.superview.transform = CGAffineTransformMakeTranslation(
-          0, self.thumbStripPanHandler.revealedHeight);
-      self.view.transform = CGAffineTransformMakeTranslation(
-          0, -self.tabStripView.frame.size.height - self.headerOffset);
-      if (!base::FeatureList::IsEnabled(kModernTabStrip))
-        self.tabStripSnapshot.transform = [self.tabStripView
-            adjustTransformForRTL:CGAffineTransformMakeTranslation(
-                                      0, self.tabStripView.frame.size.height)];
+      self.view.transform = CGAffineTransformMakeTranslation(0, -hideHeight);
+      if (!base::FeatureList::IsEnabled(kModernTabStrip)) {
+        CGAffineTransform transform =
+            CGAffineTransformMakeTranslation(0, tabStripHeight);
+        self.tabStripSnapshot.transform =
+            [self.tabStripView adjustTransformForRTL:transform];
+      }
       break;
   }
 }

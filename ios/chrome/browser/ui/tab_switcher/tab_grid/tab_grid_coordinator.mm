@@ -279,6 +279,12 @@
 
   self.bvcContainer = [[BVCContainerViewController alloc] init];
   self.bvcContainer.currentBVC = viewController;
+  if (IsThumbStripEnabled()) {
+    self.bvcContainer.thumbStripPanHandler =
+        self.thumbStripCoordinator.panHandler;
+    [self.thumbStripCoordinator.panHandler addAnimatee:self.bvcContainer];
+  }
+
   BOOL animated = !self.animationsDisabledForTesting;
   // Never animate the first time.
   if (self.firstPresentation)

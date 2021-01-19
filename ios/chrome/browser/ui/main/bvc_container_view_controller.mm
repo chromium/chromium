@@ -7,6 +7,7 @@
 #include <ostream>
 
 #include "base/check_op.h"
+#import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -14,6 +15,8 @@
 #endif
 
 @implementation BVCContainerViewController
+
+@synthesize thumbStripPanHandler = _thumbStripPanHandler;
 
 #pragma mark - public property implementation
 
@@ -94,6 +97,32 @@
 - (BOOL)shouldAutorotate {
   return self.currentBVC ? [self.currentBVC shouldAutorotate]
                          : [super shouldAutorotate];
+}
+
+#pragma mark - ViewRevealingAnimatee
+
+- (void)willAnimateViewReveal:(ViewRevealState)currentViewRevealState {
+  // No-op.
+}
+
+- (void)animateViewReveal:(ViewRevealState)nextViewRevealState {
+  switch (nextViewRevealState) {
+    case ViewRevealState::Hidden:
+      self.view.transform = CGAffineTransformIdentity;
+      break;
+    case ViewRevealState::Peeked:
+      self.view.transform = CGAffineTransformMakeTranslation(
+          0, self.thumbStripPanHandler.peekedHeight);
+      break;
+    case ViewRevealState::Revealed:
+      self.view.transform = CGAffineTransformMakeTranslation(
+          0, self.thumbStripPanHandler.revealedHeight);
+      break;
+  }
+}
+
+- (void)didAnimateViewReveal:(ViewRevealState)viewRevealState {
+  // No-op.
 }
 
 @end
