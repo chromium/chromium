@@ -102,6 +102,15 @@
       "use_goma": true
     }
   },
+  "Linux Builder (reclient)": {
+    "gn_args": {
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "use_rbe": true
+    }
+  },
   "Network Service Linux": {
     "gn_args": {
       "is_component_build": false,

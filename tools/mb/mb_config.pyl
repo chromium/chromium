@@ -522,6 +522,7 @@
       'Linux Builder (dbg)': 'gpu_tests_debug_bot',
       'Linux Builder (dbg)(32)': 'gpu_tests_debug_bot_x86',
       'Linux Builder': 'gpu_tests_release_bot',
+      'Linux Builder (reclient)': 'gpu_tests_release_bot_reclient',
       'Network Service Linux': 'release_bot',
       'fuchsia-arm64-cast': 'release_bot_fuchsia_arm64_cast',
       'fuchsia-x64-cast': 'release_bot_fuchsia_cast',
@@ -2091,6 +2092,10 @@
       'gpu_tests', 'release_bot', 'minimal_symbols', 'disable_nacl',
     ],
 
+    'gpu_tests_release_bot_reclient': [
+      'gpu_tests', 'release_bot_reclient',
+    ],
+
     'gpu_tests_release_bot_x86_minimal_symbols': [
       'gpu_tests', 'release_bot', 'x86', 'minimal_symbols',
     ],
@@ -3209,6 +3214,10 @@
       'gn_args': 'proprietary_codecs=true',
     },
 
+    'reclient': {
+      'gn_args': 'use_rbe=true',
+    },
+
     'release': {
       'gn_args': 'is_debug=false',
     },
@@ -3221,6 +3230,10 @@
     # in order to give consistent results for WebRTC codec-dependent tests.
     'release_bot_blink': {
       'mixins': ['release', 'static', 'goma', 'chrome_with_codecs'],
+    },
+
+    'release_bot_reclient': {
+      'mixins': ['release', 'static', 'reclient'],
     },
 
     'release_java': {
