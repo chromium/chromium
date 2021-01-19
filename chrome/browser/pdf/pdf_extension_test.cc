@@ -552,8 +552,14 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithTestGuestViewManager,
 // This test verifies that when a PDF is served with a restrictive
 // Content-Security-Policy, the embed tag is still sized correctly.
 // Regression test for https://crbug.com/271452.
+// Flaky on win and linux: crbug.com/1150197
+#if defined(OS_WIN) || defined(OS_LINUX)
+#define MAYBE_CSPDoesNotBlockEmbedStyles DISABLED_CSPDoesNotBlockEmbedStyles
+#else
+#define MAYBE_CSPDoesNotBlockEmbedStyles CSPDoesNotBlockEmbedStyles
+#endif
 IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithTestGuestViewManager,
-                       CSPDoesNotBlockEmbedStyles) {
+                       MAYBE_CSPDoesNotBlockEmbedStyles) {
   GURL main_url(embedded_test_server()->GetURL("/pdf/test-csp.pdf"));
   ui_test_utils::NavigateToURL(browser(), main_url);
   auto* embedder_web_contents = GetActiveWebContents();
