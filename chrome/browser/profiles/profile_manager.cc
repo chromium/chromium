@@ -996,7 +996,7 @@ void ProfileManager::CleanUpEphemeralProfiles() {
   std::vector<base::FilePath> profiles_to_delete;
   ProfileAttributesStorage& storage = GetProfileAttributesStorage();
   std::vector<ProfileAttributesEntry*> entries =
-      storage.GetAllProfilesAttributes();
+      storage.GetAllProfilesAttributes(/*include_guest_profile=*/true);
   for (ProfileAttributesEntry* entry : entries) {
     base::FilePath profile_path = entry->GetPath();
     if (entry->IsEphemeral()) {
