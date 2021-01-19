@@ -98,7 +98,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) DatabaseTracker
   };
 
   DatabaseTracker(const base::FilePath& profile_path,
-                  bool is_off_the_record,
+                  bool is_incognito,
                   SpecialStoragePolicy* special_storage_policy,
                   QuotaManagerProxy* quota_manager_proxy);
 
@@ -164,18 +164,16 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) DatabaseTracker
   virtual int DeleteDataForOrigin(const url::Origin& origin,
                                   net::CompletionOnceCallback callback);
 
-  bool IsOffTheRecordProfile() const { return is_off_the_record_; }
+  bool IsIncognitoProfile() const { return is_incognito_; }
 
-  const base::File* GetOffTheRecordFile(
-      const base::string16& vfs_file_path) const;
-  const base::File* SaveOffTheRecordFile(const base::string16& vfs_file_path,
-                                         base::File file);
-  void CloseOffTheRecordFileHandle(const base::string16& vfs_file_path);
-  bool HasSavedOffTheRecordFileHandle(
-      const base::string16& vfs_file_path) const;
+  const base::File* GetIncognitoFile(const base::string16& vfs_file_path) const;
+  const base::File* SaveIncognitoFile(const base::string16& vfs_file_path,
+                                      base::File file);
+  void CloseIncognitoFileHandle(const base::string16& vfs_file_path);
+  bool HasSavedIncognitoFileHandle(const base::string16& vfs_file_path) const;
 
   // Shutdown the database tracker, deleting database files if the tracker is
-  // used for an OffTheRecord profile.
+  // used for an Incognito profile.
   void Shutdown();
   // Disables the exit-time deletion of session-only data.
   void SetForceKeepSessionState();
@@ -219,9 +217,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) DatabaseTracker
   // virtual for unit-testing only.
   virtual ~DatabaseTracker();
 
-  // Deletes the directory that stores all DBs in OffTheRecord mode, if it
+  // Deletes the directory that stores all DBs in Incognito mode, if it
   // exists.
-  void DeleteOffTheRecordDBDirectory();
+  void DeleteIncognitoDBDirectory();
 
   // Deletes session-only databases. Blocks databases from being created/opened.
   void ClearSessionOnlyOrigins();
@@ -279,7 +277,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) DatabaseTracker
   base::FilePath GetOriginDirectory(const std::string& origin_identifier);
 
   bool is_initialized_ = false;
-  const bool is_off_the_record_;
+  const bool is_incognito_;
   bool force_keep_session_state_ = false;
   bool shutting_down_ = false;
   const base::FilePath profile_path_;
@@ -312,20 +310,20 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) DatabaseTracker
   // The database tracker thread we're supposed to run file IO on.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
-  // When in OffTheRecord mode, store a DELETE_ON_CLOSE handle to each
-  // main DB and journal file that was accessed. When the OffTheRecord profile
+  // When in Incognito mode, store a DELETE_ON_CLOSE handle to each
+  // main DB and journal file that was accessed. When the Incognito profile
   // goes away (or when the browser crashes), all these handles will be
   // closed, and the files will be deleted.
-  std::map<base::string16, base::File*> off_the_record_file_handles_;
+  std::map<base::string16, base::File*> incognito_file_handles_;
 
-  // In a non-OffTheRecord profile, all DBs in an origin are stored in a
-  // directory named after the origin. In an OffTheRecord profile though, we do
+  // In a non-Incognito profile, all DBs in an origin are stored in a
+  // directory named after the origin. In an Incognito profile though, we do
   // not want the directory structure to reveal the origins visited by the user
   // (in case the browser process crashes and those directories are not
   // deleted). So we use this map to assign directory names that do not reveal
   // this information.
-  std::map<std::string, base::string16> off_the_record_origin_directories_;
-  int off_the_record_origin_directories_generator_ = 0;
+  std::map<std::string, base::string16> incognito_origin_directories_;
+  int incognito_origin_directories_generator_ = 0;
 
   FRIEND_TEST_ALL_PREFIXES(DatabaseTracker, TestHelper);
 };
