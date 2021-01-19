@@ -4,7 +4,7 @@
 
 <link rel="import" href="/components/common_styles.html">
 <link rel="import" href="/components/hd_iron_icon.html">
-<link rel="import" href="/components/oobe_dialog.html">
+<link rel="import" href="/components/oobe_adaptive_dialog.html">
 <link rel="import" href="/components/oobe_i18n_behavior.html">
 
 <dom-module id="demo-preferences-element">
@@ -26,13 +26,15 @@
         font-size: 13px;
       }
     </style>
-    <oobe-dialog id="demoPreferencesDialog" role="dialog" has-buttons
-        aria-label$="[[i18nDynamic(locale, 'demoPreferencesScreenTitle')]]"
-        title-key="demoPreferencesScreenTitle">
-      <hd-iron-icon slot="oobe-icon"
+    <oobe-adaptive-dialog id="demoPreferencesDialog" role="dialog"
+        aria-label$="[[i18nDynamic(locale, 'demoPreferencesScreenTitle')]]">
+      <hd-iron-icon slot="icon"
           icon1x="oobe-32:gear" icon2x="oobe-64:gear">
       </hd-iron-icon>
-      <div slot="footer" class="layout vertical">
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'demoPreferencesScreenTitle')]]
+      </h1>
+      <div slot="content" class="layout vertical">
         <div id="languageDropdownContainer" class="flex layout center horizontal
             justified language-selection-entry">
           <div class="language-selection-title layout vertical
@@ -74,6 +76,6 @@
         <oobe-text-button id="nextButton" inverse on-click="onNextClicked_"
             text-key="demoPreferencesNextButtonLabel"></oobe-text-button>
       </div>
-    </oobe-dialog>
+    </oobe-adaptive-dialog>
   </template>
 </dom-module>

@@ -284,8 +284,8 @@ class DemoSetupTestBase : public OobeBaseTest {
                                    const std::string& button_selector,
                                    JSExecution execution) {
     const std::string query = base::StrCat(
-        {ScreenToContentQuery(screen), ".$$('oobe-dialog').querySelector('",
-         button_selector, "').click();"});
+        {ScreenToContentQuery(screen), ScreenToOobeDialogType(screen),
+         ".querySelector('", button_selector, "').click();"});
     switch (execution) {
       case JSExecution::kAsync:
         test::ExecuteOobeJSAsync(query);
@@ -295,6 +295,16 @@ class DemoSetupTestBase : public OobeBaseTest {
         return;
       default:
         NOTREACHED();
+    }
+  }
+
+  // During transition to new layout in OOBE we use oobe-adaptive-dialog instead
+  // of oobe-dialog. This is a helper function for this transition.
+  std::string ScreenToOobeDialogType(OobeScreenId screen) {
+    if (screen == DemoPreferencesScreenView::kScreenId) {
+      return ".$$('oobe-adaptive-dialog')";
+    } else {
+      return ".$$('oobe-dialog')";
     }
   }
 
@@ -659,17 +669,17 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
     ASSERT_NE(kCountryCodeToNameMap.end(), it);
     const std::string query = base::StrCat(
         {ScreenToContentQuery(DemoPreferencesScreenView::kScreenId),
-         ".$$('oobe-dialog').querySelector('#countrySelect').$$('option[value="
-         "\"",
-         country_code, "\"]').innerHTML"});
+         ScreenToOobeDialogType(DemoPreferencesScreenView::kScreenId),
+         ".querySelector('#countrySelect').$$('option[value=\"", country_code,
+         "\"]').innerHTML"});
     EXPECT_EQ(it->second, test::OobeJS().GetString(query));
   }
 
   // Select France as the Demo Mode country.
   const std::string select_country = base::StrCat(
       {ScreenToContentQuery(DemoPreferencesScreenView::kScreenId),
-       ".$$('oobe-dialog').querySelector('#countrySelect').onSelected_('fr')"
-       ";"});
+       ScreenToOobeDialogType(DemoPreferencesScreenView::kScreenId),
+       ".querySelector('#countrySelect').onSelected_('fr');"});
   test::ExecuteOobeJSAsync(select_country);
 
   ClickOobeButton(DemoPreferencesScreenView::kScreenId, OobeButton::kText,
