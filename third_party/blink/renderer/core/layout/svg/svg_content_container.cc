@@ -143,6 +143,16 @@ static bool HasValidBoundingBoxForContainer(const LayoutObject& object) {
   return false;
 }
 
+static FloatRect ObjectBoundsForPropagation(const LayoutObject& object) {
+  FloatRect bounds = object.ObjectBoundingBox();
+  // The local-to-parent transform for <foreignObject> contains a zoom inverse,
+  // so we need to apply zoom to the bounding box that we use for propagation to
+  // be in the correct coordinate space.
+  if (IsA<LayoutSVGForeignObject>(object))
+    bounds.Scale(object.StyleRef().EffectiveZoom());
+  return bounds;
+}
+
 bool SVGContentContainer::UpdateBoundingBoxes(bool& object_bounding_box_valid) {
   object_bounding_box_valid = false;
 
@@ -154,8 +164,9 @@ bool SVGContentContainer::UpdateBoundingBoxes(bool& object_bounding_box_valid) {
     if (!HasValidBoundingBoxForContainer(*current))
       continue;
     const AffineTransform& transform = current->LocalToSVGParentTransform();
-    UpdateObjectBoundingBox(object_bounding_box, object_bounding_box_valid,
-                            transform.MapRect(current->ObjectBoundingBox()));
+    UpdateObjectBoundingBox(
+        object_bounding_box, object_bounding_box_valid,
+        transform.MapRect(ObjectBoundsForPropagation(*current)));
     stroke_bounding_box.Unite(transform.MapRect(current->StrokeBoundingBox()));
   }
 

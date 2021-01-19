@@ -387,4 +387,25 @@ TEST_F(LayoutSVGForeignObjectTest, HitTestUnderScrollingAncestor) {
   EXPECT_EQ(PhysicalOffset(450, 450), result.PointInInnerNodeFrame());
 }
 
+TEST_F(LayoutSVGForeignObjectTest, BBoxPropagationZoomed) {
+  GetFrame().SetPageZoomFactor(2);
+  SetBodyInnerHTML(R"HTML(
+    <svg>
+      <g>
+        <foreignObject x="6" y="5" width="100" height="50" id="target"/>
+      </g>
+    </svg>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  const auto& target = *GetLayoutObjectByElementId("target");
+  ASSERT_EQ(target.StyleRef().EffectiveZoom(), 2);
+
+  EXPECT_EQ(target.ObjectBoundingBox(), FloatRect(6, 5, 100, 50));
+  EXPECT_EQ(target.StrokeBoundingBox(), FloatRect(12, 10, 200, 100));
+  const auto& parent_g = *target.Parent();
+  EXPECT_EQ(parent_g.ObjectBoundingBox(), FloatRect(6, 5, 100, 50));
+  EXPECT_EQ(parent_g.StrokeBoundingBox(), FloatRect(6, 5, 100, 50));
+}
+
 }  // namespace blink
