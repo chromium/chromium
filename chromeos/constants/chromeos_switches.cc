@@ -243,9 +243,6 @@ const char kDisableSigninFrameClientCerts[] =
 // Disables volume adjust sound.
 const char kDisableVolumeAdjustSound[] = "disable-volume-adjust-sound";
 
-// Disables wake on wifi features.
-const char kDisableWakeOnWifi[] = "disable-wake-on-wifi";
-
 // DEPRECATED. Please use --arc-availability=officially-supported.
 // Enables starting the ARC instance upon session start.
 const char kEnableArc[] = "enable-arc";
@@ -577,10 +574,6 @@ const char kDisableArcCpuRestriction[] = "disable-arc-cpu-restriction";
 // assumes that the device has reached Auto Update Expiration. This is useful
 // for testing the policy behaviour on the DUT.
 const char kUpdateRequiredAueForTest[] = "aue-reached-for-update-required-test";
-
-bool WakeOnWifiEnabled() {
-  return !base::CommandLine::ForCurrentProcess()->HasSwitch(kDisableWakeOnWifi);
-}
 
 bool MemoryPressureHandlingEnabled() {
   if (base::FieldTrialList::FindFullName(kMemoryPressureExperimentName) ==

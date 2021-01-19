@@ -94,7 +94,6 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const char kDisableSigninFrameClientCerts[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const char kDisableVolumeAdjustSound[];
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kDisableWakeOnWifi[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kEnableArc[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kEnableArcVm[];
@@ -211,16 +210,12 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const char kTetherHostScansIgnoreWiredConnections[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const char kWaitForInitialPolicyFetchForTest[];
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kWakeOnWifiPacket[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const char kUnfilteredBluetoothDevices[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const char kUpdateRequiredAueForTest[];
 
 ////////////////////////////////////////////////////////////////////////////////
-
-// Returns true if the system should wake in response to wifi traffic.
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool WakeOnWifiEnabled();
 
 // Returns true if memory pressure handling is enabled.
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool MemoryPressureHandlingEnabled();
