@@ -229,6 +229,8 @@ class TestResourceDispatcherDelegate : public ResourceDispatcherDelegate {
 
     void EvictFromBackForwardCache(
         blink::mojom::RendererEvictionReason) override {}
+    void DidBufferLoadWhileInBackForwardCache(size_t num_bytes) override {}
+    bool CanContinueBufferingWhileInBackForwardCache() override { return true; }
 
    private:
     std::unique_ptr<blink::WebRequestPeer> original_peer_;

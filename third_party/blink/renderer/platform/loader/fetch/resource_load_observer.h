@@ -102,6 +102,10 @@ class PLATFORM_EXPORT ResourceLoadObserver
   // easily deferred to handle later, for example network redirect handling.
   virtual void EvictFromBackForwardCache(mojom::RendererEvictionReason) {}
 
+  virtual void DidBufferLoadWhileInBackForwardCache(size_t num_bytes) {}
+
+  virtual bool CanContinueBufferingWhileInBackForwardCache() { return true; }
+
   virtual void Trace(Visitor*) const {}
 };
 

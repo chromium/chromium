@@ -75,6 +75,13 @@ void ExtensionLocalizationPeer::OnReceivedResponse(
 void ExtensionLocalizationPeer::EvictFromBackForwardCache(
     blink::mojom::RendererEvictionReason) {}
 
+void ExtensionLocalizationPeer::DidBufferLoadWhileInBackForwardCache(
+    size_t num_bytes) {}
+
+bool ExtensionLocalizationPeer::CanContinueBufferingWhileInBackForwardCache() {
+  return true;
+}
+
 void ExtensionLocalizationPeer::OnStartLoadingResponseBody(
     mojo::ScopedDataPipeConsumerHandle body) {
   data_pipe_state_.body_state_ = DataPipeState::BodyState::kReadingBody;

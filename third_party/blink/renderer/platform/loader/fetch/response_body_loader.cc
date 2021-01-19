@@ -18,7 +18,7 @@ namespace blink {
 
 constexpr size_t ResponseBodyLoader::kMaxNumConsumedBytesInTask;
 
-constexpr size_t kDefaultMaxBufferedBodyBytes = 100 * 1000;
+constexpr size_t kDefaultMaxBufferedBodyBytesPerRequest = 100 * 1000;
 
 class ResponseBodyLoader::DelegatingBytesConsumer final
     : public BytesConsumer,
@@ -289,7 +289,7 @@ class ResponseBodyLoader::Buffer final
         max_bytes_to_read_(base::GetFieldTrialParamByFeatureAsInt(
             blink::features::kLoadingTasksUnfreezable,
             "max_buffered_bytes",
-            kDefaultMaxBufferedBodyBytes)) {}
+            kDefaultMaxBufferedBodyBytesPerRequest)) {}
 
   bool IsEmpty() const { return buffered_data_.IsEmpty(); }
 
@@ -297,6 +297,9 @@ class ResponseBodyLoader::Buffer final
   // exceeds |max_bytes_to_read_| bytes.
   bool AddChunk(const char* buffer, size_t available) {
     total_bytes_read_ += available;
+    TRACE_EVENT2("loading", "ResponseBodyLoader::Buffer::AddChunk",
+                 "total_bytes_read", static_cast<int>(total_bytes_read_),
+                 "added_bytes", static_cast<int>(available));
     if (total_bytes_read_ > max_bytes_to_read_)
       return false;
     Vector<char> new_chunk;
@@ -439,6 +442,15 @@ void ResponseBodyLoader::EvictFromBackForwardCache(
   client_->EvictFromBackForwardCache(reason);
 }
 
+void ResponseBodyLoader::DidBufferLoadWhileInBackForwardCache(
+    size_t num_bytes) {
+  client_->DidBufferLoadWhileInBackForwardCache(num_bytes);
+}
+
+bool ResponseBodyLoader::CanContinueBufferingWhileInBackForwardCache() {
+  return client_->CanContinueBufferingWhileInBackForwardCache();
+}
+
 void ResponseBodyLoader::Start() {
   DCHECK(!started_);
   DCHECK(!drained_);
@@ -554,7 +566,9 @@ void ResponseBodyLoader::OnStateChange() {
           std::min(available, kMaxNumConsumedBytesInTask - num_bytes_consumed);
       if (IsSuspendedForBackForwardCache()) {
         // Save the read data into |body_buffer_| instead.
-        if (!body_buffer_->AddChunk(buffer, available)) {
+        DidBufferLoadWhileInBackForwardCache(available);
+        if (!body_buffer_->AddChunk(buffer, available) ||
+            !CanContinueBufferingWhileInBackForwardCache()) {
           // We've read too much data while suspended for back-forward cache.
           // Evict the page from the back-forward cache.
           result = bytes_consumer_->EndRead(available);

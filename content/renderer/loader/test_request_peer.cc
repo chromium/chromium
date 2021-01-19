@@ -94,6 +94,12 @@ void TestRequestPeer::EvictFromBackForwardCache(
   return;
 }
 
+void TestRequestPeer::DidBufferLoadWhileInBackForwardCache(size_t num_bytes) {}
+
+bool TestRequestPeer::CanContinueBufferingWhileInBackForwardCache() {
+  return true;
+}
+
 TestRequestPeer::Context::Context() = default;
 TestRequestPeer::Context::~Context() = default;
 

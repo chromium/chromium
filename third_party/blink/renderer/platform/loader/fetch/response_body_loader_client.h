@@ -31,6 +31,10 @@ class ResponseBodyLoaderClient : public GarbageCollectedMixin {
   // Called when the body loader is suspended and the data pipe is drained.
   virtual void EvictFromBackForwardCache(
       mojom::blink::RendererEvictionReason) = 0;
+
+  virtual void DidBufferLoadWhileInBackForwardCache(size_t num_bytes) = 0;
+
+  virtual bool CanContinueBufferingWhileInBackForwardCache() = 0;
 };
 
 }  // namespace blink

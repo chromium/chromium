@@ -165,6 +165,9 @@ class CONTENT_EXPORT ResourceDispatcher
 
   void EvictFromBackForwardCache(blink::mojom::RendererEvictionReason reason,
                                  int request_id) override;
+  void DidBufferLoadWhileInBackForwardCache(size_t num_bytes,
+                                            int request_id) override;
+  bool CanContinueBufferingWhileInBackForwardCache(int request_id) override;
 
   // Sets the CORS exempt header list for sanity checking.
   void SetCorsExemptHeaderList(const std::vector<std::string>& list);

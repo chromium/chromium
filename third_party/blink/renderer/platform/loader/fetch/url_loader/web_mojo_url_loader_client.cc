@@ -23,7 +23,7 @@
 namespace blink {
 namespace {
 
-constexpr size_t kDefaultMaxBufferedBodyBytes = 100 * 1000;
+constexpr size_t kDefaultMaxBufferedBodyBytesPerRequest = 100 * 1000;
 constexpr base::TimeDelta kGracePeriodToFinishLoadingWhileInBackForwardCache =
     base::TimeDelta::FromSeconds(15);
 
@@ -167,7 +167,7 @@ class WebMojoURLLoaderClient::BodyBuffer final
         max_bytes_drained_(base::GetFieldTrialParamByFeatureAsInt(
             blink::features::kLoadingTasksUnfreezable,
             "max_buffered_bytes",
-            kDefaultMaxBufferedBodyBytes)) {
+            kDefaultMaxBufferedBodyBytesPerRequest)) {
     pipe_drainer_ =
         std::make_unique<mojo::DataPipeDrainer>(this, std::move(readable));
     writable_watcher_.Watch(
@@ -188,13 +188,21 @@ class WebMojoURLLoaderClient::BodyBuffer final
     SCOPED_CRASH_KEY_STRING256(
         "OnDataAvailable", "last_loaded_url",
         owner_->last_loaded_url().possibly_invalid_spec());
-    total_bytes_drained_ += num_bytes;
 
-    if (total_bytes_drained_ > max_bytes_drained_ &&
-        owner_->IsDeferredWithBackForwardCache()) {
-      owner_->EvictFromBackForwardCache(
-          blink::mojom::RendererEvictionReason::kNetworkExceedsBufferLimit);
-      return;
+    total_bytes_drained_ += num_bytes;
+    TRACE_EVENT2("loading",
+                 "WebMojoURLLoaderClient::BodyBuffer::OnDataAvailable",
+                 "total_bytes_drained", static_cast<int>(total_bytes_drained_),
+                 "added_bytes", static_cast<int>(num_bytes));
+
+    if (owner_->IsDeferredWithBackForwardCache()) {
+      owner_->DidBufferLoadWhileInBackForwardCache(num_bytes);
+      if (total_bytes_drained_ > max_bytes_drained_ ||
+          !owner_->CanContinueBufferingWhileInBackForwardCache()) {
+        owner_->EvictFromBackForwardCache(
+            blink::mojom::RendererEvictionReason::kNetworkExceedsBufferLimit);
+        return;
+      }
     }
     buffered_body_.emplace(static_cast<const char*>(data),
                            static_cast<const char*>(data) + num_bytes);
@@ -338,6 +346,17 @@ void WebMojoURLLoaderClient::EvictFromBackForwardCache(
     blink::mojom::RendererEvictionReason reason) {
   StopBackForwardCacheEvictionTimer();
   url_loader_client_observer_->EvictFromBackForwardCache(reason, request_id_);
+}
+
+void WebMojoURLLoaderClient::DidBufferLoadWhileInBackForwardCache(
+    size_t num_bytes) {
+  url_loader_client_observer_->DidBufferLoadWhileInBackForwardCache(
+      num_bytes, request_id_);
+}
+
+bool WebMojoURLLoaderClient::CanContinueBufferingWhileInBackForwardCache() {
+  return url_loader_client_observer_
+      ->CanContinueBufferingWhileInBackForwardCache(request_id_);
 }
 
 void WebMojoURLLoaderClient::EvictFromBackForwardCacheDueToTimeout() {

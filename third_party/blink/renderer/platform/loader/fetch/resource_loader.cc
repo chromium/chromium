@@ -1274,6 +1274,14 @@ void ResourceLoader::EvictFromBackForwardCache(
   fetcher_->EvictFromBackForwardCache(reason);
 }
 
+void ResourceLoader::DidBufferLoadWhileInBackForwardCache(size_t num_bytes) {
+  fetcher_->DidBufferLoadWhileInBackForwardCache(num_bytes);
+}
+
+bool ResourceLoader::CanContinueBufferingWhileInBackForwardCache() {
+  return fetcher_->CanContinueBufferingWhileInBackForwardCache();
+}
+
 void ResourceLoader::RequestSynchronously(const ResourceRequestHead& request) {
   DCHECK(loader_);
   DCHECK_EQ(request.Priority(), ResourceLoadPriority::kHighest);

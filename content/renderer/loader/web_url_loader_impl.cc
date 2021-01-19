@@ -412,6 +412,8 @@ class WebURLLoaderImpl::Context : public base::RefCounted<Context> {
   void OnReceivedCachedMetadata(mojo_base::BigBuffer data);
   void OnCompletedRequest(const network::URLLoaderCompletionStatus& status);
   void EvictFromBackForwardCache(blink::mojom::RendererEvictionReason);
+  void DidBufferLoadWhileInBackForwardCache(size_t num_bytes);
+  bool CanContinueBufferingWhileInBackForwardCache();
 
  private:
   friend class base::RefCounted<Context>;
@@ -487,6 +489,8 @@ class WebURLLoaderImpl::RequestPeerImpl : public blink::WebRequestPeer {
   void OnCompletedRequest(
       const network::URLLoaderCompletionStatus& status) override;
   void EvictFromBackForwardCache(blink::mojom::RendererEvictionReason) override;
+  void DidBufferLoadWhileInBackForwardCache(size_t num_bytes) override;
+  bool CanContinueBufferingWhileInBackForwardCache() override;
 
  private:
   scoped_refptr<Context> context_;
@@ -656,9 +660,6 @@ void WebURLLoaderImpl::Context::Start(
 
   TRACE_EVENT_WITH_FLOW0("loading", "WebURLLoaderImpl::Context::Start", this,
                          TRACE_EVENT_FLAG_FLOW_OUT);
-  // If we use freezable_task_runner_, we won't call
-  // URLLoaderClientImpl::OnStartLoadingResponseBody until after bfcache
-  // restore. Is this OK?
   request_id_ = resource_dispatcher_->StartAsync(
       std::move(request), requestor_id, unfreezable_task_runner_,
       GetTrafficAnnotationTag(resource_type), loader_options, std::move(peer),
@@ -838,6 +839,16 @@ void WebURLLoaderImpl::RequestPeerImpl::OnCompletedRequest(
 void WebURLLoaderImpl::RequestPeerImpl::EvictFromBackForwardCache(
     blink::mojom::RendererEvictionReason reason) {
   context_->EvictFromBackForwardCache(reason);
+}
+
+void WebURLLoaderImpl::RequestPeerImpl::DidBufferLoadWhileInBackForwardCache(
+    size_t num_bytes) {
+  context_->DidBufferLoadWhileInBackForwardCache(num_bytes);
+}
+
+bool WebURLLoaderImpl::RequestPeerImpl::
+    CanContinueBufferingWhileInBackForwardCache() {
+  return context_->CanContinueBufferingWhileInBackForwardCache();
 }
 
 // WebURLLoaderImpl -----------------------------------------------------------
@@ -1253,6 +1264,15 @@ void WebURLLoaderImpl::Context::AppendVariationsThrottles(
 void WebURLLoaderImpl::Context::EvictFromBackForwardCache(
     blink::mojom::RendererEvictionReason reason) {
   client()->EvictFromBackForwardCache(reason);
+}
+
+void WebURLLoaderImpl::Context::DidBufferLoadWhileInBackForwardCache(
+    size_t num_bytes) {
+  client()->DidBufferLoadWhileInBackForwardCache(num_bytes);
+}
+
+bool WebURLLoaderImpl::Context::CanContinueBufferingWhileInBackForwardCache() {
+  return client()->CanContinueBufferingWhileInBackForwardCache();
 }
 
 }  // namespace content

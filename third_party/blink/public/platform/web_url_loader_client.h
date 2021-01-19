@@ -131,6 +131,10 @@ class BLINK_PLATFORM_EXPORT WebURLLoaderClient {
   // of client. Move the capability to the loader.
   virtual void EvictFromBackForwardCache(mojom::RendererEvictionReason) {}
 
+  virtual void DidBufferLoadWhileInBackForwardCache(size_t num_bytes) {}
+
+  virtual bool CanContinueBufferingWhileInBackForwardCache() { return true; }
+
   // Value passed to DidFinishLoading when total encoded data length isn't
   // known.
   static const int64_t kUnknownEncodedDataLength = -1;
