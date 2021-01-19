@@ -2725,6 +2725,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // WARNING: This does not behave exactly as specified in HTML. Instead it more
   // closely follows the Blink implementation, which predates it, for
   // consistency.
+  //
+  // TODO(https://crbug.com/1168024): Fix this to behave as specified in HTML.
   bool is_web_secure_context_ = false;
 
   network::CrossOriginEmbedderPolicy cross_origin_embedder_policy_;
