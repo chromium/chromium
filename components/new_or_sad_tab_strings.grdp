@@ -144,13 +144,16 @@
       <!-- TODO(msramek): Merge with the above section once this is fully launched. -->
 
       <message name="IDS_NEW_TAB_OTR_TITLE" desc="Title of the Incognito new tab page. The Incognito mode provides private browsing experience by hiding browsing activity from other people using the same device. However, it does not make the user completely invisible or anonymous; please don't translate it as such." formatter_data="android_java">
-        You've gone incognito
+        You’ve gone incognito
       </message>
       <message name="IDS_NEW_TAB_OTR_SUBTITLE" desc="Subtitle of the Incognito new tab page, explaining to the user that the Incognito mode hides their browsing activity from other people using the same device. The second sentence clarifies that there are two important exceptions from this rule - downloaded files and added bookmarks will be persisted even after the Incognito session is closed." formatter_data="android_java">
-        Now you can browse privately, and other people who use this device won't see your activity. However, downloads and bookmarks will be saved.
+        Now you can browse privately, and other people who use this device won’t see your activity. However, downloads and bookmarks will be saved.
+      </message>
+      <message name="IDS_NEW_TAB_OTR_SUBTITLE_WITH_READING_LIST" desc="Subtitle of the Incognito new tab page, explaining to the user that the Incognito mode hides their browsing activity from other people using the same device. The second sentence clarifies that there are two important exceptions from this rule - downloaded files and added bookmarks will be persisted even after the Incognito session is closed." formatter_data="android_java">
+        Now you can browse privately, and other people who use this device won’t see your activity. However, downloads, bookmarks and reading list items will be saved.
       </message>
       <message name="IDS_NEW_TAB_OTR_NOT_SAVED" desc="Bullet points listing data that are not saved in the Incognito mode. 'Browsing history' means a history of visited websites. 'Cookies and site data' refers to data saved by websites on the user's device (e.g. sign-in state, preferences, etc.). 'Information entered in forms' refers to names, addresses, passwords etc. that users enter into forms on the web." formatter_data="android_java">
-        Chrome <ph name="BEGIN_EMPHASIS">&lt;em&gt;</ph>won't save<ph name="END_EMPHASIS">&lt;/em&gt;</ph> the following information:
+        Chrome <ph name="BEGIN_EMPHASIS">&lt;em&gt;</ph>won’t save<ph name="END_EMPHASIS">&lt;/em&gt;</ph> the following information:
         <ph name="BEGIN_LIST">&lt;ul&gt;</ph>
           <ph name="LIST_ITEM">&lt;li&gt;</ph>Your browsing history
           <ph name="LIST_ITEM">&lt;li&gt;</ph>Cookies and site data

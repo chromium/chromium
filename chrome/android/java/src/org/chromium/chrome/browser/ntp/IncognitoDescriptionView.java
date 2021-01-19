@@ -27,6 +27,8 @@ import androidx.appcompat.widget.SwitchCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.CachedFeatureFlags;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
@@ -294,8 +296,10 @@ public class IncognitoDescriptionView extends LinearLayout {
 
     /** Adjust the "Learn More" link. */
     private void adjustLearnMore() {
-        final String subtitleText =
-                getContext().getResources().getString(R.string.new_tab_otr_subtitle);
+        boolean readLaterEnabled = CachedFeatureFlags.isEnabled(ChromeFeatureList.READ_LATER);
+        final String subtitleText = getContext().getResources().getString(readLaterEnabled
+                        ? R.string.new_tab_otr_subtitle_with_reading_list
+                        : R.string.new_tab_otr_subtitle);
         boolean learnMoreInSubtitle = mWidthDp > WIDE_LAYOUT_THRESHOLD_DP;
 
         mLearnMore.setVisibility(learnMoreInSubtitle ? View.GONE : View.VISIBLE);
