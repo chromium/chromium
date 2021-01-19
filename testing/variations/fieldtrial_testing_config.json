@@ -7492,21 +7492,6 @@
             ]
         }
     ],
-    "WebRTC-Audio-NetEqDecisionLogicSettings": [
-        {
-            "platforms": [
-                "windows",
-                "mac",
-                "chromeos",
-                "linux"
-            ],
-            "experiments": [
-                {
-                    "name": "estimate_dtx_delay:true,time_stretch_cn:true"
-                }
-            ]
-        }
-    ],
     "WebRTC-Audio-NetEqDelayHistogram": [
         {
             "platforms": [
@@ -7541,25 +7526,6 @@
             ]
         }
     ],
-    "WebRTC-Audio-SendSideBwe": [
-        {
-            "platforms": [
-                "windows",
-                "mac",
-                "chromeos",
-                "linux",
-                "ios",
-                "android",
-                "android_weblayer",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled"
-                }
-            ]
-        }
-    ],
     "WebRTC-CongestionWindow": [
         {
             "platforms": [
@@ -7575,24 +7541,6 @@
             "experiments": [
                 {
                     "name": "QueueSize:800,MinBitrate:30000"
-                }
-            ]
-        }
-    ],
-    "WebRTC-SendSideBwe-WithOverhead": [
-        {
-            "platforms": [
-                "windows",
-                "mac",
-                "chromeos",
-                "linux",
-                "ios",
-                "android",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled"
                 }
             ]
         }
