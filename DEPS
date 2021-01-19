@@ -266,7 +266,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling OTS
   # and whatever else without interference from each other.
-  'ots_revision': 'e5d1029ad9a16e1209b2fe7a2f8901aa42a9698c',
+  'ots_revision': 'ee537ac096667eed6559124164c3e8482646fd77',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling catapult
   # and whatever else without interference from each other.

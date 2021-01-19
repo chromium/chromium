@@ -1,17 +1,9 @@
 Name: OTS (OpenType Sanitizer)
 URL: https://github.com/khaledhosny/ots.git
-Version: e5d1029ad9a16e1209b2fe7a2f8901aa42a9698c
+Version: ee537ac096667eed6559124164c3e8482646fd77
 Security Critical: yes
 License: BSD
 
 Local Modifications:
 - BUILD.gn: Added.
 - fuzz/: Added.
-- e5d1029ad9a16e1209b2fe7a2f8901aa42a9698c points to a commit
-  chromiumOTSbeforeDEPS which has additional changes backported to the ots
-  version at which we switched to a DEPS based checkout, these changes are:
-    - e5d1029 [glyf] Guard access to maxp version 1 fields
-    - 177b26f ComponentPointCount initialisation review comments
-    - b8138ac Factor out glyph buffer retrieval
-    - 9b14724 Sanitise values for maxPoints, maxComponentPoints maxComponentDepth
-    - aeb6ce9 Don't bail if CFF2 glyph table is present
