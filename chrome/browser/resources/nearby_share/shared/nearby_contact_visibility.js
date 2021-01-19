@@ -301,12 +301,15 @@ Polymer({
   /**
    * When the contact check boxes are visible, the contact name and description
    * can be aria-hidden since they are used as labels for the checkbox.
-   * @return {string} Whether the contact name and description should be
-   *     aria-hidden. Boolean converted to string, "true" or "false".
+   * @return {string|undefined} Whether the contact name and description should
+   *     be aria-hidden. "true" or undefined.
    * @private
    */
   getContactAriaHidden_() {
-    return this.showContactCheckBoxes_().toString();
+    if (this.showContactCheckBoxes_()) {
+      return 'true';
+    }
+    return undefined;
   },
 
   /**

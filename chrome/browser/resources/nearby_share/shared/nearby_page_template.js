@@ -22,12 +22,14 @@ Polymer({
     },
 
     /**
-     * aria-hidden attribute for #subTitle div.
-     * @type {boolean}
+     * Alternate subtitle for screen readers. If not falsey, then the
+     * #pageSubTitle is aria-hidden and the #a11yAnnouncedPageSubTitle is
+     * rendered on screen readers instead. Changes to this value will result in
+     * aria-live announcements.
+     * @type {?string}
      * */
-    subTitleAriaHidden: {
-      type: Boolean,
-      value: false,
+    a11yAnnouncedSubTitle: {
+      type: String,
     },
 
     /**
@@ -113,17 +115,21 @@ Polymer({
    */
   getDialogAriaLabelledBy_() {
     let labelIds = 'pageTitle';
-    if (!this.subTitleAriaHidden) {
+    if (!this.a11yAnnouncedSubTitle) {
       labelIds += ' pageSubTitle';
     }
     return labelIds;
   },
 
   /**
-   * @return {string} aria-hidden value for the #subTitle div
+   * @return {string|undefined} aria-hidden value for the #subTitle div.
+   *     'true' or undefined.
    * @private
    */
   getSubTitleAriaHidden_() {
-    return this.subTitleAriaHidden.toString();
+    if (this.a11yAnnouncedSubTitle) {
+      return 'true';
+    }
+    return undefined;
   },
 });

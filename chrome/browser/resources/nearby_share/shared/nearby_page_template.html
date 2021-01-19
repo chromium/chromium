@@ -21,6 +21,7 @@
         margin-inline-start: var(--nearby-page-space-inline);
         padding-block-end: 16px;
         padding-block-start: var(--nearby-page-space-block);
+        position: relative;
       }
 
       #contentContainer {
@@ -45,6 +46,13 @@
         margin: 0;
       }
 
+      #a11yAnnouncedPageSubTitle {
+        bottom: 16px;
+        clip: rect(0,0,0,0); /* Make invisible. Read on screen readers only. */
+        font-size: 14px;
+        position: absolute; /* Position directly over subtitle it replaces. */
+      }
+
       #actions {
         display: flex;
         justify-content: flex-end;
@@ -59,13 +67,16 @@
       }
     </style>
     <div id="pageContainer" role="dialog" aria-modal="true"
-        aria-labelledby="[[getDialogAriaLabelledBy_(subTitleAriaHidden)]]">
+        aria-labelledby="[[getDialogAriaLabelledBy_(a11yAnnouncedSubTitle)]]">
       <div id="header">
         <h1 id="pageTitle">[[title]]</h1>
         <h2 id="pageSubTitle"
-            aria-hidden$="[[getSubTitleAriaHidden_(subTitleAriaHidden)]]">
+            aria-hidden$="[[getSubTitleAriaHidden_(a11yAnnouncedSubTitle)]]">
           [[subTitle]]
         </h2>
+        <div id="a11yAnnouncedPageSubTitle" aria-live="polite">
+          [[a11yAnnouncedSubTitle]]
+        </div>
       </div>
 
       <div id="contentContainer">

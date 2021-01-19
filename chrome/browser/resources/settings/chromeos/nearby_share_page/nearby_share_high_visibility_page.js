@@ -51,7 +51,6 @@ Polymer({
     remainingTimeInSeconds_: {
       type: Number,
       value: -1,
-      observer: 'announceRemainingTime_',
     },
 
     /** @private {?nearbyShare.mojom.RegisterReceiveSurfaceResult} */
@@ -83,14 +82,11 @@ Polymer({
     this.remainingTimeIntervalId_ = setInterval(() => {
       this.calculateRemainingTime_();
     }, 1000);
-
-    Polymer.IronA11yAnnouncer.requestAvailability();
-    this.announceRemainingTime_(this.remainingTimeInSeconds_);
   },
 
   /** @override */
   detached() {
-    if (this.remainingTimeIntervalId_ === -1) {
+    if (this.remainingTimeIntervalId_ !== -1) {
       clearInterval(this.remainingTimeIntervalId_);
       this.remainingTimeIntervalId_ = -1;
     }
@@ -199,24 +195,26 @@ Polymer({
 
   /**
    * Announce the remaining time for screen readers. Only announce once per
-   * minute to avoid overwhelming user.
-   * @param {number} remainingSeconds
+   * minute to avoid overwhelming user. Though this gets called once every
+   * second, the value returned only changes each minute.
+   * @return {string} The alternate page subtitle to be used as an aria-live
+   *     announcement for screen readers.
    * @private
    */
-  announceRemainingTime_(remainingSeconds) {
+  getA11yAnnouncedSubTitle_() {
     // Skip announcement for 0 seconds left to avoid alerting on time out.
     // There is a separate time out alert shown in the error section.
-    if (remainingSeconds <= 0 || remainingSeconds % 60 !== 0) {
-      return;
+    if (this.remainingTimeInSeconds_ === 0) {
+      return '';
     }
+    const remainingMinutes = this.remainingTimeInSeconds_ > 0 ?
+        Math.ceil(this.remainingTimeInSeconds_ / 60) :
+        5;
 
-    const timeValue = this.i18n(
-        'nearbyShareHighVisibilitySubTitleMinutes',
-        Math.ceil(this.remainingTimeInSeconds_ / 60));
+    const timeValue =
+        this.i18n('nearbyShareHighVisibilitySubTitleMinutes', remainingMinutes);
 
-    const announcement = this.i18n(
+    return this.i18n(
         'nearbyShareHighVisibilitySubTitle', this.deviceName, timeValue);
-
-    this.fire('iron-announce', {text: announcement});
   },
 });
