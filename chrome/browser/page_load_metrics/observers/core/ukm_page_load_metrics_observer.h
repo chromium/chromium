@@ -181,7 +181,8 @@ class UkmPageLoadMetricsObserver
   // loads.
   void RecordPageEndMetrics(
       const page_load_metrics::mojom::PageLoadTiming* timing,
-      base::TimeTicks page_end_time);
+      base::TimeTicks page_end_time,
+      bool app_entered_background);
 
   // Records a score from the SiteEngagementService. Called when the page
   // becomes hidden, or at the end of the session if the page is never hidden.

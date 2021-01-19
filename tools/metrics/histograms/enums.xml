@@ -56588,6 +56588,9 @@ Called by update_net_trust_anchors.py.-->
   <int value="10" label="END_HIDDEN">
     Page became hidden, but is still active.
   </int>
+  <int value="11" label="END_APP_BACKGROUND">
+    The metrics were flushed because the app entered the background.
+  </int>
 </enum>
 
 <enum name="PageLifecycleStateTransition">

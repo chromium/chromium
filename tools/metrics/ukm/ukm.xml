@@ -10152,12 +10152,23 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="Navigation.PageEndReason2" enum="PageEndReason">
+    <obsolete>
+      Deprecated Jan 2021 in favor of Navigation.PageEndReason3.
+    </obsolete>
     <summary>
       The |page_load_metrics::PageEndReason| for the main frame navigation of
       this page load. Replaced Navigation.PageEndReason at the end of May 2020
       to reduce occurrences of page_load_metrics::PageEndReason::END_NONE by
       setting the value to page_load_metrics::PageEndReason::END_HIDDEN when the
       metric is recorded after the page became hidden.
+    </summary>
+  </metric>
+  <metric name="Navigation.PageEndReason3" enum="PageEndReason">
+    <summary>
+      The |page_load_metrics::PageEndReason| for the main frame navigation of
+      this page load. Replaced Navigation.PageEndReason2 on January 2021 to get
+      rid of END_HIDDEN and use END_APP_BACKGROUND on cases where the metrics
+      are flushed and the app enters the background.
     </summary>
   </metric>
   <metric name="Navigation.PageTransition">
