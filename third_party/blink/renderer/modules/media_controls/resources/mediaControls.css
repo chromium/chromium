@@ -2,21 +2,7 @@
    Use of this source code is governed by a BSD-style license that can be
    found in the LICENSE file.*/
 
-/**
- * Used in MediaDocument only.
- * TODO: Move those outside of this file.
- */
-
-video:-webkit-full-page-media {
-    margin: auto;
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    max-height: 100%;
-    max-width: 100%;
-}
+@namespace "http://www.w3.org/1999/xhtml";
 
 /**
  * Panel Structure
@@ -1071,21 +1057,6 @@ video::-webkit-media-controls-overlay-enclosure {
 /**
  * Audio Controls
  */
-
-audio:not([controls]) {
-  display: none !important;
-}
-
-/** TODO(crbug.com/985623): Remove these hard-coded audio tag size.
- * This fixed audio tag width/height leads to fail the wpt tests below.
- * crbug.com/955170 external/wpt/css/css-contain/contain-size-replaced-003a.html
- * crbug.com/955163 external/wpt/css/css-contain/contain-size-replaced-003b.html
- * crbug.com/955163 external/wpt/css/css-contain/contain-size-replaced-003c.html
- */
-audio {
-  width: 300px;
-  height: 54px;
-}
 
 audio::-webkit-media-controls-overlay-enclosure,
 video::-webkit-media-controls.audio-only [pseudo="-webkit-media-controls-overlay-enclosure"] {

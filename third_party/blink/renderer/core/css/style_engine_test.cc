@@ -4016,4 +4016,26 @@ TEST_F(StyleEngineTest, RejectSlottedSelector) {
   EXPECT_EQ(1u, stats->rules_fast_rejected);
 }
 
+TEST_F(StyleEngineTest, AudioUAStyleNameSpace) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <audio id="html-audio"></audio>
+  )HTML");
+  Element* html_audio = GetDocument().getElementById("html-audio");
+  Element* audio = GetDocument().createElementNS("http://dummyns", "audio",
+                                                 ASSERT_NO_EXCEPTION);
+  GetDocument().body()->appendChild(audio);
+  UpdateAllLifecyclePhases();
+
+  // display:none UA rule for audio element should not apply outside html.
+  EXPECT_TRUE(audio->GetComputedStyle());
+  EXPECT_FALSE(html_audio->GetComputedStyle());
+
+  FloatSize page_size(400, 400);
+  GetDocument().GetFrame()->StartPrinting(page_size, page_size, 1);
+
+  // Also for printing.
+  EXPECT_TRUE(audio->GetComputedStyle());
+  EXPECT_FALSE(html_audio->GetComputedStyle());
+}
+
 }  // namespace blink

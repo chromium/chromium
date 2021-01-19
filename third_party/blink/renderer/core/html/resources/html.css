@@ -150,6 +150,32 @@ video {
     object-fit: contain;
 }
 
+video:-webkit-full-page-media {
+    margin: auto;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    max-height: 100%;
+    max-width: 100%;
+}
+
+audio:not([controls]) {
+  display: none !important;
+}
+
+/** TODO(crbug.com/985623): Remove these hard-coded audio tag size.
+ * This fixed audio tag width/height leads to fail the wpt tests below.
+ * crbug.com/955170 external/wpt/css/css-contain/contain-size-replaced-003a.html
+ * crbug.com/955163 external/wpt/css/css-contain/contain-size-replaced-003b.html
+ * crbug.com/955163 external/wpt/css/css-contain/contain-size-replaced-003c.html
+ */
+audio {
+  width: 300px;
+  height: 54px;
+}
+
 /* heading elements */
 
 h1 {
