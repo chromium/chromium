@@ -53,6 +53,17 @@ void RoutineLog::LogRoutineCompleted(mojom::RoutineType type,
   AppendToLog(log_line.str());
 }
 
+std::string RoutineLog::GetContents() const {
+  if (!base::PathExists(routine_log_file_path_)) {
+    return "";
+  }
+
+  std::string contents;
+  base::ReadFileToString(routine_log_file_path_, &contents);
+
+  return contents;
+}
+
 void RoutineLog::AppendToLog(const std::string& content) {
   base::AppendToFile(routine_log_file_path_, content.data(), content.size());
 }

@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_COMPONENTS_DIAGNOSTICS_UI_BACKEND_ROUTINE_LOG_H_
 #define CHROMEOS_COMPONENTS_DIAGNOSTICS_UI_BACKEND_ROUTINE_LOG_H_
 
+#include <string>
+
 #include "base/files/file_path.h"
 #include "chromeos/components/diagnostics_ui/mojom/system_routine_controller.mojom.h"
 
@@ -27,6 +29,9 @@ class RoutineLog {
   void LogRoutineStarted(mojom::RoutineType type);
   void LogRoutineCompleted(mojom::RoutineType type,
                            mojom::StandardRoutineResult result);
+
+  // Returns the current RoutineLog as a string.
+  std::string GetContents() const;
 
  private:
   void AppendToLog(const std::string& content);

@@ -64,6 +64,7 @@ TEST_F(RoutineLogTest, Empty) {
   RoutineLog log(log_path_);
 
   EXPECT_FALSE(base::PathExists(log_path_));
+  EXPECT_TRUE(log.GetContents().empty());
 }
 
 TEST_F(RoutineLogTest, Basic) {
@@ -73,8 +74,7 @@ TEST_F(RoutineLogTest, Basic) {
 
   EXPECT_TRUE(base::PathExists(log_path_));
 
-  std::string contents;
-  base::ReadFileToString(log_path_, &contents);
+  const std::string contents = log.GetContents();
   const std::string first_line = GetLogLines(contents)[0];
   const std::vector<std::string> first_line_contents =
       GetLogLineContents(first_line);
@@ -92,8 +92,7 @@ TEST_F(RoutineLogTest, TwoLine) {
                           mojom::StandardRoutineResult::kTestPassed);
   EXPECT_TRUE(base::PathExists(log_path_));
 
-  std::string contents;
-  base::ReadFileToString(log_path_, &contents);
+  const std::string contents = log.GetContents();
   const std::vector<std::string> log_lines = GetLogLines(contents);
 
   const std::string first_line = log_lines[0];
