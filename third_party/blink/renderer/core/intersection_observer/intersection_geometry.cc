@@ -97,6 +97,17 @@ PhysicalRect InitializeRootRect(const LayoutObject* root,
   return result;
 }
 
+PhysicalRect GetBoxBounds(const LayoutBox* box, bool use_overflow_clip_edge) {
+  PhysicalRect bounds = PhysicalRect(box->BorderBoundingBox());
+  // OverflowClipMargin() should only apply if clipping occurs on both axis.
+  if (use_overflow_clip_edge && box->ShouldClipOverflowAlongBothAxis() &&
+      box->StyleRef().OverflowClipMargin() != LayoutUnit()) {
+    // OverflowClipRect() may be smaller than BorderBoundingBox().
+    bounds.Unite(box->OverflowClipRect(PhysicalOffset()));
+  }
+  return bounds;
+}
+
 // Return the bounding box of target in target's own coordinate system, also
 // return a bool indicating whether the target rect before margin application
 // was empty.
@@ -109,7 +120,10 @@ std::pair<PhysicalRect, bool> InitializeTargetRect(const LayoutObject* target,
       target->IsLayoutEmbeddedContent()) {
     result.first = To<LayoutEmbeddedContent>(target)->ReplacedContentRect();
   } else if (target->IsBox()) {
-    result.first = PhysicalRect(To<LayoutBox>(target)->BorderBoundingBox());
+    result.first =
+        GetBoxBounds(To<LayoutBox>(target),
+                     (flags & IntersectionGeometry::kUseOverflowClipEdge) ==
+                         IntersectionGeometry::kUseOverflowClipEdge);
   } else if (target->IsLayoutInline()) {
     result.first = target->AbsoluteToLocalRect(
         PhysicalRect::EnclosingRect(target->AbsoluteBoundingBoxFloatRect()));
@@ -186,7 +200,8 @@ static const unsigned kConstructorFlagsMask =
     IntersectionGeometry::kShouldTrackFractionOfRoot |
     IntersectionGeometry::kShouldUseReplacedContentRect |
     IntersectionGeometry::kShouldConvertToCSSPixels |
-    IntersectionGeometry::kShouldUseCachedRects;
+    IntersectionGeometry::kShouldUseCachedRects |
+    IntersectionGeometry::kUseOverflowClipEdge;
 
 }  // namespace
 

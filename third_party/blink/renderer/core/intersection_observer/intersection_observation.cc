@@ -200,6 +200,8 @@ unsigned IntersectionObservation::GetIntersectionGeometryFlags(
     geometry_flags |= IntersectionGeometry::kShouldTrackFractionOfRoot;
   if (CanUseCachedRects())
     geometry_flags |= IntersectionGeometry::kShouldUseCachedRects;
+  if (Observer()->UseOverflowClipEdge())
+    geometry_flags |= IntersectionGeometry::kUseOverflowClipEdge;
   return geometry_flags;
 }
 

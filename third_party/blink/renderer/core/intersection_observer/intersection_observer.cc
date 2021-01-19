@@ -208,7 +208,7 @@ IntersectionObserver* IntersectionObserver::Create(
 
   return MakeGarbageCollected<IntersectionObserver>(
       delegate, root, margin, thresholds, kFractionOfTarget, delay,
-      track_visibility, false, kApplyMarginToRoot);
+      track_visibility, false, kApplyMarginToRoot, false);
 }
 
 IntersectionObserver* IntersectionObserver::Create(
@@ -238,6 +238,7 @@ IntersectionObserver* IntersectionObserver::Create(
     bool track_visibility,
     bool always_report_root_bounds,
     MarginTarget margin_target,
+    bool use_overflow_clip_edge,
     ExceptionState& exception_state) {
   IntersectionObserverDelegateImpl* intersection_observer_delegate =
       MakeGarbageCollected<IntersectionObserverDelegateImpl>(
@@ -245,7 +246,8 @@ IntersectionObserver* IntersectionObserver::Create(
           behavior);
   return MakeGarbageCollected<IntersectionObserver>(
       *intersection_observer_delegate, nullptr, margin, thresholds, semantics,
-      delay, track_visibility, always_report_root_bounds, margin_target);
+      delay, track_visibility, always_report_root_bounds, margin_target,
+      use_overflow_clip_edge);
 }
 
 IntersectionObserver::IntersectionObserver(
@@ -257,7 +259,8 @@ IntersectionObserver::IntersectionObserver(
     DOMHighResTimeStamp delay,
     bool track_visibility,
     bool always_report_root_bounds,
-    MarginTarget margin_target)
+    MarginTarget margin_target,
+    bool use_overflow_clip_edge)
     : ExecutionContextClient(delegate.GetExecutionContext()),
       delegate_(&delegate),
       root_(root),
@@ -270,7 +273,8 @@ IntersectionObserver::IntersectionObserver(
       track_fraction_of_root_(semantics == kFractionOfRoot),
       always_report_root_bounds_(always_report_root_bounds),
       needs_delivery_(0),
-      can_use_cached_rects_(0) {
+      can_use_cached_rects_(0),
+      use_overflow_clip_edge_(use_overflow_clip_edge) {
   switch (margin.size()) {
     case 0:
       break;
@@ -358,7 +362,9 @@ void IntersectionObserver::observe(Element* target,
     observation->ComputeIntersection(
         IntersectionObservation::kImplicitRootObserversNeedUpdate |
         IntersectionObservation::kExplicitRootObserversNeedUpdate |
-        IntersectionObservation::kIgnoreDelay);
+        IntersectionObservation::kIgnoreDelay |
+        (use_overflow_clip_edge_ ? IntersectionObservation::kUseOverflowClipEdge
+                                 : 0));
   }
 }
 
@@ -455,6 +461,9 @@ bool IntersectionObserver::ComputeIntersections(unsigned flags) {
       IntersectionObserver::kDeliverDuringPostLayoutSteps;
   if (post_layout_delivery_only != is_post_layout_delivery_observer)
     return false;
+
+  if (use_overflow_clip_edge_)
+    flags |= IntersectionObservation::kUseOverflowClipEdge;
 
   IntersectionGeometry::RootGeometry root_geometry(
       IntersectionGeometry::GetRootLayoutObjectForTarget(root(), nullptr,

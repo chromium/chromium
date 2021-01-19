@@ -189,7 +189,8 @@ TEST_F(IntersectionObserverTest, ReportsFractionOfTargetOrRoot) {
           *target_observer_delegate, nullptr, Vector<Length>(),
           Vector<float>{kExpectedFractionOfTarget / 2},
           IntersectionObserver::kFractionOfTarget, 0, false, false,
-          IntersectionObserver::kApplyMarginToRoot);
+          IntersectionObserver::kApplyMarginToRoot,
+          /* use_overflow_clip_edge */ false);
   DummyExceptionStateForTesting exception_state;
   target_observer->observe(target, exception_state);
   ASSERT_FALSE(exception_state.HadException());
@@ -201,7 +202,8 @@ TEST_F(IntersectionObserverTest, ReportsFractionOfTargetOrRoot) {
           *root_observer_delegate, nullptr, Vector<Length>(),
           Vector<float>{kExpectedFractionOfRoot / 2},
           IntersectionObserver::kFractionOfRoot, 0, false, false,
-          IntersectionObserver::kApplyMarginToRoot);
+          IntersectionObserver::kApplyMarginToRoot,
+          /* use_overflow_clip_edge */ false);
   root_observer->observe(target, exception_state);
   ASSERT_FALSE(exception_state.HadException());
 
@@ -257,7 +259,8 @@ TEST_F(IntersectionObserverTest, TargetRectIsEmptyAfterMapping) {
           *target_observer_delegate, nullptr, Vector<Length>(),
           Vector<float>{std::numeric_limits<float>::min()},
           IntersectionObserver::kFractionOfTarget, 0, false, false,
-          IntersectionObserver::kApplyMarginToRoot);
+          IntersectionObserver::kApplyMarginToRoot,
+          /* use_overflow_clip_edge */ false);
   DummyExceptionStateForTesting exception_state;
   target_observer->observe(target, exception_state);
   ASSERT_FALSE(exception_state.HadException());
@@ -979,7 +982,8 @@ TEST_F(IntersectionObserverTest, ApplyMarginToTarget) {
           *root_margin_delegate, nullptr, Vector<Length>{Length::Fixed(10)},
           Vector<float>{std::numeric_limits<float>::min()},
           IntersectionObserver::kFractionOfTarget, 0, false, false,
-          IntersectionObserver::kApplyMarginToRoot);
+          IntersectionObserver::kApplyMarginToRoot,
+          /* use_overflow_clip_edge */ false);
 
   DummyExceptionStateForTesting exception_state;
   root_margin_observer->observe(target, exception_state);
@@ -993,7 +997,8 @@ TEST_F(IntersectionObserverTest, ApplyMarginToTarget) {
           *target_margin_delegate, nullptr, Vector<Length>{Length::Fixed(10)},
           Vector<float>{std::numeric_limits<float>::min()},
           IntersectionObserver::kFractionOfTarget, 0, false, false,
-          IntersectionObserver::kApplyMarginToTarget);
+          IntersectionObserver::kApplyMarginToTarget,
+          /* use_overflow_clip_edge */ false);
 
   target_margin_observer->observe(target, exception_state);
   ASSERT_FALSE(exception_state.HadException());
@@ -1046,7 +1051,8 @@ TEST_F(IntersectionObserverTest, TargetMarginPercentResolvesAgainstRoot) {
           *target_margin_delegate, nullptr, Vector<Length>{Length::Percent(10)},
           Vector<float>{std::numeric_limits<float>::min()},
           IntersectionObserver::kFractionOfTarget, 0, false, false,
-          IntersectionObserver::kApplyMarginToTarget);
+          IntersectionObserver::kApplyMarginToTarget,
+          /* use_overflow_clip_edge */ false);
 
   DummyExceptionStateForTesting exception_state;
   target_margin_observer->observe(target, exception_state);

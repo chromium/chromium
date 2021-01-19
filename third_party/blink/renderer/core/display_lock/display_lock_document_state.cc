@@ -91,6 +91,9 @@ IntersectionObserver& DisplayLockDocumentState::EnsureIntersectionObserver() {
     //
     // Note that we use 150% margin (on the viewport) so that we get the
     // observation before the element enters the viewport.
+    //
+    // Paint containment requires using the overflow clip edge. To do otherwise
+    // results in overflow-clip-margin not being painted in certain scenarios.
     intersection_observer_ = IntersectionObserver::Create(
         {Length::Percent(150.f)}, {std::numeric_limits<float>::min()},
         document_,
@@ -101,7 +104,8 @@ IntersectionObserver& DisplayLockDocumentState::EnsureIntersectionObserver() {
         IntersectionObserver::kDeliverDuringPostLayoutSteps,
         IntersectionObserver::kFractionOfTarget, 0 /* delay */,
         false /* track_visibility */, false /* always report_root_bounds */,
-        IntersectionObserver::kApplyMarginToTarget);
+        IntersectionObserver::kApplyMarginToTarget,
+        true /* use_overflow_clip_edge */);
   }
   return *intersection_observer_;
 }
