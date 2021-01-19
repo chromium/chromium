@@ -7,9 +7,6 @@ import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://t
 
 import {BreadCrumb} from './breadcrumb.m.js';
 
-/** @const {boolean} */
-window.UNIT_TEST = true;
-
 /**
  * Creates new <bread-drumb> element for each test. Asserts it has no initial
  * path using the element.path getter.
@@ -758,6 +755,7 @@ export function testBreadcrumbPartPartsEllipsisElide() {
 /**
  * Tests that wide text path components in the drop-down menu are rendered
  * elided with ellipsis ... an opportunity for adding a tooltip.
+ * @suppress {accessControls} to be able to access private properties.
  */
 export function testBreadcrumbDropDownMenuPathPartsEllipsisElide() {
   const element = getBreadCrumb();
@@ -779,6 +777,9 @@ export function testBreadcrumbDropDownMenuPathPartsEllipsisElide() {
 
   const path = element.parts.join('/');
   assertEquals(expect, path + ' ' + getBreadCrumbButtonState());
+
+  // Display the dropdown menu.
+  element.toggleMenu_();
 
   // The wide part button should render its text with ellipsis.
   let ellipsis = element.getEllipsisButtons();
