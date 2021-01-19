@@ -239,11 +239,13 @@ message Study {
     // Chrome Desktop on Windows, Mac, Linux, or Chrome OS.
     DESKTOP = 0;
     // Phone-based mobile Chrome, e.g. an Android phone or iPhone.
-    PHONE   = 1;
+    PHONE = 1;
     // Tablet-based mobile Chrome, e.g. an Android tablet or iPad.
-    TABLET  = 2;
+    TABLET = 2;
     // Chrome OS running in single-app Kiosk mode.
-    KIOSK   = 3;
+    KIOSK = 3;
+    // Chrome OS running on Meet Hardware devices e.g. Chromebox For Meetings.
+    MEET_DEVICE = 4;
   }
 
   // Enum to pass as optional bool.

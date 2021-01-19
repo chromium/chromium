@@ -376,8 +376,12 @@ TEST_F(FieldTrialUtilTest,
 TEST_F(FieldTrialUtilTest,
        AssociateParamsFromFieldTrialConfigWithAllFormFactors) {
   const Study::Platform platform = Study::PLATFORM_WINDOWS;
-  const Study::FormFactor form_factors[] =
-      {Study::DESKTOP, Study::PHONE, Study::TABLET};
+  const Study::FormFactor form_factors[] = {
+      Study::DESKTOP,
+      Study::PHONE,
+      Study::TABLET,
+      Study::MEET_DEVICE,
+  };
   const FieldTrialTestingExperimentParams array_kFieldTrialConfig_params[] =
       {{"x", "1"}, {"y", "2"}};
   const FieldTrialTestingExperiment array_kFieldTrialConfig_experiments[] = {
@@ -450,10 +454,13 @@ TEST_F(FieldTrialUtilTest,
   const Study::Platform platform = Study::PLATFORM_WINDOWS;
   const Study::FormFactor current_form_factor =
       variation_service_client_.GetCurrentFormFactor();
-  const Study::FormFactor all_form_factors[] =
-      {Study::DESKTOP, Study::PHONE, Study::TABLET};
-  for (size_t i = 0; i < base::size(all_form_factors); ++i) {
-    const Study::FormFactor form_factor = all_form_factors[i];
+  const Study::FormFactor all_form_factors[] = {
+      Study::DESKTOP,
+      Study::PHONE,
+      Study::TABLET,
+      Study::MEET_DEVICE,
+  };
+  for (const Study::FormFactor form_factor : all_form_factors) {
     if (form_factor == current_form_factor)
       continue;
     const FieldTrialTestingExperimentParams array_kFieldTrialConfig_params[] =
