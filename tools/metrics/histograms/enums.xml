@@ -31000,6 +31000,11 @@ Called by update_use_counter_feature_enum.py.-->
       label="AddressSpaceUnknownNonSecureContextNavigatedToPrivate"/>
   <int value="3773" label="RTCPeerConnectionSdpSemanticsPlanB"/>
   <int value="3774" label="FetchRespondWithNoResponseWithUsedRequestBody"/>
+  <int value="3775" label="V8TCPSocket_Close_Method"/>
+  <int value="3776" label="V8TCPSocket_Readable_AttributeGetter"/>
+  <int value="3777" label="V8TCPSocket_Writable_AttributeGetter"/>
+  <int value="3778" label="V8TCPSocket_RemoteAddress_AttributeGetter"/>
+  <int value="3779" label="V8TCPSocket_RemotePort_AttributeGetter"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

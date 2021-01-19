@@ -3097,6 +3097,11 @@ enum WebFeature {
   kAddressSpaceUnknownNonSecureContextNavigatedToPrivate = 3772,
   kRTCPeerConnectionSdpSemanticsPlanB = 3773,
   kFetchRespondWithNoResponseWithUsedRequestBody = 3774,
+  kV8TCPSocket_Close_Method = 3775,
+  kV8TCPSocket_Readable_AttributeGetter = 3776,
+  kV8TCPSocket_Writable_AttributeGetter = 3777,
+  kV8TCPSocket_RemoteAddress_AttributeGetter = 3778,
+  kV8TCPSocket_RemotePort_AttributeGetter = 3779,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

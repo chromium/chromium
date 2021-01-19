@@ -9,14 +9,11 @@
     RuntimeEnabled=DirectSockets,
     SecureContext
 ] interface TCPSocket {
-  // TODO(crbug.com/905818): Add support for sending, receiving
-  // TODO(crbug.com/905818): Add measurement
-
-  [RaisesException, CallWith=ScriptState]
+  [RaisesException, CallWith=ScriptState, Measure]
   Promise<void> close();
 
-  readonly attribute DOMString remoteAddress;
-  readonly attribute unsigned short remotePort;
-  readonly attribute ReadableStream readable;
-  readonly attribute WritableStream writable;
+  [Measure] readonly attribute DOMString remoteAddress;
+  [Measure] readonly attribute unsigned short remotePort;
+  [Measure] readonly attribute ReadableStream readable;
+  [Measure] readonly attribute WritableStream writable;
 };
