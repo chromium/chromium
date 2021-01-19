@@ -17,12 +17,14 @@
 #include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
+#include "base/test/bind.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/animation/animation_host.h"
 #include "cc/animation/timing_function.h"
+#include "cc/document_transition/document_transition_request.h"
 #include "cc/input/scroll_elasticity_helper.h"
 #include "cc/layers/content_layer_client.h"
 #include "cc/layers/heads_up_display_layer.h"
@@ -67,6 +69,7 @@
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
+#include "components/viz/common/quads/compositor_frame_transition_directive.h"
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
@@ -9451,6 +9454,54 @@ class LayerTreeHostUkmSmoothnessMemoryOwnership : public LayerTreeTest {
 };
 
 MULTI_THREAD_TEST_F(LayerTreeHostUkmSmoothnessMemoryOwnership);
+
+class LayerTreeHostTestDocumentTransitionsPropagatedToMetadata
+    : public LayerTreeHostTest {
+ protected:
+  void SetupTree() override {
+    SetInitialRootBounds(gfx::Size(10, 10));
+    LayerTreeHostTest::SetupTree();
+  }
+
+  void BeginTest() override {
+    layer_tree_host()->AddDocumentTransitionRequest(
+        DocumentTransitionRequest::CreatePrepare(
+            DocumentTransitionRequest::Effect::kExplode,
+            base::TimeDelta::FromMilliseconds(123),
+            base::BindLambdaForTesting([this]() { CommitLambdaCalled(); })));
+    layer_tree_host()->AddDocumentTransitionRequest(
+        DocumentTransitionRequest::CreateStart(
+            base::BindLambdaForTesting([this]() { CommitLambdaCalled(); })));
+  }
+
+  void CommitLambdaCalled() { ++num_lambda_calls_; }
+
+  void DisplayReceivedCompositorFrameOnThread(
+      const viz::CompositorFrame& frame) override {
+    ASSERT_EQ(2u, frame.metadata.transition_directives.size());
+    const auto& save = frame.metadata.transition_directives[0];
+
+    EXPECT_EQ(save.type(),
+              viz::CompositorFrameTransitionDirective::Type::kSave);
+    EXPECT_EQ(save.effect(),
+              viz::CompositorFrameTransitionDirective::Effect::kExplode);
+    EXPECT_EQ(save.duration(), base::TimeDelta::FromMilliseconds(123));
+
+    const auto& animate = frame.metadata.transition_directives[1];
+    EXPECT_GT(animate.sequence_id(), save.sequence_id());
+    EXPECT_EQ(animate.type(),
+              viz::CompositorFrameTransitionDirective::Type::kAnimate);
+
+    EndTest();
+  }
+
+  void AfterTest() override { EXPECT_EQ(2, num_lambda_calls_); }
+
+  int num_lambda_calls_ = 0;
+};
+
+SINGLE_AND_MULTI_THREAD_TEST_F(
+    LayerTreeHostTestDocumentTransitionsPropagatedToMetadata);
 
 }  // namespace
 }  // namespace cc

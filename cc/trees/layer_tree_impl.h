@@ -48,6 +48,7 @@ class ContextProvider;
 namespace cc {
 
 class DebugRectHistory;
+class DocumentTransitionRequest;
 class DroppedFrameCounter;
 class HeadsUpDisplayLayerImpl;
 class ImageDecodeCache;
@@ -749,6 +750,15 @@ class CC_EXPORT LayerTreeImpl {
     return device_viewport_rect_changed_;
   }
 
+  // Add a document transition request from the embedder.
+  void AddDocumentTransitionRequest(
+      std::unique_ptr<DocumentTransitionRequest> request);
+
+  // Returns all of the document transition requests stored so far, and empties
+  // the internal list.
+  std::vector<std::unique_ptr<DocumentTransitionRequest>>
+  TakeDocumentTransitionRequests();
+
  protected:
   float ClampPageScaleFactorToLimits(float page_scale_factor) const;
   void PushPageScaleFactorAndLimits(const float* page_scale_factor,
@@ -903,6 +913,10 @@ class CC_EXPORT LayerTreeImpl {
   EventMetrics::List events_metrics_from_main_thread_;
 
   std::unique_ptr<viz::DelegatedInkMetadata> delegated_ink_metadata_;
+
+  // Document transition requests to be transferred to Viz.
+  std::vector<std::unique_ptr<DocumentTransitionRequest>>
+      document_transition_requests_;
 };
 
 }  // namespace cc

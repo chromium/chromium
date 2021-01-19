@@ -738,6 +738,9 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   void AddDocumentTransitionRequest(
       std::unique_ptr<DocumentTransitionRequest> request);
 
+  std::vector<std::unique_ptr<DocumentTransitionRequest>>
+  TakeDocumentTransitionRequestsForTesting();
+
  protected:
   LayerTreeHost(InitParams params, CompositorMode mode);
 
@@ -961,6 +964,16 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // as it is forwarded along the pipeline to avoid old information incorrectly
   // sticking around and potentially being reused.
   std::unique_ptr<viz::DelegatedInkMetadata> delegated_ink_metadata_;
+
+  // A list of document transitions that need to be transported from Blink to
+  // Viz, as a CompositorFrameTransitionDirective.
+  std::vector<std::unique_ptr<DocumentTransitionRequest>>
+      document_transition_requests_;
+
+  // A list of callbacks that need to be invoked in commit callback,
+  // representing document transitions that have been committed to
+  // LayerTreeImpl.
+  std::vector<base::OnceClosure> committed_document_transition_callbacks_;
 
   // Used to vend weak pointers to LayerTreeHost to ScopedDeferMainFrameUpdate
   // objects.

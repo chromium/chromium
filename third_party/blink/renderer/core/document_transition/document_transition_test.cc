@@ -25,6 +25,18 @@ class DocumentTransitionTest : public RenderingTest,
     RenderingTest::SetUp();
   }
 
+  // Testing the compositor interaction is not in scope for these unittests. So,
+  // instead of setting up a full commit flow, simulate it by calling the commit
+  // callback directly.
+  void UpdateAllLifecyclePhasesAndSimulateCommit() {
+    UpdateAllLifecyclePhasesForTest();
+    for (auto& request : GetChromeClient()
+                             .layer_tree_host()
+                             ->TakeDocumentTransitionRequestsForTesting()) {
+      request->TakeCommitCallback().Run();
+    }
+  }
+
   using State = DocumentTransition::State;
 
   State GetState(DocumentTransition* transition) const {
@@ -58,7 +70,7 @@ TEST_F(DocumentTransitionTest, TransitionPreparePromiseResolves) {
                                      transition->prepare(script_state, &init));
 
   EXPECT_EQ(GetState(transition), State::kPreparing);
-  UpdateAllLifecyclePhasesForTest();
+  UpdateAllLifecyclePhasesAndSimulateCommit();
   promise_tester.WaitUntilSettled();
 
   EXPECT_TRUE(promise_tester.IsFulfilled());
@@ -81,7 +93,7 @@ TEST_F(DocumentTransitionTest, AdditionalPrepareRejectsPreviousPromise) {
       script_state, transition->prepare(script_state, &init));
   EXPECT_EQ(GetState(transition), State::kPreparing);
 
-  UpdateAllLifecyclePhasesForTest();
+  UpdateAllLifecyclePhasesAndSimulateCommit();
   first_promise_tester.WaitUntilSettled();
   second_promise_tester.WaitUntilSettled();
 
@@ -141,7 +153,7 @@ TEST_F(DocumentTransitionTest, AdditionalPrepareAfterPreparedSucceeds) {
       script_state, transition->prepare(script_state, &init));
   EXPECT_EQ(GetState(transition), State::kPreparing);
 
-  UpdateAllLifecyclePhasesForTest();
+  UpdateAllLifecyclePhasesAndSimulateCommit();
   first_promise_tester.WaitUntilSettled();
   EXPECT_TRUE(first_promise_tester.IsFulfilled());
   EXPECT_EQ(GetState(transition), State::kPrepared);
@@ -150,7 +162,7 @@ TEST_F(DocumentTransitionTest, AdditionalPrepareAfterPreparedSucceeds) {
       script_state, transition->prepare(script_state, &init));
   EXPECT_EQ(GetState(transition), State::kPreparing);
 
-  UpdateAllLifecyclePhasesForTest();
+  UpdateAllLifecyclePhasesAndSimulateCommit();
   second_promise_tester.WaitUntilSettled();
   EXPECT_TRUE(second_promise_tester.IsFulfilled());
   EXPECT_EQ(GetState(transition), State::kPrepared);
@@ -169,7 +181,7 @@ TEST_F(DocumentTransitionTest, TransitionCleanedUpBeforePromiseResolution) {
   // ActiveScriptWrappable should keep the transition alive.
   ThreadState::Current()->CollectAllGarbageForTesting();
 
-  UpdateAllLifecyclePhasesForTest();
+  UpdateAllLifecyclePhasesAndSimulateCommit();
   tester.WaitUntilSettled();
   EXPECT_TRUE(tester.IsFulfilled());
 }
@@ -198,7 +210,7 @@ TEST_F(DocumentTransitionTest, StartAfterPrepare) {
                                      transition->prepare(script_state, &init));
   EXPECT_EQ(GetState(transition), State::kPreparing);
 
-  UpdateAllLifecyclePhasesForTest();
+  UpdateAllLifecyclePhasesAndSimulateCommit();
   prepare_tester.WaitUntilSettled();
   EXPECT_TRUE(prepare_tester.IsFulfilled());
   EXPECT_EQ(GetState(transition), State::kPrepared);
