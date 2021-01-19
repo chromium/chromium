@@ -924,8 +924,8 @@ SynthesizedClip::PaintContentsToDisplayList() {
       const auto& translation = translation_2d_or_matrix_.Translation2D();
       cc_list->push<cc::TranslateOp>(translation.Width(), translation.Height());
     } else {
-      cc_list->push<cc::ConcatOp>(SkMatrix(TransformationMatrix::ToSkMatrix44(
-          translation_2d_or_matrix_.Matrix())));
+      cc_list->push<cc::ConcatOp>(
+          TransformationMatrix::ToSkM44(translation_2d_or_matrix_.Matrix()));
     }
     if (path_) {
       cc_list->push<cc::ClipPathOp>(path_->GetSkPath(), SkClipOp::kIntersect,

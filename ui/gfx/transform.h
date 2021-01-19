@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "third_party/skia/include/core/SkM44.h"
 #include "third_party/skia/include/core/SkMatrix44.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/geometry_skia_export.h"
@@ -286,6 +287,12 @@ class GEOMETRY_SKIA_EXPORT Transform {
   // Returns the underlying matrix.
   const SkMatrix44& matrix() const { return matrix_; }
   SkMatrix44& matrix() { return matrix_; }
+
+  // TODO(crbug.com/1167153) SkMatrix44 is deprecated, this is to help in moving
+  // the code base towards SkM44, although eventually this class should just
+  // hold an SkM44
+  SkM44 GetMatrixAsSkM44() const;
+
   bool ApproximatelyEqual(const gfx::Transform& transform) const;
 
   std::string ToString() const;

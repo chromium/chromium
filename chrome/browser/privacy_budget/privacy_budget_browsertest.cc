@@ -204,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTest,
   // If the value of the relevant merged entry changes, input_digest needs to
   // change. The new input_digest can be calculated by:
   // new_input_digest = new_ukm_entry >> kTypeBits
-  constexpr uint64_t input_digest = UINT64_C(9877979512039296);
+  constexpr uint64_t input_digest = UINT64_C(23751416438320384);
   EXPECT_THAT(merged_entries.begin()->second->metrics,
               IsSupersetOf({
                   Key(blink::IdentifiableSurface::FromTypeAndToken(

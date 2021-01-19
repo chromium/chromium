@@ -297,7 +297,7 @@ TEST_F(DisplayItemListTest, TransformPairedRange) {
   {
     list->StartPaint();
     list->push<SaveOp>();
-    list->push<ConcatOp>(static_cast<SkMatrix>(transform.matrix()));
+    list->push<ConcatOp>(transform.GetMatrixAsSkM44());
     list->EndPaintOfPairedBegin();
   }
 
@@ -511,7 +511,7 @@ TEST_F(DisplayItemListTest, AsValueWithOps) {
   {
     list->StartPaint();
     list->push<SaveOp>();
-    list->push<ConcatOp>(static_cast<SkMatrix>(transform.matrix()));
+    list->push<ConcatOp>(transform.GetMatrixAsSkM44());
     list->EndPaintOfPairedBegin();
   }
 
@@ -855,7 +855,7 @@ TEST_F(DisplayItemListTest, AppendVisualRectTwoBlocksTwoDrawings) {
   {
     list->StartPaint();
     list->push<SaveOp>();
-    list->push<ConcatOp>(SkMatrix::I());
+    list->push<ConcatOp>(SkM44());
     list->EndPaintOfPairedBegin();
   }
 
@@ -918,7 +918,7 @@ TEST_F(DisplayItemListTest,
   {
     list->StartPaint();
     list->push<SaveOp>();
-    list->push<ConcatOp>(SkMatrix::I());
+    list->push<ConcatOp>(SkM44());
     list->EndPaintOfPairedBegin();
   }
 
@@ -981,7 +981,7 @@ TEST_F(DisplayItemListTest,
   {
     list->StartPaint();
     list->push<SaveOp>();
-    list->push<ConcatOp>(SkMatrix::I());
+    list->push<ConcatOp>(SkM44());
     list->EndPaintOfPairedBegin();
   }
 
@@ -1044,7 +1044,7 @@ TEST_F(DisplayItemListTest,
   {
     list->StartPaint();
     list->push<SaveOp>();
-    list->push<ConcatOp>(SkMatrix::I());
+    list->push<ConcatOp>(SkM44());
     list->EndPaintOfPairedBegin();
   }
 

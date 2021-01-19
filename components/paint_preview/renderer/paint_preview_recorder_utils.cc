@@ -72,7 +72,7 @@ void ParseGlyphsAndLinks(const cc::PaintOpBuffer* buffer,
       }
       case cc::PaintOpType::Concat: {
         auto* concat_op = static_cast<cc::ConcatOp*>(*it);
-        tracker->Concat(concat_op->matrix);
+        tracker->Concat(concat_op->matrix.asM33());
         break;
       }
       case cc::PaintOpType::Scale: {

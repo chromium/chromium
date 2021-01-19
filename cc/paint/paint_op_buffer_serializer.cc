@@ -259,7 +259,7 @@ void PaintOpBufferSerializer::SerializeBuffer(
       Save(options, params);
       // The following ops are copying the canvas's ops from
       // DrawImageRectOp::RasterWithFlags.
-      SkMatrix trans = SkMatrix::RectToRect(draw_op->src, draw_op->dst);
+      SkM44 trans = SkM44(SkMatrix::RectToRect(draw_op->src, draw_op->dst));
       ConcatOp concat_op(trans);
       bool success = SerializeOp(&concat_op, options, params);
       if (!success)

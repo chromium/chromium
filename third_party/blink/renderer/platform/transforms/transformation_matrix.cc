@@ -2095,6 +2095,13 @@ SkMatrix44 TransformationMatrix::ToSkMatrix44(
   return ret;
 }
 
+SkM44 TransformationMatrix::ToSkM44(const TransformationMatrix& matrix) {
+  return SkM44(matrix.M11(), matrix.M21(), matrix.M31(), matrix.M41(),
+               matrix.M12(), matrix.M22(), matrix.M32(), matrix.M42(),
+               matrix.M13(), matrix.M23(), matrix.M33(), matrix.M43(),
+               matrix.M14(), matrix.M24(), matrix.M34(), matrix.M44());
+}
+
 gfx::Transform TransformationMatrix::ToTransform(
     const TransformationMatrix& matrix) {
   return gfx::Transform(matrix.M11(), matrix.M21(), matrix.M31(), matrix.M41(),

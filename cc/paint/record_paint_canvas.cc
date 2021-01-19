@@ -108,12 +108,13 @@ void RecordPaintCanvas::rotate(SkScalar degrees) {
 }
 
 void RecordPaintCanvas::concat(const SkMatrix& matrix) {
-  list_->push<ConcatOp>(matrix);
-  GetCanvas()->concat(matrix);
+  SkM44 m = SkM44(matrix);
+  list_->push<ConcatOp>(m);
+  GetCanvas()->concat(m);
 }
 
 void RecordPaintCanvas::concat(const SkM44& matrix) {
-  list_->push<Concat44Op>(matrix);
+  list_->push<ConcatOp>(matrix);
   GetCanvas()->concat(matrix);
 }
 

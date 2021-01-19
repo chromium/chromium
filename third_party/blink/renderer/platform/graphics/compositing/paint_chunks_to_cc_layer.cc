@@ -151,7 +151,7 @@ class ConversionContext {
                                        translation.Height());
       }
     } else {
-      cc_list_.push<cc::ConcatOp>(translation_2d_or_matrix.ToSkMatrix());
+      cc_list_.push<cc::ConcatOp>(translation_2d_or_matrix.ToSkM44());
     }
   }
 
@@ -689,7 +689,7 @@ void ConversionContext::SwitchToTransform(
     const auto& translation = translation_2d_or_matrix.Translation2D();
     cc_list_.push<cc::TranslateOp>(translation.Width(), translation.Height());
   } else {
-    cc_list_.push<cc::ConcatOp>(translation_2d_or_matrix.ToSkMatrix());
+    cc_list_.push<cc::ConcatOp>(translation_2d_or_matrix.ToSkM44());
   }
   cc_list_.EndPaintOfPairedBegin();
   previous_transform_ = current_transform_;

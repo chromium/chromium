@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/geometry/float_point_3d.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/skia/include/core/SkM44.h"
 #include "third_party/skia/include/core/SkMatrix44.h"
 
 namespace gfx {
@@ -458,6 +459,7 @@ class PLATFORM_EXPORT TransformationMatrix {
   void ToColumnMajorFloatArray(FloatMatrix4& result) const;
 
   static SkMatrix44 ToSkMatrix44(const TransformationMatrix&);
+  static SkM44 ToSkM44(const TransformationMatrix&);
   static gfx::Transform ToTransform(const TransformationMatrix&);
 
   // If |asMatrix|, return the matrix in row-major order. Otherwise, return

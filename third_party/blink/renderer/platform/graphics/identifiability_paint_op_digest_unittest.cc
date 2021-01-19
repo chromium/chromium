@@ -48,7 +48,7 @@ class StudyParticipationRaii {
 constexpr IntSize kSize(10, 10);
 
 constexpr float kScaleX = 1.0f, kScaleY = 1.0f;
-constexpr int64_t kScaleDigest = INT64_C(3912833130267371121);
+constexpr int64_t kScaleDigest = INT64_C(8258647715449129112);
 constexpr int64_t kTokenBuilderInitialDigest = INT64_C(6544625333304541877);
 
 TEST(IdentifiabilityPaintOpDigestTest, Construct) {
@@ -185,7 +185,7 @@ TEST(IdentifiabilityPaintOpDigestTest, SkPathDigestStability) {
                                                     /*num_ops_to_visit=*/1);
   EXPECT_EQ(identifiability_paintop_digest1.GetToken().ToUkmMetricValue(),
             identifiability_paintop_digest2.GetToken().ToUkmMetricValue());
-  EXPECT_EQ(INT64_C(-399221628431375648),
+  EXPECT_EQ(INT64_C(-1093634256342000670),
             identifiability_paintop_digest1.GetToken().ToUkmMetricValue());
 
   EXPECT_FALSE(identifiability_paintop_digest1.encountered_skipped_ops());
@@ -224,7 +224,7 @@ TEST(IdentifiabilityPaintOpDigestTest, PaintShaderStability) {
                                                     /*num_ops_to_visit=*/1);
   EXPECT_EQ(identifiability_paintop_digest1.GetToken().ToUkmMetricValue(),
             identifiability_paintop_digest2.GetToken().ToUkmMetricValue());
-  EXPECT_EQ(INT64_C(3780730866145091926),
+  EXPECT_EQ(INT64_C(6157094048912696853),
             identifiability_paintop_digest1.GetToken().ToUkmMetricValue());
 }
 
@@ -249,7 +249,7 @@ TEST(IdentifiabilityPaintOpDigestTest, BufferLeftoversDontAffectFutureDigests) {
                                                     /*num_ops_to_visit=*/1);
   identifiability_paintop_digest2.MaybeUpdateDigest(paint_record2,
                                                     /*num_ops_to_visit=*/1);
-  EXPECT_EQ(INT64_C(5518043648729082780),
+  EXPECT_EQ(INT64_C(-1855817800596177722),
             identifiability_paintop_digest1.GetToken().ToUkmMetricValue());
   EXPECT_EQ(kScaleDigest,
             identifiability_paintop_digest2.GetToken().ToUkmMetricValue());
@@ -280,7 +280,7 @@ TEST(IdentifiabilityPaintOpDigestTest,
   paint_record->push<cc::ScaleOp>(kScaleX, kScaleY);
   identifiability_paintop_digest.MaybeUpdateDigest(paint_record,
                                                    /*num_ops_to_visit=*/2);
-  EXPECT_EQ(INT64_C(692457106071131666),
+  EXPECT_EQ(INT64_C(-2635322358402873102),
             identifiability_paintop_digest.GetToken().ToUkmMetricValue());
 
   EXPECT_FALSE(identifiability_paintop_digest.encountered_skipped_ops());
@@ -327,7 +327,7 @@ TEST(IdentifiabilityPaintOpDigestTest, IgnoresPrefixAndSuffix_MultipleOps) {
   identifiability_paintop_digest.SetPrefixSkipCount(1);
   identifiability_paintop_digest.MaybeUpdateDigest(paint_record,
                                                    /*num_ops_to_visit=*/2);
-  EXPECT_EQ(INT64_C(3912833130267371121),
+  EXPECT_EQ(INT64_C(8258647715449129112),
             identifiability_paintop_digest.GetToken().ToUkmMetricValue());
 
   EXPECT_FALSE(identifiability_paintop_digest.encountered_skipped_ops());
@@ -429,7 +429,7 @@ TEST(IdentifiabilityPaintOpDigestTest, DigestImageOp) {
       nullptr);
   identifiability_paintop_digest.MaybeUpdateDigest(paint_record,
                                                    /*num_ops_to_visit=*/1);
-  EXPECT_EQ(INT64_C(4005382542839876668),
+  EXPECT_EQ(INT64_C(72317288461381383),
             identifiability_paintop_digest.GetToken().ToUkmMetricValue());
 
   EXPECT_FALSE(identifiability_paintop_digest.encountered_skipped_ops());

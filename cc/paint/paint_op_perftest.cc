@@ -111,7 +111,7 @@ class PaintOpPerfTest : public testing::Test {
 TEST_F(PaintOpPerfTest, SimpleOps) {
   PaintOpBuffer buffer;
   for (size_t i = 0; i < 100; ++i)
-    buffer.push<ConcatOp>(SkMatrix::I());
+    buffer.push<ConcatOp>(SkM44());
   RunTest("simple", buffer);
 }
 

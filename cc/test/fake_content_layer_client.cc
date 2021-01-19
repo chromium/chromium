@@ -55,8 +55,7 @@ FakeContentLayerClient::PaintContentsToDisplayList() {
     if (!it->transform.IsIdentity()) {
       display_list->StartPaint();
       display_list->push<SaveOp>();
-      display_list->push<ConcatOp>(
-          static_cast<SkMatrix>(it->transform.matrix()));
+      display_list->push<ConcatOp>(it->transform.GetMatrixAsSkM44());
       display_list->EndPaintOfPairedBegin();
     }
 
