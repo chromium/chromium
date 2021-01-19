@@ -4644,6 +4644,31 @@
             ]
         }
     ],
+    "OmniboxPrefetch": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "PrefetchEnabledStreamingAny_V3",
+                    "params": {
+                        "max_attempts_per_caching_duration": "3",
+                        "only_prefetch_default_match": "false",
+                        "stream_responses": "true"
+                    },
+                    "enable_features": [
+                        "SearchPrefetchService",
+                        "SearchPrefetchServicePrefetching"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxRefinedFocusStateDesktop": [
         {
             "platforms": [
