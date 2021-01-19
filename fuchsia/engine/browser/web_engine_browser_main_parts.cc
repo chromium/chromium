@@ -29,6 +29,7 @@
 #include "gpu/command_buffer/service/gpu_switches.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "ui/aura/screen_ozone.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/switches.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/ozone_switches.h"
@@ -181,6 +182,12 @@ void WebEngineBrowserMainParts::OnIntlProfileChanged(
   std::string primary_locale =
       base::FuchsiaIntlProfileWatcher::GetPrimaryLocaleIdFromProfile(profile);
   base::i18n::SetICUDefaultLocale(primary_locale);
+
+  // Reload locale-specific resources.
+  std::string loaded_locale =
+      ui::ResourceBundle::GetSharedInstance().ReloadLocaleResources(
+          base::i18n::GetConfiguredLocale());
+  VLOG(1) << "Reloaded locale resources: " << loaded_locale;
 
   // Reconfigure the network process.
   content::BrowserContext::GetDefaultStoragePartition(browser_context_.get())
