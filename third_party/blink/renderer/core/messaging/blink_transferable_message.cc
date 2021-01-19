@@ -45,9 +45,6 @@ BlinkTransferableMessage BlinkTransferableMessage::FromMessageEvent(
         user_activation->hasBeenActive(), user_activation->isActive());
   }
 
-  // Capability delegation
-  result.delegate_payment_request = message_event->delegatePaymentRequest();
-
   // Blobs.
   for (const auto& blob : serialized_script_value->BlobDataHandles()) {
     result.message->BlobDataHandles().Set(
@@ -153,7 +150,6 @@ BlinkTransferableMessage BlinkTransferableMessage::FromTransferableMessage(
         message.user_activation->has_been_active,
         message.user_activation->was_active);
   }
-  result.delegate_payment_request = message.delegate_payment_request;
 
   if (!message.array_buffer_contents_array.empty()) {
     SerializedScriptValue::ArrayBufferContentsArray array_buffer_contents_array;

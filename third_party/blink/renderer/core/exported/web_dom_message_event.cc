@@ -64,7 +64,7 @@ WebDOMMessageEvent::WebDOMMessageEvent(
   // right?
   Unwrap<MessageEvent>()->initMessageEvent(
       "message", false, false, message_data, origin, "" /*lastEventId*/, window,
-      ports, nullptr /*user_activation*/, false);
+      ports, nullptr /*user_activation*/);
 }
 
 WebString WebDOMMessageEvent::Origin() const {

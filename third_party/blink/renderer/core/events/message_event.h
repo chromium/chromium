@@ -79,11 +79,10 @@ class CORE_EXPORT MessageEvent final : public Event {
                               const String& origin = String(),
                               const String& last_event_id = String(),
                               EventTarget* source = nullptr,
-                              UserActivation* user_activation = nullptr,
-                              bool delegate_payment_request = false) {
+                              UserActivation* user_activation = nullptr) {
     return MakeGarbageCollected<MessageEvent>(
         std::move(data), origin, last_event_id, source, std::move(channels),
-        user_activation, delegate_payment_request);
+        user_activation);
   }
   static MessageEvent* CreateError(const String& origin = String(),
                                    EventTarget* source = nullptr) {
@@ -121,8 +120,7 @@ class CORE_EXPORT MessageEvent final : public Event {
                const String& last_event_id,
                EventTarget* source,
                Vector<MessagePortChannel>,
-               UserActivation* user_activation,
-               bool delegate_payment_request);
+               UserActivation* user_activation);
   // Creates a "messageerror" event.
   MessageEvent(const String& origin, EventTarget* source);
   MessageEvent(const String& data, const String& origin);
@@ -146,8 +144,7 @@ class CORE_EXPORT MessageEvent final : public Event {
                         const String& last_event_id,
                         EventTarget* source,
                         MessagePortArray*,
-                        UserActivation* user_activation,
-                        bool delegate_payment_request);
+                        UserActivation* user_activation);
   void initMessageEvent(const AtomicString& type,
                         bool bubbles,
                         bool cancelable,
@@ -165,7 +162,6 @@ class CORE_EXPORT MessageEvent final : public Event {
   MessagePortArray ports();
   bool isPortsDirty() const { return is_ports_dirty_; }
   UserActivation* userActivation() const { return user_activation_; }
-  bool delegatePaymentRequest() const { return delegate_payment_request_; }
 
   Vector<MessagePortChannel> ReleaseChannels() { return std::move(channels_); }
 
@@ -231,7 +227,6 @@ class CORE_EXPORT MessageEvent final : public Event {
   bool is_ports_dirty_ = true;
   Vector<MessagePortChannel> channels_;
   Member<UserActivation> user_activation_;
-  bool delegate_payment_request_;
   size_t amount_of_external_memory_ = 0;
   // For serialized messages across process this attribute contains the
   // information of whether the actual original SerializedScriptValue was locked

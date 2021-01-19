@@ -39,9 +39,6 @@ struct BLINK_COMMON_EXPORT TransferableMessage : public CloneableMessage {
   // The state of user activation.
   mojom::UserActivationSnapshotPtr user_activation;
 
-  // Whether payment request capability is delegated to the destination frame.
-  bool delegate_payment_request;
-
  private:
   DISALLOW_COPY_AND_ASSIGN(TransferableMessage);
 };

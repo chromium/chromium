@@ -656,24 +656,10 @@ void DOMWindow::DoPostMessage(scoped_refptr<SerializedScriptValue> message,
   if (options->includeUserActivation())
     user_activation = UserActivation::CreateSnapshot(source);
 
-  // TODO(mustaq): This is an ad-hoc mechanism to support delegating a single
-  // capability.  We need to add a structure to support passing other
-  // capabilities.  An explainer for the general delegation API is here:
-  // https://github.com/mustaqahmed/capability-delegation
-  bool delegate_payment_request = false;
-  if (RuntimeEnabledFeatures::CapabilityDelegationPaymentRequestEnabled(
-          GetExecutionContext()) &&
-      LocalFrame::HasTransientUserActivation(source_frame) &&
-      options->hasCreateToken()) {
-    Vector<String> capability_list;
-    options->createToken().Split(' ', capability_list);
-    delegate_payment_request = capability_list.Contains("paymentrequest");
-  }
-
   MessageEvent* event =
       MessageEvent::Create(std::move(channels), std::move(message),
                            source->GetSecurityOrigin()->ToString(), String(),
-                           source, user_activation, delegate_payment_request);
+                           source, user_activation);
 
   SchedulePostMessage(event, std::move(target), source);
 }

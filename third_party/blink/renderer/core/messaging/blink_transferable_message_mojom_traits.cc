@@ -53,8 +53,6 @@ bool StructTraits<blink::mojom::blink::TransferableMessage::DataView,
         blink::SerializedScriptValue::Stream(std::move(channel)));
   }
 
-  out->delegate_payment_request = data.delegate_payment_request();
-
   out->message->SetArrayBufferContentsArray(
       std::move(array_buffer_contents_array));
   array_buffer_contents_array.clear();

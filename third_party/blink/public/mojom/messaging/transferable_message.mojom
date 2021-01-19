@@ -33,8 +33,4 @@ struct TransferableMessage {
   array<skia.mojom.BitmapN32> image_bitmap_contents_array;
   // The user activation state, null if the frame isn't providing it.
   UserActivationSnapshot? user_activation;
-  // Whether payment request capability is delegated to the destination frame.
-  //
-  // TODO(mustaq): Replace this with a structure for capability-specific bits.
-  bool delegate_payment_request;
 };
