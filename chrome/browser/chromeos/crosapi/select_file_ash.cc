@@ -167,11 +167,14 @@ class SelectFileDialogHolder : public ui::SelectFileDialog::Listener {
 
 }  // namespace
 
-// TODO(https://crbug.com/1090587): Connection error handling.
-SelectFileAsh::SelectFileAsh(mojo::PendingReceiver<mojom::SelectFile> receiver)
-    : receiver_(this, std::move(receiver)) {}
+SelectFileAsh::SelectFileAsh() = default;
 
 SelectFileAsh::~SelectFileAsh() = default;
+
+void SelectFileAsh::BindReceiver(
+    mojo::PendingReceiver<mojom::SelectFile> receiver) {
+  receivers_.Add(this, std::move(receiver));
+}
 
 void SelectFileAsh::Select(mojom::SelectFileOptionsPtr options,
                            SelectCallback callback) {

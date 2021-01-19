@@ -7,7 +7,7 @@
 
 #include "chromeos/crosapi/mojom/select_file.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 
 namespace crosapi {
 
@@ -16,17 +16,19 @@ namespace crosapi {
 // file manager to provide the dialogs. Lives on the UI thread.
 class SelectFileAsh : public mojom::SelectFile {
  public:
-  explicit SelectFileAsh(mojo::PendingReceiver<mojom::SelectFile> receiver);
+  SelectFileAsh();
   SelectFileAsh(const SelectFileAsh&) = delete;
   SelectFileAsh& operator=(const SelectFileAsh&) = delete;
   ~SelectFileAsh() override;
+
+  void BindReceiver(mojo::PendingReceiver<mojom::SelectFile> receiver);
 
   // crosapi::mojom::SelectFile:
   void Select(mojom::SelectFileOptionsPtr options,
               SelectCallback callback) override;
 
  private:
-  mojo::Receiver<mojom::SelectFile> receiver_;
+  mojo::ReceiverSet<mojom::SelectFile> receivers_;
 };
 
 }  // namespace crosapi

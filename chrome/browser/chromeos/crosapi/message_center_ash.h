@@ -7,7 +7,7 @@
 
 #include "chromeos/crosapi/mojom/message_center.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 
 namespace crosapi {
 
@@ -16,11 +16,12 @@ namespace crosapi {
 // Sends reply IPCs when the user interacts with the notifications.
 class MessageCenterAsh : public mojom::MessageCenter {
  public:
-  explicit MessageCenterAsh(
-      mojo::PendingReceiver<mojom::MessageCenter> receiver);
+  MessageCenterAsh();
   MessageCenterAsh(const MessageCenterAsh&) = delete;
   MessageCenterAsh& operator=(const MessageCenterAsh&) = delete;
   ~MessageCenterAsh() override;
+
+  void BindReceiver(mojo::PendingReceiver<mojom::MessageCenter> receiver);
 
   // crosapi::mojom::MessageCenter:
   void DisplayNotification(
@@ -31,7 +32,7 @@ class MessageCenterAsh : public mojom::MessageCenter {
       GetDisplayedNotificationsCallback callback) override;
 
  private:
-  mojo::Receiver<mojom::MessageCenter> receiver_;
+  mojo::ReceiverSet<mojom::MessageCenter> receivers_;
 };
 
 }  // namespace crosapi

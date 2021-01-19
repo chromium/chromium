@@ -23,10 +23,14 @@ chrome::FeedbackSource FromMojo(mojom::LacrosFeedbackSource source) {
 
 }  // namespace
 
-FeedbackAsh::FeedbackAsh(mojo::PendingReceiver<mojom::Feedback> receiver)
-    : receiver_(this, std::move(receiver)) {}
+FeedbackAsh::FeedbackAsh() = default;
 
 FeedbackAsh::~FeedbackAsh() = default;
+
+void FeedbackAsh::BindReceiver(
+    mojo::PendingReceiver<mojom::Feedback> receiver) {
+  receivers_.Add(this, std::move(receiver));
+}
 
 void FeedbackAsh::ShowFeedbackPage(mojom::FeedbackInfoPtr feedback_info) {
   const user_manager::User* user =

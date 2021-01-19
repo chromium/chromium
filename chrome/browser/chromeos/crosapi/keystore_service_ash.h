@@ -12,7 +12,7 @@
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 
 namespace chromeos {
 namespace attestation {
@@ -28,11 +28,12 @@ namespace crosapi {
 // system keystores. This class is affine to the UI thread.
 class KeystoreServiceAsh : public mojom::KeystoreService {
  public:
-  explicit KeystoreServiceAsh(
-      mojo::PendingReceiver<mojom::KeystoreService> receiver);
+  KeystoreServiceAsh();
   KeystoreServiceAsh(const KeystoreServiceAsh&) = delete;
   KeystoreServiceAsh& operator=(const KeystoreServiceAsh&) = delete;
   ~KeystoreServiceAsh() override;
+
+  void BindReceiver(mojo::PendingReceiver<mojom::KeystoreService> receiver);
 
   // mojom::KeystoreService:
   using KeystoreType = mojom::KeystoreType;
@@ -94,7 +95,7 @@ class KeystoreServiceAsh : public mojom::KeystoreService {
   // Container to keep outstanding challenges alive.
   std::vector<std::unique_ptr<chromeos::attestation::TpmChallengeKey>>
       outstanding_challenges_;
-  mojo::Receiver<mojom::KeystoreService> receiver_;
+  mojo::ReceiverSet<mojom::KeystoreService> receivers_;
 
   base::WeakPtrFactory<KeystoreServiceAsh> weak_factory_{this};
 };
