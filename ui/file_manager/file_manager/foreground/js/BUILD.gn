@@ -62,6 +62,7 @@ js_type_check("closure_compile_jsmodules") {
     ":last_modified_controller.m",
     ":launch_param.m",
     ":list_thumbnail_loader.m",
+    ":main.m",
     ":main_window_component.m",
     ":metadata_box_controller.m",
     ":metadata_update_controller.m",
@@ -1439,6 +1440,15 @@ js_library("main") {
     "//ui/file_manager/file_manager/common/js:files_app_entry_types",
     "//ui/file_manager/file_manager/common/js:metrics",
     "//ui/file_manager/file_manager/common/js:util",
+  ]
+}
+
+js_library("main.m") {
+  visibility += [ "//ui/file_manager:*" ]
+  deps = [
+    ":file_manager.m",
+    ":metrics_start.m",
+    "//ui/file_manager/file_manager/common/js:util.m",
   ]
 }
 

@@ -86,6 +86,7 @@ preprocess_if_expr("preprocess_static") {
     "audio_player/js/main_background.m.js",
     "file_manager/background/js/main_background.m.js",
     "file_manager/foreground/js/elements_importer.m.js",
+    "file_manager/foreground/js/main.m.js",
     "video_player/js/main.m.js",
     "video_player/js/main_background.m.js",
   ]
@@ -94,6 +95,7 @@ preprocess_if_expr("preprocess_static") {
     "//ui/file_manager/audio_player/js:main.m",
     "//ui/file_manager/audio_player/js:main_background.m",
     "//ui/file_manager/file_manager/background/js:main_background.m",
+    "//ui/file_manager/file_manager/foreground/js:main.m",
     "//ui/file_manager/video_player/js:main.m",
     "//ui/file_manager/video_player/js:main_background.m",
   ]
