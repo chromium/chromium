@@ -136,7 +136,7 @@ void BluetoothRemoteGattCharacteristicMac::ReadRemoteCharacteristic(
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(error_callback),
-                       BluetoothRemoteGattService::GATT_ERROR_NOT_SUPPORTED));
+                       BluetoothRemoteGattService::GATT_ERROR_NOT_PERMITTED));
     return;
   }
   if (HasPendingRead() || HasPendingWrite()) {
