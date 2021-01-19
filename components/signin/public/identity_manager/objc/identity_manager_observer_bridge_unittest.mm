@@ -99,6 +99,21 @@ class IdentityManagerObserverBridgeTest : public testing::Test {
   }
   ~IdentityManagerObserverBridgeTest() override {}
 
+  void TearDown() override {
+    // Check no unexpected calls. None zero counter needs to be reset at the end
+    // tests.
+    EXPECT_EQ(0, observer_bridge_delegate_.onPrimaryAccountSetCount);
+    EXPECT_EQ(0, observer_bridge_delegate_.onPrimaryAccountClearedCount);
+    EXPECT_EQ(0,
+              observer_bridge_delegate_.onRefreshTokenUpdatedForAccountCount);
+    EXPECT_EQ(0,
+              observer_bridge_delegate_.onRefreshTokenRemovedForAccountCount);
+    EXPECT_EQ(0, observer_bridge_delegate_.onRefreshTokensLoadedCount);
+    EXPECT_EQ(0, observer_bridge_delegate_.onAccountsInCookieUpdatedCount);
+    EXPECT_EQ(
+        0, observer_bridge_delegate_.onEndBatchOfRefreshTokenStateChangesCount);
+  }
+
  public:
   IdentityManagerObserverBridgeTest(const IdentityManagerObserverBridgeTest&) =
       delete;
@@ -128,6 +143,8 @@ TEST_F(IdentityManagerObserverBridgeTest, TestOnPrimaryAccountSet) {
   EXPECT_EQ(1, observer_bridge_delegate_.onPrimaryAccountSetCount);
   EXPECT_EQ(account_info_,
             observer_bridge_delegate_.receivedPrimaryAccountInfo);
+  // Reset counter to pass the tear down.
+  observer_bridge_delegate_.onPrimaryAccountSetCount = 0;
 }
 
 // Tests IdentityManagerObserverBridge::OnPrimaryAccountChanged(), with clear
@@ -141,6 +158,8 @@ TEST_F(IdentityManagerObserverBridgeTest, TestOnPrimaryAccountCleared) {
   EXPECT_EQ(1, observer_bridge_delegate_.onPrimaryAccountClearedCount);
   EXPECT_EQ(account_info_,
             observer_bridge_delegate_.receivedPrimaryAccountInfo);
+  // Reset counter to pass the tear down.
+  observer_bridge_delegate_.onPrimaryAccountClearedCount = 0;
 }
 
 // Tests IdentityManagerObserverBridge::OnRefreshTokenUpdatedForAccount()
@@ -149,6 +168,8 @@ TEST_F(IdentityManagerObserverBridgeTest, TestOnRefreshTokenUpdatedForAccount) {
   EXPECT_EQ(1, observer_bridge_delegate_.onRefreshTokenUpdatedForAccountCount);
   EXPECT_EQ(account_info_,
             observer_bridge_delegate_.receivedPrimaryAccountInfo);
+  // Reset counter to pass the tear down.
+  observer_bridge_delegate_.onRefreshTokenUpdatedForAccountCount = 0;
 }
 
 // Tests IdentityManagerObserverBridge::OnRefreshTokenRemovedForAccount()
@@ -156,12 +177,16 @@ TEST_F(IdentityManagerObserverBridgeTest, OnRefreshTokenRemovedForAccount) {
   CoreAccountId account_id;
   observer_bridge_.get()->OnRefreshTokenRemovedForAccount(account_id);
   EXPECT_EQ(1, observer_bridge_delegate_.onRefreshTokenRemovedForAccountCount);
+  // Reset counter to pass the tear down.
+  observer_bridge_delegate_.onRefreshTokenRemovedForAccountCount = 0;
 }
 
 // Tests IdentityManagerObserverBridge::OnRefreshTokensLoaded()
 TEST_F(IdentityManagerObserverBridgeTest, OnRefreshTokensLoaded) {
   observer_bridge_.get()->OnRefreshTokensLoaded();
   EXPECT_EQ(1, observer_bridge_delegate_.onRefreshTokensLoadedCount);
+  // Reset counter to pass the tear down.
+  observer_bridge_delegate_.onRefreshTokensLoadedCount = 0;
 }
 
 // Tests IdentityManagerObserverBridge::OnAccountsInCookieUpdated() with no
@@ -175,6 +200,8 @@ TEST_F(IdentityManagerObserverBridgeTest,
                                                     noError);
   EXPECT_EQ(1, observer_bridge_delegate_.onAccountsInCookieUpdatedCount);
   EXPECT_EQ(noError, observer_bridge_delegate_.receivedError);
+  // Reset counter to pass the tear down.
+  observer_bridge_delegate_.onAccountsInCookieUpdatedCount = 0;
 }
 
 // Tests IdentityManagerObserverBridge::OnAccountsInCookieUpdated() with error.
@@ -187,6 +214,8 @@ TEST_F(IdentityManagerObserverBridgeTest, OnAccountsInCookieUpdatedWithError) {
                                                     error);
   EXPECT_EQ(1, observer_bridge_delegate_.onAccountsInCookieUpdatedCount);
   EXPECT_EQ(error, observer_bridge_delegate_.receivedError);
+  // Reset counter to pass the tear down.
+  observer_bridge_delegate_.onAccountsInCookieUpdatedCount = 0;
 }
 
 // Tests IdentityManagerObserverBridge::OnEndBatchOfRefreshTokenStateChanges().
@@ -195,6 +224,8 @@ TEST_F(IdentityManagerObserverBridgeTest,
   observer_bridge_.get()->OnEndBatchOfRefreshTokenStateChanges();
   EXPECT_EQ(
       1, observer_bridge_delegate_.onEndBatchOfRefreshTokenStateChangesCount);
+  // Reset counter to pass the tear down.
+  observer_bridge_delegate_.onEndBatchOfRefreshTokenStateChangesCount = 0;
 }
 
 }
