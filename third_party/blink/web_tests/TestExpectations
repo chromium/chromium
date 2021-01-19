@@ -2859,7 +2859,6 @@ crbug.com/626703 external/wpt/webrtc/RTCPeerConnection-setRemoteDescription-trac
 crbug.com/626703 external/wpt/webrtc/RTCPeerConnection-remote-track-mute.https.html [ Timeout ]
 crbug.com/626703 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/counter-styles-3/system-cyclic-invalid.html [ Pass Failure Timeout ]
 crbug.com/626703 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/counter-styles-3/system-alphabetic-invalid.html [ Pass Failure Timeout ]
-crbug.com/626703 external/wpt/html/infrastructure/urls/resolving-urls/query-encoding/navigation.sub.html?encoding=windows-1252 [ Timeout ]
 crbug.com/626703 external/wpt/css/css-values/ch-unit-011.html [ Failure ]
 crbug.com/626703 [ Mac ] external/wpt/html/browsers/the-window-object/apis-for-creating-and-navigating-browsing-contexts-by-name/open-features-tokenization-width-height.html [ Crash Timeout ]
 crbug.com/626703 external/wpt/css/css-values/ic-unit-010.html [ Failure ]
@@ -2997,8 +2996,12 @@ crbug.com/626703 external/wpt/svg/rendering/order/z-index.svg [ Failure ]
 crbug.com/626703 external/wpt/web-animations/timing-model/timelines/update-and-send-events.html [ Failure ]
 crbug.com/626703 external/wpt/screen-orientation/orientation-reading.html [ Timeout ]
 crbug.com/626703 external/wpt/html/browsers/browsing-the-web/unloading-documents/prompt-and-unload-script-closeable.html [ Failure ]
-crbug.com/626703 external/wpt/html/infrastructure/urls/resolving-urls/query-encoding/navigation.sub.html?encoding=x-cp1251 [ Timeout ]
-crbug.com/626703 external/wpt/html/infrastructure/urls/resolving-urls/query-encoding/navigation.sub.html?encoding=utf8 [ Timeout ]
+
+# navigation.sub.html fails or times out when run with run_web_tests.py but passes with run_wpt_tests.py
+crbug.com/626703 external/wpt/html/infrastructure/urls/resolving-urls/query-encoding/navigation.sub.html?encoding=windows-1252 [ Timeout Failure ]
+crbug.com/626703 external/wpt/html/infrastructure/urls/resolving-urls/query-encoding/navigation.sub.html?encoding=x-cp1251 [ Timeout Failure ]
+crbug.com/626703 external/wpt/html/infrastructure/urls/resolving-urls/query-encoding/navigation.sub.html?encoding=utf8 [ Timeout Failure ]
+
 crbug.com/626703 external/wpt/css/css-transforms/transform-box/view-box-mutation-001.html [ Failure ]
 crbug.com/626703 external/wpt/fetch/security/redirect-to-url-with-credentials.https.html [ Timeout ]
 crbug.com/843084 external/wpt/css/css-masking/clip-path-svg-content/clip-path-shape-circle-003.svg [ Failure ]

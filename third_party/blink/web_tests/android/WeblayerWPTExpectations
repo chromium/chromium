@@ -2509,9 +2509,12 @@ crbug.com/1050754 external/wpt/html/infrastructure/urls/resolving-urls/query-enc
 crbug.com/1050754 external/wpt/html/infrastructure/urls/resolving-urls/query-encoding/attributes.sub.html?encoding=x-cp1251 [ Failure Pass ]
 crbug.com/1050754 external/wpt/html/infrastructure/urls/resolving-urls/query-encoding/location.sub.html?encoding=windows-1252 [ Failure Pass ]
 crbug.com/1050754 external/wpt/html/infrastructure/urls/resolving-urls/query-encoding/location.sub.html?encoding=x-cp1251 [ Failure Pass ]
-crbug.com/1050754 external/wpt/html/infrastructure/urls/resolving-urls/query-encoding/navigation.sub.html?encoding=utf8 [ Timeout ]
-crbug.com/1050754 external/wpt/html/infrastructure/urls/resolving-urls/query-encoding/navigation.sub.html?encoding=windows-1252 [ Timeout ]
-crbug.com/1050754 external/wpt/html/infrastructure/urls/resolving-urls/query-encoding/navigation.sub.html?encoding=x-cp1251 [ Timeout ]
+
+# navigation.sub.html fails or times out when run with run_web_tests.py but passes with run_wpt_tests.py
+crbug.com/1050754 external/wpt/html/infrastructure/urls/resolving-urls/query-encoding/navigation.sub.html?encoding=utf8 [ Timeout Failure ]
+crbug.com/1050754 external/wpt/html/infrastructure/urls/resolving-urls/query-encoding/navigation.sub.html?encoding=windows-1252 [ Timeout Failure ]
+crbug.com/1050754 external/wpt/html/infrastructure/urls/resolving-urls/query-encoding/navigation.sub.html?encoding=x-cp1251 [ Timeout Failure ]
+
 crbug.com/1050754 external/wpt/html/infrastructure/urls/resolving-urls/query-encoding/utf-16be.html?include=appcache [ Failure Pass ]
 crbug.com/1050754 external/wpt/html/infrastructure/urls/resolving-urls/query-encoding/utf-16be.html?include=history [ Failure Pass ]
 crbug.com/1050754 external/wpt/html/infrastructure/urls/resolving-urls/query-encoding/utf-16be.html?include=loading [ Failure Pass ]
