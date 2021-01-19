@@ -33,6 +33,8 @@ enum class ResolvedUnderlinePosition {
 // invalidation and painting. See also
 // https://www.w3.org/TR/css-text-decor-3/#painting-order
 class CORE_EXPORT TextDecorationInfo {
+  STACK_ALLOCATED();
+
  public:
   TextDecorationInfo(
       const PhysicalOffset& box_origin,
