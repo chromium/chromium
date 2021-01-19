@@ -1,7 +1,10 @@
 <style include="cr-shared-style scanning-shared scanning-fonts">
   #appTitle {
-    @apply --scanning-section-title-font;
-    color: var(--scanning-section-title-text-color);
+    color: var(--scanning-app-title-text-color);
+    font-family: var(--scanning-app-title-font-family);
+    font-size: var(--scanning-app-title-font-size);
+    font-weight: var(--scanning-medium-font-weight);
+    line-height: var(--scanning-app-title-line-height);
     margin-bottom: 16px;
     margin-inline-end: 0;
     margin-inline-start: 32px;
@@ -10,7 +13,6 @@
   }
 
   #moreSettingsButton {
-    @apply --scanning-more-settings-font;
     --ink-color: var(--menu-text-color);
     --paper-ripple-opacity: 0;
     align-items: center;
@@ -20,7 +22,11 @@
     box-shadow: none;
     color: var(--scanning-more-settings-text-color);
     display: flex;
+    font-family: var(--scanning-more-settings-font-family);
+    font-size: var(--scanning-more-settings-font-size);
+    font-weight: var(--scanning-regular-font-weight);
     height: unset;
+    line-height: var(--scanning-more-settings-line-height);
     margin-bottom: 8px;
     margin-inline-end: 40px;
     margin-inline-start: 32px;

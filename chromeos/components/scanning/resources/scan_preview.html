@@ -1,7 +1,10 @@
 <style include="scanning-shared scanning-fonts">
   #helperText {
-    @apply --scanning-helper-text-font;
     color: var(--scanning-helper-text-color);
+    font-family: var(--scanning-helper-text-font-family);
+    font-size: var(--scanning-helper-text-font-size);
+    font-weight: var(--scanning-regular-font-weight);
+    line-height: var(--scanning-helper-text-line-height);
     margin: auto;
     text-align: center;
     width: 60%;
@@ -15,8 +18,11 @@
 
   #progressText,
   #cancelingText {
-    @apply --scanning-progress-text-font;
     color: var(--scanning-progress-text-color);
+    font-family: var(--scanning-progress-text-font-family);
+    font-size: var(--scanning-progress-text-font-size);
+    font-weight: var(--scanning-regular-font-weight);
+    line-height: var(--scanning-progress-text-line-height);
   }
 
   #scanProgress,
