@@ -64,8 +64,7 @@ import java.util.List;
 
 /**
  * This fragment implements sign-in screen with account picker and descriptions of signin-related
- * features. Configuration for this fragment is provided by overriding {@link #getSigninArguments}
- * derived classes.
+ * features. Configuration for this fragment is provided {@link #getArguments}.
  */
 public abstract class SigninFragmentBase
         extends Fragment implements AccountPickerCoordinator.Listener {
@@ -174,12 +173,6 @@ public abstract class SigninFragmentBase
         mProfileDataCacheObserver = (String accountId) -> updateProfileData();
     }
 
-    /**
-     * This method should return arguments Bundle that contains arguments created by
-     * {@link #createArguments} and related methods.
-     */
-    protected abstract Bundle getSigninArguments();
-
     /** The sign-in was refused. */
     protected abstract void onSigninRefused();
 
@@ -209,7 +202,7 @@ public abstract class SigninFragmentBase
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Bundle arguments = getSigninArguments();
+        Bundle arguments = getArguments();
         mRequestedAccountName = arguments.getString(ARGUMENT_ACCOUNT_NAME, null);
         mChildAccountStatus =
                 arguments.getInt(ARGUMENT_CHILD_ACCOUNT_STATUS, ChildAccountStatus.NOT_CHILD);

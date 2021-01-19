@@ -27,8 +27,6 @@ public class SigninFirstRunFragment extends SigninFragmentBase implements FirstR
     public static final String FORCE_SIGNIN_ACCOUNT_TO = "ForceSigninAccountTo";
     public static final String CHILD_ACCOUNT_STATUS = "ChildAccountStatus";
 
-    private Bundle mArguments;
-
     // Every fragment must have a public default constructor.
     public SigninFirstRunFragment() {}
 
@@ -38,13 +36,11 @@ public class SigninFirstRunFragment extends SigninFragmentBase implements FirstR
 
         Bundle freProperties = getPageDelegate().getProperties();
         String forceAccountTo = freProperties.getString(FORCE_SIGNIN_ACCOUNT_TO);
-        if (forceAccountTo == null) {
-            mArguments = createArguments(null);
-        } else {
-            @ChildAccountStatus.Status
-            int childAccountStatus = freProperties.getInt(CHILD_ACCOUNT_STATUS);
-            mArguments = createArgumentsForForcedSigninFlow(forceAccountTo, childAccountStatus);
-        }
+        final @ChildAccountStatus.Status int childAccountStatus =
+                freProperties.getInt(CHILD_ACCOUNT_STATUS);
+        setArguments(forceAccountTo != null
+                        ? createArgumentsForForcedSigninFlow(forceAccountTo, childAccountStatus)
+                        : createArguments(null));
 
         // Records if there are {0, 1, 2+} accounts on device for default/non-default flows.
         int numAccounts = AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts().size();
@@ -53,11 +49,6 @@ public class SigninFirstRunFragment extends SigninFragmentBase implements FirstR
         RecordUserAction.record("MobileFre.SignInShown");
         SigninMetricsUtils.logSigninStartAccessPoint(SigninAccessPoint.START_PAGE);
         SigninMetricsUtils.logSigninUserActionForAccessPoint(SigninAccessPoint.START_PAGE);
-    }
-
-    @Override
-    protected Bundle getSigninArguments() {
-        return mArguments;
     }
 
     @Override

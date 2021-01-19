@@ -106,7 +106,7 @@ public class SigninFragment extends SigninFragmentBase {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        int accessPoint = getSigninArguments().getInt(ARGUMENT_ACCESS_POINT, -1);
+        int accessPoint = getArguments().getInt(ARGUMENT_ACCESS_POINT, -1);
         assert accessPoint == SigninAccessPoint.AUTOFILL_DROPDOWN
                 || accessPoint == SigninAccessPoint.BOOKMARK_MANAGER
                 || accessPoint == SigninAccessPoint.NTP_CONTENT_SUGGESTIONS
@@ -115,17 +115,11 @@ public class SigninFragment extends SigninFragmentBase {
                 || accessPoint
                         == SigninAccessPoint.SIGNIN_PROMO : "invalid access point: " + accessPoint;
         mSigninAccessPoint = accessPoint;
-        mPromoAction =
-                getSigninArguments().getInt(ARGUMENT_PERSONALIZED_PROMO_ACTION, PromoAction.NONE);
+        mPromoAction = getArguments().getInt(ARGUMENT_PERSONALIZED_PROMO_ACTION, PromoAction.NONE);
 
         SigninMetricsUtils.logSigninStartAccessPoint(mSigninAccessPoint);
         SigninMetricsUtils.logSigninUserActionForAccessPoint(mSigninAccessPoint);
         recordSigninStartedHistogramAccountInfo();
-    }
-
-    @Override
-    protected Bundle getSigninArguments() {
-        return getArguments();
     }
 
     @Override
