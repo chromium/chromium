@@ -13,6 +13,7 @@ import multiprocessing
 import os
 import platform
 import re
+import shutil
 import subprocess
 import sys
 import traceback
@@ -239,7 +240,8 @@ def ExtractFromOneTraceThrowing(args):
     │       │   └── json.1
     │       ├── trace2
     │       │   ├── json
-    │       │   └── json.1
+    │       │   ├── json.1
+    │       │   └── json.2
     ├── chromium@5707819
     │   │
     │   ...
@@ -267,11 +269,17 @@ def ExtractFromOneTraceThrowing(args):
   (label, trace_index, html_trace, json_dir, compiled_regex) = args
   if not os.path.exists(json_dir):
     print 'Converting trace to json: {}'.format(json_dir)
-    EnsureDirectoryExists(json_dir)
-    temp_json = os.path.join(json_dir, '.tmp.json')
-    output = subprocess.check_output([HTML2TRACE, html_trace, temp_json])
-    for json_file in output.splitlines():
-      os.rename(json_file, os.path.join(json_dir, LastAfterSlash(json_file)))
+    tmp_json_dir = json_dir + '.tmp'
+    if os.path.exists(tmp_json_dir) and os.path.isdir(tmp_json_dir):
+      shutil.rmtree(tmp_json_dir)
+    EnsureDirectoryExists(tmp_json_dir)
+    json_file = os.path.join(tmp_json_dir, 'json')
+    output = subprocess.check_output([HTML2TRACE, html_trace, json_file])
+    for line in output.splitlines():
+      assert LastAfterSlash(line).startswith('json')
+    # Rename atomically to make sure that the JSON cache is not consumed
+    # partially.
+    os.rename(tmp_json_dir, json_dir)
 
   # Since several json files are produced from the same trace, an event could
   # begin and end in different jsons.
@@ -280,6 +288,7 @@ def ExtractFromOneTraceThrowing(args):
   print 'Taking trace: {}'.format(html_trace)
   for json_file in os.listdir(json_dir):
     if not json_file.startswith('json'):
+      print '{} not starting with json'.format(json_file)
       continue
     full_json_file = os.path.join(json_dir, json_file)
     tids = LoadJsonFile(full_json_file, compiled_regex)
