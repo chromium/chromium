@@ -7,12 +7,15 @@ package org.chromium.components.messages;
 import static android.os.Looper.getMainLooper;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 import static org.robolectric.annotation.LooperMode.Mode.PAUSED;
 
+import android.animation.Animator;
 import android.content.res.Resources;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
@@ -28,6 +31,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.LooperMode;
 
+import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -54,6 +58,8 @@ public class MessageBannerMediatorUnitTest {
     private Runnable mShownRunnable;
     @Mock
     private Runnable mHiddenRunnable;
+    @Mock
+    private Callback<Animator> mAnimatorStartCallback;
 
     private MessageBannerMediator mMediator;
     private PropertyModel mModel;
@@ -72,8 +78,14 @@ public class MessageBannerMediatorUnitTest {
                 .thenReturn(24);
         when(mResources.getDimensionPixelSize(R.dimen.message_max_horizontal_translation))
                 .thenReturn(120);
-        mMediator = new MessageBannerMediator(
-                mModel, mMaxTranslationSupplier, mResources, mDismissedRunnable);
+        doAnswer(invocation -> {
+            ((Animator) invocation.getArguments()[0]).start();
+            return null;
+        })
+                .when(mAnimatorStartCallback)
+                .onResult(any(Animator.class));
+        mMediator = new MessageBannerMediator(mModel, mMaxTranslationSupplier, mResources,
+                mDismissedRunnable, mAnimatorStartCallback);
         when(mMaxTranslationSupplier.get()).thenReturn(100);
     }
 

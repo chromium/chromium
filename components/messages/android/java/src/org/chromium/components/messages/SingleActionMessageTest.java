@@ -9,6 +9,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.animation.Animator;
 import android.app.Activity;
 
 import androidx.test.filters.MediumTest;
@@ -18,6 +19,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -37,6 +39,8 @@ import org.chromium.ui.util.AccessibilityUtil;
 public class SingleActionMessageTest extends DummyUiActivityTestCase {
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock
+    private Callback<Animator> mAnimatorStartCallback;
 
     private CallbackHelper mDismissCallback;
     private Callback<PropertyModel> mEmptyDismissCallback = (model) -> {};
@@ -56,8 +60,8 @@ public class SingleActionMessageTest extends DummyUiActivityTestCase {
     public void testAddAndRemoveSingleActionMessage() throws Exception {
         MessageContainer container = new MessageContainer(getActivity(), null);
         PropertyModel model = createBasicSingleActionMessageModel();
-        SingleActionMessage message = new SingleActionMessage(
-                container, model, mEmptyDismissCallback, () -> 0, mAccessibilityUtil);
+        SingleActionMessage message = new SingleActionMessage(container, model,
+                mEmptyDismissCallback, () -> 0, mAccessibilityUtil, mAnimatorStartCallback);
         final MessageBannerCoordinator messageBanner = Mockito.mock(MessageBannerCoordinator.class);
         doNothing().when(messageBanner).show(any(Runnable.class));
         doNothing().when(messageBanner).setOnTouchRunnable(any(Runnable.class));
@@ -87,8 +91,8 @@ public class SingleActionMessageTest extends DummyUiActivityTestCase {
     public void testAutoDismissDuration() {
         MessageContainer container = new MessageContainer(getActivity(), null);
         PropertyModel model = createBasicSingleActionMessageModel();
-        SingleActionMessage message = new SingleActionMessage(
-                container, model, mEmptyDismissCallback, () -> 0, mAccessibilityUtil);
+        SingleActionMessage message = new SingleActionMessage(container, model,
+                mEmptyDismissCallback, () -> 0, mAccessibilityUtil, mAnimatorStartCallback);
         when(mAccessibilityUtil.isAccessibilityEnabled()).thenReturn(true);
         long durationOnA11y = message.getAutoDismissDuration();
         when(mAccessibilityUtil.isAccessibilityEnabled()).thenReturn(false);
@@ -103,8 +107,8 @@ public class SingleActionMessageTest extends DummyUiActivityTestCase {
         MessageContainer container = new MessageContainer(getActivity(), null);
         PropertyModel m1 = createBasicSingleActionMessageModel();
         PropertyModel m2 = createBasicSingleActionMessageModel();
-        SingleActionMessage message1 = new SingleActionMessage(
-                container, m1, mEmptyDismissCallback, () -> 0, mAccessibilityUtil);
+        SingleActionMessage message1 = new SingleActionMessage(container, m1, mEmptyDismissCallback,
+                () -> 0, mAccessibilityUtil, mAnimatorStartCallback);
         final MessageBannerCoordinator messageBanner1 =
                 Mockito.mock(MessageBannerCoordinator.class);
         doNothing().when(messageBanner1).show(any(Runnable.class));
@@ -112,8 +116,8 @@ public class SingleActionMessageTest extends DummyUiActivityTestCase {
         view1.setId(R.id.message_banner);
         message1.setMessageBannerForTesting(messageBanner1);
         message1.setViewForTesting(view1);
-        SingleActionMessage message2 = new SingleActionMessage(
-                container, m2, mEmptyDismissCallback, () -> 0, mAccessibilityUtil);
+        SingleActionMessage message2 = new SingleActionMessage(container, m2, mEmptyDismissCallback,
+                () -> 0, mAccessibilityUtil, mAnimatorStartCallback);
         final MessageBannerCoordinator messageBanner2 =
                 Mockito.mock(MessageBannerCoordinator.class);
         doNothing().when(messageBanner2).show(any(Runnable.class));
