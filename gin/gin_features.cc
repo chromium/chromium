@@ -54,4 +54,8 @@ const base::Feature kV8TurboDirectHeapAccess{"V8TurboDirectHeapAccess",
 const base::Feature kV8ExperimentalRegexpEngine{
     "V8ExperimentalRegexpEngine", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables fast API calls in TurboFan.
+const base::Feature kV8TurboFastApiCalls{"V8TurboFastApiCalls",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
