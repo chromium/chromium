@@ -905,9 +905,6 @@ TEST_F(PaymentsClientTest, UploadDoesNotIncludeCvcInRequestIfNotProvided) {
 }
 
 TEST_F(PaymentsClientTest, UploadIncludesCardNickname) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kAutofillEnableCardNicknameUpstream);
-
   StartUploading(/*include_cvc=*/true, /*include_nickname=*/true);
   IssueOAuthToken();
 
@@ -917,21 +914,7 @@ TEST_F(PaymentsClientTest, UploadIncludesCardNickname) {
               std::string::npos);
 }
 
-TEST_F(PaymentsClientTest, UploadDoesNotIncludeCardNicknameFlagDisabled) {
-  scoped_feature_list_.InitAndDisableFeature(
-      features::kAutofillEnableCardNicknameUpstream);
-
-  StartUploading(/*include_cvc=*/true, /*include_nickname=*/true);
-  IssueOAuthToken();
-
-  // Card nickname was not set.
-  EXPECT_FALSE(GetUploadData().find("nickname") != std::string::npos);
-}
-
 TEST_F(PaymentsClientTest, UploadDoesNotIncludeCardNicknameEmptyNickname) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kAutofillEnableCardNicknameUpstream);
-
   StartUploading(/*include_cvc=*/true, /*include_nickname=*/false);
   IssueOAuthToken();
 
@@ -1132,9 +1115,6 @@ TEST_F(PaymentsClientTest,
 }
 
 TEST_F(PaymentsClientTest, MigrationRequestIncludesCardNickname) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kAutofillEnableCardNicknameUpstream);
-
   StartMigrating(/*has_cardholder_name=*/true,
                  /*set_nickname_to_first_card=*/true);
   IssueOAuthToken();
@@ -1148,18 +1128,6 @@ TEST_F(PaymentsClientTest, MigrationRequestIncludesCardNickname) {
 
   // Nickname was not set for the second card.
   EXPECT_FALSE(GetUploadData().find("nickname", pos + 1) != std::string::npos);
-}
-
-TEST_F(PaymentsClientTest, MigrationRequestExcludesCardNicknameIfFlagDisabled) {
-  scoped_feature_list_.InitAndDisableFeature(
-      features::kAutofillEnableCardNicknameUpstream);
-
-  StartMigrating(/*has_cardholder_name=*/true,
-                 /*set_nickname_for_first_card=*/true);
-  IssueOAuthToken();
-
-  // Nickname was not set.
-  EXPECT_FALSE(GetUploadData().find("nickname") != std::string::npos);
 }
 
 TEST_F(PaymentsClientTest, MigrationSuccessWithSaveResult) {

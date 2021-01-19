@@ -7985,16 +7985,6 @@ class PersonalDataManagerTestForSharingNickname
   base::string16 local_nickname_;
   base::string16 server_nickname_;
   base::string16 expected_nickname_;
-
- protected:
-  void SetUp() override {
-    PersonalDataManagerTest::SetUp();
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kAutofillEnableCardNicknameManagement);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(,

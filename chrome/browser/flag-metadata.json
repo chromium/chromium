@@ -273,16 +273,6 @@
     "expiry_milestone": 72
   },
   {
-    "name": "autofill-enable-card-nickname-management",
-    "owners": [ "siyua", "sujiezhu@google.com" ],
-    "expiry_milestone": 92
-  },
-  {
-    "name": "autofill-enable-card-nickname-upstream",
-    "owners": [ "siyua", "sujiezhu@google.com" ],
-    "expiry_milestone": 94
-  },
-  {
     "name": "autofill-enable-company-name",
     "owners": [ "sebsg" ],
     "expiry_milestone": 73

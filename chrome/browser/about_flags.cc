@@ -6448,13 +6448,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(media::kMediaFeedsBackgroundFetching)},
 #endif  // !defined(OS_ANDROID)
 
-    {"autofill-enable-card-nickname-management",
-     flag_descriptions::kAutofillEnableCardNicknameManagementName,
-     flag_descriptions::kAutofillEnableCardNicknameManagementDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnableCardNicknameManagement)},
-
     {"conversion-measurement-api",
      flag_descriptions::kConversionMeasurementApiName,
      flag_descriptions::kConversionMeasurementApiDescription, kOsAll,
@@ -6469,12 +6462,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kClientStorageAccessContextAuditingDescription,
      kOsDesktop,
      FEATURE_VALUE_TYPE(features::kClientStorageAccessContextAuditing)},
-
-    {"autofill-enable-card-nickname-upstream",
-     flag_descriptions::kAutofillEnableCardNicknameUpstreamName,
-     flag_descriptions::kAutofillEnableCardNicknameUpstreamDescription, kOsAll,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnableCardNicknameUpstream)},
 
 #if defined(OS_WIN)
     {"safety-check-chrome-cleaner-child",

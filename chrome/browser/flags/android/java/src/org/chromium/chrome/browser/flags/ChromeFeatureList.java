@@ -197,8 +197,6 @@ public abstract class ChromeFeatureList {
             "AutofillCreditCardAuthentication";
     public static final String AUTOFILL_DOWNSTREAM_CVC_PROMPT_USE_GOOGLE_LOGO =
             "AutofillDownstreamCvcPromptUseGooglePayLogo";
-    public static final String AUTOFILL_ENABLE_CARD_NICKNAME_MANAGEMENT =
-            "AutofillEnableCardNicknameManagement";
     public static final String AUTOFILL_ENABLE_GOOGLE_ISSUED_CARD =
             "AutofillEnableGoogleIssuedCard";
     public static final String AUTOFILL_ENABLE_PASSWORD_INFO_BAR_ACCOUNT_INDICATION_FOOTER =

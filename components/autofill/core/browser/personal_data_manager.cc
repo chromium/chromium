@@ -2354,11 +2354,6 @@ void PersonalDataManager::MigrateUserOptedInWalletSyncTransportIfNeeded() {
 
 base::string16 PersonalDataManager::GetDisplayNicknameForCreditCard(
     const CreditCard& card) const {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillEnableCardNicknameManagement)) {
-    return base::string16();
-  }
-
   // Always prefer a local nickname if available.
   if (card.HasNonEmptyValidNickname() &&
       card.record_type() == CreditCard::LOCAL_CARD)

@@ -799,11 +799,9 @@ const std::pair<base::string16, base::string16> CreditCard::LabelPieces()
   if (number().empty()) {
     // No CC number, if valid nickname is present, return nickname only.
     // Otherwise, return cardholder name only.
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillEnableCardNicknameManagement) &&
-        HasNonEmptyValidNickname()) {
+    if (HasNonEmptyValidNickname())
       return std::make_pair(nickname_, base::string16());
-    }
+
     return std::make_pair(name_on_card_, base::string16());
   }
 

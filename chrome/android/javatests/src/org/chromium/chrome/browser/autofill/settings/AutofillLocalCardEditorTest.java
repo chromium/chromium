@@ -22,7 +22,6 @@ import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -59,22 +58,6 @@ public class AutofillLocalCardEditorTest {
 
     @Test
     @MediumTest
-    @Features.DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CARD_NICKNAME_MANAGEMENT})
-    public void nicknameFieldNotShown_expOff() throws Exception {
-        String guid = mAutofillTestHelper.setCreditCard(SAMPLE_LOCAL_CARD);
-
-        SettingsActivity activity =
-                mSettingsActivityTestRule.startSettingsActivity(fragmentArgs(guid));
-
-        AutofillLocalCardEditor autofillLocalCardEditorFragment =
-                (AutofillLocalCardEditor) activity.getMainFragment();
-        assertThat(autofillLocalCardEditorFragment.mNicknameLabel.getVisibility())
-                .isEqualTo(View.GONE);
-    }
-
-    @Test
-    @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CARD_NICKNAME_MANAGEMENT})
     public void nicknameFieldEmpty_cardDoesNotHaveNickname() throws Exception {
         String guid = mAutofillTestHelper.setCreditCard(SAMPLE_LOCAL_CARD);
 
@@ -89,7 +72,6 @@ public class AutofillLocalCardEditorTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CARD_NICKNAME_MANAGEMENT})
     public void nicknameFieldSet_cardHasNickname() throws Exception {
         String nickname = "test nickname";
         SAMPLE_LOCAL_CARD.setNickname(nickname);
@@ -108,7 +90,6 @@ public class AutofillLocalCardEditorTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CARD_NICKNAME_MANAGEMENT})
     public void testNicknameFieldIsShown() throws Exception {
         String guid = mAutofillTestHelper.setCreditCard(SAMPLE_LOCAL_CARD);
 
@@ -123,7 +104,6 @@ public class AutofillLocalCardEditorTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CARD_NICKNAME_MANAGEMENT})
     public void testInvalidNicknameShowsErrorMessage() throws Exception {
         String guid = mAutofillTestHelper.setCreditCard(SAMPLE_LOCAL_CARD);
         SettingsActivity activity =
@@ -148,7 +128,6 @@ public class AutofillLocalCardEditorTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CARD_NICKNAME_MANAGEMENT})
     @FlakyTest(message = "https://crbug.com/1139488")
     public void testErrorMessageHiddenAfterNicknameIsEditedFromInvalidToValid() throws Exception {
         String guid = mAutofillTestHelper.setCreditCard(SAMPLE_LOCAL_CARD);
@@ -182,7 +161,6 @@ public class AutofillLocalCardEditorTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CARD_NICKNAME_MANAGEMENT})
     public void testErrorMessageHiddenAfterNicknameIsEditedFromInvalidToEmpty() throws Exception {
         String guid = mAutofillTestHelper.setCreditCard(SAMPLE_LOCAL_CARD);
         SettingsActivity activity =
@@ -215,7 +193,6 @@ public class AutofillLocalCardEditorTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CARD_NICKNAME_MANAGEMENT})
     public void testNicknameLengthCappedAt25Characters() throws Exception {
         String veryLongNickname = "This is a very very long nickname";
         String guid = mAutofillTestHelper.setCreditCard(SAMPLE_LOCAL_CARD);

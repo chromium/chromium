@@ -137,12 +137,6 @@ extern const char kAutofillAssistantChromeEntryDescription[];
 extern const char kAutofillCacheQueryResponsesName[];
 extern const char kAutofillCacheQueryResponsesDescription[];
 
-extern const char kAutofillEnableCardNicknameManagementName[];
-extern const char kAutofillEnableCardNicknameManagementDescription[];
-
-extern const char kAutofillEnableCardNicknameUpstreamName[];
-extern const char kAutofillEnableCardNicknameUpstreamDescription[];
-
 extern const char kAutofillEnableGoogleIssuedCardName[];
 extern const char kAutofillEnableGoogleIssuedCardDescription[];
 

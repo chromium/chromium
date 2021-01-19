@@ -218,11 +218,8 @@ base::Value BuildCreditCardDictionary(const CreditCard& credit_card,
   SetStringIfNotEmpty(credit_card, CREDIT_CARD_NAME_FULL, app_locale,
                       "cardholder_name", card);
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableCardNicknameUpstream) &&
-      credit_card.HasNonEmptyValidNickname()) {
+  if (credit_card.HasNonEmptyValidNickname())
     card.SetKey("nickname", base::Value(credit_card.nickname()));
-  }
 
   card.SetKey("encrypted_pan", base::Value("__param:" + pan_field_name));
   return card;
@@ -825,9 +822,7 @@ class UploadCardRequest : public PaymentsRequest {
     if (base::StringToInt(exp_year, &value))
       request_dict.SetKey("expiration_year", base::Value(value));
 
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillEnableCardNicknameUpstream) &&
-        request_details_.card.HasNonEmptyValidNickname()) {
+    if (request_details_.card.HasNonEmptyValidNickname()) {
       request_dict.SetKey("nickname",
                           base::Value(request_details_.card.nickname()));
     }
