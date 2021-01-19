@@ -12,6 +12,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
+#include "chrome/browser/metrics/tab_stats_handler.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom.h"
 
 using mojom::LifecycleUnitDiscardReason;
@@ -27,9 +28,9 @@ namespace metrics {
 FORWARD_DECLARE_TEST(TabStatsTrackerBrowserTest,
                      TabDeletionGetsHandledProperly);
 
-// The data store that keeps track of all the information that the
-// TabStatsTracker wants to track.
-class TabStatsDataStore {
+// Keeps track of all the information needed by TabStatsTracker. Stats are
+// stored internally to be retrieved at a later point.
+class TabStatsDataStore : public TabStatsHandler {
  public:
   // Houses all of the statistics gathered by the TabStatsTracker.
   struct TabsStats {
@@ -82,14 +83,16 @@ class TabStatsDataStore {
   explicit TabStatsDataStore(PrefService* pref_service);
   virtual ~TabStatsDataStore();
 
-  // Functions used to update the window/tab count.
-  void OnWindowAdded();
-  void OnWindowRemoved();
-  // Virtual for unittesting.
-  virtual void OnTabAdded(content::WebContents* web_contents);
-  virtual void OnTabRemoved(content::WebContents* web_contents);
+  // TabStatsHandler:
+  void OnWindowAdded() override;
+  void OnWindowRemoved() override;
+  void OnTabAdded(content::WebContents* web_contents) override;
+  void OnTabRemoved(content::WebContents* web_contents) override;
   void OnTabReplaced(content::WebContents* old_contents,
-                     content::WebContents* new_contents);
+                     content::WebContents* new_contents) override;
+  void OnTabInteraction(content::WebContents* web_contents) override;
+  void OnTabAudible(content::WebContents* web_contents) override;
+  void OnTabVisible(content::WebContents* web_contents) override;
 
   // Update the maximum number of tabs in a single window if |value| exceeds
   // this.
@@ -101,18 +104,6 @@ class TabStatsDataStore {
   // metrics have been reported.
   void ResetMaximumsToCurrentState();
 
-  // Records that there's been a direct user interaction with a tab, see the
-  // comment for |DidGetUserInteraction| in
-  // content/public/browser/web_contents_observer.h for a list of the possible
-  // type of interactions.
-  void OnTabInteraction(content::WebContents* web_contents);
-
-  // Records that a tab became audible.
-  void OnTabAudible(content::WebContents* web_contents);
-
-  // Records that a tab became visible.
-  void OnTabVisible(content::WebContents* web_contents);
-
   // Creates a new interval map. The returned pointer is owned by |this|.
   TabsStateDuringIntervalMap* AddInterval();
 
@@ -120,9 +111,7 @@ class TabStatsDataStore {
   void ResetIntervalData(TabsStateDuringIntervalMap* interval_map);
 
   const TabsStats& tab_stats() const { return tab_stats_; }
-
   base::Optional<TabID> GetTabIDForTesting(content::WebContents* web_contents);
-
   base::flat_map<content::WebContents*, TabID>* existing_tabs_for_testing() {
     return &existing_tabs_;
   }

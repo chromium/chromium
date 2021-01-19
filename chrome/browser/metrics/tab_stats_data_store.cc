@@ -102,6 +102,24 @@ void TabStatsDataStore::OnTabReplaced(content::WebContents* old_contents,
   existing_tabs_[new_contents] = old_contents_id;
 }
 
+void TabStatsDataStore::OnTabInteraction(content::WebContents* web_contents) {
+  DCHECK(base::Contains(existing_tabs_, web_contents));
+  TabID web_contents_id = GetTabID(web_contents);
+  // Mark the tab as interacted with in all the intervals.
+  for (auto& interval_map : interval_maps_) {
+    DCHECK(base::Contains(*interval_map, web_contents_id));
+    (*interval_map)[web_contents_id].interacted_during_interval = true;
+  }
+}
+
+void TabStatsDataStore::OnTabAudible(content::WebContents* web_contents) {
+  OnTabAudibleOrVisible(web_contents);
+}
+
+void TabStatsDataStore::OnTabVisible(content::WebContents* web_contents) {
+  OnTabAudibleOrVisible(web_contents);
+}
+
 void TabStatsDataStore::UpdateMaxTabsPerWindowIfNeeded(size_t value) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (value <= tab_stats_.max_tab_per_window)
@@ -127,24 +145,6 @@ void TabStatsDataStore::ResetMaximumsToCurrentState() {
     UpdateMaxTabsPerWindowIfNeeded(
         static_cast<size_t>(browser->tab_strip_model()->count()));
   }
-}
-
-void TabStatsDataStore::OnTabInteraction(content::WebContents* web_contents) {
-  DCHECK(base::Contains(existing_tabs_, web_contents));
-  TabID web_contents_id = GetTabID(web_contents);
-  // Mark the tab as interacted with in all the intervals.
-  for (auto& interval_map : interval_maps_) {
-    DCHECK(base::Contains(*interval_map, web_contents_id));
-    (*interval_map)[web_contents_id].interacted_during_interval = true;
-  }
-}
-
-void TabStatsDataStore::OnTabAudible(content::WebContents* web_contents) {
-  OnTabAudibleOrVisible(web_contents);
-}
-
-void TabStatsDataStore::OnTabVisible(content::WebContents* web_contents) {
-  OnTabAudibleOrVisible(web_contents);
 }
 
 TabStatsDataStore::TabsStateDuringIntervalMap*
