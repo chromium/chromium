@@ -13239,8 +13239,9 @@ IN_PROC_BROWSER_TEST_P(
 
 // Test that the compositing scale factor for an out-of-process iframe are set
 // and updated correctly, including accounting for all intermediate transforms.
+// TODO(crbug.com/1164391): Flaky test.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
-                       CompositingScaleFactorInNestedFrameTest) {
+                       DISABLED_CompositingScaleFactorInNestedFrameTest) {
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/frame_tree/page_with_scaled_frame.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
