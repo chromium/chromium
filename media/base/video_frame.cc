@@ -233,6 +233,9 @@ static base::Optional<VideoFrameLayout> GetDefaultLayout(
       break;
 
     case PIXEL_FORMAT_ARGB:
+    case PIXEL_FORMAT_XRGB:
+    case PIXEL_FORMAT_ABGR:
+    case PIXEL_FORMAT_XBGR:
       planes = std::vector<ColorPlaneLayout>{ColorPlaneLayout(
           coded_size.width() * 4, 0, coded_size.GetArea() * 4)};
       break;
@@ -252,10 +255,8 @@ static base::Optional<VideoFrameLayout> GetDefaultLayout(
     default:
       // TODO(miu): This function should support any pixel format.
       // http://crbug.com/555909 .
-      DLOG(ERROR)
-          << "Only PIXEL_FORMAT_I420, PIXEL_FORMAT_Y16, PIXEL_FORMAT_NV12, "
-             "and PIXEL_FORMAT_ARGB formats are supported: "
-          << VideoPixelFormatToString(format);
+      DLOG(ERROR) << "Unsupported pixel format"
+                  << VideoPixelFormatToString(format);
       return base::nullopt;
   }
 
