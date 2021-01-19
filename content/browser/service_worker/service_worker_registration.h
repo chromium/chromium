@@ -286,6 +286,9 @@ class CONTENT_EXPORT ServiceWorkerRegistration
   // longer considered a lame duck.
   base::RepeatingTimer lame_duck_timer_;
 
+  // TODO(crbug.com/1159778): Remove once the bug is fixed.
+  bool in_activate_waiting_version_ = false;
+
   DISALLOW_COPY_AND_ASSIGN(ServiceWorkerRegistration);
 };
 

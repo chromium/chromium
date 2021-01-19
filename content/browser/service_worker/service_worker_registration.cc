@@ -67,6 +67,12 @@ ServiceWorkerRegistration::ServiceWorkerRegistration(
 ServiceWorkerRegistration::~ServiceWorkerRegistration() {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   DCHECK(!listeners_.might_have_observers());
+
+  // TODO(crbug.com/1159778): Remove once the bug is fixed.
+  CHECK(!in_activate_waiting_version_)
+      << "ServiceWorkerRegistration was destroyed while activating waiting "
+         "version";
+
   if (context_)
     context_->RemoveLiveRegistration(registration_id_);
 }
@@ -480,6 +486,8 @@ void ServiceWorkerRegistration::ActivateWaitingVersion(bool delay) {
   if (activating_version->is_redundant())
     return;  // Activation is no longer relevant.
 
+  in_activate_waiting_version_ = true;
+
   // "5. If exitingWorker is not null,
   if (exiting_version.get()) {
     // Whenever activation happens, evict bfcached controllees.
@@ -517,6 +525,7 @@ void ServiceWorkerRegistration::ActivateWaitingVersion(bool delay) {
   // "10. Queue a task to fire an event named activate..."
   // The browser could be shutting down. To avoid spurious start worker
   // failures, wait a bit before continuing.
+  in_activate_waiting_version_ = false;
   if (delay) {
     task_runner_->PostDelayedTask(
         FROM_HERE,
