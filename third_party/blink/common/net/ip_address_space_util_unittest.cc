@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/common/net/ip_address_space_util.h"
+#include "third_party/blink/public/common/net/ip_address_space_util.h"
 
 #include <utility>
 
@@ -14,7 +14,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-namespace content {
+namespace blink {
 namespace {
 
 using net::IPAddress;
@@ -130,4 +130,4 @@ TEST(IPAddressSpaceTest, CalculateResourceAddressSpaceIPAddress) {
 }
 
 }  // namespace
-}  // namespace content
+}  // namespace blink

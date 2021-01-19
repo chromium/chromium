@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_COMMON_NET_IP_ADDRESS_SPACE_UTIL_H_
-#define CONTENT_COMMON_NET_IP_ADDRESS_SPACE_UTIL_H_
+#ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_NET_IP_ADDRESS_SPACE_UTIL_H_
+#define THIRD_PARTY_BLINK_PUBLIC_COMMON_NET_IP_ADDRESS_SPACE_UTIL_H_
 
-#include "content/common/content_export.h"
 #include "services/network/public/mojom/ip_address_space.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
+#include "third_party/blink/public/common/common_export.h"
 
 class GURL;
 
@@ -17,7 +17,7 @@ class IPAddress;
 
 }  // namespace net
 
-namespace content {
+namespace blink {
 
 // Given a request URL and response information, this function calculates the
 // IPAddressSpace which should be associated with documents or worker global
@@ -39,7 +39,7 @@ namespace content {
 // is invalid (`about:srcdoc`, `blob:`, etc.) as `kUnknown`. This is incorrect.
 // We'll eventually want to make sure we inherit from the client's creator
 // in some cases), but safe, as `kUnknown` is treated the same as `kPublic`.
-network::mojom::IPAddressSpace CONTENT_EXPORT CalculateClientAddressSpace(
+network::mojom::IPAddressSpace BLINK_COMMON_EXPORT CalculateClientAddressSpace(
     const GURL& url,
     const network::mojom::URLResponseHead* response_head);
 
@@ -51,9 +51,9 @@ network::mojom::IPAddressSpace CONTENT_EXPORT CalculateClientAddressSpace(
 // that of the client of the fetch.
 //
 // See: https://wicg.github.io/cors-rfc1918/#integration-fetch
-network::mojom::IPAddressSpace CONTENT_EXPORT
+network::mojom::IPAddressSpace BLINK_COMMON_EXPORT
 CalculateResourceAddressSpace(const GURL& url, const net::IPAddress& address);
 
-}  // namespace content
+}  // namespace blink
 
-#endif  // CONTENT_COMMON_NET_IP_ADDRESS_SPACE_UTIL_H_
+#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_NET_IP_ADDRESS_SPACE_UTIL_H_

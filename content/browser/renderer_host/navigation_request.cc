@@ -72,7 +72,6 @@
 #include "content/common/navigation_params.h"
 #include "content/common/navigation_params_mojom_traits.h"
 #include "content/common/navigation_params_utils.h"
-#include "content/common/net/ip_address_space_util.h"
 #include "content/common/state_transitions.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -118,6 +117,7 @@
 #include "services/network/public/mojom/web_sandbox_flags.mojom.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
+#include "third_party/blink/public/common/net/ip_address_space_util.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/appcache/appcache.mojom.h"
@@ -4413,8 +4413,8 @@ void NavigationRequest::UpdateClientSecurityStateInternals() {
   // When we cannot compute the IPAddressSpace directly, the policy container
   // inheritance mechanisms should have provided us with the correct value
   // already. Do not overwrite it.
-  auto computed_ip_address_space =
-      CalculateClientAddressSpace(common_params_->url, response_head_.get());
+  auto computed_ip_address_space = blink::CalculateClientAddressSpace(
+      common_params_->url, response_head_.get());
   if (computed_ip_address_space != network::mojom::IPAddressSpace::kUnknown)
     policy_container_host_->SetIPAddressSpace(computed_ip_address_space);
 

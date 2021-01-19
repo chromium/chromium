@@ -32,7 +32,6 @@
 #include "components/variations/net/variations_url_loader_throttle.h"
 #include "content/child/child_thread_impl.h"
 #include "content/common/frame.mojom.h"
-#include "content/common/net/ip_address_space_util.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/navigation_policy.h"
@@ -67,6 +66,7 @@
 #include "third_party/blink/public/common/loader/referrer_utils.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
+#include "third_party/blink/public/common/net/ip_address_space_util.h"
 #include "third_party/blink/public/common/security/security_style.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom.h"
@@ -920,7 +920,7 @@ void WebURLLoaderImpl::PopulateURLResponse(
   // answer.
   //
   // Implements: https://wicg.github.io/cors-rfc1918/#integration-html
-  response->SetAddressSpace(CalculateResourceAddressSpace(
+  response->SetAddressSpace(blink::CalculateResourceAddressSpace(
       response->ResponseUrl(), head.remote_endpoint.address()));
 
   blink::WebVector<blink::WebString> cors_exposed_header_names(

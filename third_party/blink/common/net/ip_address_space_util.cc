@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/common/net/ip_address_space_util.h"
+#include "third_party/blink/public/common/net/ip_address_space_util.h"
 
 #include "base/logging.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
@@ -10,7 +10,7 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 
-namespace content {
+namespace blink {
 namespace {
 
 using network::mojom::IPAddressSpace;
@@ -71,4 +71,4 @@ IPAddressSpace CalculateResourceAddressSpace(const GURL& url,
   return network::IPAddressToIPAddressSpace(address);
 }
 
-}  // namespace content
+}  // namespace blink
