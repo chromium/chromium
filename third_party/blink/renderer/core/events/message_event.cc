@@ -160,7 +160,8 @@ MessageEvent::MessageEvent(scoped_refptr<SerializedScriptValue> data,
                            const String& last_event_id,
                            EventTarget* source,
                            Vector<MessagePortChannel> channels,
-                           UserActivation* user_activation)
+                           UserActivation* user_activation,
+                           bool delegate_payment_request)
     : Event(event_type_names::kMessage, Bubbles::kNo, Cancelable::kNo),
       data_type_(kDataTypeSerializedScriptValue),
       data_as_serialized_script_value_(
@@ -169,7 +170,8 @@ MessageEvent::MessageEvent(scoped_refptr<SerializedScriptValue> data,
       last_event_id_(last_event_id),
       source_(source),
       channels_(std::move(channels)),
-      user_activation_(user_activation) {
+      user_activation_(user_activation),
+      delegate_payment_request_(delegate_payment_request) {
   DCHECK(IsValidSource(source_.Get()));
   RegisterAmountOfExternallyAllocatedMemory();
 }
@@ -257,7 +259,8 @@ void MessageEvent::initMessageEvent(const AtomicString& type,
                                     const String& last_event_id,
                                     EventTarget* source,
                                     MessagePortArray* ports,
-                                    UserActivation* user_activation) {
+                                    UserActivation* user_activation,
+                                    bool delegate_payment_request) {
   if (IsBeingDispatched())
     return;
 
@@ -273,6 +276,7 @@ void MessageEvent::initMessageEvent(const AtomicString& type,
   ports_ = ports;
   is_ports_dirty_ = true;
   user_activation_ = user_activation;
+  delegate_payment_request_ = delegate_payment_request;
   RegisterAmountOfExternallyAllocatedMemory();
 }
 
