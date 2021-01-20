@@ -1166,8 +1166,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.ImageDecoders.Jpeg.Area" units="pixels"
-    expires_after="2021-02-28">
+    expires_after="2022-02-28">
   <owner>andrescj@chromium.org</owner>
+  <owner>src/third_party/blink/renderer/platform/image-decoders/OWNERS</owner>
   <summary>
     Number of pixels in a decoded JPEG image. Recorded after decoding is done by
     Blink's JPEG decoder (as opposed to, possibly, a hardware decode
