@@ -50,19 +50,6 @@ bool IsInertialScroll(const LatencyInfo& latency) {
   return latency.source_event_type() == ui::SourceEventType::INERTIAL;
 }
 
-// This UMA metric tracks the time from when the original wheel event is created
-// to when the scroll gesture results in final frame swap. All scroll events are
-// included in this metric.
-void RecordUmaEventLatencyScrollWheelTimeToScrollUpdateSwapBegin2Histogram(
-    base::TimeTicks start,
-    base::TimeTicks end) {
-  CONFIRM_EVENT_TIMES_EXIST(start, end);
-  UMA_HISTOGRAM_CUSTOM_COUNTS(
-      "Event.Latency.Scroll.Wheel.TimeToScrollUpdateSwapBegin2",
-      std::max(static_cast<int64_t>(0), (end - start).InMicroseconds()), 1,
-      1000000, 100);
-}
-
 bool LatencyTraceIdCompare(const LatencyInfo& i, const LatencyInfo& j) {
   return i.trace_id() < j.trace_id();
 }
@@ -211,11 +198,6 @@ void LatencyTracker::ComputeEndToEndLatencyHistograms(
     UMA_HISTOGRAM_INPUT_LATENCY_5_SECONDS_MAX_MICROSECONDS(
         metric_name, original_timestamp, gpu_swap_begin_timestamp);
 
-    if (input_modality == "Wheel") {
-      RecordUmaEventLatencyScrollWheelTimeToScrollUpdateSwapBegin2Histogram(
-          original_timestamp, gpu_swap_begin_timestamp);
-    }
-
   } else if (latency.FindLatency(
                  ui::INPUT_EVENT_LATENCY_SCROLL_UPDATE_ORIGINAL_COMPONENT,
                  &original_timestamp)) {
@@ -254,10 +236,6 @@ void LatencyTracker::ComputeEndToEndLatencyHistograms(
     UMA_HISTOGRAM_INPUT_LATENCY_5_SECONDS_MAX_MICROSECONDS(
         metric_name, original_timestamp, gpu_swap_begin_timestamp);
 
-    if (input_modality == "Wheel") {
-      RecordUmaEventLatencyScrollWheelTimeToScrollUpdateSwapBegin2Histogram(
-          original_timestamp, gpu_swap_begin_timestamp);
-    }
   } else if (latency.FindLatency(ui::INPUT_EVENT_LATENCY_ORIGINAL_COMPONENT,
                                  &original_timestamp)) {
     if (latency.source_event_type() == SourceEventType::KEY_PRESS) {

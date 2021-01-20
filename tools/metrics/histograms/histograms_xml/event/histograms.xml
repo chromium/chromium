@@ -432,6 +432,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Event.Latency.Scroll.Wheel.TimeToScrollUpdateSwapBegin2"
     units="microseconds" expires_after="2020-06-21">
+  <obsolete>
+    Removed 2021-01-14 - replaced by Event.Latency.Scroll(Begin|Update).Wheel.*.
+  </obsolete>
   <owner>flackr@chromium.org</owner>
   <summary>
     Time between initial creation of a wheel event and start of the frame swap
