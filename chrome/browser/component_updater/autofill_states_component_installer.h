@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/values.h"
 #include "components/component_updater/component_installer.h"
 #include "components/prefs/pref_service.h"
@@ -66,7 +65,7 @@ class AutofillStatesComponentInstallerPolicy : public ComponentInstallerPolicy {
   update_client::InstallerAttributes GetInstallerAttributes() const override;
   std::vector<std::string> GetMimeTypes() const override;
 
-  CheckedPtr<PrefService> pref_service_;
+  PrefService* pref_service_;
 };
 
 // Call once during startup to make the component update service aware of

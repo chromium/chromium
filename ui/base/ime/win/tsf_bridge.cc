@@ -7,7 +7,6 @@
 #include <map>
 
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
 #include "base/stl_util.h"
@@ -128,7 +127,7 @@ class TSFBridgeImpl : public TSFBridge {
   TfClientId client_id_ = TF_CLIENTID_NULL;
 
   // Current focused text input client. Do not free |client_|.
-  CheckedPtr<TextInputClient> client_ = nullptr;
+  TextInputClient* client_ = nullptr;
 
   // Input Type of current focused text input client.
   TextInputType input_type_ = TEXT_INPUT_TYPE_NONE;

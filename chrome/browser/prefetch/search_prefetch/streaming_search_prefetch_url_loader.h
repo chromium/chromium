@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
@@ -133,7 +132,7 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
 
   // The initiating prefetch request. Cleared when handing this request off to
   // the navigation stack.
-  CheckedPtr<StreamingSearchPrefetchRequest> streaming_prefetch_request_;
+  StreamingSearchPrefetchRequest* streaming_prefetch_request_;
 
   // Whether we are serving from |bdoy_content_|.
   bool serving_from_data_ = false;

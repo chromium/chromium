@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/memory/checked_ptr.h"
 #include "ui/base/hit_test.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/animation/throb_animation.h"
@@ -62,7 +61,7 @@ class FrameCaptionButton::HighlightPathGenerator
   }
 
  private:
-  const CheckedPtr<FrameCaptionButton> frame_caption_button_;
+  FrameCaptionButton* const frame_caption_button_;
 };
 
 // static

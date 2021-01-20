@@ -15,7 +15,6 @@
 #include <vector>
 
 #include "base/guid.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
@@ -352,11 +351,11 @@ class CreditCardSaveManagerTest : public testing::Test {
   syncer::TestSyncService sync_service_;
   base::test::ScopedFeatureList scoped_feature_list_;
   // Ends up getting owned (and destroyed) by TestFormDataImporter:
-  CheckedPtr<TestCreditCardSaveManager> credit_card_save_manager_;
+  TestCreditCardSaveManager* credit_card_save_manager_;
   // Ends up getting owned (and destroyed) by TestAutofillClient:
-  CheckedPtr<payments::TestPaymentsClient> payments_client_;
+  payments::TestPaymentsClient* payments_client_;
   // Ends up getting owned (and destroyed) by TestAutofillClient:
-  CheckedPtr<TestStrikeDatabase> strike_database_;
+  TestStrikeDatabase* strike_database_;
 
  private:
   int ToHistogramSample(AutofillMetrics::CardUploadDecisionMetric metric) {

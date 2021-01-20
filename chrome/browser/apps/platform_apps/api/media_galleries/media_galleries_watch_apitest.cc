@@ -9,7 +9,6 @@
 #include "base/files/file_path_watcher.h"
 #include "base/files/file_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
@@ -174,9 +173,9 @@ class MediaGalleriesGalleryWatchApiTest : public extensions::ExtensionApiTest {
 
   base::ScopedTempDir test_gallery_;
 
-  CheckedPtr<const extensions::Extension> extension_;
+  const extensions::Extension* extension_;
 
-  CheckedPtr<content::RenderViewHost> background_host_;
+  content::RenderViewHost* background_host_;
 
   DISALLOW_COPY_AND_ASSIGN(MediaGalleriesGalleryWatchApiTest);
 };

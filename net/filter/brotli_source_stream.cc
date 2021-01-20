@@ -8,7 +8,6 @@
 #include "base/bit_cast.h"
 #include "base/check_op.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "net/base/io_buffer.h"
 #include "third_party/brotli/include/brotli/decode.h"
@@ -165,7 +164,7 @@ class BrotliSourceStream : public FilterSourceStream {
     free(&array[-1]);
   }
 
-  CheckedPtr<BrotliDecoderState> brotli_state_;
+  BrotliDecoderState* brotli_state_;
 
   DecodingStatus decoding_status_;
 

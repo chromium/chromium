@@ -9,7 +9,6 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 
 class PrefChangeRegistrar;
 class PrefService;
@@ -41,7 +40,7 @@ class FontSizePrefsAndroid {
   void OnForceEnableZoomChanged();
 
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
-  const CheckedPtr<PrefService> pref_service_;
+  PrefService* const pref_service_;
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;
 
   DISALLOW_COPY_AND_ASSIGN(FontSizePrefsAndroid);

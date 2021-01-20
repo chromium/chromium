@@ -8,7 +8,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/feed/core/v2/public/feed_stream_api.h"
 
 namespace feedui {
@@ -128,7 +127,7 @@ class FeedStreamSurface : public FeedStreamApi::SurfaceInterface {
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;
-  CheckedPtr<FeedStreamApi> feed_stream_api_;
+  FeedStreamApi* feed_stream_api_;
   bool attached_ = false;
 };
 

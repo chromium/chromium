@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/subresource_filter/content/browser/subresource_filter_client.h"
 
@@ -50,14 +49,14 @@ class ChromeSubresourceFilterClient
       override;
 
  private:
-  CheckedPtr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
 
   std::unique_ptr<subresource_filter::ContentSubresourceFilterThrottleManager>
       throttle_manager_;
 
   // Owned by the profile.
-  CheckedPtr<subresource_filter::SubresourceFilterProfileContext>
-      profile_context_ = nullptr;
+  subresource_filter::SubresourceFilterProfileContext* profile_context_ =
+      nullptr;
 
   std::unique_ptr<subresource_filter::ProfileInteractionManager>
       profile_interaction_manager_;

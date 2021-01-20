@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/lookalikes/lookalike_url_blocking_page.h"
 #include "components/site_engagement/core/mojom/site_engagement_details.mojom.h"
@@ -76,7 +75,7 @@ class LookalikeUrlNavigationThrottle : public content::NavigationThrottle {
                                        ukm::SourceId source_id,
                                        LookalikeUrlMatchType match_type);
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
   bool use_test_profile_ = false;
   base::WeakPtrFactory<LookalikeUrlNavigationThrottle> weak_factory_{this};
 };

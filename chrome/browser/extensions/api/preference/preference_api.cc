@@ -373,7 +373,7 @@ PreferenceEventRouter::PreferenceEventRouter(Profile* profile)
                               base::Unretained(this), registrar_.prefs()));
   }
   DCHECK(!profile_->IsOffTheRecord());
-  observed_profiles_.Add(profile_.get());
+  observed_profiles_.Add(profile_);
   if (profile->HasPrimaryOTRProfile())
     OnOffTheRecordProfileCreated(profile->GetPrimaryOTRProfile());
   else

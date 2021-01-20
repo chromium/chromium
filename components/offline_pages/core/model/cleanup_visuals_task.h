@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/core/offline_page_types.h"
 #include "components/offline_pages/core/offline_page_visuals.h"
@@ -36,7 +35,7 @@ class CleanupVisualsTask : public Task {
   void Run() override;
 
   void Complete(Result result);
-  CheckedPtr<OfflinePageMetadataStore> store_;
+  OfflinePageMetadataStore* store_;
   base::Time now_;
 
   CleanupVisualsCallback complete_callback_;

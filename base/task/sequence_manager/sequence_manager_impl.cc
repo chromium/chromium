@@ -472,7 +472,7 @@ void SequenceManagerImpl::OnExitNestedRunLoop() {
         // back to the front of the queue.
         non_nestable_task.task.queue_time = exited_nested_now.Now();
       }
-      auto* const task_queue = non_nestable_task.task_queue.get();
+      auto* const task_queue = non_nestable_task.task_queue;
       task_queue->RequeueDeferredNonNestableTask(std::move(non_nestable_task));
       main_thread_only().non_nestable_task_queue.pop_back();
     }

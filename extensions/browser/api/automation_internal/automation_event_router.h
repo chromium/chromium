@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/scoped_observer.h"
 #include "content/public/browser/ax_event_notification_details.h"
@@ -127,7 +126,7 @@ class AutomationEventRouter : public ui::AXEventBundleSink,
   content::NotificationRegistrar registrar_;
   std::vector<AutomationListener> listeners_;
 
-  CheckedPtr<content::BrowserContext> active_context_;
+  content::BrowserContext* active_context_;
 
   ScopedObserver<content::RenderProcessHost, content::RenderProcessHostObserver>
       rph_observers_{this};

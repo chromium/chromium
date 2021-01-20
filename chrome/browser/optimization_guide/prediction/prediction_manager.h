@@ -13,7 +13,6 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/mru_cache.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
@@ -393,12 +392,12 @@ class PredictionManager
       prediction_model_download_manager_;
 
   // The top host provider that can be queried. Not owned.
-  CheckedPtr<TopHostProvider> top_host_provider_ = nullptr;
+  TopHostProvider* top_host_provider_ = nullptr;
 
   // The optimization guide store that contains prediction models and host
   // model features from the remote Optimization Guide Service. Not owned and
   // guaranteed to outlive |this|.
-  CheckedPtr<OptimizationGuideStore> model_and_features_store_ = nullptr;
+  OptimizationGuideStore* model_and_features_store_ = nullptr;
 
   // A stored response from a model and host model features fetch used to hold
   // models to be stored once host model features are processed and stored.
@@ -413,10 +412,10 @@ class PredictionManager
       net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_UNKNOWN;
 
   // A reference to the PrefService for this profile. Not owned.
-  CheckedPtr<PrefService> pref_service_ = nullptr;
+  PrefService* pref_service_ = nullptr;
 
   // A reference to the profile. Not owned.
-  CheckedPtr<Profile> profile_ = nullptr;
+  Profile* profile_ = nullptr;
 
   // The timer used to schedule fetching prediction models and host model
   // features from the remote Optimization Guide Service.
@@ -424,7 +423,7 @@ class PredictionManager
 
   // The clock used to schedule fetching from the remote Optimization Guide
   // Service.
-  CheckedPtr<const base::Clock> clock_;
+  const base::Clock* clock_;
 
   // Whether the |model_and_features_store_| is initialized and ready for use.
   bool store_is_ready_ = false;

@@ -13,7 +13,6 @@
 
 #include "base/lazy_instance.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/website_settings_info.h"
@@ -72,7 +71,7 @@ class ContentSettingsRegistry {
                 ContentSettingsInfo::OriginRestriction origin_restriction);
 
   Map content_settings_info_;
-  CheckedPtr<WebsiteSettingsRegistry> website_settings_registry_;
+  WebsiteSettingsRegistry* website_settings_registry_;
 
   DISALLOW_COPY_AND_ASSIGN(ContentSettingsRegistry);
 };

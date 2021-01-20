@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "chrome/browser/web_applications/components/external_install_options.h"
@@ -85,7 +84,7 @@ class PendingAppManagerImpl : public PendingAppManager {
   void MaybeEnqueueServiceWorkerRegistration(
       const ExternalInstallOptions& install_options);
 
-  const CheckedPtr<Profile> profile_;
+  Profile* const profile_;
   ExternallyInstalledWebAppPrefs externally_installed_app_prefs_;
 
   // unique_ptr so that it can be replaced in tests.

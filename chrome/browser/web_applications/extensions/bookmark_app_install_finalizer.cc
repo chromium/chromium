@@ -58,7 +58,7 @@ void BookmarkAppInstallFinalizer::FinalizeInstall(
     const FinalizeOptions& options,
     InstallFinalizedCallback callback) {
   scoped_refptr<CrxInstaller> crx_installer =
-      crx_installer_factory_.Run(profile_.get());
+      crx_installer_factory_.Run(profile_);
 
   extensions::LaunchType launch_type =
       web_app_info.open_as_window ? LAUNCH_TYPE_WINDOW : LAUNCH_TYPE_REGULAR;
@@ -134,7 +134,7 @@ void BookmarkAppInstallFinalizer::FinalizeUpdate(
   DCHECK(existing_extension->from_bookmark());
 
   scoped_refptr<CrxInstaller> crx_installer =
-      crx_installer_factory_.Run(profile_.get());
+      crx_installer_factory_.Run(profile_);
   crx_installer->set_installer_callback(
       base::BindOnce(&BookmarkAppInstallFinalizer::OnExtensionUpdated,
                      weak_ptr_factory_.GetWeakPtr(), std::move(expected_app_id),

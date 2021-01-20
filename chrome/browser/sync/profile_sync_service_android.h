@@ -9,7 +9,6 @@
 
 #include "base/android/jni_weak_ref.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/sync/driver/sync_service_observer.h"
 #include "components/sync/engine/net/http_post_provider_factory.h"
 
@@ -202,10 +201,10 @@ class ProfileSyncServiceAndroid : public syncer::SyncServiceObserver {
 
  private:
   // A reference to the Chrome profile object.
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   // A reference to the sync service for this profile.
-  CheckedPtr<syncer::ProfileSyncService> sync_service_;
+  syncer::ProfileSyncService* sync_service_;
 
   // Prevents Sync from running until configuration is complete.
   std::unique_ptr<syncer::SyncSetupInProgressHandle> sync_blocker_;

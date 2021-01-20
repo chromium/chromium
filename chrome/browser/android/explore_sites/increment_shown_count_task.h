@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ANDROID_EXPLORE_SITES_INCREMENT_SHOWN_COUNT_TASK_H_
 #define CHROME_BROWSER_ANDROID_EXPLORE_SITES_INCREMENT_SHOWN_COUNT_TASK_H_
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/android/explore_sites/explore_sites_store.h"
 #include "components/offline_pages/task/task.h"
 
@@ -26,7 +25,7 @@ class IncrementShownCountTask : public Task {
   void Run() override;
   void FinishedExecuting(bool result);
 
-  CheckedPtr<ExploreSitesStore> store_;  // outlives this class.
+  ExploreSitesStore* store_;  // outlives this class.
   int category_id_;
 
   bool complete_;

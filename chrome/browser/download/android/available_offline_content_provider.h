@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/common/available_offline_content.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -49,7 +48,7 @@ class AvailableOfflineContentProvider
       offline_items_collection::OfflineContentAggregator* aggregator,
       const std::vector<offline_items_collection::OfflineItem>& all_items);
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   base::WeakPtrFactory<AvailableOfflineContentProvider> weak_ptr_factory_{this};
 

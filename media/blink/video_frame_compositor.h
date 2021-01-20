@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
@@ -231,7 +230,7 @@ class MEDIA_BLINK_EXPORT VideoFrameCompositor : public VideoRendererSink,
   // media thread.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
-  CheckedPtr<const base::TickClock> tick_clock_;
+  const base::TickClock* tick_clock_;
 
   // Allows tests to disable the background rendering task.
   bool background_rendering_enabled_ = true;
@@ -246,7 +245,7 @@ class MEDIA_BLINK_EXPORT VideoFrameCompositor : public VideoRendererSink,
   base::RetainingOneShotTimer force_begin_frames_timer_;
 
   // These values are only set and read on the compositor thread.
-  CheckedPtr<cc::VideoFrameProvider::Client> client_ = nullptr;
+  cc::VideoFrameProvider::Client* client_ = nullptr;
   bool rendering_ = false;
   bool rendered_last_frame_ = false;
   bool is_background_rendering_ = false;
@@ -273,8 +272,8 @@ class MEDIA_BLINK_EXPORT VideoFrameCompositor : public VideoRendererSink,
 
   // These values are updated and read from the media and compositor threads.
   base::Lock callback_lock_;
-  CheckedPtr<VideoRendererSink::RenderCallback> callback_
-      GUARDED_BY(callback_lock_) = nullptr;
+  VideoRendererSink::RenderCallback* callback_ GUARDED_BY(callback_lock_) =
+      nullptr;
 
   // Assume 60Hz before the first UpdateCurrentFrame() call.
   // Updated/read by the compositor thread, but also read on the media thread.

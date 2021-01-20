@@ -12,7 +12,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/payments/editor_view_controller.h"
 #include "chrome/browser/ui/views/payments/validation_delegate.h"
@@ -110,7 +109,7 @@ class CreditCardEditorViewController : public EditorViewController {
 
     EditorField field_;
     // Outlives this class.
-    CheckedPtr<CreditCardEditorViewController> controller_;
+    CreditCardEditorViewController* controller_;
 
     DISALLOW_COPY_AND_ASSIGN(CreditCardValidationDelegate);
   };
@@ -133,7 +132,7 @@ class CreditCardEditorViewController : public EditorViewController {
 
   // If non-nullptr, a pointer to an object to be edited. Must outlive this
   // controller.
-  CheckedPtr<autofill::CreditCard> credit_card_to_edit_;
+  autofill::CreditCard* credit_card_to_edit_;
 
   // Keeps track of the card icons currently visible, keyed by basic card
   // network.

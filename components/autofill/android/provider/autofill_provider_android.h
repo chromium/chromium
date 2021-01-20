@@ -6,7 +6,6 @@
 #define COMPONENTS_AUTOFILL_ANDROID_PROVIDER_AUTOFILL_PROVIDER_ANDROID_H_
 
 #include "base/android/jni_weak_ref.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/autofill_provider.h"
 
@@ -116,7 +115,7 @@ class AutofillProviderAndroid : public AutofillProvider {
   std::unique_ptr<FormDataAndroid> form_;
   base::WeakPtr<AutofillHandlerProxy> handler_;
   JavaObjectWeakGlobalRef java_ref_;
-  CheckedPtr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
   bool check_submission_;
   // Valid only if check_submission_ is true.
   mojom::SubmissionSource pending_submission_source_;

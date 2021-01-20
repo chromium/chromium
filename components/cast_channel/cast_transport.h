@@ -9,7 +9,6 @@
 
 #include "base/containers/queue.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/threading/thread_checker.h"
@@ -177,7 +176,7 @@ class CastTransportImpl : public CastTransport {
   std::unique_ptr<CastMessage> current_message_;
 
   // Channel used for I/O operations.
-  const CheckedPtr<Channel> channel_;
+  Channel* const channel_;
 
   // Methods for communicating message receipt and error status to client code.
   std::unique_ptr<Delegate> delegate_;

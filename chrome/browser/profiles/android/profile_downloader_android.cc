@@ -7,7 +7,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
@@ -98,7 +97,7 @@ class AccountInfoRetriever : public ProfileDownloaderDelegate {
   std::unique_ptr<ProfileDownloader> profile_image_downloader_;
 
   // The browser profile associated with this download request.
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   // The account ID and email address of account to be loaded.
   const CoreAccountId account_id_;

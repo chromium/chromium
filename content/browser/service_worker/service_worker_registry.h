@@ -9,7 +9,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/sequence_bound.h"
 #include "content/browser/service_worker/service_worker_database.h"
@@ -454,7 +453,7 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
       Args&&... args);
 
   // The ServiceWorkerContextCore object must outlive this.
-  const CheckedPtr<ServiceWorkerContextCore> context_;
+  ServiceWorkerContextCore* const context_;
 
   mojo::Remote<storage::mojom::ServiceWorkerStorageControl>
       remote_storage_control_;

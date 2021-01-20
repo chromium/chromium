@@ -9,7 +9,6 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "weblayer/public/new_tab_delegate.h"
 
 namespace weblayer {
@@ -27,7 +26,7 @@ class NewTabCallbackProxy : public NewTabDelegate {
   void OnNewTab(Tab* tab, NewTabType type) override;
 
  private:
-  CheckedPtr<TabImpl> tab_;
+  TabImpl* tab_;
   base::android::ScopedJavaGlobalRef<jobject> java_impl_;
 
   DISALLOW_COPY_AND_ASSIGN(NewTabCallbackProxy);

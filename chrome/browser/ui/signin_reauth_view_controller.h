@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_SIGNIN_REAUTH_VIEW_CONTROLLER_H_
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
 #include "base/optional.h"
@@ -174,7 +173,7 @@ class SigninReauthViewController
   void ShowGaiaReauthPageInNewTab();
 
   // Controller inputs.
-  const CheckedPtr<Browser> browser_;
+  Browser* const browser_;
   const CoreAccountId account_id_;
   const signin_metrics::ReauthAccessPoint access_point_;
   base::OnceCallback<void(signin::ReauthResult)> reauth_callback_;
@@ -188,7 +187,7 @@ class SigninReauthViewController
   base::TimeTicks user_confirmed_reauth_time_{base::TimeTicks::Max()};
 
   // Delegate displaying the dialog.
-  CheckedPtr<SigninViewControllerDelegate> dialog_delegate_ = nullptr;
+  SigninViewControllerDelegate* dialog_delegate_ = nullptr;
   ScopedObserver<SigninViewControllerDelegate,
                  SigninViewControllerDelegate::Observer>
       dialog_delegate_observer_{this};
@@ -198,7 +197,7 @@ class SigninReauthViewController
   std::unique_ptr<ReauthWebContentsObserver> reauth_web_contents_observer_;
   // Raw pointer is only set if |reauth_web_contents_| was transferred to a new
   // tab for the SAML flow.
-  CheckedPtr<content::WebContents> raw_reauth_web_contents_ = nullptr;
+  content::WebContents* raw_reauth_web_contents_ = nullptr;
 
   // The state of the reauth flow.
   bool user_confirmed_reauth_ = false;

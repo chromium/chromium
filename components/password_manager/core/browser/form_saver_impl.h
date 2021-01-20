@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/password_manager/core/browser/form_saver.h"
 
 namespace password_manager {
@@ -46,7 +45,7 @@ class FormSaverImpl : public FormSaver {
   // form handler or origin handler which could embed FormSaver.
 
   // Cached pointer to the PasswordStore.
-  const CheckedPtr<PasswordStore> store_;
+  PasswordStore* const store_;
 
   DISALLOW_COPY_AND_ASSIGN(FormSaverImpl);
 };

@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill_assistant/browser/actions/action.h"
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
@@ -348,8 +347,8 @@ class ScriptExecutor : public ActionDelegate,
 
     void TimeoutWarning();
 
-    CheckedPtr<ScriptExecutor> main_script_;
-    CheckedPtr<ScriptExecutorDelegate> delegate_;
+    ScriptExecutor* main_script_;
+    ScriptExecutorDelegate* delegate_;
     const base::TimeDelta max_wait_time_;
     const bool allow_interrupt_;
     base::RepeatingCallback<void(BatchElementChecker*,
@@ -467,16 +466,15 @@ class ScriptExecutor : public ActionDelegate,
   std::string last_global_payload_;
   const std::string initial_script_payload_;
   std::string last_script_payload_;
-  const CheckedPtr<ScriptExecutor::Listener> listener_;
-  const CheckedPtr<ScriptExecutorDelegate> delegate_;
+  ScriptExecutor::Listener* const listener_;
+  ScriptExecutorDelegate* const delegate_;
   // Set of interrupts that might run during wait for dom or prompt action with
   // allow_interrupt. Sorted by priority; an interrupt that appears on the
   // vector first should run first. Note that the content of this vector can
   // change while the script is running, as a result of OnScriptListChanged
   // being called.
-  const CheckedPtr<const std::vector<std::unique_ptr<Script>>>
-      ordered_interrupts_;
-  const CheckedPtr<std::map<std::string, ScriptStatusProto>> scripts_state_;
+  const std::vector<std::unique_ptr<Script>>* const ordered_interrupts_;
+  std::map<std::string, ScriptStatusProto>* const scripts_state_;
   RunScriptCallback callback_;
   std::vector<std::unique_ptr<Action>> actions_;
   std::vector<ProcessedActionProto> processed_actions_;
@@ -531,7 +529,7 @@ class ScriptExecutor : public ActionDelegate,
   CurrentActionData current_action_data_;
   base::Optional<size_t> current_action_index_;
 
-  CheckedPtr<const UserData> user_data_ = nullptr;
+  const UserData* user_data_ = nullptr;
 
   bool is_paused_ = false;
   std::string last_status_message_;

@@ -8,7 +8,6 @@
 #include <set>
 #include <utility>
 
-#include "base/memory/checked_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -95,7 +94,7 @@ class FeedStoreTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::SYSTEM_TIME};
   std::unique_ptr<FeedStore> store_;
   std::map<std::string, feedstore::Record> db_entries_;
-  CheckedPtr<leveldb_proto::test::FakeDB<feedstore::Record>> fake_db_;
+  leveldb_proto::test::FakeDB<feedstore::Record>* fake_db_;
 };
 
 TEST_F(FeedStoreTest, InitSuccess) {

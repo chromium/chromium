@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/webui/feed_internals/feed_internals.mojom-forward.h"
 #include "chrome/browser/ui/webui/feed_internals/feed_internals_page_handler.h"
 #include "components/feed/buildflags.h"
@@ -36,7 +35,7 @@ class FeedInternalsUI : public ui::MojoWebUIController {
       mojo::PendingReceiver<feed_internals::mojom::PageHandler> receiver);
 
  private:
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 #if BUILDFLAG(ENABLE_FEED_V1)
   std::unique_ptr<FeedInternalsPageHandler> page_handler_;
 #endif

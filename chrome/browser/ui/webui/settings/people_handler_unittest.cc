@@ -13,7 +13,6 @@
 #include "base/command_line.h"
 #include "base/json/json_writer.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/stl_util.h"
 #include "base/test/mock_callback.h"
 #include "base/values.h"
@@ -356,7 +355,7 @@ class PeopleHandlerTest : public ChromeRenderViewHostTestHarness {
 
   testing::NiceMock<base::MockCallback<base::RepeatingClosure>>
       mock_on_setup_in_progress_handle_destroyed_;
-  CheckedPtr<syncer::MockSyncService> mock_sync_service_;
+  syncer::MockSyncService* mock_sync_service_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
   content::TestWebUI web_ui_;

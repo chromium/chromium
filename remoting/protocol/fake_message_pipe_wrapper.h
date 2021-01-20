@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "remoting/protocol/message_pipe.h"
 
 namespace google {
@@ -38,7 +37,7 @@ class FakeMessagePipeWrapper final : public MessagePipe {
   void ClosePipe();
 
  private:
-  const CheckedPtr<FakeMessagePipe> pipe_;
+  FakeMessagePipe* const pipe_;
 };
 
 }  // namespace protocol

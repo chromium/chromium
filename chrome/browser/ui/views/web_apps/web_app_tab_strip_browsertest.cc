@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/checked_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -51,9 +50,9 @@ class WebAppTabStripBrowserTest : public InProcessBrowserTest {
 
   struct App {
     AppId id;
-    CheckedPtr<Browser> browser;
-    CheckedPtr<BrowserView> browser_view;
-    CheckedPtr<content::WebContents> web_contents;
+    Browser* browser;
+    BrowserView* browser_view;
+    content::WebContents* web_contents;
   };
 
   App InstallAndLaunch() {

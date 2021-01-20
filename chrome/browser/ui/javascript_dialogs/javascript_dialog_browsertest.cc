@@ -5,7 +5,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_command_line.h"
@@ -261,9 +260,9 @@ class JavaScriptDialogDismissalCauseTester {
   void SetLastDismissalCause(DismissalCause cause) { dismissal_cause_ = cause; }
 
  private:
-  CheckedPtr<content::WebContents> tab_;
-  CheckedPtr<content::RenderFrameHost> frame_;
-  CheckedPtr<javascript_dialogs::TabModalDialogManager> js_helper_;
+  content::WebContents* tab_;
+  content::RenderFrameHost* frame_;
+  javascript_dialogs::TabModalDialogManager* js_helper_;
 
   base::Optional<DismissalCause> dismissal_cause_;
 

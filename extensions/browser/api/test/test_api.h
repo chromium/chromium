@@ -6,7 +6,6 @@
 #define EXTENSIONS_BROWSER_API_TEST_TEST_API_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/values.h"
 #include "extensions/browser/extension_function.h"
 
@@ -113,7 +112,7 @@ class TestGetConfigFunction : public TestExtensionFunction {
     friend struct base::DefaultSingletonTraits<TestConfigState>;
     TestConfigState();
 
-    CheckedPtr<base::DictionaryValue> config_state_;
+    base::DictionaryValue* config_state_;
 
     DISALLOW_COPY_AND_ASSIGN(TestConfigState);
   };

@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
@@ -219,7 +218,7 @@ class BidirectionalStream : public net::BidirectionalStream::Delegate {
   bool disable_auto_flush_;
   bool delay_headers_until_flush_;
 
-  const CheckedPtr<net::URLRequestContextGetter> request_context_getter_;
+  net::URLRequestContextGetter* const request_context_getter_;
 
   scoped_refptr<net::WrappedIOBuffer> read_buffer_;
 
@@ -231,7 +230,7 @@ class BidirectionalStream : public net::BidirectionalStream::Delegate {
   std::unique_ptr<WriteBuffers> sending_write_data_;
 
   std::unique_ptr<net::BidirectionalStream> bidi_stream_;
-  CheckedPtr<Delegate> delegate_;
+  Delegate* delegate_;
 
   base::WeakPtr<BidirectionalStream> weak_this_;
   base::WeakPtrFactory<BidirectionalStream> weak_factory_{this};

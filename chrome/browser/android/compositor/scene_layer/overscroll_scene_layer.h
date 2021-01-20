@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ANDROID_COMPOSITOR_SCENE_LAYER_OVERSCROLL_SCENE_LAYER_H_
 
 #include "base/android/jni_weak_ref.h"
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/android/layouts/scene_layer.h"
 #include "ui/android/overscroll_glow.h"
@@ -63,9 +62,9 @@ class OverscrollSceneLayer : public SceneLayer,
   // OverscrollGlowClient implementation.
   std::unique_ptr<ui::EdgeEffect> CreateEdgeEffect() override;
 
-  const CheckedPtr<ui::WindowAndroid> window_;
+  ui::WindowAndroid* const window_;
   std::unique_ptr<ui::OverscrollGlow> glow_effect_;
-  CheckedPtr<ui::ResourceManager> resource_manager_ = nullptr;
+  ui::ResourceManager* resource_manager_ = nullptr;
 
   gfx::Vector2dF start_pos_;
 

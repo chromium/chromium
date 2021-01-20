@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_APPCACHE_APPCACHE_DISK_CACHE_OPS_H_
 #define CONTENT_BROWSER_APPCACHE_APPCACHE_DISK_CACHE_OPS_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 
@@ -68,7 +67,7 @@ class CONTENT_EXPORT AppCacheResponseIO {
 
   const int64_t response_id_;
   base::WeakPtr<AppCacheDiskCache> disk_cache_;
-  CheckedPtr<AppCacheDiskCacheEntry> entry_;
+  AppCacheDiskCacheEntry* entry_;
   scoped_refptr<HttpResponseInfoIOBuffer> info_buffer_;
   scoped_refptr<net::IOBuffer> buffer_;
   scoped_refptr<net::IOBufferWithSize> metadata_;

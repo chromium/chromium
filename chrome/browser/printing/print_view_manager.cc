@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/lazy_instance.h"
-#include "base/memory/checked_ptr.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -73,8 +72,8 @@ content::WebContents* GetPrintPreviewDialog(
 }  // namespace
 
 struct PrintViewManager::FrameDispatchHelper {
-  CheckedPtr<PrintViewManager> manager;
-  CheckedPtr<content::RenderFrameHost> render_frame_host;
+  PrintViewManager* manager;
+  content::RenderFrameHost* render_frame_host;
 
   bool Send(IPC::Message* msg) { return render_frame_host->Send(msg); }
 

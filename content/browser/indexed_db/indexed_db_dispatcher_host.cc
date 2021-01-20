@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/guid.h"
-#include "base/memory/checked_ptr.h"
 #include "base/process/process.h"
 #include "base/sequenced_task_runner.h"
 #include "base/stl_util.h"
@@ -172,7 +171,7 @@ class IndexedDBDataItemReader : public storage::mojom::BlobDataItemReader {
   mojo::ReceiverSet<storage::mojom::BlobDataItemReader> receivers_;
 
   // |this| is owned by |host|, so this raw "client pointer" is safe.
-  CheckedPtr<IndexedDBDispatcherHost> host_;
+  IndexedDBDispatcherHost* host_;
 
   base::FilePath file_path_;
   base::Time expected_modification_time_;
@@ -298,7 +297,7 @@ void IndexedDBDispatcherHost::Open(
       new IndexedDBCallbacks(this->AsWeakPtr(), origin,
                              std::move(pending_callbacks), IDBTaskRunner()));
   scoped_refptr<IndexedDBDatabaseCallbacks> database_callbacks(
-      new IndexedDBDatabaseCallbacks(indexed_db_context_.get(),
+      new IndexedDBDatabaseCallbacks(indexed_db_context_,
                                      std::move(database_callbacks_remote),
                                      IDBTaskRunner()));
   base::FilePath indexed_db_path = indexed_db_context_->data_path();

@@ -281,7 +281,7 @@ void RealTimeUrlLookupServiceBase::MayBeCacheRealTimeUrlVerdict(
   if (response.threat_info_size() > 0) {
     base::PostTask(FROM_HERE, CreateTaskTraits(ThreadID::UI),
                    base::BindOnce(&VerdictCacheManager::CacheRealTimeUrlVerdict,
-                                  base::Unretained(cache_manager_.get()), url,
+                                  base::Unretained(cache_manager_), url,
                                   response, base::Time::Now(),
                                   /* store_old_cache */ false));
   }

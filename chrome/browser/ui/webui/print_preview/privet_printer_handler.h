@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string16.h"
@@ -89,7 +88,7 @@ class PrivetPrinterHandler
       const std::string& name,
       cloud_print::PrivetHTTPAsynchronousFactory::ResultCallback callback);
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
   scoped_refptr<local_discovery::ServiceDiscoverySharedClient>
       service_discovery_client_;
   std::unique_ptr<cloud_print::PrivetLocalPrinterLister> printer_lister_;

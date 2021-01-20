@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
@@ -334,7 +333,7 @@ class SessionService : public sessions::CommandStorageManagerDelegate,
                                 std::pair<int, int>* range);
 
   // The profile. This may be null during testing.
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   // Whether to use delayed save. Set to false when constructed with a FilePath
   // (which should only be used for testing).

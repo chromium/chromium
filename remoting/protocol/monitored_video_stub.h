@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
 #include "remoting/protocol/video_stub.h"
@@ -49,7 +48,7 @@ class MonitoredVideoStub : public VideoStub {
   void OnConnectivityCheckTimeout();
   void NotifyChannelState(bool connected);
 
-  CheckedPtr<VideoStub> video_stub_;
+  VideoStub* video_stub_;
   ChannelStateCallback callback_;
   base::ThreadChecker thread_checker_;
   bool is_connected_;

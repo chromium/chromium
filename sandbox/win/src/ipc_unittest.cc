@@ -5,7 +5,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/memory/checked_ptr.h"
 #include "sandbox/win/src/crosscall_client.h"
 #include "sandbox/win/src/crosscall_server.h"
 #include "sandbox/win/src/sharedmem_ipc_client.h"
@@ -378,7 +377,7 @@ TEST(IPCTest, CrossCallValidation) {
 struct ServerEvents {
   HANDLE ping;
   HANDLE pong;
-  CheckedPtr<volatile LONG> state;
+  volatile LONG* state;
   HANDLE mutex;
 };
 

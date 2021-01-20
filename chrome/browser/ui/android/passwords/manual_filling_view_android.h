@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/autofill/manual_filling_view_interface.h"
 #include "components/autofill/core/browser/ui/accessory_sheet_data.h"
 
@@ -75,7 +74,7 @@ class ManualFillingViewAndroid : public ManualFillingViewInterface {
   base::android::ScopedJavaGlobalRef<jobject> GetOrCreateJavaObject();
 
   // The controller provides data for this view and owns it.
-  CheckedPtr<ManualFillingController> controller_;
+  ManualFillingController* controller_;
 
   // The corresponding java object. Use `GetOrCreateJavaObject()` to access.
   base::android::ScopedJavaGlobalRef<jobject> java_object_internal_;

@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/hash/hash.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/feed/core/feed_scheduler_host.h"
@@ -84,7 +83,7 @@ class CallbackAggregator : public base::RefCounted<CallbackAggregator> {
     std::move(on_completion_).Run(std::move(urls_));
   }
 
-  CheckedPtr<OfflinePageModel> offline_page_model_;
+  OfflinePageModel* offline_page_model_;
 
   // To be called once all callbacks are run or destroyed.
   ReportStatusCallback on_completion_;

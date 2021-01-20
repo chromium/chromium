@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
@@ -224,10 +223,10 @@ class AppRegistrar {
   void NotifyAppRegistrarShutdown();
 
  private:
-  const CheckedPtr<Profile> profile_;
+  Profile* const profile_;
 
   base::ObserverList<AppRegistrarObserver, /*check_empty=*/true> observers_;
-  CheckedPtr<OsIntegrationManager> os_integration_manager_ = nullptr;
+  OsIntegrationManager* os_integration_manager_ = nullptr;
 };
 
 }  // namespace web_app

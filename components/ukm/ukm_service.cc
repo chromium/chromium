@@ -219,7 +219,7 @@ UkmService::UkmService(PrefService* pref_service,
   const base::RepeatingCallback<base::TimeDelta(void)>&
       get_upload_interval_callback =
           base::BindRepeating(&metrics::MetricsServiceClient::GetUploadInterval,
-                              base::Unretained(client_.get()));
+                              base::Unretained(client_));
   bool fast_startup_for_testing = client_->ShouldStartUpFastForTesting();
   scheduler_.reset(new UkmRotationScheduler(
       rotate_callback, fast_startup_for_testing, get_upload_interval_callback));

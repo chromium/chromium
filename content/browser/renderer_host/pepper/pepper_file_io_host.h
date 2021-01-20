@@ -13,7 +13,6 @@
 #include "base/files/file.h"
 #include "base/files/file_proxy.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/download/quarantine/quarantine.h"
@@ -126,7 +125,7 @@ class PepperFileIOHost : public ppapi::host::ResourceHost,
       int32_t open_flags,
       ppapi::host::ReplyMessageContext* reply_context) const;
 
-  CheckedPtr<BrowserPpapiHostImpl> browser_ppapi_host_;
+  BrowserPpapiHostImpl* browser_ppapi_host_;
 
   int render_process_id_;
   base::ProcessId resolved_render_process_id_;

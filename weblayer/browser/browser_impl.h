@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
 #include "weblayer/public/browser.h"
@@ -162,9 +161,9 @@ class BrowserImpl : public Browser {
 #endif
   base::ObserverList<BrowserObserver> browser_observers_;
   base::ObserverList<BrowserRestoreObserver> browser_restore_observers_;
-  const CheckedPtr<ProfileImpl> profile_;
+  ProfileImpl* const profile_;
   std::vector<std::unique_ptr<Tab>> tabs_;
-  CheckedPtr<TabImpl> active_tab_ = nullptr;
+  TabImpl* active_tab_ = nullptr;
   std::string persistence_id_;
   std::unique_ptr<BrowserPersister> browser_persister_;
   base::OnceClosure visible_security_state_changed_callback_for_tests_;

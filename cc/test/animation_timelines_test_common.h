@@ -8,7 +8,6 @@
 #include <memory>
 #include <unordered_map>
 
-#include "base/memory/checked_ptr.h"
 #include "cc/animation/animation_delegate.h"
 #include "cc/animation/animation_host.h"
 #include "cc/animation/keyframe_model.h"
@@ -300,8 +299,8 @@ class AnimationTimelinesTest : public testing::Test {
   TestHostClient client_;
   TestHostClient client_impl_;
 
-  CheckedPtr<AnimationHost> host_;
-  CheckedPtr<AnimationHost> host_impl_;
+  AnimationHost* host_;
+  AnimationHost* host_impl_;
 
   const int timeline_id_;
   const int animation_id_;

@@ -6,7 +6,6 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
@@ -57,7 +56,7 @@ class FakeDriveServiceFactory
   }
 
  private:
-  CheckedPtr<drive::FakeDriveService::ChangeObserver> change_observer_;
+  drive::FakeDriveService::ChangeObserver* change_observer_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeDriveServiceFactory);
 };
@@ -150,7 +149,7 @@ class SyncFileSystemTest : public extensions::PlatformAppBrowserTest,
 
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;
 
-  CheckedPtr<drive_backend::SyncEngine> remote_service_;
+  drive_backend::SyncEngine* remote_service_;
 
   DISALLOW_COPY_AND_ASSIGN(SyncFileSystemTest);
 };

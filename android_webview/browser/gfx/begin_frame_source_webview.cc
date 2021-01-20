@@ -6,7 +6,6 @@
 
 #include "android_webview/browser_jni_headers/RootBeginFrameSourceWebView_jni.h"
 #include "base/auto_reset.h"
-#include "base/memory/checked_ptr.h"
 #include "base/no_destructor.h"
 
 namespace android_webview {
@@ -32,7 +31,7 @@ class BeginFrameSourceWebView::BeginFrameObserver
   bool WantsAnimateOnlyBeginFrames() const override { return true; }
 
  private:
-  const CheckedPtr<BeginFrameSourceWebView> owner_;
+  BeginFrameSourceWebView* const owner_;
   viz::BeginFrameArgs last_used_begin_frame_args_;
 };
 

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_DOWNLOAD_ANDROID_DANGEROUS_DOWNLOAD_INFOBAR_DELEGATE_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/download/public/common/download_item.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 
@@ -42,7 +41,7 @@ class DangerousDownloadInfoBarDelegate
 
   // The download item that is requesting the infobar. Could get deleted while
   // the infobar is showing.
-  CheckedPtr<download::DownloadItem> download_item_;
+  download::DownloadItem* download_item_;
   base::string16 message_text_;
 
   DISALLOW_COPY_AND_ASSIGN(DangerousDownloadInfoBarDelegate);

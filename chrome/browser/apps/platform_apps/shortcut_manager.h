@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_APPS_PLATFORM_APPS_SHORTCUT_MANAGER_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -59,7 +58,7 @@ class AppShortcutManager : public KeyedService,
   void SetCurrentAppShortcutsVersion();
   void DeleteApplicationShortcuts(const extensions::Extension* extension);
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
   ScopedObserver<ProfileAttributesStorage, ProfileAttributesStorage::Observer>
       profile_storage_observer_{this};
   ScopedObserver<extensions::ExtensionRegistry,

@@ -15,7 +15,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "gpu/command_buffer/client/client_transfer_cache.h"
@@ -139,7 +138,7 @@ class GLES2_IMPL_EXPORT ImplementationBase
 
   void RunIfContextNotLost(base::OnceClosure callback);
 
-  CheckedPtr<TransferBufferInterface> transfer_buffer_;
+  TransferBufferInterface* transfer_buffer_;
 
   std::unique_ptr<MappedMemoryManager> mapped_memory_;
 
@@ -148,7 +147,7 @@ class GLES2_IMPL_EXPORT ImplementationBase
   base::OnceClosure lost_context_callback_;
   bool lost_context_callback_run_ = false;
 
-  const CheckedPtr<GpuControl> gpu_control_;
+  GpuControl* const gpu_control_;
 
   Capabilities capabilities_;
 
@@ -158,7 +157,7 @@ class GLES2_IMPL_EXPORT ImplementationBase
                           const char* function_name,
                           const char* msg) = 0;
 
-  CheckedPtr<CommandBufferHelper> helper_;
+  CommandBufferHelper* helper_;
 
   base::WeakPtrFactory<ImplementationBase> weak_ptr_factory_{this};
 

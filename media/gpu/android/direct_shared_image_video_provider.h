@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/single_thread_task_runner.h"
@@ -92,7 +91,7 @@ class GpuSharedImageVideoFactory
 
   void OnWillDestroyStub(bool have_context) override;
 
-  CheckedPtr<gpu::CommandBufferStub> stub_ = nullptr;
+  gpu::CommandBufferStub* stub_ = nullptr;
 
   // A helper for creating textures. Only valid while |stub_| is valid.
   std::unique_ptr<GLES2DecoderHelper> decoder_helper_;

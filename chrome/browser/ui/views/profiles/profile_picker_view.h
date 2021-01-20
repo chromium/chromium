@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_VIEW_H_
 
 #include "base/cancelable_callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
@@ -194,8 +193,8 @@ class ProfilePickerView : public views::WidgetDelegateView,
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
 
   // Views, owned by the view hierarchy.
-  CheckedPtr<views::View> toolbar_ = nullptr;
-  CheckedPtr<views::WebView> web_view_ = nullptr;
+  views::View* toolbar_ = nullptr;
+  views::WebView* web_view_ = nullptr;
 
   // The web contents backed by the system profile. This is used for displaying
   // the WebUI pages.
@@ -203,7 +202,7 @@ class ProfilePickerView : public views::WidgetDelegateView,
 
   // Assigned a value at the beginning of a signed-in profile creation flow,
   // until the end of the flow (i.e. for the rest of the lifetime of this view).
-  CheckedPtr<Profile> signed_in_profile_being_created_ = nullptr;
+  Profile* signed_in_profile_being_created_ = nullptr;
   // The web contents backed by `signed_in_profile_being_created_`, with the
   // same lifetime. This is used for displaying the sign-in flow.
   std::unique_ptr<content::WebContents> new_profile_contents_;

@@ -13,7 +13,6 @@
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -175,13 +174,13 @@ class DataReductionProxyConfigServiceClient
 #endif
 
   // The caller must ensure that the |request_options_| outlives this instance.
-  CheckedPtr<DataReductionProxyRequestOptions> request_options_;
+  DataReductionProxyRequestOptions* request_options_;
 
   // The caller must ensure that the |service_| outlives this instance.
-  CheckedPtr<DataReductionProxyService> service_;
+  DataReductionProxyService* service_;
 
   // Watches for network changes.
-  CheckedPtr<network::NetworkConnectionTracker> network_connection_tracker_;
+  network::NetworkConnectionTracker* network_connection_tracker_;
 
   // Used to persist a serialized Data Reduction Proxy configuration.
   ConfigStorer config_storer_;

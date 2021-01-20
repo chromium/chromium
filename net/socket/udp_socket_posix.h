@@ -13,7 +13,6 @@
 
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/threading/thread_checker.h"
@@ -413,7 +412,7 @@ class NET_EXPORT UDPSocketPosix {
     bool watching() { return watching_; }
 
    private:
-    const CheckedPtr<UDPSocketPosix> socket_;
+    UDPSocketPosix* const socket_;
     bool watching_;
 
     DISALLOW_COPY_AND_ASSIGN(WriteAsyncWatcher);
@@ -456,7 +455,7 @@ class NET_EXPORT UDPSocketPosix {
     void OnFileCanWriteWithoutBlocking(int /* fd */) override {}
 
    private:
-    const CheckedPtr<UDPSocketPosix> socket_;
+    UDPSocketPosix* const socket_;
 
     DISALLOW_COPY_AND_ASSIGN(ReadWatcher);
   };
@@ -472,7 +471,7 @@ class NET_EXPORT UDPSocketPosix {
     void OnFileCanWriteWithoutBlocking(int /* fd */) override;
 
    private:
-    const CheckedPtr<UDPSocketPosix> socket_;
+    UDPSocketPosix* const socket_;
 
     DISALLOW_COPY_AND_ASSIGN(WriteWatcher);
   };
@@ -603,7 +602,7 @@ class NET_EXPORT UDPSocketPosix {
   // The buffer used by InternalRead() to retry Read requests
   scoped_refptr<IOBuffer> read_buf_;
   int read_buf_len_;
-  CheckedPtr<IPEndPoint> recv_from_address_;
+  IPEndPoint* recv_from_address_;
 
   // The buffer used by InternalWrite() to retry Write requests
   scoped_refptr<IOBuffer> write_buf_;

@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/platform_thread.h"
@@ -54,7 +53,7 @@ class BaseTimerTaskInternal {
   void Abandon() { timer_ = nullptr; }
 
  private:
-  CheckedPtr<TimerBase> timer_;
+  TimerBase* timer_;
 
   DISALLOW_COPY_AND_ASSIGN(BaseTimerTaskInternal);
 };
@@ -176,13 +175,12 @@ void TimerBase::PostNewScheduledTask(TimeDelta delay) {
     // this code racy. https://crbug.com/587199
     GetTaskRunner()->PostDelayedTask(
         posted_from_,
-        BindOnce(&BaseTimerTaskInternal::Run, Owned(scheduled_task_.get())),
-        delay);
+        BindOnce(&BaseTimerTaskInternal::Run, Owned(scheduled_task_)), delay);
     scheduled_run_time_ = desired_run_time_ = Now() + delay;
   } else {
     GetTaskRunner()->PostTask(
         posted_from_,
-        BindOnce(&BaseTimerTaskInternal::Run, Owned(scheduled_task_.get())));
+        BindOnce(&BaseTimerTaskInternal::Run, Owned(scheduled_task_)));
     scheduled_run_time_ = desired_run_time_ = TimeTicks();
   }
 }

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_OVERLAY_OVERLAY_WINDOW_VIEWS_H_
 #define CHROME_BROWSER_UI_VIEWS_OVERLAY_OVERLAY_WINDOW_VIEWS_H_
 
-#include "base/memory/checked_ptr.h"
 #include "content/public/browser/overlay_window.h"
 
 #include "base/timer/timer.h"
@@ -177,7 +176,7 @@ class OverlayWindowViews : public content::OverlayWindow,
   const viz::FrameSinkId* GetCurrentFrameSinkId() const;
 
   // Not owned; |controller_| owns |this|.
-  CheckedPtr<content::PictureInPictureWindowController> controller_;
+  content::PictureInPictureWindowController* controller_;
 
   // Whether or not the window has been shown before. This is used to determine
   // sizing and placement. This is different from checking whether the window
@@ -210,16 +209,16 @@ class OverlayWindowViews : public content::OverlayWindow,
   std::vector<std::unique_ptr<views::View>> view_holder_;
 
   // Views to be shown.
-  CheckedPtr<views::View> window_background_view_ = nullptr;
-  CheckedPtr<views::View> video_view_ = nullptr;
-  CheckedPtr<views::View> controls_scrim_view_ = nullptr;
-  CheckedPtr<views::CloseImageButton> close_controls_view_ = nullptr;
-  CheckedPtr<views::BackToTabImageButton> back_to_tab_controls_view_ = nullptr;
-  CheckedPtr<views::TrackImageButton> previous_track_controls_view_ = nullptr;
-  CheckedPtr<views::PlaybackImageButton> play_pause_controls_view_ = nullptr;
-  CheckedPtr<views::TrackImageButton> next_track_controls_view_ = nullptr;
-  CheckedPtr<views::SkipAdLabelButton> skip_ad_controls_view_ = nullptr;
-  CheckedPtr<views::ResizeHandleButton> resize_handle_view_ = nullptr;
+  views::View* window_background_view_ = nullptr;
+  views::View* video_view_ = nullptr;
+  views::View* controls_scrim_view_ = nullptr;
+  views::CloseImageButton* close_controls_view_ = nullptr;
+  views::BackToTabImageButton* back_to_tab_controls_view_ = nullptr;
+  views::TrackImageButton* previous_track_controls_view_ = nullptr;
+  views::PlaybackImageButton* play_pause_controls_view_ = nullptr;
+  views::TrackImageButton* next_track_controls_view_ = nullptr;
+  views::SkipAdLabelButton* skip_ad_controls_view_ = nullptr;
+  views::ResizeHandleButton* resize_handle_view_ = nullptr;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<ash::RoundedCornerDecorator> decorator_;
 #endif

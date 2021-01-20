@@ -98,7 +98,7 @@ void ProfileCustomizationBubbleSyncController::Init() {
 
   // Observe also the sync service to abort waiting for theme sync if the user
   // hits any error or if custom passphrase is needed.
-  sync_observation_.Observe(sync_service_.get());
+  sync_observation_.Observe(sync_service_);
 }
 
 void ProfileCustomizationBubbleSyncController::OnStateChanged(

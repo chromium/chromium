@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "media/capture/video/video_capture_device.h"
 
@@ -44,7 +43,7 @@ class PacmanFramePainter {
   void DrawPacman(base::TimeDelta elapsed_time, uint8_t* target_buffer);
 
   const Format pixel_format_;
-  CheckedPtr<const FakeDeviceState> fake_device_state_ = nullptr;
+  const FakeDeviceState* fake_device_state_ = nullptr;
 };
 
 // Implementation of VideoCaptureDevice that generates test frames. This is
@@ -152,7 +151,7 @@ class FrameDelivererFactory {
 
  private:
   const FakeVideoCaptureDevice::DeliveryMode delivery_mode_;
-  CheckedPtr<const FakeDeviceState> device_state_ = nullptr;
+  const FakeDeviceState* device_state_ = nullptr;
   std::unique_ptr<gpu::GpuMemoryBufferSupport> gmb_support_;
 };
 
@@ -180,7 +179,7 @@ class FakePhotoDevice {
 
  private:
   const std::unique_ptr<PacmanFramePainter> sk_n32_painter_;
-  const CheckedPtr<const FakeDeviceState> fake_device_state_;
+  const FakeDeviceState* const fake_device_state_;
   const FakePhotoDeviceConfig config_;
 };
 

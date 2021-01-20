@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/free_deleter.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_process_information.h"
@@ -72,7 +71,7 @@ class TargetProcess {
   // Returns the address of the target main exe. This is used by the
   // interceptions framework.
   HMODULE MainModule() const {
-    return reinterpret_cast<HMODULE>(base_address_.get());
+    return reinterpret_cast<HMODULE>(base_address_);
   }
 
   // Returns the name of the executable.
@@ -105,9 +104,9 @@ class TargetProcess {
   // Reference to the IPC subsystem.
   std::unique_ptr<SharedMemIPCServer> ipc_server_;
   // Provides the threads used by the IPC. This class does not own this pointer.
-  CheckedPtr<ThreadProvider> thread_pool_;
+  ThreadProvider* thread_pool_;
   // Base address of the main executable
-  CheckedPtr<void> base_address_;
+  void* base_address_;
   // Full name of the target executable.
   std::unique_ptr<wchar_t, base::FreeDeleter> exe_name_;
   /// List of capability sids for use when impersonating in an AC process.

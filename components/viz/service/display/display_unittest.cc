@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -264,10 +263,10 @@ class DisplayTest : public testing::Test {
   scoped_refptr<base::NullTaskRunner> task_runner_;
   std::unique_ptr<BeginFrameSource> begin_frame_source_;
   std::unique_ptr<Display> display_;
-  CheckedPtr<TestSoftwareOutputDevice> software_output_device_ = nullptr;
-  CheckedPtr<FakeOutputSurface> output_surface_ = nullptr;
-  CheckedPtr<FakeSkiaOutputSurface> skia_output_surface_ = nullptr;
-  CheckedPtr<TestDisplayScheduler> scheduler_ = nullptr;
+  TestSoftwareOutputDevice* software_output_device_ = nullptr;
+  FakeOutputSurface* output_surface_ = nullptr;
+  FakeSkiaOutputSurface* skia_output_surface_ = nullptr;
+  TestDisplayScheduler* scheduler_ = nullptr;
 };
 
 // Check that frame is damaged and swapped only under correct conditions.

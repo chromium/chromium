@@ -13,7 +13,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string16.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom-forward.h"
@@ -131,7 +130,7 @@ class CONTENT_EXPORT IndexedDBDispatcherHost : public blink::mojom::IDBFactory {
   base::SequencedTaskRunner* IDBTaskRunner() const;
 
   // IndexedDBDispatcherHost is owned by IndexedDBContextImpl.
-  CheckedPtr<IndexedDBContextImpl> indexed_db_context_;
+  IndexedDBContextImpl* indexed_db_context_;
 
   // Shared task runner used for async I/O while reading blob files.
   const scoped_refptr<base::TaskRunner> io_task_runner_;

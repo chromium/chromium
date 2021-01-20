@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
@@ -61,7 +60,7 @@ class ActiveTabInfo : public RequestCoordinator::ActiveTabInfo {
   }
 
  private:
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 };
 
 RequestCoordinatorFactory::RequestCoordinatorFactory()

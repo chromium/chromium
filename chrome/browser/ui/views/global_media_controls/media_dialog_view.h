@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
 #include "chrome/browser/accessibility/soda_installer.h"
@@ -103,11 +102,11 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
   void OnSodaError() override;
   void OnSodaProgress(int progress) override;
 
-  const CheckedPtr<MediaNotificationService> service_;
+  MediaNotificationService* const service_;
 
-  const CheckedPtr<Profile> profile_;
+  Profile* const profile_;
 
-  const CheckedPtr<MediaNotificationListView> active_sessions_view_;
+  MediaNotificationListView* const active_sessions_view_;
 
   base::ObserverList<MediaDialogViewObserver> observers_;
 
@@ -115,11 +114,11 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
   std::map<const std::string, MediaNotificationContainerImplView*>
       observed_containers_;
 
-  CheckedPtr<views::View> live_caption_container_ = nullptr;
+  views::View* live_caption_container_ = nullptr;
   // TODO(crbug.com/1055150): Remove live_caption_title_new_badge_ by M93.
-  CheckedPtr<NewBadgeLabel> live_caption_title_new_badge_ = nullptr;
-  CheckedPtr<views::Label> live_caption_title_ = nullptr;
-  CheckedPtr<views::ToggleButton> live_caption_button_ = nullptr;
+  NewBadgeLabel* live_caption_title_new_badge_ = nullptr;
+  views::Label* live_caption_title_ = nullptr;
+  views::ToggleButton* live_caption_button_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(MediaDialogView);
 };

@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -68,7 +67,7 @@ class AppInfoDialogTestApi {
   }
 
  private:
-  CheckedPtr<AppInfoDialog> dialog_;
+  AppInfoDialog* dialog_;
 
   DISALLOW_COPY_AND_ASSIGN(AppInfoDialogTestApi);
 };
@@ -172,9 +171,8 @@ class AppInfoDialogViewsTest : public BrowserWithTestWindowTest,
   }
 
  protected:
-  CheckedPtr<views::Widget> widget_ = nullptr;
-  CheckedPtr<AppInfoDialog> dialog_ =
-      nullptr;  // Owned by |widget_|'s views hierarchy.
+  views::Widget* widget_ = nullptr;
+  AppInfoDialog* dialog_ = nullptr;  // Owned by |widget_|'s views hierarchy.
   scoped_refptr<const extensions::Extension> extension_;
   scoped_refptr<const extensions::Extension> chrome_app_;
   extensions::TestExtensionEnvironment extension_environment_{

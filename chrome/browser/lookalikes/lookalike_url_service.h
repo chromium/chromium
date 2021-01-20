@@ -10,7 +10,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/thread_pool.h"
@@ -56,8 +55,8 @@ class LookalikeUrlService : public KeyedService {
  private:
   void OnUpdateEngagedSitesCompleted(std::vector<DomainInfo> new_engaged_sites);
 
-  CheckedPtr<Profile> profile_;
-  CheckedPtr<base::Clock> clock_;
+  Profile* profile_;
+  base::Clock* clock_;
   base::Time last_engagement_fetch_time_;
   std::vector<DomainInfo> engaged_sites_ GUARDED_BY_CONTEXT(sequence_checker_);
 

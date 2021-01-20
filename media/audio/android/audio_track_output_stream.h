@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/android/jni_android.h"
-#include "base/memory/checked_ptr.h"
 #include "base/time/tick_clock.h"
 #include "media/audio/android/muteable_audio_output_stream.h"
 #include "media/base/audio_parameters.h"
@@ -48,15 +47,15 @@ class MEDIA_EXPORT AudioTrackOutputStream : public MuteableAudioOutputStream {
  private:
   const AudioParameters params_;
 
-  CheckedPtr<AudioManagerBase> audio_manager_;
-  CheckedPtr<AudioSourceCallback> callback_ = nullptr;
+  AudioManagerBase* audio_manager_;
+  AudioSourceCallback* callback_ = nullptr;
   bool muted_ = false;
   double volume_ = 1.0;
 
   // Extra buffer for PCM format.
   std::unique_ptr<AudioBus> audio_bus_;
 
-  CheckedPtr<const base::TickClock> tick_clock_;
+  const base::TickClock* tick_clock_;
 
   // Java AudioTrackOutputStream instance.
   base::android::ScopedJavaGlobalRef<jobject> j_audio_output_stream_;

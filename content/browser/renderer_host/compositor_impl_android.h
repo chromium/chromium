@@ -12,7 +12,6 @@
 #include "base/cancelable_callback.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -230,11 +229,11 @@ class CONTENT_EXPORT CompositorImpl
   gfx::Size size_;
   bool requires_alpha_channel_ = false;
 
-  CheckedPtr<ANativeWindow> window_;
+  ANativeWindow* window_;
   gpu::SurfaceHandle surface_handle_;
   std::unique_ptr<ScopedCachedBackBuffer> cached_back_buffer_;
 
-  CheckedPtr<CompositorClient> client_;
+  CompositorClient* client_;
 
   gfx::NativeWindow root_window_ = nullptr;
 

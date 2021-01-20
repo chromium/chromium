@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_URGENT_PAGE_DISCARDING_POLICY_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/sequence_checker.h"
 #include "components/performance_manager/public/graph/graph.h"
@@ -46,7 +45,7 @@ class UrgentPageDiscardingPolicy : public GraphOwned {
   void PostDiscardAttemptCallback(bool success);
 
   std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
-  CheckedPtr<Graph> graph_ = nullptr;
+  Graph* graph_ = nullptr;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

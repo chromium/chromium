@@ -11,7 +11,6 @@
 
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/chromeos_buildflags.h"
 #include "media/base/decoder_buffer.h"
@@ -148,7 +147,7 @@ class AV1DecoderTest : public ::testing::Test {
   }
 
   // Owned by |decoder_|.
-  CheckedPtr<MockAV1Accelerator> mock_accelerator_;
+  MockAV1Accelerator* mock_accelerator_;
 
   std::unique_ptr<AV1Decoder> decoder_;
   int32_t bitstream_id_ = 0;

@@ -17,7 +17,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/format_macros.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
@@ -241,7 +240,7 @@ class MockDownloadManagerObserver : public DownloadManager::Observer {
   MOCK_METHOD1(MockManagerGoingDown, void(DownloadManager*));
 
  private:
-  CheckedPtr<DownloadManager> manager_;
+  DownloadManager* manager_;
 };
 
 class DownloadFileWithDelayFactory;
@@ -572,14 +571,14 @@ class ErrorInjectionDownloadFileFactory : public download::DownloadFileFactory {
     download::GetDownloadTaskRunner()->PostTask(
         FROM_HERE,
         base::BindOnce(&ErrorInjectionDownloadFile::InjectStreamError,
-                       base::Unretained(download_file_.get()),
-                       injected_error_offset_, injected_error_length_));
+                       base::Unretained(download_file_), injected_error_offset_,
+                       injected_error_length_));
     injected_error_offset_ = -1;
     injected_error_length_ = 0;
     download_file_ = nullptr;
   }
 
-  CheckedPtr<ErrorInjectionDownloadFile> download_file_;
+  ErrorInjectionDownloadFile* download_file_;
   int64_t injected_error_offset_ = -1;
   int64_t injected_error_length_ = 0;
   base::WeakPtrFactory<ErrorInjectionDownloadFileFactory> weak_ptr_factory_{
@@ -657,8 +656,8 @@ class DownloadCreateObserver : DownloadManager::Observer {
   }
 
  private:
-  CheckedPtr<DownloadManager> manager_;
-  CheckedPtr<download::DownloadItem> item_;
+  DownloadManager* manager_;
+  download::DownloadItem* item_;
   base::OnceClosure completion_closure_;
 };
 
@@ -688,7 +687,7 @@ class DownloadInProgressObserver : public DownloadTestObserverInProgress {
   }
 
  private:
-  CheckedPtr<DownloadManager> manager_;
+  DownloadManager* manager_;
 };
 
 class DownloadCountingObserver : public download::DownloadItem::Observer {
@@ -726,7 +725,7 @@ class DownloadCountingObserver : public download::DownloadItem::Observer {
   virtual bool IsCountReached(download::DownloadItem* download, int count) = 0;
 
  private:
-  CheckedPtr<download::DownloadItem> item_;
+  download::DownloadItem* item_;
   int count_;
   base::OnceClosure completion_closure_;
 };
@@ -4665,7 +4664,7 @@ class MhtmlDownloadTest : public DownloadContentTest {
 
  private:
   DownloadTestContentBrowserClient new_client_;
-  CheckedPtr<ContentBrowserClient> old_client_;
+  ContentBrowserClient* old_client_;
 };
 
 // Test allow list for non http schemes which should not trigger
@@ -4732,7 +4731,7 @@ class MhtmlLoadingTest : public DownloadContentTest {
 
  private:
   DownloadTestContentBrowserClient new_client_;
-  CheckedPtr<ContentBrowserClient> old_client_;
+  ContentBrowserClient* old_client_;
 };
 
 IN_PROC_BROWSER_TEST_F(MhtmlLoadingTest, AllowRenderMultipartRelatedPage) {

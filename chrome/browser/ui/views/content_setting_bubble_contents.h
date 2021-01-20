@@ -10,7 +10,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -88,13 +87,13 @@ class ContentSettingBubbleContents : public content::WebContentsObserver,
   // Provides data for this bubble.
   std::unique_ptr<ContentSettingBubbleModel> content_setting_bubble_model_;
 
-  CheckedPtr<ListItemContainer> list_item_container_ = nullptr;
+  ListItemContainer* list_item_container_ = nullptr;
 
   typedef std::vector<views::RadioButton*> RadioGroup;
   RadioGroup radio_group_;
-  CheckedPtr<views::LabelButton> manage_button_ = nullptr;
-  CheckedPtr<views::Checkbox> manage_checkbox_ = nullptr;
-  CheckedPtr<views::ImageButton> learn_more_button_ = nullptr;
+  views::LabelButton* manage_button_ = nullptr;
+  views::Checkbox* manage_checkbox_ = nullptr;
+  views::ImageButton* learn_more_button_ = nullptr;
 
   DISALLOW_IMPLICIT_CONSTRUCTORS(ContentSettingBubbleContents);
 };

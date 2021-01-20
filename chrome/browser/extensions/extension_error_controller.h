@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/extensions/extension_error_ui.h"
 #include "extensions/common/extension_set.h"
 
@@ -52,7 +51,7 @@ class ExtensionErrorController : public ExtensionErrorUI::Delegate {
   std::unique_ptr<ExtensionErrorUI> error_ui_;
 
   // The BrowserContext with which we are associated.
-  CheckedPtr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
 
   // Whether or not this is the first run. If it is, we avoid noisy errors, and
   // silently acknowledge blocklisted extensions.

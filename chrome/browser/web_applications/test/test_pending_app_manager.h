@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/web_applications/components/pending_app_manager.h"
 #include "chrome/browser/web_applications/test/test_app_registrar.h"
 #include "url/gurl.h"
@@ -73,7 +72,7 @@ class TestPendingAppManager : public PendingAppManager {
   InstallResultCode install_result_code_ =
       InstallResultCode::kSuccessNewInstall;
 
-  CheckedPtr<TestAppRegistrar> registrar_;
+  TestAppRegistrar* registrar_;
 
   base::WeakPtrFactory<TestPendingAppManager> weak_ptr_factory_{this};
 

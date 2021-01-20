@@ -9,7 +9,6 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/history/core/browser/history_service_observer.h"
 
 namespace history {
@@ -42,7 +41,7 @@ class FeedLifecycleBridge : public history::HistoryServiceObserver {
   // Reference to the Java half of this bridge. Always valid.
   base::android::ScopedJavaGlobalRef<jobject> j_this_;
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   DISALLOW_COPY_AND_ASSIGN(FeedLifecycleBridge);
 };

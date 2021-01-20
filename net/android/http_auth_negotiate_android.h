@@ -12,7 +12,6 @@
 
 #include "base/android/jni_android.h"
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
@@ -110,11 +109,11 @@ class NET_EXPORT_PRIVATE HttpAuthNegotiateAndroid : public HttpAuthMechanism {
  private:
   void SetResultInternal(int result, const std::string& token);
 
-  CheckedPtr<const HttpAuthPreferences> prefs_ = nullptr;
+  const HttpAuthPreferences* prefs_ = nullptr;
   bool can_delegate_ = false;
   bool first_challenge_ = true;
   std::string server_auth_token_;
-  CheckedPtr<std::string> auth_token_ = nullptr;
+  std::string* auth_token_ = nullptr;
   base::android::ScopedJavaGlobalRef<jobject> java_authenticator_;
   net::CompletionOnceCallback completion_callback_;
 

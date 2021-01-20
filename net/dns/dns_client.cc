@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/values.h"
@@ -267,9 +266,9 @@ class DnsClientImpl : public DnsClient {
   std::unique_ptr<AddressSorter> address_sorter_ =
       AddressSorter::CreateAddressSorter();
 
-  CheckedPtr<NetLog> net_log_;
+  NetLog* net_log_;
 
-  CheckedPtr<ClientSocketFactory> socket_factory_;
+  ClientSocketFactory* socket_factory_;
   const RandIntCallback rand_int_callback_;
 
   DISALLOW_COPY_AND_ASSIGN(DnsClientImpl);

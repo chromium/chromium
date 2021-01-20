@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -47,8 +46,8 @@ class HistoryStatisticsReporter : public history::HistoryServiceObserver {
   void ComputeStatistics();
   void ReportStatistics(history::HistoryCountResult result);
 
-  const CheckedPtr<history::HistoryService> history_service_;
-  CheckedPtr<PrefService> prefs_;
+  history::HistoryService* const history_service_;
+  PrefService* prefs_;
 
   base::CancelableTaskTracker cancelable_task_tracker_;
   ScopedObserver<history::HistoryService, history::HistoryServiceObserver>

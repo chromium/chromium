@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/task/task.h"
 #include "url/gurl.h"
@@ -39,7 +38,7 @@ class GetVisualsInfoTask : public Task {
   // Task implementation.
   void Run() override;
   void CompleteTaskAndForwardResult(Result result);
-  CheckedPtr<PrefetchStore> prefetch_store_;
+  PrefetchStore* prefetch_store_;
   int64_t offline_id_;
   ResultCallback callback_;
 

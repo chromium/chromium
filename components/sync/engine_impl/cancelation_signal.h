@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SYNC_ENGINE_IMPL_CANCELATION_SIGNAL_H_
 #define COMPONENTS_SYNC_ENGINE_IMPL_CANCELATION_SIGNAL_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/synchronization/lock.h"
 
 namespace syncer {
@@ -73,7 +72,7 @@ class CancelationSignal {
   bool signalled_ = false;
 
   // The registered abort handler.  May be null.
-  CheckedPtr<Observer> handler_ = nullptr;
+  Observer* handler_ = nullptr;
 };
 
 }  // namespace syncer

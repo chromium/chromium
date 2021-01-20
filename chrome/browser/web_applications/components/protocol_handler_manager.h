@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_PROTOCOL_HANDLER_MANAGER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_PROTOCOL_HANDLER_MANAGER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/common/custom_handlers/protocol_handler.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
@@ -49,7 +48,7 @@ class ProtocolHandlerManager {
       const AppId& app_id,
       const std::vector<apps::ProtocolHandlerInfo>& protocol_handlers);
 
-  CheckedPtr<AppRegistrar> app_registrar_;
+  AppRegistrar* app_registrar_;
 };
 
 }  // namespace web_app

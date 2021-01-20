@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
@@ -144,7 +143,7 @@ class GL_EXPORT DirectCompositionChildSurfaceWin : public GLSurfaceEGL,
   const size_t max_pending_frames_;
   const bool force_full_damage_;
 
-  const CheckedPtr<VSyncThreadWin> vsync_thread_;
+  VSyncThreadWin* const vsync_thread_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   bool vsync_thread_started_ = false;

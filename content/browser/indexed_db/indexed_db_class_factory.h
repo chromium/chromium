@@ -13,7 +13,6 @@
 
 #include "base/callback.h"
 #include "base/lazy_instance.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string16.h"
 #include "components/services/storage/indexed_db/scopes/scopes_lock_manager.h"
@@ -90,8 +89,8 @@ class CONTENT_EXPORT IndexedDBClassFactory {
   virtual ~IndexedDBClassFactory() = default;
   friend struct base::LazyInstanceTraitsBase<IndexedDBClassFactory>;
 
-  CheckedPtr<LevelDBFactory> leveldb_factory_;
-  CheckedPtr<TransactionalLevelDBFactory> transactional_leveldb_factory_;
+  LevelDBFactory* leveldb_factory_;
+  TransactionalLevelDBFactory* transactional_leveldb_factory_;
 };
 
 }  // namespace content

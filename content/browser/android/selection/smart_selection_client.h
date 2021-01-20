@@ -9,7 +9,6 @@
 
 #include "base/android/jni_weak_ref.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string16.h"
 
@@ -49,7 +48,7 @@ class SmartSelectionClient {
 
   // WebContents is used to find the relevant RenderFrameHost that can send
   // the request for the text.
-  CheckedPtr<WebContents> web_contents_;
+  WebContents* web_contents_;
 
   base::WeakPtrFactory<SmartSelectionClient> weak_ptr_factory_{this};
 

@@ -9,7 +9,6 @@
 
 #include "android_webview/browser/gfx/aw_gl_surface.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/viz/service/display/output_surface.h"
@@ -57,7 +56,7 @@ class ParentOutputSurface : public viz::OutputSurface {
                       std::vector<ui::LatencyInfo> latency_info,
                       const gfx::PresentationFeedback& feedback);
 
-  CheckedPtr<viz::OutputSurfaceClient> client_ = nullptr;
+  viz::OutputSurfaceClient* client_ = nullptr;
   // This is really a layering violation but needed for hooking up presentation
   // feedbacks properly.
   scoped_refptr<AwGLSurface> gl_surface_;

@@ -6,7 +6,6 @@
 #define UI_ANDROID_EVENT_FORWARDER_H_
 
 #include "base/android/scoped_java_ref.h"
-#include "base/memory/checked_ptr.h"
 
 namespace ui {
 
@@ -135,7 +134,7 @@ class EventForwarder {
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
-  const CheckedPtr<ViewAndroid> view_;
+  ViewAndroid* const view_;
   base::android::ScopedJavaGlobalRef<jobject> java_obj_;
 
   DISALLOW_COPY_AND_ASSIGN(EventForwarder);

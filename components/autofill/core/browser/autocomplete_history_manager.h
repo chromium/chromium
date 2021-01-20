@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/autofill_subject.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -211,7 +210,7 @@ class AutocompleteHistoryManager : public KeyedService,
       request_callbacks_;
 
   // The PrefService that this instance uses. Must outlive this instance.
-  CheckedPtr<PrefService> pref_service_;
+  PrefService* pref_service_;
 
   // When the manager makes a request from WebDataServiceBase, the database is
   // queried asynchronously. We associate the query handle to the requestor

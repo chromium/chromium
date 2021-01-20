@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_FEED_CORE_V2_TASKS_CLEAR_ALL_TASK_H_
 #define COMPONENTS_FEED_CORE_V2_TASKS_CLEAR_ALL_TASK_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/task/task.h"
 
@@ -33,7 +32,7 @@ class ClearAllTask : public offline_pages::Task {
 
   void StoreClearComplete(bool ok);
 
-  CheckedPtr<FeedStream> stream_;
+  FeedStream* stream_;
   base::WeakPtrFactory<ClearAllTask> weak_ptr_factory_{this};
 };
 }  // namespace feed

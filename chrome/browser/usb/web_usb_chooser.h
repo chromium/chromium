@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/blink/public/mojom/usb/web_usb_service.mojom.h"
 
@@ -39,7 +38,7 @@ class WebUsbChooser {
   content::RenderFrameHost* render_frame_host() { return render_frame_host_; }
 
  private:
-  const CheckedPtr<content::RenderFrameHost> render_frame_host_;
+  content::RenderFrameHost* const render_frame_host_;
 
   DISALLOW_COPY_AND_ASSIGN(WebUsbChooser);
 };

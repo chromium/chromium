@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
@@ -117,9 +116,9 @@ class DesktopMediaListController : public DesktopMediaListObserver,
   // ViewObserver:
   void OnViewIsDeleting(views::View* view) override;
 
-  CheckedPtr<DesktopMediaPickerDialogView> dialog_;
+  DesktopMediaPickerDialogView* dialog_;
   std::unique_ptr<DesktopMediaList> media_list_;
-  CheckedPtr<ListView> view_ = nullptr;
+  ListView* view_ = nullptr;
   base::ScopedMultiSourceObservation<views::View, views::ViewObserver>
       view_observations_{this};
 

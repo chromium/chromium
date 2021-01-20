@@ -10,7 +10,6 @@
 
 #include "base/check_op.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "gpu/command_buffer/service/gl_utils.h"
 #include "gpu/command_buffer/service/shader_translator.h"
@@ -326,7 +325,7 @@ class GPU_GLES2_EXPORT ShaderManager {
   // Used to notify the watchdog thread of progress during destruction,
   // preventing time-outs when destruction takes a long time. May be null when
   // using in-process command buffer.
-  CheckedPtr<gl::ProgressReporter> progress_reporter_;
+  gl::ProgressReporter* progress_reporter_;
 
   DISALLOW_COPY_AND_ASSIGN(ShaderManager);
 };

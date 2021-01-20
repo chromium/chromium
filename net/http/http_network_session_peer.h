@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "net/base/net_export.h"
 #include "net/http/http_network_session.h"
@@ -33,7 +32,7 @@ class NET_EXPORT_PRIVATE HttpNetworkSessionPeer {
   HttpNetworkSession::Params* params();
 
  private:
-  const CheckedPtr<HttpNetworkSession> session_;
+  HttpNetworkSession* const session_;
 
   DISALLOW_COPY_AND_ASSIGN(HttpNetworkSessionPeer);
 };

@@ -12,7 +12,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "media/cdm/api/content_decryption_module.h"
 #include "media/mojo/mojom/cdm_storage.mojom.h"
@@ -89,12 +88,12 @@ class MEDIA_MOJO_EXPORT MojoCdmFileIO : public cdm::FileIO {
   // Callback to notify client of error asynchronously.
   void NotifyClientOfError(ErrorType error);
 
-  CheckedPtr<Delegate> delegate_ = nullptr;
+  Delegate* delegate_ = nullptr;
 
   // Results of cdm::FileIO operations are sent asynchronously via |client_|.
-  CheckedPtr<cdm::FileIOClient> client_ = nullptr;
+  cdm::FileIOClient* client_ = nullptr;
 
-  CheckedPtr<mojom::CdmStorage> cdm_storage_ = nullptr;
+  mojom::CdmStorage* cdm_storage_ = nullptr;
 
   // Keep track of the file being used. As this class can only be used for
   // accessing a single file, once |file_name_| is set it shouldn't be changed.

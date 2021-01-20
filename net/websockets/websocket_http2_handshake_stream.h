@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "net/base/completion_once_callback.h"
@@ -127,9 +126,9 @@ class NET_EXPORT_PRIVATE WebSocketHttp2HandshakeStream
 
   // Owned by another object.
   // |connect_delegate| will live during the lifetime of this object.
-  const CheckedPtr<WebSocketStream::ConnectDelegate> connect_delegate_;
+  WebSocketStream::ConnectDelegate* const connect_delegate_;
 
-  CheckedPtr<HttpResponseInfo> http_response_info_;
+  HttpResponseInfo* http_response_info_;
 
   spdy::Http2HeaderBlock http2_request_headers_;
 
@@ -139,9 +138,9 @@ class NET_EXPORT_PRIVATE WebSocketHttp2HandshakeStream
   // The extensions we requested.
   std::vector<std::string> requested_extensions_;
 
-  const CheckedPtr<WebSocketStreamRequestAPI> stream_request_;
+  WebSocketStreamRequestAPI* const stream_request_;
 
-  CheckedPtr<const HttpRequestInfo> request_info_;
+  const HttpRequestInfo* request_info_;
 
   RequestPriority priority_;
 

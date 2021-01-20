@@ -5,7 +5,6 @@
 #ifndef GOOGLE_APIS_GCM_ENGINE_CONNECTION_FACTORY_IMPL_H_
 #define GOOGLE_APIS_GCM_ENGINE_CONNECTION_FACTORY_IMPL_H_
 
-#include "base/memory/checked_ptr.h"
 #include "google_apis/gcm/engine/connection_factory.h"
 
 #include <stddef.h>
@@ -187,14 +186,14 @@ class GCM_EXPORT ConnectionFactoryImpl
   const scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
 
   // Recorder that records GCM activities for debugging purpose. Not owned.
-  CheckedPtr<GCMStatsRecorder> recorder_;
+  GCMStatsRecorder* recorder_;
 
   // Notifies this class of network connection changes.
   // Must outlive the ConnectionFactoryImpl.
-  CheckedPtr<network::NetworkConnectionTracker> network_connection_tracker_;
+  network::NetworkConnectionTracker* network_connection_tracker_;
 
   // The currently registered listener to notify of connection changes.
-  CheckedPtr<ConnectionListener> listener_;
+  ConnectionListener* listener_;
 
   base::WeakPtrFactory<ConnectionFactoryImpl> weak_ptr_factory_{this};
 

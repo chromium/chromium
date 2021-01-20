@@ -16,7 +16,6 @@
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
@@ -131,7 +130,7 @@ class FakeMediaSource final : public media::AudioConverter::InputCallback {
   scoped_refptr<AudioFrameInput> audio_frame_input_;
   scoped_refptr<VideoFrameInput> video_frame_input_;
   uint8_t synthetic_count_;
-  const CheckedPtr<const base::TickClock> clock_;  // Not owned by this class.
+  const base::TickClock* const clock_;  // Not owned by this class.
 
   // Time when the stream starts.
   base::TimeTicks start_time_;
@@ -144,7 +143,7 @@ class FakeMediaSource final : public media::AudioConverter::InputCallback {
   base::MemoryMappedFile file_data_;
   std::unique_ptr<InMemoryUrlProtocol> protocol_;
   std::unique_ptr<FFmpegGlue> glue_;
-  CheckedPtr<AVFormatContext> av_format_context_;
+  AVFormatContext* av_format_context_;
 
   int audio_stream_index_;
   std::unique_ptr<AVCodecContext, ScopedPtrAVFreeContext> av_audio_context_;

@@ -147,7 +147,7 @@ void HistoryUiFaviconRequestHandlerImpl::OnBitmapLocalDataAvailable(
             base::IgnoreResult(&FaviconService::GetRawFaviconForPageURL),
             // base::Unretained() is safe here as RequestFromGoogleServer()
             // doesn't execute the callback if |this| is deleted.
-            base::Unretained(favicon_service_.get()), page_url,
+            base::Unretained(favicon_service_), page_url,
             GetIconTypesForLocalQuery(), desired_size_in_pixel, kFallbackToHost,
             repeating_response_callback, &cancelable_task_tracker_),
         origin_for_uma, request_start_time_for_uma);
@@ -195,7 +195,7 @@ void HistoryUiFaviconRequestHandlerImpl::OnImageLocalDataAvailable(
             base::IgnoreResult(&FaviconService::GetFaviconImageForPageURL),
             // base::Unretained() is safe here as RequestFromGoogleServer()
             // doesn't execture the callback if |this| is deleted.
-            base::Unretained(favicon_service_.get()), page_url,
+            base::Unretained(favicon_service_), page_url,
             repeating_response_callback, &cancelable_task_tracker_),
         origin_for_uma, request_start_time_for_uma);
     return;

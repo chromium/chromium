@@ -72,7 +72,7 @@ declare_args() {
   build_base_unittests = true
 
   # Set to true to use BackupRefPtr as the implementation of CheckedPtr.
-  use_backup_ref_ptr = true
+  use_backup_ref_ptr = false
 }
 
 # Mutex priority inheritance is disabled by default due to security
@@ -1775,8 +1775,6 @@ component("base") {
         # PartitionAlloc uses SpinLock, which doesn't work in NaCl (see below).
         "allocator/partition_allocator/address_pool_manager.cc",
         "allocator/partition_allocator/address_pool_manager.h",
-        "allocator/partition_allocator/address_pool_manager_bitmap.cc",
-        "allocator/partition_allocator/address_pool_manager_bitmap.h",
         "allocator/partition_allocator/address_pool_manager_types.h",
         "allocator/partition_allocator/address_space_randomization.cc",
         "allocator/partition_allocator/address_space_randomization.h",

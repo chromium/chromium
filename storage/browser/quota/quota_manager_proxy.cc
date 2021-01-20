@@ -193,15 +193,15 @@ void QuotaManagerProxy::OverrideQuotaForOrigin(
   io_thread_->PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(&QuotaManager::OverrideQuotaForOrigin,
-                     base::RetainedRef(manager_.get()), handle_id, origin,
+                     base::RetainedRef(manager_), handle_id, origin,
                      quota_size),
       std::move(callback));
 }
 
 void QuotaManagerProxy::WithdrawOverridesForHandle(int handle_id) {
-  io_thread_->PostTask(
-      FROM_HERE, base::BindOnce(&QuotaManager::WithdrawOverridesForHandle,
-                                base::RetainedRef(manager_.get()), handle_id));
+  io_thread_->PostTask(FROM_HERE,
+                       base::BindOnce(&QuotaManager::WithdrawOverridesForHandle,
+                                      base::RetainedRef(manager_), handle_id));
 }
 
 QuotaManager* QuotaManagerProxy::quota_manager() const {
@@ -221,7 +221,7 @@ void QuotaManagerProxy::GetOverrideHandleId(
   io_thread_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&QuotaManager::GetOverrideHandleId,
-                     base::RetainedRef(manager_.get())),
+                     base::RetainedRef(manager_)),
       std::move(callback));
 }
 

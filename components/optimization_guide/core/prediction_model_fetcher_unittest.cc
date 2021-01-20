@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
@@ -110,7 +109,7 @@ class PredictionModelFetcherTest : public testing::Test {
 
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
   network::TestURLLoaderFactory test_url_loader_factory_;
-  CheckedPtr<network::TestNetworkConnectionTracker> network_tracker_;
+  network::TestNetworkConnectionTracker* network_tracker_;
 
   DISALLOW_COPY_AND_ASSIGN(PredictionModelFetcherTest);
 };

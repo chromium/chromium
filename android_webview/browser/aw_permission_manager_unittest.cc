@@ -10,7 +10,6 @@
 #include "android_webview/browser/aw_browser_permission_request_delegate.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -207,7 +206,7 @@ class AwPermissionManagerTest : public testing::Test {
 
   // Use nullptr for testing. AwPermissionManagerForTesting override all methods
   // that touch RenderFrameHost to work with nullptr.
-  CheckedPtr<content::RenderFrameHost> render_frame_host;
+  content::RenderFrameHost* render_frame_host;
 
   std::vector<PermissionStatus> resolved_permission_status;
   std::vector<int> resolved_permission_request_id;

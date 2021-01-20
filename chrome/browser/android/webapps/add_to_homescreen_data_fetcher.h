@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ANDROID_WEBAPPS_ADD_TO_HOMESCREEN_DATA_FETCHER_H_
 #define CHROME_BROWSER_ANDROID_WEBAPPS_ADD_TO_HOMESCREEN_DATA_FETCHER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string16.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -95,8 +94,8 @@ class AddToHomescreenDataFetcher : public content::WebContentsObserver {
                      const SkBitmap& icon_for_view,
                      bool is_icon_generated);
 
-  CheckedPtr<InstallableManager> installable_manager_;
-  CheckedPtr<Observer> observer_;
+  InstallableManager* installable_manager_;
+  Observer* observer_;
 
   // The icons must only be set on the UI thread for thread safety.
   SkBitmap raw_primary_icon_;

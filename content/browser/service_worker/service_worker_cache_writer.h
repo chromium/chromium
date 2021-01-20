@@ -12,7 +12,6 @@
 #include <set>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/services/storage/public/mojom/service_worker_storage_control.mojom.h"
 #include "content/common/content_export.h"
@@ -327,7 +326,7 @@ class CONTENT_EXPORT ServiceWorkerCacheWriter {
   // cache writer pauses immediately.
   const bool pause_when_not_identical_;
 
-  CheckedPtr<WriteObserver> write_observer_ = nullptr;
+  WriteObserver* write_observer_ = nullptr;
 
   mojo::Remote<storage::mojom::ServiceWorkerResourceReader> compare_reader_;
   std::unique_ptr<DataPipeReader> compare_data_pipe_reader_;

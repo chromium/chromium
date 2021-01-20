@@ -11,7 +11,6 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/stl_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -258,7 +257,7 @@ class NodeAttachedProcessData
   void EnsureRemote();
   void OnV8MemoryUsage(blink::mojom::PerProcessV8MemoryUsagePtr result);
 
-  const CheckedPtr<const ProcessNode> process_node_;
+  const ProcessNode* const process_node_;
 
   // Measurement requests that will be sent to this process only.
   V8DetailedMemoryDecorator::MeasurementRequestQueue

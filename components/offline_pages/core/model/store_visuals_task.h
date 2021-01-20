@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/core/offline_page_visuals.h"
 #include "components/offline_pages/task/task.h"
@@ -52,7 +51,7 @@ class StoreVisualsTask : public Task {
                    RowUpdatedCallback complete_callback);
   void Complete(bool success);
 
-  CheckedPtr<OfflinePageMetadataStore> store_;
+  OfflinePageMetadataStore* store_;
   int64_t offline_id_;
   base::Time expiration_;
   std::string thumbnail_;

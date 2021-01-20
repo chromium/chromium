@@ -12,7 +12,6 @@
 #include "base/callback_helpers.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
@@ -71,7 +70,7 @@ class CRLSetData {
  private:
   void UpdateCRLSetOnUI(const std::string& crl_set_bytes);
 
-  CheckedPtr<network::mojom::NetworkService> network_service_ = nullptr;
+  network::mojom::NetworkService* network_service_ = nullptr;
   base::FilePath crl_set_path_;
 };
 
@@ -92,7 +91,7 @@ void CRLSetData::UpdateCRLSetOnUI(const std::string& crl_set_bytes) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   network::mojom::NetworkService* network_service =
-      network_service_ ? network_service_.get() : content::GetNetworkService();
+      network_service_ ? network_service_ : content::GetNetworkService();
   network_service->UpdateCRLSet(base::as_bytes(base::make_span(crl_set_bytes)),
                                 base::DoNothing());
 }

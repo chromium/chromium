@@ -14,7 +14,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/idempotency.h"
 #include "net/base/ip_endpoint.h"
@@ -168,17 +167,17 @@ class NET_EXPORT_PRIVATE QuicChromiumClientStream
 
     int HandleIOComplete(int rv);
 
-    CheckedPtr<QuicChromiumClientStream> stream_;  // Unowned.
+    QuicChromiumClientStream* stream_;  // Unowned.
 
     bool may_invoke_callbacks_;  // True when callbacks may be invoked.
 
     // Callback to be invoked when ReadHeaders completes asynchronously.
     CompletionOnceCallback read_headers_callback_;
-    CheckedPtr<spdy::Http2HeaderBlock> read_headers_buffer_;
+    spdy::Http2HeaderBlock* read_headers_buffer_;
 
     // Callback to be invoked when ReadBody completes asynchronously.
     CompletionOnceCallback read_body_callback_;
-    CheckedPtr<IOBuffer> read_body_buffer_;
+    IOBuffer* read_body_buffer_;
     int read_body_buffer_len_;
 
     // Callback to be invoked when WriteStreamData or WritevStreamData completes
@@ -298,12 +297,12 @@ class NET_EXPORT_PRIVATE QuicChromiumClientStream
   void NotifyHandleOfDataAvailable();
 
   NetLogWithSource net_log_;
-  CheckedPtr<Handle> handle_;
+  Handle* handle_;
 
   // True when initial headers have been sent.
   bool initial_headers_sent_;
 
-  CheckedPtr<quic::QuicSpdyClientSessionBase> session_;
+  quic::QuicSpdyClientSessionBase* session_;
   quic::QuicTransportVersion quic_version_;
 
   // Set to false if this stream should not be migrated to a cellular network

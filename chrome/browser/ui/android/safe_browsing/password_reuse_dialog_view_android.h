@@ -7,7 +7,6 @@
 
 #include <jni.h>
 #include "base/android/scoped_java_ref.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 
 namespace ui {
@@ -38,7 +37,7 @@ class PasswordReuseDialogViewAndroid {
  private:
   // The controller which owns this dialog and handles the dialog events.
   // |controller_| owns |this|.
-  CheckedPtr<PasswordReuseControllerAndroid> controller_;
+  PasswordReuseControllerAndroid* controller_;
 
   // The corresponding java object.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;

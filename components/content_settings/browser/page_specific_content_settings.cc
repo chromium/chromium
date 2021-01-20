@@ -319,7 +319,7 @@ PageSpecificContentSettings::PageSpecificContentSettings(
           delegate_->GetAdditionalFileSystemTypes(),
           delegate_->GetIsDeletionDisabledCallback()),
       microphone_camera_state_(MICROPHONE_CAMERA_NOT_ACCESSED) {
-  observation_.Observe(map_.get());
+  observation_.Observe(map_);
 }
 
 PageSpecificContentSettings::~PageSpecificContentSettings() = default;

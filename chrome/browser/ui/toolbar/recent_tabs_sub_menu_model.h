@@ -12,7 +12,6 @@
 
 #include "base/callback_list.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -145,10 +144,9 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
 
   void OnForeignSessionUpdated();
 
-  const CheckedPtr<Browser> browser_;  // Weak.
+  Browser* const browser_;  // Weak.
 
-  const CheckedPtr<sync_sessions::SessionSyncService>
-      session_sync_service_;  // Weak.
+  sync_sessions::SessionSyncService* const session_sync_service_;  // Weak.
 
   // Accelerator for reopening last closed tab.
   ui::Accelerator reopen_closed_tab_accelerator_;

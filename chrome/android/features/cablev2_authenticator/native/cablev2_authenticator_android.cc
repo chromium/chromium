@@ -6,7 +6,6 @@
 #include "base/android/jni_string.h"
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -166,13 +165,12 @@ base::Optional<base::span<const uint8_t, N>> JavaByteArrayToFixedSpan(
 // there are ultimately only one human user, concurrent requests are not
 // supported.
 struct GlobalData {
-  CheckedPtr<JNIEnv> env = nullptr;
+  JNIEnv* env = nullptr;
   std::array<uint8_t, device::cablev2::kRootSecretSize> root_secret;
-  CheckedPtr<network::mojom::NetworkContext> network_context = nullptr;
+  network::mojom::NetworkContext* network_context = nullptr;
 
   // registration is a non-owning pointer to the global |Registration|.
-  CheckedPtr<device::cablev2::authenticator::Registration> registration =
-      nullptr;
+  device::cablev2::authenticator::Registration* registration = nullptr;
 
   // activity_class_name is the name of a Java class that should be the target
   // of any notifications shown.
@@ -243,7 +241,7 @@ class AndroidBLEAdvert
   }
 
  private:
-  const CheckedPtr<JNIEnv> env_;
+  JNIEnv* const env_;
   const ScopedJavaGlobalRef<jobject> advert_;
   SEQUENCE_CHECKER(sequence_checker_);
 };
@@ -478,7 +476,7 @@ class AndroidPlatform : public device::cablev2::authenticator::Platform {
     }
   }
 
-  const CheckedPtr<JNIEnv> env_;
+  JNIEnv* const env_;
   bool notification_showing_ = false;
   ScopedJavaGlobalRef<jobject> cable_authenticator_;
   std::unique_ptr<MakeCredentialParams> pending_make_credential_;
@@ -537,7 +535,7 @@ class USBTransport : public device::cablev2::authenticator::Transport {
     }
   }
 
-  const CheckedPtr<JNIEnv> env_;
+  JNIEnv* const env_;
   const ScopedJavaGlobalRef<jobject> usb_device_;
   base::RepeatingCallback<void(Update)> callback_;
   base::WeakPtrFactory<USBTransport> weak_factory_{this};

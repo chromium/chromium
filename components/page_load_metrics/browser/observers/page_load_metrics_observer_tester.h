@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
@@ -172,9 +171,9 @@ class PageLoadMetricsObserverTester : public test::WeakMockTimerProvider {
   content::WebContents* web_contents() const { return web_contents_; }
 
   RegisterObserversCallback register_callback_;
-  CheckedPtr<content::WebContents> web_contents_;
-  CheckedPtr<content::RenderViewHostTestHarness> rfh_test_harness_;
-  CheckedPtr<MetricsWebContentsObserver> metrics_web_contents_observer_;
+  content::WebContents* web_contents_;
+  content::RenderViewHostTestHarness* rfh_test_harness_;
+  MetricsWebContentsObserver* metrics_web_contents_observer_;
   base::HistogramTester histogram_tester_;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
 

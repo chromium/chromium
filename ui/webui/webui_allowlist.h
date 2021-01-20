@@ -8,7 +8,6 @@
 #include <initializer_list>
 #include <map>
 
-#include "base/memory/checked_ptr.h"
 #include "base/supports_user_data.h"
 #include "components/content_settings/core/browser/content_settings_rule.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -63,7 +62,7 @@ class WebUIAllowlist : public base::SupportsUserData::Data {
  private:
   std::map<ContentSettingsType, std::map<url::Origin, ContentSetting>>
       permissions_;
-  CheckedPtr<WebUIAllowlistProvider> provider_ = nullptr;
+  WebUIAllowlistProvider* provider_ = nullptr;
 };
 
 #endif  // UI_WEBUI_WEBUI_ALLOWLIST_H_

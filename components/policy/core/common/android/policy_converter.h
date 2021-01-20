@@ -12,7 +12,6 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "components/policy/policy_export.h"
 
@@ -76,7 +75,7 @@ class POLICY_EXPORT PolicyConverter {
       const base::android::JavaRef<jobjectArray>& array);
 
  private:
-  const CheckedPtr<const Schema> policy_schema_;
+  const Schema* const policy_schema_;
 
   std::unique_ptr<PolicyBundle> policy_bundle_;
 

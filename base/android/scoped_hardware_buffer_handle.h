@@ -8,7 +8,6 @@
 #include "base/base_export.h"
 #include "base/files/scoped_file.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 
 extern "C" typedef struct AHardwareBuffer AHardwareBuffer;
 
@@ -80,7 +79,7 @@ class BASE_EXPORT ScopedHardwareBufferHandle {
   // acquire a new reference.
   explicit ScopedHardwareBufferHandle(AHardwareBuffer* buffer);
 
-  CheckedPtr<AHardwareBuffer> buffer_ = nullptr;
+  AHardwareBuffer* buffer_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(ScopedHardwareBufferHandle);
 };

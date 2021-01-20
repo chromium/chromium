@@ -7,8 +7,6 @@
 
 #include <string>
 
-#include "base/memory/checked_ptr.h"
-
 namespace autofill {
 
 class AutofillProfile;
@@ -33,7 +31,7 @@ class AddressProfileSaveManager {
  private:
   // The personal data manager, used to save and load personal data to/from the
   // web database.
-  const CheckedPtr<PersonalDataManager> personal_data_manager_;
+  PersonalDataManager* const personal_data_manager_;
 };
 
 }  // namespace autofill

@@ -13,7 +13,6 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/location.h"
-#include "base/memory/checked_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/viz/common/quads/compositor_frame.h"
@@ -44,7 +43,7 @@ class TestBrowserViewRenderer : public BrowserViewRenderer {
   }
 
  private:
-  const CheckedPtr<RenderingTest> rendering_test_;
+  RenderingTest* const rendering_test_;
 };
 }  // namespace
 

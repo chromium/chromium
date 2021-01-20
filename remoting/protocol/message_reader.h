@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "remoting/base/compound_buffer.h"
@@ -61,7 +60,7 @@ class MessageReader {
 
   ReadFailedCallback read_failed_callback_;
 
-  CheckedPtr<P2PStreamSocket> socket_ = nullptr;
+  P2PStreamSocket* socket_ = nullptr;
 
   // Set to true, when we have a socket read pending, and expecting
   // OnRead() to be called when new data is received.

@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/callback_forward.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
@@ -68,7 +67,7 @@ class HatsSurveyStatusChecker : public ProfileObserver {
   content::StoragePartition* GetStoragePartition() const;
 
   // The off the record profile used for fetching survey status.
-  CheckedPtr<Profile> otr_profile_ = nullptr;
+  Profile* otr_profile_ = nullptr;
 
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
   base::OnceClosure on_success_;

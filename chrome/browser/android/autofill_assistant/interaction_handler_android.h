@@ -13,7 +13,6 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/autofill_assistant/browser/event_handler.h"
@@ -97,11 +96,11 @@ class InteractionHandlerAndroid : public EventHandler::Observer {
   std::map<EventHandler::EventKey, std::vector<InteractionCallback>>
       interactions_;
 
-  CheckedPtr<EventHandler> event_handler_ = nullptr;
-  CheckedPtr<UserModel> user_model_ = nullptr;
-  CheckedPtr<BasicInteractions> basic_interactions_ = nullptr;
-  CheckedPtr<ViewHandlerAndroid> view_handler_ = nullptr;
-  CheckedPtr<RadioButtonController> radio_button_controller_ = nullptr;
+  EventHandler* event_handler_ = nullptr;
+  UserModel* user_model_ = nullptr;
+  BasicInteractions* basic_interactions_ = nullptr;
+  ViewHandlerAndroid* view_handler_ = nullptr;
+  RadioButtonController* radio_button_controller_ = nullptr;
   base::android::ScopedJavaGlobalRef<jobject> jcontext_ = nullptr;
   base::android::ScopedJavaGlobalRef<jobject> jdelegate_ = nullptr;
   bool is_listening_ = false;

@@ -5,7 +5,6 @@
 #ifndef NET_CERT_NET_CERT_NET_FETCHER_URL_REQUEST_H_
 #define NET_CERT_NET_CERT_NET_FETCHER_URL_REQUEST_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "net/base/net_export.h"
 #include "net/cert/cert_net_fetcher.h"
@@ -64,7 +63,7 @@ class NET_EXPORT CertNetFetcherURLRequest : public CertNetFetcher {
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   // Not owned. |context_| must stay valid until Shutdown() is called.
-  CheckedPtr<URLRequestContext> context_ = nullptr;
+  URLRequestContext* context_ = nullptr;
   std::unique_ptr<AsyncCertNetFetcherURLRequest> impl_;
 };
 

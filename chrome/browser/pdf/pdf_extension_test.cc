@@ -14,7 +14,6 @@
 #include "base/hash/hash.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -1815,7 +1814,7 @@ class PDFExtensionLinkClickTest : public PDFExtensionTestWithParam {
   }
 
  private:
-  CheckedPtr<WebContents> guest_contents_;
+  WebContents* guest_contents_;
 };
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionLinkClickTest, CtrlLeft) {
@@ -2054,7 +2053,7 @@ class PDFExtensionInternalLinkClickTest : public PDFExtensionTestWithParam {
   }
 
  private:
-  CheckedPtr<WebContents> guest_contents_;
+  WebContents* guest_contents_;
 };
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionInternalLinkClickTest, CtrlLeft) {
@@ -2289,7 +2288,7 @@ class PDFExtensionClipboardTest : public PDFExtensionTestWithParam,
   }
 
   base::RepeatingClosure clipboard_quit_closure_;
-  CheckedPtr<WebContents> guest_contents_;
+  WebContents* guest_contents_;
   bool clipboard_changed_ = false;
 };
 

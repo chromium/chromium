@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observer.h"
 #include "chrome/common/extensions/command.h"
@@ -220,7 +219,7 @@ class CommandService : public BrowserContextKeyedAPI,
                                      const std::string& command_name);
 
   // A weak pointer to the profile we are associated with. Not owned by us.
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observer_{this};

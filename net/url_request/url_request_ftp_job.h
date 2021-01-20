@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/auth.h"
 #include "net/base/ip_endpoint.h"
@@ -79,7 +78,7 @@ class NET_EXPORT_PRIVATE URLRequestFtpJob : public URLRequestJob {
 
   void LogFtpStartResult(FTPStartResult result);
 
-  CheckedPtr<ProxyResolutionService> proxy_resolution_service_;
+  ProxyResolutionService* proxy_resolution_service_;
   ProxyInfo proxy_info_;
   std::unique_ptr<ProxyResolutionRequest> proxy_resolve_request_;
 
@@ -90,8 +89,8 @@ class NET_EXPORT_PRIVATE URLRequestFtpJob : public URLRequestJob {
 
   std::unique_ptr<AuthData> auth_data_;
 
-  CheckedPtr<FtpTransactionFactory> ftp_transaction_factory_;
-  CheckedPtr<FtpAuthCache> ftp_auth_cache_;
+  FtpTransactionFactory* ftp_transaction_factory_;
+  FtpAuthCache* ftp_auth_cache_;
 
   base::WeakPtrFactory<URLRequestFtpJob> weak_factory_{this};
 

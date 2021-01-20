@@ -18,7 +18,6 @@
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/containers/span.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "mojo/public/cpp/bindings/connection_group.h"
 #include "mojo/public/cpp/bindings/lib/buffer.h"
@@ -301,7 +300,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) Message {
   // A reference to the ConnectionGroup to which the receiver of this Message
   // belongs, if any. Only set if this Message was just read off of a message
   // pipe and is about to be deserialized.
-  CheckedPtr<const ConnectionGroup::Ref> receiver_connection_group_ = nullptr;
+  const ConnectionGroup::Ref* receiver_connection_group_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(Message);
 };
@@ -426,7 +425,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) SyncMessageResponseContext {
  private:
   friend class internal::SyncMessageResponseSetup;
 
-  CheckedPtr<SyncMessageResponseContext> outer_context_;
+  SyncMessageResponseContext* outer_context_;
   Message response_;
 
   DISALLOW_COPY_AND_ASSIGN(SyncMessageResponseContext);

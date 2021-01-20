@@ -12,7 +12,6 @@
 
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/task_traits.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -168,7 +167,7 @@ class RecoveryImprovedInstallerPolicy : public ComponentInstallerPolicy {
   update_client::InstallerAttributes GetInstallerAttributes() const override;
   std::vector<std::string> GetMimeTypes() const override;
 
-  CheckedPtr<PrefService> prefs_;
+  PrefService* prefs_;
 
   RecoveryImprovedInstallerPolicy(const RecoveryImprovedInstallerPolicy&) =
       delete;

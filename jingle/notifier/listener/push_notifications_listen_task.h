@@ -15,7 +15,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "third_party/libjingle_xmpp/xmpp/xmpptask.h"
 
 namespace jingle_xmpp {
@@ -48,7 +47,7 @@ class PushNotificationsListenTask : public jingle_xmpp::XmppTask {
  private:
   bool IsValidNotification(const jingle_xmpp::XmlElement* stanza);
 
-  CheckedPtr<Delegate> delegate_;
+  Delegate* delegate_;
 
   DISALLOW_COPY_AND_ASSIGN(PushNotificationsListenTask);
 };

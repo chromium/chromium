@@ -13,7 +13,6 @@
 #include "base/callback.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
@@ -313,9 +312,9 @@ class AppServiceProxy : public KeyedService,
 
     // |host_| owns |this|, as the InnerIconLoader is an AppServiceProxy
     // field.
-    CheckedPtr<AppServiceProxy> host_;
+    AppServiceProxy* host_;
 
-    CheckedPtr<apps::IconLoader> overriding_icon_loader_for_testing_;
+    apps::IconLoader* overriding_icon_loader_for_testing_;
   };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -449,7 +448,7 @@ class AppServiceProxy : public KeyedService,
   std::unique_ptr<ExtensionApps> extension_apps_;
 #endif
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   // TODO(crbug.com/1061843): Remove BrowserAppLauncher and merge the interfaces
   // to AppServiceProxy when publishers(ExtensionApps and WebApps) can run on

@@ -9,7 +9,6 @@
 
 #include "base/android/android_image_reader_compat.h"
 #include "base/containers/flat_map.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "gpu/command_buffer/service/texture_owner.h"
 #include "gpu/gpu_gles2_export.h"
@@ -95,7 +94,7 @@ class GPU_GLES2_EXPORT ImageReaderGLOwner : public TextureOwner {
   static void OnFrameAvailable(void* context, AImageReader* reader);
 
   // AImageReader instance
-  CheckedPtr<AImageReader> image_reader_;
+  AImageReader* image_reader_;
 
   // Most recently acquired image using image reader. This works like a cached
   // image until next new image is acquired which overwrites this.

@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/views/frame/web_contents_close_handler_delegate.h"
 #include "ui/views/controls/webview/webview.h"
 
@@ -49,7 +48,7 @@ class ContentsWebView
 
  private:
   void UpdateBackgroundColor();
-  CheckedPtr<StatusBubbleViews> status_bubble_;
+  StatusBubbleViews* status_bubble_;
 
   std::unique_ptr<ui::LayerTreeOwner> cloned_layer_tree_;
 

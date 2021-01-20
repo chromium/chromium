@@ -71,7 +71,7 @@ DedicatedWorkerHost::DedicatedWorkerHost(
   DCHECK((creator_render_frame_host_id_ && !creator_worker_token_) ||
          (!creator_render_frame_host_id_ && creator_worker_token_));
 
-  scoped_process_host_observation_.Observe(worker_process_host_.get());
+  scoped_process_host_observation_.Observe(worker_process_host_);
 
   service_->NotifyWorkerCreated(this);
 }

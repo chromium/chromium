@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "components/viz/common/display/update_vsync_parameters_callback.h"
 #include "components/viz/service/display/output_surface.h"
 #include "components/viz/service/display_embedder/viz_process_context_provider.h"
@@ -88,7 +87,7 @@ class GLOutputSurface : public OutputSurface {
   gfx::Rect ApplyDisplayInverse(const gfx::Rect& input);
 
   scoped_refptr<VizProcessContextProvider> viz_context_provider_;
-  CheckedPtr<OutputSurfaceClient> client_ = nullptr;
+  OutputSurfaceClient* client_ = nullptr;
   bool wants_vsync_parameter_updates_ = false;
   ui::LatencyTracker latency_tracker_;
 

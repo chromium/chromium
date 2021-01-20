@@ -11,7 +11,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/indexed_db/indexed_db_database.h"
@@ -106,7 +105,7 @@ class CONTENT_EXPORT IndexedDBConnection {
 
   // Keeps the factory for this origin alive.
   IndexedDBOriginStateHandle origin_state_handle_;
-  const CheckedPtr<IndexedDBClassFactory> indexed_db_class_factory_;
+  IndexedDBClassFactory* const indexed_db_class_factory_;
 
   base::WeakPtr<IndexedDBDatabase> database_;
   base::RepeatingClosure on_version_change_ignored_;

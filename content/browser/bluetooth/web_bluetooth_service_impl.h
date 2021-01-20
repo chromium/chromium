@@ -13,7 +13,6 @@
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/bluetooth/bluetooth_allowed_devices.h"
@@ -418,7 +417,7 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
       characteristic_id_to_notify_session_;
 
   // The RFH that owns this instance.
-  CheckedPtr<RenderFrameHost> render_frame_host_;
+  RenderFrameHost* render_frame_host_;
 
   // Keeps track of our BLE scanning session.
   std::unique_ptr<device::BluetoothDiscoverySession>

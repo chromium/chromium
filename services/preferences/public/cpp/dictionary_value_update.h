@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "services/preferences/public/cpp/scoped_pref_update.h"
@@ -157,7 +156,7 @@ class DictionaryValueUpdate {
       const std::vector<base::StringPiece>& path);
 
   UpdateCallback report_update_;
-  const CheckedPtr<base::DictionaryValue> value_;
+  base::DictionaryValue* const value_;
   const std::vector<std::string> path_;
 
   DISALLOW_COPY_AND_ASSIGN(DictionaryValueUpdate);

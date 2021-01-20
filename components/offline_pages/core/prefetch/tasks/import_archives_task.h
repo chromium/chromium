@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/core/prefetch/prefetch_importer.h"
 #include "components/offline_pages/core/prefetch/prefetch_types.h"
@@ -29,8 +28,8 @@ class ImportArchivesTask : public Task {
   void OnArchivesRetrieved(
       std::unique_ptr<std::vector<PrefetchArchiveInfo>> archive);
 
-  CheckedPtr<PrefetchStore> prefetch_store_;        // Outlives this class.
-  CheckedPtr<PrefetchImporter> prefetch_importer_;  // Outlives this class.
+  PrefetchStore* prefetch_store_;        // Outlives this class.
+  PrefetchImporter* prefetch_importer_;  // Outlives this class.
   PrefetchArchiveInfo archive_;
 
   base::WeakPtrFactory<ImportArchivesTask> weak_ptr_factory_{this};

@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
@@ -236,7 +235,7 @@ class AccessTokenFetcher : public ProfileOAuth2TokenServiceObserver,
   const CoreAccountId account_id_;
   const std::string client_id_;
   const std::string client_secret_;
-  CheckedPtr<ProfileOAuth2TokenService> token_service_;
+  ProfileOAuth2TokenService* token_service_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   const ScopeSet scopes_;
   const Mode mode_;

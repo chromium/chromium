@@ -8,7 +8,6 @@
 #include <SensorsApi.h>
 #include <wrl/client.h>
 
-#include "base/memory/checked_ptr.h"
 #include "services/device/generic_sensor/platform_sensor_reader_win_base.h"
 #include "services/device/public/mojom/sensor.mojom.h"
 
@@ -66,7 +65,7 @@ class PlatformSensorReaderWin32 final : public PlatformSensorReaderWinBase {
   // PlatformSensorWin that can modify internal state of the object.
   base::Lock lock_;
   bool sensor_active_;
-  CheckedPtr<Client> client_;
+  Client* client_;
   Microsoft::WRL::ComPtr<ISensor> sensor_;
   Microsoft::WRL::ComPtr<ISensorEvents> event_listener_;
   base::WeakPtrFactory<PlatformSensorReaderWin32> weak_factory_{this};

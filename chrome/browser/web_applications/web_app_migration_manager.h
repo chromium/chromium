@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/components/app_icon_manager.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
@@ -90,8 +89,8 @@ class WebAppMigrationManager {
   std::unique_ptr<extensions::BookmarkAppFileHandlerManager>
       bookmark_app_file_handler_manager_;
 
-  const CheckedPtr<AbstractWebAppDatabaseFactory> database_factory_;
-  const CheckedPtr<WebAppIconManager> web_app_icon_manager_;
+  AbstractWebAppDatabaseFactory* const database_factory_;
+  WebAppIconManager* const web_app_icon_manager_;
   std::unique_ptr<WebAppDatabase> database_;
 
   // A queue of bookmark app ids to be migrated.

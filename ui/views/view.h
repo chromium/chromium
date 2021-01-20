@@ -22,7 +22,6 @@
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/optional.h"
 #include "base/strings/string_piece.h"
@@ -1938,7 +1937,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Tree operations -----------------------------------------------------------
 
   // This view's parent.
-  CheckedPtr<View> parent_ = nullptr;
+  View* parent_ = nullptr;
 
   // This view's children.
   Views children_;
@@ -2027,7 +2026,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // A native theme for this view and its descendants. Typically null, in which
   // case the native theme is drawn from the parent view (eventually the
   // widget).
-  CheckedPtr<ui::NativeTheme> native_theme_ = nullptr;
+  ui::NativeTheme* native_theme_ = nullptr;
 
   // RTL painting --------------------------------------------------------------
 
@@ -2063,7 +2062,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Accelerators --------------------------------------------------------------
 
   // Focus manager accelerators registered on.
-  CheckedPtr<FocusManager> accelerator_focus_manager_ = nullptr;
+  FocusManager* accelerator_focus_manager_ = nullptr;
 
   // The list of accelerators. List elements in the range
   // [0, registered_accelerator_count_) are already registered to FocusManager,
@@ -2074,10 +2073,10 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Focus ---------------------------------------------------------------------
 
   // Next view to be focused when the Tab key is pressed.
-  CheckedPtr<View> next_focusable_view_ = nullptr;
+  View* next_focusable_view_ = nullptr;
 
   // Next view to be focused when the Shift-Tab key combination is pressed.
-  CheckedPtr<View> previous_focusable_view_ = nullptr;
+  View* previous_focusable_view_ = nullptr;
 
   // The focus behavior of the view in regular and accessibility mode.
   FocusBehavior focus_behavior_ = FocusBehavior::NEVER;
@@ -2085,11 +2084,11 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Context menus -------------------------------------------------------------
 
   // The menu controller.
-  CheckedPtr<ContextMenuController> context_menu_controller_ = nullptr;
+  ContextMenuController* context_menu_controller_ = nullptr;
 
   // Drag and drop -------------------------------------------------------------
 
-  CheckedPtr<DragController> drag_controller_ = nullptr;
+  DragController* drag_controller_ = nullptr;
 
   // Input  --------------------------------------------------------------------
 

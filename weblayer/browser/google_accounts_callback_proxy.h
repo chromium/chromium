@@ -8,7 +8,6 @@
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/memory/checked_ptr.h"
 #include "weblayer/public/google_accounts_delegate.h"
 
 namespace weblayer {
@@ -26,7 +25,7 @@ class GoogleAccountsCallbackProxy : public GoogleAccountsDelegate {
   std::string GetGaiaId() override;
 
  private:
-  CheckedPtr<Tab> tab_;
+  Tab* tab_;
   base::android::ScopedJavaGlobalRef<jobject> java_impl_;
 };
 

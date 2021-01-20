@@ -42,7 +42,7 @@ WebAppOriginText::WebAppOriginText(Browser* browser) {
   label_->SetPaintToLayer();
   label_->layer()->SetFillsBoundsOpaquely(false);
   label_->layer()->SetOpacity(0);
-  AddChildView(label_.get());
+  AddChildView(label_);
 
   // Clip child views to this view.
   SetPaintToLayer();

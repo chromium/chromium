@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observer.h"
 #include "extensions/browser/extension_icon_image.h"
 
@@ -58,9 +57,9 @@ class ExtensionActionIconFactory : public extensions::IconImage::Observer {
   gfx::Image GetIcon(int tab_id);
 
  private:
-  CheckedPtr<Profile> profile_;
-  CheckedPtr<const extensions::ExtensionAction> action_;
-  CheckedPtr<Observer> observer_;
+  Profile* profile_;
+  const extensions::ExtensionAction* action_;
+  Observer* observer_;
   const bool should_check_icons_;
   gfx::Image cached_default_icon_image_;
 

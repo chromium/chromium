@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_PAYMENTS_PAYMENT_APP_PROVIDER_IMPL_H_
 #define CONTENT_BROWSER_PAYMENTS_PAYMENT_APP_PROVIDER_IMPL_H_
 
-#include "base/memory/checked_ptr.h"
 #include "content/browser/payments/payment_app_context_impl.h"
 #include "content/browser/payments/service_worker_core_thread_event_dispatcher.h"
 #include "content/common/content_export.h"
@@ -95,7 +94,7 @@ class CONTENT_EXPORT PaymentAppProviderImpl
   std::unique_ptr<PaymentHandlerWindowObserver> payment_handler_window_;
 
   // Owns this object.
-  CheckedPtr<WebContents> payment_request_web_contents_;
+  WebContents* payment_request_web_contents_;
 
   // It should be accessed only on the service worker core thread.
   std::unique_ptr<ServiceWorkerCoreThreadEventDispatcher> event_dispatcher_;

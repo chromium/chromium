@@ -9,7 +9,6 @@
 #include <set>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "cc/trees/layer_tree_frame_sink.h"
@@ -144,7 +143,7 @@ class TestLayerTreeFrameSink : public LayerTreeFrameSink,
   const bool synchronous_composite_;
   const bool disable_display_vsync_;
   const viz::RendererSettings renderer_settings_;
-  const CheckedPtr<const viz::DebugRendererSettings> debug_settings_;
+  const viz::DebugRendererSettings* const debug_settings_;
   const double refresh_rate_;
 
   viz::FrameSinkId frame_sink_id_;
@@ -162,16 +161,14 @@ class TestLayerTreeFrameSink : public LayerTreeFrameSink,
   std::unique_ptr<viz::CompositorFrameSinkSupport> support_;
 
   std::unique_ptr<viz::SyntheticBeginFrameSource> begin_frame_source_;
-  CheckedPtr<viz::BeginFrameSource>
-      client_provided_begin_frame_source_;  // Not owned.
-  CheckedPtr<viz::BeginFrameSource> display_begin_frame_source_ =
-      nullptr;  // Not owned.
+  viz::BeginFrameSource* client_provided_begin_frame_source_;    // Not owned.
+  viz::BeginFrameSource* display_begin_frame_source_ = nullptr;  // Not owned.
   viz::ExternalBeginFrameSource external_begin_frame_source_;
 
   // Uses surface_manager_, begin_frame_source_, shared_bitmap_manager_.
   std::unique_ptr<viz::Display> display_;
 
-  CheckedPtr<TestLayerTreeFrameSinkClient> test_client_ = nullptr;
+  TestLayerTreeFrameSinkClient* test_client_ = nullptr;
   gfx::Size enlarge_pass_texture_amount_;
 
   // The set of SharedBitmapIds that have been reported as allocated to this

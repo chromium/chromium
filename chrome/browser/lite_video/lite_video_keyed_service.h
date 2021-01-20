@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_LITE_VIDEO_LITE_VIDEO_KEYED_SERVICE_H_
 
 #include "base/containers/flat_set.h"
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
 #include "chrome/browser/lite_video/lite_video_decider.h"
@@ -47,7 +46,7 @@ class LiteVideoKeyedService : public KeyedService {
   std::unique_ptr<lite_video::LiteVideoDecider> decider_;
 
   // Guaranteed to outlive |this|.
-  CheckedPtr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
 };
 
 #endif  // CHROME_BROWSER_LITE_VIDEO_LITE_VIDEO_KEYED_SERVICE_H_

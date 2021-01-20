@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/i18n/message_formatter.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
@@ -159,7 +158,7 @@ class CustomScrollableView : public views::View {
  private:
   // This view is an child of the dialog view (via |scroll_view_|) and thus will
   // not outlive it.
-  CheckedPtr<ExtensionInstallDialogView> parent_;
+  ExtensionInstallDialogView* parent_;
 
   DISALLOW_COPY_AND_ASSIGN(CustomScrollableView);
 };
@@ -517,7 +516,7 @@ void ExtensionInstallDialogView::CreateContents() {
   scroll_view_->ClipHeightTo(
       0, provider->GetDistanceMetric(
              views::DISTANCE_DIALOG_SCROLLABLE_AREA_MAX_HEIGHT));
-  AddChildView(scroll_view_.get());
+  AddChildView(scroll_view_);
 }
 
 void ExtensionInstallDialogView::EnableInstallButton() {

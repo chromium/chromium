@@ -11,7 +11,6 @@
 #include "base/android/scoped_hardware_buffer_handle.h"
 #include "base/cancelable_callback.h"
 #include "base/containers/flat_map.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "ui/gfx/android/android_surface_control_compat.h"
@@ -99,7 +98,7 @@ class GL_EXPORT GLSurfaceEGLSurfaceControl : public GLSurfaceEGL {
     SurfaceState& operator=(SurfaceState&& other);
 
     int z_order = 0;
-    CheckedPtr<AHardwareBuffer> hardware_buffer = nullptr;
+    AHardwareBuffer* hardware_buffer = nullptr;
     gfx::Rect dst;
     gfx::Rect src;
     gfx::OverlayTransform transform = gfx::OVERLAY_TRANSFORM_NONE;

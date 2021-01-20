@@ -5,7 +5,6 @@
 #define CHROME_BROWSER_CART_CART_SERVICE_H_
 
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/cart/cart_db.h"
 #include "chrome/browser/cart/cart_service_factory.h"
@@ -55,7 +54,7 @@ class CartService : public history::HistoryServiceObserver,
   // Callback when a database operation (e.g. insert or delete) is finished.
   void OnOperationFinished(bool success);
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
   std::unique_ptr<CartDB> cart_db_;
   history::HistoryService* history_service_;
   base::WeakPtrFactory<CartService> weak_ptr_factory_{this};

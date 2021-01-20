@@ -11,7 +11,6 @@
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "components/media_message_center/media_notification_item.h"
@@ -109,12 +108,12 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaSessionNotificationItem
 
   void MaybeHideOrShowNotification();
 
-  CheckedPtr<MediaNotificationController> controller_;
+  MediaNotificationController* controller_;
 
   bool is_bound_ = true;
 
   // Weak reference to the view of the currently shown media notification.
-  CheckedPtr<MediaNotificationView> view_ = nullptr;
+  MediaNotificationView* view_ = nullptr;
 
   // The |request_id_| is the request id of the media session and is guaranteed
   // to be globally unique.

@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "remoting/host/desktop_display_info.h"
@@ -62,7 +61,7 @@ class DesktopCapturerProxy : public webrtc::DesktopCapturer {
 
   std::unique_ptr<Core> core_;
   scoped_refptr<base::SingleThreadTaskRunner> capture_task_runner_;
-  CheckedPtr<webrtc::DesktopCapturer::Callback> callback_;
+  webrtc::DesktopCapturer::Callback* callback_;
 
   // Used to disconnect the client session.
   // Note: This cannot be used on Windows because the ClientSession is not in

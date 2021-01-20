@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "mojo/public/cpp/bindings/lib/serialization_context.h"
 
 namespace mojo {
@@ -42,7 +41,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ControlMessageProxy {
   void RunFlushForTestingClosure();
 
   // Not owned.
-  const CheckedPtr<InterfaceEndpointClient> owner_;
+  InterfaceEndpointClient* const owner_;
   bool encountered_error_ = false;
 
   base::OnceClosure pending_flush_callback_;

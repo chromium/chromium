@@ -15,7 +15,6 @@
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observer.h"
 #include "base/strings/string16.h"
@@ -364,11 +363,11 @@ class SupervisedUserService : public KeyedService,
   void UpdateManualURLs();
 
   // Owns us via the KeyedService mechanism.
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   bool active_;
 
-  CheckedPtr<Delegate> delegate_;
+  Delegate* delegate_;
 
   PrefChangeRegistrar pref_change_registrar_;
 

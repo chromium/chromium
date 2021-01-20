@@ -11,7 +11,6 @@
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string16.h"
 #include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
@@ -145,11 +144,11 @@ class AutofillExternalDelegate : public AutofillPopupDelegate {
   // Returns the text (i.e. |Suggestion| value) for Chrome autofill options.
   base::string16 GetSettingsSuggestionValue() const;
 
-  const CheckedPtr<AutofillManager> manager_;  // weak.
+  AutofillManager* const manager_;  // weak.
 
   // Provides driver-level context to the shared code of the component. Must
   // outlive this object.
-  const CheckedPtr<AutofillDriver> driver_;  // weak
+  AutofillDriver* const driver_;  // weak
 
   // The ID of the last request sent for form field Autofill.  Used to ignore
   // out of date responses.

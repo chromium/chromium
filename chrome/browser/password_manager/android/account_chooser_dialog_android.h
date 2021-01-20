@@ -11,7 +11,6 @@
 
 #include "base/android/jni_android.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/passwords/manage_passwords_state.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -64,7 +63,7 @@ class AccountChooserDialogAndroid : public content::WebContentsObserver {
                         password_manager::CredentialType type,
                         bool sign_button_clicked);
 
-  CheckedPtr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
   ManagePasswordsState passwords_data_;
   url::Origin origin_;
   base::android::ScopedJavaGlobalRef<jobject> dialog_jobject_;

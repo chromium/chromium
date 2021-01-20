@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
@@ -91,10 +90,10 @@ class MEDIA_MOJO_EXPORT MojoVideoDecoderService final
   bool is_active_instance_ = false;
 
   // Decoder factory.
-  CheckedPtr<MojoMediaClient> mojo_media_client_;
+  MojoMediaClient* mojo_media_client_;
 
   // A helper object required to get the CDM from a CDM ID.
-  const CheckedPtr<MojoCdmServiceContext> mojo_cdm_service_context_ = nullptr;
+  MojoCdmServiceContext* const mojo_cdm_service_context_ = nullptr;
 
   // Channel for sending async messages to the client.
   mojo::AssociatedRemote<mojom::VideoDecoderClient> client_;

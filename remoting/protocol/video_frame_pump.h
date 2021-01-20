@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -162,9 +161,9 @@ class VideoFramePump : public VideoStream,
   scoped_refptr<InputEventTimestampsSource> event_timestamps_source_;
 
   // Interface through which video frames are passed to the client.
-  CheckedPtr<protocol::VideoStub> video_stub_;
+  protocol::VideoStub* video_stub_;
 
-  CheckedPtr<Observer> observer_ = nullptr;
+  Observer* observer_ = nullptr;
   webrtc::DesktopSize frame_size_;
   webrtc::DesktopVector frame_dpi_;
 

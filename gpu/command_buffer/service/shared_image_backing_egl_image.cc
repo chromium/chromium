@@ -4,7 +4,6 @@
 
 #include "gpu/command_buffer/service/shared_image_backing_egl_image.h"
 
-#include "base/memory/checked_ptr.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image_batch_access_manager.h"
 #include "gpu/command_buffer/service/shared_image_representation.h"
@@ -32,7 +31,7 @@ class SharedImageBackingEglImage::TextureHolder
 
   ~TextureHolder() { texture_->RemoveLightweightRef(!context_lost_); }
 
-  const CheckedPtr<gles2::Texture> texture_;
+  gles2::Texture* const texture_;
   bool context_lost_ = false;
 };
 

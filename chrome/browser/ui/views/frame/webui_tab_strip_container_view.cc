@@ -12,7 +12,6 @@
 #include "base/feature_list.h"
 #include "base/i18n/message_formatter.h"
 #include "base/i18n/number_formatting.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/numerics/ranges.h"
@@ -241,10 +240,10 @@ class WebUITabStripContainerView::AutoCloser : public ui::EventHandler,
     DCHECK(content_area_);
     DCHECK(omnibox_);
 
-    view_observations_.AddObservation(content_area_.get());
-    view_observations_.AddObservation(omnibox_.get());
+    view_observations_.AddObservation(content_area_);
+    view_observations_.AddObservation(omnibox_);
 #if defined(OS_WIN)
-    view_observations_.AddObservation(top_container_.get());
+    view_observations_.AddObservation(top_container_);
 #endif  // defined(OS_WIN)
 
     // Our observed Widget's NativeView may be destroyed before us. We
@@ -343,9 +342,9 @@ class WebUITabStripContainerView::AutoCloser : public ui::EventHandler,
 
  private:
   CloseCallback close_callback_;
-  CheckedPtr<views::View> top_container_;
-  CheckedPtr<views::View> content_area_;
-  CheckedPtr<views::View> omnibox_;
+  views::View* top_container_;
+  views::View* content_area_;
+  views::View* omnibox_;
 
   bool enabled_ = false;
 
@@ -440,8 +439,8 @@ class WebUITabStripContainerView::DragToOpenHandler : public ui::EventHandler {
   }
 
  private:
-  const CheckedPtr<WebUITabStripContainerView> container_;
-  const CheckedPtr<views::View> drag_handle_;
+  WebUITabStripContainerView* const container_;
+  views::View* const drag_handle_;
 
   bool drag_in_progress_ = false;
 };
@@ -498,8 +497,8 @@ WebUITabStripContainerView::WebUITabStripContainerView(
       web_view_->web_contents());
 
   DCHECK(tab_contents_container);
-  view_observations_.AddObservation(tab_contents_container_.get());
-  view_observations_.AddObservation(top_container_.get());
+  view_observations_.AddObservation(tab_contents_container_);
+  view_observations_.AddObservation(top_container_);
 
   TabStripUI* const tab_strip_ui = static_cast<TabStripUI*>(
       web_view_->GetWebContents()->GetWebUI()->GetController());

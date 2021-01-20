@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "cc/cc_export.h"
@@ -67,7 +66,7 @@ class CC_EXPORT DecodedImageTracker {
   void OnTimeoutImages();
   void EnqueueTimeout();
 
-  CheckedPtr<ImageController> image_controller_;
+  ImageController* image_controller_;
 
   // Helper class tracking a locked image decode. Automatically releases the
   // lock using the provided DecodedImageTracker* on destruction.
@@ -83,7 +82,7 @@ class CC_EXPORT DecodedImageTracker {
     base::TimeTicks lock_time() const { return lock_time_; }
 
    private:
-    CheckedPtr<DecodedImageTracker> tracker_;
+    DecodedImageTracker* tracker_;
     ImageController::ImageDecodeRequestId request_id_;
     base::TimeTicks lock_time_;
   };
@@ -92,7 +91,7 @@ class CC_EXPORT DecodedImageTracker {
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   // Defaults to base::TimeTicks::Now(), but overrideable for testing.
-  CheckedPtr<const base::TickClock> tick_clock_;
+  const base::TickClock* tick_clock_;
 
   base::WeakPtrFactory<DecodedImageTracker> weak_ptr_factory_{this};
 };

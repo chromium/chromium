@@ -185,14 +185,14 @@ std::unique_ptr<corewm::Tooltip> DesktopWindowTreeHostWin::CreateTooltip() {
 
   DCHECK(!tooltip_);
   tooltip_ = new corewm::TooltipWin(GetAcceleratedWidget());
-  return base::WrapUnique(tooltip_.get());
+  return base::WrapUnique(tooltip_);
 }
 
 std::unique_ptr<aura::client::DragDropClient>
 DesktopWindowTreeHostWin::CreateDragDropClient(
     DesktopNativeCursorManager* cursor_manager) {
   drag_drop_client_ = new DesktopDragDropClientWin(window(), GetHWND(), this);
-  return base::WrapUnique(drag_drop_client_.get());
+  return base::WrapUnique(drag_drop_client_);
 }
 
 void DesktopWindowTreeHostWin::Close() {

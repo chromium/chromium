@@ -13,7 +13,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
@@ -205,7 +204,7 @@ class SyncPrefs : public CryptoSyncPrefs,
   void OnSyncRequestedPrefChange();
 
   // Never null.
-  const CheckedPtr<PrefService> pref_service_;
+  PrefService* const pref_service_;
 
   base::ObserverList<SyncPrefObserver>::Unchecked sync_pref_observers_;
 

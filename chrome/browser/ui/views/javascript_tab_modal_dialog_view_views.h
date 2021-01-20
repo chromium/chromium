@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/javascript_dialogs/tab_modal_dialog_view.h"
 #include "content/public/browser/javascript_dialog_manager.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -62,7 +61,7 @@ class JavaScriptTabModalDialogViewViews
   base::OnceClosure dialog_force_closed_callback_;
 
   // The message box view whose commands we handle.
-  CheckedPtr<views::MessageBoxView> message_box_view_;
+  views::MessageBoxView* message_box_view_;
 
   base::WeakPtrFactory<JavaScriptTabModalDialogViewViews> weak_factory_{this};
 

@@ -13,7 +13,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "media/base/data_source.h"
@@ -265,14 +264,14 @@ class MEDIA_BLINK_EXPORT MultibufferDataSource : public DataSource {
   // Current playback rate.
   double playback_rate_;
 
-  CheckedPtr<MediaLog> media_log_;
+  MediaLog* media_log_;
 
   bool is_client_audio_element_ = false;
 
   int buffer_size_update_counter_;
 
   // Host object to report buffered byte range changes to.
-  CheckedPtr<BufferedDataSourceHost> host_;
+  BufferedDataSourceHost* host_;
 
   DownloadingCB downloading_cb_;
 

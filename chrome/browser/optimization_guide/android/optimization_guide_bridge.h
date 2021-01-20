@@ -8,7 +8,6 @@
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/memory/checked_ptr.h"
 
 class OptimizationGuideKeyedService;
 
@@ -34,7 +33,7 @@ class OptimizationGuideBridge {
       const base::android::JavaParamRef<jobject>& java_callback);
 
  private:
-  CheckedPtr<OptimizationGuideKeyedService> optimization_guide_keyed_service_;
+  OptimizationGuideKeyedService* optimization_guide_keyed_service_;
 };
 
 }  // namespace android

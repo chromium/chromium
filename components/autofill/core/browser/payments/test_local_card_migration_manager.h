@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 #include "components/autofill/core/browser/sync_utils.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
@@ -73,7 +72,7 @@ class TestLocalCardMigrationManager : public LocalCardMigrationManager {
 
   bool main_prompt_was_shown_ = false;
 
-  CheckedPtr<TestPersonalDataManager> personal_data_manager_;
+  TestPersonalDataManager* personal_data_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(TestLocalCardMigrationManager);
 };

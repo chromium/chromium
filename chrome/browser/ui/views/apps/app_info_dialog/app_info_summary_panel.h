@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/apps/app_info_dialog/app_info_panel.h"
 #include "extensions/common/constants.h"
@@ -76,10 +75,10 @@ class AppInfoSummaryPanel : public AppInfoPanel,
   const std::vector<GURL> GetLicenseUrls() const;
 
   // UI elements on the dialog.
-  CheckedPtr<views::Label> size_value_ = nullptr;
+  views::Label* size_value_ = nullptr;
 
   std::unique_ptr<LaunchOptionsComboboxModel> launch_options_combobox_model_;
-  CheckedPtr<views::Combobox> launch_options_combobox_ = nullptr;
+  views::Combobox* launch_options_combobox_ = nullptr;
 
   base::WeakPtrFactory<AppInfoSummaryPanel> weak_ptr_factory_{this};
 };

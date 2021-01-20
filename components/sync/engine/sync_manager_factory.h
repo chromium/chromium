@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 
 namespace network {
 class NetworkConnectionTracker;
@@ -30,7 +29,7 @@ class SyncManagerFactory {
       const std::string& name);
 
  private:
-  CheckedPtr<network::NetworkConnectionTracker> network_connection_tracker_;
+  network::NetworkConnectionTracker* network_connection_tracker_;
 
   DISALLOW_COPY_AND_ASSIGN(SyncManagerFactory);
 };

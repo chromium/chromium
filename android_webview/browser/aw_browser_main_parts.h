@@ -10,7 +10,6 @@
 #include "android_webview/browser/aw_browser_process.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/task/single_thread_task_executor.h"
 #include "content/public/browser/browser_main_parts.h"
 
@@ -41,7 +40,7 @@ class AwBrowserMainParts : public content::BrowserMainParts {
   // Android specific UI SingleThreadTaskExecutor.
   std::unique_ptr<base::SingleThreadTaskExecutor> main_task_executor_;
 
-  CheckedPtr<AwContentBrowserClient> browser_client_;
+  AwContentBrowserClient* browser_client_;
 
   std::unique_ptr<metrics::MemoryMetricsLogger> metrics_logger_;
 

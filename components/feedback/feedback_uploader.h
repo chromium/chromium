@@ -11,7 +11,6 @@
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
@@ -128,7 +127,7 @@ class FeedbackUploader : public KeyedService,
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   // Browser context this uploader was created for.
-  CheckedPtr<content::BrowserContext> context_;
+  content::BrowserContext* context_;
 
   const base::FilePath feedback_reports_path_;
 

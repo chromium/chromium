@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/translate/content/common/translate.mojom.h"
@@ -133,9 +132,9 @@ class ContentTranslateDriver : public TranslateDriver,
   void OnPageAway(int page_seq_no);
 
   // The navigation controller of the tab we are associated with.
-  CheckedPtr<content::NavigationController> navigation_controller_;
+  content::NavigationController* navigation_controller_;
 
-  CheckedPtr<TranslateManager> translate_manager_;
+  TranslateManager* translate_manager_;
 
   base::ObserverList<TranslationObserver, true> translation_observers_;
 
@@ -151,7 +150,7 @@ class ContentTranslateDriver : public TranslateDriver,
 
   // Histogram to be notified about detected language of every page visited. Not
   // owned here.
-  const CheckedPtr<language::UrlLanguageHistogram> language_histogram_;
+  language::UrlLanguageHistogram* const language_histogram_;
 
   // ContentTranslateDriver is a singleton per web contents but multiple render
   // frames may be contained in a single web contents. TranslateAgents get the

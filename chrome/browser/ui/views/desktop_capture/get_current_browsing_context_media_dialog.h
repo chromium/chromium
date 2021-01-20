@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_GET_CURRENT_BROWSING_CONTEXT_MEDIA_DIALOG_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_list_controller.h"
@@ -37,8 +36,7 @@ class GetCurrentBrowsingContextMediaDialog : public DesktopMediaPicker {
       const DesktopMediaPicker::Params& params);
 
   DoneCallback callback_;
-  CheckedPtr<views::BubbleDialogModelHost> dialog_model_host_for_testing_ =
-      nullptr;
+  views::BubbleDialogModelHost* dialog_model_host_for_testing_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(GetCurrentBrowsingContextMediaDialog);
 };

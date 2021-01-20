@@ -13,7 +13,6 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "ui/android/ui_android_export.h"
@@ -119,7 +118,7 @@ class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid {
     ~ScopedSelectionHandles();
 
    private:
-    CheckedPtr<WindowAndroid> window_;
+    WindowAndroid* window_;
   };
 
  private:
@@ -139,14 +138,14 @@ class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid {
   base::android::ScopedJavaGlobalRef<jobject> java_window_;
   const int display_id_;
   const bool window_is_wide_color_gamut_;
-  CheckedPtr<WindowAndroidCompositor> compositor_;
+  WindowAndroidCompositor* compositor_;
 
   base::ObserverList<WindowAndroidObserver>::Unchecked observer_list_;
 
   float mouse_wheel_scroll_factor_;
   bool vsync_paused_ = false;
 
-  CheckedPtr<TestHooks> test_hooks_ = nullptr;
+  TestHooks* test_hooks_ = nullptr;
 
   int selection_handles_active_count_ = 0;
 

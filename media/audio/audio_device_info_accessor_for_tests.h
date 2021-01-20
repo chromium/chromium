@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "media/audio/audio_device_description.h"
 #include "media/base/audio_parameters.h"
 
@@ -48,7 +47,7 @@ class AudioDeviceInfoAccessorForTests {
   std::string GetCommunicationsOutputDeviceID();
 
  private:
-  const CheckedPtr<AudioManager> audio_manager_;
+  AudioManager* const audio_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(AudioDeviceInfoAccessorForTests);
 };

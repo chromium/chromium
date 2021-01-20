@@ -10,7 +10,6 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "content/common/content_export.h"
 
 namespace content {
@@ -138,7 +137,7 @@ class CONTENT_EXPORT NavigationControllerAndroid {
       jint index);
 
  private:
-  CheckedPtr<NavigationControllerImpl> navigation_controller_;
+  NavigationControllerImpl* navigation_controller_;
   base::android::ScopedJavaGlobalRef<jobject> obj_;
 
   DISALLOW_COPY_AND_ASSIGN(NavigationControllerAndroid);

@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/sequenced_task_runner.h"
@@ -60,8 +59,7 @@ class PersistedStateDB {
   void Destroy(JNIEnv* env);
 
  private:
-  CheckedPtr<ProfileProtoDB<persisted_state_db::PersistedStateContentProto>>
-      proto_db_;
+  ProfileProtoDB<persisted_state_db::PersistedStateContentProto>* proto_db_;
 
   base::WeakPtrFactory<PersistedStateDB> weak_ptr_factory_{this};
 };

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_ACCESSIBILITY_MAGNIFICATION_MANAGER_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/profiles/profile.h"
@@ -110,7 +109,7 @@ class MagnificationManager
   // Called in response to AXEventObserver.
   void HandleFocusChanged(const gfx::Rect& bounds_in_screen, bool is_editable);
 
-  CheckedPtr<Profile> profile_ = nullptr;
+  Profile* profile_ = nullptr;
   ScopedObserver<Profile, ProfileObserver> profile_observer_{this};
 
   // Last mouse event time - used for ignoring focus changes for a few

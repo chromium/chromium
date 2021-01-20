@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/checked_ptr.h"
 #include "base/test/bind.h"
 #include "chrome/browser/federated_learning/floc_eligibility_observer.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -131,7 +130,7 @@ class FlocEligibilityUnitTest : public ChromeRenderViewHostTestHarness {
     tracker->AddObserver(std::move(floc_plm_observer));
   }
 
-  CheckedPtr<FlocPageLoadMetricsObserver> floc_plm_observer_;
+  FlocPageLoadMetricsObserver* floc_plm_observer_;
   std::unique_ptr<page_load_metrics::PageLoadMetricsObserverTester> tester_;
 };
 

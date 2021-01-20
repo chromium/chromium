@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -95,7 +94,7 @@ class MockDisplaySourceConnectionDelegate
   void OnMediaPacketReceived(int net_result);
 
   DisplaySourceSinkInfoList sinks_;
-  CheckedPtr<DisplaySourceSinkInfo> active_sink_;
+  DisplaySourceSinkInfo* active_sink_;
   std::map<int, std::pair<AuthenticationMethod, std::string>> auth_infos_;
   RepeatingMessageCallback message_received_cb_;
 

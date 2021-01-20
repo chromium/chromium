@@ -19,7 +19,6 @@
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/scoped_observation.h"
@@ -355,10 +354,10 @@ class MostVisitedSites : public history::TopSitesObserver,
   void OnRepeatableQueriesUpdated() override;
   void OnRepeatableQueriesServiceShuttingDown() override;
 
-  CheckedPtr<PrefService> prefs_;
+  PrefService* prefs_;
   scoped_refptr<history::TopSites> top_sites_;
-  CheckedPtr<RepeatableQueriesService> repeatable_queries_;
-  CheckedPtr<suggestions::SuggestionsService> suggestions_service_;
+  RepeatableQueriesService* repeatable_queries_;
+  suggestions::SuggestionsService* suggestions_service_;
   std::unique_ptr<PopularSites> const popular_sites_;
   std::unique_ptr<CustomLinksManager> const custom_links_;
   std::unique_ptr<IconCacher> const icon_cacher_;
@@ -366,7 +365,7 @@ class MostVisitedSites : public history::TopSitesObserver,
   std::unique_ptr<HomepageClient> homepage_client_;
   std::unique_ptr<ExploreSitesClient> explore_sites_client_;
 
-  CheckedPtr<Observer> observer_;
+  Observer* observer_;
 
   // The maximum number of most visited sites to return.
   // Do not use directly. Use GetMaxNumSites() instead.

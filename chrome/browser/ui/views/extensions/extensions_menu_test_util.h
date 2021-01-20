@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/auto_reset.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 
 class Browser;
@@ -67,8 +66,8 @@ class ExtensionsMenuTestUtil : public ExtensionActionTestHelper {
 
   std::unique_ptr<Wrapper> wrapper_;
 
-  const CheckedPtr<Browser> browser_;
-  CheckedPtr<ExtensionsToolbarContainer> extensions_container_ = nullptr;
+  Browser* const browser_;
+  ExtensionsToolbarContainer* extensions_container_ = nullptr;
   std::unique_ptr<ExtensionsMenuView> menu_view_;
 };
 

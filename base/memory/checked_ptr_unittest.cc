@@ -774,34 +774,6 @@ TEST(BackupRefPtrImpl, ZeroSized) {
   }
 }
 
-TEST(BackupRefPtrImpl, EndPointer) {
-  // This test works only if GigaCage is enabled. Bail out otherwise.
-  if (!features::IsPartitionAllocGigaCageEnabled())
-    return;
-
-  // TODO(bartekn): Avoid using PartitionAlloc API directly. Switch to
-  // new/delete once PartitionAlloc Everywhere is fully enabled.
-  PartitionAllocGlobalInit(HandleOOM);
-  PartitionAllocator<ThreadSafe> allocator;
-  allocator.init({});
-
-  for (int size = 0; size < 1024; size += 8) {
-    // Creating a CheckedPtr from an address right past the end of an allocation
-    // should not result in a crash.
-    char* raw_ptr = reinterpret_cast<char*>(allocator.root()->Alloc(size, ""));
-    CheckedPtr<char> checked_ptr = raw_ptr + size;
-    allocator.root()->Free(raw_ptr);
-  }
-
-  for (int size = 0; size < 1024; size += 8) {
-    // Similarly for operator+=.
-    char* raw_ptr = reinterpret_cast<char*>(allocator.root()->Alloc(size, ""));
-    CheckedPtr<char> checked_ptr = raw_ptr;
-    checked_ptr += size;
-    allocator.root()->Free(raw_ptr);
-  }
-}
-
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC) && ENABLE_BACKUP_REF_PTR_IMPL &&
         // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
 }  // namespace internal

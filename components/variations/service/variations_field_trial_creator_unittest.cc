@@ -12,7 +12,6 @@
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/version.h"
@@ -224,7 +223,7 @@ class TestVariationsSeedStore : public VariationsSeedStore {
   // Whether to simulate having a corrupted safe seed.
   bool has_corrupted_safe_seed_ = false;
 
-  CheckedPtr<PrefService> local_state_;
+  PrefService* local_state_;
 
   DISALLOW_COPY_AND_ASSIGN(TestVariationsSeedStore);
 };
@@ -261,7 +260,7 @@ class TestVariationsFieldTrialCreator : public VariationsFieldTrialCreator {
   VariationsSeedStore* GetSeedStore() override { return &seed_store_; }
 
   TestVariationsSeedStore seed_store_;
-  const CheckedPtr<SafeSeedManager> safe_seed_manager_;
+  SafeSeedManager* const safe_seed_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(TestVariationsFieldTrialCreator);
 };

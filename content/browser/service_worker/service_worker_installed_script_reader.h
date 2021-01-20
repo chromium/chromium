@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
-#include "base/memory/checked_ptr.h"
 #include "components/services/storage/public/mojom/service_worker_storage_control.mojom.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/base/big_buffer.h"
@@ -89,7 +88,7 @@ class ServiceWorkerInstalledScriptReader
 
   mojo::Remote<storage::mojom::ServiceWorkerResourceReader> reader_;
   // |client_| must outlive this.
-  CheckedPtr<Client> client_;
+  Client* client_;
 
   // For meta data.
   std::unique_ptr<MetaDataSender> meta_data_sender_;

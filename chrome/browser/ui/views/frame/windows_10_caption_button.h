@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_WINDOWS_10_CAPTION_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_WINDOWS_10_CAPTION_BUTTON_H_
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/controls/button/button.h"
@@ -42,7 +41,7 @@ class Windows10CaptionButton : public views::Button {
   // Paints the minimize/maximize/restore/close icon for the button.
   void PaintSymbol(gfx::Canvas* canvas);
 
-  CheckedPtr<GlassBrowserFrameView> frame_view_;
+  GlassBrowserFrameView* frame_view_;
   ViewID button_type_;
 
   DISALLOW_COPY_AND_ASSIGN(Windows10CaptionButton);

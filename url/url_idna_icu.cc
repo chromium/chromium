@@ -12,7 +12,6 @@
 
 #include "base/check_op.h"
 #include "base/i18n/uchar.h"
-#include "base/memory/checked_ptr.h"
 #include "base/no_destructor.h"
 #include "third_party/icu/source/common/unicode/uidna.h"
 #include "third_party/icu/source/common/unicode/utypes.h"
@@ -60,7 +59,7 @@ struct UIDNAWrapper {
     }
   }
 
-  CheckedPtr<UIDNA> value;
+  UIDNA* value;
 };
 
 }  // namespace

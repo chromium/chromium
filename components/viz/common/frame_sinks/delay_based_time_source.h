@@ -10,7 +10,6 @@
 
 #include "base/cancelable_callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "components/viz/common/viz_common_export.h"
@@ -67,7 +66,7 @@ class VIZ_COMMON_EXPORT DelayBasedTimeSource {
 
   void OnTimerTick();
 
-  CheckedPtr<DelayBasedTimeSourceClient> client_;
+  DelayBasedTimeSourceClient* client_;
 
   bool active_;
 
@@ -79,7 +78,7 @@ class VIZ_COMMON_EXPORT DelayBasedTimeSource {
 
   base::CancelableOnceClosure tick_closure_;
 
-  CheckedPtr<base::SingleThreadTaskRunner> task_runner_;
+  base::SingleThreadTaskRunner* task_runner_;
 
   base::WeakPtrFactory<DelayBasedTimeSource> weak_factory_{this};
 

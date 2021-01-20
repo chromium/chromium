@@ -13,7 +13,6 @@
 #include "base/containers/queue.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/supports_user_data.h"
@@ -193,10 +192,10 @@ class CONTENT_EXPORT BrowsingDataRemoverImpl
   base::WeakPtr<BrowsingDataRemoverImpl> GetWeakPtr();
 
   // The browser context we're to remove from.
-  CheckedPtr<BrowserContext> browser_context_;
+  BrowserContext* browser_context_;
 
   // A delegate to delete the embedder-specific data. Owned by the embedder.
-  CheckedPtr<BrowsingDataRemoverDelegate> embedder_delegate_;
+  BrowsingDataRemoverDelegate* embedder_delegate_;
 
   // Start time to delete from.
   base::Time delete_begin_;
@@ -237,7 +236,7 @@ class CONTENT_EXPORT BrowsingDataRemoverImpl
   base::ObserverList<Observer, true>::Unchecked observer_list_;
 
   // We do not own this.
-  CheckedPtr<StoragePartition> storage_partition_for_testing_;
+  StoragePartition* storage_partition_for_testing_;
 
   base::WeakPtrFactory<BrowsingDataRemoverImpl> weak_ptr_factory_{this};
 

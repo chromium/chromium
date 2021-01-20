@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_host_view.h"
 
@@ -53,7 +52,7 @@ class InkDropHostViewTestApi {
 
  private:
   // The InkDropHostView to provide internal access to.
-  CheckedPtr<InkDropHostView> host_view_;
+  InkDropHostView* host_view_;
 
   DISALLOW_COPY_AND_ASSIGN(InkDropHostViewTestApi);
 };

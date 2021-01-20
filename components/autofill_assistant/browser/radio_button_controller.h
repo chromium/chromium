@@ -9,7 +9,6 @@
 #include <set>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill_assistant/browser/user_model.h"
 
@@ -48,7 +47,7 @@ class RadioButtonController {
  private:
   friend class RadioButtonControllerTest;
 
-  CheckedPtr<UserModel> user_model_;
+  UserModel* user_model_;
   base::WeakPtrFactory<RadioButtonController> weak_ptr_factory_{this};
 };
 

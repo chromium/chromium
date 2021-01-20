@@ -8,7 +8,6 @@
 #include <climits>
 #include <map>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/time/time.h"
@@ -109,7 +108,7 @@ class MetricsReporter {
   void FinalizeMetrics();
   void FinalizeVisit();
 
-  CheckedPtr<PrefService> profile_prefs_;
+  PrefService* profile_prefs_;
   // Persistent data stored in prefs. Data is read in the constructor, and then
   // written back to prefs on backgrounding.
   PersistentMetricsData persistent_data_;

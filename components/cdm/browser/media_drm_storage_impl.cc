@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/optional.h"
@@ -496,7 +495,7 @@ class InitializationSerializer {
              std::tie(other.pref_service, other.origin);
     }
 
-    CheckedPtr<PrefService> pref_service;
+    PrefService* pref_service;
     const url::Origin origin;
   };
 

@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/time/time.h"
@@ -182,7 +181,7 @@ class CONTENT_EXPORT ClipboardHostImpl : public blink::mojom::ClipboardHost {
   std::unique_ptr<ui::DataTransferEndpoint> CreateDataEndpoint();
 
   mojo::Receiver<blink::mojom::ClipboardHost> receiver_;
-  const CheckedPtr<ui::Clipboard> clipboard_;  // Not owned
+  ui::Clipboard* const clipboard_;  // Not owned
   GlobalFrameRoutingId render_frame_routing_id_;
   std::unique_ptr<ui::ScopedClipboardWriter> clipboard_writer_;
 

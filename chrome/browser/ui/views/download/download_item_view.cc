@@ -359,9 +359,8 @@ void DownloadItemView::Layout() {
                              text_width,
                              status_label_->GetPreferredSize().height());
   } else {
-    auto* const label = (mode_ == Mode::kDeepScanning)
-                            ? deep_scanning_label_.get()
-                            : warning_label_.get();
+    auto* const label =
+        (mode_ == Mode::kDeepScanning) ? deep_scanning_label_ : warning_label_;
     label->SetPosition(gfx::Point(kStartPadding * 2 + GetIcon().Size().width(),
                                   CenterY(label->height())));
 
@@ -473,7 +472,7 @@ void DownloadItemView::OnDownloadOpened() {
     if (!view)
       return;
     view->SetEnabled(true);
-    auto* label = view->file_name_label_.get();
+    auto* label = view->file_name_label_;
     label->SetTextStyle(views::style::STYLE_PRIMARY);
     const base::string16 filename = view->ElidedFilename(*label);
     label->SetText(filename);
@@ -523,9 +522,8 @@ gfx::Size DownloadItemView::CalculatePreferredSize() const {
              label_width + kEndPadding;
     height = file_name_label_->GetLineHeight() + status_label_->GetLineHeight();
   } else {
-    auto* const label = (mode_ == Mode::kDeepScanning)
-                            ? deep_scanning_label_.get()
-                            : warning_label_.get();
+    auto* const label =
+        (mode_ == Mode::kDeepScanning) ? deep_scanning_label_ : warning_label_;
     height = label->GetLineHeight() * 2;
     const gfx::Size icon_size = GetIcon().Size();
     width +=

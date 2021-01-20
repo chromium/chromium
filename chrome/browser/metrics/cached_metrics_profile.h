@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_METRICS_CACHED_METRICS_PROFILE_H_
 #define CHROME_BROWSER_METRICS_CACHED_METRICS_PROFILE_H_
 
-#include "base/memory/checked_ptr.h"
-
 class Profile;
 
 namespace metrics {
@@ -29,7 +27,7 @@ class CachedMetricsProfile {
   // The profile for which metrics can be gathered. Once a profile is found,
   // its value is cached here so that GetMetricsProfile() can return a
   // consistent value.
-  CheckedPtr<Profile> cached_profile_ = nullptr;
+  Profile* cached_profile_ = nullptr;
 };
 
 }  // namespace metrics

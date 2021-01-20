@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_ACCESSIBILITY_WEB_CONTENTS_ACCESSIBILITY_ANDROID_H_
 #define CONTENT_BROWSER_ACCESSIBILITY_WEB_CONTENTS_ACCESSIBILITY_ANDROID_H_
 
-#include "base/memory/checked_ptr.h"
 #include "content/browser/accessibility/web_contents_accessibility.h"
 
 #include "base/android/jni_weak_ref.h"
@@ -317,7 +316,7 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   // A weak reference to the Java WebContentsAccessibilityAndroid object.
   JavaObjectWeakGlobalRef java_ref_;
 
-  const CheckedPtr<WebContentsImpl> web_contents_;
+  WebContentsImpl* const web_contents_;
 
   bool frame_info_initialized_;
 
@@ -336,7 +335,7 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   // receives accessibility events.
   // Owns itself, and destroyed upon WebContentsObserver::WebContentsDestroyed.
   class Connector;
-  CheckedPtr<Connector> connector_ = nullptr;
+  Connector* connector_ = nullptr;
 
   base::WeakPtrFactory<WebContentsAccessibilityAndroid> weak_ptr_factory_{this};
 

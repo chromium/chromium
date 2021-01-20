@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/gtest_util.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -68,7 +67,7 @@ class DelayTrackingTaskRunner : public base::SingleThreadTaskRunner {
   ~DelayTrackingTaskRunner() override = default;
 
   base::Optional<base::TimeDelta> last_delay_;
-  CheckedPtr<base::SingleThreadTaskRunner> task_runner_;
+  base::SingleThreadTaskRunner* task_runner_;
 };
 
 class ImageAnimationControllerTest : public testing::Test,

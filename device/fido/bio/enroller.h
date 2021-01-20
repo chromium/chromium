@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
@@ -65,8 +64,8 @@ class BioEnroller {
                          base::Optional<BioEnrollmentResponse> response);
 
   State state_ = State::kInProgress;
-  CheckedPtr<Delegate> delegate_;
-  CheckedPtr<FidoAuthenticator> authenticator_;
+  Delegate* delegate_;
+  FidoAuthenticator* authenticator_;
   pin::TokenResponse token_;
   base::Optional<std::vector<uint8_t>> template_id_;
 

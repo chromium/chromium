@@ -11,7 +11,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
@@ -126,7 +125,7 @@ class PrivetURLLoader {
   const std::string request_type_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   const net::NetworkTrafficAnnotationTag traffic_annotation_;
-  const CheckedPtr<Delegate> delegate_;
+  Delegate* const delegate_;
 
   int max_retries_;
   bool do_not_retry_on_transient_error_ = false;

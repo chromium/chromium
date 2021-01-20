@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_SIGNIN_SIGNIN_MANAGER_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
@@ -51,7 +50,7 @@ class SigninManager : public KeyedService,
       const CoreAccountInfo& account_info,
       const GoogleServiceAuthError& error) override;
 
-  CheckedPtr<signin::IdentityManager> identity_manager_;
+  signin::IdentityManager* identity_manager_;
   bool unconsented_primary_account_revoked_during_load_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(SigninManager);

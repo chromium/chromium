@@ -15,7 +15,6 @@
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/scoped_observer.h"
@@ -402,7 +401,7 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
     message_dispatched_callback_for_testing_ = callback;
   }
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
   std::unique_ptr<AbusiveOriginPermissionRevocationRequest>
       abusive_origin_revocation_request_;
   std::queue<PendingMessage> messages_pending_permission_check_;

@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
@@ -34,7 +33,7 @@ class ConstantScopedFakeClock : public rtc::ClockInterface {
   int64_t TimeNanos() const override { return 1337L * 1000L * 1000L; }
 
  private:
-  CheckedPtr<ClockInterface> prev_clock_;
+  ClockInterface* prev_clock_;
 };
 
 }  // namespace

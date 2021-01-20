@@ -7,7 +7,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/gfx/win/window_impl.h"
 #include "ui/platform_window/platform_window.h"
@@ -103,7 +102,7 @@ class WIN_WINDOW_EXPORT WinWindow : public PlatformWindow,
   void OnPaint(HDC);
   void OnWindowPosChanged(WINDOWPOS* window_pos);
 
-  CheckedPtr<PlatformWindowDelegate> delegate_;
+  PlatformWindowDelegate* delegate_;
 
   CR_MSG_MAP_CLASS_DECLARATIONS(WinWindow)
 

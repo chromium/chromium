@@ -17,7 +17,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/shared_memory_mapping.h"
@@ -213,7 +212,7 @@ class DisplayResourceProviderTest : public testing::TestWithParam<bool> {
 
  protected:
   const bool use_gpu_;
-  CheckedPtr<ResourceProviderGLES2Interface> gl_ = nullptr;
+  ResourceProviderGLES2Interface* gl_ = nullptr;
   uint64_t next_fence_sync_ = 1;
   scoped_refptr<TestContextProvider> context_provider_;
   scoped_refptr<TestContextProvider> child_context_provider_;

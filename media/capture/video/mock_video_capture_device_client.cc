@@ -4,8 +4,6 @@
 
 #include "media/capture/video/mock_video_capture_device_client.h"
 
-#include "base/memory/checked_ptr.h"
-
 using testing::_;
 using testing::Invoke;
 
@@ -24,7 +22,7 @@ class StubBufferHandle : public VideoCaptureBufferHandle {
 
  private:
   const size_t mapped_size_;
-  const CheckedPtr<uint8_t> data_;
+  uint8_t* const data_;
 };
 
 class StubBufferHandleProvider
@@ -56,7 +54,7 @@ class StubBufferHandleProvider
 
  private:
   const size_t mapped_size_;
-  const CheckedPtr<uint8_t> data_;
+  uint8_t* const data_;
 };
 
 class StubReadWritePermission
@@ -66,7 +64,7 @@ class StubReadWritePermission
   ~StubReadWritePermission() override { delete[] data_; }
 
  private:
-  const CheckedPtr<uint8_t> data_;
+  uint8_t* const data_;
 };
 
 VideoCaptureDevice::Client::Buffer CreateStubBuffer(int buffer_id,

@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
@@ -109,7 +108,7 @@ class BitmapFetcherRequest {
  private:
   const BitmapFetcherService::RequestId request_id_;
   BitmapFetcherService::BitmapFetchedCallback callback_;
-  CheckedPtr<const BitmapFetcher> fetcher_;
+  const BitmapFetcher* fetcher_;
 
   DISALLOW_COPY_AND_ASSIGN(BitmapFetcherRequest);
 };

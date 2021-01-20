@@ -10,7 +10,6 @@
 
 #include "base/cancelable_callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/download/public/task/task_scheduler.h"
 
@@ -37,7 +36,7 @@ class DownloadTaskSchedulerImpl : public download::TaskScheduler {
   void RunScheduledTask(download::DownloadTaskType task_type);
   void OnTaskFinished(bool reschedule);
 
-  CheckedPtr<SimpleFactoryKey> key_;
+  SimpleFactoryKey* key_;
 
   // Keeps track of scheduled tasks so that they can be cancelled.
   std::map<download::DownloadTaskType, base::CancelableOnceClosure>

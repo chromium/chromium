@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_RENDERER_CONTEXT_MENU_COPY_LINK_TO_TEXT_MENU_OBSERVER_H_
 #define CHROME_BROWSER_RENDERER_CONTEXT_MENU_COPY_LINK_TO_TEXT_MENU_OBSERVER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/mojom/link_to_text/link_to_text.mojom.h"
@@ -43,7 +42,7 @@ class CopyLinkToTextMenuObserver : public RenderViewContextMenuObserver {
  private:
   explicit CopyLinkToTextMenuObserver(RenderViewContextMenuProxy* proxy);
   mojo::Remote<blink::mojom::TextFragmentSelectorProducer> remote_;
-  CheckedPtr<RenderViewContextMenuProxy> proxy_;
+  RenderViewContextMenuProxy* proxy_;
   GURL url_;
   base::string16 selected_text_;
   base::Optional<std::string> generated_selector_for_testing_;

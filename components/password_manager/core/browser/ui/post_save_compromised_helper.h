@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/containers/span.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "base/time/time.h"
@@ -68,7 +67,7 @@ class PostSaveCompromisedHelper {
   // Contains the entry for the currently leaked credentials if it was leaked.
   base::Optional<CompromisedCredentials> current_leak_;
   // Profile prefs.
-  CheckedPtr<PrefService> prefs_ = nullptr;
+  PrefService* prefs_ = nullptr;
   // Callback to notify the caller about the bubble type.
   BubbleCallback callback_;
   // BubbleType after the callback was executed.

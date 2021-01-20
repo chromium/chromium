@@ -14,7 +14,6 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/ui/passwords/settings/password_manager_presenter.h"
 #include "chrome/browser/ui/passwords/settings/password_ui_view.h"
@@ -143,14 +142,14 @@ class PasswordUIViewAndroid : public PasswordUIView {
   // If not null, PostSerializedPasswords will write the serialized passwords to
   // |*export_target_for_testing_| instead of passing them to Java. This must
   // remain null in production code.
-  CheckedPtr<SerializationResult> export_target_for_testing_ = nullptr;
+  SerializationResult* export_target_for_testing_ = nullptr;
 
   PasswordManagerPresenter password_manager_presenter_;
 
   // If not null, passwords for exporting will be obtained from
   // |*credential_provider_for_testing_|, otherwise from
   // |password_manager_presenter_|. This must remain null in production code.
-  CheckedPtr<password_manager::CredentialProviderInterface>
+  password_manager::CredentialProviderInterface*
       credential_provider_for_testing_ = nullptr;
 
   // Java side of UI controller.

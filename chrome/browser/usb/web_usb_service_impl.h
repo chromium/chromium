@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/usb/usb_chooser_context.h"
@@ -86,9 +85,9 @@ class WebUsbServiceImpl
 
   void OnConnectionError();
 
-  const CheckedPtr<content::RenderFrameHost> render_frame_host_;
+  content::RenderFrameHost* const render_frame_host_;
   base::WeakPtr<WebUsbChooser> usb_chooser_;
-  CheckedPtr<UsbChooserContext> chooser_context_;
+  UsbChooserContext* chooser_context_;
   url::Origin requesting_origin_;
   url::Origin embedding_origin_;
 

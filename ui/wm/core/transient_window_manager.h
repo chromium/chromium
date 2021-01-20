@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "ui/aura/window_observer.h"
 #include "ui/wm/core/wm_core_export.h"
@@ -86,8 +85,8 @@ class WM_CORE_EXPORT TransientWindowManager : public aura::WindowObserver {
   void OnWindowStackingChanged(aura::Window* window) override;
   void OnWindowDestroying(aura::Window* window) override;
 
-  CheckedPtr<aura::Window> window_;
-  CheckedPtr<aura::Window> transient_parent_;
+  aura::Window* window_;
+  aura::Window* transient_parent_;
   Windows transient_children_;
 
   // If non-null we're actively restacking transient as the result of a

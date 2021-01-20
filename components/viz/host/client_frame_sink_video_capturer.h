@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
@@ -159,7 +158,7 @@ class VIZ_HOST_EXPORT ClientFrameSinkVideoCapturer
   std::vector<Overlay*> overlays_;
   bool is_started_ = false;
 
-  CheckedPtr<mojom::FrameSinkVideoConsumer> consumer_ = nullptr;
+  mojom::FrameSinkVideoConsumer* consumer_ = nullptr;
   EstablishConnectionCallback establish_connection_callback_;
   mojo::Remote<mojom::FrameSinkVideoCapturer> capturer_remote_;
   mojo::Receiver<mojom::FrameSinkVideoConsumer> consumer_receiver_{this};

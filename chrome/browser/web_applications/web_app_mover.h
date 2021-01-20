@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
@@ -87,16 +86,16 @@ class WebAppMover final : public syncer::SyncServiceObserver {
       const AppId& id,
       InstallResultCode code);
 
-  CheckedPtr<Profile> profile_;
-  CheckedPtr<AppRegistrar> registrar_;
-  CheckedPtr<InstallFinalizer> install_finalizer_;
-  CheckedPtr<InstallManager> install_manager_;
-  CheckedPtr<AppRegistryController> controller_;
+  Profile* profile_;
+  AppRegistrar* registrar_;
+  InstallFinalizer* install_finalizer_;
+  InstallManager* install_manager_;
+  AppRegistryController* controller_;
 
   std::string uninstall_url_prefix_;
   GURL install_url_;
 
-  CheckedPtr<syncer::SyncService> sync_service_ = nullptr;
+  syncer::SyncService* sync_service_ = nullptr;
   base::OnceClosure sync_ready_callback_;
 
   bool new_app_open_as_window_ = false;

@@ -198,8 +198,9 @@ void ExtensionEnableFlow::OnBlockedByParentDialogDone() {
 void ExtensionEnableFlow::StartObserving() {
   extension_registry_observer_.Add(
       extensions::ExtensionRegistry::Get(profile_));
-  registrar_.Add(this, extensions::NOTIFICATION_EXTENSION_LOAD_ERROR,
-                 content::Source<Profile>(profile_.get()));
+  registrar_.Add(this,
+                 extensions::NOTIFICATION_EXTENSION_LOAD_ERROR,
+                 content::Source<Profile>(profile_));
 }
 
 void ExtensionEnableFlow::StopObserving() {

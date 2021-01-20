@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_THUMBNAILS_THUMBNAIL_CAPTURE_DRIVER_H_
 #define CHROME_BROWSER_UI_THUMBNAILS_THUMBNAIL_CAPTURE_DRIVER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_readiness_tracker.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_scheduler.h"
@@ -81,8 +80,8 @@ class ThumbnailCaptureDriver : public ThumbnailScheduler::TabCapturer {
   void StartCooldown();
   void OnCooldownEnded();
 
-  const CheckedPtr<Client> client_;
-  const CheckedPtr<ThumbnailScheduler> scheduler_;
+  Client* const client_;
+  ThumbnailScheduler* const scheduler_;
 
   PageReadiness page_readiness_ = PageReadiness::kNotReady;
   bool page_visible_ = false;

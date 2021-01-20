@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/time/time.h"
@@ -100,9 +99,9 @@ class ChromeBrowsingDataLifetimeManager : public KeyedService {
 
   std::vector<ScheduledRemovalSettings> scheduled_removals_settings_;
   PrefChangeRegistrar pref_change_registrar_;
-  CheckedPtr<Profile> profile_;
-  CheckedPtr<content::BrowsingDataRemover::Observer>
-      testing_data_remover_observer_ = nullptr;
+  Profile* profile_;
+  content::BrowsingDataRemover::Observer* testing_data_remover_observer_ =
+      nullptr;
   base::Optional<base::Time> end_time_for_testing_;
   base::WeakPtrFactory<ChromeBrowsingDataLifetimeManager> weak_ptr_factory_{
       this};

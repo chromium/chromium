@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/vr/vr_base_export.h"
@@ -113,8 +112,8 @@ class VR_BASE_EXPORT SpeechRecognizer : public IOBrowserUIInterface {
   void SetSpeechTimerForTest(std::unique_ptr<base::OneShotTimer> speech_timer);
 
  private:
-  CheckedPtr<VoiceResultDelegate> delegate_;
-  CheckedPtr<BrowserUiInterface> ui_;
+  VoiceResultDelegate* delegate_;
+  BrowserUiInterface* ui_;
 
   // Non-null until first Start() call, at which point it's moved to the IO
   // thread.

@@ -11,7 +11,6 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
@@ -86,7 +85,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) WinWebAuthnApiAuthenticator
   GUID cancellation_id_ = {};
   // The pointee of |win_api_| is assumed to be a singleton that outlives
   // this instance.
-  CheckedPtr<WinWebAuthnApi> win_api_;
+  WinWebAuthnApi* win_api_;
 
   // Verifies callbacks from |win_api_| are posted back onto the originating
   // sequence.

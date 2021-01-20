@@ -5,7 +5,6 @@
 #include "ui/events/event_source.h"
 
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/events/event_rewriter_continuation.h"
 #include "ui/events/event_sink.h"
 
@@ -73,8 +72,8 @@ class EventSource::EventRewriterContinuationImpl
   }
 
  private:
-  const CheckedPtr<EventSource> source_;
-  CheckedPtr<EventRewriter> rewriter_;
+  EventSource* const source_;
+  EventRewriter* rewriter_;
   EventRewriterList::iterator self_;
 
   base::WeakPtrFactory<EventRewriterContinuationImpl> weak_ptr_factory_{this};

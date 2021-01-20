@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/url_matcher/url_matcher.h"
 #include "extensions/common/event_filtering_info.h"
 #include "extensions/common/event_matcher.h"
@@ -82,7 +81,7 @@ class EventFilter {
     std::unique_ptr<EventMatcher> event_matcher_;
     // The id sets in |url_matcher_| that this EventMatcher owns.
     std::vector<url_matcher::URLMatcherConditionSet::ID> condition_set_ids_;
-    CheckedPtr<url_matcher::URLMatcher> url_matcher_;
+    url_matcher::URLMatcher* url_matcher_;
 
     DISALLOW_COPY_AND_ASSIGN(EventMatcherEntry);
   };

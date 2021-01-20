@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/protocol/client_video_stats_dispatcher.h"
@@ -72,7 +71,7 @@ class WebrtcVideoRendererAdapter
   std::string label_;
 
   scoped_refptr<webrtc::MediaStreamInterface> media_stream_;
-  CheckedPtr<VideoRenderer> video_renderer_;
+  VideoRenderer* video_renderer_;
 
   std::unique_ptr<ClientVideoStatsDispatcher> video_stats_dispatcher_;
 

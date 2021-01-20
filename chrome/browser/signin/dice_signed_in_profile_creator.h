@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
@@ -81,7 +80,7 @@ class DiceSignedInProfileCreator {
   // Callback invoked once the token service is ready for the new profile.
   void OnNewProfileTokensLoaded(Profile* new_profile);
 
-  const CheckedPtr<Profile> source_profile_;
+  Profile* const source_profile_;
   const CoreAccountId account_id_;
 
   base::OnceCallback<void(Profile*)> callback_;

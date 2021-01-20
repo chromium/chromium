@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_OFFLINE_PAGES_PREFETCH_NOTIFICATIONS_PREFETCH_NOTIFICATION_SERVICE_IMPL_H_
 #define CHROME_BROWSER_OFFLINE_PAGES_PREFETCH_NOTIFICATIONS_PREFETCH_NOTIFICATION_SERVICE_IMPL_H_
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/offline_pages/prefetch/notifications/prefetch_notification_service.h"
 
 #include <memory>
@@ -53,11 +52,11 @@ class PrefetchNotificationServiceImpl : public PrefetchNotificationService {
 
   // Used to schedule notification to show in the future. Must outlive this
   // class.
-  CheckedPtr<notifications::NotificationScheduleService> schedule_service_;
+  notifications::NotificationScheduleService* schedule_service_;
 
   std::unique_ptr<PrefetchNotificationServiceBridge> bridge_;
 
-  CheckedPtr<base::Clock> clock_;
+  base::Clock* clock_;
 
   base::WeakPtrFactory<PrefetchNotificationServiceImpl> weak_ptr_factory_{this};
 };

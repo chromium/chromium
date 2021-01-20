@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/desktop_capture/get_current_browsing_context_media_dialog.h"
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_manager.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -85,7 +84,7 @@ class GetCurrentBrowsingContextMediaDialogDelegate
   const int render_process_id_;
   const int render_frame_id_;
 
-  CheckedPtr<GetCurrentBrowsingContextMediaDialog> parent_ = nullptr;
+  GetCurrentBrowsingContextMediaDialog* parent_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(GetCurrentBrowsingContextMediaDialogDelegate);
 };

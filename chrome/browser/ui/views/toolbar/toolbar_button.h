@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "chrome/browser/ui/views/chrome_views_export.h"
 #include "ui/base/pointer/touch_ui_controller.h"
@@ -208,7 +207,7 @@ class ToolbarButton : public views::LabelButton,
 
     void ClearHighlightColor();
 
-    const CheckedPtr<ToolbarButton> parent_;
+    ToolbarButton* const parent_;
 
     // A highlight color is used to signal special states. When set this color
     // is used as a base for background, text, border and ink drops. When not
@@ -247,7 +246,7 @@ class ToolbarButton : public views::LabelButton,
   // The model that populates the attached menu.
   std::unique_ptr<ui::MenuModel> model_;
 
-  const CheckedPtr<TabStripModel> tab_strip_model_;
+  TabStripModel* const tab_strip_model_;
 
   // Indicates if menu is currently showing.
   bool menu_showing_ = false;

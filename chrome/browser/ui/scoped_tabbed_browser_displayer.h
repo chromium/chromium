@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_SCOPED_TABBED_BROWSER_DISPLAYER_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 
 class Browser;
 class Profile;
@@ -25,7 +24,7 @@ class ScopedTabbedBrowserDisplayer {
   Browser* browser() { return browser_; }
 
  private:
-  CheckedPtr<Browser> browser_;
+  Browser* browser_;
 
   DISALLOW_COPY_AND_ASSIGN(ScopedTabbedBrowserDisplayer);
 };

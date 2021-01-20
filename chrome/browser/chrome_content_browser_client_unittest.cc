@@ -12,7 +12,6 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -929,7 +928,7 @@ class CaptivePortalCheckProcessHost : public content::MockRenderProcessHost {
   }
 
  private:
-  CheckedPtr<bool> invoked_url_factory_ = nullptr;
+  bool* invoked_url_factory_ = nullptr;
   bool expected_disable_secure_dns_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(CaptivePortalCheckProcessHost);

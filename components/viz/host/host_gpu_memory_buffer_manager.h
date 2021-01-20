@@ -9,7 +9,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
@@ -127,7 +126,7 @@ class VIZ_HOST_EXPORT HostGpuMemoryBufferManager
                                   gfx::GpuMemoryBufferHandle handle);
 
   GpuServiceProvider gpu_service_provider_;
-  CheckedPtr<mojom::GpuService> gpu_service_ = nullptr;
+  mojom::GpuService* gpu_service_ = nullptr;
 
   // This is incremented every time GPU service is shut down in order check
   // whether a buffer is allocated by the most current GPU service or not.
