@@ -421,7 +421,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Session.WebStates.AllSerializedCertPolicyCachesSize"
     units="KB" expires_after="2021-06-10">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <summary>
     The size of all cert policy caches for all open tabs. Recorded when
@@ -436,7 +436,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Removed 10/2020.
   </obsolete>
   <owner>ajuma@chromium.org</owner>
-  <owner>eugenebut@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <summary>
     Number of forward navigation items when navigation was committed/finished.
@@ -453,7 +452,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Removed 10/2020.
   </obsolete>
   <owner>ajuma@chromium.org</owner>
-  <owner>eugenebut@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <summary>
     True if navigation manager has forward navigation items when navigation was
@@ -467,7 +465,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="Session.WebStates.NavigationItem" units="KB"
     expires_after="2021-07-04">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
   <owner>sdefresne@chromium.org</owner>
   <summary>
     Recorded when CRWNavigationItemStorage encodes the data, which happens on
@@ -488,7 +486,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Session.WebStates.SerializedCertPolicyCacheSize" units="KB"
     expires_after="2021-06-10">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <summary>
     The size of a single cert policy cache for one tab. Recorded when
