@@ -1339,11 +1339,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Event.Latency.ScrollUpdate.Wheel.HandledToRendererSwap2"
-    units="microseconds" expires_after="2020-12-27">
+    units="microseconds" expires_after="2021-06-16">
   <owner>flackr@chromium.org</owner>
+  <owner>input-dev@chromium.org</owner>
   <summary>
     Time between the ScrollUpdate gesture event with wheel source, is handled on
     main/impl thread (specified by suffix) and before renderer starts to swap.
+    This is recorded each time the user scrolls the mouse wheel when that frame
+    is swapped to the display.
 
     Team: input-dev@chromium.org.
 
