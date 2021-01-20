@@ -1329,6 +1329,12 @@
     "max",
     "clamp",
 
+    //<calc-constant>
+    //https://drafts.csswg.org/css-values/#calc-syntax
+    "infinity",
+    "-infinity",
+    "nan",
+
     // scroll-snap-type
     // none
     // x

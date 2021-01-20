@@ -138,7 +138,8 @@ CSSMathExpressionNumericLiteral* CSSMathExpressionNumericLiteral::Create(
     double value,
     CSSPrimitiveValue::UnitType type,
     bool is_integer) {
-  if (std::isnan(value) || std::isinf(value))
+  if (!RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled() &&
+      (std::isnan(value) || std::isinf(value)))
     return nullptr;
   return MakeGarbageCollected<CSSMathExpressionNumericLiteral>(
       CSSNumericLiteralValue::Create(value, type), is_integer);
@@ -434,10 +435,13 @@ CSSMathExpressionNode* CSSMathExpressionBinaryOperation::CreateSimplified(
         left_side == number_side ? right_side : left_side;
 
     double number = number_side->DoubleValue();
-    if (std::isnan(number) || std::isinf(number))
-      return nullptr;
-    if (op == CSSMathOperator::kDivide && !number)
-      return nullptr;
+
+    if (!RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled()) {
+      if (std::isnan(number) || std::isinf(number))
+        return nullptr;
+      if (op == CSSMathOperator::kDivide && !number)
+        return nullptr;
+    }
 
     CSSPrimitiveValue::UnitType other_type = other_side->ResolvedUnitType();
     if (HasDoubleValue(other_type)) {
@@ -723,6 +727,15 @@ void CSSMathExpressionBinaryOperation::Trace(Visitor* visitor) const {
 }
 
 // static
+bool CheckSameSign(double left_value, double right_value) {
+  if (left_value >= 0 && right_value >= 0)
+    return true;
+  if (left_value <= 0 && right_value <= 0)
+    return true;
+  return false;
+}
+
+// static
 const CSSMathExpressionNode* CSSMathExpressionBinaryOperation::GetNumberSide(
     const CSSMathExpressionNode* left_side,
     const CSSMathExpressionNode* right_side) {
@@ -737,14 +750,23 @@ const CSSMathExpressionNode* CSSMathExpressionBinaryOperation::GetNumberSide(
 double CSSMathExpressionBinaryOperation::EvaluateOperator(double left_value,
                                                           double right_value,
                                                           CSSMathOperator op) {
+  // Design doc for infinity and NaN: https://bit.ly/349gXjq
   switch (op) {
     case CSSMathOperator::kAdd:
+      if (RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled())
+        return left_value + right_value;
       return clampTo<double>(left_value + right_value);
     case CSSMathOperator::kSubtract:
+      if (RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled())
+        return left_value - right_value;
       return clampTo<double>(left_value - right_value);
     case CSSMathOperator::kMultiply:
+      if (RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled())
+        return left_value * right_value;
       return clampTo<double>(left_value * right_value);
     case CSSMathOperator::kDivide:
+      if (RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled())
+        return left_value / right_value;
       if (right_value)
         return clampTo<double>(left_value / right_value);
       return std::numeric_limits<double>::quiet_NaN();
@@ -1084,6 +1106,23 @@ class CSSMathExpressionNodeParser {
  private:
   CSSMathExpressionNode* ParseValue(CSSParserTokenRange& tokens) {
     CSSParserToken token = tokens.ConsumeIncludingWhitespace();
+    if (RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled()) {
+      if (token.Id() == CSSValueID::kInfinity) {
+        return CSSMathExpressionNumericLiteral::Create(
+            std::numeric_limits<double>::infinity(),
+            CSSPrimitiveValue::UnitType::kNumber, false);
+      }
+      if (token.Id() == CSSValueID::kNegativeInfinity) {
+        return CSSMathExpressionNumericLiteral::Create(
+            -std::numeric_limits<double>::infinity(),
+            CSSPrimitiveValue::UnitType::kNumber, false);
+      }
+      if (token.Id() == CSSValueID::kNan) {
+        return CSSMathExpressionNumericLiteral::Create(
+            std::numeric_limits<double>::quiet_NaN(),
+            CSSPrimitiveValue::UnitType::kNumber, false);
+      }
+    }
     if (!(token.GetType() == kNumberToken ||
           token.GetType() == kPercentageToken ||
           token.GetType() == kDimensionToken))

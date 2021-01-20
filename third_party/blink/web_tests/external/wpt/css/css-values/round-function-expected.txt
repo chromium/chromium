@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 66 tests; 30 PASS, 36 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 66 tests; 0 PASS, 66 FAIL, 0 TIMEOUT, 0 NOTRUN.
 FAIL round(23px, 10px) should be used-value-equivalent to 20px assert_equals: round(23px, 10px) and 20px serialize to the same thing in used values. expected "20px" but got "0px"
 FAIL round(18px, 10px) should be used-value-equivalent to 20px assert_equals: round(18px, 10px) and 20px serialize to the same thing in used values. expected "20px" but got "0px"
 FAIL round(15px, 10px) should be used-value-equivalent to 20px assert_equals: round(15px, 10px) and 20px serialize to the same thing in used values. expected "20px" but got "0px"
@@ -36,35 +36,35 @@ FAIL round(15px, -10px) should be used-value-equivalent to 20px assert_equals: r
 FAIL round(13px, -10px) should be used-value-equivalent to 10px assert_equals: round(13px, -10px) and 10px serialize to the same thing in used values. expected "10px" but got "0px"
 FAIL round(-13px, -10px) should be used-value-equivalent to -10px assert_equals: round(-13px, -10px) and -10px serialize to the same thing in used values. expected "-10px" but got "0px"
 FAIL round(-18px, -10px) should be used-value-equivalent to -20px assert_equals: round(-18px, -10px) and -20px serialize to the same thing in used values. expected "-20px" but got "0px"
-PASS round(5, 0) should be used-value-equivalent to calc(NaN)
-PASS calc(-1 * round(5, 0)) should be used-value-equivalent to calc(NaN)
-PASS round(infinity, infinity) should be used-value-equivalent to calc(NaN)
-PASS calc(-1 * round(infinity, infinity)) should be used-value-equivalent to calc(NaN)
-PASS round(infinity, -infinity) should be used-value-equivalent to calc(NaN)
-PASS calc(-1 * round(infinity, -infinity)) should be used-value-equivalent to calc(NaN)
-PASS round(-infinity, infinity) should be used-value-equivalent to calc(NaN)
-PASS calc(-1 * round(-infinity, infinity)) should be used-value-equivalent to calc(NaN)
-PASS round(-infinity, -infinity) should be used-value-equivalent to calc(NaN)
-PASS calc(-1 * round(-infinity, -infinity)) should be used-value-equivalent to calc(NaN)
-PASS round(infinity, 5) should be used-value-equivalent to calc(infinity)
-PASS round(infinity, -5) should be used-value-equivalent to calc(infinity)
-PASS round(-infinity, 5) should be used-value-equivalent to calc(-infinity)
-PASS round(-infinity, -5) should be used-value-equivalent to calc(-infinity)
-PASS calc(1 / round(5, infinity)) should be used-value-equivalent to calc(infinity)
-PASS calc(1 / round(5, -infinity)) should be used-value-equivalent to calc(infinity)
-PASS calc(1 / round(-5, infinity)) should be used-value-equivalent to calc(-infinity)
-PASS calc(1 / round(-5, -infinity)) should be used-value-equivalent to calc(-infinity)
-PASS calc(1 / round(to-zero, 5, infinity)) should be used-value-equivalent to calc(infinity)
-PASS calc(1 / round(to-zero, 5, -infinity)) should be used-value-equivalent to calc(infinity)
-PASS calc(1 / round(to-zero, -5, infinity)) should be used-value-equivalent to calc(-infinity)
-PASS calc(1 / round(to-zero, -5, -infinity)) should be used-value-equivalent to calc(-infinity)
-PASS round(up, 1, infinity) should be used-value-equivalent to calc(infinity)
-PASS calc(1 / round(up, 0, infinity)) should be used-value-equivalent to calc(infinity)
-PASS calc(1 / round(up, -1 * 0, infinity) should be used-value-equivalent to calc(-infinity)
-PASS calc(1 / round(up, -1, infinity) should be used-value-equivalent to calc(-infinity)
-PASS round(down, -1, infinity) should be used-value-equivalent to calc(-infinity)
-PASS calc(1 / round(down, -1 * 0, infinity)) should be used-value-equivalent to calc(-infinity)
-PASS calc(1 / round(down, 0, infinity)) should be used-value-equivalent to calc(infinity)
-PASS calc(1 / round(down, 1, infinity)) should be used-value-equivalent to calc(infinity)
+FAIL round(5, 0) should be used-value-equivalent to calc(NaN) assert_equals: round(5, 0) and calc(NaN) serialize to the same thing in used values. expected "matrix3d(NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 0, 0, 1, 0, 0, 0, 0, 1)" but got "none"
+FAIL calc(-1 * round(5, 0)) should be used-value-equivalent to calc(NaN) assert_equals: calc(-1 * round(5, 0)) and calc(NaN) serialize to the same thing in used values. expected "matrix3d(NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 0, 0, 1, 0, 0, 0, 0, 1)" but got "none"
+FAIL round(infinity, infinity) should be used-value-equivalent to calc(NaN) assert_equals: round(infinity, infinity) and calc(NaN) serialize to the same thing in used values. expected "matrix3d(NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 0, 0, 1, 0, 0, 0, 0, 1)" but got "none"
+FAIL calc(-1 * round(infinity, infinity)) should be used-value-equivalent to calc(NaN) assert_equals: calc(-1 * round(infinity, infinity)) and calc(NaN) serialize to the same thing in used values. expected "matrix3d(NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 0, 0, 1, 0, 0, 0, 0, 1)" but got "none"
+FAIL round(infinity, -infinity) should be used-value-equivalent to calc(NaN) assert_equals: round(infinity, -infinity) and calc(NaN) serialize to the same thing in used values. expected "matrix3d(NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 0, 0, 1, 0, 0, 0, 0, 1)" but got "none"
+FAIL calc(-1 * round(infinity, -infinity)) should be used-value-equivalent to calc(NaN) assert_equals: calc(-1 * round(infinity, -infinity)) and calc(NaN) serialize to the same thing in used values. expected "matrix3d(NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 0, 0, 1, 0, 0, 0, 0, 1)" but got "none"
+FAIL round(-infinity, infinity) should be used-value-equivalent to calc(NaN) assert_equals: round(-infinity, infinity) and calc(NaN) serialize to the same thing in used values. expected "matrix3d(NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 0, 0, 1, 0, 0, 0, 0, 1)" but got "none"
+FAIL calc(-1 * round(-infinity, infinity)) should be used-value-equivalent to calc(NaN) assert_equals: calc(-1 * round(-infinity, infinity)) and calc(NaN) serialize to the same thing in used values. expected "matrix3d(NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 0, 0, 1, 0, 0, 0, 0, 1)" but got "none"
+FAIL round(-infinity, -infinity) should be used-value-equivalent to calc(NaN) assert_equals: round(-infinity, -infinity) and calc(NaN) serialize to the same thing in used values. expected "matrix3d(NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 0, 0, 1, 0, 0, 0, 0, 1)" but got "none"
+FAIL calc(-1 * round(-infinity, -infinity)) should be used-value-equivalent to calc(NaN) assert_equals: calc(-1 * round(-infinity, -infinity)) and calc(NaN) serialize to the same thing in used values. expected "matrix3d(NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 0, 0, 1, 0, 0, 0, 0, 1)" but got "none"
+FAIL round(infinity, 5) should be used-value-equivalent to calc(infinity) assert_equals: round(infinity, 5) and calc(infinity) serialize to the same thing in used values. expected "matrix3d(infinity, NaN, NaN, NaN, NaN, infinity, NaN, NaN, 0, 0, 1, 0, 0, 0, 0, 1)" but got "none"
+FAIL round(infinity, -5) should be used-value-equivalent to calc(infinity) assert_equals: round(infinity, -5) and calc(infinity) serialize to the same thing in used values. expected "matrix3d(infinity, NaN, NaN, NaN, NaN, infinity, NaN, NaN, 0, 0, 1, 0, 0, 0, 0, 1)" but got "none"
+FAIL round(-infinity, 5) should be used-value-equivalent to calc(-infinity) assert_equals: round(-infinity, 5) and calc(-infinity) serialize to the same thing in used values. expected "matrix3d(-infinity, NaN, NaN, NaN, NaN, -infinity, NaN, NaN, 0, 0, 1, 0, 0, 0, 0, 1)" but got "none"
+FAIL round(-infinity, -5) should be used-value-equivalent to calc(-infinity) assert_equals: round(-infinity, -5) and calc(-infinity) serialize to the same thing in used values. expected "matrix3d(-infinity, NaN, NaN, NaN, NaN, -infinity, NaN, NaN, 0, 0, 1, 0, 0, 0, 0, 1)" but got "none"
+FAIL calc(1 / round(5, infinity)) should be used-value-equivalent to calc(infinity) assert_equals: calc(1 / round(5, infinity)) and calc(infinity) serialize to the same thing in used values. expected "matrix3d(infinity, NaN, NaN, NaN, NaN, infinity, NaN, NaN, 0, 0, 1, 0, 0, 0, 0, 1)" but got "none"
+FAIL calc(1 / round(5, -infinity)) should be used-value-equivalent to calc(infinity) assert_equals: calc(1 / round(5, -infinity)) and calc(infinity) serialize to the same thing in used values. expected "matrix3d(infinity, NaN, NaN, NaN, NaN, infinity, NaN, NaN, 0, 0, 1, 0, 0, 0, 0, 1)" but got "none"
+FAIL calc(1 / round(-5, infinity)) should be used-value-equivalent to calc(-infinity) assert_equals: calc(1 / round(-5, infinity)) and calc(-infinity) serialize to the same thing in used values. expected "matrix3d(-infinity, NaN, NaN, NaN, NaN, -infinity, NaN, NaN, 0, 0, 1, 0, 0, 0, 0, 1)" but got "none"
+FAIL calc(1 / round(-5, -infinity)) should be used-value-equivalent to calc(-infinity) assert_equals: calc(1 / round(-5, -infinity)) and calc(-infinity) serialize to the same thing in used values. expected "matrix3d(-infinity, NaN, NaN, NaN, NaN, -infinity, NaN, NaN, 0, 0, 1, 0, 0, 0, 0, 1)" but got "none"
+FAIL calc(1 / round(to-zero, 5, infinity)) should be used-value-equivalent to calc(infinity) assert_equals: calc(1 / round(to-zero, 5, infinity)) and calc(infinity) serialize to the same thing in used values. expected "matrix3d(infinity, NaN, NaN, NaN, NaN, infinity, NaN, NaN, 0, 0, 1, 0, 0, 0, 0, 1)" but got "none"
+FAIL calc(1 / round(to-zero, 5, -infinity)) should be used-value-equivalent to calc(infinity) assert_equals: calc(1 / round(to-zero, 5, -infinity)) and calc(infinity) serialize to the same thing in used values. expected "matrix3d(infinity, NaN, NaN, NaN, NaN, infinity, NaN, NaN, 0, 0, 1, 0, 0, 0, 0, 1)" but got "none"
+FAIL calc(1 / round(to-zero, -5, infinity)) should be used-value-equivalent to calc(-infinity) assert_equals: calc(1 / round(to-zero, -5, infinity)) and calc(-infinity) serialize to the same thing in used values. expected "matrix3d(-infinity, NaN, NaN, NaN, NaN, -infinity, NaN, NaN, 0, 0, 1, 0, 0, 0, 0, 1)" but got "none"
+FAIL calc(1 / round(to-zero, -5, -infinity)) should be used-value-equivalent to calc(-infinity) assert_equals: calc(1 / round(to-zero, -5, -infinity)) and calc(-infinity) serialize to the same thing in used values. expected "matrix3d(-infinity, NaN, NaN, NaN, NaN, -infinity, NaN, NaN, 0, 0, 1, 0, 0, 0, 0, 1)" but got "none"
+FAIL round(up, 1, infinity) should be used-value-equivalent to calc(infinity) assert_equals: round(up, 1, infinity) and calc(infinity) serialize to the same thing in used values. expected "matrix3d(infinity, NaN, NaN, NaN, NaN, infinity, NaN, NaN, 0, 0, 1, 0, 0, 0, 0, 1)" but got "none"
+FAIL calc(1 / round(up, 0, infinity)) should be used-value-equivalent to calc(infinity) assert_equals: calc(1 / round(up, 0, infinity)) and calc(infinity) serialize to the same thing in used values. expected "matrix3d(infinity, NaN, NaN, NaN, NaN, infinity, NaN, NaN, 0, 0, 1, 0, 0, 0, 0, 1)" but got "none"
+FAIL calc(1 / round(up, -1 * 0, infinity) should be used-value-equivalent to calc(-infinity) assert_equals: calc(1 / round(up, -1 * 0, infinity) and calc(-infinity) serialize to the same thing in used values. expected "matrix3d(-infinity, NaN, NaN, NaN, NaN, -infinity, NaN, NaN, 0, 0, 1, 0, 0, 0, 0, 1)" but got "none"
+FAIL calc(1 / round(up, -1, infinity) should be used-value-equivalent to calc(-infinity) assert_equals: calc(1 / round(up, -1, infinity) and calc(-infinity) serialize to the same thing in used values. expected "matrix3d(-infinity, NaN, NaN, NaN, NaN, -infinity, NaN, NaN, 0, 0, 1, 0, 0, 0, 0, 1)" but got "none"
+FAIL round(down, -1, infinity) should be used-value-equivalent to calc(-infinity) assert_equals: round(down, -1, infinity) and calc(-infinity) serialize to the same thing in used values. expected "matrix3d(-infinity, NaN, NaN, NaN, NaN, -infinity, NaN, NaN, 0, 0, 1, 0, 0, 0, 0, 1)" but got "none"
+FAIL calc(1 / round(down, -1 * 0, infinity)) should be used-value-equivalent to calc(-infinity) assert_equals: calc(1 / round(down, -1 * 0, infinity)) and calc(-infinity) serialize to the same thing in used values. expected "matrix3d(-infinity, NaN, NaN, NaN, NaN, -infinity, NaN, NaN, 0, 0, 1, 0, 0, 0, 0, 1)" but got "none"
+FAIL calc(1 / round(down, 0, infinity)) should be used-value-equivalent to calc(infinity) assert_equals: calc(1 / round(down, 0, infinity)) and calc(infinity) serialize to the same thing in used values. expected "matrix3d(infinity, NaN, NaN, NaN, NaN, infinity, NaN, NaN, 0, 0, 1, 0, 0, 0, 0, 1)" but got "none"
+FAIL calc(1 / round(down, 1, infinity)) should be used-value-equivalent to calc(infinity) assert_equals: calc(1 / round(down, 1, infinity)) and calc(infinity) serialize to the same thing in used values. expected "matrix3d(infinity, NaN, NaN, NaN, NaN, infinity, NaN, NaN, 0, 0, 1, 0, 0, 0, 0, 1)" but got "none"
 Harness: the test ran to completion.
 

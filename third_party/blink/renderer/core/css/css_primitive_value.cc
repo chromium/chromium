@@ -55,6 +55,9 @@ struct SameSizeAsCSSPrimitiveValue : CSSValue {
 ASSERT_SIZE(CSSPrimitiveValue, SameSizeAsCSSPrimitiveValue);
 
 float CSSPrimitiveValue::ClampToCSSLengthRange(double value) {
+  // TODO(crbug.com/1133390): clampTo function could occur the DECHECK failure
+  // for NaN value. Therefore, infinity and NaN values should not be clamped
+  // here.
   return clampTo<float>(value, kMinValueForCssLength, kMaxValueForCssLength);
 }
 
@@ -261,6 +264,9 @@ uint8_t CSSPrimitiveValue::ComputeLength(
 template <>
 float CSSPrimitiveValue::ComputeLength(
     const CSSToLengthConversionData& conversion_data) const {
+  // TODO(crbug.com/1133390): clampTo function could occur the DECHECK failure
+  // for NaN value. Therefore, infinity and NaN values should not be clamped
+  // here.
   return clampTo<float>(ComputeLengthDouble(conversion_data));
 }
 

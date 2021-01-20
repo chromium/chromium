@@ -455,6 +455,11 @@
       status: "test",
     },
     {
+      // https://github.com/DevSDK/calc-infinity-and-NaN/blob/master/explainer.md
+      name: "CSSCalcInfinityAndNaN",
+      status: "test",
+    },
+    {
       // When the color-scheme is supported via the CSS color-scheme property
       // (CSSColorScheme) or the meta tag (MetaColorScheme), the only UA
       // rendering change is for the canvas background and the :root element

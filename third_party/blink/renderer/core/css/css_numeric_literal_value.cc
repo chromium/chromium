@@ -7,6 +7,7 @@
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/css_value_pool.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -23,7 +24,8 @@ void CSSNumericLiteralValue::TraceAfterDispatch(blink::Visitor* visitor) const {
 
 CSSNumericLiteralValue::CSSNumericLiteralValue(double num, UnitType type)
     : CSSPrimitiveValue(kNumericLiteralClass), num_(num) {
-  DCHECK(std::isfinite(num));
+  DCHECK(RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled() ||
+         std::isfinite(num));
   DCHECK_NE(UnitType::kUnknown, type);
   numeric_literal_unit_type_ = static_cast<unsigned>(type);
 }
@@ -31,12 +33,18 @@ CSSNumericLiteralValue::CSSNumericLiteralValue(double num, UnitType type)
 // static
 CSSNumericLiteralValue* CSSNumericLiteralValue::Create(double value,
                                                        UnitType type) {
-  // TODO(timloh): This looks wrong.
-  if (std::isinf(value))
-    value = 0;
-
   if (value < 0 || value > CSSValuePool::kMaximumCacheableIntegerValue)
     return MakeGarbageCollected<CSSNumericLiteralValue>(value, type);
+
+  if (RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled()) {
+    // Value can be NaN.
+    if (std::isnan(value))
+      return MakeGarbageCollected<CSSNumericLiteralValue>(value, type);
+  } else {
+    // TODO(timloh): This looks wrong.
+    if (std::isinf(value))
+      value = 0;
+  }
 
   int int_value = clampTo<int>(value);
   if (value != int_value)
@@ -155,6 +163,24 @@ static String FormatNumber(double number, const char* suffix) {
   return result;
 }
 
+static String FormatInfinityOrNaN(double number, const char* suffix) {
+  String result;
+  if (std::isinf(number)) {
+    if (number > 0)
+      result = "infinity";
+    else
+      result = "-infinity";
+
+  } else {
+    DCHECK(std::isnan(number));
+    result = "NaN";
+  }
+
+  if (strlen(suffix) > 0)
+    result = result + String::Format(" * 1%s", suffix);
+  return result;
+}
+
 String CSSNumericLiteralValue::CustomCSSText() const {
   String text;
   switch (GetType()) {
@@ -203,7 +229,13 @@ String CSSNumericLiteralValue::CustomCSSText() const {
       // If the value is small integer, go the fast path.
       if (value < kMinInteger || value > kMaxInteger ||
           std::trunc(value) != value) {
-        text = FormatNumber(value, UnitTypeToString(GetType()));
+        if (RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled() &&
+            (std::isinf(value) || std::isnan(value))) {
+          text = FormatInfinityOrNaN(value, UnitTypeToString(GetType()));
+        } else {
+          text = FormatNumber(value, UnitTypeToString(GetType()));
+        }
+
       } else {
         StringBuilder builder;
         int int_value = value;
