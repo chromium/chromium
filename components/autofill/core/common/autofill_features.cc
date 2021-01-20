@@ -72,8 +72,8 @@ const base::Feature kAutofillEnableSupportForApartmentNumbers{
 // account-based storage when sync the transport is enabled.
 const base::Feature kAutofillEnableAccountWalletStorage {
   "AutofillEnableAccountWalletStorage",
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID) || defined(OS_IOS)
-      // Wallet transport is only currently available on Win/Mac/Linux.
+#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_IOS)
+      // Wallet transport is only currently available on Win/Mac/Linux/Android.
       // (Somehow, swapping this check makes iOS unhappy?)
       base::FEATURE_DISABLED_BY_DEFAULT
 #else
