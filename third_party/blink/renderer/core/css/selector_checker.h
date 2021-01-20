@@ -90,11 +90,8 @@ class CORE_EXPORT SelectorChecker {
         scrollbar_(init.scrollbar),
         part_names_(init.part_names),
         scrollbar_part_(init.scrollbar_part),
-        mode_(init.mode) {
-#if DCHECK_IS_ON()
-    is_ua_rule_ = init.is_ua_rule;
-#endif
-  }
+        mode_(init.mode),
+        is_ua_rule_(init.is_ua_rule) {}
   SelectorChecker(const SelectorChecker&) = delete;
   SelectorChecker& operator=(const SelectorChecker&) = delete;
 
@@ -194,11 +191,9 @@ class CORE_EXPORT SelectorChecker {
   PartNames* part_names_;
   ScrollbarPart scrollbar_part_;
   Mode mode_;
+  bool is_ua_rule_;
 #if DCHECK_IS_ON()
   mutable bool inside_match_ = false;
-  bool is_ua_rule_;
-#else
-  static constexpr bool is_ua_rule_ = true;
 #endif
 };
 

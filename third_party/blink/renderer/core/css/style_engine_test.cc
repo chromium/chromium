@@ -4067,4 +4067,28 @@ TEST_F(StyleEngineTest, AudioUAStyleNameSpace) {
   EXPECT_FALSE(html_audio->GetComputedStyle());
 }
 
+TEST_F(StyleEngineTest, TargetTextUseCount) {
+  ClearUseCounter(WebFeature::kCSSSelectorTargetText);
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      #nevermatch::target-text { background-color: pink }
+    </style>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSSelectorTargetText));
+  ClearUseCounter(WebFeature::kCSSSelectorTargetText);
+
+  // Count ::target-text if we would have matched if the page was loaded with a
+  // text fragment url.
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      div::target-text { background-color: pink }
+    </style>
+    <div></div>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSSelectorTargetText));
+  ClearUseCounter(WebFeature::kCSSSelectorTargetText);
+}
+
 }  // namespace blink
