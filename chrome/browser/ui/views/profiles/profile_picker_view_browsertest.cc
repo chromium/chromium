@@ -803,6 +803,7 @@ IN_PROC_BROWSER_TEST_P(ProfilePickerCreationFlowEphemeralProfileBrowserTest,
                   .GetProfileAttributesWithPath(
                       profile_being_created->GetPath(), &entry));
   EXPECT_TRUE(entry->IsEphemeral());
+  EXPECT_TRUE(entry->IsOmitted());
   // Add an account - simulate a successful Gaia sign-in.
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_being_created);
@@ -830,6 +831,7 @@ IN_PROC_BROWSER_TEST_P(ProfilePickerCreationFlowEphemeralProfileBrowserTest,
   EXPECT_EQ(entry->GetLocalProfileName(), base::UTF8ToUTF16("Joe"));
   // The profile is no longer ephemeral, unless the policy is enabled.
   EXPECT_EQ(entry->IsEphemeral(), AreEphemeralProfilesForced());
+  EXPECT_FALSE(entry->IsOmitted());
   // The preference is consistent with the policy.
   CheckPolicyApplied(profile_being_created);
 }
@@ -867,6 +869,7 @@ IN_PROC_BROWSER_TEST_P(ProfilePickerCreationFlowEphemeralProfileBrowserTest,
                   .GetProfileAttributesWithPath(
                       profile_being_created->GetPath(), &entry));
   EXPECT_TRUE(entry->IsEphemeral());
+  EXPECT_TRUE(entry->IsOmitted());
   // Exit Chrome while still in the signin flow.
 }
 

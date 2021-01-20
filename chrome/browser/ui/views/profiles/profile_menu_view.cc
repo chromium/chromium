@@ -698,6 +698,8 @@ void ProfileMenuView::BuildSelectableProfiles() {
     // The current profile is excluded.
     if (profile_entry->GetPath() == browser()->profile()->GetPath())
       continue;
+    if (profile_entry->IsOmitted())
+      continue;
 
     AddSelectableProfile(
         ui::ImageModel::FromImage(

@@ -8,6 +8,7 @@
 #include "base/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/optional.h"
+#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/util/values/values_util.h"
 #include "chrome/browser/browser_process.h"
@@ -621,21 +622,20 @@ void ProfilePickerHandler::SetProfilesOrder(
   profiles_order_.clear();
   size_t index = 0;
   for (const ProfileAttributesEntry* entry : entries) {
-    if (entry->IsGuest())
-      continue;
-
     profiles_order_[entry->GetPath()] = index++;
   }
 }
 
 std::vector<ProfileAttributesEntry*>
 ProfilePickerHandler::GetProfileAttributes() {
-  size_t number_of_profiles =
-      g_browser_process->profile_manager()->GetNumberOfProfiles();
   std::vector<ProfileAttributesEntry*> ordered_entries =
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
           .GetAllProfilesAttributesSortedByLocalProfilName();
+  base::EraseIf(ordered_entries, [](const ProfileAttributesEntry* entry) {
+    return entry->IsGuest() || entry->IsOmitted();
+  });
+  size_t number_of_profiles = ordered_entries.size();
 
   if (profiles_order_.size() != number_of_profiles) {
     // Should only happen the first time the function is called.
@@ -688,11 +688,30 @@ base::Value ProfilePickerHandler::GetProfilesList() {
   return std::move(profiles_list);
 }
 
-void ProfilePickerHandler::OnProfileAdded(const base::FilePath& profile_path) {
-  if (profile_path == ProfileManager::GetGuestProfilePath())
-    return;
+void ProfilePickerHandler::AddProfileToList(
+    const base::FilePath& profile_path) {
   size_t number_of_profiles = profiles_order_.size();
   profiles_order_[profile_path] = number_of_profiles;
+}
+
+void ProfilePickerHandler::RemoveProfileFromList(
+    const base::FilePath& profile_path) {
+  size_t index = profiles_order_[profile_path];
+  profiles_order_.erase(profile_path);
+  for (auto it : profiles_order_) {
+    if (it.second > index)
+      profiles_order_[it.first] = it.second - 1;
+  }
+}
+
+void ProfilePickerHandler::OnProfileAdded(const base::FilePath& profile_path) {
+  ProfileAttributesEntry* entry;
+  CHECK(g_browser_process->profile_manager()
+            ->GetProfileAttributesStorage()
+            .GetProfileAttributesWithPath(profile_path, &entry));
+  if (entry->IsGuest() || entry->IsOmitted())
+    return;
+  AddProfileToList(profile_path);
   PushProfilesList();
 }
 
@@ -700,15 +719,31 @@ void ProfilePickerHandler::OnProfileWasRemoved(
     const base::FilePath& profile_path,
     const base::string16& profile_name) {
   DCHECK(IsJavascriptAllowed());
+  ProfileAttributesEntry* entry;
+  CHECK(g_browser_process->profile_manager()
+            ->GetProfileAttributesStorage()
+            .GetProfileAttributesWithPath(profile_path, &entry));
+  if (entry->IsGuest() || entry->IsOmitted())
+    return;
+  RemoveProfileFromList(profile_path);
+  FireWebUIListener("profile-removed", util::FilePathToValue(profile_path));
+}
+
+void ProfilePickerHandler::OnProfileIsOmittedChanged(
+    const base::FilePath& profile_path) {
   if (profile_path == ProfileManager::GetGuestProfilePath())
     return;
-  size_t index = profiles_order_[profile_path];
-  profiles_order_.erase(profile_path);
-  for (auto it : profiles_order_) {
-    if (it.second > index)
-      profiles_order_[it.first] = it.second - 1;
+  ProfileAttributesEntry* entry;
+  CHECK(g_browser_process->profile_manager()
+            ->GetProfileAttributesStorage()
+            .GetProfileAttributesWithPath(profile_path, &entry));
+  if (entry->IsOmitted()) {
+    RemoveProfileFromList(profile_path);
+    PushProfilesList();
+  } else {
+    AddProfileToList(profile_path);
+    PushProfilesList();
   }
-  FireWebUIListener("profile-removed", util::FilePathToValue(profile_path));
 }
 
 void ProfilePickerHandler::OnProfileAvatarChanged(
