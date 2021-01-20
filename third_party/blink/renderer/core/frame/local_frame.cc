@@ -2823,6 +2823,12 @@ void LocalFrame::UpdateBrowserControlsState(
                                                       animate);
 }
 
+void LocalFrame::UpdateWindowControlsOverlay(
+    const gfx::Rect& window_controls_overlay_rect) {
+  is_window_controls_overlay_visible_ = !window_controls_overlay_rect.IsEmpty();
+  window_controls_overlay_rect_ = window_controls_overlay_rect;
+}
+
 void LocalFrame::RequestFullscreenVideoElement() {
   // Find the first video element of the frame.
   for (auto* child = GetDocument()->documentElement(); child;
