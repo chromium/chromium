@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <iterator>
 
+#include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"

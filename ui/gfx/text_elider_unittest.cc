@@ -13,6 +13,7 @@
 
 #include "base/files/file_path.h"
 #include "base/i18n/rtl.h"
+#include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"

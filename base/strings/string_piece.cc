@@ -12,6 +12,7 @@
 #include <ostream>
 
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 
 namespace base {
 namespace {
@@ -40,14 +41,20 @@ template class BasicStringPiece<std::string>;
 template class BasicStringPiece<string16>;
 #endif
 
-std::ostream& operator<<(std::ostream& o, const StringPiece& piece) {
+std::ostream& operator<<(std::ostream& o, StringPiece piece) {
   o.write(piece.data(), static_cast<std::streamsize>(piece.size()));
   return o;
 }
 
-std::ostream& operator<<(std::ostream& o, const StringPiece16& piece) {
+std::ostream& operator<<(std::ostream& o, StringPiece16 piece) {
   return o << UTF16ToUTF8(piece);
 }
+
+#if !defined(WCHAR_T_IS_UTF16)
+std::ostream& operator<<(std::ostream& o, WStringPiece piece) {
+  return o << WideToUTF8(piece);
+}
+#endif
 
 namespace internal {
 

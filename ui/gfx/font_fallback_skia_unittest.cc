@@ -4,6 +4,7 @@
 
 #include "ui/gfx/font_fallback.h"
 
+#include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -22,6 +22,7 @@
 
 #include "base/pending_task.h"
 #include "base/stl_util.h"
+#include "base/strings/string_piece.h"
 #include "base/task/common/task_annotator.h"
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
@@ -1131,5 +1132,22 @@ std::wstring GetLogFileFullPath() {
 }  // namespace logging
 
 std::ostream& std::operator<<(std::ostream& out, const wchar_t* wstr) {
-  return out << (wstr ? base::WideToUTF8(wstr) : std::string());
+  return out << (wstr ? base::WStringPiece(wstr) : base::WStringPiece());
+}
+
+std::ostream& std::operator<<(std::ostream& out, const std::wstring& wstr) {
+  return out << base::WStringPiece(wstr);
+}
+
+std::ostream& std::operator<<(std::ostream& out, const char16_t* str16) {
+  // TODO(crbug.com/911896): Drop cast once base::char16 is char16_t everywhere.
+  return out << (str16 ? base::StringPiece16(
+                             reinterpret_cast<const base::char16*>(str16))
+                       : base::StringPiece16());
+}
+
+std::ostream& std::operator<<(std::ostream& out, const std::u16string& str16) {
+  // TODO(crbug.com/911896): Drop cast once base::char16 is char16_t everywhere.
+  return out << base::StringPiece16(
+             reinterpret_cast<const base::char16*>(str16.data()), str16.size());
 }

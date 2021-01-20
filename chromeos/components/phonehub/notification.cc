@@ -6,6 +6,8 @@
 
 #include <tuple>
 
+#include "base/logging.h"
+
 namespace chromeos {
 namespace phonehub {
 

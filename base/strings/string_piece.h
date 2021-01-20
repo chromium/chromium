@@ -34,6 +34,7 @@
 #include "base/strings/char_traits.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_piece_forward.h"
+#include "build/build_config.h"
 
 namespace base {
 
@@ -536,11 +537,12 @@ constexpr bool operator>=(std::common_type_t<BasicStringPiece<StringT>> lhs,
   return !(lhs < rhs);
 }
 
-BASE_EXPORT std::ostream& operator<<(std::ostream& o,
-                                     const StringPiece& piece);
+BASE_EXPORT std::ostream& operator<<(std::ostream& o, StringPiece piece);
+BASE_EXPORT std::ostream& operator<<(std::ostream& o, StringPiece16 piece);
 
-BASE_EXPORT std::ostream& operator<<(std::ostream& o,
-                                     const StringPiece16& piece);
+#if !defined(WCHAR_T_IS_UTF16)
+BASE_EXPORT std::ostream& operator<<(std::ostream& o, WStringPiece piece);
+#endif
 
 // Hashing ---------------------------------------------------------------------
 

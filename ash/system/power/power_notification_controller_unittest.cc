@@ -9,6 +9,7 @@
 #include <string>
 
 #include "ash/test/ash_test_base.h"
+#include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 #include "ui/message_center/fake_message_center.h"

@@ -4,6 +4,7 @@
 
 #include "ui/base/ime/utf_offset.h"
 
+#include "base/logging.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_piece.h"

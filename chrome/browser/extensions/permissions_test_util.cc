@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/permissions_test_util.h"
 
+#include "base/logging.h"
 #include "base/run_loop.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/browser_context.h"

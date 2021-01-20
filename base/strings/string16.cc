@@ -8,12 +8,6 @@
 
 #include "base/strings/utf_string_conversions.h"
 
-#if defined(WCHAR_T_IS_UTF32)
-std::ostream& std::operator<<(std::ostream& out, const std::u16string& str16) {
-  return out << base::UTF16ToUTF8(str16);
-}
-#endif
-
 namespace base {
 
 int c16memcmp(const char16* s1, const char16* s2, size_t n) {

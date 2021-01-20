@@ -59,12 +59,6 @@ namespace base {
 using string16 = std::u16string;
 }  // namespace base
 
-// TODO(crbug.com/911896): Move this logging logic to base/logging.h.
-namespace std {
-BASE_EXPORT std::ostream& operator<<(std::ostream& out,
-                                     const std::u16string& str16);
-}  // namespace std
-
 #endif  // WCHAR_T_IS_UTF16
 
 namespace base {

@@ -6,6 +6,7 @@
 #include <tuple>
 
 #include "base/json/json_reader.h"
+#include "base/logging.h"
 #include "base/pickle.h"
 #include "base/stl_util.h"
 #include "base/values.h"

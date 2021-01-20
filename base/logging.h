@@ -734,9 +734,12 @@ namespace std {
 // common cases. Non-ASCII characters will be converted to UTF-8 by these
 // operators.
 BASE_EXPORT std::ostream& operator<<(std::ostream& out, const wchar_t* wstr);
-inline std::ostream& operator<<(std::ostream& out, const std::wstring& wstr) {
-  return out << wstr.c_str();
-}
+BASE_EXPORT std::ostream& operator<<(std::ostream& out,
+                                     const std::wstring& wstr);
+
+BASE_EXPORT std::ostream& operator<<(std::ostream& out, const char16_t* str16);
+BASE_EXPORT std::ostream& operator<<(std::ostream& out,
+                                     const std::u16string& str16);
 }  // namespace std
 
 #endif  // BASE_LOGGING_H_
