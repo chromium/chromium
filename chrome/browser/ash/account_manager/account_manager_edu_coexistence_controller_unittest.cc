@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/account_manager/account_manager_edu_coexistence_controller.h"
+#include "chrome/browser/ash/account_manager/account_manager_edu_coexistence_controller.h"
 
 #include <memory>
 #include <string>

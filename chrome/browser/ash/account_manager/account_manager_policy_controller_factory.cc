@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/account_manager/account_manager_policy_controller_factory.h"
+#include "chrome/browser/ash/account_manager/account_manager_policy_controller_factory.h"
 
 #include "base/no_destructor.h"
+#include "chrome/browser/ash/account_manager/account_manager_policy_controller.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/chromeos/account_manager/account_manager_policy_controller.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/components/account_manager/account_manager_factory.h"

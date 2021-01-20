@@ -26,9 +26,9 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/account_manager/account_manager_migrator.h"
-#include "chrome/browser/chromeos/account_manager/account_manager_util.h"
-#include "chrome/browser/chromeos/account_manager/account_migration_runner.h"
+#include "chrome/browser/ash/account_manager/account_manager_migrator.h"
+#include "chrome/browser/ash/account_manager/account_manager_util.h"
+#include "chrome/browser/ash/account_manager/account_migration_runner.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chromeos/tpm/install_attributes.h"
 #include "components/pref_registry/pref_registry_syncable.h"

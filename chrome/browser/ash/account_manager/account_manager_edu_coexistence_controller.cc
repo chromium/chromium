@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/account_manager/account_manager_edu_coexistence_controller.h"
+#include "chrome/browser/ash/account_manager/account_manager_edu_coexistence_controller.h"
 
 #include <algorithm>
 
 #include "base/logging.h"
 #include "base/optional.h"
-#include "chrome/browser/chromeos/account_manager/account_manager_util.h"
+#include "chrome/browser/ash/account_manager/account_manager_util.h"
 #include "chrome/browser/chromeos/child_accounts/edu_coexistence_tos_store_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/chromeos/edu_coexistence_login_handler_chromeos.h"

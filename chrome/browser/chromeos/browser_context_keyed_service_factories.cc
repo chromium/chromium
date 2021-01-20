@@ -4,7 +4,7 @@
 
 #include "chrome/browser/chromeos/browser_context_keyed_service_factories.h"
 
-#include "chrome/browser/chromeos/account_manager/account_manager_migrator.h"
+#include "chrome/browser/ash/account_manager/account_manager_migrator.h"
 #include "chrome/browser/chromeos/android_sms/android_sms_service_factory.h"
 #include "chrome/browser/chromeos/arc/accessibility/arc_accessibility_helper_bridge.h"
 #include "chrome/browser/chromeos/authpolicy/authpolicy_credentials_manager.h"

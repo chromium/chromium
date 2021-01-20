@@ -23,7 +23,7 @@
 #include "google_apis/google_api_keys.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/account_manager/account_manager_util.h"
+#include "chrome/browser/ash/account_manager/account_manager_util.h"
 #endif
 
 using signin::AccountConsistencyMethod;

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/account_manager/child_account_type_changed_user_data.h"
+#include "chrome/browser/ash/account_manager/child_account_type_changed_user_data.h"
 
 #include "chrome/browser/profiles/profile.h"
 
