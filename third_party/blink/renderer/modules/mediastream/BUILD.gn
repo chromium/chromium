@@ -132,6 +132,8 @@ source_set("test_support") {
     "mock_constraint_factory.cc",
     "mock_constraint_factory.h",
     "mock_encoded_video_frame.h",
+    "mock_media_stream_audio_sink.cc",
+    "mock_media_stream_audio_sink.h",
     "mock_media_stream_registry.cc",
     "mock_media_stream_registry.h",
     "mock_media_stream_video_sink.cc",

@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_frame.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_default_writer.h"
+#include "third_party/blink/renderer/modules/mediastream/mock_media_stream_audio_sink.h"
 #include "third_party/blink/renderer/modules/mediastream/pushable_media_stream_audio_source.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/to_v8.h"
@@ -25,18 +26,6 @@
 using testing::_;
 
 namespace blink {
-
-namespace {
-
-class MockMediaStreamAudioSink : public WebMediaStreamAudioSink {
- public:
-  MockMediaStreamAudioSink() = default;
-
-  MOCK_METHOD2(OnData, void(const media::AudioBus&, base::TimeTicks));
-  MOCK_METHOD1(OnSetFormat, void(const media::AudioParameters&));
-};
-
-}  // namespace
 
 class MediaStreamAudioTrackUnderlyingSinkTest : public testing::Test {
  public:

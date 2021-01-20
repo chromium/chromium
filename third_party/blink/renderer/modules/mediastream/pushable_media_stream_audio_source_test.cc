@@ -11,6 +11,7 @@
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_audio_sink.h"
 #include "third_party/blink/public/web/web_heap.h"
+#include "third_party/blink/renderer/modules/mediastream/mock_media_stream_audio_sink.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
@@ -23,14 +24,6 @@ using testing::WithArg;
 namespace blink {
 
 namespace {
-
-class MockMediaStreamAudioSink : public WebMediaStreamAudioSink {
- public:
-  MockMediaStreamAudioSink() = default;
-
-  MOCK_METHOD2(OnData, void(const media::AudioBus&, base::TimeTicks));
-  MOCK_METHOD1(OnSetFormat, void(const media::AudioParameters&));
-};
 
 class FakeAudioData : public PushableAudioData {
  public:
