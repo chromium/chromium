@@ -12,6 +12,9 @@ LastTabStandingTracker::LastTabStandingTracker() = default;
 LastTabStandingTracker::~LastTabStandingTracker() = default;
 
 void LastTabStandingTracker::Shutdown() {
+  for (auto& observer : observer_list_) {
+    observer.OnShutdown();
+  }
   observer_list_.Clear();
 }
 
