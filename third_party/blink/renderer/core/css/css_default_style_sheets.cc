@@ -355,6 +355,8 @@ void CSSDefaultStyleSheets::CollectFeaturesTo(const Document& document,
     features.Add(DefaultStyle()->Features());
   if (DefaultMediaControlsStyle())
     features.Add(DefaultMediaControlsStyle()->Features());
+  if (DefaultMathMLStyle())
+    features.Add(DefaultMathMLStyle()->Features());
   if (document.IsViewSource() && DefaultViewSourceStyle())
     features.Add(DefaultViewSourceStyle()->Features());
 }
