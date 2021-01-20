@@ -4,6 +4,7 @@
 
 #include <stdint.h>
 #include <string>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -16,6 +17,7 @@
 #include "base/version.h"
 #include "chrome/common/mac/launchd.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/external_constants_builder.h"
 #include "chrome/updater/launchd_util.h"
 #import "chrome/updater/mac/util.h"
 #include "chrome/updater/mac/xpc_service_names.h"
@@ -102,20 +104,11 @@ void ExpectServiceAbsent(const std::string& service) {
 #endif  // defined(COMPONENT_BUILD
 
 void EnterTestMode(const GURL& url) {
-  @autoreleasepool {
-    NSUserDefaults* userDefaults = [[NSUserDefaults alloc]
-        initWithSuiteName:[NSString
-                              stringWithUTF8String:kUserDefaultsSuiteName]];
-    [userDefaults
-        setURL:[NSURL URLWithString:base::SysUTF8ToNSString(url.spec())]
-        forKey:[NSString stringWithUTF8String:kDevOverrideKeyUrl]];
-    [userDefaults
-        setBool:NO
-         forKey:[NSString stringWithUTF8String:kDevOverrideKeyUseCUP]];
-    [userDefaults
-        setInteger:0
-            forKey:[NSString stringWithUTF8String:kDevOverrideKeyInitialDelay]];
-  }
+  ASSERT_TRUE(ExternalConstantsBuilder()
+                  .SetUpdateURL(std::vector<std::string>{url.spec()})
+                  .SetUseCUP(false)
+                  .SetInitialDelay(0)
+                  .Overwrite());
 }
 
 // crbug.com/1112527: These tests are not compatible with component build.
@@ -140,15 +133,6 @@ void Clean() {
   EXPECT_TRUE(base::DeletePathRecursively(GetDataDirPath()));
 
   @autoreleasepool {
-    NSUserDefaults* userDefaults = [[NSUserDefaults alloc]
-        initWithSuiteName:[NSString
-                              stringWithUTF8String:kUserDefaultsSuiteName]];
-    [userDefaults
-        removeObjectForKey:[NSString stringWithUTF8String:kDevOverrideKeyUrl]];
-    [userDefaults
-        removeObjectForKey:[NSString
-                               stringWithUTF8String:kDevOverrideKeyUseCUP]];
-
     // TODO(crbug.com/1096654): support machine case (Launchd::Domain::Local and
     // Launchd::Type::Daemon).
     RemoveJobFromLaunchd(Launchd::Domain::User, Launchd::Type::Agent,

@@ -4,6 +4,7 @@
 
 #include <wrl/client.h>
 #include <string>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -21,6 +22,7 @@
 #include "chrome/updater/app/server/win/updater_internal_idl.h"
 #include "chrome/updater/app/server/win/updater_legacy_idl.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/external_constants_builder.h"
 #include "chrome/updater/test/integration_tests.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_version.h"
@@ -75,8 +77,6 @@ base::FilePath GetDataDirPath() {
 
 void Clean() {
   // TODO(crbug.com/1062288): Delete the Client / ClientState registry keys.
-  base::win::RegKey(HKEY_CURRENT_USER, L"", KEY_SET_VALUE)
-      .DeleteKey(UPDATE_DEV_KEY);
   // TODO(crbug.com/1062288): Delete the COM server items.
   // TODO(crbug.com/1062288): Delete the COM service items.
   // TODO(crbug.com/1062288): Delete the COM interfaces.
@@ -100,19 +100,11 @@ void ExpectClean() {
 }
 
 void EnterTestMode(const GURL& url) {
-  base::win::RegKey key(HKEY_CURRENT_USER, L"", KEY_SET_VALUE);
-  ASSERT_EQ(key.Create(HKEY_CURRENT_USER, UPDATE_DEV_KEY, KEY_WRITE),
-            ERROR_SUCCESS);
-  ASSERT_EQ(key.WriteValue(base::UTF8ToUTF16(kDevOverrideKeyUrl).c_str(),
-                           base::UTF8ToUTF16(url.spec()).c_str()),
-            ERROR_SUCCESS);
-  ASSERT_EQ(key.WriteValue(base::UTF8ToUTF16(kDevOverrideKeyUseCUP).c_str(),
-                           DWORD{0}),
-            ERROR_SUCCESS);
-  ASSERT_EQ(
-      key.WriteValue(base::UTF8ToUTF16(kDevOverrideKeyInitialDelay).c_str(),
-                     DWORD{0}),
-      ERROR_SUCCESS);
+  ASSERT_TRUE(ExternalConstantsBuilder()
+                  .SetUpdateURL(std::vector<std::string>{url.spec()})
+                  .SetUseCUP(false)
+                  .SetInitialDelay(0)
+                  .Overwrite());
 }
 
 void ExpectInstalled() {

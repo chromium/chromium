@@ -115,7 +115,6 @@ if (is_win || is_mac) {
       "external_constants.h",
       "external_constants_builder.cc",
       "external_constants_builder.h",
-      "external_constants_impl.h",
       "external_constants_override.cc",
       "external_constants_override.h",
       "installer.cc",
@@ -153,7 +152,6 @@ if (is_win || is_mac) {
         "app/server/mac/service_protocol.mm",
         "app/server/mac/update_service_wrappers.h",
         "app/server/mac/update_service_wrappers.mm",
-        "external_constants_mac.mm",
         "installer_mac.cc",
         "launchd_util.cc",
         "launchd_util.h",
@@ -180,7 +178,6 @@ if (is_win || is_mac) {
         "app/server/win/server.h",
         "app/server/win/service_main.cc",
         "app/server/win/service_main.h",
-        "external_constants_win.cc",
         "lib_util_win.cc",
         "prefs_win.cc",
         "service_factory_win.cc",
@@ -336,8 +333,6 @@ if (is_win || is_mac) {
       "enum_traits_unittest.cc",
       "external_constants_builder_unittest.cc",
       "external_constants_override_unittest.cc",
-      "external_constants_unittest.cc",
-      "external_constants_unittest.h",
       "lib_util_unittest.cc",
       "persisted_data_unittest.cc",
       "policy_manager_unittest.cc",
@@ -378,10 +373,7 @@ if (is_win || is_mac) {
     ]
 
     if (is_win) {
-      sources += [
-        "external_constants_win_unittest.cc",
-        "test/integration_tests_win.cc",
-      ]
+      sources += [ "test/integration_tests_win.cc" ]
 
       deps += [
         "//chrome/updater/app/server/win:updater_idl_idl",
@@ -399,7 +391,6 @@ if (is_win || is_mac) {
 
     if (is_mac) {
       sources += [
-        "external_constants_mac_unittest.mm",
         "mac/scoped_xpc_service_mock.h",
         "mac/scoped_xpc_service_mock.mm",
         "mac/update_service_proxy_test.mm",
