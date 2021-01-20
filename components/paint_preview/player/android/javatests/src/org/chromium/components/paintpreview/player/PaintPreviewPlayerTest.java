@@ -5,6 +5,7 @@
 package org.chromium.components.paintpreview.player;
 
 import android.graphics.Rect;
+import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.uiautomator.By;
@@ -235,10 +236,33 @@ public class PaintPreviewPlayerTest extends DummyUiActivityTestCase {
 
     private void scaleSmokeTest(boolean multiFrame) throws Exception {
         initPlayerManager(multiFrame);
-        UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        final UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
 
-        // Query all FrameLayout objects as the PlayerFrameView isn't recognized.
-        List<UiObject2> objects = device.findObjects(By.clazz("android.widget.FrameLayout"));
+        device.waitForIdle();
+        List<UiObject2> objects = null;
+        boolean failed = false;
+        try {
+            // Query all FrameLayout objects as the PlayerFrameView isn't recognized.
+            //
+            // This may throw a NullPointerException when an AccessibilityNodeInfo is unexpectedly
+            // null on P. It appears to be a bug with null checks inside UiAutomator. However, it
+            // could be exacerbated were the UI state to change mid-invocation (it is unclear
+            // why/whether that happens). This occurs < 30% of the time.
+            objects = device.findObjects(By.clazz("android.widget.FrameLayout"));
+        } catch (NullPointerException e) {
+            failed = true;
+        }
+        if (failed || objects == null) {
+            // Ignore NullPointerException failures on P (particularly Pixel 2 ARM on the
+            // waterfall).
+            if (Build.VERSION.SDK_INT > VERSION_CODES.O_MR1
+                    && Build.VERSION.SDK_INT < VERSION_CODES.Q) {
+                return;
+            }
+
+            // If this fails on any other configuration it is an unexpected issue.
+            Assert.fail("UiDevice#findObjects() threw an unexpected NullPointerException.");
+        }
 
         int viewAxHashCode = mPlayerManager.getView().createAccessibilityNodeInfo().hashCode();
         boolean didPinch = false;
@@ -479,6 +503,7 @@ public class PaintPreviewPlayerTest extends DummyUiActivityTestCase {
         int[] locationXY = new int[2];
         view.getLocationOnScreen(locationXY);
         UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        device.waitForIdle();
         device.click(scaledX + locationXY[0], scaledY + locationXY[1]);
 
         CriteriaHelper.pollUiThread(() -> {
