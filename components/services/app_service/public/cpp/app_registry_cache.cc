@@ -40,7 +40,7 @@ AppRegistryCache::~AppRegistryCache() {
   for (auto& obs : observers_) {
     obs.OnAppRegistryCacheWillBeDestroyed(this);
   }
-  DCHECK(!observers_.might_have_observers());
+  DCHECK(observers_.empty());
 }
 
 void AppRegistryCache::AddObserver(Observer* observer) {
