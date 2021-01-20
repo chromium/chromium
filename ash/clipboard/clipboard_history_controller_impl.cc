@@ -373,6 +373,17 @@ bool ClipboardHistoryControllerImpl::DeleteClipboardItemById(
   return false;
 }
 
+bool ClipboardHistoryControllerImpl::DeleteClipboardItemByClipboardData(
+    ui::ClipboardData* data) {
+  for (const auto& item : history()->GetItems()) {
+    if (item.data() == *data) {
+      DeleteClipboardHistoryItem(item);
+      return true;
+    }
+  }
+  return false;
+}
+
 void ClipboardHistoryControllerImpl::OnClipboardHistoryItemAdded(
     const ClipboardHistoryItem& item,
     bool is_duplicate) {
