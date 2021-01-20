@@ -37,8 +37,8 @@ AccessibilityCommonE2ETest = class extends E2ETestBase {
       base::Bind(&AccessibilityManager::EnableAutoclick,
           base::Unretained(AccessibilityManager::Get()),
           true);
-  WaitForExtension(extension_misc::kAccessibilityCommonExtensionId, load_cb);
     `);
+    super.testGenPreambleCommon('kAccessibilityCommonExtensionId');
   }
 
   async getPref(name) {

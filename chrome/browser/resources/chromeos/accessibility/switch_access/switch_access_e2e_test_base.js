@@ -31,8 +31,8 @@ SwitchAccessE2ETest = class extends E2ETestBase {
       base::Bind(&AccessibilityManager::SetSwitchAccessEnabled,
           base::Unretained(AccessibilityManager::Get()),
           true);
-  WaitForExtension(extension_misc::kSwitchAccessExtensionId, load_cb);
     `);
+    super.testGenPreambleCommon('kSwitchAccessExtensionId');
   }
 
   /**

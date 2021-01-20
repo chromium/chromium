@@ -32,6 +32,7 @@ import('/accessibility_common/accessibility_common_loader.js').then(reinit);
 
   /** @override */
   testGenCppIncludes() {
+    super.testGenCppIncludes();
     GEN(`
 #include "ash/accessibility/accessibility_delegate.h"
 #include "ash/shell.h"
@@ -50,8 +51,8 @@ import('/accessibility_common/accessibility_common_loader.js').then(reinit);
       base::Bind(&AccessibilityManager::EnableAutoclick,
           base::Unretained(AccessibilityManager::Get()),
           true);
-  WaitForExtension(extension_misc::kAccessibilityCommonExtensionId, load_cb);
     `);
+    super.testGenPreambleCommon('kAccessibilityCommonExtensionId');
   }
 
   /**

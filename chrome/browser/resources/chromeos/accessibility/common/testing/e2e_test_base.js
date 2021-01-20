@@ -21,6 +21,10 @@ E2ETestBase = class extends testing.Test {
   testGenCppIncludes() {
     GEN(`
   #include "chrome/browser/speech/extension_api/tts_engine_extension_api.h"
+  #include "chrome/browser/ui/browser.h"
+  #include "content/public/test/browser_test_utils.h"
+  #include "extensions/browser/extension_host.h"
+  #include "extensions/browser/process_manager.h"
       `);
   }
 
@@ -29,6 +33,42 @@ E2ETestBase = class extends testing.Test {
     GEN(`
     TtsExtensionEngine::GetInstance()->DisableBuiltInTTSEngineForTesting();
       `);
+  }
+
+  /** @override */
+  testGenPostamble() {
+    GEN(`
+    if (fail_on_console_error) {
+      EXPECT_EQ(0u, console_observer.messages().size())
+          << "Found console.log or console.warn with message: "
+          << console_observer.GetMessageAt(0);
+    }
+    `);
+  }
+
+  testGenPreambleCommon(extensionIdName, failOnConsoleError = true) {
+    GEN(`
+    WaitForExtension(extension_misc::${extensionIdName}, load_cb);
+
+    extensions::ExtensionHost* host =
+        extensions::ProcessManager::Get(browser()->profile())
+            ->GetBackgroundHostForExtension(
+                extension_misc::${extensionIdName});
+
+    bool fail_on_console_error = ${failOnConsoleError};
+    content::WebContentsConsoleObserver console_observer(host->host_contents());
+    // A11y extensions should not log warnings or errors: these should cause
+    // test failures.
+    auto filter =
+        [](const content::WebContentsConsoleObserver::Message& message) {
+          return message.log_level ==
+              blink::mojom::ConsoleMessageLevel::kWarning ||
+              message.log_level == blink::mojom::ConsoleMessageLevel::kError;
+        };
+    if (fail_on_console_error) {
+      console_observer.SetFilter(base::BindRepeating(filter));
+    }
+    `);
   }
 
   /**

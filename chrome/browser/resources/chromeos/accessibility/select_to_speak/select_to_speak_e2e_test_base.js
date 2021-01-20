@@ -28,14 +28,12 @@ SelectToSpeakE2ETest = class extends E2ETestBase {
   testGenPreamble() {
     super.testGenPreamble();
     GEN(`
-    //keyboard::SetRequestedKeyboardState(keyboard::KEYBOARD_STATE_ENABLED);
-    //ash::Shell::Get()->CreateKeyboard();
     base::Closure load_cb =
         base::Bind(&AccessibilityManager::SetSelectToSpeakEnabled,
             base::Unretained(AccessibilityManager::Get()),
             true);
-    WaitForExtension(extension_misc::kSelectToSpeakExtensionId, load_cb);
-      `);
+    `);
+    super.testGenPreambleCommon('kSelectToSpeakExtensionId');
   }
 
   /**
