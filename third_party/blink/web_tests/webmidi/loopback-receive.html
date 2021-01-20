@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-<script src="../resources/js-test.js"></script>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
 <script src="../http/tests/resources/permissions-helper.js"></script>
 <script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
 <script src="file:///gen/media/midi/midi_service.mojom.js"></script>
@@ -10,13 +11,7 @@
 <body>
 <script>
 
-description("Test if midimessage event handler work.");
-
-shouldBeDefined("navigator.requestMIDIAccess");
-
-window.jsTestIsAsync = true;
-
-testData = [
+const testData = [
     // Complete messages.
     [0x80, 0x00, 0x00],
     [0x90, 0x00, 0x00],
@@ -39,13 +34,10 @@ testData = [
     [0xf0, 0xf8, 0xf7],
 ];
 
-receiveCount = 0;
+let receiveCount;
 
 function verifyData(e) {
-    debug("receiving data " + receiveCount + ": " + e.data);
-    expected = testData[receiveCount];
-    actual = e.data;
-    shouldBe("actual", "expected");
+    assert_array_equals(e.data, testData[receiveCount]);
     receiveCount++;
     if (receiveCount == testData.length) {
       // Clear the event handler in case the input object isn't GC'ed, to
@@ -57,10 +49,9 @@ function verifyData(e) {
 }
 
 function test(useAddEventListener) {
+    receiveCount = 0;
     return new Promise(function(resolve, reject) {
-        debug("running test with useAddEventListener = " + useAddEventListener);
         navigator.requestMIDIAccess({sysex: true}).then(function (a) {
-            receiveCount = 0;
             var input = a.inputs.values().next().value;
             input.resolve = resolve;
             input.reject = reject;
@@ -79,10 +70,12 @@ function test(useAddEventListener) {
     });
 }
 
-Promise.all([PermissionsHelper.setPermission('midi', 'granted'),
-             PermissionsHelper.setPermission('midi-sysex', 'granted')]).then(function() {
-  test(false).then(test.bind(null, true)).then(finishJSTest, finishJSTest);
-});
+promise_test(async _ => {
+  await PermissionsHelper.setPermission('midi', 'granted');
+  await PermissionsHelper.setPermission('midi-sysex', 'granted');
+  await test(false);
+  await test(true);
+}, 'midimessage event handling works as expected');
 
 </script>
 </body>

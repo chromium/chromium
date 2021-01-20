@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-<script src="../resources/js-test.js"></script>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
 <script src="../http/tests/resources/permissions-helper.js"></script>
 <script src="state-check-utils.js"></script>
 <script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
@@ -10,57 +11,46 @@
 </head>
 <body>
 <script>
-description("Tests MIDIPort implicit open.");
+async function checkAccess(access) {
+  const inputPort = access.inputs.values().next().value;
+  const outputPort = access.outputs.values().next().value;
 
-shouldBeDefined("PermissionsHelper.setPermission");
+  await checkStateTransition({
+    port: inputPort,
+    access,
+    method: "setonmidimessage",
+    initialconnection: "closed",
+    finalconnection: "open",
+  });
 
-function resetInputDevice(port) {
-    debug("- reset input device");
-    // Reset event handlers so that close() does not cause check failures.
-    port.onstatechange = null;
-    access.onstatechange = null;
-    return port.close();
+  // Reset event handlers so close() does not cause check failures.
+  inputPort.onstatechange = null;
+  access.onstatechange = null;
+  await inputPort.close();
+
+  await checkStateTransition({
+    port: inputPort,
+    access,
+    method: "addeventlistener",
+    initialconnection: "closed",
+    finalconnection: "open",
+  });
+
+  await checkStateTransition({
+    port: outputPort,
+    access,
+    method: "send",
+    initialconnection: "closed",
+    finalconnection: "open",
+  });
 }
 
-function successAccessCallback(a) {
-    window.access = a;
-    testPassed("requestMIDIAccess() succeeded with access " + access + ".");
-
-    var inputPort = access.inputs.values().next().value;
-    var outputPort = access.outputs.values().next().value;
-
-    checkStateTransition({
-        port: inputPort,
-        method: "setonmidimessage",
-        initialconnection: "closed",
-        finalconnection: "open" }
-    ).then(resetInputDevice.bind(undefined, inputPort
-    )).then(checkStateTransition.bind(undefined, {
-        port: inputPort,
-        method: "addeventlistener",
-        initialconnection: "closed",
-        finalconnection: "open" }
-    )).then(checkStateTransition.bind(undefined, {
-        port: outputPort,
-        method: "send",
-        initialconnection: "closed",
-        finalconnection: "open" }
-    )).then(finishJSTest, finishJSTest);
-}
-
-function errorAccessCallback(error) {
-    testFailed("requestMIDIAccess() error callback should not be called when requesting basic access.");
-    finishJSTest();
-}
-
-window.jsTestIsAsync = true;
-
-// Set default permission behavior that grants non-sysex requests.
-PermissionsHelper.setPermission('midi', 'granted').then(function() {
-    // Test MIDIPort state transition by send() and onmidimessage handler.
-    navigator.requestMIDIAccess().then(successAccessCallback, errorAccessCallback);
-});
-
+promise_test(async _ => {
+  // Set default permission behavior that grants non-sysex requests.
+  await PermissionsHelper.setPermission('midi', 'granted');
+  const access = await navigator.requestMIDIAccess();
+  await checkAccess(access);
+}, 'MIDIPort implicit open');
 </script>
 </body>
 </html>

@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-<script src="../resources/js-test.js"></script>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
 <script src="../http/tests/resources/permissions-helper.js"></script>
 <script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
 <script src="file:///gen/media/midi/midi_service.mojom.js"></script>
@@ -9,62 +10,21 @@
 </head>
 <body>
 <script>
+promise_test(async _ => {
+  await PermissionsHelper.setPermission('midi', 'granted');
+  await PermissionsHelper.setPermission('midi-sysex', 'granted');
 
-description("Test if sysex permission request is handled.");
+  const access = await navigator.requestMIDIAccess({sysex: true});
+  assert_true(access.sysexEnabled);
+}, 'sysex permission grants are properly handled');
 
-shouldBeDefined("navigator.requestMIDIAccess");
-shouldBeDefined("PermissionsHelper.setPermission");
+promise_test(async t => {
+  await PermissionsHelper.setPermission('midi', 'granted');
+  await PermissionsHelper.setPermission('midi-sysex', 'denied');
 
-window.jsTestIsAsync = true;
-
-var finishSuccessfully = function () {
-    testPassed("all permission request rests pass successfully.");
-    finishJSTest();
-}
-
-var rejectSysex = function (next) {
-    PermissionsHelper.setPermission('midi-sysex', 'denied').then(function() {
-        promise = navigator.requestMIDIAccess({sysex: true});
-        shouldBeDefined("promise");
-        shouldBeDefined("promise.then");
-        promise.then(function(access) {
-            testFailed("sysex permission request should be rejected.");
-            finishJSTest();
-        }, function (error) {
-            testPassed("sysex permission request is successfully rejected.");
-            if (next)
-                next();
-            else
-                finishSuccessfully();
-        });
-    });
-}
-
-var acceptSysex = function (next) {
-    PermissionsHelper.setPermission('midi-sysex', 'granted').then(function() {
-        promise = navigator.requestMIDIAccess({sysex: true});
-        shouldBeDefined("promise");
-        shouldBeDefined("promise.then");
-        promise.then(function(obtainedAccess) {
-            testPassed("sysex permission request is successfully accepted.");
-            access = obtainedAccess;
-            shouldBeDefined("access");
-            shouldBeDefined("access.sysexEnabled");
-            shouldBeTrue("access.sysexEnabled");
-            if (next)
-                next();
-            else
-                finishSuccessfully();
-        }, function (error) {
-            testFailed("sysex permission request should be accepted.");
-            finishJSTest();
-        });
-    });
-}
-
-PermissionsHelper.setPermission('midi', 'granted').then(function() {
-    rejectSysex(acceptSysex);
-});
+  return promise_rejects_dom(t, 'SecurityError',
+      navigator.requestMIDIAccess({sysex: true}));
+}, 'sysex permission rejections are properly handled');
 
 </script>
 </body>

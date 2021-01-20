@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-<script src="../resources/js-test.js"></script>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
 <script src="../http/tests/resources/permissions-helper.js"></script>
 <script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
 <script src="file:///gen/media/midi/midi_service.mojom.js"></script>
@@ -9,13 +10,8 @@
 </head>
 <body>
 <script>
-
-description("Test if various kinds of system messages can be validated.");
-
-window.jsTestIsAsync = true;
-
 // See https://www.midi.org/specifications/item/table-1-summary-of-midi-message
-let systemMessages = (function(messages) {
+const systemMessages = (function(messages) {
     // Prepare various combinations of messages from input message array.
     let combinations = [];
     for (let i = 0; i < messages.length; ++i) {
@@ -33,32 +29,26 @@ let systemMessages = (function(messages) {
     [0xf3, 0x00],
     [0xf6]]);
 
-let reservedSystemMessages = [[0xf4], [0xf5]];
-let systemExclusiveMessages = [[0xf0, 0xf7], [0xf0, 0x00, 0xf7]];
+const reservedSystemMessages = [[0xf4], [0xf5]];
+const systemExclusiveMessages = [[0xf0, 0xf7], [0xf0, 0x00, 0xf7]];
 
-PermissionsHelper.setPermission("midi", "granted").then(() => {
-    return navigator.requestMIDIAccess();
-}).then(a => {
-    output = a.outputs.values().next().value;
+promise_test(async _ => {
+  await PermissionsHelper.setPermission('midi', 'granted');
+  const access = await navigator.requestMIDIAccess();
+  const output = access.outputs.values().next().value;
 
-    for (let message of systemMessages) {
-        output.send(message);
-        testPassed("output.send([" + message + "])");
-    }
+  for (const message of systemMessages) {
+    output.send(message);
+  }
 
-    for (message of reservedSystemMessages) {
-        shouldThrow("output.send(message)");
-    }
+  for (const message of reservedSystemMessages) {
+    assert_throws_js(TypeError, () => output.send(message));
+  }
 
-    for (message of systemExclusiveMessages) {
-        shouldThrow("output.send(message)");
-    }
-
-    finishJSTest();
-}).catch(e => {
-    testFailed(e.toString());
-    finishJSTest();
-});
+  for (const message of systemExclusiveMessages) {
+    assert_throws_dom('InvalidAccessError', () => output.send(message));
+  }
+}, 'various types of system messages can be validated');
 
 </script>
 </body>

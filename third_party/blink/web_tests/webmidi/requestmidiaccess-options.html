@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-<script src="../resources/js-test.js"></script>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
 <script src="../http/tests/resources/permissions-helper.js"></script>
 <script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
 <script src="file:///gen/media/midi/midi_service.mojom.js"></script>
@@ -9,68 +10,40 @@
 </head>
 <body>
 <script>
-description("Test requestMIDIAccess with various options.");
-
-shouldBeDefined("navigator.requestMIDIAccess");
-shouldBeDefined("PermissionsHelper.setPermission");
-
-window.jsTestIsAsync = true;
-
-var options = [
+const options = [
     {},
     { sysex: false },
     { sysex: true }
 ];
 
-var optionIndex = 0;
-
-permissions = [
+const permissions = [
     { midi: 'denied', sysex: 'denied' },
     { midi: 'granted', sysex: 'denied' },
     { midi: 'granted', sysex: 'granted' }
 ];
 
-permissionIndex = 0;
+promise_test(async _ => {
+  for (const permission of permissions) {
+    for (const option of options) {
+      await PermissionsHelper.setPermission('midi', permission.midi);
+      await PermissionsHelper.setPermission('midi-sysex', permission.sysex);
 
-function next () {
-    optionIndex++;
-    if (options.length == optionIndex) {
-        optionIndex = 0;
-        permissionIndex++;
-        if (permissions.length == permissionIndex)
-            finishJSTest();
+      try {
+        const access = await navigator.requestMIDIAccess(option);
+        assert_equals(permission.midi, 'granted');
+        if (option.sysex) {
+          assert_equals(permission.sysex, 'granted');
+        }
+      } catch (e) {
+        if (option.sysex) {
+          assert_equals(permission.sysex, 'denied');
+        } else {
+          assert_equals(permission.midi, 'denied');
+        }
+      }
     }
-    debug("Done.");
-    runTest();
-}
-
-function runTest () {
-    var permission = permissions[permissionIndex];
-    var option = options[optionIndex];
-    debug("");
-    debug("Start test with following configurations:");
-    debug("    options: " + JSON.stringify(option));
-    debug("    configurations: " + JSON.stringify(permission));
-    Promise.all([
-        PermissionsHelper.setPermission('midi', permission.midi),
-        PermissionsHelper.setPermission('midi-sysex', permission.sysex)
-    ]).then(function () {
-        navigator.requestMIDIAccess(option).then(function(a) {
-            shouldBe("permissions[permissionIndex].midi", "'granted'");
-            if (option.sysex)
-                shouldBe("permissions[permissionIndex].sysex", "'granted'");
-            next();
-        }, function(e) {
-            if (option.sysex)
-                shouldBe("permissions[permissionIndex].sysex", "'denied'");
-            else
-                shouldBe("permissions[permissionIndex].midi", "'denied'");
-            next();
-        });
-    });
-}
-
-runTest();
+  }
+}, 'requestMIDIAccess with various options');
 
 </script>
 </body>

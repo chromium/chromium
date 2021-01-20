@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-<script src="../resources/js-test.js"></script>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
 <script src="../http/tests/resources/permissions-helper.js"></script>
 <script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
 <script src="file:///gen/media/midi/midi_service.mojom.js"></script>
@@ -9,160 +10,123 @@
 </head>
 <body>
 <script>
-description("Tests navigator.requestMIDIAccess.");
-
-shouldBeDefined("PermissionsHelper.setPermission");
-
-var access;
-var input;
-var output;
-
 function checkInputMap(inputs) {
-    window.inputs = inputs;
-    debug("for (var input of inputs.values())");
-    for (var input of inputs.values()) {
-        window.input = input;
-        shouldBeEqualToString("input.id", "MockInputID-0");
-        shouldBeEqualToString("input.manufacturer", "MockInputManufacturer");
-        shouldBeEqualToString("input.name", "MockInputName");
-        shouldBeEqualToString("input.version", "MockInputVersion");
-        shouldBeEqualToString("input.state", "connected");
-        shouldBeEqualToString("input.type", "input");
-    }
-    debug("for (var input of inputs.keys())");
-    for (var key of inputs.keys()) {
-        window.inputKey = key;
-        shouldBeEqualToString("inputKey", "MockInputID-0");
-    }
-    debug("for (var input of inputs.entries())");
-    for (var entry of inputs.entries()) {
-        window.entry = entry;
-        shouldBe("entry[0]", "inputKey");
-        shouldBe("entry[1]", "input");
-    }
-    debug("for (var input of inputs)");
-    for (var entry of inputs) {
-        window.entry = entry;
-        shouldBe("entry[0]", "inputKey");
-        shouldBe("entry[1]", "input");
-    }
-    shouldBeTrue("inputs.has('MockInputID-0')");
-    shouldBeFalse("inputs.has('MockOutputID-0')");
-    shouldBe("inputs.get('MockInputID-0')", "input");
-    shouldBeUndefined("inputs.get('MockOutputID-0')");
-    debug("inputs.forEach(...)");
-    inputs.forEach(function (input, key, map) {
-        window.forEachInput = input;
-        shouldBe("forEachInput", "input");
-        window.forEachInputKey = key;
-        shouldBe("forEachInputKey", "inputKey");
-        window.forEachMap = map;
-        shouldBe("forEachMap", "inputs");
-    });
+  let input;
+  for (const i of inputs.values()) {
+    input = i;
+    assert_equals(i.id, 'MockInputID-0');
+    assert_equals(i.manufacturer, 'MockInputManufacturer');
+    assert_equals(i.name, 'MockInputName');
+    assert_equals(i.version, 'MockInputVersion');
+    assert_equals(i.state, 'connected');
+    assert_equals(i.type, 'input');
+  }
+
+  let key;
+  for (const k of inputs.keys()) {
+    key = k;
+    assert_equals(k, 'MockInputID-0');
+  }
+
+  let entry;
+  for (const e of inputs.entries()) {
+    entry = e;
+    assert_equals(e[0], key);
+    assert_equals(e[1], input);
+  }
+
+  for (const e of inputs) {
+    assert_equals(e[0], key);
+    assert_equals(e[1], input);
+  }
+
+  assert_true(inputs.has('MockInputID-0'));
+  assert_false(inputs.has('MockOutputID-0'));
+  assert_equals(inputs.get('MockInputID-0'), input);
+  assert_equals(inputs.get('MockOutputID-0'), undefined);
+
+  inputs.forEach((i, k, m) => {
+    assert_equals(i, input);
+    assert_equals(k, key);
+    assert_equals(m, inputs);
+  });
 }
 
 function checkOutputMap(outputs) {
-    window.outputs = outputs;
-    debug("for (var output of outputs.values())");
-    for (var output of outputs.values()) {
-        window.output = output;
-        shouldBeEqualToString("output.id", "MockOutputID-0");
-        shouldBeEqualToString("output.manufacturer", "MockOutputManufacturer");
-        shouldBeEqualToString("output.name", "MockOutputName");
-        shouldBeEqualToString("output.version", "MockOutputVersion");
-        shouldBeEqualToString("output.state", "connected");
-        shouldBeEqualToString("output.type", "output");
-    }
-    debug("for (var output of outputs.keys())");
-    for (var key of outputs.keys()) {
-        window.outputKey = key;
-        shouldBeEqualToString("outputKey", "MockOutputID-0");
-    }
-    debug("for (var output of outputs.entries())");
-    for (var entry of outputs.entries()) {
-        window.entry = entry;
-        shouldBe("entry[0]", "outputKey");
-        shouldBe("entry[1]", "output");
-    }
-    debug("for (var output of outputs)");
-    for (var entry of outputs) {
-        window.entry = entry;
-        shouldBe("entry[0]", "outputKey");
-        shouldBe("entry[1]", "output");
-    }
-    shouldBeTrue("outputs.has('MockOutputID-0')");
-    shouldBeFalse("outputs.has('MockInputID-0')");
-    shouldBe("outputs.get('MockOutputID-0')", "output");
-    shouldBeUndefined("outputs.get('MockInputID-0')");
-    debug("outputs.forEach(...)");
-    outputs.forEach(function (output, key, map) {
-        window.forEachOutput = output;
-        shouldBe("forEachOutput", "output");
-        window.forEachOutputKey = key;
-        shouldBe("forEachOutputKey", "outputKey");
-        window.forEachMap = map;
-        shouldBe("forEachMap", "outputs");
-    });
+  let output;
+  for (const o of outputs.values()) {
+    output = o;
+    assert_equals(o.id, 'MockOutputID-0');
+    assert_equals(o.manufacturer, 'MockOutputManufacturer');
+    assert_equals(o.name, 'MockOutputName');
+    assert_equals(o.version, 'MockOutputVersion');
+    assert_equals(o.state, 'connected');
+    assert_equals(o.type, 'output');
+  }
+
+  let key;
+  for (const k of outputs.keys()) {
+    key = k;
+    assert_equals(k, 'MockOutputID-0');
+  }
+
+  let entry;
+  for (const e of outputs.entries()) {
+    entry = e;
+    assert_equals(e[0], key);
+    assert_equals(e[1], output);
+  }
+
+  for (const e of outputs) {
+    assert_equals(e[0], key);
+    assert_equals(e[1], output);
+  }
+
+  assert_true(outputs.has('MockOutputID-0'));
+  assert_false(outputs.has('MockInputID-0'));
+  assert_equals(outputs.get('MockOutputID-0'), output);
+  assert_equals(outputs.get('MockInputID-0'), undefined);
+
+  outputs.forEach((o, k, m) => {
+    assert_equals(o, output);
+    assert_equals(k, key);
+    assert_equals(m, outputs);
+  });
 }
 
-function successCallback1(a) {
-    access = a;
+promise_test(async t => {
+  await PermissionsHelper.setPermission('midi', 'granted');
+  const access = await navigator.requestMIDIAccess();
 
-    testPassed("requestMIDIAccess() succeeded with access " + access + ".");
+  // Validate the values of the attributes on the access.
+  assert_false(access.sysexEnabled);
+  assert_equals(access.inputs.size, 1);
+  assert_equals(access.outputs.size, 1);
+  checkInputMap(access.inputs);
+  checkOutputMap(access.outputs);
 
-    // Validate the values of the attributes on the access.
-    shouldBeDefined("access.sysexEnabled");
-    shouldBeFalse("access.sysexEnabled");
-    shouldBe("access.inputs.size", "1");
-    shouldBe("access.outputs.size", "1");
-    checkInputMap(access.inputs);
-    checkOutputMap(access.outputs);
+  const output = access.outputs.values().next().value;
 
-    window.output = access.outputs.values().next().value;
-    // Test sending of MIDI data with a Uint8Array.
-    var typedArrayData = new Uint8Array([0x90, 0x45, 0x7f]);
-    output.send(typedArrayData);
+  // Test sending of MIDI data with a Uint8Array.
+  const typedArrayData = new Uint8Array([0x90, 0x45, 0x7f]);
+  output.send(typedArrayData);
 
-    // Test sending of MIDI data with a regular Array.
-    output.send([0x90, 0x45, 0x7f]);
-    testPassed("a note on message is sent without timestamp");
+  // Test sending of MIDI data with a regular Array.
+  output.send([0x90, 0x45, 0x7f]);
 
-    // Test sending of MIDI data with a regular Array giving an explicit timestamp.
-    output.send([0x90, 0x45, 0x7f], performance.now());
-    testPassed("a note on message is sent with timestamp");
+  // Test sending of MIDI data with a regular Array giving an explicit timestamp.
+  output.send([0x90, 0x45, 0x7f], performance.now());
 
-    // Test sending of invalid MIDI data.
-    shouldThrow('output.send([0xfff, 0x45, 0x7f])');
+  // Test sending of invalid MIDI data.
+  assert_throws_js(TypeError, () => output.send([0xfff, 0x45, 0x7f]));
 
-    // Test sending system exclusive messages. These should throw, since we don't have sysex access.
-    shouldThrow('output.send([0xf0, 0x45, 0xf7])');
+  // Test sending system exclusive messages. These should throw, since we don't have sysex access.
+  assert_throws_dom('InvalidAccessError', () => output.send([0xf0, 0x45, 0xf7]));
 
-    // Now test System Exclusive access - our test mock should not allow this type of access.
-    navigator.requestMIDIAccess({sysex: true}).then(successCallback2, errorCallback2);
-}
-
-function errorCallback1(error) {
-    testFailed("requestMIDIAccess() error callback should not be called when requesting basic access.");
-    finishJSTest();
-}
-
-function successCallback2(access) {
-    testFailed("requestMIDIAccess() was not correctly blocked for System Exclusive access.");
-    finishJSTest();
-}
-
-function errorCallback2(error) {
-    testPassed("requestMIDIAccess() was correctly blocked for System Exclusive access with error " + error + ".");
-    finishJSTest();
-}
-
-window.jsTestIsAsync = true;
-
-// Set default permission behavior that grants non-sysex requests.
-PermissionsHelper.setPermission('midi', 'granted').then(function() {
-    // Test basic access, with no System Exclusive.
-    navigator.requestMIDIAccess().then(successCallback1, errorCallback1);
-});
+  // Now test System Exclusive access - our test mock should not allow this type of access.
+  return promise_rejects_dom(t, 'SecurityError',
+      navigator.requestMIDIAccess({sysex: true}));
+}, 'basic MIDI access is functional');
 
 </script>
 </body>

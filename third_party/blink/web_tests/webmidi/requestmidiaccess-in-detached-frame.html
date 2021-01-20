@@ -1,32 +1,29 @@
 <!DOCTYPE html>
 <html>
 <head>
-<script src="../resources/js-test.js"></script>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
 <script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
 <script src="file:///gen/media/midi/midi_service.mojom.js"></script>
 <script src="../http/tests/webmidi/mock-midiservice.js"></script>
 </head>
 <body>
 <script>
-description("Tests navigator.requestMIDIAccess fails in a detached frame.");
+promise_test(async _ => {
+  const iframe = document.createElement('iframe');
+  document.body.appendChild(iframe);
+  const detachedNavigator = iframe.contentWindow.navigator;
+  const detachedExceptionCtor = iframe.contentWindow.DOMException;
+  document.body.removeChild(iframe);
 
-window.jsTestIsAsync = true;
-iframe = document.createElement('iframe');
-document.body.appendChild(iframe);
-contentNavigator = iframe.contentWindow.navigator;
-document.body.removeChild(iframe);
-
-// set testRunner configuration so that requestMIDIAccess returns "AbortError".
-contentNavigator.requestMIDIAccess().then(function() {
-    testFailed("requestMIDIAccess() does not fail unexpectedly.");
-    finishJSTest();
-}, function(error) {
-    window.errorName = error.name;
-    shouldBeEqualToString("errorName", 'AbortError');
-    testPassed("requestMIDIAccess() fail as expected.");
-    finishJSTest();
-});
-
+  try {
+    await detachedNavigator.requestMIDIAccess();
+    return Promise.reject('requestMIDIAccess should have failed.');
+  } catch (e) {
+    assert_equals(e.constructor, detachedExceptionCtor);
+    assert_equals(e.code, DOMException.ABORT_ERR);
+  }
+}, 'requestMIDIAccess fails in a detached frame');
 </script>
 </body>
 </html>

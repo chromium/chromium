@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-<script src="../resources/js-test.js"></script>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
 <script src="../http/tests/resources/permissions-helper.js"></script>
 <script src="state-check-utils.js"></script>
 <script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
@@ -10,54 +11,43 @@
 </head>
 <body>
 <script>
-description("Tests MIDIPort.open and MIDIPort.close.");
+async function runTests(port) {
+  await checkStateTransition({
+    port: port,
+    method: "close",
+    initialconnection: "closed",
+    finalconnection: "closed",
+  });
 
-shouldBeDefined("PermissionsHelper.setPermission");
+  await checkStateTransition({
+    port: port,
+    method: "open",
+    initialconnection: "closed",
+    finalconnection: "open",
+  });
 
-function runTests(port) {
-    return Promise.resolve().then(checkStateTransition.bind(undefined, {
-        port: port,
-        method: "close",
-        initialconnection: "closed",
-        finalconnection: "closed",
-    })).then(checkStateTransition.bind(undefined, {
-        port: port,
-        method: "open",
-        initialconnection: "closed",
-        finalconnection: "open",
-    })).then(checkStateTransition.bind(undefined, {
-        port: port,
-        method: "open",
-        initialconnection: "open",
-        finalconnection: "open",
-    })).then(checkStateTransition.bind(undefined, {
-        port: port,
-        method: "close",
-        initialconnection: "open",
-        finalconnection: "closed",
-    }));
+  await checkStateTransition({
+    port: port,
+    method: "open",
+    initialconnection: "open",
+    finalconnection: "open",
+  });
+
+  await checkStateTransition.bind({
+    port: port,
+    method: "close",
+    initialconnection: "open",
+    finalconnection: "closed",
+  });
 }
 
-function successAccessCallback(a) {
-    window.access = a;
-    testPassed("requestMIDIAccess() succeeded with access " + access + ".");
+promise_test(async _ => {
+  // Set default permission behavior that grants non-sysex requests.
+  await PermissionsHelper.setPermission('midi', 'granted');
 
-    runTests(access.inputs.values().next().value)
-            .then(finishJSTest, finishJSTest);
-}
-
-function errorAccessCallback(error) {
-    testFailed("requestMIDIAccess() error callback should not be called when requesting basic access.");
-    finishJSTest();
-}
-
-window.jsTestIsAsync = true;
-
-// Set default permission behavior that grants non-sysex requests.
-PermissionsHelper.setPermission('midi', 'granted').then(function() {
-    // Test MIDIPort state transition by open() and close().
-    navigator.requestMIDIAccess().then(successAccessCallback, errorAccessCallback);
-});
+  const access = await navigator.requestMIDIAccess();
+  return runTests(access.inputs.values().next().value);
+}, 'opening and closing MIDI devices');
 
 </script>
 </body>

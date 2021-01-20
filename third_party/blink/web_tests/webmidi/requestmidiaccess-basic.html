@@ -1,21 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-<script src="../resources/js-test.js"></script>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
 </head>
 <body>
 <script>
-description("Test if requestMIDIAccess is available.");
+assert_implements(navigator.requestMIDIAccess);
 
-shouldBeDefined("navigator.requestMIDIAccess");
-
-var promise = navigator.requestMIDIAccess();
-shouldBeDefined("promise");
-
-shouldBeDefined("promise.then");
-
-promise.then(function(){}, function(){});
-
+test(() => {
+  const result = navigator.requestMIDIAccess();
+  assert_true(result instanceof Promise);
+}, 'requestMIDIAccess is defined and callable');
 </script>
 </body>
 </html>
