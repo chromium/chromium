@@ -125,10 +125,12 @@ std::string CipherEncrypt(const std::string& plaintext, std::string* key) {
   using ::private_join_and_compute::ECCommutativeCipher;
   auto cipher = ECCommutativeCipher::CreateWithNewKey(
       NID_X9_62_prime256v1, ECCommutativeCipher::SHA256);
-  *key = cipher.ValueOrDie()->GetPrivateKeyBytes();
-  auto result = cipher.ValueOrDie()->Encrypt(plaintext);
-  if (result.ok())
-    return result.ValueOrDie();
+  if (cipher.ok()) {
+    *key = cipher.ValueOrDie()->GetPrivateKeyBytes();
+    auto result = cipher.ValueOrDie()->Encrypt(plaintext);
+    if (result.ok())
+      return result.ValueOrDie();
+  }
   return std::string();
 }
 
@@ -137,9 +139,11 @@ std::string CipherEncryptWithKey(const std::string& plaintext,
   using ::private_join_and_compute::ECCommutativeCipher;
   auto cipher = ECCommutativeCipher::CreateFromKey(NID_X9_62_prime256v1, key,
                                                    ECCommutativeCipher::SHA256);
-  auto result = cipher.ValueOrDie()->Encrypt(plaintext);
-  if (result.ok())
-    return result.ValueOrDie();
+  if (cipher.ok()) {
+    auto result = cipher.ValueOrDie()->Encrypt(plaintext);
+    if (result.ok())
+      return result.ValueOrDie();
+  }
   return std::string();
 }
 
@@ -148,9 +152,13 @@ std::string CipherReEncrypt(const std::string& already_encrypted,
   using ::private_join_and_compute::ECCommutativeCipher;
   auto cipher = ECCommutativeCipher::CreateWithNewKey(
       NID_X9_62_prime256v1, ECCommutativeCipher::SHA256);
-  *key = cipher.ValueOrDie()->GetPrivateKeyBytes();
-  auto result = cipher.ValueOrDie()->ReEncrypt(already_encrypted);
-  return result.ValueOrDie();
+  if (cipher.ok()) {
+    *key = cipher.ValueOrDie()->GetPrivateKeyBytes();
+    auto result = cipher.ValueOrDie()->ReEncrypt(already_encrypted);
+    if (result.ok())
+      return result.ValueOrDie();
+  }
+  return std::string();
 }
 
 std::string CipherDecrypt(const std::string& ciphertext,
@@ -158,9 +166,11 @@ std::string CipherDecrypt(const std::string& ciphertext,
   using ::private_join_and_compute::ECCommutativeCipher;
   auto cipher = ECCommutativeCipher::CreateFromKey(NID_X9_62_prime256v1, key,
                                                    ECCommutativeCipher::SHA256);
-  auto result = cipher.ValueOrDie()->Decrypt(ciphertext);
-  if (result.ok())
-    return result.ValueOrDie();
+  if (cipher.ok()) {
+    auto result = cipher.ValueOrDie()->Decrypt(ciphertext);
+    if (result.ok())
+      return result.ValueOrDie();
+  }
   return std::string();
 }
 
@@ -168,7 +178,8 @@ std::string CreateNewKey() {
   using ::private_join_and_compute::ECCommutativeCipher;
   auto cipher = ECCommutativeCipher::CreateWithNewKey(
       NID_X9_62_prime256v1, ECCommutativeCipher::SHA256);
-  return cipher.ValueOrDie()->GetPrivateKeyBytes();
+  return cipher.ok() ? cipher.ValueOrDie()->GetPrivateKeyBytes()
+                     : std::string();
 }
 
 }  // namespace password_manager
