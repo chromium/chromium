@@ -114,6 +114,19 @@ bool IsArcVpn(const std::string& network_id) {
          network_state->GetVpnProviderType() == shill::kProviderArcVpn;
 }
 
+bool ShouldOpenCellularSetupPsimFlowOnClick(const std::string& network_id) {
+  // |kActivationStateNotActivated| is only set in physical SIM networks,
+  // checking a networks activation state is |kActivationStateNotActivated|
+  // ensures the current network is a phyical SIM network.
+
+  const chromeos::NetworkState* network_state = GetNetworkState(network_id);
+  return network_state && network_state->type() == shill::kTypeCellular &&
+         network_state->activation_state() ==
+             shill::kActivationStateNotActivated &&
+         base::FeatureList::IsEnabled(
+             chromeos::features::kUpdatedCellularActivationUi);
+}
+
 }  // namespace
 
 SystemTrayClient::SystemTrayClient()
@@ -371,11 +384,6 @@ void SystemTrayClient::ShowNetworkConfigure(const std::string& network_id) {
 
 void SystemTrayClient::ShowNetworkCreate(const std::string& type) {
   if (type == ::onc::network_type::kCellular) {
-    if (base::FeatureList::IsEnabled(
-            chromeos::features::kUpdatedCellularActivationUi)) {
-      ShowSettingsCellularSetupFlow();
-      return;
-    }
     const chromeos::NetworkState* cellular =
         chromeos::NetworkHandler::Get()
             ->network_state_handler()
@@ -388,10 +396,11 @@ void SystemTrayClient::ShowNetworkCreate(const std::string& type) {
   chromeos::InternetConfigDialog::ShowDialogForNetworkType(type);
 }
 
-void SystemTrayClient::ShowSettingsCellularSetupFlow() {
+void SystemTrayClient::ShowSettingsCellularSetupPsimFlow() {
   // TODO(crbug.com/1093185) Add metrics action recorder
   std::string page = chromeos::settings::mojom::kCellularNetworksSubpagePath;
   page += "&showCellularSetup=true";
+  page += "&showPsimFlow=true";
   ShowSettingsSubPageForActiveUser(page);
 }
 
@@ -442,6 +451,15 @@ void SystemTrayClient::ShowNetworkSettingsHelper(const std::string& network_id,
       return;
     }
     net_instance->ConfigureAndroidVpn();
+    return;
+  }
+
+  if (ShouldOpenCellularSetupPsimFlowOnClick(network_id)) {
+    // Special case: Clicking on "click to activate" on a psim network item
+    // should open cellular setup dialogs' psim flow if the device has
+    // |kUpdatedCellularActivationUi| feature enabled and is a non-activated
+    // cellular network
+    ShowSettingsCellularSetupPsimFlow();
     return;
   }
 

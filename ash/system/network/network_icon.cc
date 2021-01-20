@@ -20,6 +20,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/numerics/ranges.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "components/onc/onc_constants.h"
@@ -559,6 +560,11 @@ base::string16 GetLabelForNetworkList(const NetworkStateProperties* network) {
     }
     if (activation_state == ActivationStateType::kNotActivated ||
         activation_state == ActivationStateType::kPartiallyActivated) {
+      if (base::FeatureList::IsEnabled(
+              chromeos::features::kUpdatedCellularActivationUi)) {
+        return base::UTF8ToUTF16(network->name);
+      }
+
       return l10n_util::GetStringFUTF16(
           IDS_ASH_STATUS_TRAY_NETWORK_LIST_ACTIVATE,
           base::UTF8ToUTF16(network->name));

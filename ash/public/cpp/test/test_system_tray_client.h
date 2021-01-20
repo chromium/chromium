@@ -43,6 +43,7 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
   void ShowEnterpriseInfo() override;
   void ShowNetworkConfigure(const std::string& network_id) override;
   void ShowNetworkCreate(const std::string& type) override;
+  void ShowSettingsCellularSetupPsimFlow() override;
   void ShowThirdPartyVpnCreate(const std::string& extension_id) override;
   void ShowArcVpnCreate(const std::string& app_id) override;
   void ShowNetworkSettings(const std::string& network_id) override;

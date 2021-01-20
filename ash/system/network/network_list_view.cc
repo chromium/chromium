@@ -27,6 +27,7 @@
 #include "ash/system/tray/tri_view.h"
 #include "base/i18n/number_formatting.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "components/device_event_log/device_event_log.h"
@@ -77,6 +78,13 @@ SkColor GetIconColor() {
 bool IsManagedByPolicy(const NetworkInfo& info) {
   return info.source == OncSource::kDevicePolicy ||
          info.source == OncSource::kUserPolicy;
+}
+
+bool ShouldShowActivateCellularNetwork(const NetworkInfo& info) {
+  return NetworkTypeMatchesType(info.type, NetworkType::kCellular) &&
+         info.activation_state == ActivationStateType::kNotActivated &&
+         base::FeatureList::IsEnabled(
+             chromeos::features::kUpdatedCellularActivationUi);
 }
 
 }  // namespace
@@ -142,6 +150,7 @@ void NetworkListView::OnGetNetworkStateList(
       case NetworkType::kCellular:
         activation_state =
             network->type_state->get_cellular()->activation_state;
+        info->activation_state = activation_state;
         // If cellular is not enabled, skip cellular networks with no service.
         if (model()->GetDeviceState(NetworkType::kCellular) !=
                 DeviceStateType::kEnabled &&
@@ -372,10 +381,15 @@ void NetworkListView::UpdateViewForNetwork(HoverHighlightView* view,
     network_image = info.image;
   }
   view->AddIconAndLabel(network_image, info.label);
-  if (StateIsConnected(info.connection_state))
+  if (ShouldShowActivateCellularNetwork(info)) {
+    SetupUnactivatedCellularNetworkListItem(
+        view, l10n_util::GetStringUTF16(
+                  IDS_ASH_STATUS_TRAY_NETWORK_STATUS_CLICK_TO_ACTIVATE));
+  } else if (StateIsConnected(info.connection_state)) {
     SetupConnectedScrollListItem(view);
-  else if (info.connection_state == ConnectionStateType::kConnecting)
+  } else if (info.connection_state == ConnectionStateType::kConnecting) {
     SetupConnectingScrollListItem(view);
+  }
   view->SetTooltipText(info.tooltip);
 
   // Add an additional icon to the right of the label for networks
@@ -396,6 +410,17 @@ void NetworkListView::UpdateViewForNetwork(HoverHighlightView* view,
       GenerateAccessibilityDescription(info));
 
   needs_relayout_ = true;
+}
+
+void NetworkListView::SetupUnactivatedCellularNetworkListItem(
+    HoverHighlightView* view,
+    const base::string16& sub_text) {
+  DCHECK(view->is_populated());
+
+  view->SetSubText(sub_text);
+  view->sub_text_label()->SetEnabledColor(
+      AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kTextColorWarning));
 }
 
 base::string16 NetworkListView::GenerateAccessibilityLabel(
@@ -461,6 +486,12 @@ base::string16 NetworkListView::GenerateAccessibilityDescription(
           base::FormatPercent(info.signal_strength));
     }
     case NetworkType::kCellular:
+      if (info.activation_state == ActivationStateType::kNotActivated &&
+          base::FeatureList::IsEnabled(
+              chromeos::features::kUpdatedCellularActivationUi)) {
+        return l10n_util::GetStringUTF16(
+            IDS_ASH_STATUS_TRAY_NETWORK_STATUS_CLICK_TO_ACTIVATE);
+      }
       if (!connection_status.empty()) {
         if (IsManagedByPolicy(info)) {
           return l10n_util::GetStringFUTF16(
