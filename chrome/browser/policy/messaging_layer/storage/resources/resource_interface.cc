@@ -27,7 +27,7 @@ bool ScopedReservation::reserved() const {
 
 ScopedReservation::~ScopedReservation() {
   if (reserved()) {
-    resource_interface_->Reserve(size_.value());
+    resource_interface_->Discard(size_.value());
   }
 }
 
