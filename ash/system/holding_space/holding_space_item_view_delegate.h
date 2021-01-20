@@ -86,16 +86,14 @@ class ASH_EXPORT HoldingSpaceItemViewDelegate
   void OnHoldingSpaceItemViewMouseReleased(HoldingSpaceItemView* view,
                                            const ui::MouseEvent& event);
 
-  // Invoked when the tray receives the specified key pressed `event`.
-  bool OnHoldingSpaceTrayKeyPressed(const ui::KeyEvent& event);
+  // Invoked when the tray bubble receives the specified key pressed `event`.
+  bool OnHoldingSpaceTrayBubbleKeyPressed(const ui::KeyEvent& event);
 
-  // Invoked when the item views section receives the specified mouse pressed
-  // `event`.
-  void OnHoldingSpaceItemViewsSectionMousePressed(const ui::MouseEvent& event);
+  // Invoked when a tray child bubble receives the specified gesture `event`.
+  void OnHoldingSpaceTrayChildBubbleGestureEvent(const ui::GestureEvent& event);
 
-  // Invoked when the item views section receives the specified gesture `event`.
-  void OnHoldingSpaceItemViewsSectionGestureEvent(
-      const ui::GestureEvent& event);
+  // Invoked when a tray child bubble receives the given mouse pressed `event`.
+  void OnHoldingSpaceTrayChildBubbleMousePressed(const ui::MouseEvent& event);
 
  private:
   // views::ContextMenuController:

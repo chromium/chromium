@@ -252,16 +252,6 @@ void HoldingSpaceItemViewsSection::ViewHierarchyChanged(
   PreferredSizeChanged();
 }
 
-bool HoldingSpaceItemViewsSection::OnMousePressed(const ui::MouseEvent& event) {
-  delegate_->OnHoldingSpaceItemViewsSectionMousePressed(event);
-  return true;
-}
-
-void HoldingSpaceItemViewsSection::OnGestureEvent(ui::GestureEvent* event) {
-  delegate_->OnHoldingSpaceItemViewsSectionGestureEvent(*event);
-  views::View::OnGestureEvent(event);
-}
-
 void HoldingSpaceItemViewsSection::OnHoldingSpaceItemsAdded(
     const std::vector<const HoldingSpaceItem*>& items) {
   const bool needs_update = std::any_of(

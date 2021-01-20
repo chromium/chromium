@@ -8,6 +8,7 @@
 
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/system/holding_space/holding_space_item_view_delegate.h"
 #include "ash/system/holding_space/holding_space_item_views_section.h"
 #include "ash/system/holding_space/holding_space_util.h"
 #include "ash/system/tray/tray_constants.h"
@@ -250,6 +251,16 @@ void HoldingSpaceTrayChildBubble::ChildVisibilityChanged(views::View* child) {
   }
 
   PreferredSizeChanged();
+}
+
+void HoldingSpaceTrayChildBubble::OnGestureEvent(ui::GestureEvent* event) {
+  delegate_->OnHoldingSpaceTrayChildBubbleGestureEvent(*event);
+  views::View::OnGestureEvent(event);
+}
+
+bool HoldingSpaceTrayChildBubble::OnMousePressed(const ui::MouseEvent& event) {
+  delegate_->OnHoldingSpaceTrayChildBubbleMousePressed(event);
+  return true;
 }
 
 void HoldingSpaceTrayChildBubble::MaybeAnimateIn() {

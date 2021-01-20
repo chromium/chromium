@@ -4,6 +4,7 @@
 
 #include "ash/system/holding_space/holding_space_tray.h"
 
+#include <array>
 #include <deque>
 #include <vector>
 
@@ -1678,35 +1679,34 @@ TEST_P(HoldingSpaceTrayTest, ClickBackgroundToDeselectItems) {
   AddItem(HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/fake2"));
   EXPECT_TRUE(test_api()->IsShowingInShelf());
 
-  // Show the bubble.
+  // Show the bubble and cache holding space item views.
   test_api()->Show();
   std::vector<views::View*> download_chips = test_api()->GetDownloadChips();
-  HoldingSpaceItemView* holding_space_item =
-      HoldingSpaceItemView::Cast(download_chips[0]);
+  ASSERT_EQ(2u, download_chips.size());
+  std::array<HoldingSpaceItemView*, 2> item_views = {
+      HoldingSpaceItemView::Cast(download_chips[0]),
+      HoldingSpaceItemView::Cast(download_chips[1])};
 
   // Click an item chip. The view should be selected.
   Click(download_chips[0], 0);
-  ASSERT_TRUE(holding_space_item->selected());
+  ASSERT_TRUE(item_views[0]->selected());
+  ASSERT_FALSE(item_views[1]->selected());
+
   // Clicking on the parent view should deselect item.
   Click(download_chips[0]->parent(), 0);
-  ASSERT_FALSE(holding_space_item->selected());
-
-  test_api()->Show();
-
-  download_chips = test_api()->GetDownloadChips();
-  holding_space_item = HoldingSpaceItemView::Cast(download_chips[0]);
-  HoldingSpaceItemView* holding_space_item_2 =
-      HoldingSpaceItemView::Cast(download_chips[1]);
+  ASSERT_FALSE(item_views[0]->selected());
+  ASSERT_FALSE(item_views[1]->selected());
 
   // Click on both items to select them both.
   Click(download_chips[0], ui::EF_SHIFT_DOWN);
   Click(download_chips[1], ui::EF_SHIFT_DOWN);
-  ASSERT_TRUE(holding_space_item->selected());
-  ASSERT_TRUE(holding_space_item_2->selected());
+  ASSERT_TRUE(item_views[0]->selected());
+  ASSERT_TRUE(item_views[1]->selected());
+
   // Clicking on the parent view should deselect both items.
   Click(download_chips[0]->parent(), 0);
-  ASSERT_FALSE(holding_space_item->selected());
-  ASSERT_FALSE(holding_space_item_2->selected());
+  ASSERT_FALSE(item_views[0]->selected());
+  ASSERT_FALSE(item_views[1]->selected());
 }
 
 INSTANTIATE_TEST_SUITE_P(All, HoldingSpaceTrayTest, testing::Bool());
