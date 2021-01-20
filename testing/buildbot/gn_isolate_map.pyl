@@ -1424,12 +1424,8 @@
     "type": "script",
   },
   "performance_test_suite": {
-    "args": [
-      "../../tools/perf/run_benchmark",
-    ],
     "label": "//chrome/test:performance_test_suite",
-    "script": "//testing/scripts/run_performance_tests.py",
-    "type": "script",
+    "type": "generated_script",
   },
   "performance_webview_test_suite": {
     "args": [
