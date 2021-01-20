@@ -2481,14 +2481,33 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(MenuItemView* item,
           item->set_actual_menu_position(MenuPosition::kBelowBounds);
         }
       } else if (state_.anchor == MenuAnchorPosition::kBubbleBelow) {
-        y = y_for_menu_below;
-        item->set_actual_menu_position(MenuPosition::kBelowBounds);
-        if (y + menu_size.height() > monitor_bounds.bottom()) {
+        // Respect the previous MenuPosition. The menu contents could change
+        // while the menu is shown, the menu position should not change.
+        const bool able_to_show_menu_below =
+            (y_for_menu_below + menu_size.height() <= monitor_bounds.bottom());
+        const bool able_to_show_menu_above =
+            y_for_menu_above >= monitor_bounds.y();
+        if (item->actual_menu_position() == MenuPosition::kBelowBounds &&
+            able_to_show_menu_below) {
+          y = y_for_menu_below;
+        } else if (item->actual_menu_position() == MenuPosition::kAboveBounds &&
+                   able_to_show_menu_above) {
+          y = y_for_menu_above;
+        } else if (able_to_show_menu_below) {
+          y = y_for_menu_below;
+          item->set_actual_menu_position(MenuPosition::kBelowBounds);
+        } else if (able_to_show_menu_above) {
+          // No room below, but there is room above. Show above the anchor.
+          // Align the bottom of the menu with the bottom of the anchor.
           y = y_for_menu_above;
           item->set_actual_menu_position(MenuPosition::kAboveBounds);
+        } else {
+          // No room above or below. Show as low as possible. Align the bottom
+          // of the menu with the bottom of the screen.
+          y = monitor_bounds.bottom() - menu_size.height();
+          item->set_actual_menu_position(MenuPosition::kBestFit);
         }
       }
-
     } else if (state_.anchor == MenuAnchorPosition::kBubbleLeft ||
                state_.anchor == MenuAnchorPosition::kBubbleRight) {
       if (state_.anchor == MenuAnchorPosition::kBubbleLeft) {

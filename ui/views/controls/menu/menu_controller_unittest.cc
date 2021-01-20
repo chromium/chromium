@@ -1063,6 +1063,70 @@ TEST_F(MenuControllerTest, VerifyMenuBubblePositionAfterSizeChanges) {
   }
 }
 
+// Verifies that the context menu bubble position, MenuPosition::kBubbleBelow,
+// does not shift as items are removed. The menu position will shift it items
+// are added and the menu no longer fits in its previous position.
+TEST_F(MenuControllerTest, VerifyMenuBubbleBelowPositionAfterSizeChanges) {
+  constexpr gfx::Rect kMonitorBounds(0, 0, 500, 500);
+  constexpr gfx::Size kMenuSize(100, 200);
+  const gfx::Insets border_and_shadow_insets =
+      BubbleBorder::GetBorderAndShadowInsets(
+          MenuConfig::instance().touchable_menu_shadow_elevation);
+
+  // Calculate the suitable anchor point to ensure that if the menu shows below
+  // the anchor point, the bottom of the menu should be one pixel off the
+  // bottom of the display. It means that there is insufficient space for the
+  // menu below the anchor.
+  const gfx::Point anchor_point(kMonitorBounds.width() / 2,
+                                kMonitorBounds.bottom() + 1 -
+                                    kMenuSize.height() +
+                                    border_and_shadow_insets.top());
+
+  MenuBoundsOptions options;
+  options.menu_anchor = MenuAnchorPosition::kBubbleBelow;
+  options.monitor_bounds = kMonitorBounds;
+  options.anchor_bounds = gfx::Rect(anchor_point, gfx::Size());
+
+  // Case 1: There is insufficient space for the menu below `anchor_point` and
+  // there is no cached menu position. The menu should show above the anchor.
+  {
+    options.menu_size = kMenuSize;
+    ASSERT_GT(options.anchor_bounds.y() - border_and_shadow_insets.top() +
+                  kMenuSize.height(),
+              kMonitorBounds.bottom());
+    CalculateBubbleMenuBounds(options);
+    EXPECT_EQ(MenuItemView::MenuPosition::kAboveBounds,
+              menu_item()->ActualMenuPosition());
+  }
+
+  // Case 2: There is insufficient space for the menu below `anchor_point`. The
+  // cached position is below the anchor. The menu should show above the anchor
+  // point.
+  {
+    options.menu_position = MenuItemView::MenuPosition::kBelowBounds;
+    CalculateBubbleMenuBounds(options);
+    EXPECT_EQ(MenuItemView::MenuPosition::kAboveBounds,
+              menu_item()->ActualMenuPosition());
+  }
+
+  // Case 3: There is enough space for the menu below `anchor_point`. The cached
+  // menu position is above the anchor. The menu should show above the anchor.
+  {
+    // Shrink the menu size. Verify that there is enough space below the anchor
+    // point now.
+    constexpr gfx::Size kUpdatedSize(kMenuSize.width(), kMenuSize.height() / 2);
+    options.menu_size = kUpdatedSize;
+    EXPECT_LE(options.anchor_bounds.y() - border_and_shadow_insets.top() +
+                  kUpdatedSize.height(),
+              kMonitorBounds.bottom());
+
+    options.menu_position = MenuItemView::MenuPosition::kAboveBounds;
+    CalculateBubbleMenuBounds(options);
+    EXPECT_EQ(MenuItemView::MenuPosition::kAboveBounds,
+              menu_item()->ActualMenuPosition());
+  }
+}
+
 // Tests that opening the menu and pressing 'Home' selects the first menu item.
 TEST_F(MenuControllerTest, FirstSelectedItem) {
   SetPendingStateItem(menu_item()->GetSubmenu()->GetMenuItemAt(0));
