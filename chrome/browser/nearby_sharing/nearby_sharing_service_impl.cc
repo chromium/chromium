@@ -3483,20 +3483,34 @@ base::Optional<std::vector<uint8_t>>
 NearbySharingServiceImpl::GetBluetoothMacAddress(
     const ShareTarget& share_target) {
   ShareTargetInfo* info = GetShareTargetInfo(share_target);
-  if (!info)
+  if (!info) {
+    NS_LOG(ERROR) << __func__ << ": No ShareTargetInfo found for "
+                  << "share target id: " << share_target.id;
     return base::nullopt;
+  }
 
   const base::Optional<NearbyShareDecryptedPublicCertificate>& certificate =
       info->certificate();
-  if (!certificate ||
-      !certificate->unencrypted_metadata().has_bluetooth_mac_address()) {
+  if (!certificate) {
+    NS_LOG(ERROR) << __func__ << ": No decrypted public certificate found for "
+                  << "share target id: " << share_target.id;
+    return base::nullopt;
+  }
+
+  if (!certificate->unencrypted_metadata().has_bluetooth_mac_address()) {
+    NS_LOG(WARNING) << __func__ << ": Public certificate "
+                    << base::HexEncode(certificate->id()) << " did not contain "
+                    << "a Bluetooth mac address.";
     return base::nullopt;
   }
 
   std::string mac_address =
       certificate->unencrypted_metadata().bluetooth_mac_address();
-  if (mac_address.size() != 6)
+  if (mac_address.size() != 6) {
+    NS_LOG(ERROR) << __func__ << ": Invalid bluetooth mac address: '"
+                  << mac_address << "'";
     return base::nullopt;
+  }
 
   return std::vector<uint8_t>(mac_address.begin(), mac_address.end());
 }
