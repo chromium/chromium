@@ -14,6 +14,7 @@
 #include "ash/rotator/screen_rotation_animator_observer.h"
 #include "base/compiler_specific.h"
 #include "base/optional.h"
+#include "base/scoped_observation.h"
 #include "base/scoped_observer.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/chromeos/printing/cups_printers_manager.h"
@@ -378,14 +379,24 @@ class AutotestPrivateGetClipboardTextDataFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
-class AutotestPrivateSetClipboardTextDataFunction : public ExtensionFunction {
+class AutotestPrivateSetClipboardTextDataFunction
+    : public ExtensionFunction,
+      public ui::ClipboardObserver {
  public:
+  AutotestPrivateSetClipboardTextDataFunction();
+
   DECLARE_EXTENSION_FUNCTION("autotestPrivate.setClipboardTextData",
                              AUTOTESTPRIVATE_SETCLIPBOARDTEXTDATA)
 
  private:
   ~AutotestPrivateSetClipboardTextDataFunction() override;
   ResponseAction Run() override;
+
+  // ui::ClipboardObserver:
+  void OnClipboardDataChanged() override;
+
+  base::ScopedObservation<ui::ClipboardMonitor, ui::ClipboardObserver>
+      observation_{this};
 };
 
 class AutotestPrivateSetCrostiniEnabledFunction : public ExtensionFunction {

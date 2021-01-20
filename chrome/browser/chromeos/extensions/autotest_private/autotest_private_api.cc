@@ -1959,10 +1959,14 @@ AutotestPrivateGetClipboardTextDataFunction::Run() {
 ///////////////////////////////////////////////////////////////////////////////
 
 AutotestPrivateSetClipboardTextDataFunction::
+    AutotestPrivateSetClipboardTextDataFunction() = default;
+
+AutotestPrivateSetClipboardTextDataFunction::
     ~AutotestPrivateSetClipboardTextDataFunction() = default;
 
 ExtensionFunction::ResponseAction
 AutotestPrivateSetClipboardTextDataFunction::Run() {
+  observation_.Observe(ui::ClipboardMonitor::GetInstance());
   std::unique_ptr<api::autotest_private::SetClipboardTextData::Params> params(
       api::autotest_private::SetClipboardTextData::Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params);
@@ -1971,7 +1975,12 @@ AutotestPrivateSetClipboardTextDataFunction::Run() {
   ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kCopyPaste);
   clipboard_writer.WriteText(data);
 
-  return RespondNow(NoArguments());
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+void AutotestPrivateSetClipboardTextDataFunction::OnClipboardDataChanged() {
+  observation_.Reset();
+  Respond(NoArguments());
 }
 
 ///////////////////////////////////////////////////////////////////////////////

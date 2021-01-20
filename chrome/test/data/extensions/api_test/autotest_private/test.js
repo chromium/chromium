@@ -993,6 +993,31 @@ var defaultTests = [
     });
   },
 
+  function setAndGetClipboardTextData() {
+    const textData = 'foo bar';
+    chrome.autotestPrivate.getClipboardTextData(function(beforeData) {
+      chrome.test.assertTrue(textData != beforeData);
+      chrome.autotestPrivate.setClipboardTextData(textData, function() {
+        chrome.autotestPrivate.getClipboardTextData(function(afterData) {
+          chrome.test.assertEq(afterData, textData);
+          chrome.test.succeed();
+        });
+      });
+    });
+  },
+
+  function setClipboardTextDataTwice() {
+    const textData = 'twice clipboard data';
+    chrome.autotestPrivate.setClipboardTextData(textData, function() {
+      chrome.autotestPrivate.setClipboardTextData(textData, function() {
+        chrome.autotestPrivate.getClipboardTextData(function(data) {
+          chrome.test.assertEq(data, textData);
+          chrome.test.succeed();
+        });
+      });
+    });
+  },
+
   // KEEP |lockScreen()| TESTS AT THE BOTTOM OF THE defaultTests AS IT WILL
   // CHANGE THE SESSION STATE TO LOCKED STATE.
   function lockScreen() {
