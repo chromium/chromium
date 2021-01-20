@@ -10,24 +10,36 @@
 #include "base/path_service.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/test_reg_util_win.h"
+#include "base/values.h"
 #include "base/version.h"
 #include "base/win/registry.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/util/google_update_constants.h"
+#include "chrome/installer/util/initial_preferences.h"
 #include "chrome/installer/util/util_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace installer {
 
-// Tests GetChromeInstallPath with a boolean parameter which is |true| if the
-// test must use system-level values or |false| it the test must use user-level
-// values.
-class GetChromeInstallPathTest : public testing::TestWithParam<bool> {
+struct Params {
+  Params(bool system_level, base::Optional<int> target_dir_key)
+      : system_level(system_level), target_dir_key(target_dir_key) {}
+  bool system_level;
+  base::Optional<int> target_dir_key;
+};
+
+// Tests GetChromeInstallPath with a params object that contains a boolean
+// |system_level| which is |true| if the test must use system-level values or
+// |false| it the test must use user-level values, and an optional
+// |target_dir_key| in which the installation should be made. When no value is
+// set for |target_dir_key|, assume an empty path.
+class GetChromeInstallPathTest : public testing::TestWithParam<Params> {
  public:
   GetChromeInstallPathTest() = default;
 
   void SetUp() override {
     ASSERT_TRUE(program_files_.CreateUniqueTempDir());
+    ASSERT_TRUE(program_files_x86_.CreateUniqueTempDir());
     ASSERT_TRUE(random_.CreateUniqueTempDir());
     ASSERT_TRUE(local_app_data_.CreateUniqueTempDir());
     ASSERT_NO_FATAL_FAILURE(
@@ -36,16 +48,21 @@ class GetChromeInstallPathTest : public testing::TestWithParam<bool> {
         registry_override_manager_.OverrideRegistry(HKEY_CURRENT_USER));
     program_files_override_.emplace(base::DIR_PROGRAM_FILES,
                                     program_files_path());
+    program_files_x86_override_.emplace(base::DIR_PROGRAM_FILESX86,
+                                        program_files_x86_path());
     local_data_app_override_.emplace(base::DIR_LOCAL_APP_DATA,
                                      local_app_data_path());
   }
 
   base::FilePath random_path() const { return random_.GetPath(); }
   base::FilePath program_files_path() const { return program_files_.GetPath(); }
+  base::FilePath program_files_x86_path() const {
+    return program_files_x86_.GetPath();
+  }
   base::FilePath local_app_data_path() const {
     return local_app_data_.GetPath();
   }
-  static bool is_system_level() { return GetParam(); }
+  static bool is_system_level() { return GetParam().system_level; }
 
   base::FilePath GetExpectedPath(bool system_level) {
     auto path = system_level ? program_files_path() : local_app_data_path();
@@ -69,10 +86,12 @@ class GetChromeInstallPathTest : public testing::TestWithParam<bool> {
 
  private:
   base::ScopedTempDir program_files_;
+  base::ScopedTempDir program_files_x86_;
   base::ScopedTempDir random_;
   base::ScopedTempDir local_app_data_;
   registry_util::RegistryOverrideManager registry_override_manager_;
   base::Optional<base::ScopedPathOverride> program_files_override_;
+  base::Optional<base::ScopedPathOverride> program_files_x86_override_;
   base::Optional<base::ScopedPathOverride> local_data_app_override_;
 };
 
@@ -138,9 +157,148 @@ TEST_P(GetChromeInstallPathTest, RegistryValueSetNoProductVersion) {
 
 INSTANTIATE_TEST_SUITE_P(UserLevelTest,
                          GetChromeInstallPathTest,
-                         testing::Values(false));
+                         testing::Values<Params>({false, base::nullopt}));
 INSTANTIATE_TEST_SUITE_P(SystemLevelTest,
                          GetChromeInstallPathTest,
-                         testing::Values(true));
+                         testing::Values<Params>({true, base::nullopt}));
+
+// Tests GetChromeInstallPath with a params object that contains a boolean
+// |system_level| which is |true| if the test must use system-level values or
+// |false| it the test must use user-level values, and a |target_dir| path in
+// which the installation should be made.
+class GetChromeInstallPathWithPrefsTest : public GetChromeInstallPathTest {
+ public:
+  GetChromeInstallPathWithPrefsTest() = default;
+
+  base::FilePath GetExpectedPathForSetup(bool system_level,
+                                         base::FilePath target_dir) {
+    if (system_level && !target_dir.empty() &&
+        (target_dir == program_files_path() ||
+         target_dir == program_files_x86_path())) {
+      return target_dir.Append(install_static::GetChromeInstallSubDirectory())
+          .Append(kInstallBinaryDir);
+    }
+    return GetExpectedPath(system_level);
+  }
+
+  static base::FilePath target_dir() {
+    base::FilePath result;
+    if (GetParam().target_dir_key.has_value())
+      base::PathService::Get(GetParam().target_dir_key.value(), &result);
+    return result;
+  }
+
+  static base::DictionaryValue prefs_json() {
+    base::FilePath result;
+    if (GetParam().target_dir_key.has_value())
+      base::PathService::Get(GetParam().target_dir_key.value(), &result);
+    base::DictionaryValue distribution;
+    distribution.SetStringPath("distribution.program_files_dir",
+                               result.AsUTF8Unsafe());
+
+    return distribution;
+  }
+};
+
+TEST_P(GetChromeInstallPathWithPrefsTest, NoRegistryValue) {
+  EXPECT_EQ(GetChromeInstallPathWithPrefs(is_system_level(),
+                                          InitialPreferences(prefs_json())),
+            GetExpectedPathForSetup(is_system_level(), target_dir()));
+}
+
+TEST_P(GetChromeInstallPathWithPrefsTest, RegistryValueSet) {
+  base::win::RegKey client_state_key(GetClientStateRegKey());
+  ASSERT_EQ(client_state_key.WriteValue(
+                kUninstallStringField,
+                random_path()
+                    .Append(install_static::GetChromeInstallSubDirectory())
+                    .Append(kInstallBinaryDir)
+                    .AppendASCII("1.0.0.0\\Installer\\setup.exe")
+                    .value()
+                    .c_str()),
+            ERROR_SUCCESS);
+
+  base::win::RegKey client_key(GetClientsRegKey());
+  ASSERT_EQ(client_key.WriteValue(google_update::kRegVersionField, L"1.0.0.0"),
+            ERROR_SUCCESS);
+  EXPECT_EQ(GetChromeInstallPathWithPrefs(is_system_level(),
+                                          InitialPreferences(prefs_json())),
+            random_path()
+                .Append(install_static::GetChromeInstallSubDirectory())
+                .Append(kInstallBinaryDir));
+}
+
+TEST_P(GetChromeInstallPathWithPrefsTest, RegistryValueSetWrongScope) {
+  base::win::RegKey client_state_key(GetClientStateRegKey());
+  ASSERT_EQ(client_state_key.WriteValue(
+                kUninstallStringField,
+                random_path()
+                    .Append(install_static::GetChromeInstallSubDirectory())
+                    .Append(kInstallBinaryDir)
+                    .AppendASCII("1.0.0.0\\Installer\\setup.exe")
+                    .value()
+                    .c_str()),
+            ERROR_SUCCESS);
+
+  base::win::RegKey client_key(GetClientsRegKey());
+  ASSERT_EQ(client_key.WriteValue(google_update::kRegVersionField, L"1.0.0.0"),
+            ERROR_SUCCESS);
+  EXPECT_EQ(GetChromeInstallPathWithPrefs(!is_system_level(),
+                                          InitialPreferences(prefs_json())),
+            GetExpectedPathForSetup(!is_system_level(), target_dir()));
+}
+
+TEST_P(GetChromeInstallPathWithPrefsTest, RegistryValueSetNoProductVersion) {
+  base::win::RegKey client_state_key(GetClientStateRegKey());
+  ASSERT_EQ(client_state_key.WriteValue(
+                kUninstallStringField,
+                random_path()
+                    .Append(install_static::GetChromeInstallSubDirectory())
+                    .Append(kInstallBinaryDir)
+                    .AppendASCII("1.0.0.0\\Installer\\setup.exe")
+                    .value()
+                    .c_str()),
+            ERROR_SUCCESS);
+  EXPECT_EQ(GetChromeInstallPathWithPrefs(is_system_level(),
+                                          InitialPreferences(prefs_json())),
+            GetExpectedPathForSetup(is_system_level(), target_dir()));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    UserLevelX86SetupTest,
+    GetChromeInstallPathWithPrefsTest,
+    testing::Values<Params>(Params(false, base::DIR_PROGRAM_FILESX86)));
+
+INSTANTIATE_TEST_SUITE_P(
+    UserLevelX64SetupTest,
+    GetChromeInstallPathWithPrefsTest,
+    testing::Values<Params>(Params(false, base::DIR_PROGRAM_FILES)));
+
+INSTANTIATE_TEST_SUITE_P(UserLevelUnsupportedPathSetupTest,
+                         GetChromeInstallPathWithPrefsTest,
+                         testing::Values<Params>(Params(false,
+                                                        base::DIR_HOME)));
+
+INSTANTIATE_TEST_SUITE_P(UserLevelEmptyPathSetupTest,
+                         GetChromeInstallPathWithPrefsTest,
+                         testing::Values<Params>(Params(false, base::nullopt)));
+
+INSTANTIATE_TEST_SUITE_P(
+    MachineLevelX86SetupTest,
+    GetChromeInstallPathWithPrefsTest,
+    testing::Values<Params>(Params(true, base::DIR_PROGRAM_FILESX86)));
+
+INSTANTIATE_TEST_SUITE_P(
+    MachineLevelX64SetupTest,
+    GetChromeInstallPathWithPrefsTest,
+    testing::Values<Params>(Params(true, base::DIR_PROGRAM_FILES)));
+
+INSTANTIATE_TEST_SUITE_P(MachineLevelUnsupportedPathSetupTest,
+                         GetChromeInstallPathWithPrefsTest,
+                         testing::Values<Params>(Params(true, base::DIR_HOME)));
+
+INSTANTIATE_TEST_SUITE_P(MachineLevelEmptyPathSetupTest,
+                         GetChromeInstallPathWithPrefsTest,
+                         testing::Values<Params>(Params(true, base::nullopt)));
 
 }  // namespace installer

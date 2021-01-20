@@ -80,7 +80,8 @@ void InstallerState::Initialize(const base::CommandLine& command_line,
 
   const bool is_uninstall = command_line.HasSwitch(switches::kUninstall);
 
-  target_path_ = GetChromeInstallPath(system_install());
+  target_path_ = GetChromeInstallPathWithPrefs(system_install(), prefs);
+
   state_key_ = install_static::GetClientStateKeyPath();
 
   VLOG(1) << (is_uninstall ? "Uninstall Chrome" : "Install Chrome");

@@ -11,6 +11,8 @@
 
 namespace installer {
 
+class InitialPreferences;
+
 // This function returns the install path for Chrome depending on whether it's
 // a system wide install or a user specific install.
 // Returns the install path stored at
@@ -21,6 +23,14 @@ namespace installer {
 // (%LOCALAPPDATA%\[Company\]Product\Application).
 base::FilePath GetChromeInstallPath(bool system_install);
 
+// Returns a path to the directory holding chrome.exe for either a system wide
+// or user specific install. The returned path will be one of:
+// - The path to the current installation at |system_install|, if there is one.
+// - The desired path for a new installation based on the "program_files_dir"
+//   initial preference in the "distribution" dict of |prefs|, if set.
+// - The default path for a new installation based on the binary's bitness.
+base::FilePath GetChromeInstallPathWithPrefs(bool system_install,
+                                             const InitialPreferences& prefs);
 }  // namespace installer
 
 #endif  // CHROME_INSTALLER_UTIL_HELPER_H_

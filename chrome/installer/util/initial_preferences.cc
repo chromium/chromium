@@ -14,6 +14,7 @@
 #include "base/notreached.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/common/env_vars.h"
 #include "chrome/common/pref_names.h"
@@ -91,6 +92,15 @@ InitialPreferences::InitialPreferences(const base::FilePath& prefs_path) {
 
 InitialPreferences::InitialPreferences(const std::string& prefs) {
   InitializeFromString(prefs);
+}
+
+InitialPreferences::InitialPreferences(const base::DictionaryValue& prefs)
+    : initial_dictionary_(prefs.CreateDeepCopy()) {
+  // Cache a pointer to the distribution dictionary.
+  initial_dictionary_->GetDictionary(
+      installer::initial_preferences::kDistroDict, &distribution_);
+
+  EnforceLegacyPreferences();
 }
 
 InitialPreferences::~InitialPreferences() = default;
@@ -275,6 +285,15 @@ bool InitialPreferences::GetString(const std::string& name,
   if (distribution_)
     ret = (distribution_->GetString(name, value) && !value->empty());
   return ret;
+}
+
+bool InitialPreferences::GetPath(const std::string& name,
+                                 base::FilePath* value) const {
+  std::string string_value;
+  if (!GetString(name, &string_value))
+    return false;
+  *value = base::FilePath::FromUTF8Unsafe(string_value);
+  return true;
 }
 
 std::vector<std::string> InitialPreferences::GetFirstRunTabs() const {

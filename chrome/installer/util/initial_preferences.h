@@ -93,6 +93,10 @@ class InitialPreferences {
   // line switches with the distribution dictionary.
   explicit InitialPreferences(const std::string& prefs);
 
+  // Parses a preferences directly from |prefs| and does not merge any command
+  // line switches with the distribution dictionary.
+  explicit InitialPreferences(const base::DictionaryValue& prefs);
+
   ~InitialPreferences();
 
   // Each of the Get methods below returns true if the named value was found in
@@ -101,6 +105,7 @@ class InitialPreferences {
   bool GetBool(const std::string& name, bool* value) const;
   bool GetInt(const std::string& name, int* value) const;
   bool GetString(const std::string& name, std::string* value) const;
+  bool GetPath(const std::string& name, base::FilePath* value) const;
 
   // As part of the initial preferences an optional section indicates the tabs
   // to open during first run. An example is the following:
