@@ -460,10 +460,10 @@ void TetherService::GetBluetoothAdapter() {
   // constructed yet. Post the GetAdapter call to avoid this.
   auto* factory = device::BluetoothAdapterFactory::Get();
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&device::BluetoothAdapterFactory::GetAdapter,
-                                base::Unretained(factory),
-                                base::BindRepeating(
-                                    &TetherService::OnBluetoothAdapterFetched,
+      FROM_HERE,
+      base::BindOnce(&device::BluetoothAdapterFactory::GetAdapter,
+                     base::Unretained(factory),
+                     base::BindOnce(&TetherService::OnBluetoothAdapterFetched,
                                     weak_ptr_factory_.GetWeakPtr())));
 }
 

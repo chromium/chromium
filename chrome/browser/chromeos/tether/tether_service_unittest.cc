@@ -124,16 +124,16 @@ class FakeTetherComponentWithDestructorCallback
     : public chromeos::tether::FakeTetherComponent {
  public:
   FakeTetherComponentWithDestructorCallback(
-      const base::Closure& destructor_callback)
-      : FakeTetherComponent(false /* has_asynchronous_shutdown */),
-        destructor_callback_(destructor_callback) {}
+      base::OnceClosure destructor_callback)
+      : FakeTetherComponent(/*has_asynchronous_shutdown=*/false),
+        destructor_callback_(std::move(destructor_callback)) {}
 
   ~FakeTetherComponentWithDestructorCallback() override {
-    destructor_callback_.Run();
+    std::move(destructor_callback_).Run();
   }
 
  private:
-  base::Closure destructor_callback_;
+  base::OnceClosure destructor_callback_;
 };
 
 class TestTetherComponentFactory final
@@ -163,9 +163,10 @@ class TestTetherComponentFactory final
       chromeos::NetworkConnectionHandler* network_connection_handler,
       scoped_refptr<device::BluetoothAdapter> adapter,
       session_manager::SessionManager* session_manager) override {
-    active_tether_component_ = new FakeTetherComponentWithDestructorCallback(
-        base::Bind(&TestTetherComponentFactory::OnActiveTetherComponentDeleted,
-                   base::Unretained(this)));
+    active_tether_component_ =
+        new FakeTetherComponentWithDestructorCallback(base::BindOnce(
+            &TestTetherComponentFactory::OnActiveTetherComponentDeleted,
+            base::Unretained(this)));
     was_tether_component_active_ = true;
     return base::WrapUnique(active_tether_component_);
   }
