@@ -262,7 +262,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.BlocklistFeatureTestResults"
-    enum="GPUBlocklistFeatureTestResults" expires_after="2021-07-11">
+    enum="GPUBlocklistFeatureTestResults" expires_after="2021-12-01">
   <owner>vmiura@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -272,7 +272,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.BlocklistTestResultsPerEntry"
-    enum="GPUBlocklistTestResultPerEntry" expires_after="2021-03-21">
+    enum="GPUBlocklistTestResultPerEntry" expires_after="2021-12-01">
   <owner>vmiura@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -338,7 +338,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.D3D11FeatureLevel" enum="D3D11FeatureLevel"
-    expires_after="2021-05-02">
+    expires_after="2021-12-01">
   <owner>sadrul@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -640,8 +640,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.EGLDisplayType" enum="EGLDisplayType"
-    expires_after="2021-07-11">
-  <owner>jbauman@chromium.org</owner>
+    expires_after="2021-12-01">
+  <owner>zmo@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
   <summary>The display type used to ask for an EGLDisplay.</summary>
 </histogram>
 
@@ -745,8 +746,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.GPUProcessExitCode" enum="GPUProcessExitCode"
-    expires_after="2021-05-16">
-  <owner>jbauman@chromium.org</owner>
+    expires_after="2021-12-01">
+  <owner>zmo@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
   <summary>
     Counts for the exit codes returned by the GPU process when it terminated.
   </summary>
@@ -791,7 +793,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.HasDiscreteGpu" enum="HasDiscreteGpu"
-    expires_after="2021-02-21">
+    expires_after="2021-12-01">
   <owner>sadrul@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
