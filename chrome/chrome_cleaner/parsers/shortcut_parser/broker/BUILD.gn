@@ -10,6 +10,7 @@ static_library("shortcut_parser_api") {
     "shortcut_parser_api.cc",
     "shortcut_parser_api.h",
   ]
+
   deps = [
     "//base",
     "//chrome/chrome_cleaner/mojom:parser_interface",
@@ -36,10 +37,12 @@ static_library("sandboxed_shortcut_parser") {
 
 static_library("fake_shortcut_parser") {
   testonly = true
+
   sources = [
     "fake_shortcut_parser.cc",
     "fake_shortcut_parser.h",
   ]
+
   deps = [
     ":shortcut_parser_api",
     "//base",
@@ -52,6 +55,7 @@ source_set("unittest_sources") {
   testonly = true
 
   sources = [ "sandboxed_shortcut_parser_unittest.cc" ]
+
   deps = [
     ":sandboxed_shortcut_parser",
     "//base",
@@ -61,7 +65,6 @@ source_set("unittest_sources") {
     "//chrome/chrome_cleaner/os:common_os",
     "//chrome/chrome_cleaner/parsers/broker:parser_sandbox_broker",
     "//chrome/chrome_cleaner/parsers/json_parser",
-    "//chrome/chrome_cleaner/parsers/json_parser:json_splicer",
     "//chrome/chrome_cleaner/parsers/shortcut_parser:sandboxed_lnk_parser_test_util",
     "//chrome/chrome_cleaner/parsers/shortcut_parser/target:lnk_parser",
     "//chrome/chrome_cleaner/parsers/target:parser_sandbox_target",

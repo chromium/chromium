@@ -368,16 +368,6 @@ bool ReadRegistryValue(const RegKeyPath& key_path,
   return ReadRegistryValue(reg_key, value_name, content, content_type, error);
 }
 
-bool WriteRegistryValue(const wchar_t* value_name,
-                        const std::wstring& content,
-                        uint32_t content_type,
-                        base::win::RegKey* reg_key) {
-  LONG success = reg_key->WriteValue(
-      value_name, reinterpret_cast<const void*>(content.c_str()),
-      content.size() * sizeof(std::wstring::value_type), content_type);
-  return success == ERROR_SUCCESS;
-}
-
 void GetRegistryValueAsString(const wchar_t* raw_content,
                               size_t raw_content_bytes,
                               DWORD value_type,

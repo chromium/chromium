@@ -32,13 +32,6 @@ class ProtoChromePromptIPC : public ChromePromptIPC {
                           const std::vector<std::wstring>& extension_ids,
                           PromptUserCallback callback) override;
 
-  void PostDisableExtensionsTask(const std::vector<std::wstring>& extension_ids,
-                                 DisableExtensionsCallback callback) override;
-
-  void TryDeleteExtensions(
-      base::OnceClosure delete_allowed_callback,
-      base::OnceClosure delete_not_allowed_callback) override;
-
  private:
   // Implements the initialization that needs to happen on the task_runner
   // sequence.

@@ -19,21 +19,6 @@
 
 namespace chrome_cleaner {
 
-namespace {
-
-void OnTryDeleteExtensionsCallback(
-    base::OnceClosure delete_allowed_callback,
-    base::OnceClosure delete_not_allowed_callback,
-    uint32_t version) {
-  if (version >= 3) {
-    std::move(delete_allowed_callback).Run();
-  } else {
-    std::move(delete_not_allowed_callback).Run();
-  }
-}
-
-}  // namespace
-
 MojoChromePromptIPC::MojoChromePromptIPC(
     const std::string& chrome_mojo_pipe_token,
     scoped_refptr<MojoTaskRunner> task_runner)
@@ -77,27 +62,6 @@ void MojoChromePromptIPC::PostPromptUserTask(
                      extension_ids, std::move(callback)));
 }
 
-void MojoChromePromptIPC::PostDisableExtensionsTask(
-    const std::vector<std::wstring>& extension_ids,
-    DisableExtensionsCallback callback) {
-  DCHECK(task_runner_);
-  task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&MojoChromePromptIPC::RunDisableExtensionsTask,
-                                base::Unretained(this), extension_ids,
-                                std::move(callback)));
-}
-
-void MojoChromePromptIPC::TryDeleteExtensions(
-    base::OnceClosure delete_allowed_callback,
-    base::OnceClosure delete_not_allowed_callback) {
-  const auto& version_callback = base::BindRepeating(
-      &chrome_cleaner::OnTryDeleteExtensionsCallback,
-      AdaptCallbackForRepeating(std::move(delete_allowed_callback)),
-      AdaptCallbackForRepeating(std::move(delete_not_allowed_callback)));
-
-  (*chrome_prompt_service_).QueryVersion(std::move(version_callback));
-}
-
 void MojoChromePromptIPC::OnChromeResponseReceived(
     PromptUserCallback callback,
     mojom::PromptAcceptance prompt_acceptance) {
@@ -107,15 +71,6 @@ void MojoChromePromptIPC::OnChromeResponseReceived(
   state_ = State::kDoneInteraction;
   std::move(callback).Run(
       static_cast<PromptUserResponse::PromptAcceptance>(prompt_acceptance));
-}
-
-void MojoChromePromptIPC::OnChromeResponseReceivedExtensions(
-    DisableExtensionsCallback callback,
-    bool extensions_disabled) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(State::kDoneInteraction, state_);
-
-  std::move(callback).Run(extensions_disabled);
 }
 
 void MojoChromePromptIPC::OnConnectionError() {
@@ -208,24 +163,6 @@ void MojoChromePromptIPC::RunPromptUserTask(
       std::move(extension_ids),
       AdaptCallbackForRepeating(std::move(response_callback)));
   (*chrome_prompt_service_).QueryVersion(version_callback);
-}
-
-void MojoChromePromptIPC::RunDisableExtensionsTask(
-    const std::vector<std::wstring>& extension_ids,
-    DisableExtensionsCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(chrome_prompt_service_);
-  DCHECK(state_ == State::kDoneInteraction);
-
-  // Mojo will invoke this callback when a response is received. The
-  // |extensions_disabled| parameter is unbound and will be filled in by Mojo.
-  mojom::ChromePrompt::DisableExtensionsCallback response_callback =
-      base::BindOnce(&MojoChromePromptIPC::OnChromeResponseReceivedExtensions,
-                     base::Unretained(this), std::move(callback));
-
-  (*chrome_prompt_service_)
-      ->DisableExtensions(std::move(extension_ids),
-                          std::move(response_callback));
 }
 
 }  // namespace chrome_cleaner

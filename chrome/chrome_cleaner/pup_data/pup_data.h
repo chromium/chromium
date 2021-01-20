@@ -18,7 +18,6 @@
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "chrome/chrome_cleaner/chrome_utils/force_installed_extension.h"
 #include "chrome/chrome_cleaner/constants/uws_id.h"
 #include "chrome/chrome_cleaner/logging/proto/shared_data.pb.h"
 #include "chrome/chrome_cleaner/os/disk_util_types.h"
@@ -320,10 +319,6 @@ class PUPData {
     // Mapping from detected files to where they were found. Populated in the
     // target process when the engine is sandboxed.
     FileInfoMap disk_footprints_info;
-
-    // List of UwE found by the scanner. Populated in the broker process after
-    // the PUPData is copied from the target process.
-    std::vector<ForceInstalledExtension> matched_extensions;
 
    protected:
     // Allow PUPData to update |signature_| when UpdateCachedUwSForTesting is

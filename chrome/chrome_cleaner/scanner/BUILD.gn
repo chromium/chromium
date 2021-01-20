@@ -80,30 +80,23 @@ source_set("unittest_sources") {
   testonly = true
 
   sources = [
-    "force_installed_extension_scanner_unittest.cc",
     "matcher_util_unittest.cc",
     "signature_matcher_unittest.cc",
   ]
 
   deps = [
-    ":force_installed_extension_scanner",
-    ":force_installed_extension_scanner_api",
     ":matcher_util",
     ":signature_matcher",
     "//base",
     "//base/test:test_support",
     "//chrome/chrome_cleaner/chrome_utils:chrome_util_lib",
-    "//chrome/chrome_cleaner/chrome_utils:extension_id",
     "//chrome/chrome_cleaner/constants:common_strings",
     "//chrome/chrome_cleaner/logging:common",
     "//chrome/chrome_cleaner/logging:mock_logging_service",
     "//chrome/chrome_cleaner/logging/proto:shared_data_proto",
     "//chrome/chrome_cleaner/os:common_os",
-    "//chrome/chrome_cleaner/parsers/json_parser",
     "//chrome/chrome_cleaner/proto:shared_pup_enums_proto",
-    "//chrome/chrome_cleaner/pup_data:test_uws",
     "//chrome/chrome_cleaner/strings",
-    "//chrome/chrome_cleaner/test:test_extensions",
     "//chrome/chrome_cleaner/test:test_pup_data",
     "//chrome/chrome_cleaner/test:test_strings",
     "//chrome/chrome_cleaner/test:test_util",
@@ -112,52 +105,5 @@ source_set("unittest_sources") {
     "//sandbox/win:sandbox",
     "//testing/gmock",
     "//testing/gtest",
-  ]
-}
-
-source_set("force_installed_extension_scanner_api") {
-  sources = [ "force_installed_extension_scanner.h" ]
-
-  deps = [
-    "//chrome/chrome_cleaner/chrome_utils:force_installed_extension",
-    "//chrome/chrome_cleaner/parsers/json_parser",
-    "//chrome/chrome_cleaner/proto:uwe_matcher_proto",
-  ]
-}
-
-source_set("force_installed_extension_scanner") {
-  sources = [
-    "force_installed_extension_scanner_impl.cc",
-    "force_installed_extension_scanner_impl.h",
-  ]
-
-  deps = [
-    ":force_installed_extension_scanner_api",
-    "//base",
-    "//chrome/chrome_cleaner/chrome_utils:extensions_util_lib",
-    "//chrome/chrome_cleaner/chrome_utils:force_installed_extension",
-    "//chrome/chrome_cleaner/os:common_os",
-    "//chrome/chrome_cleaner/parsers/json_parser",
-    "//chrome/chrome_cleaner/proto:uwe_matcher_proto",
-  ]
-}
-
-source_set("mock_force_installed_extension_scanner") {
-  testonly = true
-
-  sources = [
-    "mock_force_installed_extension_scanner.cc",
-    "mock_force_installed_extension_scanner.h",
-  ]
-
-  deps = [
-    ":force_installed_extension_scanner_api",
-    "//base",
-    "//chrome/chrome_cleaner/chrome_utils:extensions_util_lib",
-    "//chrome/chrome_cleaner/chrome_utils:force_installed_extension",
-    "//chrome/chrome_cleaner/os:common_os",
-    "//chrome/chrome_cleaner/parsers/json_parser",
-    "//chrome/chrome_cleaner/proto:uwe_matcher_proto",
-    "//testing/gmock",
   ]
 }

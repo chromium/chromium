@@ -17,10 +17,6 @@ int GetProtectedFilesDigestResourceId() {
   return 0;
 }
 
-int GetUwEMatchersResourceID() {
-  return 0;
-}
-
 std::unordered_map<std::wstring, int> GetEmbeddedLibraryResourceIds(
     Engine::Name engine) {
   return {};

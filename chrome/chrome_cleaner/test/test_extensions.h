@@ -96,9 +96,6 @@ const char kDefaultExtensionsJson[] =
       "external_update_url":"https://test.test/crx"
     },
   })";
-const char kValidDefaultExtensionsJson[] =
-    "{\"aapocclcgogkmnckokdopfmhonfmgoek\":{"
-    "\"external_update_url\":\"https://test.test/crx\"}}";
 
 // Test force installed master preferences
 const char kMasterPreferencesJson[] =

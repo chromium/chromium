@@ -37,8 +37,6 @@ const wchar_t kValueMulti[] = L"This\0is\0a\0multi\0value\0";
 const wchar_t kValueWithNull[] = L"This\0is\0a\0test";
 const wchar_t kValueEmpty[] = L"";
 const wchar_t kUnicodeValue[] = L"This is the euro char: \u20AC";
-const wchar_t kInvalidUnicodeValue[] =
-    L"This is an invalid char: " ESCAPE_REGISTRY_STR("");
 const wchar_t kRegistryDefaultName[] = L"";
 const BYTE kNoNullCharString[] = {65, 0, 66, 0};
 const BYTE kSingleNullCharString[] = {65, 0, 66, 0, 0};
@@ -575,64 +573,6 @@ TEST(RegistryUtilTests, ReadRegistryValueWithExtraNullCharacter) {
   EXPECT_EQ(0, ::memcmp(content.c_str(), kExpectedNullOddSizeEntryString,
                         std::max(sizeof(kExpectedNullOddSizeEntryString),
                                  content.size())));
-}
-
-TEST(RegistryUtilTests, WriteRegistryValue) {
-  registry_util::RegistryOverrideManager registry_override;
-  registry_override.OverrideRegistry(HKEY_CURRENT_USER);
-  base::win::RegKey reg_key(HKEY_CURRENT_USER, kRegistryKeyPath,
-                            KEY_ALL_ACCESS);
-
-  // Write a value with NUL characters.
-  std::wstring source(kValueWithNull, base::size(kValueWithNull) - 1);
-  EXPECT_TRUE(WriteRegistryValue(kValueName, source, REG_SZ, &reg_key));
-
-  // Read back the value.
-  std::wstring content;
-  uint32_t content_type;
-  EXPECT_TRUE(
-      ReadRegistryValue(reg_key, kValueName, &content, &content_type, nullptr));
-  EXPECT_EQ(source, content);
-  EXPECT_EQ(REG_SZ, content_type);
-}
-
-TEST(RegistryUtilTests, ReadWriteRegistryUnicodeValue) {
-  registry_util::RegistryOverrideManager registry_override;
-  registry_override.OverrideRegistry(HKEY_CURRENT_USER);
-  base::win::RegKey reg_key(HKEY_CURRENT_USER, kRegistryKeyPath,
-                            KEY_ALL_ACCESS);
-
-  // Write a value with unicode characters.
-  std::wstring source(kUnicodeValue, base::size(kUnicodeValue) - 1);
-  EXPECT_TRUE(WriteRegistryValue(kValueName, source, REG_SZ, &reg_key));
-
-  // Read back the value.
-  std::wstring content;
-  uint32_t content_type;
-  EXPECT_TRUE(
-      ReadRegistryValue(reg_key, kValueName, &content, &content_type, nullptr));
-  EXPECT_EQ(source, content);
-  EXPECT_EQ(REG_SZ, content_type);
-}
-
-TEST(RegistryUtilTests, ReadWriteRegistryInvalidUnicodeValue) {
-  registry_util::RegistryOverrideManager registry_override;
-  registry_override.OverrideRegistry(HKEY_CURRENT_USER);
-  base::win::RegKey reg_key(HKEY_CURRENT_USER, kRegistryKeyPath,
-                            KEY_ALL_ACCESS);
-
-  // Write a value with an invalid character.
-  std::wstring source(kInvalidUnicodeValue,
-                      base::size(kInvalidUnicodeValue) - 1);
-  EXPECT_TRUE(WriteRegistryValue(kValueName, source, REG_SZ, &reg_key));
-
-  // Read back the value.
-  std::wstring content;
-  uint32_t content_type;
-  EXPECT_TRUE(
-      ReadRegistryValue(reg_key, kValueName, &content, &content_type, nullptr));
-  EXPECT_EQ(source, content);
-  EXPECT_EQ(REG_SZ, content_type);
 }
 
 TEST(RegistryUtilTests, GetRegistryValueAsStringRegularString) {

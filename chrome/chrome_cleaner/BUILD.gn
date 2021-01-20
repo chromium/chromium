@@ -84,7 +84,6 @@ test("chrome_cleaner_unittests") {
     "//chrome/chrome_cleaner/mojom/typemaps:unittest_sources",
     "//chrome/chrome_cleaner/os:unittest_sources",
     "//chrome/chrome_cleaner/parsers/broker:unittest_sources",
-    "//chrome/chrome_cleaner/parsers/json_parser:unittest_sources",
     "//chrome/chrome_cleaner/parsers/parser_utils:unittest_sources",
     "//chrome/chrome_cleaner/parsers/shortcut_parser/broker:unittest_sources",
     "//chrome/chrome_cleaner/parsers/shortcut_parser/target:unittest_sources",

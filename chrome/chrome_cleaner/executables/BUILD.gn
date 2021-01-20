@@ -111,8 +111,6 @@ chrome_cleaner_executable("chrome_cleanup_tool") {
     "//chrome/chrome_cleaner/logging:cleaner_logging_definitions",
     "//chrome/chrome_cleaner/os:cleaner_os",
     "//chrome/chrome_cleaner/parsers/json_parser",
-    "//chrome/chrome_cleaner/scanner:force_installed_extension_scanner",
-    "//chrome/chrome_cleaner/scanner:force_installed_extension_scanner_api",
     "//chrome/chrome_cleaner/settings:cleaner_settings_definitions",
     "//chrome/chrome_cleaner/zip_archiver/target:common",
   ]

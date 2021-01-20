@@ -5,15 +5,6 @@
 # Nothing outside //chrome/chrome_cleaner can depend on these targets.
 visibility = [ "//chrome/chrome_cleaner/*" ]
 
-static_library("json_splicer") {
-  sources = [
-    "json_splicer.cc",
-    "json_splicer.h",
-  ]
-
-  deps = [ "//base" ]
-}
-
 static_library("json_parser") {
   sources = [
     "json_parser_api.h",
@@ -35,25 +26,5 @@ static_library("json_parser") {
     "//chrome/chrome_cleaner/settings:settings_types",
     "//components/chrome_cleaner/public/constants",
     "//mojo/public/cpp/bindings",
-  ]
-}
-
-source_set("unittest_sources") {
-  testonly = true
-
-  sources = [ "json_splicer_unittest.cc" ]
-
-  deps = [
-    ":json_parser",
-    ":json_splicer",
-    "//base",
-    "//base/test:test_support",
-    "//chrome/chrome_cleaner/ipc:mojo_task_runner",
-    "//chrome/chrome_cleaner/mojom:parser_interface",
-    "//chrome/chrome_cleaner/parsers/broker:parser_sandbox_broker",
-    "//chrome/chrome_cleaner/parsers/target:parser_sandbox_target",
-    "//mojo/public/cpp/bindings",
-    "//sandbox/win:sandbox",
-    "//testing/gtest",
   ]
 }
