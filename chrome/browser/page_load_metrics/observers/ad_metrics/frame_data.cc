@@ -368,12 +368,6 @@ HeavyAdAction FrameTreeData::MaybeTriggerHeavyAdIntervention() {
     return HeavyAdAction::kNone;
   }
 
-  // Update heavy ad related metrics. Metrics are reported for all thresholds,
-  // regardless of unload policy.
-  if (heavy_ad_status_ == HeavyAdStatus::kNone) {
-    heavy_ad_status_ = ComputeHeavyAdStatus(
-        false /* use_network_threshold_noise */, HeavyAdUnloadPolicy::kAll);
-  }
   if (heavy_ad_status_with_noise_ == HeavyAdStatus::kNone) {
     heavy_ad_status_with_noise_ = ComputeHeavyAdStatus(
         true /* use_network_threshold_noise */, HeavyAdUnloadPolicy::kAll);

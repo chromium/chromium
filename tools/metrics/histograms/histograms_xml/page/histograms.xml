@@ -1358,6 +1358,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="PageLoad.HeavyAds.ComputedType2"
     enum="HeavyAdStatus2" expires_after="2021-02-01">
+  <obsolete>
+    Removed 01/2020, use PageLoad.HeavyAds.ComputedTypeWithThresholdNoise
+    instead.
+  </obsolete>
   <owner>johnidel@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <summary>
@@ -1373,7 +1377,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="PageLoad.HeavyAds.ComputedTypeWithThresholdNoise"
-    enum="HeavyAdStatus2" expires_after="2021-02-01">
+    enum="HeavyAdStatus2" expires_after="2022-02-01">
   <owner>johnidel@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <summary>
@@ -1393,7 +1397,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="PageLoad.HeavyAds.InterventionType2"
-    enum="HeavyAdStatus2" expires_after="2021-02-01">
+    enum="HeavyAdStatus2" expires_after="2022-02-01">
   <owner>johnidel@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <summary>

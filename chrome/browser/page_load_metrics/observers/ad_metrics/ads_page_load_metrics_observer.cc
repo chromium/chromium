@@ -1203,8 +1203,6 @@ void AdsPageLoadMetricsObserver::RecordPerFrameHistogramsForHeavyAds(
   // Record per-frame histograms to the appropriate visibility prefixes.
   for (const auto visibility : {ad_metrics::FrameVisibility::kAnyVisibility,
                                 ad_frame_data.visibility()}) {
-    ADS_HISTOGRAM("HeavyAds.ComputedType2", UMA_HISTOGRAM_ENUMERATION,
-                  visibility, ad_frame_data.heavy_ad_status());
     ADS_HISTOGRAM("HeavyAds.ComputedTypeWithThresholdNoise",
                   UMA_HISTOGRAM_ENUMERATION, visibility,
                   ad_frame_data.heavy_ad_status_with_noise());
@@ -1378,7 +1376,8 @@ void AdsPageLoadMetricsObserver::MaybeTriggerHeavyAdIntervention(
 
   // Record heavy ad network size only when an ad is unloaded as a result of
   // network usage.
-  if (frame_data->heavy_ad_status() == ad_metrics::HeavyAdStatus::kNetwork) {
+  if (frame_data->heavy_ad_status_with_noise() ==
+      ad_metrics::HeavyAdStatus::kNetwork) {
     ADS_HISTOGRAM("HeavyAds.NetworkBytesAtFrameUnload", PAGE_BYTES_HISTOGRAM,
                   ad_metrics::kAnyVisibility,
                   frame_data->resource_data().network_bytes());

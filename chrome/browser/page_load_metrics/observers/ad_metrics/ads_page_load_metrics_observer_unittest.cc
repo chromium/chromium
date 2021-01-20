@@ -2043,17 +2043,6 @@ TEST_F(AdsPageLoadMetricsObserverTest, HeavyAdFeatureOff_UMARecorded) {
 
   using HeavyAdStatus = ad_metrics::HeavyAdStatus;
   histogram_tester().ExpectTotalCount(
-      SuffixedHistogram("HeavyAds.ComputedType2"), 4);
-  histogram_tester().ExpectBucketCount(
-      SuffixedHistogram("HeavyAds.ComputedType2"), HeavyAdStatus::kNone, 1);
-  histogram_tester().ExpectBucketCount(
-      SuffixedHistogram("HeavyAds.ComputedType2"), HeavyAdStatus::kNetwork, 1);
-  histogram_tester().ExpectBucketCount(
-      SuffixedHistogram("HeavyAds.ComputedType2"), HeavyAdStatus::kPeakCpu, 1);
-  histogram_tester().ExpectBucketCount(
-      SuffixedHistogram("HeavyAds.ComputedType2"), HeavyAdStatus::kTotalCpu, 1);
-
-  histogram_tester().ExpectTotalCount(
       SuffixedHistogram("HeavyAds.ComputedTypeWithThresholdNoise"), 4);
   histogram_tester().ExpectBucketCount(
       SuffixedHistogram("HeavyAds.ComputedTypeWithThresholdNoise"),
@@ -2305,9 +2294,6 @@ TEST_F(AdsPageLoadMetricsObserverTest,
   NavigateFrame(kNonAdUrl, main_frame);
 
   histogram_tester().ExpectUniqueSample(
-      SuffixedHistogram("HeavyAds.ComputedType2"),
-      ad_metrics::HeavyAdStatus::kNetwork, 1);
-  histogram_tester().ExpectUniqueSample(
       SuffixedHistogram("HeavyAds.ComputedTypeWithThresholdNoise"),
       ad_metrics::HeavyAdStatus::kNone, 1);
 }
@@ -2360,9 +2346,6 @@ TEST_F(AdsPageLoadMetricsObserverTest,
   // Navigate again to trigger histograms.
   NavigateFrame(kNonAdUrl, main_frame);
 
-  histogram_tester().ExpectUniqueSample(
-      SuffixedHistogram("HeavyAds.ComputedType2"),
-      ad_metrics::HeavyAdStatus::kNetwork, 1);
   histogram_tester().ExpectUniqueSample(
       SuffixedHistogram("HeavyAds.ComputedTypeWithThresholdNoise"),
       ad_metrics::HeavyAdStatus::kTotalCpu, 1);
@@ -2494,7 +2477,7 @@ TEST_F(AdsPageLoadMetricsObserverTest,
   NavigateFrame(kNonAdUrl, main_frame);
 
   histogram_tester().ExpectUniqueSample(
-      SuffixedHistogram("HeavyAds.ComputedType2"),
+      SuffixedHistogram("HeavyAds.ComputedTypeWithThresholdNoise"),
       ad_metrics::HeavyAdStatus::kNone, 1);
 }
 

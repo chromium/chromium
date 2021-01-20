@@ -378,8 +378,6 @@ class FrameTreeData : public base::SupportsWeakPtr<FrameTreeData> {
   bool SetEarliestFirstContentfulPaint(
       base::Optional<base::TimeDelta> time_stamp);
 
-  HeavyAdStatus heavy_ad_status() const { return heavy_ad_status_; }
-
   HeavyAdStatus heavy_ad_status_with_noise() const {
     return heavy_ad_status_with_noise_;
   }
@@ -460,10 +458,7 @@ class FrameTreeData : public base::SupportsWeakPtr<FrameTreeData> {
   base::Optional<base::TimeDelta> earliest_first_contentful_paint_;
 
   // Indicates whether or not this frame met the criteria for the heavy ad
-  // intervention.
-  HeavyAdStatus heavy_ad_status_ = HeavyAdStatus::kNone;
-
-  // Same as |heavy_ad_status_| but uses additional additive noise for the
+  // intervention with additional additive noise for the
   // network threshold. A frame can be considered a heavy ad by
   // |heavy_ad_status_| but not |heavy_ad_status_with_noise_|. The noised
   // threshold is used when determining whether to actually trigger the
