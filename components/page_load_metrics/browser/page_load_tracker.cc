@@ -955,12 +955,16 @@ bool PageLoadTracker::IsFirstNavigationInWebContents() const {
 }
 
 void PageLoadTracker::OnEnterBackForwardCache() {
+  // In case of BackForwardCache, invoke and update the
+  // PageLoadMetricsUpdateDispatcher before the page is hidden to enable
+  // recording metrics that requires the page to be in foreground before
+  // entering BackForwardCache on navigation.
+  INVOKE_AND_PRUNE_OBSERVERS(observers_, OnEnterBackForwardCache,
+                             metrics_update_dispatcher_.timing());
+
   if (GetWebContents()->GetVisibility() == content::Visibility::VISIBLE) {
     PageHidden();
   }
-
-  INVOKE_AND_PRUNE_OBSERVERS(observers_, OnEnterBackForwardCache,
-                             metrics_update_dispatcher_.timing());
 }
 
 void PageLoadTracker::OnRestoreFromBackForwardCache(
