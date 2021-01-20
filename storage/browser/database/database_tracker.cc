@@ -56,14 +56,14 @@ OriginInfo::~OriginInfo() = default;
 
 void OriginInfo::GetAllDatabaseNames(
     std::vector<base::string16>* databases) const {
-  for (const auto& pair : database_info_)
-    databases->push_back(pair.first);
+  for (const auto& name_and_size : database_sizes_)
+    databases->push_back(name_and_size.first);
 }
 
 int64_t OriginInfo::GetDatabaseSize(const base::string16& database_name) const {
-  auto it = database_info_.find(database_name);
-  if (it != database_info_.end())
-    return it->second.size;
+  auto it = database_sizes_.find(database_name);
+  if (it != database_sizes_.end())
+    return it->second;
   return 0;
 }
 

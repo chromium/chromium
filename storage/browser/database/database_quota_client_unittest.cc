@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
@@ -107,8 +108,8 @@ class MockDatabaseTracker : public DatabaseTracker {
     }
 
     void AddMockDatabase(const base::string16& name, int size) {
-      EXPECT_TRUE(database_info_.find(name) == database_info_.end());
-      database_info_[name].size = size;
+      EXPECT_FALSE(base::Contains(database_sizes_, name));
+      database_sizes_[name] = size;
       total_size_ += size;
     }
   };

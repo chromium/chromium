@@ -59,15 +59,12 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) OriginInfo {
   int64_t GetDatabaseSize(const base::string16& database_name) const;
 
  protected:
-  struct DBInfo {
-    int64_t size;
-  };
   OriginInfo(const std::string& origin_identifier, int64_t total_size);
 
   std::string origin_identifier_;
   int64_t total_size_;
   base::Time last_modified_;
-  std::map<base::string16, DBInfo> database_info_;
+  std::map<base::string16, int64_t> database_sizes_;
 };
 
 // This class manages the main database and keeps track of open databases.
@@ -194,10 +191,14 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) DatabaseTracker
     }
     void SetDatabaseSize(const base::string16& database_name,
                          int64_t new_size) {
-      int64_t old_size = 0;
-      if (database_info_.find(database_name) != database_info_.end())
-        old_size = database_info_[database_name].size;
-      database_info_[database_name].size = new_size;
+      // If the name does not exist in the map, operator[] creates a new entry
+      // with a default-constructed value. The default-constructed value for
+      // int64_t is zero (0), which is exactly what we want `old_size` to be set
+      // to in this case.
+      int64_t& database_size = database_sizes_[database_name];
+      int64_t old_size = database_size;
+
+      database_size = new_size;
       if (new_size != old_size)
         total_size_ += new_size - old_size;
     }
