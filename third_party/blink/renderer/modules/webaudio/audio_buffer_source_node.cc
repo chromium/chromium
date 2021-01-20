@@ -653,7 +653,21 @@ double AudioBufferSourceHandler::GetMinPlaybackRate() {
 }
 
 bool AudioBufferSourceHandler::PropagatesSilence() const {
-  return !IsPlayingOrScheduled() || HasFinished() || !shared_buffer_.get();
+  DCHECK(Context()->IsAudioThread());
+
+  if (!IsPlayingOrScheduled() || HasFinished())
+    return true;
+
+  // Protect |shared_buffer_| with tryLock because it can be accessed by the
+  // main thread.
+  MutexTryLocker try_locker(process_lock_);
+  if (try_locker.Locked()) {
+    return !shared_buffer_.get();
+  } else {
+    // Can't get lock. Assume |shared_buffer_| exists, so return false to
+    // indicate this node is (or might be) outputting non-zero samples.
+    return false;
+  }
 }
 
 void AudioBufferSourceHandler::HandleStoppableSourceNode() {
