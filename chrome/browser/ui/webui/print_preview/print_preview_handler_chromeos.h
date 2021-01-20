@@ -105,7 +105,7 @@ class PrintPreviewHandlerChromeOS
 
   // Loads printers corresponding to the print server(s).  First element of
   // |args| is the print server IDs.
-  void HandleChoosePrintServer(const base::ListValue* args);
+  void HandleChoosePrintServers(const base::ListValue* args);
 
   // Gets the list of print servers and fetching mode.
   void HandleGetPrintServersConfig(const base::ListValue* args);

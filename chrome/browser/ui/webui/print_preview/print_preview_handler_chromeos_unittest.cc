@@ -150,7 +150,7 @@ class PrintPreviewHandlerChromeOSTest : public testing::Test {
   DISALLOW_COPY_AND_ASSIGN(PrintPreviewHandlerChromeOSTest);
 };
 
-TEST_F(PrintPreviewHandlerChromeOSTest, ChoosePrintServer) {
+TEST_F(PrintPreviewHandlerChromeOSTest, ChoosePrintServers) {
   base::Value selected_args(base::Value::Type::LIST);
   base::Value selected_ids_js(base::Value::Type::LIST);
   selected_ids_js.Append(kSelectedPrintServerId);
@@ -160,13 +160,13 @@ TEST_F(PrintPreviewHandlerChromeOSTest, ChoosePrintServer) {
   base::Value none_selected_js(base::Value::Type::LIST);
   none_selected_args.Append(std::move(none_selected_js));
 
-  web_ui()->HandleReceivedMessage("choosePrintServer",
+  web_ui()->HandleReceivedMessage("choosePrintServers",
                                   &base::Value::AsListValue(selected_args));
   EXPECT_THAT(print_servers_manager()->selected_print_server_ids(),
               testing::ElementsAre(std::string(kSelectedPrintServerId)));
 
   web_ui()->HandleReceivedMessage(
-      "choosePrintServer", &base::Value::AsListValue(none_selected_args));
+      "choosePrintServers", &base::Value::AsListValue(none_selected_args));
   EXPECT_THAT(print_servers_manager()->selected_print_server_ids(),
               testing::IsEmpty());
 
