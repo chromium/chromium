@@ -25,6 +25,7 @@ extern const base::Feature kRealboxMatchOmniboxTheme;
 extern const base::Feature kRealboxUseGoogleGIcon;
 extern const base::Feature kWebUI;
 extern const base::Feature kWebUIThemeModeDoodles;
+extern const base::Feature kNtpShortcuts;
 extern const base::Feature kModules;
 extern const base::Feature kNtpRecipeTasksModule;
 extern const base::Feature kNtpShoppingTasksModule;

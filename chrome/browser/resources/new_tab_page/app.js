@@ -198,6 +198,12 @@ class AppElement extends PolymerElement {
       },
 
       /** @private */
+      shortcutsEnabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('shortcutsEnabled'),
+      },
+
+      /** @private */
       modulesEnabled_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('modulesEnabled'),

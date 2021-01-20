@@ -71,6 +71,10 @@ const base::Feature kWebUI{"NtpWebUI", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kWebUIThemeModeDoodles{"WebUIThemeModeDoodles",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
+// If enabled, shortcuts will be shown.
+const base::Feature kNtpShortcuts{"NtpShortcuts",
+                                  base::FEATURE_ENABLED_BY_DEFAULT};
+
 // If enabled, modules will be shown.
 const base::Feature kModules{"NtpModules", base::FEATURE_DISABLED_BY_DEFAULT};
 
