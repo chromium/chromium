@@ -44,12 +44,12 @@ class VIZ_VULKAN_CONTEXT_PROVIDER_EXPORT VulkanContextProvider
   // semphores are submitted.
   virtual void EnqueueSecondaryCBPostSubmitTask(base::OnceClosure closure) = 0;
 
-  // Returns the memory limit where GPU work should be synchronized with the CPU
-  // in order to free previously released memory immediately. In other words,
-  // the CPU will wait for GPU work to complete before proceeding when the
-  // current amount of allocated memory exceeds this limit. Zero return value
-  // indicate that there's no limit.
-  virtual uint32_t GetSyncCpuMemoryLimit() const = 0;
+  // Returns a valid limit in MB if there is a memory limit where GPU work
+  // should be synchronized with the CPU in order to free previously released
+  // memory immediately. In other words, the CPU will wait for GPU work to
+  // complete before proceeding when the current amount of allocated memory
+  // exceeds this limit.
+  virtual base::Optional<uint32_t> GetSyncCpuMemoryLimit() const = 0;
 
  protected:
   friend class base::RefCountedThreadSafe<VulkanContextProvider>;

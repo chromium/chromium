@@ -378,6 +378,9 @@ viz_source_set("unit_tests") {
     ]
   }
 
+  if (enable_vulkan) {
+    sources += [ "gpu/vulkan_in_process_context_provider_unittest.cc" ]
+  }
   deps = [
     ":common",
     "//base/test:test_support",

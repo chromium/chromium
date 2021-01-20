@@ -8,6 +8,8 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/memory_pressure_listener.h"
+#include "base/time/time.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "components/viz/common/viz_vulkan_context_provider_export.h"
 #include "gpu/vulkan/buildflags.h"
@@ -28,11 +30,17 @@ namespace viz {
 class VIZ_VULKAN_CONTEXT_PROVIDER_EXPORT VulkanInProcessContextProvider
     : public VulkanContextProvider {
  public:
+  // if |sync_cpu_memory_limit| is set and greater than zero,
+  // |cooldown_duration_at_memory_pressure_critical| is the duration of applying
+  // zero sync cpu memory limit after CRITICAL memory pressure signal is
+  // received. 15s is default to sync with memory monitor cycles.
   static scoped_refptr<VulkanInProcessContextProvider> Create(
       gpu::VulkanImplementation* vulkan_implementation,
       uint32_t heap_memory_limit = 0,
       uint32_t sync_cpu_memory_limit = 0,
-      const gpu::GPUInfo* gpu_info = nullptr);
+      const gpu::GPUInfo* gpu_info = nullptr,
+      base::TimeDelta cooldown_duration_at_memory_pressure_critical =
+          base::TimeDelta::FromSeconds(15));
 
   void Destroy();
 
@@ -45,16 +53,23 @@ class VIZ_VULKAN_CONTEXT_PROVIDER_EXPORT VulkanInProcessContextProvider
   void EnqueueSecondaryCBSemaphores(
       std::vector<VkSemaphore> semaphores) override;
   void EnqueueSecondaryCBPostSubmitTask(base::OnceClosure closure) override;
-  uint32_t GetSyncCpuMemoryLimit() const override;
+  base::Optional<uint32_t> GetSyncCpuMemoryLimit() const override;
 
  private:
-  explicit VulkanInProcessContextProvider(
+  friend class VulkanInProcessContextProviderTest;
+
+  VulkanInProcessContextProvider(
       gpu::VulkanImplementation* vulkan_implementation,
       uint32_t heap_memory_limit,
-      uint32_t sync_cpu_memory_limit);
+      uint32_t sync_cpu_memory_limit,
+      base::TimeDelta cooldown_duration_at_memory_pressure_critical);
   ~VulkanInProcessContextProvider() override;
 
   bool Initialize(const gpu::GPUInfo* gpu_info);
+
+  // Memory pressure handler, called by |memory_pressure_listener_|.
+  void OnMemoryPressure(
+      base::MemoryPressureListener::MemoryPressureLevel level);
 
 #if BUILDFLAG(ENABLE_VULKAN)
   sk_sp<GrDirectContext> gr_context_;
@@ -62,7 +77,11 @@ class VIZ_VULKAN_CONTEXT_PROVIDER_EXPORT VulkanInProcessContextProvider
   std::unique_ptr<gpu::VulkanDeviceQueue> device_queue_;
   const uint32_t heap_memory_limit_;
   const uint32_t sync_cpu_memory_limit_;
+  const base::TimeDelta cooldown_duration_at_memory_pressure_critical_;
+  base::TimeTicks critical_memory_pressure_expiration_time_;
 #endif
+
+  std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
 
   DISALLOW_COPY_AND_ASSIGN(VulkanInProcessContextProvider);
 };
