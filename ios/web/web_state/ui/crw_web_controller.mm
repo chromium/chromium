@@ -977,8 +977,13 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
     GURL documentOrigin = newURL.GetOrigin();
     web::NavigationItem* committedItem =
         self.webStateImpl->GetNavigationManager()->GetLastCommittedItem();
-    GURL committedOrigin =
-        committedItem ? committedItem->GetURL().GetOrigin() : GURL::EmptyGURL();
+    GURL committedURL =
+        committedItem ? committedItem->GetURL() : GURL::EmptyGURL();
+    if (!base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage) &&
+        IsPlaceholderUrl(committedURL)) {
+      committedURL = ExtractUrlFromPlaceholderUrl(committedURL);
+    }
+    GURL committedOrigin = committedURL.GetOrigin();
     DCHECK_EQ(documentOrigin, committedOrigin)
         << "Old and new URL detection system have a mismatch";
 
