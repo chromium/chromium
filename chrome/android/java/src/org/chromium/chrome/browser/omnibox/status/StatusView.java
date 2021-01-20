@@ -102,33 +102,31 @@ public class StatusView extends LinearLayout {
      */
     public void updateSearchEngineStatusIcon(boolean shouldShowSearchEngineLogo,
             boolean isSearchEngineGoogle, String searchEngineUrl) {
-        if (mLocationBarDataProvider != null
-                && mDelegate.shouldShowSearchEngineLogo(mLocationBarDataProvider.isIncognito())) {
-            LinearLayout.LayoutParams layoutParams =
-                    new LinearLayout.LayoutParams(mIconView.getLayoutParams());
-            layoutParams.setMarginEnd(0);
-            layoutParams.width =
-                    getResources().getDimensionPixelSize(R.dimen.location_bar_status_icon_width);
-            mIconView.setLayoutParams(layoutParams);
-            // Setup the padding once we're loaded, the other padding changes will happen with post-
-            // layout positioning.
-            setPaddingRelative(getPaddingStart(), getPaddingTop(),
-                    getResources().getDimensionPixelOffset(
-                            R.dimen.sei_location_bar_icon_end_padding),
-                    getPaddingBottom());
-            // Note: the margins and implicit padding were removed from the status view for the
-            // dse icon experiment. Moving padding values that were there to the verbose status
-            // text view and the verbose text extra space.
-            mVerboseStatusTextView.setPaddingRelative(
-                    getResources().getDimensionPixelSize(
-                            R.dimen.sei_location_bar_verbose_start_padding_verbose_text),
-                    mVerboseStatusTextView.getPaddingTop(), mVerboseStatusTextView.getPaddingEnd(),
-                    mVerboseStatusTextView.getPaddingBottom());
-            layoutParams = new LinearLayout.LayoutParams(mStatusExtraSpace.getLayoutParams());
-            layoutParams.width = getResources().getDimensionPixelSize(
-                    R.dimen.sei_location_bar_status_extra_padding_width);
-            mStatusExtraSpace.setLayoutParams(layoutParams);
-        }
+        if (!mDelegate.isSearchEngineLogoEnabled()) return;
+
+        LinearLayout.LayoutParams layoutParams =
+                new LinearLayout.LayoutParams(mIconView.getLayoutParams());
+        layoutParams.setMarginEnd(0);
+        layoutParams.width =
+                getResources().getDimensionPixelSize(R.dimen.location_bar_status_icon_width);
+        mIconView.setLayoutParams(layoutParams);
+        // Setup the padding once we're loaded, the other padding changes will happen with post-
+        // layout positioning.
+        setPaddingRelative(getPaddingStart(), getPaddingTop(),
+                getResources().getDimensionPixelOffset(R.dimen.sei_location_bar_icon_end_padding),
+                getPaddingBottom());
+        // Note: the margins and implicit padding were removed from the status view for the
+        // dse icon experiment. Moving padding values that were there to the verbose status
+        // text view and the verbose text extra space.
+        mVerboseStatusTextView.setPaddingRelative(
+                getResources().getDimensionPixelSize(
+                        R.dimen.sei_location_bar_verbose_start_padding_verbose_text),
+                mVerboseStatusTextView.getPaddingTop(), mVerboseStatusTextView.getPaddingEnd(),
+                mVerboseStatusTextView.getPaddingBottom());
+        layoutParams = new LinearLayout.LayoutParams(mStatusExtraSpace.getLayoutParams());
+        layoutParams.width = getResources().getDimensionPixelSize(
+                R.dimen.sei_location_bar_status_extra_padding_width);
+        mStatusExtraSpace.setLayoutParams(layoutParams);
     }
 
     /**

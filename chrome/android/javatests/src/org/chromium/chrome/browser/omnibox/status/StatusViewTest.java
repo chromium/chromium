@@ -178,6 +178,7 @@ public class StatusViewTest extends DummyUiActivityTestCase {
     @Feature({"Omnibox"})
     @EnableFeatures("OmniboxSearchEngineLogo")
     public void testSearchEngineLogo_noIncognito_statusDimensions() {
+        doReturn(true).when(mStatusViewDelegate).isSearchEngineLogoEnabled();
         doReturn(true).when(mStatusViewDelegate).shouldShowSearchEngineLogo(false);
         runOnUiThreadBlocking(() -> {
             mStatusModel.set(StatusProperties.STATUS_ICON_RESOURCE,

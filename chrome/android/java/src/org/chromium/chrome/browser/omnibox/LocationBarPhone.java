@@ -78,6 +78,8 @@ class LocationBarPhone extends LocationBarLayout {
         // This branch will be hit if the search engine logo experiment is enabled and we should
         // show the logo.
         if (shouldShowSearchEngineLogo) {
+            mFirstVisibleFocusedView = mStatusView;
+
             // When the search engine icon is enabled, icons are translations into the parent view's
             // padding area. Set clip padding to false to prevent them from getting clipped.
             setClipToPadding(false);

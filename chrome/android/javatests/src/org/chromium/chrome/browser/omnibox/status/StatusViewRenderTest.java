@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.omnibox.status;
 
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 
+import android.graphics.Color;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -18,6 +19,7 @@ import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.browser.omnibox.status.StatusView.StatusViewDelegate;
 import org.chromium.chrome.browser.toolbar.LocationBarModel;
@@ -30,6 +32,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.DummyUiActivityTestCase;
 
+import java.io.IOException;
+
 /**
  * Render tests for {@link StatusView}.
  */
@@ -41,12 +45,13 @@ public class StatusViewRenderTest extends DummyUiActivityTestCase {
 
     private StatusView mStatusView;
     private PropertyModel mStatusModel;
+    private LocationBarModel mLocationBarModel;
 
     /** Testing implementation that returns true for everything. */
     static class DelegateForTesting extends StatusViewDelegate {
         @Override
         boolean shouldShowSearchEngineLogo(boolean isIncognito) {
-            return true;
+            return !isIncognito;
         }
 
         @Override
@@ -73,49 +78,90 @@ public class StatusViewRenderTest extends DummyUiActivityTestCase {
                                   .inflate(org.chromium.chrome.R.layout.location_status, view, true)
                                   .findViewById(org.chromium.chrome.R.id.location_bar_status);
             mStatusView.setCompositeTouchDelegate(new CompositeTouchDelegate(view));
-            mStatusView.setLocationBarDataProvider(
+            mLocationBarModel =
                     new LocationBarModel(mStatusView.getContext(), NewTabPageDelegate.EMPTY,
-                            url -> url.getSpec(), window -> null, ToolbarTestUtils.OFFLINE_STATUS));
+                            url -> url.getSpec(), window -> null, ToolbarTestUtils.OFFLINE_STATUS);
+            mLocationBarModel.setTab(null, /*  incognito= */ false);
+            mStatusView.setLocationBarDataProvider(mLocationBarModel);
+            mStatusView.setDelegateForTesting(new DelegateForTesting());
             mStatusModel = new PropertyModel.Builder(StatusProperties.ALL_KEYS).build();
             PropertyModelChangeProcessor.create(mStatusModel, mStatusView, new StatusViewBinder());
+
+            // Increases visibility for manual parsing of diffs. Status view matches the parent
+            // height, so this white will stretch vertically.
+            mStatusView.setBackgroundColor(Color.WHITE);
         });
     }
 
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    public void testStatusViewVerbosePadding() throws Exception {
+    public void testStatusViewIncognitoWithIcon() throws IOException {
+        mLocationBarModel.setTab(null, /*  incognito= */ true);
+
         runOnUiThreadBlocking(() -> {
-            mStatusView.setVerboseStatusTextContent(
-                    org.chromium.chrome.R.string.location_bar_preview_lite_page_status);
-            mStatusView.setVerboseStatusTextWidth(mStatusView.getResources().getDimensionPixelSize(
-                    org.chromium.chrome.R.dimen.location_bar_min_verbose_status_text_width));
-            mStatusView.setVerboseStatusTextVisible(true);
+            mStatusView.setIncognitoBadgeVisibility(true);
             mStatusModel.set(StatusProperties.STATUS_ICON_RESOURCE,
-                    new StatusIconResource(org.chromium.chrome.R.drawable.ic_search, 0));
+                    new StatusIconResource(R.drawable.ic_search, 0));
         });
-        mRenderTestRule.render(mStatusView, "status_view_verbose_padding");
+        mRenderTestRule.render(mStatusView, "status_view_incognito_with_icon");
     }
 
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    public void testStatusViewVerbosePadding_withDSEIcon() throws Exception {
-        runOnUiThreadBlocking(() -> {
-            mStatusView.setDelegateForTesting(new DelegateForTesting());
+    public void testStatusViewIncognitoNoIcon() throws IOException {
+        mLocationBarModel.setTab(null, /*  incognito= */ true);
 
-            mStatusView.updateSearchEngineStatusIcon(true, true, "");
-            mStatusView.setVerboseStatusTextContent(
-                    org.chromium.chrome.R.string.location_bar_preview_lite_page_status);
+        runOnUiThreadBlocking(() -> {
+            mStatusView.setIncognitoBadgeVisibility(true);
+            mStatusModel.set(StatusProperties.STATUS_ICON_RESOURCE, null);
+        });
+        mRenderTestRule.render(mStatusView, "status_view_incognito_no_icon");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testStatusViewWithIcon() throws IOException {
+        runOnUiThreadBlocking(() -> {
+            mStatusModel.set(StatusProperties.STATUS_ICON_ALPHA, 1f);
+            mStatusModel.set(StatusProperties.SHOW_STATUS_ICON, true);
+            mStatusModel.set(StatusProperties.STATUS_ICON_RESOURCE,
+                    new StatusIconResource(R.drawable.ic_search, 0));
+        });
+        mRenderTestRule.render(mStatusView, "status_view_with_icon");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testStatusViewWithIconAndVerbosePadding() throws IOException {
+        runOnUiThreadBlocking(() -> {
+            mStatusView.setVerboseStatusTextContent(R.string.location_bar_preview_lite_page_status);
             mStatusView.setVerboseStatusTextWidth(mStatusView.getResources().getDimensionPixelSize(
-                    org.chromium.chrome.R.dimen.location_bar_min_verbose_status_text_width));
+                    R.dimen.location_bar_min_verbose_status_text_width));
             mStatusView.setVerboseStatusTextVisible(true);
             mStatusModel.set(StatusProperties.STATUS_ICON_ALPHA, 1f);
             mStatusModel.set(StatusProperties.SHOW_STATUS_ICON, true);
             mStatusModel.set(StatusProperties.STATUS_ICON_RESOURCE,
-                    new StatusIconResource(org.chromium.chrome.R.drawable.ic_logo_googleg_24dp, 0));
+                    new StatusIconResource(R.drawable.ic_search, 0));
         });
+        mRenderTestRule.render(mStatusView, "status_view_with_icon_and_verbose_padding");
+    }
 
-        mRenderTestRule.render(mStatusView, "status_view_verbose_padding_with_dse_icon");
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testStatusViewNoIconAndVerbosePadding() throws IOException {
+        runOnUiThreadBlocking(() -> {
+            mStatusView.setVerboseStatusTextContent(R.string.location_bar_preview_lite_page_status);
+            mStatusView.setVerboseStatusTextWidth(mStatusView.getResources().getDimensionPixelSize(
+                    R.dimen.location_bar_min_verbose_status_text_width));
+            mStatusView.setVerboseStatusTextVisible(true);
+            mStatusModel.set(StatusProperties.STATUS_ICON_RESOURCE,
+                    new StatusIconResource(R.drawable.ic_search, 0));
+        });
+        mRenderTestRule.render(mStatusView, "status_view_no_icon_with_verbose_padding");
     }
 }

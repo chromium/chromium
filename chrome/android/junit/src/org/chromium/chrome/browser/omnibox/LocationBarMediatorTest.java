@@ -525,7 +525,6 @@ public class LocationBarMediatorTest {
         doReturn(mNonGoogleSearchEngine)
                 .when(mTemplateUrlService)
                 .getDefaultSearchEngineTemplateUrl();
-        mMediator.onFinishNativeInitialization();
         mMediator.registerTemplateUrlObserver();
 
         verify(mLocationBarLayout)
