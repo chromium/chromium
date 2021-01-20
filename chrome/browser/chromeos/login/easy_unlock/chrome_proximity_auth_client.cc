@@ -53,18 +53,18 @@ void ChromeProximityAuthClient::GetChallengeForUserAndDevice(
     const std::string& user_email,
     const std::string& remote_public_key,
     const std::string& channel_binding_data,
-    base::Callback<void(const std::string& challenge)> callback) {
+    base::OnceCallback<void(const std::string& challenge)> callback) {
   EasyUnlockService* easy_unlock_service = EasyUnlockService::Get(profile_);
   if (easy_unlock_service->GetType() == EasyUnlockService::TYPE_REGULAR) {
     PA_LOG(ERROR) << "Unable to get challenge when user is logged in.";
-    callback.Run(std::string() /* challenge */);
+    std::move(callback).Run(/*challenge=*/std::string());
     return;
   }
 
   static_cast<EasyUnlockServiceSignin*>(easy_unlock_service)
       ->WrapChallengeForUserAndDevice(AccountId::FromUserEmail(user_email),
                                       remote_public_key, channel_binding_data,
-                                      callback);
+                                      std::move(callback));
 }
 
 proximity_auth::ProximityAuthPrefManager*

@@ -27,7 +27,7 @@ class ChromeProximityAuthClient : public proximity_auth::ProximityAuthClient {
       const std::string& user_email,
       const std::string& remote_public_key,
       const std::string& nonce,
-      base::Callback<void(const std::string& challenge)> callback) override;
+      base::OnceCallback<void(const std::string& challenge)> callback) override;
   proximity_auth::ProximityAuthPrefManager* GetPrefManager() override;
 
  private:

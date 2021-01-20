@@ -44,7 +44,7 @@ class ProximityAuthClient {
       const std::string& user_email,
       const std::string& remote_public_key,
       const std::string& channel_binding_data,
-      base::Callback<void(const std::string& challenge)> callback) = 0;
+      base::OnceCallback<void(const std::string& challenge)> callback) = 0;
 
   // Returns the manager responsible for EasyUnlock preferences.
   virtual ProximityAuthPrefManager* GetPrefManager() = 0;

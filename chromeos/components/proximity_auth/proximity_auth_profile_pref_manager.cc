@@ -61,9 +61,9 @@ void ProximityAuthProfilePrefManager::StartSyncingToLocalState(
     return;
   }
 
-  base::Closure on_pref_changed_callback =
-      base::Bind(&ProximityAuthProfilePrefManager::SyncPrefsToLocalState,
-                 weak_ptr_factory_.GetWeakPtr());
+  auto on_pref_changed_callback = base::BindRepeating(
+      &ProximityAuthProfilePrefManager::SyncPrefsToLocalState,
+      weak_ptr_factory_.GetWeakPtr());
 
   registrar_.Init(pref_service_);
   registrar_.Add(chromeos::multidevice_setup::kSmartLockAllowedPrefName,
@@ -175,7 +175,7 @@ void ProximityAuthProfilePrefManager::SetHasShownLoginDisabledMessage(
     bool has_shown) {
   // This is persisted within SyncPrefsToLocalState() instead, since the local
   // state must act as the source of truth for this pref.
-  
+
   // TODO(crbug.com/1152491): Add a NOTREACHED() to ensure this method is not
   // called. It is currently incorrectly, though harmlessly, called by virtual
   // Chrome OS on Linux.

@@ -30,7 +30,7 @@ class MockProximityAuthClient : public ProximityAuthClient {
       void(const std::string& user_id,
            const std::string& remote_public_key,
            const std::string& channel_binding_data,
-           base::Callback<void(const std::string& challenge)> callback));
+           base::OnceCallback<void(const std::string& challenge)> callback));
   MOCK_CONST_METHOD0(GetAuthenticatedUsername, std::string(void));
   MOCK_METHOD0(GetPrefManager, ProximityAuthPrefManager*(void));
 

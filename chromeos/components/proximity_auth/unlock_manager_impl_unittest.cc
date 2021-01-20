@@ -9,6 +9,7 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -828,12 +829,7 @@ TEST_F(ProximityAuthUnlockManagerImplTest, OnAuthAttempted_SignIn_Success) {
               GetChallengeForUserAndDevice(remote_device_.user_email(),
                                            remote_device_.public_key(),
                                            channel_binding_data, _))
-      .WillOnce(Invoke(
-          [](const std::string& user_id, const std::string& public_key,
-             const std::string& channel_binding_data,
-             base::Callback<void(const std::string& challenge)> callback) {
-            callback.Run(kChallenge);
-          }));
+      .WillOnce(base::test::RunOnceCallback<3>(kChallenge));
 
   EXPECT_CALL(messenger_, RequestDecryption(kChallenge));
   unlock_manager_->OnAuthAttempted(mojom::AuthType::USER_CLICK);
