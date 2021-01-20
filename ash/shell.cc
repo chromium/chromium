@@ -75,6 +75,7 @@
 #include "ash/media/media_notification_controller_impl.h"
 #include "ash/multi_device_setup/multi_device_notification_presenter.h"
 #include "ash/policy/policy_recommendation_restorer.h"
+#include "ash/projector/projector_controller.h"
 #include "ash/public/cpp/ash_constants.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/ash_prefs.h"
@@ -839,6 +840,7 @@ Shell::~Shell() {
 
   display_color_manager_.reset();
   projecting_observer_.reset();
+  projector_controller_.reset();
 
   if (display_change_observer_)
     display_manager_->configurator()->RemoveObserver(
@@ -1257,6 +1259,10 @@ void Shell::Init(
   if (features::IsDisplayAlignmentAssistanceEnabled()) {
     display_alignment_controller_ =
         std::make_unique<DisplayAlignmentController>();
+  }
+
+  if (chromeos::features::IsProjectorEnabled()) {
+    projector_controller_ = std::make_unique<ProjectorController>();
   }
 
   // Injects the factory which fulfills the implementation of the text context

@@ -160,6 +160,7 @@ class PowerEventObserver;
 class PowerPrefs;
 class PrivacyScreenController;
 class ProjectingObserver;
+class ProjectorController;
 class QuickAnswersController;
 class ResizeShadowController;
 class ResolutionNotificationController;
@@ -558,6 +559,10 @@ class ASH_EXPORT Shell : public SessionObserver,
     return frame_throttling_controller_.get();
   }
 
+  ProjectorController* projector_controller() {
+    return projector_controller_.get();
+  }
+
   // Force the shelf to query for it's current visibility state.
   // TODO(jamescook): Move to Shelf.
   void UpdateShelfVisibility();
@@ -850,6 +855,8 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<KeyAccessibilityEnabler> key_accessibility_enabler_;
 
   std::unique_ptr<FrameThrottlingController> frame_throttling_controller_;
+
+  std::unique_ptr<ProjectorController> projector_controller_;
 
   // For testing only: simulate that a modal window is open
   bool simulate_modal_window_open_for_test_ = false;

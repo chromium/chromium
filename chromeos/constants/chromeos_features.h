@@ -240,6 +240,7 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kPrinterStatus;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kPrinterStatusDialog;
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const base::Feature kProjector;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const base::Feature kQuickAnswers;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kQuickAnswersDogfood;
@@ -362,6 +363,7 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsPinSetupForFamilyLinkEnabled();
 
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsPinAutosubmitBackfillFeatureEnabled();
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsProjectorEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsQuickAnswersDogfood();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsQuickAnswersEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsQuickAnswersRichUiEnabled();

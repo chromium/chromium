@@ -78,6 +78,7 @@ include_rules = [
   "+chromeos/network",
   "+chromeos/services/assistant/public" ,
   "+chromeos/services/assistant/test_support",
+  "+chromeos/services/machine_learning/public",
   "+chromeos/services/multidevice_setup/public",
   "+chromeos/services/nearby/public",
   "+chromeos/services/network_config/public",

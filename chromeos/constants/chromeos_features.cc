@@ -541,6 +541,9 @@ const base::Feature kPrintSaveToDrive{"PrintSaveToDrive",
 const base::Feature kPrintServerScaling{"PrintServerScaling",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls whether to enable projector.
+const base::Feature kProjector{"Projector", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether to enable quick answers.
 const base::Feature kQuickAnswers{"QuickAnswers",
                                   base::FEATURE_DISABLED_BY_DEFAULT};
@@ -833,6 +836,10 @@ bool IsPinAutosubmitFeatureEnabled() {
 
 bool IsPinAutosubmitBackfillFeatureEnabled() {
   return base::FeatureList::IsEnabled(kQuickUnlockPinAutosubmitBackfill);
+}
+
+bool IsProjectorEnabled() {
+  return base::FeatureList::IsEnabled(kProjector);
 }
 
 bool IsQuickAnswersDogfood() {
