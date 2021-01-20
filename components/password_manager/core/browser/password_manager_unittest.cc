@@ -74,8 +74,10 @@ using base::ASCIIToUTF16;
 using base::Feature;
 using base::TestMockTimeTaskRunner;
 using testing::_;
+using testing::AllOf;
 using testing::AnyNumber;
 using testing::ByMove;
+using testing::Field;
 using testing::Invoke;
 using testing::IsNull;
 using testing::Mock;
@@ -3410,11 +3412,12 @@ TEST_P(PasswordManagerTest, UsernameFirstFlow) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kUsernameFirstFlow);
   EXPECT_CALL(*store_, GetLogins(_, _))
-      .WillRepeatedly(WithArg<1>(InvokeEmptyConsumerWithForms(store_.get())));
+      .WillRepeatedly(
+          WithArg<1>(InvokeConsumer(store_.get(), MakeSavedForm())));
 
   PasswordForm form(MakeSimpleFormWithOnlyPasswordField());
   // Simulate the user typed a username in username form.
-  const base::string16 username = ASCIIToUTF16("username1");
+  const base::string16 username = ASCIIToUTF16("googleuser@gmail.com");
   EXPECT_CALL(driver_, GetLastCommittedURL()).WillOnce(ReturnRef(form.url));
   manager()->OnUserModifiedNonPasswordField(&driver_, FieldRendererId(1001),
                                             username /* value */);
@@ -3438,21 +3441,24 @@ TEST_P(PasswordManagerTest, UsernameFirstFlow) {
   // Simulates successful submission.
   manager()->OnPasswordFormsRendered(&driver_, {} /* observed */, true);
 
-  // Simulate saving the form, as if the info bar was accepted.
-  PasswordForm saved_form;
-  EXPECT_CALL(*store_, AddLogin(_)).WillOnce(SaveArg<0>(&saved_form));
   ASSERT_TRUE(form_manager_to_save);
-  form_manager_to_save->Save();
-
-#if defined(OS_ANDROID)
-  // Local heuristics on Android for username first flow are not supported, so
-  // the username should not be taken from the username form.
-  EXPECT_TRUE(saved_form.username_value.empty());
+#if !defined(OS_ANDROID)
+  EXPECT_CALL(*store_,
+              AddLogin(AllOf(Field(&PasswordForm::username_value, username),
+                             Field(&PasswordForm::password_value, password))));
 #else
-  EXPECT_EQ(username, saved_form.username_value);
+  // Local heuristics on Android for username first flow are not supported, so
+  // the username should not be taken from the username form. Furthermore, since
+  // there is no change to the already saved username, this should trigger an
+  // update flow, rather than a save flow.
+  EXPECT_CALL(
+      *store_,
+      UpdateLogin(AllOf(
+          Field(&PasswordForm::username_value, MakeSavedForm().username_value),
+          Field(&PasswordForm::password_value, password))));
 #endif  // defined(OS_ANDROID)
-
-  EXPECT_EQ(password, saved_form.password_value);
+  // Simulate saving the form, as if the info bar was accepted.
+  form_manager_to_save->Save();
 }
 
 #if !defined(OS_IOS)

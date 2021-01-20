@@ -1054,9 +1054,17 @@ bool PasswordFormManager::UsePossibleUsername(
     }
   }
 
+  // TODO(crbug.com/959776): This currently only considers a possible username
+  // valid if a credential with the same username already exists for the same
+  // site. This is too conservative, and we should allow any possible username
+  // that matches a credential on any site in the user's password store.
+  std::vector<base::string16> usernames;
+  usernames.reserve(GetBestMatches().size());
+  base::ranges::transform(GetBestMatches(), std::back_inserter(usernames),
+                          &PasswordForm::username_value);
+
   bool is_possible_username_valid = IsPossibleUsernameValid(
-      *possible_username, parsed_submitted_form_->signon_realm,
-      base::Time::Now());
+      *possible_username, parsed_submitted_form_->signon_realm, usernames);
   LogUsingPossibleUsername(client_, /*is_used*/ is_possible_username_valid,
                            "Local heuristics");
   return is_possible_username_valid;
