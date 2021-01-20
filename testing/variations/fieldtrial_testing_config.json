@@ -7663,7 +7663,7 @@
             ]
         }
     ],
-    "WebViewZeroCopyVideo": [
+    "WebViewZeroCopyVideoWithParam": [
         {
             "platforms": [
                 "android_webview"
@@ -7671,6 +7671,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "WebViewZeroCopyVideoBlocklist": ""
+                    },
                     "enable_features": [
                         "WebViewZeroCopyVideo"
                     ]
