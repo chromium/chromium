@@ -2208,8 +2208,8 @@ void WebGLRenderingContextBase::bufferData(GLenum target,
   if (isContextLost())
     return;
   DCHECK(data);
-  BufferDataImpl(target, data.View()->byteLength(),
-                 data.View()->BaseAddressMaybeShared(), usage);
+  BufferDataImpl(target, data->byteLength(), data->BaseAddressMaybeShared(),
+                 usage);
 }
 
 void WebGLRenderingContextBase::BufferSubDataImpl(GLenum target,
@@ -2404,7 +2404,7 @@ void WebGLRenderingContextBase::compressedTexImage2D(
     return;
   ContextGL()->CompressedTexImage2D(target, level, internalformat, width,
                                     height, border, data_length,
-                                    data.View()->BaseAddressMaybeShared());
+                                    data->BaseAddressMaybeShared());
 }
 
 void WebGLRenderingContextBase::compressedTexSubImage2D(
@@ -2427,7 +2427,7 @@ void WebGLRenderingContextBase::compressedTexSubImage2D(
     return;
   ContextGL()->CompressedTexSubImage2D(target, level, xoffset, yoffset, width,
                                        height, format, data_length,
-                                       data.View()->BaseAddressMaybeShared());
+                                       data->BaseAddressMaybeShared());
 }
 
 bool WebGLRenderingContextBase::ValidateSettableTexFormat(
@@ -4747,7 +4747,7 @@ void WebGLRenderingContextBase::readPixels(
              0)
         .Record(ukm_params.ukm_recorder);
   }
-  ReadPixelsHelper(x, y, width, height, format, type, pixels.View(), 0);
+  ReadPixelsHelper(x, y, width, height, format, type, pixels.Get(), 0);
 }
 
 void WebGLRenderingContextBase::ReadPixelsHelper(GLint x,
@@ -5398,7 +5398,7 @@ void WebGLRenderingContextBase::texImage2D(
     MaybeShared<DOMArrayBufferView> pixels) {
   TexImageHelperDOMArrayBufferView(kTexImage2D, target, level, internalformat,
                                    width, height, 1, border, format, type, 0, 0,
-                                   0, pixels.View(), kNullAllowed, 0);
+                                   0, pixels.Get(), kNullAllowed, 0);
 }
 
 void WebGLRenderingContextBase::TexImageHelperImageData(
@@ -6342,7 +6342,7 @@ void WebGLRenderingContextBase::texSubImage2D(
     MaybeShared<DOMArrayBufferView> pixels) {
   TexImageHelperDOMArrayBufferView(kTexSubImage2D, target, level, 0, width,
                                    height, 1, 0, format, type, xoffset, yoffset,
-                                   0, pixels.View(), kNullNotAllowed, 0);
+                                   0, pixels.Get(), kNullNotAllowed, 0);
 }
 
 void WebGLRenderingContextBase::texSubImage2D(GLenum target,
@@ -6716,11 +6716,11 @@ void WebGLRenderingContextBase::uniformMatrix2fv(
     MaybeShared<DOMFloat32Array> v) {
   if (isContextLost() ||
       !ValidateUniformMatrixParameters("uniformMatrix2fv", location, transpose,
-                                       v.View(), 4, 0, v.View()->length()))
+                                       v.Get(), 4, 0, v->length()))
     return;
-  ContextGL()->UniformMatrix2fv(
-      location->Location(), base::checked_cast<GLuint>(v.View()->length()) >> 2,
-      transpose, v.View()->DataMaybeShared());
+  ContextGL()->UniformMatrix2fv(location->Location(),
+                                base::checked_cast<GLuint>(v->length()) >> 2,
+                                transpose, v->DataMaybeShared());
 }
 
 void WebGLRenderingContextBase::uniformMatrix2fv(
@@ -6741,11 +6741,11 @@ void WebGLRenderingContextBase::uniformMatrix3fv(
     MaybeShared<DOMFloat32Array> v) {
   if (isContextLost() ||
       !ValidateUniformMatrixParameters("uniformMatrix3fv", location, transpose,
-                                       v.View(), 9, 0, v.View()->length()))
+                                       v.Get(), 9, 0, v->length()))
     return;
-  ContextGL()->UniformMatrix3fv(
-      location->Location(), base::checked_cast<GLuint>(v.View()->length()) / 9,
-      transpose, v.View()->DataMaybeShared());
+  ContextGL()->UniformMatrix3fv(location->Location(),
+                                base::checked_cast<GLuint>(v->length()) / 9,
+                                transpose, v->DataMaybeShared());
 }
 
 void WebGLRenderingContextBase::uniformMatrix3fv(
@@ -6766,11 +6766,11 @@ void WebGLRenderingContextBase::uniformMatrix4fv(
     MaybeShared<DOMFloat32Array> v) {
   if (isContextLost() ||
       !ValidateUniformMatrixParameters("uniformMatrix4fv", location, transpose,
-                                       v.View(), 16, 0, v.View()->length()))
+                                       v.Get(), 16, 0, v->length()))
     return;
-  ContextGL()->UniformMatrix4fv(
-      location->Location(), base::checked_cast<GLuint>(v.View()->length()) >> 4,
-      transpose, v.View()->DataMaybeShared());
+  ContextGL()->UniformMatrix4fv(location->Location(),
+                                base::checked_cast<GLuint>(v->length()) >> 4,
+                                transpose, v->DataMaybeShared());
 }
 
 void WebGLRenderingContextBase::uniformMatrix4fv(
@@ -6828,11 +6828,11 @@ void WebGLRenderingContextBase::vertexAttrib1fv(
     MaybeShared<const DOMFloat32Array> v) {
   if (isContextLost())
     return;
-  if (!v.View() || v.View()->length() < 1) {
+  if (!v.Get() || v->length() < 1) {
     SynthesizeGLError(GL_INVALID_VALUE, "vertexAttrib1fv", "invalid array");
     return;
   }
-  ContextGL()->VertexAttrib1fv(index, v.View()->DataMaybeShared());
+  ContextGL()->VertexAttrib1fv(index, v->DataMaybeShared());
   SetVertexAttribType(index, kFloat32ArrayType);
 }
 
@@ -6862,11 +6862,11 @@ void WebGLRenderingContextBase::vertexAttrib2fv(
     MaybeShared<const DOMFloat32Array> v) {
   if (isContextLost())
     return;
-  if (!v.View() || v.View()->length() < 2) {
+  if (!v.Get() || v->length() < 2) {
     SynthesizeGLError(GL_INVALID_VALUE, "vertexAttrib2fv", "invalid array");
     return;
   }
-  ContextGL()->VertexAttrib2fv(index, v.View()->DataMaybeShared());
+  ContextGL()->VertexAttrib2fv(index, v->DataMaybeShared());
   SetVertexAttribType(index, kFloat32ArrayType);
 }
 
@@ -6897,11 +6897,11 @@ void WebGLRenderingContextBase::vertexAttrib3fv(
     MaybeShared<const DOMFloat32Array> v) {
   if (isContextLost())
     return;
-  if (!v.View() || v.View()->length() < 3) {
+  if (!v.Get() || v->length() < 3) {
     SynthesizeGLError(GL_INVALID_VALUE, "vertexAttrib3fv", "invalid array");
     return;
   }
-  ContextGL()->VertexAttrib3fv(index, v.View()->DataMaybeShared());
+  ContextGL()->VertexAttrib3fv(index, v->DataMaybeShared());
   SetVertexAttribType(index, kFloat32ArrayType);
 }
 
@@ -6933,11 +6933,11 @@ void WebGLRenderingContextBase::vertexAttrib4fv(
     MaybeShared<const DOMFloat32Array> v) {
   if (isContextLost())
     return;
-  if (!v.View() || v.View()->length() < 4) {
+  if (!v.Get() || v->length() < 4) {
     SynthesizeGLError(GL_INVALID_VALUE, "vertexAttrib4fv", "invalid array");
     return;
   }
-  ContextGL()->VertexAttrib4fv(index, v.View()->DataMaybeShared());
+  ContextGL()->VertexAttrib4fv(index, v->DataMaybeShared());
   SetVertexAttribType(index, kFloat32ArrayType);
 }
 

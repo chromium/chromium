@@ -192,7 +192,7 @@ ScriptPromise NativeIOFile::read(ScriptState* script_state,
                                  MaybeShared<DOMArrayBufferView> buffer,
                                  uint64_t file_offset,
                                  ExceptionState& exception_state) {
-  if (!buffer.View()->IsShared()) {
+  if (!buffer->IsShared()) {
     exception_state.ThrowTypeError(
         "The I/O buffer must be backed by a SharedArrayBuffer");
     return ScriptPromise();
@@ -213,10 +213,9 @@ ScriptPromise NativeIOFile::read(ScriptState* script_state,
   }
   io_pending_ = true;
 
-  int read_size = OperationSize(*buffer.View());
-  char* read_buffer =
-      static_cast<char*>(buffer.View()->BaseAddressMaybeShared());
-  DOMSharedArrayBuffer* read_buffer_keepalive = buffer.View()->BufferShared();
+  int read_size = OperationSize(*buffer);
+  char* read_buffer = static_cast<char*>(buffer->BaseAddressMaybeShared());
+  DOMSharedArrayBuffer* read_buffer_keepalive = buffer->BufferShared();
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   // The first CrossThreadUnretained() is safe here because the
@@ -244,7 +243,7 @@ ScriptPromise NativeIOFile::write(ScriptState* script_state,
                                   MaybeShared<DOMArrayBufferView> buffer,
                                   uint64_t file_offset,
                                   ExceptionState& exception_state) {
-  if (!buffer.View()->IsShared()) {
+  if (!buffer->IsShared()) {
     exception_state.ThrowTypeError(
         "The I/O buffer must be backed by a SharedArrayBuffer");
     return ScriptPromise();
@@ -265,10 +264,10 @@ ScriptPromise NativeIOFile::write(ScriptState* script_state,
   }
   io_pending_ = true;
 
-  int write_size = OperationSize(*buffer.View());
+  int write_size = OperationSize(*buffer);
   const char* write_data =
-      static_cast<const char*>(buffer.View()->BaseAddressMaybeShared());
-  DOMSharedArrayBuffer* read_buffer_keepalive = buffer.View()->BufferShared();
+      static_cast<const char*>(buffer->BaseAddressMaybeShared());
+  DOMSharedArrayBuffer* read_buffer_keepalive = buffer->BufferShared();
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   // The first CrossThreadUnretained() is safe here because the

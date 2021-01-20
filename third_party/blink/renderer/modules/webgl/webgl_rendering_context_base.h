@@ -1590,7 +1590,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   bool ExtractDataLengthIfValid(const char* function_name,
                                 MaybeShared<DOMArrayBufferView> data,
                                 T* data_length) {
-    if (base::CheckedNumeric<T>(data.View()->byteLength())
+    if (base::CheckedNumeric<T>(data->byteLength())
             .AssignIfValid(data_length)) {
       return true;
     }

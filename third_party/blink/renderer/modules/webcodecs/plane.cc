@@ -88,14 +88,13 @@ void Plane::readInto(MaybeShared<DOMArrayBufferView> dst,
   size_t copy_size = total_size - trailing_zeros_size;
 
   // Note: byteLength is zero if the buffer is detached.
-  DOMArrayBufferView* view = dst.View();
-  uint8_t* base = static_cast<uint8_t*>(view->BaseAddressMaybeShared());
+  uint8_t* base = static_cast<uint8_t*>(dst->BaseAddressMaybeShared());
   if (!base) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Destination buffer is not valid.");
     return;
   }
-  if (total_size > view->byteLength()) {
+  if (total_size > dst->byteLength()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "Destination buffer is not large enough.");

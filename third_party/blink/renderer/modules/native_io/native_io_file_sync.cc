@@ -103,8 +103,8 @@ void NativeIOFileSync::setLength(uint64_t length,
 uint64_t NativeIOFileSync::read(MaybeShared<DOMArrayBufferView> buffer,
                                 uint64_t file_offset,
                                 ExceptionState& exception_state) {
-  int read_size = OperationSize(*buffer.View());
-  char* read_data = static_cast<char*>(buffer.View()->BaseAddressMaybeShared());
+  int read_size = OperationSize(*buffer);
+  char* read_data = static_cast<char*>(buffer->BaseAddressMaybeShared());
   if (!backing_file_.IsValid()) {
     ThrowNativeIOWithError(exception_state,
                            mojom::blink::NativeIOError::New(
@@ -123,9 +123,8 @@ uint64_t NativeIOFileSync::read(MaybeShared<DOMArrayBufferView> buffer,
 uint64_t NativeIOFileSync::write(MaybeShared<DOMArrayBufferView> buffer,
                                  uint64_t file_offset,
                                  ExceptionState& exception_state) {
-  int write_size = OperationSize(*buffer.View());
-  char* write_data =
-      static_cast<char*>(buffer.View()->BaseAddressMaybeShared());
+  int write_size = OperationSize(*buffer);
+  char* write_data = static_cast<char*>(buffer->BaseAddressMaybeShared());
   if (!backing_file_.IsValid()) {
     ThrowNativeIOWithError(exception_state,
                            mojom::blink::NativeIOError::New(

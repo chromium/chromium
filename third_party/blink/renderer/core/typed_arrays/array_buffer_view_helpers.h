@@ -110,8 +110,6 @@ class MaybeShared {
     return *this;
   }
 
-  // |View()| is a legacy API and deprecated.  Use Get() instead.
-  T* View() const { return GetRaw(); }
   T* Get() const { return GetRaw(); }
   void Clear() { typed_array_ = nullptr; }
 
