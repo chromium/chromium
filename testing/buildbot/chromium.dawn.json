@@ -2288,6 +2288,7 @@
       },
       {
         "args": [
+          "--test-launcher-jobs=1",
           "--enable-backend-validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
@@ -2782,6 +2783,7 @@
       },
       {
         "args": [
+          "--test-launcher-jobs=1",
           "--enable-backend-validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
@@ -3278,6 +3280,7 @@
       },
       {
         "args": [
+          "--test-launcher-jobs=1",
           "--enable-backend-validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
@@ -3768,6 +3771,7 @@
       },
       {
         "args": [
+          "--test-launcher-jobs=1",
           "--enable-backend-validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",

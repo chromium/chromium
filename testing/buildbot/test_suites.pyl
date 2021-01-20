@@ -2525,18 +2525,6 @@
       },
     },
 
-    # GPU gtests that test only Dawn with backend validation layers
-    'gpu_dawn_extra_gtests': {
-      'dawn_end2end_validation_layers_tests': {
-        'mixins': ['dawn_end2end_gpu_test'],
-        'args': [
-          '--enable-backend-validation',
-        ],
-        'linux_args': [ '--no-xvfb' ],
-        'test': 'dawn_end2end_tests',
-      },
-    },
-
     # GPU gtests that test only Dawn
     'gpu_dawn_gtests': {
       'dawn_end2end_skip_validation_tests': {
@@ -2555,6 +2543,32 @@
         'mixins': ['dawn_end2end_gpu_test'],
         'args': [
           '--use-wire',
+        ],
+        'linux_args': [ '--no-xvfb' ],
+        'test': 'dawn_end2end_tests',
+      },
+    },
+
+    # GPU gtests that test only Dawn with backend validation layers
+    'gpu_dawn_gtests_with_validation': {
+      'dawn_end2end_validation_layers_tests': {
+        'mixins': ['dawn_end2end_gpu_test'],
+        'args': [
+          '--enable-backend-validation',
+        ],
+        'linux_args': [ '--no-xvfb' ],
+        'test': 'dawn_end2end_tests',
+      },
+    },
+
+    # GPU gtests that test only Dawn with backend validation layers
+    # to accommodate less powerful Intel GPUs
+    'gpu_dawn_gtests_with_validation_win_intel': {
+      'dawn_end2end_validation_layers_tests': {
+        'mixins': ['dawn_end2end_gpu_test'],
+        'args': [
+          '--test-launcher-jobs=1',
+          '--enable-backend-validation',
         ],
         'linux_args': [ '--no-xvfb' ],
         'test': 'dawn_end2end_tests',
@@ -5875,13 +5889,21 @@
     # These tests are run both on the CI and trybots which test DEPS Dawn.
     'gpu_dawn_integration_gtests_passthrough': [
       'gpu_dawn_gtests',
-      'gpu_dawn_extra_gtests',
+      'gpu_dawn_gtests_with_validation',
+      'gpu_common_gtests_passthrough',
+    ],
+
+    # GPU gtests that test Dawn and integration with Chromium
+    # These tests are run both on the CI and trybots which test DEPS Dawn.
+    'gpu_dawn_integration_gtests_passthrough_win_intel': [
+      'gpu_dawn_gtests',
+      'gpu_dawn_gtests_with_validation_win_intel',
       'gpu_common_gtests_passthrough',
     ],
 
     'gpu_dawn_integration_gtests_validating': [
       'gpu_dawn_gtests',
-      'gpu_dawn_extra_gtests',
+      'gpu_dawn_gtests_with_validation',
       'gpu_common_gtests_validating',
     ],
 

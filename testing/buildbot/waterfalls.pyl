@@ -2207,7 +2207,7 @@
           'win10_intel_hd_630_stable',
         ],
         'test_suites': {
-          'gtest_tests': 'gpu_dawn_integration_gtests_passthrough',
+          'gtest_tests': 'gpu_dawn_integration_gtests_passthrough_win_intel',
           'isolated_scripts': 'gpu_dawn_isolated_scripts',
         },
       },
@@ -2229,7 +2229,7 @@
           'win10_intel_hd_630_stable',
         ],
         'test_suites': {
-          'gtest_tests': 'gpu_dawn_integration_gtests_passthrough',
+          'gtest_tests': 'gpu_dawn_integration_gtests_passthrough_win_intel',
           'isolated_scripts': 'gpu_dawn_isolated_scripts',
         },
       },
@@ -2253,7 +2253,7 @@
           'win10_intel_hd_630_stable',
         ],
         'test_suites': {
-          'gtest_tests': 'gpu_dawn_integration_gtests_passthrough',
+          'gtest_tests': 'gpu_dawn_integration_gtests_passthrough_win_intel',
           'isolated_scripts': 'gpu_dawn_isolated_scripts',
         },
       },
@@ -2275,7 +2275,7 @@
           'win10_intel_hd_630_stable',
         ],
         'test_suites': {
-          'gtest_tests': 'gpu_dawn_integration_gtests_passthrough',
+          'gtest_tests': 'gpu_dawn_integration_gtests_passthrough_win_intel',
           'isolated_scripts': 'gpu_dawn_isolated_scripts',
         },
       },
