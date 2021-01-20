@@ -409,6 +409,7 @@ generate_grd("build_grd") {
     "file_manager/foreground/js/deferred_elements.m.rollup.js",
     "file_manager/foreground/js/main.m.rollup.js",
     "file_manager/foreground/js/shared.m.rollup.js",
+    "file_manager/foreground/js/metadata_dispatcher.m.rollup.js",
 
     "video_player/js/main.m.rollup.js",
     "video_player/js/main_background.m.rollup.js",
@@ -422,6 +423,7 @@ generate_grd("build_grd") {
     "file_manager/background/js/main_background.m.rollup.js|file_manager/background/js/main_background.m.js",
     "file_manager/foreground/js/deferred_elements.m.rollup.js|file_manager/foreground/js/deferred_elements.m.js",
     "file_manager/foreground/js/main.m.rollup.js|file_manager/foreground/js/main.m.js",
+    "file_manager/foreground/js/metadata_dispatcher.m.rollup.js|file_manager/foreground/js/metadata_dispatcher.m.js",
     "video_player/js/main.m.rollup.js|video_player/js/main.m.js",
     "video_player/js/main_background.m.rollup.js|video_player/js/main_background.m.js",
   ]
@@ -440,6 +442,7 @@ generate_grd("build_grd") {
     "//ui/file_manager/file_manager/background/js:build",
     "//ui/file_manager/file_manager/foreground/elements:elements",
     "//ui/file_manager/file_manager/foreground/js:build",
+    "//ui/file_manager/file_manager/foreground/js:build_worker",
     "//ui/file_manager/image_loader:build",
     "//ui/file_manager/video_player/js:build",
     "//ui/file_manager/video_player/js:build_background",

@@ -142,15 +142,11 @@
       this.player_.ariaExpandArtworkLabel =
           strings['AUDIO_PLAYER_ARTWORK_EXPAND_BUTTON_LABEL'];
 
-      /**
-       * Overrided metadata worker's path.
-       * @type {string}
-       */
-      ContentMetadataProvider.WORKER_SCRIPT =
+      // Override metadata worker's path.
+      ContentMetadataProvider.configure(
           util.isAudioPlayerJsModulesEnabled() ? '/js/metadata_worker.m.js' :
-                                                 '/js/metadata_worker.js';
-      ContentMetadataProvider.loadAsModule =
-          util.isAudioPlayerJsModulesEnabled();
+                                                 '/js/metadata_worker.js',
+          /*isModule=*/ util.isAudioPlayerJsModulesEnabled());
 
       this.metadataModel_ = MetadataModel.create(this.volumeManager_);
       this.resolveMetadataModel_();

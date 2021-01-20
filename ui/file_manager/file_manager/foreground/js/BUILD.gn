@@ -858,6 +858,7 @@ js_library("file_manager.m") {
     ":spinner_controller.m",
     ":task_controller.m",
     ":toolbar_controller.m",
+    "metadata:content_metadata_provider.m",
     "metadata:metadata_model.m",
     "metadata:thumbnail_model.m",
     "ui:a11y_announce.m",
@@ -2167,6 +2168,22 @@ optimize_webui("build") {
 
   deps = [
     ":main.m",
+    "//ui/file_manager:preprocess_generated",
+    "//ui/file_manager:preprocess_static",
+    "//ui/webui/resources:preprocess",
+  ]
+}
+
+optimize_webui("build_worker") {
+  host = "file_manager"
+
+  input = preprocess_folder
+  js_module_in_files = [ "metadata/metadata_dispatcher.m.js" ]
+
+  js_out_files = [ "metadata_dispatcher.m.rollup.js" ]
+
+  deps = [
+    "metadata:metadata_dispatcher.m",
     "//ui/file_manager:preprocess_generated",
     "//ui/file_manager:preprocess_static",
     "//ui/webui/resources:preprocess",
