@@ -567,6 +567,17 @@ SYNC_TEST_F(
       assertEquals(result.node.name, fourthInline);
       assertEquals(result.offset, 3);
 
+      // Pointing to the gap between the fourthInline and thirdStatic.
+      result = ParagraphUtils.findNodeFromNodeGroupByCharIndex(
+          nodeGroup, 50 /* charIndex */);
+      assertEquals(result.node.name, thirdStatic);
+      assertEquals(result.offset, 0);
+
+      result = ParagraphUtils.findNodeFromNodeGroupByCharIndex(
+          nodeGroup, 51 /* charIndex */);
+      assertEquals(result.node.name, thirdStatic);
+      assertEquals(result.offset, 0);
+
       result = ParagraphUtils.findNodeFromNodeGroupByCharIndex(
           nodeGroup, 52 /* charIndex */);
       assertEquals(result.node.name, thirdStatic);

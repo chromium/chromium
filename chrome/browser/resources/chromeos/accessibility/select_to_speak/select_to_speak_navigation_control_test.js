@@ -434,6 +434,41 @@ TEST_F(
     });
 
 TEST_F(
+    'SelectToSpeakNavigationControlTest', 'PauseResumeAtTheEndOfNodeGroupItem',
+    function() {
+      const bodyHtml = `
+        <p id="p1">Sentence <span>one</span>. Sentence two.</p>
+      `;
+      this.runWithLoadedTree(
+          this.generateHtmlWithSelectedElement('p1', bodyHtml), () => {
+            this.triggerReadSelectedText();
+
+            // Finishes the second word.
+            this.mockTts.speakUntilCharIndex(13);
+            assertTrue(this.mockTts.currentlySpeaking());
+            assertEquals(this.mockTts.pendingUtterances().length, 1);
+            this.assertEqualsCollapseWhitespace(
+                this.mockTts.pendingUtterances()[0],
+                'Sentence one . Sentence two.');
+
+            // Hitting pause will stop the current TTS.
+            selectToSpeak.onSelectToSpeakPanelAction_(
+                chrome.accessibilityPrivate.SelectToSpeakPanelAction.PAUSE);
+            assertFalse(this.mockTts.currentlySpeaking());
+            assertEquals(this.mockTts.pendingUtterances().length, 0);
+
+            // Hitting resume will start from the remaining content of the
+            // paragraph.
+            selectToSpeak.onSelectToSpeakPanelAction_(
+                chrome.accessibilityPrivate.SelectToSpeakPanelAction.RESUME);
+            assertTrue(this.mockTts.currentlySpeaking());
+            assertEquals(this.mockTts.pendingUtterances().length, 1);
+            this.assertEqualsCollapseWhitespace(
+                this.mockTts.pendingUtterances()[0], '. Sentence two.');
+          });
+    });
+
+TEST_F(
     'SelectToSpeakNavigationControlTest', 'PauseResumeFromKeystrokeSelection',
     function() {
       const bodyHtml =
