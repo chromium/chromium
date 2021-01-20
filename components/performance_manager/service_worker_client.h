@@ -33,6 +33,8 @@ class ServiceWorkerClient {
   blink::DedicatedWorkerToken GetDedicatedWorkerToken() const;
   blink::SharedWorkerToken GetSharedWorkerToken() const;
 
+  bool operator<(const ServiceWorkerClient& other) const;
+
  private:
   // The client type.
   blink::mojom::ServiceWorkerClientType type_;

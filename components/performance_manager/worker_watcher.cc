@@ -18,6 +18,8 @@
 
 namespace performance_manager {
 
+using WorkerNodeSet = base::flat_set<WorkerNodeImpl*>;
+
 namespace {
 
 // Emits a boolean value that indicates if the client frame's node was found
@@ -68,42 +70,41 @@ void DisconnectClientWorkerOnGraph(WorkerNodeImpl* worker_node,
 
 // Helper function to remove |client_frame_node| as a client of all worker nodes
 // in |worker_nodes| on the PM sequence.
-void DisconnectClientsOnGraph(base::flat_set<WorkerNodeImpl*> worker_nodes,
+void DisconnectClientsOnGraph(WorkerNodeSet worker_nodes,
                               FrameNodeImpl* client_frame_node) {
   PerformanceManagerImpl::CallOnGraphImpl(
-      FROM_HERE, base::BindOnce(
-                     [](base::flat_set<WorkerNodeImpl*> worker_nodes,
-                        FrameNodeImpl* client_frame_node) {
-                       for (auto* worker_node : worker_nodes)
-                         worker_node->RemoveClientFrame(client_frame_node);
-                     },
-                     std::move(worker_nodes), client_frame_node));
+      FROM_HERE,
+      base::BindOnce(
+          [](WorkerNodeSet worker_nodes, FrameNodeImpl* client_frame_node) {
+            for (auto* worker_node : worker_nodes)
+              worker_node->RemoveClientFrame(client_frame_node);
+          },
+          std::move(worker_nodes), client_frame_node));
 }
 
 void DisconnectClientsOnGraph(
     base::flat_map<WorkerNodeImpl*, size_t> worker_node_connections,
     FrameNodeImpl* client_frame_node) {
-  base::flat_set<WorkerNodeImpl*>::container_type client_workers;
+  WorkerNodeSet::container_type client_workers;
   for (auto& kv : worker_node_connections)
     client_workers.push_back(kv.first);
 
-  DisconnectClientsOnGraph(
-      base::flat_set<WorkerNodeImpl*>(base::sorted_unique, client_workers),
-      client_frame_node);
+  DisconnectClientsOnGraph(WorkerNodeSet(base::sorted_unique, client_workers),
+                           client_frame_node);
 }
 
 // Helper function to remove |client_worker_node| as a client of all worker
 // nodes in |worker_nodes| on the PM sequence.
-void DisconnectClientsOnGraph(base::flat_set<WorkerNodeImpl*> worker_nodes,
+void DisconnectClientsOnGraph(WorkerNodeSet worker_nodes,
                               WorkerNodeImpl* client_worker_node) {
   PerformanceManagerImpl::CallOnGraphImpl(
-      FROM_HERE, base::BindOnce(
-                     [](base::flat_set<WorkerNodeImpl*> worker_nodes,
-                        WorkerNodeImpl* client_worker_node) {
-                       for (auto* worker_node : worker_nodes)
-                         worker_node->RemoveClientWorker(client_worker_node);
-                     },
-                     std::move(worker_nodes), client_worker_node));
+      FROM_HERE,
+      base::BindOnce(
+          [](WorkerNodeSet worker_nodes, WorkerNodeImpl* client_worker_node) {
+            for (auto* worker_node : worker_nodes)
+              worker_node->RemoveClientWorker(client_worker_node);
+          },
+          std::move(worker_nodes), client_worker_node));
 }
 
 // Helper function that posts a task on the PM sequence that will invoke
@@ -171,7 +172,7 @@ void WorkerWatcher::TearDown() {
   // Then clear client-child connections for dedicated workers.
   for (auto& kv : dedicated_worker_child_workers_) {
     const blink::DedicatedWorkerToken& dedicated_worker_token = kv.first;
-    base::flat_set<WorkerNodeImpl*>& child_workers = kv.second;
+    WorkerNodeSet& child_workers = kv.second;
     DCHECK(!child_workers.empty());
 
     // Disconnect all child workers from |dedicated_worker_token|.
@@ -184,7 +185,7 @@ void WorkerWatcher::TearDown() {
   // Finally, clear client-child connections for shared workers.
   for (auto& kv : shared_worker_child_workers_) {
     const blink::SharedWorkerToken& shared_worker_token = kv.first;
-    base::flat_set<WorkerNodeImpl*>& child_workers = kv.second;
+    WorkerNodeSet& child_workers = kv.second;
     DCHECK(!child_workers.empty());
 
     // Disconnect all child workers from |shared_worker_token|.
@@ -298,7 +299,20 @@ void WorkerWatcher::OnBeforeWorkerDestroyed(
   // Disconnect all child workers before destroying the node.
   auto child_it = shared_worker_child_workers_.find(shared_worker_token);
   if (child_it != shared_worker_child_workers_.end()) {
-    DisconnectClientsOnGraph(child_it->second, worker_node.get());
+    const WorkerNodeSet& child_workers = child_it->second;
+    DisconnectClientsOnGraph(child_workers, worker_node.get());
+
+#if DCHECK_IS_ON()
+    for (WorkerNodeImpl* worker : child_workers) {
+      // If this is a service worker client, mark it as a missing client.
+      if (IsServiceWorkerNode(worker)) {
+        DCHECK(missing_service_worker_clients_[worker]
+                   .insert(ServiceWorkerClient(shared_worker_token))
+                   .second);
+      }
+    }
+#endif
+
     shared_worker_child_workers_.erase(child_it);
   }
 
@@ -535,7 +549,6 @@ void WorkerWatcher::AddFrameClientConnection(
   // Keep track of the workers that this frame is a client to.
   bool is_first_child_worker = false;
   bool is_first_child_worker_connection = false;
-  ;
   AddChildWorkerConnection(client_render_frame_host_id, worker_node,
                            &is_first_child_worker,
                            &is_first_child_worker_connection);
@@ -608,8 +621,20 @@ void WorkerWatcher::ConnectDedicatedWorkerClient(
     blink::DedicatedWorkerToken client_dedicated_worker_token) {
   DCHECK(worker_node);
 
-  ConnectClientWorkerOnGraph(
-      worker_node, GetDedicatedWorkerNode(client_dedicated_worker_token));
+  WorkerNodeImpl* client_dedicated_worker_node =
+      GetDedicatedWorkerNode(client_dedicated_worker_token);
+  if (!client_dedicated_worker_node) {
+#if DCHECK_IS_ON()
+    bool inserted =
+        missing_service_worker_clients_[worker_node]
+            .insert(ServiceWorkerClient(client_dedicated_worker_token))
+            .second;
+    DCHECK(inserted);
+#endif
+    return;
+  }
+
+  ConnectClientWorkerOnGraph(worker_node, client_dedicated_worker_node);
 
   // Remember that |worker_node| is a child worker of this dedicated worker.
   bool inserted = dedicated_worker_child_workers_[client_dedicated_worker_token]
@@ -623,6 +648,20 @@ void WorkerWatcher::DisconnectDedicatedWorkerClient(
     blink::DedicatedWorkerToken client_dedicated_worker_token) {
   DCHECK(worker_node);
 
+  WorkerNodeImpl* client_dedicated_worker =
+      GetDedicatedWorkerNode(client_dedicated_worker_token);
+  if (!client_dedicated_worker) {
+#if DCHECK_IS_ON()
+    auto it = missing_service_worker_clients_.find(worker_node);
+    DCHECK(it != missing_service_worker_clients_.end());
+    DCHECK_EQ(1u, it->second.erase(
+                      ServiceWorkerClient(client_dedicated_worker_token)));
+    if (it->second.empty())
+      missing_service_worker_clients_.erase(it);
+#endif
+    return;
+  }
+
   // Remove |worker_node| from the set of child workers of this dedicated
   // worker.
   auto it = dedicated_worker_child_workers_.find(client_dedicated_worker_token);
@@ -635,8 +674,7 @@ void WorkerWatcher::DisconnectDedicatedWorkerClient(
   if (child_workers.empty())
     dedicated_worker_child_workers_.erase(it);
 
-  DisconnectClientWorkerOnGraph(
-      worker_node, GetDedicatedWorkerNode(client_dedicated_worker_token));
+  DisconnectClientWorkerOnGraph(worker_node, client_dedicated_worker);
 }
 
 void WorkerWatcher::ConnectSharedWorkerClient(
@@ -644,8 +682,19 @@ void WorkerWatcher::ConnectSharedWorkerClient(
     blink::SharedWorkerToken client_shared_worker_token) {
   DCHECK(worker_node);
 
-  ConnectClientWorkerOnGraph(worker_node,
-                             GetSharedWorkerNode(client_shared_worker_token));
+  WorkerNodeImpl* client_shared_worker_node =
+      GetSharedWorkerNode(client_shared_worker_token);
+  if (!client_shared_worker_node) {
+#if DCHECK_IS_ON()
+    bool inserted = missing_service_worker_clients_[worker_node]
+                        .insert(ServiceWorkerClient(client_shared_worker_token))
+                        .second;
+    DCHECK(inserted);
+#endif
+    return;
+  }
+
+  ConnectClientWorkerOnGraph(worker_node, client_shared_worker_node);
 
   // Remember that |worker_node| is a child worker of this shared worker.
   bool inserted = shared_worker_child_workers_[client_shared_worker_token]
@@ -667,6 +716,14 @@ void WorkerWatcher::DisconnectSharedWorkerClient(
     DCHECK(shared_worker_child_workers_.find(client_shared_worker_token) ==
            shared_worker_child_workers_.end());
 
+#if DCHECK_IS_ON()
+    auto it = missing_service_worker_clients_.find(worker_node);
+    DCHECK(it != missing_service_worker_clients_.end());
+    DCHECK_EQ(
+        1u, it->second.erase(ServiceWorkerClient(client_shared_worker_token)));
+    if (it->second.empty())
+      missing_service_worker_clients_.erase(it);
+#endif
     return;
   }
 
@@ -822,10 +879,9 @@ WorkerNodeImpl* WorkerWatcher::GetDedicatedWorkerNode(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto it = dedicated_worker_nodes_.find(dedicated_worker_token);
-  if (it == dedicated_worker_nodes_.end()) {
-    NOTREACHED();
+  if (it == dedicated_worker_nodes_.end())
     return nullptr;
-  }
+
   return it->second.get();
 }
 
@@ -834,10 +890,9 @@ WorkerNodeImpl* WorkerWatcher::GetSharedWorkerNode(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto it = shared_worker_nodes_.find(shared_worker_token);
-  if (it == shared_worker_nodes_.end()) {
-    NOTREACHED();
+  if (it == shared_worker_nodes_.end())
     return nullptr;
-  }
+
   return it->second.get();
 }
 
@@ -845,10 +900,21 @@ WorkerNodeImpl* WorkerWatcher::GetServiceWorkerNode(int64_t version_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto it = service_worker_nodes_.find(version_id);
-  if (it == service_worker_nodes_.end()) {
+  if (it == service_worker_nodes_.end())
     return nullptr;
-  }
+
   return it->second.get();
 }
+
+#if DCHECK_IS_ON()
+bool WorkerWatcher::IsServiceWorkerNode(WorkerNodeImpl* worker_node) {
+  for (const auto& kv : service_worker_nodes_) {
+    if (kv.second.get() == worker_node)
+      return true;
+  }
+
+  return false;
+}
+#endif
 
 }  // namespace performance_manager

@@ -40,3 +40,20 @@ blink::SharedWorkerToken ServiceWorkerClient::GetSharedWorkerToken() const {
   DCHECK_EQ(type_, blink::mojom::ServiceWorkerClientType::kSharedWorker);
   return worker_token_.GetAs<blink::SharedWorkerToken>();
 }
+
+bool ServiceWorkerClient::operator<(const ServiceWorkerClient& o) const {
+  if (type() == o.type()) {
+    switch (type()) {
+      case blink::mojom::ServiceWorkerClientType::kWindow:
+        return GetRenderFrameHostId() < o.GetRenderFrameHostId();
+      case blink::mojom::ServiceWorkerClientType::kDedicatedWorker:
+        return GetDedicatedWorkerToken() < o.GetDedicatedWorkerToken();
+      case blink::mojom::ServiceWorkerClientType::kSharedWorker:
+        return GetSharedWorkerToken() < o.GetSharedWorkerToken();
+      case blink::mojom::ServiceWorkerClientType::kAll:
+        NOTREACHED();
+        return false;
+    }
+  }
+  return type() < o.type();
+}

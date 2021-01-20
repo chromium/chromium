@@ -1359,6 +1359,84 @@ TEST_F(WorkerWatcherTest, SharedWorkerCrossProcessClient) {
   shared_worker_service()->DestroySharedWorker(shared_worker_token);
 }
 
+// Tests that the WorkerWatcher can handle the case where the service worker
+// starts after it has been assigned a worker client, but the client has
+// already died by the time the service worker starts.
+TEST_F(WorkerWatcherTest, SharedWorkerStartsWithDeadWorkerClients) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kServiceWorkerRelationshipsInGraph);
+
+  int render_process_id = process_node_source()->CreateProcessNode();
+  content::GlobalFrameRoutingId render_frame_host_id =
+      frame_node_source()->CreateFrameNode(
+          render_process_id,
+          process_node_source()->GetProcessNode(render_process_id));
+
+  // Create the worker.
+  int64_t service_worker_version_id =
+      service_worker_context()->CreateServiceWorker();
+
+  // Create a worker client of each type and connect them to the service worker.
+  // Dedicated worker client.
+  blink::DedicatedWorkerToken dedicated_worker_token =
+      dedicated_worker_service()->CreateDedicatedWorker(render_process_id,
+                                                        render_frame_host_id);
+  std::string dedicated_worker_client_uuid =
+      service_worker_context()->AddClient(
+          service_worker_version_id,
+          content::ServiceWorkerClientInfo(dedicated_worker_token));
+
+  // Shared worker client.
+  blink::SharedWorkerToken shared_worker_token =
+      shared_worker_service()->CreateSharedWorker(render_process_id);
+  std::string shared_worker_client_uuid = service_worker_context()->AddClient(
+      service_worker_version_id,
+      content::ServiceWorkerClientInfo(shared_worker_token));
+
+  // Destroy the workers before the service worker starts.
+  shared_worker_service()->DestroySharedWorker(shared_worker_token);
+  dedicated_worker_service()->DestroyDedicatedWorker(dedicated_worker_token);
+
+  // Now start the service worker.
+  service_worker_context()->StartServiceWorker(service_worker_version_id,
+                                               render_process_id);
+
+  // Check expectations on the graph.
+  CallOnGraphAndWait(base::BindLambdaForTesting(
+      [process_node = process_node_source()->GetProcessNode(render_process_id),
+       service_worker_node =
+           GetServiceWorkerNode(service_worker_version_id)](GraphImpl* graph) {
+        EXPECT_TRUE(graph->NodeInGraph(service_worker_node));
+        EXPECT_EQ(service_worker_node->worker_type(),
+                  WorkerNode::WorkerType::kService);
+        EXPECT_EQ(service_worker_node->process_node(), process_node);
+        EXPECT_TRUE(service_worker_node->child_workers().empty());
+      }));
+
+  // Disconnect the non-existent clients.
+  service_worker_context()->RemoveClient(service_worker_version_id,
+                                         shared_worker_client_uuid);
+  service_worker_context()->RemoveClient(service_worker_version_id,
+                                         dedicated_worker_client_uuid);
+
+  // No changes in the graph.
+  CallOnGraphAndWait(base::BindLambdaForTesting(
+      [process_node = process_node_source()->GetProcessNode(render_process_id),
+       service_worker_node =
+           GetServiceWorkerNode(service_worker_version_id)](GraphImpl* graph) {
+        EXPECT_TRUE(graph->NodeInGraph(service_worker_node));
+        EXPECT_EQ(service_worker_node->worker_type(),
+                  WorkerNode::WorkerType::kService);
+        EXPECT_EQ(service_worker_node->process_node(), process_node);
+        EXPECT_TRUE(service_worker_node->child_workers().empty());
+      }));
+
+  // Stop and destroy the service worker.
+  service_worker_context()->StopServiceWorker(service_worker_version_id);
+  service_worker_context()->DestroyServiceWorker(service_worker_version_id);
+}
+
 TEST_F(WorkerWatcherTest, SharedWorkerDiesAsServiceWorkerClient) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
