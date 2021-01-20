@@ -7,7 +7,7 @@
  Converts a given ASCII proto into a binary resource.
 
 """
-
+from __future__ import print_function
 import abc
 import imp
 import optparse
@@ -196,12 +196,12 @@ class BinaryProtoGenerator:
     self._ImportProtoModules(opts.path)
 
     if not self.VerifyArgs(opts):
-      print "Wrong arguments"
+      print("Wrong arguments")
       return 1
 
     try:
       self._GenerateBinaryProtos(opts)
     except Exception as e:
-      print "ERROR: Failed to render binary version of %s:\n  %s\n%s" % (
-          opts.infile, str(e), traceback.format_exc())
+      print("ERROR: Failed to render binary version of %s:\n  %s\n%s" %
+            (opts.infile, str(e), traceback.format_exc()))
       return 1
