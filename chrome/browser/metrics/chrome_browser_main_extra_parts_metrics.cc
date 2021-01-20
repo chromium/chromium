@@ -551,7 +551,7 @@ void ChromeBrowserMainExtraPartsMetrics::PreBrowserStart() {
   // Records whether or not PartitionAlloc is used as the default allocator.
   ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
       "PartitionAllocEverywhere",
-#if BUILDFLAG(USE_PARTITION_ALLOC_EVERYWHERE)
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
       "Enabled"
 #else
       "Disabled"
