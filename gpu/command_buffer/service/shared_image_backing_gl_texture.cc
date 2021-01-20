@@ -398,7 +398,7 @@ SharedImageBackingFactoryGLTexture::MakeEglImageBacking(
   return std::make_unique<SharedImageBackingEglImage>(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       estimated_size, format_info.gl_format, format_info.gl_type,
-      batch_access_manager_, workarounds_);
+      batch_access_manager_, workarounds_, use_passthrough_);
 #else
   return nullptr;
 #endif
