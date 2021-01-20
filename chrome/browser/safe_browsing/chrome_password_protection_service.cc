@@ -374,8 +374,7 @@ ChromePasswordProtectionService::GetUrlDisplayExperiment() const {
 }
 
 void ChromePasswordProtectionService::ShowModalWarning(
-    content::WebContents* web_contents,
-    RequestOutcome outcome,
+    PasswordProtectionRequest* request,
     LoginReputationClientResponse::VerdictType verdict_type,
     const std::string& verdict_token,
     ReusedPasswordAccountType password_type) {
@@ -388,6 +387,8 @@ void ChromePasswordProtectionService::ShowModalWarning(
               ReusedPasswordAccountType::SAVED_PASSWORD &&
           base::FeatureList::IsEnabled(
               safe_browsing::kPasswordProtectionForSavedPasswords)));
+  content::WebContents* web_contents = request->web_contents();
+  RequestOutcome outcome = request->request_outcome();
   // Don't show warning again if there is already a modal warning showing.
   if (IsModalWarningShowingInWebContents(web_contents))
     return;

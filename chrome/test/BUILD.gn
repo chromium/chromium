@@ -816,6 +816,7 @@ if (!is_android) {
       "//components/policy:chrome_settings_proto_generated_compile",
       "//components/resources",
       "//components/safe_browsing:buildflags",
+      "//components/safe_browsing/content/password_protection:test_support",
       "//components/safe_browsing/core/db:test_database_manager",
       "//components/services/language_detection/public/cpp",
       "//components/services/patch/public/mojom",

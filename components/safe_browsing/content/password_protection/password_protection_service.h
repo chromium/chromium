@@ -141,8 +141,7 @@ class PasswordProtectionServiceBase : public history::HistoryServiceObserver {
   // Shows modal warning dialog on the current |web_contents| and pass the
   // |verdict_token| to callback of this dialog.
   virtual void ShowModalWarning(
-      content::WebContents* web_contents,
-      RequestOutcome outcome,
+      PasswordProtectionRequest* request,
       LoginReputationClientResponse::VerdictType verdict_type,
       const std::string& verdict_token,
       ReusedPasswordAccountType password_type) = 0;

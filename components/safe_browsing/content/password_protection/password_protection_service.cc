@@ -260,9 +260,8 @@ void PasswordProtectionServiceBase::RequestFinished(
       username_for_last_shown_warning_ = request->username();
       reused_password_account_type_for_last_shown_warning_ = password_type;
       saved_passwords_matching_domains_ = request->matching_domains();
-      ShowModalWarning(request->web_contents(), request->request_outcome(),
-                       response->verdict_type(), response->verdict_token(),
-                       password_type);
+      ShowModalWarning(request, response->verdict_type(),
+                       response->verdict_token(), password_type);
       request->set_is_modal_warning_showing(true);
     }
   }

@@ -74,9 +74,8 @@ class MockPasswordProtectionService : public PasswordProtectionService {
                RequestOutcome(LoginReputationClientRequest::TriggerType,
                               const GURL&,
                               ReusedPasswordAccountType));
-  MOCK_METHOD5(ShowModalWarning,
-               void(content::WebContents*,
-                    RequestOutcome,
+  MOCK_METHOD4(ShowModalWarning,
+               void(PasswordProtectionRequest*,
                     LoginReputationClientResponse::VerdictType,
                     const std::string&,
                     ReusedPasswordAccountType));

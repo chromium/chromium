@@ -109,8 +109,7 @@ class ChromePasswordProtectionService : public PasswordProtectionService {
       content::WebContents* web_contents,
       PasswordType password_type);
 
-  void ShowModalWarning(content::WebContents* web_contents,
-                        RequestOutcome outcome,
+  void ShowModalWarning(PasswordProtectionRequest* request,
                         LoginReputationClientResponse::VerdictType verdict_type,
                         const std::string& verdict_token,
                         ReusedPasswordAccountType password_type) override;
