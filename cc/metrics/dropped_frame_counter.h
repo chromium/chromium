@@ -96,6 +96,7 @@ class CC_EXPORT DroppedFrameCounter {
       base::TimeDelta::FromSeconds(1);
   std::queue<std::pair<const viz::BeginFrameArgs, bool>> sliding_window_;
   uint32_t dropped_frame_count_in_window_ = 0;
+  double total_frames_in_window_ = 60.0;
   SlidingWindowHistogram sliding_window_histogram_;
 
   RingBufferType ring_buffer_;
