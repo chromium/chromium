@@ -496,8 +496,18 @@ void TemplateURLService::Remove(const TemplateURL* template_url) {
         crash_key, base::UTF16ToUTF8(template_url->keyword()));
 
     CHECK_NE(template_url, default_provider);
-    if (default_provider)
+
+    // For Extensions that use Override Settings API, there was a bug that
+    // caused extension engines to duplicate the Sync GUID of prepopulated
+    // engines. Since users still have those duplicated GUIDs in the wild,
+    // we skip the check for extensions. https://crbug.com/1166372#c13
+    if (default_provider &&
+        default_provider->type() !=
+            TemplateURL::Type::NORMAL_CONTROLLED_BY_EXTENSION &&
+        template_url->type() !=
+            TemplateURL::Type::NORMAL_CONTROLLED_BY_EXTENSION) {
       CHECK_NE(template_url->sync_guid(), default_provider->sync_guid());
+    }
   }
 
   auto i = FindTemplateURL(&template_urls_, template_url);
