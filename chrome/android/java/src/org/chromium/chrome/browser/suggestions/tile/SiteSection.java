@@ -43,19 +43,20 @@ public class SiteSection extends OptionalLeaf implements TileGroup.Observer {
                 .inflate(getLayout(), parent, false);
     }
 
-    public static SiteSectionViewHolder createViewHolder(ViewGroup view, UiConfig uiConfig) {
-        return new TileGridViewHolder(view, getMaxTileRows(), MAX_TILE_COLUMNS);
+    public static SiteSectionViewHolder createViewHolder(
+            ViewGroup view, UiConfig uiConfig, int maxRows) {
+        return new TileGridViewHolder(view, maxRows, MAX_TILE_COLUMNS);
     }
 
     public SiteSection(SuggestionsUiDelegate uiDelegate, ContextMenuManager contextMenuManager,
             TileGroup.Delegate tileGroupDelegate, OfflinePageBridge offlinePageBridge,
-            UiConfig uiConfig) {
+            UiConfig uiConfig, int maxRows) {
         mTileRenderer = new TileRenderer(ContextUtils.getApplicationContext(),
                 SuggestionsConfig.getTileStyle(uiConfig), TILE_TITLE_LINES,
                 uiDelegate.getImageFetcher());
         mTileGroup = new TileGroup(mTileRenderer, uiDelegate, contextMenuManager, tileGroupDelegate,
                 /* observer = */ this, offlinePageBridge);
-        mTileGroup.startObserving(MAX_TILE_COLUMNS * getMaxTileRows());
+        mTileGroup.startObserving(MAX_TILE_COLUMNS * maxRows);
     }
 
     @Override
@@ -106,10 +107,6 @@ public class SiteSection extends OptionalLeaf implements TileGroup.Observer {
 
     TileGroup getTileGroupForTesting() {
         return mTileGroup;
-    }
-
-    private static int getMaxTileRows() {
-        return 2;
     }
 
     @LayoutRes

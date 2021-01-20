@@ -243,7 +243,13 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
         mTileGroup = new TileGroup(tileRenderer, mManager, contextMenuManager, tileGroupDelegate,
                 /* observer = */ this, offlinePageBridge);
 
-        mSiteSectionViewHolder = SiteSection.createViewHolder(getSiteSectionView(), mUiConfig);
+        int maxRows = 2;
+        if (searchProviderIsGoogle && QueryTileUtils.isQueryTilesEnabledOnNTP()) {
+            maxRows = QueryTileSection.getMaxRowsForMostVisitedTiles(getContext());
+        }
+
+        mSiteSectionViewHolder =
+                SiteSection.createViewHolder(getSiteSectionView(), mUiConfig, maxRows);
         mSiteSectionViewHolder.bindDataSource(mTileGroup, tileRenderer);
 
         int variation = ExploreSitesBridge.getVariation();
@@ -275,8 +281,7 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
                     mSearchBoxCoordinator, profile, mManager::performSearchQuery);
         }
 
-        mTileGroup.startObserving(
-                getMaxRowsForMostVisitedTiles() * getMaxColumnsForMostVisitedTiles());
+        mTileGroup.startObserving(maxRows * getMaxColumnsForMostVisitedTiles());
 
         VrModuleProvider.registerVrModeObserver(this);
         if (VrModuleProvider.getDelegate().isInVr()) onEnterVr();
@@ -799,13 +804,6 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
         } else if (mTileGridPlaceholder != null) {
             mTileGridPlaceholder.setVisibility(GONE);
         }
-    }
-
-    private int getMaxRowsForMostVisitedTiles() {
-        Integer maxRows = mQueryTileSection == null
-                ? null
-                : mQueryTileSection.getMaxRowsForMostVisitedTiles();
-        return maxRows == null ? 2 : maxRows.intValue();
     }
 
     /**
