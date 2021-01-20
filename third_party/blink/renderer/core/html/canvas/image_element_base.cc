@@ -144,6 +144,18 @@ ScriptPromise ImageElementBase::CreateImageBitmap(
         "No image can be retrieved from the provided element.");
     return ScriptPromise();
   }
+  if (options->hasResizeWidth() && options->resizeWidth() == 0) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "The resize width dimension is equal to 0.");
+    return ScriptPromise();
+  }
+  if (options->hasResizeHeight() && options->resizeHeight() == 0) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "The resize width dimension is equal to 0.");
+    return ScriptPromise();
+  }
   if (auto* svg_image = DynamicTo<SVGImage>(image_content->GetImage())) {
     if (!HasDimensionsForImage(svg_image, crop_rect, options)) {
       exception_state.ThrowDOMException(

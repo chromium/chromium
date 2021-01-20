@@ -417,6 +417,8 @@ scoped_refptr<StaticBitmapImage> ScaleImage(
   SkPixmap resized_pixmap(image_info, image_pixels->data(),
                           image_info.minRowBytes());
   auto sk_image = image->PaintImageForCurrentFrame().GetSwSkImage();
+  if (!sk_image)
+    return nullptr;
   sk_image->scalePixels(resized_pixmap,
                         SkSamplingOptions(parsed_options.resize_quality));
   // Tag the resized Pixmap with the correct color space.
