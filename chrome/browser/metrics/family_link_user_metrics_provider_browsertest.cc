@@ -14,7 +14,7 @@
 #include "chrome/browser/chromeos/child_accounts/family_features.h"
 #include "chrome/browser/chromeos/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/chromeos/login/test/guest_session_mixin.h"
-#include "chrome/browser/supervised_user/logged_in_user_mixin.h"
+#include "chrome/browser/chromeos/login/test/logged_in_user_mixin.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/metrics/delegating_provider.h"
 #include "components/metrics/metrics_service.h"

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SUPERVISED_USER_LOGGED_IN_USER_MIXIN_H_
-#define CHROME_BROWSER_SUPERVISED_USER_LOGGED_IN_USER_MIXIN_H_
+#ifndef CHROME_BROWSER_CHROMEOS_LOGIN_TEST_LOGGED_IN_USER_MIXIN_H_
+#define CHROME_BROWSER_CHROMEOS_LOGIN_TEST_LOGGED_IN_USER_MIXIN_H_
 
 #include "base/optional.h"
 #include "chrome/browser/chromeos/login/test/embedded_test_server_mixin.h"
@@ -127,4 +127,4 @@ class LoggedInUserMixin : public InProcessBrowserTestMixin {
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_SUPERVISED_USER_LOGGED_IN_USER_MIXIN_H_
+#endif  // CHROME_BROWSER_CHROMEOS_LOGIN_TEST_LOGGED_IN_USER_MIXIN_H_
