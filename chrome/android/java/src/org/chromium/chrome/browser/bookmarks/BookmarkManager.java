@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
 import org.chromium.components.bookmarks.BookmarkId;
+import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.util.ConversionUtils;
 import org.chromium.components.browser_ui.widget.dragreorder.DragStateDelegate;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
@@ -494,8 +495,13 @@ public class BookmarkManager
 
     @Override
     public void openBookmark(BookmarkId bookmark) {
-        if (BookmarkUtils.openBookmark(
+        if (!BookmarkUtils.openBookmark(
                     mContext, mOpenBookmarkComponentName, mBookmarkModel, bookmark)) {
+            return;
+        }
+
+        // Close bookmark UI. Keep the reading list page open.
+        if (bookmark != null && bookmark.getType() != BookmarkType.READING_LIST) {
             BookmarkUtils.finishActivityOnPhone(mContext);
         }
     }
