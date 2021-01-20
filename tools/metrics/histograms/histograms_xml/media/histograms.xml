@@ -2861,6 +2861,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Media.Pepper.PlayedSound" enum="Boolean"
     expires_after="2021-03-01">
+  <obsolete>
+    Deprecated as of 2021/01.
+  </obsolete>
   <owner>mlamouri@google.com</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>

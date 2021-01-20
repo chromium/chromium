@@ -55,7 +55,6 @@ void PepperPlaybackObserver::PepperInstanceDeleted(
   if (iter == players_played_sound_map_.end())
     return;
 
-  UMA_HISTOGRAM_BOOLEAN("Media.Pepper.PlayedSound", iter->second);
   players_played_sound_map_.erase(iter);
 
   PepperStopsPlayback(render_frame_host, pp_instance);
