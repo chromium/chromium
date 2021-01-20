@@ -133,6 +133,10 @@ bool SystemEngine::BindRequest(
 }
 
 bool SystemEngine::IsImeSupportedByDecoder(const std::string& ime_spec) {
+  // M17N request will always fallback to built-in rulebased IMEs.
+  if (InputEngine::IsImeSupportedByRulebased(ime_spec)) {
+    return false;
+  }
   return decoder_entry_points_ &&
          decoder_entry_points_->supports(ime_spec.c_str());
 }
