@@ -52,20 +52,17 @@ Polymer({
   },
 
   /**
-   * Letter should be the default option if it exists. If not, use the first
-   * page size in the page sizes array.
-   * @return {string}
+   * Get the index of the default option if it exists. If not, use the index of
+   * the first page size in the page sizes array.
+   * @return {number}
    * @private
    */
-  getDefaultSelectedPageSize_() {
+  getDefaultSelectedPageSizeIndex_() {
     let defaultPageSizeIndex = this.pageSizes.findIndex((pageSize) => {
       return this.isDefaultPageSize_(pageSize);
     });
-    if (defaultPageSizeIndex === -1) {
-      defaultPageSizeIndex = 0;
-    }
 
-    return this.pageSizes[defaultPageSizeIndex].toString();
+    return defaultPageSizeIndex === -1 ? 0 : defaultPageSizeIndex;
   },
 
   /**
@@ -90,7 +87,9 @@ Polymer({
     }
 
     if (this.pageSizes.length > 0) {
-      this.selectedPageSize = this.getDefaultSelectedPageSize_();
+      const selectedPageSizeIndex = this.getDefaultSelectedPageSizeIndex_();
+      this.selectedPageSize = this.pageSizes[selectedPageSizeIndex].toString();
+      this.$.pageSizeSelect.selectedIndex = selectedPageSizeIndex;
     }
   },
 

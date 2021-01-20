@@ -53,19 +53,17 @@ Polymer({
   },
 
   /**
-   * 300 dpi should be the default option if it exists. If not, use the first
-   * resolution in the resolutions array.
-   * @return {string}
+   * Get the index of the default option if it exists. If not, use the index of
+   * the first resolution in the resolutions array.
+   * @return {number}
    * @private
    */
-  getDefaultSelectedResolution_() {
+  getDefaultSelectedResolutionIndex_() {
     const defaultResolutionIndex = this.resolutions.findIndex((resolution) => {
       return this.isDefaultResolution_(resolution);
     });
 
-    return defaultResolutionIndex === -1 ?
-        this.resolutions[0].toString() :
-        this.resolutions[defaultResolutionIndex].toString();
+    return defaultResolutionIndex === -1 ? 0 : defaultResolutionIndex;
   },
 
   /**
@@ -82,7 +80,10 @@ Polymer({
     }
 
     if (this.resolutions.length > 0) {
-      this.selectedResolution = this.getDefaultSelectedResolution_();
+      const selectedResolutionIndex = this.getDefaultSelectedResolutionIndex_();
+      this.selectedResolution =
+          this.resolutions[selectedResolutionIndex].toString();
+      this.$.resolutionSelect.selectedIndex = selectedResolutionIndex;
     }
   },
 

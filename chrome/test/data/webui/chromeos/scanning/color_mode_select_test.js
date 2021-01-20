@@ -9,7 +9,7 @@ import {getColorModeString} from 'chrome://scanning/scanning_app_util.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 
-import {assertOrderedAlphabetically} from './scanning_app_test_utils.js';
+import {assertOrderedAlphabetically, changeSelect} from './scanning_app_test_utils.js';
 
 const ColorMode = {
   BLACK_AND_WHITE: chromeos.scanning.mojom.ColorMode.kBlackAndWhite,
@@ -80,5 +80,32 @@ export function colorModeSelectTest() {
     assertEquals(
         ColorMode.BLACK_AND_WHITE.toString(),
         colorModeSelect.selectedColorMode);
+  });
+
+  // Verify the correct default option is selected when a scanner is selected
+  // and the options change.
+  test('selectDefaultWhenOptionsChange', () => {
+    const select =
+        /** @type {!HTMLSelectElement} */ (colorModeSelect.$$('select'));
+    colorModeSelect.colorModes =
+        [ColorMode.GRAYSCALE, ColorMode.BLACK_AND_WHITE, ColorMode.COLOR];
+    flush();
+    return changeSelect(select, /* value */ null, /* selectedIndex */ 0)
+        .then(() => {
+          assertEquals(
+              ColorMode.BLACK_AND_WHITE.toString(),
+              colorModeSelect.selectedColorMode);
+          assertEquals(
+              ColorMode.BLACK_AND_WHITE.toString(),
+              select.options[select.selectedIndex].value);
+
+          colorModeSelect.colorModes = [ColorMode.GRAYSCALE, ColorMode.COLOR];
+          flush();
+          assertEquals(
+              ColorMode.COLOR.toString(), colorModeSelect.selectedColorMode);
+          assertEquals(
+              ColorMode.COLOR.toString(),
+              select.options[select.selectedIndex].value);
+        });
   });
 }
