@@ -201,11 +201,9 @@ cr.define('ntp', function() {
       this.installLocallySeparator_.hidden = this.installLocally_.hidden =
           app.appData.isLocallyInstalled;
 
-      this.runOnOsLogin_.hidden = !app.appData.mayChangeRunOnOsLoginMode;
-      if (app.appData.mayChangeRunOnOsLoginMode) {
-        this.runOnOsLogin_.checked =
-            app.appData.runOnOsLoginMode != RUN_ON_OS_LOGIN_MODE.NONE;
-      }
+      this.runOnOsLogin_.hidden = !app.appData.mayShowRunOnOsLoginMode;
+      this.runOnOsLogin_.checked =
+          app.appData.runOnOsLoginMode != RUN_ON_OS_LOGIN_MODE.NONE;
     },
 
     /** @private */

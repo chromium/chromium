@@ -281,7 +281,7 @@ void AppLauncherHandler::CreateWebAppInfo(const web_app::AppId& app_id,
 
   // Run on OS Login can be changed only for locally installed web apps
   value->SetBoolean(
-      "mayChangeRunOnOsLoginMode",
+      "mayShowRunOnOsLoginMode",
       base::FeatureList::IsEnabled(features::kDesktopPWAsRunOnOsLogin) &&
           is_locally_installed);
   std::string runOnOsLoginModeString =
@@ -400,7 +400,7 @@ void AppLauncherHandler::CreateExtensionInfo(const Extension* extension,
   value->SetString("app_launch_ordinal", app_launch_ordinal.ToInternalValue());
 
   // Run on OS Login is not implemented for extension/bookmark apps.
-  value->SetBoolean("mayChangeRunOnOsLoginMode", false);
+  value->SetBoolean("mayShowRunOnOsLoginMode", false);
 }
 
 // static

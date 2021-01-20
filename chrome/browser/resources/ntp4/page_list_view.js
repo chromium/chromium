@@ -33,7 +33,7 @@
  *            launch_container: number,
  *            launch_type: number,
  *            mayChangeLaunchType: boolean,
- *            mayChangeRunOnOsLoginMode: boolean,
+ *            mayShowRunOnOsLoginMode: boolean,
  *            mayCreateShortcuts: boolean,
  *            mayDisable: boolean,
  *            name: string,
