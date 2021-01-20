@@ -5953,3 +5953,5 @@ crbug.com/1168373 [ Debug ] http/tests/devtools/layers/layers-3d-view-hit-testin
 
 # DevTools roll
 crbug.com/1050549 http/tests/devtools/network/preview-searchable.js [ Pass Failure ]
+crbug.com/1050549 http/tests/devtools/console/console-correct-suggestions.js [ Pass Failure ]
+crbug.com/1050549 http/tests/devtools/extensions/extensions-timeline-api.js [ Pass Failure ]
