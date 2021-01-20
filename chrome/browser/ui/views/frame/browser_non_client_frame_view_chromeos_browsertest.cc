@@ -63,6 +63,7 @@
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_menu_button.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_toolbar_button_container.h"
+#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/system_web_app_manager.h"
@@ -417,6 +418,11 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest,
   // Open a settings window.
   auto* settings_manager = chrome::SettingsWindowManager::GetInstance();
   settings_manager->ShowOSSettings(browser()->profile());
+
+  // The above ShowOSSettings() should trigger an asynchronous call to launch
+  // OS Settings SWA. Flush Mojo calls so the browser window is created.
+  web_app::FlushSystemWebAppLaunchesForTesting(browser()->profile());
+
   Browser* settings_browser =
       settings_manager->FindBrowserForProfile(browser()->profile());
 

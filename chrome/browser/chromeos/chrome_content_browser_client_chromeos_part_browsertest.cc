@@ -5,6 +5,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
+#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/pref_names.h"
@@ -38,6 +39,10 @@ IN_PROC_BROWSER_TEST_F(ChromeContentBrowserClientChromeOsPartTest,
   // Open the OS settings window.
   auto* settings = chrome::SettingsWindowManager::GetInstance();
   settings->ShowOSSettings(profile);
+
+  // The above ShowOSSettings() should trigger an asynchronous call to launch
+  // OS Settings SWA. Flush Mojo calls so the browser window is created.
+  web_app::FlushSystemWebAppLaunchesForTesting(browser()->profile());
 
   // The OS settings window still uses the default font sizes.
   Browser* browser = settings->FindBrowserForProfile(profile);
