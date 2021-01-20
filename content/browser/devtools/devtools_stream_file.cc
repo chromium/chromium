@@ -110,15 +110,16 @@ void DevToolsStreamFile::ReadOnFileSequence(off_t position,
       } else {
         buffer.resize(size_got);
       }
-      data.reset(new std::string(std::move(buffer)));
       status = size_got ? StatusSuccess : StatusEOF;
       last_read_pos_ = position + size_got;
+      if (binary_) {
+        data = std::make_unique<std::string>();
+        base::Base64Encode(buffer, data.get());
+        base64_encoded = true;
+      } else {
+        data = std::make_unique<std::string>(std::move(buffer));
+      }
     }
-  }
-  if (binary_) {
-    std::string raw_data(std::move(*data));
-    base::Base64Encode(raw_data, data.get());
-    base64_encoded = true;
   }
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(data),
