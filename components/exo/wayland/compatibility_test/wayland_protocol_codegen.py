@@ -68,7 +68,8 @@ def clang_format_source_text(source_text, clang_format_path,
         [clang_format_path, '--assume-filename', effective_filename],
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE)
-    stdout_output, stderr_output = proc.communicate(input=source_text)
+    stdout_output, stderr_output = proc.communicate(
+            input=source_text.encode('utf8'))
     retcode = proc.wait()
     if retcode != 0:
         raise CalledProcessError(retcode,
@@ -80,11 +81,11 @@ def write_if_changed(source_text, output):
     # type: (str, str) -> None
     """Writes source_text to output, but only if different."""
     if os.path.exists(output):
-        with open(output, 'rt') as infile:
+        with open(output, 'rb') as infile:
             if infile.read() == source_text:
                 return
 
-    with open(output, 'wt') as outfile:
+    with open(output, 'wb') as outfile:
         outfile.write(source_text)
 
 
