@@ -5,9 +5,11 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/cr_elements/hidden_style_css.m.js';
+import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import './profile_card_menu.js';
 import './profile_picker_shared_css.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
+import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -40,6 +42,30 @@ Polymer({
   ready() {
     this.manageProfilesBrowserProxy_ =
         ManageProfilesBrowserProxyImpl.getInstance();
+  },
+
+  /** @override */
+  attached() {
+    this.addNameInputTooltipListeners_();
+  },
+
+  /** @private */
+  addNameInputTooltipListeners_() {
+    const showTooltip = () => {
+      // Disable tooltip if the local name editing is in progress.
+      if (this.$.nameInput.hasAttribute('focused_')) {
+        this.$.tooltip.hide();
+      } else {
+        this.$.tooltip.show();
+      }
+    };
+    const hideTooltip = () => this.$.tooltip.hide();
+    const target = this.$.tooltip.target;
+    target.addEventListener('mouseenter', showTooltip);
+    target.addEventListener('focus', hideTooltip);
+    target.addEventListener('mouseleave', hideTooltip);
+    target.addEventListener('click', hideTooltip);
+    this.$.tooltip.addEventListener('mouseenter', hideTooltip);
   },
 
   /** @private */
