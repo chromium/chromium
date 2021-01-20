@@ -62,6 +62,8 @@ ImportLockDialogView::ImportLockDialogView(
       base::BindOnce(done_callback, base::Unretained(this), true));
   SetCancelCallback(
       base::BindOnce(done_callback, base::Unretained(this), false));
+  SetCloseCallback(
+      base::BindOnce(done_callback, base::Unretained(this), false));
 
   SetShowCloseButton(false);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
