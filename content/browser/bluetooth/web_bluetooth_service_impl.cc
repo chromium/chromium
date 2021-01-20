@@ -453,6 +453,15 @@ WebBluetoothServiceImpl::WebBluetoothServiceImpl(
       receiver_(this, std::move(receiver)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(web_contents());
+
+  if (base::FeatureList::IsEnabled(
+          features::kWebBluetoothNewPermissionsBackend)) {
+    BluetoothDelegate* delegate =
+        GetContentClient()->browser()->GetBluetoothDelegate();
+    if (delegate) {
+      observer_.Observe(delegate);
+    }
+  }
 }
 
 WebBluetoothServiceImpl::~WebBluetoothServiceImpl() {
@@ -563,6 +572,38 @@ void WebBluetoothServiceImpl::OnBluetoothScanningPromptEvent(
   } else {
     NOTREACHED();
   }
+}
+
+void WebBluetoothServiceImpl::OnPermissionRevoked(
+    const url::Origin& requesting_origin,
+    const url::Origin& embedding_origin) {
+  if (render_frame_host_->GetLastCommittedOrigin() != requesting_origin ||
+      render_frame_host_->GetMainFrame()->GetLastCommittedOrigin() !=
+          embedding_origin) {
+    return;
+  }
+
+  BluetoothDelegate* delegate =
+      GetContentClient()->browser()->GetBluetoothDelegate();
+  if (!delegate)
+    return;
+
+  std::set<blink::WebBluetoothDeviceId> permitted_ids;
+  for (const auto& device : delegate->GetPermittedDevices(render_frame_host_))
+    permitted_ids.insert(device->id);
+
+  connected_devices_->CloseConnectionsToDevicesNotInList(permitted_ids);
+
+  base::EraseIf(watch_advertisements_clients_,
+                [&](const std::unique_ptr<WatchAdvertisementsClient>& client) {
+                  return !base::Contains(permitted_ids, client->device_id());
+                });
+
+  MaybeStopDiscovery();
+}
+
+content::RenderFrameHost* WebBluetoothServiceImpl::GetRenderFrameHost() {
+  return render_frame_host_;
 }
 
 void WebBluetoothServiceImpl::DidFinishNavigation(
@@ -1668,18 +1709,45 @@ void WebBluetoothServiceImpl::OnStartDiscoverySessionForWatchAdvertisements(
   DCHECK(!watch_advertisements_discovery_session_);
   watch_advertisements_discovery_session_ = std::move(session);
 
+  BluetoothDelegate* delegate =
+      GetContentClient()->browser()->GetBluetoothDelegate();
+
   for (auto& callback_and_client :
        watch_advertisements_callbacks_and_clients_) {
-    if (callback_and_client.second->is_connected()) {
-      watch_advertisements_clients_.push_back(
-          std::move(callback_and_client.second));
+    if (!callback_and_client.second->is_connected()) {
       std::move(callback_and_client.first)
-          .Run(blink::mojom::WebBluetoothResult::SUCCESS);
+          .Run(blink::mojom::WebBluetoothResult::WATCH_ADVERTISEMENTS_ABORTED);
       continue;
     }
 
+    // If the new permissions backend is enabled, verify the permission using
+    // the delegate.
+    if (base::FeatureList::IsEnabled(
+            features::kWebBluetoothNewPermissionsBackend) &&
+        (!delegate ||
+         !delegate->HasDevicePermission(
+             render_frame_host_, callback_and_client.second->device_id()))) {
+      std::move(callback_and_client.first)
+          .Run(blink::mojom::WebBluetoothResult::
+                   NOT_ALLOWED_TO_ACCESS_ANY_SERVICE);
+      continue;
+    }
+
+    // Otherwise verify it via |allowed_devices|.
+    if (!base::FeatureList::IsEnabled(
+            features::kWebBluetoothNewPermissionsBackend) &&
+        !allowed_devices().IsAllowedToGATTConnect(
+            callback_and_client.second->device_id())) {
+      std::move(callback_and_client.first)
+          .Run(blink::mojom::WebBluetoothResult::
+                   NOT_ALLOWED_TO_ACCESS_ANY_SERVICE);
+      continue;
+    }
+
+    watch_advertisements_clients_.push_back(
+        std::move(callback_and_client.second));
     std::move(callback_and_client.first)
-        .Run(blink::mojom::WebBluetoothResult::WATCH_ADVERTISEMENTS_ABORTED);
+        .Run(blink::mojom::WebBluetoothResult::SUCCESS);
   }
 
   watch_advertisements_callbacks_and_clients_.clear();
