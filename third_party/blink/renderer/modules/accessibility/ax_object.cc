@@ -1685,8 +1685,11 @@ bool AXObject::AccessibilityIsIncludedInTree() const {
 
 void AXObject::UpdateCachedAttributeValuesIfNeeded(
     bool notify_parent_of_ignored_changes) const {
-  if (IsDetached())
+  if (IsDetached()) {
+    cached_is_ignored_ = true;
+    cached_is_ignored_but_included_in_tree_ = false;
     return;
+  }
 
   AXObjectCacheImpl& cache = AXObjectCache();
 

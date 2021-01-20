@@ -40,6 +40,22 @@ TEST_F(AccessibilityTest, IsAncestorOf) {
   EXPECT_FALSE(button->IsAncestorOf(*root));
 }
 
+TEST_F(AccessibilityTest, DetachedIsIgnored) {
+  SetBodyInnerHTML(R"HTML(<button id="button">button</button>)HTML");
+
+  const AXObject* root = GetAXRootObject();
+  ASSERT_NE(nullptr, root);
+  AXObject* button = GetAXObjectByElementId("button");
+  ASSERT_NE(nullptr, button);
+
+  EXPECT_FALSE(button->IsDetached());
+  EXPECT_FALSE(button->AccessibilityIsIgnored());
+  GetAXObjectCache().Remove(button->GetNode());
+  EXPECT_TRUE(button->IsDetached());
+  EXPECT_TRUE(button->AccessibilityIsIgnored());
+  EXPECT_FALSE(button->AccessibilityIsIgnoredButIncludedInTree());
+}
+
 TEST_F(AccessibilityTest, UnignoredChildren) {
   SetBodyInnerHTML(R"HTML(This is a test with
                    <p role="presentation">
