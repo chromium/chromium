@@ -5,6 +5,7 @@
 #include "ui/gl/gl_image_egl.h"
 
 #include "ui/gl/egl_util.h"
+#include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_enums.h"
 #include "ui/gl/gl_surface_egl.h"
 

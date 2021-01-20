@@ -13,6 +13,7 @@
 #include "media/gpu/test/video_test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/codec/png_codec.h"
+#include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/init/gl_factory.h"

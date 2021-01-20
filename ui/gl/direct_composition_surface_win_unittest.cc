@@ -26,6 +26,7 @@
 #include "ui/gl/dc_renderer_layer_params.h"
 #include "ui/gl/direct_composition_child_surface_win.h"
 #include "ui/gl/gl_angle_util_win.h"
+#include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_image_d3d.h"
 #include "ui/gl/gl_image_dxgi.h"

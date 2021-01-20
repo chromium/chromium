@@ -27,6 +27,7 @@
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gl/angle_platform_impl.h"
 #include "ui/gl/egl_util.h"
+#include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_context_egl.h"
 #include "ui/gl/gl_display_egl_util.h"

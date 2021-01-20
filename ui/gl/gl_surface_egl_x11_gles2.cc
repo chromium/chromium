@@ -8,6 +8,7 @@
 #include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xproto_util.h"
 #include "ui/gl/egl_util.h"
+#include "ui/gl/gl_bindings.h"
 
 using ui::GetLastEGLErrorString;
 

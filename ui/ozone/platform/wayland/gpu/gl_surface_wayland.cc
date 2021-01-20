@@ -46,21 +46,21 @@ bool GLSurfaceWayland::Resize(const gfx::Size& size,
 
 EGLConfig GLSurfaceWayland::GetConfig() {
   if (!config_) {
-    GLint config_attribs[] = {EGL_BUFFER_SIZE,
-                              32,
-                              EGL_ALPHA_SIZE,
-                              8,
-                              EGL_BLUE_SIZE,
-                              8,
-                              EGL_GREEN_SIZE,
-                              8,
-                              EGL_RED_SIZE,
-                              8,
-                              EGL_RENDERABLE_TYPE,
-                              EGL_OPENGL_ES2_BIT,
-                              EGL_SURFACE_TYPE,
-                              EGL_WINDOW_BIT,
-                              EGL_NONE};
+    EGLint config_attribs[] = {EGL_BUFFER_SIZE,
+                               32,
+                               EGL_ALPHA_SIZE,
+                               8,
+                               EGL_BLUE_SIZE,
+                               8,
+                               EGL_GREEN_SIZE,
+                               8,
+                               EGL_RED_SIZE,
+                               8,
+                               EGL_RENDERABLE_TYPE,
+                               EGL_OPENGL_ES2_BIT,
+                               EGL_SURFACE_TYPE,
+                               EGL_WINDOW_BIT,
+                               EGL_NONE};
     config_ = ChooseEGLConfig(GetDisplay(), config_attribs);
   }
   return config_;

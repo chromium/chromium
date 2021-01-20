@@ -20,6 +20,7 @@
 #include "ui/gfx/linux/gbm_defines.h"
 #include "ui/gfx/linux/scoped_gbm_device.h"
 #include "ui/gfx/native_pixmap.h"
+#include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/ozone/common/egl_util.h"
 #include "ui/ozone/common/gl_ozone_egl.h"

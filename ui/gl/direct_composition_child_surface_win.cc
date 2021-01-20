@@ -23,6 +23,7 @@
 #include "ui/gl/direct_composition_surface_win.h"
 #include "ui/gl/egl_util.h"
 #include "ui/gl/gl_angle_util_win.h"
+#include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/gl_switches.h"

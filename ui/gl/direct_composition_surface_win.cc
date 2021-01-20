@@ -20,6 +20,7 @@
 #include "ui/gl/dc_layer_tree.h"
 #include "ui/gl/direct_composition_child_surface_win.h"
 #include "ui/gl/gl_angle_util_win.h"
+#include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_features.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_switches.h"

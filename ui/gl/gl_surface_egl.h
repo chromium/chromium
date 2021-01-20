@@ -9,6 +9,9 @@
 #include <windows.h>
 #endif
 
+#include <EGL/egl.h>
+#include <EGL/eglext.h>
+
 #include <memory>
 #include <string>
 #include <vector>
@@ -22,7 +25,6 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/vsync_provider.h"
 #include "ui/gl/egl_timestamps.h"
-#include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_export.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gl_surface_overlay.h"

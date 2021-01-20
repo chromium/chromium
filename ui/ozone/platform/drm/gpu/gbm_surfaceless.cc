@@ -15,6 +15,7 @@
 #include "base/trace_event/trace_event.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/presentation_feedback.h"
+#include "ui/gl/gl_bindings.h"
 #include "ui/ozone/common/egl_util.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
 #include "ui/ozone/platform/drm/gpu/drm_framebuffer.h"
