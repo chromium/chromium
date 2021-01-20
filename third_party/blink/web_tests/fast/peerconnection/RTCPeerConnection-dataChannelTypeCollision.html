@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>RTCPeerConnection data channel type collison</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+</head>
+</body>
+<script>
+promise_test(t => {
+  // This test specifically verifies fix to crbug.com/1030628
+  var mediaConstraints = {
+    optional: [{ RtpDataChannels: true }]
+  }
+  var pc = new RTCPeerConnection({}, mediaConstraints)
+  t.add_cleanup(() => pc.close());
+  pc.createDataChannel('')
+
+  var sd = new RTCSessionDescription({
+    type: 'offer',
+    sdp: 'v=0\r\no=- 2512342596970960666 2 IN IP4 127.0.0.1\r\ns=-\r\nt=0 0\r\na=group:BUNDLE data\r\na=msid-semantic: WMS\r\nm=application 9 UDP/DTLS/SCTP webrtc-datachannel\r\nc=IN IP4 0.0.0.0\r\na=ice-ufrag:xwIt\r\na=ice-pwd:WnJ0omUfzZhL3WX63jJH5mU8\r\na=ice-options:trickle\r\na=fingerprint:sha-256 E5:61:EC:E3:D4:04:55:16:E9:47:95:A7:4E:0C:82:10:A2:70:82:4F:59:29:99:B2:66:40:F2:46:86:A6:23:A3\r\na=setup:actpass\r\na=mid:data\r\na=sctp-port:5000\r\na=max-message-size:262144\r\n',
+  })
+  return promise_rejects_dom(t, "InvalidAccessError", pc.setRemoteDescription(sd));
+}, 'Local RTP channel, remote offer of SCTP channel');
+
+promise_test(async t => {
+  var pc = new RTCPeerConnection();
+  t.add_cleanup(() => pc.close());
+  pc.createDataChannel('');
+  offer = await pc.createOffer();
+  assert_regexp_match(offer.sdp, /m=application .* webrtc-datachannel/);
+  assert_equals(offer.sdp.match(/a=rtpmap:\d+ google-data/), null);
+}, 'Asking for default Data Channels generates appropriate offer');
+
+promise_test(async t => {
+  const rtpConstraints = { optional: [{ RtpDataChannels: true}]};
+
+  var pc = new RTCPeerConnection({}, rtpConstraints);
+  t.add_cleanup(() => pc.close());
+  pc.createDataChannel('');
+  offer = await pc.createOffer();
+  assert_equals(offer.sdp.match(/m=application .* webrtc-datachannel/), null);
+  assert_regexp_match(offer.sdp, /a=rtpmap:\d+ google-data/);
+}, 'Asking for RTP Data Channels generates appropriate offer');
+
+</script>
+</body>
+</html>
