@@ -347,7 +347,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Stability.IOS.Experimental.Counts"
     enum="IOSStabilityUserVisibleTerminationType" expires_after="2021-06-15">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>eugenebut@google.com</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
     Recorded when iOS app has started after a crash caused by system signal or
@@ -367,7 +367,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Stability.iOS.TabCountBefore{Event}" units="tabs"
     expires_after="2021-05-05">
   <owner>djean@chromium.org</owner>
-  <owner>eugenebut@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
     The number of tabs opened in the previous session when the app starts after
@@ -457,7 +456,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Stability.iOS.UTE.MobileSessionAppState" enum="IOSAppState"
     expires_after="2021-05-30">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
     Recorded when app starts after Unexplained Termination Event (UTE) or
@@ -468,7 +467,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Stability.iOS.UTE.MobileSessionAppWillTerminateWasReceived"
     enum="AppWillTerminateReceived" expires_after="2021-07-11">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>eugenebut@google.com</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
     Recorded when app starts after Unexplained Termination Event (UTE) or
@@ -481,7 +480,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Stability.iOS.UTE.MobileSessionOOMShutdownHint"
     enum="OOMShutdownHint" expires_after="2021-06-22">
-  <owner>eugenebut@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <owner>sdefresne@chromium.org</owner>
   <summary>
@@ -494,7 +492,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Stability.iOS.UTE.OSRestartedAfterPreviousSession"
     enum="BooleanRebooted" expires_after="2021-06-06">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>
   <summary>
     true if OS was restarted after the previous session. Logged on application
@@ -528,7 +526,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Stability.MobileSessionShutdownType"
     enum="MobileSessionShutdownType" expires_after="2021-06-20">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>michaeldo@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
     Type of the shutdown. This histogram is recorded at startup and logs a
