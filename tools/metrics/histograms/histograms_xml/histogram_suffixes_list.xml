@@ -12034,7 +12034,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="Eula.AcceptedWithStats" label=""/>
   <suffix name="Eula.Back" label=""/>
   <suffix name="Family-link-notice.Done" label=""/>
-  <suffix name="Fingerprint-setup.Next" label=""/>
+  <suffix name="Fingerprint-setup.Done" label=""/>
+  <suffix name="Fingerprint-setup.Next" label="">
+    <obsolete>
+      Split into Fingerprint-setup.Done and Fingerprint-setup.Skipped in M90.
+    </obsolete>
+  </suffix>
+  <suffix name="Fingerprint-setup.Skipped" label=""/>
   <suffix name="Gaia-signin.Back" label=""/>
   <suffix name="Gaia-signin.Cancel" label=""/>
   <suffix name="Gaia-signin.CloseDialog" label="">

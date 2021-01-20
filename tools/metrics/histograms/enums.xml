@@ -32656,7 +32656,9 @@ Called by update_feature_policy_enum.py.-->
 <enum name="FingerprintSetupScreenUserAction">
   <summary>Actions which happen on the screen.</summary>
   <int value="0" label="Setup done button clicked"/>
-  <int value="1" label="Skipped button clicked"/>
+  <int value="1" label="Skipped button clicked">
+    Obsolete, splited into skip in flow and skip on start actions in M90.
+  </int>
   <int value="2" label="Do it later button clicked">
     Obsolete, the button is removed.
   </int>
@@ -32664,6 +32666,8 @@ Called by update_feature_policy_enum.py.-->
   <int value="4" label="Show sensor location button clicked">
     Obsolete, the button in removed.
   </int>
+  <int value="5" label="Skip button clicked on starting page"/>
+  <int value="6" label="Skip button clicked in flow"/>
 </enum>
 
 <enum name="FingerprintUnlockResult">

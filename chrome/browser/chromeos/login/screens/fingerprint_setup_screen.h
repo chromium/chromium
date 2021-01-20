@@ -34,11 +34,13 @@ class FingerprintSetupScreen : public BaseScreen,
   // or deleted. Only additions possible.
   enum class UserAction {
     kSetupDone = 0,
-    kSetupSkipped = 1,
+    // kSetupSkipped_obsolete = 1,
     // kDoItLater_obsolete = 2,
     kAddAnotherFinger = 3,
-    kShowSensorLocation_obsolete = 4, // need to be kept for `kMaxValue`
-    kMaxValue = kShowSensorLocation_obsolete
+    // kShowSensorLocation_obsolete = 4,
+    kSkipButtonClickedOnStart = 5,
+    kSkipButtonClickedInFlow = 6,
+    kMaxValue = kSkipButtonClickedInFlow
   };
 
   static std::string GetResultString(Result result);

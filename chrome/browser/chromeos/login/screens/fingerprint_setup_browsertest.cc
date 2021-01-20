@@ -152,7 +152,7 @@ IN_PROC_BROWSER_TEST_F(FingerprintSetupTest, FingerprintEnrollHalf) {
   ExpectResult(FingerprintSetupScreen::Result::SKIPPED);
   EXPECT_THAT(GetAllRecordedUserActions(),
               ElementsAre(base::Bucket(
-                  static_cast<int>(UserAction::kSetupSkipped), 1)));
+                  static_cast<int>(UserAction::kSkipButtonClickedInFlow), 1)));
 }
 
 IN_PROC_BROWSER_TEST_F(FingerprintSetupTest, FingerprintEnrollFull) {
@@ -221,7 +221,7 @@ IN_PROC_BROWSER_TEST_F(FingerprintSetupTest, FingerprintSetupCancel) {
   ExpectResult(FingerprintSetupScreen::Result::SKIPPED);
   EXPECT_THAT(GetAllRecordedUserActions(),
               ElementsAre(base::Bucket(
-                  static_cast<int>(UserAction::kSetupSkipped), 1)));
+                  static_cast<int>(UserAction::kSkipButtonClickedOnStart), 1)));
 }
 
 }  // namespace chromeos

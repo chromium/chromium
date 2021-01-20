@@ -21,7 +21,8 @@ namespace chromeos {
 namespace {
 
 constexpr char kUserActionSetupDone[] = "setup-done";
-constexpr char kUserActionSetupSkipped[] = "setup-skipped";
+constexpr char kUserActionSetupSkippedOnStart[] = "setup-skipped-on-start";
+constexpr char kUserActionSetupSkippedInFlow[] = "setup-skipped-in-flow";
 constexpr char kUserActionAddAnotherFinger[] = "add-another-finger";
 
 struct FingerprintSetupUserAction {
@@ -31,10 +32,12 @@ struct FingerprintSetupUserAction {
 
 const FingerprintSetupUserAction actions[] = {
     {kUserActionSetupDone, FingerprintSetupScreen::UserAction::kSetupDone},
-    {kUserActionSetupSkipped,
-     FingerprintSetupScreen::UserAction::kSetupSkipped},
     {kUserActionAddAnotherFinger,
      FingerprintSetupScreen::UserAction::kAddAnotherFinger},
+    {kUserActionSetupSkippedOnStart,
+     FingerprintSetupScreen::UserAction::kSkipButtonClickedOnStart},
+    {kUserActionSetupSkippedInFlow,
+     FingerprintSetupScreen::UserAction::kSkipButtonClickedInFlow},
 };
 
 void RecordFingerprintSetupUserAction(
@@ -149,7 +152,8 @@ void FingerprintSetupScreen::OnUserAction(const std::string& action_id) {
   RecordUserAction(action_id);
   if (action_id == kUserActionSetupDone) {
     exit_callback_.Run(Result::DONE);
-  } else if (action_id == kUserActionSetupSkipped) {
+  } else if (action_id == kUserActionSetupSkippedOnStart ||
+             action_id == kUserActionSetupSkippedInFlow) {
     exit_callback_.Run(Result::SKIPPED);
   } else if (action_id == kUserActionAddAnotherFinger) {
     StartAddingFinger();

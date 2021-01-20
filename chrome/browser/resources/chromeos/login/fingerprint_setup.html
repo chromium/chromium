@@ -41,7 +41,7 @@
       <div slot="bottom-buttons" class="layout horizontal end-justified">
         <oobe-text-button id="skipStart"
             text-key="skipFingerprintSetup"
-            on-click="onSkip_" class="focus-on-show">
+            on-click="onSkipOnStart_" class="focus-on-show">
         </oobe-text-button>
       </div>
     </oobe-dialog>
@@ -72,7 +72,7 @@
       </div>
       <div slot="bottom-buttons" class="layout horizontal end-justified">
         <oobe-text-button id="skipProgress"
-            on-click="onSkip_" class="focus-on-show"
+            on-click="onSkipInProgress_" class="focus-on-show"
             text-key="skipFingerprintSetup"
             hidden="[[complete_]]">
         </oobe-text-button>

@@ -162,11 +162,19 @@ Polymer({
   },
 
   /**
-   * This is 'on-tap' event handler for 'Skip' button.
+   * This is 'on-tap' event handler for 'Skip' button for 'START' step.
    * @private
    */
-  onSkip_(e) {
-    this.userActed('setup-skipped');
+  onSkipOnStart_(e) {
+    this.userActed('setup-skipped-on-start');
+  },
+
+  /**
+   * This is 'on-tap' event handler for 'Skip' button for 'PROGRESS' step.
+   * @private
+   */
+  onSkipInProgress_(e) {
+    this.userActed('setup-skipped-in-flow');
   },
 
   /**
