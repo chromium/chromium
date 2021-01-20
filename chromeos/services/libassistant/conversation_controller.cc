@@ -52,11 +52,74 @@ void ConversationController::SendTextQuery(
     options.conversation_turn_id = conversation_id.value();
 
   // Builds text interaction.
-  std::string interaction =
-      chromeos::assistant::CreateTextQueryInteraction(query);
+  std::string interaction = assistant::CreateTextQueryInteraction(query);
 
   assistant_manager_internal()->SendVoicelessInteraction(
       interaction, /*description=*/"text_query", options, [](auto) {});
+}
+
+void ConversationController::StartEditReminderInteraction(
+    const std::string& client_id) {
+  SendVoicelessInteraction(assistant::CreateEditReminderInteraction(client_id),
+                           /*description=*/std::string(),
+                           /*is_user_initiated=*/true);
+}
+
+void ConversationController::RetrieveNotification(
+    mojom::AssistantNotificationPtr notification,
+    int32_t action_index) {
+  const std::string request_interaction =
+      assistant::SerializeNotificationRequestInteraction(
+          notification->server_id, notification->consistency_token,
+          notification->opaque_token, action_index);
+
+  SendVoicelessInteraction(request_interaction,
+                           /*description=*/"RequestNotification",
+                           /*is_user_initiated=*/true);
+}
+
+void ConversationController::DismissNotification(
+    mojom::AssistantNotificationPtr notification) {
+  // |assistant_manager_internal()| may not exist if we are dismissing
+  // notifications as part of a shutdown sequence.
+  if (!assistant_manager_internal())
+    return;
+
+  const std::string dismissed_interaction =
+      assistant::SerializeNotificationDismissedInteraction(
+          notification->server_id, notification->consistency_token,
+          notification->opaque_token, {notification->grouping_key});
+
+  assistant_client::VoicelessOptions options;
+  options.obfuscated_gaia_id = notification->obfuscated_gaia_id;
+
+  assistant_manager_internal()->SendVoicelessInteraction(
+      dismissed_interaction, /*description=*/"DismissNotification", options,
+      [](auto) {});
+}
+
+void ConversationController::SendAssistantFeedback(
+    mojom::AssistantFeedbackPtr feedback) {
+  std::string raw_image_data(feedback->screenshot_png.begin(),
+                             feedback->screenshot_png.end());
+  const std::string interaction = assistant::CreateSendFeedbackInteraction(
+      feedback->assistant_debug_info_allowed, feedback->description,
+      raw_image_data);
+
+  SendVoicelessInteraction(interaction,
+                           /*description=*/"send feedback with details",
+                           /*is_user_initiated=*/false);
+}
+
+void ConversationController::SendVoicelessInteraction(
+    const std::string& interaction,
+    const std::string& description,
+    bool is_user_initiated) {
+  assistant_client::VoicelessOptions voiceless_options;
+  voiceless_options.is_user_initiated = is_user_initiated;
+
+  assistant_manager_internal()->SendVoicelessInteraction(
+      interaction, description, voiceless_options, [](auto) {});
 }
 
 assistant_client::AssistantManagerInternal*

@@ -9,6 +9,35 @@
 namespace chromeos {
 namespace assistant {
 
+namespace {
+
+// Converts |AssistantNotification| struct to the corresponding Mojom struct
+// (the Mojom-generated |AssistantNotificationPtr|).
+libassistant::mojom::AssistantNotificationPtr ConvertNotificationToMojomStruct(
+    const AssistantNotification& notification) {
+  auto ptr = libassistant::mojom::AssistantNotification::New();
+  ptr->server_id = notification.server_id;
+  ptr->consistency_token = notification.consistency_token;
+  ptr->opaque_token = notification.opaque_token;
+  ptr->grouping_key = notification.grouping_key;
+  ptr->obfuscated_gaia_id = notification.obfuscated_gaia_id;
+  return ptr;
+}
+
+// Coverts |AssistantFeedback| struct to the corresponding Mojom struct (the
+// Mojom-generated |AssistantFeedbackPtr|).
+libassistant::mojom::AssistantFeedbackPtr ConvertFeedbackToMojomStruct(
+    const AssistantFeedback& feedback) {
+  auto ptr = libassistant::mojom::AssistantFeedback::New();
+  ptr->description = feedback.description;
+  ptr->assistant_debug_info_allowed = feedback.assistant_debug_info_allowed;
+  ptr->screenshot_png = std::vector<uint8_t>(feedback.screenshot_png.begin(),
+                                             feedback.screenshot_png.end());
+  return ptr;
+}
+
+}  // namespace
+
 ConversationControllerProxy::ConversationControllerProxy(
     mojo::PendingRemote<ConversationController> conversation_controller_remote)
     : conversation_controller_remote_(
@@ -22,6 +51,30 @@ void ConversationControllerProxy::SendTextQuery(
     const std::string& conversation_id) {
   conversation_controller_remote_->SendTextQuery(query, allow_tts,
                                                  conversation_id);
+}
+
+void ConversationControllerProxy::StartEditReminderInteraction(
+    const std::string& client_id) {
+  conversation_controller_remote_->StartEditReminderInteraction(client_id);
+}
+
+void ConversationControllerProxy::RetrieveNotification(
+    const AssistantNotification& notification,
+    int32_t action_index) {
+  conversation_controller_remote_->RetrieveNotification(
+      ConvertNotificationToMojomStruct(notification), action_index);
+}
+
+void ConversationControllerProxy::DismissNotification(
+    const AssistantNotification& notification) {
+  conversation_controller_remote_->DismissNotification(
+      ConvertNotificationToMojomStruct(notification));
+}
+
+void ConversationControllerProxy::SendAssistantFeedback(
+    const AssistantFeedback& feedback) {
+  conversation_controller_remote_->SendAssistantFeedback(
+      ConvertFeedbackToMojomStruct(feedback));
 }
 
 }  // namespace assistant
