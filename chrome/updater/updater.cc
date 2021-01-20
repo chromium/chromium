@@ -109,8 +109,9 @@ int HandleUpdaterCommands(const base::CommandLine* command_line) {
 #endif  // OS_WIN
 
   if (command_line->HasSwitch(kInstallSwitch) ||
-      command_line->HasSwitch(kTagSwitch))
+      command_line->HasSwitch(kTagSwitch)) {
     return MakeAppInstall()->Run();
+  }
 
   if (command_line->HasSwitch(kUninstallSwitch))
     return MakeAppUninstall()->Run();

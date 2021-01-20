@@ -45,8 +45,8 @@ source_set("device_management") {
   if (is_win) {
     sources += [ "dm_storage_win.cc" ]
     deps += [
+      "//chrome/updater:lib",
       "//chrome/updater/win:constants",
-      "//chrome/updater/win:lib",
     ]
   }
 }
@@ -81,6 +81,6 @@ source_set("unittest") {
   }
 
   if (is_win) {
-    deps += [ "//chrome/updater/win:lib" ]
+    deps += [ "//chrome/updater:lib" ]
   }
 }

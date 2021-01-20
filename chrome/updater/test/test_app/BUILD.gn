@@ -47,8 +47,6 @@ source_set("constants") {
 
 source_set("app_sources") {
   sources = [
-    "//chrome/updater/app/app.cc",
-    "//chrome/updater/app/app.h",
     "test_app.cc",
     "test_app.h",
     "update_client.cc",
@@ -60,22 +58,22 @@ source_set("app_sources") {
     ":version_header",
     "//base",
     "//chrome/updater:base",
+    "//chrome/updater:lib",
     "//chrome/updater:version_header",
     "//components/update_client:update_client",
   ]
 
   if (is_mac) {
     sources += [
-      "//chrome/updater/app/server/mac/service_protocol.h",
-      "//chrome/updater/app/server/mac/service_protocol.mm",
-      "//chrome/updater/app/server/mac/update_service_wrappers.h",
-      "//chrome/updater/app/server/mac/update_service_wrappers.mm",
       "test_app_mac.mm",
       "update_client_mac.h",
       "update_client_mac.mm",
     ]
 
-    deps += [ "//chrome/updater/mac:xpc_names" ]
+    deps += [
+      "//chrome/updater/app/server/mac:protocol",
+      "//chrome/updater/mac:xpc_names",
+    ]
 
     frameworks = [ "CoreFoundation.framework" ]
   }
@@ -88,7 +86,7 @@ source_set("app_sources") {
     ]
     deps += [
       "//chrome/updater/app/server/win:updater_idl_idl",
-      "//chrome/updater/win:lib",
+      "//chrome/updater/win:app_install_controller",
     ]
   }
 }
