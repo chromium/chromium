@@ -19,18 +19,24 @@
     <div class="above"></div>
     <div class="to-screenshot"></div>`, 'Tests that screenshot works with clip');
 
-  const json = await session.evaluate(`
+  const clip = await session.evaluate(`
     (() => {
       const div = document.querySelector('div.to-screenshot');
       const box = div.getBoundingClientRect();
       window.scrollTo(0, 15000);
-      return JSON.stringify({x: box.left, y: box.top, width: box.width, height: box.height});
+      return {x: box.left, y: box.top, width: box.width, height: box.height};
     })()
   `);
-  testRunner.log(json);
 
-  const clip = JSON.parse(json);
-  testRunner.log(await dp.Page.captureScreenshot({format: 'png', clip: {...clip, scale: 1}}));
+  async function test(scale) {
+    const params = {format: 'png', clip: {...clip, scale: scale}};
+    testRunner.log(JSON.stringify(params));
+    testRunner.log(await dp.Page.captureScreenshot(params));
+  }
+
+  await test(1);
+  await test(0.5);
+  await test(2);
 
   testRunner.completeTest();
 })
