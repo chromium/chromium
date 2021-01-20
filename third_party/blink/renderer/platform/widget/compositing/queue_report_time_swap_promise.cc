@@ -54,6 +54,8 @@ cc::SwapPromise::DidNotSwapAction QueueReportTimeSwapPromise::DidNotSwap(
       std::move(drain_callback_).Run(source_frame_number_);
     if (swap_callback_)
       std::move(swap_callback_).Run();
+  } else if (reason == cc::SwapPromise::COMMIT_FAILS) {
+    return DidNotSwapAction::KEEP_ACTIVE;
   }
   return DidNotSwapAction::BREAK_PROMISE;
 }
