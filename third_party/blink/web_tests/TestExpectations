@@ -675,6 +675,7 @@ crbug.com/353580 external/wpt/css/css-tables/height-distribution/percentage-sizi
 crbug.com/1108224 external/wpt/css/css-tables/min-max-size-table-content-box.html [ Failure ]
 crbug.com/958381 external/wpt/css/css-tables/tentative/position-sticky-container.html [ Failure ]
 crbug.com/958381 external/wpt/css/css-tables/tentative/table-height-redistribution.html [ Failure ]
+crbug.com/958381 external/wpt/css/css-tables/tentative/paint/background-image-column-collapsed.html [ Failure ]
 
 # [css-contain]
 

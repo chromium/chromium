@@ -237,19 +237,15 @@ class ColumnGeometriesBuilder {
                 wtf_size_t span) {
     wtf_size_t end_column_index = start_column_index + span - 1;
     DCHECK_LE(end_column_index, column_locations.size() - 1);
-    LayoutUnit column_width = column_locations[end_column_index].offset +
-                              column_locations[end_column_index].size -
-                              column_locations[start_column_index].offset;
-    col.GetLayoutBox()->SetLogicalWidth(column_width);
+    LayoutUnit column_inline_size = column_locations[end_column_index].offset +
+                                    column_locations[end_column_index].size -
+                                    column_locations[start_column_index].offset;
+    col.GetLayoutBox()->SetLogicalWidth(column_inline_size);
     col.GetLayoutBox()->SetLogicalHeight(table_grid_block_size);
-    for (unsigned i = 0; i < span; ++i) {
-      wtf_size_t current_column_index = start_column_index + i;
-      column_geometries.emplace_back(
-          current_column_index, /* span */ 1,
-          column_locations[current_column_index].offset -
-              border_spacing.inline_size,
-          column_locations[current_column_index].size, col);
-    }
+    column_geometries.emplace_back(start_column_index, span,
+                                   column_locations[start_column_index].offset -
+                                       border_spacing.inline_size,
+                                   column_inline_size, col);
   }
 
   void EnterColgroup(const NGLayoutInputNode& colgroup,
@@ -261,28 +257,16 @@ class ColumnGeometriesBuilder {
                      bool has_children) {
     if (span == 0)
       return;
-    if (has_children) {
-      wtf_size_t last_column_index = start_column_index + span - 1;
-      LayoutUnit colgroup_size = column_locations[last_column_index].offset +
-                                 column_locations[last_column_index].size -
-                                 column_locations[start_column_index].offset;
-      colgroup.GetLayoutBox()->SetLogicalWidth(colgroup_size);
-      colgroup.GetLayoutBox()->SetLogicalHeight(table_grid_block_size);
-      column_geometries.emplace_back(
-          start_column_index, span,
-          column_locations[start_column_index].offset -
-              border_spacing.inline_size,
-          colgroup_size, colgroup);
-    } else {
-      for (unsigned i = 0; i < span; ++i) {
-        wtf_size_t current_column_index = start_column_index + i;
-        column_geometries.emplace_back(
-            current_column_index, /* span */ 1,
-            column_locations[current_column_index].offset -
-                border_spacing.inline_size,
-            column_locations[current_column_index].size, colgroup);
-      }
-    }
+    wtf_size_t last_column_index = start_column_index + span - 1;
+    LayoutUnit colgroup_size = column_locations[last_column_index].offset +
+                               column_locations[last_column_index].size -
+                               column_locations[start_column_index].offset;
+    colgroup.GetLayoutBox()->SetLogicalWidth(colgroup_size);
+    colgroup.GetLayoutBox()->SetLogicalHeight(table_grid_block_size);
+    column_geometries.emplace_back(start_column_index, span,
+                                   column_locations[start_column_index].offset -
+                                       border_spacing.inline_size,
+                                   colgroup_size, colgroup);
   }
 
   void Sort() {
