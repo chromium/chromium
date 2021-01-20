@@ -446,13 +446,17 @@ void MimeHandlerViewGuest::ReadyToCommitNavigation(
 
 void MimeHandlerViewGuest::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
+  guest_view::GuestView<MimeHandlerViewGuest>::DidFinishNavigation(
+      navigation_handle);
+
   if (navigation_handle->IsInMainFrame()) {
     // We should not navigate the guest away from the handling extension.
     const url::Origin handler_origin =
         url::Origin::Create(stream_->handler_url());
-    const url::Origin new_origin =
-        url::Origin::Create(navigation_handle->GetURL());
-    CHECK(new_origin.IsSameOriginWith(handler_origin));
+    const GURL& new_url = navigation_handle->GetURL();
+    const url::Origin new_origin = url::Origin::Create(new_url);
+    CHECK(new_origin.IsSameOriginWith(handler_origin) ||
+          new_url.IsAboutBlank());
   }
 }
 
