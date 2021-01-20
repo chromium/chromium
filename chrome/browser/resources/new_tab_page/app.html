@@ -105,17 +105,13 @@
     display: none;
   }
 
-  #customizeButtonSpacer {
-    flex-grow: 1;
-  }
-
   #customizeButtonContainer {
     align-self: flex-end;
     background-color: var(--ntp-background-override-color);
     border-radius: calc(.5 * var(--cr-button-height));
     bottom: 16px;
     margin-inline-end: 16px;
-    position: sticky;
+    position: fixed;
   }
 
   :host([show-background-image_]) #customizeButtonContainer {
@@ -235,6 +231,12 @@
     font-size: .75rem;
   }
 
+  #contentBottomSpacer {
+    flex-shrink: 0;
+    height: 32px;
+    width: 1px;
+  }
+
   svg {
     position: fixed;
   }
@@ -287,7 +289,6 @@
           [[backgroundImageAttribution2_]]
         </div>
       </a>
-      <div id="customizeButtonSpacer"></div>
       <!-- cr-button has a transparent background. This leads to incorrect
            results when a custom background is set. Therefore, wrap customize
            button in container to enfore solid background color. -->
@@ -307,6 +308,7 @@
       </div>
     </template>
   </dom-if>
+  <div id="contentBottomSpacer"></div>
 </div>
 <dom-if if="[[showVoiceSearchOverlay_]]" restamp>
   <template>
