@@ -572,12 +572,15 @@ template("write_build_config") {
       _dep_gen_dir = get_label_info(_base_label, "target_gen_dir")
       _dep_name = get_label_info(_base_label, "name")
       deps += [ "$_base_label$build_config_target_suffix" ]
+      _base_module_build_config = "$_dep_gen_dir/$_dep_name.build_config"
+      inputs += [ _base_module_build_config ]
       args += [
         "--base-module-build-config",
-        rebase_path("$_dep_gen_dir/$_dep_name.build_config", root_build_dir),
+        rebase_path(_base_module_build_config, root_build_dir),
       ]
     }
     if (defined(invoker.module_build_configs)) {
+      inputs += invoker.module_build_configs
       _rebased_configs =
           rebase_path(invoker.module_build_configs, root_build_dir)
       args += [ "--module-build-configs=$_rebased_configs" ]
