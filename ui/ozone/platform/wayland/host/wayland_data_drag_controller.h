@@ -109,7 +109,6 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   void OnWindowRemoved(WaylandWindow* window) override;
 
   void Offer(const OSExchangeData& data, int operation);
-  void CreateIconSurfaceIfNeeded(const OSExchangeData& data);
   void HandleUnprocessedMimeTypes(base::TimeTicks start_time);
   void OnMimeTypeDataTransferred(base::TimeTicks start_time,
                                  PlatformClipboard::Data contents);

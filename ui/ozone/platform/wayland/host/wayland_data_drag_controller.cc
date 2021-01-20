@@ -87,7 +87,12 @@ void WaylandDataDragController::StartSession(const OSExchangeData& data,
   Offer(data, operation);
 
   // Create drag icon surface (if any) and store the data to be exchanged.
-  CreateIconSurfaceIfNeeded(data);
+  icon_bitmap_ = GetDragImage(data);
+  if (icon_bitmap_) {
+    icon_surface_ = connection_->CreateSurface();
+    wl_surface_set_buffer_scale(icon_surface_.get(),
+                                origin_window_->buffer_scale());
+  }
   data_ = std::make_unique<OSExchangeData>(data.provider().Clone());
 
   // Starts the wayland drag session setting |this| object as delegate.
@@ -118,7 +123,6 @@ void WaylandDataDragController::DrawIcon() {
       return;
     }
   }
-  // TODO(crbug.com/1085418): Fix drag icon scaling
   wl::DrawBitmap(*icon_bitmap_, shm_buffer_.get());
   wl_surface_attach(icon_surface_.get(), shm_buffer_->get(), 0, 0);
   wl_surface_damage(icon_surface_.get(), 0, 0, size.width(), size.height());
@@ -273,13 +277,6 @@ void WaylandDataDragController::Offer(const OSExchangeData& data,
   DCHECK(!mime_types.empty());
   data_source_->Offer(mime_types);
   data_source_->SetAction(operation);
-}
-
-void WaylandDataDragController::CreateIconSurfaceIfNeeded(
-    const OSExchangeData& data) {
-  icon_bitmap_ = GetDragImage(data);
-  if (icon_bitmap_)
-    icon_surface_ = connection_->CreateSurface();
 }
 
 // Asynchronously requests and reads data for every negotiated/supported mime
