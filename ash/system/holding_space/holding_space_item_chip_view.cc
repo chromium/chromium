@@ -12,6 +12,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/holding_space/holding_space_item_view.h"
 #include "ash/system/holding_space/holding_space_util.h"
+#include "ui/compositor/layer_owner.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/skia_paint_util.h"
@@ -64,21 +65,19 @@ class CirclePainter : public views::Painter {
   const gfx::InsetsF insets_;
 };
 
-// HoldingSpaceItemChipView::LabelMaskOwner ------------------------------------
+// LabelMaskLayerOwner ---------------------------------------------------------
 
-class HoldingSpaceItemChipView::LabelMaskLayerOwner : public ui::LayerDelegate {
+class LabelMaskLayerOwner : public ui::LayerOwner, public ui::LayerDelegate {
  public:
-  LabelMaskLayerOwner() : layer_(ui::LAYER_TEXTURED) {
-    layer_.set_delegate(this);
-    layer_.SetFillsBoundsOpaquely(false);
+  LabelMaskLayerOwner()
+      : ui::LayerOwner(std::make_unique<ui ::Layer>(ui::LAYER_TEXTURED)) {
+    layer()->set_delegate(this);
+    layer()->SetFillsBoundsOpaquely(false);
   }
 
   LabelMaskLayerOwner(const LabelMaskLayerOwner&) = delete;
   LabelMaskLayerOwner& operator=(const LabelMaskLayerOwner&) = delete;
-
-  ~LabelMaskLayerOwner() override { layer_.set_delegate(nullptr); }
-
-  ui::Layer* layer() { return &layer_; }
+  ~LabelMaskLayerOwner() override = default;
 
  private:
   // ui::LayerDelegate:
@@ -105,8 +104,7 @@ class HoldingSpaceItemChipView::LabelMaskLayerOwner : public ui::LayerDelegate {
     flags.setAntiAlias(false);
 
     gfx::Point gradient_end(size.width() - kHoldingSpaceIconSize, 0);
-    gfx::Point gradient_start(gradient_end.x() - kLabelMaskGradientWidth,
-                              gradient_end.y());
+    gfx::Point gradient_start(gradient_end.x() - kLabelMaskGradientWidth, 0);
     flags.setShader(gfx::CreateGradientShader(
         gradient_start, gradient_end, SK_ColorBLACK, SK_ColorTRANSPARENT));
 
@@ -115,8 +113,6 @@ class HoldingSpaceItemChipView::LabelMaskLayerOwner : public ui::LayerDelegate {
 
   void OnDeviceScaleFactorChanged(float old_device_scale_factor,
                                   float new_device_scale_factor) override {}
-
-  ui::Layer layer_;
 };
 
 // HoldingSpaceItemChipView ----------------------------------------------------
