@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/platform/video_capture/local_video_capturer_source.h"
+#include "third_party/blink/renderer/modules/mediastream/local_video_capturer_source.h"
 
 #include <utility>
 
@@ -10,16 +10,21 @@
 #include "third_party/blink/public/platform/modules/video_capture/web_video_capture_impl_manager.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
 
 LocalVideoCapturerSource::LocalVideoCapturerSource(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    LocalFrame* frame,
     const base::UnguessableToken& session_id)
     : session_id_(session_id),
       manager_(Platform::Current()->GetVideoCaptureImplManager()),
-      release_device_cb_(manager_->UseDevice(session_id_)),
+      frame_token_(frame->GetLocalFrameToken()),
+      release_device_cb_(
+          manager_->UseDevice(session_id_,
+                              &frame->GetBrowserInterfaceBroker())),
       task_runner_(std::move(task_runner)) {}
 
 LocalVideoCapturerSource::~LocalVideoCapturerSource() {
@@ -108,7 +113,9 @@ void LocalVideoCapturerSource::OnStateUpdate(blink::VideoCaptureState state) {
     case VIDEO_CAPTURE_STATE_ERROR:
     case VIDEO_CAPTURE_STATE_ENDED:
       std::move(release_device_cb_).Run();
-      release_device_cb_ = manager_->UseDevice(session_id_);
+      release_device_cb_ = manager_->UseDevice(
+          session_id_, &LocalFrame::FromFrameToken(frame_token_)
+                            ->GetBrowserInterfaceBroker());
       OnLog(
           "LocalVideoCapturerSource::OnStateUpdate signaling to "
           "consumer that source is no longer running.");
@@ -126,9 +133,10 @@ void LocalVideoCapturerSource::OnStateUpdate(blink::VideoCaptureState state) {
 // static
 std::unique_ptr<media::VideoCapturerSource> LocalVideoCapturerSource::Create(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    LocalFrame* frame,
     const base::UnguessableToken& session_id) {
   return std::make_unique<LocalVideoCapturerSource>(std::move(task_runner),
-                                                    session_id);
+                                                    frame, session_id);
 }
 
 }  // namespace blink

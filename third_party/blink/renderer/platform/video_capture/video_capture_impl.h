@@ -34,6 +34,8 @@ class GpuVideoAcceleratorFactories;
 
 namespace blink {
 
+class BrowserInterfaceBrokerProxy;
+
 extern const PLATFORM_EXPORT base::Feature kTimeoutHangingVideoCaptureStarts;
 
 // VideoCaptureImpl represents a capture device in renderer process. It provides
@@ -45,7 +47,8 @@ class PLATFORM_EXPORT VideoCaptureImpl
     : public media::mojom::blink::VideoCaptureObserver {
  public:
   VideoCaptureImpl(media::VideoCaptureSessionId session_id,
-                   scoped_refptr<base::SequencedTaskRunner> main_task_runner);
+                   scoped_refptr<base::SequencedTaskRunner> main_task_runner,
+                   BrowserInterfaceBrokerProxy* browser_interface_broker);
   ~VideoCaptureImpl() override;
 
   // Stop/resume delivering video frames to clients, based on flag |suspend|.
