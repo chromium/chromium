@@ -52,7 +52,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) DeviceState : public ManagedState {
   const std::string& imei() const { return imei_; }
   const std::string& iccid() const { return iccid_; }
   const std::string& mdn() const { return mdn_; }
-  const base::ListValue& apn_list() const { return apn_list_; }
   const CellularScanResults& scan_results() const { return scan_results_; }
   bool inhibited() const { return inhibited_; }
 
@@ -130,7 +129,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) DeviceState : public ManagedState {
   base::DictionaryValue properties_;
 
   // List of APNs.
-  base::ListValue apn_list_;
+  base::Value apn_list_;
 
   // Dictionary of IPConfig properties, keyed by IpConfig path.
   base::DictionaryValue ip_configs_;

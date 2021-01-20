@@ -2386,10 +2386,14 @@ void CrosNetworkConfig::UpdateCustomAPNList(
   if (!cellular_config.apn) {
     return;
   }
-
   const DeviceState* device =
       network_state_handler_->GetDeviceState(network->device_path());
-  DCHECK(device);
+  if (!device) {
+    // Unexpected, but see note in NetworkStateToMojo.
+    NET_LOG(DEBUG) << "Cellular device is not available for APN list: "
+                   << network->device_path();
+    return;
+  }
   // Do not update custom APN list if APN is in device APN list.
   if (device->HasAPN(cellular_config.apn->access_point_name)) {
     return;

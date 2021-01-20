@@ -105,7 +105,7 @@ bool DeviceState::PropertyChanged(const std::string& key,
   } else if (key == shill::kCellularApnListProperty) {
     if (!value.is_list())
       return false;
-    apn_list_ = base::ListValue(value.Clone().TakeList());
+    apn_list_ = value.Clone();
     return true;
   } else if (key == shill::kInhibitedProperty) {
     return GetBooleanValue(key, value, &inhibited_);
