@@ -235,11 +235,6 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
                 }
 
                 mFreProperties = freProperties;
-                if (TextUtils.isEmpty(mResultSignInAccountName)) {
-                    mResultSignInAccountName = mFreProperties.getString(
-                            SigninFirstRunFragment.FORCE_SIGNIN_ACCOUNT_TO);
-                }
-
                 createPageSequence();
                 if (areNativeAndPoliciesInitialized()) {
                     createPostNativeAndPoliciesPageSequence();

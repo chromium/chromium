@@ -197,9 +197,7 @@ public class FirstRunFlowSequencerTest {
         assertFalse(bundle.getBoolean(FirstRunActivityBase.SHOW_SEARCH_ENGINE_PAGE));
         assertEquals(ChildAccountStatus.REGULAR_CHILD,
                 bundle.getInt(SigninFirstRunFragment.CHILD_ACCOUNT_STATUS));
-        assertEquals(
-                DEFAULT_ACCOUNT, bundle.getString(SigninFirstRunFragment.FORCE_SIGNIN_ACCOUNT_TO));
-        assertEquals(5, bundle.size());
+        assertEquals(4, bundle.size());
     }
 
     @Test

@@ -184,6 +184,8 @@ public class SigninFragmentTest {
     @LargeTest
     @Feature("RenderTest")
     public void testSigninFREFragmentWithAdultAccount() throws IOException {
+        HistogramDelta countHistogram =
+                new HistogramDelta("Signin.AndroidDeviceAccountsNumberWhenEnteringFRE", 1);
         HistogramDelta startPageHistogram =
                 new HistogramDelta("Signin.SigninStartedAccessPoint", SigninAccessPoint.START_PAGE);
         mSyncTestRule.addTestAccount();
@@ -202,6 +204,7 @@ public class SigninFragmentTest {
                     .commit();
         });
         ApplicationTestUtils.waitForActivityState(mActivityTestRule.getActivity(), Stage.RESUMED);
+        Assert.assertEquals(1, countHistogram.getDelta());
         Assert.assertEquals(1, startPageHistogram.getDelta());
         mRenderTestRule.render(mActivityTestRule.getActivity().findViewById(android.R.id.content),
                 "signin_fre_fragment_with_adult_account");
@@ -211,12 +214,13 @@ public class SigninFragmentTest {
     @LargeTest
     @Feature("RenderTest")
     public void testSigninFragmentForcedSigninWithRegularChild() throws IOException {
+        HistogramDelta countHistogram =
+                new HistogramDelta("Signin.AndroidDeviceAccountsNumberWhenEnteringFRE", 1);
         HistogramDelta startPageHistogram =
                 new HistogramDelta("Signin.SigninStartedAccessPoint", SigninAccessPoint.START_PAGE);
-        CoreAccountInfo accountInfo = mSyncTestRule.addTestAccount();
+        mSyncTestRule.addTestAccount();
         CustomSigninFirstRunFragment fragment = new CustomSigninFirstRunFragment();
         Bundle bundle = new Bundle();
-        bundle.putString(SigninFirstRunFragment.FORCE_SIGNIN_ACCOUNT_TO, accountInfo.getEmail());
         bundle.putInt(
                 SigninFirstRunFragment.CHILD_ACCOUNT_STATUS, ChildAccountStatus.REGULAR_CHILD);
         when(mFirstRunPageDelegateMock.getProperties()).thenReturn(bundle);
@@ -231,6 +235,7 @@ public class SigninFragmentTest {
                     .commit();
         });
         ApplicationTestUtils.waitForActivityState(mActivityTestRule.getActivity(), Stage.RESUMED);
+        Assert.assertEquals(1, countHistogram.getDelta());
         Assert.assertEquals(1, startPageHistogram.getDelta());
         mRenderTestRule.render(mActivityTestRule.getActivity().findViewById(android.R.id.content),
                 "signin_fragment_forced_signin_with_regular_child");

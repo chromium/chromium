@@ -177,13 +177,6 @@ public abstract class FirstRunFlowSequencer  {
         boolean offerSignInOk = isSyncAllowed() && !isSignedIn()
                 && (!shouldSkipFirstUseHints() || !mGoogleAccounts.isEmpty());
         freProperties.putBoolean(FirstRunActivity.SHOW_SIGNIN_PAGE, offerSignInOk);
-        if (ChildAccountStatus.isChild(mChildAccountStatus)) {
-            // If the device has a child account, there should be
-            // exactly account on the device. Force sign-in in to that account.
-            freProperties.putString(
-                    SigninFirstRunFragment.FORCE_SIGNIN_ACCOUNT_TO, mGoogleAccounts.get(0).name);
-        }
-
         freProperties.putBoolean(
                 FirstRunActivity.SHOW_DATA_REDUCTION_PAGE, shouldShowDataReductionPage());
         freProperties.putBoolean(
