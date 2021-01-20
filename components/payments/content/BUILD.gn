@@ -34,6 +34,8 @@ static_library("content") {
     "payment_event_response_util.h",
     "payment_handler_host.cc",
     "payment_handler_host.h",
+    "payment_handler_navigation_throttle.cc",
+    "payment_handler_navigation_throttle.h",
     "payment_request_converter.cc",
     "payment_request_converter.h",
     "payment_request_spec.cc",
