@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.test.pagecontroller.tests;
 
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import android.os.Build.VERSION_CODES;
@@ -22,7 +21,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.test.pagecontroller.controllers.ntp.ChromeMenu;
 import org.chromium.chrome.test.pagecontroller.controllers.ntp.NewTabPageController;
 import org.chromium.chrome.test.pagecontroller.controllers.urlpage.UrlPage;
@@ -57,14 +55,6 @@ public class NewTabPageControllerTest {
         Assert.assertTrue(mController.isCurrentPageThis());
     }
 
-    @Test
-    @DisabledTest(message = "https://crbug.com/1091640")
-    public void testHideArticles() {
-        boolean isHidden = mController.areArticlesHidden();
-        mController.toggleHideArticles();
-        assertNotEquals(isHidden, mController.areArticlesHidden());
-    }
-
     @LargeTest
     @Test
     @DisableIf.
@@ -72,8 +62,6 @@ public class NewTabPageControllerTest {
     public void testScrollPage() {
         mController.scrollToTop();
         assertTrue(mController.hasScrolledToTop());
-        mController.scrollToBottom();
-        assertTrue(mController.hasScrolledToBottom());
     }
 
     @Test
