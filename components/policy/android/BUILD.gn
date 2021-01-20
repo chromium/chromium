@@ -30,6 +30,7 @@ android_library("policy_java") {
   sources = _jni_sources + [
               "java/src/org/chromium/components/policy/AbstractAppRestrictionsProvider.java",
               "java/src/org/chromium/components/policy/AppRestrictionsProvider.java",
+              "java/src/org/chromium/components/policy/PolicyCache.java",
               "java/src/org/chromium/components/policy/PolicyProvider.java",
             ]
 }
@@ -61,6 +62,7 @@ java_library("components_policy_junit_tests") {
   sources = [
     "junit/src/org/chromium/components/policy/AbstractAppRestrictionsProviderTest.java",
     "junit/src/org/chromium/components/policy/CombinedPolicyProviderTest.java",
+    "junit/src/org/chromium/components/policy/PolicyCacheTest.java",
     "junit/src/org/chromium/components/policy/PolicyConverterTest.java",
     "junit/src/org/chromium/components/policy/test/annotations/PoliciesTest.java",
   ]
