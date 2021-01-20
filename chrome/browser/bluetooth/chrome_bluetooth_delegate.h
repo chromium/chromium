@@ -8,7 +8,11 @@
 #include <string>
 #include <vector>
 
+#include "base/observer_list.h"
+#include "base/scoped_observation.h"
+#include "components/permissions/chooser_context_base.h"
 #include "content/public/browser/bluetooth_delegate.h"
+#include "content/public/browser/render_frame_host.h"
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom-forward.h"
 
 namespace blink {
@@ -72,6 +76,47 @@ class ChromeBluetoothDelegate : public content::BluetoothDelegate {
       uint16_t manufacturer_code) override;
   std::vector<blink::mojom::WebBluetoothDevicePtr> GetPermittedDevices(
       content::RenderFrameHost* frame) override;
+  void AddFramePermissionObserver(FramePermissionObserver* observer) override;
+  void RemoveFramePermissionObserver(
+      FramePermissionObserver* observer) override;
+
+ private:
+  // Manages the FramePermissionObserver list for a particular RFH. Will
+  // self-delete when the last observer is removed from the |owning_delegate|'s
+  // |chooser_observers_| map.
+  class ChooserContextPermissionObserver
+      : public permissions::ChooserContextBase::PermissionObserver {
+   public:
+    explicit ChooserContextPermissionObserver(
+        ChromeBluetoothDelegate* owning_delegate,
+        permissions::ChooserContextBase* context);
+    ~ChooserContextPermissionObserver() override;
+
+    ChooserContextPermissionObserver(const ChooserContextPermissionObserver&) =
+        delete;
+    ChooserContextPermissionObserver& operator=(
+        const ChooserContextPermissionObserver) = delete;
+
+    // permissions::ChooserContextBase::PermissionObserver:
+    void OnPermissionRevoked(const url::Origin& requesting_origin,
+                             const url::Origin& embedding_origin) override;
+
+    void AddFramePermissionObserver(FramePermissionObserver* observer);
+    void RemoveFramePermissionObserver(FramePermissionObserver* observer);
+
+   private:
+    ChromeBluetoothDelegate* owning_delegate_;
+    base::ObserverList<FramePermissionObserver> observer_list_;
+    std::list<FramePermissionObserver*> observers_pending_removal_;
+    bool is_traversing_observers_ = false;
+    base::ScopedObservation<permissions::ChooserContextBase,
+                            permissions::ChooserContextBase::PermissionObserver>
+        observer_{this};
+  };
+
+  std::map<content::RenderFrameHost*,
+           std::unique_ptr<ChooserContextPermissionObserver>>
+      chooser_observers_;
 };
 
 #endif  // CHROME_BROWSER_BLUETOOTH_CHROME_BLUETOOTH_DELEGATE_H_

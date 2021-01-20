@@ -8,7 +8,11 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/metrics/field_trial.h"
+#include "base/optional.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/bluetooth/bluetooth_chooser_context.h"
+#include "chrome/browser/bluetooth/bluetooth_chooser_context_factory.h"
 #include "chrome/browser/bluetooth/chrome_bluetooth_delegate.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/ui/browser.h"
@@ -43,6 +47,7 @@
 namespace {
 
 constexpr char kDeviceAddress[] = "00:00:00:00:00:00";
+constexpr char kDeviceAddress2[] = "00:00:00:00:00:01";
 constexpr char kHeartRateUUIDString[] = "0000180d-0000-1000-8000-00805f9b34fb";
 const device::BluetoothUUID kHeartRateUUID(kHeartRateUUIDString);
 
@@ -58,11 +63,12 @@ class FakeBluetoothAdapter
   void SetIsPresent(bool is_present) { is_present_ = is_present; }
 
   void SimulateDeviceAdvertisementReceived(
-      const std::string& device_address) const {
+      const std::string& device_address,
+      const base::Optional<std::string>& advertisement_name =
+          base::nullopt) const {
     for (auto& observer : observers_) {
       observer.DeviceAdvertisementReceived(
-          device_address, /*device_name=*/base::nullopt,
-          /*advertisement_name=*/base::nullopt,
+          device_address, /*device_name=*/base::nullopt, advertisement_name,
           /*rssi=*/base::nullopt, /*tx_power=*/base::nullopt,
           /*appearance=*/base::nullopt,
           /*advertised_uuids=*/{}, /*service_data_map=*/{},
@@ -710,6 +716,148 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
             return `${e.name}: ${e.message}`;
           }
         })())"));
+}
+
+IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
+                       RevokingPermissionDisconnectsTheDevice) {
+  AddFakeDevice(kDeviceAddress);
+  SetDeviceToSelect(kDeviceAddress);
+
+  // Connect to heart rate device and ensure the GATT service is connected.
+  EXPECT_EQ(kHeartRateUUIDString, content::EvalJs(web_contents_, R"(
+    var gatt;
+    var gattserverdisconnectedPromise;
+
+    (async() => {
+      try {
+        let device = await navigator.bluetooth.requestDevice({
+          filters: [{name: 'Test Device', services: ['heart_rate']}]});
+        gatt = await device.gatt.connect();
+        gattserverdisconnectedPromise = new Promise(resolve => {
+          device.addEventListener('gattserverdisconnected', _ => {
+            resolve("event fired");
+          });
+        });
+        let service = await gatt.getPrimaryService('heart_rate');
+        return service.uuid;
+      } catch(e) {
+        return `${e.name}: ${e.message}`;
+      }
+    })()
+  )"));
+
+  BluetoothChooserContext* context =
+      BluetoothChooserContextFactory::GetForProfile(browser()->profile());
+  url::Origin origin =
+      url::Origin::Create(web_contents_->GetLastCommittedURL());
+
+  // Revoke the permission.
+  const auto objects = context->GetGrantedObjects(origin, origin);
+  EXPECT_EQ(1ul, objects.size());
+  context->RevokeObjectPermission(origin, origin, objects.at(0)->value);
+
+  // Wait for gattserverdisconnect event.
+  EXPECT_EQ("event fired",
+            content::EvalJs(web_contents_, "gattserverdisconnectedPromise "));
+
+  // Ensure the service is disconnected.
+  EXPECT_THAT(content::EvalJs(web_contents_, R"((async() => {
+      try {
+        let service = await gatt.getPrimaryService('heart_rate');
+        return service.uuid;
+      } catch(e) {
+        return `${e.name}: ${e.message}`;
+      }
+    })())")
+                  .ExtractString(),
+              ::testing::HasSubstr("GATT Server is disconnected."));
+}
+
+IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
+                       RevokingPermissionStopsAdvertisements) {
+  // Setup the fake device.
+  AddFakeDevice(kDeviceAddress);
+  SetDeviceToSelect(kDeviceAddress);
+
+  // Request device and watch for advertisements. Record the last seen
+  // advertisement's name.
+  EXPECT_EQ("", content::EvalJs(web_contents_, R"(
+    var events_seen = "";
+    var first_device_promise;
+    (async() => {
+      try {
+        let device = await navigator.bluetooth.requestDevice({
+          filters: [{name: 'Test Device', services: ['heart_rate']}]});
+        device.watchAdvertisements();
+        first_device_promise = new Promise(resolve => {
+          device.addEventListener('advertisementreceived', event => {
+            events_seen += event.name + "|";
+            resolve(events_seen);
+          });
+        });
+        return "";
+      } catch(e) {
+        return `${e.name}: ${e.message}`;
+      }
+    })()
+  )"));
+
+  // Add a second listener on a different device which is used purely as an
+  // indicator of how much to wait until we can be reasonably sure that the
+  // second advertisement will not arrive.
+  AddFakeDevice(kDeviceAddress2);
+  SetDeviceToSelect(kDeviceAddress2);
+
+  EXPECT_EQ("", content::EvalJs(web_contents_, R"(
+    var second_device_promise;
+    (async() => {
+      try {
+        let device = await navigator.bluetooth.requestDevice({
+          filters: [{name: 'Test Device', services: ['heart_rate']}]});
+        device.watchAdvertisements();
+        second_device_promise = new Promise(resolve => {
+          device.addEventListener('advertisementreceived', event => {
+            events_seen += 'second_device_' + event.name;
+            resolve(events_seen);
+          });
+        });
+        return "";
+      } catch(e) {
+        return `${e.name}: ${e.message}`;
+      }
+    })()
+  )"));
+
+  // Number of granted objects should be 2.
+  url::Origin origin =
+      url::Origin::Create(web_contents_->GetLastCommittedURL());
+  BluetoothChooserContext* context =
+      BluetoothChooserContextFactory::GetForProfile(browser()->profile());
+  const auto objects = context->GetGrantedObjects(origin, origin);
+  EXPECT_EQ(2u, objects.size());
+
+  // Send first advertisement and wait for the event to be resolved.
+  adapter_->SimulateDeviceAdvertisementReceived(kDeviceAddress,
+                                                "advertisement_name1");
+  EXPECT_EQ("advertisement_name1|",
+            content::EvalJs(web_contents_, "first_device_promise"));
+
+  // Revoke the permission.
+  context->RevokeObjectPermission(origin, origin, objects.at(0)->value);
+  EXPECT_EQ(1ul, context->GetGrantedObjects(origin, origin).size());
+
+  // Send another advertisement after the permission was revoked, this
+  // advertisement event should not be received. Also send an advertisement
+  // to the second device which, when received, will indicate that we have
+  // waited enough.
+
+  adapter_->SimulateDeviceAdvertisementReceived(kDeviceAddress,
+                                                "advertisement_name2");
+  adapter_->SimulateDeviceAdvertisementReceived(kDeviceAddress2,
+                                                "advertisement_name2");
+
+  EXPECT_EQ("advertisement_name1|second_device_advertisement_name2",
+            content::EvalJs(web_contents_, "second_device_promise"));
 }
 
 }  // namespace

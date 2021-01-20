@@ -9,10 +9,12 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/observer_list_types.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/bluetooth_chooser.h"
 #include "content/public/browser/bluetooth_scanning_prompt.h"
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom-forward.h"
+#include "url/origin.h"
 
 namespace blink {
 class WebBluetoothDeviceId;
@@ -35,6 +37,18 @@ class RenderFrameHost;
 // class.
 class CONTENT_EXPORT BluetoothDelegate {
  public:
+  // An observer used to track permission revocation events for a particular
+  // render frame host.
+  class CONTENT_EXPORT FramePermissionObserver : public base::CheckedObserver {
+   public:
+    // Notify observer that an object permission was revoked for
+    // |requesting_origin| and |embedding_origin|.
+    virtual void OnPermissionRevoked(const url::Origin& requesting_origin,
+                                     const url::Origin& embedding_origin) = 0;
+
+    // Returns the frame that the observer wishes to watch.
+    virtual RenderFrameHost* GetRenderFrameHost() = 0;
+  };
   virtual ~BluetoothDelegate() = default;
 
   // Shows a chooser for the user to select a nearby Bluetooth device. The
@@ -117,6 +131,15 @@ class CONTENT_EXPORT BluetoothDelegate {
   // JavaScript objects.
   virtual std::vector<blink::mojom::WebBluetoothDevicePtr> GetPermittedDevices(
       RenderFrameHost* frame) = 0;
+
+  // Add a permission observer to allow observing permission revocation effects
+  // for a particular frame.
+  virtual void AddFramePermissionObserver(
+      FramePermissionObserver* observer) = 0;
+
+  // Remove a previously added permission observer.
+  virtual void RemoveFramePermissionObserver(
+      FramePermissionObserver* observer) = 0;
 };
 
 }  // namespace content
