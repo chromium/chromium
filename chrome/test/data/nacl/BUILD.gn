@@ -22,8 +22,6 @@ group("nacl") {
     ":pnacl_dyncode_syscall_disabled_test($pnacl)",
     ":pnacl_error_handling_test($pnacl)",
     ":pnacl_hw_eh_disabled_test($pnacl)",
-    ":pnacl_mime_type_test($newlib)",
-    ":pnacl_mime_type_test($pnacl)",
     ":pnacl_options_test($pnacl)",
     ":pnacl_url_loader_test($pnacl)",
     ":ppapi_bad_get_ppp_instance_crash($newlib)",
@@ -71,7 +69,6 @@ group("nacl") {
       ":exit_status_test($glibc)",
       ":extension_validation_cache($glibc)",
       ":irt_exception_test($glibc)",
-      ":pnacl_mime_type_test($glibc)",
       ":ppapi_crash_in_callback($glibc)",
       ":ppapi_crash_off_main_thread($glibc)",
       ":ppapi_crash_ppapi_off_main_thread($glibc)",
@@ -344,11 +341,6 @@ if (is_nacl && !is_nacl_nonsfi) {
       "pnacl_error_handling/pnacl_illformed_manifest.nmf",
       "pnacl_error_handling/pnacl_nonfinal_pexe_O0.nmf",
     ]
-  }
-
-  copy("pnacl_mime_type_test") {
-    sources = [ "pnacl_mime_type/pnacl_mime_type.html" ]
-    outputs = [ "${root_build_dir}/nacl_test_data/${nacl_toolchain_variant}/{{source_file_part}}" ]
   }
 
   nacl_test_data("pnacl_options_test") {

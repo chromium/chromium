@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Tests that navigator.plugins and mimeTypes both return empty arrays. assert_equals: Plugins array must be empty expected 0 but got 2
+Harness: the test ran to completion.
+

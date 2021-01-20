@@ -794,6 +794,11 @@
              "--enable-threaded-compositing"]
   },
   {
+    "prefix": "disable-navigator-plugins-empty",
+    "bases": ["plugins"],
+    "args": ["--disable-features=NavigatorPluginsEmpty"]
+  },
+  {
     "prefix": "disable-frequency-capping-for-overlay-popup-detection",
     "bases": ["http/tests/subresource_filter/overlay_popup_ad"],
     "args": ["--disable-features=FrequencyCappingForOverlayPopupDetection"]

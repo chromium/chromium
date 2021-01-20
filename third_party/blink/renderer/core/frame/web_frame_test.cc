@@ -13096,24 +13096,6 @@ TEST_F(WebFrameTest, AltTextOnAboutBlankPage) {
   EXPECT_EQ("foo alt", text.Utf8());
 }
 
-TEST_F(WebFrameTest, NavigatorPluginsClearedWhenPluginsDisabled) {
-  ScopedFakePluginRegistry fake_plugins;
-  frame_test_helpers::WebViewHelper web_view_helper;
-  web_view_helper.Initialize();
-  v8::Isolate* isolate = v8::Isolate::GetCurrent();
-  v8::Local<v8::Context> context = isolate->GetCurrentContext();
-  v8::HandleScope scope(isolate);
-  v8::Local<v8::Value> result =
-      web_view_helper.LocalMainFrame()->ExecuteScriptAndReturnValue(
-          WebScriptSource("navigator.plugins.length"));
-  EXPECT_NE(0, result->Int32Value(context).ToChecked());
-  web_view_helper.GetWebView()->GetPage()->GetSettings().SetPluginsEnabled(
-      false);
-  result = web_view_helper.LocalMainFrame()->ExecuteScriptAndReturnValue(
-      WebScriptSource("navigator.plugins.length"));
-  EXPECT_EQ(0, result->Int32Value(context).ToChecked());
-}
-
 TEST_F(WebFrameTest, RecordSameDocumentNavigationToHistogram) {
   const char* histogramName =
       "RendererScheduler.UpdateForSameDocumentNavigationCount";

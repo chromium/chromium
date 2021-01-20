@@ -20,6 +20,7 @@
 
 #include "third_party/blink/renderer/modules/plugins/dom_plugin_array.h"
 
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
@@ -63,6 +64,8 @@ DOMPlugin* DOMPluginArray::item(unsigned index) {
 }
 
 DOMPlugin* DOMPluginArray::namedItem(const AtomicString& property_name) {
+  if (base::FeatureList::IsEnabled(features::kNavigatorPluginsEmpty))
+    return nullptr;
   PluginData* data = GetPluginData();
   if (!data)
     return nullptr;
@@ -79,6 +82,8 @@ DOMPlugin* DOMPluginArray::namedItem(const AtomicString& property_name) {
 
 void DOMPluginArray::NamedPropertyEnumerator(Vector<String>& property_names,
                                              ExceptionState&) const {
+  if (base::FeatureList::IsEnabled(features::kNavigatorPluginsEmpty))
+    return;
   PluginData* data = GetPluginData();
   if (!data)
     return;
@@ -96,6 +101,8 @@ bool DOMPluginArray::NamedPropertyQuery(const AtomicString& property_name,
 }
 
 void DOMPluginArray::refresh(bool reload) {
+  if (base::FeatureList::IsEnabled(features::kNavigatorPluginsEmpty))
+    return;
   if (!DomWindow())
     return;
 
@@ -122,6 +129,10 @@ PluginData* DOMPluginArray::GetPluginData() const {
 }
 
 void DOMPluginArray::UpdatePluginData() {
+  if (base::FeatureList::IsEnabled(features::kNavigatorPluginsEmpty)) {
+    dom_plugins_.clear();
+    return;
+  }
   PluginData* data = GetPluginData();
   if (!data) {
     dom_plugins_.clear();

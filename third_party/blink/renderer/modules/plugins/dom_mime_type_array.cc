@@ -20,6 +20,7 @@
 
 #include "third_party/blink/renderer/modules/plugins/dom_mime_type_array.h"
 
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -57,6 +58,8 @@ DOMMimeType* DOMMimeTypeArray::item(unsigned index) {
 }
 
 DOMMimeType* DOMMimeTypeArray::namedItem(const AtomicString& property_name) {
+  if (base::FeatureList::IsEnabled(features::kNavigatorPluginsEmpty))
+    return nullptr;
   PluginData* data = GetPluginData();
   if (!data)
     return nullptr;
@@ -72,6 +75,8 @@ DOMMimeType* DOMMimeTypeArray::namedItem(const AtomicString& property_name) {
 
 void DOMMimeTypeArray::NamedPropertyEnumerator(Vector<String>& property_names,
                                                ExceptionState&) const {
+  if (base::FeatureList::IsEnabled(features::kNavigatorPluginsEmpty))
+    return;
   PluginData* data = GetPluginData();
   if (!data)
     return;
@@ -96,6 +101,10 @@ PluginData* DOMMimeTypeArray::GetPluginData() const {
 }
 
 void DOMMimeTypeArray::UpdatePluginData() {
+  if (base::FeatureList::IsEnabled(features::kNavigatorPluginsEmpty)) {
+    dom_mime_types_.clear();
+    return;
+  }
   PluginData* data = GetPluginData();
   if (!data) {
     dom_mime_types_.clear();
