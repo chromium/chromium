@@ -6489,8 +6489,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="IOS.URLMismatchInLegacyAndSlimNavigationManager">
-  <owner>eugenebut@chromium.org</owner>
-  <owner>danyao@chromium.org</owner>
+  <owner>ajuma@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
   <summary>
     Logged when LegacyNavigationManager and KWKBasedNavigationManager have
     different last committed URLs. This means that either old or new navigation
