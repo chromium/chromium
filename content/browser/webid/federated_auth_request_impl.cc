@@ -128,7 +128,11 @@ void FederatedAuthRequestImpl::OnWellKnownFetched(
     }
   }
 
-  idp_endpoint_url_ = GURL(base::StringPiece(idp_endpoint));
+  const url::Origin& idp_origin = url::Origin::Create(provider_);
+  GURL well_known_url =
+      idp_origin.GetURL().Resolve(IdpNetworkRequestManager::kWellKnownFilePath);
+  idp_endpoint_url_ = well_known_url.Resolve(idp_endpoint);
+
   // TODO(kenrb): This has to be same-origin with the provider.
   // https://crbug.com/1141125
   if (!IdpUrlIsValid(idp_endpoint_url_)) {

@@ -64,6 +64,8 @@ class IdpNetworkRequestManager {
     kInvalidResponseError,
   };
 
+  static constexpr char kWellKnownFilePath[] = ".well-known/webid";
+
   using FetchWellKnownCallback =
       base::OnceCallback<void(FetchStatus, const std::string&)>;
   using SigninRequestCallback =

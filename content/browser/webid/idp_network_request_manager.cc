@@ -22,7 +22,6 @@ namespace content {
 namespace {
 // TODO(kenrb): These need to be defined in the explainer or draft spec and
 // referenced here.
-constexpr char kWellKnownFilePath[] = ".well-known/webid";
 
 // Well-known configuration keys.
 constexpr char kIdpEndpointKey[] = "idp_endpoint";
@@ -81,6 +80,9 @@ scoped_refptr<network::SharedURLLoaderFactory> GetUrlLoaderFactory(
 }  // namespace
 
 // static
+constexpr char IdpNetworkRequestManager::kWellKnownFilePath[];
+
+// static
 std::unique_ptr<IdpNetworkRequestManager> IdpNetworkRequestManager::Create(
     const GURL& provider,
     RenderFrameHost* host) {
@@ -105,7 +107,8 @@ void IdpNetworkRequestManager::FetchIDPWellKnown(
   idp_well_known_callback_ = std::move(callback);
 
   const url::Origin& idp_origin = url::Origin::Create(provider_);
-  GURL target_url = idp_origin.GetURL().Resolve(kWellKnownFilePath);
+  GURL target_url =
+      idp_origin.GetURL().Resolve(IdpNetworkRequestManager::kWellKnownFilePath);
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
       CreateTrafficAnnotation();
