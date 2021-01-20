@@ -36,13 +36,17 @@ class COMPONENT_EXPORT(HERMES_CLIENT) HermesEuiccClient {
     // will be added on subsequent  call to RequestPendingEvents.
     virtual void ResetPendingEventsRequested() = 0;
 
-    // Adds a new carrier profiles under given euicc object using faked
-    // default values for properties. Returns the path to the newly
-    // added profile.
+    // Adds a new carrier profile under given euicc object using fake default
+    // values for properties. If |state| is not pending then a corresponding
+    // fake cellular service is also created in shill. If |service_only| is true
+    // then the service will be created but the profile will not be listed in
+    // the euicc until a subsequent call to RequestInstalledProfiles. Returns
+    // the path to the newly added profile.
     virtual dbus::ObjectPath AddFakeCarrierProfile(
         const dbus::ObjectPath& euicc_path,
         hermes::profile::State state,
-        std::string activation_code) = 0;
+        const std::string& activation_code,
+        bool service_only) = 0;
 
     // Adds a new carrier profile with given path and properties.
     virtual void AddCarrierProfile(const dbus::ObjectPath& path,
@@ -52,7 +56,8 @@ class COMPONENT_EXPORT(HERMES_CLIENT) HermesEuiccClient {
                                    const std::string& service_provider,
                                    const std::string& activation_code,
                                    const std::string& network_service_path,
-                                   hermes::profile::State state) = 0;
+                                   hermes::profile::State state,
+                                   bool service_only) = 0;
 
     // Queues an error code that will be returned from a subsequent
     // method call.
@@ -130,10 +135,15 @@ class COMPONENT_EXPORT(HERMES_CLIENT) HermesEuiccClient {
       const std::string& confirmation_code,
       HermesResponseCallback callback) = 0;
 
+  // Updates installed profiles for Euicc at |euicc_path|.
+  // This updates installed profiles list prior to returning.
+  virtual void RequestInstalledProfiles(const dbus::ObjectPath& euicc_path,
+                                        HermesResponseCallback callback) = 0;
+
   // Updates pending profiles for Euicc at |euicc_path| from the SMDS server.
   // This updates pending profiles list prior to returning.
-  virtual void RequestPendingEvents(const dbus::ObjectPath& euicc_path,
-                                    HermesResponseCallback callback) = 0;
+  virtual void RequestPendingProfiles(const dbus::ObjectPath& euicc_path,
+                                      HermesResponseCallback callback) = 0;
 
   // Removes the carrier profile with the given |carrier_profile_path| from
   // the Euicc at |euicc_path|. Returns a response status indicating the result

@@ -83,7 +83,7 @@ void Euicc::InstallProfileFromActivationCode(
 
 void Euicc::RequestPendingProfiles(RequestPendingProfilesCallback callback) {
   NET_LOG(EVENT) << "Requesting Pending profiles";
-  HermesEuiccClient::Get()->RequestPendingEvents(
+  HermesEuiccClient::Get()->RequestPendingProfiles(
       path_,
       base::BindOnce(&Euicc::OnRequestPendingEventsResult,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));

@@ -18,23 +18,22 @@
 #include "dbus/property.h"
 #include "third_party/cros_system_api/dbus/hermes/dbus-constants.h"
 
-namespace hermes {
-namespace euicc {
-const char kEidProperty[] = "Eid";
-}  // namespace euicc
-}  // namespace hermes
-
 namespace chromeos {
 
 namespace {
 HermesEuiccClient* g_instance = nullptr;
+
+// TODO(1093185) Update with constants from cros_system_api when it uprevs.
+const char kEidProperty[] = "Eid";
+const char kRequestInstalledProfiles[] = "RequestInstalledProfiles";
+const char kRequestPendingProfiles[] = "RequestPendingProfiles";
 }  // namespace
 
 HermesEuiccClient::Properties::Properties(
     dbus::ObjectProxy* object_proxy,
     const PropertyChangedCallback& callback)
     : dbus::PropertySet(object_proxy, hermes::kHermesEuiccInterface, callback) {
-  RegisterProperty(hermes::euicc::kEidProperty, &eid_);
+  RegisterProperty(kEidProperty, &eid_);
   RegisterProperty(hermes::euicc::kIsActiveProperty, &is_active_);
   RegisterProperty(hermes::euicc::kInstalledProfilesProperty,
                    &installed_carrier_profiles_);
@@ -88,10 +87,21 @@ class HermesEuiccClientImpl : public HermesEuiccClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
-  void RequestPendingEvents(const dbus::ObjectPath& euicc_path,
-                            HermesResponseCallback callback) override {
+  void RequestInstalledProfiles(const dbus::ObjectPath& euicc_path,
+                                HermesResponseCallback callback) override {
     dbus::MethodCall method_call(hermes::kHermesEuiccInterface,
-                                 hermes::euicc::kRequestPendingEvents);
+                                 kRequestInstalledProfiles);
+    dbus::ObjectProxy* object_proxy = GetOrCreateProperties(euicc_path).first;
+    object_proxy->CallMethodWithErrorResponse(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&HermesEuiccClientImpl::OnHermesStatusResponse,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
+  void RequestPendingProfiles(const dbus::ObjectPath& euicc_path,
+                              HermesResponseCallback callback) override {
+    dbus::MethodCall method_call(hermes::kHermesEuiccInterface,
+                                 kRequestPendingProfiles);
     dbus::ObjectProxy* object_proxy = GetOrCreateProperties(euicc_path).first;
     object_proxy->CallMethodWithErrorResponse(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,

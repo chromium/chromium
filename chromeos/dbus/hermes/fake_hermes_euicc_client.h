@@ -45,7 +45,8 @@ class COMPONENT_EXPORT(HERMES_CLIENT) FakeHermesEuiccClient
   void ResetPendingEventsRequested() override;
   dbus::ObjectPath AddFakeCarrierProfile(const dbus::ObjectPath& euicc_path,
                                          hermes::profile::State state,
-                                         std::string activation_code) override;
+                                         const std::string& activation_code,
+                                         bool service_only) override;
   void AddCarrierProfile(const dbus::ObjectPath& path,
                          const dbus::ObjectPath& euicc_path,
                          const std::string& iccid,
@@ -53,7 +54,8 @@ class COMPONENT_EXPORT(HERMES_CLIENT) FakeHermesEuiccClient
                          const std::string& service_provider,
                          const std::string& activation_code,
                          const std::string& network_service_path,
-                         hermes::profile::State state) override;
+                         hermes::profile::State state,
+                         bool service_only) override;
   void QueueHermesErrorStatus(HermesResponseStatus status) override;
   void SetInteractiveDelay(base::TimeDelta delay) override;
 
@@ -67,8 +69,10 @@ class COMPONENT_EXPORT(HERMES_CLIENT) FakeHermesEuiccClient
                              const dbus::ObjectPath& carrier_profile_path,
                              const std::string& confirmation_code,
                              HermesResponseCallback callback) override;
-  void RequestPendingEvents(const dbus::ObjectPath& euicc_path,
-                            HermesResponseCallback callback) override;
+  void RequestInstalledProfiles(const dbus::ObjectPath& euicc_path,
+                                HermesResponseCallback callback) override;
+  void RequestPendingProfiles(const dbus::ObjectPath& euicc_path,
+                              HermesResponseCallback callback) override;
   void UninstallProfile(const dbus::ObjectPath& euicc_path,
                         const dbus::ObjectPath& carrier_profile_path,
                         HermesResponseCallback callback) override;
@@ -85,8 +89,10 @@ class COMPONENT_EXPORT(HERMES_CLIENT) FakeHermesEuiccClient
                                const dbus::ObjectPath& carrier_profile_path,
                                const std::string& confirmation_code,
                                HermesResponseCallback callback);
-  void DoRequestPendingEvents(const dbus::ObjectPath& euicc_path,
-                              HermesResponseCallback callback);
+  void DoRequestInstalledProfiles(const dbus::ObjectPath& euicc_path,
+                                  HermesResponseCallback callback);
+  void DoRequestPendingProfiles(const dbus::ObjectPath& euicc_path,
+                                HermesResponseCallback callback);
   void DoUninstallProfile(const dbus::ObjectPath& euicc_path,
                           const dbus::ObjectPath& carrier_profile_path,
                           HermesResponseCallback callback);
@@ -99,6 +105,8 @@ class COMPONENT_EXPORT(HERMES_CLIENT) FakeHermesEuiccClient
                                  const std::string& property_name);
   void NotifyPropertyChanged(const dbus::ObjectPath& object_path,
                              const std::string& property_name);
+  void QueueInstalledProfile(const dbus::ObjectPath& euicc_path,
+                             const dbus::ObjectPath& profile_path);
 
   // Indicates whether a pending event request has already been made.
   bool pending_event_requested_ = false;
@@ -115,6 +123,14 @@ class COMPONENT_EXPORT(HERMES_CLIENT) FakeHermesEuiccClient
 
   // Delay for simulating slow methods.
   base::TimeDelta interactive_delay_;
+
+  using InstalledProfileQueue = std::queue<dbus::ObjectPath>;
+  using InstalledProfileQueueMap =
+      std::map<const dbus::ObjectPath, std::unique_ptr<InstalledProfileQueue>>;
+  // Queue of installed profiles paths for which a network service
+  // has been created, but listing in Euicc is pending a call to
+  // RequestInstalledProfiles.
+  InstalledProfileQueueMap installed_profile_queue_map_;
 
   using PropertiesMap =
       std::map<const dbus::ObjectPath, std::unique_ptr<Properties>>;
