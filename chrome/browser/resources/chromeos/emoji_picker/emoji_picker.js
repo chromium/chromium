@@ -38,6 +38,7 @@ class EmojiPicker extends PolymerElement {
 
   static get properties() {
     return {
+      emojiDataUrl: {type: String, value: EMOJI_ORDERING_JSON},
       groups: {type: Array},
       /** @type {?EmojiData} */
       emojiData: {
@@ -78,7 +79,7 @@ class EmojiPicker extends PolymerElement {
 
     const xhr = new XMLHttpRequest();
     xhr.onloadend = () => this.onEmojiDataLoaded(xhr.responseText);
-    xhr.open('GET', EMOJI_ORDERING_JSON);
+    xhr.open('GET', this.emojiDataUrl);
     xhr.send();
 
     this.addEventListener(
