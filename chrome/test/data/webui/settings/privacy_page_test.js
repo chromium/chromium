@@ -166,6 +166,7 @@ suite('PrivacySandboxSettingsEnabled', function() {
     page = /** @type {!SettingsPrivacyPageElement} */
         (document.createElement('settings-privacy-page'));
     document.body.appendChild(page);
+    return flushTasks();
   });
 
   test('privacySandboxRowVisible', function() {

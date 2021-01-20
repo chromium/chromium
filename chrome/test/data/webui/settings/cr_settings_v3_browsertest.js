@@ -408,6 +408,11 @@ TEST_F('CrSettingsPrivacyPageV3Test', 'ContentSettingsRedesign', function() {
   runMochaSuite('ContentSettingsRedesign');
 });
 
+TEST_F(
+    'CrSettingsPrivacyPageV3Test', 'PrivacySandboxSettingsEnabled', function() {
+      runMochaSuite('PrivacySandboxSettingsEnabled');
+    });
+
 // TODO(crbug.com/1043665): flaky crash on Linux Tests (dbg).
 TEST_F(
     'CrSettingsPrivacyPageV3Test', 'DISABLED_PrivacyPageSoundTests',
