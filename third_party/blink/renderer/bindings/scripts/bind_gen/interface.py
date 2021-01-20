@@ -1197,8 +1197,10 @@ def make_overload_dispatcher(cg_context):
             did_use_break = did_use_break or can_fail
 
         conditional = expr_or(
-            map(lambda item: expr_from_exposure(item.function_like.exposure),
-                items))
+            list(
+                map(
+                    lambda item: expr_from_exposure(item.function_like.exposure
+                                                    ), items)))
         if not conditional.is_always_true:
             node = CxxUnlikelyIfNode(cond=conditional, body=node)
 
@@ -5594,8 +5596,8 @@ ${instance_object} = ${v8_context}->Global()->GetPrototype().As<v8::Object>();\
         pattern,
         install_func="IDLMemberInstaller::InstallConstants",
         table_name=table_name)
-    constant_callback_entries = filter(lambda entry: entry.const_callback_name,
-                                       constant_entries)
+    constant_callback_entries = list(
+        filter(lambda entry: entry.const_callback_name, constant_entries))
     install_properties(table_name, constant_callback_entries,
                        _make_constant_callback_registration_table,
                        installer_call_text)
@@ -5605,8 +5607,8 @@ ${instance_object} = ${v8_context}->Global()->GetPrototype().As<v8::Object>();\
         pattern,
         install_func="IDLMemberInstaller::InstallConstants",
         table_name=table_name)
-    constant_value_entries = filter(
-        lambda entry: not entry.const_callback_name, constant_entries)
+    constant_value_entries = list(
+        filter(lambda entry: not entry.const_callback_name, constant_entries))
     install_properties(table_name, constant_value_entries,
                        _make_constant_value_registration_table,
                        installer_call_text)
@@ -6314,8 +6316,8 @@ def make_v8_context_snapshot_api(cg_context, component, attribute_entries,
         return None, None
 
     derived_interfaces = cg_context.interface.deriveds
-    derived_names = map(lambda interface: interface.identifier,
-                        derived_interfaces)
+    derived_names = list(
+        map(lambda interface: interface.identifier, derived_interfaces))
     derived_names.append(cg_context.interface.identifier)
     if not ("Window" in derived_names or "HTMLDocument" in derived_names):
         return None, None
@@ -6389,9 +6391,11 @@ def _make_v8_context_snapshot_get_reference_table_function(
     collect_callbacks(named_properties_object_callback_defs)
     collect_callbacks(cross_origin_property_callback_defs)
 
-    entry_nodes = map(
-        lambda name: TextNode("reinterpret_cast<intptr_t>({}),".format(name)),
-        filter(None, callback_names))
+    entry_nodes = list(
+        map(
+            lambda name: TextNode("reinterpret_cast<intptr_t>({}),".format(name
+                                                                           )),
+            filter(None, callback_names)))
     table_node = ListNode([
         TextNode("static const intptr_t kReferenceTable[] = {"),
         ListNode(entry_nodes),
@@ -6428,10 +6432,11 @@ def _make_v8_context_snapshot_install_props_per_context_function(
         class_name=None,
         prop_install_mode=PropInstallMode.V8_CONTEXT_SNAPSHOT,
         trampoline_var_name=None,
-        attribute_entries=filter(selector, attribute_entries),
-        constant_entries=filter(selector, constant_entries),
-        exposed_construct_entries=filter(selector, exposed_construct_entries),
-        operation_entries=filter(selector, operation_entries))
+        attribute_entries=list(filter(selector, attribute_entries)),
+        constant_entries=list(filter(selector, constant_entries)),
+        exposed_construct_entries=list(
+            filter(selector, exposed_construct_entries)),
+        operation_entries=list(filter(selector, operation_entries)))
 
     return func_decl, func_def
 
@@ -6794,11 +6799,11 @@ def generate_class_like(class_like):
          class_name=impl_class_name,
          prop_install_mode=PropInstallMode.UNCONDITIONAL,
          trampoline_var_name=tp_install_unconditional_props,
-         attribute_entries=filter(is_unconditional, attribute_entries),
-         constant_entries=filter(is_unconditional, constant_entries),
-         exposed_construct_entries=filter(is_unconditional,
-                                          exposed_construct_entries),
-         operation_entries=filter(is_unconditional, operation_entries))
+         attribute_entries=list(filter(is_unconditional, attribute_entries)),
+         constant_entries=list(filter(is_unconditional, constant_entries)),
+         exposed_construct_entries=list(
+             filter(is_unconditional, exposed_construct_entries)),
+         operation_entries=list(filter(is_unconditional, operation_entries)))
     (install_context_independent_props_decl,
      install_context_independent_props_def,
      install_context_independent_props_trampoline) = make_install_properties(
@@ -6807,11 +6812,14 @@ def generate_class_like(class_like):
          class_name=impl_class_name,
          prop_install_mode=PropInstallMode.CONTEXT_INDEPENDENT,
          trampoline_var_name=tp_install_context_independent_props,
-         attribute_entries=filter(is_context_independent, attribute_entries),
-         constant_entries=filter(is_context_independent, constant_entries),
-         exposed_construct_entries=filter(is_context_independent,
-                                          exposed_construct_entries),
-         operation_entries=filter(is_context_independent, operation_entries))
+         attribute_entries=list(
+             filter(is_context_independent, attribute_entries)),
+         constant_entries=list(filter(is_context_independent,
+                                      constant_entries)),
+         exposed_construct_entries=list(
+             filter(is_context_independent, exposed_construct_entries)),
+         operation_entries=list(
+             filter(is_context_independent, operation_entries)))
     (install_context_dependent_props_decl, install_context_dependent_props_def,
      install_context_dependent_props_trampoline) = make_install_properties(
          cg_context,
@@ -6819,11 +6827,13 @@ def generate_class_like(class_like):
          class_name=impl_class_name,
          prop_install_mode=PropInstallMode.CONTEXT_DEPENDENT,
          trampoline_var_name=tp_install_context_dependent_props,
-         attribute_entries=filter(is_context_dependent, attribute_entries),
-         constant_entries=filter(is_context_dependent, constant_entries),
-         exposed_construct_entries=filter(is_context_dependent,
-                                          exposed_construct_entries),
-         operation_entries=filter(is_context_dependent, operation_entries))
+         attribute_entries=list(filter(is_context_dependent,
+                                       attribute_entries)),
+         constant_entries=list(filter(is_context_dependent, constant_entries)),
+         exposed_construct_entries=list(
+             filter(is_context_dependent, exposed_construct_entries)),
+         operation_entries=list(filter(is_context_dependent,
+                                       operation_entries)))
     (install_interface_template_decl, install_interface_template_def,
      install_interface_template_trampoline) = make_install_interface_template(
          cg_context,

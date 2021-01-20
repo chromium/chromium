@@ -886,7 +886,7 @@ def make_dict_trace_func(cg_context):
         _2 = _blink_member_name(member).value_var
         return TextNode(_format(pattern, _1=_1, _2=_2))
 
-    body.extend(map(make_trace_member_node, own_members))
+    body.extend(list(map(make_trace_member_node, own_members)))
     body.append(TextNode("BaseClass::Trace(visitor);"))
 
     return func_decl, func_def

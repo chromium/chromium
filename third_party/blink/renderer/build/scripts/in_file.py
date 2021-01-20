@@ -66,7 +66,7 @@ class InFile(object):
         self._defaults = defaults
         self._valid_values = copy.deepcopy(
             valid_values if valid_values else {})
-        self._parse(map(str.strip, lines))
+        self._parse(list(map(str.strip, lines)))
 
     @classmethod
     def load_from_files(self, file_paths, defaults, valid_values,

@@ -188,20 +188,20 @@ class OverloadGroup(WithIdentifier):
 
             S.append(
                 OverloadGroup.EffectiveOverloadItem(
-                    X, map(lambda arg: arg.idl_type, X.arguments),
-                    map(lambda arg: arg.optionality, X.arguments)))
+                    X, list(map(lambda arg: arg.idl_type, X.arguments)),
+                    list(map(lambda arg: arg.optionality, X.arguments))))
 
             if X.is_variadic:
                 for i in xrange(n, max(maxarg, N)):
-                    t = map(lambda arg: arg.idl_type, X.arguments)
-                    o = map(lambda arg: arg.optionality, X.arguments)
+                    t = list(map(lambda arg: arg.idl_type, X.arguments))
+                    o = list(map(lambda arg: arg.optionality, X.arguments))
                     for _ in xrange(n, i + 1):
                         t.append(X.arguments[-1].idl_type)
                         o.append(X.arguments[-1].optionality)
                     S.append(OverloadGroup.EffectiveOverloadItem(X, t, o))
 
-            t = map(lambda arg: arg.idl_type, X.arguments)
-            o = map(lambda arg: arg.optionality, X.arguments)
+            t = list(map(lambda arg: arg.idl_type, X.arguments))
+            o = list(map(lambda arg: arg.optionality, X.arguments))
             for i in xrange(n - 1, -1, -1):
                 if X.arguments[i].optionality == IdlType.Optionality.REQUIRED:
                     break

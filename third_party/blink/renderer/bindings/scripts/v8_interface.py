@@ -1356,9 +1356,9 @@ def resolution_tests_methods(effective_overloads):
 
     # Extract argument and IDL type to simplify accessing these in each loop.
     arguments = [method['arguments'][index] for method in methods]
-    arguments_methods = zip(arguments, methods)
+    arguments_methods = list(zip(arguments, methods))
     idl_types = [argument['idl_type_object'] for argument in arguments]
-    idl_types_methods = zip(idl_types, methods)
+    idl_types_methods = list(zip(idl_types, methods))
 
     # We can’t do a single loop through all methods or simply sort them, because
     # a method may be listed in multiple steps of the resolution algorithm, and

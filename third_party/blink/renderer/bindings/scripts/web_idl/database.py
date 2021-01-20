@@ -166,4 +166,4 @@ class Database(object):
         return self._view_by_kind(Database._Kind.NEW_UNION)
 
     def _view_by_kind(self, kind):
-        return self._impl.find_by_kind(kind).values()
+        return list(self._impl.find_by_kind(kind).values())

@@ -160,7 +160,7 @@ class _IRBuilder(object):
         child_nodes = list(node.GetChildren())
         extended_attributes = self._take_extended_attributes(child_nodes)
 
-        members = map(self._build_interface_member, child_nodes)
+        members = list(map(self._build_interface_member, child_nodes))
         attributes = []
         constants = []
         operations = []
@@ -302,7 +302,7 @@ class _IRBuilder(object):
         child_nodes = list(node.GetChildren())
         inherited = self._take_inheritance(child_nodes)
         extended_attributes = self._take_extended_attributes(child_nodes)
-        own_members = map(self._build_dictionary_member, child_nodes)
+        own_members = list(map(self._build_dictionary_member, child_nodes))
 
         return Dictionary.IR(
             identifier=Identifier(node.GetName()),
@@ -336,7 +336,7 @@ class _IRBuilder(object):
 
         child_nodes = list(node.GetChildren())
         extended_attributes = self._take_extended_attributes(child_nodes)
-        members = map(self._build_interface_member, child_nodes)
+        members = list(map(self._build_interface_member, child_nodes))
         constants = []
         operations = []
         for member in members:
@@ -456,8 +456,8 @@ class _IRBuilder(object):
                 assert len(child_nodes) == 1
                 child = child_nodes[0]
                 if child.GetClass() == 'Arguments':
-                    arguments = map(build_extattr_argument,
-                                    child.GetChildren())
+                    arguments = list(
+                        map(build_extattr_argument, child.GetChildren()))
                 elif child.GetClass() == 'Call':
                     assert len(child.GetChildren()) == 1
                     grand_child = child.GetChildren()[0]
@@ -486,7 +486,9 @@ class _IRBuilder(object):
 
         assert node.GetClass() == 'ExtAttributes'
         return ExtendedAttributes(
-            filter(None, map(build_extended_attribute, node.GetChildren())))
+            list(
+                filter(None, map(build_extended_attribute,
+                                 node.GetChildren()))))
 
     def _build_inheritance(self, node):
         assert node.GetClass() == 'Inherit'
@@ -506,7 +508,7 @@ class _IRBuilder(object):
 
     def _build_iterable(self, node):
         assert node.GetClass() == 'Iterable'
-        types = map(self._build_type, node.GetChildren())
+        types = list(map(self._build_type, node.GetChildren()))
         assert len(types) == 1 or len(types) == 2
         if len(types) == 1:  # value iterator
             key_type, value_type = (None, types[0])
@@ -584,7 +586,7 @@ class _IRBuilder(object):
     def _build_maplike(self, node, interface_identifier):
         assert node.GetClass() == 'Maplike'
         assert isinstance(interface_identifier, Identifier)
-        types = map(self._build_type, node.GetChildren())
+        types = list(map(self._build_type, node.GetChildren()))
         assert len(types) == 2
         key_type, value_type = types
         is_readonly = bool(node.GetProperty('READONLY'))
@@ -676,7 +678,7 @@ class _IRBuilder(object):
     def _build_setlike(self, node, interface_identifier):
         assert node.GetClass() == 'Setlike'
         assert isinstance(interface_identifier, Identifier)
-        types = map(self._build_type, node.GetChildren())
+        types = list(map(self._build_type, node.GetChildren()))
         assert len(types) == 1
         value_type = types[0]
         is_readonly = bool(node.GetProperty('READONLY'))
@@ -838,7 +840,7 @@ class _IRBuilder(object):
 
         def build_union_type(node, extended_attributes):
             return self._idl_type_factory.union_type(
-                member_types=map(self._build_type, node.GetChildren()),
+                member_types=list(map(self._build_type, node.GetChildren())),
                 is_optional=is_optional,
                 extended_attributes=extended_attributes,
                 debug_info=self._build_debug_info(node))

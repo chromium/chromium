@@ -42,8 +42,8 @@ class CSSPropertyInstancesWriter(json5_generator.Writer):
         aliases = self._css_properties.aliases
 
         # Lists of PropertyClassData.
-        self._property_classes_by_id = map(self.get_class, properties)
-        self._alias_classes_by_id = map(self.get_class, aliases)
+        self._property_classes_by_id = list(map(self.get_class, properties))
+        self._alias_classes_by_id = list(map(self.get_class, aliases))
 
         # Sort by enum value.
         self._property_classes_by_id.sort(key=lambda t: t.enum_value)

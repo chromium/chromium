@@ -80,7 +80,7 @@ def read_idl_file(reader, idl_filename):
     assert len(interfaces) == 1, (
         "Expected one interface in file %r, found %d" %
         (idl_filename, len(interfaces)))
-    return (interfaces.values()[0], includes)
+    return (list(interfaces.values())[0], includes)
 
 
 def interface_is_global(interface):
@@ -281,7 +281,7 @@ def main():
 
     info_provider = create_component_info_provider(
         os.path.normpath(options.info_dir), options.target_component)
-    idl_filenames = map(str.strip, open(options.idl_files_list))
+    idl_filenames = list(map(str.strip, open(options.idl_files_list)))
 
     generate_origin_trial_features(info_provider, options, idl_filenames)
     return 0

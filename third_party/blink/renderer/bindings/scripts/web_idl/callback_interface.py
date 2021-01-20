@@ -91,11 +91,13 @@ class CallbackInterface(UserDefinedType, WithExtendedAttributes,
             for operation_ir in ir.operations
         ])
         self._operation_groups = tuple([
-            OperationGroup(
-                operation_group_ir,
-                filter(lambda x: x.identifier == operation_group_ir.identifier,
-                       self._operations),
-                owner=self) for operation_group_ir in ir.operation_groups
+            OperationGroup(operation_group_ir,
+                           list(
+                               filter(
+                                   lambda x: x.identifier == operation_group_ir
+                                   .identifier, self._operations)),
+                           owner=self)
+            for operation_group_ir in ir.operation_groups
         ])
 
     @property

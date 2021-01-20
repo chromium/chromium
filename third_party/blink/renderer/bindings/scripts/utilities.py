@@ -196,8 +196,9 @@ class ComponentInfoProviderModules(ComponentInfoProvider):
 
     @property
     def callback_functions(self):
-        return dict(self._component_info_core['callback_functions'].items() +
-                    self._component_info_modules['callback_functions'].items())
+        return dict(
+            list(self._component_info_core['callback_functions'].items()) +
+            list(self._component_info_modules['callback_functions'].items()))
 
     @property
     def specifier_for_export(self):
