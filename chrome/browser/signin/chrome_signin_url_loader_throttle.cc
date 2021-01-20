@@ -31,8 +31,12 @@ class URLLoaderThrottle::ThrottleRequestAdapter : public ChromeRequestAdapter {
     return throttle_->web_contents_getter_;
   }
 
-  blink::mojom::ResourceType GetResourceType() const override {
-    return throttle_->request_resource_type_;
+  network::mojom::RequestDestination GetRequestDestination() const override {
+    return throttle_->request_destination_;
+  }
+
+  bool IsFetchLikeAPI() const override {
+    return throttle_->request_is_fetch_like_api_;
   }
 
   GURL GetReferrerOrigin() const override {
@@ -64,8 +68,8 @@ class URLLoaderThrottle::ThrottleResponseAdapter : public ResponseAdapter {
   }
 
   bool IsMainFrame() const override {
-    return throttle_->request_resource_type_ ==
-           blink::mojom::ResourceType::kMainFrame;
+    return throttle_->request_destination_ ==
+           network::mojom::RequestDestination::kDocument;
   }
 
   GURL GetOrigin() const override {
@@ -117,8 +121,8 @@ void URLLoaderThrottle::WillStartRequest(network::ResourceRequest* request,
                                          bool* defer) {
   request_url_ = request->url;
   request_referrer_ = request->referrer;
-  request_resource_type_ =
-      static_cast<blink::mojom::ResourceType>(request->resource_type);
+  request_destination_ = request->destination;
+  request_is_fetch_like_api_ = request->is_fetch_like_api;
 
   net::HttpRequestHeaders modified_request_headers;
   std::vector<std::string> to_be_removed_request_headers;

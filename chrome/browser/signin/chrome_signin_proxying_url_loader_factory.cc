@@ -22,6 +22,7 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/net_errors.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 
 namespace signin {
@@ -164,8 +165,9 @@ class ProxyingURLLoaderFactory::InProgressRequest
   net::HttpRequestHeaders headers_;
   net::HttpRequestHeaders cors_exempt_headers_;
   net::RedirectInfo redirect_info_;
-  const blink::mojom::ResourceType resource_type_;
+  const network::mojom::RequestDestination request_destination_;
   const bool is_main_frame_;
+  const bool is_fetch_like_api_;
 
   base::OnceClosure destruction_callback_;
 
@@ -203,8 +205,12 @@ class ProxyingURLLoaderFactory::InProgressRequest::ProxyRequestAdapter
     return in_progress_request_->factory_->web_contents_getter_;
   }
 
-  blink::mojom::ResourceType GetResourceType() const override {
-    return in_progress_request_->resource_type_;
+  network::mojom::RequestDestination GetRequestDestination() const override {
+    return in_progress_request_->request_destination_;
+  }
+
+  bool IsFetchLikeAPI() const override {
+    return in_progress_request_->is_fetch_like_api_;
   }
 
   GURL GetReferrerOrigin() const override {
@@ -285,9 +291,9 @@ ProxyingURLLoaderFactory::InProgressRequest::InProgressRequest(
       request_url_(request.url),
       response_url_(request.url),
       referrer_origin_(request.referrer.GetOrigin()),
-      resource_type_(
-          static_cast<blink::mojom::ResourceType>(request.resource_type)),
+      request_destination_(request.destination),
       is_main_frame_(request.is_main_frame),
+      is_fetch_like_api_(request.is_fetch_like_api),
       target_client_(std::move(client)),
       loader_receiver_(this, std::move(loader_receiver)) {
   mojo::PendingRemote<network::mojom::URLLoaderClient> proxy_client =

@@ -70,8 +70,8 @@ TEST(ChromeSigninURLLoaderThrottleTest, Intercept) {
       .WillOnce(
           Invoke([&](ChromeRequestAdapter* adapter, const GURL& redirect_url) {
             EXPECT_EQ(kTestURL, adapter->GetUrl());
-            EXPECT_EQ(blink::mojom::ResourceType::kMainFrame,
-                      adapter->GetResourceType());
+            EXPECT_EQ(network::mojom::RequestDestination::kDocument,
+                      adapter->GetRequestDestination());
             EXPECT_EQ(GURL("https://chrome.com"), adapter->GetReferrerOrigin());
 
             EXPECT_TRUE(adapter->HasHeader("X-Request-1"));
@@ -89,8 +89,7 @@ TEST(ChromeSigninURLLoaderThrottleTest, Intercept) {
   network::ResourceRequest request;
   request.url = kTestURL;
   request.referrer = kTestReferrer;
-  request.resource_type =
-      static_cast<int>(blink::mojom::ResourceType::kMainFrame);
+  request.destination = network::mojom::RequestDestination::kDocument;
   request.headers.SetHeader("X-Request-1", "Foo");
   bool defer = false;
   throttle->WillStartRequest(&request, &defer);
@@ -135,8 +134,8 @@ TEST(ChromeSigninURLLoaderThrottleTest, Intercept) {
   EXPECT_CALL(*delegate, ProcessRequest(_, _))
       .WillOnce(
           Invoke([&](ChromeRequestAdapter* adapter, const GURL& redirect_url) {
-            EXPECT_EQ(blink::mojom::ResourceType::kMainFrame,
-                      adapter->GetResourceType());
+            EXPECT_EQ(network::mojom::RequestDestination::kDocument,
+                      adapter->GetRequestDestination());
 
             // Changes to the URL and referrer take effect after the redirect
             // is followed.
@@ -240,14 +239,13 @@ TEST(ChromeSigninURLLoaderThrottleTest, InterceptSubFrame) {
       .Times(2)
       .WillRepeatedly(
           [](ChromeRequestAdapter* adapter, const GURL& redirect_url) {
-            EXPECT_EQ(blink::mojom::ResourceType::kSubFrame,
-                      adapter->GetResourceType());
+            EXPECT_EQ(network::mojom::RequestDestination::kIframe,
+                      adapter->GetRequestDestination());
           });
 
   network::ResourceRequest request;
   request.url = GURL("https://google.com");
-  request.resource_type =
-      static_cast<int>(blink::mojom::ResourceType::kSubFrame);
+  request.destination = network::mojom::RequestDestination::kIframe;
 
   bool defer = false;
   throttle->WillStartRequest(&request, &defer);

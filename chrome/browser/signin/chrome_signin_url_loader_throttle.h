@@ -8,8 +8,8 @@
 #include "base/macros.h"
 #include "base/supports_user_data.h"
 #include "content/public/browser/web_contents.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
-#include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 
 namespace signin {
 
@@ -57,7 +57,9 @@ class URLLoaderThrottle : public blink::URLLoaderThrottle,
   GURL request_referrer_;
   net::HttpRequestHeaders request_headers_;
   net::HttpRequestHeaders request_cors_exempt_headers_;
-  blink::mojom::ResourceType request_resource_type_;
+  network::mojom::RequestDestination request_destination_ =
+      network::mojom::RequestDestination::kEmpty;
+  bool request_is_fetch_like_api_ = false;
 
   base::OnceClosure destruction_callback_;
 

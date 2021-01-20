@@ -4257,6 +4257,7 @@ test("unit_tests") {
     "//services/device/public/cpp:test_support",
     "//services/network:test_support",
     "//services/network/public/cpp",
+    "//services/network/public/mojom",
     "//skia",
     "//testing/gmock",
     "//testing/gtest",

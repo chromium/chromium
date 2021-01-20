@@ -46,7 +46,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "net/http/http_response_headers.h"
-#include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 
 #if defined(OS_ANDROID)
 #include "chrome/browser/android/signin/signin_bridge.h"
@@ -136,12 +135,12 @@ class AccountReconcilorLockWrapper
 // * Main frame  requests.
 // * XHR requests having Gaia URL as referrer.
 bool ShouldBlockReconcilorForRequest(ChromeRequestAdapter* request) {
-  blink::mojom::ResourceType resource_type = request->GetResourceType();
-
-  if (resource_type == blink::mojom::ResourceType::kMainFrame)
+  if (request->GetRequestDestination() ==
+      network::mojom::RequestDestination::kDocument) {
     return true;
+  }
 
-  return (resource_type == blink::mojom::ResourceType::kXhr) &&
+  return request->IsFetchLikeAPI() &&
          gaia::IsGaiaSignonRealm(request->GetReferrerOrigin());
 }
 

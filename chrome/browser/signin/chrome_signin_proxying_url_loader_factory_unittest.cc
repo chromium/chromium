@@ -18,6 +18,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -138,8 +139,7 @@ TEST_F(ChromeSigninProxyingURLLoaderFactoryTest, ModifyHeaders) {
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = kTestURL;
   request->referrer = kTestReferrer;
-  request->resource_type =
-      static_cast<int>(blink::mojom::ResourceType::kMainFrame);
+  request->destination = network::mojom::RequestDestination::kDocument;
   request->is_main_frame = true;
   request->headers.SetHeader("X-Request-1", "Foo");
 
@@ -158,8 +158,8 @@ TEST_F(ChromeSigninProxyingURLLoaderFactoryTest, ModifyHeaders) {
       .WillOnce(
           Invoke([&](ChromeRequestAdapter* adapter, const GURL& redirect_url) {
             EXPECT_EQ(kTestURL, adapter->GetUrl());
-            EXPECT_EQ(blink::mojom::ResourceType::kMainFrame,
-                      adapter->GetResourceType());
+            EXPECT_EQ(network::mojom::RequestDestination::kDocument,
+                      adapter->GetRequestDestination());
             EXPECT_EQ(GURL("https://chrome.com"), adapter->GetReferrerOrigin());
 
             EXPECT_TRUE(adapter->HasHeader("X-Request-1"));
@@ -175,8 +175,8 @@ TEST_F(ChromeSigninProxyingURLLoaderFactoryTest, ModifyHeaders) {
           }))
       .WillOnce(
           Invoke([&](ChromeRequestAdapter* adapter, const GURL& redirect_url) {
-            EXPECT_EQ(blink::mojom::ResourceType::kMainFrame,
-                      adapter->GetResourceType());
+            EXPECT_EQ(network::mojom::RequestDestination::kDocument,
+                      adapter->GetRequestDestination());
 
             // Changes to the URL and referrer take effect after the redirect
             // is followed.
