@@ -22,7 +22,6 @@
 #include "components/no_state_prefetch/common/prerender_canceler.mojom.h"
 #include "components/no_state_prefetch/common/prerender_final_status.h"
 #include "components/no_state_prefetch/common/prerender_origin.h"
-#include "components/no_state_prefetch/common/prerender_types.mojom.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -110,10 +109,6 @@ class PrerenderContents : public content::NotificationObserver,
   void RemoveObserver(Observer* observer);
 
   bool Init();
-
-  prerender::mojom::PrerenderMode prerender_mode() const {
-    return prerender_mode_;
-  }
 
   static Factory* CreateFactory();
 
@@ -238,8 +233,6 @@ class PrerenderContents : public content::NotificationObserver,
   std::unique_ptr<content::WebContents> CreateWebContents(
       content::SessionStorageNamespace* session_storage_namespace);
 
-  const prerender::mojom::PrerenderMode prerender_mode_ =
-      mojom::PrerenderMode::kPrefetchOnly;
   bool prerendering_has_started_;
 
   // Time at which we started to load the URL.  This is used to compute

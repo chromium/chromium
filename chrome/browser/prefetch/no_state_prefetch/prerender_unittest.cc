@@ -42,7 +42,6 @@
 #include "components/no_state_prefetch/browser/prerender_link_manager.h"
 #include "components/no_state_prefetch/browser/prerender_manager.h"
 #include "components/no_state_prefetch/common/prerender_origin.h"
-#include "components/no_state_prefetch/common/prerender_types.mojom.h"
 #include "components/no_state_prefetch/common/prerender_util.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/render_view_host.h"
@@ -460,16 +459,6 @@ TEST_F(PrerenderTest, RespectsThirdPartyCookiesPref) {
   EXPECT_FALSE(AddSimplePrerender(url));
   histogram_tester().ExpectUniqueSample(
       "Prerender.FinalStatus", FINAL_STATUS_BLOCK_THIRD_PARTY_COOKIES, 1);
-}
-
-TEST_F(PrerenderTest, NoStatePrefetchMode) {
-  GURL url("http://www.google.com/");
-  DummyPrerenderContents* prerender_contents =
-      prerender_manager()->CreateNextPrerenderContents(
-          url, FINAL_STATUS_PROFILE_DESTROYED);
-  EXPECT_TRUE(AddSimplePrerender(url));
-  EXPECT_EQ(prerender::mojom::PrerenderMode::kPrefetchOnly,
-            prerender_contents->prerender_mode());
 }
 
 TEST_F(PrerenderTest, GWSPrefetchHoldbackNonGWSSReferrer) {

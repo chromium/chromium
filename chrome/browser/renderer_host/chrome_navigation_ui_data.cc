@@ -38,7 +38,7 @@ ChromeNavigationUIData::ChromeNavigationUIData(
   auto* prerender_contents =
       prerender::ChromePrerenderContentsDelegate::FromWebContents(web_contents);
   if (prerender_contents) {
-    prerender_mode_ = prerender_contents->prerender_mode();
+    is_no_state_prefetching_ = true;
     prerender_histogram_prefix_ =
         prerender::PrerenderHistograms::GetHistogramPrefix(
             prerender_contents->origin());
@@ -91,7 +91,7 @@ std::unique_ptr<content::NavigationUIData> ChromeNavigationUIData::Clone() {
     copy->SetOfflinePageNavigationUIData(offline_page_data_->DeepCopy());
 #endif
 
-  copy->prerender_mode_ = prerender_mode_;
+  copy->is_no_state_prefetching_ = is_no_state_prefetching_;
   copy->prerender_histogram_prefix_ = prerender_histogram_prefix_;
 
   return std::move(copy);

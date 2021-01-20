@@ -41,7 +41,6 @@
 #include "components/no_state_prefetch/browser/prerender_manager_delegate.h"
 #include "components/no_state_prefetch/browser/prerender_util.h"
 #include "components/no_state_prefetch/common/prerender_final_status.h"
-#include "components/no_state_prefetch/common/prerender_types.mojom.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_frame_host.h"

@@ -237,7 +237,6 @@
 #include "components/net_log/chrome_net_log.h"
 #include "components/no_state_prefetch/browser/prerender_manager.h"
 #include "components/no_state_prefetch/common/prerender_final_status.h"
-#include "components/no_state_prefetch/common/prerender_types.mojom.h"
 #include "components/no_state_prefetch/common/prerender_url_loader_throttle.h"
 #include "components/no_state_prefetch/common/prerender_util.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -4487,8 +4486,7 @@ ChromeContentBrowserClient::CreateURLLoaderThrottles(
 #endif
 
   if (chrome_navigation_ui_data &&
-      chrome_navigation_ui_data->prerender_mode() !=
-          prerender::mojom::PrerenderMode::kNoPrerender) {
+      chrome_navigation_ui_data->is_no_state_prefetching()) {
     result.push_back(std::make_unique<prerender::PrerenderURLLoaderThrottle>(
         chrome_navigation_ui_data->prerender_histogram_prefix(),
         GetPrerenderCanceler(wc_getter)));

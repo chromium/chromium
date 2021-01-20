@@ -11,7 +11,6 @@
 #include "base/macros.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/plugin.mojom.h"
-#include "components/no_state_prefetch/common/prerender_types.mojom.h"
 #include "components/no_state_prefetch/renderer/prerender_observer.h"
 #include "components/plugins/renderer/loadable_plugin_placeholder.h"
 #include "content/public/renderer/context_menu_client.h"

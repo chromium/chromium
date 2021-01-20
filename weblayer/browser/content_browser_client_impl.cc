@@ -442,8 +442,7 @@ ContentBrowserClientImpl::CreateURLLoaderThrottles(
   // Create prerender URL throttle.
   auto* web_contents = wc_getter.Run();
   auto* prerender_contents = PrerenderContentsFromWebContents(web_contents);
-  if (prerender_contents && prerender_contents->prerender_mode() !=
-                                prerender::mojom::PrerenderMode::kNoPrerender) {
+  if (prerender_contents) {
     result.push_back(std::make_unique<prerender::PrerenderURLLoaderThrottle>(
         prerender::PrerenderHistograms::GetHistogramPrefix(
             prerender_contents->origin()),

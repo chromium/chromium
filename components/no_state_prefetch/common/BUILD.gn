@@ -30,7 +30,6 @@ static_library("common") {
 mojom("mojo_bindings") {
   sources = [
     "prerender_canceler.mojom",
-    "prerender_types.mojom",
     "render_frame_prerender_messages.mojom",
   ]
   deps = [ "//url/mojom:url_mojom_gurl" ]

@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_NO_STATE_PREFETCH_BROWSER_PRERENDER_CONTENTS_DELEGATE_H_
 #define COMPONENTS_NO_STATE_PREFETCH_BROWSER_PRERENDER_CONTENTS_DELEGATE_H_
 
-#include "components/no_state_prefetch/common/prerender_types.mojom.h"
 #include "content/public/browser/render_frame_host.h"
 
 namespace content {

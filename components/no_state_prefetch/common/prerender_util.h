@@ -7,8 +7,6 @@
 
 #include <string>
 
-#include "components/no_state_prefetch/common/prerender_types.mojom.h"
-
 class GURL;
 
 namespace prerender {
