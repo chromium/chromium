@@ -920,7 +920,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Android.FeatureModules.AvailabilityStatus"
-    enum="FeatureModuleAvailabilityStatus" expires_after="2021-06-13">
+    enum="FeatureModuleAvailabilityStatus" expires_after="2022-06-13">
 <!-- Name completed by histogram_suffixes
        name="AndroidFeatureModuleName" -->
 
@@ -936,7 +936,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Android.FeatureModules.CachedAwakeInstallDuration"
-    units="ms" expires_after="2021-01-31">
+    units="ms" expires_after="2022-06-13">
 <!-- Name completed by histogram_suffixes
        name="AndroidFeatureModuleName" -->
 
@@ -953,7 +953,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Android.FeatureModules.InstallingStatus"
-    enum="FeatureModuleInstallingStatus" expires_after="2021-06-20">
+    enum="FeatureModuleInstallingStatus" expires_after="2022-06-13">
 <!-- Name completed by histogram_suffixes
        name="AndroidFeatureModuleName" -->
 
@@ -968,7 +968,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Android.FeatureModules.InstallStatus"
-    enum="FeatureModuleInstallStatus" expires_after="2021-05-30">
+    enum="FeatureModuleInstallStatus" expires_after="2022-06-13">
 <!-- Name completed by histogram_suffixes
        name="AndroidFeatureModuleName" -->
 
@@ -983,7 +983,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.FeatureModules.StartupTime" units="ms"
-    expires_after="2021-06-06">
+    expires_after="2022-06-13">
   <owner>agrieve@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
@@ -996,7 +996,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true"
     name="Android.FeatureModules.UncachedAwakeInstallDuration" units="ms"
-    expires_after="2021-01-31">
+    expires_after="2022-06-13">
 <!-- Name completed by histogram_suffixes
        name="AndroidFeatureModuleName" -->
 
