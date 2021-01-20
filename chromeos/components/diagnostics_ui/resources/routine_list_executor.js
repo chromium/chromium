@@ -23,12 +23,12 @@ export let ExecutionProgress = {
  * routine-result-list.
  */
 export class ResultStatusItem {
-  constructor(routine) {
+  constructor(routine, progress = ExecutionProgress.kNotStarted) {
     /** @type {!RoutineType} */
     this.routine = routine;
 
     /** @type {!ExecutionProgress} */
-    this.progress = ExecutionProgress.kNotStarted;
+    this.progress = progress;
 
     /** @type {?RoutineResult} */
     this.result = null;
@@ -107,9 +107,7 @@ export class RoutineListExecutor {
     routines.forEach((name) => {
       promise = promise.then(() => {
         // Notify the status callback that a test started running.
-        const status = new ResultStatusItem(name);
-        status.progress = ExecutionProgress.kRunning;
-        statusCallback(status);
+        statusCallback(new ResultStatusItem(name, ExecutionProgress.kRunning));
 
         this.currentExecutionContext_ = new ExecutionContext();
         // Create a new remote and execute the next test.
@@ -122,8 +120,8 @@ export class RoutineListExecutor {
         // result.
         return this.currentExecutionContext_.whenComplete().then((info) => {
           assert(info.type === name);
-          const status = new ResultStatusItem(name);
-          status.progress = ExecutionProgress.kCompleted;
+          const status =
+              new ResultStatusItem(name, ExecutionProgress.kCompleted);
           status.result = info.result;
           statusCallback(status);
         });

@@ -63,25 +63,13 @@ export function routineResultEntryTestSuite() {
   }
 
   /**
-   * Creates a result status item without a final result.
-   * @param {!RoutineType} routine
-   * @param {!ExecutionProgress} progress
-   * @return {!ResultStatusItem}
-   */
-  function createIncompleteStatus(routine, progress) {
-    let status = new ResultStatusItem(routine);
-    status.progress = progress;
-    return status;
-  }
-
-  /**
    * Creates a completed result status item with a result.
    * @param {!RoutineType} routine
    * @param {!RoutineResult} result
    * @return {!ResultStatusItem}
    */
   function createCompletedStatus(routine, result) {
-    let status = createIncompleteStatus(routine, ExecutionProgress.kCompleted);
+    let status = new ResultStatusItem(routine, ExecutionProgress.kCompleted);
     status.result = result;
     return status;
   }
@@ -116,9 +104,8 @@ export function routineResultEntryTestSuite() {
   });
 
   test('NotStartedTest', () => {
-    const item = createIncompleteStatus(
-        chromeos.diagnostics.mojom.RoutineType.kCpuStress,
-        ExecutionProgress.kNotStarted);
+    const item =
+        new ResultStatusItem(chromeos.diagnostics.mojom.RoutineType.kCpuStress);
     return initializeEntryWithItem(item).then(() => {
       assertEquals(
           getNameText(),
@@ -136,7 +123,7 @@ export function routineResultEntryTestSuite() {
   });
 
   test('RunningTest', () => {
-    const item = createIncompleteStatus(
+    const item = new ResultStatusItem(
         chromeos.diagnostics.mojom.RoutineType.kCpuStress,
         ExecutionProgress.kRunning);
     return initializeEntryWithItem(item).then(() => {
@@ -195,7 +182,7 @@ export function routineResultEntryTestSuite() {
   });
 
   test('StoppedTest', () => {
-    const item = createIncompleteStatus(
+    const item = new ResultStatusItem(
         chromeos.diagnostics.mojom.RoutineType.kCpuStress,
         ExecutionProgress.kCancelled);
     return initializeEntryWithItem(item).then(() => {

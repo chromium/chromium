@@ -9,7 +9,7 @@ import './routine_result_entry.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {RoutineType} from './diagnostics_types.js';
-import {ResultStatusItem} from './routine_list_executor.js'
+import {ExecutionProgress, ResultStatusItem} from './routine_list_executor.js'
 
 /**
  * @fileoverview
