@@ -17,11 +17,15 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.bookmarks.BookmarkId;
+import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.url.GURL;
 
@@ -322,5 +326,25 @@ public class BookmarkBridgeTest {
         Assert.assertEquals("Expected that user (non-partner) bookmarks would get priority "
                         + "over partner bookmarks",
                 expectedSearchResults, searchResults);
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @Features.EnableFeatures({ChromeFeatureList.READ_LATER})
+    @RequiresRestart
+    public void testAddToReadingList() {
+        Assert.assertNull("Should return null for non http/https URLs.",
+                mBookmarkBridge.addToReadingList("a", new GURL("chrome://flags")));
+        BookmarkId readingListId =
+                mBookmarkBridge.addToReadingList("a", new GURL("https://www.google.com/"));
+        Assert.assertNotNull("Failed to add to reading list", readingListId);
+        Assert.assertEquals(BookmarkType.READING_LIST, readingListId.getType());
+        BookmarkItem readingListItem =
+                mBookmarkBridge.getReadingListItem(new GURL("https://www.google.com/"));
+        Assert.assertNotNull("Failed to find the reading list", readingListItem);
+        Assert.assertEquals(
+                "https://www.google.com/", readingListItem.getUrl().getValidSpecOrEmpty());
+        Assert.assertEquals("a", readingListItem.getTitle());
     }
 }
