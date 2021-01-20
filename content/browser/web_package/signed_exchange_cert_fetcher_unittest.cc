@@ -23,12 +23,12 @@
 #include "net/test/test_data_directory.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
-#include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 
 namespace content {
 
@@ -273,8 +273,8 @@ TEST_F(SignedExchangeCertFetcherTest, Simple) {
   ASSERT_TRUE(mock_loader_factory_.client_remote());
   ASSERT_TRUE(mock_loader_factory_.url_request());
   EXPECT_EQ(url_, mock_loader_factory_.url_request()->url);
-  EXPECT_EQ(static_cast<int>(blink::mojom::ResourceType::kSubResource),
-            mock_loader_factory_.url_request()->resource_type);
+  EXPECT_EQ(network::mojom::RequestDestination::kEmpty,
+            mock_loader_factory_.url_request()->destination);
   EXPECT_EQ(mock_loader_factory_.url_request()->credentials_mode,
             network::mojom::CredentialsMode::kOmit);
   EXPECT_TRUE(mock_loader_factory_.url_request()->request_initiator->opaque());
@@ -330,8 +330,8 @@ TEST_F(SignedExchangeCertFetcherTest, ForceFetchAndFail) {
 
   ASSERT_TRUE(mock_loader_factory_.url_request());
   EXPECT_EQ(url_, mock_loader_factory_.url_request()->url);
-  EXPECT_EQ(static_cast<int>(blink::mojom::ResourceType::kSubResource),
-            mock_loader_factory_.url_request()->resource_type);
+  EXPECT_EQ(network::mojom::RequestDestination::kEmpty,
+            mock_loader_factory_.url_request()->destination);
   EXPECT_EQ(net::LOAD_DISABLE_CACHE | net::LOAD_BYPASS_CACHE,
             mock_loader_factory_.url_request()->load_flags);
   EXPECT_EQ(mock_loader_factory_.url_request()->credentials_mode,

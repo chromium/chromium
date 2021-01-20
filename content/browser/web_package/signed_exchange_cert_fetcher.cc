@@ -24,6 +24,7 @@
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "third_party/blink/public/common/loader/throttling_url_loader.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
@@ -114,6 +115,7 @@ SignedExchangeCertFetcher::SignedExchangeCertFetcher(
   resource_request_->request_initiator = url::Origin();
   resource_request_->resource_type =
       static_cast<int>(blink::mojom::ResourceType::kSubResource);
+  resource_request_->destination = network::mojom::RequestDestination::kEmpty;
   // Cert requests should not send credential informartion, because the default
   // credentials mode of Fetch is "omit".
   resource_request_->credentials_mode = network::mojom::CredentialsMode::kOmit;
