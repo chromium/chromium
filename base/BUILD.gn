@@ -2526,6 +2526,12 @@ test("base_perftests") {
     deps += [ "//testing/android/native_test:native_test_native_code" ]
     shard_timeout = 600
   }
+
+  if (!is_official_build) {
+    # The extra data tables required by stack traces are turned off for official
+    # build, only do stack trace perftest for unofficial build
+    sources += [ "debug/stack_trace_perftest.cc" ]
+  }
 }
 
 test("base_i18n_perftests") {
