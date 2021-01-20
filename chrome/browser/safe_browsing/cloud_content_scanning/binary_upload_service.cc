@@ -161,10 +161,13 @@ net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag(bool is_app) {
             "policy."
           chrome_policy {
             OnFileAttachedEnterpriseConnector {
+              OnFileAttachedEnterpriseConnector: "[]"
             }
             OnFileDownloadedEnterpriseConnector {
+              OnFileDownloadedEnterpriseConnector: "[]"
             }
             OnBulkDataEntryEnterpriseConnector {
+              OnBulkDataEntryEnterpriseConnector: "[]"
             }
           }
         }

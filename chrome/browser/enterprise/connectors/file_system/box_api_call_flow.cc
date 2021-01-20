@@ -109,7 +109,7 @@ BoxApiCallFlow::GetNetworkTrafficAnnotationTag() {
         cookies_allowed: NO
         setting:
           "No settings control."
-        chrome_policy {}
+        policy_exception_justification: "Not implemented yet."
       })");
   // TODO(1157959): Add the policy that will turn on/off the connector here?
 }
