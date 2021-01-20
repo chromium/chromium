@@ -28,6 +28,7 @@
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/constants/chromeos_switches.h"
+#include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/enterprise_metrics.h"
 #include "components/policy/core/common/cloud/mock_device_management_service.h"
 #include "components/prefs/pref_service.h"
@@ -168,6 +169,13 @@ class AutoEnrollmentClientImplTest
 
   int GetPrivateSetMembershipTestCaseIndex() const {
     return std::get<1>(GetParam());
+  }
+
+  std::string GetAutoEnrollmentProtocolUmaSuffix() const {
+    return GetAutoEnrollmentProtocol() ==
+                   AutoEnrollmentProtocol::kInitialEnrollment
+               ? kUMAHashDanceSuffixInitialEnrollment
+               : kUMAHashDanceSuffixFRE;
   }
 
   void CreateClient(int power_initial, int power_limit) {
@@ -482,6 +490,23 @@ class AutoEnrollmentClientImplTest
     }
   }
 
+  // Expects one sample for |kUMAHashDanceNetworkErrorCode| which has value of
+  // |network_error|.
+  void ExpectHashDanceNetworkErrorHistogram(int network_error) const {
+    histogram_tester_.ExpectBucketCount(
+        kUMAHashDanceNetworkErrorCode + GetAutoEnrollmentProtocolUmaSuffix(),
+        network_error, /*expected_count=*/1);
+  }
+
+  // Expects a sample for |kUMAHashDanceRequestStatus| with count
+  // |dm_status_count|.
+  void ExpectHashDanceRequestStatusHistogram(DeviceManagementStatus dm_status,
+                                             int dm_status_count) const {
+    histogram_tester_.ExpectBucketCount(
+        kUMAHashDanceRequestStatus + GetAutoEnrollmentProtocolUmaSuffix(),
+        dm_status, dm_status_count);
+  }
+
   const em::DeviceAutoEnrollmentRequest& auto_enrollment_request() {
     return last_request_.auto_enrollment_request();
   }
@@ -499,6 +524,7 @@ class AutoEnrollmentClientImplTest
     return static_cast<AutoEnrollmentClientImpl*>(client_.release());
   }
 
+  base::HistogramTester histogram_tester_;
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   ScopedTestingLocalState scoped_testing_local_state_;
@@ -526,6 +552,8 @@ TEST_P(AutoEnrollmentClientImplTest, NetworkFailure) {
   ServerWillFail(net::OK, DeviceManagementService::kServiceUnavailable);
   client()->Start();
   base::RunLoop().RunUntilIdle();
+  ExpectHashDanceRequestStatusHistogram(DM_STATUS_TEMPORARY_UNAVAILABLE,
+                                        /*dm_status_count=*/1);
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT,
             failed_job_type_);
   EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_SERVER_ERROR);
@@ -537,6 +565,8 @@ TEST_P(AutoEnrollmentClientImplTest, EmptyReply) {
   ServerWillReply(-1, false, false);
   client()->Start();
   base::RunLoop().RunUntilIdle();
+  ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
+                                        /*dm_status_count=*/1);
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
   EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_NO_ENROLLMENT);
@@ -548,6 +578,8 @@ TEST_P(AutoEnrollmentClientImplTest, ClientUploadsRightBits) {
   ServerWillReply(-1, false, false);
   client()->Start();
   base::RunLoop().RunUntilIdle();
+  ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
+                                        /*dm_status_count=*/1);
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
   EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_NO_ENROLLMENT);
@@ -571,6 +603,10 @@ TEST_P(AutoEnrollmentClientImplTest, AskForMoreThenFail) {
   ServerWillFail(net::OK, DeviceManagementService::kServiceUnavailable);
   client()->Start();
   base::RunLoop().RunUntilIdle();
+  ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
+                                        /*dm_status_count=*/1);
+  ExpectHashDanceRequestStatusHistogram(DM_STATUS_TEMPORARY_UNAVAILABLE,
+                                        /*dm_status_count=*/1);
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
   EXPECT_EQ(failed_job_type_,
@@ -586,6 +622,8 @@ TEST_P(AutoEnrollmentClientImplTest, AskForMoreThenEvenMore) {
   ServerWillReply(64, false, false);
   client()->Start();
   base::RunLoop().RunUntilIdle();
+  ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
+                                        /*dm_status_count=*/2);
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
   EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_SERVER_ERROR);
@@ -603,6 +641,8 @@ TEST_P(AutoEnrollmentClientImplTest, AskForLess) {
       kDisabledMessage, kWithLicense);
   client()->Start();
   base::RunLoop().RunUntilIdle();
+  ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
+                                        /*dm_status_count=*/3);
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
   EXPECT_EQ(state_retrieval_job_type_, GetExpectedStateRetrievalJobType());
@@ -623,6 +663,8 @@ TEST_P(AutoEnrollmentClientImplTest, AskForSame) {
       kDisabledMessage, kNotWithLicense);
   client()->Start();
   base::RunLoop().RunUntilIdle();
+  ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
+                                        /*dm_status_count=*/3);
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
   EXPECT_EQ(state_retrieval_job_type_, GetExpectedStateRetrievalJobType());
@@ -639,6 +681,8 @@ TEST_P(AutoEnrollmentClientImplTest, AskForSameTwice) {
   ServerWillReply(16, false, false);
   client()->Start();
   base::RunLoop().RunUntilIdle();
+  ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
+                                        /*dm_status_count=*/2);
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
   EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_SERVER_ERROR);
@@ -650,6 +694,8 @@ TEST_P(AutoEnrollmentClientImplTest, AskForTooMuch) {
   ServerWillReply(512, false, false);
   client()->Start();
   base::RunLoop().RunUntilIdle();
+  ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
+                                        /*dm_status_count=*/1);
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
   EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_SERVER_ERROR);
@@ -670,6 +716,8 @@ TEST_P(AutoEnrollmentClientImplTest, DetectOutdatedServer) {
     // detect the server as outdated and will skip enrollment.
     client()->Start();
     base::RunLoop().RunUntilIdle();
+    ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
+                                          /*dm_status_count=*/1);
     EXPECT_EQ(auto_enrollment_job_type_,
               DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
     EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_NO_ENROLLMENT);
@@ -681,6 +729,8 @@ TEST_P(AutoEnrollmentClientImplTest, DetectOutdatedServer) {
     ServerWillReply(-1, false, false);
     client()->Start();
     base::RunLoop().RunUntilIdle();
+    ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
+                                          /*dm_status_count=*/2);
     EXPECT_EQ(auto_enrollment_job_type_,
               DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
     EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_NO_ENROLLMENT);
@@ -695,6 +745,8 @@ TEST_P(AutoEnrollmentClientImplTest, AskNonPowerOf2) {
   ServerWillReply(-1, false, false);
   client()->Start();
   base::RunLoop().RunUntilIdle();
+  ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
+                                        /*dm_status_count=*/2);
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
   EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_NO_ENROLLMENT);
@@ -715,6 +767,8 @@ TEST_P(AutoEnrollmentClientImplTest, ConsumerDevice) {
   ServerWillReply(-1, true, false);
   client()->Start();
   base::RunLoop().RunUntilIdle();
+  ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
+                                        /*dm_status_count=*/1);
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
   EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_NO_ENROLLMENT);
@@ -737,6 +791,8 @@ TEST_P(AutoEnrollmentClientImplTest, ForcedReEnrollment) {
       kDisabledMessage, kNotWithLicense);
   client()->Start();
   base::RunLoop().RunUntilIdle();
+  ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
+                                        /*dm_status_count=*/2);
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
   EXPECT_EQ(state_retrieval_job_type_, GetExpectedStateRetrievalJobType());
@@ -762,6 +818,8 @@ TEST_P(AutoEnrollmentClientImplTest, ForcedEnrollmentZeroTouch) {
       kDisabledMessage, kNotWithLicense);
   client()->Start();
   base::RunLoop().RunUntilIdle();
+  ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
+                                        /*dm_status_count=*/2);
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
   EXPECT_EQ(state_retrieval_job_type_, GetExpectedStateRetrievalJobType());
@@ -792,6 +850,8 @@ TEST_P(AutoEnrollmentClientImplTest, RequestedReEnrollment) {
       kDisabledMessage, kNotWithLicense);
   client()->Start();
   base::RunLoop().RunUntilIdle();
+  ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
+                                        /*dm_status_count=*/2);
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
   EXPECT_EQ(state_retrieval_job_type_, GetExpectedStateRetrievalJobType());
@@ -810,6 +870,8 @@ TEST_P(AutoEnrollmentClientImplTest, DeviceDisabled) {
                       kDisabledMessage, kNotWithLicense);
   client()->Start();
   base::RunLoop().RunUntilIdle();
+  ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
+                                        /*dm_status_count=*/2);
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
   EXPECT_EQ(state_retrieval_job_type_, GetExpectedStateRetrievalJobType());
@@ -827,6 +889,8 @@ TEST_P(AutoEnrollmentClientImplTest, NoReEnrollment) {
                       std::string(), kNotWithLicense);
   client()->Start();
   base::RunLoop().RunUntilIdle();
+  ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
+                                        /*dm_status_count=*/2);
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
   EXPECT_EQ(state_retrieval_job_type_, GetExpectedStateRetrievalJobType());
@@ -847,6 +911,8 @@ TEST_P(AutoEnrollmentClientImplTest, NoBitsUploaded) {
   ServerWillReply(-1, false, false);
   client()->Start();
   base::RunLoop().RunUntilIdle();
+  ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
+                                        /*dm_status_count=*/1);
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
   EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_NO_ENROLLMENT);
@@ -867,6 +933,8 @@ TEST_P(AutoEnrollmentClientImplTest, ManyBitsUploaded) {
     ServerWillReply(-1, false, false);
     client()->Start();
     base::RunLoop().RunUntilIdle();
+    ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
+                                          /*dm_status_count=*/i + 1);
     EXPECT_EQ(auto_enrollment_job_type_,
               DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
     EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_NO_ENROLLMENT);
@@ -897,6 +965,8 @@ TEST_P(AutoEnrollmentClientImplTest, MoreThan32BitsUploaded) {
       kDisabledMessage, kNotWithLicense);
   client()->Start();
   base::RunLoop().RunUntilIdle();
+  ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
+                                        /*dm_status_count=*/3);
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
   EXPECT_EQ(state_retrieval_job_type_, GetExpectedStateRetrievalJobType());
@@ -925,6 +995,8 @@ TEST_P(AutoEnrollmentClientImplTest, ReuseCachedDecision) {
 
   client()->Start();
   base::RunLoop().RunUntilIdle();
+  ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
+                                        /*dm_status_count=*/1);
   EXPECT_EQ(state_retrieval_job_type_, GetExpectedStateRetrievalJobType());
   EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_TRIGGER_ENROLLMENT);
   VerifyServerBackedState("example.com",
@@ -947,6 +1019,8 @@ TEST_P(AutoEnrollmentClientImplTest, RetryIfPowerLargerThanCached) {
       kDisabledMessage, kNotWithLicense);
   client()->Start();
   base::RunLoop().RunUntilIdle();
+  ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
+                                        /*dm_status_count=*/2);
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
   EXPECT_EQ(state_retrieval_job_type_, GetExpectedStateRetrievalJobType());
@@ -960,6 +1034,8 @@ TEST_P(AutoEnrollmentClientImplTest, NetworkChangeRetryAfterErrors) {
   ServerWillFail(net::OK, DeviceManagementService::kServiceUnavailable);
   client()->Start();
   base::RunLoop().RunUntilIdle();
+  ExpectHashDanceRequestStatusHistogram(DM_STATUS_TEMPORARY_UNAVAILABLE,
+                                        /*dm_status_count=*/1);
   // Don't invoke the callback if there was a network failure.
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT,
             failed_job_type_);
@@ -985,6 +1061,8 @@ TEST_P(AutoEnrollmentClientImplTest, NetworkChangeRetryAfterErrors) {
   client()->OnConnectionChanged(
       network::mojom::ConnectionType::CONNECTION_ETHERNET);
   base::RunLoop().RunUntilIdle();
+  ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
+                                        /*dm_status_count=*/2);
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
   EXPECT_EQ(state_retrieval_job_type_, GetExpectedStateRetrievalJobType());
@@ -1098,6 +1176,8 @@ TEST_P(AutoEnrollmentClientImplTest, CancelAndDeleteSoonAfterNetworkFailure) {
   ServerWillFail(net::OK, DeviceManagementService::kServiceUnavailable);
   client()->Start();
   base::RunLoop().RunUntilIdle();
+  ExpectHashDanceRequestStatusHistogram(DM_STATUS_TEMPORARY_UNAVAILABLE,
+                                        /*dm_status_count=*/1);
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT,
             failed_job_type_);
   EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_SERVER_ERROR);
@@ -1118,6 +1198,7 @@ TEST_P(AutoEnrollmentClientImplTest, NetworkFailureThenRequireUpdatedModulus) {
   ServerWillFail(net::ERR_FAILED, DeviceManagementService::kSuccess);
   client()->Start();
   base::RunLoop().RunUntilIdle();
+  ExpectHashDanceNetworkErrorHistogram(-net::ERR_FAILED);
   // Callback should signal the connection error.
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT,
             failed_job_type_);
@@ -1141,6 +1222,10 @@ TEST_P(AutoEnrollmentClientImplTest, NetworkFailureThenRequireUpdatedModulus) {
   client()->OnConnectionChanged(
       network::mojom::ConnectionType::CONNECTION_ETHERNET);
   base::RunLoop().RunUntilIdle();
+  ExpectHashDanceRequestStatusHistogram(DM_STATUS_REQUEST_FAILED,
+                                        /*dm_status_count=*/1);
+  ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
+                                        /*dm_status_count=*/3);
   EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_TRIGGER_ENROLLMENT);
   EXPECT_TRUE(HasCachedDecision());
   VerifyServerBackedState("example.com",
@@ -1192,6 +1277,8 @@ TEST_P(AutoEnrollmentClientImplFREToInitialEnrollmentTest,
           initial_state_response));
   client()->Start();
   base::RunLoop().RunUntilIdle();
+  ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
+                                        /*dm_status_count=*/2);
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
   EXPECT_EQ(state_retrieval_job_type_, GetExpectedStateRetrievalJobType());
@@ -1223,6 +1310,8 @@ TEST_P(AutoEnrollmentClientImplFREToInitialEnrollmentTest,
           initial_state_response));
   client()->Start();
   base::RunLoop().RunUntilIdle();
+  ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
+                                        /*dm_status_count=*/2);
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
   EXPECT_EQ(state_retrieval_job_type_, GetExpectedStateRetrievalJobType());
@@ -1255,6 +1344,8 @@ TEST_P(AutoEnrollmentClientImplFREToInitialEnrollmentTest,
           initial_state_response));
   client()->Start();
   base::RunLoop().RunUntilIdle();
+  ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
+                                        /*dm_status_count=*/2);
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
   EXPECT_EQ(state_retrieval_job_type_, GetExpectedStateRetrievalJobType());
@@ -1548,8 +1639,6 @@ class PrivateSetMembershipHelperTest : public AutoEnrollmentClientImplTest {
       delete;
   PrivateSetMembershipHelperTest& operator=(
       const PrivateSetMembershipHelperTest&) = delete;
-
-  base::HistogramTester histogram_tester_;
 
  private:
   em::DeviceManagementResponse GetPrivateSetMembershipOprfResponse() const {
