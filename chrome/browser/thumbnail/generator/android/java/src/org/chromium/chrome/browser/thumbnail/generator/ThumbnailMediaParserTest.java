@@ -12,6 +12,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
@@ -36,6 +37,7 @@ import java.io.File;
  * Because each media parser call may perform multiple process and thread hops, it can be slow.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 public class ThumbnailMediaParserTest {
     private static final long MAX_MEDIA_PARSER_POLL_TIME_MS = 10000;
     private static final long MEDIA_PARSER_POLL_INTERVAL_MS = 1000;
