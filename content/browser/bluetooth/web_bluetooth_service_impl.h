@@ -14,11 +14,9 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/optional.h"
-#include "base/scoped_observation.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/bluetooth/bluetooth_allowed_devices.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/bluetooth_delegate.h"
 #include "content/public/browser/bluetooth_scanning_prompt.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -65,8 +63,7 @@ bool HasValidFilter(
 class CONTENT_EXPORT WebBluetoothServiceImpl
     : public blink::mojom::WebBluetoothService,
       public WebContentsObserver,
-      public device::BluetoothAdapter::Observer,
-      public BluetoothDelegate::FramePermissionObserver {
+      public device::BluetoothAdapter::Observer {
  public:
   // |render_frame_host|: The RFH that owns this instance.
   // |receiver|: The instance will be bound to this receiver's pipe.
@@ -94,11 +91,6 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
   void OnBluetoothScanningPromptEvent(
       BluetoothScanningPrompt::Event event,
       BluetoothDeviceScanningPromptController* prompt_controller);
-
-  // BluetoothDelegate::FramePermissionObserverimplementation:
-  void OnPermissionRevoked(const url::Origin& requesting_origin,
-                           const url::Origin& embedding_origin) override;
-  content::RenderFrameHost* GetRenderFrameHost() override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(WebBluetoothServiceImplTest,
@@ -464,12 +456,6 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
   // it so we use a "Receiver" as opposed to a "SelfOwnedReceiver" which deletes
   // the service on pipe connection errors.
   mojo::Receiver<blink::mojom::WebBluetoothService> receiver_;
-
-  base::ScopedObservation<BluetoothDelegate,
-                          BluetoothDelegate::FramePermissionObserver,
-                          &BluetoothDelegate::AddFramePermissionObserver,
-                          &BluetoothDelegate::RemoveFramePermissionObserver>
-      observer_{this};
 
   base::WeakPtrFactory<WebBluetoothServiceImpl> weak_ptr_factory_{this};
 
