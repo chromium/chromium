@@ -589,6 +589,15 @@
   }
 
   /**
+   * Returns the last URL visited with visitURL() (e.g. for "Manage in Drive").
+   * Used by the integration tests.
+   * @return {string}
+   */
+  getLastVisitedURL() {
+    return util.getLastVisitedURL();
+  }
+
+  /**
    * One time initialization for app state controller to load view option from
    * local storage.
    * @return {!Promise<void>}

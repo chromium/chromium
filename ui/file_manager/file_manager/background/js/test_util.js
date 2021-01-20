@@ -289,7 +289,7 @@ test.util.sync.getTreeItems = contentWindow => {
  * @return {!string} The URL of the last URL visited.
  */
 test.util.sync.getLastVisitedURL = contentWindow => {
-  return contentWindow.util.getLastVisitedURL();
+  return contentWindow.fileManager.getLastVisitedURL();
 };
 
 /**
