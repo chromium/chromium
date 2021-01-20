@@ -193,9 +193,7 @@ no_check_targets = [
   "//third_party/openscreen/src/osp/public:*",  # 1 error
   "//third_party/openscreen/src/osp:*",  # 13 errors
   "//third_party/openscreen/src/util:*",  # 29 errors
-  "//third_party/pdfium/samples:*",  # 1 error
   "//third_party/pdfium/third_party:*",  # 2 errors
-  "//third_party/pdfium:*",  # 1 error
 
   # //v8/*, https://crbug.com/v8/7330
   "//v8/src/inspector:*",  # 20 errors
