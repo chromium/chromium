@@ -9,18 +9,13 @@
   }
 
   cr-button {
-    background-color: var(--profile-card-background-color);
+    --hover-bg-color: none; /* Stick to the profile card hover color. */
     border: none;
-    border-radius: inherit;
     box-shadow: none;
     flex-direction: column;
     height: inherit;
     padding: 0;
     width: inherit;
-  }
-
-  :host-context(.focus-outline-visible) cr-button:focus {
-    box-shadow: 0 0 0 2px rgba(var(--google-blue-600-rgb), .4);
   }
 
   #avatarContainer {
@@ -35,7 +30,8 @@
     --domain-icon-border-size: 2px;
     align-items: center;
     background-color: white;
-    border: var(--domain-icon-border-size) solid var(--profile-card-background-color);
+    border:
+      var(--domain-icon-border-size) solid var(--profile-card-hover-color);
     border-radius: 50%;
     box-shadow: 0 0 2px rgba(60, 64, 67, 0.12), 0 0 6px rgba(60, 64, 67, 0.15);
     display: flex;
@@ -123,7 +119,8 @@
 
 <div id="profileCardContainer">
   <cr-button on-click="onProfileClick_"
-      aria-label="[[i18n('profileCardButtonLabel', profileState.localProfileName)]]">
+      aria-label="[[i18n(
+          'profileCardButtonLabel', profileState.localProfileName)]]">
     <div id="avatarContainer">
       <img class="profile-avatar" alt="" src="[[profileState.avatarIcon]]">
       <div id="iconContainer" hidden="[[!profileState.isManaged]]">
