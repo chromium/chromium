@@ -402,31 +402,21 @@ suite('NewTabPageRealboxTest', () => {
     assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
   });
 
-  test('clearing the input does not query autocomplete', async () => {
+  test('empty input does not query autocomplete', async () => {
     realbox.$.input.value = '';
-    realbox.$.input.dispatchEvent(new CustomEvent('input'));
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
     assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
-
-    // Clearing the input stops autocomplete.
-    await testProxy.handler.whenCalled('stopAutocomplete').then((args) => {
-      assertTrue(args.clearResult);
-    });
   });
 
   test('typing space does not query autocomplete', async () => {
     realbox.$.input.value = ' ';
-    realbox.$.input.dispatchEvent(new CustomEvent('input'));
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
     assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
-
-    // Typing space stops autocomplete.
-    await testProxy.handler.whenCalled('stopAutocomplete').then((args) => {
-      assertTrue(args.clearResult);
-    });
   });
 
   test('typing queries autocomplete', async () => {
     realbox.$.input.value = 'he';
-    realbox.$.input.dispatchEvent(new CustomEvent('input'));
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
 
     await testProxy.handler.whenCalled('queryAutocomplete').then((args) => {
       assertEquals(decodeString16(args.input), realbox.$.input.value);
@@ -438,7 +428,7 @@ suite('NewTabPageRealboxTest', () => {
 
     // Deleting text from input prevents inline autocompletion.
     realbox.$.input.value = 'h';
-    realbox.$.input.dispatchEvent(new CustomEvent('input'));
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
 
     await testProxy.handler.whenCalled('queryAutocomplete').then((args) => {
       assertEquals(decodeString16(args.input), realbox.$.input.value);
@@ -449,7 +439,7 @@ suite('NewTabPageRealboxTest', () => {
     testProxy.handler.reset();
 
     realbox.$.input.value = 'he';
-    realbox.$.input.dispatchEvent(new CustomEvent('input'));
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
 
     await testProxy.handler.whenCalled('queryAutocomplete').then((args) => {
       assertEquals(decodeString16(args.input), realbox.$.input.value);
@@ -464,7 +454,7 @@ suite('NewTabPageRealboxTest', () => {
     realbox.$.input.dispatchEvent(pasteEvent);
     assertFalse(pasteEvent.defaultPrevented);
     realbox.$.input.value = 'hel';
-    realbox.$.input.dispatchEvent(new CustomEvent('input'));
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
 
     await testProxy.handler.whenCalled('queryAutocomplete').then((args) => {
       assertEquals(decodeString16(args.input), realbox.$.input.value);
@@ -475,7 +465,7 @@ suite('NewTabPageRealboxTest', () => {
     testProxy.handler.reset();
 
     realbox.$.input.value = 'hell';
-    realbox.$.input.dispatchEvent(new CustomEvent('input'));
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
 
     await testProxy.handler.whenCalled('queryAutocomplete').then((args) => {
       assertEquals(decodeString16(args.input), realbox.$.input.value);
@@ -488,7 +478,7 @@ suite('NewTabPageRealboxTest', () => {
     // If caret isn't at the end of the text inline autocompletion is prevented.
     realbox.$.input.value = 'hello';
     realbox.$.input.setSelectionRange(0, 0);  // Move caret to beginning.
-    realbox.$.input.dispatchEvent(new CustomEvent('input'));
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
 
     await testProxy.handler.whenCalled('queryAutocomplete').then((args) => {
       assertEquals(decodeString16(args.input), realbox.$.input.value);
@@ -500,8 +490,7 @@ suite('NewTabPageRealboxTest', () => {
 
     // If text is being composed with an IME inline autocompletion is prevented.
     realbox.$.input.value = 'hello 간';
-    const inputEvent = new CustomEvent('input');
-    inputEvent.isComposing = true;
+    const inputEvent = new InputEvent('input', {isComposing: true});
     realbox.$.input.dispatchEvent(inputEvent);
 
     await testProxy.handler.whenCalled('queryAutocomplete').then((args) => {
@@ -513,13 +502,30 @@ suite('NewTabPageRealboxTest', () => {
     testProxy.handler.reset();
   });
 
+  test('clearing the input stops autocomplete', async () => {
+    realbox.$.input.value = 'h';
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
+
+    await testProxy.handler.whenCalled('queryAutocomplete').then((args) => {
+      assertEquals(decodeString16(args.input), realbox.$.input.value);
+      assertFalse(args.preventInlineAutocomplete);
+    });
+    assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
+
+    realbox.$.input.value = '';
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
+    await testProxy.handler.whenCalled('stopAutocomplete').then((args) => {
+      assertTrue(args.clearResult);
+    });
+  });
+
   //============================================================================
   // Test Autocomplete Response
   //============================================================================
 
   test('autocomplete response', async () => {
     realbox.$.input.value = '      hello world';
-    realbox.$.input.dispatchEvent(new CustomEvent('input'));
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
     await testProxy.handler.whenCalled('queryAutocomplete').then((args) => {
       assertEquals(decodeString16(args.input), realbox.$.input.value);
       assertFalse(args.preventInlineAutocomplete);
@@ -558,7 +564,7 @@ suite('NewTabPageRealboxTest', () => {
 
   test('autocomplete response with inline autocompletion', async () => {
     realbox.$.input.value = 'hello ';
-    realbox.$.input.dispatchEvent(new CustomEvent('input'));
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
     await testProxy.handler.whenCalled('queryAutocomplete').then((args) => {
       assertEquals(decodeString16(args.input), realbox.$.input.value);
       assertFalse(args.preventInlineAutocomplete);
@@ -634,7 +640,7 @@ suite('NewTabPageRealboxTest', () => {
     realbox.$.input.value = 'hello';
     realbox.$.input.selectionStart = 0;
     realbox.$.input.selectionEnd = 4;
-    realbox.$.input.dispatchEvent(new CustomEvent('input'));
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
 
     const matches = [createSearchMatch({
       allowedToBeDefaultMatch: true,
@@ -655,7 +661,7 @@ suite('NewTabPageRealboxTest', () => {
 
   test('stale autocomplete response is ignored', async () => {
     realbox.$.input.value = 'he';
-    realbox.$.input.dispatchEvent(new CustomEvent('input'));
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
 
     const matches = [createSearchMatch(), createUrlMatch()];
     testProxy.callbackRouterRemote.autocompleteResultChanged({
@@ -673,7 +679,7 @@ suite('NewTabPageRealboxTest', () => {
 
   test('autocomplete response changes', async () => {
     realbox.$.input.value = 'he';
-    realbox.$.input.dispatchEvent(new CustomEvent('input'));
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
 
     const matches = [createSearchMatch(), createUrlMatch()];
     testProxy.callbackRouterRemote.autocompleteResultChanged({
@@ -689,7 +695,7 @@ suite('NewTabPageRealboxTest', () => {
     assertEquals(2, matchEls.length);
 
     realbox.$.input.value += 'll';
-    realbox.$.input.dispatchEvent(new CustomEvent('input'));
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
 
     testProxy.callbackRouterRemote.autocompleteResultChanged({
       input: mojoString16(realbox.$.input.value.trimLeft()),
@@ -704,7 +710,7 @@ suite('NewTabPageRealboxTest', () => {
     assertEquals(0, matchEls.length);
 
     realbox.$.input.value += 'o';
-    realbox.$.input.dispatchEvent(new CustomEvent('input'));
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
 
     testProxy.callbackRouterRemote.autocompleteResultChanged({
       input: mojoString16(realbox.$.input.value.trimLeft()),
@@ -737,7 +743,7 @@ suite('NewTabPageRealboxTest', () => {
 
   test('Copying or cutting search match fails', async () => {
     realbox.$.input.value = 'hello ';
-    realbox.$.input.dispatchEvent(new CustomEvent('input'));
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
 
     const matches = [createSearchMatch({
       allowedToBeDefaultMatch: true,
@@ -769,7 +775,7 @@ suite('NewTabPageRealboxTest', () => {
 
   test('Copying or cutting URL match succeeds', async () => {
     realbox.$.input.value = 'hello';
-    realbox.$.input.dispatchEvent(new CustomEvent('input'));
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
 
     const matches = [createUrlMatch({
       allowedToBeDefaultMatch: true,
@@ -820,7 +826,7 @@ suite('NewTabPageRealboxTest', () => {
     realbox.$.input.dispatchEvent(new Event('focus'));
 
     realbox.$.input.value = '  hello  ';
-    realbox.$.input.dispatchEvent(new CustomEvent('input'));
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
 
     const matches = [
       createSearchMatch({
@@ -871,7 +877,7 @@ suite('NewTabPageRealboxTest', () => {
         realbox.$.input.dispatchEvent(new Event('focus'));
 
         realbox.$.input.value = '  hello  ';
-        realbox.$.input.dispatchEvent(new CustomEvent('input'));
+        realbox.$.input.dispatchEvent(new InputEvent('input'));
 
         const matches =
             [createSearchMatch({iconUrl: 'clock.svg'}), createUrlMatch()];
@@ -951,7 +957,7 @@ suite('NewTabPageRealboxTest', () => {
     realbox.$.input.dispatchEvent(new Event('focus'));
 
     realbox.$.input.value = 'hello';
-    realbox.$.input.dispatchEvent(new CustomEvent('input'));
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
 
     const matches = [createSearchMatch(), createUrlMatch()];
     testProxy.callbackRouterRemote.autocompleteResultChanged({
@@ -1058,7 +1064,7 @@ suite('NewTabPageRealboxTest', () => {
     realbox.$.input.dispatchEvent(new Event('focus'));
 
     realbox.$.input.value = 'hello';
-    realbox.$.input.dispatchEvent(new CustomEvent('input'));
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
 
     const matches = [
       createSearchMatch({
@@ -1083,7 +1089,7 @@ suite('NewTabPageRealboxTest', () => {
 
     // User types some more and presses Enter before the results update.
     realbox.$.input.value = 'hello world';
-    realbox.$.input.dispatchEvent(new CustomEvent('input'));
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
 
     const shiftEnter = new KeyboardEvent('keydown', {
       bubbles: true,
@@ -1125,7 +1131,7 @@ suite('NewTabPageRealboxTest', () => {
     realbox.$.input.dispatchEvent(new Event('focus'));
 
     realbox.$.input.value = 'hello';
-    realbox.$.input.dispatchEvent(new CustomEvent('input'));
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
 
     const matches = [
       createSearchMatch({
@@ -1174,7 +1180,7 @@ suite('NewTabPageRealboxTest', () => {
     realbox.$.input.dispatchEvent(new Event('focus'));
 
     realbox.$.input.value = 'hello';
-    realbox.$.input.dispatchEvent(new CustomEvent('input'));
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
 
     const matches = [createSearchMatch(), createUrlMatch()];
     testProxy.callbackRouterRemote.autocompleteResultChanged({
@@ -1247,7 +1253,7 @@ suite('NewTabPageRealboxTest', () => {
 
   test('Remove button is visible if the match supports deletion', async () => {
     realbox.$.input.value = 'hello';
-    realbox.$.input.dispatchEvent(new CustomEvent('input'));
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
 
     const matches =
         [createSearchMatch(), createUrlMatch({supportsDeletion: true})];
@@ -1271,7 +1277,7 @@ suite('NewTabPageRealboxTest', () => {
 
   test('Can remove match using the remove button', async () => {
     realbox.$.input.value = 'hello';
-    realbox.$.input.dispatchEvent(new CustomEvent('input'));
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
 
     const matches =
         [createSearchMatch(), createUrlMatch({supportsDeletion: true})];
@@ -1330,7 +1336,7 @@ suite('NewTabPageRealboxTest', () => {
 
   test('Can remove selected match using keyboard shortcut', async () => {
     realbox.$.input.value = 'hello';
-    realbox.$.input.dispatchEvent(new CustomEvent('input'));
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
 
     const matches = [
       createSearchMatch({
@@ -1398,7 +1404,7 @@ suite('NewTabPageRealboxTest', () => {
 
   test('Can remove match using the remove button', async () => {
     realbox.$.input.value = 'hello';
-    realbox.$.input.dispatchEvent(new CustomEvent('input'));
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
 
     const matches =
         [createSearchMatch(), createUrlMatch({supportsDeletion: true})];
@@ -1442,7 +1448,7 @@ suite('NewTabPageRealboxTest', () => {
 
   test('Selection is restored after selected match is removed', async () => {
     realbox.$.input.value = 'hello';
-    realbox.$.input.dispatchEvent(new CustomEvent('input'));
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
 
     let matches = [
       createSearchMatch({
@@ -1543,7 +1549,7 @@ suite('NewTabPageRealboxTest', () => {
 
   test('pressing Escape selects the first match / hides matches', async () => {
     realbox.$.input.value = 'hello';
-    realbox.$.input.dispatchEvent(new CustomEvent('input'));
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
 
     const matches = [createSearchMatch(), createUrlMatch()];
     testProxy.callbackRouterRemote.autocompleteResultChanged({
@@ -1640,7 +1646,7 @@ suite('NewTabPageRealboxTest', () => {
   test('arrow up/down moves selection / focus', async () => {
     realbox.$.input.focus();
     realbox.$.input.value = 'hello';
-    realbox.$.input.dispatchEvent(new CustomEvent('input'));
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
 
     const matches = [createSearchMatch(), createUrlMatch()];
     testProxy.callbackRouterRemote.autocompleteResultChanged({
@@ -1665,6 +1671,23 @@ suite('NewTabPageRealboxTest', () => {
     assertTrue(arrowDownEvent.defaultPrevented);
 
     // First match is selected but does not get focus while focus is in the
+    // input.
+    assertTrue(matchEls[0].classList.contains(CLASSES.SELECTED));
+    assertEquals('hello world', realbox.$.input.value);
+    assertEquals(realbox.$.input, realbox.shadowRoot.activeElement);
+
+    // If text is being composed with an IME composition selection is prevented.
+    arrowDownEvent = new KeyboardEvent('keydown', {
+      bubbles: true,
+      cancelable: true,
+      composed: true,  // So it propagates across shadow DOM boundary.
+      isComposing: true,
+      key: 'ArrowDown',
+    });
+    realbox.$.input.dispatchEvent(arrowDownEvent);
+    assertFalse(arrowDownEvent.defaultPrevented);
+
+    // First match remains selected and does not get focus while focus is in the
     // input.
     assertTrue(matchEls[0].classList.contains(CLASSES.SELECTED));
     assertEquals('hello world', realbox.$.input.value);
@@ -1719,7 +1742,7 @@ suite('NewTabPageRealboxTest', () => {
 
   test('responsiveness metric is being recorded', async () => {
     realbox.$.input.value = 'he';
-    realbox.$.input.dispatchEvent(new CustomEvent('input'));
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
 
     // The responsiveness metric is not recorded until the results are painted.
     assertEquals(
@@ -1744,7 +1767,7 @@ suite('NewTabPageRealboxTest', () => {
 
     // Delete the last character.
     realbox.$.input.value = 'h';
-    realbox.$.input.dispatchEvent(new CustomEvent('input'));
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
 
     matches = [createSearchMatch({
       allowedToBeDefaultMatch: true,
@@ -1816,7 +1839,7 @@ suite('NewTabPageRealboxTest', () => {
         const faviconData = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAC=';
 
         realbox.$.input.value = 'hello';
-        realbox.$.input.dispatchEvent(new CustomEvent('input'));
+        realbox.$.input.dispatchEvent(new InputEvent('input'));
 
         const matches = [
           createSearchMatch({iconUrl: 'clock.svg'}),
@@ -1917,7 +1940,7 @@ suite('NewTabPageRealboxTest', () => {
         const imageData = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAC=';
 
         realbox.$.input.value = 'hello';
-        realbox.$.input.dispatchEvent(new CustomEvent('input'));
+        realbox.$.input.dispatchEvent(new InputEvent('input'));
 
         const matches = [
           createUrlMatch({iconUrl: 'page.svg'}), createSearchMatch({
@@ -2028,7 +2051,7 @@ suite('NewTabPageRealboxTest', () => {
 
   test('matches in a suggestion group can be made hidden/visible', async () => {
     realbox.$.input.value = 'hello';
-    realbox.$.input.dispatchEvent(new CustomEvent('input'));
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
 
     const matches =
         [createSearchMatch(), createUrlMatch({suggestionGroupId: 100})];

@@ -387,6 +387,11 @@ class RealboxElement extends PolymerElement {
    */
   onInputInput_(e) {
     const inputValue = this.$.input.value;
+    const lastInputValue = this.lastInput_.text + this.lastInput_.inline;
+    if (lastInputValue === inputValue) {
+      return;
+    }
+
     this.updateInput_({text: inputValue, inline: ''});
 
     const charTyped = !this.isDeletingInput_ && !!inputValue.trim();
@@ -550,6 +555,21 @@ class RealboxElement extends PolymerElement {
       return;
     }
 
+    if (e.key === 'Delete') {
+      if (e.shiftKey && !e.altKey && !e.ctrlKey && !e.metaKey) {
+        if (this.selectedMatch_ && this.selectedMatch_.supportsDeletion) {
+          this.pageHandler_.deleteAutocompleteMatch(this.selectedMatchIndex_);
+          e.preventDefault();
+        }
+      }
+      return;
+    }
+
+    // Do not handle the following keys if inside an IME composition session.
+    if (e.isComposing) {
+      return;
+    }
+
     if (e.key === 'Enter') {
       if ([this.$.matches, this.$.input].includes(e.target)) {
         if (this.lastQueriedInput_ !== null &&
@@ -563,16 +583,6 @@ class RealboxElement extends PolymerElement {
           // because the matches are stale. Navigate to the default match (if
           // one exists) once the up-to-date matches arrive.
           this.lastIgnoredEnterEvent_ = e;
-          e.preventDefault();
-        }
-      }
-      return;
-    }
-
-    if (e.key === 'Delete') {
-      if (e.shiftKey && !e.altKey && !e.ctrlKey && !e.metaKey) {
-        if (this.selectedMatch_ && this.selectedMatch_.supportsDeletion) {
-          this.pageHandler_.deleteAutocompleteMatch(this.selectedMatchIndex_);
           e.preventDefault();
         }
       }
