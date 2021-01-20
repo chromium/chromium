@@ -36,7 +36,7 @@ public class VideoTutorialListActivity extends SynchronousInitializationActivity
                 ImageFetcherFactory.createImageFetcher(ImageFetcherConfig.IN_MEMORY_WITH_DISK_CACHE,
                         profile, GlobalDiscardableReferencePool.getReferencePool());
         mCoordinator = VideoTutorialServiceFactory.createTutorialListCoordinator(
-                findViewById(R.id.recycler_view), videoTutorialService, imageFetcher,
+                findViewById(R.id.video_tutorial_list), videoTutorialService, imageFetcher,
                 this::onTutorialSelected);
         findViewById(R.id.close_button).setOnClickListener(v -> finish());
     }

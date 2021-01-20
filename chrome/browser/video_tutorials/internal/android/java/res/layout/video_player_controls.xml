@@ -71,6 +71,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:textAppearance="@style/TextAppearance.TextMediumThick.Primary.Light"
+                android:text="@string/change_chrome_lang"
                 style="@style/TextButton" />
         </LinearLayout>
 
