@@ -20,6 +20,7 @@
 #include "components/viz/service/display/overlay_candidate.h"
 #include "components/viz/service/display/overlay_strategy_single_on_top.h"
 #include "components/viz/service/display/overlay_strategy_underlay.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/transform.h"
 
@@ -171,10 +172,17 @@ gfx::Rect ComputeDamageExcludingIndex(
     uint32_t overlay_damage_index,
     SurfaceDamageRectList* surface_damage_rect_list,
     const gfx::Rect& existing_damage,
-    const gfx::Rect& display_rect) {
+    const gfx::Rect& display_rect,
+    bool is_opaque_pure_overlay) {
   gfx::Rect root_damage_rect;
 
   if (overlay_damage_index == OverlayCandidate::kInvalidDamageIndex) {
+    // An opaque overlay that is on top will hide any damage underneath.
+    // TODO(petermcneeley): This is a special case optimization which could be
+    // removed if we had more reliable damage.
+    if (is_opaque_pure_overlay) {
+      return gfx::SubtractRects(existing_damage, display_rect);
+    }
     return existing_damage;
   }
 
@@ -244,7 +252,7 @@ void OverlayProcessorUsingStrategy::UpdateDamageRect(
   // Removes all damage from this overlay and occluded surface damages.
   *damage_rect = ComputeDamageExcludingIndex(
       exclude_overlay_index, surface_damage_rect_list, *damage_rect,
-      this_frame_overlay_rect);
+      this_frame_overlay_rect, is_opaque_overlay && !is_underlay);
 
   // Track the overlay_rect from frame to frame. If it is the same and nothing
   // is on top of it then that rect doesn't need to be damaged because the
@@ -334,7 +342,8 @@ void OverlayProcessorUsingStrategy::SortProposedOverlayCandidatesPrioritized(
         static_cast<float>(it->candidate.damage_area_estimate) / display_area,
         it->candidate.resource_id, tracker_config_,
         it->candidate.overlay_damage_index !=
-            OverlayCandidate::kInvalidDamageIndex);
+                OverlayCandidate::kInvalidDamageIndex ||
+            it->candidate.assume_damaged);
 
     // Here a series of criteria are considered for wholesale rejection of a
     // candidate. The rational for rejection is usually power improvements but
@@ -345,7 +354,7 @@ void OverlayProcessorUsingStrategy::SortProposedOverlayCandidatesPrioritized(
                                         tracker_config_) ||
           !prioritization_config_.changing_threshold) &&
          (track_data.GetModeledPowerGain(frame_sequence_number_,
-                                         tracker_config_, display_area) > 0 ||
+                                         tracker_config_, display_area) >= 0 ||
           !prioritization_config_.damage_rate_threshold));
 
     if (it->candidate.requires_overlay || passes_min_threshold) {

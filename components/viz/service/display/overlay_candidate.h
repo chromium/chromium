@@ -133,6 +133,11 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   // Is true if an HW overlay is required for the quad content.
   bool requires_overlay = false;
 
+  // Is true when quad is part of a |shared_quad_state| that has damage.
+  // This is a fallback case for when |overlay_damage_index| is unavailable and
+  // will be absent from the |SurfaceDamageRectList|.
+  bool assume_damaged = false;
+
  private:
   static bool FromDrawQuadResource(
       DisplayResourceProvider* resource_provider,

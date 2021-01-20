@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/flat_map.h"
+#include "base/stl_util.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "cc/test/fake_output_surface_client.h"
@@ -934,6 +935,59 @@ TEST_F(SingleOverlayOnTopTest, PrioritizeBiggerOne) {
   EXPECT_EQ(resource_big, candidate_list.front().resource_id);
 }
 
+TEST_F(SingleOverlayOnTopTest, OpaqueOverlayDamageSubtract) {
+  // This tests a specific damage optimization where an opaque pure overlay can
+  // subtract damage from the primary plane even if the overlay does not have a
+  // |shared_quad_state| surface damage index.
+  constexpr int kCandidateSmall = 64;
+  const gfx::Rect kOverlayDisplayRect = {10, 10, kCandidateSmall,
+                                         kCandidateSmall};
+  const gfx::Rect kDamageRect[] = {
+      gfx::Rect(10, 10, kCandidateSmall, kCandidateSmall),
+      gfx::Rect(0, 10, kCandidateSmall, kCandidateSmall),
+      gfx::Rect(6, 6, kCandidateSmall, kCandidateSmall)};
+
+  const gfx::Rect kExpectedDamage[] = {
+      gfx::Rect(), gfx::Rect(0, 10, 10, kCandidateSmall),
+      gfx::Rect(6, 6, kCandidateSmall, kCandidateSmall)};
+
+  AddExpectedRectToOverlayProcessor(gfx::RectF(kOverlayDisplayRect));
+  for (size_t i = 0; i < base::size(kDamageRect); ++i) {
+    auto pass = CreateRenderPass();
+    SharedQuadState* damaged_shared_quad_state =
+        pass->shared_quad_state_list.AllocateAndCopyFrom(
+            pass->shared_quad_state_list.back());
+    damaged_shared_quad_state->no_damage = false;
+
+    auto* quad = CreateCandidateQuadAt(
+        resource_provider_.get(), child_resource_provider_.get(),
+        child_provider_.get(), damaged_shared_quad_state, pass.get(),
+        kOverlayDisplayRect);
+
+    quad->needs_blending = false;
+    CreateFullscreenOpaqueQuad(resource_provider_.get(),
+                               pass->shared_quad_state_list.back(), pass.get());
+
+    // Check for potential candidates.
+    OverlayCandidateList candidate_list;
+    SurfaceDamageRectList surface_damage_rect_list;
+    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+    AggregatedRenderPassList pass_list;
+
+    pass_list.push_back(std::move(pass));
+    damage_rect_ = kDamageRect[i];
+
+    overlay_processor_->ProcessForOverlays(
+        resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+        render_pass_filters, render_pass_backdrop_filters,
+        std::move(surface_damage_rect_list), nullptr, &candidate_list,
+        &damage_rect_, &content_bounds_);
+
+    EXPECT_RECT_EQ(damage_rect_, kExpectedDamage[i]);
+  }
+}
+
 TEST_F(SingleOverlayOnTopTest, DamageRect) {
   auto pass = CreateRenderPass();
   CreateFullscreenCandidateQuad(
@@ -1783,9 +1837,11 @@ TEST_F(ChangeSingleOnTopTest, DoNotPromoteIfContentsDontChange) {
           child_provider_.get(), pass->output_rect.size(),
           true /*is_overlay_candidate*/);
       previous_resource_id = resource_id;
+      pass->shared_quad_state_list.back()->no_damage = false;
     } else {
       // Starting the 3rd frame, they should have the same resource ID.
       resource_id = previous_resource_id;
+      pass->shared_quad_state_list.back()->no_damage = true;
     }
 
     // Create a quad with the resource ID selected above.
