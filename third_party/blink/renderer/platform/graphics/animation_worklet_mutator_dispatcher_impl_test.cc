@@ -100,7 +100,7 @@ class AnimationWorkletMutatorDispatcherImplTest : public ::testing::Test {
  public:
   void SetUp() override {
     auto mutator = std::make_unique<AnimationWorkletMutatorDispatcherImpl>(
-        /*main_thread_task_runner=*/true);
+        base::ThreadTaskRunnerHandle::Get());
     mutator_ = mutator.get();
     client_ =
         std::make_unique<::testing::StrictMock<MockCompositorMutatorClient>>(

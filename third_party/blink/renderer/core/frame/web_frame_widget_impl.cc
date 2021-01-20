@@ -2698,15 +2698,15 @@ void WebFrameWidgetImpl::SetRootLayer(scoped_refptr<cc::Layer> layer) {
 
 base::WeakPtr<AnimationWorkletMutatorDispatcherImpl>
 WebFrameWidgetImpl::EnsureCompositorMutatorDispatcher(
-    scoped_refptr<base::SingleThreadTaskRunner>* mutator_task_runner) {
+    scoped_refptr<base::SingleThreadTaskRunner> mutator_task_runner) {
   if (!mutator_task_runner_) {
+    mutator_task_runner_ = std::move(mutator_task_runner);
     widget_base_->LayerTreeHost()->SetLayerTreeMutator(
         AnimationWorkletMutatorDispatcherImpl::CreateCompositorThreadClient(
-            &mutator_dispatcher_, &mutator_task_runner_));
+            mutator_dispatcher_, mutator_task_runner_));
   }
 
   DCHECK(mutator_task_runner_);
-  *mutator_task_runner = mutator_task_runner_;
   return mutator_dispatcher_;
 }
 

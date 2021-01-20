@@ -8,12 +8,14 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "base/timer/elapsed_timer.h"
+#include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/renderer/core/animation/worklet_animation_controller.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/platform/graphics/animation_worklet_mutator_dispatcher_impl.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
@@ -211,17 +213,25 @@ AnimationWorkletProxyClient* AnimationWorkletProxyClient::FromDocument(
   WebLocalFrameImpl* local_frame =
       WebLocalFrameImpl::FromFrame(document->GetFrame());
 
-  scoped_refptr<base::SingleThreadTaskRunner> compositor_host_queue;
+  // By default web tests run without threaded compositing. See
+  // https://crbug.com/770028. If threaded compositing is disabled, we
+  // run on the main thread's compositor task runner otherwise we run
+  // tasks on the compositor thread's default task runner.
+  scoped_refptr<base::SingleThreadTaskRunner> compositor_host_queue =
+      Thread::CompositorThread()
+          ? Thread::CompositorThread()->GetTaskRunner()
+          : local_frame->GetAgentGroupScheduler()->CompositorTaskRunner();
   base::WeakPtr<AnimationWorkletMutatorDispatcherImpl>
       compositor_mutator_dispatcher =
           local_frame->LocalRootFrameWidget()
-              ->EnsureCompositorMutatorDispatcher(&compositor_host_queue);
+              ->EnsureCompositorMutatorDispatcher(compositor_host_queue);
 
-  scoped_refptr<base::SingleThreadTaskRunner> main_thread_host_queue;
+  scoped_refptr<base::SingleThreadTaskRunner> main_thread_host_queue =
+      local_frame->GetAgentGroupScheduler()->CompositorTaskRunner();
   base::WeakPtr<AnimationWorkletMutatorDispatcherImpl>
       main_thread_mutator_dispatcher =
           document->GetWorkletAnimationController()
-              .EnsureMainThreadMutatorDispatcher(&main_thread_host_queue);
+              .EnsureMainThreadMutatorDispatcher(main_thread_host_queue);
 
   return MakeGarbageCollected<AnimationWorkletProxyClient>(
       worklet_id, std::move(compositor_mutator_dispatcher),

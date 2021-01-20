@@ -66,16 +66,10 @@ struct AnimationWorkletMutatorDispatcherImpl::AsyncMutationRequest {
 };
 
 AnimationWorkletMutatorDispatcherImpl::AnimationWorkletMutatorDispatcherImpl(
-    bool main_thread_task_runner)
-    : client_(nullptr), outputs_(OutputVectorRef::Create()) {
-  // By default web tests run without threaded compositing. See
-  // https://crbug.com/770028. If threaded compositing is disabled or
-  // |main_thread_task_runner| is true we run on the main thread's compositor
-  // task runner otherwise we run tasks on the compositor thread's default
-  // task runner.
-  host_queue_ = main_thread_task_runner || !Thread::CompositorThread()
-                    ? Thread::MainThread()->Scheduler()->CompositorTaskRunner()
-                    : Thread::CompositorThread()->GetTaskRunner();
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+    : host_queue_(task_runner),
+      client_(nullptr),
+      outputs_(OutputVectorRef::Create()) {
   tick_clock_ = std::make_unique<base::DefaultTickClock>();
 }
 
@@ -85,15 +79,13 @@ AnimationWorkletMutatorDispatcherImpl::
 // static
 template <typename ClientType>
 std::unique_ptr<ClientType> AnimationWorkletMutatorDispatcherImpl::CreateClient(
-    base::WeakPtr<AnimationWorkletMutatorDispatcherImpl>* weak_interface,
-    scoped_refptr<base::SingleThreadTaskRunner>* queue,
-    bool main_thread_client) {
+    base::WeakPtr<AnimationWorkletMutatorDispatcherImpl>& weak_interface,
+    scoped_refptr<base::SingleThreadTaskRunner> queue) {
   DCHECK(IsMainThread());
-  auto mutator = std::make_unique<AnimationWorkletMutatorDispatcherImpl>(
-      main_thread_client);
+  auto mutator =
+      std::make_unique<AnimationWorkletMutatorDispatcherImpl>(std::move(queue));
   // This is allowed since we own the class for the duration of creation.
-  *weak_interface = mutator->weak_factory_.GetWeakPtr();
-  *queue = mutator->GetTaskRunner();
+  weak_interface = mutator->weak_factory_.GetWeakPtr();
 
   return std::make_unique<ClientType>(std::move(mutator));
 }
@@ -101,17 +93,19 @@ std::unique_ptr<ClientType> AnimationWorkletMutatorDispatcherImpl::CreateClient(
 // static
 std::unique_ptr<CompositorMutatorClient>
 AnimationWorkletMutatorDispatcherImpl::CreateCompositorThreadClient(
-    base::WeakPtr<AnimationWorkletMutatorDispatcherImpl>* weak_interface,
-    scoped_refptr<base::SingleThreadTaskRunner>* queue) {
-  return CreateClient<CompositorMutatorClient>(weak_interface, queue, false);
+    base::WeakPtr<AnimationWorkletMutatorDispatcherImpl>& weak_interface,
+    scoped_refptr<base::SingleThreadTaskRunner> queue) {
+  return CreateClient<CompositorMutatorClient>(weak_interface,
+                                               std::move(queue));
 }
 
 // static
 std::unique_ptr<MainThreadMutatorClient>
 AnimationWorkletMutatorDispatcherImpl::CreateMainThreadClient(
-    base::WeakPtr<AnimationWorkletMutatorDispatcherImpl>* weak_interface,
-    scoped_refptr<base::SingleThreadTaskRunner>* queue) {
-  return CreateClient<MainThreadMutatorClient>(weak_interface, queue, true);
+    base::WeakPtr<AnimationWorkletMutatorDispatcherImpl>& weak_interface,
+    scoped_refptr<base::SingleThreadTaskRunner> queue) {
+  return CreateClient<MainThreadMutatorClient>(weak_interface,
+                                               std::move(queue));
 }
 
 void AnimationWorkletMutatorDispatcherImpl::MutateSynchronously(

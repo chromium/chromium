@@ -169,7 +169,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   // dereferenced on the output |mutator_task_runner|.
   base::WeakPtr<AnimationWorkletMutatorDispatcherImpl>
   EnsureCompositorMutatorDispatcher(
-      scoped_refptr<base::SingleThreadTaskRunner>* mutator_task_runner);
+      scoped_refptr<base::SingleThreadTaskRunner> mutator_task_runner);
 
   // TODO: consider merge the input and return value to be one parameter.
   // Creates or returns cached paint dispatcher. The returned WeakPtr must only
