@@ -313,15 +313,7 @@ MediaWebContentsObserver::MediaPlayerHostImpl::~MediaPlayerHostImpl() = default;
 
 void MediaWebContentsObserver::MediaPlayerHostImpl::BindMediaPlayerHostReceiver(
     mojo::PendingReceiver<media::mojom::MediaPlayerHost> receiver) {
-  receiver_.reset();
-  receiver_.Bind(std::move(receiver));
-
-  // Both |media_web_contents_observer_| and |render_frame_host_| outlive
-  // MediaPlayerHostImpl, so it's safe to use base::Unretained().
-  receiver_.set_disconnect_handler(
-      base::BindOnce(&MediaWebContentsObserver::OnMediaPlayerHostDisconnected,
-                     base::Unretained(media_web_contents_observer_),
-                     base::Unretained(render_frame_host_)));
+  receivers_.Add(this, std::move(receiver));
 }
 
 void MediaWebContentsObserver::MediaPlayerHostImpl::OnMediaPlayerAdded(
@@ -536,12 +528,6 @@ media::mojom::MediaPlayer* MediaWebContentsObserver::GetMediaPlayerRemote(
   }
 
   return nullptr;
-}
-
-void MediaWebContentsObserver::OnMediaPlayerHostDisconnected(
-    RenderFrameHost* host) {
-  DCHECK(media_player_hosts_.contains(host));
-  media_player_hosts_.erase(host);
 }
 
 void MediaWebContentsObserver::OnMediaPlayerObserverDisconnected(

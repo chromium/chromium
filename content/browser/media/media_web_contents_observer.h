@@ -26,6 +26,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
 
@@ -160,7 +161,7 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
                         MediaWebContentsObserver* media_web_contents_observer);
     ~MediaPlayerHostImpl() override;
 
-    // Used to bind the receiver via the BrowserInterfaceBroker.
+    // Used to bind receivers via the BrowserInterfaceBroker.
     void BindMediaPlayerHostReceiver(
         mojo::PendingReceiver<media::mojom::MediaPlayerHost> receiver);
 
@@ -172,7 +173,7 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
    private:
     RenderFrameHost* render_frame_host_;
     MediaWebContentsObserver* media_web_contents_observer_;
-    mojo::Receiver<media::mojom::MediaPlayerHost> receiver_{this};
+    mojo::ReceiverSet<media::mojom::MediaPlayerHost> receivers_;
   };
 
   // Helper class providing a per-MediaPlayerId object implementing the
@@ -233,10 +234,6 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
   void OnAudioOutputSinkChanged(RenderFrameHost* render_frame_host,
                                 int delegate_id,
                                 std::string hashed_device_id);
-
-  // Used to notify when the renderer -> browser mojo connection via the
-  // interface media::mojom::MediaPlayerHost gets disconnected.
-  void OnMediaPlayerHostDisconnected(RenderFrameHost* host);
 
   // Used to notify when the renderer -> browser mojo connection via the
   // interface media::mojom::MediaPlayerObserver gets disconnected.
