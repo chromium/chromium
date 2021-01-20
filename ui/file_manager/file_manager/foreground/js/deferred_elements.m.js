@@ -6,6 +6,7 @@
  * @fileoverview Elements not used in the first painting of the app.
  */
 
+import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
 import '../elements/files_format_dialog.m.js';
 import '../elements/files_message.m.js';
 import '../elements/files_password_dialog.m.js';

@@ -715,6 +715,7 @@ js_library("deferred_elements.m") {
     "//ui/file_manager/file_manager/foreground/elements:xf_circular_progress.m",
     "//ui/file_manager/file_manager/foreground/elements:xf_display_panel.m",
     "//ui/file_manager/file_manager/foreground/elements:xf_panel_item.m",
+    "//ui/webui/resources/cr_elements/cr_toggle:cr_toggle.m",
   ]
 }
 
