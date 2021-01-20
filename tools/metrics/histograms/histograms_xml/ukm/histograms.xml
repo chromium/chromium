@@ -136,7 +136,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="UKM.IOSLog.OnSuccess" units="records"
     expires_after="2021-07-11">
-  <owner>eugenebut@chromium.org</owner>
   <owner>rkaplow@chromium.org</owner>
   <summary>
     Number of times when UKM.LogSize.OnSuccess was recorded on iOS. Recorded
