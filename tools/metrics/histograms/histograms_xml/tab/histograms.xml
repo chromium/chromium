@@ -456,7 +456,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Tab.StateAtRendererTermination" enum="TabForegroundState"
     expires_after="2021-07-04">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
     The state (foreground/background) of a tab when its renderer is terminated.
