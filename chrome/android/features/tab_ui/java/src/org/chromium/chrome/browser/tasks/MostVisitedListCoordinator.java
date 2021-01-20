@@ -91,6 +91,16 @@ class MostVisitedListCoordinator implements TileGroup.Observer, TileGroup.TileSe
     }
 
     private void updateTileIcon(Tile tile) {
+        SuggestionsTileView tileView = findTileView(tile);
+        if (tileView != null) tileView.renderIcon(tile);
+    }
+
+    private void updateOfflineBadge(Tile tile) {
+        SuggestionsTileView tileView = findTileView(tile);
+        if (tileView != null) tileView.renderOfflineBadge(tile);
+    }
+
+    private SuggestionsTileView findTileView(Tile tile) {
         for (int i = 0; i < mParent.getChildCount(); i++) {
             View tileView = mParent.getChildAt(i);
 
@@ -98,10 +108,11 @@ class MostVisitedListCoordinator implements TileGroup.Observer, TileGroup.TileSe
 
             SuggestionsTileView suggestionsTileView = (SuggestionsTileView) tileView;
 
-            if (!suggestionsTileView.getUrl().equals(tile.getUrl())) continue;
-
-            ((SuggestionsTileView) mParent.getChildAt(i)).renderIcon(tile);
+            if (tile.getUrl().equals(suggestionsTileView.getUrl())) {
+                return (SuggestionsTileView) tileView;
+            }
         }
+        return null;
     }
 
     /** TileGroup.Observer implementation. */
@@ -117,10 +128,14 @@ class MostVisitedListCoordinator implements TileGroup.Observer, TileGroup.TileSe
     public void onTileCountChanged() {}
 
     @Override
-    public void onTileIconChanged(Tile tile) {}
+    public void onTileIconChanged(Tile tile) {
+        updateTileIcon(tile);
+    }
 
     @Override
-    public void onTileOfflineBadgeVisibilityChanged(Tile tile) {}
+    public void onTileOfflineBadgeVisibilityChanged(Tile tile) {
+        updateOfflineBadge(tile);
+    }
 
     /** TileSetupDelegate implementation. */
     @Override
