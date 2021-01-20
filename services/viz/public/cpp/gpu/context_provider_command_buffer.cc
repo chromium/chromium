@@ -377,8 +377,8 @@ gpu::ContextSupport* ContextProviderCommandBuffer::ContextSupport() {
 class GrDirectContext* ContextProviderCommandBuffer::GrContext() {
   DCHECK(bind_tried_);
   DCHECK_EQ(bind_result_, gpu::ContextResult::kSuccess);
-  DCHECK(support_grcontext_);
-  DCHECK(ContextSupport()->HasGrContextSupport());
+  if (!support_grcontext_ || !ContextSupport()->HasGrContextSupport())
+    return nullptr;
   CheckValidThreadOrLockAcquired();
 
   if (gr_context_)

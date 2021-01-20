@@ -298,11 +298,6 @@ void PaintImage::FlushPendingSkiaOps() {
     texture_backing_->FlushPendingSkiaOps();
 }
 
-bool PaintImage::HasExclusiveTextureAccess() const {
-  DCHECK(IsTextureBacked());
-  return texture_backing_->unique();
-}
-
 int PaintImage::width() const {
   return paint_worklet_input_
              ? static_cast<int>(paint_worklet_input_->GetSize().width())
