@@ -71,6 +71,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/frame/picture_in_picture_controller.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/html/html_source_element.h"
@@ -4290,7 +4291,10 @@ void HTMLMediaElement::OnRemovedFromDocumentTimerFired(TimerBase*) {
   if (InActiveDocument())
     return;
 
-  PauseInternal();
+  // Video should not pause when playing in Picture-in-Picture and subsequently
+  // removed from the Document.
+  if (!PictureInPictureController::IsElementInPictureInPicture(this))
+    PauseInternal();
 }
 
 void HTMLMediaElement::AudioSourceProviderImpl::Wrap(

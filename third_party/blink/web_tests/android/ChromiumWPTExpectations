@@ -3541,6 +3541,7 @@ crbug.com/1050754 external/wpt/picture-in-picture/picture-in-picture-element.htm
 crbug.com/1050754 external/wpt/picture-in-picture/picture-in-picture-window.html [ Failure ]
 crbug.com/1050754 external/wpt/picture-in-picture/request-picture-in-picture-twice.html [ Failure ]
 crbug.com/1050754 external/wpt/picture-in-picture/request-picture-in-picture.html [ Failure ]
+crbug.com/1050754 external/wpt/picture-in-picture/removed-from-document.html [ Failure ]
 crbug.com/1050754 external/wpt/picture-in-picture/shadow-dom.html [ Failure ]
 crbug.com/1050754 external/wpt/pointerevents/compat/pointerevent_compat-mouse-events-when-removing-nodes.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/pointerevents/compat/pointerevent_mouse-on-object.html [ Failure ]
