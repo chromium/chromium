@@ -4,10 +4,5 @@
 
 declare_args() {
   # This enables build with TFLite library.
-  # Currently only available for Desktop and Android.
-  if (is_android || is_win || is_linux || is_mac || is_chromeos) {
-    build_with_tflite_lib = true
-  } else {
-    build_with_tflite_lib = false
-  }
+  build_with_tflite_lib = false
 }

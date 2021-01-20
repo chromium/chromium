@@ -53,7 +53,7 @@ source_set("tflite_public_headers") {
     "src/tensorflow/lite/graph_info.h",
     "src/tensorflow/lite/interpreter.h",
     "src/tensorflow/lite/interpreter_builder.h",
-    "src/tensorflow/lite/kernels/builtin_op_kernels.h",
+    "src/tensorflow/lite/kernls/builtin_op_kernels.h",
     "src/tensorflow/lite/model.h",
     "src/tensorflow/lite/model_builder.h",
     "src/tensorflow/lite/mutable_op_resolver.h",
