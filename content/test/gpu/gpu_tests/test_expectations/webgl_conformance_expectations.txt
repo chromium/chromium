@@ -253,10 +253,6 @@ crbug.com/angleproject/4922 [ win intel angle-vulkan passthrough ] conformance/c
 ####################
 
 # GPU process crashes / Timed out tests
-crbug.com/1143408 [ fuchsia ] conformance/extensions/webgl-compressed-texture-size-limit.html [ Skip ]
-crbug.com/1143408 [ fuchsia ] conformance/textures/misc/texture-size.html [ Skip ]
-crbug.com/angleproject/2930 [ fuchsia ] conformance/textures/misc/texture-size-cube-maps.html [ Skip ]
-crbug.com/angleproject/3481 [ fuchsia ] conformance/textures/misc/texture-sub-image-cube-maps.html [ Skip ]
 crbug.com/angleproject/5259 [ fuchsia ] conformance/uniforms/uniform-default-values.html [ Skip ]
 crbug.com/1143392 [ fuchsia ] conformance/glsl/misc/shader-with-non-reserved-words.html [ Skip ]
 crbug.com/871352 [ fuchsia ] conformance/uniforms/uniform-samplers-test.html [ Skip ]
