@@ -296,7 +296,7 @@ void OfflinePageTabHelper::PresentOfflinePageForOnlineUrl(const GURL& url) {
       base::BindOnce(&GetOfflineData, offline_root, offline_path),
       base::BindOnce(&OfflinePageTabHelper::LoadData,
                      weak_factory_.GetWeakPtr(), last_navigation_started_,
-                     entry_url, offline_path.Extension()));
+                     entry->DistilledURL(), offline_path.Extension()));
 }
 
 bool OfflinePageTabHelper::HasDistilledVersionForOnlineUrl(
