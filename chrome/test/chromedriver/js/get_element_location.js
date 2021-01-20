@@ -115,14 +115,26 @@ function getInViewPoint(element) {
   return [x, y, left, top];
 }
 
+function rootNodeIncludes(element, elementPoint) {
+  if (!element)
+    return false;
+  let rootNode = element.getRootNode();
+  if (rootNode.elementsFromPoint(elementPoint[0], elementPoint[1])
+      .includes(element)) {
+    if (rootNode == document)
+      return true;
+    return rootNodeIncludes(rootNode.host, elementPoint);
+  }
+  return false;
+}
+
 function inView(element) {
   var elementPoint = getInViewPoint(element);
   if (!elementPoint ||
       elementPoint[0] <= 0 || elementPoint[1] <= 0 ||
       elementPoint[0] >= window.innerWidth ||
       elementPoint[1] >= window.innerHeight ||
-      !document.elementsFromPoint(elementPoint[0], elementPoint[1])
-                .includes(element)) {
+      !rootNodeIncludes(element, elementPoint)) {
     return false;
   }
 
