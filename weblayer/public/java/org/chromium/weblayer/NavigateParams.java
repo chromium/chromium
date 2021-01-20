@@ -145,7 +145,7 @@ public class NavigateParams {
      *
      * @return WebResourceResponse of html to use.
      */
-    WebResourceResponse getResponse() {
+    public WebResourceResponse getResponse() {
         return mResponse;
     }
 }
