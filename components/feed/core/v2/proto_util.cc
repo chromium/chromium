@@ -120,6 +120,7 @@ feedwire::Request CreateFeedQueryRequest(
   feedwire::FeedRequest& feed_request = *request.mutable_feed_request();
   feed_request.add_client_capability(feedwire::Capability::BASE_UI);
   feed_request.add_client_capability(feedwire::Capability::CARD_MENU);
+  feed_request.add_client_capability(feedwire::Capability::LOTTIE_ANIMATIONS);
   for (auto capability : GetFeedConfig().experimental_capabilities)
     feed_request.add_client_capability(capability);
   if (base::FeatureList::IsEnabled(kInterestFeedV2Hearts)) {

@@ -58,6 +58,7 @@ TEST(ProtoUtilTest, DefaultCapabilities) {
       request.client_capability(),
       testing::UnorderedElementsAre(
           feedwire::Capability::BASE_UI, feedwire::Capability::REQUEST_SCHEDULE,
+          feedwire::Capability::LOTTIE_ANIMATIONS,
           feedwire::Capability::OPEN_IN_TAB, feedwire::Capability::CARD_MENU,
           feedwire::Capability::DOWNLOAD_LINK,
           feedwire::Capability::INFINITE_FEED,
@@ -99,6 +100,7 @@ TEST(ProtoUtilTest, DisableCapabilitiesWithFinch) {
       request.client_capability(),
       testing::UnorderedElementsAre(
           feedwire::Capability::BASE_UI, feedwire::Capability::REQUEST_SCHEDULE,
+          feedwire::Capability::LOTTIE_ANIMATIONS,
           feedwire::Capability::OPEN_IN_TAB, feedwire::Capability::CARD_MENU,
           feedwire::Capability::DOWNLOAD_LINK,
           feedwire::Capability::DISMISS_COMMAND,
