@@ -543,6 +543,12 @@ void EnrollmentScreen::JoinDomain(const std::string& dm_token,
       std::string() /* username */, authpolicy::ERROR_NONE);
 }
 
+void EnrollmentScreen::OnBrowserRestart() {
+  // When the browser is restarted, renderers are shutdown and the `view_`
+  // wants to know in order to stop trying to use the soon-invalid renderers.
+  view_->Shutdown();
+}
+
 void EnrollmentScreen::OnActiveDirectoryJoined(
     const std::string& machine_name,
     const std::string& username,

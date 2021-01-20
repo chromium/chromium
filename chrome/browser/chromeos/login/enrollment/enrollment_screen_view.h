@@ -91,6 +91,8 @@ class EnrollmentScreenView {
 
   // Update the UI to report the `status` of the enrollment procedure.
   virtual void ShowEnrollmentStatus(policy::EnrollmentStatus status) = 0;
+
+  virtual void Shutdown() = 0;
 };
 
 }  // namespace chromeos

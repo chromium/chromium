@@ -87,6 +87,9 @@ class EnrollmentScreen
                   const std::string& domain_join_config,
                   OnDomainJoinedCallback on_joined_callback) override;
 
+  // Notification that the browser is being restarted.
+  void OnBrowserRestart();
+
   // Used for testing.
   EnrollmentScreenView* GetView() { return view_; }
 

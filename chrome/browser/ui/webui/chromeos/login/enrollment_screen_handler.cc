@@ -386,6 +386,10 @@ void EnrollmentScreenHandler::ShowOtherError(
   NOTREACHED();
 }
 
+void EnrollmentScreenHandler::Shutdown() {
+  shutdown_ = true;
+}
+
 void EnrollmentScreenHandler::ShowEnrollmentStatus(
     policy::EnrollmentStatus status) {
   switch (status.status()) {
@@ -846,7 +850,11 @@ void EnrollmentScreenHandler::OnGetCookiesForCompleteLogin(
 void EnrollmentScreenHandler::OnCookieWaitTimeout() {
   LOG(ERROR) << "Timeout waiting for OAuth cookie";
   oauth_code_waiter_.reset();
-  ShowError(IDS_LOGIN_FATAL_ERROR_NO_AUTH_TOKEN, true);
+
+  // If enrollment ends and the browser is being restarted, the renderers are
+  // killed so we can not talk to them anymore.
+  if (!shutdown_)
+    ShowError(IDS_LOGIN_FATAL_ERROR_NO_AUTH_TOKEN, true);
 }
 
 void EnrollmentScreenHandler::HandleAdCompleteLogin(
@@ -928,6 +936,11 @@ void EnrollmentScreenHandler::DoShow() {
 
 void EnrollmentScreenHandler::DoShowWithPartition(
     const std::string& partition_name) {
+  // If enrollment ends and the browser is being restarted, the renderers are
+  // killed so we can not talk to them anymore.
+  if (shutdown_)
+    return;
+
   base::DictionaryValue screen_data;
 
   screen_data.SetString("webviewPartitionName", partition_name);

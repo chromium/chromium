@@ -1291,6 +1291,8 @@ void WizardController::OnEnrollmentDone() {
           policy::EnrollmentConfig::MODE_RECOVERY ||
       enrollment_mode_rollback) {
     LOG(WARNING) << "Restart Chrome to pick up the policy changes";
+    EnrollmentScreen* screen = EnrollmentScreen::Get(screen_manager());
+    screen->OnBrowserRestart();
     chrome::AttemptRestart();
     return;
   }

@@ -88,6 +88,7 @@ class EnrollmentScreenHandler
   void ShowEnrollmentStatus(policy::EnrollmentStatus status) override;
   void ShowOtherError(
       EnterpriseEnrollmentHelper::OtherError error_code) override;
+  void Shutdown() override;
 
   // Implements BaseScreenHandler:
   void Initialize() override;
@@ -179,6 +180,10 @@ class EnrollmentScreenHandler
   // Whether we should handle network errors on enrollment screen.
   // True when signin screen step is shown.
   bool observe_network_failure_ = false;
+
+  // Set true when chrome is being restarted to pick up enrollment changes. The
+  // renderer processes will be destroyed and can no longer be talked to.
+  bool shutdown_ = false;
 
   // Network state informer used to keep signin screen up.
   scoped_refptr<NetworkStateInformer> network_state_informer_;

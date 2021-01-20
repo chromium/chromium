@@ -57,6 +57,7 @@ class MockEnrollmentScreenView : public EnrollmentScreenView {
   MOCK_METHOD(void, ShowAuthError, (const GoogleServiceAuthError&));
   MOCK_METHOD(void, ShowOtherError, (EnterpriseEnrollmentHelper::OtherError));
   MOCK_METHOD(void, ShowEnrollmentStatus, (policy::EnrollmentStatus status));
+  MOCK_METHOD(void, Shutdown, ());
 };
 
 }  // namespace chromeos
