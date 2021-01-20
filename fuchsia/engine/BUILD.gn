@@ -112,6 +112,7 @@ component("web_engine_core") {
     "//fuchsia/base:message_port",
     "//fuchsia/base:modular",
     "//fuchsia/cast_streaming",
+    "//google_apis",
     "//gpu/command_buffer/service",
     "//media",
     "//media/fuchsia/cdm/service",
@@ -258,11 +259,9 @@ source_set("switches") {
 
 executable("web_engine_exe") {
   deps = [
-    ":switches",
     ":web_engine_core",
     "//base",
     "//content/public/app",
-    "//google_apis",
   ]
   sources = [ "web_engine_main.cc" ]
   visibility = [ ":*" ]
