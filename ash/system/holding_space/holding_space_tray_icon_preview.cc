@@ -366,9 +366,9 @@ void HoldingSpaceTrayIconPreview::OnShelfConfigChanged() {
     return;
 
   // Adjust `translation` to account for the change in size.
-  gfx::Vector2dF translation = transform_.To2dTranslation();
-  translation.Scale(1.f / GetPreviewSize(!use_small_previews_).width());
-  translation.Scale(GetPreviewSize().width());
+  DCHECK(index_);
+  gfx::Vector2dF translation(*index_ * GetPreviewSize().width() / 2, 0);
+  AdjustForShelfAlignmentAndTextDirection(&translation);
   transform_.MakeIdentity();
   transform_.Translate(translation);
 
