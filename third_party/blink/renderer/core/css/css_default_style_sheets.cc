@@ -161,6 +161,7 @@ void CSSDefaultStyleSheets::InitializeDefaultStyles() {
   default_quirks_style_ = MakeGarbageCollected<RuleSet>();
   default_print_style_ = MakeGarbageCollected<RuleSet>();
   default_forced_color_style_ = MakeGarbageCollected<RuleSet>();
+  default_media_controls_style_ = MakeGarbageCollected<RuleSet>();
   default_pseudo_element_style_.Clear();
 
   default_style_->AddRulesFromSheet(DefaultStyleSheet(), ScreenEval());
@@ -248,7 +249,8 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForElement(
     // and <audio>.
     media_controls_style_sheet_ =
         ParseUASheet(media_controls_style_sheet_loader_->GetUAStyleSheet());
-    default_style_->AddRulesFromSheet(MediaControlsStyleSheet(), ScreenEval());
+    default_media_controls_style_->AddRulesFromSheet(MediaControlsStyleSheet(),
+                                                     ScreenEval());
     default_print_style_->AddRulesFromSheet(MediaControlsStyleSheet(),
                                             PrintEval());
     default_forced_color_style_->AddRulesFromSheet(MediaControlsStyleSheet(),
@@ -284,7 +286,8 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForElement(
                                 settings->GetTextTrackTextSize());
       builder.Append(" } ");
       text_track_style_sheet_ = ParseUASheet(builder.ToString());
-      default_style_->AddRulesFromSheet(text_track_style_sheet_, ScreenEval());
+      default_media_controls_style_->AddRulesFromSheet(text_track_style_sheet_,
+                                                       ScreenEval());
       default_print_style_->AddRulesFromSheet(text_track_style_sheet_,
                                               PrintEval());
       changed_default_style = true;
@@ -346,6 +349,16 @@ void CSSDefaultStyleSheets::EnsureDefaultStyleSheetForFullscreen() {
                                            ScreenEval());
 }
 
+void CSSDefaultStyleSheets::CollectFeaturesTo(const Document& document,
+                                              RuleFeatureSet& features) {
+  if (DefaultStyle())
+    features.Add(DefaultStyle()->Features());
+  if (DefaultMediaControlsStyle())
+    features.Add(DefaultMediaControlsStyle()->Features());
+  if (document.IsViewSource() && DefaultViewSourceStyle())
+    features.Add(DefaultViewSourceStyle()->Features());
+}
+
 void CSSDefaultStyleSheets::Trace(Visitor* visitor) const {
   visitor->Trace(default_style_);
   visitor->Trace(default_mathml_style_);
@@ -354,6 +367,7 @@ void CSSDefaultStyleSheets::Trace(Visitor* visitor) const {
   visitor->Trace(default_print_style_);
   visitor->Trace(default_view_source_style_);
   visitor->Trace(default_forced_color_style_);
+  visitor->Trace(default_media_controls_style_);
   visitor->Trace(default_style_sheet_);
   visitor->Trace(default_pseudo_element_style_);
   visitor->Trace(mobile_viewport_style_sheet_);

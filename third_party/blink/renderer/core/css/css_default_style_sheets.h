@@ -32,7 +32,9 @@
 
 namespace blink {
 
+class Document;
 class Element;
+class RuleFeatureSet;
 class RuleSet;
 class StyleSheetContents;
 
@@ -61,6 +63,9 @@ class CSSDefaultStyleSheets final
   }
   RuleSet* DefaultPseudoElementStyleOrNull() {
     return default_pseudo_element_style_.Get();
+  }
+  RuleSet* DefaultMediaControlsStyle() {
+    return default_media_controls_style_.Get();
   }
 
   StyleSheetContents* EnsureMobileViewportStyleSheet();
@@ -97,6 +102,8 @@ class CSSDefaultStyleSheets final
     return media_controls_style_sheet_loader_.get();
   }
 
+  void CollectFeaturesTo(const Document&, RuleFeatureSet&);
+
   void Trace(Visitor*) const;
 
  private:
@@ -110,6 +117,7 @@ class CSSDefaultStyleSheets final
   Member<RuleSet> default_view_source_style_;
   Member<RuleSet> default_forced_color_style_;
   Member<RuleSet> default_pseudo_element_style_;
+  Member<RuleSet> default_media_controls_style_;
 
   Member<StyleSheetContents> default_style_sheet_;
   Member<StyleSheetContents> mobile_viewport_style_sheet_;

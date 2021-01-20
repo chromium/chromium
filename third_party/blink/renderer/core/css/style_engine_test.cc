@@ -3934,6 +3934,35 @@ TEST_F(StyleEngineTest, MarkStyleDirtyFromContainerRecalc) {
   EXPECT_NE(old_inner_style, new_inner_style);
 }
 
+TEST_F(StyleEngineTest, VideoControlsReject) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <video controls></video>
+    <div id="target"></div>
+  )HTML");
+  UpdateAllLifecyclePhases();
+
+  StyleEngine& engine = GetStyleEngine();
+  // If the Stats() were already enabled, we would not start with 0 counts.
+  EXPECT_FALSE(engine.Stats());
+  engine.SetStatsEnabled(true);
+
+  StyleResolverStats* stats = engine.Stats();
+  ASSERT_TRUE(stats);
+  EXPECT_EQ(0u, stats->rules_fast_rejected);
+  EXPECT_EQ(0u, stats->rules_rejected);
+
+  Element* target = GetDocument().getElementById("target");
+  ASSERT_TRUE(target);
+  target->SetInlineStyleProperty(CSSPropertyID::kColor, "green");
+
+  GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
+  GetStyleEngine().RecalcStyle();
+
+  // There should be no UA rules for a div to reject
+  EXPECT_EQ(0u, stats->rules_fast_rejected);
+  EXPECT_EQ(0u, stats->rules_rejected);
+}
+
 TEST_F(StyleEngineTest, FastRejectForHostChild) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>

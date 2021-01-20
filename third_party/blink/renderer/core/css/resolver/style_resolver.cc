@@ -522,6 +522,22 @@ void StyleResolver::MatchUserRules(ElementRuleCollector& collector) {
   collector.FinishAddingUserRules();
 }
 
+namespace {
+
+bool IsInMediaUAShadow(const Element& element) {
+  ShadowRoot* root = element.ContainingShadowRoot();
+  if (!root || !root->IsUserAgent())
+    return false;
+  ShadowRoot* outer_root;
+  do {
+    outer_root = root;
+    root = root->host().ContainingShadowRoot();
+  } while (root && root->IsUserAgent());
+  return outer_root->host().IsMediaElement();
+}
+
+}  // namespace
+
 void StyleResolver::MatchUARules(const Element& element,
                                  ElementRuleCollector& collector) {
   collector.SetMatchingUARules(true);
@@ -529,12 +545,17 @@ void StyleResolver::MatchUARules(const Element& element,
   CSSDefaultStyleSheets& default_style_sheets =
       CSSDefaultStyleSheets::Instance();
   if (!print_media_type_) {
-    if (LIKELY(element.IsHTMLElement() || element.IsVTTElement()))
+    if (LIKELY(element.IsHTMLElement() || element.IsVTTElement())) {
       MatchRuleSet(collector, default_style_sheets.DefaultStyle());
-    else if (element.IsSVGElement())
+      if (UNLIKELY(IsInMediaUAShadow(element))) {
+        MatchRuleSet(collector,
+                     default_style_sheets.DefaultMediaControlsStyle());
+      }
+    } else if (element.IsSVGElement()) {
       MatchRuleSet(collector, default_style_sheets.DefaultSVGStyle());
-    else if (element.namespaceURI() == mathml_names::kNamespaceURI)
+    } else if (element.namespaceURI() == mathml_names::kNamespaceURI) {
       MatchRuleSet(collector, default_style_sheets.DefaultMathMLStyle());
+    }
   } else {
     MatchRuleSet(collector, default_style_sheets.DefaultPrintStyle());
   }
