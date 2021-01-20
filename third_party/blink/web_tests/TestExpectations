@@ -5950,6 +5950,9 @@ crbug.com/1167309 fast/canvas/canvas-createImageBitmap-drawImage.html [ Pass Fai
 
 crbug.com/1168373 [ Debug ] http/tests/devtools/layers/layers-3d-view-hit-testing.js [ Failure ]
 
+# Sheriff 2021-01-20
+crbug.com/1168522 external/wpt/focus/iframe-activeelement-after-focusing-out-iframes.html [ Pass Failure ]
+
 # DevTools roll
 crbug.com/1050549 http/tests/devtools/network/preview-searchable.js [ Pass Failure ]
 crbug.com/1050549 http/tests/devtools/console/console-correct-suggestions.js [ Pass Failure ]
