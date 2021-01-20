@@ -664,9 +664,9 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
                    initWithCommandDispatcher:self.mainInterface.browser
                                                  ->GetCommandDispatcher()]];
 
-  if (IsSceneStartupSupported() &&
-      base::FeatureList::IsEnabled(kEnableFullPageScreenshot)) {
-    if (@available(iOS 13, *)) {
+  if (@available(iOS 14, *)) {
+    if (IsSceneStartupSupported() &&
+        base::FeatureList::IsEnabled(kEnableFullPageScreenshot)) {
       self.screenshotDelegate = [[ScreenshotDelegate alloc]
           initWithBrowserInterfaceProvider:self.browserViewWrangler];
       [self.sceneState.scene.screenshotService

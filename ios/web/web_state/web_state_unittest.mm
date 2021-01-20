@@ -215,8 +215,66 @@ TEST_F(WebStateTest, Snapshot) {
   });
 }
 
-// Tests that the create PDF method retuns an PDF of a rendered html page.
-TEST_F(WebStateTest, CreateFullPagePdf_ValidURL) {
+// Tests that the create PDF method returns a PDF of a rendered html page when
+// running a supported iOS version.
+TEST_F(WebStateTest, CreateFullPagePdf_ValidURL_iOS14) {
+  // PDF generation is supported on iOS 14+.
+  if (@available(iOS 14, *)) {
+    [GetAnyKeyWindow() addSubview:web_state()->GetView()];
+
+    // Load a URL and some HTML in the WebState.
+    GURL url("https://www.chromium.org");
+    NavigationManager::WebLoadParams load_params(url);
+    web_state()->GetNavigationManager()->LoadURLWithParams(load_params);
+    ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
+      return web_state()->GetLastCommittedURL() == url &&
+             !web_state()->IsLoading();
+    }));
+
+    NSString* data_html =
+        @"<html><div style='background-color:#FF0000; width:50%; "
+         "height:100%;'></div></html>";
+    web_state()->LoadData([data_html dataUsingEncoding:NSUTF8StringEncoding],
+                          @"text/html", url);
+
+    ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
+      return !web_state()->IsLoading();
+    }));
+
+    // Create a PDF for this page and validate the data.
+    __block NSData* callback_data = nil;
+    web_state()->CreateFullPagePdf(base::BindOnce(^(NSData* pdf_document_data) {
+      callback_data = [pdf_document_data copy];
+    }));
+
+    ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
+      return callback_data;
+    }));
+
+    CGPDFDocumentRef pdf = CGPDFDocumentCreateWithProvider(
+        CGDataProviderCreateWithCFData((CFDataRef)callback_data));
+    CGSize pdf_size =
+        CGPDFPageGetBoxRect(CGPDFDocumentGetPage(pdf, 1), kCGPDFMediaBox).size;
+
+    CGFloat kSaveAreaTopInset = GetAnyKeyWindow().safeAreaInsets.top;
+    EXPECT_GE(pdf_size.height,
+              UIScreen.mainScreen.bounds.size.height - kSaveAreaTopInset);
+    EXPECT_GE(pdf_size.width, [[UIScreen mainScreen] bounds].size.width);
+
+    CGPDFDocumentRelease(pdf);
+  }
+
+  // If not an earlier version, then no PDF should be created.
+}
+
+// Tests that the create PDF method returns nil when running an unsupported iOS
+// version.
+TEST_F(WebStateTest, CreateFullPagePdf_ValidURL_NotSupported) {
+  if (@available(iOS 14, *)) {
+    // Return early when running on a support iOS version.
+    return;
+  }
+
   [GetAnyKeyWindow() addSubview:web_state()->GetView()];
 
   // Load a URL and some HTML in the WebState.
@@ -238,27 +296,14 @@ TEST_F(WebStateTest, CreateFullPagePdf_ValidURL) {
     return !web_state()->IsLoading();
   }));
 
-  // Create a PDF for this page and validate the data.
-  __block NSData* callback_data = nil;
+  // Attempt to create a PDF for this page and validate that it return nil.
+  __block BOOL callback_called = NO;
   web_state()->CreateFullPagePdf(base::BindOnce(^(NSData* pdf_document_data) {
-    callback_data = [pdf_document_data copy];
+    EXPECT_EQ(nil, pdf_document_data);
+    callback_called = YES;
   }));
 
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
-    return callback_data;
-  }));
-
-  CGPDFDocumentRef pdf = CGPDFDocumentCreateWithProvider(
-      CGDataProviderCreateWithCFData((CFDataRef)callback_data));
-  CGSize pdf_size =
-      CGPDFPageGetBoxRect(CGPDFDocumentGetPage(pdf, 1), kCGPDFMediaBox).size;
-
-  CGFloat kSaveAreaTopInset = GetAnyKeyWindow().safeAreaInsets.top;
-  EXPECT_GE(pdf_size.height,
-            UIScreen.mainScreen.bounds.size.height - kSaveAreaTopInset);
-  EXPECT_GE(pdf_size.width, [[UIScreen mainScreen] bounds].size.width);
-
-  CGPDFDocumentRelease(pdf);
+  EXPECT_TRUE(callback_called);
 }
 
 // Tests that CreateFullPagePdf invokes completion callback nil when an invalid

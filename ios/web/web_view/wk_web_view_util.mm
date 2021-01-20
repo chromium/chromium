@@ -37,11 +37,10 @@ void CreateFullPagePdf(WKWebView* web_view,
     return;
   }
 
-  __block base::OnceCallback<void(NSData*)> callback_for_block =
-      std::move(callback);
-
 #if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
   if (@available(iOS 14, *)) {
+    __block base::OnceCallback<void(NSData*)> callback_for_block =
+        std::move(callback);
     WKPDFConfiguration* pdf_configuration = [[WKPDFConfiguration alloc] init];
     [web_view createPDFWithConfiguration:pdf_configuration
                        completionHandler:^(NSData* pdf_document_data,
@@ -52,29 +51,7 @@ void CreateFullPagePdf(WKWebView* web_view,
   }
 #endif
 
-  UIPrintPageRenderer* print_renderer = [[UIPrintPageRenderer alloc] init];
-  [print_renderer addPrintFormatter:[web_view viewPrintFormatter]
-              startingAtPageAtIndex:0];
-
-  // Set the size of a page to be the size of the WebPage.
-  CGRect entire_web_page =
-      CGRectMake(0, 0, web_view.scrollView.contentSize.width,
-                 web_view.scrollView.contentSize.height);
-  [print_renderer setValue:[NSValue valueWithCGRect:entire_web_page]
-                    forKey:@"paperRect"];
-  [print_renderer setValue:[NSValue valueWithCGRect:entire_web_page]
-                    forKey:@"printableRect"];
-
-  UIGraphicsPDFRenderer* pdf_renderer =
-      [[UIGraphicsPDFRenderer alloc] initWithBounds:entire_web_page];
-
-  dispatch_async(dispatch_get_main_queue(), ^{
-    NSData* pdf_document_data = [pdf_renderer
-        PDFDataWithActions:^(UIGraphicsPDFRendererContext* context) {
-          [context beginPage];
-          [print_renderer drawPageAtIndex:0 inRect:entire_web_page];
-        }];
-    std::move(callback_for_block).Run(pdf_document_data);
-  });
+  // PDF generation is only supported on iOS 14+.
+  std::move(callback).Run(nil);
 }
 }  // namespace web
