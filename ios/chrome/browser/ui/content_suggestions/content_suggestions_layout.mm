@@ -137,7 +137,9 @@ layoutAttributesForSupplementaryViewOfKind:(NSString*)kind
     attributes.zIndex = NSIntegerMax;
 
     // Prevent the fake omnibox from scrolling up off of the screen.
-    CGFloat topSafeArea = self.collectionView.safeAreaInsets.top;
+    CGFloat topSafeArea = IsRefactoredNTP() && [self isFeedVisible]
+                              ? self.parentCollectionView.safeAreaInsets.top
+                              : self.collectionView.safeAreaInsets.top;
     CGFloat minY =
         headerHeight - ntp_header::kFakeOmniboxScrolledToTopMargin -
         ToolbarExpandedHeight(

@@ -404,8 +404,11 @@
 
 - (CGFloat)headerInsetForOverscrollActionsController:
     (OverscrollActionsController*)controller {
+  CGFloat topInset =
+      self.discoverFeedWrapperViewController.view.safeAreaInsets.top;
   return self.contentSuggestionsCoordinator.viewController.collectionView
-      .contentSize.height;
+             .contentSize.height +
+         topInset;
 }
 
 - (CGFloat)headerHeightForOverscrollActionsController:
