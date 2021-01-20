@@ -364,8 +364,8 @@ policies on the target process for enforcing security characteristics.
 
 #### CET Shadow Stack:
 
-* Only in Insider Builds of Windows 10 yet.
-* It's being evaluated and not enabled for any processes.  See
+* Available in Windows 10 2004 December Update.
+* Is not enabled in the renderer.  See
 [ticket](https://bugs.chromium.org/p/chromium/issues/detail?id=1136224),
 [MSDN](https://docs.microsoft.com/en-us/cpp/build/reference/cetcompat?view=vs-2019).
 

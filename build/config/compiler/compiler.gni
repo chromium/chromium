@@ -69,8 +69,8 @@ declare_args() {
   # Chrome's clang. crbug.com/1033839
   use_thin_lto = is_cfi || (is_official_build &&
                             (target_os == "android" ||
-                             ((is_chromeos_ash || is_chromeos_lacros)
-                              && is_chromeos_device)))
+                             ((is_chromeos_ash || is_chromeos_lacros) &&
+                              is_chromeos_device)))
 
   # If true, use Goma for ThinLTO code generation where applicable.
   use_goma_thin_lto = false
@@ -100,13 +100,12 @@ declare_args() {
   clang_diagnostic_dir =
       rebase_path("//tools/clang/crashreports", root_build_dir)
 
-  # Experimental option to mark binaries as compatible with Shadow
-  # Stack of Control-flow Enforcement Technology (CET). If Windows version
-  # and hardware supports the feature and it's enabled by OS then additional
-  # additional validation of return address will be performed as mitigation
-  # against Return-oriented programming (ROP).
+  # Mark binaries as compatible with Shadow Stack of Control-flow Enforcement
+  # Technology (CET). If Windows version and hardware supports the feature and
+  # it's enabled by OS then additional validation of return address will be
+  # performed as mitigation against Return-oriented programming (ROP).
   # https://chromium.googlesource.com/chromium/src/+/master/docs/design/sandbox.md#cet-shadow-stack
-  enable_cet_shadow_stack = false
+  enable_cet_shadow_stack = target_cpu == "x64"
 }
 
 assert(!is_cfi || use_thin_lto, "CFI requires ThinLTO")
