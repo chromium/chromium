@@ -11,7 +11,7 @@ import {skColorToRgba} from 'chrome://resources/js/color_utils.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {BrowserProxy} from './browser_proxy.js';
+import {RealboxBrowserProxy} from './realbox_browser_proxy.js';
 import {decodeString16, mojoString16, mojoTimeDelta} from './utils.js';
 
 /** @typedef {{text: string, inline: string,}} */
@@ -53,7 +53,7 @@ class RealboxElement extends PolymerElement {
       },
 
       /**
-       * @type {!newTabPage.mojom.SearchBoxTheme}
+       * @type {!realbox.mojom.SearchBoxTheme}
        */
       theme: {
         type: Object,
@@ -197,10 +197,10 @@ class RealboxElement extends PolymerElement {
   constructor() {
     performance.mark('realbox-creation-start');
     super();
-    /** @private {newTabPage.mojom.PageHandlerRemote} */
-    this.pageHandler_ = BrowserProxy.getInstance().handler;
-    /** @private {!newTabPage.mojom.PageCallbackRouter} */
-    this.callbackRouter_ = BrowserProxy.getInstance().callbackRouter;
+    /** @private {realbox.mojom.PageHandlerRemote} */
+    this.pageHandler_ = RealboxBrowserProxy.getInstance().handler;
+    /** @private {!realbox.mojom.PageCallbackRouter} */
+    this.callbackRouter_ = RealboxBrowserProxy.getInstance().callbackRouter;
     /** @private {?number} */
     this.autocompleteResultChangedListenerId_ = null;
     /** @private {?number} */

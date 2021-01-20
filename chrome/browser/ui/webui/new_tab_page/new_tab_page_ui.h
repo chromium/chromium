@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/webui/new_tab_page/foo/foo.mojom.h"  // nogncheck crbug.com/1125897
 #endif
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
+#include "chrome/browser/ui/webui/realbox/realbox.mojom-forward.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -37,6 +38,7 @@ class InstantService;
 class NewTabPageHandler;
 class Profile;
 class PromoBrowserCommandHandler;
+class RealboxHandler;
 class TaskModuleHandler;
 class CartHandler;
 class DriveHandler;
@@ -58,6 +60,11 @@ class NewTabPageUI
   void BindInterface(
       mojo::PendingReceiver<new_tab_page::mojom::PageHandlerFactory>
           pending_receiver);
+
+  // Instantiates the implementor of the realbox::mojom::PageHandler mojo
+  // interface passing the pending receiver that will be internally bound.
+  void BindInterface(
+      mojo::PendingReceiver<realbox::mojom::PageHandler> pending_page_handler);
 
   // Instantiates the implementor of the
   // promo_browser_command::mojom::CommandHandler mojo interface passing the
@@ -131,6 +138,7 @@ class NewTabPageUI
   mojo::Receiver<customize_themes::mojom::CustomizeThemesHandlerFactory>
       customize_themes_factory_receiver_;
   std::unique_ptr<PromoBrowserCommandHandler> promo_browser_command_handler_;
+  std::unique_ptr<RealboxHandler> realbox_handler_;
 #if !defined(OFFICIAL_BUILD)
   std::unique_ptr<FooHandler> foo_handler_;
 #endif

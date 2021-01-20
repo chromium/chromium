@@ -28,6 +28,7 @@ js_type_check("closure_compile") {
     ":one_google_bar_api",
     ":promo_browser_command_proxy",
     ":realbox",
+    ":realbox_browser_proxy",
     ":realbox_dropdown",
     ":realbox_icon",
     ":realbox_match",
@@ -46,6 +47,7 @@ js_library("new_tab_page") {
     ":background_manager",
     ":browser_proxy",
     ":promo_browser_command_proxy",
+    ":realbox_browser_proxy",
     ":utils",
     "modules:module_descriptor",
     "modules:module_registry",
@@ -93,6 +95,13 @@ js_library("app") {
 js_library("promo_browser_command_proxy") {
   deps = [
     "//chrome/browser/promo_browser_command:mojo_bindings_js_library_for_compile",
+    "//ui/webui/resources/js:cr.m",
+  ]
+}
+
+js_library("realbox_browser_proxy") {
+  deps = [
+    "//chrome/browser/ui/webui/realbox:mojo_bindings_js_library_for_compile",
     "//ui/webui/resources/js:cr.m",
   ]
 }
@@ -176,7 +185,7 @@ js_library("iframe") {
 
 js_library("realbox") {
   deps = [
-    ":browser_proxy",
+    ":realbox_browser_proxy",
     ":realbox_icon",
     ":utils",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -187,7 +196,7 @@ js_library("realbox") {
 
 js_library("realbox_dropdown") {
   deps = [
-    ":browser_proxy",
+    ":realbox_browser_proxy",
     ":realbox_match",
     ":utils",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -294,6 +303,7 @@ preprocess_if_expr("preprocess") {
     "customize_dialog_types.js",
     "new_tab_page.js",
     "promo_browser_command_proxy.js",
+    "realbox_browser_proxy.js",
     "utils.js",
   ]
 }
@@ -354,6 +364,15 @@ generate_grd("build_search_mojo_grdp") {
       rebase_path("$root_gen_dir/chrome/common/search", root_build_dir)
 }
 
+generate_grd("build_realbox_mojo_grdp") {
+  grd_prefix = grd_prefix
+  out_grd = "$target_gen_dir/realbox_mojo_resources.grdp"
+  input_files = [ "realbox.mojom-lite.js" ]
+  input_files_base_dir =
+      rebase_path("$root_gen_dir/chrome/browser/ui/webui/realbox",
+                  root_build_dir)
+}
+
 generate_grd("build_drive_mojo_grdp") {
   grd_prefix = grd_prefix
   out_grd = "$target_gen_dir/drive_mojo_resources.grdp"
@@ -401,6 +420,7 @@ generate_grd("build_grd") {
     "$target_gen_dir/icons/resources.grdp",
     "$target_gen_dir/new_tab_page_mojo_resources.grdp",
     "$target_gen_dir/promo_browser_command_mojo_resources.grdp",
+    "$target_gen_dir/realbox_mojo_resources.grdp",
     "$target_gen_dir/search_mojo_resources.grdp",
     "$target_gen_dir/task_module_mojo_resources.grdp",
     "$target_gen_dir/chrome_cart_mojo_resources.grdp",
@@ -411,6 +431,7 @@ generate_grd("build_grd") {
     ":build_drive_mojo_grdp",
     ":build_new_tab_page_mojo_grdp",
     ":build_promo_browser_command_mojo_grdp",
+    ":build_realbox_mojo_grdp",
     ":build_search_mojo_grdp",
     ":build_task_module_mojo_grdp",
     "icons:build_grdp",
@@ -450,6 +471,7 @@ grit("resources") {
     "//chrome/browser/search/drive:mojo_bindings_js",
     "//chrome/browser/search/task_module:mojo_bindings_js",
     "//chrome/browser/ui/webui/new_tab_page:mojo_bindings_js",
+    "//chrome/browser/ui/webui/realbox:mojo_bindings_js",
     "//chrome/common/search:mojo_bindings_js",
   ]
   if (!is_official_build) {
@@ -501,6 +523,7 @@ if (optimize_webui) {
       "chrome://resources/mojo/url/mojom/url.mojom-lite.js",
       "new_tab_page.mojom-lite.js",
       "omnibox.mojom-lite.js",
+      "realbox.mojom-lite.js",
       "one_google_bar_api.js",
       "promo_browser_command.mojom-lite.js",
       "modules/drive/drive.mojom-lite.js",

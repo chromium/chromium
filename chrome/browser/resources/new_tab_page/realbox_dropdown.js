@@ -13,7 +13,7 @@ import {skColorToRgba} from 'chrome://resources/js/color_utils.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {BrowserProxy} from './browser_proxy.js';
+import {RealboxBrowserProxy} from './realbox_browser_proxy.js';
 import {decodeString16} from './utils.js';
 
 // A dropdown element that contains autocomplete matches. Provides an API for
@@ -51,7 +51,7 @@ class RealboxDropdownElement extends PolymerElement {
       },
 
       /**
-       * @type {!newTabPage.mojom.SearchBoxTheme}
+       * @type {!realbox.mojom.SearchBoxTheme}
        */
       theme: {
         type: Object,
@@ -96,10 +96,10 @@ class RealboxDropdownElement extends PolymerElement {
 
   constructor() {
     super();
-    /** @private {!newTabPage.mojom.PageCallbackRouter} */
-    this.callbackRouter_ = BrowserProxy.getInstance().callbackRouter;
-    /** @private {newTabPage.mojom.PageHandlerRemote} */
-    this.pageHandler_ = BrowserProxy.getInstance().handler;
+    /** @private {!realbox.mojom.PageCallbackRouter} */
+    this.callbackRouter_ = RealboxBrowserProxy.getInstance().callbackRouter;
+    /** @private {realbox.mojom.PageHandlerRemote} */
+    this.pageHandler_ = RealboxBrowserProxy.getInstance().handler;
     /** @private {?number} */
     this.autocompleteMatchImageAvailableListenerId_ = null;
   }

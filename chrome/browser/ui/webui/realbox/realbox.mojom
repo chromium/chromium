@@ -1,0 +1,79 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module realbox.mojom;
+
+import "chrome/common/search/omnibox.mojom";
+import "mojo/public/mojom/base/string16.mojom";
+import "mojo/public/mojom/base/time.mojom";
+import "skia/public/mojom/skcolor.mojom";
+import "url/mojom/url.mojom";
+
+// Theme settings for the NTP realbox.
+struct SearchBoxTheme {
+  skia.mojom.SkColor bg;
+  skia.mojom.SkColor icon;
+  skia.mojom.SkColor icon_selected;
+  skia.mojom.SkColor placeholder;
+  skia.mojom.SkColor results_bg;
+  skia.mojom.SkColor results_bg_hovered;
+  skia.mojom.SkColor results_bg_selected;
+  skia.mojom.SkColor results_dim;
+  skia.mojom.SkColor results_dim_selected;
+  skia.mojom.SkColor results_text;
+  skia.mojom.SkColor results_text_selected;
+  skia.mojom.SkColor results_url;
+  skia.mojom.SkColor results_url_selected;
+  skia.mojom.SkColor text;
+};
+
+// Browser-side handler for requests from WebUI page.
+interface PageHandler {
+  // The RealboxBrowserProxy singleton calls this when it's first initialized.
+  SetPage(pending_remote<Page> page);
+  // Queries autocomplete matches from the browser.
+  QueryAutocomplete(mojo_base.mojom.String16 input,
+                    bool prevent_inline_autocomplete);
+  // Cancels the current autocomplete query. Clears the result set if
+  // |clear_result| is true.
+  StopAutocomplete(bool clear_result);
+  // Handles navigation to an autocomplete match (i.e. an item in the realbox's
+  // list of matches). Note: |url| is passed solely to verify that the browser
+  // and renderer are in sync; don't trust this content or use it for anything
+  // other than verification purposes (i.e. is the URL still the same?).
+  // TODO(crbug.com/1076604): replace |url| with an unguessable token.
+  // |mouse_button| indicates which mouse button was pressed on the match. See
+  // https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/button
+  OpenAutocompleteMatch(uint8 line,
+                        url.mojom.Url url,
+                        bool are_matches_showing,
+                        mojo_base.mojom.TimeDelta time_elapsed_since_last_focus,
+                        uint8 mouse_button,
+                        bool alt_key,
+                        bool ctrl_key,
+                        bool meta_key,
+                        bool shift_key);
+  // Deletes the AutocompleteMatch in the current results by |line| number if
+  // it is deletable.
+  DeleteAutocompleteMatch(uint8 line);
+  // Tells the browser to allow suggestions with the given suggestion group ID
+  // to appear in the results if they currently are not allowed to or to prevent
+  // them from appearing in the results if they are currently permitted to.
+  ToggleSuggestionGroupIdVisibility(int32 suggestion_group_id);
+  // Logs the time it took in milliseconds since the first character (in a
+  // series of characters) was typed until Autocomplete results were painted.
+  LogCharTypedToRepaintLatency(mojo_base.mojom.TimeDelta latency);
+};
+
+// WebUI-side handler for requests from the browser.
+interface Page {
+  // Updates the NTP realbox with the autocomplete results.
+  AutocompleteResultChanged(search.mojom.AutocompleteResult result);
+  // Updates the NTP realbox popup with the image or favicon data URL for the
+  // given |match_index| and |url| where |url| is an AutocompleteMatch image_url
+  // or destination_url for an entity or a navigation suggestion respectively.
+  AutocompleteMatchImageAvailable(uint32 match_index,
+                                  url.mojom.Url url,
+                                  string data_url);
+};

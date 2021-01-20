@@ -11,6 +11,7 @@ import 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-lite.js';
 import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
 
 import './omnibox.mojom-lite.js';
+import './realbox.mojom-lite.js';
 import './new_tab_page.mojom-lite.js';
 
 import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';

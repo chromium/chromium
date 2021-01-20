@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BrowserProxy, decodeString16, mojoString16} from 'chrome://new-tab-page/new_tab_page.js';
+import {decodeString16, mojoString16, RealboxBrowserProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-import {assertStyle, createTestProxy, createTheme} from 'chrome://test/new_tab_page/test_support.js';
+import {assertStyle, createTheme} from 'chrome://test/new_tab_page/test_support.js';
 import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
 import {eventToPromise} from 'chrome://test/test_util.m.js';
 
@@ -18,11 +18,11 @@ const CLASSES = {
 };
 
 /**
- * Helps track realbox browser call arguments. The mocked browser proxy returned
- * by |createTestProxy()| resolves the browser call promises with the arguments
- * as an array making the tests prone to change if the arguments change. This
- * class, however, resolves the browser call promises with named arguments.
- * @implements {newTabPage.mojom.PageHandlerRemote}
+ * Helps track realbox browser call arguments. A mocked page handler remote
+ * resolves the browser call promises with the arguments as an array making the
+ * tests prone to change if the arguments change. This class extends the page
+ * handler remote, resolving the browser call promises with named arguments.
+ * @implements {realbox.mojom.PageHandlerRemote}
  * @extends {TestBrowserProxy}
  */
 class TestRealboxBrowserProxy extends TestBrowserProxy {
@@ -78,6 +78,19 @@ class TestRealboxBrowserProxy extends TestBrowserProxy {
   toggleSuggestionGroupIdVisibility(suggestionGroupId) {
     this.methodCalled('toggleSuggestionGroupIdVisibility', {suggestionGroupId});
   }
+}
+
+/**
+ * Creates a mock test proxy.
+ * @return {TestBrowserProxy}
+ */
+export function createTestProxy() {
+  const testProxy = TestBrowserProxy.fromClass(RealboxBrowserProxy);
+  testProxy.callbackRouter = new realbox.mojom.PageCallbackRouter();
+  testProxy.callbackRouterRemote =
+      testProxy.callbackRouter.$.bindNewPipeAndPassRemote();
+  testProxy.handler = new TestRealboxBrowserProxy();
+  return testProxy;
 }
 
 /**
@@ -173,7 +186,7 @@ suite('NewTabPageRealboxTest', () => {
   let realbox;
 
   /**
-   * @implements {BrowserProxy}
+   * @implements {RealboxBrowserProxy}
    * @extends {TestBrowserProxy}
    */
   let testProxy;
@@ -189,8 +202,7 @@ suite('NewTabPageRealboxTest', () => {
     PolymerTest.clearBody();
 
     testProxy = createTestProxy();
-    testProxy.handler = new TestRealboxBrowserProxy();
-    BrowserProxy.instance_ = testProxy;
+    RealboxBrowserProxy.instance_ = testProxy;
 
     realbox = document.createElement('ntp-realbox');
     document.body.appendChild(realbox);

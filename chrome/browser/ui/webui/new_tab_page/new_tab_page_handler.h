@@ -13,7 +13,6 @@
 #include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "chrome/browser/bitmap_fetcher/bitmap_fetcher_service.h"
 #include "chrome/browser/search/background/ntp_background_service_observer.h"
 #include "chrome/browser/search/instant_service_observer.h"
 #include "chrome/browser/search/one_google_bar/one_google_bar_service.h"
@@ -24,8 +23,6 @@
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
 #include "chrome/common/search/instant_types.h"
 #include "chrome/common/search/ntp_logging_events.h"
-#include "components/omnibox/browser/autocomplete_controller.h"
-#include "components/omnibox/browser/favicon_cache.h"
 #include "components/search_provider_logos/logo_common.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -53,7 +50,6 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
                           public NtpBackgroundServiceObserver,
                           public OneGoogleBarServiceObserver,
                           public ui::SelectFileDialog::Listener,
-                          public AutocompleteController::Observer,
                           public PromoServiceObserver {
  public:
   NewTabPageHandler(mojo::PendingReceiver<new_tab_page::mojom::PageHandler>
@@ -142,21 +138,6 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
                       double time) override;
   void OnModuleUsage(const std::string& module_id) override;
   void OnModulesRendered(double time) override;
-  void QueryAutocomplete(const base::string16& input,
-                         bool prevent_inline_autocomplete) override;
-  void StopAutocomplete(bool clear_result) override;
-  void OpenAutocompleteMatch(uint8_t line,
-                             const GURL& url,
-                             bool are_matches_showing,
-                             base::TimeDelta time_elapsed_since_last_focus,
-                             uint8_t mouse_button,
-                             bool alt_key,
-                             bool ctrl_key,
-                             bool meta_key,
-                             bool shift_key) override;
-  void DeleteAutocompleteMatch(uint8_t line) override;
-  void ToggleSuggestionGroupIdVisibility(int32_t suggestion_group_id) override;
-  void LogCharTypedToRepaintLatency(base::TimeDelta latency) override;
 
  private:
   // InstantServiceObserver:
@@ -183,21 +164,10 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
                     void* params) override;
   void FileSelectionCanceled(void* params) override;
 
-  // AutocompleteController::Observer:
-  void OnResultChanged(AutocompleteController* controller,
-                       bool default_match_changed) override;
-
   void OnLogoAvailable(
       GetDoodleCallback callback,
       search_provider_logos::LogoCallbackReason type,
       const base::Optional<search_provider_logos::EncodedLogo>& logo);
-
-  void OnRealboxBitmapFetched(int match_index,
-                              const GURL& image_url,
-                              const SkBitmap& bitmap);
-  void OnRealboxFaviconFetched(int match_index,
-                               const GURL& page_url,
-                               const gfx::Image& favicon);
 
   void LogEvent(NTPLoggingEventType event);
 
@@ -229,11 +199,6 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   base::Optional<base::TimeTicks> one_google_bar_load_start_time_;
   Profile* profile_;
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
-  std::unique_ptr<AutocompleteController> autocomplete_controller_;
-  FaviconCache favicon_cache_;
-  BitmapFetcherService* bitmap_fetcher_service_;
-  std::vector<BitmapFetcherService::RequestId> bitmap_request_ids_;
-  base::TimeTicks time_user_first_modified_realbox_;
   content::WebContents* web_contents_;
   base::Time ntp_navigation_start_time_;
   NTPUserDataLogger logger_;
