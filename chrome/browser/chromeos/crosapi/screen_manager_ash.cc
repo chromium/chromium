@@ -14,8 +14,6 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chromeos/crosapi/cpp/bitmap.h"
-#include "chromeos/crosapi/cpp/bitmap_util.h"
 #include "ui/aura/window_observer.h"
 #include "ui/snapshot/snapshot.h"
 

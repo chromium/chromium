@@ -25,45 +25,11 @@ mojom("mojom") {
   ]
   disable_variants = true
 
-  cpp_typemaps = [
-    {
-      types = [
-        {
-          mojom = "crosapi.mojom.Bitmap"
-          cpp = "crosapi::Bitmap"
-          move_only = true
-        },
-      ]
-      traits_headers = [ "//chromeos/crosapi/mojom/bitmap_mojom_traits.h" ]
-      traits_public_deps = [
-        ":mojom_traits",
-        "//chromeos/crosapi/cpp:cpp_internal",
-      ]
-    },
-  ]
-
   public_deps = [
     "//mojo/public/mojom/base",
     "//services/device/public/mojom:mojom",
     "//services/media_session/public/mojom:mojom",
     "//ui/gfx/image/mojom",
     "//url/mojom:url_mojom_gurl",
-  ]
-}
-
-component("mojom_traits") {
-  output_name = "crosapi_mojom_traits"
-
-  sources = [
-    "bitmap_mojom_traits.cc",
-    "bitmap_mojom_traits.h",
-  ]
-
-  defines = [ "IS_CROSAPI_MOJOM_TRAITS_IMPL" ]
-
-  public_deps = [
-    ":mojom_shared",
-    "//chromeos/crosapi/cpp:cpp_internal",
-    "//mojo/public/cpp/base:shared_typemap_traits",
   ]
 }

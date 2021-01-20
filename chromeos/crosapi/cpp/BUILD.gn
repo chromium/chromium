@@ -10,8 +10,6 @@ config("crosapi_implementation") {
 component("cpp") {
   output_name = "crosapi_public_cpp"
   sources = [
-    "bitmap_util.cc",
-    "bitmap_util.h",
     "crosapi_constants.cc",
     "crosapi_constants.h",
     "keystore_service_util.cc",
@@ -24,19 +22,7 @@ component("cpp") {
     "//base",
     "//chromeos/crosapi/mojom",
     "//mojo/public/cpp/bindings",
-    "//skia",
   ]
-}
-
-# chromeos/crosapi/mojom depends on this component.
-component("cpp_internal") {
-  output_name = "crosapi_private_cpp"
-  sources = [
-    "bitmap.cc",
-    "bitmap.h",
-  ]
-  configs += [ ":crosapi_implementation" ]
-  deps = [ "//base" ]
 }
 
 source_set("unit_tests") {
