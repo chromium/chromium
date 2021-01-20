@@ -2467,7 +2467,7 @@ void QuicChromiumClientSession::OnProbeFailed(
                                                        /*is_success=*/false);
                     });
 
-  if (version().HasIetfQuicFrames()) {
+  if (version().HasIetfQuicFrames() && connection()->use_path_validator()) {
     auto* context = static_cast<QuicChromiumPathValidationContext*>(
         connection()->GetPathValidationContext());
 
@@ -2546,7 +2546,7 @@ void QuicChromiumClientSession::OnNetworkDisconnectedV2(
       "disconnected_network", disconnected_network);
 
   // Stop probing the disconnected network if there is one.
-  if (version().HasIetfQuicFrames()) {
+  if (version().HasIetfQuicFrames() && connection()->use_path_validator()) {
     auto* context = static_cast<QuicChromiumPathValidationContext*>(
         connection()->GetPathValidationContext());
     if (context && context->network() == disconnected_network &&
@@ -2672,7 +2672,7 @@ void QuicChromiumClientSession::MigrateNetworkImmediately(
   }
 
   // Cancel probing on |network| if there is any.
-  if (version().HasIetfQuicFrames()) {
+  if (version().HasIetfQuicFrames() && connection()->use_path_validator()) {
     auto* context = static_cast<QuicChromiumPathValidationContext*>(
         connection()->GetPathValidationContext());
     if (context && context->network() == network &&
@@ -3017,7 +3017,7 @@ ProbingResult QuicChromiumClientSession::StartProbing(
     NetworkChangeNotifier::NetworkHandle network,
     const quic::QuicSocketAddress& peer_address) {
   // Check if probing manager is probing the same path.
-  if (version().HasIetfQuicFrames()) {
+  if (version().HasIetfQuicFrames() && connection()->use_path_validator()) {
     auto* context = static_cast<QuicChromiumPathValidationContext*>(
         connection()->GetPathValidationContext());
     if (context && context->network() == network &&
