@@ -47,7 +47,7 @@ class PLATFORM_EXPORT WorkerMainScriptLoader final
   ~WorkerMainScriptLoader() override;
 
   // Starts to load the main script.
-  void Start(FetchParameters& fetch_params,
+  void Start(const FetchParameters& fetch_params,
              std::unique_ptr<WorkerMainScriptLoadParameters>
                  worker_main_script_load_params,
              FetchContext* fetch_context,
@@ -98,7 +98,7 @@ class PLATFORM_EXPORT WorkerMainScriptLoader final
   Member<WorkerMainScriptLoaderClient> client_;
   Member<ResourceLoadObserver> resource_load_observer_;
 
-  ResourceRequest initial_request_;
+  ResourceRequestHead initial_request_;
   ResourceLoaderOptions resource_loader_options_{nullptr /* world */};
   KURL initial_request_url_;
   KURL last_request_url_;

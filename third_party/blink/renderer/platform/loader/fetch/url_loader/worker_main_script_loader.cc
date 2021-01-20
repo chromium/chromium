@@ -31,7 +31,7 @@ WorkerMainScriptLoader::WorkerMainScriptLoader() = default;
 WorkerMainScriptLoader::~WorkerMainScriptLoader() = default;
 
 void WorkerMainScriptLoader::Start(
-    FetchParameters& fetch_params,
+    const FetchParameters& fetch_params,
     std::unique_ptr<WorkerMainScriptLoadParameters>
         worker_main_script_load_params,
     FetchContext* fetch_context,
@@ -39,7 +39,7 @@ void WorkerMainScriptLoader::Start(
     WorkerMainScriptLoaderClient* client) {
   DCHECK(resource_load_observer);
   DCHECK(client);
-  initial_request_.CopyFrom(fetch_params.GetResourceRequest());
+  initial_request_ = fetch_params.GetResourceRequest();
   resource_loader_options_ = fetch_params.Options();
   initial_request_url_ = fetch_params.GetResourceRequest().Url();
   last_request_url_ = initial_request_url_;
@@ -53,8 +53,9 @@ void WorkerMainScriptLoader::Start(
   // TODO(crbug.com/929370): Support CSP check to post violation reports for
   // worker top-level scripts, if off-the-main-thread fetch is enabled.
 
+  ResourceRequest resource_request(initial_request_);
   resource_load_observer_->WillSendRequest(
-      initial_request_.InspectorId(), initial_request_,
+      initial_request_.InspectorId(), resource_request,
       /*redirect_response=*/ResourceResponse(), ResourceType::kScript,
       resource_loader_options_.initiator_info);
 
@@ -79,7 +80,7 @@ void WorkerMainScriptLoader::Start(
       std::move(response_head), PreviewsTypes::kPreviewsUnspecified);
 
   resource_load_observer_->DidReceiveResponse(
-      initial_request_.InspectorId(), initial_request_, resource_response_,
+      initial_request_.InspectorId(), resource_request, resource_response_,
       /*resource=*/nullptr,
       ResourceLoadObserver::ResponseSource::kNotFromMemoryCache);
 

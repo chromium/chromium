@@ -160,25 +160,11 @@ ResourceRequest::ResourceRequest(const KURL& url) : ResourceRequestHead(url) {}
 ResourceRequest::ResourceRequest(const ResourceRequestHead& head)
     : ResourceRequestHead(head) {}
 
-ResourceRequest& ResourceRequest::operator=(const ResourceRequest& src) {
-  DCHECK(!body_.StreamBody().is_valid());
-  DCHECK(!src.body_.StreamBody().is_valid());
-  this->ResourceRequestHead::operator=(src);
-  body_.SetFormBody(src.body_.FormBody());
-  return *this;
-}
-
 ResourceRequest::ResourceRequest(ResourceRequest&&) = default;
 
 ResourceRequest& ResourceRequest::operator=(ResourceRequest&&) = default;
 
 ResourceRequest::~ResourceRequest() = default;
-
-void ResourceRequest::CopyFrom(const ResourceRequest& src) {
-  DCHECK(!body_.StreamBody().is_valid());
-  DCHECK(!src.body_.StreamBody().is_valid());
-  *this = src;
-}
 
 void ResourceRequest::CopyHeadFrom(const ResourceRequestHead& src) {
   this->ResourceRequestHead::operator=(src);
