@@ -179,10 +179,6 @@ GURL SystemWebAppManagerBrowserTestBase::GetStartUrl(
                    .GetAppStartUrl(params.app_id);
 }
 
-GURL SystemWebAppManagerBrowserTestBase::GetStartUrl() {
-  return GetStartUrl(LaunchParamsForApp(GetMockAppType()));
-}
-
 SystemWebAppManagerBrowserTest::SystemWebAppManagerBrowserTest(
     bool install_mock)
     : SystemWebAppManagerBrowserTestBase(install_mock) {
@@ -304,14 +300,15 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerWebAppInfoBrowserTest,
   WaitForTestSystemAppInstall();
 
   base::HistogramTester histograms;
+  apps::AppLaunchParams params = LaunchParamsForApp(GetMockAppType());
+  params.launch_source = apps::mojom::LaunchSource::kFromAppListGrid;
 
   content::TestNavigationObserver navigation_observer(
       maybe_installation_->GetAppUrl());
   navigation_observer.StartWatchingNewWebContents();
 
-  LaunchSystemWebAppAsync(
-      browser()->profile(), GetMockAppType(),
-      {.launch_source = apps::mojom::LaunchSource::kFromAppListGrid});
+  LaunchSystemWebApp(browser()->profile(), GetMockAppType(),
+                     maybe_installation_->GetAppUrl(), std::move(params));
 
   navigation_observer.Wait();
   histograms.ExpectTotalCount("Apps.DefaultAppLaunch.FromAppListGrid", 1);
