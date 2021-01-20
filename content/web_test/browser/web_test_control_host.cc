@@ -1613,8 +1613,7 @@ void WebTestControlHost::ClearAllDatabases() {
   auto run_on_database_sequence =
       [](scoped_refptr<storage::DatabaseTracker> db_tracker) {
         DCHECK(db_tracker->task_runner()->RunsTasksInCurrentSequence());
-        db_tracker->DeleteDataModifiedSince(base::Time(),
-                                            net::CompletionOnceCallback());
+        db_tracker->DeleteDataModifiedSince(base::Time(), base::DoNothing());
       };
 
   BrowserContext* browser_context =

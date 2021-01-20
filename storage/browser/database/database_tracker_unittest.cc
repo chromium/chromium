@@ -284,16 +284,15 @@ class DatabaseTracker_TestHelper_Test {
           base::Time yesterday = base::Time::Now();
           yesterday -= base::TimeDelta::FromDays(1);
 
-          net::TestCompletionCallback callback2;
-          int result =
-              tracker->DeleteDataModifiedSince(yesterday, callback2.callback());
-          EXPECT_EQ(net::ERR_IO_PENDING, result);
-          ASSERT_FALSE(callback2.have_result());
+          net::TestCompletionCallback delete_data_modified_since_callback;
+          tracker->DeleteDataModifiedSince(
+              yesterday, delete_data_modified_since_callback.callback());
+          EXPECT_FALSE(delete_data_modified_since_callback.have_result());
           EXPECT_TRUE(observer.DidReceiveNewNotification());
           tracker->DatabaseClosed(kOrigin1, kDB1);
           tracker->DatabaseClosed(kOrigin2, kDB2);
-          result = callback2.GetResult(result);
-          EXPECT_EQ(net::OK, result);
+          EXPECT_EQ(net::OK,
+                    delete_data_modified_since_callback.WaitForResult());
           EXPECT_FALSE(base::PathExists(tracker->GetOriginDirectory(kOrigin1)));
           EXPECT_TRUE(
               base::PathExists(tracker->GetFullDBFilePath(kOrigin2, kDB2)));

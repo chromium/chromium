@@ -691,18 +691,23 @@ void DatabaseTracker::DeleteDatabase(const std::string& origin_identifier,
   std::move(callback).Run(net::OK);
 }
 
-int DatabaseTracker::DeleteDataModifiedSince(
+void DatabaseTracker::DeleteDataModifiedSince(
     const base::Time& cutoff,
     net::CompletionOnceCallback callback) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  if (!LazyInit())
-    return net::ERR_FAILED;
-
-  DatabaseSet to_be_deleted;
+  DCHECK(!callback.is_null());
+  if (!LazyInit()) {
+    std::move(callback).Run(net::ERR_FAILED);
+    return;
+  }
 
   std::vector<std::string> origins_identifiers;
-  if (!databases_table_->GetAllOriginIdentifiers(&origins_identifiers))
-    return net::ERR_FAILED;
+  if (!databases_table_->GetAllOriginIdentifiers(&origins_identifiers)) {
+    std::move(callback).Run(net::ERR_FAILED);
+    return;
+  }
+
+  DatabaseSet to_be_deleted;
   int rv = net::OK;
   for (const auto& origin : origins_identifiers) {
     if (special_storage_policy_.get() &&
@@ -713,8 +718,9 @@ int DatabaseTracker::DeleteDataModifiedSince(
 
     std::vector<DatabaseDetails> details;
     if (!databases_table_->GetAllDatabaseDetailsForOriginIdentifier(origin,
-                                                                    &details))
+                                                                    &details)) {
       rv = net::ERR_FAILED;
+    }
     for (const DatabaseDetails& db : details) {
       base::FilePath db_file = GetFullDBFilePath(origin, db.database_name);
       base::File::Info file_info;
@@ -723,21 +729,26 @@ int DatabaseTracker::DeleteDataModifiedSince(
         continue;
 
       // Check if the database is opened by any renderer.
-      if (database_connections_.IsDatabaseOpened(origin, db.database_name))
+      if (database_connections_.IsDatabaseOpened(origin, db.database_name)) {
         to_be_deleted[origin].insert(db.database_name);
-      else
+      } else {
         DeleteClosedDatabase(origin, db.database_name);
+      }
     }
   }
 
-  if (rv != net::OK)
-    return rv;
+  if (rv != net::OK) {
+    DCHECK_EQ(rv, net::ERR_FAILED);
+    std::move(callback).Run(rv);
+    return;
+  }
 
   if (!to_be_deleted.empty()) {
     ScheduleDatabasesForDeletion(to_be_deleted, std::move(callback));
-    return net::ERR_IO_PENDING;
+    return;
   }
-  return net::OK;
+
+  std::move(callback).Run(net::OK);
 }
 
 void DatabaseTracker::DeleteDataForOrigin(
