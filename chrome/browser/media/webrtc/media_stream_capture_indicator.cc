@@ -186,12 +186,7 @@ class MediaStreamCaptureIndicator::UIDelegate : public content::MediaStreamUI {
   gfx::NativeViewId OnStarted(
       base::OnceClosure stop_callback,
       content::MediaStreamUI::SourceCallback source_callback) override {
-    if (started_) {
-      // Ignore possibly-compromised renderers that might call
-      // MediaStreamDispatcherHost::OnStreamStarted() more than once.
-      // See: https://crbug.com/1155426
-      return 0;
-    }
+    DCHECK(!started_);
     started_ = true;
 
     if (device_usage_) {
