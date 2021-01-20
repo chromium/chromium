@@ -49,6 +49,7 @@ cr.define('cellular_setup', function() {
       state_: {
         type: String,
         value: ESimUiState.PROFILE_SEARCH,
+        observer: 'onStateChanged_',
       },
 
       /**
@@ -124,10 +125,7 @@ cr.define('cellular_setup', function() {
       'activation-code-updated': 'onActivationCodeUpdated_',
     },
 
-    observers: [
-      'updateSelectedPage_(state_)', 'updateButtonBarState_(state_)',
-      'onSelectedProfileChanged_(selectedProfile_)'
-    ],
+    observers: ['onSelectedProfileChanged_(selectedProfile_)'],
 
     /** @override */
     created() {
@@ -205,6 +203,13 @@ cr.define('cellular_setup', function() {
     },
 
     /** @private */
+    onStateChanged_(oldState, newState) {
+      this.updateSelectedPage_();
+      this.updateButtonBarState_();
+      this.initializePageState_(oldState, newState);
+    },
+
+    /** @private */
     updateSelectedPage_() {
       switch (this.state_) {
         case ESimUiState.PROFILE_SEARCH:
@@ -240,7 +245,8 @@ cr.define('cellular_setup', function() {
             cancel: this.delegate.shouldShowCancelButton() ?
                 cellularSetup.ButtonState.ENABLED :
                 undefined,
-            forward: cellularSetup.ButtonState.DISABLED,
+            forward: this.activationCode_ ? cellularSetup.ButtonState.ENABLED :
+                                            cellularSetup.ButtonState.DISABLED,
           };
           break;
         case ESimUiState.CONFIRMATION_CODE_ENTRY:
@@ -254,8 +260,11 @@ cr.define('cellular_setup', function() {
           };
           break;
         case ESimUiState.PROFILE_SELECTION:
-          this.forwardButtonLabel = this.i18n('skipDiscovery');
+          this.forwardButtonLabel = this.selectedProfile_ ?
+              this.i18n('next') :
+              this.i18n('skipDiscovery');
           buttonState = {
+            backward: cellularSetup.ButtonState.ENABLED,
             cancel: this.delegate.shouldShowCancelButton() ?
                 cellularSetup.ButtonState.ENABLED :
                 undefined,
@@ -273,6 +282,15 @@ cr.define('cellular_setup', function() {
           break;
       }
       this.set('buttonState', buttonState);
+    },
+
+    /** @private */
+    initializePageState_(oldState, newState) {
+      this.confirmationCode_ = '';
+      if (newState === ESimUiState.ACTIVATION_CODE_ENTRY &&
+          oldState !== ESimUiState.CONFIRMATION_CODE_ENTRY) {
+        this.activationCode_ = '';
+      }
     },
 
     /** @private */
@@ -344,7 +362,22 @@ cr.define('cellular_setup', function() {
      * SubflowBehavior override
      */
     attemptBackwardNavigation() {
-      // TODO(crbug.com/1093185): Handle state when camera is used
+      if (this.state_ === ESimUiState.ACTIVATION_CODE_ENTRY &&
+          this.pendingProfiles_.length > 1) {
+        this.state_ = ESimUiState.PROFILE_SELECTION;
+        return true;
+      } else if (this.state_ === ESimUiState.CONFIRMATION_CODE_ENTRY) {
+        if (this.activationCode_) {
+          this.state_ = ESimUiState.ACTIVATION_CODE_ENTRY;
+        } else if (this.pendingProfiles_.length === 0) {
+          this.state_ = ESimUiState.ACTIVATION_CODE_ENTRY;
+        } else if (this.pendingProfiles_.length > 1) {
+          this.state_ = ESimUiState.PROFILE_SELECTION;
+        } else {
+          return false;
+        }
+        return true;
+      }
       return false;
     },
 

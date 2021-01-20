@@ -170,6 +170,35 @@ suite('CrComponentsEsimFlowUiTest', function() {
           cellular_setup.ESimPageName.CONFIRMATION_CODE, confirmationCodePage);
       assertTrue(confirmationCodeInput.invalid);
     });
+
+    test('Navigate backwards from confirmation code', async function() {
+      euicc.setProfileInstallResultForTest(
+          chromeos.cellularSetup.mojom.ProfileInstallResult
+              .kErrorNeedsConfirmationCode);
+
+      eSimPage.navigateForward();
+
+      await flushAsync();
+
+      // Confirmation code page should be showing.
+      assertSelectedPage(
+          cellular_setup.ESimPageName.CONFIRMATION_CODE, confirmationCodePage);
+      confirmationCodePage.$$('#confirmationCode').value = 'CONFIRMATION_CODE';
+
+      assertTrue(eSimPage.attemptBackwardNavigation());
+      await flushAsync();
+
+      // Should now be at the activation code page.
+      assertSelectedPage(
+          cellular_setup.ESimPageName.ACTIVATION_CODE, activationCodePage);
+      assertEquals(confirmationCodePage.$$('#confirmationCode').value, '');
+      assertEquals(
+          activationCodePage.$$('#activationCode').value, 'ACTIVATION_CODE');
+
+      // Navigating backwards should return false since we're at the beginning.
+      assertFalse(eSimPage.attemptBackwardNavigation());
+      await flushAsync();
+    });
   });
 
   suite('Single eSIM profile flow', function() {
@@ -261,11 +290,36 @@ suite('CrComponentsEsimFlowUiTest', function() {
           cellular_setup.ESimPageName.CONFIRMATION_CODE, confirmationCodePage);
       assertTrue(confirmationCodeInput.invalid);
     });
+
+    test('Navigate backwards from confirmation code', async function() {
+      profile.setProfileInstallResultForTest(
+          chromeos.cellularSetup.mojom.ProfileInstallResult
+              .kErrorNeedsConfirmationCode);
+
+      // Loading page should be showing.
+      assertSelectedPage(
+          cellular_setup.ESimPageName.PROFILE_LOADING, profileLoadingPage);
+
+      await flushAsync();
+
+      // Confirmation code page should be showing.
+      assertSelectedPage(
+          cellular_setup.ESimPageName.CONFIRMATION_CODE, confirmationCodePage);
+      confirmationCodePage.$$('#confirmationCode').value = 'CONFIRMATION_CODE';
+
+      // Navigating backwards should return false since we're at the beginning.
+      assertFalse(eSimPage.attemptBackwardNavigation());
+      await flushAsync();
+    });
   });
 
   suite('Multiple eSIM profiles flow', function() {
+    let euicc;
+
     setup(async function() {
       eSimManagerRemote.addEuiccForTest(2);
+      const availableEuiccs = await eSimManagerRemote.getAvailableEuiccs();
+      euicc = availableEuiccs.euiccs[0];
       eSimPage.initSubflow();
 
       // Loading page should be showing.
@@ -279,7 +333,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
           cellular_setup.ESimPageName.PROFILE_DISCOVERY, profileDiscoveryPage);
     });
 
-    test('Skip discovery flow', async function() {
+    function skipDiscovery() {
       // Simulate pressing 'Skip'.
       assertTrue(
           eSimPage.buttonState.forward === cellularSetup.ButtonState.ENABLED);
@@ -293,9 +347,14 @@ suite('CrComponentsEsimFlowUiTest', function() {
       // Insert an activation code.
       activationCodePage.$$('#activationCode').value = 'ACTIVATION_CODE';
 
-      // Simulate pressing 'Forward'.
       assertTrue(
           eSimPage.buttonState.forward === cellularSetup.ButtonState.ENABLED);
+    }
+
+    test('Skip discovery flow', async function() {
+      skipDiscovery();
+
+      // Simulate pressing 'Forward'.
       eSimPage.navigateForward();
       await flushAsync();
 
@@ -303,7 +362,51 @@ suite('CrComponentsEsimFlowUiTest', function() {
       assertSelectedPage(cellular_setup.ESimPageName.FINAL, finalPage);
     });
 
-    test('Select profile flow', async function() {
+    test(
+        'Navigate backwards from skip discovery flow with confirmation code',
+        async function() {
+          skipDiscovery();
+
+          euicc.setProfileInstallResultForTest(
+              chromeos.cellularSetup.mojom.ProfileInstallResult
+                  .kErrorNeedsConfirmationCode);
+
+          eSimPage.navigateForward();
+          await flushAsync();
+
+          // Confirmation code page should be showing.
+          assertSelectedPage(
+              cellular_setup.ESimPageName.CONFIRMATION_CODE,
+              confirmationCodePage);
+          confirmationCodePage.$$('#confirmationCode').value =
+              'CONFIRMATION_CODE';
+
+          // Simulate pressing 'Backward'.
+          assertTrue(eSimPage.attemptBackwardNavigation());
+          await flushAsync();
+
+          assertSelectedPage(
+              cellular_setup.ESimPageName.ACTIVATION_CODE, activationCodePage);
+          assertEquals(
+              activationCodePage.$$('#activationCode').value,
+              'ACTIVATION_CODE');
+          assertEquals(confirmationCodePage.$$('#confirmationCode').value, '');
+
+          assertTrue(eSimPage.attemptBackwardNavigation());
+          await flushAsync();
+
+          assertSelectedPage(
+              cellular_setup.ESimPageName.PROFILE_DISCOVERY,
+              profileDiscoveryPage);
+          assertEquals(
+              eSimPage.forwardButtonLabel, 'Skip & Set up new profile');
+
+          // Navigating backwards should return false since we're at the
+          // beginning.
+          assertFalse(eSimPage.attemptBackwardNavigation());
+        });
+
+    function selectProfile() {
       // Select the first profile on the list.
       const profileList = profileDiscoveryPage.$$('#profileList');
       profileList.selectItem(profileList.items[0]);
@@ -315,6 +418,10 @@ suite('CrComponentsEsimFlowUiTest', function() {
 
       // Simulate pressing 'Forward'.
       eSimPage.navigateForward();
+    }
+
+    test('Select profile flow', async function() {
+      selectProfile();
       await flushAsync();
 
       // Should now be at the final page.
@@ -329,17 +436,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
           chromeos.cellularSetup.mojom.ProfileInstallResult
               .kErrorNeedsConfirmationCode);
 
-      // Select the first profile on the list.
-      const profileListUI = profileDiscoveryPage.$$('#profileList');
-      profileListUI.selectItem(profileListUI.items[0]);
-      Polymer.dom.flush();
-
-      // The 'Forward' button should now be enabled.
-      assertTrue(
-          eSimPage.buttonState.forward === cellularSetup.ButtonState.ENABLED);
-
-      // Simulate pressing 'Forward'.
-      eSimPage.navigateForward();
+      selectProfile();
       await flushAsync();
 
       // Confirmation code page should be showing.
@@ -361,5 +458,38 @@ suite('CrComponentsEsimFlowUiTest', function() {
       // Should go to final page.
       assertSelectedPage(cellular_setup.ESimPageName.FINAL, finalPage);
     });
+
+    test(
+        'Navigate backwards from select profile with confirmation code flow',
+        async function() {
+          const availableEuiccs = await eSimManagerRemote.getAvailableEuiccs();
+          const profileList = await availableEuiccs.euiccs[0].getProfileList();
+          profileList.profiles[0].setProfileInstallResultForTest(
+              chromeos.cellularSetup.mojom.ProfileInstallResult
+                  .kErrorNeedsConfirmationCode);
+
+          selectProfile();
+          await flushAsync();
+
+          // Confirmation code page should be showing.
+          assertSelectedPage(
+              cellular_setup.ESimPageName.CONFIRMATION_CODE,
+              confirmationCodePage);
+          confirmationCodePage.$$('#confirmationCode').value =
+              'CONFIRMATION_CODE';
+
+          assertTrue(eSimPage.attemptBackwardNavigation());
+          await flushAsync();
+
+          assertSelectedPage(
+              cellular_setup.ESimPageName.PROFILE_DISCOVERY,
+              profileDiscoveryPage);
+          assertEquals(eSimPage.forwardButtonLabel, 'Next');
+          confirmationCodePage.$$('#confirmationCode').value = '';
+
+          // Navigating backwards should return false since we're at the
+          // beginning.
+          assertFalse(eSimPage.attemptBackwardNavigation());
+        });
   });
 });
