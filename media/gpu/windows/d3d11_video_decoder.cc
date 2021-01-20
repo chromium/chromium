@@ -899,6 +899,10 @@ void D3D11VideoDecoder::NotifyError(const Status& reason) {
   TRACE_EVENT0("gpu", "D3D11VideoDecoder::NotifyError");
   state_ = State::kError;
 
+  // Log why this failed.
+  base::UmaHistogramSparse("Media.D3D11.NotifyErrorStatus",
+                           static_cast<int>(reason.code()));
+
   if (init_cb_) {
     std::move(init_cb_).Run(reason);
   } else {

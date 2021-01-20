@@ -1304,6 +1304,38 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Media.D3D11.H264Status" enum="MediaStatusCode"
+    expires_after="2021-06-13">
+  <owner>liberato@chromium.org</owner>
+  <owner>tmathmeyer@chromium.org</owner>
+  <summary>
+    This records the media::StatusCode from the H264 accelerator. It is emitted
+    when the accelerator encounters an error during decoding.
+  </summary>
+</histogram>
+
+<histogram name="Media.D3D11.NotifyErrorStatus" enum="MediaStatusCode"
+    expires_after="2021-06-13">
+  <owner>liberato@chromium.org</owner>
+  <owner>tmathmeyer@chromium.org</owner>
+  <summary>
+    This records the media::StatusCode that was sent to NotifyError. kOk is not
+    recorded here. It is recorded when D3D11VideoDecoder reports an error to the
+    client. For decoder failures, an additional status code may be logged by the
+    accelerator -- see Media.D3D11{H264,VP9}Status for that.
+  </summary>
+</histogram>
+
+<histogram name="Media.D3D11.VP9Status" enum="MediaStatusCode"
+    expires_after="2021-06-13">
+  <owner>liberato@chromium.org</owner>
+  <owner>tmathmeyer@chromium.org</owner>
+  <summary>
+    This records the media::StatusCode from the VP9 accelerator. It is emitted
+    when the accelerator encounters an error during decoding.
+  </summary>
+</histogram>
+
 <histogram name="Media.D3D11.WasVideoSupported"
     enum="D3D11VideoNotSupportedReason" expires_after="2021-06-13">
   <owner>liberato@chromium.org</owner>

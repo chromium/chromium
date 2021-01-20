@@ -9,19 +9,21 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "media/gpu/windows/d3d11_vp9_picture.h"
 
 namespace media {
 
 using DecodeStatus = VP9Decoder::VP9Accelerator::Status;
 
-#define RETURN_ON_HR_FAILURE(expr_name, expr)                                  \
-  do {                                                                         \
-    HRESULT expr_value = (expr);                                               \
-    if (FAILED(expr_value)) {                                                  \
-      RecordFailure(#expr_name, logging::SystemErrorCodeToString(expr_value)); \
-      return false;                                                            \
-    }                                                                          \
+#define RETURN_ON_HR_FAILURE(expr_name, expr, code)                           \
+  do {                                                                        \
+    HRESULT expr_value = (expr);                                              \
+    if (FAILED(expr_value)) {                                                 \
+      RecordFailure(#expr_name, logging::SystemErrorCodeToString(expr_value), \
+                    code);                                                    \
+      return false;                                                           \
+    }                                                                         \
   } while (0)
 
 std::vector<D3D11_VIDEO_DECODER_SUB_SAMPLE_MAPPING_BLOCK>
@@ -54,9 +56,11 @@ D3D11VP9Accelerator::D3D11VP9Accelerator(
 D3D11VP9Accelerator::~D3D11VP9Accelerator() {}
 
 void D3D11VP9Accelerator::RecordFailure(const std::string& fail_type,
-                                        const std::string& reason) {
+                                        const std::string& reason,
+                                        StatusCode code) {
   MEDIA_LOG(ERROR, media_log_)
       << "DX11VP9Failure(" << fail_type << ")=" << reason;
+  base::UmaHistogramSparse("Media.D3D11.VP9Status", static_cast<int>(code));
 }
 
 scoped_refptr<VP9Picture> D3D11VP9Accelerator::CreateVP9Picture() {
@@ -70,7 +74,8 @@ bool D3D11VP9Accelerator::BeginFrame(const D3D11VP9Picture& pic) {
   const bool is_encrypted = pic.decrypt_config();
   if (is_encrypted) {
     RecordFailure("crypto_config",
-                  "Cannot find the decrypt context for the frame.");
+                  "Cannot find the decrypt context for the frame.",
+                  StatusCode::kCryptoConfigFailed);
     return false;
   }
 
@@ -82,7 +87,8 @@ bool D3D11VP9Accelerator::BeginFrame(const D3D11VP9Picture& pic) {
   } while (hr == E_PENDING || hr == D3DERR_WASSTILLDRAWING);
 
   if (FAILED(hr)) {
-    RecordFailure("DecoderBeginFrame", logging::SystemErrorCodeToString(hr));
+    RecordFailure("DecoderBeginFrame", logging::SystemErrorCodeToString(hr),
+                  StatusCode::kDecoderBeginFrameFailed);
     return false;
   }
 
@@ -253,25 +259,29 @@ void D3D11VP9Accelerator::CopyHeaderSizeAndID(DXVA_PicParams_VP9* pic_params,
 bool D3D11VP9Accelerator::SubmitDecoderBuffer(
     const DXVA_PicParams_VP9& pic_params,
     const D3D11VP9Picture& pic) {
-#define GET_BUFFER(type)                                 \
-  RETURN_ON_HR_FAILURE(GetDecoderBuffer,                 \
-                       video_context_->GetDecoderBuffer( \
-                           video_decoder_.Get(), type, &buffer_size, &buffer))
-#define RELEASE_BUFFER(type) \
-  RETURN_ON_HR_FAILURE(      \
-      ReleaseDecoderBuffer,  \
-      video_context_->ReleaseDecoderBuffer(video_decoder_.Get(), type))
+#define GET_BUFFER(type, code)                                                 \
+  RETURN_ON_HR_FAILURE(GetDecoderBuffer,                                       \
+                       video_context_->GetDecoderBuffer(                       \
+                           video_decoder_.Get(), type, &buffer_size, &buffer), \
+                       code)
+#define RELEASE_BUFFER(type, code) \
+  RETURN_ON_HR_FAILURE(            \
+      ReleaseDecoderBuffer,        \
+      video_context_->ReleaseDecoderBuffer(video_decoder_.Get(), type), code)
 
   UINT buffer_size;
   void* buffer;
 
-  GET_BUFFER(D3D11_VIDEO_DECODER_BUFFER_PICTURE_PARAMETERS);
+  GET_BUFFER(D3D11_VIDEO_DECODER_BUFFER_PICTURE_PARAMETERS,
+             StatusCode::kGetPicParamBufferFailed);
   memcpy(buffer, &pic_params, sizeof(pic_params));
-  RELEASE_BUFFER(D3D11_VIDEO_DECODER_BUFFER_PICTURE_PARAMETERS);
+  RELEASE_BUFFER(D3D11_VIDEO_DECODER_BUFFER_PICTURE_PARAMETERS,
+                 StatusCode::kReleasePicParamBufferFailed);
 
   size_t buffer_offset = 0;
   while (buffer_offset < pic.frame_hdr->frame_size) {
-    GET_BUFFER(D3D11_VIDEO_DECODER_BUFFER_BITSTREAM);
+    GET_BUFFER(D3D11_VIDEO_DECODER_BUFFER_BITSTREAM,
+               StatusCode::kGetBitstreamBufferFailed);
     size_t copy_size = pic.frame_hdr->frame_size - buffer_offset;
     bool contains_end = true;
     if (copy_size > buffer_size) {
@@ -279,11 +289,13 @@ bool D3D11VP9Accelerator::SubmitDecoderBuffer(
       contains_end = false;
     }
     memcpy(buffer, pic.frame_hdr->data + buffer_offset, copy_size);
-    RELEASE_BUFFER(D3D11_VIDEO_DECODER_BUFFER_BITSTREAM);
+    RELEASE_BUFFER(D3D11_VIDEO_DECODER_BUFFER_BITSTREAM,
+                   StatusCode::kReleaseBitstreamBufferFailed);
 
     DXVA_Slice_VPx_Short slice_info;
 
-    GET_BUFFER(D3D11_VIDEO_DECODER_BUFFER_SLICE_CONTROL);
+    GET_BUFFER(D3D11_VIDEO_DECODER_BUFFER_SLICE_CONTROL,
+               StatusCode::kGetSliceControlBufferFailed);
     slice_info.BSNALunitDataLocation = 0;
     slice_info.SliceBytesInBuffer = (UINT)copy_size;
 
@@ -299,7 +311,8 @@ bool D3D11VP9Accelerator::SubmitDecoderBuffer(
       slice_info.wBadSliceChopping = 3;
 
     memcpy(buffer, &slice_info, sizeof(slice_info));
-    RELEASE_BUFFER(D3D11_VIDEO_DECODER_BUFFER_SLICE_CONTROL);
+    RELEASE_BUFFER(D3D11_VIDEO_DECODER_BUFFER_SLICE_CONTROL,
+                   StatusCode::kReleaseSliceControlBufferFailed);
 
     constexpr int buffers_count = 3;
     VideoContextWrapper::VideoBufferWrapper buffers[buffers_count] = {};
@@ -327,7 +340,8 @@ bool D3D11VP9Accelerator::SubmitDecoderBuffer(
 
     RETURN_ON_HR_FAILURE(SubmitDecoderBuffers,
                          video_context_->SubmitDecoderBuffers(
-                             video_decoder_.Get(), buffers_count, buffers));
+                             video_decoder_.Get(), buffers_count, buffers),
+                         StatusCode::kSubmitDecoderBuffersFailed);
     buffer_offset += copy_size;
   }
 
@@ -361,7 +375,8 @@ DecodeStatus D3D11VP9Accelerator::SubmitDecode(
 
   HRESULT hr = video_context_->DecoderEndFrame(video_decoder_.Get());
   if (FAILED(hr)) {
-    RecordFailure("DecoderEndFrame", logging::SystemErrorCodeToString(hr));
+    RecordFailure("DecoderEndFrame", logging::SystemErrorCodeToString(hr),
+                  StatusCode::kDecoderEndFrameFailed);
     return DecodeStatus::kFail;
   }
 
