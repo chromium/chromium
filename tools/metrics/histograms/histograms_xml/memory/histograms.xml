@@ -228,7 +228,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Memory.Browser.MemoryFootprint.Active" units="MB"
     expires_after="2021-08-27">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
     This metric is only recorded on iOS. Same as Memory.Browser.MemoryFootprint
@@ -239,7 +239,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Memory.Browser.MemoryFootprint.Active.Over200MBWatermark"
     enum="BooleanGreaterOrEqualThan200MB" expires_after="2021-08-27">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
     This metric is only recorded on iOS when
@@ -255,7 +255,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Memory.Browser.MemoryFootprint.Background" units="MB"
     expires_after="2021-08-27">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
     This metric is only recorded on iOS. Same as Memory.Browser.MemoryFootprint
@@ -271,7 +271,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Memory.Browser.MemoryFootprint.Inactive" units="MB"
     expires_after="2021-08-27">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
     This metric is only recorded on iOS. Same as Memory.Browser.MemoryFootprint
@@ -314,7 +314,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Memory.Browser.MemoryFootprint.OnBackground" units="MiB"
     expires_after="2021-08-27">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
     This metric is only recorded on iOS. Same as Memory.Browser.MemoryFootprint
