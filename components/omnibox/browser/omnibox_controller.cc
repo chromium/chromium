@@ -71,6 +71,13 @@ void OmniboxController::OnResultChanged(AutocompleteController* controller,
     // Accept the temporary text as the user text, because it makes little sense
     // to have temporary text when the popup is closed.
     omnibox_edit_model_->AcceptTemporaryTextAsUserText();
+    // Closing the popup can change the default suggestion. This usually occurs
+    // when it's unclear whether the input represents a search or URL; e.g.,
+    // 'a.com/b c' or when title autocompleting. Clear the additional text to
+    // avoid suggesting the omnibox contains a URL suggestion when that may no
+    // longer be the case; i.e. when the default suggestion changed from a URL
+    // to a search suggestion upon closing the popup.
+    omnibox_edit_model_->ClearAdditionalText();
   }
 
   // Note: The client outlives |this|, so bind a weak pointer to the callback

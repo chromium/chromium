@@ -105,9 +105,7 @@ class OmniboxView {
                            bool update_popup);
 
   // Sets the window text and the caret position. |notify_text_changed| is true
-  // if the model should be notified of the change. If rich autocompletion is
-  // enabled, |additional_text| is displayed in a non-editable views::Label
-  // adjacent to the omnibox.
+  // if the model should be notified of the change. Clears the additional text.
   virtual void SetWindowTextAndCaretPos(const base::string16& text,
                                         size_t caret_pos,
                                         bool update_popup,

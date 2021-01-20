@@ -1107,6 +1107,10 @@ void OmniboxEditModel::ClearKeyword() {
   }
 }
 
+void OmniboxEditModel::ClearAdditionalText() {
+  view_->SetAdditionalText(base::string16());
+}
+
 void OmniboxEditModel::OnSetFocus(bool control_down) {
   last_omnibox_focus_ = base::TimeTicks::Now();
   user_input_since_focus_ = false;

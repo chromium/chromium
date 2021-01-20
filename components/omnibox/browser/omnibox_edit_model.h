@@ -288,6 +288,9 @@ class OmniboxEditModel {
   // Clears the current keyword.
   void ClearKeyword();
 
+  // Clears additional text.
+  void ClearAdditionalText();
+
   // Returns the current autocomplete result.  This logic should in the future
   // live in AutocompleteController but resides here for now.  This method is
   // used by AutomationProvider::AutocompleteEditGetMatches.
