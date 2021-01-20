@@ -15,6 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
+#include "base/util/values/values_util.h"
 #include "base/values.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
@@ -43,6 +44,9 @@ constexpr char kPrevious[] = "previous";
 constexpr char kLast[] = "last";
 constexpr char kBlockedUiReboot[] = "blocked_ui_reboot";
 constexpr char kStarted[] = "started";
+
+// Snapshot muss automatically expire in 30 days if not updated.
+constexpr base::TimeDelta kSnapshotMaxLifetime = base::TimeDelta::FromDays(30);
 
 // Returns true if the Chrome session is restored after crash.
 bool IsRestoredSession() {
@@ -89,8 +93,7 @@ static ArcDataSnapshotdManager* g_arc_data_snapshotd_manager = nullptr;
 ArcDataSnapshotdManager::SnapshotInfo::SnapshotInfo(bool last)
     : is_last_(last) {
   os_version_ = base::SysInfo::OperatingSystemVersion();
-  creation_date_ =
-      base::UTF16ToUTF8(base::TimeFormatShortDateAndTime(base::Time::Now()));
+  UpdateCreationDate(base::Time::Now());
 }
 
 ArcDataSnapshotdManager::SnapshotInfo::SnapshotInfo(const base::Value* value,
@@ -105,9 +108,11 @@ ArcDataSnapshotdManager::SnapshotInfo::SnapshotInfo(const base::Value* value,
       os_version_ = *found;
   }
   {
-    auto* found = dict->FindStringPath(kCreationDate);
-    if (found)
-      creation_date_ = *found;
+    auto* found = dict->FindPath(kCreationDate);
+    if (found && util::ValueToTime(found).has_value()) {
+      auto parsed_time = util::ValueToTime(found).value();
+      UpdateCreationDate(parsed_time);
+    }
   }
   {
     auto found = dict->FindBoolPath(kVerified);
@@ -128,7 +133,7 @@ ArcDataSnapshotdManager::SnapshotInfo::~SnapshotInfo() = default;
 std::unique_ptr<ArcDataSnapshotdManager::SnapshotInfo>
 ArcDataSnapshotdManager::SnapshotInfo::CreateForTesting(
     const std::string& os_version,
-    const std::string& creation_date,
+    const base::Time& creation_date,
     bool verified,
     bool updated,
     bool last) {
@@ -142,7 +147,7 @@ void ArcDataSnapshotdManager::SnapshotInfo::Sync(base::Value* dict) {
 
   base::DictionaryValue value;
   value.SetStringKey(kOsVersion, os_version_);
-  value.SetStringKey(kCreationDate, creation_date_);
+  value.SetKey(kCreationDate, util::TimeToValue(creation_date_));
   value.SetBoolKey(kVerified, verified_);
   value.SetBoolKey(kUpdated, updated_);
 
@@ -150,7 +155,12 @@ void ArcDataSnapshotdManager::SnapshotInfo::Sync(base::Value* dict) {
 }
 
 bool ArcDataSnapshotdManager::SnapshotInfo::IsExpired() const {
-  // TODO(pbond): implement;
+  if (creation_date_ + kSnapshotMaxLifetime <= base::Time::Now()) {
+    VLOG(1) << GetDictPath() << " snapshot is expired. creation_date="
+            << base::UTF16ToUTF8(
+                   base::TimeFormatShortDateAndTime(creation_date_));
+    return true;
+  }
   return false;
 }
 
@@ -160,18 +170,43 @@ bool ArcDataSnapshotdManager::SnapshotInfo::IsOsVersionUpdated() const {
 
 ArcDataSnapshotdManager::SnapshotInfo::SnapshotInfo(
     const std::string& os_version,
-    const std::string& creation_date,
+    const base::Time& creation_date,
     bool verified,
     bool updated,
     bool last)
     : is_last_(last),
       os_version_(os_version),
-      creation_date_(creation_date),
       verified_(verified),
-      updated_(updated) {}
+      updated_(updated) {
+  UpdateCreationDate(creation_date);
+}
 
 std::string ArcDataSnapshotdManager::SnapshotInfo::GetDictPath() const {
   return is_last_ ? kLast : kPrevious;
+}
+
+void ArcDataSnapshotdManager::SnapshotInfo::UpdateCreationDate(
+    const base::Time& creation_date) {
+  creation_date_ = creation_date;
+  if (lifetime_timer_.IsRunning()) {
+    LOG(ERROR) << "Updating a snapshot lifetime timer.";
+    lifetime_timer_.Stop();
+  }
+  // If the snapshot is expired on initialization, it is expected to be cleared
+  // soon in the flow.
+  if (IsExpired())
+    return;
+  base::TimeDelta delay =
+      creation_date_ + kSnapshotMaxLifetime - base::Time::Now();
+  lifetime_timer_.Start(
+      FROM_HERE, delay,
+      base::BindOnce(&ArcDataSnapshotdManager::SnapshotInfo::OnSnapshotExpired,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ArcDataSnapshotdManager::SnapshotInfo::OnSnapshotExpired() {
+  DCHECK(ArcDataSnapshotdManager::Get());
+  ArcDataSnapshotdManager::Get()->OnSnapshotExpired();
 }
 
 ArcDataSnapshotdManager::Snapshot::Snapshot(PrefService* local_state)
@@ -280,11 +315,6 @@ ArcDataSnapshotdManager::Snapshot::Snapshot(
   DCHECK(local_state_);
 }
 
-// static
-ArcDataSnapshotdManager* ArcDataSnapshotdManager::Get() {
-  return g_arc_data_snapshotd_manager;
-}
-
 ArcDataSnapshotdManager::ArcDataSnapshotdManager(
     PrefService* local_state,
     std::unique_ptr<Delegate> delegate,
@@ -328,6 +358,16 @@ ArcDataSnapshotdManager::~ArcDataSnapshotdManager() {
 
   snapshot_.Sync();
   EnsureDaemonStopped(base::DoNothing());
+}
+
+// static
+ArcDataSnapshotdManager* ArcDataSnapshotdManager::Get() {
+  return g_arc_data_snapshotd_manager;
+}
+
+// static
+base::TimeDelta ArcDataSnapshotdManager::snapshot_max_lifetime_for_testing() {
+  return kSnapshotMaxLifetime;
 }
 
 void ArcDataSnapshotdManager::EnsureDaemonStarted(base::OnceClosure callback) {
@@ -615,6 +655,28 @@ void ArcDataSnapshotdManager::UpdateUi(int percent) {
   }
   bridge_->Update(percent, base::BindOnce(&ArcDataSnapshotdManager::OnUiUpdated,
                                           weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ArcDataSnapshotdManager::OnSnapshotExpired() {
+  switch (state_) {
+    case State::kBlockedUi:
+    case State::kMgsToLaunch:
+    case State::kMgsLaunched:
+    case State::kStopping:
+      LOG(WARNING) << "Expired snapshots are cleared in scope of this process.";
+      return;
+    case State::kLoading:
+      // The expired snapshot may be in the process of being loaded to the
+      // running MGS. Postpone the removal until the chrome session restart.
+      LOG(WARNING)
+          << "The snapshot is expired while might be in use. Postpone exire.";
+      return;
+    case State::kNone:
+    case State::kRestored:
+    case State::kRunning:
+      DoClearSnapshots();
+      return;
+  }
 }
 
 void ArcDataSnapshotdManager::OnSnapshotsCleared(bool success) {

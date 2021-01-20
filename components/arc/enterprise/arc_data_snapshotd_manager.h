@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "components/arc/enterprise/arc_apps_tracker.h"
 #include "components/arc/enterprise/snapshot_hours_policy_service.h"
 #include "components/arc/enterprise/snapshot_reboot_controller.h"
@@ -93,7 +94,7 @@ class ArcDataSnapshotdManager final
     // dictionary.
     static std::unique_ptr<SnapshotInfo> CreateForTesting(
         const std::string& os_version,
-        const std::string& creation_date,
+        const base::Time& creation_date,
         bool verified,
         bool updated,
         bool last);
@@ -116,7 +117,7 @@ class ArcDataSnapshotdManager final
 
    private:
     SnapshotInfo(const std::string& os_version,
-                 const std::string& creation_date,
+                 const base::Time& creation_date,
                  bool verified,
                  bool updated,
                  bool last);
@@ -124,14 +125,25 @@ class ArcDataSnapshotdManager final
     // Returns dictionary path in arc.snapshot local state preference.
     std::string GetDictPath() const;
 
+    void UpdateCreationDate(const base::Time& creation_date);
+
+    // Called once this snapshot is expired.
+    void OnSnapshotExpired();
+
     bool is_last_;
 
     // Values should be kept in sync with values stored in arc.snapshot.last or
     // arc.snapshot.previous preferences.
     std::string os_version_;
-    std::string creation_date_;
+    base::Time creation_date_;
     bool verified_ = false;
     bool updated_ = false;
+
+    // The snapshots' lifetime timer is fired when this snapshot must be
+    // cleared.
+    base::OneShotTimer lifetime_timer_;
+
+    base::WeakPtrFactory<SnapshotInfo> weak_ptr_factory_{this};
   };
 
   // This class operates with a snapshot related info including mode and
@@ -210,6 +222,8 @@ class ArcDataSnapshotdManager final
 
   static ArcDataSnapshotdManager* Get();
 
+  static base::TimeDelta snapshot_max_lifetime_for_testing();
+
   // Starts arc-data-snapshotd.
   void EnsureDaemonStarted(base::OnceClosure callback);
   // Stops arc-data-snapshotd.
@@ -287,6 +301,8 @@ class ArcDataSnapshotdManager final
   void LoadSnapshot(const std::string& account_id, base::OnceClosure callback);
   void UpdateUi(int percent);
 
+  // Called once a snapshot is expired.
+  void OnSnapshotExpired();
   // Called once the outdated snapshots were removed or ensured that there are
   // no outdated snapshots.
   void OnSnapshotsCleared(bool success);

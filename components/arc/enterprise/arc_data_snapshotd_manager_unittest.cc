@@ -263,10 +263,10 @@ class ArcDataSnapshotdManagerBasicTest : public testing::Test {
   // mode.
   void SetupLocalState(bool blocked_ui_mode) {
     auto last = ArcDataSnapshotdManager::SnapshotInfo::CreateForTesting(
-        base::SysInfo::OperatingSystemVersion(), "" /* creation_date */,
+        base::SysInfo::OperatingSystemVersion(), base::Time::Now(),
         false /* verified */, false /* updated */, true /* last */);
     auto previous = ArcDataSnapshotdManager::SnapshotInfo::CreateForTesting(
-        base::SysInfo::OperatingSystemVersion(), "" /* creation_date */,
+        base::SysInfo::OperatingSystemVersion(), base::Time::Now(),
         false /* verified */, false /* updated */, false /* last */);
     auto snapshot = ArcDataSnapshotdManager::Snapshot::CreateForTesting(
         local_state(), blocked_ui_mode, false /* started */, std::move(last),
@@ -340,6 +340,13 @@ class ArcDataSnapshotdManagerStateTest
       public ::testing::WithParamInterface<ArcDataSnapshotdManager::State> {
  public:
   ArcDataSnapshotdManager::State expected_state() { return GetParam(); }
+
+  // Expire snapshots in max lifetime.
+  void ExpireSnapshots() {
+    task_environment_.FastForwardBy(
+        ArcDataSnapshotdManager::snapshot_max_lifetime_for_testing());
+    task_environment_.RunUntilIdle();
+  }
 };
 
 // Tests flows in ArcDataSnapshotdManager:
@@ -875,6 +882,43 @@ TEST_P(ArcDataSnapshotdManagerStateTest, OnSnapshotUpdateEndTimeChanged) {
                      false /* expected_blocked_ui_mode */);
       break;
   }
+}
+
+TEST_P(ArcDataSnapshotdManagerStateTest, ExpireSnapshots) {
+  SetupLocalState(false /* blocked_ui_mode */);
+  ExpectStopDaemon(true /* success */);
+  ArcDataSnapshotdManager::set_snapshot_enabled_for_testing(true /* enabled */);
+
+  auto* manager = CreateManager();
+  manager->set_state_for_testing(expected_state());
+  EXPECT_EQ(manager->state(), expected_state());
+  EXPECT_FALSE(manager->bridge());
+
+  CheckSnapshots(2 /* expected_snapshots_number */,
+                 false /* expected_blocked_ui_mode */);
+
+  int expected_snapshots_num;
+  switch (expected_state()) {
+    case ArcDataSnapshotdManager::State::kBlockedUi:
+    case ArcDataSnapshotdManager::State::kMgsToLaunch:
+    case ArcDataSnapshotdManager::State::kMgsLaunched:
+    case ArcDataSnapshotdManager::State::kLoading:
+    case ArcDataSnapshotdManager::State::kStopping:
+      // Do not expire snapshots if in these states. The expectation is that
+      // they are cleared during the flow or on the next session start up.
+      expected_snapshots_num = 2;
+      break;
+    case ArcDataSnapshotdManager::State::kNone:
+    case ArcDataSnapshotdManager::State::kRestored:
+    case ArcDataSnapshotdManager::State::kRunning:
+      // Expect snapshots to be cleared.
+      ExpectStartDaemon(true /* success */);
+      ExpectStopDaemon(true /* success */);
+      expected_snapshots_num = 0;
+      break;
+  }
+  ExpireSnapshots();
+  CheckSnapshots(expected_snapshots_num, false /* expected_blocked_ui_mode */);
 }
 
 INSTANTIATE_TEST_SUITE_P(
