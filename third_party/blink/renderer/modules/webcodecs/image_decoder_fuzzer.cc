@@ -125,32 +125,34 @@ DEFINE_BINARY_PROTO_FUZZER(
         ImageDecoderExternal::Create(script_state, image_decoder_init,
                                      IGNORE_EXCEPTION_FOR_TESTING);
 
-    // Promises will be fulfilled synchronously since we're using an array
-    // buffer based source.
-    for (auto& invocation : proto.invocations()) {
-      switch (invocation.Api_case()) {
-        case wc_fuzzer::ImageDecoderApiInvocation::kDecodeImage:
-          image_decoder->decode(
-              invocation.decode_image().frame_index(),
-              invocation.decode_image().complete_frames_only());
-          break;
-        case wc_fuzzer::ImageDecoderApiInvocation::kDecodeMetadata:
-          image_decoder->decodeMetadata();
-          break;
-        case wc_fuzzer::ImageDecoderApiInvocation::kSelectTrack:
-          image_decoder->selectTrack(invocation.select_track().track_id(),
-                                     IGNORE_EXCEPTION_FOR_TESTING);
-          break;
-        case wc_fuzzer::ImageDecoderApiInvocation::API_NOT_SET:
-          break;
+    if (image_decoder) {
+      // Promises will be fulfilled synchronously since we're using an array
+      // buffer based source.
+      for (auto& invocation : proto.invocations()) {
+        switch (invocation.Api_case()) {
+          case wc_fuzzer::ImageDecoderApiInvocation::kDecodeImage:
+            image_decoder->decode(
+                invocation.decode_image().frame_index(),
+                invocation.decode_image().complete_frames_only());
+            break;
+          case wc_fuzzer::ImageDecoderApiInvocation::kDecodeMetadata:
+            image_decoder->decodeMetadata();
+            break;
+          case wc_fuzzer::ImageDecoderApiInvocation::kSelectTrack:
+            image_decoder->selectTrack(invocation.select_track().track_id(),
+                                       IGNORE_EXCEPTION_FOR_TESTING);
+            break;
+          case wc_fuzzer::ImageDecoderApiInvocation::API_NOT_SET:
+            break;
+        }
+
+        // Give other tasks a chance to run (e.g. calling our output callback).
+        base::RunLoop().RunUntilIdle();
       }
-
-      // Give other tasks a chance to run (e.g. calling our output callback).
-      base::RunLoop().RunUntilIdle();
-
-      // TODO(crbug.com/1166925): Push the same image data incrementally into
-      // the fuzzer via a ReadableSource.
     }
+
+    // TODO(crbug.com/1166925): Push the same image data incrementally into
+    // the fuzzer via a ReadableSource.
   }
 
   // Request a V8 GC. Oilpan will be invoked by the GC epilogue.

@@ -89,7 +89,7 @@ TEST_F(ImageDecoderTest, DecodeEmpty) {
       DOMArrayBuffer::Create(SharedBuffer::Create())));
   auto* decoder = ImageDecoderExternal::Create(v8_scope.GetScriptState(), init,
                                                v8_scope.GetExceptionState());
-  EXPECT_TRUE(decoder);
+  EXPECT_FALSE(decoder);
   EXPECT_TRUE(v8_scope.GetExceptionState().HadException());
 }
 
@@ -108,7 +108,7 @@ TEST_F(ImageDecoderTest, DecodeNeuteredAtConstruction) {
 
   auto* decoder = ImageDecoderExternal::Create(v8_scope.GetScriptState(), init,
                                                v8_scope.GetExceptionState());
-  EXPECT_TRUE(decoder);
+  EXPECT_FALSE(decoder);
   EXPECT_TRUE(v8_scope.GetExceptionState().HadException());
 }
 
@@ -150,7 +150,7 @@ TEST_F(ImageDecoderTest, DecodeUnsupported) {
   EXPECT_FALSE(ImageDecoderExternal::canDecodeType(kImageType));
   auto* decoder =
       CreateDecoder(&v8_scope, "images/resources/test.svg", kImageType);
-  EXPECT_TRUE(decoder);
+  EXPECT_FALSE(decoder);
   EXPECT_TRUE(v8_scope.GetExceptionState().HadException());
 }
 

@@ -100,8 +100,9 @@ int AudioDecoderTraits::GetMaxDecodeRequests(const MediaDecoderType& decoder) {
 AudioDecoder* AudioDecoder::Create(ScriptState* script_state,
                                    const AudioDecoderInit* init,
                                    ExceptionState& exception_state) {
-  return MakeGarbageCollected<AudioDecoder>(script_state, init,
-                                            exception_state);
+  auto* result =
+      MakeGarbageCollected<AudioDecoder>(script_state, init, exception_state);
+  return exception_state.HadException() ? nullptr : result;
 }
 
 // static

@@ -33,8 +33,9 @@ ImageDecoderExternal* ImageDecoderExternal::Create(
     ScriptState* script_state,
     const ImageDecoderInit* init,
     ExceptionState& exception_state) {
-  return MakeGarbageCollected<ImageDecoderExternal>(script_state, init,
-                                                    exception_state);
+  auto* result = MakeGarbageCollected<ImageDecoderExternal>(script_state, init,
+                                                            exception_state);
+  return exception_state.HadException() ? nullptr : result;
 }
 
 ImageDecoderExternal::DecodeRequest::DecodeRequest(
