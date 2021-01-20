@@ -49,12 +49,11 @@ class AutoplayTest : public cr_fuchsia::WebEngineBrowserTest {
   fuchsia::web::NavigationControllerPtr controller_;
 };
 
-// TODO(1162433): Flakily times-out, probably because URL will change as soon
-// as navigation is "committed", which happens before document load.
 IN_PROC_BROWSER_TEST_F(
     AutoplayTest,
-    DISABLED_UserActivationPolicy_UserActivatedViaSimulatedInteraction) {
+    UserActivationPolicy_UserActivatedViaSimulatedInteraction) {
   const GURL kUrl(embedded_test_server()->GetURL("/play_vp8.html?autoplay=1"));
+  constexpr const char kPageLoadedTitle[] = "initial title";
 
   fuchsia::web::FramePtr frame =
       CreateFrame(fuchsia::web::AutoplayPolicy::REQUIRE_USER_ACTIVATION);
@@ -62,7 +61,7 @@ IN_PROC_BROWSER_TEST_F(
   fuchsia::web::LoadUrlParams params;
   EXPECT_TRUE(
       cr_fuchsia::LoadUrlAndExpectResponse(controller_.get(), {}, kUrl.spec()));
-  navigation_listener_.RunUntilUrlEquals(kUrl);
+  navigation_listener_.RunUntilUrlAndTitleEquals(kUrl, kPageLoadedTitle);
 
   context_impl()
       ->GetFrameImplForTest(&frame)
