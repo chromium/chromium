@@ -1439,6 +1439,8 @@ const blink::Color CaretColor::ColorIncludingFallback(
   // the background to ensure good visibility and contrast.
   StyleColor result = auto_color.IsAutoColor() ? StyleColor::CurrentColor()
                                                : auto_color.ToStyleColor();
+  if (style.ShouldForceColor(result))
+    return style.GetInternalForcedCurrentColor();
   return result.Resolve(style.GetCurrentColor(), style.UsedColorScheme());
 }
 
@@ -1450,6 +1452,16 @@ const CSSValue* CaretColor::CSSValueFromComputedStyleInternal(
   if (allow_visited_style) {
     return cssvalue::CSSColorValue::Create(
         style.VisitedDependentColor(*this).Rgb());
+  }
+
+  StyleAutoColor auto_color = style.CaretColor();
+  // TODO(rego): We may want to adjust the caret color if it's the same as
+  // the background to ensure good visibility and contrast.
+  StyleColor result = auto_color.IsAutoColor() ? StyleColor::CurrentColor()
+                                               : auto_color.ToStyleColor();
+  if (style.ShouldForceColor(result)) {
+    return cssvalue::CSSColorValue::Create(
+        style.GetInternalForcedCurrentColor().Rgb());
   }
 
   // https://drafts.csswg.org/cssom/#resolved-values
@@ -3695,6 +3707,8 @@ const blink::Color InternalVisitedCaretColor::ColorIncludingFallback(
   StyleAutoColor auto_color = style.InternalVisitedCaretColor();
   StyleColor result = auto_color.IsAutoColor() ? StyleColor::CurrentColor()
                                                : auto_color.ToStyleColor();
+  if (style.ShouldForceColor(result))
+    return style.GetInternalForcedVisitedCurrentColor();
   return result.Resolve(style.GetInternalVisitedCurrentColor(),
                         style.UsedColorScheme());
 }
