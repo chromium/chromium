@@ -88,10 +88,17 @@ class PrerenderBrowserTest : public ContentBrowserTest,
 
   // Adds <link rel=prerender> in the current main frame and waits until the
   // completion of prerendering.
-  void AddPrerender(const GURL& prerendering_url) {
+  // `final_response_url` is the final response URL of prerendering. This is
+  // necessary when it is different from `prerendering_url` due to redirection.
+  void AddPrerender(const GURL& prerendering_url,
+                    const GURL& final_response_url = GURL()) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    GURL expected_url = prerendering_url;
+    if (final_response_url.is_valid())
+      expected_url = final_response_url;
+
     // Start watching new web contents to be created for prerendering.
-    content::TestNavigationObserver observer(prerendering_url);
+    content::TestNavigationObserver observer(expected_url);
     observer.StartWatchingNewWebContents();
     // Add the link tag that will prerender the URL.
     EXPECT_TRUE(ExecJs(shell()->web_contents(),
@@ -130,6 +137,11 @@ class PrerenderBrowserTest : public ContentBrowserTest,
   GURL GetUrl(const std::string& path) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     return ssl_server_.GetURL("a.test", path);
+  }
+
+  GURL GetCrossOriginUrl(const std::string& path) {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    return ssl_server_.GetURL("b.test", path);
   }
 
   int GetRequestCount(const GURL& url) {
@@ -323,6 +335,49 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, LinkRelPrerender_Duplicate) {
     EXPECT_EQ(GetRequestCount(kPrerenderingUrl2), 1);
   }
 }
+
+IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, SameOriginRedirection) {
+  // Navigate to an initial page.
+  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Start prerendering a URL that causes same-origin redirection.
+  const GURL kRedirectedUrl = GetUrl("/empty.html");
+  const GURL kPrerenderingUrl =
+      GetUrl("/server-redirect?" + kRedirectedUrl.spec());
+  AddPrerender(kPrerenderingUrl, kRedirectedUrl);
+  EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
+  EXPECT_EQ(GetRequestCount(kRedirectedUrl), 1);
+
+  // The prerender host should be registered for the initial request URL, not
+  // the redirected URL.
+  PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
+  EXPECT_TRUE(registry.FindHostByUrlForTesting(kPrerenderingUrl));
+  EXPECT_FALSE(registry.FindHostByUrlForTesting(kRedirectedUrl));
+}
+
+IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, CrossOriginRedirection) {
+  // Navigate to an initial page.
+  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Start prerendering a URL that causes cross-origin redirection.
+  const GURL kRedirectedUrl = GetCrossOriginUrl("/empty.html");
+  const GURL kPrerenderingUrl =
+      GetUrl("/server-redirect?" + kRedirectedUrl.spec());
+  AddPrerender(kPrerenderingUrl, kRedirectedUrl);
+  EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
+  EXPECT_EQ(GetRequestCount(kRedirectedUrl), 1);
+
+  // The prerender host should be registered for the initial request URL, not
+  // the redirected URL.
+  PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
+  EXPECT_TRUE(registry.FindHostByUrlForTesting(kPrerenderingUrl));
+  EXPECT_FALSE(registry.FindHostByUrlForTesting(kRedirectedUrl));
+}
+
+// TODO(https://crbug.com/1158248): Add tests for activation with a redirected
+// URL.
 
 // Makes sure that activation on navigation for an iframes doesn't happen.
 IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, Activation_iFrame) {
@@ -551,8 +606,8 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, MojoCapabilityControl) {
 
 // TODO(https://crbug.com/1132746): Test canceling prerendering.
 
-// TODO(https://crbug.com/1132746): Test prerendering for 404 page, redirection,
-// auth error, cross origin, etc.
+// TODO(https://crbug.com/1132746): Test prerendering for 404 page, auth error,
+// cross origin, etc.
 
 // Tests for feature restrictions in prerendered pages =========================
 
