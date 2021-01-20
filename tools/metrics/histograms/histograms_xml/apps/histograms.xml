@@ -1748,6 +1748,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Apps.ShortcutsMenu.Registration.Win.Result"
     enum="ShortcutsMenuRegistrationWinResult" expires_after="M87">
+  <obsolete>
+    Removed January 2021.
+  </obsolete>
   <owner>cmumford@chromium.org</owner>
   <owner>rahsin@microsoft.com</owner>
   <summary>
@@ -1757,6 +1760,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Apps.ShortcutsMenu.Unregistration.Win.Result"
     enum="ShortcutsMenuUnregistrationWinResult" expires_after="M87">
+  <obsolete>
+    Removed January 2021.
+  </obsolete>
   <owner>cmumford@chromium.org</owner>
   <owner>rahsin@microsoft.com</owner>
   <summary>

@@ -16,7 +16,6 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -38,47 +37,6 @@ namespace web_app {
 namespace {
 
 constexpr int kMaxJumpListItems = 10;
-
-// UMA metric name for shortcuts menu registration result.
-constexpr const char kRegistrationResultMetric[] =
-    "Apps.ShortcutsMenu.Registration.Win.Result";
-
-// UMA metric name for shortcuts menu unregistration result.
-constexpr const char kUnregistrationResultMetric[] =
-    "Apps.ShortcutsMenu.Unregistration.Win.Result";
-
-// Result of shortcuts menu registration process.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class RegistrationResult {
-  kSuccess = 0,
-  kFailedToWriteIcoFilesToDisk = 1,
-  kFailedToBeginUpdate = 2,
-  kFailedToAddTasks = 3,
-  kFailedToCommitUpdate = 4,
-  kMaxValue = kFailedToCommitUpdate
-};
-
-// Result of shortcuts menu unregistration process.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class UnregistrationResult {
-  kSuccess = 0,
-  kFailedToDeleteJumpList = 1,
-  kMaxValue = kFailedToDeleteJumpList
-};
-
-// Records UMA metric for the result of shortcuts menu registration.
-// TODO(https://crbug.com/1076042): Add tests using HistogramTester to verify
-// that histograms are recorded.
-void RecordRegistration(RegistrationResult result) {
-  base::UmaHistogramEnumeration(kRegistrationResultMetric, result);
-}
-
-// Records UMA metric for the result of shortcuts menu unregistration.
-void RecordUnregistration(UnregistrationResult result) {
-  base::UmaHistogramEnumeration(kUnregistrationResultMetric, result);
-}
 
 base::FilePath GetShortcutsMenuIconsDirectory(
     const base::FilePath& shortcut_data_dir) {
@@ -148,17 +106,14 @@ void RegisterShortcutsMenuWithOsTask(
   // shortcuts vector.
   if (!WriteShortcutsMenuIconsToIcoFiles(shortcut_data_dir,
                                          shortcuts_menu_icons_bitmaps)) {
-    RecordRegistration(RegistrationResult::kFailedToWriteIcoFilesToDisk);
     return;
   }
 
   base::string16 app_user_model_id =
       GenerateAppUserModelId(profile_path, app_id);
   JumpListUpdater jumplist_updater(app_user_model_id);
-  if (!jumplist_updater.BeginUpdate()) {
-    RecordRegistration(RegistrationResult::kFailedToBeginUpdate);
+  if (!jumplist_updater.BeginUpdate())
     return;
-  }
 
   ShellLinkItemList shortcut_list;
 
@@ -187,16 +142,8 @@ void RegisterShortcutsMenuWithOsTask(
     shortcut_list.push_back(std::move(shortcut_link));
   }
 
-  if (!jumplist_updater.AddTasks(shortcut_list)) {
-    RecordRegistration(RegistrationResult::kFailedToAddTasks);
-    return;
-  }
-  if (!jumplist_updater.CommitUpdate()) {
-    RecordRegistration(RegistrationResult::kFailedToCommitUpdate);
-    return;
-  }
-
-  RecordRegistration(RegistrationResult::kSuccess);
+  if (jumplist_updater.AddTasks(shortcut_list))
+    jumplist_updater.CommitUpdate();
 }
 
 void RegisterShortcutsMenuWithOs(
@@ -215,13 +162,8 @@ void RegisterShortcutsMenuWithOs(
 
 bool UnregisterShortcutsMenuWithOs(const AppId& app_id,
                                    const base::FilePath& profile_path) {
-  if (!JumpListUpdater::DeleteJumpList(
-          GenerateAppUserModelId(profile_path, app_id))) {
-    RecordUnregistration(UnregistrationResult::kFailedToDeleteJumpList);
-    return false;
-  }
-  RecordUnregistration(UnregistrationResult::kSuccess);
-  return true;
+  return JumpListUpdater::DeleteJumpList(
+      GenerateAppUserModelId(profile_path, app_id));
 }
 
 namespace internals {

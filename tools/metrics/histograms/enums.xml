@@ -68616,6 +68616,9 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 </enum>
 
 <enum name="ShortcutsMenuRegistrationWinResult">
+  <obsolete>
+    Removed January 2021.
+  </obsolete>
   <summary>
     Result of registering app icon shortcuts menu for PWA on Windows
   </summary>
@@ -68627,6 +68630,9 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 </enum>
 
 <enum name="ShortcutsMenuUnregistrationWinResult">
+  <obsolete>
+    Removed January 2021.
+  </obsolete>
   <summary>
     Result of registering app icon shortcuts menu for PWA on Windows
   </summary>
