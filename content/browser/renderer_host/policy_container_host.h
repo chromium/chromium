@@ -57,8 +57,15 @@ class CONTENT_EXPORT PolicyContainerHost
         network::mojom::IPAddressSpace::kUnknown;
   };
 
+  // Constructs a PolicyContainerHost containing default document policies and
+  // an unbound mojo receiver.
   PolicyContainerHost();
+
+  // Constructs a PolicyContainerHost containing the given |document_policies|
+  // and an unbound mojo receiver.
   explicit PolicyContainerHost(const DocumentPolicies& document_policies);
+
+  // PolicyContainerHost instances are neither copyable nor movable.
   PolicyContainerHost(const PolicyContainerHost&) = delete;
   PolicyContainerHost& operator=(const PolicyContainerHost&) = delete;
 
@@ -73,6 +80,10 @@ class CONTENT_EXPORT PolicyContainerHost
   // PolicyContainerHost::FromFrameToken. This function can be called only once.
   void AssociateWithFrameToken(const base::UnguessableToken& token);
 
+  const DocumentPolicies& document_policies() const {
+    return document_policies_;
+  }
+
   network::mojom::ReferrerPolicy referrer_policy() const {
     return document_policies_.referrer_policy;
   }
@@ -82,10 +93,6 @@ class CONTENT_EXPORT PolicyContainerHost
   }
   void SetIPAddressSpace(network::mojom::IPAddressSpace ip_address_space) {
     document_policies_.ip_address_space = ip_address_space;
-  }
-
-  const DocumentPolicies& document_policies() const {
-    return document_policies_;
   }
 
   // Return a PolicyContainer containing copies of the policies and a pending

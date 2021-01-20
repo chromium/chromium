@@ -823,6 +823,19 @@ class CONTENT_EXPORT NavigationRequest
       int initiator_process_id,
       bool was_opener_suppressed);
 
+  // Helper for InitializePolicyContainerHost().
+  //
+  // Logically const, as it does not mutate this class' state. It does however
+  // call into NavigationHandle interface methods which are non-const, which
+  // prevents us from marking this method `const`.
+  scoped_refptr<PolicyContainerHost> MaybeInheritPolicyContainerHost(
+      const FrameNavigationEntry* frame_navigation_entry);
+
+  // Initializes |policy_container_host_| to a non-nullptr value.
+  // Constructor helper.
+  void InitializePolicyContainerHost(
+      const FrameNavigationEntry* frame_navigation_entry);
+
   // Checks if the response requests an isolated origin via the
   // Origin-Agent-Cluster header, and if so opts in the origin to be isolated.
   void CheckForIsolationOptIn(const GURL& url);

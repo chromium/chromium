@@ -1109,41 +1109,7 @@ NavigationRequest::NavigationRequest(
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("navigation", "Initializing",
                                     navigation_id_);
 
-  policy_container_host_ = base::MakeRefCounted<PolicyContainerHost>();
-
-  if (frame_entry && frame_entry->document_policies()) {
-    // If there is a history entry with some document policies, initialize the
-    // PolicyContainerHost with them, so that they will get applied to the
-    // document created by the navigation.
-    policy_container_host_ = base::MakeRefCounted<PolicyContainerHost>(
-        *frame_entry->document_policies());
-  } else if (common_params_->url.IsAboutSrcdoc()) {
-    // Srcdoc iframes inherit their policies from their parent.
-    // If there is no parent, the navigation will be blocked in BeginNavigation.
-    if (frame_tree_node_->parent()) {
-      policy_container_host_ =
-          frame_tree_node_->parent()->policy_container_host()->Clone();
-    }
-  } else if (common_params_->url.SchemeIs(url::kAboutScheme) ||
-             common_params_->url.SchemeIs(url::kDataScheme) ||
-             common_params_->url.SchemeIs(url::kBlobScheme) ||
-             common_params_->url.SchemeIs(url::kFileSystemScheme)) {
-    // Local schemes inherit the policy container  from the initiator.
-    //
-    // TODO(antoniosartori): Fill up the PolicyContainerHost and/or replace it
-    // with a new one whenever needed (e.g. blob: or filesystem: URLs should get
-    // the policy container from the document which created them and not from
-    // the initiator of the navigation).
-    if (initiator_frame_token_) {
-      // We use PolicyContainerHost::FromFrameToken directly since this will
-      // retrieve the PolicyContainerHost of the initiator RenderFrameHost even
-      // if the RenderFrameHost has already been deleted.
-      PolicyContainerHost* initiator_policy_container_host =
-          PolicyContainerHost::FromFrameToken(initiator_frame_token_.value());
-      DCHECK(initiator_policy_container_host);
-      policy_container_host_ = initiator_policy_container_host->Clone();
-    }
-  }
+  InitializePolicyContainerHost(frame_entry);
 
   // Initialize the ClientSecurityState's COEP to that of the current document.
   // It will be updated when a network response is received. For navigations
@@ -1308,6 +1274,67 @@ NavigationRequest::NavigationRequest(
   navigation_entry_offset_ = EstimateHistoryOffset();
 
   commit_params_->is_browser_initiated = browser_initiated_;
+}
+
+scoped_refptr<PolicyContainerHost>
+NavigationRequest::MaybeInheritPolicyContainerHost(
+    const FrameNavigationEntry* frame_navigation_entry) {
+  if (frame_navigation_entry && frame_navigation_entry->document_policies()) {
+    // If there is a history entry with some document policies, initialize the
+    // PolicyContainerHost with them, so that they will get applied to the
+    // document created by the navigation.
+    return base::MakeRefCounted<PolicyContainerHost>(
+        *frame_navigation_entry->document_policies());
+  }
+
+  // Srcdoc iframes inherit their policies from their parent.
+  if (common_params_->url.IsAboutSrcdoc()) {
+    RenderFrameHostImpl* parent = GetParentFrame();
+    if (!parent) {
+      // The navigation will be blocked in BeginNavigation.
+      return nullptr;
+    }
+
+    return parent->policy_container_host()->Clone();
+  }
+
+  // Local schemes inherit the policy container from the initiator.
+  //
+  // TODO(antoniosartori): Fill up the PolicyContainerHost and/or replace it
+  // with a new one whenever needed (e.g. blob: or filesystem: URLs should get
+  // the policy container from the document which created them and not from the
+  // initiator of the navigation).
+  if (common_params_->url.SchemeIs(url::kAboutScheme) ||
+      common_params_->url.SchemeIs(url::kDataScheme) ||
+      common_params_->url.SchemeIs(url::kBlobScheme) ||
+      common_params_->url.SchemeIs(url::kFileSystemScheme)) {
+    if (!initiator_frame_token_) {
+      return nullptr;
+    }
+
+    // We use PolicyContainerHost::FromFrameToken directly since this will
+    // retrieve the PolicyContainerHost of the initiator RenderFrameHost even if
+    // the RenderFrameHost has already been deleted.
+    PolicyContainerHost* initiator_policy_container_host =
+        PolicyContainerHost::FromFrameToken(initiator_frame_token_.value());
+    DCHECK(initiator_policy_container_host);
+
+    return initiator_policy_container_host->Clone();
+  }
+
+  return nullptr;
+}
+
+void NavigationRequest::InitializePolicyContainerHost(
+    const FrameNavigationEntry* frame_navigation_entry) {
+  policy_container_host_ =
+      MaybeInheritPolicyContainerHost(frame_navigation_entry);
+
+  // Use a default value if none was inherited. It will be filled up with data
+  // from this navigation before it commits.
+  if (!policy_container_host_) {
+    policy_container_host_ = base::MakeRefCounted<PolicyContainerHost>();
+  }
 }
 
 NavigationRequest::~NavigationRequest() {
