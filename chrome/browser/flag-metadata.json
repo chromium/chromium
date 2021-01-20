@@ -540,6 +540,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "clear-cross-browsing-context-group-main-frame-name",
+    "owners": [ "shuuran", "kaustubhag" ],
+    "expiry_milestone": 92
+  },
+  {
     "name": "clear-old-browsing-data",
     "owners": [ "dullweber" ],
     "expiry_milestone": 78

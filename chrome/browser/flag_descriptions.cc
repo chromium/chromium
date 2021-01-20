@@ -362,6 +362,12 @@ const char kClientStorageAccessContextAuditingName[] =
 const char kClientStorageAccessContextAuditingDescription[] =
     "Record the first-party contexts in which client-side storage was accessed";
 
+const char kClearCrossBrowsingContextGroupMainFrameNameName[] =
+    "Clear window name in top-level cross-browsing-context-group navigation";
+const char kClearCrossBrowsingContextGroupMainFrameNameDescription[] =
+    "Clear the preserved window.name when it's a top-level navigation that "
+    "swaps browsing context group.";
+
 const char kDarkLightTestName[] = "Dark/light mode of system UI";
 const char kDarkLightTestDescription[] =
     "Enables the dark/light mode of system UI, which includes shelf, launcher, "

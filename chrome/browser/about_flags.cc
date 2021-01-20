@@ -6974,6 +6974,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableRestrictedWebApisDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kEnableRestrictedWebApis)},
 
+    {"clear-cross-browsing-context-group-main-frame-name",
+     flag_descriptions::kClearCrossBrowsingContextGroupMainFrameNameName,
+     flag_descriptions::kClearCrossBrowsingContextGroupMainFrameNameDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         features::kClearCrossBrowsingContextGroupMainFrameName)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

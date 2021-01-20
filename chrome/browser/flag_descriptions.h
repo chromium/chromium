@@ -221,6 +221,9 @@ extern const char kClientStorageAccessContextAuditingDescription[];
 extern const char kConditionalTabStripAndroidName[];
 extern const char kConditionalTabStripAndroidDescription[];
 
+extern const char kClearCrossBrowsingContextGroupMainFrameNameName[];
+extern const char kClearCrossBrowsingContextGroupMainFrameNameDescription[];
+
 extern const char kDarkLightTestName[];
 extern const char kDarkLightTestDescription[];
 
