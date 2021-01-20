@@ -19664,7 +19664,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram_suffixes name="WebFontMissedCache" separator="." ordering="prefix">
   <owner>toyoshim@chromium.org</owner>
-  <suffix name="MissedCache" label="On missed cache"/>
+  <suffix name="MissedCache" label="On missed cache">
+    <obsolete>
+      Removed Dec 2020.
+    </obsolete>
+  </suffix>
   <affected-histogram name="WebFont.DownloadTime.0.Under10KB"/>
   <affected-histogram name="WebFont.DownloadTime.1.10KBTo50KB"/>
   <affected-histogram name="WebFont.DownloadTime.2.50KBTo100KB"/>
