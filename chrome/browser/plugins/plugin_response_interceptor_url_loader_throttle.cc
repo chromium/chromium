@@ -24,13 +24,14 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h"
 
 PluginResponseInterceptorURLLoaderThrottle::
-    PluginResponseInterceptorURLLoaderThrottle(int resource_type,
-                                               int frame_tree_node_id)
-    : resource_type_(resource_type), frame_tree_node_id_(frame_tree_node_id) {}
+    PluginResponseInterceptorURLLoaderThrottle(
+        network::mojom::RequestDestination request_destination,
+        int frame_tree_node_id)
+    : request_destination_(request_destination),
+      frame_tree_node_id_(frame_tree_node_id) {}
 
 PluginResponseInterceptorURLLoaderThrottle::
     ~PluginResponseInterceptorURLLoaderThrottle() = default;
@@ -123,8 +124,8 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
   transferrable_loader->head = std::move(deep_copied_response);
   transferrable_loader->head->intercepted_by_plugin = true;
 
-  bool embedded = resource_type_ !=
-                  static_cast<int>(blink::mojom::ResourceType::kMainFrame);
+  bool embedded =
+      request_destination_ != network::mojom::RequestDestination::kDocument;
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(

@@ -6061,6 +6061,7 @@ static_library("browser") {
       "//ppapi/host",
       "//ppapi/proxy:ipc",
       "//services/device/public/mojom",
+      "//services/network/public/mojom",
     ]
     if (is_chromeos_ash) {
       deps += [ "//chromeos/cryptohome" ]
