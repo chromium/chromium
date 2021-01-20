@@ -1431,8 +1431,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Event.SingleTapType" enum="TapDelayType" expires_after="M85">
+<histogram name="Event.SingleTapType" enum="TapDelayType" expires_after="M97">
   <owner>flackr@chromium.org</owner>
+  <owner>input-dev@chromium.org</owner>
   <summary>
     On non-mobile sites, gesture taps are delayed to prevent double taps from
     sending a click event. This stat counts the number of taps that are delayed
