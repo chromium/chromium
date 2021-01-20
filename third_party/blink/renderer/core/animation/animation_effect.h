@@ -114,8 +114,10 @@ class CORE_EXPORT AnimationEffect : public ScriptWrappable {
   ComputedEffectTiming* getComputedTiming() const;
   void updateTiming(OptionalEffectTiming*,
                     ExceptionState& = ASSERT_NO_EXCEPTION);
-  double GetCancelTime() const { return cancel_time_; }
-  void SetCancelTime(double cancel_time) { cancel_time_ = cancel_time; }
+  AnimationTimeDelta GetCancelTime() const { return cancel_time_; }
+  void SetCancelTime(AnimationTimeDelta cancel_time) {
+    cancel_time_ = cancel_time;
+  }
 
   // Attach/Detach the AnimationEffect from its owning animation.
   virtual void Attach(AnimationEffectOwner* owner) { owner_ = owner; }
@@ -134,7 +136,7 @@ class CORE_EXPORT AnimationEffect : public ScriptWrappable {
   // When AnimationEffect receives a new inherited time via updateInheritedTime
   // it will (if necessary) recalculate timings and (if necessary) call
   // updateChildrenAndEffects.
-  void UpdateInheritedTime(base::Optional<double> inherited_time,
+  void UpdateInheritedTime(base::Optional<AnimationTimeDelta> inherited_time,
                            base::Optional<TimelinePhase> inherited_phase,
                            TimingUpdateReason) const;
   void Invalidate() const { needs_update_ = true; }
@@ -168,9 +170,9 @@ class CORE_EXPORT AnimationEffect : public ScriptWrappable {
 
   mutable Timing::CalculatedTiming calculated_;
   mutable bool needs_update_;
-  mutable base::Optional<double> last_update_time_;
+  mutable base::Optional<AnimationTimeDelta> last_update_time_;
   mutable base::Optional<Timing::Phase> last_update_phase_;
-  double cancel_time_;
+  AnimationTimeDelta cancel_time_;
   const Timing::CalculatedTiming& EnsureCalculated() const;
 };
 

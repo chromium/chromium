@@ -106,7 +106,9 @@ class WorkletAnimationTest : public RenderingTest {
 
   void SimulateFrame(double milliseconds) {
     base::TimeTicks tick =
-        GetDocument().Timeline().ZeroTime() + ToTimeDelta(milliseconds);
+        base::TimeTicks() +
+        GetDocument().Timeline().CalculateZeroTime().since_origin() +
+        ToTimeDelta(milliseconds);
     GetDocument().GetAnimationClock().UpdateTime(tick);
     GetDocument().GetWorkletAnimationController().UpdateAnimationStates();
     GetDocument().GetWorkletAnimationController().UpdateAnimationTimings(

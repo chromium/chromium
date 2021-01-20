@@ -47,7 +47,7 @@ AnimationEffect::AnimationEffect(const Timing& timing,
       timing_(timing),
       event_delegate_(event_delegate),
       needs_update_(true),
-      cancel_time_(0) {
+      cancel_time_(AnimationTimeDelta()) {
   timing_.AssertValid();
 }
 
@@ -131,7 +131,7 @@ base::Optional<Timing::Phase> TimelinePhaseToTimingPhase(
 }
 
 void AnimationEffect::UpdateInheritedTime(
-    base::Optional<double> inherited_time,
+    base::Optional<AnimationTimeDelta> inherited_time,
     base::Optional<TimelinePhase> inherited_timeline_phase,
     TimingUpdateReason reason) const {
   base::Optional<double> playback_rate = base::nullopt;
@@ -152,7 +152,9 @@ void AnimationEffect::UpdateInheritedTime(
   last_update_time_ = inherited_time;
   last_update_phase_ = timeline_phase;
 
-  const base::Optional<double> local_time = inherited_time;
+  const base::Optional<double> local_time =
+      inherited_time ? base::make_optional(inherited_time.value().InSecondsF())
+                     : base::nullopt;
   if (needs_update) {
     Timing::CalculatedTiming calculated = SpecifiedTiming().CalculateTimings(
         local_time, timeline_phase, direction, IsA<KeyframeEffect>(this),

@@ -78,12 +78,14 @@ class CORE_EXPORT DocumentTimeline : public AnimationTimeline {
   // The zero time of DocumentTimeline is computed by adding a separate
   // |origin_time_| from DocumentTimelineOptions.
   // https://drafts.csswg.org/web-animations/#origin-time
-  base::TimeTicks ZeroTime();
-  double ZeroTimeInSeconds() override {
-    return ZeroTime().since_origin().InSecondsF();
+  // TODO(crbug.com/1162960) Convert DocumentTimeline::zero_time_ from
+  // base::TimeTicks to AnimationTimeDelta
+  base::TimeTicks CalculateZeroTime();
+  AnimationTimeDelta ZeroTime() override {
+    return AnimationTimeDelta(CalculateZeroTime().since_origin());
   }
 
-  void PauseAnimationsForTesting(double);
+  void PauseAnimationsForTesting(AnimationTimeDelta);
 
   void InvalidateKeyframeEffects(const TreeScope&);
 
@@ -107,6 +109,8 @@ class CORE_EXPORT DocumentTimeline : public AnimationTimeline {
   base::TimeDelta origin_time_;
   // The origin time. This is computed by adding |origin_time_| to the time
   // origin of the document.
+  // TODO(crbug.com/1162960) Convert DocumentTimeline::zero_time_ from
+  // base::TimeTicks to AnimationTimeDelta
   base::TimeTicks zero_time_;
   bool zero_time_initialized_;
 

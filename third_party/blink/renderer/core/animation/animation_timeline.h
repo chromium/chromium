@@ -36,6 +36,7 @@ class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
   ~AnimationTimeline() override = default;
 
   virtual void currentTime(CSSNumberish&);
+  base::Optional<AnimationTimeDelta> CurrentTime();
   base::Optional<double> CurrentTimeMilliseconds();
   base::Optional<double> CurrentTimeSeconds();
 
@@ -48,7 +49,7 @@ class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
   virtual bool IsScrollTimeline() const { return false; }
   virtual bool IsCSSScrollTimeline() const { return false; }
   virtual bool IsActive() const = 0;
-  virtual double ZeroTimeInSeconds() = 0;
+  virtual AnimationTimeDelta ZeroTime() = 0;
   // https://drafts.csswg.org/web-animations/#monotonically-increasing-timeline
   // A timeline is monotonically increasing if its reported current time is
   // always greater than or equal than its previously reported current time.

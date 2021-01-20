@@ -477,8 +477,9 @@ void WorkletAnimation::Update(TimingUpdateReason reason) {
   DCHECK_EQ(effects_.size(), local_times_.size());
   for (wtf_size_t i = 0; i < effects_.size(); ++i) {
     effects_[i]->UpdateInheritedTime(
-        local_times_[i] ? base::Optional<double>(local_times_[i]->InSecondsF())
-                        : base::nullopt,
+        local_times_[i]
+            ? base::make_optional(AnimationTimeDelta(local_times_[i].value()))
+            : base::nullopt,
         base::nullopt, reason);
   }
 }

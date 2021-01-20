@@ -53,7 +53,7 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
   // https://github.com/WICG/scroll-animations/issues/31
   bool IsActive() const override;
   base::Optional<base::TimeDelta> InitialStartTimeForAnimations() override;
-  double ZeroTimeInSeconds() override { return 0; }
+  AnimationTimeDelta ZeroTime() override { return AnimationTimeDelta(); }
 
   void ServiceAnimations(TimingUpdateReason) override;
   void ScheduleNextService() override;

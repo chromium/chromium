@@ -68,14 +68,6 @@
 
 namespace blink {
 
-namespace {
-
-double MillisecondsToSeconds(double milliseconds) {
-  return milliseconds / 1000;
-}
-
-}  // namespace
-
 void ExpectRelativeErrorWithinEpsilon(double expected, double observed) {
   EXPECT_NEAR(1.0, observed / expected, std::numeric_limits<double>::epsilon());
 }
@@ -193,8 +185,10 @@ class AnimationAnimationTestNoCompositing : public RenderingTest {
   }
 
   bool SimulateFrame(double time_ms) {
-    if (animation->pending())
-      animation->NotifyReady(MillisecondsToSeconds(last_frame_time));
+    if (animation->pending()) {
+      animation->NotifyReady(
+          AnimationTimeDelta::FromMillisecondsD(last_frame_time));
+    }
     SimulateMicrotask();
 
     last_frame_time = time_ms;
@@ -1334,7 +1328,7 @@ TEST_F(AnimationAnimationTestCompositing, PreCommitRecordsHistograms) {
   // Now make the playback rate 0. This trips both the invalid animation and
   // unsupported timing parameter reasons.
   animation->setPlaybackRate(0);
-  animation->NotifyReady(100);
+  animation->NotifyReady(AnimationTimeDelta::FromSecondsD(100));
   {
     HistogramTester histogram;
     ASSERT_TRUE(animation->PreCommit(0, nullptr, true));

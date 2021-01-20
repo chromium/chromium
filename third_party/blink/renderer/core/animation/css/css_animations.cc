@@ -760,7 +760,7 @@ void CSSAnimations::CalculateAnimationUpdate(CSSAnimationUpdate& update,
           DCHECK(!is_animation_style_change);
 
           base::Optional<TimelinePhase> inherited_phase;
-          base::Optional<double> inherited_time;
+          base::Optional<AnimationTimeDelta> inherited_time;
 
           if (timeline) {
             inherited_phase = base::make_optional(timeline->Phase());
@@ -770,7 +770,7 @@ void CSSAnimations::CalculateAnimationUpdate(CSSAnimationUpdate& update,
                 ((timeline != existing_animation->Timeline()) ||
                  animation->ResetsCurrentTimeOnResume())) {
               if (!timeline->IsMonotonicallyIncreasing())
-                inherited_time = timeline->CurrentTimeSeconds();
+                inherited_time = timeline->CurrentTime();
             }
           }
 
@@ -792,13 +792,13 @@ void CSSAnimations::CalculateAnimationUpdate(CSSAnimationUpdate& update,
             ComputeTimeline(&element, timeline_name, scroll_timeline_rule,
                             nullptr /* existing_timeline */);
         base::Optional<TimelinePhase> inherited_phase;
-        base::Optional<double> inherited_time;
+        base::Optional<AnimationTimeDelta> inherited_time;
         if (timeline) {
           if (timeline->IsMonotonicallyIncreasing()) {
-            inherited_time = 0;
+            inherited_time = AnimationTimeDelta();
           } else {
             inherited_phase = base::make_optional(timeline->Phase());
-            inherited_time = timeline->CurrentTimeSeconds();
+            inherited_time = timeline->CurrentTime();
           }
         }
         update.StartAnimation(
@@ -1253,8 +1253,8 @@ void CSSAnimations::CalculateTransitionUpdateForProperty(
   state.update.StartTransition(
       property, state.before_change_style, state.cloned_style,
       reversing_adjusted_start_value, reversing_shortening_factor,
-      *MakeGarbageCollected<InertEffect>(model, timing, false, 0,
-                                         base::nullopt));
+      *MakeGarbageCollected<InertEffect>(model, timing, false,
+                                         AnimationTimeDelta(), base::nullopt));
   DCHECK(!state.animating_element->GetElementAnimations() ||
          !state.animating_element->GetElementAnimations()
               ->IsAnimationStyleChange());
@@ -1427,17 +1427,20 @@ scoped_refptr<const ComputedStyle> CSSAnimations::CalculateBeforeChangeStyle(
 
     // Sample animations and add to the interpolations map.
     for (Animation* animation : animations) {
-      base::Optional<double> current_time = animation->currentTime();
-      if (!current_time)
+      base::Optional<double> current_time_ms = animation->currentTime();
+      if (!current_time_ms)
         continue;
+
+      base::Optional<AnimationTimeDelta> current_time =
+          AnimationTimeDelta::FromMillisecondsD(current_time_ms.value());
 
       auto* effect = DynamicTo<KeyframeEffect>(animation->effect());
       if (!effect)
         continue;
 
       auto* inert_animation_for_sampling = MakeGarbageCollected<InertEffect>(
-          effect->Model(), effect->SpecifiedTiming(), false,
-          current_time.value() / 1000, base::nullopt);
+          effect->Model(), effect->SpecifiedTiming(), false, current_time,
+          base::nullopt);
 
       HeapVector<Member<Interpolation>> sample;
       inert_animation_for_sampling->Sample(sample);
@@ -1692,10 +1695,9 @@ void CSSAnimations::AnimationEventDelegate::OnEventCondition(
       previous_phase_ != Timing::kPhaseAfter) {
     // TODO(crbug.com/1059968): Determine if animation direction or playback
     // rate factor into the calculation of the elapsed time.
-    double cancel_time = animation_node.GetCancelTime();
+    AnimationTimeDelta cancel_time = animation_node.GetCancelTime();
     MaybeDispatch(Document::kAnimationCancelListener,
-                  event_type_names::kAnimationcancel,
-                  AnimationTimeDelta::FromSecondsD(cancel_time));
+                  event_type_names::kAnimationcancel, cancel_time);
   }
 
   if (!phase_change && current_phase == Timing::kPhaseActive &&

@@ -41,6 +41,8 @@ class CORE_EXPORT AnimationTimeDelta {
 
  public:
   constexpr AnimationTimeDelta() : delta_(0) {}
+  constexpr explicit AnimationTimeDelta(base::TimeDelta time_delta)
+      : delta_(time_delta.InSecondsF()) {}
 
   static AnimationTimeDelta FromSecondsD(double time_s) {
     DCHECK(!std::isnan(time_s));
@@ -61,6 +63,9 @@ class CORE_EXPORT AnimationTimeDelta {
   bool is_max() const {
     return delta_ == std::numeric_limits<double>::infinity();
   }
+
+  bool is_inf() const { return std::isinf(delta_); }
+
   bool is_zero() const { return delta_ == 0; }
 
   AnimationTimeDelta operator+(AnimationTimeDelta other) const {
@@ -72,6 +77,7 @@ class CORE_EXPORT AnimationTimeDelta {
   AnimationTimeDelta operator-(AnimationTimeDelta other) const {
     return AnimationTimeDelta(delta_ - other.delta_);
   }
+  AnimationTimeDelta operator-() { return AnimationTimeDelta(-delta_); }
   template <typename T>
   AnimationTimeDelta operator*(T a) const {
     return AnimationTimeDelta(delta_ * a);

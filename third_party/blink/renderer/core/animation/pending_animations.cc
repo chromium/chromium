@@ -86,13 +86,12 @@ bool PendingAnimations::Update(
         waiting_for_start_time.push_back(animation.Get());
       } else if (animation->PendingInternal()) {
         DCHECK(animation->timeline()->IsActive() &&
-               animation->timeline()->CurrentTimeSeconds());
+               animation->timeline()->CurrentTime());
         // A pending animation that is not waiting on a start time does not need
         // to be synchronized with animations that are starting up. Nonetheless,
         // it needs to notify the animation to resolve the ready promise and
         // commit the pending state.
-        animation->NotifyReady(
-            animation->timeline()->CurrentTimeSeconds().value_or(0));
+        animation->NotifyReady(animation->timeline()->CurrentTime().value());
       }
     } else {
       deferred.push_back(animation);
@@ -110,9 +109,8 @@ bool PendingAnimations::Update(
     for (auto& animation : waiting_for_start_time) {
       DCHECK(!animation->startTime());
       DCHECK(animation->timeline()->IsActive() &&
-             animation->timeline()->CurrentTimeSeconds());
-      animation->NotifyReady(
-          animation->timeline()->CurrentTimeSeconds().value_or(0));
+             animation->timeline()->CurrentTime());
+      animation->NotifyReady(animation->timeline()->CurrentTime().value());
     }
   }
 
@@ -168,10 +166,11 @@ void PendingAnimations::NotifyCompositorAnimationStarted(
     if (animation->timeline() &&
         !animation->timeline()->IsMonotonicallyIncreasing()) {
       animation->NotifyReady(
-          animation->timeline()->CurrentTimeSeconds().value_or(0));
+          animation->timeline()->CurrentTime().value_or(AnimationTimeDelta()));
     } else {
-      animation->NotifyReady(monotonic_animation_start_time -
-                             animation->timeline()->ZeroTimeInSeconds());
+      animation->NotifyReady(
+          AnimationTimeDelta::FromSecondsD(monotonic_animation_start_time) -
+          animation->timeline()->ZeroTime());
     }
   }
 }
@@ -192,7 +191,7 @@ void PendingAnimations::FlushWaitingNonCompositedAnimations() {
     return;
 
   // Start any main thread animations that were scheduled to wait on
-  // compositor synchronization from a previous frame. Otherwise, an
+  // compositor synchronization from a previous frame. Otherwise, a
   // continuous influx of new composited animations could delay the start
   // of non-composited animations indefinitely (crbug.com/666710).
   HeapVector<Member<Animation>> animations;
@@ -202,9 +201,8 @@ void PendingAnimations::FlushWaitingNonCompositedAnimations() {
       waiting_for_compositor_animation_start_.push_back(animation);
     } else {
       DCHECK(animation->timeline()->IsActive() &&
-             animation->timeline()->CurrentTimeSeconds());
-      animation->NotifyReady(
-          animation->timeline()->CurrentTimeSeconds().value_or(0));
+             animation->timeline()->CurrentTime());
+      animation->NotifyReady(animation->timeline()->CurrentTime().value());
     }
   }
 }

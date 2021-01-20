@@ -38,7 +38,7 @@ class CSSAnimationsTest : public RenderingTest {
     SetUpAnimationClockForTesting();
     // Advance timer to document time.
     platform()->AdvanceClockSeconds(
-        GetDocument().Timeline().ZeroTime().since_origin().InSecondsF());
+        GetDocument().Timeline().ZeroTime().InSecondsF());
   }
 
   void TearDown() override {

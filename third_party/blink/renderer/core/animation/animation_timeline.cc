@@ -46,6 +46,12 @@ void AnimationTimeline::currentTime(CSSNumberish& currentTime) {
                        : CSSNumberish();
 }
 
+base::Optional<AnimationTimeDelta> AnimationTimeline::CurrentTime() {
+  base::Optional<base::TimeDelta> result = CurrentPhaseAndTime().time;
+  return result ? base::make_optional(AnimationTimeDelta(result.value()))
+                : base::nullopt;
+}
+
 base::Optional<double> AnimationTimeline::CurrentTimeMilliseconds() {
   base::Optional<base::TimeDelta> result = CurrentPhaseAndTime().time;
   return result ? base::make_optional(result->InMillisecondsF())
