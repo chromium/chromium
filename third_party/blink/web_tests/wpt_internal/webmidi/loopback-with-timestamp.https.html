@@ -1,15 +1,14 @@
 <!doctype html>
-<script src="../resources/testharness.js"></script>
-<script src="../resources/testharnessreport.js"></script>
-<script src="../http/tests/resources/permissions-helper.js"></script>
-<script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
-<script src="file:///gen/media/midi/midi_service.mojom.js"></script>
-<script src="../http/tests/webmidi/mock-midiservice.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+<script src="/gen/media/midi/midi_service.mojom.js"></script>
+<script src="resources/mock-midiservice.js"></script>
+<script src="resources/permissions-helper.js"></script>
 <p>Regression test to check if non-zero timestamp works well.</p>
 <script>
 promise_test(async () => {
-  await PermissionsHelper.setPermission('midi', 'granted');
-  await PermissionsHelper.setPermission('midi-sysex', 'granted');
+  await setMidiPermission({sysex: true}, 'granted');
   let access = await navigator.requestMIDIAccess({sysex: true});
   let input = access.inputs.values().next().value;
   let output = access.outputs.values().next().value;

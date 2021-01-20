@@ -1,18 +1,16 @@
 <!DOCTYPE html>
-<script src="../resources/testharness.js"></script>
-<script src="../resources/testharnessreport.js"></script>
-<script src="../http/tests/resources/permissions-helper.js"></script>
-<script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
-<script src="file:///gen/media/midi/midi_service.mojom.js"></script>
-<script src="../http/tests/webmidi/mock-midiservice.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+<script src="/gen/media/midi/midi_service.mojom.js"></script>
+<script src="resources/mock-midiservice.js"></script>
+<script src="resources/permissions-helper.js"></script>
 <script>
 async_test(t => {
   let noteOn = [ 0x90, 0x45, 0x7f ];
 
   t.step(() => {
-    Promise.all([
-        PermissionsHelper.setPermission('midi', 'granted'),
-    ]).then(() => {
+    setMidiPermission({}, 'granted').then(() => {
       return navigator.requestMIDIAccess();
     }).then(a => {
       var started = false;

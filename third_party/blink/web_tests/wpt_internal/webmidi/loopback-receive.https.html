@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-<script src="../resources/testharness.js"></script>
-<script src="../resources/testharnessreport.js"></script>
-<script src="../http/tests/resources/permissions-helper.js"></script>
-<script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
-<script src="file:///gen/media/midi/midi_service.mojom.js"></script>
-<script src="../http/tests/webmidi/mock-midiservice.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+<script src="/gen/media/midi/midi_service.mojom.js"></script>
+<script src="resources/mock-midiservice.js"></script>
+<script src="resources/permissions-helper.js"></script>
 </head>
 <body>
 <script>
@@ -71,8 +71,7 @@ function test(useAddEventListener) {
 }
 
 promise_test(async _ => {
-  await PermissionsHelper.setPermission('midi', 'granted');
-  await PermissionsHelper.setPermission('midi-sysex', 'granted');
+  await setMidiPermission({sysex: true}, 'granted');
   await test(false);
   await test(true);
 }, 'midimessage event handling works as expected');

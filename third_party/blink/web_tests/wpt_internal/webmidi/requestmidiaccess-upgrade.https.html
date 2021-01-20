@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<script src="../resources/testharness.js"></script>
-<script src="../resources/testharnessreport.js"></script>
-<script src="../http/tests/resources/permissions-helper.js"></script>
-<script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
-<script src="file:///gen/media/midi/midi_service.mojom.js"></script>
-<script src="../http/tests/webmidi/mock-midiservice.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+<script src="/gen/media/midi/midi_service.mojom.js"></script>
+<script src="resources/mock-midiservice.js"></script>
+<script src="resources/permissions-helper.js"></script>
 <script>
 promise_test(async () => {
   // Obtain the first MIDIAccess instance without a sysex permission.
-  await PermissionsHelper.setPermission('midi', 'granted');
+  await setMidiPermission({}, 'granted');
   const nosysex_access = await navigator.requestMIDIAccess();
 
   // See if a sysex message can not be sent over the first instance.
@@ -20,7 +20,7 @@ promise_test(async () => {
   });
 
   // Obtain the second MIDIAccess instance with a sysex permission.
-  await PermissionsHelper.setPermission('midi-sysex', 'granted');
+  await setMidiPermission({sysex: true}, 'granted');
   const sysex_access = await navigator.requestMIDIAccess({sysex: true});
 
   // See if a sysex message can be sent correctly over the second instance.

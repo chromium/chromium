@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+<script src="/gen/media/midi/midi_service.mojom.js"></script>
+<script src="resources/mock-midiservice.js"></script>
+<script src="resources/permissions-helper.js"></script>
+</head>
+<body>
+<script>
+promise_test(async _ => {
+  await setMidiPermission({sysex: true}, 'granted');
+
+  const access = await navigator.requestMIDIAccess({sysex: true});
+  assert_true(access.sysexEnabled);
+}, 'sysex permission grants are properly handled');
+
+promise_test(async t => {
+  await setMidiPermission({}, 'granted');
+  await setMidiPermission({sysex: true}, 'denied');
+
+  return promise_rejects_dom(t, 'SecurityError',
+      navigator.requestMIDIAccess({sysex: true}));
+}, 'sysex permission rejections are properly handled');
+
+</script>
+</body>
+</html>

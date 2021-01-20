@@ -986,5 +986,5 @@ webaudio/WaveShaper/waveshaper-364379.html
 webexposed/internal-properties-should-not-be-exposed.html
 webexposed/permissions-attribute.html
 webexposed/web-animations-api.html
-webmidi/permission.html
 wpt_internal/geolocation-api/enabled.html
+wpt_internal/webmidi/permission.html
