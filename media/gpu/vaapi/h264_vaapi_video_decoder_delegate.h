@@ -73,6 +73,10 @@ class H264VaapiVideoDecoderDelegate : public H264Decoder::H264Accelerator,
   // stays alive until SubmitDecode() or Reset().
   std::vector<VAEncryptionSegmentInfo> encryption_segment_info_;
 
+  // We need to retain this for the multi-slice case since that will aggregate
+  // the encryption details across all the slices.
+  VAEncryptionParameters crypto_params_;
+
   DISALLOW_COPY_AND_ASSIGN(H264VaapiVideoDecoderDelegate);
 };
 
