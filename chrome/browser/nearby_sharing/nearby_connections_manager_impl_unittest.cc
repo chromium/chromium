@@ -494,11 +494,13 @@ TEST_P(NearbyConnectionsManagerImplTestConnectionMediums,
                                             is_webrtc_enabled);
 
   network_notifier_->SetConnectionType(connection_type);
+  network_notifier_->SetUseDefaultConnectionCostImplementation(true);
   should_use_web_rtc_ =
       is_webrtc_enabled && data_usage != DataUsage::kOffline &&
       connection_type != net::NetworkChangeNotifier::CONNECTION_NONE &&
       (data_usage != DataUsage::kWifiOnly ||
-       !net::NetworkChangeNotifier::IsConnectionCellular(connection_type));
+       (net::NetworkChangeNotifier::GetConnectionCost() !=
+        net::NetworkChangeNotifier::CONNECTION_COST_METERED));
 
   // TODO(crbug.com/1129069): Update when WiFi LAN is supported.
   auto expected_mediums = MediumSelection::New(
@@ -1298,12 +1300,14 @@ TEST_P(NearbyConnectionsManagerImplTestMediums, StartAdvertising_Options) {
                                             is_webrtc_enabled);
 
   network_notifier_->SetConnectionType(connection_type);
+  network_notifier_->SetUseDefaultConnectionCostImplementation(true);
   should_use_web_rtc_ =
       is_webrtc_enabled && data_usage != DataUsage::kOffline &&
       power_level != PowerLevel::kLowPower &&
       connection_type != net::NetworkChangeNotifier::CONNECTION_NONE &&
       (data_usage != DataUsage::kWifiOnly ||
-       !net::NetworkChangeNotifier::IsConnectionCellular(connection_type));
+       (net::NetworkChangeNotifier::GetConnectionCost() !=
+        net::NetworkChangeNotifier::CONNECTION_COST_METERED));
 
   bool is_high_power = power_level == PowerLevel::kHighPower;
 

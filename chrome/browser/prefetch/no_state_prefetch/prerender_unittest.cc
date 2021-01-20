@@ -266,10 +266,36 @@ class UnitTestPrerenderManager : public PrerenderManager {
   bool is_low_end_device_;
 };
 
-class MockNetworkChangeNotifier4G : public net::NetworkChangeNotifier {
+class MockNetworkChangeNotifier4GMetered : public net::NetworkChangeNotifier {
  public:
   ConnectionType GetCurrentConnectionType() const override {
     return NetworkChangeNotifier::CONNECTION_4G;
+  }
+
+  ConnectionCost GetCurrentConnectionCost() override {
+    return NetworkChangeNotifier::CONNECTION_COST_METERED;
+  }
+};
+
+class MockNetworkChangeNotifier4GUnmetered : public net::NetworkChangeNotifier {
+ public:
+  ConnectionType GetCurrentConnectionType() const override {
+    return NetworkChangeNotifier::CONNECTION_4G;
+  }
+
+  ConnectionCost GetCurrentConnectionCost() override {
+    return NetworkChangeNotifier::CONNECTION_COST_UNMETERED;
+  }
+};
+
+class MockNetworkChangeNotifierWifiMetered : public net::NetworkChangeNotifier {
+ public:
+  ConnectionType GetCurrentConnectionType() const override {
+    return NetworkChangeNotifier::CONNECTION_WIFI;
+  }
+
+  ConnectionCost GetCurrentConnectionCost() override {
+    return NetworkChangeNotifier::CONNECTION_COST_METERED;
   }
 };
 
@@ -1180,9 +1206,11 @@ TEST_F(PrerenderTest, LinkRelAllowedOnCellular) {
   EnablePrerender();
   GURL url("http://www.example.com");
   std::unique_ptr<net::NetworkChangeNotifier> mock(
-      new MockNetworkChangeNotifier4G);
+      new MockNetworkChangeNotifier4GMetered);
   EXPECT_TRUE(net::NetworkChangeNotifier::IsConnectionCellular(
       net::NetworkChangeNotifier::GetConnectionType()));
+  EXPECT_EQ(net::NetworkChangeNotifier::CONNECTION_COST_METERED,
+            net::NetworkChangeNotifier::GetConnectionCost());
   DummyPrerenderContents* prerender_contents =
       prerender_manager()->CreateNextPrerenderContents(
           url, url::Origin::Create(GURL("https://www.notexample.com")),
@@ -1200,9 +1228,59 @@ TEST_F(PrerenderTest, LinkRelAllowedOnCellular) {
 TEST_F(PrerenderTest, PrerenderNotAllowedOnCellularWithExternalOrigin) {
   EnablePrerender();
   std::unique_ptr<net::NetworkChangeNotifier> mock(
-      new MockNetworkChangeNotifier4G);
+      new MockNetworkChangeNotifier4GMetered);
   EXPECT_TRUE(net::NetworkChangeNotifier::IsConnectionCellular(
       net::NetworkChangeNotifier::GetConnectionType()));
+  EXPECT_EQ(net::NetworkChangeNotifier::CONNECTION_COST_METERED,
+            net::NetworkChangeNotifier::GetConnectionCost());
+  GURL url("http://www.google.com/");
+  DummyPrerenderContents* prerender_contents =
+      prerender_manager()->CreateNextPrerenderContents(
+          url, base::nullopt, ORIGIN_EXTERNAL_REQUEST,
+          FINAL_STATUS_PROFILE_DESTROYED);
+  std::unique_ptr<PrerenderHandle> prerender_handle(
+      prerender_manager()->AddPrerenderFromExternalRequest(
+          url, content::Referrer(), nullptr, gfx::Rect(kDefaultViewSize)));
+  EXPECT_TRUE(prerender_handle);
+  EXPECT_TRUE(prerender_contents->prerendering_has_started());
+  histogram_tester().ExpectTotalCount("Prerender.FinalStatus", 0);
+}
+
+// Verify that the external prerender requests are allowed on unmetered cellular
+// connection when kPredictivePrefetchingAllowedOnAllConnectionTypes feature is
+// not enabled.
+TEST_F(PrerenderTest, PrerenderAllowedOnUnmeteredCellularWithExternalOrigin) {
+  EnablePrerender();
+  std::unique_ptr<net::NetworkChangeNotifier> mock(
+      new MockNetworkChangeNotifier4GUnmetered);
+  EXPECT_TRUE(net::NetworkChangeNotifier::IsConnectionCellular(
+      net::NetworkChangeNotifier::GetConnectionType()));
+  EXPECT_EQ(net::NetworkChangeNotifier::CONNECTION_COST_UNMETERED,
+            net::NetworkChangeNotifier::GetConnectionCost());
+  GURL url("http://www.google.com/");
+  DummyPrerenderContents* prerender_contents =
+      prerender_manager()->CreateNextPrerenderContents(
+          url, base::nullopt, ORIGIN_EXTERNAL_REQUEST,
+          FINAL_STATUS_PROFILE_DESTROYED);
+  std::unique_ptr<PrerenderHandle> prerender_handle(
+      prerender_manager()->AddPrerenderFromExternalRequest(
+          url, content::Referrer(), nullptr, gfx::Rect(kDefaultViewSize)));
+  EXPECT_TRUE(prerender_handle);
+  EXPECT_TRUE(prerender_contents->prerendering_has_started());
+  histogram_tester().ExpectTotalCount("Prerender.FinalStatus", 0);
+}
+
+// Verify that the external prerender requests are not allowed on metered wifi
+// connection when kPredictivePrefetchingAllowedOnAllConnectionTypes feature is
+// not enabled.
+TEST_F(PrerenderTest, PrerenderNotAllowedOnMeteredWifiWithExternalOrigin) {
+  EnablePrerender();
+  std::unique_ptr<net::NetworkChangeNotifier> mock(
+      new MockNetworkChangeNotifierWifiMetered);
+  EXPECT_FALSE(net::NetworkChangeNotifier::IsConnectionCellular(
+      net::NetworkChangeNotifier::GetConnectionType()));
+  EXPECT_EQ(net::NetworkChangeNotifier::CONNECTION_COST_METERED,
+            net::NetworkChangeNotifier::GetConnectionCost());
   GURL url("http://www.google.com/");
   DummyPrerenderContents* prerender_contents =
       prerender_manager()->CreateNextPrerenderContents(
@@ -1227,7 +1305,7 @@ TEST_F(
       features::kPredictivePrefetchingAllowedOnAllConnectionTypes);
   EnablePrerender();
   std::unique_ptr<net::NetworkChangeNotifier> mock(
-      new MockNetworkChangeNotifier4G);
+      new MockNetworkChangeNotifier4GMetered);
   EXPECT_TRUE(net::NetworkChangeNotifier::IsConnectionCellular(
       net::NetworkChangeNotifier::GetConnectionType()));
   GURL url("http://www.google.com/");
@@ -1248,7 +1326,7 @@ TEST_F(
 TEST_F(PrerenderTest, PrerenderAllowedForForcedCellular) {
   EnablePrerender();
   std::unique_ptr<net::NetworkChangeNotifier> mock(
-      new MockNetworkChangeNotifier4G);
+      new MockNetworkChangeNotifier4GMetered);
   EXPECT_TRUE(net::NetworkChangeNotifier::IsConnectionCellular(
       net::NetworkChangeNotifier::GetConnectionType()));
   GURL url("http://www.google.com/");

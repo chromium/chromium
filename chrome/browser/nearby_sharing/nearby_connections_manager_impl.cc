@@ -47,11 +47,12 @@ bool ShouldEnableWebRtc(DataUsage data_usage, PowerLevel power_level) {
     return false;
   }
 
-  // If the user wants to limit WebRTC, then only use it on unmetered networks.
+  // If the user wants to limit WebRTC, then don't use it on metered networks.
   if (data_usage == DataUsage::kWifiOnly &&
-      net::NetworkChangeNotifier::IsConnectionCellular(connection_type)) {
+      net::NetworkChangeNotifier::GetConnectionCost() ==
+          net::NetworkChangeNotifier::CONNECTION_COST_METERED) {
     NS_LOG(VERBOSE) << __func__ << ": Do not use WebRTC with " << data_usage
-                    << " and a cellular conneciton.";
+                    << " and a metered connection.";
     return false;
   }
 
