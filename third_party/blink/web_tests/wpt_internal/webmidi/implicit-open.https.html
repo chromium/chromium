@@ -3,14 +3,15 @@
 <head>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
-<script src="/gen/media/midi/midi_service.mojom.js"></script>
-<script src="resources/mock-midiservice.js"></script>
-<script src="resources/permissions-helper.js"></script>
-<script src="resources/state-check-utils.js"></script>
 </head>
 <body>
-<script>
+<script type="module">
+import {MockMIDIService} from './resources/mock-midiservice.js';
+import {setMidiPermission} from './resources/permissions-helper.js';
+import {checkStateTransition} from './resources/state-check-utils.js';
+
+const mock = new MockMIDIService();
+
 async function checkAccess(access) {
   const inputPort = access.inputs.values().next().value;
   const outputPort = access.outputs.values().next().value;

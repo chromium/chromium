@@ -1,4 +1,4 @@
-async function checkStateTransition(options) {
+export async function checkStateTransition(options) {
     const port = options.port;
     const access = options.access;
     assert_equals(options.initialconnection, port.connection);

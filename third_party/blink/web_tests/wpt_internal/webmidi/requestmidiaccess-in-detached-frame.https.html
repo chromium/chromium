@@ -3,12 +3,12 @@
 <head>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
-<script src="/gen/media/midi/midi_service.mojom.js"></script>
-<script src="resources/mock-midiservice.js"></script>
 </head>
 <body>
-<script>
+<script type="module">
+import {MockMIDIService} from './resources/mock-midiservice.js';
+
+const mock = new MockMIDIService();
 promise_test(async _ => {
   const iframe = document.createElement('iframe');
   document.body.appendChild(iframe);

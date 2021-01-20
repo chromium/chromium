@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
-<script src="/gen/media/midi/midi_service.mojom.js"></script>
-<script src="resources/mock-midiservice.js"></script>
-<script src="resources/permissions-helper.js"></script>
-<script>
+<script type="module">
+import {PortState} from '/gen/media/midi/midi_service.mojom.m.js';
+import {MockMIDIService} from './resources/mock-midiservice.js';
+import {setMidiPermission} from './resources/permissions-helper.js';
+
+const mock = new MockMIDIService();
+
 async_test(t => {
   let noteOn = [ 0x90, 0x45, 0x7f ];
 
@@ -13,9 +15,9 @@ async_test(t => {
     setMidiPermission({}, 'granted').then(() => {
       return navigator.requestMIDIAccess();
     }).then(a => {
-      var started = false;
-      var receivedMessages = 0;
-      var receiveMessage = e => {
+      let started = false;
+      let receivedMessages = 0;
+      let receiveMessage = e => {
         t.step(() => {
           assert_array_equals(
               e.data, noteOn, 'received message should be noteOn');
@@ -32,24 +34,22 @@ async_test(t => {
         started = true;
 
         // Set an event handler respectively for newly connected ports.
-        var inputs = a.inputs.values();
+        const inputs = a.inputs.values();
         inputs.next();
         inputs.next().value.onmidimessage = receiveMessage;
         inputs.next().value.onmidimessage = receiveMessage;
 
         // Send a message respectively, and see if it is loopbacked.
-        var outputs = a.outputs.values();
+        const outputs = a.outputs.values();
         outputs.next();
         outputs.next().value.send(noteOn);
         outputs.next().value.send(noteOn);
       };
 
-      output = a.outputs.values().next().value;
-
-      mockMIDIService.addInputPort(midi.mojom.PortState.CONNECTED);
-      mockMIDIService.addOutputPort(midi.mojom.PortState.CONNECTED);
-      mockMIDIService.addInputPort(midi.mojom.PortState.OPENED);
-      mockMIDIService.addOutputPort(midi.mojom.PortState.OPENED);
+      mock.addInputPort(PortState.CONNECTED);
+      mock.addOutputPort(PortState.CONNECTED);
+      mock.addInputPort(PortState.OPENED);
+      mock.addOutputPort(PortState.OPENED);
     }).catch(e => assert_unreached(e));
   });
 }, "Test if newly connected ports work correctly");

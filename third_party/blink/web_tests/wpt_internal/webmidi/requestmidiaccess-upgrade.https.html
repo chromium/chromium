@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
-<script src="/gen/media/midi/midi_service.mojom.js"></script>
-<script src="resources/mock-midiservice.js"></script>
-<script src="resources/permissions-helper.js"></script>
-<script>
+<script type="module">
+import {MockMIDIService} from './resources/mock-midiservice.js';
+import {setMidiPermission} from './resources/permissions-helper.js';
+
+const mock = new MockMIDIService();
 promise_test(async () => {
   // Obtain the first MIDIAccess instance without a sysex permission.
   await setMidiPermission({}, 'granted');
@@ -25,7 +25,7 @@ promise_test(async () => {
 
   // See if a sysex message can be sent correctly over the second instance.
   const sysex_loopback_inport = sysex_access.inputs.values().next().value;
-  received_data = await new Promise((resolve, reject) => {
+  const received_data = await new Promise((resolve, reject) => {
     sysex_loopback_inport.onmidimessage = e => resolve(e.data);
     const sysex_outport = sysex_access.outputs.values().next().value;
     sysex_outport.send(sysex_message);
