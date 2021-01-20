@@ -56,7 +56,8 @@ public abstract class LaunchCauseMetrics implements ApplicationStatus.Applicatio
     // These values are persisted in histograms. Please do not renumber. Append only.
     @IntDef({LaunchCause.OTHER, LaunchCause.CUSTOM_TAB, LaunchCause.TWA, LaunchCause.RECENTS,
             LaunchCause.RECENTS_OR_BACK, LaunchCause.FOREGROUND_WHEN_LOCKED,
-            LaunchCause.MAIN_LAUNCHER_ICON, LaunchCause.MAIN_LAUNCHER_ICON_SHORTCUT})
+            LaunchCause.MAIN_LAUNCHER_ICON, LaunchCause.MAIN_LAUNCHER_ICON_SHORTCUT,
+            LaunchCause.HOME_SCREEN_WIDGET})
     @Retention(RetentionPolicy.SOURCE)
     public @interface LaunchCause {
         int OTHER = 0;
@@ -67,8 +68,9 @@ public abstract class LaunchCauseMetrics implements ApplicationStatus.Applicatio
         int FOREGROUND_WHEN_LOCKED = 5;
         int MAIN_LAUNCHER_ICON = 6;
         int MAIN_LAUNCHER_ICON_SHORTCUT = 7;
+        int HOME_SCREEN_WIDGET = 8;
 
-        int NUM_ENTRIES = 8;
+        int NUM_ENTRIES = 9;
     }
 
     /**
@@ -224,6 +226,9 @@ public abstract class LaunchCauseMetrics implements ApplicationStatus.Applicatio
                 break;
             case LaunchCause.MAIN_LAUNCHER_ICON_SHORTCUT:
                 launchCause = "MAIN_LAUNCHER_ICON_SHORTCUT";
+                break;
+            case LaunchCause.HOME_SCREEN_WIDGET:
+                launchCause = "HOME_SCREEN_WIDGET";
                 break;
         }
         Log.d(TAG, "Launch Cause: " + launchCause);

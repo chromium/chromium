@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.metrics;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
+import android.support.test.runner.lifecycle.Stage;
 
 import androidx.test.filters.MediumTest;
 
@@ -20,11 +22,15 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.ScalableTimeout;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.LauncherShortcutActivity;
+import org.chromium.chrome.browser.bookmarkswidget.BookmarkWidgetProxy;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -115,5 +121,23 @@ public final class TabbedActivityLaunchCauseMetricsTest {
                                        LaunchCauseMetrics.LaunchCause.MAIN_LAUNCHER_ICON_SHORTCUT),
                     Matchers.is(count));
         });
+    }
+
+    @Test
+    @MediumTest
+    public void testBookmarkWidgetMetrics() throws Throwable {
+        Intent intent = new Intent();
+        intent.setClass(ContextUtils.getApplicationContext(), BookmarkWidgetProxy.class);
+        intent.setData(Uri.parse("about:blank"));
+        final int count =
+                1 + histogramCountForValue(LaunchCauseMetrics.LaunchCause.HOME_SCREEN_WIDGET);
+        mActivityTestRule.setActivity(ApplicationTestUtils.waitForActivityWithClass(
+                ChromeTabbedActivity.class, Stage.RESUMED,
+                () -> ContextUtils.getApplicationContext().sendBroadcast(intent)));
+        CriteriaHelper.pollInstrumentationThread(() -> {
+            Criteria.checkThat(
+                    histogramCountForValue(LaunchCauseMetrics.LaunchCause.HOME_SCREEN_WIDGET),
+                    Matchers.is(count));
+        }, ScalableTimeout.scaleTimeout(5000L), CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 }

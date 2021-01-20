@@ -9,6 +9,9 @@ import android.content.Intent;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.ShortcutHelper;
+import org.chromium.chrome.browser.searchwidget.SearchWidgetProvider;
+import org.chromium.components.webapps.ShortcutSource;
 
 /**
  * LaunchCauseMetrics for ChromeTabbedActivity.
@@ -35,6 +38,17 @@ public class TabbedActivityLaunchCauseMetrics extends LaunchCauseMetrics {
                 && IntentHandler.wasIntentSenderChrome(launchIntent)) {
             return LaunchCause.MAIN_LAUNCHER_ICON_SHORTCUT;
         }
+
+        if (ShortcutSource.BOOKMARK_NAVIGATOR_WIDGET
+                == IntentUtils.safeGetIntExtra(
+                        launchIntent, ShortcutHelper.EXTRA_SOURCE, ShortcutSource.UNKNOWN)) {
+            return LaunchCause.HOME_SCREEN_WIDGET;
+        }
+
+        if (IntentUtils.safeGetBooleanExtra(
+                    launchIntent, SearchWidgetProvider.EXTRA_FROM_SEARCH_WIDGET, false)) {
+            return LaunchCause.HOME_SCREEN_WIDGET;
+        };
 
         // TODO(https://crbug.com/1163961): Implement remaining ChromeTabbedActivity launch cause
         // metrics.

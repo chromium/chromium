@@ -41280,6 +41280,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="6" label="Main Chrome Launcher Icon"/>
   <int value="7"
       label="Main Chrome Launcher Icon Shortcuts (New Tab shortcuts)"/>
+  <int value="8" label="Home screen widget (eg. Search or Bookmarks)"/>
 </enum>
 
 <enum name="LauncherRankingItemType">

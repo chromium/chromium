@@ -342,6 +342,11 @@ public class SearchActivity extends AsyncInitializationActivity
                 getIntent(), SearchWidgetProvider.EXTRA_START_VOICE_SEARCH, false);
     }
 
+    private boolean isFromSearchWidget() {
+        return IntentUtils.safeGetBooleanExtra(
+                getIntent(), SearchWidgetProvider.EXTRA_FROM_SEARCH_WIDGET, false);
+    }
+
     private String getOptionalIntentQuery() {
         return IntentUtils.safeGetStringExtra(getIntent(), SearchManager.QUERY);
     }
@@ -419,6 +424,9 @@ public class SearchActivity extends AsyncInitializationActivity
         if (!TextUtils.isEmpty(postDataType) && postData != null && postData.length != 0) {
             intent.putExtra(IntentHandler.EXTRA_POST_DATA_TYPE, postDataType);
             intent.putExtra(IntentHandler.EXTRA_POST_DATA, postData);
+        }
+        if (isFromSearchWidget()) {
+            intent.putExtra(SearchWidgetProvider.EXTRA_FROM_SEARCH_WIDGET, true);
         }
         IntentHandler.addTrustedIntentExtras(intent);
 

@@ -286,6 +286,9 @@ public class SearchWidgetProviderTest {
             boolean microphoneState = IntentUtils.safeGetBooleanExtra(
                     intent, SearchWidgetProvider.EXTRA_START_VOICE_SEARCH, false);
             Assert.assertEquals(clickTarget == R.id.microphone_icon, microphoneState);
+            boolean fromWidget = IntentUtils.safeGetBooleanExtra(
+                    intent, SearchWidgetProvider.EXTRA_FROM_SEARCH_WIDGET, false);
+            Assert.assertTrue(fromWidget);
         }
     }
 

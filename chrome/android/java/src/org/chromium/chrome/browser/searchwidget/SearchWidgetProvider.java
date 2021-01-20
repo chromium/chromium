@@ -116,6 +116,8 @@ public class SearchWidgetProvider extends AppWidgetProvider {
 
     public static final String EXTRA_START_VOICE_SEARCH =
             "org.chromium.chrome.browser.searchwidget.START_VOICE_SEARCH";
+    public static final String EXTRA_FROM_SEARCH_WIDGET =
+            "org.chromium.chrome.browser.searchwidget.FROM_SEARCH_WIDGET";
 
     /** Number of consecutive crashes this widget will absorb before giving up. */
     private static final int CRASH_LIMIT = 3;
@@ -219,6 +221,7 @@ public class SearchWidgetProvider extends AppWidgetProvider {
         searchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         searchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
         searchIntent.putExtra(EXTRA_START_VOICE_SEARCH, startVoiceSearch);
+        searchIntent.putExtra(EXTRA_FROM_SEARCH_WIDGET, true);
 
         Bundle optionsBundle =
                 ActivityOptionsCompat.makeCustomAnimation(context, R.anim.activity_open_enter, 0)

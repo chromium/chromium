@@ -70,7 +70,8 @@ struct ShortcutInfo {
     // Used for legacy PWAs added via the banner.
     SOURCE_APP_BANNER = 2,
     SOURCE_BOOKMARK_NAVIGATOR_WIDGET = 3,
-    SOURCE_BOOKMARK_SHORTCUT_WIDGET = 4,
+    // unused
+    // SOURCE_BOOKMARK_SHORTCUT_WIDGET = 4,
 
     // Used for legacy and WebAPKs launched from a notification.
     SOURCE_NOTIFICATION = 5,
