@@ -117,7 +117,7 @@ bool DeskNameView::SkipDefaultKeyEventProcessing(const ui::KeyEvent& event) {
 }
 
 void DeskNameView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kTextField;
+  Textfield::GetAccessibleNodeData(node_data);
   // When Bento is enabled and the user creates a new desk, |full_text_| will be
   // empty but the accesssible name for |this| will be the default desk name.
   node_data->SetName(full_text_.empty() ? GetAccessibleName() : full_text_);
