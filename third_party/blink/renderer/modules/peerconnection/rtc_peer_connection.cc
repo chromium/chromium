@@ -3525,8 +3525,14 @@ void RTCPeerConnection::CloseInternal() {
   if (sctp_transport_) {
     sctp_transport_->Close();
   }
-  for (auto& dtls_transport_iter : dtls_transports_by_native_transport_) {
-    dtls_transport_iter.value->Close();
+  // Since Close() can trigger JS-level callbacks, iterate over a copy
+  // of the transports list.
+  auto dtls_transports_copy = dtls_transports_by_native_transport_;
+  for (auto& dtls_transport_iter : dtls_transports_copy) {
+    // Since "value" is a WeakPtr, check if it's still valid.
+    if (dtls_transport_iter.value) {
+      dtls_transport_iter.value->Close();
+    }
   }
 
   feature_handle_for_scheduler_.reset();
