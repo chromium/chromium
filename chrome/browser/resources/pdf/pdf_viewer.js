@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import './elements/viewer-error-screen.js';
-import './elements/viewer-password-screen.js';
+import './elements/viewer-password-dialog.js';
 import './elements/viewer-pdf-toolbar.js';
 import './elements/viewer-properties-dialog.js';
 import './elements/viewer-zoom-toolbar.js';
@@ -249,6 +249,12 @@ export class PDFViewerElement extends PDFViewerBaseElement {
 
       /** @private */
       printingEnabled_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @private */
+      showPasswordDialog_: {
         type: Boolean,
         value: false,
       },
@@ -810,11 +816,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
   setLoadState(loadState) {
     super.setLoadState(loadState);
     if (loadState === LoadState.FAILED) {
-      const passwordScreen = this.$$('#password-screen');
-      if (passwordScreen && passwordScreen.active) {
-        passwordScreen.deny();
-        passwordScreen.close();
-      }
+      this.closePasswordDialog_();
     }
   }
 
@@ -829,9 +831,22 @@ export class PDFViewerElement extends PDFViewerBaseElement {
     }
   }
 
+  /** @private */
+  closePasswordDialog_() {
+    const passwordDialog = this.shadowRoot.querySelector('#password-dialog');
+    if (passwordDialog) {
+      passwordDialog.close();
+    }
+  }
+
+  /** @private */
+  onPasswordDialogClose_() {
+    this.showPasswordDialog_ = false;
+  }
+
   /**
    * An event handler for handling password-submitted events. These are fired
-   * when an event is entered into the password screen.
+   * when an event is entered into the password dialog.
    * @param {!CustomEvent<{password: string}>} event a password-submitted event.
    * @private
    */
@@ -997,12 +1012,10 @@ export class PDFViewerElement extends PDFViewerBaseElement {
   /** @override */
   setDocumentDimensions(documentDimensions) {
     super.setDocumentDimensions(documentDimensions);
-    // If we received the document dimensions, the password was good so we
-    // can dismiss the password screen.
-    const passwordScreen = this.$$('#password-screen');
-    if (passwordScreen && passwordScreen.active) {
-      passwordScreen.close();
-    }
+
+    // If the document dimensions are received, the password was correct and the
+    // password dialog can be dismissed.
+    this.closePasswordDialog_();
 
     if (this.toolbarEnabled_) {
       this.docLength_ = this.documentDimensions.pageDimensions.length;
@@ -1023,15 +1036,14 @@ export class PDFViewerElement extends PDFViewerBaseElement {
    * @private
    */
   handlePasswordRequest_() {
-    // If the password screen isn't up, put it up. Otherwise we're
-    // responding to an incorrect password so deny it.
-    const passwordScreen = this.$$('#password-screen');
-    assert(passwordScreen);
-    if (!passwordScreen.active) {
-      this.hadPassword_ = true;
-      passwordScreen.show();
+    // Show the password dialog if it is not already shown. Otherwise, respond
+    // to an incorrect password.
+    if (!this.showPasswordDialog_) {
+      this.showPasswordDialog_ = true;
     } else {
-      passwordScreen.deny();
+      const passwordDialog = this.shadowRoot.querySelector('#password-dialog');
+      assert(passwordDialog);
+      passwordDialog.deny();
     }
   }
 

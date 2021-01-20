@@ -8,11 +8,10 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 Polymer({
-  is: 'viewer-password-screen',
+  is: 'viewer-password-dialog',
 
   _template: html`{__html_template__}`,
 
@@ -20,18 +19,8 @@ Polymer({
     invalid: Boolean,
   },
 
-  get active() {
-    return this.$.dialog.open;
-  },
-
-  show() {
-    this.$.dialog.showModal();
-  },
-
   close() {
-    if (this.active) {
-      this.$.dialog.close();
-    }
+    this.$.dialog.close();
   },
 
   deny() {
@@ -51,14 +40,4 @@ Polymer({
     this.$.submit.disabled = true;
     this.fire('password-submitted', {password: password.value});
   },
-
-  /**
-   * Returns |message| if input is invalid, otherwise empty string.
-   * This avoids setting the error message (which announces to screen readers)
-   * when there is no error.
-   * @return {string}
-   */
-  getErrorMessage_() {
-    return this.invalid ? loadTimeData.getString('passwordInvalid') : '';
-  }
 });

@@ -15,7 +15,7 @@ js_type_check("closure_compile") {
     ":viewer-error-screen",
     ":viewer-page-indicator",
     ":viewer-page-selector",
-    ":viewer-password-screen",
+    ":viewer-password-dialog",
     ":viewer-pdf-sidenav",
     ":viewer-pdf-toolbar",
     ":viewer-pdf-toolbar-new",
@@ -110,10 +110,11 @@ js_library("viewer-page-indicator") {
 js_library("viewer-page-selector") {
 }
 
-js_library("viewer-password-screen") {
+js_library("viewer-password-dialog") {
   deps = [
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
     "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
-    "//ui/webui/resources/js:load_time_data.m",
   ]
 }
 
@@ -211,7 +212,7 @@ html_to_js("web_components") {
     "viewer-error-screen.js",
     "viewer-page-indicator.js",
     "viewer-page-selector.js",
-    "viewer-password-screen.js",
+    "viewer-password-dialog.js",
     "viewer-pdf-sidenav.js",
     "viewer-pdf-toolbar.js",
     "viewer-pdf-toolbar-new.js",

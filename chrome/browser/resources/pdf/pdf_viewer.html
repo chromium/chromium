@@ -221,9 +221,11 @@
   <div id="sizer"></div>
 </template>
 
-<viewer-password-screen id="password-screen"
-    on-password-submitted="onPasswordSubmitted_">
-</viewer-password-screen>
+<template is="dom-if" if="[[showPasswordDialog_]]" restamp>
+  <viewer-password-dialog id="password-dialog" on-close="onPasswordDialogClose_"
+      on-password-submitted="onPasswordSubmitted_">
+  </viewer-password-dialog>
+</template>
 
 <template is="dom-if" if="[[showPropertiesDialog_]]" restamp>
   <viewer-properties-dialog id="properties-dialog"

@@ -13,7 +13,7 @@ const tests = [
   function testHasElements() {
     const viewer = /** @type {!PDFViewerElement} */ (
         document.body.querySelector('pdf-viewer'));
-    const commonElements = ['viewer-password-screen', 'viewer-error-screen'];
+    const commonElements = ['viewer-error-screen'];
     const elementNames =
         document.documentElement.hasAttribute('pdf-viewer-update-enabled') ?
         ['viewer-pdf-toolbar-new', 'viewer-pdf-sidenav', ...commonElements] :
