@@ -502,6 +502,11 @@ cros_healthd::BatteryResultPtr CreateBatteryResult() {
           cros_healthd::NullableUint64::New(kFakeSmartBatteryTemperature)));
 }
 
+cros_healthd::BatteryResultPtr CreateEmptyBatteryResult() {
+  return cros_healthd::BatteryResult::NewBatteryInfo(
+      cros_healthd::BatteryInfoPtr());
+}
+
 cros_healthd::NonRemovableBlockDeviceResultPtr CreateBlockDeviceResult() {
   std::vector<cros_healthd::NonRemovableBlockDeviceInfoPtr> storage_vector;
   storage_vector.push_back(cros_healthd::NonRemovableBlockDeviceInfo::New(
@@ -586,9 +591,20 @@ cros_healthd::BacklightResultPtr CreateBacklightResult() {
       std::move(backlight_vector));
 }
 
+cros_healthd::BacklightResultPtr CreateEmptyBacklightResult() {
+  std::vector<cros_healthd::BacklightInfoPtr> backlight_vector;
+  return cros_healthd::BacklightResult::NewBacklightInfo(
+      std::move(backlight_vector));
+}
+
 cros_healthd::FanResultPtr CreateFanResult() {
   std::vector<cros_healthd::FanInfoPtr> fan_vector;
   fan_vector.push_back(cros_healthd::FanInfo::New(kFakeSpeedRpm));
+  return cros_healthd::FanResult::NewFanInfo(std::move(fan_vector));
+}
+
+cros_healthd::FanResultPtr CreateEmptyFanResult() {
+  std::vector<cros_healthd::FanInfoPtr> fan_vector;
   return cros_healthd::FanResult::NewFanInfo(std::move(fan_vector));
 }
 
@@ -626,6 +642,15 @@ void GetFakeCrosHealthdBatteryData(
     policy::DeviceStatusCollector::CrosHealthdDataReceiver receiver) {
   cros_healthd::TelemetryInfo fake_info;
   fake_info.battery_result = CreateBatteryResult();
+  std::move(receiver).Run(fake_info.Clone(), CreateFakeSampleData());
+}
+
+// Creates cros_healthd data with the battery category populated with no battery
+// info (chromebox).
+void GetFakeEmptyCrosHealthdBatteryData(
+    policy::DeviceStatusCollector::CrosHealthdDataReceiver receiver) {
+  cros_healthd::TelemetryInfo fake_info;
+  fake_info.battery_result = CreateEmptyBatteryResult();
   std::move(receiver).Run(fake_info.Clone(), CreateFakeSampleData());
 }
 
@@ -675,6 +700,29 @@ void FetchFakePartialCrosHealthdData(
 
     case policy::CrosHealthdCollectionMode::kBattery: {
       GetFakeCrosHealthdBatteryData(std::move(receiver));
+      return;
+    }
+  }
+}
+
+// Fake cros_healthd fetching function. Returns data with only optional probe
+// categories populated, if |mode| is kFull or only the battery category if
+// |mode| is kBattery.
+void FetchFakeOptionalCrosHealthdData(
+    policy::CrosHealthdCollectionMode mode,
+    policy::DeviceStatusCollector::CrosHealthdDataReceiver receiver) {
+  switch (mode) {
+    case policy::CrosHealthdCollectionMode::kFull: {
+      cros_healthd::TelemetryInfo fake_info;
+      fake_info.battery_result = CreateEmptyBatteryResult();
+      fake_info.backlight_result = CreateEmptyBacklightResult();
+      fake_info.fan_result = CreateEmptyFanResult();
+      std::move(receiver).Run(fake_info.Clone(), CreateFakeSampleData());
+      return;
+    }
+
+    case policy::CrosHealthdCollectionMode::kBattery: {
+      GetFakeEmptyCrosHealthdBatteryData(std::move(receiver));
       return;
     }
   }
@@ -3248,6 +3296,30 @@ TEST_F(DeviceStatusCollectorTest, TestCrosHealthdInfo) {
   EXPECT_EQ(adapter.address(), kFakeBluetoothAdapterAddress);
   EXPECT_EQ(adapter.powered(), kFakeBluetoothAdapterIsPowered);
   EXPECT_EQ(adapter.num_connected_devices(), kFakeNumConnectedBluetoothDevices);
+}
+
+TEST_F(DeviceStatusCollectorTest, TestCrosHealthdInfoOptional) {
+  // Create a fake cros_healthd response with empty optional data from
+  // cros_healthd.
+  auto options = CreateEmptyDeviceStatusCollectorOptions();
+  options->cros_healthd_data_fetcher =
+      base::BindRepeating(&FetchFakeOptionalCrosHealthdData);
+  RestartStatusCollector(std::move(options));
+
+  scoped_testing_cros_settings_.device_settings()->SetBoolean(
+      chromeos::kReportDeviceCpuInfo, true);
+  scoped_testing_cros_settings_.device_settings()->SetBoolean(
+      chromeos::kReportDevicePowerStatus, true);
+  GetStatus();
+
+  // Verify the battery data is empty
+  EXPECT_FALSE(device_status_.has_power_status());
+
+  // Verify the backlight info is empty.
+  EXPECT_EQ(device_status_.backlight_info_size(), 0);
+
+  // Verify the fan info is empty.
+  EXPECT_EQ(device_status_.fan_info_size(), 0);
 }
 
 TEST_F(DeviceStatusCollectorTest, TestPartialCrosHealthdInfo) {

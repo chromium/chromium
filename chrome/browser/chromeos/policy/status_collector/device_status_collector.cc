@@ -989,6 +989,10 @@ class DeviceStatusCollectorState : public StatusCollectorState {
 
         case cros_healthd::BatteryResult::Tag::BATTERY_INFO: {
           const auto& battery_info = battery_result->get_battery_info();
+          // Device does not have a battery.
+          if (battery_info.is_null())
+            break;
+
           em::PowerStatus* const power_status_out =
               response_params_.device_status->mutable_power_status();
           em::BatteryInfo* const battery_info_out =
