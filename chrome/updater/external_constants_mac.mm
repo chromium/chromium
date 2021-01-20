@@ -42,7 +42,7 @@ bool DevOverrideProvider::UseCUP() const {
   }
 }
 
-int DevOverrideProvider::InitialDelay() const {
+double DevOverrideProvider::InitialDelay() const {
   @autoreleasepool {
     NSUserDefaults* userDefaults = [[NSUserDefaults alloc]
         initWithSuiteName:[NSString

@@ -97,8 +97,8 @@ ComponentUpdaterCommandLineConfigPolicy::
 
   const std::string initial_delay =
       GetSwitchArgument(switch_values, kInitialDelay);
-  int initial_delay_seconds = 0;
-  if (base::StringToInt(initial_delay, &initial_delay_seconds))
+  double initial_delay_seconds = 0;
+  if (base::StringToDouble(initial_delay, &initial_delay_seconds))
     initial_delay_ = initial_delay_seconds;
 }
 
@@ -127,7 +127,7 @@ GURL ComponentUpdaterCommandLineConfigPolicy::UrlSourceOverride() const {
   return url_source_override_;
 }
 
-int ComponentUpdaterCommandLineConfigPolicy::InitialDelay() const {
+double ComponentUpdaterCommandLineConfigPolicy::InitialDelay() const {
   return initial_delay_;
 }
 

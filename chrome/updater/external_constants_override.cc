@@ -85,7 +85,7 @@ bool ExternalConstantsOverrider::UseCUP() const {
   return use_cup_value.GetBool();
 }
 
-int ExternalConstantsOverrider::InitialDelay() const {
+double ExternalConstantsOverrider::InitialDelay() const {
   if (!override_values_.contains(kDevOverrideKeyInitialDelay)) {
     return next_provider_->InitialDelay();
   }

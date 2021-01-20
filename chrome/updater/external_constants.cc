@@ -25,7 +25,7 @@ class DefaultExternalConstants : public ExternalConstants {
 
   bool UseCUP() const override { return true; }
 
-  int InitialDelay() const override { return kInitialDelay; }
+  double InitialDelay() const override { return kInitialDelay; }
 };
 
 }  // namespace

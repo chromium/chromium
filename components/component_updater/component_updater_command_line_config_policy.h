@@ -29,7 +29,7 @@ class ComponentUpdaterCommandLineConfigPolicy final
   bool PingsEnabled() const override;
   bool TestRequest() const override;
   GURL UrlSourceOverride() const override;
-  int InitialDelay() const override;
+  double InitialDelay() const override;
 
  private:
   bool background_downloads_enabled_ = false;
@@ -40,7 +40,7 @@ class ComponentUpdaterCommandLineConfigPolicy final
 
   // If non-zero, time interval in seconds until the first component
   // update check.
-  int initial_delay_ = 0;
+  double initial_delay_ = 0;
 
   GURL url_source_override_;
 

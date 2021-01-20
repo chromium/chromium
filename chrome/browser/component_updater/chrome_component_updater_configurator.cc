@@ -53,7 +53,7 @@ class ChromeConfigurator : public update_client::Configurator {
                      PrefService* pref_service);
 
   // update_client::Configurator overrides.
-  int InitialDelay() const override;
+  double InitialDelay() const override;
   int NextCheckDelay() const override;
   int OnDemandDelay() const override;
   int UpdateDelay() const override;
@@ -107,7 +107,7 @@ ChromeConfigurator::ChromeConfigurator(const base::CommandLine* cmdline,
   DCHECK(pref_service_);
 }
 
-int ChromeConfigurator::InitialDelay() const {
+double ChromeConfigurator::InitialDelay() const {
   return configurator_impl_.InitialDelay();
 }
 

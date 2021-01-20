@@ -141,7 +141,7 @@ ChromeUpdateClientConfig::ChromeUpdateClientConfig(
   DCHECK(pref_service_);
 }
 
-int ChromeUpdateClientConfig::InitialDelay() const {
+double ChromeUpdateClientConfig::InitialDelay() const {
   return impl_.InitialDelay();
 }
 

@@ -37,7 +37,7 @@ GURL CommandLineConfigPolicy::UrlSourceOverride() const {
   return GURL();
 }
 
-int CommandLineConfigPolicy::InitialDelay() const {
+double CommandLineConfigPolicy::InitialDelay() const {
   return 0;
 }
 

@@ -39,7 +39,7 @@ bool DevOverrideProvider::UseCUP() const {
   return next_provider_->UseCUP();
 }
 
-int DevOverrideProvider::InitialDelay() const {
+double DevOverrideProvider::InitialDelay() const {
   base::win::RegKey key;
   if (key.Open(HKEY_CURRENT_USER, UPDATE_DEV_KEY, KEY_READ) == ERROR_SUCCESS) {
     DWORD initial_delay = 0;

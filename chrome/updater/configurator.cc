@@ -50,8 +50,8 @@ Configurator::Configurator(std::unique_ptr<UpdaterPrefs> prefs)
       patch_factory_(base::MakeRefCounted<PatcherFactory>()) {}
 Configurator::~Configurator() = default;
 
-int Configurator::InitialDelay() const {
-  return base::RandInt(0, external_constants_->InitialDelay());
+double Configurator::InitialDelay() const {
+  return base::RandDouble() * external_constants_->InitialDelay();
 }
 
 int Configurator::NextCheckDelay() const {

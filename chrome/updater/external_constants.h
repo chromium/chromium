@@ -29,7 +29,7 @@ class ExternalConstants {
 
   // Number of seconds to delay the start of the automated background tasks
   // such as update checks.
-  virtual int InitialDelay() const = 0;
+  virtual double InitialDelay() const = 0;
 
  protected:
   std::unique_ptr<ExternalConstants> next_provider_;
