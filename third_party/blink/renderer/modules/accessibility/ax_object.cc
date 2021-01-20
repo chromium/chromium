@@ -48,6 +48,10 @@
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/html_dialog_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
+#include "third_party/blink/renderer/core/html/html_head_element.h"
+#include "third_party/blink/renderer/core/html/html_script_element.h"
+#include "third_party/blink/renderer/core/html/html_style_element.h"
+#include "third_party/blink/renderer/core/html/html_title_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/input/context_menu_allowed_scope.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
@@ -2550,8 +2554,16 @@ bool AXObject::ComputeIsHiddenViaStyle() const {
     return false;
 
   // Display-locked nodes are always hidden.
-  if (DisplayLockUtilities::NearestLockedExclusiveAncestor(*node))
+  if (DisplayLockUtilities::NearestLockedExclusiveAncestor(*node)) {
+    // Ensure contents of head, style and script are never exposed.
+    // Note: an AXObject is created for <title> to gather the document's name.
+    DCHECK(!Traversal<HTMLHeadElement>::FirstAncestorOrSelf(*node) ||
+           IsA<HTMLTitleElement>(node))
+        << node;
+    DCHECK(!Traversal<HTMLStyleElement>::FirstAncestorOrSelf(*node)) << node;
+    DCHECK(!Traversal<HTMLScriptElement>::FirstAncestorOrSelf(*node)) << node;
     return true;
+  }
 
   // Style elements in SVG are not display: none, unlike HTML style elements,
   // but they are still hidden and thus treated as hidden from style.

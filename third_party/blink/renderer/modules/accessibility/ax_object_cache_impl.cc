@@ -57,7 +57,10 @@
 #include "third_party/blink/renderer/core/html/forms/listed_element.h"
 #include "third_party/blink/renderer/core/html/html_area_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
+#include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
+#include "third_party/blink/renderer/core/html/html_script_element.h"
+#include "third_party/blink/renderer/core/html/html_style_element.h"
 #include "third_party/blink/renderer/core/html/html_table_cell_element.h"
 #include "third_party/blink/renderer/core/html/html_table_element.h"
 #include "third_party/blink/renderer/core/html/html_table_row_element.h"
@@ -142,16 +145,49 @@ bool IsLayoutObjectRelevantForAccessibility(const Node* node) {
   return !ShouldCreateAXMenuListOptionFor(node) && !IsA<HTMLAreaElement>(node);
 }
 
-bool IsNodeRelevantForAccessibility(const Node* node) {
+bool IsNodeRelevantForAccessibility(const Node* node, bool parent_ax_known) {
   if (!node || !node->isConnected())
     return false;
 
   if (!node->IsElementNode() && !node->IsTextNode() && !node->IsDocumentNode())
     return false;  // Only documents, elements and text nodes get ax objects.
 
+  // When there is a layout object, the element is known to be visible, so
+  // consider it relevant and return early. Checking the layout object is only
+  // useful when display locking (content-visibility) is not used.
+  if (node->GetLayoutObject() &&
+      !DisplayLockUtilities::NearestLockedInclusiveAncestor(*node)) {
+    return true;
+  }
+
+  // The node is either hidden or display locked:
+  // Do not consider <head>/<style>/<script> relevant in these cases.
   if (IsA<HTMLHeadElement>(node))
     return false;
+  if (IsA<HTMLStyleElement>(node))
+    return false;
+  if (IsA<HTMLScriptElement>(node))
+    return false;
 
+  // Not a <head>/<style>/<script>:
+  // Use a slower check to see if this node is anywhere inside of a <head>,
+  // <style> or <script>.
+  // This check is not necessary if the parent_ax is already known, which means
+  // we are attempting to add this object from something already relevant in the
+  // AX tree, and therefore can't be inside a <head>, <style> or <script>.
+  if (parent_ax_known)
+    return true;  // No need to check inside if the parent exists.
+  // Objects inside <head> are irrelevant, except <title> (collects title text).
+  if (Traversal<HTMLHeadElement>::FirstAncestor(*node))
+    return IsA<HTMLTitleElement>(node);
+  // Objects inside a <style> are irrelevant.
+  if (Traversal<HTMLStyleElement>::FirstAncestor(*node))
+    return false;
+  // Objects inside a <script> are irrelevant.
+  if (Traversal<HTMLScriptElement>::FirstAncestor(*node))
+    return false;
+
+  // All other objects are relevant, even if hidden.
   return true;
 }
 
@@ -499,7 +535,7 @@ AXObject* AXObjectCacheImpl::GetOrCreate(const Node* node,
 
 AXObject* AXObjectCacheImpl::GetOrCreate(Node* node,
                                          AXObject* parent_if_known) {
-  if (!IsNodeRelevantForAccessibility(node))
+  if (!node)
     return nullptr;
 
   if (AXObject* obj = Get(node))
@@ -511,8 +547,11 @@ AXObject* AXObjectCacheImpl::GetOrCreate(Node* node,
 AXObject* AXObjectCacheImpl::CreateAndInit(Node* node,
                                            AXObject* parent_if_known,
                                            AXID use_axid) {
-#if DCHECK_IS_ON()
   DCHECK(node);
+  if (!IsNodeRelevantForAccessibility(node, parent_if_known))
+    return nullptr;
+
+#if DCHECK_IS_ON()
   DCHECK(node->isConnected());
   DCHECK(node->IsElementNode() || node->IsTextNode() || node->IsDocumentNode());
   Document* document = &node->GetDocument();
@@ -534,10 +573,6 @@ AXObject* AXObjectCacheImpl::CreateAndInit(Node* node,
   // for example, an <img> has a user agent shadow root containing a <span> for
   // the alt text. Do not create an accessible for that as it would be unable
   // to have a parent that has it as a child.
-  // TODO(aleventhal) There may be similar cases for content inside a <head>,
-  // <style> or <script> -- for style/script the inner text might change.
-  // In those cases the nodes are most likely display:none, but if they are
-  // display locked we may not know that they are display:none.
   if (node->IsInShadowTree()) {
     AXObject* shadow_host = Get(node->OwnerShadowHost());
     if (shadow_host && !shadow_host->CanHaveChildren())
@@ -589,6 +624,9 @@ AXObject* AXObjectCacheImpl::CreateAndInit(LayoutObject* layout_object,
   Node* node = layout_object->GetNode();
   DCHECK(!node || IsLayoutObjectRelevantForAccessibility(node))
       << "Shouldn't get here if the layout object is not relevant for a11y";
+
+  if (node && !IsNodeRelevantForAccessibility(node, parent_if_known))
+    return nullptr;
 
   // Return null if inside a shadow tree of something that can't have children,
   // for example, an <img> has a user agent shadow root containing a <span> for
