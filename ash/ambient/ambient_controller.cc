@@ -270,7 +270,7 @@ void AmbientController::OnAutoShowTimeOut() {
   DCHECK(IsUiHidden(ambient_ui_model_.ui_visibility()));
 
   // Show ambient screen after time out.
-  ambient_ui_model_.SetUiVisibility(AmbientUiVisibility::kShown);
+  ShowUi();
 }
 
 void AmbientController::OnLockStateChanged(bool locked) {
@@ -403,6 +403,15 @@ void AmbientController::SuspendImminent(
   // closing finished.
   CloseAllWidgets(/*immediately=*/true);
   CloseUi();
+  is_suspend_imminent_ = true;
+}
+
+void AmbientController::SuspendDone(base::TimeDelta sleep_duration) {
+  is_suspend_imminent_ = false;
+  // |DismissUI| will restart the lock screen timer if lock screen is active and
+  // if Ambient mode is enabled, so call it when resuming from suspend to
+  // restart Ambient mode if applicable.
+  DismissUI();
 }
 
 void AmbientController::OnAuthScanDone(
@@ -441,6 +450,11 @@ void AmbientController::ShowUi() {
     return;
   }
 
+  if (is_suspend_imminent_) {
+    VLOG(1) << "Do not show UI when suspend imminent";
+    return;
+  }
+
   ambient_ui_model_.SetUiVisibility(AmbientUiVisibility::kShown);
 }
 
@@ -449,6 +463,11 @@ void AmbientController::ShowHiddenUi() {
 
   if (!IsAmbientModeEnabled()) {
     LOG(WARNING) << "Ambient mode is not allowed.";
+    return;
+  }
+
+  if (is_suspend_imminent_) {
+    VLOG(1) << "Do not start hidden UI when suspend imminent";
     return;
   }
 

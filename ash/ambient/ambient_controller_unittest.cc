@@ -21,6 +21,7 @@
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
+#include "chromeos/dbus/power_manager/suspend.pb.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/pointer_details.h"
@@ -802,8 +803,30 @@ TEST_F(AmbientControllerTest, ClosesAmbientBeforeSuspend) {
   EXPECT_FALSE(ambient_controller()->IsShown());
 
   FastForwardToLockScreenTimeout();
-  // Ambient mode should not resume after suspend.
+  // Ambient mode should not resume until SuspendDone is received.
   EXPECT_FALSE(ambient_controller()->IsShown());
+}
+
+TEST_F(AmbientControllerTest, RestartsAmbientAfterSuspend) {
+  LockScreen();
+  FastForwardToLockScreenTimeout();
+
+  EXPECT_TRUE(ambient_controller()->IsShown());
+
+  SimulateSystemSuspendAndWait(
+      power_manager::SuspendImminent::Reason::SuspendImminent_Reason_IDLE);
+
+  EXPECT_FALSE(ambient_controller()->IsShown());
+
+  // This call should be blocked by prior |SuspendImminent| until |SuspendDone|.
+  ambient_controller()->ShowUi();
+  EXPECT_FALSE(ambient_controller()->IsShown());
+
+  SimulateSystemResumeAndWait();
+
+  FastForwardToLockScreenTimeout();
+
+  EXPECT_TRUE(ambient_controller()->IsShown());
 }
 
 TEST_F(AmbientControllerTest, ObservesPrefsWhenAmbientEnabled) {

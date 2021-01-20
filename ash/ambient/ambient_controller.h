@@ -22,6 +22,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -77,6 +78,7 @@ class ASH_EXPORT AmbientController
   void ScreenIdleStateChanged(
       const power_manager::ScreenIdleState& idle_state) override;
   void SuspendImminent(power_manager::SuspendImminent::Reason reason) override;
+  void SuspendDone(base::TimeDelta sleep_duration) override;
 
   // fingerprint::mojom::FingerprintObserver:
   void OnAuthScanDone(
@@ -214,6 +216,11 @@ class ASH_EXPORT AmbientController
   mojo::Remote<device::mojom::Fingerprint> fingerprint_;
   mojo::Receiver<device::mojom::FingerprintObserver>
       fingerprint_observer_receiver_{this};
+
+  // Set when |SuspendImminent| is called and cleared when |SuspendDone| is
+  // called. Used to prevent Ambient mode from reactivating while device is
+  // going to suspend.
+  bool is_suspend_imminent_ = false;
 
   base::WeakPtrFactory<AmbientController> weak_ptr_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(AmbientController);
