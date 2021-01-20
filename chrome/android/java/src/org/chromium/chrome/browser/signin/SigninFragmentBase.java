@@ -105,8 +105,8 @@ public abstract class SigninFragmentBase
 
     private String mSelectedAccountName;
     private boolean mIsDefaultAccountSelected;
-    private AccountsChangeObserver mAccountsChangedObserver;
-    private ProfileDataCache.Observer mProfileDataCacheObserver;
+    private final AccountsChangeObserver mAccountsChangedObserver;
+    private final ProfileDataCache.Observer mProfileDataCacheObserver;
     private ProfileDataCache mProfileDataCache;
     private List<String> mAccountNames;
     private boolean mResumed;
@@ -170,7 +170,7 @@ public abstract class SigninFragmentBase
 
     protected SigninFragmentBase() {
         mAccountsChangedObserver = this::triggerUpdateAccounts;
-        mProfileDataCacheObserver = (String accountId) -> updateProfileData();
+        mProfileDataCacheObserver = this::updateProfileData;
     }
 
     /** The sign-in was refused. */
@@ -277,8 +277,9 @@ public abstract class SigninFragmentBase
 
         // When a fragment that was in the FragmentManager backstack becomes visible again, the view
         // will be recreated by onCreateView. Update the state of this recreated UI.
-        if (mSelectedAccountName != null) updateProfileData();
-
+        if (mSelectedAccountName != null) {
+            updateProfileData(mSelectedAccountName);
+        }
         return mView;
     }
 
@@ -327,8 +328,10 @@ public abstract class SigninFragmentBase
         mConsentTextTracker.setText(mView.getMoreButton(), R.string.more);
     }
 
-    private void updateProfileData() {
-        if (mSelectedAccountName == null) return;
+    private void updateProfileData(String accountEmail) {
+        if (!TextUtils.equals(accountEmail, mSelectedAccountName)) {
+            return;
+        }
         DisplayableProfileData profileData =
                 mProfileDataCache.getProfileDataOrDefault(mSelectedAccountName);
         mView.getAccountImageView().setImageDrawable(profileData.getImage());
@@ -568,7 +571,7 @@ public abstract class SigninFragmentBase
         mSelectedAccountName = accountName;
         mIsDefaultAccountSelected = isDefaultAccount;
         mProfileDataCache.update(Collections.singletonList(mSelectedAccountName));
-        updateProfileData();
+        updateProfileData(mSelectedAccountName);
 
         AccountPickerDialogFragment accountPickerFragment = getAccountPickerDialogFragment();
         if (accountPickerFragment != null) {
