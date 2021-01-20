@@ -13,6 +13,7 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/wm/desks/desk_drag_proxy.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_mini_view_animations.h"
 #include "ash/wm/desks/desk_name_view.h"
@@ -33,7 +34,9 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/event_monitor.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
+#include "ui/wm/core/cursor_manager.h"
 #include "ui/wm/core/window_animations.h"
 
 namespace ash {
@@ -75,6 +78,31 @@ OverviewHighlightController* GetHighlightController() {
   auto* overview_controller = Shell::Get()->overview_controller();
   DCHECK(overview_controller->InOverviewSession());
   return overview_controller->overview_session()->highlight_controller();
+}
+
+int DetermineMoveIndex(const std::vector<DeskMiniView*>& views,
+                       int old_index,
+                       int location_screen_x) {
+  DCHECK_GE(old_index, 0);
+
+  const int views_size = static_cast<int>(views.size());
+  DCHECK_LT(old_index, views_size);
+
+  for (int new_index = 0; new_index < views_size; new_index++) {
+    // Note that we cannot directly use |GetBoundsInScreen|. Because we may
+    // perform animation (transform) on mini views. The bounds gotten from
+    // |GetBoundsInScreen| may be the intermediate bounds during animation.
+    // Therefore, we transfer a mini view's origin from its parent level to
+    // avoid the influence of its own transform.
+    auto* view = views[new_index];
+    gfx::Point center_in_screen = view->bounds().CenterPoint();
+    views::View::ConvertPointToScreen(view->parent(), &center_in_screen);
+
+    if (location_screen_x < center_in_screen.x())
+      return new_index;
+  }
+
+  return views_size - 1;
 }
 
 }  // namespace
@@ -331,6 +359,8 @@ DesksBarView::DesksBarView(OverviewGrid* overview_grid)
 
 DesksBarView::~DesksBarView() {
   DesksController::Get()->RemoveObserver(this);
+  if (drag_view_)
+    EndDragDesk(drag_view_, /*end_by_user=*/false);
 }
 
 // static
@@ -433,6 +463,108 @@ bool DesksBarView::IsZeroState() const {
          DesksController::Get()->desks().size() == 1;
 }
 
+void DesksBarView::HandleStartDragEvent(DeskMiniView* mini_view,
+                                        const ui::LocatedEvent& event) {
+  DeskNameView::CommitChanges(GetWidget());
+
+  gfx::PointF location = event.target()->GetScreenLocationF(event);
+  StartDragDesk(mini_view, location);
+}
+
+bool DesksBarView::HandleDragEvent(DeskMiniView* mini_view,
+                                   const ui::LocatedEvent& event) {
+  gfx::PointF location = event.target()->GetScreenLocationF(event);
+  return ContinueDragDesk(mini_view, location);
+}
+
+bool DesksBarView::HandleReleaseEvent(DeskMiniView* mini_view,
+                                      const ui::LocatedEvent& event) {
+  return EndDragDesk(mini_view, /*end_by_user=*/true);
+}
+
+void DesksBarView::StartDragDesk(DeskMiniView* mini_view,
+                                 const gfx::PointF& location_in_screen) {
+  // If another view is being dragged, then end the drag.
+  if (drag_view_)
+    EndDragDesk(drag_view_, /*end_by_user=*/false);
+
+  drag_view_ = mini_view;
+
+  gfx::PointF preview_origin_in_screen(
+      drag_view_->GetPreviewBoundsInScreen().origin());
+  gfx::Vector2dF drag_origin_offset =
+      location_in_screen - preview_origin_in_screen;
+
+  // Hide the dragged mini view.
+  drag_view_->layer()->SetOpacity(0.0f);
+
+  // Create a drag proxy for the dragged desk.
+  drag_proxy_ =
+      std::make_unique<DeskDragProxy>(this, drag_view_, drag_origin_offset);
+  drag_proxy_->ScaleAndMoveTo(location_in_screen);
+
+  Shell::Get()->cursor_manager()->SetCursor(ui::mojom::CursorType::kGrabbing);
+}
+
+bool DesksBarView::ContinueDragDesk(DeskMiniView* mini_view,
+                                    const gfx::PointF& location_in_screen) {
+  if (!drag_view_ || mini_view != drag_view_)
+    return false;
+
+  drag_proxy_->DragTo(location_in_screen);
+
+  const auto drag_view_iter =
+      std::find(mini_views_.cbegin(), mini_views_.cend(), drag_view_);
+  DCHECK(drag_view_iter != mini_views_.cend());
+
+  int old_index = drag_view_iter - mini_views_.cbegin();
+
+  gfx::Point drag_pos_in_screen = drag_proxy_->GetPositionInScreen();
+  gfx::Rect bar_bounds = scroll_view_contents_->GetBoundsInScreen();
+  float cursor_y = location_in_screen.y();
+
+  // Determine the target location for the desk to be reordered. If the cursor
+  // is outside the desks bar, then the dragged desk will be moved to the end.
+  // Otherwise, the position is determined by the drag proxy's location.
+  int new_index =
+      (cursor_y < bar_bounds.origin().y() || cursor_y > bar_bounds.bottom())
+          ? mini_views_.size() - 1
+          : DetermineMoveIndex(mini_views_, old_index, drag_pos_in_screen.x());
+  Shell::Get()->desks_controller()->ReorderDesk(old_index, new_index);
+
+  return true;
+}
+
+bool DesksBarView::EndDragDesk(DeskMiniView* mini_view, bool end_by_user) {
+  if (!drag_view_ || mini_view != drag_view_)
+    return false;
+
+  // Update default desk names after dropping.
+  Shell::Get()->desks_controller()->UpdateDesksDefaultNames();
+  Shell::Get()->cursor_manager()->SetCursor(ui::mojom::CursorType::kPointer);
+
+  // If the reordering is ended by the user (release the drag), perform the
+  // snapping back animation. Otherwise, directly finalize the drag.
+  if (end_by_user)
+    drag_proxy_->SnapBackToDragView();
+  else
+    FinalizeDragDesk();
+
+  return true;
+}
+
+void DesksBarView::FinalizeDragDesk() {
+  if (drag_view_) {
+    drag_view_->layer()->SetOpacity(1.0f);
+    drag_view_ = nullptr;
+  }
+  drag_proxy_.reset();
+}
+
+bool DesksBarView::IsDraggingDesk() const {
+  return drag_view_ != nullptr;
+}
+
 const char* DesksBarView::GetClassName() const {
   return "DesksBarView";
 }
@@ -530,6 +662,15 @@ void DesksBarView::OnDeskRemoved(const Desk* desk) {
       std::vector<DeskMiniView*>(mini_views_.begin(), partition_iter),
       std::vector<DeskMiniView*>(partition_iter, mini_views_.end()),
       expanded_state_new_desk_button_, begin_x - GetFirstMiniViewXOffset());
+}
+
+void DesksBarView::OnDeskReordered(int old_index, int new_index) {
+  desks_util::ReorderItem(mini_views_, old_index, new_index);
+
+  overview_grid_->OnDesksChanged();
+
+  // Call the animation function after reorder the mini views.
+  PerformReorderDeskMiniViewAnimation(old_index, new_index, mini_views_);
 }
 
 void DesksBarView::OnDeskActivationChanged(const Desk* activated,

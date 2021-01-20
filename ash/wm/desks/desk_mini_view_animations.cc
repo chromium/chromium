@@ -274,4 +274,38 @@ void PerformExpandedStateToZeroStateMiniViewAnimation(
   PositionWindowsInOverview();
 }
 
+void PerformReorderDeskMiniViewAnimation(
+    int old_index,
+    int new_index,
+    const std::vector<DeskMiniView*>& mini_views) {
+  const int views_size = static_cast<int>(mini_views.size());
+
+  DCHECK_GE(old_index, 0);
+  DCHECK_LT(old_index, views_size);
+  DCHECK_GE(new_index, 0);
+  DCHECK_LT(new_index, views_size);
+
+  if (old_index == new_index)
+    return;
+
+  // Reordering should be finished before calling this function. The source view
+  // and the target view has been exchanged. The range should be selected
+  // according to current mini views position.
+  const int start_index = old_index < new_index ? old_index : new_index + 1;
+  const int end_index = old_index < new_index ? new_index : old_index + 1;
+
+  // Since |old_index| and |new_index| are unequal valid indices, there
+  // must be at least two desks.
+  int shift_x = mini_views[0]->bounds().origin().x() -
+                mini_views[1]->bounds().origin().x();
+  shift_x = old_index < new_index ? -shift_x : shift_x;
+  gfx::Transform desks_transform;
+  desks_transform.Translate(shift_x, 0);
+
+  auto start_iter = mini_views.begin();
+  AnimateMiniViews(std::vector<DeskMiniView*>(start_iter + start_index,
+                                              start_iter + end_index),
+                   desks_transform);
+}
+
 }  // namespace ash

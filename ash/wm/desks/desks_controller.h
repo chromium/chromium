@@ -48,6 +48,9 @@ class ASH_EXPORT DesksController : public DesksHelper,
     // observers have been notified with this.
     virtual void OnDeskRemoved(const Desk* desk) = 0;
 
+    // Called when the desk at |old_index| is reordered to |new_index|.
+    virtual void OnDeskReordered(int old_index, int new_index) = 0;
+
     // Called when the |activated| desk gains activation from the |deactivated|
     // desk.
     virtual void OnDeskActivationChanged(const Desk* activated,
@@ -123,6 +126,9 @@ class ASH_EXPORT DesksController : public DesksHelper,
   // removed outside of overview.
   void RemoveDesk(const Desk* desk, DesksCreationRemovalSource source);
 
+  // Reorder the desk at |old_index| to |new_index|.
+  void ReorderDesk(int old_index, int new_index);
+
   // Performs the desk switch animation on all root windows to activate the
   // given |desk| and to deactivate the currently active one. |desk| has to be
   // an existing desk. The active window on the currently active desk will be
@@ -195,6 +201,11 @@ class ASH_EXPORT DesksController : public DesksHelper,
   int GetNumberOfDesks() const override;
   void SendToDeskAtIndex(aura::Window* window, int desk_index) override;
 
+  // Updates the default names (e.g. "Desk 1", "Desk 2", ... etc.) given to the
+  // desks. This is called when desks are added, removed or reordered to update
+  // the names based on the desks order.
+  void UpdateDesksDefaultNames();
+
   // ::wm::ActivationChangeObserver:
   void OnWindowActivating(ActivationReason reason,
                           aura::Window* gaining_active,
@@ -249,11 +260,6 @@ class ASH_EXPORT DesksController : public DesksHelper,
   void ReportNumberOfWindowsPerDeskHistogram() const;
 
   void ReportDesksCountHistogram() const;
-
-  // Updates the default names (e.g. "Desk 1", "Desk 2", ... etc.) given to the
-  // desks. This is called when desks are added or removed to update the names
-  // based on the desks order.
-  void UpdateDesksDefaultNames();
 
   std::vector<std::unique_ptr<Desk>> desks_;
 
