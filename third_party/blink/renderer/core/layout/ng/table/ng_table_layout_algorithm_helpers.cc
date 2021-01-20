@@ -609,6 +609,10 @@ void DistributeColspanCellToColumnsAuto(
   }
 }
 
+// Handles distribution of excess block size from: table, sections,
+// rows, and rowspanned cells, to rows.
+// Rowspanned cells distribute with slight differences from
+// general distribution algorithm.
 void DistributeExcessBlockSizeToRows(
     const wtf_size_t start_row_index,
     const wtf_size_t row_count,
@@ -664,6 +668,7 @@ void DistributeExcessBlockSizeToRows(
   unsigned unconstrained_non_empty_row_count = 0;
   unsigned constrained_non_empty_row_count = 0;
   unsigned empty_row_count = 0;
+  unsigned unconstrained_empty_row_count = 0;
 
   LayoutUnit total_block_size;
   LayoutUnit percentage_block_size_deficit;
@@ -687,8 +692,11 @@ void DistributeExcessBlockSizeToRows(
     } else if (row->is_constrained && !IsEmptyRow(row)) {
       constrained_non_empty_row_count++;
     }
-    if (IsEmptyRow(row))
+    if (IsEmptyRow(row)) {
       empty_row_count++;
+      if (!row->is_constrained)
+        unconstrained_empty_row_count++;
+    }
   }
 
   LayoutUnit distributable_block_size =
@@ -760,14 +768,14 @@ void DistributeExcessBlockSizeToRows(
   }
 
   // Step 4: Empty row distribution
-  // Table distributes evenly between all rows.
-  // If there are any empty rows except start row, last row takes all the
-  // excess block size.
+  // At this point all rows are empty and/or constrained.
   if (empty_row_count > 0) {
     if (desired_block_size_is_rowspan) {
       NGTableTypes::Row* last_row = nullptr;
       NGTableTypes::Row* row = start_row;
-      if (empty_row_count != row_count)  // skip initial row.
+      // Rowspan distribution skips initial empty row if possible,
+      // and distributes everything to the last empty row.
+      if (empty_row_count != row_count)
         ++row;
       for (; row != end_row; ++row) {
         if (row->block_size != LayoutUnit())
@@ -781,20 +789,25 @@ void DistributeExcessBlockSizeToRows(
     } else if (empty_row_count == row_count ||
                (empty_row_count + constrained_non_empty_row_count ==
                 row_count)) {
-      // Grow empty rows if one of these is true:
+      // Grow empty rows if either of these is true:
       // - all rows are empty.
       // - non-empty rows are all constrained.
-      // Different browsers disagree on when to grow empty rows.
       NGTableTypes::Row* last_row = nullptr;
       LayoutUnit remaining_deficit = distributable_block_size;
+      // If there are constrained and unconstrained empty rows,
+      // only unconstrained rows grow.
+      bool grow_only_unconstrained = unconstrained_empty_row_count > 0;
+      unsigned growing_rows_count = grow_only_unconstrained
+                                        ? unconstrained_empty_row_count
+                                        : empty_row_count;
       for (NGTableTypes::Row* row = start_row; row != end_row; ++row) {
         if (row->block_size != LayoutUnit())
           continue;
+        if (grow_only_unconstrained && row->is_constrained)
+          continue;
         last_row = row;
-        // Table block size distributes equally, while rowspan distributes to
-        // last row.
         LayoutUnit delta =
-            LayoutUnit(distributable_block_size.ToFloat() / empty_row_count);
+            LayoutUnit(distributable_block_size.ToFloat() / growing_rows_count);
         row->block_size = delta;
         remaining_deficit -= delta;
       }
