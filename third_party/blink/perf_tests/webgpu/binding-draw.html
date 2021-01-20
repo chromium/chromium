@@ -6,17 +6,21 @@
     Test CPU performance of the GPURenderPassEncoder.draw binding
   </title>
   <script src="../resources/runner.js"></script>
+  <script src="./resources/webgpu-perf-utils.js"></script>
 </head>
 
 <body>
   <canvas id="canvas" width=400 height=400></canvas>
   <script>
     (async () => {
+      const adapter = navigator.gpu && await navigator.gpu.requestAdapter();
+      if (!adapter) {
+        return skipTest('WebGPU not supported');
+      }
+
+      const device = await adapter.requestDevice();
       const canvas = document.getElementById('canvas');
       const context = canvas.getContext('gpupresent');
-
-      const adapter = await navigator.gpu.requestAdapter();
-      const device = await adapter.requestDevice();
       const swapChainFormat = await context.getSwapChainPreferredFormat(device);
 
       const swapChain = context.configureSwapChain({
