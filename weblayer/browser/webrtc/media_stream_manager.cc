@@ -66,6 +66,10 @@ class MediaStreamManager::StreamUi : public content::MediaStreamUI {
 
   void OnManagerGone() { manager_ = nullptr; }
 
+  void SetStopCallback(base::OnceClosure stop) override {
+    stop_ = std::move(stop);
+  }
+
   bool streaming_audio() const { return streaming_audio_; }
 
   bool streaming_video() const { return streaming_video_; }

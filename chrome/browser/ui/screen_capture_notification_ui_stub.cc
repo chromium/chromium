@@ -17,6 +17,10 @@ class ScreenCaptureNotificationUIStub : public ScreenCaptureNotificationUI {
     NOTIMPLEMENTED();
     return 0;
   }
+
+  void SetStopCallback(base::OnceClosure stop_callback) override {
+    NOTIMPLEMENTED();
+  }
 };
 
 // static

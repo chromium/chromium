@@ -176,8 +176,16 @@ void MediaStreamUIProxy::Core::ProcessAccessRequestResponse(
       result == blink::mojom::MediaStreamRequestResult::OK)
     result = blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED;
 
-  if (stream_ui)
+  if (stream_ui) {
+    // Default TabSharingUIViews always calls stop callback when destroyed
+    // due to security reasons (see crbug.com/1155426 for details).
+    // However here the UI is replaced while the screencast is ongoing.
+    // Clearing the callback here ensures that screencast is not terminated.
+    if (ui_) {
+      ui_->SetStopCallback(base::DoNothing());
+    }
     ui_ = std::move(stream_ui);
+  }
 
   if (host && result == blink::mojom::MediaStreamRequestResult::OK)
     host->OnGrantedMediaStreamAccess();

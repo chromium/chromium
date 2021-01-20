@@ -37,6 +37,11 @@ gfx::NativeViewId ScreenCaptureNotificationUIChromeOS::OnStarted(
   return 0;
 }
 
+void ScreenCaptureNotificationUIChromeOS::SetStopCallback(
+    base::OnceClosure stop_callback) {
+  stop_callback_ = std::move(stop_callback);
+}
+
 void ScreenCaptureNotificationUIChromeOS::ProcessStopRequestFromUI() {
   if (!stop_callback_.is_null()) {
     std::move(stop_callback_).Run();
