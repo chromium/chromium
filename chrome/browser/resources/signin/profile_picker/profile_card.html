@@ -73,7 +73,6 @@
   cr-input {
     --cr-input-background-color: none;
     --cr-input-padding-top: 0;
-    font-weight: 500;
     top: 0;
   }
 
@@ -127,18 +126,18 @@
         <iron-icon icon="cr:domain"></iron-icon>
       </div>
     </div>
-    <div class="profile-card-info">
-      <div id="gaiaName" hidden="[[profileState.needsSignin]]">
-        [[profileState.gaiaName]]
-      </div>
-      <div id="forceSigninContainer" hidden="[[!profileState.needsSignin]]">
-        <div>$i18n{needsSigninPrompt}</div>
-        <iron-icon id="forceSigninIcon" icon="profiles:lock"></iron-icon>
-      </div>
+    <div id="gaiaName" class="profile-card-info secondary-text"
+        hidden="[[profileState.needsSignin]]">
+      [[profileState.gaiaName]]
+    </div>
+    <div id="forceSigninContainer" class="profile-card-info secondary-text"
+        hidden="[[!profileState.needsSignin]]">
+      <div>$i18n{needsSigninPrompt}</div>
+      <iron-icon id="forceSigninIcon" icon="profiles:lock"></iron-icon>
     </div>
   </cr-button>
   <div id="profileNameInputWrapper">
-    <cr-input class="profile-card-info" id="nameInput"
+    <cr-input class="profile-card-info prominent-text" id="nameInput"
         value="[[profileState.localProfileName]]"
         on-change="onProfileNameChanged_" on-keydown="onProfileNameKeydown_"
         on-blur="onProfileNameInputBlur_" pattern="[[pattern_]]"
