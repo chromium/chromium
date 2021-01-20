@@ -2296,6 +2296,18 @@ def CheckAddedDepsHaveTargetApprovals(input_api, output_api):
   target file or directory, to avoid layering violations from being
   introduced. This check verifies that this happens.
   """
+  if input_api.change.issue:
+    # Skip OWNERS check when Bot-Commit label is approved. This label is
+    # intended for commits made by trusted bots that don't require review nor
+    # owners approval.
+    if input_api.gerrit.IsBotCommitApproved(input_api.change.issue):
+      return []
+    # Skip OWNERS check when Owners-Override label is approved. This is intended
+    # for global owners, trusted bots, and on-call sheriffs. Review is still
+    # required for these changes.
+    if input_api.gerrit.IsOwnersOverrideApproved(input_api.change.issue):
+      return []
+
   virtual_depended_on_files = set()
 
   file_filter = lambda f: not input_api.re.match(
