@@ -3490,7 +3490,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DataUse.AllServicesKB" enum="DataUseServicesHash"
-    expires_after="2021-06-20">
+    expires_after="2021-12-20">
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -3505,7 +3505,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="DataUse.AppTabState" units="bytes" expires_after="2021-06-20">
+<histogram name="DataUse.AppTabState" units="bytes" expires_after="2021-12-20">
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -3515,7 +3515,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DataUse.BackgroundToDataRecievedPerByte" units="ms"
-    expires_after="M90">
+    expires_after="2021-12-20">
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -3526,7 +3526,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DataUse.BackgroundToFirstDownstream" units="ms"
-    expires_after="M90">
+    expires_after="2021-12-20">
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -3550,7 +3550,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="DataUse.BytesReceived2" units="bytes" expires_after="M92">
+<histogram name="DataUse.BytesReceived2" units="bytes"
+    expires_after="2021-12-20">
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -3559,7 +3560,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="DataUse.BytesSent" units="bytes" expires_after="2021-06-20">
+<histogram name="DataUse.BytesSent" units="bytes" expires_after="2021-12-20">
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -3569,7 +3570,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DataUse.ContentType.UserTrafficKB" enum="DataUseContentType"
-    expires_after="2021-06-20">
+    expires_after="2021-12-20">
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -3578,7 +3579,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="DataUse.FavIcon.Downstream" units="bytes" expires_after="M90">
+<histogram name="DataUse.FavIcon.Downstream" units="bytes"
+    expires_after="2021-12-20">
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -3589,7 +3591,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DataUse.FavIcon.Downstream.Non200Response" units="bytes"
-    expires_after="M90">
+    expires_after="2021-12-20">
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -3599,7 +3601,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DataUse.PageTransition.UserTrafficKB"
-    enum="DataUsePageTransition" expires_after="M90">
+    enum="DataUsePageTransition" expires_after="2021-12-20">
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -3609,7 +3611,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DataUse.TrafficSize.User" units="bytes"
-    expires_after="2021-06-20">
+    expires_after="2021-12-20">
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>

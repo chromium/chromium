@@ -647,7 +647,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SubresourceRedirect.BypassDuration" units="ms"
-    expires_after="M90">
+    expires_after="M92">
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -672,7 +672,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SubresourceRedirect.CompressionAttempt.ServerResponded"
-    enum="Boolean" expires_after="M90">
+    enum="Boolean" expires_after="M92">
   <owner>robertogden@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -683,7 +683,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SubresourceRedirect.CompressionFetchTimeout" enum="Boolean"
-    expires_after="M90">
+    expires_after="M92">
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -693,7 +693,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SubresourceRedirect.DidCompress.BytesSaved" units="bytes"
-    expires_after="2021-07-18">
+    expires_after="M92">
   <owner>robertogden@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -703,7 +703,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SubresourceRedirect.DidCompress.CompressionPercent" units="%"
-    expires_after="2021-07-18">
+    expires_after="M92">
   <owner>robertogden@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -713,7 +713,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SubresourceRedirect.ImageCompressionNotificationInfoBar"
-    enum="HttpsImageCompressionInfoBarAction" expires_after="2021-06-06">
+    enum="HttpsImageCompressionInfoBarAction" expires_after="M92">
   <owner>rajendrant@chromium.org</owner>
   <owner>src/components/data_reduction_proxy/OWNERS</owner>
   <summary>
@@ -734,7 +734,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SubresourceRedirect.PageLoad.BypassResult" enum="Boolean"
-    expires_after="M90">
+    expires_after="M92">
   <obsolete>
     Replaced by SubresourceRedirect.LitePagesService.BypassResult on 11/2020
   </obsolete>
