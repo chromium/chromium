@@ -19,6 +19,7 @@ namespace chromeos {
 namespace diagnostics {
 
 class DiagnosticsManager;
+class SessionLogHandler;
 
 }  // namespace diagnostics
 
@@ -41,6 +42,7 @@ class DiagnosticsUI : public ui::MojoWebUIController {
  private:
   WEB_UI_CONTROLLER_TYPE_DECL();
 
+  std::unique_ptr<diagnostics::SessionLogHandler> session_log_handler_;
   std::unique_ptr<diagnostics::DiagnosticsManager> diagnostics_manager_;
 };
 

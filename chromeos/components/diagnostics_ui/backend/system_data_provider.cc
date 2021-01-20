@@ -16,6 +16,7 @@
 #include "base/timer/timer.h"
 #include "chromeos/components/diagnostics_ui/backend/cros_healthd_helpers.h"
 #include "chromeos/components/diagnostics_ui/backend/power_manager_client_conversions.h"
+#include "chromeos/components/diagnostics_ui/backend/telemetry_log.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
@@ -210,7 +211,11 @@ void PopulateAverageScaledClockSpeed(const healthd::CpuInfo& cpu_info,
 
 }  // namespace
 
-SystemDataProvider::SystemDataProvider() {
+SystemDataProvider::SystemDataProvider()
+    : SystemDataProvider(/*telemetry_log_ptr=*/nullptr) {}
+
+SystemDataProvider::SystemDataProvider(TelemetryLog* telemetry_log_ptr)
+    : telemetry_log_ptr_(telemetry_log_ptr) {
   battery_charge_status_timer_ = std::make_unique<base::RepeatingTimer>();
   battery_health_timer_ = std::make_unique<base::RepeatingTimer>();
   cpu_usage_timer_ = std::make_unique<base::RepeatingTimer>();
@@ -378,6 +383,10 @@ void SystemDataProvider::OnSystemInfoProbeResponse(
   }
 
   PopulateDeviceCapabilities(*info_ptr, *system_info.get());
+
+  if (IsLoggingEnabled()) {
+    telemetry_log_ptr_->UpdateSystemInfo(system_info.Clone());
+  }
 
   std::move(callback).Run(std::move(system_info));
 }
@@ -584,12 +593,19 @@ void SystemDataProvider::NotifyBatteryChargeStatusObservers(
   for (auto& observer : battery_charge_status_observers_) {
     observer->OnBatteryChargeStatusUpdated(battery_charge_status.Clone());
   }
+  if (IsLoggingEnabled()) {
+    telemetry_log_ptr_->UpdateBatteryChargeStatus(
+        battery_charge_status.Clone());
+  }
 }
 
 void SystemDataProvider::NotifyBatteryHealthObservers(
     const mojom::BatteryHealthPtr& battery_health) {
   for (auto& observer : battery_health_observers_) {
     observer->OnBatteryHealthUpdated(battery_health.Clone());
+  }
+  if (IsLoggingEnabled()) {
+    telemetry_log_ptr_->UpdateBatteryHealth(battery_health.Clone());
   }
 }
 
@@ -598,12 +614,18 @@ void SystemDataProvider::NotifyMemoryUsageObservers(
   for (auto& observer : memory_usage_observers_) {
     observer->OnMemoryUsageUpdated(memory_usage.Clone());
   }
+  if (IsLoggingEnabled()) {
+    telemetry_log_ptr_->UpdateMemoryUsage(memory_usage.Clone());
+  }
 }
 
 void SystemDataProvider::NotifyCpuUsageObservers(
     const mojom::CpuUsagePtr& cpu_usage) {
   for (auto& observer : cpu_usage_observers_) {
     observer->OnCpuUsageUpdated(cpu_usage.Clone());
+  }
+  if (IsLoggingEnabled()) {
+    telemetry_log_ptr_->UpdateCpuUsage(cpu_usage.Clone());
   }
 }
 
@@ -618,6 +640,10 @@ void SystemDataProvider::BindCrosHealthdProbeServiceIfNeccessary() {
 
 void SystemDataProvider::OnProbeServiceDisconnect() {
   probe_service_.reset();
+}
+
+bool SystemDataProvider::IsLoggingEnabled() const {
+  return telemetry_log_ptr_ != nullptr;
 }
 
 }  // namespace diagnostics

@@ -24,10 +24,13 @@ class RepeatingTimer;
 namespace chromeos {
 namespace diagnostics {
 
+class TelemetryLog;
+
 class SystemDataProvider : public mojom::SystemDataProvider,
                            public PowerManagerClient::Observer {
  public:
   SystemDataProvider();
+  SystemDataProvider(TelemetryLog* telemetry_log_ptr);
 
   ~SystemDataProvider() override;
 
@@ -108,6 +111,10 @@ class SystemDataProvider : public mojom::SystemDataProvider,
 
   void ComputeAndPopulateCpuUsage(const cros_healthd::mojom::CpuInfo& cpu_info,
                                   mojom::CpuUsage& out_cpu_usage);
+
+  bool IsLoggingEnabled() const;
+
+  TelemetryLog* telemetry_log_ptr_ = nullptr;  // Not owned.
 
   CpuUsageData previous_cpu_usage_data_;
 

@@ -9,6 +9,7 @@
 #include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "chromeos/components/diagnostics_ui/backend/diagnostics_manager.h"
+#include "chromeos/components/diagnostics_ui/backend/session_log_handler.h"
 #include "chromeos/components/diagnostics_ui/backend/system_data_provider.h"
 #include "chromeos/components/diagnostics_ui/backend/system_routine_controller.h"
 #include "chromeos/components/diagnostics_ui/mojom/system_data_provider.mojom.h"
@@ -126,8 +127,10 @@ void SetUpWebUIDataSource(content::WebUIDataSource* source,
 
 DiagnosticsUI::DiagnosticsUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui),
-      diagnostics_manager_(
-          std::make_unique<diagnostics::DiagnosticsManager>()) {
+      session_log_handler_(std::make_unique<diagnostics::SessionLogHandler>()) {
+  diagnostics_manager_ = std::make_unique<diagnostics::DiagnosticsManager>(
+      session_log_handler_.get());
+
   auto html_source = base::WrapUnique(
       content::WebUIDataSource::Create(kChromeUIDiagnosticsAppHost));
   html_source->OverrideContentSecurityPolicy(
