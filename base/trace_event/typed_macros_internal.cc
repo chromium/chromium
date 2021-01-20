@@ -115,9 +115,9 @@ base::trace_event::TrackEventHandle CreateTrackEvent(
     char phase,
     const unsigned char* category_group_enabled,
     const char* name,
-    unsigned int flags,
     base::TimeTicks ts,
-    uint64_t track_uuid) {
+    uint64_t track_uuid,
+    bool explicit_track) {
   DCHECK(phase == TRACE_EVENT_PHASE_BEGIN || phase == TRACE_EVENT_PHASE_END ||
          phase == TRACE_EVENT_PHASE_INSTANT);
   DCHECK(category_group_enabled);
@@ -132,7 +132,6 @@ base::trace_event::TrackEventHandle CreateTrackEvent(
   // Provide events emitted onto different tracks as NESTABLE_ASYNC events to
   // TraceLog, so that e.g. ETW export is aware of them not being a sync event
   // for the current thread.
-  bool explicit_track = track_uuid != perfetto::Track().uuid;
   auto phase_and_id_for_trace_log =
       GetPhaseAndIdForTraceLog(explicit_track, track_uuid, phase);
 
@@ -142,10 +141,15 @@ base::trace_event::TrackEventHandle CreateTrackEvent(
     return base::trace_event::TrackEventHandle();
   }
 
+  unsigned int flags = TRACE_EVENT_FLAG_NONE;
   if (ts.is_null()) {
     ts = TRACE_TIME_TICKS_NOW();
   } else {
     flags |= TRACE_EVENT_FLAG_EXPLICIT_TIMESTAMP;
+  }
+
+  if (phase == TRACE_EVENT_PHASE_INSTANT && !explicit_track) {
+    flags |= TRACE_EVENT_SCOPE_THREAD;
   }
 
   // Only emit thread time / instruction count for events on the default track

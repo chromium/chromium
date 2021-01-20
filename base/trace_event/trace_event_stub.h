@@ -69,8 +69,8 @@ struct IgnoredValue {
   INTERNAL_TRACE_IGNORE(category, name)
 #define TRACE_EVENT_END(category, ...) INTERNAL_TRACE_IGNORE(category)
 #define TRACE_EVENT(category, name, ...) INTERNAL_TRACE_IGNORE(category, name)
-#define TRACE_EVENT_INSTANT(category, name, scope, ...) \
-  INTERNAL_TRACE_IGNORE(category, name, scope)
+#define TRACE_EVENT_INSTANT(category, name, ...) \
+  INTERNAL_TRACE_IGNORE(category, name)
 
 namespace base {
 namespace trace_event {

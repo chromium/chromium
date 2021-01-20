@@ -1165,7 +1165,7 @@ void TraceEventDataSource::OnMetricsSampleCallback(
     base::HistogramBase::Sample sample) {
   TRACE_EVENT_INSTANT(
       TRACE_DISABLED_BY_DEFAULT("histogram_samples"), "HistogramSample",
-      TRACE_EVENT_SCOPE_THREAD, [&](perfetto::EventContext ctx) {
+      [&](perfetto::EventContext ctx) {
         bool privacy_filtering_enabled =
             TraceEventDataSource::GetInstance()->IsPrivacyFilteringEnabled();
         perfetto::protos::pbzero::ChromeHistogramSample* new_sample =
@@ -1182,9 +1182,11 @@ void TraceEventDataSource::OnMetricsSampleCallback(
 void TraceEventDataSource::OnUserActionSampleCallback(
     const std::string& action,
     base::TimeTicks action_time) {
+  constexpr uint64_t kGlobalInstantTrackId = 0;
   TRACE_EVENT_INSTANT(
       TRACE_DISABLED_BY_DEFAULT("user_action_samples"), "UserAction",
-      TRACE_EVENT_SCOPE_GLOBAL, [&](perfetto::EventContext ctx) {
+      perfetto::Track::Global(kGlobalInstantTrackId),
+      [&](perfetto::EventContext ctx) {
         bool privacy_filtering_enabled =
             TraceEventDataSource::GetInstance()->IsPrivacyFilteringEnabled();
         perfetto::protos::pbzero::ChromeUserEvent* new_sample =

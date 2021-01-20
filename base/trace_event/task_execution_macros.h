@@ -31,18 +31,16 @@
 
 // Implementation detail: internal macro to trace a log message, with the source
 // location of the log statement.
-#define INTERNAL_TRACE_LOG_MESSAGE(file, message, line)               \
-  TRACE_EVENT_INSTANT(                                                \
-      "log", "LogMessage", TRACE_EVENT_SCOPE_THREAD,                  \
-      [&](perfetto::EventContext ctx) {                               \
-        perfetto::protos::pbzero::LogMessage* log =                   \
-            ctx.event()->set_log_message();                           \
-        log->set_source_location_iid(                                 \
-            base::trace_event::InternedSourceLocation::Get(           \
-                &ctx, base::trace_event::TraceSourceLocation(         \
-                          /*function_name=*/nullptr, file, line)));   \
-        log->set_body_iid(base::trace_event::InternedLogMessage::Get( \
-            &ctx, message.as_string()));                              \
-      });
+#define INTERNAL_TRACE_LOG_MESSAGE(file, message, line)                      \
+  TRACE_EVENT_INSTANT("log", "LogMessage", [&](perfetto::EventContext ctx) { \
+    perfetto::protos::pbzero::LogMessage* log =                              \
+        ctx.event()->set_log_message();                                      \
+    log->set_source_location_iid(                                            \
+        base::trace_event::InternedSourceLocation::Get(                      \
+            &ctx, base::trace_event::TraceSourceLocation(                    \
+                      /*function_name=*/nullptr, file, line)));              \
+    log->set_body_iid(base::trace_event::InternedLogMessage::Get(            \
+        &ctx, message.as_string()));                                         \
+  });
 
 #endif  // BASE_TRACE_EVENT_TASK_EXECUTION_MACROS_H_

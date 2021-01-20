@@ -113,6 +113,14 @@ class TypedTraceEventTest : public testing::Test {
 
   ~TypedTraceEventTest() override { ResetTypedTraceEventsForTesting(); }
 
+  perfetto::protos::TrackEvent ParseTrackEvent() {
+    auto serialized_data = event_.event.SerializeAsArray();
+    perfetto::protos::TrackEvent track_event;
+    EXPECT_TRUE(track_event.ParseFromArray(serialized_data.data(),
+                                           serialized_data.size()));
+    return track_event;
+  }
+
  protected:
   TestTrackEvent event_;
   TestTracePacket packet_;
@@ -219,6 +227,44 @@ TEST_F(TypedTraceEventTest, InternedData) {
       event_.incremental_state.serialized_interned_data.SerializeAsString());
 
   CancelTrace();
+}
+
+TEST_F(TypedTraceEventTest, InstantThreadEvent) {
+  TraceLog::GetInstance()->SetEnabled(TraceConfig(kRecordAllCategoryFilter, ""),
+                                      TraceLog::RECORDING_MODE);
+  TRACE_EVENT_INSTANT("cat", "ThreadEvent", [](perfetto::EventContext) {});
+  auto track_event = ParseTrackEvent();
+  EXPECT_FALSE(track_event.has_track_uuid());
+}
+
+TEST_F(TypedTraceEventTest, InstantProcessEvent) {
+  TraceLog::GetInstance()->SetEnabled(TraceConfig(kRecordAllCategoryFilter, ""),
+                                      TraceLog::RECORDING_MODE);
+  TRACE_EVENT_INSTANT("cat", "ProcessEvent", perfetto::ProcessTrack::Current(),
+                      [](perfetto::EventContext) {});
+  auto track_event = ParseTrackEvent();
+  EXPECT_TRUE(track_event.has_track_uuid());
+  EXPECT_EQ(track_event.track_uuid(), perfetto::ProcessTrack::Current().uuid);
+}
+
+TEST_F(TypedTraceEventTest, InstantGlobalEvent) {
+  TraceLog::GetInstance()->SetEnabled(TraceConfig(kRecordAllCategoryFilter, ""),
+                                      TraceLog::RECORDING_MODE);
+  TRACE_EVENT_INSTANT("cat", "GlobalEvent", perfetto::Track::Global(1234),
+                      [](perfetto::EventContext) {});
+  auto track_event = ParseTrackEvent();
+  EXPECT_TRUE(track_event.has_track_uuid());
+  EXPECT_EQ(track_event.track_uuid(), perfetto::Track::Global(1234).uuid);
+}
+
+TEST_F(TypedTraceEventTest, InstantGlobalDefaultEvent) {
+  TraceLog::GetInstance()->SetEnabled(TraceConfig(kRecordAllCategoryFilter, ""),
+                                      TraceLog::RECORDING_MODE);
+  TRACE_EVENT_INSTANT("cat", "GlobalDefaultEvent", perfetto::Track::Global(0),
+                      [](perfetto::EventContext) {});
+  auto track_event = ParseTrackEvent();
+  EXPECT_TRUE(track_event.has_track_uuid());
+  EXPECT_EQ(track_event.track_uuid(), perfetto::Track::Global(0).uuid);
 }
 
 }  // namespace trace_event

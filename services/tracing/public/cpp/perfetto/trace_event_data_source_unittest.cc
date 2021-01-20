@@ -1789,10 +1789,9 @@ TEST_F(TraceEventDataSourceTest, TypedArgumentsTracingOnBeginAndEnd) {
 TEST_F(TraceEventDataSourceTest, TypedArgumentsTracingOnInstant) {
   StartTraceEventDataSource();
 
-  TRACE_EVENT_INSTANT("browser", "bar", TRACE_EVENT_SCOPE_THREAD,
-                      [&](perfetto::EventContext ctx) {
-                        ctx.event()->set_log_message()->set_body_iid(42);
-                      });
+  TRACE_EVENT_INSTANT("browser", "bar", [&](perfetto::EventContext ctx) {
+    ctx.event()->set_log_message()->set_body_iid(42);
+  });
 
   size_t packet_index = ExpectStandardPreamble();
 

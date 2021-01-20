@@ -45,13 +45,13 @@
 //       });
 #define TRACE_EVENT_BEGIN(category, name, ...)                              \
   TRACING_INTERNAL_ADD_TRACE_EVENT(TRACE_EVENT_PHASE_BEGIN, category, name, \
-                                   TRACE_EVENT_FLAG_NONE, ##__VA_ARGS__)
+                                   ##__VA_ARGS__)
 
 // End a thread-scoped slice under |category|.
 #define TRACE_EVENT_END(category, ...)                                       \
   TRACING_INTERNAL_ADD_TRACE_EVENT(TRACE_EVENT_PHASE_END, category,          \
                                    trace_event_internal::kTraceEventEndName, \
-                                   TRACE_EVENT_FLAG_NONE, ##__VA_ARGS__)
+                                   ##__VA_ARGS__)
 
 // Begin a thread-scoped slice which gets automatically closed when going out
 // of scope.
@@ -67,8 +67,8 @@
   TRACING_INTERNAL_SCOPED_ADD_TRACE_EVENT(category, name, ##__VA_ARGS__)
 
 // Emit a single event called "name" immediately, with zero duration.
-#define TRACE_EVENT_INSTANT(category, name, scope, ...)                       \
+#define TRACE_EVENT_INSTANT(category, name, ...)                              \
   TRACING_INTERNAL_ADD_TRACE_EVENT(TRACE_EVENT_PHASE_INSTANT, category, name, \
-                                   scope, ##__VA_ARGS__)
+                                   ##__VA_ARGS__)
 
 #endif  // BASE_TRACE_EVENT_TYPED_MACROS_H_
