@@ -208,7 +208,7 @@ bool PnaclCanOpenFile(const std::string& filename,
       pnacl_dir.empty())
     return false;
 
-  // Prepend the prefix to restrict files to a whitelisted set.
+  // Prepend the prefix to restrict files to an allowlist set.
   base::FilePath full_path = pnacl_dir.AppendASCII(
       std::string(kExpectedFilePrefix) + filename);
   *file_to_open = full_path;

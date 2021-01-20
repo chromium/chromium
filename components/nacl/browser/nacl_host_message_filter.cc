@@ -147,7 +147,7 @@ void NaClHostMessageFilter::OnLaunchNaCl(
 
   // If we're running llc or ld for the PNaCl translator, we don't need to look
   // up permissions, and we don't have the right browser state to look up some
-  // of the whitelisting parameters anyway.
+  // of the allowed parameters anyway.
   if (launch_params.process_type == kPNaClTranslatorProcessType) {
     uint32_t perms = launch_params.permission_bits & ppapi::PERMISSION_DEV;
     content::GetIOThreadTaskRunner({})->PostTask(

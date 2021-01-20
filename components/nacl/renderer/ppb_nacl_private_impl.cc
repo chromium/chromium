@@ -612,13 +612,13 @@ std::string PnaclComponentURLToFilename(const std::string& url) {
                           base::CompareCase::SENSITIVE));
   std::string r = url.substr(std::string(kPNaClTranslatorBaseUrl).length());
 
-  // Use white-listed-chars.
+  // Replace characters that are not allowed with '_'.
   size_t replace_pos;
-  static const char kWhiteList[] = "abcdefghijklmnopqrstuvwxyz0123456789_";
-  replace_pos = r.find_first_not_of(kWhiteList);
+  static const char kAllowList[] = "abcdefghijklmnopqrstuvwxyz0123456789_";
+  replace_pos = r.find_first_not_of(kAllowList);
   while (replace_pos != std::string::npos) {
     r = r.replace(replace_pos, 1, "_");
-    replace_pos = r.find_first_not_of(kWhiteList);
+    replace_pos = r.find_first_not_of(kAllowList);
   }
   return r;
 }
@@ -1113,7 +1113,7 @@ bool ShouldUseSubzero(const PP_PNaClOptions* pnacl_options) {
   // Only use Subzero for optlevel=0.
   if (pnacl_options->opt_level != 0)
     return false;
-  // Check a whitelist of architectures.
+  // Check a list of allowed architectures.
   const char* arch = GetSandboxArch();
   if (strcmp(arch, "x86-32") == 0)
     return true;
