@@ -51,8 +51,6 @@ class PLATFORM_EXPORT SchemeRegistry {
  public:
   static bool ShouldTreatURLSchemeAsRestrictingMixedContent(const String&);
 
-  static bool ShouldTreatURLSchemeAsNoAccess(const String&);
-
   // Display-isolated schemes can only be displayed (in the sense of
   // SecurityOrigin::canDisplay) by documents from the same scheme.
   static void RegisterURLSchemeAsDisplayIsolated(const String&);

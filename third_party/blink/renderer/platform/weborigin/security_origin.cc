@@ -115,7 +115,8 @@ static bool ShouldTreatAsOpaqueOrigin(const KURL& url) {
             relevant_url.ProtocolIs("ftp")) &&
            relevant_url.Host().IsEmpty()));
 
-  if (SchemeRegistry::ShouldTreatURLSchemeAsNoAccess(relevant_url.Protocol()))
+  if (base::Contains(url::GetNoAccessSchemes(),
+                     relevant_url.Protocol().Ascii()))
     return true;
 
   // Nonstandard schemes and unregistered schemes aren't known to contain hosts
