@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.SharedPreferences;
 import android.content.res.AssetManager;
+import android.os.Build;
 import android.os.Process;
 import android.preference.PreferenceManager;
 
@@ -18,6 +19,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.MainDex;
+import org.chromium.base.compat.ApiHelperForM;
 
 /**
  * This class provides Android application context related utility methods.
@@ -144,6 +146,18 @@ public class ContextUtils {
     /** @return The name of the current process. E.g. "org.chromium.chrome:privileged_process0". */
     public static String getProcessName() {
         return ApiCompatibilityUtils.getProcessName();
+    }
+
+    /** @return Whether the current process is 64-bit. */
+    public static boolean isProcess64Bit() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return ApiHelperForM.isProcess64Bit();
+        } else {
+            // Android sets CPU_ABI to the first supported ABI for the current process bitness
+            // (for compat reasons), so we can use this to infer our bitness.
+            return Build.SUPPORTED_64_BIT_ABIS.length > 0
+                    && Build.SUPPORTED_64_BIT_ABIS[0].equals(Build.CPU_ABI);
+        }
     }
 
     /**
