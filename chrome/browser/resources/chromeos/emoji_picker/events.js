@@ -17,6 +17,13 @@ export let EmojiButtonEvent;
 export const EMOJI_BUTTON_EVENT = 'emoji-button';
 
 /**
+ * @typedef {!CustomEvent}
+ */
+export let DataLoadedEvent;
+
+export const DATA_LOADED_EVENT = 'data-loaded';
+
+/**
  * Constructs a CustomEvent with the given event type and details.
  * The event will bubble up through elements and components.
  *

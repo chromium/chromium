@@ -9,7 +9,7 @@ import './emoji_group_button.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {EMOJI_BUTTON_EVENT, GROUP_BUTTON_EVENT} from './events.js';
+import {createCustomEvent, DATA_LOADED_EVENT, EMOJI_BUTTON_EVENT, GROUP_BUTTON_EVENT} from './events.js';
 import {EmojiData, EmojiGroup} from './types.js';
 
 const EMOJI_ORDERING_JSON = '/emoji_13_1_ordering.json';
@@ -40,7 +40,10 @@ class EmojiPicker extends PolymerElement {
     return {
       groups: {type: Array},
       /** @type {?EmojiData} */
-      emojiData: {type: Object},
+      emojiData: {
+        type: Object,
+        observer: 'onEmojiDataChanged',
+      },
       /** @type {EmojiGroup} */
       history: {type: Object},
       search: {type: String},
@@ -116,6 +119,24 @@ class EmojiPicker extends PolymerElement {
 
   onEmojiDataLoaded(data) {
     this.emojiData = /** @type {!EmojiData} */ (JSON.parse(data));
+  }
+
+  /**
+   * Fires DATA_LOADED_EVENT when emoji data is loaded and the emoji picker
+   * is ready to use.
+   */
+  onEmojiDataChanged(newValue, oldValue) {
+    // This is separate from onEmojiDataLoaded because we need to ensure
+    // Polymer has created the components for the emoji after setting
+    // this.emojiData. This is an observer, so will run after the component
+    // tree has been updated.
+
+    // see:
+    // https://polymer-library.polymer-project.org/3.0/docs/devguide/data-system#property-effects
+
+    if (newValue && newValue.length) {
+      this.dispatchEvent(createCustomEvent(DATA_LOADED_EVENT));
+    }
   }
 }
 
