@@ -15,7 +15,7 @@ namespace {
 
 constexpr base::FeatureParam<double> kSelectedTextConfidenceThreshold{
     &features::kQuickAnswersTranslation, "selected_text_confidence_threshold",
-    /*default_value=*/0.7};
+    /*default_value=*/0.8};
 
 constexpr base::FeatureParam<double> kSurroundingTextConfidenceThreshold{
     &features::kQuickAnswersTranslation,
