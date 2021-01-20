@@ -438,10 +438,11 @@ public class RootUiCoordinator
                     mMessageContainerCoordinator::getMessageMaxTranslation,
                     ChromeAccessibilityUtil.get(),
                     mActivity.getWindowAndroid()::startAnimationOverContent);
-            mMessageQueueMediator = new ChromeMessageQueueMediator(
-                    mActivity.getBrowserControlsManager(), mMessageContainerCoordinator,
-                    mActivity.getFullscreenManager(), mLayoutStateProviderOneShotSupplier,
-                    mTabModelSelectorSupplier, mMessageDispatcher);
+            mMessageQueueMediator =
+                    new ChromeMessageQueueMediator(mActivity.getBrowserControlsManager(),
+                            mMessageContainerCoordinator, mActivity.getFullscreenManager(),
+                            mLayoutStateProviderOneShotSupplier, mTabModelSelectorSupplier,
+                            mActivity.getModalDialogManagerSupplier(), mMessageDispatcher);
             mMessageDispatcher.setDelegate(mMessageQueueMediator);
             MessagesFactory.attachMessageDispatcher(
                     mActivity.getWindowAndroid(), mMessageDispatcher);
