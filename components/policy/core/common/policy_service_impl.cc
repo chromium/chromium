@@ -235,7 +235,7 @@ void PolicyServiceImpl::RemoveObserver(PolicyDomain domain,
   if (it == observers_.end())
     return;
   it->second->RemoveObserver(observer);
-  if (!it->second->might_have_observers()) {
+  if (it->second->empty()) {
     observers_.erase(it);
   }
 }
