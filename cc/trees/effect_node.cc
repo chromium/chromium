@@ -142,6 +142,10 @@ const char* RenderSurfaceReasonToString(RenderSurfaceReason reason) {
       return "cache";
     case RenderSurfaceReason::kCopyRequest:
       return "copy request";
+    case RenderSurfaceReason::kMirrored:
+      return "mirrored";
+    case RenderSurfaceReason::kSubtreeIsBeingCaptured:
+      return "subtree being captured";
     case RenderSurfaceReason::kTest:
       return "test";
     default:
