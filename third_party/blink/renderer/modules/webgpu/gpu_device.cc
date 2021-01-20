@@ -85,9 +85,6 @@ GPUDevice::GPUDevice(ExecutionContext* execution_context,
 }
 
 GPUDevice::~GPUDevice() {
-  if (IsDawnControlClientDestroyed()) {
-    return;
-  }
   queue_ = nullptr;
   GetProcs().deviceRelease(GetHandle());
 }

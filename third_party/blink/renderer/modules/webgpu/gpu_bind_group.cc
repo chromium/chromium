@@ -78,9 +78,6 @@ GPUBindGroup::GPUBindGroup(GPUDevice* device, WGPUBindGroup bind_group)
     : DawnObject<WGPUBindGroup>(device, bind_group) {}
 
 GPUBindGroup::~GPUBindGroup() {
-  if (IsDawnControlClientDestroyed()) {
-    return;
-  }
   GetProcs().bindGroupRelease(GetHandle());
 }
 

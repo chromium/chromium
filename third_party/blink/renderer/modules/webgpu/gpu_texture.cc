@@ -96,9 +96,6 @@ GPUTexture::GPUTexture(GPUDevice* device,
     : DawnObject<WGPUTexture>(device, texture), format_(format) {}
 
 GPUTexture::~GPUTexture() {
-  if (IsDawnControlClientDestroyed()) {
-    return;
-  }
   GetProcs().textureRelease(GetHandle());
 }
 

@@ -135,9 +135,6 @@ GPUBindGroupLayout::GPUBindGroupLayout(GPUDevice* device,
     : DawnObject<WGPUBindGroupLayout>(device, bind_group_layout) {}
 
 GPUBindGroupLayout::~GPUBindGroupLayout() {
-  if (IsDawnControlClientDestroyed()) {
-    return;
-  }
   GetProcs().bindGroupLayoutRelease(GetHandle());
 }
 

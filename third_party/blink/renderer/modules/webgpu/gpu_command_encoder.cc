@@ -166,9 +166,6 @@ GPUCommandEncoder::GPUCommandEncoder(GPUDevice* device,
     : DawnObject<WGPUCommandEncoder>(device, command_encoder) {}
 
 GPUCommandEncoder::~GPUCommandEncoder() {
-  if (IsDawnControlClientDestroyed()) {
-    return;
-  }
   GetProcs().commandEncoderRelease(GetHandle());
 }
 

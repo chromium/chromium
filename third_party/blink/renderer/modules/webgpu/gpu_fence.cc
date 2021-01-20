@@ -18,9 +18,6 @@ GPUFence::GPUFence(GPUDevice* device, WGPUFence fence)
     : DawnObject<WGPUFence>(device, fence) {}
 
 GPUFence::~GPUFence() {
-  if (IsDawnControlClientDestroyed()) {
-    return;
-  }
   GetProcs().fenceRelease(GetHandle());
 }
 

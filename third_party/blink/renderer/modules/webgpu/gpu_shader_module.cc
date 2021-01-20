@@ -65,9 +65,6 @@ GPUShaderModule::GPUShaderModule(GPUDevice* device,
     : DawnObject<WGPUShaderModule>(device, shader_module) {}
 
 GPUShaderModule::~GPUShaderModule() {
-  if (IsDawnControlClientDestroyed()) {
-    return;
-  }
   GetProcs().shaderModuleRelease(GetHandle());
 }
 

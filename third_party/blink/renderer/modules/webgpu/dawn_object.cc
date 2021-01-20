@@ -19,10 +19,6 @@ DawnObjectBase::GetDawnControlClient() const {
   return dawn_control_client_;
 }
 
-bool DawnObjectBase::IsDawnControlClientDestroyed() const {
-  return dawn_control_client_->IsDestroyed();
-}
-
 gpu::webgpu::WebGPUInterface* DawnObjectBase::GetInterface() const {
   return dawn_control_client_->GetInterface();
 }
@@ -38,9 +34,6 @@ DawnDeviceClientSerializerHolder::DawnDeviceClientSerializerHolder(
       device_client_id_(device_client_id) {}
 
 DawnDeviceClientSerializerHolder::~DawnDeviceClientSerializerHolder() {
-  if (dawn_control_client_->IsDestroyed()) {
-    return;
-  }
   dawn_control_client_->GetInterface()->RemoveDevice(device_client_id_);
 }
 
@@ -49,9 +42,6 @@ DeviceTreeObject::GetDawnControlClient() const {
   return device_client_serializer_holder_->dawn_control_client_;
 }
 
-bool DeviceTreeObject::IsDawnControlClientDestroyed() const {
-  return GetDawnControlClient()->IsDestroyed();
-}
 gpu::webgpu::WebGPUInterface* DeviceTreeObject::GetInterface() const {
   return GetDawnControlClient()->GetInterface();
 }
@@ -74,9 +64,6 @@ void DeviceTreeObject::EnsureFlush() {
   }
   Microtask::EnqueueMicrotask(WTF::Bind(
       [](scoped_refptr<DawnDeviceClientSerializerHolder> holder) {
-        if (holder->dawn_control_client_->IsDestroyed()) {
-          return;
-        }
         holder->dawn_control_client_->GetInterface()->FlushAwaitingCommands(
             holder->device_client_id_);
       },

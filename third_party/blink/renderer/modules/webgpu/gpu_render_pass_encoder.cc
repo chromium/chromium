@@ -23,9 +23,6 @@ GPURenderPassEncoder::GPURenderPassEncoder(
     : DawnObject<WGPURenderPassEncoder>(device, render_pass_encoder) {}
 
 GPURenderPassEncoder::~GPURenderPassEncoder() {
-  if (IsDawnControlClientDestroyed()) {
-    return;
-  }
   GetProcs().renderPassEncoderRelease(GetHandle());
 }
 

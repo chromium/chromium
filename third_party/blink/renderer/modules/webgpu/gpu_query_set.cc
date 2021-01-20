@@ -46,9 +46,6 @@ GPUQuerySet::GPUQuerySet(GPUDevice* device, WGPUQuerySet querySet)
     : DawnObject<WGPUQuerySet>(device, querySet) {}
 
 GPUQuerySet::~GPUQuerySet() {
-  if (IsDawnControlClientDestroyed()) {
-    return;
-  }
   GetProcs().querySetRelease(GetHandle());
 }
 

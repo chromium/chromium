@@ -13,9 +13,6 @@ GPURenderBundle::GPURenderBundle(GPUDevice* device,
     : DawnObject<WGPURenderBundle>(device, render_bundle) {}
 
 GPURenderBundle::~GPURenderBundle() {
-  if (IsDawnControlClientDestroyed()) {
-    return;
-  }
   GetProcs().renderBundleRelease(GetHandle());
 }
 

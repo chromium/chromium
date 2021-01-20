@@ -151,8 +151,6 @@ DawnTextureFromImageBitmap::~DawnTextureFromImageBitmap() {
 
 WGPUTexture DawnTextureFromImageBitmap::ProduceDawnTextureFromImageBitmap(
     scoped_refptr<StaticBitmapImage> image) {
-  DCHECK(!dawn_control_client_->IsDestroyed());
-
   associated_resource_ = image->GetMailboxHolder().mailbox;
 
   // Produce and inject image to WebGPU texture
@@ -174,7 +172,6 @@ WGPUTexture DawnTextureFromImageBitmap::ProduceDawnTextureFromImageBitmap(
 }
 
 void DawnTextureFromImageBitmap::FinishDawnTextureFromImageBitmapAccess() {
-  DCHECK(!dawn_control_client_->IsDestroyed());
   DCHECK_NE(wire_texture_id_, 0u);
 
   gpu::webgpu::WebGPUInterface* webgpu = dawn_control_client_->GetInterface();

@@ -46,6 +46,10 @@ class WebGPUInterface : public InterfaceBase {
   // nothing.
   virtual void FlushAwaitingCommands(DawnDeviceClientID device_client_id) = 0;
 
+  // Disconnect. All commands should become a no-op and server-side resources
+  // can be freed.
+  virtual void DisconnectContextAndDestroyServer() = 0;
+
   virtual WGPUDevice GetDevice(DawnDeviceClientID device_client_id) = 0;
   virtual ReservedTexture ReserveTexture(
       DawnDeviceClientID device_client_id) = 0;

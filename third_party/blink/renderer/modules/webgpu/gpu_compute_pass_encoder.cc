@@ -18,9 +18,6 @@ GPUComputePassEncoder::GPUComputePassEncoder(
     : DawnObject<WGPUComputePassEncoder>(device, compute_pass_encoder) {}
 
 GPUComputePassEncoder::~GPUComputePassEncoder() {
-  if (IsDawnControlClientDestroyed()) {
-    return;
-  }
   GetProcs().computePassEncoderRelease(GetHandle());
 }
 

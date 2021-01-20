@@ -61,9 +61,6 @@ GPUSampler::GPUSampler(GPUDevice* device, WGPUSampler sampler)
     : DawnObject<WGPUSampler>(device, sampler) {}
 
 GPUSampler::~GPUSampler() {
-  if (IsDawnControlClientDestroyed()) {
-    return;
-  }
   GetProcs().samplerRelease(GetHandle());
 }
 

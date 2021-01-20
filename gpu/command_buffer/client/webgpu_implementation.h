@@ -163,6 +163,7 @@ class WEBGPU_EXPORT WebGPUImplementation final : public WebGPUInterface,
   void EnsureAwaitingFlush(DawnDeviceClientID device_client_id,
                            bool* needs_flush) override;
   void FlushAwaitingCommands(DawnDeviceClientID device_client_id) override;
+  void DisconnectContextAndDestroyServer() override;
   WGPUDevice GetDevice(DawnDeviceClientID device_client_id) override;
   ReservedTexture ReserveTexture(DawnDeviceClientID device_client_id) override;
   bool RequestAdapterAsync(

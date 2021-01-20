@@ -119,7 +119,9 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
               'gpu/functional_blank.html'), ('GpuProcess_swiftshader_for_webgl',
                                              'gpu/functional_webgl.html'),
              ('GpuProcess_webgl_disabled_extension',
-              'gpu/functional_webgl_disabled_extension.html'))
+              'gpu/functional_webgl_disabled_extension.html'),
+             ('GpuProcess_webgpu_iframe_removed',
+              'gpu/webgpu-iframe-removed.html'))
 
     for t in tests:
       yield (t[0], t[1], ('_' + t[0]))
@@ -586,6 +588,12 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       self.fail(
           'Backgrounded high-performance WebGL context did not release the '
           'hold on the high-performance GPU')
+
+  def _GpuProcess_webgpu_iframe_removed(self, test_path):
+    self.RestartBrowserIfNecessaryWithArgs([
+        '--enable-unsafe-webgpu',
+    ])
+    self._NavigateAndWait(test_path)
 
   @classmethod
   def ExpectationsFiles(cls):

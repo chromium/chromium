@@ -134,10 +134,6 @@ GPUQueue::GPUQueue(GPUDevice* device, WGPUQueue queue)
 
 GPUQueue::~GPUQueue() {
   produce_dawn_texture_handler_ = nullptr;
-
-  if (IsDawnControlClientDestroyed()) {
-    return;
-  }
   GetProcs().queueRelease(GetHandle());
 }
 

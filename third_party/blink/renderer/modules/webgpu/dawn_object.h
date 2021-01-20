@@ -35,7 +35,6 @@ class DawnObjectBase {
       scoped_refptr<DawnControlClientHolder> dawn_control_client);
 
   const scoped_refptr<DawnControlClientHolder>& GetDawnControlClient() const;
-  bool IsDawnControlClientDestroyed() const;
   gpu::webgpu::WebGPUInterface* GetInterface() const;
   const DawnProcTable& GetProcs() const;
 
@@ -82,7 +81,6 @@ class DeviceTreeObject {
             std::move(device_client_seralizer_holder)) {}
 
   const scoped_refptr<DawnControlClientHolder>& GetDawnControlClient() const;
-  bool IsDawnControlClientDestroyed() const;
   gpu::webgpu::WebGPUInterface* GetInterface() const;
   const DawnProcTable& GetProcs() const;
 

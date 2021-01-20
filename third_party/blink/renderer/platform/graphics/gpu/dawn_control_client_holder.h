@@ -32,7 +32,6 @@ class PLATFORM_EXPORT DawnControlClientHolder
       std::unique_ptr<WebGraphicsContext3DProvider> context_provider);
 
   void Destroy();
-  bool IsDestroyed() const;
 
   WebGraphicsContext3DProvider* GetContextProvider() const;
   gpu::webgpu::WebGPUInterface* GetInterface() const;

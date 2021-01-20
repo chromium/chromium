@@ -13,9 +13,6 @@ GPUCommandBuffer::GPUCommandBuffer(GPUDevice* device,
     : DawnObject<WGPUCommandBuffer>(device, command_buffer) {}
 
 GPUCommandBuffer::~GPUCommandBuffer() {
-  if (IsDawnControlClientDestroyed()) {
-    return;
-  }
   GetProcs().commandBufferRelease(GetHandle());
 }
 

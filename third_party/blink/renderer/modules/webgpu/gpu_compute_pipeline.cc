@@ -59,9 +59,6 @@ GPUComputePipeline::GPUComputePipeline(GPUDevice* device,
     : DawnObject<WGPUComputePipeline>(device, compute_pipeline) {}
 
 GPUComputePipeline::~GPUComputePipeline() {
-  if (IsDawnControlClientDestroyed()) {
-    return;
-  }
   GetProcs().computePipelineRelease(GetHandle());
 }
 

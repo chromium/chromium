@@ -29,6 +29,7 @@ void WebGPUInterfaceStub::EnsureAwaitingFlush(
     bool* needs_flush) {}
 void WebGPUInterfaceStub::FlushAwaitingCommands(
     DawnDeviceClientID device_client_id) {}
+void WebGPUInterfaceStub::DisconnectContextAndDestroyServer() {}
 WGPUDevice WebGPUInterfaceStub::GetDevice(DawnDeviceClientID device_client_id) {
   return nullptr;
 }

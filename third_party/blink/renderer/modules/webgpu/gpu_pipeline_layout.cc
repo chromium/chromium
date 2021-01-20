@@ -45,9 +45,6 @@ GPUPipelineLayout::GPUPipelineLayout(GPUDevice* device,
     : DawnObject<WGPUPipelineLayout>(device, pipeline_layout) {}
 
 GPUPipelineLayout::~GPUPipelineLayout() {
-  if (IsDawnControlClientDestroyed()) {
-    return;
-  }
   GetProcs().pipelineLayoutRelease(GetHandle());
 }
 

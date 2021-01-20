@@ -291,9 +291,6 @@ GPURenderPipeline::GPURenderPipeline(GPUDevice* device,
     : DawnObject<WGPURenderPipeline>(device, render_pipeline) {}
 
 GPURenderPipeline::~GPURenderPipeline() {
-  if (IsDawnControlClientDestroyed()) {
-    return;
-  }
   GetProcs().renderPipelineRelease(GetHandle());
 }
 

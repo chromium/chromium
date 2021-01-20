@@ -21,12 +21,8 @@ void DawnControlClientHolder::SetLostContextCallback() {
 }
 
 void DawnControlClientHolder::Destroy() {
-  interface_ = nullptr;
-  context_provider_.reset();
-}
-
-bool DawnControlClientHolder::IsDestroyed() const {
-  return !interface_;
+  SetContextLost();
+  interface_->DisconnectContextAndDestroyServer();
 }
 
 WebGraphicsContext3DProvider* DawnControlClientHolder::GetContextProvider()

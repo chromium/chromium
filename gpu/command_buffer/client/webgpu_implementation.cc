@@ -615,6 +615,13 @@ void WebGPUImplementation::FlushAwaitingCommands(
 #endif
 }
 
+void WebGPUImplementation::DisconnectContextAndDestroyServer() {
+  // Treat this like a context lost since the context is no longer usable.
+  // TODO(crbug.com/1160459): Also send a message to eagerly free server-side
+  // resources.
+  OnGpuControlLostContextMaybeReentrant();
+}
+
 WGPUDevice WebGPUImplementation::GetDevice(
     DawnDeviceClientID device_client_id) {
 #if BUILDFLAG(USE_DAWN)

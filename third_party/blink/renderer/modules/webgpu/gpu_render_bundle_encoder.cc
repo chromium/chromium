@@ -55,9 +55,6 @@ GPURenderBundleEncoder::GPURenderBundleEncoder(
     : DawnObject<WGPURenderBundleEncoder>(device, render_bundle_encoder) {}
 
 GPURenderBundleEncoder::~GPURenderBundleEncoder() {
-  if (IsDawnControlClientDestroyed()) {
-    return;
-  }
   GetProcs().renderBundleEncoderRelease(GetHandle());
 }
 

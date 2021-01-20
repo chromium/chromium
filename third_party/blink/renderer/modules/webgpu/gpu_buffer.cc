@@ -80,9 +80,6 @@ GPUBuffer::GPUBuffer(GPUDevice* device,
 }
 
 GPUBuffer::~GPUBuffer() {
-  if (IsDawnControlClientDestroyed()) {
-    return;
-  }
   GetProcs().bufferRelease(GetHandle());
 }
 
