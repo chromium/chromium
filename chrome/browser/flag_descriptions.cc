@@ -2778,6 +2778,12 @@ const char kContextualSearchSecondTapDescription[] =
     "Enables triggering on a second tap gesture even when Ranker would "
     "normally suppress that tap.";
 
+const char kContextualSearchThinWebViewImplementationName[] =
+    "Use Contextual Search ThinWebView implementation";
+const char kContextualSearchThinWebViewImplementationDescription[] =
+    "Use ThinWebView and BottomSheet based implementation for Contextual"
+    "Search.";
+
 const char kContextualSearchTranslationsName[] =
     "Contextual Search translations";
 const char kContextualSearchTranslationsDescription[] =

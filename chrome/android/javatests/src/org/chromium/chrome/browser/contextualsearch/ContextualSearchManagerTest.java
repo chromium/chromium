@@ -144,7 +144,8 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         ContextualSearchFieldTrial.ONLINE_DETECTION_DISABLED,
         "disable-features=" + ChromeFeatureList.CONTEXTUAL_SEARCH_ML_TAP_SUPPRESSION + ","
-                + ChromeFeatureList.OMNIBOX_SEARCH_ENGINE_LOGO})
+                + ChromeFeatureList.OMNIBOX_SEARCH_ENGINE_LOGO + ","
+                + ChromeFeatureList.CONTEXTUAL_SEARCH_THIN_WEB_VIEW_IMPLEMENTATION})
 @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
 @Batch(Batch.PER_CLASS)
 public class ContextualSearchManagerTest {
@@ -241,7 +242,7 @@ public class ContextualSearchManagerTest {
         mManager = sActivityTestRule.getActivity().getContextualSearchManager();
 
         Assert.assertNotNull(mManager);
-        mPanel = mManager.getContextualSearchPanel();
+        mPanel = (ContextualSearchPanel) mManager.getContextualSearchPanel();
 
         mSelectionController = mManager.getSelectionController();
         mPolicy = mManager.getContextualSearchPolicy();
@@ -3038,9 +3039,10 @@ public class ContextualSearchManagerTest {
 
         // Expand the panel and assert that it ends up in the right place.
         tapPeekingBarToExpandAndAssert();
-        Assert.assertEquals(mManager.getContextualSearchPanel().getHeight(),
-                mManager.getContextualSearchPanel().getPanelHeightFromState(PanelState.EXPANDED),
-                0);
+        final ContextualSearchPanel panel =
+                (ContextualSearchPanel) mManager.getContextualSearchPanel();
+        Assert.assertEquals(
+                panel.getHeight(), panel.getPanelHeightFromState(PanelState.EXPANDED), 0);
 
         // Tap the base page and assert that the panel is closed.
         tapBasePageToClosePanel();

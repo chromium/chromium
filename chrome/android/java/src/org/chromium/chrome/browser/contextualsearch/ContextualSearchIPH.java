@@ -12,6 +12,7 @@ import android.widget.PopupWindow.OnDismissListener;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanel;
+import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanelInterface;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
@@ -29,7 +30,7 @@ import org.chromium.ui.widget.RectProvider;
 public class ContextualSearchIPH {
     private static final int FLOATING_BUBBLE_SPACING_FACTOR = 10;
     private View mParentView;
-    private ContextualSearchPanel mSearchPanel;
+    private ContextualSearchPanelInterface mSearchPanel;
     private TextBubble mHelpBubble;
     private RectProvider mRectProvider;
     private String mFeatureName;
@@ -49,7 +50,7 @@ public class ContextualSearchIPH {
     /**
      * @param searchPanel The instance of {@link ContextualSearchPanel}.
      */
-    void setSearchPanel(ContextualSearchPanel searchPanel) {
+    void setSearchPanel(ContextualSearchPanelInterface searchPanel) {
         mSearchPanel = searchPanel;
     }
 

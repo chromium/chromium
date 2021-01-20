@@ -43901,6 +43901,8 @@ from previous Chrome versions.
   <int value="-824199802" label="ContextualSearchSimplifiedServer:enabled"/>
   <int value="-823394398" label="TargetEmbeddingLookalikes:enabled"/>
   <int value="-823165021" label="MaterialDesignUserMenu:enabled"/>
+  <int value="-822712881"
+      label="ContextualSearchThinWebViewImplementation:enabled"/>
   <int value="-821635312" label="EyeDropper:enabled"/>
   <int value="-820041355" label="enable-transition-compositing"/>
   <int value="-819165158" label="ScrollableTabStripButtons:enabled"/>
@@ -45320,6 +45322,8 @@ from previous Chrome versions.
       label="AutofillDoNotUploadSaveUnsupportedCards:disabled"/>
   <int value="557200974" label="WebSocketHandshakeReuseConnection:disabled"/>
   <int value="557915559" label="CCTModuleCustomRequestHeader:enabled"/>
+  <int value="558249253"
+      label="ContextualSearchThinWebViewImplementation:disabled"/>
   <int value="558873715" label="SiteDetails:disabled"/>
   <int value="559695461" label="UseChimeAndroidSdk:enabled"/>
   <int value="561374433" label="SCTAuditing:disabled"/>

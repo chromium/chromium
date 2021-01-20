@@ -673,6 +673,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "contextual-search-twv-impl",
+    "owners": [ "//chrome/android/java/src/org/chromium/chrome/browser/contextualsearch/OWNERS" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "continuous-search",
     "owners": [ "//chrome/browser/continuous_search/OWNERS" ],
     "expiry_milestone": 92

@@ -1619,6 +1619,9 @@ extern const char kContextualSearchRankerQueryDescription[];
 extern const char kContextualSearchSecondTapName[];
 extern const char kContextualSearchSecondTapDescription[];
 
+extern const char kContextualSearchThinWebViewImplementationName[];
+extern const char kContextualSearchThinWebViewImplementationDescription[];
+
 extern const char kContextualSearchTranslationsName[];
 extern const char kContextualSearchTranslationsDescription[];
 

@@ -15,7 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CollectionUtil;
-import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanel;
+import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanelInterface;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchFieldTrial.ContextualSearchSetting;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchFieldTrial.ContextualSearchSwitch;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchSelectionController.SelectionType;
@@ -59,7 +59,7 @@ class ContextualSearchPolicy {
     private final SharedPreferencesManager mPreferencesManager;
     private final ContextualSearchSelectionController mSelectionController;
     private ContextualSearchNetworkCommunicator mNetworkCommunicator;
-    private ContextualSearchPanel mSearchPanel;
+    private ContextualSearchPanelInterface mSearchPanel;
 
     // Members used only for testing purposes.
     private boolean mDidOverrideDecidedStateForTesting;
@@ -82,7 +82,7 @@ class ContextualSearchPolicy {
      * Sets the handle to the ContextualSearchPanel.
      * @param panel The ContextualSearchPanel.
      */
-    public void setContextualSearchPanel(ContextualSearchPanel panel) {
+    public void setContextualSearchPanel(ContextualSearchPanelInterface panel) {
         mSearchPanel = panel;
     }
 

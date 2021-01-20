@@ -2608,6 +2608,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kContextualSearchSecondTapName,
      flag_descriptions::kContextualSearchSecondTapDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kContextualSearchSecondTap)},
+    {"contextual-search-twv-impl",
+     flag_descriptions::kContextualSearchThinWebViewImplementationName,
+     flag_descriptions::kContextualSearchThinWebViewImplementationDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         chrome::android::kContextualSearchThinWebViewImplementation)},
     {"contextual-search-translations",
      flag_descriptions::kContextualSearchTranslationsName,
      flag_descriptions::kContextualSearchTranslationsDescription, kOsAndroid,

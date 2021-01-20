@@ -8,6 +8,7 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayContentDelegate;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanel;
+import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanelInterface;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 
 /**
@@ -31,7 +32,7 @@ public interface ContextualSearchManagementDelegate {
      * Sets the handle to the ContextualSearchPanel.
      * @param panel The ContextualSearchPanel.
      */
-    void setContextualSearchPanel(ContextualSearchPanel panel);
+    void setContextualSearchPanel(ContextualSearchPanelInterface panel);
 
     /**
      * Gets whether the device is running in compatibility mode for Contextual Search.
