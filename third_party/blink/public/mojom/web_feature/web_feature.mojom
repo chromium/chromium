@@ -3092,6 +3092,7 @@ enum WebFeature {
   kAddressSpaceUnknownSecureContextNavigatedToPrivate = 3771,
   kAddressSpaceUnknownNonSecureContextNavigatedToPrivate = 3772,
   kRTCPeerConnectionSdpSemanticsPlanB = 3773,
+  kFetchRespondWithNoResponseWithUsedRequestBody = 3774,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

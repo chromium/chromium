@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fetch/body_stream_buffer.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/modules/service_worker/cross_origin_resource_policy_checker.h"
 #include "third_party/blink/renderer/modules/service_worker/fetch_event.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_global_scope.h"
@@ -375,11 +376,27 @@ void FetchRespondWithObserver::OnResponseFulfilled(
 
 void FetchRespondWithObserver::OnNoResponse() {
   DCHECK(GetExecutionContext());
+  if (request_body_stream_ && (request_body_stream_->IsLocked() ||
+                               request_body_stream_->IsDisturbed())) {
+    GetExecutionContext()->CountUse(
+        WebFeature::kFetchRespondWithNoResponseWithUsedRequestBody);
+  }
   ServiceWorkerGlobalScope* service_worker_global_scope =
       To<ServiceWorkerGlobalScope>(GetExecutionContext());
   service_worker_global_scope->RespondToFetchEventWithNoResponse(
       event_id_, request_url_, event_dispatch_time_, base::TimeTicks::Now());
   event_->ResolveHandledPromise();
+}
+
+void FetchRespondWithObserver::SetEvent(FetchEvent* event) {
+  DCHECK(!event_);
+  DCHECK(!request_body_stream_);
+  event_ = event;
+  // We don't use Body::body() in order to avoid accidental CountUse calls.
+  BodyStreamBuffer* body_buffer = event_->request()->BodyBuffer();
+  if (body_buffer) {
+    request_body_stream_ = body_buffer->Stream();
+  }
 }
 
 FetchRespondWithObserver::FetchRespondWithObserver(
@@ -399,6 +416,7 @@ FetchRespondWithObserver::FetchRespondWithObserver(
 
 void FetchRespondWithObserver::Trace(Visitor* visitor) const {
   visitor->Trace(event_);
+  visitor->Trace(request_body_stream_);
   RespondWithObserver::Trace(visitor);
 }
 
