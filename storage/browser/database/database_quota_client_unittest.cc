@@ -69,17 +69,17 @@ class MockDatabaseTracker : public DatabaseTracker {
     return true;
   }
 
-  int DeleteDataForOrigin(const url::Origin& origin,
-                          net::CompletionOnceCallback callback) override {
+  void DeleteDataForOrigin(const url::Origin& origin,
+                           net::CompletionOnceCallback callback) override {
     ++delete_called_count_;
     if (async_delete()) {
       base::SequencedTaskRunnerHandle::Get()->PostTask(
           FROM_HERE,
           base::BindOnce(&MockDatabaseTracker::AsyncDeleteDataForOrigin, this,
                          std::move(callback)));
-      return net::ERR_IO_PENDING;
+      return;
     }
-    return net::OK;
+    std::move(callback).Run(net::OK);
   }
 
   void AsyncDeleteDataForOrigin(net::CompletionOnceCallback callback) {

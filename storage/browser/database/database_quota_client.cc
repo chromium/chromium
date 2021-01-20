@@ -72,15 +72,10 @@ std::vector<url::Origin> GetOriginsForHostOnDBThread(
   return host_origins;
 }
 
-void DidDeleteOriginData(base::SequencedTaskRunner* original_task_runner,
-                         QuotaClient::DeleteOriginDataCallback callback,
-                         int result) {
-  if (result == net::ERR_IO_PENDING) {
-    // The callback will be invoked via
-    // DatabaseTracker::ScheduleDatabasesForDeletion.
-    return;
-  }
-
+void DidDeleteOriginData(
+    scoped_refptr<base::SequencedTaskRunner> original_task_runner,
+    QuotaClient::DeleteOriginDataCallback callback,
+    int result) {
   blink::mojom::QuotaStatusCode status;
   if (result == net::OK)
     status = blink::mojom::QuotaStatusCode::kOk;
@@ -161,20 +156,12 @@ void DatabaseQuotaClient::DeleteOriginData(const url::Origin& origin,
   DCHECK(!callback.is_null());
   DCHECK_EQ(type, StorageType::kTemporary);
 
-  // DidDeleteOriginData() translates the net::Error response to a
-  // blink::mojom::QuotaStatusCode if necessary, and no-ops as appropriate if
-  // DatabaseTracker::ScheduleDatabasesForDeletion will also invoke the
-  // callback.
-  auto delete_callback = base::BindRepeating(
-      &DidDeleteOriginData,
-      base::RetainedRef(base::SequencedTaskRunnerHandle::Get()),
-      base::AdaptCallbackForRepeating(std::move(callback)));
-
-  base::PostTaskAndReplyWithResult(
-      db_tracker_->task_runner(), FROM_HERE,
+  db_tracker_->task_runner()->PostTask(
+      FROM_HERE,
       base::BindOnce(&DatabaseTracker::DeleteDataForOrigin, db_tracker_, origin,
-                     delete_callback),
-      net::CompletionOnceCallback(delete_callback));
+                     base::BindOnce(&DidDeleteOriginData,
+                                    base::SequencedTaskRunnerHandle::Get(),
+                                    std::move(callback))));
 }
 
 void DatabaseQuotaClient::PerformStorageCleanup(

@@ -740,33 +740,41 @@ int DatabaseTracker::DeleteDataModifiedSince(
   return net::OK;
 }
 
-int DatabaseTracker::DeleteDataForOrigin(const url::Origin& origin,
-                                         net::CompletionOnceCallback callback) {
+void DatabaseTracker::DeleteDataForOrigin(
+    const url::Origin& origin,
+    net::CompletionOnceCallback callback) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  if (!LazyInit())
-    return net::ERR_FAILED;
-
-  DatabaseSet to_be_deleted;
+  DCHECK(!callback.is_null());
+  if (!LazyInit()) {
+    std::move(callback).Run(net::ERR_FAILED);
+    return;
+  }
 
   const std::string identifier = GetIdentifierFromOrigin(origin);
 
   std::vector<DatabaseDetails> details;
   if (!databases_table_->GetAllDatabaseDetailsForOriginIdentifier(identifier,
-                                                                  &details))
-    return net::ERR_FAILED;
-  for (const auto& db : details) {
+                                                                  &details)) {
+    std::move(callback).Run(net::ERR_FAILED);
+    return;
+  }
+
+  DatabaseSet to_be_deleted;
+  for (const DatabaseDetails& db : details) {
     // Check if the database is opened by any renderer.
-    if (database_connections_.IsDatabaseOpened(identifier, db.database_name))
+    if (database_connections_.IsDatabaseOpened(identifier, db.database_name)) {
       to_be_deleted[identifier].insert(db.database_name);
-    else
+    } else {
       DeleteClosedDatabase(identifier, db.database_name);
+    }
   }
 
   if (!to_be_deleted.empty()) {
     ScheduleDatabasesForDeletion(to_be_deleted, std::move(callback));
-    return net::ERR_IO_PENDING;
+    return;
   }
-  return net::OK;
+
+  std::move(callback).Run(net::OK);
 }
 
 const base::File* DatabaseTracker::GetIncognitoFile(

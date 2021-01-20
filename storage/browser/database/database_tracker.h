@@ -154,12 +154,14 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) DatabaseTracker
   int DeleteDataModifiedSince(const base::Time& cutoff,
                               net::CompletionOnceCallback callback);
 
-  // Delete all databases that belong to the given origin. Returns net::OK on
-  // success, net::FAILED if not all databases could be deleted, and
-  // net::ERR_IO_PENDING and |callback| is invoked upon completion, if non-null.
-  // virtual for unit testing only
-  virtual int DeleteDataForOrigin(const url::Origin& origin,
-                                  net::CompletionOnceCallback callback);
+  // Deletes all databases that belong to the given origin.
+  //
+  // `callback` must must be non-null, and is invoked upon completion with a
+  // net::Error. The status will be net::OK on success, or net::FAILED if not
+  // all databases could be deleted. `callback` may be called before this method
+  // returns.
+  virtual void DeleteDataForOrigin(const url::Origin& origin,
+                                   net::CompletionOnceCallback callback);
 
   bool IsIncognitoProfile() const { return is_incognito_; }
 
