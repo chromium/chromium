@@ -136,7 +136,13 @@ void ChromeAshMessageCenterClient::Display(
           base::WrapRefCounted(
               new ForwardingNotificationDelegate(notification.id(), delegate_)),
           notification);
-  MessageCenter::Get()->AddNotification(std::move(message_center_notification));
+
+  // During shutdown, Ash is destroyed before |this|, taking the MessageCenter
+  // with it.
+  if (MessageCenter::Get()) {
+    MessageCenter::Get()->AddNotification(
+        std::move(message_center_notification));
+  }
 }
 
 void ChromeAshMessageCenterClient::Close(Profile* profile,
