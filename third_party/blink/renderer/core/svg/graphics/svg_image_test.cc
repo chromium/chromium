@@ -118,7 +118,7 @@ TEST_F(SVGImageTest, TimelineSuspendAndResume) {
       new TaskRunnerTimer<SVGImageChromeClient>(
           scheduler::GetSingleThreadTaskRunnerForTesting(), &chrome_client,
           &SVGImageChromeClient::AnimationTimerFired);
-  chrome_client.SetTimer(base::WrapUnique(timer));
+  chrome_client.SetTimerForTesting(base::WrapUnique(timer));
 
   // Simulate a draw. Cause a frame (timer) to be scheduled.
   PumpFrame();
@@ -147,7 +147,7 @@ TEST_F(SVGImageTest, ResetAnimation) {
       new TaskRunnerTimer<SVGImageChromeClient>(
           scheduler::GetSingleThreadTaskRunnerForTesting(), &chrome_client,
           &SVGImageChromeClient::AnimationTimerFired);
-  chrome_client.SetTimer(base::WrapUnique(timer));
+  chrome_client.SetTimerForTesting(base::WrapUnique(timer));
 
   // Simulate a draw. Cause a frame (timer) to be scheduled.
   PumpFrame();

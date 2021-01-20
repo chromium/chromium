@@ -42,11 +42,14 @@ static constexpr base::TimeDelta kAnimationFrameDelay =
 
 SVGImageChromeClient::SVGImageChromeClient(SVGImage* image)
     : image_(image),
-      animation_timer_(std::make_unique<TaskRunnerTimer<SVGImageChromeClient>>(
-          ThreadScheduler::Current()->CompositorTaskRunner(),
-          this,
-          &SVGImageChromeClient::AnimationTimerFired)),
       timeline_state_(kRunning) {}
+
+void SVGImageChromeClient::InitAnimationTimer(
+    scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner) {
+  animation_timer_ = std::make_unique<TaskRunnerTimer<SVGImageChromeClient>>(
+      std::move(compositor_task_runner), this,
+      &SVGImageChromeClient::AnimationTimerFired);
+}
 
 bool SVGImageChromeClient::IsSVGImageChromeClient() const {
   return true;
@@ -93,6 +96,7 @@ void SVGImageChromeClient::RestoreAnimationIfNeeded() {
 
 void SVGImageChromeClient::ScheduleAnimation(const LocalFrameView*,
                                              base::TimeDelta fire_time) {
+  DCHECK(animation_timer_);
   // Because a single SVGImage can be shared by multiple pages, we can't key
   // our svg image layout on the page's real animation frame. Therefore, we
   // run this fake animation timer to trigger layout in SVGImages. The name,
@@ -113,7 +117,8 @@ void SVGImageChromeClient::ScheduleAnimation(const LocalFrameView*,
   animation_timer_->StartOneShot(fire_time, FROM_HERE);
 }
 
-void SVGImageChromeClient::SetTimer(std::unique_ptr<TimerBase> timer) {
+void SVGImageChromeClient::SetTimerForTesting(
+    std::unique_ptr<TimerBase> timer) {
   animation_timer_ = std::move(timer);
 }
 

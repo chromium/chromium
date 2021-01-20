@@ -44,6 +44,9 @@ class CORE_EXPORT SVGImageChromeClient final : public EmptyChromeClient {
  public:
   explicit SVGImageChromeClient(SVGImage*);
 
+  void InitAnimationTimer(
+      scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner);
+
   bool IsSVGImageChromeClient() const override;
 
   SVGImage* GetImage() const { return image_; }
@@ -60,7 +63,7 @@ class CORE_EXPORT SVGImageChromeClient final : public EmptyChromeClient {
   void ScheduleAnimation(const LocalFrameView*,
                          base::TimeDelta = base::TimeDelta()) override;
 
-  void SetTimer(std::unique_ptr<TimerBase>);
+  void SetTimerForTesting(std::unique_ptr<TimerBase>);
   TimerBase* GetTimerForTesting() const { return animation_timer_.get(); }
   void AnimationTimerFired(TimerBase*);
 

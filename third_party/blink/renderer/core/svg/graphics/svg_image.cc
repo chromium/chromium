@@ -808,6 +808,9 @@ Image::SizeAvailability SVGImage::DataChanged(bool all_data_received) {
       page->GetSettings().SetPreferredColorScheme(
           default_settings.GetPreferredColorScheme());
     }
+    chrome_client_->InitAnimationTimer(page->GetPageScheduler()
+                                           ->GetAgentGroupScheduler()
+                                           .CompositorTaskRunner());
   }
 
   LocalFrame* frame = nullptr;
