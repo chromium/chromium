@@ -278,14 +278,18 @@ void PasswordProtectionRequest::FillRequestProto(bool is_sampled_ping) {
 #endif  // BUILDFLAG(FULL_SAFE_BROWSING)
 
 #if defined(OS_ANDROID)
-  LoginReputationClientRequest::ReferringAppInfo referring_app_info =
-      password_protection_service_->GetReferringAppInfo(web_contents_);
-  UMA_HISTOGRAM_ENUMERATION(
-      "PasswordProtection.RequestReferringAppSource",
-      referring_app_info.referring_app_source(),
-      LoginReputationClientRequest::ReferringAppInfo::ReferringAppSource_MAX +
-          1);
-  *request_proto_->mutable_referring_app_info() = std::move(referring_app_info);
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kPasswordProtectionReferringAppEnabledAndroid)) {
+    LoginReputationClientRequest::ReferringAppInfo referring_app_info =
+        password_protection_service_->GetReferringAppInfo(web_contents_);
+    UMA_HISTOGRAM_ENUMERATION(
+        "PasswordProtection.RequestReferringAppSource",
+        referring_app_info.referring_app_source(),
+        LoginReputationClientRequest::ReferringAppInfo::ReferringAppSource_MAX +
+            1);
+    *request_proto_->mutable_referring_app_info() =
+        std::move(referring_app_info);
+  }
 #endif  // defined(OS_ANDROID)
 
   switch (trigger_type_) {
