@@ -68,31 +68,31 @@
     }, { once: true });
   }
 
+  function ensureVideoIsPlaying() {
+    video.play()
+    .then(_ => { window.domAutomationController.send(true); })
+    .catch(e => { window.domAutomationController.send(false); });
+  }
+
   function changeVideoSrc() {
     if (video.srcObject) {
       video.srcObject.getTracks().forEach(track => track.stop());
       video.srcObject = null;
     }
     video.src = '../bigbuck.webm';
-    video.play()
-    .then(_ => { window.domAutomationController.send(true); })
-    .catch(e => { window.domAutomationController.send(false); });
+    ensureVideoIsPlaying();
   }
 
   function changeVideoSrcToMediaStream() {
     const canvas = document.createElement('canvas');
     canvas.getContext('2d').fillRect(0, 0, canvas.width, canvas.height);
     video.srcObject = canvas.captureStream();
-    video.play()
-    .then(_ => { window.domAutomationController.send(true); })
-    .catch(e => { window.domAutomationController.send(false); });
+    ensureVideoIsPlaying();
   }
 
   function changeVideoSrcToNoAudioTrackVideo() {
     video.src = '../engagement/engagement_no_audio_track.webm';
-    video.play()
-    .then(_ => { window.domAutomationController.send(true); })
-    .catch(e => { window.domAutomationController.send(false); });
+    ensureVideoIsPlaying();
   }
 
   function addVisibilityChangeEventListener() {
