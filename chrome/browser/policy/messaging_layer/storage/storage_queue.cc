@@ -139,8 +139,10 @@ StorageQueue::~StorageQueue() {
 
   // Stop upload timer.
   upload_timer_.AbandonAndStop();
-  // Close all opened files.
-  files_.clear();
+  // CLose all opened files.
+  for (auto& file : files_) {
+    file.second->Close();
+  }
 }
 
 Status StorageQueue::Init() {
@@ -1316,7 +1318,6 @@ StorageQueue::SingleFile::SingleFile(const base::FilePath& filename,
     : filename_(filename), size_(size) {}
 
 StorageQueue::SingleFile::~SingleFile() {
-  Close();
   handle_.reset();
 }
 
@@ -1354,10 +1355,8 @@ void StorageQueue::SingleFile::Close() {
   }
   handle_.reset();
   is_readonly_ = base::nullopt;
-  if (buffer_) {
-    buffer_.reset();
-    GetMemoryResource()->Discard(buffer_size_);
-  }
+  buffer_.reset();
+  GetMemoryResource()->Discard(buffer_size_);
 }
 
 Status StorageQueue::SingleFile::Delete() {
