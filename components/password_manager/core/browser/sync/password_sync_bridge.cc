@@ -536,9 +536,17 @@ base::Optional<syncer::ModelError> PasswordSyncBridge::MergeSyncData(
                                      /*sync_time=*/time_now);
         PasswordStoreChangeList changes =
             password_store_sync_->UpdateLoginSync(form, &update_login_error);
-        // TODO(1167109): Check if update is required.
-        password_store_sync_->UpdateCompromisedCredentialsSync(
-            form, CompromisedCredentialsFromEntityChange(remote_entity_change));
+        // Check if compromised credentials changed before updating.
+        std::vector<CompromisedCredentials> remote_compromised_credentials =
+            CompromisedCredentialsFromEntityChange(remote_entity_change);
+        std::vector<CompromisedCredentials> local_compromised_credentials =
+            password_store_sync_->ReadSecurityIssues(
+                FormPrimaryKey(primary_key));
+        if (!base::ranges::is_permutation(remote_compromised_credentials,
+                                          local_compromised_credentials)) {
+          password_store_sync_->UpdateCompromisedCredentialsSync(
+              form, remote_compromised_credentials);
+        }
         DCHECK_LE(changes.size(), 1U);
         base::UmaHistogramEnumeration(
             "PasswordManager.MergeSyncData.UpdateLoginSyncError",
@@ -752,9 +760,19 @@ base::Optional<syncer::ModelError> PasswordSyncBridge::ApplySyncChanges(
               PasswordFromEntityChange(*entity_change, /*sync_time=*/time_now);
           changes =
               password_store_sync_->UpdateLoginSync(form, &update_login_error);
-          // TODO(vsemeniuk): Check if update is required.
-          password_store_sync_->UpdateCompromisedCredentialsSync(
-              form, CompromisedCredentialsFromEntityChange(*entity_change));
+          FormPrimaryKey primary_key =
+              FormPrimaryKey(ParsePrimaryKey(entity_change->storage_key()));
+          // Check if compromised credentials changed before updating.
+          std::vector<CompromisedCredentials> remote_compromised_credentials =
+              CompromisedCredentialsFromEntityChange(*entity_change);
+          std::vector<CompromisedCredentials> local_compromised_credentials =
+              password_store_sync_->ReadSecurityIssues(
+                  FormPrimaryKey(primary_key));
+          if (!base::ranges::is_permutation(remote_compromised_credentials,
+                                            local_compromised_credentials)) {
+            password_store_sync_->UpdateCompromisedCredentialsSync(
+                form, remote_compromised_credentials);
+          }
           base::UmaHistogramEnumeration(
               "PasswordManager.ApplySyncChanges.UpdateLoginSyncError",
               update_login_error);
@@ -772,8 +790,7 @@ base::Optional<syncer::ModelError> PasswordSyncBridge::ApplySyncChanges(
                 FROM_HERE, "Failed to update an entry in the password store.");
           }
           DCHECK_EQ(1U, changes.size());
-          DCHECK(changes[0].primary_key() ==
-                 ParsePrimaryKey(entity_change->storage_key()));
+          DCHECK(changes[0].primary_key() == *primary_key);
           break;
         }
         case syncer::EntityChange::ACTION_DELETE: {
