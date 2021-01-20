@@ -29,6 +29,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/common/url_constants.h"
+#include "extensions/browser/allowlist_state.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
@@ -370,6 +371,8 @@ void InstalledLoader::RecordExtensionsMetrics() {
   int off_store_item_count = 0;
   int web_request_blocking_count = 0;
   int web_request_count = 0;
+  int enabled_not_allowlisted_count = 0;
+  int disabled_not_allowlisted_count = 0;
 
   const ExtensionSet& extensions = extension_registry_->enabled_extensions();
   for (ExtensionSet::const_iterator iter = extensions.begin();
@@ -600,6 +603,12 @@ void InstalledLoader::RecordExtensionsMetrics() {
             num_granted_hosts);
       }
     }
+
+    if (extension_prefs_->GetExtensionAllowlistState(extension->id()) ==
+        ALLOWLIST_NOT_ALLOWLISTED) {
+      // Record the number of not allowlisted enabled extensions.
+      ++enabled_not_allowlisted_count;
+    }
   }
 
   const ExtensionSet& disabled_extensions =
@@ -623,6 +632,12 @@ void InstalledLoader::RecordExtensionsMetrics() {
                                   EXTERNAL_ITEM_NONWEBSTORE_DISABLED,
                                   EXTERNAL_ITEM_MAX_ITEMS);
       }
+    }
+
+    if (extension_prefs_->GetExtensionAllowlistState((*ex)->id()) ==
+        ALLOWLIST_NOT_ALLOWLISTED) {
+      // Record the number of not allowlisted disabled extensions.
+      ++disabled_not_allowlisted_count;
     }
   }
 
@@ -684,6 +699,16 @@ void InstalledLoader::RecordExtensionsMetrics() {
   base::UmaHistogramCounts100("Extensions.WebRequestBlockingCount",
                               web_request_blocking_count);
   base::UmaHistogramCounts100("Extensions.WebRequestCount", web_request_count);
+  base::UmaHistogramCounts100("Extensions.NotAllowlistedEnabled",
+                              enabled_not_allowlisted_count);
+  base::UmaHistogramCounts100("Extensions.NotAllowlistedDisabled",
+                              disabled_not_allowlisted_count);
+  if (safe_browsing::IsEnhancedProtectionEnabled(*profile->GetPrefs())) {
+    base::UmaHistogramCounts100("Extensions.NotAllowlistedEnabledAndEsbUser",
+                                enabled_not_allowlisted_count);
+    base::UmaHistogramCounts100("Extensions.NotAllowlistedDisabledAndEsbUser",
+                                disabled_not_allowlisted_count);
+  }
 }
 
 int InstalledLoader::GetCreationFlags(const ExtensionInfo* info) {
