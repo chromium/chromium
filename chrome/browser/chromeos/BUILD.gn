@@ -1088,6 +1088,8 @@ source_set("chromeos") {
     "crosapi/test_controller_ash.h",
     "crosapi/test_mojo_connection_manager.cc",
     "crosapi/test_mojo_connection_manager.h",
+    "crosapi/url_handler_ash.cc",
+    "crosapi/url_handler_ash.h",
     "crosapi/window_util.cc",
     "crosapi/window_util.h",
     "crostini/ansible/ansible_management_service.cc",

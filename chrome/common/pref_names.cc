@@ -1040,10 +1040,6 @@ const char kLastRsuDeviceIdUploaded[] = "rsu.last_rsu_device_id_uploaded";
 // A string pref stored in local state containing the name of the device.
 const char kDeviceName[] = "device_name";
 
-// Boolean user profile pref that determines whether to show a banner in browser
-// settings that links to OS settings.
-const char kSettingsShowOSBanner[] = "settings.cros.show_os_banner";
-
 // Int64 pref indicating the time in microseconds since Windows epoch when the
 // timer for update required which will block user session was started. If the
 // timer is not started the pref holds the default value base::Time().
@@ -1071,6 +1067,12 @@ const char kEduCoexistenceArcMigrationCompleted[] =
 const char kIntegratedWebAuthenticationAllowed[] =
     "auth.integrated_web_authentication_allowed";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+// Boolean user profile pref that determines whether to show a banner in browser
+// settings that links to OS settings.
+const char kSettingsShowOSBanner[] = "settings.cros.show_os_banner";
+#endif
 
 // A boolean pref set to true if a Home button to open the Home pages should be
 // visible on the toolbar.

@@ -22,6 +22,7 @@ mojom("mojom") {
     "screen_manager.mojom",
     "select_file.mojom",
     "test_controller.mojom",
+    "url_handler.mojom",
   ]
   disable_variants = true
 

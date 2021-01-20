@@ -259,8 +259,6 @@ extern const char kChromeUIMultiDeviceSetupUrl[];
 extern const char kChromeUINetworkHost[];
 extern const char kChromeUIOSCreditsHost[];
 extern const char kChromeUIOSCreditsURL[];
-extern const char kChromeUIOSSettingsHost[];
-extern const char kChromeUIOSSettingsURL[];
 extern const char kChromeUIOobeHost[];
 extern const char kChromeUIOobeURL[];
 extern const char kChromeUIPasswordChangeHost[];
@@ -294,6 +292,11 @@ extern const char kChromeUIUserImageURL[];
 bool IsSystemWebUIHost(base::StringPiece host);
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+extern const char kChromeUIOSSettingsHost[];
+extern const char kChromeUIOSSettingsURL[];
+#endif
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
 extern const char kChromeUIWebUIJsErrorHost[];

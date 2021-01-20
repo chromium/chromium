@@ -4616,6 +4616,8 @@ static_library("browser") {
       "lacros/lacros_chrome_service_delegate_impl.h",
       "lacros/lacros_prefs.cc",
       "lacros/lacros_prefs.h",
+      "lacros/lacros_url_handling.cc",
+      "lacros/lacros_url_handling.h",
       "lacros/metrics_reporting_observer.cc",
       "lacros/metrics_reporting_observer.h",
       "lacros/snap_controller_lacros.cc",

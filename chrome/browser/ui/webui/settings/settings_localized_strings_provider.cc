@@ -757,13 +757,8 @@ void AddLanguagesStrings(content::WebUIDataSource* html_source,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-void AddChromeOSUserStrings(content::WebUIDataSource* html_source,
-                            Profile* profile) {
-  user_manager::UserManager* user_manager = user_manager::UserManager::Get();
-
-  const user_manager::User* primary_user = user_manager->GetPrimaryUser();
-  std::string primary_user_email = primary_user->GetAccountId().GetUserEmail();
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+void AddChromeOSSettingsStrings(content::WebUIDataSource* html_source) {
   html_source->AddString(
       "osSettingsBannerText",
       l10n_util::GetStringFUTF16(
@@ -2453,9 +2448,11 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source,
   AddSearchStrings(html_source);
   AddSiteSettingsStrings(html_source, profile);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  AddChromeOSUserStrings(html_source, profile);
-#else
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  AddChromeOSSettingsStrings(html_source);
+#endif
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   AddDefaultBrowserStrings(html_source);
   AddImportDataStrings(html_source);
   AddSystemStrings(html_source);

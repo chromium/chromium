@@ -350,12 +350,14 @@ extern const char kAppReinstallRecommendationEnabled[];
 extern const char kStartupBrowserWindowLaunchSuppressed[];
 extern const char kLoginExtensionApiDataForNextLoginAttempt[];
 extern const char kLoginExtensionApiLaunchExtensionId[];
-extern const char kSettingsShowOSBanner[];
 extern const char kUpdateRequiredTimerStartTime[];
 extern const char kUpdateRequiredWarningPeriod[];
 extern const char kSystemProxyUserTrafficHostAndPort[];
 extern const char kEduCoexistenceArcMigrationCompleted[];
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+extern const char kSettingsShowOSBanner[];
+#endif
 extern const char kShowHomeButton[];
 extern const char kSpeechRecognitionFilterProfanities[];
 extern const char kAllowDeletingBrowserHistory[];

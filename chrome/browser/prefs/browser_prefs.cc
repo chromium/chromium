@@ -1076,6 +1076,10 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   borealis::prefs::RegisterProfilePrefs(registry);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  lacros_prefs::RegisterProfilePrefs(registry);
+#endif
+
 #if defined(OS_WIN)
   component_updater::RegisterProfilePrefsForSwReporter(registry);
   NetworkProfileBubble::RegisterProfilePrefs(registry);

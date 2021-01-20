@@ -57,6 +57,10 @@
 #include "components/account_id/account_id.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/lacros/lacros_url_handling.h"
+#endif
+
 #if defined(USE_AURA)
 #include "ui/aura/window.h"
 #endif
@@ -597,6 +601,12 @@ void Navigate(NavigateParams* params) {
         }
       }
     }
+  }
+#endif
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (source_browser &&
+      lacros_url_handling::MaybeInterceptNavigation(params->url)) {
+    return;
   }
 #endif
 

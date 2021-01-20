@@ -22,7 +22,7 @@ import '../reset_page/reset_profile_banner.js';
 import '../search_page/search_page.js';
 import '../settings_page/settings_section.m.js';
 import '../settings_page_css.m.js';
-// <if expr="chromeos">
+// <if expr="chromeos or lacros">
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 // </if>
 
@@ -35,7 +35,7 @@ import {beforeNextRender, html, Polymer} from 'chrome://resources/polymer/v3_0/p
 
 import {loadTimeData} from '../i18n_setup.js';
 import {PageVisibility} from '../page_visibility.js';
-// <if expr="chromeos">
+// <if expr="chromeos or lacros">
 import {PrefsBehavior} from '../prefs/prefs_behavior.m.js';
 // </if>
 import {routes} from '../route.js';
@@ -43,7 +43,7 @@ import {Route, RouteObserverBehavior, Router} from '../router.m.js';
 import {getSearchManager, SearchResult} from '../search_settings.m.js';
 import {MainPageBehavior} from '../settings_page/main_page_behavior.js';
 
-// <if expr="chromeos">
+// <if expr="chromeos or lacros">
 const OS_BANNER_INTERACTION_METRIC_NAME =
     'ChromeOS.Settings.OsBannerInteraction';
 
@@ -67,7 +67,7 @@ Polymer({
 
   behaviors: [
     MainPageBehavior, RouteObserverBehavior,
-    // <if expr="chromeos">
+    // <if expr="chromeos or lacros">
     PrefsBehavior,
     // </if>
   ],
@@ -118,7 +118,7 @@ Polymer({
       },
     },
 
-    // <if expr="chromeos">
+    // <if expr="chromeos or lacros">
     /** @private */
     showOSSettingsBanner_: {
       type: Boolean,
@@ -149,7 +149,7 @@ Polymer({
     'subpage-expand': 'onSubpageExpanded_',
   },
 
-  // <if expr="chromeos">
+  // <if expr="chromeos or lacros">
   /** @private {boolean} */
   osBannerShowMetricRecorded_: false,
   // </if>
@@ -233,7 +233,7 @@ Polymer({
     });
   },
 
-  // <if expr="chromeos">
+  // <if expr="chromeos or lacros">
   /**
    * @return {boolean|undefined}
    * @private

@@ -583,8 +583,6 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[prefs::kRestoreLastLockScreenNote] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
-  (*s_allowlist)[::prefs::kSettingsShowOSBanner] =
-      settings_api::PrefType::PREF_TYPE_BOOLEAN;
 
   // Bluetooth & Internet settings.
   (*s_allowlist)[chromeos::kAllowBluetooth] =
@@ -742,6 +740,11 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)[::prefs::kImportDialogSavedPasswords] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[::prefs::kImportDialogSearchEngine] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  (*s_allowlist)[::prefs::kSettingsShowOSBanner] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
 #endif
 

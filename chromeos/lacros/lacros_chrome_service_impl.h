@@ -25,6 +25,7 @@
 #include "chromeos/crosapi/mojom/screen_manager.mojom.h"
 #include "chromeos/crosapi/mojom/select_file.mojom.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
+#include "chromeos/crosapi/mojom/url_handler.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -237,6 +238,17 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
     return prefs_remote_;
   }
 
+  // Whether the UrlHandler API is available.
+  bool IsUrlHandlerAvailable() const;
+
+  // This must be called on the affine sequence. It exposes a remote that can
+  // be used to interface with UrlHandler.
+  mojo::Remote<crosapi::mojom::UrlHandler>& url_handler_remote() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(affine_sequence_checker_);
+    DCHECK(IsUrlHandlerAvailable());
+    return url_handler_remote_;
+  }
+
   // --------------------------------------------------------------------------
   // Some clients will want to use mojo::Remotes on arbitrary sequences (e.g.
   // background threads). The following methods allow the client to construct a
@@ -333,6 +345,7 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
   mojo::Remote<crosapi::mojom::TestController> test_controller_remote_;
   mojo::Remote<crosapi::mojom::Clipboard> clipboard_remote_;
   mojo::Remote<crosapi::mojom::Prefs> prefs_remote_;
+  mojo::Remote<crosapi::mojom::UrlHandler> url_handler_remote_;
 
   // This member is instantiated on the affine sequence alongside the
   // constructor. All subsequent invocations of this member, including

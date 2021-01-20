@@ -25,6 +25,7 @@ class PrefsAsh;
 class ScreenManagerAsh;
 class SelectFileAsh;
 class TestControllerAsh;
+class UrlHandlerAsh;
 
 // Implementation of AshChromeService. It provides a set of APIs that
 // lacros-chrome can call into.
@@ -70,6 +71,8 @@ class AshChromeServiceImpl : public mojom::AshChromeService {
           receiver) override;
   void BindTestController(
       mojo::PendingReceiver<mojom::TestController> receiver) override;
+  void BindUrlHandler(
+      mojo::PendingReceiver<mojom::UrlHandler> receiver) override;
 
  private:
   mojo::Receiver<mojom::AshChromeService> receiver_;
@@ -86,6 +89,7 @@ class AshChromeServiceImpl : public mojom::AshChromeService {
   std::unique_ptr<CertDatabaseAsh> cert_database_ash_;
   std::unique_ptr<TestControllerAsh> test_controller_ash_;
   std::unique_ptr<ClipboardAsh> clipboard_ash_;
+  std::unique_ptr<UrlHandlerAsh> url_handler_ash_;
 };
 
 }  // namespace crosapi

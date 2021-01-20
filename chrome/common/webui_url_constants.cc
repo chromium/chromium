@@ -267,8 +267,6 @@ const char kChromeUIMultiDeviceSetupUrl[] = "chrome://multidevice-setup";
 const char kChromeUINetworkHost[] = "network";
 const char kChromeUIOSCreditsHost[] = "os-credits";
 const char kChromeUIOSCreditsURL[] = "chrome://os-credits/";
-const char kChromeUIOSSettingsHost[] = "os-settings";
-const char kChromeUIOSSettingsURL[] = "chrome://os-settings/";
 const char kChromeUIOobeHost[] = "oobe";
 const char kChromeUIOobeURL[] = "chrome://oobe/";
 const char kChromeUIPasswordChangeHost[] = "password-change";
@@ -342,6 +340,11 @@ bool IsSystemWebUIHost(base::StringPiece host) {
   return false;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+const char kChromeUIOSSettingsHost[] = "os-settings";
+const char kChromeUIOSSettingsURL[] = "chrome://os-settings/";
+#endif
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
 const char kChromeUIWebUIJsErrorHost[] = "webuijserror";

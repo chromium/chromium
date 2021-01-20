@@ -62,7 +62,7 @@
           <settings-reset-profile-banner on-close="onResetProfileBannerClosed_">
           </settings-reset-profile-banner>
         </template>
-<if expr="chromeos">
+<if expr="chromeos or lacros">
         <template is="dom-if" if="[[showOSSettingsBanner_]]">
           <div id="osSettingsBanner" class="cr-row first">
             <div class="flex cr-padded-text"
