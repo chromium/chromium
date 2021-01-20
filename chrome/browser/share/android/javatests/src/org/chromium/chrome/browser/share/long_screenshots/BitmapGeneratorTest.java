@@ -50,21 +50,30 @@ public class BitmapGeneratorTest {
 
     class TestListener implements BitmapGenerator.GeneratorCallBack {
         boolean mOnBitmapGeneratedCalled;
+        boolean mSomeCallBackCalled;
+        @CompositorStatus
+        int mCompositorErrorStatus;
+
+        @Status
+        int mCaptureStatus;
 
         @Override
-        public void onCompositorError(@CompositorStatus int status) {}
+        public void onCompositorError(@CompositorStatus int status) {
+            mCompositorErrorStatus = status;
+            mSomeCallBackCalled = true;
+        }
 
         @Override
         public void onBitmapGenerated(Bitmap bitmap) {
             mOnBitmapGeneratedCalled = true;
+            mSomeCallBackCalled = true;
             mGeneratedBitmap = bitmap;
         }
 
         @Override
-        public void onCaptureError(@Status int status) {}
-
-        boolean getOnBitmapGeneratedCalled() {
-            return mOnBitmapGeneratedCalled;
+        public void onCaptureError(@Status int status) {
+            mSomeCallBackCalled = true;
+            mCaptureStatus = status;
         }
     }
 
@@ -102,10 +111,41 @@ public class BitmapGeneratorTest {
         });
 
         CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat("Callback was not called",
-                    mTestListener.getOnBitmapGeneratedCalled(), Matchers.is(true));
+            Criteria.checkThat("OnBitmapGenerated callback was not called",
+                    mTestListener.mOnBitmapGeneratedCalled, Matchers.is(true));
         }, 10000L, 50L);
 
         Assert.assertNotNull(mGeneratedBitmap);
     }
+
+    /**
+     * Verifies that a Tab's contents are captured.
+     * TODO(tgupta): Figure out how to mimic a low memory situation.
+
+    @Test
+    @MediumTest
+    @Feature({"LongScreenshots"})
+    public void testCapturedLowMemory() throws Exception {
+        EmbeddedTestServer testServer = mActivityTestRule.getTestServer();
+        final String url = testServer.getURL("/chrome/test/data/android/about.html");
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mTab.loadUrl(new LoadUrlParams(url));
+            MemoryPressureListener.notifyMemoryPressure(MemoryPressureLevel.CRITICAL);
+            mGenerator.captureScreenshot();
+
+        });
+
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat("No callback on the listener was called.",
+                    mTestListener.mSomeCallBackCalled, Matchers.is(true));
+        }, 10000L, 50L);
+
+        Assert.assertNull(mGeneratedBitmap);
+        Assert.assertEquals(Status.LOW_MEMORY_DETECTED,
+                mTestListener.mCaptureStatus);
+        Assert.assertEquals(CompositorStatus.SKIPPED_DUE_TO_MEMORY_PRESSURE,
+                mTestListener.mCompositorErrorStatus);
+    }
+  */
 }

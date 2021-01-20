@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.Rect;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.paint_preview.common.proto.PaintPreview.PaintPreviewProto;
@@ -29,7 +30,7 @@ public class BitmapGenerator implements LongScreenshotsTabService.CaptureProcess
 
     // Compositor delegate responsible for compositing the skia
     private LongScreenshotsCompositor mCompositor;
-    private LongScreenshotsTabService mLongScreenshotsTabService;
+    private LongScreenshotsTabService mTabService;
     private Tab mTab;
 
     private static final String DIR_NAME = "long_screenshots_dir";
@@ -69,16 +70,17 @@ public class BitmapGenerator implements LongScreenshotsTabService.CaptureProcess
         mTab = tab;
         mGeneratorCallback = callback;
         mRect = rect;
-
-        mLongScreenshotsTabService = LongScreenshotsTabServiceFactory.getServiceInstance();
-        mLongScreenshotsTabService.setCaptureProcessor(this);
     }
 
     /**
      * Starts the capture of the screenshot.
      */
     public void captureScreenshot() {
-        mLongScreenshotsTabService.captureTab(mTab, mRect);
+        if (mTabService == null) {
+            mTabService = LongScreenshotsTabServiceFactory.getServiceInstance();
+        }
+        mTabService.setCaptureProcessor(this);
+        mTabService.captureTab(mTab, mRect);
     }
 
     /**
@@ -91,20 +93,11 @@ public class BitmapGenerator implements LongScreenshotsTabService.CaptureProcess
     public void processCapturedTab(PaintPreviewProto response, @Status int status) {
         if (status != Status.OK) {
             mGeneratorCallback.onCaptureError(status);
-        } else {
+        } else if (mCompositor == null) {
             mCompositor = new LongScreenshotsCompositor(new GURL(response.getMetadata().getUrl()),
-                    mLongScreenshotsTabService, DIR_NAME, response, mRect,
-                    mGeneratorCallback::onBitmapGenerated, mGeneratorCallback::onCompositorError);
+                    mTabService, DIR_NAME, response, mRect, mGeneratorCallback::onBitmapGenerated,
+                    mGeneratorCallback::onCompositorError);
         }
-    }
-
-    /**
-     * Called after the bitmap has been composited and can be shown to the user.
-     *
-     * @param result Bitmap to display in the dialog.
-     */
-    private void onBitmapResult(Bitmap result) {
-        mGeneratorCallback.onBitmapGenerated(result);
     }
 
     /**
@@ -115,5 +108,12 @@ public class BitmapGenerator implements LongScreenshotsTabService.CaptureProcess
             mCompositor.destroy();
             mCompositor = null;
         }
+    }
+
+    @VisibleForTesting
+    public void setTabServiceAndCompositorForTest(
+            LongScreenshotsTabService tabService, LongScreenshotsCompositor compositor) {
+        mTabService = tabService;
+        mCompositor = compositor;
     }
 }
