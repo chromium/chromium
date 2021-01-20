@@ -485,16 +485,13 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   // browser state.
   BOOL needRestoration = NO;
   if (isPostCrashLaunch) {
-    if (IsMultiwindowSupported()) {
-      NSSet<NSString*>* sessions =
-          [[PreviousSessionInfo sharedInstance] connectedSceneSessionsIDs];
-      needRestoration =
-          [CrashRestoreHelper moveAsideSessions:sessions
-                                forBrowserState:chromeBrowserState];
-    } else {
-      needRestoration = [CrashRestoreHelper
-          moveAsideSessionInformationForBrowserState:chromeBrowserState];
-    }
+    NSSet<NSString*>* sessions =
+        IsMultiwindowSupported()
+            ? [[PreviousSessionInfo sharedInstance] connectedSceneSessionsIDs]
+            : [NSSet setWithArray:@[ @"" ]];
+
+    needRestoration = [CrashRestoreHelper moveAsideSessions:sessions
+                                            forBrowserState:chromeBrowserState];
   }
   if (!IsMultipleScenesSupported() && IsMultiwindowSupported()) {
     NSSet<NSString*>* previousSessions =

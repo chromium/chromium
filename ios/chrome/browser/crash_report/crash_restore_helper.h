@@ -16,7 +16,8 @@ class ChromeBrowserState;
 - (instancetype)initWithBrowser:(Browser*)browser;
 
 // Returns YES if a backup file for sessionID can be found on disk.
-+ (BOOL)isBackedUpSessionID:(NSString*)sessionID;
++ (BOOL)isBackedUpSessionID:(NSString*)sessionID
+               browserState:(ChromeBrowserState*)browserState;
 
 // Saves the session information stored on disk for sessions with |sessionIDs|
 // in temporary files and will then delete those from their default location.
@@ -29,16 +30,17 @@ class ChromeBrowserState;
 + (BOOL)moveAsideSessions:(NSSet<NSString*>*)sessionIDs
           forBrowserState:(ChromeBrowserState*)browserState;
 
-// Move the session information for Legacy non multiwindow supported OS.
-// This method deletes the session from its default location, while
-// allowing restoring it back later.
-// Returns |YES| if the delettion and backup was successful.
-+ (BOOL)moveAsideSessionInformationForBrowserState:
-    (ChromeBrowserState*)browserState;
-
 // Shows an infobar on the currently active tab of the browser. This infobar
 // lets the user restore its session after a crash.
 - (void)showRestorePrompt;
+
+@end
+
+@interface CrashRestoreHelper (Testing)
+
+// Returns the path for back of session |sessionID| relative in |directory|.
++ (NSString*)backupPathForSessionID:(NSString*)sessionID
+                          directory:(NSString*)directory;
 
 @end
 

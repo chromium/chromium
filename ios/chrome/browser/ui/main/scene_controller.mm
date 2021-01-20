@@ -677,12 +677,13 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   // Only create the restoration helper if the session with the current session
   // id was backed up successfully.
   if (self.sceneState.appState.sessionRestorationRequired) {
+    Browser* mainBrowser = self.mainInterface.browser;
     if (!IsMultiwindowSupported() ||
         [CrashRestoreHelper
-            isBackedUpSessionID:self.sceneState.sceneSessionID]) {
+            isBackedUpSessionID:self.sceneState.sceneSessionID
+                   browserState:mainBrowser->GetBrowserState()]) {
       self.sceneState.appState.startupInformation.restoreHelper =
-          [[CrashRestoreHelper alloc]
-              initWithBrowser:self.mainInterface.browser];
+          [[CrashRestoreHelper alloc] initWithBrowser:mainBrowser];
     }
   }
 

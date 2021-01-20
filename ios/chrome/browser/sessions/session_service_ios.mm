@@ -215,7 +215,7 @@ NSString* const kSessionFileName =
 
 + (NSString*)sessionPathForSessionID:(NSString*)sessionID
                            directory:(NSString*)directory {
-  if (!sessionID)
+  if (!sessionID.length)
     return [[self class] sessionPathForDirectory:directory];
   return [NSString pathWithComponents:@[
     directory, kSessionDirectory, sessionID, kSessionFileName

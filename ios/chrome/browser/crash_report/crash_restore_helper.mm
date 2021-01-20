@@ -54,18 +54,10 @@
 
 // Private methods.
 @interface CrashRestoreHelper ()<InfoBarManagerObserverBridgeProtocol>
-// Deletes the session file for the given browser state, optionally backing it
-// up beforehand to |backupFile| if it is not nil.  This method returns YES in
-// case of success, NO otherwise.
-+ (BOOL)deleteSessionForBrowserState:(ChromeBrowserState*)browserState
-                          backupFile:(NSString*)file;
-
-// Returns the path where the sessions with |sessionID| for the main browser
-// state are backed up.
-+ (NSString*)backupPathForSessionID:(NSString*)sessionID;
 
 // Returns a list of IDs for all backed up sessions.
-+ (NSArray<NSString*>*)backedupSessionIDs;
++ (NSArray<NSString*>*)backedupSessionIDsForBrowserState:
+    (ChromeBrowserState*)browserState;
 
 // Restores the sessions after a crash. It should only be called if
 // |moveAsideSessions:forBrowserState| for the browser state of the current
@@ -79,11 +71,12 @@
 
 namespace {
 
+NSString* const kSessionBackupDirectory =
+    @"Backups";  // The name for directory which contains all session backup
+                 // subdirectories for multiple sessions.
+
 NSString* const kSessionBackupFileName =
-    @"session.bak";  // The session file name on disk.
-NSString* const kSessionBackupDirectoryName =
-    @"Sessions";  // The name for directory which contains all session backup
-                  // subdirectories for multiple sessions.
+    @"session.backup.plist";  // The session file name on disk.
 
 class InfoBarManagerObserverBridge : infobars::InfoBarManager::Observer {
  public:
@@ -235,12 +228,11 @@ int SessionCrashedInfoBarDelegate::GetIconId() const {
 
 @implementation CrashRestoreHelper {
   Browser* _browser;
+  // Indicate that the session has been restored to tabs or to recently closed
+  // and should not be re-restored.
+  BOOL _sessionRestored;
   std::unique_ptr<InfoBarManagerObserverBridge> _infoBarBridge;
 }
-
-// Indicate that the session has been restored to tabs or to recently closed
-// and should not be rerestored.
-static BOOL _sessionRestored = NO;
 
 - (instancetype)initWithBrowser:(Browser*)browser {
   if (self = [super init]) {
@@ -271,17 +263,18 @@ static BOOL _sessionRestored = NO;
   BOOL partialSuccess = NO;
   NSString* stashPath =
       base::SysUTF8ToNSString(browserState->GetStatePath().value());
-  NSString* backupPath = nil;
 
   for (NSString* sessionID in sessionIDs) {
     NSString* sessionPath =
         [SessionServiceIOS sessionPathForSessionID:sessionID
                                          directory:stashPath];
-    if (shouldBackup)
-      backupPath = [self backupPathForSessionID:sessionID];
+    NSString* backupPath = nil;
+    if (shouldBackup) {
+      backupPath = [self backupPathForSessionID:sessionID directory:stashPath];
+    }
 
-    partialSuccess |= [[self class] deleteSessionFromPath:sessionPath
-                                               backupFile:backupPath];
+    partialSuccess |= [self deleteSessionFromPath:sessionPath
+                                       backupFile:backupPath];
   }
   return partialSuccess;
 }
@@ -331,102 +324,35 @@ static BOOL _sessionRestored = NO;
   return YES;
 }
 
-+ (BOOL)deleteSessionForBrowserState:(ChromeBrowserState*)browserState
-                          backupFile:(NSString*)file {
-  NSString* stashPath =
-      base::SysUTF8ToNSString(browserState->GetStatePath().value());
-  NSString* sessionPath = [SessionServiceIOS sessionPathForDirectory:stashPath];
-  NSFileManager* fileManager = [NSFileManager defaultManager];
-  if (![fileManager fileExistsAtPath:sessionPath])
-    return NO;
-  if (file) {
-    NSError* error = nil;
-    BOOL fileOperationSuccess =
-        [fileManager removeItemAtPath:file error:&error];
-    NSInteger errorCode = fileOperationSuccess ? 0 : [error code];
-    base::UmaHistogramSparse("TabRestore.error_remove_backup_at_path",
-                             errorCode);
-    if (!fileOperationSuccess && errorCode != NSFileNoSuchFileError) {
-      return NO;
-    }
++ (NSString*)backupPathForSessionID:(NSString*)sessionID
+                          directory:(NSString*)directory {
+  if (!sessionID.length)
+    return [directory stringByAppendingPathComponent:kSessionBackupFileName];
 
-    fileOperationSuccess =
-        [fileManager moveItemAtPath:sessionPath toPath:file error:&error];
-    errorCode = fileOperationSuccess ? 0 : [error code];
-    base::UmaHistogramSparse("TabRestore.error_move_session_at_path_to_backup",
-                             errorCode);
-    if (!fileOperationSuccess) {
-      return NO;
-    }
-  } else {
-    NSError* error;
-    BOOL fileOperationSuccess =
-        [fileManager removeItemAtPath:sessionPath error:&error];
-    NSInteger errorCode = fileOperationSuccess ? 0 : [error code];
-    base::UmaHistogramSparse("TabRestore.error_remove_session_at_path",
-                             errorCode);
-    if (!fileOperationSuccess) {
-      return NO;
-    }
-  }
-  return YES;
-}
-
-+ (NSString*)backupPathForSessionID:(NSString*)sessionID {
-  NSString* tmpDirectory = NSTemporaryDirectory();
-  if (!sessionID || !sessionID.length)
-    return [tmpDirectory stringByAppendingPathComponent:kSessionBackupFileName];
   return [NSString pathWithComponents:@[
-    tmpDirectory, kSessionBackupDirectoryName, sessionID, kSessionBackupFileName
+    directory,
+    kSessionBackupDirectory,
+    sessionID,
+    kSessionBackupFileName,
   ]];
 }
 
-+ (NSString*)backupSessionsDirectoryPath {
-  NSString* tmpDirectory = NSTemporaryDirectory();
-  return
-      [tmpDirectory stringByAppendingPathComponent:kSessionBackupDirectoryName];
-}
-
-+ (NSArray<NSString*>*)backedupSessionPaths {
-  if (!IsMultiwindowSupported())
-    return @[ [[self class] backupPathForSessionID:nil] ];
-  NSString* sessionsDirectoryPath = [[self class] backupSessionsDirectoryPath];
-  NSArray<NSString*>* sessionsIDs = [[NSFileManager defaultManager]
-      contentsOfDirectoryAtPath:sessionsDirectoryPath
-                          error:nil];
-  NSMutableArray<NSString*>* sessionFilePaths =
-      [[NSMutableArray alloc] initWithCapacity:sessionsIDs.count];
-  for (NSString* sessionID in sessionsIDs) {
-    [sessionFilePaths
-        addObject:[[self class] backupPathForSessionID:sessionID]];
-  }
-  return sessionFilePaths;
-}
-
-+ (NSArray<NSString*>*)backedupSessionIDs {
++ (NSArray<NSString*>*)backedupSessionIDsForBrowserState:
+    (ChromeBrowserState*)browserState {
   if (!IsMultiwindowSupported())
     return @[ @"" ];
-  NSString* sessionsDirectoryPath = [[self class] backupSessionsDirectoryPath];
+  NSString* stashPath =
+      base::SysUTF8ToNSString(browserState->GetStatePath().AsUTF8Unsafe());
   return [[NSFileManager defaultManager]
-      contentsOfDirectoryAtPath:sessionsDirectoryPath
+      contentsOfDirectoryAtPath:
+          [stashPath stringByAppendingPathComponent:kSessionBackupDirectory]
                           error:nil];
 }
 
-+ (BOOL)isBackedUpSessionID:(NSString*)sessionID {
-  return [[[self class] backedupSessionIDs] containsObject:sessionID];
-}
-
-+ (BOOL)moveAsideSessionInformationForBrowserState:
-    (ChromeBrowserState*)browserState {
-  DCHECK(!IsMultiwindowSupported());
-  // This may be the first time that the OTR browser state is being accessed, so
-  // ensure that the OTR ChromeBrowserState is created first.
-  ChromeBrowserState* otrBrowserState =
-      browserState->GetOffTheRecordChromeBrowserState();
-
-  [self deleteSessionForBrowserState:otrBrowserState backupFile:nil];
-  return [self deleteSessionForBrowserState:browserState
-                                 backupFile:[self backupPathForSessionID:nil]];
++ (BOOL)isBackedUpSessionID:(NSString*)sessionID
+               browserState:(ChromeBrowserState*)browserState {
+  return [[self backedupSessionIDsForBrowserState:browserState]
+      containsObject:sessionID];
 }
 
 + (BOOL)moveAsideSessions:(NSSet<NSString*>*)sessionIDs
@@ -438,43 +364,65 @@ static BOOL _sessionRestored = NO;
   [self deleteSessions:sessionIDs
        forBrowserState:otrBrowserState
           shouldBackup:NO];
+
   return [self deleteSessions:sessionIDs
               forBrowserState:browserState
                  shouldBackup:YES];
 }
 
 - (BOOL)restoreSessionsAfterCrash {
-  CrashRestoreHelper* strongSelf = self;
   DCHECK(!_sessionRestored);
   _sessionRestored = YES;
+
+  // Deleting _infoBarBridge will release the owning reference it has to self
+  // which may be the last reference existing. Thus it is unsafe to access to
+  // the current instance after _infoBarBridge.reset(). Use a local variable
+  // with precise lifetime to ensure the code self is valid till the end of the
+  // current method.
+  // TODO(crbug.com/1168480): fix ownership of CrashRestoreHelper.
+  __attribute__((objc_precise_lifetime)) CrashRestoreHelper* keepAlive = self;
   _infoBarBridge.reset();
-  BrowserList* browserList = BrowserListFactory::GetForBrowserState(
-      strongSelf.browser->GetBrowserState());
+
+  return [CrashRestoreHelper
+      restoreSessionsAfterCrashForBrowserState:_browser->GetBrowserState()];
+}
+
++ (BOOL)restoreSessionsAfterCrashForBrowserState:
+    (ChromeBrowserState*)browserState {
+  NSString* stashPath =
+      base::SysUTF8ToNSString(browserState->GetStatePath().AsUTF8Unsafe());
+
+  BrowserList* browserList =
+      BrowserListFactory::GetForBrowserState(browserState);
   breakpad_helper::WillStartCrashRestoration();
   BOOL success = NO;
   // First restore all conected sessions.
   NSFileManager* fileManager = [NSFileManager defaultManager];
   NSError* error = nil;
-  std::set<Browser*> regularBrowsers = browserList->AllRegularBrowsers();
 
+  std::set<Browser*> regularBrowsers = browserList->AllRegularBrowsers();
   for (Browser* browser : regularBrowsers) {
     NSString* sessionID = SceneStateBrowserAgent::FromBrowser(browser)
                               ->GetSceneState()
                               .sceneSessionID;
-    NSString* sessionPath =
-        [[strongSelf class] backupPathForSessionID:sessionID];
+
+    NSString* backupPath =
+        [CrashRestoreHelper backupPathForSessionID:sessionID
+                                         directory:stashPath];
+
     SessionIOS* session =
-        [[SessionServiceIOS sharedService] loadSessionFromPath:sessionPath];
+        [[SessionServiceIOS sharedService] loadSessionFromPath:backupPath];
 
     if (!session)
       continue;
     success |= SessionRestorationBrowserAgent::FromBrowser(browser)
                    ->RestoreSessionWindow(session.sessionWindows[0]);
-    // remove the backup directory for this session as it will not be moved
-    // back to its original browser state direcotry.
+
+    // Remove the backup directory for this session as it will not be moved
+    // back to its original browser state directory.
     if (IsMultiwindowSupported()) {
       [fileManager
-          removeItemAtPath:[sessionPath stringByDeletingLastPathComponent]
+          removeItemAtPath:[backupPath stringByDeletingLastPathComponent]
                      error:&error];
     }
   }
@@ -486,21 +434,21 @@ static BOOL _sessionRestored = NO;
 
   // Now put non restored sessions files to its original location in the browser
   // state directory.
-  Browser* anyBrowser = *regularBrowsers.begin();
-  NSString* stashPath = base::SysUTF8ToNSString(
-      anyBrowser->GetBrowserState()->GetStatePath().value());
-
   NSArray<NSString*>* backedupSessionIDs =
-      [[strongSelf class] backedupSessionIDs];
+      [CrashRestoreHelper backedupSessionIDsForBrowserState:browserState];
   for (NSString* sessionID in backedupSessionIDs) {
     NSString* originalSessionPath =
         [SessionServiceIOS sessionPathForSessionID:sessionID
                                          directory:stashPath];
+
     NSString* backupPath =
-        [[strongSelf class] backupPathForSessionID:sessionID];
+        [CrashRestoreHelper backupPathForSessionID:sessionID
+                                         directory:stashPath];
+
     [fileManager moveItemAtPath:backupPath
                          toPath:originalSessionPath
                           error:&error];
+
     // Remove Parent directory for the backup path, so it doesn't show restore
     // prompt again.
     [fileManager removeItemAtPath:[backupPath stringByDeletingLastPathComponent]
@@ -523,24 +471,31 @@ static BOOL _sessionRestored = NO;
   // the recently closed tabs.
   _sessionRestored = YES;
 
-  NSArray<NSString*>* sessionsIDs = [[self class] backedupSessionIDs];
+  ChromeBrowserState* browserState = _browser->GetBrowserState();
+  NSString* stashPath =
+      base::SysUTF8ToNSString(browserState->GetStatePath().AsUTF8Unsafe());
+
+  NSArray<NSString*>* sessionsIDs =
+      [CrashRestoreHelper backedupSessionIDsForBrowserState:browserState];
   NSFileManager* fileManager = [NSFileManager defaultManager];
   NSError* error = nil;
   for (NSString* sessionID in sessionsIDs) {
-    NSString* sessionPath = [[self class] backupPathForSessionID:sessionID];
+    NSString* backupPath =
+        [CrashRestoreHelper backupPathForSessionID:sessionID
+                                         directory:stashPath];
+
     SessionIOS* session =
-        [[SessionServiceIOS sharedService] loadSessionFromPath:sessionPath];
+        [[SessionServiceIOS sharedService] loadSessionFromPath:backupPath];
 
     NSArray<CRWSessionStorage*>* sessions = session.sessionWindows[0].sessions;
     if (!sessions.count)
       continue;
 
     sessions::TabRestoreService* const tabRestoreService =
-        IOSChromeTabRestoreServiceFactory::GetForBrowserState(
-            _browser->GetBrowserState());
+        IOSChromeTabRestoreServiceFactory::GetForBrowserState(browserState);
     tabRestoreService->LoadTabsFromLastSession();
 
-    web::WebState::CreateParams params(_browser->GetBrowserState());
+    web::WebState::CreateParams params(browserState);
     for (CRWSessionStorage* session in sessions) {
       auto live_tab = std::make_unique<sessions::RestoreIOSLiveTab>(session);
       // Add all tabs at the 0 position as the position is relative to an old
@@ -549,7 +504,7 @@ static BOOL _sessionRestored = NO;
     }
     if (IsMultiwindowSupported()) {
       [fileManager
-          removeItemAtPath:[sessionPath stringByDeletingLastPathComponent]
+          removeItemAtPath:[backupPath stringByDeletingLastPathComponent]
                      error:&error];
     }
   }
