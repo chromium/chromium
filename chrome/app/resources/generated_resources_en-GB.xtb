@@ -1652,6 +1652,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="281504910091592009">View and manage saved passwords in your <ph name="BEGIN_LINK" />Google Account<ph name="END_LINK" /></translation>
 <translation id="2815693974042551705">Bookmark folder</translation>
 <translation id="2816319641769218778">To save passwords to your Google account, turn on sync.</translation>
+<translation id="2816628817680324566">Allow this site to identify your security key?</translation>
 <translation id="2818476747334107629">Printer details</translation>
 <translation id="2820957248982571256">Scanning...</translation>
 <translation id="2822634587701817431">Shrink/Expand</translation>
@@ -3769,6 +3770,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="5300287940468717207">Reset site permissions?</translation>
 <translation id="5300589172476337783">Show</translation>
 <translation id="5300719150368506519">Send URLs of pages that you visit to Google</translation>
+<translation id="5300814202279832142">Move window to desk</translation>
 <translation id="5301751748813680278">Entering as Guest.</translation>
 <translation id="5301954838959518834">OK, got it</translation>
 <translation id="5302048478445481009">Language</translation>
@@ -5457,6 +5459,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="7250616558727237648">The device that you're sharing with didn't respond. Try again.</translation>
 <translation id="725109152065019550">Sorry, your administrator has disabled external storage on your account.</translation>
 <translation id="7251346854160851420">Default wallpaper</translation>
+<translation id="7251979364707973467"><ph name="WEBSITE" /> issued your security key and wants to learn its ID number. The site will know exactly which security key you're using.</translation>
 <translation id="7253521419891527137">&amp;Learn More</translation>
 <translation id="7254951428499890870">Are you sure that you want to launch "<ph name="APP_NAME" />" in diagnostic mode?</translation>
 <translation id="725497546968438223">Bookmark folder button</translation>

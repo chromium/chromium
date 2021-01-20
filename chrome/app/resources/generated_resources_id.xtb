@@ -1645,6 +1645,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="281504910091592009">Lihat dan kelola sandi tersimpan di <ph name="BEGIN_LINK" />Akun Google<ph name="END_LINK" /></translation>
 <translation id="2815693974042551705">Folder bookmark</translation>
 <translation id="2816319641769218778">Untuk menyimpan sandi ke Akun Google Anda, aktifkan sinkronisasi.</translation>
+<translation id="2816628817680324566">Izinkan situs ini mengidentifikasi kunci keamanan Anda?</translation>
 <translation id="2818476747334107629">Detail printer</translation>
 <translation id="2820957248982571256">Memindai...</translation>
 <translation id="2822634587701817431">Ciutkan/Luaskan</translation>
@@ -3749,6 +3750,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="5300287940468717207">Reset izin situs?</translation>
 <translation id="5300589172476337783">Tampilkan</translation>
 <translation id="5300719150368506519">Kirimkan URL halaman yang Anda kunjungi ke Google</translation>
+<translation id="5300814202279832142">Pindahkan jendela ke desktop</translation>
 <translation id="5301751748813680278">Masuk sebagai Tamu.</translation>
 <translation id="5301954838959518834">Oke, mengerti</translation>
 <translation id="5302048478445481009">Bahasa</translation>
@@ -5431,6 +5433,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="7250616558727237648">Perangkat yang diajak berbagi tidak merespons. Coba lagi.</translation>
 <translation id="725109152065019550">Maaf, administrator Anda telah menonaktifkan penyimpanan eksternal pada akun Anda.</translation>
 <translation id="7251346854160851420">Wallpaper default</translation>
+<translation id="7251979364707973467"><ph name="WEBSITE" /> telah membuat kunci keamanan Anda dan ingin mengetahui nomor ID-nya. Situs akan mengetahui secara tepat kunci keamanan mana yang Anda gunakan.</translation>
 <translation id="7253521419891527137">&amp;Pelajari Lebih Lanjut</translation>
 <translation id="7254951428499890870">Yakin ingin meluncurkan "<ph name="APP_NAME" />" dalam mode diagnosis?</translation>
 <translation id="725497546968438223">Tombol folder bookmark</translation>

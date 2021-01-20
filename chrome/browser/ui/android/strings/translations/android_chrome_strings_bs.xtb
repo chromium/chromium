@@ -84,7 +84,7 @@
 <translation id="1571304935088121812">Kopiranje korisničkog imena</translation>
 <translation id="1592864538817356322">Standardna zaštita:</translation>
 <translation id="1612196535745283361">Chromeu je potreban pristup lokaciji da skenira uređaje. Pristup lokaciji je <ph name="BEGIN_LINK" />isključen za ovaj uređaj<ph name="END_LINK" />.</translation>
-<translation id="1613577519914241527">Kad je ta značajka uključena, web-lokacije neće moći koristiti podatke koji otkrivaju vaš identitet kako bi vam pružale relevantnije sadržaje. Web-lokacije mogu znati samo da tisuće korisnika imaju sličan interes, kao, na primjer, publika na koncertu.\n\n"Publika" kojoj pripadate temelji se na web-lokacijama koje ste posjetili. Oglašivači mogu vidjeti samo koje web-lokacije posjećuje cijela "publika", a ne web-lokacije koje posjećujete vi osobno.</translation>
+<translation id="1613577519914241527">Kada je ta funkcija uključena, web lokacije neće moći koristiti informacije koje omogućavaju ličnu identifikaciju radi poboljšanja relevantnosti. Slično publici na koncertu, web lokacije mogu znati samo da hiljade korisnika dijeli slično interesovanje.\n\nVaša "publika" je zasnovana na web lokacijama koje posjetite. Oglašivači mogu vidjeti samo web lokacije koje posjeti cijela publika, a ne web lokacije koje vi lično posjetite.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Ukloni 1 odabranu stavku}one{Ukloni # odabranu stavku}few{Ukloni # odabrane stavke}other{Ukloni # odabranih stavki}}</translation>
 <translation id="1641113438599504367">Sigurno pregledanje</translation>
 <translation id="164269334534774161">Prikazana vam je kopija ove stranice bez mreže od <ph name="CREATION_TIME" /></translation>
@@ -469,7 +469,7 @@ Dodirnite i zadržite bilo koju riječ da je pretražite. Za fino podešavanje p
 <translation id="4440958355523780886">Jednostavnu stranicu omogućava Google. Dodirnite da učitate originalnu verziju.</translation>
 <translation id="4452411734226507615">Zatvori karticu <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Označeno u folderu <ph name="FOLDER_NAME" /></translation>
-<translation id="4465314970046116177">Privacy Sandbox skup je novih tehnologija koje će nakon primjene zaštititi ljude od mehanizama praćenja na različitim web-lokacijama, kao što su kolačići trećih strana, dok će web-sadržaji i usluge koji danas ovise o tim mehanizmima ostati očuvani. Na razvoju tih novih tehnologija Chrome surađuje s razvojnim programerima web-lokacija, izdavačima, oglašivačima i drugim preglednicima.</translation>
+<translation id="4465314970046116177">Zaštićeno okruženje za privatnost predstavlja skup novih tehnologija koje će s vremenom štititi osobe od mehanizama za praćenje između web lokacija, kao što su kolačići trećih strana, a pri tome će očuvati web sadržaj i usluge koje danas zavise od tih mehanizama. Chrome sarađuje s programerima web lokacija, izdavačima, oglašivačima i drugim preglednicima u svrhu razvoja te nove tehnologije.</translation>
 <translation id="4472118726404937099">Za sinhronizaciju i personalizaciju na vašim uređajima, prijavite se i uključite sinhronizaciju.</translation>
 <translation id="447252321002412580">Pomozite nam da poboljšamo funkcije i performanse Chromea</translation>
 <translation id="4479972344484327217">Instaliranje modula <ph name="MODULE" /> za Chrome…</translation>
@@ -640,6 +640,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5595485650161345191">Uredite adresu</translation>
 <translation id="5599455543593328020">Anonimni način rada</translation>
 <translation id="5599941490345670218">Google Asistent može za vas završavati radnje na web lokacijama</translation>
+<translation id="5606787249466187650">Istražite zaštićeno okruženje privatnosti</translation>
 <translation id="5620163320393916465">Nije sačuvana nijedna lozinka</translation>
 <translation id="5620928963363755975">Pronađite fajlove i stranice u meniju Preuzimanja koristeći dugme Više opcija</translation>
 <translation id="5626134646977739690">Naziv:</translation>
@@ -745,7 +746,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="6243852395147506234">Spremno za način rada van mreže</translation>
 <translation id="624789221780392884">Ažuriranje je spremno</translation>
 <translation id="6255999984061454636">Prijedlozi sadržaja</translation>
-<translation id="6266591733731644292">Privacy Sandbox još nije široko dostupan. Tijekom ovog probnog roka:\n<ph name="BEGIN_LIST_ITEM1" />Razvojni programeri web-lokacija i aplikacija mogu isprobati mogućnost izrade relevantnih doživljaja bez pristupanja podacima koji otkrivaju vaš identitet.<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />Korisnici se mogu isključiti iz probe pomoću kontrola na ovoj stranici.<ph name="END_LIST_ITEM2" /></translation>
+<translation id="6266591733731644292">Zaštićeno okruženje za privatnost još uvijek nije pušteno u širu upotrebu. Za vrijeme ovog probnog perioda:\n<ph name="BEGIN_LIST_ITEM1" />programeri web lokacija i aplikacija mogu isprobavati mogućnost kreiranja relevantnih iskustava bez pristupanja jedinstvenim informacijama koje mogu poslužiti za vašu identifikaciju<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />korisnici se mogu isključiti iz probnog perioda pomoću kontrola na ovoj stranici.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="6277522088822131679">Došlo je do problema sa štampanjem stranice. Pokušajte ponovo.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6292420053234093573">Korištenjem Chromea pristajete na <ph name="BEGIN_LINK1" />Googleove Uslove korištenja usluge<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />dodatne Uslove korištenja usluge za Google Chrome i Chrome OS<ph name="END_LINK2" />.</translation>
@@ -837,7 +838,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="6811034713472274749">Stranica je spremna za prikaz</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, kartica, odabrana</translation>
-<translation id="6833996806551876956">Proba za Privacy Sandbox</translation>
+<translation id="6833996806551876956">Probni period Zaštićenog okruženja za privatnost</translation>
 <translation id="6845325883481699275">Pomognite poboljšati sigurnost na Chromeu</translation>
 <translation id="6846298663435243399">Učitavanje…</translation>
 <translation id="6850409657436465440">Vaše preuzimanje je još uvijek u toku</translation>
@@ -1073,7 +1074,7 @@ Podaci iz vaših anonimnih sesija će se obrisati iz Chromea kada <ph name="BEGI
 <translation id="8442258441309440798">Nijedna priča nije dostupna</translation>
 <translation id="8443209985646068659">Chrome nije ažuriran</translation>
 <translation id="8445448999790540984">Nije moguće izvesti lozinke</translation>
-<translation id="8447219758310755868">Crowdmasking</translation>
+<translation id="8447219758310755868">Maskiranje publike</translation>
 <translation id="8461694314515752532">Šifrirajte sinhronizirane podatke svojim pristupnim izrazom</translation>
 <translation id="8466613982764129868">Provjerite je li uređaj <ph name="TARGET_DEVICE_NAME" /> povezan na internet</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>

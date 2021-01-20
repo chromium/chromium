@@ -84,6 +84,7 @@
 <translation id="1571304935088121812">复制用户名</translation>
 <translation id="1592864538817356322">标准保护：</translation>
 <translation id="1612196535745283361">Chrome 需要拥有位置信息使用权才能扫描设备。<ph name="BEGIN_LINK" />此设备的位置信息使用权已被停用<ph name="END_LINK" />。</translation>
+<translation id="1613577519914241527">当此设置开启后，网站将无法使用可标识您个人身份的信息使其网站内容更贴合您的需求。此处所说的群体与音乐会的听众类似，网站只能知道数千名用户有一种相似的兴趣。\n\n您所属的“群体”取决于您访问过的网站。广告主只能看到整个群体访问了哪些网站，看不到您个人访问了哪些网站。</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{移除 1 个所选项}other{移除 # 个所选项}}</translation>
 <translation id="1641113438599504367">安全浏览</translation>
 <translation id="164269334534774161">您目前浏览的是此网页的离线副本（创建时间：<ph name="CREATION_TIME" />）</translation>
@@ -468,6 +469,7 @@
 <translation id="4440958355523780886">由 Google 提供的精简版网页。点按即可加载原始网页。</translation>
 <translation id="4452411734226507615">关闭“<ph name="TAB_TITLE" />”标签页</translation>
 <translation id="4452548195519783679">已将书签添加到“<ph name="FOLDER_NAME" />”</translation>
+<translation id="4465314970046116177">隐私沙盒是一套新技术，其终极目标是保护用户免受跨网站跟踪机制（例如第三方 Cookie）的跟踪，同时确保目前需依赖这类机制的网络内容和服务得以持续提供。Chrome 团队正与网站开发者、发布商、广告主和其他浏览器的相关方合作开发这套新技术。</translation>
 <translation id="4472118726404937099">要在您的所有设备上保持同步并获享个性化体验，请登录您的帐号并开启同步功能</translation>
 <translation id="447252321002412580">帮助我们改进 Chrome 的功能和性能</translation>
 <translation id="4479972344484327217">正在为 Chrome 安装<ph name="MODULE" />…</translation>
@@ -743,6 +745,7 @@
 <translation id="6243852395147506234">已可离线阅读</translation>
 <translation id="624789221780392884">有可用的更新</translation>
 <translation id="6255999984061454636">内容建议</translation>
+<translation id="6266591733731644292">隐私沙盒尚未广泛发布。在这一试用期内：\n<ph name="BEGIN_LIST_ITEM1" />网站和应用开发者可试用该功能，在不获取可唯一标识您个人身份的信息的情况下打造贴合您需求的体验<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />用户可使用此页面上的控件来退出试用。<ph name="END_LIST_ITEM2" /></translation>
 <translation id="6277522088822131679">打印该页面时出现问题，请重试。</translation>
 <translation id="6278428485366576908">主题背景</translation>
 <translation id="6292420053234093573">使用 Chrome 即表示您同意接受 <ph name="BEGIN_LINK1" />Google 服务条款<ph name="END_LINK1" />以及 <ph name="BEGIN_LINK2" />Google Chrome 和 Chrome 操作系统附加服务条款<ph name="END_LINK2" />。</translation>
@@ -834,6 +837,7 @@
 <translation id="6811034713472274749">页面已可供查看</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612">已选择标签页“<ph name="TAB_TITLE" />”</translation>
+<translation id="6833996806551876956">隐私沙盒试用</translation>
 <translation id="6845325883481699275">帮助我们改善 Chrome 安全性</translation>
 <translation id="6846298663435243399">正在加载…</translation>
 <translation id="6850409657436465440">您的下载仍在进行中</translation>
@@ -1069,6 +1073,7 @@
 <translation id="8442258441309440798">没有可显示的报道</translation>
 <translation id="8443209985646068659">Chrome 无法更新</translation>
 <translation id="8445448999790540984">无法导出密码</translation>
+<translation id="8447219758310755868">群体遮掩</translation>
 <translation id="8461694314515752532">使用您自己的同步密码加密已同步的数据</translation>
 <translation id="8466613982764129868">请确保<ph name="TARGET_DEVICE_NAME" />已连接到互联网</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>

@@ -84,6 +84,7 @@
 <translation id="1571304935088121812">Copiază numele de utilizator</translation>
 <translation id="1592864538817356322">Protecție standard:</translation>
 <translation id="1612196535745283361">Chrome necesită accesul la locație pentru a căuta dispozitive. Accesul la locație este <ph name="BEGIN_LINK" />dezactivat pentru acest dispozitiv<ph name="END_LINK" />.</translation>
+<translation id="1613577519914241527">Dacă această politică este activată, site-urile nu vor putea folosi informații care te identifică personal pentru a afișa conținut mai relevant pentru tine. La fel ca în cazul mulțimii de la un concert, site-urile știu doar că mii de utilizatori au interese similare.\n\n„Mulțimea” ta este formată din utilizatorii site-urilor pe care le-ai accesat. Advertiserii află doar ce site-uri accesează întreaga mulțime, nu și site-urile pe care le accesezi personal.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Elimină un element selectat}few{Elimină # elemente selectate}other{Elimină # de elemente selectate}}</translation>
 <translation id="1641113438599504367">Navigare sigură</translation>
 <translation id="164269334534774161">Se afișează o versiune offline a acestei pagini de pe <ph name="CREATION_TIME" /></translation>
@@ -468,6 +469,7 @@ Atinge lung orice cuvânt pentru a-l căuta. Pentru a rafina căutarea, selectea
 <translation id="4440958355523780886">Pagină Lite oferită de Google. Atinge pentru a încărca versiunea originală.</translation>
 <translation id="4452411734226507615">Închide fila <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Marcaj adăugat în <ph name="FOLDER_NAME" /></translation>
+<translation id="4465314970046116177">Mediul de testare securizat pentru confidențialitate este un set de tehnologii noi care va proteja utilizatorii de mecanismele de urmărire la nivelul mai multor site-uri, cum ar fi cookie-urile terță parte, protejând totodată conținutul web și serviciile care depind în momentul de față de mecanismele respective. Chrome colaborează cu dezvoltatori de site-uri, editori, advertiseri și cu alte browsere pentru a dezvolta aceste tehnologii noi.</translation>
 <translation id="4472118726404937099">Pentru a sincroniza și a personaliza pe toate dispozitivele, conectează-te și activează sincronizarea</translation>
 <translation id="447252321002412580">Contribuie la îmbunătățirea funcțiilor și performanței Chrome</translation>
 <translation id="4479972344484327217">Se instalează <ph name="MODULE" /> pentru Chrome…</translation>
@@ -638,6 +640,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="5595485650161345191">Editează adresa</translation>
 <translation id="5599455543593328020">Modul incognito</translation>
 <translation id="5599941490345670218">Asistentul Google poate să realizeze pentru tine acțiuni pe site-uri</translation>
+<translation id="5606787249466187650">Explorează mediul de testare securizat pentru confidențialitate</translation>
 <translation id="5620163320393916465">Nu există parole salvate</translation>
 <translation id="5620928963363755975">Găsește fișierele și paginile în Descărcări folosind butonul Mai multe opțiuni</translation>
 <translation id="5626134646977739690">Nume:</translation>
@@ -743,6 +746,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="6243852395147506234">Gata pentru offline</translation>
 <translation id="624789221780392884">Actualizarea este pregătită</translation>
 <translation id="6255999984061454636">Sugestii de conținut</translation>
+<translation id="6266591733731644292">Mediul de testare securizat pentru confidențialitate nu a fost încă lansat la scară largă. Pe durata acestei perioade de încercare:\n<ph name="BEGIN_LIST_ITEM1" />dezvoltatorii de site-uri și aplicații pot testa opțiunea de creare a unor experiențe relevante pentru utilizatori fără a accesa informații care pot fi identificate în mod unic;<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />utilizatorii pot renunța la perioada de încercare folosind opțiunile din această pagină.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="6277522088822131679">A apărut o problemă la printarea paginii. Încercați din nou.</translation>
 <translation id="6278428485366576908">Temă</translation>
 <translation id="6292420053234093573">Dacă folosești Chrome, ești de acord cu <ph name="BEGIN_LINK1" />Termenii și condițiile Google<ph name="END_LINK1" /> și cu <ph name="BEGIN_LINK2" />Termenii și condițiile suplimentare pentru Google Chrome și Sistemul de operare Chrome<ph name="END_LINK2" />.</translation>
@@ -834,6 +838,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="6811034713472274749">Pagina este gata de vizualizare</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, filă, selectată</translation>
+<translation id="6833996806551876956">Perioada de încercare a Mediului de testare securizat pentru confidențialitate</translation>
 <translation id="6845325883481699275">Contribuie la îmbunătățirea securității pentru Chrome</translation>
 <translation id="6846298663435243399">Se încarcă…</translation>
 <translation id="6850409657436465440">Descărcarea este încă în desfășurare</translation>
@@ -1069,6 +1074,7 @@ Datele din sesiunea incognito vor fi șterse din Chrome numai când <ph name="BE
 <translation id="8442258441309440798">Nu sunt disponibile subiecte</translation>
 <translation id="8443209985646068659">Chrome nu se poate actualiza</translation>
 <translation id="8445448999790540984">Nu se pot exporta parole</translation>
+<translation id="8447219758310755868">Crowdmasking</translation>
 <translation id="8461694314515752532">Criptează datele sincronizate folosind propria expresie de acces pentru sincronizare</translation>
 <translation id="8466613982764129868">Asigură-te că <ph name="TARGET_DEVICE_NAME" /> este conectat la internet</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>

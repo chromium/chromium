@@ -84,6 +84,7 @@
 <translation id="1571304935088121812">Foydalanuvchi nomidan nusxa olish</translation>
 <translation id="1592864538817356322">Standart himoya:</translation>
 <translation id="1612196535745283361">Qurilmalarni tekshirish uchun Chrome brauzeriga joylashuv ma’lumotlarini ko‘rish ruxsati zarur. <ph name="BEGIN_LINK" />Ushbu qurilma uchun joylashuv ma’lumotlariga ruxsat o‘chirib qo‘yilgan<ph name="END_LINK" />.</translation>
+<translation id="1613577519914241527">Yoniq boʻlsa, saytlarga dolzarbligini oshirish uchun shaxsiy maʼlumotlaringizdan foydalanish taqiqlanadi. Konsertlardagi kabi saytlar auditoriyasi ham minglab qiziqishlari oʻxshash foydalanuvchilardan iborat.\n\n“Auditoriyangiz” siz kirgan saytlarga asoslanadi. Reklama beruvchilar bu auditoriyaning qaysi saytlarga kirayotganini koʻrishlari mumkin, ammo aynan sizning qaysi saytlarga kirayotganingizni bilishmaydi.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Tanlangan 1 ta elementni olib tashlash}other{Tanlangan # ta elementni olib tashlash}}</translation>
 <translation id="1641113438599504367">Saytlarni xavfsiz kezish</translation>
 <translation id="164269334534774161">Ushbu sahifaning <ph name="CREATION_TIME" /> sanasida saqlangan oflayn nusxasini ko‘ryapsiz.</translation>
@@ -468,6 +469,7 @@ Qidiruvni boshlash uchun istalgan soʻzni bosib turing. Qidruvni aniqlashtirish 
 <translation id="4440958355523780886">Sahifaning Lite-versiyasi Google tomonidan taqdim etildi. Asl versiyani yuklash uchun tegining.</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> nomli varaqni yopish</translation>
 <translation id="4452548195519783679">Xatcho‘p “<ph name="FOLDER_NAME" />” jildiga saqlandi</translation>
+<translation id="4465314970046116177">Privacy Sandbox – foydalanuvchilar tomonidan turli xil saytlarda amalga oshiriladigan harakatlarning kuzatuv mexanizmlaridan (masalan, uchinchi tomon cookie fayllaridan) himoya qiluvchi yangi texnologiyalar jamlanmasi. Chrome bu yangi texnologiyani rivojlantirish uchun sayt ishlab chiquvchilar, noshirlar, reklama beruvchilar va boshqa brauzer ishlab chiquvchilari bilan hamkorlik qiladi.</translation>
 <translation id="4472118726404937099">Barcha qurilmalarda sinxronlash va o‘zingizga moslash uchun hisobingizga kiring sinxronizatsiyani yoqing</translation>
 <translation id="447252321002412580">Chrome funksiyalari va unumdorligini yaxshilashga yordam bering</translation>
 <translation id="4479972344484327217">Chrome uchun <ph name="MODULE" /> oʻrnatilmoqda…</translation>
@@ -638,6 +640,7 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="5595485650161345191">Manzilni o‘zgartirish</translation>
 <translation id="5599455543593328020">Inkognito rejimidasiz</translation>
 <translation id="5599941490345670218">Google Assistent amallarni siz uchun turli saytlarda bajara oladi</translation>
+<translation id="5606787249466187650">Privacy Sandbox bilan tanishing</translation>
 <translation id="5620163320393916465">Hech qanday parol saqlanmagan</translation>
 <translation id="5620928963363755975">“Yuklanmalar” jildidagi fayl va sahiflarni “Boshqa parametrlar” tugmasidan topish mumkin</translation>
 <translation id="5626134646977739690">Ism:</translation>
@@ -743,6 +746,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="6243852395147506234">Oflayn ish uchun hamma narsa tayyor</translation>
 <translation id="624789221780392884">Yangilanish tayyor</translation>
 <translation id="6255999984061454636">Kontent takliflari</translation>
+<translation id="6266591733731644292">Hozircha Privacy Sandbox sinov versiyasi chiqdi. Sinov muddati davomida:\n<ph name="BEGIN_LIST_ITEM1" />Sayt va dastur ishlab chiquvchilar foydalanuvchilarning shaxsiy axborotlariga kirmasdan tegishli tarkibni namoyish qilish funksiyasidan foydalanishlari mumkin;<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />Foydalanuvchilar bu sahifadagi boshqaruv elementlari yordamida bepul sinovdan voz kechishlari mumkin.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="6277522088822131679">Sahifani chop etishda muammo yuzaga keldi. Qayta urinib ko‘ring.</translation>
 <translation id="6278428485366576908">Mavzu</translation>
 <translation id="6292420053234093573">Chromeni ishlatish bilan siz <ph name="BEGIN_LINK1" />Google xizmat shartlari<ph name="END_LINK1" /> bilan <ph name="BEGIN_LINK2" />Google Chrome va Chrome OS qoʻshimcha xizmat shartlariga<ph name="END_LINK2" /> rozilik bildirgan hisoblanasiz.</translation>
@@ -834,6 +838,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="6811034713472274749">Sahifani koʻrish mumkin</translation>
 <translation id="6820686453637990663">CVC kod</translation>
 <translation id="6824899148643461612">Varaq tanlandi: <ph name="TAB_TITLE" /></translation>
+<translation id="6833996806551876956">Privacy Sandbox sinov versiyasi</translation>
 <translation id="6845325883481699275">Chrome xavfsizligini yaxshilashga yordam bering</translation>
 <translation id="6846298663435243399">Yuklanmoqda…</translation>
 <translation id="6850409657436465440">Fayl hali ham yuklab olinmoqda</translation>
@@ -1069,6 +1074,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="8442258441309440798">Maqolalar topilmadi</translation>
 <translation id="8443209985646068659">Chrome yangilanmadi</translation>
 <translation id="8445448999790540984">Parollar eksport qilinmadi</translation>
+<translation id="8447219758310755868">Shaxsiy axborotlarni yopish</translation>
 <translation id="8461694314515752532">Sinxronlangan ma’lumotlarni kodli ibora bilan shifrlash</translation>
 <translation id="8466613982764129868"><ph name="TARGET_DEVICE_NAME" /> internetga ulanganini tekshiring.</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>

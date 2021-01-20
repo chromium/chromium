@@ -1653,6 +1653,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="281504910091592009">Zobrazenie a správa uložených hesiel v <ph name="BEGIN_LINK" />účte Google<ph name="END_LINK" /></translation>
 <translation id="2815693974042551705">Priečinok so záložkami</translation>
 <translation id="2816319641769218778">Ak chcete ukladať heslá do svojho účtu Google, zapnite synchronizáciu.</translation>
+<translation id="2816628817680324566">Chcete tomuto webu povoliť identifikáciu vášho bezpečnostného kľúča?</translation>
 <translation id="2818476747334107629">Podrobnosti tlačiarne</translation>
 <translation id="2820957248982571256">Prebieha vyhľadávanie...</translation>
 <translation id="2822634587701817431">Zmenšiť/zväčšiť</translation>
@@ -3770,6 +3771,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="5300287940468717207">Chcete resetovať povolenia webov?</translation>
 <translation id="5300589172476337783">Zobraziť</translation>
 <translation id="5300719150368506519">Odosielať Googlu webové adresy navštívených stránok</translation>
+<translation id="5300814202279832142">Presunúť okno na plochu</translation>
 <translation id="5301751748813680278">Vstupujete ako hosť.</translation>
 <translation id="5301954838959518834">Dobre</translation>
 <translation id="5302048478445481009">Jazyk</translation>
@@ -5458,6 +5460,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="7250616558727237648">Zariadenie, s ktorým položku zdieľate, neodpovedalo. Skúste to znova.</translation>
 <translation id="725109152065019550">Je nám ľúto, správca vo vašom účte zakázal používanie externých ukladacích priestorov.</translation>
 <translation id="7251346854160851420">Predvolená tapeta</translation>
+<translation id="7251979364707973467">Web <ph name="WEBSITE" /> poskytol váš bezpečnostný kľúč a chce vedieť jeho identifikátor. Tento web bude vedieť, ktorý bezpečnostný kľúč používate.</translation>
 <translation id="7253521419891527137">Ďalšie &amp;informácie</translation>
 <translation id="7254951428499890870">Naozaj chcete aplikáciu <ph name="APP_NAME" /> spustiť v diagnostickom režime?</translation>
 <translation id="725497546968438223">Tlačidlo Priečinok so záložkami</translation>

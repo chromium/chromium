@@ -80,6 +80,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
     &lt;li&gt;Contacta co propietario do sitio web.&lt;/li&gt;
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Introduciches o teu contrasinal nun sitio que non está xestionado pola túa organización. Para protexer a túa conta, non reutilices o contrasinal noutras aplicacións ou sitios.</translation>
+<translation id="1259144770381827039">Consulta os detalles.</translation>
 <translation id="1263231323834454256">Lista de lectura</translation>
 <translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
         Actividade que non permanecerá neste dispositivo:
@@ -325,6 +326,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2164510882479075877">Comproba que <ph name="HOST_NAME" /> estea ben escrito.</translation>
 <translation id="2166049586286450108">Acceso de administrador completo</translation>
 <translation id="2166378884831602661">Este sitio non pode fornecer unha conexión segura</translation>
+<translation id="2168151236314517198">A política do administrador bloqueou a impresión deste contido</translation>
 <translation id="2169984857010174799">Kaku2 (sobre)</translation>
 <translation id="2181821976797666341">Políticas</translation>
 <translation id="2183608646556468874">Número de teléfono</translation>
@@ -1357,6 +1359,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6290238015253830360">Os teus artigos suxeridos aparecerán aquí</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">Detendo o Asistente de Google en Chrome</translation>
+<translation id="6304463939629872728">Procesa a compra con</translation>
 <translation id="6305205051461490394">Non se pode acceder a <ph name="URL" />.</translation>
 <translation id="6312113039770857350">A páxina web non está dispoñible</translation>
 <translation id="6321917430147971392">Comproba a configuración de DNS</translation>
@@ -1386,6 +1389,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6406765186087300643">C0 (sobre)</translation>
 <translation id="6409754798200046165">Acabas de introducir o teu contrasinal nun sitio enganoso. Chrome recoméndache que cambies o contrasinal agora.</translation>
 <translation id="6410264514553301377">Introduce a data de caducidade e o código CVC da tarxeta <ph name="CREDIT_CARD" /></translation>
+<translation id="6410774864568266108">Non esquezas a túa oferta de Google Pay</translation>
 <translation id="6415778972515849510">Chromium pode axudarche a protexer a túa Conta de Google e a cambiar o teu contrasinal.</translation>
 <translation id="6423385022588644828">A partir de agora, confirma as tarxetas máis rápido con Touch ID</translation>
 <translation id="6425092077175753609">Material</translation>

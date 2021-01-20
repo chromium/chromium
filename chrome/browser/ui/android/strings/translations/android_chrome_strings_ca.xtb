@@ -84,6 +84,7 @@
 <translation id="1571304935088121812">Copia el nom d'usuari</translation>
 <translation id="1592864538817356322">Protecció estàndard:</translation>
 <translation id="1612196535745283361">Chrome necessita accedir a la ubicació per poder cercar dispositius, però aquesta funció està <ph name="BEGIN_LINK" />desactivada en aquest dispositiu<ph name="END_LINK" />.</translation>
+<translation id="1613577519914241527">Quan aquesta opció estigui activada, els llocs web no podran utilitzar informació que t'identifiqui personalment per oferir-te una experiència més rellevant. De manera semblant al que passa entre el públic d'un concert, els llocs web només podran saber que milers d'usuaris comparteixen un interès comú.\n\nEl teu "públic" es basa en els llocs web que has visitat. Els anunciants només poden veure els llocs web que visita el "públic" en general, però no els que has visitat tu.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Suprimeix 1 element seleccionat}other{Suprimeix # elements seleccionats}}</translation>
 <translation id="1641113438599504367">Navegació segura</translation>
 <translation id="164269334534774161">Es mostra una còpia sense connexió d'aquesta pàgina creada el dia <ph name="CREATION_TIME" /></translation>
@@ -468,6 +469,7 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="4440958355523780886">Pàgina en mode bàsic oferta per Google. Toca per carregar l'original.</translation>
 <translation id="4452411734226507615">Tanca la pestanya <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Adreça d'interès afegida a <ph name="FOLDER_NAME" /></translation>
+<translation id="4465314970046116177">La zona de proves de privadesa és un conjunt de noves tecnologies que protegirà les persones de mecanismes de seguiment entre llocs web, com ara galetes de tercers, alhora que preserva el contingut i els serveis web que depenen d'aquests mecanismes actualment. Chrome està treballant amb desenvolupadors, editors i anunciants de llocs web, així com amb altres navegadors per desenvolupar aquesta nova tecnologia.</translation>
 <translation id="4472118726404937099">Per sincronitzar i personalitzar el contingut en tots els dispositius, inicia la sessió i activa la sincronització</translation>
 <translation id="447252321002412580">Ajuda a millorar les funcions i el rendiment de Chrome</translation>
 <translation id="4479972344484327217">S'està instal·lant <ph name="MODULE" /> per a Chrome…</translation>
@@ -638,6 +640,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5595485650161345191">Edita l'adreça</translation>
 <translation id="5599455543593328020">Mode d'incògnit</translation>
 <translation id="5599941490345670218">L'Assistent de Google pot dur a terme accions per tu en llocs web</translation>
+<translation id="5606787249466187650">Explora la zona de proves de privadesa</translation>
 <translation id="5620163320393916465">No hi ha cap contrasenya desada</translation>
 <translation id="5620928963363755975">Per veure els teus fitxers i les teves pàgines, toca el botó Més opcions i ves a la secció Baixades</translation>
 <translation id="5626134646977739690">Nom:</translation>
@@ -743,6 +746,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6243852395147506234">Preparat per a l'accés sense connexió</translation>
 <translation id="624789221780392884">Actualització a punt.</translation>
 <translation id="6255999984061454636">Suggeriments de contingut</translation>
+<translation id="6266591733731644292">La zona de proves de privadesa encara no s'ha llançat àmpliament. Durant aquest període de prova:\n<ph name="BEGIN_LIST_ITEM1" />Els desenvolupadors de llocs web i aplicacions poden provar la seva capacitat de crear experiències rellevants sense accedir a información única que els permeti identificar-te.<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />Els usuaris poden donar-se de baixa de la prova utilitzant els controls d'aquesta pàgina.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="6277522088822131679">S'ha produït un problema en imprimir la pàgina. Torneu-ho a provar.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6292420053234093573">En utilitzar Chrome, acceptes les <ph name="BEGIN_LINK1" />condicions del servei de Google<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />les condicions del servei addicionals de Google Chrome i Chrome OS<ph name="END_LINK2" />.</translation>
@@ -834,6 +838,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6811034713472274749">Ja es pot veure la pàgina</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612">Pestanya <ph name="TAB_TITLE" /> seleccionada</translation>
+<translation id="6833996806551876956">Prova de la zona de proves de privadesa</translation>
 <translation id="6845325883481699275">Ajuda a millorar la seguretat de Chrome</translation>
 <translation id="6846298663435243399">S'està carregant…</translation>
 <translation id="6850409657436465440">La baixada encara està en curs</translation>
@@ -1069,6 +1074,7 @@ Les dades de la teva sessió d'incògnit només s'esborraran de Chrome quan <ph 
 <translation id="8442258441309440798">No hi ha cap història disponible</translation>
 <translation id="8443209985646068659">Chrome no actualitzable</translation>
 <translation id="8445448999790540984">No es poden exportar les contrasenyes</translation>
+<translation id="8447219758310755868">Crowdmasking</translation>
 <translation id="8461694314515752532">Encripta les dades sincronitzades amb la teva frase de contrasenya de sincronització</translation>
 <translation id="8466613982764129868">Comprova que el dispositiu <ph name="TARGET_DEVICE_NAME" /> estigui connectat a Internet</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>

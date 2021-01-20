@@ -185,6 +185,7 @@
 <translation id="5832805196449965646">Адам қосу</translation>
 <translation id="5895138241574237353">Қайта іске қосу</translation>
 <translation id="5916084858004523819">Тыйым салынды</translation>
+<translation id="5921506667911082617">{COUNT,plural, =1{Файлыңыз сканерленді және <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> қалтасына сақталды.}other{Файлдарыңыз сканерленді және <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> қалтасына сақталды.}}</translation>
 <translation id="5931523347251946569">Файл табылмады.</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, нұсқасы: <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Жабу</translation>

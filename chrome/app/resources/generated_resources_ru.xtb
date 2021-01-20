@@ -1646,6 +1646,7 @@
 <translation id="281504910091592009">Просматривать сохраненные пароли и управлять ими можно на странице <ph name="BEGIN_LINK" />Аккаунт Google<ph name="END_LINK" />.</translation>
 <translation id="2815693974042551705">Папка с закладками</translation>
 <translation id="2816319641769218778">Чтобы сохранять пароли в аккаунте Google, включите синхронизацию.</translation>
+<translation id="2816628817680324566">Разрешить этому сайту определять ваш электронный ключ?</translation>
 <translation id="2818476747334107629">Сведения о принтере</translation>
 <translation id="2820957248982571256">Поиск…</translation>
 <translation id="2822634587701817431">Свернуть или развернуть</translation>
@@ -3750,6 +3751,7 @@
 <translation id="5300287940468717207">Сбросить все разрешения сайтов?</translation>
 <translation id="5300589172476337783">Показать</translation>
 <translation id="5300719150368506519">Отправлять в Google URL страниц, которые вы посещаете</translation>
+<translation id="5300814202279832142">Переместить окно на рабочий стол</translation>
 <translation id="5301751748813680278">Вы входите как гость.</translation>
 <translation id="5301954838959518834">ОК</translation>
 <translation id="5302048478445481009">Язык</translation>
@@ -5432,6 +5434,7 @@
 <translation id="7250616558727237648">Устройство, на которое вы отправляете файлы, не отвечает. Повторите попытку.</translation>
 <translation id="725109152065019550">Администратор запретил использовать внешний накопитель для этого аккаунта.</translation>
 <translation id="7251346854160851420">Обои по умолчанию</translation>
+<translation id="7251979364707973467">Сайт <ph name="WEBSITE" /> выпустил для вас ключ безопасности и теперь запрашивает его идентификатор, чтобы знать, какой именно ключ безопасности вы используете.</translation>
 <translation id="7253521419891527137">&amp;Подробнее</translation>
 <translation id="7254951428499890870">Запустить приложение "<ph name="APP_NAME" />" в режиме диагностики?</translation>
 <translation id="725497546968438223">Кнопка папки с закладками</translation>
@@ -7210,7 +7213,7 @@
 <translation id="964790508619473209">Расположение экранов</translation>
 <translation id="965211523698323809">Отправлять и получать SMS на устройстве <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="967398046773905967">Запретить сайтам доступ к HID-устройствам</translation>
-<translation id="967624055006145463">Объем занятой памяти</translation>
+<translation id="967624055006145463">Объем памяти</translation>
 <translation id="968000525894980488">Включите сервисы Google Play.</translation>
 <translation id="968037381421390582">Вст&amp;авить и найти "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="968174221497644223">Кеш приложения</translation>

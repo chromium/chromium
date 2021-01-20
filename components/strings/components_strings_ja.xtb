@@ -80,6 +80,7 @@
     &lt;li&gt;ウェブサイトの所有者に問い合わせます。&lt;/li&gt;
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">組織が管理していないサイトでパスワードを入力しました。アカウントを保護するには、他のアプリやサイトでパスワードを再使用しないでください。</translation>
+<translation id="1259144770381827039">詳細をご確認ください。</translation>
 <translation id="1263231323834454256">リーディング リスト</translation>
 <translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
         このデバイスに保存されないアクティビティ:
@@ -322,6 +323,7 @@
 <translation id="2164510882479075877"><ph name="HOST_NAME" /> にタイプミスがないか確認してください。</translation>
 <translation id="2166049586286450108">すべてのデータへの管理者アクセス</translation>
 <translation id="2166378884831602661">このサイトは安全に接続できません</translation>
+<translation id="2168151236314517198">このコンテンツの印刷は管理者が設定したポリシーによってブロックされています</translation>
 <translation id="2169984857010174799">角2（封筒）</translation>
 <translation id="2181821976797666341">ポリシー</translation>
 <translation id="2183608646556468874">電話番号</translation>
@@ -1349,6 +1351,7 @@
 <translation id="6290238015253830360">おすすめの記事がここに表示されます</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">Chrome の Google アシスタントを停止しています</translation>
+<translation id="6304463939629872728">決済方法</translation>
 <translation id="6305205051461490394"><ph name="URL" /> にアクセスできません。</translation>
 <translation id="6312113039770857350">ウェブページへのアクセス不可</translation>
 <translation id="6321917430147971392">DNS 設定を確認してください</translation>
@@ -1378,6 +1381,7 @@
 <translation id="6406765186087300643">C0（封筒）</translation>
 <translation id="6409754798200046165">偽のサイトでパスワードを入力しました。パスワードをすぐに変更することをおすすめします。</translation>
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" /> の有効期限と CVC を入力</translation>
+<translation id="6410774864568266108">Google Pay もご利用いただけます</translation>
 <translation id="6415778972515849510">Chromium には Google アカウントの保護とパスワードの変更をサポートする機能があります。</translation>
 <translation id="6423385022588644828">今後 Touch ID を使用して、カードの確認をより迅速に行います</translation>
 <translation id="6425092077175753609">マテリアル</translation>

@@ -72,6 +72,7 @@
 <translation id="4405930547258349619">کتابخانه اصلی</translation>
 <translation id="443560535555262820">تنها اولویت‌های دسترس‌پذیری</translation>
 <translation id="4450893287417543264">دیگر نشان داده نشود</translation>
+<translation id="4512952200932940229">‏حق نسخه‌برداری ۲۰۲۱ Chromium Authors کلیه حقوق محفوظ است.</translation>
 <translation id="4513946894732546136">بازخورد</translation>
 <translation id="4563926062592110512">کلاینت قطع شد: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="4635770493235256822">دستگاه‌های کنترل ازراه‌دور</translation>
@@ -173,6 +174,7 @@
 <translation id="8743328882720071828">می‌خواهید به <ph name="CLIENT_USERNAME" /> اجازه دهید که رایانه‌تان را ببیند و کنترل کند؟</translation>
 <translation id="8747048596626351634">‏جلسه خراب شد یا شروع نشد. درصورت وجود ~/.chrome-remote-desktop-session در رایانه راه‌ دور، مطمئن شوید که یک فرآیند پیش‌زمینه طولانی‌مدت مثل محیط دسک‌تاپ یا مدیر پنجره را راه‌اندازی می‌کند.</translation>
 <translation id="8804164990146287819">خط‌مشی رازداری</translation>
+<translation id="8906511416443321782">‏برای ضبط کردن صدا و جاری‌سازی آن در کارخواه «رایانه ازدور Chrome»، دسترسی به میکروفون ضروری است.</translation>
 <translation id="9111855907838866522">به دستگاه راه دورتان وصل شده‌اید. برای باز کردن منو، لطفاً با چهار انگشت روی صفحه ضربه بزنید.</translation>
 <translation id="9126115402994542723">هنگام اتصال به میزبان از این دستگاه، پین دوباره درخواست نشود.</translation>
 <translation id="916856682307586697">‏XSession پیش‌فرض راه‌اندازی شود</translation>

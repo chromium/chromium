@@ -72,6 +72,7 @@ Bu icazəni vermək üçün aşağıda "<ph name="BUTTON_NAME" />" düyməsinə 
 <translation id="4405930547258349619">Kök Kitabxana</translation>
 <translation id="443560535555262820">Giriş Tərcihlərini Açın</translation>
 <translation id="4450893287417543264">Daha göstərməyin</translation>
+<translation id="4512952200932940229">Copyright 2021 Chromium Müəllifləri. Bütün hüquqlar qorunur.</translation>
 <translation id="4513946894732546136">Geri əlaqə</translation>
 <translation id="4563926062592110512">Klient bağlantısı kəsildi: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="4635770493235256822">Uzaqdan idarə edilən cihazlar</translation>
@@ -173,6 +174,7 @@ Bu icazəni vermək üçün aşağıda "<ph name="BUTTON_NAME" />" düyməsinə 
 <translation id="8743328882720071828"><ph name="CLIENT_USERNAME" /> istifadəçisinə kompüterinizi görməsinə və idarə etməsinə icazə verirsiniz?</translation>
 <translation id="8747048596626351634">Sessiyada xəta baş verdi və ya başlaya bilmədi. ~/.chrome-remote-desktop-sessiyası uzaqdan idarə olunan kompüterdə mövcuddursa, əmin olun ki, o masaüstü mühiti və ya pəncərə meneceri kimi uzun müddət davam edən ön plan prosesi kimi başlayır.</translation>
 <translation id="8804164990146287819">Məxfilik Siyasəti</translation>
+<translation id="8906511416443321782">Audio yazmaq və Chrome Remote Desktop proqramına ötürmək üçün mikrofona giriş tələb olunur.</translation>
 <translation id="9111855907838866522">Uzaqdan idarə edilən cihaza qoşulmusunuz. Menyunu açmaq üçün 4 barmağınıza ekrana toxunun.</translation>
 <translation id="9126115402994542723">Bu cihazdan bu hosta qoşulan zaman PIN istənilməsin.</translation>
 <translation id="916856682307586697">Defolt XSession'ı başladın</translation>

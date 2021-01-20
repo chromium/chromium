@@ -1371,7 +1371,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2510988373360790637">Olvidar dispositivo Bluetooth</translation>
 <translation id="2513396635448525189">Imagen de inicio de sesión</translation>
 <translation id="2515586267016047495">Alt</translation>
-<translation id="2517472476991765520">Buscar</translation>
+<translation id="2517472476991765520">Escanear</translation>
 <translation id="2518024842978892609">Utilizar tus certificados de cliente</translation>
 <translation id="2519517390894391510">Nombre de perfil del certificado</translation>
 <translation id="2520644704042891903">Esperando conector disponible...</translation>
@@ -1645,6 +1645,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="281504910091592009">Consulta y gestiona las contraseñas guardadas en tu <ph name="BEGIN_LINK" />cuenta de Google<ph name="END_LINK" /></translation>
 <translation id="2815693974042551705">Carpeta de marcadores</translation>
 <translation id="2816319641769218778">Para guardar contraseñas en tu cuenta de Google, activa la sincronización.</translation>
+<translation id="2816628817680324566">¿Quieres permitir que este sitio vea tu llave de seguridad?</translation>
 <translation id="2818476747334107629">Detalles de la impresora</translation>
 <translation id="2820957248982571256">Buscando...</translation>
 <translation id="2822634587701817431">Reducir / Ampliar</translation>
@@ -3748,6 +3749,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="5300287940468717207">¿Quieres restablecer los permisos de los sitios?</translation>
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5300719150368506519">Enviar las URL de las páginas que visitas a Google</translation>
+<translation id="5300814202279832142">Mover ventana al escritorio</translation>
 <translation id="5301751748813680278">Iniciando sesión de invitado</translation>
 <translation id="5301954838959518834">Entendido</translation>
 <translation id="5302048478445481009">Idioma</translation>
@@ -5430,6 +5432,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7250616558727237648">El dispositivo con el que estás compartiendo contenido no responde. Inténtalo de nuevo.</translation>
 <translation id="725109152065019550">Tu administrador ha inhabilitado el almacenamiento externo en tu cuenta.</translation>
 <translation id="7251346854160851420">Fondo de pantalla predeterminado</translation>
+<translation id="7251979364707973467"><ph name="WEBSITE" /> ha creado tu llave de seguridad y quiere saber su número de ID. El sitio sabrá exactamente qué llave de seguridad estás usando.</translation>
 <translation id="7253521419891527137">&amp;Más información</translation>
 <translation id="7254951428499890870">¿Seguro que quieres iniciar <ph name="APP_NAME" /> en modo de diagnóstico?</translation>
 <translation id="725497546968438223">Botón de carpeta de marcadores</translation>

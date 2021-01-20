@@ -1642,6 +1642,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="281504910091592009">Ver y administrar las contraseñas guardadas en tu <ph name="BEGIN_LINK" />cuenta de Google<ph name="END_LINK" /></translation>
 <translation id="2815693974042551705">Carpeta de favoritos</translation>
 <translation id="2816319641769218778">Para guardar contraseñas en tu Cuenta de Google, activa la sincronización.</translation>
+<translation id="2816628817680324566">¿Quieres permitir que este sitio identifique tu llave de seguridad?</translation>
 <translation id="2818476747334107629">Detalles de la impresora</translation>
 <translation id="2820957248982571256">Buscando…</translation>
 <translation id="2822634587701817431">Reducir/Ampliar</translation>
@@ -3746,6 +3747,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="5300287940468717207">¿Quieres restablecer los permisos de sitios?</translation>
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5300719150368506519">Envía a Google las URL de las páginas que visitas</translation>
+<translation id="5300814202279832142">Mover la ventana al escritorio</translation>
 <translation id="5301751748813680278">Accediendo como invitado</translation>
 <translation id="5301954838959518834">Entendido</translation>
 <translation id="5302048478445481009">Idioma</translation>
@@ -5428,6 +5430,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="7250616558727237648">El dispositivo con el que quieres compartir contenido no respondió. Vuelve a intentarlo.</translation>
 <translation id="725109152065019550">Tu administrador inhabilitó el almacenamiento externo en tu cuenta.</translation>
 <translation id="7251346854160851420">Fondo de pantalla predeterminado</translation>
+<translation id="7251979364707973467"><ph name="WEBSITE" /> emitió tu llave de seguridad y desea conocer su número de ID. El sitio sabrá exactamente qué llave de seguridad estás utilizando.</translation>
 <translation id="7253521419891527137">&amp;Más información</translation>
 <translation id="7254951428499890870">¿Confirmas que quieres iniciar "<ph name="APP_NAME" />" en modo de diagnóstico?</translation>
 <translation id="725497546968438223">Botón de la carpeta de favoritos</translation>

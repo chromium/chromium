@@ -84,6 +84,7 @@
 <translation id="1571304935088121812">Kopiraj korisničko ime</translation>
 <translation id="1592864538817356322">Standardna zaštita:</translation>
 <translation id="1612196535745283361">Chrome-u je potreban pristup lokaciji da bi tražio uređaje. Pristup lokaciji je <ph name="BEGIN_LINK" />isključen za ovaj uređaj<ph name="END_LINK" />.</translation>
+<translation id="1613577519914241527">Kada je uključeno, veb-sajtovi neće moći da koriste informacije koje vas lično identifikuju da bi bili relevantniji. Slično publici na koncertu, sajtovi mogu samo da znaju da hiljade korisnika dele slično interesovanje.\n\nVaša „publika“ je zasnovana na sajtovima koje ste posetili. Oglašavači mogu da vide samo koje sajtove cela publika posećuje, a ne koje sajtove vi lično posećujete.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Ukloni 1 izabranu stavku}one{Ukloni # izabranu stavku}few{Ukloni # izabrane stavke}other{Ukloni # izabranih stavki}}</translation>
 <translation id="1641113438599504367">Bezbedno pregledanje</translation>
 <translation id="164269334534774161">Prikazuje se oflajn kopija ove stranice od <ph name="CREATION_TIME" /></translation>
@@ -468,6 +469,7 @@ Dodirnite i zadržite bilo koju reč za pretragu. Da biste precizirali pretragu,
 <translation id="4440958355523780886">Pojednostavljenu stranicu pruža Google. Dodirnite da biste učitali prvobitnu stranicu.</translation>
 <translation id="4452411734226507615">Zatvori karticu <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Obeleživač je dodat u <ph name="FOLDER_NAME" /></translation>
+<translation id="4465314970046116177">Zaštićeno okruženje privatnosti je skup novih tehnologija koje će na kraju štititi ljude od mehanizama za praćenje na više sajtova, poput kolačića trećih strana, uz očuvanje veb-sadržaja i usluga koji danas zavise od tih mehanizama. Chrome sarađuje sa programerima veb-sajtova, objavljivačima, oglašavačima i drugim pregledačima na razvijanju ove nove tehnologije.</translation>
 <translation id="4472118726404937099">Da biste sinhronizovali i personalizovali sadržaj na uređajima, prijavite se i uključite sinhronizaciju</translation>
 <translation id="447252321002412580">Pomozite nam da poboljšamo Chrome-ove funkcije i učinak</translation>
 <translation id="4479972344484327217">Instalira se <ph name="MODULE" /> za Chrome…</translation>
@@ -638,6 +640,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="5595485650161345191">Izmena adrese</translation>
 <translation id="5599455543593328020">Režim bez arhiviranja</translation>
 <translation id="5599941490345670218">Google pomoćnik može da obavlja radnje za vas na veb-sajtovima</translation>
+<translation id="5606787249466187650">Istražite Zaštićeno okruženje privatnosti</translation>
 <translation id="5620163320393916465">Nema sačuvanih lozinki</translation>
 <translation id="5620928963363755975">Pronađite datoteke i stranice u Preuzimanjima pomoću dugmeta Još opcija</translation>
 <translation id="5626134646977739690">Ime:</translation>
@@ -743,6 +746,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="6243852395147506234">Spremno za oflajn</translation>
 <translation id="624789221780392884">Ažuriranje je spremno</translation>
 <translation id="6255999984061454636">Predlozi za sadržaj</translation>
+<translation id="6266591733731644292">Zaštićeno okruženje privatnosti još nije objavljeno za veliki broj korisnika. Tokom ovog probnog perioda:\n<ph name="BEGIN_LIST_ITEM1" />programeri veb-sajtova i aplikacija mogu da isprobaju mogućnost da prave relevantne doživljaje bez pristupa nedvosmisleno prepoznatljivim informacijama o vama<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />korisnici mogu da onemoguće probni period pomoću kontrola na ovoj stranici.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="6277522088822131679">Došlo je do problema pri štampanju stranice. Probajte ponovo.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6292420053234093573">Ako koristite Chrome, prihvatate <ph name="BEGIN_LINK1" />Google uslove korišćenja usluge<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />dodatne uslove korišćenja usluge za Google Chrome i Chrome OS<ph name="END_LINK2" />.</translation>
@@ -834,6 +838,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="6811034713472274749">Stranica je spremna za pregled</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, kartica, izabrana</translation>
+<translation id="6833996806551876956">Proba Zaštićenog okruženja privatnosti</translation>
 <translation id="6845325883481699275">Pomozite nam da poboljšamo Chrome bezbednost</translation>
 <translation id="6846298663435243399">Učitava se...</translation>
 <translation id="6850409657436465440">Preuzimanje je još uvek u toku</translation>
@@ -1069,6 +1074,7 @@ Podaci iz sesije bez arhiviranja se brišu iz Chrome-a samo kada <ph name="BEGIN
 <translation id="8442258441309440798">Nije dostupna nijedna vest</translation>
 <translation id="8443209985646068659">Chrome se neće ažurirati</translation>
 <translation id="8445448999790540984">Izvoz lozinki nije uspeo</translation>
+<translation id="8447219758310755868">Skrivanje u publici</translation>
 <translation id="8461694314515752532">Šifrujte sinhronizovane podatke pomoću sopstvene pristupne fraze za sinhronizaciju</translation>
 <translation id="8466613982764129868">Uverite se da je <ph name="TARGET_DEVICE_NAME" /> povezan na internet</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>

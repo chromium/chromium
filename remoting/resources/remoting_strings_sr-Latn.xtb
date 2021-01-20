@@ -72,6 +72,7 @@ Ako je stavka „<ph name="SERVICE_SCRIPT_NAME" />“ već označena, uklonite 
 <translation id="4405930547258349619">Osnovna biblioteka</translation>
 <translation id="443560535555262820">Otvori podešavanja pristupačnosti</translation>
 <translation id="4450893287417543264">Ne prikazuj ponovo</translation>
+<translation id="4512952200932940229">Autorska prava 2021. Autori Chromium-a. Sva prava zadržana.</translation>
 <translation id="4513946894732546136">Povratne informacije</translation>
 <translation id="4563926062592110512">Klijent čija je veza prekinuta: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="4635770493235256822">Udaljeni uređaji</translation>
@@ -173,6 +174,7 @@ Ako je polje pored stavke <ph name="SERVICE_SCRIPT_NAME" /> već označeno, ukl
 <translation id="8743328882720071828">Želite li da dozvolite da <ph name="CLIENT_USERNAME" /> vidi i kontroliše računar?</translation>
 <translation id="8747048596626351634">Sesija je prekinuta ili nije uspela da se pokrene. Ako na udaljenom računaru postoji ~/.chrome-remote-desktop-session, uverite se da pokreće dugotrajne procese u prednjem planu, kao što je računarsko okruženje ili menadžer prozora.</translation>
 <translation id="8804164990146287819">Politika privatnosti</translation>
+<translation id="8906511416443321782">Pristup mikrofonu je obavezan da bi se audio sadržaj snimao i strimovao na klijentu Chrome udaljenog računara.</translation>
 <translation id="9111855907838866522">Povezani ste sa udaljenim uređajem. Da biste otvorili meni, dodirnite ekran sa četiri prsta.</translation>
 <translation id="9126115402994542723">Ne traži ponovo PIN pri povezivanju sa ovim hostom sa ovog uređaja.</translation>
 <translation id="916856682307586697">Pokrenite podrazumevanu sesiju XSession</translation>

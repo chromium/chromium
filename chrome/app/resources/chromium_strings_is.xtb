@@ -42,17 +42,22 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="2535480412977113886">Chromium OS gat ekki samstillt gögnin því vegna þess að innskráningarupplýsingar reikningsins þíns eru úreltar.</translation>
 <translation id="2560420686485554789">Chromium þarf aðgang að geymslu til að geta sótt skrár</translation>
 <translation id="2572494885440352020">Hjálparforrit Chromium</translation>
+<translation id="2577788541081224677">Til að fá aðgang að Chromium efninu þínu í öllum tækjunum þínum skaltu skrá þig inn til að geta kveikt á samstillingu.</translation>
 <translation id="2583187216237139145">Stjórnandi vinnuprófíla getur fjarlægt öll Chromium gögn sem verða til við notkun þessa prófíls (þ.m.t. bókamerki, feril, aðgangsorð og aðrar stillingar). <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Endurræsa þarf Chromium OS til að nota uppfærsluna.</translation>
 <translation id="2615699638672665509">Þessi tölva hættir brátt að fá uppfærslur á Chromium því að ekki er lengur stuðningur við vélbúnað hennar.</translation>
 <translation id="2648074677641340862">Stýrikerfisvilla kom upp við uppsetningu. Sæktu Chromium aftur.</translation>
+<translation id="2661879430930417727">Ef nokkrir deila sama tæki geta vinir og fjölskyldumeðlimir vafrað hver á sínum prófíl og sett Chromium upp eins og hverjum og einum líkar best</translation>
+<translation id="270245676623587882">Chromium mælir með því að slökkva á þessari viðbót vegna þess að hún uppfyllir ekki kröfur um „Enn öruggari vefskoðun“ eins og er.</translation>
 <translation id="2711502716910134313">Chromium flipi</translation>
 <translation id="2718390899429598676">Chromium dulkóðar gögnin þín til að auka öryggið.</translation>
 <translation id="2770231113462710648">Breyta sjálfgefnum vafra í:</translation>
 <translation id="2799223571221894425">Endurræsa</translation>
+<translation id="2816712596130903444">Aðskilja Chromium prófíl?</translation>
 <translation id="2847479871509788944">Fjarlægja úr Chromium...</translation>
 <translation id="2885378588091291677">Verkstjórn</translation>
 <translation id="2910007522516064972">Um &amp;Chromium</translation>
+<translation id="2942419255987443909">Chromium OS á tilvist sína að þakka öðrum <ph name="BEGIN_LINK_CROS_OSS" />opnum hugbúnaði<ph name="END_LINK_CROS_OSS" /> og það sama á við um <ph name="BEGIN_LINK_LINUX_OSS" />Linux-forritunarumhverfið (tilraunaútgáfu)<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2977470724722393594">Chromium er uppfært</translation>
 <translation id="2983934633046890458">Chromium er að reyna að breyta aðgangsorðum.</translation>
 <translation id="3032706164202344641">Chromium getur ekki athugað aðgangsorðin þín. Reyndu aftur síðar.</translation>
@@ -71,6 +76,8 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="328888136576916638">Lykla vantar fyrir forritaskil Google. Sumir eiginleikar Chromium verða óvirkir.</translation>
 <translation id="3296368748942286671">Halda áfram að keyra bakgrunnsforrit þegar Chromium er lokað</translation>
 <translation id="331951419404882060">Chromium OS gat ekki samstillt gögnin þín vegna innskráningarvillu.</translation>
+<translation id="3350761136195634146">Chromium prófíll með þessum reikningi er þegar til</translation>
+<translation id="3406848076815591792">Skipta yfir í Chromium prófíl sem er til?</translation>
 <translation id="3430503420100763906">Þú getur aðskilið allt efnið þitt á Chromium með Chromium prófílum. Stofnaðu prófíla fyrir vini og fjölskyldu eða skiptu á milli vinnu og afþreyingar.</translation>
 <translation id="347328004046849135">Chromium lætur þig vita þegar þú skráir þig inn með aðgangsorði sem er í hættu</translation>
 <translation id="3474745554856756813">Þetta mun eyða <ph name="ITEMS_COUNT" /> atriðum úr þessu tæki. Skráðu þig inn í Chromium sem <ph name="USER_EMAIL" /> til að endurheimta gögnin síðar.</translation>
@@ -88,6 +95,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
 <translation id="388648406173476553">Sérsníða og stjórna Chromium. Eitthvað krefst athygli þinnar – smelltu til að sjá nánar.</translation>
 <translation id="3889543394854987837">Smelltu á nafnið þitt til að opna Chromium og byrja að vafra.</translation>
+<translation id="390528597099634151"><ph name="EXISTING_USER" /> er þegar innskráð(ur) á þennan Chromium prófíl. Chromium getur búið til sérstakan prófíl fyrir þig svo að þú getir haldið þinni vefskoðun aðskilinni.</translation>
 <translation id="3945058413678539331">Chromium er að reyna að afrita aðgangsorð. Sláðu inn Windows-aðgangsorðið þitt til að leyfa það.</translation>
 <translation id="4036079820698952681">Hjálpa til við að gera Chromium betra með því að tilkynna um <ph name="BEGIN_LINK" />núverandi stillingar<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">Mikilvægar öryggislagfæringar og nýir eiginleikar eru í boði í nýjustu útgáfunni.</translation>
@@ -103,6 +111,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="4423735387467980091">Sérsníða og stjórna Chromium</translation>
 <translation id="452711251841752011">Velkomin(n) í Chromium; nýr vafragluggi opnaður</translation>
 <translation id="4544142686420020088">Chromium uppfærðist ekki þar sem eitthvað fór úrskeiðis. <ph name="BEGIN_LINK" />Lagaðu uppfærsluvandamál Chromium og uppfærslur sem mistókust.<ph name="END_LINK" /></translation>
+<translation id="454579500955453258">Halda áfram á nýjum Chromium prófíl?</translation>
 <translation id="4567424176335768812">Þú ert skráð(ur) inn sem <ph name="USER_EMAIL_ADDRESS" />. Nú hefur þú aðgang að bókamerkjunum þínum, vefferlinum þínum og öðrum stillingum í öllum tækjum sem þú ert skráð(ur) inn á.</translation>
 <translation id="459535195905078186">Chromium forrit</translation>
 <translation id="4677944499843243528">Annað Chromium ferli (<ph name="PROCESS_ID" />) virðist vera að nota þennan prófíl í annarri tölvu (<ph name="HOST_NAME" />). Chromium hefur læst prófílnum svo hann skemmist ekki. Ef þú ert viss um að engin önnur ferli séu að nota þennan prófíl geturðu tekið hann úr lás og endurræst Chromium.</translation>
@@ -113,6 +122,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="4750035648288509542">Næstum því uppfært! Endurræstu Chromium til að ljúka við uppfærslu. Huliðsgluggar enduropnast ekki.</translation>
 <translation id="4788777615168560705">Chromium getur ekki athugað aðgangsorðin þín. Reyndu aftur eftir sólarhring eða <ph name="BEGIN_LINK" />athugaðu aðgangsorðin á Google reikningnum þínum<ph name="END_LINK" />.</translation>
 <translation id="479167709087336770">Þetta notar sömu ritvilluleit og er notuð í Google leit. Textinn sem þú skrifar í vafranum er sendur til Google. Þú getur alltaf breytt þessu í stillingunum.</translation>
+<translation id="4814736265800133385">Nota Chromium án reiknings</translation>
 <translation id="4888717733111232871">Regla á innleið til að láta Chromium leyfa mDNS-umferð.</translation>
 <translation id="4943838377383847465">Chromium er í bakgrunnsstillingu.</translation>
 <translation id="4987820182225656817">Gestir geta notað Chromium án þess að skilja eftir sig nokkur spor.</translation>
@@ -170,6 +180,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium verður endurræst eftir eina sekúndu}one{Chromium verður endurræst eftir # sekúndu}other{Chromium verður endurræst eftir # sekúndur}}</translation>
 <translation id="6475912303565314141">Stýrir því einnig hvaða síða birtist þegar þú ræsir Chromium.</translation>
 <translation id="6510925080656968729">Fjarlægja Chromium</translation>
+<translation id="6542839706527980775">Á hverjum prófíl eru geymdar Chromium upplýsingar á borð við bókamerki, feril, aðgangsorð og fleira</translation>
 <translation id="6570579332384693436">Til að lagfæra stafsetningarvillur sendir Chromium textann sem þú skrifar í textareiti til Google</translation>
 <translation id="6598877126913850652">Fara í tilkynningastillingar Chromium</translation>
 <translation id="6613594504749178791">Breytingar þínar munu taka gildi næst þegar þú endurræsir Chromium.</translation>
@@ -179,6 +190,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 Sumir eiginleikar kunna að verða óaðgengilegir. Tilgreindu aðra prófílamöppu eða notaðu nýrri útgáfu af Chromium.</translation>
 <translation id="6734080038664603509">Uppfæra &amp;Chromium</translation>
 <translation id="6734291798041940871">Chromium hefur þegar verið sett upp fyrir alla notendur í tölvunni.</translation>
+<translation id="673636774878526923">Til að fá aðgang að Chromium efninu þínu í öllum tækjunum þínum skaltu skrá þig inn og kveikja á samstillingu.</translation>
 <translation id="6774082503108938489">Foreldrar þínir hafa slökkt á „Heimildum fyrir vefsvæði, forrit og viðbætur" fyrir Chromium. Ekki er leyfilegt að kveikja á þessu <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="6847869444787758381">Chromium lætur þig vita ef aðgangsorðin þín eru einhvern tímann í hættu</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
@@ -261,6 +273,7 @@ Chromium getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="8974095189086268230">Chromium OS á tilvist sína að þakka öðrum <ph name="BEGIN_LINK_CROS_OSS" />opnum hugbúnaði<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="8986207147630327271">Þú ert að bæta vinnuprófíl við þennan vafra og veita stjórnanda þínum leyfi til að stjórna vinnuprófílnum eingöngu.</translation>
 <translation id="9019929317751753759">Til að gera Chromium öruggara höfum við slökkt á eftirfarandi viðbót sem ekki er á skrá hjá <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> og kann að hafa verið bætt við án þinnar vitneskju.</translation>
+<translation id="9047197236183657400">Flytja reikning á nýjan Chromium prófíl?</translation>
 <translation id="9089354809943900324">Chromium er úrelt</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium verður endurræst eftir klukkustund}one{Chromium verður endurræst eftir # klukkustund}other{Chromium verður endurræst eftir # klukkustundir}}</translation>
 <translation id="9107750757953039239">Ef þú ert með marga Google reikninga geturðu bætt þeim við <ph name="DEVICE_TYPE" />. Reikningarnir þínir verða tiltækir í Chromium vafranum og Play Store sem og í þjónustum á borð við Gmail, Drive og YouTube. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>

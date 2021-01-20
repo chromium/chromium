@@ -84,6 +84,7 @@
 <translation id="1571304935088121812">Kopírovať používateľské meno</translation>
 <translation id="1592864538817356322">Štandardná ochrana:</translation>
 <translation id="1612196535745283361">Na to, aby mohol Chrome hľadať zariadenia, musí mať prístup k polohe. Prístup k polohe je v tomto zariadení <ph name="BEGIN_LINK" />vypnutý<ph name="END_LINK" />.</translation>
+<translation id="1613577519914241527">Keď je táto možnosť zapnutá, weby nemôžu zvyšovať relevantnosť svojich stránok tým, že budú používať informácie, podľa ktorých je vás možné osobne identifikovať. Podobne ako publikum na koncerte, weby môžu iba zistiť, že tisíce používateľov zdieľajú podobné záujmy.\n\nVaše publikum je založené weboch, ktoré ste navštívili. Inzerenti zistia iba to, ktoré weby navštívi celé publikum, nie to, ktoré navštívite vy osobne.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Odstrániť 1 vybranú položku}few{Odstrániť # vybrané položky}many{Odstrániť # vybranej položky}other{Odstrániť # vybraných položiek}}</translation>
 <translation id="1641113438599504367">Bezpečné prehliadanie</translation>
 <translation id="164269334534774161">Zobrazuje sa offline kópia tejto stránky z <ph name="CREATION_TIME" /></translation>
@@ -468,6 +469,7 @@ Vyhľadávanie spustíte pridržaním ľubovoľného slova. Spresníte ho výber
 <translation id="4440958355523780886">Zjednodušenú verziu stránky poskytol Google. Klepnutím načítate pôvodnú verziu.</translation>
 <translation id="4452411734226507615">Zavrieť kartu <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Uložené ako záložka v priečinku <ph name="FOLDER_NAME" /></translation>
+<translation id="4465314970046116177">Karanténa ochrany súkromia je skupina nových technológií, ktorá bude ľudí chrániť pred mechanizmami sledovania na rôznych weboch, ako sú súbory cookie tretích strán. Súčasne však bude chrániť obsah a služby na internete, ktoré od týchto mechanizmov momentálne závisia. Chrome spolupracuje pri vývoji tejto novej technológie s vývojármi a vlastníkmi webov, vydavateľmi a ďalšími prehliadačmi.</translation>
 <translation id="4472118726404937099">Ak chcete synchronizovať a prispôsobovať viaceré zariadenia, prihláste sa a zapnite synchronizáciu</translation>
 <translation id="447252321002412580">Pomáhať s vylepšovaním funkcií a výkonu Chromu</translation>
 <translation id="4479972344484327217">Inštaluje sa <ph name="MODULE" /> pre Chrome…</translation>
@@ -744,6 +746,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="6243852395147506234">Pripravené na používanie offline</translation>
 <translation id="624789221780392884">Aktualizácia je pripravená</translation>
 <translation id="6255999984061454636">Návrhy obsahu</translation>
+<translation id="6266591733731644292">Karanténa ochrany súkromia ešte nie je vydaná v plnom rozsahu. Počas tohto skúšobného obdobia:\n<ph name="BEGIN_LIST_ITEM1" />vývojári webov a aplikácií môžu vyskúšať možnosť vytvárať relevantné prostredia bez prístupu k jedinečným informáciám, podľa ktorých vás možno identifikovať;<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />používatelia sa môžu zo skúšobného obdobia odhlásiť pomocou ovládania na tejto stránke.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="6277522088822131679">Pri tlačení stránky sa vyskytol problém. Skúste to znova.</translation>
 <translation id="6278428485366576908">Motív</translation>
 <translation id="6292420053234093573">Používaním Chromu vyjadrujete súhlas so <ph name="BEGIN_LINK1" />zmluvnými podmienkami spoločnosti Google<ph name="END_LINK1" /> a <ph name="BEGIN_LINK2" />dodatočnými zmluvnými podmienkami prehliadača Google Chrome a systému Chrome OS<ph name="END_LINK2" />.</translation>
@@ -835,6 +838,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="6811034713472274749">Stránka je pripravená na prezeranie</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, karta, vybrané</translation>
+<translation id="6833996806551876956">Skúšobné obdobie karantény ochrany súkromia</translation>
 <translation id="6845325883481699275">Pomoc so zlepšením zabezpečenia Chromu</translation>
 <translation id="6846298663435243399">Načítava sa…</translation>
 <translation id="6850409657436465440">Sťahovanie stále prebieha</translation>
@@ -1070,6 +1074,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="8442258441309440798">K dispozícii nie sú žiadne príbehy</translation>
 <translation id="8443209985646068659">Chrome sa nedá aktualizovať</translation>
 <translation id="8445448999790540984">Heslá sa nepodarilo exportovať</translation>
+<translation id="8447219758310755868">Crowdmasking</translation>
 <translation id="8461694314515752532">Šifrovať synchronizované údaje pomocou vlastnej prístupovej frázy synchronizácie</translation>
 <translation id="8466613982764129868">Skontrolujte, či je zariadenie <ph name="TARGET_DEVICE_NAME" /> pripojené k internetu</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>

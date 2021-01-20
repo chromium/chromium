@@ -84,6 +84,7 @@
 <translation id="1571304935088121812">Kullanıcı adını kopyala</translation>
 <translation id="1592864538817356322">Standart koruma:</translation>
 <translation id="1612196535745283361">Chrome'un cihazları taraması için konum bilgilerine erişmesi gerekiyor. Konum bilgilerine erişim <ph name="BEGIN_LINK" />bu cihaz için kapalı<ph name="END_LINK" />.</translation>
+<translation id="1613577519914241527">Privacy Sandbox açıkken web siteleri içeriklerini sizin için daha alakalı hale getirmek amacıyla kimlik bilgilerinizi kullanamaz. Bir konsere katılan kitlede olduğu gibi, web siteleri, yalnızca binlerce kullanıcının benzer bir ilgi alanını paylaştığını bilebilir.\n\nBulunduğunuz "kitle" ziyaret ettiğiniz sitelere dayanır. Reklamverenler, kişisel olarak ziyaret ettiğiniz siteleri değil yalnızca kitlenin bir bütün olarak ziyaret ettiği siteleri görebilir.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{1 seçili öğeyi kaldır}other{# seçili öğeyi kaldır}}</translation>
 <translation id="1641113438599504367">Güvenli Tarama</translation>
 <translation id="164269334534774161">Bu sayfanın <ph name="CREATION_TIME" /> tarihinde oluşturulan bir çevrimdışı kopyasını görüntülüyorsunuz</translation>
@@ -468,6 +469,7 @@ Arama yapmak için herhangi bir kelimeye dokunup basılı tutun. Aramanızı has
 <translation id="4440958355523780886">Google tarafından sağlanan basit sayfa. Sayfanın orijinalini yüklemek için dokunun.</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> sekmesini kapat</translation>
 <translation id="4452548195519783679">Yer işareti <ph name="FOLDER_NAME" /> klasörüne eklendi</translation>
+<translation id="4465314970046116177">Privacy Sandbox, nihai halini aldığında kullanıcıları üçüncü taraf çerezler gibi siteler arası izleme mekanizmalarından korurken günümüzde bu mekanizmalara bağlı olan web içeriği ve hizmetleri de muhafaza edecek olan bir dizi yeni teknolojidir. Chrome, bu yeni teknolojiyi geliştirmek için web sitesi geliştiricileri, yayıncılar, reklamverenler ve diğer tarayıcılarla birlikte çalışmaktadır.</translation>
 <translation id="4472118726404937099">Cihazlar arasında senkronizasyon ve kişiselleştirme yapmak için oturum açın ve senkronizasyonu etkinleştirin</translation>
 <translation id="447252321002412580">Chrome'un özelliklerini ve performansını iyileştirmeye yardımcı olun</translation>
 <translation id="4479972344484327217">Chrome için <ph name="MODULE" /> yükleniyor…</translation>
@@ -743,6 +745,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="6243852395147506234">Çevrimdışı kullanım için hazır</translation>
 <translation id="624789221780392884">Güncelleme hazır</translation>
 <translation id="6255999984061454636">İçerik önerileri</translation>
+<translation id="6266591733731644292">Privacy Sandbox henüz yaygın olarak yayınlanmamıştır. Bu deneme süresi sırasında:\n<ph name="BEGIN_LIST_ITEM1" />Web sitesi ve uygulama geliştiriciler, benzersiz kimlik bilgilerinize erişmeden alakalı deneyimler oluşturma olanağını deneyebilirler<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />Kullanıcılar, bu sayfadaki kontrolleri kullanarak denemenin kapsamı dışında kalmayı seçebilirler.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="6277522088822131679">Sayfa yazdırılırken bir sorun oluştu. Lütfen tekrar deneyin.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6292420053234093573">Chrome'u kullanarak <ph name="BEGIN_LINK1" />Google Hizmet Şartları<ph name="END_LINK1" /> ile <ph name="BEGIN_LINK2" />Google Chrome ve Chrome OS Ek Hizmet Şartları<ph name="END_LINK2" />'nı kabul etmiş olursunuz.</translation>
@@ -834,6 +837,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="6811034713472274749">Sayfa görüntülenmeye hazır</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" /> sekmesi seçildi</translation>
+<translation id="6833996806551876956">Privacy Sandbox denemesi</translation>
 <translation id="6845325883481699275">Chrome güvenliğini iyileştirmeye yardımcı olun</translation>
 <translation id="6846298663435243399">Yükleniyor...</translation>
 <translation id="6850409657436465440">İndirme işleminiz hâlâ devam ediyor</translation>
@@ -1069,6 +1073,7 @@ Gizli oturumunuzdaki veriler yalnızca <ph name="BEGIN_BOLD2" />tüm Gizli sekme
 <translation id="8442258441309440798">Kullanılabilir hikaye yok</translation>
 <translation id="8443209985646068659">Chrome güncellenemiyor</translation>
 <translation id="8445448999790540984">Şifreler dışa aktarılamıyor</translation>
+<translation id="8447219758310755868">Kitle maskeleme</translation>
 <translation id="8461694314515752532">Senkronize edilen verileri kendi senkronizasyon parolanızla şifreleyin</translation>
 <translation id="8466613982764129868"><ph name="TARGET_DEVICE_NAME" /> cihazının internete bağlı olduğundan emin olun</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>

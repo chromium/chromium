@@ -72,6 +72,7 @@ Si la casella <ph name="SERVICE_SCRIPT_NAME" /> ja està marcada, desmarca-la i 
 <translation id="4405930547258349619">Biblioteca principal</translation>
 <translation id="443560535555262820">Obre el tauler de preferències Accessibilitat</translation>
 <translation id="4450893287417543264">No ho tornis a mostrar</translation>
+<translation id="4512952200932940229">Copyright 2021. Els autors de Chromium. Tots els drets reservats.</translation>
 <translation id="4513946894732546136">Comentaris</translation>
 <translation id="4563926062592110512">Client desconnectat: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="4635770493235256822">Dispositius remots</translation>
@@ -173,6 +174,7 @@ Si la casella <ph name="SERVICE_SCRIPT_NAME" /> ja està marcada, desmarca-la i 
 <translation id="8743328882720071828">Vols permetre que <ph name="CLIENT_USERNAME" /> pugui veure i controlar l'ordinador?</translation>
 <translation id="8747048596626351634">La sessió s'ha bloquejat o no s'ha pogut iniciar. Si s'ha introduït ~/.chrome-remote-desktop-session a l'ordinador remot, comprova que s'iniciï un procés llarg en primer pla, com ara un entorn d'escriptori o un gestor de finestres.</translation>
 <translation id="8804164990146287819">Política de privadesa</translation>
+<translation id="8906511416443321782">Es requereix accés al micròfon per capturar l'àudio i reproduir-lo en continu al client d'Escriptori remot de Chrome.</translation>
 <translation id="9111855907838866522">Estàs connectat al dispositiu remot. Toca la pantalla amb quatre dits per obrir el menú.</translation>
 <translation id="9126115402994542723">No tornis a demanar el PIN en connectar amb aquest amfitrió des d'aquest dispositiu</translation>
 <translation id="916856682307586697">Inicia la sessió X predeterminada</translation>

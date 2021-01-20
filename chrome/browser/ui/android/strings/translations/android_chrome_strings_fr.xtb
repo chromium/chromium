@@ -84,6 +84,7 @@
 <translation id="1571304935088121812">Copier le nom d'utilisateur</translation>
 <translation id="1592864538817356322">Protection standard :</translation>
 <translation id="1612196535745283361">Chrome doit avoir accès aux données de localisation pour rechercher des appareils. Cette fonctionnalité est <ph name="BEGIN_LINK" />désactivée pour cet appareil<ph name="END_LINK" />.</translation>
+<translation id="1613577519914241527">Si cette option est activée, les webmasters ne pourront pas utiliser d'informations personnelles pour rendre leurs sites Web plus pertinents. Comme une foule anonyme à un concert, les webmasters savent seulement que des milliers d'utilisateurs ont un centre d'intérêt en commun.\n\nDans ce contexte, la "foule" varie selon les sites que vous consultez. Les annonceurs savent uniquement quels sites sont consultés par la foule dans son ensemble. Ils n'ont pas accès à ceux que vous consultez personnellement.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Supprimer 1 élément sélectionné}one{Supprimer # élément sélectionné}other{Supprimer # éléments sélectionnés}}</translation>
 <translation id="1641113438599504367">Navigation sécurisée</translation>
 <translation id="164269334534774161">Vous regardez une copie hors connexion de cette page depuis le <ph name="CREATION_TIME" />.</translation>
@@ -468,6 +469,7 @@ Appuyez sur n'importe quel mot pour effectuer une recherche. Pour affiner la rec
 <translation id="4440958355523780886">Page simplifiée fournie par Google. Appuyez pour charger la page d'origine.</translation>
 <translation id="4452411734226507615">Fermer l'onglet <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Ajouté aux favoris dans "<ph name="FOLDER_NAME" />"</translation>
+<translation id="4465314970046116177">Privacy Sandbox est un ensemble de nouvelles technologies visant à protéger les internautes contre les mécanismes de suivi intersites, comme les cookies tiers, tout en préservant les contenus et services Web qui dépendent de ces mécanismes aujourd'hui. Chrome collabore avec les développeurs de sites Web, les éditeurs, les annonceurs et les autres navigateurs pour développer cette nouvelle technologie.</translation>
 <translation id="4472118726404937099">Connectez-vous et activez la synchronisation pour accéder à vos données et les personnaliser sur tous vos appareils</translation>
 <translation id="447252321002412580">Contribuer à l'amélioration des fonctionnalités et des performances de Chrome</translation>
 <translation id="4479972344484327217">Installation du module <ph name="MODULE" /> pour Chrome…</translation>
@@ -743,6 +745,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6243852395147506234">Prêt pour le mode hors connexion</translation>
 <translation id="624789221780392884">Mise à jour prête</translation>
 <translation id="6255999984061454636">Recommandations de contenus</translation>
+<translation id="6266591733731644292">Privacy Sandbox est encore en phase d'essai. Pendant cette période :\n<ph name="BEGIN_LIST_ITEM1" />Les développeurs de sites Web et d'applications peuvent essayer la fonctionnalité pour créer des expériences pertinentes ne nécessitant pas d'accéder aux informations personnelles des utilisateurs.<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />Les utilisateurs peuvent refuser de participer à cet essai à l'aide des paramètres de cette page.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="6277522088822131679">Un problème est survenu lors de l'impression de la page. Veuillez réessayer.</translation>
 <translation id="6278428485366576908">Thème</translation>
 <translation id="6292420053234093573">En utilisant Chrome, vous acceptez les <ph name="BEGIN_LINK1" />Conditions d'utilisation de Google<ph name="END_LINK1" /> et les <ph name="BEGIN_LINK2" />Conditions d'utilisation supplémentaires de Google Chrome et Chrome OS<ph name="END_LINK2" />.</translation>
@@ -834,6 +837,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6811034713472274749">La page est prête à être affichée</translation>
 <translation id="6820686453637990663">Code CVC :</translation>
 <translation id="6824899148643461612">"<ph name="TAB_TITLE" />", onglet, sélectionné</translation>
+<translation id="6833996806551876956">Essai de Privacy Sandbox</translation>
 <translation id="6845325883481699275">Contribuer à améliorer la sécurité de Chrome</translation>
 <translation id="6846298663435243399">Chargement…</translation>
 <translation id="6850409657436465440">Téléchargement toujours en cours</translation>
@@ -1069,6 +1073,7 @@ Les données de votre session de navigation privée ne sont effacées de Chrome 
 <translation id="8442258441309440798">Aucun événement disponible</translation>
 <translation id="8443209985646068659">Impossible mettre à jour Chrome</translation>
 <translation id="8445448999790540984">Impossible d'exporter les mots de passe</translation>
+<translation id="8447219758310755868">Anonymisation</translation>
 <translation id="8461694314515752532">Chiffrer les données synchronisées avec votre propre phrase secrète de synchronisation</translation>
 <translation id="8466613982764129868">Assurez-vous que l'appareil <ph name="TARGET_DEVICE_NAME" /> est connecté à Internet</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>

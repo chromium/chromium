@@ -1652,6 +1652,7 @@
 <translation id="281504910091592009">‏הצגה וניהול של סיסמאות שמורות ב<ph name="BEGIN_LINK" />חשבון Google<ph name="END_LINK" /></translation>
 <translation id="2815693974042551705">הוספת התיקייה לסימניות</translation>
 <translation id="2816319641769218778">‏כדי לשמור סיסמאות בחשבון Google, יש להפעיל את הסנכרון.</translation>
+<translation id="2816628817680324566">האם לאפשר לאתר הזה לזהות את מפתח האבטחה שלך?</translation>
 <translation id="2818476747334107629">פרטי מדפסת</translation>
 <translation id="2820957248982571256">מתבצעת סריקה…</translation>
 <translation id="2822634587701817431">כיווץ / הרחבה</translation>
@@ -3769,6 +3770,7 @@
 <translation id="5300287940468717207">לאפס את הרשאות האתרים?</translation>
 <translation id="5300589172476337783">הצגה</translation>
 <translation id="5300719150368506519">‏שליחת כתובות URL של דפים שבהם ביקרת ל-Google</translation>
+<translation id="5300814202279832142">העברת חלון לשולחן עבודה וירטואלי</translation>
 <translation id="5301751748813680278">נכנס כאורח.</translation>
 <translation id="5301954838959518834">בסדר, הבנתי</translation>
 <translation id="5302048478445481009">שפה</translation>
@@ -5457,6 +5459,7 @@
 <translation id="7250616558727237648">המכשיר שעמו מתבצע השיתוף לא הגיב. אפשר לנסות שוב.</translation>
 <translation id="725109152065019550">מצטערים, מנהל המערכת השבית את האחסון החיצוני בחשבונך.</translation>
 <translation id="7251346854160851420">הטפט המוגדר כברירת מחדל</translation>
+<translation id="7251979364707973467">האתר <ph name="WEBSITE" /> הנפיק את מפתח האבטחה שלך ומבקש לדעת את מספר המזהה שלו. האתר יוכל לדעת בדיוק איזה מפתח אבטחה משמש אותך.</translation>
 <translation id="7253521419891527137">&amp;למידע נוסף</translation>
 <translation id="7254951428499890870">ברצונך באמת להפעיל את "<ph name="APP_NAME" />" במצב אבחון?</translation>
 <translation id="725497546968438223">לחצן תיקיית סימניות</translation>

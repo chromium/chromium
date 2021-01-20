@@ -84,6 +84,7 @@
 <translation id="1571304935088121812">Kopiuj nazwę użytkownika</translation>
 <translation id="1592864538817356322">Standardowa ochrona:</translation>
 <translation id="1612196535745283361">Aby wyszukać urządzenia, Chrome potrzebuje dostępu do lokalizacji. Dostęp jest <ph name="BEGIN_LINK" />wyłączony na tym urządzeniu<ph name="END_LINK" />.</translation>
+<translation id="1613577519914241527">Gdy ta funkcja jest włączona, strony internetowe nie mogą dostosowywać wyświetlanych treści do Twoich potrzeb na podstawie informacji, które pozwalają Cię zidentyfikować. Podobnie jak to jest w przypadku tłumu na koncercie, strony wiedzą tylko tyle, że podobne zainteresowania mają tysiące użytkowników.\n\n„Tłum” określany jest na podstawie tego, na jakie strony wchodzisz. Reklamodawcy widzą tylko to, na jakie strony wchodzi cały tłum, a nie Ty jako pojedynczy użytkownik.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Usuń 1 wybrany element}few{Usuń # wybrane elementy}many{Usuń # wybranych elementów}other{Usuń # wybranego elementu}}</translation>
 <translation id="1641113438599504367">Bezpieczne przeglądanie</translation>
 <translation id="164269334534774161">Oglądasz kopię offline tej strony z <ph name="CREATION_TIME" /></translation>
@@ -468,6 +469,7 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="4440958355523780886">Lżejsza wersja strony dostarczona przez Google. Kliknij, by załadować wersję oryginalną.</translation>
 <translation id="4452411734226507615">Zamknij kartę <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Utworzono zakładkę w folderze <ph name="FOLDER_NAME" /></translation>
+<translation id="4465314970046116177">Piaskownica prywatności to zbiór nowych technologii opracowanych w celu zapewnienia użytkownikowi ochrony przed mechanizmami śledzącymi go na różnych stronach internetowych – np. plikami cookie innych firm – przy jednoczesnym zachowaniu pełnego dostępu do treści i usług internetowych, których działanie obecnie zależy od tych mechanizmów. Tę nową technologię rozwija zespół Chrome we współpracy z programistami stron internetowych, wydawcami, reklamodawcami i zespołami innych przeglądarek.</translation>
 <translation id="4472118726404937099">Aby synchronizować i personalizować wszystkie swoje urządzenia, zaloguj się i włącz synchronizację</translation>
 <translation id="447252321002412580">Pomóż w ulepszaniu funkcji i działania Chrome</translation>
 <translation id="4479972344484327217">Instaluję moduł <ph name="MODULE" /> do Chrome…</translation>
@@ -638,6 +640,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5595485650161345191">Edytuj adres</translation>
 <translation id="5599455543593328020">Tryb incognito</translation>
 <translation id="5599941490345670218">Asystent Google może wykonywać za Ciebie działania na różnych stronach internetowych</translation>
+<translation id="5606787249466187650">Odkryj Piaskownicę prywatności</translation>
 <translation id="5620163320393916465">Brak zapisanych haseł</translation>
 <translation id="5620928963363755975">Znajdź pliki i strony w Pobranych plikach, używając przycisku Więcej opcji</translation>
 <translation id="5626134646977739690">Nazwa:</translation>
@@ -743,6 +746,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6243852395147506234">Dostępne offline</translation>
 <translation id="624789221780392884">Aktualizacja jest gotowa</translation>
 <translation id="6255999984061454636">Polecane treści</translation>
+<translation id="6266591733731644292">Piaskownica prywatności nie została jeszcze udostępniona do powszechnego użytku. W tym okresie próbnym:\n<ph name="BEGIN_LIST_ITEM1" />Programiści mogą wypróbować możliwość dostosowywania tworzonych stron i aplikacji do potrzeb użytkowników bez uzyskiwania dostępu do informacji, które pozwalają zidentyfikować konkretne osoby.<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />Użytkownicy mogą zrezygnować z okresu próbnego za pomocą elementów sterujących na tej stronie.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="6277522088822131679">Podczas drukowania strony wystąpił problem. Spróbuj ponownie.</translation>
 <translation id="6278428485366576908">Motyw</translation>
 <translation id="6292420053234093573">Korzystając z Chrome, wyrażasz zgodę na <ph name="BEGIN_LINK1" />Warunki korzystania z usług Google<ph name="END_LINK1" /> oraz <ph name="BEGIN_LINK2" />Dodatkowe warunki korzystania z Google Chrome i Chrome OS<ph name="END_LINK2" />.</translation>
@@ -834,6 +838,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6811034713472274749">Strona jest gotowa do wyświetlenia</translation>
 <translation id="6820686453637990663">Kod CVC</translation>
 <translation id="6824899148643461612">Wybrano kartę <ph name="TAB_TITLE" /></translation>
+<translation id="6833996806551876956">Okres próbny piaskownicy prywatności</translation>
 <translation id="6845325883481699275">Pomóż zwiększyć bezpieczeństwo Chrome</translation>
 <translation id="6846298663435243399">Wczytuję…</translation>
 <translation id="6850409657436465440">Pobieranie wciąż trwa</translation>
@@ -1069,6 +1074,7 @@ Dane sesji incognito zostaną usunięte z Chrome dopiero po <ph name="BEGIN_BOL
 <translation id="8442258441309440798">Brak artykułów</translation>
 <translation id="8443209985646068659">Nie można zaktualizować</translation>
 <translation id="8445448999790540984">Nie można wyeksportować haseł</translation>
+<translation id="8447219758310755868">Maskowanie przez tłum</translation>
 <translation id="8461694314515752532">Szyfruj synchronizowane dane własnym hasłem synchronizacji</translation>
 <translation id="8466613982764129868">Sprawdź, czy <ph name="TARGET_DEVICE_NAME" /> ma połączenie z internetem</translation>
 <translation id="8485434340281759656"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>

@@ -4,10 +4,12 @@
 <translation id="1012876632442809908">Thiết bị USB-C (cổng phía trước)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> đã đổi thành <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Hãy nhấp vào xác nhận để lưu các thay đổi. Các tùy chọn cài đặt trước sẽ được khôi phục sau <ph name="TIMEOUT_SECONDS" /> nữa.</translation>
 <translation id="1013923882670373915">Thiết bị Bluetooth "<ph name="DEVICE_NAME" />" muốn được phép ghép nối. Vui lòng nhập mã PIN này trên thiết bị đó: <ph name="PINCODE" /></translation>
+<translation id="1024261588257374085">Đã chọn chụp một phần màn hình</translation>
 <translation id="1032891413405719768">Pin của bút cảm ứng ở mức thấp</translation>
 <translation id="1036672894875463507">Tôi là Trợ lý Google của bạn. Tôi có thể giúp bạn bất cứ lúc nào!
 Dưới đây là một số việc bạn có thể thử để bắt đầu.</translation>
 <translation id="1037492556044956303">Đã thêm <ph name="DEVICE_NAME" /></translation>
+<translation id="1047017786576569492">một phần</translation>
 <translation id="1047773237499189053">Đã có tính năng mới, hãy sử dụng phím Mũi tên lên để tìm hiểu thêm.</translation>
 <translation id="1056775291175587022">Không có mạng</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
@@ -27,6 +29,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1195412055398077112">quét quá mức</translation>
 <translation id="119944043368869598">Xóa tất cả</translation>
 <translation id="1199716647557067911">Bạn có chắc chắn muốn tắt tính năng Tiếp cận bằng công tắc không?</translation>
+<translation id="1210557957257435379">quay màn hình</translation>
 <translation id="121097972571826261">Tiến một từ</translation>
 <translation id="1225748608451425081">Chromebook của bạn đã bị khóa do một vấn đề đã biết. Bạn có thể đăng nhập sau: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Dừng chọn</translation>
@@ -77,6 +80,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1570871743947603115">Bật/tắt Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Truy cập vào tất cả hoạt động của bạn trong phiên này</translation>
 <translation id="1611993646327628135">Bật</translation>
+<translation id="1615402009686901181">Tính năng chụp ảnh màn hình bị tắt khi có nội dung bí mật theo chính sách của quản trị viên</translation>
 <translation id="1632985212731562677">Bạn có thể tắt tính năng Tiếp cận bằng công tắc trong phần Cài đặt &gt; Hỗ trợ tiếp cận.</translation>
 <translation id="1654477262762802994">Bắt đầu đặt câu hỏi bằng giọng nói</translation>
 <translation id="1667964833127753507">Chế độ màu trung tính không dùng màu được trích xuất từ hình nền mà thay các màu này bằng bộ màu sáng hoặc tối có sắc trung tính.</translation>
@@ -110,6 +114,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1923539912171292317">Nhấp chuột tự động</translation>
 <translation id="1928739107511554905">Để cập nhật, hãy dùng màn hình cảm ứng để khởi động lại Chromebook bằng bàn phím đã kết nối.</translation>
 <translation id="1951012854035635156">Trợ lý</translation>
+<translation id="1954252331066828794">Đã quay màn hình xong</translation>
 <translation id="1957803754585243749">0°</translation>
 <translation id="1957958912175573503">Đặt ngôn ngữ</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
@@ -117,6 +122,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Chào <ph name="USERNAME" />!</translation>
 <translation id="1978498689038657292">Nhập văn bản</translation>
+<translation id="1989113344093894667">Không thể chụp nội dung</translation>
 <translation id="1993072747612765854">Tìm hiểu thêm về bản cập nhật <ph name="SYSTEM_APP_NAME" /> mới nhất</translation>
 <translation id="1995660704900986789">Tắt nguồn</translation>
 <translation id="1998100899771863792">Không gian làm việc hiện tại</translation>
@@ -140,9 +146,11 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2220572644011485463">Mã PIN hoặc mật khẩu</translation>
 <translation id="2222338659135520253">Cần đăng nhập</translation>
 <translation id="2222841058024245321">Không gian làm việc 7</translation>
+<translation id="2224075387478458881">Không cho phép quay màn hình khi có nội dung được bảo vệ</translation>
 <translation id="225680501294068881">Đang quét tìm thiết bị...</translation>
 <translation id="2268130516524549846">Đã tắt bluetooth</translation>
 <translation id="2268813581635650749">Đăng xuất tất cả</translation>
+<translation id="2269016722240250274">Một ứng dụng đang sử dụng micrô của bạn</translation>
 <translation id="2277103315734023688">Tua tiến</translation>
 <translation id="2292698582925480719">Tỷ lệ hiển thị</translation>
 <translation id="229397294990920565">Đang tắt dữ liệu di động...</translation>
@@ -168,6 +176,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2427507373259914951">Nhấp chuột trái</translation>
 <translation id="2429753432712299108">Thiết bị Bluetooth "<ph name="DEVICE_NAME" />" muốn được phép ghép nối. Trước khi chấp nhận, vui lòng xác nhận rằng mã xác nhận này đã hiển thị trên thiết bị đó: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Hiển thị mật khẩu</translation>
+<translation id="2450205753526923158">Chế độ chụp ảnh màn hình</translation>
 <translation id="2473177541599297363">Xác nhận độ phân giải</translation>
 <translation id="2475982808118771221">Đã xảy ra lôi</translation>
 <translation id="2482878487686419369">Thông báo</translation>
@@ -184,6 +193,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2596078834055697711">Chụp ảnh màn hình cửa sổ</translation>
 <translation id="2617342710774726426">Thẻ SIM bị khóa</translation>
 <translation id="2621713457727696555">Đã bảo mật</translation>
+<translation id="2653019840645008922">Chụp/quay cửa sổ</translation>
 <translation id="2653659639078652383">Gửi</translation>
 <translation id="2658778018866295321">Nhấp và kéo</translation>
 <translation id="2678852583403169292">Trình đơn Chọn để nói</translation>
@@ -197,7 +207,9 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2727175239389218057">Trả lời</translation>
 <translation id="2727977024730340865">Được cắm vào bộ sạc công suất thấp. Việc sạc pin có thể không được đảm bảo.</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> này do <ph name="MANAGER" /> quản lý</translation>
+<translation id="2782591952652094792">Thoát khỏi chế độ chụp</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
+<translation id="2814448776515246190">Chụp một phần màn hình</translation>
 <translation id="2819276065543622893">Bạn sẽ bị đăng xuất bây giờ.</translation>
 <translation id="28232023175184696">Không thể kết nối Internet. Hãy nhấp để thử lại.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> không hỗ trợ <ph name="SPECIFIED_RESOLUTION" />. Độ phân giải đã được thay đổi thành <ph name="FALLBACK_RESOLUTION" />.</translation>
@@ -221,9 +233,11 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2996462380875591307">Đã bật tính năng Phóng to ở vị trí cố định. Hãy nhấn lại tổ hợp phím Ctrl+Search+D để tắt tính năng này.</translation>
 <translation id="3000461861112256445">Đơn âm</translation>
 <translation id="3009178788565917040">Thiết bị ra</translation>
+<translation id="3017687597151988916">Đã đặt vùng chọn thành cửa sổ</translation>
 <translation id="3033545621352269033">Đang bật</translation>
 <translation id="3036649622769666520">Mở Tệp</translation>
 <translation id="3038571455154067151">Để đăng nhập, hãy nhập mã truy cập dành cho cha mẹ của Family Link</translation>
+<translation id="3039939407102840004">Bút cảm ứng còn <ph name="PERCENTAGE" />% pin.</translation>
 <translation id="3045488863354895414">Xin chào!</translation>
 <translation id="3051128274746680507">Hồ sơ người dùng được giám sát của bạn sẽ sớm bị xóa. Đăng nhập để tìm hiểu thêm.</translation>
 <translation id="3055162170959710888">Bạn đã dùng thiết bị này trong <ph name="USED_TIME" /> hôm nay</translation>
@@ -233,6 +247,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3090989381251959936">Bật/tắt <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">Di con trỏ</translation>
 <translation id="3098580329624789136">Xem <ph name="INTENT" /> của "<ph name="QUERY" />"</translation>
+<translation id="3100274880412651815">Đóng chế độ chụp</translation>
 <translation id="3105917916468784889">Chụp ảnh màn hình</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3126069444801937830">Khởi động lại để cập nhật</translation>
@@ -260,6 +275,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> vẫn có thể đăng nhập vào lúc khác.</translation>
 <translation id="3321628682574733415">Mã dành cho cha mẹ không chính xác</translation>
 <translation id="332587331255250389">Vui lòng thay pin</translation>
+<translation id="3341303451326249809">Đã chụp ảnh màn hình</translation>
 <translation id="334252345105450327">Chụp ảnh màn hình</translation>
 <translation id="3351879221545518001">Bạn hiện đang truyền màn hình.</translation>
 <translation id="3364721542077212959">Công cụ bút cảm ứng</translation>
@@ -296,9 +312,11 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3621202678540785336">Thiết bị vào</translation>
 <translation id="3621712662352432595">Cài đặt âm thanh</translation>
 <translation id="3626281679859535460">Độ sáng</translation>
+<translation id="3630697955794050612">đang tắt</translation>
 <translation id="3631369015426612114">Cho phép thông báo từ các nguồn sau</translation>
 <translation id="3638400994746983214">Bật/tắt màn hình bảo vệ quyền riêng tư. <ph name="STATE_TEXT" />.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Người dùng được quản lý</translation>
+<translation id="3665889125180354336">Ghi âm</translation>
 <translation id="3702846122927433391">Dân số ở Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="370665806235115550">Đang tải...</translation>
@@ -309,6 +327,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3773700760453577392">Quản trị viên không cho phép <ph name="USER_EMAIL" /> thực hiện đăng nhập nhiều tài khoản. Tất cả người dùng phải đăng xuất để tiếp tục.</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Khóa</translation>
+<translation id="3796746699333205839">Một ứng dụng đang sử dụng máy ảnh và micrô của bạn</translation>
 <translation id="3798670284305777884">Loa (bên trong)</translation>
 <translation id="3799080171973636491">Bạn đã nhấn phím tắt của tính năng phóng to toàn màn hình. Bạn có muốn bật tính năng này không?</translation>
 <translation id="380165613292957338">Xin chào, tôi có thể trợ giúp gì?</translation>
@@ -345,6 +364,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="4072264167173457037">Tín hiệu trung bình</translation>
 <translation id="4112140312785995938">Tua lùi</translation>
 <translation id="4114315158543974537">Bật Phone Hub</translation>
+<translation id="412298498316631026">cửa sổ</translation>
 <translation id="4129129681837227511">Để xem thông báo trên màn hình khóa, hãy mở khóa thiết bị để thay đổi tùy chọn cài đặt này</translation>
 <translation id="4146833061457621061">Phát nhạc</translation>
 <translation id="4157822100366708405">Tùy chọn cài đặt giao diện tối</translation>
@@ -402,6 +422,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="4570957409596482333">Nút Chọn để nói</translation>
 <translation id="4577274620589681794">Hết giờ · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Hiển thị bản xem trước</translation>
+<translation id="4578906031062871102">Đã mở trình đơn Cài đặt</translation>
 <translation id="4585337515783392668">Dừng truyền trên bộ thu không xác định</translation>
 <translation id="4596144739579517758">Giao diện tối đang tắt</translation>
 <translation id="4623167406982293031">Xác minh tài khoản</translation>
@@ -484,6 +505,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="5379115545237091094">Quá nhiều lần thử</translation>
 <translation id="5397578532367286026">Người quản lý (<ph name="MANAGER_EMAIL" />) trên chrome.com có thể xem lại mức sử dụng và lịch sử của người dùng này.</translation>
 <translation id="5400461572260843123">Cài đặt nhanh, Nhấn vào phím tìm kiếm + mũi tên trái để truy cập vào trung tâm thông báo.</translation>
+<translation id="5426063383988017631">Đã đóng trình đơn Cài đặt</translation>
 <translation id="5428899915242071344">Bắt đầu chọn</translation>
 <translation id="5430931332414098647">Chia sẻ Internet tức thì</translation>
 <translation id="5431825016875453137">OpenVPN / L2TP</translation>
@@ -500,12 +522,15 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="556042886152191864">Nút</translation>
 <translation id="5571066253365925590">Đã bật bluetooth</translation>
 <translation id="557563299383177668">Đoạn tiếp theo</translation>
+<translation id="5577281275355252094">Bạn phải bật Bluetooth trên điện thoại thì mới sử dụng được Trung tâm điều khiển điện thoại</translation>
 <translation id="558849140439112033">Kéo để chọn một vùng sẽ chụp</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Nhấn Ctrl + Alt + Z để tắt phản hồi bằng giọng nói.</translation>
 <translation id="5601503069213153581">Mã PIN</translation>
+<translation id="5619862035903135339">Tính năng chụp ảnh màn hình bị tắt theo chính sách của quản trị viên</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Giắc cắm micrô</translation>
+<translation id="5662709761327382534">Tính năng ghi âm <ph name="CURRENT_STATE" />. Hãy nhấn Enter để chuyển tính năng này về trạng thái <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">Đang kích hoạt</translation>
 <translation id="5673434351075758678">Từ "<ph name="FROM_LOCALE" />" sang "<ph name="TO_LOCALE" />" sau khi đồng bộ hóa cài đặt của bạn.</translation>
 <translation id="5677928146339483299">Bị chặn</translation>
@@ -553,6 +578,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />, Do quản trị viên của bạn quản lý</translation>
 <translation id="6030495522958826102">Đã di chuyển trình đơn vào góc dưới cùng bên trái màn hình.</translation>
 <translation id="6032620807120418574">Nhấp vào vị trí bất kỳ để chụp toàn màn hình</translation>
+<translation id="6040071906258664830">Ghi âm <ph name="STATE" /></translation>
 <translation id="6040143037577758943">Đóng</translation>
 <translation id="6043212731627905357">Màn hình này không tương thích với <ph name="DEVICE_TYPE" /> của bạn (màn hình không được hỗ trợ).</translation>
 <translation id="6043994281159824495">Đăng xuất bây giờ</translation>
@@ -562,6 +588,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="6062360702481658777">Bạn sẽ tự động được đăng xuất sau <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Dừng ghi</translation>
 <translation id="607652042414456612">Máy tính của bạn có thể phát hiện thiết bị Bluetooth gần đó và hiện thị dưới tên "<ph name="NAME" />" với địa chỉ là <ph name="ADDRESS" /></translation>
+<translation id="6094290315941448991">Tính năng quay màn hình bị tắt khi có nội dung bí mật theo chính sách của quản trị viên</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Bạn không thể dùng Trợ lý Google trong phiên khách.</translation>
 <translation id="6137566720514957455">Mở hộp thoại xóa tài khoản cho <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -610,6 +637,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="6570902864550063460">Đang sạc qua USB</translation>
 <translation id="6585808820553845416">Phiên sẽ kết thúc sau <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />, Do quản trị viên của bạn quản lý</translation>
+<translation id="6612802754306526077">Đã chọn chế độ quay màn hình</translation>
 <translation id="6614169507485700968">Màn hình bảo vệ quyền riêng tư đang bật</translation>
 <translation id="6627638273713273709">Tìm kiếm+Shift+K</translation>
 <translation id="6637729079642709226">Thay đổi thời gian</translation>
@@ -618,6 +646,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="6650933572246256093">Thiết bị Bluetooth "<ph name="DEVICE_NAME" />" muốn được phép ghép nối. Vui lòng nhập mã xác nhận này trên thiết bị đó: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Mật khẩu</translation>
 <translation id="6665545700722362599">Cấp cho trang web, ứng dụng và tiện ích quyền sử dụng dịch vụ vị trí, micrô, máy ảnh hoặc các tính năng khác của thiết bị</translation>
+<translation id="6667908387435388584">Kết nối với điểm phát sóng của điện thoại, tắt tiếng và xác định vị trí thiết bị của bạn, cũng như xem các thẻ Chrome mở gần đây trên điện thoại</translation>
 <translation id="6670153871843998651">Không gian làm việc 3</translation>
 <translation id="6671495933530132209">Sao chép ảnh</translation>
 <translation id="6691659475504239918">Search+Shift+H</translation>
@@ -667,6 +696,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="7076293881109082629">Đăng nhập</translation>
 <translation id="7088960765736518739">Tiếp cận bằng công tắc</translation>
 <translation id="7098389117866926363">Thiết bị USB-C (cổng bên trái ở phía sau)</translation>
+<translation id="7118268675952955085">ảnh chụp màn hình</translation>
 <translation id="7131634465328662194">Bạn sẽ tự động bị đăng xuất.</translation>
 <translation id="7143207342074048698">Đang kết nối</translation>
 <translation id="7144878232160441200">Thử lại</translation>
@@ -698,11 +728,16 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="742594950370306541">Máy ảnh đang được sử dụng.</translation>
 <translation id="742608627846767349">Xin chào!</translation>
 <translation id="743058460480092004">Máy ảnh và micrô đang được sử dụng.</translation>
+<translation id="7452560014878697800">Một ứng dụng đang sử dụng máy ảnh của bạn</translation>
+<translation id="7456049842111127849">Chế độ chụp, mặc định là <ph name="SOURCE" /> <ph name="TYPE" />.</translation>
 <translation id="7461924472993315131">Ghim</translation>
+<translation id="746232733191930409">Chế độ quay màn hình</translation>
 <translation id="7466449121337984263">Vui lòng chạm vào cảm biến</translation>
 <translation id="7477793887173910789">Điều khiển nhạc, video và nhiều nội dung khác</translation>
+<translation id="7483025031359818980">Đã đặt vùng chọn thành toàn màn hình</translation>
 <translation id="7497767806359279797">Chọn ngôn ngữ và bàn phím</translation>
 <translation id="7509246181739783082">Xác minh danh tính của bạn</translation>
+<translation id="7513622367902644023">Đã chọn chế độ chụp ảnh màn hình</translation>
 <translation id="7526573455193969409">Mạng có thể được giám sát</translation>
 <translation id="7536035074519304529">Địa chỉ IP: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">Giờ đi ngủ</translation>
@@ -727,6 +762,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="7658239707568436148">Hủy</translation>
 <translation id="7662283695561029522">Nhấn để định cấu hình</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="7714767791242455379">Thêm mạng di động mới</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 thông báo}other{# thông báo}}</translation>
 <translation id="7724603315864178912">Cắt</translation>
 <translation id="7745560842763881396">Hiện các ứng dụng trên kệ</translation>
@@ -741,6 +777,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="7842569679327885685">Cảnh báo: Tính năng thử nghiệm</translation>
 <translation id="7846634333498149051">Bàn phím</translation>
 <translation id="7860671499921112077">Vuốt lên bằng 3 ngón tay để chuyển sang chế độ Tổng quan</translation>
+<translation id="7866482334467279021">đang bật</translation>
 <translation id="7868900307798234037">Mở khóa bằng vân tay</translation>
 <translation id="7872786842639831132">Tắt</translation>
 <translation id="7875575368831396199">Có vẻ như bạn đã tắt Bluetooth trên <ph name="DEVICE_TYPE" />. Vui lòng bật Bluetooth để sử dụng Trung tâm điều khiển điện thoại.</translation>
@@ -770,6 +807,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="8036504271468642248">Câu trước</translation>
 <translation id="8042893070933512245">Mở trình đơn cài đặt hỗ trợ tiếp cận</translation>
 <translation id="8048123526339889627">Cài đặt Bluetooth</translation>
+<translation id="8052898407431791827">Đã sao chép vào khay nhớ tạm</translation>
 <translation id="8054466585765276473">Đang tính toán thời lượng pin.</translation>
 <translation id="8061464966246066292">Độ tương phản cao</translation>
 <translation id="8098591350844501178">Dừng truyền màn hình tới <ph name="RECEIVER_NAME" /></translation>
@@ -805,6 +843,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="8388750414311082622">Không thể xóa không gian làm việc gần đây nhất.</translation>
 <translation id="8394567579869570560">Cha mẹ của bạn đã khóa thiết bị này</translation>
 <translation id="8412677897383510995">Hiển thị các tùy chọn cài đặt màn hình</translation>
+<translation id="8413272770729657668">Bắt đầu chụp/quay sau 3, 2, 1</translation>
 <translation id="8425213833346101688">Thay đổi</translation>
 <translation id="8426708595819210923">Xin chào <ph name="GIVEN_NAME" />!</translation>
 <translation id="8427213022735114808">Tính năng nhập bằng giọng nói gửi giọng nói của bạn tới Google để cho phép nhập liệu bằng giọng nói vào bất kỳ trường văn bản nào.</translation>
@@ -841,9 +880,11 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="8673028979667498656">270°</translation>
 <translation id="8676770494376880701">Đã kết nối bộ sạc công suất thấp</translation>
 <translation id="8683506306463609433">Tính năng theo dõi hiệu suất đang hoạt động</translation>
+<translation id="8703634754197148428">Bắt đầu quay. Sau khi quá trình quay bắt đầu, hãy nhấn tổ hợp phím Alt + Shift + L để chuyển đến kệ rồi tìm nút dừng quay</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Dùng phím mũi tên Trái hoặc Phải để quản lý tính năng này.</translation>
 <translation id="8712637175834984815">Bỏ qua</translation>
 <translation id="8721053961083920564">Bật/tắt tiếng. <ph name="STATE_TEXT" /></translation>
+<translation id="8724318433625452070">Chụp toàn màn hình</translation>
 <translation id="8734991477317290293">Bàn phím này có thể đang cố gắng đánh cắp thao tác nhấn phím của bạn</translation>
 <translation id="8735953464173050365">Hiển thị các tùy chọn cài đặt bàn phím. <ph name="KEYBOARD_NAME" /> được chọn</translation>
 <translation id="8755498163081687682">Xác minh danh tính của bạn: <ph name="ORIGIN_NAME" /> muốn xác nhận đó là bạn</translation>
@@ -867,6 +908,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="8877788021141246043">Đặt lời nhắc</translation>
 <translation id="8878886163241303700">Mở rộng màn hình</translation>
 <translation id="8883473964424809116">Nhấp để mở phần cài đặt của Trợ lý Google.</translation>
+<translation id="8884537526797090108">Không thể quay nội dung bí mật</translation>
 <translation id="890616557918890486">Thay đổi nguồn</translation>
 <translation id="8909138438987180327">Pin ở mức <ph name="PERCENTAGE" />%.</translation>
 <translation id="8913384980486163186">Theo giao diện (mặc định)</translation>
@@ -883,6 +925,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="9024331582947483881">toàn màn hình</translation>
 <translation id="9047624247355796468">Mở tùy chọn cài đặt cho <ph name="NETWORK_NAME" /></translation>
 <translation id="9056839673611986238">Thiết bị sẽ được hạ cấp hệ điều hành</translation>
+<translation id="9063800855227801443">Không thể chụp nội dung bí mật</translation>
 <translation id="9065203028668620118">Chỉnh sửa</translation>
 <translation id="9070640332319875144">Cài đặt Trợ lý</translation>
 <translation id="9072519059834302790">Còn <ph name="TIME_LEFT" /> nữa là pin hết.</translation>
@@ -896,6 +939,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="9091626656156419976">Đã xóa màn hình <ph name="DISPLAY_NAME" /></translation>
 <translation id="9098969848082897657">Tắt tiếng điện thoại</translation>
 <translation id="9099154003160514616">Đã có bản cập nhật dành cho trình duyệt Lacros</translation>
+<translation id="9133335900048457298">Không thể quay nội dung được bảo vệ</translation>
 <translation id="9151726767154816831">Khởi động lại và powerwash để cập nhật</translation>
 <translation id="9166331175924255663">Bật/tắt chế độ hiển thị ở mức cao cho tính năng Chia sẻ lân cận.</translation>
 <translation id="9168436347345867845">Thực hiện sau</translation>

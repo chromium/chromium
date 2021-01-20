@@ -84,6 +84,7 @@
 <translation id="1571304935088121812">Kopiatu erabiltzaile-izena</translation>
 <translation id="1592864538817356322">Babes estandarra:</translation>
 <translation id="1612196535745283361">Chrome-k kokapenerako sarbidea izan behar du gailuak bilatzeko. Kokapenerako sarbidea <ph name="BEGIN_LINK" />desaktibatuta dago gailu honetan<ph name="END_LINK" />.</translation>
+<translation id="1613577519914241527">Aktibatuta dagoenean, webguneek ezingo dute erabili pertsonalki identifikatzen zaituen informazioa esanguratsuago izateko. Kontzertu bateko ikus-entzuleak balira bezala, milaka erabiltzailek interes bera dutela baino ezingo dute jakin webguneek.\n\nBisitatu dituzun webguneetan daude oinarrituta "ikus-entzule" horiek. "Ikus-entzuleek" bisitatzen dituzten webguneak soilik ikus ditzakete iragarleek, ez zeuk bisitatzen dituzunak.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Kendu hautatutako elementua}other{Kendu hautatutako # elementuak}}</translation>
 <translation id="1641113438599504367">Arakatze segurua</translation>
 <translation id="164269334534774161">Orri honen konexiorik gabeko kopia ikusten ari zara (kopiaren data: <ph name="CREATION_TIME" />)</translation>
@@ -468,6 +469,7 @@ Eduki sakatuta bilatu nahi duzun hitza. Bilaketa mugatzeko, hautatu hitz gehiago
 <translation id="4440958355523780886">Google-k hornitutako oinarrizko orria. Sakatu jatorrizkoa kargatzeko.</translation>
 <translation id="4452411734226507615">Itxi <ph name="TAB_TITLE" /> fitxa</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> karpetan gehitu da laster-marka</translation>
+<translation id="4465314970046116177">Pribatutasunaren proben eremua teknologia berrien multzo bat da. Webguneen arteko jarraipena egiten duten mekanismoen aurrean (adibidez, hirugarrenen cookieak) jendea babestea du helburu. Aldi berean, gaur egun mekanismo horien mende dauden web-edukia eta -zerbitzuak mantentzen ditu. Webgune-garatzaileekin, argitaratzaileekin, iragarleekin eta beste arakatzaile batzuekin dihardu lanean Chrome-k teknologia berri hori garatze aldera.</translation>
 <translation id="4472118726404937099">Gailu guztiak sinkronizatu eta pertsonalizatzeko, hasi saioa eta aktibatu sinkronizazioa</translation>
 <translation id="447252321002412580">Lagundu Chrome-ren eginbideak eta errendimendua hobetzen</translation>
 <translation id="4479972344484327217"><ph name="MODULE" /> instalatzen Chrome-rako…</translation>
@@ -638,6 +640,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="5595485650161345191">Editatu helbidea</translation>
 <translation id="5599455543593328020">Ezkutuko modua</translation>
 <translation id="5599941490345670218">Google-ren Laguntzailea eginbideak zure partez osa ditzake ekintzak webguneetan</translation>
+<translation id="5606787249466187650">Arakatu pribatutasunaren proben eremua</translation>
 <translation id="5620163320393916465">Ez dago pasahitzik gordeta</translation>
 <translation id="5620928963363755975">Bilatu Deskargak atalean dituzun fitxategiak eta orriak Aukera gehiago botoia sakatuta</translation>
 <translation id="5626134646977739690">Izena:</translation>
@@ -743,6 +746,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="6243852395147506234">Konexiorik gabe erabiltzeko prest</translation>
 <translation id="624789221780392884">Eguneratzea prest dago</translation>
 <translation id="6255999984061454636">Eduki-iradokizunak</translation>
+<translation id="6266591733731644292">Pribatutasunaren proben eremuak eginbide mugatuak dauzka oraindik. Probaldiak dirauen bitartean:\n<ph name="BEGIN_LIST_ITEM1" />Webgune- eta aplikazio-garatzaileek zerbitzu egokiak sortzeko aukera proba dezakete modu esklusiboan identifikatzen zaituen informazioa atzitu gabe.<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />Erabiltzaileek probaldia ez erabiltzea aukera dezakete orri honetako kontrolatzeko aukerak baliatuta.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="6277522088822131679">Arazo bat izan da orria inprimatzean. Saiatu berriro.</translation>
 <translation id="6278428485366576908">Gaia</translation>
 <translation id="6292420053234093573">Chrome erabiltzen baduzu, onartu egingo dituzu <ph name="BEGIN_LINK1" />Google-ren Zerbitzu-baldintzak<ph name="END_LINK1" /> eta <ph name="BEGIN_LINK2" />Google Chrome-ren eta Chrome OS-ren Zerbitzu-baldintza gehigarriak<ph name="END_LINK2" />.</translation>
@@ -834,6 +838,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="6811034713472274749">Orria ikusteko prest dago</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" /> fitxa, hautatuta</translation>
+<translation id="6833996806551876956">Pribatutasunaren proben eremuaren probaldia</translation>
 <translation id="6845325883481699275">Lagundu Chrome-ren segurtasuna hobetzen</translation>
 <translation id="6846298663435243399">Kargatzen…</translation>
 <translation id="6850409657436465440">Deskargatzen ari da oraindik</translation>
@@ -1069,6 +1074,7 @@ Ezkutuko moduko saioaren datuak <ph name="BEGIN_BOLD2" />ezkutuko moduko fitxa g
 <translation id="8442258441309440798">Ez dago istorio berririk</translation>
 <translation id="8443209985646068659">Ezin da eguneratu Chrome</translation>
 <translation id="8445448999790540984">Ezin dira esportatu pasahitzak</translation>
+<translation id="8447219758310755868">Crowdmasking</translation>
 <translation id="8461694314515752532">Enkriptatu sinkronizatutako datuak sinkronizazio-pasaesaldiarekin</translation>
 <translation id="8466613982764129868">Ziurtatu <ph name="TARGET_DEVICE_NAME" /> Internetera konektatuta dagoela</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>

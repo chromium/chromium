@@ -824,13 +824,6 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
       Jika kebijakan ini ditetapkan, browser akan mulai menghapus tab untuk menghemat memori setelah melampaui batas. Namun, tidak ada jaminan bahwa browser selalu berjalan di bawah batas. Setiap nilai yang kurang dari 1024 akan dibulatkan ke 1024.
 
       Jika kebijakan ini tidak ditetapkan, browser hanya akan mulai mencoba menghemat memori setelah mendeteksi bahwa perangkatnya memiliki jumlah memori fisik yang rendah.</translation>
-<translation id="2164922809922345834">Mengaktifkan penghalangan jendela native di <ph name="PRODUCT_NAME" />.
-
-      Jika Anda mengaktifkan setelan ini, untuk mengurangi pemakaian CPU dan daya, <ph name="PRODUCT_NAME" /> akan mendeteksi saat jendela tertutup oleh jendela lain, dan akan menangguhkan proses menggambar piksel.
-
-      Jika Anda menonaktifkan setelan ini, <ph name="PRODUCT_NAME" /> tidak akan mendeteksi saat jendela tertutup oleh jendela lain.
-
-      Jika kebijakan ini tidak ditetapkan, deteksi penghalangan akan diaktifkan.</translation>
 <translation id="2166472654199325139">Jangan filter konten khusus dewasa dari situs</translation>
 <translation id="2168397434410358693">Menunda waktu menganggur saat menggunakan daya AC</translation>
 <translation id="217013996107840632">Parameter command line untuk beralih dari browser alternatif.</translation>

@@ -84,6 +84,7 @@
 <translation id="1571304935088121812">Kasutajanime kopeerimine</translation>
 <translation id="1592864538817356322">Standardne kaitse:</translation>
 <translation id="1612196535745283361">Chrome vajab seadmete otsimiseks juurdepääsu teie asukohale. Juurdepääs asukohale on <ph name="BEGIN_LINK" />selles seadmes välja lülitatud<ph name="END_LINK" />.</translation>
+<translation id="1613577519914241527">Kui see on sisse lülitatud, ei saa veebisaidid oma saitide asjakohasemaks muutmiseks kasutada teie isikut tuvastavat teavet. Tuues paralleeli kontserdipublikuga, teavad saidid vaid seda, et tuhandetel inimestel on sarnane huvi.\n\nTeie „publik” põhineb saitidel, mida olete külastanud. Reklaamijad näevad ainult seda, milliseid saite publik külastab, mitte seda, milliseid saite teie isiklikult külastate.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Eemalda 1 valitud üksus}other{Eemalda # valitud üksust}}</translation>
 <translation id="1641113438599504367">Ohutu sirvimine</translation>
 <translation id="164269334534774161">Vaatate selle lehe võrguühenduseta koopiat kuupäevast <ph name="CREATION_TIME" /></translation>
@@ -468,6 +469,7 @@ Puudutage pikalt mis tahes sõna, et seda otsida. Otsingu täpsustamiseks valige
 <translation id="4440958355523780886">Lihtsustatud lehte pakub Google. Puudutage algse lehe laadimiseks.</translation>
 <translation id="4452411734226507615">Vahelehe <ph name="TAB_TITLE" /> sulgemine</translation>
 <translation id="4452548195519783679">Lisatud järjehoidjana kausta <ph name="FOLDER_NAME" /></translation>
+<translation id="4465314970046116177">Privaatsuse liivakast on uute tehnoloogiate kogum, mis kaitseb inimesi saitidevahelise jälgimise mehhanismide eest (nt kolmanda osapoole küpsisefailid), säilitades siiski veebisisu ja teenused, mis nendest mehhanismidest praegu sõltuvad. Chrome teeb selle uue tehnoloogia arendamisel koostööd veebisaitide arendajate, väljaandjate, reklaamijate ja muude brauseritega.</translation>
 <translation id="4472118726404937099">Seadmete vahel sisu sünkroonimiseks ja isikupärastamiseks logige sisse ja lülitage sünkroonimine sisse.</translation>
 <translation id="447252321002412580">Aidake täiustada Chrome'i funktsioone ja toimivust</translation>
 <translation id="4479972344484327217">Chrome'i jaoks installitakse moodulit <ph name="MODULE" /> …</translation>
@@ -638,6 +640,7 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="5595485650161345191">Muuda aadressi</translation>
 <translation id="5599455543593328020">Inkognito režiim</translation>
 <translation id="5599941490345670218">Google'i assistent saab veebisaitidel teie eest toiminguid teha</translation>
+<translation id="5606787249466187650">Avastage privaatsuse liivakasti</translation>
 <translation id="5620163320393916465">Salvestatud paroole ei ole</translation>
 <translation id="5620928963363755975">Leidke oma failid ja lehed jaotisest Allalaadimised, kasutades nuppu Rohkem valikuid</translation>
 <translation id="5626134646977739690">Nimi:</translation>
@@ -743,6 +746,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="6243852395147506234">Valmis võrguühenduseta kasutamiseks</translation>
 <translation id="624789221780392884">Värskendus on valmis</translation>
 <translation id="6255999984061454636">Sisu soovitused</translation>
+<translation id="6266591733731644292">Privaatsuse liivakast pole veel laialdaselt saadaval. Prooviperioodil toimub järgmine.\n<ph name="BEGIN_LIST_ITEM1" />Veebisait ja rakenduse arendajad saavad proovida võimalust luua asjakohaseid kasutuskogemusi, pääsemata juurde teie isikut tuvastavale teabele.<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />Kasutajad saavad sellel lehel olevate juhtelementide abil prooviperioodist loobuda.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="6277522088822131679">Lehe printimisel ilmnes probleem. Proovige uuesti.</translation>
 <translation id="6278428485366576908">Teema</translation>
 <translation id="6292420053234093573">Chrome'i kasutades nõustute <ph name="BEGIN_LINK1" />Google'i teenusetingimustega<ph name="END_LINK1" /> ning <ph name="BEGIN_LINK2" />Google Chrome'i ja Chrome OS-i lisateenusetingimustega<ph name="END_LINK2" />.</translation>
@@ -834,6 +838,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="6811034713472274749">Leht on vaatamiseks valmis</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, vaheleht, valitud</translation>
+<translation id="6833996806551876956">Privaatsuse liivakasti prooviperiood</translation>
 <translation id="6845325883481699275">Aidake Chrome'i turvalisust täiustada</translation>
 <translation id="6846298663435243399">Laadimine…</translation>
 <translation id="6850409657436465440">Allalaadimine on endiselt pooleli</translation>
@@ -1069,6 +1074,7 @@ Inkognito seanssidest saadud andmed kustutatakse Chrome'ist ainult siis, kui <ph
 <translation id="8442258441309440798">Lugusid pole saadaval</translation>
 <translation id="8443209985646068659">Ei saa värskendada</translation>
 <translation id="8445448999790540984">Paroole ei saa eksportida</translation>
+<translation id="8447219758310755868">Publiku maskeerimine</translation>
 <translation id="8461694314515752532">Krüpteeri sünkroonitud andmed sünkroonimisparooliga</translation>
 <translation id="8466613982764129868">Veenduge, et seadmel <ph name="TARGET_DEVICE_NAME" /> oleks internetiühendus</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>

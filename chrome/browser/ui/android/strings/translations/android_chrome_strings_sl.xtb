@@ -84,6 +84,7 @@
 <translation id="1571304935088121812">Kopiranje uporabniškega imena</translation>
 <translation id="1592864538817356322">Standardna zaščita:</translation>
 <translation id="1612196535745283361">Chrome za iskanje naprav potrebuje dostop do lokacije. Dostop do lokacije <ph name="BEGIN_LINK" />je izklopljen za to napravo<ph name="END_LINK" />.</translation>
+<translation id="1613577519914241527">Če je ta tehnologija vklopljena, spletna mesta ne bodo mogla uporabljati podatkov, ki omogočajo osebno prepoznavo, za zagotavljanje večje ustreznosti svojim spletnim mestom. Podobno kot pri množici na koncertu lahko spletnega mesta vedo samo, da ima več tisoč uporabnikov podobno zanimanje.\n\nVaša »množica« temelji na spletnih mestih, ki jih obiščete. Oglaševalci si lahko ogledajo samo, katera spletna mesta obišče celotna množica, ne pa, katera spletna mesta obiščete vi osebno.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Odstranitev 1 izbranega elementa}one{Odstranitev # izbranega elementa}two{Odstranitev # izbranih elementov}few{Odstranitev # izbranih elementov}other{Odstranitev # izbranih elementov}}</translation>
 <translation id="1641113438599504367">Varno brskanje</translation>
 <translation id="164269334534774161">Ogledujete si kopijo te strani brez povezave z dne <ph name="CREATION_TIME" /></translation>
@@ -468,6 +469,7 @@ Dotaknite se poljubne besede in jo pridržite, če želite iskati. Če želite i
 <translation id="4440958355523780886">Stran v osnovnem načinu, ki jo je prikazal Google. Dotaknite se, če želite naložiti izvirno stran.</translation>
 <translation id="4452411734226507615">Zapiranje zavihka <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Zaznamek ustvarjen v mapi <ph name="FOLDER_NAME" /></translation>
+<translation id="4465314970046116177">Privacy Sandbox je nabor novih tehnologij, ki bodo sčasoma ščitile ljudi pred mehanizmi za sledenje na več spletnih mestih, kot so piškotki drugih mest, obenem pa ohranjale spletno vsebino in storitve, ki so danes odvisne od omenjenih mehanizmov. Pri Chromu pri razvoju te nove tehnologije sodelujemo z razvijalci spletnih mest, izdajatelji, oglaševalci in skupinami pri drugih brskalnikih.</translation>
 <translation id="4472118726404937099">Če želite sinhronizirati in prilagajati v vseh napravah, se prijavite in vklopite sinhronizacijo</translation>
 <translation id="447252321002412580">Pomagajte izboljšati funkcije in delovanje Chroma</translation>
 <translation id="4479972344484327217">Nameščanje modula <ph name="MODULE" /> za Chrome …</translation>
@@ -744,6 +746,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="6243852395147506234">Na voljo za uporabo brez povezave</translation>
 <translation id="624789221780392884">Posodobitev je pripravljena</translation>
 <translation id="6255999984061454636">Predlogi za vsebino</translation>
+<translation id="6266591733731644292">Tehnologija Privacy Sandbox še ni objavljena za širšo javnost. Med tem preizkusnim obdobjem velja naslednje:\n<ph name="BEGIN_LIST_ITEM1" />Razvijalci spletnih mest in aplikacij lahko preizkusijo zmožnost ustvarjanja ustreznih izkušenj brez dostopanja do podatkov o vas, ki omogočajo enolično prepoznavo.<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />Uporabniki lahko s kontrolniki na tej strani odpovejo sodelovanje v preizkusu.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="6277522088822131679">Pri tiskanju strani je prišlo do težave. Poskusite znova.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6292420053234093573">Če uporabljate Chrome, se strinjate z <ph name="BEGIN_LINK1" />Googlovimi pogoji storitve<ph name="END_LINK1" /> in <ph name="BEGIN_LINK2" />dodatnimi pogoji storitve za Google Chrome in Chrome OS<ph name="END_LINK2" />.</translation>
@@ -835,6 +838,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="6811034713472274749">Stran je pripravljena za ogled</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, zavihek, izbran</translation>
+<translation id="6833996806551876956">Preizkus za Privacy Sandbox</translation>
 <translation id="6845325883481699275">Pomagajte izboljšati varnost v Chromu</translation>
 <translation id="6846298663435243399">Nalaganje poteka …</translation>
 <translation id="6850409657436465440">Prenos še poteka</translation>
@@ -1070,6 +1074,7 @@ Podatki seje brez beleženja dejavnosti se iz Chroma izbrišejo šele, ko <ph na
 <translation id="8442258441309440798">Novice niso na voljo</translation>
 <translation id="8443209985646068659">Posod. Chroma ni mogoča</translation>
 <translation id="8445448999790540984">Gesel ni mogoče izvoziti</translation>
+<translation id="8447219758310755868">Maskiranje množice</translation>
 <translation id="8461694314515752532">Šifriranje sinhroniziranih podatkov z vašim geslom za sinhronizacijo</translation>
 <translation id="8466613982764129868">Naprava <ph name="TARGET_DEVICE_NAME" /> mora biti povezana v internet</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /><ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>

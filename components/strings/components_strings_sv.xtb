@@ -80,6 +80,7 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
     &lt;li&gt;Kontakta ägaren av webbplatsen.&lt;/li&gt;
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Du har angett ditt lösenord på en webbplats som inte hanteras av organisationen. Skydda kontot genom att inte återanvända lösenordet för andra appar och webbplatser.</translation>
+<translation id="1259144770381827039">Visa mer information.</translation>
 <translation id="1263231323834454256">Läslista</translation>
 <translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
         Aktivitet som inte sparas på enheten:
@@ -326,6 +327,7 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
 <translation id="2164510882479075877">Kontrollera om det finns ett stavfel i <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">Fullständig administrativ åtkomst</translation>
 <translation id="2166378884831602661">Webbplatsen kan inte tillhandahålla en säker anslutning</translation>
+<translation id="2168151236314517198">Utskrift av detta innehåll blockeras av en administratörspolicy</translation>
 <translation id="2169984857010174799">Kaku2 (kuvert)</translation>
 <translation id="2181821976797666341">Policyer</translation>
 <translation id="2183608646556468874">Telefonnummer</translation>
@@ -1360,6 +1362,7 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
 <translation id="6290238015253830360">Rekommenderade artiklar visas här</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">Google-assistenten i Chrome stoppas</translation>
+<translation id="6304463939629872728">Betala med</translation>
 <translation id="6305205051461490394"><ph name="URL" /> kan inte nås.</translation>
 <translation id="6312113039770857350">Webbsidan är inte tillgänglig</translation>
 <translation id="6321917430147971392">Kontrollera DNS-inställningarna</translation>
@@ -1389,6 +1392,7 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
 <translation id="6406765186087300643">C0 (kuvert)</translation>
 <translation id="6409754798200046165">Du angav just ditt lösenord på en bedräglig webbplats. Du rekommenderas i Chrome att ändra lösenordet nu.</translation>
 <translation id="6410264514553301377">Ange utgångsdatum och CVC-kod för <ph name="CREDIT_CARD" /></translation>
+<translation id="6410774864568266108">Glöm inte erbjudandet i Google Pay</translation>
 <translation id="6415778972515849510">Du kan skydda Google-kontot genom att byta lösenord.</translation>
 <translation id="6423385022588644828">Verifiera kreditkort snabbare genom att använda Touch ID från och med nu</translation>
 <translation id="6425092077175753609">Material</translation>

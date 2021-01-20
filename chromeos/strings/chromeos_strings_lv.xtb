@@ -186,6 +186,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="5832805196449965646">Pievienot personu</translation>
 <translation id="5895138241574237353">Restartēt</translation>
 <translation id="5916084858004523819">Aizliegts</translation>
+<translation id="5921506667911082617">{COUNT,plural, =1{Fails ir sekmīgi noskenēts un saglabāts mapē <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}zero{Faili ir sekmīgi noskenēti un saglabāti mapē <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Faili ir sekmīgi noskenēti un saglabāti mapē <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Faili ir sekmīgi noskenēti un saglabāti mapē <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Fails nav atrasts</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, versija <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Aizvērt</translation>

@@ -52,7 +52,7 @@
 <translation id="2291999235780842123">caixa de verificación</translation>
 <translation id="2307576640803031502">na lista, elemento <ph name="INDEX" /> de <ph name="COUNT" /></translation>
 <translation id="2311842470354187719">salto de páxina</translation>
-<translation id="2335594187091864976">seleccionador de data e hora</translation>
+<translation id="2335594187091864976">selector de data e hora</translation>
 <translation id="2393030564806080191">Valor hexadecimal da cor</translation>
 <translation id="245932805758469625">número de segundos restantes do vídeo</translation>
 <translation id="248395913932153421">Día</translation>
@@ -133,7 +133,7 @@
 <translation id="4912536737030637138">entrada bibliográfica</translation>
 <translation id="4915360478455618802">Mostrar o selector da hora</translation>
 <translation id="492244087561876220">comentario</translation>
-<translation id="4950364064308314478">Mostrar o selector da data e a hora locais</translation>
+<translation id="4950364064308314478">Mostrar o selector de data e a hora locais</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" /> (opción seleccionada)</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> seleccionados</translation>
 <translation id="4992066212339426712">Activar o son</translation>
@@ -157,7 +157,7 @@
 <translation id="5453733299334684579">elemento da árbore</translation>
 <translation id="5466621249238537318">Selecciona un ou máis ficheiros.</translation>
 <translation id="5468998798572797635">sae da pantalla completa</translation>
-<translation id="5516424706154626233">seleccionador de data</translation>
+<translation id="5516424706154626233">selector de data</translation>
 <translation id="5537725057119320332">Emitir</translation>
 <translation id="5546461542133609677">activar o son</translation>
 <translation id="5608153257855394627">destacar</translation>

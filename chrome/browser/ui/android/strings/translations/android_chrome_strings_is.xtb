@@ -84,6 +84,7 @@
 <translation id="1571304935088121812">Afrita notandanafn</translation>
 <translation id="1592864538817356322">Hefðbundin vörn:</translation>
 <translation id="1612196535745283361">Chrome þarf að hafa aðgang að staðsetningu til að geta leitað að tækjum. Aðgangur að staðsetningu er <ph name="BEGIN_LINK" />óvirkur fyrir þetta tæki<ph name="END_LINK" />.</translation>
+<translation id="1613577519914241527">Þegar kveikt er á þessu geta vefsvæði ekki notað persónugreinanlegar upplýsingar til að auka vægi vefsvæða sinna. Það virkar svipað og hópur áheyrenda á tónleikum, þar sem vefsvæði sjá aðeins þúsundir notenda sem deila sama áhugasviði.\n\nÞinn „hópur“ byggist á þeim vefsvæðum sem þú hefur heimsótt. Auglýsendur geta aðeins séð hvaða vefsvæði allur hópurinn heimsækir, ekki þau vefsvæði sem þú heimsækir persónulega.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Fjarlægja 1 valið atriði}one{Fjarlægja # valið atriði}other{Fjarlægja # valin atriði}}</translation>
 <translation id="1641113438599504367">Örugg vefnotkun</translation>
 <translation id="164269334534774161">Þú ert að skoða ónettengt afrit af þessari síðu frá <ph name="CREATION_TIME" /></translation>
@@ -468,6 +469,7 @@ Haltu fingri á hvaða orði sem er til að leita að því. Veldu fleiri eða f
 <translation id="4440958355523780886">Léttútgáfa síðu frá Google. Ýttu til að hlaða upprunalegu útgáfunni.</translation>
 <translation id="4452411734226507615">Loka flipanum <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Bókamerki var búið til í <ph name="FOLDER_NAME" /></translation>
+<translation id="4465314970046116177">Persónuverndarafmörkun er ný tækni sem mun að endingu verja fólk fyrir rakningu á milli vefsvæða, t.d. fótsporum þriðja aðila, en tryggja á sama tíma aðgang að vefefni og þjónustum sem reiða sig á slíka tækni í dag. Chrome vinnur að þróun þessarar nýju tækni í samstarfi við þróunaraðila vefsvæða, útgefendur, auglýsendur og aðra vafra.</translation>
 <translation id="4472118726404937099">Skráðu þig inn og kveiktu á samstillingu til að hafa allt samstillt og sérsniðið í tækjunum þínum</translation>
 <translation id="447252321002412580">Hjálpaðu til við að bæta eiginleika og afköst Chrome</translation>
 <translation id="4479972344484327217">Setur upp <ph name="MODULE" /> fyrir Chrome…</translation>
@@ -638,6 +640,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="5595485650161345191">Breyta heimilisfangi</translation>
 <translation id="5599455543593328020">Huliðsstilling</translation>
 <translation id="5599941490345670218">Google hjálparinn getur lokið aðgerðum á ýmsum vefsvæðum fyrir þig</translation>
+<translation id="5606787249466187650">Kanna persónuverndarsandkassann</translation>
 <translation id="5620163320393916465">Engin vistuð aðgangsorð</translation>
 <translation id="5620928963363755975">Þú finnur skrár og síður í Niðurhali undir hnappinum „Fleiri valkostir“</translation>
 <translation id="5626134646977739690">Nafn:</translation>
@@ -743,6 +746,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="6243852395147506234">Tilbúið til notkunar án nettengingar</translation>
 <translation id="624789221780392884">Uppfærsla tilbúin</translation>
 <translation id="6255999984061454636">Tillögur að efni</translation>
+<translation id="6266591733731644292">Persónuverndarafmörkunin er ekki komin í almenna notkun ennþá. Meðan á prufutímanum stendur:\n<ph name="BEGIN_LIST_ITEM1" />Vefsvæði og framleiðendur forrita geta þróað tækni til að birta viðeigandi efni án þess að fá aðgang að persónugreinanlegum upplýsingum um þig<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />Notendur geta afþakkað að taka þátt í prufuútgáfunni með stýringunum á þessari síðu.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="6277522088822131679">Vandamál kom upp við að prenta síðuna. Reyndu aftur.</translation>
 <translation id="6278428485366576908">Þema</translation>
 <translation id="6292420053234093573">Með því að nota Chrome samþykkir þú <ph name="BEGIN_LINK1" />þjónustuskilmála Google<ph name="END_LINK1" />og <ph name="BEGIN_LINK2" />viðbótarskilmála Google Chrome og Chrome OS<ph name="END_LINK2" />.</translation>
@@ -834,6 +838,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="6811034713472274749">Hægt er að skoða síðuna</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, flipi, valinn</translation>
+<translation id="6833996806551876956">Prufuútgáfa persónuverndarafmörkunar</translation>
 <translation id="6845325883481699275">Hjálpaðu til við að bæta öryggi Chrome</translation>
 <translation id="6846298663435243399">Hleður…</translation>
 <translation id="6850409657436465440">Enn er verið að sækja</translation>
@@ -1069,6 +1074,7 @@ Gögnum úr huliðslotum verður aðeins eytt úr Chrome þegar þú <ph name="B
 <translation id="8442258441309440798">Engar sögur í boði</translation>
 <translation id="8443209985646068659">Ekki er hægt að uppfæra</translation>
 <translation id="8445448999790540984">Ekki er hægt að flytja út aðgangsorð</translation>
+<translation id="8447219758310755868">Hópshula</translation>
 <translation id="8461694314515752532">Dulkóða samstillt gögn með eigin aðgangsorði samstillingar</translation>
 <translation id="8466613982764129868">Gakktu úr skugga um að <ph name="TARGET_DEVICE_NAME" /> sé tengt við internetið</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>

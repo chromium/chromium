@@ -72,6 +72,7 @@ Kui ruut teenuse „<ph name="SERVICE_SCRIPT_NAME" />” juures on juba märgitu
 <translation id="4405930547258349619">Põhikogu</translation>
 <translation id="443560535555262820">Avage juurdepääsufunktsioonide eelistused</translation>
 <translation id="4450893287417543264">Ära kuva uuesti</translation>
+<translation id="4512952200932940229">Autoriõigus 2021 The Chromium Authors. Kõik õigused kaitstud.</translation>
 <translation id="4513946894732546136">Tagasiside</translation>
 <translation id="4563926062592110512">Ühenduse katkestanud klient: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="4635770493235256822">Kaugseadmed</translation>
@@ -173,6 +174,7 @@ Kui ruut teenuse „<ph name="SERVICE_SCRIPT_NAME" />” juures on juba märgitu
 <translation id="8743328882720071828">Kas lubate kasutajal <ph name="CLIENT_USERNAME" /> oma arvutit vaadata ja juhtida?</translation>
 <translation id="8747048596626351634">Seanss jooksis kokku või selle käivitamine ebaõnnestus. Kui seanss ~/.chrome-remote-desktop-session on kaugarvutis olemas, veenduge, et see käivitaks pikaajalise taustaprotsessi (nt töölauakeskkond või aknahaldur).</translation>
 <translation id="8804164990146287819">Privaatsuseeskirjad</translation>
+<translation id="8906511416443321782">Juurdepääs mikrofonile on vajalik, et jäädvustada heli ja voogesitada seda Chrome Remote Desktopi kliendile.</translation>
 <translation id="9111855907838866522">Olete kaugseadmega ühendatud. Menüü avamiseks puudutage ekraani nelja sõrmega.</translation>
 <translation id="9126115402994542723">Ära küsi PIN-koodi uuesti, kui sellest seadmest selle hostiga ühendus luuakse.</translation>
 <translation id="916856682307586697">XSession-vaikeseansi käivitamine</translation>

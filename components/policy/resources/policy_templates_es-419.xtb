@@ -820,13 +820,6 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
       Si estableces la política, el navegador comenzará a descartar pestañas para ahorrar memoria cuando se supere el límite. Sin embargo, no hay garantía de que el navegador se ejecute siempre por debajo del límite. Se redondeará a 1024 cualquier valor por debajo de 1024.
 
       Si no estableces esta política, el navegador solo comenzará a ahorrar memoria cuando detecte que queda poca cantidad de memoria física disponible en la máquina.</translation>
-<translation id="2164922809922345834">Habilita la oclusión de ventanas nativas en <ph name="PRODUCT_NAME" />.
-
-      Si habilitas esta configuración, <ph name="PRODUCT_NAME" /> detectará cuando se cubra una ventana con otras y dejará de pintar píxeles, a fin de reducir el consumo de energía y de CPU.
-
-      Si inhabilitas esta configuración, <ph name="PRODUCT_NAME" /> no detectará cuando se cubra una ventana con otras.
-
-      Si no se establece esta política, se habilitará la detección de oclusión.</translation>
 <translation id="2166472654199325139">No aplicar filtros de contenido para adultos a los sitios</translation>
 <translation id="2168397434410358693">Demora de inactividad con alimentación de CA</translation>
 <translation id="217013996107840632">Parámetros de la línea de comandos para cambiar del navegador alternativo</translation>

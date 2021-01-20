@@ -72,6 +72,7 @@
 <translation id="4405930547258349619">核心資料庫</translation>
 <translation id="443560535555262820">開啟無障礙功能偏好設定</translation>
 <translation id="4450893287417543264">不要再顯示</translation>
+<translation id="4512952200932940229">Copyright 2021 The Chromium Authors. All Rights Reserved.</translation>
 <translation id="4513946894732546136">意見回饋</translation>
 <translation id="4563926062592110512">已中斷連線至用戶端：<ph name="CLIENT_USERNAME" />。</translation>
 <translation id="4635770493235256822">遠端裝置</translation>
@@ -173,6 +174,7 @@
 <translation id="8743328882720071828">你要將電腦的瀏覽及控制權限授予 <ph name="CLIENT_USERNAME" /> 嗎？</translation>
 <translation id="8747048596626351634">工作階段當機或無法啟動。如果遠端電腦有 ~/.chrome-remote-desktop-session，請確認該檔案開始執行長期運作的前景程序，例如桌面環境或視窗管理員。</translation>
 <translation id="8804164990146287819">隱私權政策</translation>
+<translation id="8906511416443321782">該主機需要麥克風存取權才能擷取音訊，並將音訊投放到 Chrome 遠端桌面用戶端。</translation>
 <translation id="9111855907838866522">你已連上遠端裝置，使用四指輕觸螢幕即可開啟選單。</translation>
 <translation id="9126115402994542723">此裝置連線至這個主機時，不必再次詢問 PIN。</translation>
 <translation id="916856682307586697">啟動預設的 XSession</translation>

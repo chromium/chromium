@@ -80,6 +80,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
     &lt;li&gt;Jarri webgunearen jabearekin harremanetan.&lt;/li&gt;
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Zure erakundeak kudeatzen ez duen webgune batean idatzi duzu pasahitza. Kontua babesteko, ez erabili berriro pasahitz hori beste inongo aplikazio eta webgunetan.</translation>
+<translation id="1259144770381827039">Ikusi xehetasunak.</translation>
 <translation id="1263231323834454256">Irakurketa-zerrenda</translation>
 <translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
         Jarduera hauek ez dira gordeko gailuan:
@@ -322,6 +323,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2164510882479075877">Egiaztatu behar bezala idatzita dagoela <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">Administratzailearen sarbide osoa</translation>
 <translation id="2166378884831602661">Webguneak ezin du eskaini konexio segururik</translation>
+<translation id="2168151236314517198">Administratzailearen gidalerroek edukia inprimatzea eragozten dute</translation>
 <translation id="2169984857010174799">Kaku2 (gutun-azala)</translation>
 <translation id="2181821976797666341">Gidalerroak</translation>
 <translation id="2183608646556468874">Telefono-zenbakia</translation>
@@ -1344,6 +1346,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6290238015253830360">Iradokitako artikuluak agertuko zaizkizu hemen</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">Chrome-rako Google-ren Laguntzailea gelditzen</translation>
+<translation id="6304463939629872728">Erosi honekin:</translation>
 <translation id="6305205051461490394">Ezin da konektatu <ph name="URL" /> webgunera.</translation>
 <translation id="6312113039770857350">Ez dago erabilgarri web-orria</translation>
 <translation id="6321917430147971392">Begiratu DNS ezarpenak</translation>
@@ -1373,6 +1376,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6406765186087300643">C0 (gutun-azala)</translation>
 <translation id="6409754798200046165">Webgune engainagarri batean idatzi duzu pasahitza. Pasahitza berehala aldatzea gomendatzen du Chrome-k.</translation>
 <translation id="6410264514553301377">Idatzi <ph name="CREDIT_CARD" /> txartelaren iraungitze-data eta CVC kodea</translation>
+<translation id="6410774864568266108">Ez ahaztu Google Pay-n duzun eskaintzaz</translation>
 <translation id="6415778972515849510">Google-ko kontua babesten eta pasahitza aldatzen lagun diezazuke Chromium-ek.</translation>
 <translation id="6423385022588644828">Aurrerantzean, berretsi txartelak bizkorrago Touch ID erabilita</translation>
 <translation id="6425092077175753609">Material diseinua</translation>

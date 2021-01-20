@@ -1646,6 +1646,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="281504910091592009">Afficher et gérer les mots de passe enregistrés dans votre <ph name="BEGIN_LINK" />compte Google<ph name="END_LINK" /></translation>
 <translation id="2815693974042551705">Dossier de favoris</translation>
 <translation id="2816319641769218778">Pour enregistrer vos mots de passe dans votre compte Google, activez la synchronisation.</translation>
+<translation id="2816628817680324566">Autoriser ce site à identifier votre clé de sécurité ?</translation>
 <translation id="2818476747334107629">Détails de l'imprimante</translation>
 <translation id="2820957248982571256">Recherche…</translation>
 <translation id="2822634587701817431">Réduire/Développer</translation>
@@ -3750,6 +3751,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="5300287940468717207">Réinitialiser les autorisations des sites ?</translation>
 <translation id="5300589172476337783">Afficher</translation>
 <translation id="5300719150368506519">Envoyer à Google les URL des pages que vous consultez</translation>
+<translation id="5300814202279832142">Déplacer la fenêtre sur le bureau</translation>
 <translation id="5301751748813680278">Entrée en tant qu'invité.</translation>
 <translation id="5301954838959518834">OK</translation>
 <translation id="5302048478445481009">Langue</translation>
@@ -5433,6 +5435,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7250616558727237648">L'appareil avec lequel vous tentez de partager le fichier ne répond pas. Veuillez réessayer.</translation>
 <translation id="725109152065019550">Désolé, votre administrateur a désactivé les périphériques de stockage externe pour votre compte.</translation>
 <translation id="7251346854160851420">Fond d'écran par défaut</translation>
+<translation id="7251979364707973467"><ph name="WEBSITE" /> a émis votre clé de sécurité et souhaite connaître son identifiant. Le site saura exactement quelle clé de sécurité vous utilisez.</translation>
 <translation id="7253521419891527137">&amp;En savoir plus</translation>
 <translation id="7254951428499890870">Voulez-vous vraiment lancer l'application "<ph name="APP_NAME" />" en mode diagnostic ?</translation>
 <translation id="725497546968438223">Bouton du dossier de favoris</translation>

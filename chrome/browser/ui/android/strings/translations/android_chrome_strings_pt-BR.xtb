@@ -84,6 +84,7 @@
 <translation id="1571304935088121812">Copiar nome de usuário</translation>
 <translation id="1592864538817356322">Proteção padrão:</translation>
 <translation id="1612196535745283361">O Chrome precisa ter acesso ao local para verificar dispositivos. O acesso ao local está <ph name="BEGIN_LINK" />desativado neste dispositivo<ph name="END_LINK" />.</translation>
+<translation id="1613577519914241527">Quando estiver ativada, os sites não poderão usar informações que identificam você individualmente para ficarem mais relevantes. De forma semelhante à multidão em um show, os sites só poderão saber que milhares de usuários têm um mesmo interesse.\n\nSua “multidão” é baseada nos sites que você visita. Os anunciantes só poderão ver os sites que a multidão visita como um todo, não os que você visita pessoalmente.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Remover 1 item selecionado}one{Remover # item selecionado}other{Remover # itens selecionados}}</translation>
 <translation id="1641113438599504367">Navegação segura</translation>
 <translation id="164269334534774161">Você está vendo uma cópia off-line desta página de <ph name="CREATION_TIME" /></translation>
@@ -226,7 +227,7 @@ Toque em qualquer palavra e a mantenha pressionada para pesquisar. Para refinar 
 <translation id="2546283357679194313">Cookies e dados do site</translation>
 <translation id="2567385386134582609">IMAGEM</translation>
 <translation id="2571711316400087311">Oferecer a opção de enviar páginas em outros idiomas ao Google Tradutor</translation>
-<translation id="2581165646603367611">Essa ação limpará os cookies, cache e outros dados de sites que o Chrome não acredita serem importantes.</translation>
+<translation id="2581165646603367611">Essa ação apagará os cookies, cache e outros dados de sites que o Chrome não acredita serem importantes.</translation>
 <translation id="2587052924345400782">Versão mais recente disponível</translation>
 <translation id="2593272815202181319">Espaçamento uniforme</translation>
 <translation id="2612676031748830579">Número do cartão</translation>
@@ -468,6 +469,7 @@ Toque em qualquer palavra e a mantenha pressionada para pesquisar. Para refinar 
 <translation id="4440958355523780886">Página Lite exibida pelo Google. Toque para carregar a original.</translation>
 <translation id="4452411734226507615">Fechar guia <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Adicionado como favorito em <ph name="FOLDER_NAME" /></translation>
+<translation id="4465314970046116177">A Privacy Sandbox é um conjunto de novas tecnologias que, com o tempo, protegerão as pessoas de mecanismos de rastreamento entre sites, como cookies de terceiros, enquanto preservam os serviços e conteúdos da Web que dependem desses mecanismos atualmente. O Chrome está trabalhando com desenvolvedores de sites, editores, anunciantes e outros navegadores para desenvolver essa nova tecnologia.</translation>
 <translation id="4472118726404937099">Para sincronizar e personalizar vários dispositivos, faça login e ative a sincronização</translation>
 <translation id="447252321002412580">Ajude a melhorar os recursos e o desempenho do Chrome</translation>
 <translation id="4479972344484327217">Instalando <ph name="MODULE" /> para o Chrome…</translation>
@@ -745,6 +747,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6243852395147506234">Prontas para o modo off-line</translation>
 <translation id="624789221780392884">Atualização pronta</translation>
 <translation id="6255999984061454636">Sugestões de conteúdo</translation>
+<translation id="6266591733731644292">A Privacy Sandbox ainda não está amplamente disponível. Durante o período de teste:\n<ph name="BEGIN_LIST_ITEM1" />os sites e desenvolvedores de apps podem testar a habilidade de criar experiências relevantes sem acessar suas informações individualmente identificáveis;<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />os usuários podem recusar o teste usando os controles nesta página.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="6277522088822131679">Ocorreu um problema ao imprimir a página. Tente novamente.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6292420053234093573">Ao usar o Chrome, você concorda com os <ph name="BEGIN_LINK1" />Termos de Serviço do Google<ph name="END_LINK1" /> e os <ph name="BEGIN_LINK2" />Termos de Serviço adicionais do Google Chrome e do Chrome OS<ph name="END_LINK2" />.</translation>
@@ -836,6 +839,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6811034713472274749">A página já pode ser visualizada</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612">A guia <ph name="TAB_TITLE" /> está selecionada</translation>
+<translation id="6833996806551876956">Teste da Privacy Sandbox</translation>
 <translation id="6845325883481699275">Ajudar a melhorar a segurança do Chrome</translation>
 <translation id="6846298663435243399">Carregando…</translation>
 <translation id="6850409657436465440">Seu download ainda está em andamento</translation>
@@ -1071,6 +1075,7 @@ Os dados da sessão anônima só serão excluídos do Chrome quando você <ph na
 <translation id="8442258441309440798">Nenhuma matéria disponível</translation>
 <translation id="8443209985646068659">Erro ao atualizar Chrome</translation>
 <translation id="8445448999790540984">Não é possível exportar senhas</translation>
+<translation id="8447219758310755868">Crowdmasking</translation>
 <translation id="8461694314515752532">Criptografar dados sincronizados com sua própria senha longa de sincronização</translation>
 <translation id="8466613982764129868">Verifique se o <ph name="TARGET_DEVICE_NAME" /> está conectado à Internet</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>

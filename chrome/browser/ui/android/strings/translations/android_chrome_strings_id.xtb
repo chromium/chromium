@@ -84,6 +84,7 @@
 <translation id="1571304935088121812">Salin nama pengguna</translation>
 <translation id="1592864538817356322">Perlindungan standar:</translation>
 <translation id="1612196535745283361">Chrome memerlukan akses lokasi untuk memindai perangkat. Akses lokasi <ph name="BEGIN_LINK" />dinonaktifkan untuk perangkat ini<ph name="END_LINK" />.</translation>
+<translation id="1613577519914241527">Saat aktif, situs tidak akan dapat menggunakan informasi yang mengidentifikasi Anda secara pribadi untuk membuat situs mereka lebih relevan. Seperti halnya keramaian dalam konser, situs hanya dapat mengetahui bahwa ribuan pengguna memiliki minat yang serupa.\n\n“Keramaian” Anda didasarkan pada situs yang telah Anda kunjungi. Pengiklan hanya dapat melihat situs yang dikunjungi beramai-ramai, bukan situs yang dikunjungi secara pribadi.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Hapus 1 item yang dipilih}other{Hapus # item yang dipilih}}</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="164269334534774161">Anda melihat salinan offline halaman ini dari <ph name="CREATION_TIME" /></translation>
@@ -468,6 +469,7 @@ Sentuh lama kata apa pun untuk menelusurinya. Untuk menyaring penelusuran, pilih
 <translation id="4440958355523780886">Halaman ringan yang ditampilkan oleh Google. Ketuk untuk memuat halaman asli.</translation>
 <translation id="4452411734226507615">Tutup tab <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Dibookmark ke <ph name="FOLDER_NAME" /></translation>
+<translation id="4465314970046116177">Privacy Sandbox adalah seperangkat teknologi baru yang pada akhirnya akan melindungi orang-orang dari mekanisme pelacakan lintas situs, seperti cookie pihak ketiga, sekaligus mempertahankan konten dan layanan web yang saat ini bergantung pada mekanisme tersebut. Chrome bekerja sama dengan developer situs, penayang, pengiklan, dan browser lain untuk mengembangkan teknologi baru ini.</translation>
 <translation id="4472118726404937099">Untuk menyinkronkan dan mempersonalisasi berbagai perangkat, login dan aktifkan sinkronisasi</translation>
 <translation id="447252321002412580">Bantu sempurnakan fitur dan performa Chrome</translation>
 <translation id="4479972344484327217">Menginstal <ph name="MODULE" /> untuk Chrome…</translation>
@@ -743,6 +745,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="6243852395147506234">Siap untuk offline</translation>
 <translation id="624789221780392884">Pembaruan siap</translation>
 <translation id="6255999984061454636">Saran konten</translation>
+<translation id="6266591733731644292">Privacy Sandbox belum dirilis secara luas. Selama periode uji coba ini:\n<ph name="BEGIN_LIST_ITEM1" />Developer situs dan aplikasi dapat mencoba kemampuan untuk membuat pengalaman yang relevan tanpa mengakses informasi Anda yang dapat diidentifikasi secara unik <ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />Pengguna dapat memilih tidak mengikuti uji coba dengan menggunakan kontrol di halaman ini.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="6277522088822131679">Terjadi masalah saat mencetak halaman. Coba lagi.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6292420053234093573">Dengan menggunakan Chrome, Anda menyetujui <ph name="BEGIN_LINK1" />Persyaratan Layanan Google<ph name="END_LINK1" /> serta <ph name="BEGIN_LINK2" />Persyaratan Layanan Tambahan Google Chrome dan Chrome OS<ph name="END_LINK2" />.</translation>
@@ -834,6 +837,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="6811034713472274749">Halaman siap ditampilkan</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612">Tab <ph name="TAB_TITLE" /> dipilih</translation>
+<translation id="6833996806551876956">Uji coba Privacy Sandbox</translation>
 <translation id="6845325883481699275">Bantu meningkatkan keamanan Chrome</translation>
 <translation id="6846298663435243399">Memuat...</translation>
 <translation id="6850409657436465440">Download sedang berlangsung</translation>
@@ -1069,6 +1073,7 @@ Data dari sesi Samaran Anda hanya akan dihapus dari Chrome saat Anda <ph name="B
 <translation id="8442258441309440798">Artikel tidak tersedia</translation>
 <translation id="8443209985646068659">Chrome tak bisa diupdate</translation>
 <translation id="8445448999790540984">Tidak dapat mengekspor sandi</translation>
+<translation id="8447219758310755868">Crowdmasking</translation>
 <translation id="8461694314515752532">Enkripsikan data yang disinkronkan dengan frasa sandi sinkronisasi Anda sendiri</translation>
 <translation id="8466613982764129868">Pastikan <ph name="TARGET_DEVICE_NAME" /> tersambung ke internet</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>

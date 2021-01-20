@@ -84,6 +84,7 @@
 <translation id="1571304935088121812">Copia o nome de usuario</translation>
 <translation id="1592864538817356322">Protección estándar:</translation>
 <translation id="1612196535745283361">Chrome necesita acceder á localización para buscar dispositivos. O acceso á localización deste dispositivo está <ph name="BEGIN_LINK" />desactivado<ph name="END_LINK" />.</translation>
+<translation id="1613577519914241527">Cando teñas este servizo activado, os sitios web non poderán utilizar ningún dato que te identifique persoalmente para conseguir resultarche máis relevantes. Como acontece cunha multitude de asistentes a un concerto, os sitios só poden saber que hai milleiros de usuarios cun interese similar.\n\nA túa “multitude” será unha ou outra en función dos sitios que visites. Os anunciantes só poden ver que sitios visita esa multitude no seu conxunto, pero non cales visitas ti de maneira individual.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Quitar 1 elemento seleccionado}other{Quitar # elementos seleccionados}}</translation>
 <translation id="1641113438599504367">Navegación segura</translation>
 <translation id="164269334534774161">Estás vendo unha copia sen conexión desta páxina creada o <ph name="CREATION_TIME" /></translation>
@@ -468,6 +469,7 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="4440958355523780886">Páxina en modo básico ofrecida por Google. Toca para cargar a orixinal.</translation>
 <translation id="4452411734226507615">Pecha a pestana <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Marcador engadido a <ph name="FOLDER_NAME" /></translation>
+<translation id="4465314970046116177">O illamento de procesos de privacidade é un conxunto de novas tecnoloxías que servirá para protexer os usuarios dos mecanismos de seguimento en múltiples sitios, como as cookies de terceiros, ao tempo que salvagardará os servizos e o contido web que dependen deses mecanismos na actualidade. Para desenvolver esta nova tecnoloxía, Chrome colabora con programadores de sitios web, editores, anunciantes e outros navegadores.</translation>
 <translation id="4472118726404937099">Inicia sesión e activa a sincronización para personalizar todos os teus dispositivos e sincronizalos</translation>
 <translation id="447252321002412580">Axudar a mellorar o rendemento e as funcións de Chrome</translation>
 <translation id="4479972344484327217">Instalando <ph name="MODULE" /> para Chrome…</translation>
@@ -638,6 +640,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5595485650161345191">Editar enderezo</translation>
 <translation id="5599455543593328020">Modo de incógnito</translation>
 <translation id="5599941490345670218">O Asistente de Google pode completar accións por ti nos sitios web</translation>
+<translation id="5606787249466187650">Explora o illamento de procesos de privacidade</translation>
 <translation id="5620163320393916465">Non hai contrasinais gardados</translation>
 <translation id="5620928963363755975">A través do botón Máis opcións, atopa os ficheiros e as páxinas que descargaches na sección Descargas</translation>
 <translation id="5626134646977739690">Nome:</translation>
@@ -743,6 +746,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6243852395147506234">Todo listo para usar o modo sen conexión</translation>
 <translation id="624789221780392884">Actualización lista</translation>
 <translation id="6255999984061454636">Suxestións de contido</translation>
+<translation id="6266591733731644292">O illamento de procesos de privacidade aínda está en fase de proba. Durante este período de proba:\n<ph name="BEGIN_LIST_ITEM1" />Os programadores de aplicacións e sitios web poden probar a crear experiencias relevantes sen acceder a información que te identifique de maneira única.<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />Os usuarios poden darse de baixa da proba cos controis desta páxina.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="6277522088822131679">Produciuse un problema ao imprimir a páxina. Téntao de novo.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6292420053234093573">Ao utilizar Chrome, aceptas as <ph name="BEGIN_LINK1" />Condicións de servizo de Google<ph name="END_LINK1" /> e as <ph name="BEGIN_LINK2" />Condicións de servizo adicionais de Google Chrome e Chrome OS<ph name="END_LINK2" />.</translation>
@@ -834,6 +838,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6811034713472274749">A páxina está lista para vela</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, pestana, seleccionada</translation>
+<translation id="6833996806551876956">Proba de illamento de procesos de privacidade</translation>
 <translation id="6845325883481699275">Axudar a mellorar a seguranza de Chrome</translation>
 <translation id="6846298663435243399">Cargando…</translation>
 <translation id="6850409657436465440">A descarga aínda está en curso</translation>
@@ -1069,6 +1074,7 @@ Os datos da túa sesión só se borrarán de Chrome ao <ph name="BEGIN_BOLD2" />
 <translation id="8442258441309440798">Non hai ningunha historia dispoñible</translation>
 <translation id="8443209985646068659">Non se actualiza Chrome</translation>
 <translation id="8445448999790540984">Non se puideron exportar os contrasinais</translation>
+<translation id="8447219758310755868">Camuflaxe no medio da multitude</translation>
 <translation id="8461694314515752532">Encriptar os datos sincronizados coa túa propia frase de acceso de sincronización</translation>
 <translation id="8466613982764129868">Asegúrate de que o dispositivo <ph name="TARGET_DEVICE_NAME" /> estea conectado a Internet</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>

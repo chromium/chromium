@@ -1652,6 +1652,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="281504910091592009">Bekyk en bestuur gestoorde wagwoorde in jou <ph name="BEGIN_LINK" />Google-rekening<ph name="END_LINK" /></translation>
 <translation id="2815693974042551705">Boekmerkvouer</translation>
 <translation id="2816319641769218778">Skakel sinkronisering aan om wagwoorde in jou Google-rekening te stoor.</translation>
+<translation id="2816628817680324566">Laat hierdie werf toe om jou sekuriteitsleutel te identifiseer?</translation>
 <translation id="2818476747334107629">Drukkerbesonderhede</translation>
 <translation id="2820957248982571256">Skandeer tans …</translation>
 <translation id="2822634587701817431">Krimp / vou uit</translation>
@@ -3769,6 +3770,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="5300287940468717207">Stel werftoestemmings terug?</translation>
 <translation id="5300589172476337783">Wys</translation>
 <translation id="5300719150368506519">Stuur URL'e van bladsye wat jy besoek na Google toe</translation>
+<translation id="5300814202279832142">Skuif venster na lessenaar</translation>
 <translation id="5301751748813680278">Meld as gas aan.</translation>
 <translation id="5301954838959518834">OK, het dit</translation>
 <translation id="5302048478445481009">Taal</translation>
@@ -5457,6 +5459,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="7250616558727237648">Die toestel waarmee jy deel, het nie geantwoord nie. Probeer weer.</translation>
 <translation id="725109152065019550">Jammer, jou administrateur het eksterne berging op jou rekening gedeaktiveer.</translation>
 <translation id="7251346854160851420">Verstekmuurpapier</translation>
+<translation id="7251979364707973467"><ph name="WEBSITE" /> het jou sekuriteitsleutel uitgereik en wil weet wat sy ID-nommer is. Die werf sal presies weet watter sekuriteitsleutel jy gebruik.</translation>
 <translation id="7253521419891527137">Kom meer te wete</translation>
 <translation id="7254951428499890870">Is jy seker jy wil "<ph name="APP_NAME" />" in diagnostiese modus begin?</translation>
 <translation id="725497546968438223">Boekmerk Vouer-knoppie</translation>

@@ -804,13 +804,6 @@ Bu politikayı devre dışı bırakırsanız web sayfasını URL yoluyla belirli
       Politika ayarlanırsa tarayıcı, sınır geçildikten sonra bellekten tasarruf etmek için sekmeleri silmeye başlar. Bununla birlikte, tarayıcının her zaman sınırın altında çalışacağına dair herhangi bir garanti yoktur. 1024'ün altındaki değerler 1024'e yuvarlanır.
 
       Bu politika ayarlanmazsa tarayıcı yalnızca makinesindeki fiziksel bellek miktarının düştüğünü algıladığında bellekten tasarruf etmeye çalışır.</translation>
-<translation id="2164922809922345834"><ph name="PRODUCT_NAME" /> içinde yerel pencere kapamayı etkinleştirir.
-
-      Bu ayarı etkinleştirirseniz <ph name="PRODUCT_NAME" />, CPU ve güç tüketimini azaltmak için, üzeri diğer pencereler tarafından kaplanan pencereleri algılar ve piksel boyama işini askıya alır.
-
-      Bu ayarı devre dışı bırakırsanız <ph name="PRODUCT_NAME" />, üzeri diğer pencereler tarafından kaplanan pencereleri algılamaz.
-
-      Bu politika ayarlanmadan bırakılırsa kapama algılama etkinleştirilir.</translation>
 <translation id="2166472654199325139">Yetişkinlere uygun içerik için siteler filtreleme</translation>
 <translation id="2168397434410358693">AC güçle çalışırken boşta kalma gecikmesi</translation>
 <translation id="217013996107840632">Alternatif tarayıcıdan geçiş yapmak için komut satırı parametreleri.</translation>

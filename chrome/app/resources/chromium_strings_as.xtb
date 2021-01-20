@@ -42,17 +42,22 @@
 <translation id="2535480412977113886">আপোনাৰ একাউণ্টৰ ছাইন ইনৰ সবিশেষ তথ্যৰ ম্যাদ উকলি যোৱাৰ বাবে Chromium OS আপোনাৰ ডেটা ছিংক কৰিব নোৱাৰিলে।</translation>
 <translation id="2560420686485554789">ফাইল ডাউনল'ড কৰিবলৈ Chromiumক ষ্ট'ৰেজৰ এক্সেছৰ আৱশ্যক</translation>
 <translation id="2572494885440352020">Chromium সহায়ক</translation>
+<translation id="2577788541081224677">আপোনাৰ আটাইবোৰ ডিভাইচত আপোনাৰ Chromiumৰ বস্তু এক্সেছ কৰিবলৈ, চাইন ইন কৰক যাতে আপুনি ছিংক অন কৰিব পাৰে।</translation>
 <translation id="2583187216237139145">কৰ্মস্থানৰ প্ৰ’ফাইলৰ প্ৰশাসকে এই প্ৰ’ফাইলৰ ব্যৱহাৰৰ সময়ত সৃষ্টি হোৱা যিকোনো Chromium ডেটা (যেনে, বুকমাৰ্কৰ সৃষ্টি, ইতিহাস, পাছৱৰ্ড আৰু অন্য ছেটিং) আঁতৰাব পাৰে। <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">আপডে’টবোৰ প্ৰয়োগ কৰিবলৈ Chromium OS ৰিষ্টাৰ্ট কৰাৰ প্ৰয়োজন।</translation>
 <translation id="2615699638672665509">এই কম্পিউটাৰটোৱে শীঘ্ৰেই Chromiumৰ আপডে’টসমূহ লাভ কৰা বন্ধ কৰিব কাৰণ ইয়াৰ হাৰ্ডৱেৰ আৰু সমৰ্থিত নহয়।</translation>
 <translation id="2648074677641340862">ইনষ্টলেশ্বনৰ সময়ত এটা অপাৰেটিং ছিষ্টেম সম্পর্কীয় আসোঁৱাহ হৈছে। অনুগ্ৰহ কৰি পুনৰ Chromium ডাউনল’ড কৰক।</translation>
+<translation id="2661879430930417727">আপুনি যদি এটা ডিভাইচ শ্বেয়াৰ কৰে, আপোনাৰ বন্ধুবৰ্গ আৰু পৰিয়ালে পৃথককৈ ব্ৰাউজ কৰিব পাৰে আৰু তেওঁলোকে বিচৰা ধৰণে Chromium ছেট আপ কৰিব পাৰে</translation>
+<translation id="270245676623587882">এই এক্সটেনশ্বনটোৱে বৰ্তমান বৰ্ধিত সুৰক্ষিত ব্ৰাউজিঙৰ মান্যতা পূৰ নকৰে বাবে Chromiumএ এইটো অক্ষম কৰিবলৈ চুপাৰিছ কৰে।</translation>
 <translation id="2711502716910134313">Chromium টেব</translation>
 <translation id="2718390899429598676">অতিৰিক্ত সুৰক্ষাৰ বাবে Chromiumএ আপোনাৰ ডেটা এনক্ৰিপ্ট কৰিব।</translation>
 <translation id="2770231113462710648">ইয়ালৈ ডিফ’ল্ট ব্ৰাউজাৰ সলনি কৰক:</translation>
 <translation id="2799223571221894425">পুনৰ লঞ্চ কৰক</translation>
+<translation id="2816712596130903444">Chromium প্ৰ'ফাইল পৃথক কৰিবনে?</translation>
 <translation id="2847479871509788944">Chromiumৰপৰা আঁতৰাওক...</translation>
 <translation id="2885378588091291677">কাৰ্য পৰিচালক</translation>
 <translation id="2910007522516064972">&amp;Chromiumৰ বিষয়ে</translation>
+<translation id="2942419255987443909"><ph name="BEGIN_LINK_LINUX_OSS" />Linux বিকাশৰ পৰিবেশ (বিটা)<ph name="END_LINK_LINUX_OSS" />ৰ দৰে অতিৰিক্ত <ph name="BEGIN_LINK_CROS_OSS" />মুক্ত উৎসৰ ছফ্টৱেৰ<ph name="END_LINK_CROS_OSS" />ৰ জৰিয়তে Chromium OSক ব্যৱহাৰযোগ্য কৰা হৈছে।</translation>
 <translation id="2977470724722393594">Chromium একেবাৰে শেহতীয়া অৱস্থাত আছে</translation>
 <translation id="2983934633046890458">Chromiumএ পাছৱর্ডসমূহ সম্পাদনা কৰিবলৈ চেষ্টা কৰি আছে।</translation>
 <translation id="3032706164202344641">Chromiumএ আপোনাৰ পাছৱর্ডসমূহ পৰীক্ষা কৰিব নোৱাৰে। পাছত আকৌ চেষ্টা কৰক।</translation>
@@ -71,6 +76,8 @@
 <translation id="328888136576916638">Google API চাবিসমূহ নাই। Chromiumৰ কিছুমান কাৰ্যক্ষতা অক্ষম কৰা হ’ব।</translation>
 <translation id="3296368748942286671">Chromium বন্ধ কৰাৰ পিছতো নেপথ্যত এপ্‌সমূহ চলি থাকিবলৈ দিয়ক</translation>
 <translation id="331951419404882060">ছাইন ইন কৰোঁতে আসোঁৱাহ হোৱাৰ কাৰণে Chromium OSএ আপোনাৰ ডেটা ছিংক কৰিব নোৱাৰিলে।</translation>
+<translation id="3350761136195634146">এই প্ৰ'ফাইলটোৰ সৈতে এটা Chromium প্ৰ'ফাইল ইতিমধ্যে আছে</translation>
+<translation id="3406848076815591792">পূৰ্বে থকা Chromium প্ৰ'ফাইলটোলৈ যাব নেকি?</translation>
 <translation id="3430503420100763906">Chromiumৰ প্ৰ’ফাইলৰ জৰিয়তে আপুনি নিজৰ আটাইবোৰ Chromiumৰ বস্তু পৃথক কৰিব পাৰে। বন্ধুবৰ্গ আৰু পৰিয়ালৰ বাবে প্ৰ’ফাইল সৃষ্টি কৰক অথবা কৰ্মস্থান আৰু মনোৰঞ্জনৰ মাজত বিভাজন কৰক।</translation>
 <translation id="347328004046849135">আপুনি কোনো হেক কৰা পাছৱৰ্ডৰ জৰিয়তে ছাইন ইন কৰিলে Chromiumএ আপোনাক জাননী দিব</translation>
 <translation id="3474745554856756813">ইয়ে এই ডিভাইচটোৰ পৰা <ph name="ITEMS_COUNT" />টা বস্তু মচিব। আপোনাৰ ডেটা পাছত পুনৰুদ্ধাৰ কৰিবলৈ Chromiumত <ph name="USER_EMAIL" /> হিচাপে ছাইন ইন কৰক।</translation>
@@ -88,6 +95,7 @@
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
 <translation id="388648406173476553">Chromium কাষ্টমাইজ আৰু নিয়ন্ত্ৰণ কৰক। এই বিষয়ত আপুনি মনোযোগ দিয়াৰ প্ৰয়োজন - সবিশেষৰ বাবে ক্লিক কৰক।</translation>
 <translation id="3889543394854987837">Chromium খুলিবলৈ আপোনাৰ নামত ক্লিক কৰক আৰু ব্ৰাউজিং আৰম্ভ কৰক।</translation>
+<translation id="390528597099634151"><ph name="EXISTING_USER" />এ এই Chromium প্ৰ'ফাইলটোত ইতিমধ্যে ছাইন ইন কৰিছে। আপোনাৰ ব্ৰাউজিং পৃথক কৰি ৰাখিবলৈ Chromiumএ আপোনাৰ বাবে আপোনাৰ নিজৰ প্ৰ'ফাইল সৃষ্টি কৰি পাৰে।</translation>
 <translation id="3945058413678539331">Chromiumএ পাছৱর্ডসমূহ প্ৰতিলিপি কৰিবলৈ চেষ্টা কৰি আছে। ইয়াৰ অনুমতি দিবলৈ আপোনাৰ Windowsৰ পাছৱৰ্ডটো টাইপ কৰক।</translation>
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />বর্তমানৰ ছেটিংসমূহ<ph name="END_LINK" />ৰ সম্পর্কে প্ৰতিবেদন দি Chromiumক উন্নত কৰাত সহায় কৰক</translation>
 <translation id="4050175100176540509">শেহতীয়া সংস্কৰণত কিছুমান গুৰুত্বপূর্ণ উন্নত সুৰক্ষাৰ ব্যৱস্থা আৰু নতুন সুবিধা উপলব্ধ।</translation>
@@ -103,6 +111,7 @@
 <translation id="4423735387467980091">Chromium কাষ্টমাইজ আৰু নিয়ন্ত্ৰণ কৰক</translation>
 <translation id="452711251841752011">Chromiumলৈ স্বাগতম; নতুন ব্ৰাউজাৰৰ ৱিণ্ড’ খোলা হৈছে</translation>
 <translation id="4544142686420020088">Chromium আপডে'ট হোৱা নাই, কিবা ভুল হৈছে। <ph name="BEGIN_LINK" />Chromiumৰ আপডে'ট সম্পর্কীয় সমস্যাবোৰ আৰু বিফল হোৱা আপডে'টসমূহ সমাধান কৰক।<ph name="END_LINK" /></translation>
+<translation id="454579500955453258">এটা নতুন Chromium প্ৰ'ফাইলত অব্যাহত ৰাখিবনে?</translation>
 <translation id="4567424176335768812">আপুনি <ph name="USER_EMAIL_ADDRESS" /> হিচাপে ছাইন ইন হৈ আছে। আপুনি এতিয়া আপোনাৰ বুকমাৰ্ক, ইতিহাস আৰু আন ছেটিং আপুনি ছাইন ইন কৰি ৰখা সকলো ডিভাইচত এক্সেছ কৰিব পাৰিব।</translation>
 <translation id="459535195905078186">Chromium এপ্</translation>
 <translation id="4677944499843243528">অন্য কোনো কম্পিউটাৰত (<ph name="HOST_NAME" />) অন্য Chromium প্ৰক্ৰিয়াৰ (<ph name="PROCESS_ID" />) দ্বাৰা প্ৰ'ফাইলটো ব্যৱহাৰ হৈ থকা যেন লাগিছে। প্ৰ'ফাইলটো ক্ষতিগ্ৰস্থ নহ'বলৈ Chromiumএ ইয়াক অৱৰোধ কৰিছে। যদি অন্য কোনো প্ৰক্ৰিয়াই এই প্ৰ'ফাইলটো ব্যৱহাৰ কৰি থকা নাই বুলি আপুনি নিশ্চিত হয় তেন্তে আপুনি প্ৰ'ফাইলটো আনলক কৰি Chromium পুনৰ লঞ্চ কৰিব পাৰে।</translation>
@@ -113,6 +122,7 @@
 <translation id="4750035648288509542">প্ৰায় আপ টু ডে’ট হৈছে! আপডে’ট হোৱাটো সম্পূৰ্ণ কৰিবলৈ Chromium পুনৰ লঞ্চ কৰক। ইনক’গনিট’ ৱিণ্ড’সমূহ পুনৰ খুলিব নোৱাৰিব।</translation>
 <translation id="4788777615168560705">Chromiumএ আপোনাৰ পাছৱর্ডসমূহ পৰীক্ষা কৰিব নোৱাৰে। ২৪ ঘণ্টাৰ পাছত পুনৰ চেষ্টা কৰক অথবা <ph name="BEGIN_LINK" />আপোনাৰ Google একাউণ্টত পাছৱর্ডসমূহ পৰীক্ষা কৰক<ph name="END_LINK" />।</translation>
 <translation id="479167709087336770">এইটোৱে Google Searchত ব্যৱহৃত একেটা বানান পৰীক্ষকেই ব্যৱহাৰ কৰে। আপুনি ব্ৰাউজাৰত টাইপ কৰা পাঠ Googleলৈ পঠিওৱা হয়। আপুনি ছেটিংসমূহ-ত যিকোনো সময়তে এই আচৰণটো সলনি কৰিব পাৰে।</translation>
+<translation id="4814736265800133385">কোনো একাউণ্টৰ অবিহনে Chromium ব্যৱহাৰ কৰক</translation>
 <translation id="4888717733111232871">mDNS ট্ৰেফিকক অনুমতি দিবলৈ Chromium অন্তৰ্গামী নিয়ম।</translation>
 <translation id="4943838377383847465">Chromium নেপথ্য ম’ডত আছে।</translation>
 <translation id="4987820182225656817">অতিথিসকলে কোনো সুবিধা বাদ নিদিয়াকৈ Chromium ব্যৱহাৰ কৰিব পাৰে।</translation>
@@ -170,6 +180,7 @@
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium ১ ছেকেণ্ডত ৰিষ্টাৰ্ট হ’ব}one{Chromium # ছেকেণ্ডত ৰিষ্টাৰ্ট হ’ব}other{Chromium # ছেকেণ্ডত ৰিষ্টাৰ্ট হ’ব}}</translation>
 <translation id="6475912303565314141">আপুনি Chromium আৰম্ভ কৰিলে কি পৃষ্ঠা দেখুওৱা হ'ব সেয়াও ই নিয়ন্ত্ৰণ কৰে।</translation>
 <translation id="6510925080656968729">Chromium আনইনষ্টল কৰক</translation>
+<translation id="6542839706527980775">প্ৰতিটো প্ৰ'ফাইলে ইয়াৰ নিজৰ Chromiumৰ তথ্য ৰাখে, যেনে বুকমাৰ্ক, ইতিহাস, পাছৱৰ্ড আৰু অধিক</translation>
 <translation id="6570579332384693436">বানান শুদ্ধ কৰিবলৈ Chromiumএ আপুনি পাঠ অন্তৰ্ভুক্ত কৰিবলৈ থকা ক্ষেত্ৰসমূহত টাইপ কৰা পাঠখিনি Googleলৈ পঠিয়ায়</translation>
 <translation id="6598877126913850652">Chromiumৰ জাননীৰ ছেটিংসমূহ-লৈ চাওক</translation>
 <translation id="6613594504749178791">আপুনি পৰৱৰ্তী সময়ত Chromium পুনৰ লঞ্চ কৰিলে আপুনি কৰা সলনিসমূহ কাৰ্যকৰী হ’ব।</translation>
@@ -179,6 +190,7 @@
 কিছুমান সুবিধা নাথাকিব পাৰে। অনুগ্ৰহ কৰি অন্য কোনো প্ৰ’ফাইল ডাইৰেক্টৰী নির্দিষ্ট কৰক বা Chromiumৰ নতুন সংস্কৰণ ব্যৱহাৰ কৰক।</translation>
 <translation id="6734080038664603509">&amp;Chromium আপডে’ট কৰক</translation>
 <translation id="6734291798041940871">Chromium আপোনাৰ কম্পিউটাৰত থকা সকলো ব্যৱহাৰকাৰীৰ বাবে ইতিমধ্যেই ইনষ্টল কৰা হৈছে।</translation>
+<translation id="673636774878526923">আপোনাৰ আটাইবোৰ ডিভাইচত আপোনাৰ Chromiumৰ বস্তু এক্সেছ কৰিবলৈ, চাইন ইন কৰি তাৰ পাছত ছিংক অন কৰক।</translation>
 <translation id="6774082503108938489">আপোনাৰ অভিভাৱকে Chromiumত "ছাইট, এপ্ আৰু এক্সটেনশ্বনসমূহৰ বাবে অনুমতি" অফ কৰিছে। এই <ph name="EXTENSION_TYPE_PARAMETER" />টো সক্ষম কৰাৰ অনুমতি নাই।</translation>
 <translation id="6847869444787758381">Chromiumএ আপোনাৰ পাছৱৰ্ডসমূহ কেতিয়াবা হেক কৰা হৈছিল নেকি আপোনাক জানিবলৈ দিয়ে</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
@@ -261,6 +273,7 @@ Chromiumএ আপোনাৰ ছেটিংসমূহ পুনৰুদ্
 <translation id="8974095189086268230">অতিৰিক্ত <ph name="BEGIN_LINK_CROS_OSS" />মুক্ত উৎসৰ ছফ্টৱেৰ<ph name="END_LINK_CROS_OSS" />ৰ জৰিয়তে Chromium OSক ব্যৱহাৰযোগ্য কৰা হৈছে।</translation>
 <translation id="8986207147630327271">আপুনি এই ব্ৰাউজাৰত এটা কৰ্মস্থানৰ প্ৰ’ফাইল যোগ দিছে আৰু নিজৰ প্ৰশাসকক কেৱল কৰ্মস্থানৰ প্ৰ’ফাইলটোৰ ওপৰত নিয়ন্ত্ৰণ দিছে।</translation>
 <translation id="9019929317751753759">Chromiumক অধিক সুৰক্ষিত কৰিবলৈ, আমি <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />ত সূচীবদ্ধ নোহোৱা আৰু হয়তো আপোনাৰ অজ্ঞাতে যোগ কৰা তলত উল্লেখ কৰা এক্সটেনশ্বনটো অক্ষম কৰিছোঁ।</translation>
+<translation id="9047197236183657400">এটা নতুন Chromium প্ৰ'ফাইললৈ একাউণ্ট নিবনে?</translation>
 <translation id="9089354809943900324">Chromiumটো অতি পুৰণি</translation>
 <translation id="9093206154853821181">{0,plural, =1{এঘণ্টাৰ Chromium ভিতৰত পুনৰ লঞ্চ হ’ব}one{# ঘণ্টাৰ Chromium ভিতৰত পুনৰ লঞ্চ হ’ব}other{# ঘণ্টাৰ Chromium ভিতৰত পুনৰ লঞ্চ হ’ব}}</translation>
 <translation id="9107750757953039239">যদি আপোনাৰ একাধিক Google একাউণ্ট থাকে, আপুনি সেইসমূহ নিজৰ <ph name="DEVICE_TYPE" />ত যোগ দিব পাৰে। আপোনাৰ একাউণ্টসমূহ Chromium ব্ৰাউজাৰ আৰু Play Storeৰ লগতে Gmail, Drive আৰু YouTubeৰ দৰে সেৱাত উপলব্ধ হ’ব। <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" /></translation>

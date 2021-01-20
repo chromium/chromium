@@ -80,6 +80,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
     &lt;li&gt;Liên hệ với chủ sở hữu trang web.&lt;/li&gt;
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Bạn đã nhập mật khẩu của mình trên một trang web không thuộc quyền quản lý của tổ chức bạn. Để bảo vệ tài khoản, không sử dụng lại mật khẩu của bạn trên các ứng dụng và trang web khác.</translation>
+<translation id="1259144770381827039">Xem thông tin chi tiết.</translation>
 <translation id="1263231323834454256">Danh sách đọc</translation>
 <translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
         Hoạt động mà Chrome sẽ không lưu trên thiết bị này:
@@ -326,6 +327,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2164510882479075877">Kiểm tra xem có lỗi chính tả trong <ph name="HOST_NAME" /> hay không.</translation>
 <translation id="2166049586286450108">Quyền truy cập quản trị đầy đủ</translation>
 <translation id="2166378884831602661">Trang web này không thể cung cấp kết nối an toàn</translation>
+<translation id="2168151236314517198">Tính năng in nội dung này bị chặn theo chính sách của quản trị viên</translation>
 <translation id="2169984857010174799">Kaku2 (Phong bì)</translation>
 <translation id="2181821976797666341">Chính sách</translation>
 <translation id="2183608646556468874">Số điện thoại</translation>
@@ -1360,6 +1362,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6290238015253830360">Bài viết đề xuất cho bạn sẽ xuất hiện ở đây</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">Trợ lý Google trong Chrome đang dừng</translation>
+<translation id="6304463939629872728">Thanh toán bằng</translation>
 <translation id="6305205051461490394">Không thể truy cập <ph name="URL" />.</translation>
 <translation id="6312113039770857350">Trang web hiện không khả dụng</translation>
 <translation id="6321917430147971392">Kiểm tra cài đặt DNS của bạn</translation>
@@ -1389,6 +1392,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6406765186087300643">C0 (Phong bì)</translation>
 <translation id="6409754798200046165">Bạn vừa nhập mật khẩu vào một trang web lừa đảo. Chrome khuyên bạn nên đổi mật khẩu ngay.</translation>
 <translation id="6410264514553301377">Nhập ngày hết hạn và CVC cho <ph name="CREDIT_CARD" /></translation>
+<translation id="6410774864568266108">Đừng quên ưu đãi của Google Pay dành cho bạn</translation>
 <translation id="6415778972515849510">Chromium có thể giúp bạn bảo vệ Tài khoản Google của mình và đổi mật khẩu.</translation>
 <translation id="6423385022588644828">Từ giờ trở đi, bạn có thể xác nhận các thẻ nhanh hơn bằng Touch ID</translation>
 <translation id="6425092077175753609">Material</translation>

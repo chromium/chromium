@@ -84,6 +84,7 @@
 <translation id="1571304935088121812">Nakili jina la mtumiaji</translation>
 <translation id="1592864538817356322">Ulinzi wa kawaida:</translation>
 <translation id="1612196535745283361">Chrome inahitaji idhini ya kufikia mahali ili itafute vifaa. Kipengele cha kufikia mahali <ph name="BEGIN_LINK" />kimezimwa kwenye kifaa hiki<ph name="END_LINK" />.</translation>
+<translation id="1613577519914241527">Ukiwa umewasha kipengele hiki, tovuti hazitaweza kutumia maelezo yanayokutambulisha kufanya maudhui yakufae zaidi. Sawa na umati kwenye tamasha, tovuti zinaweza tu kujua kwamba maelfu ya watumiaji wanavutiwa na jambo linalofanana.\n\n“Umati” wako unategemea tovuti unazotembelea. Watangazaji wanaweza tu kuona tovuti ambazo umati mzima unatembelea wala si tovuti unazotembelea.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Ondoa kipengee 1 kilichochaguliwa}other{Ondoa vipengee # vilivyochaguliwa}}</translation>
 <translation id="1641113438599504367">Kuvinjari Salama</translation>
 <translation id="164269334534774161">Hii ni nakala ya nje ya mtandao ya ukurasa huu ya terehe <ph name="CREATION_TIME" /></translation>
@@ -468,6 +469,7 @@ Gusa na ushikilie neno lolote ili utafute. Ili uchuje utafutaji wako, chagua man
 <translation id="4440958355523780886">Ukurasa mwepesi umetolewa na Google. Gusa ili upakie ukurasa halisi.</translation>
 <translation id="4452411734226507615">Funga kichupo cha <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Imetia alamishwa kwenye <ph name="FOLDER_NAME" /></translation>
+<translation id="4465314970046116177">Kipengele cha Utaratibu wa Kuwekea Vikwazo vya Faragha ni mkusanyiko wa teknolojia mpya ambazo hatimaye zitawalinda watu kutokana na mbinu zinazotumiwa kufuatilia data kwenye tovuti nyingi, kama vile vidakuzi vya wengine, huku zikihifadhi maudhui na huduma za wavuti zinazotegemea mbinu hizo kwa sasa. Chrome inashirikiana na wasanidi programu, wachapishaji, watangazaji na vivinjari vingine kukuza teknolojia hii mpya.</translation>
 <translation id="4472118726404937099">Ingia katika akaunti na uwashe kipengele cha usawazishaji ili usawazishe na uweke mapendeleo kwenye vifaa vyako vyote</translation>
 <translation id="447252321002412580">Tusaidie tuboreshe utendaji na vipengele vya Chrome</translation>
 <translation id="4479972344484327217">Inasakinisha <ph name="MODULE" /> kwenye Chrome…</translation>
@@ -638,6 +640,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />fanya usawazishaji upya<p
 <translation id="5595485650161345191">Badilisha anwani</translation>
 <translation id="5599455543593328020">Hali fiche</translation>
 <translation id="5599941490345670218">Programu ya Mratibu wa Google inaweza kukukamilishia vitendo kwenye tovuti mbalimbali</translation>
+<translation id="5606787249466187650">Gundua Utaratibu wa Kuwekea Vikwazo vya Faragha</translation>
 <translation id="5620163320393916465">Hakuna manenosiri yaliyohifadhiwa</translation>
 <translation id="5620928963363755975">Tafuta faili na kurasa zako katika Vipakuliwa kwenye kitufe cha Chaguo Nyingine</translation>
 <translation id="5626134646977739690">Jina:</translation>
@@ -743,6 +746,7 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="6243852395147506234">Unaweza kuzisoma ukiwa nje ya mtandao</translation>
 <translation id="624789221780392884">Sasisho iko tayari</translation>
 <translation id="6255999984061454636">Mapendekezo ya maudhui</translation>
+<translation id="6266591733731644292">Kipengele cha Utaratibu wa Kuwekea Vikwazo vya Faragha bado hakijatolewa kwa kila mtu. Katika kipindi hiki cha kujaribu:\n<ph name="BEGIN_LIST_ITEM1" />Wasanidi programu na tovuti wanaweza kujaribu kubuni hali za utumiaji zinazofaa bila kufikia maelezo ya kipekee yanayokutambulisha<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />Watumiaji wanaweza kujiondoa kwenye jaribio kwa kutumia vidhibiti vilivyo kwenye ukurasa huu.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="6277522088822131679">Kulikuwa na tatizo katika kuchapisha ukurasa. Tafadhali jaribu tena.</translation>
 <translation id="6278428485366576908">Mandhari</translation>
 <translation id="6292420053234093573">Kwa kutumia Chrome, unakubali <ph name="BEGIN_LINK1" />Sheria na Masharti ya Google<ph name="END_LINK1" /> na <ph name="BEGIN_LINK2" />Sheria na Masharti ya Ziada ya Google Chrome na Mfumo wa Uendeshaji wa Chrome<ph name="END_LINK2" />.</translation>
@@ -834,6 +838,7 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="6811034713472274749">Unaweza kuona ukurasa</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612">Umechagua kichupo cha <ph name="TAB_TITLE" /></translation>
+<translation id="6833996806551876956">Jaribio la kipengele cha Utaratibu wa Kuwekea Vikwazo vya Faragha</translation>
 <translation id="6845325883481699275">Tusaidie kuboresha usalama wa Chrome</translation>
 <translation id="6846298663435243399">Inapakia…</translation>
 <translation id="6850409657436465440">Bado inapakua faili</translation>
@@ -1069,6 +1074,7 @@ Data ya kipindi chako Fiche itafutwa tu kwenye Chrome <ph name="BEGIN_BOLD2" />u
 <translation id="8442258441309440798">Hakuna taarifa zinazopatikana</translation>
 <translation id="8443209985646068659">Chrome haiwezi kusasisha</translation>
 <translation id="8445448999790540984">Haiwezi kuhamisha manenosiri</translation>
+<translation id="8447219758310755868">Kipengele cha kuchuja maelezo nyeti ya watu binafsi kwa kutumia umati</translation>
 <translation id="8461694314515752532">Simba data iliyosawazishwa kwa njia fiche ukitumia kauli yako ya siri ya usawazishaji</translation>
 <translation id="8466613982764129868">Hakikisha kwamba <ph name="TARGET_DEVICE_NAME" /> imeunganishwa kwenye intaneti</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>

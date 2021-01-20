@@ -84,6 +84,7 @@
 <translation id="1571304935088121812">Felhasználónév másolása</translation>
 <translation id="1592864538817356322">Normál védelem:</translation>
 <translation id="1612196535745283361">A Chrome-nak hozzá kell férnie a tartózkodási helyhez, hogy eszközöket kereshessen. A tartózkodási helyhez való hozzáférés <ph name="BEGIN_LINK" />ki van kapcsolva ezen az eszközön<ph name="END_LINK" />.</translation>
+<translation id="1613577519914241527">Ha be van kapcsolva, a webhelyek nem tudnak Önt személyesen azonosító információkat használni ahhoz, hogy relevánsabbak legyenek az Ön számára. A koncerteken részt vevő tömegekhez hasonlóan a webhelyek csak azt tudhatják, hogy több ezer felhasználó közös érdeklődési körrel rendelkezik.\n\nA „tömeg” az Ön esetében a felkeresett webhelyeken alapul. A hirdetők csak a teljes tömeg által felkeresett webhelyeket láthatják, azokat azonban nem, amelyekre személy szerint Ön ellátogatott.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{1 kijelölt elem eltávolítása}other{# kijelölt elem eltávolítása}}</translation>
 <translation id="1641113438599504367">Biztonságos Böngészés</translation>
 <translation id="164269334534774161">Jelenleg az oldal <ph name="CREATION_TIME" />-i dátummal mentett offline példányát tekinti meg</translation>
@@ -468,6 +469,7 @@ A kereséshez tartsa nyomva a kívánt szót. A keresés finomításához válas
 <translation id="4440958355523780886">Egyszerű oldal a Google-tól. Koppintással betöltheti az eredetit.</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> lap bezárása</translation>
 <translation id="4452548195519783679">Könyvjelzők közé téve itt: <ph name="FOLDER_NAME" /></translation>
+<translation id="4465314970046116177">A Privacy Sandbox olyan új technológiákat fog össze, amelyek megvédik majd az embereket a webhelyeken átívelő követési mechanizmusok (pl. harmadik felek cookie-jai) ellen, miközben megőrzik a jelenleg ezekre a mechanizmusokra építő webes tartalmakat és szolgáltatásokat. A Chrome webhelyfejlesztőkkel, megjelenítőkkel, hirdetőkkel és egyéb böngészőkkel közösen dolgozik ezeknek az új technológiáknak a kifejlesztésén.</translation>
 <translation id="4472118726404937099">Az eszközök közötti szinkronizáláshoz és személyre szabáshoz jelentkezzen be, és kapcsolja be a szinkronizálást</translation>
 <translation id="447252321002412580">Hozzájárulás a Chrome funkcióinak és teljesítményének javításához</translation>
 <translation id="4479972344484327217">A(z) <ph name="MODULE" /> telepítése a Chrome-hoz…</translation>
@@ -638,6 +640,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="5595485650161345191">Cím szerkesztése</translation>
 <translation id="5599455543593328020">Inkognitó mód</translation>
 <translation id="5599941490345670218">A Google Segéd elvégezhet bizonyos műveleteket Önnek a különböző webhelyeken</translation>
+<translation id="5606787249466187650">A Privacy Sandbox felfedezése</translation>
 <translation id="5620163320393916465">Nincsenek mentett jelszavak</translation>
 <translation id="5620928963363755975">A fájlokat és oldalakat a További lehetőségek gomb Letöltések menüpontjában találja meg</translation>
 <translation id="5626134646977739690">Név:</translation>
@@ -743,6 +746,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="6243852395147506234">Készen áll az offline használatra</translation>
 <translation id="624789221780392884">A frissítés készen áll</translation>
 <translation id="6255999984061454636">Javasolt tartalmak</translation>
+<translation id="6266591733731644292">A Privacy Sandbox még nincs kiadva a nagyközönség számára. A próbaidőszak során:\n<ph name="BEGIN_LIST_ITEM1" />a webhely- és alkalmazásfejlesztők kipróbálhatják annak a lehetőségét, hogy releváns felhasználói élményt hoznak létre a felhasználókat egyedileg azonosító információkhoz való hozzáférés nélkül;<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />a felhasználók elutasíthatják a próbaidőszakban való részvételt az oldalon található vezérlők segítségével.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="6277522088822131679">Hiba történt az oldal nyomtatásakor. Próbálja újra.</translation>
 <translation id="6278428485366576908">Téma</translation>
 <translation id="6292420053234093573">A Chrome használatával elfogadja a <ph name="BEGIN_LINK1" />Google Általános Szerződési Feltételeket<ph name="END_LINK1" />, valamint <ph name="BEGIN_LINK2" />A Google Chrome és a Chrome OS Kiegészítő Általános Szerződési Feltételeit<ph name="END_LINK2" />.</translation>
@@ -834,6 +838,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="6811034713472274749">Az oldal megtekinthető</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, lap, kiválasztva</translation>
+<translation id="6833996806551876956">A Privacy Sandbox próbaidőszaka</translation>
 <translation id="6845325883481699275">Segítség a Chrome biztonságának továbberősítésében</translation>
 <translation id="6846298663435243399">Betöltés…</translation>
 <translation id="6850409657436465440">A letöltés még mindig folyamatban van</translation>
@@ -1069,6 +1074,7 @@ Az inkognitó-munkamenet adatai csak <ph name="BEGIN_BOLD2" />az összes inkogni
 <translation id="8442258441309440798">Nem állnak rendelkezésre hírek</translation>
 <translation id="8443209985646068659">A Chrome nem frissíthető</translation>
 <translation id="8445448999790540984">Nem sikerült a jelszavak exportálása</translation>
+<translation id="8447219758310755868">Crowdmasking</translation>
 <translation id="8461694314515752532">A szinkronizált adatok titkosítása saját összetett szinkronizálási jelszóval</translation>
 <translation id="8466613982764129868">Győződjön meg arról, hogy a(z) <ph name="TARGET_DEVICE_NAME" /> eszköz csatlakozik az internethez</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>

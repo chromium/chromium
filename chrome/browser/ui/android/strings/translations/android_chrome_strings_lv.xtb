@@ -84,6 +84,7 @@
 <translation id="1571304935088121812">Kopēt lietotājvārdu</translation>
 <translation id="1592864538817356322">Standarta aizsardzība:</translation>
 <translation id="1612196535745283361">Lai meklētu ierīces, pārlūkam Chrome ir nepieciešama piekļuve atrašanās vietas datiem. <ph name="BEGIN_LINK" />Šajā ierīcē ir izslēgta piekļuve atrašanās vietas datiem<ph name="END_LINK" />.</translation>
+<translation id="1613577519914241527">Kad tas būs aktivizēts, vietnēs nevarēs izmantot personu identificējošu informāciju, lai padarītu tās atbilstošākas. Vietnēm ir zināms tikai tas, ka ir tūkstošiem lietotāju ar līdzīgām interesēm — līdzīgi cilvēku pūlim koncertā.\n\nJūsu “pūlis” jeb tiešsaistes auditorija ir balstīta uz jūsu apmeklētajām vietnēm. Reklāmdevējiem ir redzams tikai tas, kuras vietnes apmeklē visa tiešsaistes auditorija, nevis konkrēti jūs.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Noņemt 1 atlasīto vienumu}zero{Noņemt # atlasītos vienumus}one{Noņemt # atlasīto vienumu}other{Noņemt # atlasītos vienumus}}</translation>
 <translation id="1641113438599504367">Droša pārlūkošana</translation>
 <translation id="164269334534774161">Jūs skatāt šīs lapas bezsaistes kopiju, kas tika izveidota šādā datumā: <ph name="CREATION_TIME" /></translation>
@@ -468,6 +469,7 @@ Nospiediet un turiet jebkuru vārdu, lai to meklētu. Lai precizētu meklēšanu
 <translation id="4440958355523780886">Vienkāršota lapa, ko nodrošina Google. Lai ielādētu sākotnējo lapu, pieskarieties.</translation>
 <translation id="4452411734226507615">Aizvērt cilni <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Grāmatzīme saglabāta mapē <ph name="FOLDER_NAME" /></translation>
+<translation id="4465314970046116177">Privacy Sandbox ir jaunu tehnoloģiju kopa, kas laika gaitā aizsargās lietotājus no starpvietņu izsekošanas mehānismiem, piemēram, trešo pušu sīkfailiem, vienlaikus nebloķējot tīmekļa saturu un pakalpojumus, kuru pamatā mūsdienās ir šie mehānismi. Šīs jaunās tehnoloģijas izstrādē Chrome sadarbojas ar vietņu izstrādātājiem, izdevējiem, reklāmdevējiem un citām pārlūkprogrammām.</translation>
 <translation id="4472118726404937099">Lai sinhronizētu un personalizētu saturu dažādās ierīcēs, pierakstieties un ieslēdziet sinhronizāciju.</translation>
 <translation id="447252321002412580">Palīdzēt uzlabot Chrome funkcijas un veiktspēju</translation>
 <translation id="4479972344484327217">Notiek moduļa <ph name="MODULE" /> instalēšana pārlūkprogrammai Chrome…</translation>
@@ -638,6 +640,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāci
 <translation id="5595485650161345191">Rediģēt adresi</translation>
 <translation id="5599455543593328020">Inkognito režīms</translation>
 <translation id="5599941490345670218">Google asistents var veikt darbības vietnēs jūsu vārdā</translation>
+<translation id="5606787249466187650">Izpētiet lapu Privacy Sandbox</translation>
 <translation id="5620163320393916465">Nav saglabātu paroļu</translation>
 <translation id="5620928963363755975">Atrodiet savus failus un lapas sadaļā Lejupielādes, nospiežot pogu Vairāk opciju</translation>
 <translation id="5626134646977739690">Nosaukums:</translation>
@@ -743,6 +746,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="6243852395147506234">Pieejama(-as) bezsaistē</translation>
 <translation id="624789221780392884">Var veikt atjaunināšanu</translation>
 <translation id="6255999984061454636">Satura ieteikumi</translation>
+<translation id="6266591733731644292">Privacy Sandbox vēl nav plaši pieejams. Šī izmēģinājuma perioda laikā:\n<ph name="BEGIN_LIST_ITEM1" />vietņu un lietotņu izstrādātāji var mēģināt izveidot lietotājiem atbilstošu pieredzi, nepiekļūstot personu identificējošai informācijai;<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />lietotāji var atteikties no šī izmēģinājuma perioda, izmantojot šajā lapā pieejamās vadīklas.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="6277522088822131679">Drukājot lapu, radās problēma. Lūdzu, mēģiniet vēlreiz.</translation>
 <translation id="6278428485366576908">Motīvs</translation>
 <translation id="6292420053234093573">Izmantojot pārlūkprogrammu Chrome, jūs piekrītat <ph name="BEGIN_LINK1" />Google pakalpojumu sniegšanas noteikumiem<ph name="END_LINK1" /> un <ph name="BEGIN_LINK2" />Google Chrome un Chrome OS pakalpojumu sniegšanas papildu noteikumiem<ph name="END_LINK2" />.</translation>
@@ -834,6 +838,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="6811034713472274749">Lapu var skatīt</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, cilne, atlasīta</translation>
+<translation id="6833996806551876956">Privacy Sandbox izmēģinājuma periods</translation>
 <translation id="6845325883481699275">Palīdzēt uzlabot Chrome drošību</translation>
 <translation id="6846298663435243399">Notiek ielāde…</translation>
 <translation id="6850409657436465440">Joprojām notiek lejupielāde</translation>
@@ -1069,6 +1074,7 @@ No jūsu inkognito sesijas iegūtie dati tiks dzēsti no Chrome tikai tad, kad <
 <translation id="8442258441309440798">Nav pieejams neviens raksts</translation>
 <translation id="8443209985646068659">Nevar atjaunināt Chrome</translation>
 <translation id="8445448999790540984">Nevar eksportēt paroles</translation>
+<translation id="8447219758310755868">Pūļa maskēšana</translation>
 <translation id="8461694314515752532">Šifrējiet sinhronizētos datus, izmantojot savu sinhronizācijas ieejas frāzi</translation>
 <translation id="8466613982764129868">Ierīcē <ph name="TARGET_DEVICE_NAME" /> ir jābūt izveidotam interneta savienojumam</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>

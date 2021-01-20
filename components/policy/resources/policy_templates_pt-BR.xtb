@@ -807,13 +807,6 @@ Se você desativar a política, essa rolagem será desativada.</translation>
       Se a política for definida, o navegador começará a descartar guias para economizar memória quando o limite for excedido. Entretanto, não há garantia de que o navegador seja sempre executado dentro dos limites. Qualquer valor abaixo de 1.024 será arredondado para esse número.
 
       Se esta política não for definida, o navegador só começará a economizar memória quando detectar que a quantidade de memória física da máquina está baixa.</translation>
-<translation id="2164922809922345834">Ativa a oclusão de janelas nativas no <ph name="PRODUCT_NAME" />.
-
-      Se você ativar essa configuração, para reduzir o uso de CPU e de energia, o <ph name="PRODUCT_NAME" /> detectará quando uma janela for coberta por outras e suspenderá o trabalho de preenchimento de pixels.
-
-      Se você desativar essa configuração, o <ph name="PRODUCT_NAME" /> não detectará quando uma janela for coberta por outras.
-
-      Se esta política não for definida, a detecção de oclusão será ativada.</translation>
 <translation id="2166472654199325139">Não filtrar sites com conteúdo adulto</translation>
 <translation id="2168397434410358693">Intervalo de inatividade no funcionamento com alimentação CA</translation>
 <translation id="217013996107840632">Parâmetros de linha de comando para fazer a mudança do navegador alternativo.</translation>
@@ -2001,7 +1994,7 @@ Se esta política for definida como falsa, o <ph name="PRODUCT_NAME" /> não usa
       Se você ativar esta configuração, o <ph name="PRODUCT_NAME" /> e os apps ARC ignorarão todas as opções relacionadas a proxy especificadas na linha de comando.
 
       Deixar estas políticas se definição permitirá que os usuários escolham as configurações de proxy por conta própria.</translation>
-<translation id="3758249152301468420">Desativar Ferramentas de desenvolvedor</translation>
+<translation id="3758249152301468420">Desativar Ferramentas para desenvolvedores</translation>
 <translation id="3760148113224469113">Sempre pedir que os usuários confirmem solicitações de protocolo externas</translation>
 <translation id="3760231600118073732">Bloquear a sessão atual.</translation>
 <translation id="3762520180381586267">Se a política for definida como "Ativada", o <ph name="PRODUCT_OS_NAME" /> acionará uma reinicialização quando os usuários desligarem o dispositivo. O <ph name="PRODUCT_OS_NAME" /> substitui todos os botões de desligamento na IU por botões de reinicialização. Se os usuários desligarem os dispositivos usando o botão liga/desliga, eles não poderão reinicializar automaticamente, mesmo se a política estiver ativada.

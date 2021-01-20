@@ -84,6 +84,7 @@
 <translation id="1571304935088121812">複製使用者名稱</translation>
 <translation id="1592864538817356322">標準保護功能：</translation>
 <translation id="1612196535745283361">Chrome 需要位置資訊存取權才能掃描裝置，而系統已<ph name="BEGIN_LINK" />關閉此裝置<ph name="END_LINK" />的位置存取權。</translation>
+<translation id="1613577519914241527">開啟此功能後，網站將無法使用您的個人識別資料為您提供更貼近需要的內容。這和演唱會中的群眾類似，網站只會知道數千位使用者擁有類似興趣。\n\n至於您屬於哪一類「群眾」，則取決於您瀏覽過的網站。廣告客戶只能得知整群人會瀏覽哪些網站，而無法看到您本人瀏覽的網站。</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{移除 1 個已選取的項目}other{移除 # 個已選取的項目}}</translation>
 <translation id="1641113438599504367">安全瀏覽</translation>
 <translation id="164269334534774161">您正在查看此網頁的離線版本 (建立時間：<ph name="CREATION_TIME" />)</translation>
@@ -468,6 +469,7 @@
 <translation id="4440958355523780886">此簡易版網頁由 Google 提供。輕按即可載入原始版本網頁。</translation>
 <translation id="4452411734226507615">關閉 <ph name="TAB_TITLE" /> 分頁</translation>
 <translation id="4452548195519783679">已將書籤加入到「<ph name="FOLDER_NAME" />」</translation>
+<translation id="4465314970046116177">「私隱沙箱」是一套防止跨網站追蹤的新科技，除了讓使用者不再受到第三方 Cookie 等跨網站追蹤機制影響，同時保護目前仍須依賴相關機制運作的網頁內容和服務。Chrome 現正與網站開發人員、發佈者、廣告客戶和其他瀏覽器公司一起開發這項新科技。</translation>
 <translation id="4472118726404937099">如要在不同裝置上同步和個人化內容，請登入並開啟同步處理功能</translation>
 <translation id="447252321002412580">協助改善 Chrome 的功能和效能</translation>
 <translation id="4479972344484327217">正在為 Chrome 安裝 <ph name="MODULE" />…</translation>
@@ -638,6 +640,7 @@
 <translation id="5595485650161345191">編輯地址</translation>
 <translation id="5599455543593328020">無痕模式</translation>
 <translation id="5599941490345670218">「Google 助理」可助您完成各網站的操作</translation>
+<translation id="5606787249466187650">探索「私隱沙箱」</translation>
 <translation id="5620163320393916465">沒有已儲存的密碼</translation>
 <translation id="5620928963363755975">透過「更多選項」按鈕，喺「下載」主畫面搵您嘅檔案同網頁</translation>
 <translation id="5626134646977739690">名稱：</translation>
@@ -743,6 +746,7 @@
 <translation id="6243852395147506234">可供離線使用</translation>
 <translation id="624789221780392884">可執行更新</translation>
 <translation id="6255999984061454636">內容建議</translation>
+<translation id="6266591733731644292">「私隱沙箱」尚未全面發佈。以下是試用期注意事項：\n<ph name="BEGIN_LIST_ITEM1" />網站和應用程式開發人員可嘗試在未取得使用者專屬識別資料的情況下提供貼近個人需要的體驗。<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />使用者可利用本頁面的控制項停止試用。<ph name="END_LIST_ITEM2" /></translation>
 <translation id="6277522088822131679">列印網頁時發生問題，請再試一次。</translation>
 <translation id="6278428485366576908">主題背景</translation>
 <translation id="6292420053234093573">使用 Chrome 即表示您同意《<ph name="BEGIN_LINK1" />Google 服務條款<ph name="END_LINK1" />》以及 <ph name="BEGIN_LINK2" />Google Chrome 和 Chrome 作業系統的《附加服務條款》<ph name="END_LINK2" />。</translation>
@@ -834,6 +838,7 @@
 <translation id="6811034713472274749">網頁已準備就緒，可供查看</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />，分頁，已選取</translation>
+<translation id="6833996806551876956">私隱沙箱試用</translation>
 <translation id="6845325883481699275">協助提高 Chrome 安全性</translation>
 <translation id="6846298663435243399">載入中…</translation>
 <translation id="6850409657436465440">仍在下載</translation>
@@ -1069,6 +1074,7 @@
 <translation id="8442258441309440798">沒有任何報導</translation>
 <translation id="8443209985646068659">無法更新 Chrome</translation>
 <translation id="8445448999790540984">無法匯出密碼</translation>
+<translation id="8447219758310755868">群眾掩蔽</translation>
 <translation id="8461694314515752532">使用您的同步密碼短語，加密已同步的資料</translation>
 <translation id="8466613982764129868">請確保 <ph name="TARGET_DEVICE_NAME" /> 已連接互聯網</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>

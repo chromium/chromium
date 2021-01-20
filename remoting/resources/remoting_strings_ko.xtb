@@ -72,6 +72,7 @@
 <translation id="4405930547258349619">핵심 라이브러리</translation>
 <translation id="443560535555262820">접근성 환경설정 열기</translation>
 <translation id="4450893287417543264">다시 표시하지 않음</translation>
+<translation id="4512952200932940229">Copyright 2021 The Chromium Authors. All Rights Reserved.</translation>
 <translation id="4513946894732546136">문제 신고</translation>
 <translation id="4563926062592110512">연결 해제된 클라이언트: <ph name="CLIENT_USERNAME" /></translation>
 <translation id="4635770493235256822">원격 기기</translation>
@@ -173,6 +174,7 @@
 <translation id="8743328882720071828"><ph name="CLIENT_USERNAME" />이(가) 컴퓨터를 확인하고 제어할 수 있게 하시겠습니까?</translation>
 <translation id="8747048596626351634">세션이 다운되었거나 시작되지 못했습니다. 원격 컴퓨터에 ~/.chrome-remote-desktop-session이 있는 경우, 세션에서 데스크톱 환경이나 창 관리자와 같이 오랫동안 실행되는 포그라운드 프로세스가 시작되어야 합니다.</translation>
 <translation id="8804164990146287819">개인정보처리방침</translation>
+<translation id="8906511416443321782">오디오를 캡처하고 Chrome 원격 데스크톱 클라이언트로 스트리밍하려면 마이크 액세스 권한이 필요합니다.</translation>
 <translation id="9111855907838866522">원격 기기에 연결되었습니다. 메뉴를 열려면 네 손가락으로 화면을 탭하세요.</translation>
 <translation id="9126115402994542723">이 기기에서 이 호스트로 연결할 때 PIN을 다시 요청하지 않습니다.</translation>
 <translation id="916856682307586697">기본 XSession 실행</translation>

@@ -18,6 +18,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="137466361146087520">Google Chrome Bèta</translation>
 <translation id="1399397803214730675">Deze computer beschikt al over een nieuwere versie van Google Chrome. Als de software niet werkt, verwijder je Google Chrome en probeer je het opnieuw.</translation>
 <translation id="1434626383986940139">Chrome Canary-apps</translation>
+<translation id="147727933880789532">Chrome raadt je aan om deze extensie uit te zetten omdat deze op dit moment niet voldoet aan de standaard van de uitgebreide versie van Safe Browsing.</translation>
 <translation id="1553358976309200471">Chrome updaten</translation>
 <translation id="1587223624401073077">Google Chrome gebruikt je camera.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> is gevaarlijk en is daarom door Chrome geblokkeerd.</translation>
@@ -36,12 +37,14 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="174539241580958092">Google Chrome kan je gegevens niet synchroniseren vanwege een fout tijdens het inloggen.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Zorg dat je bent ingelogd bij Chrome op je <ph name="TARGET_DEVICE_NAME" /> en probeer opnieuw te sturen.</translation>
+<translation id="1807517590912578995">Chrome-profiel scheiden?</translation>
 <translation id="1812689907177901597">Als je dit uitschakelt, kun je inloggen bij Google-sites zoals Gmail zonder in te loggen bij Chrome</translation>
 <translation id="1860536484129686729">Chrome heeft toegangsrechten voor je camera nodig voor deze site</translation>
 <translation id="1873233029667955273">Google Chrome is niet je standaardbrowser</translation>
 <translation id="1874309113135274312">Google Chrome Bèta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome is verouderd</translation>
 <translation id="1919130412786645364">Inloggen bij Chrome toestaan</translation>
+<translation id="2018528049276128029">Elk profiel heeft eigen Chrome-informatie, zoals bookmarks, geschiedenis en wachtwoorden</translation>
 <translation id="2063848847527508675">Chrome OS moet opnieuw worden gestart om de update uit te voeren.</translation>
 <translation id="2094919256425865063">Chrome toch sluiten?</translation>
 <translation id="2120620239521071941">Hiermee worden <ph name="ITEMS_COUNT" /> items verwijderd van dit apparaat. Als je je gegevens later wilt terughalen, log je in bij Chrome als <ph name="USER_EMAIL" />.</translation>
@@ -55,9 +58,11 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="234869673307233423">Chrome kan je wachtwoorden niet checken. Probeer het later opnieuw.</translation>
 <translation id="235650106824528204">Alle Chrome-gegevens die worden gegenereerd bij het gebruik van dit profiel (zoals bookmarks, geschiedenis, wachtwoorden en andere instellingen) kunnen worden verwijderd door de beheerder van het werkprofiel. <ph name="LEARN_MORE" /></translation>
 <translation id="2429317896000329049">Google Chrome kan je gegevens niet synchroniseren, omdat synchronisatie niet beschikbaar is voor je domein.</translation>
+<translation id="245659736593643560">Chrome OS wordt mogelijk gemaakt door aanvullende <ph name="BEGIN_LINK_CROS_OSS" />opensource-software<ph name="END_LINK_CROS_OSS" />, net als de <ph name="BEGIN_LINK_LINUX_OSS" />Linux-ontwikkelomgeving (bèta)<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2467438592969358367">Google Chrome wil je wachtwoorden exporteren. Geef je Windows-wachtwoord op om dit toe te staan.</translation>
 <translation id="2485422356828889247">Installatie ongedaan maken</translation>
 <translation id="2534507159460261402">Google Pay (gekopieerd naar Chrome)</translation>
+<translation id="2574930892358684005"><ph name="EXISTING_USER" /> is al ingelogd bij dit Chrome-profiel. Als je je browsegegevens gescheiden wilt houden, kan Chrome een eigen profiel voor je maken.</translation>
 <translation id="2580411288591421699">Kan dezelfde Google Chrome-versie die momenteel actief is, niet installeren. Sluit Google Chrome en probeer het opnieuw.</translation>
 <translation id="2586406160782125153">Hiermee worden je browsegegevens verwijderd van dit apparaat. Als je je gegevens later wilt terughalen, log je in bij Chrome als <ph name="USER_EMAIL" />.</translation>
 <translation id="2588634262982826227">Chrome OS kan je apps en pagina's altijd herstellen na opnieuw opstarten zonder dit elke keer te vragen.</translation>
@@ -72,6 +77,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="2799223571221894425">Opnieuw starten</translation>
 <translation id="2847461019998147611">Google Chrome weergegeven in deze taal</translation>
 <translation id="2857540653560290388">Chrome starten…</translation>
+<translation id="2857972467023607093">Er bestaat al een Chrome-profiel voor dit account</translation>
 <translation id="2871893339301912279">Je bent ingelogd bij Chrome.</translation>
 <translation id="2885378588091291677">Taakbeheer</translation>
 <translation id="2888126860611144412">Over Chrome</translation>
@@ -141,6 +147,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="4600710005438004015">Chrome kan niet worden geüpdatet naar de nieuwste versie, dus je loopt nieuwe functies en beveiligingsoplossingen mis.</translation>
 <translation id="4631713731678262610">Verbergen in Chrome-menu</translation>
 <translation id="4633000520311261472">Om Chrome veiliger te maken, hebben we een aantal extensies uitgeschakeld die niet worden vermeld in de <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> en mogelijk zonder je medeweten zijn geïnstalleerd.</translation>
+<translation id="4666328473657283332">Als je toegang tot je Chrome-gegevens wilt, log je in zodat je synchronisatie kunt aanzetten.</translation>
 <translation id="4728575227883772061">De installatie is mislukt wegens een onbekende fout. Als Google Chrome momenteel actief is, sluit je het programma af en probeer je het opnieuw.</translation>
 <translation id="4750550185319565338">Start Chrome opnieuw op om <ph name="PLUGIN_NAME" /> in te schakelen</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
@@ -160,6 +167,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 
 Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirectory op of gebruik een nieuwere versie van Chrome.</translation>
 <translation id="5193136243808726294">Google Chrome OS kan deze pagina niet openen.</translation>
+<translation id="521447420733633466">Als je een apparaat deelt, kunnen vrienden en familie afzonderlijk surfen en Chrome instellen zoals zij dat willen.</translation>
 <translation id="5251420635869119124">Gasten kunnen Chrome gebruiken zonder iets achter te laten.</translation>
 <translation id="532046782124376502">Waarschuwing: Google Chrome kan niet voorkomen dat extensies je browsegeschiedenis registreren. Als je deze extensie in de incognitomodus wilt uitschakelen, verwijder je het vinkje bij deze optie.</translation>
 <translation id="5386244825306882791">Hiermee wordt ook gecontroleerd welke pagina wordt weergegeven wanneer je Chrome start of vanuit de omnibox zoekt.</translation>
@@ -194,12 +202,14 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="6291549208091401781">Google Chrome is al geïnstalleerd voor alle gebruikers op je computer.</translation>
 <translation id="6338556085225130112">Google Chrome updaten</translation>
 <translation id="6368958679917195344">Chrome OS wordt mogelijk gemaakt door aanvullende <ph name="BEGIN_LINK_CROS_OSS" />opensource-software<ph name="END_LINK_CROS_OSS" />.</translation>
+<translation id="6418662306461808273">Overschakelen naar bestaand Chrome-profiel?</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6566149418543181476">Google Chrome updaten (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Chrome OS-systeem</translation>
 <translation id="6650333065969705433">Start Chrome opnieuw op als je Rosetta wilt gebruiken om beveiligde media af te spelen.</translation>
 <translation id="6676384891291319759">Verbinding maken met internet</translation>
 <translation id="6679975945624592337">Google Chrome op de achtergrond laten uitvoeren</translation>
+<translation id="6739177684496155661">Doorgaan met een nieuw Chrome-profiel?</translation>
 <translation id="6750954913813541382">Voor het verbeteren van spelfouten verzendt Chrome de tekst die je in de browser typt naar Google</translation>
 <translation id="6755885556185485672">Chrome OS is niet correct afgesloten.</translation>
 <translation id="677276454032249905">Chrome toch sluiten?</translation>
@@ -217,6 +227,7 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="7242029209006116544">Je logt in op een beheerd account waarmee de eigenaar van dat account beheer krijgt over je Google Chrome-profiel. Je Chrome-gegevens zoals je apps, bookmarks, geschiedenis, wachtwoorden en andere instellingen worden permanent gekoppeld aan <ph name="USER_NAME" />. Je kunt deze gegevens verwijderen via het Google Accounts Dashboard, maar je kunt deze gegevens niet koppelen aan een ander account. Je kunt ook een nieuw profiel maken om je bestaande Chrome-gegevens gescheiden te houden. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">Deze taal wordt gebruikt om de Google Chrome-UI weer te geven</translation>
 <translation id="7296210096911315575">Belangrijke informatie over gebruik en veiligheid</translation>
+<translation id="7303916856901595720">Account verplaatsen naar een nieuw Chrome-profiel?</translation>
 <translation id="7308322188646931570">Chrome heeft toegang tot de opslag nodig om bestanden te kunnen downloaden</translation>
 <translation id="7339898014177206373">Nieuw venster</translation>
 <translation id="7398801000654795464">Je bent ingelogd bij Chrome als <ph name="USER_EMAIL_ADDRESS" />. Gebruik hetzelfde account om opnieuw in te loggen.</translation>
@@ -245,6 +256,7 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="7930071585467473040">Google Chrome probeert wachtwoorden te kopiëren.</translation>
 <translation id="7962410387636238736">Deze computer ontvangt geen Google Chrome-updates meer, omdat Windows XP en Windows Vista niet meer worden ondersteund</translation>
 <translation id="8008534537613507642">Chrome opnieuw installeren</translation>
+<translation id="8009904340233602924">Chrome gebruiken zonder account</translation>
 <translation id="8013993649590906847">Als een afbeelding geen nuttige beschrijving bevat, probeert Chrome je er een te geven. Afbeeldingen worden naar Google verzonden om beschrijvingen te maken.</translation>
 <translation id="8129812357326543296">Over &amp;Google Chrome</translation>
 <translation id="8255190535488645436">Google Chrome gebruikt je camera en microfoon.</translation>
@@ -284,6 +296,7 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="911206726377975832">Ook browsegegevens wissen?</translation>
 <translation id="9138603949443464873">Als je de wijzigingen wilt toepassen, start je Chrome opnieuw</translation>
 <translation id="919706545465235479">Chrome updaten om de synchronisatie te starten</translation>
+<translation id="940313311831216333">Log in voor toegang tot je Chrome-gegevens op al je apparaten en zet daarna synchronisatie aan.</translation>
 <translation id="94743460404517794">Als je meerdere Google-accounts hebt, kun je deze toevoegen aan je <ph name="DEVICE_TYPE" />. Je accounts zijn beschikbaar in de Chrome-browser en de Play Store. Je kunt ze ook gebruiken in services zoals Gmail, Drive en YouTube. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="989369509083708165">Google Chrome is je standaardbrowser</translation>
 </translationbundle>

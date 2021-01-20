@@ -1657,6 +1657,7 @@
 <translation id="281504910091592009">‏بإمكانك عرض كلمات المرور المحفوظة وإدارتها في <ph name="BEGIN_LINK" />حسابك على Google<ph name="END_LINK" />.</translation>
 <translation id="2815693974042551705">مجلد الإشارات المرجعية</translation>
 <translation id="2816319641769218778">‏لحفظ كلمات المرور في حسابك على Google، يُرجى تفعيل المزامنة.</translation>
+<translation id="2816628817680324566">هل تريد السماح لهذا الموقع الإلكتروني بالتعرُّف على مفتاح الأمان الخاص بك؟</translation>
 <translation id="2818476747334107629">تفاصيل الطابعة</translation>
 <translation id="2820957248982571256">جارٍ الفحص...</translation>
 <translation id="2822634587701817431">تقليص/توسيع</translation>
@@ -3772,6 +3773,7 @@
 <translation id="5300287940468717207">هل تريد إعادة ضبط أذونات المواقع الإلكترونية هذه؟</translation>
 <translation id="5300589172476337783">عرض</translation>
 <translation id="5300719150368506519">‏إرسال عناوين URL الخاصة بالصفحات التي تزورها إلى Google</translation>
+<translation id="5300814202279832142">نقل النافذة إلى سطح المكتب</translation>
 <translation id="5301751748813680278">جارٍ تسجيل الدخول كضيف.</translation>
 <translation id="5301954838959518834">حسنًا</translation>
 <translation id="5302048478445481009">اللغة</translation>
@@ -5462,6 +5464,7 @@
 <translation id="7250616558727237648">لم يستجِب الجهاز الذي تحاول المشاركة معه لطلبك. يُرجى إعادة المحاولة.</translation>
 <translation id="725109152065019550">عذرًا، أوقف المشرف التخزين الخارجي بحسابك.</translation>
 <translation id="7251346854160851420">خلفية تلقائية</translation>
+<translation id="7251979364707973467">أصدر الموقع الإلكتروني <ph name="WEBSITE" /> مفتاح الأمان الخاص بك ويريد معرفة رقم تعريفه. وسيتمكّن الموقع الإلكتروني من معرفة مفتاح الأمان الذي تستخدمه تحديدًا.</translation>
 <translation id="7253521419891527137">&amp;مزيد من المعلومات</translation>
 <translation id="7254951428499890870">هل تريد فعلًا تشغيل "<ph name="APP_NAME" />" في الوضع التشخيصي؟</translation>
 <translation id="725497546968438223">زر مجلد الإشارات المرجعية</translation>

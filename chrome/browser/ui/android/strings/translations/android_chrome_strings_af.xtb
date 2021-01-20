@@ -84,6 +84,7 @@
 <translation id="1571304935088121812">Kopieer gebruikernaam</translation>
 <translation id="1592864538817356322">Standaardbeskerming:</translation>
 <translation id="1612196535745283361">Chrome benodig liggingtoegang om toestelle te soek. Liggingtoegang is <ph name="BEGIN_LINK" />afgeskakel vir hierdie toestel<ph name="END_LINK" />.</translation>
+<translation id="1613577519914241527">Wanneer dit aan is, sal webwerwe nie inligting wat jou persoonlik identifiseer kan gebruik om hul werwe meer relevant te maak nie. Net soos 'n skare by 'n konsert, kan werwe net weet dat duisende gebruikers 'n soortgelyke belangstelling deel.\n\nJou "skare" word gegrond op die werwe wat jy besoek het. Adverteerders kan net sien watter werwe die hele skare besoek, en nie watter werwe jy persoonlik besoek nie.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Verwyder 1 gekose item}other{Verwyder # gekose items}}</translation>
 <translation id="1641113438599504367">Veiligblaai</translation>
 <translation id="164269334534774161">Jy bekyk tans 'n vanlyn kopie van hierdie program vanaf <ph name="CREATION_TIME" /></translation>
@@ -468,6 +469,7 @@ Raak en hou enige woord om te soek. Kies meer of minder woorde as jy jou soektog
 <translation id="4440958355523780886">Ligte bladsy verskaf deur Google. Tik om die oorspronklike bladsy te laai.</translation>
 <translation id="4452411734226507615">Maak <ph name="TAB_TITLE" />-oortjie toe</translation>
 <translation id="4452548195519783679">Geboekmerk in <ph name="FOLDER_NAME" /></translation>
+<translation id="4465314970046116177">Privaatheidsandput is 'n stel nuwe tegnologieë wat mense eventueel teen kruiswerfnasporingmeganismes, soos derdepartywebkoekies, sal beskerm terwyl dit webinhoud en -dienste wat tans op daardie meganismes staatmaak, in stand hou. Chrome werk tans saam met webwerfontwikkelaars, uitgewers, adverteerders en ander blaaiers om hierdie nuwe tegnologie te ontwikkel.</translation>
 <translation id="4472118726404937099">Meld aan en skakel sinkronisering aan om oor toestelle heen te sinkroniseer en personaliseer</translation>
 <translation id="447252321002412580">Help om Chrome se kenmerke en werkverrigting te verbeter</translation>
 <translation id="4479972344484327217">Installeer tans <ph name="MODULE" /> vir Chrome …</translation>
@@ -744,6 +746,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="6243852395147506234">Gereed vir vanlyn</translation>
 <translation id="624789221780392884">Opdatering gereed</translation>
 <translation id="6255999984061454636">Inhoudvoorstelle</translation>
+<translation id="6266591733731644292">Privaatheidsandput is nog nie algemeen vrygestel nie. Gedurende hierdie proeftydperk:\n<ph name="BEGIN_LIST_ITEM1" />Kan webwerf- en programontwikkelaars die vermoë toets om relevante ervarings te skep sonder om toegang tot uniek identifiseerbare inligting oor jou te kry<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />Kan gebruikers die kontroles op hierdie bladsy gebruik om van die proeflopie te onttrek.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="6277522088822131679">Kon nie die bladsy uitdruk nie. Probeer asseblief weer.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6292420053234093573">As jy Chrome gebruik, stem jy in tot <ph name="BEGIN_LINK1" />Google se diensbepalings<ph name="END_LINK1" /> en <ph name="BEGIN_LINK2" />Google Chrome en Chrome-bedryfstelsel se bykomende diensbepalings<ph name="END_LINK2" />.</translation>
@@ -835,6 +838,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="6811034713472274749">Bladsy is gereed om bekyk te word</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, oortjie, gekies</translation>
+<translation id="6833996806551876956">Privaatheidsandputproeflopie</translation>
 <translation id="6845325883481699275">Help om Chrome-sekuriteit te verbeter</translation>
 <translation id="6846298663435243399">Laai tans …</translation>
 <translation id="6850409657436465440">Jou aflaai is nog aan die gang</translation>
@@ -1070,6 +1074,7 @@ Data van jou Incognito-sessie af sal slegs in Chrome uitgevee word wanneer jy <p
 <translation id="8442258441309440798">Geen stories beskikbaar nie</translation>
 <translation id="8443209985646068659">Chrome dateer nie op nie</translation>
 <translation id="8445448999790540984">Kan nie wagwoorde uitvoer nie</translation>
+<translation id="8447219758310755868">Skaremaskering</translation>
 <translation id="8461694314515752532">Enkripteer gesinkroniseerde data met jou eie sinkroniseringwagfrase</translation>
 <translation id="8466613982764129868">Maak seker dat <ph name="TARGET_DEVICE_NAME" /> aan die internet gekoppel is.</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>

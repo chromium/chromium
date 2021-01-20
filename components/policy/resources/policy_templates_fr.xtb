@@ -826,13 +826,6 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
       Si cette règle est configurée, le navigateur commence à ignorer des onglets pour économiser de la mémoire lorsque la limite est dépassée. Il n'est cependant pas garanti que le navigateur fonctionne toujours en deçà de cette limite. Toute valeur inférieure à 1024 est arrondie à ce nombre.
 
       Si cette règle n'est pas configurée, le navigateur ne commence à économiser de la mémoire que s'il détecte que la quantité de mémoire physique sur l'ordinateur est faible.</translation>
-<translation id="2164922809922345834">Active le recouvrement par la fenêtre native dans <ph name="PRODUCT_NAME" />.
-
-      Si vous activez ce paramètre, <ph name="PRODUCT_NAME" /> détecte si une fenêtre est recouverte par d'autres et interrompt le processus de rendu des pixels pour réduire le niveau d'utilisation du processeur et la consommation d'énergie.
-
-      Si vous désactivez ce paramètre, <ph name="PRODUCT_NAME" /> ne détecte pas la présence d'une fenêtre recouverte par d'autres.
-
-      Si vous ne définissez pas ce paramètre, la détection du recouvrement sera activée.</translation>
 <translation id="2166472654199325139">Ne pas filtrer les sites de contenus réservés aux adultes</translation>
 <translation id="2168397434410358693">Délai d'inactivité (secteur)</translation>
 <translation id="217013996107840632">Paramètres de ligne de commande pour basculer vers Chrome à partir du navigateur secondaire.</translation>

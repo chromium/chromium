@@ -186,6 +186,7 @@
 <translation id="5832805196449965646">অন্য লোক যোগ কৰক</translation>
 <translation id="5895138241574237353">ৰিষ্টাৰ্ট কৰক</translation>
 <translation id="5916084858004523819">নিষিদ্ধ</translation>
+<translation id="5921506667911082617">{COUNT,plural, =1{আপোনাৰ ফাইলটো সফলভাৱে স্কেন আৰু <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />ত ছেভ কৰা হৈছে।}one{আপোনাৰ ফাইলসমূহ সফলভাৱে স্কেন আৰু <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />ত ছেভ কৰা হৈছে।}other{আপোনাৰ ফাইলসমূহ সফলভাৱে স্কেন আৰু <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />ত ছেভ কৰা হৈছে।}}</translation>
 <translation id="5931523347251946569">ফাইলটো পোৱা নগ’ল</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, সংস্কৰণ <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">বন্ধ কৰক</translation>

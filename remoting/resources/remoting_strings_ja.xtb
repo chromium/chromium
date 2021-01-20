@@ -72,6 +72,7 @@
 <translation id="4405930547258349619">コア ライブラリ</translation>
 <translation id="443560535555262820">[アクセシビリティ] 設定を開く</translation>
 <translation id="4450893287417543264">次回から表示しない</translation>
+<translation id="4512952200932940229">Copyright 2021 The Chromium Authors. All Rights Reserved.</translation>
 <translation id="4513946894732546136">フィードバック</translation>
 <translation id="4563926062592110512">次のクライアントが切断しました: <ph name="CLIENT_USERNAME" />。</translation>
 <translation id="4635770493235256822">リモートのデバイス</translation>
@@ -173,6 +174,7 @@
 <translation id="8743328882720071828"><ph name="CLIENT_USERNAME" /> にパソコンの閲覧と制御を許可しますか？</translation>
 <translation id="8747048596626351634">セッションがクラッシュしたか、セッションを開始できませんでした。~/.chrome-remote-desktop-session がリモートのパソコンにある場合は、このスクリプトによって、デスクトップ環境やウィンドウ マネージャのような長時間実行のフォアグラウンド プロセスが開始されることを確認してください。</translation>
 <translation id="8804164990146287819">プライバシー ポリシー</translation>
+<translation id="8906511416443321782">音声をキャプチャして Chrome リモート デスクトップ クライアントにストリーミングするには、マイクへのアクセスが必要です。</translation>
 <translation id="9111855907838866522">リモートデバイスに接続されています。メニューを開くには、4 本の指で画面をタップしてください。</translation>
 <translation id="9126115402994542723">このデバイスからこのホストに接続するときに PIN の再入力を要求しない。</translation>
 <translation id="916856682307586697">デフォルトの XSession を起動</translation>

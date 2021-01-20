@@ -1648,6 +1648,7 @@
 <translation id="281504910091592009">Переглядайте збережені паролі й керуйте ними в <ph name="BEGIN_LINK" />обліковому записі Google<ph name="END_LINK" /></translation>
 <translation id="2815693974042551705">Папка із закладками</translation>
 <translation id="2816319641769218778">Щоб зберігати паролі в обліковому записі Google, увімкніть синхронізацію.</translation>
+<translation id="2816628817680324566">Дозволити цьому сайту ідентифікувати ваш ключ безпеки?</translation>
 <translation id="2818476747334107629">Дані принтера</translation>
 <translation id="2820957248982571256">Сканування…</translation>
 <translation id="2822634587701817431">Зменшити/збільшити</translation>
@@ -3752,6 +3753,7 @@
 <translation id="5300287940468717207">Скинути дозволи сайту?</translation>
 <translation id="5300589172476337783">Показати</translation>
 <translation id="5300719150368506519">Надсилати в Google URL-адреси відвіданих сторінок</translation>
+<translation id="5300814202279832142">Перемістити вікно на робочий стіл</translation>
 <translation id="5301751748813680278">Вхід у режимі гостя.</translation>
 <translation id="5301954838959518834">OK</translation>
 <translation id="5302048478445481009">Мова</translation>
@@ -5434,6 +5436,7 @@
 <translation id="7250616558727237648">Пристрій, на який ви надсилаєте файл, не відповів. Повторіть спробу.</translation>
 <translation id="725109152065019550">На жаль, адміністратор вимкнув зовнішню пам’ять у вашому обліковому записі.</translation>
 <translation id="7251346854160851420">Фоновий малюнок за умовчанням</translation>
+<translation id="7251979364707973467">Веб-сайт <ph name="WEBSITE" /> видав ваш ключ безпеки й запитує його ідентифікатор, щоб знати, який саме ключ ви використовуєте.</translation>
 <translation id="7253521419891527137">&amp;Докладніше</translation>
 <translation id="7254951428499890870">Справді запустити додаток "<ph name="APP_NAME" />" у режимі діагностики?</translation>
 <translation id="725497546968438223">Кнопка "Папка із закладками"</translation>

@@ -396,7 +396,7 @@
 <translation id="143027896309062157">Bilgisayarınızda ve ziyaret ettiğiniz web sitelerinde tüm verilerinizi okuma ve değiştirme</translation>
 <translation id="1430915738399379752">Yazdır</translation>
 <translation id="1431188203598586230">Son yazılım güncellemesi</translation>
-<translation id="1431402976894535801">Etkin olduğunuzda sitelerin bilmesini engelleyin</translation>
+<translation id="1431402976894535801">Sitelerin etkin olduğumu öğrenmesini engelle</translation>
 <translation id="1431432486300429272">Google, Arama ve diğer Google hizmetlerini kişiselleştirmek için tarama geçmişinizi kullanabilir. Bunu istediğiniz zaman siz veya ebeveyniniz myaccount.google.com/activitycontrols/search adresinden değiştirebilirsiniz</translation>
 <translation id="1432581352905426595">Arama motorlarını yönet</translation>
 <translation id="1433811987160647649">Erişmeden önce sor</translation>
@@ -1645,6 +1645,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="281504910091592009"><ph name="BEGIN_LINK" />Google Hesabınızdaki<ph name="END_LINK" /> kayıtlı şifrelerinizi görüntüleyin ve yönetin.</translation>
 <translation id="2815693974042551705">Yer işareti klasörü</translation>
 <translation id="2816319641769218778">Şifreleri Google Hesabınıza kaydetmek için senkronizasyonu açın.</translation>
+<translation id="2816628817680324566">Bu sitenin güvenlik anahtarınızı tanımlamasına izin verilsin mi?</translation>
 <translation id="2818476747334107629">Yazıcı ayrıntıları</translation>
 <translation id="2820957248982571256">Taranıyor...</translation>
 <translation id="2822634587701817431">Daralt / Genişlet</translation>
@@ -1943,7 +1944,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> adlı satıcı firma tarafından sağlanan <ph name="PRODUCT_ID" /> ürün kimliğine sahip bilinmeyen ürün</translation>
 <translation id="3163254451837720982">Aşağıdaki hizmetler verilerinizin güvende kalmasına yardımcı olur. Bu özellikleri istediğiniz zaman devre dışı bırakabilirsiniz.</translation>
 <translation id="3164329792803560526">Bu sekme <ph name="APP_NAME" /> ile paylaşılıyor</translation>
-<translation id="3165371858310906303">Bir site, etkin olduğumu bilmek istediğinde sor</translation>
+<translation id="3165371858310906303">Bir site, etkin olduğumu öğrenmek istediğinde sor</translation>
 <translation id="3165390001037658081">Bazı operatörler bu özelliği engelleyebilir.</translation>
 <translation id="316652501498554287">Eğitim için G Suite hesapları</translation>
 <translation id="3170072451822350649">Ayrıca, oturum açmayı atlayabilir ve <ph name="LINK_START" />misafir olarak göz atabilirsiniz<ph name="LINK_END" />.</translation>
@@ -3749,6 +3750,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="5300287940468717207">Site izinleri sıfırlansın mı?</translation>
 <translation id="5300589172476337783">Göster</translation>
 <translation id="5300719150368506519">Ziyaret ettiğim sayfaların URL'lerini Google'a gönder</translation>
+<translation id="5300814202279832142">Pencereyi masaya taşı</translation>
 <translation id="5301751748813680278">Misafir olarak giriliyor.</translation>
 <translation id="5301954838959518834">Tamam, anladım</translation>
 <translation id="5302048478445481009">Dil</translation>
@@ -5432,6 +5434,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="7250616558727237648">Dosya paylaştığınız cihaz yanıt vermedi. Lütfen tekrar deneyin.</translation>
 <translation id="725109152065019550">Maalesef, yöneticiniz hesabınızda harici depolama özelliğini devre dışı bıraktı.</translation>
 <translation id="7251346854160851420">Varsayılan duvar kağıdı</translation>
+<translation id="7251979364707973467"><ph name="WEBSITE" /> güvenlik anahtarınızı oluşturdu ve bu anahtarın kimlik numarasını istiyor. Site, tam olarak hangi güvenlik anahtarını kullandığınız bilgisine sahiptir.</translation>
 <translation id="7253521419891527137">&amp;Daha Fazla Bilgi Edinin</translation>
 <translation id="7254951428499890870">"<ph name="APP_NAME" />" uygulamasını teşhis modunda başlatmak istediğinizden emin misiniz?</translation>
 <translation id="725497546968438223">Yer işareti klasörü düğmesi</translation>

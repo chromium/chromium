@@ -84,6 +84,7 @@
 <translation id="1571304935088121812">Salin nama pengguna</translation>
 <translation id="1592864538817356322">Perlindungan standard:</translation>
 <translation id="1612196535745283361">Chrome memerlukan akses lokasi untuk mengimbas peranti. Akses lokasi <ph name="BEGIN_LINK" />dimatikan untuk peranti ini<ph name="END_LINK" />.</translation>
+<translation id="1613577519914241527">Apabila dihidupkan, laman web tidak akan dapat menggunakan maklumat yang mengenal pasti anda secara peribadi untuk menjadikan laman mereka lebih berkaitan. Sama seperti khalayak yang menonton konsert, laman hanya dapat mengetahui bahawa ribuan pengguna berkongsi minat yang sama.\n\n“Khalayak” anda ditentukan berdasarkan laman yang pernah anda lawati. Pengiklan hanya dapat melihat laman yang dilawati oleh seluruh khalayak, bukan laman yang anda lawati secara peribadi.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Alih keluar 1 item yang dipilih}other{Alih keluar # item yang dipilih}}</translation>
 <translation id="1641113438599504367">Penyemakan Imbas Selamat</translation>
 <translation id="164269334534774161">Anda sedang melihat salinan luar talian halaman ini dari <ph name="CREATION_TIME" /></translation>
@@ -468,6 +469,7 @@ Sentuh &amp; tahan mana-mana perkataan untuk mencari. Untuk memperhalus carian a
 <translation id="4440958355523780886">Halaman Lite disediakan oleh Google. Ketik untuk memuatkan halaman asal.</translation>
 <translation id="4452411734226507615">Tutup tab <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Ditandai halaman ke <ph name="FOLDER_NAME" /></translation>
+<translation id="4465314970046116177">Kotak Pasir Privasi merupakan satu set teknologi baharu yang akhirnya akan melindungi orang daripada mekanisme penjejakan rentas laman, seperti kuki pihak ketiga, sambil mengekalkan kandungan dan perkhidmatan web yang bergantung pada mekanisme tersebut hari ini. Chrome sedang bekerjasama dengan pembangun laman web, penerbit, pengiklan dan penyemak imbas lain untuk membangunkan teknologi baharu ini.</translation>
 <translation id="4472118726404937099">Log masuk dan hidupkan penyegerakan untuk melakukan penyegerakan dan pemperibadian pada semua peranti</translation>
 <translation id="447252321002412580">Bantu meningkatkan ciri dan prestasi Chrome</translation>
 <translation id="4479972344484327217">Memasang <ph name="MODULE" /> untuk Chrome…</translation>
@@ -638,6 +640,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<
 <translation id="5595485650161345191">Edit alamat</translation>
 <translation id="5599455543593328020">Mod inkognito</translation>
 <translation id="5599941490345670218">Google Assistant boleh melengkapkan tindakan merentas beberapa laman web untuk anda</translation>
+<translation id="5606787249466187650">Teroka Kotak Pasir Privasi</translation>
 <translation id="5620163320393916465">Tiada kata laluan yang disimpan</translation>
 <translation id="5620928963363755975">Cari fail dan halaman anda dalam Muat Turun daripada butang Lagi Pilihan</translation>
 <translation id="5626134646977739690">Nama:</translation>
@@ -743,6 +746,7 @@ Sebagai contoh, sesetengah tapak web mungkin memberi respons kepada permintaan i
 <translation id="6243852395147506234">Bersedia untuk luar talian</translation>
 <translation id="624789221780392884">Kemaskini bersedia</translation>
 <translation id="6255999984061454636">Cadangan kandungan</translation>
+<translation id="6266591733731644292">Kotak Pasir Privasi belum dikeluarkan secara meluas. Sepanjang tempoh percubaan ini:\n<ph name="BEGIN_LIST_ITEM1" />Pembangun laman web dan apl boleh mencuba keupayaan untuk membuat pengalaman berkaitan tanpa mengakses maklumat yang boleh dikenal pasti secara unik tentang anda<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />Pengguna boleh menarik diri daripada percubaan menggunakan kawalan pada halaman ini.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="6277522088822131679">Terdapat masalah semasa mencetak halaman. Sila cuba sekali lagi.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6292420053234093573">Dengan menggunakan Chrome, anda bersetuju menerima <ph name="BEGIN_LINK1" />Syarat Perkhidmatan Google<ph name="END_LINK1" /> dan <ph name="BEGIN_LINK2" />Syarat Perkhidmatan Tambahan Google Chrome dan OS Chrome<ph name="END_LINK2" />.</translation>
@@ -834,6 +838,7 @@ Sebagai contoh, sesetengah tapak web mungkin memberi respons kepada permintaan i
 <translation id="6811034713472274749">Halaman sedia untuk dipaparkan</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, tab, dipilih</translation>
+<translation id="6833996806551876956">Percubaan Kotak Pasir Privasi</translation>
 <translation id="6845325883481699275">Bantu tingkatkan keselamatan Chrome</translation>
 <translation id="6846298663435243399">Memuatkan…</translation>
 <translation id="6850409657436465440">Muat turun anda masih berlangsung</translation>
@@ -1069,6 +1074,7 @@ Data daripada sesi Inkognito anda hanya akan dikosongkan daripada Chrome apabila
 <translation id="8442258441309440798">Tiada cerita tersedia</translation>
 <translation id="8443209985646068659">Gagal kemas kini Chrome</translation>
 <translation id="8445448999790540984">Tidak dapat mengeskport kata laluan</translation>
+<translation id="8447219758310755868">Crowdmasking</translation>
 <translation id="8461694314515752532">Sulitkan data yang disegerakkan dengan ungkapan laluan penyegerakan anda sendiri</translation>
 <translation id="8466613982764129868">Pastikan <ph name="TARGET_DEVICE_NAME" /> disambungkan ke Internet</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>

@@ -1651,6 +1651,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="281504910091592009">Visualizza e gestisci le password salvate nel tuo <ph name="BEGIN_LINK" />Account Google<ph name="END_LINK" /></translation>
 <translation id="2815693974042551705">Aggiungi la cartella ai segnalibri</translation>
 <translation id="2816319641769218778">Attiva la sincronizzazione per salvare le password nel tuo Account Google.</translation>
+<translation id="2816628817680324566">Vuoi consentire a questo sito di identificare il tuo token di sicurezza?</translation>
 <translation id="2818476747334107629">Dettagli stampante</translation>
 <translation id="2820957248982571256">Scansione…</translation>
 <translation id="2822634587701817431">Comprimi/Espandi</translation>
@@ -3768,6 +3769,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="5300287940468717207">Vuoi reimpostare le autorizzazioni dei siti?</translation>
 <translation id="5300589172476337783">Mostra</translation>
 <translation id="5300719150368506519">Invia a Google gli URL delle pagine che visiti</translation>
+<translation id="5300814202279832142">Sposta finestra nella scrivania</translation>
 <translation id="5301751748813680278">Accesso come Ospite.</translation>
 <translation id="5301954838959518834">OK</translation>
 <translation id="5302048478445481009">Lingua</translation>
@@ -5456,6 +5458,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="7250616558727237648">Il dispositivo con cui hai tentato di condividere il file non ha risposto. Riprova.</translation>
 <translation id="725109152065019550">Spiacenti, l'amministratore ha disabilitato l'archiviazione esterna per il tuo account.</translation>
 <translation id="7251346854160851420">Sfondo predefinito</translation>
+<translation id="7251979364707973467">Il tuo token di sicurezza è di <ph name="WEBSITE" />, che vorrebbe conoscere il relativo numero ID. Il sito saprà esattamente quale token di sicurezza stai usando.</translation>
 <translation id="7253521419891527137">&amp;Ulteriori informazioni</translation>
 <translation id="7254951428499890870">Avviare "<ph name="APP_NAME" />" in modalità diagnostica?</translation>
 <translation id="725497546968438223">Pulsante della cartella Preferiti</translation>

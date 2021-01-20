@@ -84,6 +84,7 @@
 <translation id="1571304935088121812">העתקת שם משתמש</translation>
 <translation id="1592864538817356322">הגנה רגילה:</translation>
 <translation id="1612196535745283361">‏כדי לבצע סריקה לאיתור מכשירים, Chrome זקוק לגישה לנתוני מיקום. הגישה למיקום <ph name="BEGIN_LINK" />כבויה במכשיר הזה<ph name="END_LINK" />.</translation>
+<translation id="1613577519914241527">‏כשהאפשרות פועלת, אתרים לא יוכלו להשתמש במידע שמזהה אותך באופן אישי כדי לספק תוכן רלוונטי יותר. כמו קהל בהופעה, אתרים יכולים לדעת רק שאלפי משתמשים חולקים עניין דומה.\n\nה"קהל" שלך מבוסס על אתרים שאליהם נכנסת. מפרסמים יכולים לראות רק לאילו אתרים הקהל נכנס, ולא את האתרים שאליהם נכנסת באופן אישי.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{הסרת פריט אחד שנבחר}two{הסרת # פריטים שנבחרו}many{הסרת # פריטים שנבחרו}other{הסרת # פריטים שנבחרו}}</translation>
 <translation id="1641113438599504367">גלישה בטוחה</translation>
 <translation id="164269334534774161">זהו עותק אופליין של הדף הזה מ-<ph name="CREATION_TIME" /></translation>
@@ -468,6 +469,7 @@
 <translation id="4440958355523780886">‏גרסת Lite של הדף נוצרה על ידי Google. אפשר להקיש כדי לטעון את הגרסה המקורית.</translation>
 <translation id="4452411734226507615">סגירת הכרטיסייה <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">התווסף לסימניות ב-<ph name="FOLDER_NAME" /></translation>
+<translation id="4465314970046116177">‏ארגז חול של הגדרות פרטיות הוא אוסף של טכנולוגיות חדשות שמטרתן, בסופו של דבר, להגן על אנשים מפני מנגנוני מעקב באתרים שונים (כמו קובצי cookie של צדדים שלישיים) ובמקביל, להמשיך לספק את התוכן והשירותים שתלויים במנגנונים האלה כיום. במסגרת Chrome אנחנו פועלים לפיתוח הטכנולוגיה החדשה הזו בשיתוף עם מפתחי אתרים, בעלי תוכן דיגיטלי, מפרסמים וצוותים של דפדפנים אחרים.</translation>
 <translation id="4472118726404937099">כדי לסנכרן ולהתאים אישית את החוויה במכשירים שונים, יש להיכנס לחשבון ולהפעיל את הסנכרון</translation>
 <translation id="447252321002412580">‏עזרה בשיפור התכונות והביצועים של Chrome</translation>
 <translation id="4479972344484327217">‏מתבצעת התקנה של <ph name="MODULE" /> ל-Chrome…</translation>
@@ -744,6 +746,7 @@
 <translation id="6243852395147506234">מסונכרן למצב אופליין</translation>
 <translation id="624789221780392884">העדכון מוכן</translation>
 <translation id="6255999984061454636">הצעות לתוכן</translation>
+<translation id="6266591733731644292">‏האפשרות 'ארגז חול של הגדרות פרטיות' עדיין לא הושקה לציבור הרחב. בתקופת הניסיון הזו:\n<ph name="BEGIN_LIST_ITEM1" />אתרים ומפתחי אפליקציות יוכלו לנסות ליצור חוויות משתמש רלוונטיות בלי לקבל גישה למידע מזהה ייחודי לגביך<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />משתמשים יכולים לבטל את הסכמתם לתקופת הניסיון באמצעות הפקדים שבדף הזה.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="6277522088822131679">אירעה בעיה בעת הדפסת הדף. יש לנסות שוב.</translation>
 <translation id="6278428485366576908">עיצוב</translation>
 <translation id="6292420053234093573">‏השימוש ב-Chrome מבטא הסכמה ל<ph name="BEGIN_LINK1" />תנאים ולהגבלות של Google<ph name="END_LINK1" /> ול<ph name="BEGIN_LINK2" />תנאים ולהגבלות הנוספים של Google Chrome ו-Chrome OS<ph name="END_LINK2" />.</translation>
@@ -835,6 +838,7 @@
 <translation id="6811034713472274749">הדף מוכן להצגה</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612">הכרטיסייה, <ph name="TAB_TITLE" />, נבחרה</translation>
+<translation id="6833996806551876956">תקופת ניסיון של ארגז חול של הגדרות פרטיות</translation>
 <translation id="6845325883481699275">‏עזרה בשיפור האבטחה של Chrome</translation>
 <translation id="6846298663435243399">הטעינה מתבצעת...</translation>
 <translation id="6850409657436465440">ההורדה עדיין מתבצעת</translation>
@@ -1070,6 +1074,7 @@
 <translation id="8442258441309440798">אין סיפורים זמינים</translation>
 <translation id="8443209985646068659">‏אי אפשר לעדכן את Chrome</translation>
 <translation id="8445448999790540984">אי אפשר לייצא סיסמאות</translation>
+<translation id="8447219758310755868">התממת מידע לפי קהל</translation>
 <translation id="8461694314515752532">הצפנת נתונים מסונכרנים בעזרת ביטוי סיסמה אישי לסנכרון</translation>
 <translation id="8466613982764129868">יש לוודא ש-<ph name="TARGET_DEVICE_NAME" /> מחובר לאינטרנט</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>

@@ -1642,6 +1642,7 @@
 <translation id="281504910091592009">સાચવેલા પાસવર્ડ તમારા <ph name="BEGIN_LINK" />Google એકાઉન્ટ<ph name="END_LINK" />માં જુઓ અને મેનેજ કરો</translation>
 <translation id="2815693974042551705">બુકમાર્ક ફોલ્ડર</translation>
 <translation id="2816319641769218778">તમારા Google એકાઉન્ટમાં પાસવર્ડ સાચવવા માટે, સિંક કરવાનું ચાલુ કરો.</translation>
+<translation id="2816628817680324566">આ સાઇટને તમારી સિક્યુરિટી કી ઓળખવાની મંજૂરી આપીએ?</translation>
 <translation id="2818476747334107629">પ્રિન્ટરની વિગતો</translation>
 <translation id="2820957248982571256">સ્કૅન કરી રહ્યાં છીએ…</translation>
 <translation id="2822634587701817431">સંકોચો / વિસ્તૃત કરો</translation>
@@ -3746,6 +3747,7 @@
 <translation id="5300287940468717207">સાઇટ પરવાનગીઓ રીસેટ કરીએ?</translation>
 <translation id="5300589172476337783">બતાવો</translation>
 <translation id="5300719150368506519">તમે મુલાકાત લો તે પેજના URLs Googleને મોકલો</translation>
+<translation id="5300814202279832142">વિન્ડોને 'ડેસ્ક' સબમેનૂ પર ખસેડો</translation>
 <translation id="5301751748813680278">અતિથિ તરીકે દાખલ થઈ રહ્યું છે.</translation>
 <translation id="5301954838959518834">બરાબર, સમજાઇ ગયું</translation>
 <translation id="5302048478445481009">ભાષા</translation>
@@ -5430,6 +5432,7 @@ USB ડિવાઇસ</translation>
 <translation id="7250616558727237648">તમે જે ડિવાઇસ સાથે શેર કરી રહ્યાં છો, તેણે પ્રતિસાદ આપ્યો નથી. કૃપા કરીને ફરી પ્રયાસ કરો.</translation>
 <translation id="725109152065019550">માફ કરશો, તમારા એડમિને તમારા એકાઉન્ટ પર બહારના સ્ટોરેજને બંધ કર્યું છે.</translation>
 <translation id="7251346854160851420">ડિફૉલ્ટ વૉલપેપર</translation>
+<translation id="7251979364707973467"><ph name="WEBSITE" /> દ્વારા તમારી સિક્યુરિટી કી જારી કરવામાં આવી છે અને એ તેનો ID નંબર જાણવા માગે છે. તમે કઈ સિક્યુરિટી કીનો ઉપયોગ કરો છો, તેની સાઇટને બરાબર જાણ થશે.</translation>
 <translation id="7253521419891527137">&amp;વધુ જાણો</translation>
 <translation id="7254951428499890870">શું તમે ખરેખર "<ph name="APP_NAME" />" ને ડાયગ્નોસ્ટિક મોડમાં લોંચ કરવા માગો છો?</translation>
 <translation id="725497546968438223">બુકમાર્ક ફોલ્ડરનું બટન</translation>

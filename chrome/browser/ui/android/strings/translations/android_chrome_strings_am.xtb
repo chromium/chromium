@@ -84,6 +84,7 @@
 <translation id="1571304935088121812">የተጠቃሚ ስምን ቅዳ</translation>
 <translation id="1592864538817356322">መደበኛ ጥበቃ፦</translation>
 <translation id="1612196535745283361">Chrome መሣሪያዎችን መቃኘት እንዲችል የአካባቢ መዳረሻ ያስፈልገዋል። የአካባቢ መዳረሻ <ph name="BEGIN_LINK" />ለዚህ መሣሪያ ጠፍቷል<ph name="END_LINK" />።</translation>
+<translation id="1613577519914241527">ሲበራ ድር ጣቢያዎች ጣቢያዎቻቸውን የበለጠ ተዛማጅ ለማድረግ በግል እርስዎን የሚለይ መረጃን መጠቀም አይችሉም። በአንድ ኮንሰርት ውስጥ ካለው ህዝብ ጋር ተመሳሳይ በሆነ መልኩ ጣቢያዎች ሊያውቁት የሚችሉት በሺዎች የሚቆጠሩ ተጠቃሚዎች ተመሳሳይ ፍላጎት እንዳላቸው ብቻ ነው።\n\nየእርስዎ «ህዝብ» በጎበኟቸው ጣቢያዎች ላይ የተመሠረተ ነው። ማስታወቂያ ሰሪዎች ማየት የሚችሉት ህዝብ የሚጎበኘውን ጣቢያ ብቻ ነው፣ እርስዎ በግል የሚጎበኟቸውን ጣቢያዎችን አይደለም።</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{1 የተመረጠ ንጥልን አስወግድ}one{# የተመረጡ ንጥሎችን አስወግድ}other{# የተመረጡ ንጥሎችን አስወግድ}}</translation>
 <translation id="1641113438599504367">የጥንቃቄ አሰሳ</translation>
 <translation id="164269334534774161"><ph name="CREATION_TIME" /> ላይ የነበረ የዚህን ገጽ የመስመር ውጪ ቅጂ በመመልከት ላይ ነዎት</translation>
@@ -468,6 +469,7 @@
 <translation id="4440958355523780886">ቀላል ገጽ በGoogle ቀርቧል። ኦርጂናሉን ለመጫን መታ ያድርጉ።</translation>
 <translation id="4452411734226507615">የ<ph name="TAB_TITLE" /> ትር ዝጋ</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> ላይ ዕልባት ተደርጓል</translation>
+<translation id="4465314970046116177">የግላዊነት ማጠሪያ ዞሮ ዞሮ በእነዚያ ስልቶች ላይ የተመሠረቱ የድር ይዘቶችን እና አገልግሎቶችን እየጠበቀ ሰዎችን እንደ የሶስተኛ ወገን ኩኪዎች ካሉ የጣቢያ መከታተያ ዘዴዎች የሚጠብቅ አዲስ የቴክኖሎጂዎች ስብስብ ነው። ይህን አዲስ ቴክኖሎጂ ለማዳበር Chrome ከድር ጣቢያ ገንቢዎች፣ አሳታሚዎች፣ አስተዋዋቂዎች እና ሌሎች አሳሾች ጋር አብሮ እየሰራ ነው።</translation>
 <translation id="4472118726404937099">በመላ መሣሪያዎች ላይ በመለያ መግባት እና ስምረትን ማብራት ለማስመር እና ግላዊነትን ለማላበስ</translation>
 <translation id="447252321002412580">የChrome ባህሪያት እና አፈጻጸም እንዲሻሻል ያግዙ</translation>
 <translation id="4479972344484327217"><ph name="MODULE" /> ን ለChrome በመጫን ላይ…</translation>
@@ -638,6 +640,7 @@
 <translation id="5595485650161345191">አድራሻ አርትዕ</translation>
 <translation id="5599455543593328020">ማንነት የማያሳውቅ ሁነታ</translation>
 <translation id="5599941490345670218">የGoogle ረዳት እርምጃዎችን በመላው ድር ጣቢያዎች ለእርስዎ ሊያጠናቅቅ ይችላል</translation>
+<translation id="5606787249466187650">የግላዊነት ማጠሪያ ሣጥን ያስሱ</translation>
 <translation id="5620163320393916465">ምንም የተቀመጡ የይለፍ ቃላት የሉም</translation>
 <translation id="5620928963363755975">ከተጨማሪ አማራጮች አዝራር ሆነው የእርስዎን ፋይሎች እና ገጾች በውርዶች ውስጥ ያግኙ</translation>
 <translation id="5626134646977739690">ስም፦</translation>
@@ -743,6 +746,7 @@
 <translation id="6243852395147506234">ለመስመር ውጭ ዝግጁ</translation>
 <translation id="624789221780392884">ማዘመኛ ዝግጁ ነው</translation>
 <translation id="6255999984061454636">የይዘት አስተያየት ጥቆማዎች</translation>
+<translation id="6266591733731644292">ግላዊነት ማጠሪያ ሳጥን ገና በሰፊው አልተለቀቀም። በዚህ የሙከራ ክፍለ-ጊዜ፦\n<ph name="BEGIN_LIST_ITEM1" />የድር ጣቢያ እና የመተግበሪያ ገንቢዎች ስለእርስዎ ልዩ መረጃዎችን ሳያገኙ ተዛማጅ ልምዶችን የመፍጠር ችሎታን መሞከር ይችላሉ<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />ተጠቃሚዎች በዚህ ገጽ ላይ ያሉትን መቆጣጠሪያዎችን በመጠቀም ከሙከራው መውጣት ይችላሉ።<ph name="END_LIST_ITEM2" /></translation>
 <translation id="6277522088822131679">ገጹን ማተም ላይ ችግር ነበር። እባክዎ እንደገና ይሞክሩ።</translation>
 <translation id="6278428485366576908">ገጽታ</translation>
 <translation id="6292420053234093573">Chromeን በመጠቀምዎ በ<ph name="BEGIN_LINK1" />የGoogle አገልግሎት ውል<ph name="END_LINK1" /> እና <ph name="BEGIN_LINK2" />የGoogle Chrome እና የChrome OS ተጨማሪ አገልግሎት ውል<ph name="END_LINK2" /> ይስማማሉ።</translation>
@@ -834,6 +838,7 @@
 <translation id="6811034713472274749">ገጽ ለመመልከት ዝግጁ ነው</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />፣ ትር ተመርጧል</translation>
+<translation id="6833996806551876956">የግላዊነት ማጠሪያ ሙከራ</translation>
 <translation id="6845325883481699275">የChrome ደህንነት እንዲሻሻል ያግዙ</translation>
 <translation id="6846298663435243399">በመጫን ላይ…</translation>
 <translation id="6850409657436465440">የእርስዎ ውርድ አሁንም በሂደት ላይ ነው</translation>
@@ -1069,6 +1074,7 @@
 <translation id="8442258441309440798">ምንም ዘገባዎች አይገኙም</translation>
 <translation id="8443209985646068659">Chromeን ማዘመን አይቻልም</translation>
 <translation id="8445448999790540984">የይለፍ ቃላትን ወደ ውጭ መላክ አልተቻለም</translation>
+<translation id="8447219758310755868">Crowdmasking</translation>
 <translation id="8461694314515752532">የሰመረ ውሂብ በራስዎ የስምረት ይለፍ ሐረግ ያመሣጥሩ</translation>
 <translation id="8466613982764129868"><ph name="TARGET_DEVICE_NAME" /> ከበይነ መረብ ጋር መገናኘቱን ያረጋግጡ</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>

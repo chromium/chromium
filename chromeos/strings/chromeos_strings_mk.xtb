@@ -186,6 +186,7 @@
 <translation id="5832805196449965646">Додај лице</translation>
 <translation id="5895138241574237353">Рестартирај</translation>
 <translation id="5916084858004523819">Забранета</translation>
+<translation id="5921506667911082617">{COUNT,plural, =1{Датотеката е успешно скенирана и зачувана во <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Датотеките се успешно скенирани и зачувани во <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Датотеките се успешно скенирани и зачувани во <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Датотеката не е најдена</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, верзија <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Затвори</translation>

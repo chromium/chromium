@@ -824,13 +824,6 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
       Si se define esta política, el navegador empezará a descartar pestañas para ahorrar memoria cuando se supere el límite de memoria. Sin embargo, no se garantiza que el navegador se ejecute siempre por debajo de ese límite. Cualquier valor que sea inferior a 1024 se establecerá como 1024.
 
       Si no se define esta política, el navegador solo intentará ahorrar memoria cuando detecte que la cantidad de memoria física del equipo es baja.</translation>
-<translation id="2164922809922345834">Habilita la oclusión de ventana nativa en <ph name="PRODUCT_NAME" />.
-
-      Si se habilita esta opción, <ph name="PRODUCT_NAME" /> detectará si una ventana está tapada por otras ventanas y, en ese caso, dejará de mostrar píxeles para reducir el consumo de energía y de CPU.
-
-      Si se inhabilita esta opción, <ph name="PRODUCT_NAME" /> no detectará si una ventana está tapada por otras ventanas.
-
-      Si no se asigna ningún valor a esta política, se habilitará la detección de oclusión.</translation>
 <translation id="2166472654199325139">No filtrar el contenido para adultos de los sitios web</translation>
 <translation id="2168397434410358693">Retraso de inactividad cuando el dispositivo está conectado a la red</translation>
 <translation id="217013996107840632">Parámetros de línea de comandos para cambiar desde el navegador alternativo.</translation>

@@ -84,6 +84,7 @@
 <translation id="1571304935088121812">Kopjo emrin e përdoruesit</translation>
 <translation id="1592864538817356322">Mbrojtja standarde:</translation>
 <translation id="1612196535745283361">Chrome ka nevojë për qasjen te vendndodhja për të skanuar për pajisje. Qasja te vendndodhja është <ph name="BEGIN_LINK" />e çaktivizuar për këtë pajisje<ph name="END_LINK" />.</translation>
+<translation id="1613577519914241527">Kur është aktiv, faqet e internetit nuk do të jenë në gjendje të përdorin informacione që të identifikojnë personalisht ty për t'i bërë sajtet e tyre më të përshtatshme. Njësoj si një turmë në koncert, sajtet mund të dinë vetëm që mijëra përdorues kanë një interes të përbashkët.\n\n"Turma" jote bazohet në sajtet që viziton. Reklamuesit mund të shikojnë vetë çfarë sajtesh viziton e gjithë turma, jo çfarë sajtesh viziton ti personalisht.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Hiq 1 artikull të zgjedhur}other{Hiq # artikuj të zgjedhur}}</translation>
 <translation id="1641113438599504367">Shfletimi i sigurt</translation>
 <translation id="164269334534774161">Po shikon një kopje jashtë linje të kësaj faqeje nga <ph name="CREATION_TIME" /></translation>
@@ -468,6 +469,7 @@ Prek dhe mbaj shtypur një fjalë për ta kërkuar. Për të përsosur kërkimin
 <translation id="4440958355523780886">Faqja e lehtë ofrohet nga Google. Trokit për të ngarkuar faqen origjinale.</translation>
 <translation id="4452411734226507615">Mbyll skedën <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Faqeshënuesi u shtua te <ph name="FOLDER_NAME" /></translation>
+<translation id="4465314970046116177">"Kufizuesi i privatësisë" është një set teknologjish të reja që rrjedhimisht do t'i mbrojnë njerëzit nga mekanizmat e gjurmimit ndërmjet sajteve, siç janë kukit e palëve të treta, ndërsa ruajnë përmbajtjen e uebit dhe shërbimet që varen nga ato mekanizma sot. Chrome bashkëpunon me zhvilluesit e faqeve të internetit, publikuesit, reklamuesit dhe shfletues të tjerë për të zhvilluar këtë teknologji të re.</translation>
 <translation id="4472118726404937099">Për të sinkronizuar dhe personalizuar mes pajisjeve, identifikohu dhe aktivizo sinkronizimin</translation>
 <translation id="447252321002412580">Ndihmo në përmirësimin e funksioneve dhe cilësisë së funksionimit të Chrome</translation>
 <translation id="4479972344484327217">Po instalohet <ph name="MODULE" /> për Chrome…</translation>
@@ -638,6 +640,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5595485650161345191">Redakto adresën</translation>
 <translation id="5599455543593328020">Modaliteti "i fshehtë"</translation>
 <translation id="5599941490345670218">"Asistenti i Google" mund të kryejë veprime nëpër faqe interneti për ty</translation>
+<translation id="5606787249466187650">Eksploro "Kufizuesin e privatësisë"</translation>
 <translation id="5620163320393916465">Nuk ka asnjë fjalëkalim të ruajtur</translation>
 <translation id="5620928963363755975">Gjej skedarët dhe faqet e tua te "Shkarkimet" nga butoni "Më shumë opsione"</translation>
 <translation id="5626134646977739690">Emri:</translation>
@@ -743,6 +746,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="6243852395147506234">Gati për jashtë linje</translation>
 <translation id="624789221780392884">Përditësimi është gati</translation>
 <translation id="6255999984061454636">Sugjerimet e përmbajtjes</translation>
+<translation id="6266591733731644292">"Kufizuesi i privatësisë" nuk është publikuar ende për përdorim të gjerë. Gjatë kësaj periudhe prove:\n<ph name="BEGIN_LIST_ITEM1" />Zhvilluesit e faqeve të internetit dhe aplikacioneve mund të provojnë mundësinë për të krijuar përvoja të përshtatshme pa u qasur në informacionet unike identifikuese rreth teje<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />Përdoruesit mund të tërhiqen nga prova duke përdorur kontrollet në këtë faqe.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="6277522088822131679">Pati një problem me printimin e faqes. Provo përsëri.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6292420053234093573">Duke përdorur Chrome, ti pranon <ph name="BEGIN_LINK1" />Kushtet e shërbimit të Google<ph name="END_LINK1" /> dhe <ph name="BEGIN_LINK2" />Kushtet shtesë të shërbimit të Google Chrome dhe të sistemit operativ Chrome<ph name="END_LINK2" />.</translation>
@@ -834,6 +838,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="6811034713472274749">Faqja është gati për ta shikuar</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612">Skeda <ph name="TAB_TITLE" /> është zgjedhur</translation>
+<translation id="6833996806551876956">Prova e "Kufizuesit të privatësisë"</translation>
 <translation id="6845325883481699275">Ndihmo në përmirësimin e sigurisë së Chrome</translation>
 <translation id="6846298663435243399">Po ngarkohet...</translation>
 <translation id="6850409657436465440">Shkarkimi yt është ende në vazhdim</translation>
@@ -1069,6 +1074,7 @@ Të dhënat nga sesioni yt "i fshehtë" do të pastrohen nga Chrome vetëm kur <
 <translation id="8442258441309440798">Nuk ofrohet asnjë histori</translation>
 <translation id="8443209985646068659">Chrome s'mund të përditësohet</translation>
 <translation id="8445448999790540984">Fjalëkalimet nuk mund të eksportohen</translation>
+<translation id="8447219758310755868">Maskimi në turmë</translation>
 <translation id="8461694314515752532">Enkripto të dhënat e sinkronizuara me frazën tënde të kalimit për sinkronizimin</translation>
 <translation id="8466613982764129868">Sigurohu që <ph name="TARGET_DEVICE_NAME" /> të jetë lidhur me internetin</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
