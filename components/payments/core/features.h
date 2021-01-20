@@ -90,6 +90,10 @@ extern const base::Feature kEnforceFullDelegation;
 // SecurePaymentConfirmation to be available.
 extern const base::Feature kSecurePaymentConfirmation;
 
+// If enabled, the GooglePayPaymentApp handles communications between the native
+// GPay app and the browser for dynamic updates on shipping and payment data.
+extern const base::Feature kGPayAppDynamicUpdate;
+
 }  // namespace features
 }  // namespace payments
 
