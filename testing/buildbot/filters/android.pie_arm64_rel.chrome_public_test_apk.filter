@@ -87,9 +87,5 @@
 # crbug.com/1165449
 -org.chromium.chrome.browser.firstrun.TosAndUmaFirstRunFragmentWithEnterpriseSupportTest.testAcceptTosWithoutCrashUpload
 
-# crbug.com/1165456
--org.chromium.chrome.browser.paint_preview.StartupPaintPreviewTest.testRemoveOnActionbarClick
--org.chromium.chrome.browser.paint_preview.StartupPaintPreviewTest.testSnackbarShow
-
 # crbug.com/1165459
 -org.chromium.chrome.browser.share.long_screenshots.LongScreenshotsEntryTest.testCaptured
