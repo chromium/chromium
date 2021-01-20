@@ -300,7 +300,7 @@ class MEDIA_EXPORT Vp9Parser {
   // The parsing context that persists across frames.
   class Context {
    public:
-    class Vp9FrameContextManager {
+    class MEDIA_EXPORT Vp9FrameContextManager {
      public:
       Vp9FrameContextManager();
       ~Vp9FrameContextManager();
