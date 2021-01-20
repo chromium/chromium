@@ -177,11 +177,15 @@ const getFormInputElements = function(form) {
  * @return {string} The password form.
  */
 __gCrWeb.passwords['getPasswordFormDataAsString'] = function(identifier) {
-  const el = getPasswordFormElement(window, identifier);
-  if (!el) {
+  const hasFormTag =
+      identifier.toString() !== __gCrWeb.fill.RENDERER_ID_NOT_SET;
+  const form = hasFormTag ? getPasswordFormElement(window, identifier) : null;
+  if (!form && hasFormTag) {
     return '{}';
   }
-  const formData = __gCrWeb.passwords.getPasswordFormData(el, window);
+  const formData = hasFormTag ?
+      __gCrWeb.passwords.getPasswordFormData(form, window) :
+      __gCrWeb.passwords.getPasswordFormDataFromUnownedElements(window);
   if (!formData) {
     return '{}';
   }
@@ -351,7 +355,11 @@ const getPasswordFormDataList = function(formDataList, win) {
       addSubmitButtonTouchEndHandler(forms[i]);
     }
   }
-  getPasswordFormDataFromUnownedElements_(formDataList, win);
+  const unownedFormData =
+      __gCrWeb.passwords.getPasswordFormDataFromUnownedElements(win);
+  if (unownedFormData) {
+    formDataList.push(unownedFormData);
+  }
   // Recursively invoke for all iframes.
   const frames = getSameOriginFrames(win);
   for (let i = 0; i < frames.length; i++) {
@@ -360,13 +368,12 @@ const getPasswordFormDataList = function(formDataList, win) {
 };
 
 /**
- * Finds all forms with passwords that are not inside any <form> tag and appends
- * JS object containing the form data to |formDataList|.
- * @param {!Array<Object>} formDataList A list that this function populates
- *     with descriptions of discovered forms.
+ * Finds all forms with passwords that are not inside any <form> tag and returns
+ * JS object containing the form data.
  * @param {Window} win A window or a frame containing formData.
+ * @return {Object} Object of data from formElement.
  */
-function getPasswordFormDataFromUnownedElements_(formDataList, window) {
+__gCrWeb.passwords.getPasswordFormDataFromUnownedElements = function(window) {
   const doc = window.document;
   const extractMask = __gCrWeb.fill.EXTRACT_MASK_VALUE;
   const fieldsets = [];
@@ -380,10 +387,9 @@ function getPasswordFormDataFromUnownedElements_(formDataList, window) {
       __gCrWeb.fill.unownedFormElementsAndFieldSetsToFormData(
           window, fieldsets, unownedControlElements, extractMask, false,
           unownedForm);
-  if (hasUnownedForm) {
-    formDataList.push(unownedForm);
-  }
-}
+  return hasUnownedForm ? unownedForm : null;
+};
+
 
 /**
  * Returns a JS object containing the data from |formElement|.

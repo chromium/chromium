@@ -712,4 +712,39 @@ TEST_F(PasswordControllerJsTest, FillOnlyPasswordField) {
                                       @[ @"password" ], @[ password ]);
 }
 
+// Check that password form outside the <form> tag is extracted correctly.
+TEST_F(PasswordControllerJsTest, ExtractFormOutsideTheFormTag) {
+  LoadHtmlAndInject(@"<html><body>"
+                     "  Name: <input type='text' name='name'>"
+                     "  Password: <input type='password' name='password'>"
+                     "  <input type='submit' value='Submit'>"
+                     "</body></html>");
+  ExecuteJavaScript(@"__gCrWeb.fill.setUpForUniqueIDs(0);");
+
+  const std::string base_url = BaseUrl();
+  NSString* result = [NSString
+      stringWithFormat:
+          @"{\"name\":\"\",\"origin\":\"%s\",\"action\":\"\","
+          @"\"is_form_tag\":false,\"fields\":[{"
+          @"\"identifier\":\"gChrome~field~~INPUT~0\","
+          @"\"name\":\"name\",\"name_attribute\":\"name\",\"id_attribute\":"
+          @"\"\",\"unique_renderer_id\":\"0\",\"form_control_type\":\"text\","
+          @"\"aria_label\":\"\","
+          @"\"aria_description\":\"\",\"should_autocomplete\":true,"
+          @"\"is_focusable\":true,\"max_length\":524288,\"is_checkable\":false,"
+          @"\"value\":\"\",\"label\":\"Name:\"},{\"identifier\":"
+          @"\"gChrome~field~~INPUT~1\",\"name\":\"password\",\"name_"
+          @"attribute\":\"password\","
+          @"\"id_attribute\":\"\",\"unique_renderer_id\":\"1\",\"form_control_"
+          @"type\":\"password\","
+          @"\"aria_label\":\"\",\"aria_description\":\"\","
+          @"\"should_autocomplete\":true,\"is_focusable\":true,"
+          @"\"max_length\":524288,\"is_checkable\":false,\"value\":\"\","
+          @"\"label\":\"Password:\"}]}",
+          base_url.c_str()];
+  EXPECT_NSEQ(result,
+              ExecuteJavaScriptWithFormat(
+                  @"__gCrWeb.passwords.getPasswordFormDataAsString(-1)"));
+}
+
 }  // namespace

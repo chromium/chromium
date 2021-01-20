@@ -102,7 +102,7 @@ std::unique_ptr<base::Value> SerializeFillData(
     completionHandler:(void (^)(NSString*))completionHandler {
   DCHECK(completionHandler);
   std::vector<base::Value> parameters;
-  parameters.emplace_back(static_cast<int>(formIdentifier.value()));
+  parameters.emplace_back(FormRendererIdToJsParameter(formIdentifier));
   autofill::ExecuteJavaScriptFunction("passwords.getPasswordFormDataAsString",
                                       parameters, frame,
                                       CreateStringCallback(completionHandler));
