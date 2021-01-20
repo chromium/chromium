@@ -9352,6 +9352,7 @@ TEST_F(AXPositionTest, EmptyObjectReplacedByCharacterTextNavigation) {
   // ++++13 kStaticText
   // ++++14 kButton
   // ++++++15 kGenericContainer ignored
+  // ++++16 kSplitter
   AXNodeData root_1;
   AXNodeData static_text_2;
   AXNodeData inline_box_3;
@@ -9367,6 +9368,7 @@ TEST_F(AXPositionTest, EmptyObjectReplacedByCharacterTextNavigation) {
   AXNodeData static_text_13;
   AXNodeData button_14;
   AXNodeData generic_container_15;
+  AXNodeData splitter_16;
 
   root_1.id = 1;
   static_text_2.id = 2;
@@ -9383,12 +9385,14 @@ TEST_F(AXPositionTest, EmptyObjectReplacedByCharacterTextNavigation) {
   static_text_13.id = 13;
   button_14.id = 14;
   generic_container_15.id = 15;
+  splitter_16.id = 16;
 
   root_1.role = ax::mojom::Role::kRootWebArea;
   root_1.child_ids = {static_text_2.id,        text_field_4.id,
                       static_text_6.id,        heading_8.id,
                       generic_container_11.id, generic_container_12.id,
-                      static_text_13.id,       button_14.id};
+                      static_text_13.id,       button_14.id,
+                      splitter_16.id};
 
   static_text_2.role = ax::mojom::Role::kStaticText;
   static_text_2.SetName("Hello ");
@@ -9445,11 +9449,15 @@ TEST_F(AXPositionTest, EmptyObjectReplacedByCharacterTextNavigation) {
   generic_container_15.role = ax::mojom::Role::kGenericContainer;
   generic_container_15.AddState(ax::mojom::State::kIgnored);
 
-  SetTree(CreateAXTree({root_1, static_text_2, inline_box_3, text_field_4,
-                        generic_container_5, static_text_6, inline_box_7,
-                        heading_8, static_text_9, inline_box_10,
-                        generic_container_11, generic_container_12,
-                        static_text_13, button_14, generic_container_15}));
+  splitter_16.role = ax::mojom::Role::kSplitter;
+  splitter_16.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                               true);
+
+  SetTree(CreateAXTree(
+      {root_1, static_text_2, inline_box_3, text_field_4, generic_container_5,
+       static_text_6, inline_box_7, heading_8, static_text_9, inline_box_10,
+       generic_container_11, generic_container_12, static_text_13, button_14,
+       generic_container_15, splitter_16}));
 
   // CreateNextWordStartPosition tests.
   TestPositionType position = AXNodePosition::CreateTextPosition(
@@ -9557,7 +9565,7 @@ TEST_F(AXPositionTest, EmptyObjectReplacedByCharacterTextNavigation) {
       base::WideToUTF16(L"Hello ") + AXNodePosition::kEmbeddedCharacter +
       base::WideToUTF16(L" world") + AXNodePosition::kEmbeddedCharacter +
       AXNodePosition::kEmbeddedCharacter + base::WideToUTF16(L"hey") +
-      AXNodePosition::kEmbeddedCharacter;
+      AXNodePosition::kEmbeddedCharacter + AXNodePosition::kEmbeddedCharacter;
   EXPECT_EQ(expected_text, position->GetText());
 
   // MaxTextOffset() on a non-text node. This is represented by an embedded
@@ -9630,7 +9638,23 @@ TEST_F(AXPositionTest, EmptyObjectReplacedByCharacterTextNavigation) {
   text_position = text_position->CreateNextParagraphEndPosition(
       AXBoundaryBehavior::StopAtLastAnchorBoundary);
   ASSERT_NE(nullptr, text_position);
-  EXPECT_TRUE(text_position->IsTextPosition());
+  EXPECT_TRUE(text_position->IsLeafTextPosition());
+  EXPECT_EQ(button_14.id, text_position->anchor_id());
+  EXPECT_EQ(1, text_position->text_offset());
+  EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, text_position->affinity());
+
+  // The following is to test that an element with the kSplitter role is not
+  // exposed to the accessibility tree's text representation, e.g. UIA's text
+  // pattern.
+  text_position = AXNodePosition::CreateTextPosition(
+      GetTreeID(), button_14.id, 1 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, text_position);
+
+  // The |text_position| shouldn't change.
+  text_position = text_position->CreateNextParagraphStartPosition(
+      AXBoundaryBehavior::StopAtLastAnchorBoundary);
+  ASSERT_NE(nullptr, text_position);
   EXPECT_TRUE(text_position->IsLeafTextPosition());
   EXPECT_EQ(button_14.id, text_position->anchor_id());
   EXPECT_EQ(1, text_position->text_offset());

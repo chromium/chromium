@@ -494,6 +494,9 @@ void AXNode::ClearLanguageInfo() {
 
 std::string AXNode::GetHypertext() const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
+  if (IsIgnoredForTextNavigation())
+    return std::string();
+
   if (IsLeaf())
     return GetInnerText();
 
@@ -517,6 +520,11 @@ std::string AXNode::GetHypertext() const {
 
 std::string AXNode::GetInnerText() const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
+  // The inner text computed should exclude the elements not exposed to text
+  // navigation.
+  if (IsIgnoredForTextNavigation())
+    return std::string();
+
   // If a text field has no descendants, then we compute its inner text from its
   // value or its placeholder. Otherwise we prefer to look at its descendant
   // text nodes because Blink doesn't always add all trailing white space to the
@@ -1195,6 +1203,10 @@ std::string AXNode::GetValueForTextField() const {
 
 bool AXNode::IsIgnored() const {
   return data().IsIgnored();
+}
+
+bool AXNode::IsIgnoredForTextNavigation() const {
+  return data().role == ax::mojom::Role::kSplitter;
 }
 
 bool AXNode::IsInvisibleOrIgnored() const {

@@ -205,6 +205,10 @@ bool BrowserAccessibility::IsIgnored() const {
   return node()->IsIgnored();
 }
 
+bool BrowserAccessibility::IsIgnoredForTextNavigation() const {
+  return node()->IsIgnoredForTextNavigation();
+}
+
 bool BrowserAccessibility::IsLineBreakObject() const {
   return node()->IsLineBreak();
 }

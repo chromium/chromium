@@ -428,6 +428,11 @@ class AX_EXPORT AXNode final {
   // Returns true if node has ignored state or ignored role.
   bool IsIgnored() const;
 
+  // Some nodes are not ignored but should be skipped during text navigation.
+  // For example, on some platforms screen readers should not stop when
+  // encountering a splitter during character and word navigation.
+  bool IsIgnoredForTextNavigation() const;
+
   // Returns true if node is invisible or ignored.
   bool IsInvisibleOrIgnored() const;
 

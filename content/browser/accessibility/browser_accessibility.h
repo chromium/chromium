@@ -93,6 +93,8 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
 
   bool IsIgnored() const;
 
+  bool IsIgnoredForTextNavigation() const;
+
   bool IsLineBreakObject() const;
 
   // See AXNode::IsLeaf().

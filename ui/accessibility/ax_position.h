@@ -334,7 +334,10 @@ class AXPosition {
     DCHECK(GetAnchor());
     // If this position is anchored to an ignored node, then consider this
     // position to be ignored.
-    if (GetAnchor()->IsIgnored())
+    //
+    // TODO(nektar): Ensure that all methods skip over empty text nodes and
+    // remove the IsIgnoredForTextNavigation call.
+    if (GetAnchor()->IsIgnored() || GetAnchor()->IsIgnoredForTextNavigation())
       return true;
 
     switch (kind_) {
@@ -3450,17 +3453,20 @@ class AXPosition {
       return false;
     }
 
-    // All unignored leaf nodes in the AXTree except web area and text
-    // nodes should be replaced by the embedded object character. Also, nodes
-    // that only have ignored children (e.g., a button that contains only an
-    // empty div) need to be treated as leaf nodes.
+    // All unignored leaf nodes in the AXTree should be replaced by the embedded
+    // object character - unless the object is a web area, a text node or is
+    // skipped during text navigation. Also, nodes that only have ignored
+    // children (e.g., a button that contains only an empty div) need to be
+    // treated as leaf nodes.
     //
     // Calling AXPosition::IsIgnored here is not possible as it would create an
     // infinite loop. However, GetAnchor()->IsIgnored() is sufficient here
     // because we know that the anchor at this position doesn't have an
     // unignored child, making this a leaf tree or text position.
-    return !GetAnchor()->IsIgnored() && !IsPlatformDocument(GetAnchorRole()) &&
-           !IsInTextObject() && !IsIframe(GetAnchorRole());
+    return !GetAnchor()->IsIgnored() &&
+           !GetAnchor()->IsIgnoredForTextNavigation() &&
+           !IsPlatformDocument(GetAnchorRole()) && !IsInTextObject() &&
+           !IsIframe(GetAnchorRole());
   }
 
   bool IsInDescendantOfEmptyObject() const {
