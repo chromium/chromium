@@ -21,12 +21,6 @@ namespace chromeos {
 // Loads locally stored icon data and decodes it.
 class KioskAppIconLoader {
  public:
-  enum LoadResult {
-    SUCCESS,
-    FAILED_TO_LOAD,
-    FAILED_TO_DECODE,
-  };
-
   class Delegate {
    public:
     virtual void OnIconLoadSuccess(const gfx::ImageSkia& icon) = 0;
