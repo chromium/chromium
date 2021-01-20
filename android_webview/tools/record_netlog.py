@@ -14,6 +14,7 @@ from __future__ import print_function
 import argparse
 import logging
 import os
+import posixpath
 import re
 import sys
 import time
@@ -90,7 +91,7 @@ https://chromium.googlesource.com/chromium/src/+/HEAD/android_webview/docs/net-d
 
   package_name = args.package
   device_netlog_file_name = 'netlog.json'
-  device_netlog_path = os.path.join(
+  device_netlog_path = posixpath.join(
       device.GetApplicationDataDirectory(package_name), 'app_webview',
       device_netlog_file_name)
 
