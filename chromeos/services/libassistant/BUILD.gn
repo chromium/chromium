@@ -48,6 +48,8 @@ source_set("internal") {
     "chromium_http_connection.h",
     "conversation_controller.cc",
     "conversation_controller.h",
+    "display_controller.cc",
+    "display_controller.h",
     "platform_api.cc",
     "platform_api.h",
     "service_controller.cc",

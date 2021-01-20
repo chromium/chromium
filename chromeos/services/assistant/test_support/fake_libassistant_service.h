@@ -36,8 +36,13 @@ class FakeLibassistantService
                 audio_stream_factory_delegate,
             mojo::PendingReceiver<libassistant::mojom::ConversationController>
                 conversation_controller,
+            mojo::PendingReceiver<libassistant::mojom::DisplayController>
+                display_controller,
             mojo::PendingReceiver<libassistant::mojom::ServiceController>
                 service_controller) override;
+  void AddSpeechRecognitionObserver(
+      mojo::PendingRemote<libassistant::mojom::SpeechRecognitionObserver>
+          observer) override {}
 
  private:
   mojo::Receiver<libassistant::mojom::LibassistantService> receiver_;

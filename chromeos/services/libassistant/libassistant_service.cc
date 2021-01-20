@@ -12,6 +12,7 @@
 #include "chromeos/services/assistant/public/cpp/migration/cros_platform_api.h"
 #include "chromeos/services/libassistant/audio_input_controller.h"
 #include "chromeos/services/libassistant/conversation_controller.h"
+#include "chromeos/services/libassistant/display_controller.h"
 #include "chromeos/services/libassistant/platform_api.h"
 #include "chromeos/services/libassistant/service_controller.h"
 
@@ -24,11 +25,16 @@ LibassistantService::LibassistantService(
     assistant::AssistantManagerServiceDelegate* delegate)
     : receiver_(this, std::move(receiver)),
       platform_api_(std::make_unique<PlatformApi>()),
+      display_controller_(
+          std::make_unique<DisplayController>(&speech_recognition_observers_)),
       service_controller_(
           std::make_unique<ServiceController>(delegate, platform_api_.get())),
       conversation_controller_(
           std::make_unique<ConversationController>(service_controller_.get())),
       audio_input_controller_(std::make_unique<AudioInputController>()) {
+  service_controller_->AddAndFireAssistantManagerObserver(
+      display_controller_.get());
+
   platform_api_->SetAudioInputProvider(&platform_api->GetAudioInputProvider())
       .SetAudioOutputProvider(&platform_api->GetAudioOutputProvider())
       .SetAuthProvider(&platform_api->GetAuthProvider())
@@ -37,7 +43,10 @@ LibassistantService::LibassistantService(
       .SetSystemProvider(&platform_api->GetSystemProvider());
 }
 
-LibassistantService::~LibassistantService() = default;
+LibassistantService::~LibassistantService() {
+  service_controller_->RemoveAssistantManagerObserver(
+      display_controller_.get());
+}
 
 void LibassistantService::Bind(
     mojo::PendingReceiver<mojom::AudioInputController> audio_input_controller,
@@ -45,15 +54,22 @@ void LibassistantService::Bind(
         audio_stream_factory_delegate,
     mojo::PendingReceiver<mojom::ConversationController>
         conversation_controller,
+    mojo::PendingReceiver<mojom::DisplayController> display_controller,
     mojo::PendingReceiver<mojom::ServiceController> service_controller) {
   audio_input_controller_->Bind(std::move(audio_input_controller),
                                 std::move(audio_stream_factory_delegate));
-  service_controller_->Bind(std::move(service_controller));
   conversation_controller_->Bind(std::move(conversation_controller));
+  display_controller_->Bind(std::move(display_controller));
+  service_controller_->Bind(std::move(service_controller));
 }
 
 void LibassistantService::SetInitializeCallback(InitializeCallback callback) {
   service_controller().SetInitializeCallback(std::move(callback));
+}
+
+void LibassistantService::AddSpeechRecognitionObserver(
+    mojo::PendingRemote<mojom::SpeechRecognitionObserver> observer) {
+  speech_recognition_observers_.Add(std::move(observer));
 }
 
 }  // namespace libassistant
