@@ -32,10 +32,13 @@ constexpr int kZeroStateNewDeskButtonWidth = 36;
 // -----------------------------------------------------------------------------
 // DeskButtonBase:
 
-DeskButtonBase::DeskButtonBase(const base::string16& text)
+DeskButtonBase::DeskButtonBase(const base::string16& text,
+                               int border_corder_radius,
+                               int corner_radius)
     : LabelButton(base::BindRepeating(&DeskButtonBase::OnButtonPressed,
                                       base::Unretained(this)),
-                  text) {
+                  text),
+      corner_radius_(corner_radius) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
@@ -45,11 +48,11 @@ DeskButtonBase::DeskButtonBase(const base::string16& text)
   SetFocusPainter(nullptr);
   SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
 
-  auto border = std::make_unique<WmHighlightItemBorder>(kCornerRadius);
+  auto border = std::make_unique<WmHighlightItemBorder>(border_corder_radius);
   border_ptr_ = border.get();
   SetBorder(std::move(border));
   views::InstallRoundRectHighlightPathGenerator(this, GetInsets(),
-                                                kCornerRadius);
+                                                border_corder_radius);
 
   UpdateBorderState();
 }
@@ -66,7 +69,7 @@ void DeskButtonBase::OnPaintBackground(gfx::Canvas* canvas) {
     flags.setColor(background_color_);
     canvas->DrawRoundRect(gfx::RectF(paint_contents_only_ ? GetContentsBounds()
                                                           : GetLocalBounds()),
-                          kCornerRadius, flags);
+                          corner_radius_, flags);
   }
 }
 
@@ -132,7 +135,9 @@ void DeskButtonBase::UpdateBorderState() {
 // TODO(minch): Show the first desk's current name instead of the default name.
 ZeroStateDefaultDeskButton::ZeroStateDefaultDeskButton(DesksBarView* bar_view)
     : DeskButtonBase(
-          l10n_util::GetStringUTF16(IDS_ASH_DESKS_DESK_1_MINI_VIEW_TITLE)),
+          l10n_util::GetStringUTF16(IDS_ASH_DESKS_DESK_1_MINI_VIEW_TITLE),
+          kCornerRadius,
+          kCornerRadius),
       bar_view_(bar_view) {}
 
 const char* ZeroStateDefaultDeskButton::GetClassName() const {
@@ -161,7 +166,7 @@ void ZeroStateDefaultDeskButton::OnButtonPressed() {
 // ZeroStateNewDeskButton:
 
 ZeroStateNewDeskButton::ZeroStateNewDeskButton()
-    : DeskButtonBase(base::string16()) {
+    : DeskButtonBase(base::string16(), kCornerRadius, kCornerRadius) {
   highlight_on_hover_ = false;
 }
 

@@ -20,7 +20,9 @@ class ASH_EXPORT DeskButtonBase
     : public views::LabelButton,
       public OverviewHighlightController::OverviewHighlightableView {
  public:
-  explicit DeskButtonBase(const base::string16& text);
+  DeskButtonBase(const base::string16& text,
+                 int border_corder_radius,
+                 int corner_radius);
   ~DeskButtonBase() override = default;
 
   // LabelButton:
@@ -63,6 +65,8 @@ class ASH_EXPORT DeskButtonBase
   // Owned by this View via `View::border_`. This is just a convenient pointer
   // to it.
   WmHighlightItemBorder* border_ptr_;
+
+  const int corner_radius_;
 };
 
 // A button in zero state bar showing "Desk 1". Zero state is the state of the
