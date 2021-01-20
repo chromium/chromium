@@ -388,8 +388,6 @@ NewTabPageHandler::NewTabPageHandler(
   instant_service_->AddObserver(this);
   ntp_background_service_->AddObserver(this);
   instant_service_->UpdateNtpTheme();
-  OmniboxTabHelper::CreateForWebContents(web_contents);
-  OmniboxTabHelper::FromWebContents(web_contents_)->AddObserver(this);
   promo_service_observation_.Observe(promo_service_);
   one_google_bar_service_observation_.Observe(one_google_bar_service_);
   logger_.SetModulesVisible(
@@ -399,9 +397,6 @@ NewTabPageHandler::NewTabPageHandler(
 NewTabPageHandler::~NewTabPageHandler() {
   instant_service_->RemoveObserver(this);
   ntp_background_service_->RemoveObserver(this);
-  if (auto* helper = OmniboxTabHelper::FromWebContents(web_contents_)) {
-    helper->RemoveObserver(this);
-  }
   // Clear pending bitmap requests.
   for (auto bitmap_request_id : bitmap_request_ids_) {
     bitmap_fetcher_service_->CancelRequest(bitmap_request_id);
@@ -1331,21 +1326,6 @@ void NewTabPageHandler::OnNextCollectionImageAvailable() {}
 void NewTabPageHandler::OnNtpBackgroundServiceShuttingDown() {
   ntp_background_service_->RemoveObserver(this);
   ntp_background_service_ = nullptr;
-}
-
-void NewTabPageHandler::OnOmniboxInputStateChanged() {
-  // This handler was added for the local NTP to show the fakebox when pressing
-  // escape while the omnibox has focus. The WebUI NTP only shows the fakebox
-  // when blurring the omnibox. Thus, we do nothing here.
-}
-
-void NewTabPageHandler::OnOmniboxFocusChanged(OmniboxFocusState state,
-                                              OmniboxFocusChangeReason reason) {
-  page_->SetFakeboxFocused(state == OMNIBOX_FOCUS_INVISIBLE);
-  // Don't make fakebox re-appear for a short moment before navigating away.
-  if (web_contents_->GetController().GetPendingEntry() == nullptr) {
-    page_->SetFakeboxVisible(reason != OMNIBOX_FOCUS_CHANGE_TYPING);
-  }
 }
 
 void NewTabPageHandler::OnOneGoogleBarDataUpdated() {

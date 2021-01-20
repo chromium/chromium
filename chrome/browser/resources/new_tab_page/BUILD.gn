@@ -21,7 +21,6 @@ js_type_check("closure_compile") {
     ":browser_proxy",
     ":customize_dialog",
     ":doodle_share_dialog",
-    ":fakebox",
     ":iframe",
     ":lazy_load",
     ":logo",
@@ -175,12 +174,6 @@ js_library("iframe") {
   ]
 }
 
-js_library("fakebox") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
 js_library("realbox") {
   deps = [
     ":browser_proxy",
@@ -258,7 +251,6 @@ html_to_js("web_components_local") {
     "customize_dialog.js",
     "customize_shortcuts.js",
     "doodle_share_dialog.js",
-    "fakebox.js",
     "logo.js",
     "middle_slot_promo.js",
     "mini_page.js",
@@ -323,7 +315,6 @@ preprocess_if_expr("preprocess_gen") {
     "customize_shortcuts.js",
     "iframe.js",
     "mini_page.js",
-    "fakebox.js",
     "logo.js",
     "doodle_share_dialog.js",
     "realbox.js",

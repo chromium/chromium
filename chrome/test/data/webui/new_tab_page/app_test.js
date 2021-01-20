@@ -32,7 +32,6 @@ suite('NewTabPageAppTest', () => {
   suiteSetup(() => {
     loadTimeData.overrideValues({
       modulesLoadTimeout: 0,
-      realboxEnabled: false,
     });
   });
 
@@ -141,8 +140,6 @@ suite('NewTabPageAppTest', () => {
 
   test('realbox is not visible by default', async () => {
     // Assert.
-    assertNotStyle($$(app, '#fakebox'), 'display', 'none');
-    assertStyle($$(app, '#realbox'), 'display', 'none');
     assertStyle($$(app, '#realbox'), 'visibility', 'hidden');
 
     // Act.
@@ -155,7 +152,7 @@ suite('NewTabPageAppTest', () => {
 
   test('open voice search event opens voice search overlay', async () => {
     // Act.
-    $$(app, '#fakebox').dispatchEvent(new Event('open-voice-search'));
+    $$(app, '#realbox').dispatchEvent(new Event('open-voice-search'));
     await flushTasks();
 
     // Assert.

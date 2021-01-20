@@ -112,18 +112,6 @@ TEST_F('NewTabPageVoiceSearchOverlayTest', 'All', function() {
 });
 
 // eslint-disable-next-line no-var
-var NewTabPageFakeboxTest = class extends NewTabPageBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://new-tab-page/test_loader.html?module=new_tab_page/fakebox_test.js';
-  }
-};
-
-TEST_F('NewTabPageFakeboxTest', 'All', function() {
-  mocha.run();
-});
-
-// eslint-disable-next-line no-var
 var NewTabPageRealboxTest = class extends NewTabPageBrowserTest {
   /** @override */
   get browsePreload() {

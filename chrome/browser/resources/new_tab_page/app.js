@@ -4,7 +4,6 @@
 
 import './strings.m.js';
 import './iframe.js';
-import './fakebox.js';
 import './realbox.js';
 import './logo.js';
 import './modules/module_wrapper.js';
@@ -183,12 +182,6 @@ class AppElement extends PolymerElement {
       singleColoredLogo_: {
         computed: 'computeSingleColoredLogo_(theme_, backgroundSelection_)',
         type: Boolean,
-      },
-
-      /** @private */
-      realboxEnabled_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('realboxEnabled'),
       },
 
       /** @private */

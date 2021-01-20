@@ -70,12 +70,10 @@
     z-index: 1;  /* Needed so it layers on top of OneGoogleBar. */
   }
 
-  ntp-fakebox,
   ntp-realbox {
     margin-bottom: 32px;
   }
 
-  ntp-fakebox,
   ntp-realbox,
   ntp-module-wrapper {
     flex-shrink: 0;
@@ -253,12 +251,8 @@
       single-colored$="[[singleColoredLogo_]]" dark="[[theme_.isDark]]"
       background-color="[[backgroundColor_]]">
   </ntp-logo>
-  <ntp-fakebox id="fakebox" on-open-voice-search="onOpenVoiceSearch_"
-      hidden$="[[realboxEnabled_]]">
-  </ntp-fakebox>
   <ntp-realbox id="realbox" on-open-voice-search="onOpenVoiceSearch_"
-      theme="[[theme_.searchBox]]" shown$="[[realboxShown_]]"
-      hidden$="[[!realboxEnabled_]]">
+      theme="[[theme_.searchBox]]" shown$="[[realboxShown_]]">
   </ntp-realbox>
   <dom-if if="[[lazyRender_]]" on-dom-change="onLazyRendered_">
     <template>

@@ -450,10 +450,6 @@ interface Page {
   SetMostVisitedInfo(MostVisitedInfo info);
   // Sets the current theme.
   SetTheme(Theme theme);
-  // If |focused| fakes focus on the fakebox.
-  SetFakeboxFocused(bool focused);
-  // If |visible| shows the fakebox.
-  SetFakeboxVisible(bool visible);
   // Updates the module visibility.
   SetModulesVisible(bool visible);
 

@@ -20,7 +20,6 @@
 #include "chrome/browser/search/one_google_bar/one_google_bar_service_observer.h"
 #include "chrome/browser/search/promos/promo_service.h"
 #include "chrome/browser/search/promos/promo_service_observer.h"
-#include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "chrome/browser/ui/search/ntp_user_data_logger.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
 #include "chrome/common/search/instant_types.h"
@@ -52,7 +51,6 @@ class LogoService;
 class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
                           public InstantServiceObserver,
                           public NtpBackgroundServiceObserver,
-                          public OmniboxTabHelper::Observer,
                           public OneGoogleBarServiceObserver,
                           public ui::SelectFileDialog::Listener,
                           public AutocompleteController::Observer,
@@ -170,11 +168,6 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   void OnCollectionImagesAvailable() override;
   void OnNextCollectionImageAvailable() override;
   void OnNtpBackgroundServiceShuttingDown() override;
-
-  // OmniboxTabHelper::Observer:
-  void OnOmniboxInputStateChanged() override;
-  void OnOmniboxFocusChanged(OmniboxFocusState state,
-                             OmniboxFocusChangeReason reason) override;
 
   // OneGoogleBarServiceObserver:
   void OnOneGoogleBarDataUpdated() override;
