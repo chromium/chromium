@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.util.AttributeSet;
 
-import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton;
 
 /**

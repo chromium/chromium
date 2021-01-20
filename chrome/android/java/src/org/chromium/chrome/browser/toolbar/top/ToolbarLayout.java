@@ -25,6 +25,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.findinpage.FindToolbar;
 import org.chromium.chrome.browser.omnibox.LocationBar;
@@ -91,7 +92,6 @@ public abstract class ToolbarLayout
     public ToolbarLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
         mDefaultTint = ThemeUtils.getThemedToolbarIconTint(getContext(), false);
-        mProgressBar = createProgressBar();
 
         addOnLayoutChangeListener(new OnLayoutChangeListener() {
             @Override
@@ -112,13 +112,16 @@ public abstract class ToolbarLayout
      * @param toolbarDataProvider The provider for toolbar data.
      * @param tabController       The controller that handles interactions with the tab.
      * @param menuButtonCoordinator Coordinator for interacting with the MenuButton.
+     * @param isInVrSupplier A supplier of the state of VR mode.
      */
     @CallSuper
     protected void initialize(ToolbarDataProvider toolbarDataProvider,
-            ToolbarTabController tabController, MenuButtonCoordinator menuButtonCoordinator) {
+            ToolbarTabController tabController, MenuButtonCoordinator menuButtonCoordinator,
+            BooleanSupplier isInVrSupplier) {
         mToolbarDataProvider = toolbarDataProvider;
         mToolbarTabController = tabController;
         mMenuButtonCoordinator = menuButtonCoordinator;
+        mProgressBar = createProgressBar(isInVrSupplier);
     }
 
     /** @param overlay The coordinator for the texture version of the top toolbar. */
@@ -212,8 +215,9 @@ public abstract class ToolbarLayout
     /**
      * @return A progress bar for Chrome to use.
      */
-    ToolbarProgressBar createProgressBar() {
-        return new ToolbarProgressBar(getContext(), getProgressBarHeight(), this, false);
+    private ToolbarProgressBar createProgressBar(BooleanSupplier isInVrSupplier) {
+        return new ToolbarProgressBar(
+                getContext(), getProgressBarHeight(), this, false, isInVrSupplier);
     }
 
     /**

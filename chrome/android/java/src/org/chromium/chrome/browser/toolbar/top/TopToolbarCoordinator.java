@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -40,7 +41,6 @@ import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.features.start_surface.StartSurface;
-import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.ui.resources.ResourceManager;
 
@@ -68,6 +68,8 @@ public class TopToolbarCoordinator implements Toolbar {
     public static final int TAB_SWITCHER_MODE_GTS_ANIMATION_DURATION_MS = 150;
 
     private final ToolbarLayout mToolbarLayout;
+
+    private final boolean mIsGridTabSwitcherEnabled;
 
     /**
      * The coordinator for the tab switcher mode toolbar (phones only). This will be lazily created
@@ -109,6 +111,10 @@ public class TopToolbarCoordinator implements Toolbar {
      * @param identityDiscButtonSupplier Supplier of Identity Disc button.
      * @param startSurfaceSupplier Supplier of the StartSurface.
      * @param resourceManagerSupplier A supplier of a resource manager for native textures.
+     * @param isInVrSupplier A supplier of the state of VR mode.
+     * @param isGridTabSwitcherEnabled Whether grid tab switcher is enabled via a feature flag.
+     * @param isTabToGtsAnimationEnabled Whether Tab-to-GTS animation is enabled via a feature flag.
+     * @param isStartSurfaceEnabled Whether start surface is enabled via a feature flag.
      */
     public TopToolbarCoordinator(ToolbarControlContainer controlContainer,
             ToolbarLayout toolbarLayout, ToolbarDataProvider toolbarDataProvider,
@@ -125,7 +131,9 @@ public class TopToolbarCoordinator implements Toolbar {
             ObservableSupplier<Boolean> identityDiscStateSupplier,
             Callback<Runnable> invalidatorCallback, Supplier<ButtonData> identityDiscButtonSupplier,
             OneshotSupplier<StartSurface> startSurfaceSupplier,
-            Supplier<ResourceManager> resourceManagerSupplier) {
+            Supplier<ResourceManager> resourceManagerSupplier, BooleanSupplier isInVrSupplier,
+            boolean isGridTabSwitcherEnabled, boolean isTabToGtsAnimationEnabled,
+            boolean isStartSurfaceEnabled) {
         mControlContainer = controlContainer;
         mToolbarLayout = toolbarLayout;
         mMenuButtonCoordinator = browsingModeMenuButtonCoordinator;
@@ -136,7 +144,7 @@ public class TopToolbarCoordinator implements Toolbar {
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
 
         if (mToolbarLayout instanceof ToolbarPhone) {
-            if (StartSurfaceConfiguration.isStartSurfaceEnabled()) {
+            if (isStartSurfaceEnabled) {
                 mStartSurfaceToolbarCoordinator = new StartSurfaceToolbarCoordinator(
                         controlContainer.getRootView().findViewById(R.id.tab_switcher_toolbar_stub),
                         userEducationHelper, layoutStateProviderSupplier, identityDiscStateSupplier,
@@ -145,11 +153,14 @@ public class TopToolbarCoordinator implements Toolbar {
             } else {
                 mTabSwitcherModeCoordinatorPhone = new TabSwitcherModeTTCoordinatorPhone(
                         controlContainer.getRootView().findViewById(R.id.tab_switcher_toolbar_stub),
-                        overviewModeMenuButtonCoordinator);
+                        overviewModeMenuButtonCoordinator, isGridTabSwitcherEnabled,
+                        isTabToGtsAnimationEnabled);
             }
         }
+        mIsGridTabSwitcherEnabled = isGridTabSwitcherEnabled;
         controlContainer.setToolbar(this);
-        mToolbarLayout.initialize(toolbarDataProvider, tabController, mMenuButtonCoordinator);
+        mToolbarLayout.initialize(
+                toolbarDataProvider, tabController, mMenuButtonCoordinator, isInVrSupplier);
 
         mToolbarLayout.setThemeColorProvider(normalThemeColorProvider);
         mAppMenuButtonHelperSupplier = appMenuButtonHelperSupplier;
@@ -218,8 +229,8 @@ public class TopToolbarCoordinator implements Toolbar {
         if (DeviceClassManager.enableFullscreen()) {
             mOverlayCoordinator = new TopToolbarOverlayCoordinator(mToolbarLayout.getContext(),
                     layoutManager, mControlContainer::getProgressBarDrawingInfo, tabSupplier,
-                    browserControlsStateProvider, mResourceManagerSupplier,
-                    topUiThemeColorProvider);
+                    browserControlsStateProvider, mResourceManagerSupplier, topUiThemeColorProvider,
+                    mIsGridTabSwitcherEnabled);
             layoutManager.addSceneOverlay(mOverlayCoordinator);
             mToolbarLayout.setOverlayCoordinator(mOverlayCoordinator);
         }

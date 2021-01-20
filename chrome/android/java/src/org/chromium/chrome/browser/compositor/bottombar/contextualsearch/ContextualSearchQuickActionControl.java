@@ -27,7 +27,7 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchUma;
 import org.chromium.chrome.browser.contextualsearch.QuickActionCategory;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.toolbar.ToolbarColors;
+import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 import org.chromium.ui.resources.dynamics.ViewResourceInflater;
@@ -304,7 +304,7 @@ public class ContextualSearchQuickActionControl extends ViewResourceInflater {
 
                 Resources res = mContext.getResources();
                 if (mToolbarBackgroundColor != 0
-                        && !ToolbarColors.isUsingDefaultToolbarColor(
+                        && !ThemeUtils.isUsingDefaultToolbarColor(
                                 res, false, mToolbarBackgroundColor)
                         && ColorUtils.shouldUseLightForegroundOnBackground(
                                 mToolbarBackgroundColor)) {

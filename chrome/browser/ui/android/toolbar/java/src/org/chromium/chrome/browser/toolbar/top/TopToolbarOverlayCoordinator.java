@@ -10,7 +10,6 @@ import android.graphics.RectF;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.layouts.CompositorModelChangeProcessor;
 import org.chromium.chrome.browser.layouts.EventFilter;
@@ -20,6 +19,7 @@ import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
+import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.resources.ResourceManager;
@@ -45,7 +45,7 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
             ObservableSupplier<Tab> tabSupplier,
             BrowserControlsStateProvider browserControlsStateProvider,
             Supplier<ResourceManager> resourceManagerSupplier,
-            TopUiThemeColorProvider topUiThemeColorProvider) {
+            TopUiThemeColorProvider topUiThemeColorProvider, boolean isGridTabSwitcherEnabled) {
         mModel = new PropertyModel.Builder(TopToolbarOverlayProperties.ALL_KEYS)
                          .with(TopToolbarOverlayProperties.RESOURCE_ID, R.id.control_container)
                          .with(TopToolbarOverlayProperties.URL_BAR_RESOURCE_ID,
@@ -58,9 +58,9 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
         mChangeProcessor =
                 layoutManager.createCompositorMCP(mModel, mSceneLayer, TopToolbarSceneLayer::bind);
 
-        mMediator =
-                new TopToolbarOverlayMediator(mModel, context, layoutManager, progressInfoCallback,
-                        tabSupplier, browserControlsStateProvider, topUiThemeColorProvider);
+        mMediator = new TopToolbarOverlayMediator(mModel, context, layoutManager,
+                progressInfoCallback, tabSupplier, browserControlsStateProvider,
+                topUiThemeColorProvider, isGridTabSwitcherEnabled);
     }
 
     /**

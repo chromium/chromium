@@ -13,7 +13,6 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.load_progress.LoadProgressProperties.CompletionState;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
-import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -28,17 +27,19 @@ public class LoadProgressMediator {
     private final PropertyModel mModel;
     private final CurrentTabObserver mTabObserver;
     private final LoadProgressSimulator mLoadProgressSimulator;
+    private final boolean mIsStartSurfaceEnabled;
     private boolean mPreventUpdates;
 
     /**
      * @param tabSupplier An observable supplier of the current {@link Tab}.
      * @param model MVC property model instance used for load progress bar.
+     * @param isStartSurfaceEnabled Whether start surface is enabled via a feature flag.
      */
-    public LoadProgressMediator(
-            @NonNull ObservableSupplier<Tab> tabSupplier, @NonNull PropertyModel model) {
+    public LoadProgressMediator(@NonNull ObservableSupplier<Tab> tabSupplier,
+            @NonNull PropertyModel model, boolean isStartSurfaceEnabled) {
         mModel = model;
         mLoadProgressSimulator = new LoadProgressSimulator(model);
-
+        mIsStartSurfaceEnabled = isStartSurfaceEnabled;
         mTabObserver = new CurrentTabObserver(tabSupplier, new EmptyTabObserver() {
             @Override
             public void onDidStartNavigation(Tab tab, NavigationHandle navigation) {
@@ -118,9 +119,7 @@ public class LoadProgressMediator {
         if (tab == null) {
             // If start surface is enabled and new tab is null, then new tab is home page or tab
             // switcher. Finish progress bar loading.
-            if (StartSurfaceConfiguration.isStartSurfaceEnabled()) {
-                finishLoadProgress(false);
-            }
+            if (mIsStartSurfaceEnabled) finishLoadProgress(false);
             return;
         }
 

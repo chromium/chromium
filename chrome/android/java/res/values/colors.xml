@@ -70,9 +70,6 @@
     <color name="contextual_search_promo_background_color">@color/default_bg_color_elev_0</color>
     <color name="contextual_search_promo_border_color">#C2C2C2</color>
 
-    <!-- Toolbar colors -->
-    <color name="toolbar_text_box_background_incognito">@color/black_alpha_38</color>
-
     <!-- LocationBar colors -->
     <color name="locationbar_dark_hint_text">@color/search_box_hint</color>
     <color name="locationbar_light_hint_text">@color/white_alpha_70</color>

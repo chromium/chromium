@@ -20,9 +20,8 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
+import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
-import org.chromium.chrome.browser.toolbar.ToolbarColors;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -80,7 +79,7 @@ public class TopToolbarOverlayMediator {
             Callback<ClipDrawableProgressBar.DrawingInfo> progressInfoCallback,
             ObservableSupplier<Tab> tabSupplier,
             BrowserControlsStateProvider browserControlsStateProvider,
-            TopUiThemeColorProvider topUiThemeColorProvider) {
+            TopUiThemeColorProvider topUiThemeColorProvider, boolean isGridTabSwitcherEnabled) {
         mContext = context;
         mLayoutStateProvider = layoutStateProvider;
         mProgressInfoCallback = progressInfoCallback;
@@ -95,8 +94,8 @@ public class TopToolbarOverlayMediator {
             public void onStartedShowing(@LayoutType int layout, boolean showToolbar) {
                 // TODO(1100332): Once ToolbarSwipeLayout uses a SceneLayer that does not include
                 //                its own toolbar, only check for the vertical tab switcher.
-                mLayoutHasOwnToolbar = (layout == LayoutType.TAB_SWITCHER
-                                               && !TabUiFeatureUtilities.isGridTabSwitcherEnabled())
+                mLayoutHasOwnToolbar =
+                        (layout == LayoutType.TAB_SWITCHER && !isGridTabSwitcherEnabled)
                         || layout == LayoutType.TOOLBAR_SWIPE;
                 updateVisibility();
             }
@@ -203,7 +202,7 @@ public class TopToolbarOverlayMediator {
     @ColorInt
     private int getUrlBarBackgroundColor(Tab tab, @ColorInt int backgroundColor) {
         if (sUrlBarColorForTesting != null) return sUrlBarColorForTesting;
-        return ToolbarColors.getTextBoxColorForToolbarBackground(
+        return ThemeUtils.getTextBoxColorForToolbarBackground(
                 mContext.getResources(), tab, backgroundColor);
     }
 

@@ -30,7 +30,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.toolbar.load_progress.LoadProgressProperties.CompletionState;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -45,9 +44,9 @@ public class LoadProgressMediatorTest {
     private static final String NATIVE_PAGE_URL = "chrome-native://newtab";
 
     @Mock
-    private TabImpl mTab;
+    private Tab mTab;
     @Mock
-    private TabImpl mTab2;
+    private Tab mTab2;
 
     @Captor
     public ArgumentCaptor<TabObserver> mTabObserverCaptor;
@@ -66,7 +65,7 @@ public class LoadProgressMediatorTest {
     private void initMediator() {
         // ObservableSupplierImpl needs initialization in UI thread.
         mTabSupplier = new ObservableSupplierImpl<>();
-        mMediator = new LoadProgressMediator(mTabSupplier, mModel);
+        mMediator = new LoadProgressMediator(mTabSupplier, mModel, false);
         mTabSupplier.set(mTab);
         verify(mTab).addObserver(mTabObserverCaptor.capture());
         mTabObserver = mTabObserverCaptor.getValue();

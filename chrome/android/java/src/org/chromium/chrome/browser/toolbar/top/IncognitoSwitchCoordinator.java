@@ -17,7 +17,6 @@ import org.chromium.chrome.browser.tabmodel.EmptyTabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
-import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -32,7 +31,8 @@ class IncognitoSwitchCoordinator {
     private TabModelSelectorObserver mTabModelSelectorObserver;
 
     @SuppressWarnings({"UseSwitchCompatOrMaterialCode"})
-    public IncognitoSwitchCoordinator(ViewGroup root, TabModelSelector tabModelSelector) {
+    public IncognitoSwitchCoordinator(
+            ViewGroup root, TabModelSelector tabModelSelector, boolean visible) {
         assert tabModelSelector != null;
         mTabModelSelector = tabModelSelector;
 
@@ -52,12 +52,7 @@ class IncognitoSwitchCoordinator {
                         .with(IS_INCOGNITO, mTabModelSelector.isIncognitoSelected())
                         // TODO(crbug.com/1042997): check start surface status properly in
                         //  StartSurfaceToolbarMediator.
-                        .with(IS_VISIBLE,
-                                !StartSurfaceConfiguration
-                                                .START_SURFACE_HIDE_INCOGNITO_SWITCH_NO_TAB
-                                                .getValue()
-                                        && !StartSurfaceConfiguration
-                                                    .START_SURFACE_HIDE_INCOGNITO_SWITCH.getValue())
+                        .with(IS_VISIBLE, visible)
                         .build();
 
         mTabModelSelectorObserver = new EmptyTabModelSelectorObserver() {

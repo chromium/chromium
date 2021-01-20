@@ -7,8 +7,8 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "cc/layers/solid_color_layer.h"
-#include "chrome/android/chrome_jni_headers/TopToolbarSceneLayer_jni.h"
 #include "chrome/browser/android/compositor/layer/toolbar_layer.h"
+#include "chrome/browser/ui/android/toolbar/jni_headers/TopToolbarSceneLayer_jni.h"
 #include "ui/android/resources/resource_manager_impl.h"
 #include "ui/gfx/android/java_bitmap.h"
 

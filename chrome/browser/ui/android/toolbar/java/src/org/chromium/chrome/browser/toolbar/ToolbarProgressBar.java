@@ -25,8 +25,8 @@ import androidx.core.view.ViewCompat;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.MathUtils;
 import org.chromium.base.ThreadUtils;
-import org.chromium.chrome.R;
-import org.chromium.chrome.browser.vr.VrModuleProvider;
+import org.chromium.base.supplier.BooleanSupplier;
+import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.interpolators.BakedBezierInterpolator;
@@ -98,6 +98,8 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar {
 
     /** Whether or not to use the status bar color as the background of the toolbar. */
     private boolean mUseStatusBarColorAsBackground;
+
+    private BooleanSupplier mIsInVrSupplier;
 
     /**
      * The indeterminate animating view for the progress bar. This will be null for Android
@@ -177,11 +179,13 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar {
      * @param anchor The view to use as an anchor.
      * @param useStatusBarColorAsBackground Whether or not to use the status bar color as the
      *                                      background of the toolbar.
+     * @param isInVrSupplier A supplier of the state of VR mode.
      */
-    public ToolbarProgressBar(
-            Context context, int height, View anchor, boolean useStatusBarColorAsBackground) {
+    public ToolbarProgressBar(Context context, int height, View anchor,
+            boolean useStatusBarColorAsBackground, BooleanSupplier isInVrSupplier) {
         super(context, height);
         mProgressBarHeight = height;
+        mIsInVrSupplier = isInVrSupplier;
         setAlpha(0.0f);
         setAnchorView(anchor);
         mUseStatusBarColorAsBackground = useStatusBarColorAsBackground;
@@ -422,7 +426,7 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar {
     @Override
     public void setVisibility(int visibility) {
         // The progress bar should never show up while in VR.
-        if (VrModuleProvider.getDelegate().isInVr()) visibility = GONE;
+        if (mIsInVrSupplier.getAsBoolean()) visibility = GONE;
         super.setVisibility(visibility);
         if (mAnimatingView != null) mAnimatingView.setVisibility(visibility);
     }
@@ -434,7 +438,7 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar {
     public void setThemeColor(int color, boolean isIncognito) {
         mThemeColor = color;
         boolean isDefaultTheme =
-                ToolbarColors.isUsingDefaultToolbarColor(getResources(), isIncognito, mThemeColor);
+                ThemeUtils.isUsingDefaultToolbarColor(getResources(), isIncognito, mThemeColor);
 
         // All colors use a single path if using the status bar color as the background.
         if (mUseStatusBarColorAsBackground) {

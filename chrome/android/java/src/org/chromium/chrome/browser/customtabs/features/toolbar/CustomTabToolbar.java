@@ -62,7 +62,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TrustedCdn;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.LocationBarModel;
-import org.chromium.chrome.browser.toolbar.ToolbarColors;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone;
@@ -747,7 +746,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             if (progressBar == null) return;
             final Resources resources = getResources();
             final int backgroundColor = getBackground().getColor();
-            if (ToolbarColors.isUsingDefaultToolbarColor(
+            if (ThemeUtils.isUsingDefaultToolbarColor(
                         resources, /*isIncognito=*/false, backgroundColor)) {
                 progressBar.setBackgroundColor(
                         ApiCompatibilityUtils.getColor(resources, R.color.progress_bar_background));

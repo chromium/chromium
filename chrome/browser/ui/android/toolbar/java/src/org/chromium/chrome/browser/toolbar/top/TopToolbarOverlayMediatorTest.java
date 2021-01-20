@@ -27,7 +27,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -51,10 +50,10 @@ public class TopToolbarOverlayMediatorTest {
     private TopUiThemeColorProvider mTopUiThemeColorProvider;
 
     @Mock
-    private TabImpl mTab;
+    private Tab mTab;
 
     @Mock
-    private TabImpl mTab2;
+    private Tab mTab2;
 
     @Captor
     private ArgumentCaptor<TabObserver> mTabObserverCaptor;
@@ -89,7 +88,8 @@ public class TopToolbarOverlayMediatorTest {
 
         when(mTabSupplier.get()).thenReturn(mTab);
         mMediator = new TopToolbarOverlayMediator(mModel, mContext, mLayoutStateProvider,
-                (info) -> {}, mTabSupplier, mBrowserControlsProvider, mTopUiThemeColorProvider);
+                (info)-> {}, mTabSupplier, mBrowserControlsProvider, mTopUiThemeColorProvider,
+                false);
         mMediator.setIsAndroidViewVisible(true);
 
         // Ensure the observer is added to the initial tab. We have 2 observers added -

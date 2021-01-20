@@ -63,7 +63,7 @@ public class ToolbarProgressBarTest extends DummyUiActivityTestCase {
         view.addView(anchor,
                 new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, heightPx * 2));
 
-        mProgressBar = new ToolbarProgressBar(getActivity(), heightPx, anchor, false);
+        mProgressBar = new ToolbarProgressBar(getActivity(), heightPx, anchor, false, () -> false);
         @ColorInt
         int toolbarColor = ApiCompatibilityUtils.getColor(res, R.color.toolbar_background_primary);
         mProgressBar.setThemeColor(toolbarColor, false);

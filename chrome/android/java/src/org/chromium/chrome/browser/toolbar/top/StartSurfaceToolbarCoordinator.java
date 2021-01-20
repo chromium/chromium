@@ -291,7 +291,11 @@ public class StartSurfaceToolbarCoordinator {
 
         if (IncognitoUtils.isIncognitoModeEnabled()
                 && !StartSurfaceConfiguration.START_SURFACE_SHOW_STACK_TAB_SWITCHER.getValue()) {
-            mIncognitoSwitchCoordinator = new IncognitoSwitchCoordinator(mView, mTabModelSelector);
+            boolean visible =
+                    !StartSurfaceConfiguration.START_SURFACE_HIDE_INCOGNITO_SWITCH_NO_TAB.getValue()
+                    && !StartSurfaceConfiguration.START_SURFACE_HIDE_INCOGNITO_SWITCH.getValue();
+            mIncognitoSwitchCoordinator =
+                    new IncognitoSwitchCoordinator(mView, mTabModelSelector, visible);
         }
     }
 
