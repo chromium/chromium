@@ -786,7 +786,8 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
       return &NewWebUI<chromeos::ArcPowerControlUI>;
     }
   }
-  if (url.host_piece() == chrome::kChromeUIEmojiPickerHost) {
+  if (url.host_piece() == chrome::kChromeUIEmojiPickerHost &&
+      base::FeatureList::IsEnabled(chromeos::features::kImeSystemEmojiPicker)) {
     return &NewWebUI<chromeos::EmojiPicker>;
   }
 
