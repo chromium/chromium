@@ -30,7 +30,7 @@ void DefaultPrefStore::RemoveObserver(PrefStore::Observer* observer) {
 }
 
 bool DefaultPrefStore::HasObservers() const {
-  return observers_.might_have_observers();
+  return !observers_.empty();
 }
 
 void DefaultPrefStore::SetDefaultValue(const std::string& key, Value value) {

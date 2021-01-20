@@ -74,7 +74,7 @@ void SegregatedPrefStore::RemoveObserver(Observer* observer) {
 }
 
 bool SegregatedPrefStore::HasObservers() const {
-  return observers_.might_have_observers();
+  return !observers_.empty();
 }
 
 bool SegregatedPrefStore::IsInitializationComplete() const {

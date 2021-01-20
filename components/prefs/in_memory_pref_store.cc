@@ -36,7 +36,7 @@ void InMemoryPrefStore::RemoveObserver(PrefStore::Observer* observer) {
 }
 
 bool InMemoryPrefStore::HasObservers() const {
-  return observers_.might_have_observers();
+  return !observers_.empty();
 }
 
 bool InMemoryPrefStore::IsInitializationComplete() const {

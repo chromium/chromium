@@ -44,7 +44,7 @@ void TestingPrefStore::RemoveObserver(PrefStore::Observer* observer) {
 }
 
 bool TestingPrefStore::HasObservers() const {
-  return observers_.might_have_observers();
+  return !observers_.empty();
 }
 
 bool TestingPrefStore::IsInitializationComplete() const {

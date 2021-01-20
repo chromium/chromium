@@ -63,7 +63,7 @@ void OverlayUserPrefStore::RemoveObserver(PrefStore::Observer* observer) {
 }
 
 bool OverlayUserPrefStore::HasObservers() const {
-  return observers_.might_have_observers();
+  return !observers_.empty();
 }
 
 bool OverlayUserPrefStore::IsInitializationComplete() const {
