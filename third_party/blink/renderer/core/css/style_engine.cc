@@ -1377,6 +1377,17 @@ void StyleEngine::EnsureUAStyleForPseudoElement(PseudoId pseudo_id) {
   }
 }
 
+void StyleEngine::EnsureUAStyleForForcedColors() {
+  DCHECK(!IsHTMLImport());
+  DCHECK(global_rule_set_);
+  if (CSSDefaultStyleSheets::Instance()
+          .EnsureDefaultStyleSheetForForcedColors()) {
+    global_rule_set_->MarkDirty();
+    if (GetDocument().IsActive())
+      UpdateActiveStyle();
+  }
+}
+
 bool StyleEngine::HasRulesForId(const AtomicString& id) const {
   DCHECK(!IsHTMLImport());
   DCHECK(global_rule_set_);

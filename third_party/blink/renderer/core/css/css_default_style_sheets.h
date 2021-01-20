@@ -51,6 +51,7 @@ class CSSDefaultStyleSheets final
   bool EnsureDefaultStyleSheetsForPseudoElement(PseudoId);
   bool EnsureDefaultStyleSheetForXrOverlay();
   void EnsureDefaultStyleSheetForFullscreen();
+  bool EnsureDefaultStyleSheetForForcedColors();
 
   RuleSet* DefaultStyle() { return default_style_.Get(); }
   RuleSet* DefaultMathMLStyle() { return default_mathml_style_.Get(); }
@@ -83,6 +84,9 @@ class CSSDefaultStyleSheets final
     return fullscreen_style_sheet_.Get();
   }
   StyleSheetContents* MarkerStyleSheet() { return marker_style_sheet_.Get(); }
+  StyleSheetContents* ForcedColorsStyleSheet() {
+    return forced_colors_style_sheet_.Get();
+  }
 
   CORE_EXPORT void PrepareForLeakDetection();
 
@@ -131,6 +135,7 @@ class CSSDefaultStyleSheets final
   Member<StyleSheetContents> fullscreen_style_sheet_;
   Member<StyleSheetContents> webxr_overlay_style_sheet_;
   Member<StyleSheetContents> marker_style_sheet_;
+  Member<StyleSheetContents> forced_colors_style_sheet_;
 
   std::unique_ptr<UAStyleSheetLoader> media_controls_style_sheet_loader_;
 };
