@@ -5949,7 +5949,7 @@ crbug.com/1167210 [ Mac ] virtual/forced-high-contrast-colors/fast/css/forced-co
 crbug.com/1167222 http/tests/websocket/multiple-connections-throttled.html [ Pass Failure ]
 crbug.com/1167309 fast/canvas/canvas-createImageBitmap-drawImage.html [ Pass Failure ]
 
-crbug.com/1168373 [ Linux Debug ] http/tests/devtools/layers/layers-3d-view-hit-testing.js [ Failure ]
+crbug.com/1168373 [ Debug ] http/tests/devtools/layers/layers-3d-view-hit-testing.js [ Failure ]
 
 # DevTools roll
 crbug.com/1050549 http/tests/devtools/network/preview-searchable.js [ Pass Failure ]
