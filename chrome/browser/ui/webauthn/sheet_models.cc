@@ -29,18 +29,6 @@
 
 namespace {
 
-base::string16 GetRelyingPartyIdString(
-    AuthenticatorRequestDialogModel* dialog_model) {
-  static constexpr char kRpIdUrlPrefix[] = "https://";
-  // The preferred width of medium snap point modal dialog view is 448 dp, but
-  // we leave some room for padding between the text and the modal views.
-  static constexpr int kDialogWidth = 300;
-  const auto& rp_id = dialog_model->relying_party_id();
-  DCHECK(!rp_id.empty());
-  GURL rp_id_url(kRpIdUrlPrefix + rp_id);
-  return url_formatter::ElideHost(rp_id_url, gfx::FontList(), kDialogWidth);
-}
-
 // Possibly returns a resident key warning if the model indicates that it's
 // needed.
 base::string16 PossibleResidentKeyWarning(
@@ -67,6 +55,19 @@ AuthenticatorSheetModelBase::~AuthenticatorSheetModelBase() {
     dialog_model_->RemoveObserver(this);
     dialog_model_ = nullptr;
   }
+}
+
+// static
+base::string16 AuthenticatorSheetModelBase::GetRelyingPartyIdString(
+    const AuthenticatorRequestDialogModel* dialog_model) {
+  static constexpr char kRpIdUrlPrefix[] = "https://";
+  // The preferred width of medium snap point modal dialog view is 448 dp, but
+  // we leave some room for padding between the text and the modal views.
+  static constexpr int kDialogWidth = 300;
+  const auto& rp_id = dialog_model->relying_party_id();
+  DCHECK(!rp_id.empty());
+  GURL rp_id_url(kRpIdUrlPrefix + rp_id);
+  return url_formatter::ElideHost(rp_id_url, gfx::FontList(), kDialogWidth);
 }
 
 bool AuthenticatorSheetModelBase::IsActivityIndicatorVisible() const {
@@ -574,11 +575,63 @@ base::string16 AuthenticatorPaaskSheetModel::GetStepTitle() const {
 }
 
 base::string16 AuthenticatorPaaskSheetModel::GetStepDescription() const {
+  if (dialog_model()->cable_is_serverlink()) {
+    // The description will be shown by AuthenticatorPaaskSheetView because it
+    // needs to include a clickable link.
+    return base::string16();
+  }
   return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CABLE_ACTIVATE_DESCRIPTION);
 }
 
 ui::MenuModel* AuthenticatorPaaskSheetModel::GetOtherTransportsMenuModel() {
   return other_transports_menu_model_.get();
+}
+
+// AuthenticatorAndroidAccessorySheetModel
+// -----------------------------------------
+
+AuthenticatorAndroidAccessorySheetModel::
+    AuthenticatorAndroidAccessorySheetModel(
+        AuthenticatorRequestDialogModel* dialog_model)
+    : AuthenticatorSheetModelBase(dialog_model),
+      other_transports_menu_model_(std::make_unique<OtherTransportsMenuModel>(
+          dialog_model,
+          AuthenticatorTransport::kCloudAssistedBluetoothLowEnergy)) {}
+
+AuthenticatorAndroidAccessorySheetModel::
+    ~AuthenticatorAndroidAccessorySheetModel() = default;
+
+bool AuthenticatorAndroidAccessorySheetModel::IsBackButtonVisible() const {
+  return true;
+}
+
+bool AuthenticatorAndroidAccessorySheetModel::IsActivityIndicatorVisible()
+    const {
+  return true;
+}
+
+const gfx::VectorIcon&
+AuthenticatorAndroidAccessorySheetModel::GetStepIllustration(
+    ImageColorScheme color_scheme) const {
+  return kWebauthnAoaIcon;
+}
+
+base::string16 AuthenticatorAndroidAccessorySheetModel::GetStepTitle() const {
+  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CABLEV2_AOA_TITLE);
+}
+
+base::string16 AuthenticatorAndroidAccessorySheetModel::GetStepDescription()
+    const {
+  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CABLEV2_AOA_DESCRIPTION);
+}
+
+ui::MenuModel*
+AuthenticatorAndroidAccessorySheetModel::GetOtherTransportsMenuModel() {
+  return other_transports_menu_model_.get();
+}
+
+void AuthenticatorAndroidAccessorySheetModel::OnBack() {
+  dialog_model()->ShowCable();
 }
 
 // AuthenticatorPaaskV2SheetModel  -----------------------------------------

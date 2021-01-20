@@ -38,6 +38,11 @@ class AuthenticatorSheetModelBase
     return dialog_model_;
   }
 
+  // Returns a string containing the RP ID, styled as an origin, truncated to a
+  // reasonable width.
+  static base::string16 GetRelyingPartyIdString(
+      const AuthenticatorRequestDialogModel* dialog_model);
+
  protected:
   // AuthenticatorRequestSheetModel:
   bool IsActivityIndicatorVisible() const override;
@@ -263,6 +268,27 @@ class AuthenticatorPaaskSheetModel : public AuthenticatorSheetModelBase {
   base::string16 GetStepTitle() const override;
   base::string16 GetStepDescription() const override;
   ui::MenuModel* GetOtherTransportsMenuModel() override;
+
+  std::unique_ptr<OtherTransportsMenuModel> other_transports_menu_model_;
+};
+
+class AuthenticatorAndroidAccessorySheetModel
+    : public AuthenticatorSheetModelBase {
+ public:
+  explicit AuthenticatorAndroidAccessorySheetModel(
+      AuthenticatorRequestDialogModel* dialog_model);
+  ~AuthenticatorAndroidAccessorySheetModel() override;
+
+ private:
+  // AuthenticatorSheetModelBase:
+  bool IsBackButtonVisible() const override;
+  bool IsActivityIndicatorVisible() const override;
+  const gfx::VectorIcon& GetStepIllustration(
+      ImageColorScheme color_scheme) const override;
+  base::string16 GetStepTitle() const override;
+  base::string16 GetStepDescription() const override;
+  ui::MenuModel* GetOtherTransportsMenuModel() override;
+  void OnBack() override;
 
   std::unique_ptr<OtherTransportsMenuModel> other_transports_menu_model_;
 };

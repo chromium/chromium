@@ -325,6 +325,16 @@ void AuthenticatorRequestDialogModel::
   DispatchRequestAsync(&*platform_authenticator_it);
 }
 
+void AuthenticatorRequestDialogModel::ShowCableUsbFallback() {
+  DCHECK_EQ(current_step(), Step::kCableActivate);
+  SetCurrentStep(Step::kAndroidAccessory);
+}
+
+void AuthenticatorRequestDialogModel::ShowCable() {
+  DCHECK_EQ(current_step(), Step::kAndroidAccessory);
+  SetCurrentStep(Step::kCableActivate);
+}
+
 void AuthenticatorRequestDialogModel::Cancel() {
   if (is_request_complete()) {
     SetCurrentStep(Step::kClosed);
@@ -538,6 +548,15 @@ void AuthenticatorRequestDialogModel::SetSelectedAuthenticatorForTesting(
       test_authenticator.authenticator_id;
   ephemeral_state_.saved_authenticators_.AddAuthenticator(
       std::move(test_authenticator));
+}
+
+bool AuthenticatorRequestDialogModel::cable_is_serverlink() const {
+  // A caBLEv2 serverlink is detected by the presence of the AOA transport. The
+  // result of this function is used to decide whether to use a UI prompt for
+  // plugging the phone in with a USB cable and the AOA transport needs to exist
+  // for that to function.
+  return base::Contains(transport_availability_.available_transports,
+                        AuthenticatorTransport::kAndroidAccessory);
 }
 
 void AuthenticatorRequestDialogModel::CollectPIN(

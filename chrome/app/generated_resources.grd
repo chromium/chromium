@@ -10738,6 +10738,20 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_WEBAUTHN_CABLE_ACTIVATE_DESCRIPTION" desc="Contents of the dialog shown when the user tries to sign-in using a phone as a security key.">
         A notification was sent to your phone to confirm it's you.
       </message>
+
+      <message name="IDS_WEBAUTHN_CABLEV2_SERVERLINK_DESCRIPTION" desc="Contents of the dialog shown when the user tries to sign-in using a phone as a security key. The second placeholder will be replaced by the contents of the translated string IDS_WEBAUTHN_CABLEV2_SERVERLINK_TROUBLE. A placeholder is used for this because that link will be styled as a clickable link. The word 'Yes' will appear on the phone and is TC ID 6139894934866548097.">
+        <ph name="WEBSITE"><ex>accounts.google.com</ex>$1</ph> sent a notification to your phone. Tap Yes to confirm it's you. <ph name="LINK"><ex>Didn't get it?</ex>$2</ph>
+      </message>
+      <message name="IDS_WEBAUTHN_CABLEV2_SERVERLINK_TROUBLE" desc="This message is shown as a link inside of IDS_WEBAUTHN_CABLEV2_SERVERLINK_DESCRIPTION and replaces placeholder two. The 'it' referenced here is the notification mentioned in that message.">
+        Didn't get it?
+      </message>
+      <message name="IDS_WEBAUTHN_CABLEV2_AOA_TITLE" desc="Contents of the dialog shown when the user tries to sign-in using a phone as a security key. The 'cable' is a physical USB cable.">
+        Connect your phone with a cable
+      </message>
+      <message name="IDS_WEBAUTHN_CABLEV2_AOA_DESCRIPTION" desc="Contents of the dialog shown when the user tries to sign-in using a phone as a security key.">
+        Use a USB cable to connect your phone to your computer. If your phone is already connected, unplug it and plug it back in.
+      </message>
+
       <message name="IDS_WEBAUTHN_CABLE_ACTIVATE_DESCRIPTION_SHORT" desc="Second line of text in an item letting the user know that they can use their phone as a security key. The user needs to check their phone and respond to a notification that will ask them to press a button on the phone's screen to confirm that they're logging in.">
         Unlock your phone and confirm it's you
       </message>

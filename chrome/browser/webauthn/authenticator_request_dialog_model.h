@@ -78,6 +78,7 @@ class AuthenticatorRequestDialogModel {
 
     // Phone as a security key.
     kCableActivate,
+    kAndroidAccessory,
     kCableV2Activate,
     kCableV2QRCode,
 
@@ -251,6 +252,12 @@ class AuthenticatorRequestDialogModel {
   // Valid action when at all steps.
   void HideDialogAndDispatchToPlatformAuthenticator();
 
+  // Show guidance about caBLE USB fallback.
+  void ShowCableUsbFallback();
+
+  // Show caBLE activation sheet.
+  void ShowCable();
+
   // Cancels the flow as a result of the user clicking `Cancel` on the UI.
   //
   // Valid action at all steps.
@@ -367,6 +374,10 @@ class AuthenticatorRequestDialogModel {
   }
 
   const std::string& cable_qr_string() const { return *cable_qr_string_; }
+
+  // cable_is_serverlink returns true if the caBLE "v1" UI was triggered by a
+  // caBLEv2 server-linked request.
+  bool cable_is_serverlink() const;
 
   void CollectPIN(device::pin::PINEntryReason reason,
                   device::pin::PINEntryError error,
