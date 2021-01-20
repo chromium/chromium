@@ -92,7 +92,7 @@ void SmsProvider::RecordParsingStatus(SmsParsingStatus status) {
 }
 
 bool SmsProvider::HasObservers() {
-  return observers_.might_have_observers();
+  return !observers_.empty();
 }
 
 }  // namespace content

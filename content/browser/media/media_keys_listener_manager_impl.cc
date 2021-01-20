@@ -299,14 +299,14 @@ void MediaKeysListenerManagerImpl::UpdateMediaKeysListener() {
 
 bool MediaKeysListenerManagerImpl::ShouldListenToKey(
     const ListeningData& listening_data) const {
-  return listening_data.listeners.might_have_observers() ||
+  return !listening_data.listeners.empty() ||
          (listening_data.active_media_session_controller_listening &&
           CanActiveMediaSessionControllerReceiveEvents());
 }
 
 bool MediaKeysListenerManagerImpl::AnyDelegatesListening() const {
   for (const auto& key_code_listening_data : delegate_map_) {
-    if (key_code_listening_data.second->listeners.might_have_observers())
+    if (!key_code_listening_data.second->listeners.empty())
       return true;
   }
   return false;

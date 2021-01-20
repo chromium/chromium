@@ -177,7 +177,7 @@ void WebRTCInternals::OnAddPeerConnection(int render_process_id,
   dict->SetBoolean("isOpen", true);
   dict->SetBoolean("connected", false);
 
-  if (observers_.might_have_observers())
+  if (!observers_.empty())
     SendUpdate("addPeerConnection", dict->CreateDeepCopy());
 
   peer_connection_data_.Append(std::move(dict));
@@ -199,7 +199,7 @@ void WebRTCInternals::OnRemovePeerConnection(ProcessId pid, int lid) {
     peer_connection_data_.Remove(index, nullptr);
   }
 
-  if (observers_.might_have_observers()) {
+  if (!observers_.empty()) {
     std::unique_ptr<base::DictionaryValue> id(new base::DictionaryValue());
     id->SetInteger("pid", static_cast<int>(pid));
     id->SetInteger("lid", lid);
@@ -227,7 +227,7 @@ void WebRTCInternals::OnUpdatePeerConnection(
   }
 
   // Don't update entries if there aren't any observers.
-  if (!observers_.might_have_observers())
+  if (observers_.empty())
     return;
 
   auto log_entry = std::make_unique<base::DictionaryValue>();
@@ -252,7 +252,7 @@ void WebRTCInternals::OnUpdatePeerConnection(
 void WebRTCInternals::OnAddStandardStats(base::ProcessId pid,
                                          int lid,
                                          base::Value value) {
-  if (!observers_.might_have_observers())
+  if (observers_.empty())
     return;
 
   auto dict = std::make_unique<base::DictionaryValue>();
@@ -267,7 +267,7 @@ void WebRTCInternals::OnAddStandardStats(base::ProcessId pid,
 void WebRTCInternals::OnAddLegacyStats(base::ProcessId pid,
                                        int lid,
                                        base::Value value) {
-  if (!observers_.might_have_observers())
+  if (observers_.empty())
     return;
 
   auto dict = std::make_unique<base::DictionaryValue>();
@@ -304,7 +304,7 @@ void WebRTCInternals::OnGetUserMedia(int rid,
   if (video)
     dict->SetString("video", video_constraints);
 
-  if (observers_.might_have_observers())
+  if (!observers_.empty())
     SendUpdate("addGetUserMedia", dict->CreateDeepCopy());
 
   get_user_media_requests_.Append(std::move(dict));
@@ -324,7 +324,7 @@ void WebRTCInternals::AddObserver(WebRTCInternalsUIObserver* observer) {
 void WebRTCInternals::RemoveObserver(WebRTCInternalsUIObserver* observer) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   observers_.RemoveObserver(observer);
-  if (observers_.might_have_observers())
+  if (!observers_.empty())
     return;
 
   // Disables event log and audio debug recordings if enabled and the last
@@ -452,7 +452,7 @@ bool WebRTCInternals::CanToggleEventLogRecordings() const {
 void WebRTCInternals::SendUpdate(const char* command,
                                  std::unique_ptr<base::Value> value) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(observers_.might_have_observers());
+  DCHECK(!observers_.empty());
 
   bool queue_was_empty = pending_updates_.empty();
   pending_updates_.push(PendingUpdate(command, std::move(value)));
@@ -526,7 +526,7 @@ void WebRTCInternals::OnRendererExit(int render_process_id) {
     record->GetInteger("rid", &this_rid);
 
     if (this_rid == render_process_id) {
-      if (observers_.might_have_observers()) {
+      if (!observers_.empty()) {
         int lid = 0, pid = 0;
         record->GetInteger("lid", &lid);
         record->GetInteger("pid", &pid);
@@ -559,7 +559,7 @@ void WebRTCInternals::OnRendererExit(int render_process_id) {
     }
   }
 
-  if (found_any && observers_.might_have_observers()) {
+  if (found_any && !observers_.empty()) {
     std::unique_ptr<base::DictionaryValue> update(new base::DictionaryValue());
     update->SetInteger("rid", render_process_id);
     SendUpdate("removeGetUserMediaForRenderer", std::move(update));

@@ -85,7 +85,7 @@ void RenderWidgetHostViewBase::NotifyObserversAboutShutdown() {
   for (auto& observer : observers_)
     observer.OnRenderWidgetHostViewBaseDestroyed(this);
   // All observers are required to disconnect after they are notified.
-  DCHECK(!observers_.might_have_observers());
+  DCHECK(observers_.empty());
 }
 
 MouseWheelPhaseHandler* RenderWidgetHostViewBase::GetMouseWheelPhaseHandler() {

@@ -313,7 +313,7 @@ bool TtsControllerImpl::IsSpeaking() {
 }
 
 void TtsControllerImpl::VoicesChanged() {
-  if (!voices_changed_delegates_.might_have_observers() || TtsPlatformLoading())
+  if (voices_changed_delegates_.empty() || TtsPlatformLoading())
     return;
 
   // Existence of platform tts indicates explicit requests to tts. Since
