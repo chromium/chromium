@@ -222,10 +222,7 @@
             <settings-toggle-button id="offerTranslateOtherLanguages"
                 pref="{{prefs.translate.enabled}}"
                 label="$i18n{offerToEnableTranslate}"
-            <if expr="chromeos">
-                on-settings-boolean-control-change="onTranslateToggleChange_"
-            </if>
-            >
+                on-settings-boolean-control-change="onTranslateToggleChange_">
             </settings-toggle-button>
           </iron-collapse>
           <settings-toggle-button

@@ -103,6 +103,21 @@ TEST_F(
 GEN('#endif');
 
 // eslint-disable-next-line no-var
+var CrSettingsLanguagesPageMetricsV3Test =
+    class extends CrSettingsV3BrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://settings/test_loader.html?module=settings/languages_page_metrics_test_browser.js';
+  }
+};
+
+TEST_F(
+    'CrSettingsLanguagesPageMetricsV3Test', 'LanguagesPageMetricsBrowser',
+    function() {
+      runMochaSuite('LanguagesPageMetricsBrowser');
+    });
+
+// eslint-disable-next-line no-var
 var CrSettingsClearBrowsingDataV3Test = class extends CrSettingsV3BrowserTest {
   /** @override */
   get browsePreload() {
