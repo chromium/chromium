@@ -63,6 +63,11 @@ net::CookieOptions MakeOptionsForSet(
   options.set_same_party_cookie_context_type(
       net::cookie_util::ComputeSamePartyContext(request_site, isolation_info,
                                                 cookie_access_delegate));
+  if (isolation_info.party_context().has_value()) {
+    // Count the top-frame site since it's not in the party_context.
+    options.set_full_party_context_size(isolation_info.party_context()->size() +
+                                        1);
+  }
   bool is_in_nontrivial_first_party_set =
       cookie_access_delegate &&
       cookie_access_delegate->IsInNontrivialFirstPartySet(request_site);
@@ -101,6 +106,11 @@ net::CookieOptions MakeOptionsForGet(
   options.set_same_party_cookie_context_type(
       net::cookie_util::ComputeSamePartyContext(request_site, isolation_info,
                                                 cookie_access_delegate));
+  if (isolation_info.party_context().has_value()) {
+    // Count the top-frame site since it's not in the party_context.
+    options.set_full_party_context_size(isolation_info.party_context()->size() +
+                                        1);
+  }
   bool is_in_nontrivial_first_party_set =
       cookie_access_delegate &&
       cookie_access_delegate->IsInNontrivialFirstPartySet(request_site);
