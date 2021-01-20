@@ -1257,6 +1257,21 @@
             ]
         }
     ],
+    "CalculateNativeWinOcclusionCheckVirtualDesktopUsed": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CalculateNativeWinOcclusionCheckVirtualDesktopUsed"
+                    ]
+                }
+            ]
+        }
+    ],
     "CastMediaRouteProviderAndGlobalMediaControlsForCast": [
         {
             "platforms": [
