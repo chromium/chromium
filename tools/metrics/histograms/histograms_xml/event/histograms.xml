@@ -452,8 +452,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Event.Latency.ScrollBegin.Scrollbar.BrowserNotifiedToBeforeGpuSwap2"
-    units="microseconds" expires_after="2021-06-13">
-  <owner>nzolghadr@chromium.org</owner>
+    units="microseconds" expires_after="2021-12-01">
+  <owner>flackr@chromium.org</owner>
   <owner>dlibby@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
@@ -640,8 +640,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Event.Latency.ScrollBegin.Touch.BrowserNotifiedToBeforeGpuSwap2"
-    units="microseconds" expires_after="2020-12-06">
+    units="microseconds" expires_after="2021-12-01">
   <owner>flackr@chromium.org</owner>
+  <owner>input-dev@chromium.org</owner>
   <summary>
     Time between the browser receives the notification of the first ScrollUpdate
     gesture event in a given scroll gesture event sequence with touch source
@@ -746,8 +747,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Event.Latency.ScrollBegin.Wheel.BrowserNotifiedToBeforeGpuSwap2"
-    units="microseconds" expires_after="2020-11-29">
+    units="microseconds" expires_after="2021-12-01">
   <owner>flackr@chromium.org</owner>
+  <owner>input-dev@chromium.org</owner>
   <summary>
     Time between the browser receives the notification of the first ScrollUpdate
     gesture event in a given scroll gesture event sequence with wheel source
@@ -850,8 +852,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Event.Latency.ScrollInertial.Touch.BrowserNotifiedToBeforeGpuSwap2"
-    units="microseconds" expires_after="M80">
-  <owner>nzolghad@chromium.org</owner>
+    units="microseconds" expires_after="2021-12-01">
+  <owner>flackr@chromium.org</owner>
+  <owner>input-dev@chromium.org</owner>
   <summary>
     Time between the browser receives the notification of a ScrollUpdate gesture
     generated from a touchscreen fling induced renderer swap and GPU starts to
@@ -1205,8 +1208,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Event.Latency.ScrollUpdate.Touch.BrowserNotifiedToBeforeGpuSwap2"
-    units="microseconds" expires_after="M85">
+    units="microseconds" expires_after="2021-12-01">
   <owner>flackr@chromium.org</owner>
+  <owner>input-dev@chromium.org</owner>
   <summary>
     Time between the browser receives the notification of a ScrollUpdate gesture
     event with touch source induced renderer swap and GPU starts to swap.
@@ -1310,8 +1314,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Event.Latency.ScrollUpdate.Wheel.BrowserNotifiedToBeforeGpuSwap2"
-    units="microseconds" expires_after="2020-12-06">
+    units="microseconds" expires_after="2021-12-01">
   <owner>flackr@chromium.org</owner>
+  <owner>input-dev@chromium.org</owner>
   <summary>
     Time between the browser receives the notification of a ScrollUpdate gesture
     event with wheel source induced renderer swap and GPU starts to swap.
