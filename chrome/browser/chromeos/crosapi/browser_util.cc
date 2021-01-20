@@ -180,6 +180,11 @@ bool IsLacrosEnabled(Channel channel) {
     return false;
   }
 
+  // TODO(https://crbug.com/1135494): Remove the free ticket for
+  // Channel::UNKNOWN after the policy is set on server side for developers.
+  if (channel == Channel::UNKNOWN)
+    return true;
+
   if (!g_browser_process->local_state()->GetBoolean(prefs::kLacrosAllowed)) {
     LOG(WARNING) << "Lacros-chrome is not allowed by policy";
     return false;

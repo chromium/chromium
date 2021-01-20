@@ -90,10 +90,7 @@ TEST_F(BrowserUtilTest, ManagedAccountLacrosEnabled) {
       true);
   g_browser_process->local_state()->SetBoolean(prefs::kLacrosAllowed, true);
 
-  EXPECT_TRUE(browser_util::IsLacrosEnabled(Channel::UNKNOWN));
   EXPECT_TRUE(browser_util::IsLacrosEnabled(Channel::CANARY));
-  EXPECT_TRUE(browser_util::IsLacrosEnabled(Channel::DEV));
-  EXPECT_TRUE(browser_util::IsLacrosEnabled(Channel::BETA));
 }
 
 TEST_F(BrowserUtilTest, ManagedAccountLacrosDisabled) {
@@ -104,10 +101,7 @@ TEST_F(BrowserUtilTest, ManagedAccountLacrosDisabled) {
       true);
   g_browser_process->local_state()->SetBoolean(prefs::kLacrosAllowed, false);
 
-  EXPECT_FALSE(browser_util::IsLacrosEnabled(Channel::UNKNOWN));
   EXPECT_FALSE(browser_util::IsLacrosEnabled(Channel::CANARY));
-  EXPECT_FALSE(browser_util::IsLacrosEnabled(Channel::DEV));
-  EXPECT_FALSE(browser_util::IsLacrosEnabled(Channel::BETA));
 }
 
 TEST_F(BrowserUtilTest, BlockedForChildUser) {
