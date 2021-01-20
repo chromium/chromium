@@ -1304,21 +1304,6 @@
             ]
         }
     ],
-    "CertDualVerificationTrial": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CertDualVerificationTrial"
-                    ]
-                }
-            ]
-        }
-    ],
     "CertVerifierBuiltin": [
         {
             "platforms": [
