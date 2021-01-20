@@ -41,10 +41,6 @@ const CGFloat kVerticalContentPadding = 70.0f;
         [[UIVisualEffectView alloc] initWithEffect:blurEffect];
     [self addSubview:blurBackgroundView];
     blurBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
-    // TODO(crbug.com/1138892): add localized text.
-    blurBackgroundView.accessibilityLabel =
-        @"[Test String] Authenticate to access Incognito content";
-    blurBackgroundView.isAccessibilityElement = YES;
     AddSameConstraints(self, blurBackgroundView);
 
     UIImage* incognitoLogo = [UIImage imageNamed:@"incognito_logo_reauth"];
