@@ -37,7 +37,8 @@ class AutocompleteInput {
                     metrics::OmniboxEventProto::PageClassification
                         current_page_classification,
                     const AutocompleteSchemeClassifier& scheme_classifier,
-                    bool should_use_https_as_default_scheme = false);
+                    bool should_use_https_as_default_scheme = false,
+                    int https_port_for_testing = 0);
   // This constructor adds |cursor_position|, related to |text|.
   // |cursor_position| represents the location of the cursor within the
   // query |text|. It may be set to base::string16::npos if the input
@@ -47,7 +48,8 @@ class AutocompleteInput {
                     metrics::OmniboxEventProto::PageClassification
                         current_page_classification,
                     const AutocompleteSchemeClassifier& scheme_classifier,
-                    bool should_use_https_as_default_scheme = false);
+                    bool should_use_https_as_default_scheme = false,
+                    int https_port_for_testing = 0);
 
   // This constructor adds |desired_tld|, related to |text|. |desired_tld|
   // is the user's desired TLD, if one is not already present in the text to
@@ -60,7 +62,8 @@ class AutocompleteInput {
                     metrics::OmniboxEventProto::PageClassification
                         current_page_classification,
                     const AutocompleteSchemeClassifier& scheme_classifier,
-                    bool should_use_https_as_default_scheme = false);
+                    bool should_use_https_as_default_scheme = false,
+                    int https_port_for_testing = 0);
 
   AutocompleteInput(const AutocompleteInput& other);
   ~AutocompleteInput();
@@ -299,6 +302,12 @@ class AutocompleteInput {
   // Flags for OmniboxDefaultNavigationsToHttps feature.
   bool should_use_https_as_default_scheme_;
   bool added_default_scheme_to_typed_url_;
+  // Port used by the embedded https server in tests. This is used to determine
+  // the correct port while upgrading URLs to https if the original URL has a
+  // non-default port.
+  // TODO(crbug.com/1168371): Remove when URLLoaderInterceptor can simulate
+  // redirects.
+  int https_port_for_testing_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_INPUT_H_

@@ -33,6 +33,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/ssl/typed_navigation_upgrade_throttle.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/browser.h"
@@ -167,6 +168,10 @@ AutocompleteClassifier* ChromeOmniboxClient::GetAutocompleteClassifier() {
 
 bool ChromeOmniboxClient::ShouldDefaultTypedNavigationsToHttps() const {
   return base::FeatureList::IsEnabled(omnibox::kDefaultTypedNavigationsToHttps);
+}
+
+int ChromeOmniboxClient::GetHttpsPortForTesting() const {
+  return TypedNavigationUpgradeThrottle::GetHttpsPortForTesting();
 }
 
 gfx::Image ChromeOmniboxClient::GetIconIfExtensionMatch(

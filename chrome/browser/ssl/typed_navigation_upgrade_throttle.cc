@@ -35,6 +35,8 @@ constexpr base::FeatureParam<base::TimeDelta> kFallbackDelay{
     omnibox::kDefaultTypedNavigationsToHttpsTimeoutParam,
     base::TimeDelta::FromSeconds(3)};
 
+int g_https_port_for_testing = 0;
+
 bool IsNavigationUsingHttpsAsDefaultScheme(content::NavigationHandle* handle) {
   content::NavigationUIData* ui_data = handle->GetNavigationUIData();
   // UI data can be null in the case of navigations to interstitials.
@@ -174,6 +176,12 @@ TypedNavigationUpgradeThrottle::WillFailRequest() {
 }
 
 content::NavigationThrottle::ThrottleCheckResult
+TypedNavigationUpgradeThrottle::WillRedirectRequest() {
+  RecordUMA(Event::kRedirected);
+  return content::NavigationThrottle::PROCEED;
+}
+
+content::NavigationThrottle::ThrottleCheckResult
 TypedNavigationUpgradeThrottle::WillProcessResponse() {
   DCHECK_EQ(url::kHttpsScheme, navigation_handle()->GetURL().scheme());
   // If we got here, HTTPS load succeeded. Stop the timer.
@@ -194,6 +202,17 @@ bool TypedNavigationUpgradeThrottle::
   return base::FeatureList::IsEnabled(
              omnibox::kDefaultTypedNavigationsToHttps) &&
          IsNavigationUsingHttpsAsDefaultScheme(handle);
+}
+
+// static
+int TypedNavigationUpgradeThrottle::GetHttpsPortForTesting() {
+  return g_https_port_for_testing;
+}
+
+// static
+void TypedNavigationUpgradeThrottle::SetHttpsPortForTesting(
+    int https_port_for_testing) {
+  g_https_port_for_testing = https_port_for_testing;
 }
 
 TypedNavigationUpgradeThrottle::TypedNavigationUpgradeThrottle(

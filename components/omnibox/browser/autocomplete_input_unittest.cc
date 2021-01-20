@@ -376,11 +376,13 @@ TEST(AutocompleteInputTest, InputTypeWithCursorPosition) {
 }
 
 TEST(AutocompleteInputTest, UpgradeTypedNavigationsToHttps) {
-  struct test_data {
+  struct TestData {
     const base::string16 input;
     const GURL expected_url;
     bool expected_added_default_scheme_to_typed_url;
-  } input_cases[]{
+  };
+
+  const TestData test_cases[] = {
       {ASCIIToUTF16("example.com"), GURL("https://example.com"), true},
       // If the hostname has a port specified, the URL shouldn't be upgraded
       // to HTTPS because we can't assume that the HTTPS site is served over the
@@ -408,14 +410,56 @@ TEST(AutocompleteInputTest, UpgradeTypedNavigationsToHttps) {
       {ASCIIToUTF16("HTTP://EXAMPLE.COM:8080"), GURL("http://example.com:8080"),
        false},
   };
-  for (const test_data& input_case : input_cases) {
-    AutocompleteInput input(input_case.input, base::string16::npos,
+  for (const TestData& test_case : test_cases) {
+    AutocompleteInput input(test_case.input, base::string16::npos,
                             metrics::OmniboxEventProto::OTHER,
                             TestSchemeClassifier(),
                             /*should_use_https_as_default_scheme=*/true);
-    EXPECT_EQ(input_case.expected_url, input.canonicalized_url())
-        << input_case.input;
-    EXPECT_EQ(input_case.expected_added_default_scheme_to_typed_url,
+    EXPECT_EQ(test_case.expected_url, input.canonicalized_url())
+        << test_case.input;
+    EXPECT_EQ(test_case.expected_added_default_scheme_to_typed_url,
+              input.added_default_scheme_to_typed_url());
+  }
+
+  // Try the same test cases with a non-zero HTTPS port passed to
+  // AutocompleteInput. When a non-zero HTTPS port is used, AutoCompleteInput
+  // should use that port to replace the port of the HTTP URL when upgrading
+  // the URL.
+  // We don't check the default port 80 being upgraded in these test case,
+  // because the default port will be dropped by GURL and we'll end up with
+  // example.com. A hostname without a port is not a valid input when using a
+  // non-zero value for https_port_for_testing.
+  int https_port_for_testing = 12345;
+  const TestData test_cases_non_default_port[] = {
+      {ASCIIToUTF16("example.com:8080"), GURL("https://example.com:12345"),
+       true},
+      // Non-URL inputs shouldn't be upgraded.
+      {ASCIIToUTF16("example query"), GURL(), false},
+      // IP addresses shouldn't be upgraded.
+      {ASCIIToUTF16("127.0.0.1"), GURL("http://127.0.0.1"), false},
+      {ASCIIToUTF16("127.0.0.1:80"), GURL("http://127.0.0.1:80"), false},
+      {ASCIIToUTF16("127.0.0.1:8080"), GURL("http://127.0.0.1:8080"), false},
+      // Non-unique hostnames shouldn't be upgraded.
+      {ASCIIToUTF16("site.test"), GURL("http://site.test"), false},
+      // // Fully typed URLs shouldn't be upgraded.
+      {ASCIIToUTF16("http://example.com"), GURL("http://example.com"), false},
+      {ASCIIToUTF16("HTTP://EXAMPLE.COM"), GURL("http://example.com"), false},
+      {ASCIIToUTF16("http://example.com:80"), GURL("http://example.com"),
+       false},
+      {ASCIIToUTF16("HTTP://EXAMPLE.COM:80"), GURL("http://example.com"),
+       false},
+      {ASCIIToUTF16("http://example.com:8080"), GURL("http://example.com:8080"),
+       false},
+      {ASCIIToUTF16("HTTP://EXAMPLE.COM:8080"), GURL("http://example.com:8080"),
+       false}};
+  for (const TestData& test_case : test_cases_non_default_port) {
+    AutocompleteInput input(
+        test_case.input, base::string16::npos,
+        metrics::OmniboxEventProto::OTHER, TestSchemeClassifier(),
+        /*should_use_https_as_default_scheme=*/true, https_port_for_testing);
+    EXPECT_EQ(test_case.expected_url, input.canonicalized_url())
+        << test_case.input;
+    EXPECT_EQ(test_case.expected_added_default_scheme_to_typed_url,
               input.added_default_scheme_to_typed_url());
   }
 }

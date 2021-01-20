@@ -35,7 +35,10 @@ class TypedNavigationUpgradeThrottle : public content::NavigationThrottle {
     // Failed to load the upgraded HTTPS URL within the timeout window, fell
     // back to the HTTP URL.
     kHttpsLoadTimedOut,
-    kMaxValue = kHttpsLoadTimedOut,
+    // Received a redirect. This doesn't necessarily imply that the HTTPS load
+    // succeeded or failed.
+    kRedirected,
+    kMaxValue = kRedirected,
   };
 
   static std::unique_ptr<content::NavigationThrottle> MaybeCreateThrottleFor(
@@ -46,6 +49,8 @@ class TypedNavigationUpgradeThrottle : public content::NavigationThrottle {
   // content::NavigationThrottle:
   content::NavigationThrottle::ThrottleCheckResult WillStartRequest() override;
   content::NavigationThrottle::ThrottleCheckResult WillFailRequest() override;
+  content::NavigationThrottle::ThrottleCheckResult WillRedirectRequest()
+      override;
   content::NavigationThrottle::ThrottleCheckResult WillProcessResponse()
       override;
   const char* GetNameForLogging() override;
@@ -55,6 +60,12 @@ class TypedNavigationUpgradeThrottle : public content::NavigationThrottle {
   // failure.
   static bool ShouldIgnoreInterstitialBecauseNavigationDefaultedToHttps(
       content::NavigationHandle* handle);
+
+  // Sets the port used by the embedded https server. This is used to determine
+  // the correct port while upgrading URLs to https if the original URL has a
+  // non-default port.
+  static void SetHttpsPortForTesting(int https_port_for_testing);
+  static int GetHttpsPortForTesting();
 
   static const char kHistogramName[];
 

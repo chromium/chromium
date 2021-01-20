@@ -49,6 +49,7 @@ class ChromeOmniboxClient : public OmniboxClient {
   const AutocompleteSchemeClassifier& GetSchemeClassifier() const override;
   AutocompleteClassifier* GetAutocompleteClassifier() override;
   bool ShouldDefaultTypedNavigationsToHttps() const override;
+  int GetHttpsPortForTesting() const override;
   gfx::Image GetIconIfExtensionMatch(
       const AutocompleteMatch& match) const override;
   gfx::Image GetSizedIcon(const gfx::VectorIcon& vector_icon_type,

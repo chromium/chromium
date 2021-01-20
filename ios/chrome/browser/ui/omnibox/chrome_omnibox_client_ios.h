@@ -38,6 +38,7 @@ class ChromeOmniboxClientIOS : public OmniboxClient {
   const AutocompleteSchemeClassifier& GetSchemeClassifier() const override;
   AutocompleteClassifier* GetAutocompleteClassifier() override;
   bool ShouldDefaultTypedNavigationsToHttps() const override;
+  int GetHttpsPortForTesting() const override;
   gfx::Image GetIconIfExtensionMatch(
       const AutocompleteMatch& match) const override;
   bool ProcessExtensionKeyword(const TemplateURL* template_url,

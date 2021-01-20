@@ -75077,6 +75077,9 @@ Full version information for the fingerprint enum values:
   <int value="4"
       label="Failed to load the upgraded HTTPS URL because of a net error,
              fell back to the HTTP URL."/>
+  <int value="5"
+      label="Received a redirect. This doesn't necessarily imply that the
+             HTTPS load succeeded or failed."/>
 </enum>
 
 <enum name="TypeOfVideoInFrame">

@@ -85,6 +85,13 @@ class OmniboxClient {
   virtual const AutocompleteSchemeClassifier& GetSchemeClassifier() const = 0;
   virtual AutocompleteClassifier* GetAutocompleteClassifier();
   virtual bool ShouldDefaultTypedNavigationsToHttps() const = 0;
+  // Returns the port used by the embedded https server in tests. This is used
+  // to determine the correct port while upgrading typed URLs to https if the
+  // original URL has a non-default port. Only meaningful if
+  // ShouldDefaultTypedNavigationsToHttps() returns true.
+  // TODO(crbug.com/1168371): Remove when URLLoaderInterceptor can simulate
+  // redirects.
+  virtual int GetHttpsPortForTesting() const = 0;
 
   // Returns the icon corresponding to |match| if match is an extension match
   // and an empty icon otherwise.

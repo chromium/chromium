@@ -108,6 +108,10 @@ bool ChromeOmniboxClientIOS::ShouldDefaultTypedNavigationsToHttps() const {
   return false;
 }
 
+int ChromeOmniboxClientIOS::GetHttpsPortForTesting() const {
+  return 0;
+}
+
 gfx::Image ChromeOmniboxClientIOS::GetIconIfExtensionMatch(
     const AutocompleteMatch& match) const {
   // Extensions are not supported on iOS.

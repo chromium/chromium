@@ -539,7 +539,8 @@ void OmniboxEditModel::StartAutocomplete(bool has_selected_text,
   input_ =
       AutocompleteInput(input_text, cursor_position, GetPageClassification(),
                         client_->GetSchemeClassifier(),
-                        client_->ShouldDefaultTypedNavigationsToHttps());
+                        client_->ShouldDefaultTypedNavigationsToHttps(),
+                        client_->GetHttpsPortForTesting());
   input_.set_current_url(client_->GetURL());
   input_.set_current_title(client_->GetTitle());
   input_.set_prevent_inline_autocomplete(
@@ -762,7 +763,8 @@ void OmniboxEditModel::OpenMatch(AutocompleteMatch match,
   // to create an alternate navigational match.
   AutocompleteInput alternate_input(
       input_text, GetPageClassification(), client_->GetSchemeClassifier(),
-      client_->ShouldDefaultTypedNavigationsToHttps());
+      client_->ShouldDefaultTypedNavigationsToHttps(),
+      client_->GetHttpsPortForTesting());
   // Somehow we can occasionally get here with no active tab.  It's not
   // clear why this happens.
   alternate_input.set_current_url(client_->GetURL());
@@ -1144,7 +1146,8 @@ void OmniboxEditModel::StartZeroSuggestRequest(
   // match can be wrong. The full page URL is anyways in set_current_url().
   input_ = AutocompleteInput(view_->GetText(), GetPageClassification(),
                              client_->GetSchemeClassifier(),
-                             client_->ShouldDefaultTypedNavigationsToHttps());
+                             client_->ShouldDefaultTypedNavigationsToHttps(),
+                             client_->GetHttpsPortForTesting());
   input_.set_current_url(client_->GetURL());
   input_.set_current_title(client_->GetTitle());
   input_.set_focus_type(user_clobbered_permanent_text
