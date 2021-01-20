@@ -65,10 +65,18 @@ def parse_args(triggerer):
       dest='optional_dimensions',
       help='Optional dimensions which will result in additional task slices. '
            'Duplicated from the `swarming.py trigger` command.')
-  base_test_triggerer.BaseTestTriggerer.setup_parser_contract(parser)
-  args, additional_args = parser.parse_known_args()
-  additional_args = triggerer.modify_args(
-      additional_args, 0, args.shard_index, args.shards, args.dump_json)
+  # BaseTestTriggerer's setup_parser_contract() takes care of adding needed
+  # swarming.py args if they're not already present. But only do this if
+  # '--shard-index' is passed in. (The exact usage of trigger scripts are
+  # currently changing. See crbug.com/926987 for more info.)
+  if '--shard-index' in sys.argv:
+    base_test_triggerer.BaseTestTriggerer.setup_parser_contract(parser)
+    args, additional_args = parser.parse_known_args()
+    additional_args = triggerer.modify_args(
+        additional_args, 0, args.shard_index, args.shards, args.dump_json)
+  else:
+    base_test_triggerer.BaseTestTriggerer.add_use_swarming_go_arg(parser)
+    args, additional_args = parser.parse_known_args()
 
   if additional_args[0] != 'trigger':
     parser.error(
@@ -122,8 +130,7 @@ def main():
   new_args += additional_args[1:]
 
   if args.use_swarming_go:
-    return triggerer.run_swarming_go(new_args, True, args.dump_json)
-
+    return triggerer.run_swarming_go(new_args, True)
   return triggerer.run_swarming(new_args, True)
 
 

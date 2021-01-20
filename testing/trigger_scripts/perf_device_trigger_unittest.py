@@ -53,7 +53,7 @@ class FakeTriggerer(perf_device_trigger.PerfDeviceTriggerer):
     del verbose #unused
     self._swarming_runs.append(args)
 
-  def run_swarming_go(self, args, verbose, _json_path, _merged_json=None):
+  def run_swarming_go(self, args, verbose):
     self._triggered_with_swarming_go += 1
     self.run_swarming(args, verbose)
 
