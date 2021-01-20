@@ -246,6 +246,7 @@ void CastMessageHandler::StopSession(
   CastSocket* socket = socket_service_->GetSocket(channel_id);
   if (!socket) {
     DVLOG(2) << __func__ << ": socket not found: " << channel_id;
+    std::move(callback).Run(cast_channel::Result::kFailed);
     return;
   }
 

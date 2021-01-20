@@ -84,6 +84,8 @@ class DualMediaSinkService {
   // started.
   virtual void StartMdnsDiscovery();
 
+  bool MdnsDiscoveryStarted();
+
  protected:
   // Used by tests.
   DualMediaSinkService(

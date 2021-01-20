@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/rand_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/default_clock.h"
@@ -378,10 +379,19 @@ void CastMediaSinkServiceImpl::OnNetworksChanged(
     sink_cache_[last_network_id] = std::move(current_sinks);
   }
 
+  if (logger_.is_bound()) {
+    logger_->LogError(mojom::LogCategory::kDiscovery, kLoggerComponent,
+                      base::StringPrintf(
+                          "Network ID chagned from \"%s\" to \"%s\".",
+                          last_network_id.c_str(), current_network_id_.c_str()),
+                      "", "", "");
+  }
+
   // TODO(imcheng): Maybe this should clear |sinks_| and call |StartTimer()|
   // so it is more responsive?
-  if (IsNetworkIdUnknownOrDisconnected(network_id))
+  if (IsNetworkIdUnknownOrDisconnected(network_id)) {
     return;
+  }
 
   auto cache_entry = sink_cache_.find(network_id);
   // Check if we have any cached sinks for this network ID.
@@ -611,8 +621,9 @@ void CastMediaSinkServiceImpl::OnChannelOpenFailed(
 
   if (logger_.is_bound()) {
     logger_->LogError(mojom::LogCategory::kDiscovery, kLoggerComponent,
-                      "Failed to open a channel for sink", sink.sink().id(), "",
-                      "");
+                      base::StrCat({"Failed to open the channel. IP endpoint: ",
+                                    ip_endpoint.ToString()}),
+                      sink.sink().id(), "", "");
   }
   RemoveSink(sink);
 }

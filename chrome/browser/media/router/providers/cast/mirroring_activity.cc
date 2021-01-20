@@ -17,6 +17,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/optional.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/browser/media/router/data_decoder_util.h"
 #include "chrome/browser/media/router/providers/cast/cast_activity_manager.h"
@@ -340,7 +341,16 @@ void MirroringActivity::HandleParseJsonResult(
   cast::channel::CastMessage cast_message = cast_channel::CreateCastMessage(
       message_namespace, std::move(*result.value),
       message_handler_->sender_id(), session->transport_id());
-  message_handler_->SendCastMessage(cast_data_.cast_channel_id, cast_message);
+  if (message_handler_->SendCastMessage(cast_data_.cast_channel_id,
+                                        cast_message) == Result::kFailed) {
+    logger_->LogError(
+        media_router::mojom::LogCategory::kMirroring, kLoggerComponent,
+        base::StringPrintf(
+            "Failed to send Cast message to channel_id: %d, in namespace: %s",
+            cast_data_.cast_channel_id, message_namespace.c_str()),
+        route().media_sink_id(), route().media_source().id(),
+        session->session_id());
+  }
 }
 
 void MirroringActivity::OnSessionSet(const CastSession& session) {

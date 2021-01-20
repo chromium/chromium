@@ -29,6 +29,10 @@
 
 namespace media_router {
 
+#if defined(OS_WIN)
+constexpr char kLoggerComponent[] = "MediaRouterDesktop";
+#endif
+
 MediaRouterDesktop::~MediaRouterDesktop() = default;
 
 // static
@@ -54,6 +58,11 @@ void MediaRouterDesktop::OnUserGesture() {
   media_sink_service_->OnUserGesture();
 
 #if defined(OS_WIN)
+  if (!media_sink_service_->MdnsDiscoveryStarted()) {
+    GetLogger()->LogInfo(
+        mojom::LogCategory::kDiscovery, kLoggerComponent,
+        "The user interacted with MR. mDNS discovery is enabled.", "", "", "");
+  }
   EnsureMdnsDiscoveryEnabled();
 #endif
 }
@@ -323,8 +332,18 @@ void MediaRouterDesktop::EnsureMdnsDiscoveryEnabled() {
 
 void MediaRouterDesktop::OnFirewallCheckComplete(
     bool firewall_can_use_local_ports) {
-  if (firewall_can_use_local_ports)
+  if (firewall_can_use_local_ports) {
+    GetLogger()->LogInfo(
+        mojom::LogCategory::kDiscovery, kLoggerComponent,
+        "Windows firewall allows mDNS. Ensuring mDNS discovery is enabled.", "",
+        "", "");
     EnsureMdnsDiscoveryEnabled();
+  } else {
+    GetLogger()->LogInfo(mojom::LogCategory::kDiscovery, kLoggerComponent,
+                         "Windows firewall does not allows mDNS. mDNS "
+                         "discovery can be enabled by user gesture.",
+                         "", "", "");
+  }
 }
 #endif
 
