@@ -2985,7 +2985,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="ContextMenu.CancelSystemTouches" enum="BooleanHit"
     expires_after="2021-06-20">
   <owner>michaeldo@chromium.org</owner>
-  <owner>src/ios/web/web_state/ui/OWNERS</owner>
+  <owner>src/ios/web/OWNERS</owner>
   <summary>
     Logs true when the system touches are cancelled in order to show the Context
     Menu instead of performing a default system action. Only logged on iOS.
@@ -2995,7 +2995,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="ContextMenu.DelayedElementDetails"
     enum="ContextMenuDelayedElementDetails" expires_after="2021-05-23">
   <owner>michaeldo@chromium.org</owner>
-  <owner>src/ios/web/web_state/ui/OWNERS</owner>
+  <owner>src/ios/web/OWNERS</owner>
   <summary>
     Logged when DOM element details are not yet available when the user
     completes a long press. Also logs if the context menu was shown once the
@@ -3008,7 +3008,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="ContextMenu.DOMElementFrame" enum="ContextMenuDOMElementFrame"
     expires_after="2021-05-23">
   <owner>michaeldo@chromium.org</owner>
-  <owner>src/ios/web/web_state/ui/OWNERS</owner>
+  <owner>src/ios/web/OWNERS</owner>
   <summary>
     Logged when the Context Menu will be displayed. Also logs if the element for
     the last touch was found in the main frame or a iframe. Only logged on iOS.
@@ -3191,7 +3191,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="ContextMenu.WaitingForElementDetails" enum="BooleanHit"
     expires_after="2021-05-23">
   <owner>michaeldo@chromium.org</owner>
-  <owner>src/ios/web/web_state/ui/OWNERS</owner>
+  <owner>src/ios/web/OWNERS</owner>
   <summary>
     Logs true when the context menu gesture recognizer fully recognizes a long
     press, but is still waiting on the DOM element details before the context
