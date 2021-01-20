@@ -409,7 +409,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Startup.ColdStartFromProcessCreationTime" units="ms"
     expires_after="2021-06-20">
   <owner>djean@chromium.org</owner>
-  <owner>eugenebut@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <summary>
     The duration of all initializations from process creation time to UI ready.
     This includes code loading, static initializers and the execution time
@@ -552,7 +552,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Startup.MobileSessionStartAction"
     enum="MobileSessionStartAction" expires_after="2021-07-04">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>thegreenfrog@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
     The action requested on the application startup when called from another app
@@ -562,7 +562,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Startup.MobileSessionStartFromApps"
     enum="MobileSessionCallerApp" expires_after="2021-07-04">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>thegreenfrog@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>The calling application (if any).</summary>
 </histogram>
