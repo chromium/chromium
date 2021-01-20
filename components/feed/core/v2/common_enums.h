@@ -75,10 +75,18 @@ enum class FeedUserActionType {
   kClosedDialog = 21,
   // User action caused a snackbar to be shown. User action not reported here.
   kShowSnackbar = 22,
-  // User opened the native back of card menu.
-  kOpenedNativeContextMenu = 23,
+  // User opened back of card menu in the native action sheet.
+  kOpenedNativeActionSheet = 23,
+  // User opened back of card menu in the native context menu.
+  kOpenedNativeContextMenu = 24,
+  // User closed back of card menu in the native context menu.
+  kClosedNativeContextMenu = 25,
+  // User opened back of card menu in the native pull-down menu.
+  kOpenedNativePulldownMenu = 26,
+  // User closed back of card menu in the native pull-down menu.
+  kClosedNativePulldownMenu = 27,
   // Highest enumerator. Recommended by Histogram metrics best practices.
-  kMaxValue = kOpenedNativeContextMenu,
+  kMaxValue = kClosedNativePulldownMenu,
 };
 
 }  // namespace feed

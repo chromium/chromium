@@ -106,6 +106,12 @@
             (NSTimeInterval)durationInSeconds
                                          success:(BOOL)success;
 
+// Records the native context menu visibility change.
+- (void)recordNativeContextMenuVisibilityChanged:(BOOL)shown;
+
+// Records the native pull-down menu visibility change.
+- (void)recordNativePulldownMenuVisibilityChanged:(BOOL)shown;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_DISCOVER_FEED_METRICS_RECORDER_H_
