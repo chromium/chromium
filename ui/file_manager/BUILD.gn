@@ -85,6 +85,7 @@ preprocess_if_expr("preprocess_static") {
     "audio_player/js/main.m.js",
     "audio_player/js/main_background.m.js",
     "file_manager/background/js/main_background.m.js",
+    "file_manager/foreground/js/deferred_elements.m.js",
     "file_manager/foreground/js/elements_importer.m.js",
     "file_manager/foreground/js/main.m.js",
     "image_loader/background.m.js",
@@ -96,6 +97,7 @@ preprocess_if_expr("preprocess_static") {
     "//ui/file_manager/audio_player/js:main.m",
     "//ui/file_manager/audio_player/js:main_background.m",
     "//ui/file_manager/file_manager/background/js:main_background.m",
+    "//ui/file_manager/file_manager/foreground/js:deferred_elements.m",
     "//ui/file_manager/file_manager/foreground/js:main.m",
     "//ui/file_manager/image_loader:background.m",
     "//ui/file_manager/video_player/js:main.m",
@@ -232,6 +234,7 @@ preprocess_if_expr("preprocess_generated") {
     "file_manager/foreground/js/main_window_component.m.js",
     "file_manager/foreground/js/metadata_box_controller.m.js",
     "file_manager/foreground/js/metadata_update_controller.m.js",
+    "file_manager/foreground/js/metrics_start.m.js",
     "file_manager/foreground/js/naming_controller.m.js",
     "file_manager/foreground/js/navigation_list_model.m.js",
     "file_manager/foreground/js/navigation_uma.m.js",
@@ -254,6 +257,7 @@ preprocess_if_expr("preprocess_generated") {
 
     # Files app Elements:
     "file_manager/foreground/elements/icons.m.js",
+    "file_manager/foreground/elements/files_format_dialog.m.js",
     "file_manager/foreground/elements/files_icon_button.m.js",
     "file_manager/foreground/elements/files_message.m.js",
     "file_manager/foreground/elements/files_metadata_box.m.js",
@@ -262,9 +266,14 @@ preprocess_if_expr("preprocess_generated") {
     "file_manager/foreground/elements/files_quick_view.m.js",
     "file_manager/foreground/elements/files_ripple.m.js",
     "file_manager/foreground/elements/files_safe_media.m.js",
+    "file_manager/foreground/elements/files_spinner.m.js",
     "file_manager/foreground/elements/files_toast.m.js",
     "file_manager/foreground/elements/files_toggle_ripple.m.js",
     "file_manager/foreground/elements/files_tooltip.m.js",
+    "file_manager/foreground/elements/xf_button.m.js",
+    "file_manager/foreground/elements/xf_circular_progress.m.js",
+    "file_manager/foreground/elements/xf_display_panel.m.js",
+    "file_manager/foreground/elements/xf_panel_item.m.js",
 
     # Files app UI:
     "file_manager/foreground/js/ui/a11y_announce.m.js",
@@ -395,8 +404,11 @@ generate_grd("build_grd") {
 
     "file_manager/background/js/main_background.m.rollup.js",
     "file_manager/foreground/elements/files_icon_button.m.js",
-    "file_manager/foreground/elements/files_toggle_ripple.m.js",
     "file_manager/foreground/elements/files_ripple.m.js",
+    "file_manager/foreground/elements/files_toggle_ripple.m.js",
+    "file_manager/foreground/js/deferred_elements.m.rollup.js",
+    "file_manager/foreground/js/main.m.rollup.js",
+    "file_manager/foreground/js/shared.m.rollup.js",
 
     "video_player/js/main.m.rollup.js",
     "video_player/js/main_background.m.rollup.js",
@@ -408,6 +420,8 @@ generate_grd("build_grd") {
     "audio_player/js/metadata_worker.m.rollup.js|audio_player/js/metadata_worker.m.js",
     "image_loader/background.m.rollup.js|image_loader/background.m.js",
     "file_manager/background/js/main_background.m.rollup.js|file_manager/background/js/main_background.m.js",
+    "file_manager/foreground/js/deferred_elements.m.rollup.js|file_manager/foreground/js/deferred_elements.m.js",
+    "file_manager/foreground/js/main.m.rollup.js|file_manager/foreground/js/main.m.js",
     "video_player/js/main.m.rollup.js|video_player/js/main.m.js",
     "video_player/js/main_background.m.rollup.js|video_player/js/main_background.m.js",
   ]
@@ -425,6 +439,7 @@ generate_grd("build_grd") {
     "//ui/file_manager/audio_player/js:build_worker",
     "//ui/file_manager/file_manager/background/js:build",
     "//ui/file_manager/file_manager/foreground/elements:elements",
+    "//ui/file_manager/file_manager/foreground/js:build",
     "//ui/file_manager/image_loader:build",
     "//ui/file_manager/video_player/js:build",
     "//ui/file_manager/video_player/js:build_background",

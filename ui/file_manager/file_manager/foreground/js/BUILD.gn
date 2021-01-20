@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/browser/resources/tools/optimize_webui.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//third_party/closure_compiler/js_unit_tests.gni")
 import("//ui/file_manager/base/gn/js_test_gen_html.gni")
@@ -700,6 +701,7 @@ js_library("elements_importer.m") {
 }
 
 js_library("deferred_elements.m") {
+  visibility += [ "//ui/file_manager:*" ]
   deps = [
     "//ui/file_manager/file_manager/foreground/elements:files_format_dialog.m",
     "//ui/file_manager/file_manager/foreground/elements:files_message.m",
@@ -2140,4 +2142,32 @@ js_modulizer("modulize") {
                          "cr.filebrowser.DefaultTaskDialog|DefaultTaskDialog",
                          "window.importElementsPromise|importElements",
                        ]
+}
+
+preprocess_folder =
+    rebase_path(
+        "$target_gen_dir/../../../preprocessed/file_manager/foreground/js",
+        root_build_dir)
+
+optimize_webui("build") {
+  host = "file_manager"
+
+  input = preprocess_folder
+  js_module_in_files = [
+    "main.m.js",
+    "deferred_elements.m.js",
+  ]
+
+  js_out_files = [
+    "main.m.rollup.js",
+    "deferred_elements.m.rollup.js",
+    "shared.m.rollup.js",
+  ]
+
+  deps = [
+    ":main.m",
+    "//ui/file_manager:preprocess_generated",
+    "//ui/file_manager:preprocess_static",
+    "//ui/webui/resources:preprocess",
+  ]
 }
