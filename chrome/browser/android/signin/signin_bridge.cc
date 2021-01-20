@@ -8,7 +8,6 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "chrome/android/chrome_jni_headers/SigninBridge_jni.h"
-#include "chrome/android/chrome_jni_headers/SigninUtils_jni.h"
 #include "ui/android/window_android.h"
 
 using base::android::JavaParamRef;
@@ -38,7 +37,7 @@ void SigninBridge::OpenAccountPickerBottomSheet(
     const std::string& continue_url) {
   DCHECK(window);
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_SigninUtils_openAccountPickerBottomSheet(
+  Java_SigninBridge_openAccountPickerBottomSheet(
       env, window->GetJavaObject(),
       base::android::ConvertUTF8ToJavaString(env, continue_url));
 }

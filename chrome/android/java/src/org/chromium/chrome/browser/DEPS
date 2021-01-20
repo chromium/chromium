@@ -283,7 +283,7 @@ specific_include_rules = {
   "SendTabToSelfShareActivity\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
-  "SigninUtils\.java": [
+  "SigninBridge\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
   "AccountPickerDelegate\.java": [

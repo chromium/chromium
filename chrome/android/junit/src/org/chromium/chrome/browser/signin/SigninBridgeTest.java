@@ -27,10 +27,10 @@ import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
- * This class tests the method {@link SigninUtils#openAccountPickerBottomSheet}
+ * JUnit tests for the class {@link SigninBridge}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-public class SigninUtilsAccountPickerTest {
+public class SigninBridgeTest {
     private static final String CONTINUE_URL = "https://test-continue-url.com";
 
     @Rule
@@ -65,7 +65,7 @@ public class SigninUtilsAccountPickerTest {
     @SmallTest
     public void testAccountPickerSuppressedWhenSigninNotAllowed() {
         when(mSigninManagerMock.isSignInAllowed()).thenReturn(false);
-        SigninUtils.openAccountPickerBottomSheet(mWindowAndroidMock, CONTINUE_URL);
+        SigninBridge.openAccountPickerBottomSheet(mWindowAndroidMock, CONTINUE_URL);
         checkHistogramRecording(AccountConsistencyPromoAction.SUPPRESSED_SIGNIN_NOT_ALLOWED);
     }
 
@@ -73,7 +73,7 @@ public class SigninUtilsAccountPickerTest {
     @SmallTest
     public void testAccountPickerSuppressedWhenNoAccountsOnDevice() {
         when(mSigninManagerMock.isSignInAllowed()).thenReturn(true);
-        SigninUtils.openAccountPickerBottomSheet(mWindowAndroidMock, CONTINUE_URL);
+        SigninBridge.openAccountPickerBottomSheet(mWindowAndroidMock, CONTINUE_URL);
         checkHistogramRecording(AccountConsistencyPromoAction.SUPPRESSED_NO_ACCOUNTS);
     }
 

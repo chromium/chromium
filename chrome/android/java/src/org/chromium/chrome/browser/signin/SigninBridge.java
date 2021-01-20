@@ -6,9 +6,25 @@ package org.chromium.chrome.browser.signin;
 
 import android.content.Context;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.account_picker.AccountPickerDelegateImpl;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
+import org.chromium.chrome.browser.signin.services.WebSigninBridge;
+import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerBottomSheetCoordinator;
 import org.chromium.chrome.browser.sync.settings.AccountManagementFragment;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
+import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.GAIAServiceType;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.base.WindowAndroid;
@@ -42,6 +58,52 @@ final class SigninBridge {
         if (context != null) {
             AccountManagementFragment.openAccountManagementScreen(context, gaiaServiceType);
         }
+    }
+
+    /**
+     * Opens account picker bottom sheet.
+     */
+    @VisibleForTesting
+    @CalledByNative
+    static void openAccountPickerBottomSheet(WindowAndroid windowAndroid, String continueUrl) {
+        ThreadUtils.assertOnUiThread();
+        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
+                Profile.getLastUsedRegularProfile());
+        if (!signinManager.isSignInAllowed()) {
+            SigninMetricsUtils.logAccountConsistencyPromoAction(
+                    org.chromium.components.signin.metrics.AccountConsistencyPromoAction
+                            .SUPPRESSED_SIGNIN_NOT_ALLOWED);
+            return;
+        }
+        if (AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts().isEmpty()) {
+            // TODO(https://crbug.com/1119720): Show the bottom sheet when no accounts on device
+            //  in the future. This disabling is only temporary.
+            SigninMetricsUtils.logAccountConsistencyPromoAction(
+                    org.chromium.components.signin.metrics.AccountConsistencyPromoAction
+                            .SUPPRESSED_NO_ACCOUNTS);
+            return;
+        }
+        BottomSheetController bottomSheetController =
+                BottomSheetControllerProvider.from(windowAndroid);
+        if (bottomSheetController == null) {
+            // The bottomSheetController can be null when google.com is just opened inside a
+            // bottom sheet for example. In this case, it's better to disable the account picker
+            // bottom sheet.
+            return;
+        }
+
+        ChromeActivity activity = (ChromeActivity) windowAndroid.getActivity().get();
+        // To close the current regular tab after the user clicks on "Continue" in the incognito
+        // interstitial.
+        TabModel regularTabModel = activity.getTabModelSelector().getModel(/*incognito=*/false);
+        // To create a new incognito tab after after the user clicks on "Continue" in the incognito
+        // interstitial.
+        TabCreator incognitoTabCreator = activity.getTabCreator(/*incognito=*/true);
+        AccountPickerBottomSheetCoordinator coordinator = new AccountPickerBottomSheetCoordinator(
+                activity, bottomSheetController,
+                new AccountPickerDelegateImpl(windowAndroid, activity.getActivityTab(),
+                        new WebSigninBridge.Factory(), continueUrl),
+                regularTabModel, incognitoTabCreator, HelpAndFeedbackLauncherImpl.getInstance());
     }
 
     private SigninBridge() {}
