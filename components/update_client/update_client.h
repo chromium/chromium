@@ -283,7 +283,6 @@ struct CrxComponent {
 
   std::string fingerprint;  // Optional.
   std::string name;         // Optional.
-  std::vector<std::string> handled_mime_types;
 
   // Optional.
   // Valid values for the name part of an attribute match

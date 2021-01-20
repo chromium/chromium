@@ -48,8 +48,6 @@ class CrxUpdateService : public ComponentUpdateService,
   bool RegisterComponent(const CrxComponent& component) override;
   bool UnregisterComponent(const std::string& id) override;
   std::vector<std::string> GetComponentIDs() const override;
-  std::unique_ptr<ComponentInfo> GetComponentForMimeType(
-      const std::string& id) const override;
   std::vector<ComponentInfo> GetComponents() const override;
   OnDemandUpdater& GetOnDemandUpdater() override;
   void MaybeThrottle(const std::string& id,

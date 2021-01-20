@@ -197,7 +197,6 @@ class WidevineCdmComponentInstallerPolicy : public ComponentInstallerPolicy {
   void GetHash(std::vector<uint8_t>* hash) const override;
   std::string GetName() const override;
   update_client::InstallerAttributes GetInstallerAttributes() const override;
-  std::vector<std::string> GetMimeTypes() const override;
 
   // Updates CDM path if necessary.
   void UpdateCdmPath(const base::Version& cdm_version,
@@ -293,11 +292,6 @@ std::string WidevineCdmComponentInstallerPolicy::GetName() const {
 update_client::InstallerAttributes
 WidevineCdmComponentInstallerPolicy::GetInstallerAttributes() const {
   return update_client::InstallerAttributes();
-}
-
-std::vector<std::string> WidevineCdmComponentInstallerPolicy::GetMimeTypes()
-    const {
-  return std::vector<std::string>();
 }
 
 void WidevineCdmComponentInstallerPolicy::UpdateCdmPath(

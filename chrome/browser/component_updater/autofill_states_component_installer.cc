@@ -115,11 +115,6 @@ AutofillStatesComponentInstallerPolicy::GetInstallerAttributes() const {
   return update_client::InstallerAttributes();
 }
 
-std::vector<std::string> AutofillStatesComponentInstallerPolicy::GetMimeTypes()
-    const {
-  return std::vector<std::string>();
-}
-
 void RegisterAutofillStatesComponent(ComponentUpdateService* cus,
                                      PrefService* prefs) {
   DVLOG(1) << "Registering Autofill States data component.";

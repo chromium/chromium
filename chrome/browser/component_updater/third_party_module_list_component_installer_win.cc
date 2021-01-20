@@ -141,11 +141,6 @@ std::string ThirdPartyModuleListComponentInstallerPolicy::GetName() const {
   return kThirdPartyModuleListName;
 }
 
-std::vector<std::string>
-ThirdPartyModuleListComponentInstallerPolicy::GetMimeTypes() const {
-  return std::vector<std::string>();
-}
-
 update_client::InstallerAttributes
 ThirdPartyModuleListComponentInstallerPolicy::GetInstallerAttributes() const {
   return update_client::InstallerAttributes();

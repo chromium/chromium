@@ -128,11 +128,6 @@ OptimizationHintsComponentInstallerPolicy::GetInstallerAttributes() const {
   return update_client::InstallerAttributes();
 }
 
-std::vector<std::string>
-OptimizationHintsComponentInstallerPolicy::GetMimeTypes() const {
-  return std::vector<std::string>();
-}
-
 void RegisterOptimizationHintsComponent(ComponentUpdateService* cus) {
   if (!optimization_guide::features::IsOptimizationHintsEnabled())
     return;

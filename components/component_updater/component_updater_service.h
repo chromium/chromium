@@ -110,13 +110,6 @@ class ComponentUpdateService {
   // Returns a list of registered components.
   virtual std::vector<std::string> GetComponentIDs() const = 0;
 
-  // Returns a ComponentInfo describing a registered component that implements a
-  // handler for the specified |mime_type|. If multiple such components exist,
-  // returns information for the one that was most recently registered. If no
-  // such components exist, returns nullptr.
-  virtual std::unique_ptr<ComponentInfo> GetComponentForMimeType(
-      const std::string& mime_type) const = 0;
-
   // Returns a list of ComponentInfo objects describing all registered
   // components.
   virtual std::vector<ComponentInfo> GetComponents() const = 0;

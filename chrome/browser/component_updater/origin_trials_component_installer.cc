@@ -141,11 +141,6 @@ OriginTrialsComponentInstallerPolicy::GetInstallerAttributes() const {
   return update_client::InstallerAttributes();
 }
 
-std::vector<std::string> OriginTrialsComponentInstallerPolicy::GetMimeTypes()
-    const {
-  return std::vector<std::string>();
-}
-
 void RegisterOriginTrialsComponent(ComponentUpdateService* cus) {
   auto installer = base::MakeRefCounted<ComponentInstaller>(
       std::make_unique<OriginTrialsComponentInstallerPolicy>());

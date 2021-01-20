@@ -129,11 +129,6 @@ OnDeviceHeadSuggestInstallerPolicy::GetInstallerAttributes() const {
   return {{"accept_locale", accept_locale_}};
 }
 
-std::vector<std::string> OnDeviceHeadSuggestInstallerPolicy::GetMimeTypes()
-    const {
-  return std::vector<std::string>();
-}
-
 void RegisterOnDeviceHeadSuggestComponent(ComponentUpdateService* cus,
                                           const std::string& locale) {
   // Ideally we should only check if the feature is enabled for non-incognito or

@@ -159,10 +159,6 @@ update_client::InstallerAttributes CRLSetPolicy::GetInstallerAttributes()
   return update_client::InstallerAttributes();
 }
 
-std::vector<std::string> CRLSetPolicy::GetMimeTypes() const {
-  return std::vector<std::string>();
-}
-
 void RegisterCRLSetComponent(ComponentUpdateService* cus) {
   auto installer = base::MakeRefCounted<ComponentInstaller>(
       std::make_unique<CRLSetPolicy>());

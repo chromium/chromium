@@ -176,11 +176,6 @@ FirstPartySetsComponentInstallerPolicy::GetInstallerAttributes() const {
   };
 }
 
-std::vector<std::string> FirstPartySetsComponentInstallerPolicy::GetMimeTypes()
-    const {
-  return {};
-}
-
 void RegisterFirstPartySetsComponent(ComponentUpdateService* cus) {
   if (!base::FeatureList::IsEnabled(net::features::kFirstPartySets))
     return;

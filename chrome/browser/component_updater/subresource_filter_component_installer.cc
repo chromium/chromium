@@ -143,11 +143,6 @@ SubresourceFilterComponentInstallerPolicy::GetInstallerAttributes() const {
   return attributes;
 }
 
-std::vector<std::string>
-SubresourceFilterComponentInstallerPolicy::GetMimeTypes() const {
-  return std::vector<std::string>();
-}
-
 void RegisterSubresourceFilterComponent(ComponentUpdateService* cus) {
   if (!base::FeatureList::IsEnabled(
           subresource_filter::kSafeBrowsingSubresourceFilter)) {

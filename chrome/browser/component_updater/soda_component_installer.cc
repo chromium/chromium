@@ -162,10 +162,6 @@ SodaComponentInstallerPolicy::GetInstallerAttributes() const {
   return update_client::InstallerAttributes();
 }
 
-std::vector<std::string> SodaComponentInstallerPolicy::GetMimeTypes() const {
-  return std::vector<std::string>();
-}
-
 void UpdateSodaInstallDirPref(PrefService* prefs,
                               const base::FilePath& install_dir) {
 #if !defined(OS_ANDROID)

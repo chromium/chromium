@@ -167,11 +167,6 @@ TLSDeprecationConfigComponentInstallerPolicy::GetInstallerAttributes() const {
   return update_client::InstallerAttributes();
 }
 
-std::vector<std::string>
-TLSDeprecationConfigComponentInstallerPolicy::GetMimeTypes() const {
-  return std::vector<std::string>();
-}
-
 void RegisterTLSDeprecationConfigComponent(ComponentUpdateService* cus) {
   DVLOG(1) << "Registering TLS Deprecation Config component.";
 

@@ -160,11 +160,6 @@ TrustTokenKeyCommitmentsComponentInstallerPolicy::GetInstallerAttributes()
   return update_client::InstallerAttributes();
 }
 
-std::vector<std::string>
-TrustTokenKeyCommitmentsComponentInstallerPolicy::GetMimeTypes() const {
-  return std::vector<std::string>();
-}
-
 void RegisterTrustTokenKeyCommitmentsComponentIfTrustTokensEnabled(
     ComponentUpdateService* cus) {
   if (!base::FeatureList::IsEnabled(network::features::kTrustTokens))

@@ -416,7 +416,6 @@ void ComponentInstaller::FinishRegistration(
       installer_policy_->RequiresNetworkEncryption();
   crx.crx_format_requirement =
       crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF;
-  crx.handled_mime_types = installer_policy_->GetMimeTypes();
   crx.supports_group_policy_enable_component_updates =
       installer_policy_->SupportsGroupPolicyEnabledComponentUpdates();
 

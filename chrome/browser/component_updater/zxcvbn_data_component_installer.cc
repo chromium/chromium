@@ -156,11 +156,6 @@ std::string ZxcvbnDataComponentInstallerPolicy::GetName() const {
   return "Zxcvbn Data Dictionaries";
 }
 
-std::vector<std::string> ZxcvbnDataComponentInstallerPolicy::GetMimeTypes()
-    const {
-  return std::vector<std::string>();
-}
-
 update_client::InstallerAttributes
 ZxcvbnDataComponentInstallerPolicy::GetInstallerAttributes() const {
   return update_client::InstallerAttributes();

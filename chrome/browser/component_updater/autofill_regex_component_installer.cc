@@ -127,11 +127,6 @@ AutofillRegexComponentInstallerPolicy::GetInstallerAttributes() const {
   return update_client::InstallerAttributes();
 }
 
-std::vector<std::string> AutofillRegexComponentInstallerPolicy::GetMimeTypes()
-    const {
-  return std::vector<std::string>();
-}
-
 void RegisterAutofillRegexComponent(ComponentUpdateService* cus,
                                     const base::FilePath& user_data_dir) {
   VLOG(1) << "Registering Autofill Regex component.";

@@ -43,7 +43,6 @@ class CrowdDenyComponentInstallerPolicy : public ComponentInstallerPolicy {
   base::FilePath GetRelativeInstallDir() const override;
   void GetHash(std::vector<uint8_t>* hash) const override;
   std::string GetName() const override;
-  std::vector<std::string> GetMimeTypes() const override;
   update_client::InstallerAttributes GetInstallerAttributes() const override;
 
   DISALLOW_COPY_AND_ASSIGN(CrowdDenyComponentInstallerPolicy);

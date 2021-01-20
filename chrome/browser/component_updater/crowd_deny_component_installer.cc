@@ -106,12 +106,6 @@ std::string CrowdDenyComponentInstallerPolicy::GetName() const {
   return kCrowdDenyHumanReadableName;
 }
 
-std::vector<std::string> CrowdDenyComponentInstallerPolicy::GetMimeTypes()
-    const {
-  // Not a plugin.
-  return std::vector<std::string>();
-}
-
 update_client::InstallerAttributes
 CrowdDenyComponentInstallerPolicy::GetInstallerAttributes() const {
   // No special update rules.

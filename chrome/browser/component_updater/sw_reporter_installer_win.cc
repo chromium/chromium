@@ -337,10 +337,6 @@ SwReporterInstallerPolicy::GetInstallerAttributes() const {
   return attributes;
 }
 
-std::vector<std::string> SwReporterInstallerPolicy::GetMimeTypes() const {
-  return std::vector<std::string>();
-}
-
 SwReporterOnDemandFetcher::SwReporterOnDemandFetcher(
     ComponentUpdateService* cus,
     base::OnceClosure on_error_callback)

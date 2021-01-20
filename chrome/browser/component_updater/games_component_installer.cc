@@ -129,10 +129,6 @@ GamesComponentInstallerPolicy::GetInstallerAttributes() const {
   return update_client::InstallerAttributes();
 }
 
-std::vector<std::string> GamesComponentInstallerPolicy::GetMimeTypes() const {
-  return std::vector<std::string>();
-}
-
 void RegisterGamesComponent(ComponentUpdateService* cus, PrefService* prefs) {
   // We delay the registration because we are not required in the critical path
   // during browser setup.

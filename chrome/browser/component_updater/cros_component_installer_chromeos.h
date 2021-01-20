@@ -70,7 +70,6 @@ class CrOSComponentInstallerPolicy : public ComponentInstallerPolicy {
   void GetHash(std::vector<uint8_t>* hash) const override;
   std::string GetName() const override;
   update_client::InstallerAttributes GetInstallerAttributes() const override;
-  std::vector<std::string> GetMimeTypes() const override;
 
   // This is virtual so unit tests can override it.
   virtual bool IsCompatible(const std::string& env_version_str,

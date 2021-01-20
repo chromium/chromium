@@ -175,10 +175,6 @@ RecoveryImprovedInstallerPolicy::GetInstallerAttributes() const {
   return {};
 }
 
-std::vector<std::string> RecoveryImprovedInstallerPolicy::GetMimeTypes() const {
-  return {};
-}
-
 void RegisterRecoveryImprovedComponent(ComponentUpdateService* cus,
                                        PrefService* prefs) {
 // TODO(sorin): enable recovery component for macOS. crbug/687231.

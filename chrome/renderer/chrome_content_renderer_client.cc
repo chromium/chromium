@@ -1074,28 +1074,6 @@ WebPlugin* ChromeContentRendererClient::CreatePlugin(
         content_settings_agent->DidBlockContentType(content_type);
         break;
       }
-      case chrome::mojom::PluginStatus::kComponentUpdateRequired: {
-        placeholder = create_blocked_plugin(
-            IDR_BLOCKED_PLUGIN_HTML,
-            l10n_util::GetStringFUTF16(IDS_PLUGIN_OUTDATED, group_name));
-        placeholder->AllowLoading();
-        mojo::AssociatedRemote<chrome::mojom::PluginHost> plugin_host;
-        render_frame->GetRemoteAssociatedInterfaces()->GetInterface(
-            plugin_host.BindNewEndpointAndPassReceiver());
-        plugin_host->BlockedComponentUpdatedPlugin(
-            placeholder->BindPluginRenderer(), identifier);
-        break;
-      }
-
-      case chrome::mojom::PluginStatus::kRestartRequired: {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-        placeholder =
-            create_blocked_plugin(IDR_BLOCKED_PLUGIN_HTML,
-                                  l10n_util::GetStringFUTF16(
-                                      IDS_PLUGIN_RESTART_REQUIRED, group_name));
-#endif
-        break;
-      }
     }
   }
   placeholder->SetStatus(status);

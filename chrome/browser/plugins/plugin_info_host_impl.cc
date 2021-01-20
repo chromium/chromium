@@ -207,18 +207,8 @@ void PluginInfoHostImpl::PluginsLoaded(
         plugin_metadata->identifier(), &output->status);
   }
 
-  if (output->status == chrome::mojom::PluginStatus::kNotFound) {
-    // Check to see if the component updater can fetch an implementation.
-    std::unique_ptr<component_updater::ComponentInfo> cus_plugin_info =
-        g_browser_process->component_updater()->GetComponentForMimeType(
-            params.mime_type);
-    ComponentPluginLookupDone(params, std::move(output), std::move(callback),
-                              std::move(plugin_metadata),
-                              std::move(cus_plugin_info));
-  } else {
-    GetPluginInfoFinish(params, std::move(output), std::move(callback),
-                        std::move(plugin_metadata));
-  }
+  GetPluginInfoFinish(params, std::move(output), std::move(callback),
+                      std::move(plugin_metadata));
 }
 
 void PluginInfoHostImpl::Context::DecidePluginStatus(
@@ -369,30 +359,6 @@ bool PluginInfoHostImpl::Context::FindEnabledPlugin(
     *plugin_metadata = PluginFinder::GetInstance()->GetPluginMetadata(*plugin);
 
   return enabled;
-}
-
-void PluginInfoHostImpl::ComponentPluginLookupDone(
-    const GetPluginInfo_Params& params,
-    chrome::mojom::PluginInfoPtr output,
-    GetPluginInfoCallback callback,
-    std::unique_ptr<PluginMetadata> plugin_metadata,
-    std::unique_ptr<component_updater::ComponentInfo> cus_plugin_info) {
-  if (cus_plugin_info) {
-    output->status = chrome::mojom::PluginStatus::kComponentUpdateRequired;
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-    if (cus_plugin_info->version != base::Version("0")) {
-      output->status = chrome::mojom::PluginStatus::kRestartRequired;
-    }
-#endif
-    // Component Updater wouldn't provide a deprecated plugin.
-    bool plugin_is_deprecated = false;
-    plugin_metadata = std::make_unique<PluginMetadata>(
-        cus_plugin_info->id, cus_plugin_info->name, false, GURL(), GURL(),
-        base::ASCIIToUTF16(cus_plugin_info->id), std::string(),
-        plugin_is_deprecated);
-  }
-  GetPluginInfoFinish(params, std::move(output), std::move(callback),
-                      std::move(plugin_metadata));
 }
 
 void PluginInfoHostImpl::GetPluginInfoFinish(

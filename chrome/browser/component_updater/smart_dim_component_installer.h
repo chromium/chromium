@@ -46,7 +46,6 @@ class SmartDimComponentInstallerPolicy : public ComponentInstallerPolicy {
   void GetHash(std::vector<uint8_t>* hash) const override;
   std::string GetName() const override;
   update_client::InstallerAttributes GetInstallerAttributes() const override;
-  std::vector<std::string> GetMimeTypes() const override;
 
   // This installer requests exact expected_version_ from the server.
   // Only expected_version_ can pass VerifyInstallation and be fed to

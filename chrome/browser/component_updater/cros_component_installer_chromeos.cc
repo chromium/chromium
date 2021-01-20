@@ -193,11 +193,6 @@ CrOSComponentInstallerPolicy::GetInstallerAttributes() const {
   return attrs;
 }
 
-std::vector<std::string> CrOSComponentInstallerPolicy::GetMimeTypes() const {
-  std::vector<std::string> mime_types;
-  return mime_types;
-}
-
 bool CrOSComponentInstallerPolicy::IsCompatible(
     const std::string& env_version_str,
     const std::string& min_env_version_str) {

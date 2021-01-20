@@ -29,10 +29,6 @@ class GURL;
 class HostContentSettingsMap;
 class Profile;
 
-namespace component_updater {
-struct ComponentInfo;
-}
-
 namespace content {
 struct WebPluginInfo;
 }  // namespace content
@@ -116,13 +112,6 @@ class PluginInfoHostImpl : public chrome::mojom::PluginInfoHost {
   void PluginsLoaded(const GetPluginInfo_Params& params,
                      GetPluginInfoCallback callback,
                      const std::vector<content::WebPluginInfo>& plugins);
-
-  void ComponentPluginLookupDone(
-      const GetPluginInfo_Params& params,
-      chrome::mojom::PluginInfoPtr output,
-      GetPluginInfoCallback callback,
-      std::unique_ptr<PluginMetadata> plugin_metadata,
-      std::unique_ptr<component_updater::ComponentInfo> cus_plugin_info);
 
   void GetPluginInfoFinish(const GetPluginInfo_Params& params,
                            chrome::mojom::PluginInfoPtr output,

@@ -186,11 +186,6 @@ SmartDimComponentInstallerPolicy::GetInstallerAttributes() const {
   return attrs;
 }
 
-std::vector<std::string> SmartDimComponentInstallerPolicy::GetMimeTypes()
-    const {
-  return std::vector<std::string>();
-}
-
 void RegisterSmartDimComponent(ComponentUpdateService* cus) {
   if (!base::FeatureList::IsEnabled(chromeos::features::kSmartDimNewMlAgent))
     return;
