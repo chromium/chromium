@@ -35,16 +35,14 @@ namespace internals {
 // TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
 // complete.
 #if !(defined(OS_WIN) || defined(OS_MAC) || (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)))
-// TODO(crbug.com/897302): This boilerplate function is used for platforms
-// that don't support Run On OS Login. Currently the feature is supported on
-// Windows, Linux and MacOS.
+// This boilerplate function is used for platforms that don't support Run On OS
+// Login. Currently the feature is supported on Windows, Linux and MacOS.
 bool RegisterRunOnOsLogin(const ShortcutInfo& shortcut_info) {
   return false;
 }
 
-// TODO(crbug.com/897302): This boilerplate function is used for platforms
-// that don't support Run On OS Login. Currently the feature is supported on
-// Windows, Linux and MacOS.
+// This boilerplate function is used for platforms that don't support Run On OS
+// Login. Currently the feature is supported on Windows, Linux and MacOS.
 bool UnregisterRunOnOsLogin(const std::string& app_id,
                             const base::FilePath& profile_path,
                             const base::string16& shortcut_title) {

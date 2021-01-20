@@ -94,7 +94,8 @@ struct ShortcutLocations {
   bool in_quick_launch_bar;
 
   // For Windows, this refers to the Startup folder.
-  // TODO(crbug.com/897302): where to create shortcuts in other OS.
+  // For Mac, this refers to the Login Items list.
+  // For Linux, this refers to the autostart folder.
   bool in_startup;
 };
 

@@ -514,7 +514,7 @@ void OsIntegrationManager::OnShortcutsCreated(
 
   if (options.os_hooks[OsHookType::kRunOnOsLogin] &&
       base::FeatureList::IsEnabled(features::kDesktopPWAsRunOnOsLogin)) {
-    // TODO(crbug.com/897302): Implement Run on OS Login mode selection.
+    // TODO(crbug.com/1091964): Implement Run on OS Login mode selection.
     // Currently it is set to be the default: RunOnOsLoginMode::kWindowed
     RegisterRunOnOsLogin(app_id, barrier->CreateBarrierCallbackForType(
                                      OsHookType::kRunOnOsLogin));
