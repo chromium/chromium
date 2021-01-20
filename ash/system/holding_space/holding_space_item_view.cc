@@ -19,10 +19,8 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
-#include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
-#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/painter.h"
 #include "ui/views/style/platform_style.h"
@@ -120,21 +118,6 @@ HoldingSpaceItemView::HoldingSpaceItemView(
           &HoldingSpaceItemView::OnPaintSelect, base::Unretained(this)));
   layer()->Add(selected_layer_owner_->layer());
 
-  // Ink drop.
-  // Note that `ink_drop_container_` is added to the view hierarchy to parent
-  // any created ink drop layers. This will allow ink drop layers to animate
-  // in/out with the layer for this view as well as fix a crash in which ink
-  // drop layers were attempted to be reordered during destruction of this view.
-  ink_drop_container_ =
-      AddChildView(std::make_unique<views::InkDropContainerView>());
-  SetInkDropMode(InkDropMode::ON_NO_GESTURE_HANDLER);
-  SetInkDropVisibleOpacity(
-      AshColorProvider::Get()->GetRippleAttributes().inkdrop_opacity);
-
-  // Ink drop layers should match the corner radius of this view.
-  views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
-                                                kHoldingSpaceCornerRadius);
-
   delegate_->OnHoldingSpaceItemViewCreated(this);
 }
 
@@ -151,29 +134,10 @@ bool HoldingSpaceItemView::IsInstance(views::View* view) {
   return view->GetProperty(kIsHoldingSpaceItemViewProperty);
 }
 
-void HoldingSpaceItemView::AddLayerBeneathView(ui::Layer* layer) {
-  ink_drop_container_->AddInkDropLayer(layer);
-}
-
-void HoldingSpaceItemView::RemoveLayerBeneathView(ui::Layer* layer) {
-  ink_drop_container_->RemoveInkDropLayer(layer);
-}
-
-SkColor HoldingSpaceItemView::GetInkDropBaseColor() const {
-  return AshColorProvider::Get()->GetRippleAttributes().base_color;
-}
-
 bool HoldingSpaceItemView::HandleAccessibleAction(
     const ui::AXActionData& action_data) {
   return delegate_->OnHoldingSpaceItemViewAccessibleAction(this, action_data) ||
-         views::InkDropHostView::HandleAccessibleAction(action_data);
-}
-
-void HoldingSpaceItemView::Layout() {
-  views::InkDropHostView::Layout();
-
-  // Ink drop bounds should always match the bounds for this view.
-  ink_drop_container_->SetSize(size());
+         views::View::HandleAccessibleAction(action_data);
 }
 
 void HoldingSpaceItemView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
@@ -215,7 +179,7 @@ void HoldingSpaceItemView::OnMouseEvent(ui::MouseEvent* event) {
     default:
       break;
   }
-  views::InkDropHostView::OnMouseEvent(event);
+  views::View::OnMouseEvent(event);
 }
 
 bool HoldingSpaceItemView::OnMousePressed(const ui::MouseEvent& event) {
@@ -355,7 +319,7 @@ void HoldingSpaceItemView::UpdatePin() {
   OnPinVisiblityChanged(true);
 }
 
-BEGIN_METADATA(HoldingSpaceItemView, views::InkDropHostView)
+BEGIN_METADATA(HoldingSpaceItemView, views::View)
 END_METADATA
 
 }  // namespace ash
