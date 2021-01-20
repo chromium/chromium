@@ -60,6 +60,12 @@ class ArcWindowDelegateImpl : public ArcImeService::ArcWindowDelegate {
       if (ash::IsArcWindow(window))
         return true;
 
+      // TODO(crbug.com/1168334): Find a correct way to detect the ARC++
+      // notifications. It should be okay for now because only the ARC++ windows
+      // have kSkipImeProcessing.
+      if (window->GetProperty(aura::client::kSkipImeProcessing))
+        return true;
+
       // IsArcAppWindow returns false for a window of ARC++ Kiosk app, so we
       // have to check application id of the active window to cover that case.
       // TODO(yhanada): Make IsArcAppWindow support a window of ARC++ Kiosk.
