@@ -14,14 +14,4 @@ export const SelectBehavior = {
     /** @type {boolean} */
     disabled: Boolean,
   },
-
-  /**
-   * @param {!Array} arr
-   * @param {!function(string, string): number} compareFn
-   * @param {!function(T): string} conversionFn
-   * @template T
-   */
-  customSort(arr, compareFn, conversionFn = (val) => val) {
-    return arr.sort((a, b) => compareFn(conversionFn(a), conversionFn(b)));
-  },
 };

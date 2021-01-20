@@ -19,7 +19,6 @@ import {scanPreviewTest} from './scan_preview_test.js';
 import {scanToSelectTest} from './scan_to_select_test.js';
 import {scannerSelectTest} from './scanner_select_test.js';
 import {scanningAppTest} from './scanning_app_test.js';
-import {selectBehaviorTest} from './select_behavior_test.js';
 import {sourceSelectTest} from './source_select_test.js';
 
 window.test_suites_list = [];
@@ -38,5 +37,4 @@ runSuite('ScanDoneSection', scanDoneSectionTest);
 runSuite('ScannerSelect', scannerSelectTest);
 runSuite('ScanPreview', scanPreviewTest);
 runSuite('ScanToSelect', scanToSelectTest);
-runSuite('SelectBehavior', selectBehaviorTest);
 runSuite('SourceSelect', sourceSelectTest);

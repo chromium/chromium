@@ -72,9 +72,9 @@ Polymer({
    */
   onPageSizesChange_() {
     if (this.pageSizes.length > 1) {
-      this.pageSizes = this.customSort(
-          this.pageSizes, alphabeticalCompare,
-          (pageSize) => getPageSizeString(pageSize));
+      this.pageSizes.sort((a, b) => {
+        return alphabeticalCompare(getPageSizeString(a), getPageSizeString(b));
+      });
 
       // If the fit to scan area option exists, move it to the end of the page
       // sizes array.

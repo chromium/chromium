@@ -69,9 +69,10 @@ Polymer({
    */
   onSourcesChange_() {
     if (this.sources.length > 1) {
-      this.sources = this.customSort(
-          this.sources, alphabeticalCompare,
-          (source) => getSourceTypeString(source.type));
+      this.sources.sort((a, b) => {
+        return alphabeticalCompare(
+            getSourceTypeString(a.type), getSourceTypeString(b.type));
+      });
     }
 
     if (this.sources.length > 0) {

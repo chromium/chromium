@@ -73,9 +73,10 @@ Polymer({
    */
   onScannersChange_() {
     if (this.scanners.length > 1) {
-      this.scanners = this.customSort(
-          this.scanners, alphabeticalCompare,
-          (scanner) => getScannerDisplayName(scanner));
+      this.scanners.sort((a, b) => {
+        return alphabeticalCompare(
+            getScannerDisplayName(a), getScannerDisplayName(b));
+      });
     }
 
     // If it exists, select the first option in the sorted array as the default.

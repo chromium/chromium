@@ -75,9 +75,10 @@ Polymer({
    */
   onColorModesChange_() {
     if (this.colorModes.length > 1) {
-      this.colorModes = this.customSort(
-          this.colorModes, alphabeticalCompare,
-          (colorMode) => getColorModeString(colorMode));
+      this.colorModes.sort((a, b) => {
+        return alphabeticalCompare(
+            getColorModeString(a), getColorModeString(b));
+      });
     }
 
     if (this.colorModes.length > 0) {

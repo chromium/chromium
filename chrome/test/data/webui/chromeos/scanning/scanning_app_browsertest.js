@@ -53,7 +53,7 @@ ScanningAppBrowserTest.prototype = {
 const debug_suites_list = [
   'ColorModeSelect', 'FileTypeSelect', 'PageSizeSelect', 'ResolutionSelect',
   'ScanApp', 'ScanDoneSection', 'ScannerSelect', 'ScanPreview', 'ScanToSelect',
-  'SelectBehavior', 'SourceSelect'
+  'SourceSelect'
 ];
 
 TEST_F('ScanningAppBrowserTest', 'All', function() {
