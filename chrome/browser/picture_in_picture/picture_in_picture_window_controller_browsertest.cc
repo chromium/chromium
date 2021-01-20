@@ -2442,9 +2442,10 @@ IN_PROC_BROWSER_TEST_F(
 
 // Check that video does not leave Picture-in-Picture automatically when it
 // doesn't have the Auto Picture-in-Picture attribute set.
+// Flaky, see crbug.com/1140960.
 IN_PROC_BROWSER_TEST_F(
     WebAppPictureInPictureWindowControllerBrowserTest,
-    AutoPictureInPictureNotTriggeredOnPageShownIfNoAttribute) {
+    DISABLED_AutoPictureInPictureNotTriggeredOnPageShownIfNoAttribute) {
   InstallAndLaunchPWA(main_url());
   bool result = false;
   ASSERT_TRUE(content::ExecuteScriptAndExtractBool(web_contents(),
