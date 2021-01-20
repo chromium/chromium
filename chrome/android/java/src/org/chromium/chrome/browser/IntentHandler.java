@@ -78,29 +78,6 @@ public class IntentHandler {
     private static final String TAG = "IntentHandler";
 
     /**
-     * Document mode: If true, Chrome is launched into the same Task.
-     * Note: used by first-party applications, do not rename.
-     */
-    public static final String EXTRA_APPEND_TASK = "com.android.chrome.append_task";
-
-    /**
-     * Document mode: If true, keep tasks in Recents when a user hits back at the root URL.
-     * Note: used by first-party applications, do not rename.
-     */
-    public static final String EXTRA_PRESERVE_TASK = "com.android.chrome.preserve_task";
-
-    /**
-     * Document mode: If true, opens the document in background.
-     * Note: used by first-party applications, do not rename.
-     */
-    public static final String EXTRA_OPEN_IN_BG = "com.android.chrome.open_with_affiliation";
-
-    /**
-     * Document mode: Records what caused a document to be created.
-     */
-    public static final String EXTRA_STARTED_BY = "com.android.chrome.started_by";
-
-    /**
      * Tab ID to use when creating a new Tab.
      */
     public static final String EXTRA_TAB_ID = "com.android.chrome.tab_id";
