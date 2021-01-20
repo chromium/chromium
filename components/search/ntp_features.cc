@@ -79,6 +79,10 @@ const base::Feature kWebUIThemeModeDoodles{"WebUIThemeModeDoodles",
 const base::Feature kNtpShortcuts{"NtpShortcuts",
                                   base::FEATURE_ENABLED_BY_DEFAULT};
 
+// If enabled, middle slot promo will be shown.
+const base::Feature kNtpMiddleSlotPromo{"NtpMiddleSlotPromo",
+                                        base::FEATURE_ENABLED_BY_DEFAULT};
+
 // If enabled, modules will be shown.
 const base::Feature kModules{"NtpModules", base::FEATURE_DISABLED_BY_DEFAULT};
 

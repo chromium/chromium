@@ -197,6 +197,12 @@ class AppElement extends PolymerElement {
       },
 
       /** @private */
+      middleSlotPromoEnabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('middleSlotPromoEnabled'),
+      },
+
+      /** @private */
       modulesEnabled_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('modulesEnabled'),
@@ -517,7 +523,8 @@ class AppElement extends PolymerElement {
    * @private
    */
   computePromoAndModulesLoaded_() {
-    return this.middleSlotPromoLoaded_ &&
+    return (!loadTimeData.getBoolean('middleSlotPromoEnabled') ||
+            this.middleSlotPromoLoaded_) &&
         (!loadTimeData.getBoolean('modulesEnabled') || this.modulesLoaded_);
   }
 
