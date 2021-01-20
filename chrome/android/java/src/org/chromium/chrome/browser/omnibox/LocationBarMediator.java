@@ -4,10 +4,14 @@
 
 package org.chromium.chrome.browser.omnibox;
 
+import android.animation.Animator;
+import android.animation.ObjectAnimator;
 import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.Rect;
 import android.text.TextUtils;
+import android.util.Property;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnKeyListener;
@@ -19,6 +23,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.CommandLine;
+import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -41,8 +46,10 @@ import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.search_engines.TemplateUrl;
@@ -66,6 +73,21 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
                                      VoiceRecognitionHandler.Delegate,
                                      AssistantVoiceSearchService.Observer, UrlBarDelegate,
                                      OnKeyListener, ComponentCallbacks, TemplateUrlServiceObserver {
+    private static final long MAX_NTP_KEYBOARD_FOCUS_DURATION_MS = 200;
+
+    private final Property<LocationBarMediator, Float> mUrlFocusChangeFractionProperty =
+            new Property<LocationBarMediator, Float>(Float.class, "") {
+                @Override
+                public Float get(LocationBarMediator object) {
+                    return mLocationBarLayout.getUrlFocusChangeFraction();
+                }
+
+                @Override
+                public void set(LocationBarMediator object, Float value) {
+                    setUrlFocusChangeFraction(value);
+                }
+            };
+
     private final LocationBarLayout mLocationBarLayout;
     private VoiceRecognitionHandler mVoiceRecognitionHandler;
     private final LocationBarDataProvider mLocationBarDataProvider;
@@ -87,8 +109,16 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
     private final BackKeyBehaviorDelegate mBackKeyBehavior;
     private final WindowAndroid mWindowAndroid;
     private String mOriginalUrl = "";
+    private Animator mUrlFocusChangeAnimator;
+    private final ObserverList<UrlFocusChangeListener> mUrlFocusChangeListeners =
+            new ObserverList<>();
+    private final Rect mRootViewBounds = new Rect();
 
     private boolean mNativeInitialized;
+    private boolean mUrlFocusedFromFakebox;
+    private boolean mUrlFocusedFromQueryTiles;
+    private boolean mUrlFocusedWithoutAnimations;
+    private final boolean mIsTablet;
 
     /*package */ LocationBarMediator(@NonNull Context context,
             @NonNull LocationBarLayout locationBarLayout,
@@ -98,8 +128,8 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
             @NonNull OverrideUrlLoadingDelegate overrideUrlLoadingDelegate,
             @NonNull LocaleManager localeManager,
             @NonNull OneshotSupplier<TemplateUrlService> templateUrlServiceSupplier,
-            @NonNull BackKeyBehaviorDelegate backKeyBehavior,
-            @NonNull WindowAndroid windowAndroid) {
+            @NonNull BackKeyBehaviorDelegate backKeyBehavior, @NonNull WindowAndroid windowAndroid,
+            boolean isTablet) {
         mContext = context;
         mLocationBarLayout = locationBarLayout;
         mLocationBarDataProvider = locationBarDataProvider;
@@ -114,6 +144,7 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
         mTemplateUrlServiceSupplier = templateUrlServiceSupplier;
         mBackKeyBehavior = backKeyBehavior;
         mWindowAndroid = windowAndroid;
+        mIsTablet = isTablet;
     }
 
     /**
@@ -129,6 +160,7 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
         mUrlCoordinator = urlCoordinator;
         mAutocompleteCoordinator = autocompleteCoordinator;
         mStatusCoordinator = statusCoordinator;
+        updateShouldAnimateIconChanges();
     }
 
     /*package */ void destroy() {
@@ -147,13 +179,45 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
         if (templateUrlService != null) {
             templateUrlService.removeObserver(this);
         }
+        mUrlFocusChangeListeners.clear();
     }
 
     /*package */ void onUrlFocusChange(boolean hasFocus) {
-        mLocationBarLayout.onUrlFocusChange(hasFocus);
+        setUrlFocusChangeInProgress(true);
+        mLocationBarLayout.setUrlHasFocus(hasFocus);
+        updateButtonVisibility();
+        updateShouldAnimateIconChanges();
         onPrimaryColorChanged();
-        mLocationBarLayout.updateStatusVisibility();
-        // Focus change caused by a closed tab may result in there not being an active tab.
+
+        if (hasFocus) {
+            if (mNativeInitialized) RecordUserAction.record("FocusLocation");
+            UrlBarData urlBarData = mLocationBarDataProvider.getUrlBarData();
+            if (urlBarData.editingText != null) {
+                setUrlBarText(urlBarData, UrlBar.ScrollType.NO_SCROLL, SelectionState.SELECT_ALL);
+            }
+        } else {
+            mUrlFocusedFromFakebox = false;
+            mUrlFocusedFromQueryTiles = false;
+            mUrlFocusedWithoutAnimations = false;
+        }
+
+        mStatusCoordinator.onUrlFocusChange(hasFocus);
+
+        if (!mUrlFocusedWithoutAnimations) handleUrlFocusAnimation(hasFocus);
+
+        if (hasFocus && mLocationBarDataProvider.hasTab()
+                && !mLocationBarDataProvider.isIncognito()) {
+            if (mNativeInitialized
+                    && mTemplateUrlServiceSupplier.get().isDefaultSearchEngineGoogle()) {
+                GeolocationHeader.primeLocationForGeoHeader();
+            } else {
+                mDeferredNativeRunnables.add(() -> {
+                    if (mTemplateUrlServiceSupplier.get().isDefaultSearchEngineGoogle()) {
+                        GeolocationHeader.primeLocationForGeoHeader();
+                    }
+                });
+            }
+        } // Focus change caused by a closed tab may result in there not being an active tab.
         if (!hasFocus && mLocationBarDataProvider.hasTab()) {
             setUrl(mLocationBarDataProvider.getCurrentUrl(),
                     mLocationBarDataProvider.getUrlBarData());
@@ -204,6 +268,11 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
         return mAssistantVoiceSearchServiceSupplier;
     }
 
+    /* package */ void setIsUrlBarFocusedWithoutAnimationsForTesting(
+            boolean isUrlBarFocusedWithoutAnimations) {
+        mUrlFocusedWithoutAnimations = isUrlBarFocusedWithoutAnimations;
+    }
+
     /*package */ void updateVisualsForState() {
         onPrimaryColorChanged();
     }
@@ -213,11 +282,11 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
     }
 
     /*package */ void showUrlBarCursorWithoutFocusAnimations() {
-        if (mLocationBarLayout.isUrlBarFocused() || mLocationBarLayout.didFocusUrlFromFakebox()) {
+        if (mLocationBarLayout.isUrlBarFocused() || mUrlFocusedFromFakebox) {
             return;
         }
 
-        mLocationBarLayout.setIsUrlFocusedWithoutAnimations(true);
+        mUrlFocusedWithoutAnimations = true;
         // This method should only be called on devices with a hardware keyboard attached, as
         // described in the documentation for LocationBar#showUrlBarCursorWithoutFocusAnimations.
         setUrlBarFocus(/*shouldBeFocused=*/true, /*pastedText=*/null,
@@ -229,10 +298,10 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
             String currentUrl = mLocationBarDataProvider.getCurrentUrl();
             if (NativePageFactory.isNativePageUrl(
                         currentUrl, mLocationBarDataProvider.isIncognito())) {
-                mLocationBarLayout.setUrlBarTextEmpty();
+                setUrlBarTextEmpty();
             } else {
-                mLocationBarLayout.setUrlBarText(mLocationBarDataProvider.getUrlBarData(),
-                        UrlBar.ScrollType.NO_SCROLL, SelectionState.SELECT_ALL);
+                setUrlBarText(mLocationBarDataProvider.getUrlBarData(), UrlBar.ScrollType.NO_SCROLL,
+                        SelectionState.SELECT_ALL);
             }
             mUrlCoordinator.setKeyboardVisibility(false, false);
         } else {
@@ -256,9 +325,8 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
 
         // Handle the case where suggestions (in particular zero suggest) are received without the
         // URL focusing happening.
-        if (mLocationBarLayout.isUrlBarFocusedWithoutAnimations()
-                && mLocationBarLayout.isUrlBarFocused()) {
-            mLocationBarLayout.handleUrlFocusAnimation(/*hasFocus=*/true);
+        if (mUrlFocusedWithoutAnimations && mLocationBarLayout.isUrlBarFocused()) {
+            handleUrlFocusAnimation(/*hasFocus=*/true);
         }
 
         if (mNativeInitialized
@@ -337,11 +405,11 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
     }
 
     /* package */ boolean didFocusUrlFromFakebox() {
-        return mLocationBarLayout.didFocusUrlFromFakebox();
+        return mUrlFocusedFromFakebox;
     }
 
     /* package */ boolean didFocusUrlFromQueryTiles() {
-        return mLocationBarLayout.didFocusUrlFromQueryTiles();
+        return mUrlFocusedFromQueryTiles;
     }
 
     /** Updates the visibility of the buttons inside the location bar. */
@@ -369,8 +437,7 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
         // If the URL is currently focused, do not replace the text they have entered with the URL.
         // Once they stop editing the URL, the current tab's URL will automatically be filled in.
         if (mUrlCoordinator.hasFocus()) {
-            if (mLocationBarLayout.isUrlBarFocusedWithoutAnimations()
-                    && !UrlUtilities.isNTPUrl(currentUrlString)) {
+            if (mUrlFocusedWithoutAnimations && !UrlUtilities.isNTPUrl(currentUrlString)) {
                 // If we did not run the focus animations, then the user has not typed any text.
                 // So, clear the focus and accept whatever URL the page is currently attempting to
                 // display. If the NTP is showing, the current page's URL should not be displayed.
@@ -381,14 +448,13 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
         }
 
         mOriginalUrl = currentUrlString;
-        mLocationBarLayout.setUrlBarText(
-                urlBarData, UrlBar.ScrollType.SCROLL_TO_TLD, SelectionState.SELECT_ALL);
+        setUrlBarText(urlBarData, UrlBar.ScrollType.SCROLL_TO_TLD, SelectionState.SELECT_ALL);
     }
 
     /* package */ void deleteButtonClicked(View view) {
         if (!mNativeInitialized) return;
         RecordUserAction.record("MobileOmniboxDeleteUrl");
-        mLocationBarLayout.setUrlBarTextEmpty();
+        setUrlBarTextEmpty();
         updateButtonVisibility();
     }
 
@@ -400,7 +466,133 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
     }
 
     /* package */ void setUrlFocusChangeInProgress(boolean inProgress) {
+        if (mUrlCoordinator == null) return;
         mLocationBarLayout.setUrlFocusChangeInProgress(inProgress);
+        if (!inProgress) {
+            updateButtonVisibility();
+
+            // The accessibility bounding box is not properly updated when focusing the Omnibox
+            // from the NTP fakebox.  Clearing/re-requesting focus triggers the bounding box to
+            // be recalculated.
+            if (didFocusUrlFromFakebox() && mLocationBarLayout.isUrlBarFocused()
+                    && ChromeAccessibilityUtil.get().isAccessibilityEnabled()) {
+                String existingText = mUrlCoordinator.getTextWithoutAutocomplete();
+                mUrlCoordinator.clearFocus();
+                mUrlCoordinator.requestFocus();
+                // Existing text (e.g. if the user pasted via the fakebox) from the fake box
+                // should be restored after toggling the focus.
+                if (!TextUtils.isEmpty(existingText)) {
+                    mUrlCoordinator.setUrlBarData(UrlBarData.forNonUrlText(existingText),
+                            UrlBar.ScrollType.NO_SCROLL,
+                            UrlBarCoordinator.SelectionState.SELECT_END);
+                    forceOnTextChanged();
+                }
+            }
+
+            for (UrlFocusChangeListener listener : mUrlFocusChangeListeners) {
+                listener.onUrlAnimationFinished(mLocationBarLayout.isUrlBarFocused());
+            }
+        }
+    }
+
+    /**
+     * Handles any actions to be performed after all other actions triggered by the URL focus
+     * change.  This will be called after any animations are performed to transition from one
+     * focus state to the other.
+     * @param hasFocus Whether the URL field has gained focus.
+     * @param shouldShowKeyboard Whether the keyboard should be shown. This value should be the same
+     *         as hasFocus by default.
+     */
+    /* package */ void finishUrlFocusChange(boolean hasFocus, boolean shouldShowKeyboard) {
+        if (mUrlCoordinator == null) return;
+        mUrlCoordinator.setKeyboardVisibility(hasFocus && shouldShowKeyboard, true);
+        setUrlFocusChangeInProgress(false);
+        updateShouldAnimateIconChanges();
+        mStatusCoordinator.onUrlAnimationFinished(hasFocus);
+        if (!mIsTablet && !hasFocus) {
+            mLocationBarLayout.setUrlActionContainerVisibility(View.GONE);
+        }
+    }
+
+    /**
+     * Handle and run any necessary animations that are triggered off focusing the UrlBar.
+     * @param hasFocus Whether focus was gained.
+     */
+    @VisibleForTesting
+    /* package */ void handleUrlFocusAnimation(boolean hasFocus) {
+        if (hasFocus) {
+            mUrlFocusedWithoutAnimations = false;
+        }
+
+        for (UrlFocusChangeListener listener : mUrlFocusChangeListeners) {
+            listener.onUrlFocusChange(hasFocus);
+        }
+
+        // The focus animation for phones is driven by ToolbarPhone, so we don't currently have any
+        // phone-specific animation logic in this class.
+        if (mIsTablet) {
+            if (mUrlFocusChangeAnimator != null && mUrlFocusChangeAnimator.isRunning()) {
+                mUrlFocusChangeAnimator.cancel();
+                mUrlFocusChangeAnimator = null;
+            }
+
+            if (mLocationBarDataProvider.getNewTabPageDelegate().isCurrentlyVisible()) {
+                finishUrlFocusChange(hasFocus, /* shouldShowKeyboard= */ hasFocus);
+                return;
+            }
+
+            mLocationBarLayout.getRootView().getLocalVisibleRect(mRootViewBounds);
+            float screenSizeRatio = (mRootViewBounds.height()
+                    / (float) (Math.max(mRootViewBounds.height(), mRootViewBounds.width())));
+            mUrlFocusChangeAnimator = ObjectAnimator.ofFloat(
+                    this, mUrlFocusChangeFractionProperty, hasFocus ? 1f : 0f);
+            mUrlFocusChangeAnimator.setDuration(
+                    (long) (MAX_NTP_KEYBOARD_FOCUS_DURATION_MS * screenSizeRatio));
+            mUrlFocusChangeAnimator.addListener(new CancelAwareAnimatorListener() {
+                @Override
+                public void onEnd(Animator animator) {
+                    finishUrlFocusChange(hasFocus, /* shouldShowKeyboard= */ hasFocus);
+                }
+
+                @Override
+                public void onCancel(Animator animator) {
+                    setUrlFocusChangeInProgress(false);
+                }
+            });
+            mUrlFocusChangeAnimator.start();
+        }
+    }
+
+    /**
+     * Changes the text on the url bar.  The text update will be applied regardless of the current
+     * focus state (comparing to {@link LocationBarMediator#setUrl} which only applies text updates
+     * when not focused).
+     *
+     * @param urlBarData The contents of the URL bar, both for editing and displaying.
+     * @param scrollType Specifies how the text should be scrolled in the unfocused state.
+     * @param selectionState Specifies how the text should be selected in the focused state.
+     * @return Whether the URL was changed as a result of this call.
+     */
+    /* package */ boolean setUrlBarText(UrlBarData urlBarData, @UrlBar.ScrollType int scrollType,
+            @SelectionState int selectionState) {
+        return mUrlCoordinator.setUrlBarData(urlBarData, scrollType, selectionState);
+    }
+
+    /**
+     * Clear any text in the URL bar.
+     * @return Whether this changed the existing text.
+     */
+    /* package */ boolean setUrlBarTextEmpty() {
+        boolean textChanged = mUrlCoordinator.setUrlBarData(
+                UrlBarData.EMPTY, UrlBar.ScrollType.SCROLL_TO_BEGINNING, SelectionState.SELECT_ALL);
+        forceOnTextChanged();
+        return textChanged;
+    }
+
+    /* package */ void forceOnTextChanged() {
+        String textWithoutAutocomplete = mUrlCoordinator.getTextWithoutAutocomplete();
+        String textWithAutocomplete = mUrlCoordinator.getTextWithAutocomplete();
+        mAutocompleteCoordinator.onTextChanged(textWithoutAutocomplete, textWithAutocomplete);
     }
 
     // Private methods
@@ -470,6 +662,13 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
         }
     }
 
+    private void updateShouldAnimateIconChanges() {
+        boolean shouldAnimate = mIsTablet
+                ? isUrlBarFocused()
+                : isUrlBarFocused() || mLocationBarLayout.isUrlFocusChangeInProgress();
+        mStatusCoordinator.setShouldAnimateIconChanges(shouldAnimate);
+    }
+
     private void recordOmniboxFocusReason(@OmniboxFocusReason int reason) {
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.OmniboxFocusReason", reason, OmniboxFocusReason.NUM_ENTRIES);
@@ -526,16 +725,16 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
                     || reason == OmniboxFocusReason.FAKE_BOX_LONG_PRESS
                     || reason == OmniboxFocusReason.TASKS_SURFACE_FAKE_BOX_LONG_PRESS
                     || reason == OmniboxFocusReason.TASKS_SURFACE_FAKE_BOX_TAP) {
-                mLocationBarLayout.setUrlFocusedFromFakebox(true);
+                mUrlFocusedFromFakebox = true;
             }
 
             if (reason == OmniboxFocusReason.QUERY_TILES_NTP_TAP) {
-                mLocationBarLayout.setUrlFocusedFromFakebox(true);
-                mLocationBarLayout.setUrlFocusedFromQueryTiles(true);
+                mUrlFocusedFromFakebox = true;
+                mUrlFocusedFromQueryTiles = true;
             }
 
-            if (urlHasFocus && mLocationBarLayout.isUrlBarFocusedWithoutAnimations()) {
-                mLocationBarLayout.handleUrlFocusAnimation(true);
+            if (urlHasFocus && mUrlFocusedWithoutAnimations) {
+                handleUrlFocusAnimation(true);
             } else {
                 mUrlCoordinator.requestFocus();
             }
@@ -548,7 +747,7 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
             // This must be happen after requestUrlFocus(), which changes the selection.
             mUrlCoordinator.setUrlBarData(UrlBarData.forNonUrlText(pastedText),
                     UrlBar.ScrollType.NO_SCROLL, UrlBarCoordinator.SelectionState.SELECT_END);
-            mLocationBarLayout.forceOnTextChanged();
+            forceOnTextChanged();
         }
     }
 
@@ -578,12 +777,12 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
 
     @Override
     public void addUrlFocusChangeListener(UrlFocusChangeListener listener) {
-        mLocationBarLayout.addUrlFocusChangeListener(listener);
+        mUrlFocusChangeListeners.addObserver(listener);
     }
 
     @Override
     public void removeUrlFocusChangeListener(UrlFocusChangeListener listener) {
-        mLocationBarLayout.removeUrlFocusChangeListener(listener);
+        mUrlFocusChangeListeners.removeObserver(listener);
     }
 
     @Override
@@ -630,8 +829,8 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
         // autocomplete text will be updated but the visible text will not.
         setUrlBarFocus(
                 /*shouldBeFocused=*/true, /*pastedText=*/null, OmniboxFocusReason.SEARCH_QUERY);
-        mLocationBarLayout.setUrlBarText(UrlBarData.forNonUrlText(query),
-                UrlBar.ScrollType.NO_SCROLL, SelectionState.SELECT_ALL);
+        setUrlBarText(UrlBarData.forNonUrlText(query), UrlBar.ScrollType.NO_SCROLL,
+                SelectionState.SELECT_ALL);
         mAutocompleteCoordinator.startAutocompleteForQuery(query);
         mUrlCoordinator.setKeyboardVisibility(true, false);
     }
@@ -689,11 +888,10 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
     public boolean onKey(View view, int keyCode, KeyEvent event) {
         boolean result = handleKeyEvent(view, keyCode, event);
 
-        if (result && mLocationBarLayout.isUrlBarFocused()
-                && mLocationBarLayout.isUrlBarFocusedWithoutAnimations()
+        if (result && mLocationBarLayout.isUrlBarFocused() && mUrlFocusedWithoutAnimations
                 && event.getAction() == KeyEvent.ACTION_DOWN && event.isPrintingKey()
                 && event.hasNoModifiers()) {
-            mLocationBarLayout.handleUrlFocusAnimation(/*hasFocus=*/true);
+            handleUrlFocusAnimation(/*hasFocus=*/true);
         }
 
         return result;
@@ -735,8 +933,7 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
-        if (mLocationBarLayout.isUrlBarFocused()
-                && mLocationBarLayout.isUrlBarFocusedWithoutAnimations()
+        if (mLocationBarLayout.isUrlBarFocused() && mUrlFocusedWithoutAnimations
                 && newConfig.keyboard != Configuration.KEYBOARD_QWERTY) {
             // If we lose the hardware keyboard and the focus animations were not run, then the
             // user has not typed any text, so we will just clear the focus instead.

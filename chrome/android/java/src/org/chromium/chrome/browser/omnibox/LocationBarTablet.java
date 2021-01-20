@@ -22,7 +22,6 @@ import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.top.ToolbarTablet;
-import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.interpolators.BakedBezierInterpolator;
 
@@ -33,25 +32,10 @@ import java.util.List;
  * Location bar for tablet form factors.
  */
 class LocationBarTablet extends LocationBarLayout {
-    private static final long MAX_NTP_KEYBOARD_FOCUS_DURATION_MS = 200;
-
     private static final int ICON_FADE_ANIMATION_DURATION_MS = 150;
     private static final int ICON_FADE_ANIMATION_DELAY_MS = 75;
     private static final int WIDTH_CHANGE_ANIMATION_DURATION_MS = 225;
     private static final int WIDTH_CHANGE_ANIMATION_DELAY_MS = 75;
-
-    private final Property<LocationBarTablet, Float> mUrlFocusChangeFractionProperty =
-            new Property<LocationBarTablet, Float>(Float.class, "") {
-                @Override
-                public Float get(LocationBarTablet object) {
-                    return object.mUrlFocusChangeFraction;
-                }
-
-                @Override
-                public void set(LocationBarTablet object, Float value) {
-                    setUrlFocusChangeFraction(value);
-                }
-            };
 
     private final Property<LocationBarTablet, Float> mWidthChangeFractionProperty =
             new Property<LocationBarTablet, Float>(Float.class, "") {
@@ -69,7 +53,6 @@ class LocationBarTablet extends LocationBarLayout {
     private View mLocationBarIcon;
     private View mBookmarkButton;
     private View mSaveOfflineButton;
-    private Animator mUrlFocusChangeAnimator;
     private View[] mTargets;
     private final Rect mCachedTargetBounds = new Rect();
 
@@ -153,43 +136,6 @@ class LocationBarTablet extends LocationBarLayout {
 
         event.setLocation(newX, newY);
         return selectedTarget.onTouchEvent(event);
-    }
-
-    @Override
-    public void handleUrlFocusAnimation(final boolean hasFocus) {
-        super.handleUrlFocusAnimation(hasFocus);
-
-        if (mUrlFocusChangeAnimator != null && mUrlFocusChangeAnimator.isRunning()) {
-            mUrlFocusChangeAnimator.cancel();
-            mUrlFocusChangeAnimator = null;
-        }
-
-        if (mLocationBarDataProvider.getNewTabPageDelegate().isCurrentlyVisible()) {
-            finishUrlFocusChange(hasFocus, /* shouldShowKeyboard= */ hasFocus);
-            return;
-        }
-
-        Rect rootViewBounds = new Rect();
-        getRootView().getLocalVisibleRect(rootViewBounds);
-        float screenSizeRatio = (rootViewBounds.height()
-                / (float) (Math.max(rootViewBounds.height(), rootViewBounds.width())));
-        mUrlFocusChangeAnimator =
-                ObjectAnimator.ofFloat(this, mUrlFocusChangeFractionProperty, hasFocus ? 1f : 0f);
-        mUrlFocusChangeAnimator.setDuration(
-                (long) (MAX_NTP_KEYBOARD_FOCUS_DURATION_MS * screenSizeRatio));
-        mUrlFocusChangeAnimator.addListener(new CancelAwareAnimatorListener() {
-            @Override
-            public void onEnd(Animator animator) {
-                finishUrlFocusChange(hasFocus, /* shouldShowKeyboard= */ hasFocus);
-            }
-
-            @Override
-            public void onCancel(Animator animator) {
-                setUrlFocusChangeInProgress(false);
-            }
-        });
-        setUrlFocusChangeInProgress(true);
-        mUrlFocusChangeAnimator.start();
     }
 
     /**

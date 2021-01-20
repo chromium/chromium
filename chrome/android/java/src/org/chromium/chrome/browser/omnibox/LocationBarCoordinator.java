@@ -127,7 +127,7 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
                 mLocationBarLayout, locationBarDataProvider, profileObservableSupplier,
                 PrivacyPreferencesManagerImpl.getInstance(), overrideUrlLoadingDelegate,
                 LocaleManager.getInstance(), mTemplateUrlServiceSupplier, backKeyBehavior,
-                windowAndroid);
+                windowAndroid, isTablet());
         mUrlCoordinator =
                 new UrlBarCoordinator((UrlBar) mUrlBar, windowDelegate, actionModeCallback,
                         mCallbackController.makeCancelable(mLocationBarMediator::onUrlFocusChange),
@@ -138,17 +138,21 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
         StatusView statusView = mLocationBarLayout.findViewById(R.id.location_bar_status);
         mStatusCoordinator = new StatusCoordinator(isTablet(), statusView, mUrlCoordinator,
                 incognitoStateProvider, modalDialogManagerSupplier, locationBarDataProvider);
+
         mLocationBarMediator.setCoordinators(
                 mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
-        mUrlBar.setOnKeyListener(mLocationBarMediator);
+
+        mLocationBarMediator.addUrlFocusChangeListener(mAutocompleteCoordinator);
+        mLocationBarMediator.addUrlFocusChangeListener(mUrlCoordinator);
 
         mDeleteButton = mLocationBarLayout.findViewById(R.id.delete_button);
-        mMicButton = mLocationBarLayout.findViewById(R.id.mic_button);
         mDeleteButton.setOnClickListener(mLocationBarMediator::deleteButtonClicked);
+
+        mMicButton = mLocationBarLayout.findViewById(R.id.mic_button);
         mMicButton.setOnClickListener(mLocationBarMediator::micButtonClicked);
 
+        mUrlBar.setOnKeyListener(mLocationBarMediator);
         mUrlCoordinator.addUrlTextChangeListener(mAutocompleteCoordinator);
-
         // The LocationBar's direction is tied to the UrlBar's text direction. Icons inside the
         // location bar, e.g. lock, refresh, X, should be reversed if UrlBar's text is RTL.
         mUrlCoordinator.setUrlDirectionListener(
@@ -158,8 +162,6 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
                 }));
 
         mLocationBarLayout.getContext().registerComponentCallbacks(mLocationBarMediator);
-        mLocationBarLayout.addUrlFocusChangeListener(mAutocompleteCoordinator);
-        mLocationBarLayout.addUrlFocusChangeListener(mUrlCoordinator);
         mLocationBarLayout.initialize(mAutocompleteCoordinator, mUrlCoordinator, mStatusCoordinator,
                 locationBarDataProvider);
 
@@ -176,28 +178,40 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
     public void destroy() {
         mActivityLifecycleDispatcher.unregister(this);
         mActivityLifecycleDispatcher = null;
+
         if (mSubCoordinator != null) {
             mSubCoordinator.destroy();
             mSubCoordinator = null;
         }
+
         mUrlBar.setOnKeyListener(null);
         mUrlBar = null;
+
         mDeleteButton.setOnClickListener(null);
         mDeleteButton = null;
+
         mMicButton.setOnClickListener(null);
         mMicButton = null;
+
+        mLocationBarMediator.removeUrlFocusChangeListener(mUrlCoordinator);
         mUrlCoordinator.destroy();
         mUrlCoordinator = null;
+
         mLocationBarLayout.getContext().unregisterComponentCallbacks(mLocationBarMediator);
-        mLocationBarLayout.removeUrlFocusChangeListener(mAutocompleteCoordinator);
+
+        mLocationBarMediator.removeUrlFocusChangeListener(mAutocompleteCoordinator);
         mAutocompleteCoordinator.destroy();
         mAutocompleteCoordinator = null;
+
         mStatusCoordinator.destroy();
         mStatusCoordinator = null;
+
         mLocationBarLayout.destroy();
         mLocationBarLayout = null;
+
         mCallbackController.destroy();
         mCallbackController = null;
+
         mLocationBarMediator.destroy();
         mLocationBarMediator = null;
     }
@@ -251,7 +265,7 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
 
     @Override
     public View getContainerView() {
-        return mLocationBarLayout.getContainerView();
+        return mLocationBarLayout;
     }
 
     @Override
@@ -429,6 +443,25 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
      */
     public void setUrlFocusChangeInProgress(boolean inProgress) {
         mLocationBarMediator.setUrlFocusChangeInProgress(inProgress);
+    }
+
+    /**
+     * Handles any actions to be performed after all other actions triggered by the URL focus
+     * change. This will be called after any animations are performed to transition from one
+     * focus state to the other.
+     *
+     * @param hasFocus Whether the URL field has gained focus.
+     * @param shouldShowKeyboard Whether the keyboard should be shown. This value should be the same
+     *         as hasFocus by default.
+     * @param shouldShowInOverviewMode Whether the location bar should be shown when in overview
+     *         mode.
+     */
+    public void finishUrlFocusChange(
+            boolean hasFocus, boolean shouldShowKeyboard, boolean shouldShowInOverviewMode) {
+        mLocationBarMediator.finishUrlFocusChange(hasFocus, shouldShowKeyboard);
+        if (shouldShowInOverviewMode) {
+            mStatusCoordinator.onSecurityStateChanged();
+        }
     }
 
     public void setVoiceRecognitionHandlerForTesting(

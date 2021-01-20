@@ -71,25 +71,6 @@ public class LocationBarCoordinatorPhone implements LocationBarCoordinator.SubCo
     }
 
     /**
-     * Handles any actions to be performed after all other actions triggered by the URL focus
-     * change. This will be called after any animations are performed to transition from one
-     * focus state to the other.
-     *
-     * @param hasFocus Whether the URL field has gained focus.
-     * @param shouldShowKeyboard Whether the keyboard should be shown. This value should be the same
-     *         as hasFocus by default.
-     * @param shouldShowInOverviewMode Whether the location bar should be shown when in overview
-     *         mode.
-     */
-    public void finishUrlFocusChange(
-            boolean hasFocus, boolean shouldShowKeyboard, boolean shouldShowInOverviewMode) {
-        mLocationBarPhone.finishUrlFocusChange(hasFocus, shouldShowKeyboard);
-        if (shouldShowInOverviewMode) {
-            mStatusCoordinator.onSecurityStateChanged();
-        }
-    }
-
-    /**
      * Returns {@link FrameLayout.LayoutParams} of the LocationBar view.
      *
      * <p>TODO(1133482): Hide this View interaction if possible.

@@ -4,11 +4,19 @@
 
 package org.chromium.chrome.browser.omnibox;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+
+import static org.hamcrest.CoreMatchers.allOf;
 import static org.mockito.Mockito.doReturn;
 
 import android.content.Intent;
 import android.content.res.Configuration;
 
+import androidx.lifecycle.Lifecycle;
+import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -23,9 +31,8 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.Matchers;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -36,11 +43,14 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.chrome.test.util.OmniboxTestUtils;
+import org.chromium.chrome.test.util.ViewUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentSwitches;
+import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.Arrays;
 import java.util.List;
@@ -147,11 +157,7 @@ public class LocationBarTest {
             Assert.assertTrue(mLocationBarMediator.isUrlBarFocused());
         });
 
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(
-                    mActivityTestRule.getKeyboardDelegate().isKeyboardShowing(mActivity, mUrlBar),
-                    Matchers.is(true));
-        });
+        OmniboxTestUtils.waitForFocusAndKeyboardActive(mUrlBar, true);
     }
 
     @Test
@@ -168,11 +174,7 @@ public class LocationBarTest {
             Assert.assertTrue(mLocationBarMediator.isUrlBarFocused());
         });
 
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(
-                    mActivityTestRule.getKeyboardDelegate().isKeyboardShowing(mActivity, mUrlBar),
-                    Matchers.is(true));
-        });
+        OmniboxTestUtils.waitForFocusAndKeyboardActive(mUrlBar, true);
     }
 
     @Test
@@ -254,12 +256,16 @@ public class LocationBarTest {
     @MediumTest
     public void testPostDestroyFocusLogic() {
         startActivityNormally();
+        LocationBarLayout locationBarLayout =
+                mActivity.findViewById(org.chromium.chrome.R.id.location_bar);
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mActivity.finish(); });
+
+        CriteriaHelper.pollUiThread(
+                () -> mActivity.getLifecycle().getCurrentState().equals(Lifecycle.State.DESTROYED));
+
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            LocationBarLayout locationBarLayout =
-                    mActivity.findViewById(org.chromium.chrome.R.id.location_bar);
-            locationBarLayout.destroy();
-            locationBarLayout.finishUrlFocusChange(true, true);
             locationBarLayout.setUrlFocusChangeInProgress(false);
+            mLocationBarMediator.finishUrlFocusChange(true, true);
         });
     }
 
@@ -280,5 +286,101 @@ public class LocationBarTest {
             Assert.assertEquals(url.length(), mUrlBar.getSelectionStart());
             Assert.assertEquals(url.length(), mUrlBar.getSelectionEnd());
         });
+    }
+
+    @Test
+    @MediumTest
+    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    public void testFocusLogic_buttonVisibilityPhone() {
+        startActivityNormally();
+        String url = mActivityTestRule.getEmbeddedTestServerRule().getServer().getURLWithHostName(
+                HOSTNAME, "/");
+        mActivityTestRule.loadUrl(url);
+
+        onView(withId(R.id.url_action_container))
+                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
+        onView(withId(R.id.mic_button))
+                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
+        onView(withId(R.id.delete_button))
+                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mUrlBar.requestFocus(); });
+
+        ViewUtils.waitForView(allOf(withId(R.id.url_action_container),
+                withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
+        onView(withId(R.id.mic_button))
+                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
+        onView(withId(R.id.delete_button))
+                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mLocationBarCoordinator.setOmniboxEditingText(url); });
+
+        onView(withId(R.id.mic_button))
+                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
+        onView(withId(R.id.delete_button))
+                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mUrlBar.clearFocus(); });
+
+        ViewUtils.waitForView(allOf(withId(R.id.url_action_container),
+                withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
+    }
+
+    @Test
+    @MediumTest
+    @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
+    public void testFocusLogic_buttonVisibilityTablet() {
+        startActivityNormally();
+        String url = mActivityTestRule.getEmbeddedTestServerRule().getServer().getURLWithHostName(
+                HOSTNAME, "/");
+        mActivityTestRule.loadUrl(url);
+
+        onView(withId(R.id.url_action_container))
+                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
+        onView(withId(R.id.mic_button))
+                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
+        onView(withId(R.id.delete_button))
+                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
+        onView(withId(R.id.bookmark_button))
+                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
+        onView(withId(R.id.save_offline_button))
+                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mUrlBar.requestFocus(); });
+
+        onView(withId(R.id.mic_button))
+                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
+        onView(withId(R.id.delete_button))
+                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mLocationBarCoordinator.setOmniboxEditingText(url); });
+
+        onView(withId(R.id.mic_button))
+                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
+        onView(withId(R.id.delete_button))
+                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mUrlBar.clearFocus(); });
+
+        mLocationBarCoordinator.getTabletCoordinator().setShouldShowButtonsWhenUnfocused(false);
+        onView(withId(R.id.bookmark_button))
+                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
+        onView(withId(R.id.save_offline_button))
+                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
+    }
+
+    @Test
+    @MediumTest
+    public void testFocusLogic_keyboardVisibility() {
+        startActivityNormally();
+        OmniboxTestUtils.waitForFocusAndKeyboardActive(mUrlBar, false);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mUrlBar.requestFocus(); });
+        OmniboxTestUtils.waitForFocusAndKeyboardActive(mUrlBar, true);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mUrlBar.clearFocus(); });
+        OmniboxTestUtils.waitForFocusAndKeyboardActive(mUrlBar, false);
     }
 }

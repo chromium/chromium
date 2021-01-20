@@ -2137,8 +2137,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
                     mLayoutLocationBarInFocusedMode = false;
                     requestLayout();
                 }
-                mLocationBar.getPhoneCoordinator().finishUrlFocusChange(hasFocus,
-                        shouldShowKeyboard,
+                mLocationBar.finishUrlFocusChange(hasFocus, shouldShowKeyboard,
                         getToolbarDataProvider().shouldShowLocationBarInOverviewMode());
                 mUrlFocusChangeInProgress = false;
             }

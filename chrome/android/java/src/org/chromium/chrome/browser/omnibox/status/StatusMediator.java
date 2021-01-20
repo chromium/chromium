@@ -286,9 +286,7 @@ class StatusMediator implements IncognitoStateProvider.IncognitoStateObserver {
     // focused, but hide it when unfocused.
     void setUrlAnimationFinished(boolean urlHasFocus) {
         // On tablets, the status icon should always be shown so the following logic doesn't apply.
-        assert !mIsTablet : "This logic shouldn't be called on tablets";
-
-        if (!mDelegate.shouldShowSearchEngineLogo(mIsIncognito)) {
+        if (mIsTablet || !mDelegate.shouldShowSearchEngineLogo(mIsIncognito)) {
             return;
         }
 
