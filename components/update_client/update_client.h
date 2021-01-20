@@ -176,6 +176,13 @@ class CrxInstaller : public base::RefCountedThreadSafe<CrxInstaller> {
         : error(static_cast<int>(error)), extended_error(extended_error) {}
     int error = 0;  // 0 indicates that install has been successful.
     int extended_error = 0;
+
+    // Localized text displayed to the user, if applicable.
+    std::string installer_text;
+
+    // Shell command run at the end of the install, if applicable. This string
+    // must be escaped to be a command line.
+    std::string installer_cmd_line;
   };
 
   struct InstallParams {
