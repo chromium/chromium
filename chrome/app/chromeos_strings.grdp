@@ -1293,8 +1293,8 @@
   <message name="IDS_LOGIN_ACCOUNT_SETUP_CANCEL_DIALOG_YES" desc="Text to show on button to accept cancelation.">
     Yes
   </message>
-  <message name="IDS_LOGIN_DEVICE_MANAGED_BY_NOTICE" desc="Text for notifications showing that this is managed device.">
-    Managed by <ph name="DOMAIN">$1<ex>acmecorp.com</ex></ph>
+  <message name="IDS_LOGIN_DEVICE_MANAGED_BY_NOTICE" desc="Text for notifications showing that this is managed device. MANAGER can be a domain or an email address.">
+    Managed by <ph name="MANAGER">$1<ex>acmecorp.com</ex></ph>
   </message>
   <message name="IDS_LOGIN_FATAL_ERROR_NO_ACCOUNT_DETAILS" desc="Message to show when the authentication could not be completed because the user's account details could not be retrieved.">
     Sign-in failed because your account details could not be retrieved. Please contact your administrator or try again.
