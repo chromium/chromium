@@ -367,7 +367,8 @@ ui::SimpleMenuModel* HoldingSpaceItemViewDelegate::BuildMenuModel() {
         HoldingSpaceCommandId::kShowInFolder,
         l10n_util::GetStringUTF16(
             IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_SHOW_IN_FOLDER),
-        ui::ImageModel::FromVectorIcon(kFolderIcon));
+        ui::ImageModel::FromVectorIcon(kFolderIcon, /*color_id=*/-1,
+                                       kHoldingSpaceIconSize));
 
     std::string mime_type;
     const bool is_image =
@@ -382,7 +383,8 @@ ui::SimpleMenuModel* HoldingSpaceItemViewDelegate::BuildMenuModel() {
           HoldingSpaceCommandId::kCopyImageToClipboard,
           l10n_util::GetStringUTF16(
               IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_COPY_IMAGE_TO_CLIPBOARD),
-          ui::ImageModel::FromVectorIcon(kCopyIcon));
+          ui::ImageModel::FromVectorIcon(kCopyIcon, /*color_id=*/-1,
+                                         kHoldingSpaceIconSize));
     }
   }
 
@@ -399,14 +401,16 @@ ui::SimpleMenuModel* HoldingSpaceItemViewDelegate::BuildMenuModel() {
     context_menu_model_->AddItemWithIcon(
         HoldingSpaceCommandId::kPinItem,
         l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_PIN),
-        ui::ImageModel::FromVectorIcon(views::kPinIcon));
+        ui::ImageModel::FromVectorIcon(views::kPinIcon, /*color_id=*/-1,
+                                       kHoldingSpaceIconSize));
   } else {
     // The "Unpin" command should be present only if all selected holding space
     // items are already pinned.
     context_menu_model_->AddItemWithIcon(
         HoldingSpaceCommandId::kUnpinItem,
         l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_UNPIN),
-        ui::ImageModel::FromVectorIcon(views::kUnpinIcon));
+        ui::ImageModel::FromVectorIcon(views::kUnpinIcon, /*color_id=*/-1,
+                                       kHoldingSpaceIconSize));
   }
 
   return context_menu_model_.get();

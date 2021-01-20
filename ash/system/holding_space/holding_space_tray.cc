@@ -322,13 +322,15 @@ void HoldingSpaceTray::ShowContextMenuForViewImpl(
         HoldingSpaceCommandId::kHidePreviews,
         l10n_util::GetStringUTF16(
             IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_HIDE_PREVIEWS),
-        ui::ImageModel::FromVectorIcon(kVisibilityOffIcon));
+        ui::ImageModel::FromVectorIcon(kVisibilityOffIcon, /*color_id=*/-1,
+                                       kHoldingSpaceIconSize));
   } else {
     context_menu_model_->AddItemWithIcon(
         HoldingSpaceCommandId::kShowPreviews,
         l10n_util::GetStringUTF16(
             IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_SHOW_PREVIEWS),
-        ui::ImageModel::FromVectorIcon(kVisibilityIcon));
+        ui::ImageModel::FromVectorIcon(kVisibilityIcon, /*color_id=*/-1,
+                                       kHoldingSpaceIconSize));
   }
 
   const int run_types = views::MenuRunner::USE_TOUCHABLE_LAYOUT |
