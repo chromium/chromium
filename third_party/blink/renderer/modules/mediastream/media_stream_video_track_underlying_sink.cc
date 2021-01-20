@@ -34,8 +34,7 @@ ScriptPromise MediaStreamVideoTrackUnderlyingSink::write(
   }
 
   if (!video_frame->frame()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
-                                      "Empty video frame.");
+    exception_state.ThrowTypeError("Empty video frame.");
     return ScriptPromise();
   }
 

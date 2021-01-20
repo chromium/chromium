@@ -14,6 +14,7 @@ namespace blink {
 
 class ExceptionState;
 class AudioFrameInit;
+class PushableAudioData;
 
 class MODULES_EXPORT AudioFrame final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -29,6 +30,9 @@ class MODULES_EXPORT AudioFrame final : public ScriptWrappable {
   void close();
   uint64_t timestamp() const;
   AudioBuffer* buffer() const;
+
+  // Returns audio data that will outlive |this| being closed() or destroyed.
+  std::unique_ptr<PushableAudioData> GetPushableAudioData();
 
   // GarbageCollected override.
   void Trace(Visitor*) const override;

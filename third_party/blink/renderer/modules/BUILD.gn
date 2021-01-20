@@ -354,6 +354,7 @@ source_set("unit_tests") {
     "mediastream/media_constraints_test.cc",
     "mediastream/media_devices_test.cc",
     "mediastream/media_stream_audio_processor_test.cc",
+    "mediastream/media_stream_audio_track_underlying_sink_test.cc",
     "mediastream/media_stream_constraints_util_audio_test.cc",
     "mediastream/media_stream_constraints_util_sets_test.cc",
     "mediastream/media_stream_constraints_util_test.cc",

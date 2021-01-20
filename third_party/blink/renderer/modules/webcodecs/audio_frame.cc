@@ -6,9 +6,38 @@
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_bus.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_frame_init.h"
+#include "third_party/blink/renderer/modules/mediastream/pushable_media_stream_audio_source.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_buffer.h"
 
 namespace blink {
+
+namespace {
+class SharedAudioData final : public PushableAudioData {
+ public:
+  ~SharedAudioData() override = default;
+
+  explicit SharedAudioData(std::unique_ptr<SharedAudioBuffer> shared_buffer)
+      : shared_buffer_(std::move(shared_buffer)) {
+    buffer_wrapper_ =
+        media::AudioBus::CreateWrapper(shared_buffer_->numberOfChannels());
+
+    for (int i = 0; i < buffer_wrapper_->channels(); ++i) {
+      float* channel_data =
+          static_cast<float*>(shared_buffer_->channels()[i].Data());
+      buffer_wrapper_->SetChannelData(i, channel_data);
+    }
+    buffer_wrapper_->set_frames(shared_buffer_->length());
+  }
+
+  media::AudioBus* data() override { return buffer_wrapper_.get(); }
+
+  int sampleRate() override { return shared_buffer_->sampleRate(); }
+
+ private:
+  std::unique_ptr<media::AudioBus> buffer_wrapper_;
+  std::unique_ptr<SharedAudioBuffer> shared_buffer_;
+};
+}  // namespace
 
 // static
 AudioFrame* AudioFrame::Create(AudioFrameInit* init,
@@ -42,6 +71,11 @@ AudioFrame::AudioFrame(scoped_refptr<media::AudioBuffer> buffer)
   // ref a media::AudioBuffer and only copy for calls to copyToChannel().
   buffer->ReadFrames(media_bus_wrapper->frames(), 0 /* source_frame_offset */,
                      0 /* dest_frame_offset */, media_bus_wrapper.get());
+}
+
+std::unique_ptr<PushableAudioData> AudioFrame::GetPushableAudioData() {
+  DCHECK(buffer_);
+  return std::make_unique<SharedAudioData>(buffer_->CreateSharedAudioBuffer());
 }
 
 void AudioFrame::close() {
