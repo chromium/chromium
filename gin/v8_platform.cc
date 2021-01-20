@@ -325,10 +325,6 @@ class JobHandleImpl : public v8::JobHandle {
   bool IsActive() override { return handle_.IsActive(); }
   bool IsValid() override { return !!handle_; }
 
-  // TODO(etiennep): Cleanup once rename is complete.
-  bool IsCompleted() override { return !IsActive(); }
-  bool IsRunning() override { return IsValid(); }
-
  private:
   static base::TaskPriority ToBaseTaskPriority(v8::TaskPriority priority) {
     switch (priority) {
