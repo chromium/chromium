@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1252 tests; 1232 PASS, 20 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1252 tests; 1247 PASS, 5 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Window: original interface defined
@@ -884,27 +884,27 @@ PASS EventTarget interface: document.createComment("abc") must inherit property 
 PASS EventTarget interface: calling removeEventListener(DOMString, EventListener?, optional (EventListenerOptions or boolean)) on document.createComment("abc") with too few arguments must throw TypeError
 PASS EventTarget interface: document.createComment("abc") must inherit property "dispatchEvent(Event)" with the proper type
 PASS EventTarget interface: calling dispatchEvent(Event) on document.createComment("abc") with too few arguments must throw TypeError
-FAIL AbstractRange interface: existence and properties of interface object assert_own_property: self does not have own property "AbstractRange" expected property "AbstractRange" missing
-FAIL AbstractRange interface object length assert_own_property: self does not have own property "AbstractRange" expected property "AbstractRange" missing
-FAIL AbstractRange interface object name assert_own_property: self does not have own property "AbstractRange" expected property "AbstractRange" missing
-FAIL AbstractRange interface: existence and properties of interface prototype object assert_own_property: self does not have own property "AbstractRange" expected property "AbstractRange" missing
-FAIL AbstractRange interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "AbstractRange" expected property "AbstractRange" missing
-FAIL AbstractRange interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "AbstractRange" expected property "AbstractRange" missing
-FAIL AbstractRange interface: attribute startContainer assert_own_property: self does not have own property "AbstractRange" expected property "AbstractRange" missing
-FAIL AbstractRange interface: attribute startOffset assert_own_property: self does not have own property "AbstractRange" expected property "AbstractRange" missing
-FAIL AbstractRange interface: attribute endContainer assert_own_property: self does not have own property "AbstractRange" expected property "AbstractRange" missing
-FAIL AbstractRange interface: attribute endOffset assert_own_property: self does not have own property "AbstractRange" expected property "AbstractRange" missing
-FAIL AbstractRange interface: attribute collapsed assert_own_property: self does not have own property "AbstractRange" expected property "AbstractRange" missing
-FAIL StaticRange interface: existence and properties of interface object assert_own_property: self does not have own property "AbstractRange" expected property "AbstractRange" missing
+PASS AbstractRange interface: existence and properties of interface object
+PASS AbstractRange interface object length
+PASS AbstractRange interface object name
+PASS AbstractRange interface: existence and properties of interface prototype object
+PASS AbstractRange interface: existence and properties of interface prototype object's "constructor" property
+PASS AbstractRange interface: existence and properties of interface prototype object's @@unscopables property
+PASS AbstractRange interface: attribute startContainer
+PASS AbstractRange interface: attribute startOffset
+PASS AbstractRange interface: attribute endContainer
+PASS AbstractRange interface: attribute endOffset
+PASS AbstractRange interface: attribute collapsed
+PASS StaticRange interface: existence and properties of interface object
 FAIL StaticRange interface object length assert_equals: wrong value for StaticRange.length expected 1 but got 0
 PASS StaticRange interface object name
-FAIL StaticRange interface: existence and properties of interface prototype object assert_own_property: self does not have own property "AbstractRange" expected property "AbstractRange" missing
+PASS StaticRange interface: existence and properties of interface prototype object
 PASS StaticRange interface: existence and properties of interface prototype object's "constructor" property
 PASS StaticRange interface: existence and properties of interface prototype object's @@unscopables property
-FAIL Range interface: existence and properties of interface object assert_own_property: self does not have own property "AbstractRange" expected property "AbstractRange" missing
+PASS Range interface: existence and properties of interface object
 PASS Range interface object length
 PASS Range interface object name
-FAIL Range interface: existence and properties of interface prototype object assert_own_property: self does not have own property "AbstractRange" expected property "AbstractRange" missing
+PASS Range interface: existence and properties of interface prototype object
 PASS Range interface: existence and properties of interface prototype object's "constructor" property
 PASS Range interface: existence and properties of interface prototype object's @@unscopables property
 PASS Range interface: attribute commonAncestorContainer

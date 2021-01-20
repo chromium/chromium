@@ -17,6 +17,14 @@ interface AbortSignal : EventTarget
 interface AbsoluteOrientationSensor : OrientationSensor
     attribute @@toStringTag
     method constructor
+interface AbstractRange
+    attribute @@toStringTag
+    getter collapsed
+    getter endContainer
+    getter endOffset
+    getter startContainer
+    getter startOffset
+    method constructor
 interface Accelerometer : Sensor
     attribute @@toStringTag
     getter x
@@ -5613,18 +5621,13 @@ interface RadioNodeList : NodeList
     method @@iterator
     method constructor
     setter value
-interface Range
+interface Range : AbstractRange
     attribute @@toStringTag
     attribute END_TO_END
     attribute END_TO_START
     attribute START_TO_END
     attribute START_TO_START
-    getter collapsed
     getter commonAncestorContainer
-    getter endContainer
-    getter endOffset
-    getter startContainer
-    getter startOffset
     method cloneContents
     method cloneRange
     method collapse
@@ -7175,13 +7178,8 @@ interface SpeechSynthesisUtterance : EventTarget
     setter text
     setter voice
     setter volume
-interface StaticRange
+interface StaticRange : AbstractRange
     attribute @@toStringTag
-    getter collapsed
-    getter endContainer
-    getter endOffset
-    getter startContainer
-    getter startOffset
     method constructor
 interface StereoPannerNode : AudioNode
     attribute @@toStringTag

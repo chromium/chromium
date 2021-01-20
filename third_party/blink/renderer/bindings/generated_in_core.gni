@@ -491,6 +491,8 @@ generated_interface_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_abort_controller.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_abort_signal.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_abort_signal.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_abstract_range.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_abstract_range.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_accessible_node.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_accessible_node.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_accessible_node_list.cc",

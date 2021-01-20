@@ -114,6 +114,7 @@ core_interface_idl_files_core_only =
                     "document_transition/document_transition.idl",
                     "dom/abort_controller.idl",
                     "dom/abort_signal.idl",
+                    "dom/abstract_range.idl",
                     "dom/attr.idl",
                     "dom/cdata_section.idl",
                     "dom/character_data.idl",

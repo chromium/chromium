@@ -35,6 +35,8 @@ blink_core_sources_dom = [
   "abort_controller.h",
   "abort_signal.cc",
   "abort_signal.h",
+  "abstract_range.cc",
+  "abstract_range.h",
   "attr.cc",
   "attr.h",
   "attribute.h",
