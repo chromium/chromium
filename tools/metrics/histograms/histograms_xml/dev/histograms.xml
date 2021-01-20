@@ -139,6 +139,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Some explanations to make sense of the enum values:
 
     LoadsThroughPage = LoadThroughPageViaTarget + LoadThroughPageViaFrame
+
     SuccessfulLoadsThroughPage = LoadsThroughPage - LoadThroughPageFailure
 
     LoadThroughPageFallback is the number of loads that can in principle be
@@ -157,6 +158,24 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     The total number of loads that used the fallback can be computed as
     LoadThroughPageFallback + FallbackPerOverride + FallbackPerProtocol. Adding
     SuccessfulLoadsThroughPage to that number gives the total number of loads.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.DeveloperResourceScheme"
+    enum="DevToolsDeveloperResourceScheme" expires_after="2021-12-31">
+  <owner>yangguo@chromium.org</owner>
+  <owner>sigurds@chromium.org</owner>
+  <summary>
+    Records for each developer resource load that the DevTools front-end issues
+    (e.g. to load a source map) one enum value that records the scheme of the
+    resource's URL. For HTTP and HTTPS schemes, there are two enums each: One
+    that signifies that the host was localhost, and one that signifies that it
+    wasn't, i.e. to get the total number of resource loads using a HTTP scheme
+    one must add the numbers of SchemeHttp and SchemeHttpLocalhost.
+
+    The value SchemeUnknown signifies that parsing the scheme from the URL
+    failed (note that at the point the enum is recorded, only absolute URLs
+    arrive).
   </summary>
 </histogram>
 

@@ -17158,6 +17158,18 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="7" label="FallbackFailure"/>
 </enum>
 
+<enum name="DevToolsDeveloperResourceScheme">
+  <int value="0" label="SchemeOther"/>
+  <int value="1" label="SchemeUnknown"/>
+  <int value="2" label="SchemeHttp"/>
+  <int value="3" label="SchemeHttps"/>
+  <int value="4" label="SchemeHttpLocalhost"/>
+  <int value="5" label="SchemeHttpsLocalhost"/>
+  <int value="6" label="SchemeData"/>
+  <int value="7" label="SchemeFile"/>
+  <int value="8" label="SchemeBlob"/>
+</enum>
+
 <enum name="DevToolsDualScreenDeviceEmulated">
   <int value="0" label="Dual-screen or fold device selected"/>
   <int value="1" label="Dual-screen span mode selected"/>
