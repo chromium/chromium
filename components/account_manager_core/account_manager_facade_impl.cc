@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "components/account_manager_core/account_manager_util.h"
 
 namespace {
 
@@ -36,6 +37,14 @@ AccountManagerFacadeImpl::~AccountManagerFacadeImpl() = default;
 
 bool AccountManagerFacadeImpl::IsInitialized() {
   return is_initialized_;
+}
+
+void AccountManagerFacadeImpl::AddObserver(Observer* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void AccountManagerFacadeImpl::RemoveObserver(Observer* observer) {
+  observer_list_.RemoveObserver(observer);
 }
 
 void AccountManagerFacadeImpl::ShowAddAccountDialog(
@@ -81,7 +90,29 @@ void AccountManagerFacadeImpl::OnInitialized(bool is_initialized) {
 void AccountManagerFacadeImpl::OnTokenUpserted(
     crosapi::mojom::AccountPtr account) {
   is_initialized_ = true;
+
+  base::Optional<account_manager::Account> maybe_account =
+      account_manager::FromMojoAccount(account);
+  if (!maybe_account) {
+    LOG(WARNING) << "Can't unmarshal account of type: "
+                 << account->key->account_type;
+    return;
+  }
+  for (auto& observer : observer_list_) {
+    observer.OnAccountUpserted(maybe_account->key);
+  }
 }
 
 void AccountManagerFacadeImpl::OnAccountRemoved(
-    crosapi::mojom::AccountPtr account) {}
+    crosapi::mojom::AccountPtr account) {
+  base::Optional<account_manager::Account> maybe_account =
+      account_manager::FromMojoAccount(account);
+  if (!maybe_account) {
+    LOG(WARNING) << "Can't unmarshal account of type: "
+                 << account->key->account_type;
+    return;
+  }
+  for (auto& observer : observer_list_) {
+    observer.OnAccountRemoved(maybe_account->key);
+  }
+}

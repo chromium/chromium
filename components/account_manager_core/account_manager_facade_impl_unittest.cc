@@ -4,6 +4,7 @@
 
 #include "components/account_manager_core/account_manager_facade_impl.h"
 
+#include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
 #include "components/account_manager_core/account.h"
@@ -13,6 +14,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -50,11 +52,37 @@ class FakeAccountManager : public crosapi::mojom::AccountManager {
     }
   }
 
+  void NotifyOnAccountRemovedObservers(
+      const account_manager::Account& account) {
+    for (auto& observer : observers_) {
+      observer->OnAccountRemoved(ToMojoAccount(account));
+    }
+  }
+
  private:
   bool is_initialized_{false};
   mojo::ReceiverSet<crosapi::mojom::AccountManager> receivers_;
   mojo::RemoteSet<crosapi::mojom::AccountManagerObserver> observers_;
 };
+
+class MockObserver : public account_manager::AccountManagerFacade::Observer {
+ public:
+  MockObserver() = default;
+  MockObserver(const MockObserver&) = delete;
+  MockObserver& operator=(const MockObserver&) = delete;
+  ~MockObserver() override = default;
+
+  MOCK_METHOD(void,
+              OnAccountUpserted,
+              (const account_manager::AccountKey& account),
+              (override));
+  MOCK_METHOD(void,
+              OnAccountRemoved,
+              (const account_manager::AccountKey& account),
+              (override));
+};
+
+constexpr char kTestAccountEmail[] = "test@gmail.com";
 
 }  // namespace
 
@@ -97,4 +125,51 @@ TEST_F(AccountManagerFacadeImplTest, FacadeIsUninitializedByDefault) {
   EXPECT_FALSE(account_manager_facade->IsInitialized());
 }
 
-// TODO(https://crbug.com/1117472): Add more tests after implementing observers.
+TEST_F(AccountManagerFacadeImplTest,
+       UninitializedFacadeIsInitializedOnFirstTokenUpsertedNotification) {
+  std::unique_ptr<AccountManagerFacadeImpl> account_manager_facade =
+      CreateFacade();
+  ASSERT_FALSE(account_manager_facade->IsInitialized());
+
+  testing::StrictMock<MockObserver> observer;
+  account_manager_facade->AddObserver(&observer);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer, OnAccountUpserted(testing::_))
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+  account_manager().NotifyOnTokenUpsertedObservers(
+      account_manager::CreateTestGaiaAccount(kTestAccountEmail));
+  run_loop.Run();
+
+  EXPECT_TRUE(account_manager_facade->IsInitialized());
+}
+
+TEST_F(AccountManagerFacadeImplTest, OnTokenUpsertedIsPropagatedToObservers) {
+  std::unique_ptr<AccountManagerFacadeImpl> account_manager_facade =
+      CreateFacade();
+  testing::StrictMock<MockObserver> observer;
+  account_manager_facade->AddObserver(&observer);
+
+  account_manager::Account account =
+      account_manager::CreateTestGaiaAccount(kTestAccountEmail);
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer, OnAccountUpserted(account.key))
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+  account_manager().NotifyOnTokenUpsertedObservers(account);
+  run_loop.Run();
+}
+
+TEST_F(AccountManagerFacadeImplTest, OnAccountRemovedIsPropagatedToObservers) {
+  std::unique_ptr<AccountManagerFacadeImpl> account_manager_facade =
+      CreateFacade();
+  testing::StrictMock<MockObserver> observer;
+  account_manager_facade->AddObserver(&observer);
+
+  account_manager::Account account =
+      account_manager::CreateTestGaiaAccount(kTestAccountEmail);
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer, OnAccountRemoved(account.key))
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+  account_manager().NotifyOnAccountRemovedObservers(account);
+  run_loop.Run();
+}

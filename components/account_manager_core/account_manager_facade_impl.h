@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -29,6 +30,8 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacadeImpl
 
   // AccountManagerFacade overrides:
   bool IsInitialized() override;
+  void AddObserver(Observer* observer) override;
+  void RemoveObserver(Observer* observer) override;
   void ShowAddAccountDialog(
       const AccountAdditionSource& source,
       base::OnceCallback<void(const AccountAdditionResult& result)> callback)
@@ -51,6 +54,7 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacadeImpl
   bool is_initialized_ = false;
   std::unique_ptr<mojo::Receiver<crosapi::mojom::AccountManagerObserver>>
       receiver_;
+  base::ObserverList<Observer> observer_list_;
 
   base::WeakPtrFactory<AccountManagerFacadeImpl> weak_factory_{this};
 };

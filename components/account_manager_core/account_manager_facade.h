@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
+#include "base/observer_list_types.h"
 #include "components/account_manager_core/account.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
@@ -21,6 +22,20 @@ namespace account_manager {
 // Use |GetAccountManagerFacade()| to get an instance of this class.
 class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacade {
  public:
+  // Observer interface to get notifications about changes in the account list.
+  class Observer : public base::CheckedObserver {
+   public:
+    Observer();
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+    ~Observer() override;
+
+    // Invoked when an account is added or updated.
+    virtual void OnAccountUpserted(const AccountKey& account) = 0;
+    // Invoked when an account is removed.
+    virtual void OnAccountRemoved(const AccountKey& account) = 0;
+  };
+
   // The source UI surface used for launching the account addition /
   // re-authentication dialog. This should be as specific as possible.
   // These values are persisted to logs. Entries should not be renumbered and
@@ -82,6 +97,11 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacade {
   // Note: For out-of-process implementations, it returns |false| if the IPC
   // pipe to |AccountManager| is disconnected.
   virtual bool IsInitialized() = 0;
+
+  // Registers an observer. Ensures the observer wasn't already registered.
+  virtual void AddObserver(Observer* observer) = 0;
+  // Unregisters an observer that was registered using AddObserver.
+  virtual void RemoveObserver(Observer* observer) = 0;
 
   // Launches account addition dialog and calls the `callback` with the result.
   // If `result` is `kSuccess`, the added account will be passed to the

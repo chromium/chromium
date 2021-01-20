@@ -17,6 +17,9 @@ AccountManagerFacade::AccountAdditionResult::AccountAdditionResult(
     : status(status), error(error) {}
 AccountManagerFacade::AccountAdditionResult::~AccountAdditionResult() = default;
 
+AccountManagerFacade::Observer::Observer() = default;
+AccountManagerFacade::Observer::~Observer() = default;
+
 AccountManagerFacade::AccountManagerFacade() = default;
 AccountManagerFacade::~AccountManagerFacade() = default;
 
