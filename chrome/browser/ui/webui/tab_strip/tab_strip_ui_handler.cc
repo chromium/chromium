@@ -862,9 +862,11 @@ void TabStripUIHandler::HandleReportTabCreationDuration(
 void TabStripUIHandler::HandleThumbnailUpdate(
     content::WebContents* tab,
     ThumbnailTracker::CompressedThumbnailData image) {
-  // Send base-64 encoded image to JS side.
-  std::string data_uri =
-      webui::MakeDataURIForImage(base::make_span(image->data), "jpeg");
+  // Send base-64 encoded image to JS side. If |image| is blank (i.e.
+  // there is no data), send a blank URI.
+  std::string data_uri;
+  if (image)
+    data_uri = webui::MakeDataURIForImage(base::make_span(image->data), "jpeg");
 
   const int tab_id = extensions::ExtensionTabUtil::GetTabId(tab);
   FireWebUIListener("tab-thumbnail-updated", base::Value(tab_id),
