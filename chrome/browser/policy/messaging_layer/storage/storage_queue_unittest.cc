@@ -15,9 +15,9 @@
 #include "base/optional.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/synchronization/waitable_event.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/policy/messaging_layer/encryption/test_encryption_module.h"
+#include "chrome/browser/policy/messaging_layer/storage/resources/resource_interface.h"
 #include "chrome/browser/policy/messaging_layer/storage/storage_configuration.h"
 #include "chrome/browser/policy/messaging_layer/util/status.h"
 #include "chrome/browser/policy/messaging_layer/util/statusor.h"
@@ -288,6 +288,8 @@ class StorageQueueTest : public ::testing::TestWithParam<size_t> {
   void ResetTestStorageQueue() {
     task_environment_.RunUntilIdle();
     storage_queue_.reset();
+    // Make sure all memory is deallocated.
+    ASSERT_THAT(GetMemoryResource()->GetUsed(), Eq(0u));
   }
 
   void InjectFailures(std::initializer_list<int64_t> seq_numbers) {

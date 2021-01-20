@@ -13,12 +13,12 @@
 #include "base/sequenced_task_runner.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/synchronization/waitable_event.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/policy/messaging_layer/encryption/decryption.h"
 #include "chrome/browser/policy/messaging_layer/encryption/encryption.h"
 #include "chrome/browser/policy/messaging_layer/encryption/test_encryption_module.h"
+#include "chrome/browser/policy/messaging_layer/storage/resources/resource_interface.h"
 #include "chrome/browser/policy/messaging_layer/storage/storage_configuration.h"
 #include "chrome/browser/policy/messaging_layer/util/status.h"
 #include "chrome/browser/policy/messaging_layer/util/status_macros.h"
@@ -493,6 +493,8 @@ class StorageTest
   void ResetTestStorage() {
     task_environment_.RunUntilIdle();
     storage_.reset();
+    // Make sure all memory is deallocated.
+    ASSERT_THAT(GetMemoryResource()->GetUsed(), Eq(0u));
     expect_to_need_key_ = false;
   }
 
