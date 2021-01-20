@@ -34,6 +34,8 @@ void FakeServiceConnectionImpl::Clone(
   clone_ml_service_receivers_.Add(this, std::move(receiver));
 }
 
+void FakeServiceConnectionImpl::Initialize() {}
+
 void FakeServiceConnectionImpl::LoadBuiltinModel(
     mojom::BuiltinModelSpecPtr spec,
     mojo::PendingReceiver<mojom::Model> receiver,

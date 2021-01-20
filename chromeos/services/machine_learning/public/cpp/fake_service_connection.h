@@ -49,6 +49,7 @@ class FakeServiceConnectionImpl : public ServiceConnection,
   // ServiceConnection:
   void BindMachineLearningService(
       mojo::PendingReceiver<mojom::MachineLearningService> receiver) override;
+  void Initialize() override;
 
   // mojom::MachineLearningService:
   void Clone(
@@ -228,8 +229,9 @@ class FakeServiceConnectionImpl : public ServiceConnection,
   void HandleLoadGrammarCheckerCall(
       mojo::PendingReceiver<mojom::GrammarChecker> receiver,
       mojom::MachineLearningService::LoadGrammarCheckerCallback callback);
-  void HandleGrammarCheckerQueryCall(mojom::GrammarCheckerQueryPtr query,
-                                 mojom::GrammarChecker::CheckCallback callback);
+  void HandleGrammarCheckerQueryCall(
+      mojom::GrammarCheckerQueryPtr query,
+      mojom::GrammarChecker::CheckCallback callback);
   void HandleLoadSpeechRecognizerCall(
       mojo::PendingRemote<mojom::SodaClient> soda_client,
       mojo::PendingReceiver<mojom::SodaRecognizer> soda_recognizer,

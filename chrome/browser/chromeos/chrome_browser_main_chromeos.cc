@@ -176,6 +176,7 @@
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/portal_detector/network_portal_detector_stub.h"
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
+#include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "chromeos/system/statistics_provider.h"
 #include "chromeos/tpm/install_attributes.h"
 #include "chromeos/tpm/tpm_token_loader.h"
@@ -1119,6 +1120,8 @@ void ChromeBrowserMainPartsChromeos::PostBrowserStart() {
       wake_lock_provider.InitWithNewPipeAndPassReceiver());
   dark_resume_controller_ = std::make_unique<system::DarkResumeController>(
       std::move(wake_lock_provider));
+
+  chromeos::machine_learning::ServiceConnection::GetInstance()->Initialize();
 
   ChromeBrowserMainPartsLinux::PostBrowserStart();
 }

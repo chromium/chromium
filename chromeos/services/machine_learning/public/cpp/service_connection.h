@@ -53,9 +53,14 @@ class ServiceConnection {
   static void UseFakeServiceConnectionForTesting(
       ServiceConnection* fake_service_connection);
 
-  // Binds the receiver to the implementation in the ml_service daemon.
+  // Binds the receiver to a Clone of the primordial top-level interface.
+  // May be called from any sequence.
   virtual void BindMachineLearningService(
       mojo::PendingReceiver<mojom::MachineLearningService> receiver) = 0;
+
+  // Call this once at startup (e.g. PostBrowserStart) on the sequence that
+  // should own the Mojo connection to MachineLearningService (e.g. UI thread).
+  virtual void Initialize() = 0;
 
   // Instruct ML daemon to load the builtin model specified in |spec|, binding a
   // Model implementation to |receiver|. Bootstraps the initial Mojo connection

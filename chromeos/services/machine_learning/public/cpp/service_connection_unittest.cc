@@ -57,6 +57,7 @@ class ServiceConnectionTest : public testing::Test {
 // Tests that LoadBuiltinModel runs OK (no crash) in a basic Mojo
 // environment.
 TEST_F(ServiceConnectionTest, LoadBuiltinModel) {
+  ServiceConnection::GetInstance()->Initialize();
   mojo::Remote<mojom::Model> model;
   mojom::BuiltinModelSpecPtr spec =
       mojom::BuiltinModelSpec::New(mojom::BuiltinModelId::TEST_MODEL);
@@ -68,6 +69,7 @@ TEST_F(ServiceConnectionTest, LoadBuiltinModel) {
 // Tests that LoadFlatBufferModel runs OK (no crash) in a basic Mojo
 // environment.
 TEST_F(ServiceConnectionTest, LoadFlatBufferModel) {
+  ServiceConnection::GetInstance()->Initialize();
   mojo::Remote<mojom::Model> model;
   mojom::FlatBufferModelSpecPtr spec = mojom::FlatBufferModelSpec::New();
   ServiceConnection::GetInstance()->LoadFlatBufferModel(
@@ -78,6 +80,7 @@ TEST_F(ServiceConnectionTest, LoadFlatBufferModel) {
 // Tests that LoadTextClassifier runs OK (no crash) in a basic Mojo
 // environment.
 TEST_F(ServiceConnectionTest, LoadTextClassifier) {
+  ServiceConnection::GetInstance()->Initialize();
   mojo::Remote<mojom::TextClassifier> text_classifier;
   ServiceConnection::GetInstance()->LoadTextClassifier(
       text_classifier.BindNewPipeAndPassReceiver(),
@@ -87,6 +90,7 @@ TEST_F(ServiceConnectionTest, LoadTextClassifier) {
 // Tests that LoadHandwritingModelWithSpec runs OK (no crash) in a basic Mojo
 // environment.
 TEST_F(ServiceConnectionTest, LoadHandwritingModelWithSpec) {
+  ServiceConnection::GetInstance()->Initialize();
   mojo::Remote<mojom::HandwritingRecognizer> handwriting_recognizer;
   ServiceConnection::GetInstance()->LoadHandwritingModelWithSpec(
       mojom::HandwritingRecognizerSpec::New("en"),
@@ -96,6 +100,7 @@ TEST_F(ServiceConnectionTest, LoadHandwritingModelWithSpec) {
 
 // Tests that LoadGrammarChecker runs OK (no crash) in a basic Mojo environment.
 TEST_F(ServiceConnectionTest, LoadGrammarModel) {
+  ServiceConnection::GetInstance()->Initialize();
   mojo::Remote<mojom::GrammarChecker> grammar_checker;
   ServiceConnection::GetInstance()->LoadGrammarChecker(
       grammar_checker.BindNewPipeAndPassReceiver(),

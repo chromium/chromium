@@ -31,6 +31,8 @@ class ServiceConnectionImpl : public ServiceConnection {
   void BindMachineLearningService(
       mojo::PendingReceiver<mojom::MachineLearningService> receiver) override;
 
+  void Initialize() override;
+
   void LoadBuiltinModel(mojom::BuiltinModelSpecPtr spec,
                         mojo::PendingReceiver<mojom::Model> receiver,
                         mojom::MachineLearningService::LoadBuiltinModelCallback
@@ -72,10 +74,10 @@ class ServiceConnectionImpl : public ServiceConnection {
       override;
 
  private:
-  // Binds the top level interface |machine_learning_service_| to an
+  // Binds the primordial, top-level interface |machine_learning_service_| to an
   // implementation in the ML Service daemon, if it is not already bound. The
   // binding is accomplished via D-Bus bootstrap.
-  void BindMachineLearningServiceIfNeeded();
+  void BindPrimordialMachineLearningServiceIfNeeded();
 
   // Mojo disconnect handler. Resets |machine_learning_service_|, which
   // will be reconnected upon next use.
@@ -94,6 +96,8 @@ class ServiceConnectionImpl : public ServiceConnection {
 
 void ServiceConnectionImpl::BindMachineLearningService(
     mojo::PendingReceiver<mojom::MachineLearningService> receiver) {
+  DCHECK(task_runner_)
+      << "Call Initialize before first use of ServiceConnection.";
   if (!task_runner_->RunsTasksInCurrentSequence()) {
     task_runner_->PostTask(
         FROM_HERE,
@@ -102,8 +106,15 @@ void ServiceConnectionImpl::BindMachineLearningService(
     return;
   }
 
-  BindMachineLearningServiceIfNeeded();
+  BindPrimordialMachineLearningServiceIfNeeded();
   machine_learning_service_->Clone(std::move(receiver));
+}
+
+void ServiceConnectionImpl::Initialize() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!task_runner_) << "Initialize must be called only once.";
+
+  task_runner_ = base::SequencedTaskRunnerHandle::Get();
 }
 
 void ServiceConnectionImpl::LoadBuiltinModel(
@@ -119,7 +130,7 @@ void ServiceConnectionImpl::LoadBuiltinModel(
     return;
   }
 
-  BindMachineLearningServiceIfNeeded();
+  BindPrimordialMachineLearningServiceIfNeeded();
   machine_learning_service_->LoadBuiltinModel(
       std::move(spec), std::move(receiver), std::move(result_callback));
 }
@@ -138,7 +149,7 @@ void ServiceConnectionImpl::LoadFlatBufferModel(
     return;
   }
 
-  BindMachineLearningServiceIfNeeded();
+  BindPrimordialMachineLearningServiceIfNeeded();
   machine_learning_service_->LoadFlatBufferModel(
       std::move(spec), std::move(receiver), std::move(result_callback));
 }
@@ -154,7 +165,7 @@ void ServiceConnectionImpl::LoadTextClassifier(
     return;
   }
 
-  BindMachineLearningServiceIfNeeded();
+  BindPrimordialMachineLearningServiceIfNeeded();
   machine_learning_service_->LoadTextClassifier(std::move(receiver),
                                                 std::move(result_callback));
 }
@@ -173,7 +184,7 @@ void ServiceConnectionImpl::LoadHandwritingModel(
     return;
   }
 
-  BindMachineLearningServiceIfNeeded();
+  BindPrimordialMachineLearningServiceIfNeeded();
   machine_learning_service_->LoadHandwritingModel(
       std::move(spec), std::move(receiver), std::move(result_callback));
 }
@@ -192,7 +203,7 @@ void ServiceConnectionImpl::LoadHandwritingModelWithSpec(
     return;
   }
 
-  BindMachineLearningServiceIfNeeded();
+  BindPrimordialMachineLearningServiceIfNeeded();
   machine_learning_service_->LoadHandwritingModelWithSpec(
       std::move(spec), std::move(receiver), std::move(result_callback));
 }
@@ -208,7 +219,7 @@ void ServiceConnectionImpl::LoadGrammarChecker(
     return;
   }
 
-  BindMachineLearningServiceIfNeeded();
+  BindPrimordialMachineLearningServiceIfNeeded();
   machine_learning_service_->LoadGrammarChecker(std::move(receiver),
                                                 std::move(result_callback));
 }
@@ -228,13 +239,13 @@ void ServiceConnectionImpl::LoadSpeechRecognizer(
     return;
   }
 
-  BindMachineLearningServiceIfNeeded();
+  BindPrimordialMachineLearningServiceIfNeeded();
   machine_learning_service_->LoadSpeechRecognizer(
       std::move(soda_config), std::move(soda_client),
       std::move(soda_recognizer), std::move(callback));
 }
 
-void ServiceConnectionImpl::BindMachineLearningServiceIfNeeded() {
+void ServiceConnectionImpl::BindPrimordialMachineLearningServiceIfNeeded() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (machine_learning_service_) {
     return;
@@ -267,8 +278,7 @@ void ServiceConnectionImpl::BindMachineLearningServiceIfNeeded() {
                      base::Unretained(this)));
 }
 
-ServiceConnectionImpl::ServiceConnectionImpl()
-    : task_runner_(base::SequencedTaskRunnerHandle::Get()) {
+ServiceConnectionImpl::ServiceConnectionImpl() {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
