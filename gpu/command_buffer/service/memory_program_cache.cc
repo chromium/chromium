@@ -43,7 +43,7 @@ void FillShaderVariableProto(
     ShaderVariableProto* field = proto->add_fields();
     FillShaderVariableProto(field, variable.fields[ii]);
   }
-  proto->set_struct_name(variable.structName);
+  proto->set_struct_name(variable.getStructName());
 }
 
 void FillShaderAttributeProto(
@@ -134,7 +134,7 @@ void RetrieveShaderVariableInfo(
   variable->fields.resize(proto.fields_size());
   for (int ii = 0; ii < proto.fields_size(); ++ii)
     RetrieveShaderVariableInfo(proto.fields(ii), &(variable->fields[ii]));
-  variable->structName = proto.struct_name();
+  variable->setStructName(proto.struct_name());
 }
 
 void RetrieveShaderAttributeInfo(
