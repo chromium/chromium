@@ -270,12 +270,10 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkRequestBrowserTest,
       content::JsReplace(script_template, LocalNonSecureURL(*server))));
   EXPECT_TRUE(NavigateAndFlushHistograms());
 
-  // TODO(https://crbug.com/1129326): Expect InPublicNonSecureContext?
   EXPECT_THAT(
       GetAddressSpaceFeatureBucketCounts(histogram_tester),
-      ElementsAre(
-          Pair(WebFeature::kAddressSpaceUnknownNonSecureContextNavigatedToLocal,
-               1)));
+      ElementsAre(Pair(
+          WebFeature::kAddressSpacePublicNonSecureContextNavigatedToLocal, 1)));
 }
 
 // This test verifies that when a non-secure context served from the public
@@ -308,12 +306,10 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkRequestBrowserTest,
       content::JsReplace(script_template, LocalNonSecureURL(*server))));
   EXPECT_TRUE(NavigateAndFlushHistograms());
 
-  // TODO(https://crbug.com/1129326): Expect InPublicNonSecureContext?
   EXPECT_THAT(
       GetAddressSpaceFeatureBucketCounts(histogram_tester),
-      ElementsAre(
-          Pair(WebFeature::kAddressSpaceUnknownNonSecureContextNavigatedToLocal,
-               1)));
+      ElementsAre(Pair(
+          WebFeature::kAddressSpacePublicNonSecureContextNavigatedToLocal, 1)));
 }
 
 class PrivateNetworkRequestWithFeatureEnabledBrowserTest

@@ -866,7 +866,6 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
           /*data_url_as_string=*/std::string(),
 #endif
           /*is_browser_initiated=*/false,
-          network::mojom::IPAddressSpace::kUnknown,
           /*web_bundle_physical_url=*/GURL(),
           /*base_url_override_for_web_bundle=*/GURL(),
           /*document_ukm_source_id=*/ukm::kInvalidSourceId,
@@ -984,7 +983,6 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateForCommit(
           std::string() /* data_url_as_string */,
 #endif
           false /* is_browser_initiated */,
-          network::mojom::IPAddressSpace::kUnknown,
           GURL() /* web_bundle_physical_url */,
           GURL() /* base_url_override_for_web_bundle */,
           ukm::kInvalidSourceId /* document_ukm_source_id */,
@@ -4446,8 +4444,6 @@ void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
 
   if (!IsSameDocument() && !IsServedFromBackForwardCache()) {
     UpdateClientSecurityStateInternals();
-    commit_params_->ip_address_space =
-        policy_container_host_->ip_address_space();
   }
 
   if (appcache_handle_) {

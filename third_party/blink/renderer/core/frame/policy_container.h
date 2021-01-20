@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_POLICY_CONTAINER_H_
 
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/policy_container.mojom-blink.h"
 #include "third_party/blink/public/platform/web_policy_container.h"
@@ -40,6 +41,8 @@ class CORE_EXPORT PolicyContainer {
   // PolicyContainer owned by the RenderFrameHost.
   void UpdateReferrerPolicy(network::mojom::blink::ReferrerPolicy policy);
   network::mojom::blink::ReferrerPolicy GetReferrerPolicy() const;
+
+  network::mojom::blink::IPAddressSpace GetIPAddressSpace() const;
 
   const mojom::blink::PolicyContainerDocumentPoliciesPtr& GetPolicies() const;
 

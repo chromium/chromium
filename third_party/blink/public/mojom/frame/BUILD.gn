@@ -35,6 +35,7 @@ mojom_component("frame") {
 
   public_deps = [
     "//services/network/public/mojom",
+    "//services/network/public/mojom:url_loader_base",
     "//ui/gfx/geometry/mojom",
     "//ui/gfx/mojom",
     "//url/mojom:url_mojom_gurl",

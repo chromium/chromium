@@ -12,7 +12,6 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-shared.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-shared.h"
@@ -240,11 +239,6 @@ struct BLINK_EXPORT WebNavigationParams {
   // If non-null, this gives the pre-redirect URL in case that we're committing
   // a failed navigation.
   WebURL pre_redirect_url_for_failed_navigations;
-
-  // The IP address space from which this document was loaded.
-  // https://wicg.github.io/cors-rfc1918/#address-space
-  network::mojom::IPAddressSpace ip_address_space =
-      network::mojom::IPAddressSpace::kUnknown;
 
   // The net error code for failed navigation. Must be non-zero when
   // |unreachable_url| is non-null.

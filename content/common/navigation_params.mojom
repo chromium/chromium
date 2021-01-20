@@ -11,7 +11,6 @@ import "mojo/public/mojom/base/unguessable_token.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "services/network/public/mojom/content_security_policy.mojom";
 import "services/network/public/mojom/fetch_api.mojom";
-import "services/network/public/mojom/ip_address_space.mojom";
 import "services/network/public/mojom/source_location.mojom";
 import "services/network/public/mojom/trust_tokens.mojom";
 import "services/network/public/mojom/url_loader.mojom";
@@ -407,11 +406,6 @@ struct CommitNavigationParams {
 
   // Whether this navigation was browser initiated.
   bool is_browser_initiated = false;
-
-  // The IP address space into which this document is committing.
-  // https://wicg.github.io/cors-rfc1918/#address-space
-  network.mojom.IPAddressSpace ip_address_space =
-      network.mojom.IPAddressSpace.kUnknown;
 
   // The physical URL of Web Bundle from which the document is loaded.
   // Used as an additional identifier for MemoryCache.

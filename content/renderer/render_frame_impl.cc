@@ -431,7 +431,6 @@ void FillNavigationParamsRequest(
   navigation_params->http_method = WebString::FromASCII(
       !commit_params.original_method.empty() ? commit_params.original_method
                                              : common_params.method);
-  navigation_params->ip_address_space = commit_params.ip_address_space;
 
   if (common_params.referrer->url.is_valid()) {
     WebString referrer = WebSecurityPolicy::GenerateReferrerHeader(
@@ -1149,7 +1148,8 @@ std::unique_ptr<blink::WebPolicyContainer> ToWebPolicyContainer(
     return nullptr;
 
   return std::make_unique<blink::WebPolicyContainer>(
-      blink::WebPolicyContainerDocumentPolicies{in->policies->referrer_policy},
+      blink::WebPolicyContainerDocumentPolicies{in->policies->referrer_policy,
+                                                in->policies->ip_address_space},
       std::move(in->remote));
 }
 
