@@ -119,7 +119,7 @@ PrintingSection::~PrintingSection() {
 
 void PrintingSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"printingPageTitle", IDS_SETTINGS_PRINTING},
+      {"printingPageTitle", IDS_SETTINGS_PRINT_AND_SCAN},
       {"cupsPrintersTitle", IDS_SETTINGS_PRINTING_CUPS_PRINTERS},
       {"cupsPrintersLearnMoreLabel",
        IDS_SETTINGS_PRINTING_CUPS_PRINTERS_LEARN_MORE_LABEL},
@@ -281,7 +281,7 @@ void PrintingSection::AddHandlers(content::WebUI* web_ui) {
 }
 
 int PrintingSection::GetSectionNameMessageId() const {
-  return IDS_SETTINGS_PRINTING;
+  return IDS_SETTINGS_PRINT_AND_SCAN;
 }
 
 mojom::Section PrintingSection::GetSection() const {

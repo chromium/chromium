@@ -992,11 +992,6 @@
     Notifications will be disabled
   </message>
 
-  <!-- Printing (used by OS Settings page) -->
-  <message name="IDS_SETTINGS_PRINTING" desc="Title of the printing page and navigation item to get there.">
-    Printing
-  </message>
-
   <!-- Downloads Page -->
   <message name="IDS_SETTINGS_DOWNLOADS" desc="Name of the settings page which displays download preferences.">
     Downloads
