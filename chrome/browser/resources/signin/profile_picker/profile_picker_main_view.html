@@ -91,7 +91,9 @@
   }
 
   #addProfile.profile-item {
+    --hover-bg-color: none;
     border: 1px dashed var(--google-grey-300);
+    box-shadow: none;
     position: relative;
   }
 
@@ -100,13 +102,11 @@
     top: 0;
   }
 
-  cr-icon-button[iron-icon='profiles:add'] {
-    --cr-icon-button-icon-size: var(--avatar-icon-size);
-    --cr-icon-button-size: 84px;
-    --cr-icon-button-fill-color: var(--google-grey-refresh-100);
-    --cr-icon-button-margin-end: 0;
-    --cr-icon-button-margin-start: 0;
-    --cr-icon-button-stroke-color: var(--google-grey-refresh-700);
+  iron-icon[icon='profiles:add'] {
+    --iron-icon-height: var(--avatar-icon-size);
+    --iron-icon-width: var(--avatar-icon-size);
+    --iron-icon-fill-color: var(--google-grey-refresh-100);
+    --iron-icon-stroke-color: var(--google-grey-refresh-700);
   }
 
   #browseAsGuestButton {
@@ -141,10 +141,9 @@
       border-color: var(--google-grey-refresh-700);
     }
 
-    cr-icon-button[iron-icon='profiles:add'] {
-      --cr-icon-button-fill-color: var(--google-grey-refresh-500);
-      --cr-icon-button-stroke-color: rgb(48, 48, 50);
-      color: var(--google-grey-refresh-500);
+    iron-icon[icon='profiles:add'] {
+      --iron-icon-fill-color: var(--google-grey-refresh-500);
+      --iron-icon-stroke-color: rgb(48, 48, 50);
     }
   }
 </style>
@@ -165,14 +164,13 @@
           class="profile-item" profile-state="[[item]]">
       </profile-card>
     </template>
-    <div id="addProfile" class="profile-item">
+    <cr-button id="addProfile" class="profile-item"
+        on-click="onAddProfileClick_" aria-labelledby="addProfileButtonLabel">
       <div id="addProfileButtonLabel" class="profile-card-info">
         $i18n{addSpaceButton}
       </div>
-      <cr-icon-button iron-icon="profiles:add"
-          on-click="onAddProfileClick_" aria-labelledby="addProfileButtonLabel">
-      </cr-icon-button>
-    </div>
+      <iron-icon icon="profiles:add"></iron-icon>
+    </cr-button>
   </div>
 </div>
 <div id="rightBanner" class="banner"></div>

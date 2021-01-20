@@ -48,7 +48,7 @@ suite('LocalProfileCustomizationFocusTest', function() {
   /** @param {!ProfilePickerMainViewElement} mainView */
   function navigateToProfileCreationFromMainView(mainView) {
     mainView.$$('#addProfile').focus();
-    mainView.$$('#addProfile').querySelectorAll('cr-icon-button')[0].click();
+    mainView.$$('#addProfile').click();
     flush();
   }
 
