@@ -1422,6 +1422,7 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
 
   return profile_manager->GetProfile(
       GetStartupProfilePath(profile_manager->user_data_dir(),
+                            /*current_directory=*/base::FilePath(),
                             *base::CommandLine::ForCurrentProcess()));
 }
 
