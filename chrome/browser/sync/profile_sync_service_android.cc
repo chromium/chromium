@@ -498,7 +498,7 @@ void ProfileSyncServiceAndroid::RecordKeyRetrievalTrigger(
 jlong ProfileSyncServiceAndroid::GetProfileSyncServiceForTest(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj) {
-  return reinterpret_cast<intptr_t>(sync_service_);
+  return reinterpret_cast<intptr_t>(sync_service_.get());
 }
 
 jlong ProfileSyncServiceAndroid::GetLastSyncedTimeForTest(

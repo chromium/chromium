@@ -10,6 +10,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "weblayer/public/fullscreen_delegate.h"
 
 namespace weblayer {
@@ -32,7 +33,7 @@ class FullscreenCallbackProxy : public FullscreenDelegate {
   void DoExitFullscreen(JNIEnv* env);
 
  private:
-  Tab* tab_;
+  CheckedPtr<Tab> tab_;
   base::android::ScopedJavaGlobalRef<jobject> java_delegate_;
   base::OnceClosure exit_fullscreen_closure_;
 

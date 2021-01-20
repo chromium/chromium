@@ -6,6 +6,7 @@
 #define COMPONENTS_UNDO_BOOKMARK_UNDO_UTILS_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 
 class BookmarkUndoService;
 class UndoManager;
@@ -21,7 +22,7 @@ class ScopedSuspendBookmarkUndo {
   ~ScopedSuspendBookmarkUndo();
 
  private:
-  UndoManager* undo_manager_;
+  CheckedPtr<UndoManager> undo_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(ScopedSuspendBookmarkUndo);
 };

@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
@@ -151,7 +152,7 @@ class WebAppsBase : public apps::PublisherBase,
 
   mojo::RemoteSet<apps::mojom::Subscriber> subscribers_;
 
-  Profile* const profile_;
+  const CheckedPtr<Profile> profile_;
 
   apps_util::IncrementingIconKeyFactory icon_key_factory_;
 
@@ -161,12 +162,12 @@ class WebAppsBase : public apps::PublisherBase,
   ScopedObserver<HostContentSettingsMap, content_settings::Observer>
       content_settings_observer_{this};
 
-  web_app::WebAppProvider* provider_ = nullptr;
+  CheckedPtr<web_app::WebAppProvider> provider_ = nullptr;
 
   std::unique_ptr<web_app::WebAppLaunchManager> web_app_launch_manager_;
 
   // app_service_ is owned by the object that owns this object.
-  apps::mojom::AppService* app_service_;
+  CheckedPtr<apps::mojom::AppService> app_service_;
 };
 
 void PopulateIntentFilters(const web_app::WebApp& web_app,

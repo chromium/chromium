@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -88,7 +89,7 @@ class ManageProfileHandler : public settings::SettingsPageUIHandler,
   void HandleRemoveProfileShortcut(const base::ListValue* args);
 
   // Non-owning pointer to the associated profile.
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 
   // Used to observe profile avatar updates.
   base::ScopedObservation<ProfileAttributesStorage,

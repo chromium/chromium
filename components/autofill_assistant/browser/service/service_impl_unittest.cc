@@ -4,6 +4,7 @@
 
 #include "components/autofill_assistant/browser/service/service_impl.h"
 
+#include "base/memory/checked_ptr.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "components/autofill_assistant/browser/mock_client_context.h"
@@ -44,8 +45,8 @@ class ServiceImplTest : public testing::Test {
 
  protected:
   base::MockCallback<Service::ResponseCallback> mock_response_callback_;
-  NiceMock<MockClientContext>* mock_client_context_;
-  NiceMock<MockServiceRequestSender>* mock_request_sender_;
+  CheckedPtr<NiceMock<MockClientContext>> mock_client_context_;
+  CheckedPtr<NiceMock<MockServiceRequestSender>> mock_request_sender_;
   std::unique_ptr<ServiceImpl> service_;
 };
 

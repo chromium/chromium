@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback_forward.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
@@ -171,7 +172,7 @@ class ChromeBrowsingDataRemoverDelegate
 #endif
 
   // The profile for which the data will be deleted.
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 
   // Start time to delete from.
   base::Time delete_begin_;

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "url/gurl.h"
@@ -68,10 +69,10 @@ class PasswordReuseControllerAndroid
 
  private:
   std::unique_ptr<PasswordReuseDialogViewAndroid> dialog_view_;
-  ChromePasswordProtectionService* service_;
+  CheckedPtr<ChromePasswordProtectionService> service_;
   const GURL url_;
   const ReusedPasswordAccountType password_type_;
-  ui::WindowAndroid* window_android_;
+  CheckedPtr<ui::WindowAndroid> window_android_;
   OnWarningDone done_callback_;
 
   // Records the start time when modal warning is constructed.

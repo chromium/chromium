@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/location.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/sparse_histogram.h"
 #include "base/task_runner.h"
 #include "base/time/time.h"
@@ -75,8 +76,8 @@ class QuicChromeAlarm : public quic::QuicAlarm {
     Fire();
   }
 
-  const quic::QuicClock* clock_;
-  base::TaskRunner* task_runner_;
+  CheckedPtr<const quic::QuicClock> clock_;
+  CheckedPtr<base::TaskRunner> task_runner_;
   // If a task has been posted to the message loop, this is the time it
   // was scheduled to fire.  Tracking this allows us to avoid posting a
   // new tast if the new deadline is in the future, but permits us to

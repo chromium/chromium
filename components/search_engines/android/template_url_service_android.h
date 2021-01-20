@@ -9,6 +9,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_observer.h"
 
@@ -120,7 +121,7 @@ class TemplateUrlServiceAndroid : public TemplateURLServiceObserver {
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;
 
   // Pointer to the TemplateUrlService for the main profile.
-  TemplateURLService* template_url_service_;
+  CheckedPtr<TemplateURLService> template_url_service_;
 
   base::CallbackListSubscription template_url_subscription_;
 

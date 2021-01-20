@@ -10,6 +10,7 @@
 #include <wrl/client.h>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece_forward.h"
 #include "device/bluetooth/bluetooth_device.h"
@@ -65,12 +66,12 @@ class BluetoothPairingWinrt {
                   pairing_result);
 
   // Weak. This is the device object that owns this pairing instance.
-  BluetoothDeviceWinrt* device_;
+  CheckedPtr<BluetoothDeviceWinrt> device_;
 
   // Weak. This is the pairing delegate provided to BluetoothDevice::Pair.
   // Clients need to ensure the delegate stays alive during the pairing
   // procedure.
-  BluetoothDevice::PairingDelegate* pairing_delegate_;
+  CheckedPtr<BluetoothDevice::PairingDelegate> pairing_delegate_;
 
   // Boolean indicating whether the device is currently pairing and expecting a
   // PIN Code to be returned.

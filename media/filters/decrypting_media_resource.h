@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
@@ -50,9 +51,9 @@ class MEDIA_EXPORT DecryptingMediaResource : public MediaResource {
  private:
   void OnDecryptingDemuxerInitialized(PipelineStatus status);
 
-  MediaResource* const media_resource_;
-  CdmContext* const cdm_context_;
-  MediaLog* const media_log_;
+  const CheckedPtr<MediaResource> media_resource_;
+  const CheckedPtr<CdmContext> cdm_context_;
+  const CheckedPtr<MediaLog> media_log_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   // Number of DecryptingDemuxerStreams that have yet to be initialized.

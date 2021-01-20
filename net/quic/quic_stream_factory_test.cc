@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -935,7 +936,7 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
   bool failed_on_default_network_;
   NetErrorDetails net_error_details_;
 
-  QuicParams* quic_params_;
+  CheckedPtr<QuicParams> quic_params_;
 };
 
 class QuicStreamFactoryTest : public QuicStreamFactoryTestBase,
@@ -12364,7 +12365,7 @@ TEST_P(QuicStreamFactoryTest, ClearCachedStatesInCryptoConfig) {
     }
 
     quic::QuicServerId server_id;
-    quic::QuicCryptoClientConfig::CachedState* state;
+    CheckedPtr<quic::QuicCryptoClientConfig::CachedState> state;
   } test_cases[] = {TestCase("www.google.com", 443, privacy_mode_,
                              crypto_config_handle->GetConfig()),
                     TestCase("www.example.com", 443, privacy_mode_,

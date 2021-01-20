@@ -13,6 +13,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/extensions/extension_context_menu_model.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
@@ -366,24 +367,24 @@ class LocationBarView : public LocationBar,
   // The Browser this LocationBarView is in.  Note that at least
   // chromeos::SimpleWebViewDialog uses a LocationBarView outside any browser
   // window, so this may be NULL.
-  Browser* const browser_;
+  const CheckedPtr<Browser> browser_;
 
   // May be nullptr in tests.
-  Profile* const profile_;
+  const CheckedPtr<Profile> profile_;
 
   // The omnibox view where the user types and the current page URL is displayed
   // when user input is not in progress.
-  OmniboxViewViews* omnibox_view_ = nullptr;
+  CheckedPtr<OmniboxViewViews> omnibox_view_ = nullptr;
 
   // Our delegate.
-  Delegate* delegate_;
+  CheckedPtr<Delegate> delegate_;
 
   // A view that contains a chip button that shows a permission request.
-  PermissionChip* permission_chip_ = nullptr;
+  CheckedPtr<PermissionChip> permission_chip_ = nullptr;
 
   // An icon to the left of the edit field: the HTTPS lock, blank page icon,
   // search icon, EV HTTPS bubble, etc.
-  LocationIconView* location_icon_view_ = nullptr;
+  CheckedPtr<LocationIconView> location_icon_view_ = nullptr;
 
   // A view to show inline autocompletion when an IME is active.  In this case,
   // we shouldn't change the text or selection inside the OmniboxView itself,
@@ -404,23 +405,23 @@ class LocationBarView : public LocationBar,
   // These autocollapse when the edit needs the room.
 
   // Shown if the user has selected a keyword.
-  SelectedKeywordView* selected_keyword_view_ = nullptr;
+  CheckedPtr<SelectedKeywordView> selected_keyword_view_ = nullptr;
 
   // Shown if the selected url has a corresponding keyword.
-  KeywordHintView* keyword_hint_view_ = nullptr;
+  CheckedPtr<KeywordHintView> keyword_hint_view_ = nullptr;
 
   // The content setting views.
   ContentSettingViews content_setting_views_;
 
   // The controller for page action icons.
-  PageActionIconController* page_action_icon_controller_ = nullptr;
+  CheckedPtr<PageActionIconController> page_action_icon_controller_ = nullptr;
 
   // The container for page action icons.
-  PageActionIconContainerView* page_action_icon_container_ = nullptr;
+  CheckedPtr<PageActionIconContainerView> page_action_icon_container_ = nullptr;
 
   // An [x] that appears in touch mode (when the OSK is visible) and allows the
   // user to clear all text.
-  views::ImageButton* clear_all_button_ = nullptr;
+  CheckedPtr<views::ImageButton> clear_all_button_ = nullptr;
 
   // Animation to change whole location bar background color on hover.
   gfx::SlideAnimation hover_animation_{this};
@@ -430,7 +431,7 @@ class LocationBarView : public LocationBar,
   const bool is_popup_mode_;
 
   // The focus ring, if one is in use.
-  views::FocusRing* focus_ring_ = nullptr;
+  CheckedPtr<views::FocusRing> focus_ring_ = nullptr;
 
   bool is_initialized_ = false;
 

@@ -13,6 +13,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string16.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -116,7 +117,7 @@ class WebApkInstallService : public KeyedService {
       bool is_primary_icon_maskable,
       const std::string& webapk_package_name);
 
-  content::BrowserContext* browser_context_;
+  CheckedPtr<content::BrowserContext> browser_context_;
 
   // In progress installs.
   std::set<GURL> installs_;

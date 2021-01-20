@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/media_router/browser/media_sinks_observer.h"
 #include "content/public/browser/presentation_service_delegate.h"
 #include "third_party/blink/public/mojom/presentation/presentation.mojom.h"
@@ -47,7 +48,7 @@ class PresentationMediaSinksObserver : public MediaSinksObserver {
   }
 
  private:
-  content::PresentationScreenAvailabilityListener* listener_;
+  CheckedPtr<content::PresentationScreenAvailabilityListener> listener_;
   blink::mojom::ScreenAvailability previous_availability_;
 
   DISALLOW_COPY_AND_ASSIGN(PresentationMediaSinksObserver);

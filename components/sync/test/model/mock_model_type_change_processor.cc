@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "components/sync/model/metadata_batch.h"
 
@@ -90,7 +91,7 @@ class ForwardingModelTypeChangeProcessor : public ModelTypeChangeProcessor {
   }
 
  private:
-  ModelTypeChangeProcessor* other_;
+  CheckedPtr<ModelTypeChangeProcessor> other_;
 };
 
 }  // namespace

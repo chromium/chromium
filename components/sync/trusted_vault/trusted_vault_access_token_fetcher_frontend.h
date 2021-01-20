@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
@@ -68,7 +69,7 @@ class TrustedVaultAccessTokenFetcherFrontend
       base::Optional<signin::AccessTokenInfo> access_token_info);
 
   // Never null.
-  signin::IdentityManager* const identity_manager_;
+  const CheckedPtr<signin::IdentityManager> identity_manager_;
 
   // Pending request for an access token. Non-null iff there is a request
   // ongoing.

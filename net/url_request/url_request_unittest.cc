@@ -7,6 +7,7 @@
 
 // This must be before Windows headers
 #include "base/callback_helpers.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
 
@@ -349,7 +350,7 @@ class PriorityMonitoringURLRequestJob : public URLRequestTestJob {
   }
 
  private:
-  RequestPriority* const request_priority_;
+  const CheckedPtr<RequestPriority> request_priority_;
 };
 
 // Do a case-insensitive search through |haystack| for |needle|.
@@ -1023,7 +1024,7 @@ class URLRequestLoadTimingTest : public URLRequestTest {
   }
 
  private:
-  URLRequestInterceptorWithLoadTimingInfo* interceptor_;
+  CheckedPtr<URLRequestInterceptorWithLoadTimingInfo> interceptor_;
 };
 
 // "Normal" LoadTimingInfo as returned by a job.  Everything is in order, not
@@ -4148,7 +4149,7 @@ class AsyncDelegateLogger : public base::RefCounted<AsyncDelegateLogger> {
     std::move(callback_).Run();
   }
 
-  URLRequest* url_request_;
+  CheckedPtr<URLRequest> url_request_;
   const int expected_first_load_state_;
   const int expected_second_load_state_;
   const int expected_third_load_state_;
@@ -8109,7 +8110,7 @@ class FailingHttpTransactionFactory : public HttpTransactionFactory {
   HttpNetworkSession* GetSession() override { return network_session_; }
 
  private:
-  HttpNetworkSession* network_session_;
+  CheckedPtr<HttpNetworkSession> network_session_;
 
   DISALLOW_COPY_AND_ASSIGN(FailingHttpTransactionFactory);
 };

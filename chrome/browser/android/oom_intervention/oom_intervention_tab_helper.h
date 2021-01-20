@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
@@ -94,7 +95,7 @@ class OomInterventionTabHelper
   base::OneShotTimer renderer_detection_timer_;
 
   // Not owned. This will be nullptr in incognito mode.
-  OomInterventionDecider* decider_;
+  CheckedPtr<OomInterventionDecider> decider_;
 
   mojo::Remote<blink::mojom::OomIntervention> intervention_;
 

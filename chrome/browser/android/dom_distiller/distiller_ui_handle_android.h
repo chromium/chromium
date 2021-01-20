@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ANDROID_DOM_DISTILLER_DISTILLER_UI_HANDLE_ANDROID_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/dom_distiller/core/distiller_ui_handle.h"
 
 namespace content {
@@ -27,7 +28,7 @@ class DistillerUIHandleAndroid : public DistillerUIHandle {
   void OpenSettings() override;
 
  private:
-  content::RenderFrameHost* render_frame_host_ = nullptr;
+  CheckedPtr<content::RenderFrameHost> render_frame_host_ = nullptr;
   DISALLOW_COPY_AND_ASSIGN(DistillerUIHandleAndroid);
 };
 

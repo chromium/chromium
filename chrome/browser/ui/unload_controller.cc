@@ -221,7 +221,7 @@ void UnloadController::CancelWindowClose() {
 
   content::NotificationService::current()->Notify(
       chrome::NOTIFICATION_BROWSER_CLOSE_CANCELLED,
-      content::Source<Browser>(browser_),
+      content::Source<Browser>(browser_.get()),
       content::NotificationService::NoDetails());
 }
 

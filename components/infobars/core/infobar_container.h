@@ -11,6 +11,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "components/infobars/core/infobar_manager.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -92,8 +93,8 @@ class InfoBarContainer : public InfoBarManager::Observer {
   // infobar->Show().
   void AddInfoBar(InfoBar* infobar, size_t position, bool animate);
 
-  Delegate* delegate_;
-  InfoBarManager* infobar_manager_;
+  CheckedPtr<Delegate> delegate_;
+  CheckedPtr<InfoBarManager> infobar_manager_;
   InfoBars infobars_;
 
   // Normally false.  When true, OnInfoBarStateChanged() becomes a no-op.  We

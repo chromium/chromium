@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "chrome/browser/geolocation/geolocation_permission_context_delegate.h"
@@ -96,7 +97,7 @@ class PermissionManagerBrowserTest : public InProcessBrowserTest {
   Browser* incognito_browser() { return incognito_browser_; }
 
  private:
-  Browser* incognito_browser_ = nullptr;
+  CheckedPtr<Browser> incognito_browser_ = nullptr;
   DISALLOW_COPY_AND_ASSIGN(PermissionManagerBrowserTest);
 };
 

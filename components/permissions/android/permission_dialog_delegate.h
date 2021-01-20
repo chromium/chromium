@@ -10,6 +10,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/android/permission_prompt_android.h"
 #include "components/permissions/permission_util.h"
@@ -62,7 +63,7 @@ class PermissionDialogDelegate : public content::WebContentsObserver {
   // The PermissionPromptAndroid is deleted when either the dialog is resolved
   // or the tab is navigated/closed. We close the prompt on DidFinishNavigation
   // and WebContentsDestroyed, so it should always be safe to use this pointer.
-  PermissionPromptAndroid* permission_prompt_;
+  CheckedPtr<PermissionPromptAndroid> permission_prompt_;
 
   DISALLOW_COPY_AND_ASSIGN(PermissionDialogDelegate);
 };

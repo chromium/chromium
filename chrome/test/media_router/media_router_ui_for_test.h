@@ -7,6 +7,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_view.h"
@@ -101,8 +102,8 @@ class MediaRouterUiForTest
   void ObserveDialog(WatchType watch_type,
                      base::Optional<std::string> sink_name = base::nullopt);
 
-  content::WebContents* web_contents_;
-  MediaRouterDialogControllerViews* dialog_controller_;
+  CheckedPtr<content::WebContents> web_contents_;
+  CheckedPtr<MediaRouterDialogControllerViews> dialog_controller_;
 
   base::Optional<std::string> watch_sink_name_;
   base::Optional<base::OnceClosure> watch_callback_;

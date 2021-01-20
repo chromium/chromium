@@ -257,10 +257,10 @@ InstantService::InstantService(Profile* profile)
       content::BrowserContext::GetDefaultStoragePartition(profile_)
           ->GetURLLoaderFactoryForBrowserProcess());
 
-  theme_observer_.Add(native_theme_);
+  theme_observer_.Add(native_theme_.get());
 
   if (background_service_)
-    background_service_observer_.Add(background_service_);
+    background_service_observer_.Add(background_service_.get());
 }
 
 InstantService::~InstantService() = default;
@@ -506,7 +506,7 @@ NtpTheme* InstantService::GetInitializedNtpTheme() {
 void InstantService::SetNativeThemeForTesting(ui::NativeTheme* theme) {
   theme_observer_.RemoveAll();
   native_theme_ = theme;
-  theme_observer_.Add(native_theme_);
+  theme_observer_.Add(native_theme_.get());
 }
 
 void InstantService::Shutdown() {

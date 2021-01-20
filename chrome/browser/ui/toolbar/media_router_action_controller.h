@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/profiles/profile.h"
@@ -99,7 +100,7 @@ class MediaRouterActionController : public media_router::IssuesObserver,
 
   // The profile |this| is associated with. There should be one instance of this
   // class per profile.
-  Profile* const profile_;
+  const CheckedPtr<Profile> profile_;
 
   bool has_issue_ = false;
   bool has_local_display_route_ = false;

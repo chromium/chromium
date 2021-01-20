@@ -8,6 +8,7 @@
 
 #include "base/auto_reset.h"
 #include "base/containers/contains.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -111,7 +112,7 @@ class NavigationControllerImpl::NavigationThrottleImpl
   }
 
  private:
-  NavigationControllerImpl* controller_;
+  CheckedPtr<NavigationControllerImpl> controller_;
   bool should_cancel_ = false;
   std::unique_ptr<content::NavigationController::LoadURLParams> load_params_;
 };

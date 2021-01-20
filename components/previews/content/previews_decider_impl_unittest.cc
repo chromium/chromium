@@ -18,6 +18,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
@@ -167,7 +168,7 @@ class TestPreviewsOptimizationGuide
   }
 
  private:
-  network::NetworkQualityTracker* network_quality_tracker_;
+  CheckedPtr<network::NetworkQualityTracker> network_quality_tracker_;
   net::EffectiveConnectionType current_ect_ =
       net::EFFECTIVE_CONNECTION_TYPE_UNKNOWN;
 };
@@ -411,9 +412,9 @@ class PreviewsDeciderImplTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  TestPreviewsDeciderImpl* previews_decider_impl_;
+  CheckedPtr<TestPreviewsDeciderImpl> previews_decider_impl_;
   optimization_guide::TestOptimizationGuideDecider optimization_guide_decider_;
-  TestPreviewsOptimizationGuide* previews_opt_guide_;
+  CheckedPtr<TestPreviewsOptimizationGuide> previews_opt_guide_;
   std::unique_ptr<TestPreviewsUIService> ui_service_;
   network::TestNetworkQualityTracker network_quality_tracker_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;

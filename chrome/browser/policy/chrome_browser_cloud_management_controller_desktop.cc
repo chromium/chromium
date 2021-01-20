@@ -5,6 +5,7 @@
 #include "chrome/browser/policy/chrome_browser_cloud_management_controller_desktop.h"
 
 #include "base/command_line.h"
+#include "base/memory/checked_ptr.h"
 #include "base/path_service.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -159,7 +160,7 @@ class MachineLevelDeviceAccountInitializerHelper
     return url_loader_factory_;
   }
 
-  policy::CloudPolicyClient* policy_client_;
+  CheckedPtr<policy::CloudPolicyClient> policy_client_;
   std::unique_ptr<DeviceAccountInitializer> device_account_initializer_;
   Callback callback_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;

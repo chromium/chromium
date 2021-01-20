@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
@@ -38,7 +39,7 @@ class DiscardMetricsLifecycleUnitObserverTest : public testing::Test {
   }
 
   // Owned by |lifecycle_unit|.
-  DiscardMetricsLifecycleUnitObserver* observer_ =
+  CheckedPtr<DiscardMetricsLifecycleUnitObserver> observer_ =
       new DiscardMetricsLifecycleUnitObserver();
 
   std::unique_ptr<TestLifecycleUnit> lifecycle_unit_ =

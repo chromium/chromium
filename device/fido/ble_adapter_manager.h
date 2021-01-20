@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
@@ -39,7 +40,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) BleAdapterManager
 
   void Start(scoped_refptr<BluetoothAdapter> adapter);
 
-  FidoRequestHandlerBase* const request_handler_;
+  const CheckedPtr<FidoRequestHandlerBase> request_handler_;
   scoped_refptr<BluetoothAdapter> adapter_;
   bool adapter_powered_on_programmatically_ = false;
 

@@ -67,6 +67,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/shared_memory_mapping.h"
@@ -127,8 +128,8 @@ class BASE_EXPORT FieldTrial : public RefCounted<FieldTrial> {
   // FieldTrial object. Does not use StringPiece to avoid conversions back to
   // std::string.
   struct BASE_EXPORT State {
-    const std::string* trial_name = nullptr;
-    const std::string* group_name = nullptr;
+    CheckedPtr<const std::string> trial_name = nullptr;
+    CheckedPtr<const std::string> group_name = nullptr;
     bool activated = false;
 
     State();
@@ -784,7 +785,7 @@ class BASE_EXPORT FieldTrialList {
   scoped_refptr<ObserverListThreadSafe<Observer> > observer_list_;
 
   // Single synchronous observer to be notified when a trial group is chosen.
-  Observer* synchronous_observer_ = nullptr;
+  CheckedPtr<Observer> synchronous_observer_ = nullptr;
 
   // Allocator in shared memory containing field trial data. Used in both
   // browser and child processes, but readonly in the child.

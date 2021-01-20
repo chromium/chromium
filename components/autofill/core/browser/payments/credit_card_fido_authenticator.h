@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
@@ -235,7 +236,7 @@ class CreditCardFIDOAuthenticator
   InternalAuthenticator* authenticator();
 
   // Card being unmasked.
-  const CreditCard* card_;
+  CheckedPtr<const CreditCard> card_;
 
   // The current flow in progress.
   Flow current_flow_ = NONE_FLOW;
@@ -248,16 +249,16 @@ class CreditCardFIDOAuthenticator
   base::TimeTicks form_parsed_timestamp_;
 
   // The associated autofill driver. Weak reference.
-  AutofillDriver* const autofill_driver_;
+  const CheckedPtr<AutofillDriver> autofill_driver_;
 
   // The associated autofill client. Weak reference.
-  AutofillClient* const autofill_client_;
+  const CheckedPtr<AutofillClient> autofill_client_;
 
   // Payments client to make requests to Google Payments.
-  payments::PaymentsClient* const payments_client_;
+  const CheckedPtr<payments::PaymentsClient> payments_client_;
 
   // Authenticator pointer to facilitate WebAuthn.
-  InternalAuthenticator* authenticator_ = nullptr;
+  CheckedPtr<InternalAuthenticator> authenticator_ = nullptr;
 
   // Responsible for getting the full card details, including the PAN and the
   // CVC.

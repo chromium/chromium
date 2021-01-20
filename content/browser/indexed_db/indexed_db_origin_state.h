@@ -12,6 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/checked_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string16.h"
 #include "base/time/clock.h"
@@ -199,15 +200,15 @@ class CONTENT_EXPORT IndexedDBOriginState {
   // CanCloseFactory.
   bool has_blobs_outstanding_ = false;
   bool skip_closing_sequence_ = false;
-  base::Clock* const clock_;
-  TransactionalLevelDBFactory* const transactional_leveldb_factory_;
+  const CheckedPtr<base::Clock> clock_;
+  const CheckedPtr<TransactionalLevelDBFactory> transactional_leveldb_factory_;
 
   bool running_tasks_ = false;
   bool task_run_scheduled_ = false;
 
   // This is safe because it is owned by IndexedDBFactoryImpl, which owns this
   // object.
-  base::Time* earliest_global_sweep_time_;
+  CheckedPtr<base::Time> earliest_global_sweep_time_;
   ClosingState closing_stage_ = ClosingState::kNotClosing;
   base::OneShotTimer close_timer_;
   const std::unique_ptr<DisjointRangeLockManager> lock_manager_;

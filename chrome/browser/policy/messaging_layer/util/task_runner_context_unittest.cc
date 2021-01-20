@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequenced_task_runner.h"
@@ -402,7 +403,7 @@ TEST_F(TaskRunner, ActionsWithStatusOrPtr) {
 
     void OnStart() override { Pick(0); }
 
-    std::vector<StatusOrPtr>* const vector_;
+    const CheckedPtr<std::vector<StatusOrPtr>> vector_;
   };
 
   const int kI = 0;

@@ -10,6 +10,7 @@
 #include "base/component_export.h"
 #include "base/containers/linked_list.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -149,8 +150,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
       const net::CanonicalCookie* cookie_being_set = nullptr);
 
   const mojom::RestrictedCookieManagerRole role_;
-  net::CookieStore* const cookie_store_;
-  const CookieSettings* const cookie_settings_;
+  const CheckedPtr<net::CookieStore> cookie_store_;
+  const CheckedPtr<const CookieSettings> cookie_settings_;
 
   // TODO(https://crbug/1166215): Consolidate these three fields since
   // `isolation_info_` holds copy of those values.

@@ -14,6 +14,7 @@
 #include "base/debug/leak_annotations.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -99,7 +100,7 @@ class CaptureToEventList : public Thread {
   void CleanUp() override { event_list_->push_back(THREAD_EVENT_CLEANUP); }
 
  private:
-  EventList* event_list_;
+  CheckedPtr<EventList> event_list_;
 
   DISALLOW_COPY_AND_ASSIGN(CaptureToEventList);
 };
@@ -121,7 +122,7 @@ class CapturingDestructionObserver
   }
 
  private:
-  EventList* event_list_;
+  CheckedPtr<EventList> event_list_;
 
   DISALLOW_COPY_AND_ASSIGN(CapturingDestructionObserver);
 };

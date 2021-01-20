@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_CART_CART_HANDLER_H_
 
 #include "chrome/browser/cart/cart_service.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/cart/chrome_cart.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"

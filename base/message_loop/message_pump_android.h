@@ -13,6 +13,7 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/message_loop/message_pump.h"
 #include "base/optional.h"
 #include "base/time/time.h"
@@ -80,7 +81,7 @@ class BASE_EXPORT MessagePumpForUI : public MessagePump {
   bool quit_ = false;
 
   // The MessageLoop::Delegate for this pump.
-  Delegate* delegate_ = nullptr;
+  CheckedPtr<Delegate> delegate_ = nullptr;
 
   // The time at which we are currently scheduled to wake up and perform a
   // delayed task. This avoids redundantly scheduling |delayed_fd_| with the
@@ -98,10 +99,10 @@ class BASE_EXPORT MessagePumpForUI : public MessagePump {
   int delayed_fd_;
 
   // The Android Looper for this thread.
-  ALooper* looper_ = nullptr;
+  CheckedPtr<ALooper> looper_ = nullptr;
 
   // The JNIEnv* for this thread, used to check for pending exceptions.
-  JNIEnv* env_;
+  CheckedPtr<JNIEnv> env_;
 
   DISALLOW_COPY_AND_ASSIGN(MessagePumpForUI);
 };

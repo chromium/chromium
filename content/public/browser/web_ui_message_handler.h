@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "base/values.h"
 #include "content/common/content_export.h"
@@ -150,7 +151,7 @@ class CONTENT_EXPORT WebUIMessageHandler {
   // True if the page is for JavaScript calls from this handler.
   bool javascript_allowed_;
 
-  WebUI* web_ui_;
+  CheckedPtr<WebUI> web_ui_;
 };
 
 }  // namespace content

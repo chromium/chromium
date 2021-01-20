@@ -6,6 +6,7 @@
 #define WEBLAYER_BROWSER_DOWNLOAD_MANAGER_DELEGATE_IMPL_H_
 
 #include "base/callback_forward.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/download/public/common/download_item.h"
 #include "content/public/browser/download_manager.h"
@@ -75,7 +76,7 @@ class DownloadManagerDelegateImpl : public content::DownloadManagerDelegate,
   DownloadDelegate* GetDelegate(content::BrowserContext* browser_context);
   DownloadDelegate* GetDelegate(download::DownloadItem* item);
 
-  content::DownloadManager* download_manager_;
+  CheckedPtr<content::DownloadManager> download_manager_;
   base::RepeatingClosure download_dropped_callback_;
   base::WeakPtrFactory<DownloadManagerDelegateImpl> weak_ptr_factory_{this};
 

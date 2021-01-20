@@ -11,6 +11,7 @@
 
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/checked_ptr.h"
 #include "components/policy/core/common/android/policy_map_android.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/policy_export.h"
@@ -54,7 +55,7 @@ class POLICY_EXPORT PolicyServiceAndroid : public PolicyService::Observer {
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
  private:
-  PolicyService* policy_service_;
+  CheckedPtr<PolicyService> policy_service_;
 
   // Contains all Chrome policies. The PolicyBundle is not used as there is only
   // one policy namespace supported on Android.

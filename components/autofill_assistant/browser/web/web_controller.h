@@ -11,6 +11,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/autofill_assistant/browser/batch_element_checker.h"
@@ -318,7 +319,7 @@ class WebController {
     void RenderFrameDeleted(
         content::RenderFrameHost* render_frame_host) override;
 
-    content::RenderFrameHost* render_frame_host_;
+    CheckedPtr<content::RenderFrameHost> render_frame_host_;
   };
 
   void OnJavaScriptResult(
@@ -465,7 +466,7 @@ class WebController {
 
   // Weak pointer is fine here since it must outlive this web controller, which
   // is guaranteed by the owner of this object.
-  content::WebContents* web_contents_;
+  CheckedPtr<content::WebContents> web_contents_;
   std::unique_ptr<DevtoolsClient> devtools_client_;
 
   // Currently running workers.

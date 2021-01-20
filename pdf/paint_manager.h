@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/location.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "pdf/paint_aggregator.h"
 #include "pdf/ppapi_migration/callback.h"
@@ -166,7 +167,7 @@ class PaintManager {
   void OnManualCallbackComplete(int32_t);
 
   // Non-owning pointer. See the constructor.
-  Client* const client_;
+  const CheckedPtr<Client> client_;
 
   // This graphics device will be null if no graphics has been set yet.
   std::unique_ptr<Graphics> graphics_;

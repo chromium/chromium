@@ -68,7 +68,7 @@ TestRapporServiceImpl::TestRapporServiceImpl()
       is_incognito_(false) {
   RegisterPrefs(test_prefs_.registry());
   test_uploader_ = new TestLogUploader();
-  InitializeInternal(base::WrapUnique(test_uploader_), 0,
+  InitializeInternal(base::WrapUnique(test_uploader_.get()), 0,
                      HmacByteVectorGenerator::GenerateEntropyInput());
   Update(true, true);
 }

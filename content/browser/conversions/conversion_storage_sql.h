@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/clock.h"
@@ -127,7 +128,7 @@ class CONTENT_EXPORT ConversionStorageSql : public ConversionStorage {
   sql::MetaTable meta_table_;
 
   // Must outlive |this|.
-  const base::Clock* clock_;
+  CheckedPtr<const base::Clock> clock_;
 
   std::unique_ptr<Delegate> delegate_;
 

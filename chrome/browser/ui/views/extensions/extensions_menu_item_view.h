@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -67,17 +68,17 @@ class ExtensionsMenuItemView : public views::View {
   // background.
   SkColor GetAdjustedIconColor(SkColor icon_color) const;
 
-  Profile* const profile_;
+  const CheckedPtr<Profile> profile_;
 
-  ExtensionsMenuButton* const primary_action_button_;
+  const CheckedPtr<ExtensionsMenuButton> primary_action_button_;
 
   std::unique_ptr<ToolbarActionViewController> controller_;
 
-  views::ImageButton* context_menu_button_ = nullptr;
+  CheckedPtr<views::ImageButton> context_menu_button_ = nullptr;
 
-  ToolbarActionsModel* const model_;
+  const CheckedPtr<ToolbarActionsModel> model_;
 
-  views::ImageButton* pin_button_ = nullptr;
+  CheckedPtr<views::ImageButton> pin_button_ = nullptr;
 
   // This controller is responsible for showing the context menu for an
   // extension.

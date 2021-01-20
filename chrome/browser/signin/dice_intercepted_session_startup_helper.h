@@ -7,6 +7,7 @@
 
 #include "base/callback_forward.h"
 #include "base/cancelable_callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -96,7 +97,7 @@ class DiceInterceptedSessionStartupHelper
   // still open.
   void MoveTab(Result result);
 
-  Profile* const profile_;
+  const CheckedPtr<Profile> profile_;
   bool use_multilogin_;
   CoreAccountId account_id_;
   base::OnceClosure callback_;

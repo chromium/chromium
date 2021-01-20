@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_FILE_SYSTEM_ACCESS_NATIVE_FILE_SYSTEM_TRANSFER_TOKEN_IMPL_H_
 #define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_NATIVE_FILE_SYSTEM_TRANSFER_TOKEN_IMPL_H_
 
+#include "base/memory/checked_ptr.h"
 #include "content/browser/file_system_access/native_file_system_manager_impl.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -68,7 +69,7 @@ class CONTENT_EXPORT NativeFileSystemTransferTokenImpl
   const base::UnguessableToken token_;
   const FileSystemAccessPermissionContext::HandleType handle_type_;
   // Raw pointer since NativeFileSystemManagerImpl owns `this`.
-  NativeFileSystemManagerImpl* const manager_;
+  const CheckedPtr<NativeFileSystemManagerImpl> manager_;
   const storage::FileSystemURL url_;
   const url::Origin origin_;
   const NativeFileSystemManagerImpl::SharedHandleState handle_state_;

@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/files/file_path.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/scoped_observation.h"
@@ -225,7 +226,7 @@ class DownloadItemView : public views::View,
   DownloadCommands commands_{model()};
 
   // The download shelf that owns us.
-  DownloadShelfView* const shelf_;
+  const CheckedPtr<DownloadShelfView> shelf_;
 
   // Mode of the download item view.
   Mode mode_;
@@ -236,7 +237,7 @@ class DownloadItemView : public views::View,
   // be a button. This is necessary because buttons are not allowed to have
   // children in macOS Accessibility, and to avoid reimplementing much of the
   // button logic in DownloadItemView.
-  views::Button* open_button_;
+  CheckedPtr<views::Button> open_button_;
 
   // Whether we are dragging the download button.
   bool dragging_ = false;
@@ -253,16 +254,16 @@ class DownloadItemView : public views::View,
   // used, so that we can detect a change in the path and reload the icon.
   base::FilePath file_path_;
 
-  views::Label* file_name_label_;
-  views::Label* status_label_;
-  views::StyledLabel* warning_label_;
-  views::StyledLabel* deep_scanning_label_;
+  CheckedPtr<views::Label> file_name_label_;
+  CheckedPtr<views::Label> status_label_;
+  CheckedPtr<views::StyledLabel> warning_label_;
+  CheckedPtr<views::StyledLabel> deep_scanning_label_;
 
   views::MdTextButton* open_now_button_;
   views::MdTextButton* save_button_;
   views::MdTextButton* discard_button_;
   views::MdTextButton* scan_button_;
-  views::ImageButton* dropdown_button_;
+  CheckedPtr<views::ImageButton> dropdown_button_;
 
   // Whether the dropdown is currently pressed.
   bool dropdown_pressed_ = false;
@@ -289,7 +290,7 @@ class DownloadItemView : public views::View,
 
   // A hidden view for accessible status alerts that are spoken by screen
   // readers when a download changes state.
-  views::View* const accessible_alert_;
+  const CheckedPtr<views::View> accessible_alert_;
 
   // A timer for accessible alerts that helps reduce the number of similar
   // messages spoken in a short period of time.

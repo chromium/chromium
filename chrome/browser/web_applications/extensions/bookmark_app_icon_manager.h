@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/web_applications/components/app_icon_manager.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 
@@ -58,8 +59,7 @@ class BookmarkAppIconManager : public web_app::AppIconManager {
   SkBitmap GetFavicon(const web_app::AppId& app_id) const override;
 
  private:
-  Profile* const profile_;
-
+  const CheckedPtr<Profile> profile_;
 };
 
 }  // namespace extensions

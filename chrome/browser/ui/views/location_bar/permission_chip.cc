@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/location.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -76,7 +77,7 @@ class BubbleButtonController : public views::ButtonController {
 
  private:
   bool suppress_button_release_ = false;
-  BubbleOwnerDelegate* bubble_owner_ = nullptr;
+  CheckedPtr<BubbleOwnerDelegate> bubble_owner_ = nullptr;
 };
 
 PermissionChip::PermissionChip(Browser* browser)

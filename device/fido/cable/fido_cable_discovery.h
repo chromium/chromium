@@ -16,6 +16,7 @@
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "device/bluetooth/bluetooth_adapter.h"
@@ -140,7 +141,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoCableDiscovery
   std::unique_ptr<BluetoothDiscoverySession> discovery_session_;
 
   std::vector<CableDiscoveryData> discovery_data_;
-  FidoDeviceDiscovery::BLEObserver* const ble_observer_;
+  const CheckedPtr<FidoDeviceDiscovery::BLEObserver> ble_observer_;
 
   // active_authenticator_eids_ contains authenticator EIDs for which a
   // handshake is currently running. Further advertisements for the same EIDs

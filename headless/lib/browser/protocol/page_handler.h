@@ -5,6 +5,7 @@
 #ifndef HEADLESS_LIB_BROWSER_PROTOCOL_PAGE_HANDLER_H_
 #define HEADLESS_LIB_BROWSER_PROTOCOL_PAGE_HANDLER_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "headless/lib/browser/protocol/domain_handler.h"
@@ -60,7 +61,7 @@ class PageHandler : public DomainHandler, public Page::Backend {
                   scoped_refptr<base::RefCountedMemory> data);
 #endif
   scoped_refptr<content::DevToolsAgentHost> agent_host_;
-  content::WebContents* web_contents_;
+  CheckedPtr<content::WebContents> web_contents_;
   base::WeakPtrFactory<PageHandler> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(PageHandler);
 };

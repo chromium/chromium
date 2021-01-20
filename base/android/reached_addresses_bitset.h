@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/memory/checked_ptr.h"
 
 namespace base {
 
@@ -66,7 +67,7 @@ class BASE_EXPORT ReachedAddressesBitset {
 
   uintptr_t start_address_;
   uintptr_t end_address_;
-  std::atomic<uint32_t>* reached_;
+  CheckedPtr<std::atomic<uint32_t>> reached_;
 };
 
 }  // namespace android

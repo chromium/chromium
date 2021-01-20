@@ -11,6 +11,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "components/page_info/page_info_ui.h"
 
@@ -55,7 +56,7 @@ class PageInfoControllerAndroid : public PageInfoUI {
 
   GURL url_;
 
-  content::WebContents* web_contents_;
+  CheckedPtr<content::WebContents> web_contents_;
 
   DISALLOW_COPY_AND_ASSIGN(PageInfoControllerAndroid);
 };

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/profiles/profile_customization_bubble_sync_controller.h"
 
+#include "base/memory/checked_ptr.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_syncable_service.h"
@@ -53,7 +54,7 @@ class FakeThemeService : public ThemeService {
   }
 
  private:
-  ThemeSyncableService* theme_syncable_service_ = nullptr;
+  CheckedPtr<ThemeSyncableService> theme_syncable_service_ = nullptr;
   bool using_default_theme_ = true;
   SkColor color_ = 0;
 };

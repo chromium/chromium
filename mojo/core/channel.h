@@ -10,6 +10,7 @@
 #include "base/containers/span.h"
 #include "base/macros.h"
 #include "base/memory/aligned_memory.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
@@ -227,7 +228,7 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
 
 #if defined(OS_WIN)
     // On Windows, handles are serialised into the extra header section.
-    HandleEntry* handles_ = nullptr;
+    CheckedPtr<HandleEntry> handles_ = nullptr;
 #elif defined(OS_MAC)
     // On OSX, handles are serialised into the extra header section.
     MachPortsExtraHeader* mach_ports_header_ = nullptr;
@@ -405,7 +406,7 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
 
   class ReadBuffer;
 
-  Delegate* delegate_;
+  CheckedPtr<Delegate> delegate_;
   HandlePolicy handle_policy_;
   const std::unique_ptr<ReadBuffer> read_buffer_;
 

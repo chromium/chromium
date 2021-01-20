@@ -10,6 +10,7 @@
 
 #include "base/android/jni_weak_ref.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/autofill/core/browser/payments/internal_authenticator.h"
 #include "content/public/browser/render_frame_host.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
@@ -68,7 +69,7 @@ class InternalAuthenticatorAndroid : public autofill::InternalAuthenticator {
   base::android::JavaRef<jobject>& GetJavaObject();
 
   base::android::ScopedJavaGlobalRef<jobject> java_authenticator_impl_ref_;
-  content::RenderFrameHost* render_frame_host_;
+  CheckedPtr<content::RenderFrameHost> render_frame_host_;
   blink::mojom::Authenticator::MakeCredentialCallback
       make_credential_response_callback_;
   blink::mojom::Authenticator::GetAssertionCallback

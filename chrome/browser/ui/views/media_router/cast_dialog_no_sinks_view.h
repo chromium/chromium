@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_MEDIA_ROUTER_CAST_DIALOG_NO_SINKS_VIEW_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/view.h"
 
@@ -33,10 +34,10 @@ class CastDialogNoSinksView : public views::View {
  private:
   void SetHelpIconView();
 
-  Profile* const profile_;
+  const CheckedPtr<Profile> profile_;
   base::OneShotTimer timer_;
-  views::View* icon_ = nullptr;
-  views::Label* label_ = nullptr;
+  CheckedPtr<views::View> icon_ = nullptr;
+  CheckedPtr<views::Label> label_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(CastDialogNoSinksView);
 };

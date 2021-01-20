@@ -21,6 +21,7 @@
 #include "base/files/file_util.h"
 #include "base/macros.h"
 #include "base/memory/aligned_memory.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
@@ -457,7 +458,7 @@ static bool DecodeFile(const base::FilePath& src_file,
     }
 
    private:
-    TestStream* const test_stream_;
+    const CheckedPtr<TestStream> test_stream_;
     DISALLOW_COPY_AND_ASSIGN(FrameWriter);
   } frame_writer(test_stream);
 
@@ -1502,7 +1503,7 @@ class VEAClientBase : public VideoEncodeAccelerator::Client {
 
   // Used to notify another thread about the state. VEAClientBase does not own
   // this.
-  media::test::ClientStateNotification<ClientState>* note_;
+  CheckedPtr<media::test::ClientStateNotification<ClientState>> note_;
 
   // All methods of this class should be run on the same thread.
   base::ThreadChecker thread_checker_;
@@ -1623,7 +1624,7 @@ class VEAClient : public VEAClientBase {
 
   ClientState state_;
 
-  TestStream* test_stream_;
+  CheckedPtr<TestStream> test_stream_;
 
   // Ids assigned to VideoFrames.
   std::set<int32_t> inputs_at_client_;

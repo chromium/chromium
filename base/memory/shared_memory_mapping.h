@@ -11,6 +11,7 @@
 #include "base/containers/buffer_iterator.h"
 #include "base/containers/span.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/unguessable_token.h"
 
 namespace base {
@@ -76,7 +77,7 @@ class BASE_EXPORT SharedMemoryMapping {
 
   void Unmap();
 
-  void* memory_ = nullptr;
+  CheckedPtr<void> memory_ = nullptr;
   size_t size_ = 0;
   size_t mapped_size_ = 0;
   UnguessableToken guid_;

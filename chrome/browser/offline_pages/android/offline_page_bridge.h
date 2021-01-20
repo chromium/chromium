@@ -15,6 +15,7 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
 #include "components/offline_items_collection/core/launch_location.h"
@@ -258,9 +259,9 @@ class OfflinePageBridge : public OfflinePageModel::Observer,
 
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;
   // Not owned.
-  SimpleFactoryKey* key_;
+  CheckedPtr<SimpleFactoryKey> key_;
   // Not owned.
-  OfflinePageModel* offline_page_model_;
+  CheckedPtr<OfflinePageModel> offline_page_model_;
 
   base::WeakPtrFactory<OfflinePageBridge> weak_ptr_factory_{this};
 

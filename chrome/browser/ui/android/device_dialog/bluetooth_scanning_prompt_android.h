@@ -7,6 +7,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "content/public/browser/bluetooth_scanning_prompt.h"
 #include "content/public/browser/web_contents.h"
 
@@ -32,7 +33,7 @@ class BluetoothScanningPromptAndroid : public content::BluetoothScanningPrompt {
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_dialog_;
 
-  content::WebContents* web_contents_;
+  CheckedPtr<content::WebContents> web_contents_;
   content::BluetoothScanningPrompt::EventHandler event_handler_;
 
   DISALLOW_COPY_AND_ASSIGN(BluetoothScanningPromptAndroid);

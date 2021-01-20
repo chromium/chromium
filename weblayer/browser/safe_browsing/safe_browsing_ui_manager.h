@@ -5,6 +5,7 @@
 #ifndef WEBLAYER_BROWSER_SAFE_BROWSING_SAFE_BROWSING_UI_MANAGER_H_
 #define WEBLAYER_BROWSER_SAFE_BROWSING_SAFE_BROWSING_UI_MANAGER_H_
 
+#include "base/memory/checked_ptr.h"
 #include "components/safe_browsing/content/base_ui_manager.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 
@@ -44,7 +45,7 @@ class SafeBrowsingUIManager : public safe_browsing::BaseUIManager {
   // Provides phishing and malware statistics. Accessed on IO thread.
   std::unique_ptr<safe_browsing::PingManager> ping_manager_;
 
-  SafeBrowsingService* safe_browsing_service_;
+  CheckedPtr<SafeBrowsingService> safe_browsing_service_;
 
   DISALLOW_COPY_AND_ASSIGN(SafeBrowsingUIManager);
 };

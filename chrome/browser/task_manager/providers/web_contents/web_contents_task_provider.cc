@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/task_manager/providers/web_contents/subframe_task.h"
 #include "chrome/browser/task_manager/providers/web_contents/web_contents_tags_manager.h"
@@ -86,7 +87,7 @@ class WebContentsTaskProvider::WebContentsEntry
   RenderFrameHost* FindLocalRoot(RenderFrameHost* render_frame_host) const;
 
   // The provider that owns this entry.
-  WebContentsTaskProvider* provider_;
+  CheckedPtr<WebContentsTaskProvider> provider_;
 
   // For each SiteInstance, the frames within it that are tracked (local roots
   // only as per FindLocalRoot()), and its RendererTask. The number of tracked
@@ -98,7 +99,7 @@ class WebContentsTaskProvider::WebContentsEntry
   base::flat_map<SiteInstance*, SiteInstanceInfo> site_instance_infos_;
 
   // States whether we did record a main frame for this entry.
-  SiteInstance* main_frame_site_instance_ = nullptr;
+  CheckedPtr<SiteInstance> main_frame_site_instance_ = nullptr;
 
   base::WeakPtrFactory<WebContentsEntry> weak_factory_{this};
 };

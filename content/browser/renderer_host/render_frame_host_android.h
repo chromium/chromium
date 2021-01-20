@@ -14,6 +14,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/supports_user_data.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -84,7 +85,7 @@ class RenderFrameHostAndroid : public base::SupportsUserData::Data {
   RenderFrameHostImpl* render_frame_host() const { return render_frame_host_; }
 
  private:
-  RenderFrameHostImpl* const render_frame_host_;
+  const CheckedPtr<RenderFrameHostImpl> render_frame_host_;
   mojo::PendingRemote<service_manager::mojom::InterfaceProvider>
       interface_provider_remote_;
   JavaObjectWeakGlobalRef obj_;

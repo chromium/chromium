@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "url/origin.h"
 
@@ -41,7 +42,7 @@ class AwURLLoaderThrottle : public blink::URLLoaderThrottle {
   void AddExtraHeadersIfNeeded(const GURL& url,
                                net::HttpRequestHeaders* headers);
 
-  AwResourceContext* aw_resource_context_;
+  CheckedPtr<AwResourceContext> aw_resource_context_;
   std::vector<std::string> added_headers_;
   url::Origin original_origin_;
 

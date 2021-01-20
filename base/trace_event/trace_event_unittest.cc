@@ -22,6 +22,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/singleton.h"
@@ -161,14 +162,14 @@ class TraceEventTestFixture : public testing::Test {
   void TearDown() override {
     if (TraceLog::GetInstance())
       EXPECT_FALSE(TraceLog::GetInstance()->IsEnabled());
-    PlatformThread::SetName(old_thread_name_ ? old_thread_name_ : "");
+    PlatformThread::SetName(old_thread_name_ ? old_thread_name_.get() : "");
     free(old_thread_name_);
     old_thread_name_ = nullptr;
     // We want our singleton torn down after each test.
     TraceLog::ResetForTesting();
   }
 
-  char* old_thread_name_;
+  CheckedPtr<char> old_thread_name_;
   ListValue trace_parsed_;
   TraceResultBuffer trace_buffer_;
   TraceResultBuffer::SimpleOutput json_output_;
@@ -1281,7 +1282,7 @@ TEST_F(TraceEventTestFixture, AddMetadataEvent) {
     }
 
    private:
-    int* num_calls_;
+    CheckedPtr<int> num_calls_;
   };
 
   std::unique_ptr<ConvertableToTraceFormat> conv1(new Convertable(&num_calls));

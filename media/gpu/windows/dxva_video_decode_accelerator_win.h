@@ -20,6 +20,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread.h"
@@ -395,7 +396,7 @@ class MEDIA_GPU_EXPORT DXVAVideoDecodeAccelerator
   ID3D11Device* D3D11Device() const;
 
   // To expose client callbacks from VideoDecodeAccelerator.
-  VideoDecodeAccelerator::Client* client_;
+  CheckedPtr<VideoDecodeAccelerator::Client> client_;
 
   // MediaFoundation session, calls MFShutdown on deletion.
   MFSessionLifetime session_;
@@ -511,7 +512,7 @@ class MEDIA_GPU_EXPORT DXVAVideoDecodeAccelerator
   BindGLImageCallback bind_image_cb_;
 
   // This may be null, e.g. when not using MojoVideoDecoder.
-  MediaLog* const media_log_;
+  const CheckedPtr<MediaLog> media_log_;
 
   // Which codec we are decoding with hardware acceleration.
   VideoCodec codec_;

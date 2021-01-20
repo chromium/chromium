@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/feed_internals/feed_internals.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -59,9 +60,9 @@ class FeedInternalsPageHandler : public feed_internals::mojom::PageHandler {
   bool IsFeedAllowed();
 
   // Services that provide the data and functionality.
-  feed::FeedSchedulerHost* feed_scheduler_host_;
-  feed::FeedOfflineHost* feed_offline_host_;
-  PrefService* pref_service_;
+  CheckedPtr<feed::FeedSchedulerHost> feed_scheduler_host_;
+  CheckedPtr<feed::FeedOfflineHost> feed_offline_host_;
+  CheckedPtr<PrefService> pref_service_;
 
   base::WeakPtrFactory<FeedInternalsPageHandler> weak_ptr_factory_{this};
 

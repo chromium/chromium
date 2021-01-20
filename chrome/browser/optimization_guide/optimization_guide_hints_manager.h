@@ -13,6 +13,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/mru_cache.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
@@ -424,10 +425,10 @@ class OptimizationGuideHintsManager
   base::CancelableTaskTracker hints_component_processing_task_tracker_;
 
   // A reference to the profile. Not owned.
-  Profile* profile_ = nullptr;
+  CheckedPtr<Profile> profile_ = nullptr;
 
   // A reference to the PrefService for this profile. Not owned.
-  PrefService* pref_service_ = nullptr;
+  CheckedPtr<PrefService> pref_service_ = nullptr;
 
   // The hint cache that holds both hints received from the component and
   // fetched from the remote Optimization Guide Service.
@@ -454,7 +455,7 @@ class OptimizationGuideHintsManager
   base::flat_set<std::string> external_app_packages_approved_for_fetch_;
 
   // The top host provider that can be queried. Not owned.
-  optimization_guide::TopHostProvider* top_host_provider_ = nullptr;
+  CheckedPtr<optimization_guide::TopHostProvider> top_host_provider_ = nullptr;
 
   // The timer used to schedule fetching hints from the remote Optimization
   // Guide Service.
@@ -462,7 +463,7 @@ class OptimizationGuideHintsManager
 
   // The clock used to schedule fetching from the remote Optimization Guide
   // Service.
-  const base::Clock* clock_;
+  CheckedPtr<const base::Clock> clock_;
 
   // Whether fetched hints should be cleared when the store is initialized
   // because a new optimization type was registered.

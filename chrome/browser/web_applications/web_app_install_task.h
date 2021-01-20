@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "chrome/browser/web_applications/components/install_finalizer.h"
@@ -271,10 +272,10 @@ class WebAppInstallTask : content::WebContentsObserver {
   std::unique_ptr<WebApplicationInfo> web_application_info_;
   std::unique_ptr<content::WebContents> web_contents_;
 
-  OsIntegrationManager* os_integration_manager_;
-  InstallFinalizer* install_finalizer_;
-  Profile* const profile_;
-  AppRegistrar* registrar_;
+  CheckedPtr<OsIntegrationManager> os_integration_manager_;
+  CheckedPtr<InstallFinalizer> install_finalizer_;
+  const CheckedPtr<Profile> profile_;
+  CheckedPtr<AppRegistrar> registrar_;
 
   base::WeakPtrFactory<WebAppInstallTask> weak_ptr_factory_{this};
 

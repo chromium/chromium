@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ANDROID_FEED_V2_REFRESH_TASK_SCHEDULER_IMPL_H_
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 
 #include "components/feed/core/v2/refresh_task_scheduler.h"
 
@@ -32,7 +33,7 @@ class RefreshTaskSchedulerImpl : public RefreshTaskScheduler {
   void RefreshTaskComplete() override;
 
  private:
-  background_task::BackgroundTaskScheduler* scheduler_;
+  CheckedPtr<background_task::BackgroundTaskScheduler> scheduler_;
   base::OnceClosure task_complete_callback_;
 };
 

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_ACTION_VIEW_CONTROLLER_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/extensions/extension_action_icon_factory.h"
@@ -171,7 +172,7 @@ class ExtensionActionViewController
   scoped_refptr<const extensions::Extension> extension_;
 
   // The corresponding browser.
-  Browser* const browser_;
+  const CheckedPtr<Browser> browser_;
 
   // Whether we are displayed in the 3-dot menu or not.
   // TODO(pbos): Remove when 3-dot menu no longer contains extensions.
@@ -179,19 +180,19 @@ class ExtensionActionViewController
 
   // The browser action this view represents. The ExtensionAction is not owned
   // by this class.
-  extensions::ExtensionAction* const extension_action_;
+  const CheckedPtr<extensions::ExtensionAction> extension_action_;
 
   // The corresponding ExtensionsContainer on the toolbar.
-  ExtensionsContainer* const extensions_container_;
+  const CheckedPtr<ExtensionsContainer> extensions_container_;
 
   // The extension popup's host if the popup is visible; null otherwise.
-  extensions::ExtensionViewHost* popup_host_;
+  CheckedPtr<extensions::ExtensionViewHost> popup_host_;
 
   // The context menu model for the extension.
   std::unique_ptr<extensions::ExtensionContextMenuModel> context_menu_model_;
 
   // Our view delegate.
-  ToolbarActionViewDelegate* view_delegate_;
+  CheckedPtr<ToolbarActionViewDelegate> view_delegate_;
 
   // The delegate to handle platform-specific implementations.
   std::unique_ptr<ExtensionActionPlatformDelegate> platform_delegate_;
@@ -203,7 +204,7 @@ class ExtensionActionViewController
   ExtensionActionIconFactory icon_factory_;
 
   // The associated ExtensionRegistry; cached for quick checking.
-  extensions::ExtensionRegistry* extension_registry_;
+  CheckedPtr<extensions::ExtensionRegistry> extension_registry_;
 
   ScopedObserver<extensions::ExtensionHost, extensions::ExtensionHostObserver>
       popup_host_observer_{this};

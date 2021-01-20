@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SUBRESOURCE_REDIRECT_SUBRESOURCE_REDIRECT_OBSERVER_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/common/subresource_redirect_service.mojom.h"
 #include "components/optimization_guide/content/optimization_guide_decider.h"
 #include "content/public/browser/render_document_host_user_data.h"
@@ -49,7 +50,7 @@ class SubresourceRedirectDocumentHost
   friend class content::RenderDocumentHostUserData<
       SubresourceRedirectDocumentHost>;
 
-  content::RenderFrameHost* render_frame_host_;
+  CheckedPtr<content::RenderFrameHost> render_frame_host_;
   RENDER_DOCUMENT_HOST_USER_DATA_KEY_DECL();
 };
 

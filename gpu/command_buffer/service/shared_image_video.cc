@@ -8,6 +8,7 @@
 
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
 #include "base/android/scoped_hardware_buffer_handle.h"
+#include "base/memory/checked_ptr.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/resource_sizes.h"
@@ -170,7 +171,7 @@ class SharedImageRepresentationGLTextureVideo
   void EndAccess() override {}
 
  private:
-  gles2::Texture* texture_;
+  CheckedPtr<gles2::Texture> texture_;
 
   DISALLOW_COPY_AND_ASSIGN(SharedImageRepresentationGLTextureVideo);
 };

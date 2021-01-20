@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -129,7 +130,7 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
   void NotifyOnTriggerScriptFinished(Metrics::LiteScriptFinishedState state);
 
   // Used to query login information for the current webcontents.
-  WebsiteLoginManager* website_login_manager_;
+  CheckedPtr<WebsiteLoginManager> website_login_manager_;
 
   // Callback that can be used to query whether a user has seen the trigger
   // script UI at least once or not.
@@ -201,7 +202,7 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
   int64_t initial_trigger_condition_evaluations_ = -1;
 
   // The UKM recorder used for metrics.
-  ukm::UkmRecorder* const ukm_recorder_;
+  const CheckedPtr<ukm::UkmRecorder> ukm_recorder_;
 
   // Flag to ensure that we only get one LiteScriptFinished event per run.
   bool finished_state_recorded_ = false;

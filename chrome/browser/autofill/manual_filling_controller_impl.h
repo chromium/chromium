@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/autofill/manual_filling_controller.h"
 #include "chrome/browser/autofill/manual_filling_view_interface.h"
@@ -106,7 +107,7 @@ class ManualFillingControllerImpl
   PasswordAccessoryController* GetPasswordController() const;
 
   // The tab for which this class is scoped.
-  content::WebContents* web_contents_ = nullptr;
+  CheckedPtr<content::WebContents> web_contents_ = nullptr;
 
   // This set contains sources to be shown to the user.
   base::flat_set<FillingSource> available_sources_;

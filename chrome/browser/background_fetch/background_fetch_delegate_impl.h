@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/download/public/background_service/download_params.h"
@@ -268,7 +269,7 @@ class BackgroundFetchDelegateImpl
                                 base::Optional<ukm::SourceId> source_id);
 
   // The profile this service is being created for.
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 
   // The namespace provided to the |offline_content_aggregator_| and used when
   // creating Content IDs.
@@ -276,7 +277,7 @@ class BackgroundFetchDelegateImpl
 
   // The BackgroundFetchDelegateImplFactory depends on the
   // DownloadServiceFactory, so |download_service_| should outlive |this|.
-  download::DownloadService* download_service_ = nullptr;
+  CheckedPtr<download::DownloadService> download_service_ = nullptr;
 
   // Map from individual download GUIDs to job unique ids.
   std::map<std::string, std::string> download_job_unique_id_map_;
@@ -284,7 +285,7 @@ class BackgroundFetchDelegateImpl
   // Map from job unique ids to the details of the job.
   std::map<std::string, JobDetails> job_details_map_;
 
-  offline_items_collection::OfflineContentAggregator*
+  CheckedPtr<offline_items_collection::OfflineContentAggregator>
       offline_content_aggregator_;
 
   // Set of Observers to be notified of any changes to the shown notifications.

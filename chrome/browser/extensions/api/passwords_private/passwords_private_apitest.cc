@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/observer_list.h"
@@ -107,7 +108,7 @@ class PasswordsPrivateApiTest : public ExtensionApiTest {
   }
 
  private:
-  TestPasswordsPrivateDelegate* s_test_delegate_ = nullptr;
+  CheckedPtr<TestPasswordsPrivateDelegate> s_test_delegate_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(PasswordsPrivateApiTest);
 };

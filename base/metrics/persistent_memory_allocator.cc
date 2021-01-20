@@ -516,10 +516,10 @@ PersistentMemoryAllocator::Reference PersistentMemoryAllocator::GetAsReference(
     const void* memory,
     uint32_t type_id) const {
   uintptr_t address = reinterpret_cast<uintptr_t>(memory);
-  if (address < reinterpret_cast<uintptr_t>(mem_base_))
+  if (address < reinterpret_cast<uintptr_t>(mem_base_.get()))
     return kReferenceNull;
 
-  uintptr_t offset = address - reinterpret_cast<uintptr_t>(mem_base_);
+  uintptr_t offset = address - reinterpret_cast<uintptr_t>(mem_base_.get());
   if (offset >= mem_size_ || offset < sizeof(BlockHeader))
     return kReferenceNull;
 
@@ -952,7 +952,8 @@ LocalPersistentMemoryAllocator::LocalPersistentMemoryAllocator(
                                 size, 0, id, name, false) {}
 
 LocalPersistentMemoryAllocator::~LocalPersistentMemoryAllocator() {
-  DeallocateLocalMemory(const_cast<char*>(mem_base_), mem_size_, mem_type_);
+  DeallocateLocalMemory(const_cast<char*>(mem_base_.get()), mem_size_,
+                        mem_type_);
 }
 
 // static

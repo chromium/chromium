@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/extensions/install_observer.h"
 #include "chrome/browser/extensions/install_tracker.h"
@@ -40,7 +41,7 @@ class ScopedActiveInstall : public InstallObserver {
   // InstallObserver implementation.
   void OnShutdown() override;
 
-  InstallTracker* tracker_;
+  CheckedPtr<InstallTracker> tracker_;
   ScopedObserver<InstallTracker, InstallObserver> tracker_observer_{this};
   const std::string extension_id_;
 

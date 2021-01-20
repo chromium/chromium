@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/android/password_edit_delegate.h"
 #include "chrome/browser/android/password_editing_bridge.h"
@@ -36,7 +37,7 @@ class PasswordEditDelegateSettingsImpl : public PasswordEditDelegate {
                          const base::string16& new_password) override;
 
  private:
-  Profile* profile_ = nullptr;
+  CheckedPtr<Profile> profile_ = nullptr;
   std::vector<base::string16> existing_usernames_;
   std::vector<std::unique_ptr<password_manager::PasswordForm>> forms_to_change_;
 };

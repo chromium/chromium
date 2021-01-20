@@ -11,6 +11,7 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -127,7 +128,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieManager
   // Handles connection errors on change listener pipes.
   void RemoveChangeListener(ListenerRegistration* registration);
 
-  net::CookieStore* const cookie_store_;
+  const CheckedPtr<net::CookieStore> cookie_store_;
   scoped_refptr<SessionCleanupCookieStore> session_cleanup_cookie_store_;
   mojo::ReceiverSet<mojom::CookieManager> receivers_;
   std::vector<std::unique_ptr<ListenerRegistration>> listener_registrations_;

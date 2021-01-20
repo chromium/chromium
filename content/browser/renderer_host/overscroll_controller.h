@@ -7,6 +7,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "cc/input/overscroll_behavior.h"
@@ -159,7 +160,7 @@ class CONTENT_EXPORT OverscrollController {
 
   // The delegate that receives the overscroll updates. The delegate is not
   // owned by this controller.
-  OverscrollControllerDelegate* delegate_ = nullptr;
+  CheckedPtr<OverscrollControllerDelegate> delegate_ = nullptr;
 
   // A inertial scroll (fling) event may complete an overscroll gesture and
   // navigate to a new page or cancel the overscroll animation. In both cases

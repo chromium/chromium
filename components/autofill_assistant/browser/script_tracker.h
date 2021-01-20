@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -129,8 +130,8 @@ class ScriptTracker : public ScriptExecutor::Listener {
   void OnScriptListChanged(
       std::vector<std::unique_ptr<Script>> scripts) override;
 
-  ScriptExecutorDelegate* const delegate_;
-  ScriptTracker::Listener* const listener_;
+  const CheckedPtr<ScriptExecutorDelegate> delegate_;
+  const CheckedPtr<ScriptTracker::Listener> listener_;
 
   // If true, a set of script has already been reported to
   // Listener::OnRunnableScriptsChanged.

@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/android/explore_sites/explore_sites_store.h"
 #include "chrome/browser/android/explore_sites/explore_sites_types.h"
 #include "components/offline_pages/task/task.h"
@@ -48,7 +49,7 @@ class GetImagesTask : public Task {
 
   void FinishedExecuting(EncodedImageList images);
 
-  ExploreSitesStore* store_;  // outlives this class.
+  CheckedPtr<ExploreSitesStore> store_;  // outlives this class.
 
   DataType data_type_;
   int id_;

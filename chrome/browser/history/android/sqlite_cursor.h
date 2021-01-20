@@ -12,6 +12,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -179,12 +180,12 @@ class SQLiteCursor {
   base::WaitableEvent event_;
 
   // The wrapped history::AndroidStatement.
-  history::AndroidStatement* statement_;
+  CheckedPtr<history::AndroidStatement> statement_;
 
   // Result set columns' name
   const std::vector<std::string> column_names_;
 
-  AndroidHistoryProviderService* service_;
+  CheckedPtr<AndroidHistoryProviderService> service_;
 
   // Live on UI thread.
   std::unique_ptr<base::CancelableTaskTracker> tracker_;
@@ -195,7 +196,7 @@ class SQLiteCursor {
   // The favicon image.
   favicon_base::FaviconRawBitmapResult favicon_bitmap_result_;
 
-  TestObserver* test_observer_;
+  CheckedPtr<TestObserver> test_observer_;
 
   DISALLOW_COPY_AND_ASSIGN(SQLiteCursor);
 };

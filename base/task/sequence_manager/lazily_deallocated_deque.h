@@ -14,6 +14,7 @@
 #include "base/check_op.h"
 #include "base/debug/alias.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 
 namespace base {
@@ -244,7 +245,7 @@ class LazilyDeallocatedDeque {
       while (!empty()) {
         pop_front();
       }
-      delete[] reinterpret_cast<char*>(data_);
+      delete[] reinterpret_cast<char*>(data_.get());
     }
 
     bool empty() const { return back_index_ == front_index_; }
@@ -313,7 +314,7 @@ class LazilyDeallocatedDeque {
     size_t capacity_;
     size_t front_index_;
     size_t back_index_;
-    T* data_;
+    CheckedPtr<T> data_;
     std::unique_ptr<Ring> next_;
   };
 
@@ -351,7 +352,7 @@ class LazilyDeallocatedDeque {
       index_ = ring_->CircularIncrement(ring->front_index_);
     }
 
-    const Ring* ring_;
+    CheckedPtr<const Ring> ring_;
     size_t index_;
 
     friend class LazilyDeallocatedDeque;
@@ -365,7 +366,7 @@ class LazilyDeallocatedDeque {
   // We maintain a list of Ring buffers, to enable us to grow without copying,
   // but most of the time we aim to have only one active Ring.
   std::unique_ptr<Ring> head_;
-  Ring* tail_ = nullptr;
+  CheckedPtr<Ring> tail_ = nullptr;
 
   size_t size_ = 0;
   size_t max_size_ = 0;

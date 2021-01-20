@@ -17,6 +17,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -992,7 +993,7 @@ class TestTabMirroringSession : public mirroring::mojom::SessionObserver,
   int udp_port_ = -1;
   SharedSenderReceiverConfigs shared_configs_;
 
-  CastV2PerformanceTest* const parent_;
+  const CheckedPtr<CastV2PerformanceTest> parent_;
   scoped_refptr<media::cast::StandaloneCastEnvironment> cast_environment_;
 };
 }  // namespace

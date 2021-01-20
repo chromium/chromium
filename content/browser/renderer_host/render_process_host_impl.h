@@ -21,6 +21,7 @@
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
@@ -1020,7 +1021,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // The tick clock used to get the current time.  Used for determining
   // |init_time_| and |background_status_update_time_| for metrics.  Can be
   // replaced by tests.
-  const base::TickClock* clock_;
+  CheckedPtr<const base::TickClock> clock_;
 
   // Used to allow a RenderWidgetHost to intercept various messages on the
   // IO thread.
@@ -1047,7 +1048,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   BrowserContext* const browser_context_;
 
   // Owned by |browser_context_|.
-  StoragePartitionImpl* const storage_partition_impl_;
+  const CheckedPtr<StoragePartitionImpl> storage_partition_impl_;
 
   // Owns the singular DomStorageProvider binding established by this renderer.
   mojo::Receiver<blink::mojom::DomStorageProvider>

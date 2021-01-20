@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/aura_extra/aura_extra_export.h"
@@ -76,7 +77,7 @@ class AURA_EXTRA_EXPORT WindowsDesktopWindowIterator
 
   static BOOL CALLBACK EnumWindowsOcclusionCallback(HWND hwnd, LPARAM lParam);
 
-  WindowEvaluator* evaluator_ = nullptr;
+  CheckedPtr<WindowEvaluator> evaluator_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(WindowsDesktopWindowIterator);
 };

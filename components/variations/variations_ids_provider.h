@@ -13,6 +13,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/observer_list.h"
 #include "base/synchronization/lock.h"
@@ -261,7 +262,7 @@ class VariationsIdsProvider : public base::FieldTrialList::Observer,
   // https://crbug.com/1051937 this isn't currently possible.
   base::ObserverList<Observer>::Unchecked observer_list_;
 
-  const VariationsClient* variations_client_ = nullptr;
+  CheckedPtr<const VariationsClient> variations_client_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(VariationsIdsProvider);
 };

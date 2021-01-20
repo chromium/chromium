@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -163,7 +164,7 @@ class SupervisedUserServiceTest : public ::testing::Test {
       identity_test_environment_adaptor_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
-  SupervisedUserService* supervised_user_service_;
+  CheckedPtr<SupervisedUserService> supervised_user_service_;
 };
 
 }  // namespace

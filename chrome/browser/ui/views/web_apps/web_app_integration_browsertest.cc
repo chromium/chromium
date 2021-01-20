@@ -4,6 +4,7 @@
 
 #include "base/base_paths.h"
 #include "base/files/file_util.h"
+#include "base/memory/checked_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/string_split.h"
 #include "base/test/bind.h"
@@ -574,13 +575,13 @@ class WebAppIntegrationBrowserTest
   PageActionIconView* pwa_install_view() { return pwa_install_view_; }
 
  private:
-  Browser* app_browser_ = nullptr;
+  CheckedPtr<Browser> app_browser_ = nullptr;
   std::vector<AppId> app_ids_;
   std::vector<std::string> testing_actions_;
   NavigateToSiteResult last_navigation_result_;
   AppId app_id_;
   net::EmbeddedTestServer https_server_;
-  PageActionIconView* pwa_install_view_ = nullptr;
+  CheckedPtr<PageActionIconView> pwa_install_view_ = nullptr;
   ScopedOsHooksSuppress os_hooks_suppress_;
 };
 

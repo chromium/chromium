@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "content/common/frame_messages.h"
@@ -77,7 +78,7 @@ class FakeWebContentsDelegate : public WebContentsDelegate {
   }
 
  private:
-  WebContents* fullscreened_contents_ = nullptr;
+  CheckedPtr<WebContents> fullscreened_contents_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(FakeWebContentsDelegate);
 };

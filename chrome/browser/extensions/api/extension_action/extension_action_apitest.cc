@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observer.h"
 #include "base/strings/strcat.h"
@@ -175,7 +176,7 @@ class ActionTestHelper {
   // The name of the property in the set method details (e.g., "popup").
   const char* const js_property_key_;
   // The associated profile.
-  Profile* const profile_;
+  const CheckedPtr<Profile> profile_;
   // The id of the extension.
   const ExtensionId extension_id_;
 

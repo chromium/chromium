@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_CLIENT_HINTS_CRITICAL_CLIENT_HINTS_THROTTLE_H_
 #define CONTENT_BROWSER_CLIENT_HINTS_CRITICAL_CLIENT_HINTS_THROTTLE_H_
 
+#include "base/memory/checked_ptr.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 
@@ -40,8 +41,8 @@ class CriticalClientHintsThrottle : public blink::URLLoaderThrottle {
                            bool* defer) override;
 
  private:
-  BrowserContext* context_;
-  ClientHintsControllerDelegate* client_hint_delegate_;
+  CheckedPtr<BrowserContext> context_;
+  CheckedPtr<ClientHintsControllerDelegate> client_hint_delegate_;
   int frame_tree_node_id_;
   // This ensures the navigation doesn't turn into an infinite loop (this
   // object should stay alive until the navigation is committed). On finding a

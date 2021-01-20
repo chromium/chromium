@@ -11,6 +11,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
@@ -99,7 +100,7 @@ class ChromeSigninClient
   void OnAccessTokenAvailable(GoogleServiceAuthError error,
                               signin::AccessTokenInfo access_token_info);
 
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 
   // Stored callback from PreSignOut();
   base::OnceCallback<void(SignoutDecision)> on_signout_decision_reached_;

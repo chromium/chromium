@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ANDROID_PREFERENCES_COOKIE_CONTROLS_SERVICE_BRIDGE_H_
 
 #include "base/android/jni_weak_ref.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/cookie_controls/cookie_controls_service.h"
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
 
@@ -36,7 +37,7 @@ class CookieControlsServiceBridge : public CookieControlsService::Observer {
   // Starts a service to observe the current profile.
   void UpdateServiceIfNecessary();
 
-  CookieControlsService* service_;
+  CheckedPtr<CookieControlsService> service_;
   base::android::ScopedJavaGlobalRef<jobject> jobject_;
 
   DISALLOW_COPY_AND_ASSIGN(CookieControlsServiceBridge);

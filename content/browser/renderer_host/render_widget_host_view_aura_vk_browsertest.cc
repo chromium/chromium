@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/win/windows_version.h"
 #include "content/browser/accessibility/browser_accessibility.h"
@@ -239,8 +240,8 @@ class RenderWidgetHostViewAuraBrowserMockIMETest : public ContentBrowserTest {
   }
 
  protected:
-  KeyboardControllerMockInputMethod* input_method_ = nullptr;
-  VirtualKeyboardObserver* mock_keyboard_observer_ = nullptr;
+  CheckedPtr<KeyboardControllerMockInputMethod> input_method_ = nullptr;
+  CheckedPtr<VirtualKeyboardObserver> mock_keyboard_observer_ = nullptr;
 
  private:
   BrowserAccessibility* FindNodeInSubtree(BrowserAccessibility& node,

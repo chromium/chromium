@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sync/driver/model_type_controller.h"
 
@@ -36,8 +37,8 @@ class SessionModelTypeController : public syncer::ModelTypeController {
  private:
   void OnSavingBrowserHistoryPrefChanged();
 
-  syncer::SyncService* const sync_service_;
-  PrefService* const pref_service_;
+  const CheckedPtr<syncer::SyncService> sync_service_;
+  const CheckedPtr<PrefService> pref_service_;
 
   // Name of the pref that indicates whether saving history is disabled.
   const std::string history_disabled_pref_name_;

@@ -8,6 +8,7 @@
 #include <set>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
@@ -49,7 +50,7 @@ class TestExtensionActionAPIObserver : public ExtensionActionAPI::Observer {
       content::WebContents* web_contents,
       content::BrowserContext* browser_context) override;
 
-  content::WebContents* last_web_contents_ = nullptr;
+  CheckedPtr<content::WebContents> last_web_contents_ = nullptr;
   ExtensionId extension_id_;
   base::RunLoop run_loop_;
   ScopedObserver<ExtensionActionAPI, ExtensionActionAPI::Observer>

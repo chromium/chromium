@@ -10,6 +10,7 @@
 
 #include "base/android/jni_weak_ref.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -163,8 +164,8 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
   bool inside_synchronous_start_;
 
   JavaObjectWeakGlobalRef weak_java_autocomplete_controller_android_;
-  Profile* profile_;
-  ChromeAutocompleteProviderClient* provider_client_;
+  CheckedPtr<Profile> profile_;
+  CheckedPtr<ChromeAutocompleteProviderClient> provider_client_;
 
   // Whether the omnibox input is a query that starts building
   // by clicking on an image tile.

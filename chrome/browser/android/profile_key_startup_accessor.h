@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ANDROID_PROFILE_KEY_STARTUP_ACCESSOR_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 
 class ProfileKey;
 
@@ -31,7 +32,7 @@ class ProfileKeyStartupAccessor {
   void Reset();
 
  private:
-  ProfileKey* key_;
+  CheckedPtr<ProfileKey> key_;
 };
 
 #endif  // CHROME_BROWSER_ANDROID_PROFILE_KEY_STARTUP_ACCESSOR_H_

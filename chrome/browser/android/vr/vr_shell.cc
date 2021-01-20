@@ -166,9 +166,9 @@ VrShell::VrShell(JNIEnv* env,
       std::move(surface_callback));
   ui_ = gl_thread_.get();
   toolbar_ = std::make_unique<LocationBarHelper>(ui_, this);
-  autocomplete_controller_ =
-      std::make_unique<AutocompleteController>(base::BindRepeating(
-          &BrowserUiInterface::SetOmniboxSuggestions, base::Unretained(ui_)));
+  autocomplete_controller_ = std::make_unique<AutocompleteController>(
+      base::BindRepeating(&BrowserUiInterface::SetOmniboxSuggestions,
+                          base::Unretained(ui_.get())));
 
   gl_thread_->Start();
 
@@ -715,7 +715,7 @@ void VrShell::UpdateWebInputIndices(
 }
 
 content::WebContents* VrShell::GetNonNativePageWebContents() const {
-  return !web_contents_is_native_page_ ? web_contents_ : nullptr;
+  return !web_contents_is_native_page_ ? web_contents_.get() : nullptr;
 }
 
 void VrShell::OnUnsupportedMode(UiUnsupportedMode mode) {
@@ -934,7 +934,7 @@ void VrShell::PollCapturingState() {
         ui->SetCapturingState(*active_capturing, *background_capturing,
                               *potential_capturing);
       },
-      base::Unretained(this), base::Unretained(ui_),
+      base::Unretained(this), base::Unretained(ui_.get()),
       base::Unretained(&active_capturing_),
       base::Unretained(&background_capturing_),
       base::Unretained(&potential_capturing_)));

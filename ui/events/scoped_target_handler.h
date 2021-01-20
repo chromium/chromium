@@ -6,6 +6,7 @@
 #define UI_EVENTS_SCOPED_TARGET_HANDLER_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string_piece.h"
 #include "ui/events/event_handler.h"
 #include "ui/events/events_export.h"
@@ -31,17 +32,17 @@ class EVENTS_EXPORT ScopedTargetHandler : public EventHandler {
  private:
   // If non-null the destructor sets this to true. This is set while handling
   // an event and used to detect if |this| has been deleted.
-  bool* destroyed_flag_;
+  CheckedPtr<bool> destroyed_flag_;
 
   // An EventTarget that has its target handler replaced with |this| for a life
   // time of |this|.
-  EventTarget* target_;
+  CheckedPtr<EventTarget> target_;
 
   // An EventHandler that gets restored on |view_| when |this| is destroyed.
-  EventHandler* original_handler_;
+  CheckedPtr<EventHandler> original_handler_;
 
   // A new handler that gets events in addition to the |original_handler_|.
-  EventHandler* new_handler_;
+  CheckedPtr<EventHandler> new_handler_;
 
   DISALLOW_COPY_AND_ASSIGN(ScopedTargetHandler);
 };

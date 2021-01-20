@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/autofill/autofill_keyboard_accessory_adapter.h"
@@ -141,7 +142,7 @@ class AutofillKeyboardAccessoryAdapterTest : public testing::Test {
   MockAccessoryView* view() { return accessory_view_; }
 
  private:
-  StrictMock<MockAccessoryView>* accessory_view_;
+  CheckedPtr<StrictMock<MockAccessoryView>> accessory_view_;
   std::unique_ptr<StrictMock<MockAutofillPopupController>> popup_controller_;
   std::unique_ptr<AutofillKeyboardAccessoryAdapter> autofill_accessory_adapter_;
 };

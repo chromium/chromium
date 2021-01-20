@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_DEVICE_API_MANAGED_CONFIGURATION_API_H_
 
 #include "base/files/file_path.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
 #include "base/values.h"
@@ -84,7 +85,7 @@ class ManagedConfigurationAPI : public KeyedService {
   ManagedConfigurationStore* GetOrLoadStoreForOrigin(const url::Origin& origin);
   base::FilePath GetStoreLocation(const url::Origin& origin);
 
-  Profile* const profile_;
+  const CheckedPtr<Profile> profile_;
 
   const base::FilePath stores_path_;
   std::map<url::Origin, std::unique_ptr<ManagedConfigurationStore>> store_map_;

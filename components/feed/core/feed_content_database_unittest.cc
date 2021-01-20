@@ -7,6 +7,7 @@
 #include <map>
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -146,7 +147,7 @@ class FeedContentDatabaseTest : public testing::Test {
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   // Owned by |feed_db_|.
-  FakeDB<ContentStorageProto>* content_db_;
+  CheckedPtr<FakeDB<ContentStorageProto>> content_db_;
 
   std::unique_ptr<FeedContentDatabase> feed_db_;
 

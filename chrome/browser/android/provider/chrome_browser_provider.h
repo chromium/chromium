@@ -10,6 +10,7 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -179,7 +180,7 @@ class ChromeBrowserProvider : public bookmarks::BaseBookmarkModelObserver,
   //
   // HistoryService and history::TopSites lifetime is bound to the lifetime of
   // Profile, they are safe to use as long as the Profile is alive.
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
   scoped_refptr<history::TopSites> top_sites_;
 
   base::WeakPtr<bookmarks::BookmarkModel> bookmark_model_;

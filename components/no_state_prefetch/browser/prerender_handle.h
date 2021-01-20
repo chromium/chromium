@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/no_state_prefetch/browser/prerender_manager.h"
 
@@ -80,7 +81,7 @@ class PrerenderHandle : public PrerenderContents::Observer {
   void OnPrerenderNetworkBytesChanged(
       PrerenderContents* prerender_contents) override;
 
-  Observer* observer_;
+  CheckedPtr<Observer> observer_;
 
   base::WeakPtr<PrerenderManager::PrerenderData> prerender_data_;
   base::WeakPtrFactory<PrerenderHandle> weak_ptr_factory_{this};

@@ -810,7 +810,7 @@ bool ExtensionService::UninstallExtension(
        by_policy->MustRemainInstalled(extension.get(), error))) {
     content::NotificationService::current()->Notify(
         NOTIFICATION_EXTENSION_UNINSTALL_NOT_ALLOWED,
-        content::Source<Profile>(profile_),
+        content::Source<Profile>(profile_.get()),
         content::Details<const Extension>(extension.get()));
     return false;
   }

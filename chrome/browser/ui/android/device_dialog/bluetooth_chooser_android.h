@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_ANDROID_DEVICE_DIALOG_BLUETOOTH_CHOOSER_ANDROID_H_
 
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/checked_ptr.h"
 #include "content/public/browser/bluetooth_chooser.h"
 #include "content/public/browser/web_contents.h"
 
@@ -47,7 +48,7 @@ class BluetoothChooserAndroid : public content::BluetoothChooser {
   void OpenURL(const char* url);
   base::android::ScopedJavaGlobalRef<jobject> java_dialog_;
 
-  content::WebContents* web_contents_;
+  CheckedPtr<content::WebContents> web_contents_;
   BluetoothChooser::EventHandler event_handler_;
 };
 

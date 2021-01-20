@@ -4,6 +4,7 @@
 
 #include "cc/input/scroll_elasticity_helper.h"
 
+#include "base/memory/checked_ptr.h"
 #include "cc/layers/layer_impl.h"
 #include "cc/trees/layer_tree_host_impl.h"
 #include "cc/trees/layer_tree_impl.h"
@@ -26,7 +27,7 @@ class ScrollElasticityHelperImpl : public ScrollElasticityHelper {
   void RequestOneBeginFrame() override;
 
  private:
-  LayerTreeHostImpl* host_impl_;
+  CheckedPtr<LayerTreeHostImpl> host_impl_;
 };
 
 ScrollElasticityHelperImpl::ScrollElasticityHelperImpl(

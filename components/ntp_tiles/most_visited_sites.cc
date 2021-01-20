@@ -222,7 +222,7 @@ void MostVisitedSites::SetMostVisitedURLsObserver(Observer* observer,
   }
 
   if (repeatable_queries_) {
-    repeatable_queries_observation_.Observe(repeatable_queries_);
+    repeatable_queries_observation_.Observe(repeatable_queries_.get());
   }
 
   if (custom_links_) {

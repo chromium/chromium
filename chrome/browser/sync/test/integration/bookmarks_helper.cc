@@ -16,6 +16,7 @@
 #include "base/files/file_util.h"
 #include "base/guid.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/path_service.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
@@ -145,8 +146,8 @@ class FaviconChangeObserver : public bookmarks::BookmarkModelObserver {
   }
 
  private:
-  BookmarkModel* model_;
-  const BookmarkNode* node_;
+  CheckedPtr<BookmarkModel> model_;
+  CheckedPtr<const BookmarkNode> node_;
   base::RunLoop run_loop_;
   DISALLOW_COPY_AND_ASSIGN(FaviconChangeObserver);
 };

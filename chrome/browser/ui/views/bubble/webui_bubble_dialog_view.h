@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_BUBBLE_WEBUI_BUBBLE_DIALOG_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_BUBBLE_WEBUI_BUBBLE_DIALOG_VIEW_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_view.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -35,7 +36,7 @@ class WebUIBubbleDialogView : public views::BubbleDialogDelegateView,
   void OnWebViewSizeChanged() override;
 
  private:
-  WebUIBubbleView* web_view_ = nullptr;
+  CheckedPtr<WebUIBubbleView> web_view_ = nullptr;
   base::WeakPtrFactory<WebUIBubbleDialogView> weak_factory_{this};
 };
 

@@ -9,6 +9,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -256,7 +257,7 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
       std::unordered_map<int, scoped_refptr<AnimationTimeline>>;
   IdToTimelineMap id_to_timeline_map_;
 
-  MutatorHostClient* mutator_host_client_;
+  CheckedPtr<MutatorHostClient> mutator_host_client_;
 
   // Exactly one of scroll_offset_animations_ and scroll_offset_animations_impl_
   // will be non-null for a given AnimationHost instance (the former if

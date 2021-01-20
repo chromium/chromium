@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_SCHEDULER_BROWSER_IO_THREAD_DELEGATE_H_
 #define CONTENT_BROWSER_SCHEDULER_BROWSER_IO_THREAD_DELEGATE_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequence_manager/task_queue.h"
@@ -73,7 +74,7 @@ class CONTENT_EXPORT BrowserIOThreadDelegate : public base::Thread::Delegate {
   const std::unique_ptr<base::sequence_manager::SequenceManager>
       owned_sequence_manager_;
 
-  base::sequence_manager::SequenceManager* const sequence_manager_;
+  const CheckedPtr<base::sequence_manager::SequenceManager> sequence_manager_;
 
   std::unique_ptr<BrowserTaskQueues> task_queues_;
   scoped_refptr<base::SingleThreadTaskRunner> default_task_runner_;
@@ -83,7 +84,7 @@ class CONTENT_EXPORT BrowserIOThreadDelegate : public base::Thread::Delegate {
   // behaves as expected.
   std::unique_ptr<TLSMultiplexer> tls_multiplexer_;
 
-  base::TaskExecutor* task_executor_ = nullptr;
+  CheckedPtr<base::TaskExecutor> task_executor_ = nullptr;
 };
 
 }  // namespace content

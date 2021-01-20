@@ -15,6 +15,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/chrome_notification_types.h"
@@ -70,7 +71,7 @@ class ExtensionUserScriptLoaderTest : public testing::Test,
   base::ScopedTempDir temp_dir_;
 
   // Updated to the script shared memory when we get notified.
-  base::ReadOnlySharedMemoryRegion* shared_memory_;
+  CheckedPtr<base::ReadOnlySharedMemoryRegion> shared_memory_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;

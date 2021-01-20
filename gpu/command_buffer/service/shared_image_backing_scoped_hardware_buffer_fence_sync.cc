@@ -6,6 +6,7 @@
 
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
 #include "base/android/scoped_hardware_buffer_handle.h"
+#include "base/memory/checked_ptr.h"
 #include "base/posix/eintr_wrapper.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "components/viz/common/resources/resource_format_utils.h"
@@ -158,7 +159,7 @@ class SharedImageRepresentationGLTextureScopedHardwareBufferFenceSync
     return ahb_backing;
   }
 
-  gles2::Texture* texture_;
+  CheckedPtr<gles2::Texture> texture_;
 
   DISALLOW_COPY_AND_ASSIGN(
       SharedImageRepresentationGLTextureScopedHardwareBufferFenceSync);

@@ -15,6 +15,7 @@
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -117,7 +118,7 @@ class ImageReaderGLOwner::ScopedHardwareBufferImpl
  private:
   base::ScopedFD read_fence_;
   base::WeakPtr<ImageReaderGLOwner> texture_owner_;
-  AImage* image_;
+  CheckedPtr<AImage> image_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };
 

@@ -8,6 +8,7 @@
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/checked_ptr.h"
 #include "components/prefs/pref_service.h"
 #include "components/safety_check/safety_check.h"
 
@@ -36,7 +37,7 @@ class SafetyCheckBridge
  private:
   virtual ~SafetyCheckBridge();
 
-  PrefService* pref_service_ = nullptr;
+  CheckedPtr<PrefService> pref_service_ = nullptr;
   std::unique_ptr<safety_check::SafetyCheck> safety_check_;
   base::android::ScopedJavaGlobalRef<jobject> j_safety_check_observer_;
 };

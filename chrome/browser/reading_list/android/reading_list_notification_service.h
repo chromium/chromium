@@ -9,6 +9,7 @@
 #include <queue>
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -102,14 +103,15 @@ class ReadingListNotificationServiceImpl
   // Gets the next notification show time.
   base::Time GetShowTime() const;
 
-  ReadingListModel* reading_list_model_;
-  notifications::NotificationScheduleService* notification_scheduler_;
+  CheckedPtr<ReadingListModel> reading_list_model_;
+  CheckedPtr<notifications::NotificationScheduleService>
+      notification_scheduler_;
   std::unique_ptr<ReadingListNotificationDelegate> delegate_;
 
   // Closures cached by MaybeCallSoon().
   std::queue<base::OnceClosure> cached_closures_;
   std::unique_ptr<Config> config_;
-  base::Clock* clock_;
+  CheckedPtr<base::Clock> clock_;
 
   base::WeakPtrFactory<ReadingListNotificationServiceImpl> weak_ptr_factory_{
       this};

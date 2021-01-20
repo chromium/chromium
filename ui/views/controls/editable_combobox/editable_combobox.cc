@@ -11,6 +11,7 @@
 #include "base/check_op.h"
 #include "base/i18n/rtl.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -136,7 +137,7 @@ class EditableCombobox::EditableComboboxMenuModel
         filter_on_edit_(filter_on_edit),
         show_on_empty_(show_on_empty) {
     UpdateItemsShown();
-    observation_.Observe(combobox_model_);
+    observation_.Observe(combobox_model_.get());
   }
 
   ~EditableComboboxMenuModel() override = default;
@@ -236,8 +237,8 @@ class EditableCombobox::EditableComboboxMenuModel
 
   MenuModel* GetSubmenuModelAt(int index) const override { return nullptr; }
 
-  EditableCombobox* owner_;            // Weak. Owns |this|.
-  ui::ComboboxModel* combobox_model_;  // Weak.
+  CheckedPtr<EditableCombobox> owner_;            // Weak. Owns |this|.
+  CheckedPtr<ui::ComboboxModel> combobox_model_;  // Weak.
 
   // Whether to adapt the items shown to the textfield content.
   const bool filter_on_edit_;
@@ -298,8 +299,8 @@ class EditableCombobox::EditableComboboxPreTargetHandler
     root_view_ = nullptr;
   }
 
-  EditableCombobox* owner_;
-  View* root_view_;
+  CheckedPtr<EditableCombobox> owner_;
+  CheckedPtr<View> root_view_;
 
   DISALLOW_COPY_AND_ASSIGN(EditableComboboxPreTargetHandler);
 };
@@ -323,13 +324,13 @@ EditableCombobox::EditableCombobox(
       show_on_empty_(show_on_empty),
       showing_password_text_(type != Type::kPassword) {
   SetModel(std::move(combobox_model));
-  observation_.Observe(textfield_);
+  observation_.Observe(textfield_.get());
   textfield_->set_controller(this);
   textfield_->SetFontList(GetFontList());
   textfield_->SetTextInputType((type == Type::kPassword)
                                    ? ui::TEXT_INPUT_TYPE_PASSWORD
                                    : ui::TEXT_INPUT_TYPE_TEXT);
-  AddChildView(textfield_);
+  AddChildView(textfield_.get());
   if (display_arrow) {
     textfield_->SetExtraInsets(gfx::Insets(
         /*top=*/0, /*left=*/0, /*bottom=*/0,
