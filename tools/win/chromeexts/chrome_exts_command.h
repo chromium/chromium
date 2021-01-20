@@ -58,8 +58,14 @@ class ChromeExtsCommand {
   HRESULT PrintErrorV(const char* format, va_list ap);
 
   const std::string& args() const { return args_; }
-  IDebugClient* debug_client() { return debug_client_.Get(); }
-  IDebugControl* debug_control() { return debug_control_.Get(); }
+
+  // Returns the Debug Client as T, null ComPtr<T> otherwise.
+  template <typename T>
+  ComPtr<T> GetDebugClientAs() {
+    ComPtr<T> target_interface;
+    debug_client_.As(&target_interface);
+    return target_interface;
+  }
 
  private:
   std::string args_;

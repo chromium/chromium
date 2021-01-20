@@ -20,9 +20,9 @@ HRESULT ChromeExtsCommand::Initialize(IDebugClient* debug_client,
   DCHECK(args);
   args_ = args;
   debug_client_ = debug_client;
-  HRESULT hr = debug_client_->QueryInterface(IID_PPV_ARGS(&debug_control_));
-  if (FAILED(hr)) {
-    return hr;
+  debug_control_ = GetDebugClientAs<IDebugControl>();
+  if (!debug_control_) {
+    return E_FAIL;
   }
   return S_OK;
 }

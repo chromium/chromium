@@ -25,8 +25,8 @@ HRESULT HwndCommand::Execute() {
   // and truncate the displayed hwnds to 32-bit below.
   // See https://msdn.microsoft.com/en-us/library/aa384203.aspx
   DEBUG_VALUE value;
-  HRESULT hr = debug_control()->Evaluate(args().c_str(), DEBUG_VALUE_INT64,
-                                         &value, nullptr);
+  HRESULT hr = GetDebugClientAs<IDebugControl>()->Evaluate(
+      args().c_str(), DEBUG_VALUE_INT64, &value, nullptr);
   if (FAILED(hr)) {
     PrintErrorf("Unable to evaluate %s\n", args().c_str());
     return hr;
