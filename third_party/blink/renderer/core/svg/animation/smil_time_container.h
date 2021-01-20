@@ -135,7 +135,7 @@ class CORE_EXPORT SMILTimeContainer final
   bool document_order_indexes_dirty_ : 1;
   bool is_updating_intervals_;
 
-  TaskRunnerTimer<SMILTimeContainer> wakeup_timer_;
+  HeapTaskRunnerTimer<SMILTimeContainer> wakeup_timer_;
 
   using AnimatedTargets = HeapHashCountedSet<WeakMember<SVGElement>>;
   AnimatedTargets animated_targets_;

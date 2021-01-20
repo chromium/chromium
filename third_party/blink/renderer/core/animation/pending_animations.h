@@ -103,7 +103,7 @@ class CORE_EXPORT PendingAnimations final
 
   HeapVector<Member<Animation>> pending_;
   HeapVector<Member<Animation>> waiting_for_compositor_animation_start_;
-  TaskRunnerTimer<PendingAnimations> timer_;
+  HeapTaskRunnerTimer<PendingAnimations> timer_;
   int compositor_group_;
   bool inside_timer_fired_;
 };

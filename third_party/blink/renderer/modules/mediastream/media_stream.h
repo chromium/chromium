@@ -177,7 +177,7 @@ class MODULES_EXPORT MediaStream final
   // including image capture for video tracks.
   base::OnceCallback<void(MediaStream*)> media_stream_initialized_callback_;
 
-  TaskRunnerTimer<MediaStream> scheduled_event_timer_;
+  HeapTaskRunnerTimer<MediaStream> scheduled_event_timer_;
   HeapVector<Member<Event>> scheduled_events_;
 
   uint32_t number_of_video_tracks_initialized_ = 0;

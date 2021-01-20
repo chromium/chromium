@@ -447,7 +447,7 @@ class PLATFORM_EXPORT ResourceFetcher
   HeapVector<Member<Resource>> matched_preloads_;
   Member<MHTMLArchive> archive_;
 
-  TaskRunnerTimer<ResourceFetcher> resource_timing_report_timer_;
+  HeapTaskRunnerTimer<ResourceFetcher> resource_timing_report_timer_;
 
   TaskHandle unused_preloads_timer_;
 

@@ -38,8 +38,10 @@
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/graphics/overlay_scrollbar_clip_behavior.h"
+#include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -628,7 +630,7 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   mutable Member<ScrollAnimatorBase> scroll_animator_;
   mutable Member<ProgrammaticScrollAnimator> programmatic_scroll_animator_;
 
-  std::unique_ptr<TaskRunnerTimer<ScrollableArea>>
+  Member<DisallowNewWrapper<HeapTaskRunnerTimer<ScrollableArea>>>
       fade_overlay_scrollbars_timer_;
 
   Vector<ScrollCallback> pending_scroll_complete_callbacks_;

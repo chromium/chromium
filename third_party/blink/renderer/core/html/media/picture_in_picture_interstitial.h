@@ -61,7 +61,7 @@ class PictureInPictureInterstitial final : public HTMLDivElement {
   // necessary.
   Member<ResizeObserver> resize_observer_;
 
-  TaskRunnerTimer<PictureInPictureInterstitial> interstitial_timer_;
+  HeapTaskRunnerTimer<PictureInPictureInterstitial> interstitial_timer_;
   Member<HTMLVideoElement> video_element_;
   Member<HTMLImageElement> background_image_;
   Member<HTMLDivElement> message_element_;

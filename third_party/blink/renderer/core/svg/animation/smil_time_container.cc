@@ -608,6 +608,7 @@ void SMILTimeContainer::AdvanceFrameForTesting() {
 }
 
 void SMILTimeContainer::Trace(Visitor* visitor) const {
+  visitor->Trace(wakeup_timer_);
   visitor->Trace(animated_targets_);
   visitor->Trace(priority_queue_);
   visitor->Trace(owner_svg_element_);

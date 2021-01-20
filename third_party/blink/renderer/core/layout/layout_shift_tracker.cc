@@ -670,6 +670,7 @@ void LayoutShiftTracker::SetLayoutShiftRects(const Vector<IntRect>& int_rects) {
 
 void LayoutShiftTracker::Trace(Visitor* visitor) const {
   visitor->Trace(frame_view_);
+  visitor->Trace(timer_);
 }
 
 ReattachHookScope::ReattachHookScope(const Node& node) : outer_(top_) {

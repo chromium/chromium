@@ -343,6 +343,7 @@ HTMLMediaElement* HTMLTrackElement::MediaElement() const {
 void HTMLTrackElement::Trace(Visitor* visitor) const {
   visitor->Trace(track_);
   visitor->Trace(loader_);
+  visitor->Trace(load_timer_);
   HTMLElement::Trace(visitor);
 }
 

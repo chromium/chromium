@@ -81,7 +81,7 @@ class TextTrackLoader final : public GarbageCollected<TextTrackLoader>,
   Member<VTTParser> cue_parser_;
   // FIXME: Remove this pointer and get the Document from m_client.
   Member<Document> document_;
-  TaskRunnerTimer<TextTrackLoader> cue_load_timer_;
+  HeapTaskRunnerTimer<TextTrackLoader> cue_load_timer_;
   State state_;
   bool new_cues_available_;
 };

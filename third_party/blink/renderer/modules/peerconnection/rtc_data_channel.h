@@ -176,7 +176,7 @@ class MODULES_EXPORT RTCDataChannel final
   enum BinaryType { kBinaryTypeBlob, kBinaryTypeArrayBuffer };
   BinaryType binary_type_;
 
-  TaskRunnerTimer<RTCDataChannel> scheduled_event_timer_;
+  HeapTaskRunnerTimer<RTCDataChannel> scheduled_event_timer_;
   HeapVector<Member<Event>> scheduled_events_;
   FRIEND_TEST_ALL_PREFIXES(RTCDataChannelTest, Open);
   FRIEND_TEST_ALL_PREFIXES(RTCDataChannelTest, Close);

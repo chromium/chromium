@@ -2130,6 +2130,9 @@ HTMLVideoElement& MediaControlsImpl::VideoElement() {
 
 void MediaControlsImpl::Trace(Visitor* visitor) const {
   visitor->Trace(element_mutation_callback_);
+  visitor->Trace(element_size_changed_timer_);
+  visitor->Trace(tap_timer_);
+  visitor->Trace(volume_slider_wanted_timer_);
   visitor->Trace(resize_observer_);
   visitor->Trace(panel_);
   visitor->Trace(overlay_play_button_);
@@ -2156,6 +2159,7 @@ void MediaControlsImpl::Trace(Visitor* visitor) const {
   visitor->Trace(orientation_lock_delegate_);
   visitor->Trace(rotate_to_fullscreen_delegate_);
   visitor->Trace(display_cutout_delegate_);
+  visitor->Trace(hide_media_controls_timer_);
   visitor->Trace(media_button_panel_);
   visitor->Trace(loading_panel_);
   visitor->Trace(display_cutout_fullscreen_button_);

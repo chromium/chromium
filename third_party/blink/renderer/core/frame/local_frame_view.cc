@@ -290,6 +290,7 @@ LocalFrameView::~LocalFrameView() {
 
 void LocalFrameView::Trace(Visitor* visitor) const {
   visitor->Trace(frame_);
+  visitor->Trace(update_plugins_timer_);
   visitor->Trace(fragment_anchor_);
   visitor->Trace(scrollable_areas_);
   visitor->Trace(animating_scrollable_areas_);

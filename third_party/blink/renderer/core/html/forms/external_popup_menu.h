@@ -90,7 +90,7 @@ class CORE_EXPORT ExternalPopupMenu final
   Member<HTMLSelectElement> owner_element_;
   Member<LocalFrame> local_frame_;
   std::unique_ptr<WebMouseEvent> synthetic_event_;
-  TaskRunnerTimer<ExternalPopupMenu> dispatch_event_timer_;
+  HeapTaskRunnerTimer<ExternalPopupMenu> dispatch_event_timer_;
   // The actual implementor of the show menu.
   HeapMojoReceiver<mojom::blink::PopupMenuClient,
                    ExternalPopupMenu,

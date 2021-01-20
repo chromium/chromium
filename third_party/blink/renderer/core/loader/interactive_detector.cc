@@ -615,6 +615,7 @@ void InteractiveDetector::ContextDestroyed() {
 }
 
 void InteractiveDetector::Trace(Visitor* visitor) const {
+  visitor->Trace(time_to_interactive_timer_);
   Supplement<Document>::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }

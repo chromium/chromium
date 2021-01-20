@@ -8733,6 +8733,8 @@ void WebGLRenderingContextBase::TextureUnitState::Trace(
 
 void WebGLRenderingContextBase::Trace(Visitor* visitor) const {
   visitor->Trace(context_group_);
+  visitor->Trace(dispatch_context_lost_event_timer_);
+  visitor->Trace(restore_timer_);
   visitor->Trace(bound_array_buffer_);
   visitor->Trace(default_vertex_array_object_);
   visitor->Trace(bound_vertex_array_object_);

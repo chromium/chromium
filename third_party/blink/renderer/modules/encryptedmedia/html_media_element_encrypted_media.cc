@@ -55,7 +55,7 @@ class SetMediaKeysHandler : public ScriptPromiseResolver {
   Member<HTMLMediaElement> element_;
   Member<MediaKeys> new_media_keys_;
   bool made_reservation_;
-  TaskRunnerTimer<SetMediaKeysHandler> timer_;
+  HeapTaskRunnerTimer<SetMediaKeysHandler> timer_;
 
   DISALLOW_COPY_AND_ASSIGN(SetMediaKeysHandler);
 };
@@ -323,6 +323,7 @@ void SetMediaKeysHandler::SetFailed(ExceptionCode code,
 void SetMediaKeysHandler::Trace(Visitor* visitor) const {
   visitor->Trace(element_);
   visitor->Trace(new_media_keys_);
+  visitor->Trace(timer_);
   ScriptPromiseResolver::Trace(visitor);
 }
 

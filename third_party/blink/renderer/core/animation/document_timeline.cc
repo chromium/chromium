@@ -142,6 +142,7 @@ void DocumentTimeline::DocumentTimelineTiming::WakeAfter(
 
 void DocumentTimeline::DocumentTimelineTiming::Trace(Visitor* visitor) const {
   visitor->Trace(timeline_);
+  visitor->Trace(timer_);
   DocumentTimeline::PlatformTiming::Trace(visitor);
 }
 

@@ -616,11 +616,11 @@ class CORE_EXPORT HTMLMediaElement
 
   Features GetFeatures() override;
 
-  TaskRunnerTimer<HTMLMediaElement> load_timer_;
-  TaskRunnerTimer<HTMLMediaElement> progress_event_timer_;
-  TaskRunnerTimer<HTMLMediaElement> playback_progress_timer_;
-  TaskRunnerTimer<HTMLMediaElement> audio_tracks_timer_;
-  TaskRunnerTimer<HTMLMediaElement> removed_from_document_timer_;
+  HeapTaskRunnerTimer<HTMLMediaElement> load_timer_;
+  HeapTaskRunnerTimer<HTMLMediaElement> progress_event_timer_;
+  HeapTaskRunnerTimer<HTMLMediaElement> playback_progress_timer_;
+  HeapTaskRunnerTimer<HTMLMediaElement> audio_tracks_timer_;
+  HeapTaskRunnerTimer<HTMLMediaElement> removed_from_document_timer_;
 
   Member<TimeRanges> played_time_ranges_;
   Member<EventQueue> async_event_queue_;
@@ -677,7 +677,7 @@ class CORE_EXPORT HTMLMediaElement
     kExecuteOnStopDelayingLoadEventTask
   };
   DeferredLoadState deferred_load_state_;
-  TaskRunnerTimer<HTMLMediaElement> deferred_load_timer_;
+  HeapTaskRunnerTimer<HTMLMediaElement> deferred_load_timer_;
 
   std::unique_ptr<WebMediaPlayer> web_media_player_;
   cc::Layer* cc_layer_;

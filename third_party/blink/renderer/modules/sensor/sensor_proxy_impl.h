@@ -86,7 +86,7 @@ class SensorProxyImpl final : public SensorProxy,
   bool suspended_ = false;
 
   WTF::Vector<double> active_frequencies_;
-  TaskRunnerTimer<SensorProxyImpl> polling_timer_;
+  HeapTaskRunnerTimer<SensorProxyImpl> polling_timer_;
 
   DISALLOW_COPY_AND_ASSIGN(SensorProxyImpl);
 };

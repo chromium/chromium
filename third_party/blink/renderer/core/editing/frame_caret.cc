@@ -50,7 +50,8 @@ FrameCaret::FrameCaret(LocalFrame& frame,
     : selection_editor_(&selection_editor),
       frame_(frame),
       display_item_client_(new CaretDisplayItemClient()),
-      caret_blink_timer_(new TaskRunnerTimer<FrameCaret>(
+      caret_blink_timer_(MakeGarbageCollected<
+                         DisallowNewWrapper<HeapTaskRunnerTimer<FrameCaret>>>(
           frame.GetTaskRunner(TaskType::kInternalDefault),
           this,
           &FrameCaret::CaretBlinkTimerFired)) {}
@@ -60,6 +61,7 @@ FrameCaret::~FrameCaret() = default;
 void FrameCaret::Trace(Visitor* visitor) const {
   visitor->Trace(selection_editor_);
   visitor->Trace(frame_);
+  visitor->Trace(caret_blink_timer_);
 }
 
 const PositionWithAffinity FrameCaret::CaretPosition() const {
@@ -102,22 +104,22 @@ void FrameCaret::UpdateAppearance() {
 }
 
 void FrameCaret::StopCaretBlinkTimer() {
-  if (caret_blink_timer_->IsActive() ||
+  if (caret_blink_timer_->Value().IsActive() ||
       display_item_client_->IsVisibleIfActive())
     ScheduleVisualUpdateForPaintInvalidationIfNeeded();
   display_item_client_->SetVisibleIfActive(false);
-  caret_blink_timer_->Stop();
+  caret_blink_timer_->Value().Stop();
 }
 
 void FrameCaret::StartBlinkCaret() {
   // Start blinking with a black caret. Be sure not to restart if we're
   // already blinking in the right location.
-  if (caret_blink_timer_->IsActive())
+  if (caret_blink_timer_->Value().IsActive())
     return;
 
   base::TimeDelta blink_interval = LayoutTheme::GetTheme().CaretBlinkInterval();
   if (!blink_interval.is_zero())
-    caret_blink_timer_->StartRepeating(blink_interval, FROM_HERE);
+    caret_blink_timer_->Value().StartRepeating(blink_interval, FROM_HERE);
 
   display_item_client_->SetVisibleIfActive(true);
   ScheduleVisualUpdateForPaintInvalidationIfNeeded();
@@ -222,8 +224,9 @@ void FrameCaret::ScheduleVisualUpdateForPaintInvalidationIfNeeded() {
 
 void FrameCaret::RecreateCaretBlinkTimerForTesting(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  caret_blink_timer_.reset(new TaskRunnerTimer<FrameCaret>(
-      std::move(task_runner), this, &FrameCaret::CaretBlinkTimerFired));
+  caret_blink_timer_ =
+      MakeGarbageCollected<DisallowNewWrapper<HeapTaskRunnerTimer<FrameCaret>>>(
+          std::move(task_runner), this, &FrameCaret::CaretBlinkTimerFired);
 }
 
 bool FrameCaret::IsVisibleIfActiveForTesting() const {

@@ -82,17 +82,20 @@ class PLATFORM_EXPORT TimerBase {
     bool operator()(const TimerBase* a, const TimerBase* b) const;
   };
 
- private:
+ protected:
   virtual void Fired() = 0;
 
-  NO_SANITIZE_ADDRESS
-  virtual bool CanFire() const { return true; }
+  virtual base::OnceClosure BindTimerClosure(
+      base::WeakPtr<TimerBase> weak_ptr) {
+    return WTF::Bind(&TimerBase::RunInternal, std::move(weak_ptr));
+  }
 
+  void RunInternal();
+
+ private:
   base::TimeTicks TimerCurrentTimeTicks() const;
 
   void SetNextFireTime(base::TimeTicks now, base::TimeDelta delay);
-
-  void RunInternal();
 
   base::TimeTicks next_fire_time_;   // 0 if inactive
   base::TimeDelta repeat_interval_;  // 0 if not repeating
@@ -102,36 +105,30 @@ class PLATFORM_EXPORT TimerBase {
 #if DCHECK_IS_ON()
   base::PlatformThreadId thread_;
 #endif
+  // Used for invalidating tasks at arbitrary times and after the timer has been
+  // destructed.
   base::WeakPtrFactory<TimerBase> weak_ptr_factory_{this};
-
-  friend class ThreadTimers;
-  friend class TimerHeapLessThanFunction;
-  friend class TimerHeapReference;
 
   DISALLOW_COPY_AND_ASSIGN(TimerBase);
 };
 
-template <typename TimerFiredClass,
-          bool = WTF::IsGarbageCollectedTypeInternal<TimerFiredClass>::value>
-class TaskRunnerTimer;
-
 template <typename TimerFiredClass>
-class TaskRunnerTimer<TimerFiredClass, false> : public TimerBase {
+class TaskRunnerTimer : public TimerBase {
  public:
   using TimerFiredFunction = void (TimerFiredClass::*)(TimerBase*);
 
   TaskRunnerTimer(scoped_refptr<base::SingleThreadTaskRunner> web_task_runner,
                   TimerFiredClass* o,
                   TimerFiredFunction f)
-      : TimerBase(std::move(web_task_runner)), object_(o), function_(f) {}
+      : TimerBase(std::move(web_task_runner)), object_(o), function_(f) {
+    static_assert(!WTF::IsGarbageCollectedType<TimerFiredClass>::value,
+                  "Use HeapTaskRunnerTimer with garbage-collected types.");
+  }
 
   ~TaskRunnerTimer() override = default;
 
  protected:
   void Fired() override { (object_->*function_)(this); }
-
-  NO_SANITIZE_ADDRESS
-  bool CanFire() const override { return true; }
 
  private:
   TimerFiredClass* object_;
@@ -139,26 +136,52 @@ class TaskRunnerTimer<TimerFiredClass, false> : public TimerBase {
 };
 
 template <typename TimerFiredClass>
-class TaskRunnerTimer<TimerFiredClass, true> : public TimerBase {
+class HeapTaskRunnerTimer final : public TimerBase {
+  DISALLOW_NEW();
+
  public:
   using TimerFiredFunction = void (TimerFiredClass::*)(TimerBase*);
 
-  TaskRunnerTimer(scoped_refptr<base::SingleThreadTaskRunner> web_task_runner,
-                  TimerFiredClass* o,
-                  TimerFiredFunction f)
-      : TimerBase(std::move(web_task_runner)), object_(o), function_(f) {}
+  HeapTaskRunnerTimer(
+      scoped_refptr<base::SingleThreadTaskRunner> web_task_runner,
+      TimerFiredClass* object,
+      TimerFiredFunction function)
+      : TimerBase(std::move(web_task_runner)),
+        object_(object),
+        function_(function) {
+    static_assert(
+        WTF::IsGarbageCollectedType<TimerFiredClass>::value,
+        "HeapTaskRunnerTimer can only be used with garbage-collected types.");
+  }
 
-  ~TaskRunnerTimer() override = default;
+  ~HeapTaskRunnerTimer() final = default;
+
+  void Trace(Visitor* visitor) const { visitor->Trace(object_); }
 
  protected:
-  void Fired() override { (object_->*function_)(this); }
+  void Fired() final { (object_->*function_)(this); }
 
-  NO_SANITIZE_ADDRESS
-  bool CanFire() const override { return object_.IsClearedUnsafe(); }
+  base::OnceClosure BindTimerClosure(base::WeakPtr<TimerBase> weak_ptr) final {
+    return WTF::Bind(&HeapTaskRunnerTimer::RunInternalTrampoline,
+                     std::move(weak_ptr), WrapWeakPersistent(object_.Get()));
+  }
 
  private:
-  GC_PLUGIN_IGNORE("363031")
-  WeakPersistent<TimerFiredClass> object_;
+  // Trampoline used for garbage-collected timer version also checks whether the
+  // object has been deemed as dead by the GC but not yet reclaimed. Dead
+  // objects that have not been reclaimed yet must not be touched (which is
+  // enforced by ASAN poisoning).
+  static void RunInternalTrampoline(base::WeakPtr<TimerBase> weak_ptr,
+                                    TimerFiredClass* object) {
+    // - {weak_ptr} is invalidated upon request and when the timer is destroyed.
+    // - {object} is null when the garbage collector deemed the timer as
+    //   unreachable.
+    if (weak_ptr && object) {
+      static_cast<HeapTaskRunnerTimer*>(weak_ptr.get())->RunInternal();
+    }
+  }
+
+  WeakMember<TimerFiredClass> object_;
   TimerFiredFunction function_;
 };
 

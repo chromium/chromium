@@ -25,11 +25,10 @@ void VideoFrameLogger::VideoFrameCloseAuditor::Clear() {
 
 VideoFrameLogger::VideoFrameLogger(ExecutionContext& context)
     : Supplement<ExecutionContext>(context),
-      close_auditor_(base::MakeRefCounted<VideoFrameCloseAuditor>()) {
-  timer_ = std::make_unique<TaskRunnerTimer<VideoFrameLogger>>(
-      context.GetTaskRunner(TaskType::kInternalMedia), this,
-      &VideoFrameLogger::LogCloseErrors);
-}
+      close_auditor_(base::MakeRefCounted<VideoFrameCloseAuditor>()),
+      timer_(context.GetTaskRunner(TaskType::kInternalMedia),
+             this,
+             &VideoFrameLogger::LogCloseErrors) {}
 
 // static
 VideoFrameLogger& VideoFrameLogger::From(ExecutionContext& context) {
@@ -49,8 +48,8 @@ VideoFrameLogger::GetCloseAuditor() {
   // collection, and it would be unsafe to access GC'ed objects from a GC'ed
   // object's destructor. Instead, start a timer here to periodically poll for
   // these errors. The timer should stop itself after a period of inactivity.
-  if (!timer_->IsActive())
-    timer_->StartRepeating(kTimerInterval, FROM_HERE);
+  if (!timer_.IsActive())
+    timer_.StartRepeating(kTimerInterval, FROM_HERE);
 
   last_auditor_access_ = base::TimeTicks::Now();
 
@@ -62,7 +61,7 @@ void VideoFrameLogger::LogCloseErrors(TimerBase*) {
   // references to |leak_status_|, stop the timer.
   if (base::TimeTicks::Now() - last_auditor_access_ > kTimerShutdownDelay &&
       close_auditor_->HasOneRef()) {
-    timer_->Stop();
+    timer_.Stop();
   }
 
   if (!close_auditor_->were_frames_not_closed())
@@ -82,6 +81,7 @@ void VideoFrameLogger::LogCloseErrors(TimerBase*) {
 }
 
 void VideoFrameLogger::Trace(Visitor* visitor) const {
+  visitor->Trace(timer_);
   Supplement<ExecutionContext>::Trace(visitor);
 }
 

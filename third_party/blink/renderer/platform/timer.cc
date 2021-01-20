@@ -117,17 +117,12 @@ void TimerBase::SetNextFireTime(base::TimeTicks now, base::TimeDelta delay) {
     weak_ptr_factory_.InvalidateWeakPtrs();
 
     web_task_runner_->PostDelayedTask(
-        location_,
-        WTF::Bind(&TimerBase::RunInternal, weak_ptr_factory_.GetWeakPtr()),
-        delay);
+        location_, BindTimerClosure(weak_ptr_factory_.GetWeakPtr()), delay);
   }
 }
 
 NO_SANITIZE_ADDRESS
 void TimerBase::RunInternal() {
-  if (!CanFire())
-    return;
-
   weak_ptr_factory_.InvalidateWeakPtrs();
 
   TRACE_EVENT0("blink", "TimerBase::run");

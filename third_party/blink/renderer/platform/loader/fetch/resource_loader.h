@@ -274,7 +274,7 @@ class PLATFORM_EXPORT ResourceLoader final
   // HandleDataURL().
   bool defers_handling_data_url_ = false;
 
-  TaskRunnerTimer<ResourceLoader> cancel_timer_;
+  HeapTaskRunnerTimer<ResourceLoader> cancel_timer_;
 
   FrameScheduler::SchedulingAffectingFeatureHandle
       feature_handle_for_scheduler_;

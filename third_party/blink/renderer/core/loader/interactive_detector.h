@@ -200,7 +200,7 @@ class CORE_EXPORT InteractiveDetector
   void UpdateNetworkQuietState(double request_count,
                                base::Optional<base::TimeTicks> current_time);
 
-  TaskRunnerTimer<InteractiveDetector> time_to_interactive_timer_;
+  HeapTaskRunnerTimer<InteractiveDetector> time_to_interactive_timer_;
   base::TimeTicks time_to_interactive_timer_fire_time_;
   void StartOrPostponeCITimer(base::TimeTicks timer_fire_time);
   void TimeToInteractiveTimerFired(TimerBase*);

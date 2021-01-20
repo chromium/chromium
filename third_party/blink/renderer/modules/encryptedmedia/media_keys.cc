@@ -460,6 +460,7 @@ WebContentDecryptionModule* MediaKeys::ContentDecryptionModule() {
 void MediaKeys::Trace(Visitor* visitor) const {
   visitor->Trace(pending_actions_);
   visitor->Trace(media_element_);
+  visitor->Trace(timer_);
   ScriptWrappable::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }

@@ -46,7 +46,8 @@ SVGImageChromeClient::SVGImageChromeClient(SVGImage* image)
 
 void SVGImageChromeClient::InitAnimationTimer(
     scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner) {
-  animation_timer_ = std::make_unique<TaskRunnerTimer<SVGImageChromeClient>>(
+  animation_timer_ = MakeGarbageCollected<
+      DisallowNewWrapper<HeapTaskRunnerTimer<SVGImageChromeClient>>>(
       std::move(compositor_task_runner), this,
       &SVGImageChromeClient::AnimationTimerFired);
 }
@@ -102,7 +103,7 @@ void SVGImageChromeClient::ScheduleAnimation(const LocalFrameView*,
   // run this fake animation timer to trigger layout in SVGImages. The name,
   // "animationTimer", is to match the new requestAnimationFrame-based layout
   // approach.
-  if (animation_timer_->IsActive())
+  if (animation_timer_->Value().IsActive())
     return;
   // Schedule the 'animation' ASAP if the image does not contain any
   // animations, but prefer a fixed, jittery, frame-delay if there're any
@@ -114,12 +115,12 @@ void SVGImageChromeClient::ScheduleAnimation(const LocalFrameView*,
     if (fire_time.is_zero())
       fire_time = kAnimationFrameDelay;
   }
-  animation_timer_->StartOneShot(fire_time, FROM_HERE);
+  animation_timer_->Value().StartOneShot(fire_time, FROM_HERE);
 }
 
 void SVGImageChromeClient::SetTimerForTesting(
-    std::unique_ptr<TimerBase> timer) {
-  animation_timer_ = std::move(timer);
+    DisallowNewWrapper<HeapTaskRunnerTimer<SVGImageChromeClient>>* timer) {
+  animation_timer_ = timer;
 }
 
 void SVGImageChromeClient::AnimationTimerFired(TimerBase*) {
@@ -137,6 +138,11 @@ void SVGImageChromeClient::AnimationTimerFired(TimerBase*) {
     return;
 
   image_->ServiceAnimations(base::TimeTicks::Now());
+}
+
+void SVGImageChromeClient::Trace(Visitor* visitor) const {
+  visitor->Trace(animation_timer_);
+  EmptyChromeClient::Trace(visitor);
 }
 
 }  // namespace blink

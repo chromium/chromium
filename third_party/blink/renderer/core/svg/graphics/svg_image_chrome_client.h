@@ -33,6 +33,7 @@
 #include "base/gtest_prod_util.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
+#include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
@@ -57,18 +58,22 @@ class CORE_EXPORT SVGImageChromeClient final : public EmptyChromeClient {
 
   bool IsSuspended() const { return timeline_state_ >= kSuspended; }
 
+  void Trace(Visitor*) const final;
+
  private:
   void ChromeDestroyed() override;
   void InvalidateRect(const IntRect&) override;
   void ScheduleAnimation(const LocalFrameView*,
                          base::TimeDelta = base::TimeDelta()) override;
 
-  void SetTimerForTesting(std::unique_ptr<TimerBase>);
-  TimerBase* GetTimerForTesting() const { return animation_timer_.get(); }
+  void SetTimerForTesting(
+      DisallowNewWrapper<HeapTaskRunnerTimer<SVGImageChromeClient>>*);
+  TimerBase& GetTimerForTesting() const { return animation_timer_->Value(); }
   void AnimationTimerFired(TimerBase*);
 
   SVGImage* image_;
-  std::unique_ptr<TimerBase> animation_timer_;
+  Member<DisallowNewWrapper<HeapTaskRunnerTimer<SVGImageChromeClient>>>
+      animation_timer_;
   enum {
     kRunning,
     kSuspended,

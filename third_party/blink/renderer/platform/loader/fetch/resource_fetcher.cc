@@ -2313,6 +2313,7 @@ void ResourceFetcher::Trace(Visitor* visitor) const {
   visitor->Trace(loader_factory_);
   visitor->Trace(scheduler_);
   visitor->Trace(archive_);
+  visitor->Trace(resource_timing_report_timer_);
   visitor->Trace(loaders_);
   visitor->Trace(non_blocking_loaders_);
   visitor->Trace(cached_resources_map_);

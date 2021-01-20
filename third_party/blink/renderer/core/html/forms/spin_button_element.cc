@@ -223,6 +223,7 @@ bool SpinButtonElement::ShouldRespondToMouseEvents() {
 
 void SpinButtonElement::Trace(Visitor* visitor) const {
   visitor->Trace(spin_button_owner_);
+  visitor->Trace(repeating_timer_);
   HTMLDivElement::Trace(visitor);
 }
 

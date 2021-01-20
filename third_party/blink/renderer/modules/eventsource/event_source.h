@@ -131,7 +131,7 @@ class MODULES_EXPORT EventSource final
 
   Member<EventSourceParser> parser_;
   Member<ThreadableLoader> loader_;
-  TaskRunnerTimer<EventSource> connect_timer_;
+  HeapTaskRunnerTimer<EventSource> connect_timer_;
 
   uint64_t reconnect_delay_;
   String event_stream_origin_;

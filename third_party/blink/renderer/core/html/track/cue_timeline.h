@@ -100,11 +100,11 @@ class CueTimeline final : public GarbageCollected<CueTimeline> {
 
   // Timer data for cue events (start, end)
   base::Optional<double> next_cue_event_;
-  TaskRunnerTimer<CueTimeline> cue_event_timer_;
+  HeapTaskRunnerTimer<CueTimeline> cue_event_timer_;
 
   // Timer data for cue timestamps
   // https://w3c.github.io/webvtt/#ref-for-webvtt-timestamp-6
-  TaskRunnerTimer<CueTimeline> cue_timestamp_event_timer_;
+  HeapTaskRunnerTimer<CueTimeline> cue_timestamp_event_timer_;
 
   int ignore_update_;
   bool update_requested_while_ignoring_;

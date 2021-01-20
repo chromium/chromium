@@ -385,6 +385,7 @@ void InspectorOverlayAgent::Trace(Visitor* visitor) const {
   visitor->Trace(overlay_page_);
   visitor->Trace(overlay_chrome_client_);
   visitor->Trace(overlay_host_);
+  visitor->Trace(resize_timer_);
   visitor->Trace(dom_agent_);
   visitor->Trace(inspect_tool_);
   visitor->Trace(persistent_tool_);

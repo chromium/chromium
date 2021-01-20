@@ -268,22 +268,23 @@ void ContentCaptureTask::ScheduleInternal(ScheduleReason reason) {
   base::TimeDelta delay = GetAndAdjustDelay(reason);
 
   // Return if the current task is about to run soon.
-  if (delay_task_ && delay_task_->IsActive() &&
-      delay_task_->NextFireInterval() < delay) {
+  if (delay_task_ && delay_task_->Value().IsActive() &&
+      delay_task_->Value().NextFireInterval() < delay) {
     return;
   }
 
   if (!delay_task_) {
     scoped_refptr<base::SingleThreadTaskRunner> task_runner =
         local_frame_root_->GetTaskRunner(TaskType::kInternalContentCapture);
-    delay_task_ = std::make_unique<TaskRunnerTimer<ContentCaptureTask>>(
+    delay_task_ = MakeGarbageCollected<
+        DisallowNewWrapper<HeapTaskRunnerTimer<ContentCaptureTask>>>(
         task_runner, this, &ContentCaptureTask::Run);
   }
 
-  if (delay_task_->IsActive())
-    delay_task_->Stop();
+  if (delay_task_->Value().IsActive())
+    delay_task_->Value().Stop();
 
-  delay_task_->StartOneShot(delay, FROM_HERE);
+  delay_task_->Value().StartOneShot(delay, FROM_HERE);
   TRACE_EVENT_INSTANT1("content_capture", "ScheduleTask",
                        TRACE_EVENT_SCOPE_THREAD, "reason", reason);
   if (histogram_reporter_) {
@@ -308,16 +309,16 @@ bool ContentCaptureTask::ShouldPause() {
 }
 
 void ContentCaptureTask::CancelTask() {
-  if (delay_task_ && delay_task_->IsActive())
-    delay_task_->Stop();
+  if (delay_task_ && delay_task_->Value().IsActive())
+    delay_task_->Value().Stop();
 }
 void ContentCaptureTask::ClearDocumentSessionsForTesting() {
   task_session_->ClearDocumentSessionsForTesting();
 }
 
 base::TimeDelta ContentCaptureTask::GetTaskNextFireIntervalForTesting() const {
-  return delay_task_ && delay_task_->IsActive()
-             ? delay_task_->NextFireInterval()
+  return delay_task_ && delay_task_->Value().IsActive()
+             ? delay_task_->Value().NextFireInterval()
              : base::TimeDelta();
 }
 
@@ -328,6 +329,7 @@ void ContentCaptureTask::CancelTaskForTesting() {
 void ContentCaptureTask::Trace(Visitor* visitor) const {
   visitor->Trace(local_frame_root_);
   visitor->Trace(task_session_);
+  visitor->Trace(delay_task_);
 }
 
 }  // namespace blink

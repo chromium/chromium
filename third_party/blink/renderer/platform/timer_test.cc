@@ -119,7 +119,7 @@ class OnHeapTimerOwner final : public GarbageCollected<OnHeapTimerOwner> {
     timer_.StartOneShot(interval, caller);
   }
 
-  void Trace(Visitor* visitor) const {}
+  void Trace(Visitor* visitor) const { visitor->Trace(timer_); }
 
  private:
   void Fired(TimerBase*) {
@@ -127,7 +127,7 @@ class OnHeapTimerOwner final : public GarbageCollected<OnHeapTimerOwner> {
     record_->SetTimerHasFired();
   }
 
-  TaskRunnerTimer<OnHeapTimerOwner> timer_;
+  HeapTaskRunnerTimer<OnHeapTimerOwner> timer_;
   scoped_refptr<Record> record_;
 };
 

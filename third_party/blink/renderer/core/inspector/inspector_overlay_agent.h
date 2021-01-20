@@ -292,7 +292,7 @@ class CORE_EXPORT InspectorOverlayAgent final
   Member<InspectorOverlayChromeClient> overlay_chrome_client_;
   Member<InspectorOverlayHost> overlay_host_;
   bool resize_timer_active_;
-  TaskRunnerTimer<InspectorOverlayAgent> resize_timer_;
+  HeapTaskRunnerTimer<InspectorOverlayAgent> resize_timer_;
   bool disposed_;
   v8_inspector::V8InspectorSession* v8_session_;
   Member<InspectorDOMAgent> dom_agent_;

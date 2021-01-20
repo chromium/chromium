@@ -1047,6 +1047,8 @@ void Performance::Trace(Visitor* visitor) const {
   visitor->Trace(observers_);
   visitor->Trace(active_observers_);
   visitor->Trace(suspended_observers_);
+  visitor->Trace(deliver_observations_timer_);
+  visitor->Trace(resource_timing_buffer_full_timer_);
   EventTargetWithInlineData::Trace(visitor);
 }
 

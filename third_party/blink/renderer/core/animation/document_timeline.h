@@ -119,7 +119,7 @@ class CORE_EXPORT DocumentTimeline : public AnimationTimeline {
 
   class DocumentTimelineTiming final : public PlatformTiming {
    public:
-    DocumentTimelineTiming(DocumentTimeline* timeline)
+    explicit DocumentTimelineTiming(DocumentTimeline* timeline)
         : timeline_(timeline),
           timer_(timeline->GetDocument()->GetTaskRunner(
                      TaskType::kInternalDefault),
@@ -136,7 +136,7 @@ class CORE_EXPORT DocumentTimeline : public AnimationTimeline {
 
    private:
     Member<DocumentTimeline> timeline_;
-    TaskRunnerTimer<DocumentTimelineTiming> timer_;
+    HeapTaskRunnerTimer<DocumentTimelineTiming> timer_;
   };
 
   friend class AnimationDocumentTimelineTest;

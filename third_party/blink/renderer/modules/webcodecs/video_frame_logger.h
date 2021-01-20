@@ -69,9 +69,9 @@ class MODULES_EXPORT VideoFrameLogger
 
   base::TimeTicks last_auditor_access_;
 
-  std::unique_ptr<TimerBase> timer_;
-
   scoped_refptr<VideoFrameCloseAuditor> close_auditor_;
+
+  HeapTaskRunnerTimer<VideoFrameLogger> timer_;
 };
 
 }  // namespace blink

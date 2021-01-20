@@ -293,6 +293,7 @@ void VibrationController::Trace(Visitor* visitor) const {
   ExecutionContextLifecycleObserver::Trace(visitor);
   PageVisibilityObserver::Trace(visitor);
   visitor->Trace(vibration_manager_);
+  visitor->Trace(timer_do_vibrate_);
 }
 
 }  // namespace blink

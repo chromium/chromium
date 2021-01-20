@@ -77,7 +77,7 @@ class CORE_EXPORT CSSSelectorWatch final
   HashSet<String> added_selectors_;
   HashSet<String> removed_selectors_;
 
-  TaskRunnerTimer<CSSSelectorWatch> callback_selector_change_timer_;
+  HeapTaskRunnerTimer<CSSSelectorWatch> callback_selector_change_timer_;
 
   // When an element is reparented, the new location's style is evaluated after
   // the expriation of the relayout timer.  We don't want to send redundant

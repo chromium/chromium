@@ -78,7 +78,7 @@ class MODULES_EXPORT MediaMetadata final : public ScriptWrappable {
   HeapVector<Member<MediaImage>> artwork_;
 
   Member<MediaSession> session_;
-  TaskRunnerTimer<MediaMetadata> notify_session_timer_;
+  HeapTaskRunnerTimer<MediaMetadata> notify_session_timer_;
 };
 
 }  // namespace blink

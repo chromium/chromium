@@ -791,9 +791,10 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   // real ones, it's likely that there's no JavaScript on the stack, but that
   // might be dependent on how exactly the platform discovers that the context
   // was lost. For better portability we always defer the dispatch of the event.
-  TaskRunnerTimer<WebGLRenderingContextBase> dispatch_context_lost_event_timer_;
+  HeapTaskRunnerTimer<WebGLRenderingContextBase>
+      dispatch_context_lost_event_timer_;
   bool restore_allowed_ = false;
-  TaskRunnerTimer<WebGLRenderingContextBase> restore_timer_;
+  HeapTaskRunnerTimer<WebGLRenderingContextBase> restore_timer_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   bool destruction_in_progress_ = false;

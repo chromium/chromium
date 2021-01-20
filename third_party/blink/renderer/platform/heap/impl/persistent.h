@@ -556,9 +556,6 @@ class WeakPersistent
     Parent::operator=(other);
     return *this;
   }
-
-  NO_SANITIZE_ADDRESS
-  bool IsClearedUnsafe() const { return this->IsNotNull(); }
 };
 
 // CrossThreadPersistent allows for holding onto an object strongly on a

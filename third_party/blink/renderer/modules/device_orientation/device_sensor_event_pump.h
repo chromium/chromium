@@ -76,7 +76,7 @@ class MODULES_EXPORT DeviceSensorEventPump : public GarbageCollectedMixin {
   virtual bool SensorsReadyOrErrored() const = 0;
 
   PumpState state_;
-  TaskRunnerTimer<DeviceSensorEventPump> timer_;
+  HeapTaskRunnerTimer<DeviceSensorEventPump> timer_;
 };
 
 }  // namespace blink

@@ -114,7 +114,7 @@ class InspectorRevalidateDOMTask final
 
  private:
   Member<InspectorDOMAgent> dom_agent_;
-  TaskRunnerTimer<InspectorRevalidateDOMTask> timer_;
+  HeapTaskRunnerTimer<InspectorRevalidateDOMTask> timer_;
   HeapHashSet<Member<Element>> style_attr_invalidated_elements_;
 };
 
@@ -146,6 +146,7 @@ void InspectorRevalidateDOMTask::OnTimer(TimerBase*) {
 void InspectorRevalidateDOMTask::Trace(Visitor* visitor) const {
   visitor->Trace(dom_agent_);
   visitor->Trace(style_attr_invalidated_elements_);
+  visitor->Trace(timer_);
 }
 
 Response InspectorDOMAgent::ToResponse(ExceptionState& exception_state) {

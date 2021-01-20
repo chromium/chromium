@@ -141,6 +141,11 @@ class WebAssociatedURLLoaderImpl::ClientAdapter final
     return client;
   }
 
+  void Trace(Visitor* visitor) const final {
+    visitor->Trace(error_timer_);
+    ThreadableLoaderClient::Trace(visitor);
+  }
+
  private:
   void NotifyError(TimerBase*);
 
@@ -151,7 +156,7 @@ class WebAssociatedURLLoaderImpl::ClientAdapter final
   network::mojom::CredentialsMode credentials_mode_;
   base::Optional<WebURLError> error_;
 
-  TaskRunnerTimer<ClientAdapter> error_timer_;
+  HeapTaskRunnerTimer<ClientAdapter> error_timer_;
   bool enable_error_notifications_;
   bool did_fail_;
 

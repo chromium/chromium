@@ -461,6 +461,7 @@ void ResourceLoader::Trace(Visitor* visitor) const {
   visitor->Trace(resource_);
   visitor->Trace(response_body_loader_);
   visitor->Trace(data_pipe_completion_notifier_);
+  visitor->Trace(cancel_timer_);
   ResourceLoadSchedulerClient::Trace(visitor);
 }
 

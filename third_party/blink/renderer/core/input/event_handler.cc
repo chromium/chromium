@@ -251,6 +251,8 @@ EventHandler::EventHandler(LocalFrame& frame)
 void EventHandler::Trace(Visitor* visitor) const {
   visitor->Trace(frame_);
   visitor->Trace(selection_controller_);
+  visitor->Trace(hover_timer_);
+  visitor->Trace(cursor_update_timer_);
   visitor->Trace(capturing_mouse_events_element_);
   visitor->Trace(capturing_subframe_element_);
   visitor->Trace(last_mouse_move_event_subframe_);
@@ -264,6 +266,7 @@ void EventHandler::Trace(Visitor* visitor) const {
   visitor->Trace(keyboard_event_manager_);
   visitor->Trace(pointer_event_manager_);
   visitor->Trace(gesture_manager_);
+  visitor->Trace(active_interval_timer_);
   visitor->Trace(last_deferred_tap_element_);
 }
 

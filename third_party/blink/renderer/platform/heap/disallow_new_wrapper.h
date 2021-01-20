@@ -27,7 +27,16 @@ class DisallowNewWrapper final
     static_assert(WTF::IsTraceable<T>::value, "T needs to be traceable");
   }
 
+  template <typename... Args>
+  explicit DisallowNewWrapper(Args&&... args)
+      : value_(std::forward<Args>(args)...) {
+    static_assert(WTF::IsDisallowNew<T>::value,
+                  "T needs to be a disallow new type");
+    static_assert(WTF::IsTraceable<T>::value, "T needs to be traceable");
+  }
+
   const T& Value() const { return value_; }
+  T& Value() { return value_; }
   T&& TakeValue() { return std::move(value_); }
 
   void Trace(Visitor* visitor) const { visitor->Trace(value_); }

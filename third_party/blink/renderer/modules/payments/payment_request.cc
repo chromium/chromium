@@ -1178,6 +1178,8 @@ void PaymentRequest::Trace(Visitor* visitor) const {
   visitor->Trace(has_enrolled_instrument_resolver_);
   visitor->Trace(payment_provider_);
   visitor->Trace(client_receiver_);
+  visitor->Trace(complete_timer_);
+  visitor->Trace(update_payment_details_timer_);
   EventTargetWithInlineData::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }

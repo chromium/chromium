@@ -161,7 +161,7 @@ class MediaKeySession final
   Member<ClosedPromise> closed_promise_;
 
   HeapDeque<Member<PendingAction>> pending_actions_;
-  TaskRunnerTimer<MediaKeySession> action_timer_;
+  HeapTaskRunnerTimer<MediaKeySession> action_timer_;
 };
 
 }  // namespace blink

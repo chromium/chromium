@@ -175,6 +175,7 @@ void PictureInPictureInterstitial::OnPosterImageChanged() {
 
 void PictureInPictureInterstitial::Trace(Visitor* visitor) const {
   visitor->Trace(resize_observer_);
+  visitor->Trace(interstitial_timer_);
   visitor->Trace(video_element_);
   visitor->Trace(background_image_);
   visitor->Trace(message_element_);

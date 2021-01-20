@@ -155,6 +155,7 @@ void MediaRemotingInterstitial::OnPosterImageChanged() {
 }
 
 void MediaRemotingInterstitial::Trace(Visitor* visitor) const {
+  visitor->Trace(toggle_interstitial_timer_);
   visitor->Trace(video_element_);
   visitor->Trace(background_image_);
   visitor->Trace(cast_icon_);

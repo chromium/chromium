@@ -87,6 +87,7 @@ bool GeoNotifier::IsTimerActive() const {
 }
 
 void GeoNotifier::Timer::Trace(Visitor* visitor) const {
+  visitor->Trace(timer_);
   visitor->Trace(notifier_);
 }
 

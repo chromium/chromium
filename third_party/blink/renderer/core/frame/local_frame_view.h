@@ -1013,7 +1013,7 @@ class CORE_EXPORT LocalFrameView final
   unsigned layout_count_for_testing_;
   unsigned lifecycle_update_count_for_testing_;
   unsigned nested_layout_count_;
-  TaskRunnerTimer<LocalFrameView> update_plugins_timer_;
+  HeapTaskRunnerTimer<LocalFrameView> update_plugins_timer_;
 
   bool first_layout_;
   UseColorAdjustBackground use_color_adjust_background_{

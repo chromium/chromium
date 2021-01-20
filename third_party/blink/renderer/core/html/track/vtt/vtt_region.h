@@ -132,7 +132,7 @@ class VTTRegion final : public ScriptWrappable {
   // soon as the animation for rolling out one line has finished, but
   // currently it is used also for non-scrolling regions to use a single
   // code path.
-  TaskRunnerTimer<VTTRegion> scroll_timer_;
+  HeapTaskRunnerTimer<VTTRegion> scroll_timer_;
 };
 
 }  // namespace blink

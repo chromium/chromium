@@ -8150,7 +8150,10 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(lists_invalidated_at_document_);
   visitor->Trace(node_lists_);
   visitor->Trace(top_layer_elements_);
+  visitor->Trace(load_event_delay_timer_);
+  visitor->Trace(plugin_loading_timer_);
   visitor->Trace(elem_sheet_);
+  visitor->Trace(clear_focused_element_timer_);
   visitor->Trace(node_iterators_);
   visitor->Trace(ranges_);
   visitor->Trace(document_explicit_root_intersection_observer_data_);
@@ -8169,10 +8172,12 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(scripted_animation_controller_);
   visitor->Trace(scripted_idle_task_controller_);
   visitor->Trace(text_autosizer_);
+  visitor->Trace(element_data_cache_clear_timer_);
   visitor->Trace(element_data_cache_);
   visitor->Trace(use_elements_needing_update_);
   visitor->Trace(template_document_);
   visitor->Trace(template_document_host_);
+  visitor->Trace(did_associate_form_controls_timer_);
   visitor->Trace(user_action_elements_);
   visitor->Trace(svg_extensions_);
   visitor->Trace(document_animations_);

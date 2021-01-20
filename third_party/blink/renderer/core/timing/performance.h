@@ -389,8 +389,8 @@ class CORE_EXPORT Performance : public EventTargetWithInlineData {
   HeapLinkedHashSet<Member<PerformanceObserver>> active_observers_;
   HeapLinkedHashSet<Member<PerformanceObserver>> suspended_observers_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  TaskRunnerTimer<Performance> deliver_observations_timer_;
-  TaskRunnerTimer<Performance> resource_timing_buffer_full_timer_;
+  HeapTaskRunnerTimer<Performance> deliver_observations_timer_;
+  HeapTaskRunnerTimer<Performance> resource_timing_buffer_full_timer_;
 };
 
 }  // namespace blink

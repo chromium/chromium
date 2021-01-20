@@ -75,7 +75,7 @@ class CORE_EXPORT FontPreloadManager final
 
   unsigned imperative_font_loading_count_ = 0;
 
-  TaskRunnerTimer<FontPreloadManager> render_delay_timer_;
+  HeapTaskRunnerTimer<FontPreloadManager> render_delay_timer_;
   base::TimeDelta render_delay_timeout_;
 
   State state_ = State::kInitial;

@@ -55,6 +55,7 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
+#include "third_party/blink/renderer/platform/timer.h"
 
 namespace blink {
 
@@ -113,7 +114,7 @@ void ScrollableArea::Dispose() {
   if (HasBeenDisposed())
     return;
   DisposeImpl();
-  fade_overlay_scrollbars_timer_.reset();
+  fade_overlay_scrollbars_timer_ = nullptr;
   has_been_disposed_ = true;
 }
 
@@ -125,7 +126,7 @@ void ScrollableArea::ClearScrollableArea() {
   scroll_animator_.Clear();
   programmatic_scroll_animator_.Clear();
   if (fade_overlay_scrollbars_timer_)
-    fade_overlay_scrollbars_timer_->Stop();
+    fade_overlay_scrollbars_timer_->Value().Stop();
 }
 
 ScrollAnimatorBase& ScrollableArea::GetScrollAnimator() const {
@@ -489,7 +490,7 @@ void ScrollableArea::MouseEnteredScrollbar(Scrollbar& scrollbar) {
   GetScrollAnimator().MouseEnteredScrollbar(scrollbar);
   ShowNonMacOverlayScrollbars();
   if (fade_overlay_scrollbars_timer_)
-    fade_overlay_scrollbars_timer_->Stop();
+    fade_overlay_scrollbars_timer_->Value().Stop();
 }
 
 void ScrollableArea::MouseExitedScrollbar(Scrollbar& scrollbar) {
@@ -505,7 +506,7 @@ void ScrollableArea::MouseCapturedScrollbar() {
   scrollbar_captured_ = true;
   ShowNonMacOverlayScrollbars();
   if (fade_overlay_scrollbars_timer_)
-    fade_overlay_scrollbars_timer_->Stop();
+    fade_overlay_scrollbars_timer_->Value().Stop();
 }
 
 void ScrollableArea::MouseReleasedScrollbar() {
@@ -768,18 +769,19 @@ void ScrollableArea::ShowNonMacOverlayScrollbars() {
     return;
 
   if (!fade_overlay_scrollbars_timer_) {
-    fade_overlay_scrollbars_timer_ =
-        std::make_unique<TaskRunnerTimer<ScrollableArea>>(
-            GetLayoutBox()
-                ->GetFrame()
-                ->GetFrameScheduler()
-                ->GetAgentGroupScheduler()
-                ->CompositorTaskRunner(),
-            this, &ScrollableArea::FadeOverlayScrollbarsTimerFired);
+    fade_overlay_scrollbars_timer_ = MakeGarbageCollected<
+        DisallowNewWrapper<HeapTaskRunnerTimer<ScrollableArea>>>(
+        GetLayoutBox()
+            ->GetFrame()
+            ->GetFrameScheduler()
+            ->GetAgentGroupScheduler()
+            ->CompositorTaskRunner(),
+        this, &ScrollableArea::FadeOverlayScrollbarsTimerFired);
   }
 
   if (!scrollbar_captured_ && !mouse_over_scrollbar_) {
-    fade_overlay_scrollbars_timer_->StartOneShot(time_until_disable, FROM_HERE);
+    fade_overlay_scrollbars_timer_->Value().StartOneShot(time_until_disable,
+                                                         FROM_HERE);
   }
 }
 
@@ -989,6 +991,7 @@ bool ScrollableArea::PerformSnapping(
 void ScrollableArea::Trace(Visitor* visitor) const {
   visitor->Trace(scroll_animator_);
   visitor->Trace(programmatic_scroll_animator_);
+  visitor->Trace(fade_overlay_scrollbars_timer_);
 }
 
 void ScrollableArea::InjectGestureScrollEvent(

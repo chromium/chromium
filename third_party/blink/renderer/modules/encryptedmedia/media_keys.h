@@ -133,7 +133,7 @@ class MediaKeys : public ScriptWrappable,
   bool reserved_for_media_element_;
 
   HeapDeque<Member<PendingAction>> pending_actions_;
-  TaskRunnerTimer<MediaKeys> timer_;
+  HeapTaskRunnerTimer<MediaKeys> timer_;
 };
 
 }  // namespace blink

@@ -199,8 +199,9 @@ void FontPreloadManager::DisableTimeoutForTest() {
 }
 
 void FontPreloadManager::Trace(Visitor* visitor) const {
-  visitor->Trace(finish_observers_);
   visitor->Trace(document_);
+  visitor->Trace(finish_observers_);
+  visitor->Trace(render_delay_timer_);
 }
 
 }  // namespace blink

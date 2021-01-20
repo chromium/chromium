@@ -265,6 +265,7 @@ void FontFaceSetDocument::LCPLimitReached(TimerBase*) {
 }
 
 void FontFaceSetDocument::Trace(Visitor* visitor) const {
+  visitor->Trace(lcp_limit_timer_);
   Supplement<Document>::Trace(visitor);
   FontFaceSet::Trace(visitor);
 }

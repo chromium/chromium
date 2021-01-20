@@ -193,7 +193,7 @@ class CORE_EXPORT LayoutShiftTracker final
   // Tracks the short period after an input event during which we ignore shifts
   // for the purpose of cumulative scoring, and report them to the web perf API
   // with hadRecentInput == true.
-  TaskRunnerTimer<LayoutShiftTracker> timer_;
+  HeapTaskRunnerTimer<LayoutShiftTracker> timer_;
 
   // The maximum distance any layout object has moved in the current animation
   // frame.
