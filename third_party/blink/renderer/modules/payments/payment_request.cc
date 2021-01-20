@@ -808,8 +808,8 @@ ScriptPromise PaymentRequest::show(ScriptState* script_state,
     return ScriptPromise();
   }
 
-  bool is_user_gesture =
-      LocalFrame::HasTransientUserActivation(DomWindow()->GetFrame());
+  LocalFrame* local_frame = DomWindow()->GetFrame();
+  bool is_user_gesture = LocalFrame::HasTransientUserActivation(local_frame);
   if (!is_user_gesture) {
     UseCounter::Count(GetExecutionContext(),
                       WebFeature::kPaymentRequestShowWithoutGesture);
@@ -817,12 +817,17 @@ ScriptPromise PaymentRequest::show(ScriptState* script_state,
   if (RuntimeEnabledFeatures::PaymentRequestShowConsumesUserActivationEnabled(
           GetExecutionContext())) {
     if (!is_user_gesture) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kNotAllowedError,
-          "show() must be called with transient user activation");
+      String message =
+          "PaymentRequest.show() requires transient user activation";
+      GetExecutionContext()->AddConsoleMessage(
+          MakeGarbageCollected<ConsoleMessage>(
+              mojom::blink::ConsoleMessageSource::kJavaScript,
+              mojom::blink::ConsoleMessageLevel::kWarning, message));
+      exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
+                                        message);
       return ScriptPromise();
     }
-    // TODO(crbug.com/1130553): consume the user activation as well.
+    LocalFrame::ConsumeTransientUserActivation(local_frame);
   }
 
   // TODO(crbug.com/825270): Pretend that a user gesture is provided to allow
@@ -836,7 +841,7 @@ ScriptPromise PaymentRequest::show(ScriptState* script_state,
 
   // TODO(crbug.com/779126): add support for handling payment requests in
   // immersive mode.
-  if (DomWindow()->GetFrame()->GetSettings()->GetImmersiveModeEnabled()) {
+  if (local_frame->GetSettings()->GetImmersiveModeEnabled()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Page popups are suppressed");
     return ScriptPromise();
