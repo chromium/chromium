@@ -346,11 +346,19 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
 }
 
 - (BOOL)disabledBecauseOfSyncError {
-  SyncSetupService::SyncServiceState state =
-      self.syncSetupService->GetSyncServiceState();
-  return state != SyncSetupService::kNoSyncServiceError &&
-         state != SyncSetupService::kSyncServiceNeedsPassphrase &&
-         state != SyncSetupService::kSyncServiceNeedsTrustedVaultKey;
+  switch (self.syncSetupService->GetSyncServiceState()) {
+    case SyncSetupService::kSyncServiceUnrecoverableError:
+    case SyncSetupService::kSyncServiceSignInNeedsUpdate:
+    case SyncSetupService::kSyncSettingsNotConfirmed:
+    case SyncSetupService::kSyncServiceCouldNotConnect:
+    case SyncSetupService::kSyncServiceServiceUnavailable:
+      return YES;
+    case SyncSetupService::kNoSyncServiceError:
+    case SyncSetupService::kSyncServiceNeedsPassphrase:
+    case SyncSetupService::kSyncServiceNeedsTrustedVaultKey:
+      return NO;
+  }
+  NOTREACHED();
 }
 
 - (BOOL)shouldSyncDataItemEnabled {
@@ -553,6 +561,10 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
 
 // Loads the sync errors section.
 - (void)loadSyncErrorsSection {
+  // The |self.consumer.tableViewModel| will be reset prior to this method.
+  // Ignore any previous value the |self.syncErrorItem| may have contained.
+  self.syncErrorItem = nil;
+
   [self.consumer.tableViewModel
       addSectionWithIdentifier:SyncErrorsSectionIdentifier];
   [self updateSyncErrorsSection:NO];

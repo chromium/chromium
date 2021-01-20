@@ -158,7 +158,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   } else if (syncSetupService->IsFirstSetupComplete()) {
     SyncSetupService::SyncServiceState errorState =
         syncSetupService->GetSyncServiceState();
-    if (syncSetupService->IsSyncEnabled() || IsTransientSyncError(errorState)) {
+    if (syncSetupService->IsSyncEnabled() && IsTransientSyncError(errorState)) {
       return kSyncEnabled;
     } else {
       return kSyncEnabledWithError;
@@ -1525,9 +1525,6 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
     if (_googleSyncDetailItem) {
       [self updateGoogleSyncDetailItem:_googleSyncDetailItem];
       [self reconfigureCellsForItems:@[ _googleSyncDetailItem ]];
-    } else {
-      [self.tableViewModel addItem:[self googleSyncDetailItem]
-           toSectionWithIdentifier:SettingsSectionIdentifierAccount];
     }
   } else if (_googleSyncDetailItem) {
     [self.tableViewModel removeItemWithType:SettingsItemTypeGoogleSync
