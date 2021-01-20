@@ -100,7 +100,7 @@ if (breakpad_enabled) {
   is_official_release = false
 }
 
-chromium_bundle_id = "chrome.ios.herebedragons"
+chromium_bundle_id = "chrome.ios.dev"
 chromium_handoff_id = "$ios_app_bundle_id_prefix.chrome.handoff"
 ios_move_tab_activity_type = "$ios_app_bundle_id_prefix.chrome.move-tab"
 
