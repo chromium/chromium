@@ -205,7 +205,7 @@ class SingleClientSharingMessageSyncTest : public SyncTest {
   SingleClientSharingMessageSyncTest() : SyncTest(SINGLE_CLIENT) {
     // Replace the default value (5 seconds) with 1 minute to reduce possibility
     // of test flakiness.
-    feature_list_.InitAndEnableFeatureWithParameters(
+    features_override_.InitAndEnableFeatureWithParameters(
         kSharingMessageBridgeTimeout,
         {{"SharingMessageBridgeTimeoutSeconds", "60"}});
   }
@@ -216,6 +216,9 @@ class SingleClientSharingMessageSyncTest : public SyncTest {
                                          std::move(expected_specifics))
         .Wait();
   }
+
+ private:
+  base::test::ScopedFeatureList features_override_;
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientSharingMessageSyncTest, ShouldSubmit) {

@@ -335,8 +335,6 @@ class SyncTest : public PlatformBrowserTest {
   // GAIA servers.
   void SetupMockGaiaResponsesForProfile(Profile* profile);
 
-  base::test::ScopedFeatureList feature_list_;
-
   // The FakeServer used in tests with server type IN_PROCESS_FAKE_SERVER.
   std::unique_ptr<fake_server::FakeServer> fake_server_;
 
@@ -517,6 +515,9 @@ class SyncTest : public PlatformBrowserTest {
   // Indicates whether to use a new user data dir.
   // Only used for external server tests with two clients.
   bool use_new_user_data_dir_ = false;
+
+  // The feature list to override features for all sync tests.
+  base::test::ScopedFeatureList feature_list_;
 
 #if !defined(OS_ANDROID)
   // Disable extension install verification.

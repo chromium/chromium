@@ -394,14 +394,17 @@ class SingleClientSyncInvalidationsTestWithPreDisabledSendInterestedDataTypes
  public:
   SingleClientSyncInvalidationsTestWithPreDisabledSendInterestedDataTypes()
       : SyncTest(SINGLE_CLIENT) {
-    feature_list_.InitWithFeatureState(switches::kSyncSendInterestedDataTypes,
-                                       !content::IsPreTest());
+    features_override_.InitWithFeatureState(
+        switches::kSyncSendInterestedDataTypes, !content::IsPreTest());
   }
 
   std::string GetLocalCacheGuid() {
     syncer::SyncPrefs prefs(GetProfile(0)->GetPrefs());
     return prefs.GetCacheGuid();
   }
+
+ private:
+  base::test::ScopedFeatureList features_override_;
 };
 
 IN_PROC_BROWSER_TEST_F(

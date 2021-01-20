@@ -125,18 +125,24 @@ class SingleClientBookmarksSyncTestWithDisabledCommitWithoutFavicon
  public:
   SingleClientBookmarksSyncTestWithDisabledCommitWithoutFavicon()
       : SyncTest(SINGLE_CLIENT) {
-    feature_list_.InitAndEnableFeature(
+    features_override_.InitAndEnableFeature(
         switches::kSyncDoNotCommitBookmarksWithoutFavicon);
   }
+
+ private:
+  base::test::ScopedFeatureList features_override_;
 };
 
 class SingleClientBookmarksSyncTestWithEnabledReuploadRemoteBookmarks
     : public SingleClientBookmarksSyncTest {
  public:
   SingleClientBookmarksSyncTestWithEnabledReuploadRemoteBookmarks() {
-    feature_list_.InitAndEnableFeature(
+    features_override_.InitAndEnableFeature(
         switches::kSyncReuploadBookmarkFullTitles);
   }
+
+ private:
+  base::test::ScopedFeatureList features_override_;
 };
 
 class SingleClientBookmarksSyncTestWithDisabledReuploadBookmarks
@@ -144,27 +150,36 @@ class SingleClientBookmarksSyncTestWithDisabledReuploadBookmarks
  public:
   SingleClientBookmarksSyncTestWithDisabledReuploadBookmarks()
       : SyncTest(SINGLE_CLIENT) {
-    feature_list_.InitAndDisableFeature(
+    features_override_.InitAndDisableFeature(
         switches::kSyncReuploadBookmarkFullTitles);
   }
+
+ private:
+  base::test::ScopedFeatureList features_override_;
 };
 
 class SingleClientBookmarksSyncTestWithEnabledReuploadPreexistingBookmarks
     : public SingleClientBookmarksSyncTest {
  public:
   SingleClientBookmarksSyncTestWithEnabledReuploadPreexistingBookmarks() {
-    feature_list_.InitWithFeatureState(
+    features_override_.InitWithFeatureState(
         switches::kSyncReuploadBookmarkFullTitles, !content::IsPreTest());
   }
+
+ private:
+  base::test::ScopedFeatureList features_override_;
 };
 
 class SingleClientBookmarksSyncTestWithEnabledClientTags : public SyncTest {
  public:
   SingleClientBookmarksSyncTestWithEnabledClientTags()
       : SyncTest(SINGLE_CLIENT) {
-    feature_list_.InitAndEnableFeature(
+    features_override_.InitAndEnableFeature(
         switches::kSyncUseClientTagForBookmarkCommits);
   }
+
+ private:
+  base::test::ScopedFeatureList features_override_;
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTestWithVerifier, Sanity) {
