@@ -3662,14 +3662,18 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
 IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
                        RendererInitiatedCrossWindowNavigationInUnload) {
   GURL url(embedded_test_server()->GetURL("/empty.html"));
+  GURL always_referrer_url(embedded_test_server()->GetURL(
+      "/set-header?Referrer-Policy: unsafe-url"));
 
   // Setup the opener window.
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
   // Setup the openee window;
   ShellAddedObserver new_shell_observer;
-  EXPECT_TRUE(ExecJs(shell(), JsReplace("window.open($1);", url)));
+  EXPECT_TRUE(
+      ExecJs(shell(), JsReplace("window.open($1);", always_referrer_url)));
   Shell* openee_shell = new_shell_observer.GetShell();
+  EXPECT_TRUE(WaitForLoadStop(openee_shell->web_contents()));
 
   // When deleted, the openee will initiate a navigation in its opener.
   EXPECT_TRUE(ExecJs(openee_shell, R"(
@@ -3697,6 +3701,20 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
         auto* initiator_rfh = RenderFrameHostImpl::FromFrameToken(
             request->GetInitiatorProcessID(), *frame_token);
         ASSERT_FALSE(initiator_rfh);
+
+        // Even if the initiator RenderFrameHost is gone, its policy container
+        // should still be around since the LocalFrame has not been destroyed
+        // yet.
+        auto* initiator_policy_container =
+            PolicyContainerHost::FromFrameToken(frame_token.value());
+        ASSERT_TRUE(initiator_policy_container);
+        ASSERT_EQ(network::mojom::ReferrerPolicy::kAlways,
+                  initiator_policy_container->referrer_policy());
+
+        // Even if the initiator RenderFrameHost is gone, the navigation request
+        // (to "about:blank") should have inherited its policy container.
+        ASSERT_EQ(network::mojom::ReferrerPolicy::kAlways,
+                  request->policy_container_host()->referrer_policy());
         loop.Quit();
       }));
 
@@ -3709,6 +3727,8 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
 // Check the initiator frame token.
 IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, FormSubmissionThenDeleteFrame) {
   GURL url(embedded_test_server()->GetURL("/empty.html"));
+  GURL always_referrer_url(embedded_test_server()->GetURL(
+      "/set-header?Referrer-Policy: unsafe-url"));
 
   // Setup the opener window.
   EXPECT_TRUE(NavigateToURL(shell(), url));
@@ -3726,22 +3746,23 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, FormSubmissionThenDeleteFrame) {
       iframe.onload = resolve;
       iframe.name = 'form-submission-target';
       iframe.src = location.href;
-      console.log(location.href);
       document.body.appendChild(iframe);
     });
   )"));
 
   // Create an iframe in the second window. It will be initiating a form
   // submission and removing itself before the scheduled form navigation occurs.
+  // This iframe will have referrer policy "unsafe-url".
   EXPECT_TRUE(WaitForLoadStop(openee_shell->web_contents()));
-  EXPECT_TRUE(ExecJs(openee_shell, R"(
+  EXPECT_TRUE(ExecJs(openee_shell, JsReplace(R"(
     new Promise(resolve => {
-      let iframe = document.createElement("iframe");
+      let iframe = document.createElement('iframe');
       iframe.onload = resolve;
-      iframe.src = location.href;
+      iframe.src = $1;
       document.body.appendChild(iframe);
     });
-  )"));
+  )",
+                                             always_referrer_url)));
   EXPECT_TRUE(WaitForLoadStop(openee_shell->web_contents()));
 
   RenderFrameHost* initiator_rfh =
@@ -3767,6 +3788,17 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, FormSubmissionThenDeleteFrame) {
             request->GetInitiatorProcessID(), frame_token.value());
         ASSERT_FALSE(initiator_rfh);
 
+        // Even if the initiator RenderFrameHost is gone, its policy container
+        // should still be around since the LocalFrame has not been destroyed
+        // yet.
+        auto* initiator_policy_container =
+            PolicyContainerHost::FromFrameToken(frame_token.value());
+        ASSERT_TRUE(initiator_policy_container);
+        EXPECT_EQ(network::mojom::ReferrerPolicy::kAlways,
+                  initiator_policy_container->referrer_policy());
+        ASSERT_EQ(network::mojom::ReferrerPolicy::kAlways,
+                  request->policy_container_host()->referrer_policy());
+
         loop.Quit();
       }));
 
@@ -3783,7 +3815,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, FormSubmissionThenDeleteFrame) {
     let form = document.createElement('form');
     form.appendChild(input);
     form.setAttribute("method", "POST");
-    form.setAttribute("action", location.href);
+    form.setAttribute("action", "about:blank");
     form.setAttribute("target", "form-submission-target");
     document.body.appendChild(form);
     form.submit();

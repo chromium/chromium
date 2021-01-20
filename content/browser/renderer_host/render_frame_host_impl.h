@@ -541,8 +541,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       int new_routing_id,
       mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
           browser_interface_broker_receiver,
-      mojo::PendingAssociatedReceiver<blink::mojom::PolicyContainerHost>
-          policy_container_host_receiver,
+      blink::mojom::PolicyContainerBindParamsPtr policy_container_bind_params,
       blink::mojom::TreeScopeType scope,
       const std::string& frame_name,
       const std::string& frame_unique_name,
@@ -1553,7 +1552,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // TODO(https://crbug.com/1072817): Remove this logic when removing the
   // early commit.
   void SetPolicyContainerForEarlyCommitAfterCrash(
-      std::unique_ptr<PolicyContainerHost> policy_container_host);
+      scoped_refptr<PolicyContainerHost> policy_container_host);
 
   // This function mimics DidCommitProvisionalLoad for navigations served from
   // the back-forward cache.
@@ -2117,8 +2116,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       int new_routing_id,
       mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
           browser_interface_broker_receiver,
-      mojo::PendingAssociatedReceiver<blink::mojom::PolicyContainerHost>
-          policy_container_host_receiver,
+      blink::mojom::PolicyContainerBindParamsPtr policy_container_bind_params,
       blink::mojom::TreeScopeType scope,
       const std::string& frame_name,
       const std::string& frame_unique_name,
@@ -2130,13 +2128,20 @@ class CONTENT_EXPORT RenderFrameHostImpl
       mojom::DidCommitProvisionalLoadParamsPtr params,
       mojom::DidCommitSameDocumentNavigationParamsPtr same_document_params)
       override;
+
+  // |initiator_policy_container_host_keep_alive_handle| is needed to
+  // ensure that the PolicyContainerHost of the initiator RenderFrameHost
+  // can still be retrieved even if the RenderFrameHost has been deleted in
+  // between.
   void BeginNavigation(
       mojom::CommonNavigationParamsPtr common_params,
       mojom::BeginNavigationParamsPtr begin_params,
       mojo::PendingRemote<blink::mojom::BlobURLToken> blob_url_token,
       mojo::PendingAssociatedRemote<mojom::NavigationClient> navigation_client,
       mojo::PendingRemote<blink::mojom::NavigationInitiator>
-          navigation_initiator) override;
+          navigation_initiator,
+      mojo::PendingRemote<blink::mojom::PolicyContainerHostKeepAliveHandle>
+          initiator_policy_container_host_keep_alive_handle) override;
   void SubresourceResponseStarted(const GURL& url,
                                   net::CertStatus cert_status) override;
   void ResourceLoadComplete(
@@ -2655,6 +2660,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   bool is_render_frame_created() {
     return render_frame_state_ == RenderFrameState::kCreated;
   }
+
+  void SetPolicyContainerHost(
+      scoped_refptr<PolicyContainerHost> policy_container_host);
 
   // The RenderViewHost that this RenderFrameHost is associated with.
   //
@@ -3384,8 +3392,16 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // is displaying a document. Its lifetime should coincide with the lifetime of
   // the document displayed in the RenderFrameHost. It is overwritten at
   // navigation commit time in DidCommitNewDocument with the PolicyContainerHost
-  // of the new document.
-  std::unique_ptr<PolicyContainerHost> policy_container_host_;
+  // of the new document. Never set this directly, but always use
+  // SetPolicyContainerHost.
+  // Note: Although it is owned through a scoped_refptr, a PolicyContainerHost
+  // should not be shared between different owners. The PolicyContainerHost of a
+  // RenderFrameHost can be retrieven with PolicyContainerHost::FromFrameToken
+  // even after the RenderFrameHost has been deleted, if there exist still some
+  // keepalive for it. One keepalive is always held by the LocalFrame's
+  // PolicyContainer. Cf. the documentation string of the PolicyContainerHost
+  // class for more information.
+  scoped_refptr<PolicyContainerHost> policy_container_host_;
 
   // Prerender2:
   // Receivers for PrerenderProcessor that handle prerendering requests from a

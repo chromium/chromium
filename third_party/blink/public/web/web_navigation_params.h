@@ -168,6 +168,11 @@ struct BLINK_EXPORT WebNavigationInfo {
 
   // The frame token of the initiator Frame.
   base::Optional<base::UnguessableToken> initiator_frame_token;
+
+  // A handle for keeping the initiator RenderFrameHost's PolicyContainerHost
+  // alive until we create the NavigationRequest.
+  CrossVariantMojoRemote<mojom::PolicyContainerHostKeepAliveHandleInterfaceBase>
+      initiator_policy_container_keep_alive_handle;
 };
 
 // This structure holds all information provided by the embedder that is

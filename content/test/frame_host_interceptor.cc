@@ -47,14 +47,17 @@ class FrameHostInterceptor::FrameAgent
       mojo::PendingRemote<blink::mojom::BlobURLToken> blob_url_token,
       mojo::PendingAssociatedRemote<mojom::NavigationClient> navigation_client,
       mojo::PendingRemote<blink::mojom::NavigationInitiator>
-          navigation_initiator) override {
+          navigation_initiator,
+      mojo::PendingRemote<blink::mojom::PolicyContainerHostKeepAliveHandle>
+          initiator_policy_container_keep_alive_handle) override {
     if (interceptor_->WillDispatchBeginNavigation(
             rfhi_, &common_params, &begin_params, &blob_url_token,
             &navigation_client, &navigation_initiator)) {
       GetForwardingInterface()->BeginNavigation(
           std::move(common_params), std::move(begin_params),
           std::move(blob_url_token), std::move(navigation_client),
-          std::move(navigation_initiator));
+          std::move(navigation_initiator),
+          std::move(initiator_policy_container_keep_alive_handle));
     }
   }
 

@@ -1,0 +1,28 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "content/public/test/mock_policy_container_host.h"
+
+namespace content {
+
+MockPolicyContainerHost::MockPolicyContainerHost() = default;
+MockPolicyContainerHost::~MockPolicyContainerHost() = default;
+
+mojo::PendingAssociatedRemote<blink::mojom::PolicyContainerHost>
+MockPolicyContainerHost::BindNewEndpointAndPassDedicatedRemote() {
+  return receiver_.BindNewEndpointAndPassDedicatedRemote();
+}
+
+void MockPolicyContainerHost::FlushForTesting() {
+  receiver_.FlushForTesting();
+}
+
+blink::mojom::PolicyContainerPtr
+MockPolicyContainerHost::CreatePolicyContainerForBlink() {
+  return blink::mojom::PolicyContainer::New(
+      blink::mojom::PolicyContainerDocumentPolicies::New(),
+      BindNewEndpointAndPassDedicatedRemote());
+}
+
+}  // namespace content

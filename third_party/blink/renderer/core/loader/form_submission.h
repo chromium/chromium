@@ -100,21 +100,24 @@ class FormSubmission final : public GarbageCollected<FormSubmission> {
                                 const Event*,
                                 HTMLFormControlElement* submit_button);
 
-  FormSubmission(SubmitMethod,
-                 const KURL& action,
-                 const AtomicString& target,
-                 const AtomicString& content_type,
-                 HTMLFormElement*,
-                 scoped_refptr<EncodedFormData>,
-                 const Event*,
-                 NavigationPolicy navigation_policy,
-                 mojom::blink::TriggeringEventInfo triggering_event_info,
-                 ClientNavigationReason reason,
-                 std::unique_ptr<ResourceRequest> resource_request,
-                 Frame* target_frame,
-                 WebFrameLoadType load_type,
-                 LocalDOMWindow* origin_window,
-                 const base::UnguessableToken& initiator_frame_token);
+  FormSubmission(
+      SubmitMethod,
+      const KURL& action,
+      const AtomicString& target,
+      const AtomicString& content_type,
+      HTMLFormElement*,
+      scoped_refptr<EncodedFormData>,
+      const Event*,
+      NavigationPolicy navigation_policy,
+      mojom::blink::TriggeringEventInfo triggering_event_info,
+      ClientNavigationReason reason,
+      std::unique_ptr<ResourceRequest> resource_request,
+      Frame* target_frame,
+      WebFrameLoadType load_type,
+      LocalDOMWindow* origin_window,
+      const base::UnguessableToken& initiator_frame_token,
+      mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>
+          initiator_policy_container_keep_alive_handle);
   // FormSubmission for DialogMethod
   explicit FormSubmission(const String& result);
 
@@ -150,6 +153,12 @@ class FormSubmission final : public GarbageCollected<FormSubmission> {
   WebFrameLoadType load_type_;
   Member<LocalDOMWindow> origin_window_;
   base::UnguessableToken initiator_frame_token_;
+
+  // Since form submissions are scheduled asynchronously, we need to keep a
+  // handle to the initiator PolicyContainerHost. This ensures that it remains
+  // available in the browser until we create the NavigationRequest.
+  mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>
+      initiator_policy_container_keep_alive_handle_;
 };
 
 }  // namespace blink

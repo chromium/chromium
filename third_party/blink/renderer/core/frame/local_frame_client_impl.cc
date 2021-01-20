@@ -554,7 +554,9 @@ void LocalFrameClientImpl::BeginNavigation(
     WTF::Vector<network::mojom::blink::ContentSecurityPolicyPtr> initiator_csp,
     network::mojom::IPAddressSpace initiator_address_space,
     mojo::PendingRemote<mojom::blink::NavigationInitiator> navigation_initiator,
-    const base::UnguessableToken* initiator_frame_token) {
+    const base::UnguessableToken* initiator_frame_token,
+    mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>
+        initiator_policy_container_keep_alive_handle) {
   if (!web_frame_->Client())
     return;
 
@@ -573,6 +575,8 @@ void LocalFrameClientImpl::BeginNavigation(
   navigation_info->input_start = input_start_time;
   if (initiator_frame_token)
     navigation_info->initiator_frame_token = *initiator_frame_token;
+  navigation_info->initiator_policy_container_keep_alive_handle =
+      std::move(initiator_policy_container_keep_alive_handle);
   if (origin_window && origin_window->GetFrame()) {
     // Many navigation paths do not pass an |initiator_frame_token|, so we need
     // to compute it here.

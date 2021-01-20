@@ -156,15 +156,19 @@ class CONTENT_EXPORT FrameTree {
   // |interface_provider_receiver| is the receiver end of the InterfaceProvider
   // interface through which the child RenderFrame can access Mojo services
   // exposed by the corresponding RenderFrameHost. The caller takes care of
-  // sending the client end of the interface down to the RenderFrame.
+  // sending the client end of the interface down to the
+  // RenderFrame. |policy_container_bind_params|, if not null, is used for
+  // binding Blink's policy container to the new RenderFrameHost's
+  // PolicyContainerHost. This is only needed if this frame is the result of the
+  // CreateChildFrame mojo call, which also delivers the
+  // |policy_container_bind_params|.
   FrameTreeNode* AddFrame(
       RenderFrameHostImpl* parent,
       int process_id,
       int new_routing_id,
       mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
           browser_interface_broker_receiver,
-      mojo::PendingAssociatedReceiver<blink::mojom::PolicyContainerHost>
-          policy_container_host_receiver,
+      blink::mojom::PolicyContainerBindParamsPtr policy_container_bind_params,
       blink::mojom::TreeScopeType scope,
       const std::string& frame_name,
       const std::string& frame_unique_name,

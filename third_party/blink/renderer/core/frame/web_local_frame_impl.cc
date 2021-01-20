@@ -2092,7 +2092,8 @@ LocalFrame* WebLocalFrameImpl::CreateChildFrame(
           owner_element->getAttribute(
               owner_element->SubResourceAttributeName()),
           owner_element->GetFramePolicy(), owner_properties,
-          owner_element->OwnerType(), std::move(policy_container_receiver)));
+          owner_element->OwnerType(),
+          WebPolicyContainerBindParams{std::move(policy_container_receiver)}));
   if (!webframe_child)
     return nullptr;
 

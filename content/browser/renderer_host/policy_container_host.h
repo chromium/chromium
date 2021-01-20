@@ -8,6 +8,7 @@
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/policy_container.mojom.h"
@@ -21,8 +22,24 @@ namespace content {
 // PolicyContainerHost of the opener is cloned and a copy is attached to the new
 // document, so that the same security policies are applied to it. It implements
 // a mojo interface that allows updates coming from Blink.
+//
+// Although it is owned through a scoped_refptr, a PolicyContainerHost should
+// not be shared between different owners. A RenderFrameHost gets a
+// PolicyContainerHost at creation time, and it gets a new one from the
+// NavigationRequest every time a NavigationRequest commits. Initially, a
+// PolicyContainerHost has no associated frame token. As soon as the
+// PolicyContainerHost becomes owned by a RenderFrameHost, the method
+// AssociateWithFrameToken must be called. This makes it possible to retrieve
+// the PolicyContainerHost via
+// PolicyContainerHost::FromFrameToken. Additionally, this enables the
+// PolicyContainerHost to outlive its RenderFrameHost. In fact, as long as the
+// mojo receiver or a keep alive handle (as registered using
+// IssueKeepAliveHandle) is alive, the PolicyContainerHost will still be
+// retrievable by the corresponding frame token even if the RenderFrameHost has
+// been deleted (and the scoped_refptr with it).
 class CONTENT_EXPORT PolicyContainerHost
-    : public blink::mojom::PolicyContainerHost {
+    : public base::RefCounted<PolicyContainerHost>,
+      public blink::mojom::PolicyContainerHost {
  public:
   struct DocumentPolicies {
     // The referrer policy for the associated document. If not overwritten via a
@@ -44,7 +61,17 @@ class CONTENT_EXPORT PolicyContainerHost
   explicit PolicyContainerHost(const DocumentPolicies& document_policies);
   PolicyContainerHost(const PolicyContainerHost&) = delete;
   PolicyContainerHost& operator=(const PolicyContainerHost&) = delete;
-  ~PolicyContainerHost() override;
+
+  // Retrieve the PolicyContainerHost associated with the frame token |token|
+  // (cf. AsssociateWithFrameToken).
+  static PolicyContainerHost* FromFrameToken(
+      const base::UnguessableToken& token);
+
+  // AssociateWithFrameToken must be called as soon as this PolicyContainerHost
+  // becomes owned by a RenderFrameHost. After this function is called, it
+  // becomes possible to retrieve this PolicyContainerHost via
+  // PolicyContainerHost::FromFrameToken. This function can be called only once.
+  void AssociateWithFrameToken(const base::UnguessableToken& token);
 
   network::mojom::ReferrerPolicy referrer_policy() const {
     return document_policies_.referrer_policy;
@@ -69,20 +96,38 @@ class CONTENT_EXPORT PolicyContainerHost
 
   // Create a new PolicyContainerHost with the same policies (i.e. a deep copy),
   // but with a new, unbound mojo receiver.
-  std::unique_ptr<PolicyContainerHost> Clone() const;
+  scoped_refptr<PolicyContainerHost> Clone() const;
 
   // Bind this PolicyContainerHost with the given mojo receiver, so that it can
   // handle mojo messages coming from the corresponding remote.
-  void Bind(mojo::PendingAssociatedReceiver<blink::mojom::PolicyContainerHost>
-                receiver);
+  void Bind(
+      blink::mojom::PolicyContainerBindParamsPtr policy_container_bind_params);
+
+  // Register a keep alive handle by passing the mojo receiver. The
+  // PolicyContainerHost is kept alive as long as the corresponding remote
+  // exists.
+  // See also:
+  // - PolicyContainerHost::AssociateWithFrameToken(token)
+  // - PolicyContainerHost::FromFrameToken(token)
+  void IssueKeepAliveHandle(
+      mojo::PendingReceiver<blink::mojom::PolicyContainerHostKeepAliveHandle>
+          receiver) override;
 
  private:
+  friend class base::RefCounted<PolicyContainerHost>;
+  ~PolicyContainerHost() override;
+
   void SetReferrerPolicy(network::mojom::ReferrerPolicy referrer_policy) final;
 
   DocumentPolicies document_policies_;
 
   mojo::AssociatedReceiver<blink::mojom::PolicyContainerHost>
       policy_container_host_receiver_{this};
+
+  mojo::UniqueReceiverSet<blink::mojom::PolicyContainerHostKeepAliveHandle>
+      keep_alive_handles_receiver_set_;
+
+  base::UnguessableToken frame_token_;
 };
 
 }  // namespace content

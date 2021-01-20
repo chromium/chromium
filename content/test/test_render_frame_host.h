@@ -168,10 +168,13 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
   static mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
   CreateStubBrowserInterfaceBrokerReceiver();
 
-  // Returns a PendingAssociatedReceiver<PolicyContainerHost> that is safe to
-  // bind to an implementation, but will never receive any interface requests.
-  static mojo::PendingAssociatedReceiver<blink::mojom::PolicyContainerHost>
-  CreateStubPolicyContainerHostReceiver();
+  // Returns a blink::mojom::PolicyContainerBindParams containing a
+  // PendingAssociatedReceiver<PolicyContainerHost> and a
+  // PendingReceiver<PolicyContainerHostKeepAliveHandle> that are safe to bind
+  // to an implementation, but will never receive any interface requests. To be
+  // passed to RenderFrameHostImpl::CreateChildFrame.
+  static blink::mojom::PolicyContainerBindParamsPtr
+  CreateStubPolicyContainerBindParams();
 
   // This simulates aborting a cross document navigation.
   // Will abort the navigation with the given |navigation_id|.

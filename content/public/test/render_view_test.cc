@@ -508,7 +508,10 @@ void RenderViewTest::SetUp() {
       render_widget_host_->BindNewWidgetInterfaces();
   std::tie(view_params->frame_widget_host, view_params->frame_widget) =
       render_widget_host_->BindNewFrameWidgetInterfaces();
-  view_params->policy_container = CreateStubPolicyContainer();
+
+  policy_container_host_ = std::make_unique<MockPolicyContainerHost>();
+  view_params->policy_container =
+      policy_container_host_->CreatePolicyContainerForBlink();
 
   RenderViewImpl* view = RenderViewImpl::Create(
       *agent_scheduling_group_, compositor_deps_.get(), std::move(view_params),

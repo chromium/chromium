@@ -32,6 +32,11 @@ struct WebPolicyContainer {
       remote;
 };
 
+struct WebPolicyContainerBindParams {
+  CrossVariantMojoAssociatedReceiver<mojom::PolicyContainerHostInterfaceBase>
+      receiver;
+};
+
 }  // namespace blink
 
 #endif

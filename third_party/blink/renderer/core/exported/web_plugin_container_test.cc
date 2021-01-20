@@ -206,11 +206,10 @@ class TestPluginWebFrameClient : public frame_test_helpers::TestWebFrameClient {
       const FramePolicy&,
       const WebFrameOwnerProperties&,
       mojom::blink::FrameOwnerElementType owner_type,
-      blink::CrossVariantMojoAssociatedReceiver<
-          blink::mojom::PolicyContainerHostInterfaceBase>
-          policy_container_host_receiver) override {
+      WebPolicyContainerBindParams policy_container_bind_params) override {
     return CreateLocalChild(*Frame(), scope,
-                            std::make_unique<TestPluginWebFrameClient>());
+                            std::make_unique<TestPluginWebFrameClient>(),
+                            std::move(policy_container_bind_params));
   }
 
   WebPlugin* CreatePlugin(const WebPluginParams& params) override {

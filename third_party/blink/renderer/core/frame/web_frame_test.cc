@@ -4453,12 +4453,11 @@ class ContextLifetimeTestWebFrameClient
       const FramePolicy&,
       const WebFrameOwnerProperties&,
       mojom::blink::FrameOwnerElementType,
-      blink::CrossVariantMojoAssociatedReceiver<
-          blink::mojom::PolicyContainerHostInterfaceBase>
-          policy_container_host_receiver) override {
+      WebPolicyContainerBindParams policy_container_bind_params) override {
     return CreateLocalChild(*Frame(), scope,
                             std::make_unique<ContextLifetimeTestWebFrameClient>(
-                                create_notifications_, release_notifications_));
+                                create_notifications_, release_notifications_),
+                            std::move(policy_container_bind_params));
   }
 
   void DidCreateScriptContext(v8::Local<v8::Context> context,
@@ -7216,8 +7215,9 @@ TEST_F(WebFrameTest, ReloadPost) {
   frame_test_helpers::WebViewHelper web_view_helper;
   web_view_helper.InitializeAndLoad(base_url_ + "reload_post.html", &client);
   WebLocalFrame* frame = web_view_helper.LocalMainFrame();
+  auto* main_frame = web_view_helper.GetWebView()->MainFrameImpl();
 
-  frame_test_helpers::LoadFrame(web_view_helper.GetWebView()->MainFrameImpl(),
+  frame_test_helpers::LoadFrame(main_frame,
                                 "javascript:document.forms[0].submit()");
   // Pump requests one more time after the javascript URL has executed to
   // trigger the actual POST load request.
@@ -7255,13 +7255,12 @@ class TestCachePolicyWebFrameClient
       const FramePolicy&,
       const WebFrameOwnerProperties& frame_owner_properties,
       mojom::blink::FrameOwnerElementType,
-      blink::CrossVariantMojoAssociatedReceiver<
-          blink::mojom::PolicyContainerHostInterfaceBase>
-          policy_container_host_receiver) override {
+      WebPolicyContainerBindParams policy_container_bind_params) override {
     auto child = std::make_unique<TestCachePolicyWebFrameClient>();
     auto* child_ptr = child.get();
     child_clients_.push_back(std::move(child));
-    return CreateLocalChild(*Frame(), scope, child_ptr);
+    return CreateLocalChild(*Frame(), scope, child_ptr,
+                            std::move(policy_container_bind_params));
   }
   void BeginNavigation(std::unique_ptr<WebNavigationInfo> info) override {
     cache_mode_ = info->url_request.GetCacheMode();
@@ -7750,9 +7749,7 @@ class FailCreateChildFrame : public frame_test_helpers::TestWebFrameClient {
       const FramePolicy&,
       const WebFrameOwnerProperties& frame_owner_properties,
       mojom::blink::FrameOwnerElementType,
-      blink::CrossVariantMojoAssociatedReceiver<
-          blink::mojom::PolicyContainerHostInterfaceBase>
-          policy_container_host_receiver) override {
+      WebPolicyContainerBindParams policy_container_bind_params) override {
     ++call_count_;
     return nullptr;
   }
@@ -8858,11 +8855,10 @@ class WebFrameSwapTestClient : public frame_test_helpers::TestWebFrameClient {
       const FramePolicy&,
       const WebFrameOwnerProperties&,
       mojom::blink::FrameOwnerElementType,
-      blink::CrossVariantMojoAssociatedReceiver<
-          blink::mojom::PolicyContainerHostInterfaceBase>
-          policy_container_host_receiver) override {
+      WebPolicyContainerBindParams policy_container_bind_params) override {
     return CreateLocalChild(*Frame(), scope,
-                            std::make_unique<WebFrameSwapTestClient>(this));
+                            std::make_unique<WebFrameSwapTestClient>(this),
+                            std::move(policy_container_bind_params));
   }
 
   void DidChangeFrameOwnerProperties(
@@ -11065,10 +11061,9 @@ class WebLocalFrameVisibilityChangeTest
       const FramePolicy&,
       const WebFrameOwnerProperties&,
       mojom::blink::FrameOwnerElementType,
-      blink::CrossVariantMojoAssociatedReceiver<
-          blink::mojom::PolicyContainerHostInterfaceBase>
-          policy_container_host_receiver) override {
-    return CreateLocalChild(*Frame(), scope, &child_client_);
+      WebPolicyContainerBindParams policy_container_bind_params) override {
+    return CreateLocalChild(*Frame(), scope, &child_client_,
+                            std::move(policy_container_bind_params));
   }
 
   TestLocalFrameHostForVisibility& ChildHost() { return child_host_; }
@@ -12765,10 +12760,9 @@ TEST_F(WebFrameTest, NoLoadingCompletionCallbacksInDetach) {
         const FramePolicy&,
         const WebFrameOwnerProperties&,
         mojom::blink::FrameOwnerElementType,
-        blink::CrossVariantMojoAssociatedReceiver<
-            blink::mojom::PolicyContainerHostInterfaceBase>
-            policy_container_host_receiver) override {
-      return CreateLocalChild(*Frame(), scope, &child_client_);
+        WebPolicyContainerBindParams policy_container_bind_params) override {
+      return CreateLocalChild(*Frame(), scope, &child_client_,
+                              std::move(policy_container_bind_params));
     }
 
     LoadingObserverFrameClient& ChildClient() { return child_client_; }
@@ -13025,11 +13019,10 @@ class TestFallbackWebFrameClient
       const FramePolicy&,
       const WebFrameOwnerProperties& frameOwnerProperties,
       mojom::blink::FrameOwnerElementType,
-      blink::CrossVariantMojoAssociatedReceiver<
-          blink::mojom::PolicyContainerHostInterfaceBase>
-          policy_container_host_receiver) override {
+      WebPolicyContainerBindParams policy_container_bind_params) override {
     DCHECK(child_client_);
-    return CreateLocalChild(*Frame(), scope, child_client_);
+    return CreateLocalChild(*Frame(), scope, child_client_,
+                            std::move(policy_container_bind_params));
   }
   void BeginNavigation(std::unique_ptr<WebNavigationInfo> info) override {
     if (child_client_ || KURL(info->url_request.Url()) == BlankURL()) {

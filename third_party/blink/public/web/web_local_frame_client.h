@@ -230,9 +230,7 @@ class BLINK_EXPORT WebLocalFrameClient {
       const FramePolicy&,
       const WebFrameOwnerProperties&,
       mojom::FrameOwnerElementType,
-      CrossVariantMojoAssociatedReceiver<
-          mojom::PolicyContainerHostInterfaceBase>
-          policy_container_host_receiver) {
+      WebPolicyContainerBindParams policy_container_bind_params) {
     return nullptr;
   }
   // When CreateChildFrame() returns there is no core LocalFrame backing the

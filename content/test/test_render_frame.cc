@@ -119,8 +119,7 @@ class MockFrameHost : public mojom::FrameHost {
       int new_routing_id,
       mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
           browser_interface_broker_receiver,
-      mojo::PendingAssociatedReceiver<blink::mojom::PolicyContainerHost>
-          policy_container_host_receiver,
+      blink::mojom::PolicyContainerBindParamsPtr policy_container_bind_params,
       blink::mojom::TreeScopeType scope,
       const std::string& frame_name,
       const std::string& frame_unique_name,
@@ -161,7 +160,9 @@ class MockFrameHost : public mojom::FrameHost {
       mojom::BeginNavigationParamsPtr begin_params,
       mojo::PendingRemote<blink::mojom::BlobURLToken> blob_url_token,
       mojo::PendingAssociatedRemote<mojom::NavigationClient>,
-      mojo::PendingRemote<blink::mojom::NavigationInitiator>) override {}
+      mojo::PendingRemote<blink::mojom::NavigationInitiator>,
+      mojo::PendingRemote<blink::mojom::PolicyContainerHostKeepAliveHandle>)
+      override {}
 
   void SubresourceResponseStarted(const GURL& url,
                                   net::CertStatus cert_status) override {}

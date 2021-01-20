@@ -422,6 +422,14 @@ struct OpenURLParams {
   string href_translate;
   Impression? impression;
   NavigationDownloadPolicy download_policy;
+
+  // Passing the |initiator_policy_container_keep_alive_handle| is just a mean
+  // to ensure that the PolicyContainerHost of the initiator RenderFrameHost is
+  // kept alive, even if the RenderFrameHost itself has already been deleted in
+  // the meantime. If this can be ensured in other ways, it is safe to pass a
+  // mojo::NullRemote here.
+  pending_remote<blink.mojom.PolicyContainerHostKeepAliveHandle>?
+      initiator_policy_container_keep_alive_handle;
 };
 
 // Implemented by the frame server (i.e. the browser process). For messages that
@@ -482,8 +490,8 @@ interface FrameHost {
   CreateChildFrame(int32 child_routing_id,
                    pending_receiver<blink.mojom.BrowserInterfaceBroker>
                      browser_interface_broker,
-                   pending_associated_receiver<blink.mojom.PolicyContainerHost>
-                     policy_container_associated_receiver,
+                   blink.mojom.PolicyContainerBindParams
+                     policy_container_bind_params,
                    blink.mojom.TreeScopeType scope,
                    string frame_name,
                    string frame_unique_name,
@@ -528,6 +536,14 @@ interface FrameHost {
   // url in |common_params|, the navigation will result in a network error.
   // |navigation_client| is passed to the renderer to allow for further control
   // of the navigation. Allows for Commit and Cancels/Aborts.
+  // Passing the |initiator_policy_container_keep_alive_handle| is just a means
+  // to ensure that the PolicyContainerHost of the initiator RenderFrameHost is
+  // kept alive, even if the RenderFrameHost itself has already been deleted in
+  // the meantime. If this can be ensured in other ways, it is safe to pass a
+  // mojo::NullRemote. In particular, if the initiator LocalFrame is alive when
+  // issuing this mojo call, there is no need to pass
+  // |initiator_policy_container_keep_alive_handle|, since the initiator
+  // PolicyContainerHost is kept alive by LocalFrame's PolicyContainer.
   // TODO(ahemery): |navigation_client| should not be optional. Make it
   // mandatory.
   BeginNavigation(
@@ -535,7 +551,9 @@ interface FrameHost {
       BeginNavigationParams begin_params,
       pending_remote<blink.mojom.BlobURLToken>? blob_url_token,
       pending_associated_remote<NavigationClient>? navigation_client,
-      pending_remote<blink.mojom.NavigationInitiator>? navigation_initiator);
+      pending_remote<blink.mojom.NavigationInitiator>? navigation_initiator,
+      pending_remote<blink.mojom.PolicyContainerHostKeepAliveHandle>?
+          initiator_policy_container_keep_alive_handle);
 
   // Sent when a subresource response has started.
   // |cert_status| is the bitmask of status info of the SSL certificate. (see

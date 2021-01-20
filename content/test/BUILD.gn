@@ -166,6 +166,8 @@ static_library("test_support") {
     "../public/test/mock_notification_observer.h",
     "../public/test/mock_permission_manager.cc",
     "../public/test/mock_permission_manager.h",
+    "../public/test/mock_policy_container_host.cc",
+    "../public/test/mock_policy_container_host.h",
     "../public/test/mock_render_process_host.cc",
     "../public/test/mock_render_process_host.h",
     "../public/test/mock_render_thread.cc",

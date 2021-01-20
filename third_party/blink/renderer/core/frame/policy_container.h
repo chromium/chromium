@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_POLICY_CONTAINER_H_
 
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/policy_container.mojom-blink.h"
@@ -45,6 +46,14 @@ class CORE_EXPORT PolicyContainer {
   network::mojom::blink::IPAddressSpace GetIPAddressSpace() const;
 
   const mojom::blink::PolicyContainerDocumentPoliciesPtr& GetPolicies() const;
+
+  // Return a keep alive handle for the browser process' PolicyContainerHost. If
+  // that PolicyContainerHost is owned by a RenderFrameHost, holding a keep
+  // alive handle ensures that the PolicyContainerHost will still be retrievable
+  // via RenderFrameHostImpl::GetPolicyContainerHost, even if the
+  // RenderFrameHost has been deleted in between.
+  mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>
+  IssueKeepAliveHandle();
 
  private:
   mojom::blink::PolicyContainerDocumentPoliciesPtr policies_;

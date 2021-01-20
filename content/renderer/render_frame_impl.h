@@ -528,9 +528,8 @@ class CONTENT_EXPORT RenderFrameImpl
       const blink::FramePolicy& frame_policy,
       const blink::WebFrameOwnerProperties& frame_owner_properties,
       blink::mojom::FrameOwnerElementType frame_owner_element_type,
-      blink::CrossVariantMojoAssociatedReceiver<
-          blink::mojom::PolicyContainerHostInterfaceBase>
-          policy_container_host_receiver) override;
+      blink::WebPolicyContainerBindParams policy_container_bind_params)
+      override;
   void InitializeAsChildFrame(blink::WebLocalFrame* parent) override;
   std::pair<blink::WebRemoteFrame*, blink::PortalToken> CreatePortal(
       blink::CrossVariantMojoAssociatedReceiver<

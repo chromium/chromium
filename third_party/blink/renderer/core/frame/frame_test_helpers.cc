@@ -65,6 +65,7 @@
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/fake_web_plugin.h"
+#include "third_party/blink/renderer/core/testing/mock_policy_container_host.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -159,8 +160,10 @@ void LoadFrameDontWait(WebLocalFrame* frame, const WebURL& url) {
     params->navigation_timings.navigation_start = base::TimeTicks::Now();
     params->navigation_timings.fetch_start = base::TimeTicks::Now();
     params->is_browser_initiated = true;
+    MockPolicyContainerHost mock_policy_container_host;
     params->policy_container = std::make_unique<WebPolicyContainer>(
-        WebPolicyContainerDocumentPolicies(), mojo::NullAssociatedRemote());
+        WebPolicyContainerDocumentPolicies(),
+        mock_policy_container_host.BindNewEndpointAndPassDedicatedRemote());
     FillNavigationParamsResponse(params.get());
     impl->CommitNavigation(std::move(params), nullptr /* extra_data */);
   }
@@ -241,9 +244,14 @@ WebMouseEvent CreateMouseEvent(WebInputEvent::Type type,
   return result;
 }
 
-WebLocalFrameImpl* CreateLocalChild(WebLocalFrame& parent,
-                                    mojom::blink::TreeScopeType scope,
-                                    TestWebFrameClient* client) {
+WebLocalFrameImpl* CreateLocalChild(
+    WebLocalFrame& parent,
+    mojom::blink::TreeScopeType scope,
+    TestWebFrameClient* client,
+    WebPolicyContainerBindParams policy_container_bind_params) {
+  MockPolicyContainerHost mock_policy_container_host;
+  mock_policy_container_host.BindWithNewEndpoint(
+      std::move(policy_container_bind_params.receiver));
   std::unique_ptr<TestWebFrameClient> owned_client;
   client = CreateDefaultClientIfNeeded(client, owned_client);
   auto* frame = To<WebLocalFrameImpl>(parent.CreateLocalChild(
@@ -255,7 +263,11 @@ WebLocalFrameImpl* CreateLocalChild(WebLocalFrame& parent,
 WebLocalFrameImpl* CreateLocalChild(
     WebLocalFrame& parent,
     mojom::blink::TreeScopeType scope,
-    std::unique_ptr<TestWebFrameClient> self_owned) {
+    std::unique_ptr<TestWebFrameClient> self_owned,
+    WebPolicyContainerBindParams policy_container_bind_params) {
+  MockPolicyContainerHost mock_policy_container_host;
+  mock_policy_container_host.BindWithNewEndpoint(
+      std::move(policy_container_bind_params.receiver));
   DCHECK(self_owned);
   TestWebFrameClient* client = self_owned.get();
   auto* frame = To<WebLocalFrameImpl>(parent.CreateLocalChild(
@@ -353,10 +365,12 @@ WebViewImpl* WebViewHelper::InitializeWithOpener(
   std::unique_ptr<TestWebFrameClient> owned_web_frame_client;
   web_frame_client =
       CreateDefaultClientIfNeeded(web_frame_client, owned_web_frame_client);
+  MockPolicyContainerHost mock_policy_container_host;
   WebLocalFrame* frame = WebLocalFrame::CreateMainFrame(
       web_view_, web_frame_client, nullptr, base::UnguessableToken::Create(),
-      std::make_unique<WebPolicyContainer>(WebPolicyContainerDocumentPolicies(),
-                                           mojo::NullAssociatedRemote()),
+      std::make_unique<WebPolicyContainer>(
+          WebPolicyContainerDocumentPolicies(),
+          mock_policy_container_host.BindNewEndpointAndPassDedicatedRemote()),
       opener);
   web_frame_client->Bind(frame, std::move(owned_web_frame_client));
 
@@ -638,10 +652,9 @@ WebLocalFrame* TestWebFrameClient::CreateChildFrame(
     const FramePolicy&,
     const WebFrameOwnerProperties& frame_owner_properties,
     mojom::blink::FrameOwnerElementType owner_type,
-    blink::CrossVariantMojoAssociatedReceiver<
-        mojom::PolicyContainerHostInterfaceBase>
-        policy_container_host_receiver) {
-  return CreateLocalChild(*frame_, scope);
+    WebPolicyContainerBindParams policy_container_bind_params) {
+  return CreateLocalChild(*frame_, scope, /*test_web_frame_client=*/nullptr,
+                          std::move(policy_container_bind_params));
 }
 
 void TestWebFrameClient::InitializeAsChildFrame(WebLocalFrame* parent) {}

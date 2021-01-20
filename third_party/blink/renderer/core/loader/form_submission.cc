@@ -158,7 +158,9 @@ inline FormSubmission::FormSubmission(
     Frame* target_frame,
     WebFrameLoadType load_type,
     LocalDOMWindow* origin_window,
-    const base::UnguessableToken& initiator_frame_token)
+    const base::UnguessableToken& initiator_frame_token,
+    mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>
+        initiator_policy_container_keep_alive_handle)
     : method_(method),
       action_(action),
       target_(target),
@@ -172,7 +174,9 @@ inline FormSubmission::FormSubmission(
       target_frame_(target_frame),
       load_type_(load_type),
       origin_window_(origin_window),
-      initiator_frame_token_(initiator_frame_token) {}
+      initiator_frame_token_(initiator_frame_token),
+      initiator_policy_container_keep_alive_handle_(
+          std::move(initiator_policy_container_keep_alive_handle)) {}
 
 inline FormSubmission::FormSubmission(const String& result)
     : method_(kDialogMethod), result_(result) {}
@@ -331,7 +335,11 @@ FormSubmission* FormSubmission::Create(HTMLFormElement* form,
       frame_request.GetNavigationPolicy(), triggering_event_info, reason,
       std::move(resource_request), target_frame, load_type,
       form->GetDocument().domWindow(),
-      form->GetDocument().GetFrame()->GetFrameToken());
+      form->GetDocument().GetFrame()->GetFrameToken(),
+      form->GetDocument()
+          .GetFrame()
+          ->GetPolicyContainer()
+          ->IssueKeepAliveHandle());
 }
 
 void FormSubmission::Trace(Visitor* visitor) const {
@@ -354,6 +362,8 @@ void FormSubmission::Navigate() {
   frame_request.SetForm(form_);
   frame_request.SetTriggeringEventInfo(triggering_event_info_);
   frame_request.SetInitiatorFrameToken(initiator_frame_token_);
+  frame_request.SetInitiatorPolicyContainerKeepAliveHandle(
+      std::move(initiator_policy_container_keep_alive_handle_));
 
   if (target_frame_ && !target_frame_->GetPage())
     return;

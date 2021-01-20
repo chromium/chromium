@@ -1138,14 +1138,14 @@ RenderFrameHostImpl::RenderFrameHostImpl(
     // newly-created FTN, which should not have committed a real load yet.
     DCHECK(!frame_tree_node_->has_committed_real_load());
     if (parent_) {
-      policy_container_host_ = parent_->policy_container_host()->Clone();
+      SetPolicyContainerHost(parent_->policy_container_host()->Clone());
     } else if (frame_tree_node_->opener()) {
-      policy_container_host_ = frame_tree_node_->opener()
-                                   ->current_frame_host()
-                                   ->policy_container_host()
-                                   ->Clone();
+      SetPolicyContainerHost(frame_tree_node_->opener()
+                                 ->current_frame_host()
+                                 ->policy_container_host()
+                                 ->Clone());
     } else {
-      policy_container_host_ = std::make_unique<PolicyContainerHost>();
+      SetPolicyContainerHost(base::MakeRefCounted<PolicyContainerHost>());
     }
   }
 
@@ -2172,6 +2172,12 @@ RenderFrameHostImpl::AccessibilityGetWebContentsAccessibility() {
   return view->GetWebContentsAccessibility();
 }
 
+void RenderFrameHostImpl::SetPolicyContainerHost(
+    scoped_refptr<PolicyContainerHost> policy_container_host) {
+  policy_container_host_ = std::move(policy_container_host);
+  policy_container_host_->AssociateWithFrameToken(GetFrameToken());
+}
+
 void RenderFrameHostImpl::RenderProcessExited(
     RenderProcessHost* host,
     const ChildProcessTerminationInfo& info) {
@@ -2683,8 +2689,7 @@ void RenderFrameHostImpl::OnCreateChildFrame(
     int new_routing_id,
     mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
         browser_interface_broker_receiver,
-    mojo::PendingAssociatedReceiver<blink::mojom::PolicyContainerHost>
-        policy_container_host_receiver,
+    blink::mojom::PolicyContainerBindParamsPtr policy_container_bind_params,
     blink::mojom::TreeScopeType scope,
     const std::string& frame_name,
     const std::string& frame_unique_name,
@@ -2697,7 +2702,7 @@ void RenderFrameHostImpl::OnCreateChildFrame(
   // TODO(lukasza): Call ReceivedBadMessage when |frame_unique_name| is empty.
   DCHECK(!frame_unique_name.empty());
   DCHECK(browser_interface_broker_receiver.is_valid());
-  DCHECK(policy_container_host_receiver.is_valid());
+  DCHECK(policy_container_bind_params->receiver.is_valid());
   if (owner_type == blink::mojom::FrameOwnerElementType::kNone) {
     // Any child frame must have a HTMLFrameOwnerElement in its parent document
     // and therefore the corresponding type of kNone (specific to main frames)
@@ -2721,7 +2726,7 @@ void RenderFrameHostImpl::OnCreateChildFrame(
   // taken from the renderer process.
   frame_tree_->AddFrame(this, GetProcess()->GetID(), new_routing_id,
                         std::move(browser_interface_broker_receiver),
-                        std::move(policy_container_host_receiver), scope,
+                        std::move(policy_container_bind_params), scope,
                         frame_name, frame_unique_name, is_created_by_script,
                         frame_token, devtools_frame_token, frame_policy,
                         frame_owner_properties, was_discarded_, owner_type);
@@ -2731,8 +2736,7 @@ void RenderFrameHostImpl::CreateChildFrame(
     int new_routing_id,
     mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
         browser_interface_broker_receiver,
-    mojo::PendingAssociatedReceiver<blink::mojom::PolicyContainerHost>
-        policy_container_host_receiver,
+    blink::mojom::PolicyContainerBindParamsPtr policy_container_bind_params,
     blink::mojom::TreeScopeType scope,
     const std::string& frame_name,
     const std::string& frame_unique_name,
@@ -2754,7 +2758,7 @@ void RenderFrameHostImpl::CreateChildFrame(
   // match the mojo interface.
   OnCreateChildFrame(
       new_routing_id, std::move(browser_interface_broker_receiver),
-      std::move(policy_container_host_receiver), scope, frame_name,
+      std::move(policy_container_bind_params), scope, frame_name,
       frame_unique_name, is_created_by_script, frame_token,
       devtools_frame_token, frame_policy, *frame_owner_properties, owner_type);
 }
@@ -5626,8 +5630,9 @@ void RenderFrameHostImpl::BeginNavigation(
     mojom::BeginNavigationParamsPtr begin_params,
     mojo::PendingRemote<blink::mojom::BlobURLToken> blob_url_token,
     mojo::PendingAssociatedRemote<mojom::NavigationClient> navigation_client,
-    mojo::PendingRemote<blink::mojom::NavigationInitiator>
-        navigation_initiator) {
+    mojo::PendingRemote<blink::mojom::NavigationInitiator> navigation_initiator,
+    mojo::PendingRemote<blink::mojom::PolicyContainerHostKeepAliveHandle>
+        initiator_policy_container_host_keep_alive_handle) {
   if (frame_tree_node_->render_manager()->is_attaching_inner_delegate()) {
     // Avoid starting any new navigations since this frame is in the process of
     // attaching an inner delegate.
@@ -5704,6 +5709,14 @@ void RenderFrameHostImpl::BeginNavigation(
         std::move(navigation_initiator));
     return;
   }
+
+  // We can discard the parameter
+  // |initiator_policy_container_host_keep_alive_handle|. This is just needed to
+  // ensure that the PolicyContainerHost of the initiator RenderFrameHost
+  // can still be retrieved even if the RenderFrameHost has been deleted in
+  // between. Since the NavigationRequest will be created synchronously as a
+  // result of this function's execution, we don't need to pass
+  // |initiator_policy_container_host_keep_alive_handle| along.
 
   frame_tree_node()->navigator().OnBeginNavigation(
       frame_tree_node(), std::move(validated_params), std::move(begin_params),
@@ -9055,7 +9068,7 @@ void RenderFrameHostImpl::DidCommitNewDocument(
   // of the new document, inherited at RenderFrameHost creation time, with an
   // empty PolicyContainerHost).
   if (navigation_request->IsWaitingToCommit()) {
-    policy_container_host_ = navigation_request->TakePolicyContainerHost();
+    SetPolicyContainerHost(navigation_request->TakePolicyContainerHost());
   }
 
   // Set the state whether this navigation is to an MHTML document, since there
@@ -10487,10 +10500,10 @@ bool RenderFrameHostImpl::DocumentUsedWebOTP() {
 }
 
 void RenderFrameHostImpl::SetPolicyContainerForEarlyCommitAfterCrash(
-    std::unique_ptr<PolicyContainerHost> policy_container_host) {
+    scoped_refptr<PolicyContainerHost> policy_container_host) {
   DCHECK_EQ(lifecycle_state_, LifecycleState::kSpeculative);
   DCHECK(!policy_container_host_);
-  policy_container_host_ = std::move(policy_container_host);
+  SetPolicyContainerHost(std::move(policy_container_host));
 }
 
 std::ostream& operator<<(std::ostream& o,

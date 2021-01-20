@@ -182,8 +182,7 @@ FrameTreeNode* FrameTree::AddFrame(
     int new_routing_id,
     mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
         browser_interface_broker_receiver,
-    mojo::PendingAssociatedReceiver<blink::mojom::PolicyContainerHost>
-        policy_container_host_receiver,
+    blink::mojom::PolicyContainerBindParamsPtr policy_container_bind_params,
     blink::mojom::TreeScopeType scope,
     const std::string& frame_name,
     const std::string& frame_unique_name,
@@ -229,9 +228,9 @@ FrameTreeNode* FrameTree::AddFrame(
   added_node->current_frame_host()->BindBrowserInterfaceBrokerReceiver(
       std::move(browser_interface_broker_receiver));
 
-  if (policy_container_host_receiver) {
+  if (policy_container_bind_params) {
     added_node->current_frame_host()->policy_container_host()->Bind(
-        std::move(policy_container_host_receiver));
+        std::move(policy_container_bind_params));
   }
 
   // The last committed NavigationEntry may have a FrameNavigationEntry with the

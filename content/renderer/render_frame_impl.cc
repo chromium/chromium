@@ -3817,9 +3817,7 @@ blink::WebLocalFrame* RenderFrameImpl::CreateChildFrame(
     const blink::FramePolicy& frame_policy,
     const blink::WebFrameOwnerProperties& frame_owner_properties,
     blink::mojom::FrameOwnerElementType frame_owner_element_type,
-    blink::CrossVariantMojoAssociatedReceiver<
-        blink::mojom::PolicyContainerHostInterfaceBase>
-        policy_container_host_receiver) {
+    blink::WebPolicyContainerBindParams policy_container_bind_params) {
   // Allocate child routing ID. This is a synchronous call.
   int child_routing_id;
   base::UnguessableToken frame_token;
@@ -3857,8 +3855,9 @@ blink::WebLocalFrame* RenderFrameImpl::CreateChildFrame(
   GetFrameHost()->CreateChildFrame(
       child_routing_id,
       browser_interface_broker.InitWithNewPipeAndPassReceiver(),
-      std::move(policy_container_host_receiver), scope, name.Utf8(),
-      frame_unique_name, is_created_by_script, frame_policy,
+      blink::mojom::PolicyContainerBindParams::New(
+          std::move(policy_container_bind_params.receiver)),
+      scope, name.Utf8(), frame_unique_name, is_created_by_script, frame_policy,
       blink::mojom::FrameOwnerProperties::From(frame_owner_properties),
       frame_owner_element_type);
 
@@ -5645,6 +5644,8 @@ void RenderFrameImpl::OpenURL(std::unique_ptr<blink::WebNavigationInfo> info) {
       info->frame_load_type == WebFrameLoadType::kReplaceCurrentItem &&
       render_view_->history_list_length_;
   params->user_gesture = info->has_transient_user_activation;
+  params->initiator_policy_container_keep_alive_handle =
+      std::move(info->initiator_policy_container_keep_alive_handle);
 
   params->initiator_frame_token = info->initiator_frame_token;
 
@@ -5994,12 +5995,17 @@ void RenderFrameImpl::BeginNavigationInternal(
       current_frame_has_download_sandbox_flag;
   bool from_ad = info->initiator_frame_is_ad || frame_->IsAdSubframe();
 
+  mojo::PendingRemote<blink::mojom::PolicyContainerHostKeepAliveHandle>
+      initiator_policy_container_keep_alive_handle =
+          std::move(info->initiator_policy_container_keep_alive_handle);
+
   GetFrameHost()->BeginNavigation(
       MakeCommonNavigationParams(frame_->GetSecurityOrigin(), std::move(info),
                                  load_flags, has_download_sandbox_flag, from_ad,
                                  is_history_navigation_in_new_child_frame),
       std::move(begin_navigation_params), std::move(blob_url_token),
-      std::move(navigation_client_remote), std::move(navigation_initiator));
+      std::move(navigation_client_remote), std::move(navigation_initiator),
+      std::move(initiator_policy_container_keep_alive_handle));
 }
 
 void RenderFrameImpl::DecodeDataURL(

@@ -17,6 +17,7 @@
 #include "build/build_config.h"
 #include "content/public/browser/native_web_keyboard_event.h"
 #include "content/public/common/main_function_params.h"
+#include "content/public/test/mock_policy_container_host.h"
 #include "content/public/test/mock_render_thread.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
@@ -227,6 +228,9 @@ class RenderViewTest : public testing::Test {
   std::unique_ptr<MockRenderThread> render_thread_;
   std::unique_ptr<AgentSchedulingGroup> agent_scheduling_group_;
   std::unique_ptr<FakeRenderWidgetHost> render_widget_host_;
+
+  // The PolicyContainerHost for the main RenderFrameHost.
+  std::unique_ptr<MockPolicyContainerHost> policy_container_host_;
 
   // Used to setup the process so renderers can run.
   std::unique_ptr<RendererMainPlatformDelegate> platform_;

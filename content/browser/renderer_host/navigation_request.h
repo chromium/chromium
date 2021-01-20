@@ -667,7 +667,7 @@ class CONTENT_EXPORT NavigationRequest
   void SetRequiredCSP(network::mojom::ContentSecurityPolicyPtr csp);
   network::mojom::ContentSecurityPolicyPtr TakeRequiredCSP();
 
-  std::unique_ptr<PolicyContainerHost> TakePolicyContainerHost();
+  scoped_refptr<PolicyContainerHost> TakePolicyContainerHost();
   PolicyContainerHost* policy_container_host() {
     return policy_container_host_.get();
   }
@@ -1499,9 +1499,13 @@ class CONTENT_EXPORT NavigationRequest
   network::mojom::ContentSecurityPolicyPtr required_csp_;
 
   // Holds the PolicyContainerHost for the new document that will be created by
-  // this navigation. It is moved into the RenderFrameHostImpl at
-  // DidCommitNavigation time.
-  std::unique_ptr<PolicyContainerHost> policy_container_host_;
+  // this navigation.
+  // Note: Although it is owned through a scoped_refptr, a PolicyContainerHost
+  // should not be shared between different owners (cf. the documentation string
+  // of the PolicyContainerHost class). The NavigationRequest owns the
+  // PolicyContainerHost of the new document until DidCommitNavigation time,
+  // when the PolicyContainerHost is is moved into the RenderFrameHostImpl.
+  scoped_refptr<PolicyContainerHost> policy_container_host_;
 
   std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter_;
 

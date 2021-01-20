@@ -58,9 +58,9 @@ CreateStubBrowserInterfaceBrokerReceiver() {
   return TestRenderFrameHost::CreateStubBrowserInterfaceBrokerReceiver();
 }
 
-mojo::PendingAssociatedReceiver<blink::mojom::PolicyContainerHost>
-CreateStubPolicyContainerHostReceiver() {
-  return TestRenderFrameHost::CreateStubPolicyContainerHostReceiver();
+blink::mojom::PolicyContainerBindParamsPtr
+CreateStubPolicyContainerBindParams() {
+  return TestRenderFrameHost::CreateStubPolicyContainerBindParams();
 }
 
 // Logs calls to WebContentsObserver along with the state of the frame tree,
@@ -172,42 +172,42 @@ TEST_F(FrameTreeTest, Shape) {
   // Simulate attaching a series of frames to build the frame tree.
   frame_tree->AddFrame(root->current_frame_host(), process_id, 14,
                        CreateStubBrowserInterfaceBrokerReceiver(),
-                       mojo::NullAssociatedReceiver(),
+                       CreateStubPolicyContainerBindParams(),
                        blink::mojom::TreeScopeType::kDocument, std::string(),
                        "uniqueName0", false, base::UnguessableToken::Create(),
                        base::UnguessableToken::Create(), blink::FramePolicy(),
                        blink::mojom::FrameOwnerProperties(), false, kOwnerType);
   frame_tree->AddFrame(root->current_frame_host(), process_id, 15,
                        CreateStubBrowserInterfaceBrokerReceiver(),
-                       mojo::NullAssociatedReceiver(),
+                       CreateStubPolicyContainerBindParams(),
                        blink::mojom::TreeScopeType::kDocument, std::string(),
                        "uniqueName1", false, base::UnguessableToken::Create(),
                        base::UnguessableToken::Create(), blink::FramePolicy(),
                        blink::mojom::FrameOwnerProperties(), false, kOwnerType);
   frame_tree->AddFrame(root->current_frame_host(), process_id, 16,
                        CreateStubBrowserInterfaceBrokerReceiver(),
-                       mojo::NullAssociatedReceiver(),
+                       CreateStubPolicyContainerBindParams(),
                        blink::mojom::TreeScopeType::kDocument, std::string(),
                        "uniqueName2", false, base::UnguessableToken::Create(),
                        base::UnguessableToken::Create(), blink::FramePolicy(),
                        blink::mojom::FrameOwnerProperties(), false, kOwnerType);
   frame_tree->AddFrame(root->child_at(0)->current_frame_host(), process_id, 244,
                        CreateStubBrowserInterfaceBrokerReceiver(),
-                       mojo::NullAssociatedReceiver(),
+                       CreateStubPolicyContainerBindParams(),
                        blink::mojom::TreeScopeType::kDocument, std::string(),
                        "uniqueName3", false, base::UnguessableToken::Create(),
                        base::UnguessableToken::Create(), blink::FramePolicy(),
                        blink::mojom::FrameOwnerProperties(), false, kOwnerType);
   frame_tree->AddFrame(root->child_at(1)->current_frame_host(), process_id, 255,
                        CreateStubBrowserInterfaceBrokerReceiver(),
-                       mojo::NullAssociatedReceiver(),
+                       CreateStubPolicyContainerBindParams(),
                        blink::mojom::TreeScopeType::kDocument, no_children_node,
                        "uniqueName4", false, base::UnguessableToken::Create(),
                        base::UnguessableToken::Create(), blink::FramePolicy(),
                        blink::mojom::FrameOwnerProperties(), false, kOwnerType);
   frame_tree->AddFrame(root->child_at(0)->current_frame_host(), process_id, 245,
                        CreateStubBrowserInterfaceBrokerReceiver(),
-                       mojo::NullAssociatedReceiver(),
+                       CreateStubPolicyContainerBindParams(),
                        blink::mojom::TreeScopeType::kDocument, std::string(),
                        "uniqueName5", false, base::UnguessableToken::Create(),
                        base::UnguessableToken::Create(), blink::FramePolicy(),
@@ -222,35 +222,35 @@ TEST_F(FrameTreeTest, Shape) {
   FrameTreeNode* child_16 = root->child_at(2);
   frame_tree->AddFrame(child_16->current_frame_host(), process_id, 264,
                        CreateStubBrowserInterfaceBrokerReceiver(),
-                       mojo::NullAssociatedReceiver(),
+                       CreateStubPolicyContainerBindParams(),
                        blink::mojom::TreeScopeType::kDocument, std::string(),
                        "uniqueName6", false, base::UnguessableToken::Create(),
                        base::UnguessableToken::Create(), blink::FramePolicy(),
                        blink::mojom::FrameOwnerProperties(), false, kOwnerType);
   frame_tree->AddFrame(child_16->current_frame_host(), process_id, 265,
                        CreateStubBrowserInterfaceBrokerReceiver(),
-                       mojo::NullAssociatedReceiver(),
+                       CreateStubPolicyContainerBindParams(),
                        blink::mojom::TreeScopeType::kDocument, std::string(),
                        "uniqueName7", false, base::UnguessableToken::Create(),
                        base::UnguessableToken::Create(), blink::FramePolicy(),
                        blink::mojom::FrameOwnerProperties(), false, kOwnerType);
   frame_tree->AddFrame(child_16->current_frame_host(), process_id, 266,
                        CreateStubBrowserInterfaceBrokerReceiver(),
-                       mojo::NullAssociatedReceiver(),
+                       CreateStubPolicyContainerBindParams(),
                        blink::mojom::TreeScopeType::kDocument, std::string(),
                        "uniqueName8", false, base::UnguessableToken::Create(),
                        base::UnguessableToken::Create(), blink::FramePolicy(),
                        blink::mojom::FrameOwnerProperties(), false, kOwnerType);
   frame_tree->AddFrame(child_16->current_frame_host(), process_id, 267,
                        CreateStubBrowserInterfaceBrokerReceiver(),
-                       mojo::NullAssociatedReceiver(),
+                       CreateStubPolicyContainerBindParams(),
                        blink::mojom::TreeScopeType::kDocument, deep_subtree,
                        "uniqueName9", false, base::UnguessableToken::Create(),
                        base::UnguessableToken::Create(), blink::FramePolicy(),
                        blink::mojom::FrameOwnerProperties(), false, kOwnerType);
   frame_tree->AddFrame(child_16->current_frame_host(), process_id, 268,
                        CreateStubBrowserInterfaceBrokerReceiver(),
-                       mojo::NullAssociatedReceiver(),
+                       CreateStubPolicyContainerBindParams(),
                        blink::mojom::TreeScopeType::kDocument, std::string(),
                        "uniqueName10", false, base::UnguessableToken::Create(),
                        base::UnguessableToken::Create(), blink::FramePolicy(),
@@ -259,14 +259,14 @@ TEST_F(FrameTreeTest, Shape) {
   FrameTreeNode* child_267 = child_16->child_at(3);
   frame_tree->AddFrame(child_267->current_frame_host(), process_id, 365,
                        CreateStubBrowserInterfaceBrokerReceiver(),
-                       mojo::NullAssociatedReceiver(),
+                       CreateStubPolicyContainerBindParams(),
                        blink::mojom::TreeScopeType::kDocument, std::string(),
                        "uniqueName11", false, base::UnguessableToken::Create(),
                        base::UnguessableToken::Create(), blink::FramePolicy(),
                        blink::mojom::FrameOwnerProperties(), false, kOwnerType);
   frame_tree->AddFrame(child_267->child_at(0)->current_frame_host(), process_id,
                        455, CreateStubBrowserInterfaceBrokerReceiver(),
-                       mojo::NullAssociatedReceiver(),
+                       CreateStubPolicyContainerBindParams(),
                        blink::mojom::TreeScopeType::kDocument, std::string(),
                        "uniqueName12", false, base::UnguessableToken::Create(),
                        base::UnguessableToken::Create(), blink::FramePolicy(),
@@ -274,17 +274,19 @@ TEST_F(FrameTreeTest, Shape) {
   frame_tree->AddFrame(
       child_267->child_at(0)->child_at(0)->current_frame_host(), process_id,
       555, CreateStubBrowserInterfaceBrokerReceiver(),
-      mojo::NullAssociatedReceiver(), blink::mojom::TreeScopeType::kDocument,
-      std::string(), "uniqueName13", false, base::UnguessableToken::Create(),
-      base::UnguessableToken::Create(), blink::FramePolicy(),
-      blink::mojom::FrameOwnerProperties(), false, kOwnerType);
+      CreateStubPolicyContainerBindParams(),
+      blink::mojom::TreeScopeType::kDocument, std::string(), "uniqueName13",
+      false, base::UnguessableToken::Create(), base::UnguessableToken::Create(),
+      blink::FramePolicy(), blink::mojom::FrameOwnerProperties(), false,
+      kOwnerType);
   frame_tree->AddFrame(
       child_267->child_at(0)->child_at(0)->child_at(0)->current_frame_host(),
       process_id, 655, CreateStubBrowserInterfaceBrokerReceiver(),
-      mojo::NullAssociatedReceiver(), blink::mojom::TreeScopeType::kDocument,
-      std::string(), "uniqueName14", false, base::UnguessableToken::Create(),
-      base::UnguessableToken::Create(), blink::FramePolicy(),
-      blink::mojom::FrameOwnerProperties(), false, kOwnerType);
+      CreateStubPolicyContainerBindParams(),
+      blink::mojom::TreeScopeType::kDocument, std::string(), "uniqueName14",
+      false, base::UnguessableToken::Create(), base::UnguessableToken::Create(),
+      blink::FramePolicy(), blink::mojom::FrameOwnerProperties(), false,
+      kOwnerType);
 
   // Now that's it's fully built, verify the tree structure is as expected.
   EXPECT_EQ(
@@ -358,19 +360,19 @@ TEST_F(FrameTreeTest, FindFrames) {
   constexpr auto kOwnerType = blink::mojom::FrameOwnerElementType::kIframe;
   main_test_rfh()->OnCreateChildFrame(
       22, CreateStubBrowserInterfaceBrokerReceiver(),
-      CreateStubPolicyContainerHostReceiver(),
+      CreateStubPolicyContainerBindParams(),
       blink::mojom::TreeScopeType::kDocument, "child0", "uniqueName0", false,
       base::UnguessableToken::Create(), base::UnguessableToken::Create(),
       blink::FramePolicy(), blink::mojom::FrameOwnerProperties(), kOwnerType);
   main_test_rfh()->OnCreateChildFrame(
       23, CreateStubBrowserInterfaceBrokerReceiver(),
-      CreateStubPolicyContainerHostReceiver(),
+      CreateStubPolicyContainerBindParams(),
       blink::mojom::TreeScopeType::kDocument, "child1", "uniqueName1", false,
       base::UnguessableToken::Create(), base::UnguessableToken::Create(),
       blink::FramePolicy(), blink::mojom::FrameOwnerProperties(), kOwnerType);
   main_test_rfh()->OnCreateChildFrame(
       24, CreateStubBrowserInterfaceBrokerReceiver(),
-      CreateStubPolicyContainerHostReceiver(),
+      CreateStubPolicyContainerBindParams(),
       blink::mojom::TreeScopeType::kDocument, std::string(), "uniqueName2",
       false, base::UnguessableToken::Create(), base::UnguessableToken::Create(),
       blink::FramePolicy(), blink::mojom::FrameOwnerProperties(), kOwnerType);
@@ -381,7 +383,7 @@ TEST_F(FrameTreeTest, FindFrames) {
   // Add one grandchild frame.
   child1->current_frame_host()->OnCreateChildFrame(
       33, CreateStubBrowserInterfaceBrokerReceiver(),
-      CreateStubPolicyContainerHostReceiver(),
+      CreateStubPolicyContainerBindParams(),
       blink::mojom::TreeScopeType::kDocument, "grandchild", "uniqueName3",
       false, base::UnguessableToken::Create(), base::UnguessableToken::Create(),
       blink::FramePolicy(), blink::mojom::FrameOwnerProperties(), kOwnerType);
@@ -423,19 +425,19 @@ TEST_F(FrameTreeTest, GetSibling) {
   FrameTreeNode* root = frame_tree->root();
   main_test_rfh()->OnCreateChildFrame(
       22, CreateStubBrowserInterfaceBrokerReceiver(),
-      CreateStubPolicyContainerHostReceiver(),
+      CreateStubPolicyContainerBindParams(),
       blink::mojom::TreeScopeType::kDocument, "child0", "uniqueName0", false,
       base::UnguessableToken::Create(), base::UnguessableToken::Create(),
       blink::FramePolicy(), blink::mojom::FrameOwnerProperties(), kOwnerType);
   main_test_rfh()->OnCreateChildFrame(
       23, CreateStubBrowserInterfaceBrokerReceiver(),
-      CreateStubPolicyContainerHostReceiver(),
+      CreateStubPolicyContainerBindParams(),
       blink::mojom::TreeScopeType::kDocument, "child1", "uniqueName1", false,
       base::UnguessableToken::Create(), base::UnguessableToken::Create(),
       blink::FramePolicy(), blink::mojom::FrameOwnerProperties(), kOwnerType);
   main_test_rfh()->OnCreateChildFrame(
       24, CreateStubBrowserInterfaceBrokerReceiver(),
-      CreateStubPolicyContainerHostReceiver(),
+      CreateStubPolicyContainerBindParams(),
       blink::mojom::TreeScopeType::kDocument, "child2", "uniqueName2", false,
       base::UnguessableToken::Create(), base::UnguessableToken::Create(),
       blink::FramePolicy(), blink::mojom::FrameOwnerProperties(), kOwnerType);
@@ -446,7 +448,7 @@ TEST_F(FrameTreeTest, GetSibling) {
   // Add one grandchild frame.
   child1->current_frame_host()->OnCreateChildFrame(
       33, CreateStubBrowserInterfaceBrokerReceiver(),
-      CreateStubPolicyContainerHostReceiver(),
+      CreateStubPolicyContainerBindParams(),
       blink::mojom::TreeScopeType::kDocument, "grandchild", "uniqueName3",
       false, base::UnguessableToken::Create(), base::UnguessableToken::Create(),
       blink::FramePolicy(), blink::mojom::FrameOwnerProperties(), kOwnerType);
@@ -481,7 +483,7 @@ TEST_F(FrameTreeTest, ObserverWalksTreeDuringFrameCreation) {
   // Simulate attaching a series of frames to build the frame tree.
   main_test_rfh()->OnCreateChildFrame(
       14, CreateStubBrowserInterfaceBrokerReceiver(),
-      CreateStubPolicyContainerHostReceiver(),
+      CreateStubPolicyContainerBindParams(),
       blink::mojom::TreeScopeType::kDocument, std::string(), "uniqueName0",
       false, base::UnguessableToken::Create(), base::UnguessableToken::Create(),
       blink::FramePolicy(), blink::mojom::FrameOwnerProperties(), kOwnerType);
@@ -491,7 +493,7 @@ TEST_F(FrameTreeTest, ObserverWalksTreeDuringFrameCreation) {
       activity.GetLog());
   main_test_rfh()->OnCreateChildFrame(
       18, CreateStubBrowserInterfaceBrokerReceiver(),
-      CreateStubPolicyContainerHostReceiver(),
+      CreateStubPolicyContainerBindParams(),
       blink::mojom::TreeScopeType::kDocument, std::string(), "uniqueName1",
       false, base::UnguessableToken::Create(), base::UnguessableToken::Create(),
       blink::FramePolicy(), blink::mojom::FrameOwnerProperties(), kOwnerType);
@@ -515,7 +517,7 @@ TEST_F(FrameTreeTest, ObserverWalksTreeAfterCrash) {
   constexpr auto kOwnerType = blink::mojom::FrameOwnerElementType::kIframe;
   main_test_rfh()->OnCreateChildFrame(
       22, CreateStubBrowserInterfaceBrokerReceiver(),
-      CreateStubPolicyContainerHostReceiver(),
+      CreateStubPolicyContainerBindParams(),
       blink::mojom::TreeScopeType::kDocument, std::string(), "uniqueName0",
       false, base::UnguessableToken::Create(), base::UnguessableToken::Create(),
       blink::FramePolicy(), blink::mojom::FrameOwnerProperties(), kOwnerType);
@@ -525,7 +527,7 @@ TEST_F(FrameTreeTest, ObserverWalksTreeAfterCrash) {
       activity.GetLog());
   main_test_rfh()->OnCreateChildFrame(
       23, CreateStubBrowserInterfaceBrokerReceiver(),
-      CreateStubPolicyContainerHostReceiver(),
+      CreateStubPolicyContainerBindParams(),
       blink::mojom::TreeScopeType::kDocument, std::string(), "uniqueName1",
       false, base::UnguessableToken::Create(), base::UnguessableToken::Create(),
       blink::FramePolicy(), blink::mojom::FrameOwnerProperties(), kOwnerType);
@@ -558,10 +560,10 @@ TEST_F(FrameTreeTest, FailAddFrameWithWrongProcessId) {
   ASSERT_FALSE(frame_tree->AddFrame(
       root->current_frame_host(), process_id + 1, 1,
       CreateStubBrowserInterfaceBrokerReceiver(),
-      mojo::NullAssociatedReceiver(), blink::mojom::TreeScopeType::kDocument,
-      std::string(), "uniqueName0", false, base::UnguessableToken::Create(),
-      base::UnguessableToken::Create(), blink::FramePolicy(),
-      blink::mojom::FrameOwnerProperties(), false,
+      CreateStubPolicyContainerBindParams(),
+      blink::mojom::TreeScopeType::kDocument, std::string(), "uniqueName0",
+      false, base::UnguessableToken::Create(), base::UnguessableToken::Create(),
+      blink::FramePolicy(), blink::mojom::FrameOwnerProperties(), false,
       blink::mojom::FrameOwnerElementType::kIframe));
   ASSERT_EQ("1: []", GetTreeState(frame_tree));
 }
@@ -577,13 +579,13 @@ TEST_F(FrameTreeTest, ProcessCrashClearsGlobalMap) {
   constexpr auto kOwnerType = blink::mojom::FrameOwnerElementType::kIframe;
   main_test_rfh()->OnCreateChildFrame(
       22, CreateStubBrowserInterfaceBrokerReceiver(),
-      CreateStubPolicyContainerHostReceiver(),
+      CreateStubPolicyContainerBindParams(),
       blink::mojom::TreeScopeType::kDocument, std::string(), "uniqueName0",
       false, base::UnguessableToken::Create(), base::UnguessableToken::Create(),
       blink::FramePolicy(), blink::mojom::FrameOwnerProperties(), kOwnerType);
   main_test_rfh()->OnCreateChildFrame(
       23, CreateStubBrowserInterfaceBrokerReceiver(),
-      CreateStubPolicyContainerHostReceiver(),
+      CreateStubPolicyContainerBindParams(),
       blink::mojom::TreeScopeType::kDocument, std::string(), "uniqueName1",
       false, base::UnguessableToken::Create(), base::UnguessableToken::Create(),
       blink::FramePolicy(), blink::mojom::FrameOwnerProperties(), kOwnerType);
@@ -592,7 +594,7 @@ TEST_F(FrameTreeTest, ProcessCrashClearsGlobalMap) {
   RenderFrameHostImpl* child1_rfh = root->child_at(0)->current_frame_host();
   child1_rfh->OnCreateChildFrame(
       33, CreateStubBrowserInterfaceBrokerReceiver(),
-      CreateStubPolicyContainerHostReceiver(),
+      CreateStubPolicyContainerBindParams(),
       blink::mojom::TreeScopeType::kDocument, std::string(), "uniqueName2",
       false, base::UnguessableToken::Create(), base::UnguessableToken::Create(),
       blink::FramePolicy(), blink::mojom::FrameOwnerProperties(), kOwnerType);

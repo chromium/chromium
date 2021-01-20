@@ -1109,13 +1109,13 @@ NavigationRequest::NavigationRequest(
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("navigation", "Initializing",
                                     navigation_id_);
 
-  policy_container_host_ = std::make_unique<PolicyContainerHost>();
+  policy_container_host_ = base::MakeRefCounted<PolicyContainerHost>();
 
   if (frame_entry && frame_entry->document_policies()) {
     // If there is a history entry with some document policies, initialize the
     // PolicyContainerHost with them, so that they will get applied to the
     // document created by the navigation.
-    policy_container_host_ = std::make_unique<PolicyContainerHost>(
+    policy_container_host_ = base::MakeRefCounted<PolicyContainerHost>(
         *frame_entry->document_policies());
   } else if (common_params_->url.IsAboutSrcdoc()) {
     // Srcdoc iframes inherit their policies from their parent.
@@ -1135,16 +1135,13 @@ NavigationRequest::NavigationRequest(
     // the policy container from the document which created them and not from
     // the initiator of the navigation).
     if (initiator_frame_token_) {
-      RenderFrameHostImpl* initiator_rfh = RenderFrameHostImpl::FromFrameToken(
-          initiator_process_id_, initiator_frame_token_.value());
-      // It can happen that the initiator RenderFrameHost is deleted just before
-      // this NavigationRequest is created, se https://crbug.com/1129416.
-      //
-      // TODO(antoniosartori): Fix this.
-      if (initiator_rfh) {
-        policy_container_host_ =
-            initiator_rfh->policy_container_host()->Clone();
-      }
+      // We use PolicyContainerHost::FromFrameToken directly since this will
+      // retrieve the PolicyContainerHost of the initiator RenderFrameHost even
+      // if the RenderFrameHost has already been deleted.
+      PolicyContainerHost* initiator_policy_container_host =
+          PolicyContainerHost::FromFrameToken(initiator_frame_token_.value());
+      DCHECK(initiator_policy_container_host);
+      policy_container_host_ = initiator_policy_container_host->Clone();
     }
   }
 
@@ -1787,7 +1784,7 @@ network::mojom::ContentSecurityPolicyPtr NavigationRequest::TakeRequiredCSP() {
   return std::move(required_csp_);
 }
 
-std::unique_ptr<PolicyContainerHost>
+scoped_refptr<PolicyContainerHost>
 NavigationRequest::TakePolicyContainerHost() {
   return std::move(policy_container_host_);
 }

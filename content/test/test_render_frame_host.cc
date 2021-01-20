@@ -154,7 +154,7 @@ TestRenderFrameHost* TestRenderFrameHost::AppendChildWithPolicy(
   OnCreateChildFrame(
       GetProcess()->GetNextRoutingID(),
       CreateStubBrowserInterfaceBrokerReceiver(),
-      CreateStubPolicyContainerHostReceiver(),
+      CreateStubPolicyContainerBindParams(),
       blink::mojom::TreeScopeType::kDocument, frame_name, frame_unique_name,
       false, base::UnguessableToken::Create(), base::UnguessableToken::Create(),
       blink::FramePolicy(
@@ -328,7 +328,7 @@ void TestRenderFrameHost::SendRendererInitiatedNavigationRequest(
       navigation_client_remote.InitWithNewEndpointAndPassReceiver());
   BeginNavigation(std::move(common_params), std::move(begin_params),
                   mojo::NullRemote(), std::move(navigation_client_remote),
-                  mojo::NullRemote());
+                  mojo::NullRemote(), mojo::NullRemote());
 }
 
 void TestRenderFrameHost::SimulateDidChangeOpener(
@@ -590,10 +590,11 @@ TestRenderFrameHost::CreateStubBrowserInterfaceBrokerReceiver() {
 }
 
 // static
-mojo::PendingAssociatedReceiver<blink::mojom::PolicyContainerHost>
-TestRenderFrameHost::CreateStubPolicyContainerHostReceiver() {
-  return mojo::PendingAssociatedRemote<blink::mojom::PolicyContainerHost>()
-      .InitWithNewEndpointAndPassReceiver();
+blink::mojom::PolicyContainerBindParamsPtr
+TestRenderFrameHost::CreateStubPolicyContainerBindParams() {
+  return blink::mojom::PolicyContainerBindParams::New(
+      mojo::PendingAssociatedRemote<blink::mojom::PolicyContainerHost>()
+          .InitWithNewEndpointAndPassReceiver());
 }
 
 void TestRenderFrameHost::SimulateLoadingCompleted(

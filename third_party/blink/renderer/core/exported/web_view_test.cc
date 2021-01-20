@@ -3989,9 +3989,7 @@ class CreateChildCounterFrameClient
       const FramePolicy&,
       const WebFrameOwnerProperties&,
       mojom::blink::FrameOwnerElementType,
-      blink::CrossVariantMojoAssociatedReceiver<
-          blink::mojom::PolicyContainerHostInterfaceBase>
-          policy_container_host_receiver) override;
+      WebPolicyContainerBindParams policy_container_bind_params) override;
 
   int Count() const { return count_; }
 
@@ -4006,13 +4004,11 @@ WebLocalFrame* CreateChildCounterFrameClient::CreateChildFrame(
     const FramePolicy& frame_policy,
     const WebFrameOwnerProperties& frame_owner_properties,
     mojom::blink::FrameOwnerElementType frame_owner_element_type,
-    blink::CrossVariantMojoAssociatedReceiver<
-        blink::mojom::PolicyContainerHostInterfaceBase>
-        policy_container_host_receiver) {
+    WebPolicyContainerBindParams policy_container_bind_params) {
   ++count_;
   return TestWebFrameClient::CreateChildFrame(
       scope, name, fallback_name, frame_policy, frame_owner_properties,
-      frame_owner_element_type, std::move(policy_container_host_receiver));
+      frame_owner_element_type, std::move(policy_container_bind_params));
 }
 
 TEST_F(WebViewTest, ChangeDisplayMode) {

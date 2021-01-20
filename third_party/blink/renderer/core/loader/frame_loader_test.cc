@@ -135,8 +135,7 @@ TEST_F(FrameLoaderTest, PolicyContainerIsStoredInLocalFrameOnCommitNavigation) {
       WebPolicyContainerDocumentPolicies{
           network::mojom::ReferrerPolicy::kAlways,
           network::mojom::IPAddressSpace::kPublic},
-      CrossVariantMojoAssociatedRemote<
-          mojom::PolicyContainerHostInterfaceBase>());
+      mojo::NullAssociatedRemote());
   LocalFrame* local_frame =
       To<LocalFrame>(web_view_impl->GetPage()->MainFrame());
   local_frame->Loader().CommitNavigation(std::move(params), nullptr);

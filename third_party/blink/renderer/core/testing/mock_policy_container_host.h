@@ -18,11 +18,25 @@ class MockPolicyContainerHost : public mojom::blink::PolicyContainerHost {
               SetReferrerPolicy,
               (network::mojom::ReferrerPolicy),
               (override));
+  MOCK_METHOD(
+      void,
+      IssueKeepAliveHandle,
+      (mojo::PendingReceiver<mojom::blink::PolicyContainerHostKeepAliveHandle>),
+      (override));
   MockPolicyContainerHost() = default;
 
+  // Wrapper around AssociatedReceiver::BindNewEndpointAndPassDedicatedRemote.
   mojo::PendingAssociatedRemote<mojom::blink::PolicyContainerHost>
   BindNewEndpointAndPassDedicatedRemote();
+
+  // Wrapper around AssociatedReceiver::FlushForTesting.
   void FlushForTesting();
+
+  // This does the same as BindNewEndpointAndPassDedicatedRemote, but allows the
+  // remote to be created first and the receiver to be passed in.
+  void BindWithNewEndpoint(
+      mojo::PendingAssociatedReceiver<mojom::blink::PolicyContainerHost>
+          receiver);
 
  private:
   mojo::AssociatedReceiver<mojom::blink::PolicyContainerHost> receiver_{this};

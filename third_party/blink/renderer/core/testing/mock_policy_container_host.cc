@@ -15,4 +15,29 @@ void MockPolicyContainerHost::FlushForTesting() {
   receiver_.FlushForTesting();
 }
 
+void MockPolicyContainerHost::BindWithNewEndpoint(
+    mojo::PendingAssociatedReceiver<mojom::blink::PolicyContainerHost>
+        receiver) {
+  // The code is adapted from
+  // mojo::AssociatedReceiver::BindWithNewEndpointAndPassDedicatedRemote
+  mojo::MessagePipe pipe;
+  scoped_refptr<mojo::internal::MultiplexRouter> router0 =
+      new mojo::internal::MultiplexRouter(
+          std::move(pipe.handle0),
+          mojo::internal::MultiplexRouter::MULTI_INTERFACE, false,
+          base::SequencedTaskRunnerHandle::Get());
+  scoped_refptr<mojo::internal::MultiplexRouter> router1 =
+      new mojo::internal::MultiplexRouter(
+          std::move(pipe.handle1),
+          mojo::internal::MultiplexRouter::MULTI_INTERFACE, true,
+          base::SequencedTaskRunnerHandle::Get());
+
+  mojo::InterfaceId id = router1->AssociateInterface(receiver.PassHandle());
+
+  receiver_.Bind(
+      mojo::PendingAssociatedReceiver<mojom::blink::PolicyContainerHost>(
+          router0->CreateLocalEndpointHandle(id)),
+      nullptr);
+}
+
 }  // namespace blink
