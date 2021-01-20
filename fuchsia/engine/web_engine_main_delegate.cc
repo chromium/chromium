@@ -20,6 +20,7 @@
 #include "fuchsia/engine/common/web_engine_content_client.h"
 #include "fuchsia/engine/renderer/web_engine_content_renderer_client.h"
 #include "fuchsia/engine/switches.h"
+#include "google_apis/google_api_keys.h"
 #include "ui/base/resource/resource_bundle.h"
 
 namespace {
@@ -75,6 +76,11 @@ bool WebEngineMainDelegate::BasicStartupComplete(int* exit_code) {
   if (!cr_fuchsia::InitLoggingFromCommandLine(*command_line)) {
     *exit_code = 1;
     return true;
+  }
+
+  if (command_line->HasSwitch(switches::kGoogleApiKey)) {
+    google_apis::SetAPIKey(
+        command_line->GetSwitchValueASCII(switches::kGoogleApiKey));
   }
 
   SetCorsExemptHeaders(base::SplitString(
