@@ -24,6 +24,8 @@ DOMAgentAura::DOMAgentAura() {
   DCHECK(!dom_agent_aura_);
   dom_agent_aura_ = this;
   aura::Env::GetInstance()->AddObserver(this);
+  for (auto* window_tree_host : aura::Env::GetInstance()->window_tree_hosts())
+    OnHostInitialized(window_tree_host);
 }
 
 DOMAgentAura::~DOMAgentAura() {

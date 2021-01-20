@@ -33,12 +33,20 @@ class ChromeBrowserMainExtraPartsViews : public ChromeBrowserMainExtraParts {
   ChromeBrowserMainExtraPartsViews();
   ~ChromeBrowserMainExtraPartsViews() override;
 
+  // Returns global singleton.
+  static ChromeBrowserMainExtraPartsViews* Get();
+
   // Overridden from ChromeBrowserMainExtraParts:
   void ToolkitInitialized() override;
   void PreCreateThreads() override;
   void PreProfileInit() override;
   void PostBrowserStart() override;
   void PostMainMessageLoopRun() override;
+
+  // Manipulate UiDevTools.
+  void CreateUiDevTools();
+  const ui_devtools::UiDevToolsServer* GetUiDevToolsServerInstance();
+  void DestroyUiDevTools();
 
  private:
   std::unique_ptr<views::ViewsDelegate> views_delegate_;

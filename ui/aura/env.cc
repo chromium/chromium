@@ -244,8 +244,15 @@ void Env::NotifyWindowInitialized(Window* window) {
 }
 
 void Env::NotifyHostInitialized(WindowTreeHost* host) {
+  window_tree_hosts_.push_back(host);
   for (EnvObserver& observer : observers_)
     observer.OnHostInitialized(host);
+}
+
+void Env::NotifyHostDestroyed(WindowTreeHost* host) {
+  base::Erase(window_tree_hosts_, host);
+  for (EnvObserver& observer : observers_)
+    observer.OnHostDestroyed(host);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

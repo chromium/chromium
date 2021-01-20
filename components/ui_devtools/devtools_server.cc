@@ -155,7 +155,11 @@ bool UiDevToolsServer::IsUiDevToolsEnabled(const char* enable_devtools_flag) {
 // static
 int UiDevToolsServer::GetUiDevToolsPort(const char* enable_devtools_flag,
                                         int default_port) {
-  DCHECK(IsUiDevToolsEnabled(enable_devtools_flag));
+  // `enable_devtools_flag` is specified only when UiDevTools were started with
+  // browser start. If not specified at run time, we should use default port.
+  if (!IsUiDevToolsEnabled(enable_devtools_flag))
+    return default_port;
+
   std::string switch_value =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           enable_devtools_flag);

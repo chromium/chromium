@@ -50,6 +50,13 @@
 #include "ui/base/l10n/l10n_util.h"
 #endif  // defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
+namespace {
+
+// Owned by ChromeBrowserMainParts.
+ChromeBrowserMainExtraPartsViews* g_main_parts_views = nullptr;
+
+}  // namespace
+
 // This connector is used in ui_devtools's TracingAgent to hook up with the
 // tracing service.
 class UiDevtoolsConnector : public ui_devtools::ConnectorDelegate {
@@ -63,10 +70,20 @@ class UiDevtoolsConnector : public ui_devtools::ConnectorDelegate {
   }
 };
 
-ChromeBrowserMainExtraPartsViews::ChromeBrowserMainExtraPartsViews() {}
+ChromeBrowserMainExtraPartsViews::ChromeBrowserMainExtraPartsViews() {
+  DCHECK(!g_main_parts_views);
+  g_main_parts_views = this;
+}
 
 ChromeBrowserMainExtraPartsViews::~ChromeBrowserMainExtraPartsViews() {
+  DCHECK_EQ(g_main_parts_views, this);
+  g_main_parts_views = nullptr;
   constrained_window::SetConstrainedWindowViewsClient(nullptr);
+}
+
+// static
+ChromeBrowserMainExtraPartsViews* ChromeBrowserMainExtraPartsViews::Get() {
+  return g_main_parts_views;
 }
 
 void ChromeBrowserMainExtraPartsViews::ToolkitInitialized() {
@@ -96,13 +113,7 @@ void ChromeBrowserMainExtraPartsViews::PreCreateThreads() {
 void ChromeBrowserMainExtraPartsViews::PreProfileInit() {
   if (ui_devtools::UiDevToolsServer::IsUiDevToolsEnabled(
           ui_devtools::switches::kEnableUiDevTools)) {
-    // Starts the UI Devtools server for browser UI (and Ash UI on Chrome OS).
-    auto connector = std::make_unique<UiDevtoolsConnector>();
-    devtools_server_ = ui_devtools::CreateUiDevToolsServerForViews(
-        g_browser_process->system_network_context_manager()->GetContext(),
-        std::move(connector));
-    devtools_process_observer_ = std::make_unique<DevtoolsProcessObserver>(
-        devtools_server_->tracing_agent());
+    CreateUiDevTools();
   }
 
   media_router::MediaRouterDialogController::SetGetOrCreate(
@@ -167,4 +178,27 @@ void ChromeBrowserMainExtraPartsViews::PostMainMessageLoopRun() {
   // down explicitly here to avoid a case where such an event arrives during
   // shutdown.
   relaunch_notification_controller_.reset();
+}
+
+void ChromeBrowserMainExtraPartsViews::CreateUiDevTools() {
+  DCHECK(!devtools_server_);
+  DCHECK(!devtools_process_observer_);
+
+  // Starts the UI Devtools server for browser UI (and Ash UI on Chrome OS).
+  auto connector = std::make_unique<UiDevtoolsConnector>();
+  devtools_server_ = ui_devtools::CreateUiDevToolsServerForViews(
+      g_browser_process->system_network_context_manager()->GetContext(),
+      std::move(connector));
+  devtools_process_observer_ = std::make_unique<DevtoolsProcessObserver>(
+      devtools_server_->tracing_agent());
+}
+
+const ui_devtools::UiDevToolsServer*
+ChromeBrowserMainExtraPartsViews::GetUiDevToolsServerInstance() {
+  return devtools_server_.get();
+}
+
+void ChromeBrowserMainExtraPartsViews::DestroyUiDevTools() {
+  devtools_process_observer_.reset();
+  devtools_server_.reset();
 }

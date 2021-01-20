@@ -114,6 +114,12 @@ class ASH_EXPORT ShellDelegate {
 
   // Returns if window browser sessions are restoring.
   virtual bool IsSessionRestoreInProgress() const = 0;
+
+  // Ui Dev Tools control.
+  virtual bool IsUiDevToolsStarted() const;
+  virtual void StartUiDevTools() {}
+  virtual void StopUiDevTools() {}
+  virtual int GetUiDevToolsPort() const;
 };
 
 }  // namespace ash

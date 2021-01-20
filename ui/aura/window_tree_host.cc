@@ -383,6 +383,7 @@ void WindowTreeHost::DestroyCompositor() {
 }
 
 void WindowTreeHost::DestroyDispatcher() {
+  Env::GetInstance()->NotifyHostDestroyed(this);
   delete window_;
   window_ = nullptr;
   dispatcher_.reset();

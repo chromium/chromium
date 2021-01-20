@@ -7,6 +7,7 @@
 #include "ash/hud_display/hud_display.h"
 #include "ash/hud_display/hud_properties.h"
 #include "ash/shell.h"
+#include "ash/shell_delegate.h"
 #include "base/bind.h"
 #include "base/compiler_specific.h"
 #include "base/strings/string16.h"
@@ -19,7 +20,9 @@
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/canvas.h"
+#include "ui/views/background.h"
 #include "ui/views/controls/button/checkbox.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/slider.h"
 #include "ui/views/layout/box_layout.h"
@@ -335,6 +338,20 @@ void AnimationSpeedControl::Layout() {
   views::View::Layout();
 }
 
+std::unique_ptr<views::LabelButton> CreateActionButton(
+    views::Button::PressedCallback::Callback callback,
+    const base::string16& text) {
+  auto button = std::make_unique<views::LabelButton>(callback, text);
+  button->SetHorizontalAlignment(gfx::ALIGN_CENTER);
+  button->SetEnabledTextColors(kHUDBackground);
+  button->SetProperty(kHUDClickHandler, HTCLIENT);
+  constexpr float kActionButtonCournerRadius = 2;
+  button->SetBackground(views::CreateRoundedRectBackground(
+      kHUDDefaultColor, kActionButtonCournerRadius));
+  button->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
+  return button;
+}
+
 }  // anonymous namespace
 
 BEGIN_METADATA(HUDSettingsView, views::View)
@@ -430,6 +447,44 @@ HUDSettingsView::HUDSettingsView(HUDDisplayView* hud_display) {
           },
           base::Unretained(hud_display))));
   AddChildView(std::make_unique<AnimationSpeedControl>());
+
+  // Ui Dev Tools controls.
+  constexpr int kUiDevToolsControlButtonMargin = 6;
+  views::View* ui_devtools_controls =
+      AddChildView(std::make_unique<views::View>());
+  ui_devtools_controls
+      ->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kVertical))
+      ->set_cross_axis_alignment(
+          views::BoxLayout::CrossAxisAlignment::kStretch);
+  ui_devtools_controls->SetBorder(
+      views::CreateEmptyBorder(gfx::Insets(kUiDevToolsControlButtonMargin)));
+  ui_dev_tools_control_button_ =
+      ui_devtools_controls->AddChildView(CreateActionButton(
+          base::BindRepeating(&HUDSettingsView::OnEnableUiDevToolsButtonPressed,
+                              base::Unretained(this)),
+          base::string16()));
+  UpdateDevToolsControlButtonLabel();
+}
+
+void HUDSettingsView::OnEnableUiDevToolsButtonPressed(const ui::Event& event) {
+  if (Shell::Get()->shell_delegate()->IsUiDevToolsStarted()) {
+    Shell::Get()->shell_delegate()->StopUiDevTools();
+  } else {
+    Shell::Get()->shell_delegate()->StartUiDevTools();
+  }
+  UpdateDevToolsControlButtonLabel();
+}
+
+void HUDSettingsView::UpdateDevToolsControlButtonLabel() {
+  if (!Shell::Get()->shell_delegate()->IsUiDevToolsStarted()) {
+    ui_dev_tools_control_button_->SetText(
+        base::ASCIIToUTF16("Create Ui Dev Tools"));
+  } else {
+    const int port = Shell::Get()->shell_delegate()->GetUiDevToolsPort();
+    ui_dev_tools_control_button_->SetText(base::ASCIIToUTF16(
+        base::StringPrintf("Ui Dev Tools: ON, port %d", port).c_str()));
+  }
 }
 
 HUDSettingsView::~HUDSettingsView() = default;
