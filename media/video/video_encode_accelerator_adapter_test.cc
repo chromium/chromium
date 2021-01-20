@@ -308,6 +308,36 @@ TEST_P(VideoEncodeAcceleratorAdapterTest, TwoFramesResize) {
   EXPECT_EQ(outputs_count, 2);
 }
 
+TEST_F(VideoEncodeAcceleratorAdapterTest, AutomaticResizeSupport) {
+  VideoEncoder::Options options;
+  options.frame_size = gfx::Size(640, 480);
+  int outputs_count = 0;
+  gfx::Size small_size(480, 320);
+  auto pixel_format = PIXEL_FORMAT_NV12;
+  VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
+      [&](VideoEncoderOutput, base::Optional<VideoEncoder::CodecDescription>) {
+        outputs_count++;
+      });
+
+  vea()->SetEncodingCallback(base::BindLambdaForTesting(
+      [&](BitstreamBuffer&, bool keyframe, scoped_refptr<VideoFrame> frame) {
+        EXPECT_EQ(frame->coded_size(), small_size);
+        return BitstreamBufferMetadata(1, keyframe, frame->timestamp());
+      }));
+  vea()->SupportResize();
+  adapter()->Initialize(profile_, options, std::move(output_cb),
+                        ValidatingStatusCB());
+
+  auto frame1 = CreateGreenFrame(small_size, pixel_format,
+                                 base::TimeDelta::FromMilliseconds(1));
+  auto frame2 = CreateGreenFrame(small_size, pixel_format,
+                                 base::TimeDelta::FromMilliseconds(2));
+  adapter()->Encode(frame1, true, ValidatingStatusCB());
+  adapter()->Encode(frame2, false, ValidatingStatusCB());
+  RunUntilIdle();
+  EXPECT_EQ(outputs_count, 2);
+}
+
 TEST_P(VideoEncodeAcceleratorAdapterTest, RunWithAllPossibleInputConversions) {
   VideoEncoder::Options options;
   options.frame_size = gfx::Size(640, 480);

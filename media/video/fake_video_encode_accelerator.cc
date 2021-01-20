@@ -142,4 +142,8 @@ void FakeVideoEncodeAccelerator::DoBitstreamBufferReady(
   client_->BitstreamBufferReady(buffer.id(), metadata);
 }
 
+bool FakeVideoEncodeAccelerator::IsGpuFrameResizeSupported() {
+  return resize_supported_;
+}
+
 }  // namespace media

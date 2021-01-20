@@ -343,6 +343,11 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
   // VEA has been initialized.
   virtual bool IsFlushSupported();
 
+  // Returns true if the encoder supports automatic resize of GPU backed frames
+  // to the size provided during encoder configuration.
+  // This method must be called after VEA has been initialized.
+  virtual bool IsGpuFrameResizeSupported();
+
  protected:
   // Do not delete directly; use Destroy() or own it with a scoped_ptr, which
   // will Destroy() it properly by default.
