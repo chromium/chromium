@@ -119,6 +119,8 @@ void FakeAmbientBackendControllerImpl::GetSettings(
 void FakeAmbientBackendControllerImpl::UpdateSettings(
     const AmbientSettings& settings,
     UpdateSettingsCallback callback) {
+  // |show_weather| should always be set to true.
+  DCHECK(settings.show_weather);
   pending_update_callback_ = std::move(callback);
 }
 
@@ -162,13 +164,14 @@ FakeAmbientBackendControllerImpl::GetBackupPhotoUrls() const {
 }
 
 void FakeAmbientBackendControllerImpl::ReplyFetchSettingsAndAlbums(
-    bool success) {
+    bool success,
+    const base::Optional<AmbientSettings>& settings) {
   if (!pending_fetch_settings_albums_callback_)
     return;
 
   if (success) {
     std::move(pending_fetch_settings_albums_callback_)
-        .Run(CreateFakeSettings(), CreateFakeAlbums());
+        .Run(settings.value_or(CreateFakeSettings()), CreateFakeAlbums());
   } else {
     std::move(pending_fetch_settings_albums_callback_)
         .Run(/*settings=*/base::nullopt, PersonalAlbums());

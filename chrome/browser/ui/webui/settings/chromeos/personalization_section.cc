@@ -260,7 +260,8 @@ void PersonalizationSection::AddHandlers(content::WebUI* web_ui) {
   if (!profile()->IsGuestSession() &&
       chromeos::features::IsAmbientModeEnabled()) {
     web_ui->AddMessageHandler(
-        std::make_unique<chromeos::settings::AmbientModeHandler>());
+        std::make_unique<chromeos::settings::AmbientModeHandler>(
+            pref_service_));
   }
 }
 

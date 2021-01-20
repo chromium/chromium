@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "net/base/backoff_entry.h"
 
 namespace ash {
@@ -26,6 +27,8 @@ namespace gfx {
 class ImageSkia;
 }  // namespace gfx
 
+class PrefService;
+
 namespace chromeos {
 namespace settings {
 
@@ -33,18 +36,22 @@ namespace settings {
 // photo frame and other related functionalities.
 class AmbientModeHandler : public ::settings::SettingsPageUIHandler {
  public:
-  AmbientModeHandler();
+  explicit AmbientModeHandler(PrefService* pref_service);
   AmbientModeHandler(const AmbientModeHandler&) = delete;
   AmbientModeHandler& operator=(const AmbientModeHandler&) = delete;
   ~AmbientModeHandler() override;
 
   // settings::SettingsPageUIHandler:
   void RegisterMessages() override;
-  void OnJavascriptAllowed() override {}
+  void OnJavascriptAllowed() override;
   void OnJavascriptDisallowed() override;
 
  private:
   friend class AmbientModeHandlerTest;
+
+  bool IsAmbientModeEnabled();
+
+  void OnEnabledPrefChanged();
 
   // WebUI call to request topic source and temperature unit related data.
   void HandleRequestSettings(const base::ListValue* args);
@@ -161,6 +168,10 @@ class AmbientModeHandler : public ::settings::SettingsPageUIHandler {
   net::BackoffEntry update_settings_retry_backoff_;
 
   std::vector<gfx::ImageSkia> recent_highlights_preview_images_;
+
+  PrefService* pref_service_;
+
+  PrefChangeRegistrar pref_change_registrar_;
 
   base::WeakPtrFactory<AmbientModeHandler> backend_weak_factory_{this};
   base::WeakPtrFactory<AmbientModeHandler> ui_update_weak_factory_{this};

@@ -10,6 +10,7 @@
 
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "ash/public/cpp/ambient/ambient_metrics.h"
+#include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/ambient/common/ambient_settings.h"
 #include "ash/public/cpp/image_downloader.h"
 #include "base/barrier_closure.h"
@@ -25,6 +26,7 @@
 #include "base/values.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/prefs/pref_service.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -124,9 +126,10 @@ base::string16 GetAlbumDescription(const ash::PersonalAlbum& album) {
 
 }  // namespace
 
-AmbientModeHandler::AmbientModeHandler()
+AmbientModeHandler::AmbientModeHandler(PrefService* pref_service)
     : fetch_settings_retry_backoff_(&kRetryBackoffPolicy),
-      update_settings_retry_backoff_(&kRetryBackoffPolicy) {}
+      update_settings_retry_backoff_(&kRetryBackoffPolicy),
+      pref_service_(pref_service) {}
 
 AmbientModeHandler::~AmbientModeHandler() = default;
 
@@ -152,9 +155,30 @@ void AmbientModeHandler::RegisterMessages() {
                           base::Unretained(this)));
 }
 
+void AmbientModeHandler::OnJavascriptAllowed() {
+  pref_change_registrar_.Init(pref_service_);
+  pref_change_registrar_.Add(
+      ash::ambient::prefs::kAmbientModeEnabled,
+      base::BindRepeating(&AmbientModeHandler::OnEnabledPrefChanged,
+                          base::Unretained(this)));
+}
+
 void AmbientModeHandler::OnJavascriptDisallowed() {
   backend_weak_factory_.InvalidateWeakPtrs();
   ui_update_weak_factory_.InvalidateWeakPtrs();
+  pref_change_registrar_.RemoveAll();
+}
+
+bool AmbientModeHandler::IsAmbientModeEnabled() {
+  return pref_service_->GetBoolean(ash::ambient::prefs::kAmbientModeEnabled);
+}
+
+void AmbientModeHandler::OnEnabledPrefChanged() {
+  // Call |UpdateSettings| when Ambient mode is enabled to make sure that
+  // settings are properly synced to the server even if the user never touches
+  // the other controls.
+  if (settings_ && IsAmbientModeEnabled())
+    UpdateSettings();
 }
 
 void AmbientModeHandler::HandleRequestSettings(const base::ListValue* args) {
@@ -347,6 +371,10 @@ void AmbientModeHandler::SendRecentHighlightsPreviews() {
 }
 
 void AmbientModeHandler::UpdateSettings() {
+  DCHECK(IsAmbientModeEnabled())
+      << "Ambient mode must be enabled to update settings";
+  DCHECK(settings_);
+
   // Prevent fetch settings callback changing |settings_| and |personal_albums_|
   // while updating.
   ui_update_weak_factory_.InvalidateWeakPtrs();
@@ -359,7 +387,10 @@ void AmbientModeHandler::UpdateSettings() {
   has_pending_updates_for_backend_ = false;
   is_updating_backend_ = true;
 
-  DCHECK(settings_);
+  // Explicitly set show_weather to true to force server to respond with
+  // weather information. See: b/158630188.
+  settings_->show_weather = true;
+
   settings_sent_for_update_ = settings_;
   ash::AmbientBackendController::Get()->UpdateSettings(
       *settings_, base::BindOnce(&AmbientModeHandler::OnUpdateSettings,
@@ -475,14 +506,9 @@ void AmbientModeHandler::OnSettingsAndAlbumsFetched(
     SendTopicSource();
     SendTemperatureUnit();
 
-    // Explicitly enable the weather settings if necessary to make sure we
-    // can always get weather info in the response. Leaving this settings as
-    // default could result in unpredictable behavior (b/158630188). Note that
-    // right now the weather info is designed to be always shown on ambient
-    // screen, so we don't expose an option in ambient Settings for users to
-    // switch it off.
-    if (!settings_->show_weather) {
-      settings_->show_weather = true;
+    // If weather info is disabled, call |UpdateSettings| immediately to force
+    // it to true.
+    if (!settings_->show_weather && IsAmbientModeEnabled()) {
       UpdateSettings();
     }
     return;
