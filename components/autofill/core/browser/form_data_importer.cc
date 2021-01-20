@@ -240,7 +240,8 @@ FormDataImporter::FormDataImporter(AutofillClient* client,
                                                   app_locale,
                                                   personal_data_manager)),
       address_profile_save_manager_(
-          std::make_unique<AddressProfileSaveManager>(personal_data_manager)),
+          std::make_unique<AddressProfileSaveManager>(client,
+                                                      personal_data_manager)),
 #if !defined(OS_ANDROID) && !defined(OS_IOS)
       local_card_migration_manager_(
           std::make_unique<LocalCardMigrationManager>(client,
@@ -715,10 +716,7 @@ bool FormDataImporter::ImportAddressProfileForSection(
   if (!candidate_profile.FinalizeAfterImport())
     return false;
 
-  std::string guid =
-      address_profile_save_manager_->SaveProfile(candidate_profile);
-
-  return !guid.empty();
+  return address_profile_save_manager_->SaveProfile(candidate_profile);
 }
 
 bool FormDataImporter::ImportCreditCard(

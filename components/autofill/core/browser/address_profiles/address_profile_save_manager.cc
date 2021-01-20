@@ -6,20 +6,53 @@
 
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill {
 
 AddressProfileSaveManager::AddressProfileSaveManager(
+    AutofillClient* client,
     PersonalDataManager* personal_data_manager)
-    : personal_data_manager_(personal_data_manager) {}
+    : client_(client), personal_data_manager_(personal_data_manager) {}
 
 AddressProfileSaveManager::~AddressProfileSaveManager() = default;
 
-std::string AddressProfileSaveManager::SaveProfile(
+bool AddressProfileSaveManager::SaveProfile(const AutofillProfile& profile) {
+  if (!personal_data_manager_)
+    return false;
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillAddressProfileSavePrompt)) {
+    client_->ConfirmSaveAddressProfile(
+        profile,
+        base::BindOnce(&AddressProfileSaveManager::SaveProfilePromptCallback,
+                       weak_ptr_factory_.GetWeakPtr()));
+    // TODO(crbug.com/1135178): The semantics of the return value are that the
+    // profile has been saved. At this point, we cannot tell if the profile is
+    // going to be saved or not since it depends on the user action. Revisit
+    // once the intended behavior of save prompts is final.
+    return true;
+  }
+  return SaveProfileInternal(profile);
+}
+
+bool AddressProfileSaveManager::SaveProfileInternal(
     const AutofillProfile& profile) {
-  return personal_data_manager_
-             ? personal_data_manager_->SaveImportedProfile(profile)
-             : std::string();
+  return !personal_data_manager_->SaveImportedProfile(profile).empty();
+}
+
+void AddressProfileSaveManager::SaveProfilePromptCallback(
+    AutofillClient::SaveAddressProfileOfferUserDecision user_decision,
+    AutofillProfile profile) {
+  switch (user_decision) {
+    case AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted:
+    case AutofillClient::SaveAddressProfileOfferUserDecision::kEdited:
+      personal_data_manager_->SaveImportedProfile(profile);
+      break;
+    case AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined:
+    case AutofillClient::SaveAddressProfileOfferUserDecision::kIgnored:
+      break;
+  }
 }
 
 }  // namespace autofill

@@ -7,6 +7,9 @@
 
 #include <string>
 
+#include "base/memory/weak_ptr.h"
+#include "components/autofill/core/browser/autofill_client.h"
+
 namespace autofill {
 
 class AutofillProfile;
@@ -16,22 +19,32 @@ class PersonalDataManager;
 // FormDataImporter.
 class AddressProfileSaveManager {
  public:
-  explicit AddressProfileSaveManager(
-      PersonalDataManager* personal_data_manager);
+  // The parameters should outlive the AddressProfileSaveManager.
+  AddressProfileSaveManager(AutofillClient* client,
+                            PersonalDataManager* personal_data_manager);
   AddressProfileSaveManager(const AddressProfileSaveManager&) = delete;
   AddressProfileSaveManager& operator=(const AddressProfileSaveManager&) =
       delete;
   virtual ~AddressProfileSaveManager();
 
-  // Saves `imported_profile` using the `personal_data_manager_`. Returns the
-  // guid of the new or updated profile, or the empty string if no profile was
+  // Saves `profile` using the `personal_data_manager_`. Returns true
+  // if the profile was saved or updated, and false if no profile was
   // saved.
-  std::string SaveProfile(const AutofillProfile& imported_profile);
+  bool SaveProfile(const AutofillProfile& profile);
 
  private:
+  void SaveProfilePromptCallback(
+      AutofillClient::SaveAddressProfileOfferUserDecision user_decision,
+      AutofillProfile profile);
+  bool SaveProfileInternal(const AutofillProfile& profile);
+
+  AutofillClient* const client_;
+
   // The personal data manager, used to save and load personal data to/from the
   // web database.
   PersonalDataManager* const personal_data_manager_;
+
+  base::WeakPtrFactory<AddressProfileSaveManager> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill
