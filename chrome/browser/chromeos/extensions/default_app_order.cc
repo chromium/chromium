@@ -62,6 +62,7 @@ const char* const kDefaultAppOrder[] = {
     web_app::kGoogleDriveAppId,
 
     extension_misc::kGoogleKeepAppId,
+    web_app::kGoogleKeepAppId,
 
     arc::kGoogleCalendarAppId,
     extension_misc::kCalendarAppId,
