@@ -249,7 +249,8 @@ TEST_F(ConfigDirPolicyLoaderTest, ReadPrefsMergePrefs) {
         ->AddConflictingPolicy(std::move(conflict_policy));
     expected_bundle.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
         .GetMutable(kHomepageLocation)
-        ->AddWarning(IDS_POLICY_CONFLICT_DIFF_VALUE);
+        ->AddMessage(PolicyMap::MessageType::kWarning,
+                     IDS_POLICY_CONFLICT_DIFF_VALUE);
   }
   EXPECT_TRUE(bundle->Equals(expected_bundle));
 }

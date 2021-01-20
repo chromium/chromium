@@ -143,10 +143,12 @@ void RemapRenamedPolicies(PolicyMap* policies) {
     if (old_policy &&
         (!new_policy || old_policy->has_higher_priority_than(*new_policy))) {
       PolicyMap::Entry policy_entry = old_policy->DeepCopy();
-      policy_entry.AddWarning(IDS_POLICY_MIGRATED_NEW_POLICY,
+      policy_entry.AddMessage(PolicyMap::MessageType::kWarning,
+                              IDS_POLICY_MIGRATED_NEW_POLICY,
                               {base::UTF8ToUTF16(policy_pair.first)});
-      old_policy->AddError(IDS_POLICY_MIGRATED_OLD_POLICY,
-                           {base::UTF8ToUTF16(policy_pair.second)});
+      old_policy->AddMessage(PolicyMap::MessageType::kError,
+                             IDS_POLICY_MIGRATED_OLD_POLICY,
+                             {base::UTF8ToUTF16(policy_pair.second)});
       policies->Set(policy_pair.second, std::move(policy_entry));
     }
     if (policy_lists_to_merge.contains(policy_pair.first) &&
@@ -164,7 +166,8 @@ void DowngradeMetricsReportingToRecommendedPolicy(PolicyMap* policies) {
   if (policy && policy->level != POLICY_LEVEL_RECOMMENDED && policy->value() &&
       policy->value()->is_bool() && policy->value()->GetBool()) {
     policy->level = POLICY_LEVEL_RECOMMENDED;
-    policy->AddError(IDS_POLICY_IGNORED_MANDATORY_REPORTING_POLICY);
+    policy->AddMessage(PolicyMap::MessageType::kError,
+                       IDS_POLICY_IGNORED_MANDATORY_REPORTING_POLICY);
   }
 }
 

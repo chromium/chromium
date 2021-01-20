@@ -153,9 +153,10 @@ TEST_F(DevicePolicyDecoderChromeOSTest, UserWhitelistWarning) {
       base::BindRepeating(&l10n_util::GetStringUTF16);
 
   // Should have a deprecation warning.
-  EXPECT_FALSE(policies.Get(key::kDeviceUserWhitelist)
-                   ->GetLocalizedErrors(l10nlookup)
-                   .empty());
+  EXPECT_FALSE(
+      policies.Get(key::kDeviceUserWhitelist)
+          ->GetLocalizedMessages(PolicyMap::MessageType::kError, l10nlookup)
+          .empty());
 }
 
 }  // namespace policy

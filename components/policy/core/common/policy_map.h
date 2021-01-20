@@ -33,6 +33,10 @@ FORWARD_DECLARE_TEST(PolicyMapTest, MergeFrom);
 // A mapping of policy names to policy values for a given policy namespace.
 class POLICY_EXPORT PolicyMap {
  public:
+  // Types of messages that can be associated with policies. New types must be
+  // added here in order to appear in the policy table.
+  enum class MessageType { kInfo, kWarning, kError };
+
   // Each policy maps to an Entry which keeps the policy value as well as other
   // relevant data about the policy.
   class POLICY_EXPORT Entry {
@@ -70,15 +74,17 @@ class POLICY_EXPORT PolicyMap {
     // Returns true if |this| equals |other|.
     bool Equals(const Entry& other) const;
 
-    // Add a localized error given its l10n message ID.
-    void AddError(int message_id);
-    // Add a localized error given its l10n message ID and placeholder args.
-    void AddError(int message_id, std::vector<base::string16> message_args);
+    // Add a localized message given its l10n message ID.
+    void AddMessage(MessageType type, int message_id);
 
-    // Add a localized warning given its l10n message ID.
-    void AddWarning(int message_id);
-    // Add a localized warning given its l10n message ID and placeholder args.
-    void AddWarning(int message_id, std::vector<base::string16> message_args);
+    // Add a localized message given its l10n message ID and placeholder
+    // args.
+    void AddMessage(MessageType type,
+                    int message_id,
+                    std::vector<base::string16>&& message_args);
+
+    // Clear a message of a specific type given its l10n message ID.
+    void ClearMessage(MessageType type, int message_id);
 
     // Adds a conflicting policy.
     void AddConflictingPolicy(Entry&& conflict);
@@ -114,22 +120,20 @@ class POLICY_EXPORT PolicyMap {
     typedef base::RepeatingCallback<base::string16(int message_id)>
         L10nLookupFunction;
 
-    // Returns localized errors added through AddError(), as UTF-16, and
-    // separated with LF characters.
-    base::string16 GetLocalizedErrors(L10nLookupFunction lookup) const;
-
-    // Returns localized warnings added through AddWarning(), as UTF-16, and
-    // separated with LF characters.
-    base::string16 GetLocalizedWarnings(L10nLookupFunction lookup) const;
+    // Returns localized messages as UTF-16 separated with LF characters. The
+    // messages are organized according to message types (Warning, Error, etc).
+    base::string16 GetLocalizedMessages(MessageType type,
+                                        L10nLookupFunction lookup) const;
 
    private:
     base::Optional<base::Value> value_;
     bool ignored_ = false;
     bool is_default_value_ = false;
-    std::map<int, base::Optional<std::vector<base::string16>>>
-        error_message_ids_;
-    std::map<int, base::Optional<std::vector<base::string16>>>
-        warning_message_ids_;
+
+    // Stores all message IDs separated by message types.
+    std::map<MessageType,
+             std::map<int, base::Optional<std::vector<base::string16>>>>
+        message_ids_;
   };
 
   typedef std::map<std::string, Entry> PolicyMapType;
@@ -161,20 +165,21 @@ class POLICY_EXPORT PolicyMap {
 
   void Set(const std::string& policy, Entry entry);
 
-  // Adds a localized error with |message_id| to the map for the key |policy|
+  // Adds a localized message with |message_id| to the map for the key |policy|
   // that should be shown to the user alongisde the value in the policy UI. This
   // should only be called for policies that are already stored in the map.
-  void AddError(const std::string& policy, int message_id);
+  void AddMessage(const std::string& policy, MessageType type, int message_id);
 
-  // Adds a localized error with |message_id| and placeholder arguments
+  // Adds a localized message with |message_id| and placeholder arguments
   // |message_args| to the map for the key |policy| that should be shown to the
   // user alongisde the value in the policy UI. The number of placeholders in
   // the policy string corresponding to |message_id| must be equal to the number
   // of arguments in |message_args|. This should only be called for policies
   // that are already stored in the map.
-  void AddError(const std::string& policy,
-                int message_id,
-                std::vector<base::string16> message_args);
+  void AddMessage(const std::string& policy,
+                  MessageType type,
+                  int message_id,
+                  std::vector<base::string16>&& message_args);
 
   // Return True if the policy is set but its value is ignored because it does
   // not share the highest priority from its atomic group. Returns False if the

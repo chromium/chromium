@@ -189,7 +189,8 @@ Value PolicyConversionsClient::GetPolicyValue(
   } else {
     // The PolicyMap contains errors about retrieving the policy, while the
     // PolicyErrorMap contains validation errors. Concat the errors.
-    auto policy_map_errors = policy.GetLocalizedErrors(
+    auto policy_map_errors = policy.GetLocalizedMessages(
+        PolicyMap::MessageType::kError,
         base::BindRepeating(&l10n_util::GetStringUTF16));
     auto error_map_errors =
         errors ? errors->GetErrors(policy_name) : base::string16();
@@ -205,7 +206,8 @@ Value PolicyConversionsClient::GetPolicyValue(
   if (!error.empty())
     value.SetKey("error", Value(error));
 
-  base::string16 warning = policy.GetLocalizedWarnings(
+  base::string16 warning = policy.GetLocalizedMessages(
+      PolicyMap::MessageType::kWarning,
       base::BindRepeating(&l10n_util::GetStringUTF16));
   if (!warning.empty())
     value.SetKey("warning", Value(warning));

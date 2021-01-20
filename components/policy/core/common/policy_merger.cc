@@ -72,7 +72,8 @@ bool PolicyListMerger::CanMerge(const std::string& policy_name,
     return false;
 
   if (!policy.value()->is_list()) {
-    policy.AddError(IDS_POLICY_LIST_MERGING_WRONG_POLICY_TYPE_SPECIFIED);
+    policy.AddMessage(PolicyMap::MessageType::kError,
+                      IDS_POLICY_LIST_MERGING_WRONG_POLICY_TYPE_SPECIFIED);
     return false;
   }
 
@@ -160,12 +161,15 @@ bool PolicyDictionaryMerger::CanMerge(const std::string& policy_name,
     return false;
 
   if (!allowed_to_merge) {
-    policy.AddError(IDS_POLICY_DICTIONARY_MERGING_POLICY_NOT_ALLOWED);
+    policy.AddMessage(PolicyMap::MessageType::kError,
+                      IDS_POLICY_DICTIONARY_MERGING_POLICY_NOT_ALLOWED);
     return false;
   }
 
   if (!policy.value()->is_dict()) {
-    policy.AddError(IDS_POLICY_DICTIONARY_MERGING_WRONG_POLICY_TYPE_SPECIFIED);
+    policy.AddMessage(
+        PolicyMap::MessageType::kError,
+        IDS_POLICY_DICTIONARY_MERGING_WRONG_POLICY_TYPE_SPECIFIED);
     return false;
   }
 
