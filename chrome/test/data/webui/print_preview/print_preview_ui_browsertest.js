@@ -676,6 +676,13 @@ TEST_F(
     });
 
 TEST_F(
+    'PrintPreviewPrintServerStoreTestCros', 'GetPrintServersConfig',
+    function() {
+      this.runMochaTest(
+          print_server_store_test.TestNames.GetPrintServersConfig);
+    });
+
+TEST_F(
     'PrintPreviewPrintServerStoreTestCros', 'ServerPrintersLoading',
     function() {
       this.runMochaTest(

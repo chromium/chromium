@@ -66,8 +66,11 @@ export class PrintServerStore extends EventTarget {
    * Gets the currently available print servers and fetching mode.
    * @return {!Promise<!PrintServersConfig>} The print servers configuration.
    */
-  getPrintServersConfig() {
-    return this.nativeLayerCros_.getPrintServersConfig();
+  async getPrintServersConfig() {
+    const printServersConfig =
+        await this.nativeLayerCros_.getPrintServersConfig();
+    this.updatePrintServersConfig(printServersConfig);
+    return printServersConfig;
   }
 
   /**
@@ -83,6 +86,23 @@ export class PrintServerStore extends EventTarget {
    *     configuration.
    */
   onPrintServersConfigChanged_(printServersConfig) {
+    this.updatePrintServersConfig(printServersConfig);
+    const eventData = {
+      printServerNames: Array.from(this.printServersByName_.keys()),
+      isSingleServerFetchingMode: this.isSingleServerFetchingMode_
+    };
+    this.dispatchEvent(new CustomEvent(
+        PrintServerStore.EventType.PRINT_SERVERS_CHANGED, {detail: eventData}));
+  }
+
+  /**
+   * Updates the print servers configuration when new print servers and fetching
+   * mode are available.
+   * @param {!PrintServersConfig} printServersConfig The print servers
+   *     configuration.
+   * @private
+   */
+  updatePrintServersConfig(printServersConfig) {
     this.isSingleServerFetchingMode_ =
         printServersConfig.isSingleServerFetchingMode;
     this.printServersByName_ = new Map();
@@ -93,12 +113,6 @@ export class PrintServerStore extends EventTarget {
         this.printServersByName_.set(printServer.name, [printServer]);
       }
     }
-    const eventData = {
-      printServerNames: Array.from(this.printServersByName_.keys()),
-      isSingleServerFetchingMode: this.isSingleServerFetchingMode_
-    };
-    this.dispatchEvent(new CustomEvent(
-        PrintServerStore.EventType.PRINT_SERVERS_CHANGED, {detail: eventData}));
   }
 
   /**
