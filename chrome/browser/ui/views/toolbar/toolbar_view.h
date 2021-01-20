@@ -240,6 +240,9 @@ class ToolbarView : public views::AccessiblePaneView,
       const ui::DropTargetEvent& event) override;
   views::View* GetViewForDrop() override;
 
+  // Changes the visibility of the Chrome Labs entry point based on prefs.
+  void OnChromeLabsPrefChanged();
+
   // Loads the images for all the child views.
   void LoadImages();
 
@@ -279,6 +282,9 @@ class ToolbarView : public views::AccessiblePaneView,
 
   Browser* const browser_;
   BrowserView* const browser_view_;
+
+  PrefService* profile_pref_service_;
+  std::unique_ptr<PrefChangeRegistrar> profile_registrar_;
 
   views::FlexLayout* layout_manager_ = nullptr;
 

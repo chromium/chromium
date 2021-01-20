@@ -270,10 +270,16 @@ void ToolbarView::Init() {
   if (extensions_container)
     extensions_container_ = AddChildView(std::move(extensions_container));
 
-  if (base::FeatureList::IsEnabled(features::kChromeLabs) &&
-      browser_->profile()->GetPrefs()->GetBoolean(
-          chrome_labs_prefs::kBrowserLabsEnabled)) {
+  if (base::FeatureList::IsEnabled(features::kChromeLabs)) {
     chrome_labs_button_ = AddChildView(std::make_unique<ChromeLabsButton>());
+    profile_pref_service_ = browser_->profile()->GetPrefs();
+    profile_registrar_ = std::make_unique<PrefChangeRegistrar>();
+    profile_registrar_->Init(profile_pref_service_);
+    profile_registrar_->Add(
+        chrome_labs_prefs::kBrowserLabsEnabled,
+        base::BindRepeating(&ToolbarView::OnChromeLabsPrefChanged,
+                            base::Unretained(this)));
+    OnChromeLabsPrefChanged();
   }
 
   if (cast)
@@ -880,6 +886,11 @@ BrowserRootView::DropIndex ToolbarView::GetDropIndex(
 
 views::View* ToolbarView::GetViewForDrop() {
   return this;
+}
+
+void ToolbarView::OnChromeLabsPrefChanged() {
+  chrome_labs_button_->SetVisible(profile_pref_service_->GetBoolean(
+      chrome_labs_prefs::kBrowserLabsEnabled));
 }
 
 void ToolbarView::LoadImages() {

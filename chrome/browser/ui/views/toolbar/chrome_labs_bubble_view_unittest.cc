@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/about_flags.h"
+#include "chrome/browser/ui/toolbar/chrome_labs_prefs.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
@@ -52,9 +53,12 @@ class ChromeLabsBubbleTest : public TestWithBrowserView {
         {kThirdTestFeatureId, "", "", os_other_than_current,
          FEATURE_VALUE_TYPE(kTestFeature3)}};
     about_flags::testing::SetFeatureEntries(entries);
-    TestWithBrowserView::SetUp();
-    ChromeLabsButton* button = chrome_labs_button();
 
+    TestWithBrowserView::SetUp();
+    profile()->GetPrefs()->SetBoolean(chrome_labs_prefs::kBrowserLabsEnabled,
+                                      true);
+
+    ChromeLabsButton* button = chrome_labs_button();
     CreateTestLabInfo();
     std::unique_ptr<ChromeLabsBubbleViewModel> test_model =
         std::make_unique<ChromeLabsBubbleViewModel>();

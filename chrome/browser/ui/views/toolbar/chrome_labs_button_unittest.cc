@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/toolbar/chrome_labs_button.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/about_flags.h"
+#include "chrome/browser/ui/toolbar/chrome_labs_prefs.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
@@ -24,6 +25,8 @@ class ChromeLabsButtonTest : public TestWithBrowserView {
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(features::kChromeLabs);
     TestWithBrowserView::SetUp();
+    profile()->GetPrefs()->SetBoolean(chrome_labs_prefs::kBrowserLabsEnabled,
+                                      true);
   }
 
  private:
