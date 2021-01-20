@@ -59,6 +59,7 @@ struct StaticColorCheckParam {
   ImageDecoder::CompressionFormat compression_format;
   ImageDecoder::AlphaOption alpha_option;
   ColorBehavior color_behavior;
+  ImageOrientation orientation;
   int color_threshold;
   std::vector<ExpectedColor> colors;
 };
@@ -92,11 +93,39 @@ std::ostream& operator<<(std::ostream& os, const StaticColorCheckParam& param) {
     DCHECK(param.color_behavior.IsTransformToSRGB());
     color_behavior = "TransformToSRGB";
   }
+  const char* orientation;
+  switch (param.orientation.Orientation()) {
+    case ImageOrientationEnum::kOriginTopLeft:
+      orientation = "kOriginTopLeft";
+      break;
+    case ImageOrientationEnum::kOriginTopRight:
+      orientation = "kOriginTopRight";
+      break;
+    case ImageOrientationEnum::kOriginBottomRight:
+      orientation = "kOriginBottomRight";
+      break;
+    case ImageOrientationEnum::kOriginBottomLeft:
+      orientation = "kOriginBottomLeft";
+      break;
+    case ImageOrientationEnum::kOriginLeftTop:
+      orientation = "kOriginLeftTop";
+      break;
+    case ImageOrientationEnum::kOriginRightTop:
+      orientation = "kOriginRightTop";
+      break;
+    case ImageOrientationEnum::kOriginRightBottom:
+      orientation = "kOriginRightBottom";
+      break;
+    case ImageOrientationEnum::kOriginLeftBottom:
+      orientation = "kOriginLeftBottom";
+      break;
+  }
   return os << "\nStaticColorCheckParam {\n  path: \"" << param.path
             << "\",\n  bit_depth: " << param.bit_depth
             << ",\n  color_type: " << color_type
             << ",\n  alpha_option: " << alpha_option
-            << ",\n  color_behavior: " << color_behavior << "\n}";
+            << ",\n  color_behavior: " << color_behavior
+            << ",\n  orientation: " << orientation << "\n}";
 }
 
 StaticColorCheckParam kTestParams[] = {
@@ -107,6 +136,7 @@ StaticColorCheckParam kTestParams[] = {
         ImageDecoder::kLossyFormat,
         ImageDecoder::kAlphaNotPremultiplied,  // q=60(lossy)
         ColorBehavior::Tag(),
+        ImageOrientationEnum::kOriginTopLeft,
         0,
         {},  // we just check that this image is lossy.
     },
@@ -117,6 +147,7 @@ StaticColorCheckParam kTestParams[] = {
         ImageDecoder::kLossyFormat,
         ImageDecoder::kAlphaNotPremultiplied,  // q=60(lossy)
         ColorBehavior::Ignore(),
+        ImageOrientationEnum::kOriginTopLeft,
         0,
         {},  // we just check that the decoder won't crash when
              // ColorBehavior::Ignore() is used.
@@ -127,6 +158,7 @@ StaticColorCheckParam kTestParams[] = {
      ImageDecoder::kLosslessFormat,
      ImageDecoder::kAlphaNotPremultiplied,
      ColorBehavior::Tag(),
+     ImageOrientationEnum::kOriginTopLeft,
      3,
      {
          {gfx::Point(0, 0), SkColorSetARGB(0, 255, 0, 0)},
@@ -139,6 +171,7 @@ StaticColorCheckParam kTestParams[] = {
      ImageDecoder::kLosslessFormat,
      ImageDecoder::kAlphaNotPremultiplied,
      ColorBehavior::Tag(),
+     ImageOrientationEnum::kOriginTopLeft,
      1,
      {
          {gfx::Point(0, 0), SkColorSetARGB(0, 255, 0, 0)},
@@ -151,6 +184,7 @@ StaticColorCheckParam kTestParams[] = {
      ImageDecoder::kLosslessFormat,
      ImageDecoder::kAlphaNotPremultiplied,
      ColorBehavior::Tag(),
+     ImageOrientationEnum::kOriginTopLeft,
      3,
      {
          {gfx::Point(0, 0), SkColorSetARGB(255, 255, 0, 0)},
@@ -163,6 +197,7 @@ StaticColorCheckParam kTestParams[] = {
      ImageDecoder::kLosslessFormat,
      ImageDecoder::kAlphaNotPremultiplied,
      ColorBehavior::Tag(),
+     ImageOrientationEnum::kOriginTopLeft,
      3,
      {
          {gfx::Point(0, 0), SkColorSetARGB(255, 255, 0, 0)},
@@ -175,6 +210,7 @@ StaticColorCheckParam kTestParams[] = {
      ImageDecoder::kLosslessFormat,
      ImageDecoder::kAlphaNotPremultiplied,
      ColorBehavior::Tag(),
+     ImageOrientationEnum::kOriginTopLeft,
      1,
      {
          {gfx::Point(0, 0), SkColorSetARGB(255, 192, 192, 192)},
@@ -187,6 +223,7 @@ StaticColorCheckParam kTestParams[] = {
      ImageDecoder::kLosslessFormat,
      ImageDecoder::kAlphaNotPremultiplied,
      ColorBehavior::Tag(),
+     ImageOrientationEnum::kOriginTopLeft,
      1,
      {
          {gfx::Point(0, 0), SkColorSetARGB(255, 0, 0, 0)},
@@ -199,6 +236,7 @@ StaticColorCheckParam kTestParams[] = {
      ImageDecoder::kLosslessFormat,
      ImageDecoder::kAlphaNotPremultiplied,
      ColorBehavior::Tag(),
+     ImageOrientationEnum::kOriginTopLeft,
      1,
      {
          {gfx::Point(0, 0), SkColorSetARGB(255, 0, 0, 0)},
@@ -211,6 +249,7 @@ StaticColorCheckParam kTestParams[] = {
      ImageDecoder::kLosslessFormat,
      ImageDecoder::kAlphaPremultiplied,
      ColorBehavior::TransformToSRGB(),
+     ImageOrientationEnum::kOriginTopLeft,
      3,
      {
          {gfx::Point(0, 0), SkColorSetARGB(0, 0, 0, 0)},
@@ -224,6 +263,7 @@ StaticColorCheckParam kTestParams[] = {
      ImageDecoder::kLosslessFormat,
      ImageDecoder::kAlphaNotPremultiplied,
      ColorBehavior::Ignore(),
+     ImageOrientationEnum::kOriginTopLeft,
      1,
      {
          {gfx::Point(0, 0), SkColorSetARGB(255, 0, 0, 255)},
@@ -238,6 +278,7 @@ StaticColorCheckParam kTestParams[] = {
      ImageDecoder::kLosslessFormat,
      ImageDecoder::kAlphaNotPremultiplied,
      ColorBehavior::TransformToSRGB(),
+     ImageOrientationEnum::kOriginTopLeft,
      1,
      {
          /*
@@ -255,6 +296,7 @@ StaticColorCheckParam kTestParams[] = {
      ImageDecoder::kLosslessFormat,
      ImageDecoder::kAlphaNotPremultiplied,
      ColorBehavior::Tag(),
+     ImageOrientationEnum::kOriginTopLeft,
      1,
      {
          {gfx::Point(0, 0), SkColorSetARGB(0, 255, 0, 0)},
@@ -267,6 +309,7 @@ StaticColorCheckParam kTestParams[] = {
      ImageDecoder::kLosslessFormat,
      ImageDecoder::kAlphaNotPremultiplied,
      ColorBehavior::Tag(),
+     ImageOrientationEnum::kOriginTopLeft,
      1,
      {
          {gfx::Point(0, 0), SkColorSetARGB(0, 255, 0, 0)},
@@ -279,6 +322,7 @@ StaticColorCheckParam kTestParams[] = {
      ImageDecoder::kLosslessFormat,
      ImageDecoder::kAlphaPremultiplied,
      ColorBehavior::TransformToSRGB(),
+     ImageOrientationEnum::kOriginTopLeft,
      1,
      {
          {gfx::Point(0, 0), SkColorSetARGB(0, 0, 0, 0)},
@@ -291,6 +335,7 @@ StaticColorCheckParam kTestParams[] = {
      ImageDecoder::kLosslessFormat,
      ImageDecoder::kAlphaNotPremultiplied,
      ColorBehavior::Tag(),
+     ImageOrientationEnum::kOriginTopLeft,
      2,
      {
          {gfx::Point(0, 0), SkColorSetARGB(255, 255, 0, 0)},
@@ -303,6 +348,7 @@ StaticColorCheckParam kTestParams[] = {
      ImageDecoder::kLosslessFormat,
      ImageDecoder::kAlphaNotPremultiplied,
      ColorBehavior::Tag(),
+     ImageOrientationEnum::kOriginTopLeft,
      1,
      {
          {gfx::Point(0, 0), SkColorSetARGB(255, 0, 0, 0)},
@@ -315,6 +361,7 @@ StaticColorCheckParam kTestParams[] = {
      ImageDecoder::kLosslessFormat,
      ImageDecoder::kAlphaNotPremultiplied,
      ColorBehavior::Tag(),
+     ImageOrientationEnum::kOriginTopLeft,
      1,
      {
          {gfx::Point(0, 0), SkColorSetARGB(255, 0, 0, 0)},
@@ -328,6 +375,7 @@ StaticColorCheckParam kTestParams[] = {
      ImageDecoder::kLosslessFormat,
      ImageDecoder::kAlphaNotPremultiplied,
      ColorBehavior::Ignore(),
+     ImageOrientationEnum::kOriginTopLeft,
      1,
      {
          {gfx::Point(0, 0), SkColorSetARGB(255, 0, 0, 255)},
@@ -342,6 +390,7 @@ StaticColorCheckParam kTestParams[] = {
      ImageDecoder::kLosslessFormat,
      ImageDecoder::kAlphaNotPremultiplied,
      ColorBehavior::TransformToSRGB(),
+     ImageOrientationEnum::kOriginTopLeft,
      1,
      {
          /*
@@ -359,6 +408,7 @@ StaticColorCheckParam kTestParams[] = {
      ImageDecoder::kLosslessFormat,
      ImageDecoder::kAlphaNotPremultiplied,
      ColorBehavior::Tag(),
+     ImageOrientationEnum::kOriginTopLeft,
      1,
      {
          {gfx::Point(0, 0), SkColorSetARGB(0, 255, 0, 0)},
@@ -371,6 +421,7 @@ StaticColorCheckParam kTestParams[] = {
      ImageDecoder::kLosslessFormat,
      ImageDecoder::kAlphaNotPremultiplied,
      ColorBehavior::Tag(),
+     ImageOrientationEnum::kOriginTopLeft,
      1,
      {
          {gfx::Point(0, 0), SkColorSetARGB(0, 255, 0, 0)},
@@ -383,6 +434,7 @@ StaticColorCheckParam kTestParams[] = {
      ImageDecoder::kLosslessFormat,
      ImageDecoder::kAlphaPremultiplied,
      ColorBehavior::TransformToSRGB(),
+     ImageOrientationEnum::kOriginTopLeft,
      1,
      {
          {gfx::Point(0, 0), SkColorSetARGB(0, 0, 0, 0)},
@@ -395,6 +447,7 @@ StaticColorCheckParam kTestParams[] = {
      ImageDecoder::kLosslessFormat,
      ImageDecoder::kAlphaNotPremultiplied,
      ColorBehavior::Tag(),
+     ImageOrientationEnum::kOriginTopLeft,
      2,
      {
          {gfx::Point(0, 0), SkColorSetARGB(255, 255, 0, 0)},
@@ -407,6 +460,7 @@ StaticColorCheckParam kTestParams[] = {
      ImageDecoder::kLosslessFormat,
      ImageDecoder::kAlphaNotPremultiplied,
      ColorBehavior::Tag(),
+     ImageOrientationEnum::kOriginTopLeft,
      1,
      {
          {gfx::Point(0, 0), SkColorSetARGB(255, 0, 0, 0)},
@@ -419,6 +473,7 @@ StaticColorCheckParam kTestParams[] = {
      ImageDecoder::kLosslessFormat,
      ImageDecoder::kAlphaNotPremultiplied,
      ColorBehavior::Tag(),
+     ImageOrientationEnum::kOriginTopLeft,
      1,
      {
          {gfx::Point(0, 0), SkColorSetARGB(255, 0, 0, 0)},
@@ -432,6 +487,7 @@ StaticColorCheckParam kTestParams[] = {
      ImageDecoder::kLosslessFormat,
      ImageDecoder::kAlphaNotPremultiplied,
      ColorBehavior::Ignore(),
+     ImageOrientationEnum::kOriginTopLeft,
      1,
      {
          {gfx::Point(0, 0), SkColorSetARGB(255, 0, 0, 255)},
@@ -446,6 +502,7 @@ StaticColorCheckParam kTestParams[] = {
      ImageDecoder::kLosslessFormat,
      ImageDecoder::kAlphaNotPremultiplied,
      ColorBehavior::TransformToSRGB(),
+     ImageOrientationEnum::kOriginTopLeft,
      1,
      {
          /*
@@ -457,13 +514,78 @@ StaticColorCheckParam kTestParams[] = {
          {gfx::Point(2, 2), SkColorSetARGB(255, 255, 0, 0)},
      }},
 #endif
+    {"/images/resources/avif/red-full-range-angle-1-420-8bpc.avif",
+     8,
+     ColorType::kRgb,
+     ImageDecoder::kLosslessFormat,
+     ImageDecoder::kAlphaNotPremultiplied,
+     ColorBehavior::Tag(),
+     ImageOrientationEnum::kOriginLeftBottom,
+     3,
+     {
+         {gfx::Point(0, 0), SkColorSetARGB(255, 255, 0, 0)},
+         {gfx::Point(1, 1), SkColorSetARGB(255, 255, 0, 0)},
+         {gfx::Point(2, 2), SkColorSetARGB(255, 255, 0, 0)},
+     }},
+    {"/images/resources/avif/red-full-range-axis-0-420-8bpc.avif",
+     8,
+     ColorType::kRgb,
+     ImageDecoder::kLosslessFormat,
+     ImageDecoder::kAlphaNotPremultiplied,
+     ColorBehavior::Tag(),
+     ImageOrientationEnum::kOriginTopRight,
+     3,
+     {
+         {gfx::Point(0, 0), SkColorSetARGB(255, 255, 0, 0)},
+         {gfx::Point(1, 1), SkColorSetARGB(255, 255, 0, 0)},
+         {gfx::Point(2, 2), SkColorSetARGB(255, 255, 0, 0)},
+     }},
+    {"/images/resources/avif/red-full-range-axis-1-420-8bpc.avif",
+     8,
+     ColorType::kRgb,
+     ImageDecoder::kLosslessFormat,
+     ImageDecoder::kAlphaNotPremultiplied,
+     ColorBehavior::Tag(),
+     ImageOrientationEnum::kOriginBottomLeft,
+     3,
+     {
+         {gfx::Point(0, 0), SkColorSetARGB(255, 255, 0, 0)},
+         {gfx::Point(1, 1), SkColorSetARGB(255, 255, 0, 0)},
+         {gfx::Point(2, 2), SkColorSetARGB(255, 255, 0, 0)},
+     }},
+    {"/images/resources/avif/red-full-range-angle-2-axis-0-420-8bpc.avif",
+     8,
+     ColorType::kRgb,
+     ImageDecoder::kLosslessFormat,
+     ImageDecoder::kAlphaNotPremultiplied,
+     ColorBehavior::Tag(),
+     ImageOrientationEnum::kOriginBottomLeft,
+     3,
+     {
+         {gfx::Point(0, 0), SkColorSetARGB(255, 255, 0, 0)},
+         {gfx::Point(1, 1), SkColorSetARGB(255, 255, 0, 0)},
+         {gfx::Point(2, 2), SkColorSetARGB(255, 255, 0, 0)},
+     }},
+    {"/images/resources/avif/red-full-range-angle-3-axis-1-420-8bpc.avif",
+     8,
+     ColorType::kRgb,
+     ImageDecoder::kLosslessFormat,
+     ImageDecoder::kAlphaNotPremultiplied,
+     ColorBehavior::Tag(),
+     ImageOrientationEnum::kOriginRightBottom,
+     3,
+     {
+         {gfx::Point(0, 0), SkColorSetARGB(255, 255, 0, 0)},
+         {gfx::Point(1, 1), SkColorSetARGB(255, 255, 0, 0)},
+         {gfx::Point(2, 2), SkColorSetARGB(255, 255, 0, 0)},
+     }},
     // TODO(ryoh): Add other color profile images, such as BT2020CL,
-    //  BT2020NCL, Rec601, SMPTE 274M
+    //  SMPTE 274M
     // TODO(ryoh): Add images with different combinations of ColorPrimaries,
     //  TransferFunction and MatrixCoefficients,
     //  such as:
     //   sRGB ColorPrimaries, BT.2020 TransferFunction and
-    //   BT.609 MatrixCoefficients
+    //   BT.709 MatrixCoefficients
     // TODO(ryoh): Add Mono + Alpha Images.
 };
 
@@ -779,9 +901,8 @@ TEST_P(StaticAVIFColorTests, InspectImage) {
   ASSERT_TRUE(frame);
   EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
   EXPECT_FALSE(decoder->Failed());
-  // TODO(ryoh): How should we treat imir(mirroring), irot(rotation) and
-  // clap(cropping)?
-  // EXPECT_EQ(xxxx, decoder->Orientation());
+  // TODO(ryoh): How should we treat clap(cropping)?
+  EXPECT_EQ(param.orientation, decoder->Orientation());
   EXPECT_EQ(param.color_type == ColorType::kRgbA ||
                 param.color_type == ColorType::kMonoA,
             frame->HasAlpha());

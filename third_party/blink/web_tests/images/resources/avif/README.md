@@ -73,4 +73,15 @@ avifenc command line:
 avifenc -r f -d  8 -y 420 -s 0 --nclx 1/13/1 silver.png silver-full-range-srgb-420-8bpc.avif
 ```
 
+### red-full-range-angle-(0|1|2|3)-axis-(0|1)-420-8bpc.avif
+These are all generated from red.png with the appropriate avifenc command line:
+
+```
+avifenc -r f -d  8 -y 420 -s 0 --irot 1 red.png red-full-range-angle-1-420-8bpc.avif
+avifenc -r f -d  8 -y 420 -s 0 --imir 0 red.png red-full-range-axis-0-420-8bpc.avif
+avifenc -r f -d  8 -y 420 -s 0 --imir 1 red.png red-full-range-axis-1-420-8bpc.avif
+avifenc -r f -d  8 -y 420 -s 0 --irot 2 --imir 0 red.png red-full-range-angle-2-axis-0-420-8bpc.avif
+avifenc -r f -d  8 -y 420 -s 0 --irot 3 --imir 1 red.png red-full-range-angle-3-axis-1-420-8bpc.avif
+```
+
 ### TODO(crbug.com/960620): Figure out how the rest of files were generated.
