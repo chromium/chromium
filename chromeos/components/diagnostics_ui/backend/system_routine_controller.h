@@ -29,6 +29,8 @@ class RoutineUpdatePtr;
 namespace chromeos {
 namespace diagnostics {
 
+class RoutineLog;
+
 constexpr int32_t kInvalidRoutineId = 0;
 
 using RunRoutineCallback =
@@ -37,6 +39,7 @@ using RunRoutineCallback =
 class SystemRoutineController : public mojom::SystemRoutineController {
  public:
   SystemRoutineController();
+  SystemRoutineController(RoutineLog* routine_log_ptr);
   ~SystemRoutineController() override;
 
   SystemRoutineController(const SystemRoutineController&) = delete;
@@ -114,6 +117,10 @@ class SystemRoutineController : public mojom::SystemRoutineController {
 
   void OnRoutineCancelAttempted(
       cros_healthd::mojom::RoutineUpdatePtr update_ptr);
+
+  bool IsLoggingEnabled() const;
+
+  RoutineLog* routine_log_ptr_ = nullptr;  // Not Owned.
 
   // Keeps track of the id created by CrosHealthd for the currently running
   // routine.

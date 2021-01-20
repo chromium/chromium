@@ -5,14 +5,17 @@
 #include "chromeos/components/diagnostics_ui/backend/system_routine_controller.h"
 
 #include "base/containers/contains.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
+#include "base/strings/string_split.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "chromeos/components/diagnostics_ui/backend/routine_log.h"
 #include "chromeos/dbus/cros_healthd/fake_cros_healthd_client.h"
 #include "chromeos/dbus/cros_healthd/fake_cros_healthd_service.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
@@ -124,6 +127,19 @@ void SetAvailableRoutines(
     const std::vector<healthd::DiagnosticRoutineEnum>& routines) {
   cros_healthd::FakeCrosHealthdClient::Get()->SetAvailableRoutinesForTesting(
       routines);
+}
+
+std::vector<std::string> GetLogLines(const std::string& log) {
+  return base::SplitString(log, "\n", base::WhitespaceHandling::TRIM_WHITESPACE,
+                           base::SplitResult::SPLIT_WANT_NONEMPTY);
+}
+
+std::vector<std::string> GetLogLineContents(const std::string& log_line) {
+  const std::vector<std::string> result = base::SplitString(
+      log_line, " - ", base::WhitespaceHandling::TRIM_WHITESPACE,
+      base::SplitResult::SPLIT_WANT_NONEMPTY);
+  DCHECK_EQ(3u, result.size());
+  return result;
 }
 
 }  // namespace
@@ -626,6 +642,58 @@ TEST_F(SystemRoutineControllerTest, RunRoutineCount1) {
 
   histogram_tester.ExpectBucketCount("ChromeOS.DiagnosticsUi.RoutineCount", 1,
                                      1);
+}
+
+TEST_F(SystemRoutineControllerTest, RoutineLog) {
+  base::ScopedTempDir temp_dir;
+  base::FilePath log_path;
+
+  EXPECT_TRUE(temp_dir.CreateUniqueTempDir());
+  log_path = temp_dir.GetPath().AppendASCII("routine_log");
+
+  RoutineLog log(log_path);
+  system_routine_controller_ = std::make_unique<SystemRoutineController>(&log);
+
+  SetRunRoutineResponse(/*id=*/1,
+                        healthd::DiagnosticRoutineStatusEnum::kRunning);
+
+  FakeRoutineRunner routine_runner;
+  system_routine_controller_->RunRoutine(
+      mojom::RoutineType::kCpuStress,
+      routine_runner.receiver.BindNewPipeAndPassRemote());
+  base::RunLoop().RunUntilIdle();
+
+  // Assert that the first routine is not complete.
+  EXPECT_TRUE(routine_runner.result.is_null());
+
+  // Verify that the Running status appears in the log.
+  std::vector<std::string> log_lines = GetLogLines(log.GetContents());
+  EXPECT_EQ(1u, log_lines.size());
+
+  std::vector<std::string> log_line_contents = GetLogLineContents(log_lines[0]);
+  ASSERT_EQ(3u, log_line_contents.size());
+  EXPECT_EQ("RoutineType::kCpuStress", log_line_contents[1]);
+  EXPECT_EQ("Started", log_line_contents[2]);
+
+  // Update the status on cros_healthd.
+  SetNonInteractiveRoutineUpdateResponse(
+      /*percent_complete=*/100, healthd::DiagnosticRoutineStatusEnum::kPassed,
+      mojo::ScopedHandle());
+
+  // After the update interval, the update is fetched and processed.
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(60));
+  EXPECT_FALSE(routine_runner.result.is_null());
+  VerifyRoutineResult(*routine_runner.result, mojom::RoutineType::kCpuStress,
+                      mojom::StandardRoutineResult::kTestPassed);
+
+  // Verify that the Passed status appears in the log.
+  log_lines = GetLogLines(log.GetContents());
+  EXPECT_EQ(2u, log_lines.size());
+
+  log_line_contents = GetLogLineContents(log_lines[1]);
+  ASSERT_EQ(3u, log_line_contents.size());
+  EXPECT_EQ("RoutineType::kCpuStress", log_line_contents[1]);
+  EXPECT_EQ("StandardRoutineResult::kTestPassed", log_line_contents[2]);
 }
 
 }  // namespace diagnostics

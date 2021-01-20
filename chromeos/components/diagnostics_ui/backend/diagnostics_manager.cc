@@ -14,7 +14,8 @@ namespace diagnostics {
 DiagnosticsManager::DiagnosticsManager(SessionLogHandler* session_log_handler)
     : system_data_provider_(std::make_unique<SystemDataProvider>(
           session_log_handler->GetTelemetryLog())),
-      system_routine_controller_(std::make_unique<SystemRoutineController>()) {}
+      system_routine_controller_(std::make_unique<SystemRoutineController>(
+          session_log_handler->GetRoutineLog())) {}
 
 DiagnosticsManager::~DiagnosticsManager() = default;
 

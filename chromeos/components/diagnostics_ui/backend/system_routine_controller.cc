@@ -16,6 +16,7 @@
 #include "base/values.h"
 #include "chromeos/components/diagnostics_ui/backend/cros_healthd_helpers.h"
 #include "chromeos/components/diagnostics_ui/backend/histogram_util.h"
+#include "chromeos/components/diagnostics_ui/backend/routine_log.h"
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 
 namespace chromeos {
@@ -195,7 +196,11 @@ mojom::RoutineType DiagnosticRoutineEnumToRoutineType(
 
 }  // namespace
 
-SystemRoutineController::SystemRoutineController() {
+SystemRoutineController::SystemRoutineController()
+    : SystemRoutineController(/*routine_log_ptr=*/nullptr) {}
+
+SystemRoutineController::SystemRoutineController(RoutineLog* routine_log_ptr)
+    : routine_log_ptr_(routine_log_ptr) {
   inflight_routine_timer_ = std::make_unique<base::OneShotTimer>();
 }
 
@@ -273,43 +278,46 @@ void SystemRoutineController::ExecuteRoutine(mojom::RoutineType routine_type) {
           base::BindOnce(&SystemRoutineController::OnPowerRoutineStarted,
                          base::Unretained(this), routine_type));
 
-      return;
+      break;
     case mojom::RoutineType::kBatteryDischarge:
       diagnostics_service_->RunBatteryDischargeRoutine(
           kBatteryDurationInSeconds, kBatteryDischargeMaximumPercent,
           base::BindOnce(&SystemRoutineController::OnPowerRoutineStarted,
                          base::Unretained(this), routine_type));
 
-      return;
+      break;
     case mojom::RoutineType::kCpuCache:
       diagnostics_service_->RunCpuCacheRoutine(
           healthd::NullableUint32::New(kCpuCacheDurationInSeconds),
           base::BindOnce(&SystemRoutineController::OnRoutineStarted,
                          base::Unretained(this), routine_type));
-      return;
+      break;
     case mojom::RoutineType::kCpuFloatingPoint:
       diagnostics_service_->RunFloatingPointAccuracyRoutine(
           healthd::NullableUint32::New(kCpuFloatingPointDurationInSeconds),
           base::BindOnce(&SystemRoutineController::OnRoutineStarted,
                          base::Unretained(this), routine_type));
-      return;
+      break;
     case mojom::RoutineType::kCpuPrime:
       diagnostics_service_->RunPrimeSearchRoutine(
           healthd::NullableUint32::New(kCpuPrimeDurationInSeconds),
           base::BindOnce(&SystemRoutineController::OnRoutineStarted,
                          base::Unretained(this), routine_type));
-      return;
+      break;
     case mojom::RoutineType::kCpuStress:
       diagnostics_service_->RunCpuStressRoutine(
           healthd::NullableUint32::New(kCpuStressDurationInSeconds),
           base::BindOnce(&SystemRoutineController::OnRoutineStarted,
                          base::Unretained(this), routine_type));
-      return;
+      break;
     case mojom::RoutineType::kMemory:
       diagnostics_service_->RunMemoryRoutine(
           base::BindOnce(&SystemRoutineController::OnRoutineStarted,
                          base::Unretained(this), routine_type));
-      return;
+      break;
+  }
+  if (IsLoggingEnabled()) {
+    routine_log_ptr_->LogRoutineStarted(routine_type);
   }
 }
 
@@ -609,6 +617,9 @@ void SystemRoutineController::OnStandardRoutineResult(
   auto result_info =
       ConstructStandardRoutineResultInfoPtr(routine_type, result);
   SendRoutineResult(std::move(result_info));
+  if (IsLoggingEnabled()) {
+    routine_log_ptr_->LogRoutineCompleted(routine_type, result);
+  }
 }
 
 void SystemRoutineController::OnPowerRoutineResult(
@@ -620,6 +631,9 @@ void SystemRoutineController::OnPowerRoutineResult(
   auto result_info = ConstructPowerRoutineResultInfoPtr(
       routine_type, result, percent_change, seconds_elapsed);
   SendRoutineResult(std::move(result_info));
+  if (IsLoggingEnabled()) {
+    routine_log_ptr_->LogRoutineCompleted(routine_type, result);
+  }
 }
 
 void SystemRoutineController::SendRoutineResult(
@@ -667,6 +681,10 @@ void SystemRoutineController::OnRoutineCancelAttempted(
     DVLOG(2) << "Failed to cancel routine.";
     return;
   }
+}
+
+bool SystemRoutineController::IsLoggingEnabled() const {
+  return routine_log_ptr_ != nullptr;
 }
 
 }  // namespace diagnostics
