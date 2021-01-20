@@ -41,13 +41,14 @@ public class SingleActionMessageTest extends DummyUiActivityTestCase {
     private CallbackHelper mDismissCallback;
     private Callback<PropertyModel> mEmptyDismissCallback = (model) -> {};
 
+    private AccessibilityUtil mAccessibilityUtil;
+
     @Override
     public void setUpTest() throws Exception {
         super.setUpTest();
         mDismissCallback = new CallbackHelper();
-        AccessibilityUtil util = Mockito.mock(AccessibilityUtil.class);
-        when(util.isAccessibilityEnabled()).thenReturn(false);
-        MessageUtils.setAccessibilityUtil(util);
+        mAccessibilityUtil = Mockito.mock(AccessibilityUtil.class);
+        when(mAccessibilityUtil.isAccessibilityEnabled()).thenReturn(false);
     }
 
     @Test
@@ -55,8 +56,8 @@ public class SingleActionMessageTest extends DummyUiActivityTestCase {
     public void testAddAndRemoveSingleActionMessage() throws Exception {
         MessageContainer container = new MessageContainer(getActivity(), null);
         PropertyModel model = createBasicSingleActionMessageModel();
-        SingleActionMessage message =
-                new SingleActionMessage(container, model, mEmptyDismissCallback, () -> 0);
+        SingleActionMessage message = new SingleActionMessage(
+                container, model, mEmptyDismissCallback, () -> 0, mAccessibilityUtil);
         final MessageBannerCoordinator messageBanner = Mockito.mock(MessageBannerCoordinator.class);
         doNothing().when(messageBanner).show(any(Runnable.class));
         doNothing().when(messageBanner).setOnTouchRunnable(any(Runnable.class));
@@ -81,14 +82,29 @@ public class SingleActionMessageTest extends DummyUiActivityTestCase {
                 "Dismiss callback should be called when message is dismissed");
     }
 
+    @Test
+    @MediumTest
+    public void testAutoDismissDuration() {
+        MessageContainer container = new MessageContainer(getActivity(), null);
+        PropertyModel model = createBasicSingleActionMessageModel();
+        SingleActionMessage message = new SingleActionMessage(
+                container, model, mEmptyDismissCallback, () -> 0, mAccessibilityUtil);
+        when(mAccessibilityUtil.isAccessibilityEnabled()).thenReturn(true);
+        long durationOnA11y = message.getAutoDismissDuration();
+        when(mAccessibilityUtil.isAccessibilityEnabled()).thenReturn(false);
+        long duration = message.getAutoDismissDuration();
+        Assert.assertTrue(
+                "Message duration should be longer when a11y is on", durationOnA11y > duration);
+    }
+
     @Test(expected = IllegalStateException.class)
     @MediumTest
     public void testAddMultipleSingleActionMessage() {
         MessageContainer container = new MessageContainer(getActivity(), null);
         PropertyModel m1 = createBasicSingleActionMessageModel();
         PropertyModel m2 = createBasicSingleActionMessageModel();
-        SingleActionMessage message1 =
-                new SingleActionMessage(container, m1, mEmptyDismissCallback, () -> 0);
+        SingleActionMessage message1 = new SingleActionMessage(
+                container, m1, mEmptyDismissCallback, () -> 0, mAccessibilityUtil);
         final MessageBannerCoordinator messageBanner1 =
                 Mockito.mock(MessageBannerCoordinator.class);
         doNothing().when(messageBanner1).show(any(Runnable.class));
@@ -96,8 +112,8 @@ public class SingleActionMessageTest extends DummyUiActivityTestCase {
         view1.setId(R.id.message_banner);
         message1.setMessageBannerForTesting(messageBanner1);
         message1.setViewForTesting(view1);
-        SingleActionMessage message2 =
-                new SingleActionMessage(container, m2, mEmptyDismissCallback, () -> 0);
+        SingleActionMessage message2 = new SingleActionMessage(
+                container, m2, mEmptyDismissCallback, () -> 0, mAccessibilityUtil);
         final MessageBannerCoordinator messageBanner2 =
                 Mockito.mock(MessageBannerCoordinator.class);
         doNothing().when(messageBanner2).show(any(Runnable.class));
