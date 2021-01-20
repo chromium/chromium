@@ -11123,18 +11123,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PerformanceHints.Observer.HintForURLResult"
     enum="PerformanceHintsObserverHintForURLResult" expires_after="2021-05-30">
-  <owner>jds@chromium.org</owner>
+  <owner>jds@google.com</owner>
   <owner>src/chrome/browser/performance_hints/OWNERS</owner>
   <summary>
     Records the result of querying PerformanceHintsObserver for a URL-specific
     performance hint. This enables tracking how often the
     OptimizationGuideDecider provides a hint in time for a HintForURL request.
+
+    This is recorded once for each surface shown (e.g. once per link context
+    menu opened).
   </summary>
 </histogram>
 
 <histogram name="PerformanceHints.Observer.PerformanceClassForURL"
-    enum="PerformanceHintsPerformanceClass" expires_after="2021-01-24">
-  <owner>jds@chromium.org</owner>
+    enum="PerformanceHintsPerformanceClass" expires_after="2021-05-30">
+  <owner>jds@google.com</owner>
   <owner>src/chrome/browser/performance_hints/OWNERS</owner>
   <summary>
     Records the PerformanceClass determined for a given URL. This value
@@ -11146,13 +11149,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram base="true" name="PerformanceHints.Observer.SourceLookupStatus"
     enum="PerformanceHintsObserverSourceLookupStatus"
     expires_after="2021-05-30">
-  <owner>jds@chromium.org</owner>
+  <owner>jds@google.com</owner>
   <owner>src/chrome/browser/performance_hints/OWNERS</owner>
   <summary>
     Records the result of a hint lookup in a single source (e.g. link hints of
     the current page, the page's OptimizationMetadata, etc). See the
     PerformanceHintsSource suffix for name completions. All source suffix
     histograms should have the same total count.
+
+    This is recorded for each source once per surface shown (e.g. each source is
+    recorded once per link context menu opened).
   </summary>
 </histogram>
 
@@ -17096,7 +17102,7 @@ regressions. -->
 
 <histogram name="VoiceInteraction.AssistantActionPerformed{Source}"
     enum="AssistantActionPerformed" expires_after="2021-04-04">
-  <owner>jds@chromium.org</owner>
+  <owner>jds@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     Android: The action performed by Assistant upon being invoked during a voice
