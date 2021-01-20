@@ -17,7 +17,7 @@ public class WebappLaunchCauseMetrics extends LaunchCauseMetrics {
     }
 
     @Override
-    public @LaunchCause int computeLaunchCause() {
+    public @LaunchCause int computeIntentLaunchCause() {
         // TODO(https://crbug.com/1163961): Implement Webapp launch cause metrics.
         return LaunchCause.OTHER;
     }

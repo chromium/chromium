@@ -70,7 +70,7 @@ public final class LaunchCauseMetricsTest {
         }
 
         @Override
-        protected @LaunchCause int computeLaunchCause() {
+        protected @LaunchCause int computeIntentLaunchCause() {
             return LaunchCause.OTHER;
         }
 
@@ -194,5 +194,23 @@ public final class LaunchCauseMetricsTest {
         metrics.recordLaunchCause();
         Assert.assertEquals(count,
                 histogramCountForValue(LaunchCauseMetrics.LaunchCause.FOREGROUND_WHEN_LOCKED));
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testLaunchAborted() throws Throwable {
+        int count = histogramCountForValue(LaunchCauseMetrics.LaunchCause.RECENTS);
+        TestLaunchCauseMetrics metrics = new TestLaunchCauseMetrics(mActivity);
+        metrics.onReceivedIntent();
+        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.STARTED);
+        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.STOPPED);
+
+        // Should clear the state that we received an intent.
+        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.STARTED);
+        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.RESUMED);
+        metrics.recordLaunchCause();
+        count++;
+        Assert.assertEquals(count, histogramCountForValue(LaunchCauseMetrics.LaunchCause.RECENTS));
     }
 }

@@ -82,6 +82,7 @@ import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeApplication;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -780,7 +781,7 @@ public class CustomTabActivityTest {
         IntentFilter filter = new IntentFilter(Intent.ACTION_VIEW);
         filter.addDataScheme(Uri.parse(mTestServer.getURL("/")).getScheme());
         final ActivityMonitor monitor =
-                InstrumentationRegistry.getInstrumentation().addMonitor(filter, null, true);
+                InstrumentationRegistry.getInstrumentation().addMonitor(filter, null, false);
         openAppMenuAndAssertMenuShown();
         PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
             MenuItem item =
@@ -789,15 +790,18 @@ public class CustomTabActivityTest {
             Assert.assertNotNull(item);
             getActivity().onMenuOrKeyboardAction(R.id.open_in_browser_id, false);
         });
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            return InstrumentationRegistry.getInstrumentation().checkMonitorHit(monitor, 1);
-        });
+        final Activity activity =
+                monitor.waitForActivityWithTimeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL);
 
         callbackTriggered.waitForCallback(0);
-        // No additional LaunchCauses should have been recorded.
-        assertEquals(1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        LaunchCauseMetrics.LAUNCH_CAUSE_HISTOGRAM));
+
+        CriteriaHelper.pollInstrumentationThread(() -> {
+            Criteria.checkThat(RecordHistogram.getHistogramValueCountForTesting(
+                                       LaunchCauseMetrics.LAUNCH_CAUSE_HISTOGRAM,
+                                       LaunchCauseMetrics.LaunchCause.OPEN_IN_BROWSER_FROM_MENU),
+                    Matchers.is(1));
+        }, ScalableTimeout.scaleTimeout(5000L), CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        activity.finish();
     }
 
     /**
@@ -812,10 +816,10 @@ public class CustomTabActivityTest {
                         LaunchCauseMetrics.LAUNCH_CAUSE_HISTOGRAM,
                         LaunchCauseMetrics.LaunchCause.CUSTOM_TAB));
         reparentAndVerifyTab();
-        // No additional LaunchCauses should have been recorded.
         assertEquals(1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        LaunchCauseMetrics.LAUNCH_CAUSE_HISTOGRAM));
+                RecordHistogram.getHistogramValueCountForTesting(
+                        LaunchCauseMetrics.LAUNCH_CAUSE_HISTOGRAM,
+                        LaunchCauseMetrics.LaunchCause.OPEN_IN_BROWSER_FROM_MENU));
     }
 
     /**

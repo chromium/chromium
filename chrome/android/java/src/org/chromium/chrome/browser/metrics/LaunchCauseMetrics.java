@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.metrics;
 import android.app.Activity;
 import android.view.Display;
 
-import androidx.annotation.CallSuper;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
@@ -40,7 +39,8 @@ public abstract class LaunchCauseMetrics implements ApplicationStatus.Applicatio
     private PerLaunchState mPerLaunchState = new PerLaunchState();
     private BetweenLaunchState mBetweenLaunchState = new BetweenLaunchState();
 
-    // State pertaining to the current launch, reset when Chrome is backgrounded.
+    // State pertaining to the current launch, reset when Chrome is backgrounded,
+    // and after computing LaunchCause.
     private static class PerLaunchState {
         boolean mReceivedIntent;
         boolean mLaunchedFromRecents;
@@ -57,7 +57,7 @@ public abstract class LaunchCauseMetrics implements ApplicationStatus.Applicatio
     @IntDef({LaunchCause.OTHER, LaunchCause.CUSTOM_TAB, LaunchCause.TWA, LaunchCause.RECENTS,
             LaunchCause.RECENTS_OR_BACK, LaunchCause.FOREGROUND_WHEN_LOCKED,
             LaunchCause.MAIN_LAUNCHER_ICON, LaunchCause.MAIN_LAUNCHER_ICON_SHORTCUT,
-            LaunchCause.HOME_SCREEN_WIDGET})
+            LaunchCause.HOME_SCREEN_WIDGET, LaunchCause.OPEN_IN_BROWSER_FROM_MENU})
     @Retention(RetentionPolicy.SOURCE)
     public @interface LaunchCause {
         int OTHER = 0;
@@ -69,8 +69,9 @@ public abstract class LaunchCauseMetrics implements ApplicationStatus.Applicatio
         int MAIN_LAUNCHER_ICON = 6;
         int MAIN_LAUNCHER_ICON_SHORTCUT = 7;
         int HOME_SCREEN_WIDGET = 8;
+        int OPEN_IN_BROWSER_FROM_MENU = 9;
 
-        int NUM_ENTRIES = 9;
+        int NUM_ENTRIES = 10;
     }
 
     /**
@@ -92,16 +93,12 @@ public abstract class LaunchCauseMetrics implements ApplicationStatus.Applicatio
     @Override
     public void onApplicationStateChange(@ApplicationState int newState) {
         if (newState == ApplicationState.HAS_STOPPED_ACTIVITIES) {
+            sRecordedLaunchCause = false;
             resetPerLaunchState();
         }
     }
 
-    /**
-     * Resets state used to compute launch cause when Chrome is backgrounded.
-     */
-    @CallSuper
-    protected void resetPerLaunchState() {
-        sRecordedLaunchCause = false;
+    private void resetPerLaunchState() {
         mPerLaunchState = new PerLaunchState();
     }
 
@@ -112,7 +109,25 @@ public abstract class LaunchCauseMetrics implements ApplicationStatus.Applicatio
     /**
      * Computes and returns what the cause of the Chrome launch was.
      */
-    protected abstract @LaunchCause int computeLaunchCause();
+    protected abstract @LaunchCause int computeIntentLaunchCause();
+
+    /**
+     * Computes and returns the cause of an Intentional transition between Chrome Activity
+     * types, or other if the transition wasn't Intentional.
+     *
+     * Intentional here means that the user knew they were transitioning between Chrome Activities,
+     * and made an explicit choice to do so.
+     */
+    protected @LaunchCause int getIntentionalTransitionCauseOrOther() {
+        return LaunchCause.OTHER;
+    }
+
+    /**
+     * Returns true if an intent has been received since the last launch of Chrome.
+     */
+    protected boolean didReceiveIntent() {
+        return mPerLaunchState.mReceivedIntent;
+    }
 
     /**
      * Called after Chrome has launched and all information necessary to compute why Chrome was
@@ -128,7 +143,7 @@ public abstract class LaunchCauseMetrics implements ApplicationStatus.Applicatio
             int cause = LaunchCause.OTHER;
 
             if (mPerLaunchState.mReceivedIntent) {
-                cause = computeLaunchCause();
+                cause = computeIntentLaunchCause();
             } else {
                 cause = computeNonIntentLaunchCause();
             }
@@ -137,7 +152,17 @@ public abstract class LaunchCauseMetrics implements ApplicationStatus.Applicatio
 
             RecordHistogram.recordEnumeratedHistogram(
                     LAUNCH_CAUSE_HISTOGRAM, cause, LaunchCause.NUM_ENTRIES);
+        } else {
+            // Handle the case where we're intentionally transitioning between two Chrome
+            // Activities while Chrome is in the foreground, and want to count that as a Launch.
+            @LaunchCause
+            int cause = getIntentionalTransitionCauseOrOther();
+            if (cause != LaunchCause.OTHER) {
+                RecordHistogram.recordEnumeratedHistogram(
+                        LAUNCH_CAUSE_HISTOGRAM, cause, LaunchCause.NUM_ENTRIES);
+            }
         }
+        resetPerLaunchState();
         resetBetweenLaunchState();
     }
 
@@ -229,6 +254,9 @@ public abstract class LaunchCauseMetrics implements ApplicationStatus.Applicatio
                 break;
             case LaunchCause.HOME_SCREEN_WIDGET:
                 launchCause = "HOME_SCREEN_WIDGET";
+                break;
+            case LaunchCause.OPEN_IN_BROWSER_FROM_MENU:
+                launchCause = "OPEN_IN_BROWSER_FROM_MENU";
                 break;
         }
         Log.d(TAG, "Launch Cause: " + launchCause);

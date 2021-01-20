@@ -183,6 +183,13 @@ public class IntentHandler {
     public static final String EXTRA_POST_DATA_TYPE = "com.android.chrome.post_data_type";
 
     /**
+     * A boolean to indicate whether this Intent originated from the Open In Browser Custom Tab
+     * feature.
+     */
+    public static final String EXTRA_FROM_OPEN_IN_BROWSER =
+            "com.android.chrome.from_open_in_browser";
+
+    /**
      * Fake ComponentName used in constructing TRUSTED_APPLICATION_CODE_EXTRA.
      */
     private static ComponentName sFakeComponentName;

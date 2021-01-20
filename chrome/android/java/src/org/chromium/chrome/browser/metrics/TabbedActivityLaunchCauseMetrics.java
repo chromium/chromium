@@ -25,7 +25,7 @@ public class TabbedActivityLaunchCauseMetrics extends LaunchCauseMetrics {
     }
 
     @Override
-    public @LaunchCause int computeLaunchCause() {
+    protected @LaunchCause int computeIntentLaunchCause() {
         Intent launchIntent = mActivity.getIntent();
         if (launchIntent == null) return LaunchCause.OTHER;
 
@@ -48,10 +48,33 @@ public class TabbedActivityLaunchCauseMetrics extends LaunchCauseMetrics {
         if (IntentUtils.safeGetBooleanExtra(
                     launchIntent, SearchWidgetProvider.EXTRA_FROM_SEARCH_WIDGET, false)) {
             return LaunchCause.HOME_SCREEN_WIDGET;
-        };
+        }
+
+        // This is unlikely to be hit here (much more likely to see Open In Browser intents in
+        // getIntentionalTransitionCauseOrOther() below), but an Intent Picker dialog could cause
+        // Chrome to be backgrounded on some Android distributions, or on tiny screens. This will
+        // also be hit when Open In Browser crosses Chrome channels
+        // (eg. Chrome Stable CCT -> Open In Browser -> User chooses Canary)
+        if (IntentUtils.safeGetBooleanExtra(
+                    launchIntent, IntentHandler.EXTRA_FROM_OPEN_IN_BROWSER, false)) {
+            return LaunchCause.OPEN_IN_BROWSER_FROM_MENU;
+        }
 
         // TODO(https://crbug.com/1163961): Implement remaining ChromeTabbedActivity launch cause
         // metrics.
+
+        return LaunchCause.OTHER;
+    }
+
+    @Override
+    protected @LaunchCause int getIntentionalTransitionCauseOrOther() {
+        Intent launchIntent = mActivity.getIntent();
+        if (!didReceiveIntent() || launchIntent == null) return LaunchCause.OTHER;
+
+        if (IntentUtils.safeGetBooleanExtra(
+                    launchIntent, IntentHandler.EXTRA_FROM_OPEN_IN_BROWSER, false)) {
+            return LaunchCause.OPEN_IN_BROWSER_FROM_MENU;
+        }
 
         return LaunchCause.OTHER;
     }
