@@ -22,8 +22,9 @@ const DnsView = (function() {
     // Call superclass's constructor.
     superClass.call(this, DnsView.MAIN_BOX_ID);
 
-    $(DnsView.CLEAR_CACHE_BUTTON_ID).onclick =
-        g_browser.sendClearHostResolverCache.bind(g_browser);
+    $(DnsView.CLEAR_CACHE_BUTTON_ID).onclick = () => {
+      BrowserBridge.getInstance().sendClearHostResolverCache();
+    };
   }
 
   DnsView.TAB_ID = 'tab-handle-dns';

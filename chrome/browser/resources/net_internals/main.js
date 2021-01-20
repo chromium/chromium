@@ -3,12 +3,6 @@
 // found in the LICENSE file.
 
 /**
- * Object to communicate between the renderer and the browser.
- * @type {!BrowserBridge}
- */
-let g_browser = null;
-
-/**
  * This class is the root view object of the page.  It owns all the other
  * views, and manages switching between them.  It is also responsible for
  * initializing the views and the BrowserBridge.
@@ -29,10 +23,6 @@ const MainView = (function() {
     if (hasTouchScreen()) {
       document.body.classList.add('touch');
     }
-
-    // This must be initialized before the tabs, so they can register as
-    // observers.
-    g_browser = BrowserBridge.getInstance();
 
     // Create the tab switcher.
     this.initTabs_();

@@ -46,11 +46,11 @@ const SocketsView = (function() {
     __proto__: superClass.prototype,
 
     closeIdleSockets() {
-      g_browser.sendCloseIdleSockets();
+      BrowserBridge.getInstance().sendCloseIdleSockets();
     },
 
     flushSocketPools() {
-      g_browser.sendFlushSocketPools();
+      BrowserBridge.getInstance().sendFlushSocketPools();
     }
   };
 

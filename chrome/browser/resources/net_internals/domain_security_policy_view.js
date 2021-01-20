@@ -27,6 +27,7 @@ const DomainSecurityPolicyView = (function() {
     // Call superclass's constructor.
     superClass.call(this, DomainSecurityPolicyView.MAIN_BOX_ID);
 
+    this.browserBridge_ = BrowserBridge.getInstance();
     this.deleteInput_ = $(DomainSecurityPolicyView.DELETE_INPUT_ID);
     this.addStsInput_ = $(DomainSecurityPolicyView.ADD_HSTS_INPUT_ID);
     this.addStsCheck_ = $(DomainSecurityPolicyView.ADD_STS_CHECK_ID);
@@ -68,8 +69,8 @@ const DomainSecurityPolicyView = (function() {
     form.addEventListener(
         'submit', this.onSubmitExpectCTTestReport_.bind(this), false);
 
-    g_browser.addHSTSObserver(this);
-    g_browser.addExpectCTObserver(this);
+    this.hstsObservers_ = [];
+    this.expectCTObservers_ = [];
   }
 
   DomainSecurityPolicyView.TAB_ID = 'tab-handle-domain-security-policy';
@@ -130,9 +131,22 @@ const DomainSecurityPolicyView = (function() {
     // Inherit the superclass's methods.
     __proto__: superClass.prototype,
 
+    // Test specific functions.
+    addHSTSObserverForTest(observer) {
+      this.hstsObservers_.push(observer);
+    },
+
+    addExpectCTObserverForTest(observer) {
+      this.expectCTObservers_.push(observer);
+    },
+
     onSubmitHSTSAdd_(event) {
-      g_browser.sendHSTSAdd(this.addStsInput_.value, this.addStsCheck_.checked);
-      g_browser.sendHSTSQuery(this.addStsInput_.value);
+      this.browserBridge_.sendHSTSAdd(
+          this.addStsInput_.value, this.addStsCheck_.checked);
+      this.browserBridge_.sendHSTSQuery(this.addStsInput_.value)
+          .then(result => {
+            this.onHSTSQueryResult_(result);
+          });
       this.queryStsInput_.value = this.addStsInput_.value;
       this.addStsCheck_.checked = false;
       this.addStsInput_.value = '';
@@ -140,102 +154,104 @@ const DomainSecurityPolicyView = (function() {
     },
 
     onSubmitDelete_(event) {
-      g_browser.sendDomainSecurityPolicyDelete(this.deleteInput_.value);
+      this.browserBridge_.sendDomainSecurityPolicyDelete(
+          this.deleteInput_.value);
       this.deleteInput_.value = '';
       event.preventDefault();
     },
 
     onSubmitHSTSQuery_(event) {
-      g_browser.sendHSTSQuery(this.queryStsInput_.value);
+      this.browserBridge_.sendHSTSQuery(this.queryStsInput_.value)
+          .then(result => {
+            this.onHSTSQueryResult_(result);
+          });
       event.preventDefault();
     },
 
-    onHSTSQueryResult(result) {
+    onHSTSQueryResult_(result) {
+      this.queryStsOutputDiv_.innerHTML = trustedTypes.emptyHTML;
       if (result.error != undefined) {
-        this.queryStsOutputDiv_.innerHTML = trustedTypes.emptyHTML;
         const s = addNode(this.queryStsOutputDiv_, 'span');
         s.textContent = result.error;
         s.style.color = '#e00';
-        yellowFade(this.queryStsOutputDiv_);
-        return;
-      }
-
-      if (result.result == false) {
-        this.queryStsOutputDiv_.innerHTML = trustedTypes.emptyHTML;
+      } else if (result.result == false) {
         const notFound = document.createElement('b');
         notFound.textContent = 'Not found';
         this.queryStsOutputDiv_.appendChild(notFound);
-        yellowFade(this.queryStsOutputDiv_);
-        return;
-      }
+      } else {
+        const s = addNode(this.queryStsOutputDiv_, 'span');
+        const found = document.createElement('b');
+        found.textContent = 'Found:';
+        s.appendChild(found);
+        s.appendChild(document.createElement('br'));
 
-      this.queryStsOutputDiv_.innerHTML = trustedTypes.emptyHTML;
+        const keys = [
+          'static_sts_domain',
+          'static_upgrade_mode',
+          'static_sts_include_subdomains',
+          'static_sts_observed',
+          'static_pkp_domain',
+          'static_pkp_include_subdomains',
+          'static_pkp_observed',
+          'static_spki_hashes',
+          'dynamic_sts_domain',
+          'dynamic_upgrade_mode',
+          'dynamic_sts_include_subdomains',
+          'dynamic_sts_observed',
+          'dynamic_sts_expiry',
+        ];
 
-      const s = addNode(this.queryStsOutputDiv_, 'span');
-      const found = document.createElement('b');
-      found.textContent = 'Found:';
-      s.appendChild(found);
-      s.appendChild(document.createElement('br'));
+        const kStaticHashKeys = [
+          'public_key_hashes', 'preloaded_spki_hashes', 'static_spki_hashes'
+        ];
 
-      const keys = [
-        'static_sts_domain',
-        'static_upgrade_mode',
-        'static_sts_include_subdomains',
-        'static_sts_observed',
-        'static_pkp_domain',
-        'static_pkp_include_subdomains',
-        'static_pkp_observed',
-        'static_spki_hashes',
-        'dynamic_sts_domain',
-        'dynamic_upgrade_mode',
-        'dynamic_sts_include_subdomains',
-        'dynamic_sts_observed',
-        'dynamic_sts_expiry',
-      ];
-
-      const kStaticHashKeys =
-          ['public_key_hashes', 'preloaded_spki_hashes', 'static_spki_hashes'];
-
-      const staticHashes = [];
-      for (let i = 0; i < kStaticHashKeys.length; ++i) {
-        const staticHashValue = result[kStaticHashKeys[i]];
-        if (staticHashValue != undefined && staticHashValue != '') {
-          staticHashes.push(staticHashValue);
+        const staticHashes = [];
+        for (let i = 0; i < kStaticHashKeys.length; ++i) {
+          const staticHashValue = result[kStaticHashKeys[i]];
+          if (staticHashValue != undefined && staticHashValue != '') {
+            staticHashes.push(staticHashValue);
+          }
         }
-      }
 
-      for (let i = 0; i < keys.length; ++i) {
-        const key = keys[i];
-        const value = result[key];
-        addTextNode(this.queryStsOutputDiv_, ' ' + key + ': ');
+        for (let i = 0; i < keys.length; ++i) {
+          const key = keys[i];
+          const value = result[key];
+          addTextNode(this.queryStsOutputDiv_, ' ' + key + ': ');
 
-        // If there are no static_hashes, do not make it seem like there is a
-        // static PKP policy in place.
-        if (staticHashes.length == 0 && key.startsWith('static_pkp_')) {
+          // If there are no static_hashes, do not make it seem like there is a
+          // static PKP policy in place.
+          if (staticHashes.length == 0 && key.startsWith('static_pkp_')) {
+            addNode(this.queryStsOutputDiv_, 'br');
+            continue;
+          }
+
+          if (key === 'static_spki_hashes') {
+            addNodeWithText(
+                this.queryStsOutputDiv_, 'tt', staticHashes.join(','));
+          } else if (key.indexOf('_upgrade_mode') >= 0) {
+            addNodeWithText(this.queryStsOutputDiv_, 'tt', modeToString(value));
+          } else {
+            addNodeWithText(
+                this.queryStsOutputDiv_, 'tt', value == undefined ? '' : value);
+          }
           addNode(this.queryStsOutputDiv_, 'br');
-          continue;
         }
-
-        if (key === 'static_spki_hashes') {
-          addNodeWithText(
-              this.queryStsOutputDiv_, 'tt', staticHashes.join(','));
-        } else if (key.indexOf('_upgrade_mode') >= 0) {
-          addNodeWithText(this.queryStsOutputDiv_, 'tt', modeToString(value));
-        } else {
-          addNodeWithText(
-              this.queryStsOutputDiv_, 'tt', value == undefined ? '' : value);
-        }
-        addNode(this.queryStsOutputDiv_, 'br');
       }
 
       yellowFade(this.queryStsOutputDiv_);
+      for (const observer of this.hstsObservers_) {
+        observer.onHSTSQueryResult(result);
+      }
     },
 
     onSubmitExpectCTAdd_(event) {
-      g_browser.sendExpectCTAdd(
+      this.browserBridge_.sendExpectCTAdd(
           this.addExpectCTInput_.value, this.addExpectCTReportUriInput_.value,
           this.addExpectCTEnforceCheck_.checked);
-      g_browser.sendExpectCTQuery(this.addExpectCTInput_.value);
+      this.browserBridge_.sendExpectCTQuery(this.addExpectCTInput_.value)
+          .then(result => {
+            this.onExpectCTQueryResult_(result);
+          });
       this.queryExpectCTInput_.value = this.addExpectCTInput_.value;
       this.addExpectCTInput_.value = '';
       this.addExpectCTReportUriInput_.value = '';
@@ -244,70 +260,77 @@ const DomainSecurityPolicyView = (function() {
     },
 
     onSubmitExpectCTQuery_(event) {
-      g_browser.sendExpectCTQuery(this.queryExpectCTInput_.value);
+      this.browserBridge_.sendExpectCTQuery(this.queryExpectCTInput_.value)
+          .then(result => {
+            this.onExpectCTQueryResult_(result);
+          });
+
       event.preventDefault();
     },
 
-    onExpectCTQueryResult(result) {
+    onExpectCTQueryResult_(result) {
+      this.queryExpectCTOutputDiv_.innerHTML = trustedTypes.emptyHTML;
       if (result.error != undefined) {
-        this.queryExpectCTOutputDiv_.innerHTML = trustedTypes.emptyHTML;
         const s = addNode(this.queryExpectCTOutputDiv_, 'span');
         s.textContent = result.error;
         s.style.color = '#e00';
-        yellowFade(this.queryExpectCTOutputDiv_);
-        return;
-      }
-
-      if (result.result == false) {
-        this.queryExpectCTOutputDiv_.innerHTML = trustedTypes.emptyHTML;
+      } else if (result.result == false) {
         const notFound = document.createElement('b');
         notFound.textContent = 'Not found';
         this.queryExpectCTOutputDiv_.appendChild(notFound);
-        yellowFade(this.queryExpectCTOutputDiv_);
-        return;
-      }
+      } else {
+        const s = addNode(this.queryExpectCTOutputDiv_, 'span');
+        const found = document.createElement('b');
+        found.textContent = 'Found:';
+        s.appendChild(found);
+        s.appendChild(document.createElement('br'));
 
-      this.queryExpectCTOutputDiv_.innerHTML = trustedTypes.emptyHTML;
+        const keys = [
+          'dynamic_expect_ct_domain',
+          'dynamic_expect_ct_observed',
+          'dynamic_expect_ct_expiry',
+          'dynamic_expect_ct_enforce',
+          'dynamic_expect_ct_report_uri',
+        ];
 
-      const s = addNode(this.queryExpectCTOutputDiv_, 'span');
-      const found = document.createElement('b');
-      found.textContent = 'Found:';
-      s.appendChild(found);
-      s.appendChild(document.createElement('br'));
-
-      const keys = [
-        'dynamic_expect_ct_domain',
-        'dynamic_expect_ct_observed',
-        'dynamic_expect_ct_expiry',
-        'dynamic_expect_ct_enforce',
-        'dynamic_expect_ct_report_uri',
-      ];
-
-      for (const i in keys) {
-        const key = keys[i];
-        const value = result[key];
-        addTextNode(this.queryExpectCTOutputDiv_, ' ' + key + ': ');
-        addNodeWithText(
-            this.queryExpectCTOutputDiv_, 'tt',
-            value == undefined ? '' : value);
-        addNode(this.queryExpectCTOutputDiv_, 'br');
+        for (const i in keys) {
+          const key = keys[i];
+          const value = result[key];
+          addTextNode(this.queryExpectCTOutputDiv_, ' ' + key + ': ');
+          addNodeWithText(
+              this.queryExpectCTOutputDiv_, 'tt',
+              value == undefined ? '' : value);
+          addNode(this.queryExpectCTOutputDiv_, 'br');
+        }
       }
 
       yellowFade(this.queryExpectCTOutputDiv_);
+      for (const observer of this.expectCTObservers_) {
+        observer.onExpectCTQueryResult(result);
+      }
     },
 
     onSubmitExpectCTTestReport_(event) {
-      g_browser.sendExpectCTTestReport(this.testExpectCTReportInput_.value);
+      this.browserBridge_
+          .sendExpectCTTestReport(this.testExpectCTReportInput_.value)
+          .then(result => {
+            if (result === 'invalid') {
+              return;
+            }
+            this.onExpectCTTestReportResult_(result);
+          });
       event.preventDefault();
     },
 
-    onExpectCTTestReportResult(result) {
-      if (result == 'success') {
-        addTextNode(this.testExpectCTOutputDiv_, 'Test report succeeded');
-      } else {
-        addTextNode(this.testExpectCTOutputDiv_, 'Test report failed');
-      }
+    onExpectCTTestReportResult_(result) {
+      addTextNode(
+          this.testExpectCTOutputDiv_,
+          result === 'success' ? 'Test report succeeded' :
+                                 'Test report failed');
       yellowFade(this.testExpectCTOutputDiv_);
+      for (const observer of this.expectCTObservers_) {
+        observer.onExpectCTTestReportResult(result);
+      }
     },
 
   };

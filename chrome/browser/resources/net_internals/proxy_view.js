@@ -24,10 +24,12 @@ const ProxyView = (function() {
     superClass.call(this, ProxyView.MAIN_BOX_ID);
 
     // Hook up the UI components.
-    $(ProxyView.RELOAD_SETTINGS_BUTTON_ID).onclick =
-        g_browser.sendReloadProxySettings.bind(g_browser);
-    $(ProxyView.CLEAR_BAD_PROXIES_BUTTON_ID).onclick =
-        g_browser.sendClearBadProxies.bind(g_browser);
+    $(ProxyView.RELOAD_SETTINGS_BUTTON_ID).onclick = () => {
+      BrowserBridge.getInstance().sendReloadProxySettings();
+    };
+    $(ProxyView.CLEAR_BAD_PROXIES_BUTTON_ID).onclick = () => {
+      BrowserBridge.getInstance().sendClearBadProxies();
+    };
   }
 
   ProxyView.TAB_ID = 'tab-handle-proxy';

@@ -50,11 +50,6 @@ var NetInternalsTest = (function() {
     setUp: function() {
       testing.Test.prototype.setUp.call(this);
 
-      // Wrap g_browser.receive around a test function so that assert and expect
-      // functions can be called from observers.
-      g_browser.receive = this.continueTest(
-          WhenTestDone.EXPECT, BrowserBridge.prototype.receive.bind(g_browser));
-
       var runTest = this.deferRunTest(WhenTestDone.EXPECT);
       window.setTimeout(runTest, 0);
     }

@@ -67,11 +67,13 @@ class NetInternalsMessageHandler
  private:
   network::mojom::NetworkContext* GetNetworkContext();
 
-  // Calls g_browser.receive in the renderer, passing in |command| and |arg|.
+  // Resolve JS |callback_id| with |result|.
   // If the renderer is displaying a log file, the message will be ignored.
-  void SendJavascriptCommand(const std::string& command, base::Value arg);
+  void ResolveCallbackWithResult(const std::string& callback_id,
+                                 base::Value result);
 
-  void OnExpectCTTestReportCallback(bool success);
+  void OnExpectCTTestReportCallback(const std::string& callback_id,
+                                    bool success);
 
   //--------------------------------
   // Javascript message handlers:
@@ -145,15 +147,6 @@ void NetInternalsMessageHandler::RegisterMessages() {
                           base::Unretained(this)));
 }
 
-void NetInternalsMessageHandler::SendJavascriptCommand(
-    const std::string& command,
-    base::Value arg) {
-  std::unique_ptr<base::Value> command_value(new base::Value(command));
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  web_ui()->CallJavascriptFunctionUnsafe("g_browser.receive",
-                                         *command_value.get(), arg);
-}
-
 void NetInternalsMessageHandler::OnReloadProxySettings(
     const base::ListValue* list) {
   GetNetworkContext()->ForceReloadProxyConfig(base::NullCallback());
@@ -184,14 +177,23 @@ void NetInternalsMessageHandler::OnDomainSecurityPolicyDelete(
 }
 
 void NetInternalsMessageHandler::OnHSTSQuery(const base::ListValue* list) {
-  // |list| should be: [<domain to query>].
+  std::string callback_id;
+  bool get_callback_id = list->GetString(0, &callback_id);
   std::string domain;
-  bool get_domain_result = list->GetString(0, &domain);
-  DCHECK(get_domain_result);
+  bool get_domain_result = list->GetString(1, &domain);
+  DCHECK(get_domain_result && get_callback_id);
 
+  AllowJavascript();
   GetNetworkContext()->GetHSTSState(
-      domain, base::BindOnce(&NetInternalsMessageHandler::SendJavascriptCommand,
-                             this->AsWeakPtr(), "receivedHSTSResult"));
+      domain,
+      base::BindOnce(&NetInternalsMessageHandler::ResolveCallbackWithResult,
+                     base::Unretained(this), callback_id));
+}
+
+void NetInternalsMessageHandler::ResolveCallbackWithResult(
+    const std::string& callback_id,
+    base::Value result) {
+  ResolveJavascriptCallback(base::Value(callback_id), result);
 }
 
 void NetInternalsMessageHandler::OnHSTSAdd(const base::ListValue* list) {
@@ -214,19 +216,22 @@ void NetInternalsMessageHandler::OnHSTSAdd(const base::ListValue* list) {
 }
 
 void NetInternalsMessageHandler::OnExpectCTQuery(const base::ListValue* list) {
-  // |list| should be: [<domain to query>].
+  std::string callback_id;
   std::string domain;
-  bool result = list->GetString(0, &domain);
-  DCHECK(result);
+  bool callback_result = list->GetString(0, &callback_id);
+  bool result = list->GetString(1, &domain);
+
+  DCHECK(result && callback_result);
 
   url::Origin origin = url::Origin::Create(GURL("https://" + domain));
+  AllowJavascript();
 
   GetNetworkContext()->GetExpectCTState(
       domain,
       net::NetworkIsolationKey(origin /* top_frame_site */,
                                origin /* frame_site */),
-      base::BindOnce(&NetInternalsMessageHandler::SendJavascriptCommand,
-                     this->AsWeakPtr(), "receivedExpectCTResult"));
+      base::BindOnce(&NetInternalsMessageHandler::ResolveCallbackWithResult,
+                     base::Unretained(this), callback_id));
 }
 
 void NetInternalsMessageHandler::OnExpectCTAdd(const base::ListValue* list) {
@@ -259,24 +264,29 @@ void NetInternalsMessageHandler::OnExpectCTAdd(const base::ListValue* list) {
 
 void NetInternalsMessageHandler::OnExpectCTTestReport(
     const base::ListValue* list) {
-  // |list| should be: [<report URI>].
+  std::string callback_id;
   std::string report_uri_str;
-  bool result = list->GetString(0, &report_uri_str);
-  DCHECK(result);
+  bool callback_result = list->GetString(0, &callback_id);
+  bool result = list->GetString(1, &report_uri_str);
+  DCHECK(result && callback_result);
   GURL report_uri(report_uri_str);
-  if (!report_uri.is_valid())
+  AllowJavascript();
+  if (!report_uri.is_valid()) {
+    ResolveCallbackWithResult(callback_id, base::Value("invalid"));
     return;
+  }
 
   GetNetworkContext()->SetExpectCTTestReport(
       report_uri,
       base::BindOnce(&NetInternalsMessageHandler::OnExpectCTTestReportCallback,
-                     this->AsWeakPtr()));
+                     base::Unretained(this), callback_id));
 }
 
-void NetInternalsMessageHandler::OnExpectCTTestReportCallback(bool success) {
-  SendJavascriptCommand(
-      "receivedExpectCTTestReportResult",
-      success ? base::Value("success") : base::Value("failure"));
+void NetInternalsMessageHandler::OnExpectCTTestReportCallback(
+    const std::string& callback_id,
+    bool success) {
+  ResolveCallbackWithResult(
+      callback_id, success ? base::Value("success") : base::Value("failure"));
 }
 
 void NetInternalsMessageHandler::OnFlushSocketPools(
