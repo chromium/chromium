@@ -1896,4 +1896,6 @@ message ChromeDeviceSettingsProto {
   optional DeviceFamilyLinkAccountsAllowedProto family_link_accounts_allowed =
       114;
   optional DeviceArcDataSnapshotHoursProto arc_data_snapshot_hours = 115;
+  optional BooleanPolicyProto device_allow_mgs_to_store_display_properties =
+      116;
 }

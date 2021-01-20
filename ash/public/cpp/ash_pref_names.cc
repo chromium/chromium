@@ -217,6 +217,10 @@ const char kExternalDisplayMirrorInfo[] =
 // Its key is the ID of the display and its value is a dictionary for the
 // layout/offset information.
 const char kSecondaryDisplays[] = "settings.display.secondary_displays";
+// A boolean pref which determines whether the display configuration set by
+// managed guest session should be stored in local state.
+const char kAllowMGSToStoreDisplayProperties[] =
+    "settings.display.allow_mgs_to_store";
 
 // A boolean pref that enable fullscreen alert bubble.
 // TODO(zxdan): Change to an allowlist in M89.

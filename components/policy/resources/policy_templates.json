@@ -2392,6 +2392,33 @@
           This policy has no effect if it is not set. In this case, remote access connections will have no maximum duration on this machine.''',
     },
     {
+      'name': 'DeviceAllowMGSToStoreDisplayProperties',
+      'owners' : ['file://chrome/browser/chromeos/app_mode/OWNERS', 'apotapchuk@chromium.org'],
+      'type' : 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': ['chrome_os:90-'],
+      'device_only': True,
+      'features': {
+        'dynamic_refresh': True,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Managed Guest Session users can store device-wide display settings.',
+        },
+        {
+          'value': False,
+          'caption': 'Managed Guest Session users cannot store device-wide display settings.',
+        },
+      ],
+      'default': False,
+      'example_value': True,
+      'id': 818,
+      'caption': '''Allow Managed guest session to persist display properties''',
+      'tags': [],
+      'desc': '''If this policy is disabled or unset, all display settings that were set in Managed guest session will be reset as soon as the session finishes. If this policy is set to True, display properties will persist after exiting the managed guest session.''',
+    },
+    {
       'name': 'PrintingEnabled',
       'owners': ['file://printing/OWNERS', 'thestig@chromium.org'],
       'type': 'main',
@@ -24614,6 +24641,7 @@ The recommended way to configure policy on Windows is via GPO, although provisio
     'DeviceEphemeralUsersEnabled': 'ephemeral_users_enabled.ephemeral_users_enabled',
     'LoginAuthenticationBehavior': 'login_authentication_behavior.login_authentication_behavior',
     'DeviceAllowBluetooth': 'allow_bluetooth.allow_bluetooth',
+    'DeviceAllowMGSToStoreDisplayProperties': 'device_allow_mgs_to_store_display_properties.value',
     'DeviceLoginScreenExtensions': 'device_login_screen_extensions.device_login_screen_extensions',
     'DeviceLoginScreenDomainAutoComplete': 'login_screen_domain_auto_complete.login_screen_domain_auto_complete',
     'DeviceLoginScreenLocales': 'login_screen_locales.login_screen_locales',
@@ -25259,6 +25287,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 817,
+  'highest_id_currently_used': 818,
   'highest_atomic_group_id_currently_used': 40
 }

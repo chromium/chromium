@@ -88,6 +88,7 @@ ASH_PUBLIC_EXPORT extern const char kDisplayTouchAssociations[];
 ASH_PUBLIC_EXPORT extern const char kDisplayTouchPortAssociations[];
 ASH_PUBLIC_EXPORT extern const char kExternalDisplayMirrorInfo[];
 ASH_PUBLIC_EXPORT extern const char kSecondaryDisplays[];
+ASH_PUBLIC_EXPORT extern const char kAllowMGSToStoreDisplayProperties[];
 
 ASH_PUBLIC_EXPORT extern const char kFullscreenAlertEnabled[];
 

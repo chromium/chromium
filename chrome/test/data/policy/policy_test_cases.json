@@ -6756,6 +6756,18 @@
     ]
   },
 
+  "DeviceAllowMGSToStoreDisplayProperties": {
+    "os": ["chromeos"],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "DeviceAllowMGSToStoreDisplayProperties": true
+        },
+        "prefs": { "settings.display.allow_mgs_to_store": { "location": "local_state" } }
+      }
+    ]
+  },
+
   "WebAppInstallForceList": {
     "os": ["win", "linux", "mac", "chromeos"],
     "policy_pref_mapping_tests": [

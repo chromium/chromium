@@ -23209,6 +23209,7 @@ Called by update_document_policy_enum.py.-->
   <int value="815" label="EnableDeprecatedPrivetPrinting"/>
   <int value="816" label="BrowserLabsEnabled"/>
   <int value="817" label="WindowOcclusionEnabled"/>
+  <int value="818" label="DeviceAllowMGSToStoreDisplayProperties"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">
