@@ -687,16 +687,16 @@ Try tapping the mic to ask me anything.
         (<ph name="BOARD_NAME">$1<ex>Atlas</ex></ph>, version <ph name="MILESTONE_VERSION">$2<ex>88</ex></ph>)
       </message>
       <message name="IDS_DIAGNOSTICS_BATTERY_HEALTH_TOOLTIP_TEXT" desc="The tooltip that states that battery capacity declines with usage.">
-        Batteries capacity declines with usage
+        Battery capacity declines with usage
       </message>
-      <message name="IDS_DIAGNOSTICS_CYCLE_COUNT_TOOLTIP_TEXT" desc="The tooltip that states that a battery is considered consumed once it reaches its cycle count limit.">
-        The battery is considered consumed once it reaches the limit
+      <message name="IDS_DIAGNOSTICS_CYCLE_COUNT_TOOLTIP_TEXT" desc="The tooltip that explains that cycle count is the number of times the battery has gone through a full charging cycle.">
+        This is the number of times your battery has gone through a full charging cycle
       </message>
       <message name="IDS_DIAGNOSTICS_CURRENT_NOW_TOOLTIP_TEXT" desc="The tooltip that states the current rate at which a user's device is charging or discharging.">
         The rate at which the device is currently charging or discharging
       </message>
       <message name="IDS_DIAGNOSTICS_CPU_USAGE_TOOLTIP_TEXT" desc="The tooltip for CPU usage.">
-        This measures the CPU usage, and is an aggregation of all cores
+        This is an aggregation of all cores
       </message>
       <message name="IDS_DIANOSTICS_ROUTINE_NAME_TEXT" desc="The text that informs the user which test is currently running.">
         Running <ph name="TEST_NAME">$1<ex>Charging rate</ex></ph> test...
