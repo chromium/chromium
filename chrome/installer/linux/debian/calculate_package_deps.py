@@ -7,6 +7,8 @@
 are satisfiable on all supported debian-based distros.
 """
 
+from __future__ import print_function
+
 import argparse
 import json
 import os
@@ -55,7 +57,7 @@ elif arch == 'mips64el':
   cmd.extend(['-l%s/usr/lib/mips64el-linux-gnuabi64' % sysroot,
               '-l%s/lib/mips64el-linux-gnuabi64' % sysroot])
 else:
-  print 'Unsupported architecture ' + arch
+  print('Unsupported architecture ' + arch)
   sys.exit(1)
 cmd.extend(['-l%s/usr/lib' % sysroot, '-O', '-e', binary])
 
@@ -64,8 +66,8 @@ proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
 (stdout, stderr) = proc.communicate()
 exit_code = proc.wait()
 if exit_code != 0:
-  print 'dpkg-shlibdeps failed with exit code ' + str(exit_code)
-  print 'stderr was ' + stderr
+  print('dpkg-shlibdeps failed with exit code ' + str(exit_code))
+  print('stderr was ' + stderr)
   sys.exit(1)
 
 SHLIBS_DEPENDS_PREFIX = 'shlibs:Depends='
@@ -98,9 +100,10 @@ if distro_check:
           dep_satisfiable = True
           break
       if not dep_satisfiable:
-        print >> sys.stderr, (
+        print(
             'Dependency %s not satisfiable on distro %s caused by binary %s' % (
-                interval_set.formatted(), distro, os.path.basename(binary)))
+                interval_set.formatted(), distro, os.path.basename(binary)),
+            file=sys.stderr)
         ret_code = 1
 if ret_code == 0:
   with open(dep_filename, 'w') as dep_file:
