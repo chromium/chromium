@@ -225,7 +225,7 @@ class DedicatedWorkerHost final : public RenderProcessHostObserver {
   std::unique_ptr<ServiceWorkerMainResourceHandle> service_worker_handle_;
 
   BrowserInterfaceBrokerImpl<DedicatedWorkerHost, const url::Origin&> broker_{
-      this, /*policy_applier=*/nullptr};
+      this};
   mojo::Receiver<blink::mojom::BrowserInterfaceBroker> broker_receiver_{
       &broker_};
 

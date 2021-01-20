@@ -29,7 +29,7 @@ class CONTENT_EXPORT MojoBinderPolicyMapImpl : public MojoBinderPolicyMap {
   MojoBinderPolicyMapImpl(MojoBinderPolicyMapImpl&&) = delete;
   MojoBinderPolicyMapImpl& operator=(MojoBinderPolicyMapImpl&&) = delete;
 
-  // Returns the instance used by BrowserInterfaceBroker for pages that are
+  // Returns the instance used by MojoBinderPolicyApplier for pages that are
   // prerendering. Currently this is the only use of this class.
   static const MojoBinderPolicyMapImpl* GetInstanceForPrerendering();
 

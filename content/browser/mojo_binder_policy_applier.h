@@ -33,6 +33,11 @@ class CONTENT_EXPORT MojoBinderPolicyApplier {
                           base::OnceClosure cancel_closure);
   ~MojoBinderPolicyApplier();
 
+  // Returns the instance used by BrowserInterfaceBrokerImpl for pages that are
+  // prerendering.
+  static std::unique_ptr<MojoBinderPolicyApplier> CreateForPrerendering(
+      base::OnceClosure cancel_closure);
+
   // Disallows copy and move operations.
   MojoBinderPolicyApplier(const MojoBinderPolicyApplier& other) = delete;
   MojoBinderPolicyApplier& operator=(const MojoBinderPolicyApplier& other) =

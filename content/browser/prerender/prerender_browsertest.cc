@@ -13,16 +13,22 @@
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/common/content_client.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
+#include "content/test/test_content_browser_client.h"
+#include "content/test/test_mojo_binder_policy_applier_unittest.mojom.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/browser_interface_broker.mojom.h"
 
 namespace content {
 namespace {
@@ -434,6 +440,113 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, PrerenderIframe) {
 // prerendering state as well.
 IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, PrerenderBlankIframe) {
   TestRenderFrameHostPrerenderingState(GetUrl("/page_with_blank_iframe.html"));
+}
+
+class MojoCapabilityControlTestContentBrowserClient
+    : public TestContentBrowserClient,
+      mojom::TestInterfaceForDefer,
+      mojom::TestInterfaceForGrant {
+ public:
+  void RegisterBrowserInterfaceBindersForFrame(
+      RenderFrameHost* render_frame_host,
+      mojo::BinderMapWithContext<RenderFrameHost*>* map) override {
+    map->Add<mojom::TestInterfaceForDefer>(base::BindRepeating(
+        &MojoCapabilityControlTestContentBrowserClient::BindDeferInterface,
+        base::Unretained(this)));
+    map->Add<mojom::TestInterfaceForGrant>(base::BindRepeating(
+        &MojoCapabilityControlTestContentBrowserClient::BindGrantInterface,
+        base::Unretained(this)));
+  }
+
+  void RegisterMojoBinderPoliciesForPrerendering(
+      MojoBinderPolicyMap& policy_map) override {
+    policy_map.SetPolicy<mojom::TestInterfaceForGrant>(
+        MojoBinderPolicy::kGrant);
+  }
+
+  void BindDeferInterface(
+      RenderFrameHost* render_frame_host,
+      mojo::PendingReceiver<content::mojom::TestInterfaceForDefer> receiver) {
+    defer_receiver_set_.Add(this, std::move(receiver));
+  }
+
+  void BindGrantInterface(
+      RenderFrameHost* render_frame_host,
+      mojo::PendingReceiver<mojom::TestInterfaceForGrant> receiver) {
+    grant_receiver_set_.Add(this, std::move(receiver));
+  }
+
+  size_t GetDeferReceiverSetSize() { return defer_receiver_set_.size(); }
+
+  size_t GetGrantReceiverSetSize() { return grant_receiver_set_.size(); }
+
+ private:
+  mojo::ReceiverSet<mojom::TestInterfaceForDefer> defer_receiver_set_;
+  mojo::ReceiverSet<mojom::TestInterfaceForGrant> grant_receiver_set_;
+};
+
+// Tests that binding requests are handled according to MojoBinderPolicyMap
+// during prerendering.
+IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, MojoCapabilityControl) {
+  MojoCapabilityControlTestContentBrowserClient test_browser_client;
+  auto* old_browser_client = SetBrowserClientForTesting(&test_browser_client);
+
+  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
+  const GURL kPrerenderingUrl = GetUrl("/page_with_iframe.html");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  ASSERT_EQ(shell()->web_contents()->GetURL(), kInitialUrl);
+
+  // Start a prerender.
+  AddPrerender(kPrerenderingUrl);
+  PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
+  PrerenderHost* prerender_host =
+      registry.FindHostByUrlForTesting(kPrerenderingUrl);
+  RenderFrameHostImpl* prerendered_render_frame_host =
+      prerender_host->GetPrerenderedMainFrameHostForTesting();
+  std::vector<RenderFrameHost*> frames =
+      prerendered_render_frame_host->GetFramesInSubtree();
+
+  mojo::RemoteSet<mojom::TestInterfaceForDefer> defer_remote_set;
+  mojo::RemoteSet<mojom::TestInterfaceForGrant> grant_remote_set;
+  for (auto* frame : frames) {
+    auto* rfhi = static_cast<RenderFrameHostImpl*>(frame);
+    EXPECT_TRUE(rfhi->IsPrerendering());
+
+    mojo::Receiver<blink::mojom::BrowserInterfaceBroker>& bib =
+        rfhi->browser_interface_broker_receiver_for_testing();
+    blink::mojom::BrowserInterfaceBroker* prerender_broker =
+        bib.internal_state()->impl();
+    // Try to bind a kDefer interface.
+    mojo::Remote<mojom::TestInterfaceForDefer> prerender_defer_remote;
+    prerender_broker->GetInterface(
+        prerender_defer_remote.BindNewPipeAndPassReceiver());
+    defer_remote_set.Add(std::move(prerender_defer_remote));
+    // Try to bind a kGrant interface.
+    mojo::Remote<mojom::TestInterfaceForGrant> prerender_grant_remote;
+    prerender_broker->GetInterface(
+        prerender_grant_remote.BindNewPipeAndPassReceiver());
+    grant_remote_set.Add(std::move(prerender_grant_remote));
+  }
+  // Verify that BrowserInterfaceBrokerImpl defers running binders whose
+  // policies are kDefer until the prerendered page is activated.
+  EXPECT_EQ(test_browser_client.GetDeferReceiverSetSize(), 0U);
+  // Verify that BrowserInterfaceBrokerImpl executes kGrant binders immediately.
+  EXPECT_EQ(test_browser_client.GetGrantReceiverSetSize(), frames.size());
+
+  // TODO(https://crbug.com/1132752): Test kCancel interface binding requests.
+
+  // The rest of this test is only meaningful with activation.
+  if (IsActivationDisabled()) {
+    SetBrowserClientForTesting(old_browser_client);
+    return;
+  }
+  // Activate the prerendered page.
+  NavigateWithLocation(kPrerenderingUrl);
+  EXPECT_EQ(test_browser_client.GetDeferReceiverSetSize(), frames.size());
+
+  SetBrowserClientForTesting(old_browser_client);
 }
 
 // TODO(https://crbug.com/1132746): Test canceling prerendering.

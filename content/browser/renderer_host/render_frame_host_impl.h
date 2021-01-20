@@ -3092,7 +3092,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // initializing BrowserInterfaceBrokerImpl with a non-null
   // MojoBinderPolicyApplier pointer.
   BrowserInterfaceBrokerImpl<RenderFrameHostImpl, RenderFrameHost*> broker_{
-      this, /*policy_applier=*/nullptr};
+      this};
   mojo::Receiver<blink::mojom::BrowserInterfaceBroker> broker_receiver_{
       &broker_};
 

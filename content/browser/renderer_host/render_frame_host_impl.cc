@@ -6324,8 +6324,12 @@ void RenderFrameHostImpl::CommitNavigation(
 
   if (base::FeatureList::IsEnabled(blink::features::kPrerender2)) {
     is_prerendering_ = navigation_request->IsPrerendering();
-    // TODO(https://crbug.com/1132752): If the frame is for prerendering, enable
-    // Mojo capability control.
+    // TODO(https://crbug.com/1132752): Set cancellation_closure after replacing
+    // is_prerendering with prerender_host_id.
+    if (is_prerendering_) {
+      broker_.ApplyMojoBinderPolicies(
+          MojoBinderPolicyApplier::CreateForPrerendering(base::DoNothing()));
+    }
   }
 
   bool is_same_document =
@@ -7843,12 +7847,9 @@ void RenderFrameHostImpl::OnPrerenderedPageActivated() {
   DCHECK(base::FeatureList::IsEnabled(blink::features::kPrerender2));
   DCHECK(is_prerendering_);
   is_prerendering_ = false;
-
+  broker_.ReleaseMojoBinderPolicies();
   for (auto& child : children_)
     child->current_frame_host()->OnPrerenderedPageActivated();
-
-  // TODO(https://crbug.com/1132752): Inform `broker_` that the prerendered
-  // frame is activated.
 }
 
 void RenderFrameHostImpl::BindMediaInterfaceFactoryReceiver(
@@ -8823,6 +8824,10 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     if (base::FeatureList::IsEnabled(blink::features::kPrerender2) &&
         is_initial_empty_commit && !is_main_frame()) {
       is_prerendering_ = parent_->IsPrerendering();
+      if (is_prerendering_) {
+        broker_.ApplyMojoBinderPolicies(
+            MojoBinderPolicyApplier::CreateForPrerendering(base::DoNothing()));
+      }
     }
 
     // TODO(https://crbug.com/1131832): Do not use |params| to get the values,
