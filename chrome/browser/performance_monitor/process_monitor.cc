@@ -11,6 +11,7 @@
 #include "base/process/process_iterator.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "chrome/browser/performance_monitor/process_metrics_history.h"
 #include "content/public/browser/browser_child_process_host.h"
 #include "content/public/browser/browser_child_process_host_iterator.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -41,7 +42,7 @@ constexpr base::TimeDelta kGatherInterval = base::TimeDelta::FromSeconds(120);
 ProcessMonitor* g_process_monitor = nullptr;
 
 void GatherMetricsForRenderProcess(content::RenderProcessHost* host,
-                                   ProcessMetricsMetadata* data) {
+                                   ProcessMetadata* data) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   content::BrowserContext* browser_context = host->GetBrowserContext();
@@ -96,14 +97,21 @@ void ProcessMonitor::StartGatherCycle() {
                          &ProcessMonitor::GatherMetricsMapOnUIThread);
 }
 
+void ProcessMonitor::AddObserver(Observer* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void ProcessMonitor::RemoveObserver(Observer* observer) {
+  observer_list_.RemoveObserver(observer);
+}
+
 ProcessMonitor::ProcessMonitor() {
   DCHECK(!g_process_monitor);
   g_process_monitor = this;
 }
 
-void ProcessMonitor::MarkProcessAsAlive(
-    const ProcessMetricsMetadata& process_data,
-    int current_update_sequence) {
+void ProcessMonitor::MarkProcessAsAlive(const ProcessMetadata& process_data,
+                                        int current_update_sequence) {
   const base::ProcessHandle& handle = process_data.handle;
   if (handle == base::kNullProcessHandle) {
     // Process may not be valid yet.
@@ -135,7 +143,7 @@ void ProcessMonitor::GatherMetricsMapOnUIThread() {
            content::RenderProcessHost::AllHostsIterator();
        !rph_iter.IsAtEnd(); rph_iter.Advance()) {
     content::RenderProcessHost* host = rph_iter.GetCurrentValue();
-    ProcessMetricsMetadata data;
+    ProcessMetadata data;
     data.process_type = content::PROCESS_TYPE_RENDERER;
     data.handle = host->GetProcess().Handle();
 
@@ -155,7 +163,7 @@ void ProcessMonitor::GatherMetricsMapOnIOThread(int current_update_sequence) {
   // Find all child processes (does not include renderers), which has to be
   // done on the IO thread.
   for (content::BrowserChildProcessHostIterator iter; !iter.Done(); ++iter) {
-    ProcessMetricsMetadata child_process_data;
+    ProcessMetadata child_process_data;
     child_process_data.handle = iter.GetData().GetProcess().Handle();
     child_process_data.process_type = iter.GetData().process_type;
 
@@ -167,7 +175,7 @@ void ProcessMonitor::GatherMetricsMapOnIOThread(int current_update_sequence) {
   }
 
   // Add the current (browser) process.
-  ProcessMetricsMetadata browser_process_data;
+  ProcessMetadata browser_process_data;
   browser_process_data.process_type = content::PROCESS_TYPE_BROWSER;
   browser_process_data.handle = base::GetCurrentProcessHandle();
   MarkProcessAsAlive(browser_process_data, current_update_sequence);
@@ -180,7 +188,9 @@ void ProcessMonitor::GatherMetricsMapOnIOThread(int current_update_sequence) {
       // Not touched this iteration; let's get rid of it.
       metrics_map_.erase(iter++);
     } else {
-      process_metrics->SampleMetrics();
+      Metrics metrics = process_metrics->SampleMetrics();
+      for (auto& observer : observer_list_)
+        observer.OnMetricsSampled(process_metrics->metadata(), metrics);
       ++iter;
     }
   }

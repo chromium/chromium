@@ -8,21 +8,73 @@
 #include <map>
 #include <memory>
 
-#include "base/lazy_instance.h"
 #include "base/macros.h"
+#include "base/observer_list.h"
 #include "base/process/process_handle.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/performance_monitor/process_metrics_history.h"
+#include "build/build_config.h"
+#include "content/public/common/process_type.h"
 
 namespace performance_monitor {
 
 class ProcessMetricsHistory;
+
+enum ProcessSubtypes {
+  kProcessSubtypeUnknown,
+  kProcessSubtypePPAPIFlash,
+  kProcessSubtypeExtensionPersistent,
+  kProcessSubtypeExtensionEvent
+};
+
+struct ProcessMetadata {
+  base::ProcessHandle handle = base::kNullProcessHandle;
+  int process_type = content::PROCESS_TYPE_UNKNOWN;
+  ProcessSubtypes process_subtype = kProcessSubtypeUnknown;
+};
 
 // ProcessMonitor is a tool which periodically monitors performance metrics
 // of all the Chrome processes for histogram logging and possibly taking action
 // upon noticing serious performance degradation.
 class ProcessMonitor {
  public:
+  struct Metrics {
+    // The percentage of time spent executing, across all threads of the
+    // process, in the interval since the last time the metric was sampled. This
+    // can exceed 100% in multi-thread processes running on multi-core systems.
+    double cpu_usage = 0.0;
+
+#if defined(OS_WIN)
+    // The number of bytes transferred to/from disk per second, across all
+    // threads of the process, in the interval since the last time the metric
+    // was sampled.
+    uint64_t disk_usage = 0;
+#endif
+
+#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
+    defined(OS_AIX)
+    // Returns the number of average idle cpu wakeups per second since the last
+    // time the metric was sampled.
+    int idle_wakeups = 0;
+#endif
+
+#if defined(OS_MAC)
+    // The number of average "package idle exits" per second since the last
+    // time the metric was sampled. See base/process/process_metrics.h for a
+    // more detailed explanation.
+    int package_idle_wakeups = 0;
+
+    // "Energy Impact" is a synthetic power estimation metric displayed by macOS
+    // in Activity Monitor and the battery menu.
+    double energy_impact = 0.0;
+#endif
+  };
+
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnMetricsSampled(const ProcessMetadata& process_metadata,
+                                  const Metrics& metrics) = 0;
+  };
+
   // Creates and returns the application-wide ProcessMonitor. Can only be called
   // if no ProcessMonitor instances exists in the current process. The caller
   // owns the created instance. The current process' instance can be retrieved
@@ -38,9 +90,11 @@ class ProcessMonitor {
   // Start the cycle of metrics gathering.
   void StartGatherCycle();
 
- private:
-  friend struct base::LazyInstanceTraitsBase<ProcessMonitor>;
+  // Adds/removes an observer.
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
+ private:
   using MetricsMap =
       std::map<base::ProcessHandle, std::unique_ptr<ProcessMetricsHistory>>;
 
@@ -49,7 +103,7 @@ class ProcessMonitor {
   // Mark the given process as alive in the current update iteration.
   // This means adding an entry to the map of watched processes if it's not
   // already present.
-  void MarkProcessAsAlive(const ProcessMetricsMetadata& process_data,
+  void MarkProcessAsAlive(const ProcessMetadata& process_data,
                           int current_update_sequence);
 
   // Updates the ProcessMetrics map with the current list of processes and
@@ -62,6 +116,8 @@ class ProcessMonitor {
 
   // The timer to signal ProcessMonitor to perform its timed collections.
   base::RepeatingTimer repeating_timer_;
+
+  base::ObserverList<Observer> observer_list_;
 
   DISALLOW_COPY_AND_ASSIGN(ProcessMonitor);
 };
