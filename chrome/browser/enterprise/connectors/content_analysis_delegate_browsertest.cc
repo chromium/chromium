@@ -833,4 +833,159 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
   ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 3);
 }
 
+// This class tests that ContentAnalysisDelegate is handled correctly when the
+// requests are already unauthorized. The test parameter represents if the scan
+// is set to be blocking through policy.
+class ContentAnalysisDelegateUnauthorizedBrowserTest
+    : public ContentAnalysisDelegateBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  ContentAnalysisDelegateUnauthorizedBrowserTest() = default;
+
+  bool blocking_scan() const { return GetParam(); }
+
+  void SetUpScanning(bool file_scan) {
+    SetDMTokenForTesting(policy::DMToken::CreateValidTokenForTesting(kDmToken));
+
+    std::string pref = base::StringPrintf(
+        R"({
+          "service_provider": "google",
+          "enable": [
+            {
+              "url_list": ["*"],
+              "tags": ["dlp", "malware"]
+            }
+          ],
+          "block_until_verdict": %d
+        })",
+        blocking_scan() ? 1 : 0);
+
+    safe_browsing::SetAnalysisConnector(
+        browser()->profile()->GetPrefs(),
+        file_scan ? FILE_ATTACHED : BULK_DATA_ENTRY, pref);
+    file_scan_ = file_scan;
+  }
+
+  // The dialog should only appear on file scans since they need to be opened
+  // asynchronously. This means that the dialog appears when scanning files and
+  // that all the following overrides should be called. Text scans don't have an
+  // asynchronous operation needed before being sent for scanning, so in the
+  // unauthorized case the dialog doesn't need to appear and the assertions will
+  // fail the test if they are reached.
+  void ConstructorCalled(ContentAnalysisDialog* dialog,
+                         base::TimeTicks timestamp) override {
+    ASSERT_TRUE(file_scan_ && blocking_scan());
+  }
+
+  void ViewsFirstShown(ContentAnalysisDialog* dialog,
+                       base::TimeTicks timestamp) override {
+    ASSERT_TRUE(file_scan_ && blocking_scan());
+  }
+
+  void DialogUpdated(ContentAnalysisDialog* dialog,
+                     ContentAnalysisDelegate::FinalResult result) override {
+    ASSERT_TRUE(file_scan_ && blocking_scan());
+  }
+
+  void DestructorCalled(ContentAnalysisDialog* dialog) override {
+    ASSERT_TRUE(file_scan_ && blocking_scan());
+    CallQuitClosure();
+  }
+
+ protected:
+  bool file_scan_ = false;
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         ContentAnalysisDelegateUnauthorizedBrowserTest,
+                         testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateUnauthorizedBrowserTest, Paste) {
+  SetUpScanning(/*file_scan*/ false);
+
+  ContentAnalysisDelegate::SetFactoryForTesting(
+      base::BindRepeating(&MinimalFakeContentAnalysisDelegate::Create));
+
+  FakeBinaryUploadServiceStorage()->SetAuthForTesting(kDmToken, false);
+
+  bool called = false;
+  base::RunLoop run_loop;
+  base::RepeatingClosure quit_closure = run_loop.QuitClosure();
+
+  ContentAnalysisDelegate::Data data;
+  data.text.emplace_back(text());
+  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
+      browser()->profile(), GURL(kTestUrl), &data, BULK_DATA_ENTRY));
+
+  ContentAnalysisDelegate::CreateForWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents(), std::move(data),
+      base::BindLambdaForTesting(
+          [&quit_closure, &called](
+              const ContentAnalysisDelegate::Data& data,
+              const ContentAnalysisDelegate::Result& result) {
+            ASSERT_EQ(result.text_results.size(), 1u);
+            ASSERT_EQ(result.paths_results.size(), 0u);
+            ASSERT_TRUE(result.text_results[0]);
+            called = true;
+            quit_closure.Run();
+          }),
+      safe_browsing::DeepScanAccessPoint::PASTE);
+
+  run_loop.Run();
+  EXPECT_TRUE(called);
+
+  // No requests should be made since the DM token is unauthorized.
+  ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 0);
+}
+
+IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateUnauthorizedBrowserTest, Files) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  SetUpScanning(/*file_scan*/ true);
+
+  ContentAnalysisDelegate::SetFactoryForTesting(
+      base::BindRepeating(&MinimalFakeContentAnalysisDelegate::Create));
+
+  FakeBinaryUploadServiceStorage()->SetAuthForTesting(kDmToken, false);
+
+  bool called = false;
+  base::RunLoop run_loop;
+  base::Optional<base::RepeatingClosure> quit_closure = base::nullopt;
+
+  // If the scan is blocking, we can call the quit closure when the dialog
+  // closes. If it's not, call it at the end of the result callback.
+  if (blocking_scan())
+    SetQuitClosure(run_loop.QuitClosure());
+  else
+    quit_closure = run_loop.QuitClosure();
+
+  ContentAnalysisDelegate::Data data;
+  CreateFilesForTest({"file1.doc", "file2.doc"}, {"content1", "content2"},
+                     &data);
+  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
+      browser()->profile(), GURL(kTestUrl), &data, FILE_ATTACHED));
+
+  ContentAnalysisDelegate::CreateForWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents(), std::move(data),
+      base::BindLambdaForTesting(
+          [&quit_closure, &called](
+              const ContentAnalysisDelegate::Data& data,
+              const ContentAnalysisDelegate::Result& result) {
+            ASSERT_EQ(result.text_results.size(), 0u);
+            ASSERT_EQ(result.paths_results.size(), 2u);
+            ASSERT_TRUE(result.paths_results[0]);
+            ASSERT_TRUE(result.paths_results[1]);
+            called = true;
+            if (quit_closure.has_value())
+              quit_closure.value().Run();
+          }),
+      safe_browsing::DeepScanAccessPoint::UPLOAD);
+
+  run_loop.Run();
+  EXPECT_TRUE(called);
+
+  // No requests should be made since the DM token is unauthorized.
+  ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 0);
+}
+
 }  // namespace enterprise_connectors

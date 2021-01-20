@@ -188,9 +188,7 @@ void ContentAnalysisDelegate::BypassWarnings() {
       content_size += (entry.size() * sizeof(base::char16));
 
     ReportAnalysisConnectorWarningBypass(
-        Profile::FromBrowserContext(web_contents_->GetBrowserContext()),
-        web_contents_->GetLastCommittedURL(), "Text data", std::string(),
-        "text/plain",
+        profile_, url_, "Text data", std::string(), "text/plain",
         extensions::SafeBrowsingPrivateEventRouter::kTriggerWebContentUpload,
         access_point_, content_size, text_response_);
   }
@@ -201,8 +199,7 @@ void ContentAnalysisDelegate::BypassWarnings() {
     result_.paths_results[index] = true;
 
     ReportAnalysisConnectorWarningBypass(
-        Profile::FromBrowserContext(web_contents_->GetBrowserContext()),
-        web_contents_->GetLastCommittedURL(), data_.paths[index].AsUTF8Unsafe(),
+        profile_, url_, data_.paths[index].AsUTF8Unsafe(),
         file_info_[index].sha256, file_info_[index].mime_type,
         extensions::SafeBrowsingPrivateEventRouter::kTriggerFileUpload,
         access_point_, file_info_[index].size, warning.second);
@@ -359,11 +356,12 @@ ContentAnalysisDelegate::ContentAnalysisDelegate(
     Data data,
     CompletionCallback callback,
     safe_browsing::DeepScanAccessPoint access_point)
-    : web_contents_(web_contents),
-      data_(std::move(data)),
+    : data_(std::move(data)),
       callback_(std::move(callback)),
       access_point_(access_point) {
-  DCHECK(web_contents_);
+  DCHECK(web_contents);
+  profile_ = Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  url_ = web_contents->GetLastCommittedURL();
   result_.text_results.resize(data_.text.size(), false);
   result_.paths_results.resize(data_.paths.size(), false);
   file_info_.resize(data_.paths.size());
@@ -390,9 +388,7 @@ void ContentAnalysisDelegate::StringRequestCallback(
             text_complies);
 
   MaybeReportDeepScanningVerdict(
-      Profile::FromBrowserContext(web_contents_->GetBrowserContext()),
-      web_contents_->GetLastCommittedURL(), "Text data", std::string(),
-      "text/plain",
+      profile_, url_, "Text data", std::string(), "text/plain",
       extensions::SafeBrowsingPrivateEventRouter::kTriggerWebContentUpload,
       access_point_, content_size, result, response,
       CalculateEventResult(data_.settings, text_complies, should_warn));
@@ -425,9 +421,7 @@ void ContentAnalysisDelegate::CompleteFileRequestCallback(
   result_.paths_results[index] = file_complies;
 
   MaybeReportDeepScanningVerdict(
-      Profile::FromBrowserContext(web_contents_->GetBrowserContext()),
-      web_contents_->GetLastCommittedURL(), path.AsUTF8Unsafe(),
-      file_info_[index].sha256, mime_type,
+      profile_, url_, path.AsUTF8Unsafe(), file_info_[index].sha256, mime_type,
       extensions::SafeBrowsingPrivateEventRouter::kTriggerFileUpload,
       access_point_, file_info_[index].size, result, response,
       CalculateEventResult(data_.settings, file_complies, should_warn));
@@ -479,6 +473,10 @@ bool ContentAnalysisDelegate::UploadData() {
   for (const base::FilePath& path : data_.paths)
     PrepareFileRequest(path);
 
+  data_uploaded_ = true;
+  // Do not add code under this comment. The above line should be the last thing
+  // this function does before the return statement.
+
   return !text_request_complete_ || file_result_count_ != data_.paths.size();
 }
 
@@ -529,12 +527,9 @@ void ContentAnalysisDelegate::PrepareFileRequest(const base::FilePath& path) {
 void ContentAnalysisDelegate::PrepareRequest(
     enterprise_connectors::AnalysisConnector connector,
     BinaryUploadService::Request* request) {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents_->GetBrowserContext());
-
   request->set_device_token(data_.settings.dm_token);
   request->set_analysis_connector(connector);
-  request->set_email(safe_browsing::GetProfileEmail(profile));
+  request->set_email(safe_browsing::GetProfileEmail(profile_));
   request->set_url(data_.url.spec());
   request->set_tab_url(data_.url);
   for (const std::string& tag : data_.settings.tags)
@@ -547,8 +542,7 @@ void ContentAnalysisDelegate::FillAllResultsWith(bool status) {
 }
 
 BinaryUploadService* ContentAnalysisDelegate::GetBinaryUploadService() {
-  return safe_browsing::BinaryUploadServiceFactory::GetForProfile(
-      Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
+  return safe_browsing::BinaryUploadServiceFactory::GetForProfile(profile_);
 }
 
 void ContentAnalysisDelegate::UploadTextForDeepScanning(
@@ -584,8 +578,9 @@ void ContentAnalysisDelegate::MaybeCompleteScanRequest() {
   if (final_result_ != FinalResult::WARNING)
     RunCallback();
 
-  if (!UpdateDialog()) {
-    // No UI was shown.  Delete |this| to cleanup.
+  if (!UpdateDialog() && data_uploaded_) {
+    // No UI was shown.  Delete |this| to cleanup, unless UploadData isn't done
+    // yet.
     delete this;
   }
 }

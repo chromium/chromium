@@ -244,7 +244,8 @@ class ContentAnalysisDelegate {
 
  private:
   // Uploads data for deep scanning.  Returns true if uploading is occurring in
-  // the background and false if there is nothing to do.
+  // the background and false if there is nothing to do. Sets |data_uploaded_|
+  // to true right before returning.
   bool UploadData();
 
   // Prepares an upload request for the text in |data_|. If |data_.text| is
@@ -314,8 +315,11 @@ class ContentAnalysisDelegate {
   // Virtual to override in tests.
   virtual safe_browsing::BinaryUploadService* GetBinaryUploadService();
 
-  // The web contents that is attempting to access the data.
-  content::WebContents* web_contents_ = nullptr;
+  // The Profile corresponding to the pending scan request(s).
+  Profile* profile_ = nullptr;
+
+  // The GURL corresponding to the page where the scan triggered.
+  GURL url_;
 
   // Description of the data being scanned and the results of the scan.
   // The elements of the vector |file_info_| hold the FileInfo of the file at
@@ -352,6 +356,10 @@ class ContentAnalysisDelegate {
 
   // Scanning result to be shown to the user once every request is done.
   FinalResult final_result_ = FinalResult::SUCCESS;
+
+  // Set to true at the end of UploadData to indicate requests have been made
+  // for every file/text. This is read to ensure |this| isn't deleted too early.
+  bool data_uploaded_ = false;
 
   base::TimeTicks upload_start_time_;
 
