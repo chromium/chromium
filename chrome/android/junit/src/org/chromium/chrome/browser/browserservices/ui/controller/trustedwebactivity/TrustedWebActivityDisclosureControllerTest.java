@@ -16,6 +16,7 @@ import static org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityM
 import static org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel.DISCLOSURE_FIRST_TIME;
 import static org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel.DISCLOSURE_SCOPE;
 import static org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel.DISCLOSURE_STATE;
+import static org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel.DISCLOSURE_STATE_DISMISSED_BY_USER;
 import static org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel.DISCLOSURE_STATE_NOT_SHOWN;
 import static org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel.DISCLOSURE_STATE_SHOWN;
 
@@ -62,6 +63,7 @@ public class TrustedWebActivityDisclosureControllerTest {
     public ArgumentCaptor<Runnable> mVerificationObserverCaptor;
 
     public TrustedWebActivityModel mModel = new TrustedWebActivityModel();
+    private TrustedWebActivityDisclosureController mController;
 
     @Before
     public void setUp() {
@@ -73,8 +75,8 @@ public class TrustedWebActivityDisclosureControllerTest {
                 .addVerificationObserver(mVerificationObserverCaptor.capture());
         doReturn(false).when(mStore).hasUserAcceptedTwaDisclosureForPackage(anyString());
 
-        new TrustedWebActivityDisclosureController(mStore, mModel, mLifecycleDispatcher,
-                mCurrentPageVerifier, mRecorder, mClientPackageNameProvider);
+        mController = new TrustedWebActivityDisclosureController(mStore, mModel,
+                mLifecycleDispatcher, mCurrentPageVerifier, mRecorder, mClientPackageNameProvider);
     }
 
     @Test
@@ -151,6 +153,19 @@ public class TrustedWebActivityDisclosureControllerTest {
         enterVerifiedOrigin();
         mModel.get(DISCLOSURE_EVENTS_CALLBACK).onDisclosureShown();
         verify(mStore).setUserSeenTwaDisclosureForPackage(CLIENT_PACKAGE);
+    }
+
+    @Test
+    @Feature("TrustedWebActivities")
+    public void noticesShouldShowDisclosureChanges() {
+        mController.onFinishNativeInitialization();
+        enterVerifiedOrigin();
+        assertSnackbarShown();
+
+        doReturn(true).when(mStore).hasUserAcceptedTwaDisclosureForPackage(anyString());
+        mController.onStopWithNative();
+
+        assertEquals(DISCLOSURE_STATE_DISMISSED_BY_USER, mModel.get(DISCLOSURE_STATE));
     }
 
     private void enterVerifiedOrigin() {
