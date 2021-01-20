@@ -9,7 +9,8 @@
 namespace views {
 
 void DisableActivationChangeHandlingForTests() {
-  Widget::g_disable_activation_change_handling_ = true;
+  Widget::SetDisableActivationChangeHandling(
+      Widget::DisableActivationChangeHandlingType::kIgnore);
 }
 
 }  // namespace views

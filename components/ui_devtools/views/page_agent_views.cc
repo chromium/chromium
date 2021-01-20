@@ -63,8 +63,9 @@ PageAgentViews::PageAgentViews(DOMAgent* dom_agent) : PageAgent(dom_agent) {}
 PageAgentViews::~PageAgentViews() {}
 
 protocol::Response PageAgentViews::disable() {
-  // Set bubble lock flag back to false.
-  views::BubbleDialogDelegateView::devtools_dismiss_override_ = false;
+  // Don't disable widget activation handling any more.
+  views::Widget::SetDisableActivationChangeHandling(
+      views::Widget::DisableActivationChangeHandlingType::kNone);
 
   // Remove debug bounds rects if enabled.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -82,10 +83,14 @@ protocol::Response PageAgentViews::reload(protocol::Maybe<bool> bypass_cache) {
 
   bool shift_pressed = bypass_cache.fromMaybe(false);
 
-  // Ctrl+Shift+R called to toggle bubble lock.
+  // Ctrl+Shift+R called to toggle widget lock.
   if (shift_pressed) {
-    views::BubbleDialogDelegateView::devtools_dismiss_override_ =
-        !views::BubbleDialogDelegateView::devtools_dismiss_override_;
+    views::Widget::SetDisableActivationChangeHandling(
+        views::Widget::GetDisableActivationChangeHandling() ==
+                views::Widget::DisableActivationChangeHandlingType::kNone
+            ? views::Widget::DisableActivationChangeHandlingType::
+                  kIgnoreDeactivationOnly
+            : views::Widget::DisableActivationChangeHandlingType::kNone);
   } else {
     // Ctrl+R called to toggle debug bounds rectangles.
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -152,8 +157,10 @@ protocol::Response PageAgentViews::getResourceContent(
     return protocol::Response::ServerError("Could not read source file");
 }
 
-bool PageAgentViews::devtools_dismiss_override() {
-  return views::BubbleDialogDelegateView::devtools_dismiss_override_;
+bool PageAgentViews::GetDevtoolsDismissOverrideForTesting() const {
+  return views::Widget::GetDisableActivationChangeHandling() ==
+         views::Widget::DisableActivationChangeHandlingType::
+             kIgnoreDeactivationOnly;
 }
 
 }  // namespace ui_devtools

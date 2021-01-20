@@ -44,9 +44,6 @@
 
 namespace views {
 
-// static
-bool BubbleDialogDelegate::devtools_dismiss_override_ = false;
-
 namespace {
 
 // A BubbleFrameView will apply a masking path to its ClientView to ensure
@@ -454,9 +451,6 @@ void BubbleDialogDelegate::OnAnchorWidgetDestroying() {
 }
 
 void BubbleDialogDelegate::OnBubbleWidgetActivationChanged(bool active) {
-  if (devtools_dismiss_override_)
-    return;
-
 #if defined(OS_APPLE)
   // Install |mac_bubble_closer_| the first time the widget becomes active.
   if (active && !mac_bubble_closer_) {

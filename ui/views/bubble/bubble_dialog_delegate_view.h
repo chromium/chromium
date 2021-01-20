@@ -29,10 +29,6 @@ namespace gfx {
 class Rect;
 }
 
-namespace ui_devtools {
-class PageAgentViews;
-}
-
 namespace views {
 
 class Button;
@@ -311,7 +307,6 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate,
 
   friend class BubbleBorderDelegate;
   friend class BubbleWindowTargeter;
-  friend class ui_devtools::PageAgentViews;
 
   // Notify the BubbleDialogDelegate about changes in the anchor Widget. You do
   // not need to call these yourself.
@@ -326,10 +321,6 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate,
   void OnBubbleWidgetPaintAsActiveChanged();
 
   void OnDeactivate();
-
-  // Set from UI DevTools to prevent bubbles from closing in
-  // OnWidgetActivationChanged().
-  static bool devtools_dismiss_override_;
 
   gfx::Insets title_margins_;
   BubbleBorder::Arrow arrow_ = BubbleBorder::NONE;

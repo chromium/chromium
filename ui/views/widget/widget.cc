@@ -87,7 +87,9 @@ void NotifyCaretBoundsChanged(ui::InputMethod* input_method) {
 }  // namespace
 
 // static
-bool Widget::g_disable_activation_change_handling_ = false;
+Widget::DisableActivationChangeHandlingType
+    Widget::g_disable_activation_change_handling_ =
+        Widget::DisableActivationChangeHandlingType::kNone;
 
 // A default implementation of WidgetDelegate, used by Widget when no
 // WidgetDelegate is supplied.
@@ -1101,7 +1103,11 @@ bool Widget::IsNativeWidgetInitialized() const {
 }
 
 bool Widget::OnNativeWidgetActivationChanged(bool active) {
-  if (g_disable_activation_change_handling_)
+  if (g_disable_activation_change_handling_ ==
+          DisableActivationChangeHandlingType::kIgnore ||
+      (g_disable_activation_change_handling_ ==
+           DisableActivationChangeHandlingType::kIgnoreDeactivationOnly &&
+       !active))
     return false;
 
   // On windows we may end up here before we've completed initialization (from

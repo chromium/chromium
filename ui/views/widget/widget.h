@@ -47,6 +47,10 @@ class OSExchangeData;
 class ThemeProvider;
 }  // namespace ui
 
+namespace ui_devtools {
+class PageAgentViews;
+}
+
 namespace views {
 
 class DesktopWindowTreeHost;
@@ -1018,6 +1022,13 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   virtual void OnDragComplete();
 
  private:
+  // Type of ways to ignore activation changes.
+  enum class DisableActivationChangeHandlingType {
+    kNone = 0,  // Don't ignore any activation changes.
+    kIgnore,    // Ignore both activation and deactivation changes.
+    kIgnoreDeactivationOnly,  // Ignore only deactivation changes.
+  };
+
   class PaintAsActiveLockImpl;
 
   friend class ButtonTest;
@@ -1025,7 +1036,18 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   friend class PaintAsActiveLockImpl;
   friend class TextfieldTest;
   friend class ViewAuraTest;
+  friend class ui_devtools::PageAgentViews;
   friend void DisableActivationChangeHandlingForTests();
+
+  // Sets/gets the type of disabling widget activation change handling.
+  static void SetDisableActivationChangeHandling(
+      DisableActivationChangeHandlingType new_type) {
+    g_disable_activation_change_handling_ = new_type;
+  }
+  static DisableActivationChangeHandlingType
+  GetDisableActivationChangeHandling() {
+    return g_disable_activation_change_handling_;
+  }
 
   // Persists the window's restored position and "show" state using the
   // window delegate.
@@ -1057,7 +1079,8 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // If a descendent of |root_view_| is focused, then clear the focus.
   void ClearFocusFromWidget();
 
-  static bool g_disable_activation_change_handling_;
+  static DisableActivationChangeHandlingType
+      g_disable_activation_change_handling_;
 
   internal::NativeWidgetPrivate* native_widget_ = nullptr;
 
