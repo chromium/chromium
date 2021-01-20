@@ -1,9 +1,0 @@
-# In general, no changes should be made to the wpt/tools directory in Chromium.
-# Almost all changes should be made in the upstream repository at
-# https://github.com/web-platform-tests/wpt and then be imported into the
-# Chromium repo.
-foolip@chromium.org
-lpz@chromium.org
-smcgruer@chromium.org
-
-# Team alias: ecosystem-infra@chromium.org
