@@ -204,21 +204,6 @@ AddressPoolManager::Pool::~Pool() = default;
 
 #else  // defined(PA_HAS_64_BITS_POINTERS)
 
-namespace {
-
-LazyInstance<Lock>::Leaky g_lock = LAZY_INSTANCE_INITIALIZER;
-
-}  // namespace
-
-Lock& AddressPoolManager::GetLock() {
-  return g_lock.Get();
-}
-
-std::bitset<AddressPoolManager::kDirectMapBits>
-    AddressPoolManager::directmap_bits_;  // GUARDED_BY(GetLock())
-std::bitset<AddressPoolManager::kNormalBucketBits>
-    AddressPoolManager::normal_bucket_bits_;  // GUARDED_BY(GetLock())
-
 template <size_t bitsize>
 void SetBitmap(std::bitset<bitsize>& bitmap,
                size_t start_bit,
@@ -279,39 +264,41 @@ void AddressPoolManager::MarkUsed(pool_handle handle,
                                   const char* address,
                                   size_t length) {
   uintptr_t ptr_as_uintptr = reinterpret_cast<uintptr_t>(address);
-  AutoLock guard(GetLock());
+  AutoLock guard(AddressPoolManagerBitmap::GetLock());
   if (handle == kDirectMapHandle) {
-    SetBitmap(directmap_bits_, ptr_as_uintptr / PageAllocationGranularity(),
+    SetBitmap(AddressPoolManagerBitmap::directmap_bits_,
+              ptr_as_uintptr / PageAllocationGranularity(),
               length / PageAllocationGranularity());
   } else {
     PA_DCHECK(handle == kNormalBucketHandle);
     PA_DCHECK(!(length & kSuperPageOffsetMask));
-    SetBitmap(normal_bucket_bits_, ptr_as_uintptr >> kSuperPageShift,
-              length >> kSuperPageShift);
+    SetBitmap(AddressPoolManagerBitmap::normal_bucket_bits_,
+              ptr_as_uintptr >> kSuperPageShift, length >> kSuperPageShift);
   }
 }
 
 void AddressPoolManager::MarkUnused(pool_handle handle,
                                     uintptr_t address,
                                     size_t length) {
-  AutoLock guard(GetLock());
+  AutoLock guard(AddressPoolManagerBitmap::GetLock());
   // Currently, address regions allocated by kNormalBucketHandle are never freed
   // in PartitionAlloc. Thus we have LIKELY for kDirectMapHandle
   if (LIKELY(handle == kDirectMapHandle)) {
-    ResetBitmap(directmap_bits_, address / PageAllocationGranularity(),
+    ResetBitmap(AddressPoolManagerBitmap::directmap_bits_,
+                address / PageAllocationGranularity(),
                 length / PageAllocationGranularity());
   } else {
     PA_DCHECK(handle == kNormalBucketHandle);
     PA_DCHECK(!(length & kSuperPageOffsetMask));
-    ResetBitmap(normal_bucket_bits_, address >> kSuperPageShift,
-                length >> kSuperPageShift);
+    ResetBitmap(AddressPoolManagerBitmap::normal_bucket_bits_,
+                address >> kSuperPageShift, length >> kSuperPageShift);
   }
 }
 
 void AddressPoolManager::ResetForTesting() {
-  AutoLock guard(GetLock());
-  directmap_bits_.reset();
-  normal_bucket_bits_.reset();
+  AutoLock guard(AddressPoolManagerBitmap::GetLock());
+  AddressPoolManagerBitmap::directmap_bits_.reset();
+  AddressPoolManagerBitmap::normal_bucket_bits_.reset();
 }
 
 #endif  // defined(PA_HAS_64_BITS_POINTERS)

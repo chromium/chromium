@@ -39,6 +39,7 @@ android_webview/public/
 
 # Exclude dependences of checked_ptr.h
 base/logging.h
+base/synchronization/lock_impl.h
 
 # Exclude code that only runs inside a renderer process - renderer
 # processes are excluded for now from the MiraclePtr project scope,
