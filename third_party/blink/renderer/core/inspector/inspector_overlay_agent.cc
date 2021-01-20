@@ -370,6 +370,7 @@ InspectorOverlayAgent::InspectorOverlayAgent(
       show_layout_shift_regions_(&agent_state_, false),
       show_scroll_bottleneck_rects_(&agent_state_, false),
       show_hit_test_borders_(&agent_state_, false),
+      show_web_vitals_(&agent_state_, false),
       show_size_on_resize_(&agent_state_, false),
       paused_in_debugger_message_(&agent_state_, String()),
       inspect_mode_(&agent_state_, protocol::Overlay::InspectModeEnum::None),
@@ -598,6 +599,25 @@ Response InspectorOverlayAgent::setShowHitTestBorders(bool show) {
 
 Response InspectorOverlayAgent::setShowViewportSizeOnResize(bool show) {
   show_size_on_resize_.Set(show);
+  return Response::Success();
+}
+
+Response InspectorOverlayAgent::setShowWebVitals(bool show) {
+  show_web_vitals_.Set(show);
+  if (show) {
+    Response response = CompositingEnabled();
+    if (!response.IsSuccess())
+      return response;
+  }
+  auto* widget_impl =
+      static_cast<WebFrameWidgetImpl*>(frame_impl_->LocalRoot()->FrameWidget());
+  // While a frame is being detached the inspector will shutdown and
+  // turn off debug overlays, but the WebFrameWidget is already gone.
+  if (widget_impl) {
+    cc::LayerTreeDebugState debug_state = widget_impl->GetLayerTreeDebugState();
+    debug_state.show_web_vital_metrics = show;
+    widget_impl->SetLayerTreeDebugState(debug_state);
+  }
   return Response::Success();
 }
 

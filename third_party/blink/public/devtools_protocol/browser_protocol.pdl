@@ -6041,6 +6041,11 @@ experimental domain Overlay
       # True for showing hit-test borders
       boolean show
 
+  # Request that backend shows an overlay with web vital metrics.
+  command setShowWebVitals
+    parameters
+      boolean show
+
   # Paints viewport size upon main frame resize.
   command setShowViewportSizeOnResize
     parameters

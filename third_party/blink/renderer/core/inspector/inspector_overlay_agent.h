@@ -169,6 +169,7 @@ class CORE_EXPORT InspectorOverlayAgent final
   protocol::Response setShowFPSCounter(bool) override;
   protocol::Response setShowScrollBottleneckRects(bool) override;
   protocol::Response setShowHitTestBorders(bool) override;
+  protocol::Response setShowWebVitals(bool) override;
   protocol::Response setShowViewportSizeOnResize(bool) override;
   protocol::Response setPausedInDebuggerMessage(
       protocol::Maybe<String>) override;
@@ -315,6 +316,7 @@ class CORE_EXPORT InspectorOverlayAgent final
   InspectorAgentState::Boolean show_layout_shift_regions_;
   InspectorAgentState::Boolean show_scroll_bottleneck_rects_;
   InspectorAgentState::Boolean show_hit_test_borders_;
+  InspectorAgentState::Boolean show_web_vitals_;
   InspectorAgentState::Boolean show_size_on_resize_;
   InspectorAgentState::String paused_in_debugger_message_;
   InspectorAgentState::String inspect_mode_;
