@@ -188,9 +188,10 @@ bool HandleDesksSwitchHorizontalScroll(float scroll_x) {
   auto* desks_controller = DesksController::Get();
   const bool move_left = GetOffset(scroll_x) < 0;
 
-  MaybeHandleWrongHorizontalGesture(move_left,
-                                    desks_controller->GetPreviousDesk(),
-                                    desks_controller->GetNextDesk());
+  MaybeHandleWrongHorizontalGesture(
+      move_left,
+      desks_controller->GetPreviousDesk(/*use_target_active_desk=*/false),
+      desks_controller->GetNextDesk(/*use_target_active_desk=*/false));
 
   // If touchpad reverse scroll is on, the swipe direction will invert.
   return desks_controller->ActivateAdjacentDesk(
@@ -297,9 +298,10 @@ bool WmGestureHandler::ProcessEventImpl(int finger_count,
         scroll_data_.reset();
         return false;
       }
-      MaybeHandleWrongHorizontalGesture(/*move_left=*/scroll_x < 0,
-                                        desks_controller->GetPreviousDesk(),
-                                        desks_controller->GetNextDesk());
+      MaybeHandleWrongHorizontalGesture(
+          /*move_left=*/scroll_x < 0,
+          desks_controller->GetPreviousDesk(/*use_target_active_desk=*/false),
+          desks_controller->GetNextDesk(/*use_target_active_desk=*/false));
       scroll_data_->continuous_gesture_started = true;
     }
   }

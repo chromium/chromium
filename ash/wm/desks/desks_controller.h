@@ -100,11 +100,11 @@ class ASH_EXPORT DesksController : public DesksHelper,
   // there is at least one single desk at any time.
   bool CanRemoveDesks() const;
 
-  // Returns the next / previous desks to the currently active desk. Returns
-  // nullptr if the active desk is the first on the left or the last on the
-  // right, and previous and next desks are requested respectively.
-  Desk* GetNextDesk() const;
-  Desk* GetPreviousDesk() const;
+  // Returns the next / previous desks to the target / currently active desk.
+  // Returns nullptr if the active desk is the first on the left or the last on
+  // the right, and previous and next desks are requested respectively.
+  Desk* GetNextDesk(bool use_target_active_desk = true) const;
+  Desk* GetPreviousDesk(bool use_target_active_desk = true) const;
 
   // Creates a new desk. CanCreateDesks() must be checked before calling this.
   void NewDesk(DesksCreationRemovalSource source);
