@@ -107,7 +107,7 @@ void PermissionPromptImpl::UpdateAnchorPosition() {
       DCHECK(permission_chip_);
       // If there is fresh pending request shown as chip UI and location bar
       // isn't visible anymore, show bubble UI instead.
-      if (!permission_chip_->is_collapsed() && !is_location_bar_drawn) {
+      if (!permission_chip_->is_fully_collapsed() && !is_location_bar_drawn) {
         permission_chip_->FinalizeRequest();
         permission_chip_ = nullptr;
         ShowBubble();
