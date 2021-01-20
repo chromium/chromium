@@ -493,6 +493,7 @@ void RenderViewTest::SetUp() {
       render_thread_->GetNextRoutingID();
   view_params->main_frame_frame_token = base::UnguessableToken::Create();
   view_params->main_frame_routing_id = render_thread_->GetNextRoutingID();
+  view_params->frame = TestRenderFrame::CreateStubFrameReceiver();
 
   // Ignoring the returned PendingReceiver because it is not bound to anything
   ignore_result(view_params->main_frame_interface_broker

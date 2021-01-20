@@ -58,6 +58,7 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
                       FrameTree* frame_tree,
                       FrameTreeNode* frame_tree_node,
                       int32_t routing_id,
+                      mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
                       const base::UnguessableToken& frame_token,
                       LifecycleState lifecyle_state);
   ~TestRenderFrameHost() override;
@@ -162,6 +163,10 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
 
   // Creates a WebBluetooth Service with a dummy InterfaceRequest.
   WebBluetoothServiceImpl* CreateWebBluetoothServiceForTesting();
+
+  // Returns a pending Frame remote that represents a connection to a non-
+  // existent renderer, where all messages will go into the void.
+  static mojo::PendingAssociatedRemote<mojom::Frame> CreateStubFrameRemote();
 
   // Returns a PendingReceiver<BrowserInterfaceBroker> that is safe to bind to
   // an implementation, but will never receive any interface requests.

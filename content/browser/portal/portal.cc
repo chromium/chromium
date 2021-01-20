@@ -132,6 +132,9 @@ RenderFrameProxyHost* Portal::CreateProxyAndAttachPortal() {
   FrameTreeNode* outer_node = outer_contents_impl->GetFrameTree()->AddFrame(
       owner_render_frame_host_, owner_render_frame_host_->GetProcess()->GetID(),
       owner_render_frame_host_->GetProcess()->GetNextRoutingID(),
+      // The renderer frame doesn't exist yet and will be created later with the
+      // CreateRenderView message.
+      /*frame_remote=*/mojo::NullAssociatedRemote(),
       mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>()
           .InitWithNewPipeAndPassReceiver(),
       // The PolicyContainerHost remote is sent to Blink in the CreateRenderView

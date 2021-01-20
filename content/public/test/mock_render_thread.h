@@ -24,17 +24,12 @@ class MessageFilter;
 class MessageReplyDeserializer;
 }
 
-namespace blink {
-namespace mojom {
-enum class TreeScopeType;
-}
-}
-
 namespace content {
 
 namespace mojom {
 class CreateNewWindowParams;
 class CreateNewWindowReply;
+class Frame;
 class RenderMessageFilter;
 }
 
@@ -62,6 +57,9 @@ class MockRenderThread : public RenderThread {
   scoped_refptr<base::SingleThreadTaskRunner> GetIOTaskRunner() override;
   void BindHostReceiver(mojo::GenericPendingReceiver receiver) override;
   void AddRoute(int32_t routing_id, IPC::Listener* listener) override;
+  void AttachTaskRunnerToRoute(
+      int32_t routing_id,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner) override;
   void RemoveRoute(int32_t routing_id) override;
   int GenerateRoutingID() override;
   bool GenerateFrameRoutingID(
@@ -113,6 +111,7 @@ class MockRenderThread : public RenderThread {
 
   void OnCreateChildFrame(
       int32_t child_routing_id,
+      mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
       mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
           browser_interface_broker);
 
@@ -135,8 +134,10 @@ class MockRenderThread : public RenderThread {
   // Routing ID what will be assigned to the next view, widget, or frame.
   int32_t next_routing_id_;
 
+  // Pending BrowserInterfaceBrokers sent from the renderer when creating a
+  // new Frame and informing the browser.
   std::map<int32_t, mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>>
-      frame_routing_id_to_initial_browser_broker_receivers_;
+      frame_routing_id_to_initial_browser_brokers_;
 
   // The last known good deserializer for sync messages.
   std::unique_ptr<IPC::MessageReplyDeserializer> reply_deserializer_;

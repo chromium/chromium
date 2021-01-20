@@ -93,8 +93,6 @@ class CastWebContentsImpl : public CastWebContents,
 
   // content::WebContentsObserver implementation:
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
-  void RenderFrameHostChanged(content::RenderFrameHost* old_host,
-                              content::RenderFrameHost* new_host) override;
   void OnInterfaceRequestFromFrame(
       content::RenderFrameHost* /* render_frame_host */,
       const std::string& interface_name,

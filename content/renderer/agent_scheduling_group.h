@@ -26,7 +26,6 @@ class SyncChannel;
 }  // namespace IPC
 
 namespace content {
-
 class RenderThread;
 
 // Renderer-side representation of AgentSchedulingGroup, used for communication
@@ -53,6 +52,9 @@ class CONTENT_EXPORT AgentSchedulingGroup
 
   bool Send(IPC::Message* message);
   void AddRoute(int32_t routing_id, IPC::Listener* listener);
+  void AddFrameRoute(int32_t routing_id,
+                     IPC::Listener* listener,
+                     scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   void RemoveRoute(int32_t routing_id);
   void DidUnloadRenderFrame(const base::UnguessableToken& frame_token);
 

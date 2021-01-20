@@ -164,8 +164,7 @@ class CONTENT_EXPORT RenderFrameImpl
     : public RenderFrame,
       public blink::mojom::ResourceLoadInfoNotifier,
       blink::mojom::AutoplayConfigurationClient,
-      mojom::Frame,
-      public mojom::FrameNavigationControl,
+      public mojom::Frame,
       mojom::FrameBindingsControl,
       mojom::MhtmlFileWriter,
       public blink::WebLocalFrameClient,
@@ -204,6 +203,7 @@ class CONTENT_EXPORT RenderFrameImpl
   static void CreateFrame(
       AgentSchedulingGroup& agent_scheduling_group,
       int routing_id,
+      mojo::PendingAssociatedReceiver<mojom::Frame> frame_receiver,
       mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
           browser_interface_broker,
       int previous_routing_id,
@@ -230,6 +230,7 @@ class CONTENT_EXPORT RenderFrameImpl
     CreateParams(AgentSchedulingGroup& agent_scheduling_group,
                  RenderViewImpl* render_view,
                  int32_t routing_id,
+                 mojo::PendingAssociatedReceiver<mojom::Frame> frame_receiver,
                  mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
                      browser_interface_broker,
                  const base::UnguessableToken& devtools_frame_token);
@@ -241,6 +242,7 @@ class CONTENT_EXPORT RenderFrameImpl
     AgentSchedulingGroup* agent_scheduling_group;
     RenderViewImpl* render_view;
     int32_t routing_id;
+    mojo::PendingAssociatedReceiver<mojom::Frame> frame_receiver;
     mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
         browser_interface_broker;
     base::UnguessableToken devtools_frame_token;
@@ -422,25 +424,6 @@ class CONTENT_EXPORT RenderFrameImpl
   void NotifyResourceLoadCanceled(int64_t request_id) override;
   void Clone(mojo::PendingReceiver<blink::mojom::ResourceLoadInfoNotifier>
                  pending_resource_load_info_notifier) override;
-
-  // mojom::Frame implementation:
-  void GetInterfaceProvider(
-      mojo::PendingReceiver<service_manager::mojom::InterfaceProvider> receiver)
-      override;
-  void GetCanonicalUrlForSharing(
-      GetCanonicalUrlForSharingCallback callback) override;
-  void BlockRequests() override;
-  void ResumeBlockedRequests() override;
-  void SnapshotAccessibilityTree(
-      mojom::SnapshotAccessibilityTreeParamsPtr params,
-      SnapshotAccessibilityTreeCallback callback) override;
-  void GetSerializedHtmlWithLocalLinks(
-      const base::flat_map<GURL, base::FilePath>& url_map,
-      const base::flat_map<base::UnguessableToken, base::FilePath>&
-          frame_token_map,
-      bool save_with_empty_url,
-      mojo::PendingRemote<mojom::FrameHTMLSerializerHandler> handler_remote)
-      override;
 
 #if defined(OS_ANDROID)
   void ExtractSmartClipData(
@@ -676,18 +659,13 @@ class CONTENT_EXPORT RenderFrameImpl
       mojo::PendingAssociatedReceiver<blink::mojom::AutoplayConfigurationClient>
           receiver);
 
-  // Binds to the FrameHost in the browser.
-  void BindFrame(mojo::PendingReceiver<mojom::Frame> receiver);
+  void BindFrameBindingsControl(
+      mojo::PendingAssociatedReceiver<mojom::FrameBindingsControl> receiver);
+  void BindNavigationClient(
+      mojo::PendingAssociatedReceiver<mojom::NavigationClient> receiver);
 
   // Virtual so that a TestRenderFrame can mock out the interface.
   virtual mojom::FrameHost* GetFrameHost();
-
-  void BindFrameBindingsControl(
-      mojo::PendingAssociatedReceiver<mojom::FrameBindingsControl> receiver);
-  void BindFrameNavigationControl(
-      mojo::PendingAssociatedReceiver<mojom::FrameNavigationControl> receiver);
-  void BindNavigationClient(
-      mojo::PendingAssociatedReceiver<mojom::NavigationClient> receiver);
 
   media::MediaPermission* GetMediaPermission();
 
@@ -828,6 +806,7 @@ class CONTENT_EXPORT RenderFrameImpl
       AgentSchedulingGroup& agent_scheduling_group,
       RenderViewImpl* render_view,
       int32_t routing_id,
+      mojo::PendingAssociatedReceiver<mojom::Frame> frame_receiver,
       mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
           browser_interface_broker,
       const base::UnguessableToken& devtools_frame_token);
@@ -839,7 +818,7 @@ class CONTENT_EXPORT RenderFrameImpl
   // Checks whether accessibility support for this frame is currently enabled.
   bool IsAccessibilityEnabled() const;
 
-  // mojom::FrameNavigationControl implementation:
+  // mojom::Frame implementation:
   void CommitSameDocumentNavigation(
       mojom::CommonNavigationParamsPtr common_params,
       mojom::CommitNavigationParamsPtr commit_params,
@@ -879,6 +858,23 @@ class CONTENT_EXPORT RenderFrameImpl
               const FrameReplicationState& replicated_frame_state,
               const base::UnguessableToken& frame_token) override;
   void Delete(mojom::FrameDeleteIntention intent) override;
+  void BlockRequests() override;
+  void ResumeBlockedRequests() override;
+  void GetInterfaceProvider(
+      mojo::PendingReceiver<service_manager::mojom::InterfaceProvider> receiver)
+      override;
+  void GetCanonicalUrlForSharing(
+      GetCanonicalUrlForSharingCallback callback) override;
+  void SnapshotAccessibilityTree(
+      mojom::SnapshotAccessibilityTreeParamsPtr params,
+      SnapshotAccessibilityTreeCallback callback) override;
+  void GetSerializedHtmlWithLocalLinks(
+      const base::flat_map<GURL, base::FilePath>& url_map,
+      const base::flat_map<base::UnguessableToken, base::FilePath>&
+          frame_token_map,
+      bool save_with_empty_url,
+      mojo::PendingRemote<mojom::FrameHTMLSerializerHandler> handler_remote)
+      override;
 
   // IPC message handlers ------------------------------------------------------
   //
@@ -1279,11 +1275,12 @@ class CONTENT_EXPORT RenderFrameImpl
 
   mojo::AssociatedReceiver<blink::mojom::AutoplayConfigurationClient>
       autoplay_configuration_receiver_{this};
-  mojo::Receiver<mojom::Frame> frame_receiver_{this};
+  // The mojom::Frame can not be bound at construction because it needs the
+  // WebFrame to get a TaskRunner from so it is stashed here.
+  mojo::PendingAssociatedReceiver<mojom::Frame> pending_frame_receiver_;
+  mojo::AssociatedReceiver<mojom::Frame> frame_receiver_{this};
   mojo::AssociatedReceiver<mojom::FrameBindingsControl>
       frame_bindings_control_receiver_{this};
-  mojo::AssociatedReceiver<mojom::FrameNavigationControl>
-      frame_navigation_control_receiver_{this};
   mojo::AssociatedReceiver<mojom::MhtmlFileWriter> mhtml_file_writer_receiver_{
       this};
 

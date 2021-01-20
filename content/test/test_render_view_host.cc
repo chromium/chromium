@@ -282,6 +282,8 @@ bool TestRenderViewHost::CreateRenderView(
         mojo::PendingAssociatedRemote<blink::mojom::FrameWidgetHost>()
             .InitWithNewEndpointAndPassReceiver(),
         TestRenderWidgetHost::CreateStubFrameWidgetRemote());
+    main_frame->SetMojomFrameRemote(
+        TestRenderFrameHost::CreateStubFrameRemote());
 
     // This also initializes the RenderWidgetHost attached to the frame.
     main_frame->RenderFrameCreated();

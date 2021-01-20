@@ -104,6 +104,7 @@ class AgentSchedulingGroup;
 class CategorizedWorkerPool;
 class GpuVideoAcceleratorFactoriesImpl;
 class MediaInterfaceFactory;
+class RenderFrameImpl;
 class RenderThreadObserver;
 class RendererBlinkPlatformImpl;
 class ResourceDispatcher;
@@ -163,6 +164,9 @@ class CONTENT_EXPORT RenderThreadImpl
   std::string GetLocale() override;
   IPC::SyncMessageFilter* GetSyncMessageFilter() override;
   void AddRoute(int32_t routing_id, IPC::Listener* listener) override;
+  void AttachTaskRunnerToRoute(
+      int32_t routing_id,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner) override;
   void RemoveRoute(int32_t routing_id) override;
   int GenerateRoutingID() override;
   bool GenerateFrameRoutingID(

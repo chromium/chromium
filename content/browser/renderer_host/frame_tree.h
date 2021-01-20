@@ -166,6 +166,7 @@ class CONTENT_EXPORT FrameTree {
       RenderFrameHostImpl* parent,
       int process_id,
       int new_routing_id,
+      mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
       mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
           browser_interface_broker_receiver,
       blink::mojom::PolicyContainerBindParamsPtr policy_container_bind_params,

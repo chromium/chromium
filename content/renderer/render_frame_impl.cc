@@ -1531,11 +1531,13 @@ RenderFrameImpl* RenderFrameImpl::Create(
     AgentSchedulingGroup& agent_scheduling_group,
     RenderViewImpl* render_view,
     int32_t routing_id,
+    mojo::PendingAssociatedReceiver<mojom::Frame> frame_receiver,
     mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
         browser_interface_broker,
     const base::UnguessableToken& devtools_frame_token) {
   DCHECK(routing_id != MSG_ROUTING_NONE);
   CreateParams params(agent_scheduling_group, render_view, routing_id,
+                      std::move(frame_receiver),
                       std::move(browser_interface_broker),
                       devtools_frame_token);
 
@@ -1573,7 +1575,7 @@ RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
 
   RenderFrameImpl* render_frame = RenderFrameImpl::Create(
       agent_scheduling_group, render_view, params->main_frame_routing_id,
-      std::move(params->main_frame_interface_broker),
+      std::move(params->frame), std::move(params->main_frame_interface_broker),
       params->devtools_main_frame_token);
   render_frame->InitializeBlameContext(nullptr);
 
@@ -1630,6 +1632,7 @@ RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
 void RenderFrameImpl::CreateFrame(
     AgentSchedulingGroup& agent_scheduling_group,
     int routing_id,
+    mojo::PendingAssociatedReceiver<mojom::Frame> frame_receiver,
     mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
         browser_interface_broker,
     int previous_routing_id,
@@ -1676,7 +1679,8 @@ void RenderFrameImpl::CreateFrame(
     // Create the RenderFrame and WebLocalFrame, linking the two.
     render_frame = RenderFrameImpl::Create(
         agent_scheduling_group, parent_proxy->render_view(), routing_id,
-        std::move(browser_interface_broker), devtools_frame_token);
+        std::move(frame_receiver), std::move(browser_interface_broker),
+        devtools_frame_token);
     render_frame->InitializeBlameContext(FromRoutingID(parent_routing_id));
     render_frame->unique_name_helper_.set_propagated_name(
         replicated_state.unique_name);
@@ -1718,7 +1722,8 @@ void RenderFrameImpl::CreateFrame(
     // main frame, as in the case where a navigation to the current process'
     render_frame = RenderFrameImpl::Create(
         agent_scheduling_group, render_view, routing_id,
-        std::move(browser_interface_broker), devtools_frame_token);
+        std::move(frame_receiver), std::move(browser_interface_broker),
+        devtools_frame_token);
     render_frame->InitializeBlameContext(nullptr);
     web_frame = blink::WebLocalFrame::CreateProvisional(
         render_frame, render_frame->blink_interface_registry_.get(),
@@ -1953,12 +1958,14 @@ RenderFrameImpl::CreateParams::CreateParams(
     AgentSchedulingGroup& agent_scheduling_group,
     RenderViewImpl* render_view,
     int32_t routing_id,
+    mojo::PendingAssociatedReceiver<mojom::Frame> frame_receiver,
     mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
         browser_interface_broker,
     const base::UnguessableToken& devtools_frame_token)
     : agent_scheduling_group(&agent_scheduling_group),
       render_view(render_view),
       routing_id(routing_id),
+      frame_receiver(std::move(frame_receiver)),
       browser_interface_broker(std::move(browser_interface_broker)),
       devtools_frame_token(devtools_frame_token) {}
 RenderFrameImpl::CreateParams::~CreateParams() = default;
@@ -1995,7 +2002,10 @@ RenderFrameImpl::RenderFrameImpl(CreateParams params)
   blink_interface_registry_.reset(new BlinkInterfaceRegistryImpl(
       registry_.GetWeakPtr(), associated_interfaces_.GetWeakPtr()));
 
-  CHECK(params.browser_interface_broker.is_valid());
+  DCHECK(params.frame_receiver.is_valid());
+  pending_frame_receiver_ = std::move(params.frame_receiver);
+
+  DCHECK(params.browser_interface_broker.is_valid());
   browser_interface_broker_proxy_.Bind(
       std::move(params.browser_interface_broker),
       agent_scheduling_group_.agent_group_scheduler().DefaultTaskRunner());
@@ -2085,9 +2095,15 @@ void RenderFrameImpl::Initialize(blink::WebFrame* parent) {
     enabled_bindings_ |= BINDINGS_POLICY_STATS_COLLECTION;
   frame_request_blocker_ = blink::WebFrameRequestBlocker::Create();
 
-  // Bind this frame and the message router. This must be called after |frame_|
-  // is set since binding requires a per-frame task runner.
-  agent_scheduling_group_.AddRoute(routing_id_, this);
+  // Bind this class to mojom::Frame and to the message router for legacy IPC.
+  // These must be called after |frame_| is set since binding requires a
+  // per-frame task runner.
+  frame_receiver_.Bind(
+      std::move(pending_frame_receiver_),
+      GetTaskRunner(blink::TaskType::kInternalNavigationAssociated));
+  agent_scheduling_group_.AddFrameRoute(
+      routing_id_, this,
+      GetTaskRunner(blink::TaskType::kInternalNavigationAssociated));
 }
 
 void RenderFrameImpl::InitializeBlameContext(RenderFrameImpl* parent_frame) {
@@ -2217,25 +2233,9 @@ void RenderFrameImpl::BindAutoplayConfiguration(
       GetTaskRunner(blink::TaskType::kInternalNavigationAssociated));
 }
 
-void RenderFrameImpl::BindFrame(mojo::PendingReceiver<mojom::Frame> receiver) {
-  // It's not unfreezable at the moment because Frame::SetLifecycleState
-  // has to run for the frozen frames.
-  // TODO(altimin): Move SetLifecycleState to a dedicated scheduling interface.
-  frame_receiver_.Bind(
-      std::move(receiver),
-      GetTaskRunner(blink::TaskType::kInternalFrameLifecycleControl));
-}
-
 void RenderFrameImpl::BindFrameBindingsControl(
     mojo::PendingAssociatedReceiver<mojom::FrameBindingsControl> receiver) {
   frame_bindings_control_receiver_.Bind(
-      std::move(receiver),
-      GetTaskRunner(blink::TaskType::kInternalNavigationAssociated));
-}
-
-void RenderFrameImpl::BindFrameNavigationControl(
-    mojo::PendingAssociatedReceiver<mojom::FrameNavigationControl> receiver) {
-  frame_navigation_control_receiver_.Bind(
       std::move(receiver),
       GetTaskRunner(blink::TaskType::kInternalNavigationAssociated));
 }
@@ -2882,8 +2882,6 @@ void RenderFrameImpl::Clone(
       agent_scheduling_group_.agent_group_scheduler().DefaultTaskRunner());
 }
 
-// mojom::Frame implementation -------------------------------------------------
-
 void RenderFrameImpl::GetInterfaceProvider(
     mojo::PendingReceiver<service_manager::mojom::InterfaceProvider> receiver) {
   auto task_runner = GetTaskRunner(blink::TaskType::kInternalDefault);
@@ -3410,8 +3408,6 @@ void RenderFrameImpl::CommitFailedNavigation(
   browser_side_navigation_pending_ = false;
 }
 
-// mojom::FrameNavigationControl implementation --------------------------------
-
 void RenderFrameImpl::CommitSameDocumentNavigation(
     mojom::CommonNavigationParamsPtr common_params,
     mojom::CommitNavigationParamsPtr commit_params,
@@ -3848,12 +3844,16 @@ blink::WebLocalFrame* RenderFrameImpl::CreateChildFrame(
           name.IsEmpty() ? fallback_name.Utf8() : name.Utf8(),
           is_created_by_script);
 
+  mojo::PendingAssociatedRemote<mojom::Frame> pending_frame_remote;
+  mojo::PendingAssociatedReceiver<mojom::Frame> pending_frame_receiver =
+      pending_frame_remote.InitWithNewEndpointAndPassReceiver();
+
   mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
       browser_interface_broker;
 
   // Now create the child frame in the browser via an asynchronous call.
   GetFrameHost()->CreateChildFrame(
-      child_routing_id,
+      child_routing_id, std::move(pending_frame_remote),
       browser_interface_broker.InitWithNewPipeAndPassReceiver(),
       blink::mojom::PolicyContainerBindParams::New(
           std::move(policy_container_bind_params.receiver)),
@@ -3869,7 +3869,8 @@ blink::WebLocalFrame* RenderFrameImpl::CreateChildFrame(
   // Create the RenderFrame and WebLocalFrame, linking the two.
   RenderFrameImpl* child_render_frame = RenderFrameImpl::Create(
       agent_scheduling_group_, render_view_, child_routing_id,
-      std::move(browser_interface_broker), devtools_frame_token);
+      std::move(pending_frame_receiver), std::move(browser_interface_broker),
+      devtools_frame_token);
   child_render_frame->unique_name_helper_.set_propagated_name(
       frame_unique_name);
   if (is_created_by_script)
@@ -6076,10 +6077,6 @@ void RenderFrameImpl::RegisterMojoInterfaces() {
 
   GetAssociatedInterfaceRegistry()->AddInterface(base::BindRepeating(
       &RenderFrameImpl::BindFrameBindingsControl, weak_factory_.GetWeakPtr()));
-
-  GetAssociatedInterfaceRegistry()->AddInterface(
-      base::BindRepeating(&RenderFrameImpl::BindFrameNavigationControl,
-                          weak_factory_.GetWeakPtr()));
 
   GetAssociatedInterfaceRegistry()->AddInterface(base::BindRepeating(
       &RenderFrameImpl::BindNavigationClient, weak_factory_.GetWeakPtr()));

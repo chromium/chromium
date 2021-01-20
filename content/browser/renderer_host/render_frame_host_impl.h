@@ -539,6 +539,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // RenderFrame to use.
   void OnCreateChildFrame(
       int new_routing_id,
+      mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
       mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
           browser_interface_broker_receiver,
       blink::mojom::PolicyContainerBindParamsPtr policy_container_bind_params,
@@ -572,10 +573,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // represented.
   size_t child_count() { return children_.size(); }
   FrameTreeNode* child_at(size_t index) const { return children_[index].get(); }
-  FrameTreeNode* AddChild(std::unique_ptr<FrameTreeNode> child,
-                          int process_id,
-                          int frame_routing_id,
-                          const base::UnguessableToken& frame_token);
+  FrameTreeNode* AddChild(
+      std::unique_ptr<FrameTreeNode> child,
+      int process_id,
+      int frame_routing_id,
+      mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
+      const base::UnguessableToken& frame_token);
   void RemoveChild(FrameTreeNode* child);
   void ResetChildren();
 
@@ -1066,10 +1069,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
     return has_focused_editable_element_;
   }
 
-  // Resumes any blocked request for the specified root RenderFrameHost and
-  // child frame hosts.
-  void ResumeBlockedRequestsForFrame();
-
   // Binds a DevToolsAgent interface for debugging.
   void BindDevToolsAgent(
       mojo::PendingAssociatedRemote<blink::mojom::DevToolsAgentHost> host,
@@ -1341,6 +1340,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Returns true if the frame is frozen.
   bool IsFrozen();
+
+  // Set the `frame_` for sending messages to the renderer process.
+  void SetMojomFrameRemote(mojo::PendingAssociatedRemote<mojom::Frame>);
 
   void CreateAppCacheBackend(
       mojo::PendingReceiver<blink::mojom::AppCacheBackend> receiver);
@@ -1923,8 +1925,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
                       FrameTree* frame_tree,
                       FrameTreeNode* frame_tree_node,
                       int32_t routing_id,
+                      mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
                       const base::UnguessableToken& frame_token,
-                      bool renderer_initiated_creation,
+                      bool renderer_initiated_creation_of_main_frame,
                       LifecycleState lifecycle_state);
 
   // The SendCommit* functions below are wrappers for commit calls
@@ -2114,6 +2117,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       override;
   void CreateChildFrame(
       int new_routing_id,
+      mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
       mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
           browser_interface_broker_receiver,
       blink::mojom::PolicyContainerBindParamsPtr policy_container_bind_params,
@@ -2464,10 +2468,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void ForEachImmediateLocalRoot(
       const base::RepeatingCallback<void(RenderFrameHostImpl*)>& callback);
 
-  // Lazily initializes and returns the mojom::FrameNavigationControl interface
-  // for this frame. May be overridden by friend subclasses for e.g. tests which
-  // wish to intercept outgoing navigation control messages.
-  virtual mojom::FrameNavigationControl* GetNavigationControl();
+  // Returns the mojom::Frame interface for this frame in the renderer process.
+  // May be overridden by friend subclasses for e.g. tests which wish to
+  // intercept outgoing messages. May only be called when the RenderFrame in the
+  // renderer exists (i.e. RenderFrameCreated() is true).
+  mojom::Frame* GetMojomFrameInRenderer();
 
   // Utility function used to validate potentially harmful parameters sent by
   // the renderer during the commit notification.
@@ -2998,9 +3003,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
       this};
   mojo::AssociatedReceiver<blink::mojom::BackForwardCacheControllerHost>
       back_forward_cache_controller_host_associated_receiver_{this};
-  mojo::Remote<mojom::Frame> frame_;
+  mojo::AssociatedRemote<mojom::Frame> frame_;
   mojo::AssociatedRemote<mojom::FrameBindingsControl> frame_bindings_control_;
-  mojo::AssociatedRemote<mojom::FrameNavigationControl> navigation_control_;
   mojo::AssociatedReceiver<blink::mojom::LocalFrameHost>
       local_frame_host_receiver_{this};
 

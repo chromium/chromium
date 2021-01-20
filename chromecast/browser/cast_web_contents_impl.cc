@@ -504,12 +504,6 @@ void CastWebContentsImpl::RenderFrameCreated(
   }
 }
 
-void CastWebContentsImpl::RenderFrameHostChanged(
-    content::RenderFrameHost* old_host,
-    content::RenderFrameHost* new_host) {
-  RenderFrameCreated(new_host);
-}
-
 std::vector<chromecast::shell::mojom::FeaturePtr>
 CastWebContentsImpl::GetRendererFeatures() {
   std::vector<chromecast::shell::mojom::FeaturePtr> features;

@@ -12,11 +12,13 @@
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "content/common/associated_interfaces.mojom.h"
+#include "content/common/frame.mojom.h"
 #include "content/common/frame_messages.h"
 #include "content/common/render_message_filter.mojom.h"
 #include "content/public/renderer/render_thread_observer.h"
 #include "content/renderer/render_thread_impl.h"
 #include "content/renderer/render_view_impl.h"
+#include "content/test/test_render_frame.h"
 #include "ipc/ipc_message_utils.h"
 #include "ipc/ipc_sync_message.h"
 #include "ipc/message_filter.h"
@@ -133,6 +135,10 @@ void MockRenderThread::BindHostReceiver(mojo::GenericPendingReceiver receiver) {
 
 void MockRenderThread::AddRoute(int32_t routing_id, IPC::Listener* listener) {}
 
+void MockRenderThread::AttachTaskRunnerToRoute(
+    int32_t routing_id,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {}
+
 void MockRenderThread::RemoveRoute(int32_t routing_id) {}
 
 int MockRenderThread::GenerateRoutingID() {
@@ -244,20 +250,22 @@ int32_t MockRenderThread::GetNextRoutingID() {
 mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
 MockRenderThread::TakeInitialBrowserInterfaceBrokerReceiverForFrame(
     int32_t routing_id) {
-  auto it =
-      frame_routing_id_to_initial_browser_broker_receivers_.find(routing_id);
-  if (it == frame_routing_id_to_initial_browser_broker_receivers_.end())
-    return mojo::NullReceiver();
-  auto browser_broker_receiver = std::move(it->second);
-  frame_routing_id_to_initial_browser_broker_receivers_.erase(it);
-  return browser_broker_receiver;
+  mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
+      broker_from_create_child_frame_request;
+  auto it = frame_routing_id_to_initial_browser_brokers_.find(routing_id);
+  if (it != frame_routing_id_to_initial_browser_brokers_.end()) {
+    broker_from_create_child_frame_request = std::move(it->second);
+    frame_routing_id_to_initial_browser_brokers_.erase(it);
+  }
+  return broker_from_create_child_frame_request;
 }
 
 void MockRenderThread::OnCreateChildFrame(
     int32_t child_routing_id,
+    mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
     mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
         browser_interface_broker) {
-  frame_routing_id_to_initial_browser_broker_receivers_.emplace(
+  frame_routing_id_to_initial_browser_brokers_.emplace(
       child_routing_id, std::move(browser_interface_broker));
 }
 
@@ -280,8 +288,9 @@ void MockRenderThread::OnCreateWindow(
     const mojom::CreateNewWindowParams& params,
     mojom::CreateNewWindowReply* reply) {
   reply->route_id = GetNextRoutingID();
+  reply->frame = TestRenderFrame::CreateStubFrameReceiver();
   reply->main_frame_route_id = GetNextRoutingID();
-  frame_routing_id_to_initial_browser_broker_receivers_.emplace(
+  frame_routing_id_to_initial_browser_brokers_.emplace(
       reply->main_frame_route_id,
       reply->main_frame_interface_broker.InitWithNewPipeAndPassReceiver());
 

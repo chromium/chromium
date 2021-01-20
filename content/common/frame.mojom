@@ -94,44 +94,6 @@ struct SnapshotAccessibilityTreeParams {
   mojo_base.mojom.TimeDelta timeout;
 };
 
-// Implemented by the frame provider (e.g. renderer processes).
-interface Frame {
-  GetInterfaceProvider(
-      pending_receiver<service_manager.mojom.InterfaceProvider> interfaces);
-  GetCanonicalUrlForSharing() => (url.mojom.Url? canonical_url);
-
-  // Causes all new subresource requests to be blocked (not being started) until
-  // ResumeBlockedRequests is called.
-  BlockRequests();
-
-  // Resumes blocked requests.
-  // It is safe to call this without calling BlockRequests.
-  ResumeBlockedRequests();
-
-  // Samsung Galaxy Note-specific "smart clip" stylus text getter.
-  // Extracts the data at the given rect.
-  [EnableIf=is_android]
-  ExtractSmartClipData(gfx.mojom.Rect rect)
-      => (mojo_base.mojom.String16 text, mojo_base.mojom.String16 html,
-              gfx.mojom.Rect clip_rect);
-
-  // Requests a one-time snapshot of the accessibility tree without enabling
-  // accessibility if it wasn't already enabled.
-  SnapshotAccessibilityTree(SnapshotAccessibilityTreeParams params)
-      => (ax.mojom.AXTreeUpdate snapshot);
-
-  // Get HTML data by serializing the target frame and replacing all resource
-  // links with a path to the local copy passed in the message payload. In order
-  // to report progress to the the browser process, a pending remote is passed
-  // via |callback_remote|, so that direct communication with the SavePackage
-  // object that initiated the process can be established.
-  GetSerializedHtmlWithLocalLinks(
-      map<url.mojom.Url, mojo_base.mojom.FilePath> url_map,
-      map<mojo_base.mojom.UnguessableToken, mojo_base.mojom.FilePath>
-          frame_token_map, bool save_with_empty_url,
-          pending_remote<FrameHTMLSerializerHandler> handler_remote);
-};
-
 // An enumeration specifying the reason of the frame deletion.
 enum FrameDeleteIntention {
   // The frame being deleted isn't a (speculative) main frame.
@@ -146,11 +108,12 @@ enum FrameDeleteIntention {
   kSpeculativeMainFrameForNavigationCancelled,
 };
 
-// Implemented by the frame provider and currently must be associated with the
-// legacy IPC channel.
+// Implemented by the frame provider, and must be associated with other content
+// mojoms bound to frames, widgets, views, and currently also with the legacy
+// IPC channel.
 // KEEP THE COMMIT FUNCTIONS IN SYNC in content/common/navigation_client.mojom.
-// These will eventually be removed from FrameNavigationControl.
-interface FrameNavigationControl {
+// These will eventually be removed from Frame.
+interface Frame {
   // Tells the renderer that a same-document navigation should be committed.
   // The renderer will return a status value indicating whether the commit
   // could proceed as expected or not. In particular, it might be necessary to
@@ -261,6 +224,42 @@ interface FrameNavigationControl {
   // browser process. Committed main frames are owned by the renderer's WebView
   // and can not be deleted directly.
   Delete(FrameDeleteIntention intention);
+
+  // Causes all new subresource requests to be blocked (not being started) until
+  // ResumeBlockedRequests is called.
+  BlockRequests();
+
+  // Resumes blocked requests.
+  // It is safe to call this without calling BlockRequests.
+  ResumeBlockedRequests();
+
+  GetInterfaceProvider(
+      pending_receiver<service_manager.mojom.InterfaceProvider> interfaces);
+
+  GetCanonicalUrlForSharing() => (url.mojom.Url? canonical_url);
+
+  // Samsung Galaxy Note-specific "smart clip" stylus text getter.
+  // Extracts the data at the given rect.
+  [EnableIf=is_android]
+  ExtractSmartClipData(gfx.mojom.Rect rect)
+      => (mojo_base.mojom.String16 text, mojo_base.mojom.String16 html,
+              gfx.mojom.Rect clip_rect);
+
+  // Requests a one-time snapshot of the accessibility tree without enabling
+  // accessibility if it wasn't already enabled.
+  SnapshotAccessibilityTree(SnapshotAccessibilityTreeParams params)
+      => (ax.mojom.AXTreeUpdate snapshot);
+
+  // Get HTML data by serializing the target frame and replacing all resource
+  // links with a path to the local copy passed in the message payload. In order
+  // to report progress to the the browser process, a pending remote is passed
+  // via |callback_remote|, so that direct communication with the SavePackage
+  // object that initiated the process can be established.
+  GetSerializedHtmlWithLocalLinks(
+      map<url.mojom.Url, mojo_base.mojom.FilePath> url_map,
+      map<mojo_base.mojom.UnguessableToken, mojo_base.mojom.FilePath>
+          frame_token_map, bool save_with_empty_url,
+          pending_remote<FrameHTMLSerializerHandler> handler_remote);
 };
 
 // Implemented by the frame (e.g. renderer processes).
@@ -281,12 +280,6 @@ interface FrameBindingsControl {
   // Used to bind WebUI and WebUIHost mojo connections.
   BindWebUI(pending_associated_receiver<content.mojom.WebUI> receiver,
             pending_associated_remote<content.mojom.WebUIHost> remote);
-};
-
-// Implemented by a service that provides implementations of the Frame
-// interface. (e.g. renderer processes).
-interface FrameFactory {
-  CreateFrame(int32 frame_routing_id, pending_receiver<Frame> frame);
 };
 
 struct CreateNewWindowParams {
@@ -350,6 +343,9 @@ struct CreateNewWindowReply {
 
   // The ID of the main frame hosted in the view.
   int32 main_frame_route_id;
+
+  // The pending mojo connection to the Frame implementation in the renderer.
+  pending_associated_receiver<content.mojom.Frame> frame;
 
   // The unique identifier of the RenderFrameHost
   mojo_base.mojom.UnguessableToken main_frame_frame_token;
@@ -488,6 +484,7 @@ interface FrameHost {
   // Each of these messages will have a corresponding mojom::FrameHost::Detach
   // API sent when the frame is detached from the DOM.
   CreateChildFrame(int32 child_routing_id,
+                   pending_associated_remote<content.mojom.Frame> frame,
                    pending_receiver<blink.mojom.BrowserInterfaceBroker>
                      browser_interface_broker,
                    blink.mojom.PolicyContainerBindParams

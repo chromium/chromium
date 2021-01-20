@@ -36,6 +36,24 @@
 
 namespace content {
 
+// static
+mojo::PendingAssociatedReceiver<mojom::Frame>
+TestRenderFrame::CreateStubFrameReceiver() {
+  mojo::PendingAssociatedRemote<mojom::Frame> pending_remote;
+  mojo::PendingAssociatedReceiver<mojom::Frame> pending_receiver =
+      pending_remote.InitWithNewEndpointAndPassReceiver();
+  return pending_receiver;
+}
+
+// static
+mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
+TestRenderFrame::CreateStubBrowserInterfaceBrokerRemote() {
+  mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> pending_remote;
+  mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker> pending_receiver =
+      pending_remote.InitWithNewPipeAndPassReceiver();
+  return pending_remote;
+}
+
 class MockFrameHost : public mojom::FrameHost {
  public:
   MockFrameHost() {}
@@ -55,11 +73,11 @@ class MockFrameHost : public mojom::FrameHost {
     did_add_message_to_console_callback_ = std::move(callback);
   }
 
-  // Holds on to the receiver end of the BrowserInterfaceBroker interface whose
-  // client end is bound to the corresponding RenderFrame's
-  // |browser_interface_broker_proxy_| to facilitate retrieving the most recent
-  // |browser_interface_broker_receiver| in tests.
-  void PassLastBrowserInterfaceBrokerReceiver(
+  // The frame in the renderer sends a BrowserInterfaceBroker Receiver to the
+  // browser process. The test harness (in MockRenderThread) will stash away
+  // those pending Receivers. This sets the pending Receiver that was sent for
+  // the browser process to bind when initially creating the frame.
+  void SetInitialBrowserInterfaceBrokerReceiver(
       mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
           browser_interface_broker_receiver) {
     last_browser_interface_broker_receiver_ =
@@ -117,6 +135,7 @@ class MockFrameHost : public mojom::FrameHost {
 
   void CreateChildFrame(
       int new_routing_id,
+      mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
       mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
           browser_interface_broker_receiver,
       blink::mojom::PolicyContainerBindParamsPtr policy_container_bind_params,
@@ -130,7 +149,8 @@ class MockFrameHost : public mojom::FrameHost {
     MockRenderThread* mock_render_thread =
         static_cast<MockRenderThread*>(RenderThread::Get());
     mock_render_thread->OnCreateChildFrame(
-        new_routing_id, std::move(browser_interface_broker_receiver));
+        new_routing_id, std::move(frame_remote),
+        std::move(browser_interface_broker_receiver));
   }
 
   void CreatePortal(mojo::PendingAssociatedReceiver<blink::mojom::Portal>,
@@ -233,7 +253,7 @@ TestRenderFrame::TestRenderFrame(RenderFrameImpl::CreateParams params)
       mock_frame_host_(std::make_unique<MockFrameHost>()) {
   MockRenderThread* mock_render_thread =
       static_cast<MockRenderThread*>(RenderThread::Get());
-  mock_frame_host_->PassLastBrowserInterfaceBrokerReceiver(
+  mock_frame_host_->SetInitialBrowserInterfaceBrokerReceiver(
       mock_render_thread->TakeInitialBrowserInterfaceBrokerReceiverForFrame(
           params.routing_id));
 }

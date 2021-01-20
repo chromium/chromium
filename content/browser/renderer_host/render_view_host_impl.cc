@@ -428,6 +428,9 @@ bool RenderViewHostImpl::CreateRenderView(
   params->view_id = GetRoutingID();
   if (main_rfh) {
     params->main_frame_routing_id = main_frame_routing_id_;
+    mojo::PendingAssociatedRemote<mojom::Frame> pending_frame_remote;
+    params->frame = pending_frame_remote.InitWithNewEndpointAndPassReceiver();
+    main_rfh->SetMojomFrameRemote(std::move(pending_frame_remote));
     params->main_frame_widget_routing_id =
         main_rfh->GetRenderWidgetHost()->GetRoutingID();
     main_rfh->BindBrowserInterfaceBrokerReceiver(

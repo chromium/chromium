@@ -1601,6 +1601,10 @@ void DevToolsUIBindings::CallClientMethod(
   // If we're not exposing bindings, we shouldn't call functions either.
   if (!frontend_host_)
     return;
+  // If the client renderer is gone (e.g., the window was closed with both the
+  // inspector and client being destroyed), the message can not be sent.
+  if (!web_contents_->GetMainFrame()->IsRenderFrameCreated())
+    return;
   base::Value arguments(base::Value::Type::LIST);
   if (!arg1.is_none()) {
     arguments.Append(std::move(arg1));

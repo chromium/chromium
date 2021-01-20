@@ -5,6 +5,7 @@
 module content.mojom;
 
 import "content/common/associated_interfaces.mojom";
+import "content/common/frame.mojom";
 import "content/common/native_types.mojom";
 import "ipc/constants.mojom";
 import "mojo/public/mojom/base/generic_pending_receiver.mojom";
@@ -54,8 +55,9 @@ struct CreateViewParams {
   pending_remote<blink.mojom.BrowserInterfaceBroker>?
       main_frame_interface_broker;
 
-  // The communication interfaces for the WebFrameWidget in blink. All should
-  // be set if there is a |main_frame_routing_id|.
+  // The communication interfaces for the main Frame and its WebFrameWidget in
+  // blink. All should be set if there is a |main_frame_routing_id|.
+  pending_associated_receiver<content.mojom.Frame>? frame;
   pending_associated_remote<blink.mojom.FrameWidgetHost>? frame_widget_host;
   pending_associated_receiver<blink.mojom.FrameWidget>? frame_widget;
   pending_associated_remote<blink.mojom.WidgetHost>? widget_host;
@@ -209,6 +211,9 @@ struct CreateFrameParams {
   // speculative RenderFrameHost. In that case, the final policy container will
   // be sent along CommitNavigation.
   blink.mojom.PolicyContainer? policy_container;
+
+  // The mojo connection to the mojom::Frame in the renderer.
+  pending_associated_receiver<content.mojom.Frame> frame;
 };
 
 

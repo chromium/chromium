@@ -6314,8 +6314,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_TRUE(NavigateToURLFromRenderer(
       node, embedded_test_server()->GetURL("c.com", "/title2.html")));
   {
+    mojo::PendingAssociatedRemote<mojom::Frame> pending_frame;
+
     mojom::CreateFrameParamsPtr params = mojom::CreateFrameParams::New();
     params->routing_id = frame_routing_id;
+    params->frame = pending_frame.InitWithNewEndpointAndPassReceiver();
     ignore_result(params->interface_broker.InitWithNewPipeAndPassReceiver());
     params->previous_routing_id = previous_routing_id;
     params->opener_frame_token = base::nullopt;
@@ -6391,8 +6394,13 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ParentDetachRemoteChild) {
   EXPECT_EQ(1U, contents->GetFrameTree()->root()->child_count());
 
   {
+    mojo::PendingAssociatedRemote<mojom::Frame> pending_frame;
+    mojo::PendingAssociatedRemote<blink::mojom::FrameWidget> blink_frame_widget;
+    mojo::PendingAssociatedRemote<blink::mojom::Widget> blink_widget;
+
     mojom::CreateFrameParamsPtr params = mojom::CreateFrameParams::New();
     params->routing_id = frame_routing_id;
+    params->frame = pending_frame.InitWithNewEndpointAndPassReceiver();
     ignore_result(params->interface_broker.InitWithNewPipeAndPassReceiver());
     params->previous_routing_id = IPC::mojom::kRoutingIdNone;
     params->opener_frame_token = base::nullopt;
@@ -6401,10 +6409,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ParentDetachRemoteChild) {
     params->frame_owner_properties = blink::mojom::FrameOwnerProperties::New();
     params->widget_params = mojom::CreateFrameWidgetParams::New();
     params->widget_params->routing_id = widget_routing_id;
-    mojo::PendingAssociatedRemote<blink::mojom::FrameWidget> blink_frame_widget;
     params->widget_params->frame_widget =
         blink_frame_widget.InitWithNewEndpointAndPassReceiver();
-    mojo::PendingAssociatedRemote<blink::mojom::Widget> blink_widget;
     params->widget_params->widget =
         blink_widget.InitWithNewEndpointAndPassReceiver();
     ignore_result(params->widget_params->frame_widget_host

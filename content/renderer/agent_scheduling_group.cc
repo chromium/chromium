@@ -149,6 +149,14 @@ void AgentSchedulingGroup::AddRoute(int32_t routing_id, Listener* listener) {
   render_thread_.AddRoute(routing_id, listener);
 }
 
+void AgentSchedulingGroup::AddFrameRoute(
+    int32_t routing_id,
+    IPC::Listener* listener,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+  AddRoute(routing_id, listener);
+  render_thread_.AttachTaskRunnerToRoute(routing_id, std::move(task_runner));
+}
+
 void AgentSchedulingGroup::RemoveRoute(int32_t routing_id) {
   DCHECK(listener_map_.Lookup(routing_id));
   listener_map_.Remove(routing_id);
@@ -193,12 +201,12 @@ void AgentSchedulingGroup::DestroyView(int32_t view_id,
 
 void AgentSchedulingGroup::CreateFrame(mojom::CreateFrameParamsPtr params) {
   RenderFrameImpl::CreateFrame(
-      *this, params->routing_id, std::move(params->interface_broker),
-      params->previous_routing_id, params->opener_frame_token,
-      params->parent_routing_id, params->previous_sibling_routing_id,
-      params->frame_token, params->devtools_frame_token,
-      params->replication_state, &ToImpl(render_thread_),
-      std::move(params->widget_params),
+      *this, params->routing_id, std::move(params->frame),
+      std::move(params->interface_broker), params->previous_routing_id,
+      params->opener_frame_token, params->parent_routing_id,
+      params->previous_sibling_routing_id, params->frame_token,
+      params->devtools_frame_token, params->replication_state,
+      &ToImpl(render_thread_), std::move(params->widget_params),
       std::move(params->frame_owner_properties),
       params->has_committed_real_load, std::move(params->policy_container));
 }

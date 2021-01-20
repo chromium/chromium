@@ -129,16 +129,11 @@ class RenderFrameImplTest : public RenderViewTest {
         view_->GetMainRenderFrame()->GetWebFrame()->FirstChild())
         ->Unload(kFrameProxyRouteId, false, frame_replication_state,
                  base::UnguessableToken::Create());
-
-    mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
-        stub_browser_interface_broker;
-    ignore_result(
-        stub_browser_interface_broker.InitWithNewPipeAndPassReceiver());
-
     RenderFrameImpl::CreateFrame(
         *agent_scheduling_group_, kSubframeRouteId,
-        std::move(stub_browser_interface_broker), MSG_ROUTING_NONE,
-        base::nullopt, kFrameProxyRouteId, MSG_ROUTING_NONE,
+        TestRenderFrame::CreateStubFrameReceiver(),
+        TestRenderFrame::CreateStubBrowserInterfaceBrokerRemote(),
+        MSG_ROUTING_NONE, base::nullopt, kFrameProxyRouteId, MSG_ROUTING_NONE,
         base::UnguessableToken::Create(), base::UnguessableToken::Create(),
         frame_replication_state, &compositor_deps_, std::move(widget_params),
         blink::mojom::FrameOwnerProperties::New(),
@@ -362,7 +357,7 @@ TEST_F(RenderFrameImplTest, NoCrashWhenDeletingFrameDuringFind) {
       true /* new_session */, true /* force */, false /* wrap_within_frame */,
       false /* async */);
 
-  static_cast<mojom::FrameNavigationControl*>(frame())->Delete(
+  static_cast<mojom::Frame*>(frame())->Delete(
       mojom::FrameDeleteIntention::kNotMainFrame);
 }
 

@@ -144,45 +144,6 @@ void CreateResourceUsageReporter(
       std::move(receiver));
 }
 
-class FrameFactoryImpl : public mojom::FrameFactory {
- public:
-  FrameFactoryImpl() = default;
-  FrameFactoryImpl(const FrameFactoryImpl&) = delete;
-  FrameFactoryImpl& operator=(const FrameFactoryImpl&) = delete;
-
- private:
-  // mojom::FrameFactory:
-  void CreateFrame(
-      int32_t frame_routing_id,
-      mojo::PendingReceiver<mojom::Frame> frame_receiver) override {
-    // TODO(morrita): This is for investigating http://crbug.com/415059 and
-    // should be removed once it is fixed.
-    CHECK_LT(routing_id_highmark_, frame_routing_id);
-    routing_id_highmark_ = frame_routing_id;
-
-    RenderFrameImpl* frame = RenderFrameImpl::FromRoutingID(frame_routing_id);
-    // We can receive a GetServiceProviderForFrame message for a frame not yet
-    // created due to a race between the message and a
-    // mojom::Renderer::CreateView IPC that triggers creation of the RenderFrame
-    // we want.
-    if (!frame) {
-      RenderThreadImpl::current()->RegisterPendingFrameCreate(
-          frame_routing_id, std::move(frame_receiver));
-      return;
-    }
-
-    frame->BindFrame(std::move(frame_receiver));
-  }
-
- private:
-  int32_t routing_id_highmark_ = -1;
-};
-
-void CreateFrameFactory(mojo::PendingReceiver<mojom::FrameFactory> receiver) {
-  mojo::MakeSelfOwnedReceiver(std::make_unique<FrameFactoryImpl>(),
-                              std::move(receiver));
-}
-
 void CreateEmbeddedWorker(
     scoped_refptr<base::SingleThreadTaskRunner> initiator_task_runner,
     base::WeakPtr<RenderThreadImpl> render_thread,
@@ -216,9 +177,6 @@ void ExposeRendererInterfacesToBrowser(
   binders->Add(base::BindRepeating(&CreateEmbeddedWorker,
                                    task_runner_for_service_worker_startup,
                                    render_thread),
-               base::ThreadTaskRunnerHandle::Get());
-
-  binders->Add(base::BindRepeating(&CreateFrameFactory),
                base::ThreadTaskRunnerHandle::Get());
 
   GetContentClient()->renderer()->ExposeInterfacesToBrowser(binders);

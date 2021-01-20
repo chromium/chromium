@@ -219,16 +219,19 @@ void RenderFrameHostManager::InitRoot(SiteInstance* site_instance,
                                       bool renderer_initiated_creation) {
   SetRenderFrameHost(CreateRenderFrameHost(
       CreateFrameCase::kInitRoot, site_instance,
-      /*frame_routing_id=*/MSG_ROUTING_NONE, base::UnguessableToken::Create(),
-      renderer_initiated_creation));
+      /*frame_routing_id=*/MSG_ROUTING_NONE,
+      mojo::PendingAssociatedRemote<mojom::Frame>(),
+      base::UnguessableToken::Create(), renderer_initiated_creation));
 }
 
 void RenderFrameHostManager::InitChild(
     SiteInstance* site_instance,
     int32_t frame_routing_id,
+    mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
     const base::UnguessableToken& frame_token) {
   SetRenderFrameHost(CreateRenderFrameHost(
-      CreateFrameCase::kInitChild, site_instance, frame_routing_id, frame_token,
+      CreateFrameCase::kInitChild, site_instance, frame_routing_id,
+      std::move(frame_remote), frame_token,
       /*renderer_initiated_creation=*/false));
   // Notify the delegate of the creation of the current RenderFrameHost.
   // Do this only for subframes, as the main frame case is taken care of by
@@ -2341,6 +2344,7 @@ RenderFrameHostManager::CreateRenderFrameHost(
     CreateFrameCase create_frame_case,
     SiteInstance* site_instance,
     int32_t frame_routing_id,
+    mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
     const base::UnguessableToken& frame_token,
     bool renderer_initiated_creation) {
   FrameTree* frame_tree = frame_tree_node_->frame_tree();
@@ -2401,8 +2405,8 @@ RenderFrameHostManager::CreateRenderFrameHost(
   return RenderFrameHostFactory::Create(
       site_instance, std::move(render_view_host),
       frame_tree->render_frame_delegate(), frame_tree, frame_tree_node_,
-      frame_routing_id, frame_token, renderer_initiated_creation,
-      lifecycle_state);
+      frame_routing_id, std::move(frame_remote), frame_token,
+      renderer_initiated_creation, lifecycle_state);
 }
 
 bool RenderFrameHostManager::CreateSpeculativeRenderFrameHost(
@@ -2474,6 +2478,7 @@ RenderFrameHostManager::CreateSpeculativeRenderFrame(
   std::unique_ptr<RenderFrameHostImpl> new_render_frame_host =
       CreateRenderFrameHost(CreateFrameCase::kCreateSpeculative, instance,
                             /*frame_routing_id=*/MSG_ROUTING_NONE,
+                            mojo::PendingAssociatedRemote<mojom::Frame>(),
                             base::UnguessableToken::Create(),
                             /*renderer_initiated_creation=*/false);
   DCHECK_EQ(new_render_frame_host->GetSiteInstance(), instance);

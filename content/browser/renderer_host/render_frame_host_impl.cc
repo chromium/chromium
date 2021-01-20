@@ -1076,8 +1076,9 @@ RenderFrameHostImpl::RenderFrameHostImpl(
     FrameTree* frame_tree,
     FrameTreeNode* frame_tree_node,
     int32_t routing_id,
+    mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
     const base::UnguessableToken& frame_token,
-    bool renderer_initiated_creation,
+    bool renderer_initiated_creation_of_main_frame,
     LifecycleState lifecycle_state)
     : render_view_host_(std::move(render_view_host)),
       delegate_(delegate),
@@ -1090,7 +1091,8 @@ RenderFrameHostImpl::RenderFrameHostImpl(
       beforeunload_timeout_delay_(RenderViewHostImpl::kUnloadTimeout),
       last_navigation_previews_state_(
           blink::PreviewsTypes::PREVIEWS_UNSPECIFIED),
-      waiting_for_init_(renderer_initiated_creation),
+      frame_(std::move(frame_remote)),
+      waiting_for_init_(renderer_initiated_creation_of_main_frame),
       push_messaging_manager_(
           nullptr,
           base::OnTaskRunnerDeleter(base::CreateSequencedTaskRunner(
@@ -1104,6 +1106,8 @@ RenderFrameHostImpl::RenderFrameHostImpl(
   DCHECK(delegate_);
   DCHECK(lifecycle_state_ == LifecycleState::kSpeculative ||
          lifecycle_state_ == LifecycleState::kActive);
+  // Only main frames have `waiting_for_init_` set.
+  DCHECK(!waiting_for_init_ || !parent_);
 
   agent_scheduling_group().AddRoute(routing_id_, this);
   g_routing_id_frame_map.Get().emplace(
@@ -1148,8 +1152,6 @@ RenderFrameHostImpl::RenderFrameHostImpl(
       SetPolicyContainerHost(base::MakeRefCounted<PolicyContainerHost>());
     }
   }
-
-  SetUpMojoIfNeeded();
 
   unload_event_monitor_timeout_ =
       std::make_unique<TimeoutMonitor>(base::BindRepeating(
@@ -1670,10 +1672,8 @@ RenderFrameHostImpl::GetPendingIsolationInfoForSubresources() {
 
 void RenderFrameHostImpl::GetCanonicalUrlForSharing(
     mojom::Frame::GetCanonicalUrlForSharingCallback callback) {
-  // TODO(https://crbug.com/859110): Remove this once frame_ can no longer be
-  // null.
-  if (IsRenderFrameLive()) {
-    frame_->GetCanonicalUrlForSharing(std::move(callback));
+  if (IsRenderFrameCreated()) {
+    GetMojomFrameInRenderer()->GetCanonicalUrlForSharing(std::move(callback));
   } else {
     std::move(callback).Run(base::nullopt);
   }
@@ -1685,17 +1685,15 @@ void RenderFrameHostImpl::GetSerializedHtmlWithLocalLinks(
         frame_token_map,
     bool save_with_empty_url,
     mojo::PendingRemote<mojom::FrameHTMLSerializerHandler> serializer_handler) {
-  // TODO(https://crbug.com/859110): Remove once frame_ can no longer be null.
-  if (!IsRenderFrameLive())
+  if (!IsRenderFrameCreated())
     return;
-
-  frame_->GetSerializedHtmlWithLocalLinks(url_map, frame_token_map,
-                                          save_with_empty_url,
-                                          std::move(serializer_handler));
+  GetMojomFrameInRenderer()->GetSerializedHtmlWithLocalLinks(
+      url_map, frame_token_map, save_with_empty_url,
+      std::move(serializer_handler));
 }
 
 void RenderFrameHostImpl::SetWantErrorMessageStackTrace() {
-  GetNavigationControl()->SetWantErrorMessageStackTrace();
+  GetMojomFrameInRenderer()->SetWantErrorMessageStackTrace();
 }
 
 void RenderFrameHostImpl::ExecuteMediaPlayerActionAtLocation(
@@ -1758,7 +1756,7 @@ void RenderFrameHostImpl::MarkIsolatedWorldsAsRequiringSeparateURLLoaderFactory(
         CreateURLLoaderFactoriesForIsolatedWorlds(
             FindLatestNavigationRequestThatIsStillCommitting(),
             isolated_world_origins);
-    GetNavigationControl()->UpdateSubresourceLoaderFactories(
+    GetMojomFrameInRenderer()->UpdateSubresourceLoaderFactories(
         std::move(subresource_loader_factories));
   }
 }
@@ -1826,7 +1824,7 @@ void RenderFrameHostImpl::ExecuteJavaScriptMethod(
   CHECK(CanExecuteJavaScript());
 
   const bool wants_result = !callback.is_null();
-  GetNavigationControl()->JavaScriptMethodExecuteRequest(
+  GetMojomFrameInRenderer()->JavaScriptMethodExecuteRequest(
       object_name, method_name, std::move(arguments), wants_result,
       std::move(callback));
 }
@@ -1837,8 +1835,8 @@ void RenderFrameHostImpl::ExecuteJavaScript(const base::string16& javascript,
   CHECK(CanExecuteJavaScript());
 
   const bool wants_result = !callback.is_null();
-  GetNavigationControl()->JavaScriptExecuteRequest(javascript, wants_result,
-                                                   std::move(callback));
+  GetMojomFrameInRenderer()->JavaScriptExecuteRequest(javascript, wants_result,
+                                                      std::move(callback));
 }
 
 void RenderFrameHostImpl::ExecuteJavaScriptInIsolatedWorld(
@@ -1850,7 +1848,7 @@ void RenderFrameHostImpl::ExecuteJavaScriptInIsolatedWorld(
   DCHECK_LE(world_id, ISOLATED_WORLD_ID_MAX);
 
   const bool wants_result = !callback.is_null();
-  GetNavigationControl()->JavaScriptExecuteRequestInIsolatedWorld(
+  GetMojomFrameInRenderer()->JavaScriptExecuteRequestInIsolatedWorld(
       javascript, wants_result, world_id, std::move(callback));
 }
 
@@ -1862,7 +1860,7 @@ void RenderFrameHostImpl::ExecuteJavaScriptForTests(
 
   const bool has_user_gesture = false;
   const bool wants_result = !callback.is_null();
-  GetNavigationControl()->JavaScriptExecuteRequestForTests(  // IN-TEST
+  GetMojomFrameInRenderer()->JavaScriptExecuteRequestForTests(  // IN-TEST
       javascript, wants_result, has_user_gesture, world_id,
       std::move(callback));
 }
@@ -1880,7 +1878,7 @@ void RenderFrameHostImpl::ExecuteJavaScriptWithUserGestureForTests(
       blink::mojom::UserActivationNotificationType::kTest);
 
   const bool has_user_gesture = true;
-  GetNavigationControl()->JavaScriptExecuteRequestForTests(  // IN-TEST
+  GetMojomFrameInRenderer()->JavaScriptExecuteRequestForTests(  // IN-TEST
       javascript, false, has_user_gesture, world_id, base::NullCallback());
 }
 
@@ -1903,6 +1901,7 @@ RenderViewHost* RenderFrameHostImpl::GetRenderViewHost() {
 }
 
 service_manager::InterfaceProvider* RenderFrameHostImpl::GetRemoteInterfaces() {
+  DCHECK(IsRenderFrameCreated());
   return remote_interfaces_.get();
 }
 
@@ -2437,6 +2436,9 @@ bool RenderFrameHostImpl::CreateRenderFrame(
              params->widget_params->frame_widget) =
         rwh->BindNewFrameWidgetInterfaces();
   }
+  mojo::PendingAssociatedRemote<mojom::Frame> pending_frame_remote;
+  params->frame = pending_frame_remote.InitWithNewEndpointAndPassReceiver();
+  SetMojomFrameRemote(std::move(pending_frame_remote));
 
   // https://crbug.com/1006814. The renderer needs at least one of these IDs to
   // be able to insert the new frame in the frame tree.
@@ -2465,6 +2467,12 @@ bool RenderFrameHostImpl::CreateRenderFrame(
   return true;
 }
 
+void RenderFrameHostImpl::SetMojomFrameRemote(
+    mojo::PendingAssociatedRemote<mojom::Frame> frame_remote) {
+  DCHECK(!frame_);
+  frame_.Bind(std::move(frame_remote));
+}
+
 void RenderFrameHostImpl::DeleteRenderFrame(
     mojom::FrameDeleteIntention intent) {
   if (IsPendingDeletion())
@@ -2475,8 +2483,8 @@ void RenderFrameHostImpl::DeleteRenderFrame(
   bool wait_for_unload_handlers =
       has_unload_handlers() && !IsInBackForwardCache();
 
-  if (is_render_frame_created()) {
-    GetNavigationControl()->Delete(intent);
+  if (IsRenderFrameCreated()) {
+    GetMojomFrameInRenderer()->Delete(intent);
 
     if (!frame_tree_node_->IsMainFrame() && IsCurrent()) {
       DCHECK_NE(lifecycle_state(), LifecycleState::kSpeculative);
@@ -2597,7 +2605,13 @@ void RenderFrameHostImpl::Init() {
 
   GetLocalRenderWidgetHost()->Init();
 
-  ResumeBlockedRequestsForFrame();
+  // TODO(danakj): We only blocked the main frame, so we should only need to
+  // resume that?
+  ForEachFrame(this,
+               base::BindRepeating([](RenderFrameHostImpl* render_frame_host) {
+                 if (render_frame_host->IsRenderFrameCreated())
+                   render_frame_host->frame_->ResumeBlockedRequests();
+               }));
 
   if (pending_navigate_) {
     frame_tree_node()->navigator().OnBeginNavigation(
@@ -2687,6 +2701,7 @@ void RenderFrameHostImpl::DidAddMessageToConsole(
 
 void RenderFrameHostImpl::OnCreateChildFrame(
     int new_routing_id,
+    mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
     mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
         browser_interface_broker_receiver,
     blink::mojom::PolicyContainerBindParamsPtr policy_container_bind_params,
@@ -2725,6 +2740,7 @@ void RenderFrameHostImpl::OnCreateChildFrame(
   // |devtools_frame_token| were generated on the browser's IO thread and not
   // taken from the renderer process.
   frame_tree_->AddFrame(this, GetProcess()->GetID(), new_routing_id,
+                        std::move(frame_remote),
                         std::move(browser_interface_broker_receiver),
                         std::move(policy_container_bind_params), scope,
                         frame_name, frame_unique_name, is_created_by_script,
@@ -2734,6 +2750,7 @@ void RenderFrameHostImpl::OnCreateChildFrame(
 
 void RenderFrameHostImpl::CreateChildFrame(
     int new_routing_id,
+    mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
     mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
         browser_interface_broker_receiver,
     blink::mojom::PolicyContainerBindParamsPtr policy_container_bind_params,
@@ -2756,11 +2773,12 @@ void RenderFrameHostImpl::CreateChildFrame(
 
   // TODO(crbug.com/1145708). The interface exposed to tests should
   // match the mojo interface.
-  OnCreateChildFrame(
-      new_routing_id, std::move(browser_interface_broker_receiver),
-      std::move(policy_container_bind_params), scope, frame_name,
-      frame_unique_name, is_created_by_script, frame_token,
-      devtools_frame_token, frame_policy, *frame_owner_properties, owner_type);
+  OnCreateChildFrame(new_routing_id, std::move(frame_remote),
+                     std::move(browser_interface_broker_receiver),
+                     std::move(policy_container_bind_params), scope, frame_name,
+                     frame_unique_name, is_created_by_script, frame_token,
+                     devtools_frame_token, frame_policy,
+                     *frame_owner_properties, owner_type);
 }
 
 void RenderFrameHostImpl::DidNavigate(
@@ -2989,6 +3007,7 @@ FrameTreeNode* RenderFrameHostImpl::AddChild(
     std::unique_ptr<FrameTreeNode> child,
     int process_id,
     int frame_routing_id,
+    mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
     const base::UnguessableToken& frame_token) {
   // Child frame must always be created in the same process as the parent.
   CHECK_EQ(process_id, GetProcess()->GetID());
@@ -2997,7 +3016,7 @@ FrameTreeNode* RenderFrameHostImpl::AddChild(
   // frames in the same SiteInstance as the current frame, and they can swap to
   // a different one if they navigate away.
   child->render_manager()->InitChild(GetSiteInstance(), frame_routing_id,
-                                     frame_token);
+                                     std::move(frame_remote), frame_token);
 
   // Other renderer processes in this BrowsingInstance may need to find out
   // about the new frame.  Create a proxy for the child frame in all
@@ -3360,8 +3379,8 @@ void RenderFrameHostImpl::Unload(RenderFrameProxyHost* proxy, bool is_loading) {
 
   if (proxy) {
     SetLifecycleState(LifecycleState::kRunningUnloadHandlers);
-    if (IsRenderFrameLive()) {
-      GetNavigationControl()->Unload(
+    if (IsRenderFrameCreated()) {
+      GetMojomFrameInRenderer()->Unload(
           proxy->GetRoutingID(), is_loading,
           proxy->frame_tree_node()->current_replication_state(),
           proxy->GetFrameToken());
@@ -3394,9 +3413,9 @@ void RenderFrameHostImpl::Unload(RenderFrameProxyHost* proxy, bool is_loading) {
 }
 
 void RenderFrameHostImpl::SwapOuterDelegateFrame(RenderFrameProxyHost* proxy) {
-  GetNavigationControl()->Unload(proxy->GetRoutingID(), /*is_loading=*/false,
-                                 frame_tree_node()->current_replication_state(),
-                                 proxy->GetFrameToken());
+  GetMojomFrameInRenderer()->Unload(
+      proxy->GetRoutingID(), /*is_loading=*/false,
+      frame_tree_node()->current_replication_state(), proxy->GetFrameToken());
 }
 
 void RenderFrameHostImpl::DetachFromProxy() {
@@ -3662,7 +3681,7 @@ void RenderFrameHostImpl::RequestSmartClipExtract(
     gfx::Rect rect) {
   int32_t callback_id = smart_clip_callbacks_.Add(
       std::make_unique<ExtractSmartClipDataCallback>(std::move(callback)));
-  frame_->ExtractSmartClipData(
+  GetMojomFrameInRenderer()->ExtractSmartClipData(
       rect, base::BindOnce(&RenderFrameHostImpl::OnSmartClipDataExtracted,
                            base::Unretained(this), callback_id));
 }
@@ -4135,10 +4154,9 @@ void RenderFrameHostImpl::FlushNetworkAndNavigationInterfacesForTesting() {
   DCHECK(network_service_disconnect_handler_holder_);
   network_service_disconnect_handler_holder_.FlushForTesting();  // IN-TEST
 
-  if (!navigation_control_)
-    GetNavigationControl();
-  DCHECK(navigation_control_);
-  navigation_control_.FlushForTesting();  // IN-TEST
+  DCHECK(IsRenderFrameCreated());
+  DCHECK(frame_);
+  frame_.FlushForTesting();  // IN-TEST
 }
 
 void RenderFrameHostImpl::PrepareForInnerWebContentsAttach(
@@ -4180,7 +4198,7 @@ void RenderFrameHostImpl::UpdateSubresourceLoaderFactories() {
                   latest_nav_request_still_committing,
                   isolated_worlds_requiring_separate_url_loader_factory_),
               bypass_redirect_checks);
-  GetNavigationControl()->UpdateSubresourceLoaderFactories(
+  GetMojomFrameInRenderer()->UpdateSubresourceLoaderFactories(
       std::move(subresource_loader_factories));
 }
 
@@ -5436,12 +5454,10 @@ void RenderFrameHostImpl::CreateNewWindow(
             isolation_info_.network_isolation_key()));
   }
 
-  if (main_frame->waiting_for_init_) {
-    // Need to check |waiting_for_init_| as some paths inside CreateNewWindow
-    // call above (eg if WebContentsDelegate::IsWebContentsCreationOverridden()
-    // returns true) will resume requests by calling RenderFrameHostImpl::Init.
-    main_frame->frame_->BlockRequests();
-  }
+  mojo::PendingAssociatedRemote<mojom::Frame> pending_frame_remote;
+  mojo::PendingAssociatedReceiver<mojom::Frame> pending_frame_receiver =
+      pending_frame_remote.InitWithNewEndpointAndPassReceiver();
+  main_frame->SetMojomFrameRemote(std::move(pending_frame_remote));
 
   mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
       browser_interface_broker;
@@ -5495,7 +5511,8 @@ void RenderFrameHostImpl::CreateNewWindow(
       devtools_instrumentation::ShouldWaitForDebuggerInWindowOpen();
   mojom::CreateNewWindowReplyPtr reply = mojom::CreateNewWindowReply::New(
       main_frame->GetRenderViewHost()->GetRoutingID(),
-      main_frame->GetRoutingID(), main_frame->GetFrameToken(),
+      main_frame->GetRoutingID(), std::move(pending_frame_receiver),
+      main_frame->GetFrameToken(),
       main_frame->GetLocalRenderWidgetHost()->GetRoutingID(), visual_properties,
       std::move(blink_frame_widget_host),
       std::move(blink_frame_widget_receiver), std::move(blink_widget_host),
@@ -5506,6 +5523,14 @@ void RenderFrameHostImpl::CreateNewWindow(
 
   std::move(callback).Run(mojom::CreateNewWindowStatus::kSuccess,
                           std::move(reply));
+
+  // When `waiting_for_init_` is true, the browser waits for the renderer to
+  // request to show the window (which becomes a call to Init() on the new
+  // window's `main_frame`) before servicing subresource requests. We ensure
+  // this is the first message received by the remote frame (instead of plumbing
+  // it with the CreateNewWindow IPC).
+  if (main_frame->waiting_for_init_)
+    main_frame->GetMojomFrameInRenderer()->BlockRequests();
 
   // The mojom reply callback with kSuccess causes the renderer to create the
   // renderer-side objects.
@@ -6678,7 +6703,7 @@ void RenderFrameHostImpl::CommitNavigation(
     DCHECK(GetSameDocumentNavigationRequest(navigation_token));
     bool should_replace_current_entry =
         common_params->should_replace_current_entry;
-    GetNavigationControl()->CommitSameDocumentNavigation(
+    GetMojomFrameInRenderer()->CommitSameDocumentNavigation(
         std::move(common_params), std::move(commit_params),
         base::BindOnce(&RenderFrameHostImpl::OnSameDocumentCommitProcessed,
                        base::Unretained(this), navigation_token,
@@ -6884,7 +6909,7 @@ void RenderFrameHostImpl::HandleRendererDebugURL(const GURL& url) {
     frame_tree_node()->DidStartLoading(true, was_loading);
   }
 
-  GetNavigationControl()->HandleRendererDebugURL(url);
+  GetMojomFrameInRenderer()->HandleRendererDebugURL(url);
 
   // Ensure that the renderer process is marked as used after processing a
   // renderer debug URL, since this process is now unsafe to be reused by sites
@@ -7003,17 +7028,9 @@ void RenderFrameHostImpl::SetUpMojoIfNeeded() {
       base::Unretained(this)));
 #endif
 
-  mojo::PendingRemote<mojom::FrameFactory> frame_factory;
-  GetProcess()->BindReceiver(frame_factory.InitWithNewPipeAndPassReceiver());
-  mojo::Remote<mojom::FrameFactory>(std::move(frame_factory))
-      ->CreateFrame(routing_id_, frame_.BindNewPipeAndPassReceiver());
-
-  // TODO(http://crbug.com/1014212): Change to DCHECK.
-  CHECK(frame_);
-
   mojo::PendingRemote<service_manager::mojom::InterfaceProvider>
       remote_interfaces;
-  frame_->GetInterfaceProvider(
+  GetMojomFrameInRenderer()->GetInterfaceProvider(
       remote_interfaces.InitWithNewPipeAndPassReceiver());
 
   remote_interfaces_ = std::make_unique<service_manager::InterfaceProvider>(
@@ -7033,7 +7050,6 @@ void RenderFrameHostImpl::InvalidateMojoConnection() {
   local_frame_.reset();
   local_main_frame_.reset();
   high_priority_local_frame_.reset();
-  navigation_control_.reset();
   find_in_page_.reset();
   render_accessibility_.reset();
 
@@ -7184,19 +7200,11 @@ void RenderFrameHostImpl::ClearFocusedElement() {
   GetAssociatedLocalFrame()->ClearFocusedElement();
 }
 
-void RenderFrameHostImpl::ResumeBlockedRequestsForFrame() {
-  ForEachFrame(this,
-               base::BindRepeating([](RenderFrameHostImpl* render_frame_host) {
-                 if (render_frame_host->frame_)
-                   render_frame_host->frame_->ResumeBlockedRequests();
-               }));
-}
-
 void RenderFrameHostImpl::BindDevToolsAgent(
     mojo::PendingAssociatedRemote<blink::mojom::DevToolsAgentHost> host,
     mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> receiver) {
-  GetNavigationControl()->BindDevToolsAgent(std::move(host),
-                                            std::move(receiver));
+  GetMojomFrameInRenderer()->BindDevToolsAgent(std::move(host),
+                                               std::move(receiver));
 }
 
 bool RenderFrameHostImpl::IsSameSiteInstance(
@@ -7232,10 +7240,10 @@ void RenderFrameHostImpl::RequestAXTreeSnapshot(
     AXTreeSnapshotCallback callback,
     mojom::SnapshotAccessibilityTreeParamsPtr params) {
   // TODO(https://crbug.com/859110): Remove once frame_ can no longer be null.
-  if (!IsRenderFrameLive())
+  if (!IsRenderFrameCreated())
     return;
 
-  frame_->SnapshotAccessibilityTree(
+  GetMojomFrameInRenderer()->SnapshotAccessibilityTree(
       std::move(params),
       base::BindOnce(&RenderFrameHostImpl::RequestAXTreeSnapshotCallback,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -7244,7 +7252,6 @@ void RenderFrameHostImpl::RequestAXTreeSnapshot(
 void RenderFrameHostImpl::GetSavableResourceLinksFromRenderer() {
   if (!IsRenderFrameLive())
     return;
-
   GetAssociatedLocalFrame()->GetSavableResourceLinks(
       base::BindOnce(&RenderFrameHostImpl::GetSavableResourceLinksCallback,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -8510,10 +8517,9 @@ void RenderFrameHostImpl::SetVisibilityForChildViews(bool visible) {
       visible));
 }
 
-mojom::FrameNavigationControl* RenderFrameHostImpl::GetNavigationControl() {
-  if (!navigation_control_)
-    GetRemoteAssociatedInterfaces()->GetInterface(&navigation_control_);
-  return navigation_control_.get();
+mojom::Frame* RenderFrameHostImpl::GetMojomFrameInRenderer() {
+  DCHECK(frame_);
+  return frame_.get();
 }
 
 bool RenderFrameHostImpl::ShouldBypassSecurityChecksForErrorPage(

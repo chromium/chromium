@@ -63,6 +63,13 @@ class CONTENT_EXPORT RenderThread : virtual public ChildThread {
   // Called to add or remove a listener for a particular message routing ID.
   // These methods normally get delegated to a MessageRouter.
   virtual void AddRoute(int32_t routing_id, IPC::Listener* listener) = 0;
+  // Attach a task runner to run received IPC tasks on for the given routing ID.
+  // This must be called after the route has already been added via AddRoute(),
+  // but it is optional. The default main thread task runner would be used if
+  // this method is not called.
+  virtual void AttachTaskRunnerToRoute(
+      int32_t routing_id,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner) = 0;
   virtual void RemoveRoute(int32_t routing_id) = 0;
   virtual int GenerateRoutingID() = 0;
   virtual bool GenerateFrameRoutingID(

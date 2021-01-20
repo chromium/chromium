@@ -442,6 +442,7 @@ WebView* RenderViewImpl::CreateView(
   view_params->view_id = reply->route_id;
   view_params->main_frame_frame_token = reply->main_frame_frame_token;
   view_params->main_frame_routing_id = reply->main_frame_route_id;
+  view_params->frame = std::move(reply->frame);
   view_params->frame_widget_host = std::move(reply->frame_widget_host);
   view_params->frame_widget = std::move(reply->frame_widget);
   view_params->widget_host = std::move(reply->widget_host);

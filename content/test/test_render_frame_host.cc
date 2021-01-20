@@ -64,6 +64,7 @@ TestRenderFrameHost::TestRenderFrameHost(
     FrameTree* frame_tree,
     FrameTreeNode* frame_tree_node,
     int32_t routing_id,
+    mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
     const base::UnguessableToken& frame_token,
     RenderFrameHostImpl::LifecycleState lifecyle_state)
     : RenderFrameHostImpl(site_instance,
@@ -72,6 +73,7 @@ TestRenderFrameHost::TestRenderFrameHost(
                           frame_tree,
                           frame_tree_node,
                           routing_id,
+                          std::move(frame_remote),
                           frame_token,
                           /*renderer_initiated_creation=*/false,
                           lifecyle_state),
@@ -152,7 +154,7 @@ TestRenderFrameHost* TestRenderFrameHost::AppendChildWithPolicy(
     const blink::ParsedFeaturePolicy& allow) {
   std::string frame_unique_name = base::GenerateGUID();
   OnCreateChildFrame(
-      GetProcess()->GetNextRoutingID(),
+      GetProcess()->GetNextRoutingID(), CreateStubFrameRemote(),
       CreateStubBrowserInterfaceBrokerReceiver(),
       CreateStubPolicyContainerBindParams(),
       blink::mojom::TreeScopeType::kDocument, frame_name, frame_unique_name,
@@ -589,6 +591,15 @@ TestRenderFrameHost::CreateStubBrowserInterfaceBrokerReceiver() {
       .InitWithNewPipeAndPassReceiver();
 }
 
+// static
+mojo::PendingAssociatedRemote<mojom::Frame>
+TestRenderFrameHost::CreateStubFrameRemote() {
+  // There's no renderer to pass the receiver to in these tests.
+  mojo::AssociatedRemote<mojom::Frame> frame_remote;
+  mojo::PendingAssociatedReceiver<mojom::Frame> frame_receiver =
+      frame_remote.BindNewEndpointAndPassDedicatedReceiver();
+  return frame_remote.Unbind();
+}
 // static
 blink::mojom::PolicyContainerBindParamsPtr
 TestRenderFrameHost::CreateStubPolicyContainerBindParams() {

@@ -826,33 +826,18 @@ IPC::SyncMessageFilter* RenderThreadImpl::GetSyncMessageFilter() {
 
 void RenderThreadImpl::AddRoute(int32_t routing_id, IPC::Listener* listener) {
   ChildThreadImpl::GetRouter()->AddRoute(routing_id, listener);
-  auto it = pending_frames_.find(routing_id);
-  if (it == pending_frames_.end())
-    return;
+}
 
-  RenderFrameImpl* frame = RenderFrameImpl::FromRoutingID(routing_id);
-  if (!frame)
-    return;
-
-  GetChannel()->AddListenerTaskRunner(
-      routing_id,
-      frame->GetTaskRunner(blink::TaskType::kInternalNavigationAssociated));
-
-  frame->BindFrame(std::move(it->second));
-  pending_frames_.erase(it);
+void RenderThreadImpl::AttachTaskRunnerToRoute(
+    int32_t routing_id,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+  GetChannel()->AddListenerTaskRunner(routing_id, std::move(task_runner));
 }
 
 void RenderThreadImpl::RemoveRoute(int32_t routing_id) {
   ChildThreadImpl::GetRouter()->RemoveRoute(routing_id);
   GetChannel()->RemoveListenerTaskRunner(routing_id);
   pending_frames_.erase(routing_id);
-}
-
-void RenderThreadImpl::RegisterPendingFrameCreate(
-    int routing_id,
-    mojo::PendingReceiver<mojom::Frame> frame_receiver) {
-  auto pair = pending_frames_.emplace(routing_id, std::move(frame_receiver));
-  CHECK(pair.second) << "Inserting a duplicate item.";
 }
 
 mojom::RendererHost* RenderThreadImpl::GetRendererHost() {

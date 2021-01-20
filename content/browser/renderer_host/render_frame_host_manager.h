@@ -182,6 +182,7 @@ class CONTENT_EXPORT RenderFrameHostManager
   // Initialize this frame as the child of another frame.
   void InitChild(SiteInstance* site_instance,
                  int32_t frame_routing_id,
+                 mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
                  const base::UnguessableToken& frame_token);
 
   // Returns the currently active RenderFrameHost.
@@ -817,12 +818,15 @@ class CONTENT_EXPORT RenderFrameHostManager
   // Creates a RenderFrameHost. This uses an existing a RenderViewHost in the
   // same SiteInstance if it exists or creates a new one (a new one will only be
   // created if this is a root or child local root).
+  // The `frame_routing_id` and `frame_remote` are both valid or not together,
+  // as they are valid when the renderer-side frame is already created.
   // TODO(https://crbug.com/1060082): Eliminate or rename
   // renderer_initiated_creation.
   std::unique_ptr<RenderFrameHostImpl> CreateRenderFrameHost(
       CreateFrameCase create_frame_case,
       SiteInstance* site_instance,
       int32_t frame_routing_id,
+      mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
       const base::UnguessableToken& frame_token,
       bool renderer_initiated_creation);
 

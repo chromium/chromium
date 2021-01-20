@@ -180,6 +180,7 @@ FrameTreeNode* FrameTree::AddFrame(
     RenderFrameHostImpl* parent,
     int process_id,
     int new_routing_id,
+    mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
     mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
         browser_interface_broker_receiver,
     blink::mojom::PolicyContainerBindParamsPtr policy_container_bind_params,
@@ -194,6 +195,11 @@ FrameTreeNode* FrameTree::AddFrame(
     bool was_discarded,
     blink::mojom::FrameOwnerElementType owner_type) {
   CHECK_NE(new_routing_id, MSG_ROUTING_NONE);
+  // Normally this path is for blink adding a child local frame. But portals are
+  // making a remote frame, as the local frame is only created in a nested
+  // FrameTree.
+  DCHECK_NE(frame_remote.is_valid(),
+            owner_type == blink::mojom::FrameOwnerElementType::kPortal);
 
   // A child frame always starts with an initial empty document, which means
   // it is in the same SiteInstance as the parent frame. Ensure that the process
@@ -221,8 +227,9 @@ FrameTreeNode* FrameTree::AddFrame(
     new_node->set_was_discarded();
 
   // Add the new node to the FrameTree, creating the RenderFrameHost.
-  FrameTreeNode* added_node = parent->AddChild(std::move(new_node), process_id,
-                                               new_routing_id, frame_token);
+  FrameTreeNode* added_node =
+      parent->AddChild(std::move(new_node), process_id, new_routing_id,
+                       std::move(frame_remote), frame_token);
 
   DCHECK(browser_interface_broker_receiver.is_valid());
   added_node->current_frame_host()->BindBrowserInterfaceBrokerReceiver(
