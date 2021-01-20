@@ -310,6 +310,21 @@ void BrowserManager::StartWithLogFile(base::ScopedFD logfd) {
   // This sets the channel for Lacros.
   options.environment["CHROME_VERSION_EXTRA"] = "dev";
 
+  std::string additional_env =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          chromeos::switches::kLacrosChromeAdditionalEnv);
+  base::StringPairs env_pairs;
+  if (base::SplitStringIntoKeyValuePairsUsingSubstr(additional_env, '=', "####",
+                                                    &env_pairs)) {
+    for (const auto& env_pair : env_pairs) {
+      if (!env_pair.first.empty()) {
+        LOG(WARNING) << "Applying lacros env " << env_pair.first << "="
+                     << env_pair.second;
+        options.environment[env_pair.first] = env_pair.second;
+      }
+    }
+  }
+
   options.kill_on_parent_death = true;
 
   // Paths are UTF-8 safe on Chrome OS.

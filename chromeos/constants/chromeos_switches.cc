@@ -423,6 +423,12 @@ const char kKernelnextRestrictVMs[] = "kernelnext-restrict-vms";
 //   --bar=/tmp/dir name
 const char kLacrosChromeAdditionalArgs[] = "lacros-chrome-additional-args";
 
+// Additional environment variables set for lacros-chrome. The string '####' is
+// used as a delimiter. For example:
+// --lacros-chrome-additional-env=WAYLAND_DEBUG=client####FOO=bar
+// will enable Wayland protocol logging and set FOO=bar.
+const char kLacrosChromeAdditionalEnv[] = "lacros-chrome-additional-env";
+
 // If this switch is set, then ash-chrome will exec the lacros-chrome binary
 // from the indicated path rather than from component updater. Note that the
 // path should be to a directory that contains a binary named 'chrome'.

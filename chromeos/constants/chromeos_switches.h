@@ -164,6 +164,8 @@ extern const char kInstallLogFastUploadForTests[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kKernelnextRestrictVMs[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const char kLacrosChromeAdditionalArgs[];
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const char kLacrosChromeAdditionalEnv[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kLacrosChromePath[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const char kLacrosMojoSocketForTesting[];
