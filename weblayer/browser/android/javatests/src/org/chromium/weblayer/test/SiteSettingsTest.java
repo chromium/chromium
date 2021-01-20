@@ -17,6 +17,7 @@ import static org.hamcrest.core.StringContains.containsString;
 import android.app.Activity;
 import android.app.Instrumentation.ActivityResult;
 import android.content.Intent;
+import android.os.RemoteException;
 import android.provider.Settings;
 
 import androidx.test.espresso.intent.Intents;
@@ -30,6 +31,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.weblayer.SettingsTestUtils;
 import org.chromium.weblayer.SiteSettingsActivity;
+import org.chromium.weblayer.TestWebLayer;
 
 /**
  * Tests the behavior of the Site Settings UI.
@@ -105,9 +107,12 @@ public class SiteSettingsTest {
 
     @Test
     @SmallTest
-    public void testSingleSiteLocationAccess() throws InterruptedException {
+    public void testSingleSiteLocationAccess() throws InterruptedException, RemoteException {
         try {
             Intents.init();
+            TestWebLayer testWebLayer =
+                    TestWebLayer.getTestWebLayer(mSettingsTestRule.getContext());
+            testWebLayer.setSystemLocationSettingEnabled(true);
             mSettingsTestRule.launchActivity(
                     SettingsTestUtils.createIntentForSiteSettingsSingleWebsite(
                             mSettingsTestRule.getContext(), PROFILE_NAME, /*isIncognito=*/false,
