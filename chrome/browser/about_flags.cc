@@ -6969,6 +6969,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(media::kWasapiRawAudioCapture)},
 #endif  // defined(OS_MAC)
 
+    {"enable-restricted-web-apis",
+     flag_descriptions::kEnableRestrictedWebApisName,
+     flag_descriptions::kEnableRestrictedWebApisDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kEnableRestrictedWebApis)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

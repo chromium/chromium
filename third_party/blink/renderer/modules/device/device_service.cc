@@ -17,9 +17,9 @@ namespace blink {
 
 namespace {
 
-const DOMExceptionCode kDOMExceptionCode = DOMExceptionCode::kNotAllowedError;
-const char kDOMExceptionMessage[] =
+const char kNotHighTrustedAppExceptionMessage[] =
     "This API is available only for high trusted apps.";
+
 }  // namespace
 
 const char DeviceService::kSupplementName[] = "DeviceService";
@@ -83,9 +83,11 @@ mojom::blink::DeviceAPIService* DeviceService::GetService() {
 void DeviceService::OnServiceConnectionError() {
   device_api_service_.reset();
   // Resolve all pending promises with a failure.
-  for (ScriptPromiseResolver* resolver : pending_promises_)
-    resolver->Reject(MakeGarbageCollected<DOMException>(kDOMExceptionCode,
-                                                        kDOMExceptionMessage));
+  for (ScriptPromiseResolver* resolver : pending_promises_) {
+    resolver->Reject(
+        MakeGarbageCollected<DOMException>(DOMExceptionCode::kNotAllowedError,
+                                           kNotHighTrustedAppExceptionMessage));
+  }
 }
 
 ScriptPromise DeviceService::getManagedConfiguration(ScriptState* script_state,
@@ -97,6 +99,50 @@ ScriptPromise DeviceService::getManagedConfiguration(ScriptState* script_state,
   GetService()->GetManagedConfiguration(
       keys, Bind(&DeviceService::OnConfigurationReceived,
                  WrapWeakPersistent(this), WrapPersistent(resolver)));
+  return promise;
+}
+
+ScriptPromise DeviceService::getDirectoryId(ScriptState* script_state) {
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  pending_promises_.insert(resolver);
+
+  ScriptPromise promise = resolver->Promise();
+  GetService()->GetDirectoryId(
+      WTF::Bind(&DeviceService::OnAttributeReceived, WrapWeakPersistent(this),
+                WrapPersistent(script_state), WrapPersistent(resolver)));
+  return promise;
+}
+
+ScriptPromise DeviceService::getSerialNumber(ScriptState* script_state) {
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  pending_promises_.insert(resolver);
+
+  ScriptPromise promise = resolver->Promise();
+  GetService()->GetSerialNumber(
+      WTF::Bind(&DeviceService::OnAttributeReceived, WrapWeakPersistent(this),
+                WrapPersistent(script_state), WrapPersistent(resolver)));
+  return promise;
+}
+
+ScriptPromise DeviceService::getAnnotatedAssetId(ScriptState* script_state) {
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  pending_promises_.insert(resolver);
+
+  ScriptPromise promise = resolver->Promise();
+  GetService()->GetAnnotatedAssetId(
+      WTF::Bind(&DeviceService::OnAttributeReceived, WrapWeakPersistent(this),
+                WrapPersistent(script_state), WrapPersistent(resolver)));
+  return promise;
+}
+
+ScriptPromise DeviceService::getAnnotatedLocation(ScriptState* script_state) {
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  pending_promises_.insert(resolver);
+
+  ScriptPromise promise = resolver->Promise();
+  GetService()->GetAnnotatedLocation(
+      WTF::Bind(&DeviceService::OnAttributeReceived, WrapWeakPersistent(this),
+                WrapPersistent(script_state), WrapPersistent(resolver)));
   return promise;
 }
 
@@ -118,6 +164,22 @@ void DeviceService::OnConfigurationReceived(
     }
   }
   scoped_resolver->Resolve(result.GetScriptValue());
+}
+
+void DeviceService::OnAttributeReceived(
+    ScriptState* script_state,
+    ScriptPromiseResolver* scoped_resolver,
+    mojom::blink::DeviceAttributeResultPtr result) {
+  pending_promises_.erase(scoped_resolver);
+
+  if (result->is_error_message()) {
+    scoped_resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kUnknownError, result->get_error_message()));
+  } else if (result->get_attribute().IsNull()) {
+    scoped_resolver->Resolve(v8::Null(script_state->GetIsolate()));
+  } else {
+    scoped_resolver->Resolve(result->get_attribute());
+  }
 }
 
 void DeviceService::OnConfigurationChanged() {

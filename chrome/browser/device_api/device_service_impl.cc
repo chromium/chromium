@@ -5,9 +5,11 @@
 
 #include <memory>
 
+#include "chrome/browser/device_api/device_attribute_api.h"
 #include "chrome/browser/device_api/managed_configuration_api_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/components/policy/web_app_policy_constants.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
@@ -18,6 +20,11 @@ namespace {
 
 bool IsTrustedContext(content::RenderFrameHost* host,
                       const url::Origin& origin) {
+  // TODO(anqing): This is used for dev trial. The flag will be removed when
+  // permission policies are ready.
+  if (!base::FeatureList::IsEnabled(features::kEnableRestrictedWebApis))
+    return false;
+
   PrefService* prefs =
       Profile::FromBrowserContext(host->GetBrowserContext())->GetPrefs();
 
@@ -46,6 +53,7 @@ DeviceServiceImpl::DeviceServiceImpl(
                           base::Unretained(this)));
   managed_configuration_api()->AddObserver(origin(), this);
 }
+
 DeviceServiceImpl::~DeviceServiceImpl() {
   managed_configuration_api()->RemoveObserver(origin(), this);
 }
@@ -104,4 +112,22 @@ void DeviceServiceImpl::SubscribeToManagedConfiguration(
 
 void DeviceServiceImpl::OnManagedConfigurationChanged() {
   configuration_subscription_->OnConfigurationChanged();
+}
+
+void DeviceServiceImpl::GetDirectoryId(GetDirectoryIdCallback callback) {
+  device_attribute_api::GetDirectoryId(std::move(callback));
+}
+
+void DeviceServiceImpl::GetSerialNumber(GetSerialNumberCallback callback) {
+  device_attribute_api::GetSerialNumber(std::move(callback));
+}
+
+void DeviceServiceImpl::GetAnnotatedAssetId(
+    GetAnnotatedAssetIdCallback callback) {
+  device_attribute_api::GetAnnotatedAssetId(std::move(callback));
+}
+
+void DeviceServiceImpl::GetAnnotatedLocation(
+    GetAnnotatedLocationCallback callback) {
+  device_attribute_api::GetAnnotatedLocation(std::move(callback));
 }

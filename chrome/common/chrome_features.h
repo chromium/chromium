@@ -243,6 +243,9 @@ extern const base::Feature kEnableIncognitoShortcutOnDesktop;
 #endif
 
 COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kEnableRestrictedWebApis;
+
+COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kEnableWebAppUninstallFromOsSettings;
 
 #if !defined(OS_ANDROID)

@@ -1584,7 +1584,11 @@ interface DeviceService : EventTarget
     attribute @@toStringTag
     getter onmanagedconfigurationchange
     method constructor
+    method getAnnotatedAssetId
+    method getAnnotatedLocation
+    method getDirectoryId
     method getManagedConfiguration
+    method getSerialNumber
     setter onmanagedconfigurationchange
 interface Document : Node
     attribute @@toStringTag

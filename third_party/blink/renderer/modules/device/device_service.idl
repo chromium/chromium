@@ -12,4 +12,10 @@
   [CallWith=ScriptState]
   Promise<object> getManagedConfiguration(sequence<DOMString> keys);
   attribute EventHandler onmanagedconfigurationchange;
+
+  // Device Attributes API.
+  [CallWith=ScriptState] Promise<DOMString> getDirectoryId();
+  [CallWith=ScriptState] Promise<DOMString> getSerialNumber();
+  [CallWith=ScriptState] Promise<DOMString> getAnnotatedAssetId();
+  [CallWith=ScriptState] Promise<DOMString> getAnnotatedLocation();
 };

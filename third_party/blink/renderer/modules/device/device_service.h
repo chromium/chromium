@@ -60,12 +60,23 @@ class MODULES_EXPORT DeviceService final
   DEFINE_ATTRIBUTE_EVENT_LISTENER(managedconfigurationchange,
                                   kManagedconfigurationchange)
 
+  // Device Attributes API:
+  ScriptPromise getDirectoryId(ScriptState* script_state);
+  ScriptPromise getSerialNumber(ScriptState* script_state);
+  ScriptPromise getAnnotatedAssetId(ScriptState* script_state);
+  ScriptPromise getAnnotatedLocation(ScriptState* script_state);
+
  private:
   // ManagedConfigurationObserver:
   void OnConfigurationChanged() override;
 
   void OnConfigurationReceived(ScriptPromiseResolver* scoped_resolver,
                                const HashMap<String, String>& configurations);
+
+  void OnAttributeReceived(ScriptState* script_state,
+                           ScriptPromiseResolver* scoped_resolver,
+                           mojom::blink::DeviceAttributeResultPtr result);
+
   // Lazily binds mojo interface.
   mojom::blink::DeviceAPIService* GetService();
 

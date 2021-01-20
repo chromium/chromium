@@ -973,6 +973,12 @@ const char kEnableResamplingScrollEventsExperimentalPredictionDescription[] =
     "Predicts the scroll amount after the vsync time to more closely match "
     "when the frame is visible.";
 
+extern const char kEnableRestrictedWebApisName[] =
+    "Enable the restriced web APIs for high-trusted apps.";
+extern const char kEnableRestrictedWebApisDescription[] =
+    "Enable the restricted web APIs for dev trial. This will be replaced with "
+    "permission policies to control the capabilities afterwards.";
+
 const char kEnableTabSearchFlagId[] = "enable-tab-search";
 const char kEnableTabSearchName[] = "Enable Tab Search";
 const char kEnableTabSearchDescription[] =

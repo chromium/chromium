@@ -46224,6 +46224,7 @@ from previous Chrome versions.
       label="PrefetchMainResourceNetworkIsolationKey:disabled"/>
   <int value="1411679884"
       label="AutofillLocalCardMigrationUsesStrikeSystemV2:enabled"/>
+  <int value="1412874669" label="EnableRestrictedWebApis:enabled"/>
   <int value="1413158119" label="WebRtcRemoteEventLog:disabled"/>
   <int value="1413334779" label="WebPaymentsMinimalUI:enabled"/>
   <int value="1413948819" label="NupPrinting:enabled"/>
@@ -46986,6 +46987,7 @@ from previous Chrome versions.
   <int value="2137599770" label="enable-win32k-renderer-lockdown"/>
   <int value="2138146331" label="OmniboxVoiceSearchAlwaysVisible:enabled"/>
   <int value="2139048614" label="UseSurfaceLayerForVideo:enabled"/>
+  <int value="2139520082" label="EnableRestrictedWebApis:disabled"/>
   <int value="2140453427"
       label="MigrateDefaultChromeAppToWebAppsGSuite:enabled"/>
   <int value="2141067485" label="SystemWebApps:enabled"/>
