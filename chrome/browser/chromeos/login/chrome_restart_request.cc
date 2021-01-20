@@ -351,6 +351,9 @@ void GetOffTheRecordCommandLine(const GURL& start_url,
   otr_switches.SetString(
       switches::kLoginUser,
       cryptohome::Identification(user_manager::GuestAccountId()).id());
+  if (!base::SysInfo::IsRunningOnChromeOS()) {
+    otr_switches.SetString(switches::kLoginProfile, chrome::kLegacyProfileDir);
+  }
 
   // Override the home page.
   otr_switches.SetString(::switches::kHomePage,
