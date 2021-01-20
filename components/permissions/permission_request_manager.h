@@ -175,6 +175,11 @@ class PermissionRequestManager
 
   PermissionPrompt* view_for_testing() { return view_.get(); }
 
+  base::Optional<PermissionUmaUtil::PredictionGrantLikelihood>
+  prediction_grant_likelihood_for_testing() {
+    return prediction_grant_likelihood_;
+  }
+
  private:
   friend class test::PermissionRequestManagerTestApi;
   friend class content::WebContentsUserData<PermissionRequestManager>;
