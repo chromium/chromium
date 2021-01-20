@@ -36,6 +36,8 @@ source_set("browser") {
 
   if (is_android) {
     sources += [
+      "android/add_to_homescreen_data_fetcher.cc",
+      "android/add_to_homescreen_data_fetcher.h",
       "android/add_to_homescreen_params.cc",
       "android/add_to_homescreen_params.h",
       "android/features.cc",
@@ -56,9 +58,15 @@ source_set("browser") {
 
     deps += [
       "//base",
+      "//components/dom_distiller/core",
+      "//components/favicon/content",
+      "//components/favicon/core",
+      "//components/favicon_base",
       "//components/infobars/android",
       "//components/infobars/content",
       "//components/strings",
+      "//components/webapps/common",
+      "//components/webapps/common:mojo_bindings",
       "//services/device/public/mojom",
       "//skia",
       "//third_party/blink/public/common:common",

@@ -1,7 +1,13 @@
 include_rules = [
   "+components/browser_ui/widget/android",
+  "+components/dom_distiller",
+  "+components/favicon/content",
+  "+components/favicon/core",
+  "+components/favicon_base",
   "+components/strings",
   "+components/webapk/android/libs/client",
+  "+content/public/test",
+  "+mojo/public/cpp",
   "+services/device/public/mojom",
   "+ui/android",
   "+ui/base",

@@ -56,15 +56,21 @@ android_resources("java_resources") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "add_to_homescreen_data_fetcher_unittest.cc",
     "shortcut_info_unittest.cc",
     "webapps_utils_unittest.cc",
   ]
   deps = [
     "//base",
+    "//components/favicon/content",
+    "//components/favicon_base",
     "//components/webapps/browser",
+    "//content/public/browser",
+    "//content/test:test_support",
     "//testing/gtest",
     "//third_party/blink/public/common:common",
     "//third_party/blink/public/mojom:mojom_platform",
+    "//ui/gfx:test_support",
     "//url",
   ]
 }

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/webapps/add_to_homescreen_data_fetcher.h"
+#include "components/webapps/browser/android/add_to_homescreen_data_fetcher.h"
 
 #include <memory>
 #include <string>
@@ -18,15 +18,17 @@
 #include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/cancelable_task_tracker.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/favicon/favicon_service_factory.h"
-#include "chrome/browser/flags/android/chrome_feature_list.h"
-#include "chrome/browser/history/history_service_factory.h"
-#include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "chrome/test/base/testing_profile.h"
+#include "components/favicon/content/large_favicon_provider_getter.h"
+#include "components/favicon/core/large_favicon_provider.h"
+#include "components/favicon_base/favicon_types.h"
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/test_renderer_host.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -83,7 +85,7 @@ class ObserverWaiter : public AddToHomescreenDataFetcher::Observer {
     EXPECT_FALSE(data_available_);
     EXPECT_TRUE(title_available_);
     data_available_ = true;
-    if (!quit_closure_.is_null())
+    if (quit_closure_)
       quit_closure_.Run();
   }
 
@@ -96,7 +98,7 @@ class ObserverWaiter : public AddToHomescreenDataFetcher::Observer {
   bool is_webapk_compatible_;
   bool title_available_;
   bool data_available_;
-  base::Closure quit_closure_;
+  base::RepeatingClosure quit_closure_;
 
   DISALLOW_COPY_AND_ASSIGN(ObserverWaiter);
 };
@@ -200,13 +202,14 @@ class TestInstallableManager : public InstallableManager {
 
 // Tests AddToHomescreenDataFetcher. These tests should be browser tests but
 // Android does not support browser tests yet (crbug.com/611756).
-class AddToHomescreenDataFetcherTest : public ChromeRenderViewHostTestHarness {
+class AddToHomescreenDataFetcherTest
+    : public content::RenderViewHostTestHarness {
  public:
   AddToHomescreenDataFetcherTest() {}
   ~AddToHomescreenDataFetcherTest() override {}
 
   void SetUp() override {
-    ChromeRenderViewHostTestHarness::SetUp();
+    content::RenderViewHostTestHarness::SetUp();
 
     // Manually inject the TestInstallableManager as a "InstallableManager"
     // WebContentsUserData. We can't directly call ::CreateForWebContents due to
@@ -218,14 +221,12 @@ class AddToHomescreenDataFetcherTest : public ChromeRenderViewHostTestHarness {
     installable_manager_ = static_cast<TestInstallableManager*>(
         web_contents()->GetUserData(TestInstallableManager::UserDataKey()));
 
-    NavigateAndCommit(GURL(kDefaultStartUrl));
-  }
+    favicon::SetLargeFaviconProviderGetter(base::BindRepeating(
+        [](favicon::LargeFaviconProvider* provider,
+           content::BrowserContext* context) { return provider; },
+        &null_large_favicon_provider_));
 
-  TestingProfile::TestingFactories GetTestingFactories() const override {
-    return {{HistoryServiceFactory::GetInstance(),
-             HistoryServiceFactory::GetDefaultFactory()},
-            {FaviconServiceFactory::GetInstance(),
-             FaviconServiceFactory::GetDefaultFactory()}};
+    NavigateAndCommit(GURL(kDefaultStartUrl));
   }
 
   std::unique_ptr<AddToHomescreenDataFetcher> BuildFetcher(
@@ -292,7 +293,26 @@ class AddToHomescreenDataFetcherTest : public ChromeRenderViewHostTestHarness {
   }
 
  private:
+  class NullLargeFaviconProvider : public favicon::LargeFaviconProvider {
+   public:
+    NullLargeFaviconProvider() = default;
+    virtual ~NullLargeFaviconProvider() = default;
+
+    base::CancelableTaskTracker::TaskId GetLargestRawFaviconForPageURL(
+        const GURL& page_url,
+        const std::vector<favicon_base::IconTypeSet>& icon_types,
+        int minimum_size_in_pixels,
+        favicon_base::FaviconRawBitmapCallback callback,
+        base::CancelableTaskTracker* tracker) override {
+      content::GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback),
+                                    favicon_base::FaviconRawBitmapResult()));
+      return base::CancelableTaskTracker::kBadTaskId;
+    }
+  };
+
   TestInstallableManager* installable_manager_;
+  NullLargeFaviconProvider null_large_favicon_provider_;
 
   DISALLOW_COPY_AND_ASSIGN(AddToHomescreenDataFetcherTest);
 };
