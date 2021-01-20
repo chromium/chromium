@@ -136,17 +136,10 @@ class URLDownloader : reading_list::ReadingListDistillerPageDelegate {
 
   // HTML processing methods.
 
-  // Saves the |data| for image at |imageURL| to disk, for main URL |url|;
-  // puts path of saved file in |path| and returns whether save was successful.
-  bool SaveImage(const GURL& url,
-                 const GURL& imageURL,
-                 const std::string& data,
-                 std::string* image_name);
-  // Saves images in |images| array to disk and replaces references in |html| to
-  // local path. Returns updated html.
-  // If some images could not be saved, returns an empty string. It is the
-  // responsibility of the caller to clean the partial processing.
-  std::string SaveAndReplaceImagesInHTML(
+  // Injects script to replace images in |images| array with a data-uri
+  // of their contents. If the data does not represent an image, it is
+  // skipped.
+  std::string ReplaceImagesInHTML(
       const GURL& url,
       const std::string& html,
       const std::vector<dom_distiller::DistillerViewerInterface::ImageInfo>&

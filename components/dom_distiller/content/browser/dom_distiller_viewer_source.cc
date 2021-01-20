@@ -255,9 +255,12 @@ void DomDistillerViewerSource::StartDataRequest(
       web_contents->GetContainerBounds().size());
 
   GURL current_url(url_utils::GetOriginalUrlFromDistillerUrl(request_url));
+
+  // Pass an empty nonce value as the CSP is only inlined on the iOS build.
   std::string unsafe_page_html = viewer::GetArticleTemplateHtml(
       dom_distiller_service_->GetDistilledPagePrefs()->GetTheme(),
-      dom_distiller_service_->GetDistilledPagePrefs()->GetFontFamily());
+      dom_distiller_service_->GetDistilledPagePrefs()->GetFontFamily(),
+      std::string());
 
   if (viewer_handle) {
     // The service returned a |ViewerHandle| and guarantees it will call
