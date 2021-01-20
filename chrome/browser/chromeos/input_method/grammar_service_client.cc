@@ -62,12 +62,29 @@ void GrammarServiceClient::ParseGrammarCheckerResult(
     chromeos::machine_learning::mojom::GrammarCheckerResultPtr result) const {
   if (result->status == GrammarCheckerResult::Status::OK &&
       !result->candidates.empty()) {
-    std::vector<SpellCheckResult> grammar_results;
-    grammar_results.emplace_back(
-        SpellCheckResult::GRAMMAR, 0, text.size(),
-        base::UTF8ToUTF16(result->candidates.at(0)->text));
-    std::move(callback).Run(true, grammar_results);
+    const auto& top_candidate = result->candidates.front();
+    if (!top_candidate->text.empty() && !top_candidate->fragments.empty()) {
+      std::vector<SpellCheckResult> grammar_results;
+      for (const auto& fragment : top_candidate->fragments) {
+        uint32_t end;
+        if (!base::CheckAdd(fragment->offset, fragment->length)
+                 .AssignIfValid(&end) ||
+            end > text.size()) {
+          DLOG(ERROR) << "Grammar checker returns invalid correction "
+                         "fragement, offset: "
+                      << fragment->offset << ", length: " << fragment->length
+                      << ", but the text length is " << text.size();
+        } else {
+          grammar_results.emplace_back(
+              SpellCheckResult::GRAMMAR, fragment->offset, fragment->length,
+              base::UTF8ToUTF16(fragment->replacement));
+        }
+      }
+      std::move(callback).Run(true, grammar_results);
+      return;
+    }
   }
+  std::move(callback).Run(false, {});
 }
 
 bool GrammarServiceClient::IsAvailable(Profile* profile) const {

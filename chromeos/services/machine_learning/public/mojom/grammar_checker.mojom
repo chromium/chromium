@@ -3,6 +3,10 @@
 // found in the LICENSE file.
 
 // Datatypes and interfaces of grammar checker API.
+// Grammar check API is implemented in Chrome OS platform2 repo
+//      src/platform2/ml/grammar_checker_impl.h
+// It is running inside the ML sandbox and consumed only from the Chrome browser
+// process.
 
 // NOTE: This mojom exists in two places and must be kept in sync:
 //       Chromium:  //chromeos/services/machine_learning/public/mojom/
@@ -25,6 +29,18 @@ struct GrammarCheckerQuery {
   string language;
 };
 
+// A span with suggested corrections.
+struct GrammarCorrectionFragment {
+  // The start offset in the original text.
+  uint32 offset;
+
+  // The length of the fragment in the original text.
+  uint32 length;
+
+  // The replacement string.
+  string replacement;
+};
+
 // One possible candidate returned from the grammar checker model.
 struct GrammarCheckerCandidate {
   // Corrected text.
@@ -32,6 +48,9 @@ struct GrammarCheckerCandidate {
 
   // Score of the text. Log of conditional probability.
   float score;
+
+  // The list of individual corrections.
+  array<GrammarCorrectionFragment> fragments;
 };
 
 // The grammar check response.

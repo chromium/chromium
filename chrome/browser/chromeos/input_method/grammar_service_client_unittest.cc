@@ -64,15 +64,19 @@ TEST_F(GrammarServiceClientTest, ParsesResults) {
       spellcheck::prefs::kSpellCheckUseSpellingService, true);
 
   // Construct fake output
-  const base::string16 input_text = base::UTF8ToUTF16("fake input");
-  const base::string16 expected_output = base::UTF8ToUTF16("fake output");
   machine_learning::mojom::GrammarCheckerResultPtr result =
       machine_learning::mojom::GrammarCheckerResult::New();
   result->status = machine_learning::mojom::GrammarCheckerResult::Status::OK;
   machine_learning::mojom::GrammarCheckerCandidatePtr candidate =
       machine_learning::mojom::GrammarCheckerCandidate::New();
-  candidate->text = base::UTF16ToUTF8(expected_output);
+  candidate->text = "fake output";
   candidate->score = 0.5f;
+  machine_learning::mojom::GrammarCorrectionFragmentPtr fragment =
+      machine_learning::mojom::GrammarCorrectionFragment::New();
+  fragment->offset = 3;
+  fragment->length = 5;
+  fragment->replacement = "fake replacement";
+  candidate->fragments.emplace_back(std::move(fragment));
   result->candidates.emplace_back(std::move(candidate));
   fake_service_connection.SetOutputGrammarCheckerResult(result);
 
@@ -80,19 +84,18 @@ TEST_F(GrammarServiceClientTest, ParsesResults) {
   base::RunLoop().RunUntilIdle();
 
   client.RequestTextCheck(
-      profile.get(), input_text,
+      profile.get(), base::UTF8ToUTF16("fake input"),
       base::BindOnce(
-          [](const base::string16& text, const base::string16& expected_output,
-             bool success, const std::vector<SpellCheckResult>& results) {
+          [](bool success, const std::vector<SpellCheckResult>& results) {
             EXPECT_TRUE(success);
             ASSERT_EQ(results.size(), 1U);
             EXPECT_EQ(results[0].decoration, SpellCheckResult::GRAMMAR);
-            EXPECT_EQ(results[0].location, 0);
-            EXPECT_EQ(results[0].length, static_cast<int>(text.size()));
+            EXPECT_EQ(results[0].location, 3);
+            EXPECT_EQ(results[0].length, 5);
             ASSERT_EQ(results[0].replacements.size(), 1U);
-            EXPECT_EQ(results[0].replacements[0], expected_output);
-          },
-          input_text, expected_output));
+            EXPECT_EQ(results[0].replacements[0],
+                      base::UTF8ToUTF16("fake replacement"));
+          }));
 
   base::RunLoop().RunUntilIdle();
 }

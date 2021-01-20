@@ -523,6 +523,12 @@ TEST_F(ServiceConnectionTest, FakeGrammarChecker) {
       mojom::GrammarCheckerCandidate::New();
   candidate->text = "cat";
   candidate->score = 0.5f;
+  mojom::GrammarCorrectionFragmentPtr fragment =
+      mojom::GrammarCorrectionFragment::New();
+  fragment->offset = 3;
+  fragment->length = 5;
+  fragment->replacement = "dog";
+  candidate->fragments.emplace_back(std::move(fragment));
   result->candidates.emplace_back(std::move(candidate));
   fake_service_connection.SetOutputGrammarCheckerResult(result);
 
@@ -535,8 +541,15 @@ TEST_F(ServiceConnectionTest, FakeGrammarChecker) {
             *infer_callback_done = true;
             // Check if the annotation is correct.
             ASSERT_EQ(result->status, mojom::GrammarCheckerResult::Status::OK);
+            ASSERT_EQ(result->candidates.size(), 1UL);
             EXPECT_EQ(result->candidates.at(0)->text, "cat");
             EXPECT_EQ(result->candidates.at(0)->score, 0.5f);
+
+            ASSERT_EQ(result->candidates.at(0)->fragments.size(), 1UL);
+            EXPECT_EQ(result->candidates.at(0)->fragments.at(0)->offset, 3U);
+            EXPECT_EQ(result->candidates.at(0)->fragments.at(0)->length, 5U);
+            EXPECT_EQ(result->candidates.at(0)->fragments.at(0)->replacement,
+                      "dog");
           },
           &infer_callback_done));
   base::RunLoop().RunUntilIdle();
