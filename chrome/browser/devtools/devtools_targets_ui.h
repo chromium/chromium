@@ -68,7 +68,7 @@ class DevToolsTargetsUIHandler {
 class PortForwardingStatusSerializer
     : private DevToolsAndroidBridge::PortForwardingListener {
  public:
-  typedef base::Callback<void(base::Value)> Callback;
+  typedef base::RepeatingCallback<void(base::Value)> Callback;
 
   PortForwardingStatusSerializer(const Callback& callback, Profile* profile);
   ~PortForwardingStatusSerializer() override;
