@@ -8,13 +8,13 @@
 
 // This file defines a list of UseCounter WebFeature measured in the
 // UKM-based UseCounter. Features must all satisfy UKM privacy requirements
-// (see go/ukm). In addition, features should only be added if it's shown
-// (or highly likely be) rare, e.g. <1% of page views as measured by UMA.
+// (see go/ukm). In addition, features should only be added if it's shown to be
+// (or highly likely to be) rare, e.g. <1% of page views as measured by UMA.
 //
 // UKM-based UseCounter should be used to cover the case when UMA UseCounter
 // data shows a behaviour that is rare but too common to blindly change.
-// UKM-based UseCounter would allow use to find specific pages to reason about
-// either a breaking change is acceptable or not.
+// UKM-based UseCounter would allow us to find specific pages to reason about
+// whether a breaking change is acceptable or not.
 
 using WebFeature = blink::mojom::WebFeature;
 
