@@ -691,8 +691,9 @@ void DesksBarView::UpdateNewMiniViews(bool initializing_bar_view,
   const bool is_bento_enabled = features::IsBentoEnabled();
   const auto& desks = DesksController::Get()->desks();
   if (is_bento_enabled) {
-    if (IsZeroState() && !expanding_bar_view) {
+    if (initializing_bar_view)
       UpdateBentoDeskButtonsVisibility();
+    if (IsZeroState() && !expanding_bar_view) {
       gfx::Transform transform;
       transform.Translate(0, -(height() - kZeroStateBarHeight));
       background_view_->layer()->SetTransform(transform);
