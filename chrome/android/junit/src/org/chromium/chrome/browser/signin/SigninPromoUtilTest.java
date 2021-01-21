@@ -9,8 +9,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-import androidx.collection.ArraySet;
-
 import com.google.common.collect.ImmutableSet;
 
 import org.junit.After;
@@ -19,19 +17,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.robolectric.annotation.Config;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.Set;
 
 /** Tests for {@link SigninPromoUtil}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class SigninPromoUtilTest {
     private SigninPreferencesManager mPreferencesManager;
 
@@ -45,14 +38,6 @@ public class SigninPromoUtilTest {
     @After
     public void tearDown() {
         verifyNoMoreInteractions(ignoreStubs(mPreferencesManager));
-    }
-
-    /**
-     * Creates a {@link Supplier} that returns a list of accounts provided to this method.
-     * @param accountNames The account names to return from {@link Supplier}
-     */
-    private Supplier<Set<String>> accountsSupplier(String... accountNames) {
-        return () -> new ArraySet<>(Arrays.asList(accountNames));
     }
 
     @Test
