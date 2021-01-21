@@ -11,10 +11,10 @@ import androidx.annotation.ColorRes;
 
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
+import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.toolbar.NewTabPageDelegate;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.security_state.ConnectionSecurityLevel;

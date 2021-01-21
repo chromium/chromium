@@ -24,6 +24,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
+import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 
 /** Unit tests for LocationBarFocusScrimHandler. */

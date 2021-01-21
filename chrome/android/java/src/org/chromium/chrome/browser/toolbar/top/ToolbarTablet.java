@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.NavigationPopup;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
+import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -40,7 +41,6 @@ import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.HomeButton;
 import org.chromium.chrome.browser.toolbar.KeyboardNavigationListener;
-import org.chromium.chrome.browser.toolbar.NewTabPageDelegate;
 import org.chromium.chrome.browser.toolbar.TabCountProvider;
 import org.chromium.chrome.browser.toolbar.TabCountProvider.TabCountObserver;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
@@ -61,9 +61,6 @@ import java.util.Collection;
 @SuppressLint("Instantiatable")
 public class ToolbarTablet extends ToolbarLayout
         implements OnClickListener, View.OnLongClickListener, TabCountObserver {
-    // The number of toolbar buttons that can be hidden at small widths (reload, back, forward).
-    public static final int HIDEABLE_BUTTON_COUNT = 3;
-
     private HomeButton mHomeButton;
     private ImageButton mBackButton;
     private ImageButton mForwardButton;

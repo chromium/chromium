@@ -21,7 +21,6 @@ import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.toolbar.top.ToolbarTablet;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.interpolators.BakedBezierInterpolator;
 
@@ -32,6 +31,9 @@ import java.util.List;
  * Location bar for tablet form factors.
  */
 class LocationBarTablet extends LocationBarLayout {
+    // The number of toolbar buttons that can be hidden at small widths (reload, back, forward).
+    private static final int HIDEABLE_BUTTON_COUNT = 3;
+
     private static final int ICON_FADE_ANIMATION_DURATION_MS = 150;
     private static final int ICON_FADE_ANIMATION_DELAY_MS = 75;
     private static final int WIDTH_CHANGE_ANIMATION_DURATION_MS = 225;
@@ -77,7 +79,7 @@ class LocationBarTablet extends LocationBarLayout {
         mShouldShowButtonsWhenUnfocused = true;
 
         mToolbarButtonsWidth = getResources().getDimensionPixelOffset(R.dimen.toolbar_button_width)
-                * ToolbarTablet.HIDEABLE_BUTTON_COUNT;
+                * HIDEABLE_BUTTON_COUNT;
         mMicButtonWidth = getResources().getDimensionPixelOffset(R.dimen.location_bar_icon_width);
     }
 

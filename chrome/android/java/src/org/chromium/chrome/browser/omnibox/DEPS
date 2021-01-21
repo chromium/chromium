@@ -1,4 +1,5 @@
 include_rules = [
+  "-chrome/android/java/src/org/chromium/chrome/browser/toolbar",
   "+components/omnibox/browser/android/java/src/org/chromium/components/omnibox/AutocompleteMatch.java",
   "+components/omnibox/browser/android/java/src/org/chromium/components/omnibox/AutocompleteResult.java",
 ]

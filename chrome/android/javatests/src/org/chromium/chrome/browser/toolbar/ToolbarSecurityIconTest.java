@@ -24,6 +24,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omnibox.LocationBarLayout;
+import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.test.util.ToolbarTestUtils;
 import org.chromium.components.security_state.ConnectionSecurityLevel;

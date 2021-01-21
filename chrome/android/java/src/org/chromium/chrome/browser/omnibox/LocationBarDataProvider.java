@@ -14,7 +14,6 @@ import androidx.annotation.StringRes;
 
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.toolbar.NewTabPageDelegate;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 
 /**
