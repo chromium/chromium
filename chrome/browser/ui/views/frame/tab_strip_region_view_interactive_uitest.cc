@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/new_tab_button.h"
@@ -180,10 +181,8 @@ IN_PROC_BROWSER_TEST_P(TabStripRegionViewBrowserTest, TestBeginEndFocus) {
 IN_PROC_BROWSER_TEST_P(TabStripRegionViewBrowserTest,
                        TestSearchButtonIsEndAligned) {
   if (base::FeatureList::IsEnabled(features::kTabSearch)) {
-    const int kRightMargin = tab_strip_region_view()
-                                 ->layout_manager_for_testing()
-                                 ->interior_margin()
-                                 .right();
+    const int kRightMargin =
+        GetLayoutConstant(TABSTRIP_REGION_VIEW_CONTROL_PADDING);
     EXPECT_EQ(tab_strip_region_view()->GetLocalBounds().right() - kRightMargin,
               tab_search_button()->bounds().right());
   }

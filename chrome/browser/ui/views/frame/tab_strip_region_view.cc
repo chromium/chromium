@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 
 #include "base/bind.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -13,6 +14,7 @@
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
+#include "chrome/browser/ui/views/user_education/tip_marquee_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -20,8 +22,10 @@
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
+#include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
@@ -208,7 +212,25 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip) {
   reserved_grab_handle_space_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
-                               views::MaximumFlexSizeRule::kUnbounded));
+                               views::MaximumFlexSizeRule::kUnbounded)
+          .WithOrder(3));
+
+  // This is the margin necessary to ensure correct spacing between right-
+  // aligned control and the end of the TabStripRegionView.
+  const gfx::Insets control_padding = gfx::Insets(
+      0, 0, 0, GetLayoutConstant(TABSTRIP_REGION_VIEW_CONTROL_PADDING));
+
+  tip_marquee_view_ = AddChildView(
+      std::make_unique<TipMarqueeView>(views::style::CONTEXT_LABEL));
+  tip_marquee_view_->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(
+          views::LayoutOrientation::kHorizontal,
+          views::MinimumFlexSizeRule::kPreferredSnapToMinimum)
+          .WithOrder(2));
+  tip_marquee_view_->SetProperty(views::kCrossAxisAlignmentKey,
+                                 views::LayoutAlignment::kCenter);
+  tip_marquee_view_->SetProperty(views::kMarginsKey, control_padding);
 
   const Browser* browser = tab_strip_->controller()->GetBrowser();
   if (base::FeatureList::IsEnabled(features::kTabSearch) && browser &&
@@ -221,11 +243,7 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip) {
     tab_search_button->SetProperty(views::kCrossAxisAlignmentKey,
                                    views::LayoutAlignment::kCenter);
     tab_search_button_ = AddChildView(std::move(tab_search_button));
-
-    // Add the margin necessary to ensure correct spacing between right-aligned
-    // controls and the end of the TabStripRegionView.
-    layout_manager_->SetInteriorMargin(gfx::Insets(
-        0, 0, 0, GetLayoutConstant(TABSTRIP_REGION_VIEW_CONTROL_PADDING)));
+    tab_search_button_->SetProperty(views::kMarginsKey, control_padding);
   }
 }
 
@@ -326,15 +344,14 @@ void TabStripRegionView::OnViewPreferredSizeChanged(View* view) {
 
 int TabStripRegionView::GetTabStripAvailableWidth() const {
   // The tab strip can occupy the space not currently taken by its fixed-width
-  // sibling views.
-  int reserved_width = 0;
-  for (View* const child : children()) {
-    if (child != tab_strip_container_)
-      reserved_width += child->GetMinimumSize().width();
-  }
+  // sibling views. First ask for the available size of the container.
+  views::SizeBound width_bound = GetAvailableSize(tab_strip_container_).width();
 
-  return size().width() - reserved_width -
-         layout_manager_->interior_margin().width();
+  // Because we can't return a null value, and we can't return zero, for cases
+  // where we have never been laid out we will return something arbitrary (the
+  // width of the region view is as good a choice as any, as it's strictly
+  // larger than the tabstrip should be able to display).
+  return width_bound.min_of(width());
 }
 
 void TabStripRegionView::ScrollTowardsLeadingTab() {

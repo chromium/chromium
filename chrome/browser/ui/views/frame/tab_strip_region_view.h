@@ -17,6 +17,7 @@ class FlexLayout;
 class NewTabButton;
 class TabSearchButton;
 class TabStrip;
+class TipMarqueeView;
 
 // Container for the tabstrip, new tab button, and reserved grab handle space.
 class TabStripRegionView final : public views::AccessiblePaneView,
@@ -44,6 +45,8 @@ class TabStripRegionView final : public views::AccessiblePaneView,
   NewTabButton* new_tab_button() { return new_tab_button_; }
 
   TabSearchButton* tab_search_button() { return tab_search_button_; }
+
+  TipMarqueeView* tip_marquee_view() { return tip_marquee_view_; }
 
   views::View* reserved_grab_handle_space_for_testing() {
     return reserved_grab_handle_space_;
@@ -84,6 +87,7 @@ class TabStripRegionView final : public views::AccessiblePaneView,
   TabSearchButton* tab_search_button_ = nullptr;
   views::ImageButton* leading_scroll_button_;
   views::ImageButton* trailing_scroll_button_;
+  TipMarqueeView* tip_marquee_view_ = nullptr;
 
   const base::CallbackListSubscription subscription_ =
       ui::TouchUiController::Get()->RegisterCallback(
