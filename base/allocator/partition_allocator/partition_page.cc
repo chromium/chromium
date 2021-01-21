@@ -55,7 +55,7 @@ PartitionDirectUnmap(SlotSpanMetadata<thread_safe>* slot_span) {
   PA_DCHECK(!(reserved_size & PageAllocationGranularityOffsetMask()));
 
   char* ptr = reinterpret_cast<char*>(
-      SlotSpanMetadata<thread_safe>::ToPointer(slot_span));
+      SlotSpanMetadata<thread_safe>::ToSlotSpanStartPtr(slot_span));
   // Account for the mapping starting a partition page before the actual
   // allocation address.
   ptr -= PartitionPageSize();
@@ -168,7 +168,7 @@ void SlotSpanMetadata<thread_safe>::Decommit(PartitionRoot<thread_safe>* root) {
   root->lock_.AssertAcquired();
   PA_DCHECK(is_empty());
   PA_DCHECK(!bucket->is_direct_mapped());
-  void* addr = SlotSpanMetadata::ToPointer(this);
+  void* slot_span_start = SlotSpanMetadata::ToSlotSpanStartPtr(this);
   size_t size_to_decommit =
 #if defined(OS_WIN)
       // Windows uses lazy commit, thus only provisioned slots are committed.
@@ -178,7 +178,7 @@ void SlotSpanMetadata<thread_safe>::Decommit(PartitionRoot<thread_safe>* root) {
 #endif
   // Not decommitted slot span must've had at least 1 allocation.
   PA_DCHECK(size_to_decommit > 0);
-  root->DecommitSystemPagesForData(addr, size_to_decommit,
+  root->DecommitSystemPagesForData(slot_span_start, size_to_decommit,
                                    PageKeepPermissionsIfPossible);
 
   // We actually leave the decommitted slot span in the active list. We'll sweep

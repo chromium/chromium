@@ -69,7 +69,9 @@ PartitionDirectMap(PartitionRoot<thread_safe>* root, int flags, size_t raw_size)
   PA_DCHECK(!metadata->extent.super_page_base);
   PA_DCHECK(!metadata->extent.super_pages_end);
   PA_DCHECK(!metadata->extent.next);
-  PA_DCHECK(PartitionPage<thread_safe>::FromPointerNoAlignmentCheck(slot) ==
+  // Call FromSlotInnerPtr instead of FromSlotStartPtr, because the bucket isn't
+  // set up yet to properly assert the slot start.
+  PA_DCHECK(PartitionPage<thread_safe>::FromSlotInnerPtr(slot) ==
             &metadata->page);
 
   auto* page = &metadata->page;
@@ -371,7 +373,7 @@ ALWAYS_INLINE char* PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
 
   size_t size = slot_size;
   char* base = reinterpret_cast<char*>(
-      SlotSpanMetadata<thread_safe>::ToPointer(slot_span));
+      SlotSpanMetadata<thread_safe>::ToSlotSpanStartPtr(slot_span));
   // If we got here, the first unallocated slot is either partially or fully on
   // an uncommitted page. If the latter, it must be at the start of that page.
   char* return_slot = base + (size * slot_span->num_allocated_slots);
@@ -573,7 +575,8 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
 #if !defined(OS_WIN)
       // Windows uses lazy commit. Pages will be recommitted when provisioning
       // slots, in ProvisionMoreSlotsAndAllocOne().
-      void* addr = SlotSpanMetadata<thread_safe>::ToPointer(new_slot_span);
+      void* addr =
+          SlotSpanMetadata<thread_safe>::ToSlotSpanStartPtr(new_slot_span);
       root->RecommitSystemPagesForData(
           addr, new_slot_span->bucket->get_bytes_per_span(),
           PageKeepPermissionsIfPossible);
@@ -595,9 +598,10 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
         AllocNewSlotSpan(root, flags, num_partition_pages,
                          /* slot_span_committed_size= */ get_bytes_per_span());
     if (LIKELY(raw_memory != nullptr)) {
+      // Call FromSlotInnerPtr instead of FromSlotStartPtr, because the bucket
+      // isn't set up yet to properly assert the slot start.
       new_slot_span =
-          SlotSpanMetadata<thread_safe>::FromPointerNoAlignmentCheck(
-              raw_memory);
+          SlotSpanMetadata<thread_safe>::FromSlotInnerPtr(raw_memory);
       InitializeSlotSpan(new_slot_span);
       // New memory from PageAllocator is always zeroed.
       *is_already_zeroed = true;

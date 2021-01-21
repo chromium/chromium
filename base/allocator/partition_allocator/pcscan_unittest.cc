@@ -80,7 +80,8 @@ FullSlotSpanAllocation GetFullSlotSpan(ThreadSafePartitionRoot& root,
       last = root.AdjustPointerForExtrasSubtract(ptr);
   }
 
-  EXPECT_EQ(SlotSpan::FromPointer(first), SlotSpan::FromPointer(last));
+  EXPECT_EQ(SlotSpan::FromSlotStartPtr(first),
+            SlotSpan::FromSlotStartPtr(last));
   if (bucket.num_system_pages_per_slot_span == NumSystemPagesPerPartitionPage())
     EXPECT_EQ(reinterpret_cast<size_t>(first) & PartitionPageBaseMask(),
               reinterpret_cast<size_t>(last) & PartitionPageBaseMask());
@@ -95,11 +96,11 @@ FullSlotSpanAllocation GetFullSlotSpan(ThreadSafePartitionRoot& root,
           root.AdjustPointerForExtrasAdd(last)};
 }
 
-bool IsInFreeList(void* object) {
-  auto* slot_span = SlotSpan::FromPointerNoAlignmentCheck(object);
+bool IsInFreeList(void* slot_start) {
+  auto* slot_span = SlotSpan::FromSlotStartPtr(slot_start);
   for (auto* entry = slot_span->freelist_head; entry;
        entry = entry->GetNext()) {
-    if (entry == object)
+    if (entry == slot_start)
       return true;
   }
   return false;
@@ -232,8 +233,8 @@ TEST_F(PCScanTest, DanglingReferenceSameSlotSpanButDifferentPages) {
 
   // Assert that the first and the last objects are in the same slot span but on
   // different partition pages.
-  ASSERT_EQ(SlotSpan::FromPointerNoAlignmentCheck(full_slot_span.first),
-            SlotSpan::FromPointerNoAlignmentCheck(full_slot_span.last));
+  ASSERT_EQ(SlotSpan::FromSlotInnerPtr(full_slot_span.first),
+            SlotSpan::FromSlotInnerPtr(full_slot_span.last));
   ASSERT_NE(
       reinterpret_cast<size_t>(full_slot_span.first) & PartitionPageBaseMask(),
       reinterpret_cast<size_t>(full_slot_span.last) & PartitionPageBaseMask());
@@ -260,11 +261,9 @@ TEST_F(PCScanTest, DanglingReferenceFromFullPage) {
   // Assert that the first and the last objects are in different slot spans but
   // in the same bucket.
   SlotSpan* source_slot_span =
-      ThreadSafePartitionRoot::SlotSpan::FromPointerNoAlignmentCheck(
-          source_addr);
+      ThreadSafePartitionRoot::SlotSpan::FromSlotInnerPtr(source_addr);
   SlotSpan* value_slot_span =
-      ThreadSafePartitionRoot::SlotSpan::FromPointerNoAlignmentCheck(
-          value_addr);
+      ThreadSafePartitionRoot::SlotSpan::FromSlotInnerPtr(value_addr);
   ASSERT_NE(source_slot_span, value_slot_span);
   ASSERT_EQ(source_slot_span->bucket, value_slot_span->bucket);
 

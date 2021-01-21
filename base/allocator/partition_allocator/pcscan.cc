@@ -295,7 +295,7 @@ PCScan<thread_safe>::PCScanTask::TryMarkObjectInNormalBucketPool(
   PA_DCHECK((maybe_ptr & kSuperPageBaseMask) == (base & kSuperPageBaseMask));
 
   auto target_slot_span =
-      SlotSpan::FromPointerNoAlignmentCheck(reinterpret_cast<void*>(base));
+      SlotSpan::FromSlotInnerPtr(reinterpret_cast<void*>(base));
   PA_DCHECK(root == PartitionRoot<thread_safe>::FromSlotSpan(target_slot_span));
 
   const size_t usable_size = root->AdjustSizeForExtrasSubtract(
@@ -324,7 +324,7 @@ void PCScan<thread_safe>::PCScanTask::ClearQuarantinedObjects() const {
     auto* root = Root::FromSuperPage(reinterpret_cast<char*>(super_page));
     bitmap->Iterate([root](uintptr_t ptr) {
       auto* object = reinterpret_cast<void*>(ptr);
-      auto* slot_span = SlotSpan::FromPointerNoAlignmentCheck(object);
+      auto* slot_span = SlotSpan::FromSlotInnerPtr(object);
       // Use zero as a zapping value to speed up the fast bailout check in
       // ScanPartitions.
       memset(
@@ -411,7 +411,7 @@ size_t PCScan<thread_safe>::PCScanTask::SweepQuarantine() {
     auto* root = Root::FromSuperPage(reinterpret_cast<char*>(super_page));
     bitmap->Iterate([root, &swept_bytes](uintptr_t ptr) {
       auto* object = reinterpret_cast<void*>(ptr);
-      auto* slot_span = SlotSpan::FromPointerNoAlignmentCheck(object);
+      auto* slot_span = SlotSpan::FromSlotInnerPtr(object);
       swept_bytes += slot_span->bucket->slot_size;
       root->FreeNoHooksImmediate(object, slot_span);
     });
@@ -448,8 +448,8 @@ PCScan<thread_safe>::PCScanTask::PCScanTask(PCScan& pcscan) : pcscan_(pcscan) {
         // TODO(bikineev): Consider following freelists instead of slot spans.
         IterateActiveAndFullSlotSpans<thread_safe>(
             super_page, true /*with pcscan*/, [this](SlotSpan* slot_span) {
-              auto* payload_begin =
-                  static_cast<uintptr_t*>(SlotSpan::ToPointer(slot_span));
+              auto* payload_begin = static_cast<uintptr_t*>(
+                  SlotSpan::ToSlotSpanStartPtr(slot_span));
               size_t provisioned_size = slot_span->GetProvisionedSize();
               // Free & decommitted slot spans are skipped.
               PA_DCHECK(provisioned_size > 0);

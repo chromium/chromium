@@ -106,9 +106,10 @@ struct __attribute__((packed)) SlotSpanMetadata {
   // |slot_span| pointer may be the result of an offset calculation and
   // therefore cannot be trusted. The objective of these functions is to
   // sanitize this input.
-  ALWAYS_INLINE static void* ToPointer(const SlotSpanMetadata* slot_span);
-  ALWAYS_INLINE static SlotSpanMetadata* FromPointer(void* ptr);
-  ALWAYS_INLINE static SlotSpanMetadata* FromPointerNoAlignmentCheck(void* ptr);
+  ALWAYS_INLINE static void* ToSlotSpanStartPtr(
+      const SlotSpanMetadata* slot_span);
+  ALWAYS_INLINE static SlotSpanMetadata* FromSlotStartPtr(void* slot_start);
+  ALWAYS_INLINE static SlotSpanMetadata* FromSlotInnerPtr(void* ptr);
 
   // Checks if it is feasible to store raw_size.
   ALWAYS_INLINE bool CanStoreRawSize() const;
@@ -210,7 +211,11 @@ struct PartitionPage {
   // tells how many pages in from that first page we are.
   uint16_t slot_span_metadata_offset;
 
-  ALWAYS_INLINE static PartitionPage* FromPointerNoAlignmentCheck(void* ptr);
+  ALWAYS_INLINE static PartitionPage* FromSlotStartPtr(void* slot_start);
+  ALWAYS_INLINE static PartitionPage* FromSlotInnerPtr(void* ptr);
+
+ private:
+  ALWAYS_INLINE static void* ToSlotSpanStartPtr(const PartitionPage* page);
 };
 
 static_assert(sizeof(PartitionPage<ThreadSafe>) == kPageMetadataSize,
@@ -302,14 +307,14 @@ ALWAYS_INLINE char* GetSlotStartInSuperPage(char* maybe_inner_ptr) {
       PartitionSuperPageToMetadataArea(super_page_ptr));
   PA_DCHECK(
       IsWithinSuperPagePayload(maybe_inner_ptr, extent->root->IsScanEnabled()));
-  auto* slot_span = SlotSpanMetadata<thread_safe>::FromPointerNoAlignmentCheck(
-      maybe_inner_ptr);
+  auto* slot_span =
+      SlotSpanMetadata<thread_safe>::FromSlotInnerPtr(maybe_inner_ptr);
   // Check if the slot span is actually used and valid.
   if (!slot_span->bucket)
     return nullptr;
   PA_DCHECK(PartitionRoot<thread_safe>::IsValidSlotSpan(slot_span));
-  char* const slot_span_begin =
-      static_cast<char*>(SlotSpanMetadata<thread_safe>::ToPointer(slot_span));
+  char* const slot_span_begin = static_cast<char*>(
+      SlotSpanMetadata<thread_safe>::ToSlotSpanStartPtr(slot_span));
   const ptrdiff_t ptr_offset = maybe_inner_ptr - slot_span_begin;
   PA_DCHECK(0 <= ptr_offset &&
             ptr_offset < static_cast<ptrdiff_t>(
@@ -326,18 +331,23 @@ ALWAYS_INLINE char* GetSlotStartInSuperPage(char* maybe_inner_ptr) {
   return result;
 }
 
-// See the comment for |FromPointer|.
+// Converts from a pointer to the PartitionPage object (within super pages's
+// metadata) into a pointer to the beginning of the slot span.
+// |page| must be the first PartitionPage of the slot span.
 template <bool thread_safe>
-ALWAYS_INLINE SlotSpanMetadata<thread_safe>*
-SlotSpanMetadata<thread_safe>::FromPointerNoAlignmentCheck(void* ptr) {
-  return &PartitionPage<thread_safe>::FromPointerNoAlignmentCheck(ptr)
-              ->slot_span_metadata;
+ALWAYS_INLINE void* PartitionPage<thread_safe>::ToSlotSpanStartPtr(
+    const PartitionPage* page) {
+  PA_DCHECK(!page->slot_span_metadata_offset);
+  return SlotSpanMetadata<thread_safe>::ToSlotSpanStartPtr(
+      &page->slot_span_metadata);
 }
 
-// See the comment for |FromPointer|.
+// Converts from a pointer inside a slot into a pointer to the PartitionPage
+// object (within super pages's metadata) that describes the first partition
+// page of a slot span containing that slot.
 template <bool thread_safe>
 ALWAYS_INLINE PartitionPage<thread_safe>*
-PartitionPage<thread_safe>::FromPointerNoAlignmentCheck(void* ptr) {
+PartitionPage<thread_safe>::FromSlotInnerPtr(void* ptr) {
   uintptr_t pointer_as_uint = reinterpret_cast<uintptr_t>(ptr);
   char* super_page_ptr =
       reinterpret_cast<char*>(pointer_as_uint & kSuperPageBaseMask);
@@ -358,10 +368,25 @@ PartitionPage<thread_safe>::FromPointerNoAlignmentCheck(void* ptr) {
   return page;
 }
 
+// Like |FromSlotInnerPtr|, but asserts that pointer points to the beginning of
+// the slot.
+template <bool thread_safe>
+ALWAYS_INLINE PartitionPage<thread_safe>*
+PartitionPage<thread_safe>::FromSlotStartPtr(void* slot_start) {
+  auto* page = FromSlotInnerPtr(slot_start);
+
+  // Checks that the pointer is a multiple of slot size.
+  auto* slot_span_start = ToSlotSpanStartPtr(page);
+  PA_DCHECK(!((reinterpret_cast<uintptr_t>(slot_start) -
+               reinterpret_cast<uintptr_t>(slot_span_start)) %
+              page->slot_span_metadata.bucket->slot_size));
+  return page;
+}
+
 // Converts from a pointer to the SlotSpanMetadata object (within super pages's
 // metadata) into a pointer to the beginning of the slot span.
 template <bool thread_safe>
-ALWAYS_INLINE void* SlotSpanMetadata<thread_safe>::ToPointer(
+ALWAYS_INLINE void* SlotSpanMetadata<thread_safe>::ToSlotSpanStartPtr(
     const SlotSpanMetadata* slot_span) {
   uintptr_t pointer_as_uint = reinterpret_cast<uintptr_t>(slot_span);
 
@@ -387,20 +412,25 @@ ALWAYS_INLINE void* SlotSpanMetadata<thread_safe>::ToPointer(
   return ret;
 }
 
-// Converts from a pointer to the beginning of a slot into a pointer to the
-// SlotSpanMetadata object (within super pages's metadata) that describes the
-// slot span containing that slot.
+// Converts from a pointer inside a slot into a pointer to the SlotSpanMetadata
+// object (within super pages's metadata) that describes the slot span
+// containing that slot.
 template <bool thread_safe>
 ALWAYS_INLINE SlotSpanMetadata<thread_safe>*
-SlotSpanMetadata<thread_safe>::FromPointer(void* slot_start) {
-  SlotSpanMetadata* slot_span =
-      SlotSpanMetadata::FromPointerNoAlignmentCheck(slot_start);
-  // Checks that the pointer is a multiple of slot size.
-  PA_DCHECK(
-      !((reinterpret_cast<uintptr_t>(slot_start) -
-         reinterpret_cast<uintptr_t>(SlotSpanMetadata::ToPointer(slot_span))) %
-        slot_span->bucket->slot_size));
-  return slot_span;
+SlotSpanMetadata<thread_safe>::FromSlotInnerPtr(void* ptr) {
+  auto* page = PartitionPage<thread_safe>::FromSlotInnerPtr(ptr);
+  PA_DCHECK(!page->slot_span_metadata_offset);
+  return &page->slot_span_metadata;
+}
+
+// Like |FromSlotInnerPtr|, but asserts that pointer points to the beginning of
+// the slot.
+template <bool thread_safe>
+ALWAYS_INLINE SlotSpanMetadata<thread_safe>*
+SlotSpanMetadata<thread_safe>::FromSlotStartPtr(void* slot_start) {
+  auto* page = PartitionPage<thread_safe>::FromSlotStartPtr(slot_start);
+  PA_DCHECK(!page->slot_span_metadata_offset);
+  return &page->slot_span_metadata;
 }
 
 template <bool thread_safe>
@@ -435,7 +465,8 @@ ALWAYS_INLINE void SlotSpanMetadata<thread_safe>::SetFreelistHead(
 }
 
 template <bool thread_safe>
-ALWAYS_INLINE DeferredUnmap SlotSpanMetadata<thread_safe>::Free(void* ptr) {
+ALWAYS_INLINE DeferredUnmap
+SlotSpanMetadata<thread_safe>::Free(void* slot_start) {
 #if DCHECK_IS_ON()
   auto* root = PartitionRoot<thread_safe>::FromSlotSpan(this);
   root->lock_.AssertAcquired();
@@ -443,10 +474,10 @@ ALWAYS_INLINE DeferredUnmap SlotSpanMetadata<thread_safe>::Free(void* ptr) {
 
   PA_DCHECK(num_allocated_slots);
   // Catches an immediate double free.
-  PA_CHECK(ptr != freelist_head);
+  PA_CHECK(slot_start != freelist_head);
   // Look for double free one level deeper in debug.
-  PA_DCHECK(!freelist_head || ptr != freelist_head->GetNext());
-  auto* entry = static_cast<internal::PartitionFreelistEntry*>(ptr);
+  PA_DCHECK(!freelist_head || slot_start != freelist_head->GetNext());
+  auto* entry = static_cast<internal::PartitionFreelistEntry*>(slot_start);
   entry->SetNext(freelist_head);
   SetFreelistHead(entry);
   --num_allocated_slots;
@@ -543,9 +574,12 @@ void IterateActiveAndFullSlotSpans(char* super_page_base,
 #endif
 
   using Page = PartitionPage<thread_safe>;
-  auto* const first_page = Page::FromPointerNoAlignmentCheck(
+  auto* const first_page = Page::FromSlotStartPtr(
       SuperPagePayloadBegin(super_page_base, with_pcscan));
-  auto* const last_page = Page::FromPointerNoAlignmentCheck(
+  // Call FromSlotInnerPtr instead of FromSlotStartPtr, because this slot span
+  // doesn't exist, hence its bucket isn't set up to properly assert the slot
+  // start.
+  auto* const last_page = Page::FromSlotInnerPtr(
       SuperPagePayloadEnd(super_page_base) - PartitionPageSize());
   for (auto* page = first_page;
        page <= last_page && page->slot_span_metadata.bucket;

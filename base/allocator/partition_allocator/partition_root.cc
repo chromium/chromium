@@ -62,7 +62,8 @@ static size_t PartitionPurgeSlotSpan(
     discardable_bytes = bucket->slot_size - used_bytes;
     if (discardable_bytes && discard) {
       char* ptr = reinterpret_cast<char*>(
-          internal::SlotSpanMetadata<thread_safe>::ToPointer(slot_span));
+          internal::SlotSpanMetadata<thread_safe>::ToSlotSpanStartPtr(
+              slot_span));
       ptr += used_bytes;
       DiscardSystemPages(ptr, discardable_bytes);
     }
@@ -93,7 +94,7 @@ static size_t PartitionPurgeSlotSpan(
 #endif
   memset(slot_usage, 1, num_slots);
   char* ptr = reinterpret_cast<char*>(
-      internal::SlotSpanMetadata<thread_safe>::ToPointer(slot_span));
+      internal::SlotSpanMetadata<thread_safe>::ToSlotSpanStartPtr(slot_span));
   // First, walk the freelist for this slot span and make a bitmap of which
   // slots are not in use.
   for (internal::PartitionFreelistEntry* entry = slot_span->freelist_head;
@@ -488,7 +489,7 @@ bool PartitionRoot<thread_safe>::ReallocDirectMappedInPlace(
 
   // bucket->slot_size is the current size of the allocation.
   size_t current_slot_size = slot_span->bucket->slot_size;
-  char* char_ptr = static_cast<char*>(SlotSpan::ToPointer(slot_span));
+  char* char_ptr = static_cast<char*>(SlotSpan::ToSlotSpanStartPtr(slot_span));
   if (new_slot_size == current_slot_size) {
     // No need to move any memory around, but update size and cookie below.
     // That's because raw_size may have changed.
@@ -577,7 +578,7 @@ void* PartitionRoot<thread_safe>::ReallocFlags(int flags,
   }
   if (LIKELY(!overridden)) {
     auto* slot_span =
-        SlotSpan::FromPointer(AdjustPointerForExtrasSubtract(ptr));
+        SlotSpan::FromSlotStartPtr(AdjustPointerForExtrasSubtract(ptr));
     bool success = false;
     {
       internal::ScopedGuard<thread_safe> guard{lock_};
