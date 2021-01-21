@@ -311,8 +311,8 @@ ChromeExtensionsAPIClient::CreateContentRulesRegistry(
     RulesCacheDelegate* cache_delegate) const {
   return base::MakeRefCounted<ChromeContentRulesRegistry>(
       browser_context, cache_delegate,
-      base::Bind(&CreateDefaultContentPredicateEvaluators,
-                 base::Unretained(browser_context)));
+      base::BindOnce(&CreateDefaultContentPredicateEvaluators,
+                     base::Unretained(browser_context)));
 }
 
 std::unique_ptr<DevicePermissionsPrompt>

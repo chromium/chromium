@@ -89,15 +89,14 @@ class DeclarativeContentPageUrlConditionTracker
   class PerWebContentsTracker : public content::WebContentsObserver {
    public:
     using RequestEvaluationCallback =
-        base::Callback<void(content::WebContents*)>;
+        base::RepeatingCallback<void(content::WebContents*)>;
     using WebContentsDestroyedCallback =
-        base::Callback<void(content::WebContents*)>;
+        base::OnceCallback<void(content::WebContents*)>;
 
-    PerWebContentsTracker(
-        content::WebContents* contents,
-        url_matcher::URLMatcher* url_matcher,
-        const RequestEvaluationCallback& request_evaluation,
-        const WebContentsDestroyedCallback& web_contents_destroyed);
+    PerWebContentsTracker(content::WebContents* contents,
+                          url_matcher::URLMatcher* url_matcher,
+                          RequestEvaluationCallback request_evaluation,
+                          WebContentsDestroyedCallback web_contents_destroyed);
     ~PerWebContentsTracker() override;
 
     void UpdateMatchesForCurrentUrl(bool request_evaluation_if_unchanged);
@@ -112,7 +111,7 @@ class DeclarativeContentPageUrlConditionTracker
 
     url_matcher::URLMatcher* url_matcher_;
     const RequestEvaluationCallback request_evaluation_;
-    const WebContentsDestroyedCallback web_contents_destroyed_;
+    WebContentsDestroyedCallback web_contents_destroyed_;
 
     std::set<url_matcher::URLMatcherConditionSet::ID> matches_;
 

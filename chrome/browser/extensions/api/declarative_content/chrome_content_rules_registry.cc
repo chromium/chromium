@@ -78,13 +78,13 @@ ChromeContentRulesRegistry::EvaluationScope::~EvaluationScope() {
 ChromeContentRulesRegistry::ChromeContentRulesRegistry(
     content::BrowserContext* browser_context,
     RulesCacheDelegate* cache_delegate,
-    const PredicateEvaluatorsFactory& evaluators_factory)
+    PredicateEvaluatorsFactory evaluators_factory)
     : ContentRulesRegistry(browser_context,
                            declarative_content_constants::kOnPageChanged,
                            content::BrowserThread::UI,
                            cache_delegate,
                            RulesRegistryService::kDefaultRulesRegistryID),
-      evaluators_(evaluators_factory.Run(this)),
+      evaluators_(std::move(evaluators_factory).Run(this)),
       evaluation_disposition_(EVALUATE_REQUESTS) {
   registrar_.Add(this,
                  content::NOTIFICATION_WEB_CONTENTS_DESTROYED,

@@ -90,14 +90,13 @@ class DeclarativeContentIsBookmarkedConditionTracker
   class PerWebContentsTracker : public content::WebContentsObserver {
    public:
     using RequestEvaluationCallback =
-        base::Callback<void(content::WebContents*)>;
+        base::RepeatingCallback<void(content::WebContents*)>;
     using WebContentsDestroyedCallback =
-        base::Callback<void(content::WebContents*)>;
+        base::OnceCallback<void(content::WebContents*)>;
 
-    PerWebContentsTracker(
-        content::WebContents* contents,
-        const RequestEvaluationCallback& request_evaluation,
-        const WebContentsDestroyedCallback& web_contents_destroyed);
+    PerWebContentsTracker(content::WebContents* contents,
+                          RequestEvaluationCallback request_evaluation,
+                          WebContentsDestroyedCallback web_contents_destroyed);
     ~PerWebContentsTracker() override;
 
     void BookmarkAddedForUrl(const GURL& url);
@@ -116,7 +115,7 @@ class DeclarativeContentIsBookmarkedConditionTracker
 
     bool is_url_bookmarked_;
     const RequestEvaluationCallback request_evaluation_;
-    const WebContentsDestroyedCallback web_contents_destroyed_;
+    WebContentsDestroyedCallback web_contents_destroyed_;
 
     DISALLOW_COPY_AND_ASSIGN(PerWebContentsTracker);
   };

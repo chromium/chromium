@@ -52,16 +52,15 @@ class ChromeContentRulesRegistry
       public content::NotificationObserver,
       public ContentPredicateEvaluator::Delegate {
  public:
-  using PredicateEvaluatorsFactory =
-      base::Callback<std::vector<std::unique_ptr<ContentPredicateEvaluator>>(
+  using PredicateEvaluatorsFactory = base::OnceCallback<
+      std::vector<std::unique_ptr<ContentPredicateEvaluator>>(
           ContentPredicateEvaluator::Delegate*)>;
 
   // For testing, |cache_delegate| can be NULL. In that case it constructs the
   // registry with storage functionality suspended.
-  ChromeContentRulesRegistry(
-      content::BrowserContext* browser_context,
-      RulesCacheDelegate* cache_delegate,
-      const PredicateEvaluatorsFactory& evaluators_factory);
+  ChromeContentRulesRegistry(content::BrowserContext* browser_context,
+                             RulesCacheDelegate* cache_delegate,
+                             PredicateEvaluatorsFactory evaluators_factory);
 
   // ContentRulesRegistry:
   void MonitorWebContentsForRuleEvaluation(

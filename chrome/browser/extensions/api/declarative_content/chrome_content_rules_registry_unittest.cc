@@ -144,9 +144,9 @@ class DeclarativeChromeContentRulesRegistryTest : public testing::Test {
 TEST_F(DeclarativeChromeContentRulesRegistryTest, ActiveRulesDoesntGrow) {
   TestPredicateEvaluator* evaluator = nullptr;
   scoped_refptr<ChromeContentRulesRegistry> registry(
-      new ChromeContentRulesRegistry(env()->profile(), nullptr,
-                                     base::Bind(&CreateTestEvaluator,
-                                                &evaluator)));
+      new ChromeContentRulesRegistry(
+          env()->profile(), nullptr,
+          base::BindOnce(&CreateTestEvaluator, &evaluator)));
 
   EXPECT_EQ(0u, registry->GetActiveRulesCountForTesting());
 

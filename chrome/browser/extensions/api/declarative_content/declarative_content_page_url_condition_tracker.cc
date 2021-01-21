@@ -28,8 +28,8 @@ static url_matcher::URLMatcherConditionSet::ID g_next_id = 0;
 // DeclarativeContentPageUrlPredicate
 //
 
-DeclarativeContentPageUrlPredicate::~DeclarativeContentPageUrlPredicate() {
-}
+DeclarativeContentPageUrlPredicate::~DeclarativeContentPageUrlPredicate() =
+    default;
 
 // static
 std::unique_ptr<DeclarativeContentPageUrlPredicate>
@@ -74,20 +74,17 @@ DeclarativeContentPageUrlPredicate::DeclarativeContentPageUrlPredicate(
 //
 
 DeclarativeContentPageUrlConditionTracker::PerWebContentsTracker::
-PerWebContentsTracker(
-    content::WebContents* contents,
-    url_matcher::URLMatcher* url_matcher,
-    const RequestEvaluationCallback& request_evaluation,
-    const WebContentsDestroyedCallback& web_contents_destroyed)
+    PerWebContentsTracker(content::WebContents* contents,
+                          url_matcher::URLMatcher* url_matcher,
+                          RequestEvaluationCallback request_evaluation,
+                          WebContentsDestroyedCallback web_contents_destroyed)
     : WebContentsObserver(contents),
       url_matcher_(url_matcher),
-      request_evaluation_(request_evaluation),
-      web_contents_destroyed_(web_contents_destroyed) {
-}
+      request_evaluation_(std::move(request_evaluation)),
+      web_contents_destroyed_(std::move(web_contents_destroyed)) {}
 
 DeclarativeContentPageUrlConditionTracker::PerWebContentsTracker::
-~PerWebContentsTracker() {
-}
+    ~PerWebContentsTracker() = default;
 
 void DeclarativeContentPageUrlConditionTracker::PerWebContentsTracker::
 UpdateMatchesForCurrentUrl(bool request_evaluation_if_unchanged) {
@@ -100,7 +97,7 @@ UpdateMatchesForCurrentUrl(bool request_evaluation_if_unchanged) {
 
 void DeclarativeContentPageUrlConditionTracker::PerWebContentsTracker::
 WebContentsDestroyed() {
-  web_contents_destroyed_.Run(web_contents());
+  std::move(web_contents_destroyed_).Run(web_contents());
 }
 
 //
@@ -113,8 +110,7 @@ DeclarativeContentPageUrlConditionTracker(Delegate* delegate)
 }
 
 DeclarativeContentPageUrlConditionTracker::
-~DeclarativeContentPageUrlConditionTracker() {
-}
+    ~DeclarativeContentPageUrlConditionTracker() = default;
 
 std::string DeclarativeContentPageUrlConditionTracker::
 GetPredicateApiAttributeName() const {
@@ -182,10 +178,11 @@ void DeclarativeContentPageUrlConditionTracker::TrackForWebContents(
     content::WebContents* contents) {
   per_web_contents_tracker_[contents] = std::make_unique<PerWebContentsTracker>(
       contents, &url_matcher_,
-      base::Bind(&Delegate::RequestEvaluation, base::Unretained(delegate_)),
-      base::Bind(&DeclarativeContentPageUrlConditionTracker::
-                     DeletePerWebContentsTracker,
-                 base::Unretained(this)));
+      base::BindRepeating(&Delegate::RequestEvaluation,
+                          base::Unretained(delegate_)),
+      base::BindOnce(&DeclarativeContentPageUrlConditionTracker::
+                         DeletePerWebContentsTracker,
+                     base::Unretained(this)));
   per_web_contents_tracker_[contents]->UpdateMatchesForCurrentUrl(true);
 }
 

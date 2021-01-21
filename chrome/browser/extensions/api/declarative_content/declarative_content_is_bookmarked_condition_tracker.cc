@@ -35,8 +35,7 @@ bool HasBookmarkAPIPermission(const Extension* extension) {
 //
 
 DeclarativeContentIsBookmarkedPredicate::
-~DeclarativeContentIsBookmarkedPredicate() {
-}
+    ~DeclarativeContentIsBookmarkedPredicate() = default;
 
 bool DeclarativeContentIsBookmarkedPredicate::IsIgnored() const {
   return !HasBookmarkAPIPermission(extension_.get());
@@ -85,20 +84,18 @@ DeclarativeContentIsBookmarkedPredicate(
 //
 
 DeclarativeContentIsBookmarkedConditionTracker::PerWebContentsTracker::
-PerWebContentsTracker(
-    content::WebContents* contents,
-    const RequestEvaluationCallback& request_evaluation,
-    const WebContentsDestroyedCallback& web_contents_destroyed)
+    PerWebContentsTracker(content::WebContents* contents,
+                          RequestEvaluationCallback request_evaluation,
+                          WebContentsDestroyedCallback web_contents_destroyed)
     : WebContentsObserver(contents),
-      request_evaluation_(request_evaluation),
-      web_contents_destroyed_(web_contents_destroyed) {
+      request_evaluation_(std::move(request_evaluation)),
+      web_contents_destroyed_(std::move(web_contents_destroyed)) {
   is_url_bookmarked_ = IsCurrentUrlBookmarked();
   request_evaluation_.Run(web_contents());
 }
 
 DeclarativeContentIsBookmarkedConditionTracker::PerWebContentsTracker::
-~PerWebContentsTracker() {
-}
+    ~PerWebContentsTracker() = default;
 
 void DeclarativeContentIsBookmarkedConditionTracker::PerWebContentsTracker::
 BookmarkAddedForUrl(const GURL& url) {
@@ -138,7 +135,7 @@ IsCurrentUrlBookmarked() {
 
 void DeclarativeContentIsBookmarkedConditionTracker::PerWebContentsTracker::
 WebContentsDestroyed() {
-  web_contents_destroyed_.Run(web_contents());
+  std::move(web_contents_destroyed_).Run(web_contents());
 }
 
 //
@@ -158,8 +155,7 @@ DeclarativeContentIsBookmarkedConditionTracker::
 }
 
 DeclarativeContentIsBookmarkedConditionTracker::
-~DeclarativeContentIsBookmarkedConditionTracker() {
-}
+    ~DeclarativeContentIsBookmarkedConditionTracker() = default;
 
 std::string DeclarativeContentIsBookmarkedConditionTracker::
 GetPredicateApiAttributeName() const {
@@ -190,10 +186,11 @@ void DeclarativeContentIsBookmarkedConditionTracker::TrackForWebContents(
     content::WebContents* contents) {
   per_web_contents_tracker_[contents] = std::make_unique<PerWebContentsTracker>(
       contents,
-      base::Bind(&Delegate::RequestEvaluation, base::Unretained(delegate_)),
-      base::Bind(&DeclarativeContentIsBookmarkedConditionTracker::
-                     DeletePerWebContentsTracker,
-                 base::Unretained(this)));
+      base::BindRepeating(&Delegate::RequestEvaluation,
+                          base::Unretained(delegate_)),
+      base::BindOnce(&DeclarativeContentIsBookmarkedConditionTracker::
+                         DeletePerWebContentsTracker,
+                     base::Unretained(this)));
 }
 
 void DeclarativeContentIsBookmarkedConditionTracker::OnWebContentsNavigation(
