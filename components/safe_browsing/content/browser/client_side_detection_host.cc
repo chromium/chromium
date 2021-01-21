@@ -359,6 +359,8 @@ void ClientSideDetectionHost::SendModelToRenderFrame() {
     return;
 
   for (content::RenderFrameHost* frame : web_contents()->GetAllFrames()) {
+    if (!frame->IsRenderFrameCreated())
+      continue;  // We'd send to this frame on RenderFrameCreated().
     if (phishing_detector_)
       phishing_detector_.reset();
     frame->GetRemoteInterfaces()->GetInterface(
