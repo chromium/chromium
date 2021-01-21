@@ -306,6 +306,13 @@ class CONTENT_EXPORT LegacyCacheStorageCache : public CacheStorageCache {
       blink::mojom::CacheStorageError error,
       std::unique_ptr<QueryCacheResults> query_cache_results);
 
+  // Utility method to write metadata headers to an entry.
+  using WriteMetadataCallback =
+      base::OnceCallback<void(int exepected_bytes, int rv)>;
+  void WriteMetadata(disk_cache::Entry* entry,
+                     const proto::CacheMetadata& metadata,
+                     WriteMetadataCallback callback);
+
   // WriteSideData callbacks
   void WriteSideDataDidGetQuota(ErrorCallback callback,
                                 const GURL& url,

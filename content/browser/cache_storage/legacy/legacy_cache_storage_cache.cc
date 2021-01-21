@@ -1457,6 +1457,38 @@ void LegacyCacheStorageCache::MatchAllDidQueryCache(
                           std::move(out_responses));
 }
 
+void LegacyCacheStorageCache::WriteMetadata(
+    disk_cache::Entry* entry,
+    const proto::CacheMetadata& metadata,
+    WriteMetadataCallback callback) {
+  std::unique_ptr<std::string> serialized = std::make_unique<std::string>();
+  if (!metadata.SerializeToString(serialized.get())) {
+    std::move(callback).Run(0, -1);
+    return;
+  }
+
+  scoped_refptr<net::StringIOBuffer> buffer =
+      base::MakeRefCounted<net::StringIOBuffer>(std::move(serialized));
+
+  auto callback_with_expected_bytes = base::BindOnce(
+      [](WriteMetadataCallback callback, int expected_bytes, int rv) {
+        std::move(callback).Run(expected_bytes, rv);
+      },
+      std::move(callback), buffer->size());
+
+  // Create a callback that is copyable, even though it can only be called once.
+  net::CompletionRepeatingCallback adapted_callback =
+      base::AdaptCallbackForRepeating(std::move(callback_with_expected_bytes));
+
+  DCHECK(scheduler_->IsRunningExclusiveOperation());
+  int rv =
+      entry->WriteData(INDEX_HEADERS, /*offset=*/0, buffer.get(),
+                       buffer->size(), adapted_callback, /*truncate=*/true);
+
+  if (rv != net::ERR_IO_PENDING)
+    std::move(adapted_callback).Run(rv);
+}
+
 void LegacyCacheStorageCache::WriteSideDataDidGetQuota(
     ErrorCallback callback,
     const GURL& url,
@@ -1837,36 +1869,13 @@ void LegacyCacheStorageCache::PutDidCreateEntry(
   for (const auto& header : put_context->response->cors_exposed_header_names)
     response_metadata->add_cors_exposed_header_names(header);
 
-  std::unique_ptr<std::string> serialized(new std::string());
-  if (!metadata.SerializeToString(serialized.get())) {
-    PutComplete(
-        std::move(put_context),
-        MakeErrorStorage(ErrorStorageType::kMetadataSerializationFailed));
-    return;
-  }
-
-  scoped_refptr<net::StringIOBuffer> buffer =
-      base::MakeRefCounted<net::StringIOBuffer>(std::move(serialized));
-
   // Get a temporary copy of the entry pointer before passing it in base::Bind.
   disk_cache::Entry* temp_entry_ptr = put_context->cache_entry.get();
 
-  // Create a callback that is copyable, even though it can only be called once.
-  // BindRepeating() cannot be used directly because |put_context| is not
-  // copyable.
-  net::CompletionRepeatingCallback write_headers_callback =
-      base::AdaptCallbackForRepeating(
-          base::BindOnce(&LegacyCacheStorageCache::PutDidWriteHeaders,
-                         weak_ptr_factory_.GetWeakPtr(), std::move(put_context),
-                         buffer->size()));
-
-  DCHECK(scheduler_->IsRunningExclusiveOperation());
-  rv = temp_entry_ptr->WriteData(INDEX_HEADERS, 0 /* offset */, buffer.get(),
-                                 buffer->size(), write_headers_callback,
-                                 true /* truncate */);
-
-  if (rv != net::ERR_IO_PENDING)
-    std::move(write_headers_callback).Run(rv);
+  WriteMetadata(
+      temp_entry_ptr, metadata,
+      base::BindOnce(&LegacyCacheStorageCache::PutDidWriteHeaders,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(put_context)));
 }
 
 void LegacyCacheStorageCache::PutDidWriteHeaders(
