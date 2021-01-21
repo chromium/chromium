@@ -106,6 +106,7 @@
 #include "components/cdm/browser/cdm_message_filter_android.h"
 #include "components/crash/core/app/crashpad.h"
 #include "media/audio/android/audio_manager_android.h"
+#include "media/audio/audio_features.h"
 #else
 #include "chromecast/browser/memory_pressure_controller_impl.h"
 #endif  // defined(OS_ANDROID)
@@ -178,8 +179,10 @@ CastContentBrowserClient::CastContentBrowserClient(
       // TODO(juke): Reenable this after solving casting issue on LAN.
       blink::features::kMixedContentAutoupgrade,
 #if defined(OS_ANDROID)
-      ::media::kAudioFocusLossSuspendMediaSession,
-      ::media::kRequestSystemAudioFocus,
+          ::media::kAudioFocusLossSuspendMediaSession,
+          ::media::kRequestSystemAudioFocus,
+          // Disable AAudio improve AV sync performance.
+          ::features::kUseAAudioDriver,
 #endif
   });
 }
