@@ -2196,7 +2196,6 @@ crbug.com/1050754 external/wpt/html/browsers/browsing-the-web/history-traversal/
 crbug.com/1050754 external/wpt/html/browsers/browsing-the-web/history-traversal/persisted-user-state-restoration/scroll-restoration-navigation-samedoc.html [ Failure ]
 crbug.com/1050754 external/wpt/html/browsers/browsing-the-web/history-traversal/same-url.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/html/browsers/browsing-the-web/history-traversal/scroll-restoration-order.html [ Failure ]
-crbug.com/1050754 external/wpt/html/browsers/browsing-the-web/history-traversal/unset_context_name-1.html [ Failure ]
 crbug.com/1050754 external/wpt/html/browsers/browsing-the-web/history-traversal/window-name-after-cross-origin-main-frame-navigation.sub.html [ Failure ]
 crbug.com/1050754 external/wpt/html/browsers/browsing-the-web/navigating-across-documents/009.html [ Timeout ]
 crbug.com/1050754 external/wpt/html/browsers/browsing-the-web/navigating-across-documents/012.html [ Failure Pass ]
