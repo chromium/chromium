@@ -32,8 +32,8 @@ namespace em = enterprise_management;
 
 namespace chromeos {
 
-SessionManagerOperation::SessionManagerOperation(const Callback& callback)
-    : callback_(callback) {}
+SessionManagerOperation::SessionManagerOperation(Callback callback)
+    : callback_(std::move(callback)) {}
 
 SessionManagerOperation::~SessionManagerOperation() {}
 
@@ -66,8 +66,9 @@ void SessionManagerOperation::StartLoading() {
     return;
   is_loading_ = true;
   if (cloud_validations_) {
-    EnsurePublicKey(base::Bind(&SessionManagerOperation::RetrieveDeviceSettings,
-                               weak_factory_.GetWeakPtr()));
+    EnsurePublicKey(
+        base::BindOnce(&SessionManagerOperation::RetrieveDeviceSettings,
+                       weak_factory_.GetWeakPtr()));
   } else {
     RetrieveDeviceSettings();
   }
@@ -76,8 +77,8 @@ void SessionManagerOperation::StartLoading() {
 void SessionManagerOperation::LoadImmediately() {
   if (cloud_validations_) {
     StorePublicKey(
-        base::Bind(&SessionManagerOperation::BlockingRetrieveDeviceSettings,
-                   weak_factory_.GetWeakPtr()),
+        base::BindOnce(&SessionManagerOperation::BlockingRetrieveDeviceSettings,
+                       weak_factory_.GetWeakPtr()),
         LoadPublicKey(owner_key_util_, public_key_));
   } else {
     BlockingRetrieveDeviceSettings();
@@ -86,10 +87,10 @@ void SessionManagerOperation::LoadImmediately() {
 
 void SessionManagerOperation::ReportResult(
     DeviceSettingsService::Status status) {
-  callback_.Run(this, status);
+  std::move(callback_).Run(this, status);
 }
 
-void SessionManagerOperation::EnsurePublicKey(const base::Closure& callback) {
+void SessionManagerOperation::EnsurePublicKey(base::OnceClosure callback) {
   if (force_key_load_ || !public_key_ || !public_key_->is_loaded()) {
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE,
@@ -98,9 +99,9 @@ void SessionManagerOperation::EnsurePublicKey(const base::Closure& callback) {
         base::BindOnce(&SessionManagerOperation::LoadPublicKey, owner_key_util_,
                        force_key_load_ ? nullptr : public_key_),
         base::BindOnce(&SessionManagerOperation::StorePublicKey,
-                       weak_factory_.GetWeakPtr(), callback));
+                       weak_factory_.GetWeakPtr(), std::move(callback)));
   } else {
-    callback.Run();
+    std::move(callback).Run();
   }
 }
 
@@ -122,7 +123,7 @@ scoped_refptr<PublicKey> SessionManagerOperation::LoadPublicKey(
   return public_key;
 }
 
-void SessionManagerOperation::StorePublicKey(const base::Closure& callback,
+void SessionManagerOperation::StorePublicKey(base::OnceClosure callback,
                                              scoped_refptr<PublicKey> new_key) {
   force_key_load_ = false;
   public_key_ = new_key;
@@ -132,7 +133,7 @@ void SessionManagerOperation::StorePublicKey(const base::Closure& callback,
     return;
   }
 
-  callback.Run();
+  std::move(callback).Run();
 }
 
 void SessionManagerOperation::RetrieveDeviceSettings() {
@@ -224,8 +225,8 @@ void SessionManagerOperation::ReportValidatorStatus(
 LoadSettingsOperation::LoadSettingsOperation(bool force_key_load,
                                              bool cloud_validations,
                                              bool force_immediate_load,
-                                             const Callback& callback)
-    : SessionManagerOperation(callback) {
+                                             Callback callback)
+    : SessionManagerOperation(std::move(callback)) {
   force_key_load_ = force_key_load;
   cloud_validations_ = cloud_validations;
   force_immediate_load_ = force_immediate_load;
@@ -241,9 +242,9 @@ void LoadSettingsOperation::Run() {
 }
 
 StoreSettingsOperation::StoreSettingsOperation(
-    const Callback& callback,
+    Callback callback,
     std::unique_ptr<em::PolicyFetchResponse> policy)
-    : SessionManagerOperation(callback), policy_(std::move(policy)) {
+    : SessionManagerOperation(std::move(callback)), policy_(std::move(policy)) {
   if (policy_->has_new_public_key())
     force_key_load_ = true;
 }

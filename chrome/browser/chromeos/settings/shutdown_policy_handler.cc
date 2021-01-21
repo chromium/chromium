@@ -18,8 +18,9 @@ ShutdownPolicyHandler::ShutdownPolicyHandler(CrosSettings* cros_settings,
   DCHECK(delegate);
   shutdown_policy_subscription_ = cros_settings_->AddSettingsObserver(
       kRebootOnShutdown,
-      base::Bind(&ShutdownPolicyHandler::NotifyDelegateWithShutdownPolicy,
-                 weak_factory_.GetWeakPtr()));
+      base::BindRepeating(
+          &ShutdownPolicyHandler::NotifyDelegateWithShutdownPolicy,
+          weak_factory_.GetWeakPtr()));
 }
 
 ShutdownPolicyHandler::~ShutdownPolicyHandler() {}

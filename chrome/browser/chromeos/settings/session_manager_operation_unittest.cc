@@ -130,8 +130,8 @@ TEST_F(SessionManagerOperationTest, LoadNoPolicyNoKey) {
   LoadSettingsOperation op(
       false /* force_key_load */, true /* cloud_validations */,
       false /* force_immediate_load */,
-      base::Bind(&SessionManagerOperationTest::OnOperationCompleted,
-                 base::Unretained(this)));
+      base::BindOnce(&SessionManagerOperationTest::OnOperationCompleted,
+                     base::Unretained(this)));
 
   EXPECT_CALL(*this,
               OnOperationCompleted(
@@ -151,8 +151,8 @@ TEST_F(SessionManagerOperationTest, LoadOwnerKey) {
   LoadSettingsOperation op(
       false /* force_key_load */, true /* cloud_validations */,
       false /* force_immediate_load */,
-      base::Bind(&SessionManagerOperationTest::OnOperationCompleted,
-                 base::Unretained(this)));
+      base::BindOnce(&SessionManagerOperationTest::OnOperationCompleted,
+                     base::Unretained(this)));
 
   EXPECT_CALL(*this,
               OnOperationCompleted(
@@ -170,8 +170,8 @@ TEST_F(SessionManagerOperationTest, LoadPolicy) {
   LoadSettingsOperation op(
       false /* force_key_load */, true /* cloud_validations */,
       false /* force_immediate_load */,
-      base::Bind(&SessionManagerOperationTest::OnOperationCompleted,
-                 base::Unretained(this)));
+      base::BindOnce(&SessionManagerOperationTest::OnOperationCompleted,
+                     base::Unretained(this)));
 
   EXPECT_CALL(*this,
               OnOperationCompleted(&op, DeviceSettingsService::STORE_SUCCESS));
@@ -193,8 +193,8 @@ TEST_F(SessionManagerOperationTest, LoadImmediately) {
   LoadSettingsOperation op(
       false /* force_key_load */, true /* cloud_validations */,
       true /* force_immediate_load */,
-      base::Bind(&SessionManagerOperationTest::OnOperationCompleted,
-                 base::Unretained(this)));
+      base::BindOnce(&SessionManagerOperationTest::OnOperationCompleted,
+                     base::Unretained(this)));
 
   EXPECT_CALL(*this,
               OnOperationCompleted(
@@ -217,8 +217,8 @@ TEST_F(SessionManagerOperationTest, RestartLoad) {
   LoadSettingsOperation op(
       false /* force_key_load */, true /* cloud_validations */,
       false /* force_immediate_load */,
-      base::Bind(&SessionManagerOperationTest::OnOperationCompleted,
-                 base::Unretained(this)));
+      base::BindOnce(&SessionManagerOperationTest::OnOperationCompleted,
+                     base::Unretained(this)));
 
   // Just after the first RetrieveDevicePolicy() completion,
   // verify the state, install a different key, then RestartLoad().
@@ -272,8 +272,8 @@ TEST_F(SessionManagerOperationTest, RestartLoad) {
 TEST_F(SessionManagerOperationTest, StoreSettings) {
   owner_key_util_->SetPublicKeyFromPrivateKey(*policy_.GetSigningKey());
   StoreSettingsOperation op(
-      base::Bind(&SessionManagerOperationTest::OnOperationCompleted,
-                 base::Unretained(this)),
+      base::BindOnce(&SessionManagerOperationTest::OnOperationCompleted,
+                     base::Unretained(this)),
       policy_.GetCopy());
 
   EXPECT_CALL(*this,

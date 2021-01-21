@@ -163,7 +163,7 @@ class DeviceSettingsService : public SessionManagerClient::Observer {
   // reported through |callback|. If successful, the updated device settings are
   // present in policy_data() and device_settings() when the callback runs.
   void Store(std::unique_ptr<enterprise_management::PolicyFetchResponse> policy,
-             const base::Closure& callback);
+             base::OnceClosure callback);
 
   // Returns the ownership status. May return OWNERSHIP_UNKNOWN if the disk
   // hasn't been checked yet.
@@ -229,13 +229,13 @@ class DeviceSettingsService : public SessionManagerClient::Observer {
   void StartNextOperation();
 
   // Updates status, policy data and owner key from a finished operation.
-  void HandleCompletedOperation(const base::Closure& callback,
+  void HandleCompletedOperation(base::OnceClosure callback,
                                 SessionManagerOperation* operation,
                                 Status status);
 
   // Same as HandleCompletedOperation(), but also starts the next pending
   // operation if available.
-  void HandleCompletedAsyncOperation(const base::Closure& callback,
+  void HandleCompletedAsyncOperation(base::OnceClosure callback,
                                      SessionManagerOperation* operation,
                                      Status status);
 

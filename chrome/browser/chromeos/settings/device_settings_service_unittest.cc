@@ -156,8 +156,8 @@ TEST_F(DeviceSettingsServiceTest, StoreFailure) {
   session_manager_client_.ForceStorePolicyFailure(true);
   device_settings_service_->Store(
       device_policy_->GetCopy(),
-      base::Bind(&DeviceSettingsServiceTest::SetOperationCompleted,
-                 base::Unretained(this)));
+      base::BindOnce(&DeviceSettingsServiceTest::SetOperationCompleted,
+                     base::Unretained(this)));
   FlushDeviceSettings();
   EXPECT_TRUE(operation_completed_);
   EXPECT_EQ(DeviceSettingsService::STORE_OPERATION_FAILED,
@@ -176,8 +176,8 @@ TEST_F(DeviceSettingsServiceTest, StoreSuccess) {
             true);
   device_settings_service_->Store(
       device_policy_->GetCopy(),
-      base::Bind(&DeviceSettingsServiceTest::SetOperationCompleted,
-                 base::Unretained(this)));
+      base::BindOnce(&DeviceSettingsServiceTest::SetOperationCompleted,
+                     base::Unretained(this)));
   FlushDeviceSettings();
   EXPECT_TRUE(operation_completed_);
   EXPECT_EQ(DeviceSettingsService::STORE_SUCCESS,
@@ -195,7 +195,8 @@ TEST_F(DeviceSettingsServiceTest, StoreRotation) {
       ->set_device_policy_refresh_rate(300);
   device_policy_->SetDefaultNewSigningKey();
   device_policy_->Build();
-  device_settings_service_->Store(device_policy_->GetCopy(), base::Closure());
+  device_settings_service_->Store(device_policy_->GetCopy(),
+                                  base::OnceClosure());
   FlushDeviceSettings();
   owner_key_util_->SetPublicKeyFromPrivateKey(
       *device_policy_->GetNewSigningKey());
@@ -218,7 +219,7 @@ TEST_F(DeviceSettingsServiceTest, OwnershipStatus) {
   EXPECT_EQ(DeviceSettingsService::OWNERSHIP_UNKNOWN,
             device_settings_service_->GetOwnershipStatus());
 
-  device_settings_service_->GetOwnershipStatusAsync(base::Bind(
+  device_settings_service_->GetOwnershipStatusAsync(base::BindOnce(
       &DeviceSettingsServiceTest::SetOwnershipStatus, base::Unretained(this)));
   FlushDeviceSettings();
   EXPECT_FALSE(device_settings_service_->HasPrivateOwnerKey());
@@ -230,7 +231,7 @@ TEST_F(DeviceSettingsServiceTest, OwnershipStatus) {
 
   owner_key_util_->SetPublicKeyFromPrivateKey(*device_policy_->GetSigningKey());
   ReloadDeviceSettings();
-  device_settings_service_->GetOwnershipStatusAsync(base::Bind(
+  device_settings_service_->GetOwnershipStatusAsync(base::BindOnce(
       &DeviceSettingsServiceTest::SetOwnershipStatus, base::Unretained(this)));
   FlushDeviceSettings();
   EXPECT_FALSE(device_settings_service_->HasPrivateOwnerKey());
@@ -245,7 +246,7 @@ TEST_F(DeviceSettingsServiceTest, OwnershipStatus) {
   owner_key_util_->SetPrivateKey(device_policy_->GetSigningKey());
   InitOwner(AccountId::FromUserEmail(device_policy_->policy_data().username()),
             true);
-  device_settings_service_->GetOwnershipStatusAsync(base::Bind(
+  device_settings_service_->GetOwnershipStatusAsync(base::BindOnce(
       &DeviceSettingsServiceTest::SetOwnershipStatus, base::Unretained(this)));
   FlushDeviceSettings();
   EXPECT_TRUE(device_settings_service_->HasPrivateOwnerKey());
@@ -442,7 +443,8 @@ TEST_F(DeviceSettingsServiceTest, Observer) {
 
   EXPECT_CALL(observer_, OwnershipStatusChanged()).Times(0);
   EXPECT_CALL(observer_, DeviceSettingsUpdated()).Times(1);
-  device_settings_service_->Store(device_policy_->GetCopy(), base::Closure());
+  device_settings_service_->Store(device_policy_->GetCopy(),
+                                  base::OnceClosure());
   FlushDeviceSettings();
   Mock::VerifyAndClearExpectations(&observer_);
 

@@ -81,9 +81,9 @@ CrosSettings::CrosSettings() = default;
 CrosSettings::CrosSettings(DeviceSettingsService* device_settings_service,
                            PrefService* local_state) {
   CrosSettingsProvider::NotifyObserversCallback notify_cb(
-      base::Bind(&CrosSettings::FireObservers,
-                 // This is safe since |this| is never deleted.
-                 base::Unretained(this)));
+      base::BindRepeating(&CrosSettings::FireObservers,
+                          // This is safe since |this| is never deleted.
+                          base::Unretained(this)));
 
   auto supervised_user_cros_provider =
       std::make_unique<SupervisedUserCrosSettingsProvider>(notify_cb);
@@ -272,8 +272,8 @@ bool CrosSettings::AddSettingsProvider(
   // Providers instantiated inside this class will have the same callback
   // passed to their constructor, but doing it here allows for providers
   // to be instantiated outside this class.
-  CrosSettingsProvider::NotifyObserversCallback notify_cb(
-      base::Bind(&CrosSettings::FireObservers, base::Unretained(this)));
+  CrosSettingsProvider::NotifyObserversCallback notify_cb(base::BindRepeating(
+      &CrosSettings::FireObservers, base::Unretained(this)));
   provider_ptr->SetNotifyObserversCallback(notify_cb);
   return true;
 }

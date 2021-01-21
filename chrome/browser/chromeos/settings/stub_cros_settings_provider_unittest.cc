@@ -19,9 +19,8 @@ class StubCrosSettingsProviderTest : public testing::Test {
  protected:
   StubCrosSettingsProviderTest()
       : provider_(new StubCrosSettingsProvider(
-          base::Bind(&StubCrosSettingsProviderTest::FireObservers,
-                     base::Unretained(this)))) {
-  }
+            base::BindRepeating(&StubCrosSettingsProviderTest::FireObservers,
+                                base::Unretained(this)))) {}
 
   ~StubCrosSettingsProviderTest() override {}
 

@@ -42,9 +42,6 @@ class DeviceSettingsProvider
       public DeviceSettingsService::Observer,
       public ownership::OwnerSettingsService::Observer {
  public:
-  // The callback type that is called to get the device mode.
-  typedef base::Callback<policy::DeviceMode(void)> GetDeviceModeCallback;
-
   DeviceSettingsProvider(const NotifyObserversCallback& notify_cb,
                          DeviceSettingsService* device_settings_service,
                          PrefService* pref_service);

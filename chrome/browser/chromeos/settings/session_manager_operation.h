@@ -34,11 +34,11 @@ namespace chromeos {
 // are subclasses for loading, storing and signing policy blobs.
 class SessionManagerOperation {
  public:
-  typedef base::Callback<void(SessionManagerOperation*,
-                              DeviceSettingsService::Status)> Callback;
+  using Callback = base::OnceCallback<void(SessionManagerOperation*,
+                                           DeviceSettingsService::Status)>;
 
   // Creates a new load operation.
-  explicit SessionManagerOperation(const Callback& callback);
+  explicit SessionManagerOperation(Callback callback);
   virtual ~SessionManagerOperation();
 
   // Starts the operation.
@@ -69,7 +69,7 @@ class SessionManagerOperation {
   virtual void Run() = 0;
 
   // Ensures the public key is loaded.
-  void EnsurePublicKey(const base::Closure& callback);
+  void EnsurePublicKey(base::OnceClosure callback);
 
   // Starts a load operation.
   void StartLoading();
@@ -101,7 +101,7 @@ class SessionManagerOperation {
       scoped_refptr<ownership::PublicKey> current_key);
 
   // Stores the owner key loaded by LoadOwnerKey and calls |callback|.
-  void StorePublicKey(const base::Closure& callback,
+  void StorePublicKey(base::OnceClosure callback,
                       scoped_refptr<ownership::PublicKey> new_key);
 
   // Triggers a device settings load.
@@ -146,7 +146,7 @@ class LoadSettingsOperation : public SessionManagerOperation {
   LoadSettingsOperation(bool force_key_load,
                         bool cloud_validations,
                         bool force_immediate_load,
-                        const Callback& callback);
+                        Callback callback);
   ~LoadSettingsOperation() override;
 
  protected:
@@ -163,7 +163,7 @@ class StoreSettingsOperation : public SessionManagerOperation {
  public:
   // Creates a new store operation.
   StoreSettingsOperation(
-      const Callback& callback,
+      Callback callback,
       std::unique_ptr<enterprise_management::PolicyFetchResponse> policy);
   ~StoreSettingsOperation() override;
 
