@@ -263,6 +263,7 @@ class FakeWifiSyncFeatureManagerFactory
       HostStatusProvider* host_status_provider,
       PrefService* pref_service,
       device_sync::DeviceSyncClient* device_sync_client,
+      AccountStatusChangeDelegateNotifier* delegate_notifier,
       std::unique_ptr<base::OneShotTimer> timer) override {
     EXPECT_FALSE(instance_);
     EXPECT_EQ(fake_host_status_provider_factory_->instance(),

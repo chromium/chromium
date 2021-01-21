@@ -2668,6 +2668,12 @@ This file contains the strings for ash.
       <message name="IDS_ASH_MULTI_DEVICE_SETUP_EXISTING_USER_NEW_CHROME_DEVICE_ADDED_MESSAGE" desc="Message shown as part of the notification shown to a user that has already completed the MultiDevice setup flow logging into a new Chrome device that all their Chrome devices are MultiDevice enabled.">
         This <ph name="DEVICE_NAME">$1<ex>Chromebook</ex></ph> and your phone will connect automatically
       </message>
+      <message name="IDS_ASH_MULTI_DEVICE_WIFI_SYNC_AVAILABLE_TITLE" desc="Title of the notification shown to a user that is newly eligible for Wi-Fi Sync.">
+        Turn on Wi-Fi Sync
+      </message>
+      <message name="IDS_ASH_MULTI_DEVICE_WIFI_SYNC_AVAILABLE_MESSAGE" desc="Message shown as part of the notification shown to a user that has become eligible to enable Wi-Fi Sync.">
+        Wi-Fi networks will be shared between your phone and <ph name="DEVICE_NAME">$1<ex>Chromebook</ex></ph>
+      </message>
 
       <!-- Window teleportation warning dialog -->
       <message name="IDS_ASH_TELEPORT_WARNING_TITLE" desc="The title of the dialog which warns user about oddities which can be seen when a window gets moved to another user desktop.">
