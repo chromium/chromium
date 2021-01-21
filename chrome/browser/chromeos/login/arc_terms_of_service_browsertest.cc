@@ -41,6 +41,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/interactive_test_utils.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "components/arc/arc_prefs.h"
@@ -97,11 +98,11 @@ const test::UIPath kArcReviewSettingsCheckbox = {kArcTosID,
                                                  "arcReviewSettingsCheckbox"};
 const test::UIPath kArcTosAcceptButton = {kArcTosID, "arcTosAcceptButton"};
 const test::UIPath kArcTosBackButton = {kArcTosID, "arcTosBackButton"};
-const test::UIPath kArcTosDialog = {kArcTosID, "arcTosDialog"};
 const test::UIPath kArcTosNextButton = {kArcTosID, "arcTosNextButton"};
 const test::UIPath kArcTosOverlayWebview = {kArcTosID, "arcTosOverlayWebview"};
 const test::UIPath kArcTosRetryButton = {kArcTosID, "arcTosRetryButton"};
 const test::UIPath kArcTosView = {kArcTosID, "arcTosView"};
+const test::UIPath kArcTosDialog = {kArcTosID, "arcTosDialog"};
 
 ArcPlayTermsOfServiceConsent BuildArcPlayTermsOfServiceConsent(bool accepted) {
   ArcPlayTermsOfServiceConsent play_consent;
@@ -261,9 +262,7 @@ class ArcTermsOfServiceScreenTest : public OobeBaseTest {
 
   void WaitForTermsOfServiceWebViewToLoad() {
     OobeScreenWaiter(ArcTermsOfServiceScreenView::kScreenId).Wait();
-    test::OobeJS()
-        .CreateHasClassWaiter(true, "arc-tos-loaded", kArcTosDialog)
-        ->Wait();
+    test::OobeJS().CreateVisibilityWaiter(true, kArcTosDialog)->Wait();
   }
 
   void WaitForScreenExitResult() {
@@ -531,6 +530,25 @@ IN_PROC_BROWSER_TEST_F(ArcTermsOfServiceScreenTest, RetryAndBackButtonClicked) {
               static_cast<int>(
                   ArcTermsOfServiceScreen::UserAction::kBackButtonClicked),
               1)));
+}
+
+IN_PROC_BROWSER_TEST_F(ArcTermsOfServiceScreenTest, NextButtonFocused) {
+  TriggerArcTosScreen();
+  WaitForTermsOfServiceWebViewToLoad();
+  test::OobeJS().CreateFocusWaiter(kArcTosNextButton)->Wait();
+
+  // TODO(crbug/1167720): Make this a method of JSChecker
+  ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
+      nullptr, ui::VKEY_RETURN, false /* control */, false /* shift */,
+      false /* alt */, false /* command */));
+  test::OobeJS().CreateVisibilityWaiter(true, kArcTosAcceptButton)->Wait();
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  "OOBE.ArcTermsOfServiceScreen.UserActions"),
+              ElementsAre(base::Bucket(
+                  static_cast<int>(
+                      ArcTermsOfServiceScreen::UserAction::kNextButtonClicked),
+                  1)));
 }
 
 // There are two checkboxes for enabling/disabling arc backup restore and
