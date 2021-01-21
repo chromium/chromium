@@ -264,19 +264,19 @@ KioskAppData::KioskAppData(KioskAppDataDelegate* delegate,
                        app_id,
                        account_id),
       delegate_(delegate),
-      status_(STATUS_INIT),
+      status_(Status::kInit),
       update_url_(update_url),
       crx_file_(cached_crx) {
   if (ignore_kiosk_app_data_load_failures_for_testing) {
     LOG(WARNING) << "Force KioskAppData loaded for testing.";
-    SetStatus(STATUS_LOADED);
+    SetStatus(Status::kLoaded);
   }
 }
 
 KioskAppData::~KioskAppData() = default;
 
 void KioskAppData::Load() {
-  SetStatus(STATUS_LOADING);
+  SetStatus(Status::kLoading);
 
   if (LoadFromCache())
     return;
@@ -286,7 +286,7 @@ void KioskAppData::Load() {
 
 void KioskAppData::LoadFromInstalledApp(Profile* profile,
                                         const extensions::Extension* app) {
-  SetStatus(STATUS_LOADING);
+  SetStatus(Status::kLoading);
 
   if (!app) {
     app = extensions::ExtensionRegistry::Get(profile)->GetInstalledExtension(
@@ -317,7 +317,7 @@ void KioskAppData::SetCachedCrx(const base::FilePath& crx_file) {
 }
 
 bool KioskAppData::IsLoading() const {
-  return status_ == STATUS_LOADING;
+  return status_ == Status::kLoading;
 }
 
 bool KioskAppData::IsFromWebStore() const {
@@ -338,16 +338,16 @@ std::unique_ptr<KioskAppData> KioskAppData::CreateForTest(
     const std::string& required_platform_version) {
   std::unique_ptr<KioskAppData> data(new KioskAppData(
       delegate, app_id, account_id, update_url, base::FilePath()));
-  data->status_ = STATUS_LOADED;
+  data->status_ = Status::kLoaded;
   data->required_platform_version_ = required_platform_version;
   return data;
 }
 
 void KioskAppData::SetStatus(Status status) {
-  if (status == STATUS_ERROR &&
+  if (status == Status::kError &&
       ignore_kiosk_app_data_load_failures_for_testing) {
     LOG(WARNING) << "Ignoring KioskAppData error for testing. Force OK.";
-    status = STATUS_LOADED;
+    status = Status::kLoaded;
   }
 
   if (status_ == status)
@@ -359,12 +359,12 @@ void KioskAppData::SetStatus(Status status) {
     return;
 
   switch (status_) {
-    case STATUS_INIT:
-    case STATUS_LOADING:
-    case STATUS_LOADED:
+    case Status::kInit:
+    case Status::kLoading:
+    case Status::kLoaded:
       delegate_->OnKioskAppDataChanged(app_id());
       break;
-    case STATUS_ERROR:
+    case Status::kError:
       delegate_->OnKioskAppDataLoadFailure(app_id());
       break;
   }
@@ -427,14 +427,14 @@ void KioskAppData::OnExtensionIconLoaded(const gfx::Image& icon) {
     SetCache(name_, icon.AsBitmap(), required_platform_version_);
   }
 
-  SetStatus(STATUS_LOADED);
+  SetStatus(Status::kLoaded);
 }
 
 void KioskAppData::OnIconLoadSuccess(const gfx::ImageSkia& icon) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   kiosk_app_icon_loader_.reset();
   icon_ = icon;
-  SetStatus(STATUS_LOADED);
+  SetStatus(Status::kLoaded);
 }
 
 void KioskAppData::OnIconLoadFailure() {
@@ -452,12 +452,12 @@ void KioskAppData::OnWebstoreParseSuccess(
     const SkBitmap& icon,
     const std::string& required_platform_version) {
   SetCache(name_, icon, required_platform_version);
-  SetStatus(STATUS_LOADED);
+  SetStatus(Status::kLoaded);
 }
 
 void KioskAppData::OnWebstoreParseFailure() {
   LOG(WARNING) << "Webstore request parse failure for app_id=" << app_id();
-  SetStatus(STATUS_ERROR);
+  SetStatus(Status::kError);
 }
 
 void KioskAppData::StartFetch() {
@@ -475,7 +475,7 @@ void KioskAppData::StartFetch() {
 
 void KioskAppData::OnWebstoreRequestFailure(const std::string& extension_id) {
   LOG(WARNING) << "Webstore request failure for app_id=" << extension_id;
-  SetStatus(STATUS_ERROR);
+  SetStatus(Status::kError);
 }
 
 void KioskAppData::OnWebstoreResponseParseSuccess(
@@ -531,7 +531,7 @@ void KioskAppData::OnWebstoreResponseParseFailure(
     const std::string& error) {
   LOG(ERROR) << "Webstore failed for kiosk app " << app_id() << ", " << error;
   webstore_fetcher_.reset();
-  SetStatus(STATUS_ERROR);
+  SetStatus(Status::kError);
 }
 
 bool KioskAppData::CheckResponseKeyValue(const std::string& extension_id,
@@ -570,7 +570,7 @@ void KioskAppData::OnCrxLoadFinished(const CrxLoader* crx_loader) {
     if (delegate_)
       delegate_->OnExternalCacheDamaged(app_id());
 
-    SetStatus(STATUS_INIT);
+    SetStatus(Status::kInit);
     return;
   }
 
@@ -579,7 +579,7 @@ void KioskAppData::OnCrxLoadFinished(const CrxLoader* crx_loader) {
     icon = *extensions::util::GetDefaultAppIcon().bitmap();
   SetCache(crx_loader->name(), icon, crx_loader->required_platform_version());
 
-  SetStatus(STATUS_LOADED);
+  SetStatus(Status::kLoaded);
 }
 
 }  // namespace chromeos

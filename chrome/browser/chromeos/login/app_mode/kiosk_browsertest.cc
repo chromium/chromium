@@ -483,8 +483,8 @@ class KioskTest : public OobeBaseTest {
     // This test does not operate any real App, so App data does not exist.
     // Depending on timing, the asynchronous check for app data may or may not
     // complete before test checks pass. And if the check does complete, it will
-    // mark app status KioskAppData::STATUS_ERROR, and exclude it from the list
-    // of populated apps.
+    // mark app status KioskAppData::Status::kError, and exclude it from the
+    // list of populated apps.
     //
     // Then, any Update UI event (asynchronous) (like
     // LoginDisplayHostCommon::OnStartSignInScreenCommon() will invoke

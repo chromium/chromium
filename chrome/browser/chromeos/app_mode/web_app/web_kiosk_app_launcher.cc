@@ -42,7 +42,7 @@ void WebKioskAppLauncher::Initialize() {
   const WebKioskAppData* app =
       WebKioskAppManager::Get()->GetAppByAccountId(account_id_);
   DCHECK(app);
-  if (app->status() == WebKioskAppData::STATUS_INSTALLED ||
+  if (app->status() == WebKioskAppData::Status::kInstalled ||
       delegate_->ShouldSkipAppInstallation()) {
     delegate_->OnAppPrepared();
     return;
@@ -98,7 +98,7 @@ void WebKioskAppLauncher::LaunchApp() {
   DCHECK(!browser_);
   const WebKioskAppData* app = GetCurrentApp();
 
-  GURL url = app->status() == WebKioskAppData::STATUS_INSTALLED
+  GURL url = app->status() == WebKioskAppData::Status::kInstalled
                  ? app->launch_url()
                  : app->install_url();
 

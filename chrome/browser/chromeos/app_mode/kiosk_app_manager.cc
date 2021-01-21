@@ -499,7 +499,7 @@ void KioskAppManager::GetApps(Apps* apps) const {
   apps->clear();
   for (size_t i = 0; i < apps_.size(); ++i) {
     const KioskAppData& app_data = *apps_[i];
-    if (app_data.status() != KioskAppData::STATUS_ERROR) {
+    if (app_data.status() != KioskAppData::Status::kError) {
       apps->push_back(ConstructApp(app_data));
     }
   }
@@ -544,7 +544,7 @@ void KioskAppManager::UpdateAppDataFromProfile(
 
 void KioskAppManager::RetryFailedAppDataFetch() {
   for (size_t i = 0; i < apps_.size(); ++i) {
-    if (apps_[i]->status() == KioskAppData::STATUS_ERROR)
+    if (apps_[i]->status() == KioskAppData::Status::kError)
       apps_[i]->Load();
   }
 }

@@ -42,11 +42,11 @@ class KioskAppDataDelegate;
 class KioskAppData : public KioskAppDataBase,
                      public extensions::WebstoreDataFetcherDelegate {
  public:
-  enum Status {
-    STATUS_INIT,     // Data initialized with app id.
-    STATUS_LOADING,  // Loading data from cache or web store.
-    STATUS_LOADED,   // Data loaded.
-    STATUS_ERROR,    // Failed to load data.
+  enum class Status {
+    kInit,     // Data initialized with app id.
+    kLoading,  // Loading data from cache or web store.
+    kLoaded,   // Data loaded.
+    kError,    // Failed to load data.
   };
 
   KioskAppData(KioskAppDataDelegate* delegate,

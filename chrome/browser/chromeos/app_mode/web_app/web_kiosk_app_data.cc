@@ -154,7 +154,7 @@ WebKioskAppData::WebKioskAppData(KioskAppDataDelegate* delegate,
                        app_id,
                        account_id),
       delegate_(delegate),
-      status_(STATUS_INIT),
+      status_(Status::kInit),
       install_url_(url),
       icon_url_(icon_url) {
   name_ = title.empty() ? install_url_.spec() : title;
@@ -176,13 +176,13 @@ bool WebKioskAppData::LoadFromCache() {
     return false;
 
   if (LoadLaunchUrlFromDictionary(*dict)) {
-    SetStatus(STATUS_INSTALLED);
+    SetStatus(Status::kInstalled);
     return true;
   }
 
   // Wait while icon is loaded.
-  if (status_ == STATUS_INIT)
-    SetStatus(STATUS_LOADING);
+  if (status_ == Status::kInit)
+    SetStatus(Status::kLoading);
   return true;
 }
 
@@ -191,7 +191,7 @@ void WebKioskAppData::LoadIcon() {
     return;
 
   // Decode the icon if one is already cached.
-  if (status_ != STATUS_INIT) {
+  if (status_ != Status::kInit) {
     DecodeIcon();
     return;
   }
@@ -201,7 +201,7 @@ void WebKioskAppData::LoadIcon() {
 
   DCHECK(!icon_fetcher_);
 
-  status_ = STATUS_LOADING;
+  status_ = Status::kLoading;
 
   icon_fetcher_ = std::make_unique<WebKioskAppData::IconFetcher>(
       weak_ptr_factory_.GetWeakPtr(), icon_url_);
@@ -233,7 +233,7 @@ void WebKioskAppData::UpdateFromWebAppInfo(
       ->FindDictKey(app_id())
       ->SetStringKey(kKeyLaunchUrl, launch_url_.spec());
 
-  SetStatus(STATUS_INSTALLED);
+  SetStatus(Status::kInstalled);
 }
 
 void WebKioskAppData::SetStatus(Status status) {
@@ -274,7 +274,7 @@ void WebKioskAppData::OnDidDownloadIcon(const SkBitmap& icon) {
 
   std::unique_ptr<IconFetcher> fetcher = std::move(icon_fetcher_);
 
-  if (status_ == STATUS_INSTALLED)
+  if (status_ == Status::kInstalled)
     return;
 
   base::FilePath cache_dir;
@@ -291,23 +291,23 @@ void WebKioskAppData::OnDidDownloadIcon(const SkBitmap& icon) {
       ->FindDictKey(app_id())
       ->SetStringKey(kKeyLastIconUrl, launch_url_.spec());
 
-  SetStatus(STATUS_LOADED);
+  SetStatus(Status::kLoaded);
 }
 
 void WebKioskAppData::OnIconLoadSuccess(const gfx::ImageSkia& icon) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   kiosk_app_icon_loader_.reset();
   icon_ = icon;
-  if (status_ != STATUS_INSTALLED)
-    SetStatus(STATUS_LOADED);
+  if (status_ != Status::kInstalled)
+    SetStatus(Status::kLoaded);
   else
-    SetStatus(STATUS_INSTALLED);  // To notify menu controller.
+    SetStatus(Status::kInstalled);  // To notify menu controller.
 }
 
 void WebKioskAppData::OnIconLoadFailure() {
   kiosk_app_icon_loader_.reset();
   LOG(ERROR) << "Icon Load Failure";
-  SetStatus(STATUS_LOADED);
+  SetStatus(Status::kLoaded);
   // Do nothing
 }
 

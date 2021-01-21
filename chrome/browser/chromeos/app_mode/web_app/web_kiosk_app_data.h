@@ -22,13 +22,14 @@ class KioskAppDataDelegate;
 
 class WebKioskAppData : public KioskAppDataBase {
  public:
-  enum Status {
-    STATUS_INIT,       // Data initialized with app id.
-    STATUS_LOADING,    // Loading data from cache or web store.
-    STATUS_LOADED,     // Data load finished.
-    STATUS_INSTALLED,  // Icon and launch url are fetched and app can be run
-                       // without them.
+  enum class Status {
+    kInit,       // Data initialized with app id.
+    kLoading,    // Loading data from cache or web store.
+    kLoaded,     // Data load finished.
+    kInstalled,  // Icon and launch url are fetched and app can be run
+                 // without them.
   };
+
   WebKioskAppData(KioskAppDataDelegate* delegate,
                   const std::string& app_id,
                   const AccountId& account_id,

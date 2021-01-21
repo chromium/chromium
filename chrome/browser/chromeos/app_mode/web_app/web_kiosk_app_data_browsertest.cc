@@ -101,7 +101,7 @@ IN_PROC_BROWSER_TEST_F(WebKioskAppDataTest, NoIconCached) {
   app_data.LoadFromCache();
   // The app will stay in the INIT state if there is nothing to be loaded from
   // cache.
-  EXPECT_EQ(app_data.status(), WebKioskAppData::STATUS_INIT);
+  EXPECT_EQ(app_data.status(), WebKioskAppData::Status::kInit);
   EXPECT_EQ(app_data.name(), kAppUrl);
   EXPECT_TRUE(app_data.icon().isNull());
 }
@@ -114,7 +114,7 @@ IN_PROC_BROWSER_TEST_F(WebKioskAppDataTest, LoadCachedIcon) {
   app_data.LoadIcon();
   WaitForAppDataChange(2);
 
-  EXPECT_EQ(app_data.status(), WebKioskAppData::STATUS_LOADED);
+  EXPECT_EQ(app_data.status(), WebKioskAppData::Status::kLoaded);
   EXPECT_EQ(app_data.name(), kAppTitle);
   EXPECT_FALSE(app_data.icon().isNull());
 }
@@ -132,7 +132,7 @@ IN_PROC_BROWSER_TEST_F(WebKioskAppDataTest, PRE_DownloadedIconPersists) {
   app_data.LoadIcon();
   WaitForAppDataChange(1);
 
-  EXPECT_EQ(app_data.status(), WebKioskAppData::STATUS_LOADED);
+  EXPECT_EQ(app_data.status(), WebKioskAppData::Status::kLoaded);
   EXPECT_EQ(app_data.name(), kAppTitle);
 }
 
@@ -154,12 +154,12 @@ IN_PROC_BROWSER_TEST_F(WebKioskAppDataTest, DownloadedIconPersists) {
                            kAppTitle2, /*icon_url=*/icon_url);
   app_data.LoadFromCache();
   // Icon is stored in cache.
-  EXPECT_EQ(app_data.status(), WebKioskAppData::STATUS_LOADING);
+  EXPECT_EQ(app_data.status(), WebKioskAppData::Status::kLoading);
 
   app_data.LoadIcon();
   WaitForAppDataChange(2);
 
-  EXPECT_EQ(app_data.status(), WebKioskAppData::STATUS_LOADED);
+  EXPECT_EQ(app_data.status(), WebKioskAppData::Status::kLoaded);
   // The title should not persist.
   EXPECT_EQ(app_data.name(), kAppTitle2);
 }
@@ -178,7 +178,7 @@ IN_PROC_BROWSER_TEST_F(WebKioskAppDataTest,
   app_data.LoadIcon();
   WaitForAppDataChange(1);
 
-  EXPECT_EQ(app_data.status(), WebKioskAppData::STATUS_LOADED);
+  EXPECT_EQ(app_data.status(), WebKioskAppData::Status::kLoaded);
   EXPECT_EQ(app_data.name(), kAppTitle);
 }
 
@@ -194,12 +194,12 @@ IN_PROC_BROWSER_TEST_F(WebKioskAppDataTest, RedownloadIconWhenDifferentUrl) {
 
   app_data.LoadFromCache();
   // No icon was loaded from cache because urls are different.
-  EXPECT_EQ(app_data.status(), WebKioskAppData::STATUS_INIT);
+  EXPECT_EQ(app_data.status(), WebKioskAppData::Status::kInit);
 
   app_data.LoadIcon();
   WaitForAppDataChange(1);
 
-  EXPECT_EQ(app_data.status(), WebKioskAppData::STATUS_LOADED);
+  EXPECT_EQ(app_data.status(), WebKioskAppData::Status::kLoaded);
   EXPECT_EQ(app_data.name(), kAppTitle2);
 }
 
@@ -211,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(WebKioskAppDataTest, AlreadyInstalled) {
   app_data.LoadIcon();
   WaitForAppDataChange(2);
 
-  EXPECT_EQ(app_data.status(), WebKioskAppData::STATUS_INSTALLED);
+  EXPECT_EQ(app_data.status(), WebKioskAppData::Status::kInstalled);
   EXPECT_EQ(app_data.name(), kAppTitle);
 }
 

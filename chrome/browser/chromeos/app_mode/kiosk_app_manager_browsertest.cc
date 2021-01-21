@@ -613,7 +613,7 @@ IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, UpdateAppDataFromCrx) {
   // Fake app data load failure so that the manager will attempt to
   // load it from crx.
   KioskAppData* app_data = GetAppDataMutable(kAppId);
-  app_data->SetStatusForTest(KioskAppData::STATUS_ERROR);
+  app_data->SetStatusForTest(KioskAppData::Status::kError);
 
   // Copy test crx file to temp dir because the cache moves the file.
   base::FilePath test_dir;
@@ -636,15 +636,15 @@ IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, UpdateAppDataFromCrx) {
   // Wait for 3 data loaded events at the most. One for crx putting into cache,
   // one for update check and one for app data is updated from crx.
   const size_t kMaxDataChange = 3;
-  for (size_t i = 0;
-       i < kMaxDataChange && app_data->status() != KioskAppData::STATUS_LOADED;
+  for (size_t i = 0; i < kMaxDataChange &&
+                     app_data->status() != KioskAppData::Status::kLoaded;
        ++i) {
     waiter.Reset();
     waiter.Wait();
     EXPECT_EQ(waiter.data_change_count(), 1);
     EXPECT_EQ(waiter.data_load_failure_count(), 0);
   }
-  ASSERT_EQ(KioskAppData::STATUS_LOADED, app_data->status());
+  ASSERT_EQ(KioskAppData::Status::kLoaded, app_data->status());
 
   CheckAppData(kAppId, kAppName, "1234");
 }
@@ -666,7 +666,7 @@ IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, FailedToLoadFromCrx) {
   // Fake app data load failure so that the manager will attempt to
   // load it from crx.
   KioskAppData* app_data = GetAppDataMutable(kAppId);
-  app_data->SetStatusForTest(KioskAppData::STATUS_ERROR);
+  app_data->SetStatusForTest(KioskAppData::Status::kError);
 
   // Copy test crx file to temp dir because the cache moves the file.
   base::FilePath test_dir;
@@ -691,14 +691,14 @@ IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, FailedToLoadFromCrx) {
   // data status into INIT stage.
   const size_t kMaxDataChange = 3;
   for (size_t i = 0;
-       i < kMaxDataChange && app_data->status() != KioskAppData::STATUS_INIT;
+       i < kMaxDataChange && app_data->status() != KioskAppData::Status::kInit;
        ++i) {
     waiter.Reset();
     waiter.Wait();
     EXPECT_EQ(waiter.data_change_count(), 1);
     EXPECT_EQ(waiter.data_load_failure_count(), 0);
   }
-  ASSERT_EQ(KioskAppData::STATUS_INIT, app_data->status());
+  ASSERT_EQ(KioskAppData::Status::kInit, app_data->status());
   CheckAppData(kAppId, kAppName, "");
 }
 

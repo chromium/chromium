@@ -202,7 +202,7 @@ TEST_F(WebKioskAppLauncherTest, NormalFlowNotInstalled) {
   launcher()->ContinueWithNetworkReady();
   loop2.Run();
 
-  EXPECT_EQ(app_data()->status(), WebKioskAppData::STATUS_INSTALLED);
+  EXPECT_EQ(app_data()->status(), WebKioskAppData::Status::kInstalled);
   EXPECT_EQ(app_data()->launch_url(), kAppLaunchUrl);
 
   base::RunLoop loop3;
@@ -254,7 +254,7 @@ TEST_F(WebKioskAppLauncherTest, NormalFlowBadLaunchUrl) {
   launcher()->ContinueWithNetworkReady();
   loop2.Run();
 
-  EXPECT_NE(app_data()->status(), WebKioskAppData::STATUS_INSTALLED);
+  EXPECT_NE(app_data()->status(), WebKioskAppData::Status::kInstalled);
 }
 
 TEST_F(WebKioskAppLauncherTest, InstallationRestarted) {
@@ -279,7 +279,7 @@ TEST_F(WebKioskAppLauncherTest, InstallationRestarted) {
   launcher()->RestartLauncher();
 
   // App should not be installed yet.
-  EXPECT_NE(app_data()->status(), WebKioskAppData::STATUS_INSTALLED);
+  EXPECT_NE(app_data()->status(), WebKioskAppData::Status::kInstalled);
 
   // We should not receive any status updates now.
   url_loader_->ProcessLoadUrlRequests();
@@ -295,7 +295,7 @@ TEST_F(WebKioskAppLauncherTest, InstallationRestarted) {
   url_loader_->ProcessLoadUrlRequests();
   loop2.Run();
 
-  EXPECT_EQ(app_data()->status(), WebKioskAppData::STATUS_INSTALLED);
+  EXPECT_EQ(app_data()->status(), WebKioskAppData::Status::kInstalled);
 
   base::RunLoop loop3;
   EXPECT_CALL(*delegate(), OnAppLaunched())
@@ -327,7 +327,7 @@ TEST_F(WebKioskAppLauncherTest, UrlNotLoaded) {
   launcher()->ContinueWithNetworkReady();
   loop2.Run();
 
-  EXPECT_NE(app_data()->status(), WebKioskAppData::STATUS_INSTALLED);
+  EXPECT_NE(app_data()->status(), WebKioskAppData::Status::kInstalled);
 }
 
 TEST_F(WebKioskAppLauncherTest, SkipInstallation) {
@@ -340,7 +340,7 @@ TEST_F(WebKioskAppLauncherTest, SkipInstallation) {
   launcher()->Initialize();
   loop1.Run();
 
-  EXPECT_EQ(app_data()->status(), WebKioskAppData::STATUS_INIT);
+  EXPECT_EQ(app_data()->status(), WebKioskAppData::Status::kInit);
   EXPECT_EQ(app_data()->launch_url(), GURL());
 
   base::RunLoop loop2;
