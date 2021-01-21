@@ -1,5 +1,6 @@
-{% from 'templates/macros.tmpl' import license, source_files_for_generated_file %}
-{{license()}}
+// Copyright (c) 2014 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 
 #include "base/no_destructor.h"
@@ -15,30 +16,25 @@ namespace blink {
 
 const DocumentPolicyFeatureInfoMap& GetDocumentPolicyFeatureInfoMap() {
   static const base::NoDestructor<DocumentPolicyFeatureInfoMap> feature_info_map([] {
-    DocumentPolicyFeatureInfoMap map({
-      {%- for feature in features %}
-        {
-          mojom::DocumentPolicyFeature::k{{feature.name}},
+    DocumentPolicyFeatureInfoMap map({        {
+          mojom::DocumentPolicyFeature::kDefaultValueFeatureForTest,
           {
-            "{{feature.document_policy_name}}",
-            {{parse_default_value(feature.default_value, feature.value_type)}}
+            "test-feature",
+            PolicyValue::CreateBool(true)
           }
-        },
-      {%- endfor %}
-    });
-
-    {%- for feature in features %}
-    {%- if feature.default_value_behind_flag %}
-      {%- for flag, default_value in feature.default_value_behind_flag %}
-        {%- if not loop.first %} else {% endif %}
-        if (base::FeatureList::IsEnabled(features::k{{flag}})) {
-          map.find(mojom::DocumentPolicyFeature::k{{feature.name}})->second.default_value =
-            {{parse_default_value(default_value, feature.value_type)}};
+        },        {
+          mojom::DocumentPolicyFeature::kDefault,
+          {
+            "*",
+            PolicyValue::CreateBool(true)
+          }
+        },    });        if (base::FeatureList::IsEnabled(features::kDocumentPolicyRuntimeFlag1ForTest)) {
+          map.find(mojom::DocumentPolicyFeature::kDefaultValueFeatureForTest)->second.default_value =
+            PolicyValue::CreateBool(false);
+        } else         if (base::FeatureList::IsEnabled(features::kDocumentPolicyRuntimeFlag2ForTest)) {
+          map.find(mojom::DocumentPolicyFeature::kDefaultValueFeatureForTest)->second.default_value =
+            PolicyValue::CreateBool(true);
         }
-      {%- endfor %}
-    {%- endif %}
-    {%- endfor %}
-
     return map;
   }());
   return *feature_info_map;
