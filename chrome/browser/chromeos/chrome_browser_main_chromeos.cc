@@ -245,7 +245,7 @@ bool ShouldAutoLaunchKioskApp(const base::CommandLine& command_line) {
          (app_manager->IsAutoLaunchEnabled() ||
           web_app_manager->GetAutoLaunchAccountId().is_valid() ||
           arc_app_manager->GetAutoLaunchAccountId().is_valid()) &&
-         KioskAppLaunchError::Get() == KioskAppLaunchError::NONE;
+         KioskAppLaunchError::Get() == KioskAppLaunchError::Error::kNone;
 }
 
 // Creates an instance of the NetworkPortalDetector implementation or a stub.

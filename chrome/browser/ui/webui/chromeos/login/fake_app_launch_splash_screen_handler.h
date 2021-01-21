@@ -26,7 +26,8 @@ class FakeAppLaunchSplashScreenHandler : public AppLaunchSplashScreenView {
   AppLaunchState GetAppLaunchState();
 
  private:
-  KioskAppLaunchError::Error error_message_type_ = KioskAppLaunchError::NONE;
+  KioskAppLaunchError::Error error_message_type_ =
+      KioskAppLaunchError::Error::kNone;
   bool network_ready_ = false;
   AppLaunchState state_ = APP_LAUNCH_STATE_PREPARING_PROFILE;
 };

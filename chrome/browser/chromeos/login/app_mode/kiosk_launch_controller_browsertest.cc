@@ -488,7 +488,7 @@ IN_PROC_BROWSER_TEST_P(KioskLaunchControllerWithInvalidExtensionTest,
   ExpectState(AppState::kLaunched, NetworkUIState::kNotShowing);
   EXPECT_TRUE(session_manager::SessionManager::Get()->IsSessionStarted());
   EXPECT_EQ(view()->GetErrorMessageType(),
-            KioskAppLaunchError::EXTENSIONS_POLICY_INVALID);
+            KioskAppLaunchError::Error::kExtensionsPolicyInvalid);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

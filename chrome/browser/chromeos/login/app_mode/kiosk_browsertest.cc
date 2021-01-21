@@ -637,7 +637,7 @@ class KioskTest : public OobeBaseTest {
     EXPECT_TRUE(static_cast<ProfileImpl*>(app_profile)->chromeos_preferences_);
 
     // Check installer status.
-    EXPECT_EQ(chromeos::KioskAppLaunchError::NONE,
+    EXPECT_EQ(chromeos::KioskAppLaunchError::Error::kNone,
               chromeos::KioskAppLaunchError::Get());
 
     // Check if the kiosk webapp is really installed for the default profile.
@@ -1119,7 +1119,7 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, DISABLED_LaunchAppUserCancel) {
   LoginDisplayHost::default_host()->HandleAccelerator(
       ash::LoginAcceleratorAction::kAppLaunchBailout);
   signal.Wait();
-  EXPECT_EQ(chromeos::KioskAppLaunchError::USER_CANCEL,
+  EXPECT_EQ(chromeos::KioskAppLaunchError::Error::kUserCancel,
             chromeos::KioskAppLaunchError::Get());
 }
 
@@ -2553,7 +2553,7 @@ IN_PROC_BROWSER_TEST_F(KioskEnterpriseTest, EnterpriseKioskApp) {
   KioskSessionInitializedWaiter().Wait();
 
   // Check installer status.
-  EXPECT_EQ(chromeos::KioskAppLaunchError::NONE,
+  EXPECT_EQ(chromeos::KioskAppLaunchError::Error::kNone,
             chromeos::KioskAppLaunchError::Get());
   EXPECT_EQ(extensions::Manifest::EXTERNAL_POLICY, GetInstalledAppLocation());
 

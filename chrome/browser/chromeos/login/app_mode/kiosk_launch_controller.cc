@@ -261,7 +261,7 @@ void KioskLaunchController::OnCancelAppLaunch() {
 
   SYSLOG(INFO) << "Canceling kiosk app launch.";
 
-  KioskAppLaunchError::Save(KioskAppLaunchError::USER_CANCEL);
+  KioskAppLaunchError::Save(KioskAppLaunchError::Error::kUserCancel);
   CleanUp();
   chrome::AttemptUserExit();
 }
@@ -355,7 +355,7 @@ void KioskLaunchController::OnAppPrepared() {
     SYSLOG(WARNING) << "The ExtensionInstallForcelist policy value is invalid.";
 
     splash_screen_view_->ShowErrorMessage(
-        KioskAppLaunchError::EXTENSIONS_POLICY_INVALID);
+        KioskAppLaunchError::Error::kExtensionsPolicyInvalid);
     OnForceInstalledExtensionsReady();
     return;
   }
@@ -421,7 +421,7 @@ void KioskLaunchController::OnExtensionWaitTimedOut() {
   SYSLOG(WARNING) << "OnExtensionWaitTimedout...";
 
   splash_screen_view_->ShowErrorMessage(
-      KioskAppLaunchError::EXTENSIONS_LOAD_TIMEOUT);
+      KioskAppLaunchError::Error::kExtensionsLoadTimeout);
   OnForceInstalledExtensionsReady();
 }
 
@@ -438,8 +438,8 @@ bool KioskLaunchController::ShouldSkipAppInstallation() const {
 }
 
 void KioskLaunchController::OnLaunchFailed(KioskAppLaunchError::Error error) {
-  DCHECK_NE(KioskAppLaunchError::NONE, error);
-  SYSLOG(ERROR) << "Kiosk launch failed, error=" << error;
+  DCHECK_NE(KioskAppLaunchError::Error::kNone, error);
+  SYSLOG(ERROR) << "Kiosk launch failed, error=" << static_cast<int>(error);
 
   if (kiosk_app_id_.type == KioskAppType::WEB_APP) {
     HandleWebAppInstallFailed();
@@ -447,8 +447,8 @@ void KioskLaunchController::OnLaunchFailed(KioskAppLaunchError::Error error) {
   }
 
   // Reboot on the recoverable cryptohome errors.
-  if (error == KioskAppLaunchError::CRYPTOHOMED_NOT_RUNNING ||
-      error == KioskAppLaunchError::ALREADY_MOUNTED) {
+  if (error == KioskAppLaunchError::Error::kCryptohomedNotRunning ||
+      error == KioskAppLaunchError::Error::kAlreadyMounted) {
     // Do not save the error because saved errors would stop app from launching
     // on the next run.
     chrome::AttemptRelaunch();

@@ -42,14 +42,14 @@ KioskAppLaunchError::Error LoginFailureToKioskAppLaunchError(
   switch (error.reason()) {
     case AuthFailure::COULD_NOT_MOUNT_TMPFS:
     case AuthFailure::COULD_NOT_MOUNT_CRYPTOHOME:
-      return KioskAppLaunchError::UNABLE_TO_MOUNT;
+      return KioskAppLaunchError::Error::kUnableToMount;
     case AuthFailure::DATA_REMOVAL_FAILED:
-      return KioskAppLaunchError::UNABLE_TO_REMOVE;
+      return KioskAppLaunchError::Error::kUnableToRemove;
     case AuthFailure::USERNAME_HASH_FAILED:
-      return KioskAppLaunchError::UNABLE_TO_RETRIEVE_HASH;
+      return KioskAppLaunchError::Error::kUnableToRetrieveHash;
     default:
       NOTREACHED();
-      return KioskAppLaunchError::UNABLE_TO_MOUNT;
+      return KioskAppLaunchError::Error::kUnableToMount;
   }
 }
 
@@ -82,7 +82,7 @@ class KioskProfileLoader::CryptohomedChecker
     ++retry_count_;
     if (retry_count_ > kMaxRetryTimes) {
       SYSLOG(ERROR) << "Could not talk to cryptohomed for launching kiosk app.";
-      ReportCheckResult(KioskAppLaunchError::CRYPTOHOMED_NOT_RUNNING);
+      ReportCheckResult(KioskAppLaunchError::Error::kCryptohomedNotRunning);
       return;
     }
 
@@ -110,15 +110,15 @@ class KioskProfileLoader::CryptohomedChecker
 
     // Proceed only when cryptohome is not mounded or running on dev box.
     if (!is_mounted.value() || !base::SysInfo::IsRunningOnChromeOS()) {
-      ReportCheckResult(KioskAppLaunchError::NONE);
+      ReportCheckResult(KioskAppLaunchError::Error::kNone);
     } else {
       SYSLOG(ERROR) << "Cryptohome is mounted before launching kiosk app.";
-      ReportCheckResult(KioskAppLaunchError::ALREADY_MOUNTED);
+      ReportCheckResult(KioskAppLaunchError::Error::kAlreadyMounted);
     }
   }
 
   void ReportCheckResult(KioskAppLaunchError::Error error) {
-    if (error == KioskAppLaunchError::NONE)
+    if (error == KioskAppLaunchError::Error::kNone)
       loader_->LoginAsKioskAccount();
     else
       loader_->ReportLaunchResult(error);
@@ -174,7 +174,7 @@ void KioskProfileLoader::LoginAsKioskAccount() {
 void KioskProfileLoader::ReportLaunchResult(KioskAppLaunchError::Error error) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (error != KioskAppLaunchError::NONE) {
+  if (error != KioskAppLaunchError::Error::kNone) {
     delegate_->OnProfileLoadFailed(error);
   }
 }
@@ -223,7 +223,7 @@ void KioskProfileLoader::AllowlistCheckFailed(const std::string& email) {
 }
 
 void KioskProfileLoader::PolicyLoadFailed() {
-  ReportLaunchResult(KioskAppLaunchError::POLICY_LOAD_FAILED);
+  ReportLaunchResult(KioskAppLaunchError::Error::kPolicyLoadFailed);
 }
 
 void KioskProfileLoader::OnOldEncryptionDetected(
@@ -239,7 +239,7 @@ void KioskProfileLoader::OnProfilePrepared(Profile* profile,
   UserSessionManager::GetInstance()->DelegateDeleted(this);
 
   delegate_->OnProfileLoaded(profile);
-  ReportLaunchResult(KioskAppLaunchError::NONE);
+  ReportLaunchResult(KioskAppLaunchError::Error::kNone);
 }
 
 }  // namespace chromeos

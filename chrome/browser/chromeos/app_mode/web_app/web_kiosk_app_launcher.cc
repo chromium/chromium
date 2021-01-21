@@ -76,7 +76,7 @@ void WebKioskAppLauncher::OnAppDataObtained(
     std::unique_ptr<WebApplicationInfo> app_info) {
   if (!app_info) {
     // Notify about failed installation, let the controller decide what to do.
-    delegate_->OnLaunchFailed(KioskAppLaunchError::UNABLE_TO_INSTALL);
+    delegate_->OnLaunchFailed(KioskAppLaunchError::Error::kUnableToInstall);
     return;
   }
 
@@ -85,7 +85,7 @@ void WebKioskAppLauncher::OnAppDataObtained(
   if (url::Origin::Create(GetCurrentApp()->install_url()) !=
       url::Origin::Create(app_info->start_url)) {
     VLOG(1) << "Origin of the app does not match the origin of install url";
-    delegate_->OnLaunchFailed(KioskAppLaunchError::UNABLE_TO_LAUNCH);
+    delegate_->OnLaunchFailed(KioskAppLaunchError::Error::kUnableToLaunch);
     return;
   }
 

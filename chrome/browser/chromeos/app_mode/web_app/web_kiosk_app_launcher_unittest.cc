@@ -249,7 +249,7 @@ TEST_F(WebKioskAppLauncherTest, NormalFlowBadLaunchUrl) {
   base::RunLoop loop2;
   EXPECT_CALL(*delegate(), OnAppInstalling());
   EXPECT_CALL(*delegate(),
-              OnLaunchFailed((KioskAppLaunchError::Error::UNABLE_TO_LAUNCH)))
+              OnLaunchFailed((KioskAppLaunchError::Error::kUnableToLaunch)))
       .WillOnce(RunClosure(loop2.QuitClosure()));
   launcher()->ContinueWithNetworkReady();
   loop2.Run();
@@ -322,7 +322,7 @@ TEST_F(WebKioskAppLauncherTest, UrlNotLoaded) {
   base::RunLoop loop2;
   EXPECT_CALL(*delegate(), OnAppInstalling());
   EXPECT_CALL(*delegate(),
-              OnLaunchFailed(KioskAppLaunchError::Error::UNABLE_TO_INSTALL))
+              OnLaunchFailed(KioskAppLaunchError::Error::kUnableToInstall))
       .WillOnce(RunClosure(loop2.QuitClosure()));
   launcher()->ContinueWithNetworkReady();
   loop2.Run();

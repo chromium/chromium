@@ -145,7 +145,7 @@ class TestAppLaunchDelegate : public StartupAppLauncher::Delegate {
 
   LaunchState launch_state_ = LaunchState::kNotStarted;
   std::vector<LaunchState> launch_state_changes_;
-  KioskAppLaunchError::Error launch_error_ = KioskAppLaunchError::NONE;
+  KioskAppLaunchError::Error launch_error_ = KioskAppLaunchError::Error::kNone;
 
   bool network_ready_ = false;
   bool showing_network_config_screen_ = false;
@@ -738,7 +738,7 @@ TEST_F(StartupAppLauncherTest, PrimaryAppDownloadFailure) {
   EXPECT_EQ(std::vector<LaunchState>({LaunchState::kLaunchFailed}),
             startup_launch_delegate_.launch_state_changes());
 
-  EXPECT_EQ(KioskAppLaunchError::UNABLE_TO_DOWNLOAD,
+  EXPECT_EQ(KioskAppLaunchError::Error::kUnableToDownload,
             startup_launch_delegate_.launch_error());
 
   EXPECT_FALSE(kiosk_app_session_initialized_);
@@ -757,7 +757,7 @@ TEST_F(StartupAppLauncherTest, PrimaryAppCrxInstallFailure) {
   EXPECT_EQ(std::vector<LaunchState>({LaunchState::kLaunchFailed}),
             startup_launch_delegate_.launch_state_changes());
 
-  EXPECT_EQ(KioskAppLaunchError::UNABLE_TO_INSTALL,
+  EXPECT_EQ(KioskAppLaunchError::Error::kUnableToInstall,
             startup_launch_delegate_.launch_error());
 
   EXPECT_FALSE(kiosk_app_session_initialized_);
@@ -781,7 +781,7 @@ TEST_F(StartupAppLauncherTest, PrimaryAppNotKioskEnabled) {
   EXPECT_EQ(std::vector<LaunchState>({LaunchState::kLaunchFailed}),
             startup_launch_delegate_.launch_state_changes());
 
-  EXPECT_EQ(KioskAppLaunchError::NOT_KIOSK_ENABLED,
+  EXPECT_EQ(KioskAppLaunchError::Error::kNotKioskEnabled,
             startup_launch_delegate_.launch_error());
 
   EXPECT_FALSE(kiosk_app_session_initialized_);
@@ -804,7 +804,7 @@ TEST_F(StartupAppLauncherTest, PrimaryAppIsExtension) {
   EXPECT_EQ(std::vector<LaunchState>({LaunchState::kLaunchFailed}),
             startup_launch_delegate_.launch_state_changes());
 
-  EXPECT_EQ(KioskAppLaunchError::NOT_KIOSK_ENABLED,
+  EXPECT_EQ(KioskAppLaunchError::Error::kNotKioskEnabled,
             startup_launch_delegate_.launch_error());
 
   EXPECT_FALSE(kiosk_app_session_initialized_);
@@ -1030,7 +1030,7 @@ TEST_F(StartupAppLauncherTest, SecondaryAppCrxInstallFailure) {
   ASSERT_TRUE(
       external_apps_loader_handler_->FailPendingInstall(kSecondaryAppId));
 
-  EXPECT_EQ(KioskAppLaunchError::UNABLE_TO_INSTALL,
+  EXPECT_EQ(KioskAppLaunchError::Error::kUnableToInstall,
             startup_launch_delegate_.launch_error());
 
   EXPECT_FALSE(kiosk_app_session_initialized_);

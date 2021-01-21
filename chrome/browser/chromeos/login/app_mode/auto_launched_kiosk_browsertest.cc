@@ -342,7 +342,8 @@ IN_PROC_BROWSER_TEST_F(AutoLaunchedNonKioskEnabledAppTest, NotLaunched) {
   termination_waiter.Wait();
 
   EXPECT_FALSE(listener.was_satisfied());
-  EXPECT_EQ(KioskAppLaunchError::NOT_KIOSK_ENABLED, KioskAppLaunchError::Get());
+  EXPECT_EQ(KioskAppLaunchError::Error::kNotKioskEnabled,
+            KioskAppLaunchError::Get());
 }
 
 // Used to test management API availability in kiosk sessions.

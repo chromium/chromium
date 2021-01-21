@@ -165,7 +165,8 @@ IN_PROC_BROWSER_TEST_F(ChromeKioskCrashRestoreTest, ChromeAppNotInstalled) {
   // If app is not installed when restoring from crash, the kiosk launch is
   // expected to fail, as in that case the crash occured during the app
   // initialization - before the app was actually launched.
-  EXPECT_EQ(KioskAppLaunchError::UNABLE_TO_LAUNCH, KioskAppLaunchError::Get());
+  EXPECT_EQ(KioskAppLaunchError::Error::kUnableToLaunch,
+            KioskAppLaunchError::Get());
 }
 
 class WebKioskCrashRestoreTest : public KioskCrashRestoreTest {
@@ -179,7 +180,7 @@ IN_PROC_BROWSER_TEST_F(WebKioskCrashRestoreTest, WebKioskLaunches) {
   // If app is not installed when restoring from crash, the kiosk launch is
   // expected to fail, as in that case the crash occured during the app
   // initialization - before the app was actually launched.
-  EXPECT_EQ(KioskAppLaunchError::NONE, KioskAppLaunchError::Get());
+  EXPECT_EQ(KioskAppLaunchError::Error::kNone, KioskAppLaunchError::Get());
   KioskSessionInitializedWaiter().Wait();
 }
 

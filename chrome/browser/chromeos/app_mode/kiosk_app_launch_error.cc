@@ -23,55 +23,56 @@ constexpr char kKeyLaunchError[] = "launch_error";
 constexpr char kKeyCryptohomeFailure[] = "cryptohome_failure";
 
 // Error from the last kiosk launch.
-KioskAppLaunchError::Error s_last_error = KioskAppLaunchError::ERROR_COUNT;
+KioskAppLaunchError::Error s_last_error = KioskAppLaunchError::Error::kCount;
 
 }  // namespace
 
 // static
 std::string KioskAppLaunchError::GetErrorMessage(Error error) {
   switch (error) {
-    case NONE:
+    case Error::kNone:
       return std::string();
 
-    case HAS_PENDING_LAUNCH:
-    case NOT_KIOSK_ENABLED:
-    case UNABLE_TO_RETRIEVE_HASH:
-    case POLICY_LOAD_FAILED:
-    case ARC_AUTH_FAILED:
+    case Error::kHasPendingLaunch:
+    case Error::kNotKioskEnabled:
+    case Error::kUnableToRetrieveHash:
+    case Error::kPolicyLoadFailed:
+    case Error::kArcAuthFailed:
       return l10n_util::GetStringUTF8(IDS_KIOSK_APP_FAILED_TO_LAUNCH);
 
-    case CRYPTOHOMED_NOT_RUNNING:
-    case ALREADY_MOUNTED:
-    case UNABLE_TO_MOUNT:
-    case UNABLE_TO_REMOVE:
+    case Error::kCryptohomedNotRunning:
+    case Error::kAlreadyMounted:
+    case Error::kUnableToMount:
+    case Error::kUnableToRemove:
       return l10n_util::GetStringUTF8(IDS_KIOSK_APP_ERROR_UNABLE_TO_MOUNT);
 
-    case UNABLE_TO_INSTALL:
+    case Error::kUnableToInstall:
       return l10n_util::GetStringUTF8(IDS_KIOSK_APP_ERROR_UNABLE_TO_INSTALL);
 
-    case USER_CANCEL:
+    case Error::kUserCancel:
       return l10n_util::GetStringUTF8(IDS_KIOSK_APP_ERROR_USER_CANCEL);
 
-    case UNABLE_TO_DOWNLOAD:
+    case Error::kUnableToDownload:
       return l10n_util::GetStringUTF8(IDS_KIOSK_APP_ERROR_UNABLE_TO_DOWNLOAD);
 
-    case UNABLE_TO_LAUNCH:
+    case Error::kUnableToLaunch:
       return l10n_util::GetStringUTF8(IDS_KIOSK_APP_ERROR_UNABLE_TO_LAUNCH);
 
-    case EXTENSIONS_LOAD_TIMEOUT:
+    case Error::kExtensionsLoadTimeout:
       return l10n_util::GetStringUTF8(
           IDS_KIOSK_APP_ERROR_EXTENSIONS_LOAD_TIMEOUT);
 
-    case EXTENSIONS_POLICY_INVALID:
+    case Error::kExtensionsPolicyInvalid:
       return l10n_util::GetStringUTF8(
           IDS_KIOSK_APP_ERROR_EXTENSIONS_POLICY_INVALID);
 
-    case ERROR_COUNT:
+    case Error::kCount:
       // Break onto the NOTREACHED() code path below.
       break;
   }
 
-  NOTREACHED() << "Unknown kiosk app launch error, error=" << error;
+  NOTREACHED() << "Unknown kiosk app launch error, error="
+               << static_cast<int>(error);
   return l10n_util::GetStringUTF8(IDS_KIOSK_APP_FAILED_TO_LAUNCH);
 }
 
@@ -80,7 +81,7 @@ void KioskAppLaunchError::Save(KioskAppLaunchError::Error error) {
   PrefService* local_state = g_browser_process->local_state();
   DictionaryPrefUpdate dict_update(local_state,
                                    KioskAppManager::kKioskDictionaryName);
-  dict_update->SetInteger(kKeyLaunchError, error);
+  dict_update->SetInteger(kKeyLaunchError, static_cast<int>(error));
   s_last_error = error;
 }
 
@@ -95,9 +96,9 @@ void KioskAppLaunchError::SaveCryptohomeFailure(
 
 // static
 KioskAppLaunchError::Error KioskAppLaunchError::Get() {
-  if (s_last_error != KioskAppLaunchError::ERROR_COUNT)
+  if (s_last_error != Error::kCount)
     return s_last_error;
-  s_last_error = KioskAppLaunchError::NONE;
+  s_last_error = Error::kNone;
   PrefService* local_state = g_browser_process->local_state();
   const base::DictionaryValue* dict =
       local_state->GetDictionary(KioskAppManager::kKioskDictionaryName);
@@ -108,7 +109,7 @@ KioskAppLaunchError::Error KioskAppLaunchError::Get() {
     return s_last_error;
   }
 
-  return KioskAppLaunchError::NONE;
+  return Error::kNone;
 }
 
 // static
@@ -120,7 +121,7 @@ void KioskAppLaunchError::RecordMetricAndClear() {
   int error;
   if (dict_update->GetInteger(kKeyLaunchError, &error))
     UMA_HISTOGRAM_ENUMERATION("Kiosk.Launch.Error", static_cast<Error>(error),
-                              ERROR_COUNT);
+                              Error::kCount);
   dict_update->Remove(kKeyLaunchError, NULL);
 
   int cryptohome_failure;

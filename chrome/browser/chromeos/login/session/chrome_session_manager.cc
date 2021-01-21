@@ -76,7 +76,7 @@ bool ShouldAutoLaunchKioskApp(const base::CommandLine& command_line) {
          (app_manager->IsAutoLaunchEnabled() ||
           web_app_manager->GetAutoLaunchAccountId().is_valid() ||
           arc_app_manager->GetAutoLaunchAccountId().is_valid()) &&
-         KioskAppLaunchError::Get() == KioskAppLaunchError::NONE &&
+         KioskAppLaunchError::Get() == KioskAppLaunchError::Error::kNone &&
          // IsOobeCompleted() is needed to prevent kiosk session start in case
          // of enterprise rollback, when keeping the enrollment, policy, not
          // clearing TPM, but wiping stateful partition.

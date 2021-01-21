@@ -51,55 +51,65 @@ class KioskAppLaunchErrorTest : public testing::Test {
 
 TEST_F(KioskAppLaunchErrorTest, GetErrorMessage) {
   std::string expected_message;
-  VerifyErrorMessage(KioskAppLaunchError::NONE, expected_message);
+  VerifyErrorMessage(KioskAppLaunchError::Error::kNone, expected_message);
 
   expected_message = l10n_util::GetStringUTF8(IDS_KIOSK_APP_FAILED_TO_LAUNCH);
-  VerifyErrorMessage(KioskAppLaunchError::HAS_PENDING_LAUNCH, expected_message);
-  VerifyErrorMessage(KioskAppLaunchError::NOT_KIOSK_ENABLED, expected_message);
-  VerifyErrorMessage(KioskAppLaunchError::UNABLE_TO_RETRIEVE_HASH,
+  VerifyErrorMessage(KioskAppLaunchError::Error::kHasPendingLaunch,
                      expected_message);
-  VerifyErrorMessage(KioskAppLaunchError::POLICY_LOAD_FAILED, expected_message);
-  VerifyErrorMessage(KioskAppLaunchError::ARC_AUTH_FAILED, expected_message);
+  VerifyErrorMessage(KioskAppLaunchError::Error::kNotKioskEnabled,
+                     expected_message);
+  VerifyErrorMessage(KioskAppLaunchError::Error::kUnableToRetrieveHash,
+                     expected_message);
+  VerifyErrorMessage(KioskAppLaunchError::Error::kPolicyLoadFailed,
+                     expected_message);
+  VerifyErrorMessage(KioskAppLaunchError::Error::kArcAuthFailed,
+                     expected_message);
 
   expected_message =
       l10n_util::GetStringUTF8(IDS_KIOSK_APP_ERROR_UNABLE_TO_MOUNT);
-  VerifyErrorMessage(KioskAppLaunchError::CRYPTOHOMED_NOT_RUNNING,
+  VerifyErrorMessage(KioskAppLaunchError::Error::kCryptohomedNotRunning,
                      expected_message);
-  VerifyErrorMessage(KioskAppLaunchError::ALREADY_MOUNTED, expected_message);
-  VerifyErrorMessage(KioskAppLaunchError::UNABLE_TO_MOUNT, expected_message);
-  VerifyErrorMessage(KioskAppLaunchError::UNABLE_TO_REMOVE, expected_message);
+  VerifyErrorMessage(KioskAppLaunchError::Error::kAlreadyMounted,
+                     expected_message);
+  VerifyErrorMessage(KioskAppLaunchError::Error::kUnableToMount,
+                     expected_message);
+  VerifyErrorMessage(KioskAppLaunchError::Error::kUnableToRemove,
+                     expected_message);
 
   expected_message =
       l10n_util::GetStringUTF8(IDS_KIOSK_APP_ERROR_UNABLE_TO_INSTALL);
-  VerifyErrorMessage(KioskAppLaunchError::UNABLE_TO_INSTALL, expected_message);
+  VerifyErrorMessage(KioskAppLaunchError::Error::kUnableToInstall,
+                     expected_message);
 
   expected_message = l10n_util::GetStringUTF8(IDS_KIOSK_APP_ERROR_USER_CANCEL);
-  VerifyErrorMessage(KioskAppLaunchError::USER_CANCEL, expected_message);
+  VerifyErrorMessage(KioskAppLaunchError::Error::kUserCancel, expected_message);
 
   expected_message =
       l10n_util::GetStringUTF8(IDS_KIOSK_APP_ERROR_UNABLE_TO_DOWNLOAD);
-  VerifyErrorMessage(KioskAppLaunchError::UNABLE_TO_DOWNLOAD, expected_message);
+  VerifyErrorMessage(KioskAppLaunchError::Error::kUnableToDownload,
+                     expected_message);
 
   expected_message =
       l10n_util::GetStringUTF8(IDS_KIOSK_APP_ERROR_UNABLE_TO_LAUNCH);
-  VerifyErrorMessage(KioskAppLaunchError::UNABLE_TO_LAUNCH, expected_message);
+  VerifyErrorMessage(KioskAppLaunchError::Error::kUnableToLaunch,
+                     expected_message);
 }
 
 TEST_F(KioskAppLaunchErrorTest, SaveError) {
   // No launch error is stored before it is saved.
   EXPECT_FALSE(GetKioskDictionary()->HasKey(kKeyLaunchError));
-  KioskAppLaunchError::Save(KioskAppLaunchError::ERROR_COUNT);
+  KioskAppLaunchError::Save(KioskAppLaunchError::Error::kCount);
 
   // The launch error can be retrieved.
   int out_error;
   EXPECT_TRUE(GetKioskDictionary()->GetInteger(kKeyLaunchError, &out_error));
-  EXPECT_EQ(out_error, KioskAppLaunchError::ERROR_COUNT);
-  EXPECT_EQ(KioskAppLaunchError::Get(), KioskAppLaunchError::ERROR_COUNT);
+  EXPECT_EQ(out_error, static_cast<int>(KioskAppLaunchError::Error::kCount));
+  EXPECT_EQ(KioskAppLaunchError::Get(), KioskAppLaunchError::Error::kCount);
 
   // The launch error is cleaned up after clear operation.
   KioskAppLaunchError::RecordMetricAndClear();
   EXPECT_FALSE(GetKioskDictionary()->HasKey(kKeyLaunchError));
-  EXPECT_EQ(KioskAppLaunchError::Get(), KioskAppLaunchError::NONE);
+  EXPECT_EQ(KioskAppLaunchError::Get(), KioskAppLaunchError::Error::kNone);
 }
 
 TEST_F(KioskAppLaunchErrorTest, SaveCryptohomeFailure) {

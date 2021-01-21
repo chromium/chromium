@@ -78,7 +78,7 @@ void KioskAppMenuController::SendKioskApps() {
       base::BindRepeating(&KioskAppMenuController::OnMenuWillShow,
                           weak_factory_.GetWeakPtr()));
   KioskAppLaunchError::Error error = KioskAppLaunchError::Get();
-  if (error == KioskAppLaunchError::NONE)
+  if (error == KioskAppLaunchError::Error::kNone)
     return;
 
   // Clear any old pending Kiosk launch errors

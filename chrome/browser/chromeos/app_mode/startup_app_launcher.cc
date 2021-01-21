@@ -192,7 +192,7 @@ void StartupAppLauncher::MaybeLaunchApp() {
   // this means that the kiosk app might not yet be downloaded. If that is
   // the case, bail out from the app launch.
   if (!extension || !AreSecondaryAppsInstalled()) {
-    OnLaunchFailure(KioskAppLaunchError::UNABLE_TO_LAUNCH);
+    OnLaunchFailure(KioskAppLaunchError::Error::kUnableToLaunch);
     return;
   }
 
@@ -219,7 +219,7 @@ void StartupAppLauncher::MaybeLaunchApp() {
                                     weak_ptr_factory_.GetWeakPtr()));
       return;
     }
-    OnLaunchFailure(KioskAppLaunchError::UNABLE_TO_LAUNCH);
+    OnLaunchFailure(KioskAppLaunchError::Error::kUnableToLaunch);
   }
 }
 
@@ -278,7 +278,7 @@ void StartupAppLauncher::OnFinishCrxInstall(const std::string& extension_id,
 
   if (DidPrimaryOrSecondaryAppFailedToInstall(success, extension_id)) {
     install_observer_.RemoveAll();
-    OnLaunchFailure(KioskAppLaunchError::UNABLE_TO_INSTALL);
+    OnLaunchFailure(KioskAppLaunchError::Error::kUnableToInstall);
     return;
   }
 
@@ -298,12 +298,12 @@ void StartupAppLauncher::OnFinishCrxInstall(const std::string& extension_id,
 
   const extensions::Extension* primary_app = GetPrimaryAppExtension();
   if (!primary_app) {
-    OnLaunchFailure(KioskAppLaunchError::UNABLE_TO_INSTALL);
+    OnLaunchFailure(KioskAppLaunchError::Error::kUnableToInstall);
     return;
   }
 
   if (!extensions::KioskModeInfo::IsKioskEnabled(primary_app)) {
-    OnLaunchFailure(KioskAppLaunchError::NOT_KIOSK_ENABLED);
+    OnLaunchFailure(KioskAppLaunchError::Error::kNotKioskEnabled);
     return;
   }
 
@@ -334,7 +334,7 @@ void StartupAppLauncher::OnKioskAppDataLoadStatusChanged(
   if (KioskAppManager::Get()->HasCachedCrx(app_id_))
     BeginInstall();
   else
-    OnLaunchFailure(KioskAppLaunchError::UNABLE_TO_DOWNLOAD);
+    OnLaunchFailure(KioskAppLaunchError::Error::kUnableToDownload);
 }
 
 bool StartupAppLauncher::IsAnySecondaryAppPending() const {
@@ -420,7 +420,7 @@ void StartupAppLauncher::LaunchApp() {
   CHECK(extension);
 
   if (!extensions::KioskModeInfo::IsKioskEnabled(extension)) {
-    OnLaunchFailure(KioskAppLaunchError::NOT_KIOSK_ENABLED);
+    OnLaunchFailure(KioskAppLaunchError::Error::kNotKioskEnabled);
     return;
   }
 
@@ -463,8 +463,8 @@ void StartupAppLauncher::OnAppWindowAdded(extensions::AppWindow* app_window) {
 }
 
 void StartupAppLauncher::OnLaunchFailure(KioskAppLaunchError::Error error) {
-  SYSLOG(ERROR) << "App launch failed, error: " << error;
-  DCHECK_NE(KioskAppLaunchError::NONE, error);
+  SYSLOG(ERROR) << "App launch failed, error: " << static_cast<int>(error);
+  DCHECK_NE(KioskAppLaunchError::Error::kNone, error);
 
   delegate_->OnLaunchFailed(error);
 }
@@ -489,13 +489,13 @@ void StartupAppLauncher::BeginInstall() {
   const extensions::Extension* primary_app = GetPrimaryAppExtension();
   if (!primary_app) {
     // The extension is skipped for installation due to some error.
-    OnLaunchFailure(KioskAppLaunchError::UNABLE_TO_INSTALL);
+    OnLaunchFailure(KioskAppLaunchError::Error::kUnableToInstall);
     return;
   }
 
   if (!extensions::KioskModeInfo::IsKioskEnabled(primary_app)) {
     // The installed primary app is not kiosk enabled.
-    OnLaunchFailure(KioskAppLaunchError::NOT_KIOSK_ENABLED);
+    OnLaunchFailure(KioskAppLaunchError::Error::kNotKioskEnabled);
     return;
   }
 
@@ -536,7 +536,7 @@ void StartupAppLauncher::MaybeInstallSecondaryApps() {
     // Check extension update before launching the primary kiosk app.
     MaybeCheckExtensionUpdate();
   } else {
-    OnLaunchFailure(KioskAppLaunchError::UNABLE_TO_INSTALL);
+    OnLaunchFailure(KioskAppLaunchError::Error::kUnableToInstall);
   }
 }
 
