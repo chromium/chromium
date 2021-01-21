@@ -56,7 +56,6 @@ void SelectToSpeakSpeedBubbleController::Show(views::View* anchor_view,
     init_params.close_on_deactivate = false;
     init_params.preferred_width = kPreferredWidth;
     bubble_view_ = new TrayBubbleView(init_params);
-    // TODO(crbug.com/1143814): Ensure this works correctly for RTL languages.
     bubble_view_->SetArrow(views::BubbleBorder::BOTTOM_RIGHT);
     bubble_view_->SetCanActivate(true);
     bubble_view_->SetFocusBehavior(ActionableView::FocusBehavior::ALWAYS);
