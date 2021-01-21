@@ -771,6 +771,17 @@ const ENTRIES = {
     typeText: 'PDF document',
   }),
 
+  popupPdf: new TestEntryInfo({
+    type: EntryType.FILE,
+    sourceFileName: 'popup.pdf',
+    targetPath: 'popup.pdf',
+    mimeType: 'application/pdf',
+    lastModifiedTime: 'Jul 4, 2000, 10:42 AM',
+    nameText: 'popup.pdf',
+    sizeText: '538 bytes',
+    typeText: 'PDF document',
+  }),
+
   imgPdf: new TestEntryInfo({
     type: EntryType.FILE,
     sourceFileName: 'img.pdf',
