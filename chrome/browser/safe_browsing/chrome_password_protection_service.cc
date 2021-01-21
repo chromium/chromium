@@ -1206,7 +1206,7 @@ std::string ChromePasswordProtectionService::GetOrganizationName(
 // Disabled on Android, because enterprise reporting extension is not supported.
 #if !defined(OS_ANDROID)
 void ChromePasswordProtectionService::MaybeReportPasswordReuseDetected(
-    content::WebContents* web_contents,
+    PasswordProtectionRequest* request,
     const std::string& username,
     PasswordType password_type,
     bool is_phishing_url) {
@@ -1236,7 +1236,7 @@ void ChromePasswordProtectionService::MaybeReportPasswordReuseDetected(
             profile_);
     if (router) {
       router->OnPolicySpecifiedPasswordReuseDetected(
-          web_contents->GetLastCommittedURL(), username_or_email,
+          request->web_contents()->GetLastCommittedURL(), username_or_email,
           is_phishing_url);
     }
   }

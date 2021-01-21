@@ -155,7 +155,7 @@ class PasswordProtectionServiceBase : public history::HistoryServiceObserver {
 #if !defined(OS_ANDROID)
   // Triggers the safeBrowsingPrivate.OnPolicySpecifiedPasswordReuseDetected.
   virtual void MaybeReportPasswordReuseDetected(
-      content::WebContents* web_contents,
+      PasswordProtectionRequest* request,
       const std::string& username,
       PasswordType password_type,
       bool is_phishing_url) = 0;
