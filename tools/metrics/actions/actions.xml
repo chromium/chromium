@@ -14675,7 +14675,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobilePasswordsSettingsBack">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>kazinova@google.com</owner>
   <owner>sczs@chromium.org</owner>
   <description>
     Reported when user goes back from Passwords Settings UI to root Settings
