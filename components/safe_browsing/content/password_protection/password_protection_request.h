@@ -83,16 +83,13 @@ using DeleteOnUIThread =
 class PasswordProtectionRequest
     : public CancelableRequest,
       public base::RefCountedThreadSafe<PasswordProtectionRequest,
-                                        DeleteOnUIThread> {
+                                        DeleteOnUIThread>,
+      public base::SupportsWeakPtr<PasswordProtectionRequest> {
  public:
   // Not copyable or movable
   PasswordProtectionRequest(const PasswordProtectionRequest&) = delete;
   PasswordProtectionRequest& operator=(const PasswordProtectionRequest&) =
       delete;
-
-  base::WeakPtr<PasswordProtectionRequest> GetWeakPtr() {
-    return weakptr_factory_.GetWeakPtr();
-  }
 
   // Starts processing request by checking extended reporting and incognito
   // conditions.
@@ -295,8 +292,6 @@ class PasswordProtectionRequest
 
   // If a request is sent, this is the token returned by the WebUI.
   int web_ui_token_;
-
-  base::WeakPtrFactory<PasswordProtectionRequest> weakptr_factory_{this};
 };
 
 class PasswordProtectionRequestContent : public PasswordProtectionRequest {
@@ -318,8 +313,8 @@ class PasswordProtectionRequestContent : public PasswordProtectionRequest {
 
   content::WebContents* web_contents() const { return web_contents_; }
 
-  base::WeakPtr<PasswordProtectionRequestContent> GetWeakPtr() {
-    return weakptr_factory_.GetWeakPtr();
+  base::WeakPtr<PasswordProtectionRequestContent> AsWeakPtr() {
+    return base::AsWeakPtr(this);
   }
 
  private:
@@ -383,8 +378,6 @@ class PasswordProtectionRequestContent : public PasswordProtectionRequest {
   // successfully gathering the features.
   bool dom_features_collection_complete_;
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-
-  base::WeakPtrFactory<PasswordProtectionRequestContent> weakptr_factory_{this};
 };
 
 }  // namespace safe_browsing

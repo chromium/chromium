@@ -139,9 +139,7 @@ PasswordProtectionRequest::PasswordProtectionRequest(
       pps->GetUrlDisplayExperiment();
 }
 
-PasswordProtectionRequest::~PasswordProtectionRequest() {
-  weakptr_factory_.InvalidateWeakPtrs();
-}
+PasswordProtectionRequest::~PasswordProtectionRequest() = default;
 
 void PasswordProtectionRequest::Start() {
   DCHECK(CurrentlyOnThread(ThreadID::UI));
@@ -162,8 +160,7 @@ void PasswordProtectionRequest::CheckWhitelist() {
   // Start a task on the IO thread to check the whitelist. It may
   // callback immediately on the IO thread or take some time if a full-hash-
   // check is required.
-  auto result_callback =
-      base::BindOnce(&OnWhitelistCheckDoneOnIO, GetWeakPtr());
+  auto result_callback = base::BindOnce(&OnWhitelistCheckDoneOnIO, AsWeakPtr());
   tracker_.PostTask(
       GetTaskRunner(ThreadID::IO).get(), FROM_HERE,
       base::BindOnce(&AllowlistCheckerClient::StartCheckCsdWhitelist,
@@ -396,7 +393,7 @@ void PasswordProtectionRequest::SendRequest() {
   url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       password_protection_service_->url_loader_factory().get(),
       base::BindOnce(&PasswordProtectionRequest::OnURLLoaderComplete,
-                     GetWeakPtr()));
+                     AsWeakPtr()));
 }
 
 void PasswordProtectionRequest::StartTimeout() {
@@ -409,8 +406,7 @@ void PasswordProtectionRequest::StartTimeout() {
   GetTaskRunner(ThreadID::UI)
       ->PostDelayedTask(
           FROM_HERE,
-          base::BindOnce(&PasswordProtectionRequest::Cancel, GetWeakPtr(),
-                         true),
+          base::BindOnce(&PasswordProtectionRequest::Cancel, AsWeakPtr(), true),
           base::TimeDelta::FromMilliseconds(request_timeout_in_ms_));
 }
 
@@ -528,7 +524,7 @@ PasswordProtectionRequestContent::PasswordProtectionRequestContent(
                                 request_timeout_in_ms),
       web_contents_(web_contents) {
   request_canceler_ =
-      RequestCanceler::CreateRequestCanceler(GetWeakPtr(), web_contents);
+      RequestCanceler::CreateRequestCanceler(AsWeakPtr(), web_contents);
 }
 
 PasswordProtectionRequestContent::~PasswordProtectionRequestContent() = default;
@@ -549,13 +545,13 @@ void PasswordProtectionRequestContent::GetDomFeatures() {
   phishing_detector_->StartPhishingDetection(
       main_frame_url(),
       base::BindRepeating(&PasswordProtectionRequestContent::OnGetDomFeatures,
-                          GetWeakPtr()));
+                          AsWeakPtr()));
   GetTaskRunner(ThreadID::UI)
       ->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(
               &PasswordProtectionRequestContent::OnGetDomFeatureTimeout,
-              GetWeakPtr()),
+              AsWeakPtr()),
           base::TimeDelta::FromMilliseconds(kDomFeatureTimeoutMs));
   dom_feature_start_time_ = base::TimeTicks::Now();
 }
@@ -648,7 +644,7 @@ void PasswordProtectionRequestContent::CollectVisualFeatures() {
   view->CopyFromSurface(
       gfx::Rect(), gfx::Size(),
       base::BindOnce(&PasswordProtectionRequestContent::OnScreenshotTaken,
-                     GetWeakPtr()));
+                     AsWeakPtr()));
 }
 
 void PasswordProtectionRequestContent::OnScreenshotTaken(
@@ -661,7 +657,7 @@ void PasswordProtectionRequestContent::OnScreenshotTaken(
       base::BindOnce(&ExtractVisualFeatures, screenshot),
       base::BindOnce(
           &PasswordProtectionRequestContent::OnVisualFeatureCollectionDone,
-          GetWeakPtr()));
+          AsWeakPtr()));
 }
 
 void PasswordProtectionRequestContent::OnVisualFeatureCollectionDone(
