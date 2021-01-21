@@ -806,4 +806,9 @@ void WebSettingsImpl::SetAccessibilityIncludeSvgGElement(bool include) {
   settings_->SetAccessibilityIncludeSvgGElement(include);
 }
 
+void WebSettingsImpl::SetWebXRImmersiveArAllowed(
+    bool webxr_immersive_ar_allowed) {
+  settings_->SetWebXRImmersiveArAllowed(webxr_immersive_ar_allowed);
+}
+
 }  // namespace blink

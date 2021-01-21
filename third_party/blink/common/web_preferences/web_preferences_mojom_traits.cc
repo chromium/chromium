@@ -218,6 +218,7 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
   out->allow_mixed_content_upgrades = data.allow_mixed_content_upgrades();
   out->always_show_focus = data.always_show_focus();
   out->touch_drag_drop_enabled = data.touch_drag_drop_enabled();
+  out->webxr_immersive_ar_allowed = data.webxr_immersive_ar_allowed();
   return true;
 }
 

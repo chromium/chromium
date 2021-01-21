@@ -27,7 +27,8 @@
     <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS"/>
 
     <application android:name="ChromeBrowserTestsApplication"
-            android:label="ChromeBrowserTests">
+            android:label="ChromeBrowserTests"
+            android:requestLegacyExternalStorage="true">
         <activity android:name="ChromeBrowserTestsActivity"
                   android:launchMode="singleTask"
                   android:theme="@style/Theme.Chromium.TabbedMode"

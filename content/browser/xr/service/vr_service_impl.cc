@@ -481,6 +481,10 @@ void VRServiceImpl::EnsureRuntimeInstalled(SessionRequestData request,
 
   // Ensure that it's the same runtime as the one we expect.
   if (!runtime || runtime->GetId() != request.runtime_id) {
+    DVLOG(1) << __func__
+             << ": failed to obtain the runtime or the runtime id does not "
+                "match the expected ID, request.runtime_id="
+             << request.runtime_id;
     std::move(request.callback)
         .Run(device::mojom::RequestSessionResult::NewFailureReason(
             device::mojom::RequestSessionError::RUNTIMES_CHANGED));
@@ -496,6 +500,8 @@ void VRServiceImpl::EnsureRuntimeInstalled(SessionRequestData request,
 
 void VRServiceImpl::OnInstallResult(SessionRequestData request,
                                     bool install_succeeded) {
+  DVLOG(2) << __func__ << ": install_succeeded=" << install_succeeded;
+
   if (!install_succeeded) {
     std::move(request.callback)
         .Run(device::mojom::RequestSessionResult::NewFailureReason(

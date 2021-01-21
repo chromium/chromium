@@ -57,6 +57,9 @@ void ArCoreInstallHelper::EnsureInstalled(
     int render_process_id,
     int render_frame_id,
     base::OnceCallback<void(bool)> install_callback) {
+  DVLOG(1) << __func__ << ": java_install_utils_.is_null()="
+           << java_install_utils_.is_null();
+
   DCHECK(!install_finished_callback_);
   install_finished_callback_ = std::move(install_callback);
 
@@ -79,6 +82,8 @@ void ArCoreInstallHelper::EnsureInstalled(
 
 void ArCoreInstallHelper::ShowInfoBar(int render_process_id,
                                       int render_frame_id) {
+  DVLOG(1) << __func__;
+
   infobars::InfoBarManager* infobar_manager =
       install_delegate_->GetInfoBarManager(
           GetWebContents(render_process_id, render_frame_id));
@@ -86,6 +91,7 @@ void ArCoreInstallHelper::ShowInfoBar(int render_process_id,
   // We can't show an infobar without an |infobar_manager|, so if it's null,
   // report that we are not installed and stop processing.
   if (!infobar_manager) {
+    DVLOG(2) << __func__ << ": infobar_manager is null";
     RunInstallFinishedCallback(false);
     return;
   }
@@ -138,6 +144,7 @@ void ArCoreInstallHelper::ShowInfoBar(int render_process_id,
 void ArCoreInstallHelper::OnInfoBarResponse(int render_process_id,
                                             int render_frame_id,
                                             bool try_install) {
+  DVLOG(1) << __func__ << ": try_install=" << try_install;
   if (!try_install) {
     OnRequestInstallSupportedArCoreResult(nullptr, false);
     return;
