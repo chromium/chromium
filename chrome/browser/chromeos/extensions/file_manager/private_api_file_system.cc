@@ -254,10 +254,9 @@ void CancelCopyOnIOThread(
 }
 
 // Converts a status code to a bool value and calls the |callback| with it.
-void StatusCallbackToResponseCallback(
-    const base::Callback<void(bool)>& callback,
-    base::File::Error result) {
-  callback.Run(result == base::File::FILE_OK);
+void StatusCallbackToResponseCallback(base::OnceCallback<void(bool)> callback,
+                                      base::File::Error result) {
+  std::move(callback).Run(result == base::File::FILE_OK);
 }
 
 // Calls a response callback (on the UI thread) with a file content hash
@@ -520,12 +519,14 @@ void FileManagerPrivateInternalAddFileWatchFunction::
       file_system_url, false /* recursive */,
       base::BindOnce(
           &StatusCallbackToResponseCallback,
-          base::Bind(&PostResponseCallbackTaskToUIThread,
-                     base::Bind(&FileWatchFunctionBase::RespondWith, this))),
-      base::Bind(
+          base::BindOnce(
+              &PostResponseCallbackTaskToUIThread,
+              base::BindOnce(&FileWatchFunctionBase::RespondWith, this))),
+      base::BindRepeating(
           &PostNotificationCallbackTaskToUIThread,
-          base::Bind(&file_manager::EventRouter::OnWatcherManagerNotification,
-                     event_router, file_system_url, extension_id())));
+          base::BindRepeating(
+              &file_manager::EventRouter::OnWatcherManagerNotification,
+              event_router, file_system_url, extension_id())));
 }
 
 void FileManagerPrivateInternalAddFileWatchFunction::
@@ -553,8 +554,9 @@ void FileManagerPrivateInternalRemoveFileWatchFunction::
       file_system_url, false /* recursive */,
       base::BindOnce(
           &StatusCallbackToResponseCallback,
-          base::Bind(&PostResponseCallbackTaskToUIThread,
-                     base::Bind(&FileWatchFunctionBase::RespondWith, this))));
+          base::BindOnce(
+              &PostResponseCallbackTaskToUIThread,
+              base::BindOnce(&FileWatchFunctionBase::RespondWith, this))));
 }
 
 void FileManagerPrivateInternalRemoveFileWatchFunction::

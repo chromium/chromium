@@ -415,8 +415,8 @@ EventRouter::EventRouter(Profile* profile)
       drivefs_event_router_(
           std::make_unique<DriveFsEventRouterImpl>(profile, &file_watchers_)),
       dispatch_directory_change_event_impl_(
-          base::Bind(&EventRouter::DispatchDirectoryChangeEventImpl,
-                     base::Unretained(this))) {
+          base::BindRepeating(&EventRouter::DispatchDirectoryChangeEventImpl,
+                              base::Unretained(this))) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   ObserveEvents();
 }
@@ -516,9 +516,8 @@ void EventRouter::ObserveEvents() {
   extensions::ExtensionRegistry::Get(profile_)->AddObserver(this);
 
   pref_change_registrar_->Init(profile_->GetPrefs());
-  base::Closure callback =
-      base::Bind(&EventRouter::OnFileManagerPrefsChanged,
-                 weak_factory_.GetWeakPtr());
+  auto callback = base::BindRepeating(&EventRouter::OnFileManagerPrefsChanged,
+                                      weak_factory_.GetWeakPtr());
   pref_change_registrar_->Add(drive::prefs::kDisableDriveOverCellular,
                               callback);
   pref_change_registrar_->Add(drive::prefs::kDisableDrive, callback);
@@ -566,8 +565,8 @@ void EventRouter::AddFileWatch(const base::FilePath& local_path,
     watcher->AddExtension(extension_id);
     watcher->WatchLocalFile(
         profile_, local_path,
-        base::Bind(&EventRouter::HandleFileWatchNotification,
-                   weak_factory_.GetWeakPtr()),
+        base::BindRepeating(&EventRouter::HandleFileWatchNotification,
+                            weak_factory_.GetWeakPtr()),
         std::move(callback));
 
     file_watchers_[local_path] = std::move(watcher);

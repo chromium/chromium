@@ -34,17 +34,17 @@ bool ActiveTabPermissionGranterDelegateChromeOS::ShouldGrantActiveTabOrPrompt(
     content::WebContents* web_contents) {
   permission_helper::RequestResolvedCallback callback;
   if (g_resolved_callback)
-    callback = *g_resolved_callback;
+    callback = std::move(*g_resolved_callback);
 
   if (!profiles::ArePublicSessionRestrictionsEnabled()) {
     if (callback)
-      callback.Run({APIPermission::kActiveTab});
+      std::move(callback).Run({APIPermission::kActiveTab});
     return true;
   }
 
   bool already_handled = permission_helper::HandlePermissionRequest(
-      *extension, {APIPermission::kActiveTab}, web_contents, callback,
-      permission_helper::PromptFactory());
+      *extension, {APIPermission::kActiveTab}, web_contents,
+      std::move(callback), permission_helper::PromptFactory());
 
   return already_handled && permission_helper::PermissionAllowed(
                                 extension, APIPermission::kActiveTab);

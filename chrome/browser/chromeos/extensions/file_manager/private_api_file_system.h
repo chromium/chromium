@@ -95,7 +95,7 @@ class FileManagerPrivateGrantAccessFunction : public ExtensionFunction {
 // directories.
 class FileWatchFunctionBase : public LoggedExtensionFunction {
  public:
-  using ResponseCallback = base::Callback<void(bool success)>;
+  using ResponseCallback = base::OnceCallback<void(bool success)>;
 
   // Calls Respond() with |success| converted to base::Value.
   void RespondWith(bool success);

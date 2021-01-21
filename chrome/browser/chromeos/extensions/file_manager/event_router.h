@@ -54,10 +54,10 @@ class EventRouter
       public guest_os::GuestOsSharePath::Observer,
       public ash::TabletModeObserver {
  public:
-  typedef base::Callback<void(const base::FilePath& virtual_path,
-                              bool got_error,
-                              const std::vector<std::string>& extension_ids)>
-      DispatchDirectoryChangeEventImplCallback;
+  using DispatchDirectoryChangeEventImplCallback = base::RepeatingCallback<void(
+      const base::FilePath& virtual_path,
+      bool got_error,
+      const std::vector<std::string>& extension_ids)>;
 
   explicit EventRouter(Profile* profile);
   ~EventRouter() override;

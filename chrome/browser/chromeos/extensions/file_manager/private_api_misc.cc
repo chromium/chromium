@@ -933,7 +933,7 @@ FileManagerPrivateInternalGetCustomActionsFunction::Run() {
   DCHECK(file_system);
   file_system->GetActions(
       paths,
-      base::Bind(
+      base::BindOnce(
           &FileManagerPrivateInternalGetCustomActionsFunction::OnCompleted,
           this));
   return RespondLater();

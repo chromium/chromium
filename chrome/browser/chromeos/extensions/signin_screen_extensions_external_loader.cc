@@ -106,8 +106,9 @@ void SigninScreenExtensionsExternalLoader::SubscribeAndInitializeFromPrefs() {
   pref_change_registrar_.Init(profile_->GetPrefs());
   pref_change_registrar_.Add(
       extensions::pref_names::kInstallForceList,
-      base::Bind(&SigninScreenExtensionsExternalLoader::UpdateStateFromPrefs,
-                 base::Unretained(this)));
+      base::BindRepeating(
+          &SigninScreenExtensionsExternalLoader::UpdateStateFromPrefs,
+          base::Unretained(this)));
 
   UpdateStateFromPrefs();
 }

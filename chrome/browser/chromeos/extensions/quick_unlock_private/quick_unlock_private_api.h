@@ -26,7 +26,7 @@ class QuickUnlockPrivateGetAuthTokenFunction
       public chromeos::AuthStatusConsumer {
  public:
   using AuthenticatorAllocator =
-      base::Callback<chromeos::ExtendedAuthenticator*(
+      base::RepeatingCallback<chromeos::ExtendedAuthenticator*(
           chromeos::AuthStatusConsumer* auth_status_consumer)>;
 
   class TestObserver {
@@ -203,7 +203,7 @@ class QuickUnlockPrivateSetModesFunction : public ExtensionFunction {
   using QuickUnlockMode =
       extensions::api::quick_unlock_private::QuickUnlockMode;
   using ModesChangedEventHandler =
-      base::Callback<void(const std::vector<QuickUnlockMode>&)>;
+      base::RepeatingCallback<void(const std::vector<QuickUnlockMode>&)>;
 
   QuickUnlockPrivateSetModesFunction();
 

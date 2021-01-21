@@ -270,7 +270,7 @@ QuickUnlockPrivateGetAuthTokenFunction::Run() {
       FROM_HERE,
       base::BindOnce(&chromeos::ExtendedAuthenticator::AuthenticateToCheck,
                      extended_authenticator_.get(), user_context,
-                     base::Closure()));
+                     base::OnceClosure()));
 
   return RespondLater();
 }

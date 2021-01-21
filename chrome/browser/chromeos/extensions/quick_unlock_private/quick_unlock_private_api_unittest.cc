@@ -252,14 +252,14 @@ class QuickUnlockPrivateUnitTest
 
   // If a mode change event is raised, fail the test.
   void FailIfModesChanged() {
-    modes_changed_handler_ = base::Bind(&FailIfCalled);
+    modes_changed_handler_ = base::BindRepeating(&FailIfCalled);
   }
 
   // If a mode change event is raised, expect the given |modes|.
   void ExpectModesChanged(const QuickUnlockModeList& modes) {
     modes_changed_handler_ =
-        base::Bind(&QuickUnlockPrivateUnitTest::ExpectModeList,
-                   base::Unretained(this), modes);
+        base::BindRepeating(&QuickUnlockPrivateUnitTest::ExpectModeList,
+                            base::Unretained(this), modes);
     expect_modes_changed_ = true;
   }
 
@@ -270,7 +270,7 @@ class QuickUnlockPrivateUnitTest
     // Setup a fake authenticator to avoid calling cryptohome methods.
     auto* func = new extensions::QuickUnlockPrivateGetAuthTokenFunction();
     func->SetAuthenticatorAllocatorForTesting(
-        base::Bind(&CreateFakeAuthenticator));
+        base::BindRepeating(&CreateFakeAuthenticator));
 
     auto params = std::make_unique<base::ListValue>();
     params->Append(base::Value(password));
@@ -287,7 +287,7 @@ class QuickUnlockPrivateUnitTest
     // Setup a fake authenticator to avoid calling cryptohome methods.
     auto* func = new extensions::QuickUnlockPrivateGetAuthTokenFunction();
     func->SetAuthenticatorAllocatorForTesting(
-        base::Bind(&CreateFakeAuthenticator));
+        base::BindRepeating(&CreateFakeAuthenticator));
 
     auto params = std::make_unique<base::ListValue>();
     params->Append(base::Value(kInvalidPassword));

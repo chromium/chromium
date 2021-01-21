@@ -57,8 +57,9 @@ bool get_did_show_dialog_and_reset() {
   return tmp;
 }
 
-base::Callback<void(const PermissionIDSet&)> BindQuitLoop(base::RunLoop* loop) {
-  return base::Bind(
+base::OnceCallback<void(const PermissionIDSet&)> BindQuitLoop(
+    base::RunLoop* loop) {
+  return base::BindOnce(
       [](base::RunLoop* loop, const PermissionIDSet&) { loop->Quit(); }, loop);
 }
 
@@ -156,14 +157,14 @@ PublicSessionPermissionHelperTest::CallHandlePermissionRequest(
     const PermissionIDSet& permissions) {
   auto* prompt = new ProgrammableInstallPrompt(web_contents());
   auto prompt_weak_ptr = prompt->AsWeakPtr();
-  auto factory_callback = base::Bind(
+  auto factory_callback = base::BindOnce(
       &PublicSessionPermissionHelperTest::ReturnPrompt, base::Unretained(this),
-      base::Passed(base::WrapUnique<ExtensionInstallPrompt>(prompt)));
+      base::WrapUnique<ExtensionInstallPrompt>(prompt));
   HandlePermissionRequest(
       *extension.get(), permissions, web_contents(),
-      base::Bind(&PublicSessionPermissionHelperTest::RequestResolved,
-                 base::Unretained(this)),
-      factory_callback);
+      base::BindOnce(&PublicSessionPermissionHelperTest::RequestResolved,
+                     base::Unretained(this)),
+      std::move(factory_callback));
   // In case all permissions were already prompted, ReturnPrompt isn't called
   // because of an early return in HandlePermissionRequest, and in that case the
   // prompt is free'd as soon as HandlePermissionRequest returns (because it's
