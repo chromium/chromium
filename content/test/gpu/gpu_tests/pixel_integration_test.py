@@ -206,6 +206,18 @@ class PixelIntegrationTest(
     dummy_tab.action_runner.Wait(2)
     tab.Activate()
 
+  def _SwitchTabsAndCopyImage(self, tab, page):
+    del page  # Unused in this particular action.
+    if not tab.browser.supports_tab_control:
+      self.fail('Browser must support tab control')
+    dummy_tab = tab.browser.tabs.New()
+    dummy_tab.Activate()
+    # Wait for 2 seconds so that new tab becomes visible.
+    dummy_tab.action_runner.Wait(2)
+    # Close new tab.
+    dummy_tab.Close()
+    tab.EvaluateJavaScript("copyImage()")
+
   def _RunTestWithHighPerformanceTab(self, tab, page):
     del page  # Unused in this particular action.
     if not self._IsDualGPUMacLaptop():

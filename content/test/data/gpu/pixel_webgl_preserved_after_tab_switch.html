@@ -1,0 +1,71 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>WebGL Test: WebGL Content Preserved after Tab Switched</title>
+<style type="text/css">
+    .nomargin {
+        margin: 0px auto;
+    }
+</style>
+<script src="pixel_webgl_util.js"></script>
+</head>
+<body onload="main()">
+<canvas id="source" width="100" height="100" class="nomargin"></canvas>
+<canvas id="destination" width="100" height="100" class="nomargin"></canvas>
+
+<!-- The pixel result of this test is two green squares side-by-side. -->
+
+<script>
+    let canvasSource = document.getElementById("source");
+    let canvasDestination = document.getElementById("destination");
+    let canvasOptions = {
+        preserveDrawingBuffer: true
+    };
+    let destinationContext = canvasDestination.getContext("2d", canvasOptions);
+    let gl;
+
+    canvasSource.addEventListener("webglcontextlost", function(event) {
+        console.log('context lost');
+        event.preventDefault();
+    }, false);
+
+    canvasSource.addEventListener("webglcontextrestored", init3d, false);
+
+    function copyImageInternal() {
+        let error = gl.getError();
+        if (error) {
+            console.log('Gl Error: ' + error);
+        }
+        destinationContext.clearRect(0, 0, 100, 100);
+        destinationContext.drawImage(canvasSource, 0, 0);
+    }
+
+    function copyImage() {
+        copyImageInternal();
+        domAutomationController.send("SUCCESS");
+    }
+
+    function init3d() {
+        gl = canvasSource.getContext("webgl", canvasOptions);
+        if (gl == null)
+            console.log("couldn't get webgl context");
+        else
+            console.log(gl);
+
+        gl.viewport(0, 0, canvasSource.width, canvasSource.height);
+        gl.clearColor(0, 0.5, 0, 1);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+        copyImageInternal();
+    }
+
+    function main() {
+        init3d();
+        if (gl) {
+            domAutomationController.send("READY");
+        } else {
+            domAutomationController.send("FAILURE");
+        }
+    }
+</script>
+</body>
+</html>

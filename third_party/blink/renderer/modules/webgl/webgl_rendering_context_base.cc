@@ -1754,15 +1754,19 @@ bool WebGLRenderingContextBase::PaintRenderingResultsToCanvas(
     return false;
 
   bool must_clear_now = ClearIfComposited(kClearCallerOther) != kSkipped;
-  if (!must_paint_to_canvas_ && !must_clear_now)
-    return false;
-
-  must_paint_to_canvas_ = false;
 
   if (Host()->ResourceProvider() &&
       Host()->ResourceProvider()->Size() != GetDrawingBuffer()->Size()) {
     Host()->DiscardResourceProvider();
   }
+
+  // The host's ResourceProvider is purged to save memory when the tab
+  // is backgrounded.
+
+  if (!must_paint_to_canvas_ && !must_clear_now && Host()->ResourceProvider())
+    return false;
+
+  must_paint_to_canvas_ = false;
 
   CanvasResourceProvider* resource_provider =
       Host()->GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);

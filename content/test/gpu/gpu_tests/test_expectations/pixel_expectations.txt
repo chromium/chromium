@@ -98,8 +98,10 @@
 # Skip tab switching tests on Android webview and Fuchsia since they don't have tabs
 [ android android-webview-instrumentation ] Pixel_Canvas2DTabSwitch [ Skip ]
 [ android android-webview-instrumentation ] Pixel_WebGLReadPixelsTabSwitch [ Skip ]
+[ android android-webview-instrumentation ] Pixel_WebGLPreservedAfterTabSwitch [ Skip ]
 [ fuchsia ] Pixel_Canvas2DTabSwitch [ Skip ]
 [ fuchsia ] Pixel_WebGLReadPixelsTabSwitch [ Skip ]
+[ fuchsia ] Pixel_WebGLPreservedAfterTabSwitch [ Skip ]
 
 # Fuchsia emulators don't support video
 [ fuchsia fuchsia-board-qemu-x64 ] Pixel_Video* [ Skip ]
