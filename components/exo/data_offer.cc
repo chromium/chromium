@@ -234,16 +234,18 @@ void DataOffer::SetDropData(DataExchangeDelegate* data_exchange_delegate,
                             const ui::OSExchangeData& data) {
   DCHECK_EQ(0u, data_callbacks_.size());
 
+  ui::EndpointType endpoint_type =
+      data_exchange_delegate->GetDataTransferEndpointType(target);
   const std::string uri_list_mime_type =
-      data_exchange_delegate->GetMimeTypeForUriList(target);
+      data_exchange_delegate->GetMimeTypeForUriList(endpoint_type);
   if (data.HasFile()) {
     std::vector<ui::FileInfo> files;
     if (data.GetFilenames(&files)) {
       data_callbacks_.emplace(
           uri_list_mime_type,
           base::BindOnce(&DataExchangeDelegate::SendFileInfo,
-                         base::Unretained(data_exchange_delegate), target,
-                         std::move(files)));
+                         base::Unretained(data_exchange_delegate),
+                         endpoint_type, std::move(files)));
       delegate_->OnOffer(uri_list_mime_type);
       return;
     }
@@ -255,7 +257,7 @@ void DataOffer::SetDropData(DataExchangeDelegate* data_exchange_delegate,
     data_callbacks_.emplace(
         uri_list_mime_type,
         base::BindOnce(&DataExchangeDelegate::SendPickle,
-                       base::Unretained(data_exchange_delegate), target,
+                       base::Unretained(data_exchange_delegate), endpoint_type,
                        pickle));
     delegate_->OnOffer(uri_list_mime_type);
     return;

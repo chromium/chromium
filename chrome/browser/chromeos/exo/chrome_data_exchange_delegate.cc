@@ -162,14 +162,13 @@ struct FileInfo {
   storage::FileSystemURL url;
 };
 
-void ShareAndSend(aura::Window* target,
+void ShareAndSend(ui::EndpointType target,
                   std::vector<FileInfo> files,
                   exo::DataExchangeDelegate::SendDataCallback callback) {
   Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
-  aura::Window* toplevel = target->GetToplevelWindow();
-  bool is_arc = ash::IsArcWindow(target->GetToplevelWindow());
-  bool is_crostini = crostini::IsCrostiniWindow(toplevel);
-  bool is_plugin_vm = plugin_vm::IsPluginVmAppWindow(toplevel);
+  bool is_arc = target == ui::EndpointType::kArc;
+  bool is_crostini = target == ui::EndpointType::kCrostini;
+  bool is_plugin_vm = target == ui::EndpointType::kPluginVm;
 
   base::FilePath vm_mount;
   std::string vm_name;
@@ -285,22 +284,12 @@ ui::EndpointType ChromeDataExchangeDelegate::GetDataTransferEndpointType(
   return ui::EndpointType::kUnknownVm;
 }
 
-void ChromeDataExchangeDelegate::SetSourceOnOSExchangeData(
-    aura::Window* target,
-    ui::OSExchangeData* os_exchange_data) const {
-  DCHECK(os_exchange_data);
-
-  os_exchange_data->SetSource(std::make_unique<ui::DataTransferEndpoint>(
-      GetDataTransferEndpointType(target)));
-}
-
 std::vector<ui::FileInfo> ChromeDataExchangeDelegate::GetFilenames(
-    aura::Window* source,
+    ui::EndpointType source,
     const std::vector<uint8_t>& data) const {
   Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
-  aura::Window* toplevel = source->GetToplevelWindow();
-  bool is_crostini = crostini::IsCrostiniWindow(toplevel);
-  bool is_plugin_vm = plugin_vm::IsPluginVmAppWindow(toplevel);
+  bool is_crostini = source == ui::EndpointType::kCrostini;
+  bool is_plugin_vm = source == ui::EndpointType::kPluginVm;
 
   base::FilePath vm_mount;
   std::string vm_name;
@@ -349,13 +338,13 @@ std::vector<ui::FileInfo> ChromeDataExchangeDelegate::GetFilenames(
 }
 
 std::string ChromeDataExchangeDelegate::GetMimeTypeForUriList(
-    aura::Window* target) const {
-  return ash::IsArcWindow(target->GetToplevelWindow()) ? kMimeTypeArcUriList
-                                                       : kMimeTypeTextUriList;
+    ui::EndpointType target) const {
+  return target == ui::EndpointType::kArc ? kMimeTypeArcUriList
+                                          : kMimeTypeTextUriList;
 }
 
 void ChromeDataExchangeDelegate::SendFileInfo(
-    aura::Window* target,
+    ui::EndpointType target,
     const std::vector<ui::FileInfo>& files,
     SendDataCallback callback) const {
   storage::ExternalMountPoints* mount_points =
@@ -383,14 +372,14 @@ bool ChromeDataExchangeDelegate::HasUrlsInPickle(
   return !file_system_urls.empty();
 }
 
-void ChromeDataExchangeDelegate::SendPickle(aura::Window* target,
+void ChromeDataExchangeDelegate::SendPickle(ui::EndpointType target,
                                             const base::Pickle& pickle,
                                             SendDataCallback callback) {
   std::vector<storage::FileSystemURL> file_system_urls;
   GetFileSystemUrlsFromPickle(pickle, &file_system_urls);
 
   // ARC FileSystemURLs are converted to Content URLs.
-  if (ash::IsArcWindow(target->GetToplevelWindow())) {
+  if (target == ui::EndpointType::kArc) {
     if (file_system_urls.empty()) {
       std::move(callback).Run(nullptr);
       return;

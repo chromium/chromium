@@ -22,7 +22,6 @@ class RefCountedMemory;
 
 namespace ui {
 struct FileInfo;
-class OSExchangeData;
 enum class EndpointType;
 }  // namespace ui
 
@@ -34,31 +33,25 @@ class DataExchangeDelegate {
  public:
   virtual ~DataExchangeDelegate() {}
 
-  // Returns the type of DataTransferEndpoint according to the `target` window.
+  // Returns the endpoint type of `window`.
   virtual ui::EndpointType GetDataTransferEndpointType(
-      aura::Window* target) const = 0;
+      aura::Window* window) const = 0;
 
-  // Sets the source of `os_exchange_data` according to the `target` window.
-  virtual void SetSourceOnOSExchangeData(
-      aura::Window* target,
-      ui::OSExchangeData* os_exchange_data) const = 0;
-
-  // Read filenames from |data| which was provided by source window |source|.
-  // Translates paths from source to host format.
+  // Read filenames from text/uri-list |data| which was provided by |source|
+  // endpoint. Translates paths from source to host format.
   virtual std::vector<ui::FileInfo> GetFilenames(
-      aura::Window* source,
+      ui::EndpointType source,
       const std::vector<uint8_t>& data) const = 0;
 
-  // Returns the mime type which is used by target window |target| for a list of
+  // Returns the mime type which is used by |target| endpoint for a list of
   // file path URIs.
-  virtual std::string GetMimeTypeForUriList(aura::Window* target) const = 0;
+  virtual std::string GetMimeTypeForUriList(ui::EndpointType target) const = 0;
 
-  // Sends the given file list |files| to target window |target| window.
-  // Translates paths from host format to the target and performs any required
-  // file sharing for VMs.
+  // Sends the given list of |files| to |target| endpoint. Translates paths from
+  // host format to the target and performs any required file sharing for VMs.
   using SendDataCallback =
       base::OnceCallback<void(scoped_refptr<base::RefCountedMemory>)>;
-  virtual void SendFileInfo(aura::Window* target,
+  virtual void SendFileInfo(ui::EndpointType target,
                             const std::vector<ui::FileInfo>& files,
                             SendDataCallback callback) const = 0;
 
@@ -67,9 +60,9 @@ class DataExchangeDelegate {
   virtual bool HasUrlsInPickle(const base::Pickle& pickle) const = 0;
 
   // Takes in |pickle| constructed by the web contents view containing
-  // filesystem URLs. Provides translations for the specified target window
-  // |target| and performs any required file sharing for VMs..
-  virtual void SendPickle(aura::Window* target,
+  // filesystem URLs. Provides translations for the specified |target| endpoint
+  // and performs any required file sharing for VMs.
+  virtual void SendPickle(ui::EndpointType target,
                           const base::Pickle& pickle,
                           SendDataCallback callback) = 0;
 };

@@ -184,8 +184,9 @@ DragDropOperation::DragDropOperation(
 
   drag_drop_controller_->AddObserver(this);
 
-  data_exchange_delegate->SetSourceOnOSExchangeData(origin_->get()->window(),
-                                                    os_exchange_data_.get());
+  os_exchange_data_->SetSource(std::make_unique<ui::DataTransferEndpoint>(
+      data_exchange_delegate->GetDataTransferEndpointType(
+          origin_->get()->window())));
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   extended_drag_source_ = ExtendedDragSource::Get();
@@ -266,8 +267,8 @@ void DragDropOperation::OnFilenamesRead(
     const std::string& mime_type,
     const std::vector<uint8_t>& data) {
   DCHECK(os_exchange_data_);
-  os_exchange_data_->SetFilenames(
-      data_exchange_delegate->GetFilenames(source, data));
+  os_exchange_data_->SetFilenames(data_exchange_delegate->GetFilenames(
+      data_exchange_delegate->GetDataTransferEndpointType(source), data));
   mime_type_ = mime_type;
   counter_.Run();
 }

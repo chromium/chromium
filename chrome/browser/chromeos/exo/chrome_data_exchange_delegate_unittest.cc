@@ -88,40 +88,6 @@ class ChromeDataExchangeDelegateTest : public testing::Test {
         crostini_mount_name_, storage::kFileSystemTypeNativeLocal,
         storage::FileSystemMountOption(), crostini_dir_);
 
-    // ChromeDataExchangeDelegate always checks app type in
-    // window->GetToplevelWindow(), so we must create a parent window with
-    // delegate and app type set, but use the child window in tests. Arc:
-    arc_toplevel_ = aura::test::CreateTestWindowWithDelegate(
-        &delegate_, 0, gfx::Rect(), nullptr);
-    arc_toplevel_->SetProperty(aura::client::kAppType,
-                               static_cast<int>(ash::AppType::ARC_APP));
-    ASSERT_TRUE(ash::IsArcWindow(arc_toplevel_));
-    arc_window_ =
-        aura::test::CreateTestWindowWithBounds(gfx::Rect(), arc_toplevel_);
-    ASSERT_TRUE(ash::IsArcWindow(arc_window_->GetToplevelWindow()));
-
-    // Crostini:
-    crostini_toplevel_ = aura::test::CreateTestWindowWithDelegate(
-        &delegate_, 0, gfx::Rect(), nullptr);
-    crostini_toplevel_->SetProperty(
-        aura::client::kAppType, static_cast<int>(ash::AppType::CROSTINI_APP));
-    ASSERT_TRUE(crostini::IsCrostiniWindow(crostini_toplevel_));
-    crostini_window_ =
-        aura::test::CreateTestWindowWithBounds(gfx::Rect(), crostini_toplevel_);
-    ASSERT_TRUE(
-        crostini::IsCrostiniWindow(crostini_window_->GetToplevelWindow()));
-
-    // Plugin VM:
-    plugin_vm_toplevel_ = aura::test::CreateTestWindowWithDelegate(
-        &delegate_, 0, gfx::Rect(), nullptr);
-    exo::SetShellApplicationId(plugin_vm_toplevel_,
-                               "org.chromium.plugin_vm_ui");
-    ASSERT_TRUE(plugin_vm::IsPluginVmAppWindow(plugin_vm_toplevel_));
-    plugin_vm_window_ = aura::test::CreateTestWindowWithBounds(
-        gfx::Rect(), plugin_vm_toplevel_);
-    ASSERT_TRUE(
-        plugin_vm::IsPluginVmAppWindow(plugin_vm_window_->GetToplevelWindow()));
-
     // DBus seneschal client.
     fake_seneschal_client_ = static_cast<chromeos::FakeSeneschalClient*>(
         chromeos::DBusThreadManager::Get()->GetSeneschalClient());
@@ -143,12 +109,6 @@ class ChromeDataExchangeDelegateTest : public testing::Test {
   std::unique_ptr<crostini::CrostiniTestHelper> test_helper_;
 
   aura::test::TestWindowDelegate delegate_;
-  aura::Window* arc_toplevel_;
-  aura::Window* arc_window_;
-  aura::Window* crostini_toplevel_;
-  aura::Window* crostini_window_;
-  aura::Window* plugin_vm_toplevel_;
-  aura::Window* plugin_vm_window_;
 
   storage::ExternalMountPoints* mount_points_;
   std::string myfiles_mount_name_;
@@ -159,13 +119,63 @@ class ChromeDataExchangeDelegateTest : public testing::Test {
   chromeos::FakeSeneschalClient* fake_seneschal_client_ = nullptr;
 };
 
+TEST_F(ChromeDataExchangeDelegateTest, GetDataTransferEndpointType) {
+  // ChromeDataExchangeDelegate always checks app type in
+  // window->GetToplevelWindow(), so we must create a parent window with
+  // delegate and app type set, but use the child window in tests. Arc:
+  aura::Window* arc_toplevel = aura::test::CreateTestWindowWithDelegate(
+      &delegate_, 0, gfx::Rect(), nullptr);
+  arc_toplevel->SetProperty(aura::client::kAppType,
+                            static_cast<int>(ash::AppType::ARC_APP));
+  ASSERT_TRUE(ash::IsArcWindow(arc_toplevel));
+  aura::Window* arc_window =
+      aura::test::CreateTestWindowWithBounds(gfx::Rect(), arc_toplevel);
+  ASSERT_TRUE(ash::IsArcWindow(arc_window->GetToplevelWindow()));
+
+  // Crostini:
+  aura::Window* crostini_toplevel = aura::test::CreateTestWindowWithDelegate(
+      &delegate_, 0, gfx::Rect(), nullptr);
+  crostini_toplevel->SetProperty(aura::client::kAppType,
+                                 static_cast<int>(ash::AppType::CROSTINI_APP));
+  ASSERT_TRUE(crostini::IsCrostiniWindow(crostini_toplevel));
+  aura::Window* crostini_window =
+      aura::test::CreateTestWindowWithBounds(gfx::Rect(), crostini_toplevel);
+  ASSERT_TRUE(crostini::IsCrostiniWindow(crostini_window->GetToplevelWindow()));
+
+  // Plugin VM:
+  aura::Window* plugin_vm_toplevel = aura::test::CreateTestWindowWithDelegate(
+      &delegate_, 0, gfx::Rect(), nullptr);
+  exo::SetShellApplicationId(plugin_vm_toplevel, "org.chromium.plugin_vm_ui");
+  ASSERT_TRUE(plugin_vm::IsPluginVmAppWindow(plugin_vm_toplevel));
+  aura::Window* plugin_vm_window =
+      aura::test::CreateTestWindowWithBounds(gfx::Rect(), plugin_vm_toplevel);
+  ASSERT_TRUE(
+      plugin_vm::IsPluginVmAppWindow(plugin_vm_window->GetToplevelWindow()));
+
+  ChromeDataExchangeDelegate data_exchange_delegate;
+
+  ui::OSExchangeData os_exchange_data;
+
+  EXPECT_EQ(ui::EndpointType::kArc,
+            data_exchange_delegate.GetDataTransferEndpointType(arc_window));
+
+  EXPECT_EQ(
+      ui::EndpointType::kCrostini,
+      data_exchange_delegate.GetDataTransferEndpointType(crostini_window));
+
+  EXPECT_EQ(
+      ui::EndpointType::kPluginVm,
+      data_exchange_delegate.GetDataTransferEndpointType(plugin_vm_window));
+}
+
 TEST_F(ChromeDataExchangeDelegateTest, GetFilenames) {
   ChromeDataExchangeDelegate data_exchange_delegate;
 
   // Multiple lines should be parsed.
   // Arc should not translate paths.
   std::vector<ui::FileInfo> files = data_exchange_delegate.GetFilenames(
-      arc_window_, Data("\n\tfile:///file1\t\r\n#ignore\r\nfile:///file2\r\n"));
+      ui::EndpointType::kArc,
+      Data("\n\tfile:///file1\t\r\n#ignore\r\nfile:///file2\r\n"));
   EXPECT_EQ(2, files.size());
   EXPECT_EQ("/file1", files[0].path.value());
   EXPECT_EQ("", files[0].display_name.value());
@@ -174,38 +184,39 @@ TEST_F(ChromeDataExchangeDelegateTest, GetFilenames) {
 
   // Crostini shared paths should be mapped.
   files = data_exchange_delegate.GetFilenames(
-      crostini_window_, Data("file:///mnt/chromeos/MyFiles/file"));
+      ui::EndpointType::kCrostini, Data("file:///mnt/chromeos/MyFiles/file"));
   EXPECT_EQ(myfiles_dir_.Append("file"), files[0].path);
 
   // Crostini homedir should be mapped.
   files = data_exchange_delegate.GetFilenames(
-      crostini_window_, Data("file:///home/testuser/file"));
+      ui::EndpointType::kCrostini, Data("file:///home/testuser/file"));
   EXPECT_EQ(crostini_dir_.Append("file"), files[0].path);
 
   // Crostini internal paths should be mapped.
-  files = data_exchange_delegate.GetFilenames(crostini_window_,
+  files = data_exchange_delegate.GetFilenames(ui::EndpointType::kCrostini,
                                               Data("file:///etc/hosts"));
   EXPECT_EQ("vmfile:termina:/etc/hosts", files[0].path.value());
 
   // Plugin VM shared paths should be mapped.
   files = data_exchange_delegate.GetFilenames(
-      plugin_vm_window_, Data("file://ChromeOS/MyFiles/file"));
+      ui::EndpointType::kPluginVm, Data("file://ChromeOS/MyFiles/file"));
   EXPECT_EQ(myfiles_dir_.Append("file"), files[0].path);
 
   // Plugin VM internal paths should be mapped.
   files = data_exchange_delegate.GetFilenames(
-      plugin_vm_window_, Data("file:///C:/WINDOWS/notepad.exe"));
+      ui::EndpointType::kPluginVm, Data("file:///C:/WINDOWS/notepad.exe"));
   EXPECT_EQ("vmfile:PvmDefault:/C:/WINDOWS/notepad.exe", files[0].path.value());
 }
 
 TEST_F(ChromeDataExchangeDelegateTest, GetMimeTypeForUriList) {
   ChromeDataExchangeDelegate data_exchange_delegate;
-  EXPECT_EQ("application/x-arc-uri-list",
-            data_exchange_delegate.GetMimeTypeForUriList(arc_window_));
-  EXPECT_EQ("text/uri-list",
-            data_exchange_delegate.GetMimeTypeForUriList(crostini_window_));
-  EXPECT_EQ("text/uri-list",
-            data_exchange_delegate.GetMimeTypeForUriList(plugin_vm_window_));
+  EXPECT_EQ(
+      "application/x-arc-uri-list",
+      data_exchange_delegate.GetMimeTypeForUriList(ui::EndpointType::kArc));
+  EXPECT_EQ("text/uri-list", data_exchange_delegate.GetMimeTypeForUriList(
+                                 ui::EndpointType::kCrostini));
+  EXPECT_EQ("text/uri-list", data_exchange_delegate.GetMimeTypeForUriList(
+                                 ui::EndpointType::kPluginVm));
 }
 
 TEST_F(ChromeDataExchangeDelegateTest, SendFileInfoConvertPaths) {
@@ -219,7 +230,7 @@ TEST_F(ChromeDataExchangeDelegateTest, SendFileInfoConvertPaths) {
 
   // Arc should convert path to UTF16 URL.
   std::string data;
-  data_exchange_delegate.SendFileInfo(arc_window_, {file1},
+  data_exchange_delegate.SendFileInfo(ui::EndpointType::kArc, {file1},
                                       base::BindOnce(&CaptureUTF16, &data));
   task_environment_.RunUntilIdle();
   EXPECT_EQ(
@@ -228,7 +239,7 @@ TEST_F(ChromeDataExchangeDelegateTest, SendFileInfoConvertPaths) {
       data);
 
   // Arc should join lines with CRLF.
-  data_exchange_delegate.SendFileInfo(arc_window_, {file1, file2},
+  data_exchange_delegate.SendFileInfo(ui::EndpointType::kArc, {file1, file2},
                                       base::BindOnce(&CaptureUTF16, &data));
   task_environment_.RunUntilIdle();
   EXPECT_EQ(
@@ -240,13 +251,14 @@ TEST_F(ChromeDataExchangeDelegateTest, SendFileInfoConvertPaths) {
       data);
 
   // Crostini should convert path to inside VM, and share the path.
-  data_exchange_delegate.SendFileInfo(crostini_window_, {file1},
+  data_exchange_delegate.SendFileInfo(ui::EndpointType::kCrostini, {file1},
                                       base::BindOnce(&Capture, &data));
   task_environment_.RunUntilIdle();
   EXPECT_EQ("file:///mnt/chromeos/MyFiles/file1", data);
 
   // Crostini should join lines with CRLF.
-  data_exchange_delegate.SendFileInfo(crostini_window_, {file1, file2},
+  data_exchange_delegate.SendFileInfo(ui::EndpointType::kCrostini,
+                                      {file1, file2},
                                       base::BindOnce(&Capture, &data));
   task_environment_.RunUntilIdle();
   EXPECT_EQ(
@@ -256,35 +268,35 @@ TEST_F(ChromeDataExchangeDelegateTest, SendFileInfoConvertPaths) {
       data);
 
   // Plugin VM should convert path to inside VM.
-  data_exchange_delegate.SendFileInfo(plugin_vm_window_, {file1},
+  data_exchange_delegate.SendFileInfo(ui::EndpointType::kPluginVm, {file1},
                                       base::BindOnce(&Capture, &data));
   task_environment_.RunUntilIdle();
   EXPECT_EQ("file://ChromeOS/MyFiles/file1", data);
 
   // Crostini should handle vmfile:termina:/etc/hosts.
   file1.path = base::FilePath("vmfile:termina:/etc/hosts");
-  data_exchange_delegate.SendFileInfo(crostini_window_, {file1},
+  data_exchange_delegate.SendFileInfo(ui::EndpointType::kCrostini, {file1},
                                       base::BindOnce(&Capture, &data));
   task_environment_.RunUntilIdle();
   EXPECT_EQ("file:///etc/hosts", data);
 
   // Crostini should ignore vmfile:PvmDefault:C:/WINDOWS/notepad.exe.
   file1.path = base::FilePath("vmfile:PvmDefault:C:/WINDOWS/notepad.exe");
-  data_exchange_delegate.SendFileInfo(crostini_window_, {file1},
+  data_exchange_delegate.SendFileInfo(ui::EndpointType::kCrostini, {file1},
                                       base::BindOnce(&Capture, &data));
   task_environment_.RunUntilIdle();
   EXPECT_EQ("", data);
 
   // Plugin VM should handle vmfile:PvmDefault:C:/WINDOWS/notepad.exe.
   file1.path = base::FilePath("vmfile:PvmDefault:C:/WINDOWS/notepad.exe");
-  data_exchange_delegate.SendFileInfo(plugin_vm_window_, {file1},
+  data_exchange_delegate.SendFileInfo(ui::EndpointType::kPluginVm, {file1},
                                       base::BindOnce(&Capture, &data));
   task_environment_.RunUntilIdle();
   EXPECT_EQ("file:///C:/WINDOWS/notepad.exe", data);
 
   // Crostini should handle vmfile:termina:/etc/hosts.
   file1.path = base::FilePath("vmfile:termina:/etc/hosts");
-  data_exchange_delegate.SendFileInfo(plugin_vm_window_, {file1},
+  data_exchange_delegate.SendFileInfo(ui::EndpointType::kPluginVm, {file1},
                                       base::BindOnce(&Capture, &data));
   task_environment_.RunUntilIdle();
   EXPECT_EQ("", data);
@@ -302,7 +314,7 @@ TEST_F(ChromeDataExchangeDelegateTest, SendFileInfoSharePathsCrostini) {
   ui::FileInfo file(shared_path, base::FilePath());
   EXPECT_FALSE(fake_seneschal_client_->share_path_called());
   std::string data;
-  data_exchange_delegate.SendFileInfo(crostini_window_, {file},
+  data_exchange_delegate.SendFileInfo(ui::EndpointType::kCrostini, {file},
                                       base::BindOnce(&Capture, &data));
   task_environment_.RunUntilIdle();
   EXPECT_EQ("file:///mnt/chromeos/MyFiles/shared", data);
@@ -310,7 +322,7 @@ TEST_F(ChromeDataExchangeDelegateTest, SendFileInfoSharePathsCrostini) {
 
   // A path which is not already shared should be shared.
   file = ui::FileInfo(myfiles_dir_.Append("file"), base::FilePath());
-  data_exchange_delegate.SendFileInfo(crostini_window_, {file},
+  data_exchange_delegate.SendFileInfo(ui::EndpointType::kCrostini, {file},
                                       base::BindOnce(&Capture, &data));
   task_environment_.RunUntilIdle();
   EXPECT_EQ("file:///mnt/chromeos/MyFiles/file", data);
@@ -323,7 +335,7 @@ TEST_F(ChromeDataExchangeDelegateTest, SendFileInfoSharePathsPluginVm) {
   // Plugin VM should send empty data and not share path if not already shared.
   ui::FileInfo file(myfiles_dir_.Append("file"), base::FilePath());
   std::string data;
-  data_exchange_delegate.SendFileInfo(plugin_vm_window_, {file},
+  data_exchange_delegate.SendFileInfo(ui::EndpointType::kPluginVm, {file},
                                       base::BindOnce(&Capture, &data));
   task_environment_.RunUntilIdle();
   EXPECT_EQ("", data);
@@ -353,39 +365,6 @@ TEST_F(ChromeDataExchangeDelegateTest, HasUrlsInPickle) {
   content::DropData::FileSystemFileInfo::WriteFileSystemFilesToPickle(
       {file_info}, &valid);
   EXPECT_EQ(true, data_exchange_delegate.HasUrlsInPickle(valid));
-}
-
-TEST_F(ChromeDataExchangeDelegateTest, GetDataTransferEndpointType) {
-  ChromeDataExchangeDelegate data_exchange_delegate;
-
-  ui::OSExchangeData os_exchange_data;
-
-  EXPECT_EQ(ui::EndpointType::kArc,
-            data_exchange_delegate.GetDataTransferEndpointType(arc_window_));
-
-  EXPECT_EQ(
-      ui::EndpointType::kCrostini,
-      data_exchange_delegate.GetDataTransferEndpointType(crostini_window_));
-
-  EXPECT_EQ(
-      ui::EndpointType::kPluginVm,
-      data_exchange_delegate.GetDataTransferEndpointType(plugin_vm_window_));
-}
-
-TEST_F(ChromeDataExchangeDelegateTest, SetExchangeDataSource) {
-  ChromeDataExchangeDelegate data_exchange_delegate;
-
-  ui::OSExchangeData os_exchange_data;
-
-  data_exchange_delegate.SetSourceOnOSExchangeData(arc_window_,
-                                                   &os_exchange_data);
-  EXPECT_TRUE(os_exchange_data.GetSource());
-  EXPECT_EQ(ui::EndpointType::kArc, os_exchange_data.GetSource()->type());
-
-  data_exchange_delegate.SetSourceOnOSExchangeData(crostini_window_,
-                                                   &os_exchange_data);
-  EXPECT_TRUE(os_exchange_data.GetSource());
-  EXPECT_EQ(ui::EndpointType::kCrostini, os_exchange_data.GetSource()->type());
 }
 
 }  // namespace chromeos

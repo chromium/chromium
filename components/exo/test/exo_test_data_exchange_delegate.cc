@@ -25,16 +25,12 @@ TestDataExchangeDelegate::TestDataExchangeDelegate() = default;
 TestDataExchangeDelegate::~TestDataExchangeDelegate() = default;
 
 ui::EndpointType TestDataExchangeDelegate::GetDataTransferEndpointType(
-    aura::Window* target) const {
+    aura::Window* window) const {
   return ui::EndpointType::kUnknownVm;
 }
 
-void TestDataExchangeDelegate::SetSourceOnOSExchangeData(
-    aura::Window* target,
-    ui::OSExchangeData* os_exchange_data) const {}
-
 std::vector<ui::FileInfo> TestDataExchangeDelegate::GetFilenames(
-    aura::Window* source,
+    ui::EndpointType source,
     const std::vector<uint8_t>& data) const {
   std::string lines(data.begin(), data.end());
   std::vector<ui::FileInfo> filenames;
@@ -48,12 +44,12 @@ std::vector<ui::FileInfo> TestDataExchangeDelegate::GetFilenames(
 }
 
 std::string TestDataExchangeDelegate::GetMimeTypeForUriList(
-    aura::Window* target) const {
+    ui::EndpointType target) const {
   return "text/uri-list";
 }
 
 void TestDataExchangeDelegate::SendFileInfo(
-    aura::Window* target,
+    ui::EndpointType target,
     const std::vector<ui::FileInfo>& files,
     SendDataCallback callback) const {
   std::vector<std::string> lines;
@@ -69,7 +65,7 @@ bool TestDataExchangeDelegate::HasUrlsInPickle(
   return true;
 }
 
-void TestDataExchangeDelegate::SendPickle(aura::Window* target,
+void TestDataExchangeDelegate::SendPickle(ui::EndpointType target,
                                           const base::Pickle& pickle,
                                           SendDataCallback callback) {
   send_pickle_callback_ = std::move(callback);
