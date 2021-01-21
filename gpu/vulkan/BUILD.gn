@@ -111,6 +111,7 @@ if (enable_vulkan) {
       ":buildflags",
       "//base",
       "//base/util/type_safety",
+      "//build:chromeos_buildflags",
       "//components/crash/core/common:crash_key",
       "//gpu/ipc/common:vulkan_ycbcr_info",
       "//ui/gfx",
