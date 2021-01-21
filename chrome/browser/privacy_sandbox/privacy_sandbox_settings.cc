@@ -131,6 +131,22 @@ bool PrivacySandboxSettings::IsPrivacySandboxAllowed() {
   return pref_service_->GetBoolean(prefs::kPrivacySandboxApisEnabled);
 }
 
+bool PrivacySandboxSettings::IsPrivacySandboxEnabled() {
+  return pref_service_->GetBoolean(prefs::kPrivacySandboxApisEnabled);
+}
+
+bool PrivacySandboxSettings::IsPrivacySandboxManaged() {
+  return pref_service_->IsManagedPreference(prefs::kPrivacySandboxApisEnabled);
+}
+
+void PrivacySandboxSettings::SetPrivacySandboxEnabled(bool enabled) {
+  if (!base::FeatureList::IsEnabled(features::kPrivacySandboxSettings)) {
+    return;
+  }
+  pref_service_->SetBoolean(prefs::kPrivacySandboxManuallyControlled, true);
+  pref_service_->SetBoolean(prefs::kPrivacySandboxApisEnabled, enabled);
+}
+
 void PrivacySandboxSettings::OnCookiesCleared() {
   pref_service_->SetTime(prefs::kPrivacySandboxFlocDataAccessibleSince,
                          base::Time::Now());

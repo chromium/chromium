@@ -77,6 +77,16 @@ class PrivacySandboxSettings : public KeyedService {
   // is enabled, this will check prefs::kPrivacySandboxApisEnabled instead.
   bool IsPrivacySandboxAllowed();
 
+  // Used by the UI to check if the API is enabled. Unlike the method above,
+  // this method only checks the pref directly.
+  bool IsPrivacySandboxEnabled();
+
+  // Returns whether the state of the API is managed.
+  bool IsPrivacySandboxManaged();
+
+  // Gets invoked by the UI when the user manually changed the state of the API.
+  void SetPrivacySandboxEnabled(bool enabled);
+
   // Called when there's a broad cookies clearing action. For example, this
   // should be called on "Clear browsing data", but shouldn't be called on the
   // Clear-Site-Data header, as it's restricted to a specific site.
