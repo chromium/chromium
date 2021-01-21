@@ -18,6 +18,7 @@
 #include "chrome/browser/policy/messaging_layer/encryption/decryption.h"
 #include "chrome/browser/policy/messaging_layer/encryption/encryption.h"
 #include "chrome/browser/policy/messaging_layer/encryption/test_encryption_module.h"
+#include "chrome/browser/policy/messaging_layer/storage/resources/resource_interface.h"
 #include "chrome/browser/policy/messaging_layer/storage/storage_configuration.h"
 #include "chrome/browser/policy/messaging_layer/util/status.h"
 #include "chrome/browser/policy/messaging_layer/util/status_macros.h"
@@ -448,7 +449,11 @@ class StorageTest
     }
   }
 
-  void TearDown() override { ResetTestStorage(); }
+  void TearDown() override {
+    ResetTestStorage();
+    // Make sure all memory is deallocated.
+    ASSERT_THAT(GetMemoryResource()->GetUsed(), Eq(0u));
+  }
 
   StatusOr<scoped_refptr<Storage>> CreateTestStorage(
       const StorageOptions& options,
