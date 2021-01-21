@@ -52,7 +52,7 @@ ScriptPromise MediaStreamVideoTrackUnderlyingSink::write(
   // Invalidate the JS |video_frame|. Otherwise, the media frames might not be
   // released, which would leak resources and also cause some MediaStream
   // sources such as cameras to drop frames.
-  video_frame->destroy();
+  video_frame->close();
 
   return ScriptPromise::CastUndefined(script_state);
 }

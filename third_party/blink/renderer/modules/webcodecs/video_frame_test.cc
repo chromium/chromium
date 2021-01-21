@@ -65,7 +65,7 @@ TEST_F(VideoFrameTest, ConstructorAndAttributes) {
   EXPECT_EQ(200u, blink_frame->cropHeight());
   EXPECT_EQ(media_frame, blink_frame->frame());
 
-  blink_frame->destroy();
+  blink_frame->close();
 
   EXPECT_FALSE(blink_frame->timestamp().has_value());
   EXPECT_EQ(0u, blink_frame->codedWidth());
@@ -75,7 +75,7 @@ TEST_F(VideoFrameTest, ConstructorAndAttributes) {
   EXPECT_EQ(nullptr, blink_frame->frame());
 }
 
-TEST_F(VideoFrameTest, FramesSharingHandleDestruction) {
+TEST_F(VideoFrameTest, FramesSharingHandleClose) {
   V8TestingScope scope;
 
   scoped_refptr<media::VideoFrame> media_frame =
@@ -90,12 +90,12 @@ TEST_F(VideoFrameTest, FramesSharingHandleDestruction) {
   // media::VideoFrame reference.
   EXPECT_EQ(media_frame, frame_with_shared_handle->frame());
 
-  // Destroying a frame should invalidate all frames sharing the same handle.
-  blink_frame->destroy();
+  // Closing a frame should invalidate all frames sharing the same handle.
+  blink_frame->close();
   EXPECT_EQ(nullptr, frame_with_shared_handle->frame());
 }
 
-TEST_F(VideoFrameTest, FramesNotSharingHandleDestruction) {
+TEST_F(VideoFrameTest, FramesNotSharingHandleClose) {
   V8TestingScope scope;
 
   scoped_refptr<media::VideoFrame> media_frame =
@@ -112,8 +112,8 @@ TEST_F(VideoFrameTest, FramesNotSharingHandleDestruction) {
   EXPECT_EQ(media_frame, frame_with_new_handle->frame());
 
   // If a frame was created a new handle reference the same media::VideoFrame,
-  // one frame's destruction should not affect the other.
-  blink_frame->destroy();
+  // one frame's closure should not affect the other.
+  blink_frame->close();
   EXPECT_EQ(media_frame, frame_with_new_handle->frame());
 }
 
@@ -133,13 +133,13 @@ TEST_F(VideoFrameTest, ClonedFrame) {
   EXPECT_EQ(media_frame, cloned_frame->frame());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
 
-  blink_frame->destroy();
+  blink_frame->close();
 
-  // Destroying the original frame should not affect the cloned frame.
+  // Closing the original frame should not affect the cloned frame.
   EXPECT_EQ(media_frame, cloned_frame->frame());
 }
 
-TEST_F(VideoFrameTest, CloningDestroyedFrame) {
+TEST_F(VideoFrameTest, CloningClosedFrame) {
   V8TestingScope scope;
 
   scoped_refptr<media::VideoFrame> media_frame =
@@ -147,7 +147,7 @@ TEST_F(VideoFrameTest, CloningDestroyedFrame) {
   VideoFrame* blink_frame =
       CreateBlinkVideoFrame(media_frame, scope.GetExecutionContext());
 
-  blink_frame->destroy();
+  blink_frame->close();
 
   VideoFrame* cloned_frame =
       blink_frame->clone(scope.GetScriptState(), scope.GetExceptionState());
@@ -172,7 +172,7 @@ TEST_F(VideoFrameTest, LeakedHandlesReportLeaks) {
 
   auto& logger = VideoFrameLogger::From(*scope.GetExecutionContext());
 
-  EXPECT_TRUE(logger.GetDestructionAuditor()->were_frames_not_destroyed());
+  EXPECT_TRUE(logger.GetCloseAuditor()->were_frames_not_closed());
 }
 
 TEST_F(VideoFrameTest, InvalidatedHandlesDontReportLeaks) {
@@ -190,7 +190,7 @@ TEST_F(VideoFrameTest, InvalidatedHandlesDontReportLeaks) {
 
   auto& logger = VideoFrameLogger::From(*scope.GetExecutionContext());
 
-  EXPECT_FALSE(logger.GetDestructionAuditor()->were_frames_not_destroyed());
+  EXPECT_FALSE(logger.GetCloseAuditor()->were_frames_not_closed());
 }
 
 }  // namespace

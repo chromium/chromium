@@ -16,7 +16,7 @@ async function encode_decode_test(codec, acc, avc_options) {
       assert_equals(frame.cropHeight, h, "cropHeight");
       assert_equals(frame.timestamp, next_ts++, "timestamp");
       frames_decoded++;
-      frame.destroy();
+      frame.close();
     },
     error(e) {
       errors++;

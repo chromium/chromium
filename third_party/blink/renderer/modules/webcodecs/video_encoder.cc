@@ -477,9 +477,8 @@ void VideoEncoder::ProcessEncode(Request* request) {
       WTF::Bind(done_callback, WrapCrossThreadWeakPersistent(this),
                 WrapCrossThreadPersistent(request)));
 
-  // We passed a copy of frame() above, so this should be safe to destroy
-  // here.
-  request->frame->destroy();
+  // We passed a copy of frame() above, so this should be safe to close here.
+  request->frame->close();
 }
 
 void VideoEncoder::OnReceivedGpuFactories(
