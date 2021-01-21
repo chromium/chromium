@@ -100,11 +100,6 @@ class VIEWS_EXPORT NativeMenuWin {
   // If we're a submenu, this is our parent.
   NativeMenuWin* parent_;
 
-  // If non-null the destructor sets this to true. This is set to non-null while
-  // the menu is showing. It is used to detect if the menu was deleted while
-  // running.
-  bool* destroyed_flag_;
-
   DISALLOW_COPY_AND_ASSIGN(NativeMenuWin);
 };
 

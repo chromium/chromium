@@ -51,12 +51,9 @@ NativeMenuWin::NativeMenuWin(ui::MenuModel* model, HWND system_menu_for)
                   !system_menu_for),
       system_menu_for_(system_menu_for),
       first_item_index_(0),
-      parent_(nullptr),
-      destroyed_flag_(nullptr) {}
+      parent_(nullptr) {}
 
 NativeMenuWin::~NativeMenuWin() {
-  if (destroyed_flag_)
-    *destroyed_flag_ = true;
   items_.clear();
   DestroyMenu(menu_);
 }
