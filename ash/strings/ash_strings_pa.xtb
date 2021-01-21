@@ -90,6 +90,7 @@
 <translation id="1708345662127501511">ਡੈਸਕ: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">ਨੈੱਟਵਰਕ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="1719094688023114093">ਲਾਈਵ ਸੁਰਖੀਆਂ ਚਾਲੂ ਹਨ।</translation>
+<translation id="1720011244392820496">ਵਾਈ-ਫਾਈ ਸਿੰਕ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="1743570585616704562">ਪਛਾਣ ਨਹੀਂ ਹੋਈ</translation>
 <translation id="1746730358044914197">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਇਨਪੁੱਟ ਵਿਧੀਆਂ ਦਾ ਸੰਰੂਪਣ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="1747827819627189109">ਔਨ-ਸਕ੍ਰੀਨ ਕੀ-ਬੋਰਡ ਸਮਰਥਿਤ</translation>
@@ -235,7 +236,7 @@
 <translation id="3033545621352269033">ਚਾਲੂ</translation>
 <translation id="3036649622769666520">ਫਾਈਲਾਂ ਖੋਲ੍ਹੋ</translation>
 <translation id="3038571455154067151">ਸਾਈਨ-ਇਨ ਕਰਨ ਲਈ, ਆਪਣਾ Family Link ਮਾਂ-ਪਿਓ ਪਹੁੰਚ ਕੋਡ ਦਾਖਲ ਕਰੋ</translation>
-<translation id="3039939407102840004">ਸਟਾਈਲਸ ਦੀ ਬੈਟਰੀ <ph name="PERCENTAGE" /> ਪ੍ਰਤਿਸ਼ਤ ਹੈ।</translation>
+<translation id="3039939407102840004">ਸਟਾਈਲਸ ਦੀ ਬੈਟਰੀ <ph name="PERCENTAGE" /> ਪ੍ਰਤੀਸ਼ਤ ਹੈ।</translation>
 <translation id="3045488863354895414">ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ,</translation>
 <translation id="3055162170959710888">ਤੁਸੀਂ ਅੱਜ ਇਸ ਡੀਵਾਈਸ ਨੂੰ <ph name="USED_TIME" /> ਤੱਕ ਵਰਤਿਆ</translation>
 <translation id="3077734595579995578">shift</translation>
@@ -313,7 +314,8 @@
 <translation id="3631369015426612114">ਇਹਨਾਂ ਤੋਂ ਸੂਚਨਾਵਾਂ ਦਿਖਾਉਣ ਦਿਓ</translation>
 <translation id="3638400994746983214">ਪਰਦੇਦਾਰੀ ਸਕ੍ਰੀਨ ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="STATE_TEXT" />।</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> ਪ੍ਰਬੰਧਿਤ ਵਰਤੋਂਕਾਰ</translation>
-<translation id="3665889125180354336">ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਰਿਕਾਰਡ ਕਰੋ</translation>
+<translation id="3665889125180354336">ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਨਾਲ ਰਿਕਾਰਡ ਕਰੋ</translation>
+<translation id="36813544980941320">ਤੁਹਾਡੇ ਫ਼ੋਨ ਅਤੇ <ph name="DEVICE_NAME" /> ਵਿਚਾਲੇ ਵਾਈ-ਫਾਈ ਨੈੱਟਵਰਕਾਂ ਨੂੰ ਸਾਂਝਾ ਕੀਤਾ ਜਾਵੇਗਾ</translation>
 <translation id="3702846122927433391">ਨਾਈਜੀਰੀਆ ਦੀ ਜਨਸੰਖਿਆ</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="370665806235115550">ਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
@@ -419,7 +421,7 @@
 <translation id="4570957409596482333">'ਚੁਣੋ ਅਤੇ ਸੁਣੋ' ਬਟਨ</translation>
 <translation id="4577274620589681794">ਸਮਾਂ ਸਮਾਪਤ ਹੋਇਆ · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">ਪੂਰਵ-ਝਲਕਾਂ ਦਿਖਾਓ</translation>
-<translation id="4578906031062871102">ਸੈਟਿੰਗਾਂ ਮੀਨੂ ਨੂੰ ਖੋਲ੍ਹਿਆ ਗਿਆ</translation>
+<translation id="4578906031062871102">ਸੈਟਿੰਗ ਮੀਨੂ ਨੂੰ ਖੋਲ੍ਹਿਆ ਗਿਆ</translation>
 <translation id="4585337515783392668">ਕਿਸੇ ਅਗਿਆਤ ਪ੍ਰਾਪਤਕਰਤਾ 'ਤੇ ਕਾਸਟ ਕਰਨਾ ਬੰਦ ਕਰੋ</translation>
 <translation id="4596144739579517758">ਗੂੜ੍ਹਾ ਥੀਮ ਬੰਦ ਹੈ।</translation>
 <translation id="4623167406982293031">ਖਾਤੇ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
@@ -502,7 +504,7 @@
 <translation id="5379115545237091094">ਬਹੁਤ ਸਾਰੀਆਂ ਕੋਸ਼ਿਸ਼ਾਂ</translation>
 <translation id="5397578532367286026">ਇਸ ਵਰਤੋਂਕਾਰ ਦੀ ਵਰਤੋਂ ਅਤੇ ਇਤਿਹਾਸ ਦੀ ਸਮੀਖਿਆ ਪ੍ਰਬੰਧਕ (<ph name="MANAGER_EMAIL" />) ਵੱਲੋਂ chrome.com 'ਤੇ ਕੀਤੀ ਜਾ ਸਕਦੀ ਹੈ।</translation>
 <translation id="5400461572260843123">ਤਤਕਾਲ ਸੈਟਿੰਗਾਂ, ਸੂਚਨਾ ਕੇਂਦਰ 'ਤੇ ਜਾਣ ਲਈ search + left ਦਬਾਓ।</translation>
-<translation id="5426063383988017631">ਸੈਟਿੰਗਾਂ ਮੀਨੂ ਨੂੰ ਬੰਦ ਕੀਤਾ ਗਿਆ</translation>
+<translation id="5426063383988017631">ਸੈਟਿੰਗ ਮੀਨੂ ਨੂੰ ਬੰਦ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="5428899915242071344">ਚੁਣਨਾ ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="5430931332414098647">ਤਤਕਾਲ ਟੈਦਰਿੰਗ</translation>
 <translation id="5431825016875453137">OpenVPN / L2TP</translation>
@@ -527,7 +529,7 @@
 <translation id="5619862035903135339">ਪ੍ਰਸ਼ਾਸਕ ਨੀਤੀ ਸਕ੍ਰੀਨ ਕੈਪਚਰ ਨੂੰ ਬੰਦ ਕਰਦੀ ਹੈ</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">ਮਾਈਕ ਜੈਕ</translation>
-<translation id="5662709761327382534">ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਰਿਕਾਰਡ ਕਰੋ <ph name="CURRENT_STATE" />, ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਰਿਕਾਰਡਿੰਗ ਚਾਲੂ ਕਰਨ ਲਈ Enter ਦਬਾਓ <ph name="NEW_STATE" /></translation>
+<translation id="5662709761327382534">ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਨਾਲ ਰਿਕਾਰਡ ਕਰੋ <ph name="CURRENT_STATE" />, ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਰਿਕਾਰਡਿੰਗ ਚਾਲੂ ਕਰਨ ਲਈ Enter ਦਬਾਓ <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">ਸਕਿਰਿਆ ਕਰ ਰਿਹਾ ਹੈ</translation>
 <translation id="5673434351075758678">ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਨੂੰ ਸਮਕਾਲੀਕਿਰਤ ਕਰਨ ਤੋਂ ਬਾਅਦ ਭਾਸ਼ਾ "<ph name="FROM_LOCALE" />" ਤੋਂ "<ph name="TO_LOCALE" />" ਹੋਈ।</translation>
 <translation id="5677928146339483299">ਬਲੌਕ ਕੀਤਾ</translation>
@@ -575,7 +577,7 @@
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ਸਿਗਨਲ ਦੀ ਤੀਬਰਤਾ <ph name="SIGNAL_STRENGTH" />, ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="6030495522958826102">ਮੀਨੂ ਨੂੰ ਸਕ੍ਰੀਨ ਦੇ ਹੇਠਲੇ ਖੱਬੇ ਕੋਨੇ ਵਿੱਚ ਲਿਜਾਇਆ ਗਿਆ।</translation>
 <translation id="6032620807120418574">ਪੂਰੀ ਸਕ੍ਰੀਨ ਨੂੰ ਰਿਕਾਰਡ ਕਰਨ ਲਈ ਕਿਤੇ ਵੀ ਕਲਿੱਕ ਕਰੋ</translation>
-<translation id="6040071906258664830">ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਰਿਕਾਰਡ ਕਰੋ <ph name="STATE" /></translation>
+<translation id="6040071906258664830">ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਨਾਲ ਰਿਕਾਰਡ ਕਰੋ <ph name="STATE" /></translation>
 <translation id="6040143037577758943">ਬੰਦ ਕਰੋ</translation>
 <translation id="6043212731627905357">ਇਹ ਮਾਨੀਟਰ ਤੁਹਾਡੇ <ph name="DEVICE_TYPE" /> ਨਾਲ ਕੰਮ ਨਹੀਂ ਕਰ ਰਿਹਾ ਹੈ (ਮਾਨੀਟਰ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ)।</translation>
 <translation id="6043994281159824495">ਹੁਣ ਸਾਈਨ-ਆਊਟ ਕਰੋ</translation>
@@ -642,7 +644,7 @@
 <translation id="6650933572246256093">ਬਲੂਟੁੱਥ ਡੀਵਾਈਸ "<ph name="DEVICE_NAME" />" ਜੋੜਾਬੱਧ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਚਾਹੁੰਦੀ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਉਸ ਡੀਵਾਈਸ 'ਤੇ ਇਹ ਪਾਸਕੁੰਜੀ ਦਰਜ ਕਰੋ: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">ਪਾਸਵਰਡ</translation>
 <translation id="6665545700722362599">ਟਿਕਾਣਾ ਸੇਵਾਵਾਂ, ਡੀਵਾਈਸ ਦੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ, ਕੈਮਰੇ ਜਾਂ ਹੋਰ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਨੂੰ ਵਰਤਣ ਲਈ ਵੈੱਬਸਾਈਟਾਂ, ਐਪਾਂ ਅਤੇ ਐਕਸਟੈਂਸ਼ਨਾਂ ਨੂੰ ਇਜਾਜ਼ਤ ਦਿਓ</translation>
-<translation id="6667908387435388584">ਆਪਣੇ ਫ਼ੋਨ ਦੇ ਹੌਟਸਪੌਟ ਨਾਲ ਕਨੈਕਟ ਕਰੋ, ਖਮੋਸ਼ ਕਰਕੇ ਆਪਣੇ ਡੀਵਾਈਸ ਦਾ ਪਤਾ ਲਗਾਓ ਅਤੇ ਆਪਣੇ ਫ਼ੋਨ 'ਤੇ ਖੁੱਲ੍ਹੀਆਂ ਹੋਈਆਂ ਹਾਲੀਆ Chrome ਟੈਬਾਂ ਨੂੰ ਦੇਖੋ</translation>
+<translation id="6667908387435388584">ਆਪਣੇ ਫ਼ੋਨ ਦੇ ਹੌਟਸਪੌਟ ਨਾਲ ਕਨੈਕਟ ਕਰੋ, ਖਮੋਸ਼ ਕਰੋ ਅਤੇ ਆਪਣੇ ਡੀਵਾਈਸ ਦਾ ਪਤਾ ਲਗਾਓ ਅਤੇ ਆਪਣੇ ਫ਼ੋਨ 'ਤੇ ਖੁੱਲ੍ਹੀਆਂ ਹੋਈਆਂ ਹਾਲੀਆ Chrome ਟੈਬਾਂ ਨੂੰ ਦੇਖੋ</translation>
 <translation id="6670153871843998651">ਡੈਸਕ 3</translation>
 <translation id="6671495933530132209">ਚਿੱਤਰ ਕਾਪੀ ਕਰੋ</translation>
 <translation id="6691659475504239918">Search+Shift+H</translation>
@@ -876,7 +878,7 @@
 <translation id="8673028979667498656">270°</translation>
 <translation id="8676770494376880701">ਘੱਟ-ਪਾਵਰ ਦਾ ਚਾਰਜਰ ਕਨੈਕਟ ਕੀਤਾ</translation>
 <translation id="8683506306463609433">ਪ੍ਰਦਰਸ਼ਨ ਟ੍ਰੇਸਿੰਗ ਕਿਰਿਆਸ਼ੀਲ ਹੈ</translation>
-<translation id="8703634754197148428">ਰਿਕਾਰਡਿੰਗ ਸ਼ੁੁਰੂ ਕਰੋ। ਇੱਕ ਵਾਰ ਰਿਕਾਰਡਿੰਗ ਸ਼ੁਰੂ ਹੋਣ ਤੋਂ ਬਾਅਦ, ਸ਼ੈਲਫ 'ਤੇ ਜਾਣ ਲਈ Alt + Shift + L ਦੀ ਵਰਤੋਂ ਕਰੋ ਅਤੇ 'ਰਿਕਾਰਡਿੰਗ ਬੰਦ ਕਰੋ' ਬਟਨ ਲੱਭੋ</translation>
+<translation id="8703634754197148428">ਰਿਕਾਰਡਿੰਗ ਸ਼ੁੁਰੂ ਕਰੋ। ਇੱਕ ਵਾਰ ਰਿਕਾਰਡਿੰਗ ਸ਼ੁਰੂ ਹੋਣ ਤੋਂ ਬਾਅਦ, ਸ਼ੈਲਫ 'ਤੇ ਜਾਣ ਲਈ ਅਤੇ 'ਰਿਕਾਰਡਿੰਗ ਬੰਦ ਕਰੋ' ਬਟਨ ਲੱਭਣ ਲਈ Alt + Shift + L ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> ਇਸ ਵਿਸ਼ੇਸ਼ਤਾ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਲਈ ਖੱਬੀ ਜਾਂ ਸੱਜੀ ਤੀਰ ਕੁੰਜੀ ਵਰਤੋ।</translation>
 <translation id="8712637175834984815">ਸਮਝ ਲਿਆ</translation>
 <translation id="8721053961083920564">ਅਵਾਜ਼ ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="STATE_TEXT" /></translation>

@@ -84,6 +84,7 @@
 <translation id="1571304935088121812">ユーザー名をコピー</translation>
 <translation id="1592864538817356322">標準保護機能:</translation>
 <translation id="1612196535745283361">Chrome ではデバイスをスキャンするために現在地情報にアクセスする必要があります。現在地情報へのアクセスは<ph name="BEGIN_LINK" />このデバイスでオフになっています<ph name="END_LINK" />。</translation>
+<translation id="1613577519914241527">オンにした場合、ウェブサイトでは個人が特定されるような情報を使用してコンテンツの関連性を高めることはできなくなります。コンサートの観客（「クラウド」）と同じように、サイトでは数千のユーザーが同様の興味を持っていることだけを把握できます。\n\n「クラウド」は、ユーザーがこれまでにアクセスしたサイトに基づいて生成されます。広告主は、個々のユーザーがアクセスしたサイトではなく、観客全体がアクセスしたサイトのみを把握できます。</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{選択された 1 件のアイテムを削除します}other{選択された # 件のアイテムを削除します}}</translation>
 <translation id="1641113438599504367">セーフ ブラウジング</translation>
 <translation id="164269334534774161">このページの <ph name="CREATION_TIME" /> のオフライン コピーを表示しています</translation>
@@ -468,6 +469,7 @@
 <translation id="4440958355523780886">Google から提供されている軽量版のページです。元のページを読み込むにはタップしてください。</translation>
 <translation id="4452411734226507615">「<ph name="TAB_TITLE" />」タブを閉じます</translation>
 <translation id="4452548195519783679">「<ph name="FOLDER_NAME" />」にブックマークしました</translation>
+<translation id="4465314970046116177">プライバシー サンドボックスは、将来的にクロスサイト トラッキング メカニズム（サードパーティ Cookie など）からユーザーを保護しつつ、こうした今日のメカニズムに依存するウェブのコンテンツやサービスを維持するための新しい技術セットです。Chrome では、ウェブサイトのデベロッパー、パブリッシャー、広告主、その他のブラウザと連携して、この新しい技術を開発しています。</translation>
 <translation id="4472118726404937099">複数のデバイスで独自の設定を同期して共有するには、ログインして同期を有効にします</translation>
 <translation id="447252321002412580">Chrome の機能と動作の改善に協力する</translation>
 <translation id="4479972344484327217">Chrome 用の <ph name="MODULE" /> をインストールしています…</translation>
@@ -744,6 +746,7 @@
 <translation id="6243852395147506234">オフラインで利用できます</translation>
 <translation id="624789221780392884">アップデート準備完了</translation>
 <translation id="6255999984061454636">おすすめのコンテンツ</translation>
+<translation id="6266591733731644292">プライバシー サンドボックスは、現時点では限定リリースとなっています。試用期間中にできること:\n<ph name="BEGIN_LIST_ITEM1" />ウェブサイトやアプリのデベロッパーは、ユーザー個人を一意に特定できるような情報を使用せずに関連性の高いユーザー エクスペリエンスを提供するための機能を試すことができます。<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />ユーザーはこのページの設定で、この試用版を無効にするよう選択できます。<ph name="END_LIST_ITEM2" /></translation>
 <translation id="6277522088822131679">ページの印刷中に問題が発生しました。もう一度お試しください。</translation>
 <translation id="6278428485366576908">テーマ</translation>
 <translation id="6292420053234093573">Chrome を使用すると、<ph name="BEGIN_LINK1" />Google 利用規約<ph name="END_LINK1" />と <ph name="BEGIN_LINK2" />Google Chrome および Chrome OS 追加利用規約<ph name="END_LINK2" />に同意したことになります。</translation>
@@ -835,6 +838,7 @@
 <translation id="6811034713472274749">ページを表示できます</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />、タブ、選択中</translation>
+<translation id="6833996806551876956">プライバシー サンドボックス（試用版）</translation>
 <translation id="6845325883481699275">Chrome のセキュリティ改善に協力する</translation>
 <translation id="6846298663435243399">読み込んでいます…</translation>
 <translation id="6850409657436465440">ダウンロードが進行中です</translation>
@@ -1070,6 +1074,7 @@
 <translation id="8442258441309440798">表示できる記事はありません</translation>
 <translation id="8443209985646068659">Chrome を更新できません</translation>
 <translation id="8445448999790540984">パスワードをエクスポートできません</translation>
+<translation id="8447219758310755868">クラウドによるマスキング</translation>
 <translation id="8461694314515752532">同期データを同期パスフレーズで暗号化する</translation>
 <translation id="8466613982764129868"><ph name="TARGET_DEVICE_NAME" /> がインターネットに接続していることを確認してください</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>

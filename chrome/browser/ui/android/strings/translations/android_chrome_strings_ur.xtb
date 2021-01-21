@@ -84,6 +84,7 @@
 <translation id="1571304935088121812">صارف نام کاپی کریں</translation>
 <translation id="1592864538817356322">معیاری تحفظ:</translation>
 <translation id="1612196535745283361">‏Chrome کو آلات اسکین کرنے کیلئے مقام تک رسائی کی ضرورت ہے۔ مقام تک رسائی <ph name="BEGIN_LINK" />اس آلہ کیلئے آف<ph name="END_LINK" /> ہے۔</translation>
+<translation id="1613577519914241527">‏آن ہونے پر ویب سائٹس ایسی معلومات کا استعمال نہیں کر سکیں گی جو ان کی سائٹس کو مزید متعلقہ بنانے کے لیے آپ کی ذاتی طور پر شناخت کرتی ہیں۔ کسی کنسرٹ میں موجود کراؤڈ کی طرح سائٹس کو صرف یہ معلوم ہو سکتا ہے کہ ہزاروں صارفین ایک جیسی دلچسپی رکھتے ہیں۔\n\nآپ کا "کراؤڈ" آپ کی ملاحظہ کردہ سائٹس پر مبنی ہے۔ مشتہرین صرف وہی سائٹس دیکھ سکتے ہیں جن کو مجموعی کراؤڈ ملاحظہ کرتا ہے نہ کہ وہ سائٹس جنہیں آپ ذاتی طور پر ملاحظہ کرتے ہیں۔</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{1 منتخب آئٹم کو ہٹائیں}other{# منتخب آئٹمز کو ہٹائیں}}</translation>
 <translation id="1641113438599504367">محفوظ براؤزنگ</translation>
 <translation id="164269334534774161">آپ <ph name="CREATION_TIME" /> سے اس صفحہ کی ایک آف لائن کاپی دیکھ رہے ہیں</translation>
@@ -468,6 +469,7 @@
 <translation id="4440958355523780886">‏Google کے ذریعے فراہم کردہ لائٹ صفحہ۔ اصل کو لوڈ کرنے کیلئے تھپتھپائیں۔</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> ٹیب بند کریں</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> میں بُک مارک کردہ</translation>
+<translation id="4465314970046116177">‏رازداری سینڈ باکس نئی ٹیکنالوجیز کا ایک سیٹ ہے جو ویب مواد اور سروسز جو آج ان میکانزم پر منحصر ہیں کی حفاظت کرتے ہوئے بالآخر لوگوں کو فریق ثالث کوکیز جیسے کراس سائٹ ٹریکنگ میکانزم سے محفوظ رکھے گا۔ Chrome اس نئی ٹیکنالوجی کو ڈیولپ کرنے کے ليے ویب سائٹ ڈویلپرز، پبلشرز، مشتہرین اور دیگر براؤزرز کے ساتھ کام کر رہا ہے۔</translation>
 <translation id="4472118726404937099">سبھی آلات پر سِنک کرنے اور ذاتی نوعیت سازی کیلئے، سائن ان کریں اور سِنک کو آن کریں</translation>
 <translation id="447252321002412580">‏Chrome کی خصوصیات اور کارکردگی کو بہتر بنانے میں مدد کریں</translation>
 <translation id="4479972344484327217">‏Chrome کیلئے <ph name="MODULE" /> انسٹال ہو رہا ہے…</translation>
@@ -744,6 +746,7 @@
 <translation id="6243852395147506234">آف لائن کیلئے تیار</translation>
 <translation id="624789221780392884">اپ ڈیٹ تیار ہے</translation>
 <translation id="6255999984061454636">مواد کی تجاویز</translation>
+<translation id="6266591733731644292">‏رازداری سینڈ باکس کو ابھی تک وسیع پیمانے پر ریلیز نہیں کیا گیا ہے۔ اس ٹرائل کی مدت کے دوران:\n<ph name="BEGIN_LIST_ITEM1" />ویب سائٹ اور ایپ ڈویلپرز آپ کے بارے میں منفرد لحاظ سے قابل شناخت معلومات تک رسائی حاصل کیے بغیر متعلقہ تجربات تخلیق کرنے کی صلاحیت کو آزما سکتے ہیں<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />صارفین اس صفحے پر کنٹرولز کا استعمال کر کے ٹرائل سے آپٹ آؤٹ کر سکتے ہیں۔<ph name="END_LIST_ITEM2" /></translation>
 <translation id="6277522088822131679">صفحہ کو پرنٹ کرنے میں ایک مسئلہ تھا۔ براہ کرم دوبارہ کوشش کریں۔</translation>
 <translation id="6278428485366576908">تھیم</translation>
 <translation id="6292420053234093573">‏Chrome کا استعمال کر کے، آپ <ph name="BEGIN_LINK1" />Google کی سروس کی شرائط<ph name="END_LINK1" />، اور <ph name="BEGIN_LINK2" />Chrome OS کی اضافی سروس کی شرائط<ph name="END_LINK2" />سے اتفاق کرتے ہیں۔</translation>
@@ -835,6 +838,7 @@
 <translation id="6811034713472274749">صفحہ دیکھے جانے کیلئے تیار ہے</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />، ٹیب منتخب ہو گیا</translation>
+<translation id="6833996806551876956">رازداری سینڈ باکس کا ٹرائل</translation>
 <translation id="6845325883481699275">‏Chrome کی سیکیورٹی کو بہتر بنانے میں مدد کریں</translation>
 <translation id="6846298663435243399">لوڈ ہو رہا ہے…</translation>
 <translation id="6850409657436465440">آپ کا ڈاؤن لوڈ ابھی بھی پیشرفت میں ہے</translation>
@@ -1070,6 +1074,7 @@
 <translation id="8442258441309440798">کوئی کہانی دستیاب نہیں ہے</translation>
 <translation id="8443209985646068659">‏Chrome اپ ڈیٹ ممکن نہیں</translation>
 <translation id="8445448999790540984">پاس ورڈز برآمد نہیں ہو سکتے</translation>
+<translation id="8447219758310755868">کراؤڈ ماسکنگ</translation>
 <translation id="8461694314515752532">اپنے ذاتی مطابقت پذیر پاس فریز کے ساتھ مطابقت پذیر کردہ ڈیٹا کی مرموزکاری کریں</translation>
 <translation id="8466613982764129868">یہ یقینی بنائیں کہ <ph name="TARGET_DEVICE_NAME" /> انٹرنیٹ سے منسلک ہے</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>

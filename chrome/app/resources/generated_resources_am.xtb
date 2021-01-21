@@ -318,6 +318,7 @@
 <translation id="1354045473509304750"><ph name="HOST" /> የእርስዎን ካሜራ እንዲጠቀም እና እንዲያንቀሳቅስ መፍቀዱን ይቀጥሉ</translation>
 <translation id="1355088139103479645">ሁሉም ውሂብ ይሰረዝ?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> ታግዷል</translation>
+<translation id="1357896526834120583">ዳግም ማስጀመር ተጠይቋል</translation>
 <translation id="1358741672408003399">እረማ ሆሄ እና ሰዋስው</translation>
 <translation id="1359923111303110318">የእርስዎ መሣሪያ በSmart Lock ሊከፈት ይችላል። ለመክፈት አስገባን ይጫኑ።</translation>
 <translation id="1361164813881551742">ራስዎ ያክሉ</translation>
@@ -1212,6 +1213,7 @@
 <translation id="2345723121311404059">1 ገጽ ወደ <ph name="PRINTER_NAME" /></translation>
 <translation id="2347644257713614136">የHangouts እና Cast for Education አጠቃቀም በGoogle ግላዊነት መመሪያ ነው የሚተዳደሩት።</translation>
 <translation id="2348176352564285430">መተግበሪያ፦ <ph name="ARC_PROCESS_NAME" /></translation>
+<translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> - ፈቃድ ተጠይቋል፣ ምላሽ ለመስጠት Ctrl + ወደፊት ይጫኑ</translation>
 <translation id="234889437187286781">ውሂብ በመስቀል ላይ ስህተት አለ</translation>
 <translation id="2349610121459545414">ይህ ጣቢያ የእርስዎን አካባቢ መድረሱን እንዲቀጥል መፍቀድ ይቀጥሉ</translation>
 <translation id="2349896577940037438">የእርስዎ የተጨማሪ ድር እና መተግበሪያ እንቅስቃሴ ቅንብር በርቶ ከሆነ ይህ ውሂብ በGoogle መለያዎ ላይ ሊቀመጥ ይችላል። በaccount.google.com ላይ የእርስዎን ውሂብ ማየት፣ መሰረዝ እና የእርስዎን መለያ ቅንብሮች መለወጥ ይችላሉ።</translation>
@@ -1758,6 +1760,7 @@
 <translation id="29488703364906173">ለዘመናዊ ድር የተሰራ ፈጣን፣ ቀላል እና ደህንነቱ አስተማማኝ የሆነ የድር አሳሽ።</translation>
 <translation id="2949289451367477459">መገኛ አካባቢን ይጠቀሙ። ይህን የመሣሪያ መገኛ አካባቢ ለመጠቀም ከመገኛ አካባቢ ፈቃድ ጋር እንዲጠቀሙ ለመተግበሪያዎች እና አገልግሎቶች ይፍቀዱ። Google የአካባቢ ትክክለኝነትን እና በአካባቢ ላይ የተመሠረቱ አገልግሎቶችን ለማሻሻል በየጊዜው የአካባቢ ውሂብን ሊሰበስብና ይህን ውሂብ ስም-አልባ በሆነ መልኩ ሊጠቀምበት ይችላል። <ph name="BEGIN_LINK1" />የበለጠ ለመረዳት<ph name="END_LINK1" /></translation>
 <translation id="2950666755714083615">መዝግበኝ</translation>
+<translation id="2953019166882260872">ስልክዎን ከኬብል ጋር ያገናኙ</translation>
 <translation id="2956070239128776395">ክፍል በቡድን እቀፍ ውስጥ ተካቷል፦ <ph name="ERROR_LINE" /></translation>
 <translation id="2957117904572187936">ማናቸውም ጣቢያዎች በመሣሪያዎ ላይ ያሉ ፋይሎችን ወይም አቃፊዎችን እንዲያርትዑ አይፍቀዱ</translation>
 <translation id="2958721676848865875">የጥቅል ቅጥያ ማስጠንቀቂያ</translation>
@@ -1778,6 +1781,7 @@
 <translation id="2979520980928493164">ይበልጥ ጤናማ፣ ይበልጥ ደስተኛ Chrome</translation>
 <translation id="2979639724566107830">በአዲስ መስኮት ክፈት</translation>
 <translation id="2981113813906970160">ትልቅ የመዳፊት ጠቋሚ አሳይ</translation>
+<translation id="2983175648295374032"><ph name="WEBSITE" /> ማሳወቂያ ወደ ስልክዎ ልኳል። እርስዎ መሆንዎን ለማረጋገጥ አዎ የሚለውን መታ ያድርጉ። <ph name="LINK" /></translation>
 <translation id="2984956121108740037">{COUNT,plural, =1{{COUNT} የይለፍ ቃል በዚህ መሣሪያ ላይ ተደራሽ ነው}one{{COUNT} የይለፍ ቃላት በዚህ መሣሪያ ላይ ተደራሽ ናቸው}other{{COUNT} የይለፍ ቃላት በዚህ መሣሪያ ላይ ተደራሽ ናቸው}}</translation>
 <translation id="2985348301114641460">«<ph name="EXTENSION_NAME" />» ለመጫን ለእርስዎ አስተዳዳሪ ጥያቄ ይላክ?</translation>
 <translation id="2987620471460279764">ከሌሎች መሣሪያዎች የተጋራ ጽሑፍ</translation>
@@ -2846,6 +2850,7 @@
 <translation id="420283545744377356">የማያ ገጽ ማቆያን አጥፋ</translation>
 <translation id="4206144641569145248">በዓድ ፍጥረት</translation>
 <translation id="4206323443866416204">የግብረመልስ ሪፖርት</translation>
+<translation id="4207932031282227921">ፈቃድ ተጠይቋል፣ ምላሽ ለመስጠት F6ን ይጫኑ</translation>
 <translation id="4208390505124702064"><ph name="SITE_NAME" />ን ይፈልጉ</translation>
 <translation id="4209092469652827314">ትልቅ</translation>
 <translation id="4209251085232852247">ጠፍተዋል</translation>
@@ -3308,6 +3313,7 @@
 <translation id="4763408175235639573">ይህን ገጽ ሲመለከቱት የሚከተሉት ኩኪዎች ተቀናብረዋል</translation>
 <translation id="4765582662863429759">የAndroid መልዕክቶች ከስልክዎ የሚመጡ ጽሑፎችን ወደ የእርስዎ Chromebook እንዲያስተላልፉ ያስችለዋል</translation>
 <translation id="4768332406694066911">እርስዎን የሚለዩ ከእነዚህ ድርጅቶች የመጡ የዕውቅና ማረጋገጫዎች አለዎት</translation>
+<translation id="4770119228883592393">ፍቃድ ተጠይቋል፣ መልስ ለመስጠት ⌘ + አማራጭ + የታች ቀስት ይጫኑ</translation>
 <translation id="4773112038801431077">Linuxን አልቅ</translation>
 <translation id="4774357366578243684">በሁሉም መሣሪያዎችዎ ላይ እነሱን ለመጠቀም፣ እነሱን ወደ የእርስዎ የGoogle መለያ ይውሰዷቸው</translation>
 <translation id="477647109558161443">የዴስክቶፕ አቋራጭ ይፍጠሩ</translation>
@@ -3549,6 +3555,7 @@
 <translation id="5067867186035333991"><ph name="HOST" /> ማይክሮፎንዎን መድረስ የሚፈልግ ከሆነ ይጠይቅ</translation>
 <translation id="5068918910148307423">በቅርቡ የተዘጉ ጣቢያዎች ውሂብን መላክ እና መቀበል እንዲጨርሱ አትፍቀድ</translation>
 <translation id="5068919226082848014">ፒዛ</translation>
+<translation id="5070773577685395116">አላገኙትም?</translation>
 <translation id="5072052264945641674">የጠቋሚ መጠንን አስተካክል</translation>
 <translation id="5072836811783999860">የሚቀናበሩ ዕልባቶችን አሳይ</translation>
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" />፣ <ph name="FILE2" />}one{<ph name="FILE1" />፣ <ph name="FILE2" />፣ እና # ተጨማሪ}other{<ph name="FILE1" />፣ <ph name="FILE2" />፣ እና # ተጨማሪ}}</translation>
@@ -3815,6 +3822,7 @@
 <translation id="5382591305415226340">የሚደገፉ አገናኞችን ያስተዳድሩ</translation>
 <translation id="5383377866517186886">ካሜራ በMac System Preferences ውስጥ ጠፍቷል</translation>
 <translation id="5383740867328871413">ያልተሰየመ ቡድን - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="5387466398175703340">በእንግሊዝኛ ለሚድያ የመግለጫ ፅሁፎችን በራስ-ሰር ይፈጥራል። ኦዲዮ እና መግለጫ ጽሑፎች መሣሪያውን በጭራሽ አይተዉም።</translation>
 <translation id="5388885445722491159">ተጣምሯል</translation>
 <translation id="5389237414310520250">አዲሱ ተጠቃሚ ሊፈጠር አልቻለም። እባክዎ የደረቅ አንጻፊዎ ቦታ እና ፍቃዶችን ያረጋግጡና እንደገና ይሞክሩ።</translation>
 <translation id="5390100381392048184">ጣቢያዎች ድምጽ እንዲያጫውቱ ፍቀድ</translation>
@@ -4038,6 +4046,7 @@
 <translation id="5627676517703583263">ከChrome ጋር በዘመናዊ መንገድ ያስሱ</translation>
 <translation id="5627832140542566187">የማሳያ አቀማመጥ</translation>
 <translation id="562935524653278697">የእርስዎ አስተዳዳሪ የእርስዎን ዕልባቶች፣ ታሪክ፣ የይለፍ ቃላት እና ሌሎች ቅንብሮች ስምረትን አሰናክለዋል።</translation>
+<translation id="5632059346822207074">ፈቃድ ተጠይቋል፣ ምላሽ ለመስጠት Ctrl + ወደፊት ይጫኑ</translation>
 <translation id="5632566673632479864">የእርስዎ <ph name="EMAIL" /> ከእንግዲህ እንደ ተቀዳሚ መለያ አይፈቀድም። ይህ መለያ በ<ph name="DOMAIN" /> የሚተዳደር ስለሆነ የእርስዎ ዕልባቶች፣ ታሪክ፣ የይለፍ ቃላት፣እና ሌላ ቅንብሮች ከዚህ መሣሪያ ላይ ይጸዳሉ።</translation>
 <translation id="5632592977009207922">በማውረድ ላይ፣ <ph name="PERCENT_REMAINING" />% ይቀራል</translation>
 <translation id="563371367637259496">ተንቀሳቃሽ ስልክ</translation>
@@ -4672,6 +4681,7 @@
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">እንደገና ይሞክሩ</translation>
 <translation id="6377268785556383139">ለ«<ph name="SEARCH_TEXT" />» 1 ውጤት</translation>
+<translation id="6377571698477774687">መግለጫ ጽሑፎችን ለሚዲያ በእንግሊዝኛ በራስ-ሰር ይፈጥራል (በአሁኑ ጊዜ በChrome አሳሽ ውስጥ ብቻ ይገኛል)። ኦዲዮ እና መግለጫ ጽሑፎች መሣሪያውን በጭራሽ አይተዉም።</translation>
 <translation id="6380143666419481200">ይቀበሉ እና ይቀጥሉ</translation>
 <translation id="6384275966486438344">የፍለጋ ቅንብሮችዎን ወደሚከተለው ይለውጡ፦ <ph name="SEARCH_HOST" /></translation>
 <translation id="6385149369087767061">ከበይነመረቡ ጋር ይገናኙና እንደገና ይሞክሩ</translation>
@@ -5448,6 +5458,7 @@
 <translation id="7287411021188441799">ወደነበረበት ነባሪ ዳራ መልስ</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
 <translation id="7289225569524511578">የልጣፍ መተግበሪያውን ክፈት</translation>
+<translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> - ፈቃድ ተጠይቋል፣ ምላሽ ለመስጠት F6 ይጫኑ</translation>
 <translation id="7290242001003353852">ይህ በ<ph name="SAML_DOMAIN" /> የሚስተናገድ የመለያ መግቢያ አገልግሎት የእርስዎን ካሜራ እየደረሰበት ነው።</translation>
 <translation id="7295614427631867477">Android፣ Play እና ተጓዳኝ መተግበሪያዎች የሚተዳድደሩት በራሳቸው የውሂብ ስብስብ የሚተዳደሩ እና መመሪያዎችን የሚጥጠቀሙ መሆናቸውን ልብ ይበሉ።</translation>
 <translation id="729583233778673644">የAES እና የRC4 ምሥጠራን ይፍቀዱ። የRC4 ምሥጠራዎች ለደህንነት አስተማማኝ ስላልሆኑ ይህን አማራጭ መጠቀም የእርስዎን አደጋ ይጨምራል።</translation>
@@ -5814,6 +5825,7 @@
 <translation id="7707922173985738739">የተንቀሳቃሽ ስልክ ውሂብ</translation>
 <translation id="7709152031285164251">አልተሳካም - <ph name="INTERRUPT_REASON" /></translation>
 <translation id="7710568461918838723">&amp;Cast...</translation>
+<translation id="7711900714716399411">ስልክዎን ከኮምፒውተርዎ ጋር ለማገናኘት የዩኤስቢ ገመድ ይጠቀሙ። ስልክዎ ቀድሞ ከተገናኘ ነቅለው መልሰው ይሰኩት።</translation>
 <translation id="7712739869553853093">የህትመት ቅድመ-ዕይታ መገናኛ</translation>
 <translation id="7712836429117959503">መታወቂያ <ph name="EXTENSION_ID" /> ያለው ያልታወቀ ቅጥያ</translation>
 <translation id="7714307061282548371">ከ<ph name="DOMAIN" /> የመጡ ኩኪዎች ተፈቅደዋል</translation>
@@ -6116,6 +6128,7 @@ nil</translation>
 <translation id="8028060951694135607">Microsoft Key Recovery</translation>
 <translation id="8028803902702117856"><ph name="SIZE" />፣ <ph name="FILE_NAME" /> በማውረድ ላይ</translation>
 <translation id="8028993641010258682">መጠን</translation>
+<translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> - ፍቃድ ተጠይቋል፣ መልስ ለመስጠት ⌘ + አማራጭ + የላይ ቀስት ይጫኑ</translation>
 <translation id="8030852056903932865">አጽድቅ</translation>
 <translation id="8032244173881942855">ትሩን cast ማድረግ አልተቻለም።</translation>
 <translation id="8033827949643255796">ተመርጧል</translation>
@@ -7125,6 +7138,7 @@ nil</translation>
 <translation id="917350715406657904">የእርስዎ ወላጅ ለ<ph name="APP_NAME" /> ያቀናበሩት የጊዜ ገደብ ላይ ደርሰዋል። ነገ ለ<ph name="TIME_LIMIT" /> ሊጠቀሙበት ይችላሉ።</translation>
 <translation id="9173787391779732995">ጣቢያዎች ምስሎችን ማሳየት ይችላሉ (የሚመከር)</translation>
 <translation id="9173995187295789444">የብሉቱዝ መሣሪያዎችን በመቃኘት ላይ...</translation>
+<translation id="9174052566244514547">እርስዎ አስተዳዳሪ መተግበሪያዎችን ለማዘመን መሣሪያዎን እንደገና ለማስጀመር ጠይቀዋል። ይህን ለማጠናቀቅ በርካታ ደቂቃዎችን ሊወስድ ይችላል።</translation>
 <translation id="9174401638287877180">የአጠቃቀም እና የምርመራ ውሂብ ይላኩ። የምርመራ፣ የመሣሪያ እና የመተግበሪያ አጠቃቀም ውሂብ በራስ-ሰር ወደ Google በመላክ የልጅዎን የAndroid ተሞክሮ እንዲሻሻል ያግዙ። ይህ ልጅዎን ለመለየት ስራ ላይ አይውልም፣ እና የስርዓት እና የመተግበሪያ እርጋታን እና ሌሎች ማሻሻያዎችን ያግዛል። አንዳንድ ውሑድ ውሂብ እንዲሁም የGoogle መተግበሪያዎችን እና እንደ የAndroid ገንቢዎች ያሉ አጋሮችን ያግዛሉ። የተጨማሪ የድር እና መተግበሪያ እንቅስቃሴ ቅንብር ለልጅዎ በርቶ ከሆነ ይህ ውሂብ ወደ የGoogle መለያቸው ሊቀመጥ ይችላል።</translation>
 <translation id="917510707618656279">አንድ ጣቢያ የብሉቱዝ መሣሪያዎችን መድረስ ሲፈልግ ጠይቅ</translation>
 <translation id="9176476835295860688">የአጠቃቀም እና የምርመራ ውሂብ ይላኩ። ይህ መሣሪያ በአሁኑ ጊዜ በራስ-ሰር የምርመራ፣ የመሣሪያ እና የመተግበሪያ አጠቃቀም ውሂብ ወደ Google እየላከ ነው። ይህ የስርዓት እና የመተግበሪያ እርጋታን እና ሌሎች ማሻሻያዎችን ያግዛል። አንዳንድ ውሑድ ውሂብ እንዲሁም የGoogle መተግበሪያዎችን እና እንደ የAndroid ገንቢዎች ያሉ አጋሮችን ያግዛሉ። ይህ <ph name="BEGIN_LINK1" />ቅንብር<ph name="END_LINK1" /> በባለቤቱ ተፈጻሚ ይደረጋል። የእርስዎ የተጨማሪ ድር እና መተግበሪያ እንቅስቃሴ ቅንብር በርቶ ከሆነ ይህ ውሂብ በGoogle መለያዎ ላይ ሊቀመጥ ይችላል። <ph name="BEGIN_LINK2" />የበለጠ ለመረዳት<ph name="END_LINK2" /></translation>

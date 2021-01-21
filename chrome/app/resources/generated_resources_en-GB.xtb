@@ -317,6 +317,7 @@
 <translation id="1354045473509304750">Continue allowing <ph name="HOST" /> to use and move your camera</translation>
 <translation id="1355088139103479645">Delete all data?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> is blocked</translation>
+<translation id="1357896526834120583">Restart requested</translation>
 <translation id="1358741672408003399">Spelling and Grammar</translation>
 <translation id="1359923111303110318">Your device can be unlocked with Smart Lock. Press enter to unlock.</translation>
 <translation id="1361164813881551742">Add Manually</translation>
@@ -1211,6 +1212,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2345723121311404059">1 page to <ph name="PRINTER_NAME" /></translation>
 <translation id="2347644257713614136">Use of Hangouts and Cast for Education is governed by the Google Privacy Policy.</translation>
 <translation id="2348176352564285430">App: <ph name="ARC_PROCESS_NAME" /></translation>
+<translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> – Permission requested, press Ctrl + Forward to respond</translation>
 <translation id="234889437187286781">Error loading data</translation>
 <translation id="2349610121459545414">Continue allowing this site to access your location</translation>
 <translation id="2349896577940037438">If your additional Web &amp; App Activity setting is turned on, this data may be saved to your Google Account. You can see your data, delete it and change your account settings at account.google.com.</translation>
@@ -1758,6 +1760,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="29488703364906173">A fast, simple and secure web browser, built for the modern web.</translation>
 <translation id="2949289451367477459">Use location. Allow apps and services with location permission to use this device’s location. Google may collect location data periodically and use this data in an anonymous way to improve location accuracy and location-based services. <ph name="BEGIN_LINK1" />Learn More<ph name="END_LINK1" /></translation>
 <translation id="2950666755714083615">Sign me up</translation>
+<translation id="2953019166882260872">Connect your phone with a cable</translation>
 <translation id="2956070239128776395">Section nested in group: <ph name="ERROR_LINE" /></translation>
 <translation id="2957117904572187936">Do not allow any sites to edit files or folders on your device</translation>
 <translation id="2958721676848865875">Pack extension warning</translation>
@@ -1778,6 +1781,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2979520980928493164">A healthier, happier Chrome</translation>
 <translation id="2979639724566107830">Open in new window</translation>
 <translation id="2981113813906970160">Show large mouse cursor</translation>
+<translation id="2983175648295374032"><ph name="WEBSITE" /> sent a notification to your phone. Tap 'Yes' to confirm that it's you. <ph name="LINK" /></translation>
 <translation id="2984956121108740037">{COUNT,plural, =1{{COUNT} password is accessible on this device}other{{COUNT} passwords are accessible on this device}}</translation>
 <translation id="2985348301114641460">Send a request to your administrator to install '<ph name="EXTENSION_NAME" />'?</translation>
 <translation id="2987620471460279764">Text shared from other device</translation>
@@ -2848,6 +2852,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="420283545744377356">Turn off screensaver</translation>
 <translation id="4206144641569145248">Alien</translation>
 <translation id="4206323443866416204">Feedback Report</translation>
+<translation id="4207932031282227921">Permission requested, press F6 to respond</translation>
 <translation id="4208390505124702064">Search <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Large</translation>
 <translation id="4209251085232852247">Turned off</translation>
@@ -3310,6 +3315,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4763408175235639573">The following cookies were set when you viewed this page</translation>
 <translation id="4765582662863429759">Allows Android Messages to relay texts from your phone to your Chromebook</translation>
 <translation id="4768332406694066911">You have certificates from these organisations that identify you</translation>
+<translation id="4770119228883592393">Permission requested, press ⌘ + Option + Down arrow to respond</translation>
 <translation id="4773112038801431077">Upgrade Linux</translation>
 <translation id="4774357366578243684">To use them on all your devices, move them to your Google Account</translation>
 <translation id="477647109558161443">Create a desktop shortcut</translation>
@@ -3551,6 +3557,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="5067867186035333991">Ask if <ph name="HOST" /> wants to access your microphone</translation>
 <translation id="5068918910148307423">Do not allow recently closed sites to finish sending and receiving data</translation>
 <translation id="5068919226082848014">Pizza</translation>
+<translation id="5070773577685395116">Didn't get it?</translation>
 <translation id="5072052264945641674">Adjust cursor size</translation>
 <translation id="5072836811783999860">Show managed bookmarks</translation>
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" />, <ph name="FILE2" />}other{<ph name="FILE1" />, <ph name="FILE2" /> and # more}}</translation>
@@ -3817,6 +3824,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="5382591305415226340">Manage supported links</translation>
 <translation id="5383377866517186886">Camera is turned off in Mac System Preferences</translation>
 <translation id="5383740867328871413">Unnamed group – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
+<translation id="5387466398175703340">Automatically creates captions for media in English. Audio and captions never leave the device.</translation>
 <translation id="5388885445722491159">Paired</translation>
 <translation id="5389237414310520250">The new user couldn't be created. Please check your hard drive space and permissions and try again.</translation>
 <translation id="5390100381392048184">Allow sites to play sound</translation>
@@ -4040,6 +4048,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="5627676517703583263">Browse smart with Chrome</translation>
 <translation id="5627832140542566187">Display orientation</translation>
 <translation id="562935524653278697">Your administrator has disabled syncing of your bookmarks, history, passwords and other settings.</translation>
+<translation id="5632059346822207074">Permission requested, press Ctrl + Forward to respond</translation>
 <translation id="5632566673632479864">Your account <ph name="EMAIL" /> is no longer allowed as the primary account. Because this account is managed by <ph name="DOMAIN" />, your bookmarks, history, passwords and other settings will be cleared from this device.</translation>
 <translation id="5632592977009207922">Downloading, <ph name="PERCENT_REMAINING" />% remaining</translation>
 <translation id="563371367637259496">Mobile</translation>
@@ -4674,6 +4683,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Try Again</translation>
 <translation id="6377268785556383139">1 result for '<ph name="SEARCH_TEXT" />'</translation>
+<translation id="6377571698477774687">Automatically creates captions for media in English (currently available in Chrome browser only). Audio and captions never leave the device.</translation>
 <translation id="6380143666419481200">Accept and continue</translation>
 <translation id="6384275966486438344">Change your search settings to: <ph name="SEARCH_HOST" /></translation>
 <translation id="6385149369087767061">Connect to the Internet and try again</translation>
@@ -5450,6 +5460,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="7287411021188441799">Restore default background</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
 <translation id="7289225569524511578">Open the wallpaper app</translation>
+<translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> – Permission requested, press F6 to respond</translation>
 <translation id="7290242001003353852">This sign-in service, hosted by <ph name="SAML_DOMAIN" />, is accessing your camera.</translation>
 <translation id="7295614427631867477">Note that Android, Play and associated apps are governed by their own data collection and use policies.</translation>
 <translation id="729583233778673644">Allow AES and RC4 encryption. Using this option increases your risk, as the RC4 ciphers are insecure.</translation>
@@ -5816,6 +5827,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="7707922173985738739">Use mobile data</translation>
 <translation id="7709152031285164251">Failed - <ph name="INTERRUPT_REASON" /></translation>
 <translation id="7710568461918838723">&amp;Cast...</translation>
+<translation id="7711900714716399411">Use a USB cable to connect your phone to your computer. If your phone is already connected, unplug it and plug it back in.</translation>
 <translation id="7712739869553853093">Print preview dialogue</translation>
 <translation id="7712836429117959503">Unknown extension with ID <ph name="EXTENSION_ID" /></translation>
 <translation id="7714307061282548371">Cookies from <ph name="DOMAIN" /> allowed</translation>
@@ -6113,6 +6125,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8028060951694135607">Microsoft Key Recovery</translation>
 <translation id="8028803902702117856">Downloading <ph name="SIZE" />, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">Size</translation>
+<translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> – Permission requested, press ⌘ + Option + Up arrow to respond</translation>
 <translation id="8030852056903932865">Approve</translation>
 <translation id="8032244173881942855">Unable to cast tab.</translation>
 <translation id="8033827949643255796">selected</translation>
@@ -7122,6 +7135,7 @@ Press an assigned switch to remove assignment.</translation>
 <translation id="917350715406657904">You reached the time limit that your parent set for <ph name="APP_NAME" />. You can use it for <ph name="TIME_LIMIT" /> tomorrow.</translation>
 <translation id="9173787391779732995">Sites can show images (recommended)</translation>
 <translation id="9173995187295789444">Scanning for Bluetooth devices...</translation>
+<translation id="9174052566244514547">Your administrator requested that you restart your device to update apps. This may take several minutes to complete</translation>
 <translation id="9174401638287877180">Send usage and diagnostic data. Help improve your child's Android experience by automatically sending diagnostic, device and app usage data to Google. This won't be used to identify your child, and will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. If additional Web &amp; App Activity setting is turned on for your child, this data may be saved to their Google Account.</translation>
 <translation id="917510707618656279">Ask when a site wants to access HID devices</translation>
 <translation id="9176476835295860688">Send usage and diagnostic data. This device is currently automatically sending diagnostic, device and app usage data to Google. This will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. This <ph name="BEGIN_LINK1" />setting<ph name="END_LINK1" /> is enforced by the owner. If your additional Web &amp; App Activity setting is turned on, this data may be saved to your Google Account. <ph name="BEGIN_LINK2" />Find out more<ph name="END_LINK2" /></translation>

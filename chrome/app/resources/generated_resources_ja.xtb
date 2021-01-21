@@ -1641,6 +1641,7 @@
 <translation id="281504910091592009"><ph name="BEGIN_LINK" />Google アカウント<ph name="END_LINK" />での保存パスワードの表示と管理</translation>
 <translation id="2815693974042551705">ブックマーク フォルダ</translation>
 <translation id="2816319641769218778">パスワードを Google アカウントに保存するには、同期を有効にします。</translation>
+<translation id="2816628817680324566">このサイトによるセキュリティ キーの読み取りを許可しますか？</translation>
 <translation id="2818476747334107629">プリンタの詳細</translation>
 <translation id="2820957248982571256">スキャンしています…</translation>
 <translation id="2822634587701817431">拡大または縮小</translation>
@@ -3745,6 +3746,7 @@
 <translation id="5300287940468717207">サイトの権限をリセットしますか。</translation>
 <translation id="5300589172476337783">表示</translation>
 <translation id="5300719150368506519">アクセスしたページの URL を Google に送信</translation>
+<translation id="5300814202279832142">ウィンドウをデスクに移動</translation>
 <translation id="5301751748813680278">ゲストとしてログインしています。</translation>
 <translation id="5301954838959518834">OK</translation>
 <translation id="5302048478445481009">言語</translation>
@@ -5414,6 +5416,7 @@
 <translation id="7250616558727237648">共有先のデバイスから応答がありませんでした。もう一度お試しください。</translation>
 <translation id="725109152065019550">このアカウントでの外部ストレージの使用は、管理者によって無効にされています。</translation>
 <translation id="7251346854160851420">デフォルトの壁紙</translation>
+<translation id="7251979364707973467"><ph name="WEBSITE" /> が発行済みのセキュリティ キーの ID の読み取りを求めています。許可すると、使用しているセキュリティ キーがサイトで認識されます。</translation>
 <translation id="7253521419891527137">詳細(&amp;L)</translation>
 <translation id="7254951428499890870">「<ph name="APP_NAME" />」を診断モードで起動してもよろしいですか？</translation>
 <translation id="725497546968438223">ブックマーク フォルダ ボタン</translation>

@@ -80,7 +80,7 @@
 <translation id="1570871743947603115">切換藍牙。<ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">存取此工作階段的所有活動紀錄</translation>
 <translation id="1611993646327628135">開啟</translation>
-<translation id="1615402009686901181">當畫面上出現機密內容，管理員政策就會停用螢幕截圖擷取功能</translation>
+<translation id="1615402009686901181">當畫面上出現機密內容時，管理員政策就會停用螢幕截圖擷取功能</translation>
 <translation id="1632985212731562677">您可在 [設定] &gt; [無障礙功能] 中停用「按鈕控制」。</translation>
 <translation id="1654477262762802994">開始語音查詢</translation>
 <translation id="1667964833127753507">中性色調模式不會使用從桌布擷取的顏色，而是改用一組中性的淺色或深色調。</translation>
@@ -147,7 +147,7 @@
 <translation id="2220572644011485463">PIN 或密碼</translation>
 <translation id="2222338659135520253">必須登入</translation>
 <translation id="2222841058024245321">桌面 7</translation>
-<translation id="2224075387478458881">當畫面上有受保護的內容時，無法使用螢幕畫面錄影功能</translation>
+<translation id="2224075387478458881">當畫面上有受保護的內容時，就無法使用螢幕畫面錄影功能</translation>
 <translation id="225680501294068881">正在掃描裝置…</translation>
 <translation id="2268130516524549846">藍牙已停用</translation>
 <translation id="2268813581635650749">登出所有使用者</translation>
@@ -589,7 +589,7 @@
 <translation id="6062360702481658777">您將於 <ph name="LOGOUT_TIME_LEFT" />後自動登出。</translation>
 <translation id="6073451960410192870">停止錄影</translation>
 <translation id="607652042414456612">您的電腦已開放讓附近的藍牙裝置搜尋，顯示名稱為「<ph name="NAME" />」，地址則是 <ph name="ADDRESS" /></translation>
-<translation id="6094290315941448991">當畫面上出現機密內容，管理員政策就會停用螢幕錄影功能</translation>
+<translation id="6094290315941448991">當畫面上出現機密內容時，管理員政策就會停用螢幕錄影功能</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />。<ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">「Google 助理」不適用於訪客工作階段。</translation>
 <translation id="6137566720514957455">打開移除 <ph name="USER_EMAIL_ADDRESS" /> 嘅對話框</translation>

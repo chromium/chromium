@@ -84,6 +84,7 @@
 <translation id="1571304935088121812">Sao chép tên người dùng</translation>
 <translation id="1592864538817356322">Chế độ bảo vệ thông thường:</translation>
 <translation id="1612196535745283361">Chrome cần có quyền truy cập vị trí để quét tìm thiết bị. Tính năng truy cập vị trí bị <ph name="BEGIN_LINK" />tắt cho thiết bị này<ph name="END_LINK" />.</translation>
+<translation id="1613577519914241527">Khi hộp cát đang bật, các trang web sẽ không thể sử dụng thông tin nhận dạng cá nhân của bạn để cải thiện mức độ phù hợp của nội dung trên các trang web đó. Tương tự như đám đông trong một buổi hòa nhạc, các trang web chỉ có thể biết rằng hàng nghìn người dùng có cùng một mối quan tâm.\n\n“Đám đông” của bạn được xây dựng dựa trên những trang web bạn từng truy cập. Các nhà quảng cáo chỉ có thể thấy những trang web mà cả "đám đông" đó truy cập chứ không thấy những trang web mà cá nhân bạn truy cập.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Xóa 1 mục đã chọn}other{Xóa # mục đã chọn}}</translation>
 <translation id="1641113438599504367">Duyệt web an toàn</translation>
 <translation id="164269334534774161">Bạn đang xem bản sao ngoại tuyến của trang này từ <ph name="CREATION_TIME" /></translation>
@@ -468,6 +469,7 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="4440958355523780886">Trang phiên bản rút gọn do Google cung cấp. Nhấn để tải trang gốc.</translation>
 <translation id="4452411734226507615">Đóng thẻ <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Đã đánh dấu trang vào <ph name="FOLDER_NAME" /></translation>
+<translation id="4465314970046116177">Hộp cát bảo vệ quyền riêng tư là một tập hợp các công nghệ mới nhằm bảo vệ người dùng khỏi các cơ chế theo dõi qua nhiều trang web (chẳng hạn như cookie của bên thứ ba), trong khi đó vẫn giúp những dịch vụ và nội dung trên web đang phụ thuộc vào những cơ chế như vậy duy trì hoạt động. Chrome đang hợp tác với các nhà phát triển trang web, nhà xuất bản, nhà quảng cáo và các trình duyệt khác để phát triển công nghệ mới này.</translation>
 <translation id="4472118726404937099">Để đồng bộ hóa và cá nhân hóa trên các thiết bị, hãy đăng nhập và bật tính năng đồng bộ hóa</translation>
 <translation id="447252321002412580">Giúp cải thiện hiệu suất và các tính năng của Chrome</translation>
 <translation id="4479972344484327217">Đang cài đặt <ph name="MODULE" /> cho Chrome…</translation>
@@ -744,6 +746,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6243852395147506234">Có thể đọc khi không có mạng</translation>
 <translation id="624789221780392884">Bản cập nhật đã sẵn sàng</translation>
 <translation id="6255999984061454636">Đề xuất nội dung</translation>
+<translation id="6266591733731644292">Cơ chế hộp cát bảo vệ quyền riêng tư chưa được áp dụng rộng rãi. Trong thời gian dùng thử này:\n<ph name="BEGIN_LIST_ITEM1" />Các nhà phát triển ứng dụng và trang web có thể dùng thử tính năng tạo trải nghiệm phù hợp mà không cần tiếp cận thông tin nhận dạng của chính bạn<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />Người dùng có thể chọn không tham gia dùng thử bằng cách tùy chỉnh chế độ điều khiển trên trang này.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="6277522088822131679">Đã xảy ra sự cố khi in trang này. Vui lòng thử lại.</translation>
 <translation id="6278428485366576908">Chủ đề</translation>
 <translation id="6292420053234093573">Bằng việc sử dụng Chrome, bạn đồng ý với <ph name="BEGIN_LINK1" />Điều khoản dịch vụ của Google<ph name="END_LINK1" /> cũng như <ph name="BEGIN_LINK2" />Điều khoản dịch vụ bổ sung của Google Chrome và Chrome OS<ph name="END_LINK2" />.</translation>
@@ -835,6 +838,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6811034713472274749">Trang hiện đã sẵn sàng cho bạn xem</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, thẻ, đã chọn</translation>
+<translation id="6833996806551876956">Dùng thử hộp cát bảo vệ quyền riêng tư</translation>
 <translation id="6845325883481699275">Giúp cải thiện khả năng bảo mật của Chrome</translation>
 <translation id="6846298663435243399">Đang tải…</translation>
 <translation id="6850409657436465440">Vẫn đang tải xuống</translation>
@@ -1070,6 +1074,7 @@ Dữ liệu của phiên Ẩn danh sẽ chỉ bị xóa khỏi Chrome khi bạn 
 <translation id="8442258441309440798">Không có tin bài nào</translation>
 <translation id="8443209985646068659">Chrome không thể cập nhật</translation>
 <translation id="8445448999790540984">Không xuất được mật khẩu</translation>
+<translation id="8447219758310755868">Mặt nạ ẩn danh trong đám đông</translation>
 <translation id="8461694314515752532">Mã hóa dữ liệu đã đồng bộ hóa bằng cụm mật khẩu đồng bộ hóa của riêng bạn</translation>
 <translation id="8466613982764129868">Hãy đảm bảo <ph name="TARGET_DEVICE_NAME" /> có kết nối Internet</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>

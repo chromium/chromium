@@ -208,6 +208,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="5781694279199921985">Save session log</translation>
 <translation id="5797428682393400134">SUCCESS</translation>
 <translation id="5832805196449965646">Add Person</translation>
+<translation id="5844247382766192936"><ph name="TEST_NAME" /> Test has been cancelled</translation>
 <translation id="5849570051105887917">Home provider code</translation>
 <translation id="5866840822086176774">Very strong</translation>
 <translation id="5895138241574237353">Restart</translation>
@@ -261,6 +262,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="6977381486153291903">Firmware revision</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> manages this device and has access to all user activity, including web pages visited, passwords and email.</translation>
 <translation id="7040230719604914234">Operator</translation>
+<translation id="708426984172631313">STOPPED</translation>
 <translation id="7143207342074048698">Connecting</translation>
 <translation id="714876143603641390">LAN connectivity</translation>
 <translation id="7162487448488904999">Gallery</translation>

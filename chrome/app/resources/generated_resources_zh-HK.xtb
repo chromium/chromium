@@ -556,7 +556,7 @@
 <translation id="1612019740169791082">您的容器並未設定至可以支援調整磁碟大小。如要調整保留給 Linux 的空間數量，請先備份容器，然後再復原至新容器。</translation>
 <translation id="1614511179807650956">您可能已用盡流動數據配額。前往 <ph name="NAME" /> 啟用入口網站即可購買更多數據用量。</translation>
 <translation id="161460670679785907">無法偵測您的手機</translation>
-<translation id="1615402009686901181">當畫面上出現機密內容，管理員政策就會停用螢幕截圖擷取功能</translation>
+<translation id="1615402009686901181">當畫面上出現機密內容時，管理員政策就會停用螢幕截圖擷取功能</translation>
 <translation id="1616206807336925449">這個擴充功能不需任何特殊權限。</translation>
 <translation id="1616298854599875024">「<ph name="IMPORT_NAME" />」擴充程式並非共用模組，因此無法匯入。</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{正在檢查此資料是否符合您機構的安全性政策…}=1{正在檢查此檔案是否符合您機構的安全性政策…}other{正在檢查這些檔案是否符合您機構的安全性政策…}}</translation>
