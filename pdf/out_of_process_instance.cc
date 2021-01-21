@@ -847,17 +847,13 @@ void OutOfProcessInstance::DidChangeView(const pp::View& view) {
     OnGeometryChanged(zoom(), old_device_scale);
   }
 
-  if (!is_print_preview_ &&
-      base::FeatureList::IsEnabled(features::kPDFViewerUpdate)) {
-    // Scrolling in the new PDF Viewer UI is already handled by
-    // HandleUpdateScrollMessage().
-    return;
-  }
-
-  if (!stop_scrolling_) {
+  if (is_print_preview_ && !stop_scrolling_) {
     scroll_position_ = PointFromPPPoint(view.GetScrollOffset());
     UpdateScroll();
   }
+
+  // Scrolling in the main PDF Viewer UI is already handled by
+  // HandleUpdateScrollMessage().
 }
 
 void OutOfProcessInstance::UpdateScroll() {
@@ -1936,8 +1932,7 @@ void OutOfProcessInstance::HandleSaveMessage(const pp::VarDictionary& dict) {
 
 void OutOfProcessInstance::HandleSetReadOnlyMessage(
     const pp::VarDictionary& dict) {
-  if (!base::FeatureList::IsEnabled(features::kPDFViewerUpdate) ||
-      !base::FeatureList::IsEnabled(features::kPdfViewerPresentationMode) ||
+  if (!base::FeatureList::IsEnabled(features::kPdfViewerPresentationMode) ||
       !dict.Get(pp::Var(kJSEnableReadOnly)).is_bool()) {
     NOTREACHED();
     return;
@@ -1948,8 +1943,7 @@ void OutOfProcessInstance::HandleSetReadOnlyMessage(
 
 void OutOfProcessInstance::HandleSetTwoUpViewMessage(
     const pp::VarDictionary& dict) {
-  if (!base::FeatureList::IsEnabled(features::kPDFViewerUpdate) ||
-      !dict.Get(pp::Var(kJSEnableTwoUpView)).is_bool()) {
+  if (!dict.Get(pp::Var(kJSEnableTwoUpView)).is_bool()) {
     NOTREACHED();
     return;
   }
@@ -1959,8 +1953,7 @@ void OutOfProcessInstance::HandleSetTwoUpViewMessage(
 
 void OutOfProcessInstance::HandleUpdateScrollMessage(
     const pp::VarDictionary& dict) {
-  if (!base::FeatureList::IsEnabled(features::kPDFViewerUpdate) ||
-      !dict.Get(pp::Var(kJSUpdateScrollX)).is_number() ||
+  if (!dict.Get(pp::Var(kJSUpdateScrollX)).is_number() ||
       !dict.Get(pp::Var(kJSUpdateScrollY)).is_number()) {
     NOTREACHED();
     return;
