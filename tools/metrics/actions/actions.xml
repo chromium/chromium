@@ -9206,7 +9206,7 @@ should be able to be added at any place in this file.
 
 <action name="IOS.OpenIn">
   <obsolete>Renamed to IOS.OpenIn.Tapped, 08/2020</obsolete>
-  <owner>eugenebut@chromium.org</owner>
+  <owner>ewannpv@chromium.org</owner>
   <owner>mrefaat@chromium.org</owner>
   <description>
     Recorded when the user taps on OPEN IN... button to share the page
@@ -9215,7 +9215,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="IOS.OpenIn.Presented" not_user_triggered="true">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>mrefaat@chromium.org</owner>
   <owner>ewannpv@chromium.org</owner>
   <description>
     Recorded when the user loads a web page containing a file that can be
@@ -9224,7 +9224,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="IOS.OpenIn.Tapped">
-  <owner>eugenebut@chromium.org</owner>
   <owner>mrefaat@chromium.org</owner>
   <owner>ewannpv@chromium.org</owner>
   <description>
@@ -9297,7 +9296,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="IOSDownloadClose">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>ewannpv@chromium.org</owner>
   <owner>sdefresne@chromium.org</owner>
   <description>
     User closed Download Manager UI by tapping x button when download was not
@@ -9306,7 +9305,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="IOSDownloadConfirmClose">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>ewannpv@chromium.org</owner>
   <owner>sdefresne@chromium.org</owner>
   <description>
     User confirmed download closure by tapping &quot;Stop&quot; on &quot;Stop
@@ -9315,7 +9314,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="IOSDownloadConfirmReplace">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>ewannpv@chromium.org</owner>
   <owner>sdefresne@chromium.org</owner>
   <description>
     User confirmed download replacement by tapping &quot;OK&quot; on &quot;Start
@@ -9324,7 +9323,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="IOSDownloadDoNotClose">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>ewannpv@chromium.org</owner>
   <owner>sdefresne@chromium.org</owner>
   <description>
     User rejected download closure by tapping &quot;Continue&quot; on &quot;Stop
@@ -9333,7 +9332,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="IOSDownloadDoNotReplace">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>ewannpv@chromium.org</owner>
   <owner>sdefresne@chromium.org</owner>
   <description>
     User rejected download replacement by tapping &quot;Cancel&quot; on
@@ -9342,13 +9341,13 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="IOSDownloadInstallGoogleDrive">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>ewannpv@chromium.org</owner>
   <owner>sdefresne@chromium.org</owner>
   <description>User tapped on Install Google Drive promo.</description>
 </action>
 
 <action name="IOSDownloadOpenIn">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>ewannpv@chromium.org</owner>
   <owner>sdefresne@chromium.org</owner>
   <description>
     User tapped on Open In... button after in Download Manager after download
@@ -9357,13 +9356,13 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="IOSDownloadStartDownload">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>ewannpv@chromium.org</owner>
   <owner>sdefresne@chromium.org</owner>
   <description>User started the download in Download Manager.</description>
 </action>
 
 <action name="IOSDownloadTryCloseWhenInProgress">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>ewannpv@chromium.org</owner>
   <owner>sdefresne@chromium.org</owner>
   <description>
     User tapped x button when download was in-progress. The Download Manager did
@@ -13698,7 +13697,7 @@ should be able to be added at any place in this file.
   <obsolete>
     Removed in 12/2019 after adds of IOSDownloadFileUIGoogleDrive's histogram.
   </obsolete>
-  <owner>eugenebut@chromium.org</owner>
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>
     User has requested installation of Google Drive app from the Download file
     UI.
@@ -13709,7 +13708,7 @@ should be able to be added at any place in this file.
   <obsolete>
     Removed as of 11/2019 after adds of DownloadFileUI's histogram.
   </obsolete>
-  <owner>eugenebut@chromium.org</owner>
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>User was presented with the Download file UI.</description>
 </action>
 
@@ -13730,7 +13729,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileDownloadRetryDownload">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>ewannpv@chromium.org</owner>
+  <owner>sdefresne@chromium.org</owner>
   <description>
     User attempted to retry downloading a file after the download failed.
   </description>
@@ -14748,7 +14748,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobilePullGestureCloseTab">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>rkgibson@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>
   <description>
     Emitted on iOS when over-scroll action touch gesture closes current tab.
@@ -14758,7 +14758,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobilePullGestureNewTab">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>rkgibson@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>
   <description>
     Emitted on iOS when over-scroll action touch gesture opens a new tab. This
@@ -14768,7 +14768,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobilePullGestureReload">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>rkgibson@chromium.org</owner>
   <owner>tedchoc@chromium.org</owner>
   <description>
     Emitted on Android and iOS when a pull-to-refresh touch gesture initiates a
@@ -14959,7 +14959,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileSearchEngineSettingsBack">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
   <owner>sczs@chromium.org</owner>
   <description>
     Reported when user goes back from Search Engine Settings UI to root Settings
@@ -14968,7 +14968,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileSearchEngineSettingsClose">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
   <owner>sczs@chromium.org</owner>
   <description>
     Reported when Search Engine Settings UI was dismissed. iOS only.
@@ -15804,7 +15804,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileWebContextMenuCopyImage">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>
   <description>
     Recorded when user taps Copy Image in context menu. iOS only.
@@ -15812,7 +15812,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileWebContextMenuCopyLink">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>
   <description>
     Recorded when user taps Copy Link in context menu. iOS only.
@@ -15820,7 +15820,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileWebContextMenuImageImpression">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>
   <description>
     Recorded when user invokes context menu for web contents image. iOS only.
@@ -15828,7 +15828,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileWebContextMenuLinkImpression">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>
   <description>
     Recorded when user invokes context menu for web contents link. iOS only.
@@ -15836,7 +15836,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileWebContextMenuOpenImage">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>
   <description>
     Recorded when user taps Open Image in context menu. iOS only.
@@ -15844,7 +15844,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileWebContextMenuOpenImageInNewTab">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>
   <description>
     Recorded when user taps Open Image In New Tab in context menu. iOS only.
@@ -15852,7 +15852,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileWebContextMenuOpenInIncognitoTab">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>
   <description>
     Recorded when user taps Open In Incognito Tab in context menu. iOS only.
@@ -15860,7 +15860,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileWebContextMenuOpenInNewTab">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>
   <description>
     Recorded when user taps Open In New Tab in context menu. iOS only.
@@ -15876,7 +15876,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileWebContextMenuOpenJS">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>
   <description>
     Recorded when user taps Open Java Script in context menu. iOS only.
@@ -15884,7 +15884,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileWebContextMenuReadLater">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>
   <description>
     Recorded when user taps Read Later in context menu. iOS only.
@@ -15892,7 +15892,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileWebContextMenuSaveImage">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>
   <description>
     Recorded when user taps Save Image in context menu. iOS only.
@@ -15900,7 +15900,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileWebContextMenuSearchByImage">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>
   <description>
     Recorded when user taps Search By Image in context menu. iOS only.
@@ -15927,7 +15927,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileWillEnterForeground">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <owner>marq@chromium.org</owner>
   <description>
     App transitioned from background to foreground. This action is directly or
@@ -19062,7 +19062,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="OverscrollActionCloseTab">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>rkgibson@chromium.org</owner>
   <owner>kkhorimoto@chromium.org</owner>
   <description>
     Called when the user closes the tab using overscroll action.
@@ -21014,7 +21014,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="SessionCrashedInfobarClose">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <description>
     Logged when user taps on close button that dismisses tab restoration UI when
@@ -21023,7 +21023,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="SessionCrashedInfobarRestore">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <description>
     Logged when user taps on Restore button that restores tabs when the app was
