@@ -3211,27 +3211,6 @@
             ]
         }
     ],
-    "HostResolverDispatch": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "0:0:0:0:0:0:64",
-                    "enable_features": [
-                        "DNSConcurrencyDoesNotUseFeatures"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSCrashReportBreadcrumbs": [
         {
             "platforms": [
