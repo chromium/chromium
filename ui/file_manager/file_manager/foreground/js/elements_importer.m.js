@@ -24,3 +24,6 @@ export function importElements() {
     document.head.appendChild(script);
   });
 }
+
+// TODO: Remove this initialization once non-JS module is removed.
+window.importElements = importElements;

@@ -874,8 +874,16 @@
     this.document_ = this.dialogDom_.ownerDocument;
 
     metrics.startInterval('Load.InitDocuments');
-    await Promise.all(
-        [this.initBackgroundPagePromise_, window.importElementsPromise]);
+    if (window.importElementsPromise) {
+      // For non-js modules version these promises can run in parallel.
+      await Promise.all(
+          [this.initBackgroundPagePromise_, window.importElementsPromise]);
+    } else if (window.importElements) {
+      // importElements depend on loadTimeData which is initialized in the
+      // initBackgroundPagePromise_.
+      await this.initBackgroundPagePromise_;
+      await window.importElements();
+    }
     metrics.recordInterval('Load.InitDocuments');
 
     metrics.startInterval('Load.InitUI');
