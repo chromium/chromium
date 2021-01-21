@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/payments/secure_payment_confirmation_dialog_view.h"
 #include "chrome/browser/ui/views/payments/test_secure_payment_confirmation_payment_request_delegate.h"
@@ -161,6 +162,15 @@ class SecurePaymentConfirmationDialogViewTest
 
     EXPECT_TRUE(confirm_pressed_);
     EXPECT_FALSE(cancel_pressed_);
+
+    histogram_tester_.ExpectTotalCount(
+        "PaymentRequest.SecurePaymentConfirmation.Funnel."
+        "AuthenticationDialogResult",
+        1);
+    histogram_tester_.ExpectBucketCount(
+        "PaymentRequest.SecurePaymentConfirmation.Funnel."
+        "AuthenticationDialogResult",
+        SecurePaymentConfirmationAuthenticationDialogResult::kAccepted, 1);
   }
 
   void ClickCancelAndWait() {
@@ -171,6 +181,15 @@ class SecurePaymentConfirmationDialogViewTest
 
     EXPECT_TRUE(cancel_pressed_);
     EXPECT_FALSE(confirm_pressed_);
+
+    histogram_tester_.ExpectTotalCount(
+        "PaymentRequest.SecurePaymentConfirmation.Funnel."
+        "AuthenticationDialogResult",
+        1);
+    histogram_tester_.ExpectBucketCount(
+        "PaymentRequest.SecurePaymentConfirmation.Funnel."
+        "AuthenticationDialogResult",
+        SecurePaymentConfirmationAuthenticationDialogResult::kCanceled, 1);
   }
 
   void CloseDialogAndWait() {
@@ -181,6 +200,15 @@ class SecurePaymentConfirmationDialogViewTest
 
     EXPECT_FALSE(cancel_pressed_);
     EXPECT_FALSE(confirm_pressed_);
+
+    histogram_tester_.ExpectTotalCount(
+        "PaymentRequest.SecurePaymentConfirmation.Funnel."
+        "AuthenticationDialogResult",
+        1);
+    histogram_tester_.ExpectBucketCount(
+        "PaymentRequest.SecurePaymentConfirmation.Funnel."
+        "AuthenticationDialogResult",
+        SecurePaymentConfirmationAuthenticationDialogResult::kClosed, 1);
   }
 
   void ResetEventWaiter(DialogEvent event) {
@@ -214,6 +242,8 @@ class SecurePaymentConfirmationDialogViewTest
 
   bool confirm_pressed_ = false;
   bool cancel_pressed_ = false;
+
+  base::HistogramTester histogram_tester_;
 };
 
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,

@@ -137,6 +137,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram
+    name="PaymentRequest.SecurePaymentConfirmation.Funnel.AuthenticationDialogResult"
+    enum="SecurePaymentConfirmationAuthenticationDialogResult"
+    expires_after="2021-08-01">
+  <owner>danyao@chromium.org</owner>
+  <owner>web-payments-team@google.com</owner>
+  <summary>
+    Records the action performed by the user on the Secure Payment confirmation
+    dialog. The result is Accepted if the affirmitive button is pressed,
+    Canceled if the dialog is canceled, or Closed if it is otherwise closed.
+    Logged when the user interacts with the dialog or the dialog is otherwise
+    closed.
+  </summary>
+</histogram>
+
+<histogram
     name="PaymentRequest.SecurePaymentConfirmationCredentialIdSizeInBytes"
     units="bytes" expires_after="2021-08-01">
   <owner>danyao@chromium.org</owner>

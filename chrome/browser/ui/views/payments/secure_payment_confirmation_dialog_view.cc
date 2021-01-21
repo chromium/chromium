@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/payments/secure_payment_confirmation_dialog_view.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -46,6 +47,15 @@ constexpr int kBodyExtraInset = 24;
 
 // Height of each row.
 constexpr int kRowHeight = 48;
+
+// Records UMA metric for the authentication dialog result.
+void RecordAuthenticationDialogResult(
+    const SecurePaymentConfirmationAuthenticationDialogResult result) {
+  base::UmaHistogramEnumeration(
+      "PaymentRequest.SecurePaymentConfirmation.Funnel."
+      "AuthenticationDialogResult",
+      result);
+}
 
 }  // namespace
 
@@ -95,6 +105,8 @@ void SecurePaymentConfirmationDialogView::ShowDialog(
 
 void SecurePaymentConfirmationDialogView::OnDialogAccepted() {
   std::move(verify_callback_).Run();
+  RecordAuthenticationDialogResult(
+      SecurePaymentConfirmationAuthenticationDialogResult::kAccepted);
 
   if (observer_for_test_) {
     observer_for_test_->OnConfirmButtonPressed();
@@ -104,6 +116,8 @@ void SecurePaymentConfirmationDialogView::OnDialogAccepted() {
 
 void SecurePaymentConfirmationDialogView::OnDialogCancelled() {
   std::move(cancel_callback_).Run();
+  RecordAuthenticationDialogResult(
+      SecurePaymentConfirmationAuthenticationDialogResult::kCanceled);
 
   if (observer_for_test_) {
     observer_for_test_->OnCancelButtonPressed();
@@ -113,6 +127,8 @@ void SecurePaymentConfirmationDialogView::OnDialogCancelled() {
 
 void SecurePaymentConfirmationDialogView::OnDialogClosed() {
   std::move(cancel_callback_).Run();
+  RecordAuthenticationDialogResult(
+      SecurePaymentConfirmationAuthenticationDialogResult::kClosed);
 
   if (observer_for_test_) {
     observer_for_test_->OnDialogClosed();
