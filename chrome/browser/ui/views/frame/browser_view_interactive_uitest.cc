@@ -78,7 +78,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, BrowserFullscreenShowTopView) {
 
   // The top view should always show up in regular mode.
   EXPECT_FALSE(browser_view->IsFullscreen());
-  EXPECT_TRUE(browser_view->IsTabStripVisible());
+  EXPECT_TRUE(browser_view->GetTabStripVisible());
 
   // Enter into fullscreen mode.
   chrome::ToggleFullscreenMode(browser());
@@ -87,7 +87,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, BrowserFullscreenShowTopView) {
   bool top_view_in_browser_fullscreen = false;
 #if defined(OS_MAC)
   // The top view should show up by default.
-  EXPECT_TRUE(browser_view->IsTabStripVisible());
+  EXPECT_TRUE(browser_view->GetTabStripVisible());
   // The 'Always Show Bookmarks Bar' should be enabled.
   EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_SHOW_BOOKMARK_BAR));
 
@@ -100,7 +100,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, BrowserFullscreenShowTopView) {
   // While back to fullscreen mode, the top view no longer shows up.
   chrome::ToggleFullscreenMode(browser());
   EXPECT_TRUE(browser_view->IsFullscreen());
-  EXPECT_FALSE(browser_view->IsTabStripVisible());
+  EXPECT_FALSE(browser_view->GetTabStripVisible());
   // The 'Always Show Bookmarks Bar' should be disabled.
   EXPECT_FALSE(chrome::IsCommandEnabled(browser(), IDC_SHOW_BOOKMARK_BAR));
 
@@ -114,7 +114,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, BrowserFullscreenShowTopView) {
   if (browser_view->immersive_mode_controller()->IsEnabled())
     top_view_in_browser_fullscreen = true;
 #endif
-  EXPECT_EQ(top_view_in_browser_fullscreen, browser_view->IsTabStripVisible());
+  EXPECT_EQ(top_view_in_browser_fullscreen, browser_view->GetTabStripVisible());
   // The 'Always Show Bookmarks Bar' should be enabled if top view is shown.
   EXPECT_EQ(top_view_in_browser_fullscreen,
             chrome::IsCommandEnabled(browser(), IDC_SHOW_BOOKMARK_BAR));
@@ -128,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, BrowserFullscreenShowTopView) {
   EXPECT_TRUE(browser_view->IsFullscreen());
   bool top_view_in_tab_fullscreen =
       browser_view->immersive_mode_controller()->IsEnabled() ? true : false;
-  EXPECT_EQ(top_view_in_tab_fullscreen, browser_view->IsTabStripVisible());
+  EXPECT_EQ(top_view_in_tab_fullscreen, browser_view->GetTabStripVisible());
   // The 'Always Show Bookmarks Bar' should be disabled in tab fullscreen mode.
   EXPECT_EQ(top_view_in_tab_fullscreen,
             chrome::IsCommandEnabled(browser(), IDC_SHOW_BOOKMARK_BAR));
@@ -140,7 +140,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, BrowserFullscreenShowTopView) {
   event.windows_key_code = ui::VKEY_ESCAPE;
   browser()->exclusive_access_manager()->HandleUserKeyEvent(event);
   EXPECT_TRUE(browser_view->IsFullscreen());
-  EXPECT_EQ(top_view_in_browser_fullscreen, browser_view->IsTabStripVisible());
+  EXPECT_EQ(top_view_in_browser_fullscreen, browser_view->GetTabStripVisible());
   // This makes sure that the layout was updated accordingly.
   EXPECT_EQ(top_view_in_browser_fullscreen,
             browser_view->tabstrip()->GetVisible());
@@ -150,7 +150,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, BrowserFullscreenShowTopView) {
   // Return to regular mode.
   chrome::ToggleFullscreenMode(browser());
   EXPECT_FALSE(browser_view->IsFullscreen());
-  EXPECT_TRUE(browser_view->IsTabStripVisible());
+  EXPECT_TRUE(browser_view->GetTabStripVisible());
 }
 
 // Test whether the top view including toolbar and tab strip appears or hides
@@ -160,7 +160,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, TabFullscreenShowTopView) {
 
   // The top view should always show up in regular mode.
   EXPECT_FALSE(browser_view->IsFullscreen());
-  EXPECT_TRUE(browser_view->IsTabStripVisible());
+  EXPECT_TRUE(browser_view->GetTabStripVisible());
 
   // Enter into tab fullscreen mode.
   FullscreenController* controller =
@@ -171,12 +171,12 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, TabFullscreenShowTopView) {
   EXPECT_TRUE(browser_view->IsFullscreen());
 
   // The top view should not show up.
-  EXPECT_FALSE(browser_view->IsTabStripVisible());
+  EXPECT_FALSE(browser_view->GetTabStripVisible());
 
   // After exiting the fullscreen mode, the top view should show up again.
   controller->ExitFullscreenModeForTab(web_contents);
   EXPECT_FALSE(browser_view->IsFullscreen());
-  EXPECT_TRUE(browser_view->IsTabStripVisible());
+  EXPECT_TRUE(browser_view->GetTabStripVisible());
 }
 
 // Test whether bookmark bar shows up or hides correctly for fullscreen modes.
@@ -210,18 +210,18 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, FullscreenShowBookmarkBar) {
   // Test toggling toolbar state in fullscreen mode would also affect bookmark
   // bar state.
   chrome::ToggleFullscreenToolbar(browser());
-  EXPECT_TRUE(browser_view->IsTabStripVisible());
+  EXPECT_TRUE(browser_view->GetTabStripVisible());
   EXPECT_TRUE(browser_view->IsBookmarkBarVisible());
 
   chrome::ToggleFullscreenToolbar(browser());
-  EXPECT_FALSE(browser_view->IsTabStripVisible());
+  EXPECT_FALSE(browser_view->GetTabStripVisible());
   EXPECT_FALSE(browser_view->IsBookmarkBarVisible());
 #endif
 
   // Exit from fullscreen mode.
   chrome::ToggleFullscreenMode(browser());
   EXPECT_FALSE(browser_view->IsFullscreen());
-  EXPECT_TRUE(browser_view->IsTabStripVisible());
+  EXPECT_TRUE(browser_view->GetTabStripVisible());
   EXPECT_TRUE(browser_view->IsBookmarkBarVisible());
 }
 

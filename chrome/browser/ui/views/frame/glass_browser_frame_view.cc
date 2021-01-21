@@ -92,7 +92,7 @@ GlassBrowserFrameView::GlassBrowserFrameView(BrowserFrame* frame,
   // is true. Everything else here is only used when
   // ShouldCustomDrawSystemTitlebar() is true.
 
-  if (browser_view->CanShowWindowIcon()) {
+  if (browser_view->GetSupportsIcon()) {
     InitThrobberIcons();
 
     AddChildView(views::Builder<TabIconView>()
@@ -117,7 +117,7 @@ GlassBrowserFrameView::GlassBrowserFrameView(BrowserFrame* frame,
   // The window title appears above the web app frame toolbar (if present),
   // which surrounds the title with minimal-ui buttons on the left,
   // and other controls (such as the app menu button) on the right.
-  if (browser_view->CanShowWindowTitle()) {
+  if (browser_view->GetSupportsTitle()) {
     window_title_ = new views::Label(browser_view->GetWindowTitle());
     window_title_->SetSubpixelRenderingEnabled(false);
     window_title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
@@ -161,7 +161,7 @@ gfx::Rect GlassBrowserFrameView::GetBoundsForTabStripRegion(
 }
 
 int GlassBrowserFrameView::GetTopInset(bool restored) const {
-  if (browser_view()->IsTabStripVisible() || IsWebUITabStrip())
+  if (browser_view()->GetTabStripVisible() || IsWebUITabStrip())
     return TopAreaHeight(restored);
   return ShouldCustomDrawSystemTitlebar() ? TitlebarHeight(restored) : 0;
 }
@@ -241,7 +241,7 @@ gfx::Rect GlassBrowserFrameView::GetBoundsForClientView() const {
 gfx::Rect GlassBrowserFrameView::GetWindowBoundsForClientBounds(
     const gfx::Rect& client_bounds) const {
   HWND hwnd = views::HWNDForWidget(frame());
-  if (!browser_view()->IsTabStripVisible() && hwnd) {
+  if (!browser_view()->GetTabStripVisible() && hwnd) {
     // If we don't have a tabstrip, we're either a popup or an app window, in
     // which case we have a standard size non-client area and can just use
     // AdjustWindowRectEx to obtain it. We check for a non-null window handle in
@@ -265,8 +265,7 @@ int GlassBrowserFrameView::NonClientHitTest(const gfx::Point& point) {
 
   // For app windows and popups without a custom titlebar we haven't customized
   // the frame at all so Windows can figure it out.
-  if (!ShouldCustomDrawSystemTitlebar() &&
-      !browser_view()->IsBrowserTypeNormal())
+  if (!ShouldCustomDrawSystemTitlebar() && !browser_view()->GetIsNormalType())
     return HTNOWHERE;
 
   // If the point isn't within our bounds, then it's in the native portion of
@@ -423,7 +422,7 @@ int GlassBrowserFrameView::FrameTopBorderThickness(bool restored) const {
     // default. When maximized, the OS sizes the window such that the border
     // extends beyond the screen edges. In that case, we must return the default
     // value.
-    if (browser_view()->IsTabStripVisible())
+    if (browser_view()->GetTabStripVisible())
       return drag_handle_padding_;
 
     // There is no top border in tablet mode when the window is "restored"
@@ -550,7 +549,7 @@ bool GlassBrowserFrameView::ShouldShowWindowIcon(TitlebarType type) const {
     return false;
   if (type == TitlebarType::kSystem && ShouldCustomDrawSystemTitlebar())
     return false;
-  if (frame()->IsFullscreen() || browser_view()->IsBrowserTypeWebApp())
+  if (frame()->IsFullscreen() || browser_view()->GetIsWebAppType())
     return false;
   return browser_view()->ShouldShowWindowIcon();
 }
@@ -608,7 +607,7 @@ void GlassBrowserFrameView::PaintTitlebar(gfx::Canvas* canvas) const {
   canvas->DrawRect(gfx::RectF(0, 0, width() * scale, y), flags);
 
   const int titlebar_height =
-      browser_view()->IsTabStripVisible()
+      browser_view()->GetTabStripVisible()
           ? GetBoundsForTabStripRegion(
                 browser_view()->tab_strip_region_view()->GetMinimumSize())
                 .bottom()

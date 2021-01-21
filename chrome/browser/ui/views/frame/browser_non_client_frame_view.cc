@@ -99,7 +99,7 @@ bool BrowserNonClientFrameView::IsFrameCondensed() const {
 
 bool BrowserNonClientFrameView::HasVisibleBackgroundTabShapes(
     BrowserFrameActiveState active_state) const {
-  DCHECK(browser_view_->CanSupportTabStrip());
+  DCHECK(browser_view_->GetSupportsTabStrip());
 
   TabStrip* const tab_strip = browser_view_->tabstrip();
 
@@ -119,7 +119,7 @@ bool BrowserNonClientFrameView::HasVisibleBackgroundTabShapes(
     // Inactive tab background images are copied from the active ones, so in the
     // inactive case, check the active image as well.
     if (!active) {
-      const int active_id = browser_view_->IsIncognito()
+      const int active_id = browser_view_->GetIncognito()
                                 ? IDR_THEME_TAB_BACKGROUND_INCOGNITO
                                 : IDR_THEME_TAB_BACKGROUND;
       if (tp->HasCustomImage(active_id))
@@ -183,7 +183,7 @@ SkColor BrowserNonClientFrameView::GetToolbarTopSeparatorColor() const {
 base::Optional<int> BrowserNonClientFrameView::GetCustomBackgroundId(
     BrowserFrameActiveState active_state) const {
   const ui::ThemeProvider* tp = GetThemeProvider();
-  const bool incognito = browser_view_->IsIncognito();
+  const bool incognito = browser_view_->GetIncognito();
   const bool active = ShouldPaintAsActive(active_state);
   const int active_id =
       incognito ? IDR_THEME_TAB_BACKGROUND_INCOGNITO : IDR_THEME_TAB_BACKGROUND;
@@ -277,7 +277,7 @@ gfx::ImageSkia BrowserNonClientFrameView::GetFrameImage(
 
 gfx::ImageSkia BrowserNonClientFrameView::GetFrameOverlayImage(
     BrowserFrameActiveState active_state) const {
-  if (browser_view_->IsIncognito() || !browser_view_->IsBrowserTypeNormal())
+  if (browser_view_->GetIncognito() || !browser_view_->GetIsNormalType())
     return gfx::ImageSkia();
 
   const ui::ThemeProvider* tp = GetFrameThemeProvider();
@@ -311,7 +311,7 @@ bool BrowserNonClientFrameView::DoesIntersectRect(const views::View* target,
       browser_view_->immersive_mode_controller()->IsRevealed();
 #endif
 
-  if (!browser_view_->IsTabStripVisible()) {
+  if (!browser_view_->GetTabStripVisible()) {
     // Claim |rect| if it is above the top of the topmost client area view.
     return !should_leave_to_top_container && (rect.y() < GetTopInset(false));
   }
@@ -385,7 +385,7 @@ void BrowserNonClientFrameView::OnProfileHighResAvatarLoaded(
 
 #if defined(OS_WIN)
 int BrowserNonClientFrameView::GetSystemMenuY() const {
-  if (!browser_view()->IsTabStripVisible())
+  if (!browser_view()->GetTabStripVisible())
     return GetTopInset(false);
   return GetBoundsForTabStripRegion(
              browser_view()->tab_strip_region_view()->GetMinimumSize())

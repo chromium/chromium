@@ -65,10 +65,10 @@ TEST_F(BrowserViewTest, BrowserView) {
   EXPECT_TRUE(browser_view()->browser());
 
   // Test initial state.
-  EXPECT_TRUE(browser_view()->IsTabStripVisible());
-  EXPECT_FALSE(browser_view()->IsIncognito());
-  EXPECT_FALSE(browser_view()->IsGuestSession());
-  EXPECT_TRUE(browser_view()->IsBrowserTypeNormal());
+  EXPECT_TRUE(browser_view()->GetTabStripVisible());
+  EXPECT_FALSE(browser_view()->GetIncognito());
+  EXPECT_FALSE(browser_view()->GetGuestSession());
+  EXPECT_TRUE(browser_view()->GetIsNormalType());
   EXPECT_FALSE(browser_view()->IsFullscreen());
   EXPECT_FALSE(browser_view()->IsBookmarkBarVisible());
   EXPECT_FALSE(browser_view()->IsBookmarkBarAnimating());

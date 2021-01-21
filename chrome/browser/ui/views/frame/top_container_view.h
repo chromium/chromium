@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_FRAME_TOP_CONTAINER_VIEW_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 class BrowserView;
@@ -16,19 +16,19 @@ class BrowserView;
 // order to slide in and out over the web contents.
 class TopContainerView : public views::View {
  public:
+  METADATA_HEADER(TopContainerView);
   explicit TopContainerView(BrowserView* browser_view);
+  TopContainerView(const TopContainerView&) = delete;
+  TopContainerView& operator=(const TopContainerView&) = delete;
   ~TopContainerView() override;
 
   // views::View overrides:
-  const char* GetClassName() const override;
   void PaintChildren(const views::PaintInfo& paint_info) override;
   void ChildPreferredSizeChanged(views::View* child) override;
 
  private:
   // The parent of this view. Not owned.
   BrowserView* browser_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(TopContainerView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_TOP_CONTAINER_VIEW_H_
