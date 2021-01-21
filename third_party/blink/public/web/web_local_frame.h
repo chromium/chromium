@@ -93,6 +93,7 @@ struct WebIsolatedWorldInfo;
 struct WebPrintPageDescription;
 struct WebPrintParams;
 struct WebPrintPresetOptions;
+struct WebRect;
 struct WebScriptSource;
 
 namespace mojom {

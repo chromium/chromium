@@ -157,7 +157,7 @@ WebNode WebElement::OpenOrClosedShadowRoot() {
   return WebNode(root);
 }
 
-WebRect WebElement::BoundsInViewport() const {
+gfx::Rect WebElement::BoundsInViewport() const {
   return ConstUnwrap<Element>()->BoundsInViewport();
 }
 

@@ -47,7 +47,8 @@ class RenderWidgetTest : public RenderViewTest {
   gfx::PointF GetCenterPointOfElement(const blink::WebString& id) {
     auto rect =
         GetMainFrame()->GetDocument().GetElementById(id).BoundsInViewport();
-    return gfx::PointF(rect.x + rect.width / 2, rect.y + rect.height / 2);
+    return gfx::PointF(rect.x() + rect.width() / 2,
+                       rect.y() + rect.height() / 2);
   }
 
   // Returns Compositor scrolling ElementId for a given id. If id is empty it
