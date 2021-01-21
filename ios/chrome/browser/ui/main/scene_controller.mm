@@ -52,6 +52,7 @@
 #import "ios/chrome/browser/main/browser_util.h"
 #include "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/policy/policy_watcher_browser_agent.h"
+#import "ios/chrome/browser/prefs/prefs_util.h"
 #include "ios/chrome/browser/screenshot/screenshot_delegate.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
@@ -687,16 +688,28 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
     }
   }
 
-  // Make sure the launch mode is correct and consistent with the mode used
-  // when the application was terminated. It is possible for the incognito
-  // UI to have been presented but with no tabs (e.g. the tab switcher was
-  // active and user closed the last tab). In that case, switch to regular
-  // UI. Also, if the app crashed, always switch back to regular UI.
-  const BOOL startInIncognito =
-      self.sceneState.incognitoContentVisible &&
-      !self.sceneState.appState.postCrashLaunch &&
-      !self.interfaceProvider.incognitoInterface.browser->GetWebStateList()
-           ->empty();
+  BOOL startInIncognito;
+  PrefService* prefService =
+      self.mainInterface.browser->GetBrowserState()->GetPrefs();
+  if (IsIncognitoModeForced(prefService)) {
+    // When only incognito mode is available.
+    startInIncognito = YES;
+  } else if (IsIncognitoModeDisabled(prefService)) {
+    // When incognito mode is disabled.
+    startInIncognito = NO;
+    [self clearIOSSpecificIncognitoData];
+  } else {
+    // Make sure the launch mode is correct and consistent with the mode used
+    // when the application was terminated. It is possible for the incognito
+    // UI to have been presented but with no tabs (e.g. the tab switcher was
+    // active and user closed the last tab). In that case, switch to regular
+    // UI. Also, if the app crashed, always switch back to regular UI.
+    startInIncognito =
+        self.sceneState.incognitoContentVisible &&
+        !self.sceneState.appState.postCrashLaunch &&
+        !self.interfaceProvider.incognitoInterface.browser->GetWebStateList()
+             ->empty();
+  }
 
   // If the application crashed, clear incognito state.
   if (self.sceneState.appState.postCrashLaunch)
