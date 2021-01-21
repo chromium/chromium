@@ -110,7 +110,7 @@ html_to_js("web_components") {
   ]
 }
 
-grit("bookmarks_resources") {
+grit("resources") {
   defines = chrome_grit_defines
 
   # These arguments are needed since the grd is generated at build time.

@@ -14,7 +14,7 @@ preprocess_manifest = "preprocessed_manifest.json"
 preprocess_web_components_manifest = "preprocessed_gen_manifest.json"
 preprocess_mojo_manifest = "preprocessed_mojo_manifest.json"
 
-grit("read_later_resources") {
+grit("resources") {
   defines = chrome_grit_defines
 
   # These arguments are needed since the grd is generated at build time.

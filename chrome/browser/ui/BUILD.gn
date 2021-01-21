@@ -368,11 +368,11 @@ static_library("ui") {
     "//chrome/browser/media/feeds:mojo_bindings",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiling_host",
-    "//chrome/browser/resources/invalidations:invalidations_resources",
+    "//chrome/browser/resources/invalidations:resources",
     "//chrome/browser/resources/media:webrtc_logs_resources",
-    "//chrome/browser/resources/net_internals:net_internals_resources",
+    "//chrome/browser/resources/net_internals:resources",
     "//chrome/browser/resources/omnibox:resources",
-    "//chrome/browser/resources/quota_internals:quota_internals_resources",
+    "//chrome/browser/resources/quota_internals:resources",
     "//chrome/browser/resources/usb_internals:resources",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/ui/webui/bluetooth_internals",
@@ -805,7 +805,7 @@ static_library("ui") {
       "//chrome/android:jni_headers",
       "//chrome/android/features/dev_ui:buildflags",
       "//chrome/browser/image_decoder",
-      "//chrome/browser/resources/webapks:webapks_resources",
+      "//chrome/browser/resources/webapks:resources",
       "//components/autofill_assistant/browser",
       "//components/autofill_assistant/browser:proto",
       "//components/browser_ui/client_certificate/android",
@@ -4681,7 +4681,7 @@ static_library("ui") {
   }
 
   if (enable_webui_tab_strip) {
-    deps += [ "//chrome/browser/resources/tab_strip:tab_strip_resources" ]
+    deps += [ "//chrome/browser/resources/tab_strip:resources" ]
 
     sources += [
       "views/frame/webui_tab_strip_container_view.cc",

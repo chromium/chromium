@@ -116,7 +116,7 @@ preprocess_if_expr("preprocess_mojo") {
   in_files = [ "tab_search.mojom-webui.js" ]
 }
 
-grit("tab_search_resources") {
+grit("resources") {
   defines = chrome_grit_defines
 
   # These arguments are needed since the grd is generated at build time.

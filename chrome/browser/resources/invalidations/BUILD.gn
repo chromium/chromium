@@ -17,7 +17,7 @@ generate_grd("build_grd") {
   input_files_base_dir = rebase_path(".", "//")
 }
 
-grit("invalidations_resources") {
+grit("resources") {
   source = "$target_gen_dir/resources.grd"
   deps = [ ":build_grd" ]
   enable_input_discovery_for_gn_analyze = false

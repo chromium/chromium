@@ -5,7 +5,7 @@
 import("//chrome/common/features.gni")
 import("//tools/grit/grit_rule.gni")
 
-grit("net_internals_resources") {
+grit("resources") {
   source = "net_internals_resources.grd"
   defines = chrome_grit_defines
   outputs = [

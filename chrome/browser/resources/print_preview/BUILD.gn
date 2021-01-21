@@ -226,7 +226,7 @@ preprocess_if_expr("preprocess_pdf_generated") {
   ]
 }
 
-grit("print_preview_resources") {
+grit("resources") {
   defines = chrome_grit_defines
 
   # These arguments are needed since the grd is generated at build time.

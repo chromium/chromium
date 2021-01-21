@@ -183,7 +183,7 @@ preprocess_if_expr("preprocess_external_mojo") {
   ]
 }
 
-grit("os_settings_resources") {
+grit("resources") {
   defines = chrome_grit_defines
 
   # These arguments are needed since the grd is generated at build time.

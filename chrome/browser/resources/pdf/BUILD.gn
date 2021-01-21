@@ -141,7 +141,7 @@ generate_grd("build_grd") {
   resource_path_prefix = "pdf"
 }
 
-grit("pdf_resources") {
+grit("resources") {
   defines = chrome_grit_defines
 
   enable_input_discovery_for_gn_analyze = false

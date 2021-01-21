@@ -47,7 +47,7 @@ generate_grd("build_grd") {
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
 }
 
-grit("webui_js_error_resources") {
+grit("resources") {
   defines = chrome_grit_defines
 
   # These arguments are needed since the grd is generated at build time.
