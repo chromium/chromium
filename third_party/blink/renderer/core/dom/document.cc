@@ -2858,6 +2858,20 @@ void Document::EnsurePaintLocationDataValidForNode(
   }
 }
 
+bool Document::IsPaintLocationDataValidForNode(const Node* node) const {
+  DocumentLifecycle::LifecycleState required_state =
+      DocumentLifecycle::kLayoutClean;
+  if (View() && node->GetLayoutObject() &&
+      node->GetLayoutObject()->StyleRef().SubtreeIsSticky()) {
+    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+      required_state = DocumentLifecycle::kCompositingAssignmentsClean;
+    } else {
+      required_state = DocumentLifecycle::kCompositingInputsClean;
+    }
+  }
+  return Lifecycle().GetState() >= required_state;
+}
+
 bool Document::IsPageBoxVisible(uint32_t page_index) {
   return StyleForPage(page_index)->Visibility() !=
          EVisibility::kHidden;  // display property doesn't apply to @page.

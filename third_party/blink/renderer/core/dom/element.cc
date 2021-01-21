@@ -2015,10 +2015,7 @@ IntRect Element::VisibleBoundsInVisualViewport() const {
   return visible_rect;
 }
 
-void Element::ClientQuads(Vector<FloatQuad>& quads) {
-  GetDocument().EnsurePaintLocationDataValidForNode(
-      this, DocumentUpdateReason::kJavaScript);
-
+void Element::ClientQuads(Vector<FloatQuad>& quads) const {
   LayoutObject* element_layout_object = GetLayoutObject();
   if (!element_layout_object)
     return;
@@ -2027,7 +2024,7 @@ void Element::ClientQuads(Vector<FloatQuad>& quads) {
   // cannot use LocalToAbsoluteQuad directly with ObjectBoundingBox which is
   // SVG coordinates and not HTML coordinates. Instead, use the AbsoluteQuads
   // codepath below.
-  auto* svg_element = DynamicTo<SVGElement>(this);
+  const auto* svg_element = DynamicTo<SVGElement>(this);
   if (svg_element && !element_layout_object->IsSVGRoot() &&
       !element_layout_object->IsSVGForeignObject()) {
     // Get the bounding rectangle from the SVG model.
@@ -2048,6 +2045,8 @@ void Element::ClientQuads(Vector<FloatQuad>& quads) {
 }
 
 DOMRectList* Element::getClientRects() {
+  GetDocument().EnsurePaintLocationDataValidForNode(
+      this, DocumentUpdateReason::kJavaScript);
   Vector<FloatQuad> quads;
   ClientQuads(quads);
   if (quads.IsEmpty())
@@ -2060,11 +2059,11 @@ DOMRectList* Element::getClientRects() {
   return MakeGarbageCollected<DOMRectList>(quads);
 }
 
-DOMRect* Element::getBoundingClientRect() {
+FloatRect Element::GetBoundingClientRectNoLifecycleUpdate() const {
   Vector<FloatQuad> quads;
   ClientQuads(quads);
   if (quads.IsEmpty())
-    return DOMRect::Create();
+    return FloatRect();
 
   FloatRect result = quads[0].BoundingBox();
   for (wtf_size_t i = 1; i < quads.size(); ++i)
@@ -2074,7 +2073,13 @@ DOMRect* Element::getBoundingClientRect() {
   DCHECK(element_layout_object);
   GetDocument().AdjustFloatRectForScrollAndAbsoluteZoom(result,
                                                         *element_layout_object);
-  return DOMRect::FromFloatRect(result);
+  return result;
+}
+
+DOMRect* Element::getBoundingClientRect() {
+  GetDocument().EnsurePaintLocationDataValidForNode(
+      this, DocumentUpdateReason::kJavaScript);
+  return DOMRect::FromFloatRect(GetBoundingClientRectNoLifecycleUpdate());
 }
 
 const AtomicString& Element::computedRole() {

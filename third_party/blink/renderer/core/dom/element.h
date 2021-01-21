@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/dom/whitespace_attacher.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
+#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -336,6 +337,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
       DocumentUpdateReason reason = DocumentUpdateReason::kUnknown) const;
 
   DOMRectList* getClientRects();
+  FloatRect GetBoundingClientRectNoLifecycleUpdate() const;
   DOMRect* getBoundingClientRect();
 
   const AtomicString& computedRole();
@@ -1126,7 +1128,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
                 const AtomicString& new_id);
   void UpdateName(const AtomicString& old_name, const AtomicString& new_name);
 
-  void ClientQuads(Vector<FloatQuad>& quads);
+  void ClientQuads(Vector<FloatQuad>& quads) const;
 
   NodeType getNodeType() const final;
   bool ChildTypeAllowed(NodeType) const final;

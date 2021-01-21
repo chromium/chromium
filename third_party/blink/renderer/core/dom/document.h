@@ -607,6 +607,8 @@ class CORE_EXPORT Document : public ContainerNode,
   void EnsurePaintLocationDataValidForNode(const Node*,
                                            DocumentUpdateReason reason);
 
+  bool IsPaintLocationDataValidForNode(const Node*) const;
+
   // Returns true if page box (margin boxes and page borders) is visible.
   bool IsPageBoxVisible(uint32_t page_index);
 

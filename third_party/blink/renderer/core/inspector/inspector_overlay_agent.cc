@@ -864,6 +864,8 @@ Response InspectorOverlayAgent::getHighlightObjectForTest(
     config->color_format = ColorFormat::HEX;
   }
 
+  node->GetDocument().EnsurePaintLocationDataValidForNode(
+      node, DocumentUpdateReason::kInspector);
   NodeHighlightTool tool(this, GetFrontend(), node, "" /* selector_list */,
                          std::move(config));
   *result = tool.GetNodeInspectorHighlightAsJson(
