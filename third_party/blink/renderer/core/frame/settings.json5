@@ -1094,10 +1094,5 @@
       invalidate: ["TextAutosizing"],
       type: "IntSize",
     },
-    {
-      name: "WebXRImmersiveArAllowed",
-      initial: true,
-      type: "bool",
-    },
   ],
 }

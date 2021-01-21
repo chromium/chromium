@@ -283,7 +283,6 @@ class WebSettings {
   virtual void SetUseAXMenuList(bool) = 0;
   virtual void SetSelectionClipboardBufferAvailable(bool) = 0;
   virtual void SetAccessibilityIncludeSvgGElement(bool) = 0;
-  virtual void SetWebXRImmersiveArAllowed(bool) = 0;
 
  protected:
   ~WebSettings() = default;

@@ -350,10 +350,6 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   // cannot show context menus, see crbug.com/1096189.
   bool touch_dragend_context_menu = false;
 
-  // By default, WebXR's immersive-ar session creation is allowed, but this can
-  // change depending on the enterprise policy if the platform supports it.
-  bool webxr_immersive_ar_allowed = true;
-
   // We try to keep the default values the same as the default values in
   // chrome, except for the cases where it would require lots of extra work for
   // the embedder to use the same default value.

@@ -436,7 +436,4 @@ struct WebPreferences {
   // Whether touch input can trigger HTML drag-and-drop operations. The
   // default value depends on the platform.
   bool touch_drag_drop_enabled;
-
-  // Controls whether WebXR's immersive-ar is allowed.
-  bool webxr_immersive_ar_allowed;
 };
