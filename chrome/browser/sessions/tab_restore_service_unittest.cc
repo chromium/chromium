@@ -13,6 +13,7 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -35,6 +36,8 @@
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
 #include "components/sessions/core/session_types.h"
 #include "components/sessions/core/tab_restore_service_observer.h"
+#include "components/tab_groups/tab_group_id.h"
+#include "components/tab_groups/tab_group_visual_data.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -150,9 +153,15 @@ class TabRestoreServiceImplTest : public ChromeRenderViewHostTestHarness {
     SynchronousLoadTabsFromLastSession();
   }
 
-  // Adds a window with one tab and url to the profile's session service.
-  // If |pinned| is true, the tab is marked as pinned in the session service.
-  void AddWindowWithOneTabToSessionService(bool pinned) {
+  // Adds a window with one tab and url to the profile's session
+  // service. If |pinned| is true, the tab is marked as pinned in the
+  // session service. If |group| is present, sets the tab's group ID. If
+  // |group_visual_data| is also present, sets |group|'s visual data.
+  void AddWindowWithOneTabToSessionService(
+      bool pinned,
+      base::Optional<tab_groups::TabGroupId> group = base::nullopt,
+      base::Optional<tab_groups::TabGroupVisualData> group_visual_data =
+          base::nullopt) {
     // Create new window / tab IDs so that these remain distinct.
     window_id_ = SessionID::NewUnique();
     tab_id_ = SessionID::NewUnique();
@@ -165,6 +174,12 @@ class TabRestoreServiceImplTest : public ChromeRenderViewHostTestHarness {
     session_service->SetSelectedTabInWindow(window_id(), 0);
     if (pinned)
       session_service->SetPinnedState(window_id(), tab_id(), true);
+    if (group)
+      session_service->SetTabGroup(window_id(), tab_id(), group);
+    if (group && group_visual_data)
+      session_service->SetTabGroupMetadata(window_id(), *group,
+                                           &*group_visual_data);
+
     session_service->UpdateTabNavigation(
         window_id(), tab_id(),
         ContentTestHelper::CreateNavigation(url1_.spec(), "title"));
@@ -976,4 +991,27 @@ TEST_F(TabRestoreServiceImplTest, GoToLoadedWhenHaveMaxEntries) {
   EXPECT_EQ(max_entries, service_->entries().size());
   SynchronousLoadTabsFromLastSession();
   EXPECT_TRUE(service_->IsLoaded());
+}
+
+// Ensures tab group data is restored from previous session.
+TEST_F(TabRestoreServiceImplTest, TabGroupsRestoredFromSessionData) {
+  CreateSessionServiceWithOneWindow(false);
+
+  auto group = tab_groups::TabGroupId::GenerateNew();
+  auto group_visual_data = tab_groups::TabGroupVisualData(
+      base::ASCIIToUTF16("Foo"), tab_groups::TabGroupColorId::kBlue);
+  AddWindowWithOneTabToSessionService(false, group, group_visual_data);
+
+  SessionServiceFactory::GetForProfile(profile())
+      ->MoveCurrentSessionToLastSession();
+  EXPECT_FALSE(service_->IsLoaded());
+  SynchronousLoadTabsFromLastSession();
+
+  ASSERT_EQ(2u, service_->entries().size());
+  Entry* entry = service_->entries().back().get();
+  ASSERT_EQ(sessions::TabRestoreService::WINDOW, entry->type);
+  auto* window = static_cast<sessions::TabRestoreService::Window*>(entry);
+  ASSERT_EQ(1u, window->tabs.size());
+  EXPECT_EQ(group, window->tabs[0]->group);
+  EXPECT_EQ(group_visual_data, window->tab_groups[group]);
 }

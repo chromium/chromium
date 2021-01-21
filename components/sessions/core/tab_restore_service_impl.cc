@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
+#include <map>
 #include <utility>
 #include <vector>
 
@@ -1137,21 +1138,40 @@ void TabRestoreServiceImpl::PersistenceDelegate::OnGotPreviousSession(
 bool TabRestoreServiceImpl::PersistenceDelegate::ConvertSessionWindowToWindow(
     SessionWindow* session_window,
     Window* window) {
-  for (size_t i = 0; i < session_window->tabs.size(); ++i) {
-    if (!session_window->tabs[i]->navigations.empty()) {
-      window->tabs.push_back(std::make_unique<Tab>());
-      Tab& tab = *window->tabs.back();
-      tab.pinned = session_window->tabs[i]->pinned;
-      tab.navigations.swap(session_window->tabs[i]->navigations);
-      tab.current_navigation_index =
-          session_window->tabs[i]->current_navigation_index;
-      tab.extension_app_id = session_window->tabs[i]->extension_app_id;
-      tab.timestamp = base::Time();
-    }
+  // The group visual datas must be stored in both |window| and each
+  // grouped tab.
+  std::map<tab_groups::TabGroupId, tab_groups::TabGroupVisualData>
+      group_visual_datas;
+  for (size_t i = 0; i < session_window->tab_groups.size(); ++i) {
+    auto group_id = session_window->tab_groups[i]->id;
+    group_visual_datas[group_id] = session_window->tab_groups[i]->visual_data;
   }
+
+  for (size_t i = 0; i < session_window->tabs.size(); ++i) {
+    if (session_window->tabs[i]->navigations.empty())
+      continue;
+
+    window->tabs.push_back(std::make_unique<Tab>());
+    Tab& tab = *window->tabs.back();
+
+    auto group_id = session_window->tabs[i]->group;
+    if (group_id.has_value()) {
+      tab.group = group_id;
+      tab.group_visual_data = group_visual_datas[group_id.value()];
+    }
+
+    tab.pinned = session_window->tabs[i]->pinned;
+    tab.navigations.swap(session_window->tabs[i]->navigations);
+    tab.current_navigation_index =
+        session_window->tabs[i]->current_navigation_index;
+    tab.extension_app_id = session_window->tabs[i]->extension_app_id;
+    tab.timestamp = base::Time();
+  }
+
   if (window->tabs.empty())
     return false;
 
+  window->tab_groups = std::move(group_visual_datas);
   window->selected_tab_index =
       std::min(session_window->selected_tab_index,
                static_cast<int>(window->tabs.size() - 1));
