@@ -54,6 +54,8 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/native_widget.h"
@@ -93,6 +95,7 @@ base::string16 GetTabCounterLabelText(int num_tabs) {
 // tab counter border, the font shrinks when the count is 10 or higher.
 class NumberLabel : public views::Label {
  public:
+  METADATA_HEADER(NumberLabel);
   NumberLabel() : Label(base::string16(), CONTEXT_TAB_COUNTER) {
     single_digit_font_ = font_list();
     double_digit_font_ = views::style::GetFont(CONTEXT_TAB_COUNTER,
@@ -110,6 +113,9 @@ class NumberLabel : public views::Label {
   gfx::FontList single_digit_font_;
   gfx::FontList double_digit_font_;
 };
+
+BEGIN_METADATA(NumberLabel, views::Label)
+END_METADATA
 
 ///////////////////////////////////////////////////////////////////////////////
 // InteractionTracker
@@ -438,6 +444,8 @@ class WebUITabCounterButton : public views::Button,
                               public views::ContextMenuController,
                               public ui::SimpleMenuModel::Delegate {
  public:
+  METADATA_HEADER(WebUITabCounterButton);
+
   static constexpr int WEBUI_TAB_COUNTER_CXMENU_CLOSE_TAB = 13;
   static constexpr int WEBUI_TAB_COUNTER_CXMENU_NEW_TAB = 14;
 
@@ -683,6 +691,9 @@ void WebUITabCounterButton::ExecuteCommand(int command_id, int event_flags) {
       NOTREACHED();
   }
 }
+
+BEGIN_METADATA(WebUITabCounterButton, views::Button)
+END_METADATA
 
 }  // namespace
 

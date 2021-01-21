@@ -12,6 +12,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/presentation_feedback.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -147,3 +148,6 @@ void TabSearchButton::ButtonPressed(const ui::Event& event) {
   }
   CloseTabSearchBubble();
 }
+
+BEGIN_METADATA(TabSearchButton, NewTabButton)
+END_METADATA

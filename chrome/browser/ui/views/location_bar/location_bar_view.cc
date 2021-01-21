@@ -545,7 +545,7 @@ void LocationBarView::Layout() {
       }
       selected_keyword_view_->SetCustomImage(image);
     }
-  } else if (location_icon_view_->ShouldShowText()) {
+  } else if (location_icon_view_->GetShowText()) {
     leading_decorations.AddDecoration(vertical_padding, location_height, false,
                                       kLeadingDecorationMaxFraction,
                                       edge_padding, location_icon_view_);
@@ -817,7 +817,7 @@ int LocationBarView::GetMinimumLeadingWidth() const {
   if (ShouldShowKeywordBubble())
     return 0;
 
-  if (location_icon_view_->ShouldShowText())
+  if (location_icon_view_->GetShowText())
     return location_icon_view_->GetMinimumLabelTextWidth();
 
   return GetLayoutConstant(LOCATION_BAR_ELEMENT_PADDING) +
@@ -1302,7 +1302,7 @@ ui::ImageModel LocationBarView::GetLocationIcon(
 }
 
 void LocationBarView::UpdatePermissionChipVisibility() {
-  if (!permission_chip()->HasActiveRequest()) {
+  if (!permission_chip()->GetActiveRequest()) {
     DCHECK(!permission_chip()->GetVisible());
     return;
   }

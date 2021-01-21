@@ -15,6 +15,7 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/scoped_canvas.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 Windows10CaptionButton::Windows10CaptionButton(
     PressedCallback callback,
@@ -267,3 +268,9 @@ void Windows10CaptionButton::PaintSymbol(gfx::Canvas* canvas) {
       return;
   }
 }
+
+BEGIN_METADATA(Windows10CaptionButton, views::Button)
+ADD_READONLY_PROPERTY_METADATA(int, BetweenButtonSpacing)
+ADD_READONLY_PROPERTY_METADATA(int, ButtonDisplayOrderIndex)
+ADD_READONLY_PROPERTY_METADATA(SkColor, BaseColor)
+END_METADATA

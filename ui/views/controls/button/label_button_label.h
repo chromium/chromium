@@ -6,12 +6,12 @@
 #define UI_VIEWS_CONTROLS_BUTTON_LABEL_BUTTON_LABEL_H_
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/views_export.h"
 
 namespace views {
@@ -22,7 +22,10 @@ namespace internal {
 // views::LabelButton.
 class VIEWS_EXPORT LabelButtonLabel : public Label {
  public:
+  METADATA_HEADER(LabelButtonLabel);
   LabelButtonLabel(const base::string16& text, int text_context);
+  LabelButtonLabel(const LabelButtonLabel&) = delete;
+  LabelButtonLabel& operator=(const LabelButtonLabel&) = delete;
   ~LabelButtonLabel() override;
 
   // Set an explicit disabled color. This will stop the Label responding to
@@ -46,8 +49,6 @@ class VIEWS_EXPORT LabelButtonLabel : public Label {
       AddEnabledChangedCallback(
           base::BindRepeating(&LabelButtonLabel::OnEnabledChanged,
                               base::Unretained(this)));
-
-  DISALLOW_COPY_AND_ASSIGN(LabelButtonLabel);
 };
 
 }  // namespace internal

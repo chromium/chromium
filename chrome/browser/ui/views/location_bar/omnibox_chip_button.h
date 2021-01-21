@@ -7,17 +7,18 @@
 
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 // UI component for chip button located in the omnibox. A button with an icon
 // and text, with rounded corners.
 class OmniboxChipButton : public views::MdTextButton {
  public:
+  METADATA_HEADER(OmniboxChipButton);
   explicit OmniboxChipButton(
       PressedCallback callback,
       int button_context = views::style::CONTEXT_BUTTON_MD);
   OmniboxChipButton(const OmniboxChipButton& button) = delete;
   OmniboxChipButton& operator=(const OmniboxChipButton& button) = delete;
-
   ~OmniboxChipButton() override;
 
   void AnimateCollapse();
@@ -28,7 +29,7 @@ class OmniboxChipButton : public views::MdTextButton {
   void SetExpandAnimationEndedCallback(
       base::RepeatingCallback<void()> callback);
 
-  bool is_fully_collapsed() { return is_fully_collapsed_; }
+  bool GetFullyCollapsed() const;
 
   // views::AnimationDelegateViews:
   void AnimationEnded(const gfx::Animation* animation) override;
@@ -47,7 +48,7 @@ class OmniboxChipButton : public views::MdTextButton {
 
   // If chip is collapsed. In the collapsed state, only an icon is visible,
   // without text.
-  bool is_fully_collapsed_ = false;
+  bool fully_collapsed_ = false;
 
   const gfx::VectorIcon* icon_ = nullptr;
 

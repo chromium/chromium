@@ -8,6 +8,7 @@
 #include "base/scoped_observation.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -21,6 +22,7 @@ class Windows10CaptionButton;
 class GlassBrowserCaptionButtonContainer : public views::View,
                                            public views::WidgetObserver {
  public:
+  METADATA_HEADER(GlassBrowserCaptionButtonContainer);
   explicit GlassBrowserCaptionButtonContainer(
       GlassBrowserFrameView* frame_view);
   ~GlassBrowserCaptionButtonContainer() override;

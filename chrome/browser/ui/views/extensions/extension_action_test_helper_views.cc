@@ -74,11 +74,11 @@ class ExtensionActionTestHelperViews::TestToolbarActionsBarHelper
 ExtensionActionTestHelperViews::~ExtensionActionTestHelperViews() = default;
 
 int ExtensionActionTestHelperViews::NumberOfBrowserActions() {
-  return browser_actions_container_->num_toolbar_actions();
+  return browser_actions_container_->GetNumToolbarActions();
 }
 
 int ExtensionActionTestHelperViews::VisibleBrowserActions() {
-  return browser_actions_container_->VisibleBrowserActions();
+  return browser_actions_container_->GetVisibleBrowserActions();
 }
 
 void ExtensionActionTestHelperViews::InspectPopup(int index) {

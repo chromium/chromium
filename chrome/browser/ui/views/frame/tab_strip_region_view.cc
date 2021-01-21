@@ -20,6 +20,7 @@
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
 
@@ -51,6 +52,7 @@ std::unique_ptr<views::ImageButton> CreateScrollButton(
 
 class FrameGrabHandle : public views::View {
  public:
+  METADATA_HEADER(FrameGrabHandle);
   gfx::Size CalculatePreferredSize() const override {
     // Reserve some space for the frame to be grabbed by, even if the tabstrip
     // is full.
@@ -59,10 +61,14 @@ class FrameGrabHandle : public views::View {
   }
 };
 
+BEGIN_METADATA(FrameGrabHandle, views::View)
+END_METADATA
+
 // A customized overflow indicator that fades the tabs into the frame
 // background.
 class TabStripContainerOverflowIndicator : public views::View {
  public:
+  METADATA_HEADER(TabStripContainerOverflowIndicator);
   TabStripContainerOverflowIndicator(TabStrip* tab_strip,
                                      views::OverflowIndicatorAlignment side)
       : tab_strip_(tab_strip), side_(side) {
@@ -115,6 +121,9 @@ class TabStripContainerOverflowIndicator : public views::View {
   TabStrip* tab_strip_;
   views::OverflowIndicatorAlignment side_;
 };
+
+BEGIN_METADATA(TabStripContainerOverflowIndicator, views::View)
+END_METADATA
 
 }  // namespace
 

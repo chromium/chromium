@@ -115,14 +115,16 @@ TEST_F(TypeConversionTest, TestConversion_StringToShadowValues) {
 }
 
 TEST_F(TypeConversionTest, TestConversion_InsetsToString) {
-  base::string16 to_string =
-      metadata::TypeConverter<gfx::Insets>::ToString(gfx::Insets(3, 5, 7, 9));
+  constexpr gfx::Insets kInsets(3, 5, 7, 9);
 
-  EXPECT_EQ(to_string, base::ASCIIToUTF16("{3, 5, 7, 9}"));
+  base::string16 to_string =
+      metadata::TypeConverter<gfx::Insets>::ToString(kInsets);
+
+  EXPECT_EQ(to_string, base::ASCIIToUTF16(kInsets.ToString()));
 }
 
 TEST_F(TypeConversionTest, TestConversion_StringToInsets) {
-  base::string16 from_string = base::ASCIIToUTF16("{2, 3, 4, 5}");
+  base::string16 from_string = base::ASCIIToUTF16("2,3,4,5");
   EXPECT_EQ(metadata::TypeConverter<gfx::Insets>::FromString(from_string),
             gfx::Insets(2, 3, 4, 5));
 }

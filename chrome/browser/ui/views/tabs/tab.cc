@@ -813,7 +813,7 @@ void Tab::SetData(TabRendererData data) {
 
   base::string16 title = data_.title;
   if (title.empty() && !data_.should_render_empty_title) {
-    title = icon_->ShowingLoadingAnimation()
+    title = icon_->GetShowingLoadingAnimation()
                 ? l10n_util::GetStringUTF16(IDS_TAB_LOADING_TITLE)
                 : CoreTabHelper::GetDefaultTitle();
   } else {

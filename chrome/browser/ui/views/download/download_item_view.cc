@@ -441,9 +441,7 @@ void DownloadItemView::OnDownloadUpdated() {
     return;
   }
 
-  const Mode desired_mode = GetDesiredMode();
-  if ((mode_ != desired_mode) || (desired_mode == Mode::kNormal))
-    UpdateMode(desired_mode);
+  SetMode(GetDesiredMode());
 
   if (model_->GetState() == download::DownloadItem::COMPLETE &&
       model_->ShouldRemoveFromShelfWhenComplete()) {
@@ -673,7 +671,9 @@ DownloadItemView::Mode DownloadItemView::GetDesiredMode() const {
              : Mode::kNormal;
 }
 
-void DownloadItemView::UpdateMode(Mode mode) {
+void DownloadItemView::SetMode(Mode mode) {
+  if (mode_ == mode && mode != Mode::kNormal)
+    return;
   mode_ = mode;
   UpdateFilePathAndIcons();
   UpdateLabels();
@@ -719,6 +719,11 @@ void DownloadItemView::UpdateMode(Mode mode) {
   }
 
   shelf_->InvalidateLayout();
+  OnPropertyChanged(&mode_, views::kPropertyEffectsNone);
+}
+
+DownloadItemView::Mode DownloadItemView::GetMode() const {
+  return mode_;
 }
 
 void DownloadItemView::UpdateFilePathAndIcons() {
@@ -1138,11 +1143,16 @@ int DownloadItemView::GetLabelWidth(const views::StyledLabel& label) const {
 }
 
 void DownloadItemView::SetDropdownPressed(bool pressed) {
-  if (dropdown_pressed_ != pressed) {
-    dropdown_pressed_ = pressed;
-    dropdown_button_->SetHighlighted(dropdown_pressed_);
-    UpdateDropdownButtonImage();
-  }
+  if (dropdown_pressed_ == pressed)
+    return;
+  dropdown_pressed_ = pressed;
+  dropdown_button_->SetHighlighted(dropdown_pressed_);
+  UpdateDropdownButtonImage();
+  OnPropertyChanged(&dropdown_pressed_, views::kPropertyEffectsNone);
+}
+
+bool DownloadItemView::GetDropdownPressed() const {
+  return dropdown_pressed_;
 }
 
 void DownloadItemView::UpdateDropdownButtonImage() {
@@ -1250,3 +1260,21 @@ bool DownloadItemView::SubmitDownloadToFeedbackService(
 void DownloadItemView::ExecuteCommand(DownloadCommands::Command command) {
   commands_.ExecuteCommand(command);
 }
+
+DEFINE_ENUM_CONVERTERS(
+    DownloadItemView::Mode,
+    {DownloadItemView::Mode::kNormal, base::ASCIIToUTF16("kNormal")},
+    {DownloadItemView::Mode::kDangerous, base::ASCIIToUTF16("kDangerous")},
+    {DownloadItemView::Mode::kMalicious, base::ASCIIToUTF16("kMalicious")},
+    {DownloadItemView::Mode::kMixedContentWarn,
+     base::ASCIIToUTF16("kMixedContentWarn")},
+    {DownloadItemView::Mode::kMixedContentBlock,
+     base::ASCIIToUTF16("kMixedContentBlock")})
+
+BEGIN_METADATA(DownloadItemView, views::View)
+ADD_READONLY_PROPERTY_METADATA(Mode, Mode)
+ADD_READONLY_PROPERTY_METADATA(base::string16, InProgressAccessibleAlertText)
+ADD_READONLY_PROPERTY_METADATA(gfx::RectF, IconBounds)
+ADD_READONLY_PROPERTY_METADATA(gfx::Size, ButtonSize)
+ADD_PROPERTY_METADATA(bool, DropdownPressed)
+END_METADATA

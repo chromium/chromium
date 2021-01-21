@@ -31,6 +31,7 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
 
@@ -38,6 +39,8 @@ namespace {
 
 class ChipLabel : public views::Label {
  public:
+  METADATA_HEADER(ChipLabel);
+
   using views::Label::Label;
 
   // views::Label
@@ -53,6 +56,9 @@ class ChipLabel : public views::Label {
                      GetLayoutConstant(LOCATION_BAR_ICON_SIZE));
   }
 };
+
+BEGIN_METADATA(ChipLabel, views::Label)
+END_METADATA
 
 }  // namespace
 

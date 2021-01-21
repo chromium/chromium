@@ -1130,7 +1130,7 @@ IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTestForStatusChip,
   EXPECT_TRUE(GetLocalCardMigrationIconView()->GetVisible());
   EXPECT_FALSE(GetLocalCardMigrationIconView()
                    ->loading_indicator_for_testing()
-                   ->IsAnimating());
+                   ->GetAnimating());
 
   // Click the [Save] button in the dialog.
   ResetEventWaiterForSequence({DialogEvent::SENT_MIGRATE_CARDS_REQUEST});
@@ -1142,7 +1142,7 @@ IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTestForStatusChip,
   EXPECT_TRUE(GetLocalCardMigrationIconView()->GetVisible());
   EXPECT_TRUE(GetLocalCardMigrationIconView()
                   ->loading_indicator_for_testing()
-                  ->IsAnimating());
+                  ->GetAnimating());
 
   SetUpMigrateCardsRpcPaymentsAccepts();
   ResetEventWaiterForSequence({DialogEvent::RECEIVED_MIGRATE_CARDS_RESPONSE});
@@ -1152,7 +1152,7 @@ IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTestForStatusChip,
   EXPECT_TRUE(GetLocalCardMigrationIconView()->GetVisible());
   EXPECT_FALSE(GetLocalCardMigrationIconView()
                    ->loading_indicator_for_testing()
-                   ->IsAnimating());
+                   ->GetAnimating());
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)

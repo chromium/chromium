@@ -20,7 +20,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/range/range.h"
 #include "ui/gfx/shadow_value.h"
 #include "ui/gfx/text_constants.h"
@@ -157,10 +162,15 @@ DECLARE_CONVERSIONS(double)
 DECLARE_CONVERSIONS(const char*)
 DECLARE_CONVERSIONS(base::string16)
 DECLARE_CONVERSIONS(base::TimeDelta)
+DECLARE_CONVERSIONS(gfx::Insets)
+DECLARE_CONVERSIONS(gfx::Point)
+DECLARE_CONVERSIONS(gfx::PointF)
+DECLARE_CONVERSIONS(gfx::Range)
+DECLARE_CONVERSIONS(gfx::Rect)
+DECLARE_CONVERSIONS(gfx::RectF)
 DECLARE_CONVERSIONS(gfx::ShadowValues)
 DECLARE_CONVERSIONS(gfx::Size)
-DECLARE_CONVERSIONS(gfx::Range)
-DECLARE_CONVERSIONS(gfx::Insets)
+DECLARE_CONVERSIONS(gfx::SizeF)
 DECLARE_CONVERSIONS(GURL)
 DECLARE_CONVERSIONS(url::Component)
 

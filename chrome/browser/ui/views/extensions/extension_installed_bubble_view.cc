@@ -73,7 +73,7 @@ views::View* AnchorViewForBrowser(const ExtensionInstalledBubbleModel* model,
           browser_view->toolbar()->browser_actions();
       // Hitting this DCHECK means |ShouldShow| failed.
       DCHECK(container);
-      DCHECK(!container->animating());
+      DCHECK(!container->GetAnimating());
 
       reference_view = container->GetViewForId(model->extension_id());
     }
@@ -346,7 +346,7 @@ class IconAnimationWaiter {
           BrowserView::GetBrowserViewForBrowser(browser_)
               ->toolbar()
               ->browser_actions();
-      return container && !container->animating();
+      return container && !container->GetAnimating();
     }
     return true;
   }

@@ -4,6 +4,8 @@
 
 #include "ui/views/controls/button/label_button_label.h"
 
+#include "ui/views/metadata/metadata_impl_macros.h"
+
 namespace views {
 
 namespace internal {
@@ -35,14 +37,18 @@ void LabelButtonLabel::OnEnabledChanged() {
 }
 
 void LabelButtonLabel::SetColorForEnableState() {
-  if (GetEnabled() ? requested_enabled_color_ : requested_disabled_color_) {
-    Label::SetEnabledColor(GetEnabled() ? *requested_enabled_color_
-                                        : *requested_disabled_color_);
+  const base::Optional<SkColor>& color =
+      GetEnabled() ? requested_enabled_color_ : requested_disabled_color_;
+  if (color) {
+    Label::SetEnabledColor(*color);
   } else {
     int style = GetEnabled() ? style::STYLE_PRIMARY : style::STYLE_DISABLED;
     Label::SetEnabledColor(style::GetColor(*this, GetTextContext(), style));
   }
 }
+
+BEGIN_METADATA(LabelButtonLabel, Label)
+END_METADATA
 
 }  // namespace internal
 

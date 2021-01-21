@@ -198,7 +198,7 @@ IN_PROC_BROWSER_TEST_F(ToolbarViewInteractiveUITest,
 
   // Click on the toolbar action.
   BrowserActionsContainer* const browser_actions = GetBrowserActions();
-  ASSERT_EQ(1u, browser_actions->VisibleBrowserActions());
+  ASSERT_EQ(1u, browser_actions->GetVisibleBrowserActions());
   ToolbarActionView* toolbar_action =
       browser_actions->GetToolbarActionViewAt(0);
   ASSERT_TRUE(toolbar_action);

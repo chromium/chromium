@@ -13,6 +13,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 BackForwardButton::BackForwardButton(Direction direction,
                                      PressedCallback callback,
@@ -56,3 +57,6 @@ void BackForwardButton::UpdateIcon() {
   }
   UpdateIconsWithStandardColors(*image);
 }
+
+BEGIN_METADATA(BackForwardButton, ToolbarButton)
+END_METADATA

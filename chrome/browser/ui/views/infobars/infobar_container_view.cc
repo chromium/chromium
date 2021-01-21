@@ -17,12 +17,14 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/skia_paint_util.h"
 #include "ui/views/bubble/bubble_border.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
 
 class ContentShadow : public views::View {
  public:
+  METADATA_HEADER(ContentShadow);
   ContentShadow();
 
  protected:
@@ -49,6 +51,9 @@ void ContentShadow::OnPaint(gfx::Canvas* canvas) {
   views::BubbleBorder::DrawBorderAndShadow(gfx::RectFToSkRect(container_bounds),
                                            &cc::PaintCanvas::drawRect, canvas);
 }
+
+BEGIN_METADATA(ContentShadow, views::View)
+END_METADATA
 
 }  // namespace
 

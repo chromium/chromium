@@ -11,6 +11,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 OmniboxChipButton::OmniboxChipButton(PressedCallback callback,
                                      int button_context)
@@ -61,6 +62,10 @@ void OmniboxChipButton::SetExpandAnimationEndedCallback(
   expand_animation_ended_callback_ = callback;
 }
 
+bool OmniboxChipButton::GetFullyCollapsed() const {
+  return fully_collapsed_;
+}
+
 gfx::Size OmniboxChipButton::CalculatePreferredSize() const {
   const int fixed_width = GetIconSize() + GetInsets().width();
   const int collapsable_width =
@@ -80,7 +85,7 @@ void OmniboxChipButton::AnimationEnded(const gfx::Animation* animation) {
   if (animation != animation_.get())
     return;
 
-  is_fully_collapsed_ = animation->GetCurrentValue() != 1.0;
+  fully_collapsed_ = animation->GetCurrentValue() != 1.0;
   if (animation->GetCurrentValue() == 1.0)
     expand_animation_ended_callback_.Run();
 }
@@ -107,3 +112,8 @@ void OmniboxChipButton::UpdateIconAndTextColor() {
                                                  GetIconSize()));
   }
 }
+
+BEGIN_METADATA(OmniboxChipButton, views::MdTextButton)
+ADD_READONLY_PROPERTY_METADATA(bool, FullyCollapsed)
+ADD_READONLY_PROPERTY_METADATA(int, IconSize)
+END_METADATA

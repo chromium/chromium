@@ -1225,7 +1225,7 @@ IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewAshTest, BrowserActions) {
       browser_actions_container_->toolbar_actions_bar();
   LoadExtensions();
   toolbar_model()->SetVisibleIconCount(2);
-  EXPECT_EQ(0u, browser_actions_container_->VisibleBrowserActions());
+  EXPECT_EQ(0u, browser_actions_container_->GetVisibleBrowserActions());
 
   // Show the menu.
   SimulateClickOnView(web_app_menu_button_);
@@ -1234,12 +1234,12 @@ IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewAshTest, BrowserActions) {
   EXPECT_EQ(3u, GetAppMenu()
                     ->extension_toolbar_for_testing()
                     ->container_for_testing()
-                    ->VisibleBrowserActions());
+                    ->GetVisibleBrowserActions());
 
   // Popping out an extension makes its action show in the bar.
   toolbar_actions_bar->PopOutAction(toolbar_actions_bar->GetActions()[2], false,
                                     base::DoNothing());
-  EXPECT_EQ(1u, browser_actions_container_->VisibleBrowserActions());
+  EXPECT_EQ(1u, browser_actions_container_->GetVisibleBrowserActions());
 }
 
 // Regression test for https://crbug.com/839955

@@ -32,6 +32,7 @@
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 class DownloadShelfView;
@@ -67,6 +68,8 @@ class DownloadItemView : public views::View,
                          public DownloadUIModel::Observer,
                          public views::AnimationDelegateViews {
  public:
+  METADATA_HEADER(DownloadItemView);
+
   enum class Mode;
 
   DownloadItemView(DownloadUIModel::DownloadUIModelPtr model,
@@ -118,7 +121,8 @@ class DownloadItemView : public views::View,
   Mode GetDesiredMode() const;
 
   // Sets the current mode to |mode| and updates UI appropriately.
-  void UpdateMode(Mode mode);
+  void SetMode(Mode mode);
+  Mode GetMode() const;
 
   // Updates the file path, and if necessary, begins loading the file icon in
   // various sizes. This may eventually result in a callback to
@@ -189,6 +193,7 @@ class DownloadItemView : public views::View,
 
   // Sets the state and triggers a repaint.
   void SetDropdownPressed(bool pressed);
+  bool GetDropdownPressed() const;
 
   // Sets |dropdown_button_| to have the correct image for the current state.
   void UpdateDropdownButtonImage();

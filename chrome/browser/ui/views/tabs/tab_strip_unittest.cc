@@ -149,7 +149,7 @@ class TabStripTest : public ChromeViewsTestBase,
   }
 
   bool IsShowingAttentionIndicator(Tab* tab) {
-    return tab->icon_->ShowingAttentionIndicator();
+    return tab->icon_->GetShowingAttentionIndicator();
   }
 
   // Checks whether |tab| contains |point_in_tabstrip_coords|, where the point

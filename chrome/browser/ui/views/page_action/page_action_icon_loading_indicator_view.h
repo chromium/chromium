@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_ICON_LOADING_INDICATOR_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_ICON_LOADING_INDICATOR_VIEW_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/throb_animation.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 
@@ -23,12 +23,16 @@ class PageActionIconLoadingIndicatorView : public views::View,
                                            public views::ViewObserver,
                                            public gfx::AnimationDelegate {
  public:
+  METADATA_HEADER(PageActionIconLoadingIndicatorView);
   explicit PageActionIconLoadingIndicatorView(PageActionIconView* parent);
+  PageActionIconLoadingIndicatorView(
+      const PageActionIconLoadingIndicatorView&) = delete;
+  PageActionIconLoadingIndicatorView& operator=(
+      const PageActionIconLoadingIndicatorView&) = delete;
   ~PageActionIconLoadingIndicatorView() override;
 
-  void ShowAnimation();
-  void StopAnimation();
-  bool IsAnimating();
+  void SetAnimating(bool animating);
+  bool GetAnimating() const;
 
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
@@ -45,8 +49,6 @@ class PageActionIconLoadingIndicatorView : public views::View,
   gfx::ThrobAnimation animation_{this};
 
   PageActionIconView* const parent_;
-
-  DISALLOW_COPY_AND_ASSIGN(PageActionIconLoadingIndicatorView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_ICON_LOADING_INDICATOR_VIEW_H_

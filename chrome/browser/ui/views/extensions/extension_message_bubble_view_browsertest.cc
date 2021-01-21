@@ -73,8 +73,8 @@ gfx::Rect GetAnchorReferenceBoundsForBrowser(
   views::View* anchor_view = nullptr;
   switch (anchor) {
     case ExtensionMessageBubbleBrowserTest::ANCHOR_BROWSER_ACTION:
-      EXPECT_GT(browser_actions_container->num_toolbar_actions(), 0u);
-      if (browser_actions_container->num_toolbar_actions() == 0)
+      EXPECT_GT(browser_actions_container->GetNumToolbarActions(), 0u);
+      if (browser_actions_container->GetNumToolbarActions() == 0)
         return gfx::Rect();
       anchor_view = browser_actions_container->GetToolbarActionViewAt(0);
       break;

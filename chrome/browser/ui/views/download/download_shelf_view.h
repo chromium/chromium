@@ -14,6 +14,7 @@
 #include "ui/views/accessible_pane_view.h"
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/mouse_watcher.h"
 #include "ui/views/mouse_watcher_view_host.h"
 
@@ -36,6 +37,7 @@ class DownloadShelfView : public DownloadShelf,
                           public views::AnimationDelegateViews,
                           public views::MouseWatcherListener {
  public:
+  METADATA_HEADER(DownloadShelfView);
   DownloadShelfView(Browser* browser, BrowserView* parent);
   DownloadShelfView(const DownloadShelfView&) = delete;
   DownloadShelfView& operator=(const DownloadShelfView&) = delete;

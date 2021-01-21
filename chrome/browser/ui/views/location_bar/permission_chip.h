@@ -10,6 +10,7 @@
 #include "components/permissions/permission_prompt.h"
 #include "components/permissions/permission_request.h"
 #include "ui/views/accessible_pane_view.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/widget/widget_observer.h"
 
 class Browser;
@@ -30,10 +31,10 @@ class PermissionChip : public views::AccessiblePaneView,
                        public views::WidgetObserver,
                        public BubbleOwnerDelegate {
  public:
+  METADATA_HEADER(PermissionChip);
   explicit PermissionChip(Browser* browser);
   PermissionChip(const PermissionChip& chip) = delete;
   PermissionChip& operator=(const PermissionChip& chip) = delete;
-
   ~PermissionChip() override;
 
   void DisplayRequest(permissions::PermissionPrompt::Delegate* delegate);
@@ -41,10 +42,10 @@ class PermissionChip : public views::AccessiblePaneView,
   void OpenBubble();
   void Hide();
   void Reshow();
-  bool HasActiveRequest();
+  bool GetActiveRequest() const;
 
   views::Button* button() { return chip_button_; }
-  bool is_fully_collapsed() { return chip_button_->is_fully_collapsed(); }
+  bool is_fully_collapsed() const { return chip_button_->GetFullyCollapsed(); }
 
   // views::View:
   void OnMouseEntered(const ui::MouseEvent& event) override;
@@ -63,8 +64,8 @@ class PermissionChip : public views::AccessiblePaneView,
   void ChipButtonPressed();
   void Collapse();
   void StartCollapseTimer();
-  base::string16 GetPermissionMessage();
-  const gfx::VectorIcon& GetPermissionIconId();
+  base::string16 GetPermissionMessage() const;
+  const gfx::VectorIcon& GetPermissionIconId() const;
   void AnnouncePermissionRequested();
 
   void AnimateCollapse();

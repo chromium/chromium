@@ -115,7 +115,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionsBarBrowserTest, DragBrowserActions) {
   // Shrink the size of the container so we have an overflow menu.
   toolbar_model()->SetVisibleIconCount(2u);
   RunScheduledLayouts();
-  EXPECT_EQ(2u, container->VisibleBrowserActions());
+  EXPECT_EQ(2u, container->GetVisibleBrowserActions());
 
   // Simulate a drag and drop from the overflow menu.
   ui::OSExchangeData drop_data3;
@@ -138,7 +138,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionsBarBrowserTest, DragBrowserActions) {
   EXPECT_EQ(extension_c()->id(), browser_actions_bar()->GetExtensionId(1));
   EXPECT_EQ(extension_b()->id(), browser_actions_bar()->GetExtensionId(2));
   RunScheduledLayouts();
-  EXPECT_EQ(3u, container->VisibleBrowserActions());
+  EXPECT_EQ(3u, container->GetVisibleBrowserActions());
   EXPECT_TRUE(toolbar_model()->all_icons_visible());
 }
 
@@ -163,8 +163,8 @@ IN_PROC_BROWSER_TEST_F(BrowserActionsBarBrowserTest, MultipleWindows) {
   // Both containers should have the same order and visible actions, which
   // is right now A B C.
   RunScheduledLayouts();
-  EXPECT_EQ(3u, first_container->VisibleBrowserActions());
-  EXPECT_EQ(3u, second_container->VisibleBrowserActions());
+  EXPECT_EQ(3u, first_container->GetVisibleBrowserActions());
+  EXPECT_EQ(3u, second_container->GetVisibleBrowserActions());
   EXPECT_EQ(extension_a()->id(), first_container->GetIdAt(0u));
   EXPECT_EQ(extension_a()->id(), second_container->GetIdAt(0u));
   EXPECT_EQ(extension_b()->id(), first_container->GetIdAt(1u));
@@ -205,8 +205,8 @@ IN_PROC_BROWSER_TEST_F(BrowserActionsBarBrowserTest, MultipleWindows) {
   first_container->OnResize(1, true);
   // The first and second container should each have resized.
   RunScheduledLayouts();
-  EXPECT_EQ(2u, first_container->VisibleBrowserActions());
-  EXPECT_EQ(2u, second_container->VisibleBrowserActions());
+  EXPECT_EQ(2u, first_container->GetVisibleBrowserActions());
+  EXPECT_EQ(2u, second_container->GetVisibleBrowserActions());
 }
 
 // Test that the BrowserActionsContainer responds correctly when the underlying
@@ -222,7 +222,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionsBarBrowserTest, HighlightMode) {
           ->GetBrowserActionsContainer();
   auto container_can_be_resized = [container]() {
     // The container can only be resized if we can start a drag for the view.
-    EXPECT_GE(container->num_toolbar_actions(), 1u);
+    EXPECT_GE(container->GetNumToolbarActions(), 1u);
     ToolbarActionView* action_view = container->GetToolbarActionViewAt(0);
     gfx::Point point(action_view->x(), action_view->y());
     return container->CanStartDragForView(action_view, point, point);
@@ -556,10 +556,10 @@ void BrowserActionsContainerOverflowTest::UpdateUi() {
 }
 
 bool BrowserActionsContainerOverflowTest::ViewOrdersMatch() {
-  if (main_bar_->num_toolbar_actions() !=
-      overflow_bar_->num_toolbar_actions())
+  if (main_bar_->GetNumToolbarActions() !=
+      overflow_bar_->GetNumToolbarActions())
     return false;
-  for (size_t i = 0; i < main_bar_->num_toolbar_actions(); ++i) {
+  for (size_t i = 0; i < main_bar_->GetNumToolbarActions(); ++i) {
     if (main_bar_->GetIdAt(i) != overflow_bar_->GetIdAt(i))
       return false;
   }
@@ -575,7 +575,7 @@ BrowserActionsContainerOverflowTest::VerifyVisibleCount(
 
   // Loop through and check each browser action for proper visibility (which
   // implicitly also guarantees that the proper number are visible).
-  for (size_t i = 0; i < overflow_bar_->num_toolbar_actions(); ++i) {
+  for (size_t i = 0; i < overflow_bar_->GetNumToolbarActions(); ++i) {
     bool visible = i < expected_visible;
     if (main_bar_->GetToolbarActionViewAt(i)->GetVisible() != visible) {
       return testing::AssertionFailure() << "Index " << i <<
@@ -599,7 +599,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionsContainerOverflowTest,
   // All actions are showing, and are in the installation order.
   EXPECT_TRUE(toolbar_model()->all_icons_visible());
   EXPECT_EQ(3u, toolbar_model()->visible_icon_count());
-  ASSERT_EQ(3u, main_bar()->num_toolbar_actions());
+  ASSERT_EQ(3u, main_bar()->GetNumToolbarActions());
   EXPECT_EQ(extension_a()->id(), main_bar()->GetIdAt(0u));
   EXPECT_EQ(extension_b()->id(), main_bar()->GetIdAt(1u));
   EXPECT_EQ(extension_c()->id(), main_bar()->GetIdAt(2u));
@@ -651,7 +651,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionsContainerOverflowTest,
   UpdateUi();
 
   // Verify starting state is A B [C].
-  ASSERT_EQ(3u, main_bar()->num_toolbar_actions());
+  ASSERT_EQ(3u, main_bar()->GetNumToolbarActions());
   EXPECT_EQ(extension_a()->id(), main_bar()->GetIdAt(0u));
   EXPECT_EQ(extension_b()->id(), main_bar()->GetIdAt(1u));
   EXPECT_EQ(extension_c()->id(), main_bar()->GetIdAt(2u));

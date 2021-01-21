@@ -5,32 +5,34 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_WEB_FOOTER_EXPERIMENT_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_WEB_FOOTER_EXPERIMENT_VIEW_H_
 
-#include "base/macros.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 class Profile;
 
 class WebFooterExperimentView : public views::WebView {
  public:
+  METADATA_HEADER(WebFooterExperimentView);
   explicit WebFooterExperimentView(Profile* profile);
+  WebFooterExperimentView(const WebFooterExperimentView&) = delete;
+  WebFooterExperimentView& operator=(const WebFooterExperimentView&) = delete;
 
  private:
   class FirstPaintMetricsCollector : public content::WebContentsObserver {
    public:
     explicit FirstPaintMetricsCollector(content::WebContents* web_contents);
+    FirstPaintMetricsCollector(const FirstPaintMetricsCollector&) = delete;
+    FirstPaintMetricsCollector& operator=(const FirstPaintMetricsCollector&) =
+        delete;
     ~FirstPaintMetricsCollector() override;
 
    private:
     // content::WebContentsObserver:
     void DidFirstVisuallyNonEmptyPaint() override;
-
-    DISALLOW_COPY_AND_ASSIGN(FirstPaintMetricsCollector);
   };
 
   FirstPaintMetricsCollector metrics_collector_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebFooterExperimentView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_WEB_FOOTER_EXPERIMENT_VIEW_H_

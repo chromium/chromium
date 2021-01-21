@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string16.h"
@@ -59,6 +58,26 @@ class IconLabelBubbleView : public views::InkDropObserver,
 
     // Returns the background color behind the IconLabelBubbleView.
     virtual SkColor GetIconLabelBubbleBackgroundColor() const = 0;
+  };
+
+  // A view that draws the separator.
+  class SeparatorView : public views::View {
+   public:
+    METADATA_HEADER(SeparatorView);
+    explicit SeparatorView(IconLabelBubbleView* owner);
+    SeparatorView(const SeparatorView&) = delete;
+    SeparatorView& operator=(const SeparatorView&) = delete;
+
+    // views::View:
+    void OnPaint(gfx::Canvas* canvas) override;
+    void OnThemeChanged() override;
+
+    // Updates the opacity based on the ink drop's state.
+    void UpdateOpacity();
+
+   private:
+    // Weak.
+    IconLabelBubbleView* owner_;
   };
 
   IconLabelBubbleView(const gfx::FontList& font_list, Delegate* delegate);
@@ -180,25 +199,6 @@ class IconLabelBubbleView : public views::InkDropObserver,
 
  private:
   class HighlightPathGenerator;
-
-  // A view that draws the separator.
-  class SeparatorView : public views::View {
-   public:
-    explicit SeparatorView(IconLabelBubbleView* owner);
-
-    // views::View:
-    void OnPaint(gfx::Canvas* canvas) override;
-    void OnThemeChanged() override;
-
-    // Updates the opacity based on the ink drop's state.
-    void UpdateOpacity();
-
-   private:
-    // Weak.
-    IconLabelBubbleView* owner_;
-
-    DISALLOW_COPY_AND_ASSIGN(SeparatorView);
-  };
 
   // Spacing between the image and the label.
   int GetInternalSpacing() const;

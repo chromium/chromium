@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view_model.h"
 #include "ui/views/controls/button/button_controller.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 ChromeLabsButton::ChromeLabsButton()
     : ToolbarButton(base::BindRepeating(&ChromeLabsButton::ButtonPressed,
@@ -19,10 +20,6 @@ ChromeLabsButton::~ChromeLabsButton() = default;
 
 void ChromeLabsButton::UpdateIcon() {
   UpdateIconsWithStandardColors(kChromeLabsIcon);
-}
-
-const char* ChromeLabsButton::GetClassName() const {
-  return "ChromeLabsButton";
 }
 
 void ChromeLabsButton::SetLabInfoForTesting(
@@ -39,3 +36,6 @@ void ChromeLabsButton::ButtonPressed() {
       std::make_unique<ChromeLabsBubbleViewModel>(test_lab_info_);
   ChromeLabsBubbleView::Show(this, std::move(model));
 }
+
+BEGIN_METADATA(ChromeLabsButton, ToolbarButton)
+END_METADATA

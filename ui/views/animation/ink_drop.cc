@@ -5,6 +5,7 @@
 #include "ui/views/animation/ink_drop.h"
 
 #include "ui/views/animation/ink_drop_observer.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace views {
 
@@ -51,5 +52,8 @@ bool InkDropContainerView::GetCanProcessEventsWithinSubtree() const {
   // Ensure the container View is found as the EventTarget instead of this.
   return false;
 }
+
+BEGIN_METADATA(InkDropContainerView, views::View)
+END_METADATA
 
 }  // namespace views

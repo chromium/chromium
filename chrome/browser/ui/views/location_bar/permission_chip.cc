@@ -19,6 +19,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -150,8 +151,8 @@ void PermissionChip::Hide() {
   SetVisible(false);
 }
 
-bool PermissionChip::HasActiveRequest() {
-  return delegate_;
+bool PermissionChip::GetActiveRequest() const {
+  return !!delegate_;
 }
 
 void PermissionChip::OnMouseEntered(const ui::MouseEvent& event) {
@@ -210,7 +211,7 @@ void PermissionChip::StartCollapseTimer() {
                &PermissionChip::Collapse);
 }
 
-const gfx::VectorIcon& PermissionChip::GetPermissionIconId() {
+const gfx::VectorIcon& PermissionChip::GetPermissionIconId() const {
   auto requests = delegate_->Requests();
   if (requests.size() == 1)
     return permissions::GetIconId(requests[0]->GetRequestType());
@@ -222,7 +223,7 @@ const gfx::VectorIcon& PermissionChip::GetPermissionIconId() {
              : permissions::GetIconId(requests[1]->GetRequestType());
 }
 
-base::string16 PermissionChip::GetPermissionMessage() {
+base::string16 PermissionChip::GetPermissionMessage() const {
   auto requests = delegate_->Requests();
 
   return requests.size() == 1
@@ -235,3 +236,8 @@ void PermissionChip::AnnouncePermissionRequested() {
   GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(
       IDS_PERMISSIONS_REQUESTED_SCREENREADER_ANNOUNCEMENT));
 }
+
+BEGIN_METADATA(PermissionChip, views::View)
+ADD_READONLY_PROPERTY_METADATA(bool, ActiveRequest)
+ADD_READONLY_PROPERTY_METADATA(base::string16, PermissionMessage)
+END_METADATA

@@ -23,6 +23,7 @@
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/controls/button/button_controller.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace media_router {
 
@@ -232,5 +233,8 @@ void CastToolbarButton::LogIconChange(const gfx::VectorIcon* icon) {
     NOTREACHED();
   }
 }
+
+BEGIN_METADATA(CastToolbarButton, ToolbarButton)
+END_METADATA
 
 }  // namespace media_router

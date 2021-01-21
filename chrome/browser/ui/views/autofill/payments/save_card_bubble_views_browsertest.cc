@@ -2168,7 +2168,7 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTestForStatusChip,
   // Ensures icon is visible and animation is not.
   EXPECT_TRUE(GetSaveCardIconView()->GetVisible());
   EXPECT_FALSE(
-      GetSaveCardIconView()->loading_indicator_for_testing()->IsAnimating());
+      GetSaveCardIconView()->loading_indicator_for_testing()->GetAnimating());
 
   ResetEventWaiterForSequence({DialogEvent::SENT_UPLOAD_CARD_REQUEST});
   ClickOnDialogViewWithIdAndWait(DialogViewId::OK_BUTTON);
@@ -2177,7 +2177,7 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTestForStatusChip,
   // Ensures icon and the animation are visible.
   EXPECT_TRUE(GetSaveCardIconView()->GetVisible());
   EXPECT_TRUE(
-      GetSaveCardIconView()->loading_indicator_for_testing()->IsAnimating());
+      GetSaveCardIconView()->loading_indicator_for_testing()->GetAnimating());
 
   SetUploadCardRpcPaymentsSucceeds();
   ResetEventWaiterForSequence({DialogEvent::RECEIVED_UPLOAD_CARD_RESPONSE,
@@ -2215,7 +2215,7 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTestForStatusChip,
   // Ensures icon is visible and animation is not.
   EXPECT_TRUE(GetSaveCardIconView()->GetVisible());
   EXPECT_FALSE(
-      GetSaveCardIconView()->loading_indicator_for_testing()->IsAnimating());
+      GetSaveCardIconView()->loading_indicator_for_testing()->GetAnimating());
 
   ResetEventWaiterForSequence({DialogEvent::SENT_UPLOAD_CARD_REQUEST});
   ClickOnDialogViewWithIdAndWait(DialogViewId::OK_BUTTON);
@@ -2224,7 +2224,7 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTestForStatusChip,
   // Ensures icon and the animation are visible.
   EXPECT_TRUE(GetSaveCardIconView()->GetVisible());
   EXPECT_TRUE(
-      GetSaveCardIconView()->loading_indicator_for_testing()->IsAnimating());
+      GetSaveCardIconView()->loading_indicator_for_testing()->GetAnimating());
 
   SetUploadCardRpcPaymentsFails();
   ResetEventWaiterForSequence({DialogEvent::RECEIVED_UPLOAD_CARD_RESPONSE,
@@ -2236,7 +2236,7 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTestForStatusChip,
   // Ensures icon is visible and the animation is not animating.
   EXPECT_TRUE(GetSaveCardIconView()->GetVisible());
   EXPECT_FALSE(
-      GetSaveCardIconView()->loading_indicator_for_testing()->IsAnimating());
+      GetSaveCardIconView()->loading_indicator_for_testing()->GetAnimating());
 
   // UMA should have been logged.
   histogram_tester.ExpectTotalCount("Autofill.CreditCardUploadFeedback", 2);

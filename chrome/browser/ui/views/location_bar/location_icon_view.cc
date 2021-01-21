@@ -25,6 +25,7 @@
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 using content::WebContents;
 using security_state::SecurityLevel;
@@ -127,7 +128,7 @@ int LocationIconView::GetMinimumLabelTextWidth() const {
   return GetMinimumSizeForPreferredSize(GetSizeForLabelWidth(width)).width();
 }
 
-bool LocationIconView::ShouldShowText() const {
+bool LocationIconView::GetShowText() const {
   if (delegate_->IsEditingOrEmpty())
     return false;
 
@@ -180,7 +181,7 @@ base::string16 LocationIconView::GetText() const {
   return delegate_->GetLocationBarModel()->GetSecureDisplayText();
 }
 
-bool LocationIconView::ShouldAnimateTextVisibilityChange() const {
+bool LocationIconView::GetAnimateTextVisibilityChange() const {
   if (delegate_->IsEditingOrEmpty())
     return false;
 
@@ -196,8 +197,8 @@ bool LocationIconView::ShouldAnimateTextVisibilityChange() const {
 void LocationIconView::UpdateTextVisibility(bool suppress_animations) {
   SetLabel(GetText());
 
-  bool should_show = ShouldShowText();
-  if (!ShouldAnimateTextVisibilityChange() || suppress_animations)
+  bool should_show = GetShowText();
+  if (!GetAnimateTextVisibilityChange() || suppress_animations)
     ResetSlideAnimation(should_show);
   else if (should_show)
     AnimateIn(base::nullopt);
@@ -286,3 +287,10 @@ gfx::Size LocationIconView::GetMinimumSizeForPreferredSize(
       GetSizeForLabelWidth(font_list().GetExpectedTextWidth(kMinCharacters)));
   return size;
 }
+
+BEGIN_METADATA(LocationIconView, IconLabelBubbleView)
+ADD_READONLY_PROPERTY_METADATA(int, MinimumLabelTextWidth)
+ADD_READONLY_PROPERTY_METADATA(base::string16, Text)
+ADD_READONLY_PROPERTY_METADATA(bool, ShowText)
+ADD_READONLY_PROPERTY_METADATA(bool, AnimateTextVisibilityChange)
+END_METADATA

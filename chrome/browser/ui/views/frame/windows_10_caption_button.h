@@ -8,15 +8,19 @@
 #include "chrome/browser/ui/view_ids.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 class GlassBrowserFrameView;
 
 class Windows10CaptionButton : public views::Button {
  public:
+  METADATA_HEADER(Windows10CaptionButton);
   Windows10CaptionButton(PressedCallback callback,
                          GlassBrowserFrameView* frame_view,
                          ViewID button_type,
                          const base::string16& accessible_name);
+  Windows10CaptionButton(const Windows10CaptionButton&) = delete;
+  Windows10CaptionButton& operator=(const Windows10CaptionButton&) = delete;
 
   // views::Button:
   gfx::Size CalculatePreferredSize() const override;
@@ -43,8 +47,6 @@ class Windows10CaptionButton : public views::Button {
 
   GlassBrowserFrameView* frame_view_;
   ViewID button_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(Windows10CaptionButton);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_WINDOWS_10_CAPTION_BUTTON_H_
