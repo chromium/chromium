@@ -100,6 +100,7 @@ class BluetoothNotificationController;
 class BluetoothPowerController;
 class BrightnessControlDelegate;
 class CaptureModeController;
+class ControlVHistogramRecorder;
 class CrosDisplayConfig;
 class DesksController;
 class DetachableBaseHandler;
@@ -725,6 +726,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<ShelfWindowWatcher> shelf_window_watcher_;
   std::unique_ptr<ShellDelegate> shell_delegate_;
   std::unique_ptr<CaptureModeController> capture_mode_controller_;
+  std::unique_ptr<ControlVHistogramRecorder> control_v_histogram_recorder_;
   std::unique_ptr<ShutdownControllerImpl> shutdown_controller_;
   std::unique_ptr<SystemNotificationController> system_notification_controller_;
   std::unique_ptr<SystemTrayModel> system_tray_model_;
