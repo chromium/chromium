@@ -232,9 +232,35 @@ void BrowserAccessibilityManagerWin::FireGeneratedEvent(
       ui::AXNode::AXID focus_id =
           ax_tree()->GetUnignoredSelection().focus_object_id;
       BrowserAccessibility* focus_object = GetFromID(focus_id);
-      if (focus_object && focus_object->HasVisibleCaretOrSelection())
-        FireWinAccessibilityEvent(IA2_EVENT_TEXT_CARET_MOVED, focus_object);
-      HandleTextSelectionChangedEvent(*node);
+      if (focus_object) {
+        HandleTextSelectionChangedEvent(*focus_object);
+        if (BrowserAccessibility* text_field =
+                focus_object->GetTextFieldAncestor()) {
+          HandleTextSelectionChangedEvent(*text_field);
+
+          // Plain text fields (including input and textarea elements) have
+          // descendant objects that are part of their internal implementation
+          // in Blink, which are not exposed to platform APIs in the
+          // accessibility tree. Firing an event on such descendants will not
+          // reach the assistive software.
+          if (text_field->IsPlainTextField()) {
+            FireWinAccessibilityEvent(IA2_EVENT_TEXT_CARET_MOVED, text_field);
+          } else {
+            FireWinAccessibilityEvent(IA2_EVENT_TEXT_CARET_MOVED, focus_object);
+          }
+        } else {
+          // Fire the event on the root object, which in the absence of a text
+          // field ancestor is the closest UIA text provider (other than the
+          // focused object) in which the selection has changed.
+          HandleTextSelectionChangedEvent(*node);
+
+          // "IA2_EVENT_TEXT_CARET_MOVED" should only be fired when a visible
+          // caret or a selection is present. In the case of a text field above,
+          // this is implicitly true.
+          if (node->HasVisibleCaretOrSelection())
+            FireWinAccessibilityEvent(IA2_EVENT_TEXT_CARET_MOVED, focus_object);
+        }
+      }
       break;
     }
     // aria-dropeffect is deprecated in WAI-ARIA 1.1.
@@ -885,9 +911,16 @@ void BrowserAccessibilityManagerWin::FinalizeAccessibilityEvents() {
     FireUiaPropertyChangedEvent(UIA_AriaPropertiesPropertyId, event_node);
   aria_properties_events_.clear();
 
-  // Finalize text selection events.
-  for (BrowserAccessibility* event_node : text_selection_changed_events_)
-    FireUiaAccessibilityEvent(UIA_Text_TextSelectionChangedEventId, event_node);
+  // Finalize selection changed events.
+  for (BrowserAccessibility* event_node : text_selection_changed_events_) {
+    DCHECK(event_node);
+    if (ToBrowserAccessibilityWin(event_node)
+            ->GetCOM()
+            ->IsPatternProviderSupported(UIA_TextPatternId)) {
+      FireUiaAccessibilityEvent(UIA_Text_TextSelectionChangedEventId,
+                                event_node);
+    }
+  }
   text_selection_changed_events_.clear();
 
   // Finalize text changed events.
