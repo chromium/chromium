@@ -30,7 +30,7 @@ bool IsMatchingRobotsRule(const std::string& path, const std::string& pattern) {
   }
 
   size_t numpos = 1;
-  size_t pos[path.length() + 1];
+  std::vector<size_t> pos(path.length() + 1, 0);
 
   // The pos[] array holds a sorted list of indexes of 'path', with length
   // 'numpos'.  At the start and end of each iteration of the main loop below,
@@ -39,7 +39,6 @@ bool IsMatchingRobotsRule(const std::string& path, const std::string& pattern) {
   // return false. If we reach the end of 'pattern' with at least one element
   // in pos[], return true.
 
-  pos[0] = 0;
   for (auto pat = pattern.begin(); pat != pattern.end(); ++pat) {
     if (*pat == '$' && pat + 1 == pattern.end()) {
       return (pos[numpos - 1] == path.length());
