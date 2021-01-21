@@ -7,6 +7,7 @@
 
 #import <AVFoundation/AVFoundation.h>
 #import <Foundation/Foundation.h>
+#include "base/callback_forward.h"
 
 #include "base/mac/scoped_dispatch_object.h"
 #include "base/mac/scoped_nsobject.h"
@@ -55,6 +56,9 @@ CAPTURE_EXPORT
       GUARDED_BY(_lock);  // weak.
   bool _capturedFirstFrame GUARDED_BY(_lock);
 
+  // Used to rate-limit crash reports for https://crbug.com/1168112.
+  bool _hasDumpedForFrameSizeMismatch;
+
   base::scoped_nsobject<AVCaptureSession> _captureSession;
 
   // |captureDevice_| is an object coming from AVFoundation, used only to be
@@ -87,6 +91,14 @@ CAPTURE_EXPORT
 
 - (void)setOnStillImageOutputStoppedForTesting:
     (base::RepeatingCallback<void()>)onStillImageOutputStopped;
+
+// Use the below only for test.
+- (void)callLocked:(base::OnceClosure)lambda;
+
+- (BOOL)processPixelBuffer:(CVImageBufferRef)pixelBuffer
+             captureFormat:(const media::VideoCaptureFormat&)captureFormat
+                colorSpace:(const gfx::ColorSpace&)colorSpace
+                 timestamp:(const base::TimeDelta)timestamp;
 
 @end
 

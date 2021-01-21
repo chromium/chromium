@@ -10,12 +10,15 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/location.h"
 #include "base/mac/foundation_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
+#include "components/crash/core/common/crash_key.h"
 #include "media/base/mac/color_space_util_mac.h"
 #include "media/base/media_switches.h"
 #include "media/base/timestamp_constants.h"
@@ -623,20 +626,40 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
     packedBufferSize += bytesPerRow * height;
   }
 
+  // If media::VideoFrame::PlaneSize differs from the CVPixelBuffer's size then
+  // generate a crash report to show the difference.
+  // https://crbug.com/1168112
+  CHECK_EQ(pixelBufferHeights.size(), packedHeights.size());
+  for (size_t plane = 0; plane < pixelBufferHeights.size(); ++plane) {
+    if (pixelBufferHeights[plane] != packedHeights[plane] &&
+        !_hasDumpedForFrameSizeMismatch) {
+      static crash_reporter::CrashKeyString<64> planeInfoKey(
+          "core-video-plane-info");
+      planeInfoKey.Set(
+          base::StringPrintf("plane:%zu cv_height:%zu packed_height:%zu", plane,
+                             pixelBufferHeights[plane], packedHeights[plane]));
+      base::debug::DumpWithoutCrashing();
+      _hasDumpedForFrameSizeMismatch = true;
+    }
+  }
+
   // If |pixelBuffer| is not tightly packed, then copy it to |packedBufferCopy|,
   // because ReceiveFrame() below assumes tight packing.
   // https://crbug.com/1151936
   bool needsCopyToPackedBuffer = pixelBufferBytesPerRows != packedBytesPerRows;
-  CHECK(pixelBufferHeights == packedHeights);
   std::vector<uint8_t> packedBufferCopy;
   if (needsCopyToPackedBuffer) {
-    CHECK(pixelBufferHeights == packedHeights);
-    packedBufferCopy.resize(packedBufferSize);
+    packedBufferCopy.resize(packedBufferSize, 0);
     uint8_t* dstAddr = packedBufferCopy.data();
     for (size_t plane = 0; plane < numPlanes; ++plane) {
       uint8_t* srcAddr = pixelBufferAddresses[plane];
-      for (size_t row = 0; row < packedHeights[plane]; ++row) {
-        memcpy(dstAddr, srcAddr, packedBytesPerRows[plane]);
+      size_t row = 0;
+      for (row = 0;
+           row < std::min(packedHeights[plane], pixelBufferHeights[plane]);
+           ++row) {
+        memcpy(dstAddr, srcAddr,
+               std::min(packedBytesPerRows[plane],
+                        pixelBufferBytesPerRows[plane]));
         dstAddr += packedBytesPerRows[plane];
         srcAddr += pixelBufferBytesPerRows[plane];
       }
@@ -825,6 +848,11 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
         media::VideoCaptureError::
             kMacAvFoundationReceivedAVCaptureSessionRuntimeErrorNotification,
         FROM_HERE, base::SysNSStringToUTF8(error));
+}
+
+- (void)callLocked:(base::OnceClosure)lambda {
+  base::AutoLock lock(_lock);
+  std::move(lambda).Run();
 }
 
 @end

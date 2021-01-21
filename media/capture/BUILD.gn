@@ -194,6 +194,7 @@ component("capture_lib") {
       "video/mac/video_capture_metrics_mac.mm",
     ]
     deps += [
+      "//components/crash/core/common:crash_key",
       "//services/video_capture/public/uma",
       "//third_party/decklink",
     ]
