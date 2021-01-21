@@ -4,10 +4,13 @@
 
 #include "chromeos/services/secure_channel/data_with_timestamp.h"
 
-#include <iomanip>
 #include <sstream>
 
 #include "base/check.h"
+#include "base/i18n/time_formatting.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 
 namespace chromeos {
 
@@ -37,7 +40,12 @@ std::string DataWithTimestamp::ToDebugString(
   std::stringstream ss;
   ss << "[";
   for (const DataWithTimestamp& data : data_with_timestamps) {
-    ss << "\n  (" << data.start_timestamp_ms << ": " << data.DataInHex()
+    ss << "\n  (data: " << data.DataInHex() << ", start: "
+       << base::UTF16ToUTF8(base::TimeFormatShortDateAndTimeWithTimeZone(
+              base::Time::FromJavaTime(data.start_timestamp_ms)))
+       << ", end: "
+       << base::UTF16ToUTF8(base::TimeFormatShortDateAndTimeWithTimeZone(
+              base::Time::FromJavaTime(data.end_timestamp_ms)))
        << "),";
   }
   ss << "\n]";
@@ -49,13 +57,7 @@ bool DataWithTimestamp::ContainsTime(const int64_t timestamp_ms) const {
 }
 
 std::string DataWithTimestamp::DataInHex() const {
-  std::stringstream ss;
-  ss << "0x";
-  for (uint8_t byte : data) {
-    ss << std::hex << std::setfill('0') << std::setw(2)
-       << static_cast<uint64_t>(byte);
-  }
-  return ss.str();
+  return "0x" + base::HexEncode(data.data(), data.size());
 }
 
 bool DataWithTimestamp::operator==(const DataWithTimestamp& other) const {

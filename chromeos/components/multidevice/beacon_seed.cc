@@ -100,9 +100,12 @@ std::ostream& operator<<(std::ostream& stream, const BeaconSeed& beacon_seed) {
   base::Base64Encode(beacon_seed.data(), &base_64_data);
 
   stream << "{base_64_data: \"" << base_64_data << "\", start_time: \""
-         << base::TimeFormatShortDateAndTime(beacon_seed.start_time()) << "\", "
+         << base::TimeFormatShortDateAndTimeWithTimeZone(
+                beacon_seed.start_time())
+         << "\", "
          << "end_time: \""
-         << base::TimeFormatShortDateAndTime(beacon_seed.start_time()) << "\"}";
+         << base::TimeFormatShortDateAndTimeWithTimeZone(beacon_seed.end_time())
+         << "\"}";
 
   return stream;
 }
