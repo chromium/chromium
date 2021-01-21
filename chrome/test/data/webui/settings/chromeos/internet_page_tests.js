@@ -312,7 +312,8 @@ suite('InternetPage', function() {
   });
 
   test(
-      'Show cellular setup dialog if route params contain showCellularSetup',
+      'Show pSIM flow cellular setup dialog if route params' +
+          'contain showCellularSetup and showPsimFlow',
       async function() {
         loadTimeData.overrideValues({
           updatedCellularActivationUi: true,
@@ -322,7 +323,7 @@ suite('InternetPage', function() {
         const mojom = chromeos.networkConfig.mojom;
         mojoApi_.setNetworkTypeEnabledState(mojom.NetworkType.kCellular, true);
         const cellularNetwork = OncMojo.getDefaultManagedProperties(
-            mojom.NetworkType.kCellular, 'cellular_guid', name);
+            mojom.NetworkType.kCellular, 'cellular_guid');
         cellularNetwork.connectable = false;
         mojoApi_.setManagedPropertiesForTest(cellularNetwork);
 
@@ -336,12 +337,17 @@ suite('InternetPage', function() {
         params.append('type', 'Cellular');
         params.append('name', 'cellular');
         params.append('showCellularSetup', 'true');
+        params.append('showPsimFlow', 'true');
         settings.Router.getInstance().navigateTo(
             settings.routes.INTERNET_NETWORKS, params);
 
         await flushAsync();
         cellularSetupDialog = internetPage.$$('#cellularSetupDialog');
         assertTrue(!!cellularSetupDialog);
+        const psimFlow =
+            cellularSetupDialog.shadowRoot.querySelector('cellular-setup')
+                .shadowRoot.querySelector('#psim-flow-ui');
+        assertTrue(!!psimFlow);
       });
 
   // TODO(stevenjb): Figure out a way to reliably test navigation. Currently

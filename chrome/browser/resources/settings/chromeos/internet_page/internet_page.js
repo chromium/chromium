@@ -251,9 +251,16 @@ Polymer({
       // e.g. chrome://settings/internet/networks?type=WiFi
       const queryParams = settings.Router.getInstance().getQueryParameters();
       const type = queryParams.get('type');
-      this.showCellularSetupDialog_ = !!queryParams.get('showCellularSetup');
       if (type) {
         this.subpageType_ = OncMojo.getNetworkTypeFromString(type);
+      }
+
+      this.showCellularSetupDialog_ =
+          queryParams.get('showCellularSetup') === 'true';
+      const showPSimFlow = queryParams.get('showPsimFlow') === 'true';
+      if (showPSimFlow && this.showCellularSetupDialog_) {
+        this.cellularSetupDialogPageName_ =
+            cellularSetup.CellularSetupPageName.PSIM_FLOW_UI;
       }
     } else if (route === settings.routes.KNOWN_NETWORKS) {
       // Handle direct navigation to the known networks page,
