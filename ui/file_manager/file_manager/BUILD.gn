@@ -22,6 +22,15 @@ action("gen_main_html") {
   ]
 }
 
+# TODO: Remove this file copy when breadcrumb.js supports only JS modules.
+copy("fix_broken_images") {
+  sources = [
+    "foreground/images/files/ui/arrow_right.svg",
+    "foreground/images/files/ui/menu_ng.svg",
+  ]
+  outputs = [ "$target_gen_dir/images/files/ui/{{source_file_part}}" ]
+}
+
 generated_static_grdp = "$target_gen_dir/static_resources.grdp"
 
 generate_grd("build_static_grdp") {
