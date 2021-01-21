@@ -114,4 +114,19 @@ base::TimeDelta SysInfo::Uptime() {
   return base::TimeDelta::FromMicroseconds(uptime_in_microseconds);
 }
 
+// static
+std::string SysInfo::ProcessCPUArchitecture() {
+#if defined(ARCH_CPU_X86)
+  return "x86";
+#elif defined(ARCH_CPU_X86_64)
+  return "x86_64";
+#elif defined(ARCH_CPU_ARMEL)
+  return "ARM";
+#elif defined(ARCH_CPU_ARM64)
+  return "ARM_64";
+#else
+  return std::string();
+#endif
+}
+
 }  // namespace base

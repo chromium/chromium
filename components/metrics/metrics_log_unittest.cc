@@ -181,6 +181,9 @@ TEST_F(MetricsLogTest, BasicRecord) {
 #if !defined(OS_IOS)
   hardware->set_cpu_architecture(base::SysInfo::OperatingSystemArchitecture());
 #endif
+  auto app_os_arch = base::SysInfo::ProcessCPUArchitecture();
+  if (!app_os_arch.empty())
+    hardware->set_app_cpu_architecture(app_os_arch);
   hardware->set_system_ram_mb(base::SysInfo::AmountOfPhysicalMemoryMB());
   hardware->set_hardware_class(GetExpectedHardwareClass());
 #if defined(OS_WIN)

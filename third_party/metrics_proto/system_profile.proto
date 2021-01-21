@@ -147,12 +147,18 @@ message SystemProfileProto {
   optional OS os = 5;
 
   // Information on the user's hardware.
-  // Next tag: 21
+  // Next tag: 22
   message Hardware {
-    // CPU architecture. Taken from uname -m and modified in Chromium logic.
+    // OS CPU architecture. Taken from uname -m and modified in Chromium logic.
     // Common options are: x86, x86_64, armv7l, armv8l, aarch64.
     // Not recorded on iOS.
     optional string cpu_architecture = 1;
+
+    // Browser process CPU architecture. Will be different from
+    // `cpu_architecture` in the case where Chromium runs non-natively (e.g.
+    // macOS Rosetta or Arm Windows). One of four values: x86, x86_64, ARM,
+    // ARM_64. Added in M90.
+    optional string app_cpu_architecture = 21;
 
     // The amount of RAM present on the system, in megabytes.
     optional int64 system_ram_mb = 2;
