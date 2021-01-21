@@ -50,7 +50,6 @@ Polymer({
 
   behaviors: [
     OobeI18nBehavior,
-    OobeDialogHostBehavior,
     LoginScreenBehavior,
     MultiStepBehavior,
   ],
@@ -235,16 +234,16 @@ Polymer({
           chrome.send('oauthEnrollCompleteLogin', [detail.email]);
         }).bind(this));
 
-    this.$.adJoinUI.addEventListener('authCompleted', function(e) {
-      this.$.adJoinUI.disabled = true;
-      this.$.adJoinUI.loading = true;
+    this.$["step-ad-join"].addEventListener('authCompleted', function(e) {
+      this.$["step-ad-join"].disabled = true;
+      this.$["step-ad-join"].loading = true;
       chrome.send('oauthEnrollAdCompleteLogin', [
         e.detail.machine_name, e.detail.distinguished_name,
         e.detail.encryption_types, e.detail.username, e.detail.password
       ]);
     }.bind(this));
-    this.$.adJoinUI.addEventListener('unlockPasswordEntered', function(e) {
-      this.$.adJoinUI.disabled = true;
+    this.$["step-ad-join"].addEventListener('unlockPasswordEntered', function(e) {
+      this.$["step-ad-join"].disabled = true;
       chrome.send(
           'oauthEnrollAdUnlockConfiguration', [e.detail.unlock_password]);
     }.bind(this));
@@ -336,7 +335,7 @@ Polymer({
     this.isAutoEnroll_ = data.attestationBased;
 
     this.authenticatorDialogDisplayed_ = false;
-    cr.ui.login.invokePolymerMethod(this.$.adJoinUI, 'onBeforeShow');
+    cr.ui.login.invokePolymerMethod(this.$["step-ad-join"], 'onBeforeShow');
     if (!this.uiStep) {
       this.showStep(data.attestationBased ?
           ENROLLMENT_STEP.WORKING : ENROLLMENT_STEP.SIGNIN);
@@ -355,7 +354,7 @@ Polymer({
    * Executed on language change.
    */
   updateLocalizedContent: function() {
-    this.$.adJoinUI.i18nUpdateLocale();
+    this.$["step-ad-join"].i18nUpdateLocale();
     this.i18nUpdateLocale();
   },
 
@@ -400,9 +399,9 @@ Polymer({
   showStep(step) {
     this.setUIStep(step);
     if (step === ENROLLMENT_STEP.AD_JOIN) {
-      this.$.adJoinUI.disabled = false;
-      this.$.adJoinUI.loading = false;
-      this.$.adJoinUI.focus();
+      this.$["step-ad-join"].disabled = false;
+      this.$["step-ad-join"].loading = false;
+      this.$["step-ad-join"].focus();
     }
     this.isCancelDisabled =
         (step === ENROLLMENT_STEP.SIGNIN && !this.isManualEnrollment_) ||
@@ -425,14 +424,14 @@ Polymer({
    * configuration (and not unlocked yet).
    */
   setAdJoinParams(machineName, userName, errorState, showUnlockConfig) {
-    this.$.adJoinUI.disabled = false;
-    this.$.adJoinUI.machineName = machineName;
-    this.$.adJoinUI.userName = userName;
-    this.$.adJoinUI.errorState = errorState;
+    this.$["step-ad-join"].disabled = false;
+    this.$["step-ad-join"].machineName = machineName;
+    this.$["step-ad-join"].userName = userName;
+    this.$["step-ad-join"].errorState = errorState;
     if (showUnlockConfig) {
-      this.$.adJoinUI.setUIStep(adLoginStep.UNLOCK);
+      this.$["step-ad-join"].setUIStep(adLoginStep.UNLOCK);
     } else {
-      this.$.adJoinUI.setUIStep(adLoginStep.CREDS);
+      this.$["step-ad-join"].setUIStep(adLoginStep.CREDS);
     }
   },
 
@@ -441,10 +440,10 @@ Polymer({
    * @param {Array<JoinConfigType>} options
    */
   setAdJoinConfiguration(options) {
-    this.$.adJoinUI.disabled = false;
-    this.$.adJoinUI.setJoinConfigurationOptions(options);
-    this.$.adJoinUI.setUIStep(adLoginStep.CREDS);
-    this.$.adJoinUI.focus();
+    this.$["step-ad-join"].disabled = false;
+    this.$["step-ad-join"].setJoinConfigurationOptions(options);
+    this.$["step-ad-join"].setUIStep(adLoginStep.CREDS);
+    this.$["step-ad-join"].focus();
   },
 
   /**
