@@ -127,6 +127,7 @@ void MergeMetadata(cros::mojom::CameraMetadataPtr* to,
   }
   for (const auto& entry : from->entries.value()) {
     if (tags.find(entry->tag) != tags.end()) {
+      (*to)->entry_count -= 1;
       LOG(ERROR) << "Found duplicated entries for tag " << entry->tag;
       continue;
     }
