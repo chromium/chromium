@@ -64,6 +64,11 @@ typedef BOOL (WINAPI* HeapQueryFn)  \
 // test suite setup and does not need to be done again, else mach_override
 // will fail.
 
+// Wrap free() in a function to thwart Clang's -Wfree-nonheap-object warning.
+static void callFree(void *ptr) {
+  free(ptr);
+}
+
 TEST(ProcessMemoryTest, MacTerminateOnHeapCorruption) {
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)
   base::allocator::InitializeAllocatorShim();
@@ -74,11 +79,11 @@ TEST(ProcessMemoryTest, MacTerminateOnHeapCorruption) {
 #if ARCH_CPU_64_BITS
   // On 64 bit Macs, the malloc system automatically abort()s on heap corruption
   // but does not output anything.
-  ASSERT_DEATH(free(buf), "");
+  ASSERT_DEATH(callFree(buf), "");
 #elif defined(ADDRESS_SANITIZER)
   // AddressSanitizer replaces malloc() and prints a different error message on
   // heap corruption.
-  ASSERT_DEATH(free(buf), "attempting free on address which "
+  ASSERT_DEATH(callFree(buf), "attempting free on address which "
       "was not malloc\\(\\)-ed");
 #else
   ADD_FAILURE() << "This test is not supported in this build configuration.";
