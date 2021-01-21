@@ -272,10 +272,7 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   bool is_scissor_enabled_ = false;
   gfx::Rect scissor_rect_;
 
-  // TODO(crbug.com/920344): Use partial swap for SkDDL.
-  bool use_swap_with_bounds_ = false;
   gfx::Rect swap_buffer_rect_;
-  std::vector<gfx::Rect> swap_content_bounds_;
 
   // State common to all quads in a batch. Draws that require an SkPaint not
   // captured by this state cannot be batched.

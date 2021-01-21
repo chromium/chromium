@@ -752,9 +752,6 @@ void SkiaRenderer::FinishDrawingFrame() {
 
   swap_buffer_rect_ = current_frame()->root_damage_rect;
 
-  if (use_swap_with_bounds_)
-    swap_content_bounds_ = current_frame()->root_content_bounds;
-
   // TODO(weiliangc): Remove this once OverlayProcessor schedules overlays.
   if (current_frame()->output_surface_plane) {
     skia_output_surface_->ScheduleOutputSurfaceAsOverlay(
@@ -771,13 +768,11 @@ void SkiaRenderer::SwapBuffers(SwapFrameData swap_frame_data) {
   output_frame.top_controls_visible_height_changed =
       swap_frame_data.top_controls_visible_height_changed;
   output_frame.size = surface_size_for_swap_buffers();
-  if (use_swap_with_bounds_) {
-    output_frame.content_bounds = std::move(swap_content_bounds_);
-  } else if (use_partial_swap_) {
+  if (use_partial_swap_) {
     swap_buffer_rect_.Intersect(gfx::Rect(surface_size_for_swap_buffers()));
     output_frame.sub_buffer_rect = swap_buffer_rect_;
   } else if (swap_buffer_rect_.IsEmpty() && allow_empty_swap_) {
-    output_frame.sub_buffer_rect = swap_buffer_rect_;
+    output_frame.sub_buffer_rect = gfx::Rect();
   }
 
   skia_output_surface_->SwapBuffers(std::move(output_frame));
