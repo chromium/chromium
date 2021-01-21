@@ -285,10 +285,6 @@ bool ShouldShowProfilePickerAtProcessLaunch(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return false;
 #else
-  // If multiple profiles get restored, do not show the picker.
-  if (!profile_manager->GetLastOpenedProfiles().empty())
-    return false;
-
   // Don't show the picker if a certain profile (or an incognito window in the
   // default profile) is explicitly requested.
   if (profiles::IsGuestModeRequested(command_line,
@@ -948,6 +944,20 @@ bool StartupBrowserCreator::LaunchBrowserForLastProfiles(
   was_windows_notification_launch =
       command_line.HasSwitch(switches::kNotificationLaunchId);
 #endif  // defined(OS_WIN)
+
+  // TODO(crbug.com/1150326) Calling ShouldShowProfilePickerAtProcessLaunch()
+  // a second time here duplicates the logic to show the profile picker. The
+  // decision to show the picker should instead be on the previous call to
+  // ShouldShowProfilePickerAtProcessLaunch() issued from
+  // GetStartupProfilePath().
+  if (ShouldShowProfilePickerAtProcessLaunch(
+          g_browser_process->profile_manager(), command_line) &&
+      last_used_profile && last_used_profile->IsGuestSession()) {
+    // The guest session is used to indicate the the profile picker should be
+    // displayed on start-up. See GetStartupProfilePath().
+    ShowUserManager(/*is_process_startup=*/process_startup);
+    return true;
+  }
 
   // |last_opened_profiles| will be empty in the following circumstances:
   // - This is the first launch. |last_used_profile| is the initial profile.
