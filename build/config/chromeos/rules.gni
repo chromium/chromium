@@ -137,11 +137,12 @@ template("generate_runner_script") {
     cros_board = override_board
   }
 
+  cros_is_vm = false
+  is_tast = defined(tast_attr_expr) || defined(tast_tests)
   if (is_chromeos_device && cros_sdk_version != "") {
     assert(defined(generated_script),
            "Must specify where to place generated test launcher script via " +
                "'generated_script'")
-    is_tast = defined(tast_attr_expr) || defined(tast_tests)
     assert(!(is_tast && defined(test_exe)),
            "Tast tests are invoked from binaries shipped with the VM image. " +
                "There should be no locally built binary needed.")
@@ -150,7 +151,6 @@ template("generate_runner_script") {
 
     # Determine the real paths for various items in the SDK, which may be used
     # in the 'generate_runner_script' template below.
-    cros_is_vm = false
     foreach(b, string_split(cros_boards_with_qemu_images, ":")) {
       if (cros_board == b) {
         cros_is_vm = true
