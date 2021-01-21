@@ -102,8 +102,7 @@ class CORE_EXPORT FrameCaret final : public GarbageCollected<FrameCaret> {
   const Member<LocalFrame> frame_;
   const std::unique_ptr<CaretDisplayItemClient> display_item_client_;
   // TODO(https://crbug.com/668758): Consider using BeginFrame update for this.
-  Member<DisallowNewWrapper<HeapTaskRunnerTimer<FrameCaret>>>
-      caret_blink_timer_;
+  HeapTaskRunnerTimer<FrameCaret> caret_blink_timer_;
   bool is_caret_enabled_ = false;
   bool should_show_caret_ = false;
   bool is_caret_blinking_suspended_ = false;
