@@ -3,3 +3,7 @@
 ++++[panel] name='Browser Engines:' labelled-by
 ++++++[label] label-for
 ++++++++[static] name='Browser Engines:'
+++[panel] name='Which cake do you prefer?' labelled-by
+++++[label] label-for
+++++++[heading] name='Which cake do you prefer?'
+++++++++[static] name='Which cake do you prefer?'

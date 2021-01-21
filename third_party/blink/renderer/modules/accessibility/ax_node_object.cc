@@ -379,6 +379,10 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
   if (IsA<HTMLLabelElement>(node))
     return kIncludeObject;
 
+  // Don't ignored legends, because JAWS uses them to determine redundant text.
+  if (IsA<HTMLLegendElement>(node))
+    return kIncludeObject;
+
   // Anything that is content editable should not be ignored.
   // However, one cannot just call node->hasEditableStyle() since that will ask
   // if its parents are also editable. Only the top level content editable
