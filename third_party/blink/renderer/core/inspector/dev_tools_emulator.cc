@@ -432,10 +432,10 @@ void DevToolsEmulator::OverrideVisibleRect(
   if (!viewport_override_ || !frame)
     return;
 
-  FloatSize scaled_viewport_size(viewport_size);
-  scaled_viewport_size.Scale(1. / viewport_override_->scale);
+  // Don't apply viewport_override_->scale because all coordinates here are
+  // under the same scale.
   IntRect visible_rect_in_document = EnclosingIntRect(
-      FloatRect(viewport_override_->position, scaled_viewport_size));
+      FloatRect(viewport_override_->position, FloatSize(viewport_size)));
   *visible_rect_in_frame =
       frame->GetFrameView()->DocumentToFrame(visible_rect_in_document);
 }
