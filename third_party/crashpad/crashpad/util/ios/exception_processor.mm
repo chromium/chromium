@@ -35,6 +35,7 @@
 
 #include "base/bit_cast.h"
 #include "base/logging.h"
+#include "base/memory/free_deleter.h"
 #include "base/strings/sys_string_conversions.h"
 #include "build/build_config.h"
 
@@ -215,7 +216,7 @@ id ObjcExceptionPreprocessor(id exception) {
     // Check if the function is one that is known to obscure (by way of
     // catch-and-rethrow) exception stack traces. If it is, sinkhole it
     // by crashing here at the point of throw.
-    constexpr const char* kExceptionSymbolNameSinkholes[] = {
+    static constexpr const char* kExceptionSymbolNameSinkholes[] = {
         // The two CF symbol names will also be captured by the CoreFoundation
         // library path check below, but for completeness they are listed here,
         // since they appear unredacted.
@@ -232,7 +233,7 @@ id ObjcExceptionPreprocessor(id exception) {
     // On iOS, function names are often reported as "<redacted>", although they
     // do appear when attached to the debugger.  When this happens, use the path
     // of the image to determine if the handler is an exception sinkhole.
-    constexpr const char* kExceptionLibraryPathSinkholes[] = {
+    static constexpr const char* kExceptionLibraryPathSinkholes[] = {
         // Everything in this library is a sinkhole, specifically
         // _dispatch_client_callout.  Both are needed here depending on whether
         // the debugger is attached (introspection only appears when a simulator
@@ -258,35 +259,45 @@ id ObjcExceptionPreprocessor(id exception) {
     // Some <redacted> sinkholes are harder to find. _UIGestureEnvironmentUpdate
     // in UIKitCore is an example. UIKitCore can't be added to
     // kExceptionLibraryPathSinkholes because it uses Objective-C exceptions
-    // internally and also has has non-sinkhole handlers. Since
-    // _UIGestureEnvironmentUpdate is always called from
-    // -[UIGestureEnvironment _deliverEvent:toGestureRecognizers:usingBlock:],
-    // inspect the caller frame info to match the sinkhole.
-    constexpr const char* kUIKitCorePath =
+    // internally and also has has non-sinkhole handlers. While all the
+    // calling methods in UIKit are marked <redacted> starting in iOS14, it's
+    // currently true that all callers to _UIGestureEnvironmentUpdate are within
+    // UIGestureEnvironment.  That means a very hacky way to detect this are to
+    // check if the calling method IMP is within the range of all
+    // UIGestureEnvironment methods.
+    static constexpr const char kUIKitCorePath[] =
         "/System/Library/PrivateFrameworks/UIKitCore.framework/UIKitCore";
     if (ModulePathMatchesSinkhole(dl_info.dli_fname, kUIKitCorePath)) {
       unw_proc_info_t caller_frame_info;
       if (LoggingUnwStep(&cursor) > 0 &&
           unw_get_proc_info(&cursor, &caller_frame_info) == UNW_ESUCCESS) {
-        static IMP uigesture_deliver_event_imp = [] {
-          IMP imp = class_getMethodImplementation(
-              NSClassFromString(@"UIGestureEnvironment"),
-              NSSelectorFromString(
-                  @"_deliverEvent:toGestureRecognizers:usingBlock:"));
-
-          // From 10.15.0 objc4-779.1/runtime/objc-class.mm
-          // class_getMethodImplementation returns nil or _objc_msgForward on
-          // failure.
-          if (!imp || imp == _objc_msgForward) {
-            LOG(WARNING) << "Unable to find -[UIGestureEnvironment "
-                            "_deliverEvent:toGestureRecognizers:usingBlock:]";
-            return bit_cast<IMP>(nullptr);  // IMP is a function pointer type.
+        auto uigestureimp_lambda = [](IMP* max) {
+          IMP min = *max = bit_cast<IMP>(nullptr);
+          unsigned int method_count = 0;
+          std::unique_ptr<Method[], base::FreeDeleter> method_list(
+              class_copyMethodList(NSClassFromString(@"UIGestureEnvironment"),
+                                   &method_count));
+          if (method_count > 0) {
+            min = *max = method_getImplementation(method_list[0]);
+            for (unsigned int method_index = 1; method_index < method_count;
+                 method_index++) {
+              IMP method_imp =
+                  method_getImplementation(method_list[method_index]);
+              *max = std::max(method_imp, *max);
+              min = std::min(method_imp, min);
+            }
           }
-          return imp;
-        }();
+          return min;
+        };
 
-        if (uigesture_deliver_event_imp ==
-            reinterpret_cast<IMP>(caller_frame_info.start_ip)) {
+        static IMP gesture_environment_max_imp;
+        static IMP gesture_environment_min_imp =
+            uigestureimp_lambda(&gesture_environment_max_imp);
+
+        IMP caller = reinterpret_cast<IMP>(caller_frame_info.start_ip);
+        if (gesture_environment_min_imp && gesture_environment_max_imp &&
+            caller >= gesture_environment_min_imp &&
+            caller <= gesture_environment_max_imp) {
           TerminatingFromUncaughtNSException(exception,
                                              "_UIGestureEnvironmentUpdate");
         }

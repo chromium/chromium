@@ -20,8 +20,11 @@
 #include <features.h>
 
 // glibc for 64-bit ARM uses different names for these structs prior to 2.20.
+// However, Debian's glibc 2.19-8 backported the change so it's not sufficient
+// to only test the version. user_pt_regs and user_fpsimd_state are actually
+// defined in <asm/ptrace.h> so we use the include guard here.
 #if defined(__aarch64__) && defined(__GLIBC__)
-#if !__GLIBC_PREREQ(2, 20)
+#if !__GLIBC_PREREQ(2, 20) && defined(__ASM_PTRACE_H)
 using user_regs_struct = user_pt_regs;
 using user_fpsimd_struct = user_fpsimd_state;
 #endif
