@@ -23,7 +23,10 @@
 
 namespace ui {
 
+// Definition of static class members.
 constexpr AXNode::AXID AXNode::kInvalidAXID;
+constexpr base::char16 AXNode::kEmbeddedCharacter[];
+constexpr int AXNode::kEmbeddedCharacterLength;
 
 AXNode::AXNode(AXNode::OwnerTree* tree,
                AXNode* parent,
@@ -492,25 +495,45 @@ void AXNode::ClearLanguageInfo() {
   language_info_.reset();
 }
 
-std::string AXNode::GetHypertext() const {
+base::string16 AXNode::GetHypertext() const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
   if (IsIgnoredForTextNavigation())
-    return std::string();
+    return base::string16();
 
-  if (IsLeaf())
-    return GetInnerText();
+  // Hypertext is not exposed for descendants of leaf nodes. For such nodes,
+  // their inner text is equivalent to their hypertext. Otherwise, we would
+  // never be able to compute equivalent ancestor positions in text fields given
+  // an AXPosition on an inline text box descendant, because there is often an
+  // ignored generic container between the text descendants and the text field
+  // node.
+  //
+  // For example, look at the following accessibility tree and the text
+  // positions indicated using "<>" symbols in the inner text of every node, and
+  // then imagine what would happen if the generic container was represented by
+  // an "embedded object replacement character" in the text of its text field
+  // parent.
+  // ++kTextField "Hell<o>" IsLeaf=true
+  // ++++kGenericContainer "Hell<o>" ignored IsChildOfLeaf=true
+  // ++++++kStaticText "Hell<o>" IsChildOfLeaf=true
+  // ++++++++kInlineTextBox "Hell<o>" IsChildOfLeaf=true
+  if (IsLeaf() || IsChildOfLeaf())
+    return base::UTF8ToUTF16(GetInnerText());
 
   // Construct the hypertext for this node, which contains the concatenation of
-  // the inner text of this node's textual children, and an embedded object
-  // character for all the other children.
-  const std::string embedded_character_str("\xEF\xBF\xBC");
-  std::string hypertext;
+  // the inner text of this node's textual children, and an "object replacement
+  // character" for all the other children.
+  //
+  // Note that the word "hypertext" comes from the IAccessible2 Standard and has
+  // nothing to do with HTML.
+  const base::string16 embedded_character_str(kEmbeddedCharacter);
+  DCHECK_EQ(int{embedded_character_str.length()}, kEmbeddedCharacterLength);
+  base::string16 hypertext;
   for (auto it = UnignoredChildrenBegin(); it != UnignoredChildrenEnd(); ++it) {
     // Similar to Firefox, we don't expose text nodes in IAccessible2 and ATK
     // hypertext with the embedded object character. We copy all of their text
     // instead.
     if (it->IsText()) {
-      hypertext += it->GetInnerText();
+      hypertext += base::UTF8ToUTF16(it->GetInnerText());
     } else {
       hypertext += embedded_character_str;
     }
@@ -582,6 +605,27 @@ std::string AXNode::GetInnerText() const {
     inner_text += it->GetInnerText();
   }
   return inner_text;
+}
+
+int AXNode::GetInnerTextLength() const {
+  // This is an optimized version of `AXNode::GetInnerText()`.length(). Instead
+  // of concatenating the strings in GetInnerText() to then get their length, we
+  // sum the lengths of the individual strings. This is faster than
+  // concatenating the strings first and then taking their length, especially
+  // when the process is recursive.
+
+  const bool is_plain_text_field_with_descendants =
+      (data().IsTextField() && GetUnignoredChildCount());
+  // Plain text fields are always leaves so we need to exclude them when
+  // computing the length of their inner text if that text should be derived
+  // from their descendant nodes.
+  if (IsLeaf() && !is_plain_text_field_with_descendants)
+    return int{GetInnerText().length()};
+
+  int inner_text_length = 0;
+  for (auto it = UnignoredChildrenBegin(); it != UnignoredChildrenEnd(); ++it)
+    inner_text_length += it->GetInnerTextLength();
+  return inner_text_length;
 }
 
 std::string AXNode::GetLanguage() const {
@@ -1230,9 +1274,29 @@ bool AXNode::IsChildOfLeaf() const {
   return false;
 }
 
+bool AXNode::IsEmptyLeaf() const {
+  if (!IsLeaf())
+    return false;
+  if (GetUnignoredChildCount())
+    return !GetInnerTextLength();
+  // Text exposed by ignored leaf (text) nodes is not exposed to the platforms'
+  // accessibility layer, hence such leaf nodes are in effect empty.
+  return IsIgnored() || !GetInnerTextLength();
+}
+
 bool AXNode::IsLeaf() const {
-  // A node is also a leaf if all of it's descendants are ignored.
-  if (children().empty() || !GetUnignoredChildCount())
+  // A node is a leaf if it has no descendants, regardless whether it is ignored
+  // or not.
+  if (children().empty())
+    return true;
+
+  // Leaf nodes with descendants should always be exposed to the platforms'
+  // accessibility layer.
+  if (IsIgnored())
+    return false;
+
+  // An unignored node is a leaf if all of its descendants are ignored.
+  if (!GetUnignoredChildCount())
     return true;
 
 #if defined(OS_WIN)

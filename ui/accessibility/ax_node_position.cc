@@ -197,7 +197,7 @@ base::string16 AXNodePosition::GetText() const {
     case AXEmbeddedObjectBehavior::kSuppressCharacter:
       return base::UTF8ToUTF16(anchor->GetInnerText());
     case AXEmbeddedObjectBehavior::kExposeCharacter:
-      return base::UTF8ToUTF16(anchor->GetHypertext());
+      return anchor->GetHypertext();
   }
 }
 
