@@ -150,7 +150,8 @@ scoped_refptr<const ComputedStyle> HighlightPseudoStyle(Node* node,
     // ::selection and ::selection:window-inactive styles may be different. Only
     // cache the styles for ::selection if there are no :window-inactive
     // selector, or if the page is active.
-    return element->StyleForPseudoElement(request, element->GetComputedStyle());
+    return element->UncachedStyleForPseudoElement(request,
+                                                  element->GetComputedStyle());
   }
 
   return element->CachedStyleForPseudoElement(request);

@@ -5112,10 +5112,17 @@ const ComputedStyle* Element::CachedStyleForPseudoElement(
           style->GetCachedPseudoElementStyle(request.pseudo_id))
     return cached;
 
-  scoped_refptr<ComputedStyle> result = StyleForPseudoElement(request, style);
+  scoped_refptr<ComputedStyle> result =
+      UncachedStyleForPseudoElement(request, style);
   if (result)
     return style->AddCachedPseudoElementStyle(std::move(result));
   return nullptr;
+}
+
+scoped_refptr<ComputedStyle> Element::UncachedStyleForPseudoElement(
+    const PseudoElementStyleRequest& request,
+    const ComputedStyle* parent_style) {
+  return StyleForPseudoElement(request, parent_style);
 }
 
 scoped_refptr<ComputedStyle> Element::StyleForPseudoElement(
