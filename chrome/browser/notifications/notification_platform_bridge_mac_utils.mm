@@ -4,10 +4,13 @@
 
 #include "chrome/browser/notifications/notification_platform_bridge_mac_utils.h"
 
+#include "base/feature_list.h"
 #include "base/i18n/number_formatting.h"
 #include "base/optional.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/system/sys_info.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -50,6 +53,17 @@ void DoProcessMacNotificationResponse(
       base::Bind(&NotificationDisplayServiceImpl::ProfileLoadedCallback,
                  operation, type, origin, notificationId, actionIndex, reply,
                  byUser));
+}
+
+// Implements the version check to determine if alerts are supported. Do not
+// call this method directly as SysInfo::OperatingSystemVersionNumbers might be
+// an expensive call. Instead use SupportsAlerts which caches this value.
+bool MacOSSupportsXPCAlertsImpl() {
+  int32_t major, minor, bugfix;
+  base::SysInfo::OperatingSystemVersionNumbers(&major, &minor, &bugfix);
+  // Allow alerts on all versions except 10.15.0, 10.15.1 & 10.15.2.
+  // See crbug.com/1007418 for details.
+  return major != 10 || minor != 15 || bugfix > 2;
 }
 
 }  // namespace
@@ -221,4 +235,24 @@ void ProcessMacNotificationResponse(NSDictionary* response) {
                      profileId, [isIncognito boolValue],
                      GURL(notificationOrigin), notificationId, actionIndex,
                      base::nullopt /* reply */, true /* byUser */));
+}
+
+bool MacOSSupportsXPCAlerts() {
+  // Cache result as SysInfo::OperatingSystemVersionNumbers might be expensive.
+  static bool supportsAlerts = MacOSSupportsXPCAlertsImpl();
+  return supportsAlerts;
+}
+
+bool IsAlertNotificationMac(const message_center::Notification& notification) {
+  // TODO(crbug/1134539): Support alerts via UNNotification API.
+  if (base::FeatureList::IsEnabled(features::kNewMacNotificationAPI))
+    return false;
+
+  // We show alerts via an XPC service, check if that's possible.
+  if (!MacOSSupportsXPCAlerts())
+    return false;
+
+  // Check if the |notification| should be shown as alert.
+  return notification.never_timeout() ||
+         notification.type() == message_center::NOTIFICATION_TYPE_PROGRESS;
 }

@@ -23,7 +23,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/system/sys_info.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
@@ -75,27 +74,6 @@ enum XPCConnectionEvent {
 void RecordXPCEvent(XPCConnectionEvent event) {
   UMA_HISTOGRAM_ENUMERATION("Notifications.XPCConnectionEvent", event,
                             XPC_CONNECTION_EVENT_COUNT);
-}
-
-bool IsPersistentNotification(
-    const message_center::Notification& notification) {
-  if (!NotificationPlatformBridgeMac::SupportsAlerts())
-    return false;
-
-  return notification.never_timeout() ||
-         notification.type() == message_center::NOTIFICATION_TYPE_PROGRESS;
-}
-
-// Implements the version check to determine if alerts are supported. Do not
-// call this method directly as SysInfo::OperatingSystemVersionNumbers might be
-// an expensive call. Instead use NotificationPlatformBridgeMac::SupportsAlerts
-// which caches this value.
-bool SupportsAlertsImpl() {
-  int32_t major, minor, bugfix;
-  base::SysInfo::OperatingSystemVersionNumbers(&major, &minor, &bugfix);
-  // Allow alerts on all versions except 10.15.0, 10.15.1 & 10.15.2.
-  // See crbug.com/1007418 for details.
-  return major != 10 || minor != 15 || bugfix > 2;
 }
 
 }  // namespace
@@ -178,10 +156,10 @@ void NotificationPlatformBridgeMac::Display(
       notification.context_message().empty() &&
       notification_type != NotificationHandler::Type::EXTENSION;
 
-  bool is_persistent = IsPersistentNotification(notification);
+  bool is_alert = IsAlertNotificationMac(notification);
 
   [builder setSubTitle:base::SysUTF16ToNSString(CreateMacNotificationContext(
-                           is_persistent, notification, requires_attribution))];
+                           is_alert, notification, requires_attribution))];
 
   if (!notification.icon().IsEmpty()) {
     // TODO(crbug/1138176): Resize images by adding a transparent border so that
@@ -230,10 +208,9 @@ void NotificationPlatformBridgeMac::Display(
       setNotificationType:[NSNumber numberWithInteger:static_cast<NSInteger>(
                                                           notification_type)]];
 
-  // Send persistent notifications to the XPC service so they
-  // can be displayed as alerts. Chrome itself can only display
+  // Send alert notifications to the XPC service. Chrome itself can only display
   // banners.
-  if (IsPersistentNotification(notification)) {
+  if (is_alert) {
     NSDictionary* dict = [builder buildDictionary];
     [alert_dispatcher_ dispatchNotification:dict];
   } else {
@@ -275,11 +252,38 @@ void NotificationPlatformBridgeMac::Close(Profile* profile,
 void NotificationPlatformBridgeMac::GetDisplayed(
     Profile* profile,
     GetDisplayedNotificationsCallback callback) const {
+  NSString* profileId = base::SysUTF8ToNSString(GetProfileId(profile));
+  bool incognito = profile->IsOffTheRecord();
+  std::set<std::string> banners;
+
+  for (NSUserNotification* toast in
+       [notification_center_ deliveredNotifications]) {
+    NSString* toastProfileId = [toast.userInfo
+        objectForKey:notification_constants::kNotificationProfileId];
+    BOOL toastIncognito = [[toast.userInfo
+        objectForKey:notification_constants::kNotificationIncognito] boolValue];
+
+    if ([profileId isEqualToString:toastProfileId] &&
+        incognito == toastIncognito) {
+      banners.insert(base::SysNSStringToUTF8([toast.userInfo
+          objectForKey:notification_constants::kNotificationId]));
+    }
+  }
+
+  GetDisplayedNotificationsCallback alerts_callback = base::BindOnce(
+      [](GetDisplayedNotificationsCallback callback,
+         std::set<std::string> banners, std::set<std::string> alerts,
+         bool supports_synchronization) {
+        // Merge banner and alert notification ids.
+        banners.insert(alerts.begin(), alerts.end());
+        std::move(callback).Run(std::move(banners), supports_synchronization);
+      },
+      std::move(callback), std::move(banners));
+
   [alert_dispatcher_ getDisplayedAlertsForProfileId:base::SysUTF8ToNSString(
                                                         GetProfileId(profile))
                                           incognito:profile->IsOffTheRecord()
-                                 notificationCenter:notification_center_
-                                           callback:std::move(callback)];
+                                           callback:std::move(alerts_callback)];
 }
 
 void NotificationPlatformBridgeMac::SetReadyCallback(
@@ -288,13 +292,6 @@ void NotificationPlatformBridgeMac::SetReadyCallback(
 }
 
 void NotificationPlatformBridgeMac::DisplayServiceShutDown(Profile* profile) {}
-
-// static
-bool NotificationPlatformBridgeMac::SupportsAlerts() {
-  // Cache result as SysInfo::OperatingSystemVersionNumbers might be expensive.
-  static bool supports_alerts = SupportsAlertsImpl();
-  return supports_alerts;
-}
 
 // /////////////////////////////////////////////////////////////////////////////
 @implementation NotificationCenterDelegate
@@ -402,27 +399,12 @@ bool NotificationPlatformBridgeMac::SupportsAlerts() {
 - (void)
 getDisplayedAlertsForProfileId:(NSString*)profileId
                      incognito:(BOOL)incognito
-            notificationCenter:(NSUserNotificationCenter*)notificationCenter
                       callback:(GetDisplayedNotificationsCallback)callback {
   // Create a copyable version of the OnceCallback because ObjectiveC blocks
   // copy all referenced variables via copy constructor.
   auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
   auto reply = ^(NSArray* alerts) {
     std::set<std::string> displayedNotifications;
-
-    for (NSUserNotification* toast in
-         [notificationCenter deliveredNotifications]) {
-      NSString* toastProfileId = [toast.userInfo
-          objectForKey:notification_constants::kNotificationProfileId];
-      BOOL incognitoNotification = [[toast.userInfo
-          objectForKey:notification_constants::kNotificationIncognito]
-          boolValue];
-      if ([toastProfileId isEqualToString:profileId] &&
-          incognito == incognitoNotification) {
-        displayedNotifications.insert(base::SysNSStringToUTF8([toast.userInfo
-            objectForKey:notification_constants::kNotificationId]));
-      }
-    }
 
     for (NSString* alert in alerts)
       displayedNotifications.insert(base::SysNSStringToUTF8(alert));

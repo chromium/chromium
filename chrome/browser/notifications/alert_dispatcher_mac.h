@@ -7,7 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/callback_forward.h"
 #include "chrome/browser/notifications/displayed_notifications_dispatch_callback.h"
 
 // Interface to communicate with the Alert XPC service.
@@ -27,7 +26,6 @@
 - (void)
 getDisplayedAlertsForProfileId:(NSString*)profileId
                      incognito:(BOOL)incognito
-            notificationCenter:(NSUserNotificationCenter*)notificationCenter
                       callback:(GetDisplayedNotificationsCallback)callback;
 @end
 

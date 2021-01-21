@@ -52,21 +52,24 @@
 - (void)
 getDisplayedAlertsForProfileId:(NSString*)profileId
                      incognito:(BOOL)incognito
-            notificationCenter:(NSUserNotificationCenter*)notificationCenter
                       callback:(GetDisplayedNotificationsCallback)callback {
-  std::set<std::string> displayedNotifications;
-  for (NSUserNotification* toast in
-       [notificationCenter deliveredNotifications]) {
-    NSString* toastProfileId = [toast.userInfo
-        objectForKey:notification_constants::kNotificationProfileId];
-    if ([toastProfileId isEqualToString:profileId]) {
-      displayedNotifications.insert(base::SysNSStringToUTF8([toast.userInfo
-          objectForKey:notification_constants::kNotificationId]));
+  std::set<std::string> alerts;
+
+  for (NSDictionary* toast in _alerts.get()) {
+    NSString* toastProfileId =
+        [toast objectForKey:notification_constants::kNotificationProfileId];
+    BOOL toastIncognito = [[toast
+        objectForKey:notification_constants::kNotificationIncognito] boolValue];
+
+    if ([profileId isEqualToString:toastProfileId] &&
+        incognito == toastIncognito) {
+      alerts.insert(base::SysNSStringToUTF8(
+          [toast objectForKey:notification_constants::kNotificationId]));
     }
   }
 
-  std::move(callback).Run(std::move(displayedNotifications),
-                          true /* supports_synchronization */);
+  std::move(callback).Run(std::move(alerts),
+                          /*supports_synchronization=*/true);
 }
 
 - (NSArray*)alerts {

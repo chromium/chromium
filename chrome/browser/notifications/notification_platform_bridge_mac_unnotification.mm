@@ -82,6 +82,7 @@ NotificationPlatformBridgeMacUNNotification::
     ~NotificationPlatformBridgeMacUNNotification() {
   [notification_center_ setDelegate:nil];
   [notification_center_ removeAllDeliveredNotifications];
+  // TODO(crbug/1134539): Close alerts.
 }
 
 void NotificationPlatformBridgeMacUNNotification::Display(
@@ -102,6 +103,8 @@ void NotificationPlatformBridgeMacUNNotification::Display(
           : (notification.items().at(0).title + base::UTF8ToUTF16(" - ") +
              notification.items().at(0).message);
 
+  bool is_alert = IsAlertNotificationMac(notification);
+
   bool requires_attribution =
       notification.context_message().empty() &&
       notification_type != NotificationHandler::Type::EXTENSION;
@@ -110,8 +113,7 @@ void NotificationPlatformBridgeMacUNNotification::Display(
                         CreateMacNotificationTitle(notification))];
   [builder setContextMessage:base::SysUTF16ToNSString(context_message)];
   [builder setSubTitle:base::SysUTF16ToNSString(CreateMacNotificationContext(
-                           /*is_persistent=*/false, notification,
-                           requires_attribution))];
+                           is_alert, notification, requires_attribution))];
 
   if (!notification.icon().IsEmpty()) {
     // TODO(crbug/1138176): Resize images by adding a transparent border so that
@@ -142,11 +144,16 @@ void NotificationPlatformBridgeMacUNNotification::Display(
   [builder setIncognito:profile->IsOffTheRecord()];
   [builder setCreatorPid:[NSNumber numberWithInteger:static_cast<NSInteger>(
                                                          getpid())]];
-
   [builder
       setNotificationType:[NSNumber numberWithInteger:static_cast<NSInteger>(
                                                           notification_type)]];
 
+  if (is_alert) {
+    // TODO(crbug.com/1134539): Send out an alert.
+    NOTIMPLEMENTED();
+  }
+
+  // Create a new category from the desired action buttons.
   UNNotificationCategory* category = [builder buildCategory];
 
   // Check if this notification had an already existing category from a previous

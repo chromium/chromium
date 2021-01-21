@@ -14,6 +14,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/notifications/notification_platform_bridge_mac.h"
+#include "chrome/browser/notifications/notification_platform_bridge_mac_utils.h"
 #include "chrome/browser/notifications/notification_test_util.h"
 #include "chrome/browser/notifications/stub_alert_dispatcher_mac.h"
 #include "chrome/browser/notifications/stub_notification_center_mac.h"
@@ -191,7 +192,7 @@ TEST_F(NotificationPlatformBridgeMacTest, TestDisplayOneButton) {
 }
 
 TEST_F(NotificationPlatformBridgeMacTest, TestDisplayProgress) {
-  if (!NotificationPlatformBridgeMac::SupportsAlerts())
+  if (!MacOSSupportsXPCAlerts())
     return;
 
   std::unique_ptr<Notification> notification =
@@ -271,7 +272,7 @@ TEST_F(NotificationPlatformBridgeMacTest, TestQuitRemovesNotifications) {
 }
 
 TEST_F(NotificationPlatformBridgeMacTest, TestDisplayAlert) {
-  if (!NotificationPlatformBridgeMac::SupportsAlerts())
+  if (!MacOSSupportsXPCAlerts())
     return;
 
   std::unique_ptr<Notification> alert =
@@ -286,7 +287,7 @@ TEST_F(NotificationPlatformBridgeMacTest, TestDisplayAlert) {
 }
 
 TEST_F(NotificationPlatformBridgeMacTest, TestDisplayBannerAndAlert) {
-  if (!NotificationPlatformBridgeMac::SupportsAlerts())
+  if (!MacOSSupportsXPCAlerts())
     return;
 
   std::unique_ptr<Notification> alert =
@@ -305,7 +306,7 @@ TEST_F(NotificationPlatformBridgeMacTest, TestDisplayBannerAndAlert) {
 }
 
 TEST_F(NotificationPlatformBridgeMacTest, TestCloseAlert) {
-  if (!NotificationPlatformBridgeMac::SupportsAlerts())
+  if (!MacOSSupportsXPCAlerts())
     return;
 
   std::unique_ptr<Notification> alert =
@@ -323,7 +324,7 @@ TEST_F(NotificationPlatformBridgeMacTest, TestCloseAlert) {
 }
 
 TEST_F(NotificationPlatformBridgeMacTest, TestQuitRemovesBannersAndAlerts) {
-  if (!NotificationPlatformBridgeMac::SupportsAlerts())
+  if (!MacOSSupportsXPCAlerts())
     return;
 
   std::unique_ptr<Notification> notification = CreateBanner(

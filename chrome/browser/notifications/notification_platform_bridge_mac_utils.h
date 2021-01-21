@@ -32,4 +32,10 @@ bool VerifyMacNotificationData(NSDictionary* response) WARN_UNUSED_RESULT;
 // (click close, etc.).
 void ProcessMacNotificationResponse(NSDictionary* response);
 
+// Returns if alerts via XPC are supported on this machine.
+bool MacOSSupportsXPCAlerts();
+
+// Returns if the given |notification| should be shown as an alert.
+bool IsAlertNotificationMac(const message_center::Notification& notification);
+
 #endif  // CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_PLATFORM_BRIDGE_MAC_UTILS_H_
