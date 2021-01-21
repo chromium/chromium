@@ -5211,20 +5211,19 @@ TEST_F(WebViewTest, ResizeForPrintingViewportUnits) {
 
   EXPECT_EQ(800, vw_element->OffsetWidth());
 
-  FloatSize page_size(300, 360);
+  gfx::Size page_size(300, 360);
 
   WebPrintParams print_params;
-  print_params.print_content_area.width = page_size.Width();
-  print_params.print_content_area.height = page_size.Height();
+  print_params.print_content_area.set_size(page_size);
 
-  IntSize expected_size = PrintICBSizeFromPageSize(page_size);
+  IntSize expected_size = PrintICBSizeFromPageSize(FloatSize(page_size));
 
   frame->PrintBegin(print_params, WebNode());
 
   EXPECT_EQ(expected_size.Width(), vw_element->OffsetWidth());
   EXPECT_EQ(expected_size.Height(), vw_element->OffsetHeight());
 
-  web_view->MainFrameWidget()->Resize(gfx::Size(FlooredIntSize(page_size)));
+  web_view->MainFrameWidget()->Resize(page_size);
 
   EXPECT_EQ(expected_size.Width(), vw_element->OffsetWidth());
   EXPECT_EQ(expected_size.Height(), vw_element->OffsetHeight());
@@ -5257,11 +5256,10 @@ TEST_F(WebViewTest, WidthMediaQueryWithPageZoomAfterPrinting) {
   EXPECT_EQ(MakeRGB(0, 128, 0), div->GetComputedStyle()->VisitedDependentColor(
                                     GetCSSPropertyColor()));
 
-  FloatSize page_size(300, 360);
+  gfx::Size page_size(300, 360);
 
   WebPrintParams print_params;
-  print_params.print_content_area.width = page_size.Width();
-  print_params.print_content_area.height = page_size.Height();
+  print_params.print_content_area.set_size(page_size);
 
   frame->PrintBegin(print_params, WebNode());
   frame->PrintEnd();
@@ -5294,12 +5292,11 @@ TEST_F(WebViewTest, ViewportUnitsPrintingWithPageZoom) {
   EXPECT_EQ(400, t1->OffsetWidth());
   EXPECT_EQ(400, t2->OffsetWidth());
 
-  FloatSize page_size(600, 720);
-  int expected_width = PrintICBSizeFromPageSize(page_size).Width();
+  gfx::Size page_size(600, 720);
+  int expected_width = PrintICBSizeFromPageSize(FloatSize(page_size)).Width();
 
   WebPrintParams print_params;
-  print_params.print_content_area.width = page_size.Width();
-  print_params.print_content_area.height = page_size.Height();
+  print_params.print_content_area.set_size(page_size);
 
   frame->PrintBegin(print_params, WebNode());
 

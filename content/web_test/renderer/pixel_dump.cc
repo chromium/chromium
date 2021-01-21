@@ -44,7 +44,7 @@ SkBitmap PrintFrameToBitmap(blink::WebLocalFrame* web_frame) {
   auto* frame_widget = web_frame->LocalRoot()->FrameWidget();
   frame_widget->UpdateAllLifecyclePhases(blink::DocumentUpdateReason::kTest);
 
-  blink::WebSize page_size_in_pixels = frame_widget->Size();
+  gfx::Size page_size_in_pixels = frame_widget->Size();
 
   uint32_t page_count =
       web_frame->PrintBegin(page_size_in_pixels, blink::WebNode());
@@ -56,7 +56,7 @@ SkBitmap PrintFrameToBitmap(blink::WebLocalFrame* web_frame) {
   SkBitmap bitmap;
   if (!bitmap.tryAllocN32Pixels(spool_size.width, spool_size.height,
                                 is_opaque)) {
-    LOG(ERROR) << "Failed to create bitmap width=" << page_size_in_pixels.width
+    LOG(ERROR) << "Failed to create bitmap width=" << spool_size.width
                << " height=" << spool_size.height;
     return SkBitmap();
   }

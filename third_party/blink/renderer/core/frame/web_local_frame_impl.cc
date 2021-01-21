@@ -1701,8 +1701,7 @@ uint32_t WebLocalFrameImpl::PrintBegin(const WebPrintParams& print_params,
         GetFrame(), print_params.use_printing_layout);
   }
 
-  FloatSize size(static_cast<float>(print_params.print_content_area.width),
-                 static_cast<float>(print_params.print_content_area.height));
+  FloatSize size(print_params.print_content_area.size());
   print_context_->BeginPrintMode(size.Width(), size.Height());
   print_context_->ComputePageRects(size);
 
@@ -1770,10 +1769,10 @@ void WebLocalFrameImpl::GetPageDescription(
   GetFrame()->GetDocument()->GetPageDescription(page_index, description);
 }
 
-WebSize WebLocalFrameImpl::SpoolSizeInPixelsForTesting(
-    const WebSize& page_size_in_pixels,
+gfx::Size WebLocalFrameImpl::SpoolSizeInPixelsForTesting(
+    const gfx::Size& page_size_in_pixels,
     uint32_t page_count) {
-  int spool_width = page_size_in_pixels.width;
+  int spool_width = page_size_in_pixels.width();
   int spool_height = 0;
   for (uint32_t page_index = 0; page_index < page_count; page_index++) {
     // Make room for the 1px tall page separator.
@@ -1783,24 +1782,23 @@ WebSize WebLocalFrameImpl::SpoolSizeInPixelsForTesting(
     WebPrintPageDescription description;
     GetFrame()->GetDocument()->GetPageDescription(page_index, &description);
     if (description.orientation == PageOrientation::kUpright) {
-      spool_height += page_size_in_pixels.height;
+      spool_height += page_size_in_pixels.height();
     } else {
-      spool_height += page_size_in_pixels.width;
-      spool_width = std::max(spool_width, page_size_in_pixels.height);
+      spool_height += page_size_in_pixels.width();
+      spool_width = std::max(spool_width, page_size_in_pixels.height());
     }
   }
-  return WebSize(spool_width, spool_height);
+  return gfx::Size(spool_width, spool_height);
 }
 
 void WebLocalFrameImpl::PrintPagesForTesting(
     cc::PaintCanvas* canvas,
-    const WebSize& page_size_in_pixels,
-    const WebSize& spool_size_in_pixels) {
+    const gfx::Size& page_size_in_pixels,
+    const gfx::Size& spool_size_in_pixels) {
   DCHECK(print_context_);
 
   print_context_->SpoolAllPagesWithBoundariesForTesting(
-      canvas, FloatSize(page_size_in_pixels.width, page_size_in_pixels.height),
-      FloatSize(spool_size_in_pixels.width, spool_size_in_pixels.height));
+      canvas, FloatSize(page_size_in_pixels), FloatSize(spool_size_in_pixels));
 }
 
 WebRect WebLocalFrameImpl::GetSelectionBoundsRectForTesting() const {

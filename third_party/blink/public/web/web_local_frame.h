@@ -774,15 +774,15 @@ class WebLocalFrame : public WebFrame {
   // oneanother vertically), when printing for testing. Even if we still only
   // support a uniform page size, some pages may be rotated using
   // page-orientation.
-  virtual WebSize SpoolSizeInPixelsForTesting(
-      const WebSize& page_size_in_pixels,
+  virtual gfx::Size SpoolSizeInPixelsForTesting(
+      const gfx::Size& page_size_in_pixels,
       uint32_t page_count) = 0;
 
   // Prints the frame into the canvas, with page boundaries drawn as one pixel
   // wide blue lines. This method exists to support web tests.
   virtual void PrintPagesForTesting(cc::PaintCanvas*,
-                                    const WebSize& page_size_in_pixels,
-                                    const WebSize& spool_size_in_pixels) = 0;
+                                    const gfx::Size& page_size_in_pixels,
+                                    const gfx::Size& spool_size_in_pixels) = 0;
 
   // Returns the bounds rect for current selection. If selection is performed
   // on transformed text, the rect will still bound the selection but will

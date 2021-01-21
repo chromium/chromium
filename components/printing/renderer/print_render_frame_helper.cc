@@ -332,24 +332,19 @@ void ComputeWebKitPrintParamsInDesiredDpi(
   webkit_print_params->rasterize_pdf = print_params.rasterize_pdf;
   webkit_print_params->print_scaling_option = print_params.print_scaling_option;
 
-  webkit_print_params->print_content_area.width =
-      ConvertUnit(print_params.content_size.width(), dpi, kPointsPerInch);
-  webkit_print_params->print_content_area.height =
-      ConvertUnit(print_params.content_size.height(), dpi, kPointsPerInch);
+  webkit_print_params->print_content_area.set_size(gfx::Size(
+      ConvertUnit(print_params.content_size.width(), dpi, kPointsPerInch),
+      ConvertUnit(print_params.content_size.height(), dpi, kPointsPerInch)));
 
-  webkit_print_params->printable_area.x =
-      ConvertUnit(print_params.printable_area.x(), dpi, kPointsPerInch);
-  webkit_print_params->printable_area.y =
-      ConvertUnit(print_params.printable_area.y(), dpi, kPointsPerInch);
-  webkit_print_params->printable_area.width =
-      ConvertUnit(print_params.printable_area.width(), dpi, kPointsPerInch);
-  webkit_print_params->printable_area.height =
-      ConvertUnit(print_params.printable_area.height(), dpi, kPointsPerInch);
+  webkit_print_params->printable_area = gfx::Rect(
+      ConvertUnit(print_params.printable_area.x(), dpi, kPointsPerInch),
+      ConvertUnit(print_params.printable_area.y(), dpi, kPointsPerInch),
+      ConvertUnit(print_params.printable_area.width(), dpi, kPointsPerInch),
+      ConvertUnit(print_params.printable_area.height(), dpi, kPointsPerInch));
 
-  webkit_print_params->paper_size.width =
-      ConvertUnit(print_params.page_size.width(), dpi, kPointsPerInch);
-  webkit_print_params->paper_size.height =
-      ConvertUnit(print_params.page_size.height(), dpi, kPointsPerInch);
+  webkit_print_params->paper_size = gfx::Size(
+      ConvertUnit(print_params.page_size.width(), dpi, kPointsPerInch),
+      ConvertUnit(print_params.page_size.height(), dpi, kPointsPerInch));
 
   // The following settings is for N-up mode.
   webkit_print_params->pages_per_sheet = print_params.pages_per_sheet;
@@ -895,8 +890,7 @@ void PrepareFrameAndViewForPrint::ResizeForPrinting() {
   // the number that produces output with the correct physical size for elements
   // that are specified in cm, mm, pt etc.
   // This is important for sites that try to fill the page.
-  gfx::Size print_layout_size(web_print_params_.print_content_area.width,
-                              web_print_params_.print_content_area.height);
+  gfx::Size print_layout_size(web_print_params_.print_content_area.size());
   print_layout_size.set_height(
       ScaleAndRound(print_layout_size.height(), kPrintingMinimumShrinkFactor));
 

@@ -8748,8 +8748,7 @@ TEST_F(WebFrameTest, PrintingBasic)
   WebLocalFrame* frame = web_view_helper.LocalMainFrame();
 
   WebPrintParams print_params;
-  print_params.print_content_area.width = 500;
-  print_params.print_content_area.height = 500;
+  print_params.print_content_area.set_size(gfx::Size(500, 500));
 
   uint32_t page_count = frame->PrintBegin(print_params, WebNode());
   EXPECT_EQ(1u, page_count);
@@ -13142,9 +13141,8 @@ TEST_F(WebFrameTest, RecordSameDocumentNavigationToHistogram) {
 
 static void TestFramePrinting(WebLocalFrameImpl* frame) {
   WebPrintParams print_params;
-  WebSize page_size(500, 500);
-  print_params.print_content_area.width = page_size.width;
-  print_params.print_content_area.height = page_size.height;
+  gfx::Size page_size(500, 500);
+  print_params.print_content_area.set_size(page_size);
   EXPECT_EQ(1u, frame->PrintBegin(print_params, WebNode()));
   PaintRecorder recorder;
   frame->PrintPagesForTesting(recorder.beginRecording(IntRect()), page_size,
@@ -13220,9 +13218,8 @@ TEST_F(WebFrameTest, FirstLetterHasDOMNodeIdWhenPrinting) {
 
   // Print the page and capture the PaintRecord.
   WebPrintParams print_params;
-  WebSize page_size(500, 500);
-  print_params.print_content_area.width = page_size.width;
-  print_params.print_content_area.height = page_size.height;
+  gfx::Size page_size(500, 500);
+  print_params.print_content_area.set_size(page_size);
   WebLocalFrameImpl* frame = web_view_helper.LocalMainFrame();
   EXPECT_EQ(1u, frame->PrintBegin(print_params, WebNode()));
   PaintRecorder recorder;
@@ -13474,8 +13471,7 @@ TEST_F(WebFrameSimTest, PageOrientation) {
 
   auto* frame = WebView().MainFrame()->ToWebLocalFrame();
   WebPrintParams print_params;
-  print_params.print_content_area.width = page_size.width();
-  print_params.print_content_area.height = page_size.height();
+  print_params.print_content_area.set_size(page_size);
   EXPECT_EQ(4u, frame->PrintBegin(print_params, WebNode()));
 
   WebPrintPageDescription description;
