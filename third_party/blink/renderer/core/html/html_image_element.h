@@ -260,13 +260,12 @@ class CORE_EXPORT HTMLImageElement final
   // policies. When any policy is violated, the image should be rendered as a
   // placeholder image.
   bool is_legacy_format_or_unoptimized_image_ : 1;
+  bool is_ad_related_ : 1;
 
   network::mojom::ReferrerPolicy referrer_policy_;
 
   std::unique_ptr<LazyLoadImageObserver::VisibleLoadTimeMetrics>
       visible_load_time_metrics_;
-
-  bool is_ad_related_ = false;
 };
 
 }  // namespace blink

@@ -108,6 +108,7 @@ HTMLImageElement::HTMLImageElement(Document& document, bool created_by_parser)
           !GetExecutionContext()->IsFeatureEnabled(
               mojom::blink::DocumentPolicyFeature::kUnsizedMedia)),
       is_legacy_format_or_unoptimized_image_(false),
+      is_ad_related_(false),
       referrer_policy_(network::mojom::ReferrerPolicy::kDefault) {
   SetHasCustomStyleCallbacks();
 }
