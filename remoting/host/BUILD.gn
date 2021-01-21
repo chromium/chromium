@@ -429,6 +429,7 @@ static_library("common") {
     deps += [
       ":remoting_version",
       "//remoting/host/mac:constants",
+      "//remoting/host/mac:permission_checking",
     ]
   }
 

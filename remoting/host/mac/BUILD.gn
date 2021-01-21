@@ -44,6 +44,8 @@ source_set("permission_checking") {
     ":constants",
     "//remoting/resources",
   ]
+
+  frameworks = [ "AVFoundation.framework" ]
 }
 
 executable("remoting_me2me_host_service") {
