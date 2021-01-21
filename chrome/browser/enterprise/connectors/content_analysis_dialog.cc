@@ -33,6 +33,7 @@
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/controls/link.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout.h"
@@ -50,7 +51,8 @@ constexpr int kSideImageSize = 24;
 constexpr int kLineHeight = 20;
 
 constexpr gfx::Insets kSideImageInsets = gfx::Insets(8, 8, 8, 8);
-constexpr gfx::Insets kMessageAndIconRowInsets = gfx::Insets(0, 32, 0, 48);
+constexpr int kMessageAndIconRowLeadingPadding = 32;
+constexpr int kMessageAndIconRowTrailingPadding = 48;
 constexpr int kSideIconBetweenChildSpacing = 16;
 
 // These time values are non-const in order to be overridden in test so they
@@ -212,6 +214,14 @@ void ContentAnalysisDialog::CancelButtonCallback() {
     delegate_->Cancel(is_warning());
 }
 
+void ContentAnalysisDialog::LearnMoreLinkClickedCallback(
+    const ui::Event& event) {
+  web_contents_->OpenURL(
+      content::OpenURLParams(final_learn_more_url_, content::Referrer(),
+                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                             ui::PAGE_TRANSITION_LINK, false));
+}
+
 void ContentAnalysisDialog::SuccessCallback() {
 #if defined(USE_AURA)
   if (web_contents_) {
@@ -253,20 +263,30 @@ views::View* ContentAnalysisDialog::GetContentsView() {
     // Add padding to distance the top image from the icon and message.
     layout->AddPaddingRow(views::GridLayout::kFixedSize, 16);
 
+    views::ColumnSet* message_columns = layout->AddColumnSet(1);
+    message_columns->AddPaddingColumn(0.0, kMessageAndIconRowLeadingPadding);
+    message_columns->AddColumn(
+        /*h_align=*/views::GridLayout::LEADING,
+        /*v_align=*/views::GridLayout::FILL,
+        /*resize_percent=*/0.0,
+        /*size_type=*/views::GridLayout::ColumnSize::kUsePreferred,
+        /*fixed_width=*/0,
+        /*min_width=*/0);
+    message_columns->AddPaddingColumn(0.0, kSideIconBetweenChildSpacing);
+    message_columns->AddColumn(
+        /*h_align=*/views::GridLayout::LEADING,
+        /*v_align=*/views::GridLayout::FILL,
+        /*resize_percent=*/1.0,
+        /*size_type=*/views::GridLayout::ColumnSize::kUsePreferred,
+        /*fixed_width=*/0,
+        /*min_width=*/0);
+    message_columns->AddPaddingColumn(0.0, kMessageAndIconRowTrailingPadding);
+
     // Add the side icon and message row.
-    layout->StartRow(views::GridLayout::kFixedSize, 0);
-    auto icon_and_message_row = std::make_unique<views::View>();
-    auto* row_layout = icon_and_message_row->SetLayoutManager(
-        std::make_unique<views::BoxLayout>(
-            views::BoxLayout::Orientation::kHorizontal,
-            kMessageAndIconRowInsets, kSideIconBetweenChildSpacing));
-    row_layout->set_main_axis_alignment(
-        views::BoxLayout::MainAxisAlignment::kStart);
-    row_layout->set_cross_axis_alignment(
-        views::BoxLayout::CrossAxisAlignment::kCenter);
+    layout->StartRow(views::GridLayout::kFixedSize, 1);
 
     // Add the side icon.
-    icon_and_message_row->AddChildView(CreateSideIcon());
+    layout->AddView(CreateSideIcon());
 
     // Add the message.
     auto label = std::make_unique<DeepScanningMessageView>(this);
@@ -275,9 +295,20 @@ views::View* ContentAnalysisDialog::GetContentsView() {
     label->SetMultiLine(true);
     label->SetVerticalAlignment(gfx::ALIGN_MIDDLE);
     label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    message_ = icon_and_message_row->AddChildView(std::move(label));
+    message_ = layout->AddView(std::move(label));
 
-    layout->AddView(std::move(icon_and_message_row));
+    layout->StartRow(views::GridLayout::kFixedSize, 1);
+    layout->SkipColumns(1);
+    // Add the Learn More link but hide it so it can only be displayed when
+    // required.
+    auto learn_more_link =
+        std::make_unique<views::Link>(l10n_util::GetStringUTF16(
+            IDS_DEEP_SCANNING_DIALOG_CUSTOM_MESSAGE_LEARN_MORE_LINK));
+    learn_more_link->SetCallback(base::BindRepeating(
+        &ContentAnalysisDialog::LearnMoreLinkClickedCallback,
+        base::Unretained(this)));
+    learn_more_link->SetVisible(false);
+    learn_more_link_ = layout->AddView(std::move(learn_more_link));
 
     // Add padding to distance the message from the button(s).
     layout->AddPaddingRow(views::GridLayout::kFixedSize, 10);
@@ -306,9 +337,14 @@ void ContentAnalysisDialog::WebContentsDestroyed() {
 }
 
 void ContentAnalysisDialog::ShowResult(
-    ContentAnalysisDelegate::FinalResult result) {
+    ContentAnalysisDelegate::FinalResult result,
+    const std::string& custom_message,
+    const GURL& learn_more_url) {
   DCHECK(is_pending());
   final_result_ = result;
+  final_custom_message_ = custom_message;
+  final_learn_more_url_ = learn_more_url;
+
   switch (final_result_) {
     case ContentAnalysisDelegate::FinalResult::ENCRYPTED_FILES:
     case ContentAnalysisDelegate::FinalResult::LARGE_FILES:
@@ -357,6 +393,8 @@ void ContentAnalysisDialog::UpdateDialog() {
   DCHECK(widget);
   DCHECK(is_result());
 
+  auto height_before = contents_view_->GetPreferredSize().height();
+
   // Update the style of the dialog to reflect the new state.
   message_->Update();
   image_->Update();
@@ -373,11 +411,18 @@ void ContentAnalysisDialog::UpdateDialog() {
   message_->SetText(new_message);
   message_->GetViewAccessibility().AnnounceText(std::move(new_message));
 
+  // Update the visibility of the Learn More link, which should only be visible
+  // if the dialog is in the warning or failure state, and there's a link to
+  // display.
+  learn_more_link_->SetVisible(
+      (is_failure() || is_warning()) &&
+      (final_learn_more_url_.is_valid() && !final_learn_more_url_.is_empty()));
+
   // Resize the dialog's height. This is needed since the text might take more
   // lines after changing.
-  int text_height = message_->GetRequiredLines() * message_->GetLineHeight();
-  int row_height = message_->parent()->height();
-  int height_to_add = std::max(text_height - row_height, 0);
+
+  auto height_after = contents_view_->GetPreferredSize().height();
+  int height_to_add = std::max(height_after - height_before, 0);
   if (height_to_add > 0)
     Resize(height_to_add);
 
@@ -432,7 +477,6 @@ void ContentAnalysisDialog::Resize(int height_to_add) {
   bounds_animator_->SetAnimationDuration(kResizeAnimationDuration);
 
   DCHECK(widget->GetRootView());
-  DCHECK_EQ(widget->GetRootView()->children().size(), 1u);
   views::View* view_to_resize = widget->GetRootView()->children()[0];
 
   // Start the animation.
@@ -603,6 +647,11 @@ base::string16 ContentAnalysisDialog::GetPendingMessage() const {
 base::string16 ContentAnalysisDialog::GetFailureMessage() const {
   DCHECK(is_failure());
 
+  // If the admin has specified a custom message for this failure, it takes
+  // precedence over the generic ones.
+  if (has_custom_message())
+    return GetCustomMessage();
+
   if (final_result_ == ContentAnalysisDelegate::FinalResult::LARGE_FILES) {
     return l10n_util::GetPluralStringFUTF16(
         IDS_DEEP_SCANNING_DIALOG_LARGE_FILE_FAILURE_MESSAGE, files_count_);
@@ -619,6 +668,12 @@ base::string16 ContentAnalysisDialog::GetFailureMessage() const {
 
 base::string16 ContentAnalysisDialog::GetWarningMessage() const {
   DCHECK(is_warning());
+
+  // If the admin has specified a custom message for this warning, it takes
+  // precedence over the generic one.
+  if (has_custom_message())
+    return GetCustomMessage();
+
   return l10n_util::GetPluralStringFUTF16(
       IDS_DEEP_SCANNING_DIALOG_UPLOAD_WARNING_MESSAGE, files_count_);
 }
@@ -627,6 +682,13 @@ base::string16 ContentAnalysisDialog::GetSuccessMessage() const {
   DCHECK(is_success());
   return l10n_util::GetPluralStringFUTF16(
       IDS_DEEP_SCANNING_DIALOG_SUCCESS_MESSAGE, files_count_);
+}
+
+base::string16 ContentAnalysisDialog::GetCustomMessage() const {
+  DCHECK(is_warning() || is_failure());
+  DCHECK(has_custom_message());
+  return l10n_util::GetStringFUTF16(IDS_DEEP_SCANNING_DIALOG_CUSTOM_MESSAGE,
+                                    base::ASCIIToUTF16(final_custom_message_));
 }
 
 const gfx::ImageSkia* ContentAnalysisDialog::GetTopImage() const {
