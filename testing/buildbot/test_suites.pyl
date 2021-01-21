@@ -3925,6 +3925,11 @@
     },
 
     'linux_ozone_x11_only_gtests': {
+      'interactive_ui_tests': {
+        'swarming': {
+          'shards': 3,
+        },
+      },
       'ozone_x11_unittests': {},
       'x11_unittests': {},
     },
