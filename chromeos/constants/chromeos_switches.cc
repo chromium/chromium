@@ -344,6 +344,11 @@ const char kFakeArcRecommendedAppsForTesting[] =
 // "keyboard-bottom-left", keyboard-bottom-right", "keyboard-top-right".
 const char kFingerprintSensorLocation[] = "fingerprint-sensor-location";
 
+// Specifies the device's form factor. If provided, this flag overrides the
+// value from the LSB release info. Possible values are: "CHROMEBASE",
+// "CHROMEBIT", "CHROMEBOOK", "REFERENCE", "CHROMEBOX"
+const char kFormFactor[] = "form-factor";
+
 // Passed to Chrome the first time that it's run after the system boots.
 // Not passed on restart after sign out.
 const char kFirstExecAfterBoot[] = "first-exec-after-boot";
