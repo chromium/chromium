@@ -51,16 +51,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Renderer4.CompositorTouchScrollUpdateThread"
-    enum="ScrollThread" expires_after="M85">
+    enum="ScrollThread" expires_after="M97">
   <owner>flackr@chromium.org</owner>
-  <summary>Whether the scroll from touch is executed on main thread.</summary>
+  <owner>input-dev@chromium.org</owner>
+  <summary>
+    Whether the scroll from touch is executed on main thread. Recorded once for
+    each scroll. Contains incomplete data from M85 to M89 inclusively.
+  </summary>
 </histogram>
 
 <histogram name="Renderer4.CompositorWheelScrollUpdateThread"
-    enum="ScrollThread" expires_after="M85">
+    enum="ScrollThread" expires_after="M97">
   <owner>flackr@chromium.org</owner>
+  <owner>input-dev@chromium.org</owner>
   <summary>
-    Whether the scroll from mouse wheel is executed on main thread.
+    Whether the scroll from mouse wheel is executed on main thread. Recorded
+    once for each scroll. Contains incomplete data from M85 to M89 inclusively.
   </summary>
 </histogram>
 
@@ -173,28 +179,32 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Renderer4.MainThreadGestureScrollReason"
-    enum="MainThreadScrollingReason" expires_after="M88">
+    enum="MainThreadScrollingReason" expires_after="M97">
   <owner>flackr@chromium.org</owner>
   <owner>pdr@chromium.org</owner>
+  <owner>input-dev@chromium.org</owner>
   <summary>
     Ideally we'd always scroll on the impl thread, but there are a variety of
     situations where we need to scroll on main. We should try to drive these
     down. For every gesture, we record whether or not the scroll occurred on the
     main thread or it should scroll on the impl thread but is blocked on main
-    thread, and if it did, what the reason was.
+    thread, and if it did, what the reasons were. One report is made for each
+    reason preventing scrolling on the impl thread.
   </summary>
 </histogram>
 
 <histogram name="Renderer4.MainThreadWheelScrollReason"
-    enum="MainThreadScrollingReason" expires_after="M88">
+    enum="MainThreadScrollingReason" expires_after="M97">
   <owner>flackr@chromium.org</owner>
   <owner>pdr@chromium.org</owner>
+  <owner>input-dev@chromium.org</owner>
   <summary>
     Ideally we'd always scroll on the impl thread, but there are a variety of
     situations where we need to scroll on main. We should try to drive these
     down. For every wheel tick, we record whether or not the the scroll occurred
     on the main thread or it should scroll on the impl thread but is blocked on
-    main thread, and if it did, what the reason was.
+    main thread, and if it did, what the reasons were. One report is made for
+    each reason preventing scrolling on the impl thread.
   </summary>
 </histogram>
 
