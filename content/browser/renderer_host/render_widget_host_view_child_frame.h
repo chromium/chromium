@@ -96,6 +96,7 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   void InitAsPopup(RenderWidgetHostView* parent_host_view,
                    const gfx::Rect& bounds) override;
   void UpdateCursor(const WebCursor& cursor) override;
+  void SendInitialPropertiesIfNeeded() override;
   void SetIsLoading(bool is_loading) override;
   void RenderProcessGone() override;
   void Destroy() override;
@@ -138,7 +139,6 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   std::unique_ptr<SyntheticGestureTarget> CreateSyntheticGestureTarget()
       override;
   bool IsRenderWidgetHostViewChildFrame() override;
-  void WillSendScreenRects() override;
 
 #if defined(OS_MAC)
   // RenderWidgetHostView implementation.
@@ -285,6 +285,11 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
 
   // True if there is currently a scroll sequence being bubbled to our parent.
   bool is_scroll_sequence_bubbling_ = false;
+
+  // If a new RWHVCF is created for a cross-origin navigation, the parent
+  // will typically not notice and will not transmit a full complement of
+  // properties.
+  bool initial_properties_sent_ = false;
 
   // The ScreenInfo information from the parent at the time this class is
   // created, to be used before this view is connected to its FrameDelegate.

@@ -334,14 +334,6 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
     use_zoom_for_device_scale_factor_ = use_zoom_for_device_scale_factor;
   }
 
-  // TODO(szager): This is a hack piled on top of a hack; see
-  // RenderWidgetHostViewChildFrame::WillSendScreenRects. We need a better way
-  // to initialize renderer process state after a frame migrates to a different
-  // process due to navigation.
-  bool IsProcessingViewportIntersection() const {
-    return is_processing_viewport_intersection_;
-  }
-
  protected:
   friend class MockCrossProcessFrameConnector;
   friend class SitePerProcessBrowserTestBase;
@@ -421,9 +413,6 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
   // Remembers whether or not the RenderFrameHostDelegate (i.e., tab) was
   // shown after a crash. This is only used when recording renderer crashes.
   bool delegate_was_shown_after_crash_ = false;
-
-  // This is used to prevent re-entry into UpdateViewportIntersection.
-  bool is_processing_viewport_intersection_ = false;
 
   // The last pre-transform frame size received from the parent renderer.
   // |last_received_local_frame_size_| may be in DIP if use zoom for DSF is

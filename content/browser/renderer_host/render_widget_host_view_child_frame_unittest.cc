@@ -244,7 +244,8 @@ TEST_F(RenderWidgetHostViewChildFrameTest, ViewportIntersectionUpdated) {
   FakeFrameWidget fake_frame_widget(std::move(blink_frame_widget_receiver));
 
   widget_host_->RendererWidgetCreated(/*for_frame_widget=*/true);
-
+  base::RunLoop().RunUntilIdle();
+  widget_.ClearScreenRects();
   base::RunLoop().RunUntilIdle();
 
   auto& intersection_state = fake_frame_widget.GetIntersectionState();

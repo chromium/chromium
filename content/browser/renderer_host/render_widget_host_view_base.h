@@ -146,6 +146,8 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
 
   WidgetType GetWidgetType();
 
+  virtual void SendInitialPropertiesIfNeeded() {}
+
   // Notification that a resize or move session ended on the native widget.
   void UpdateScreenInfo(gfx::NativeView view);
 
@@ -323,10 +325,6 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
   // a more generic term -- in which case, static casts to RWHVChildFrame will
   // need to also be resolved.
   virtual bool IsRenderWidgetHostViewChildFrame();
-
-  // Notify the View that a screen rect update is being sent to the
-  // RenderWidget. Related platform-specific updates can be sent from here.
-  virtual void WillSendScreenRects() {}
 
   // Returns true if the current view is in virtual reality mode.
   virtual bool IsInVR() const;

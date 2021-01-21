@@ -349,6 +349,17 @@ void RenderWidgetHostViewChildFrame::UpdateCursor(const WebCursor& cursor) {
     frame_connector_->UpdateCursor(cursor);
 }
 
+void RenderWidgetHostViewChildFrame::SendInitialPropertiesIfNeeded() {
+  if (initial_properties_sent_ || !frame_connector_)
+    return;
+  UpdateViewportIntersection(frame_connector_->intersection_state(),
+                             base::nullopt);
+  SetIsInert();
+  UpdateInheritedEffectiveTouchAction();
+  UpdateRenderThrottlingStatus();
+  initial_properties_sent_ = true;
+}
+
 void RenderWidgetHostViewChildFrame::SetIsLoading(bool is_loading) {
   // It is valid for an inner WebContents's SetIsLoading() to end up here.
   // This is because an inner WebContents's main frame's RenderWidgetHostView
@@ -728,26 +739,6 @@ gfx::PointF RenderWidgetHostViewChildFrame::TransformRootPointToViewCoordSpace(
 
 bool RenderWidgetHostViewChildFrame::IsRenderWidgetHostViewChildFrame() {
   return true;
-}
-
-void RenderWidgetHostViewChildFrame::WillSendScreenRects() {
-  // TODO(kenrb): These represent post-initialization state updates that are
-  // needed by the renderer. During normal OOPIF setup these are unnecessary,
-  // as the parent renderer will send the information and it will be
-  // immediately propagated to the OOPIF. However when an OOPIF navigates from
-  // one process to another, the parent doesn't know that, and certain
-  // browser-side state needs to be sent again. There is probably a less
-  // spammy way to do this, but triggering on SendScreenRects() is reasonable
-  // until somebody figures that out. RWHVCF::Init() is too early.
-  if (frame_connector_) {
-    if (!frame_connector_->IsProcessingViewportIntersection()) {
-      UpdateViewportIntersection(frame_connector_->intersection_state(),
-                                 base::nullopt);
-    }
-    SetIsInert();
-    UpdateInheritedEffectiveTouchAction();
-    UpdateRenderThrottlingStatus();
-  }
 }
 
 #if defined(OS_MAC)
