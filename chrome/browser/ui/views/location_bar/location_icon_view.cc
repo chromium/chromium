@@ -76,9 +76,10 @@ bool LocationIconView::IsBubbleShowing() const {
 }
 
 bool LocationIconView::OnMousePressed(const ui::MouseEvent& event) {
-  delegate_->OnLocationIconPressed(event);
-
   IconLabelBubbleView::OnMousePressed(event);
+  delegate_->OnLocationIconPressed(event);
+  // Since OnLocationIconPressed() runs a nested message loop on Linux, |this|
+  // may be deleted by now.
   return true;
 }
 
