@@ -4,7 +4,6 @@
 
 #include "chrome/browser/chromeos/printing/history/print_job_history_service_impl.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/chromeos/printing/cups_print_job.h"
 #include "chrome/browser/chromeos/printing/history/print_job_info.pb.h"
 #include "chrome/browser/chromeos/printing/history/test_print_job_database.h"
@@ -13,7 +12,6 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -111,9 +109,6 @@ TEST_F(PrintJobHistoryServiceImplTest, SaveObservedCupsPrintJob) {
 }
 
 TEST_F(PrintJobHistoryServiceImplTest, DoesNotSaveIncognitoPrintJobs) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kPrintJobManagementApp);
-
   // Expect no initial print jobs saved.
   std::vector<printing::proto::PrintJobInfo> entries = GetPrintJobs();
   EXPECT_EQ(0u, entries.size());

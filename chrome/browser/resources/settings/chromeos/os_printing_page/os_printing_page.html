@@ -22,14 +22,12 @@
             on-click="onTapCupsPrinters_"
             role-description="$i18n{subpageArrowRoleDescription}">
         </cr-link-row>
-        <template is="dom-if" if="[[isPrintManagementEnabled_]]">
-          <cr-link-row class="hr" id="printManagement"
-              on-click="onOpenPrintManagement_"
-              label="$i18n{printJobsTitle}"
-              sub-label="$i18n{printJobsSublabel}"
-              external deep-link-focus-id$="[[Setting.kPrintJobs]]">
-          </cr-link-row>
-        </template>
+        <cr-link-row class="hr" id="printManagement"
+            on-click="onOpenPrintManagement_"
+            label="$i18n{printJobsTitle}"
+            sub-label="$i18n{printJobsSublabel}"
+            external deep-link-focus-id$="[[Setting.kPrintJobs]]">
+        </cr-link-row>
         <template is="dom-if" if="[[isScanningAppEnabled_]]">
           <cr-link-row class="hr" id="scanningApp"
               on-click="onOpenScanningApp_"

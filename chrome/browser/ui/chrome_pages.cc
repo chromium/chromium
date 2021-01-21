@@ -445,8 +445,6 @@ void ShowAppManagementPage(Profile* profile,
 
 void ShowPrintManagementApp(Profile* profile,
                             PrintManagementAppEntryPoint entry_point) {
-  DCHECK(
-      base::FeatureList::IsEnabled(chromeos::features::kPrintJobManagementApp));
   DCHECK(entry_point == PrintManagementAppEntryPoint::kSettings ||
          entry_point == PrintManagementAppEntryPoint::kNotification);
 

@@ -27,12 +27,6 @@ PrintManagementBrowserTest.prototype = {
     '//ui/webui/resources/js/assert.js',
     '//ui/webui/resources/js/promise_resolver.js',
   ],
-
-  featureList: {
-    enabled: [
-      'chromeos::features::kPrintJobManagementApp',
-    ]
-  },
 };
 
 TEST_F('PrintManagementBrowserTest', 'All', function() {

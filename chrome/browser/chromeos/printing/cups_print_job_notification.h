@@ -7,10 +7,9 @@
 
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "ui/gfx/image/image.h"
+#include "base/strings/string16.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
 class Profile;
@@ -32,11 +31,6 @@ class CupsPrintJobNotificationManager;
 // according to its state and respond to the user's action.
 class CupsPrintJobNotification : public message_center::NotificationObserver {
  public:
-  enum class ButtonCommand {
-    CANCEL_PRINTING,
-    GET_HELP,
-  };
-
   CupsPrintJobNotification(CupsPrintJobNotificationManager* manager,
                            base::WeakPtr<CupsPrintJob> print_job,
                            Profile* profile);
@@ -55,15 +49,9 @@ class CupsPrintJobNotification : public message_center::NotificationObserver {
   void UpdateNotificationTitle();
   void UpdateNotificationIcon();
   void UpdateNotificationBodyMessage();
-  void UpdateNotificationType();
-  void UpdateNotificationButtons();
+  void UpdateNotificationTimeout();
 
   void CleanUpNotification();
-
-  // Returns the buttons according to the print job's current status.
-  std::vector<ButtonCommand> GetButtonCommands() const;
-  base::string16 GetButtonLabel(ButtonCommand button) const;
-  gfx::Image GetButtonIcon(ButtonCommand button) const;
 
   CupsPrintJobNotificationManager* notification_manager_;
   std::unique_ptr<message_center::Notification> notification_;
@@ -75,14 +63,6 @@ class CupsPrintJobNotification : public message_center::NotificationObserver {
   // is true, then prevent the following print job progress update after close,
   // and only show the print job done or failed notification.
   bool closed_in_middle_ = false;
-
-  // If this is true, the user cancelled the job using the cancel button and
-  // should not be notified of events.
-  bool cancelled_by_user_ = false;
-
-  // Maintains a list of button actions according to the print job's current
-  // status.
-  std::vector<ButtonCommand> button_commands_;
 
   // Timer to close the notification in case of success.
   std::unique_ptr<base::OneShotTimer> success_timer_;

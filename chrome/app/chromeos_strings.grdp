@@ -4095,7 +4095,7 @@
     Print
   </message>
   <message name="IDS_PRINT_JOB_PRINTING_NOTIFICATION_TITLE" desc="Title of the printing-in-progress notification.">
-    Printing
+    Printing started
   </message>
   <message name="IDS_PRINT_JOB_DONE_NOTIFICATION_TITLE" desc="Title of the successful printing notification.">
     Printing complete

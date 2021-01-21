@@ -9,7 +9,6 @@
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
-#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted_memory.h"
@@ -33,7 +32,6 @@
 #include "chrome/browser/ui/webui/print_preview/printer_handler.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/printing/browser/print_composite_client.h"
 #include "components/printing/browser/print_manager_utils.h"
@@ -868,13 +866,10 @@ bool PrintViewManagerBase::CreateNewPrintJob(
   print_job_ = base::MakeRefCounted<PrintJob>();
   print_job_->Initialize(std::move(query), RenderSourceName(), number_pages_);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  PrintJob::Source source = PrintJob::Source::PRINT_PREVIEW;
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kPrintJobManagementApp) &&
-      web_contents()->GetBrowserContext()->IsOffTheRecord()) {
-    source = PrintJob::Source::PRINT_PREVIEW_INCOGNITO;
-  }
-  print_job_->SetSource(source, /*source_id=*/"");
+  print_job_->SetSource(web_contents()->GetBrowserContext()->IsOffTheRecord()
+                            ? PrintJob::Source::PRINT_PREVIEW_INCOGNITO
+                            : PrintJob::Source::PRINT_PREVIEW,
+                        /*source_id=*/"");
 #endif
 
   registrar_.Add(this, chrome::NOTIFICATION_PRINT_JOB_EVENT,

@@ -351,13 +351,10 @@ void CupsPrintersHandler::RegisterMessages() {
       "queryPrintServer",
       base::BindRepeating(&CupsPrintersHandler::HandleQueryPrintServer,
                           base::Unretained(this)));
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kPrintJobManagementApp)) {
-    web_ui()->RegisterMessageCallback(
-        "openPrintManagementApp",
-        base::BindRepeating(&CupsPrintersHandler::HandleOpenPrintManagementApp,
-                            base::Unretained(this)));
-  }
+  web_ui()->RegisterMessageCallback(
+      "openPrintManagementApp",
+      base::BindRepeating(&CupsPrintersHandler::HandleOpenPrintManagementApp,
+                          base::Unretained(this)));
   if (base::FeatureList::IsEnabled(chromeos::features::kScanningUI)) {
     web_ui()->RegisterMessageCallback(
         "openScanningApp",
@@ -1316,8 +1313,6 @@ void CupsPrintersHandler::OnQueryPrintServerCompleted(
 void CupsPrintersHandler::HandleOpenPrintManagementApp(
     const base::ListValue* args) {
   DCHECK(args->empty());
-  DCHECK(
-      base::FeatureList::IsEnabled(chromeos::features::kPrintJobManagementApp));
   chrome::ShowPrintManagementApp(profile_,
                                  PrintManagementAppEntryPoint::kSettings);
 }

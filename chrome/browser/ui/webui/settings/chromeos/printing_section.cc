@@ -80,11 +80,6 @@ const std::vector<SearchConcept>& GetScanningAppSearchConcepts() {
   return *tags;
 }
 
-bool IsPrintManagementEnabled() {
-  return base::FeatureList::IsEnabled(
-      chromeos::features::kPrintJobManagementApp);
-}
-
 bool IsScanningAppEnabled() {
   return base::FeatureList::IsEnabled(chromeos::features::kScanningUI);
 }
@@ -98,8 +93,7 @@ PrintingSection::PrintingSection(Profile* profile,
       printers_manager_(printers_manager) {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.AddSearchTags(GetPrintingSearchConcepts());
-  if (IsPrintManagementEnabled())
-    updater.AddSearchTags(GetPrintingManagementSearchConcepts());
+  updater.AddSearchTags(GetPrintingManagementSearchConcepts());
 
   if (IsScanningAppEnabled())
     updater.AddSearchTags(GetScanningAppSearchConcepts());
@@ -271,7 +265,6 @@ void PrintingSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddString(
       "printingCUPSPrintPpdLearnMoreUrl",
       GetHelpUrlWithBoard(chrome::kCupsPrintPPDLearnMoreURL));
-  html_source->AddBoolean("printManagementEnabled", IsPrintManagementEnabled());
   html_source->AddBoolean("scanningAppEnabled", IsScanningAppEnabled());
 }
 

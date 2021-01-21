@@ -1093,9 +1093,6 @@ extern const char kPrerender2Description[];
 extern const char kPreviewsAllowedName[];
 extern const char kPreviewsAllowedDescription[];
 
-extern const char kPrintJobManagementAppName[];
-extern const char kPrintJobManagementAppDescription[];
-
 extern const char kPrintSaveToDriveName[];
 extern const char kPrintSaveToDriveDescription[];
 

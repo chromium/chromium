@@ -726,9 +726,7 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
       url.host_piece() == chromeos::kChromeUIDiagnosticsAppHost) {
     return &NewWebUI<chromeos::DiagnosticsUI>;
   }
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kPrintJobManagementApp) &&
-      url.host_piece() == chromeos::kChromeUIPrintManagementHost)
+  if (url.host_piece() == chromeos::kChromeUIPrintManagementHost)
     return &NewWebUI<chromeos::printing::printing_manager::PrintManagementUI>;
   if (base::FeatureList::IsEnabled(chromeos::features::kScanningUI) &&
       url.host_piece() == chromeos::kChromeUIScanningAppHost) {

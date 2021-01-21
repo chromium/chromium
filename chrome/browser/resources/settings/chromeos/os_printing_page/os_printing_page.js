@@ -35,14 +35,6 @@ Polymer({
     },
 
     /** @private */
-    isPrintManagementEnabled_: {
-      type: Boolean,
-      value: function() {
-        return loadTimeData.getBoolean('printManagementEnabled');
-      }
-    },
-
-    /** @private */
     isScanningAppEnabled_: {
       type: Boolean,
       value: function() {
@@ -83,7 +75,6 @@ Polymer({
 
   /** @private */
   onOpenPrintManagement_() {
-    assert(this.isPrintManagementEnabled_);
     settings.CupsPrintersBrowserProxyImpl.getInstance()
         .openPrintManagementApp();
   },

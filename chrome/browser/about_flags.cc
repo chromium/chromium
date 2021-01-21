@@ -5445,10 +5445,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPrinterStatusDialogDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kPrinterStatusDialog)},
 
-    {"print-job-management-app", flag_descriptions::kPrintJobManagementAppName,
-     flag_descriptions::kPrintJobManagementAppDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::features::kPrintJobManagementApp)},
-
     {"enable-phone-hub", flag_descriptions::kPhoneHubName,
      flag_descriptions::kPhoneHubDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kPhoneHub)},

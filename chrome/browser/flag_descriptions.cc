@@ -1879,11 +1879,6 @@ const char kPreviewsAllowedDescription[] =
     "enabled and the client experiencing specific triggering conditions. "
     "May be used as a kill-switch to turn off all potential preview types.";
 
-const char kPrintJobManagementAppName[] = "Print Management App";
-const char kPrintJobManagementAppDescription[] =
-    "Enables the print management app that allows Chrome OS users to view "
-    "and manage their native print jobs.";
-
 const char kPrintSaveToDriveName[] = "Print Save to Drive locally";
 const char kPrintSaveToDriveDescription[] =
     "Modifies Print Preview Save to Drive to use locally mounted Drive";
