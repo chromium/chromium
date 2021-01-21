@@ -19,7 +19,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/chromeos/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "components/account_id/account_id.h"
 #include "components/services/app_service/app_service_impl.h"
@@ -256,13 +255,8 @@ void AppServiceProxy::Launch(const std::string& app_id,
         return;
       }
 #endif
-      // Don't record system apps metric here, they are handled in
-      // LaunchSystemWebApp.
-      base::Optional<web_app::SystemAppType> system_app_type =
-          web_app::GetSystemWebAppTypeForAppId(profile_, update.AppId());
-      if (!system_app_type) {
-        RecordAppLaunch(update.AppId(), launch_source);
-      }
+
+      RecordAppLaunch(update.AppId(), launch_source);
       app_service_->Launch(update.AppType(), update.AppId(), event_flags,
                            launch_source, display_id);
     });
@@ -321,13 +315,7 @@ void AppServiceProxy::LaunchAppWithIntent(
         return;
       }
 #endif
-      base::Optional<web_app::SystemAppType> system_app_type =
-          web_app::GetSystemWebAppTypeForAppId(profile_, update.AppId());
-      if (!system_app_type) {
-        // Don't record system apps metric here, they are handled in
-        // LaunchSystemWebApp.
-        RecordAppLaunch(update.AppId(), launch_source);
-      }
+      RecordAppLaunch(update.AppId(), launch_source);
       app_service_->LaunchAppWithIntent(update.AppType(), update.AppId(),
                                         event_flags, std::move(intent),
                                         launch_source, display_id);

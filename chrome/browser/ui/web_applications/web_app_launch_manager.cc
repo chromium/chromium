@@ -168,7 +168,7 @@ content::WebContents* WebAppLaunchManager::OpenApplication(
       GetSystemWebAppTypeForAppId(profile_, params.app_id);
   if (system_app_type) {
     Browser* browser =
-        LaunchSystemWebApp(profile_, *system_app_type, url, std::move(params));
+        LaunchSystemWebAppImpl(profile_, *system_app_type, url, params);
     return browser->tab_strip_model()->GetActiveWebContents();
   }
 

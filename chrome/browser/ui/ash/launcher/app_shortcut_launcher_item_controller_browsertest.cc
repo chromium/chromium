@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_types.h"
+#include "chrome/browser/chromeos/crostini/crostini_terminal.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -44,11 +45,8 @@ class AppShortcutLauncherItemControllerBrowserTest
   }
 
   Browser* LaunchApp() {
-    Browser* app_browser = web_app::LaunchSystemWebApp(
-        browser()->profile(), web_app::SystemAppType::TERMINAL,
-        GURL("chrome-untrusted://terminal/html/terminal.html"));
-    DCHECK(app_browser);
-    return app_browser;
+    crostini::LaunchTerminal(browser()->profile());
+    return chrome::FindLastActive();
   }
 
   ash::ShelfItemDelegate* GetShelfItemDelegate() {

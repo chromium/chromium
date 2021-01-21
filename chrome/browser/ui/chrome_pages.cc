@@ -450,15 +450,14 @@ void ShowPrintManagementApp(Profile* profile,
 
   base::UmaHistogramEnumeration("Printing.CUPS.PrintManagementAppEntryPoint",
                                 entry_point);
-  LaunchSystemWebApp(profile, web_app::SystemAppType::PRINT_MANAGEMENT,
-                     GURL(chrome::kChromeUIPrintManagementUrl));
+  LaunchSystemWebAppAsync(profile, web_app::SystemAppType::PRINT_MANAGEMENT);
 }
 
 void ShowConnectivityDiagnosticsApp(Profile* profile) {
   DCHECK(base::FeatureList::IsEnabled(
       chromeos::features::kConnectivityDiagnosticsWebUi));
-  LaunchSystemWebApp(profile, web_app::SystemAppType::CONNECTIVITY_DIAGNOSTICS,
-                     GURL(chromeos::kChromeUIConnectivityDiagnosticsUrl));
+  LaunchSystemWebAppAsync(profile,
+                          web_app::SystemAppType::CONNECTIVITY_DIAGNOSTICS);
 }
 
 void ShowScanningApp(Profile* profile,
@@ -466,8 +465,7 @@ void ShowScanningApp(Profile* profile,
   DCHECK(base::FeatureList::IsEnabled(chromeos::features::kScanningUI));
   DCHECK_EQ(chromeos::scanning::ScanAppEntryPoint::kSettings, entry_point);
 
-  LaunchSystemWebApp(profile, web_app::SystemAppType::SCANNING,
-                     GURL(chrome::kChromeUIScanningAppURL));
+  LaunchSystemWebAppAsync(profile, web_app::SystemAppType::SCANNING);
   chromeos::scanning::RecordScanAppEntryPoint(entry_point);
 }
 
@@ -475,8 +473,7 @@ void ShowDiagnosticsApp(Profile* profile) {
   // TODO(joonbug): Add entry point tracking
   DCHECK(base::FeatureList::IsEnabled(chromeos::features::kDiagnosticsApp));
 
-  LaunchSystemWebApp(profile, web_app::SystemAppType::DIAGNOSTICS,
-                     GURL(chrome::kChromeUIDiagnosticsAppURL));
+  LaunchSystemWebAppAsync(profile, web_app::SystemAppType::DIAGNOSTICS);
 }
 
 GURL GetOSSettingsUrl(const std::string& sub_page) {

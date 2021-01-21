@@ -54,6 +54,9 @@ class SystemWebAppManagerBrowserTestBase : public InProcessBrowserTest {
   // Returns the start URL based on the given |params|.
   GURL GetStartUrl(const apps::AppLaunchParams& params);
 
+  // Returns the default start url.
+  GURL GetStartUrl();
+
   void WaitForTestSystemAppInstall();
 
   // Creates a default AppLaunchParams for |system_app_type|. Launches a window.

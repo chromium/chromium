@@ -502,11 +502,11 @@ void Navigate(NavigateParams* params) {
       (!params->browser ||
        !web_app::IsBrowserForSystemWebApp(params->browser,
                                           capturing_system_app_type.value()))) {
-    params->browser = web_app::LaunchSystemWebApp(
-        params->initiating_profile, capturing_system_app_type.value(),
-        params->url);
+    web_app::LaunchSystemWebAppAsync(params->initiating_profile,
+                                     capturing_system_app_type.value(),
+                                     {.url = params->url});
 
-    // It's okay to early return here, because LaunchSystemWebApp uses a
+    // It's okay to early return here, because LaunchSystemWebAppAsync uses a
     // different logic to choose (and create if necessary) a browser window for
     // system apps.
     //
