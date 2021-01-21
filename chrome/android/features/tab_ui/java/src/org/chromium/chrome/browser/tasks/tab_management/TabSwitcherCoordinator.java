@@ -134,17 +134,15 @@ public class TabSwitcherCoordinator
                                         .getTabsWithNoOtherRelatedTabs());
                         RecordUserAction.record("MobileMenuGroupTabs");
                         return true;
-                    } else if (id == R.id.track_prices_id || id == R.id.track_prices_check_id) {
-                        PriceTrackingUtilities.flipTrackPricesOnTabs();
-                        resetWithTabList(mTabModelSelector.getTabModelFilterProvider()
-                                                 .getCurrentTabModelFilter(),
-                                false, TabSwitcherMediator.isShowingTabsInMRUOrder());
+                    } else if (id == R.id.track_prices_row_menu_id) {
+                        mPriceTrackingDialogCoordinator.show();
                         return true;
                     }
                     return false;
                 }
             };
     private TabGridIphDialogCoordinator mTabGridIphDialogCoordinator;
+    private PriceTrackingDialogCoordinator mPriceTrackingDialogCoordinator;
 
     public TabSwitcherCoordinator(Context context, ActivityLifecycleDispatcher lifecycleDispatcher,
             TabModelSelector tabModelSelector, TabContentManager tabContentManager,
@@ -325,13 +323,16 @@ public class TabSwitcherCoordinator
                 mMessageCardProviderCoordinator.subscribeMessageService(iphMessageService);
             }
 
-            if (TabUiFeatureUtilities.isPriceTrackingEnabled()
-                    && !PriceTrackingUtilities.isPriceWelcomeMessageCardDisabled()) {
-                mPriceWelcomeMessageService =
-                        new PriceWelcomeMessageService(mTabListCoordinator, mMediator);
-                mMessageCardProviderCoordinator.subscribeMessageService(
-                        mPriceWelcomeMessageService);
-                mMediator.setPriceWelcomeMessageService(mPriceWelcomeMessageService);
+            if (TabUiFeatureUtilities.isPriceTrackingEnabled()) {
+                mPriceTrackingDialogCoordinator = new PriceTrackingDialogCoordinator(
+                        context, modalDialogManager, this, mTabModelSelector);
+                if (!PriceTrackingUtilities.isPriceWelcomeMessageCardDisabled()) {
+                    mPriceWelcomeMessageService =
+                            new PriceWelcomeMessageService(mTabListCoordinator, mMediator);
+                    mMessageCardProviderCoordinator.subscribeMessageService(
+                            mPriceWelcomeMessageService);
+                    mMediator.setPriceWelcomeMessageService(mPriceWelcomeMessageService);
+                }
             }
         }
         mIsInitialized = true;

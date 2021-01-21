@@ -347,8 +347,6 @@ public class OverviewAppMenuTest {
                 int itemGroupId = item.getGroupId();
                 if (itemGroupId == R.id.OVERVIEW_MODE_MENU) {
                     assertTrue(item.isVisible());
-                    MenuItem trackPricesCheck = menu.findItem(R.id.track_prices_check_id);
-                    assertTrue(trackPricesCheck.isChecked());
                 }
                 if (itemGroupId == R.id.START_SURFACE_MODE_MENU) {
                     assertFalse(item.isVisible());
