@@ -144,6 +144,9 @@ enum class KeyRetrievalTriggerForUMA;
 - (void)showSignin:(ShowSigninCommand*)command
     baseViewController:(UIViewController*)baseViewController;
 
+// Signs the user out and dismisses UI for any in-progress sign-in.
+- (void)forceSignOut;
+
 // TODO(crbug.com/779791) : Do not pass baseViewController through dispatcher.
 // Shows the Add Account UI, presenting from |baseViewController|.
 - (void)showAddAccountFromViewController:(UIViewController*)baseViewController;

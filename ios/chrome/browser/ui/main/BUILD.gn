@@ -108,6 +108,7 @@ source_set("scene") {
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/main",
     "//ios/chrome/browser/ntp:features",
+    "//ios/chrome/browser/policy",
     "//ios/chrome/browser/screenshot",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/snapshots",

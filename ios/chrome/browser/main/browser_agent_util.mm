@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/device_sharing/device_sharing_browser_agent.h"
 #include "ios/chrome/browser/infobars/overlays/browser_agent/infobar_overlay_browser_agent_util.h"
 #import "ios/chrome/browser/metrics/tab_usage_recorder_browser_agent.h"
+#import "ios/chrome/browser/policy/policy_watcher_browser_agent.h"
 #include "ios/chrome/browser/send_tab_to_self/send_tab_to_self_browser_agent.h"
 #import "ios/chrome/browser/sessions/live_tab_context_browser_agent.h"
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
@@ -48,6 +49,7 @@ void AttachBrowserAgents(Browser* browser) {
 
   ClosingWebStateObserverBrowserAgent::CreateForBrowser(browser);
   SnapshotBrowserAgent::CreateForBrowser(browser);
+  PolicyWatcherBrowserAgent::CreateForBrowser(browser);
 
   // Send Tab To Self is non-OTR only.
   if (!browser->GetBrowserState()->IsOffTheRecord())
