@@ -1151,7 +1151,7 @@ WebRange WebLocalFrameImpl::MarkedRange() const {
 bool WebLocalFrameImpl::FirstRectForCharacterRange(
     unsigned location,
     unsigned length,
-    WebRect& rect_in_viewport) const {
+    gfx::Rect& rect_in_viewport) const {
   if ((location + length < location) && (location + length))
     length = 0;
 
@@ -1168,9 +1168,8 @@ bool WebLocalFrameImpl::FirstRectForCharacterRange(
       PlainTextRange(location, location + length).CreateRange(*editable);
   if (range.IsNull())
     return false;
-  IntRect int_rect = FirstRectForRange(range);
-  rect_in_viewport = WebRect(int_rect);
-  rect_in_viewport = GetFrame()->View()->FrameToViewport(rect_in_viewport);
+  rect_in_viewport =
+      GetFrame()->View()->FrameToViewport(FirstRectForRange(range));
   return true;
 }
 

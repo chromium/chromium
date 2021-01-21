@@ -187,8 +187,9 @@ WebTextInputType WebInputMethodControllerImpl::TextInputType() {
   return GetFrame()->GetInputMethodController().TextInputType();
 }
 
-void WebInputMethodControllerImpl::GetLayoutBounds(WebRect* control_bounds,
-                                                   WebRect* selection_bounds) {
+void WebInputMethodControllerImpl::GetLayoutBounds(
+    gfx::Rect* control_bounds,
+    gfx::Rect* selection_bounds) {
   GetInputMethodController().GetLayoutBounds(control_bounds, selection_bounds);
 }
 
@@ -223,7 +224,7 @@ WebRange WebInputMethodControllerImpl::CompositionRange() {
 }
 
 bool WebInputMethodControllerImpl::GetCompositionCharacterBounds(
-    WebVector<WebRect>& bounds) {
+    WebVector<gfx::Rect>& bounds) {
   if (IsEditContextActive())
     return false;
 
@@ -233,14 +234,14 @@ bool WebInputMethodControllerImpl::GetCompositionCharacterBounds(
 
   size_t character_count = range.length();
   size_t offset = range.StartOffset();
-  WebVector<WebRect> result(character_count);
-  WebRect webrect;
+  WebVector<gfx::Rect> result(character_count);
+  gfx::Rect rect;
   for (size_t i = 0; i < character_count; ++i) {
-    if (!web_frame_->FirstRectForCharacterRange(offset + i, 1, webrect)) {
+    if (!web_frame_->FirstRectForCharacterRange(offset + i, 1, rect)) {
       DLOG(ERROR) << "Could not retrieve character rectangle at " << i;
       return false;
     }
-    result[i] = webrect;
+    result[i] = rect;
   }
 
   bounds.Swap(result);

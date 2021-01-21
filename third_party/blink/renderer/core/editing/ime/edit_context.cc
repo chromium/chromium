@@ -380,10 +380,10 @@ String EditContext::enterKeyHint() const {
   }
 }
 
-void EditContext::GetLayoutBounds(WebRect* web_control_bounds,
-                                  WebRect* web_selection_bounds) {
-  *web_control_bounds = control_bounds_;
-  *web_selection_bounds = selection_bounds_;
+void EditContext::GetLayoutBounds(gfx::Rect* control_bounds,
+                                  gfx::Rect* selection_bounds) {
+  *control_bounds = control_bounds_;
+  *selection_bounds = selection_bounds_;
 }
 
 bool EditContext::SetComposition(
@@ -613,7 +613,7 @@ WebRange EditContext::CompositionRange() {
   return WebRange(composition_range_start_, composition_range_end_);
 }
 
-bool EditContext::GetCompositionCharacterBounds(WebVector<WebRect>& bounds) {
+bool EditContext::GetCompositionCharacterBounds(WebVector<gfx::Rect>& bounds) {
   bounds[0] = selection_bounds_;
   return true;
 }

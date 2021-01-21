@@ -4175,7 +4175,7 @@ TEST_F(WebFrameTest, FirstRectForCharacterRangeWithPinchZoom) {
   WebLocalFrame* main_frame = web_view_helper.LocalMainFrame();
   main_frame->ExecuteScript(WebScriptSource("selectRange();"));
 
-  WebRect old_rect;
+  gfx::Rect old_rect;
   main_frame->FirstRectForCharacterRange(0, 5, old_rect);
 
   gfx::PointF visual_offset(100, 130);
@@ -4183,13 +4183,13 @@ TEST_F(WebFrameTest, FirstRectForCharacterRangeWithPinchZoom) {
   web_view_helper.GetWebView()->SetPageScaleFactor(scale);
   web_view_helper.GetWebView()->SetVisualViewportOffset(visual_offset);
 
-  WebRect rect;
+  gfx::Rect rect;
   main_frame->FirstRectForCharacterRange(0, 5, rect);
 
-  EXPECT_EQ((old_rect.x - visual_offset.x()) * scale, rect.x);
-  EXPECT_EQ((old_rect.y - visual_offset.y()) * scale, rect.y);
-  EXPECT_EQ(old_rect.width * scale, rect.width);
-  EXPECT_EQ(old_rect.height * scale, rect.height);
+  EXPECT_EQ((old_rect.x() - visual_offset.x()) * scale, rect.x());
+  EXPECT_EQ((old_rect.y() - visual_offset.y()) * scale, rect.y());
+  EXPECT_EQ(old_rect.width() * scale, rect.width());
+  EXPECT_EQ(old_rect.height() * scale, rect.height());
 }
 class TestReloadDoesntRedirectWebFrameClient
     : public frame_test_helpers::TestWebFrameClient {

@@ -134,7 +134,7 @@ class CORE_EXPORT InputMethodController final
 
   // Returns either the focused editable element's control bounds or the
   // EditContext's control and selection bounds if available.
-  void GetLayoutBounds(WebRect* control_bounds, WebRect* selection_bounds);
+  void GetLayoutBounds(gfx::Rect* control_bounds, gfx::Rect* selection_bounds);
 
   // Sets the state of the VK show()/hide() calls from virtualkeyboard.
   void SetVirtualKeyboardVisibilityRequest(

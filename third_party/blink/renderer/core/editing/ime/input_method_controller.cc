@@ -1495,8 +1495,8 @@ void InputMethodController::DeleteSurroundingTextInCodePoints(int before,
   return DeleteSurroundingText(before_length, after_length);
 }
 
-void InputMethodController::GetLayoutBounds(WebRect* control_bounds,
-                                            WebRect* selection_bounds) {
+void InputMethodController::GetLayoutBounds(gfx::Rect* control_bounds,
+                                            gfx::Rect* selection_bounds) {
   if (!IsAvailable())
     return;
 

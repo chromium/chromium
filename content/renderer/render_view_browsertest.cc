@@ -1705,8 +1705,8 @@ TEST_F(RenderViewImplTextInputStateChanged, ActiveElementGetLayoutBounds) {
   EXPECT_EQ(1u, updated_states().size());
   blink::WebInputMethodController* controller =
       frame()->GetWebFrame()->GetInputMethodController();
-  blink::WebRect expected_control_bounds;
-  blink::WebRect temp_selection_bounds;
+  gfx::Rect expected_control_bounds;
+  gfx::Rect temp_selection_bounds;
   controller->GetLayoutBounds(&expected_control_bounds, &temp_selection_bounds);
   gfx::Rect expected_control_bounds_in_dips =
       main_frame_widget()->BlinkSpaceToEnclosedDIPs(expected_control_bounds);
@@ -1772,8 +1772,8 @@ TEST_F(RenderViewImplTextInputStateChanged,
   EXPECT_EQ(1u, updated_states().size());
   blink::WebInputMethodController* controller =
       frame()->GetWebFrame()->GetInputMethodController();
-  blink::WebRect expected_control_bounds;
-  blink::WebRect temp_selection_bounds;
+  gfx::Rect expected_control_bounds;
+  gfx::Rect temp_selection_bounds;
   controller->GetLayoutBounds(&expected_control_bounds, &temp_selection_bounds);
   gfx::Rect expected_control_bounds_in_dips =
       main_frame_widget()->BlinkSpaceToEnclosedDIPs(expected_control_bounds);

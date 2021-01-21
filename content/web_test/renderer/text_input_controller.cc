@@ -350,7 +350,7 @@ std::vector<int> TextInputController::SelectedRange() {
 std::vector<int> TextInputController::FirstRectForCharacterRange(
     unsigned location,
     unsigned length) {
-  blink::WebRect rect;
+  gfx::Rect rect;
   if (!view()->FocusedFrame() ||
       !view()->FocusedFrame()->FirstRectForCharacterRange(location, length,
                                                           rect)) {
@@ -358,10 +358,10 @@ std::vector<int> TextInputController::FirstRectForCharacterRange(
   }
 
   std::vector<int> int_array(4);
-  int_array[0] = rect.x;
-  int_array[1] = rect.y;
-  int_array[2] = rect.width;
-  int_array[3] = rect.height;
+  int_array[0] = rect.x();
+  int_array[1] = rect.y();
+  int_array[2] = rect.width();
+  int_array[3] = rect.height();
 
   return int_array;
 }

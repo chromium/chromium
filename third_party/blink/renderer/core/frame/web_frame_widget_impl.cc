@@ -2967,14 +2967,14 @@ void WebFrameWidgetImpl::GetEditContextBoundsInWindow(
   WebInputMethodController* controller = GetActiveWebInputMethodController();
   if (!controller)
     return;
-  WebRect control_bounds;
-  WebRect selection_bounds;
+  gfx::Rect control_bounds;
+  gfx::Rect selection_bounds;
   controller->GetLayoutBounds(&control_bounds, &selection_bounds);
   *edit_context_control_bounds =
-      widget_base_->BlinkSpaceToEnclosedDIPs(gfx::Rect(control_bounds));
+      widget_base_->BlinkSpaceToEnclosedDIPs(control_bounds);
   if (controller->IsEditContextActive()) {
     *edit_context_selection_bounds =
-        widget_base_->BlinkSpaceToEnclosedDIPs(gfx::Rect(selection_bounds));
+        widget_base_->BlinkSpaceToEnclosedDIPs(selection_bounds);
   }
 }
 
@@ -3287,13 +3287,12 @@ void WebFrameWidgetImpl::GetCompositionCharacterBoundsInWindow(
     return;
   blink::WebInputMethodController* controller =
       focused_frame->GetInputMethodController();
-  blink::WebVector<blink::WebRect> bounds_from_blink;
+  blink::WebVector<gfx::Rect> bounds_from_blink;
   if (!controller->GetCompositionCharacterBounds(bounds_from_blink))
     return;
 
   for (auto& rect : bounds_from_blink) {
-    bounds_in_dips->push_back(
-        widget_base_->BlinkSpaceToEnclosedDIPs(gfx::Rect(rect)));
+    bounds_in_dips->push_back(widget_base_->BlinkSpaceToEnclosedDIPs(rect));
   }
 }
 
@@ -3317,14 +3316,13 @@ WebFrameWidgetImpl::GetImeTextSpansInfo(
   Vector<ui::mojom::blink::ImeTextSpanInfoPtr> ime_text_spans_info;
 
   for (const auto& ime_text_span : ime_text_spans) {
-    WebRect webrect;
+    gfx::Rect rect;
     unsigned length = ime_text_span.end_offset - ime_text_span.start_offset;
     focused_frame->FirstRectForCharacterRange(ime_text_span.start_offset,
-                                              length, webrect);
+                                              length, rect);
 
     ime_text_spans_info.push_back(ui::mojom::blink::ImeTextSpanInfo::New(
-        ime_text_span,
-        widget_base_->BlinkSpaceToEnclosedDIPs(gfx::Rect(webrect))));
+        ime_text_span, widget_base_->BlinkSpaceToEnclosedDIPs(rect)));
   }
   return ime_text_spans_info;
 }

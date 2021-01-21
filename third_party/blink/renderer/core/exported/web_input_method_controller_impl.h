@@ -48,12 +48,12 @@ class CORE_EXPORT WebInputMethodControllerImpl
   int ComputeWebTextInputNextPreviousFlags() override;
   WebTextInputType TextInputType() override;
   WebRange CompositionRange() override;
-  bool GetCompositionCharacterBounds(WebVector<WebRect>& bounds) override;
+  bool GetCompositionCharacterBounds(WebVector<gfx::Rect>& bounds) override;
 
   WebRange GetSelectionOffsets() const override;
 
-  void GetLayoutBounds(WebRect* control_bounds,
-                       WebRect* selection_bounds) override;
+  void GetLayoutBounds(gfx::Rect* control_bounds,
+                       gfx::Rect* selection_bounds) override;
   bool IsVirtualKeyboardPolicyManual() const override;
   bool IsEditContextActive() const override;
   ui::mojom::VirtualKeyboardVisibilityRequest

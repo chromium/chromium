@@ -2722,15 +2722,13 @@ void LocalFrame::GetFirstRectForRange(const gfx::Range& range) {
     return;
 
   if (!client->GetCaretBoundsFromFocusedPlugin(rect)) {
-    blink::WebRect web_rect;
     // When request range is invalid we will try to obtain it from current
     // frame selection. The fallback value will be 0.
     uint32_t start =
         range.IsValid() ? range.start() : GetCurrentCursorPositionInFrame(this);
 
     WebLocalFrameImpl::FromFrame(this)->FirstRectForCharacterRange(
-        start, range.length(), web_rect);
-    rect.SetRect(web_rect.x, web_rect.y, web_rect.width, web_rect.height);
+        start, range.length(), rect);
   }
 
   GetTextInputHost().GotFirstRectForRange(rect);

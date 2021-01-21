@@ -441,7 +441,7 @@ class WebLocalFrame : public WebFrame {
   // Returns the text range rectangle in the viepwort coordinate space.
   virtual bool FirstRectForCharacterRange(unsigned location,
                                           unsigned length,
-                                          WebRect&) const = 0;
+                                          gfx::Rect&) const = 0;
 
   // Supports commands like Undo, Redo, Cut, Copy, Paste, SelectAll,
   // Unselect, etc. See EditorCommand.cpp for the full list of supported
