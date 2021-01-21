@@ -19,14 +19,9 @@ Case: Displaying poster
   "layers": [
     {
       "name": "Scrolling background of LayoutView #document",
-      "bounds": [785, 605],
+      "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "VerticalScrollbar",
-      "position": [785, 0],
-      "bounds": [15, 600]
     }
   ]
 }
@@ -37,7 +32,7 @@ Case: Displaying movie
   "layers": [
     {
       "name": "Scrolling background of LayoutView #document",
-      "bounds": [785, 893],
+      "bounds": [785, 813],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },

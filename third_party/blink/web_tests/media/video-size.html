@@ -36,7 +36,18 @@ var movieInfo = [
     {
         src: "content/test.ogv",
         poster: "content/abe.png",
-        description: "'poster' and 'src', should be 'video' size",
+        play: false,
+        description: "'poster' and 'src', should be 'poster' size before play",
+        width: 76,
+        height: 103,
+        videoWidth: 320,
+        videoHeight: 240
+    },
+    {
+        src: "content/test.ogv",
+        poster: "content/abe.png",
+        play: true,
+        description: "'poster' and 'src', should be 'video' size after play",
         width: 320,
         height: 240,
         videoWidth: 320,
@@ -78,7 +89,12 @@ movieInfo.forEach(function(movie) {
             if (movie.poster)
                 video.poster = movie.poster;
 
-            video.onloadedmetadata = t.step_func_done(testMovieSize);
+            if (movie.play) {
+                video.onplaying = t.step_func_done(testMovieSize);
+                video.play();
+            } else {
+                video.onloadedmetadata = t.step_func_done(testMovieSize);
+            }
 
             if (!movie.src || movie.src.indexOf("bogus") >= 0) {
                 setTimeout(t.step_func_done(testMovieSize), 0);

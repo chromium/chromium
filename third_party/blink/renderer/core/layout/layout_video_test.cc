@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/layout_video.h"
 
+#include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
@@ -26,7 +27,9 @@ class LayoutVideoTest : public RenderingTest {
         UnacceleratedStaticBitmapImage::Create(image).get());
 
     // Set image to video
-    auto* layout_image = (LayoutImage*)GetLayoutObjectByElementId(id);
+    auto* video = To<HTMLVideoElement>(GetElementById(id));
+    auto* layout_image = To<LayoutImage>(video->GetLayoutObject());
+    video->setAttribute(html_names::kPosterAttr, "http://example.com/foo.jpg");
     layout_image->ImageResource()->SetImageResource(image_content);
   }
 };
@@ -42,7 +45,7 @@ TEST_F(LayoutVideoTest, PosterSizeWithNormal) {
   CreateAndSetImage("video", 10, 10);
   UpdateAllLifecyclePhasesForTest();
 
-  int width = ((LayoutBox*)GetLayoutObjectByElementId("video"))
+  int width = To<LayoutBox>(GetLayoutObjectByElementId("video"))
                   ->AbsoluteBoundingBoxRect()
                   .Width();
   EXPECT_EQ(width, 10);
@@ -59,10 +62,32 @@ TEST_F(LayoutVideoTest, PosterSizeWithZoom) {
   CreateAndSetImage("video", 10, 10);
   UpdateAllLifecyclePhasesForTest();
 
-  int width = ((LayoutBox*)GetLayoutObjectByElementId("video"))
+  int width = To<LayoutBox>(GetLayoutObjectByElementId("video"))
                   ->AbsoluteBoundingBoxRect()
                   .Width();
   EXPECT_EQ(width, 15);
+}
+
+TEST_F(LayoutVideoTest, PosterSizeAfterPlay) {
+  SetBodyInnerHTML(R"HTML(
+    <video id='video' src='http://example.com/foo.mp4' />
+  )HTML");
+
+  CreateAndSetImage("video", 10, 10);
+  UpdateAllLifecyclePhasesForTest();
+  auto* video = To<HTMLVideoElement>(GetElementById("video"));
+
+  // Try playing the video (should stall without a real source)
+  video->Play();
+  EXPECT_FALSE(video->IsShowPosterFlagSet());
+  EXPECT_FALSE(video->HasAvailableVideoFrame());
+
+  // Width should still be that of the poster image, NOT the default video
+  // element width
+  int width = To<LayoutBox>(GetLayoutObjectByElementId("video"))
+                  ->AbsoluteBoundingBoxRect()
+                  .Width();
+  EXPECT_EQ(width, 10);
 }
 
 }  // namespace blink

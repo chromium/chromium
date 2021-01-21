@@ -19,15 +19,9 @@ Case: Displaying poster
   "layers": [
     {
       "name": "Scrolling Contents Layer",
-      "bounds": [785, 605],
+      "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
-      "position": [785, 0],
-      "bounds": [15, 600],
-      "contentsOpaque": true
     }
   ]
 }
@@ -38,7 +32,7 @@ Case: Displaying movie
   "layers": [
     {
       "name": "Scrolling Contents Layer",
-      "bounds": [785, 909],
+      "bounds": [785, 813],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
