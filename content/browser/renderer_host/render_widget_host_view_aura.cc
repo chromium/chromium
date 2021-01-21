@@ -1460,22 +1460,7 @@ bool RenderWidgetHostViewAura::SetCompositionFromExistingText(
 gfx::Range RenderWidgetHostViewAura::GetAutocorrectRange() const {
   if (!text_input_manager_ || !text_input_manager_->GetActiveWidget())
     return gfx::Range();
-
-  const std::vector<ui::mojom::ImeTextSpanInfoPtr>& ime_text_spans_info =
-      text_input_manager_->GetTextInputState()->ime_text_spans_info;
-
-  unsigned autocorrect_span_found = 0;
-  gfx::Range range;
-  for (const auto& ime_text_span_info : ime_text_spans_info) {
-    if (ime_text_span_info->span.type == ui::ImeTextSpan::Type::kAutocorrect) {
-      range = gfx::Range(ime_text_span_info->span.start_offset,
-                         ime_text_span_info->span.end_offset);
-      autocorrect_span_found++;
-    }
-  }
-  // Assuming there is only one autocorrect span at any point in time.
-  DCHECK_LE(autocorrect_span_found, 1u);
-  return range;
+  return text_input_manager_->GetAutocorrectRange();
 }
 
 gfx::Rect RenderWidgetHostViewAura::GetAutocorrectCharacterBounds() const {
