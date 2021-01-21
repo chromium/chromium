@@ -402,6 +402,17 @@ TEST_F(AssistantManagerServiceImplTest, ShouldSetStateToStoppedAfterStopping) {
   WaitForState(AssistantManagerService::STOPPED);
 }
 
+TEST_F(AssistantManagerServiceImplTest, ShouldAllowRestartingAfterStopping) {
+  Start();
+  WaitForState(AssistantManagerService::STARTED);
+
+  assistant_manager_service()->Stop();
+  WaitForState(AssistantManagerService::STOPPED);
+
+  Start();
+  WaitForState(AssistantManagerService::STARTED);
+}
+
 TEST_F(AssistantManagerServiceImplTest,
        ShouldReportAuthenticationErrorsToCommunicationErrorObservers) {
   TestCommunicationErrors(GetAuthenticationErrorCodes(),
