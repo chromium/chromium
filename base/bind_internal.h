@@ -980,6 +980,16 @@ struct IsWeakReceiver<std::reference_wrapper<T>> : IsWeakReceiver<T> {};
 template <typename T>
 struct IsWeakReceiver<WeakPtr<T>> : std::true_type {};
 
+// An injection point to control how objects are checked for maybe validity,
+// which is an optimistic thread-safe check for full validity.
+template <typename>
+struct MaybeValidTraits {
+  template <typename T>
+  static bool MaybeValid(const T& o) {
+    return o.MaybeValid();
+  }
+};
+
 // An injection point to control how bound objects passed to the target
 // function. BindUnwrapTraits<>::Unwrap() is called for each bound objects right
 // before the target function is invoked.
@@ -1055,7 +1065,7 @@ struct CallbackCancellationTraits<
   static bool MaybeValid(const Functor&,
                          const Receiver& receiver,
                          const Args&...) {
-    return receiver.MaybeValid();
+    return MaybeValidTraits<Receiver>::MaybeValid(receiver);
   }
 };
 
@@ -1072,7 +1082,7 @@ struct CallbackCancellationTraits<OnceCallback<Signature>,
 
   template <typename Functor>
   static bool MaybeValid(const Functor& functor, const BoundArgs&...) {
-    return functor.MaybeValid();
+    return MaybeValidTraits<Functor>::MaybeValid(functor);
   }
 };
 
@@ -1088,7 +1098,7 @@ struct CallbackCancellationTraits<RepeatingCallback<Signature>,
 
   template <typename Functor>
   static bool MaybeValid(const Functor& functor, const BoundArgs&...) {
-    return functor.MaybeValid();
+    return MaybeValidTraits<Functor>::MaybeValid(functor);
   }
 };
 

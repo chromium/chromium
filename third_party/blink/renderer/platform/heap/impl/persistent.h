@@ -72,10 +72,6 @@ class PersistentBase {
     return raw_;
   }
 
-  // TODO(https://crbug.com/653394): Consider returning a thread-safe best
-  // guess of validity.
-  bool MaybeValid() const { return true; }
-
   explicit operator bool() const { return Get(); }
   T& operator*() const { return *Get(); }
   operator T*() const { return Get(); }

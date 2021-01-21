@@ -145,6 +145,20 @@ struct BindUnwrapTraits<blink::CrossThreadWeakPersistent<T>> {
   }
 };
 
+// TODO(https://crbug.com/653394): Consider returning a thread-safe best
+// guess of validity. MaybeValid() can be invoked from an arbitrary thread.
+template <typename T>
+struct MaybeValidTraits<blink::WeakPersistent<T>> {
+  static bool MaybeValid(const blink::WeakPersistent<T>& p) { return true; }
+};
+
+template <typename T>
+struct MaybeValidTraits<blink::CrossThreadWeakPersistent<T>> {
+  static bool MaybeValid(const blink::CrossThreadWeakPersistent<T>& p) {
+    return true;
+  }
+};
+
 }  // namespace base
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_PERSISTENT_H_
