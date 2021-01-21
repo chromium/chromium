@@ -601,16 +601,14 @@ void* PartitionRoot<thread_safe>::ReallocFlags(int flags,
       return ptr;
     }
 
-    const size_t actual_new_size = ActualSize(new_size);
-    const size_t actual_old_size = GetSize(ptr);
-
     // TODO: note that tcmalloc will "ignore" a downsizing realloc() unless the
     // new size is a significant percentage smaller. We could do the same if we
     // determine it is a win.
-    if (actual_new_size == actual_old_size) {
-      // Trying to allocate a block of size |new_size| would give us a block of
-      // the same size as the one we've already got, so re-use the allocation
-      // after updating statistics (and cookies, if present).
+    if (AllocationCapacityFromRequestedSize(new_size) ==
+        AllocationCapacityFromPtr(ptr)) {
+      // Trying to allocate |new_size| would use the same amount of underlying
+      // memory as we're already using, so re-use the allocation after updating
+      // statistics (and cookies, if present).
       if (slot_span->CanStoreRawSize()) {
         size_t new_raw_size = AdjustSizeForExtrasAdd(new_size);
         slot_span->SetRawSize(new_raw_size);

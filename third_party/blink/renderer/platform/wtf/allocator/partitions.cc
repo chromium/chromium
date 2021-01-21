@@ -270,8 +270,8 @@ void Partitions::BufferFree(void* p) {
 }
 
 // static
-size_t Partitions::BufferActualSize(size_t n) {
-  return BufferPartition()->ActualSize(n);
+size_t Partitions::BufferPotentialCapacity(size_t n) {
+  return BufferPartition()->AllocationCapacityFromRequestedSize(n);
 }
 
 // Ideally this would be removed when PartitionAlloc is malloc(), but there are

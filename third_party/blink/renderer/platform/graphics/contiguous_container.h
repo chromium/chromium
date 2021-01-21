@@ -73,7 +73,7 @@ class PLATFORM_EXPORT ContiguousContainerBase {
    public:
     Buffer(wtf_size_t buffer_size, const char* type_name)
         : capacity_(static_cast<wtf_size_t>(
-              WTF::Partitions::BufferActualSize(buffer_size))),
+              WTF::Partitions::BufferPotentialCapacity(buffer_size))),
           begin_(static_cast<uint8_t*>(
               WTF::Partitions::BufferMalloc(capacity_, type_name))),
           end_(begin_) {

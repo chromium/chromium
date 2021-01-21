@@ -298,8 +298,9 @@ struct BASE_EXPORT PartitionRoot {
   ALWAYS_INLINE void FreeNoHooksImmediate(void* ptr, SlotSpan* slot_span);
 
   ALWAYS_INLINE static size_t GetUsableSize(void* ptr);
-  ALWAYS_INLINE size_t GetSize(void* ptr) const;
-  ALWAYS_INLINE size_t ActualSize(size_t size);
+
+  ALWAYS_INLINE size_t AllocationCapacityFromPtr(void* ptr) const;
+  ALWAYS_INLINE size_t AllocationCapacityFromRequestedSize(size_t size) const;
 
   // Frees memory from this partition, if possible, by decommitting pages or
   // even etnire slot spans. |flags| is an OR of base::PartitionPurgeFlags.
@@ -423,7 +424,8 @@ struct BASE_EXPORT PartitionRoot {
   //
   // See crbug.com/1150772 for an instance of Clusterfuzz / UBSAN detecting
   // this.
-  ALWAYS_INLINE Bucket& NO_SANITIZE("undefined") bucket_at(size_t i) {
+  ALWAYS_INLINE const Bucket& NO_SANITIZE("undefined")
+      bucket_at(size_t i) const {
     PA_DCHECK(i <= kNumBuckets);
     return buckets[i];
   }
@@ -1067,11 +1069,15 @@ ALWAYS_INLINE size_t PartitionRoot<thread_safe>::GetUsableSize(void* ptr) {
   return size;
 }
 
-// Gets the size of the allocated slot that contains |ptr|, adjusted for the
-// cookie and ref-count (if any). CAUTION! For direct-mapped allocation, |ptr|
-// has to be within the first partition page.
+// Return the capacity of the underlying slot (adjusted for extras). This
+// doesn't mean this capacity is readily available. It merely means that if
+// a new allocation (or realloc) happened with that returned value, it'd use
+// the same amount of underlying memory.
+// CAUTION! For direct-mapped allocation, |ptr| has to be within the first
+// partition page.
 template <bool thread_safe>
-ALWAYS_INLINE size_t PartitionRoot<thread_safe>::GetSize(void* ptr) const {
+ALWAYS_INLINE size_t
+PartitionRoot<thread_safe>::AllocationCapacityFromPtr(void* ptr) const {
   ptr = AdjustPointerForExtrasSubtract(ptr);
   auto* slot_span =
       internal::PartitionAllocGetSlotSpanForSizeQuery<thread_safe>(ptr);
@@ -1369,8 +1375,15 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::TryRealloc(
   return ReallocFlags(PartitionAllocReturnNull, ptr, new_size, type_name);
 }
 
+// Return the capacity of the underlying slot (adjusted for extras) that'd be
+// used to satisfy a request of |size|. This doesn't mean this capacity would be
+// readily available. It merely means that if an allocation happened with that
+// returned value, it'd use the same amount of underlying memory as the
+// allocation with |size|.
 template <bool thread_safe>
-ALWAYS_INLINE size_t PartitionRoot<thread_safe>::ActualSize(size_t size) {
+ALWAYS_INLINE size_t
+PartitionRoot<thread_safe>::AllocationCapacityFromRequestedSize(
+    size_t size) const {
 #if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
   return size;
 #else
