@@ -1626,13 +1626,13 @@ class CONTENT_EXPORT ContentBrowserClient {
                               int /* render_process_id */,
                               int /* render_frame_id */)> callback);
 
-  // Returns whether a base::ThreadPoolInstance should be created when
-  // BrowserMainLoop starts.
-  // If false, a thread pool has been created by the embedder, and
-  // BrowserMainLoop should skip creating a second one.
+  // Called when starting BrowserMainLoop to create a base::ThreadPoolInstance.
+  // The embedder may choose to not create a thread pool; in that case
+  // ThreadPoolInstance::Get() will be null. Returns true if the
+  // ThreadPoolInstance was created.
   // Note: the embedder should *not* start the ThreadPoolInstance for
   // BrowserMainLoop, BrowserMainLoop itself is responsible for that.
-  virtual bool ShouldCreateThreadPool();
+  virtual bool CreateThreadPool(base::StringPiece name);
 
   // Returns an AuthenticatorRequestClientDelegate subclass instance to provide
   // embedder-specific configuration for a single Web Authentication API request

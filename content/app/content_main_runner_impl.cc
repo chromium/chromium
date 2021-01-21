@@ -951,11 +951,10 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams& main_params,
       mojo::core::InitFeatures();
     }
 
-    if (GetContentClient()->browser()->ShouldCreateThreadPool()) {
-      // Create and start the ThreadPool early to allow upcoming code to use
-      // the post_task.h API.
-      base::ThreadPoolInstance::Create("Browser");
-    }
+    // Create and start the ThreadPool early to allow upcoming code to use
+    // the post_task.h API.
+    const bool has_thread_pool =
+        GetContentClient()->browser()->CreateThreadPool("Browser");
 
     delegate_->PreCreateMainMessageLoop();
 #if defined(OS_WIN)
@@ -983,7 +982,7 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams& main_params,
       ANNOTATE_LEAKING_OBJECT_PTR(hang_watcher_);
     }
 
-    if (GetContentClient()->browser()->ShouldCreateThreadPool()) {
+    if (has_thread_pool) {
       // The FeatureList needs to create before starting the ThreadPool.
       StartBrowserThreadPool();
     }

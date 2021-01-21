@@ -6,6 +6,8 @@
 
 #include <limits>
 
+#include "base/immediate_crash.h"
+
 namespace base {
 
 static constexpr ProcessHandle kCurrentProcessHandle =
@@ -40,6 +42,13 @@ Process Process::Open(ProcessId pid) {
 // static
 Process Process::OpenWithExtraPrivileges(ProcessId pid) {
   return Process(pid);
+}
+
+// static
+void Process::TerminateCurrentProcessImmediately(int exit_code) {
+  // This method is marked noreturn, so we crash rather than just provide an
+  // empty stub implementation.
+  IMMEDIATE_CRASH();
 }
 
 bool Process::IsValid() const {

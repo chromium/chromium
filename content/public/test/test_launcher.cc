@@ -345,6 +345,10 @@ int LaunchTests(TestLauncherDelegate* launcher_delegate,
   // end up being launched as a test, which leads to rerunning the test.
   if (command_line->HasSwitch(switches::kProcessType) ||
       command_line->HasSwitch(switches::kLaunchAsBrowser)) {
+    // The main test process has this initialized by the base::TestSuite. But
+    // child processes don't have a TestSuite, and must initialize this
+    // explicitly before ContentMain.
+    TestTimeouts::Initialize();
     return ContentMain(params);
   }
 #endif
@@ -374,6 +378,11 @@ int LaunchTests(TestLauncherDelegate* launcher_delegate,
 
   base::AtExitManager at_exit;
   testing::InitGoogleTest(&argc, argv);
+
+  // The main test process has this initialized by the base::TestSuite. But
+  // this process is just sharding the test off to each main test process, and
+  // doesn't have a TestSuite, so must initialize this explicitly as the
+  // timeouts are used in the TestLauncher.
   TestTimeouts::Initialize();
 
   fprintf(stdout,

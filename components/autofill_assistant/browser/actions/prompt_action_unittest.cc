@@ -572,7 +572,7 @@ TEST_F(PromptActionTest, TimingStatsEndActionOnNavigation) {
   EXPECT_CALL(callback_, Run(_)).WillOnce(SaveArgPointee<0>(&capture));
   action.ProcessAction(callback_.Get());
   EXPECT_TRUE(task_env_.NextTaskIsDelayed());
-  task_env_.DescribePendingMainThreadTasks();
+  task_env_.DescribeCurrentTasks();
   task_env_.FastForwardUntilNoTasksRemain();
   EXPECT_EQ(capture.timing_stats().wait_time_ms(), 1000);
 }

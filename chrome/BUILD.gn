@@ -1504,8 +1504,6 @@ if (is_android) {
 
   source_set("chrome_android_core") {
     sources = [
-      "app/android/chrome_android_initializer.cc",
-      "app/android/chrome_android_initializer.h",
       "app/android/chrome_jni_onload.cc",
       "app/android/chrome_jni_onload.h",
       "app/android/chrome_main_delegate_android.cc",

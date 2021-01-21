@@ -20,6 +20,7 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/sequenced_task_runner.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
@@ -904,7 +905,8 @@ bool ContentBrowserClient::ShowPaymentHandlerWindow(
   return false;
 }
 
-bool ContentBrowserClient::ShouldCreateThreadPool() {
+bool ContentBrowserClient::CreateThreadPool(base::StringPiece name) {
+  base::ThreadPoolInstance::Create(name);
   return true;
 }
 

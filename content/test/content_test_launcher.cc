@@ -15,8 +15,8 @@
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/content_browser_test_shell_main_delegate.h"
 #include "content/public/test/content_test_suite_base.h"
-#include "content/shell/app/shell_main_delegate.h"
 #include "content/shell/common/shell_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/buildflags.h"
@@ -66,7 +66,7 @@ class ContentTestLauncherDelegate : public TestLauncherDelegate {
  protected:
 #if !defined(OS_ANDROID)
   ContentMainDelegate* CreateContentMainDelegate() override {
-    return new ShellMainDelegate(true);
+    return new ContentBrowserTestShellMainDelegate();
   }
 #endif
 

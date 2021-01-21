@@ -18,11 +18,12 @@
 #include "base/process/process_metrics.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
 #include "base/test/test_switches.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/app/chrome_main_delegate.h"
+#include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/profiler/main_thread_stack_sampling_profiler.h"
@@ -133,10 +134,29 @@ ChromeTestLauncherDelegate::GetUserDataDirectoryCommandLineSwitch() {
   return switches::kUserDataDir;
 }
 
+// Acts like normal ChromeContentBrowserClient but injects a test TaskTracker to
+// watch for long-running tasks and produce a useful timeout message in order to
+// find the cause of flaky timeout tests.
+class BrowserTestChromeContentBrowserClient
+    : public ChromeContentBrowserClient {
+ public:
+  bool CreateThreadPool(base::StringPiece name) override {
+    base::test::TaskEnvironment::CreateThreadPool();
+    return true;
+  }
+};
+
+content::ContentBrowserClient*
+ChromeTestChromeMainDelegate::CreateContentBrowserClient() {
+  chrome_content_browser_client_ =
+      std::make_unique<BrowserTestChromeContentBrowserClient>();
+  return chrome_content_browser_client_.get();
+}
+
 #if !defined(OS_ANDROID)
 content::ContentMainDelegate*
 ChromeTestLauncherDelegate::CreateContentMainDelegate() {
-  return new ChromeMainDelegate(base::TimeTicks::Now());
+  return new ChromeTestChromeMainDelegate(base::TimeTicks::Now());
 }
 #endif
 

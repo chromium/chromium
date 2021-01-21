@@ -297,8 +297,13 @@ void TaskTracker::CompleteShutdown() {
   // pointer never changes after being set by StartShutdown(), which must
   // happen-before this.
   DCHECK(TS_UNCHECKED_READ(shutdown_event_));
+
   {
     base::ScopedAllowBaseSyncPrimitives allow_wait;
+    // Allow tests to wait for and introduce logging about the shutdown tasks
+    // before we block this thread.
+    BeginCompleteShutdown(*TS_UNCHECKED_READ(shutdown_event_));
+    // Now block the thread until all tasks are done.
     TS_UNCHECKED_READ(shutdown_event_)->Wait();
   }
 
@@ -522,6 +527,10 @@ void TaskTracker::RunTask(Task task,
   ThreadRestrictions::SetWaitAllowed(previous_wait_allowed);
   ThreadRestrictions::SetIOAllowed(previous_io_allowed);
   ThreadRestrictions::SetSingletonAllowed(previous_singleton_allowed);
+}
+
+void TaskTracker::BeginCompleteShutdown(base::WaitableEvent& shutdown_event) {
+  // Do nothing in production, tests may override this.
 }
 
 bool TaskTracker::HasIncompleteTaskSourcesForTesting() const {

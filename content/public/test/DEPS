@@ -28,10 +28,10 @@ include_rules = [
   "+ui/platform_window/common/platform_window_defaults.h",
 ]
 
-# Ensure we don't leak internal content headers through public headers.
 specific_include_rules = {
   ".*\.(cc|mm)": [
-    # Testing utilities can access anything in content/
+    # Ensure we don't leak internal content headers through public headers. But
+    # testing utilities can access anything in content/.
     "+content",
     "+components/tracing/common",
     "+gin/v8_initializer.h",
@@ -39,4 +39,10 @@ specific_include_rules = {
     "+third_party/iaccessible2",
     "+ui/base/resource/resource_bundle.h",
   ],
+  # Shell-based browser test set up should use this Shell-derived
+  # ContentMainDelegate, but tests that use content should not be using Shell
+  # directly.
+  "content_browser_test_shell_main_delegate.h": [
+    "+content/shell/app/shell_main_delegate.h"
+  ]
 }

@@ -491,10 +491,6 @@ BrowserMainLoop::BrowserMainLoop(
     unregister_thread_closure_ = base::HangWatcher::RegisterThread(
         base::HangWatcher::ThreadType::kUIThread);
   }
-
-  if (GetContentClient()->browser()->ShouldCreateThreadPool()) {
-    DCHECK(base::ThreadPoolInstance::Get());
-  }
 }
 
 BrowserMainLoop::~BrowserMainLoop() {

@@ -15,6 +15,7 @@
 #include "base/message_loop/message_pump.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/no_destructor.h"
+#include "base/process/process.h"
 #include "base/run_loop.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
@@ -28,6 +29,7 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/test/test_timeouts.h"
 #include "base/thread_annotations.h"
+#include "base/threading/platform_thread.h"
 #include "base/threading/sequence_local_storage_map.h"
 #include "base/threading/thread_local.h"
 #include "base/threading/thread_restrictions.h"
@@ -118,6 +120,10 @@ class TaskEnvironment::TestTaskTracker
   // Returns true if tasks are currently allowed to run.
   bool TasksAllowedToRun() const;
 
+  // For debugging purposes. Returns a string with information about all the
+  // currently running tasks on the thread pool.
+  std::string DescribeRunningTasks() const;
+
  private:
   friend class TaskEnvironment;
 
@@ -125,6 +131,7 @@ class TaskEnvironment::TestTaskTracker
   void RunTask(internal::Task task,
                internal::TaskSource* sequence,
                const TaskTraits& traits) override;
+  void BeginCompleteShutdown(base::WaitableEvent& shutdown_event) override;
 
   // Synchronizes accesses to members below.
   mutable Lock lock_;
@@ -138,8 +145,11 @@ class TaskEnvironment::TestTaskTracker
   // Signaled when a task is completed.
   ConditionVariable task_completed_cv_ GUARDED_BY(lock_);
 
-  // Number of tasks that are currently running.
-  int num_tasks_running_ GUARDED_BY(lock_) = 0;
+  // Next task number so that each task has some unique-ish id.
+  int64_t next_task_number_ GUARDED_BY(lock_) = 1;
+  // The set of tasks currently running, keyed by the id from
+  // |next_task_number_|.
+  base::flat_map<int64_t, Location> running_tasks_ GUARDED_BY(lock_);
 
   DISALLOW_COPY_AND_ASSIGN(TestTaskTracker);
 };
@@ -419,13 +429,30 @@ TaskEnvironment::TaskEnvironment(
   }
 }
 
-void TaskEnvironment::InitializeThreadPool() {
+// static
+TaskEnvironment::TestTaskTracker* TaskEnvironment::CreateThreadPool() {
   CHECK(!ThreadPoolInstance::Get())
       << "Someone has already installed a ThreadPoolInstance. If nothing in "
          "your test does so, then a test that ran earlier may have installed "
          "one and leaked it. base::TestSuite will trap leaked globals, unless "
          "someone has explicitly disabled it with "
          "DisableCheckForLeakedGlobals().";
+
+  auto task_tracker = std::make_unique<TestTaskTracker>();
+  TestTaskTracker* raw_task_tracker = task_tracker.get();
+  auto thread_pool = std::make_unique<internal::ThreadPoolImpl>(
+      std::string(), std::move(task_tracker));
+  ThreadPoolInstance::Set(std::move(thread_pool));
+  return raw_task_tracker;
+}
+
+void TaskEnvironment::InitializeThreadPool() {
+  task_tracker_ = CreateThreadPool();
+  if (mock_time_domain_) {
+    mock_time_domain_->SetThreadPool(
+        static_cast<internal::ThreadPoolImpl*>(ThreadPoolInstance::Get()),
+        task_tracker_);
+  }
 
   ThreadPoolInstance::InitParams init_params(kNumForegroundThreadPoolThreads);
   init_params.suggested_reclaim_time = TimeDelta::Max();
@@ -435,14 +462,6 @@ void TaskEnvironment::InitializeThreadPool() {
         ThreadPoolInstance::InitParams::CommonThreadPoolEnvironment::COM_MTA;
   }
 #endif
-
-  auto task_tracker = std::make_unique<TestTaskTracker>();
-  task_tracker_ = task_tracker.get();
-  auto thread_pool = std::make_unique<internal::ThreadPoolImpl>(
-      std::string(), std::move(task_tracker));
-  if (mock_time_domain_)
-    mock_time_domain_->SetThreadPool(thread_pool.get(), task_tracker_);
-  ThreadPoolInstance::Set(std::move(thread_pool));
   ThreadPoolInstance::Get()->Start(init_params);
 }
 
@@ -708,8 +727,9 @@ bool TaskEnvironment::NextTaskIsDelayed() const {
   return !delay.is_zero() && !delay.is_max();
 }
 
-void TaskEnvironment::DescribePendingMainThreadTasks() const {
+void TaskEnvironment::DescribeCurrentTasks() const {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
+  LOG(INFO) << task_tracker_->DescribeRunningTasks();
   LOG(INFO) << sequence_manager_->DescribeAllPendingTasks();
 }
 
@@ -748,7 +768,7 @@ bool TaskEnvironment::TestTaskTracker::DisallowRunTasks() {
   AutoLock auto_lock(lock_);
 
   // Can't disallow run task if there are tasks running.
-  if (num_tasks_running_ > 0) {
+  if (!running_tasks_.empty()) {
     // Attempt to wait a bit so that the caller doesn't busy-loop with the same
     // set of pending work. A short wait is required to avoid deadlock
     // scenarios. See DisallowRunTasks()'s declaration for more details.
@@ -763,13 +783,16 @@ bool TaskEnvironment::TestTaskTracker::DisallowRunTasks() {
 void TaskEnvironment::TestTaskTracker::RunTask(internal::Task task,
                                                internal::TaskSource* sequence,
                                                const TaskTraits& traits) {
+  int task_number;
   {
     AutoLock auto_lock(lock_);
 
     while (!can_run_tasks_)
       can_run_tasks_cv_.Wait();
 
-    ++num_tasks_running_;
+    task_number = next_task_number_++;
+    auto pair = running_tasks_.emplace(task_number, task.posted_from);
+    CHECK(pair.second);  // If false, the |task_number| was already present.
   }
 
   {
@@ -783,23 +806,54 @@ void TaskEnvironment::TestTaskTracker::RunTask(internal::Task task,
                                                        sequence, traits);
     base::TimeTicks after = base::subtle::TimeTicksNowIgnoringOverride();
 
-    if ((after - before) > TestTimeouts::action_max_timeout()) {
+    const TimeDelta kTimeout = TestTimeouts::action_max_timeout();
+    if ((after - before) > kTimeout) {
       ADD_FAILURE() << "TaskEnvironment: RunTask took more than "
-                    << TestTimeouts::action_max_timeout().InSeconds()
-                    << " seconds. Posted from " << posted_from.ToString();
+                    << kTimeout.InSeconds() << " seconds. Posted from "
+                    << posted_from.ToString();
     }
   }
 
   {
     AutoLock auto_lock(lock_);
-
-    CHECK_GT(num_tasks_running_, 0);
     CHECK(can_run_tasks_);
-
-    --num_tasks_running_;
+    size_t found = running_tasks_.erase(task_number);
+    CHECK_EQ(1u, found);
 
     task_completed_cv_.Broadcast();
   }
+}
+
+std::string TaskEnvironment::TestTaskTracker::DescribeRunningTasks() const {
+  base::flat_map<int64_t, Location> running_tasks_copy;
+  {
+    AutoLock auto_lock(lock_);
+    running_tasks_copy = running_tasks_;
+  }
+  std::string running_tasks_str = "ThreadPool currently running tasks:";
+  if (running_tasks_copy.empty()) {
+    running_tasks_str += " none.";
+  } else {
+    for (auto& pair : running_tasks_copy)
+      running_tasks_str += "\n  Task posted from: " + pair.second.ToString();
+  }
+  return running_tasks_str;
+}
+
+void TaskEnvironment::TestTaskTracker::BeginCompleteShutdown(
+    base::WaitableEvent& shutdown_event) {
+  const TimeDelta kTimeout = TestTimeouts::action_max_timeout();
+  if (shutdown_event.TimedWait(kTimeout))
+    return;  // All tasks completed in time, yay! Yield back to shutdown.
+
+  // If we had to wait too long for the shutdown tasks to complete, then we
+  // should fail the test and report which tasks are currently running.
+  std::string failure_tasks = DescribeRunningTasks();
+
+  ADD_FAILURE() << "TaskEnvironment: CompleteShutdown took more than "
+                << kTimeout.InSeconds() << " seconds.\n"
+                << failure_tasks;
+  base::Process::TerminateCurrentProcessImmediately(-1);
 }
 
 }  // namespace test

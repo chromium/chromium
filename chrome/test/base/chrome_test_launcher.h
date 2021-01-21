@@ -11,6 +11,12 @@
 #include "build/build_config.h"
 #include "content/public/test/test_launcher.h"
 
+#if defined(OS_ANDROID)
+#include "chrome/app/android/chrome_main_delegate_android.h"
+#else
+#include "chrome/app/chrome_main_delegate.h"
+#endif
+
 // Allows a test suite to override the TestSuite class used. By default it is an
 // instance of ChromeTestSuite.
 class ChromeTestSuiteRunner {
@@ -21,6 +27,25 @@ class ChromeTestSuiteRunner {
   virtual ~ChromeTestSuiteRunner() = default;
 
   virtual int RunTestSuite(int argc, char** argv);
+};
+
+// Acts like normal ChromeMainDelegate but injects behaviour for browser tests.
+class ChromeTestChromeMainDelegate
+#if defined(OS_ANDROID)
+    : public ChromeMainDelegateAndroid {
+#else
+    : public ChromeMainDelegate {
+#endif
+ public:
+#if defined(OS_ANDROID)
+  ChromeTestChromeMainDelegate() : ChromeMainDelegateAndroid() {}
+#else
+  explicit ChromeTestChromeMainDelegate(base::TimeTicks time)
+      : ChromeMainDelegate(time) {}
+#endif
+
+  // ChromeMainDelegateOverrides.
+  content::ContentBrowserClient* CreateContentBrowserClient() override;
 };
 
 // Delegate used for setting up and running chrome browser tests.
