@@ -5,6 +5,8 @@
 #include "base/ios/ios_util.h"
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
+
 #include <stddef.h>
 
 #include "base/mac/foundation_util.h"
@@ -112,6 +114,13 @@ bool IsSceneStartupSupported() {
     cached_value = scene_api_manifest != nil;
   });
   return cached_value;
+}
+
+bool IsMultipleScenesSupported() {
+  if (@available(iOS 13, *)) {
+    return UIApplication.sharedApplication.supportsMultipleScenes;
+  }
+  return false;
 }
 
 }  // namespace ios

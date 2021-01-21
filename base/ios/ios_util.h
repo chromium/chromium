@@ -56,6 +56,11 @@ BASE_EXPORT bool IsMultiwindowSupported();
 // base::ios::IsMultiwindowSupported() returns true.
 BASE_EXPORT bool IsSceneStartupSupported();
 
+// Returns true iff multiple windows can be opened, i.e. when the multiwindow
+// build flag is on, the device is running on iOS 13+ and it's a compatible
+// iPad.
+BASE_EXPORT bool IsMultipleScenesSupported();
+
 }  // namespace ios
 }  // namespace base
 

@@ -21,8 +21,5 @@ bool IsSceneStartupSupported() {
 }
 
 bool IsMultipleScenesSupported() {
-  if (@available(iOS 13, *)) {
-    return UIApplication.sharedApplication.supportsMultipleScenes;
-  }
-  return false;
+  return base::ios::IsMultipleScenesSupported();
 }
