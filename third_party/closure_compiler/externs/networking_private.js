@@ -794,7 +794,6 @@ chrome.networkingPrivate.VPNStateProperties;
  *   SSID: (string|undefined),
  *   Security: (string|undefined),
  *   SignalStrength: (number|undefined),
- *   TetheringState: (string|undefined)
  * }}
  */
 chrome.networkingPrivate.WiFiProperties;
@@ -813,7 +812,6 @@ chrome.networkingPrivate.WiFiProperties;
  *   SSID: (!chrome.networkingPrivate.ManagedDOMString|undefined),
  *   Security: !chrome.networkingPrivate.ManagedDOMString,
  *   SignalStrength: (number|undefined),
- *   TetheringState: (string|undefined)
  * }}
  */
 chrome.networkingPrivate.ManagedWiFiProperties;
@@ -827,7 +825,6 @@ chrome.networkingPrivate.ManagedWiFiProperties;
  *   Security: string,
  *   SignalStrength: (number|undefined),
  *   SSID: (string|undefined),
- *   TetheringState: (string|undefined)
  * }}
  */
 chrome.networkingPrivate.WiFiStateProperties;

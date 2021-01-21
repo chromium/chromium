@@ -45,8 +45,6 @@ extern const StringTranslationEntry kNetworkTechnologyTable[];
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
 extern const StringTranslationEntry kRoamingStateTable[];
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
-extern const StringTranslationEntry kTetheringStateTable[];
-COMPONENT_EXPORT(CHROMEOS_NETWORK)
 extern const StringTranslationEntry kOpenVpnCompressionAlgorithmTable[];
 
 // A separate translation table for cellular properties that are stored in a

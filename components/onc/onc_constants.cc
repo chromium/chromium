@@ -230,7 +230,6 @@ const char kSSID[] = "SSID";
 const char kSecurity[] = "Security";
 const char kSecurityNone[] = "None";
 const char kSignalStrength[] = "SignalStrength";
-const char kTetheringState[] = "TetheringState";
 const char kWEP_8021X[] = "WEP-8021X";
 const char kWEP_PSK[] = "WEP-PSK";
 const char kWPA_EAP[] = "WPA-EAP";
@@ -499,11 +498,5 @@ const char kDisabled[] = "Disabled";
 const char kEnabling[] = "Enabling";
 const char kEnabled[] = "Enabled";
 }  // device_state
-
-namespace tethering_state {
-const char kTetheringConfirmedState[] = "Confirmed";
-const char kTetheringNotDetectedState[] = "NotDetected";
-const char kTetheringSuspectedState[] = "Suspected";
-}  // namespace tethering_state
 
 }  // namespace onc

@@ -188,8 +188,6 @@ bool NetworkState::PropertyChanged(const std::string& key,
     }
     SetVpnProvider(vpn_provider_id, vpn_provider_type);
     return true;
-  } else if (key == shill::kTetheringProperty) {
-    return GetStringValue(key, value, &tethering_state_);
   } else if (key == shill::kUIDataProperty) {
     std::unique_ptr<NetworkUIData> ui_data =
         chromeos::shill_property_util::GetUIDataFromValue(value);
@@ -291,8 +289,6 @@ void NetworkState::GetStateProperties(base::Value* dictionary) const {
     dictionary->SetKey(shill::kEapMethodProperty, base::Value(eap_method()));
     dictionary->SetKey(shill::kWifiFrequency, base::Value(frequency_));
     dictionary->SetKey(shill::kWifiHexSsid, base::Value(GetHexSsid()));
-    dictionary->SetKey(shill::kTetheringProperty,
-                       base::Value(tethering_state_));
   }
 
   // Mobile properties

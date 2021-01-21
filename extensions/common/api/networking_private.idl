@@ -654,7 +654,6 @@ namespace networkingPrivate {
     DOMString? SSID;
     DOMString? Security;
     long? SignalStrength;
-    DOMString? TetheringState;
   };
 
   dictionary ManagedWiFiProperties {
@@ -670,7 +669,6 @@ namespace networkingPrivate {
     ManagedDOMString? SSID;
     ManagedDOMString Security;
     long? SignalStrength;
-    DOMString? TetheringState;
   };
 
   dictionary WiFiStateProperties {
@@ -681,7 +679,6 @@ namespace networkingPrivate {
     DOMString Security;
     long? SignalStrength;
     DOMString? SSID;
-    DOMString? TetheringState;
   };
 
   dictionary NetworkConfigProperties {

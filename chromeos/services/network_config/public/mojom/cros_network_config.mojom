@@ -542,7 +542,6 @@ struct ManagedWiFiProperties {
   ManagedString ssid;
   SecurityType security;
   int32 signal_strength = 0;
-  string? tethering_state;
   // Indicates whether the network is eligible to be included in Chrome Sync.
   bool is_syncable;
   // True for unshared networks and for shared networks configured by the

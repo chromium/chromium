@@ -238,7 +238,6 @@ Field **NetworkConfigurations** is an array of
     * Whether the network should be considered metered. This may affect auto
       update frequency, and may be used as a hint for apps to conserve data.
       When not specified, the system will set this to the detected value.
-      See also **WiFi.TetheringState**.
 
 * **NameServersConfigType**
     * (optional if **Remove** is *false*, otherwise ignored. Defaults to *DHCP*
@@ -526,10 +525,7 @@ field **WiFi** must be set to an object of type [WiFi](#WiFi-type).
       be set to '0' or not present.
 
 * **TetheringState**
-    * (optional, read-only, defaults to "NotDetected") - **string**
-    * The tethering state of the WiFi connection. If the connection is
-      tethered the value is "Confirmed". If the connection is suspected to be
-      tethered the value is "Suspected". In all other cases it's "NotDetected".
+    * DEPRECATED, see **Metered**.<br/>
 
 ---
   * At least one of the fields **HexSSID** or **SSID** must be present.

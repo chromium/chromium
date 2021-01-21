@@ -1449,8 +1449,6 @@ mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
       wifi->ssid = GetRequiredManagedString(wifi_dict, ::onc::wifi::kSSID);
       CHECK(wifi->ssid);
       wifi->signal_strength = GetInt32(wifi_dict, ::onc::wifi::kSignalStrength);
-      wifi->tethering_state =
-          GetString(wifi_dict, ::onc::wifi::kTetheringState);
       wifi->is_syncable = sync_wifi::IsEligibleForSync(
           result->guid, result->connectable, wifi->security, result->source,
           /*log_result=*/false);

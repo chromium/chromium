@@ -142,7 +142,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
   const std::string& payment_url() const { return payment_url_; }
   const std::string& payment_post_data() const { return payment_post_data_; }
   bool cellular_out_of_credits() const { return cellular_out_of_credits_; }
-  const std::string& tethering_state() const { return tethering_state_; }
 
   // VPN property accessors
   const VpnProviderInfo* vpn_provider() const { return vpn_provider_.get(); }
@@ -336,7 +335,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
   std::string payment_url_;
   std::string payment_post_data_;
   bool cellular_out_of_credits_ = false;
-  std::string tethering_state_;
 
   // VPN properties, used to construct the display name and to show the correct
   // configuration dialog. The id is the Extension ID or Arc package name for
