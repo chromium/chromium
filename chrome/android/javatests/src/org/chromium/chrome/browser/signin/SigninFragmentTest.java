@@ -183,6 +183,35 @@ public class SigninFragmentTest {
     @Test
     @LargeTest
     @Feature("RenderTest")
+    public void testSigninFREFragmentWithNoAccountsOnDevice() throws IOException {
+        HistogramDelta countHistogram =
+                new HistogramDelta("Signin.AndroidDeviceAccountsNumberWhenEnteringFRE", 0);
+        HistogramDelta startPageHistogram =
+                new HistogramDelta("Signin.SigninStartedAccessPoint", SigninAccessPoint.START_PAGE);
+        CustomSigninFirstRunFragment fragment = new CustomSigninFirstRunFragment();
+        Bundle bundle = new Bundle();
+        bundle.putInt(SigninFirstRunFragment.CHILD_ACCOUNT_STATUS, ChildAccountStatus.NOT_CHILD);
+        when(mFirstRunPageDelegateMock.getProperties()).thenReturn(bundle);
+        fragment.setPageDelegate(mFirstRunPageDelegateMock);
+
+        mActivityTestRule.launchActivity(null);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mActivityTestRule.getActivity()
+                    .getSupportFragmentManager()
+                    .beginTransaction()
+                    .add(android.R.id.content, fragment)
+                    .commit();
+        });
+        ApplicationTestUtils.waitForActivityState(mActivityTestRule.getActivity(), Stage.RESUMED);
+        Assert.assertEquals(1, countHistogram.getDelta());
+        Assert.assertEquals(1, startPageHistogram.getDelta());
+        mRenderTestRule.render(mActivityTestRule.getActivity().findViewById(android.R.id.content),
+                "signin_fre_fragment_with_no_account");
+    }
+
+    @Test
+    @LargeTest
+    @Feature("RenderTest")
     public void testSigninFREFragmentWithAdultAccount() throws IOException {
         HistogramDelta countHistogram =
                 new HistogramDelta("Signin.AndroidDeviceAccountsNumberWhenEnteringFRE", 1);
