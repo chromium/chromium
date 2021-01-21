@@ -25,9 +25,6 @@ namespace v8_memory {
 namespace {
 
 using AttributionScope = mojom::WebMemoryAttribution::Scope;
-using NodeAggregationType = WebMemoryAggregator::NodeAggregationType;
-
-using WebMemoryAggregatorTest = WebMemoryTestHarness;
 
 struct ExpectedMemoryBreakdown {
   WebMemoryTestHarness::Bytes bytes;
@@ -97,15 +94,70 @@ std::string MeasurementToJSON(
   return json_value.ToJSON();
 }
 
+}  // namespace
+
+class WebMemoryAggregatorTest : public WebMemoryTestHarness {
+ protected:
+  using NodeAggregationType = WebMemoryAggregator::NodeAggregationType;
+
+  // Allow individual test subclasses to access private members of
+  // WebMemoryAggregator.
+
+  static NodeAggregationType FindNodeAggregationType(
+      WebMemoryAggregator* aggregator,
+      const FrameNode* frame_node) {
+    return aggregator->FindNodeAggregationType(frame_node);
+  }
+
+  static NodeAggregationType FindNodeAggregationType(
+      WebMemoryAggregator* aggregator,
+      const WorkerNode* worker_node,
+      NodeAggregationType parent_aggregation_type) {
+    return aggregator->FindNodeAggregationType(worker_node,
+                                               parent_aggregation_type);
+  }
+
+  static const FrameNode* GetSameOriginParentOrOpener(
+      const FrameNode* frame_node,
+      const url::Origin& origin) {
+    return WebMemoryAggregator::GetSameOriginParentOrOpener(frame_node, origin);
+  }
+
+  static const FrameNode* FindAggregationStartNode(
+      const FrameNode* requesting_node) {
+    return WebMemoryAggregator::FindAggregationStartNode(requesting_node);
+  }
+
+  static mojom::WebMemoryBreakdownEntry* CreateBreakdownEntry(
+      mojom::WebMemoryAttribution::Scope scope,
+      base::Optional<std::string> url,
+      mojom::WebMemoryMeasurement* measurement) {
+    return WebMemoryAggregator::CreateBreakdownEntry(scope, url, measurement);
+  }
+
+  static void SetBreakdownAttributionFromFrame(
+      const FrameNode* frame_node,
+      mojom::WebMemoryBreakdownEntry* breakdown) {
+    WebMemoryAggregator::SetBreakdownAttributionFromFrame(frame_node,
+                                                          breakdown);
+  }
+
+  static void CopyBreakdownAttribution(
+      const mojom::WebMemoryBreakdownEntry* from,
+      mojom::WebMemoryBreakdownEntry* to) {
+    WebMemoryAggregator::CopyBreakdownAttribution(from, to);
+  }
+};
+
 TEST_F(WebMemoryAggregatorTest, CreateBreakdownEntry) {
   auto measurement = mojom::WebMemoryMeasurement::New();
   auto* breakdown_with_no_url =
-      internal::CreateBreakdownEntry(AttributionScope::kCrossOriginAggregated,
-                                     base::nullopt, measurement.get());
-  auto* breakdown_with_url = internal::CreateBreakdownEntry(
+      CreateBreakdownEntry(AttributionScope::kCrossOriginAggregated,
+                           base::nullopt, measurement.get());
+  auto* breakdown_with_url = CreateBreakdownEntry(
       AttributionScope::kWindow, "https://example.com", measurement.get());
-  auto* breakdown_with_empty_url = internal::CreateBreakdownEntry(
-      AttributionScope::kWindow, "", measurement.get());
+  auto* breakdown_with_empty_url =
+      CreateBreakdownEntry(AttributionScope::kWindow, "", measurement.get());
 
   // Ensure breakdowns were added to measurement.
   EXPECT_EQ(measurement->breakdown.size(), 3U);
@@ -128,9 +180,8 @@ TEST_F(WebMemoryAggregatorTest, CreateBreakdownEntry) {
                   : nullptr;
     FrameNodeImpl* frame = AddFrameNode("https://example.com", Bytes{1},
                                         parent_frame, attribute, attribute);
-    internal::SetBreakdownAttributionFromFrame(frame, breakdown_with_url);
-    internal::CopyBreakdownAttribution(breakdown_with_url,
-                                       breakdown_with_empty_url);
+    SetBreakdownAttributionFromFrame(frame, breakdown_with_url);
+    CopyBreakdownAttribution(breakdown_with_url, breakdown_with_empty_url);
 
     // All measurements should be created without measurement results.
     auto expected_result = CreateExpectedMemoryMeasurement({
@@ -159,7 +210,7 @@ TEST_F(WebMemoryAggregatorTest, AggregateSingleFrame) {
       ExpectedMemoryBreakdown(10, AttributionScope::kWindow,
                               "https://example.com/"),
   });
-  EXPECT_EQ(internal::FindAggregationStartNode(main_frame), main_frame);
+  EXPECT_EQ(FindAggregationStartNode(main_frame), main_frame);
   WebMemoryAggregator aggregator(main_frame);
   auto result = aggregator.AggregateMeasureMemoryResult();
   EXPECT_EQ(MeasurementToJSON(result), MeasurementToJSON(expected_result));
@@ -172,17 +223,17 @@ TEST_F(WebMemoryAggregatorTest, AggregateSingleSiteMultiFrame) {
       AddFrameNode("https://example.com/iframe.html", Bytes{5}, main_frame,
                    "example-id", "redirect.html?target=iframe.html");
 
-  EXPECT_EQ(internal::FindAggregationStartNode(main_frame), main_frame);
+  EXPECT_EQ(FindAggregationStartNode(main_frame), main_frame);
   WebMemoryAggregator aggregator(main_frame);
 
   // Test the relationships of each node in the graph.
-  EXPECT_EQ(aggregator.FindNodeAggregationType(main_frame),
+  EXPECT_EQ(FindNodeAggregationType(&aggregator, main_frame),
             NodeAggregationType::kSameOriginAggregationPoint);
-  EXPECT_EQ(aggregator.FindNodeAggregationType(child_frame),
+  EXPECT_EQ(FindNodeAggregationType(&aggregator, child_frame),
             NodeAggregationType::kSameOriginAggregationPoint);
-  EXPECT_EQ(internal::GetSameOriginParentOrOpener(
-                child_frame, aggregator.requesting_origin()),
-            main_frame);
+  EXPECT_EQ(
+      GetSameOriginParentOrOpener(child_frame, aggregator.requesting_origin()),
+      main_frame);
 
   auto expected_result = CreateExpectedMemoryMeasurement({
       ExpectedMemoryBreakdown(10, AttributionScope::kWindow,
@@ -222,32 +273,32 @@ TEST_F(WebMemoryAggregatorTest, AggregateCrossOrigin) {
   FrameNodeImpl* grandchild3 =
       AddFrameNode("https://foo.com/worker.js", Bytes{4}, child_frame);
 
-  EXPECT_EQ(internal::FindAggregationStartNode(main_frame), main_frame);
+  EXPECT_EQ(FindAggregationStartNode(main_frame), main_frame);
   WebMemoryAggregator aggregator(main_frame);
 
   // Test the relationships of each node in the graph.
-  EXPECT_EQ(aggregator.FindNodeAggregationType(main_frame),
+  EXPECT_EQ(FindNodeAggregationType(&aggregator, main_frame),
             NodeAggregationType::kSameOriginAggregationPoint);
-  EXPECT_EQ(aggregator.FindNodeAggregationType(child_frame),
+  EXPECT_EQ(FindNodeAggregationType(&aggregator, child_frame),
             NodeAggregationType::kCrossOriginAggregationPoint);
-  EXPECT_EQ(internal::GetSameOriginParentOrOpener(
-                child_frame, aggregator.requesting_origin()),
-            main_frame);
-  EXPECT_EQ(aggregator.FindNodeAggregationType(grandchild1),
+  EXPECT_EQ(
+      GetSameOriginParentOrOpener(child_frame, aggregator.requesting_origin()),
+      main_frame);
+  EXPECT_EQ(FindNodeAggregationType(&aggregator, grandchild1),
             NodeAggregationType::kCrossOriginAggregated);
-  EXPECT_EQ(internal::GetSameOriginParentOrOpener(
-                grandchild1, aggregator.requesting_origin()),
-            nullptr);
-  EXPECT_EQ(aggregator.FindNodeAggregationType(grandchild2),
+  EXPECT_EQ(
+      GetSameOriginParentOrOpener(grandchild1, aggregator.requesting_origin()),
+      nullptr);
+  EXPECT_EQ(FindNodeAggregationType(&aggregator, grandchild2),
             NodeAggregationType::kCrossOriginAggregated);
-  EXPECT_EQ(internal::GetSameOriginParentOrOpener(
-                grandchild2, aggregator.requesting_origin()),
-            nullptr);
-  EXPECT_EQ(aggregator.FindNodeAggregationType(grandchild3),
+  EXPECT_EQ(
+      GetSameOriginParentOrOpener(grandchild2, aggregator.requesting_origin()),
+      nullptr);
+  EXPECT_EQ(FindNodeAggregationType(&aggregator, grandchild3),
             NodeAggregationType::kCrossOriginAggregated);
-  EXPECT_EQ(internal::GetSameOriginParentOrOpener(
-                grandchild3, aggregator.requesting_origin()),
-            nullptr);
+  EXPECT_EQ(
+      GetSameOriginParentOrOpener(grandchild3, aggregator.requesting_origin()),
+      nullptr);
 
   auto expected_result = CreateExpectedMemoryMeasurement({
       ExpectedMemoryBreakdown(10, AttributionScope::kWindow,
@@ -315,56 +366,56 @@ TEST_F(WebMemoryAggregatorTest, AggregateNestedCrossOrigin) {
   FrameNodeImpl* empty_frame =
       AddFrameNode("https://example.com/empty_frame", base::nullopt, subframe3);
 
-  EXPECT_EQ(internal::FindAggregationStartNode(main_frame), main_frame);
+  EXPECT_EQ(FindAggregationStartNode(main_frame), main_frame);
   WebMemoryAggregator aggregator(main_frame);
 
   // Test the relationships of each node in the graph.
-  EXPECT_EQ(aggregator.FindNodeAggregationType(main_frame),
+  EXPECT_EQ(FindNodeAggregationType(&aggregator, main_frame),
             NodeAggregationType::kSameOriginAggregationPoint);
-  EXPECT_EQ(aggregator.FindNodeAggregationType(subframe),
+  EXPECT_EQ(FindNodeAggregationType(&aggregator, subframe),
             NodeAggregationType::kCrossOriginAggregationPoint);
-  EXPECT_EQ(internal::GetSameOriginParentOrOpener(
-                subframe, aggregator.requesting_origin()),
-            main_frame);
-  EXPECT_EQ(aggregator.FindNodeAggregationType(subframe2),
+  EXPECT_EQ(
+      GetSameOriginParentOrOpener(subframe, aggregator.requesting_origin()),
+      main_frame);
+  EXPECT_EQ(FindNodeAggregationType(&aggregator, subframe2),
             NodeAggregationType::kCrossOriginAggregated);
-  EXPECT_EQ(internal::GetSameOriginParentOrOpener(
-                subframe2, aggregator.requesting_origin()),
-            nullptr);
-  EXPECT_EQ(aggregator.FindNodeAggregationType(subframe3),
+  EXPECT_EQ(
+      GetSameOriginParentOrOpener(subframe2, aggregator.requesting_origin()),
+      nullptr);
+  EXPECT_EQ(FindNodeAggregationType(&aggregator, subframe3),
             NodeAggregationType::kSameOriginAggregationPoint);
-  EXPECT_EQ(internal::GetSameOriginParentOrOpener(
-                subframe3, aggregator.requesting_origin()),
-            nullptr);
-  EXPECT_EQ(aggregator.FindNodeAggregationType(subframe4),
+  EXPECT_EQ(
+      GetSameOriginParentOrOpener(subframe3, aggregator.requesting_origin()),
+      nullptr);
+  EXPECT_EQ(FindNodeAggregationType(&aggregator, subframe4),
             NodeAggregationType::kCrossOriginAggregationPoint);
-  EXPECT_EQ(internal::GetSameOriginParentOrOpener(
-                subframe4, aggregator.requesting_origin()),
-            subframe3);
-  EXPECT_EQ(aggregator.FindNodeAggregationType(subframe5),
+  EXPECT_EQ(
+      GetSameOriginParentOrOpener(subframe4, aggregator.requesting_origin()),
+      subframe3);
+  EXPECT_EQ(FindNodeAggregationType(&aggregator, subframe5),
             NodeAggregationType::kSameOriginAggregationPoint);
-  EXPECT_EQ(internal::GetSameOriginParentOrOpener(
-                subframe5, aggregator.requesting_origin()),
-            nullptr);
-  EXPECT_EQ(aggregator.FindNodeAggregationType(subframe6),
+  EXPECT_EQ(
+      GetSameOriginParentOrOpener(subframe5, aggregator.requesting_origin()),
+      nullptr);
+  EXPECT_EQ(FindNodeAggregationType(&aggregator, subframe6),
             NodeAggregationType::kSameOriginAggregationPoint);
-  EXPECT_EQ(internal::GetSameOriginParentOrOpener(
-                subframe6, aggregator.requesting_origin()),
-            subframe3);
-  EXPECT_EQ(aggregator.FindNodeAggregationType(empty_frame),
+  EXPECT_EQ(
+      GetSameOriginParentOrOpener(subframe6, aggregator.requesting_origin()),
+      subframe3);
+  EXPECT_EQ(FindNodeAggregationType(&aggregator, empty_frame),
             NodeAggregationType::kSameOriginAggregationPoint);
-  EXPECT_EQ(internal::GetSameOriginParentOrOpener(
-                empty_frame, aggregator.requesting_origin()),
-            subframe3);
-  EXPECT_EQ(aggregator.FindNodeAggregationType(cross_process_frame),
+  EXPECT_EQ(
+      GetSameOriginParentOrOpener(empty_frame, aggregator.requesting_origin()),
+      subframe3);
+  EXPECT_EQ(FindNodeAggregationType(&aggregator, cross_process_frame),
             NodeAggregationType::kSameOriginAggregationPoint);
-  EXPECT_EQ(internal::GetSameOriginParentOrOpener(
-                cross_process_frame, aggregator.requesting_origin()),
+  EXPECT_EQ(GetSameOriginParentOrOpener(cross_process_frame,
+                                        aggregator.requesting_origin()),
             subframe3);
-  EXPECT_EQ(aggregator.FindNodeAggregationType(cross_process_frame2),
+  EXPECT_EQ(FindNodeAggregationType(&aggregator, cross_process_frame2),
             NodeAggregationType::kCrossOriginAggregationPoint);
-  EXPECT_EQ(internal::GetSameOriginParentOrOpener(
-                cross_process_frame2, aggregator.requesting_origin()),
+  EXPECT_EQ(GetSameOriginParentOrOpener(cross_process_frame2,
+                                        aggregator.requesting_origin()),
             subframe3);
 
   auto expected_result = CreateExpectedMemoryMeasurement({
@@ -406,7 +457,7 @@ TEST_F(WebMemoryAggregatorTest, AggregateSameOriginAboutBlank) {
                               "https://example.com/"),
       ExpectedMemoryBreakdown(20, AttributionScope::kWindow, "about:blank"),
   });
-  EXPECT_EQ(internal::FindAggregationStartNode(main_frame), main_frame);
+  EXPECT_EQ(FindAggregationStartNode(main_frame), main_frame);
   WebMemoryAggregator aggregator(main_frame);
   auto result = aggregator.AggregateMeasureMemoryResult();
   EXPECT_EQ(MeasurementToJSON(result), MeasurementToJSON(expected_result));
@@ -424,7 +475,7 @@ TEST_F(WebMemoryAggregatorTest, SkipCrossOriginAboutBlank) {
       ExpectedMemoryBreakdown(50, AttributionScope::kCrossOriginAggregated,
                               base::nullopt),
   });
-  EXPECT_EQ(internal::FindAggregationStartNode(main_frame), main_frame);
+  EXPECT_EQ(FindAggregationStartNode(main_frame), main_frame);
   WebMemoryAggregator aggregator(main_frame);
   auto result = aggregator.AggregateMeasureMemoryResult();
   EXPECT_EQ(MeasurementToJSON(result), MeasurementToJSON(expected_result));
@@ -441,10 +492,8 @@ TEST_F(WebMemoryAggregatorTest, FindAggregationStartNode) {
   // FindAggregationStartNode should return the parent foo.com frame for either
   // foo.com child. It should not return the main frame since it's cross-site
   // from the requesting frames.
-  EXPECT_EQ(internal::FindAggregationStartNode(cross_site_child),
-            cross_site_child);
-  EXPECT_EQ(internal::FindAggregationStartNode(same_site_child),
-            cross_site_child);
+  EXPECT_EQ(FindAggregationStartNode(cross_site_child), cross_site_child);
+  EXPECT_EQ(FindAggregationStartNode(same_site_child), cross_site_child);
 
   // When aggregation starts at |cross_site_child| it should not include any
   // memory from the main frame.
@@ -461,7 +510,7 @@ TEST_F(WebMemoryAggregatorTest, FindAggregationStartNode) {
 
   // When the main frame requests a measurement of the same tree it should
   // aggregate the children, which are cross-site from it.
-  EXPECT_EQ(internal::FindAggregationStartNode(main_frame), main_frame);
+  EXPECT_EQ(FindAggregationStartNode(main_frame), main_frame);
   auto main_frame_expected_result = CreateExpectedMemoryMeasurement({
       ExpectedMemoryBreakdown(10, AttributionScope::kWindow,
                               "https://example.com/"),
@@ -482,19 +531,18 @@ TEST_F(WebMemoryAggregatorTest, FindCrossProcessAggregationStartNode) {
       "https://example.com/same_process.html", Bytes{3}, cross_process_child);
 
   auto origin = url::Origin::Create(GURL("https://example.com"));
-  ASSERT_EQ(internal::GetSameOriginParentOrOpener(cross_process_child, origin),
+  ASSERT_EQ(GetSameOriginParentOrOpener(cross_process_child, origin),
             main_frame);
-  ASSERT_EQ(internal::GetSameOriginParentOrOpener(same_process_child, origin),
+  ASSERT_EQ(GetSameOriginParentOrOpener(same_process_child, origin),
             cross_process_child);
 
   // |cross_process_child| has no ancestor in the same process as it.
-  EXPECT_EQ(internal::FindAggregationStartNode(cross_process_child),
-            cross_process_child);
+  EXPECT_EQ(FindAggregationStartNode(cross_process_child), cross_process_child);
 
   // The search starting from |same_process_child| should skip over
   // |cross_process_child|, which is in a different process, and find
   // |main_frame| which is in the same process.
-  EXPECT_EQ(internal::FindAggregationStartNode(same_process_child), main_frame);
+  EXPECT_EQ(FindAggregationStartNode(same_process_child), main_frame);
 }
 
 TEST_F(WebMemoryAggregatorTest, AggregateWindowOpener) {
@@ -519,39 +567,38 @@ TEST_F(WebMemoryAggregatorTest, AggregateWindowOpener) {
   // same-site frames.
   for (auto* frame :
        {main_frame, child_frame, opened_frame, child_of_opened_frame}) {
-    EXPECT_EQ(internal::FindAggregationStartNode(frame), main_frame)
-        << frame->url();
+    EXPECT_EQ(FindAggregationStartNode(frame), main_frame) << frame->url();
   }
 
   WebMemoryAggregator aggregator(main_frame);
 
   // Test the relationships of each node in the graph.
-  EXPECT_EQ(aggregator.FindNodeAggregationType(main_frame),
+  EXPECT_EQ(FindNodeAggregationType(&aggregator, main_frame),
             NodeAggregationType::kSameOriginAggregationPoint);
-  EXPECT_EQ(aggregator.FindNodeAggregationType(child_frame),
+  EXPECT_EQ(FindNodeAggregationType(&aggregator, child_frame),
             NodeAggregationType::kSameOriginAggregationPoint);
-  EXPECT_EQ(internal::GetSameOriginParentOrOpener(
-                child_frame, aggregator.requesting_origin()),
-            main_frame);
-  EXPECT_EQ(aggregator.FindNodeAggregationType(opened_frame),
+  EXPECT_EQ(
+      GetSameOriginParentOrOpener(child_frame, aggregator.requesting_origin()),
+      main_frame);
+  EXPECT_EQ(FindNodeAggregationType(&aggregator, opened_frame),
             NodeAggregationType::kSameOriginAggregationPoint);
-  EXPECT_EQ(internal::GetSameOriginParentOrOpener(
-                opened_frame, aggregator.requesting_origin()),
-            main_frame);
-  EXPECT_EQ(aggregator.FindNodeAggregationType(child_of_opened_frame),
+  EXPECT_EQ(
+      GetSameOriginParentOrOpener(opened_frame, aggregator.requesting_origin()),
+      main_frame);
+  EXPECT_EQ(FindNodeAggregationType(&aggregator, child_of_opened_frame),
             NodeAggregationType::kSameOriginAggregationPoint);
-  EXPECT_EQ(internal::GetSameOriginParentOrOpener(
-                child_of_opened_frame, aggregator.requesting_origin()),
+  EXPECT_EQ(GetSameOriginParentOrOpener(child_of_opened_frame,
+                                        aggregator.requesting_origin()),
             opened_frame);
-  EXPECT_EQ(aggregator.FindNodeAggregationType(cross_site_child),
+  EXPECT_EQ(FindNodeAggregationType(&aggregator, cross_site_child),
             NodeAggregationType::kCrossOriginAggregationPoint);
-  EXPECT_EQ(internal::GetSameOriginParentOrOpener(
-                cross_site_child, aggregator.requesting_origin()),
+  EXPECT_EQ(GetSameOriginParentOrOpener(cross_site_child,
+                                        aggregator.requesting_origin()),
             opened_frame);
-  EXPECT_EQ(aggregator.FindNodeAggregationType(cross_site_popup),
+  EXPECT_EQ(FindNodeAggregationType(&aggregator, cross_site_popup),
             NodeAggregationType::kInvisible);
-  EXPECT_EQ(internal::GetSameOriginParentOrOpener(
-                cross_site_popup, aggregator.requesting_origin()),
+  EXPECT_EQ(GetSameOriginParentOrOpener(cross_site_popup,
+                                        aggregator.requesting_origin()),
             main_frame);
 
   auto expected_result = CreateExpectedMemoryMeasurement({
@@ -577,13 +624,13 @@ TEST_F(WebMemoryAggregatorTest, AggregateWindowOpener) {
     const std::string url = frame->url().spec();
     SCOPED_TRACE(url);
 
-    const FrameNode* start_node = internal::FindAggregationStartNode(frame);
+    const FrameNode* start_node = FindAggregationStartNode(frame);
     EXPECT_EQ(start_node, frame);
 
     WebMemoryAggregator aggregator(start_node);
     // Only check the NodeAggregationType of the single node that's iterated
     // over. Parents of the start node have an undefined aggregation type.
-    EXPECT_EQ(aggregator.FindNodeAggregationType(start_node),
+    EXPECT_EQ(FindNodeAggregationType(&aggregator, start_node),
               NodeAggregationType::kSameOriginAggregationPoint);
 
     auto expected_cross_site_result = CreateExpectedMemoryMeasurement({
@@ -607,7 +654,7 @@ TEST_F(WebMemoryAggregatorTest, AggregateProvisionalWindowOpener) {
 
   WebMemoryAggregator aggregator(main_frame);
 
-  EXPECT_EQ(aggregator.FindNodeAggregationType(pending_frame),
+  EXPECT_EQ(FindNodeAggregationType(&aggregator, pending_frame),
             NodeAggregationType::kInvisible);
 
   auto expected_result = CreateExpectedMemoryMeasurement({
@@ -671,8 +718,6 @@ TEST_F(WebMemoryAggregatorTest, AggregateCrossOriginWorker) {
   worker2->RemoveClientWorker(worker1);
   worker1->RemoveClientFrame(child_frame);
 }
-
-}  // namespace
 
 }  // namespace v8_memory
 

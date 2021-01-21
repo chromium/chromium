@@ -41,10 +41,22 @@ class WebMemoryAggregator {
   WebMemoryAggregator(const WebMemoryAggregator& other) = delete;
   WebMemoryAggregator& operator=(const WebMemoryAggregator& other) = delete;
 
+  // Returns the origin of |requesting_node|.
+  const url::Origin& requesting_origin() const { return requesting_origin_; }
+
+  // Performs the aggregation.
+  mojom::WebMemoryMeasurementPtr AggregateMeasureMemoryResult();
+
+ private:
+  friend class WebMemoryAggregatorTest;
+
+  class AggregationPointVisitor;
+
   // The various ways a node can be treated during the aggregation.
   enum class NodeAggregationType {
     // Node is same-origin to |requesting_node|; will be a new aggregation
-    // point with scope "Window".
+    // point with a scope depending on the node type (eg. "Window" or
+    // "DedicatedWorker").
     kSameOriginAggregationPoint,
     // Node is cross-origin with |requesting_node| but its parent is not; will
     // be a new aggregation point with scope
@@ -58,9 +70,6 @@ class WebMemoryAggregator {
     kInvisible,
   };
 
-  // Returns the origin of |requesting_node|.
-  const url::Origin& requesting_origin() const { return requesting_origin_; }
-
   // Returns the way that |frame_node| should be treated during the
   // aggregation.  |aggregation_start_node_| must be reachable from
   // |frame_node| by following parent/child or opener links. This will always
@@ -72,33 +81,58 @@ class WebMemoryAggregator {
       const WorkerNode* worker_node,
       NodeAggregationType parent_aggregation_type);
 
-  // Performs the aggregation.
-  mojom::WebMemoryMeasurementPtr AggregateMeasureMemoryResult();
-
- private:
   // FrameNodeVisitor that recursively adds |frame_node| and its children to
-  // the aggregation. |enclosing_aggregation_point| is the aggregation point
-  // that |frame_node|'s parent or opener is in. Always returns true to
-  // continue traversal.
-  bool VisitFrame(mojom::WebMemoryBreakdownEntry* enclosing_aggregation_point,
+  // the aggregation using |ap_visitor|. Always returns true to continue
+  // traversal.
+  bool VisitFrame(AggregationPointVisitor* ap_visitor,
                   const FrameNode* frame_node);
 
   // WorkerNodeVisitor that recursively adds |worker_node| and its children to
-  // the aggregation. |enclosing_aggregation_point| is the aggregation point
-  // that |worker_node|'s parent is in. Similarly |enclosing_aggregation_type|
-  // is the aggregation type of the parent.
-  // Always returns true to continue traversal.
-  bool VisitWorker(mojom::WebMemoryBreakdownEntry* enclosing_aggregation_point,
+  // the aggregation using |ap_visitor|. |enclosing_aggregation_type| is the
+  // type of the aggregation point that |worker_node|'s parent is in. Always
+  // returns true to continue traversal.
+  bool VisitWorker(AggregationPointVisitor* ap_visitor,
                    NodeAggregationType enclosing_aggregation_type,
                    const WorkerNode* worker_node);
 
   // PageNodeVisitor that recursively adds |page_node|'s main frames and their
-  // children to the aggregation. |enclosing_aggregation_point| is the
-  // aggregation point that |page_node|'s opener is in. Always returns true to
+  // children to the aggregation using |ap_visitor|. Always returns true to
   // continue traversal.
-  bool VisitOpenedPage(
-      mojom::WebMemoryBreakdownEntry* enclosing_aggregation_point,
-      const PageNode* page_node);
+  bool VisitOpenedPage(AggregationPointVisitor* ap_visitor,
+                       const PageNode* page_node);
+
+  // Static private methods are implementation details, but can be accessed from
+  // friend classes for testing.
+
+  // Returns |frame_node|'s parent or opener if the parent or opener is
+  // same-origin with |origin|, nullptr otherwise.
+  static const FrameNode* GetSameOriginParentOrOpener(
+      const FrameNode* frame_node,
+      const url::Origin& origin);
+
+  // Walks back the chain of parents and openers from |requesting_node| to find
+  // the farthest ancestor that should be visible to it (all intermediate nodes
+  // in the chain are same-origin).
+  static const FrameNode* FindAggregationStartNode(
+      const FrameNode* requesting_node);
+
+  // Creates a new breakdown entry with the given |scope| and |url|, and adds it
+  // to the list in |measurement|. Returns a pointer to the newly created entry.
+  static mojom::WebMemoryBreakdownEntry* CreateBreakdownEntry(
+      mojom::WebMemoryAttribution::Scope scope,
+      base::Optional<std::string> url,
+      mojom::WebMemoryMeasurement* measurement);
+
+  // Sets the id and src attributes of |breakdown| using those stored in the
+  // V8ContextTracker for the given |frame_node|.
+  static void SetBreakdownAttributionFromFrame(
+      const FrameNode* frame_node,
+      mojom::WebMemoryBreakdownEntry* breakdown);
+
+  // Copies the id and src attributes from |from| to |to|.
+  static void CopyBreakdownAttribution(
+      const mojom::WebMemoryBreakdownEntry* from,
+      mojom::WebMemoryBreakdownEntry* to);
 
   // The origin of |requesting_node|. Cached so it doesn't have to be
   // recalculated in each call to VisitFrame.
@@ -108,47 +142,8 @@ class WebMemoryAggregator {
   // |requesting_node| using FindAggregationStartNode.
   const FrameNode* aggregation_start_node_;
 
-  // Stores the result of the aggregation. This is populated by
-  // AggregateMeasureMemoryResult.
-  mojom::WebMemoryMeasurementPtr aggregation_result_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-
   SEQUENCE_CHECKER(sequence_checker_);
 };
-
-namespace internal {
-
-// These functions are used in the implementation and exposed in the header for
-// testing.
-
-// Returns |frame_node|'s parent or opener if the parent or opener is
-// same-origin with |origin|, nullptr otherwise.
-const FrameNode* GetSameOriginParentOrOpener(const FrameNode* frame_node,
-                                             const url::Origin& origin);
-
-// Walks back the chain of parents and openers from |requesting_node| to find
-// the farthest ancestor that should be visible to it (all intermediate nodes
-// in the chain are same-origin).
-const FrameNode* FindAggregationStartNode(const FrameNode* requesting_node);
-
-// Creates a new breakdown entry with the given |scope| and |url|, and adds it
-// to the list in |measurement|. Returns a pointer to the newly created entry.
-mojom::WebMemoryBreakdownEntry* CreateBreakdownEntry(
-    mojom::WebMemoryAttribution::Scope scope,
-    base::Optional<std::string> url,
-    mojom::WebMemoryMeasurement* measurement);
-
-// Sets the id and src attributes of |breakdown| using those stored in the
-// V8ContextTracker for the given |frame_node|.
-void SetBreakdownAttributionFromFrame(
-    const FrameNode* frame_node,
-    mojom::WebMemoryBreakdownEntry* breakdown);
-
-// Copies the id and src attributes from |from| to |to|.
-void CopyBreakdownAttribution(const mojom::WebMemoryBreakdownEntry* from,
-                              mojom::WebMemoryBreakdownEntry* to);
-
-}  // namespace internal
 
 }  // namespace v8_memory
 
