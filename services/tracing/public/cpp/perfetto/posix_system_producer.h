@@ -17,13 +17,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
-#include "build/build_config.h"
-#include "mojo/public/cpp/bindings/shared_remote.h"
 #include "services/tracing/public/cpp/perfetto/system_producer.h"
 #include "services/tracing/public/cpp/perfetto/task_runner.h"
-#if !defined(OS_ANDROID)
-#include "services/tracing/public/mojom/system_tracing_service.mojom.h"
-#endif
 
 namespace perfetto {
 class SharedMemoryArbiter;
@@ -105,10 +100,6 @@ class COMPONENT_EXPORT(TRACING_CPP) PosixSystemProducer
   // OnDisconnect() will be called.
   void Connect();
 
-  // Returns whether the security sandbox forbids opening the producer socket
-  // connection directly from within the current process.
-  virtual bool SandboxForbidsSocketConnection();
-
  private:
   // This sets |service_| by connecting over Perfetto's IPC connection.
   void ConnectSocket();
@@ -155,12 +146,6 @@ class COMPONENT_EXPORT(TRACING_CPP) PosixSystemProducer
 
   uint64_t data_sources_tracing_ = 0;
   // -- End lock-protected members. --
-
-#if !defined(OS_ANDROID)
-  // For connecting to the system tracing service from sandboxed child
-  // processes.
-  mojo::SharedRemote<mojom::SystemTracingService> shared_remote_;
-#endif
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   // and thus must be the last member variable.
