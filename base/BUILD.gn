@@ -2247,16 +2247,8 @@ component("base") {
 
   if (using_sanitizer) {
     data += [ "//tools/valgrind/asan/" ]
-    if (is_win) {
-      data +=
-          [ "//third_party/llvm-build/Release+Asserts/bin/llvm-symbolizer.exe" ]
-    } else {
-      data += [ "//third_party/llvm-build/Release+Asserts/bin/llvm-symbolizer" ]
-    }
-    if (is_linux) {
-      # llvm-symbolizer uses libstdc++ from the clang package.
-      data += [ "//third_party/llvm-build/Release+Asserts/lib/libstdc++.so.6" ]
-    }
+    data_deps +=
+        [ "//build/config/clang:llvm-symbolizer_data($host_toolchain)" ]
   }
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]

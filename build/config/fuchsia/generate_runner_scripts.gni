@@ -128,7 +128,8 @@ template("fuchsia_package_runner") {
     }
 
     if (test_host_cpu == "x64") {
-      data += [ "//third_party/llvm-build/Release+Asserts/bin/llvm-symbolizer" ]
+      data_deps +=
+          [ "//build/config/clang:llvm-symbolizer_data($host_toolchain)" ]
     }
 
     data += [
