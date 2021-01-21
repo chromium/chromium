@@ -9,13 +9,13 @@
 
 namespace safe_browsing {
 
-scoped_refptr<PasswordProtectionRequest> CreateDummyRequest(
+scoped_refptr<PasswordProtectionRequestContent> CreateDummyRequest(
     content::WebContents* web_contents) {
   std::unique_ptr<safe_browsing::MockPasswordProtectionService>
       password_protection_service =
           std::make_unique<safe_browsing::MockPasswordProtectionService>();
-  scoped_refptr<PasswordProtectionRequest> request =
-      base::MakeRefCounted<PasswordProtectionRequest>(
+  scoped_refptr<PasswordProtectionRequestContent> request =
+      base::MakeRefCounted<PasswordProtectionRequestContent>(
           web_contents, GURL(), GURL(), GURL(),
           web_contents->GetContentsMimeType(), "",
           PasswordType::PASSWORD_TYPE_UNKNOWN,

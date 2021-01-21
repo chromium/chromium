@@ -330,7 +330,7 @@ class ChromePasswordProtectionServiceTest
     std::vector<password_manager::MatchingReusedCredential> credentials = {
         {"somedomain.com"}};
     if (trigger_type == LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE) {
-      request_ = new PasswordProtectionRequest(
+      request_ = new PasswordProtectionRequestContent(
           web_contents(), GURL(kPhishingURL), GURL(), GURL(),
           web_contents()->GetContentsMimeType(), kUserName,
           PasswordType::PASSWORD_TYPE_UNKNOWN, credentials, trigger_type, true,
@@ -338,7 +338,7 @@ class ChromePasswordProtectionServiceTest
     } else {
       ASSERT_EQ(LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
                 trigger_type);
-      request_ = new PasswordProtectionRequest(
+      request_ = new PasswordProtectionRequestContent(
           web_contents(), GURL(kPhishingURL), GURL(), GURL(),
           web_contents()->GetContentsMimeType(), kUserName,
           reused_password_type, credentials, trigger_type,

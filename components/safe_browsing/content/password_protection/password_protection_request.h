@@ -85,21 +85,6 @@ class PasswordProtectionRequest
       public base::RefCountedThreadSafe<PasswordProtectionRequest,
                                         DeleteOnUIThread> {
  public:
-  PasswordProtectionRequest(
-      content::WebContents* web_contents,
-      const GURL& main_frame_url,
-      const GURL& password_form_action,
-      const GURL& password_form_frame_url,
-      const std::string& mime_type,
-      const std::string& username,
-      PasswordType password_type,
-      const std::vector<password_manager::MatchingReusedCredential>&
-          matching_reused_credentials,
-      LoginReputationClientRequest::TriggerType type,
-      bool password_field_exists,
-      PasswordProtectionServiceBase* pps,
-      int request_timeout_in_ms);
-
   // Not copyable or movable
   PasswordProtectionRequest(const PasswordProtectionRequest&) = delete;
   PasswordProtectionRequest& operator=(const PasswordProtectionRequest&) =
@@ -124,8 +109,6 @@ class PasswordProtectionRequest
   const LoginReputationClientRequest* request_proto() const {
     return request_proto_.get();
   }
-
-  content::WebContents* web_contents() const { return web_contents_; }
 
   LoginReputationClientRequest::TriggerType trigger_type() const {
     return trigger_type_;
@@ -171,12 +154,44 @@ class PasswordProtectionRequest
  protected:
   friend class base::RefCountedThreadSafe<PasswordProtectionRequest>;
 
+  PasswordProtectionRequest(
+      const GURL& main_frame_url,
+      const GURL& password_form_action,
+      const GURL& password_form_frame_url,
+      const std::string& mime_type,
+      const std::string& username,
+      PasswordType password_type,
+      const std::vector<password_manager::MatchingReusedCredential>&
+          matching_reused_credentials,
+      LoginReputationClientRequest::TriggerType type,
+      bool password_field_exists,
+      PasswordProtectionServiceBase* pps,
+      int request_timeout_in_ms);
+
+  ~PasswordProtectionRequest() override;
+
+  // Initiates network request to Safe Browsing backend.
+  void SendRequest();
+
+  // Records an event for the result of the URL reputation lookup if the user
+  // enters their password on a website.
+  virtual void MaybeLogPasswordReuseLookupEvent(
+      RequestOutcome outcome,
+      const LoginReputationClientResponse* response) = 0;
+
+  // The PasswordProtectionServiceBase instance owns |this|.
+  // Can only be accessed on UI thread.
+  PasswordProtectionServiceBase* password_protection_service() {
+    return password_protection_service_;
+  }
+
+  std::unique_ptr<LoginReputationClientRequest> request_proto_;
+
  private:
   friend DeleteOnUIThread;
   friend class base::DeleteHelper<PasswordProtectionRequest>;
   friend class PasswordProtectionServiceTest;
   friend class ChromePasswordProtectionServiceTest;
-  ~PasswordProtectionRequest() override;
 
   // Start checking the whitelist.
   void CheckWhitelist();
@@ -198,39 +213,13 @@ class PasswordProtectionRequest
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   // Extracts DOM features.
-  void GetDomFeatures();
-
-  // Called when the DOM feature extraction is complete.
-  void OnGetDomFeatures(mojom::PhishingDetectorResult result,
-                        const std::string& verdict);
-
-  // Called when the DOM feature extraction times out.
-  void OnGetDomFeatureTimeout();
-
-  // If appropriate, collects visual features, otherwise continues on to sending
-  // the request.
-  void MaybeCollectVisualFeatures();
+  virtual void GetDomFeatures() = 0;
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-
-#if BUILDFLAG(FULL_SAFE_BROWSING)
-  // Collects visual features from the current login page.
-  void CollectVisualFeatures();
-
-  // Processes the screenshot of the login page into visual features.
-  void OnScreenshotTaken(const SkBitmap& bitmap);
-
-  // Called when the visual feature extraction is complete.
-  void OnVisualFeatureCollectionDone(
-      std::unique_ptr<VisualFeatures> visual_features);
-#endif  // BUILDFLAG(FULL_SAFE_BROWSING)
 
 #if defined(OS_ANDROID)
   // Sets the referring app info.
-  void SetReferringAppInfo();
+  virtual void SetReferringAppInfo() = 0;
 #endif  // defined(OS_ANDROID)
-
-  // Initiates network request to Safe Browsing backend.
-  void SendRequest();
 
   // Start a timer to cancel the request if it takes too long.
   void StartTimeout();
@@ -238,9 +227,6 @@ class PasswordProtectionRequest
   // |this| will be destroyed after calling this function.
   void Finish(RequestOutcome outcome,
               std::unique_ptr<LoginReputationClientResponse> response);
-
-  // WebContents of the password protection event.
-  content::WebContents* web_contents_;
 
   // Main frame URL of the login form.
   const GURL main_frame_url_;
@@ -296,8 +282,6 @@ class PasswordProtectionRequest
   // request.
   const int request_timeout_in_ms_;
 
-  std::unique_ptr<LoginReputationClientRequest> request_proto_;
-
   // Needed for canceling tasks posted to different threads.
   base::CancelableTaskTracker tracker_;
 
@@ -311,6 +295,77 @@ class PasswordProtectionRequest
 
   // If a request is sent, this is the token returned by the WebUI.
   int web_ui_token_;
+
+  base::WeakPtrFactory<PasswordProtectionRequest> weakptr_factory_{this};
+};
+
+class PasswordProtectionRequestContent : public PasswordProtectionRequest {
+ public:
+  PasswordProtectionRequestContent(
+      content::WebContents* web_contents,
+      const GURL& main_frame_url,
+      const GURL& password_form_action,
+      const GURL& password_form_frame_url,
+      const std::string& mime_type,
+      const std::string& username,
+      PasswordType password_type,
+      const std::vector<password_manager::MatchingReusedCredential>&
+          matching_reused_credentials,
+      LoginReputationClientRequest::TriggerType type,
+      bool password_field_exists,
+      PasswordProtectionServiceBase* pps,
+      int request_timeout_in_ms);
+
+  content::WebContents* web_contents() const { return web_contents_; }
+
+  base::WeakPtr<PasswordProtectionRequestContent> GetWeakPtr() {
+    return weakptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  ~PasswordProtectionRequestContent() override;
+
+  void MaybeLogPasswordReuseLookupEvent(
+      RequestOutcome outcome,
+      const LoginReputationClientResponse* response) override;
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+  // Extracts DOM features.
+  void GetDomFeatures() override;
+
+  // Called when the DOM feature extraction is complete.
+  void OnGetDomFeatures(mojom::PhishingDetectorResult result,
+                        const std::string& verdict);
+
+  // Called when the DOM feature extraction times out.
+  void OnGetDomFeatureTimeout();
+
+  // If appropriate, collects visual features, otherwise continues on to sending
+  // the request.
+  void MaybeCollectVisualFeatures();
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+  // Collects visual features from the current login page.
+  void CollectVisualFeatures();
+
+  // Processes the screenshot of the login page into visual features.
+  void OnScreenshotTaken(const SkBitmap& bitmap);
+
+  // Called when the visual feature extraction is complete.
+  void OnVisualFeatureCollectionDone(
+      std::unique_ptr<VisualFeatures> visual_features);
+#endif  // BUILDFLAG(FULL_SAFE_BROWSING)
+
+#if defined(OS_ANDROID)
+  void SetReferringAppInfo() override;
+#endif  // defined(OS_ANDROID)
+
+  // WebContents of the password protection event.
+  content::WebContents* web_contents_;
+
+  // Cancels the request when it is no longer valid.
+  std::unique_ptr<RequestCanceler> request_canceler_;
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   // When we start extracting visual features.
@@ -329,10 +384,7 @@ class PasswordProtectionRequest
   bool dom_features_collection_complete_;
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
-  // Cancels the request when it is no longer valid.
-  std::unique_ptr<RequestCanceler> request_canceler_;
-
-  base::WeakPtrFactory<PasswordProtectionRequest> weakptr_factory_{this};
+  base::WeakPtrFactory<PasswordProtectionRequestContent> weakptr_factory_{this};
 };
 
 }  // namespace safe_browsing

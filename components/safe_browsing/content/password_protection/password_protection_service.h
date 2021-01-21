@@ -292,6 +292,7 @@ class PasswordProtectionServiceBase : public history::HistoryServiceObserver {
 
  protected:
   friend class PasswordProtectionRequest;
+  friend class PasswordProtectionRequestContent;
 
   // Chrome can send password protection ping if it is allowed by for the
   // |trigger_type| and |password_type| and if Safe Browsing can compute

@@ -387,7 +387,9 @@ void ChromePasswordProtectionService::ShowModalWarning(
               ReusedPasswordAccountType::SAVED_PASSWORD &&
           base::FeatureList::IsEnabled(
               safe_browsing::kPasswordProtectionForSavedPasswords)));
-  content::WebContents* web_contents = request->web_contents();
+  PasswordProtectionRequestContent* request_content =
+      static_cast<PasswordProtectionRequestContent*>(request);
+  content::WebContents* web_contents = request_content->web_contents();
   RequestOutcome outcome = request->request_outcome();
   // Don't show warning again if there is already a modal warning showing.
   if (IsModalWarningShowingInWebContents(web_contents))
@@ -1235,9 +1237,11 @@ void ChromePasswordProtectionService::MaybeReportPasswordReuseDetected(
         extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(
             profile_);
     if (router) {
+      PasswordProtectionRequestContent* request_content =
+          static_cast<PasswordProtectionRequestContent*>(request);
       router->OnPolicySpecifiedPasswordReuseDetected(
-          request->web_contents()->GetLastCommittedURL(), username_or_email,
-          is_phishing_url);
+          request_content->web_contents()->GetLastCommittedURL(),
+          username_or_email, is_phishing_url);
     }
   }
 }
@@ -1627,7 +1631,9 @@ void ChromePasswordProtectionService::
 
 bool ChromePasswordProtectionService::UserClickedThroughSBInterstitial(
     PasswordProtectionRequest* request) {
-  content::WebContents* web_contents = request->web_contents();
+  PasswordProtectionRequestContent* request_content =
+      static_cast<PasswordProtectionRequestContent*>(request);
+  content::WebContents* web_contents = request_content->web_contents();
   SBThreatType current_threat_type;
   if (!ui_manager_->IsUrlWhitelistedOrPendingForWebContents(
           web_contents->GetLastCommittedURL().GetWithEmptyPath(),

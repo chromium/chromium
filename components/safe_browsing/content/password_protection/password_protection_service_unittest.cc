@@ -254,14 +254,16 @@ class PasswordProtectionServiceTest : public ::testing::Test {
             content::WebContents::CreateParams(&browser_context_)));
     const std::vector<password_manager::MatchingReusedCredential>
         matching_reused_credentials = {};
-    request_ = base::MakeRefCounted<safe_browsing::PasswordProtectionRequest>(
-        web_contents_.get(), GURL(kTargetUrl), /*password_form_action=*/GURL(),
-        /*password_form_frame_url=*/GURL(),
-        web_contents_->GetContentsMimeType(), kUserName,
-        PasswordType::PASSWORD_TYPE_UNKNOWN, matching_reused_credentials,
-        LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
-        /*password_field_exists=*/true, password_protection_service_.get(),
-        /*request_timeout_in_ms=*/10000);
+    request_ =
+        base::MakeRefCounted<safe_browsing::PasswordProtectionRequestContent>(
+            web_contents_.get(), GURL(kTargetUrl),
+            /*password_form_action=*/GURL(),
+            /*password_form_frame_url=*/GURL(),
+            web_contents_->GetContentsMimeType(), kUserName,
+            PasswordType::PASSWORD_TYPE_UNKNOWN, matching_reused_credentials,
+            LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
+            /*password_field_exists=*/true, password_protection_service_.get(),
+            /*request_timeout_in_ms=*/10000);
   }
 
   void TearDown() override {
@@ -367,7 +369,7 @@ class PasswordProtectionServiceBaseTest
         .WillRepeatedly(
             Return(match_whitelist ? AsyncMatch::MATCH : AsyncMatch::NO_MATCH));
 
-    request_ = new PasswordProtectionRequest(
+    request_ = new PasswordProtectionRequestContent(
         web_contents, target_url, GURL(kFormActionUrl), GURL(kPasswordFrameUrl),
         web_contents->GetContentsMimeType(), kUserName,
         PasswordType::PASSWORD_TYPE_UNKNOWN, {},
@@ -388,7 +390,7 @@ class PasswordProtectionServiceBaseTest
         .WillRepeatedly(
             Return(match_whitelist ? AsyncMatch::MATCH : AsyncMatch::NO_MATCH));
 
-    request_ = new PasswordProtectionRequest(
+    request_ = new PasswordProtectionRequestContent(
         web_contents, target_url, GURL(), GURL(),
         web_contents->GetContentsMimeType(), kUserName, type,
         matching_reused_credentials,

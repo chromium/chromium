@@ -206,7 +206,7 @@ void PasswordProtectionServiceBase::StartRequest(
     bool password_field_exists) {
   DCHECK(CurrentlyOnThread(ThreadID::UI));
   scoped_refptr<PasswordProtectionRequest> request(
-      new PasswordProtectionRequest(
+      new PasswordProtectionRequestContent(
           web_contents, main_frame_url, password_form_action,
           password_form_frame_url, web_contents->GetContentsMimeType(),
           username, password_type, matching_reused_credentials, trigger_type,
@@ -541,7 +541,9 @@ PasswordProtectionService::MaybeCreateNavigationThrottle(
 
   content::WebContents* web_contents = navigation_handle->GetWebContents();
   for (scoped_refptr<PasswordProtectionRequest> request : pending_requests_) {
-    if (request->web_contents() == web_contents &&
+    PasswordProtectionRequestContent* request_content =
+        static_cast<PasswordProtectionRequestContent*>(request.get());
+    if (request_content->web_contents() == web_contents &&
         request->trigger_type() ==
             safe_browsing::LoginReputationClientRequest::PASSWORD_REUSE_EVENT &&
         IsSupportedPasswordTypeForModalWarning(
@@ -553,7 +555,9 @@ PasswordProtectionService::MaybeCreateNavigationThrottle(
   }
 
   for (scoped_refptr<PasswordProtectionRequest> request : warning_requests_) {
-    if (request->web_contents() == web_contents) {
+    PasswordProtectionRequestContent* request_content =
+        static_cast<PasswordProtectionRequestContent*>(request.get());
+    if (request_content->web_contents() == web_contents) {
       return std::make_unique<PasswordProtectionNavigationThrottle>(
           navigation_handle, request, /*is_warning_showing=*/true);
     }
@@ -564,7 +568,9 @@ PasswordProtectionService::MaybeCreateNavigationThrottle(
 void PasswordProtectionService::RemoveWarningRequestsByWebContents(
     content::WebContents* web_contents) {
   for (auto it = warning_requests_.begin(); it != warning_requests_.end();) {
-    if (it->get()->web_contents() == web_contents)
+    PasswordProtectionRequestContent* request_content =
+        static_cast<PasswordProtectionRequestContent*>(it->get());
+    if (request_content->web_contents() == web_contents)
       it = warning_requests_.erase(it);
     else
       ++it;
@@ -574,7 +580,9 @@ void PasswordProtectionService::RemoveWarningRequestsByWebContents(
 bool PasswordProtectionService::IsModalWarningShowingInWebContents(
     content::WebContents* web_contents) {
   for (const auto& request : warning_requests_) {
-    if (request->web_contents() == web_contents)
+    PasswordProtectionRequestContent* request_content =
+        static_cast<PasswordProtectionRequestContent*>(request.get());
+    if (request_content->web_contents() == web_contents)
       return true;
   }
   return false;

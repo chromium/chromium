@@ -16,7 +16,7 @@ namespace safe_browsing {
 
 // Returns a request object with |web_contents|. Other request options are set
 // to some default value and potentially nonsensical.
-scoped_refptr<PasswordProtectionRequest> CreateDummyRequest(
+scoped_refptr<PasswordProtectionRequestContent> CreateDummyRequest(
     content::WebContents* web_contents);
 
 }  // namespace safe_browsing
