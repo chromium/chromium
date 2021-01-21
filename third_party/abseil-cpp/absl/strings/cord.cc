@@ -208,9 +208,9 @@ static CordRep* NewTree(const char* data,
   size_t n = 0;
   do {
     const size_t len = std::min(length, kMaxFlatLength);
-    CordRep* rep = CordRepFlat::New(len + alloc_hint);
+    CordRepFlat* rep = CordRepFlat::New(len + alloc_hint);
     rep->length = len;
-    memcpy(rep->data, data, len);
+    memcpy(rep->Data(), data, len);
     reps[n++] = VerifyTree(rep);
     data += len;
     length -= len;
@@ -272,10 +272,10 @@ inline CordRep* Cord::InlineRep::force_tree(size_t extra_hint) {
     return data_.as_tree.rep;
   }
 
-  CordRep* result = CordRepFlat::New(len + extra_hint);
+  CordRepFlat* result = CordRepFlat::New(len + extra_hint);
   result->length = len;
   static_assert(kMinFlatLength >= sizeof(data_.as_chars), "");
-  memcpy(result->data, data_.as_chars, sizeof(data_.as_chars));
+  memcpy(result->Data(), data_.as_chars, sizeof(data_.as_chars));
   set_tree(result);
   return result;
 }
@@ -349,7 +349,7 @@ static inline bool PrepareAppendRegion(CordRep* root, char** region,
   }
   dst->length += size_increase;
 
-  *region = dst->data + in_use;
+  *region = dst->flat()->Data() + in_use;
   *size = size_increase;
   return true;
 }
@@ -381,7 +381,7 @@ void Cord::InlineRep::GetAppendRegion(char** region, size_t* size,
   CordRepFlat* new_node =
       CordRepFlat::New(std::max(static_cast<size_t>(root->length), max_length));
   new_node->length = std::min(new_node->Capacity(), max_length);
-  *region = new_node->data;
+  *region = new_node->Data();
   *size = new_node->length;
   replace_tree(Concat(root, new_node));
 }
@@ -407,7 +407,7 @@ void Cord::InlineRep::GetAppendRegion(char** region, size_t* size) {
   // Allocate new node.
   CordRepFlat* new_node = CordRepFlat::New(root->length);
   new_node->length = new_node->Capacity();
-  *region = new_node->data;
+  *region = new_node->Data();
   *size = new_node->length;
   replace_tree(Concat(root, new_node));
 }
@@ -523,7 +523,7 @@ Cord& Cord::operator=(absl::string_view src) {
       tree->flat()->Capacity() >= length &&
       tree->refcount.IsOne()) {
     // Copy in place if the existing FLAT node is reusable.
-    memmove(tree->data, data, length);
+    memmove(tree->flat()->Data(), data, length);
     tree->length = length;
     VerifyTree(tree);
     return *this;
@@ -578,8 +578,8 @@ void Cord::InlineRep::AppendArray(const char* src_data, size_t src_size) {
     root = CordRepFlat::New(std::max<size_t>(size1, size2));
     appended = std::min(
         src_size, root->flat()->Capacity() - inline_length);
-    memcpy(root->data, data_.as_chars, inline_length);
-    memcpy(root->data + inline_length, src_data, appended);
+    memcpy(root->flat()->Data(), data_.as_chars, inline_length);
+    memcpy(root->flat()->Data() + inline_length, src_data, appended);
     root->length = inline_length + appended;
     set_tree(root);
   }
@@ -635,7 +635,7 @@ inline void Cord::AppendImpl(C&& src) {
     }
     if (src_tree->tag >= FLAT) {
       // src tree just has one flat node.
-      contents_.AppendArray(src_tree->data, src_size);
+      contents_.AppendArray(src_tree->flat()->Data(), src_size);
       return;
     }
     if (&src == this) {
@@ -1093,7 +1093,7 @@ inline absl::string_view Cord::InlineRep::FindFlatStartPiece() const {
 
   CordRep* node = tree();
   if (node->tag >= FLAT) {
-    return absl::string_view(node->data, node->length);
+    return absl::string_view(node->flat()->Data(), node->length);
   }
 
   if (node->tag == EXTERNAL) {
@@ -1116,7 +1116,7 @@ inline absl::string_view Cord::InlineRep::FindFlatStartPiece() const {
   }
 
   if (node->tag >= FLAT) {
-    return absl::string_view(node->data + offset, length);
+    return absl::string_view(node->flat()->Data() + offset, length);
   }
 
   assert((node->tag == EXTERNAL) && "Expect FLAT or EXTERNAL node here");
@@ -1329,7 +1329,7 @@ Cord::ChunkIterator& Cord::ChunkIterator::AdvanceStack() {
   assert(node->tag == EXTERNAL || node->tag >= FLAT);
   assert(length != 0);
   const char* data =
-      node->tag == EXTERNAL ? node->external()->base : node->data;
+      node->tag == EXTERNAL ? node->external()->base : node->flat()->Data();
   current_chunk_ = absl::string_view(data + offset, length);
   current_leaf_ = node;
   return *this;
@@ -1362,8 +1362,8 @@ Cord Cord::ChunkIterator::AdvanceAndReadBytes(size_t n) {
     // Range to read is a proper subrange of the current chunk.
     assert(current_leaf_ != nullptr);
     CordRep* subnode = CordRep::Ref(current_leaf_);
-    const char* data =
-        subnode->tag == EXTERNAL ? subnode->external()->base : subnode->data;
+    const char* data = subnode->tag == EXTERNAL ? subnode->external()->base
+                                                : subnode->flat()->Data();
     subnode = NewSubstring(subnode, current_chunk_.data() - data, n);
     subcord.contents_.set_tree(VerifyTree(subnode));
     RemoveChunkPrefix(n);
@@ -1375,8 +1375,8 @@ Cord Cord::ChunkIterator::AdvanceAndReadBytes(size_t n) {
   assert(current_leaf_ != nullptr);
   CordRep* subnode = CordRep::Ref(current_leaf_);
   if (current_chunk_.size() < subnode->length) {
-    const char* data =
-        subnode->tag == EXTERNAL ? subnode->external()->base : subnode->data;
+    const char* data = subnode->tag == EXTERNAL ? subnode->external()->base
+                                                : subnode->flat()->Data();
     subnode = NewSubstring(subnode, current_chunk_.data() - data,
                            current_chunk_.size());
   }
@@ -1444,7 +1444,7 @@ Cord Cord::ChunkIterator::AdvanceAndReadBytes(size_t n) {
     subnode = Concat(subnode, NewSubstring(CordRep::Ref(node), offset, n));
   }
   const char* data =
-      node->tag == EXTERNAL ? node->external()->base : node->data;
+      node->tag == EXTERNAL ? node->external()->base : node->flat()->Data();
   current_chunk_ = absl::string_view(data + offset + n, length - n);
   current_leaf_ = node;
   bytes_remaining_ -= n;
@@ -1511,7 +1511,7 @@ void Cord::ChunkIterator::AdvanceBytesSlowPath(size_t n) {
   assert(node->tag == EXTERNAL || node->tag >= FLAT);
   assert(length > n);
   const char* data =
-      node->tag == EXTERNAL ? node->external()->base : node->data;
+      node->tag == EXTERNAL ? node->external()->base : node->flat()->Data();
   current_chunk_ = absl::string_view(data + offset + n, length - n);
   current_leaf_ = node;
   bytes_remaining_ -= n;
@@ -1529,7 +1529,7 @@ char Cord::operator[](size_t i) const {
     assert(offset < rep->length);
     if (rep->tag >= FLAT) {
       // Get the "i"th character directly from the flat array.
-      return rep->data[offset];
+      return rep->flat()->Data()[offset];
     } else if (rep->tag == EXTERNAL) {
       // Get the "i"th character from the external array.
       return rep->external()->base[offset];
@@ -1562,7 +1562,7 @@ absl::string_view Cord::FlattenSlowPath() {
   if (total_size <= kMaxFlatLength) {
     new_rep = CordRepFlat::New(total_size);
     new_rep->length = total_size;
-    new_buffer = new_rep->data;
+    new_buffer = new_rep->flat()->Data();
     CopyToArraySlowPath(new_buffer);
   } else {
     new_buffer = std::allocator<char>().allocate(total_size);
@@ -1583,7 +1583,7 @@ absl::string_view Cord::FlattenSlowPath() {
 /* static */ bool Cord::GetFlatAux(CordRep* rep, absl::string_view* fragment) {
   assert(rep != nullptr);
   if (rep->tag >= FLAT) {
-    *fragment = absl::string_view(rep->data, rep->length);
+    *fragment = absl::string_view(rep->flat()->Data(), rep->length);
     return true;
   } else if (rep->tag == EXTERNAL) {
     *fragment = absl::string_view(rep->external()->base, rep->length);
@@ -1591,8 +1591,8 @@ absl::string_view Cord::FlattenSlowPath() {
   } else if (rep->tag == SUBSTRING) {
     CordRep* child = rep->substring()->child;
     if (child->tag >= FLAT) {
-      *fragment =
-          absl::string_view(child->data + rep->substring()->start, rep->length);
+      *fragment = absl::string_view(
+          child->flat()->Data() + rep->substring()->start, rep->length);
       return true;
     } else if (child->tag == EXTERNAL) {
       *fragment = absl::string_view(
@@ -1680,7 +1680,7 @@ static void DumpNode(CordRep* rep, bool include_data, std::ostream* os) {
         *os << "FLAT cap=" << rep->flat()->Capacity()
             << " [";
         if (include_data)
-          *os << absl::CEscape(std::string(rep->data, rep->length));
+          *os << absl::CEscape(std::string(rep->flat()->Data(), rep->length));
         *os << "]\n";
       }
       if (stack.empty()) break;

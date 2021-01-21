@@ -37,7 +37,7 @@ namespace cord_internal {
 // ideally a 'nice' size aligning with allocation and cacheline sizes like 32.
 // kMaxFlatSize is bounded by the size resulting in a computed tag no greater
 // than MAX_FLAT_TAG. MAX_FLAT_TAG provides for additional 'high' tag values.
-static constexpr size_t kFlatOverhead = offsetof(CordRep, data);
+static constexpr size_t kFlatOverhead = offsetof(CordRep, storage);
 static constexpr size_t kMinFlatSize = 32;
 static constexpr size_t kMaxFlatSize = 4096;
 static constexpr size_t kMaxFlatLength = kMaxFlatSize - kFlatOverhead;
@@ -114,6 +114,9 @@ struct CordRepFlat : public CordRep {
     ::operator delete(rep);
 #endif
   }
+
+  char* Data() { return storage; }
+  const char* Data() const { return storage; }
 
   // Returns the maximum capacity (payload size) of this instance.
   size_t Capacity() const { return TagToLength(tag); }

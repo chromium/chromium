@@ -981,6 +981,7 @@ EXPORTS
     ??0Time@absl@@QAE@XZ
     ??0TimeConversion@absl@@QAE@XZ
     ??0TimeInfo@TimeZone@absl@@QAE@XZ
+    ??0TimeSample@absl@@QAE@XZ
     ??0TimeZone@absl@@QAE@Vtime_zone@cctz@time_internal@1@@Z
     ??0TimeZoneIf@cctz@time_internal@absl@@IAE@XZ
     ??0TimeZoneInfo@cctz@time_internal@absl@@QAE@XZ
@@ -1510,6 +1511,8 @@ EXPORTS
     ?Crash@Helper@internal_statusor@absl@@SAXABVStatus@3@@Z
     ?CreateThreadIdentity@synchronization_internal@absl@@YAPAUThreadIdentity@base_internal@2@XZ
     ?CurrentThreadIdentityIfPresent@base_internal@absl@@YAPAUThreadIdentity@12@XZ
+    ?Data@CordRepFlat@cord_internal@absl@@QAEPADXZ
+    ?Data@CordRepFlat@cord_internal@absl@@QBEPBDXZ
     ?DataLength@Header@TimeZoneInfo@cctz@time_internal@absl@@QBEII@Z
     ?DataLossError@absl@@YA?AVStatus@1@Vstring_view@1@@Z
     ?DeadlineExceededError@absl@@YA?AVStatus@1@Vstring_view@1@@Z

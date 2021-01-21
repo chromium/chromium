@@ -166,7 +166,7 @@ enum CordRepKind {
 struct CordRep {
   CordRep() = default;
   constexpr CordRep(Refcount::Immortal immortal, size_t l)
-      : length(l), refcount(immortal), tag(EXTERNAL), data{} {}
+      : length(l), refcount(immortal), tag(EXTERNAL), storage{} {}
 
   // The following three fields have to be less than 32 bytes since
   // that is the smallest supported flat node size.
@@ -175,7 +175,7 @@ struct CordRep {
   // If tag < FLAT, it represents CordRepKind and indicates the type of node.
   // Otherwise, the node type is CordRepFlat and the tag is the encoded size.
   uint8_t tag;
-  char data[1];  // Starting point for flat array: MUST BE LAST FIELD of CordRep
+  char storage[1];  // Starting point for flat array: MUST BE LAST FIELD
 
   inline CordRepConcat* concat();
   inline const CordRepConcat* concat() const;
@@ -219,8 +219,8 @@ struct CordRepConcat : public CordRep {
   CordRep* left;
   CordRep* right;
 
-  uint8_t depth() const { return static_cast<uint8_t>(data[0]); }
-  void set_depth(uint8_t depth) { data[0] = static_cast<char>(depth); }
+  uint8_t depth() const { return static_cast<uint8_t>(storage[0]); }
+  void set_depth(uint8_t depth) { storage[0] = static_cast<char>(depth); }
 };
 
 struct CordRepSubstring : public CordRep {
