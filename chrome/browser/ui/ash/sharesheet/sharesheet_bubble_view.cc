@@ -81,10 +81,7 @@ constexpr int kExpandViewPaddingTop = 16;
 constexpr int kExpandViewPaddingBottom = 8;
 
 constexpr int kShortSpacing = 20;
-constexpr int kSpacing = 24;
-constexpr int kTitleLineHeight = 24;
 
-constexpr SkColor kShareTitleColor = gfx::kGoogleGrey900;
 constexpr SkColor kShareTargetTitleColor = gfx::kGoogleGrey700;
 
 constexpr auto kAnimateDelay = base::TimeDelta::FromMilliseconds(100);
@@ -159,35 +156,10 @@ void SharesheetBubbleView::ShowBubble(
       /* inside_border_insets */ gfx::Insets(),
       /* between_child_spacing */ 0, /* collapse_margins_spacing */ true));
 
-  // Add Title label
-  auto* title = main_view_->AddChildView(std::make_unique<views::Label>(
-      l10n_util::GetStringUTF16(IDS_SHARESHEET_TITLE_LABEL),
-      ash::CONTEXT_SHARESHEET_BUBBLE_TITLE, ash::STYLE_SHARESHEET));
-  title->SetLineHeight(kTitleLineHeight);
-  title->SetEnabledColor(kShareTitleColor);
-  title->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  title->SetProperty(views::kMarginsKey, gfx::Insets(kSpacing));
-
-  // Add content preview text descriptor.
-  if (base::FeatureList::IsEnabled(features::kSharesheetContentPreviews) &&
-      (intent_->file_urls.has_value())) {
-    // Remove the margin under the title for file_title
-    title->SetProperty(views::kMarginsKey,
-                       gfx::Insets(kSpacing, kSpacing, 0, kSpacing));
-    // This displays text data only for the first file_url provided.
-    auto* file_title = main_view_->AddChildView(std::make_unique<views::Label>(
-        base::ASCIIToUTF16(
-            (intent_->file_urls.value().front().ExtractFileName())),
-        ash::CONTEXT_SHARESHEET_BUBBLE_BODY_SECONDARY));
-    file_title->SetLineHeight(kTitleLineHeight);
-    file_title->SetEnabledColor(kShareTargetTitleColor);
-    file_title->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    file_title->SetProperty(views::kMarginsKey,
-                            gfx::Insets(3, kSpacing, kSpacing, kSpacing));
-
-    main_view_->AddChildView(
-        std::make_unique<SharesheetContentPreviews>(intent_->Clone()));
-  }
+  // Adds view for content previews including the title, text descriptor
+  // and image preview.
+  main_view_->AddChildView(
+      std::make_unique<SharesheetContentPreviews>(intent_->Clone()));
 
   if (targets.empty()) {
     auto* image =

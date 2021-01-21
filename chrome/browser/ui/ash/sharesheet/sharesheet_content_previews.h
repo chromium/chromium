@@ -19,11 +19,14 @@ class SharesheetContentPreviews : public views::View {
       delete;
 
  private:
+  // Adds the share title to the view.
+  void ShowShareTitle();
+
   // Adds the title preview to the view.
-  void SetTitlePreview();
+  void ShowFileTitlePreview();
 
   // Adds the image preview to the view.
-  void SetImagePreview();
+  void ShowImagePreview();
 
   apps::mojom::IntentPtr intent_;
 };

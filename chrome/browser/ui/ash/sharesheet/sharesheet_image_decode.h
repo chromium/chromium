@@ -16,7 +16,7 @@ class SharesheetImageDecode {
   SharesheetImageDecode& operator=(const SharesheetImageDecode&) = delete;
 
  private:
-  // Encodes the FilePath |GURL| into encoded bytes.
+  // Encodes the FilePath |url| into encoded bytes.
   void URLToEncodedBytes(const base::FilePath& url);
 
   // Decodes the string of encoded bytes |image_data|

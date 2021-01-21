@@ -28,6 +28,10 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView {
   METADATA_HEADER(SharesheetBubbleView);
   using TargetInfo = sharesheet::TargetInfo;
 
+  // These constants are shared between sharesheet UI related classes.
+  static constexpr int kSpacing = 24;
+  static constexpr int kTitleLineHeight = 24;
+
   SharesheetBubbleView(views::View* anchor_view,
                        sharesheet::SharesheetServiceDelegate* delegate);
   SharesheetBubbleView(gfx::NativeWindow native_window,
