@@ -549,6 +549,9 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
       accessibility_mode_observer_(
           std::make_unique<AccessibilityModeObserver>(this)) {
   SetShowIcon(::ShouldShowWindowIcon(browser_.get()));
+
+  SetCanResize(browser_->can_resize());
+
   SetHasWindowSizeControls(!chrome::IsRunningInForcedAppMode());
 
   browser_->tab_strip_model()->AddObserver(this);

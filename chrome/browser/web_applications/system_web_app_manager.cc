@@ -659,6 +659,14 @@ bool SystemWebAppManager::ShouldShowInSearch(SystemAppType type) const {
   return it->second.show_in_search;
 }
 
+bool SystemWebAppManager::IsResizeableWindow(SystemAppType type) const {
+  auto it = system_app_infos_.find(type);
+  if (it == system_app_infos_.end())
+    return false;
+
+  return it->second.is_resizeable;
+}
+
 base::Optional<SystemAppType> SystemWebAppManager::GetCapturingSystemAppForURL(
     const GURL& url) const {
   if (!HasSystemWebAppScheme(url))

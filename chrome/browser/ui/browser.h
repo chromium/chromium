@@ -269,6 +269,9 @@ class Browser : public TabStripModelObserver,
     // User-set title of this browser window, if there is one.
     std::string user_title;
 
+    // True if the browser is resizeable.
+    bool can_resize = true;
+
    private:
     friend class Browser;
     friend class WindowSizerChromeOSTest;
@@ -661,6 +664,9 @@ class Browser : public TabStripModelObserver,
     return type_ == TYPE_APP || type_ == TYPE_DEVTOOLS ||
            type_ == TYPE_APP_POPUP;
   }
+
+  // True if the browser is resizeable.
+  bool can_resize() const { return create_params_.can_resize; }
 
   // True when the mouse cursor is locked.
   bool IsMouseLocked() const;

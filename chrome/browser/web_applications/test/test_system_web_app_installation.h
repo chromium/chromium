@@ -58,6 +58,8 @@ class TestSystemWebAppInstallation {
   static std::unique_ptr<TestSystemWebAppInstallation>
   SetUpAppThatCapturesNavigation(const bool use_web_app_info);
 
+  static std::unique_ptr<TestSystemWebAppInstallation> SetUpNonResizeableApp();
+
   static std::unique_ptr<TestSystemWebAppInstallation> SetUpChromeUntrustedApp(
       const bool use_web_app_info);
 

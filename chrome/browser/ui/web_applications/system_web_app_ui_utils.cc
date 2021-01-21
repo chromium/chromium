@@ -239,11 +239,13 @@ Browser* LaunchSystemWebApp(Profile* profile,
     *did_create = !browser;
 
   content::WebContents* web_contents = nullptr;
+  bool can_resize =
+      provider->system_web_app_manager().IsResizeableWindow(app_type);
 
   if (!browser) {
-    browser =
-        CreateWebApplicationWindow(profile_for_launch, params->app_id,
-                                   params->disposition, params->restore_id);
+    browser = CreateWebApplicationWindow(profile_for_launch, params->app_id,
+                                         params->disposition,
+                                         params->restore_id, can_resize);
   }
 
   // Navigate application window to application's |url| if necessary.

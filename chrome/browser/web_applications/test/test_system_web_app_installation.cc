@@ -314,6 +314,16 @@ TestSystemWebAppInstallation::SetUpChromeUntrustedApp(
   }
 }
 
+// static
+std::unique_ptr<TestSystemWebAppInstallation>
+TestSystemWebAppInstallation::SetUpNonResizeableApp() {
+  SystemAppInfo app_info("Test", GURL("chrome://test-system-app/pwa.html"));
+  app_info.is_resizeable = false;
+
+  return base::WrapUnique(new TestSystemWebAppInstallation(
+      SystemAppType::SAMPLE, std::move(app_info)));
+}
+
 std::unique_ptr<KeyedService>
 TestSystemWebAppInstallation::CreateWebAppProvider(SystemAppInfo info,
                                                    Profile* profile) {

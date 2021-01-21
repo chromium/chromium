@@ -104,6 +104,9 @@ struct SystemAppInfo {
   // browser tab).
   bool capture_navigations = false;
 
+  // If set to false, the app will non-resizeable.
+  bool is_resizeable = true;
+
   WebApplicationInfoFactory app_info_factory;
 };
 
@@ -186,6 +189,9 @@ class SystemWebAppManager {
 
   // Returns whether the app should be shown in search.
   bool ShouldShowInSearch(SystemAppType type) const;
+
+  // Returns whether the app should be resizeable.
+  bool IsResizeableWindow(SystemAppType type) const;
 
   // Returns the SystemAppType that should capture the navigation to |url|.
   base::Optional<SystemAppType> GetCapturingSystemAppForURL(

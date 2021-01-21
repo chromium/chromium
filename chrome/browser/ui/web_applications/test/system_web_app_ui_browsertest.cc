@@ -445,6 +445,28 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
   EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
 }
 
+class SystemWebAppManagerNonResizeableWindowTest
+    : public SystemWebAppManagerBrowserTest {
+ public:
+  SystemWebAppManagerNonResizeableWindowTest()
+      : SystemWebAppManagerBrowserTest(/*install_mock=*/false) {
+    maybe_installation_ = TestSystemWebAppInstallation::SetUpNonResizeableApp();
+  }
+  ~SystemWebAppManagerNonResizeableWindowTest() override = default;
+};
+
+IN_PROC_BROWSER_TEST_P(SystemWebAppManagerNonResizeableWindowTest,
+                       NonResizeableWindow) {
+  WaitForTestSystemAppInstall();
+
+  content::TestNavigationObserver observer(maybe_installation_->GetAppUrl());
+  observer.StartWatchingNewWebContents();
+  Browser* app_browser;
+  LaunchApp(maybe_installation_->GetType(), &app_browser);
+
+  EXPECT_FALSE(app_browser->can_resize());
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Use LoginManagerTest here instead of SystemWebAppManagerBrowserTest, because
 // it's less complicated to add SWA to LoginManagerTest than adding multi-logins
@@ -715,5 +737,8 @@ INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_INSTALL_TYPES_P(
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_GUEST_SESSION_P(
     SystemWebAppLaunchProfileGuestSessionBrowserTest);
 #endif
+
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_WEB_APP_INFO_INSTALL_P(
+    SystemWebAppManagerNonResizeableWindowTest);
 
 }  // namespace web_app
