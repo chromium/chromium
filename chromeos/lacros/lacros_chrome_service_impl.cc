@@ -102,21 +102,24 @@ class LacrosChromeServiceNeverBlockingState
     owner_sequence_->PostTask(
         FROM_HERE,
         base::BindOnce(&LacrosChromeServiceImpl::GetFeedbackDataAffineSequence,
-                       owner_, std::move(callback)));
+                       owner_, base::SequencedTaskRunnerHandle::Get(),
+                       std::move(callback)));
   }
 
   void GetHistograms(GetHistogramsCallback callback) override {
     owner_sequence_->PostTask(
         FROM_HERE,
         base::BindOnce(&LacrosChromeServiceImpl::GetHistogramsAffineSequence,
-                       owner_, std::move(callback)));
+                       owner_, base::SequencedTaskRunnerHandle::Get(),
+                       std::move(callback)));
   }
 
   void GetActiveTabUrl(GetActiveTabUrlCallback callback) override {
     owner_sequence_->PostTask(
         FROM_HERE,
         base::BindOnce(&LacrosChromeServiceImpl::GetActiveTabUrlAffineSequence,
-                       owner_, std::move(callback)));
+                       owner_, base::SequencedTaskRunnerHandle::Get(),
+                       std::move(callback)));
   }
 
   // Unlike most of other methods of this class, this is called on the
@@ -735,21 +738,28 @@ void LacrosChromeServiceImpl::NewWindowAffineSequence() {
 }
 
 void LacrosChromeServiceImpl::GetFeedbackDataAffineSequence(
+    scoped_refptr<base::TaskRunner> callback_task_runner,
     GetFeedbackDataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(affine_sequence_checker_);
-  delegate_->GetFeedbackData(std::move(callback));
+  delegate_->GetFeedbackData(std::move(callback_task_runner),
+                             std::move(callback));
 }
 
 void LacrosChromeServiceImpl::GetHistogramsAffineSequence(
+    scoped_refptr<base::TaskRunner> callback_task_runner,
     GetHistogramsCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(affine_sequence_checker_);
-  delegate_->GetHistograms(std::move(callback));
+  delegate_->GetHistograms(std::move(callback_task_runner),
+                           std::move(callback));
 }
 
 void LacrosChromeServiceImpl::GetActiveTabUrlAffineSequence(
+    scoped_refptr<base::TaskRunner> callback_task_runner,
     GetActiveTabUrlCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(affine_sequence_checker_);
-  delegate_->GetActiveTabUrl(std::move(callback));
+  GURL url = delegate_->GetActiveTabUrl();
+  callback_task_runner->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(url)));
 }
 
 base::Optional<uint32_t> LacrosChromeServiceImpl::AshChromeServiceVersion()

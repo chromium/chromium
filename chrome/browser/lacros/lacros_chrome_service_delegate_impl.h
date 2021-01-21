@@ -25,15 +25,23 @@ class LacrosChromeServiceDelegateImpl
       const crosapi::mojom::LacrosInitParams& init_params) override;
   void NewWindow() override;
   std::string GetChromeVersion() override;
-  void GetFeedbackData(GetFeedbackDataCallback callback) override;
-  void GetHistograms(GetHistogramsCallback callback) override;
-  void GetActiveTabUrl(GetActiveTabUrlCallback callback) override;
+  void GetFeedbackData(scoped_refptr<base::TaskRunner> callback_task_runner,
+                       GetFeedbackDataCallback callback) override;
+  void GetHistograms(scoped_refptr<base::TaskRunner> callback_task_runner,
+                     GetHistogramsCallback callback) override;
+  GURL GetActiveTabUrl() override;
 
  private:
   void OnSystemInformationReady(
+      scoped_refptr<base::TaskRunner> callback_task_runner,
+      GetFeedbackDataCallback callback,
       std::unique_ptr<system_logs::SystemLogsResponse> sys_info);
 
-  GetFeedbackDataCallback get_feedback_data_callback_;
+  void OnGetCompressedHistograms(
+      scoped_refptr<base::TaskRunner> callback_task_runner,
+      GetHistogramsCallback callback,
+      const std::string& compressed_histogram);
+
   base::WeakPtrFactory<LacrosChromeServiceDelegateImpl> weak_ptr_factory_{this};
 };
 

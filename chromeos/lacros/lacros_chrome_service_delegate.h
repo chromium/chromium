@@ -8,6 +8,8 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/task_runner.h"
 #include "base/values.h"
 
 class GURL;
@@ -41,16 +43,18 @@ class LacrosChromeServiceDelegate {
 
   using GetFeedbackDataCallback = base::OnceCallback<void(base::Value)>;
   // Gets lacros feedback data.
-  virtual void GetFeedbackData(GetFeedbackDataCallback callback) = 0;
+  virtual void GetFeedbackData(
+      scoped_refptr<base::TaskRunner> callback_task_runner,
+      GetFeedbackDataCallback callback) = 0;
 
-  using GetHistogramsCallback = base::OnceCallback<void(const std::string&)>;
   // Gets lacros histograms.
-  virtual void GetHistograms(GetHistogramsCallback callback) = 0;
+  using GetHistogramsCallback = base::OnceCallback<void(const std::string&)>;
+  virtual void GetHistograms(
+      scoped_refptr<base::TaskRunner> callback_task_runner,
+      GetHistogramsCallback callback) = 0;
 
-  using GetActiveTabUrlCallback =
-      base::OnceCallback<void(const base::Optional<GURL>&)>;
   // Gets Url of the active tab if there is any.
-  virtual void GetActiveTabUrl(GetActiveTabUrlCallback callback) = 0;
+  virtual GURL GetActiveTabUrl() = 0;
 };
 
 }  // namespace chromeos
