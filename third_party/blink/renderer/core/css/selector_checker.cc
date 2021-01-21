@@ -1027,7 +1027,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       return !element.GetDocument().GetPage()->GetFocusController().IsActive();
     case CSSSelector::kPseudoState: {
       return element.DidAttachInternals() &&
-             element.EnsureElementInternals().HasState(selector.Argument());
+             element.EnsureElementInternals().HasState(selector.Value());
     }
     case CSSSelector::kPseudoHorizontal:
     case CSSSelector::kPseudoVertical:

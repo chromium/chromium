@@ -628,7 +628,7 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
   selector->SetMatch(colons == 1 ? CSSSelector::kPseudoClass
                                  : CSSSelector::kPseudoElement);
 
-  AtomicString value = token.Value().ToAtomicString().LowerASCII();
+  AtomicString value = token.Value().ToAtomicString();
   bool has_arguments = token.GetType() == kFunctionToken;
   selector->UpdatePseudoType(value, *context_, has_arguments, context_->Mode());
 
@@ -734,8 +734,7 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
       selector->SetSelectorList(std::move(selector_list));
       return selector;
     }
-    case CSSSelector::kPseudoDir:
-    case CSSSelector::kPseudoState: {
+    case CSSSelector::kPseudoDir: {
       const CSSParserToken& ident = block.ConsumeIncludingWhitespace();
       if (ident.GetType() != kIdentToken || !block.AtEnd())
         return nullptr;

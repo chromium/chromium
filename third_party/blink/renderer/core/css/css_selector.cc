@@ -471,7 +471,6 @@ const static NameToPseudoStruct kPseudoTypeWithArgumentsMap[] = {
     {"nth-of-type", CSSSelector::kPseudoNthOfType},
     {"part", CSSSelector::kPseudoPart},
     {"slotted", CSSSelector::kPseudoSlotted},
-    {"state", CSSSelector::kPseudoState},
     {"where", CSSSelector::kPseudoWhere},
 };
 
@@ -516,11 +515,6 @@ static CSSSelector::PseudoType NameToPseudoType(const AtomicString& name,
   if (match->type == CSSSelector::kPseudoPictureInPicture &&
       !RuntimeEnabledFeatures::CSSPictureInPictureEnabled())
     return CSSSelector::kPseudoUnknown;
-
-  if (match->type == CSSSelector::kPseudoState &&
-      !RuntimeEnabledFeatures::CustomStatePseudoClassEnabled()) {
-    return CSSSelector::kPseudoUnknown;
-  }
 
   if (match->type == CSSSelector::kPseudoTargetText &&
       !RuntimeEnabledFeatures::CSSTargetTextPseudoElementEnabled()) {
@@ -580,6 +574,9 @@ CSSSelector::PseudoType CSSSelector::ParsePseudoType(const AtomicString& name,
     return kPseudoWebKitCustomElement;
   if (name.StartsWith("-internal-"))
     return kPseudoBlinkInternalElement;
+  if (RuntimeEnabledFeatures::CustomStatePseudoClassEnabled() &&
+      name.StartsWith("--"))
+    return kPseudoState;
 
   return kPseudoUnknown;
 }
@@ -610,8 +607,10 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
                                    bool has_arguments,
                                    CSSParserMode mode) {
   DCHECK(match_ == kPseudoClass || match_ == kPseudoElement);
-  SetValue(value);
-  SetPseudoType(ParsePseudoType(value, has_arguments));
+  AtomicString lower_value = value.LowerASCII();
+  PseudoType pseudo_type = ParsePseudoType(lower_value, has_arguments);
+  SetPseudoType(pseudo_type);
+  SetValue(pseudo_type == kPseudoState ? value : lower_value);
 
   switch (GetPseudoType()) {
     case kPseudoAfter:
@@ -813,8 +812,10 @@ const CSSSelector* CSSSelector::SerializeCompound(
       SerializeIdentifier(simple_selector->SerializingValue(), builder);
     } else if (simple_selector->match_ == kPseudoClass ||
                simple_selector->match_ == kPagePseudoClass) {
-      builder.Append(':');
-      builder.Append(simple_selector->SerializingValue());
+      if (simple_selector->GetPseudoType() != kPseudoState) {
+        builder.Append(':');
+        builder.Append(simple_selector->SerializingValue());
+      }
 
       switch (simple_selector->GetPseudoType()) {
         case kPseudoNthChild:
@@ -847,13 +848,16 @@ const CSSSelector* CSSSelector::SerializeCompound(
         }
         case kPseudoDir:
         case kPseudoLang:
-        case kPseudoState:
           builder.Append('(');
           SerializeIdentifier(simple_selector->Argument(), builder);
           builder.Append(')');
           break;
         case kPseudoNot:
           DCHECK(simple_selector->SelectorList());
+          break;
+        case kPseudoState:
+          builder.Append(':');
+          SerializeIdentifier(simple_selector->SerializingValue(), builder);
           break;
         case kPseudoHost:
         case kPseudoHostContext:
