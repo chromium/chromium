@@ -52,7 +52,7 @@ message_center::SystemNotificationWarningLevel GetWarningLevelMD(
     return message_center::SystemNotificationWarningLevel::NORMAL;
   } else if (notification_state ==
              PowerNotificationController::NOTIFICATION_LOW_POWER) {
-    return message_center::SystemNotificationWarningLevel::NORMAL;
+    return message_center::SystemNotificationWarningLevel::WARNING;
   } else if (notification_state ==
              PowerNotificationController::NOTIFICATION_CRITICAL) {
     return message_center::SystemNotificationWarningLevel::CRITICAL_WARNING;
