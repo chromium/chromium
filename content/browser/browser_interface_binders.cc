@@ -44,6 +44,7 @@
 #include "content/browser/wake_lock/wake_lock_service_impl.h"
 #include "content/browser/web_contents/file_chooser_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/browser/webid/flags.h"
 #include "content/browser/worker_host/dedicated_worker_host.h"
 #include "content/browser/worker_host/shared_worker_connector_impl.h"
 #include "content/browser/worker_host/shared_worker_host.h"
@@ -656,7 +657,7 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
                             base::Unretained(host)));
   }
 
-  if (base::FeatureList::IsEnabled(features::kWebID)) {
+  if (IsWebIDEnabled()) {
     map->Add<blink::mojom::FederatedAuthRequest>(base::BindRepeating(
         &RenderFrameHostImpl::BindFederatedAuthRequestReceiver,
         base::Unretained(host)));
