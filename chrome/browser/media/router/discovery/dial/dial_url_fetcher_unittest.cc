@@ -8,7 +8,9 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/media/router/discovery/dial/dial_url_fetcher.h"
@@ -43,8 +45,8 @@ class DialURLFetcherTest : public testing::Test {
   }
 
  protected:
-  MOCK_METHOD1(OnSuccess, void(const std::string&));
-  MOCK_METHOD2(OnError, void(int, const std::string&));
+  MOCK_METHOD(void, OnSuccess, (const std::string&));
+  MOCK_METHOD(void, OnError, (const std::string&, base::Optional<int>));
 
   base::test::TaskEnvironment environment_;
   network::TestURLLoaderFactory loader_factory_;
@@ -77,22 +79,30 @@ TEST_F(DialURLFetcherTest, FetchSuccessful) {
 }
 
 TEST_F(DialURLFetcherTest, FetchFailsOnMissingAppInfo) {
-  EXPECT_CALL(*this, OnError(404, HasSubstr("404")));
+  auto head = network::mojom::URLResponseHead::New();
+  head->headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 404 Not Found");
+  ASSERT_EQ(404, head->headers->response_code());
+
+  EXPECT_CALL(*this, OnError(HasSubstr(base::NumberToString(
+                                 net::ERR_HTTP_RESPONSE_CODE_FAILURE)),
+                             base::Optional<int>(404)));
   loader_factory_.AddResponse(
-      url_, network::mojom::URLResponseHead::New(), "",
-      network::URLLoaderCompletionStatus(net::HTTP_NOT_FOUND));
+      url_, std::move(head), "",
+      network::URLLoaderCompletionStatus(net::ERR_HTTP_RESPONSE_CODE_FAILURE),
+      {}, network::TestURLLoaderFactory::kSendHeadersOnNetworkError);
   StartGetRequest();
 }
 
 TEST_F(DialURLFetcherTest, FetchFailsOnEmptyAppInfo) {
-  EXPECT_CALL(*this, OnError(_, HasSubstr("Missing or empty response")));
+  EXPECT_CALL(*this, OnError(HasSubstr("Missing or empty response"), _));
   loader_factory_.AddResponse(url_, network::mojom::URLResponseHead::New(), "",
                               network::URLLoaderCompletionStatus());
   StartGetRequest();
 }
 
 TEST_F(DialURLFetcherTest, FetchFailsOnBadAppInfo) {
-  EXPECT_CALL(*this, OnError(_, "Invalid response encoding"));
+  EXPECT_CALL(*this, OnError("Invalid response encoding", _));
   std::string body("\xfc\x9c\xbf\x80\xbf\x80");
   network::URLLoaderCompletionStatus status;
   status.decoded_body_length = body.size();

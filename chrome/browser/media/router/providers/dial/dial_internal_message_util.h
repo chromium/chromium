@@ -139,7 +139,9 @@ class DialInternalMessageUtil final {
   mojom::RouteMessagePtr CreateDialAppInfoErrorMessage(
       DialAppInfoResultCode result_code,
       const std::string& client_id,
-      int sequence_number) const;
+      int sequence_number,
+      const std::string& error_message,
+      base::Optional<int> http_error_code = base::nullopt) const;
 
  private:
   base::Value CreateReceiver(const MediaSinkInternal& sink) const;

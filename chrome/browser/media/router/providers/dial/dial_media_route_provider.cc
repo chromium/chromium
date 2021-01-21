@@ -391,7 +391,8 @@ void DialMediaRouteProvider::SendDialAppInfoResponse(
         sequence_number, DialInternalMessageType::kDialAppInfo);
   } else {
     message = internal_message_util_.CreateDialAppInfoErrorMessage(
-        result.result_code, activity->launch_info.client_id, sequence_number);
+        result.result_code, activity->launch_info.client_id, sequence_number,
+        result.error_message, result.http_error_code);
   }
   std::vector<mojom::RouteMessagePtr> messages;
   messages.push_back(std::move(message));

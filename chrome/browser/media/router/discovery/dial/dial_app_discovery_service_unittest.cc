@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/mock_callback.h"
+#include "chrome/browser/media/router/discovery/dial/dial_url_fetcher.h"
 #include "chrome/browser/media/router/discovery/dial/parsed_dial_device_description.h"
 #include "chrome/browser/media/router/discovery/dial/safe_dial_app_info_parser.h"
 #include "chrome/browser/media/router/test/provider_test_helpers.h"
@@ -25,14 +26,12 @@ namespace {
 
 constexpr char kYouTubeName[] = "YouTube";
 
-}  // namespace
-
 class TestSafeDialAppInfoParser : public SafeDialAppInfoParser {
  public:
   TestSafeDialAppInfoParser() = default;
   ~TestSafeDialAppInfoParser() override = default;
 
-  MOCK_METHOD1(ParseInternal, void(const std::string& xml_text));
+  MOCK_METHOD(void, ParseInternal, (const std::string& xml_text));
 
   void Parse(const std::string& xml_text, ParseCallback callback) override {
     parse_callback_ = std::move(callback);
@@ -49,6 +48,8 @@ class TestSafeDialAppInfoParser : public SafeDialAppInfoParser {
  private:
   ParseCallback parse_callback_;
 };
+
+}  // namespace
 
 class DialAppDiscoveryServiceTest : public ::testing::Test {
  public:
@@ -100,9 +101,9 @@ class DialAppDiscoveryServiceTest : public ::testing::Test {
   }
 
   void OnDialAppInfoFetchError(DialAppDiscoveryService::PendingRequest* request,
-                               int response_code,
+                               base::Optional<int> response_code,
                                const std::string& error_text) {
-    request->OnDialAppInfoFetchError(response_code, error_text);
+    request->OnDialAppInfoFetchError(error_text, response_code);
   }
 
   void TearDown() override {
@@ -140,25 +141,34 @@ TEST_F(DialAppDiscoveryServiceTest,
 
   EXPECT_CALL(*this, OnAppInfoFailure(sink_id, _,
                                       DialAppInfoResultCode::kNetworkError));
-  OnDialAppInfoFetchError(request, net::HTTP_TEMPORARY_REDIRECT,
-                          "Temporary redirect");
+  OnDialAppInfoFetchError(request, base::nullopt, "Temporarily throttled");
 }
 
 TEST_F(DialAppDiscoveryServiceTest, TestFetchDialAppInfoFetchURLError) {
   MediaSinkInternal dial_sink = CreateDialSink(1);
   const MediaSink::Id& sink_id = dial_sink.sink().id();
   auto* request = AddFetchRequest(dial_sink, kYouTubeName);
-
   EXPECT_CALL(*this,
-              OnAppInfoFailure(sink_id, _, DialAppInfoResultCode::kNotFound));
+              OnAppInfoFailure(sink_id, _, DialAppInfoResultCode::kHttpError));
   OnDialAppInfoFetchError(request, net::HTTP_NOT_FOUND, "Not found");
+}
+
+TEST_F(DialAppDiscoveryServiceTest, TestFetchDialAppInfoErrorWithHttpSuccess) {
+  MediaSinkInternal dial_sink = CreateDialSink(1);
+  const MediaSink::Id& sink_id = dial_sink.sink().id();
+  auto* request = AddFetchRequest(dial_sink, kYouTubeName);
+
+  // If the HTTP response code unexpectedly is in the 200s, we treat it as a
+  // parsing error.
+  EXPECT_CALL(*this, OnAppInfoFailure(sink_id, _,
+                                      DialAppInfoResultCode::kParsingError));
+  OnDialAppInfoFetchError(request, net::HTTP_OK, "Bad encoding");
 }
 
 TEST_F(DialAppDiscoveryServiceTest, TestFetchDialAppInfoParseError) {
   MediaSinkInternal dial_sink = CreateDialSink(1);
   const MediaSink::Id& sink_id = dial_sink.sink().id();
   auto* request = AddFetchRequest(dial_sink, kYouTubeName);
-
   EXPECT_CALL(*test_parser_, ParseInternal(_))
       .WillOnce(Invoke([&](const std::string& xml_text) {
         test_parser_->InvokeParseCallback(
