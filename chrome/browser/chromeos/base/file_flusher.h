@@ -27,11 +27,11 @@ class FileFlusher {
   // |callback| is invoked when the request is finished or canceled.
   void RequestFlush(const base::FilePath& path,
                     bool recursive,
-                    const base::Closure& callback);
+                    base::OnceClosure callback);
 
   // Set a callback for every file flush for test. Note the callback is
   // called on a blocking pool thread.
-  using OnFlushCallback = base::Callback<void(const base::FilePath&)>;
+  using OnFlushCallback = base::RepeatingCallback<void(const base::FilePath&)>;
   void set_on_flush_callback_for_test(
       const OnFlushCallback& on_flush_callback) {
     on_flush_callback_for_test_ = on_flush_callback;

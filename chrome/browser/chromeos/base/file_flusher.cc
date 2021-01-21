@@ -27,7 +27,7 @@ class FileFlusher::Job {
       const base::FilePath& path,
       bool recursive,
       const FileFlusher::OnFlushCallback& on_flush_callback,
-      const base::Closure& callback);
+      base::OnceClosure callback);
   ~Job() = default;
 
   void Start();
@@ -50,7 +50,7 @@ class FileFlusher::Job {
   const base::FilePath path_;
   const bool recursive_;
   const FileFlusher::OnFlushCallback on_flush_callback_;
-  const base::Closure callback_;
+  base::OnceClosure callback_;
 
   bool started_ = false;
   base::AtomicFlag cancel_flag_;
@@ -63,12 +63,12 @@ FileFlusher::Job::Job(const base::WeakPtr<FileFlusher>& master,
                       const base::FilePath& path,
                       bool recursive,
                       const FileFlusher::OnFlushCallback& on_flush_callback,
-                      const base::Closure& callback)
+                      base::OnceClosure callback)
     : master_(master),
       path_(path),
       recursive_(recursive),
       on_flush_callback_(on_flush_callback),
-      callback_(callback) {}
+      callback_(std::move(callback)) {}
 
 void FileFlusher::Job::Start() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -135,7 +135,7 @@ void FileFlusher::Job::FinishOnUIThread() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (!callback_.is_null())
-    callback_.Run();
+    std::move(callback_).Run();
 
   if (master_)
     master_->OnJobDone(this);
@@ -155,14 +155,14 @@ FileFlusher::~FileFlusher() {
 
 void FileFlusher::RequestFlush(const base::FilePath& path,
                                bool recursive,
-                               const base::Closure& callback) {
+                               base::OnceClosure callback) {
   for (auto* job : jobs_) {
     if (path == job->path() || path.IsParent(job->path()))
       job->Cancel();
   }
 
   jobs_.push_back(new Job(weak_factory_.GetWeakPtr(), path, recursive,
-                          on_flush_callback_for_test_, callback));
+                          on_flush_callback_for_test_, std::move(callback)));
   ScheduleJob();
 }
 
