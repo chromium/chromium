@@ -71,6 +71,7 @@ copy("chrome_camera_app_preload_images_js") {
 
 copy("chrome_camera_app_js") {
   sources = [
+    "js/animation.js",
     "js/app_window.js",
     "js/async_job_queue.js",
     "js/background.js",

@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import * as animate from '../../animation.js';
 import * as dom from '../../dom.js';
 import {play} from '../../sound.js';
 import * as state from '../../state.js';
-import * as util from '../../util.js';
 
 /**
  * Handler to cancel the active running timer-ticks.
@@ -30,7 +30,7 @@ export function start() {
         clearTimeout(tickTimeout);
         tickTimeout = null;
       }
-      util.animateCancel(tickMsg);
+      animate.cancel(tickMsg);
       reject(new Error('cancel'));
     };
 
@@ -49,7 +49,7 @@ export function start() {
           play(sounds[tickCounter]);
         }
         tickMsg.textContent = tickCounter + '';
-        util.animateOnce(tickMsg);
+        animate.play(tickMsg);
         tickTimeout = setTimeout(onTimerTick, 1000);
         tickCounter--;
       }

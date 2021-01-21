@@ -1166,29 +1166,40 @@ body:not(.recording-ui-paused) #record-time [i18n-content=record_video_paused_ms
 }
 
 #banner {
+  --bottom-down: -130px;
+  --bottom-up: 31px;
   background: white;
   border-radius: 8px;
-  bottom: -130px;
+  bottom: var(--bottom-up);
   display: none;
   padding: 26px 29px;
   width: 460px;
 }
 
 #banner.animate {
-  animation: emerge 6000ms var(--enter-easing);
+  --present-duration: 5000ms;
+  --hide-delay: calc(var(--moderate2-duration) + var(--present-duration));
+  animation:
+    show-banner var(--moderate2-duration) var(--enter-easing),
+    hide-banner var(--moderate2-duration) var(--hide-delay) var(--exit-easing);
   display: block;
 }
 
-@keyframes emerge {
-  0%,
-  100% {
-    bottom: -130;
+@keyframes show-banner {
+  0% {
+    bottom: var(--bottom-down);
   }
-  8%,
-  92% {
-    /* exit-easing. We cannot use variable here (https://crbug.com/1066798) */
-    animation-timing-function: cubic-bezier(0.4, 0, 1, 1);
-    bottom: 31px;
+  100% {
+    bottom: var(--bottom-up);
+  }
+}
+
+@keyframes hide-banner {
+  0% {
+    bottom: var(--bottom-up);
+  }
+  100% {
+    bottom: var(--bottom-down);
   }
 }
 

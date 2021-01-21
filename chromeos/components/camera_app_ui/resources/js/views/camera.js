@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import * as animate from '../animation.js';
 import {browserProxy} from '../browser_proxy/browser_proxy.js';
 import {
   assert,
@@ -246,7 +247,7 @@ export class Camera extends View {
 
     dom.get('#banner-close', HTMLButtonElement)
         .addEventListener('click', () => {
-          util.animateCancel(this.banner_);
+          animate.cancel(this.banner_);
         });
 
     // Monitor the states to stop camera when locked/minimized.
@@ -356,10 +357,9 @@ export class Camera extends View {
       await this.configuring_;
       if (!values['isFolderChangeMsgShown']) {
         browserProxy.localStorageSet({isFolderChangeMsgShown: true});
-        util.animateOnce(this.banner_, focusOnShutterButton);
-      } else {
-        focusOnShutterButton();
+        await animate.play(this.banner_);
       }
+      focusOnShutterButton();
     })();
   }
 
@@ -450,7 +450,7 @@ export class Camera extends View {
    */
   playShutterEffect() {
     sound.play('#sound-shutter');
-    util.animateOnce(this.preview_.video);
+    animate.play(this.preview_.video);
   }
 
   /**

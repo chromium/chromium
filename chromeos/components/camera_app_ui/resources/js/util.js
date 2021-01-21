@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import * as animate from './animation.js';
 import {browserProxy} from './browser_proxy/browser_proxy.js';
 import {assertInstanceof} from './chrome_util.js';
 import * as dom from './dom.js';
@@ -30,69 +31,6 @@ export function newDrawingCanvas({width, height}) {
   const ctx =
       assertInstanceof(canvas.getContext('2d'), CanvasRenderingContext2D);
   return {canvas, ctx};
-}
-
-/**
- * Cancels animating the element by removing 'animate' class.
- * @param {!HTMLElement} element Element for canceling animation.
- * @return {!Promise} Promise resolved when ongoing animation is canceled and
- *     next animation can be safely applied.
- */
-export function animateCancel(element) {
-  element.classList.remove('animate');
-  element.classList.add('cancel-animate');
-  /** @suppress {suspiciousCode} */
-  element.offsetWidth;  // Force calculation to re-apply animation.
-  element.classList.remove('cancel-animate');
-  // Assumes transitioncancel, transitionend, animationend events from previous
-  // animation are all cleared after requestAnimationFrame().
-  return new Promise((r) => requestAnimationFrame(r));
-}
-
-/**
- * Waits for animation completed.
- * @param {!HTMLElement} element Element to be animated.
- * @return {!Promise} Promise is resolved when animation is completed or
- *     cancelled.
- */
-function waitAnimationCompleted(element) {
-  return new Promise((resolve) => {
-    let animationCount = 0;
-    const onStart = (event) =>
-        void (event.target === element && animationCount++);
-    const onFinished = (event, callback) => {
-      if (event.target !== element || --animationCount !== 0) {
-        return;
-      }
-      events.forEach(([e, fn]) => element.removeEventListener(e, fn));
-      callback();
-    };
-    const events = [
-      ['transitionrun', onStart], ['animationstart', onStart],
-      ['transitionend', (event) => onFinished(event, resolve)],
-      ['animationend', (event) => onFinished(event, resolve)],
-      ['transitioncancel', (event) => onFinished(event, resolve)],
-      // animationcancel is not implemented on chrome.
-    ];
-    events.forEach(([e, fn]) => element.addEventListener(e, fn));
-  });
-}
-
-/**
- * Animates the element once by applying 'animate' class.
- * @param {!HTMLElement} element Element to be animated.
- * @param {function()=} callback Callback called on completion.
- */
-export function animateOnce(element, callback) {
-  animateCancel(element).then(() => {
-    element.classList.add('animate');
-    waitAnimationCompleted(element).finally(() => {
-      element.classList.remove('animate');
-      if (callback) {
-        callback();
-      }
-    });
-  });
 }
 
 /**
@@ -346,7 +284,7 @@ export function setInkdropEffect(el) {
     el.style.setProperty('--drop-x', `${dropX}px`);
     el.style.setProperty('--drop-y', `${dropY}px`);
     el.style.setProperty('--drop-radius', `${radius}px`);
-    animateOnce(el);
+    animate.play(el);
   });
 }
 

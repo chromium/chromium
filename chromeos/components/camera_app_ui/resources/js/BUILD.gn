@@ -51,6 +51,7 @@ js_library("preload_images") {
 
 js_library("compile_resources") {
   sources = [
+    "animation.js",
     "app_window.js",
     "async_job_queue.js",
     "background.js",

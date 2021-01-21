@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import * as animate from './animation.js';
 import {browserProxy} from './browser_proxy/browser_proxy.js';
 import * as dom from './dom.js';
-import * as util from './util.js';
 
 /**
  * Shows a snackbar message.
@@ -16,5 +16,5 @@ export function show(label, ...substitutions) {
   const el = dom.get('.snackbar', HTMLElement);
   el.textContent = '';  // Force reiterate the same message for a11y.
   el.textContent = message;
-  util.animateOnce(el);
+  animate.play(el);
 }

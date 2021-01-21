@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import * as animate from '../../animation.js';
 import {browserProxy} from '../../browser_proxy/browser_proxy.js';
 // eslint-disable-next-line no-unused-vars
 import {Camera3DeviceInfo} from '../../device/camera3_device_info.js';
@@ -151,7 +152,7 @@ export class Options {
     }
     state.set(PerfEvent.CAMERA_SWITCHING, true);
     const devices = await this.infoUpdater_.getDevicesInfo();
-    util.animateOnce(dom.get('#switch-device', HTMLElement));
+    animate.play(dom.get('#switch-device', HTMLElement));
     let index =
         devices.findIndex((entry) => entry.deviceId === this.videoDeviceId_);
     if (index === -1) {
