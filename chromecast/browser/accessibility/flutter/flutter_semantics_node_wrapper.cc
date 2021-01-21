@@ -171,7 +171,9 @@ void FlutterSemanticsNodeWrapper::PopulateAXRole(
     return;
   }
 
-  if (node_ptr_->scroll_children() > 0) {
+  std::vector<FlutterSemanticsNodeWrapper*> actionable_children;
+  GetActionableChildren(&actionable_children);
+  if (node_ptr_->scroll_children() > 0 && actionable_children.size() > 0) {
     out_data->role = ax::mojom::Role::kList;
     return;
   }
