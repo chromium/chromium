@@ -114,7 +114,7 @@ TEST_F(ExternalConstantsBuilderTests, TestClearedEverything) {
                   .SetUpdateURL(std::vector<std::string>{
                       "https://www.google.com", "https://www.example.com"})
                   .SetUseCUP(false)
-                  .SetInitialDelay(123)
+                  .SetInitialDelay(123.4)
                   .ClearUpdateURL()
                   .ClearUseCUP()
                   .ClearInitialDelay()
@@ -137,10 +137,10 @@ TEST_F(ExternalConstantsBuilderTests, TestOverSet) {
       ExternalConstantsBuilder()
           .SetUpdateURL(std::vector<std::string>{"https://www.google.com"})
           .SetUseCUP(true)
-          .SetInitialDelay(123)
+          .SetInitialDelay(123.4)
           .SetUpdateURL(std::vector<std::string>{"https://www.example.com"})
           .SetUseCUP(false)
-          .SetInitialDelay(937)
+          .SetInitialDelay(937.6)
           .Overwrite());
 
   // Only the second set of values should be observed.
@@ -153,7 +153,7 @@ TEST_F(ExternalConstantsBuilderTests, TestOverSet) {
   ASSERT_EQ(urls.size(), 1ul);
   EXPECT_EQ(urls[0], GURL("https://www.example.com"));
 
-  EXPECT_EQ(verifier->InitialDelay(), 937);
+  EXPECT_EQ(verifier->InitialDelay(), 937.6);
 }
 
 TEST_F(ExternalConstantsBuilderTests, TestReuseBuilder) {
@@ -161,7 +161,7 @@ TEST_F(ExternalConstantsBuilderTests, TestReuseBuilder) {
   EXPECT_TRUE(
       builder.SetUpdateURL(std::vector<std::string>{"https://www.google.com"})
           .SetUseCUP(false)
-          .SetInitialDelay(123)
+          .SetInitialDelay(123.4)
           .SetUpdateURL(std::vector<std::string>{"https://www.example.com"})
           .Overwrite());
 
@@ -175,10 +175,10 @@ TEST_F(ExternalConstantsBuilderTests, TestReuseBuilder) {
   ASSERT_EQ(urls.size(), 1ul);
   EXPECT_EQ(urls[0], GURL("https://www.example.com"));
 
-  EXPECT_EQ(verifier->InitialDelay(), 123);
+  EXPECT_EQ(verifier->InitialDelay(), 123.4);
 
   // But now we can use the builder again:
-  EXPECT_TRUE(builder.SetInitialDelay(92).ClearUpdateURL().Overwrite());
+  EXPECT_TRUE(builder.SetInitialDelay(92.3).ClearUpdateURL().Overwrite());
 
   // We need a new overrider to verify because it only loads once.
   std::unique_ptr<ExternalConstantsOverrider> verifier2 =
@@ -191,7 +191,8 @@ TEST_F(ExternalConstantsBuilderTests, TestReuseBuilder) {
   ASSERT_EQ(urls2.size(), 1ul);
   EXPECT_EQ(urls2[0], GURL(UPDATE_CHECK_URL));  // Cleared; should be default.
 
-  EXPECT_EQ(verifier2->InitialDelay(), 92);  // Updated; update should be seen.
+  EXPECT_EQ(verifier2->InitialDelay(),
+            92.3);  // Updated; update should be seen.
 }
 
 }  // namespace updater

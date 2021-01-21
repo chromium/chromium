@@ -179,7 +179,7 @@ void CheckForUpdatesTask::MaybeCheckForUpdates() {
               base::BindOnce(&CheckForUpdatesTask::MaybeCheckForUpdatesDone,
                              this),
               config_)),
-      base::TimeDelta::FromSeconds(config_->InitialDelay()));
+      base::TimeDelta::FromSecondsD(config_->InitialDelay()));
 }
 
 void CheckForUpdatesTask::MaybeCheckForUpdatesDone() {

@@ -47,8 +47,8 @@ ExternalConstantsBuilder& ExternalConstantsBuilder::ClearUseCUP() {
 }
 
 ExternalConstantsBuilder& ExternalConstantsBuilder::SetInitialDelay(
-    int initial_delay) {
-  overrides_.SetIntKey(kDevOverrideKeyInitialDelay, initial_delay);
+    double initial_delay) {
+  overrides_.SetDoubleKey(kDevOverrideKeyInitialDelay, initial_delay);
   return *this;
 }
 

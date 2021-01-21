@@ -103,7 +103,7 @@ void EnterTestMode(const GURL& url) {
   ASSERT_TRUE(ExternalConstantsBuilder()
                   .SetUpdateURL(std::vector<std::string>{url.spec()})
                   .SetUseCUP(false)
-                  .SetInitialDelay(0)
+                  .SetInitialDelay(0.1)
                   .Overwrite());
 }
 

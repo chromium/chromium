@@ -92,10 +92,10 @@ double ExternalConstantsOverrider::InitialDelay() const {
 
   const base::Value& initial_delay_value =
       override_values_.at(kDevOverrideKeyInitialDelay);
-  CHECK(initial_delay_value.is_int())
+  CHECK(initial_delay_value.is_double())
       << "Unexpected type of override[" << kDevOverrideKeyInitialDelay
       << "]: " << base::Value::GetTypeName(initial_delay_value.type());
-  return initial_delay_value.GetInt();
+  return initial_delay_value.GetDouble();
 }
 
 // static

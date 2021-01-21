@@ -209,7 +209,7 @@ constexpr int kUninstallPingReasonUserNotAnOwner = 1;
 // The file downloaded to a temporary location could not be moved.
 constexpr int kErrorFailedToMoveDownloadedFile = 5;
 
-constexpr int kInitialDelay = 60;
+constexpr double kInitialDelay = 60;
 
 }  // namespace updater
 

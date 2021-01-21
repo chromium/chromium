@@ -35,7 +35,7 @@ class ExternalConstantsBuilder {
   ExternalConstantsBuilder& SetUseCUP(bool use_cup);
   ExternalConstantsBuilder& ClearUseCUP();
 
-  ExternalConstantsBuilder& SetInitialDelay(int initial_delay);
+  ExternalConstantsBuilder& SetInitialDelay(double initial_delay);
   ExternalConstantsBuilder& ClearInitialDelay();
 
   // Write the external constants overrides file in the default location

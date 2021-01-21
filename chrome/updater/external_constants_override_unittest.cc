@@ -39,7 +39,7 @@ TEST_F(ExternalConstantsOverriderTest, TestFullOverrides) {
   url_list.push_back(base::Value("https://www.google.com"));
   overrides[kDevOverrideKeyUseCUP] = base::Value(false);
   overrides[kDevOverrideKeyUrl] = base::Value(std::move(url_list));
-  overrides[kDevOverrideKeyInitialDelay] = base::Value(137);
+  overrides[kDevOverrideKeyInitialDelay] = base::Value(137.1);
   ExternalConstantsOverrider overrider(
       std::move(overrides), CreateDefaultExternalConstantsForTesting());
 
@@ -52,7 +52,7 @@ TEST_F(ExternalConstantsOverriderTest, TestFullOverrides) {
   EXPECT_EQ(urls[1], GURL("https://www.google.com"));
   EXPECT_TRUE(urls[1].is_valid());
 
-  EXPECT_EQ(overrider.InitialDelay(), 137);
+  EXPECT_EQ(overrider.InitialDelay(), 137.1);
 }
 
 TEST_F(ExternalConstantsOverriderTest, TestOverrideUnwrappedURL) {
