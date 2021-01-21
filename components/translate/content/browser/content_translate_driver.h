@@ -95,8 +95,6 @@ class ContentTranslateDriver : public TranslateDriver,
   void OpenUrlInNewTab(const GURL& url) override;
 
   // content::WebContentsObserver implementation.
-  void NavigationEntryCommitted(
-      const content::LoadCommittedDetails& load_details) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
@@ -130,6 +128,9 @@ class ContentTranslateDriver : public TranslateDriver,
 
  private:
   void OnPageAway(int page_seq_no);
+
+  void InitiateTranslationIfReload(
+      content::NavigationHandle* navigation_handle);
 
   // The navigation controller of the tab we are associated with.
   content::NavigationController* navigation_controller_;

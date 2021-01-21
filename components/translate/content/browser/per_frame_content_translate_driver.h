@@ -52,8 +52,6 @@ class PerFrameContentTranslateDriver : public ContentTranslateDriver {
   void RevertTranslation(int page_seq_no) override;
 
   // content::WebContentsObserver implementation.
-  void NavigationEntryCommitted(
-      const content::LoadCommittedDetails& load_details) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
   void DOMContentLoaded(content::RenderFrameHost* render_frame_host) override;
@@ -83,6 +81,9 @@ class PerFrameContentTranslateDriver : public ContentTranslateDriver {
   };
 
   void StartLanguageDetection();
+
+  void InitiateTranslationIfReload(
+      content::NavigationHandle* navigation_handle);
 
   void TranslateFrame(const std::string& translate_script,
                       const std::string& source_lang,

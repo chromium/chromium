@@ -180,29 +180,22 @@ void ContentTranslateDriver::OpenUrlInNewTab(const GURL& url) {
   navigation_controller_->GetWebContents()->OpenURL(params);
 }
 
-// content::WebContentsObserver methods
-
-void ContentTranslateDriver::NavigationEntryCommitted(
-    const content::LoadCommittedDetails& load_details) {
+void ContentTranslateDriver::InitiateTranslationIfReload(
+    content::NavigationHandle* navigation_handle) {
   // Check whether this is a reload: When doing a page reload, the
   // TranslateLanguageDetermined IPC is not sent so the translation needs to be
   // explicitly initiated.
 
-  content::NavigationEntry* entry =
-      web_contents()->GetController().GetLastCommittedEntry();
-  if (!entry) {
-    NOTREACHED();
-    return;
-  }
-
   // If the navigation happened while offline don't show the translate
   // bar since there will be nothing to translate.
-  if (load_details.http_status_code == 0 ||
-      load_details.http_status_code == net::HTTP_INTERNAL_SERVER_ERROR) {
+  int response_code =
+      navigation_handle->GetResponseHeaders()
+          ? navigation_handle->GetResponseHeaders()->response_code()
+          : 0;
+  if (response_code == 0 || response_code == net::HTTP_INTERNAL_SERVER_ERROR)
     return;
-  }
 
-  if (!load_details.is_main_frame &&
+  if (!navigation_handle->IsInMainFrame() &&
       translate_manager_->GetLanguageState()->translation_declined()) {
     // Some sites (such as Google map) may trigger sub-frame navigations
     // when the user interacts with the page.  We don't want to show a new
@@ -211,13 +204,11 @@ void ContentTranslateDriver::NavigationEntryCommitted(
   }
 
   // If not a reload, return.
-  if (!ui::PageTransitionCoreTypeIs(entry->GetTransitionType(),
-                                    ui::PAGE_TRANSITION_RELOAD) &&
-      load_details.type != content::NAVIGATION_TYPE_SAME_ENTRY) {
+  if (navigation_handle->GetReloadType() == content::ReloadType::NONE)
     return;
-  }
 
-  if (entry->GetTransitionType() & ui::PAGE_TRANSITION_FORWARD_BACK) {
+  if (navigation_handle->GetPageTransition() &
+      ui::PAGE_TRANSITION_FORWARD_BACK) {
     // Workaround for http://crbug.com/653051: back navigation sometimes have
     // the reload core type. Once http://crbug.com/669008 got resolved, we
     // could revisit here for a thorough solution.
@@ -245,10 +236,13 @@ void ContentTranslateDriver::NavigationEntryCommitted(
           translate_manager_->GetLanguageState()->original_language(), 0));
 }
 
+// content::WebContentsObserver methods
 void ContentTranslateDriver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!navigation_handle->HasCommitted())
     return;
+
+  InitiateTranslationIfReload(navigation_handle);
 
   if (navigation_handle->IsInMainFrame())
     finish_navigation_time_ = base::TimeTicks::Now();
