@@ -85,9 +85,13 @@ class PdfViewPluginBase : public PDFEngine::Client,
                        std::vector<PaintReadyRect>* ready,
                        std::vector<gfx::Rect>* pending) = 0;
 
-  // Called whenever the plugin geometry changes to update the location of the
-  // background parts, and notifies the pdf engine.
+  // Updates the available area and the background parts, notifies the PDF
+  // engine, and updates the accessibility information.
   virtual void OnGeometryChanged(double old_zoom, float old_device_scale) = 0;
+
+  // A helper of OnGeometryChanged() which updates the available area and
+  // the background parts, and notifies the PDF engine of geometry changes.
+  void RecalculateAreas(double old_zoom, float old_device_scale);
 
   // Figures out the location of any background rectangles (i.e. those that
   // aren't painted by the PDF engine).
@@ -103,11 +107,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   }
 
   const gfx::Rect& available_area() const { return available_area_; }
-
-  // TODO(https://crbug.com/1140629): Remove mutable_available_area()
-  // once all uses of it in OnGeometryChanged() are migrated to
-  // PdfViewPluginBase.
-  gfx::Rect& mutable_available_area() { return available_area_; }
 
   const gfx::Size& document_size() const { return document_size_; }
   void set_document_size(const gfx::Size& size) { document_size_ = size; }

@@ -2214,29 +2214,7 @@ void OutOfProcessInstance::ResetRecentlySentFindUpdate(int32_t /* unused */) {
 
 void OutOfProcessInstance::OnGeometryChanged(double old_zoom,
                                              float old_device_scale) {
-  if (zoom() != old_zoom || device_scale() != old_device_scale)
-    engine()->ZoomUpdated(zoom() * device_scale());
-
-  mutable_available_area() = gfx::Rect(plugin_size());
-  int doc_width = GetDocumentPixelWidth();
-  if (doc_width < available_area().width()) {
-    mutable_available_area().Offset((available_area().width() - doc_width) / 2,
-                                    0);
-    mutable_available_area().set_width(doc_width);
-  }
-  int bottom_of_document =
-      GetDocumentPixelHeight() +
-      (top_toolbar_height_in_viewport_coords() * device_scale());
-  if (bottom_of_document < available_area().height())
-    mutable_available_area().set_height(bottom_of_document);
-
-  CalculateBackgroundParts();
-  engine()->PageOffsetUpdated(available_area().OffsetFromOrigin());
-  engine()->PluginSizeUpdated(available_area().size());
-
-  if (document_size().IsEmpty())
-    return;
-  paint_manager().InvalidateRect(gfx::Rect(plugin_size()));
+  RecalculateAreas(old_zoom, old_device_scale);
 
   if (accessibility_state_ == ACCESSIBILITY_STATE_LOADED)
     SendAccessibilityViewportInfo();

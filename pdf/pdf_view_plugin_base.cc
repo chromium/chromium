@@ -62,6 +62,37 @@ void PdfViewPluginBase::LoadUrl(const std::string& url, bool is_print_preview) {
                      GetWeakPtr(), std::move(loader)));
 }
 
+void PdfViewPluginBase::RecalculateAreas(double old_zoom,
+                                         float old_device_scale) {
+  if (zoom_ != old_zoom || device_scale_ != old_device_scale)
+    engine()->ZoomUpdated(zoom_ * device_scale_);
+
+  available_area_ = gfx::Rect(plugin_size_);
+  int doc_width = GetDocumentPixelWidth();
+  if (doc_width < available_area_.width()) {
+    // Center the document horizontally inside the plugin rectangle.
+    available_area_.Offset((plugin_size_.width() - doc_width) / 2, 0);
+    available_area_.set_width(doc_width);
+  }
+
+  // The distance between top of the plugin and the bottom of the document in
+  // pixels.
+  int bottom_of_document =
+      GetDocumentPixelHeight() +
+      (top_toolbar_height_in_viewport_coords() * device_scale());
+  if (bottom_of_document < plugin_size_.height())
+    available_area_.set_height(bottom_of_document);
+
+  CalculateBackgroundParts();
+
+  engine()->PageOffsetUpdated(available_area_.OffsetFromOrigin());
+  engine()->PluginSizeUpdated(available_area_.size());
+
+  if (document_size_.IsEmpty())
+    return;
+  paint_manager().InvalidateRect(gfx::Rect(plugin_size_));
+}
+
 void PdfViewPluginBase::CalculateBackgroundParts() {
   background_parts_.clear();
   int left_width = available_area_.x();

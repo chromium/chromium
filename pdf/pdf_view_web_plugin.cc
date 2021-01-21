@@ -397,9 +397,12 @@ void PdfViewWebPlugin::DoPaint(const std::vector<gfx::Rect>& paint_rects,
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
-// TODO(https://crbug.com/1099020): To be implemented as a Pepper-free version
-// of `OutOfProcessInstance::OnGeometryChanged()`
 void PdfViewWebPlugin::OnGeometryChanged(double old_zoom,
-                                         float old_device_scale) {}
+                                         float old_device_scale) {
+  RecalculateAreas(old_zoom, old_device_scale);
+
+  // TODO(https://crbug.com/1144444): Add a Pepper-free implementation to update
+  // accessibility information in the viewport.
+}
 
 }  // namespace chrome_pdf
