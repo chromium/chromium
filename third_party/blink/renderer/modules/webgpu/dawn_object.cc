@@ -82,6 +82,10 @@ DawnObjectImpl::DawnObjectImpl(GPUDevice* device)
 
 DawnObjectImpl::~DawnObjectImpl() = default;
 
+WGPUDevice DawnObjectImpl::GetDeviceHandle() {
+  return device_->GetHandle();
+}
+
 void DawnObjectImpl::Trace(Visitor* visitor) const {
   visitor->Trace(device_);
   ScriptWrappable::Trace(visitor);

@@ -77,8 +77,4 @@ GPUBindGroup* GPUBindGroup::Create(GPUDevice* device,
 GPUBindGroup::GPUBindGroup(GPUDevice* device, WGPUBindGroup bind_group)
     : DawnObject<WGPUBindGroup>(device, bind_group) {}
 
-GPUBindGroup::~GPUBindGroup() {
-  GetProcs().bindGroupRelease(GetHandle());
-}
-
 }  // namespace blink

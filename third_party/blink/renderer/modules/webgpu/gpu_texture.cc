@@ -95,10 +95,6 @@ GPUTexture::GPUTexture(GPUDevice* device,
                        WGPUTextureFormat format)
     : DawnObject<WGPUTexture>(device, texture), format_(format) {}
 
-GPUTexture::~GPUTexture() {
-  GetProcs().textureRelease(GetHandle());
-}
-
 GPUTextureView* GPUTexture::createView(
     const GPUTextureViewDescriptor* webgpu_desc) {
   DCHECK(webgpu_desc);

@@ -12,8 +12,4 @@ GPURenderBundle::GPURenderBundle(GPUDevice* device,
                                  WGPURenderBundle render_bundle)
     : DawnObject<WGPURenderBundle>(device, render_bundle) {}
 
-GPURenderBundle::~GPURenderBundle() {
-  GetProcs().renderBundleRelease(GetHandle());
-}
-
 }  // namespace blink

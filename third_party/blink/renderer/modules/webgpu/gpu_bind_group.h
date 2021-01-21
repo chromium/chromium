@@ -20,7 +20,6 @@ class GPUBindGroup : public DawnObject<WGPUBindGroup> {
                               const GPUBindGroupDescriptor* webgpu_desc,
                               ExceptionState& exception_state);
   explicit GPUBindGroup(GPUDevice* device, WGPUBindGroup bind_group);
-  ~GPUBindGroup() override;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(GPUBindGroup);

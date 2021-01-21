@@ -290,10 +290,6 @@ GPURenderPipeline::GPURenderPipeline(GPUDevice* device,
                                      WGPURenderPipeline render_pipeline)
     : DawnObject<WGPURenderPipeline>(device, render_pipeline) {}
 
-GPURenderPipeline::~GPURenderPipeline() {
-  GetProcs().renderPipelineRelease(GetHandle());
-}
-
 GPUBindGroupLayout* GPURenderPipeline::getBindGroupLayout(uint32_t index) {
   return MakeGarbageCollected<GPUBindGroupLayout>(
       device_, GetProcs().renderPipelineGetBindGroupLayout(GetHandle(), index));

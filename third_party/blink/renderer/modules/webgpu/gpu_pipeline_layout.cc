@@ -44,8 +44,4 @@ GPUPipelineLayout::GPUPipelineLayout(GPUDevice* device,
                                      WGPUPipelineLayout pipeline_layout)
     : DawnObject<WGPUPipelineLayout>(device, pipeline_layout) {}
 
-GPUPipelineLayout::~GPUPipelineLayout() {
-  GetProcs().pipelineLayoutRelease(GetHandle());
-}
-
 }  // namespace blink

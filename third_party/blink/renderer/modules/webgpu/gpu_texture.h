@@ -24,7 +24,6 @@ class GPUTexture : public DawnObject<WGPUTexture> {
   explicit GPUTexture(GPUDevice* device,
                       WGPUTexture texture,
                       WGPUTextureFormat format);
-  ~GPUTexture() override;
 
   // gpu_texture.idl
   GPUTextureView* createView(const GPUTextureViewDescriptor* webgpu_desc);

@@ -33,7 +33,6 @@ class GPUCommandEncoder : public DawnObject<WGPUCommandEncoder> {
       const GPUCommandEncoderDescriptor* webgpu_desc);
   explicit GPUCommandEncoder(GPUDevice* device,
                              WGPUCommandEncoder command_encoder);
-  ~GPUCommandEncoder() override;
 
   // gpu_command_encoder.idl
   GPURenderPassEncoder* beginRenderPass(

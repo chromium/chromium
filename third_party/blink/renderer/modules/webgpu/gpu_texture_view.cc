@@ -11,8 +11,4 @@ namespace blink {
 GPUTextureView::GPUTextureView(GPUDevice* device, WGPUTextureView texture_view)
     : DawnObject<WGPUTextureView>(device, texture_view) {}
 
-GPUTextureView::~GPUTextureView() {
-  GetProcs().textureViewRelease(GetHandle());
-}
-
 }  // namespace blink

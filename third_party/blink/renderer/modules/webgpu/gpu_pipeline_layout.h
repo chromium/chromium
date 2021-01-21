@@ -20,7 +20,6 @@ class GPUPipelineLayout : public DawnObject<WGPUPipelineLayout> {
       const GPUPipelineLayoutDescriptor* webgpu_desc);
   explicit GPUPipelineLayout(GPUDevice* device,
                              WGPUPipelineLayout pipeline_layout);
-  ~GPUPipelineLayout() override;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(GPUPipelineLayout);

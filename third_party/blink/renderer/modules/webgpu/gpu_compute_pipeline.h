@@ -27,7 +27,6 @@ class GPUComputePipeline : public DawnObject<WGPUComputePipeline> {
       const GPUComputePipelineDescriptor* webgpu_desc);
   explicit GPUComputePipeline(GPUDevice* device,
                               WGPUComputePipeline compute_pipeline);
-  ~GPUComputePipeline() override;
 
   GPUBindGroupLayout* getBindGroupLayout(uint32_t index);
 

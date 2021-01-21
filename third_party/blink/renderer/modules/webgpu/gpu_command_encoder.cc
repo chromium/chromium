@@ -165,10 +165,6 @@ GPUCommandEncoder::GPUCommandEncoder(GPUDevice* device,
                                      WGPUCommandEncoder command_encoder)
     : DawnObject<WGPUCommandEncoder>(device, command_encoder) {}
 
-GPUCommandEncoder::~GPUCommandEncoder() {
-  GetProcs().commandEncoderRelease(GetHandle());
-}
-
 GPURenderPassEncoder* GPUCommandEncoder::beginRenderPass(
     const GPURenderPassDescriptor* descriptor,
     ExceptionState& exception_state) {

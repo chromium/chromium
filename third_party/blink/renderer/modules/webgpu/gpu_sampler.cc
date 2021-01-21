@@ -60,8 +60,4 @@ GPUSampler* GPUSampler::Create(GPUDevice* device,
 GPUSampler::GPUSampler(GPUDevice* device, WGPUSampler sampler)
     : DawnObject<WGPUSampler>(device, sampler) {}
 
-GPUSampler::~GPUSampler() {
-  GetProcs().samplerRelease(GetHandle());
-}
-
 }  // namespace blink

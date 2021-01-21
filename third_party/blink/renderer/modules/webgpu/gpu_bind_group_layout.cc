@@ -134,8 +134,4 @@ GPUBindGroupLayout::GPUBindGroupLayout(GPUDevice* device,
                                        WGPUBindGroupLayout bind_group_layout)
     : DawnObject<WGPUBindGroupLayout>(device, bind_group_layout) {}
 
-GPUBindGroupLayout::~GPUBindGroupLayout() {
-  GetProcs().bindGroupLayoutRelease(GetHandle());
-}
-
 }  // namespace blink

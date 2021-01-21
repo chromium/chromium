@@ -132,11 +132,6 @@ GPUQueue::GPUQueue(GPUDevice* device, WGPUQueue queue)
       GetDawnControlClient(), GetDeviceClientID()));
 }
 
-GPUQueue::~GPUQueue() {
-  produce_dawn_texture_handler_ = nullptr;
-  GetProcs().queueRelease(GetHandle());
-}
-
 void GPUQueue::submit(const HeapVector<Member<GPUCommandBuffer>>& buffers) {
   std::unique_ptr<WGPUCommandBuffer[]> commandBuffers = AsDawnType(buffers);
 

@@ -27,7 +27,6 @@ class GPUBuffer : public DawnObject<WGPUBuffer> {
   explicit GPUBuffer(GPUDevice* device,
                      uint64_t size,
                      WGPUBuffer buffer);
-  ~GPUBuffer() override;
 
   void Trace(Visitor* visitor) const override;
 

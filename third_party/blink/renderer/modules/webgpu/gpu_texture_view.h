@@ -14,7 +14,6 @@ class GPUTextureView : public DawnObject<WGPUTextureView> {
 
  public:
   explicit GPUTextureView(GPUDevice* device, WGPUTextureView texture_view);
-  ~GPUTextureView() override;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(GPUTextureView);

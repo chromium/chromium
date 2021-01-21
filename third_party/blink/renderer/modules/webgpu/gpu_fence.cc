@@ -17,10 +17,6 @@ namespace blink {
 GPUFence::GPUFence(GPUDevice* device, WGPUFence fence)
     : DawnObject<WGPUFence>(device, fence) {}
 
-GPUFence::~GPUFence() {
-  GetProcs().fenceRelease(GetHandle());
-}
-
 uint64_t GPUFence::getCompletedValue() const {
   return GetProcs().fenceGetCompletedValue(GetHandle());
 }

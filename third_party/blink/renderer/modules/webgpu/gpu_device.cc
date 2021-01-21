@@ -84,11 +84,6 @@ GPUDevice::GPUDevice(ExecutionContext* execution_context,
                                          lost_callback_->AsUserdata());
 }
 
-GPUDevice::~GPUDevice() {
-  queue_ = nullptr;
-  GetProcs().deviceRelease(GetHandle());
-}
-
 void GPUDevice::InjectError(WGPUErrorType type, const char* message) {
   GetProcs().deviceInjectError(GetHandle(), type, message);
 }

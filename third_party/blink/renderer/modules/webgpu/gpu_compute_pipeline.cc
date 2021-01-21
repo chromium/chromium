@@ -58,10 +58,6 @@ GPUComputePipeline::GPUComputePipeline(GPUDevice* device,
                                        WGPUComputePipeline compute_pipeline)
     : DawnObject<WGPUComputePipeline>(device, compute_pipeline) {}
 
-GPUComputePipeline::~GPUComputePipeline() {
-  GetProcs().computePipelineRelease(GetHandle());
-}
-
 GPUBindGroupLayout* GPUComputePipeline::getBindGroupLayout(uint32_t index) {
   return MakeGarbageCollected<GPUBindGroupLayout>(
       device_,

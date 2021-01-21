@@ -16,7 +16,6 @@ class GPURenderBundle : public DawnObject<WGPURenderBundle> {
 
  public:
   explicit GPURenderBundle(GPUDevice* device, WGPURenderBundle render_bundle);
-  ~GPURenderBundle() override;
 
   DISALLOW_COPY_AND_ASSIGN(GPURenderBundle);
 };

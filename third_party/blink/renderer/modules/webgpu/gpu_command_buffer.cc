@@ -12,8 +12,4 @@ GPUCommandBuffer::GPUCommandBuffer(GPUDevice* device,
                                    WGPUCommandBuffer command_buffer)
     : DawnObject<WGPUCommandBuffer>(device, command_buffer) {}
 
-GPUCommandBuffer::~GPUCommandBuffer() {
-  GetProcs().commandBufferRelease(GetHandle());
-}
-
 }  // namespace blink

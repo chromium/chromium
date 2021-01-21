@@ -56,7 +56,6 @@ class GPURenderPipeline : public DawnObject<WGPURenderPipeline> {
       const GPURenderPipelineDescriptor* webgpu_desc);
   explicit GPURenderPipeline(GPUDevice* device,
                              WGPURenderPipeline render_pipeline);
-  ~GPURenderPipeline() override;
 
   GPUBindGroupLayout* getBindGroupLayout(uint32_t index);
 

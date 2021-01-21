@@ -64,8 +64,4 @@ GPUShaderModule::GPUShaderModule(GPUDevice* device,
                                  WGPUShaderModule shader_module)
     : DawnObject<WGPUShaderModule>(device, shader_module) {}
 
-GPUShaderModule::~GPUShaderModule() {
-  GetProcs().shaderModuleRelease(GetHandle());
-}
-
 }  // namespace blink

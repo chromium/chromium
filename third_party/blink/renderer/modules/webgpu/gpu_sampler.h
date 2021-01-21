@@ -18,7 +18,6 @@ class GPUSampler : public DawnObject<WGPUSampler> {
   static GPUSampler* Create(GPUDevice* device,
                             const GPUSamplerDescriptor* webgpu_desc);
   explicit GPUSampler(GPUDevice* device, WGPUSampler sampler);
-  ~GPUSampler() override;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(GPUSampler);

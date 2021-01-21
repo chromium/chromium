@@ -28,7 +28,6 @@ class GPUQueue : public DawnObject<WGPUQueue> {
 
  public:
   explicit GPUQueue(GPUDevice* device, WGPUQueue queue);
-  ~GPUQueue() override;
 
   // gpu_queue.idl
   void submit(const HeapVector<Member<GPUCommandBuffer>>& buffers);

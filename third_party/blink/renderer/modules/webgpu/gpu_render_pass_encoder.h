@@ -27,7 +27,6 @@ class GPURenderPassEncoder : public DawnObject<WGPURenderPassEncoder>,
  public:
   explicit GPURenderPassEncoder(GPUDevice* device,
                                 WGPURenderPassEncoder render_pass_encoder);
-  ~GPURenderPassEncoder() override;
 
   // gpu_render_pass_encoder.idl
   void setBindGroup(uint32_t index,

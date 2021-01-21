@@ -17,10 +17,6 @@ GPUComputePassEncoder::GPUComputePassEncoder(
     WGPUComputePassEncoder compute_pass_encoder)
     : DawnObject<WGPUComputePassEncoder>(device, compute_pass_encoder) {}
 
-GPUComputePassEncoder::~GPUComputePassEncoder() {
-  GetProcs().computePassEncoderRelease(GetHandle());
-}
-
 void GPUComputePassEncoder::setBindGroup(
     uint32_t index,
     GPUBindGroup* bindGroup,

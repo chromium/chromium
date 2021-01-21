@@ -45,10 +45,6 @@ GPUQuerySet* GPUQuerySet::Create(GPUDevice* device,
 GPUQuerySet::GPUQuerySet(GPUDevice* device, WGPUQuerySet querySet)
     : DawnObject<WGPUQuerySet>(device, querySet) {}
 
-GPUQuerySet::~GPUQuerySet() {
-  GetProcs().querySetRelease(GetHandle());
-}
-
 void GPUQuerySet::destroy() {
   GetProcs().querySetDestroy(GetHandle());
 }

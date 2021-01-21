@@ -79,10 +79,6 @@ GPUBuffer::GPUBuffer(GPUDevice* device,
     : DawnObject<WGPUBuffer>(device, buffer), size_(size) {
 }
 
-GPUBuffer::~GPUBuffer() {
-  GetProcs().bufferRelease(GetHandle());
-}
-
 void GPUBuffer::Trace(Visitor* visitor) const {
   visitor->Trace(mapped_array_buffers_);
   DawnObject<WGPUBuffer>::Trace(visitor);
