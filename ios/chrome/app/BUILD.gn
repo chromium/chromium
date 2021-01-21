@@ -148,20 +148,6 @@ source_set("content_suggestions_scheduler_app_state_agent") {
   ]
 }
 
-source_set("app_metrics_app_state_agent") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "app_metrics_app_state_agent.h",
-    "app_metrics_app_state_agent.mm",
-  ]
-  deps = [
-    "//base",
-    "//ios/chrome/app/application_delegate:app_state_header",
-    "//ios/chrome/browser/metrics",
-    "//ios/chrome/browser/ui/main:scene_state_header",
-  ]
-}
-
 source_set("app_internal") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
@@ -181,7 +167,6 @@ source_set("app_internal") {
 
   deps = [
     ":app",
-    ":app_metrics_app_state_agent",
     ":blocking_scene_commands",
     ":content_suggestions_scheduler_app_state_agent",
     ":mode",

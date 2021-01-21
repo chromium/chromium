@@ -38,6 +38,8 @@
 #include "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/geolocation/omnibox_geolocation_config.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/metrics/ios_profile_session_durations_service.h"
+#import "ios/chrome/browser/metrics/ios_profile_session_durations_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/signed_in_accounts_view_controller.h"
@@ -98,6 +100,8 @@ const NSTimeInterval kMemoryFootprintRecordingTimeInterval = 5;
   // Variables backing properties of same name.
   SafeModeCoordinator* _safeModeCoordinator;
 
+  // Start of the current session, used for UMA.
+  base::TimeTicks _sessionStartTime;
   // YES if the app is currently in the process of terminating.
   BOOL _appIsTerminating;
   // Whether the application is currently in the background.
@@ -383,6 +387,8 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   DCHECK([_browserLauncher browserInitializationStage] ==
          INITIALIZATION_STAGE_FOREGROUND);
 
+  _sessionStartTime = base::TimeTicks::Now();
+
   id<BrowserInterface> currentInterface =
       _browserLauncher.interfaceProvider.currentInterface;
   CommandDispatcher* dispatcher =
@@ -408,6 +414,12 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   } else {
     [HandlerForProtocol(dispatcher, HelpCommands) showHelpBubbleIfEligible];
   }
+
+  IOSProfileSessionDurationsService* psdService =
+      IOSProfileSessionDurationsServiceFactory::GetForBrowserState(
+          currentInterface.browserState);
+  if (psdService)
+    psdService->OnSessionStarted(_sessionStartTime);
 
   [MetricsMediator logStartupDuration:self.startupInformation
                 connectionInformation:connectionInformation];
@@ -495,6 +507,11 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 
   id<BrowserInterface> currentInterface =
       _browserLauncher.interfaceProvider.currentInterface;
+  base::TimeDelta duration = base::TimeTicks::Now() - _sessionStartTime;
+  UMA_HISTOGRAM_LONG_TIMES("Session.TotalDuration", duration);
+  UMA_HISTOGRAM_CUSTOM_TIMES("Session.TotalDurationMax1Day", duration,
+                             base::TimeDelta::FromMilliseconds(1),
+                             base::TimeDelta::FromHours(24), 50);
 
   // Record session metrics (currentInterface.browserState may be null during
   // tests).
@@ -515,6 +532,14 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
       SessionMetrics::FromBrowserState(otrChromeBrowserState)
           ->RecordAndClearSessionMetrics(MetricsToRecordFlags::kNoMetrics);
     }
+  }
+
+  if (currentInterface.browserState) {
+    IOSProfileSessionDurationsService* psdService =
+        IOSProfileSessionDurationsServiceFactory::GetForBrowserState(
+            currentInterface.browserState);
+    if (psdService)
+      psdService->OnSessionEnded(duration);
   }
 }
 
