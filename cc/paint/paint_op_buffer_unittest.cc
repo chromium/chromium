@@ -1105,37 +1105,12 @@ std::vector<SkIRect> test_irects = {
 
 std::vector<uint32_t> test_ids = {0, 1, 56, 0xFFFFFFFF, 0xFFFFFFFE, 0x10001};
 
-std::vector<SkMatrix> test_matrices = {
-    SkMatrix::I(),
-    SkMatrix::Scale(3.91f, 4.31f),
-    SkMatrix::Translate(-5.2f, 8.7f),
-    [] {
-      SkMatrix matrix;
-      SkScalar buffer[] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
-      matrix.set9(buffer);
-      return matrix;
-    }(),
-    [] {
-      SkMatrix matrix;
-      SkScalar buffer[] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
-      matrix.set9(buffer);
-      return matrix;
-    }(),
-};
-
-std::vector<SkM44> test_matrix44s = {
+std::vector<SkM44> test_matrices = {
     SkM44(),
     SkM44::Scale(3.91f, 4.31f, 1.0f),
     SkM44::Translate(-5.2f, 8.7f, 0.0f),
-    [] {
-      SkScalar buffer[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-      return SkM44::RowMajor(buffer);
-    }(),
-    [] {
-      SkScalar buffer[] = {1, 2,  3,  4,  5,  6,  7,  8,
-                           9, 10, 11, 12, 13, 14, 15, 16};
-      return SkM44::RowMajor(buffer);
-    }(),
+    SkM44(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+    SkM44(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16),
 };
 
 std::vector<SkPath> test_paths = {
@@ -1462,8 +1437,8 @@ void PushClipRRectOps(PaintOpBuffer* buffer) {
 }
 
 void PushConcatOps(PaintOpBuffer* buffer) {
-  for (auto& test_matrix44 : test_matrix44s)
-    buffer->push<ConcatOp>(test_matrix44);
+  for (auto& test_matrix : test_matrices)
+    buffer->push<ConcatOp>(test_matrix);
   ValidateOps<ConcatOp>(buffer);
 }
 
@@ -1693,15 +1668,9 @@ void PushScaleOps(PaintOpBuffer* buffer) {
 }
 
 void PushSetMatrixOps(PaintOpBuffer* buffer) {
-  for (size_t i = 0; i < test_matrices.size(); ++i)
-    buffer->push<SetMatrixOp>(test_matrices[i]);
+  for (auto& test_matrix : test_matrices)
+    buffer->push<SetMatrixOp>(test_matrix);
   ValidateOps<SetMatrixOp>(buffer);
-}
-
-void PushSetMatrix44Ops(PaintOpBuffer* buffer) {
-  for (auto& test_matrix44 : test_matrix44s)
-    buffer->push<SetMatrix44Op>(test_matrix44);
-  ValidateOps<SetMatrix44Op>(buffer);
 }
 
 void PushTranslateOps(PaintOpBuffer* buffer) {
@@ -1805,9 +1774,6 @@ class PaintOpSerializationTest : public ::testing::TestWithParam<uint8_t> {
         break;
       case PaintOpType::SetMatrix:
         PushSetMatrixOps(&buffer_);
-        break;
-      case PaintOpType::SetMatrix44:
-        PushSetMatrix44Ops(&buffer_);
         break;
       case PaintOpType::Translate:
         PushTranslateOps(&buffer_);

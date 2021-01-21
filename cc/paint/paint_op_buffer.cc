@@ -89,7 +89,6 @@ SkRect MapRect(const SkMatrix& matrix, const SkRect& src) {
   M(SaveLayerAlphaOp) \
   M(ScaleOp)          \
   M(SetMatrixOp)      \
-  M(SetMatrix44Op)    \
   M(SetNodeIdOp)      \
   M(TranslateOp)
 
@@ -300,8 +299,6 @@ std::string PaintOpTypeToString(PaintOpType type) {
       return "Scale";
     case PaintOpType::SetMatrix:
       return "SetMatrix";
-    case PaintOpType::SetMatrix44:
-      return "SetMatrix44";
     case PaintOpType::SetNodeId:
       return "SetNodeId";
     case PaintOpType::Translate:
@@ -734,28 +731,14 @@ bool IsSkM44Identity(const SkM44& m) {
 }
 
 size_t SetMatrixOp::Serialize(const PaintOp* base_op,
-                              void* memory,
-                              size_t size,
-                              const SerializeOptions& options) {
-  auto* op = static_cast<const SetMatrixOp*>(base_op);
-  PaintOpWriter helper(memory, size, options);
-
-  // TODO(aaronhk) take out this early out and see if there's a perf regression
-  if (IsSkM44Identity(options.original_ctm)) {
-    helper.Write(op->matrix);
-  } else {
-    helper.Write(options.original_ctm.asM33() * op->matrix);
-  }
-  return helper.size();
-}
-
-size_t SetMatrix44Op::Serialize(const PaintOp* base_op,
                                 void* memory,
                                 size_t size,
                                 const SerializeOptions& options) {
-  auto* op = static_cast<const SetMatrix44Op*>(base_op);
+  auto* op = static_cast<const SetMatrixOp*>(base_op);
   PaintOpWriter helper(memory, size, options);
 
+  // TODO(crbug.com/1155544): Take out this early out and see if there's a perf
+  // regression.
   if (IsSkM44Identity(options.original_ctm)) {
     helper.Write(op->matrix);
   } else {
@@ -1335,26 +1318,6 @@ PaintOp* SetMatrixOp::Deserialize(const volatile void* input,
   }
 
   UpdateTypeAndSkip(op);
-  PaintOpReader::FixupMatrixPostSerialization(&op->matrix);
-  return op;
-}
-
-PaintOp* SetMatrix44Op::Deserialize(const volatile void* input,
-                                    size_t input_size,
-                                    void* output,
-                                    size_t output_size,
-                                    const DeserializeOptions& options) {
-  DCHECK_GE(output_size, sizeof(SetMatrix44Op));
-  SetMatrix44Op* op = new (output) SetMatrix44Op;
-
-  PaintOpReader helper(input, input_size, options);
-  helper.Read(&op->matrix);
-  if (!helper.valid() || !op->IsValid()) {
-    op->~SetMatrix44Op();
-    return nullptr;
-  }
-
-  UpdateTypeAndSkip(op);
   return op;
 }
 
@@ -1738,12 +1701,6 @@ void ScaleOp::Raster(const ScaleOp* op,
 }
 
 void SetMatrixOp::Raster(const SetMatrixOp* op,
-                         SkCanvas* canvas,
-                         const PlaybackParams& params) {
-  canvas->setMatrix(SkM44(op->matrix) * params.original_ctm);
-}
-
-void SetMatrix44Op::Raster(const SetMatrix44Op* op,
                            SkCanvas* canvas,
                            const PlaybackParams& params) {
   canvas->setMatrix(op->matrix * params.original_ctm);
@@ -2187,17 +2144,6 @@ bool SetMatrixOp::AreEqual(const PaintOp* base_left,
                            const PaintOp* base_right) {
   auto* left = static_cast<const SetMatrixOp*>(base_left);
   auto* right = static_cast<const SetMatrixOp*>(base_right);
-  DCHECK(left->IsValid());
-  DCHECK(right->IsValid());
-  if (!AreSkMatricesEqual(left->matrix, right->matrix))
-    return false;
-  return true;
-}
-
-bool SetMatrix44Op::AreEqual(const PaintOp* base_left,
-                             const PaintOp* base_right) {
-  auto* left = static_cast<const SetMatrix44Op*>(base_left);
-  auto* right = static_cast<const SetMatrix44Op*>(base_right);
   DCHECK(left->IsValid());
   DCHECK(right->IsValid());
   if (!AreSkM44sEqual(left->matrix, right->matrix))

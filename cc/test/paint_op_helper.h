@@ -207,12 +207,6 @@ class PaintOpHelper {
             << PaintOpHelper::SkiaTypeToString(op->matrix) << ")";
         break;
       }
-      case PaintOpType::SetMatrix44: {
-        const auto* op = static_cast<const SetMatrix44Op*>(base_op);
-        str << "SetMatrix44Op(matrix="
-            << PaintOpHelper::SkiaTypeToString(op->matrix) << ")";
-        break;
-      }
       case PaintOpType::Translate: {
         const auto* op = static_cast<const TranslateOp*>(base_op);
         str << "TranslateOp(dx=" << PaintOpHelper::SkiaTypeToString(op->dx)
@@ -255,19 +249,6 @@ class PaintOpHelper {
     return base::StringPrintf("[bounded by %.3f,%.3f %.3fx%.3f]",
                               rect.rect().x(), rect.rect().y(),
                               rect.rect().width(), rect.rect().height());
-  }
-
-  // TODO(crbug.com/1155544): Remove this when setMatrix(SkMatrix&) is removed.
-  static std::string SkiaTypeToString(const ThreadsafeMatrix& matrix) {
-    return SkiaTypeToString(static_cast<const SkMatrix&>(matrix));
-  }
-
-  // TODO(crbug.com/1155544): Remove this when setMatrix(SkMatrix&) is removed.
-  static std::string SkiaTypeToString(const SkMatrix& matrix) {
-    return base::StringPrintf(
-        "[%8.4f %8.4f %8.4f][%8.4f %8.4f %8.4f][%8.4f %8.4f %8.4f]", matrix[0],
-        matrix[1], matrix[2], matrix[3], matrix[4], matrix[5], matrix[6],
-        matrix[7], matrix[8]);
   }
 
   static std::string SkiaTypeToString(const SkM44& matrix) {

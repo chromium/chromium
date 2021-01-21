@@ -47,16 +47,6 @@ class ClientPaintCache;
 class ImageProvider;
 class ServicePaintCache;
 
-// TODO(aaronhk) I think this can be removed when the SkMatrix functions are
-// removed (crbug.com/1155544)
-class CC_PAINT_EXPORT ThreadsafeMatrix : public SkMatrix {
- public:
-  explicit ThreadsafeMatrix(const SkMatrix& matrix) : SkMatrix(matrix) {
-    (void)getType();
-  }
-  ThreadsafeMatrix() { (void)getType(); }
-};
-
 class CC_PAINT_EXPORT ThreadsafePath : public SkPath {
  public:
   explicit ThreadsafePath(const SkPath& path) : SkPath(path) {
@@ -110,7 +100,6 @@ enum class PaintOpType : uint8_t {
   SaveLayerAlpha,
   Scale,
   SetMatrix,
-  SetMatrix44,
   SetNodeId,
   Translate,
   LastPaintOpType = Translate,
@@ -942,8 +931,7 @@ class CC_PAINT_EXPORT ScaleOp final : public PaintOp {
 class CC_PAINT_EXPORT SetMatrixOp final : public PaintOp {
  public:
   static constexpr PaintOpType kType = PaintOpType::SetMatrix;
-  explicit SetMatrixOp(const SkMatrix& matrix)
-      : PaintOp(kType), matrix(matrix) {}
+  explicit SetMatrixOp(const SkM44& matrix) : PaintOp(kType), matrix(matrix) {}
   // This is the only op that needs the original ctm of the SkCanvas
   // used for raster (since SetMatrix is relative to the recording origin and
   // shouldn't clobber the SkCanvas raster origin).
@@ -957,28 +945,10 @@ class CC_PAINT_EXPORT SetMatrixOp final : public PaintOp {
   static bool AreEqual(const PaintOp* left, const PaintOp* right);
   HAS_SERIALIZATION_FUNCTIONS();
 
-  ThreadsafeMatrix matrix;
-
- private:
-  SetMatrixOp() : PaintOp(kType) {}
-};
-
-class CC_PAINT_EXPORT SetMatrix44Op final : public PaintOp {
- public:
-  static constexpr PaintOpType kType = PaintOpType::SetMatrix44;
-  explicit SetMatrix44Op(const SkM44& matrix)
-      : PaintOp(kType), matrix(matrix) {}
-  static void Raster(const SetMatrix44Op* op,
-                     SkCanvas* canvas,
-                     const PlaybackParams& params);
-  bool IsValid() const { return true; }
-  static bool AreEqual(const PaintOp* left, const PaintOp* right);
-  HAS_SERIALIZATION_FUNCTIONS();
-
   SkM44 matrix;
 
  private:
-  SetMatrix44Op() : PaintOp(kType) {}
+  SetMatrixOp() : PaintOp(kType) {}
 };
 
 class CC_PAINT_EXPORT SetNodeIdOp final : public PaintOp {

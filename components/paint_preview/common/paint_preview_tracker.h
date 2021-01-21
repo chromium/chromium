@@ -112,6 +112,7 @@ class PaintPreviewTracker {
   const base::Optional<base::UnguessableToken> embedding_token_;
   const bool is_main_frame_;
 
+  // TODO(crbug.com/1155544): Change this to an SkM44.
   SkMatrix matrix_;
   std::vector<SkMatrix> states_;
 
