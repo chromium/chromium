@@ -1603,7 +1603,7 @@ RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
           mojom::ViewWidgetType::kTopLevel,
       /*hidden=*/true, render_view->widgets_never_composited());
   web_frame_widget->InitializeCompositing(
-      compositor_deps->GetWebMainThreadScheduler(),
+      agent_scheduling_group.agent_group_scheduler(),
       compositor_deps->GetTaskGraphRunner(),
       params->visual_properties.screen_info,
       compositor_deps->CreateUkmRecorderFactory(),
@@ -1773,7 +1773,7 @@ void RenderFrameImpl::CreateFrame(
         /*is_for_nested_main_frame=*/false,
         /*hidden=*/true, render_view->widgets_never_composited());
     web_frame_widget->InitializeCompositing(
-        compositor_deps->GetWebMainThreadScheduler(),
+        agent_scheduling_group.agent_group_scheduler(),
         compositor_deps->GetTaskGraphRunner(),
         widget_params->visual_properties.screen_info,
         compositor_deps->CreateUkmRecorderFactory(),
@@ -1817,7 +1817,7 @@ void RenderFrameImpl::CreateFrame(
         /*is_for_nested_main_frame=*/false,
         /*hidden=*/true, render_view->widgets_never_composited());
     web_frame_widget->InitializeCompositing(
-        compositor_deps->GetWebMainThreadScheduler(),
+        agent_scheduling_group.agent_group_scheduler(),
         compositor_deps->GetTaskGraphRunner(),
         widget_params->visual_properties.screen_info,
         compositor_deps->CreateUkmRecorderFactory(),

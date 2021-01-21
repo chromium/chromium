@@ -171,7 +171,7 @@ WidgetBase::~WidgetBase() {
 }
 
 void WidgetBase::InitializeCompositing(
-    scheduler::WebThreadScheduler* main_thread_scheduler,
+    scheduler::WebAgentGroupScheduler& agent_group_scheduler,
     cc::TaskGraphRunner* task_graph_runner,
     bool for_child_local_root_frame,
     const ScreenInfo& screen_info,
@@ -179,8 +179,10 @@ void WidgetBase::InitializeCompositing(
     const cc::LayerTreeSettings* settings,
     base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
         frame_widget_input_handler) {
+  scheduler::WebThreadScheduler* main_thread_scheduler =
+      &agent_group_scheduler.GetMainThreadScheduler();
   main_thread_compositor_task_runner_ =
-      main_thread_scheduler->CompositorTaskRunner();
+      agent_group_scheduler.CompositorTaskRunner();
 
   auto* compositing_thread_scheduler =
       scheduler::WebThreadScheduler::CompositorThreadScheduler();

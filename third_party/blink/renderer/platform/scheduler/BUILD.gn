@@ -189,6 +189,7 @@ source_set("test_support") {
   testonly = true
 
   sources = [
+    "test/fake_agent_group_scheduler_scheduler.h",
     "test/fake_frame_scheduler.h",
     "test/fake_page_scheduler.h",
     "test/fake_task_runner.cc",

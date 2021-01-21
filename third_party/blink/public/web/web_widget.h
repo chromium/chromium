@@ -47,6 +47,7 @@
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/input/input_handler_proxy.h"
+#include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
 #include "third_party/blink/public/platform/web_rect.h"
@@ -75,7 +76,6 @@ class WebCoalescedInputEvent;
 
 namespace scheduler {
 class WebRenderWidgetSchedulingState;
-class WebThreadScheduler;
 }
 
 class WebWidget {
@@ -86,7 +86,7 @@ class WebWidget {
   // the default settings will be used, tests may provide a |settings| object to
   // override the defaults.
   virtual void InitializeCompositing(
-      scheduler::WebThreadScheduler* main_thread_scheduler,
+      scheduler::WebAgentGroupScheduler& agent_group_scheduler,
       cc::TaskGraphRunner* task_graph_runner,
       const ScreenInfo& screen_info,
       std::unique_ptr<cc::UkmRecorderFactory> ukm_recorder_factory,

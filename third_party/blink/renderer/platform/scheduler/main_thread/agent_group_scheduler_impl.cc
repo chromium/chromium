@@ -60,6 +60,10 @@ AgentGroupSchedulerImpl::CompositorTaskRunner() {
   return main_thread_scheduler_.CompositorTaskRunner();
 }
 
+WebThreadScheduler& AgentGroupSchedulerImpl::GetMainThreadScheduler() {
+  return main_thread_scheduler_;
+}
+
 AgentGroupScheduler& AgentGroupSchedulerImpl::AsAgentGroupScheduler() {
   return *this;
 }

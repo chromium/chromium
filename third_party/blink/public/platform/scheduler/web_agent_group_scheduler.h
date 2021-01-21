@@ -11,6 +11,7 @@
 namespace blink {
 class AgentGroupScheduler;
 namespace scheduler {
+class WebThreadScheduler;
 
 // WebAgentGroupScheduler schedules per-AgentSchedulingGroup tasks.
 // AgentSchedulingGroup is Blink's unit of scheduling and performance isolation.
@@ -37,6 +38,9 @@ class BLINK_PLATFORM_EXPORT WebAgentGroupScheduler {
   // independent and won't have any ordering guarantees between them.
   virtual scoped_refptr<base::SingleThreadTaskRunner>
   CompositorTaskRunner() = 0;
+
+  // The main thread scheduler related to this WebAgentGroupScheduler.
+  virtual WebThreadScheduler& GetMainThreadScheduler() = 0;
 };
 
 }  // namespace scheduler

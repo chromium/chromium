@@ -507,7 +507,7 @@ blink::WebPagePopup* RenderViewImpl::CreatePopup(
       std::move(blink_popup_widget_host), std::move(blink_widget_host),
       std::move(blink_widget_receiver),
       agent_scheduling_group_.agent_group_scheduler().DefaultTaskRunner());
-  popup->InitializeCompositing(compositor_deps_->GetWebMainThreadScheduler(),
+  popup->InitializeCompositing(agent_scheduling_group_.agent_group_scheduler(),
                                compositor_deps_->GetTaskGraphRunner(),
                                opener_widget->GetOriginalScreenInfo(),
                                compositor_deps_->CreateUkmRecorderFactory(),

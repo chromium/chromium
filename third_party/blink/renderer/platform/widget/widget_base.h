@@ -47,8 +47,8 @@ class WidgetInputHandlerManager;
 class WidgetCompositor;
 
 namespace scheduler {
+class WebAgentGroupScheduler;
 class WebRenderWidgetSchedulingState;
-class WebThreadScheduler;
 }
 
 // This class is the foundational class for all widgets that blink creates.
@@ -83,7 +83,7 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   // The `frame_widget_input_handler` must be invalidated when the WidgetBase is
   // destroyed/invalidated.
   void InitializeCompositing(
-      scheduler::WebThreadScheduler* main_thread_scheduler,
+      scheduler::WebAgentGroupScheduler& agent_group_scheduler,
       cc::TaskGraphRunner* task_graph_runner,
       bool for_child_local_root_frame,
       const ScreenInfo& screen_info,

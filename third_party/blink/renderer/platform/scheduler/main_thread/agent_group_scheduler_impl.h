@@ -18,6 +18,7 @@ namespace blink {
 namespace scheduler {
 class MainThreadSchedulerImpl;
 class MainThreadTaskQueue;
+class WebThreadScheduler;
 
 // AgentGroupScheduler implementation which schedules per-AgentSchedulingGroup
 // tasks.
@@ -33,9 +34,7 @@ class PLATFORM_EXPORT AgentGroupSchedulerImpl : public AgentGroupScheduler {
       PageScheduler::Delegate*) override;
   scoped_refptr<base::SingleThreadTaskRunner> DefaultTaskRunner() override;
   scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner() override;
-  MainThreadSchedulerImpl& GetMainThreadScheduler() {
-    return main_thread_scheduler_;
-  }
+  WebThreadScheduler& GetMainThreadScheduler() override;
   AgentGroupScheduler& AsAgentGroupScheduler() override;
 
  private:

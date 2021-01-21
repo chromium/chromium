@@ -21,9 +21,8 @@ namespace {
 
 class DummyFrameScheduler : public FrameScheduler {
  public:
-  explicit DummyFrameScheduler(PageScheduler* page_scheduler)
-      : page_scheduler_(page_scheduler) {}
-  ~DummyFrameScheduler() override {}
+  DummyFrameScheduler() : page_scheduler_(CreateDummyPageScheduler()) {}
+  ~DummyFrameScheduler() override = default;
 
   DummyFrameScheduler(const DummyFrameScheduler&) = delete;
   DummyFrameScheduler& operator=(const DummyFrameScheduler&) = delete;
@@ -33,8 +32,12 @@ class DummyFrameScheduler : public FrameScheduler {
     return base::ThreadTaskRunnerHandle::Get();
   }
 
-  PageScheduler* GetPageScheduler() const override { return page_scheduler_; }
-  AgentGroupScheduler* GetAgentGroupScheduler() override { return nullptr; }
+  PageScheduler* GetPageScheduler() const override {
+    return page_scheduler_.get();
+  }
+  WebAgentGroupScheduler* GetAgentGroupScheduler() override {
+    return &page_scheduler_->GetAgentGroupScheduler();
+  }
 
   void SetPreemptedForCooperativeScheduling(Preempted) override {}
   void SetFrameVisible(bool) override {}
@@ -94,35 +97,14 @@ class DummyFrameScheduler : public FrameScheduler {
   void ReportActiveSchedulerTrackedFeatures() override {}
 
  private:
-  PageScheduler* page_scheduler_;
+  std::unique_ptr<PageScheduler> page_scheduler_;
   base::WeakPtrFactory<FrameScheduler> weak_ptr_factory_{this};
-};
-
-class DummyAgentGroupScheduler : public AgentGroupScheduler {
- public:
-  DummyAgentGroupScheduler() = default;
-  ~DummyAgentGroupScheduler() override = default;
-
-  DummyAgentGroupScheduler(const DummyAgentGroupScheduler&) = delete;
-  DummyAgentGroupScheduler& operator=(const DummyAgentGroupScheduler&) = delete;
-
-  AgentGroupScheduler& AsAgentGroupScheduler() override { return *this; }
-  std::unique_ptr<PageScheduler> CreatePageScheduler(
-      PageScheduler::Delegate*) override {
-    return CreateDummyPageScheduler();
-  }
-  scoped_refptr<base::SingleThreadTaskRunner> DefaultTaskRunner() override {
-    return base::ThreadTaskRunnerHandle::Get();
-  }
-  scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner() override {
-    return base::ThreadTaskRunnerHandle::Get();
-  }
 };
 
 class DummyPageScheduler : public PageScheduler {
  public:
   DummyPageScheduler()
-      : agent_group_scheduler_(std::make_unique<DummyAgentGroupScheduler>()) {}
+      : agent_group_scheduler_(CreateDummyAgentGroupScheduler()) {}
   ~DummyPageScheduler() override = default;
 
   DummyPageScheduler(const DummyPageScheduler&) = delete;
@@ -132,7 +114,7 @@ class DummyPageScheduler : public PageScheduler {
       FrameScheduler::Delegate* delegate,
       BlameContext*,
       FrameScheduler::FrameType) override {
-    return std::make_unique<DummyFrameScheduler>(this);
+    return CreateDummyFrameScheduler();
   }
 
   void OnTitleOrFaviconUpdated() override {}
@@ -165,12 +147,40 @@ class DummyPageScheduler : public PageScheduler {
       WebScopedVirtualTimePauser::VirtualTaskDuration) override {
     return WebScopedVirtualTimePauser();
   }
-  scheduler::WebAgentGroupScheduler& GetAgentGroupScheduler() override {
+  WebAgentGroupScheduler& GetAgentGroupScheduler() override {
     return *agent_group_scheduler_;
   }
 
  private:
-  std::unique_ptr<DummyAgentGroupScheduler> agent_group_scheduler_;
+  std::unique_ptr<WebAgentGroupScheduler> agent_group_scheduler_;
+};
+
+class DummyAgentGroupScheduler : public AgentGroupScheduler {
+ public:
+  DummyAgentGroupScheduler()
+      : main_thread_scheduler_(CreateDummyWebThreadScheduler()) {}
+  ~DummyAgentGroupScheduler() override = default;
+
+  DummyAgentGroupScheduler(const DummyAgentGroupScheduler&) = delete;
+  DummyAgentGroupScheduler& operator=(const DummyAgentGroupScheduler&) = delete;
+
+  AgentGroupScheduler& AsAgentGroupScheduler() override { return *this; }
+  std::unique_ptr<PageScheduler> CreatePageScheduler(
+      PageScheduler::Delegate*) override {
+    return CreateDummyPageScheduler();
+  }
+  scoped_refptr<base::SingleThreadTaskRunner> DefaultTaskRunner() override {
+    return base::ThreadTaskRunnerHandle::Get();
+  }
+  scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner() override {
+    return base::ThreadTaskRunnerHandle::Get();
+  }
+  WebThreadScheduler& GetMainThreadScheduler() override {
+    return *main_thread_scheduler_;
+  }
+
+ private:
+  std::unique_ptr<WebThreadScheduler> main_thread_scheduler_;
 };
 
 // TODO(altimin,yutak): Merge with SimpleThread in platform.cc.
@@ -219,7 +229,7 @@ class DummyThreadScheduler : public ThreadScheduler {
   }
 
   std::unique_ptr<WebAgentGroupScheduler> CreateAgentGroupScheduler() override {
-    return std::make_unique<DummyAgentGroupScheduler>();
+    return CreateDummyAgentGroupScheduler();
   }
 
   WebAgentGroupScheduler* GetCurrentAgentGroupScheduler() override {
@@ -287,7 +297,7 @@ class DummyWebThreadScheduler : public WebThreadScheduler,
   }
 
   std::unique_ptr<WebAgentGroupScheduler> CreateAgentGroupScheduler() override {
-    return std::make_unique<DummyAgentGroupScheduler>();
+    return CreateDummyAgentGroupScheduler();
   }
 
   WebAgentGroupScheduler* GetCurrentAgentGroupScheduler() override {
@@ -298,7 +308,7 @@ class DummyWebThreadScheduler : public WebThreadScheduler,
 }  // namespace
 
 std::unique_ptr<FrameScheduler> CreateDummyFrameScheduler() {
-  return std::make_unique<DummyFrameScheduler>(nullptr);
+  return std::make_unique<DummyFrameScheduler>();
 }
 
 std::unique_ptr<PageScheduler> CreateDummyPageScheduler() {

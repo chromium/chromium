@@ -540,7 +540,7 @@ TestWebFrameWidget* WebViewHelper::CreateFrameWidgetAndInitializeCompositing(
   cc::LayerTreeSettings layer_tree_settings =
       GetSynchronousSingleThreadLayerTreeSettings();
   frame_widget->InitializeCompositing(
-      frame_widget->main_thread_scheduler(), frame_widget->task_graph_runner(),
+      frame_widget->GetAgentGroupScheduler(), frame_widget->task_graph_runner(),
       frame_widget->GetInitialScreenInfo(),
       std::make_unique<cc::TestUkmRecorderFactory>(), &layer_tree_settings);
   frame_widget->SetCompositorVisible(true);
