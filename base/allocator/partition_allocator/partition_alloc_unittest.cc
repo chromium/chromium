@@ -18,6 +18,7 @@
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_features.h"
+#include "base/allocator/partition_allocator/partition_cookie.h"
 #include "base/allocator/partition_allocator/partition_page.h"
 #include "base/allocator/partition_allocator/partition_ref_count.h"
 #include "base/bits.h"
@@ -1023,7 +1024,8 @@ TEST_F(PartitionAllocTest, Realloc) {
   // Test that growing an allocation with realloc() copies everything from the
   // old allocation.
   size_t size = SystemPageSize() - kExtraAllocSize;
-  EXPECT_EQ(size, allocator.root()->ActualSize(size));
+  // Confirm size fills the entire slot.
+  ASSERT_EQ(size, allocator.root()->ActualSize(size));
   ptr = allocator.root()->Alloc(size, type_name);
   memset(ptr, 'A', size);
   ptr2 = allocator.root()->Realloc(ptr, size + 1, type_name);
@@ -1036,7 +1038,8 @@ TEST_F(PartitionAllocTest, Realloc) {
 #endif
 
   // Test that shrinking an allocation with realloc() also copies everything
-  // from the old allocation.
+  // from the old allocation. Use |size - 1| to test what happens to the extra
+  // space before the cookie.
   ptr = allocator.root()->Realloc(ptr2, size - 1, type_name);
   EXPECT_NE(ptr2, ptr);
   char* char_ptr = static_cast<char*>(ptr);
@@ -1044,6 +1047,38 @@ TEST_F(PartitionAllocTest, Realloc) {
   EXPECT_EQ('A', char_ptr[size - 2]);
 #if DCHECK_IS_ON()
   EXPECT_EQ(kUninitializedByte, static_cast<unsigned char>(char_ptr[size - 1]));
+#endif
+
+  allocator.root()->Free(ptr);
+
+  // Single-slot slot spans...
+  // Test that growing an allocation with realloc() copies everything from the
+  // old allocation.
+  size = 200000;
+  // Confirm size doesn't fill the entire slot.
+  ASSERT_LT(size, allocator.root()->ActualSize(size));
+  ptr = allocator.root()->Alloc(size, type_name);
+  memset(ptr, 'A', size);
+  ptr2 = allocator.root()->Realloc(ptr, size * 2, type_name);
+  EXPECT_NE(ptr, ptr2);
+  char_ptr2 = static_cast<char*>(ptr2);
+  EXPECT_EQ('A', char_ptr2[0]);
+  EXPECT_EQ('A', char_ptr2[size - 1]);
+#if DCHECK_IS_ON()
+  EXPECT_EQ(kUninitializedByte, static_cast<unsigned char>(char_ptr2[size]));
+#endif
+
+  // Test that shrinking an allocation with realloc() also copies everything
+  // from the old allocation.
+  ptr = allocator.root()->Realloc(ptr2, size / 2, type_name);
+  EXPECT_NE(ptr2, ptr);
+  char_ptr = static_cast<char*>(ptr);
+  EXPECT_EQ('A', char_ptr[0]);
+  EXPECT_EQ('A', char_ptr[size / 2 - 1]);
+#if DCHECK_IS_ON()
+  // For single-slot slot spans, the cookie is always placed immediately after
+  // the allocation.
+  EXPECT_EQ(kCookieValue[0], static_cast<unsigned char>(char_ptr[size / 2]));
 #endif
 
   allocator.root()->Free(ptr);
