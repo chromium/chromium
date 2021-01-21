@@ -76,19 +76,7 @@ class DocumentProvider : public AutocompleteProvider {
   static const GURL GetURLForDeduping(const GURL& url);
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest, CheckFeatureBehindFlag);
-  FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest,
-                           CheckFeaturePrerequisiteNoIncognito);
-  FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest,
-                           CheckFeaturePrerequisiteNoSync);
-  FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest,
-                           CheckFeaturePrerequisiteClientSettingOff);
-  FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest,
-                           CheckFeaturePrerequisiteDefaultSearch);
-  FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest,
-                           CheckFeatureNotInExplicitKeywordMode);
-  FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest,
-                           CheckFeaturePrerequisiteServerBackoff);
+  FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest, IsDocumentProviderAllowed);
   FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest, IsInputLikelyURL);
   FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest, ParseDocumentSearchResults);
   FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest,
@@ -104,8 +92,8 @@ class DocumentProvider : public AutocompleteProvider {
                            ParseDocumentSearchResultsWithBadResponse);
   FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest, GenerateLastModifiedString);
   FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest, Scoring);
-  FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest, Caching);
-  FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest, MinQueryLength);
+  FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest, CachingForAsyncMatches);
+  FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest, CachingForSyncMatches);
   FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest, StartCallsStop);
 
   using MatchesCache = base::MRUCache<GURL, AutocompleteMatch>;
@@ -151,10 +139,24 @@ class DocumentProvider : public AutocompleteProvider {
   // Appends |matches_cache_| to |matches_|. Updates their classifications
   // according to |input_.text()| and sets their relevance to 0.
   // |skip_n_most_recent_matches| indicates the number of cached matches already
-  // in |matches_|. E.g. if the drive server responded with 3 docs, these 3 docs
-  // are added both to |matches_| and |matches_cache| prior to invoking
-  // |AddCachedMatches| in order to avoid duplicate matches.
+  //   in |matches_|. E.g. if the drive server responded with 3 docs, these 3
+  //   docs are added both to |matches_| and |matches_cache| prior to invoking
+  //   |CopyCachedMatchesToMatches()| in order to avoid duplicate matches.
   void CopyCachedMatchesToMatches(size_t skip_n_most_recent_matches = 0);
+
+  // Sets the scores of all cached matches to 0. This is invoked before pushing
+  // the latest async response returns so that the scores aren't preserved for
+  // further inputs. E.g., the input 'london' shouldn't display cached docs from
+  // a previous input 'paris'. This can't be done by automatically (i.e. set
+  // scores to 0 before pushing to the cache), as the scores are needed for the
+  // async pass if the user continued their input.
+  void SetCachedMatchesScoresTo0();
+
+  // Sets the scores of matches beyond the first |provider_max_matches_| to 0.
+  // This ensures the doc provider doesn't exceed it's allocated suggestions
+  // while also allowing docs from other providers to be deduped and styled like
+  // docs from the doc provider.
+  void DemoteMatchesBeyondMax();
 
   // Generates the localized last-modified timestamp to present to the user.
   // Full date for old files, mm/dd within the same calendar year, or time-of-
