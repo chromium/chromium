@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.ui.ConfirmSyncDataStateMachine;
 import org.chromium.chrome.browser.signin.ui.ConfirmSyncDataStateMachineDelegate;
 import org.chromium.chrome.browser.signin.ui.ConsentTextTracker;
+import org.chromium.chrome.browser.signin.ui.SigninUtils;
 import org.chromium.chrome.browser.signin.ui.SigninView;
 import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerCoordinator;
 import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerDialogFragment;

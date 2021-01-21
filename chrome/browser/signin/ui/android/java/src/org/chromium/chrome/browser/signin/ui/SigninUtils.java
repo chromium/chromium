@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.signin;
+package org.chromium.chrome.browser.signin.ui;
 
 import android.accounts.Account;
 import android.app.Activity;
@@ -15,7 +15,7 @@ import org.chromium.base.IntentUtils;
 /**
  * Helper functions for sign-in and accounts.
  */
-public class SigninUtils {
+public final class SigninUtils {
     private static final String ACCOUNT_SETTINGS_ACTION = "android.settings.ACCOUNT_SYNC_SETTINGS";
     private static final String ACCOUNT_SETTINGS_ACCOUNT_KEY = "account";
 
@@ -45,5 +45,4 @@ public class SigninUtils {
     public static boolean openSettingsForAllAccounts(Activity activity) {
         return IntentUtils.safeStartActivity(activity, new Intent(Settings.ACTION_SYNC_SETTINGS));
     }
-
 }
