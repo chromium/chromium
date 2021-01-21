@@ -39,9 +39,9 @@ namespace {
 constexpr int kDragImageItemViewCornerRadius = 8;
 constexpr int kDragImageItemViewElevation = 2;
 constexpr int kDragImageItemChipViewIconSize = 24;
-constexpr gfx::Insets kDragImageItemChipViewInsets(0, 13);
+constexpr gfx::Insets kDragImageItemChipViewInsets(8, 8, 8, /*right=*/12);
 constexpr gfx::Size kDragImageItemChipViewPreferredSize(160, 40);
-constexpr int kDragImageItemChipViewSpacing = 13;
+constexpr int kDragImageItemChipViewSpacing = 8;
 constexpr gfx::Size kDragImageItemScreenshotViewPreferredSize(104, 80);
 constexpr gfx::Insets kDragImageOverflowBadgeInsets = gfx::Insets(0, 8);
 constexpr gfx::Size kDragImageOverflowBadgeMinimumSize(24, 24);
