@@ -18,7 +18,6 @@ import dalvik.system.DexFile;
 import org.chromium.base.BuildConfig;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.JavaExceptionReporter;
 import org.chromium.base.Log;
 import org.chromium.base.compat.ApiHelperForM;
 import org.chromium.base.compat.ApiHelperForO;
@@ -30,7 +29,6 @@ import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.version.ChromeVersionInfo;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,12 +40,6 @@ import java.io.IOException;
 public class DexFixer {
     private static final String TAG = "DexFixer";
     private static boolean sHasIsolatedSplits;
-
-    private static class DexFixerException extends Exception {
-        DexFixerException(String reason, Throwable causedBy) {
-            super(reason, causedBy);
-        }
-    }
 
     @WorkerThread
     public static void fixDexInBackground() {
@@ -85,23 +77,16 @@ public class DexFixer {
         int reason = needsDexCompile(appInfo);
         if (reason > DexFixerReason.NOT_NEEDED) {
             Log.w(TAG, "Triggering dex compile. Reason=%d", reason);
-            String cmd = "cmd package compile -r shared ";
-            if (reason == DexFixerReason.NOT_READABLE && BuildConfig.ISOLATED_SPLITS_ENABLED) {
-                // Isolated processes need only access the base split.
-                String apkBaseName = new File(appInfo.sourceDir).getName();
-                cmd += String.format("--split %s ", apkBaseName);
-            }
-            cmd += ContextUtils.getApplicationContext().getPackageName();
             try {
+                String cmd = "cmd package compile -r shared ";
+                if (reason == DexFixerReason.NOT_READABLE && BuildConfig.ISOLATED_SPLITS_ENABLED) {
+                    // Isolated processes need only access the base split.
+                    String apkBaseName = new File(appInfo.sourceDir).getName();
+                    cmd += String.format("--split %s ", apkBaseName);
+                }
+                cmd += ContextUtils.getApplicationContext().getPackageName();
                 runtime.exec(cmd);
             } catch (IOException e) {
-                DexFixerException dfException =
-                        new DexFixerException(String.format("Reason: %s Name: %s", reason,
-                                                      new File(appInfo.sourceDir).getName()),
-                                e);
-                // TODO(agrieve): Remove reportException() once some data is collected.
-                PostTask.postTask(UiThreadTaskTraits.BEST_EFFORT,
-                        () -> JavaExceptionReporter.reportException(dfException));
                 reason = DexFixerReason.FAILED_TO_RUN;
             }
         }
@@ -189,11 +174,6 @@ public class DexFixer {
                 return DexFixerReason.NOT_READABLE;
             }
         } catch (ErrnoException e) {
-            // TODO(agrieve): Remove reportException() once some data is collected.
-            DexFixerException dfException = new DexFixerException(
-                    String.format("Path: %s exists: %s", oatPath, new File(oatPath).exists()), e);
-            PostTask.postTask(UiThreadTaskTraits.BEST_EFFORT,
-                    () -> JavaExceptionReporter.reportException(dfException));
             return DexFixerReason.STAT_FAILED;
         }
         return DexFixerReason.NOT_NEEDED;
