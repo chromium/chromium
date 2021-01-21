@@ -29,6 +29,7 @@ generate_grd("build_grd") {
     "index.html",
     "types.js",
     "events.js",
+    "emoji_test_ordering.json",
   ]
   grdp_files = [
     components_grdp_file,

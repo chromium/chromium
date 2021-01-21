@@ -25,6 +25,7 @@ group("closure_compile") {
     public_deps += [
       "account_manager:closure_compile",
       "diagnostics:closure_compile",
+      "emoji_picker:closure_compile",
       "gaia_action_buttons:closure_compile",
       "scanning:closure_compile",
     ]

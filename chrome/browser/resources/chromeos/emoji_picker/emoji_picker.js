@@ -27,7 +27,7 @@ const GROUP_TABS = [
   {icon: 'emoji_picker:flag', group: '8', active: false},
 ];
 
-class EmojiPicker extends PolymerElement {
+export class EmojiPicker extends PolymerElement {
   static get is() {
     return 'emoji-picker';
   }
