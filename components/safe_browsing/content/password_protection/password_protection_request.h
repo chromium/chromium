@@ -224,6 +224,11 @@ class PasswordProtectionRequest
       std::unique_ptr<VisualFeatures> visual_features);
 #endif  // BUILDFLAG(FULL_SAFE_BROWSING)
 
+#if defined(OS_ANDROID)
+  // Sets the referring app info.
+  void SetReferringAppInfo();
+#endif  // defined(OS_ANDROID)
+
   // Initiates network request to Safe Browsing backend.
   void SendRequest();
 
