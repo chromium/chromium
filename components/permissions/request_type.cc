@@ -12,6 +12,7 @@
 #if defined(OS_ANDROID)
 #include "components/resources/android/theme_resources.h"
 #else
+#include "components/permissions/vector_icons/vector_icons.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -63,7 +64,7 @@ int GetIconIdAndroid(RequestType type) {
 const gfx::VectorIcon& GetIconIdDesktop(RequestType type) {
   switch (type) {
     case RequestType::kAccessibilityEvents:
-      return vector_icons::kAccessibilityIcon;
+      return kAccessibilityIcon;
     case RequestType::kArSession:
     case RequestType::kVrSession:
       return vector_icons::kVrHeadsetIcon;
@@ -97,7 +98,7 @@ const gfx::VectorIcon& GetIconIdDesktop(RequestType type) {
     case RequestType::kRegisterProtocolHandler:
       return vector_icons::kProtocolHandlerIcon;
     case RequestType::kSecurityAttestation:
-      return vector_icons::kUsbSecurityKeyIcon;
+      return kUsbSecurityKeyIcon;
     case RequestType::kStorageAccess:
       return vector_icons::kCookieIcon;
     case RequestType::kWindowPlacement:

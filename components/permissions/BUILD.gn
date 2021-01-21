@@ -75,6 +75,7 @@ source_set("permissions") {
     "//components/content_settings/core/browser",
     "//components/keyed_service/content",
     "//components/permissions/prediction_service",
+    "//components/permissions/vector_icons",
     "//components/strings:components_strings_grit",
     "//components/ukm/content",
     "//components/url_formatter",

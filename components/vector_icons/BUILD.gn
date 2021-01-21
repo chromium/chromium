@@ -8,7 +8,6 @@ aggregate_vector_icons("components_vector_icons") {
   icon_directory = "."
 
   sources = [
-    "accessibility.icon",
     "add_cellular_network.icon",
     "ads.icon",
     "back_arrow.icon",
@@ -83,7 +82,6 @@ aggregate_vector_icons("components_vector_icons") {
     "settings.icon",
     "sync.icon",
     "usb.icon",
-    "usb_security_key.icon",
     "videocam.icon",
     "videocam_off.icon",
     "videogame_asset.icon",
