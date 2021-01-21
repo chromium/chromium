@@ -19,7 +19,7 @@ namespace base {
 namespace {
 
 ThreadLocalPointer<RunLoop::Delegate>& GetTlsDelegate() {
-  static base::NoDestructor<ThreadLocalPointer<RunLoop::Delegate>> instance;
+  static NoDestructor<ThreadLocalPointer<RunLoop::Delegate>> instance;
   return *instance;
 }
 
@@ -39,9 +39,11 @@ ThreadLocalPointer<const RunLoop::RunLoopTimeout>& RunLoopTimeoutTLS() {
   return *tls;
 }
 
-void OnRunLoopTimeout(RunLoop* run_loop, OnceClosure on_timeout) {
+void OnRunLoopTimeout(RunLoop* run_loop,
+                      const Location& location,
+                      OnceCallback<void(const Location&)> on_timeout) {
   run_loop->Quit();
-  std::move(on_timeout).Run();
+  std::move(on_timeout).Run(location);
 }
 
 }  // namespace
@@ -106,7 +108,7 @@ RunLoop::~RunLoop() {
   DCHECK(!running_);
 }
 
-void RunLoop::Run() {
+void RunLoop::Run(const Location& location) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!BeforeRun())
@@ -118,8 +120,8 @@ void RunLoop::Run() {
   CancelableOnceClosure cancelable_timeout;
   const RunLoopTimeout* run_timeout = GetTimeoutForCurrentThread();
   if (run_timeout) {
-    cancelable_timeout.Reset(
-        BindOnce(&OnRunLoopTimeout, Unretained(this), run_timeout->on_timeout));
+    cancelable_timeout.Reset(BindOnce(&OnRunLoopTimeout, Unretained(this),
+                                      location, run_timeout->on_timeout));
     origin_task_runner_->PostDelayedTask(
         FROM_HERE, cancelable_timeout.callback(), run_timeout->timeout);
   }

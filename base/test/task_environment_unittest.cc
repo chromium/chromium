@@ -880,8 +880,12 @@ TEST_F(TaskEnvironmentTest, SetsDefaultRunTimeout) {
     if (!debug::BeingDebugged()) {
       EXPECT_LT(run_timeout->timeout, TestTimeouts::test_launcher_timeout());
     }
-    static const RepeatingClosure& static_on_timeout = run_timeout->on_timeout;
-    EXPECT_FATAL_FAILURE(static_on_timeout.Run(), "RunLoop::Run() timed out");
+    static auto& static_on_timeout_cb = run_timeout->on_timeout;
+    EXPECT_FATAL_FAILURE(
+        static_on_timeout_cb.Run(FROM_HERE),
+        "RunLoop::Run() timed out. Timeout set at "
+        // We don't test the line number but it would be present.
+        "TaskEnvironment@../../base/test/task_environment.cc:");
   }
 
   EXPECT_EQ(ScopedRunLoopTimeout::GetTimeoutForCurrentThread(),

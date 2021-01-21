@@ -13,6 +13,7 @@
 #include "base/callback.h"
 #include "base/containers/stack.h"
 #include "base/gtest_prod_util.h"
+#include "base/location.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -81,7 +82,7 @@ class BASE_EXPORT RunLoop {
 
   // Run the current RunLoop::Delegate. This blocks until Quit is called
   // (directly or by running the RunLoop::QuitClosure).
-  void Run();
+  void Run(const Location& location = Location::Current());
 
   // Run the current RunLoop::Delegate until it doesn't find any tasks or
   // messages in its queue (it goes idle).
@@ -281,7 +282,7 @@ class BASE_EXPORT RunLoop {
     RunLoopTimeout();
     ~RunLoopTimeout();
     TimeDelta timeout;
-    RepeatingClosure on_timeout;
+    RepeatingCallback<void(const Location&)> on_timeout;
   };
 
  private:

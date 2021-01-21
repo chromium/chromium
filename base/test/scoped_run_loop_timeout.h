@@ -58,12 +58,13 @@ FORWARD_DECLARE_TEST(TaskEnvironmentTest, SetsDefaultRunTimeout);
 
 class ScopedRunLoopTimeout {
  public:
-  ScopedRunLoopTimeout(const Location& from_here, TimeDelta timeout);
+  ScopedRunLoopTimeout(const Location& timeout_enabled_from_here,
+                       TimeDelta timeout);
   ~ScopedRunLoopTimeout();
 
   // Invokes |on_timeout_log| if |timeout| expires, and appends it to the
   // logged error message.
-  ScopedRunLoopTimeout(const Location& from_here,
+  ScopedRunLoopTimeout(const Location& timeout_enabled_from_here,
                        TimeDelta timeout,
                        RepeatingCallback<std::string()> on_timeout_log);
 

@@ -414,7 +414,8 @@ TEST_F(TaskAnnotatorBacktraceIntegrationTest, SingleThreadedNested) {
   {
     TaskAnnotator::ScopedSetIpcHash scoped_ipc_hash(dummy_ipc_hash2);
     ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, BindOnce(&RunLoop::Run, Unretained(&nested_run_loop1)));
+        FROM_HERE,
+        BindOnce(&RunLoop::Run, Unretained(&nested_run_loop1), FROM_HERE));
   }
 
   run_loop.Run();
