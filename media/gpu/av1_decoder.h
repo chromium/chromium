@@ -112,6 +112,8 @@ class MEDIA_GPU_EXPORT AV1Decoder : public AcceleratedVideoDecoder {
   size_t GetNumReferenceFrames() const override;
 
  private:
+  friend class AV1DecoderTest;
+
   bool DecodeAndOutputPicture(
       scoped_refptr<AV1Picture> pic,
       const libgav1::Vector<libgav1::TileBuffer>& tile_buffers);
