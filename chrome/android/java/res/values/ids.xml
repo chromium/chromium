@@ -17,12 +17,6 @@
     <item name="custom_tab_bottom_bar_wrapper" type="id"/>
     <item name="default_search_engine_dialog_options" type="id"/>
 
-    <!-- Tab Actions -->
-    <item type="id" name="close_tab" />
-    <item type="id" name="ungroup_tab" />
-    <item type="id" name="share_tab_group" />
-    <item type="id" name="edit_group_name" />
-
     <!-- Media playback notification -->
     <item type="id" name="media_playback_notification" />
 

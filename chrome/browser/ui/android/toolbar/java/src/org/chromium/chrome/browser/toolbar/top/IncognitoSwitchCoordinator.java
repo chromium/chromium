@@ -12,11 +12,11 @@ import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tabmodel.EmptyTabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
+import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -39,21 +39,20 @@ class IncognitoSwitchCoordinator {
         Switch incognitoSwitchView = (Switch) root.findViewById(R.id.incognito_switch);
         assert incognitoSwitchView != null;
 
-        mPropertyModel =
-                new PropertyModel.Builder(IncognitoSwitchProperties.ALL_KEYS)
-                        .with(ON_CHECKED_CHANGE_LISTENER,
-                                new CompoundButton.OnCheckedChangeListener() {
-                                    @Override
-                                    public void onCheckedChanged(
-                                            CompoundButton buttonView, boolean incognitoSelected) {
-                                        setSelectedMode(incognitoSelected);
-                                    }
-                                })
-                        .with(IS_INCOGNITO, mTabModelSelector.isIncognitoSelected())
-                        // TODO(crbug.com/1042997): check start surface status properly in
-                        //  StartSurfaceToolbarMediator.
-                        .with(IS_VISIBLE, visible)
-                        .build();
+        mPropertyModel = new PropertyModel.Builder(IncognitoSwitchProperties.ALL_KEYS)
+                                 .with(ON_CHECKED_CHANGE_LISTENER,
+                                         new CompoundButton.OnCheckedChangeListener() {
+                                             @Override
+                                             public void onCheckedChanged(CompoundButton buttonView,
+                                                     boolean incognitoSelected) {
+                                                 setSelectedMode(incognitoSelected);
+                                             }
+                                         })
+                                 .with(IS_INCOGNITO, mTabModelSelector.isIncognitoSelected())
+                                 // TODO(crbug.com/1042997): check start surface status properly in
+                                 //  StartSurfaceToolbarMediator.
+                                 .with(IS_VISIBLE, visible)
+                                 .build();
 
         mTabModelSelectorObserver = new EmptyTabModelSelectorObserver() {
             @Override

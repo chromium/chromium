@@ -10,7 +10,7 @@ import static org.chromium.chrome.browser.toolbar.top.IncognitoSwitchProperties.
 import android.view.View;
 import android.widget.Switch;
 
-import org.chromium.chrome.R;
+import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 

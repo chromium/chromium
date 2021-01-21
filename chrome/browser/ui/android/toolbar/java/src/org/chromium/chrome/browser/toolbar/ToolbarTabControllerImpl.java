@@ -7,9 +7,7 @@ package org.chromium.chrome.browser.toolbar;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -26,7 +24,7 @@ import org.chromium.ui.base.PageTransition;
 public class ToolbarTabControllerImpl implements ToolbarTabController {
     private final Supplier<Tab> mTabSupplier;
     private final Supplier<Boolean> mOverrideHomePageSupplier;
-    private final Supplier<Profile> mProfileSupplier;
+    private final Supplier<Tracker> mTrackerSupplier;
     private final Supplier<BottomControlsCoordinator> mBottomControlsCoordinatorSupplier;
     private final Supplier<String> mHomepageUrlSupplier;
     private final Runnable mOnSuccessRunnable;
@@ -36,19 +34,19 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
      * @param tabSupplier Supplier for the currently active tab.
      * @param overrideHomePageSupplier Supplier that returns true if it overrides the default
      *         homepage behavior.
-     * @param profileSupplier Supplier for the current profile.
+     * @param trackerSupplier Supplier for the current profile tracker.
      * @param homepageUrlSupplier Supplier for the homepage URL.
      * @param onSuccessRunnable Runnable that is invoked when the active tab is asked to perform the
      *         corresponding ToolbarTabController action; it is not invoked if the tab cannot
      *         perform the action or for openHompage.
      */
     public ToolbarTabControllerImpl(Supplier<Tab> tabSupplier,
-            Supplier<Boolean> overrideHomePageSupplier, Supplier<Profile> profileSupplier,
+            Supplier<Boolean> overrideHomePageSupplier, Supplier<Tracker> trackerSupplier,
             Supplier<BottomControlsCoordinator> bottomControlsCoordinatorSupplier,
             Supplier<String> homepageUrlSupplier, Runnable onSuccessRunnable) {
         mTabSupplier = tabSupplier;
         mOverrideHomePageSupplier = overrideHomePageSupplier;
-        mProfileSupplier = profileSupplier;
+        mTrackerSupplier = trackerSupplier;
         mBottomControlsCoordinatorSupplier = bottomControlsCoordinatorSupplier;
         mHomepageUrlSupplier = homepageUrlSupplier;
         mOnSuccessRunnable = onSuccessRunnable;
@@ -104,11 +102,8 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
                 // While some other element is handling the routing of this click event, something
                 // still needs to notify the event. This approach allows consolidation of events for
                 // the home button.
-                Profile profile = mProfileSupplier.get();
-                if (profile != null) {
-                    TrackerFactory.getTrackerForProfile(profile).notifyEvent(
-                            EventConstants.HOMEPAGE_BUTTON_CLICKED);
-                }
+                Tracker tracker = mTrackerSupplier.get();
+                if (tracker != null) tracker.notifyEvent(EventConstants.HOMEPAGE_BUTTON_CLICKED);
             }
             return;
         }
@@ -134,10 +129,9 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
     /** Record that homepage button was used for IPH reasons */
     private void recordHomeButtonUseForIPH(String homepageUrl) {
         Tab tab = mTabSupplier.get();
-        Profile profile = mProfileSupplier.get();
-        if (tab == null || profile == null) return;
+        Tracker tracker = mTrackerSupplier.get();
+        if (tab == null || tracker == null) return;
 
-        Tracker tracker = TrackerFactory.getTrackerForProfile(mProfileSupplier.get());
         tracker.notifyEvent(EventConstants.HOMEPAGE_BUTTON_CLICKED);
 
         if (UrlUtilities.isNTPUrl(homepageUrl)) {
