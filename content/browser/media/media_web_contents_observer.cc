@@ -19,6 +19,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "ipc/ipc_message_macros.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/device/public/mojom/wake_lock_context.mojom.h"
 #include "services/media_session/public/cpp/media_position.h"
@@ -582,12 +583,11 @@ void MediaWebContentsObserver::BindMediaPlayerHost(
 void MediaWebContentsObserver::OnMediaPlayerAdded(
     mojo::PendingRemote<media::mojom::MediaPlayer> player_remote,
     MediaPlayerId player_id) {
-  if (!media_player_remotes_.contains(player_id)) {
-    media_player_remotes_[player_id] =
-        mojo::Remote<media::mojom::MediaPlayer>();
+  if (media_player_remotes_.contains(player_id)) {
+    mojo::ReportBadMessage("Unexpected player_id reuse");
+    return;
   }
 
-  media_player_remotes_[player_id].reset();
   media_player_remotes_[player_id].Bind(std::move(player_remote));
   media_player_remotes_[player_id].set_disconnect_handler(base::BindOnce(
       [](MediaWebContentsObserver* observer, const MediaPlayerId& player_id) {
