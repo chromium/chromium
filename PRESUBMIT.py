@@ -375,7 +375,6 @@ _NOT_CONVERTED_TO_MODERN_BIND_AND_CALLBACK = '|'.join((
   '^chrome/browser/translate/',
   '^chrome/browser/web_applications/',
   '^chrome/browser/win/',
-  '^chromeos/components/',
   '^components/drive/',
   '^components/search_engines/',
   '^components/webcrypto/',
