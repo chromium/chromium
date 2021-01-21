@@ -33,7 +33,7 @@ TEST_PAGES_LOCATION_BY_REPO = {
             'src/content/getusermedia/resolution',
             'src/content/insertable-streams/video-processing',
         ],
-        'revision': 'bcccf04dcbbb1c1061c76712b0f501e117d8a1bd',
+        'revision': '583fc1a6efacd19d9485be381a8698d12748b671',
     },
 }
 
