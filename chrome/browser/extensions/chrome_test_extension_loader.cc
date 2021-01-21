@@ -23,9 +23,9 @@
 #include "extensions/browser/extension_creator.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/extension_user_script_manager.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/notification_types.h"
-#include "extensions/browser/shared_user_script_manager.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/browser/user_script_loader.h"
 #include "extensions/common/manifest_handlers/background_info.h"
@@ -160,8 +160,8 @@ scoped_refptr<const Extension> ChromeTestExtensionLoader::LoadExtension(
 
 bool ChromeTestExtensionLoader::WaitForExtensionReady(
     const Extension& extension) {
-  SharedUserScriptManager* user_script_manager =
-      ExtensionSystem::Get(browser_context_)->shared_user_script_manager();
+  ExtensionUserScriptManager* user_script_manager =
+      ExtensionSystem::Get(browser_context_)->extension_user_script_manager();
   // Note: |user_script_manager| can be null in tests.
   if (user_script_manager &&
       !ContentScriptsInfo::GetContentScripts(&extension).empty()) {

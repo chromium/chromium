@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/browser/shared_user_script_manager.h"
+#include "extensions/browser/extension_user_script_manager.h"
 
 #include "extensions/browser/extension_util.h"
 #include "extensions/common/host_id.h"
@@ -10,7 +10,7 @@
 
 namespace extensions {
 
-SharedUserScriptManager::SharedUserScriptManager(
+ExtensionUserScriptManager::ExtensionUserScriptManager(
     content::BrowserContext* browser_context)
     : loader_(browser_context,
               HostID(),
@@ -19,15 +19,15 @@ SharedUserScriptManager::SharedUserScriptManager(
   extension_registry_observer_.Add(ExtensionRegistry::Get(browser_context_));
 }
 
-SharedUserScriptManager::~SharedUserScriptManager() {}
+ExtensionUserScriptManager::~ExtensionUserScriptManager() {}
 
-void SharedUserScriptManager::OnExtensionLoaded(
+void ExtensionUserScriptManager::OnExtensionLoaded(
     content::BrowserContext* browser_context,
     const Extension* extension) {
   loader_.AddScripts(GetScriptsMetadata(extension));
 }
 
-void SharedUserScriptManager::OnExtensionUnloaded(
+void ExtensionUserScriptManager::OnExtensionUnloaded(
     content::BrowserContext* browser_context,
     const Extension* extension,
     UnloadedExtensionReason reason) {
@@ -39,7 +39,7 @@ void SharedUserScriptManager::OnExtensionUnloaded(
   loader_.RemoveScripts(scripts_to_remove);
 }
 
-std::unique_ptr<UserScriptList> SharedUserScriptManager::GetScriptsMetadata(
+std::unique_ptr<UserScriptList> ExtensionUserScriptManager::GetScriptsMetadata(
     const Extension* extension) {
   bool incognito_enabled =
       util::IsIncognitoEnabled(extension->id(), browser_context_);

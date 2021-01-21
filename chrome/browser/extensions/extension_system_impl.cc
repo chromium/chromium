@@ -50,12 +50,12 @@
 #include "extensions/browser/extension_pref_value_map_factory.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_user_script_manager.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/info_map.h"
 #include "extensions/browser/quota_service.h"
 #include "extensions/browser/runtime_data.h"
 #include "extensions/browser/service_worker_manager.h"
-#include "extensions/browser/shared_user_script_manager.h"
 #include "extensions/browser/state_store.h"
 #include "extensions/browser/uninstall_ping_sender.h"
 #include "extensions/browser/value_store/value_store_factory_impl.h"
@@ -201,8 +201,8 @@ void ExtensionSystemImpl::Shared::Init(bool extensions_enabled) {
 
   service_worker_manager_.reset(new ServiceWorkerManager(profile_));
 
-  shared_user_script_manager_ =
-      std::make_unique<SharedUserScriptManager>(profile_);
+  extension_user_script_manager_ =
+      std::make_unique<ExtensionUserScriptManager>(profile_);
 
   // ExtensionService depends on RuntimeData.
   runtime_data_.reset(new RuntimeData(ExtensionRegistry::Get(profile_)));
@@ -334,9 +334,9 @@ ManagementPolicy* ExtensionSystemImpl::Shared::management_policy() {
   return management_policy_.get();
 }
 
-SharedUserScriptManager*
-ExtensionSystemImpl::Shared::shared_user_script_manager() {
-  return shared_user_script_manager_.get();
+ExtensionUserScriptManager*
+ExtensionSystemImpl::Shared::extension_user_script_manager() {
+  return extension_user_script_manager_.get();
 }
 
 InfoMap* ExtensionSystemImpl::Shared::info_map() {
@@ -379,7 +379,7 @@ void ExtensionSystemImpl::Shutdown() {
 void ExtensionSystemImpl::InitForRegularProfile(bool extensions_enabled) {
   TRACE_EVENT0("browser,startup", "ExtensionSystemImpl::InitForRegularProfile");
 
-  if (shared_user_script_manager() || extension_service())
+  if (extension_user_script_manager() || extension_service())
     return;  // Already initialized.
 
   // The InfoMap needs to be created before the ProcessManager.
@@ -403,8 +403,9 @@ ServiceWorkerManager* ExtensionSystemImpl::service_worker_manager() {
   return shared_->service_worker_manager();
 }
 
-SharedUserScriptManager* ExtensionSystemImpl::shared_user_script_manager() {
-  return shared_->shared_user_script_manager();
+ExtensionUserScriptManager*
+ExtensionSystemImpl::extension_user_script_manager() {
+  return shared_->extension_user_script_manager();
 }
 
 StateStore* ExtensionSystemImpl::state_store() {

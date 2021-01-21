@@ -14,7 +14,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/extension_system.h"
-#include "extensions/browser/shared_user_script_manager.h"
+#include "extensions/browser/extension_user_script_manager.h"
 #include "extensions/browser/user_script_loader.h"
 #include "extensions/common/host_id.h"
 #include "extensions/test/test_extension_dir.h"
@@ -80,7 +80,7 @@ IN_PROC_BROWSER_TEST_F(ChromeTestExtensionLoaderUnitTest,
 
   ExtensionSystem* extension_system = ExtensionSystem::Get(profile());
   EXPECT_TRUE(
-      extension_system->shared_user_script_manager()
+      extension_system->extension_user_script_manager()
           ->script_loader()
           ->HasLoadedScripts(HostID(HostID::EXTENSIONS, extension->id())));
 

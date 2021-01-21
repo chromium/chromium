@@ -109,7 +109,8 @@ ServiceWorkerManager* TestExtensionSystem::service_worker_manager() {
   return nullptr;
 }
 
-SharedUserScriptManager* TestExtensionSystem::shared_user_script_manager() {
+ExtensionUserScriptManager*
+TestExtensionSystem::extension_user_script_manager() {
   return nullptr;
 }
 
