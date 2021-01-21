@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 // Multiply-included file, no traditional include guard.
+// no-include-guard-because-multiply-included
 
 #include <stdint.h>
 
@@ -33,6 +34,7 @@ IPC_STRUCT_TRAITS_BEGIN(nacl::NaClLaunchParams)
   IPC_STRUCT_TRAITS_MEMBER(nexe_token_hi)
   IPC_STRUCT_TRAITS_MEMBER(resource_prefetch_request_list)
   IPC_STRUCT_TRAITS_MEMBER(render_view_id)
+  IPC_STRUCT_TRAITS_MEMBER(render_frame_id)
   IPC_STRUCT_TRAITS_MEMBER(permission_bits)
   IPC_STRUCT_TRAITS_MEMBER(uses_nonsfi_mode)
   IPC_STRUCT_TRAITS_MEMBER(process_type)
@@ -111,7 +113,7 @@ IPC_MESSAGE_CONTROL1(NaClHostMsg_MissingArchError,
 // A renderer sends this to the browser process when it wants to
 // open a NaCl executable file from an installed application directory.
 IPC_SYNC_MESSAGE_CONTROL3_3(NaClHostMsg_OpenNaClExecutable,
-                            int /* render_view_id */,
+                            int /* render_frame_id */,
                             GURL /* URL of NaCl executable file */,
                             bool /* enable_validation_caching */,
                             IPC::PlatformFileForTransit /* output file */,

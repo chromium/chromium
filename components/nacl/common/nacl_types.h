@@ -127,6 +127,7 @@ struct NaClLaunchParams {
                    const std::vector<NaClResourcePrefetchRequest>&
                        resource_prefetch_request_list,
                    int render_view_id,
+                   int render_frame_id,
                    uint32_t permission_bits,
                    bool uses_nonsfi_mode,
                    NaClAppProcessType process_type);
@@ -137,16 +138,17 @@ struct NaClLaunchParams {
   // On Windows, the HANDLE passed here is valid in the renderer's context.
   // It's the responsibility of the browser to duplicate this handle properly
   // for passing it to the plugin.
-  IPC::PlatformFileForTransit nexe_file;
-  uint64_t nexe_token_lo;
-  uint64_t nexe_token_hi;
+  IPC::PlatformFileForTransit nexe_file = IPC::InvalidPlatformFileForTransit();
+  uint64_t nexe_token_lo = 0;
+  uint64_t nexe_token_hi = 0;
   std::vector<NaClResourcePrefetchRequest> resource_prefetch_request_list;
 
-  int render_view_id;
-  uint32_t permission_bits;
-  bool uses_nonsfi_mode;
+  int render_view_id = 0;
+  int render_frame_id = 0;
+  uint32_t permission_bits = 0;
+  bool uses_nonsfi_mode = false;
 
-  NaClAppProcessType process_type;
+  NaClAppProcessType process_type = kUnknownNaClProcessType;
 };
 
 struct NaClLaunchResult {
