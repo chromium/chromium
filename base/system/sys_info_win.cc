@@ -169,7 +169,7 @@ void SysInfo::OperatingSystemVersionNumbers(int32_t* major_version,
 
 // static
 SysInfo::HardwareInfo SysInfo::GetHardwareInfoSync() {
-  constexpr base::char16 kSystemBiosInformationRegKey[] =
+  constexpr wchar_t kSystemBiosInformationRegKey[] =
       L"HARDWARE\\DESCRIPTION\\System\\BIOS";
 
   HardwareInfo info;
@@ -177,15 +177,15 @@ SysInfo::HardwareInfo SysInfo::GetHardwareInfoSync() {
   if (system_information_key.Open(HKEY_LOCAL_MACHINE,
                                   kSystemBiosInformationRegKey,
                                   KEY_READ) == ERROR_SUCCESS) {
-    base::string16 value16;
-    if (system_information_key.ReadValue(L"SystemManufacturer", &value16) ==
+    std::wstring value;
+    if (system_information_key.ReadValue(L"SystemManufacturer", &value) ==
         ERROR_SUCCESS) {
-      info.manufacturer = base::SysWideToUTF8(value16);
+      info.manufacturer = base::SysWideToUTF8(value);
     }
 
-    if (system_information_key.ReadValue(L"SystemProductName", &value16) ==
+    if (system_information_key.ReadValue(L"SystemProductName", &value) ==
         ERROR_SUCCESS) {
-      info.model = base::SysWideToUTF8(value16);
+      info.model = base::SysWideToUTF8(value);
     }
   }
 
