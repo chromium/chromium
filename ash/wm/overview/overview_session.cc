@@ -1017,9 +1017,10 @@ void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
   // If any desk name is being modified, let the DeskNameView handle the key
   // events.
   // Note that Tab presses should commit any pending desk name changes.
+  const ui::KeyboardCode key_code = event->key_code();
   const bool is_key_press = event->type() == ui::ET_KEY_PRESSED;
   const bool should_commit_name_changes =
-      is_key_press && event->key_code() == ui::VKEY_TAB;
+      is_key_press && key_code == ui::VKEY_TAB;
   for (auto& grid : grid_list_) {
     if (grid->IsDeskNameBeingModified()) {
       if (!should_commit_name_changes)
@@ -1042,7 +1043,9 @@ void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
   if (!is_key_press)
     return;
 
-  switch (event->key_code()) {
+  bool is_control_down = event->IsControlDown();
+
+  switch (key_code) {
     case ui::VKEY_BROWSER_BACK:
     case ui::VKEY_ESCAPE:
       EndOverview();
@@ -1057,7 +1060,10 @@ void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
       break;
     case ui::VKEY_RIGHT:
       ++num_key_presses_;
-      Move(/*reverse=*/false);
+      if (!is_control_down ||
+          !highlight_controller_->MaybeSwapHighlightedView(/*right=*/true)) {
+        Move(/*reverse=*/false);
+      }
       break;
     case ui::VKEY_TAB: {
       const bool reverse = event->flags() & ui::EF_SHIFT_DOWN;
@@ -1067,7 +1073,10 @@ void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
     }
     case ui::VKEY_LEFT:
       ++num_key_presses_;
-      Move(/*reverse=*/true);
+      if (!is_control_down ||
+          !highlight_controller_->MaybeSwapHighlightedView(/*right=*/false)) {
+        Move(/*reverse=*/true);
+      }
       break;
     case ui::VKEY_W: {
       if (!(event->flags() & ui::EF_CONTROL_DOWN))

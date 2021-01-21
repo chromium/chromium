@@ -38,6 +38,10 @@ class ASH_EXPORT OverviewHighlightController {
     virtual void MaybeActivateHighlightedView() = 0;
     virtual void MaybeCloseHighlightedView() = 0;
 
+    // Attempts to swap the view with its neighbor views. (Mainly used for
+    // |DeskMiniView|).
+    virtual void MaybeSwapHighlightedView(bool right) = 0;
+
     void SetHighlightVisibility(bool visible);
 
     // Returns true if this is the current highlighted view.
@@ -99,6 +103,9 @@ class ASH_EXPORT OverviewHighlightController {
   // the activation or closing operations respectively.
   bool MaybeActivateHighlightedView();
   bool MaybeCloseHighlightedView();
+
+  // Swap the currently highlighted view with its neighbor views.
+  bool MaybeSwapHighlightedView(bool right);
 
   // Tries to get the item that is currently highlighted. Returns null if there
   // is no highlight, or if the highlight is on a desk view.

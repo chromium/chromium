@@ -167,6 +167,14 @@ bool OverviewHighlightController::MaybeCloseHighlightedView() {
   return true;
 }
 
+bool OverviewHighlightController::MaybeSwapHighlightedView(bool right) {
+  if (!features::IsBentoEnabled() || !highlighted_view_)
+    return false;
+
+  highlighted_view_->MaybeSwapHighlightedView(right);
+  return true;
+}
+
 OverviewItem* OverviewHighlightController::GetHighlightedItem() const {
   if (!highlighted_view_)
     return nullptr;

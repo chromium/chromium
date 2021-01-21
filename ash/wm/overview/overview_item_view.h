@@ -73,6 +73,7 @@ class ASH_EXPORT OverviewItemView
   views::View* GetView() override;
   void MaybeActivateHighlightedView() override;
   void MaybeCloseHighlightedView() override;
+  void MaybeSwapHighlightedView(bool right) override;
   void OnViewHighlighted() override;
   void OnViewUnhighlighted() override;
   gfx::Point GetMagnifierFocusPointInScreen() override;

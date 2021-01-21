@@ -88,6 +88,7 @@ class ASH_EXPORT DeskMiniView
   views::View* GetView() override;
   void MaybeActivateHighlightedView() override;
   void MaybeCloseHighlightedView() override;
+  void MaybeSwapHighlightedView(bool right) override;
   void OnViewHighlighted() override;
   void OnViewUnhighlighted() override;
 

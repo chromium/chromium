@@ -161,6 +161,8 @@ void DeskNameView::MaybeActivateHighlightedView() {
 
 void DeskNameView::MaybeCloseHighlightedView() {}
 
+void DeskNameView::MaybeSwapHighlightedView(bool right) {}
+
 void DeskNameView::OnViewHighlighted() {
   UpdateBorderState();
 }
