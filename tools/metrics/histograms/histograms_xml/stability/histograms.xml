@@ -387,6 +387,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="Stability.IOS.UTE.AppWillTerminateWasCalledInForeground"
+    enum="Boolean" expires_after="2021-06-06">
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>eugenebut@google.com</owner>
+  <summary>
+    Recorded on iOS when applicationWillTerminate callback is called when app is
+    in the foreground. When this happens the app will not write clean exit
+    beacon and shutdown will not be clean.
+  </summary>
+</histogram>
+
 <histogram name="Stability.iOS.UTE.AvailableStorage" units="KB"
     expires_after="2021-06-06">
   <owner>michaeldo@chromium.org</owner>
