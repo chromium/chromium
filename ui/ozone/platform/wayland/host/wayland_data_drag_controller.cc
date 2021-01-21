@@ -64,8 +64,6 @@ WaylandDataDragController::WaylandDataDragController(
   DCHECK(window_manager_);
   DCHECK(data_device_manager_);
   DCHECK(data_device_);
-
-  window_manager_->AddObserver(this);
 }
 
 WaylandDataDragController::~WaylandDataDragController() = default;
@@ -99,14 +97,15 @@ void WaylandDataDragController::StartSession(const OSExchangeData& data,
   state_ = State::kStarted;
   data_device_->StartDrag(*data_source_, *origin_window_, icon_surface_.get(),
                           this);
+
+  window_manager_->AddObserver(this);
 }
 
-// Sessions initiated from Chromium, will have |origin_window_| pointing to the
-// window where the drag started in. In such cases, |data_| is expected to be
-// non-null, which can be used to save some IO cycles.
+// Sessions initiated from Chromium, will have |data_source_| set. In which
+// case, |data_| is expected to be non-null as well.
 bool WaylandDataDragController::IsDragSource() const {
-  DCHECK(!origin_window_ || data_);
-  return !!origin_window_;
+  DCHECK(!data_source_ || data_);
+  return !!data_source_;
 }
 
 void WaylandDataDragController::DrawIcon() {
@@ -218,16 +217,17 @@ void WaylandDataDragController::OnDragDrop() {
 
 void WaylandDataDragController::OnDataSourceFinish(bool completed) {
   DCHECK(data_source_);
-  DCHECK(origin_window_);
 
-  origin_window_->OnDragSessionClose(data_source_->dnd_action());
+  if (origin_window_) {
+    origin_window_->OnDragSessionClose(data_source_->dnd_action());
+    // DnD handlers expect DragLeave to be sent for drag sessions that end up
+    // with no data transfer (wl_data_source::cancelled event).
+    if (!completed)
+      origin_window_->OnDragLeave();
+    origin_window_ = nullptr;
+  }
 
-  // DnD handlers expect DragLeave to be sent for drag sessions that end up
-  // with no data transfer (wl_data_source::cancelled event).
-  if (!completed)
-    origin_window_->OnDragLeave();
-
-  origin_window_ = nullptr;
+  window_manager_->RemoveObserver(this);
   data_source_.reset();
   data_offer_.reset();
   data_.reset();
@@ -249,6 +249,9 @@ void WaylandDataDragController::OnDataSourceSend(const std::string& mime_type,
 void WaylandDataDragController::OnWindowRemoved(WaylandWindow* window) {
   if (window == window_)
     window_ = nullptr;
+
+  if (window == origin_window_)
+    origin_window_ = nullptr;
 }
 
 void WaylandDataDragController::Offer(const OSExchangeData& data,
@@ -287,9 +290,8 @@ void WaylandDataDragController::Offer(const OSExchangeData& data,
 // |received_data_| to the drop handler.
 void WaylandDataDragController::HandleUnprocessedMimeTypes(
     base::TimeTicks start_time) {
-  DCHECK_EQ(state_, State::kTransferring);
   std::string mime_type = GetNextUnprocessedMimeType();
-  if (mime_type.empty() || is_leave_pending_) {
+  if (mime_type.empty() || is_leave_pending_ || state_ == State::kIdle) {
     OnDataTransferFinished(start_time, std::move(received_data_));
   } else {
     DCHECK(data_offer_);
@@ -303,7 +305,6 @@ void WaylandDataDragController::HandleUnprocessedMimeTypes(
 void WaylandDataDragController::OnMimeTypeDataTransferred(
     base::TimeTicks start_time,
     PlatformClipboard::Data contents) {
-  DCHECK_EQ(state_, State::kTransferring);
   DCHECK(contents);
   if (!contents->data().empty()) {
     std::string mime_type = unprocessed_mime_types_.front();
@@ -319,6 +320,9 @@ void WaylandDataDragController::OnDataTransferFinished(
     base::TimeTicks start_time,
     std::unique_ptr<OSExchangeData> received_data) {
   unprocessed_mime_types_.clear();
+  if (state_ == State::kIdle)
+    return;
+
   state_ = State::kIdle;
 
   // If |is_leave_pending_| is set, it means a 'leave' event was fired while

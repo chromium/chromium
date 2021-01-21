@@ -163,7 +163,7 @@ void WaylandDataDevice::OnLeave(void* data, wl_data_device* data_device) {
   // potential use-after-free. Above call to OnDragLeave() may result in
   // |drag_delegate_| being reset, so it must be checked here as well.
   if (self->drag_delegate_ && !self->drag_delegate_->IsDragSource())
-    self->drag_delegate_ = nullptr;
+    self->ResetDragDelegate();
 }
 
 void WaylandDataDevice::OnSelection(void* data,

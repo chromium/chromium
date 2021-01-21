@@ -76,12 +76,6 @@ WaylandWindow::~WaylandWindow() {
 
   if (parent_window_)
     parent_window_->set_child_window(nullptr);
-
-  if (drag_handler_delegate_) {
-    drag_handler_delegate_->OnDragFinished(
-        DragDropTypes::DragOperation::DRAG_NONE);
-  }
-  CancelDrag();
 }
 
 void WaylandWindow::OnWindowLostCapture() {
@@ -184,7 +178,10 @@ bool WaylandWindow::IsVisible() const {
   return false;
 }
 
-void WaylandWindow::PrepareForShutdown() {}
+void WaylandWindow::PrepareForShutdown() {
+  if (drag_handler_delegate_)
+    OnDragSessionClose(DragDropTypes::DRAG_NONE);
+}
 
 void WaylandWindow::SetBounds(const gfx::Rect& bounds_px) {
   if (bounds_px_ == bounds_px)
