@@ -1604,7 +1604,14 @@ TEST_P(CertVerifyProcInternalTest, PublicKeyHashes) {
 // the required key usage for serverAuth.
 // TODO(mattm): This cert fails for many reasons, replace with a generated one
 // that tests only the desired case.
-TEST_P(CertVerifyProcInternalTest, WrongKeyPurpose) {
+//
+// Disabled on Android, crbug.com/1167663.
+#if defined(OS_ANDROID)
+#define MAYBE_WrongKeyPurpose DISABLED_WrongKeyPurpose
+#else
+#define MAYBE_WrongKeyPurpose WrongKeyPurpose
+#endif
+TEST_P(CertVerifyProcInternalTest, MAYBE_WrongKeyPurpose) {
   base::FilePath certs_dir = GetTestCertsDirectory();
 
   scoped_refptr<X509Certificate> server_cert =
