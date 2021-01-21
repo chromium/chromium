@@ -3446,7 +3446,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="CrashReport.BreakpadIOSUploadOutcome"
     enum="FoundationPopularErrorCode" expires_after="2021-09-01">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
     Reports the Foundation error code of an attempt to upload a breakpad crash
@@ -5598,7 +5598,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     expires_after="2021-06-20">
 <!-- Name completed by histogram_suffixes name="FirstUserActionType" and name="FirstUserActionTypeDevice" -->
 
-  <owner>eugenebut@chromium.org</owner>
+  <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
     WARNING: The list of actions used to identify new tasks hasn't been
@@ -5613,7 +5613,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="FirstUserAction.HandsetUserActionType"
     enum="FirstUserActionType" expires_after="2021-06-20">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
     WARNING: The list of actions used to identify new tasks hasn't been
@@ -5628,7 +5628,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="FirstUserAction.TabletUserActionType"
     enum="FirstUserActionType" expires_after="2021-06-20">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
     WARNING: The list of actions used to identify new tasks hasn't been
@@ -11424,7 +11424,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="PLT.iOS.BrowserInitiatedPageLoadTime" units="ms"
     expires_after="2022-08-09">
   <owner>djean@chromium.org</owner>
-  <owner>eugenebut@chromium.org</owner>
+  <owner>ajuma@chromium.org</owner>
   <summary>
     Page load time for Browser-initiated navigations. Recorded when
     CRWWebRequestController::didFinishWithURL completes successfully. iOS
@@ -11435,7 +11435,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="PLT.iOS.RendererInitiatedPageLoadTime" units="ms"
     expires_after="2022-08-09">
   <owner>djean@chromium.org</owner>
-  <owner>eugenebut@chromium.org</owner>
+  <owner>ajuma@chromium.org</owner>
   <summary>
     Page load time for Renderer-initiated navigations. Recorded when
     CRWWebRequestController::didFinishWithURL completes successfully. iOS
@@ -17325,7 +17325,7 @@ regressions. -->
 
 <histogram name="Web.CurrentOriginEqualsLastCommittedOrigin"
     enum="BooleanEqual" expires_after="2021-11-17">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>ajuma@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <summary>
     [iOS] Reports URL matches between the return value from the WebState's
@@ -17917,7 +17917,6 @@ regressions. -->
 <histogram name="WebController.BackForwardListOutOfSync" enum="BooleanHit"
     expires_after="2021-12-25">
   <owner>ajuma@chromium.org</owner>
-  <owner>eugenebut@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <summary>
     [iOS] Counts the number of time the backForwardList of the WebView gets out
@@ -17929,7 +17928,6 @@ regressions. -->
 <histogram name="WebController.BackForwardListOutOfSyncInProvisionalNavigation"
     enum="IOSOutOfSyncURLAction" expires_after="2021-12-25">
   <owner>ajuma@chromium.org</owner>
-  <owner>eugenebut@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <summary>
     [iOS] Records the action take when the backForwardList of the WebView is out
@@ -17941,7 +17939,7 @@ regressions. -->
 
 <histogram name="WebController.CertVerificationErrorsCacheHit"
     enum="BooleanCacheHit" expires_after="2021-05-01">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>ajuma@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <summary>
     [iOS] Report cache hit/miss for WKWebView cert verification.
