@@ -49,6 +49,7 @@
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/display_layout_builder.h"
 #include "ui/display/manager/display_layout_store.h"
 #include "ui/display/manager/display_manager.h"
@@ -168,11 +169,11 @@ class WindowCycleControllerTest : public AshTestBase {
         ->GetWindowCycleItemViewsForTesting();
   }
 
-  const views::View::Views& GetWindowCycleTabSliderViews() const {
+  const views::View::Views& GetWindowCycleTabSliderButtons() const {
     return Shell::Get()
         ->window_cycle_controller()
         ->window_cycle_list()
-        ->GetWindowCycleTabSliderViewsForTesting();
+        ->GetWindowCycleTabSliderButtonsForTesting();
   }
 
   const views::Label* GetWindowCycleNoRecentItemsLabel() const {
@@ -1727,8 +1728,10 @@ class ModeSelectionWindowCycleControllerTest
   }
 
   void SwitchPerDeskAltTabMode(bool per_desk_mode) {
+    ui::ScopedAnimationDurationScaleMode animation_scale(
+        ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
     gfx::Point button_center =
-        GetWindowCycleTabSliderViews()[per_desk_mode ? 1 : 0]
+        GetWindowCycleTabSliderButtons()[per_desk_mode ? 1 : 0]
             ->GetBoundsInScreen()
             .CenterPoint();
     generator_->MoveMouseTo(button_center);
@@ -1779,7 +1782,7 @@ TEST_F(ModeSelectionWindowCycleControllerTest, SingleDeskHidesInteractiveMode) {
 
   // Expect mode-switching buttons and no-recent-item label to exist.
   EXPECT_FALSE(!GetWindowCycleNoRecentItemsLabel());
-  auto tab_slider_buttons = GetWindowCycleTabSliderViews();
+  auto tab_slider_buttons = GetWindowCycleTabSliderButtons();
   EXPECT_EQ(2u, tab_slider_buttons.size());
   const gfx::Rect alttab_bounds_with_tab_slider =
       GetWindowCycleListWidget()->GetWindowBoundsInScreen();
@@ -2160,7 +2163,7 @@ class MultiUserWindowCycleControllerTest
     auto* cycle_controller = Shell::Get()->window_cycle_controller();
     EXPECT_TRUE(cycle_controller->IsCycling());
     gfx::Point button_center =
-        GetWindowCycleTabSliderViews()[per_desk_mode ? 1 : 0]
+        GetWindowCycleTabSliderButtons()[per_desk_mode ? 1 : 0]
             ->GetBoundsInScreen()
             .CenterPoint();
     generator_->MoveMouseTo(button_center);
@@ -2223,11 +2226,11 @@ class MultiUserWindowCycleControllerTest
         ->GetWindowCycleItemViewsForTesting();
   }
 
-  const views::View::Views& GetWindowCycleTabSliderViews() const {
+  const views::View::Views& GetWindowCycleTabSliderButtons() const {
     return Shell::Get()
         ->window_cycle_controller()
         ->window_cycle_list()
-        ->GetWindowCycleTabSliderViewsForTesting();
+        ->GetWindowCycleTabSliderButtonsForTesting();
   }
 
   const aura::Window* GetTargetWindow() const {

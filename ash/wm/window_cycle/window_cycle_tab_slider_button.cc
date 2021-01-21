@@ -19,9 +19,6 @@ namespace {
 // The height of the tab slider button.
 constexpr int kTabSliderButtonHeight = 32;
 
-// The round radius of the slider, which is half of its diameter (height).
-constexpr int kTabSliderRoundRadius = int{kTabSliderButtonHeight / 2};
-
 // The horizontal insets between the label and the button.
 constexpr int kTabSliderButtonHorizontalInsets = 20;
 
@@ -56,20 +53,6 @@ void WindowCycleTabSliderButton::SetToggled(bool is_toggled) {
   SetEnabledTextColors(AshColorProvider::Get()->GetContentLayerColor(
       toggled_ ? AshColorProvider::ContentLayerType::kButtonLabelColorPrimary
                : AshColorProvider::ContentLayerType::kTextColorPrimary));
-  // SchedulePaint triggers OnPaintBackground
-  SchedulePaint();
-}
-
-void WindowCycleTabSliderButton::OnPaintBackground(gfx::Canvas* canvas) {
-  if (!toggled_)
-    return;
-
-  cc::PaintFlags flags;
-  flags.setAntiAlias(true);
-  flags.setStyle(cc::PaintFlags::kFill_Style);
-  flags.setColor(AshColorProvider::Get()->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kControlBackgroundColorActive));
-  canvas->DrawRoundRect(GetContentsBounds(), kTabSliderRoundRadius, flags);
 }
 
 gfx::Size WindowCycleTabSliderButton::CalculatePreferredSize() const {

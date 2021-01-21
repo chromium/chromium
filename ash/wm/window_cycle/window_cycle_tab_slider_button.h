@@ -25,7 +25,6 @@ class ASH_EXPORT WindowCycleTabSliderButton : public views::LabelButton {
   ~WindowCycleTabSliderButton() override = default;
 
   // views::View:
-  void OnPaintBackground(gfx::Canvas* canvas) override;
   gfx::Size CalculatePreferredSize() const override;
 
   void SetToggled(bool is_toggled);

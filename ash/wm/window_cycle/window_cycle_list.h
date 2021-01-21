@@ -121,7 +121,7 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
   const views::View::Views& GetWindowCycleItemViewsForTesting() const;
 
   // Returns the views for the window cycle tab slider buttons.
-  const views::View::Views& GetWindowCycleTabSliderViewsForTesting() const;
+  const views::View::Views& GetWindowCycleTabSliderButtonsForTesting() const;
 
   // Returns no recent items label.
   const views::Label* GetWindowCycleNoRecentItemsLabelForTesting() const;
