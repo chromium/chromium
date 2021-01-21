@@ -583,8 +583,12 @@ class HatsServiceHatsNext : public HatsServiceProbabilityOne {
 // returns false until the service has been informed the dialog was closed.
 IN_PROC_BROWSER_TEST_F(HatsServiceHatsNext, SingleHatsNextDialog) {
   SetMetricsConsent(true);
-  EXPECT_TRUE(GetHatsService()->ShouldShowSurvey(kHatsSurveyTriggerTesting));
-  GetHatsService()->LaunchSurvey(kHatsSurveyTriggerTesting);
+  EXPECT_TRUE(
+      GetHatsService()->ShouldShowSurvey(kHatsSurveyTriggerSatisfaction));
+  GetHatsService()->LaunchSurvey(kHatsSurveyTriggerSatisfaction);
+
+  // Clear any metadata that would prevent another survey from being displayed.
+  GetHatsService()->SetSurveyMetadataForTesting({});
 
   // At this point a HaTS Next dialog is created and is attempting to contact
   // the wrapper website (which will fail as requests to non-localhost addresses
@@ -592,9 +596,25 @@ IN_PROC_BROWSER_TEST_F(HatsServiceHatsNext, SingleHatsNextDialog) {
   // request, the dialog waits for a timeout posted to the UI thread before
   // closing itself. Since this test is also on the UI thread, these checks,
   // which rely on the dialog still being open, will not race.
-  EXPECT_FALSE(GetHatsService()->ShouldShowSurvey(kHatsSurveyTriggerTesting));
+  EXPECT_FALSE(
+      GetHatsService()->ShouldShowSurvey(kHatsSurveyTriggerSatisfaction));
 
   // Inform the service directly that the dialog has been closed.
   GetHatsService()->HatsNextDialogClosed();
-  EXPECT_TRUE(GetHatsService()->ShouldShowSurvey(kHatsSurveyTriggerTesting));
+  EXPECT_TRUE(
+      GetHatsService()->ShouldShowSurvey(kHatsSurveyTriggerSatisfaction));
+}
+
+// Check that launching a HaTS Next survey records a survey check time
+IN_PROC_BROWSER_TEST_F(HatsServiceHatsNext, SurveyCheckTimeRecorded) {
+  SetMetricsConsent(true);
+
+  // Clear any existing survey metadata.
+  GetHatsService()->SetSurveyMetadataForTesting({});
+
+  GetHatsService()->LaunchSurvey(kHatsSurveyTriggerSatisfaction);
+
+  HatsService::SurveyMetadata metadata;
+  GetHatsService()->GetSurveyMetadataForTesting(&metadata);
+  EXPECT_TRUE(metadata.last_survey_check_time.has_value());
 }

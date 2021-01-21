@@ -500,6 +500,17 @@ bool HatsService::CanShowSurvey(const std::string& trigger) const {
     }
   }
 
+  // If an attempt to check with the HaTS servers whether a survey should be
+  // delivered was made too recently, another survey cannot be shown.
+  base::Optional<base::Time> last_survey_check_time =
+      util::ValueToTime(pref_data->FindPath(GetLastSurveyCheckTime(trigger)));
+  if (last_survey_check_time.has_value()) {
+    base::TimeDelta elapsed_time_since_last_check =
+        base::Time::Now() - *last_survey_check_time;
+    if (elapsed_time_since_last_check < kMinimumTimeBetweenSurveyChecks)
+      return false;
+  }
+
   return true;
 }
 
@@ -535,17 +546,6 @@ void HatsService::CheckSurveyStatusAndMaybeShow(
     return;
   }
 
-  base::Optional<base::Time> last_survey_check_time =
-      util::ValueToTime(pref_data->FindPath(GetLastSurveyCheckTime(trigger)));
-  if (last_survey_check_time.has_value()) {
-    base::TimeDelta elapsed_time_since_last_check =
-        base::Time::Now() - *last_survey_check_time;
-    if (elapsed_time_since_last_check < kMinimumTimeBetweenSurveyChecks) {
-      std::move(failure_callback).Run();
-      return;
-    }
-  }
-
   DCHECK(survey_configs_by_triggers_.find(trigger) !=
          survey_configs_by_triggers_.end());
 
@@ -559,6 +559,13 @@ void HatsService::CheckSurveyStatusAndMaybeShow(
         survey_configs_by_triggers_[trigger].en_site_id_,
         std::move(success_callback), std::move(failure_callback));
     hats_next_dialog_exists_ = true;
+
+    // As soon as the HaTS Next dialog is created it will attempt to contact
+    // the HaTS servers to check for a survey.
+    DictionaryPrefUpdate update(profile_->GetPrefs(),
+                                prefs::kHatsSurveyMetadata);
+    update->SetPath(GetLastSurveyCheckTime(trigger),
+                    util::TimeToValue(base::Time::Now()));
   } else {
     if (!checker_)
       checker_ = std::make_unique<HatsSurveyStatusChecker>(profile_);
