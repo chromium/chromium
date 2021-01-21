@@ -18,6 +18,7 @@ class CONTENT_EXPORT FontAccessDelegate {
 
   virtual std::unique_ptr<FontAccessChooser> RunChooser(
       RenderFrameHost* frame,
+      const std::vector<std::string>& selection,
       FontAccessChooser::Callback callback) = 0;
 };
 

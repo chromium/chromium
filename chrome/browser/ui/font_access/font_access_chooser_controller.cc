@@ -24,6 +24,7 @@ content::FontAccessContext* GetChooserContext(content::RenderFrameHost* frame) {
 
 FontAccessChooserController::FontAccessChooserController(
     content::RenderFrameHost* frame,
+    const std::vector<std::string>& selection,
     content::FontAccessChooser::Callback callback)
     : ChooserController(frame,
                         IDS_FONT_ACCESS_CHOOSER_PROMPT_ORIGIN,
@@ -38,6 +39,8 @@ FontAccessChooserController::FontAccessChooserController(
         blink::mojom::FontEnumerationStatus::kUnexpectedError, {});
     return;
   }
+
+  selection_ = base::flat_set<std::string>(selection);
 
   chooser_context->FindAllFonts(
       base::BindOnce(&FontAccessChooserController::DidFindAllFonts,
@@ -145,6 +148,10 @@ void FontAccessChooserController::DidFindAllFonts(
     auto found = font_metadata_map_.find(font.postscript_name);
     // If the font is already in the map, skip it.
     if (found != font_metadata_map_.end()) {
+      continue;
+    }
+    // If a selection list is provided and the font isn't in the list, skip it.
+    if (!selection_.empty() && !selection_.contains(font.postscript_name)) {
       continue;
     }
     items_.push_back(font.postscript_name);

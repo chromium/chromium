@@ -109,6 +109,7 @@ void FontAccessManagerImpl::EnumerateLocalFonts(
 }
 
 void FontAccessManagerImpl::ChooseLocalFonts(
+    const std::vector<std::string>& selection,
     ChooseLocalFontsCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -146,8 +147,9 @@ void FontAccessManagerImpl::ChooseLocalFonts(
   FontAccessDelegate* delegate =
       GetContentClient()->browser()->GetFontAccessDelegate();
   choosers_[context.frame_id] = delegate->RunChooser(
-      rfh, base::BindOnce(&FontAccessManagerImpl::DidChooseLocalFonts,
-                          base::Unretained(this), std::move(callback)));
+      rfh, selection,
+      base::BindOnce(&FontAccessManagerImpl::DidChooseLocalFonts,
+                     base::Unretained(this), std::move(callback)));
 #endif
 }
 

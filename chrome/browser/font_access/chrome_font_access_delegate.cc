@@ -15,11 +15,12 @@ ChromeFontAccessDelegate::~ChromeFontAccessDelegate() = default;
 std::unique_ptr<content::FontAccessChooser>
 ChromeFontAccessDelegate::RunChooser(
     content::RenderFrameHost* frame,
+    const std::vector<std::string>& selection,
     content::FontAccessChooser::Callback callback) {
   // TODO(crbug.com/1151464): Decide whether or not to extend/refactor the
   // bubble view launched by chrome::ShowDeviceChooserDialog() or build a new
   // one.
   return std::make_unique<FontAccessChooser>(chrome::ShowDeviceChooserDialog(
       frame, std::make_unique<FontAccessChooserController>(
-                 frame, std::move(callback))));
+                 frame, selection, std::move(callback))));
 }

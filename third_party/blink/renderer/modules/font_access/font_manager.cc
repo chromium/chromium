@@ -46,14 +46,13 @@ FontManager::FontManager(ExecutionContext* context)
 ScriptValue FontManager::query(ScriptState* script_state,
                                const QueryOptions* options,
                                ExceptionState& exception_state) {
+  DCHECK(options->hasSelect());
+
   if (exception_state.HadException())
     return ScriptValue();
 
-  Vector<String> selection =
-      options->hasSelect() ? options->select() : Vector<String>();
-
   auto* iterator = MakeGarbageCollected<FontIterator>(
-      ExecutionContext::From(script_state), std::move(selection));
+      ExecutionContext::From(script_state), options->select());
   auto* isolate = script_state->GetIsolate();
   auto context = script_state->GetContext();
 
@@ -71,12 +70,14 @@ ScriptValue FontManager::query(ScriptState* script_state,
 
 ScriptPromise FontManager::showFontChooser(ScriptState* script_state,
                                            const QueryOptions* options) {
+  DCHECK(options->hasSelect());
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
-  remote_manager_->ChooseLocalFonts(WTF::Bind(&FontManager::DidShowFontChooser,
-                                              WrapWeakPersistent(this),
-                                              WrapPersistent(resolver)));
+  remote_manager_->ChooseLocalFonts(
+      options->select(),
+      WTF::Bind(&FontManager::DidShowFontChooser, WrapWeakPersistent(this),
+                WrapPersistent(resolver)));
 
   return promise;
 }

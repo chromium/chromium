@@ -18,6 +18,7 @@ class ChromeFontAccessDelegate : public content::FontAccessDelegate {
 
   std::unique_ptr<content::FontAccessChooser> RunChooser(
       content::RenderFrameHost* frame,
+      const std::vector<std::string>& selection,
       content::FontAccessChooser::Callback callback) override;
 };
 
