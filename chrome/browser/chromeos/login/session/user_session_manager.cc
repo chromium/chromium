@@ -21,8 +21,6 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string16.h"
@@ -619,8 +617,6 @@ void UserSessionManager::RestoreAuthenticationSession(Profile* user_profile) {
            .empty();
   if (!account_id_valid)
     LOG(ERROR) << "No account is associated with sign-in manager on restore.";
-  UMA_HISTOGRAM_BOOLEAN("UserSessionManager.RestoreOnCrash.AccountIdValid",
-                        account_id_valid);
 
   DCHECK(user);
   if (network_connection_tracker_ &&

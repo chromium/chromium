@@ -16871,6 +16871,9 @@ regressions. -->
 
 <histogram name="UserSessionManager.RestoreOnCrash.AccountIdValid"
     enum="BooleanValid" expires_after="2021-02-16">
+  <obsolete>
+    Removed 01/2021.
+  </obsolete>
   <owner>rsorokin@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
