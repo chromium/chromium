@@ -162,7 +162,7 @@ void KioskExternalUpdater::OnExternalUpdateUnpackSuccess(
     return;
 
   if (!ShouldDoExternalUpdate(app_id, version, min_browser_version)) {
-    external_updates_[app_id].update_status = FAILED;
+    external_updates_[app_id].update_status = UpdateStatus::kFailed;
     MaybeValidateNextExternalUpdate();
     return;
   }
@@ -190,7 +190,7 @@ void KioskExternalUpdater::OnExternalUpdateUnpackFailure(
   if (CheckExternalUpdateInterrupted())
     return;
 
-  external_updates_[app_id].update_status = FAILED;
+  external_updates_[app_id].update_status = UpdateStatus::kFailed;
   external_updates_[app_id].error =
       ui::ResourceBundle::GetSharedInstance().GetLocalizedString(
           IDS_KIOSK_EXTERNAL_UPDATE_BAD_CRX);
@@ -266,7 +266,7 @@ void KioskExternalUpdater::ProcessParsedManifest(
         external_update_path_.AppendASCII(external_crx_str),
         extensions::GetExternalVerifierFormat());
     update.external_crx.extension_id = app_id;
-    update.update_status = PENDING;
+    update.update_status = UpdateStatus::kPending;
     external_updates_[app_id] = update;
   }
 
@@ -296,7 +296,7 @@ bool KioskExternalUpdater::CheckExternalUpdateInterrupted() {
 void KioskExternalUpdater::ValidateExternalUpdates() {
   for (const auto& it : external_updates_) {
     const ExternalUpdate& update = it.second;
-    if (update.update_status == PENDING) {
+    if (update.update_status == UpdateStatus::kPending) {
       auto crx_validator = base::MakeRefCounted<KioskExternalUpdateValidator>(
           backend_task_runner_, update.external_crx, crx_unpack_dir_,
           weak_factory_.GetWeakPtr());
@@ -308,7 +308,7 @@ void KioskExternalUpdater::ValidateExternalUpdates() {
 
 bool KioskExternalUpdater::IsExternalUpdatePending() const {
   for (const auto& it : external_updates_) {
-    if (it.second.update_status == PENDING)
+    if (it.second.update_status == UpdateStatus::kPending)
       return true;
   }
   return false;
@@ -316,7 +316,7 @@ bool KioskExternalUpdater::IsExternalUpdatePending() const {
 
 bool KioskExternalUpdater::IsAllExternalUpdatesSucceeded() const {
   for (const auto& it : external_updates_) {
-    if (it.second.update_status != SUCCESS)
+    if (it.second.update_status != UpdateStatus::kSuccess)
       return false;
   }
   return true;
@@ -366,7 +366,7 @@ void KioskExternalUpdater::PutValidatedExtension(const std::string& app_id,
 
   if (!crx_copied) {
     LOG(ERROR) << "Cannot copy external crx file to " << crx_file.value();
-    external_updates_[app_id].update_status = FAILED;
+    external_updates_[app_id].update_status = UpdateStatus::kFailed;
     external_updates_[app_id].error = l10n_util::GetStringFUTF16(
         IDS_KIOSK_EXTERNAL_UPDATE_FAILED_COPY_CRX_TO_TEMP,
         base::UTF8ToUTF16(crx_file.value()));
@@ -388,12 +388,12 @@ void KioskExternalUpdater::OnPutValidatedExtension(const std::string& app_id,
     return;
 
   if (!success) {
-    external_updates_[app_id].update_status = FAILED;
+    external_updates_[app_id].update_status = UpdateStatus::kFailed;
     external_updates_[app_id].error = l10n_util::GetStringFUTF16(
         IDS_KIOSK_EXTERNAL_UPDATE_CANNOT_INSTALL_IN_LOCAL_CACHE,
         base::UTF8ToUTF16(external_updates_[app_id].external_crx.path.value()));
   } else {
-    external_updates_[app_id].update_status = SUCCESS;
+    external_updates_[app_id].update_status = UpdateStatus::kSuccess;
   }
 
   // Validate the next pending external update.
@@ -421,7 +421,7 @@ void KioskExternalUpdater::NotifyKioskAppUpdateAvailable() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   for (const auto& it : external_updates_) {
-    if (it.second.update_status == SUCCESS) {
+    if (it.second.update_status == UpdateStatus::kSuccess) {
       KioskAppManager::Get()->OnKioskAppCacheUpdated(it.first);
     }
   }
@@ -450,13 +450,13 @@ base::string16 KioskExternalUpdater::GetUpdateReportMessage() const {
   for (const auto& it : external_updates_) {
     const ExternalUpdate& update = it.second;
     base::string16 app_name = base::UTF8ToUTF16(update.app_name);
-    if (update.update_status == SUCCESS) {
+    if (update.update_status == UpdateStatus::kSuccess) {
       ++updated;
       if (updated_apps.empty())
         updated_apps = app_name;
       else
         updated_apps += base::ASCIIToUTF16(", ") + app_name;
-    } else {  // FAILED
+    } else {  // UpdateStatus::kFailed
       ++failed;
       if (failed_apps.empty()) {
         failed_apps = app_name + base::ASCIIToUTF16(": ") + update.error;

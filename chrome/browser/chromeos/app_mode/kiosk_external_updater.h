@@ -40,10 +40,10 @@ class KioskExternalUpdater : public disks::DiskMountManager::Observer,
   ~KioskExternalUpdater() override;
 
  private:
-  enum ExternalUpdateStatus {
-    PENDING,
-    SUCCESS,
-    FAILED,
+  enum class UpdateStatus {
+    kPending,
+    kSuccess,
+    kFailed,
   };
   struct ExternalUpdate {
     ExternalUpdate();
@@ -52,7 +52,7 @@ class KioskExternalUpdater : public disks::DiskMountManager::Observer,
 
     std::string app_name;
     extensions::CRXFileInfo external_crx;
-    ExternalUpdateStatus update_status;
+    UpdateStatus update_status;
     base::string16 error;
   };
 
