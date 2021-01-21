@@ -1687,7 +1687,7 @@
         'swarming': {
           'dimension_sets': [
             {
-              'os': 'Mac',
+              'os': 'Mac-10.13',
             },
           ],
         }
@@ -1696,7 +1696,7 @@
         'swarming': {
           'dimension_sets': [
             {
-              'os': 'Mac',
+              'os': 'Mac-10.13',
             },
           ],
         },
