@@ -57,7 +57,10 @@
 #include "third_party/blink/renderer/core/html/forms/listed_element.h"
 #include "third_party/blink/renderer/core/html/html_area_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
+#include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
+#include "third_party/blink/renderer/core/html/html_script_element.h"
+#include "third_party/blink/renderer/core/html/html_style_element.h"
 #include "third_party/blink/renderer/core/html/html_table_cell_element.h"
 #include "third_party/blink/renderer/core/html/html_table_element.h"
 #include "third_party/blink/renderer/core/html/html_table_row_element.h"
@@ -149,9 +152,24 @@ bool IsNodeRelevantForAccessibility(const Node* node) {
   if (!node->IsElementNode() && !node->IsTextNode() && !node->IsDocumentNode())
     return false;  // Only documents, elements and text nodes get ax objects.
 
+  // When there is a layout object, the element is known to be visible, so
+  // consider it relevant and return early. Checking the layout object is only
+  // useful when display locking (content-visibility) is not used.
+  if (node->GetLayoutObject() &&
+      !DisplayLockUtilities::NearestLockedInclusiveAncestor(*node)) {
+    return true;
+  }
+
+  // The node is either hidden or display locked:
+  // Do not consider <head>/<style>/<script> relevant in these cases.
   if (IsA<HTMLHeadElement>(node))
     return false;
+  if (IsA<HTMLStyleElement>(node))
+    return false;
+  if (IsA<HTMLScriptElement>(node))
+    return false;
 
+  // All other objects are relevant, even if hidden.
   return true;
 }
 
@@ -498,8 +516,11 @@ AXObject* AXObjectCacheImpl::GetOrCreate(Node* node) {
 }
 
 AXObject* AXObjectCacheImpl::CreateAndInit(Node* node, AXID use_axid) {
-#if DCHECK_IS_ON()
   DCHECK(node);
+  if (!IsNodeRelevantForAccessibility(node))
+    return nullptr;
+
+#if DCHECK_IS_ON()
   DCHECK(node->isConnected());
   DCHECK(node->IsElementNode() || node->IsTextNode() || node->IsDocumentNode());
   Document* document = &node->GetDocument();
@@ -559,6 +580,9 @@ AXObject* AXObjectCacheImpl::CreateAndInit(LayoutObject* layout_object,
   Node* node = layout_object->GetNode();
   DCHECK(!node || IsLayoutObjectRelevantForAccessibility(node))
       << "Shouldn't get here if the layout object is not relevant for a11y";
+
+  if (node && !IsNodeRelevantForAccessibility(node))
+    return nullptr;
 
   // Prefer creating AXNodeObjects over AXLayoutObjects in locked subtrees
   // (e.g. content-visibility: auto), even if a LayoutObject is available,

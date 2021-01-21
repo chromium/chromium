@@ -1,0 +1,47 @@
+<!--
+@BLINK-ALLOW:htmlTag*
+@WAIT-FOR:Done
+-->
+<!-- Do not create accessible objects for head, style, script subtrees
+  when hidden via CSS content-visibility -->
+<html>
+  <head>
+    <title>Loading...</title>
+    <style>
+      head,style,script { display:block; content-visibility:hidden; }
+    </style>
+    <style>
+      p { outline: 2px solid green; }
+    </style>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(() => {
+          // Change inner text of head, style, and script  to see if it causes
+          // an attempt to create an accessible object inside a subtree of head,
+          // style, or script, which is not allowed. A DCHECK will be triggered
+          // if an accessible object is created within any of these elements.
+          // Leaves the first two style and script elements alone as they are
+          // used for the test implementation.
+          document.querySelectorAll('style')[1].innerText = 'p { outline: 3px dotted blue; }';
+          document.querySelectorAll('style')[2].innerText = 'p { outline: 3px dotted blue; }';
+          document.querySelectorAll('script')[1].innerText = 'var y = 5;';
+          document.querySelectorAll('script')[2].innerText = 'var y = 5;';
+          document.head.appendChild(document.createElement('meta'));
+          document.head.appendChild(document.createElement('p'));
+          document.title = 'Done';
+        }, 50);
+      });
+    </script>
+    <script>
+      var x = 3;
+    </script>
+  </head>
+</html>
+<body>
+  <style>
+    p { outline: 2px solid green; }
+  </style>
+  <script>
+    var x = 3;
+  </script>
+</body>
