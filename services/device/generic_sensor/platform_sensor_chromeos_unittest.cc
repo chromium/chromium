@@ -189,19 +189,14 @@ TEST_P(PlatformSensorChromeOSOneChannelTest, GetSamples) {
   sensor_->StartListening(client.get(), PlatformSensorConfiguration(frequency));
   WaitForAndCheckReading(client.get());
 
-  sensor_device_->ResetObserverRemote(receiver_id_);
-
-  WaitForAndCheckReading(client.get());
-
   DisableFirstChannel();
-  sensor_device_->ResetObserverRemote(receiver_id_);
 
   EXPECT_CALL(*client.get(), OnSensorReadingChanged(GetParam().first)).Times(0);
   // Wait until a sample without the first channel is received.
   base::RunLoop().RunUntilIdle();
   // No reading updated.
 
-  sensor_device_->RemoveReceiver(receiver_id_);
+  sensor_device_->ResetObserverRemote(receiver_id_);
 
   base::RunLoop loop;
   // Wait until the disconnect arrives at |sensor_|.
@@ -341,12 +336,7 @@ TEST_P(PlatformSensorChromeOSAxesTest, GetSamples) {
   sensor_->StartListening(client.get(), PlatformSensorConfiguration(frequency));
   WaitForAndCheckReading(client.get());
 
-  sensor_device_->ResetObserverRemote(receiver_id_);
-
-  WaitForAndCheckReading(client.get());
-
   DisableFirstChannel();
-  sensor_device_->ResetObserverRemote(receiver_id_);
 
   EXPECT_CALL(*client.get(), OnSensorReadingChanged(GetParam().first)).Times(0);
   // Wait until a sample without the first channel is received.

@@ -361,7 +361,10 @@ bool PlatformSensorProviderChromeOS::AreAllSensorsReady() const {
 void PlatformSensorProviderChromeOS::OnSensorDeviceDisconnect(int32_t id) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  sensors_[id].remote.reset();
+  LOG(ERROR) << "OnSensorDeviceDisconnect: " << id;
+
+  // Assumes IIO Service has crashed and waits for its relaunch.
+  ResetSensorService();
 }
 
 void PlatformSensorProviderChromeOS::ProcessSensorsIfPossible() {

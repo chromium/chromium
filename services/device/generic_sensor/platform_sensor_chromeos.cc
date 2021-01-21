@@ -259,12 +259,10 @@ void PlatformSensorChromeOS::OnObserverDisconnect() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(receiver_.is_bound());
 
-  LOG(ERROR) << "On Observer Disconnect";
-  receiver_.reset();
+  LOG(ERROR) << "OnObserverDisconnect";
 
-  // Try to restart reading.
-  if (sensor_device_remote_.is_bound())
-    StartReadingIfReady();
+  // Assumes IIO Service has crashed and waits for its relaunch.
+  ResetOnError();
 }
 
 void PlatformSensorChromeOS::SetRequiredChannels() {

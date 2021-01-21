@@ -317,43 +317,64 @@ TEST_F(PlatformSensorProviderChromeOSTest,
   EXPECT_TRUE(CreateSensor(mojom::SensorType::AMBIENT_LIGHT));
 }
 
-TEST_F(PlatformSensorProviderChromeOSTest, Reconnect) {
+TEST_F(PlatformSensorProviderChromeOSTest, SensorDeviceDisconnect) {
   int fake_id = 1;
-
-  // Will not be used.
   AddDevice(fake_id++, chromeos::sensors::mojom::DeviceType::ACCEL,
             base::NumberToString(kScaleValue),
-            chromeos::sensors::mojom::kLocationBase);
-
+            chromeos::sensors::mojom::kLocationLid);
   AddDevice(fake_id++, chromeos::sensors::mojom::DeviceType::ANGLVEL,
             base::NumberToString(kScaleValue),
             chromeos::sensors::mojom::kLocationLid);
 
-  AddDevice(fake_id++, chromeos::sensors::mojom::DeviceType::LIGHT,
-            base::NumberToString(kScaleValue),
-            chromeos::sensors::mojom::kLocationBase);
-
   StartConnection();
 
-  EXPECT_FALSE(CreateSensor(mojom::SensorType::ACCELEROMETER));
+  EXPECT_TRUE(CreateSensor(mojom::SensorType::ACCELEROMETER));
 
-  // Simulate a disconnection between |provider_| and the dispatcher.
-  ResetClient();
-
-  EXPECT_TRUE(CreateSensor(mojom::SensorType::GYROSCOPE));
-
-  // Simulate a disconnection of IIO Service.
-  sensor_hal_server_->GetSensorService()->ClearReceivers();
-  sensor_hal_server_->OnServerDisconnect();
-  // Remove the stored Mojo remote of the ambient light sensor.
+  // Simulate a disconnection of an existing SensorDevice in |provider_|, which
+  // triggers PlatformSensorProviderChromeOS::OnSensorDeviceDisconnect().
   sensor_devices_.back()->ClearReceivers();
 
-  // Wait until the disconnect arrives at the dispatcher.
+  // Wait until the disconnection is done.
   base::RunLoop().RunUntilIdle();
+  // PlatformSensorProviderChromeOS::OnSensorDeviceDisconnect() resets the
+  // SensorService Mojo channel.
+  EXPECT_FALSE(sensor_hal_server_->GetSensorService()->HasReceivers());
+}
+
+TEST_F(PlatformSensorProviderChromeOSTest, ReconnectClient) {
+  AddDevice(kFakeDeviceId, chromeos::sensors::mojom::DeviceType::ACCEL,
+            base::NumberToString(kScaleValue),
+            chromeos::sensors::mojom::kLocationLid);
 
   StartConnection();
 
-  EXPECT_TRUE(CreateSensor(mojom::SensorType::AMBIENT_LIGHT));
+  EXPECT_TRUE(CreateSensor(mojom::SensorType::ACCELEROMETER));
+
+  // Simulate a disconnection between |provider_| and SensorHalDispatcher.
+  ResetClient();
+
+  EXPECT_TRUE(CreateSensor(mojom::SensorType::ACCELEROMETER));
+}
+
+TEST_F(PlatformSensorProviderChromeOSTest, ReconnectServer) {
+  AddDevice(kFakeDeviceId, chromeos::sensors::mojom::DeviceType::ACCEL,
+            base::NumberToString(kScaleValue),
+            chromeos::sensors::mojom::kLocationLid);
+
+  StartConnection();
+
+  EXPECT_TRUE(CreateSensor(mojom::SensorType::ACCELEROMETER));
+
+  sensor_hal_server_->OnServerDisconnect();
+  sensor_hal_server_->GetSensorService()->ClearReceivers();
+
+  base::RunLoop().RunUntilIdle();
+  // Finished simulating a disconnection with IIO Service.
+  EXPECT_FALSE(provider_->GetSensor(mojom::SensorType::ACCELEROMETER));
+
+  StartConnection();
+
+  EXPECT_TRUE(CreateSensor(mojom::SensorType::ACCELEROMETER));
 }
 
 TEST_F(PlatformSensorProviderChromeOSTest,
