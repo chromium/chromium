@@ -72,6 +72,9 @@ class StorageHandler : public DevToolsDomainHandler,
   Response TrackIndexedDBForOrigin(const std::string& origin) override;
   Response UntrackIndexedDBForOrigin(const std::string& origin) override;
 
+  void GetTrustTokens(
+      std::unique_ptr<GetTrustTokensCallback> callback) override;
+
  private:
   // See definition for lifetime information.
   class CacheStorageObserver;

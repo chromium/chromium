@@ -545,5 +545,37 @@ Response StorageHandler::FindStoragePartition(
   return Response::Success();
 }
 
+namespace {
+
+void SendTrustTokens(
+    std::unique_ptr<StorageHandler::GetTrustTokensCallback> callback,
+    std::vector<::network::mojom::StoredTrustTokensForIssuerPtr> tokens) {
+  auto result =
+      std::make_unique<protocol::Array<protocol::Storage::TrustTokens>>();
+  for (auto const& token : tokens) {
+    auto protocol_token =
+        protocol::Storage::TrustTokens::Create()
+            .SetIssuerOrigin(token->issuer.GetURL().GetContent())
+            .SetCount(token->count)
+            .Build();
+    result->push_back(std::move(protocol_token));
+  }
+
+  callback->sendSuccess(std::move(result));
+}
+
+}  // namespace
+
+void StorageHandler::GetTrustTokens(
+    std::unique_ptr<GetTrustTokensCallback> callback) {
+  if (!storage_partition_) {
+    callback->sendFailure(Response::InternalError());
+    return;
+  }
+
+  storage_partition_->GetNetworkContext()->GetStoredTrustTokenCounts(
+      base::BindOnce(&SendTrustTokens, std::move(callback)));
+}
+
 }  // namespace protocol
 }  // namespace content

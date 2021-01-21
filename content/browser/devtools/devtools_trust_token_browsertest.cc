@@ -278,4 +278,40 @@ IN_PROC_BROWSER_TEST_F(DevToolsTrustTokenBrowsertest,
           protocol::Network::TrustTokenOperationDone::StatusEnum::BadResponse));
 }
 
+IN_PROC_BROWSER_TEST_F(DevToolsTrustTokenBrowsertest, GetTrustTokens) {
+  ProvideRequestHandlerKeyCommitmentsToNetworkService({"a.test"});
+
+  // 1) Navigate to a test site.
+  GURL start_url = server_.GetURL("a.test", "/title1.html");
+  ASSERT_TRUE(NavigateToURL(shell(), start_url));
+
+  // 2) Open DevTools.
+  Attach();
+
+  // 3) Call Storage.getTrustTokens and expect none to be there.
+  SendCommand("Storage.getTrustTokens", nullptr);
+  base::Value* tokens = result_->FindPath("tokens");
+  EXPECT_TRUE(tokens);
+  EXPECT_EQ(tokens->GetList().size(), 0ul);
+
+  // 4) Request and redeem a token, then use the redeemed token in a Signing
+  // request.
+  std::string command = R"(
+  (async () => {
+    await fetch('/issue', {trustToken: {type: 'token-request'}});
+    return 'Success'; })(); )";
+
+  // We use EvalJs here, not ExecJs, because EvalJs waits for promises to
+  // resolve.
+  EXPECT_EQ(
+      "Success",
+      EvalJs(shell(), JsReplace(command, IssuanceOriginFromHost("a.test"))));
+
+  // 5) Call Storage.getTrustTokens and expect a Trust Token to be there.
+  SendCommand("Storage.getTrustTokens", nullptr);
+  tokens = result_->FindPath("tokens");
+  EXPECT_TRUE(tokens);
+  EXPECT_EQ(tokens->GetList().size(), 1ul);
+}
+
 }  // namespace content
