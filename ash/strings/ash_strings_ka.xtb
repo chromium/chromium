@@ -77,6 +77,7 @@
 <translation id="1570871743947603115">Bluetooth-ის გადართვა. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">ამ სესიის დროს თქვენს მთელ აქტივობაზე წვდომა</translation>
 <translation id="1611993646327628135">ჩართული</translation>
+<translation id="1615402009686901181">ადმინისტრატორის წესების მიხედვით, ეკრანის აღბეჭდვა გათიშულია, როცა ხილულია კონფიდენციალური კონტენტი</translation>
 <translation id="1632985212731562677">გადამრთველით წვდომის გათიშვა შესაძლებელია აქ: პარამეტრები &gt; მარტივი წვდომა.</translation>
 <translation id="1654477262762802994">ხმოვანი მოთხოვნის დაწყება</translation>
 <translation id="1667964833127753507">ფერთა ნეიტრალური რეჟიმი არ იყენებს ფონიდან ამოღებულ ფერებს — ისინი ნეიტრალური ღია ან მუქი ტონებით ნაცვლდება.</translation>
@@ -117,6 +118,7 @@
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">გამარჯობა, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">ტექსტის შეყვანა</translation>
+<translation id="1989113344093894667">კონტენტის აღბეჭდვა ვერ ხერხდება</translation>
 <translation id="1993072747612765854">შეიტყვეთ მეტი <ph name="SYSTEM_APP_NAME" />-ის ბოლო განახლების შესახებ</translation>
 <translation id="1995660704900986789">გამორთვა</translation>
 <translation id="1998100899771863792">ამჟამინდელი სამუშაო მაგიდა</translation>
@@ -143,6 +145,7 @@
 <translation id="225680501294068881">სკანირება მოწყობილობებისთვის…</translation>
 <translation id="2268130516524549846">Bluetooth გათიშულია</translation>
 <translation id="2268813581635650749">ყველას გამოსვლა</translation>
+<translation id="2269016722240250274">აპლიკაცია იყენებს თქვენს მიკროფონს</translation>
 <translation id="2277103315734023688">წინ გადახვევა</translation>
 <translation id="2292698582925480719">ჩვენების მასშტაბი</translation>
 <translation id="229397294990920565">მიმდინარეობს მობილური ინტერნეტის გათიშვა...</translation>
@@ -168,6 +171,7 @@
 <translation id="2427507373259914951">მარცხენა დაწკაპუნება</translation>
 <translation id="2429753432712299108">Bluetooth მოწყობილობა „<ph name="DEVICE_NAME" />“ მოითხოვს ნებართვას დაწყვილებისთვის. დათანხმებამდე, დაადასტურეთ, რომ ეს კოდი მითითებულია მოწყობილობაში: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">პაროლის ჩვენება</translation>
+<translation id="2450205753526923158">ეკრანის ანაბეჭდის რეჟიმი</translation>
 <translation id="2473177541599297363">დაადასტურეთ გარჩევადობა</translation>
 <translation id="2475982808118771221">შეცდომა მოხდა</translation>
 <translation id="2482878487686419369">შეტყობინებები</translation>
@@ -184,6 +188,7 @@
 <translation id="2596078834055697711">ფანჯრის ანაბეჭდის გადაღება</translation>
 <translation id="2617342710774726426">SIM ბარათი დაბლოკილია</translation>
 <translation id="2621713457727696555">დაცული</translation>
+<translation id="2653019840645008922">ფანჯრის აღბეჭდვა</translation>
 <translation id="2653659639078652383">გაგზავნა</translation>
 <translation id="2658778018866295321">დაწკაპუნება და ჩავლებით გადატანა</translation>
 <translation id="2678852583403169292">წარმოსათქმელად მონიშვნის მენიუ</translation>
@@ -198,6 +203,7 @@
 <translation id="2727977024730340865">შეერთებულია დაბალი სიმძლავრის დამტენთან. ბატარეის დატენვა შეიძლება არ იყოს სანდო.</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> იმართება <ph name="MANAGER" />-ის მიერ</translation>
 <translation id="2792498699870441125">Alt+ძიება</translation>
+<translation id="2814448776515246190">ნაწილობრივი აღბეჭდვა</translation>
 <translation id="2819276065543622893">თქვენ ახლა გამოხვალთ.</translation>
 <translation id="28232023175184696">ინტერნეტთან დაკავშირება ვერ მოხერხდა. დააწკაპუნეთ ხელახლა საცდელად.</translation>
 <translation id="2825224105325558319"><ph name="SPECIFIED_RESOLUTION" /> არ არის მხარდაჭერილი <ph name="DISPLAY_NAME" />-ის მიერ. გარჩევადობა შეიცვალა <ph name="FALLBACK_RESOLUTION" />-ზე.</translation>
@@ -224,6 +230,7 @@
 <translation id="3033545621352269033">ჩართვა</translation>
 <translation id="3036649622769666520">გახსენით ფაილები</translation>
 <translation id="3038571455154067151">სისტემაში შესასვლელად შეიყვანეთ Family Link-ის წვდომის კოდი მშობლებისთვის</translation>
+<translation id="3039939407102840004">სტილუსის ბატარეა <ph name="PERCENTAGE" /> პროცენტზეა.</translation>
 <translation id="3045488863354895414">შუადღე მშვიდობის,</translation>
 <translation id="3051128274746680507">თქვენი კონტროლის ქვეშ მყოფი მომხმარებლის პროფილი მალე ამოიშლება. დამატებითი ინფორმაციისთვის შედით სისტემაში.</translation>
 <translation id="3055162170959710888">ამ მოწყობილობას დღეს <ph name="USED_TIME" /> იყენებდით</translation>
@@ -233,6 +240,7 @@
 <translation id="3090989381251959936">გადაირთოს <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">კურსორის გადაადგილება</translation>
 <translation id="3098580329624789136">„<ph name="QUERY" />“-ის <ph name="INTENT" /></translation>
+<translation id="3100274880412651815">აღბეჭდვის რეჟიმის დახურვა</translation>
 <translation id="3105917916468784889">ეკრანის ანაბეჭდის გადაღება</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3126069444801937830">გადატვირთეთ განახლებისთვის</translation>
@@ -298,6 +306,7 @@
 <translation id="3621202678540785336">შეყვანა</translation>
 <translation id="3621712662352432595">აუდიო პარამეტრები</translation>
 <translation id="3626281679859535460">სიკაშკაშე</translation>
+<translation id="3630697955794050612">გამორთული</translation>
 <translation id="3631369015426612114">შეტყობინებების დაშვება შემდეგიდან:</translation>
 <translation id="3638400994746983214">კონფიდენციალურობის ეკრანის გადართვა. <ph name="STATE_TEXT" />.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> — მართული მომხმარებელი</translation>
@@ -311,6 +320,7 @@
 <translation id="3773700760453577392">ადმინისტრატორმა აკრძალა მრავალჯერადი შესვლა <ph name="USER_EMAIL" />-ისთვის. გასაგრძელებლად საჭიროა ყველა მომხმარებლის გამოსვლა სისტემიდან.</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">დაბლოკვა</translation>
+<translation id="3796746699333205839">აპლიკაცია იყენებს თქვენს კამერასა და მიკროფონს</translation>
 <translation id="3798670284305777884">დინამიკი (შიდა)</translation>
 <translation id="3799080171973636491">თქვენ დააჭირეთ სრულეკრანიანი ლუპის კლავიატურის მალსახმობს. გსურთ მისი ჩართვა?</translation>
 <translation id="380165613292957338">გამარჯობა, რით შემიძლია გემსახუროთ?</translation>
@@ -404,6 +414,7 @@
 <translation id="4570957409596482333">წარმოსათქმელად მონიშვნის ღილაკი</translation>
 <translation id="4577274620589681794">დრო ამოიწურა · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">გადახედვის ჩართვა</translation>
+<translation id="4578906031062871102">პარამეტრების მენიუ გახსნილია</translation>
 <translation id="4585337515783392668">ტრანსლირების შეწყვეტა უცნობ მიმღებში</translation>
 <translation id="4596144739579517758">მუქი თემა გამორთულია</translation>
 <translation id="4623167406982293031">დაადასტურეთ ანგარიში</translation>
@@ -486,6 +497,7 @@
 <translation id="5379115545237091094">დაფიქსირდა მეტისმეტად ბევრი მცდელობა</translation>
 <translation id="5397578532367286026">ამ მომხმარებლის გამოყენების და ისტორიის დათვალიერება შესაძლებელია მენეჯერის მიერ (<ph name="MANAGER_EMAIL" />) chrome.com-ზე.</translation>
 <translation id="5400461572260843123">სწრაფი პარამეტრები, შეტყობინებების ცენტრზე წვდომისთვის დააჭირეთ კლავიშთა კომბინაციაზე: search + მარცხნივ მიმართული ისარი.</translation>
+<translation id="5426063383988017631">პარამეტრების მენიუ დახურულია</translation>
 <translation id="5428899915242071344">არჩევის დაწყება</translation>
 <translation id="5430931332414098647">მყისიერი ტეტერინგი</translation>
 <translation id="5431825016875453137">OpenVPN / L2TP</translation>
@@ -502,12 +514,15 @@
 <translation id="556042886152191864">ღილაკი</translation>
 <translation id="5571066253365925590">Bluetooth ჩართულია</translation>
 <translation id="557563299383177668">შემდეგი აბზაცი</translation>
+<translation id="5577281275355252094">ტელეფონის ცენტრის გამოსაყენებლად შეამოწმეთ, რომ თქვენს ტელეფონზე ჩართულია Bluetooth</translation>
 <translation id="558849140439112033">ჩავლებით გადაიტანეთ, აღსაბეჭდი არე რომ აირჩიოთ</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">გახმოვანებული უკუკავშირის გასათიშად დააჭირეთ კლავიშთა კომბინაციას: Ctrl + Alt + Z.</translation>
 <translation id="5601503069213153581">PIN</translation>
+<translation id="5619862035903135339">ეკრანის აღბეჭდვა გათიშულია ადმინისტრატორის წესების მიხედვით</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">მიკროფონის ჯეკი</translation>
+<translation id="5662709761327382534">მიკროფონის ჩაწერაა <ph name="CURRENT_STATE" />, დააჭირეთ კლავიშს enter, თუ გსურთ, მიკროფონის ჩაწერა <ph name="NEW_STATE" /> იყოს</translation>
 <translation id="5669267381087807207">გააქტიურება</translation>
 <translation id="5673434351075758678">„<ph name="FROM_LOCALE" />“ გახდა „<ph name="TO_LOCALE" />“ თქვენი პარამეტრების სინქრონიზაციის შემდეგ.</translation>
 <translation id="5677928146339483299">დაბლოკილი</translation>
@@ -555,6 +570,7 @@
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />, მართავს თქვენი ადმინისტრატორი</translation>
 <translation id="6030495522958826102">მენიუ გადატანილია ეკრანის ქვედა მარცხენა კუთხეში.</translation>
 <translation id="6032620807120418574">სრული ეკრანის ჩასაწერად დააწკაპუნეთ ნებისმიერ ადგილზე</translation>
+<translation id="6040071906258664830">მიკროფონის ჩაწერაა <ph name="STATE" /></translation>
 <translation id="6040143037577758943">დახურვა</translation>
 <translation id="6043212731627905357">ეს მონიტორი თქვენს <ph name="DEVICE_TYPE" />-თან თავსებადი არ არის (მონიტორი მხარდაუჭერელია).</translation>
 <translation id="6043994281159824495">გამოსვლა</translation>
@@ -564,6 +580,7 @@
 <translation id="6062360702481658777">თქვენ ავტომატურად გამოხვალთ ამ პერიოდში: <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">ჩაწერის შეწყვეტა</translation>
 <translation id="607652042414456612">თქვენი კომპიუტერი ხილულია ახლომდებარე Bluetooth მოწყობილობებისთვის და გამოჩნდება, როგორც „<ph name="NAME" />“ მისამართით <ph name="ADDRESS" /></translation>
+<translation id="6094290315941448991">ადმინისტრატორის წესების მიხედვით, ეკრანის ჩაწერა გათიშულია, როცა ხილულია კონფიდენციალური კონტენტი</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google ასისტენტი მიუწვდომელია სტუმრის სესიაში.</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" />-ის ამოშლის დიალოგის გახსნა</translation>
@@ -620,6 +637,7 @@
 <translation id="6650933572246256093">Bluetooth მოწყობილობა „<ph name="DEVICE_NAME" />“ მოითხოვს დაწყვილების ნებართვას. შეიყვანეთ ეს საიდუმლო ფრაზა მოწყობილობაში: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">პაროლი</translation>
 <translation id="6665545700722362599">ვებსაიტებისთვის, აპებისთვის და გაფართოებებისთვის მდებარეობის სერვისების, მოწყობილობის მიკროფონის, კამერისა თუ სხვა ფუნქციების გამოყენების დაშვება</translation>
+<translation id="6667908387435388584">დაუკავშირდით თქვენი ტელეფონის უსადენო ქსელს, დაადუმეთ თქვენი მოწყობილობა და იპოვეთ მისი მდებარეობა, ასევე, იხილეთ თქვენს ტელეფონზე გახსნილი ბოლოდროინდელი Chrome ჩანართები</translation>
 <translation id="6670153871843998651">დესკტოპი 3</translation>
 <translation id="6671495933530132209">გამოსახულების კოპირება</translation>
 <translation id="6691659475504239918">Search+Shift+H</translation>
@@ -700,7 +718,9 @@
 <translation id="742594950370306541">კამერა გამოიყენება.</translation>
 <translation id="742608627846767349">დილა მშვიდობის,</translation>
 <translation id="743058460480092004">კამერა და მიკროფონი გამოიყენება.</translation>
+<translation id="7452560014878697800">აპლიკაცია იყენებს თქვენს კამერას</translation>
 <translation id="7461924472993315131">პინი</translation>
+<translation id="746232733191930409">ეკრანის ჩაწერის რეჟიმი</translation>
 <translation id="7466449121337984263">შეეხეთ სენსორს</translation>
 <translation id="7477793887173910789">მართეთ თქვენი მუსიკა, ვიდეოები და სხვა</translation>
 <translation id="7497767806359279797">აირჩიეთ ენა და კლავიატურა</translation>
@@ -729,6 +749,7 @@
 <translation id="7658239707568436148">გაუქმება</translation>
 <translation id="7662283695561029522">შეეხეთ პარამეტრების კონფიგურაციისთვის</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="7714767791242455379">ახალი ფიჭური ქსელის დამატება</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 შეტყობინება}other{# შეტყობინება}}</translation>
 <translation id="7724603315864178912">ამოჭრა</translation>
 <translation id="7745560842763881396">თაროზე აპების ჩვენება</translation>
@@ -743,6 +764,7 @@
 <translation id="7842569679327885685">გაფრთხილება: ფუნქცია ექსპერიმენტულია</translation>
 <translation id="7846634333498149051">კლავიატურა</translation>
 <translation id="7860671499921112077">მიმოხილვაზე გადასასვლელად გადაფურცლეთ ზემოთ სამი თითით</translation>
+<translation id="7866482334467279021">ჩართული</translation>
 <translation id="7868900307798234037">მიმდინარეობს თითის ანაბეჭდით განბლოკვა</translation>
 <translation id="7872786842639831132">გამორთვა</translation>
 <translation id="7875575368831396199">როგორც ჩანს, თქვენს <ph name="DEVICE_TYPE" />-ზე გამორთულია Bluetooth. ტელეფონის ცენტრის გამოსაყენებლად ჩართეთ Bluetooth.</translation>
@@ -772,6 +794,7 @@
 <translation id="8036504271468642248">წინა წინადადება</translation>
 <translation id="8042893070933512245">მარტივი წვდომის პარამეტრების მენიუს გახსნა</translation>
 <translation id="8048123526339889627">Bluetooth-ის პარამეტრები</translation>
+<translation id="8052898407431791827">დაკოპირდა გაცვლის ბუფერში</translation>
 <translation id="8054466585765276473">ბატარეის დროის გამოთვლა.</translation>
 <translation id="8061464966246066292">მაღალკონტრასტული რეჟიმი</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" />-ში ეკრანის ტრანსლირების შეწყვეტა</translation>
@@ -843,9 +866,11 @@
 <translation id="8673028979667498656">270°</translation>
 <translation id="8676770494376880701">დაბალი სიმძლავრის დამტენი დაკავშირებულია</translation>
 <translation id="8683506306463609433">ეფექტურობის ტრასირება გააქტიურებულია</translation>
+<translation id="8703634754197148428">ჩაწერის დაწყება. ჩაწერის დაწყების შემდეგ თაროზე გადასასვლელად და ჩაწერის შეწყვეტის ღილაკის საპოვნელად გამოიყენეთ კლავიშთა კომბინაცია Alt + Shift + L</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> ამ ფუნქციის სამართავად გამოიყენეთ კლავიშები მარცხნივ ან მარჯვნივ მიმართული ისრებით.</translation>
 <translation id="8712637175834984815">კარგი</translation>
 <translation id="8721053961083920564">ხმის გადართვა. <ph name="STATE_TEXT" /></translation>
+<translation id="8724318433625452070">სრული ეკრანის აღბეჭდვა</translation>
 <translation id="8734991477317290293">ეს შეიძლება იყოს თქვენ მიერ აკრეფილი ტექსტის მოპარვის მცდელობა</translation>
 <translation id="8735953464173050365">კლავიატურის პარამეტრების ჩვენება. არჩეულია <ph name="KEYBOARD_NAME" /></translation>
 <translation id="8755498163081687682">დაადასტურეთ ვინაობა: <ph name="ORIGIN_NAME" /> ითხოვს თქვენი ვინაობის დადასტურებას</translation>
@@ -869,6 +894,7 @@
 <translation id="8877788021141246043">შეხსენების დაყენება</translation>
 <translation id="8878886163241303700">ეკრანის გაშლა</translation>
 <translation id="8883473964424809116">დააწკაპუნეთ Google ასისტენტის პარამეტრების გასახსნელად.</translation>
+<translation id="8884537526797090108">კონფიდენციალური კონტენტის ჩაწერა ვერ მოხერხდება</translation>
 <translation id="890616557918890486">წყაროს შეცვლა</translation>
 <translation id="8909138438987180327">ბატარეის დონე <ph name="PERCENTAGE" /> პროცენტზეა.</translation>
 <translation id="8913384980486163186">თემატური (ნაგულისხმევი)</translation>
@@ -884,6 +910,7 @@
 <translation id="9017320285115481645">შეიყვანეთ Family Link-ის წვდომის კოდი მშობლებისთვის.</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" />-ის პარამეტრების გახსნა</translation>
 <translation id="9056839673611986238">მოწყობილობა დაბრუნდება ძველ ვერსიაზე</translation>
+<translation id="9063800855227801443">კონფიდენციალური კონტენტის აღბეჭდვა ვერ მოხერხდება</translation>
 <translation id="9065203028668620118">რედაქტირება</translation>
 <translation id="9070640332319875144">ასისტენტის პარამეტრები</translation>
 <translation id="9072519059834302790">ბატარეის დაცლამდე დარჩენილია <ph name="TIME_LEFT" />.</translation>

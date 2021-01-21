@@ -80,6 +80,7 @@
     &lt;li&gt;Обратитесь к владельцу сайта.&lt;/li&gt;
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Вы ввели пароль на сайте, которым не управляет ваша организация. Чтобы защитить свой аккаунт, не используйте этот пароль для других приложений и сайтов.</translation>
+<translation id="1259144770381827039">Подробнее…</translation>
 <translation id="1263231323834454256">Список для чтения</translation>
 <translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
         На этом устройстве не будут сохраняться:
@@ -322,6 +323,7 @@
 <translation id="2164510882479075877">Проверьте, нет ли опечаток в имени хоста <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">Доступ администратора ко всем данным</translation>
 <translation id="2166378884831602661">Этот сайт не может обеспечить безопасное соединение</translation>
+<translation id="2168151236314517198">Администратор запретил печатать этот контент.</translation>
 <translation id="2169984857010174799">Kaku2 (конверт)</translation>
 <translation id="2181821976797666341">Правила</translation>
 <translation id="2183608646556468874">Номер телефона</translation>
@@ -1111,7 +1113,7 @@
 <translation id="5332219387342487447">Способ доставки</translation>
 <translation id="5334013548165032829">Подробные системные журналы.</translation>
 <translation id="5340250774223869109">Приложение заблокировано</translation>
-<translation id="534295439873310000">Устройства с функцией NFC</translation>
+<translation id="534295439873310000">Устройства с NFC</translation>
 <translation id="5344579389779391559">Если вы откроете эту страницу, с вашего счета могут быть списаны средства</translation>
 <translation id="5355557959165512791">Сертификат веб-сайта <ph name="SITE" /> отозван. Открыть сайт в настоящее время нельзя. Сбой мог быть вызван сетевой ошибкой или действиями злоумышленников. Скорее всего, сайт заработает через некоторое время.</translation>
 <translation id="536296301121032821">Не удалось сохранить настройки политики</translation>
@@ -1348,6 +1350,7 @@
 <translation id="6290238015253830360">Здесь появятся рекомендуемые статьи.</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">Google Ассистент в Chrome отключится</translation>
+<translation id="6304463939629872728">Посмотреть предложение для</translation>
 <translation id="6305205051461490394">Сайт <ph name="URL" /> недоступен.</translation>
 <translation id="6312113039770857350">Не удалось открыть веб-страницу</translation>
 <translation id="6321917430147971392">Проверьте настройки DNS</translation>
@@ -1377,6 +1380,7 @@
 <translation id="6406765186087300643">C0 (конверт)</translation>
 <translation id="6409754798200046165">Вы только что ввели пароль на поддельном сайте. Браузер Chrome рекомендует сменить пароль прямо сейчас.</translation>
 <translation id="6410264514553301377">Введите срок действия и CVC-код карты <ph name="CREDIT_CARD" /></translation>
+<translation id="6410774864568266108">Не забудьте о специальном предложении Google Pay</translation>
 <translation id="6415778972515849510">Защитите свой аккаунт Google и смените пароль с помощью Chromium.</translation>
 <translation id="6423385022588644828">Подтверждайте карты быстрее с помощью Touch ID</translation>
 <translation id="6425092077175753609">Material design</translation>

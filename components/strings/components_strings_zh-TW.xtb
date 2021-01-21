@@ -80,6 +80,7 @@
     &lt;li&gt;與網站擁有者聯絡。&lt;/li&gt;
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">你在不是由貴機構管理的網站上輸入了你的密碼。為確保帳戶安全，請勿在其他應用程式和網站上重複使用你的密碼。</translation>
+<translation id="1259144770381827039">查看詳細資料。</translation>
 <translation id="1263231323834454256">閱讀清單</translation>
 <translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
         這部裝置不會儲存的活動：
@@ -322,6 +323,7 @@
 <translation id="2164510882479075877">請檢查 <ph name="HOST_NAME" /> 中是否有錯字。</translation>
 <translation id="2166049586286450108">完整管理員存取權</translation>
 <translation id="2166378884831602661">這個網站無法提供安全連線</translation>
+<translation id="2168151236314517198">系統管理員政策禁止列印此內容</translation>
 <translation id="2169984857010174799">Kaku2 (信封)</translation>
 <translation id="2181821976797666341">政策</translation>
 <translation id="2183608646556468874">電話號碼</translation>
@@ -1349,6 +1351,7 @@
 <translation id="6290238015253830360">這裡會顯示推薦給你的文章</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">正在停止 Chrome 版 Google 助理</translation>
+<translation id="6304463939629872728">使用以下卡片結帳：</translation>
 <translation id="6305205051461490394">無法連上 <ph name="URL" />。</translation>
 <translation id="6312113039770857350">網頁無法使用</translation>
 <translation id="6321917430147971392">檢查 DNS 設定</translation>
@@ -1378,6 +1381,7 @@
 <translation id="6406765186087300643">C0 (信封)</translation>
 <translation id="6409754798200046165">你剛才在詐騙網站上輸入了密碼。Chrome 建議你立即變更密碼。</translation>
 <translation id="6410264514553301377">輸入 <ph name="CREDIT_CARD" /> 的到期日和信用卡驗證碼</translation>
+<translation id="6410774864568266108">別錯過 Google Pay 優惠</translation>
 <translation id="6415778972515849510">Chromium 可協助你保護 Google 帳戶並變更密碼。</translation>
 <translation id="6423385022588644828">現在就開始使用 Touch ID，加快卡片驗證速度</translation>
 <translation id="6425092077175753609">質感</translation>

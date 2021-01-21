@@ -80,6 +80,7 @@
     &lt;li&gt;Зв’яжіться з власником веб-сайту.&lt;/li&gt;
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Ви ввели пароль на сайті, яким не керує ваша організація. Щоб захистити свій обліковий запис, не використовуйте цей пароль для інших додатків і сайтів.</translation>
+<translation id="1259144770381827039">Докладніше.</translation>
 <translation id="1263231323834454256">Список читання</translation>
 <translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
         Дії, інформація про які не залишиться на пристрої:
@@ -326,6 +327,7 @@
 <translation id="2164510882479075877">Перевірте, чи немає описки в імені хосту <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">Повний адміністративний доступ</translation>
 <translation id="2166378884831602661">Цей сайт не може забезпечити захищене з’єднання</translation>
+<translation id="2168151236314517198">Адміністратор заборонив друкувати цей контент</translation>
 <translation id="2169984857010174799">Kaku2 (конверт)</translation>
 <translation id="2181821976797666341">Правила</translation>
 <translation id="2183608646556468874">Номер телефону</translation>
@@ -1358,6 +1360,7 @@
 <translation id="6290238015253830360">Тут відображатимуться рекомендовані статті</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">Припинення роботи Google Асистента в Chrome</translation>
+<translation id="6304463939629872728">Оплатити за допомогою</translation>
 <translation id="6305205051461490394">Сторінка <ph name="URL" /> недоступна.</translation>
 <translation id="6312113039770857350">Веб-сторінка недоступна</translation>
 <translation id="6321917430147971392">Перевірте налаштування DNS</translation>
@@ -1387,6 +1390,7 @@
 <translation id="6406765186087300643">C0 (конверт)</translation>
 <translation id="6409754798200046165">Щойно ви ввели пароль на оманливому сайті. Chrome радить змінити пароль.</translation>
 <translation id="6410264514553301377">Введіть дату закінчення терміну дії та код CVC картки <ph name="CREDIT_CARD" /></translation>
+<translation id="6410774864568266108">Не забудьте про пропозицію Google Pay</translation>
 <translation id="6415778972515849510">Chromium допоможе захистити обліковий запис Google і змінити пароль.</translation>
 <translation id="6423385022588644828">Відтепер ви можете підтверджувати картки швидше за допомогою Touch ID</translation>
 <translation id="6425092077175753609">Матеріальний</translation>

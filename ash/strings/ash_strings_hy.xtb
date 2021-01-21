@@ -77,6 +77,7 @@
 <translation id="1570871743947603115">Միացնել/անջատել Bluetooth-ը: <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Դիտեք այս աշխատաշրջանում ձեր գործողությունների վիճակագրությունը</translation>
 <translation id="1611993646327628135">Միացված է</translation>
+<translation id="1615402009686901181">Ադմինիստրատորն անջատում է էկրանի լուսանկարումը, երբ գաղտնի բովանդակություն է տեսանելի</translation>
 <translation id="1632985212731562677">Switch Access-ն անջատելու համար անցեք Կարգավորումներ &gt; Հատուկ գործառույթներ։</translation>
 <translation id="1654477262762802994">Հնչեցնել հարցում</translation>
 <translation id="1667964833127753507">Չեզոք գույների ռեժիմում ձեր պաստառների գույները չեն օգտագործվում։ Դրանց փոխարեն միջերեսը գունավորվում է չեզոք բաց կամ մուգ գույնի երանգներով։</translation>
@@ -117,6 +118,7 @@
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Ողջույն, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Տեքսի մուտքագրում</translation>
+<translation id="1989113344093894667">Հնարավոր չէ լուսանկարել բովանդակությունը</translation>
 <translation id="1993072747612765854">Իմացեք ավելին <ph name="SYSTEM_APP_NAME" /> հավելվածի վերջին թարմացման մասին</translation>
 <translation id="1995660704900986789">Անջատել</translation>
 <translation id="1998100899771863792">Ընթացիկ աշխատասեղանը</translation>
@@ -143,6 +145,7 @@
 <translation id="225680501294068881">Սարքերի որոնում…</translation>
 <translation id="2268130516524549846">Bluetooth-ն անջատված է</translation>
 <translation id="2268813581635650749">Դուրս գալ բոլորից</translation>
+<translation id="2269016722240250274">Ինչ-որ հավելված օգտագործում է ձեր խոսափողը</translation>
 <translation id="2277103315734023688">Առաջ գնալ</translation>
 <translation id="2292698582925480719">Էկրանի մասշտաբ</translation>
 <translation id="229397294990920565">Բջջային ինտերնետն անջատվում է…</translation>
@@ -168,6 +171,7 @@
 <translation id="2427507373259914951">Ձախ սեղմում</translation>
 <translation id="2429753432712299108">«<ph name="DEVICE_NAME" />» Bluetooth սարքը զուգավորման թույլտվություն է խնդրում: Նախքան ընդունելը հաստատեք, որ սարքի վրա ցուցադրվում է այս կոդը` <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Ցույց տալ գաղտնաբառը</translation>
+<translation id="2450205753526923158">Սքրինշոթի ռեժիմ</translation>
 <translation id="2473177541599297363">Լուծաչափի հաստատում</translation>
 <translation id="2475982808118771221">Սխալ առաջացավ</translation>
 <translation id="2482878487686419369">Ծանուցումներ</translation>
@@ -184,6 +188,7 @@
 <translation id="2596078834055697711">Ստանալ պատուհանի պատկեր</translation>
 <translation id="2617342710774726426">SIM քարտը կողպված է</translation>
 <translation id="2621713457727696555">Պաշտպանված է</translation>
+<translation id="2653019840645008922">Պատուհանի տեսագրում</translation>
 <translation id="2653659639078652383">Ուղարկել</translation>
 <translation id="2658778018866295321">Սեղմել և քաշել</translation>
 <translation id="2678852583403169292">«Ընտրեք և լսեք» գործառույթի ընտրացանկ</translation>
@@ -198,6 +203,7 @@
 <translation id="2727977024730340865">Միացված է թույլ լիցքավորիչի: Մարտկոցի լիցքավորումը կարող է հուսալի չլինել:</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> սարքը կառավարվում է <ph name="MANAGER" />-ի կողմից</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
+<translation id="2814448776515246190">Մասնակի սքրինշոթ</translation>
 <translation id="2819276065543622893">Դուք հիմա դուրս կգրվեք:</translation>
 <translation id="28232023175184696">Չհաջողվեց միանալ ինտերնետին։ Սեղմեք՝ նորից փորձելու համար:</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" />-ը չի աջակցում <ph name="SPECIFIED_RESOLUTION" /> լուծաչափը։ Լուծաչափը փոխվել է <ph name="FALLBACK_RESOLUTION" />-ի։</translation>
@@ -224,6 +230,7 @@
 <translation id="3033545621352269033">Միացված է</translation>
 <translation id="3036649622769666520">Ֆայլերի բացում</translation>
 <translation id="3038571455154067151">Մուտք գործելու համար մուտքագրեք Family Link-ի ծնողի մուտքի կոդը։</translation>
+<translation id="3039939407102840004">Ստիլուսի մարտկոցի լիցքը՝ <ph name="PERCENTAGE" /> տոկոս</translation>
 <translation id="3045488863354895414">Բարի օր,</translation>
 <translation id="3051128274746680507">Ձեր վերահսկվող պրոֆիլը շուտով կհեռացվի։ Մանրամասներին ծանոթանալու համար մտեք հաշիվ:</translation>
 <translation id="3055162170959710888">Այս սարքն այսօր օգտագործվել է <ph name="USED_TIME" /></translation>
@@ -233,6 +240,7 @@
 <translation id="3090989381251959936"><ph name="FEATURE_NAME" />՝ միացնել/անջատել։ <ph name="STATE_TEXT" />։</translation>
 <translation id="309749186376891736">Նշորդի տեղափոխում</translation>
 <translation id="3098580329624789136">Ստացեք <ph name="INTENT" /> «<ph name="QUERY" />» հարցումով</translation>
+<translation id="3100274880412651815">Անջատել տեսագրման ռեժիմը</translation>
 <translation id="3105917916468784889">Ստանալ սքրինշոթը</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3126069444801937830">Թարմացնելու համար վերագործարկեք</translation>
@@ -298,6 +306,7 @@
 <translation id="3621202678540785336">Ներածում</translation>
 <translation id="3621712662352432595">Ձայնի կարգավորումներ</translation>
 <translation id="3626281679859535460">Պայծառություն</translation>
+<translation id="3630697955794050612">անջատված է</translation>
 <translation id="3631369015426612114">Թույլ տալ ծանուցումները հետևյալ կայքերից</translation>
 <translation id="3638400994746983214">Միացնել/անջատել գաղտնիության էկրանը։ <ph name="STATE_TEXT" />:</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> կառավարվող օգտատեր</translation>
@@ -311,6 +320,7 @@
 <translation id="3773700760453577392">Ադմինիստրատորն արգելել է բազմակի մուտքը <ph name="USER_EMAIL" />-ի հաշվի համար: Շարունակելու համար բոլոր օգտատերերը պետք է դուրս գրվեն:</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Կողպել</translation>
+<translation id="3796746699333205839">Ինչ-որ հավելված օգտագործում է ձեր տեսախցիկն ու խոսափողը</translation>
 <translation id="3798670284305777884">Բարձրախոս (ներքին)</translation>
 <translation id="3799080171973636491">Դուք սեղմել եք լիաէկրան խոշորացույցի դյուրանցման ստեղները: Ուզում եք միացնե՞լ այն:</translation>
 <translation id="380165613292957338">Ողջույն: Ինչո՞վ կարող եմ օգնել:</translation>
@@ -404,6 +414,7 @@
 <translation id="4570957409596482333">«Ընտրեք և լսեք» կոճակ</translation>
 <translation id="4577274620589681794">Ժամանակը սպառվել է · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Միացնել նախադիտումը</translation>
+<translation id="4578906031062871102">Կարգավորումների ընտրացանկը բացված է</translation>
 <translation id="4585337515783392668">Դադարեցնել հեռարձակումը անհայտ սարքին</translation>
 <translation id="4596144739579517758">Մուգ թեման անջատված է</translation>
 <translation id="4623167406982293031">Հաստատել հաշիվը</translation>
@@ -486,6 +497,7 @@
 <translation id="5379115545237091094">Չափազանց շատ փորձեր</translation>
 <translation id="5397578532367286026">Այս օգտատիրոջ օգտագործման տվյալները և պատմությունը կարող են վերահսկվել chrome.com-ի կառավարիչի (<ph name="MANAGER_EMAIL" />) կողմից:</translation>
 <translation id="5400461572260843123">Արագ կարգավորումներ․ սեղմեք Search+ձախ սլաքը՝ ծանուցումների կենտրոն մտնելու համար։</translation>
+<translation id="5426063383988017631">Կարգավորումների ընտրացանկը փակված է</translation>
 <translation id="5428899915242071344">Սկսել տեքստի ընտրությունը</translation>
 <translation id="5430931332414098647">Անկթարթային մուտքի կետ</translation>
 <translation id="5431825016875453137">OpenVPN / L2TP</translation>
@@ -502,12 +514,15 @@
 <translation id="556042886152191864">Կոճակ</translation>
 <translation id="5571066253365925590">Bluetooth-ը միացված է</translation>
 <translation id="557563299383177668">Հաջորդ պարբերությունը</translation>
+<translation id="5577281275355252094">Phone Hub-ն օգտագործելու համար համոզվեք, որ Bluetooth-ը միացված է ձեր հեռախոսում</translation>
 <translation id="558849140439112033">Քաշեք՝ լուսանկարի հատվածն ընտրելու համար</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Սեղմեք Ctrl+Alt+Z՝ ձայնային ուղեկցումն անջատելու համար:</translation>
 <translation id="5601503069213153581">PIN</translation>
+<translation id="5619862035903135339">Ադմինիստրատորի կանոններով արգելված է էկրանի տեսագրումը</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Խոսափողի հարակցիչ</translation>
+<translation id="5662709761327382534">Ձայնագրումը <ph name="CURRENT_STATE" />։ Սեղմեք «Enter» և կարգավիճակը դարձրեք «<ph name="NEW_STATE" />»։</translation>
 <translation id="5669267381087807207">Ակտիվացում</translation>
 <translation id="5673434351075758678">Կարգավորումների համաժամացման արդյունքում լեզուն փոխվել է: Ընթացիկ լեզուն՝ <ph name="TO_LOCALE" /> (նախկինում՝ <ph name="FROM_LOCALE" />):</translation>
 <translation id="5677928146339483299">Արգելափակված է</translation>
@@ -555,6 +570,7 @@
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />, կառավարվում է ձեր ադմինիստրատորի կողմից</translation>
 <translation id="6030495522958826102">Ընտրացանկը տեղափոխվեց էկրանի ներքևի ձախ անկյուն։</translation>
 <translation id="6032620807120418574">Լիաէկրան ռեժիմում տեսագրելու համար սեղմեք էկրանի որևէ կետ</translation>
+<translation id="6040071906258664830">Ձայնագրումը <ph name="STATE" /></translation>
 <translation id="6040143037577758943">Փակել</translation>
 <translation id="6043212731627905357">Այս մոնիտորը համատեղելի չէ ձեր <ph name="DEVICE_TYPE" /> սարքի հետ (մոնիտորը չի աջակցվում):</translation>
 <translation id="6043994281159824495">Դուրս գրվել</translation>
@@ -564,6 +580,7 @@
 <translation id="6062360702481658777">Դուք ավտոմատ դուրս կգրվեք <ph name="LOGOUT_TIME_LEFT" />-ից:</translation>
 <translation id="6073451960410192870">Դադարեցնել տեսագրումը</translation>
 <translation id="607652042414456612">Ձեր համակարգիչը տեսանելի է մոտակայքի Bluetooth սարքերի համար: Այն երևում է «<ph name="NAME" />» անունով, <ph name="ADDRESS" /> հասցեով</translation>
+<translation id="6094290315941448991">Ադմինիստրատորն անջատում է էկրանի տեսագրումը, երբ գաղտնի բովանդակություն է տեսանելի</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />։ <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google Օգնականը հասանելի չէ հյուրի աշխատաշրջանում:</translation>
 <translation id="6137566720514957455">Բացել <ph name="USER_EMAIL_ADDRESS" /> հաշվի հեռացման երկխոսության պատուհանը</translation>
@@ -620,6 +637,7 @@
 <translation id="6650933572246256093">«<ph name="DEVICE_NAME" />» Bluetooth սարքը զուգավորման թույլտվություն է խնդրում: Մուտքագրեք այս անցակոդն այդ սարքում՝ <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Գաղտնաբառ</translation>
 <translation id="6665545700722362599">Թույլատրեք կայքերին, հավելվածներին և ընդլայնումներին օգտագործել տեղորոշման ծառայությունները, սարքի խոսափողը, տեսախցիկը և այլ գործառույթներ:</translation>
+<translation id="6667908387435388584">Միացեք ձեր հեռախոսի թեժ կետին, անջատեք սարքի ձայնը կամ տեղորոշեք այն, ինչպես նաև դիտեք ձեր հեռախոսում բացված Chrome-ի վերջին ներդիրները</translation>
 <translation id="6670153871843998651">Աշխատասեղան 3</translation>
 <translation id="6671495933530132209">Պատճենել պատկերը</translation>
 <translation id="6691659475504239918">Search+Shift+H</translation>
@@ -700,7 +718,9 @@
 <translation id="742594950370306541">Տեսախցիկն օգտագործվում է:</translation>
 <translation id="742608627846767349">Բարի լույս,</translation>
 <translation id="743058460480092004">Տեսախցիկն ու խոսափողը օգտագործվում են:</translation>
+<translation id="7452560014878697800">Ինչ-որ հավելված օգտագործում է ձեր տեսախցիկը</translation>
 <translation id="7461924472993315131">Ամրացնել</translation>
+<translation id="746232733191930409">Էկրանի տեսագրման ռեժիմ</translation>
 <translation id="7466449121337984263">Մատը դրեք տվիչին</translation>
 <translation id="7477793887173910789">Վերահսկեք երաժշտությունը, տեսանյութերը և այլն</translation>
 <translation id="7497767806359279797">Ընտրել լեզու և ստեղնաշար</translation>
@@ -729,6 +749,7 @@
 <translation id="7658239707568436148">Չեղարկել</translation>
 <translation id="7662283695561029522">Հպեք՝ կարգավորելու համար</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="7714767791242455379">Ավելացնել նոր բջջային ցանց</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 ծանուցում}one{# ծանուցում}other{# ծանուցում}}</translation>
 <translation id="7724603315864178912">Կտրել</translation>
 <translation id="7745560842763881396">Ցուցադրել դարակի հավելվածները</translation>
@@ -743,6 +764,7 @@
 <translation id="7842569679327885685">Ուշադրություն. սա փորձնական գործառույթ է</translation>
 <translation id="7846634333498149051">Ստեղնաշար</translation>
 <translation id="7860671499921112077">Համատեսքը բացելու համար երեք մատով սահեցրեք վեր</translation>
+<translation id="7866482334467279021">միացված է</translation>
 <translation id="7868900307798234037">Ապակողպում մատնահետքով</translation>
 <translation id="7872786842639831132">Անջատված է</translation>
 <translation id="7875575368831396199">Bluetooth-ն անջատված է ձեր <ph name="DEVICE_TYPE" /> սարքում։ Հեռախոսի կառավարման կենտրոնն օգտագործելու համար միացրեք Bluetooth-ը։</translation>
@@ -772,6 +794,7 @@
 <translation id="8036504271468642248">Նախորդ նախադասությունը</translation>
 <translation id="8042893070933512245">Բացել հատուկ գործառույթների կարգավորումների ընտրացանկը</translation>
 <translation id="8048123526339889627">Bluetooth-ի կարգավորումներ</translation>
+<translation id="8052898407431791827">Պատճենվեց սեղմատախտակին</translation>
 <translation id="8054466585765276473">Մարտկոցի ժամանակի հաշվարկում:</translation>
 <translation id="8061464966246066292">Բարձր կոնտրաստ</translation>
 <translation id="8098591350844501178">Դադարեցնել էկրանի հեռարձակումը <ph name="RECEIVER_NAME" />-ին</translation>
@@ -843,9 +866,11 @@
 <translation id="8673028979667498656">270°</translation>
 <translation id="8676770494376880701">Կապակցվել է թույլ լիցքով լիցքավորիչ</translation>
 <translation id="8683506306463609433">Արդյունավետության հետագծումն ակտիվ է</translation>
+<translation id="8703634754197148428">Սկսել տեսագրումը։ Տեսագրումը սկսելուց հետո կարող եք օգտագործել Alt+Shift+L ստեղների համադրությունը՝ դարակ անցնելու և տեսագրումը կանգնեցնելու կոճակը գտնելու համար։</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Այս գործառույթը կառավարելու համար օգտագործեք ձախ կամ աջ սլաքները։</translation>
 <translation id="8712637175834984815">Պատրաստ է</translation>
 <translation id="8721053961083920564">Միացնել/անջատել ձայնը: <ph name="STATE_TEXT" /></translation>
+<translation id="8724318433625452070">Լիաէկրան տեսագրում</translation>
 <translation id="8734991477317290293">Հնարավոր է՝ ինչ-որ մեկը փորձում է իմանալ, թե ինչ ստեղներ եք սեղմում։</translation>
 <translation id="8735953464173050365">Ցուցադրել ստեղնաշարի կարգավորումները: Ընտրված է <ph name="KEYBOARD_NAME" />ը</translation>
 <translation id="8755498163081687682"><ph name="ORIGIN_NAME" /> կայքին/հավելվածին անհրաժեշտ է, որ հաստատեք ձեր ինքնությունը</translation>
@@ -869,6 +894,7 @@
 <translation id="8877788021141246043">Ստեղծել հիշեցում</translation>
 <translation id="8878886163241303700">Էկրանի ընդարձակում</translation>
 <translation id="8883473964424809116">Սեղմեք՝ Google Օգնականի կարգավորումները բացելու համար։</translation>
+<translation id="8884537526797090108">Հնարավոր չէ տեսագրել գաղտնի բովանդակությունը</translation>
 <translation id="890616557918890486">Փոխել աղբյուրը</translation>
 <translation id="8909138438987180327">Մարտկոցի լիցքը՝ <ph name="PERCENTAGE" />%</translation>
 <translation id="8913384980486163186">Թեմատիկ (կանխադրված)</translation>
@@ -884,6 +910,7 @@
 <translation id="9017320285115481645">Մուտքագրեք Family Link-ի ծնողի մուտքի կոդը։</translation>
 <translation id="9047624247355796468">Բացել «<ph name="NETWORK_NAME" />» ցանցի կարգավորումները</translation>
 <translation id="9056839673611986238">Սարքը կվերակայվի</translation>
+<translation id="9063800855227801443">Հնարավոր չէ տեսագրել գաղտնի բովանդակությունը</translation>
 <translation id="9065203028668620118">Փոփոխել</translation>
 <translation id="9070640332319875144">Օգնականի կարգավորումներ</translation>
 <translation id="9072519059834302790">Մարտկոցը կդատարկվի <ph name="TIME_LEFT" />ից։</translation>

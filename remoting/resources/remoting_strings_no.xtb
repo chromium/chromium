@@ -72,6 +72,7 @@ Hvis det allerede er merket av for «<ph name="SERVICE_SCRIPT_NAME" />», fjerne
 <translation id="4405930547258349619">Core-bibliotek</translation>
 <translation id="443560535555262820">Åpne innstillinger for tilgjengelighet</translation>
 <translation id="4450893287417543264">Ikke vis igjen</translation>
+<translation id="4512952200932940229">Copyright 2021 The Chromium Authors. Med enerett.</translation>
 <translation id="4513946894732546136">Google Feedback</translation>
 <translation id="4563926062592110512">Klienten koblet fra: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="4635770493235256822">Eksterne enheter</translation>
@@ -173,6 +174,7 @@ Hvis det allerede er merket av for «<ph name="SERVICE_SCRIPT_NAME" />», fjerne
 <translation id="8743328882720071828">Vil du tillate at <ph name="CLIENT_USERNAME" /> kan se og kontrollere datamaskinen din?</translation>
 <translation id="8747048596626351634">Økten krasjet eller kunne ikke starte. Hvis ~/.chrome-remote-desktop-session eksisterer på den eksterne datamaskinen, må du sørge for at den starter en prosess i forgrunnen som kjører lenge – for eksempel et skrivebordsmiljø eller en vindusbehandler.</translation>
 <translation id="8804164990146287819">Personvernregler</translation>
+<translation id="8906511416443321782">Mikrofontilgang kreves for å ta opp lyd og strømme den til Chrome Eksternt skrivebord-klienten.</translation>
 <translation id="9111855907838866522">Du er koblet til den eksterne enheten. For å åpne menyen, trykk på skjermen med fire fingre.</translation>
 <translation id="9126115402994542723">Ikke be om PIN-kode igjen når du kobler til denne verten fra denne enheten.</translation>
 <translation id="916856682307586697">Start standard XSession</translation>

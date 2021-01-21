@@ -80,6 +80,7 @@
     &lt;li&gt;વેબસાઇટના માલિકનો સંપર્ક કરો.&lt;/li&gt;
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">તમે એવી સાઇટ પર તમારો પાસવર્ડ દાખલ કર્યો કે જે તમારી કંપની દ્વારા મેનેજ કરવામાં આવતો નથી. તમારા એકાઉન્ટને સુરક્ષિત કરવા માટે, અન્ય ઍપ અને સાઇટ પર તમારા પાસવર્ડનો ફરી ઉપયોગ કરશો નહિ.</translation>
+<translation id="1259144770381827039">વિગતો જુઓ.</translation>
 <translation id="1263231323834454256">વાચન સૂચિ</translation>
 <translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
         આ ડિવાઇસ પર નહીં રહે તેવી પ્રવૃત્તિ આ છે:
@@ -326,6 +327,7 @@
 <translation id="2164510882479075877">ચેક કરો કે <ph name="HOST_NAME" />માં કોઈ ટાઇપિંગ ભૂલ તો નથી ને.</translation>
 <translation id="2166049586286450108">સંપૂર્ણ વ્યવસ્થાપક ઍક્સેસ</translation>
 <translation id="2166378884831602661">આ સાઇટ એક સુરક્ષિત કનેક્શન આપી શકતી નથી</translation>
+<translation id="2168151236314517198">વ્યવસ્થાપક પૉલિસીને કારણે આ કન્ટેન્ટ પ્રિન્ટ કરવાની સુવિધા બ્લૉક કરવામાં આવી છે</translation>
 <translation id="2169984857010174799">Kaku2 (એન્વલપ)</translation>
 <translation id="2181821976797666341">નીતિઓ</translation>
 <translation id="2183608646556468874">ફોન નંબર</translation>
@@ -1360,6 +1362,7 @@
 <translation id="6290238015253830360">તમારા સૂચવેલા લેખ અહીં દેખાય છે</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">Chromeમાં Google આસિસ્ટંટ રોકાઈ રહ્યું છે</translation>
+<translation id="6304463939629872728">આના વડે ચેક આઉટ કરો</translation>
 <translation id="6305205051461490394"><ph name="URL" />, પહોંચવા યોગ્ય નથી.</translation>
 <translation id="6312113039770857350">વેબપેજ ઉપલબ્ધ નથી</translation>
 <translation id="6321917430147971392">તમારી DNS સેટિંગ્સ તપાસો</translation>
@@ -1389,6 +1392,7 @@
 <translation id="6406765186087300643">C0 (એન્વલપ)</translation>
 <translation id="6409754798200046165">હમણાં જ કોઈ છેતરામણી સાઇટ પર તમે તમારો પાસવર્ડ દાખલ કર્યો. તરત જ તમારો પાસવર્ડ બદલવાનો સુઝાવ Chrome આપે છે.</translation>
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" /> માટે સમાપ્તિ તારીખ અને CVC દાખલ કરો</translation>
+<translation id="6410774864568266108">તમારી Google Pay ઑફર ભૂલશો નહીં</translation>
 <translation id="6415778972515849510">Chromium તમારા Google એકાઉન્ટને સુરક્ષિત કરવામાં અને તમારો પાસવર્ડ બદલવામાં તમારી સહાય કરી શકે છે.</translation>
 <translation id="6423385022588644828">હવેથી Touch IDનો ઉપયોગ કરીને તમારા કાર્ડ વધુ ઝડપથી કન્ફર્મ કરો</translation>
 <translation id="6425092077175753609">સામગ્રી</translation>

@@ -846,6 +846,16 @@ Als je dit beleid uitschakelt, wordt op de webpagina naar specifieke tekstfragme
       Als je <ph name="CRITICAL_VARIATIONS_ONLY_OPTION_NAME" /> (waarde 1) instelt, mogen alleen varianten die worden beschouwd als essentiële beveiligings- of stabiliteitsoplossingen, worden toegepast op <ph name="PRODUCT_OS_NAME" />.
 
       Als je <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (waarde 2) instelt, mag geen van de varianten op de browser worden toegepast op het inlogscherm. Deze modus kan er potentieel voor zorgen dat <ph name="PRODUCT_OS_NAME" />-ontwikkelaars essentiële beveiligingsoplossingen niet tijdig kunnen leveren en wordt dus niet aanbevolen.</translation>
+<translation id="2221850122314326571">Als je deze instelling aanzet, verifieert <ph name="PRODUCT_NAME" /> servercertificaten met de ingebouwde certificaatverificatie.
+      Als je deze instelling uitzet, verifieert <ph name="PRODUCT_NAME" /> servercertificaten met de verouderde certificaatverificatie die door het platform wordt geleverd.
+      Als je deze instelling niet instelt, kan de ingebouwde of de verouderde certificaatverificatie worden gebruikt.
+
+      Dit beleid wordt verwijderd in <ph name="PRODUCT_OS_NAME" /> versie 81, als de support voor de verouderde certificaatverificatie in <ph name="PRODUCT_OS_NAME" /> ook wordt verwijderd.
+
+      Dit beleid wordt verwijderd in <ph name="PRODUCT_NAME" /> voor Linux-versie 83, als de support voor de verouderde certificaatverificatie in Linux ook wordt verwijderd.
+
+      Dit beleid wordt verwijderd in <ph name="PRODUCT_NAME" /> voor Mac OS X-versie 92, als de support voor de verouderde certificaatverificatie in Mac OS X ook wordt verwijderd.
+      </translation>
 <translation id="2223582957891074498">Als je het beleid instelt op 'True', kunnen er geen screenshots worden gemaakt via sneltoetsen of extensie-API's. Als je het beleid instelt op 'False', zijn screenshots toegestaan.</translation>
 <translation id="2223598546285729819">Standaardinstelling voor meldingen</translation>
 <translation id="2231817271680715693">Browsegeschiedenis importeren uit standaardbrowser bij eerste uitvoering</translation>
@@ -859,6 +869,7 @@ Als je dit beleid uitschakelt, wordt op de webpagina naar specifieke tekstfragme
 <translation id="2261329877420573811">Als <ph name="PRINTERS_WHITELIST" /> wordt gekozen voor <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, kun je door <ph name="DEVICE_NATIVE_PRINTERS_WHITELIST_POLICY_NAME" /> in te stellen aangeven welke printers gebruikers kunnen gebruiken. Alleen printers waarvan de ID overeenkomt met de waarden in dit beleid, zijn beschikbaar voor gebruikers. De ID's moeten overeenkomen met het veld <ph name="ID_FIELD" /> of <ph name="GUID_FIELD" /> in het bestand dat is opgegeven in <ph name="DEVICE_PRINTERS_POLICY_NAME" />.
 
       Dit beleid is verouderd. Gebruik in plaats daarvan <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" />.</translation>
+<translation id="2261648512244797294">Verouderde Privet-afdrukken uitzetten</translation>
 <translation id="2266422599396179941">Toestaan dat gebruikers feedback indienen</translation>
 <translation id="2269319728625047531">Weergave van synchronisatietoestemming inschakelen tijdens het inloggen</translation>
 <translation id="2270747976331889601">Een TLS 1.3-beveiligingsfunctie voor lokale vertrouwensinstanties inschakelen.</translation>
@@ -2605,6 +2616,11 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
       Als dit beleid niet is ingesteld of als het is ingeschakeld, worden de controles voor DNS-onderschepping uitgevoerd. Als het beleid expliciet is uitgeschakeld, is dit niet het geval.</translation>
 <translation id="4700190441681139987">Geen sites toegang geven tot sensoren</translation>
 <translation id="4703402283970867140">Slim dimmodel inschakelen, zodat het langer duurt tot het scherm wordt gedimd</translation>
+<translation id="4715026656747891013">Lijst met instellingen voor Chrome Enterprise Connectors-services die moeten worden toegepast op de Enterprise Connector <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" />. De lijst wordt geactiveerd als een beveiligingsgebeurtenis plaatsvindt in Chrome. Dit omvat onder meer negatieve analyseresultaten van Enterprise Connectors, hergebruik van wachtwoorden, navigatie naar onveilige pagina's en andere beveiligingsgevoelige gebruikersacties.
+
+      Het veld <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> geeft aan bij welke rapportageserviceprovider de instellingen horen en het veld <ph name="ENTERPRISE_CONNECTOR_ENABLED_EVENT_NAMES_FIELD" /> geeft aan welke gebeurtenissen zijn aangezet voor deze provider.
+
+      Dit beleid kan alleen worden ingesteld via de Google Beheerdersconsole.</translation>
 <translation id="4722122254122249791">Site-isolatie inschakelen voor gespecificeerde herkomsten</translation>
 <translation id="4723122879352880315">Met deze instelling kunnen gebruikers de inloggegevens van <ph name="PRODUCT_OS_NAME" /> gebruiken om een beheerde proxy die is beveiligd met NTLM-verificatie te verifiëren.
 
@@ -2876,6 +2892,7 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
           Als dit beleid niet is ingesteld, wordt de standaardopdrachtregel gebruikt.</translation>
 <translation id="5152393033264257734">Controles voor DNS-onderschepping en infobalken voor 'bedoelde je http://intranetsite/' toestaan.</translation>
 <translation id="5152787786897382519">Zowel Chromium als Google Chrome bevatten enkele beleidsgroepen die voor het beheer van een functie van elkaar afhankelijk zijn. Deze reeksen worden vertegenwoordigd door de volgende beleidsgroepen. Aangezien beleidsregels meerdere bronnen kunnen hebben, worden alleen waarden afkomstig van de bron met de hoogste prioriteit toegepast. Waarden van een bron met een lagere prioriteit in dezelfde groep worden genegeerd. De prioriteitsvolgorde wordt gedefinieerd in <ph name="POLICY_PRIORITY_DOC_URL" />.</translation>
+<translation id="5153187201534281749">Icoon voor experimentele browserfuncties op werkbalk</translation>
 <translation id="515816885693899426">Dit beleid is beëindigd. Gebruik in plaats daarvan het beleid <ph name="URL_BLOCKLIST_POLICY_NAME" />.
 
       Als je het beleid instelt, wordt voorkomen dat webpagina's met verboden URL's worden geladen. Het beleid biedt een lijst met URL-patronen die verboden URL's definiëren. Als je het beleid niet instelt, worden er geen URL's verboden in de browser. Gebruik een notatie voor het URL-patroon volgens deze indeling (https://www.chromium.org/administrators/url-blacklist-filter-format). Er kunnen maximaal 1000 uitzonderingen worden gedefinieerd in <ph name="URL_ALLOWLIST_POLICY_NAME" />.
@@ -4033,6 +4050,11 @@ Als je ervoor kiest het volgende te gebruiken:
 <translation id="6789422336869764846">Als je het beleid inschakelt of niet instelt, rapporteren ingeschreven apparaten de status van de schakelaar voor de ontwikkelaarsmodus toen de computer werd opgestart.
 
       Als je het beleid uitschakelt, rapporteren ingeschreven apparaten de status van de schakelaar voor de ontwikkelaarsmodus niet.</translation>
+<translation id="6789441722870183939">Als je het beleid aanzet of niet instelt, hebben gebruikers via een icoon op de werkbalk toegang tot experimentele browserfuncties
+
+Als je het beleid uitzet, wordt het icoon voor experimentele browserfuncties verwijderd van de werkbalk.
+
+      chrome://flags en andere manieren om browserfunctie aan en uit te zetten werken nog steeds zoals verwacht, ongeacht of dit beleid aan- of uitstaat.</translation>
 <translation id="6793420507738858152">Als je dit beleid hebt toegepast, stuurt de <ph name="PRODUCT_NAME" />-functie gedetailleerde verzoekheaders met informatie over de browser en omgeving van de gebruiker.
 
       Dit is een aanvullende functie, maar de nieuwe headers kunnen de juiste weergave verhinderen van sommige websites die de tekens in deze verzoeken beperken.
@@ -4774,6 +4796,7 @@ Als je ervoor kiest het volgende te gebruiken:
 
       Als je het beleid uitschakelt, kunnen gebruikers niet door waarschuwingspagina's klikken.</translation>
 <translation id="7750991880413385988">Pagina 'Nieuw tabblad' openen</translation>
+<translation id="7753678409577376761">Beginpunt voor werkbalk met experimentele browserfuncties aanzetten</translation>
 <translation id="7754704193130578113">Voorafgaand aan een download vragen waar een bestand moet worden opgeslagen</translation>
 <translation id="7754893969683595513">Als je het beleid instelt, wordt de periode in milliseconden gespecificeerd waarna de apparaatbeheerservice wordt gevraagd om informatie over het gebruikersbeleid. Geldige waarden liggen tussen 1.800.000 (30 minuten) en 86.400.000 (1 dag). Waarden buiten dit bereik worden vast ingesteld op de respectieve grenswaarde.
 
@@ -4874,6 +4897,9 @@ Als je ervoor kiest het volgende te gebruiken:
 <translation id="791267408364877739">Beveiligingswaarschuwingen weergeven als er mogelijk schadelijke opdrachtregelmarkeringen worden gebruikt</translation>
 <translation id="7922358664346625612">Laatste tabblad open houden in Chrome.</translation>
 <translation id="7924321157669251966">Percentage voor schermhelderheid als er op de batterij wordt gewerkt</translation>
+<translation id="7925224837072026018">Als je het beleid instelt, geef je toegang tot zakelijke sleutels tot extensies of Android-apps. Sleutels zijn alleen voor zakelijk gebruik bedoeld als ze via een beheerd account worden gegenereerd met de chrome.enterprise.platformKeys API. Gebruikers kunnen geen toegang toestaan of intrekken tot zakelijke sleutels naar of van extensies of Android-apps.
+
+      Een extensie of Android-app kan standaard geen sleutel gebruiken die is bedoeld voor zakelijk gebruik. Dit staat gelijk aan het instellen van allowCorporateKeyUsage op False voor die extensie of Android-app. Alleen als allowCorporateKeyUsage voor een extensie of Android-app is ingesteld op True kan deze elke platformsleutel gebruiken die is gemarkeerd voor zakelijk gebruik om willekeurige gegevens te ondertekenen. Geef deze toestemming alleen als de extensie toegang tot de sleutel of Android-app op betrouwbare wijze beveiligt tegen aanvallers.</translation>
 <translation id="793134539373873765">Specificeert of p2p wordt gebruikt voor netto-updateladingen voor het besturingssysteem. Als dit is ingesteld op 'True', proberen apparaten netto-updateladingen (payloads) op te halen via het LAN, waardoor bandbreedtegebruik en vertraging kunnen worden verminderd. Als de netto-updatelading niet beschikbaar is via het LAN, gaat het apparaat over tot downloaden via een updateserver. Als deze instelling is ingesteld op 'False' of niet is geconfigureerd, wordt 2p2 niet gebruikt.</translation>
 <translation id="7933141401888114454">Maken van bewaakte gebruikers inschakelen</translation>
 <translation id="793473937901685727">Certificaatbeschikbaarheid instellen voor ARC-apps</translation>
@@ -4900,6 +4926,9 @@ Als je ervoor kiest het volgende te gebruiken:
 <translation id="7956210013490975468">Configureert de systeemproxyservice voor <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="7958537754689366707">Het wachtwoord moet elke twaalf uur worden opgegeven</translation>
 <translation id="7961779417826583251">Handhaving van Certificaattransparantie voor een lijst met certificeringsinstanties uitschakelen</translation>
+<translation id="7962093600142350905">Met dit beleid bepaal je of gebruikers beschikbare Privet-printers te zien krijgen in het dialoogvenster met afdrukvoorbeeld.
+      Als je dit beleid aanzet, worden beschikbare Privet-printers getoond.
+      Als je dit beleid uitzet of niet instelt, worden Privet-printers niet getoond in het dialoogvenster met afdrukvoorbeeld, omdat deze afdrukmethode is verouderd.</translation>
 <translation id="7973609468423251675">Dit beleid is beëindigd en wordt verwijderd in <ph name="PRODUCT_OS_NAME" />-versie 85. Gebruik in plaats daarvan <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
 
           Specificeert de tijdsduur zonder gebruikersinvoer waarna het scherm wordt gedimd als er op de batterij wordt gewerkt.
@@ -4943,6 +4972,7 @@ Als je ervoor kiest het volgende te gebruiken:
 <translation id="8011935490612940798">De functie <ph name="PRODUCT_NAME" /> beheren.</translation>
 <translation id="802147957407376460">Scherm 0 graden draaien</translation>
 <translation id="802776363472387903">De SHA-256-hash van de <ph name="PLUGIN_VM_NAME" />-afbeelding.</translation>
+<translation id="8029201909194194377">Maximale toegestane sessieduur voor verbindingen voor externe toegang</translation>
 <translation id="8033913082323846868">Dit beleid is beëindigd in M70. Gebruik in plaats hiervan AutofillAddressEnabled en AutofillCreditCardEnabled.
 
       Hiermee wordt de functie 'Automatisch invullen' van <ph name="PRODUCT_NAME" /> ingeschakeld en wordt gebruikers toegestaan webformulieren automatisch in te vullen met eerder opgeslagen informatie zoals adres- of creditcardgegevens.
@@ -4980,6 +5010,7 @@ Als je ervoor kiest het volgende te gebruiken:
 <translation id="8078297389450285582">Als je dit beleid inschakelt of niet instelt, wordt het slimme dimmodel gebruikt en kan het langer duren voordat het scherm wordt gedimd. Als dit het geval is, blijven de perioden tot het scherm uitgaat, het scherm wordt vergrendeld en inactiviteit wordt geactiveerd, gelijk aan de periode voor het dimmen van het scherm die je oorspronkelijk had ingesteld.
 
       Als je dit beleid uitschakelt, heeft het slimme dimmodel geen invloed op het dimmen van het scherm.</translation>
+<translation id="8089200718228084417">Verouderde Privet-afdrukken aanzetten</translation>
 <translation id="8091982561085048989">Booleaanse markering die aangeeft of IPP Everywhere moet worden gebruikt om de printer in te stellen. Deze markering wordt ondersteund in versie 76 en hoger van <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="8099880303030573137">Inactieve vertraging wanneer op de batterij wordt gewerkt</translation>
 <translation id="8101381354936029836">Beleid van atomische groep:</translation>
@@ -5068,6 +5099,7 @@ Als dit beleid niet is ingesteld, wordt het privacyscherm in eerste instantie ui
           Als je dit beleid instelt, kunnen gebruikers het niet wijzigen of overschrijven.
 
           Als dit beleid niet is ingesteld, is de functie voor cursormarkering in eerste instantie uitgeschakeld, maar kan de gebruiker deze op elk gewenst moment inschakelen.</translation>
+<translation id="8164144100557223371">Beginpunt voor werkbalk met experimentele browserfuncties uitzetten</translation>
 <translation id="8164687848393015214">Als je het beleid inschakelt, worden controlenetwerkpakketten (<ph name="HEARTBEATS_TERM" />) naar de beheerserver gestuurd, zodat de server kan waarnemen of het apparaat offline is.
 
       Als je het beleid uitschakelt of niet instelt, worden er geen pakketten gestuurd.</translation>
@@ -5472,6 +5504,9 @@ Dit beleid wordt verwijderd in M75.</translation>
 
       Als je het beleid niet instelt, is het beleid ingeschakeld en kunnen gebruikers het niet uitschakelen.</translation>
 <translation id="8798099450830957504">Standaard</translation>
+<translation id="8799492680917278474">Als je dit beleid aanzet, worden verbindingen voor externe toegang automatisch verbroken nadat het aantal minuten dat in het beleid wordt gedefinieerd, is verstreken. Hierdoor wordt niet voorkomen dat de client opnieuw verbinding maakt nadat maximale sessieduur is bereikt. Als je het beleid instelt op een waarde die niet binnen het minimale/maximale bereikt ligt, kan de host misschien niet worden gestart. Dit beleid heeft geen effect op scenario's voor support op afstand.
+
+          Dit beleid heeft geen effect als het niet is ingesteld. In dat geval is er geen maximale duur voor verbindingen voor externe toegang op deze machine.</translation>
 <translation id="8800453707696044281">Een custom batterijoplaadstop opgeven in procenten</translation>
 <translation id="8801680448782904838">Een gebruiker laten weten dat het aanbevolen of vereist is om de browser of het apparaat opnieuw op te starten</translation>
 <translation id="8816671955985738552">Geen wijzigingen in SAML-wachtwoorden op chrome://password-change toestaan tijdens een sessie</translation>
@@ -5818,6 +5853,7 @@ Dit beleid wordt verwijderd in M75.</translation>
 <translation id="9194447412184412480">Bepaalt instellingen voor gebruikers die zijn geverifieerd via SAML met een externe IdP</translation>
 <translation id="9197740283131855199">Percentage waarmee de dimvertraging van het scherm wordt geschaald als de gebruiker actief wordt na het dimmen</translation>
 <translation id="9200828125069750521">Parameters voor afbeeldings-URL die POST gebruikt</translation>
+<translation id="9204863016826119209">Zakelijke sleutels kunnen worden gebruikt door Android-apps die zijn geïnstalleerd en in dit beleid worden vermeld.</translation>
 <translation id="9213751049772256263">Alle varianten uitschakelen</translation>
 <translation id="9217154963008402249">Frequentie van netwerkpakketten voor bijhouden</translation>
 <translation id="922540222991413931">Installatiebronnen voor het configureren van extensies, apps en gebruikersscripts</translation>

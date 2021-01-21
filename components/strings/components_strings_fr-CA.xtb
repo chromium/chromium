@@ -80,6 +80,7 @@
     &lt;li&gt;Communiquez avec le propriétaire du site Web.&lt;/li&gt;
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Vous avez entré votre mot de passe sur un site qui n'est pas géré par votre organisation. Pour protéger votre compte, ne réutilisez pas votre mot de passe dans d'autres applications ni sur d'autres sites.</translation>
+<translation id="1259144770381827039">Afficher les renseignements.</translation>
 <translation id="1263231323834454256">Liste de lecture</translation>
 <translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
         Les activités qui ne seront pas enregistrées sur cet appareil :
@@ -322,6 +323,7 @@
 <translation id="2164510882479075877">Vérifiez si <ph name="HOST_NAME" /> est écrit correctement.</translation>
 <translation id="2166049586286450108">Accès administrateur complet</translation>
 <translation id="2166378884831602661">Ce site ne fournit pas de connexion sécurisée</translation>
+<translation id="2168151236314517198">La politique définie par l'administrateur empêche l'impression de ce contenu</translation>
 <translation id="2169984857010174799">Enveloppe Kaku2</translation>
 <translation id="2181821976797666341">Règles</translation>
 <translation id="2183608646556468874">Numéro de téléphone</translation>
@@ -1349,6 +1351,7 @@
 <translation id="6290238015253830360">Les articles que vous avez suggérés s'afficheront ici</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">Arrêt de l'Assistant Google dans Chrome en cours…</translation>
+<translation id="6304463939629872728">Payer avec</translation>
 <translation id="6305205051461490394">Impossible d'accéder à <ph name="URL" />.</translation>
 <translation id="6312113039770857350">La page Web n'est pas disponible</translation>
 <translation id="6321917430147971392">Vérifier vos paramètres DNS</translation>
@@ -1378,6 +1381,7 @@
 <translation id="6406765186087300643">Enveloppe C0</translation>
 <translation id="6409754798200046165">Vous venez d'entrer votre mot de passe sur un site trompeur. Chrome vous recommande de modifier votre mot de passe maintenant.</translation>
 <translation id="6410264514553301377">Entrez la date d'expiration et le code de vérification de carte (CVC) pour <ph name="CREDIT_CARD" /></translation>
+<translation id="6410774864568266108">N'oubliez pas votre offre Google Pay</translation>
 <translation id="6415778972515849510">Chromium peut vous aider à protéger votre compte Google et à changer votre mot de passe.</translation>
 <translation id="6423385022588644828">Vérifiez vos cartes plus rapidement en vous servant de Touch ID à partir de maintenant</translation>
 <translation id="6425092077175753609">Matériel</translation>

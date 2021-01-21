@@ -832,6 +832,16 @@
       如果設為 <ph name="CRITICAL_VARIATIONS_ONLY_OPTION_NAME" /> (值為 1)，使用者只能將修正重大安全性或穩定性問題的變化版本套用到 <ph name="PRODUCT_OS_NAME" />。
 
       如果設為 <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (值為 2)，使用者無法在登入畫面上將任何變化版本套用到瀏覽器。請注意，這個模式可能會讓 <ph name="PRODUCT_OS_NAME" />開發人員無法及時提供重大安全性修正項目，因此不建議使用。</translation>
+<translation id="2221850122314326571">如果啟用這項設定，<ph name="PRODUCT_NAME" /> 將使用內建的憑證驗證器執行伺服器憑證驗證作業。
+      如果停用這項設定，<ph name="PRODUCT_NAME" /> 將使用平台提供的舊版憑證驗證器執行伺服器憑證驗證作業。
+      如果不進行設定，系統可能會使用內建或舊版的憑證驗證器。
+
+      我們計劃將這項政策從 <ph name="PRODUCT_OS_NAME" /> 81 版中移除，屆時也將停止支援 <ph name="PRODUCT_OS_NAME" />的舊版憑證驗證器。
+
+     我們計劃將這項政策從 Linux 適用的 <ph name="PRODUCT_NAME" /> 83 版中移除，屆時也將停止支援 Linux 的舊版憑證驗證器。
+
+      我們計劃將這項政策從 Mac OS X 適用的 <ph name="PRODUCT_NAME" /> 92 版中移除，屆時也將停止支援 Mac OS X 的舊版憑證驗證器。
+      </translation>
 <translation id="2223582957891074498">如果將這項政策設為 True，使用者無法使用鍵盤快速鍵或擴充功能 API 來擷取螢幕畫面。如果將這項政策設為 False，使用者可以擷取螢幕畫面。</translation>
 <translation id="2223598546285729819">預設通知設定</translation>
 <translation id="2231817271680715693">第一次執行時從預設瀏覽器匯入瀏覽記錄</translation>
@@ -844,6 +854,7 @@
 <translation id="2261329877420573811">如果在 <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> 中選擇了 <ph name="PRINTERS_WHITELIST" />，系統會根據 <ph name="DEVICE_NATIVE_PRINTERS_WHITELIST_POLICY_NAME" /> 的設定指定使用者可操作的印表機。只有 ID 與這項政策值相符的印表機，才會提供給使用者。印表機 ID 必須與 <ph name="DEVICE_PRINTERS_POLICY_NAME" /> 政策指定檔案的 <ph name="ID_FIELD" /> 或 <ph name="GUID_FIELD" /> 欄位值相符。
 
       這項政策已遭淘汰，請改用 <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" />。</translation>
+<translation id="2261648512244797294">停用已淘汰的 Privet 列印功能</translation>
 <translation id="2266422599396179941">允許使用者提出意見回饋</translation>
 <translation id="2269319728625047531">在登入期間允許顯示同步處理同意聲明</translation>
 <translation id="2270747976331889601">啟用本機信任錨點的傳輸層安全標準 (TLS) 1.3 安全功能。</translation>
@@ -2581,6 +2592,11 @@
       如果不設定這項政策或設為啟用，系統會執行 DNS 攔截檢查。如果明確指定停用這項政策，系統就不會執行 DNS 攔截檢查。</translation>
 <translation id="4700190441681139987">不允許任何網站存取感應器</translation>
 <translation id="4703402283970867140">啟用智慧型調光模式來延長使用時間，直到螢幕變暗為止</translation>
+<translation id="4715026656747891013">指定要套用至 <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> Enterprise 連接器的 Chrome Enterprise 連接器服務設定清單，這份清單會在 Chrome 中發生安全性事件時觸發。安全性事件包含分析 Enterprise 連接器後得到負面的結果、重複使用密碼、瀏覽不安全的頁面，以及其他攸關安全性的使用者動作。
+
+      <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> 欄位可用來指定與設定對應的報告服務供應商，<ph name="ENTERPRISE_CONNECTOR_ENABLED_EVENT_NAMES_FIELD" /> 欄位則可用來指定針對這個供應商啟用的事件。
+
+      你只能透過 Google 管理控制台設定這項政策。</translation>
 <translation id="4722122254122249791">為指定來源啟用網站隔離</translation>
 <translation id="4723122879352880315">你可以透過這項設定，允許使用者利用 <ph name="PRODUCT_OS_NAME" />登入憑證，向採用 NTLM 驗證防護機制的受管理 Proxy 進行驗證。
 
@@ -2853,6 +2869,7 @@
           如果未設定這項政策，系統會使用預設命令列。</translation>
 <translation id="5152393033264257734">允許 DNS 攔截檢查功能，以及你是不是要前往「http://intranetsite/」資訊列。</translation>
 <translation id="5152787786897382519">Chromium 和 Google Chrome 有部分政策群組具有相依關係，依此共同管控特定功能。這些組合如下列政策群組所示。由於政策可能具有多個來源，系統只會套用群組中最高優先來源所提供的值，忽略同個群組中優先順序較低的來源所提供的值。請參閱 <ph name="POLICY_PRIORITY_DOC_URL" /> 瞭解來源的優先順序。</translation>
+<translation id="5153187201534281749">工具列中的瀏覽器實驗功能圖示</translation>
 <translation id="515816885693899426">這項政策已遭淘汰，請改用「<ph name="URL_BLOCKLIST_POLICY_NAME" />」政策。
 
       你可以透過這項政策，禁止系統載入網址遭到禁止的網頁。這項政策可提供網址模式清單，用於指定要禁止的網址。如果未設定這項政策，則瀏覽器不會禁止任何網址。網址模式的格式如下：https://www.chromium.org/administrators/url-blacklist-filter-format。<ph name="URL_ALLOWLIST_POLICY_NAME" /> 中最多可定義 1000 個例外網址。
@@ -3999,6 +4016,11 @@
 <translation id="6789422336869764846">如果將這項政策設為啟用或不設定，已註冊的裝置會回報裝置的開發人員模式切換設定在開機時的狀態。
 
       如果將這項政策設為停用，已註冊的裝置不會回報開發人員模式切換設定的狀態。</translation>
+<translation id="6789441722870183939">如果將這項政策設為啟用或不設定，使用者就能透過工具列中的圖示使用瀏覽器實驗功能
+
+      如果將這項政策設為停用，則會從工具列中移除瀏覽器實驗功能圖示。
+
+      無論這項政策設為啟用或停用，chrome://flags 和其他開啟/關閉瀏覽器功能的方法都能正常運作。</translation>
 <translation id="6793420507738858152">如果設為啟用，<ph name="PRODUCT_NAME" /> 功能會傳送詳細的要求標頭，提供使用者瀏覽器和環境的相關資訊。
 
       這是附加功能，但因為有些網站會限制要求所包含的字元，新標頭可能會導致這類網站無法正常運作。
@@ -4734,6 +4756,7 @@
 
       如果將這項政策設為停用，使用者無法點閱任何警告頁面。</translation>
 <translation id="7750991880413385988">開啟新分頁</translation>
+<translation id="7753678409577376761">啟用瀏覽器實驗功能工具列進入點</translation>
 <translation id="7754704193130578113">下載每個檔案前先詢問儲存位置</translation>
 <translation id="7754893969683595513">你可以透過這項政策，指定向裝置管理服務查詢使用者政策資訊的時間範圍 (以毫秒為單位)。有效值範圍介於 1,800,000 (30 分鐘) 到 86,400,000 (1 天) 之間。系統會將超出範圍的值調整成接近的上限值或下限值。
 
@@ -4834,6 +4857,9 @@
 <translation id="791267408364877739">在使用具有安全疑慮的指令列旗標時，顯示安全性警告。</translation>
 <translation id="7922358664346625612">讓 Chrome 中的最後一個分頁保持開啟。</translation>
 <translation id="7924321157669251966">使用電池供電時的螢幕亮度百分比</translation>
+<translation id="7925224837072026018">設定這項政策會將企業金鑰的存取權授予擴充功能或 Android 應用程式。在受管理的帳戶中使用 chrome.enterprise.platformKeys API 產生的金鑰僅供企業使用。使用者無法將企業金鑰的存取權授予擴充功能或 Android 應用程式，也無法撤銷擴充功能或 Android 應用程式對企業金鑰的存取權。
+
+      根據預設，擴充功能或 Android 應用程式無法使用企業專用的金鑰 (等同於將 allowCorporateKeyUsage 設為 False)。擴充功能或 Android 應用程式只有在 allowCorporateKeyUsage 設為 True 時，才能使用企業專用的平台金鑰簽署任意資料。為了確保攻擊者無法獲得金鑰存取權，這項權限只應授予信任的擴充功能或 Android 應用程式。</translation>
 <translation id="793134539373873765">指定是否使用 P2P 更新裝載作業系統。如果設為 True，裝置將會在 LAN 上共用並嘗試使用更新裝載，藉此降低網際網路頻寬用量及減輕壅塞。如果 LAN 上未提供更新裝載，裝置將回歸至更新伺服器進行下載。如果設為 False 或未設定，則不會使用 P2P。</translation>
 <translation id="7933141401888114454">啟用建立受監管使用者的功能</translation>
 <translation id="793473937901685727">設定 ARC 應用程式的憑證可用性</translation>
@@ -4860,6 +4886,9 @@
 <translation id="7956210013490975468">設定 <ph name="PRODUCT_OS_NAME" />的系統 Proxy 服務。</translation>
 <translation id="7958537754689366707">每 12 小時需輸入密碼</translation>
 <translation id="7961779417826583251">不針對列出的舊版憑證授權單位強制執行憑證透明化政策</translation>
+<translation id="7962093600142350905">這項政策可控管是否要在列印預覽對話方塊中向使用者顯示任何可用的 Privet 印表機。
+      如果將這項政策設為啟用，列印預覽就會顯示可用的 Privet 印表機。
+      如果將這項政策設為停用或不設定，列印預覽中則不會顯示 Privet 印表機，因為這種列印方式已經淘汰。</translation>
 <translation id="7973609468423251675">請注意，這項政策已遭淘汰，並將在 <ph name="PRODUCT_OS_NAME" />第 85 版中移除。請改用 <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />。
 
           指定電池供電時的閒置時間長度。如果使用者在這段時間內沒有任何動作，系統就會將螢幕調暗。
@@ -4898,6 +4927,7 @@
 <translation id="8011935490612940798">控管 <ph name="PRODUCT_NAME" /> 功能。</translation>
 <translation id="802147957407376460">將畫面旋轉 0 度</translation>
 <translation id="802776363472387903"><ph name="PLUGIN_VM_NAME" /> 圖片的 SHA-256 雜湊值。</translation>
+<translation id="8029201909194194377">遠端存取連線所允許的工作階段持續時間上限</translation>
 <translation id="8033913082323846868">這項政策自 M70 起已淘汰，請改用 AutofillAddressEnabled 和 AutofillCreditCardEnabled。
 
 啟用「<ph name="PRODUCT_NAME" />」的「自動填入」功能，並允許使用者使用先前儲存的地址或信用卡資料等資訊自動填寫網路表單。
@@ -4935,6 +4965,7 @@
 <translation id="8078297389450285582">如果將這項政策設為啟用或不設定，系統會開啟智慧調光模式，並可延後螢幕調暗時間。一旦延後螢幕調暗時間，螢幕關閉、螢幕鎖定和閒置狀態的延遲時間也會隨之調整，以維持與原先設定相同的間隔時間。
 
       如果將這項政策設為停用，智慧調光模式並不會影響螢幕調暗設定。</translation>
+<translation id="8089200718228084417">啟用已淘汰的 Privet 列印功能</translation>
 <translation id="8091982561085048989">布林值標記，表示是否要使用 IPP Everywhere 設定印表機。<ph name="PRODUCT_OS_NAME" /> 76 以上版本支援這個標記。</translation>
 <translation id="8099880303030573137">在電池供電環境下執行時的閒置延遲時間</translation>
 <translation id="8101381354936029836">政策不可部分完成的群組：</translation>
@@ -5023,6 +5054,7 @@
           設定這項政策後，使用者即無法變更或覆寫。
 
           如果不設定這項政策，系統預設會停用游標醒目顯示功能，但使用者隨時可以啟用這項功能。</translation>
+<translation id="8164144100557223371">停用瀏覽器實驗功能工具列進入點</translation>
 <translation id="8164687848393015214">如果將這項政策設為啟用，系統會將監控網路封包 (<ph name="HEARTBEATS_TERM" />) 傳送到可監控上線狀態的管理伺服器，讓伺服器偵測裝置是否處於離線狀態。
 
       如果將這項政策設為停用或不設定，系統不會傳送任何封包。</translation>
@@ -5427,6 +5459,9 @@
 
       如果不設定這項政策，系統會將政策預設為啟用，且使用者無法予以停用。</translation>
 <translation id="8798099450830957504">預設</translation>
+<translation id="8799492680917278474">如果設定這項政策，遠端存取連線就會在政策中設定的分鐘時間過去後自動中斷連線。這項政策不禁止用戶端在達到工作階段持續時間上限後重新連線。如果為這項政策設定低於下限或高於上限的值，可能會導致主機無法啟動。這項政策不適用於遠端支援情境。
+
+          在未設定的情況下，這項政策不會有任何作用。也就是說，這部裝置上的遠端存取連線將沒有持續時間上限。</translation>
 <translation id="8800453707696044281">自訂電池停止充電值 (以百分比表示)</translation>
 <translation id="8801680448782904838">透過通知建議或要求使用者重新啟動瀏覽器或裝置</translation>
 <translation id="8816671955985738552">禁止在工作階段中透過 chrome://password-change 變更 SAML 密碼</translation>
@@ -5752,6 +5787,7 @@
 <translation id="9194447412184412480">控管使用外部 IdP 透過 SAML 進行驗證的使用者設定</translation>
 <translation id="9197740283131855199">使用者在螢幕調暗後繼續使用裝置時的螢幕調暗時間延長百分比</translation>
 <translation id="9200828125069750521">使用 POST 的圖片網址參數</translation>
+<translation id="9204863016826119209">這項政策中列出的已安裝 Android 應用程式可以使用企業金鑰。</translation>
 <translation id="9213751049772256263">停用所有變化版本</translation>
 <translation id="9217154963008402249">監控網路封包的傳送頻率</translation>
 <translation id="922540222991413931">設定擴充功能、應用程式和使用者指令碼安裝來源</translation>

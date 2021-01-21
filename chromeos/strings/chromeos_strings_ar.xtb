@@ -111,7 +111,7 @@
 <translation id="4170700058716978431">تعذّر إجراء الاختبار.</translation>
 <translation id="4176463684765177261">غير مفعّل</translation>
 <translation id="4227825898293920515">تنتهي صلاحية كلمة المرور في <ph name="TIME" /></translation>
-<translation id="4228041325992544252">يتم استخدام <ph name="AVAILABLE_MEMORY" /> غيغابايت من مساحة التخزين المتاحة التي تبلغ <ph name="TOTAL_MEMORY" /> غيغابايت.</translation>
+<translation id="4228041325992544252">يتوفّر <ph name="AVAILABLE_MEMORY" /> غيغابايت من سعة التخزين البالغة <ph name="TOTAL_MEMORY" /> غيغابايت.</translation>
 <translation id="4238516577297848345">ما من مهام قيد الطباعة.</translation>
 <translation id="4297501883039923494">توقّفت الطابعة - خطأ غير معروف</translation>
 <translation id="4378373042927530923">لم يتم التشغيل</translation>

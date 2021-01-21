@@ -72,6 +72,7 @@ Ef þegar er hakað við „<ph name="SERVICE_SCRIPT_NAME" />“ skaltu fjarlæg
 <translation id="4405930547258349619">Kjarnasafn</translation>
 <translation id="443560535555262820">Opna aðgengisstillingar</translation>
 <translation id="4450893287417543264">Ekki sýna þetta aftur</translation>
+<translation id="4512952200932940229">Höfundarréttur 2021 höfundar Chromium. Öll réttindi áskilin.</translation>
 <translation id="4513946894732546136">Ábendingar</translation>
 <translation id="4563926062592110512">Biðlari aftengdur: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="4635770493235256822">Fjartengd tæki</translation>
@@ -173,6 +174,7 @@ Ef þegar er merkt í „<ph name="SERVICE_SCRIPT_NAME" />“ skaltu fjarlægja 
 <translation id="8743328882720071828">Viltu leyfa <ph name="CLIENT_USERNAME" /> að sjá og stjórna tölvunni þinni?</translation>
 <translation id="8747048596626351634">Lotan hrundi eða ekki tókst að ræsa hana. Ef ~/.chrome-remote-desktop-session er til staðar í fjartengdu tölvunni skaltu ganga úr skugga um að hún ræsi ferli sem er lengi í gangi í forgrunni, til dæmis skjáborðsumhverfi eða gluggastýringu.</translation>
 <translation id="8804164990146287819">Persónuverndarstefna</translation>
+<translation id="8906511416443321782">Aðgangur að hljóðnema er áskilinn til að taka upp hljóð og senda það út í biðlara fjarstjórnunar tölvu í Chrome.</translation>
 <translation id="9111855907838866522">Þú ert tengd(ur) við fjartengda tækið. Ýttu á skjáinn með fjórum fingrum til að opna valmyndina.</translation>
 <translation id="9126115402994542723">Ekki biðja aftur um PIN-númer þegar tengst er við þennan þjón úr þessu tæki.</translation>
 <translation id="916856682307586697">Ræsa sjálfgefið XSession</translation>

@@ -72,6 +72,7 @@ Dacă opțiunea „<ph name="SERVICE_SCRIPT_NAME" />” este deja bifată, debif
 <translation id="4405930547258349619">Biblioteca nucleu</translation>
 <translation id="443560535555262820">Deschide preferințele pentru accesibilitate</translation>
 <translation id="4450893287417543264">Nu mai afișa</translation>
+<translation id="4512952200932940229">Copyright 2021 The Chromium Authors. Toate drepturile rezervate.</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="4563926062592110512">Client deconectat: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="4635770493235256822">Dispozitive la distanță</translation>
@@ -173,6 +174,7 @@ Dacă opțiunea „<ph name="SERVICE_SCRIPT_NAME" />” este deja bifată, debif
 <translation id="8743328882720071828">Dorești să-i permiți utilizatorului <ph name="CLIENT_USERNAME" /> să vadă și să îți controleze computerul?</translation>
 <translation id="8747048596626351634">Sesiunea s-a blocat sau nu a pornit. Dacă pe computerul la distanță există ~/.chrome-remote-desktop-session, asigură-te că inițiază un proces în prim-plan de lungă durată, cum ar fi un mediu de desktop sau un manager de ferestre.</translation>
 <translation id="8804164990146287819">Politica de confidențialitate</translation>
+<translation id="8906511416443321782">Este necesar accesul la microfon pentru a captura conținut audio și a-l proiecta pe clientul Desktop la distanță Chrome.</translation>
 <translation id="9111855907838866522">Te-ai conectat la dispozitivul la distanță. Pentru a deschide meniul, atinge ecranul cu patru degete.</translation>
 <translation id="9126115402994542723">Nu mai solicita un cod PIN când mă conectez la această gazdă de pe acest dispozitiv.</translation>
 <translation id="916856682307586697">Lansează sesiunea XSession prestabilită</translation>

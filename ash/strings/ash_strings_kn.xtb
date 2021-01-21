@@ -77,6 +77,7 @@
 <translation id="1570871743947603115">ಬ್ಲೂಟೂತ್ ಟಾಗಲ್ ಮಾಡಿ. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">ಈ ಸೆಶನ್‌ನಲ್ಲಿ ನೀವು ನಡೆಸುವ ಎಲ್ಲಾ ಚಟುವಟಿಕೆಯನ್ನು ಪ್ರವೇಶಿಸುವುದು</translation>
 <translation id="1611993646327628135">ಆನ್ ಮಾಡಿ</translation>
+<translation id="1615402009686901181">ನಿರ್ವಾಹಕರ ನೀತಿಯ ಪ್ರಕಾರ ಗೌಪ್ಯ ವಿಷಯ ಗೋಚರಿಸುತ್ತಿರುವಾಗ ಸ್ಕ್ರೀನ್ ಕ್ಯಾಪ್ಚರ್ ಮಾಡುವುದನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="1632985212731562677">ಪ್ರವೇಶ ಬದಲಾಯಿಸಿ ಅನ್ನು ಸೆಟ್ಟಿಂಗ್‌ಗಳು &gt; ಆ್ಯಕ್ಸೆಸಿಬಿಲಿಟಿಯಲ್ಲಿ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಬಹುದು.</translation>
 <translation id="1654477262762802994">ಧ್ವನಿ ಪ್ರಶ್ನೆಯನ್ನು ಕೇಳಲು ಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="1667964833127753507">ತಟಸ್ಥ ಬಣ್ಣ ಮೋಡ್, ವಾಲ್‌ಪೇಪರ್‌ನಿಂದ ಆಯ್ದು ತೆಗೆದ ಬಣ್ಣಗಳನ್ನು ಬಳಸುವುದಿಲ್ಲ, ಅವುಗಳನ್ನು ತಟಸ್ಥ ಛಾಯೆಯ ಬೆಳಕು ಅಥವಾ ಗಾಢ ವರ್ಣಗಳಿಂದ ಬದಲಾಯಿಸುತ್ತದೆ.</translation>
@@ -117,6 +118,7 @@
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">ಹಾಯ್‌, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">ಪಠ್ಯ ಇನ್‌ಪುಟ್</translation>
+<translation id="1989113344093894667">ವಿಷಯವನ್ನು ಕ್ಯಾಪ್ಚರ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="1993072747612765854">ಇತ್ತೀಚಿನ <ph name="SYSTEM_APP_NAME" /> ಅಪ್‌ಡೇಟ್ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="1995660704900986789">ಪವರ್ ಆಫ್</translation>
 <translation id="1998100899771863792">ಪ್ರಸ್ತುತ ಡೆಸ್ಕ್</translation>
@@ -143,6 +145,7 @@
 <translation id="225680501294068881">ಸಾಧನಗಳಿಗಾಗಿ ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="2268130516524549846">ಬ್ಲೂಟೂತ್‌ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="2268813581635650749">ಎಲ್ಲಾ ಸೈನ್ ಔಟ್ ಮಾಡಿ</translation>
+<translation id="2269016722240250274">ಆ್ಯಪ್‌ವೊಂದು ನಿಮ್ಮ ಮೈಕ್ರೊಫೋನ್ ಅನ್ನು ಬಳಸುತ್ತಿದೆ</translation>
 <translation id="2277103315734023688">ಮುಂದಕ್ಕೆ ಸೀಕ್ ಮಾಡಿ</translation>
 <translation id="2292698582925480719">ಪ್ರಮಾಣ ತೋರಿಸಿ</translation>
 <translation id="229397294990920565">ಮೊಬೈಲ್ ಡೇಟಾವನ್ನು ಆಫ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
@@ -168,6 +171,7 @@
 <translation id="2427507373259914951">ಎಡ-ಕ್ಲಿಕ್</translation>
 <translation id="2429753432712299108">ಬ್ಲೂಟೂತ್‌‌ ಸಾಧನವು "<ph name="DEVICE_NAME" />" ಜೋಡಣೆಗಾಗಿ ಅನುಮತಿಯನ್ನು ಬಯಸುತ್ತದೆ. ಸಮ್ಮತಿಸುವುದಕ್ಕೂ ಮೊದಲು, ದಯವಿಟ್ಟು ಆ ಸಾಧನದಲ್ಲಿ ಈ ಪಾಸ್‌ಕೀಲಿಯನ್ನು ತೋರಿಸಲಾಗಿದೆಯೇ ಎಂಬುದನ್ನು ಖಾತರಿಪಡಿಸಿಕೊಳ್ಳಿ: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ತೋರಿಸಿ</translation>
+<translation id="2450205753526923158">ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ಮೋಡ್</translation>
 <translation id="2473177541599297363">ರೆಸಲ್ಯೂಷನ್ ಖಚಿತಪಡಿಸಿ</translation>
 <translation id="2475982808118771221">ದೋಷವೊಂದು ಕಾಣಿಸಿಕೊಂಡಿದೆ</translation>
 <translation id="2482878487686419369">ಸೂಚನೆಗಳು</translation>
@@ -184,6 +188,7 @@
 <translation id="2596078834055697711">ವಿಂಡೋ ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ತೆಗೆದುಕೊಳ್ಳಿ</translation>
 <translation id="2617342710774726426">ಸಿಮ್‌ ಕಾರ್ಡ್ ಲಾಕ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="2621713457727696555">ಸುರಕ್ಷಿತವಾಗಿದೆ</translation>
+<translation id="2653019840645008922">ವಿಂಡೋ ಕ್ಯಾಪ್ಚರ್</translation>
 <translation id="2653659639078652383">ಸಲ್ಲಿಸಿ</translation>
 <translation id="2658778018866295321">ಕ್ಲಿಕ್ ಮಾಡಿ ಮತ್ತು ಡ್ರ್ಯಾಗ್ ಮಾಡಿ</translation>
 <translation id="2678852583403169292">ಆಯ್ಕೆಮಾಡಿ ಮತ್ತು ಆಲಿಸಿ ಮೆನು</translation>
@@ -198,6 +203,7 @@
 <translation id="2727977024730340865">ಕಡಿಮೆ ವಿದ್ಯುತ್ ಚಾರ್ಜರ್‌ಗೆ ಪ್ಲಗ್ ಮಾಡಲಾಗಿದೆ. ಬ್ಯಾಟರಿ ಚಾರ್ಜಿಂಗ್ ವಿಶ್ವಾಸಾರ್ಹವಾಗಿಲ್ಲದಿರಬಹುದು.</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> ಸಾಧನವನ್ನು <ph name="MANAGER" /> ನಿರ್ವಹಿಸುತ್ತಿದೆ</translation>
 <translation id="2792498699870441125">Alt+ಹುಡುಕಾಟ</translation>
+<translation id="2814448776515246190">ಭಾಗಶಃ ಕ್ಯಾಪ್ಚರ್</translation>
 <translation id="2819276065543622893">ಈಗ ನಿಮ್ಮನ್ನು ಸೈನ್ ಔಟ್ ಮಾಡಲಾಗುತ್ತದೆ.</translation>
 <translation id="28232023175184696">ಇಂಟರ್ನೆಟ್‌ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ. ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ.</translation>
 <translation id="2825224105325558319"><ph name="SPECIFIED_RESOLUTION" /> ಅನ್ನು <ph name="DISPLAY_NAME" /> ಬೆಂಬಲಿಸುವುದಿಲ್ಲ. ರೆಸಲ್ಯೂಷನ್‌ ಅನ್ನು <ph name="FALLBACK_RESOLUTION" /> ಗೆ ಬದಲಾಯಿಸಲಾಗಿದೆ.</translation>
@@ -224,6 +230,7 @@
 <translation id="3033545621352269033">ಆನ್</translation>
 <translation id="3036649622769666520">ಫೈಲ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="3038571455154067151">ಸೈನ್ ಇನ್ ಮಾಡಲು, ನಿಮ್ಮ Family Link ಪೋಷಕರ ಪ್ರವೇಶ ಕೋಡ್ ಅನ್ನು ನಮೂದಿಸಿ</translation>
+<translation id="3039939407102840004">ಸ್ಟೈಲಸ್ ಬ್ಯಾಟರಿಯು ಶೇಕಡಾ <ph name="PERCENTAGE" /> ನಷ್ಟು ಇದೆ.</translation>
 <translation id="3045488863354895414">ಶುಭ ಮಧ್ಯಾಹ್ನ,</translation>
 <translation id="3051128274746680507">ನಿಮ್ಮ ಮೇಲ್ವಿಚಾರಣೆಯ ಬಳಕೆದಾರರ ಪ್ರೊಫೈಲ್ ಅನ್ನು ಶೀಘ್ರವೇ ತೆಗೆದುಹಾಕಲಾಗುತ್ತದೆ. ಇನ್ನಷ್ಟು ತಿಳಿದುಕೊಳ್ಳಲು ಸೈನ್ ಇನ್ ಮಾಡಿ.</translation>
 <translation id="3055162170959710888">ನೀವು ಇಂದು <ph name="USED_TIME" /> ರಷ್ಟು ಸಮಯ ಈ ಸಾಧನವನ್ನು ಬಳಸಿದ್ದೀರಿ</translation>
@@ -233,6 +240,7 @@
 <translation id="3090989381251959936"><ph name="FEATURE_NAME" /> ಅನ್ನು ಟಾಗಲ್ ಮಾಡಿ. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">ಕರ್ಸರ್ ಸರಿಸಿ</translation>
 <translation id="3098580329624789136">"<ph name="QUERY" />" ಗಾಗಿ <ph name="INTENT" /> ಅನ್ನು ಪಡೆಯಿರಿ</translation>
+<translation id="3100274880412651815">ಕ್ಯಾಪ್ಚರ್ ಮೋಡ್ ಅನ್ನು ವಜಾಗೊಳಿಸಿ</translation>
 <translation id="3105917916468784889">ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ಅನ್ನು ತೆಗೆದುಕೊಳ್ಳಿ</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (ಬ್ಲೂಟೂತ್‌)</translation>
 <translation id="3126069444801937830">ಅಪ್‌ಡೇಟ್‌ ಮಾಡಲು ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
@@ -298,6 +306,7 @@
 <translation id="3621202678540785336">ಇನ್‌ಪುಟ್</translation>
 <translation id="3621712662352432595">ಆಡಿಯೊ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="3626281679859535460">ಪ್ರಕಾಶಮಾನ</translation>
+<translation id="3630697955794050612">ಆಫ್</translation>
 <translation id="3631369015426612114">ಕೆಳಗಿನವುಗಳಿಂದ ಅಧಿಸೂಚನೆಗಳನ್ನು ಅನುಮತಿಸಿ</translation>
 <translation id="3638400994746983214">ಗೌಪ್ಯತೆ ಸ್ಕ್ರೀನ್ ಅನ್ನು ಟಾಗಲ್ ಮಾಡಿ. <ph name="STATE_TEXT" />.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> ನಿರ್ವಹಿಸಲಾದ ಬಳಕೆದಾರರು</translation>
@@ -311,6 +320,7 @@
 <translation id="3773700760453577392"><ph name="USER_EMAIL" /> ಗೆ ಬಹು ಸೈನ್‌-ಇನ್‌ ಅನುಮತಿಯನ್ನು ನಿರ್ವಾಹಕರು ರದ್ದುಗೊಳಿಸಿದ್ದಾರೆ. ಮುಂದುವರಿಯಲು ಎಲ್ಲ ಬಳಕೆದಾರರು ಸೈನ್‌ ಔಟ್‌ ಮಾಡಬೇಕು.</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">ಲಾಕ್ ಮಾಡಿ</translation>
+<translation id="3796746699333205839">ಆ್ಯಪ್‌ವೊಂದು ನಿಮ್ಮ ಕ್ಯಾಮರಾ ಮತ್ತು ಮೈಕ್ರೋಫೋನ್ ಅನ್ನು ಬಳಸುತ್ತಿದೆ</translation>
 <translation id="3798670284305777884">ಸ್ಪೀಕರ್ (ಆಂತರಿಕ)</translation>
 <translation id="3799080171973636491">ನೀವು ಪೂರ್ಣ ಪರದೆ ವರ್ಧಕದ ಕೀಬೋರ್ಡ್ ಶಾರ್ಟ್‌ಕಟ್ ಒತ್ತಿದ್ದೀರಿ. ನೀವು ಅದನ್ನು ಆನ್ ಮಾಡಲು ಬಯಸುವಿರಾ?</translation>
 <translation id="380165613292957338">ಹಾಯ್, ನಾನು ಹೇಗೆ ಸಹಾಯ ಮಾಡಬಹುದು?</translation>
@@ -404,6 +414,7 @@
 <translation id="4570957409596482333">'ಆಯ್ಕೆಮಾಡಿ ಮತ್ತು ಆಲಿಸಿ' ಬಟನ್‌</translation>
 <translation id="4577274620589681794">ಸಮಯ ಮುಗಿದಿದೆ · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">ಪೂರ್ವವೀಕ್ಷಣೆಗಳನ್ನು ತೋರಿಸಿ</translation>
+<translation id="4578906031062871102">ಸೆಟ್ಟಿಂಗ್‌ಗಳ ಮೆನುವನ್ನು ತೆರೆಯಲಾಗಿದೆ</translation>
 <translation id="4585337515783392668">"ಅಪರಿಚಿತ ಸ್ವೀಕರಿಸುವವರು" ನಲ್ಲಿ ಬಿತ್ತರಿಸುವುದನ್ನು ನಿಲ್ಲಿಸಿ</translation>
 <translation id="4596144739579517758">ಡಾರ್ಕ್ ಥೀಮ್ ಆಫ್ ಆಗಿದೆ</translation>
 <translation id="4623167406982293031">ಖಾತೆಯನ್ನು ದೃಢೀಕರಿಸಿ</translation>
@@ -486,6 +497,7 @@
 <translation id="5379115545237091094">ಹಲವು ಬಾರಿ ಪ್ರಯತ್ನಿಸಿದ್ದೀರಿ</translation>
 <translation id="5397578532367286026">ಈ ಬಳಕೆದಾರರ ಬಳಕೆ ಮತ್ತು ಇತಿಹಾಸವನ್ನು chrome.com ನಲ್ಲಿ ನಿರ್ವಾಹಕರು (<ph name="MANAGER_EMAIL" />) ಪರಿಶೀಲಿಸಬಹುದು.</translation>
 <translation id="5400461572260843123">ತ್ವರಿತ ಸೆಟ್ಟಿಂಗ್‌ಗಳು, ಅಧಿಸೂಚನೆ ಕೇಂದ್ರಕ್ಕೆ ಪ್ರವೇಶಿಸಲು ಹುಡುಕಾಟ + ಎಡಕ್ಕೆ ಬಾಣದ ಗುರುತನ್ನು ಒತ್ತಿರಿ.</translation>
+<translation id="5426063383988017631">ಸೆಟ್ಟಿಂಗ್‌ಗಳ ಮೆನುವನ್ನು ಮುಚ್ಚಲಾಗಿದೆ</translation>
 <translation id="5428899915242071344">ಆಯ್ಕೆಮಾಡುವುದನ್ನು ಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="5430931332414098647">ತತ್‌ಕ್ಷಣದ ಟೆಥರಿಂಗ್‌</translation>
 <translation id="5431825016875453137">VPN / L2TP ತೆರೆಯಿರಿ</translation>
@@ -502,12 +514,15 @@
 <translation id="556042886152191864">ಬಟನ್</translation>
 <translation id="5571066253365925590">ಬ್ಲೂಟೂತ್‌ ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="557563299383177668">ಮುಂದಿನ ಪ್ಯಾರಾಗ್ರಾಫ್</translation>
+<translation id="5577281275355252094">ಫೋನ್ ಹಬ್ ಬಳಸಲು ನಿಮ್ಮ ಫೋನ್‌ನಲ್ಲಿ ಬ್ಲೂಟೂತ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆಯೇ ಎನ್ನುವುದನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="558849140439112033">ಕ್ಯಾಪ್ಚರ್ ಮಾಡುವುದಕ್ಕಾಗಿ ಪ್ರದೇಶವೊಂದನ್ನು ಆಯ್ಕೆ ಮಾಡಲು ಡ್ರ್ಯಾಗ್ ಮಾಡಿ</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">ಮಾತಿನ ಪ್ರತಿಕ್ರಿಯೆಯನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲು Ctrl + Alt + Z ಒತ್ತಿ.</translation>
 <translation id="5601503069213153581">PIN</translation>
+<translation id="5619862035903135339">ನಿರ್ವಾಹಕರ ನೀತಿಯ ಪ್ರಕಾರ ಸ್ಕ್ರೀನ್ ಕ್ಯಾಪ್ಚರ್ ಮೋಡ್ ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">ಮೈಕ್ ಜ್ಯಾಕ್</translation>
+<translation id="5662709761327382534">ಮೈಕ್ರೋಫೋನ್ ಮೂಲಕ ರೆಕಾರ್ಡ್ ಮಾಡಿ ಆಯ್ಕೆಯು <ph name="CURRENT_STATE" /> ಆಗಿದೆ, ಮೈಕ್ರೋಫೋನ್ ಮೂಲಕ ರೆಕಾರ್ಡ್ ಮಾಡುವ ಆಯ್ಕೆಯನ್ನು <ph name="NEW_STATE" /> ಮಾಡಲು Enter ಒತ್ತಿರಿ</translation>
 <translation id="5669267381087807207">ಸಕ್ರಿಯವಾಗುತ್ತಿದೆ</translation>
 <translation id="5673434351075758678">ನಿಮ್ಮ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಸಿಂಕ್ ಮಾಡಿದ ಬಳಿಕ "<ph name="FROM_LOCALE" />" ನಿಂದ "<ph name="TO_LOCALE" />" ಗೆ.</translation>
 <translation id="5677928146339483299">ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
@@ -556,6 +571,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />, ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ವಹಿಸಿದ್ದಾರೆ</translation>
 <translation id="6030495522958826102">ಮೆನುವನ್ನು ಪರದೆಯ ಕೆಳಭಾಗದಲ್ಲಿ ಎಡತುದಿಗೆ ಸರಿಸಲಾಗಿದೆ.</translation>
 <translation id="6032620807120418574">ಪೂರ್ಣ ಪರದೆಯನ್ನು ರೆಕಾರ್ಡ್ ಮಾಡಲು ಎಲ್ಲಿಯಾದರೂ ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
+<translation id="6040071906258664830">ಮೈಕ್ರೋಫೋನ್ ಮೂಲಕ ರೆಕಾರ್ಡ್ ಮಾಡಿ ಆಯ್ಕೆಯು <ph name="STATE" /> ಆಗಿದೆ</translation>
 <translation id="6040143037577758943">ಮುಚ್ಚಿರಿ</translation>
 <translation id="6043212731627905357">ಈ ಮಾನಿಟರ್ ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಜೊತೆ ಸಿಗುತ್ತಿಲ್ಲ (ಮಾನಿಟರ್ ಬೆಂಬಲಿಸುವುದಿಲ್ಲ).</translation>
 <translation id="6043994281159824495">ಈಗ ಸೈನ್ ಔಟ್ ಮಾಡಿ</translation>
@@ -565,6 +581,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="6062360702481658777"><ph name="LOGOUT_TIME_LEFT" /> ನಲ್ಲಿ ನಿಮ್ಮನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಸೈನ್‌ಔಟ್‌ ಮಾಡಲಾಗುತ್ತದೆ.</translation>
 <translation id="6073451960410192870">ರೆಕಾರ್ಡಿಂಗ್ ನಿಲ್ಲಿಸಿ</translation>
 <translation id="607652042414456612">ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್ ಅನ್ನು ಸಮೀಪದಲ್ಲಿರುವ ಬ್ಲೂಟೂತ್‌‌ ಸಾಧನಗಳು ಅನ್ವೇಷಿಸಬಹುದಾಗಿದೆ ಮತ್ತು <ph name="ADDRESS" /> ವಿಳಾಸದೊಂದಿಗೆ "<ph name="NAME" />" ರೂಪದಲ್ಲಿ ಗೋಚರಿಸುತ್ತದೆ</translation>
+<translation id="6094290315941448991">ನಿರ್ವಾಹಕರ ನೀತಿಯ ಪ್ರಕಾರ ಗೌಪ್ಯ ವಿಷಯ ಗೋಚರಿಸುತ್ತಿರುವಾಗ ಸ್ಕ್ರೀನ್‌‌ ರೆಕಾರ್ಡಿಂಗ್ ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google ಅಸಿಸ್ಟೆಂಟ್‌ ಅತಿಥಿ ಸೆಶನ್‌ನಲ್ಲಿ ಲಭ್ಯವಿಲ್ಲ.</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> ಗೆ ಸಂಬಂಧಿಸಿದ ತೆಗೆದುಹಾಕಿ ಡೈಲಾಗ್ ಅನ್ನು ತೆರೆಯಿರಿ</translation>
@@ -621,6 +638,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="6650933572246256093">ಬ್ಲೂಟೂತ್‌ ಸಾಧನವು "<ph name="DEVICE_NAME" />" ಜೋಡಣೆಗಾಗಿ ಅನುಮತಿಯನ್ನು ಬಯಸುತ್ತಿದೆ. ಆ ಸಾಧನದಲ್ಲಿ ಈ ಪಾಸ್‌ಕೀಲಿಯನ್ನು ನಮೂದಿಸಿ: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">ಪಾಸ್‌ವರ್ಡ್</translation>
 <translation id="6665545700722362599">ಸ್ಥಳ ಸೇವೆಗಳು, ಸಾಧನದ ಮೈಕ್ರೊಫೋನ್, ಕ್ಯಾಮೆರಾ, ಅಥವಾ ಇತರ ವೈಶಿಷ್ಟ್ಯಗಳನ್ನು ಬಳಸಲು ವೆಬ್‌ಸೈಟ್‌ಗಳು, ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ವಿಸ್ತರಣೆಗಳಿಗೆ ಅನುಮತಿಯನ್ನು ನೀಡುವುದು</translation>
+<translation id="6667908387435388584">ನಿಮ್ಮ ಫೋನ್‌ನ ಹಾಟ್‌ಸ್ಪಾಟ್‌ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಿ, ನಿಶ್ಯಬ್ದಗೊಳಿಸಿ ಹಾಗೂ ನಿಮ್ಮ ಸಾಧನವನ್ನು ಪತ್ತೆ ಮಾಡಿ ಮತ್ತು ಇತ್ತೀಚೆಗೆ ನಿಮ್ಮ ಫೋನ್‌ನಲ್ಲಿ ತೆರೆಯಲಾದ Chrome ಟ್ಯಾಬ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಿ</translation>
 <translation id="6670153871843998651">ಡೆಸ್ಕ್ 3</translation>
 <translation id="6671495933530132209">ಚಿತ್ರವನ್ನು ನಕಲಿಸಿ</translation>
 <translation id="6691659475504239918">ಹುಡುಕಾಟ+Shift+H</translation>
@@ -701,7 +719,9 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="742594950370306541">ಕ್ಯಾಮರಾ ಬಳಕೆಯಲ್ಲಿದೆ.</translation>
 <translation id="742608627846767349">ಶುಭೋದಯ,</translation>
 <translation id="743058460480092004">ಕ್ಯಾಮರಾ ಮತ್ತು ಮೈಕ್ರೋಫೋನ್ ಬಳಕೆಯಲ್ಲಿವೆ.</translation>
+<translation id="7452560014878697800">ಆ್ಯಪ್‌ವೊಂದು ನಿಮ್ಮ ಕ್ಯಾಮರಾವನ್ನು ಬಳಸುತ್ತಿದೆ</translation>
 <translation id="7461924472993315131">ಪಿನ್</translation>
+<translation id="746232733191930409">ಸ್ಕ್ರೀನ್ ರೆಕಾರ್ಡಿಂಗ್ ಮೋಡ್</translation>
 <translation id="7466449121337984263">ಸೆನ್ಸರ್ ಅನ್ನು ಸ್ಪರ್ಶಿಸಿ</translation>
 <translation id="7477793887173910789">ನಿಮ್ಮ ಸಂಗೀತ, ವೀಡಿಯೊಗಳು ಹಾಗೂ ಇತ್ಯಾದಿಗಳನ್ನು ನಿಯಂತ್ರಿಸಿ</translation>
 <translation id="7497767806359279797">ಭಾಷೆ ಮತ್ತು ಕೀಬೋರ್ಡ್ ಆರಿಸಿ</translation>
@@ -730,6 +750,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="7658239707568436148">ರದ್ದುಮಾಡಿ</translation>
 <translation id="7662283695561029522">ಕಾನ್ಫಿಗರ್ ಮಾಡಲು ಟ್ಯಾಪ್‌ ಮಾಡಿ</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="7714767791242455379">ಹೊಸ ಸೆಲ್ಯುಲಾರ್ ನೆಟ್‌ವರ್ಕ್ ಅನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 ಅಧಿಸೂಚನೆ}one{# ಅಧಿಸೂಚನೆಗಳು}other{# ಅಧಿಸೂಚನೆಗಳು}}</translation>
 <translation id="7724603315864178912">ಕತ್ತರಿಸು</translation>
 <translation id="7745560842763881396">ಶೆಲ್ಫ್‌ನಲ್ಲಿ ಆ್ಯಪ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
@@ -744,6 +765,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="7842569679327885685">ಎಚ್ಚರಿಕೆ: ಪ್ರಾಯೋಗಿಕ ವೈಶಿಷ್ಟ್ಯ</translation>
 <translation id="7846634333498149051">ಕೀಬೋರ್ಡ್</translation>
 <translation id="7860671499921112077">ಸಮಗ್ರ ನೋಟವನ್ನು ಪ್ರವೇಶಿಸಲು ಮೂರು ಬೆರಳುಗಳಿಂದ ಮೇಲಕ್ಕೆ ಸ್ವೈಪ್ ಮಾಡಿ.</translation>
+<translation id="7866482334467279021">ಆನ್‌</translation>
 <translation id="7868900307798234037">ಫಿಂಗರ್‌ಪ್ರಿಂಟ್ ಮೂಲಕ ಅನ್‌ಲಾಕ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="7872786842639831132">ಆಫ್ ಮಾಡಿ</translation>
 <translation id="7875575368831396199">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನಲ್ಲಿ ಬ್ಲೂಟೂತ್ ಆಫ್ ಆಗಿರುವಂತೆ ತೋರುತ್ತಿದೆ. ಫೋನ್ ಹಬ್ ಅನ್ನು ಬಳಸಲು ಬ್ಲೂಟೂತ್ ಅನ್ನು ಆನ್ ಮಾಡಿ.</translation>
@@ -773,6 +795,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="8036504271468642248">ಹಿಂದಿನ ವಾಕ್ಯ</translation>
 <translation id="8042893070933512245">ಪ್ರವೇಶಿಸುವಿಕೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳ ಮೆನು ತೆರೆಯಿರಿ</translation>
 <translation id="8048123526339889627">ಬ್ಲೂಟೂತ್‌‌ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
+<translation id="8052898407431791827">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್‌ಗೆ ನಕಲಿಸಲಾಗಿದೆ</translation>
 <translation id="8054466585765276473">ಬ್ಯಾಟರಿ ಸಮಯವನ್ನು ಲೆಕ್ಕಾಚಾರ ಮಾಡಲಾಗುತ್ತಿದೆ.</translation>
 <translation id="8061464966246066292">ಉನ್ನತ ಕಾಂಟ್ರಾಸ್ಟ್</translation>
 <translation id="8098591350844501178">ಪರದೆಯನ್ನು <ph name="RECEIVER_NAME" /> ಗೆ ಬಿತ್ತರಿಸುವುದನ್ನು ನಿಲ್ಲಿಸಿ</translation>
@@ -844,9 +867,11 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="8673028979667498656">270°</translation>
 <translation id="8676770494376880701">ಕಡಿಮೆ ವಿದ್ಯುತ್ ಚಾರ್ಜರ್ ಸಂಪರ್ಕಪಡಿಸಲಾಗಿದೆ</translation>
 <translation id="8683506306463609433">ಕಾರ್ಯಕ್ಷಮತೆಯ ಟ್ರೇಸಿಂಗ್ ಸಕ್ರಿಯವಾಗಿದೆ</translation>
+<translation id="8703634754197148428">ರೆಕಾರ್ಡಿಂಗ್ ಪ್ರಾರಂಭಿಸಿ. ರೆಕಾರ್ಡಿಂಗ್ ಪ್ರಾರಂಭವಾದ ನಂತರ ಶೆಲ್ಫ್‌ಗೆ ನ್ಯಾವಿಗೇಟ್ ಮಾಡಲು ಮತ್ತು ರೆಕಾರ್ಡಿಂಗ್ ನಿಲ್ಲಿಸಿ ಬಟನ್ ಅನ್ನು ಹುಡುಕಲು Alt + Shift + L ಅನ್ನು ಒತ್ತಿ</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> ಈ ಫೀಚರ್ ಅನ್ನು ನಿರ್ವಹಿಸಲು ಎಡ ಅಥವಾ ಬಲ ಆ್ಯರೋ ಕೀಗಳನ್ನು ಬಳಸಿ.</translation>
 <translation id="8712637175834984815">ಅರ್ಥವಾಯಿತು</translation>
 <translation id="8721053961083920564">ವಾಲ್ಯೂಮ್ ಅನ್ನು ಟಾಗಲ್ ಮಾಡಿ. <ph name="STATE_TEXT" /></translation>
+<translation id="8724318433625452070">ಪೂರ್ಣ ಸ್ಕ್ರೀನ್ ಕ್ಯಾಪ್ಚರ್</translation>
 <translation id="8734991477317290293">ನಿಮ್ಮ ಕೀಸ್ಟ್ರೋಕ್‌ಗಳನ್ನು ಕಳವು ಮಾಡಲು ಇದು ಪ್ರಯತ್ನಿಸುತ್ತಿರಬಹುದು</translation>
 <translation id="8735953464173050365">ಕೀಬೋರ್ಡ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೋರಿಸಿ. <ph name="KEYBOARD_NAME" /> ಅನ್ನು ಆಯ್ಕೆ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="8755498163081687682">ನಿಮ್ಮ ಗುರುತನ್ನು ಖಚಿತಪಡಿಸಿ: ಇದು ನೀವೇ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಲು <ph name="ORIGIN_NAME" /> ಬಯಸುತ್ತದೆ</translation>
@@ -870,6 +895,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="8877788021141246043">ಜ್ಞಾಪನೆಯನ್ನು ಹೊಂದಿಸಿ</translation>
 <translation id="8878886163241303700">ಪರದೆಯನ್ನು ವಿಸ್ತರಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="8883473964424809116">Google Assistant ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಲು ಕ್ಲಿಕ್ ಮಾಡಿ.</translation>
+<translation id="8884537526797090108">ಗೌಪ್ಯ ವಿಷಯವನ್ನು ರೆಕಾರ್ಡ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="890616557918890486">ಮೂಲವನ್ನು ಬದಲಿಸಿ</translation>
 <translation id="8909138438987180327">ಬ್ಯಾಟರಿ <ph name="PERCENTAGE" /> ಪ್ರತಿಶತ ಇದೆ.</translation>
 <translation id="8913384980486163186">ಥೀಮ್ ಹೊಂದಿರುವಂತದ್ದು (ಡೀಫಾಲ್ಟ್)</translation>
@@ -885,6 +911,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="9017320285115481645">Family Link ಪೋಷಕ ಪ್ರವೇಶದ ಕೋಡ್ ಅನ್ನು ನಮೂದಿಸಿ.</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> ನ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="9056839673611986238">ಸಾಧನವನ್ನು ಮುಂಚಿನ ನಿರ್ದಿಷ್ಟ ಸ್ಥಿತಿಗೆ ಹಿಂತಿರುಗಿಸಲಾಗುತ್ತದೆ</translation>
+<translation id="9063800855227801443">ಗೌಪ್ಯ ವಿಷಯವನ್ನು ಕ್ಯಾಪ್ಚರ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="9065203028668620118">ಎಡಿಟ್</translation>
 <translation id="9070640332319875144">ಅಸಿಸ್ಟೆಂಟ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="9072519059834302790">ಬ್ಯಾಟರಿ ಖಾಲಿಯಾಗಲು <ph name="TIME_LEFT" /> ಸಮಯವಿದೆ.</translation>

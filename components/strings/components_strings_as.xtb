@@ -80,6 +80,7 @@
     &lt;li&gt;ৱেবছাইটটোৰ গৰাকীৰ সৈতে সম্পর্ক কৰক।&lt;/li&gt;
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">আপুনি আপোনাৰ প্ৰতিষ্ঠানে পৰিচালনা নকৰা এটা ছাইটত নিজৰ পাছৱৰ্ডটো দিছে। আপোনাৰ একাউণ্টটো সুৰক্ষিত কৰিবলৈ আপোনাৰ পাছৱৰ্ডটো অন্য এপ্‌ আৰু ছাইটত পুনৰ ব্যৱহাৰ নকৰিব।</translation>
+<translation id="1259144770381827039">সবিশেষ চাওক।</translation>
 <translation id="1263231323834454256">পঢ়াৰ সূচী</translation>
 <translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
         এইসমূহ কাৰ্যকলাপ এই ডিভাইচটোত ছেভ কৰা নহ’ব:
@@ -326,6 +327,7 @@
 <translation id="2164510882479075877"><ph name="HOST_NAME" /> টাইপ কৰোঁতে ভুল হৈছে নেকি পৰীক্ষা কৰক।</translation>
 <translation id="2166049586286450108">প্ৰশাসকৰ সম্পূর্ণ এক্সেছ</translation>
 <translation id="2166378884831602661">এই ছাইটটোৱে সুৰক্ষিত সংযোগ প্ৰদান কৰিব নোৱাৰে</translation>
+<translation id="2168151236314517198">এই সমল প্ৰিণ্ট কৰাটো প্ৰশাসকৰ নীতিয়ে অৱৰোধ কৰিছে</translation>
 <translation id="2169984857010174799">Kaku2 (লেফাফা)</translation>
 <translation id="2181821976797666341">নীতি</translation>
 <translation id="2183608646556468874">ফ’ন নম্বৰ</translation>
@@ -1353,6 +1355,7 @@
 <translation id="6290238015253830360">আপুনি পৰামৰ্শ দিয়া প্ৰবন্ধবোৰ ইয়াত দেখা যাব</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">Chromeত Google Assistant বন্ধ হ'ব</translation>
+<translation id="6304463939629872728">ইয়াৰ জৰিয়তে চেক আউট কৰক</translation>
 <translation id="6305205051461490394"><ph name="URL" />ত উপনীত হ’ব নোৱাৰি৷</translation>
 <translation id="6312113039770857350">ৱেবপৃষ্ঠা উপলব্ধ নহয়</translation>
 <translation id="6321917430147971392">আপোনাৰ DNS ছেটিং পৰীক্ষা কৰক</translation>
@@ -1382,6 +1385,7 @@
 <translation id="6406765186087300643">C0 (লেফাফা)</translation>
 <translation id="6409754798200046165">আপুনি প্ৰবঞ্চনামূলক ছাইটটোত এইমাত্ৰ নিজৰ পাছৱৰ্ডটো দিছে। Chromeএ আপোনাৰ পাছৱৰ্ডটো এতিয়াই সলনি কৰাটো চুপাৰিছ কৰে।</translation>
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" />ৰ ম্যাদ উকলা তাৰিখ আৰু CVC দিয়ক</translation>
+<translation id="6410774864568266108">আপোনাৰ Google Payৰ অফাৰটো নাপাহৰিব</translation>
 <translation id="6415778972515849510">Chromiumএ আপোনাৰ Google একাউণ্ট সুৰক্ষিত কৰাত আৰু আপোনৰ পাছৱৰ্ড সলনি কৰাত সহায় কৰিব পাৰে।</translation>
 <translation id="6423385022588644828">এতিয়াৰ পৰা স্পৰ্শ আইডি ব্যৱহাৰ কৰি আপোনাৰ কাৰ্ডসমূহ খৰতকীয়াকৈ নিশ্চিত কৰক</translation>
 <translation id="6425092077175753609">সামগ্ৰী</translation>

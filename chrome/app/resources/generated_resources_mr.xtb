@@ -799,6 +799,7 @@
 <translation id="1867780286110144690"><ph name="PRODUCT_NAME" /> तुमची स्थापना पूर्ण करण्यासाठी तयार आहे</translation>
 <translation id="1868193363684582383">"Ok Google"</translation>
 <translation id="1868553836791672080">Chromium मध्ये पासवर्ड तपासणी उपलब्ध नाही</translation>
+<translation id="1869433484041798909">बुकमार्क बटण</translation>
 <translation id="187145082678092583">काही अ‍ॅप्स</translation>
 <translation id="1871534214638631766">तुम्ही आशयावर राइट क्लिक करता किंवा दाबून ठेवता तेव्हा त्यासंबंधित माहिती दाखवा</translation>
 <translation id="1871615898038944731">तुमचे <ph name="DEVICE_TYPE" /> अद्ययावत आहे</translation>
@@ -830,6 +831,7 @@
 <translation id="1900305421498694955">Google Play वरील ॲप्सना कदाचित बाह्य स्टोरेज डिव्हाइसवरील फाइल रीड आणि राइट करण्यासाठी संपूर्ण फाइल सिस्टम ॲक्सेसची आवश्यकता असू शकते. डिव्हाइसवर तयार केलेल्या फाइल आणि फोल्डर हे बाह्य ड्राइव्ह वापरणार्‍या कोणालाही दिसतील. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">&amp;सर्व निवडा</translation>
 <translation id="1901396183631570154">Chrome ला हे पासवर्ड तुमच्या Google खाते मध्ये सेव्ह करता आले नाहीत. तुम्ही तरीही ते या डिव्हाइसवर सेव्ह करू शकता.</translation>
+<translation id="1903995858055162096">तुमचे डिव्हाइस नाही का? <ph name="BEGIN_LINK" />अतिथी मोड<ph name="END_LINK" /> वापरा.</translation>
 <translation id="1905375423839394163">Chromebook डिव्हाइसचे नाव</translation>
 <translation id="1906181697255754968">तुमचे काम आपोआप सेव्ह करणे यासारख्या वैशिष्ट्यांसाठी साइट सामान्यपणे तुमच्या डिव्हाइसवरील फाइल आणि फोल्डर अ‍ॅक्सेस करतात</translation>
 <translation id="1906828677882361942">कोणत्याही साइटना सिरीअल पोर्ट अ‍ॅक्सेस करू देऊ नका</translation>
@@ -5433,6 +5435,7 @@
 <translation id="7251346854160851420">डीफॉल्ट वॉलपेपर</translation>
 <translation id="7253521419891527137">&amp;अधिक जाणून घ्या</translation>
 <translation id="7254951428499890870">तुम्ही निदान मोडमध्ये "<ph name="APP_NAME" />" लाँच करू इच्छिता याची तुम्हाला खात्री आहे?</translation>
+<translation id="725497546968438223">बुकमार्क फोल्डरचे बटण</translation>
 <translation id="7255002516883565667">सध्या तुमच्याकडे एक कार्ड आहे जे फक्त या डिव्हाइसवर वापरले जाऊ शकते</translation>
 <translation id="7255935316994522020">लागू करा</translation>
 <translation id="7256069762010468647">साइट तुमचा कॅमेरा वापरत आहे</translation>
@@ -5694,6 +5697,7 @@
 <translation id="7564847347806291057">प्रक्रिया समाप्त करा</translation>
 <translation id="7566118625369982896">Play ॲप लिंक व्‍यवस्‍थापित करा</translation>
 <translation id="756809126120519699">Chrome डेटा साफ केला</translation>
+<translation id="756876171895853918">अवतार कस्टमाइझ करा</translation>
 <translation id="7568790562536448087">अपडेट करीत आहे</translation>
 <translation id="7569983096843329377">काळा</translation>
 <translation id="7571643774869182231">अपडेटसाठी पुरेसे स्टोरेज उपलब्ध नाही</translation>

@@ -72,6 +72,7 @@ Si la casilla <ph name="SERVICE_SCRIPT_NAME" /> ya está marcada, desmárcala y 
 <translation id="4405930547258349619">Biblioteca principal</translation>
 <translation id="443560535555262820">Abrir preferencias de accesibilidad</translation>
 <translation id="4450893287417543264">No volver a mostrar</translation>
+<translation id="4512952200932940229">Copyright 2021 The Chromium Authors. Todos los derechos reservados.</translation>
 <translation id="4513946894732546136">Comentarios</translation>
 <translation id="4563926062592110512">Cliente desconectado: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="4635770493235256822">Dispositivos remotos</translation>
@@ -173,6 +174,7 @@ Si la casilla <ph name="SERVICE_SCRIPT_NAME" /> ya está marcada, desmárcala y 
 <translation id="8743328882720071828">¿Quieres permitir que <ph name="CLIENT_USERNAME" /> vea y controle tu ordenador?</translation>
 <translation id="8747048596626351634">La sesión ha fallado o no se ha podido iniciar. Si hay una secuencia de comandos ~/.chrome-remote-desktop-session en el ordenador remoto, esta debe iniciar un proceso largo en primer plano, como un entorno de escritorio o un administrador de ventanas.</translation>
 <translation id="8804164990146287819">Política de Privacidad</translation>
+<translation id="8906511416443321782">Se necesita acceso al micrófono para capturar audio y emitirlo en el Escritorio Remoto de Chrome.</translation>
 <translation id="9111855907838866522">Estás conectado al dispositivo remoto. Para abrir el menú, toca la pantalla con cuatro dedos.</translation>
 <translation id="9126115402994542723">No volver a pedir un PIN al conectarse a este host desde este dispositivo.</translation>
 <translation id="916856682307586697">Iniciar la XSession predeterminada</translation>

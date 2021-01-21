@@ -72,6 +72,7 @@ Si l'option « <ph name="SERVICE_SCRIPT_NAME" /> » est déjà cochée, décoc
 <translation id="4405930547258349619">Bibliothèque principale</translation>
 <translation id="443560535555262820">Ouvrir les préférences d'accessibilité</translation>
 <translation id="4450893287417543264">Ne plus afficher</translation>
+<translation id="4512952200932940229">© 2021 Les auteurs de Chromium. Tous droits réservés.</translation>
 <translation id="4513946894732546136">Commentaires</translation>
 <translation id="4563926062592110512">Déconnexion du client : <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="4635770493235256822">Appareils distants</translation>
@@ -173,6 +174,7 @@ Si l'option « <ph name="SERVICE_SCRIPT_NAME" /> » est déjà cochée, décoc
 <translation id="8743328882720071828">Voulez-vous autoriser <ph name="CLIENT_USERNAME" /> à accéder à votre ordinateur et à en prendre le contrôle?</translation>
 <translation id="8747048596626351634">La session a planté ou n'a pas réussi à démarrer. Si ~/.chrome-remote-desktop-session est présente sur l'ordinateur distant, assurez-vous qu'elle exécute un processus de longue durée au premier plan, tel qu'un environnement de bureau ou un gestionnaire de fenêtres.</translation>
 <translation id="8804164990146287819">Politique de confidentialité</translation>
+<translation id="8906511416443321782">L'accès au microphone est requis pour capturer de l'audio et le diffuser au client Bureau à distance Chrome.</translation>
 <translation id="9111855907838866522">Vous êtes connecté à votre appareil distant. Pour ouvrir le menu, veuillez toucher l'écran avec quatre doigts.</translation>
 <translation id="9126115402994542723">Ne plus demander de NIP pour la connexion à cet hôte à partir de cet appareil.</translation>
 <translation id="916856682307586697">Lancer la XSession par défaut</translation>

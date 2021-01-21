@@ -77,6 +77,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1570871743947603115">Activa o desactiva el Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Accedir a tota la teva activitat d'aquesta sessió.</translation>
 <translation id="1611993646327628135">Activat</translation>
+<translation id="1615402009686901181">La política de l'administrador desactiva la captura de pantalla quan s'hi mostra contingut confidencial</translation>
 <translation id="1632985212731562677">L'accés amb interruptors es pot desactivar a Configuració &gt; Accessibilitat.</translation>
 <translation id="1654477262762802994">Inicia una consulta per veu</translation>
 <translation id="1667964833127753507">El mode de color neutre no utilitza colors extrets del fons de pantalla, sinó que els substitueix per un conjunt de tons neutres clars o foscos.</translation>
@@ -117,6 +118,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Hola, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Introducció de text</translation>
+<translation id="1989113344093894667">No es pot capturar contingut</translation>
 <translation id="1993072747612765854">Obtén més informació sobre l'última actualització de: <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1995660704900986789">Apaga</translation>
 <translation id="1998100899771863792">Escriptori actual</translation>
@@ -143,6 +145,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="225680501294068881">S'estan cercant dispositius...</translation>
 <translation id="2268130516524549846">S'ha desactivat el Bluetooth</translation>
 <translation id="2268813581635650749">Tanca les sessions</translation>
+<translation id="2269016722240250274">Una aplicació està utilitzant el micròfon</translation>
 <translation id="2277103315734023688">Avança</translation>
 <translation id="2292698582925480719">Escala de visualització</translation>
 <translation id="229397294990920565">S'estan desactivant les dades mòbils...</translation>
@@ -168,6 +171,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2427507373259914951">Fes clic amb el botó esquerre</translation>
 <translation id="2429753432712299108">El dispositiu Bluetooth "<ph name="DEVICE_NAME" />" sol·licita permís per emparellar-se. Abans d'acceptar, comproveu que aquesta clau d'accés es mostri al dispositiu: <ph name="PASSKEY" />.</translation>
 <translation id="2435457462613246316">Mostra la contrasenya</translation>
+<translation id="2450205753526923158">Mode de captura de pantalla</translation>
 <translation id="2473177541599297363">Confirma la resolució</translation>
 <translation id="2475982808118771221">S'ha produït un error</translation>
 <translation id="2482878487686419369">Notificacions</translation>
@@ -184,6 +188,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2596078834055697711">Fa una captura de pantalla de la finestra</translation>
 <translation id="2617342710774726426">La targeta SIM està bloquejada</translation>
 <translation id="2621713457727696555">Segura</translation>
+<translation id="2653019840645008922">Captura de la finestra</translation>
 <translation id="2653659639078652383">Envia</translation>
 <translation id="2658778018866295321">Fes clic i arrossega</translation>
 <translation id="2678852583403169292">Menú Escolta la selecció</translation>
@@ -198,6 +203,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2727977024730340865">S'ha connectat a un carregador de baix consum. És possible que la càrrega de la bateria no sigui fiable.</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> gestionat per <ph name="MANAGER" /></translation>
 <translation id="2792498699870441125">Alt+Cerca</translation>
+<translation id="2814448776515246190">Captura parcial</translation>
 <translation id="2819276065543622893">Ara se us tancarà la sessió.</translation>
 <translation id="28232023175184696">No es pot connectar a Internet. Fes clic per tornar-ho a provar.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> no admet la resolució <ph name="SPECIFIED_RESOLUTION" />. La resolució ha canviat a <ph name="FALLBACK_RESOLUTION" />.</translation>
@@ -224,6 +230,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3033545621352269033">Activada</translation>
 <translation id="3036649622769666520">Obre fitxers</translation>
 <translation id="3038571455154067151">Per iniciar la sessió, introdueix el codi d'accés parental de Family Link</translation>
+<translation id="3039939407102840004">El llapis òptic té un <ph name="PERCENTAGE" /> de bateria.</translation>
 <translation id="3045488863354895414">Bona tarda,</translation>
 <translation id="3051128274746680507">El perfil del teu usuari supervisat se suprimirà aviat. Inicia la sessió per obtenir més informació.</translation>
 <translation id="3055162170959710888">Avui has fet servir aquest dispositiu durant <ph name="USED_TIME" /></translation>
@@ -233,6 +240,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3090989381251959936">Commuta <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">Mou el cursor</translation>
 <translation id="3098580329624789136">Obtén la <ph name="INTENT" /> de: <ph name="QUERY" /></translation>
+<translation id="3100274880412651815">Ignora el mode de captura</translation>
 <translation id="3105917916468784889">Fes una captura de pantalla</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3126069444801937830">Reinicia per actualitzar</translation>
@@ -298,6 +306,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3621202678540785336">Entrada</translation>
 <translation id="3621712662352432595">Configuració d'àudio</translation>
 <translation id="3626281679859535460">Brillantor</translation>
+<translation id="3630697955794050612">desactivat</translation>
 <translation id="3631369015426612114">Permet notificacions de les fonts següents:</translation>
 <translation id="3638400994746983214">Commuta la pantalla de privadesa. <ph name="STATE_TEXT" />.</translation>
 <translation id="366222428570480733">Usuari gestionat (<ph name="USER_EMAIL_ADDRESS" />)</translation>
@@ -311,6 +320,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3773700760453577392">Un administrador ha desactivat l'inici de sessió múltiple per a <ph name="USER_EMAIL" />. Tots els usuaris han de tancar la sessió per continuar.</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Bloqueja</translation>
+<translation id="3796746699333205839">Una aplicació està utilitzant la càmera i el micròfon</translation>
 <translation id="3798670284305777884">Altaveu (intern)</translation>
 <translation id="3799080171973636491">Has premut la tecla de drecera de la lupa de pantalla completa. Vols activar-la?</translation>
 <translation id="380165613292957338">Hola, en què et puc ajudar?</translation>
@@ -404,6 +414,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="4570957409596482333">Botó Escolta la selecció</translation>
 <translation id="4577274620589681794">El temps s'ha esgotat · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Mostra les previsualitzacions</translation>
+<translation id="4578906031062871102">El menú de configuració s'ha obert</translation>
 <translation id="4585337515783392668">Deixa d'emetre en un receptor desconegut</translation>
 <translation id="4596144739579517758">El tema fosc està desactivat</translation>
 <translation id="4623167406982293031">Verifica el compte</translation>
@@ -486,6 +497,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="5379115545237091094">Massa intents</translation>
 <translation id="5397578532367286026">El gestor (<ph name="MANAGER_EMAIL" />) pot revisar l'ús i l'historial d'aquest usuari a chrome.com.</translation>
 <translation id="5400461572260843123">Configuració ràpida, prem cerca+fletxa esquerra per accedir al centre de notificacions.</translation>
+<translation id="5426063383988017631">El menú de configuració s'ha tancat</translation>
 <translation id="5428899915242071344">Comença a seleccionar</translation>
 <translation id="5430931332414098647">Compartició de xarxa instantània</translation>
 <translation id="5431825016875453137">OpenVPN/L2TP</translation>
@@ -502,12 +514,15 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="556042886152191864">Botó</translation>
 <translation id="5571066253365925590">S'ha activat el Bluetooth</translation>
 <translation id="557563299383177668">Paràgraf següent</translation>
+<translation id="5577281275355252094">Comprova que el Bluetooth estigui activat al telèfon per utilitzar El meu telèfon</translation>
 <translation id="558849140439112033">Arrossega per seleccionar l'àrea que vols capturar</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Prem Ctrl+Alt+Z per desactivar els avisos de veu.</translation>
 <translation id="5601503069213153581">PIN</translation>
+<translation id="5619862035903135339">La política de l'administrador desactiva la captura de pantalla</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Connector per al micròfon</translation>
+<translation id="5662709761327382534">L'estat actual de l'opció Grava el micròfon és <ph name="CURRENT_STATE" />, prem Retorn per canviar-lo a <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">Activant</translation>
 <translation id="5673434351075758678">Després de sincronitzar la configuració, canvia <ph name="FROM_LOCALE" /> per <ph name="TO_LOCALE" />.</translation>
 <translation id="5677928146339483299">Bloquejat</translation>
@@ -555,6 +570,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" /> d'intensitat del senyal, gestionada per l'administrador</translation>
 <translation id="6030495522958826102">El menú s'ha mogut a l'extrem inferior esquerre de la pantalla.</translation>
 <translation id="6032620807120418574">Fes clic en qualsevol lloc per gravar la pantalla completa</translation>
+<translation id="6040071906258664830">Grava el micròfon <ph name="STATE" /></translation>
 <translation id="6040143037577758943">Tanca</translation>
 <translation id="6043212731627905357">Aquest monitor i el teu <ph name="DEVICE_TYPE" /> no s'entenen (el monitor no és compatible).</translation>
 <translation id="6043994281159824495">Tanca la sessió ara</translation>
@@ -564,6 +580,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="6062360702481658777">Es tancarà la sessió automàticament d'aquí a <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Atura la gravació</translation>
 <translation id="607652042414456612">El vostre ordinador està visible als dispositius Bluetooth propers i apareixerà com a "<ph name="NAME" />" amb l'adreça <ph name="ADDRESS" />.</translation>
+<translation id="6094290315941448991">La política de l'administrador desactiva la gravació de pantalla quan s'hi mostra contingut confidencial</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>
 <translation id="612734058257491180">L'Assistent de Google no està disponible a les sessions de convidat.</translation>
 <translation id="6137566720514957455">Obre el quadre de diàleg per suprimir <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -620,6 +637,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="6650933572246256093">El dispositiu Bluetooth "<ph name="DEVICE_NAME" />" sol·licita permís per emparellar-se. Introduïu-hi aquesta contrasenya: <ph name="PASSKEY" />.</translation>
 <translation id="6657585470893396449">Contrasenya</translation>
 <translation id="6665545700722362599">Concedir permís als llocs web, a les aplicacions i a les extensions per utilitzar els serveis d'ubicació o el micròfon, la càmera o altres funcions del dispositiu.</translation>
+<translation id="6667908387435388584">Connecta't al punt d'accés Wi-Fi del telèfon, silencia i localitza el dispositiu i consulta les pestanyes de Chrome obertes recentment al telèfon</translation>
 <translation id="6670153871843998651">Escriptori 3</translation>
 <translation id="6671495933530132209">Copia la imatge</translation>
 <translation id="6691659475504239918">Cerca+Maj+H</translation>
@@ -700,7 +718,9 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="742594950370306541">La càmera s'està utilitzant.</translation>
 <translation id="742608627846767349">Bon dia,</translation>
 <translation id="743058460480092004">La càmera i el micròfon s'estan utilitzant.</translation>
+<translation id="7452560014878697800">Una aplicació està utilitzant la càmera</translation>
 <translation id="7461924472993315131">Fixa</translation>
+<translation id="746232733191930409">Mode de gravació de pantalla</translation>
 <translation id="7466449121337984263">Toca el sensor</translation>
 <translation id="7477793887173910789">Controla la música, els vídeos i molt més</translation>
 <translation id="7497767806359279797">Tria l'idioma i el teclat</translation>
@@ -729,6 +749,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="7658239707568436148">Cancel·la</translation>
 <translation id="7662283695561029522">Toca per configurar</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="7714767791242455379">Afegeix una xarxa mòbil nova</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notificació}other{# notificacions}}</translation>
 <translation id="7724603315864178912">Retalla</translation>
 <translation id="7745560842763881396">Mostra les aplicacions del prestatge</translation>
@@ -743,6 +764,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="7842569679327885685">Advertiment: funció experimental</translation>
 <translation id="7846634333498149051">Teclat</translation>
 <translation id="7860671499921112077">Fes lliscar tres dits cap amunt per entrar a Visió general</translation>
+<translation id="7866482334467279021">activat</translation>
 <translation id="7868900307798234037">Has desbloquejat el dispositiu amb empremta digital</translation>
 <translation id="7872786842639831132">Desactivat</translation>
 <translation id="7875575368831396199">Sembla que el Bluetooth està desactivat al teu <ph name="DEVICE_TYPE" />. Activa el Bluetooth per utilitzar El meu telèfon.</translation>
@@ -772,6 +794,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="8036504271468642248">Frase anterior</translation>
 <translation id="8042893070933512245">Obre el menú de configuració d'accessibilitat</translation>
 <translation id="8048123526339889627">Configuració del Bluetooth</translation>
+<translation id="8052898407431791827">S'ha copiat al porta-retalls</translation>
 <translation id="8054466585765276473">S'està calculant el temps de la bateria.</translation>
 <translation id="8061464966246066292">Contrast alt</translation>
 <translation id="8098591350844501178">Deixa d'emetre la pantalla a <ph name="RECEIVER_NAME" /></translation>
@@ -843,9 +866,11 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="8673028979667498656">270°</translation>
 <translation id="8676770494376880701">S'ha connectat un carregador de baix consum</translation>
 <translation id="8683506306463609433">Traça del rendiment activa</translation>
+<translation id="8703634754197148428">Comença a gravar. Quan la gravació hagi començat, prem Alt+Maj+L per navegar fins al prestatge, on trobaràs el botó per aturar-la.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Utilitza les tecles de fletxa dreta o esquerra per gestionar aquesta funció.</translation>
 <translation id="8712637175834984815">Entesos</translation>
 <translation id="8721053961083920564">Activa o desactiva el volum. <ph name="STATE_TEXT" /></translation>
+<translation id="8724318433625452070">Captura de pantalla completa</translation>
 <translation id="8734991477317290293">Pot ser que estigui provant de robar-te les combinacions de tecles</translation>
 <translation id="8735953464173050365">Mostra la configuració del teclat. S'ha seleccionat <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="8755498163081687682">Verifica la teva identitat: <ph name="ORIGIN_NAME" /> vol confirmar que ets tu</translation>
@@ -869,6 +894,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="8877788021141246043">Configura un recordatori</translation>
 <translation id="8878886163241303700">Ampliació de la pantalla</translation>
 <translation id="8883473964424809116">Fes clic per obrir la configuració de l'Assistent de Google.</translation>
+<translation id="8884537526797090108">No es pot gravar contingut confidencial</translation>
 <translation id="890616557918890486">Canvia la font</translation>
 <translation id="8909138438987180327">La bateria està a un <ph name="PERCENTAGE" />%.</translation>
 <translation id="8913384980486163186">Amb temàtica (opció predeterminada)</translation>
@@ -884,6 +910,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="9017320285115481645">Introdueix el codi d'accés parental de Family Link.</translation>
 <translation id="9047624247355796468">Obre la configuració de la xarxa <ph name="NETWORK_NAME" /></translation>
 <translation id="9056839673611986238">El dispositiu es revertirà a una versió anterior</translation>
+<translation id="9063800855227801443">No es pot capturar contingut confidencial</translation>
 <translation id="9065203028668620118">Edita</translation>
 <translation id="9070640332319875144">Configuració de l'Assistent</translation>
 <translation id="9072519059834302790">Temps restant perquè s'esgoti la bateria: <ph name="TIME_LEFT" />.</translation>

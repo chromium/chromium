@@ -80,6 +80,7 @@
     &lt;li&gt;వెబ్‌సైట్ యజమానిని సంప్రదించండి.&lt;/li&gt;
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">మీ సంస్థ నిర్వహించని ఒక సైట్‌లో మీరు మీ పాస్‌వర్డ్‌ను నమోదు చేసారు. మీ ఖాతాను రక్షించడం కోసం, ఇతర యాప్‌లు మరియు సైట్‌లలో మీ పాస్‌వర్డ్‌ను తిరిగి ఉపయోగించవద్దు.</translation>
+<translation id="1259144770381827039">వివరాలను చూడండి.</translation>
 <translation id="1263231323834454256">పఠన జాబితా</translation>
 <translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
         ఈ పరికరంలో సేవ్ అవ్వని యాక్టివిటీ:
@@ -305,7 +306,7 @@
 <translation id="2099652385553570808">ఎడమవైపు ట్రిపుల్ స్టేపుల్</translation>
 <translation id="2101225219012730419">వెర్షన్:</translation>
 <translation id="2102134110707549001">బలమైన పాస్‌వర్డ్‌ను సూచించు…</translation>
-<translation id="2102495993840063010">Android అనువర్తనాలు</translation>
+<translation id="2102495993840063010">Android యాప్‌లు</translation>
 <translation id="2107021941795971877">ప్రింట్ మద్దతులు</translation>
 <translation id="2108755909498034140">మీ కంప్యూటర్‌ను పునఃప్రారంభించండి</translation>
 <translation id="2111166930115883695">ఆడటానికి స్పేస్‌ను నొక్కండి</translation>
@@ -328,6 +329,7 @@
 <translation id="2164510882479075877"><ph name="HOST_NAME" />లో అక్షర దోషం ఉందేమో చెక్ చేయండి.</translation>
 <translation id="2166049586286450108">పూర్తి నిర్వాహక యాక్సెస్</translation>
 <translation id="2166378884831602661">ఈ సైట్ సురక్షితమైన కనెక్షన్‌ను అందించలేకపోయింది</translation>
+<translation id="2168151236314517198">ఈ కంటెంట్ ప్రింట్ చేయడాన్ని అడ్మినిస్ట్రేటర్ పాలసీ బ్లాక్ చేసింది</translation>
 <translation id="2169984857010174799">Kaku2 (ఎన్వలప్)</translation>
 <translation id="2181821976797666341">విధానాలు</translation>
 <translation id="2183608646556468874">ఫోన్ నంబర్</translation>
@@ -782,7 +784,7 @@
 <translation id="4098354747657067197">ముందున్న సైట్ మోసపూరితమైనది</translation>
 <translation id="4101413244023615925">టెక్స్ట్, గ్రాఫిక్స్</translation>
 <translation id="4103249731201008433">పరికరం క్రమ సంఖ్య చెల్లదు</translation>
-<translation id="4110652170750985508">మీ చెల్లింపును సమీక్షించండి</translation>
+<translation id="4110652170750985508">మీ చెల్లింపును రివ్యూ చేయండి</translation>
 <translation id="4112140312785995938">వెనుకకు జరుపు</translation>
 <translation id="4116663294526079822">ఈ సైట్‌లో ఎల్లప్పుడూ అనుమతించు</translation>
 <translation id="4116701314593212016">JIS B7</translation>
@@ -1360,6 +1362,7 @@
 <translation id="6290238015253830360">మీకు సూచించిన కథనాలు ఇక్కడ కనిపిస్తాయి</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">Chromeలో Google అసిస్టెంట్ ఆపివేయబడుతోంది</translation>
+<translation id="6304463939629872728">దీనితో చెక్ అవుట్ చేయండి</translation>
 <translation id="6305205051461490394"><ph name="URL" />ని చేరుకోలేకపోయాము.</translation>
 <translation id="6312113039770857350">వెబ్‌పేజీ అందుబాటులో లేదు</translation>
 <translation id="6321917430147971392">మీ DNS సెట్టింగ్‌లను తనిఖీ చేయండి</translation>
@@ -1389,6 +1392,7 @@
 <translation id="6406765186087300643">C0 (ఎన్వలప్)</translation>
 <translation id="6409754798200046165">మీరు మోసపూరితమైన సైట్‌లో మీ పాస్‌వర్డ్‌ను నమోదు చేశారు. మీ పాస్‌వర్డ్‌ను ఇప్పుడే మార్చాల్సిందిగా Chrome సిఫార్సు చేస్తోంది.</translation>
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" /> గడువు ముగింపు తేదీ మరియు CVCని నమోదు చేయండి</translation>
+<translation id="6410774864568266108">మీ Google Pay ఆఫర్‌ను మర్చిపోకండి</translation>
 <translation id="6415778972515849510">మీ Google ఖాతాను సంరక్షించుకోవడంలో, మీ పాస్‌వర్డ్‌ను మార్చడంలో Chromium మీకు సహాయపడగలదు.</translation>
 <translation id="6423385022588644828">ఇప్పటి నుండి Touch ID ఉపయోగించి మీ కార్డ్‌లను వేగంగా నిర్ధారించండి</translation>
 <translation id="6425092077175753609">విశిష్టం</translation>
@@ -2040,7 +2044,7 @@
 <translation id="9050666287014529139">రహస్య పదబంధం</translation>
 <translation id="9056953843249698117">స్టోర్</translation>
 <translation id="9062620674789239642">ఇది తరలించబడి గానీ, ఎడిట్ చేసి గానీ లేదా తొలగించబడి ఉండవచ్చు.</translation>
-<translation id="9065203028668620118">సవరించు</translation>
+<translation id="9065203028668620118">ఎడిట్</translation>
 <translation id="9065745800631924235">చరిత్ర నుండి <ph name="TEXT" /> శోధన</translation>
 <translation id="9069693763241529744">పొడిగింపు ద్వారా బ్లాక్ చేయబడింది</translation>
 <translation id="9078964945751709336">మరింత సమాచారం ఆవశ్యకం</translation>

@@ -80,6 +80,7 @@
     &lt;li&gt;ਵੈੱਬਸਾਈਟ ਮਾਲਕ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।&lt;/li&gt;
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">ਤੁਸੀਂ ਉਸ ਸਾਈਟ 'ਤੇ ਆਪਣਾ ਪਾਸਵਰਡ ਦਾਖਲ ਕੀਤਾ ਹੈ ਜੋ ਤੁਹਾਡੀ ਸੰਸਥਾ ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਨਹੀਂ ਹੈ। ਆਪਣੇ ਖਾਤੇ ਨੂੰ ਸੁਰੱਖਿਅਤ ਰੱਖਣ ਲਈ, ਹੋਰਾਂ ਐਪਾਂ ਅਤੇ ਸਾਈਟਾਂ 'ਤੇ ਆਪਣਾ ਪਾਸਵਰਡ ਮੁੜ ਨਾ ਵਰਤੋ।</translation>
+<translation id="1259144770381827039">ਵੇਰਵੇ ਦੇਖੋ।</translation>
 <translation id="1263231323834454256">ਪੜ੍ਹਤ ਸੂਚੀ</translation>
 <translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
         ਉਹ ਸਰਗਰਮੀਆਂ ਜੋ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤੀਆਂ ਜਾਣਗੀਆਂ:
@@ -322,6 +323,7 @@
 <translation id="2164510882479075877">ਜਾਂਚ ਕਰੋ ਕਿ <ph name="HOST_NAME" /> ਵਿੱਚ ਕੋਈ ਟਾਈਪਿੰਗ ਸੰਬੰਧੀ ਗੜਬੜ ਤਾਂ ਨਹੀਂ ਹੈ।</translation>
 <translation id="2166049586286450108">ਪੂਰੀ ਪ੍ਰਸ਼ਾਸਕ ਪਹੁੰਚ</translation>
 <translation id="2166378884831602661">ਇਹ ਸਾਈਟ ਇੱਕ ਸੁਰੱਖਿਅਤ ਕਨੈਕਸ਼ਨ ਨਹੀਂ ਮੁਹੱਈਆ ਕਰਵਾ ਸਕਦੀ।</translation>
+<translation id="2168151236314517198">ਪ੍ਰਸ਼ਾਸਕ ਨੀਤੀ ਵੱਲੋਂ ਇਸ ਸਮੱਗਰੀ ਨੂੰ ਪ੍ਰਿੰਟ ਕਰਨਾ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="2169984857010174799">Kaku2 (ਲਿਫ਼ਾਫ਼ਾ)</translation>
 <translation id="2181821976797666341">ਨੀਤੀਆਂ</translation>
 <translation id="2183608646556468874">ਫ਼ੋਨ ਨੰਬਰ</translation>
@@ -1346,6 +1348,7 @@
 <translation id="6290238015253830360">ਤੁਹਾਡੇ ਸੁਝਾਏ ਗਏ ਲੇਖ ਇੱਥੇ ਦਿਖਾਈ ਦੇਣਗੇ</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">Chrome ਵਿੱਚ 'Google ਅਸਿਸਟੈਂਟ' ਨੂੰ ਬੰਦ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
+<translation id="6304463939629872728">ਇਸ ਨਾਲ ਚੈੱਕ-ਆਊਟ ਕਰੋ</translation>
 <translation id="6305205051461490394"><ph name="URL" /> ਪਹੁੰਚਯੋਗ ਨਹੀਂ ਹੈ।</translation>
 <translation id="6312113039770857350">ਵੈਬਸਫ਼ਾ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
 <translation id="6321917430147971392">ਆਪਣੀਆਂ DNS ਸੈਟਿੰਗਾਂ ਦੀ ਜਾਂਚ ਕਰੋ</translation>
@@ -1375,6 +1378,7 @@
 <translation id="6406765186087300643">C0 (ਲਿਫ਼ਾਫ਼ਾ)</translation>
 <translation id="6409754798200046165">ਤੁਸੀਂ ਹੁਣੇ-ਹੁਣੇ ਕਿਸੇ ਭਰਮਪੂਰਨ ਸਾਈਟ 'ਤੇ ਆਪਣਾ ਪਾਸਵਰਡ ਦਾਖਲ ਕੀਤਾ ਹੈ। Chrome ਵੱਲੋਂ ਹੁਣੇ ਤੁਹਾਡਾ ਪਾਸਵਰਡ ਬਦਲਣ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਕੀਤੀ ਜਾਂਦੀ ਹੈ।</translation>
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" /> ਲਈ ਮਿਆਦ ਸਮਾਪਤੀ ਦੀ ਤਾਰੀਖ ਅਤੇ CVC ਦਾਖਲ ਕਰੋ</translation>
+<translation id="6410774864568266108">ਆਪਣੀ Google Pay ਪੇਸ਼ਕਸ਼ ਨੂੰ ਨਾ ਭੁੱਲੋ</translation>
 <translation id="6415778972515849510">Chromium ਤੁਹਾਡੇ Google ਖਾਤੇ ਦੀ ਸੁਰੱਖਿਆ ਕਰਨ ਅਤੇ ਪਾਸਵਰਡ ਬਦਲਣ ਵਿੱਚ ਤੁਹਾਡੀ ਮਦਦ ਕਰ ਸਕਦਾ ਹੈ।</translation>
 <translation id="6423385022588644828">ਹੁਣ ਤੋਂ ਸਪਰਸ਼ ਆਈਡੀ ਦੀ ਵਰਤੋਂ ਕਰਕੇ ਆਪਣੇ ਕਾਰਡਾਂ ਦੀ ਤੇਜ਼ੀ ਨਾਲ ਤਸਦੀਕ ਕਰੋ</translation>
 <translation id="6425092077175753609">ਮੈਟੀਰੀਅਲ</translation>

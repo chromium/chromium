@@ -76,6 +76,7 @@
 <translation id="1570871743947603115">Bluetooth മാറ്റുക. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">ഈ സെഷനിൽ നിങ്ങളുടെ എല്ലാ ആക്‌റ്റിവിറ്റികളും ആക്‌സസ് ചെയ്യുക</translation>
 <translation id="1611993646327628135">ഓണാണ്</translation>
+<translation id="1615402009686901181">രഹസ്യാത്മക ഉള്ളടക്കം ദൃശ്യമായിരിക്കുമ്പോൾ അഡ്‌മിൻ നയം സ്ക്രീൻ ക്യാപ്‌ചർ പ്രവർത്തനരഹിതമാക്കുന്നു</translation>
 <translation id="1632985212731562677">ക്രമീകരണം &gt; ഉപയോഗസഹായി എന്നതിൽ 'ആക്‌സസ് മാറുക' പ്രവർത്തനരഹിതമാക്കാം.</translation>
 <translation id="1654477262762802994">ഒരു ശബ്‌ദ ചോദ്യം ആരംഭിക്കുക</translation>
 <translation id="1667964833127753507">ന്യൂട്രൽ വർണ്ണ മോഡ് വാൾപേപ്പർ എക്‌സ്‌ട്രാക്റ്റ് ചെയ്‌ത വർണ്ണങ്ങൾ ഉപയോഗിക്കുന്നില്ല, അവയ്ക്ക് പകരം ന്യൂട്രലായി ടോൺ ചെയ്‌‌ത ഇളം നിറത്തിന്റെയോ ഇരുണ്ട നിറത്തിന്റെയോ ഒരു സെറ്റ് ഉപയോഗിക്കുന്നു.</translation>
@@ -116,6 +117,7 @@
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">ഹായ്, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">ടെക്‌സ്‌റ്റ് ഇൻപുട്ട്</translation>
+<translation id="1989113344093894667">ഉള്ളടക്കം ക്യാപ്‌ചർ ചെയ്യാനാകില്ല</translation>
 <translation id="1993072747612765854">ഏറ്റവും പുതിയ <ph name="SYSTEM_APP_NAME" /> അപ്‌ഡേറ്റിനെ കുറിച്ച് കൂടുതലറിയുക</translation>
 <translation id="1995660704900986789">പവർ ഓഫാക്കുക</translation>
 <translation id="2012624427112548395">Ctrl+തിരയൽ+H</translation>
@@ -141,6 +143,7 @@
 <translation id="225680501294068881">ഉപകരണങ്ങൾക്കായി സ്‌കാൻ ചെയ്യുന്നു...</translation>
 <translation id="2268130516524549846">Bluetooth അപ്രാപ്‌തമാക്കി</translation>
 <translation id="2268813581635650749">എല്ലാം സൈൻ ഔട്ട്</translation>
+<translation id="2269016722240250274">ഒരു ആപ്പ് നിങ്ങളുടെ മൈക്രോഫോൺ ഉപയോഗിക്കുന്നു</translation>
 <translation id="2277103315734023688">മുന്നോട്ട് നീക്കുക</translation>
 <translation id="2292698582925480719">ഡിസ്പ്ലേ സ്കെയിൽ</translation>
 <translation id="229397294990920565">മൊബൈൽ ഡാറ്റ ഓഫാക്കുന്നു...</translation>
@@ -166,6 +169,7 @@
 <translation id="2427507373259914951">ഇടത് ക്ലിക്ക്</translation>
 <translation id="2429753432712299108">"<ph name="DEVICE_NAME" />" എന്ന Bluetooth ഉപകരണം ജോടിയാക്കുന്നതിനുള്ള അനുമതി ആവശ്യപ്പെടുന്നു. അനുമതി നൽകുന്നതിനുമുമ്പ്, ആ ഉപകരണത്തിൽ ഈ പാസ്‌കീ കാണിച്ചിരിക്കുന്നുവെന്ന് സ്ഥിരീകരിക്കുക: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">പാസ്‌വേഡ് കാണിക്കുക</translation>
+<translation id="2450205753526923158">സ്ക്രീൻഷോട്ട് മോഡ്</translation>
 <translation id="2473177541599297363">റെസല്യൂഷൻ സ്ഥിരീകരിക്കുക</translation>
 <translation id="2475982808118771221">ഒരു പിശക് സംഭവിച്ചു</translation>
 <translation id="2482878487686419369">അറിയിപ്പുകൾ</translation>
@@ -182,6 +186,7 @@
 <translation id="2596078834055697711">വിൻഡോ സ്ക്രീൻഷോട്ട് എടുക്കുക</translation>
 <translation id="2617342710774726426">സിം കാർഡ് ലോക്കുചെയ്‌തു</translation>
 <translation id="2621713457727696555">സുരക്ഷിതമാക്കി</translation>
+<translation id="2653019840645008922">വിൻഡോ ക്യാപ്‌ചർ</translation>
 <translation id="2653659639078652383">സമര്‍പ്പിക്കുക</translation>
 <translation id="2658778018866295321">ക്ലിക്ക് ചെയ്‌ത് വലിച്ചിടുക</translation>
 <translation id="2678852583403169292">വായിച്ചുകേൾക്കാൻ തിരഞ്ഞെടുക്കുക മെനു</translation>
@@ -196,6 +201,7 @@
 <translation id="2727977024730340865">കുറഞ്ഞ തോതിൽ വൈദ്യുതി പ്രവഹിക്കുന്ന ചാർജ്ജറിലേക്ക് പ്ലഗ് ചെയ്‌തിരിക്കുന്നു. ബാറ്ററി ചാർജുചെയ്യൽ വിശ്വസനീയമാകണമെന്നില്ല.</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> മാനേജ് ചെയ്യുന്നത് <ph name="MANAGER" /> ആണ്</translation>
 <translation id="2792498699870441125">Alt+തിരയൽ</translation>
+<translation id="2814448776515246190">ഭാഗികമായി ക്യാപ്‌ചർ ചെയ്യൽ</translation>
 <translation id="2819276065543622893">നിങ്ങൾ ഇപ്പോൾ സൈൻ ഔട്ട് ചെയ്യും.</translation>
 <translation id="28232023175184696">ഇന്റർനെറ്റിലേക്ക് കണക്റ്റ് ചെയ്യാനാകുന്നില്ല. വീണ്ടും ശ്രമിക്കാൻ ക്ലിക്ക് ചെയ്യുക.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" />, <ph name="SPECIFIED_RESOLUTION" /> എന്നതിനെ പിന്തുണയ്‌ക്കുന്നില്ല. റെസല്യൂഷൻ <ph name="FALLBACK_RESOLUTION" /> എന്നതിലേക്ക് മാറ്റി.</translation>
@@ -222,6 +228,7 @@
 <translation id="3033545621352269033">ഓണാണ്</translation>
 <translation id="3036649622769666520">ഫയലുകള്‍‌ തുറക്കുക</translation>
 <translation id="3038571455154067151">സൈൻ ഇൻ ചെയ്യാൻ, നിങ്ങളുടെ Family Link രക്ഷാകർതൃ ആക്‌സസ് കോഡ് നൽകുക</translation>
+<translation id="3039939407102840004">സ്റ്റൈലസ് ബാറ്ററി <ph name="PERCENTAGE" /> ശതമാനത്തിലാണ്.</translation>
 <translation id="3045488863354895414">ഗുഡ് ആഫ്‌റ്റർനൂൺ,</translation>
 <translation id="3051128274746680507">നിങ്ങളുടെ മേൽനോട്ടത്തിലുള്ള ഉപയോക്തൃ പ്രൊഫൈൽ വൈകാതെ നീക്കം ചെയ്യപ്പെടും. കൂടുതലറിയാൻ സൈൻ ഇൻ ചെയ്യുക.</translation>
 <translation id="3055162170959710888">നിങ്ങൾ ഇന്ന് <ph name="USED_TIME" />, ഈ ഉപകരണം ഉപയോഗിച്ചു</translation>
@@ -231,6 +238,7 @@
 <translation id="3090989381251959936"><ph name="FEATURE_NAME" /> മാറ്റുക. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">കഴ്‌സർ നീക്കുക</translation>
 <translation id="3098580329624789136">"<ph name="QUERY" />" എന്നതിനുള്ള <ph name="INTENT" /> നേടുക</translation>
+<translation id="3100274880412651815">ക്യാപ്‌ചർ മോഡ് ഡിസ്‌മിസ് ചെയ്യുക</translation>
 <translation id="3105917916468784889">സ്ക്രീന്‍ഷോട്ട് എടുക്കുക</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3126069444801937830">അപ്‌ഡേറ്റ് ചെയ്യുന്നതിന് റീസ്റ്റാർട്ട് ചെയ്യുക</translation>
@@ -296,6 +304,7 @@
 <translation id="3621202678540785336">ഇൻപുട്ട്</translation>
 <translation id="3621712662352432595">ഓഡിയോ ക്രമീകരണങ്ങൾ</translation>
 <translation id="3626281679859535460">മിഴിവ്</translation>
+<translation id="3630697955794050612">ഓഫാണ്</translation>
 <translation id="3631369015426612114">ഇനിപ്പറയുന്നതിൽ നിന്നുള്ള അറിയിപ്പുകൾ അനുവദിക്കുക</translation>
 <translation id="3638400994746983214">സ്വകാര്യതാ സ്‌ക്രീൻ മാറ്റുക. <ph name="STATE_TEXT" />.</translation>
 <translation id="366222428570480733">നിയന്ത്രിത ഉപയോക്താവ് <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -309,6 +318,7 @@
 <translation id="3773700760453577392"><ph name="USER_EMAIL" /> എന്ന ഇമെയിലിലേക്ക് ഒന്നിലധികം പേർ സൈൻ ഇൻ ചെയ്യുന്നത് ഒരു അഡ്‌മിനിസ്‌ട്രേറ്റർ വിലക്കിയിരിക്കുന്നു. തുടരാൻ, എല്ലാ ഉപയോക്താക്കളും സൈൻ ഔട്ട് ചെയ്യണം.</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">ലോക്കുചെയ്യുക</translation>
+<translation id="3796746699333205839">ഒരു ആപ്പ് നിങ്ങളുടെ ക്യാമറയും മൈക്രോഫോണും ഉപയോഗിക്കുന്നു</translation>
 <translation id="3798670284305777884">സ്‌പീക്കർ (ഇന്റേണൽ)</translation>
 <translation id="3799080171973636491">നിങ്ങൾ പൂർണ്ണ സ്‌ക്രീൻ മാഗ്നിഫയറിനുള്ള കീബോഡ് കുറുക്കുവഴി അമർത്തി. അത് ഓണാക്കണോ?</translation>
 <translation id="380165613292957338">ഹായ്, എന്ത് സഹായമാണ് വേണ്ടത്?</translation>
@@ -402,6 +412,7 @@
 <translation id="4570957409596482333">വായിച്ചുകേൾക്കാൻ തിരഞ്ഞെടുക്കുക ബട്ടൺ</translation>
 <translation id="4577274620589681794"><ph name="LABEL" /> · സമയം കഴിഞ്ഞു</translation>
 <translation id="4577990005084629481">പ്രിവ്യുകൾ കാണിക്കുക</translation>
+<translation id="4578906031062871102">ക്രമീകരണം മെനു തുറന്നു</translation>
 <translation id="4585337515783392668">അജ്ഞാത റിസീവറിൽ കാസ്‌റ്റ് ചെയ്യുന്നത് നിർത്തുക</translation>
 <translation id="4596144739579517758">ഡാർക്ക് തീം ഓഫാണ്</translation>
 <translation id="4623167406982293031">അക്കൗണ്ട് പരിശോധിച്ചുറപ്പിക്കുക</translation>
@@ -484,6 +495,7 @@
 <translation id="5379115545237091094">നിരവധി ശ്രമങ്ങൾ</translation>
 <translation id="5397578532367286026">ഈ ഉപയോക്താവിന്റെ ഉപയോഗവും ചരിത്രവും chrome.com-ൽ മാനേജർക്ക് (<ph name="MANAGER_EMAIL" />) അവലോകനം ചെയ്യാനാകും.</translation>
 <translation id="5400461572260843123">ദ്രുത ക്രമീകരണം, അറിയിപ്പ് കേന്ദ്രം ആക്‌സസ് ചെയ്യാൻ തിരയൽ + ഇടത് അമ്പടയാളം അമർത്തുക.</translation>
+<translation id="5426063383988017631">ക്രമീകരണം മെനു അടച്ചു</translation>
 <translation id="5428899915242071344">തിരഞ്ഞെടുക്കാൻ ആരംഭിക്കുക</translation>
 <translation id="5430931332414098647">തൽക്ഷണ ടെതറിംഗ്</translation>
 <translation id="5431825016875453137">OpenVPN / L2TP</translation>
@@ -500,12 +512,15 @@
 <translation id="556042886152191864">ബട്ടൺ</translation>
 <translation id="5571066253365925590">Bluetooth പ്രവർത്തനക്ഷമമാക്കി</translation>
 <translation id="557563299383177668">അടുത്ത ഖണ്ഡിക</translation>
+<translation id="5577281275355252094">ഫോൺ ഹബ് ഉപയോഗിക്കാൻ, നിങ്ങളുടെ ഫോണിൽ Bluetooth പ്രവർത്തനക്ഷമമാക്കിയിട്ടുണ്ടോ എന്ന് പരിശോധിക്കുക</translation>
 <translation id="558849140439112033">ക്യാപ്‌ചർ ചെയ്യുന്നതിന് ഒരു ഏരിയ തിരഞ്ഞെടുക്കാൻ വലിച്ചിടുക</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">സംഭാഷണ ഫീഡ്‌ബാക്ക് പ്രവർത്തനരഹിതമാക്കാൻ Ctrl + Alt + Z അമർത്തുക.</translation>
 <translation id="5601503069213153581">PIN</translation>
+<translation id="5619862035903135339">അഡ്‌മിൻ നയം സ്ക്രീൻ ക്യാപ്‌ചർ പ്രവർത്തനരഹിതമാക്കുന്നു</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Mic jack</translation>
+<translation id="5662709761327382534">മൈക്രോഫോൺ റെക്കോർഡ് ചെയ്യുക <ph name="CURRENT_STATE" />, മൈക്രോഫോൺ റെക്കോർഡിംഗ് <ph name="NEW_STATE" /> ആക്കാൻ Enter അമർത്തുക</translation>
 <translation id="5669267381087807207">സജീവമാക്കുന്നു</translation>
 <translation id="5673434351075758678">നിങ്ങളുടെ ക്രമീകരണം സമന്വയിപ്പിച്ചതിന് ശേഷം, "<ph name="FROM_LOCALE" />" എന്നതിൽ നിന്ന്"<ph name="TO_LOCALE" />" എന്നതിലേക്ക്.</translation>
 <translation id="5677928146339483299">തടഞ്ഞു</translation>
@@ -553,6 +568,7 @@
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" />, നിങ്ങളുടെ അഡ്‌മിൻ മാനേജ് ചെയ്യുന്നത്</translation>
 <translation id="6030495522958826102">സ്‌ക്രീനിന്റെ ചുവടെ ഇടത് കോണിലേക്ക് മെനു നീക്കിയിരിക്കുന്നു.</translation>
 <translation id="6032620807120418574">പൂർണ്ണ സ്ക്രീൻ റെക്കോർഡ് ചെയ്യാൻ എവിടെയെങ്കിലും ക്ലിക്ക് ചെയ്യുക</translation>
+<translation id="6040071906258664830">മൈക്രോഫോൺ റെക്കോർഡ് ചെയ്യുക <ph name="STATE" /></translation>
 <translation id="6040143037577758943">അടയ്ക്കുക</translation>
 <translation id="6043212731627905357">ഈ മോണിറ്റർ നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> ഉപകരണത്തിൽ പ്രവർത്തിക്കുന്നില്ല (മോണിറ്റർ ഇതിൽ പ്രവർത്തിക്കില്ല).</translation>
 <translation id="6043994281159824495">ഇപ്പോൾ സൈൻ ഔട്ട് ചെയ്യുക</translation>
@@ -562,6 +578,7 @@
 <translation id="6062360702481658777">നിങ്ങൾ <ph name="LOGOUT_TIME_LEFT" />-നുള്ളിൽ സ്വയമേവ സൈൻ ഔട്ട് ചെയ്യും.</translation>
 <translation id="6073451960410192870">റെക്കോർഡിംഗ് നിർത്തുക</translation>
 <translation id="607652042414456612">നിങ്ങളുടെ കമ്പ്യൂട്ടർ സമീപത്തുള്ള Bluetooth ഉപകരണങ്ങൾക്ക് കണ്ടെത്താനാകുന്നതാണ് ഒപ്പം അത് <ph name="ADDRESS" /> എന്ന വിലാസത്തിൽ "<ph name="NAME" />" എന്നതായി ദൃശ്യമാകും.</translation>
+<translation id="6094290315941448991">രഹസ്യാത്മക ഉള്ളടക്കം ദൃശ്യമായിരിക്കുമ്പോൾ അഡ്‌മിൻ നയം സ്ക്രീൻ റെക്കോർഡിംഗ് പ്രവർത്തനരഹിതമാക്കുന്നു</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">അതിഥി സെഷനിൽ Google അസി‌സ്‌റ്റന്റ് ലഭ്യമല്ല.</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> -നുള്ള ഡയലോഗ് നീക്കം ചെയ്യുക തുറക്കുക</translation>
@@ -618,6 +635,7 @@
 <translation id="6650933572246256093">"<ph name="DEVICE_NAME" />" എന്ന Bluetooth ഉപകരണം ജോടിയാക്കുന്നതിനുള്ള അനുമതി ആവശ്യപ്പെടുന്നു. ആ ഉപകരണത്തിൽ ഈ പാസ്‌കീ നൽകുക: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">പാസ്‌വേഡ്</translation>
 <translation id="6665545700722362599">ലൊക്കേഷൻ സേവനങ്ങൾ, ഉപകരണത്തിന്‍റെ മൈക്രോഫോൺ, ക്യാമറ അല്ലെങ്കിൽ മറ്റ് ഫീച്ചറുകൾ  ഉപയോഗിക്കാൻ, വെബ്സൈറ്റുകൾക്കും ആപ്പുകൾക്കും വിപുലീകരണങ്ങൾക്കും അനുമതി നൽകുക</translation>
+<translation id="6667908387435388584">നിങ്ങളുടെ ഫോണിന്റെ ഹോട്ട്‌സ്പോട്ടിലേക്ക് കണക്റ്റ് ചെയ്യുക, നിങ്ങളുടെ ഉപകരണം നിശബ്ദമാക്കുകയും കണ്ടെത്തുകയും ചെയ്യുക, നിങ്ങളുടെ ഫോണിൽ തുറന്ന Chrome ടാബുകൾ കാണുക</translation>
 <translation id="6670153871843998651">ഡെസ്‌ക് 3</translation>
 <translation id="6671495933530132209">ചിത്രം പകർത്തുക</translation>
 <translation id="6691659475504239918">തിരയൽ+Shift+H</translation>
@@ -698,7 +716,9 @@
 <translation id="742594950370306541">ക്യാമറ ഉപയോഗത്തിലാണ്.</translation>
 <translation id="742608627846767349">ഗുഡ്മോണിംഗ്,</translation>
 <translation id="743058460480092004">ക്യാമറയും മൈക്രോഫോണും ഉപയോഗത്തിലാണ്.</translation>
+<translation id="7452560014878697800">ഒരു ആപ്പ് നിങ്ങളുടെ ക്യാമറ ഉപയോഗിക്കുന്നു</translation>
 <translation id="7461924472993315131">പിൻ ചെയ്യുക</translation>
+<translation id="746232733191930409">സ്ക്രീൻ റെക്കോർഡിംഗ് മോഡ്</translation>
 <translation id="7466449121337984263">സെൻസറിൽ സ്‌പർശിക്കുക</translation>
 <translation id="7477793887173910789">നിങ്ങളുടെ സംഗീതവും വീഡിയോകളും മറ്റും നിയന്ത്രിക്കുക</translation>
 <translation id="7497767806359279797">ഭാഷയും കീബോഡും തിരഞ്ഞെടുക്കുക</translation>
@@ -727,6 +747,7 @@
 <translation id="7658239707568436148">റദ്ദാക്കൂ</translation>
 <translation id="7662283695561029522">കോൺഫിഗർ ചെയ്യുന്നതിന് ടാപ്പ് ചെയ്യുക</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="7714767791242455379">പുതിയ സെല്ലുലാർ നെറ്റ്‌വർക്ക് ചേർക്കുക</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{ഒരു അറിയിപ്പ്}other{# അറിയിപ്പുകൾ}}</translation>
 <translation id="7724603315864178912">മുറിക്കുക</translation>
 <translation id="7745560842763881396">ഷെൽഫിലെ ആപ്പുകൾ കാണിക്കുക</translation>
@@ -741,6 +762,7 @@
 <translation id="7842569679327885685">മുന്നറിയിപ്പ്: പരീക്ഷണാത്മക ഫീച്ചർ</translation>
 <translation id="7846634333498149051">കീബോർഡ്</translation>
 <translation id="7860671499921112077">അവലോകനത്തിലേക്ക് കടക്കാൻ മൂന്നു വിരലുകൾ ഉപയോഗിച്ച് മുകളിലേക്ക് സ്വൈപ്പ് ചെയ്യുക</translation>
+<translation id="7866482334467279021">ഓണാണ്</translation>
 <translation id="7868900307798234037">വിരലടയാളം ഉപയോഗിച്ച് അൺലോക്ക് ചെയ്യുന്നു</translation>
 <translation id="7872786842639831132">ഓഫാണ്</translation>
 <translation id="7875575368831396199">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> എന്നതിൽ Bluetooth ഓഫാണെന്ന് തോന്നുന്നു. ഫോൺ ഹബ് ഉപയോഗിക്കാൻ, Bluetooth ഓണാക്കുക.</translation>
@@ -770,6 +792,7 @@
 <translation id="8036504271468642248">മുമ്പത്തെ വാചകം</translation>
 <translation id="8042893070933512245">ഉപയോഗസഹായി ക്രമീകരണ മെനു തുറക്കുക</translation>
 <translation id="8048123526339889627">Bluetooth ക്രമീകരണം</translation>
+<translation id="8052898407431791827">ക്ലിപ്പ്ബോർഡിലേക്ക് പകർത്തി</translation>
 <translation id="8054466585765276473">ബാറ്ററി സമയം കണക്കാക്കുന്നു.</translation>
 <translation id="8061464966246066292">ഉയർന്ന ദൃശ്യ തീവ്രത</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" /> എന്നതിലേക്ക് സ്‌ക്രീൻ കാസ്‌റ്റുചെയ്യുന്നത് നിർത്തുക</translation>
@@ -841,9 +864,11 @@
 <translation id="8673028979667498656">270°</translation>
 <translation id="8676770494376880701">കുറഞ്ഞ തോതിൽ വൈദ്യുതി പ്രവഹിക്കുന്ന ചാർജർ കണക്റ്റുചെയ്‌തു</translation>
 <translation id="8683506306463609433">പ്രകടനം പിന്തുടരൽ സജീവം</translation>
+<translation id="8703634754197148428">റെക്കോർഡിംഗ് ആരംഭിക്കൂ. റെക്കോർഡിംഗ് ആരംഭിച്ചുകഴിഞ്ഞാൽ, ഷെൽഫിലേക്ക് പോയി റെക്കോർഡിംഗ് നിർത്തുക ബട്ടൺ കണ്ടെത്താൻ Alt + Shift + L ഉപയോഗിക്കുക</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> ഈ ഫീച്ചർ മാനേജ് ചെയ്യാൻ ഇടത്തേയ്‌ക്കോ വലത്തേയ്‌ക്കോ ഉള്ള അമ്പടയാളം ഉപയോഗിക്കുക.</translation>
 <translation id="8712637175834984815">മനസ്സിലായി</translation>
 <translation id="8721053961083920564">വോളിയം മാറ്റുക. <ph name="STATE_TEXT" /></translation>
+<translation id="8724318433625452070">പൂർണ്ണ സ്ക്രീൻ ക്യാപ്‌ചർ ചെയ്യൽ</translation>
 <translation id="8734991477317290293">ഇത് നിങ്ങളുടെ കീസ്ട്രോക്കുകൾ മോഷ്‌ടിക്കാൻ ശ്രമിച്ചേക്കാം.</translation>
 <translation id="8735953464173050365">കീബോഡ് ക്രമീകരണം കാണിക്കുക. <ph name="KEYBOARD_NAME" /> തിരഞ്ഞെടുത്തിരിക്കുന്നു</translation>
 <translation id="8755498163081687682">നിങ്ങളുടെ ഐഡന്റിറ്റി പരിശോധിച്ചുറപ്പിക്കുക: ഇത് നിങ്ങൾ തന്നെയാണെന്ന് സ്ഥിരീകരിക്കാൻ <ph name="ORIGIN_NAME" /> ആഗ്രഹിക്കുന്നു</translation>
@@ -867,6 +892,7 @@
 <translation id="8877788021141246043">ഒരു റിമൈൻഡർ സജ്ജീകരിക്കുക</translation>
 <translation id="8878886163241303700">സ്‌ക്രീൻ വിപുലീകരിക്കുന്നു</translation>
 <translation id="8883473964424809116">Google Assistant ക്രമീകരണം തുറക്കാൻ ക്ലിക്ക് ചെയ്യുക.</translation>
+<translation id="8884537526797090108">രഹസ്യാത്മക ഉള്ളടക്കം റെക്കോർഡ് ചെയ്യാനാകില്ല</translation>
 <translation id="890616557918890486">ഉറവിടം മാറ്റുക</translation>
 <translation id="8909138438987180327">ബാറ്ററി <ph name="PERCENTAGE" /> ശതമാനം ഉണ്ട്..</translation>
 <translation id="8913384980486163186">തീമുള്ള (ഡിഫോൾട്ട്)</translation>
@@ -882,6 +908,7 @@
 <translation id="9017320285115481645">Family Link രക്ഷാകർതൃ ആക്‌സസ് കോഡ് നൽകുക.</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> എന്നതിനുള്ള ക്രമീകരണം തുറക്കുക</translation>
 <translation id="9056839673611986238">ഉപകരണം പഴയ അവസ്ഥയിലേക്ക് പുനഃസ്ഥാപിക്കും</translation>
+<translation id="9063800855227801443">രഹസ്യാത്മക ഉള്ളടക്കം ക്യാപ്‌ചർ ചെയ്യാനാകില്ല</translation>
 <translation id="9065203028668620118">എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="9070640332319875144">അസി‌സ്‌റ്റന്റ് ക്രമീകരണം</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" />-ൽ ബാറ്ററി തീരും</translation>

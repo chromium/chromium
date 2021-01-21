@@ -80,6 +80,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
     &lt;li&gt;Wenden Sie sich an den Websiteinhaber.&lt;/li&gt;
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Sie haben Ihr Passwort auf einer Website eingegeben, die nicht von Ihrer Organisation verwaltet wird. Zum Schutz Ihres Kontos sollten Sie das Passwort nicht für andere Apps und Websites verwenden.</translation>
+<translation id="1259144770381827039">Details ansehen.</translation>
 <translation id="1263231323834454256">Leseliste</translation>
 <translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
         Aktivitäten, die nicht auf diesem Gerät gespeichert werden:
@@ -322,6 +323,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="2164510882479075877">Prüfen Sie, ob "<ph name="HOST_NAME" />" einen Tippfehler enthält.</translation>
 <translation id="2166049586286450108">Vollständiger Administratorzugriff</translation>
 <translation id="2166378884831602661">Diese Website kann keine sichere Verbindung bereitstellen</translation>
+<translation id="2168151236314517198">Die Administratorrichtlinie blockiert das Drucken dieses Inhalts</translation>
 <translation id="2169984857010174799">Kaku2 (Umschlag)</translation>
 <translation id="2181821976797666341">Richtlinien</translation>
 <translation id="2183608646556468874">Telefonnummer</translation>
@@ -1347,6 +1349,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="6290238015253830360">Hier werden Ihre vorgeschlagenen Artikel angezeigt</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">Google Assistant für Chrome wird beendet</translation>
+<translation id="6304463939629872728">Bezahlen mit</translation>
 <translation id="6305205051461490394"><ph name="URL" /> ist nicht erreichbar.</translation>
 <translation id="6312113039770857350">Webseite nicht verfügbar</translation>
 <translation id="6321917430147971392">Überprüfen Sie die DNS-Einstellungen.</translation>
@@ -1376,6 +1379,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="6406765186087300643">C0 (Umschlag)</translation>
 <translation id="6409754798200046165">Sie haben Ihr Passwort gerade auf einer verdächtigen Seite eingegeben. Chrome empfiehlt, Ihr Passwort jetzt zu ändern.</translation>
 <translation id="6410264514553301377">Ablaufdatum und CVC für <ph name="CREDIT_CARD" /> eingeben</translation>
+<translation id="6410774864568266108">Denken Sie an Ihr Google Pay-Angebot</translation>
 <translation id="6415778972515849510">Mithilfe von Chromium können Sie Ihr Google-Konto schützen und Ihr Passwort ändern.</translation>
 <translation id="6423385022588644828">Karten mithilfe von Touch ID ab sofort schneller bestätigen</translation>
 <translation id="6425092077175753609">Material</translation>

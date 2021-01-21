@@ -77,6 +77,7 @@
 <translation id="1570871743947603115">Bluetooth'ду өчүрүү/күйгүзүү. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Бул сеанста аткарган иш-аракеттериңизди көрөт</translation>
 <translation id="1611993646327628135">Күйүк</translation>
+<translation id="1615402009686901181">Купуя мазмун көрүнүп турганда, Администратордун саясатына ылайык экрандагыны сүрөткө тартып алууга болбойт</translation>
 <translation id="1632985212731562677">Switch Access функциясын Жөндөөлөр &gt; Атайын мүмкүнчүлүктөр бөлүмүнөн өчүрүүгө болот.</translation>
 <translation id="1654477262762802994">Айтып издеп баштоо</translation>
 <translation id="1667964833127753507">Нейтралдуу түс режими тушкагаздан алынган түстөрдү эмес нейтралдуу тондогу жарык жана караңгы өндөрдү колдонот.</translation>
@@ -117,6 +118,7 @@
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Салам <ph name="USERNAME" />,</translation>
 <translation id="1978498689038657292">Текст киргизүү</translation>
+<translation id="1989113344093894667">Мазмун сүрөткө тартылган жок</translation>
 <translation id="1993072747612765854"><ph name="SYSTEM_APP_NAME" /> колдонмосундагы жаңыртуу жөнүндө кененирээк маалымат алуу</translation>
 <translation id="1995660704900986789">Өчүрүү</translation>
 <translation id="1998100899771863792">Учурдагы иш такта</translation>
@@ -143,6 +145,7 @@
 <translation id="225680501294068881">Түзмөктөр изделүүдө…</translation>
 <translation id="2268130516524549846">Bluetooth өчүрүлдү</translation>
 <translation id="2268813581635650749">Баарын чыгаруу</translation>
+<translation id="2269016722240250274">Колдонмо микрофонуңузду колдонуп жатат</translation>
 <translation id="2277103315734023688">Алдыга түрдүрүү</translation>
 <translation id="2292698582925480719">Дисплей шкаласы</translation>
 <translation id="229397294990920565">Мобилдик Интернет өчүрүлүүдө...</translation>
@@ -168,6 +171,7 @@
 <translation id="2427507373259914951">Сол баскычын чыкылдатуу</translation>
 <translation id="2429753432712299108">"<ph name="DEVICE_NAME" />" Bluetooth түзмөгү жупташуу үчүн уруксат суроодо. Уруксат берүүдөн мурун, төмөнкү купуя сөз айкашы түзмөгүңүздө көрүнүп тургандыгын ырастаңыз: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Сырсөздү көрсөтүү</translation>
+<translation id="2450205753526923158">Скриншот режими</translation>
 <translation id="2473177541599297363">Дааналыкты ырастоо</translation>
 <translation id="2475982808118771221">Ката кетти</translation>
 <translation id="2482878487686419369">Билдирмелер</translation>
@@ -184,6 +188,7 @@
 <translation id="2596078834055697711">Терезенин скриншотун тартып алуу</translation>
 <translation id="2617342710774726426">SIM-карта кулпуланган</translation>
 <translation id="2621713457727696555">Корголгон</translation>
+<translation id="2653019840645008922">Терезени сүрөткө тартып алуу</translation>
 <translation id="2653659639078652383">Тапшыруу</translation>
 <translation id="2658778018866295321">Чыкылдатып, сүйрөө</translation>
 <translation id="2678852583403169292">Басып туруп угуңуз функциясынын менюсу</translation>
@@ -198,6 +203,7 @@
 <translation id="2727977024730340865">Кубаттуулугу төмөн кубаттагычка сайылды. Батареяны кубаттоо аракети ишенимдүү эмес.</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> түзмөгү <ph name="MANAGER" /> тарабынан башкарылат</translation>
 <translation id="2792498699870441125">Alt+Издөө</translation>
+<translation id="2814448776515246190">Сүрөткө жарым-жартылай тартып алуу</translation>
 <translation id="2819276065543622893">Сиз азыр чыгарыласыз.</translation>
 <translation id="28232023175184696">Интернетке туташпай жатат. Кайра аракет кылуу үчүн таптап коюңуз.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> дааналыкты колдоого албайт. Дааналыгы төмөнкүгө өзгөртүлдү: <ph name="FALLBACK_RESOLUTION" />.</translation>
@@ -224,6 +230,7 @@
 <translation id="3033545621352269033">Күйүк</translation>
 <translation id="3036649622769666520">Файлдарды ачуу</translation>
 <translation id="3038571455154067151">Кирүү үчүн, Family Link'теги ата-эненин кирүү кодун териңиз</translation>
+<translation id="3039939407102840004">Стилус батареясынын кубаты <ph name="PERCENTAGE" /> пайыз.</translation>
 <translation id="3045488863354895414">Кутман күнүңүз менен,</translation>
 <translation id="3051128274746680507">Көзөмөлдөнгөн колдонуучунун профили жакында өчүрүлөт. Кененирээк маалымат алуу үчүн, аккаунтуңузга кириңиз.</translation>
 <translation id="3055162170959710888">Бүгүн бул түзмөктү <ph name="USED_TIME" /> колдондуңуз</translation>
@@ -233,6 +240,7 @@
 <translation id="3090989381251959936"><ph name="FEATURE_NAME" /> функциясын өчүрүү/күйгүзүү. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">Курсорду жылдыруу</translation>
 <translation id="3098580329624789136">"<ph name="QUERY" />" үчүн <ph name="INTENT" /> алуу</translation>
+<translation id="3100274880412651815">Сүрөткө тартып алуу режимин жабуу</translation>
 <translation id="3105917916468784889">Скриншот тартып алуу</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3126069444801937830">Жаңыртуу үчүн өчүрүп күйгүзүңүз</translation>
@@ -298,6 +306,7 @@
 <translation id="3621202678540785336">Киргизүү</translation>
 <translation id="3621712662352432595">Аудио жөндөөлөрү</translation>
 <translation id="3626281679859535460">Жарыктыгы</translation>
+<translation id="3630697955794050612">өчүк</translation>
 <translation id="3631369015426612114">Төмөнкүдөн эскертмелерге уруксат берүү:</translation>
 <translation id="3638400994746983214">Купуялык экранын өчүрүү/күйгүзүү. <ph name="STATE_TEXT" />.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Башкарылган колдонуучу</translation>
@@ -311,6 +320,7 @@
 <translation id="3773700760453577392">Администратор <ph name="USER_EMAIL" /> дарегине бир убакта бир нече колдонуучуга кирүүгө тыюу салды. Улантуу үчүн бардык колдонуучулар чыгышы керек.</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Кулпулоо</translation>
+<translation id="3796746699333205839">Колдонмо камераңыз менен микрофонуңузду колдонуп жатат</translation>
 <translation id="3798670284305777884">Катуу сүйлөткүч (ички)</translation>
 <translation id="3799080171973636491">Толук экран режиминдеги лупаны ачуу үчүн тез баскычты бастыңыз. Ал күйгүзүлсүнбү?</translation>
 <translation id="380165613292957338">Салам, кандай жардам керек?</translation>
@@ -404,6 +414,7 @@
 <translation id="4570957409596482333">Басып туруп угуу баскычы</translation>
 <translation id="4577274620589681794">Убакыт бүттү · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Алдын ала көрүүнү жашыруу</translation>
+<translation id="4578906031062871102">Жөндөөлөр менюсу ачылды</translation>
 <translation id="4585337515783392668">Белгисиз алуучуга чыгарууну токтотуу</translation>
 <translation id="4596144739579517758">Караңгы тема өчүк</translation>
 <translation id="4623167406982293031">Аккаунтту ырастоо</translation>
@@ -486,6 +497,7 @@
 <translation id="5379115545237091094">Өтө көп аракеттер аткарылды</translation>
 <translation id="5397578532367286026">Башкаруучу бул колдонуучунун пайдалангандарын жана таржымалын (<ph name="MANAGER_EMAIL" />) chrome.com дарегинен карап чыга алат.</translation>
 <translation id="5400461572260843123">Ыкчам жөндөөлөр, Билдирмелер борборуна өтүү үчүн Издөө + сол баскычты басыңыз.</translation>
+<translation id="5426063383988017631">Жөндөөлөр менюсу жабылды</translation>
 <translation id="5428899915242071344">Тандап баштоо</translation>
 <translation id="5430931332414098647">Ыкчам байланыш түйүнү</translation>
 <translation id="5431825016875453137">OpenVPN / L2TP</translation>
@@ -502,12 +514,15 @@
 <translation id="556042886152191864">Баскыч</translation>
 <translation id="5571066253365925590">Bluetooth иштетилди</translation>
 <translation id="557563299383177668">Кийинки абзац</translation>
+<translation id="5577281275355252094">Phone Hub'ды колдонуу үчүн телефонуңуздагы Bluetooth иштетилгенин текшериңиз</translation>
 <translation id="558849140439112033">Сүрөткө тарткыңыз келген аймакты тандоо үчүн сүйрөңүз</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Экрандагы текстти окуп берүүнү өчүрүү үчүн Ctrl + Alt + Z баскычтарын басыңыз.</translation>
 <translation id="5601503069213153581">PIN</translation>
+<translation id="5619862035903135339">Администратордун саясаты боюнча экрандагыны сүрөткө тартып алуу өчүрүлгөн</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Микрофондун оюкчасы</translation>
+<translation id="5662709761327382534">Аудиону жаздыруу <ph name="CURRENT_STATE" />. Микрофонду <ph name="NEW_STATE" /> абалына өткөрүү үчүн "Enter" баскычын басыңыз</translation>
 <translation id="5669267381087807207">Жандырылууда</translation>
 <translation id="5673434351075758678">Жөндөөлөр шайкештештирилгенден кийин тил "<ph name="FROM_LOCALE" />" тилинен "<ph name="TO_LOCALE" />" тилине өзгөртүлдү.</translation>
 <translation id="5677928146339483299">Бөгөттөлгөн</translation>
@@ -555,6 +570,7 @@
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Сигналдын күчү <ph name="SIGNAL_STRENGTH" />, Администраторуңуз башкарат</translation>
 <translation id="6030495522958826102">Меню экрандын төмөнкү сол бурчуна жылдырылды.</translation>
 <translation id="6032620807120418574">Толук экранды жаздыруу үчүн каалаган жерин басыңыз</translation>
+<translation id="6040071906258664830">Аудиону жаздыруу <ph name="STATE" /></translation>
 <translation id="6040143037577758943">Жабуу</translation>
 <translation id="6043212731627905357">Бул монитор <ph name="DEVICE_TYPE" /> түзмөгүңүз менен иштебей жатат (монитор колдоого алынбайт).</translation>
 <translation id="6043994281159824495">Азыр чыгуу</translation>
@@ -564,6 +580,7 @@
 <translation id="6062360702481658777"><ph name="LOGOUT_TIME_LEFT" /> ичинен автоматтык түрдө чыгарыласыз.</translation>
 <translation id="6073451960410192870">Жаздырууну токтотуу</translation>
 <translation id="607652042414456612">Компьютериңиз жакын арадагы Bluetooth түзмөктөрүнө көрүнүп, <ph name="ADDRESS" /> дарегиндеги "<ph name="NAME" />" катары күйүп турат.</translation>
+<translation id="6094290315941448991">Купуя мазмун көрүнүп турганда, Администратордун саясатына ылайык экрандагыны видеого жаздырып алууга болбойт</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google Жардамчысы конок сеансында жеткиликсиз.</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> аккаунтун өчүрүү диалогун ачуу</translation>
@@ -620,6 +637,7 @@
 <translation id="6650933572246256093">"<ph name="DEVICE_NAME" />" Bluetooth түзмөгү жупташуу үчүн уруксат сурап жатат. Ал түзмөккө төмөнкү купуя сөз айкашын киргизиңиз: <ph name="PASSKEY" />.</translation>
 <translation id="6657585470893396449">Сырсөз</translation>
 <translation id="6665545700722362599">Вебсайттарга, колдонмолорго жана кеңейтүүлөргө жайгашкан жерди аныктоо кызматтарын, түзмөктүн микрофонун, камерасын же башка функцияларын колдонуу мүмкүнчүлүгүн берет</translation>
+<translation id="6667908387435388584">Телефонуңуздагы хотспотко туташтырып, үнүн басып, түзмөгүңүздү аныктаңыз да, андан соң телефонуңузда ачылган акыркы Chrome өтмөктөрүн көрүңүз</translation>
 <translation id="6670153871843998651">3-иш такта</translation>
 <translation id="6671495933530132209">Сүрөттү көчүрүү</translation>
 <translation id="6691659475504239918">Search+Shift+H</translation>
@@ -700,7 +718,9 @@
 <translation id="742594950370306541">Камера колдонулууда.</translation>
 <translation id="742608627846767349">Кутмандуу таңыңыз менен,</translation>
 <translation id="743058460480092004">Камера менен микрофон колдонулууда.</translation>
+<translation id="7452560014878697800">Колдонмо камераңызды колдонуп жатат</translation>
 <translation id="7461924472993315131">Кадап коюу</translation>
+<translation id="746232733191930409">Экрандан видео жаздырып алуу режими</translation>
 <translation id="7466449121337984263">Сенсорго тийиңиз, сураныч</translation>
 <translation id="7477793887173910789">Музыканы, видеолорду жана башкаларды көзөмөлдөңүз</translation>
 <translation id="7497767806359279797">Тилди жана баскычтопту тандоо</translation>
@@ -729,6 +749,7 @@
 <translation id="7658239707568436148">Жокко чыгаруу</translation>
 <translation id="7662283695561029522">Конфигурациялоо үчүн таптап коюңуз</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="7714767791242455379">Жаңы мобилдик тармакты кошуу</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 билдирме}other{# билдирме}}</translation>
 <translation id="7724603315864178912">Кесүү</translation>
 <translation id="7745560842763881396">Текчедеги колдонмолорду көрсөтүү</translation>
@@ -743,6 +764,7 @@
 <translation id="7842569679327885685">Эскертүү: Сынамык функция</translation>
 <translation id="7846634333498149051">Баскычтоп</translation>
 <translation id="7860671499921112077">Жалпы маалыматка кирүү үчүн үч манжаңыз менен өйдө сүрүп коюңуз</translation>
+<translation id="7866482334467279021">күйүк</translation>
 <translation id="7868900307798234037">Кулпу манжа изи менен ачылууда</translation>
 <translation id="7872786842639831132">Өчүк</translation>
 <translation id="7875575368831396199"><ph name="DEVICE_TYPE" /> түзмөгүңүздө Bluetooth өчүрүлгөн окшойт. Phone Hub'ды колдонуу үчүн Bluetooth'ду күйгүзүңүз.</translation>
@@ -772,6 +794,7 @@
 <translation id="8036504271468642248">Мурунку сүйлөм</translation>
 <translation id="8042893070933512245">Атайын мүмкүнчүлүктөр жөндөөлөрүнүн менюсун ачуу</translation>
 <translation id="8048123526339889627">Bluetooth жөндөөлөрү</translation>
+<translation id="8052898407431791827">Буферге көчүрүлдү</translation>
 <translation id="8054466585765276473">Батареянын убакыты эсептелүүдө.</translation>
 <translation id="8061464966246066292">Жогорку контраст</translation>
 <translation id="8098591350844501178">Экранды <ph name="RECEIVER_NAME" /> түзмөгүнө чыгарууну токтотуу</translation>
@@ -843,9 +866,11 @@
 <translation id="8673028979667498656">270°</translation>
 <translation id="8676770494376880701">Кубаты төмөн кубаттагыч туташтырылды</translation>
 <translation id="8683506306463609433">Майнаптуулукка көз салуу жигердүү</translation>
+<translation id="8703634754197148428">Жаздырып баштаңыз. Жаздыруу башталгандан кийин Alt + Shift + L баскычтарынын айкалышын колдонуп, текчеге өтүп, жаздырууну токтотуу баскычын издеңиз</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Бул функцияны Солго же Оңго жебе баскычы менен башкарасыз.</translation>
 <translation id="8712637175834984815">Түшүндүм</translation>
 <translation id="8721053961083920564">Үндү өчүрүү/күйгүзүү. <ph name="STATE_TEXT" /></translation>
+<translation id="8724318433625452070">Экрандагыны толугу менен сүрөткө тартып алуу</translation>
 <translation id="8734991477317290293">Ал сырсөзүңүздү тергенде баскан баскычтарды билип алууга аракет кылышы мүмкүн</translation>
 <translation id="8735953464173050365">Баскычтоптун жөндөөлөрүн көрсөтүү. <ph name="KEYBOARD_NAME" /> тандалды</translation>
 <translation id="8755498163081687682">Өздүгүңүздү ырастаңыз: <ph name="ORIGIN_NAME" /> өздүгүңүздү ырастоону суранып жатат</translation>
@@ -869,6 +894,7 @@
 <translation id="8877788021141246043">Эстеткич коюу</translation>
 <translation id="8878886163241303700">Кеңейтилген экран</translation>
 <translation id="8883473964424809116">Google Жардамчынын жөндөөлөрүн ачуу үчүн басыңыз.</translation>
+<translation id="8884537526797090108">Купуя мазмунду жаздырууга болбойт</translation>
 <translation id="890616557918890486">Булагын өзгөртүү</translation>
 <translation id="8909138438987180327">Батареянын кубаты – <ph name="PERCENTAGE" /> пайыз.</translation>
 <translation id="8913384980486163186">Тема кошулган (демейки)</translation>
@@ -884,6 +910,7 @@
 <translation id="9017320285115481645">Family Link'ке ата-эненин кодун киргизиңиз.</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> тармагынын жөндөөлөрүн ачуу</translation>
 <translation id="9056839673611986238">Түзмөк баштапкы абалга келтирилет</translation>
+<translation id="9063800855227801443">Купуя мазмунду сүрөткө тартып алууга болбойт</translation>
 <translation id="9065203028668620118">Түзөтүү</translation>
 <translation id="9070640332319875144">Жардамчынын жөндөөлөрү</translation>
 <translation id="9072519059834302790">Батарея <ph name="TIME_LEFT" /> кийин отуруп калат.</translation>

@@ -80,6 +80,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
     &lt;li&gt;Susisiekite su svetainės savininku.&lt;/li&gt;
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Įvedėte slaptažodį svetainėje, kurios netvarko jūsų organizacija. Kad apsaugotumėte paskyrą, nenaudokite to paties slaptažodžio kitose programose ir svetainėse.</translation>
+<translation id="1259144770381827039">Žr. išsamią informaciją.</translation>
 <translation id="1263231323834454256">Skaitymo sąrašas</translation>
 <translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
         Šiame įrenginyje neišsaugoma veikla:
@@ -326,6 +327,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2164510882479075877">Patikrinkite, ar pavadinime <ph name="HOST_NAME" /> nėra klaidos.</translation>
 <translation id="2166049586286450108">Visateisė administratoriaus prieiga</translation>
 <translation id="2166378884831602661">Ši svetainė negali užtikrinti saugaus ryšio</translation>
+<translation id="2168151236314517198">Šio turinio spausdinimas yra blokuojamas remiantis administratoriaus politika</translation>
 <translation id="2169984857010174799">„Kaku2“ (vokas)</translation>
 <translation id="2181821976797666341">Politika</translation>
 <translation id="2183608646556468874">Telefono numeris</translation>
@@ -1361,6 +1363,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6290238015253830360">Jūsų pasiūlyti straipsniai rodomi čia</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">„Google“ padėjėjas sistemoje „Chrome“ sustabdomas</translation>
+<translation id="6304463939629872728">Atsiskaitykite naudodami</translation>
 <translation id="6305205051461490394"><ph name="URL" /> nepasiekiama.</translation>
 <translation id="6312113039770857350">Tinklalapis nepasiekiamas</translation>
 <translation id="6321917430147971392">Patikrinkite DNS nustatymus</translation>
@@ -1390,6 +1393,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6406765186087300643">C0 (vokas)</translation>
 <translation id="6409754798200046165">Ką tik savo slaptažodį įvedėte apgaulingoje svetainėje. „Chrome“ rekomenduoja dabar pakeisti slaptažodį.</translation>
 <translation id="6410264514553301377">įveskite „<ph name="CREDIT_CARD" />“ galiojimo pabaigos datą ir kortelės saugos kodą (CVC)</translation>
+<translation id="6410774864568266108">Nepamirškite „Google Pay“ pasiūlymo</translation>
 <translation id="6415778972515849510">„Chromium“ gali padėti apsaugoti „Google“ paskyrą ir pakeisti slaptažodį.</translation>
 <translation id="6423385022588644828">Nuo šiol patvirtinkite korteles greičiau su „Touch ID“</translation>
 <translation id="6425092077175753609">Trimačiai objektai</translation>

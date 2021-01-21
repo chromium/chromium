@@ -80,6 +80,7 @@
     &lt;li&gt;ವೆಬ್‌ಸೈಟ್‌ನ ಮಾಲೀಕರನ್ನು ಸಂಪರ್ಕಿಸಿ.&lt;/li&gt;
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">ನೀವು ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನಿಮ್ಮ ಸಂಸ್ಥೆಯು ನಿರ್ವಹಣೆ ಮಾಡದ ಸೈಟ್‌ನಲ್ಲಿ ನಮೂದಿಸಿದ್ದೀರಿ. ನಿಮ್ಮ ಖಾತೆಯನ್ನು ರಕ್ಷಿಸಲು, ಇತರ ಅಪ್ಲಿಕೇಶನ್‌ಗಳಲ್ಲಿ ಮತ್ತು ಸೈಟ್‌ಗಳಲ್ಲಿ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ ಅನ್ನು ಮರುಬಳಕೆ ಮಾಡಬೇಡಿ.</translation>
+<translation id="1259144770381827039">ವಿವರಗಳನ್ನು ನೋಡಿ.</translation>
 <translation id="1263231323834454256">ಓದುವ ಪಟ್ಟಿ</translation>
 <translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
         ಈ ಸಾಧನದಲ್ಲಿ ಉಳಿಯದ ಚಟುವಟಿಕೆ:
@@ -324,6 +325,7 @@
 <translation id="2164510882479075877"><ph name="HOST_NAME" /> ನ ಕಾಗುಣಿತ ತಪ್ಪಾಗಿದೆಯೇ ಎಂದು ಪರಿಶೀಲಿಸಿ.</translation>
 <translation id="2166049586286450108">ಪೂರ್ಣ ನಿರ್ವಾಹಕ ಪ್ರವೇಶ</translation>
 <translation id="2166378884831602661">ಈ ಸೈಟ್‌ಗೆ ಸುರಕ್ಷಿತ ಸಂಪರ್ಕವನ್ನು ಒದಗಿಸಲಾಗುವುದಿಲ್ಲ</translation>
+<translation id="2168151236314517198">ನಿರ್ವಾಹಕರ ನೀತಿಯ ಪ್ರಕಾರ ಈ ವಿಷಯವನ್ನು ಪ್ರಿಂಟ್ ಮಾಡುವುದನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="2169984857010174799">Kaku2 (Envelope)</translation>
 <translation id="2181821976797666341">ನಿಯಮಗಳು</translation>
 <translation id="2183608646556468874">ಫೋನ್ ಸಂಖ್ಯೆ</translation>
@@ -1347,6 +1349,7 @@
 <translation id="6290238015253830360">ನೀವು ಸಲಹೆ ನೀಡಿರುವ ಲೇಖನಗಳು ಇಲ್ಲಿ ಕಾಣಿಸಿಕೊಳ್ಳುತ್ತವೆ</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">Chrome ನಲ್ಲಿನ Google ಅಸಿಸ್ಟೆಂಟ್ ನಿಲ್ಲುತ್ತಿದೆ</translation>
+<translation id="6304463939629872728">ಇದರ ಮೂಲಕ ಚೆಕ್ ಔಟ್ ಮಾಡಿ</translation>
 <translation id="6305205051461490394"><ph name="URL" /> ತಲುಪಲಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="6312113039770857350">ವೆಬ್‌ಪುಟ ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="6321917430147971392">ನಿಮ್ಮ DNS ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
@@ -1376,6 +1379,7 @@
 <translation id="6406765186087300643">C0 (Envelope)</translation>
 <translation id="6409754798200046165">ನೀವು ಈಗಷ್ಟೇ ಒಂದು ವಂಚನೆ ಮಾಡುವಂತಹ ಸೈಟ್‌ನಲ್ಲಿ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನಮೂದಿಸಿದ್ದೀರಿ. ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಈಗಲೇ ಬದಲಾಯಿಸುವಂತೆ Chrome ಶಿಫಾರಸು ಮಾಡುತ್ತದೆ.</translation>
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" /> ಗೆ ಮುಕ್ತಾಯ ದಿನಾಂಕ ಮತ್ತು ಸಿವಿಸಿ ಅನ್ನು ನಮೂದಿಸಿ</translation>
+<translation id="6410774864568266108">ನಿಮ್ಮ Google Pay ಆಫರ್ ಅನ್ನು ಮರೆಯದಿರಿ</translation>
 <translation id="6415778972515849510">ನಿಮ್ಮ Google ಖಾತೆಯನ್ನು ಸಂರಕ್ಷಿಸಲು ಹಾಗೂ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಬದಲಾಯಿಸಲು, Chromium ನಿಮಗೆ ಸಹಾಯ ಮಾಡಬಲ್ಲದು.</translation>
 <translation id="6423385022588644828">ಇನ್ನು ಮುಂದೆ, ಟಚ್ ID ಬಳಸುವ ಮೂಲಕ ನಿಮ್ಮ ಕಾರ್ಡ್‌ಗಳನ್ನು ವೇಗವಾಗಿ ದೃಢೀಕರಿಸಿ</translation>
 <translation id="6425092077175753609">ವಸ್ತು</translation>

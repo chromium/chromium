@@ -80,6 +80,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
     &lt;li&gt;Makipag-ugnayan sa may-ari ng website.&lt;/li&gt;
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Inilagay mo ang iyong password sa site na hindi pinamamahalaan ng iyong organisasyon. Para protektahan ang account mo, huwag gamiting muli ang iyong password sa iba pang app at site.</translation>
+<translation id="1259144770381827039">Tingnan ang mga detalye.</translation>
 <translation id="1263231323834454256">Listahan ng babasahin</translation>
 <translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
         Aktibidad na hindi mananatili sa device na ito:
@@ -326,6 +327,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2164510882479075877">Tingnan kung may typo sa <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">Ganap na Access ng Admin</translation>
 <translation id="2166378884831602661">Hindi makakapagbigay ng secure na koneksyon ang site na ito</translation>
+<translation id="2168151236314517198">Na-block ng patakaran ng administrator ang pag-print ng content na ito</translation>
 <translation id="2169984857010174799">Kaku2 (Envelope)</translation>
 <translation id="2181821976797666341">Mga Patakaran</translation>
 <translation id="2183608646556468874">Numero ng Telepono</translation>
@@ -1360,6 +1362,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6290238015253830360">Lalabas dito ang mga iminungkahi mong artikulo</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">Ihinihinto ang Google Assistant sa Chrome</translation>
+<translation id="6304463939629872728">Mag-check out gamit ang</translation>
 <translation id="6305205051461490394">Hindi makakonekta sa <ph name="URL" />.</translation>
 <translation id="6312113039770857350">Hindi available ang webpage</translation>
 <translation id="6321917430147971392">Suriin ang iyong mga setting ng DNS</translation>
@@ -1389,6 +1392,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6406765186087300643">C0 (Envelope)</translation>
 <translation id="6409754798200046165">Kakalagay mo lang ng iyong password sa isang mapanlinang na site. Inirerekomenda ng Chrome na palitan mo ang iyong password ngayon.</translation>
 <translation id="6410264514553301377">Ilagay ang petsa ng pag-expire at CVC para sa <ph name="CREDIT_CARD" /></translation>
+<translation id="6410774864568266108">Huwag kalimutan ang iyong alok sa Google Pay</translation>
 <translation id="6415778972515849510">Makakatulong sa iyo ang Chromium na protektahan ang iyong Google Account at palitan ang password mo.</translation>
 <translation id="6423385022588644828">Kumpirmahin nang mas mabilis ang iyong mga card gamit ang Touch ID mula ngayon</translation>
 <translation id="6425092077175753609">Material</translation>

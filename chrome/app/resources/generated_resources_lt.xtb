@@ -119,6 +119,7 @@
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1128591060186966949">Paieškos variklio redagavimas</translation>
 <translation id="1129850422003387628">Valdyti programas</translation>
+<translation id="113050636487300043">Pasirinkite pavadinimą ir spalvos temą, kad atskirtumėte profilius</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – priklauso grupei „<ph name="GROUP_NAME" />“</translation>
 <translation id="1134009406053225289">Atidaryti nežinomame lange</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" /> iš <ph name="EMOJI_COUNT" />.</translation>
@@ -563,6 +564,7 @@
 <translation id="1612019740169791082">Sudėtinis rodinys nesukonfigūruotas palaikyti disko dydžio keitimą. Jei norite koreguoti, kiek vietos priskiriama „Linux“, sukurkite atsarginę kopiją ir atkurkite naujame sudėtiniame rodinyje.</translation>
 <translation id="1614511179807650956">Gali būti, kad pasiekėte mobiliojo ryšio duomenų apribojimą. Apsilankykite „<ph name="NAME" />“ suaktyvinimo portale, kad įsigytumėte daugiau duomenų</translation>
 <translation id="161460670679785907">Nepavyko aptikti telefono</translation>
+<translation id="1615402009686901181">Remiantis administratoriaus politika, negalima užfiksuoti ekrano, jei matomas konfidencialus turinys</translation>
 <translation id="1616206807336925449">Šiam plėtiniui nereikalingi jokie specialūs leidimai.</translation>
 <translation id="1616298854599875024">Nepavyko importuoti plėtinio „<ph name="IMPORT_NAME" />“, nes tai nėra bendrinamas modulis</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Tikrinami šie duomenys pagal jūsų organizacijos saugos politiką...}=1{Tikrinamas šis failas pagal jūsų organizacijos saugos politiką...}one{Tikrinami šie failai pagal jūsų organizacijos saugos politiką...}few{Tikrinami šie failai pagal jūsų organizacijos saugos politiką...}many{Tikrinami šie failai pagal jūsų organizacijos saugos politiką...}other{Tikrinami šie failai pagal jūsų organizacijos saugos politiką...}}</translation>
@@ -576,6 +578,7 @@
 <translation id="1623132449929929218">Vaizdai šiuo metu nepasiekiami. Prisijunkite prie interneto iš naujo ir peržiūrėkite ekrano fonų kolekcijas.</translation>
 <translation id="1623723619460186680">Mėlynos šviesos slopinimas</translation>
 <translation id="1624012933569991823">Nustatymai</translation>
+<translation id="1624599281783425761">Nebematysite „<ph name="MERCHANT" />“</translation>
 <translation id="1627276047960621195">Failų deskriptoriai</translation>
 <translation id="1627408615528139100">Jau atsisiųsta</translation>
 <translation id="1628948239858170093">Nuskaityti failą prieš atidarant?</translation>
@@ -732,6 +735,7 @@
 <translation id="1790194216133135334">Siųsti nuorodą į „<ph name="DEVICE_NAME" />“</translation>
 <translation id="1790976235243700817">Pašalinti prieigą</translation>
 <translation id="1792619191750875668">Išplėstas vaizdas</translation>
+<translation id="1794051631868188691">Niekada nerodyti „<ph name="MERCHANT" />“</translation>
 <translation id="1794791083288629568">Atsiųskite atsiliepimų, kad padėtumėte mums išspręsti šią problemą.</translation>
 <translation id="1795214765651529549">Naudoti klasikinę</translation>
 <translation id="1799071797295057738">Plėtinys „<ph name="EXTENSION_NAME" />“ buvo automatiškai išjungtas.</translation>
@@ -905,6 +909,7 @@
 <translation id="1984417487208496350">Apsaugos nėra (nerekomenduojama)</translation>
 <translation id="1987317783729300807">Paskyros</translation>
 <translation id="1989112275319619282">Naršyti</translation>
+<translation id="1989113344093894667">Negalima užfiksuoti turinio</translation>
 <translation id="1990046457226896323">Kalbos failai atsisiųsti</translation>
 <translation id="1990512225220753005">Nerodyti sparčiųjų klavišų šiame puslapyje</translation>
 <translation id="1992397118740194946">Nenustatyta</translation>
@@ -1374,6 +1379,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2509566264613697683">8 k.</translation>
 <translation id="2510988373360790637">„Bluetooth“ įrenginio užmiršimas</translation>
 <translation id="2513396635448525189">Prisijungimo vaizdas</translation>
+<translation id="2514326558286966059">Atrakinkite greičiau kontroliniu kodu</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">Nuskaityti</translation>
 <translation id="2518024842978892609">Naudoti klientų sertifikatus</translation>
@@ -1511,6 +1517,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2673135533890720193">Skaityti naršymo istoriją</translation>
 <translation id="2673589024369449924">Kurti šio naudotojo darbalaukio šaukinį</translation>
 <translation id="2674764818721168631">Išjungta</translation>
+<translation id="2676518761349096749"><ph name="DOMAIN" /> nori unikaliai identifikuoti jūsų įrenginį, kad būtų galima paleisti aukščiausios kokybės apsaugotus vaizdo ir garso įrašus.</translation>
 <translation id="2678063897982469759">Iš naujo įgalinti</translation>
 <translation id="268053382412112343">Is&amp;torija</translation>
 <translation id="2682498795777673382">Vieno iš tėvų naujinys</translation>
@@ -1885,6 +1892,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3090819949319990166">Nepavyko nukopijuoti išorinio CRX failo į „<ph name="TEMP_CRX_FILE" />“.</translation>
 <translation id="3090871774332213558">Įrenginys „<ph name="DEVICE_NAME" />“ susietas</translation>
 <translation id="3092699946856346803">Įdėkite SIM kortelę ir bandykite dar kartą</translation>
+<translation id="3094141017404513551">Jūsų naršymo veikla bus atskirta nuo <ph name="EXISTING_USER" /></translation>
 <translation id="3095871294753148861">Žymės, slaptažodžiai ir kiti naršyklės duomenys sinchronizuojami su pagrindine paskyra.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{Išjungtas vienas potencialiai žalingas plėtinys. Taip pat galite jį pašalinti.}one{Išjungtas {NUM_EXTENSIONS} potencialiai žalingas plėtinys. Taip pat galite juos pašalinti.}few{Išjungti {NUM_EXTENSIONS} potencialiai žalingi plėtiniai. Taip pat galite juos pašalinti.}many{Išjungta {NUM_EXTENSIONS} potencialiai žalingo plėtinio. Taip pat galite juos pašalinti.}other{Išjungta {NUM_EXTENSIONS} potencialiai žalingų plėtinių. Taip pat galite juos pašalinti.}}</translation>
 <translation id="3101126716313987672">Pritemdyta šviesa</translation>
@@ -2214,6 +2222,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3482719661246593752"><ph name="ORIGIN" /> gali peržiūrėti toliau nurodytus failus</translation>
 <translation id="3484273680291419129">Šalinama žalinga programinė įranga...</translation>
 <translation id="3484869148456018791">Gauti naują sertifikatą</translation>
+<translation id="3484991308207164042">Slėpti šiuos krepšelius</translation>
 <translation id="3487007233252413104">anoniminė funkcija</translation>
 <translation id="348780365869651045">Laukiama programų talpyklos...</translation>
 <translation id="3488065109653206955">Iš dalies suaktyvinta</translation>
@@ -2571,6 +2580,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3866249974567520381">Aprašas</translation>
 <translation id="3867134342671430205">Vilkite arba rodyklių klavišais perkelkite ekraną</translation>
 <translation id="3867944738977021751">Sertifikato laukai</translation>
+<translation id="3868847547183917201">Nebematysite savo krepšelių šiame puslapyje</translation>
 <translation id="3869917919960562512">Neteisingas indeksas.</translation>
 <translation id="3870931306085184145">Nėra išsaugotų <ph name="DOMAIN" /> slaptažodžių</translation>
 <translation id="3871350334636688135">Po 24 valandų administratorius pritaikys vienkartinį naujinį ir bus ištrinti jūsų vietiniai duomenys, kai iš naujo paleisite įrenginį. Visus reikalingus duomenis išsaugokite saugykloje debesyje per 24 valandas.</translation>
@@ -2756,6 +2766,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="407173827865827707">Spustelėjus</translation>
 <translation id="4074900173531346617">El. laiškus pasirašančiojo sertifikatas</translation>
 <translation id="407520071244661467">Mastelis</translation>
+<translation id="407543464472585404"><ph name="NAME" /> profilis yra susietas su <ph name="EMAIL" /></translation>
 <translation id="4075639477629295004">Nepavyko perduoti „<ph name="FILE_NAME" />“.</translation>
 <translation id="4077917118009885966">Skelbimai užblokuoti šioje svetainėje</translation>
 <translation id="4077919383365622693">Visi <ph name="SITE" /> saugomi duomenys ir slapukai bus išvalyti.</translation>
@@ -2975,6 +2986,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4364567974334641491">„<ph name="APP_NAME" />“ bendrina langą.</translation>
 <translation id="4364830672918311045">Pateikti pranešimus</translation>
 <translation id="437004882363131692">Gaukite „<ph name="DEVICE_TYPE" />“ patarimų, pasiūlymų bei naujinių ir pateikite atsiliepimų. Atsisakyti prenumeratos galėsite bet kuriuo metu.</translation>
+<translation id="4370425812909262207">Krepšeliai paslėpti. Jie bus vėl rodomi, kai atliksite pakeitimus.</translation>
 <translation id="4370975561335139969">Įvestas slaptažodis neatitinka el. pašto adreso</translation>
 <translation id="4374831787438678295">„Linux“ diegimo programa</translation>
 <translation id="4375035964737468845">Atidaryti atsisiųstus failus</translation>
@@ -3027,6 +3039,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4421932782753506458">Pūkuotasis</translation>
 <translation id="4423376891418188461">Atkurti nustatymus</translation>
 <translation id="442397852638519243"><ph name="USER_NAME" />, jūsų administratoriui reikia pakeisti jūsų slaptažodį.</translation>
+<translation id="4427365070557649936">Patvirtinamas patvirtinimo kodas...</translation>
 <translation id="4430019312045809116">Apimtis</translation>
 <translation id="4430369329743628066">Žymė pridėta</translation>
 <translation id="4432621511648257259">Slaptažodis netinkamas</translation>
@@ -3035,6 +3048,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="443475966875174318">Nesuderinamų programų atnaujinimas arba pašalinimas</translation>
 <translation id="4436063104263971834">Nėra pasiekiamų SIM kortelės profilių. <ph name="BEGIN_LINK" />Čia<ph name="END_LINK" /> nustatykite naują profilį.</translation>
 <translation id="4438043733494739848">Skaidru</translation>
+<translation id="4438639467177774583"><ph name="USERNAME" /> <ph name="MASKED_PASSWORD" /> informacija bus išsaugota jūsų „Google“ paskyroje <ph name="ACCOUNT" /></translation>
 <translation id="4439427728133035643"><ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“, signalo stiprumas <ph name="SIGNAL_STRENGTH" /> %, prisijungti</translation>
 <translation id="4441124369922430666">Norite automatiškai paleisti šią programą, kai įjungiamas įrenginys?</translation>
 <translation id="4441147046941420429">Norėdami tęsti išimkite saugos raktą iš įrenginio, įdėkite iš naujo ir palieskite</translation>
@@ -3057,6 +3071,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4462159676511157176">Tinkintų pavadinimų serveriai</translation>
 <translation id="4465236939126352372">Programai „<ph name="APP_NAME" />“ nustatytas <ph name="TIME" /> laiko apribojimas</translation>
 <translation id="4465725236958772856"><ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“, tvarko administratorius, prisijungti</translation>
+<translation id="4466068638972170851">Paryškinkite tai, ką norite girdėti, tada paspauskite paieškos klavišą + S. Arba norėdami pasirinkti paspauskite ir palaikykite paieškos klavišą ar palieskite piktogramą „Teksto ištarimas“ netoli būsenos dėklo.</translation>
 <translation id="4469477701382819144">Blokuojama svetainėse, kuriose rodomi nepageidaujami arba klaidinantys skelbimai</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> gali redaguoti aplanko „<ph name="FOLDERNAME" />“ failus</translation>
 <translation id="4470957202018033307">Išorinės saugyklos nuostatos</translation>
@@ -3080,6 +3095,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4488257340342212116">Leidžiama naudoti fotoaparatą</translation>
 <translation id="4488502501195719518">Išvalyti visus duomenis?</translation>
 <translation id="449232563137139956">Paprastai svetainėse rodomi vaizdai, norint teikti iliustracijas, pvz., internetinių parduotuvių ar naujienų straipsnių nuotraukas</translation>
+<translation id="4492698018379445570">Peržiūrėkite, ką įsidėjote į pirkinių krepšelius, ir apmokėkite, kai būsite pasiruošę</translation>
 <translation id="4493468155686877504">Rekomenduojama (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495419450179050807">Nerodyti šiame puslapyje</translation>
 <translation id="4496054781541092778">automatiškai užblokuota: <ph name="PERMISSION" /></translation>
@@ -3124,6 +3140,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4538417792467843292">Ištrinti žodį</translation>
 <translation id="4538684596480161368">Visada blokuoti į smėlio dėžę neįtrauktus papildinius, esančius <ph name="HOST" /></translation>
 <translation id="4538792345715658285">Įdiegta pagal įmonės politiką.</translation>
+<translation id="4541662893742891060">Nepavyko prisijungti prie šio profilio. Jei reikia techninio palaikymo, susisiekite su operatoriumi.</translation>
 <translation id="4542520061254486227">Skaityti duomenis svetainėse <ph name="WEBSITE_1" /> ir <ph name="WEBSITE_2" /></translation>
 <translation id="4543778593405494224">Sertifikatų tvarkytuvė</translation>
 <translation id="4544174279960331769">Numatytasis mėlynas pseudoportretas</translation>
@@ -3243,6 +3260,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4664482161435122549">PKCS Nr. 12 eksportavimo klaida</translation>
 <translation id="4665014895760275686">Gamintojas</translation>
 <translation id="4665446389743427678">Visi svetainės <ph name="SITE" /> išsaugoti duomenys bus ištrinti.</translation>
+<translation id="4666472247053585787">Peržiūrėkite pranešimus iš telefono „<ph name="DEVICE_TYPE" />“ įrenginyje</translation>
 <translation id="4666911709726371538">Daugiau programų</translation>
 <translation id="4668721319092543482">Spustelėkite, kad įgalintumėte „<ph name="PLUGIN_NAME" />“</translation>
 <translation id="4670064810192446073">Virtualioji realybė</translation>
@@ -3342,6 +3360,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4808667324955055115">Iššokantieji langai užblokuoti:</translation>
 <translation id="4809079943450490359">Įrenginio administratoriaus instrukcijos:</translation>
 <translation id="480990236307250886">Atidaryti pagrindinį puslapį</translation>
+<translation id="4810383437107234249">Niekada nerodyti krepšelių</translation>
 <translation id="4811212958317149293">Prieigos jungikliu klaviatūros automatinis nuskaitymas</translation>
 <translation id="4811503964269049987">Grupuoti pasirinktą skirtuką</translation>
 <translation id="4813136279048157860">Mano vaizdai</translation>
@@ -3714,6 +3733,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="5254368820972107711">Rodyti norimus pašalinti failus</translation>
 <translation id="52550593576409946">Nepavyko paleisti viešojo terminalo programos.</translation>
 <translation id="5255859108402770436">Prisijungti dar kartą</translation>
+<translation id="52566111838498928">Įkeliami šriftai...</translation>
 <translation id="5256861893479663409">Visose svetainėse</translation>
 <translation id="5258992782919386492">Įdiegti šiame įrenginyje</translation>
 <translation id="5260334392110301220">Išmaniosios kabutės</translation>
@@ -3890,6 +3910,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="5461050611724244538">Prarastas ryšys su jūsų telefonu</translation>
 <translation id="5463231940765244860">Įvesti</translation>
 <translation id="5463275305984126951">Turinys iš <ph name="LOCATION" /></translation>
+<translation id="5463625433003343978">Ieškoma įrenginių...</translation>
 <translation id="5463856536939868464">Meniu su paslėptomis žymėmis</translation>
 <translation id="5464632865477611176">Paleisti šį kartą</translation>
 <translation id="5464660706533281090">Šio nustatymo negalima pakeisti, jei naudotojas yra vaikas.</translation>
@@ -4039,6 +4060,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="561698261642843490">„Firefox“ uždarymas</translation>
 <translation id="5618333180342767515">(tai gali užtrukti kelias minutes)</translation>
 <translation id="56197088284879152">Ryšys perduotas nuotoliniam įrenginiui „<ph name="DEVICE_NAME" />“.</translation>
+<translation id="5619862035903135339">Ekrano fiksavimo funkcija yra išjungta remiantis administratoriaus politika</translation>
 <translation id="5620568081365989559">Kūrėjo įrankiai pateikė visos prieigos prie <ph name="FOLDER_PATH" /> užklausą.
 Įsitikinkite, kad neatskleisite slaptos informacijos.</translation>
 <translation id="5620612546311710611">naudojimo statistika</translation>
@@ -4874,6 +4896,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="6590458744723262880">Pervardyti aplanką</translation>
 <translation id="6592267180249644460">„WebRTC“ žurnalas užfiksuotas <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
 <translation id="6592808042417736307">Kontrolinis kodas užfiksuotas</translation>
+<translation id="6594011207075825276">Ieškoma serijos numerių...</translation>
 <translation id="6595187330192059106">Visada blokuoti <ph name="HOST" />, kad negalėtų visiškai valdyti MIDI įrenginių.</translation>
 <translation id="6596325263575161958">Šifravimo parinktys</translation>
 <translation id="6596816719288285829">IP adresas</translation>
@@ -4901,6 +4924,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="6624535038674360844">Faile „<ph name="FILE_NAME" />“ yra neskelbtino arba pavojingo turinio. Paprašykite savininko sutvarkyti.</translation>
 <translation id="6624687053722465643">Saldumas</translation>
 <translation id="6628328486509726751">Įkelta <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
+<translation id="6630043285902923878">Ieškoma USB įrenginių...</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> nori nuolatinės prieigos prie sertifikato, kad galėtų save autentifikuoti jūsų vardu.</translation>
 <translation id="6635944431854494329">Savininkas gali valdyti šią funkciją skiltyje „Nustatymai“ &gt; „Išplėstiniai“ &gt; „Automatiškai siųsti diagnostikos ir naudojimo duomenis „Google“.</translation>
 <translation id="6635956300022133031">Pasirinkite ir tinkinkite teksto į kalbą balsus</translation>
@@ -5161,6 +5185,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="6935286146439255109">Nėra popieriaus dėklo</translation>
 <translation id="693807610556624488">Rašymo operacija viršija didžiausią įrenginiui „<ph name="DEVICE_NAME" />“ leistiną atributo simbolių skaičių.</translation>
 <translation id="6938386202199793006">Esate išsaugoję 1 spausdintuvą.</translation>
+<translation id="6938606182859551396">Kad gautumėte pranešimus iš telefono „<ph name="DEVICE_TYPE" />“ įrenginyje, vadovaudamiesi telefone pateiktomis instrukcijomis suteikite „Google Play“ paslaugoms prieigą prie pranešimų.</translation>
 <translation id="6938789263968032501">Žmonės</translation>
 <translation id="6939815295902433669">Peržiūrėti įrenginio programinę įrangą</translation>
 <translation id="6941937518557314510">Kad „<ph name="HOST_NAME" />“ patvirtintumėte tapatybę, naudodami sertifikatą, prisijunkite prie „<ph name="TOKEN_NAME" />“.</translation>
@@ -5359,6 +5384,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="7152478047064750137">Šiam plėtiniui nereikia specialių leidimų</translation>
 <translation id="7154130902455071009">Pakeiskite pradžios puslapį į: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Esama nuotrauka iš fotoaparato arba failo</translation>
+<translation id="7163202347044721291">Patvirtinamas aktyvinimo kodas...</translation>
 <translation id="7165320105431587207">Nepavyko sukonfigūruoti tinklo</translation>
 <translation id="716640248772308851">„<ph name="EXTENSION" />“ patikrintose vietose gali nuskaityti vaizdus, vaizdo įrašus ir garso failus.</translation>
 <translation id="7167486101654761064">&amp;Visada atidaryti tokio tipo failus</translation>
@@ -5454,6 +5480,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="7258697411818564379">PIN kodas pridėtas</translation>
 <translation id="7262004276116528033">Ši prisijungimo paslauga priglobiama <ph name="SAML_DOMAIN" />.</translation>
 <translation id="7267044199012331848">Nepavyko įdiegti virtualiojo įrenginio. Bandykite dar kartą arba susisiekite su administratoriumi. Klaidos kodas: <ph name="ERROR_CODE" />.</translation>
+<translation id="7267875682732693301">Kelis kartus patraukite ir vėl pridėkite pirštą, kad būtų užfiksuotos skirtingos piršto atspaudo dalys</translation>
 <translation id="7268127947535186412">Šį nustatymą valdo įrenginio savininkas.</translation>
 <translation id="7269736181983384521">Bendrinimo netoliese duomenų naudojimas</translation>
 <translation id="7270858098575133036">Paklausti, kai svetainė nori naudoti sistemos išskirtinius pranešimus MIDI įrenginiams pasiekti</translation>
@@ -5651,6 +5678,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="7503191893372251637">„Netscape“ sertifikato tipas</translation>
 <translation id="7503985202154027481">Saugos rakte bus saugomas įrašas apie apsilankymą šioje svetainėje.</translation>
 <translation id="750509436279396091">Atidaryti atsisiuntimų aplanką</translation>
+<translation id="7505717542095249632">Slėpti „<ph name="MERCHANT" />“</translation>
 <translation id="7506093026325926984">Šis slaptažodis bus išsaugotas šiame įrenginyje</translation>
 <translation id="7506130076368211615">Naujo tinklo nustatymas</translation>
 <translation id="7506242536428928412">Jei norite naudoti naują saugos raktą, nustatykite naują PIN kodą</translation>
@@ -5669,6 +5697,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="7522255036471229694">Ištarkite „Ok Google“.</translation>
 <translation id="7523585675576642403">Pervardyti profilį</translation>
 <translation id="7525067979554623046">Sukurti</translation>
+<translation id="7525625923260515951">Išgirskite pasirinktą tekstą</translation>
 <translation id="7526658513669652747">{NUM_DOWNLOADS,plural, =1{Dar 1}one{Dar {NUM_DOWNLOADS}}few{Dar {NUM_DOWNLOADS}}many{Dar {NUM_DOWNLOADS}}other{Dar {NUM_DOWNLOADS}}}</translation>
 <translation id="7526989658317409655">Rezervuota vieta</translation>
 <translation id="7529411698175791732">Patikrinkite interneto ryšį. Jei problema kartosis, pabandykite atsijungti ir vėl prisijungti.</translation>
@@ -5713,6 +5742,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="7576690715254076113">Gretinti</translation>
 <translation id="7576976045740938453">Iškilo su demonstracinio režimo paskyra susijusi problema.</translation>
 <translation id="7578137152457315135">Kontrolinio kodo nustatymai</translation>
+<translation id="7578692661782707876">Įveskite patvirtinimo kodą.</translation>
 <translation id="7580671184200851182">Paleisti tą patį garso įrašą visuose garsiakalbiuose (monofoninio garso įrašas)</translation>
 <translation id="7581462281756524039">Valymo įrankis</translation>
 <translation id="7582582252461552277">Rinktis šį tinklą</translation>
@@ -5929,6 +5959,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="7805768142964895445">Būsena</translation>
 <translation id="7807067443225230855">Paieška ir Padėjėjas</translation>
 <translation id="7807711621188256451">Visada leisti <ph name="HOST" /> pasiekti fotoaparatą</translation>
+<translation id="7809278638132552546">„Linux“ kūrimo aplinka (beta versija)</translation>
 <translation id="7810202088502699111">Šiame puslapyje iššokantieji langai buvo užblokuoti.</translation>
 <translation id="781167124805380294">„<ph name="FILE_NAME" />“ perdavimas</translation>
 <translation id="7814277578404816512">Peržiūrėkite, kas naujo „<ph name="DEVICE_TYPE" />“</translation>
@@ -6102,6 +6133,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="7986295104073916105">Skaityti ir keisti išsaugotų slaptažodžių nustatymus</translation>
 <translation id="7987814697832569482">Visada susieti naudojant šį VPN</translation>
 <translation id="7988355189918024273">Įgalinti pasiekiamumo funkcijas</translation>
+<translation id="7990197569510003844"><ph name="USERNAME" /> <ph name="MASKED_PASSWORD" /> informacija bus išsaugota paskyroje <ph name="ACCOUNT" /></translation>
 <translation id="7991296728590311172">Prieigos jungikliu nustatymai</translation>
 <translation id="7994702968232966508">EAP metodas</translation>
 <translation id="7997826902155442747">Apdorojimo pirmumas</translation>
@@ -6203,6 +6235,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" /> naudoja plėtinio tarpinio serverio nustatymus</translation>
 <translation id="8097959162767603171">Jūsų administratorius pirmiausia turi sutikti su paslaugų teikimo sąlygomis administratoriaus pulto „Chrome“ įrenginių sąraše.</translation>
 <translation id="810068641062493918">Pasirinkta: <ph name="LANGUAGE" />. Paspauskite paieškos ir tarpo klavišus, kad atšauktumėte pasirinkimą.</translation>
+<translation id="810185532889603849">Tinkinta spalva</translation>
 <translation id="8101987792947961127">Kitą kartą įkeliant operacinę sistemą iš naujo būtina paleisti „Powerwash“</translation>
 <translation id="8102139037507939978">Panaikinti asmens identifikavimo informaciją iš „system_logs.txt“.</translation>
 <translation id="8102159139658438129">Eikite į skiltį <ph name="LINK_BEGIN" />„Nustatymai“<ph name="LINK_END" /> ir peržiūrėkite susieto telefono parinktis</translation>
@@ -6300,10 +6333,12 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8213449224684199188">Įjungtas nuotraukų režimas</translation>
 <translation id="8214489666383623925">Atidaryti failą...</translation>
 <translation id="8214962590150211830">Pašalinti šį asmenį</translation>
+<translation id="8215129063232901118">Pasiekite savo telefono funkcijas „<ph name="DEVICE_TYPE" />“ įrenginyje</translation>
 <translation id="8216351761227087153">Žiūrėti</translation>
 <translation id="8217399928341212914">Toliau blokuoti automatinius kelių failų atsisiuntimus</translation>
 <translation id="8218847192766059983">Pridėkite kalbų arba pertvarkykite sąrašą. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="8221491193165283816">Įprastai blokuojate pranešimus. Jei norite leisti šiai svetainei siųsti pranešimus, spustelėkite čia.</translation>
+<translation id="822347941086490485">Ieškoma HID įrenginių...</translation>
 <translation id="8225265270453771718">Programos lango bendrinimas</translation>
 <translation id="8226222018808695353">Uždrausta</translation>
 <translation id="8226619461731305576">Eilė</translation>
@@ -6522,6 +6557,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8487678622945914333">Artinti</translation>
 <translation id="8489156414266187072">Asmeniniai pasiūlymai rodomi tik jūsų paskyroje</translation>
 <translation id="8490896350101740396">Buvo atnaujintos šios viešojo terminalo programos: <ph name="UPDATED_APPS" />. Paleiskite įrenginį iš naujo, kad užbaigtumėte atnaujinimo procesą.</translation>
+<translation id="8492685019009920170">Palieskite kontrolinio kodo jutiklį pirštu. Jūsų duomenys laikomi saugiai ir niekada neperduodami iš „<ph name="DEVICE_TYPE" />“ įrenginio.</translation>
 <translation id="8492822722330266509">Svetainėse galima siųsti iššokančiuosius langus ir naudoti peradresavimus</translation>
 <translation id="8492972329130824181">Namų tinklas nepasiekiamas. Norint prisijungti turi būti įgalintas tarptinklinis duomenų ryšys mobiliesiems.</translation>
 <translation id="8493236660459102203">Mikrofonas:</translation>
@@ -6841,6 +6877,7 @@ Paspauskite priskirtą jungiklį, kad pašalintumėte priskyrimą.</translation>
 <translation id="8830779999439981481">Paleidžiama iš naujo, kad būtų pritaikyti naujiniai</translation>
 <translation id="8830796635868321089">Tikrinant, ar yra naujinių, įvyko klaida. Koreguokite <ph name="PROXY_SETTINGS_LINK_START" />tarpinio serverio<ph name="PROXY_SETTINGS_LINK_END" /> nustatymus.</translation>
 <translation id="8831140208248705279">Įrenginys „<ph name="DEVICE_TYPE" />“ ir „Android“ telefonas geriau veikia kartu. Susiekite juos, kad galėtumėte siųsti teksto pranešimus iš kompiuterio, bendrinti interneto ryšį ir telefonu atrakinti „<ph name="DEVICE_TYPE" />“.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
+<translation id="8832781841902333794">Jūsų profiliai</translation>
 <translation id="8834039744648160717">Tinklo konfigūravimą valdo <ph name="USER_EMAIL" />.</translation>
 <translation id="8835786707922974220">Galimybė visada pasiekti išsaugotus slaptažodžius</translation>
 <translation id="8836360711089151515"><ph name="MANAGER" /> reikalauja sukurti atsarginę duomenų kopiją ir grąžinti šį „<ph name="DEVICE_TYPE" />“ įrenginį per vieną savaitę. <ph name="LINK_BEGIN" />Žr. išsamią informaciją<ph name="LINK_END" /></translation>
@@ -7051,6 +7088,7 @@ Paspauskite priskirtą jungiklį, kad pašalintumėte priskyrimą.</translation>
 <translation id="9057354806206861646">Tvarkaraščio atnaujinimas</translation>
 <translation id="9062468308252555888">14 k.</translation>
 <translation id="9063208415146866933">Klaida eilutėse nuo <ph name="ERROR_LINE_START" /> iki <ph name="ERROR_LINE_END" /></translation>
+<translation id="9063800855227801443">Negalima užfiksuoti konfidencialaus turinio</translation>
 <translation id="9064275926664971810">Įgalinti automatinį pildymą, kad būtų galima užpildyti žiniatinklio formas vienu paspaudimu</translation>
 <translation id="9065203028668620118">Redaguoti</translation>
 <translation id="9065512565307033593">Jei jums nepavyks patvirtinti, tinklo prieiga bus išjungta.</translation>
@@ -7226,6 +7264,7 @@ Paspauskite priskirtą jungiklį, kad pašalintumėte priskyrimą.</translation>
 <translation id="969096075394517431">Pakeisti kalbas</translation>
 <translation id="970047733946999531">{NUM_TABS,plural, =1{1 skirtukas}one{# skirtukas}few{# skirtukai}many{# skirtuko}other{# skirtukų}}</translation>
 <translation id="971774202801778802">Žymės URL</translation>
+<translation id="972996901592717370">Pirštu palieskite maitinimo mygtuką. Jūsų duomenys laikomi saugiai ir niekada neperduodami iš „<ph name="DEVICE_TYPE" />“ įrenginio.</translation>
 <translation id="973473557718930265">Išeiti</translation>
 <translation id="975893173032473675">Kalba, į kurią verčiama</translation>
 <translation id="976499800099896273">Rodomas žodžio „<ph name="TYPED_WORD" />“, ištaisyto į žodį „<ph name="CORRECTED_WORD" />“, automatinio taisymo anuliavimo dialogo langas.  Paspauskite rodyklę aukštyn, kad pasiektumėte, arba „Escape“, jei norite nepaisyti.</translation>

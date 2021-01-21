@@ -72,6 +72,7 @@
 <translation id="4405930547258349619">ຄັງເກັບມ້ຽນຕົ້ນຕໍ</translation>
 <translation id="443560535555262820">ເປີດການຕັ້ງຄ່າການຊ່ວຍເຂົ້າເຖິງ</translation>
 <translation id="4450893287417543264">ຢ່າສະແດງອີກ</translation>
+<translation id="4512952200932940229">ລິຂະສິດ 2021 ຜູ້ຂຽນ Chromium. ສະຫງວນສິດທັງໝົດ.</translation>
 <translation id="4513946894732546136">ຄໍາຄິດເຫັນ</translation>
 <translation id="4563926062592110512">ຕັດເຊື່ອມຕໍ່ລູກຂ່າຍແລ້ວ: <ph name="CLIENT_USERNAME" /> .</translation>
 <translation id="4635770493235256822">ອຸປະກອນທາງໄກ</translation>
@@ -174,6 +175,7 @@ Desktop</translation>
 <translation id="8743328882720071828">ທ່ານຕ້ອງການອະນຸຍາດໃຫ້ <ph name="CLIENT_USERNAME" /> ເຫັນ ແລະ ຄວບຄຸມຄອມພິວເຕີຂອງທ່ານບໍ?</translation>
 <translation id="8747048596626351634">ເຊດຊັນຂັດຂ້ອງ ຫຼື ໂຫຼດບໍ່ສຳເລັດ. ຖ້າມີ ~/.chrome-remote-desktop-session ຢູ່ໃນຄອມພິວເຕີທາງໄກ, ກະລຸນາກວດໃຫ້ແນ່ໃຈວ່າມັນເລີ່ມຂັ້ນຕອນໃນພື້ນໜ້າທີ່ເປີດໃຊ້ຍາວນານ ເຊັ່ນວ່າ ຕົວຈັດການສະພາບແວດລ້ອມ ຫຼື ໜ້າຈໍເດັສທັອບຫຼືບໍ່.</translation>
 <translation id="8804164990146287819">ນະ​ໂຍ​ບາຍ​ວ່າດ້ວຍຄວາມ​​ເປັນ​ສ່ວນ​ຕົວ</translation>
+<translation id="8906511416443321782">ຈຳເປັນຕ້ອງເຂົ້າເຖິງໄມໂຄຣໂຟນເພື່ອບັນທຶກສຽງ ແລະ ສະຕຣີມມັນໄປຍັງລູກຂ່າຍ Chrome Remote Desktop.</translation>
 <translation id="9111855907838866522">ພວກເຮົາເຊື່ອມຕໍ່ກັບອຸປະກອນທາງໄກຂອງທ່ານ. ເພື່ອເປີດເມນູ, ກະລຸນາແຕະໜ້າຈໍດ້ວຍສີ່ນິ້ວມື.</translation>
 <translation id="9126115402994542723">ຢ່າຖາມຫາ PIN ອີກ ເມື່ອເຊື່ອມຕໍ່ກັບແມ່ຂ່າຍນີ້ຈາກອຸປະກອນນີ້.</translation>
 <translation id="916856682307586697">ເປີດໃຊ້ XSession ເລີ່ມຕົ້ນ</translation>

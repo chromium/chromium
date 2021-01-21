@@ -80,6 +80,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
     &lt;li&gt;Obratite se vlasniku web-lokacije.&lt;/li&gt;
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Unijeli ste zaporku na web-lokaciju kojom ne upravlja vaša organizacija. Da biste zaštitili račun, nemojte upotrebljavati tu zaporku za druge aplikacije i web-lokacije.</translation>
+<translation id="1259144770381827039">Pogledajte pojedinosti.</translation>
 <translation id="1263231323834454256">Popis za čitanje</translation>
 <translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
         Aktivnost koja neće ostati na uređaju:
@@ -326,6 +327,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2164510882479075877">Provjerite sadrži li naziv <ph name="HOST_NAME" /> pravopisnu pogrešku.</translation>
 <translation id="2166049586286450108">Potpuni administratorski pristup</translation>
 <translation id="2166378884831602661">Web-lokacija ne može pružiti sigurnu vezu</translation>
+<translation id="2168151236314517198">Administratorsko pravilo blokira ispis tog sadržaja</translation>
 <translation id="2169984857010174799">Kaku2 (omotnica)</translation>
 <translation id="2181821976797666341">Pravila</translation>
 <translation id="2183608646556468874">Telefonski broj</translation>
@@ -1360,6 +1362,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6290238015253830360">Ovdje će se prikazivati predloženi članci</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">Zaustavljanje Google asistenta u Chromeu</translation>
+<translation id="6304463939629872728">Završite kupnju karticom</translation>
 <translation id="6305205051461490394">Web-lokacija <ph name="URL" /> nije dostupna.</translation>
 <translation id="6312113039770857350">Web-stranica nije dostupna</translation>
 <translation id="6321917430147971392">Provjerite postavke DNS-a</translation>
@@ -1389,6 +1392,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6406765186087300643">C0 (omotnica)</translation>
 <translation id="6409754798200046165">Upravo ste unijeli zaporku na obmanjujućoj web-lokaciji. Chrome preporučuje da odmah promijenite zaporku.</translation>
 <translation id="6410264514553301377">Unesite datum isteka i CVC za karticu <ph name="CREDIT_CARD" /></translation>
+<translation id="6410774864568266108">Ne zaboravite ponudu Google Paya</translation>
 <translation id="6415778972515849510">Chromium vam može pomoći da zaštitite svoj Google račun i promijenite zaporku.</translation>
 <translation id="6423385022588644828">Odsad brže potvrdite svoje kartice upotrebom značajke Touch ID.</translation>
 <translation id="6425092077175753609">Materijal</translation>

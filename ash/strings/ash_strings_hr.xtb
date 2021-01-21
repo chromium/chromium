@@ -77,6 +77,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="1570871743947603115">Prebacivanje Bluetootha. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Pristup svim vašim aktivnostima u ovoj sesiji</translation>
 <translation id="1611993646327628135">Uključeno</translation>
+<translation id="1615402009686901181">Administratorsko pravilo onemogućuje snimanje zaslona ako je vidljiv povjerljiv sadržaj</translation>
 <translation id="1632985212731562677">Prekidač za pristup možete onemogućiti tako da otvorite Postavke &gt; Pristupačnost.</translation>
 <translation id="1654477262762802994">Pokrenite glasovni upit</translation>
 <translation id="1667964833127753507">Način neutralne boje ne upotrebljava boje izdvojene iz pozadine, već ih zamjenjuje skupom neutralnih svijetlih ili tamnih nijansi.</translation>
@@ -117,6 +118,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Pozdrav, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Unos teksta</translation>
+<translation id="1989113344093894667">Snimanje sadržaja nije moguće</translation>
 <translation id="1993072747612765854">Saznajte više o najnovijem ažuriranju za <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1995660704900986789">Isključi</translation>
 <translation id="1998100899771863792">Trenutačna radna površina</translation>
@@ -143,6 +145,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="225680501294068881">Pretraživanje uređaja...</translation>
 <translation id="2268130516524549846">Bluetooth onemogućen</translation>
 <translation id="2268813581635650749">Odjavi sve</translation>
+<translation id="2269016722240250274">Aplikacija upotrebljava vaš mikrofon</translation>
 <translation id="2277103315734023688">Traži prema naprijed</translation>
 <translation id="2292698582925480719">Skala prikaza</translation>
 <translation id="229397294990920565">Mobilni podaci se isključuju...</translation>
@@ -168,6 +171,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="2427507373259914951">Lijevi klik</translation>
 <translation id="2429753432712299108">Bluetooth uređaj "<ph name="DEVICE_NAME" />" traži dopuštenje za uparivanje. Prije prihvaćanja provjerite prikazuje li se na njemu ovaj pristupni ključ: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Pokaži zaporku</translation>
+<translation id="2450205753526923158">Način snimke zaslona</translation>
 <translation id="2473177541599297363">Potvrđivanje razlučivosti</translation>
 <translation id="2475982808118771221">Došlo je do pogreške</translation>
 <translation id="2482878487686419369">Obavijesti</translation>
@@ -184,6 +188,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="2596078834055697711">Snimanje snimke zaslona prozora</translation>
 <translation id="2617342710774726426">SIM kartica je zaključana</translation>
 <translation id="2621713457727696555">Zaštićeno</translation>
+<translation id="2653019840645008922">Snimanje prozora</translation>
 <translation id="2653659639078652383">Pošalji</translation>
 <translation id="2658778018866295321">Klikanje i povlačenje</translation>
 <translation id="2678852583403169292">Izbornik Odabir za govor</translation>
@@ -198,6 +203,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="2727977024730340865">Uređaj je priključen na punjač male snage. Punjenje baterije možda nije pouzdano.</translation>
 <translation id="2778650143428714839">Uređajem <ph name="DEVICE_TYPE" /> upravlja <ph name="MANAGER" /></translation>
 <translation id="2792498699870441125">Alt + Pretraživanje</translation>
+<translation id="2814448776515246190">Djelomično snimanje</translation>
 <translation id="2819276065543622893">Odjavit ćete se sada.</translation>
 <translation id="28232023175184696">Povezivanje s internetom nije uspjelo. Kliknite da biste pokušali ponovo.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> ne podržava razlučivost <ph name="SPECIFIED_RESOLUTION" />. Razlučivost je promijenjena u <ph name="FALLBACK_RESOLUTION" />.</translation>
@@ -224,6 +230,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="3033545621352269033">Uključeno</translation>
 <translation id="3036649622769666520">Otvori datoteke</translation>
 <translation id="3038571455154067151">Da biste se prijavili, unesite kôd za roditeljski pristup za Family Link</translation>
+<translation id="3039939407102840004">Baterija pisaljke je na <ph name="PERCENTAGE" /> posto.</translation>
 <translation id="3045488863354895414">Dobar dan,</translation>
 <translation id="3051128274746680507">Vaš profil nadziranog korisnika uskoro će se ukloniti. Prijavite se da biste saznali više.</translation>
 <translation id="3055162170959710888">Uređaj je danas korišten <ph name="USED_TIME" /></translation>
@@ -233,6 +240,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="3090989381251959936">Uključite ili isključite značajku <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">Pomicanje pokazivača</translation>
 <translation id="3098580329624789136">Saznajte <ph name="INTENT" /> za "<ph name="QUERY" />"</translation>
+<translation id="3100274880412651815">Odbacivanje načina snimanja</translation>
 <translation id="3105917916468784889">Snimi zaslon</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3126069444801937830">Ponovo pokrenite za ažuriranje</translation>
@@ -298,6 +306,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="3621202678540785336">Ulaz</translation>
 <translation id="3621712662352432595">Postavke zvuka</translation>
 <translation id="3626281679859535460">Svjetlina</translation>
+<translation id="3630697955794050612">isključeno</translation>
 <translation id="3631369015426612114">Omogućite obavijesti iz sljedećih izvora</translation>
 <translation id="3638400994746983214">Uključite/isključite zaslon privatnosti. <ph name="STATE_TEXT" />.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> upravljani korisnik</translation>
@@ -311,6 +320,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="3773700760453577392">Administrator je onemogućio višestruku prijavu za <ph name="USER_EMAIL" />. Svi se korisnici moraju odjaviti da bi nastavili.</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Zaključaj</translation>
+<translation id="3796746699333205839">Aplikacija upotrebljava vašu kameru i mikrofon</translation>
 <translation id="3798670284305777884">Zvučnik (ugrađeni)</translation>
 <translation id="3799080171973636491">Pritisnuli ste tipkovni prečac za povećalo za cijeli zaslon. Želite li ga uključiti?</translation>
 <translation id="380165613292957338">Pozdrav, kako mogu pomoći?</translation>
@@ -404,6 +414,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="4570957409596482333">Gumb Odabira za govor</translation>
 <translation id="4577274620589681794">Vrijeme je isteklo · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Prikaži preglede</translation>
+<translation id="4578906031062871102">Otvoren je izbornik postavki</translation>
 <translation id="4585337515783392668">Zaustavite emitiranje na nepoznatom prijamniku</translation>
 <translation id="4596144739579517758">Tamna je tema isključena</translation>
 <translation id="4623167406982293031">Potvrdite račun</translation>
@@ -486,6 +497,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="5379115545237091094">Previše pokušaja</translation>
 <translation id="5397578532367286026">Upravitelj (<ph name="MANAGER_EMAIL" />) može pregledavati upotrebu i povijest tog korisnika na web-lokaciji chrome.com.</translation>
 <translation id="5400461572260843123">Brze postavke, pritisnite tipku za pretraživanje i strelicu lijevo da biste otvorili centar obavijesti.</translation>
+<translation id="5426063383988017631">Izbornik postavki je zatvoren</translation>
 <translation id="5428899915242071344">Započni s odabirom</translation>
 <translation id="5430931332414098647">Automatsko modemsko povezivanje</translation>
 <translation id="5431825016875453137">OpenVPN/L2TP</translation>
@@ -502,12 +514,15 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="556042886152191864">Gumb</translation>
 <translation id="5571066253365925590">Bluetooth omogućen</translation>
 <translation id="557563299383177668">Sljedeći odlomak</translation>
+<translation id="5577281275355252094">Da biste mogli koristiti Phone hub, provjerite je li na telefonu omogućen Bluetooth</translation>
 <translation id="558849140439112033">Povucite da biste odabrali područje za fotografiranje</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Pritisnite Ctrl + Alt + Z da biste onemogućili govorne povratne informacije.</translation>
 <translation id="5601503069213153581">PIN</translation>
+<translation id="5619862035903135339">Administratorsko pravilo onemogućuje snimku zaslona</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Utičnica mikrofona</translation>
+<translation id="5662709761327382534">Snimanje mikrofona <ph name="CURRENT_STATE" />, pritisnite enter da biste snimanje mikrofona postavili na <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">Aktivacija</translation>
 <translation id="5673434351075758678">"<ph name="FROM_LOCALE" />" je promijenjen u "<ph name="TO_LOCALE" />" nakon sinkronizacije postavki.</translation>
 <translation id="5677928146339483299">Blokirano</translation>
@@ -555,6 +570,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />, upravlja administrator</translation>
 <translation id="6030495522958826102">Izbornik je premješten u donji lijevi kut zaslona.</translation>
 <translation id="6032620807120418574">Kliknite bilo gdje da biste snimili cijeli zaslon</translation>
+<translation id="6040071906258664830">Snimanje mikrofona <ph name="STATE" /></translation>
 <translation id="6040143037577758943">Zatvori</translation>
 <translation id="6043212731627905357">Ovaj se monitor ne podudara s vašim uređajem <ph name="DEVICE_TYPE" /> (monitor nije podržan).</translation>
 <translation id="6043994281159824495">Odjavi se odmah</translation>
@@ -564,6 +580,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="6062360702481658777">Automatski ćete se odjaviti za <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Zaustavi snimanje</translation>
 <translation id="607652042414456612">Vaše računalo mogu otkriti Bluetooth uređaji u blizini i prikazivat će se kao "<ph name="NAME" />" s adresom <ph name="ADDRESS" />.</translation>
+<translation id="6094290315941448991">Administratorsko pravilo onemogućuje snimanje zaslona ako je vidljiv povjerljiv sadržaj</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google asistent nije dostupan u gostujućoj sesiji.</translation>
 <translation id="6137566720514957455">Otvorite dijalog za uklanjanje za <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -620,6 +637,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="6650933572246256093">Bluetooth uređaj "<ph name="DEVICE_NAME" />" traži dopuštenje za uparivanje. Unesite ovaj pristupni ključ na tom uređaju: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Zaporka</translation>
 <translation id="6665545700722362599">Dopustite web-lokacijama, aplikacijama i proširenjima da upotrebljavaju usluge lokacije, mikrofon i kameru uređaja ili druge značajke</translation>
+<translation id="6667908387435388584">Spojite se na žarišnu točku telefona, utišajte i locirajte uređaj i pregledajte nedavne kartice u Chromeu otvorene na telefonu</translation>
 <translation id="6670153871843998651">Radna površina 3</translation>
 <translation id="6671495933530132209">Kopiraj sliku</translation>
 <translation id="6691659475504239918">Search + Shift + H</translation>
@@ -700,7 +718,9 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="742594950370306541">Fotoaparat je aktivan.</translation>
 <translation id="742608627846767349">Dobro jutro,</translation>
 <translation id="743058460480092004">Fotoaparat i mikrofon su aktivni.</translation>
+<translation id="7452560014878697800">Aplikacija upotrebljava vašu kameru</translation>
 <translation id="7461924472993315131">Prikvači</translation>
+<translation id="746232733191930409">Način snimanja zaslona</translation>
 <translation id="7466449121337984263">Dodirnite senzor</translation>
 <translation id="7477793887173910789">Upravljate glazbom, videozapisima i drugim medijima</translation>
 <translation id="7497767806359279797">Odaberite jezik i tipkovnicu</translation>
@@ -729,6 +749,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="7658239707568436148">Odustani</translation>
 <translation id="7662283695561029522">Dodirnite da biste konfigurirali</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="7714767791242455379">Dodaj novu mobilnu mrežu</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 obavijest}one{# obavijest}few{# obavijesti}other{# obavijesti}}</translation>
 <translation id="7724603315864178912">Izreži</translation>
 <translation id="7745560842763881396">Prikaži aplikacije na polici</translation>
@@ -743,6 +764,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="7842569679327885685">Upozorenje: eksperimentalna značajka</translation>
 <translation id="7846634333498149051">Tipkovnica</translation>
 <translation id="7860671499921112077">Prijeđite s tri prsta prema gore da biste otvorili Pregled</translation>
+<translation id="7866482334467279021">uključeno</translation>
 <translation id="7868900307798234037">Otključavanje otiskom prsta</translation>
 <translation id="7872786842639831132">Isključeno</translation>
 <translation id="7875575368831396199">Čini se da je na vašem uređaju <ph name="DEVICE_TYPE" /> isključen Bluetooth. Da biste mogli upotrebljavati Phone hub, uključite Bluetooth.</translation>
@@ -772,6 +794,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="8036504271468642248">Prethodna rečenica</translation>
 <translation id="8042893070933512245">Otvori izbornik postavki pristupačnosti</translation>
 <translation id="8048123526339889627">Postavke Bluetootha</translation>
+<translation id="8052898407431791827">Kopirano u međuspremnik</translation>
 <translation id="8054466585765276473">Izračun vremena baterije.</translation>
 <translation id="8061464966246066292">Visoki kontrast</translation>
 <translation id="8098591350844501178">Zaustavi emitiranje zaslona na prijamniku <ph name="RECEIVER_NAME" /></translation>
@@ -843,9 +866,11 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="8673028979667498656">270°</translation>
 <translation id="8676770494376880701">Priključen je punjač male snage</translation>
 <translation id="8683506306463609433">Aktivno je praćenje izvedbe</translation>
+<translation id="8703634754197148428">Početak snimanja. Kad snimanje započne, pomoću Alt + Shift + L možete se pomaknuti do police i pronaći gumb za zaustavljanje snimanja</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Tipkom sa strelicom ulijevo ili strelicom udesno upravljajte ovom značajkom.</translation>
 <translation id="8712637175834984815">Shvaćam</translation>
 <translation id="8721053961083920564">Uključivanje ili isključivanje zvuka. <ph name="STATE_TEXT" /></translation>
+<translation id="8724318433625452070">Snimka cijelog zaslona</translation>
 <translation id="8734991477317290293">Možda pokušava ukrasti podatke o pritisnutim tipkama</translation>
 <translation id="8735953464173050365">Prikaz postavki tipkovnice. Odabrana je tipkovnica <ph name="KEYBOARD_NAME" /></translation>
 <translation id="8755498163081687682">Potvrdite svoj identitet: <ph name="ORIGIN_NAME" /> želi potvrditi da ste to vi</translation>
@@ -869,6 +894,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="8877788021141246043">Postavi podsjetnik</translation>
 <translation id="8878886163241303700">Produljenje zaslona</translation>
 <translation id="8883473964424809116">Kliknite da biste otvorili postavke Google asistenta.</translation>
+<translation id="8884537526797090108">Snimanje povjerljivog sadržaja nije moguće</translation>
 <translation id="890616557918890486">Promijeni izvor</translation>
 <translation id="8909138438987180327">Baterija je na <ph name="PERCENTAGE" /> posto.</translation>
 <translation id="8913384980486163186">Tema (zadano)</translation>
@@ -884,6 +910,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="9017320285115481645">Unesite kôd za roditeljski pristup Family Linka.</translation>
 <translation id="9047624247355796468">Otvorite postavke mreže <ph name="NETWORK_NAME" /></translation>
 <translation id="9056839673611986238">Uređaj će se vratiti na prethodnu verziju sustava</translation>
+<translation id="9063800855227801443">Snimanje povjerljivog sadržaja nije moguće</translation>
 <translation id="9065203028668620118">Uredi</translation>
 <translation id="9070640332319875144">Postavke Asistenta</translation>
 <translation id="9072519059834302790">Baterija će se isprazniti za <ph name="TIME_LEFT" />.</translation>

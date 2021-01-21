@@ -77,6 +77,7 @@
 <translation id="1570871743947603115">روشن/خاموش کردن بلوتوث. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">به همه فعالیت‌هایتان در این جلسه دسترسی پیدا کنید</translation>
 <translation id="1611993646327628135">روشن</translation>
+<translation id="1615402009686901181">خط‌مشی سرپرست ضبط صفحه‌نمایش را هنگامی که محتوای محرمانه نمایان باشد غیرفعال می‌کند</translation>
 <translation id="1632985212731562677">می‌توانید «دسترسی کلیدی» را در «تنظیمات &gt; دسترس‌پذیری» غیرفعال کنید.</translation>
 <translation id="1654477262762802994">شروع پُرسمان صوتی</translation>
 <translation id="1667964833127753507">حالت «رنگ خنثی» از رنگ‌های استخراج‌شده از کاغذدیواری استفاده نمی‌کند، بلکه آن‌ها را با مجموعه‌ای از ته‌رنگ‌های تیره و روشن خنثی جایگزین می‌کند.</translation>
@@ -117,6 +118,7 @@
 <translation id="1969011864782743497">‏<ph name="DEVICE_NAME" /> (‏USB)</translation>
 <translation id="1972950159383891558">سلام، <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">ورودی نوشتاری</translation>
+<translation id="1989113344093894667">نمی‌توان محتوا را ضبط کرد</translation>
 <translation id="1993072747612765854">درباره جدیدترین به‌روزرسانی‌ <ph name="SYSTEM_APP_NAME" /> بیشتر بدانید.</translation>
 <translation id="1995660704900986789">خاموش کردن</translation>
 <translation id="1998100899771863792">میزکار کنونی</translation>
@@ -143,6 +145,7 @@
 <translation id="225680501294068881">درحال جستجو برای دستگاه‌ها...</translation>
 <translation id="2268130516524549846">بلوتوث غیرفعال است</translation>
 <translation id="2268813581635650749">خروج همه از سیستم</translation>
+<translation id="2269016722240250274">برنامه‌ای درحال استفاده از میکروفونتان است</translation>
 <translation id="2277103315734023688">رفتن به جلو</translation>
 <translation id="2292698582925480719">مقیاس نمایش</translation>
 <translation id="229397294990920565">داده تلفن همراه درحال خاموش شدن است...</translation>
@@ -168,6 +171,7 @@
 <translation id="2427507373259914951">کلیک چپ</translation>
 <translation id="2429753432712299108">دستگاه بلوتوث «<ph name="DEVICE_NAME" />» برای مرتبط‌سازی به مجوز نیاز دارد. قبل از پذیرش، لطفاً تأیید کنید که این کلیدواژه در آن دستگاه نشان داده می‌شود: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">نمایش گذرواژه</translation>
+<translation id="2450205753526923158">حالت نماگرفت</translation>
 <translation id="2473177541599297363">تأیید وضوح</translation>
 <translation id="2475982808118771221">یک خطا روی داد</translation>
 <translation id="2482878487686419369">اعلان‌ها</translation>
@@ -184,6 +188,7 @@
 <translation id="2596078834055697711">گرفتن عکس از پنجره صفحه‌نمایش</translation>
 <translation id="2617342710774726426">سیم‌کارت قفل است</translation>
 <translation id="2621713457727696555">ایمن شد</translation>
+<translation id="2653019840645008922">ضبط پنجره</translation>
 <translation id="2653659639078652383">ارسال</translation>
 <translation id="2658778018866295321">کلیک کنید و بکشید</translation>
 <translation id="2678852583403169292">منوی «انتخاب برای شنیدن»</translation>
@@ -198,6 +203,7 @@
 <translation id="2727977024730340865">باتری به شارژر برق ضعیف متصل است. شارژ باتری ممکن است قابل اطمینان نباشد.</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> تحت مدیریت <ph name="MANAGER" /></translation>
 <translation id="2792498699870441125">‏Alt+جستجو</translation>
+<translation id="2814448776515246190">ضبط جزئی</translation>
 <translation id="2819276065543622893">هم‌اکنون از سیستم خارج خواهید شد.</translation>
 <translation id="28232023175184696">اتصال به اینترنت ممکن نیست. برای امتحان مجدد، کلیک کنید.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" />، از <ph name="SPECIFIED_RESOLUTION" /> پشتیبانی نمی‌کند. وضوح به <ph name="FALLBACK_RESOLUTION" /> تغییر کرد.</translation>
@@ -224,6 +230,7 @@
 <translation id="3033545621352269033">روشن</translation>
 <translation id="3036649622769666520">باز کردن فایل‌ها</translation>
 <translation id="3038571455154067151">‏برای ورود به سیستم، کد دسترسی والدین Family Link خود را وارد کنید</translation>
+<translation id="3039939407102840004">شارژ باتری قلم <ph name="PERCENTAGE" /> درصد است.</translation>
 <translation id="3045488863354895414">بعدازظهر به‌خیر،</translation>
 <translation id="3051128274746680507">نمایه کاربر تحت‌نظارت به‌زودی برداشته می‌شود. برای اطلاعات بیشتر به سیستم وارد شوید.</translation>
 <translation id="3055162170959710888">امروز از این دستگاه به‌مدت <ph name="USED_TIME" /> استفاده کردید</translation>
@@ -233,6 +240,7 @@
 <translation id="3090989381251959936">روشن/خاموش کردن <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">حرکت دادن نشانگر</translation>
 <translation id="3098580329624789136">دریافت <ph name="INTENT" /> برای «<ph name="QUERY" />»</translation>
+<translation id="3100274880412651815">رد شدن حالت ضبط</translation>
 <translation id="3105917916468784889">گرفتن نماگرفت</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (بلوتوث)</translation>
 <translation id="3126069444801937830">راه‌اندازی مجدد برای به‌روزرسانی</translation>
@@ -298,6 +306,7 @@
 <translation id="3621202678540785336">ورودی</translation>
 <translation id="3621712662352432595">تنظیمات صوتی</translation>
 <translation id="3626281679859535460">روشنایی</translation>
+<translation id="3630697955794050612">خاموش</translation>
 <translation id="3631369015426612114">مجاز کردن اعلان‌های منابع زیر</translation>
 <translation id="3638400994746983214">روشن/خاموش کردن صفحه حریم‌خصوصی. <ph name="STATE_TEXT" />.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> کاربر مدیریت‌شده</translation>
@@ -311,6 +320,7 @@
 <translation id="3773700760453577392">یکی از سرپرستان ورود چندگانه به سیستم را برای <ph name="USER_EMAIL" /> غیرمجاز کرده است. برای ادامه دادن، همه کاربران باید از سیستم خارج شوند.</translation>
 <translation id="3783640748446814672">دگرساز</translation>
 <translation id="3784455785234192852">قفل</translation>
+<translation id="3796746699333205839">برنامه‌ای درحال استفاده از دوربین و میکروفونتان است</translation>
 <translation id="3798670284305777884">بلندگو (داخلی)</translation>
 <translation id="3799080171973636491">میان‌بر صفحه‌کلید مربوط به ذره‌بین تمام‌صفحه را فشار دادید. می‌خواهید آن را روشن کنید؟</translation>
 <translation id="380165613292957338">سلام، چه کمکی می‌توانم بکنم؟</translation>
@@ -404,6 +414,7 @@
 <translation id="4570957409596482333">دکمه «انتخاب برای شنیدن»</translation>
 <translation id="4577274620589681794">وقت تمام است · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">نمایش پیش‌نمایش‌ها</translation>
+<translation id="4578906031062871102">منوی تنظیمات باز شد</translation>
 <translation id="4585337515783392668">توقف ارسال محتوا به گیرنده ناشناس</translation>
 <translation id="4596144739579517758">طرح زمینه تیره خاموش است</translation>
 <translation id="4623167406982293031">به‌تأیید رساندن حساب</translation>
@@ -486,6 +497,7 @@
 <translation id="5379115545237091094">تلاش‌های ناموفق زیادی انجام شده است</translation>
 <translation id="5397578532367286026">‏میزان مصرف و سابقه این کاربر می‌تواند توسط مدیر (<ph name="MANAGER_EMAIL" />) در chrome.com بازبینی شود.</translation>
 <translation id="5400461572260843123">تنظیمات فوری، برای دسترسی به مرکز اعلان، «جستجو + چپ» را فشار دهید.</translation>
+<translation id="5426063383988017631">منوی تنظیمات بسته شد</translation>
 <translation id="5428899915242071344">شروع کردن انتخاب</translation>
 <translation id="5430931332414098647">اشتراک‌گذاری اینترنت فوری</translation>
 <translation id="5431825016875453137">OpenVPN / L2TP</translation>
@@ -502,12 +514,15 @@
 <translation id="556042886152191864">دکمه</translation>
 <translation id="5571066253365925590">بلوتوث فعال شد</translation>
 <translation id="557563299383177668">پاراگراف بعدی</translation>
+<translation id="5577281275355252094">برای استفاده از «مرکز کنترل تلفن»، مطمئن شوید بلوتوث در تلفنتان فعال باشد</translation>
 <translation id="558849140439112033">برای انتخاب ناحیه گرفتن عکس، بکشید</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />، <ph name="DATE" /></translation>
 <translation id="5600837773213129531">‏برای غیرفعال کردن بازخورد گفتاری، Ctrl + Alt + Z را فشار دهید.</translation>
 <translation id="5601503069213153581">پین</translation>
+<translation id="5619862035903135339">خط‌مشی سرپرست ضبط صفحه‌نمایش را غیرفعال می‌کند</translation>
 <translation id="5625955975703555628">LTE+‎</translation>
 <translation id="5648021990716966815">فیش میکروفون</translation>
+<translation id="5662709761327382534">ضبط میکروفون <ph name="CURRENT_STATE" /> است، کلید ورود را فشار دهید تا ضبط میکروفون <ph name="NEW_STATE" /> شود</translation>
 <translation id="5669267381087807207">فعالسازی</translation>
 <translation id="5673434351075758678">از «<ph name="FROM_LOCALE" />» به «<ph name="TO_LOCALE" />» بعد از همگام‌سازی تنظیمات.</translation>
 <translation id="5677928146339483299">مسدود است</translation>
@@ -555,6 +570,7 @@
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />، <ph name="CONNECTION_STATUS" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" />، تحت‌مدیریت سرپرست</translation>
 <translation id="6030495522958826102">منو به گوشه راست پایین صفحه منتقل شد.</translation>
 <translation id="6032620807120418574">برای ضبط تمام‌صفحه، روی هرجایی از صفحه کلیک کنید</translation>
+<translation id="6040071906258664830">ضبط میکروفون <ph name="STATE" /></translation>
 <translation id="6040143037577758943">بستن</translation>
 <translation id="6043212731627905357">این نمایشگر با <ph name="DEVICE_TYPE" /> سازگار نیست (نمایشگر پشتیبانی نمی‌شود).</translation>
 <translation id="6043994281159824495">خروج از سیستم هم‌اکنون</translation>
@@ -564,6 +580,7 @@
 <translation id="6062360702481658777">به صورت خودکار در عرض <ph name="LOGOUT_TIME_LEFT" /> از سیستم خارج می‌شوید.</translation>
 <translation id="6073451960410192870">توقف ضبط</translation>
 <translation id="607652042414456612">رایانه شما توسط دستگاه‌های بلوتوث نزدیک قابل شناسایی است و با نام «<ph name="NAME" />» و آدرس <ph name="ADDRESS" /> نشان داده می‌شود</translation>
+<translation id="6094290315941448991">خط‌مشی سرپرست ضبط صفحه‌نمایش را هنگامی که محتوای محرمانه نمایان باشد غیرفعال می‌کند</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">‏«دستیار Google» در جلسه مهمان دردسترس نیست.</translation>
 <translation id="6137566720514957455">باز کردن کادر گفتگوی برداشتن <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -620,6 +637,7 @@
 <translation id="6650933572246256093">دستگاه بلوتوث «<ph name="DEVICE_NAME" />» برای مرتبط‌سازی به مجوز نیاز دارد. لطفاً این کلیدواژه را در آن دستگاه وارد کنید: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">گذرواژه</translation>
 <translation id="6665545700722362599">به وب‌سایت‌ها، برنامه‌ها و افزونه‌ها برای استفاده از سرویس‌ها، میکروفون و دوربین یا سایر ویژگی‌های دستگاه مجوز بدهید</translation>
+<translation id="6667908387435388584">‏به نقطه اتصال تلفنتان وصل شوید، دستگاه‌تان را بی‌صدا و موقعیت‌یابی کنید، و برگه‌های اخیر Chrome را که در تلفنتان باز هستند مشاهده کنید</translation>
 <translation id="6670153871843998651">میز ۳</translation>
 <translation id="6671495933530132209">کپی تصویر</translation>
 <translation id="6691659475504239918">Search+Shift+H</translation>
@@ -700,7 +718,9 @@
 <translation id="742594950370306541">دوربین در حال استفاده است.</translation>
 <translation id="742608627846767349">صبح‌به‌خیر،</translation>
 <translation id="743058460480092004">دوربین و میکروفن در حال استفاده هستند.</translation>
+<translation id="7452560014878697800">برنامه‌ای درحال استفاده از دوربینتان است</translation>
 <translation id="7461924472993315131">پین</translation>
+<translation id="746232733191930409">حالت ضبط صفحه‌نمایش</translation>
 <translation id="7466449121337984263">لطفاً حسگر را لمس کنید</translation>
 <translation id="7477793887173910789">کنترل موسیقی، ویدیو و سایر موارد</translation>
 <translation id="7497767806359279797">انتخاب زبان و صفحه‌کلید</translation>
@@ -729,6 +749,7 @@
 <translation id="7658239707568436148">لغو</translation>
 <translation id="7662283695561029522">برای پیکربندی ضربه بزنید</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="7714767791242455379">افزودن شبکه تلفن همراه جدید</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{۱ اعلان}one{# اعلان}other{# اعلان}}</translation>
 <translation id="7724603315864178912">برش</translation>
 <translation id="7745560842763881396">نمایش برنامه‌ها در قفسه</translation>
@@ -743,6 +764,7 @@
 <translation id="7842569679327885685">هشدار: ویژگی آزمایشی</translation>
 <translation id="7846634333498149051">صفحه‌کلید</translation>
 <translation id="7860671499921112077">برای ورود به «نمای کلی»، با سه انگشت تند به بالا بکشید</translation>
+<translation id="7866482334467279021">روشن</translation>
 <translation id="7868900307798234037">درحال باز کردن قفل با اثر انگشت</translation>
 <translation id="7872786842639831132">خاموش</translation>
 <translation id="7875575368831396199">ظاهراً بلوتوث در <ph name="DEVICE_TYPE" /> شما خاموش است. لطفاً برای استفاده از «مرکز کنترل تلفن»، بلوتوث را روشن کنید.</translation>
@@ -772,6 +794,7 @@
 <translation id="8036504271468642248">جمله قبلی</translation>
 <translation id="8042893070933512245">باز کردن منوی تنظیمات دسترس‌پذیری</translation>
 <translation id="8048123526339889627">تنظیمات بلوتوث</translation>
+<translation id="8052898407431791827">در بریده‌دان کپی شد</translation>
 <translation id="8054466585765276473">درحال محاسبه زمان شارژ باتری.</translation>
 <translation id="8061464966246066292">کنتراست بالا</translation>
 <translation id="8098591350844501178">توقف ارسال محتوای صفحه به <ph name="RECEIVER_NAME" /></translation>
@@ -843,9 +866,11 @@
 <translation id="8673028979667498656">‎۲۷۰°‎</translation>
 <translation id="8676770494376880701">شارژر برق متصل شده ضعیف است</translation>
 <translation id="8683506306463609433">ردیابی عملکرد فعال است</translation>
+<translation id="8703634754197148428">شروع ضبط. هروقت ضبط شروع شد، بااستفاده از کلیدهای «دگرساز + تبدیل + م» به قفسه پیمایش کنید و دکمه متوقف کردن ضبط را پیدا کنید</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> برای مدیریت این ویژگی، از کلیدهای پیکان روبه راست یا روبه چپ استفاده کنید.</translation>
 <translation id="8712637175834984815">متوجه شدم</translation>
 <translation id="8721053961083920564">تغییر وضعیت میزان صدا. <ph name="STATE_TEXT" /></translation>
+<translation id="8724318433625452070">ضبط تمام صفحه‌نمایش</translation>
 <translation id="8734991477317290293">ممکن است تلاش کند ضربه‌کلیدهای شما را به سرقت ببرد</translation>
 <translation id="8735953464173050365">نمایش تنظیمات صفحه‌کلید. <ph name="KEYBOARD_NAME" /> انتخاب شده است</translation>
 <translation id="8755498163081687682">هویتتان را به‌تأیید برسانید: <ph name="ORIGIN_NAME" /> می‌خواهید تأیید کند این فرد شما هستید</translation>
@@ -869,6 +894,7 @@
 <translation id="8877788021141246043">‏Set a reminder (یادآوری تنظیم کن)</translation>
 <translation id="8878886163241303700">صفحه گسترش یافته است</translation>
 <translation id="8883473964424809116">‏برای باز کردن تنظیمات «دستیار Google» کلیک کنید.</translation>
+<translation id="8884537526797090108">نمی‌توان محتوای محرمانه را ضبط کرد</translation>
 <translation id="890616557918890486">تغییر منبع</translation>
 <translation id="8909138438987180327">شارژ باتری <ph name="PERCENTAGE" /> درصد است.</translation>
 <translation id="8913384980486163186">رنگ‌مایه (پیش‌فرض)</translation>
@@ -884,6 +910,7 @@
 <translation id="9017320285115481645">‏کد دسترسی والدین Family Link را وارد کنید</translation>
 <translation id="9047624247355796468">باز کردن تنظیمات <ph name="NETWORK_NAME" /></translation>
 <translation id="9056839673611986238">دستگاه عقب‌گرد می‌کند</translation>
+<translation id="9063800855227801443">نمی‌توان محتوای محرمانه را ضبط کرد</translation>
 <translation id="9065203028668620118">ویرایش</translation>
 <translation id="9070640332319875144">تنظیمات «دستیار»</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> زمان تا تخلیه باتری باقی‌مانده است.</translation>

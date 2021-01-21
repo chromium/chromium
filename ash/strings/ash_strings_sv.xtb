@@ -77,6 +77,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1570871743947603115">Aktivera och inaktivera Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Få tillgång till all aktivitet i sessionen</translation>
 <translation id="1611993646327628135">På</translation>
+<translation id="1615402009686901181">Skärmdumpar inaktiveras av en administratörspolicy när konfidentiellt innehåll är synligt</translation>
 <translation id="1632985212731562677">Brytarstyrning kan inaktiveras under Inställningar &gt; Tillgänglighet</translation>
 <translation id="1654477262762802994">Säg en sökfråga</translation>
 <translation id="1667964833127753507">I det neutrala färgläget ersätts färger från bakgrunden med en uppsättning ljusa eller mörka nyanser i neutrala toner.</translation>
@@ -117,6 +118,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Hej <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Textinmatning</translation>
+<translation id="1989113344093894667">Det gick inte att ta en skärmbild/skärminspelning på innehållet</translation>
 <translation id="1993072747612765854">Läs mer om den senaste uppdateringen av <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1995660704900986789">Stäng av</translation>
 <translation id="1998100899771863792">Aktuellt skrivbord</translation>
@@ -143,6 +145,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="225680501294068881">Söker efter enheter ...</translation>
 <translation id="2268130516524549846">Bluetooth inaktiverat</translation>
 <translation id="2268813581635650749">Logga ut alla</translation>
+<translation id="2269016722240250274">Mikrofonen används av en app</translation>
 <translation id="2277103315734023688">Sök framåt</translation>
 <translation id="2292698582925480719">Skala på skärmen</translation>
 <translation id="229397294990920565">Mobildata stängs av …</translation>
@@ -168,6 +171,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2427507373259914951">Vänsterklicka</translation>
 <translation id="2429753432712299108">Bluetooth-enheten <ph name="DEVICE_NAME" /> har begärt tillstånd för koppling. Innan du godkänner bekräftar du att den här lösenordsnyckeln visas på den enheten: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Visa lösenord</translation>
+<translation id="2450205753526923158">Skärmdumpsläge</translation>
 <translation id="2473177541599297363">Bekräfta upplösningen</translation>
 <translation id="2475982808118771221">Det uppstod ett fel</translation>
 <translation id="2482878487686419369">Aviseringar</translation>
@@ -184,6 +188,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2596078834055697711">Ta en skärmdump av fönstret</translation>
 <translation id="2617342710774726426">SIM-kortet är låst</translation>
 <translation id="2621713457727696555">Skyddat</translation>
+<translation id="2653019840645008922">Skärmbild/skärminspelning av fönster</translation>
 <translation id="2653659639078652383">Skicka</translation>
 <translation id="2658778018866295321">Klicka och dra</translation>
 <translation id="2678852583403169292">Textuppläsningsmeny</translation>
@@ -198,6 +203,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2727977024730340865">Ansluten till en laddare med låg effekt. Batteriet kanske inte laddas ordentligt.</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> hanteras av <ph name="MANAGER" /></translation>
 <translation id="2792498699870441125">Alt + Sök</translation>
+<translation id="2814448776515246190">Skärmbild/skärminspelning av en del av skärmen</translation>
 <translation id="2819276065543622893">Du loggas nu ut.</translation>
 <translation id="28232023175184696">Det gick inte att ansluta till internet. Klicka om du vill försöka igen.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> har inte stöd för <ph name="SPECIFIED_RESOLUTION" />. Upplösningen ändrades till <ph name="FALLBACK_RESOLUTION" />.</translation>
@@ -224,6 +230,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3033545621352269033">På</translation>
 <translation id="3036649622769666520">Öppna filer</translation>
 <translation id="3038571455154067151">Ange föräldraåtkomstkoden för Family Link om du vill logga in</translation>
+<translation id="3039939407102840004">E-pennan har <ph name="PERCENTAGE" /> procent batteri.</translation>
 <translation id="3045488863354895414">Hej!</translation>
 <translation id="3051128274746680507">Din profil som kontrollerad användare tas snart bort. Logga in och läs mer.</translation>
 <translation id="3055162170959710888">Du har använt den här enheten i <ph name="USED_TIME" /> i dag</translation>
@@ -233,6 +240,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3090989381251959936">Aktivera och inaktivera <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">Flytta muspekaren</translation>
 <translation id="3098580329624789136"><ph name="INTENT" /> <ph name="QUERY" /></translation>
+<translation id="3100274880412651815">Stäng läget för skärmbild/skärminspelning</translation>
 <translation id="3105917916468784889">Ta en skärmdump</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3126069444801937830">Starta om för att uppdatera</translation>
@@ -298,6 +306,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3621202678540785336">Ingång</translation>
 <translation id="3621712662352432595">Ljudinställningar</translation>
 <translation id="3626281679859535460">Ljusstyrka</translation>
+<translation id="3630697955794050612">av</translation>
 <translation id="3631369015426612114">Tillåt aviseringar från följande</translation>
 <translation id="3638400994746983214">Aktivera och inaktivera sekretesskärmen. <ph name="STATE_TEXT" />.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Hanterad användare</translation>
@@ -311,6 +320,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3773700760453577392">En administratör har förbjudit multiinloggning för <ph name="USER_EMAIL" />. Alla användare måste logga ut för att fortsätta.</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Lås</translation>
+<translation id="3796746699333205839">Kameran och mikrofonen används av en app</translation>
 <translation id="3798670284305777884">Högtalare (inbyggd)</translation>
 <translation id="3799080171973636491">Du tryckte på kortkommandot för helskärmsförstoring. Vill du aktivera funktionen?</translation>
 <translation id="380165613292957338">Hej. Hur kan jag hjälpa dig?</translation>
@@ -404,6 +414,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4570957409596482333">Knappen Textuppläsning</translation>
 <translation id="4577274620589681794">Tiden är ute · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Visa förhandsgranskningar</translation>
+<translation id="4578906031062871102">Inställningsmenyn har öppnats</translation>
 <translation id="4585337515783392668">Sluta casta till en okänd mottagare</translation>
 <translation id="4596144739579517758">Mörkt tema är av</translation>
 <translation id="4623167406982293031">Verifiera konto</translation>
@@ -486,6 +497,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="5379115545237091094">För många försök</translation>
 <translation id="5397578532367286026">Användning och historik för den här användaren kan granskas av den ansvarige (<ph name="MANAGER_EMAIL" />) på chrome.com.</translation>
 <translation id="5400461572260843123">Snabbinställningar, tryck på sök + vänster för att komma åt aviseringscentret.</translation>
+<translation id="5426063383988017631">Inställningsmenyn har stängts</translation>
 <translation id="5428899915242071344">Börja markera</translation>
 <translation id="5430931332414098647">Direktinternetdelning</translation>
 <translation id="5431825016875453137">OpenVPN/L2TP</translation>
@@ -502,12 +514,15 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="556042886152191864">Knapp</translation>
 <translation id="5571066253365925590">Bluetooth aktiverad</translation>
 <translation id="557563299383177668">Nästa stycke</translation>
+<translation id="5577281275355252094">Kontrollera att Bluetooth är aktiverat på telefonen om du vill använda Phone Hub</translation>
 <translation id="558849140439112033">Välj område att ta en bild av genom att dra</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Inaktivera talad feedback genom att trycka på Ctrl + Alt + Z.</translation>
 <translation id="5601503069213153581">Pinkod</translation>
+<translation id="5619862035903135339">Skärmdump inaktiveras av en administratörspolicy</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Mikrofonuttag</translation>
+<translation id="5662709761327382534">Inspelning med mikrofon <ph name="CURRENT_STATE" />, Tryck på Retur för att slå <ph name="NEW_STATE" /> mikrofoninspelning</translation>
 <translation id="5669267381087807207">Aktiverar</translation>
 <translation id="5673434351075758678">Från <ph name="FROM_LOCALE" /> till <ph name="TO_LOCALE" /> efter synkronisering av inställningarna.</translation>
 <translation id="5677928146339483299">Blockerat</translation>
@@ -555,6 +570,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" />, hanteras av administratören</translation>
 <translation id="6030495522958826102">Menyn har flyttats till skärmens nedre vänstra hörn.</translation>
 <translation id="6032620807120418574">Klicka var som helst för att spela in hela skärmen</translation>
+<translation id="6040071906258664830">Spela in via mikrofon <ph name="STATE" /></translation>
 <translation id="6040143037577758943">Stäng</translation>
 <translation id="6043212731627905357">Skärmen kan inte användas med <ph name="DEVICE_TYPE" /> (det finns inte stöd för skärmen).</translation>
 <translation id="6043994281159824495">Logga ut nu</translation>
@@ -564,6 +580,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="6062360702481658777">Du loggas ut automatiskt om <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Sluta spela in</translation>
 <translation id="607652042414456612">Din dator kan upptäckas av Bluetooth-enheter som finns i närheten och den visas som <ph name="NAME" /> med adressen <ph name="ADDRESS" /></translation>
+<translation id="6094290315941448991">Skärminspelning inaktiveras av en administratörspolicy när konfidentiellt innehåll är synligt</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google-assistenten är inte tillgänglig i en gästsession.</translation>
 <translation id="6137566720514957455">Öppna dialogrutan för borttagning av <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -620,6 +637,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="6650933572246256093">Bluetooth-enheten <ph name="DEVICE_NAME" /> har begärt tillstånd för koppling. Ange denna lösenordsnyckel på den enheten: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Lösenord</translation>
 <translation id="6665545700722362599">Ge webbplatser, appar och tillägg behörighet att använda platstjänster, enhetens mikrofon, kamera eller andra funktioner</translation>
+<translation id="6667908387435388584">Anslut till telefonens surfzon, stäng av ljudet för och hitta din enhet, samt visa de senaste Chrome-flikarna som öppnats på telefonen</translation>
 <translation id="6670153871843998651">Skrivbord 3</translation>
 <translation id="6671495933530132209">Kopiera bild</translation>
 <translation id="6691659475504239918">Sök+Skift+H</translation>
@@ -700,7 +718,9 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="742594950370306541">Kameran används.</translation>
 <translation id="742608627846767349">Hej!</translation>
 <translation id="743058460480092004">Kameran och mikrofonen används.</translation>
+<translation id="7452560014878697800">Kameran används av en app</translation>
 <translation id="7461924472993315131">Fäst</translation>
+<translation id="746232733191930409">Skärmimspelningsläge</translation>
 <translation id="7466449121337984263">Tryck på sensorn</translation>
 <translation id="7477793887173910789">Styr uppspelningen av musik, videor med mera</translation>
 <translation id="7497767806359279797">Välj språk och tangentbord</translation>
@@ -729,6 +749,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7662283695561029522">Tryck om du vill konfigurera</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="7714767791242455379">Lägg till nytt mobilnätverk</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 avisering}other{# aviseringar}}</translation>
 <translation id="7724603315864178912">Klipp ut</translation>
 <translation id="7745560842763881396">Visa appar på hyllan</translation>
@@ -743,6 +764,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="7842569679327885685">Varning: Experimentfunktion</translation>
 <translation id="7846634333498149051">Tangentbord</translation>
 <translation id="7860671499921112077">Öppna översikten genom att svepa uppåt med tre fingrar</translation>
+<translation id="7866482334467279021">på</translation>
 <translation id="7868900307798234037">Låser upp med fingeravtryck</translation>
 <translation id="7872786842639831132">Av</translation>
 <translation id="7875575368831396199">Det verkar som om Bluetooth har inaktiverats på <ph name="DEVICE_TYPE" />. Aktivera Bluetooth om du vill använda Phone Hub.</translation>
@@ -772,6 +794,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="8036504271468642248">Föregående mening</translation>
 <translation id="8042893070933512245">Öppna menyn med tillgänglighetsinställningar</translation>
 <translation id="8048123526339889627">Bluetooth-inställningar</translation>
+<translation id="8052898407431791827">Kopierat till urklipp</translation>
 <translation id="8054466585765276473">Batteritiden beräknas.</translation>
 <translation id="8061464966246066292">Hög kontrast</translation>
 <translation id="8098591350844501178">Sluta casta skärmen till <ph name="RECEIVER_NAME" /></translation>
@@ -843,9 +866,11 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="8673028979667498656">270°</translation>
 <translation id="8676770494376880701">Laddare med låg effekt ansluten</translation>
 <translation id="8683506306463609433">Prestandaspårning är aktiv</translation>
+<translation id="8703634754197148428">Starta inspelning. När inspelningen har startats kan du navigera till hyllan och leta reda knappen för att stoppa inspelningen med hjälp av Alt + Skift + L</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Hantera den här funktionen med tangenterna vänster- och högerpil.</translation>
 <translation id="8712637175834984815">Uppfattat</translation>
 <translation id="8721053961083920564">Ljud på/av. <ph name="STATE_TEXT" /></translation>
+<translation id="8724318433625452070">Skärmbild/skärminspelning av hela skärmen</translation>
 <translation id="8734991477317290293">Det kan försöka stjäla dina tangenttryckningar</translation>
 <translation id="8735953464173050365">Visa tangentbordsinställningar. Inställt på <ph name="KEYBOARD_NAME" /></translation>
 <translation id="8755498163081687682">Verifiera din identitet: <ph name="ORIGIN_NAME" /> vill kontrollera din identitet</translation>
@@ -869,6 +894,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="8877788021141246043">Ställ in en påminnelse</translation>
 <translation id="8878886163241303700">Utökad skärm</translation>
 <translation id="8883473964424809116">Klicka här för att öppna inställningarna för Google Assistent.</translation>
+<translation id="8884537526797090108">Det går inte att spela in konfidentiellt innehåll</translation>
 <translation id="890616557918890486">Ändra källa</translation>
 <translation id="8909138438987180327">Batterinivån är på <ph name="PERCENTAGE" /> procent.</translation>
 <translation id="8913384980486163186">Tema (standard)</translation>
@@ -884,6 +910,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="9017320285115481645">Ange föräldraåtkomstkoden för Family Link.</translation>
 <translation id="9047624247355796468">Öppnar inställningarna för <ph name="NETWORK_NAME" /></translation>
 <translation id="9056839673611986238">Enheten återställs</translation>
+<translation id="9063800855227801443">Det går inte att ta bilder på konfidentiellt innehåll</translation>
 <translation id="9065203028668620118">Redigera</translation>
 <translation id="9070640332319875144">Inställningar för Google-assistenten</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> tills batteriet är tomt.</translation>

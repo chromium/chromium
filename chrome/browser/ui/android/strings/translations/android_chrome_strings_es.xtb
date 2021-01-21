@@ -217,7 +217,7 @@ Mantén pulsada cualquier palabra para buscarla. Para acotar la búsqueda, selec
 <translation id="250020030759455918">Verás tu estado de inicio de sesión, datos de navegación y datos del sitio de <ph name="SITE_NAME" /> en Chrome.</translation>
 <translation id="2512164632052122970">Idiomas del contenido</translation>
 <translation id="2513403576141822879">Para ver más opciones relacionadas con la privacidad, la seguridad y la recogida de datos, accede a <ph name="BEGIN_LINK" />Sincronización y servicios de Google<ph name="END_LINK" /></translation>
-<translation id="2517472476991765520">Buscar</translation>
+<translation id="2517472476991765520">Escanear</translation>
 <translation id="2518590038762162553">En el modo básico, Chrome carga las páginas más rápido y reduce el uso de datos hasta un 60 %. Chrome también envía tu tráfico web a Google para optimizar las páginas que visitas. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="2523184218357549926">Envía las URL de las páginas que visitas a Google</translation>
 <translation id="2532336938189706096">Vista web</translation>
@@ -640,6 +640,7 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="5595485650161345191">Editar dirección</translation>
 <translation id="5599455543593328020">Modo de incógnito</translation>
 <translation id="5599941490345670218">El Asistente de Google puede completar acciones en tu nombre en sitios web</translation>
+<translation id="5606787249466187650">Explora la zona de pruebas de privacidad</translation>
 <translation id="5620163320393916465">No hay ninguna contraseña guardada</translation>
 <translation id="5620928963363755975">Encuentra tus archivos y páginas en la sección Descargas con el botón Más opciones</translation>
 <translation id="5626134646977739690">Nombre:</translation>
