@@ -6,7 +6,9 @@
 
 #include <memory>
 
+#include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/login_status.h"
+#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/system/power/power_button_controller.h"
@@ -15,6 +17,8 @@
 #include "ash/system/power/power_button_test_base.h"
 #include "ash/test_screenshot_delegate.h"
 #include "ash/wm/lock_state_controller_test_api.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "ui/aura/test/test_window_delegate.h"
@@ -69,6 +73,8 @@ class PowerButtonScreenshotControllerTest : public PowerButtonTestBase {
     tick_clock_.Advance(
         PowerButtonController::kIgnorePowerButtonAfterResumeDelay +
         base::TimeDelta::FromMilliseconds(2));
+
+    ResetScreenshotCount();
   }
 
  protected:
@@ -91,11 +97,27 @@ class PowerButtonScreenshotControllerTest : public PowerButtonTestBase {
   }
 
   int GetScreenshotCount() const {
+    if (features::IsCaptureModeEnabled()) {
+      constexpr char kClamshellHistogram[] =
+          "Ash.CaptureModeController.EntryPoint.ClamshellMode";
+      constexpr char kTabletHistogram[] =
+          "Ash.CaptureModeController.EntryPoint.TabletMode";
+      if (Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+        return histograme_tester_->GetBucketCount(
+            kTabletHistogram, CaptureModeEntryType::kCaptureAllDisplays);
+      }
+
+      return histograme_tester_->GetBucketCount(
+          kClamshellHistogram, CaptureModeEntryType::kCaptureAllDisplays);
+    }
     return screenshot_delegate_->handle_take_screenshot_count();
   }
 
   void ResetScreenshotCount() {
-    return screenshot_delegate_->reset_handle_take_screenshot_count();
+    if (features::IsCaptureModeEnabled())
+      histograme_tester_ = std::make_unique<base::HistogramTester>();
+    else
+      screenshot_delegate_->reset_handle_take_screenshot_count();
   }
 
   bool LastKeyConsumed() const {
@@ -109,6 +131,9 @@ class PowerButtonScreenshotControllerTest : public PowerButtonTestBase {
   // Stores the last key event. Can be NULL if not set through PressKey() or
   // ReleaseKey().
   std::unique_ptr<ui::KeyEvent> last_key_event_;
+
+  // Used to test capture mode invocations when the feature is on.
+  std::unique_ptr<base::HistogramTester> histograme_tester_;
 
   DISALLOW_COPY_AND_ASSIGN(PowerButtonScreenshotControllerTest);
 };
