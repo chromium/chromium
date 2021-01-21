@@ -6,8 +6,8 @@
   "zstd_args" : [ "-14" ],
   "far_total_name" : "chrome_fuchsia",
   "size_limits" : {
-    "chrome_fuchsia_compressed": 38e6,
-    "cast_runner_compressed": 3e6,
-    "web_engine_compressed": 32e6
+    "chrome_fuchsia_compressed": 54e6,
+    "cast_runner_compressed": 7e6,
+    "web_engine_compressed": 53e6
   }
 }

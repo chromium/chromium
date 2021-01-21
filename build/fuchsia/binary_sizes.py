@@ -258,9 +258,15 @@ def CommitPositionFromBuildProperty(value):
   raise RuntimeError('Could not get chromium commit position from test arg.')
 
 
-def GetSDKLibs():
+# Compiled regular expression matching strings like *.so, *.so.1, *.so.2, ...
+SO_FILENAME_REGEXP = re.compile(r'\.so(\.\d+)?$')
+
+
+def GetSdkModulesForExclusion():
   """Finds shared objects (.so) under the Fuchsia SDK arch directory in dist or
   lib subdirectories.
+
+  Returns a set of shared objects' filenames.
   """
 
   # Fuchsia SDK arch directory path (contains all shared object files).
@@ -274,7 +280,7 @@ def GetSDKLibs():
   for dirpath, _, file_names in os.walk(sdk_arch_dir):
     if os.path.basename(dirpath) in sdk_so_leaf_dirs:
       for name in file_names:
-        if re.search(sdk_so_filename_re, name):
+        if SO_FILENAME_REGEXP.search(name):
           lib_names.add(name)
   return lib_names
 
@@ -285,8 +291,7 @@ def FarBaseName(name):
   return name
 
 
-def GetBlobSizes(far_file, build_out_dir, extract_dir, excluded_paths,
-                 compression_args):
+def GetBlobSizes(far_file, build_out_dir, extract_dir, compression_args):
   """Calculates compressed and uncompressed blob sizes for specified FAR file.
   Does not count blobs from SDK libraries."""
 
@@ -306,11 +311,14 @@ def GetBlobSizes(far_file, build_out_dir, extract_dir, excluded_paths,
   # Map Linux filesystem blob names to blob hashes.
   blob_name_hashes = GetBlobNameHashes(meta_far_extract_dir)
 
+  # File names whose sizes are not charged against component's size budgets.
+  # Fuchsia SDK modules and the ICU icudtl.dat file are excluded from sizes.
+  excluded_files = GetSdkModulesForExclusion() | set(['icudtl.dat'])
+
   # Sum compresses and uncompressed blob sizes, except for SDK blobs.
   blob_sizes = {}
   for blob_name in blob_name_hashes:
-    _, blob_base_name = os.path.split(blob_name)
-    if blob_base_name not in excluded_paths:
+    if os.path.basename(blob_name) not in excluded_files:
       blob_path = os.path.join(far_extract_dir, blob_name_hashes[blob_name])
       compressed_size = CompressedSize(blob_path, compression_args)
       uncompressed_size = os.path.getsize(blob_path)
@@ -319,8 +327,8 @@ def GetBlobSizes(far_file, build_out_dir, extract_dir, excluded_paths,
   return blob_sizes
 
 
-def GetPackageSizes(far_files, build_out_dir, extract_dir, excluded_paths,
-                    compression_args, print_sizes):
+def GetPackageSizes(far_files, build_out_dir, extract_dir, compression_args,
+                    print_sizes):
   """Calculates compressed and uncompressed package sizes from blob sizes.
   Does not count blobs from SDK libraries."""
 
@@ -332,7 +340,7 @@ def GetPackageSizes(far_files, build_out_dir, extract_dir, excluded_paths,
   for far_file in far_files:
     package_name = FarBaseName(far_file)
     package_blob_sizes[package_name] = GetBlobSizes(far_file, build_out_dir,
-                                                    extract_dir, excluded_paths,
+                                                    extract_dir,
                                                     compression_args)
 
   # Optionally print package blob sizes (does not count sharing).
@@ -373,11 +381,10 @@ def GetBinarySizes(args, sizes_config):
   the aggregated sizes across all blobs."""
 
   # Calculate compressed and uncompressed package sizes.
-  sdk_libs = GetSDKLibs()
   extract_dir = args.extract_dir if args.extract_dir else tempfile.mkdtemp()
   package_sizes = GetPackageSizes(sizes_config['far_files'], args.build_out_dir,
-                                  extract_dir, sdk_libs,
-                                  sizes_config['zstd_args'], args.verbose)
+                                  extract_dir, sizes_config['zstd_args'],
+                                  args.verbose)
   if not args.extract_dir:
     shutil.rmtree(extract_dir)
 
@@ -476,9 +483,11 @@ def main():
     if not os.path.isfile(far_abs_path):
       raise Exception('Could not find FAR file "%s".' % far_abs_path)
 
-  test_completed = False
   test_name = 'sizes'
   timestamp = time.time()
+  test_completed = False
+  all_tests_passed = False
+  test_status = {}
   sizes_histogram = []
 
   results_directory = None
@@ -497,8 +506,9 @@ def main():
     traceback.print_tb(trace)
     print(str(value))
   finally:
-    all_tests_passed, test_status = GetTestStatus(package_sizes, sizes_config,
-                                                  test_completed)
+    if test_completed:
+      all_tests_passed, test_status = GetTestStatus(package_sizes, sizes_config,
+                                                    test_completed)
 
     if results_directory:
       WriteTestResults(os.path.join(results_directory, 'test_results.json'),
