@@ -21,13 +21,8 @@
 #include "components/safe_browsing/core/db/hit_report.h"
 #include "components/safe_browsing/core/db/util.h"
 #include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "url/gurl.h"
-
-namespace blink {
-namespace mojom {
-enum class ResourceType;
-}  // namespace mojom
-}  // namespace blink
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -122,9 +117,9 @@ class SafeBrowsingDatabaseManager
   // Methods to check whether the database manager supports a certain feature.
   //
 
-  // Returns true if this resource type should be checked.
-  virtual bool CanCheckResourceType(
-      blink::mojom::ResourceType resource_type) const = 0;
+  // Returns true if this request destination should be checked.
+  virtual bool CanCheckRequestDestination(
+      network::mojom::RequestDestination request_destination) const = 0;
 
   // Returns true if the url's scheme can be checked.
   virtual bool CanCheckUrl(const GURL& url) const = 0;

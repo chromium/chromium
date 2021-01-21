@@ -365,6 +365,7 @@ source_set("unit_tests_internal") {
     "//net",
     "//net:test_support",
     "//services/network:test_support",
+    "//services/network/public/mojom",
     "//testing/gtest",
     "//third_party/ocmock",
     "//ui/base",

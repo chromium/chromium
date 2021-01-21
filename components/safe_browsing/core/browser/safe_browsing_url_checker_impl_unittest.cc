@@ -65,8 +65,8 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
     return false;
   }
 
-  bool CanCheckResourceType(
-      blink::mojom::ResourceType resource_type) const override {
+  bool CanCheckRequestDestination(
+      network::mojom::RequestDestination request_destination) const override {
     return true;
   }
 
@@ -252,7 +252,7 @@ class SafeBrowsingUrlCheckerTest : public PlatformTest {
         mock_web_contents_getter;
     return std::make_unique<SafeBrowsingUrlCheckerImpl>(
         net::HttpRequestHeaders(), /*load_flags=*/0,
-        static_cast<blink::mojom::ResourceType>(ResourceType::kMainFrame),
+        network::mojom::RequestDestination::kDocument,
         /*has_user_gesture=*/false, url_checker_delegate_,
         mock_web_contents_getter.Get(), real_time_lookup_enabled,
         /*can_rt_check_subresource_url=*/false, can_check_safe_browsing_db,

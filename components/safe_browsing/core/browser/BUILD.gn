@@ -24,6 +24,7 @@ source_set("browser") {
     "//components/security_interstitials/core:unsafe_resource",
     "//net:extras",
     "//services/network/public/cpp",
+    "//services/network/public/mojom",
   ]
   if (is_ios) {
     sources += [ "//components/safe_browsing/ios/browser/safe_browsing_url_checker_impl_ios.cc" ]
@@ -65,6 +66,7 @@ source_set("safe_browsing_url_checker_unittest") {
     "//components/safe_browsing/core/db:util",
     "//components/safe_browsing/core/realtime:url_lookup_service",
     "//services/network/public/cpp",
+    "//services/network/public/mojom",
     "//testing/gtest",
   ]
 }

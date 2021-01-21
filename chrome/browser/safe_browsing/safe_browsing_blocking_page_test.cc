@@ -104,6 +104,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/url_request/url_request_mock_http_job.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -284,8 +285,9 @@ class FakeSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
   // These are called when checking URLs, so we implement them.
   bool IsSupported() const override { return true; }
   bool ChecksAreAlwaysAsync() const override { return false; }
-  bool CanCheckResourceType(
-      blink::mojom::ResourceType /* resource_type */) const override {
+  bool CanCheckRequestDestination(
+      network::mojom::RequestDestination /* request_destination */)
+      const override {
     return true;
   }
 

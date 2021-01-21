@@ -29,6 +29,7 @@
 #include "components/safe_browsing/core/db/test_database_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_widget_host_observer.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "url/gurl.h"
 
 namespace prerender {
@@ -63,8 +64,9 @@ class FakeSafeBrowsingDatabaseManager
   // These are called when checking URLs, so we implement them.
   bool IsSupported() const override;
   bool ChecksAreAlwaysAsync() const override;
-  bool CanCheckResourceType(
-      blink::mojom::ResourceType /* resource_type */) const override;
+  bool CanCheckRequestDestination(
+      network::mojom::RequestDestination /* request_destination */)
+      const override;
 
   bool CheckExtensionIDs(const std::set<std::string>& extension_ids,
                          Client* client) override;

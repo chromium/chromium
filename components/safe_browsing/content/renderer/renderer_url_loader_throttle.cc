@@ -9,8 +9,10 @@
 #include "base/trace_event/trace_event.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #include "components/safe_browsing/core/common/utils.h"
+#include "net/base/net_errors.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 
 namespace safe_browsing {
 
@@ -54,8 +56,7 @@ void RendererURLLoaderThrottle::WillStartRequest(
   headers.CopyFrom(request->headers);
   safe_browsing_->CreateCheckerAndCheck(
       render_frame_id_, url_checker_.BindNewPipeAndPassReceiver(), request->url,
-      request->method, headers, request->load_flags,
-      static_cast<blink::mojom::ResourceType>(request->resource_type),
+      request->method, headers, request->load_flags, request->destination,
       request->has_user_gesture, request->originated_from_service_worker,
       base::BindOnce(&RendererURLLoaderThrottle::OnCheckUrlResult,
                      weak_factory_.GetWeakPtr()));

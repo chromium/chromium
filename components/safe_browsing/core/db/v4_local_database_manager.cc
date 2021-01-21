@@ -325,9 +325,9 @@ void V4LocalDatabaseManager::CancelCheck(Client* client) {
   }
 }
 
-bool V4LocalDatabaseManager::CanCheckResourceType(
-    blink::mojom::ResourceType resource_type) const {
-  // We check all types since most checks are fast.
+bool V4LocalDatabaseManager::CanCheckRequestDestination(
+    network::mojom::RequestDestination request_destination) const {
+  // We check all destinations since most checks are fast.
   return true;
 }
 

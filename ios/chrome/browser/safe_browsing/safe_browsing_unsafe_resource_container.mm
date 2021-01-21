@@ -12,6 +12,7 @@
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -90,7 +91,8 @@ void SafeBrowsingUnsafeResourceContainer::StoreMainFrameUnsafeResource(
     const security_interstitials::UnsafeResource& resource) {
   DCHECK(!resource.web_state_getter.is_null() &&
          resource.web_state_getter.Run() == web_state_);
-  DCHECK_EQ(safe_browsing::ResourceType::kMainFrame, resource.resource_type);
+  DCHECK_EQ(network::mojom::RequestDestination::kDocument,
+            resource.request_destination);
 
   // For main frame navigations, the copy is stored in
   // |main_frame_unsafe_resource_|.  It corresponds with the pending
@@ -104,7 +106,8 @@ void SafeBrowsingUnsafeResourceContainer::StoreSubFrameUnsafeResource(
     web::NavigationItem* main_frame_item) {
   DCHECK(!resource.web_state_getter.is_null() &&
          resource.web_state_getter.Run() == web_state_);
-  DCHECK_EQ(safe_browsing::ResourceType::kSubFrame, resource.resource_type);
+  DCHECK_EQ(network::mojom::RequestDestination::kIframe,
+            resource.request_destination);
   DCHECK(main_frame_item);
 
   // Unsafe sub frame resources are caused by loads triggered by a committed

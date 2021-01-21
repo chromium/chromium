@@ -106,7 +106,7 @@ void SafeBrowsingServiceImpl::ShutDown() {
 
 std::unique_ptr<safe_browsing::SafeBrowsingUrlCheckerImpl>
 SafeBrowsingServiceImpl::CreateUrlChecker(
-    safe_browsing::ResourceType resource_type,
+    network::mojom::RequestDestination request_destination,
     web::WebState* web_state) {
   bool can_perform_full_url_lookup = false;
   safe_browsing::RealTimeUrlLookupService* url_lookup_service = nullptr;
@@ -117,8 +117,8 @@ SafeBrowsingServiceImpl::CreateUrlChecker(
         url_lookup_service && url_lookup_service->CanPerformFullURLLookup();
   }
   return std::make_unique<safe_browsing::SafeBrowsingUrlCheckerImpl>(
-      resource_type, url_checker_delegate_, web_state->CreateDefaultGetter(),
-      can_perform_full_url_lookup,
+      request_destination, url_checker_delegate_,
+      web_state->CreateDefaultGetter(), can_perform_full_url_lookup,
       /*can_rt_check_subresource_url=*/false,
       url_lookup_service ? url_lookup_service->GetWeakPtr() : nullptr);
 }

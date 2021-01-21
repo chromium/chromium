@@ -23,6 +23,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/threat_details.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/safe_browsing/core/common/utils.h"
 #include "components/safe_browsing/core/features.h"
 #include "components/safe_browsing/core/triggers/trigger_manager.h"
 #include "components/security_interstitials/content/content_metrics_helper.h"
@@ -213,8 +214,10 @@ SafeBrowsingBlockingPage* SafeBrowsingBlockingPage::CreateBlockingPage(
     const GURL& main_frame_url,
     const UnsafeResource& unsafe_resource,
     bool should_trigger_reporting) {
-  UMA_HISTOGRAM_ENUMERATION("SafeBrowsing.BlockingPage.ResourceType",
-                            unsafe_resource.resource_type);
+  UMA_HISTOGRAM_ENUMERATION(
+      "SafeBrowsing.BlockingPage.ResourceType",
+      safe_browsing::GetResourceTypeFromRequestDestination(
+          unsafe_resource.request_destination));
   const UnsafeResourceList resources{unsafe_resource};
   // Set up the factory if this has not been done already (tests do that
   // before this method is called).

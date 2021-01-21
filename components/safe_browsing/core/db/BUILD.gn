@@ -51,6 +51,7 @@ static_library("database_manager") {
     "//components/safe_browsing/core/common:thread_utils",
     "//net",
     "//services/network/public/cpp",
+    "//services/network/public/mojom",
     "//url",
   ]
 
@@ -81,6 +82,7 @@ static_library("test_database_manager") {
     "//base:base",
     "//net",
     "//services/network/public/cpp",
+    "//services/network/public/mojom",
   ]
 }
 
@@ -163,6 +165,7 @@ static_library("v4_local_database_manager") {
     "//crypto",
     "//net",
     "//services/network/public/cpp",
+    "//services/network/public/mojom",
     "//url",
   ]
 }

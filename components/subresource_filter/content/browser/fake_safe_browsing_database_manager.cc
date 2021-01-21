@@ -101,8 +101,8 @@ void FakeSafeBrowsingDatabaseManager::CancelCheck(Client* client) {
   size_t erased = checks_.erase(client);
   DCHECK_EQ(erased, 1u);
 }
-bool FakeSafeBrowsingDatabaseManager::CanCheckResourceType(
-    blink::mojom::ResourceType /* resource_type */) const {
+bool FakeSafeBrowsingDatabaseManager::CanCheckRequestDestination(
+    network::mojom::RequestDestination /* request_destination */) const {
   return true;
 }
 

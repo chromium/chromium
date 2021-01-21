@@ -11,7 +11,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/safe_browsing/core/db/test_database_manager.h"
-#include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 
 class GURL;
 
@@ -47,8 +47,9 @@ class FakeSafeBrowsingDatabaseManager
   bool IsSupported() const override;
   void CancelCheck(Client* client) override;
   bool ChecksAreAlwaysAsync() const override;
-  bool CanCheckResourceType(
-      blink::mojom::ResourceType /* resource_type */) const override;
+  bool CanCheckRequestDestination(
+      network::mojom::RequestDestination /* request_destination */)
+      const override;
   safe_browsing::ThreatSource GetThreatSource() const override;
   bool CheckExtensionIDs(const std::set<std::string>& extension_ids,
                          Client* client) override;

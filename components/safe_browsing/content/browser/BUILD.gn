@@ -39,6 +39,7 @@ source_set("browser") {
     "//components/signin/public/identity_manager",
     "//content/public/browser:browser",
     "//net:extras",
+    "//services/network/public/mojom",
   ]
 }
 

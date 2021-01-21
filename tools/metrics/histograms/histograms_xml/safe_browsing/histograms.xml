@@ -77,6 +77,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     show the priority of checking each resource type in real time. Note that
     this metric may be bias towards mainframe, because the default resource type
     is set to mainframe.
+
+    Starting M89, this metric is derived from
+    network::mojom::RequestDestination. kPrefetch, kFavicon, kXhr, kPing,
+    kNavigationPreloadMainFrame, and kNavigationPreloadSubFrame are all mapped
+    to kSubResource.
   </summary>
 </histogram>
 
@@ -1069,6 +1074,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Logs the resource type that was checked by Safe Browsing real time URL
     lookup. Logged on each resource check that is eligible for real time checks.
+
+    Starting M89, this metric is derived from
+    network::mojom::RequestDestination. kPrefetch, kFavicon, kXhr, kPing,
+    kNavigationPreloadMainFrame, and kNavigationPreloadSubFrame are all mapped
+    to kSubResource.
   </summary>
 </histogram>
 
@@ -1079,6 +1089,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Logs the resource type that was requested to be checked by Safe Browsing
     real time URL lookup. Logged on each resource check.
+
+    Starting M89, this metric is derived from
+    network::mojom::RequestDestination. kPrefetch, kFavicon, kXhr, kPing,
+    kNavigationPreloadMainFrame, and kNavigationPreloadSubFrame are all mapped
+    to kSubResource.
   </summary>
 </histogram>
 

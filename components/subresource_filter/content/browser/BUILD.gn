@@ -97,6 +97,7 @@ static_library("test_support") {
     "//content/public/browser",
     "//content/test:test_support",
     "//net",
+    "//services/network/public/mojom",
     "//testing/gtest:gtest",
     "//url",
   ]

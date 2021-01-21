@@ -13344,6 +13344,11 @@ Safe Browsing lookups, which is critical for security. -->
   <summary>
     Resource types of resources that were inspected by Safe Browsing in the
     SafeBrowsingResourceThrottle.
+
+    Starting M89, this metric is derived from
+    network::mojom::RequestDestination. kPrefetch, kFavicon, kXhr, kPing,
+    kNavigationPreloadMainFrame, and kNavigationPreloadSubFrame are all mapped
+    to kSubResource.
   </summary>
 </histogram>
 

@@ -18,6 +18,7 @@ static_library("policy_engine") {
     "//components/unified_consent",
     "//components/user_prefs",
     "//components/variations/service",
+    "//services/network/public/mojom",
   ]
 }
 
@@ -95,6 +96,7 @@ source_set("unit_tests") {
     "//components/variations/service:service",
     "//services/network:test_support",
     "//services/network/public/cpp:cpp",
+    "//services/network/public/mojom",
     "//testing/gtest",
     "//third_party/googletest:gmock",
   ]

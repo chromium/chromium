@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/safe_browsing/unsafe_resource_util.h"
 #include "ios/components/security_interstitials/ios_blocking_page_metrics_helper.h"
 #import "ios/web/public/web_state.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/jstemplate_builder.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -36,7 +37,8 @@ using security_interstitials::SafeBrowsingLoudErrorUI;
 namespace {
 // Retrieves the main frame URL for |resource| in |web_state|.
 const GURL GetMainFrameUrl(const UnsafeResource& resource) {
-  if (resource.resource_type == safe_browsing::ResourceType::kMainFrame)
+  if (resource.request_destination ==
+      network::mojom::RequestDestination::kDocument)
     return resource.url;
   return resource.web_state_getter.Run()->GetLastCommittedURL();
 }

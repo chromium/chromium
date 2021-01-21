@@ -1319,6 +1319,7 @@ test("content_browsertests") {
     "//services/image_annotation/public/mojom:mojom",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/network:test_support",
+    "//services/network/public/mojom",
     "//services/network/trust_tokens:test_support",
     "//services/service_manager/public/cpp",
     "//services/test/echo/public/mojom",

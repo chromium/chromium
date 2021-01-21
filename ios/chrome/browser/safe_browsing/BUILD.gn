@@ -89,6 +89,7 @@ source_set("test_support") {
     "//ios/web/public",
     "//services/network:test_support",
     "//services/network/public/cpp",
+    "//services/network/public/mojom",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -188,6 +189,7 @@ source_set("unit_tests") {
     "//net:test_support",
     "//net/traffic_annotation:test_support",
     "//services/network/public/cpp",
+    "//services/network/public/mojom",
     "//testing/gmock",
     "//testing/gtest",
   ]

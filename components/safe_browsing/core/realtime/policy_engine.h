@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "build/build_config.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 
 class PrefService;
 
@@ -17,8 +18,6 @@ class VariationsService;
 }
 
 namespace safe_browsing {
-
-enum class ResourceType;
 
 // This class implements the logic to decide whether the real time lookup
 // feature is enabled for a given user/profile.
@@ -36,11 +35,11 @@ class RealTimePolicyEngine {
   using ClientConfiguredForTokenFetchesCallback =
       base::OnceCallback<bool(bool user_has_enabled_enhanced_protection)>;
 
-  // Return true if full URL lookups are enabled for |resource_type|. If
+  // Return true if full URL lookups are enabled for |request_destination|. If
   // |can_rt_check_subresource_url| is set to false, return true only if
-  // |resource_type| is |kMainFrame|.
-  static bool CanPerformFullURLLookupForResourceType(
-      ResourceType resource_type,
+  // |request_destination| is |kDocument|.
+  static bool CanPerformFullURLLookupForRequestDestination(
+      network::mojom::RequestDestination request_destination,
       bool can_rt_check_subresource_url);
 
   // Return true if the feature to enable full URL lookups is enabled and the

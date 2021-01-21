@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ios/chrome/browser/safe_browsing/safe_browsing_service.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 
 // A fake SafeBrowsingService whose database treats URLs from host
@@ -28,7 +29,7 @@ class FakeSafeBrowsingService : public SafeBrowsingService {
                   const base::FilePath& user_data_path) override;
   void ShutDown() override;
   std::unique_ptr<safe_browsing::SafeBrowsingUrlCheckerImpl> CreateUrlChecker(
-      safe_browsing::ResourceType resource_type,
+      network::mojom::RequestDestination request_destination,
       web::WebState* web_state) override;
   bool CanCheckUrl(const GURL& url) const override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;

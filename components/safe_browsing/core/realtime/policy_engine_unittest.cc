@@ -237,12 +237,16 @@ TEST_F(RealTimePolicyEngineTest, TestCanPerformEnterpriseFullURLLookup) {
 TEST_F(
     RealTimePolicyEngineTest,
     TestCanPerformFullURLLookup_EnabledMainFrameOnlyForSubresourceDisabledUser) {
-  for (int i = 0; i <= static_cast<int>(ResourceType::kMaxValue); i++) {
-    ResourceType resource_type = static_cast<ResourceType>(i);
-    bool enabled = RealTimePolicyEngine::CanPerformFullURLLookupForResourceType(
-        resource_type, /*can_rt_check_subresource_url=*/false);
-    switch (resource_type) {
-      case ResourceType::kMainFrame:
+  for (int i = 0;
+       i <= static_cast<int>(network::mojom::RequestDestination::kMaxValue);
+       i++) {
+    network::mojom::RequestDestination request_destination =
+        static_cast<network::mojom::RequestDestination>(i);
+    bool enabled =
+        RealTimePolicyEngine::CanPerformFullURLLookupForRequestDestination(
+            request_destination, /*can_rt_check_subresource_url=*/false);
+    switch (request_destination) {
+      case network::mojom::RequestDestination::kDocument:
         EXPECT_TRUE(enabled);
         break;
       default:
@@ -255,13 +259,18 @@ TEST_F(
 TEST_F(
     RealTimePolicyEngineTest,
     TestCanPerformFullURLLookup_EnabledNonMainFrameForSubresourceEnabledUser) {
-  for (int i = 0; i <= static_cast<int>(ResourceType::kMaxValue); i++) {
-    ResourceType resource_type = static_cast<ResourceType>(i);
-    bool enabled = RealTimePolicyEngine::CanPerformFullURLLookupForResourceType(
-        resource_type, /*can_rt_check_subresource_url=*/true);
-    switch (resource_type) {
-      case ResourceType::kMainFrame:
-      case ResourceType::kSubFrame:
+  for (int i = 0;
+       i <= static_cast<int>(network::mojom::RequestDestination::kMaxValue);
+       i++) {
+    network::mojom::RequestDestination request_destination =
+        static_cast<network::mojom::RequestDestination>(i);
+    bool enabled =
+        RealTimePolicyEngine::CanPerformFullURLLookupForRequestDestination(
+            request_destination, /*can_rt_check_subresource_url=*/true);
+    switch (request_destination) {
+      case network::mojom::RequestDestination::kDocument:
+      case network::mojom::RequestDestination::kIframe:
+      case network::mojom::RequestDestination::kFrame:
         EXPECT_TRUE(enabled);
         break;
       default:

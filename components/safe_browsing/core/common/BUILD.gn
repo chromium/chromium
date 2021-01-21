@@ -89,6 +89,7 @@ source_set("common") {
     "//crypto:crypto",
     "//ipc",
     "//net",
+    "//services/network/public/mojom",
     "//url/ipc:url_ipc",
   ]
 

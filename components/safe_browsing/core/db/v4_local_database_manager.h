@@ -20,6 +20,7 @@
 #include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/db/v4_update_protocol_manager.h"
 #include "components/safe_browsing/core/proto/webui.pb.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "url/gurl.h"
 
 namespace safe_browsing {
@@ -51,8 +52,8 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   //
 
   void CancelCheck(Client* client) override;
-  bool CanCheckResourceType(
-      blink::mojom::ResourceType resource_type) const override;
+  bool CanCheckRequestDestination(
+      network::mojom::RequestDestination request_destination) const override;
   bool CanCheckUrl(const GURL& url) const override;
   bool ChecksAreAlwaysAsync() const override;
   bool CheckBrowseUrl(const GURL& url,

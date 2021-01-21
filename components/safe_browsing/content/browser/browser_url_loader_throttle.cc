@@ -20,6 +20,7 @@
 #include "net/log/net_log_event_type.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace safe_browsing {
@@ -51,7 +52,7 @@ class BrowserURLLoaderThrottle::CheckerOnIO
   // skipped after checking with the UrlCheckerDelegate.
   void Start(const net::HttpRequestHeaders& headers,
              int load_flags,
-             blink::mojom::ResourceType resource_type,
+             network::mojom::RequestDestination request_destination,
              bool has_user_gesture,
              bool originated_from_service_worker,
              const GURL& url,
@@ -73,7 +74,7 @@ class BrowserURLLoaderThrottle::CheckerOnIO
     }
 
     url_checker_ = std::make_unique<SafeBrowsingUrlCheckerImpl>(
-        headers, load_flags, resource_type, has_user_gesture,
+        headers, load_flags, request_destination, has_user_gesture,
         url_checker_delegate, web_contents_getter_, real_time_lookup_enabled_,
         can_rt_check_subresource_url_, can_check_db_, url_lookup_service_);
 
@@ -203,13 +204,12 @@ void BrowserURLLoaderThrottle::WillStartRequest(
   original_url_ = request->url;
   pending_checks_++;
   content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &BrowserURLLoaderThrottle::CheckerOnIO::Start,
-          io_checker_->AsWeakPtr(), request->headers, request->load_flags,
-          static_cast<blink::mojom::ResourceType>(request->resource_type),
-          request->has_user_gesture, request->originated_from_service_worker,
-          request->url, request->method));
+      FROM_HERE, base::BindOnce(&BrowserURLLoaderThrottle::CheckerOnIO::Start,
+                                io_checker_->AsWeakPtr(), request->headers,
+                                request->load_flags, request->destination,
+                                request->has_user_gesture,
+                                request->originated_from_service_worker,
+                                request->url, request->method));
 }
 
 void BrowserURLLoaderThrottle::WillRedirectRequest(

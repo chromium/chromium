@@ -10,12 +10,12 @@
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "ios/web/public/thread/web_task_traits.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-using safe_browsing::ResourceType;
 using security_interstitials::UnsafeResource;
 
 WEB_STATE_USER_DATA_KEY_IMPL(SafeBrowsingQueryManager)
@@ -58,11 +58,12 @@ void SafeBrowsingQueryManager::StartQuery(const Query& query) {
   results_.insert({query, Result()});
 
   // Create a URL checker and perform the query on the IO thread.
-  ResourceType resource_type =
-      query.IsMainFrame() ? ResourceType::kMainFrame : ResourceType::kSubFrame;
+  network::mojom::RequestDestination request_destination =
+      query.IsMainFrame() ? network::mojom::RequestDestination::kDocument
+                          : network::mojom::RequestDestination::kIframe;
   std::unique_ptr<safe_browsing::SafeBrowsingUrlCheckerImpl> url_checker =
       GetApplicationContext()->GetSafeBrowsingService()->CreateUrlChecker(
-          resource_type, web_state_);
+          request_destination, web_state_);
   base::OnceCallback<void(bool proceed, bool show_error_page)> callback =
       base::BindOnce(&SafeBrowsingQueryManager::UrlCheckFinished,
                      weak_factory_.GetWeakPtr(), query);
@@ -75,8 +76,8 @@ void SafeBrowsingQueryManager::StartQuery(const Query& query) {
 
 void SafeBrowsingQueryManager::StoreUnsafeResource(
     const UnsafeResource& resource) {
-  bool is_main_frame =
-      resource.resource_type == safe_browsing::ResourceType::kMainFrame;
+  bool is_main_frame = resource.request_destination ==
+                       network::mojom::RequestDestination::kDocument;
   auto it = std::find_if(results_.begin(), results_.end(),
                          [&resource, &is_main_frame](const auto& pair) {
                            return pair.first.url == resource.url &&

@@ -22,9 +22,9 @@ class FakeSafeBrowsingUrlCheckerImpl
     : public safe_browsing::SafeBrowsingUrlCheckerImpl {
  public:
   explicit FakeSafeBrowsingUrlCheckerImpl(
-      safe_browsing::ResourceType resource_type)
+      network::mojom::RequestDestination request_destination)
       : SafeBrowsingUrlCheckerImpl(
-            resource_type,
+            request_destination,
             base::MakeRefCounted<UrlCheckerDelegateImpl>(
                 /*database_manager=*/nullptr),
             base::BindRepeating(
@@ -71,9 +71,9 @@ void FakeSafeBrowsingService::ShutDown() {
 
 std::unique_ptr<safe_browsing::SafeBrowsingUrlCheckerImpl>
 FakeSafeBrowsingService::CreateUrlChecker(
-    safe_browsing::ResourceType resource_type,
+    network::mojom::RequestDestination request_destination,
     web::WebState* web_state) {
-  return std::make_unique<FakeSafeBrowsingUrlCheckerImpl>(resource_type);
+  return std::make_unique<FakeSafeBrowsingUrlCheckerImpl>(request_destination);
 }
 
 bool FakeSafeBrowsingService::CanCheckUrl(const GURL& url) const {

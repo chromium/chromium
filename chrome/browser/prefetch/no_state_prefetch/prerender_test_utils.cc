@@ -116,8 +116,8 @@ bool FakeSafeBrowsingDatabaseManager::ChecksAreAlwaysAsync() const {
   return false;
 }
 
-bool FakeSafeBrowsingDatabaseManager::CanCheckResourceType(
-    blink::mojom::ResourceType /* resource_type */) const {
+bool FakeSafeBrowsingDatabaseManager::CanCheckRequestDestination(
+    network::mojom::RequestDestination /* request_destination */) const {
   return true;
 }
 

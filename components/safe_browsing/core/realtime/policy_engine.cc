@@ -11,6 +11,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
+#include "components/safe_browsing/core/common/utils.h"
 #include "components/safe_browsing/core/features.h"
 #include "components/unified_consent/pref_names.h"
 #include "components/user_prefs/user_prefs.h"
@@ -109,15 +110,18 @@ bool RealTimePolicyEngine::CanPerformEnterpriseFullURLLookup(
 }
 
 // static
-bool RealTimePolicyEngine::CanPerformFullURLLookupForResourceType(
-    ResourceType resource_type,
+bool RealTimePolicyEngine::CanPerformFullURLLookupForRequestDestination(
+    network::mojom::RequestDestination request_destination,
     bool can_rt_check_subresource_url) {
-  UMA_HISTOGRAM_ENUMERATION("SafeBrowsing.RT.ResourceTypes.Requested",
-                            resource_type);
-  if (resource_type == ResourceType::kMainFrame) {
+  UMA_HISTOGRAM_ENUMERATION(
+      "SafeBrowsing.RT.ResourceTypes.Requested",
+      safe_browsing::GetResourceTypeFromRequestDestination(
+          request_destination));
+  if (request_destination == network::mojom::RequestDestination::kDocument) {
     return true;
   }
-  if (resource_type == ResourceType::kSubFrame &&
+  if ((request_destination == network::mojom::RequestDestination::kIframe ||
+       request_destination == network::mojom::RequestDestination::kFrame) &&
       can_rt_check_subresource_url) {
     return true;
   }

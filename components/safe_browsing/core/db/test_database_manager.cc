@@ -17,8 +17,8 @@ void TestSafeBrowsingDatabaseManager::CancelCheck(Client* client) {
   NOTIMPLEMENTED();
 }
 
-bool TestSafeBrowsingDatabaseManager::CanCheckResourceType(
-    blink::mojom::ResourceType resource_type) const {
+bool TestSafeBrowsingDatabaseManager::CanCheckRequestDestination(
+    network::mojom::RequestDestination request_destination) const {
   NOTIMPLEMENTED();
   return false;
 }
