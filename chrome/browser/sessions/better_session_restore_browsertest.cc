@@ -495,16 +495,29 @@ IN_PROC_BROWSER_TEST_F(ContinueWhereILeftOffTest,
   CheckReloadedPageRestored(new_browser);
 }
 
+// Crashes on Mac and Windows. https://crbug.com/1169082
+#if defined(OS_MAC) || defined(OS_WIN)
+#define MAYBE_PostCloseAllBrowsers DISABLED_PostCloseAllBrowsers
+#else
+#define MAYBE_PostCloseAllBrowsers PostCloseAllBrowsers
+#endif
 // Check that form data is restored after wrench menu quit.
-IN_PROC_BROWSER_TEST_F(ContinueWhereILeftOffTest, PostCloseAllBrowsers) {
+IN_PROC_BROWSER_TEST_F(ContinueWhereILeftOffTest, MAYBE_PostCloseAllBrowsers) {
   PostFormWithPage("post.html", false);
   Browser* new_browser = QuitBrowserAndRestore(browser(), true);
   CheckFormRestored(new_browser, true, false);
 }
 
+// Crashes on Mac and Windows. https://crbug.com/1169082
+#if defined(OS_MAC) || defined(OS_WIN)
+#define MAYBE_PostWithPasswordCloseAllBrowsers \
+  DISABLED_PostWithPasswordCloseAllBrowsers
+#else
+#define MAYBE_PostWithPasswordCloseAllBrowsers PostWithPasswordCloseAllBrowsers
+#endif
 // Check that form data with a password field is cleared after wrench menu quit.
 IN_PROC_BROWSER_TEST_F(ContinueWhereILeftOffTest,
-                       PostWithPasswordCloseAllBrowsers) {
+                       MAYBE_PostWithPasswordCloseAllBrowsers) {
   PostFormWithPage("post_with_password.html", true);
   Browser* new_browser = QuitBrowserAndRestore(browser(), true);
   CheckReloadedPageRestored(new_browser);
@@ -536,10 +549,17 @@ IN_PROC_BROWSER_TEST_F(ContinueWhereILeftOffTest,
     CheckReloadedPageNotRestored(new_browser);
 }
 
+// Crashes on Mac and Windows. https://crbug.com/1169082
+#if defined(OS_MAC) || defined(OS_WIN)
+#define MAYBE_CookiesClearedOnCloseAllBrowsers \
+  DISABLED_CookiesClearedOnCloseAllBrowsers
+#else
+#define MAYBE_CookiesClearedOnCloseAllBrowsers CookiesClearedOnCloseAllBrowsers
+#endif
 // Check that cookies are cleared on a wrench menu quit only if cookies are set
 // to current session only, regardless of whether background mode is enabled.
 IN_PROC_BROWSER_TEST_F(ContinueWhereILeftOffTest,
-                       CookiesClearedOnCloseAllBrowsers) {
+                       MAYBE_CookiesClearedOnCloseAllBrowsers) {
   StoreDataWithPage("cookies.html");
   // Normally cookies are restored.
   Browser* new_browser = QuitBrowserAndRestore(browser(), true);
