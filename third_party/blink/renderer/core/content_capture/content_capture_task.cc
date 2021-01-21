@@ -46,7 +46,12 @@ void ContentCaptureTask::TaskDelay::IncreaseDelayExponent() {
 
 ContentCaptureTask::ContentCaptureTask(LocalFrame& local_frame_root,
                                        TaskSession& task_session)
-    : local_frame_root_(&local_frame_root), task_session_(&task_session) {
+    : local_frame_root_(&local_frame_root),
+      task_session_(&task_session),
+      delay_task_(
+          local_frame_root_->GetTaskRunner(TaskType::kInternalContentCapture),
+          this,
+          &ContentCaptureTask::Run) {
   base::TimeDelta task_short_delay;
   base::TimeDelta task_long_delay;
 
@@ -268,23 +273,14 @@ void ContentCaptureTask::ScheduleInternal(ScheduleReason reason) {
   base::TimeDelta delay = GetAndAdjustDelay(reason);
 
   // Return if the current task is about to run soon.
-  if (delay_task_ && delay_task_->Value().IsActive() &&
-      delay_task_->Value().NextFireInterval() < delay) {
+  if (delay_task_.IsActive() && delay_task_.NextFireInterval() < delay) {
     return;
   }
 
-  if (!delay_task_) {
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-        local_frame_root_->GetTaskRunner(TaskType::kInternalContentCapture);
-    delay_task_ = MakeGarbageCollected<
-        DisallowNewWrapper<HeapTaskRunnerTimer<ContentCaptureTask>>>(
-        task_runner, this, &ContentCaptureTask::Run);
-  }
+  if (delay_task_.IsActive())
+    delay_task_.Stop();
 
-  if (delay_task_->Value().IsActive())
-    delay_task_->Value().Stop();
-
-  delay_task_->Value().StartOneShot(delay, FROM_HERE);
+  delay_task_.StartOneShot(delay, FROM_HERE);
   TRACE_EVENT_INSTANT1("content_capture", "ScheduleTask",
                        TRACE_EVENT_SCOPE_THREAD, "reason", reason);
   if (histogram_reporter_) {
@@ -309,17 +305,16 @@ bool ContentCaptureTask::ShouldPause() {
 }
 
 void ContentCaptureTask::CancelTask() {
-  if (delay_task_ && delay_task_->Value().IsActive())
-    delay_task_->Value().Stop();
+  if (delay_task_.IsActive())
+    delay_task_.Stop();
 }
 void ContentCaptureTask::ClearDocumentSessionsForTesting() {
   task_session_->ClearDocumentSessionsForTesting();
 }
 
 base::TimeDelta ContentCaptureTask::GetTaskNextFireIntervalForTesting() const {
-  return delay_task_ && delay_task_->Value().IsActive()
-             ? delay_task_->Value().NextFireInterval()
-             : base::TimeDelta();
+  return delay_task_.IsActive() ? delay_task_.NextFireInterval()
+                                : base::TimeDelta();
 }
 
 void ContentCaptureTask::CancelTaskForTesting() {

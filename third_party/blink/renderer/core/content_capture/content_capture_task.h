@@ -143,8 +143,7 @@ class CORE_EXPORT ContentCaptureTask
 
   Member<LocalFrame> local_frame_root_;
   Member<TaskSession> task_session_;
-  Member<DisallowNewWrapper<HeapTaskRunnerTimer<ContentCaptureTask>>>
-      delay_task_;
+  HeapTaskRunnerTimer<ContentCaptureTask> delay_task_;
   TaskState task_state_ = TaskState::kStop;
 
   std::unique_ptr<TaskDelay> task_delay_;
