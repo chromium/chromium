@@ -197,6 +197,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Profile.EphemeralGuest.Signin" enum="BooleanProfileSignedIn"
+    expires_after="2022-02-02">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-privacy-core@google.com</owner>
+  <summary>
+    This histogram records if user's sign-in state to a GAIA account in an
+    Ephemeral Guest profile is changed. This is recorded when user signs in and
+    when user signs out in an Ephemeral Guest profile.
+  </summary>
+</histogram>
+
 <histogram name="Profile.ExtensionSize" units="MB" expires_after="2018-08-30">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <summary>Size of the extension cookies database.</summary>
