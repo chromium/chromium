@@ -62,8 +62,6 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
                              int32_t request_id) override;
   void PrinterSettingsInvalid(int32_t document_cookie,
                               int32_t request_id) override;
-  void CheckForCancel(int32_t request_id,
-                      CheckForCancelCallback callback) override;
 
   bool IsBound() const;
 
@@ -132,7 +130,7 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
   // Determines whether to cancel a print preview request based on the request
   // id.
   // Can be called from any thread.
-  bool ShouldCancelRequest(int request_id) const;
+  static bool ShouldCancelRequest(int preview_ui_id, int request_id);
 
   // Returns an id to uniquely identify this PrintPreviewUI.
   base::Optional<int32_t> GetIDForPrintPreviewUI() const;

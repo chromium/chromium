@@ -21,8 +21,20 @@
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_job_constants.h"
 #include "printing/units.h"
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+#include "mojo/public/cpp/bindings/message.h"
+#endif
 
 namespace headless {
+
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+namespace {
+
+constexpr char kInvalidPathForCheckForCancel[] =
+    "Invalid path for CheckForCancel";
+
+}  // namespace
+#endif
 
 HeadlessPrintSettings::HeadlessPrintSettings()
     : prefer_css_page_size(false),
@@ -237,6 +249,16 @@ void HeadlessPrintManager::ShowInvalidPrinterSettingsError() {
 void HeadlessPrintManager::PrintingFailed(int32_t cookie) {
   ReleaseJob(PRINTING_FAILED);
 }
+
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+void HeadlessPrintManager::CheckForCancel(int32_t preview_ui_id,
+                                          int32_t request_id,
+                                          CheckForCancelCallback callback) {
+  // CheckForCancel should never be called on HeadlessPrintManager, since this
+  // is only triggered by Print Preview.
+  mojo::ReportBadMessage(kInvalidPathForCheckForCancel);
+}
+#endif
 
 void HeadlessPrintManager::DidPrintDocument(
     printing::mojom::DidPrintDocumentParamsPtr params,

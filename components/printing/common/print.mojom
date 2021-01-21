@@ -234,11 +234,6 @@ interface PrintPreviewUI {
   // printer driver is bogus).
   [EnableIf=enable_print_preview]
   PrinterSettingsInvalid(int32 document_cookie, int32 request_id);
-
-  // Asks the browser whether the print preview has been cancelled. It
-  // gets true if the preview for |request_id| has been cancelled.
-  [EnableIf=enable_print_preview, Sync]
-  CheckForCancel(int32 request_id) => (bool cancel);
 };
 
 // Render process interface exposed to the browser to handle most of the
@@ -344,4 +339,10 @@ interface PrintManagerHost {
   // Asks the browser to do print preview.
   [EnableIf=enable_print_preview]
   RequestPrintPreview(RequestPrintPreviewParams params);
+
+  // Asks the browser whether the print preview has been cancelled. It
+  // gets true if the preview corresponding to |preview_ui_id| and |request_id|
+  // has been cancelled.
+  [EnableIf=enable_print_preview, Sync]
+  CheckForCancel(int32 preview_ui_id, int32 request_id) => (bool cancel);
 };

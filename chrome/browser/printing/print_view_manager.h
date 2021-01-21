@@ -62,6 +62,9 @@ class PrintViewManager : public PrintViewManagerBase,
   void DidShowPrintDialog() override;
   void ShowScriptedPrintPreview(bool source_is_modifiable) override;
   void RequestPrintPreview(mojom::RequestPrintPreviewParamsPtr params) override;
+  void CheckForCancel(int32_t preview_ui_id,
+                      int32_t request_id,
+                      CheckForCancelCallback callback) override;
 
   // content::WebContentsObserver implementation.
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;

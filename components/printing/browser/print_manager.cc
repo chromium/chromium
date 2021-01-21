@@ -71,6 +71,10 @@ void PrintManager::ShowScriptedPrintPreview(bool source_is_modifiable) {}
 
 void PrintManager::RequestPrintPreview(
     mojom::RequestPrintPreviewParamsPtr params) {}
+
+void PrintManager::CheckForCancel(int32_t preview_ui_id,
+                                  int32_t request_id,
+                                  CheckForCancelCallback callback) {}
 #endif
 
 bool PrintManager::IsPrintRenderFrameConnected(content::RenderFrameHost* rfh) {
