@@ -5,7 +5,7 @@
 <link rel="import" href="/components/common_styles.html">
 <link rel="import" href="/components/hd_iron_icon.html">
 <link rel="import" href="/components/oobe_i18n_behavior.html">
-<link rel="import" href="/components/oobe_dialog.html">
+<link rel="import" href="/components/oobe_adaptive_dialog.html">
 
 <iron-iconset-svg name="oobe-hid-detection" size="24">
   <svg>
@@ -55,12 +55,16 @@
   <template>
     <style include="oobe-dialog-host"></style>
     <link rel="stylesheet" href="oobe_hid_detection.css">
-    <oobe-dialog has-buttons
-        title-key="hidDetectionInvitation"
-        subtitle-key="hidDetectionPrerequisites">
-      <iron-icon icon="oobe-hid-detection:bluetooth" slot="oobe-icon">
+    <oobe-adaptive-dialog>
+      <iron-icon icon="oobe-hid-detection:bluetooth" slot="icon">
       </iron-icon>
-      <div slot="footer" class="flex layout vertical">
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'hidDetectionInvitation')]]
+      </h1>
+      <div slot="subtitle">
+        [[i18nDynamic(locale, 'hidDetectionPrerequisites')]]
+      </div>
+      <div slot="content" class="flex layout vertical">
         <div class="layout vertical justified hid-selection-entry">
           <div id="hid-mouse-row" class="flex layout horizontal center">
             <hd-iron-icon id="mouse-icon" alt=""
@@ -91,13 +95,13 @@
           </div>
         </div>
       </div>
-      <div slot="bottom-buttons" class="flex layout horizontal end-justified">
+      <div slot="bottom-buttons">
         <oobe-text-button inverse on-click="onHIDContinueTap_"
             text-key="hidDetectionContinue"
             id="hid-continue-button"
             disabled="[[!continueButtonEnabled]]"></oobe-text-button>
       </div>
-    </oobe-dialog>
+    </oobe-adaptive-dialog>
 
     <!-- Popup that displays the PIN for pairing with a bluetooth keyboard. -->
     <oobe-modal-dialog id="hid-pin-popup" on-close="onPinDialogClosed_">
