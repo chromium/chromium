@@ -74,7 +74,6 @@ int GetEventFlags(apps::mojom::LaunchContainer container,
 // for a system web app, or for a web app not opened in tab. Otherwise, returns
 // an invalid session id.
 int GetSessionIdForRestoreFromWebContents(
-    apps::mojom::LaunchContainer container,
     const content::WebContents* web_contents);
 
 }  // namespace apps

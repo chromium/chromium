@@ -13,6 +13,13 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/apps/app_service/launch_utils.h"
+#include "components/full_restore/app_launch_info.h"
+#include "components/full_restore/full_restore_utils.h"
+#include "components/sessions/core/session_id.h"
+#endif
+
 namespace apps {
 
 BrowserAppLauncher::BrowserAppLauncher(Profile* profile)
@@ -26,7 +33,38 @@ content::WebContents* BrowserAppLauncher::LaunchAppWithParams(
       extensions::ExtensionRegistry::Get(profile_)->GetInstalledExtension(
           params.app_id);
   if (!extension || extension->from_bookmark()) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    AppLaunchParams params_for_restore(
+        params.app_id, params.container, params.disposition, params.source,
+        params.display_id, params.launch_files, params.intent);
+    int restore_id = params.restore_id;
+
+    auto* web_contents =
+        web_app_launch_manager_.OpenApplication(std::move(params));
+
+    if (!SessionID::IsValidValue(restore_id)) {
+      return web_contents;
+    }
+
+    int session_id = GetSessionIdForRestoreFromWebContents(web_contents);
+    if (!SessionID::IsValidValue(session_id)) {
+      return web_contents;
+    }
+
+    // If the restore id is available, save the launch parameters to the full
+    // restore file for the system web apps.
+    auto launch_info = std::make_unique<full_restore::AppLaunchInfo>(
+        params_for_restore.app_id, session_id, params_for_restore.container,
+        params_for_restore.disposition, params_for_restore.display_id,
+        std::move(params_for_restore.launch_files),
+        std::move(params_for_restore.intent));
+    full_restore::SaveAppLaunchInfo(profile_->GetPath(),
+                                    std::move(launch_info));
+
+    return web_contents;
+#else
     return web_app_launch_manager_.OpenApplication(std::move(params));
+#endif
   }
 
   if (params.container ==

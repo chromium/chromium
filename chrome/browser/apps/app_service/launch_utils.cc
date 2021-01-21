@@ -227,7 +227,6 @@ int GetEventFlags(apps::mojom::LaunchContainer container,
 }
 
 int GetSessionIdForRestoreFromWebContents(
-    apps::mojom::LaunchContainer container,
     const content::WebContents* web_contents) {
   if (!web_contents) {
     return SessionID::InvalidValue().id();
