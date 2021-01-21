@@ -81595,6 +81595,35 @@
         {}
        ]
       ],
+      "image-orientation-img-object-fit.html": [
+       "5551eb938455a3f56e2860c9d2af24dde12e1b98",
+       [
+        null,
+        [
+         [
+          "/css/css-images/image-orientation/reference/image-orientation-img-object-fit-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             5
+            ],
+            [
+             0,
+             375
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
       "image-orientation-list-style-image.html": [
        "ac735626dbd1ec8a0743cf480bddc40d85e93149",
        [
@@ -196350,6 +196379,10 @@
         "a9e9b3fbe308329defb6ecd6612eb10ff07cba13",
         []
        ],
+       "image-orientation-img-object-fit-ref.html": [
+        "0d84291e8a592395de745f4cec7635de0e381427",
+        []
+       ],
        "image-orientation-list-style-image-ref.html": [
         "8dcef6a243927f927f9d6e42709959f265332db9",
         []
@@ -216546,6 +216579,10 @@
      ],
      "typing-around-link-element-at-non-collapsed-selection.tentative_target=DesignMode_child=b-expected.txt": [
       "2584e79549405bfcfdd69f5f6e327deeb65a5a87",
+      []
+     ],
+     "typing-around-link-element-at-non-collapsed-selection.tentative_target=DesignMode_parent=b-expected.txt": [
+      "739ba50c81524fc8c424880738e41661f0e30a2e",
       []
      ],
      "typing-around-link-element-at-non-collapsed-selection.tentative_target=DesignMode_parent=b_child=i-expected.txt": [
@@ -310310,7 +310347,7 @@
      ]
     },
     "historical.html": [
-     "dcbd9f0b2327aa654b8787bdb294e5582e2fc1a8",
+     "8a71e364e5ef30a0f9d9621d3eb018a34d42ae4c",
      [
       null,
       {}
