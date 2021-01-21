@@ -160,7 +160,7 @@ class NativeIOManagerTest : public testing::Test {
         base::ThreadTaskRunnerHandle::Get().get(),
         /*special storage policy=*/nullptr);
     quota_manager_proxy_ = base::MakeRefCounted<storage::MockQuotaManagerProxy>(
-        quota_manager(), base::ThreadTaskRunnerHandle::Get().get());
+        quota_manager(), base::ThreadTaskRunnerHandle::Get());
     manager_ = std::make_unique<NativeIOManager>(
         data_dir_.GetPath(),
         /*special storage policy=*/nullptr, quota_manager_proxy());

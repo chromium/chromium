@@ -8,6 +8,8 @@
 #include <stdint.h>
 
 #include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/sequenced_task_runner.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -25,9 +27,10 @@ enum class QuotaClientType;
 
 class MockQuotaManagerProxy : public QuotaManagerProxy {
  public:
-  // It is ok to give nullptr to |quota_manager|.
-  MockQuotaManagerProxy(MockQuotaManager* quota_manager,
-                        base::SingleThreadTaskRunner* task_runner);
+  // It is ok to give nullptr to `quota_manager`.
+  MockQuotaManagerProxy(
+      MockQuotaManager* quota_manager,
+      scoped_refptr<base::SequencedTaskRunner> quota_manager_task_runner);
 
   void RegisterClient(
       mojo::PendingRemote<mojom::QuotaClient> client,

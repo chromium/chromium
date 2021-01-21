@@ -30,6 +30,7 @@
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_clock.h"
 #include "components/services/storage/indexed_db/scopes/disjoint_range_lock_manager.h"
 #include "components/services/storage/indexed_db/scopes/varint_coding.h"
@@ -289,8 +290,9 @@ class IndexedDBBackingStoreTest : public testing::Test {
  public:
   IndexedDBBackingStoreTest()
       : quota_manager_proxy_(
-            base::MakeRefCounted<storage::MockQuotaManagerProxy>(nullptr,
-                                                                 nullptr)) {}
+            base::MakeRefCounted<storage::MockQuotaManagerProxy>(
+                nullptr,
+                base::ThreadTaskRunnerHandle::Get())) {}
 
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());

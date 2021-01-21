@@ -35,6 +35,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/pass_key.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "storage/browser/quota/client_usage_tracker.h"
@@ -908,10 +909,10 @@ QuotaManager::QuotaManager(
     : RefCountedDeleteOnSequence<QuotaManager>(io_thread),
       is_incognito_(is_incognito),
       profile_path_(profile_path),
-      proxy_(new QuotaManagerProxy(this, io_thread)),
+      proxy_(base::MakeRefCounted<QuotaManagerProxy>(this, io_thread)),
       db_disabled_(false),
       eviction_disabled_(false),
-      io_thread_(io_thread),
+      io_thread_(std::move(io_thread)),
       db_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
@@ -1271,7 +1272,7 @@ bool QuotaManager::ResetUsageTracker(StorageType type) {
 }
 
 QuotaManager::~QuotaManager() {
-  proxy_->manager_ = nullptr;
+  proxy_->InvalidateQuotaManager(base::PassKey<QuotaManager>());
 
   // Iterating over `legacy_clients_for_ownership_` is correct here because we
   // want to call OnQuotaManagerDestroyed() once per QuotaClient.

@@ -197,7 +197,7 @@ class CopyOrMoveOperationTestHelper {
         base::ThreadTaskRunnerHandle::Get().get(),
         nullptr /* special storage policy */);
     quota_manager_proxy_ = base::MakeRefCounted<MockQuotaManagerProxy>(
-        quota_manager_.get(), base::ThreadTaskRunnerHandle::Get().get());
+        quota_manager_.get(), base::ThreadTaskRunnerHandle::Get());
     file_system_context_ =
         CreateFileSystemContextForTesting(quota_manager_proxy_.get(), base_dir);
 

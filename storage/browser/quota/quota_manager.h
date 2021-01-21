@@ -520,8 +520,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManager
   const bool is_incognito_;
   const base::FilePath profile_path_;
 
-  // proxy_ can be accessed by any thread so it must be thread-safe
+  // This member is thread-safe. The scoped_refptr is immutable (the object it
+  // points to never changes), and the underlying object is thread-safe.
   const scoped_refptr<QuotaManagerProxy> proxy_;
+
   bool db_disabled_;
   bool eviction_disabled_;
   base::Optional<url::Origin> origin_for_pending_storage_pressure_callback_;

@@ -565,12 +565,12 @@ class CacheStorageCacheTest : public testing::Test {
 
     quota_policy_ = base::MakeRefCounted<storage::MockSpecialStoragePolicy>();
     mock_quota_manager_ = base::MakeRefCounted<storage::MockQuotaManager>(
-        is_incognito, temp_dir_path_, base::ThreadTaskRunnerHandle::Get().get(),
-        quota_policy_.get());
+        is_incognito, temp_dir_path_, base::ThreadTaskRunnerHandle::Get(),
+        quota_policy_);
     SetQuota(1024 * 1024 * 100);
 
     quota_manager_proxy_ = base::MakeRefCounted<storage::MockQuotaManagerProxy>(
-        mock_quota_manager_.get(), base::ThreadTaskRunnerHandle::Get().get());
+        mock_quota_manager_.get(), base::ThreadTaskRunnerHandle::Get());
 
     CreateRequests(blob_storage_context);
 

@@ -62,7 +62,7 @@ class FileSystemOperationImplTest : public testing::Test {
         base::ThreadTaskRunnerHandle::Get().get(),
         /* special storage policy= */ nullptr);
     quota_manager_proxy_ = base::MakeRefCounted<MockQuotaManagerProxy>(
-        quota_manager(), base::ThreadTaskRunnerHandle::Get().get());
+        quota_manager(), base::ThreadTaskRunnerHandle::Get());
     sandbox_file_system_.SetUp(base_dir, quota_manager_proxy_.get());
     sandbox_file_system_.AddFileChangeObserver(&change_observer_);
     sandbox_file_system_.AddFileUpdateObserver(&update_observer_);

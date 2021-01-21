@@ -14,8 +14,8 @@ namespace storage {
 
 MockQuotaManagerProxy::MockQuotaManagerProxy(
     MockQuotaManager* quota_manager,
-    base::SingleThreadTaskRunner* task_runner)
-    : QuotaManagerProxy(quota_manager, task_runner),
+    scoped_refptr<base::SequencedTaskRunner> quota_manager_task_runner)
+    : QuotaManagerProxy(quota_manager, std::move(quota_manager_task_runner)),
       storage_accessed_count_(0),
       storage_modified_count_(0),
       last_notified_type_(blink::mojom::StorageType::kUnknown),

@@ -4,6 +4,7 @@
 
 #include "content/browser/appcache/appcache_storage.h"
 
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "content/browser/appcache/appcache.h"
 #include "content/browser/appcache/appcache_group.h"
 #include "content/browser/appcache/appcache_response_info.h"
@@ -144,8 +145,8 @@ TEST_F(AppCacheStorageTest, UsageMap) {
   const url::Origin kOrigin2(url::Origin::Create(GURL("http://origin2/")));
 
   MockAppCacheService service;
-  scoped_refptr<storage::MockQuotaManagerProxy> mock_proxy =
-      base::MakeRefCounted<storage::MockQuotaManagerProxy>(nullptr, nullptr);
+  auto mock_proxy = base::MakeRefCounted<storage::MockQuotaManagerProxy>(
+      nullptr, base::SequencedTaskRunnerHandle::Get());
   service.set_quota_manager_proxy(mock_proxy.get());
 
   service.storage()->UpdateUsageMapAndNotify(kOrigin, 0);

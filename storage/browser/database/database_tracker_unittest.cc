@@ -13,6 +13,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -100,7 +101,8 @@ void CheckNotificationReceived(TestObserver* observer,
 class TestQuotaManagerProxy : public QuotaManagerProxy {
  public:
   TestQuotaManagerProxy()
-      : QuotaManagerProxy(nullptr, nullptr), registered_client_(nullptr) {}
+      : QuotaManagerProxy(nullptr, base::SequencedTaskRunnerHandle::Get()),
+        registered_client_(nullptr) {}
 
   void RegisterLegacyClient(
       scoped_refptr<QuotaClient> client,

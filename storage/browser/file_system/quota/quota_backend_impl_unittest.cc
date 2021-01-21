@@ -42,7 +42,7 @@ bool DidReserveQuota(bool accepted,
 class MockQuotaManagerProxy : public QuotaManagerProxy {
  public:
   MockQuotaManagerProxy()
-      : QuotaManagerProxy(nullptr, nullptr),
+      : QuotaManagerProxy(nullptr, base::ThreadTaskRunnerHandle::Get()),
         storage_modified_count_(0),
         usage_(0),
         quota_(0) {}

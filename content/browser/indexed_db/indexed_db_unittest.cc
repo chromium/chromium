@@ -86,8 +86,9 @@ class IndexedDBTest : public testing::Test {
       : kNormalOrigin(url::Origin::Create(GURL("http://normal/"))),
         kSessionOnlyOrigin(url::Origin::Create(GURL("http://session-only/"))),
         quota_manager_proxy_(
-            base::MakeRefCounted<storage::MockQuotaManagerProxy>(nullptr,
-                                                                 nullptr)),
+            base::MakeRefCounted<storage::MockQuotaManagerProxy>(
+                nullptr,
+                base::SequencedTaskRunnerHandle::Get())),
         context_(base::MakeRefCounted<IndexedDBContextImpl>(
             CreateAndReturnTempDir(&temp_dir_),
             quota_manager_proxy_.get(),
@@ -153,11 +154,10 @@ class IndexedDBTest : public testing::Test {
 
  protected:
   IndexedDBContextImpl* context() const { return context_.get(); }
-  scoped_refptr<storage::MockQuotaManagerProxy> quota_manager_proxy_;
 
- private:
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
+  scoped_refptr<storage::MockQuotaManagerProxy> quota_manager_proxy_;
   scoped_refptr<IndexedDBContextImpl> context_;
 
   DISALLOW_COPY_AND_ASSIGN(IndexedDBTest);
