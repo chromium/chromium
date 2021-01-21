@@ -72,8 +72,6 @@ class UnitTest(unittest.TestCase):
         'trigger',
         '--swarming',
         'http://foo_server',
-        '--auth-service-account-json',
-        '/creds/test_service_account',
         '--dimension',
         'pool',
         'chrome-perf-fyi',
@@ -182,9 +180,6 @@ class UnitTest(unittest.TestCase):
       self.assertTrue('query' in triggerer._swarming_runs[i])
       self.assertTrue(self.list_contains_sublist(
         triggerer._swarming_runs[i], ['-S', 'foo_server']))
-      self.assertTrue(self.list_contains_sublist(
-        triggerer._swarming_runs[i], ['--auth-service-account-json',
-                                      '/creds/test_service_account']))
 
   def get_triggered_shard_to_bot(self, triggerer, num_shards):
     self.assert_query_swarming_args(triggerer, num_shards)

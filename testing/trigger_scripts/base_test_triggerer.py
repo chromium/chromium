@@ -155,8 +155,7 @@ class BaseTestTriggerer(object):
   # swarming to its own object to make trigger logic more clear.
   def query_swarming(self, api, query_args, verbose,
                      limit='0',
-                     server='chromium-swarm.appspot.com',
-                     service_account=None):
+                     server='chromium-swarm.appspot.com'):
     try:
       temp_file = self.make_temp_file(prefix='base_trigger_dimensions',
                                       suffix='.json')
@@ -168,10 +167,6 @@ class BaseTestTriggerer(object):
              limit,
              '--json',
              temp_file]
-      # Add in service account auth if present
-      if service_account:
-        args.append('--auth-service-account-json')
-        args.append(service_account)
       # Append the query at the end
       args.append(('%s?%s' % (api, encoded_args)))
       ret = self.run_swarming(args, verbose)
