@@ -742,7 +742,7 @@ class ScopedCancellingItem {
   ~ScopedCancellingItem() {
     item_->Cancel(true);
     content::DownloadUpdatedObserver observer(
-        item_, base::Bind(&ItemNotInProgress));
+        item_, base::BindRepeating(&ItemNotInProgress));
     observer.WaitForEvent();
   }
   DownloadItem* get() { return item_; }
@@ -765,7 +765,7 @@ class ScopedItemVectorCanceller {
       if ((*item)->GetState() == DownloadItem::IN_PROGRESS)
         (*item)->Cancel(true);
       content::DownloadUpdatedObserver observer(
-          (*item), base::Bind(&ItemNotInProgress));
+          (*item), base::BindRepeating(&ItemNotInProgress));
       observer.WaitForEvent();
     }
   }
@@ -805,11 +805,12 @@ class HTML5FileWriter {
 
  private:
   static void CopyInCompletion(bool* result,
-                               const base::Closure& quit_closure,
+                               base::OnceClosure quit_closure,
                                base::File::Error error) {
     DCHECK_CURRENTLY_ON(BrowserThread::IO);
     *result = error == base::File::FILE_OK;
-    content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, quit_closure);
+    content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE,
+                                                 std::move(quit_closure));
   }
 
   static void CreateFileForTestingOnIOThread(
@@ -817,12 +818,12 @@ class HTML5FileWriter {
       const storage::FileSystemURL& path,
       const base::FilePath& temp_file,
       bool* result,
-      const base::Closure& quit_closure) {
+      base::OnceClosure quit_closure) {
     DCHECK_CURRENTLY_ON(BrowserThread::IO);
     context->operation_runner()->CopyInForeignFile(
         temp_file, path,
         base::BindOnce(&CopyInCompletion, base::Unretained(result),
-                       quit_closure));
+                       std::move(quit_closure)));
   }
 };
 
@@ -4271,8 +4272,8 @@ IN_PROC_BROWSER_TEST_F(
                           item->GetId(),
                           GetFilename("42.txt").c_str())));
 
-  content::DownloadUpdatedObserver interrupted(item, base::Bind(
-      ItemIsInterrupted));
+  content::DownloadUpdatedObserver interrupted(
+      item, base::BindRepeating(ItemIsInterrupted));
   ASSERT_TRUE(interrupted.WaitForEvent());
   ASSERT_TRUE(WaitFor(downloads::OnChanged::kEventName,
                       base::StringPrintf(
@@ -4384,7 +4385,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
           GetCurrentManager(), 1,
           content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_IGNORE));
   DownloadsAcceptDangerFunction::OnPromptCreatedCallback callback =
-      base::Bind(&OnDangerPromptCreated);
+      base::BindOnce(&OnDangerPromptCreated);
   DownloadsAcceptDangerFunction::OnPromptCreatedForTesting(
       &callback);
   ExtensionActionTestHelper::Create(current_browser())->Press(0);

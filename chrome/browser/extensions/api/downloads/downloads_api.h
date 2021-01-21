@@ -187,7 +187,8 @@ class DownloadsRemoveFileFunction : public ExtensionFunction {
 
 class DownloadsAcceptDangerFunction : public ExtensionFunction {
  public:
-  typedef base::Callback<void(DownloadDangerPrompt*)> OnPromptCreatedCallback;
+  using OnPromptCreatedCallback =
+      base::OnceCallback<void(DownloadDangerPrompt*)>;
   static void OnPromptCreatedForTesting(
       OnPromptCreatedCallback* callback) {
     on_prompt_created_ = callback;
