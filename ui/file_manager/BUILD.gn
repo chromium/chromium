@@ -374,6 +374,7 @@ preprocess_if_expr("preprocess_generated") {
     "//ui/file_manager/base/js:modulize",
     "//ui/file_manager/externs:modulize",
     "//ui/file_manager/externs/background:modulize",
+    "//ui/file_manager/file_manager:gen_main_html",
     "//ui/file_manager/file_manager/background/js:modulize",
     "//ui/file_manager/file_manager/common/js:modulize",
     "//ui/file_manager/file_manager/cws_widget:modulize",
@@ -408,8 +409,9 @@ generate_grd("build_grd") {
     "file_manager/foreground/elements/files_toggle_ripple.m.js",
     "file_manager/foreground/js/deferred_elements.m.rollup.js",
     "file_manager/foreground/js/main.m.rollup.js",
-    "file_manager/foreground/js/shared.m.rollup.js",
     "file_manager/foreground/js/metadata_dispatcher.m.rollup.js",
+    "file_manager/foreground/js/shared.m.rollup.js",
+    "file_manager/main_modules.html",
 
     "video_player/js/main.m.rollup.js",
     "video_player/js/main_background.m.rollup.js",
