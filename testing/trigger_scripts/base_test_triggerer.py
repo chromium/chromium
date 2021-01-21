@@ -234,10 +234,29 @@ class BaseTestTriggerer(object):
       logging.info('Running Swarming with args: %s', args)
     return subprocess.call([sys.executable, SWARMING_PY] + args)
 
-  def run_swarming_go(self, args, verbose):
+  def run_swarming_go(self, args, verbose, json_path, shard_index, shards,
+                      merged_json=None):
     if verbose:
       logging.info('Running Go `swarming` with args: %s', args)
-    return subprocess.call([SWARMING_GO] + _convert_to_go_swarming_args(args))
+
+    if merged_json is None:
+      merged_json = {}
+
+    if 'tasks' not in merged_json:
+      merged_json['tasks'] = {}
+
+    ret = subprocess.call([SWARMING_GO] + _convert_to_go_swarming_args(args))
+    result_json = self.read_json_from_temp_file(json_path)
+
+    tasks = {
+      task['request']['task_id']: task['request']
+      for task  in result_json['tasks']
+    }
+    for k, v in tasks.items():
+      v['shard_index'] = shard_index
+      merged_json['tasks'][k + ':%d:%d' % (shard_index, shards)] = v
+    self.write_json_to_file(merged_json, json_path)
+    return ret
 
   def prune_test_specific_configs(self, args, verbose):
     # Ability for base class to further prune configs to
@@ -302,12 +321,19 @@ class BaseTestTriggerer(object):
         args_to_pass = self.modify_args(filtered_remaining_args, bot_index,
                                         shard_index, args.shards, json_temp)
         if args.use_swarming_go:
-          ret = self.run_swarming_go(args_to_pass, verbose)
+          ret = self.run_swarming_go(
+            args_to_pass, verbose, json_temp, shard_index, args.shards,
+            merged_json)
         else:
           ret = self.run_swarming(args_to_pass, verbose)
         if ret:
           sys.stderr.write('Failed to trigger a task, aborting\n')
           return ret
+
+        if args.use_swarming_go:
+          continue
+
+        # TODO(crbug.com/1127205): remove belows in this block.
         result_json = self.read_json_from_temp_file(json_temp)
         if not merged_json:
           # Copy the entire JSON -- in particular, the "request"
@@ -319,11 +345,6 @@ class BaseTestTriggerer(object):
           # which will be handled specially.
           merged_json['tasks'] = {}
         tasks = result_json['tasks']
-        if args.use_swarming_go:
-          # TODO(crbug.com/1127205): remove this
-          tasks = {
-            task['request']['task_id']: task['request'] for task in tasks
-          }
         for k, v in tasks.items():
           v['shard_index'] = shard_index
           merged_json['tasks'][k + ':%d:%d' % (shard_index, args.shards)] = v
