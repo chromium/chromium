@@ -1416,7 +1416,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': [
-        'chrome.win:89-',
+        'chrome.win:90-',
       ],
       'features': {
         'can_be_recommended': False,
