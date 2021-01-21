@@ -36,7 +36,7 @@ class PrefRegistrySyncable;
 namespace device {
 class FidoAuthenticator;
 class FidoDiscoveryFactory;
-}
+}  // namespace device
 
 class ChromeAuthenticatorRequestDelegate
     : public content::AuthenticatorRequestClientDelegate,
@@ -95,6 +95,8 @@ class ChromeAuthenticatorRequestDelegate
       base::OnceCallback<void(device::AuthenticatorGetAssertionResponse)>
           callback) override;
   bool IsFocused() override;
+  base::Optional<bool> IsUserVerifyingPlatformAuthenticatorAvailableOverride()
+      override;
   void UpdateLastTransportUsed(
       device::FidoTransportProtocol transport) override;
   void DisableUI() override;

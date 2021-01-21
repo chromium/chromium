@@ -248,6 +248,7 @@ class AuthenticatorOffTheRecordInterstitialSheetModel
   bool IsAcceptButtonVisible() const override;
   bool IsAcceptButtonEnabled() const override;
   base::string16 GetAcceptButtonLabel() const override;
+  base::string16 GetCancelButtonLabel() const override;
   void OnAccept() override;
 
   std::unique_ptr<OtherTransportsMenuModel> other_transports_menu_model_;

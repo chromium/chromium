@@ -10642,7 +10642,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_WEBAUTHN_GENERIC_TITLE" desc="Title of most dialogs shown while the user is authenticating on a web site using a security key.">
         Use your security key with <ph name="APP_NAME">$1<ex>google.com</ex></ph>
       </message>
-      <message name="IDS_WEBAUTHN_WELCOME_SCREEN_NEXT" desc="Button text to continue using a security key for authentication on the web for the very first time.">
+      <message name="IDS_WEBAUTHN_CONTINUE" desc="Label of a button to continue in the dialog shown when using a security key.">
         Continue
       </message>
       <message name="IDS_WEBAUTHN_TRANSPORT_SELECTION_TITLE" desc="Title of the dialog instructing the user to choose how they want to connect their security key with their computer, e.g. USB or Bluetooth.">
@@ -10884,17 +10884,15 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_WEBAUTHN_RETRY" desc="Button text. The user clicks this to retry the authentication flow after an error happened, e.g. to try with a different Security Key.">
         Try again
       </message>
-   </if>
-   <if expr="is_macosx">
-     <message name="IDS_WEBAUTHN_TOUCH_ID_INCOGNITO_BUMP_TITLE" desc="Title of the dialog shown when the user attempts to set up sign-in with Touch ID on a website in incognito mode." meaning="'Touch ID' is the fingerprint recognition feature in macOS. Try to refer Apple support documentation in the target language for the appropriate product name translation.">
-       Do you want to use Touch ID with <ph name="APP_NAME">$1<ex>example.com</ex></ph> in Incognito mode?
-     </message>
-     <message name="IDS_WEBAUTHN_TOUCH_ID_INCOGNITO_BUMP_DESCRIPTION" desc="Description of the dialog shown when the user attempts to set up sign-in with Touch ID on a website in incognito mode." meaning="'Touch ID' is the fingerprint recognition feature in macOS. Try to refer Apple support documentation in the target language for the appropriate product name translation.">
-       Sign-in data will be stored in Chrome after you exit Incognito mode. This will let you use Touch ID with this website again later.
-     </message>
-     <message name="IDS_WEBAUTHN_TOUCH_ID_INCOGNITO_BUMP_CONTINUE" desc="Label of the button to continue from a dialog shown when the user attempts to set up sign-in with Touch ID on a website in incognito mode." meaning="'Touch ID' is the fingerprint recognition feature in macOS. Try to refer Apple support documentation in the target language for the appropriate product name translation.">
-       Continue
-     </message>
+      <message name="IDS_WEBAUTHN_PLATFORM_AUTHENTICATOR_OFF_THE_RECORD_INTERSTITIAL_TITLE" desc="Title of a dialog that asks for the user's permission to set up device-based sign-in (i.e. using their computer's biometric sensor or screen unlock/PIN) on a website while browsing in Incognito mode.">
+         Use your device to sign in to <ph name="APP_NAME">$1<ex>example.com</ex></ph>?
+      </message>
+      <message name="IDS_WEBAUTHN_PLATFORM_AUTHENTICATOR_OFF_THE_RECORD_INTERSTITIAL_DESCRIPTION" desc="Description of a dialog that asks for the user's permission to set up device-based sign-in (i.e. using their computer's biometric sensor or screen unlock/PIN) on a website while browsing in Incognito mode.">
+         Sign-in data will be stored on this device after you exit Incognito mode. You'll be able to sign in to this website with your device again later.
+      </message>
+      <message name="IDS_WEBAUTHN_PLATFORM_AUTHENTICATOR_OFF_THE_RECORD_INTERSTITIAL_DENY" desc="Button label on a dialog that asks for the user's permission to set up device-based sign-in (i.e. using their computer's biometric sensor or screen unlock/PIN) on a website while browsing in Incognito mode.">
+         No thanks
+      </message>
    </if>
 
    <!-- Incognito Profile Menu bubble. -->

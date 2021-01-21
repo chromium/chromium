@@ -90,7 +90,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
 #endif  // defined(OS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Records the callback to generates request_id.
+  // Sets a callback to generate an identifier when making DBUS requests to
+  // u2fd.
   void set_generate_request_id_callback(base::RepeatingCallback<uint32_t()>);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

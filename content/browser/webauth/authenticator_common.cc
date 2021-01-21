@@ -503,6 +503,7 @@ void IsUserVerifyingPlatformAuthenticatorAvailableImpl(
     return;
   }
 
+  // Check for a delegate override. Chrome overrides IsUVPAA() in Guest mode.
   base::Optional<bool> is_uvpaa_override =
       delegate->IsUserVerifyingPlatformAuthenticatorAvailableOverride();
   if (is_uvpaa_override) {
@@ -517,6 +518,8 @@ void IsUserVerifyingPlatformAuthenticatorAvailableImpl(
                           IsUVPlatformAuthenticatorAvailable(*config));
   return;
 #elif defined(OS_WIN)
+  // TODO(crbug.com/908622): Enable platform authenticators in Incognito on
+  // Windows once the API allows triggering an adequate warning dialog.
   if (browser_context->IsOffTheRecord()) {
     std::move(callback).Run(false);
     return;
@@ -526,11 +529,6 @@ void IsUserVerifyingPlatformAuthenticatorAvailableImpl(
       discovery_factory->win_webauthn_api()));
   return;
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
-  if (browser_context->IsOffTheRecord()) {
-    std::move(callback).Run(false);
-    return;
-  }
-
   // ChromeOS needs to do a dbus call to determine platform authenticator
   // availability. The call is fast in practice, but nonetheless may
   // theoretically block.
@@ -563,23 +561,24 @@ base::flat_set<device::FidoTransportProtocol> GetAvailableTransports(
   base::flat_set<device::FidoTransportProtocol> transports;
   transports.insert(device::FidoTransportProtocol::kUsbHumanInterfaceDevice);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO(crbug.com/1157651): Work around CrOS platform authenticator being
-  // unavailable in Incognito.
-  if (!content::WebContents::FromRenderFrameHost(render_frame_host)
-           ->GetBrowserContext()
-           ->IsOffTheRecord()) {
+  // Only instantiate platform discovery if the embedder hasn't chosen to
+  // override IsUserVerifyingPlatformAuthenticatorAvailable() to be false.
+  // Chrome disables platform authenticators in Guest modes this way.
+  base::Optional<bool> embedder_isuvpaa_override =
+      delegate->IsUserVerifyingPlatformAuthenticatorAvailableOverride();
+  if (!embedder_isuvpaa_override || *embedder_isuvpaa_override) {
     transports.insert(device::FidoTransportProtocol::kInternal);
   }
-#else
-  transports.insert(device::FidoTransportProtocol::kInternal);
-#endif
 
   if (discovery_factory->IsTestOverride()) {
     // The desktop implementation does not support BLE or NFC, but we emulate
     // them if the testing API is enabled.
     transports.insert(device::FidoTransportProtocol::kBluetoothLowEnergy);
     transports.insert(device::FidoTransportProtocol::kNearFieldCommunication);
+
+    // Ensure virtual platform authenticators can be instantiated even if they
+    // are not-user-verifying, i.e. IsUVPAA() returns false.
+    transports.insert(device::FidoTransportProtocol::kInternal);
   }
 
   if (base::FeatureList::IsEnabled(features::kWebAuthCable) ||

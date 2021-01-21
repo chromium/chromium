@@ -494,22 +494,15 @@ AuthenticatorOffTheRecordInterstitialSheetModel::GetStepIllustration(
 
 base::string16 AuthenticatorOffTheRecordInterstitialSheetModel::GetStepTitle()
     const {
-#if defined(OS_MAC)
-  return l10n_util::GetStringFUTF16(IDS_WEBAUTHN_TOUCH_ID_INCOGNITO_BUMP_TITLE,
-                                    GetRelyingPartyIdString(dialog_model()));
-#else
-  return base::string16();
-#endif  // defined(OS_MAC)
+  return l10n_util::GetStringFUTF16(
+      IDS_WEBAUTHN_PLATFORM_AUTHENTICATOR_OFF_THE_RECORD_INTERSTITIAL_TITLE,
+      GetRelyingPartyIdString(dialog_model()));
 }
 
 base::string16
 AuthenticatorOffTheRecordInterstitialSheetModel::GetStepDescription() const {
-#if defined(OS_MAC)
   return l10n_util::GetStringUTF16(
-      IDS_WEBAUTHN_TOUCH_ID_INCOGNITO_BUMP_DESCRIPTION);
-#else
-  return base::string16();
-#endif  // defined(OS_MAC)
+      IDS_WEBAUTHN_PLATFORM_AUTHENTICATOR_OFF_THE_RECORD_INTERSTITIAL_DESCRIPTION);
 }
 
 ui::MenuModel*
@@ -529,16 +522,17 @@ bool AuthenticatorOffTheRecordInterstitialSheetModel::IsAcceptButtonEnabled()
 
 base::string16
 AuthenticatorOffTheRecordInterstitialSheetModel::GetAcceptButtonLabel() const {
-#if defined(OS_MAC)
-  return l10n_util::GetStringUTF16(
-      IDS_WEBAUTHN_TOUCH_ID_INCOGNITO_BUMP_CONTINUE);
-#else
-  return base::string16();
-#endif  // defined(OS_MAC)
+  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CONTINUE);
 }
 
 void AuthenticatorOffTheRecordInterstitialSheetModel::OnAccept() {
   dialog_model()->HideDialogAndDispatchToPlatformAuthenticator();
+}
+
+base::string16
+AuthenticatorOffTheRecordInterstitialSheetModel::GetCancelButtonLabel() const {
+  return l10n_util::GetStringUTF16(
+      IDS_WEBAUTHN_PLATFORM_AUTHENTICATOR_OFF_THE_RECORD_INTERSTITIAL_DENY);
 }
 
 // AuthenticatorPaaskSheetModel -----------------------------------------
@@ -1070,7 +1064,7 @@ bool AuthenticatorResidentCredentialConfirmationSheetView::
 base::string16
 AuthenticatorResidentCredentialConfirmationSheetView::GetAcceptButtonLabel()
     const {
-  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_WELCOME_SCREEN_NEXT);
+  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CONTINUE);
 }
 
 base::string16
@@ -1135,7 +1129,7 @@ bool AuthenticatorSelectAccountSheetModel::IsAcceptButtonEnabled() const {
 
 base::string16 AuthenticatorSelectAccountSheetModel::GetAcceptButtonLabel()
     const {
-  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_WELCOME_SCREEN_NEXT);
+  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CONTINUE);
 }
 
 // AttestationPermissionRequestSheetModel -------------------------------------

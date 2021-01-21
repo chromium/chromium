@@ -434,6 +434,17 @@ bool ChromeAuthenticatorRequestDelegate::IsFocused() {
   return web_contents->GetVisibility() == content::Visibility::VISIBLE;
 }
 
+base::Optional<bool> ChromeAuthenticatorRequestDelegate::
+    IsUserVerifyingPlatformAuthenticatorAvailableOverride() {
+  Profile* profile = Profile::FromBrowserContext(browser_context());
+  // Platform authenticators are never available in Guest sessions. They may be
+  // available (behind an additional interstitial) in Incognito mode.
+  if (profile->IsGuestSession() || profile->IsEphemeralGuestProfile()) {
+    return false;
+  }
+  return base::nullopt;
+}
+
 #if defined(OS_MAC)
 static constexpr char kTouchIdKeychainAccessGroup[] =
     "EQHXZ8M8AV.com.google.Chrome.webauthn";
@@ -497,12 +508,8 @@ bool ChromeAuthenticatorRequestDelegate::IsWebAuthnUIEnabled() {
 #if defined(OS_MAC)
 base::Optional<ChromeAuthenticatorRequestDelegate::TouchIdAuthenticatorConfig>
 ChromeAuthenticatorRequestDelegate::GetTouchIdAuthenticatorConfig() {
-  Profile* profile = Profile::FromBrowserContext(browser_context());
-  // Touch ID is available in Incognito but not Guest windows.
-  if (profile->IsGuestSession() || profile->IsEphemeralGuestProfile())
-    return base::nullopt;
-
-  return TouchIdAuthenticatorConfigForProfile(profile);
+  return TouchIdAuthenticatorConfigForProfile(
+      Profile::FromBrowserContext(browser_context()));
 }
 #endif  // defined(OS_MAC)
 
