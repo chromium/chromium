@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/webui/app_management/app_management_page_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/android_apps_handler.h"
+#include "chrome/browser/ui/webui/settings/chromeos/guest_os_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/plugin_vm_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -205,8 +206,8 @@ void AppsSection::AddHandlers(content::WebUI* web_ui) {
       std::make_unique<chromeos::settings::AndroidAppsHandler>(profile()));
 
   if (ShowPluginVm(profile(), *pref_service_)) {
-    web_ui->AddMessageHandler(
-        std::make_unique<chromeos::settings::PluginVmHandler>(profile()));
+    web_ui->AddMessageHandler(std::make_unique<GuestOsHandler>(profile()));
+    web_ui->AddMessageHandler(std::make_unique<PluginVmHandler>(profile()));
   }
 }
 

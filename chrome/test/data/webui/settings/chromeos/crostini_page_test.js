@@ -5,6 +5,9 @@
 /** @type {?SettingsCrostiniPageElement} */
 let crostiniPage = null;
 
+/** @type {?TestGuestOsBrowserProxy} */
+let guestOsBrowserProxy = null;
+
 /** @type {?TestCrostiniBrowserProxy} */
 let crostiniBrowserProxy = null;
 
@@ -28,7 +31,7 @@ function setCrostiniPrefs(enabled, optional = {}) {
       paths_shared_to_vms: {value: sharedPaths},
     },
   };
-  crostiniBrowserProxy.sharedUsbDevices = sharedUsbDevices;
+  guestOsBrowserProxy.sharedUsbDevices = sharedUsbDevices;
   crostiniBrowserProxy.crostiniMicSharingEnabled = crostiniMicSharingEnabled;
   Polymer.dom.flush();
 }
@@ -46,6 +49,8 @@ suite('CrostiniPageTests', function() {
   setup(function() {
     crostiniBrowserProxy = new TestCrostiniBrowserProxy();
     settings.CrostiniBrowserProxyImpl.instance_ = crostiniBrowserProxy;
+    guestOsBrowserProxy = new TestGuestOsBrowserProxy();
+    settings.GuestOsBrowserProxyImpl.instance_ = guestOsBrowserProxy;
     PolymerTest.clearBody();
     crostiniPage = document.createElement('settings-crostini-page');
     document.body.appendChild(crostiniPage);
@@ -1005,7 +1010,7 @@ suite('CrostiniPageTests', function() {
         // Remove first shared path, still one left.
         subpage.$$('.list-item cr-icon-button').click();
         const [vmName, path] =
-            await crostiniBrowserProxy.whenCalled('removeCrostiniSharedPath');
+            await guestOsBrowserProxy.whenCalled('removeGuestOsSharedPath');
         assertEquals('termina', vmName);
         assertEquals('path1', path);
         setCrostiniPrefs(true, {sharedPaths: {path2: ['termina']}});
@@ -1018,10 +1023,10 @@ suite('CrostiniPageTests', function() {
 
       {
         // Remove remaining shared path, none left.
-        crostiniBrowserProxy.resetResolver('removeCrostiniSharedPath');
+        guestOsBrowserProxy.resetResolver('removeGuestOsSharedPath');
         subpage.$$(`${rows} cr-icon-button`).click();
         const [vmName, path] =
-            await crostiniBrowserProxy.whenCalled('removeCrostiniSharedPath');
+            await guestOsBrowserProxy.whenCalled('removeGuestOsSharedPath');
         assertEquals('termina', vmName);
         assertEquals('path2', path);
         setCrostiniPrefs(true, {sharedPaths: {}});
@@ -1037,20 +1042,20 @@ suite('CrostiniPageTests', function() {
 
     test('RemoveFailedRetry', async function() {
       // Remove shared path fails.
-      crostiniBrowserProxy.removeSharedPathResult = false;
+      guestOsBrowserProxy.removeSharedPathResult = false;
       subpage.$$('.list-item cr-icon-button').click();
 
-      await crostiniBrowserProxy.whenCalled('removeCrostiniSharedPath');
+      await guestOsBrowserProxy.whenCalled('removeGuestOsSharedPath');
       Polymer.dom.flush();
       assertTrue(subpage.$$('#removeSharedPathFailedDialog').open);
 
       // Click retry and make sure 'removeCrostiniSharedPath' is called
       // and dialog is closed/removed.
-      crostiniBrowserProxy.removeSharedPathResult = true;
+      guestOsBrowserProxy.removeSharedPathResult = true;
       subpage.$$('#removeSharedPathFailedDialog')
           .querySelector('.action-button')
           .click();
-      await crostiniBrowserProxy.whenCalled('removeCrostiniSharedPath');
+      await guestOsBrowserProxy.whenCalled('removeGuestOsSharedPath');
       assertFalse(!!subpage.$$('#removeSharedPathFailedDialog'));
     });
   });
@@ -1064,20 +1069,20 @@ suite('CrostiniPageTests', function() {
           {
             guid: '0001',
             name: 'usb_dev1',
-            shared: false,
-            shareWillReassign: false
+            sharedWith: 'otherVm',
+            promptBeforeSharing: false
           },
           {
             guid: '0002',
             name: 'usb_dev2',
-            shared: true,
-            shareWillReassign: false
+            sharedWith: 'termina',
+            promptBeforeSharing: false
           },
           {
             guid: '0003',
             name: 'usb_dev3',
-            shared: false,
-            shareWillReassign: true
+            sharedWith: null,
+            promptBeforeSharing: true
           },
         ]
       });
@@ -1103,17 +1108,18 @@ suite('CrostiniPageTests', function() {
       Polymer.dom.flush();
 
       const args =
-          await crostiniBrowserProxy.whenCalled('setCrostiniUsbDeviceShared');
-      assertEquals('0001', args[0]);
-      assertEquals(true, args[1]);
+          await guestOsBrowserProxy.whenCalled('setGuestOsUsbDeviceShared');
+      assertEquals('termina', args[0]);
+      assertEquals('0001', args[1]);
+      assertEquals(true, args[2]);
 
       // Simulate a change in the underlying model.
-      cr.webUIListenerCallback('crostini-shared-usb-devices-changed', [
+      cr.webUIListenerCallback('guest-os-shared-usb-devices-changed', [
         {
           guid: '0001',
           name: 'usb_dev1',
-          shared: true,
-          shareWillReassign: false
+          sharedWith: 'termina',
+          prmoptBeforeSharing: true
         },
       ]);
       Polymer.dom.flush();
@@ -1143,9 +1149,10 @@ suite('CrostiniPageTests', function() {
       Polymer.dom.flush();
       assertFalse(!!subpage.$$('#reassignDialog'));
       const args =
-          await crostiniBrowserProxy.whenCalled('setCrostiniUsbDeviceShared');
-      assertEquals('0003', args[0]);
-      assertEquals(true, args[1]);
+          await guestOsBrowserProxy.whenCalled('setGuestOsUsbDeviceShared');
+      assertEquals('termina', args[0]);
+      assertEquals('0003', args[1]);
+      assertEquals(true, args[2]);
     });
   });
 

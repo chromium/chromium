@@ -655,6 +655,7 @@ var OSSettingsCrostiniPageTest = class extends OSSettingsBrowserTest {
       BROWSER_SETTINGS_PATH + '../test_util.js',
       BROWSER_SETTINGS_PATH + '../test_browser_proxy.js',
       'test_crostini_browser_proxy.js',
+      'test_guest_os_browser_proxy.js',
       'crostini_page_test.js',
     ]);
   }

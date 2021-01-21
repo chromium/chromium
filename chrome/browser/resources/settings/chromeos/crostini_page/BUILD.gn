@@ -67,18 +67,18 @@ js_library("crostini_page") {
 
 js_library("crostini_shared_paths") {
   deps = [
-    ":crostini_browser_proxy",
     "..:metrics_recorder",
     "..:os_route",
     "../../prefs:prefs_behavior",
+    "../guest_os:guest_os_browser_proxy",
   ]
 }
 
 js_library("crostini_shared_usb_devices") {
   deps = [
-    ":crostini_browser_proxy",
     "..:metrics_recorder",
     "..:os_route",
+    "../guest_os:guest_os_browser_proxy",
     "//ui/webui/resources/js:web_ui_listener_behavior",
   ]
 }

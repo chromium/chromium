@@ -30,7 +30,7 @@ Polymer({
 
     /**
      * The shared path string suitable for display in the UI.
-     * @private {Array<!CrostiniSharedPath>}
+     * @private {Array<!{path: string, pathDisplayText: string}>}
      */
     sharedPaths_: Array,
 
@@ -46,14 +46,14 @@ Polymer({
   },
 
   observers: [
-    'onCrostiniSharedPathsChanged_(prefs.guest_os.paths_shared_to_vms.value)'
+    'onGuestOsSharedPathsChanged_(prefs.guest_os.paths_shared_to_vms.value)'
   ],
 
   /**
    * @param {!Object<!Array<string>>} paths
    * @private
    */
-  onCrostiniSharedPathsChanged_(paths) {
+  onGuestOsSharedPathsChanged_(paths) {
     const vmPaths = [];
     for (const path in paths) {
       const vms = paths[path];
@@ -61,8 +61,8 @@ Polymer({
         vmPaths.push(path);
       }
     }
-    settings.CrostiniBrowserProxyImpl.getInstance()
-        .getCrostiniSharedPathsDisplayText(vmPaths)
+    settings.GuestOsBrowserProxyImpl.getInstance()
+        .getGuestOsSharedPathsDisplayText(vmPaths)
         .then(text => {
           this.sharedPaths_ = vmPaths.map(
               (path, i) => ({path: path, pathDisplayText: text[i]}));
@@ -75,8 +75,8 @@ Polymer({
    */
   removeSharedPath_(path) {
     this.sharedPathWhichFailedRemoval_ = null;
-    settings.CrostiniBrowserProxyImpl.getInstance()
-        .removeCrostiniSharedPath(DEFAULT_CROSTINI_VM, path)
+    settings.GuestOsBrowserProxyImpl.getInstance()
+        .removeGuestOsSharedPath(DEFAULT_CROSTINI_VM, path)
         .then(result => {
           if (!result) {
             this.sharedPathWhichFailedRemoval_ = path;

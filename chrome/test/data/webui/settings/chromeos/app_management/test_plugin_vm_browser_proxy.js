@@ -6,26 +6,10 @@
 class TestPluginVmBrowserProxy extends TestBrowserProxy {
   constructor() {
     super([
-      'getPluginVmSharedPathsDisplayText',
-      'removePluginVmSharedPath',
       'isRelaunchNeededForNewPermissions',
-      'setPluginVmPermission',
       'relaunchPluginVm',
     ]);
-    this.removeSharedPathResult = true;
     this.pluginVmRunning = false;
-  }
-
-  /** @override */
-  getPluginVmSharedPathsDisplayText(paths) {
-    this.methodCalled('getPluginVmSharedPathsDisplayText', paths);
-    return Promise.resolve(true);
-  }
-
-  /** @override */
-  removePluginVmSharedPath(vmName, path) {
-    this.methodCalled('removePluginVmSharedPath', vmName, path);
-    return Promise.resolve(this.removeSharedPathResult);
   }
 
   /** @override */

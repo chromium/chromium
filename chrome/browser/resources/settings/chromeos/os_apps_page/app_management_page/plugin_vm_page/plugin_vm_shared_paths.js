@@ -45,14 +45,14 @@ Polymer({
   },
 
   observers: [
-    'onPluginVmSharedPathsChanged_(prefs.guest_os.paths_shared_to_vms.value)'
+    'onGuestOsSharedPathsChanged_(prefs.guest_os.paths_shared_to_vms.value)'
   ],
 
   /**
    * @param {!Object<!Array<string>>} paths
    * @private
    */
-  onPluginVmSharedPathsChanged_(paths) {
+  onGuestOsSharedPathsChanged_(paths) {
     const vmPaths = [];
     for (const path in paths) {
       const vms = paths[path];
@@ -60,8 +60,8 @@ Polymer({
         vmPaths.push(path);
       }
     }
-    settings.PluginVmBrowserProxyImpl.getInstance()
-        .getPluginVmSharedPathsDisplayText(vmPaths)
+    settings.GuestOsBrowserProxyImpl.getInstance()
+        .getGuestOsSharedPathsDisplayText(vmPaths)
         .then(text => {
           this.sharedPaths_ = vmPaths.map(
               (path, i) => ({path: path, pathDisplayText: text[i]}));
@@ -74,8 +74,8 @@ Polymer({
    */
   removeSharedPath_(path) {
     this.sharedPathWhichFailedRemoval_ = null;
-    settings.PluginVmBrowserProxyImpl.getInstance()
-        .removePluginVmSharedPath(PLUGIN_VM, path)
+    settings.GuestOsBrowserProxyImpl.getInstance()
+        .removeGuestOsSharedPath(PLUGIN_VM, path)
         .then(success => {
           if (!success) {
             this.sharedPathWhichFailedRemoval_ = path;

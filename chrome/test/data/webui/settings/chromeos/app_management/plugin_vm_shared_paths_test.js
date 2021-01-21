@@ -2,25 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/** @implements {settings.PluginVmBrowserProxy} */
-class TestPluginVmBrowserProxy extends TestBrowserProxy {
+/** @implements {settings.GuestOsBrowserProxy} */
+class TestGuestOsBrowserProxy extends TestBrowserProxy {
   constructor() {
     super([
-      'getPluginVmSharedPathsDisplayText',
-      'removePluginVmSharedPath',
+      'getGuestOsSharedPathsDisplayText',
+      'removeGuestOsSharedPath',
     ]);
     this.removeSharedPathResult = true;
   }
 
   /** override */
-  getPluginVmSharedPathsDisplayText(paths) {
-    this.methodCalled('getPluginVmSharedPathsDisplayText');
+  getGuestOsSharedPathsDisplayText(paths) {
+    this.methodCalled('getGuestOsSharedPathsDisplayText');
     return Promise.resolve(paths.map(path => path + '-displayText'));
   }
 
   /** override */
-  removePluginVmSharedPath(vmName, path) {
-    this.methodCalled('removePluginVmSharedPath', [vmName, path]);
+  removeGuestOsSharedPath(vmName, path) {
+    this.methodCalled('removeGuestOsSharedPath', [vmName, path]);
     return Promise.resolve(this.removeSharedPathResult);
   }
 }
@@ -29,25 +29,25 @@ suite('SharedPaths', function() {
   /** @type {?SettingsPluginVmSharedPathsElement} */
   let page = null;
 
-  /** @type {?TestPluginVmBrowserProxy} */
-  let pluginVmBrowserProxy = null;
+  /** @type {?TestGuestOsBrowserProxy} */
+  let guestOsBrowserProxy = null;
 
   function setPrefs(sharedPaths) {
-    pluginVmBrowserProxy.resetResolver('getPluginVmSharedPathsDisplayText');
+    guestOsBrowserProxy.resetResolver('getGuestOsSharedPathsDisplayText');
     page.prefs = {
       guest_os: {
         paths_shared_to_vms: {value: sharedPaths},
       }
     };
-    return pluginVmBrowserProxy.whenCalled('getPluginVmSharedPathsDisplayText')
+    return guestOsBrowserProxy.whenCalled('getGuestOsSharedPathsDisplayText')
         .then(() => {
           Polymer.dom.flush();
         });
   }
 
   setup(function() {
-    pluginVmBrowserProxy = new TestPluginVmBrowserProxy();
-    settings.PluginVmBrowserProxyImpl.instance_ = pluginVmBrowserProxy;
+    guestOsBrowserProxy = new TestGuestOsBrowserProxy();
+    settings.GuestOsBrowserProxyImpl.instance_ = guestOsBrowserProxy;
     PolymerTest.clearBody();
     page = document.createElement('settings-plugin-vm-shared-paths');
     document.body.appendChild(page);
@@ -72,7 +72,7 @@ suite('SharedPaths', function() {
     page.$$('.list-item cr-icon-button').click();
     {
       const [vmName, path] =
-          await pluginVmBrowserProxy.whenCalled('removePluginVmSharedPath');
+          await guestOsBrowserProxy.whenCalled('removeGuestOsSharedPath');
       assertEquals('PvmDefault', vmName);
       assertEquals('path1', path);
     }
@@ -81,11 +81,11 @@ suite('SharedPaths', function() {
     assertFalse(page.$.pluginVmInstructionsRemove.hidden);
 
     // Remove remaining shared path, none left.
-    pluginVmBrowserProxy.resetResolver('removePluginVmSharedPath');
+    guestOsBrowserProxy.resetResolver('removeGuestOsSharedPath');
     page.$$(`${rows} cr-icon-button`).click();
     {
       const [vmName, path] =
-          await pluginVmBrowserProxy.whenCalled('removePluginVmSharedPath');
+          await guestOsBrowserProxy.whenCalled('removeGuestOsSharedPath');
       assertEquals('PvmDefault', vmName);
       assertEquals('path2', path);
     }
@@ -101,20 +101,20 @@ suite('SharedPaths', function() {
     await setPrefs({'path1': ['PvmDefault'], 'path2': ['PvmDefault']});
 
     // Remove shared path fails.
-    pluginVmBrowserProxy.removeSharedPathResult = false;
+    guestOsBrowserProxy.removeSharedPathResult = false;
     page.$$('.list-item cr-icon-button').click();
 
-    await pluginVmBrowserProxy.whenCalled('removePluginVmSharedPath');
+    await guestOsBrowserProxy.whenCalled('removeGuestOsSharedPath');
     Polymer.dom.flush();
     assertTrue(page.$$('#removeSharedPathFailedDialog').open);
 
-    // Click retry and make sure 'removePluginVmSharedPath' is called
+    // Click retry and make sure 'removeGuestOsSharedPath' is called
     // and dialog is closed/removed.
-    pluginVmBrowserProxy.removeSharedPathResult = true;
+    guestOsBrowserProxy.removeSharedPathResult = true;
     page.$$('#removeSharedPathFailedDialog')
         .querySelector('.action-button')
         .click();
-    await pluginVmBrowserProxy.whenCalled('removePluginVmSharedPath');
+    await guestOsBrowserProxy.whenCalled('removeGuestOsSharedPath');
     assertFalse(!!page.$$('#removeSharedPathFailedDialog'));
   });
 });

@@ -15,6 +15,7 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/settings/chromeos/crostini_handler.h"
+#include "chrome/browser/ui/webui/settings/chromeos/guest_os_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
@@ -435,6 +436,7 @@ void CrostiniSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
 void CrostiniSection::AddHandlers(content::WebUI* web_ui) {
   if (crostini::CrostiniFeatures::Get()->CouldBeAllowed(profile())) {
+    web_ui->AddMessageHandler(std::make_unique<GuestOsHandler>(profile()));
     web_ui->AddMessageHandler(std::make_unique<CrostiniHandler>(profile()));
   }
 }

@@ -16,14 +16,14 @@ Polymer({
   properties: {
     /**
      * The USB Devices available for connection to a VM.
-     * @private {Array<!PluginVmSharedUsbDevice>}
+     * @private {Array<{shared: boolean, device: !GuestOsSharedUsbDevice}>}
      */
     sharedUsbDevices_: Array,
 
     /**
      * The USB device which was toggled to be shared, but is already shared
      * with another VM. When non-null the reassign dialog is shown.
-     * @private {?PluginVmSharedUsbDevice}
+     * @private {?GuestOsSharedUsbDevice}
      */
     reassignDevice_: {
       type: Object,
@@ -31,40 +31,49 @@ Polymer({
     },
   },
 
-  /** @private {settings.PluginVmBrowserProxy} */
+  /**
+   * The Plugin VM is named 'PvmDefault'.
+   * https://cs.chromium.org/chromium/src/chrome/browser/chromeos/plugin_vm/plugin_vm_util.h?q=kPluginVmName
+   * @private {string}
+   */
+  vmName_: 'PvmDefault',
+
+  /** @private {settings.GuestOsBrowserProxy} */
   browserProxy_: null,
 
   /** @override */
   ready() {
-    this.browserProxy_ = settings.PluginVmBrowserProxyImpl.getInstance();
+    this.browserProxy_ = settings.GuestOsBrowserProxyImpl.getInstance();
     this.addWebUIListener(
-        'plugin-vm-shared-usb-devices-changed',
-        this.onPluginVmSharedUsbDevicesChanged_.bind(this));
-    this.browserProxy_.notifyPluginVmSharedUsbDevicesPageReady();
+        'guest-os-shared-usb-devices-changed',
+        this.onGuestOsSharedUsbDevicesChanged_.bind(this));
+    this.browserProxy_.notifyGuestOsSharedUsbDevicesPageReady();
   },
 
   /**
-   * @param {!Array<PluginVmSharedUsbDevice>} devices
+   * @param {!Array<GuestOsSharedUsbDevice>} devices
    * @private
    */
-  onPluginVmSharedUsbDevicesChanged_(devices) {
-    this.sharedUsbDevices_ = devices;
+  onGuestOsSharedUsbDevicesChanged_(devices) {
+    this.sharedUsbDevices_ = devices.map((device) => {
+      return {shared: device.sharedWith === this.vmName_, device: device};
+    });
   },
 
   /**
-   * @param {!CustomEvent<!PluginVmSharedUsbDevice>} event
+   * @param {!CustomEvent<!GuestOsSharedUsbDevice>} event
    * @private
    */
   onDeviceSharedChange_(event) {
-    const device = event.model.item;
+    const device = event.model.item.device;
     // Show reassign dialog if device is already shared with another VM.
-    if (event.target.checked && device.shareWillReassign) {
+    if (event.target.checked && device.promptBeforeSharing) {
       event.target.checked = false;
       this.reassignDevice_ = device;
       return;
     }
-    this.browserProxy_.setPluginVmUsbDeviceShared(
-        device.guid, event.target.checked);
+    this.browserProxy_.setGuestOsUsbDeviceShared(
+        this.vmName_, device.guid, event.target.checked);
     settings.recordSettingChange();
   },
 
@@ -75,14 +84,14 @@ Polymer({
 
   /** @private */
   onReassignContinueClick_() {
-    this.browserProxy_.setPluginVmUsbDeviceShared(
-        this.reassignDevice_.guid, true);
+    this.browserProxy_.setGuestOsUsbDeviceShared(
+        this.vmName_, this.reassignDevice_.guid, true);
     this.reassignDevice_ = null;
     settings.recordSettingChange();
   },
 
   /**
-   * @param {!PluginVmSharedUsbDevice} device USB device.
+   * @param {!GuestOsSharedUsbDevice} device USB device.
    * @private
    */
   getReassignDialogText_(device) {

@@ -2521,6 +2521,8 @@ static_library("ui") {
       "webui/settings/chromeos/fingerprint_handler.h",
       "webui/settings/chromeos/google_assistant_handler.cc",
       "webui/settings/chromeos/google_assistant_handler.h",
+      "webui/settings/chromeos/guest_os_handler.cc",
+      "webui/settings/chromeos/guest_os_handler.h",
       "webui/settings/chromeos/hierarchy.cc",
       "webui/settings/chromeos/hierarchy.h",
       "webui/settings/chromeos/internet_handler.cc",

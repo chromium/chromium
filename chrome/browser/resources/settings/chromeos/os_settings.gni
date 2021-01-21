@@ -34,6 +34,7 @@ os_settings_namespace_rewrites = settings_namespace_rewrites +
                                    "settings.GlobalScrollTargetBehavior|GlobalScrollTargetBehavior",
                                    "settings.GoogleAssistantBrowserProxy|GoogleAssistantBrowserProxy",
                                    "settings.GoogleAssistantBrowserProxyImpl|GoogleAssistantBrowserProxyImpl",
+                                   "settings.GuestOsBrowserProxy|GuestOsBrowserProxy",
                                    "settings.input_method_util.generateOptions|generateOptions",
                                    "settings.input_method_util.getFirstPartyInputMethodEngineId|getFirstPartyInputMethodEngineId",
                                    "settings.input_method_util.getOptionLabelName|getOptionLabelName",

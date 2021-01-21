@@ -137,14 +137,14 @@ void RemovePersistedPathFromPrefs(base::DictionaryValue* shared_paths,
   // If |path| exists, remove |vm_name| from list of VMs.
   base::Value* found = shared_paths->FindKey(path.value());
   if (!found) {
-    LOG(WARNING) << "Path not in prefs to ushare path " << path.value()
+    LOG(WARNING) << "Path not in prefs to unshare path " << path.value()
                  << " for VM " << vm_name;
     return;
   }
   auto it = std::find(found->GetList().begin(), found->GetList().end(),
                       base::Value(vm_name));
   if (!found->EraseListIter(it)) {
-    LOG(WARNING) << "VM not in prefs to ushare path " << path.value()
+    LOG(WARNING) << "VM not in prefs to unshare path " << path.value()
                  << " for VM " << vm_name;
     return;
   }

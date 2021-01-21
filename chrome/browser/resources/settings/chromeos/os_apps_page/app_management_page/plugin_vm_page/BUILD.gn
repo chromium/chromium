@@ -30,8 +30,8 @@ js_library("plugin_vm_detail_view") {
 
 js_library("plugin_vm_shared_paths") {
   deps = [
-    ":plugin_vm_browser_proxy",
     "../../..:metrics_recorder",
+    "../../../guest_os:guest_os_browser_proxy",
     "//ui/webui/resources/js:i18n_behavior",
     "//ui/webui/resources/js:web_ui_listener_behavior",
   ]
@@ -39,8 +39,8 @@ js_library("plugin_vm_shared_paths") {
 
 js_library("plugin_vm_shared_usb_devices") {
   deps = [
-    ":plugin_vm_browser_proxy",
     "../../..:metrics_recorder",
+    "../../../guest_os:guest_os_browser_proxy",
   ]
 }
 

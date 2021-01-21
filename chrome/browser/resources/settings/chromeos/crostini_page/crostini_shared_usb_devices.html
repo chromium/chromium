@@ -31,10 +31,10 @@
         hidden="[[!sharedUsbDevices_.length]]">
       <template is="dom-repeat" items="[[sharedUsbDevices_]]">
         <div class="list-item toggle-container">
-          <div class="label">[[item.label]]</div>
+          <div class="label">[[item.device.label]]</div>
           <cr-toggle class="toggle" checked="[[item.shared]]"
             on-change="onDeviceSharedChange_"
-            aria-label$="[[item.label]]"></cr-toggle>
+            aria-label$="[[item.device.label]]"></cr-toggle>
         </div>
       </div>
     </template>
