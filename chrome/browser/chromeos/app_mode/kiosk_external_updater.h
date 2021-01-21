@@ -26,10 +26,10 @@ class KioskExternalUpdateNotification;
 class KioskExternalUpdater : public disks::DiskMountManager::Observer,
                              public KioskExternalUpdateValidatorDelegate {
  public:
-  enum ExternalUpdateErrorCode {
-    ERROR_NONE,
-    ERROR_NO_MANIFEST,
-    ERROR_INVALID_MANIFEST,
+  enum class ErrorCode {
+    kNone,
+    kNoManifest,
+    kInvalidManifest,
   };
 
   KioskExternalUpdater(
@@ -69,10 +69,10 @@ class KioskExternalUpdater : public disks::DiskMountManager::Observer,
                                      const base::FilePath& temp_dir) override;
   void OnExternalUpdateUnpackFailure(const std::string& app_id) override;
 
-  // Processes the parsed external update manifest, check the
-  // ExternalUpdateErrorCode in |result| for any manifest parsing error.
-  using ParseManifestResult = std::pair<std::unique_ptr<base::DictionaryValue>,
-                                        ExternalUpdateErrorCode>;
+  // Processes the parsed external update manifest, check the ErrorCode in
+  // |result| for any manifest parsing error.
+  using ParseManifestResult =
+      std::pair<std::unique_ptr<base::DictionaryValue>, ErrorCode>;
   void ProcessParsedManifest(const base::FilePath& external_update_dir,
                              const ParseManifestResult& result);
 

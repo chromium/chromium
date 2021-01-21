@@ -33,11 +33,12 @@ constexpr char kExternalCrx[] = "external_crx";
 constexpr char kExternalVersion[] = "external_version";
 
 std::pair<std::unique_ptr<base::DictionaryValue>,
-          KioskExternalUpdater::ExternalUpdateErrorCode>
+          KioskExternalUpdater::ErrorCode>
 ParseExternalUpdateManifest(const base::FilePath& external_update_dir) {
   base::FilePath manifest = external_update_dir.Append(kExternalUpdateManifest);
   if (!base::PathExists(manifest)) {
-    return std::make_pair(nullptr, KioskExternalUpdater::ERROR_NO_MANIFEST);
+    return std::make_pair(nullptr,
+                          KioskExternalUpdater::ErrorCode::kNoManifest);
   }
 
   JSONFileValueDeserializer deserializer(manifest);
@@ -45,11 +46,11 @@ ParseExternalUpdateManifest(const base::FilePath& external_update_dir) {
       base::DictionaryValue::From(deserializer.Deserialize(nullptr, nullptr));
   if (!extensions) {
     return std::make_pair(nullptr,
-                          KioskExternalUpdater::ERROR_INVALID_MANIFEST);
+                          KioskExternalUpdater::ErrorCode::kInvalidManifest);
   }
 
   return std::make_pair(std::move(extensions),
-                        KioskExternalUpdater::ERROR_NONE);
+                        KioskExternalUpdater::ErrorCode::kNone);
 }
 
 // Copies |external_crx_file| to |temp_crx_file|, and removes |temp_dir|
@@ -202,12 +203,12 @@ void KioskExternalUpdater::ProcessParsedManifest(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   const std::unique_ptr<base::DictionaryValue>& parsed_manifest = result.first;
-  ExternalUpdateErrorCode parsing_error = result.second;
-  if (parsing_error == ERROR_NO_MANIFEST) {
+  ErrorCode parsing_error = result.second;
+  if (parsing_error == ErrorCode::kNoManifest) {
     KioskAppManager::Get()->OnKioskAppExternalUpdateComplete(false);
     return;
   }
-  if (parsing_error == ERROR_INVALID_MANIFEST) {
+  if (parsing_error == ErrorCode::kInvalidManifest) {
     NotifyKioskUpdateProgress(
         ui::ResourceBundle::GetSharedInstance().GetLocalizedString(
             IDS_KIOSK_EXTERNAL_UPDATE_INVALID_MANIFEST));
