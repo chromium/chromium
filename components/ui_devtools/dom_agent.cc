@@ -167,9 +167,15 @@ void DOMAgent::OnUIElementReordered(UIElement* parent, UIElement* child) {
 }
 
 void DOMAgent::OnUIElementRemoved(UIElement* ui_element) {
-  DCHECK(node_id_to_ui_element_.count(ui_element->node_id()));
-
-  RemoveDomNode(ui_element, true);
+  if (node_id_to_ui_element_.count(ui_element->node_id())) {
+    // Check if |ui_element| exists in DOM before asking the frontend to remove
+    // it. It is possible that this node is already removed along with its
+    // ancestor. This happens for example when a bubble closes.
+    // The DOM tree is first requested to be removed in
+    // |WidgetElement::OnWidgetDestroyed()| then in
+    // |ViewElement::OnChildViewRemoved()|.
+    RemoveDomNode(ui_element, true);
+  }
 }
 
 void DOMAgent::OnUIElementBoundsChanged(UIElement* ui_element) {
