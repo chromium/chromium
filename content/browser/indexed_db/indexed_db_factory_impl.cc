@@ -197,13 +197,18 @@ void IndexedDBFactoryImpl::GetDatabaseInfo(
   IndexedDBOriginStateHandle origin_state_handle;
   leveldb::Status s;
   IndexedDBDatabaseError error;
+  std::vector<blink::mojom::IDBNameAndVersionPtr> names_and_versions;
   // Note: Any data loss information here is not piped up to the renderer, and
   // will be lost.
   std::tie(origin_state_handle, s, error, std::ignore, std::ignore) =
       GetOrOpenOriginFactory(origin, data_directory,
-                             /*create_if_missing=*/true);
+                             /*create_if_missing=*/false);
   if (!origin_state_handle.IsHeld() || !origin_state_handle.origin_state()) {
-    callbacks->OnError(error);
+    if (s.IsNotFound()) {
+      callbacks->OnSuccess(std::move(names_and_versions));
+    } else {
+      callbacks->OnError(error);
+    }
     if (s.IsCorruption())
       HandleBackingStoreCorruption(origin, error);
     return;
@@ -211,7 +216,6 @@ void IndexedDBFactoryImpl::GetDatabaseInfo(
   IndexedDBOriginState* factory = origin_state_handle.origin_state();
 
   IndexedDBMetadataCoding metadata_coding;
-  std::vector<blink::mojom::IDBNameAndVersionPtr> names_and_versions;
   s = metadata_coding.ReadDatabaseNamesAndVersions(
       factory->backing_store_->db(),
       factory->backing_store_->origin_identifier(), &names_and_versions);

@@ -671,7 +671,7 @@ TEST_F(IndexedDBFactoryTest, DeleteDatabaseWithForceClose) {
   EXPECT_TRUE(factory()->GetOriginFactory(origin)->IsClosing());
 }
 
-TEST_F(IndexedDBFactoryTest, GetDatabaseNames) {
+TEST_F(IndexedDBFactoryTest, GetDatabaseNames_NoFactory) {
   SetupContext();
 
   auto callbacks = base::MakeRefCounted<MockIndexedDBCallbacks>(
@@ -682,9 +682,32 @@ TEST_F(IndexedDBFactoryTest, GetDatabaseNames) {
   factory()->GetDatabaseInfo(callbacks, origin, context()->data_path());
 
   EXPECT_TRUE(callbacks->info_called());
-  // Since there are no more references the factory should be closing.
+  // Don't create a factory if one doesn't exist.
+  EXPECT_FALSE(factory()->GetOriginFactory(origin));
+}
+
+TEST_F(IndexedDBFactoryTest, GetDatabaseNames_ExistingFactory) {
+  SetupContext();
+
+  auto callbacks = base::MakeRefCounted<MockIndexedDBCallbacks>(
+      /*expect_connection=*/false);
+
+  const Origin origin = Origin::Create(GURL("http://localhost:81"));
+
+  IndexedDBOriginStateHandle origin_state_handle;
+  leveldb::Status s;
+
+  std::tie(origin_state_handle, s, std::ignore, std::ignore, std::ignore) =
+      factory()->GetOrOpenOriginFactory(origin, context()->data_path(),
+                                        /*create_if_missing=*/true);
+  EXPECT_TRUE(origin_state_handle.IsHeld()) << s.ToString();
+
+  factory()->GetDatabaseInfo(callbacks, origin, context()->data_path());
+
+  EXPECT_TRUE(callbacks->info_called());
   EXPECT_TRUE(factory()->GetOriginFactory(origin));
-  EXPECT_TRUE(factory()->GetOriginFactory(origin)->IsClosing());
+  // GetDatabaseInfo didn't create the factory, so it shouldn't close it.
+  EXPECT_FALSE(factory()->GetOriginFactory(origin)->IsClosing());
 }
 
 class LookingForQuotaErrorMockCallbacks : public IndexedDBCallbacks {
