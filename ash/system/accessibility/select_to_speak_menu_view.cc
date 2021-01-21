@@ -10,8 +10,10 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/accessibility/floating_menu_button.h"
 #include "ash/system/accessibility/select_to_speak_constants.h"
+#include "ash/system/accessibility/select_to_speak_metrics_utils.h"
 #include "ash/system/tray/tray_constants.h"
 #include "base/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -30,6 +32,16 @@ namespace {
 constexpr int kButtonSize = 36;
 constexpr int kStopButtonPadding = 14;
 constexpr int kSeparatorHeight = 16;
+
+// Histograms in which user action statistics are recorded. These values
+// correspond to their respective entries in histograms.xml, so if they are
+// changed, please deprecate the corresponding histograms there.
+const char kParagraphNavigationMethodHistogramName[] =
+    "Accessibility.CrosSelectToSpeak.ParagraphNavigationMethod";
+const char kSentenceNavigationMethodHistogramName[] =
+    "Accessibility.CrosSelectToSpeak.SentenceNavigationMethod";
+const char kBubbleDismissMethodHistogramName[] =
+    "Accessibility.CrosSelectToSpeak.BubbleDismissMethod";
 
 SelectToSpeakPanelAction PanelActionForButtonID(int button_id, bool is_paused) {
   auto button_enum = static_cast<SelectToSpeakMenuView::ButtonId>(button_id);
@@ -183,23 +195,39 @@ void SelectToSpeakMenuView::OnKeyEvent(ui::KeyEvent* key_event) {
   switch (key_event->key_code()) {
     case ui::KeyboardCode::VKEY_LEFT:
       action = SelectToSpeakPanelAction::kPreviousSentence;
+      base::UmaHistogramEnumeration(
+          kSentenceNavigationMethodHistogramName,
+          CrosSelectToSpeakActivationMethod::kKeyboardShortcut);
       break;
     case ui::KeyboardCode::VKEY_RIGHT:
       action = SelectToSpeakPanelAction::kNextSentence;
+      base::UmaHistogramEnumeration(
+          kSentenceNavigationMethodHistogramName,
+          CrosSelectToSpeakActivationMethod::kKeyboardShortcut);
       break;
     case ui::KeyboardCode::VKEY_UP:
       action = SelectToSpeakPanelAction::kPreviousParagraph;
+      base::UmaHistogramEnumeration(
+          kParagraphNavigationMethodHistogramName,
+          CrosSelectToSpeakActivationMethod::kKeyboardShortcut);
       break;
     case ui::KeyboardCode::VKEY_DOWN:
       action = SelectToSpeakPanelAction::kNextParagraph;
+      base::UmaHistogramEnumeration(
+          kParagraphNavigationMethodHistogramName,
+          CrosSelectToSpeakActivationMethod::kKeyboardShortcut);
       break;
     case ui::KeyboardCode::VKEY_ESCAPE:
       action = SelectToSpeakPanelAction::kExit;
+      base::UmaHistogramEnumeration(
+          kBubbleDismissMethodHistogramName,
+          CrosSelectToSpeakActivationMethod::kKeyboardShortcut);
       break;
     default:
       // Unhandled key.
       return;
   }
+
   delegate_->OnActionSelected(action);
   key_event->SetHandled();
   key_event->StopPropagation();
@@ -229,6 +257,31 @@ void SelectToSpeakMenuView::SetSpeedButtonToggled(bool toggled) {
 void SelectToSpeakMenuView::OnButtonPressed(views::Button* sender) {
   SelectToSpeakPanelAction action =
       PanelActionForButtonID(sender->GetID(), is_paused_);
+
+  switch (action) {
+    case SelectToSpeakPanelAction::kPreviousParagraph:
+      ABSL_FALLTHROUGH_INTENDED;
+    case SelectToSpeakPanelAction::kNextParagraph:
+      base::UmaHistogramEnumeration(
+          kParagraphNavigationMethodHistogramName,
+          CrosSelectToSpeakActivationMethod::kMenuButton);
+      break;
+    case SelectToSpeakPanelAction::kPreviousSentence:
+      ABSL_FALLTHROUGH_INTENDED;
+    case SelectToSpeakPanelAction::kNextSentence:
+      base::UmaHistogramEnumeration(
+          kSentenceNavigationMethodHistogramName,
+          CrosSelectToSpeakActivationMethod::kMenuButton);
+      break;
+    case SelectToSpeakPanelAction::kExit:
+      base::UmaHistogramEnumeration(
+          kBubbleDismissMethodHistogramName,
+          CrosSelectToSpeakActivationMethod::kMenuButton);
+      break;
+    default:
+      break;  // Nothing to record
+  }
+
   delegate_->OnActionSelected(action);
 }
 
