@@ -318,9 +318,8 @@ FirstLetterPseudoElement::CustomStyleForLayoutObject(
   if (!first_letter_text)
     return nullptr;
   DCHECK(first_letter_text->Parent());
-  // TODO(crbug.com/1145970): Pass StyleRecalcContext to StyleForPseudoElement.
   return ParentOrShadowHostElement()->StyleForPseudoElement(
-      PseudoElementStyleRequest(GetPseudoId()),
+      style_recalc_context, PseudoElementStyleRequest(GetPseudoId()),
       first_letter_text->Parent()->FirstLineStyle());
 }
 

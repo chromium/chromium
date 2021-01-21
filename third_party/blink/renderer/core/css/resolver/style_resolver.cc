@@ -958,6 +958,7 @@ CompositorKeyframeValue* StyleResolver::CreateCompositorKeyframeValueSnapshot(
 
 scoped_refptr<ComputedStyle> StyleResolver::PseudoStyleForElement(
     Element* element,
+    const StyleRecalcContext& style_recalc_context,
     const PseudoElementStyleRequest& pseudo_style_request,
     const ComputedStyle* parent_style,
     const ComputedStyle* parent_layout_object_style) {
@@ -999,8 +1000,6 @@ scoped_refptr<ComputedStyle> StyleResolver::PseudoStyleForElement(
     }
     state.Style()->SetStyleType(pseudo_style_request.pseudo_id);
 
-    // TODO(crbug.com/1145970): Use actual StyleRecalcContext.
-    StyleRecalcContext style_recalc_context;
     // Check UA, user and author rules.
     ElementRuleCollector collector(state.ElementContext(), style_recalc_context,
                                    selector_filter_,
@@ -1028,6 +1027,9 @@ scoped_refptr<ComputedStyle> StyleResolver::PseudoStyleForElement(
     }
 
     CascadeAndApplyMatchedProperties(state, cascade);
+
+    if (collector.MatchedResult().DependsOnContainerQueries())
+      state.Style()->SetDependsOnContainerQueries(true);
 
     ApplyCallbackSelectors(state);
 

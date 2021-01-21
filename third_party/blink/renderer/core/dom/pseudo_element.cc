@@ -123,9 +123,8 @@ PseudoElement::PseudoElement(Element* parent, PseudoId pseudo_id)
 
 scoped_refptr<ComputedStyle> PseudoElement::CustomStyleForLayoutObject(
     const StyleRecalcContext& style_recalc_context) {
-  // TODO(crbug.com/1145970): Pass StyleRecalcContext to StyleForPseudoElement.
   return ParentOrShadowHostElement()->StyleForPseudoElement(
-      PseudoElementStyleRequest(pseudo_id_));
+      style_recalc_context, PseudoElementStyleRequest(pseudo_id_));
 }
 
 scoped_refptr<ComputedStyle> PseudoElement::LayoutStyleForDisplayContents(

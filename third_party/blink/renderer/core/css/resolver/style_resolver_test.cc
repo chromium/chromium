@@ -601,14 +601,16 @@ TEST_F(StyleResolverTest, NoFetchForHighlightPseudoElements) {
 
   scoped_refptr<ComputedStyle> target_text_style =
       GetDocument().GetStyleResolver().PseudoStyleForElement(
-          GetDocument().body(), PseudoElementStyleRequest(kPseudoIdTargetText),
-          element_style, element_style);
+          GetDocument().body(), StyleRecalcContext(),
+          PseudoElementStyleRequest(kPseudoIdTargetText), element_style,
+          element_style);
   ASSERT_TRUE(target_text_style);
 
   scoped_refptr<ComputedStyle> selection_style =
       GetDocument().GetStyleResolver().PseudoStyleForElement(
-          GetDocument().body(), PseudoElementStyleRequest(kPseudoIdSelection),
-          element_style, element_style);
+          GetDocument().body(), StyleRecalcContext(),
+          PseudoElementStyleRequest(kPseudoIdSelection), element_style,
+          element_style);
   ASSERT_TRUE(selection_style);
 
   // Check that we don't fetch the cursor url() for ::target-text.
@@ -1120,6 +1122,37 @@ TEST_F(StyleResolverTest, DependsOnContainerQueries) {
   EXPECT_TRUE(c->ComputedStyleRef().DependsOnContainerQueries());
   EXPECT_TRUE(d->ComputedStyleRef().DependsOnContainerQueries());
   EXPECT_FALSE(e->ComputedStyleRef().DependsOnContainerQueries());
+}
+
+TEST_F(StyleResolverTest, DependsOnContainerQueriesPseudo) {
+  ScopedCSSContainerQueriesForTest scoped_feature(true);
+
+  GetDocument().documentElement()->setInnerHTML(R"HTML(
+    <style>
+      main { contain: size layout; width: 100px; }
+      #a::before { content: "before"; }
+      @container (min-width: 0px) {
+        #a::after { content: "after"; }
+      }
+    </style>
+    <main>
+      <div id=a></div>
+    </main>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* a = GetDocument().getElementById("a");
+  auto* before = a->GetPseudoElement(kPseudoIdBefore);
+  auto* after = a->GetPseudoElement(kPseudoIdAfter);
+
+  ASSERT_TRUE(a);
+  ASSERT_TRUE(before);
+  ASSERT_TRUE(after);
+
+  EXPECT_TRUE(a->ComputedStyleRef().DependsOnContainerQueries());
+  EXPECT_FALSE(before->ComputedStyleRef().DependsOnContainerQueries());
+  EXPECT_TRUE(after->ComputedStyleRef().DependsOnContainerQueries());
 }
 
 // Verify that the ComputedStyle::DependsOnContainerQuery flag does

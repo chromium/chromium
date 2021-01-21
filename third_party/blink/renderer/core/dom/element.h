@@ -724,14 +724,32 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   LayoutObject* PseudoElementLayoutObject(PseudoId) const;
 
   bool PseudoElementStylesDependOnFontMetrics() const;
+
+  // Retrieve the ComputedStyle (if any) corresponding to the provided
+  // PseudoElementStyleRequest from cache, calculating the ComputedStyle
+  // on-demand if it's missing from the cache.
   const ComputedStyle* CachedStyleForPseudoElement(
       const PseudoElementStyleRequest&);
+
+  // Calculate the ComputedStyle corresponding to the provided
+  // PseudoElementStyleRequest, bypassing the pseudo style cache.
+  //
+  // This is appropriate to use if the cached version is invalid in a given
+  // situation.
   scoped_refptr<ComputedStyle> UncachedStyleForPseudoElement(
       const PseudoElementStyleRequest&,
       const ComputedStyle* parent_style = nullptr);
+
+  // This is the same as UncachedStyleForPseudoElement, except that the caller
+  // must provide an appropriate StyleRecalcContext such that e.g. @container
+  // queries are evaluated correctly.
+  //
+  // See StyleRecalcContext for more information.
   scoped_refptr<ComputedStyle> StyleForPseudoElement(
+      const StyleRecalcContext&,
       const PseudoElementStyleRequest&,
       const ComputedStyle* parent_style = nullptr);
+
   virtual bool CanGeneratePseudoElement(PseudoId) const;
 
   virtual bool MatchesDefaultPseudoClass() const { return false; }
@@ -1061,7 +1079,9 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   inline void CheckForEmptyStyleChange(const Node* node_before_change,
                                        const Node* node_after_change);
 
-  void UpdatePseudoElement(PseudoId, const StyleRecalcChange);
+  void UpdatePseudoElement(PseudoId,
+                           const StyleRecalcChange,
+                           const StyleRecalcContext&);
 
   enum class StyleUpdatePhase {
     kRecalc,
@@ -1071,7 +1091,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   void UpdateFirstLetterPseudoElement(StyleUpdatePhase);
 
-  inline PseudoElement* CreatePseudoElementIfNeeded(PseudoId);
+  inline PseudoElement* CreatePseudoElementIfNeeded(PseudoId,
+                                                    const StyleRecalcContext&);
   void AttachPseudoElement(PseudoId, AttachContext&);
   void DetachPseudoElement(PseudoId, bool performing_reattach);
 
