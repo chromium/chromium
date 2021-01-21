@@ -21,7 +21,7 @@ namespace braille_display_private {
 // about the semantics of the methods in this class.
 class BrlapiConnection {
  public:
-  typedef base::Closure OnDataReadyCallback;
+  typedef base::RepeatingClosure OnDataReadyCallback;
 
   enum ConnectResult {
     CONNECT_ERROR_RETRY,
@@ -35,7 +35,7 @@ class BrlapiConnection {
   BrlapiConnection& operator=(const BrlapiConnection&) = delete;
   virtual ~BrlapiConnection() = default;
 
-  virtual ConnectResult Connect(const OnDataReadyCallback& onDataReady) = 0;
+  virtual ConnectResult Connect(OnDataReadyCallback onDataReady) = 0;
 
   virtual void Disconnect() = 0;
 

@@ -41,7 +41,7 @@ class BrlapiConnectionImpl : public BrlapiConnection {
   BrlapiConnectionImpl& operator=(const BrlapiConnectionImpl&) = delete;
   ~BrlapiConnectionImpl() override { Disconnect(); }
 
-  ConnectResult Connect(const OnDataReadyCallback& on_data_ready) override;
+  ConnectResult Connect(OnDataReadyCallback on_data_ready) override;
   void Disconnect() override;
   bool Connected() override { return handle_ != nullptr; }
   brlapi_error_t* BrlapiError() override;
@@ -67,7 +67,7 @@ std::unique_ptr<BrlapiConnection> BrlapiConnection::Create(
 }
 
 BrlapiConnection::ConnectResult BrlapiConnectionImpl::Connect(
-    const OnDataReadyCallback& on_data_ready) {
+    OnDataReadyCallback on_data_ready) {
   DCHECK(!handle_);
   handle_.reset(reinterpret_cast<brlapi_handle_t*>(
       malloc(libbrlapi_loader_->brlapi_getHandleSize())));
@@ -125,7 +125,7 @@ BrlapiConnection::ConnectResult BrlapiConnectionImpl::Connect(
   }
 
   fd_controller_ =
-      base::FileDescriptorWatcher::WatchReadable(fd, on_data_ready);
+      base::FileDescriptorWatcher::WatchReadable(fd, std::move(on_data_ready));
 
   return CONNECT_SUCCESS;
 }

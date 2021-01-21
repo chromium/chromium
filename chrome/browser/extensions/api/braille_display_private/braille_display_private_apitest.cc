@@ -65,9 +65,10 @@ class MockBrlapiConnection : public BrlapiConnection {
  public:
   explicit MockBrlapiConnection(MockBrlapiConnectionData* data)
       : data_(data) {}
-  ConnectResult Connect(const OnDataReadyCallback& on_data_ready) override {
+
+  ConnectResult Connect(OnDataReadyCallback on_data_ready) override {
     data_->connected = true;
-    on_data_ready_ = on_data_ready;
+    on_data_ready_ = std::move(on_data_ready);
     if (!data_->pending_keys.empty()) {
       content::GetIOThreadTaskRunner({})->PostTask(
           FROM_HERE, base::BindOnce(&MockBrlapiConnection::NotifyDataReady,
@@ -154,9 +155,8 @@ class BrailleDisplayPrivateApiTest : public ExtensionApiTest {
     connection_data_.error.brlerrno = BRLAPI_ERROR_SUCCESS;
     connection_data_.reappear_on_disconnect = false;
     BrailleControllerImpl::GetInstance()->SetCreateBrlapiConnectionForTesting(
-        base::Bind(
-            &BrailleDisplayPrivateApiTest::CreateBrlapiConnection,
-            base::Unretained(this)));
+        base::BindOnce(&BrailleDisplayPrivateApiTest::CreateBrlapiConnection,
+                       base::Unretained(this)));
     BrailleControllerImpl::GetInstance()->skip_libbrlapi_so_load_ = true;
     DisableAccessibilityManagerBraille();
   }
