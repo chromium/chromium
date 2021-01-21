@@ -24,6 +24,7 @@
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/native_theme/native_theme.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -38,37 +39,23 @@ int AutofillPopupBaseView::GetCornerRadius() {
 }
 
 SkColor AutofillPopupBaseView::GetBackgroundColor() {
-  return GetHighContrastAwareColor(
-      ui::NativeTheme::kColorId_DropdownBackgroundColor,
-      ui::NativeTheme::SystemThemeColor::kButtonFace);
+  return GetNativeTheme()->GetSystemColor(
+      ui::NativeTheme::kColorId_DropdownBackgroundColor);
 }
 
 SkColor AutofillPopupBaseView::GetForegroundColor() {
-  return GetHighContrastAwareColor(
-      ui::NativeTheme::kColorId_DropdownForegroundColor,
-      ui::NativeTheme::SystemThemeColor::kButtonText);
+  return GetNativeTheme()->GetSystemColor(
+      ui::NativeTheme::kColorId_DropdownForegroundColor);
 }
 
 SkColor AutofillPopupBaseView::GetSelectedBackgroundColor() {
-  return GetHighContrastAwareColor(
-      ui::NativeTheme::kColorId_DropdownSelectedBackgroundColor,
-      ui::NativeTheme::SystemThemeColor::kButtonText);
+  return GetNativeTheme()->GetSystemColor(
+      ui::NativeTheme::kColorId_DropdownSelectedBackgroundColor);
 }
 
 SkColor AutofillPopupBaseView::GetSelectedForegroundColor() {
-  return GetHighContrastAwareColor(
-      ui::NativeTheme::kColorId_DropdownSelectedForegroundColor,
-      ui::NativeTheme::SystemThemeColor::kButtonFace);
-}
-
-SkColor AutofillPopupBaseView::GetHighContrastAwareColor(
-    ui::NativeTheme::ColorId non_hc_color,
-    ui::NativeTheme::SystemThemeColor hc_color) {
-  if (ui::NativeTheme::GetInstanceForWeb()->UserHasContrastPreference()) {
-    return *GetNativeTheme()->GetSystemThemeColor(hc_color);
-  } else {
-    return GetNativeTheme()->GetSystemColor(non_hc_color);
-  }
+  return GetNativeTheme()->GetSystemColor(
+      ui::NativeTheme::kColorId_DropdownSelectedForegroundColor);
 }
 
 SkColor AutofillPopupBaseView::GetFooterBackgroundColor() {
