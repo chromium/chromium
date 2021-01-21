@@ -64,9 +64,11 @@ AppWindowLauncherItemController::AppWindowLauncherItemController(
     : ash::ShelfItemDelegate(shelf_id) {}
 
 AppWindowLauncherItemController::~AppWindowLauncherItemController() {
-  for (auto* window : windows_)
-    window->SetController(nullptr);
+  WindowList windows(windows_);
   for (auto* window : hidden_windows_)
+    windows.push_back(window);
+
+  for (auto* window : windows)
     window->SetController(nullptr);
 }
 
