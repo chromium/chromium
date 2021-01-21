@@ -280,7 +280,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Download.IOSDownloadedFileAction" enum="DownloadedFileAction"
     expires_after="2021-07-11">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>sdefresne@chromium.org</owner>
   <owner>ewannpv@chromium.com</owner>
   <summary>
     The action that a user takes on a file after it has been successfully
@@ -290,7 +290,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Download.IOSDownloadedFileNetError" enum="NetErrorCodes"
     expires_after="2021-05-08">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>ewannpv@chromium.org</owner>
   <owner>mrefaat@chromium.org</owner>
   <summary>
     Positive net error codes that happen in the case of download content fetch
@@ -303,7 +303,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <obsolete>
     Deprecated as of 08-2018. Recording code was removed in crrev.com/c/1170128.
   </obsolete>
-  <owner>eugenebut@chromium.org</owner>
   <owner>stkhapugin@chromium.org</owner>
   <summary>
     HTTP status code returned when file download completes on iOS.
@@ -312,7 +311,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Download.IOSDownloadFileInBackground"
     enum="DownloadFileInBackground" expires_after="2021-05-08">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>sdefresne@chromium.org</owner>
   <owner>ewannpv@chromium.com</owner>
   <summary>
     Logged when the download is completed (successfully or not) or in-progress
@@ -324,14 +323,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Download.IOSDownloadFileResult" enum="DownloadFileResult"
     expires_after="2021-07-26">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>ewannpv@chromium.org</owner>
+  <owner>sdefresne@chromium.org</owner>
   <summary>Result when a user attempts to download a file on iOS.</summary>
 </histogram>
 
 <histogram name="Download.IOSDownloadFileUI" enum="DownloadFileUI"
     expires_after="2021-06-13">
   <owner>ewannpv@chromium.org</owner>
-  <owner>eugenebut@chromium.org</owner>
+  <owner>sdefresne@chromium.org</owner>
   <summary>
     Result when a user attempts to present the download UI on iOS. Looged when
     download is created.
@@ -341,7 +341,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Download.IOSDownloadFileUIGoogleDrive"
     enum="DownloadFileUIGoogleDrive" expires_after="2021-11-29">
   <owner>ewannpv@chromium.org</owner>
-  <owner>eugenebut@chromium.org</owner>
+  <owner>sdefresne@chromium.org</owner>
   <summary>
     Result when the download UI is prexsented on iOS. Values indicate if Google
     Drive is installed and whether or not Install Google Drive promo was shown.
@@ -351,7 +351,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Download.IOSDownloadMimeType" enum="DownloadMimeTypeResult"
     expires_after="2021-06-13">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>ewannpv@chromium.org</owner>
+  <owner>sdefresne@chromium.org</owner>
   <summary>
     MIME type of a download response. Logged when the download UI was offered by
     the browser to the user.
@@ -360,8 +361,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Download.IOSDownloadPassKitResult"
     enum="DownloadPassKitResult" expires_after="2021-05-08">
-  <owner>eugenebut@chromium.org</owner>
-  <owner>ewannpv@chromium.com</owner>
+  <owner>ewannpv@chromium.org</owner>
+  <owner>sdefresne@chromium.org</owner>
   <summary>
     Recorded when a user attempts to download a PassKit file on iOS.
   </summary>
@@ -369,7 +370,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Download.IOSDownloadReplaced" enum="BooleanReplaced"
     expires_after="2021-07-15">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>ewannpv@chromium.org</owner>
   <owner>sdefresne@chromium.org</owner>
   <summary>
     The user discarded in-progress download and replaced with the new one. Only
@@ -381,7 +382,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Download.IOSPresentAddPassesDialogResult"
     enum="PresentAddPassesDialogResult" expires_after="2021-05-01">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>ewannpv@chromium.org</owner>
   <owner>sdefresne@chromium.org</owner>
   <summary>Result of an attempt to present Add Passes dialog on iOS.</summary>
 </histogram>
