@@ -571,10 +571,9 @@ class CONTENT_EXPORT RenderFrameImpl
   void ShowContextMenu(
       const blink::WebContextMenuData& data,
       const base::Optional<gfx::Point>& host_context_menu_location) override;
-  void FrameRectsChanged(const blink::WebRect& frame_rect) override;
+  void FrameRectsChanged(const gfx::Rect& frame_rect) override;
   void FocusedElementChanged(const blink::WebElement& element) override;
-  void OnMainFrameIntersectionChanged(
-      const blink::WebRect& intersect_rect) override;
+  void OnMainFrameIntersectionChanged(const gfx::Rect& intersect_rect) override;
   void WillSendRequest(blink::WebURLRequest& request,
                        ForRedirect for_redirect) override;
   void OnOverlayPopupAdDetected() override;
@@ -1417,7 +1416,7 @@ class CONTENT_EXPORT RenderFrameImpl
 
   // Used for tracking a frame's main frame document intersection and
   // and replicating it to the browser when it changes.
-  base::Optional<blink::WebRect> mainframe_intersection_rect_;
+  base::Optional<gfx::Rect> mainframe_intersection_rect_;
 
   std::unique_ptr<WebSocketHandshakeThrottleProvider>
       websocket_handshake_throttle_provider_;

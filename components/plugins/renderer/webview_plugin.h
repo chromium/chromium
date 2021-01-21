@@ -101,12 +101,12 @@ class WebViewPlugin : public blink::WebPlugin,
   bool IsErrorPlaceholder() override;
 
   void UpdateAllLifecyclePhases(blink::DocumentUpdateReason reason) override;
-  void Paint(cc::PaintCanvas* canvas, const blink::WebRect& rect) override;
+  void Paint(cc::PaintCanvas* canvas, const gfx::Rect& rect) override;
 
   // Coordinates are relative to the containing window.
-  void UpdateGeometry(const blink::WebRect& window_rect,
-                      const blink::WebRect& clip_rect,
-                      const blink::WebRect& unobscured_rect,
+  void UpdateGeometry(const gfx::Rect& window_rect,
+                      const gfx::Rect& clip_rect,
+                      const gfx::Rect& unobscured_rect,
                       bool is_visible) override;
 
   void UpdateFocus(bool foucsed, blink::mojom::FocusType focus_type) override;
@@ -135,8 +135,8 @@ class WebViewPlugin : public blink::WebPlugin,
   void OnZoomLevelChanged() override;
 
   void LoadHTML(const std::string& html_data, const GURL& url);
-  void UpdatePluginForNewGeometry(const blink::WebRect& window_rect,
-                                  const blink::WebRect& unobscured_rect);
+  void UpdatePluginForNewGeometry(const gfx::Rect& window_rect,
+                                  const gfx::Rect& unobscured_rect);
 
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner();
 
@@ -175,7 +175,7 @@ class WebViewPlugin : public blink::WebPlugin,
     // WebViewClient methods:
     bool AcceptsLoadDrops() override;
     bool CanUpdateLayout() override;
-    void DidInvalidateRect(const blink::WebRect&) override;
+    void DidInvalidateRect(const gfx::Rect&) override;
 
     // WebNonCompositedWidgetClient overrides.
     void ScheduleNonCompositedAnimation() override;

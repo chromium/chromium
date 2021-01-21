@@ -28,7 +28,6 @@ class RemoteFrameClientImpl;
 enum class WebFrameLoadType;
 class WebFrameWidget;
 class WebView;
-struct WebRect;
 class WindowAgentFactory;
 
 class CORE_EXPORT WebRemoteFrameImpl final
@@ -113,7 +112,6 @@ class CORE_EXPORT WebRemoteFrameImpl final
                         const gfx::Size& max_size) override;
   void DisableAutoResize() override;
   v8::Local<v8::Object> GlobalProxy() const override;
-  WebRect GetCompositingRect() override;
   void SynchronizeVisualProperties() override;
   void ResendVisualProperties() override;
   float GetCompositingScaleFactor() override;
@@ -134,6 +132,8 @@ class CORE_EXPORT WebRemoteFrameImpl final
   static WebRemoteFrameImpl* FromFrame(RemoteFrame&);
 
   void Trace(Visitor*) const;
+
+  gfx::Rect GetCompositingRect();
 
  private:
   friend class RemoteFrameClientImpl;

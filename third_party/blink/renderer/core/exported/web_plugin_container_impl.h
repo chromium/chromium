@@ -121,12 +121,12 @@ class CORE_EXPORT WebPluginContainerImpl final
                              const WebString& url) override;
   void EnqueueMessageEvent(const WebDOMMessageEvent&) override;
   void Invalidate() override;
-  void InvalidateRect(const WebRect&) override;
+  void InvalidateRect(const gfx::Rect&) override;
   void ScheduleAnimation() override;
   void ReportGeometry() override;
   v8::Local<v8::Object> V8ObjectForElement() override;
   void LoadFrameRequest(const WebURLRequest&, const WebString& target) override;
-  bool IsRectTopmost(const WebRect&) override;
+  bool IsRectTopmost(const gfx::Rect&) override;
   void RequestTouchEventType(TouchEventRequestType) override;
   void SetWantsWheelEvents(bool) override;
   gfx::Point RootFrameToLocalPoint(const gfx::Point&) override;

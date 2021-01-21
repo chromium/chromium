@@ -43,13 +43,13 @@
 #include "third_party/blink/public/web/web_ax_enums.h"
 #include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_navigation_policy.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace blink {
 
 class WebPagePopup;
 class WebURLRequest;
 class WebView;
-struct WebRect;
 struct WebWindowFeatures;
 
 class WebViewClient {
@@ -91,7 +91,7 @@ class WebViewClient {
   // for non-composited WebViews that exist to contribute to a "parent" WebView
   // painting. Otherwise invalidations are transmitted to the compositor through
   // the layers.
-  virtual void DidInvalidateRect(const WebRect&) {}
+  virtual void DidInvalidateRect(const gfx::Rect&) {}
 
   // Called when script in the page calls window.print().  If frame is
   // non-null, then it selects a particular frame, including its

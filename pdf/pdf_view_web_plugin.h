@@ -32,10 +32,10 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   void Destroy() override;
   blink::WebPluginContainer* Container() const override;
   void UpdateAllLifecyclePhases(blink::DocumentUpdateReason reason) override;
-  void Paint(cc::PaintCanvas* canvas, const blink::WebRect& rect) override;
-  void UpdateGeometry(const blink::WebRect& window_rect,
-                      const blink::WebRect& clip_rect,
-                      const blink::WebRect& unobscured_rect,
+  void Paint(cc::PaintCanvas* canvas, const gfx::Rect& rect) override;
+  void UpdateGeometry(const gfx::Rect& window_rect,
+                      const gfx::Rect& clip_rect,
+                      const gfx::Rect& unobscured_rect,
                       bool is_visible) override;
   void UpdateFocus(bool focused, blink::mojom::FocusType focus_type) override;
   void UpdateVisibility(bool visibility) override;

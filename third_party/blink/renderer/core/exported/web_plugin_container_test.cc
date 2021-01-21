@@ -1182,12 +1182,12 @@ TEST_F(WebPluginContainerTest, IsRectTopmostTest) {
   plugin_container_impl->SetFrameRect(IntRect(0, 0, 300, 300));
 
   WebRect rect = plugin_container_impl->GetElement().BoundsInViewport();
-  EXPECT_TRUE(plugin_container_impl->IsRectTopmost(rect));
+  EXPECT_TRUE(plugin_container_impl->IsRectTopmost(gfx::Rect(rect)));
 
   // Cause the plugin's frame to be detached.
   web_view_helper.Reset();
 
-  EXPECT_FALSE(plugin_container_impl->IsRectTopmost(rect));
+  EXPECT_FALSE(plugin_container_impl->IsRectTopmost(gfx::Rect(rect)));
 }
 
 // Verify that IsRectTopmost works with odd and even dimensions.
@@ -1205,14 +1205,14 @@ TEST_F(WebPluginContainerTest, IsRectTopmostTestWithOddAndEvenDimensions) {
           web_view, WebString::FromUTF8("translated-plugin")));
   even_plugin_container_impl->SetFrameRect(IntRect(0, 0, 300, 300));
   auto even_rect = even_plugin_container_impl->GetElement().BoundsInViewport();
-  EXPECT_TRUE(even_plugin_container_impl->IsRectTopmost(even_rect));
+  EXPECT_TRUE(even_plugin_container_impl->IsRectTopmost(gfx::Rect(even_rect)));
 
   auto* odd_plugin_container_impl =
       To<WebPluginContainerImpl>(GetWebPluginContainer(
           web_view, WebString::FromUTF8("odd-dimensions-plugin")));
   odd_plugin_container_impl->SetFrameRect(IntRect(0, 0, 300, 300));
   auto odd_rect = odd_plugin_container_impl->GetElement().BoundsInViewport();
-  EXPECT_TRUE(odd_plugin_container_impl->IsRectTopmost(odd_rect));
+  EXPECT_TRUE(odd_plugin_container_impl->IsRectTopmost(gfx::Rect(odd_rect)));
 }
 
 TEST_F(WebPluginContainerTest, ClippedRectsForIframedElement) {
@@ -1374,7 +1374,7 @@ TEST_F(WebPluginContainerTest, ClippedRectsForSubpixelPositionedPlugin) {
 }
 
 TEST_F(WebPluginContainerTest, TopmostAfterDetachTest) {
-  static constexpr WebRect kTopmostRect(10, 10, 40, 40);
+  static constexpr gfx::Rect kTopmostRect(10, 10, 40, 40);
 
   // Plugin that checks isRectTopmost in destroy().
   class TopmostPlugin : public FakeWebPlugin {

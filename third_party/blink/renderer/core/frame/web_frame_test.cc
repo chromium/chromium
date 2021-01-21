@@ -7359,14 +7359,14 @@ class TestMainFrameIntersectionChanged
 
   // frame_test_helpers::TestWebFrameClient:
   void OnMainFrameIntersectionChanged(
-      const WebRect& intersection_rect) override {
+      const gfx::Rect& intersection_rect) override {
     main_frame_intersection_ = intersection_rect;
   }
 
-  WebRect MainFrameIntersection() const { return main_frame_intersection_; }
+  gfx::Rect MainFrameIntersection() const { return main_frame_intersection_; }
 
  private:
-  WebRect main_frame_intersection_;
+  gfx::Rect main_frame_intersection_;
 };
 
 TEST_F(WebFrameTest, MainFrameIntersectionChanged) {
@@ -7393,7 +7393,7 @@ TEST_F(WebFrameTest, MainFrameIntersectionChanged) {
       occlusion_state, gfx::Size(), gfx::Point(), transform);
   static_cast<WebFrameWidgetImpl*>(widget)->ApplyViewportIntersectionForTesting(
       std::move(intersection_state));
-  EXPECT_EQ(client.MainFrameIntersection(), blink::WebRect(100, 100, 200, 140));
+  EXPECT_EQ(client.MainFrameIntersection(), gfx::Rect(100, 100, 200, 140));
 }
 
 class TestSameDocumentWithImageWebFrameClient
@@ -13918,7 +13918,7 @@ TEST_F(WebFrameTest, RemoteFrameCompositingScaleFactor) {
 
   // The compositing scale factor tells the OOPIF compositor to raster at a
   // lower scale since the frame is scaled down in the parent webview.
-  EXPECT_EQ(remote_frame->GetCompositingRect(), WebRect(0, 0, 1600, 1200));
+  EXPECT_EQ(remote_frame->GetCompositingRect(), gfx::Rect(0, 0, 1600, 1200));
   EXPECT_EQ(remote_frame->GetCompositingScaleFactor(), 0.5f);
 }
 
@@ -13956,7 +13956,7 @@ TEST_F(WebFrameTest, RotatedRemoteFrameCompositingScaleFactor) {
 
   // The compositing scale factor tells the OOPIF compositor to raster at a
   // lower scale since the frame is scaled down in the parent webview.
-  EXPECT_EQ(remote_frame->GetCompositingRect(), WebRect(0, 0, 1600, 1200));
+  EXPECT_EQ(remote_frame->GetCompositingRect(), gfx::Rect(0, 0, 1600, 1200));
   EXPECT_EQ(remote_frame->GetCompositingScaleFactor(), 0.5f);
 }
 

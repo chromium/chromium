@@ -43,6 +43,7 @@
 
 namespace gfx {
 class PointF;
+class Rect;
 }  // namespace gfx
 
 namespace ui {
@@ -58,7 +59,6 @@ class WebPluginContainer;
 class WebURLResponse;
 struct WebPrintParams;
 struct WebPrintPresetOptions;
-struct WebRect;
 struct WebURLError;
 template <typename T>
 class WebVector;
@@ -110,12 +110,12 @@ class WebPlugin {
   virtual bool CanProcessDrag() const { return false; }
 
   virtual void UpdateAllLifecyclePhases(blink::DocumentUpdateReason) = 0;
-  virtual void Paint(cc::PaintCanvas*, const WebRect&) = 0;
+  virtual void Paint(cc::PaintCanvas*, const gfx::Rect&) = 0;
 
   // Coordinates are relative to the containing window.
-  virtual void UpdateGeometry(const WebRect& window_rect,
-                              const WebRect& clip_rect,
-                              const WebRect& unobscured_rect,
+  virtual void UpdateGeometry(const gfx::Rect& window_rect,
+                              const gfx::Rect& clip_rect,
+                              const gfx::Rect& unobscured_rect,
                               bool is_visible) = 0;
 
   virtual void UpdateFocus(bool focused, mojom::FocusType) = 0;

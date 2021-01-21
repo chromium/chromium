@@ -537,7 +537,7 @@ void WebPluginContainerImpl::Invalidate() {
   InvalidateRect(IntRect(0, 0, Size().Width(), Size().Height()));
 }
 
-void WebPluginContainerImpl::InvalidateRect(const WebRect& rect) {
+void WebPluginContainerImpl::InvalidateRect(const gfx::Rect& rect) {
   InvalidateRect(static_cast<IntRect>(rect));
 }
 
@@ -594,7 +594,7 @@ void WebPluginContainerImpl::LoadFrameRequest(const WebURLRequest& request,
     target_frame->Navigate(frame_request, WebFrameLoadType::kStandard);
 }
 
-bool WebPluginContainerImpl::IsRectTopmost(const WebRect& rect) {
+bool WebPluginContainerImpl::IsRectTopmost(const gfx::Rect& rect) {
   // Disallow access to the frame during Dispose(), because it is not guaranteed
   // to be valid memory once this object has started disposal. In particular,
   // we might be being disposed because the frame has already be deleted and
@@ -607,7 +607,7 @@ bool WebPluginContainerImpl::IsRectTopmost(const WebRect& rect) {
   if (!frame)
     return false;
 
-  IntRect frame_rect = rect;
+  IntRect frame_rect(rect);
   frame_rect.MoveBy(Location());
   HitTestLocation location((PhysicalRect(frame_rect)));
   HitTestResult result = frame->GetEventHandler().HitTestResultAtLocation(

@@ -93,6 +93,10 @@ namespace cc {
 class LayerTreeSettings;
 }  // namespace cc
 
+namespace gfx {
+class Rect;
+}  // namespace gfx
+
 namespace blink {
 namespace mojom {
 enum class TreeScopeType;
@@ -126,7 +130,6 @@ struct MobileFriendliness;
 struct WebConsoleMessage;
 struct WebContextMenuData;
 struct WebPluginParams;
-struct WebRect;
 
 class BLINK_EXPORT WebLocalFrameClient {
  public:
@@ -464,7 +467,7 @@ class BLINK_EXPORT WebLocalFrameClient {
                                const base::Optional<gfx::Point>&) {}
 
   // Called when the frame rects changed.
-  virtual void FrameRectsChanged(const WebRect&) {}
+  virtual void FrameRectsChanged(const gfx::Rect&) {}
 
   // Called when a new element gets focused. |from_element| is the previously
   // focused element, |to_element| is the newly focused one. Either can be null.
@@ -472,7 +475,7 @@ class BLINK_EXPORT WebLocalFrameClient {
 
   // Called when a frame's intersection with the main frame has changed.
   virtual void OnMainFrameIntersectionChanged(
-      const WebRect& intersection_rect) {}
+      const gfx::Rect& intersection_rect) {}
 
   // Called when an overlay interstitial pop up ad is detected.
   virtual void OnOverlayPopupAdDetected() {}

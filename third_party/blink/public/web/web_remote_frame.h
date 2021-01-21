@@ -37,7 +37,6 @@ class WebView;
 struct FramePolicy;
 struct FrameVisualProperties;
 struct WebFrameOwnerProperties;
-struct WebRect;
 
 class WebRemoteFrame : public WebFrame {
  public:
@@ -155,9 +154,6 @@ class WebRemoteFrame : public WebFrame {
   virtual void EnableAutoResize(const gfx::Size& min_size,
                                 const gfx::Size& max_size) = 0;
   virtual void DisableAutoResize() = 0;
-
-  // Return the interest rect for compositing in the frame's space.
-  virtual WebRect GetCompositingRect() = 0;
 
   virtual void SynchronizeVisualProperties() = 0;
   virtual void ResendVisualProperties() = 0;

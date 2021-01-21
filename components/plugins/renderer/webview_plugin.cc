@@ -41,7 +41,6 @@ using blink::WebLocalFrame;
 using blink::WebMouseEvent;
 using blink::WebPlugin;
 using blink::WebPluginContainer;
-using blink::WebRect;
 using blink::WebString;
 using blink::WebURLError;
 using blink::WebURLResponse;
@@ -160,7 +159,7 @@ bool WebViewPlugin::IsErrorPlaceholder() {
   return delegate_->IsErrorPlaceholder();
 }
 
-void WebViewPlugin::Paint(cc::PaintCanvas* canvas, const WebRect& rect) {
+void WebViewPlugin::Paint(cc::PaintCanvas* canvas, const gfx::Rect& rect) {
   gfx::Rect paint_rect = gfx::IntersectRects(rect_, rect);
   if (paint_rect.IsEmpty())
     return;
@@ -177,15 +176,15 @@ void WebViewPlugin::Paint(cc::PaintCanvas* canvas, const WebRect& rect) {
 }
 
 // Coordinates are relative to the containing window.
-void WebViewPlugin::UpdateGeometry(const WebRect& window_rect,
-                                   const WebRect& clip_rect,
-                                   const WebRect& unobscured_rect,
+void WebViewPlugin::UpdateGeometry(const gfx::Rect& window_rect,
+                                   const gfx::Rect& clip_rect,
+                                   const gfx::Rect& unobscured_rect,
                                    bool is_visible) {
   DCHECK(container_);
 
   base::AutoReset<bool> is_resizing(&is_resizing_, true);
 
-  if (static_cast<gfx::Rect>(window_rect) != rect_) {
+  if (window_rect != rect_) {
     rect_ = window_rect;
     DCHECK(web_view()->MainFrameWidget());
     web_view()->MainFrameWidget()->Resize(rect_.size());
@@ -313,7 +312,7 @@ void WebViewPlugin::WebViewHelper::SetToolTipText(
   }
 }
 
-void WebViewPlugin::WebViewHelper::DidInvalidateRect(const WebRect& rect) {
+void WebViewPlugin::WebViewHelper::DidInvalidateRect(const gfx::Rect& rect) {
   if (plugin_->container_)
     plugin_->container_->InvalidateRect(rect);
 }
@@ -390,8 +389,8 @@ void WebViewPlugin::LoadHTML(const std::string& html_data, const GURL& url) {
 }
 
 void WebViewPlugin::UpdatePluginForNewGeometry(
-    const blink::WebRect& window_rect,
-    const blink::WebRect& unobscured_rect) {
+    const gfx::Rect& window_rect,
+    const gfx::Rect& unobscured_rect) {
   DCHECK(container_);
   if (!delegate_)
     return;

@@ -509,10 +509,10 @@ class ScriptOnDestroyPlugin : public GarbageCollected<ScriptOnDestroyPlugin>,
   WebPluginContainer* Container() const override { return container_; }
 
   void UpdateAllLifecyclePhases(DocumentUpdateReason) override {}
-  void Paint(cc::PaintCanvas*, const WebRect&) override {}
-  void UpdateGeometry(const WebRect&,
-                      const WebRect&,
-                      const WebRect&,
+  void Paint(cc::PaintCanvas*, const gfx::Rect&) override {}
+  void UpdateGeometry(const gfx::Rect&,
+                      const gfx::Rect&,
+                      const gfx::Rect&,
                       bool) override {}
   void UpdateFocus(bool, mojom::blink::FocusType) override {}
   void UpdateVisibility(bool) override {}

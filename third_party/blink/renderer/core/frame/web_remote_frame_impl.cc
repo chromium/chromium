@@ -403,7 +403,7 @@ v8::Local<v8::Object> WebRemoteFrameImpl::GlobalProxy() const {
       ->GlobalProxyIfNotDetached();
 }
 
-WebRect WebRemoteFrameImpl::GetCompositingRect() {
+gfx::Rect WebRemoteFrameImpl::GetCompositingRect() {
   return GetFrame()->View()->GetCompositingRect();
 }
 

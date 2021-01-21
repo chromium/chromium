@@ -29,7 +29,6 @@
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-shared.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
-#include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_error.h"
@@ -153,12 +152,11 @@ blink::WebPluginContainer* PdfViewWebPlugin::Container() const {
 void PdfViewWebPlugin::UpdateAllLifecyclePhases(
     blink::DocumentUpdateReason reason) {}
 
-void PdfViewWebPlugin::Paint(cc::PaintCanvas* canvas,
-                             const blink::WebRect& rect) {}
+void PdfViewWebPlugin::Paint(cc::PaintCanvas* canvas, const gfx::Rect& rect) {}
 
-void PdfViewWebPlugin::UpdateGeometry(const blink::WebRect& window_rect,
-                                      const blink::WebRect& clip_rect,
-                                      const blink::WebRect& unobscured_rect,
+void PdfViewWebPlugin::UpdateGeometry(const gfx::Rect& window_rect,
+                                      const gfx::Rect& clip_rect,
+                                      const gfx::Rect& unobscured_rect,
                                       bool is_visible) {}
 
 void PdfViewWebPlugin::UpdateFocus(bool focused,
