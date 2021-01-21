@@ -905,6 +905,9 @@ can be compared for the same population). -->
 </histogram>
 
 <histogram name="Sync.SessionTabs" units="tabs" expires_after="2021-01-31">
+  <obsolete>
+    Removed 2021-01.
+  </obsolete>
   <owner>mastiz@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -1125,12 +1128,14 @@ can be compared for the same population). -->
 </histogram>
 
 <histogram name="Sync.URLFetchTimedOut" enum="BooleanTimedOut"
-    expires_after="2021-01-31">
+    expires_after="2021-07-31">
   <owner>mastiz@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
-    Whether a url fetch timed out or not. Timing out implies the fetch was
-    stalled for an unknown reason.
+    Whether a URL fetch timed out or not. Timing out implies the fetch was
+    stalled for an unknown reason. Note that this records true on timeout and
+    false on success, but doesn't record anything if the fetch failed for any
+    other reason.
   </summary>
 </histogram>
 

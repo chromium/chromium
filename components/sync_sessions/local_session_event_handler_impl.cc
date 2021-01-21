@@ -10,9 +10,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/strings/stringprintf.h"
-#include "build/build_config.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync_sessions/switches.h"
@@ -157,11 +154,6 @@ void LocalSessionEventHandlerImpl::AssociateWindows(ReloadTabsOption option,
 
   for (auto& window_iter_pair : windows) {
     const SyncedWindowDelegate* window_delegate = window_iter_pair.second;
-    if (option == RELOAD_TABS) {
-      UMA_HISTOGRAM_COUNTS_1M("Sync.SessionTabs",
-                              window_delegate->GetTabCount());
-    }
-
     // Make sure the window is viewable and is not about to be closed. The
     // viewable window check is necessary because, for example, when a browser
     // is closed the destructor is not necessarily run immediately. This means
