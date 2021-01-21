@@ -236,23 +236,29 @@ wl::Object<wl_region> WaylandSurface::CreateAndAddRegion(
 }
 
 void WaylandSurface::SetViewportSource(const gfx::RectF& src_rect) {
-  if (src_rect == crop_rect_) {
+  if (src_rect == crop_rect_)
     return;
-  } else if (src_rect.IsEmpty() || src_rect == gfx::RectF{0.f, 0.f, 1.f, 1.f}) {
+  // |src_rect| {1.f, 1.f} does not apply cropping so set it to empty.
+  if (src_rect.IsEmpty() || src_rect == gfx::RectF{1.f, 1.f}) {
+    crop_rect_ = gfx::RectF();
     wp_viewport_set_source(viewport(), wl_fixed_from_int(-1),
                            wl_fixed_from_int(-1), wl_fixed_from_int(-1),
                            wl_fixed_from_int(-1));
     return;
   }
 
+  // wp_viewport_set_source() needs pixel inputs. Store |src_rect| and calculate
+  // in UpdateBufferDamageRegion().
   crop_rect_ = src_rect;
 }
 
 void WaylandSurface::SetViewportDestination(const gfx::Size& dest_size_px) {
-  if (dest_size_px == display_size_px_) {
+  if (dest_size_px == display_size_px_)
     return;
-  } else if (dest_size_px.IsEmpty()) {
+  if (dest_size_px.IsEmpty()) {
+    display_size_px_ = gfx::Size();
     wp_viewport_set_destination(viewport(), -1, -1);
+    return;
   }
   display_size_px_ = dest_size_px;
   gfx::Size viewport_dst =
