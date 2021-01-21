@@ -83,7 +83,7 @@ Tile* PictureLayerTiling::CreateTile(const Tile::CreateInfo& info) {
   TileMapKey key(i, j);
   DCHECK(tiles_.find(key) == tiles_.end());
 
-  if (!raster_source_->CoversRect(info.enclosing_layer_rect, *client_))
+  if (!raster_source_->IntersectsRect(info.enclosing_layer_rect, *client_))
     return nullptr;
 
   all_tiles_done_ = false;
@@ -355,8 +355,8 @@ bool PictureLayerTiling::ShouldCreateTileAt(
 
   // If the active tree can't create a tile, because of its raster source, then
   // the pending tree should create one.
-  if (!active_twin->raster_source()->CoversRect(info.enclosing_layer_rect,
-                                                *active_twin->client()))
+  if (!active_twin->raster_source()->IntersectsRect(info.enclosing_layer_rect,
+                                                    *active_twin->client()))
     return true;
 
   const Region* layer_invalidation = client_->GetPendingInvalidation();
@@ -879,7 +879,8 @@ PrioritizedTile PictureLayerTiling::MakePrioritizedTile(
     Tile* tile,
     PriorityRectType priority_rect_type) const {
   DCHECK(tile);
-  DCHECK(raster_source()->CoversRect(tile->enclosing_layer_rect(), *client_))
+  DCHECK(
+      raster_source()->IntersectsRect(tile->enclosing_layer_rect(), *client_))
       << "Recording rect: "
       << EnclosingLayerRectFromContentsRect(tile->content_rect()).ToString();
 

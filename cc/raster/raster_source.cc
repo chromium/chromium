@@ -149,8 +149,9 @@ RasterSource::TakeDecodingModeMap() {
   return display_list_->TakeDecodingModeMap();
 }
 
-bool RasterSource::CoversRect(const gfx::Rect& layer_rect,
-                              const PictureLayerTilingClient& client) const {
+bool RasterSource::IntersectsRect(
+    const gfx::Rect& layer_rect,
+    const PictureLayerTilingClient& client) const {
   if (size_.IsEmpty())
     return false;
 
@@ -163,7 +164,7 @@ bool RasterSource::CoversRect(const gfx::Rect& layer_rect,
 
   gfx::Rect bounded_rect = layer_rect;
   bounded_rect.Intersect(gfx::Rect(size_));
-  return recorded_viewport_.Contains(bounded_rect);
+  return recorded_viewport_.Intersects(bounded_rect);
 }
 
 gfx::Size RasterSource::GetSize() const {

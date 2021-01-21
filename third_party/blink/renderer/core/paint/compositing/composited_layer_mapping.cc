@@ -1582,11 +1582,6 @@ void CompositedLayerMapping::DoPaintTask(
 
 // TODO(eseckler): Make recording distance configurable, e.g. for use in
 // headless, where we would like to record an exact area.
-// Note however that the minimum value for this constant is the size of a
-// raster tile. This is because the raster system is not able to raster a
-// tile that is not completely covered by a display list. If the constant
-// were less than the size of a tile, then a tile which partially overlaps
-// the screen may not be rastered.
 static const int kPixelDistanceToRecord = 4000;
 
 IntRect CompositedLayerMapping::RecomputeInterestRect(

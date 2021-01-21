@@ -4907,9 +4907,9 @@ TEST_F(LegacySWPictureLayerImplTest, CloneMissingRecordings) {
   // dropped recordings). This will cause us to be missing some tiles.
   SetupPendingTreeWithFixedTileSize(partial_raster_source, tile_size,
                                     Region(gfx::Rect(layer_bounds)));
-  EXPECT_EQ(3u * 3u, pending_tiling->AllTilesForTesting().size());
+  EXPECT_EQ(4u * 4u, pending_tiling->AllTilesForTesting().size());
   EXPECT_FALSE(pending_tiling->TileAt(0, 0));
-  EXPECT_FALSE(pending_tiling->TileAt(1, 1));
+  EXPECT_TRUE(pending_tiling->TileAt(1, 1));
   EXPECT_TRUE(pending_tiling->TileAt(2, 2));
 
   // Active is not affected yet.
@@ -4917,9 +4917,9 @@ TEST_F(LegacySWPictureLayerImplTest, CloneMissingRecordings) {
 
   // Activate the tree. The same tiles go missing on the active tree.
   ActivateTree();
-  EXPECT_EQ(3u * 3u, active_tiling->AllTilesForTesting().size());
+  EXPECT_EQ(4u * 4u, active_tiling->AllTilesForTesting().size());
   EXPECT_FALSE(active_tiling->TileAt(0, 0));
-  EXPECT_FALSE(active_tiling->TileAt(1, 1));
+  EXPECT_TRUE(active_tiling->TileAt(1, 1));
   EXPECT_TRUE(active_tiling->TileAt(2, 2));
 
   // Now put a full recording on the pending tree again. We'll get all our tiles
@@ -4932,7 +4932,7 @@ TEST_F(LegacySWPictureLayerImplTest, CloneMissingRecordings) {
   Tile::Id tile22 = pending_tiling->TileAt(2, 2)->id();
 
   // Active is not affected yet.
-  EXPECT_EQ(3u * 3u, active_tiling->AllTilesForTesting().size());
+  EXPECT_EQ(4u * 4u, active_tiling->AllTilesForTesting().size());
 
   // Activate the tree. The tiles are moved to the active tree.
   ActivateTree();
