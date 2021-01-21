@@ -34,4 +34,9 @@ public class OriginVerifierStatics {
             String packageName, Origin origin, @CustomTabsService.Relation int relation) {
         return OriginVerifier.wasPreviouslyVerified(packageName, origin, relation);
     }
+
+    /** Calls {@link OriginVerifier#getCertificateSHA256FingerprintForPackage(String)}. */
+    public static String getCertificateSHA256FingerprintForPackage(String packageName) {
+        return OriginVerifier.getCertificateSHA256FingerprintForPackage(packageName);
+    }
 }

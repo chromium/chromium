@@ -123,6 +123,38 @@ std::unique_ptr<protocol::Audits::HeavyAdIssueDetails> GetHeavyAdIssueHelper(
       .Build();
 }
 
+std::unique_ptr<protocol::Audits::TrustedWebActivityIssueDetails>
+BuildTWAQualityIssue(
+    blink::mojom::TrustedWebActivityIssueDetailsPtr issue_details) {
+  protocol::String type_string;
+  switch (issue_details->violation_type) {
+    case blink::mojom::TwaQualityEnforcementViolationType::kHttpError:
+      type_string =
+          protocol::Audits::TwaQualityEnforcementViolationTypeEnum::KHttpError;
+      break;
+    case blink::mojom::TwaQualityEnforcementViolationType::kUnavailableOffline:
+      type_string = protocol::Audits::TwaQualityEnforcementViolationTypeEnum::
+          KUnavailableOffline;
+      break;
+    case blink::mojom::TwaQualityEnforcementViolationType::kDigitalAssetLinks:
+      type_string = protocol::Audits::TwaQualityEnforcementViolationTypeEnum::
+          KDigitalAssetLinks;
+      break;
+  }
+
+  auto twaDetails = protocol::Audits::TrustedWebActivityIssueDetails::Create()
+                        .SetUrl(issue_details->url.spec())
+                        .SetViolationType(type_string)
+                        .Build();
+  if (issue_details->http_error_code)
+    twaDetails->SetHttpStatusCode(issue_details->http_error_code);
+  if (issue_details->package_name)
+    twaDetails->SetPackageName(*issue_details->package_name);
+  if (issue_details->signature)
+    twaDetails->SetSignature(*issue_details->signature);
+  return twaDetails;
+}
+
 }  // namespace
 
 void OnResetNavigationRequest(NavigationRequest* navigation_request) {
@@ -967,6 +999,28 @@ void ReportBrowserInitiatedIssue(RenderFrameHostImpl* frame,
 
   AddIssueToIssueStorage(frame, issue->clone());
   DispatchToAgents(ftn, &protocol::AuditsHandler::OnIssueAdded, issue);
+}
+
+void BuildAndReportBrowserInitiatedIssue(
+    RenderFrameHostImpl* frame,
+    blink::mojom::InspectorIssueInfoPtr info) {
+  // This method does not support other type for now.
+  CHECK(info &&
+        info->code ==
+            blink::mojom::InspectorIssueCode::kTrustedWebActivityIssue &&
+        info->details && info->details->twa_issue_details);
+
+  auto issue_details = protocol::Audits::InspectorIssueDetails::Create();
+  issue_details.SetTwaQualityEnforcementDetails(
+      BuildTWAQualityIssue(std::move(info->details->twa_issue_details)));
+  auto issue =
+      protocol::Audits::InspectorIssue::Create()
+          .SetCode(
+              protocol::Audits::InspectorIssueCodeEnum::TrustedWebActivityIssue)
+          .SetDetails(issue_details.Build())
+          .Build();
+
+  ReportBrowserInitiatedIssue(frame, issue.get());
 }
 
 std::unique_ptr<protocol::Audits::InspectorIssue> GetHeavyAdIssue(

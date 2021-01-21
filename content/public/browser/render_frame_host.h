@@ -697,6 +697,13 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
       blink::mojom::HeavyAdResolutionStatus resolution,
       blink::mojom::HeavyAdReason reason) = 0;
 
+  // Report an inspector issue to devtools. Note that the issue is stored on the
+  // browser-side, and may contain information that we don't want to share
+  // with the renderer.
+  // TODO(crbug.com/1091720): This reporting should be done directly in the
+  // chrome layer in the future.
+  virtual void ReportInspectorIssue(blink::mojom::InspectorIssueInfoPtr) = 0;
+
   // Returns whether a document uses WebOTP. Returns true if a WebOTPService is
   // created on the document.
   virtual bool DocumentUsedWebOTP() = 0;

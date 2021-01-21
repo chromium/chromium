@@ -416,7 +416,7 @@ public class OriginVerifier {
      */
     @SuppressLint("PackageManagerGetSignatures")
     // https://stackoverflow.com/questions/39192844/android-studio-warning-when-using-packagemanager-get-signatures
-    static String getCertificateSHA256FingerprintForPackage(String packageName) {
+    public static String getCertificateSHA256FingerprintForPackage(String packageName) {
         PackageInfo packageInfo = getPackageInfo(packageName);
         if (packageInfo == null) return null;
 

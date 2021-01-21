@@ -669,6 +669,25 @@ experimental domain Audits
       SourceCodeLocation sourceCodeLocation
       boolean isWarning
 
+  type TwaQualityEnforcementViolationType extends string
+    enum
+      kHttpError
+      kUnavailableOffline
+      kDigitalAssetLinks
+
+  type TrustedWebActivityIssueDetails extends object
+    properties
+      # The url that triggers the violation.
+      string url
+      TwaQualityEnforcementViolationType violationType
+      optional integer httpStatusCode
+      # The package name of the Trusted Web Activity client app. This field is
+      # only used when violation type is kDigitalAssetLinks.
+      optional string packageName
+      # The signature of the Trusted Web Activity client app. This field is only
+      # used when violation type is kDigitalAssetLinks.
+      optional string signature
+
   # A unique identifier for the type of issue. Each type may use one of the
   # optional fields in InspectorIssueDetails to convey more specific
   # information about the kind of issue.
@@ -680,6 +699,7 @@ experimental domain Audits
       HeavyAdIssue
       ContentSecurityPolicyIssue
       SharedArrayBufferTransferIssue
+      TrustedWebActivityIssue
 
   # This struct holds a list of optional fields with additional information
   # specific to the kind of issue. When adding a new issue code, please also
@@ -692,6 +712,7 @@ experimental domain Audits
       optional HeavyAdIssueDetails heavyAdIssueDetails
       optional ContentSecurityPolicyIssueDetails contentSecurityPolicyIssueDetails
       optional SharedArrayBufferTransferIssueDetails sharedArrayBufferTransferIssueDetails
+      optional TrustedWebActivityIssueDetails twaQualityEnforcementDetails
 
   # An inspector issue reported from the back-end.
   type InspectorIssue extends object

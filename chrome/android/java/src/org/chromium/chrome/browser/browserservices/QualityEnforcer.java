@@ -19,6 +19,7 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.trustedwebactivity.ClientPackageNameProvider;
+import org.chromium.chrome.browser.browserservices.verification.OriginVerifierStatics;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar.CustomTabTabObserver;
@@ -130,9 +131,21 @@ public class QualityEnforcer {
         if (ChromeFeatureList.isEnabled(
                     ChromeFeatureList.TRUSTED_WEB_ACTIVITY_QUALITY_ENFORCEMENT_WARNING)) {
             showErrorToast(getToastMessage(type, url, httpStatusCode));
+
             if (tab.getWebContents() != null) {
-                QualityEnforcerJni.get().reportDevtoolsIssue(
-                        tab.getWebContents().getMainFrame(), type, url, httpStatusCode);
+                String packageName = null;
+                String signature = null;
+                // Only get the package name and signature when violation type is
+                // DIGITAL_ASSET_LINK. This is because computing the fingerprint is expensive.
+                // We should figure out how to reuse the existing one in OriginVerifier.
+                if (type == QualityEnforcementViolationType.DIGITAL_ASSET_LINK) {
+                    packageName = mClientPackageNameProvider.get();
+                    signature = OriginVerifierStatics.getCertificateSHA256FingerprintForPackage(
+                            packageName);
+                }
+
+                QualityEnforcerJni.get().reportDevtoolsIssue(tab.getWebContents().getMainFrame(),
+                        type, url, httpStatusCode, packageName, signature);
             }
         }
 
@@ -233,7 +246,7 @@ public class QualityEnforcer {
 
     @NativeMethods
     interface Natives {
-        void reportDevtoolsIssue(
-                RenderFrameHost renderFrameHost, int type, String url, int httpStatusCode);
+        void reportDevtoolsIssue(RenderFrameHost renderFrameHost, int type, String url,
+                int httpStatusCode, String packageName, String signature);
     }
 }

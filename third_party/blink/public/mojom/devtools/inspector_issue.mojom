@@ -18,6 +18,7 @@ enum InspectorIssueCode {
   kBlockedByResponseIssue,
   kContentSecurityPolicyIssue,
   kSharedArrayBufferTransferIssue,
+  kTrustedWebActivityIssue,
 };
 
 // Information about a cookie that is affected by an issue.
@@ -126,6 +127,21 @@ struct SharedArrayBufferTransferIssueDetails {
   bool is_warning;
 };
 
+enum TwaQualityEnforcementViolationType {
+  kHttpError,
+  kUnavailableOffline,
+  kDigitalAssetLinks,
+};
+
+struct TrustedWebActivityIssueDetails {
+  url.mojom.Url url;
+  TwaQualityEnforcementViolationType violation_type;
+  // 0 is not a valid code and is used to indicate absence.
+  int32 http_error_code = 0;
+  string? package_name;
+  string? signature;
+};
+
 // A collection of optional fields that may store additional data depending
 // on the issue code.
 struct InspectorIssueDetails {
@@ -134,6 +150,7 @@ struct InspectorIssueDetails {
   BlockedByResponseIssueDetails? blocked_by_response_issue_details;
   ContentSecurityPolicyIssueDetails? csp_issue_details;
   SharedArrayBufferTransferIssueDetails? sab_transfer_details;
+  TrustedWebActivityIssueDetails twa_issue_details;
 };
 
 struct InspectorIssueInfo {

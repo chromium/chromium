@@ -216,6 +216,13 @@ void CONTENT_EXPORT
 ReportBrowserInitiatedIssue(RenderFrameHostImpl* frame,
                             protocol::Audits::InspectorIssue* issue);
 
+// Produces an inspector issue and sends it to the client with
+// |ReportBrowserInitiatedIssue|.
+// This only support TrustedWebActivityIssue for now.
+void BuildAndReportBrowserInitiatedIssue(
+    RenderFrameHostImpl* frame,
+    blink::mojom::InspectorIssueInfoPtr info);
+
 // Produces a Heavy Ad Issue based on the parameters passed in.
 std::unique_ptr<protocol::Audits::InspectorIssue> GetHeavyAdIssue(
     RenderFrameHostImpl* frame,

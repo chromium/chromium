@@ -3991,6 +3991,14 @@ void RenderFrameHostImpl::ReportHeavyAdIssue(
   devtools_instrumentation::ReportBrowserInitiatedIssue(this, issue.get());
 }
 
+// TODO(crbug.com/1091720): Would be better to do this directly in the chrome
+// layer.  See referenced bug for further details.
+void RenderFrameHostImpl::ReportInspectorIssue(
+    blink::mojom::InspectorIssueInfoPtr info) {
+  devtools_instrumentation::BuildAndReportBrowserInitiatedIssue(
+      this, std::move(info));
+}
+
 void RenderFrameHostImpl::AsValueInto(
     base::trace_event::TracedValue* traced_value) {
   traced_value->SetPointer("this", this);

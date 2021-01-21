@@ -195,6 +195,8 @@ blink::protocol::String InspectorIssueCodeValue(
     case mojom::blink::InspectorIssueCode::kSharedArrayBufferTransferIssue:
       return protocol::Audits::InspectorIssueCodeEnum::
           SharedArrayBufferTransferIssue;
+    case mojom::blink::InspectorIssueCode::kTrustedWebActivityIssue:
+      return protocol::Audits::InspectorIssueCodeEnum::TrustedWebActivityIssue;
   }
 }
 
