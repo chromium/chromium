@@ -94,7 +94,6 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/browserservices/ui/controller/CurrentPageVerifierTest.java",
   "javatests/src/org/chromium/chrome/browser/browserservices/ui/controller/TestVerifier.java",
   "javatests/src/org/chromium/chrome/browser/browserservices/ui/controller/trustedwebactivity/TrustedWebActivityCurrentPageVerifierTest.java",
-  "javatests/src/org/chromium/chrome/browser/browserservices/verification/OriginVerifierTest.java",
   "javatests/src/org/chromium/chrome/browser/browsing_data/BrowsingDataBridgeTest.java",
   "javatests/src/org/chromium/chrome/browser/browsing_data/BrowsingDataRemoverIntegrationTest.java",
   "javatests/src/org/chromium/chrome/browser/browsing_data/BrowsingDataTest.java",

@@ -1,3 +1,0 @@
-include_rules = [
-  "+components/externalauth/android/java/src/org/chromium/components/externalauth",
-]

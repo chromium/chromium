@@ -4,9 +4,52 @@
 
 import("//build/config/android/rules.gni")
 
-# Empty modules for a three sided patch.
-java_group("java") {
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/browserservices/verification/OriginVerifier.java",
+    "java/src/org/chromium/chrome/browser/browserservices/verification/Relationship.java",
+    "java/src/org/chromium/chrome/browser/browserservices/verification/VerificationResultStore.java",
+  ]
+  deps = [
+    "//base:base_java",
+    "//base:jni_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
+    "//components/embedder_support/android:util_java",
+    "//components/externalauth/android:java",
+    "//content/public/android:content_java",
+    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/android_deps:dagger_java",
+    "//third_party/android_deps:javax_inject_javax_inject_java",
+    "//third_party/android_sdk/androidx_browser:androidx_browser_java",
+  ]
+  srcjar_deps =
+      [ "//chrome/browser/installable/digital_asset_links:enums_srcjar" ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
-java_group("javatests") {
+generate_jni("jni_headers") {
+  sources = [ "java/src/org/chromium/chrome/browser/browserservices/verification/OriginVerifier.java" ]
+}
+
+android_library("javatests") {
+  testonly = true
+  sources = [ "./java/src/org/chromium/chrome/browser/browserservices/verification/OriginVerifierTest.java" ]
+
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//chrome/android:chrome_java",
+    "//chrome/browser/flags:java",
+    "//chrome/test/android:chrome_java_test_support",
+    "//components/embedder_support/android:util_java",
+    "//components/externalauth/android:java",
+    "//content/public/android:content_java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/android_deps:androidx_test_runner_java",
+    "//third_party/android_sdk/androidx_browser:androidx_browser_java",
+    "//third_party/junit",
+  ]
 }
