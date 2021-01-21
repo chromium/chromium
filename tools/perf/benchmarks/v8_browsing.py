@@ -74,9 +74,10 @@ class _V8BrowsingBenchmark(perf_benchmark.PerfBenchmark):
     return options
 
 
-@benchmark.Info(
-    emails=['mythria@chromium.org', 'tmrts@chromium.org'],
-    component='Blink>JavaScript')
+@benchmark.Info(emails=[
+    'mythria@chromium.org', 'tmrts@chromium.org', 'almuthanna@chromium.org'
+],
+                component='Blink>JavaScript')
 class V8DesktopBrowsingBenchmark(
     _V8BrowsingBenchmark):
   PLATFORM = 'desktop'
@@ -116,9 +117,10 @@ class V8MobileBrowsingBenchmark(
     return 'v8.browsing_mobile'
 
 
-@benchmark.Info(
-    emails=['mythria@chromium.org', 'tmrts@chromium.org'],
-    component='Blink>JavaScript')
+@benchmark.Info(emails=[
+    'mythria@chromium.org', 'tmrts@chromium.org', 'almuthanna@chromium.org'
+],
+                component='Blink>JavaScript')
 class V8FutureDesktopBrowsingBenchmark(
     _V8BrowsingBenchmark):
   PLATFORM = 'desktop'

@@ -70,8 +70,8 @@ system_health.webview_startup,"oksamyt@chromium.org, torne@chromium.org, changwa
 tab_switching.typical_25,vovoy@chromium.org,OS>Performance,,"2016,tabs_switching"
 tracing.tracing_with_background_memory_infra,ssid@chromium.org,,,
 tracing_perftests,"eseckler@chromium.org, oysteine@chromium.org",Speed>Tracing,,
-v8.browsing_desktop,"mythria@chromium.org, tmrts@chromium.org",Blink>JavaScript,,"2016,2018,2019,2020,health_check,images,infinite_scroll,international,javascript_heavy,keyboard_input,wasm,webgl"
-v8.browsing_desktop-future,"mythria@chromium.org, tmrts@chromium.org",Blink>JavaScript,,"2016,2018,2019,2020,health_check,images,infinite_scroll,international,javascript_heavy,keyboard_input,wasm,webgl"
+v8.browsing_desktop,"mythria@chromium.org, tmrts@chromium.org, almuthanna@chromium.org",Blink>JavaScript,,"2016,2018,2019,2020,health_check,images,infinite_scroll,international,javascript_heavy,keyboard_input,wasm,webgl"
+v8.browsing_desktop-future,"mythria@chromium.org, tmrts@chromium.org, almuthanna@chromium.org",Blink>JavaScript,,"2016,2018,2019,2020,health_check,images,infinite_scroll,international,javascript_heavy,keyboard_input,wasm,webgl"
 v8.browsing_mobile,"mythria@chromium.org, tmrts@chromium.org",Blink>JavaScript,,"2018,2019,2020,emerging_market,health_check,images,infinite_scroll,international,javascript_heavy"
 v8.browsing_mobile-future,"mythria@chromium.org, tmrts@chromium.org",Blink>JavaScript,,"2018,2019,2020,emerging_market,health_check,images,infinite_scroll,international,javascript_heavy"
 v8.runtime_stats.top_25,"mythria@chromium.org, ulan@chromium.org",Blink>JavaScript,,"cold,hot,warm"
