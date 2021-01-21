@@ -10,15 +10,12 @@ load("//lib/branches.star", "branches")
 load("//project.star", "settings")
 
 lucicfg.check_version(
-    min = "1.19.0",
+    min = "1.21.5",
     message = "Update depot_tools",
 )
 
 # Enable LUCI Realms support.
 lucicfg.enable_experiment("crbug.com/1085650")
-
-# Enable tree closing.
-lucicfg.enable_experiment("crbug.com/1054172")
 
 # Tell lucicfg what files it is allowed to touch
 lucicfg.config(

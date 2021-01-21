@@ -374,7 +374,7 @@ by CQ. These are often used to test new configurations before they are added
 as required builders.
 
 * [linux-perfetto-rel](https://ci.chromium.org/p/chromium/builders/try/linux-perfetto-rel) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+linux-perfetto-rel)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+linux-perfetto-rel))
-  * Experiment percentage: 100
+  * Experiment percentage: 100.0
 
   Path regular expressions:
   * [`//base/trace_event/.+`](https://cs.chromium.org/chromium/src/base/trace_event/)
@@ -384,5 +384,5 @@ as required builders.
   * [`//services/tracing/.+`](https://cs.chromium.org/chromium/src/services/tracing/)
 
 * [linux-rel-builderful](https://ci.chromium.org/p/chromium/builders/try/linux-rel-builderful) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+linux-rel-builderful)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+linux-rel-builderful))
-  * Experiment percentage: 5
+  * Experiment percentage: 5.0
 
