@@ -16,12 +16,12 @@
 #include "base/util/values/values_util.h"
 #include "chrome/browser/banners/app_banner_manager.h"
 #include "chrome/browser/banners/app_banner_metrics.h"
-#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/permissions/permissions_client.h"
 #include "components/variations/variations_associated_data.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
@@ -89,12 +89,13 @@ class AppPrefs {
            const GURL& origin,
            const std::string& package_name_or_start_url)
       : origin_(origin) {
-    Profile* profile =
-        Profile::FromBrowserContext(web_contents->GetBrowserContext());
-    if (profile->IsOffTheRecord() || !origin.is_valid())
+    content::BrowserContext* browser_context =
+        web_contents->GetBrowserContext();
+    if (browser_context->IsOffTheRecord() || !origin.is_valid())
       return;
 
-    settings_ = HostContentSettingsMapFactory::GetForProfile(profile);
+    settings_ =
+        permissions::PermissionsClient::Get()->GetSettingsMap(browser_context);
     origin_dict_ = GetOriginAppBannerData(settings_, origin);
     dict_ = origin_dict_->FindKeyOfType(package_name_or_start_url,
                                         base::Value::Type::DICTIONARY);
@@ -249,10 +250,10 @@ void NextInstallTextAnimation::RecordToPrefs(content::WebContents* web_contents,
 const char AppBannerSettingsHelper::kInstantAppsKey[] = "instantapps";
 
 void AppBannerSettingsHelper::ClearHistoryForURLs(
-    Profile* profile,
+    content::BrowserContext* browser_context,
     const std::set<GURL>& origin_urls) {
   HostContentSettingsMap* settings =
-      HostContentSettingsMapFactory::GetForProfile(profile);
+      permissions::PermissionsClient::Get()->GetSettingsMap(browser_context);
   for (const GURL& origin_url : origin_urls) {
     settings->SetWebsiteSettingDefaultScope(
         origin_url, GURL(), ContentSettingsType::APP_BANNER, nullptr);
@@ -398,11 +399,12 @@ void AppBannerSettingsHelper::RecordMinutesFromFirstVisitToShow(
   TrackMinutesFromFirstVisitToBannerShown(minutes);
 }
 
-bool AppBannerSettingsHelper::WasLaunchedRecently(Profile* profile,
-                                                  const GURL& origin_url,
-                                                  base::Time now) {
+bool AppBannerSettingsHelper::WasLaunchedRecently(
+    content::BrowserContext* browser_context,
+    const GURL& origin_url,
+    base::Time now) {
   HostContentSettingsMap* settings =
-      HostContentSettingsMapFactory::GetForProfile(profile);
+      permissions::PermissionsClient::Get()->GetSettingsMap(browser_context);
   std::unique_ptr<base::DictionaryValue> origin_dict =
       GetOriginAppBannerData(settings, origin_url);
 

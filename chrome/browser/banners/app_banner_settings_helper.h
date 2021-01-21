@@ -13,11 +13,11 @@
 #include "base/time/time.h"
 
 namespace content {
+class BrowserContext;
 class WebContents;
 }  // namespace content
 
 class GURL;
-class Profile;
 
 namespace webapps {
 
@@ -80,7 +80,7 @@ class AppBannerSettingsHelper {
   // For privacy reasons this needs to be cleared. The ClearHistoryForURLs
   // function removes any information from the banner content settings for the
   // given URls.
-  static void ClearHistoryForURLs(Profile* profile,
+  static void ClearHistoryForURLs(content::BrowserContext* browser_context,
                                   const std::set<GURL>& origin_urls);
 
   // Record a banner installation event, for either a WEB or NATIVE app.
@@ -148,7 +148,7 @@ class AppBannerSettingsHelper {
   // last ten days. This allows services outside app banners to utilise the
   // content setting that ensures app banners are not shown for sites which ave
   // already been added to homescreen.
-  static bool WasLaunchedRecently(Profile* profile,
+  static bool WasLaunchedRecently(content::BrowserContext* browser_context,
                                   const GURL& origin_url,
                                   base::Time now);
 
