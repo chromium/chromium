@@ -35,7 +35,6 @@ class FileSystemWritableFileStream final : public WritableStream {
       const ArrayBufferOrArrayBufferViewOrBlobOrUSVStringOrWriteParams& data,
       ExceptionState&);
   ScriptPromise truncate(ScriptState*, uint64_t size, ExceptionState&);
-  ScriptPromise close(ScriptState*, ExceptionState&);
   ScriptPromise seek(ScriptState*, uint64_t offset, ExceptionState&);
 
  private:

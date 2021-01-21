@@ -473,7 +473,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method requestPermission
 [Worker] interface FileSystemWritableFileStream : WritableStream
 [Worker]     attribute @@toStringTag
-[Worker]     method close
 [Worker]     method constructor
 [Worker]     method seek
 [Worker]     method truncate

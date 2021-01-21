@@ -89,20 +89,6 @@ ScriptPromise FileSystemWritableFileStream::truncate(
   return promise;
 }
 
-ScriptPromise FileSystemWritableFileStream::close(
-    ScriptState* script_state,
-    ExceptionState& exception_state) {
-  WritableStreamDefaultWriter* writer =
-      WritableStream::AcquireDefaultWriter(script_state, this, exception_state);
-  if (exception_state.HadException())
-    return ScriptPromise();
-
-  ScriptPromise promise = writer->close(script_state, exception_state);
-
-  WritableStreamDefaultWriter::Release(script_state, writer);
-  return promise;
-}
-
 ScriptPromise FileSystemWritableFileStream::seek(
     ScriptState* script_state,
     uint64_t offset,
