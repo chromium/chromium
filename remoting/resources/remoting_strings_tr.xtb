@@ -72,6 +72,7 @@ Bu izni vermek için aşağıdaki "<ph name="BUTTON_NAME" />" düğmesini tıkla
 <translation id="4405930547258349619">Çekirdek Kitaplığı</translation>
 <translation id="443560535555262820">Erişilebilirlik Tercihlerini Aç</translation>
 <translation id="4450893287417543264">Bir daha gösterme</translation>
+<translation id="4512952200932940229">Telif hakkı 2021 The Chromium Authors. Tüm Hakları Saklıdır.</translation>
 <translation id="4513946894732546136">Geri Bildirim</translation>
 <translation id="4563926062592110512">İstemcinin bağlantısı kesildi: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="4635770493235256822">Uzak cihazlar</translation>
@@ -173,6 +174,7 @@ Bu izni vermek için aşağıdaki "<ph name="BUTTON_NAME" />" düğmesini tıkla
 <translation id="8743328882720071828"><ph name="CLIENT_USERNAME" /> kullanıcısının bilgisayarınızı görmesine ve kontrol etmesine izin vermek istiyor musunuz?</translation>
 <translation id="8747048596626351634">Oturum kilitlendi veya başlatılamadı. Uzak bilgisayarda ~/.chrome-remote-desktop-session mevcutsa masaüstü ortamı veya pencere yöneticisi gibi uzun süre ön planda çalışan bir işlem başlattığından emin olun.</translation>
 <translation id="8804164990146287819">Gizlilik Politikası</translation>
+<translation id="8906511416443321782">Sesi yakalayıp Chrome Uzaktan Masaüstü istemcisine yayınlayabilmek için mikrofon erişimi gerekiyor.</translation>
 <translation id="9111855907838866522">Uzak cihazınıza bağlısınız. Menüyü açmak için lütfen ekrana dört parmağınızla dokunun.</translation>
 <translation id="9126115402994542723">Bu cihazdan bu ana makineye bağlantı kurarken bir daha PIN sorma.</translation>
 <translation id="916856682307586697">Varsayılan XSession'ı başlat</translation>

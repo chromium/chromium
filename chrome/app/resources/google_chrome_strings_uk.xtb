@@ -16,6 +16,7 @@
 <translation id="137466361146087520">Бета-версія Google Chrome</translation>
 <translation id="1399397803214730675">На комп’ютері вже встановлено новішу версію Google Chrome. Якщо програмне забезпечення не працює, видаліть Google Chrome і повторіть спробу.</translation>
 <translation id="1434626383986940139">Програми Chrome для версії Canary</translation>
+<translation id="147727933880789532">Chrome радить вимкнути це розширення, оскільки наразі воно не відповідає стандартам Безпечного перегляду з розширеним захистом</translation>
 <translation id="1553358976309200471">Оновити Chrome</translation>
 <translation id="1587223624401073077">Google Chrome використовує вашу камеру.</translation>
 <translation id="1587325591171447154">Файл <ph name="FILE_NAME" /> небезпечний, тому Chrome заблокував його.</translation>
@@ -32,12 +33,14 @@
 <translation id="174539241580958092">Google Chrome не вдалося синхронізувати ваші дані через помилку входу.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Переконайтеся, що ви ввійшли в Chrome на пристрої <ph name="TARGET_DEVICE_NAME" />, і повторіть спробу.</translation>
+<translation id="1807517590912578995">Створити окремий профіль Chrome?</translation>
 <translation id="1812689907177901597">Якщо вимкнути цей параметр, ви зможете входити на сайти Google, як-от Gmail, без входу в Chrome</translation>
 <translation id="1860536484129686729">Chrome потрібен дозвіл на використання камери, щоб надати цьому сайту доступ до неї</translation>
 <translation id="1873233029667955273">Google Chrome не є веб-переглядачем за умовчанням</translation>
 <translation id="1874309113135274312">Бета-версія Google Chrome (mDNS-In)</translation>
 <translation id="1877026089748256423">Версія Chrome застаріла</translation>
 <translation id="1919130412786645364">Дозволити вхід у Chrome</translation>
+<translation id="2018528049276128029">У кожному профілі зберігається власна інформація Chrome, як-от закладки, історія, паролі тощо</translation>
 <translation id="2063848847527508675">Щоб застосувати це оновлення, потрібно перезапустити ОС Chrome.</translation>
 <translation id="2094919256425865063">Усе одно вийти з Chrome?</translation>
 <translation id="2120620239521071941">З цього пристрою буде видалено стільки елементів: <ph name="ITEMS_COUNT" />. Щоб відновити дані пізніше, увійдіть в обліковий запис Chrome як <ph name="USER_EMAIL" />.</translation>
@@ -51,9 +54,11 @@
 <translation id="234869673307233423">Chrome не може перевірити паролі. Повторіть спробу пізніше.</translation>
 <translation id="235650106824528204">Будь-які дані Chrome, створені під час використання цього робочого профілю (наприклад, закладки, історію, паролі й інші налаштування), може видалити його адміністратор. <ph name="LEARN_MORE" /></translation>
 <translation id="2429317896000329049">Google Chrome не вдалося синхронізувати ваші дані, оскільки синхронізація для вашого домену недоступна.</translation>
+<translation id="245659736593643560">ОС Chrome і <ph name="BEGIN_LINK_LINUX_OSS" />бета-версія середовища для розробки Linux<ph name="END_LINK_LINUX_OSS" /> працюють завдяки додатковому <ph name="BEGIN_LINK_CROS_OSS" />програмному забезпеченню з відкритим кодом<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="2467438592969358367">Google Chrome хоче експортувати ваші паролі. Щоб дозволити, введіть свій пароль Windows.</translation>
 <translation id="2485422356828889247">Видалити</translation>
 <translation id="2534507159460261402">Google Pay (скопійовано в Chrome)</translation>
+<translation id="2574930892358684005">Користувач <ph name="EXISTING_USER" /> уже ввійшов у цей профіль Chrome. Щоб переглядати веб-сторінки окремо, Chrome може створити для вас окремий профіль.</translation>
 <translation id="2580411288591421699">Поки Google Chrome працює, неможливо встановити версію, аналогічну поточній. Закрийте Google Chrome і повторіть спробу.</translation>
 <translation id="2586406160782125153">Дані веб-перегляду буде видалено з цього пристрою. Щоб відновити дані пізніше, увійдіть в обліковий запис Chrome як <ph name="USER_EMAIL" />.</translation>
 <translation id="2588634262982826227">ОС Chrome може автоматично відновлювати ваші додатки й сторінки після перезапуску пристрою.</translation>
@@ -68,6 +73,7 @@
 <translation id="2799223571221894425">Перезапустити</translation>
 <translation id="2847461019998147611">Вибрати цю мову для Google Chrome</translation>
 <translation id="2857540653560290388">Запускається Chrome…</translation>
+<translation id="2857972467023607093">Профіль Chrome із цим обліковим записом уже існує</translation>
 <translation id="2871893339301912279">Ви ввійшли в Chrome.</translation>
 <translation id="2885378588091291677">Диспетчер завдань</translation>
 <translation id="2888126860611144412">Про Chrome</translation>
@@ -137,6 +143,7 @@
 <translation id="4600710005438004015">Не вдалось оновити Chrome до останньої версії. Ви не зможете скористатися новими функціями та застосувати виправлення системи безпеки.</translation>
 <translation id="4631713731678262610">Сховати в меню Chrome</translation>
 <translation id="4633000520311261472">Щоб зробити Chrome безпечнішим, ми вимкнули деякі розширення, установлені не із сайту <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> і, можливо, додані без вашого відома.</translation>
+<translation id="4666328473657283332">Щоб мати доступ до даних Chrome на всіх пристроях, увійдіть в обліковий запис і ввімкніть синхронізацію.</translation>
 <translation id="4728575227883772061">Не вдалося здійснити встановлення через невизначену помилку. Якщо наразі Google Chrome запущено, закрийте його та повторіть спробу.</translation>
 <translation id="4750550185319565338">Перезавантажте Chrome, щоб увімкнути плагін "<ph name="PLUGIN_NAME" />"</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
@@ -154,6 +161,7 @@
 <translation id="5163087008893166964">Вітаємо в Chrome! Відкрито нове вікно веб-переглядача</translation>
 <translation id="5170938038195470297">Ваш профіль не можна використати, оскільки його створено в новішій версії Google Chrome. Деякі функції можуть бути недоступними. Укажіть інший каталог профілю чи скористайтеся новішою версією Chrome.</translation>
 <translation id="5193136243808726294">Неможливо відкрити цю сторінку в ОС Google Chrome.</translation>
+<translation id="521447420733633466">Якщо ви користуєтеся пристроєм спільно з друзями та рідними, вони можуть переглядати веб-сторінки окремо та налаштовувати Chrome на свій смак.</translation>
 <translation id="5251420635869119124">Гості можуть анонімно користуватися Chrome.</translation>
 <translation id="532046782124376502">Застереження. Google Chrome не може заборонити розширенням реєструвати історію веб-перегляду. Щоб розширення не працювало в режимі анонімного перегляду, зніміть прапорець біля цієї опції.</translation>
 <translation id="5386244825306882791">Розширення також змінило сторінку, яка відкривається під час запуску Chrome або пошуку в універсальному вікні пошуку.</translation>
@@ -189,12 +197,14 @@
 <translation id="6291549208091401781">Google Chrome уже встановлено для всіх користувачів на вашому комп’ютері.</translation>
 <translation id="6338556085225130112">Оновлення Google Chrome</translation>
 <translation id="6368958679917195344">ОС Chrome стала можливою завдяки додатковому <ph name="BEGIN_LINK_CROS_OSS" />програмному забезпеченню з відкритим кодом<ph name="END_LINK_CROS_OSS" />.</translation>
+<translation id="6418662306461808273">Перейти в наявний профіль Chrome?</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Версія Google Chrome для розробників</translation>
 <translation id="6566149418543181476">Google Chrome оновлюється (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">ОС Chrome</translation>
 <translation id="6650333065969705433">Щоб відтворювати захищений медіаконтент за допомогою додатка Rosetta, потрібно перезапустити Chrome.</translation>
 <translation id="6676384891291319759">Доступ до Інтернету</translation>
 <translation id="6679975945624592337">Дозволити Google Chrome працювати у фоновому режимі</translation>
+<translation id="6739177684496155661">Продовжити в новому профілі Chrome?</translation>
 <translation id="6750954913813541382">Щоб виправляти орфографічні помилки, Chrome надсилає в Google текст, який ви вводите у веб-переглядачі</translation>
 <translation id="6755885556185485672">ОС Chrome завершила роботу неналежним чином.</translation>
 <translation id="677276454032249905">Усе одно вийти з Chrome?</translation>
@@ -212,6 +222,7 @@
 <translation id="7242029209006116544">Ви входите, використовуючи дані облікового запису, яким керує адміністратор. Адміністратор може контролювати ваш профіль Google Chrome. Ваші дані Chrome, як-от програми, закладки, історія, паролі й інші налаштування, буде назавжди пов’язано з обліковим записом <ph name="USER_NAME" />. Ці дані можна видалити на інформаційній панелі Облікових записів Google, але ви не зможете пов’язати їх з іншим обліковим записом. Проте ви можете створити новий профіль, щоб зберігати наявні дані Chrome окремо. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">Цією мовою відображається інтерфейс Google Chrome</translation>
 <translation id="7296210096911315575">Важлива інформація про використання й безпеку</translation>
+<translation id="7303916856901595720">Перенести обліковий запис у новий профіль Chrome?</translation>
 <translation id="7308322188646931570">Chrome потрібен доступ до пам’яті, щоб завантажувати файли</translation>
 <translation id="7339898014177206373">Нове вікно</translation>
 <translation id="7398801000654795464">Ви ввійшли в Chrome як <ph name="USER_EMAIL_ADDRESS" />. Скористайтеся тим самим обліковим записом, щоб увійти знову.</translation>
@@ -240,6 +251,7 @@
 <translation id="7930071585467473040">Google Chrome намагається скопіювати паролі.</translation>
 <translation id="7962410387636238736">На цей комп’ютер не надходитимуть оновлення Google Chrome, оскільки Windows XP та Windows Vista більше не підтримуються</translation>
 <translation id="8008534537613507642">Перевстановити Chrome</translation>
+<translation id="8009904340233602924">Користуватися Chrome, не входячи в обліковий запис</translation>
 <translation id="8013993649590906847">Якщо зображення не має корисного опису, Chrome спробує додати його. Для цього зображення надсилаються в Google.</translation>
 <translation id="8129812357326543296">Про &amp;Google Chrome</translation>
 <translation id="8255190535488645436">Google Chrome використовує вашу камеру та мікрофон.</translation>
@@ -279,6 +291,7 @@
 <translation id="911206726377975832">Також видалити дані веб-перегляду?</translation>
 <translation id="9138603949443464873">Щоб застосувати зміни, перезапустіть Chrome</translation>
 <translation id="919706545465235479">Щоб почати синхронізацію, оновіть Chrome</translation>
+<translation id="940313311831216333">Щоб мати доступ до даних Chrome на всіх пристроях, увійдіть в обліковий запис і ввімкніть синхронізацію.</translation>
 <translation id="94743460404517794">Якщо у вас кілька облікових записів Google, їх можна додати на <ph name="DEVICE_TYPE" />. Облікові записи будуть доступні у веб-переглядачі Chrome, Google Play і таких сервісах, як Gmail, Диск та YouTube. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="989369509083708165">Google Chrome – ваш веб-переглядач за умовчанням</translation>
 </translationbundle>
