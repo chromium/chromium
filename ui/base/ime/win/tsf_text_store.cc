@@ -1081,7 +1081,6 @@ bool TSFTextStore::GetCompositionStatus(
       ImeTextSpan span;
       span.start_offset = start_pos;
       span.end_offset = start_pos + length;
-      span.underline_color = SK_ColorBLACK;
       span.background_color = SK_ColorTRANSPARENT;
       if (selection_.EqualsIgnoringDirection(
               gfx::Range(span.start_offset, span.end_offset))) {

@@ -77,7 +77,6 @@ void GetImeTextSpans(HIMC imm_context,
         ui::ImeTextSpan ime_text_span;
         ime_text_span.start_offset = clause_data[i];
         ime_text_span.end_offset = clause_data[i + 1];
-        ime_text_span.underline_color = SK_ColorBLACK;
         ime_text_span.thickness = ui::ImeTextSpan::Thickness::kThin;
         ime_text_span.background_color = SK_ColorTRANSPARENT;
 
