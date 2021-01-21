@@ -48,6 +48,9 @@ DeskButtonBase::DeskButtonBase(const base::string16& text,
   SetFocusPainter(nullptr);
   SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
 
+  // TODO(minch): A11y of zero state.
+  SetAccessibleName(base::UTF8ToUTF16(GetClassName()));
+
   auto border = std::make_unique<WmHighlightItemBorder>(border_corder_radius);
   border_ptr_ = border.get();
   SetBorder(std::move(border));

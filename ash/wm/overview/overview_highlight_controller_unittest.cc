@@ -343,9 +343,9 @@ class DesksOverviewHighlightControllerTest
   DesksOverviewHighlightControllerTest() = default;
   ~DesksOverviewHighlightControllerTest() override = default;
 
-  // AshTestBase:
+  // OverviewHighlightControllerTest:
   void SetUp() override {
-    AshTestBase::SetUp();
+    OverviewHighlightControllerTest::SetUp();
 
     // All tests in this suite require the desks bar to be visible in overview,
     // which requires at least two desks.
@@ -362,8 +362,18 @@ class DesksOverviewHighlightControllerTest
   const DesksBarView* GetDesksBarViewForRoot(aura::Window* root_window) {
     OverviewGrid* grid =
         GetOverviewSession()->GetGridWithRootWindow(root_window);
-    DCHECK(grid->IsDesksBarViewActive());
-    return grid->desks_bar_view();
+    const DesksBarView* bar_view = grid->desks_bar_view();
+    DCHECK(bar_view->IsZeroState() ^ grid->IsDesksBarViewActive());
+    return bar_view;
+  }
+
+  OverviewHighlightController::OverviewHighlightableView* GetNewDeskButton(
+      const DesksBarView* bar_view) {
+    DCHECK(bar_view);
+    if (features::IsBentoEnabled())
+      return bar_view->expanded_state_new_desk_button()->new_desk_button();
+
+    return bar_view->new_desk_button();
   }
 
  protected:
@@ -407,7 +417,7 @@ TEST_F(DesksOverviewHighlightControllerTest, TabbingBasic) {
   SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
-  EXPECT_EQ(desk_bar_view->new_desk_button(), GetHighlightedView());
+  EXPECT_EQ(GetNewDeskButton(desk_bar_view), GetHighlightedView());
   CheckDeskBarViewSize(desk_bar_view, "new desk button");
 
   // Tests that the overview item gets highlighted after the new desk button.
@@ -445,7 +455,7 @@ TEST_F(DesksOverviewHighlightControllerTest, TabbingReverse) {
   // the new desk button.
   SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-  EXPECT_EQ(desk_bar_view->new_desk_button(), GetHighlightedView());
+  EXPECT_EQ(GetNewDeskButton(desk_bar_view), GetHighlightedView());
 
   // Tests that after the new desk button comes the mini views and their desk
   // name views in reverse order.
@@ -502,7 +512,7 @@ TEST_F(DesksOverviewHighlightControllerTest, TabbingMultiDisplay) {
   EXPECT_EQ(desk_bar_view1->mini_views()[1]->desk_name_view(),
             GetHighlightedView());
   SendKey(ui::VKEY_TAB);
-  EXPECT_EQ(desk_bar_view1->new_desk_button(), GetHighlightedView());
+  EXPECT_EQ(GetNewDeskButton(desk_bar_view1), GetHighlightedView());
 
   // Tests that two more tabs, will highlight the two overview items on the
   // first display.
@@ -524,7 +534,7 @@ TEST_F(DesksOverviewHighlightControllerTest, TabbingMultiDisplay) {
   SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
-  EXPECT_EQ(desk_bar_view2->new_desk_button(), GetHighlightedView());
+  EXPECT_EQ(GetNewDeskButton(desk_bar_view2), GetHighlightedView());
   SendKey(ui::VKEY_TAB);
   auto* item3 = GetOverviewItemForWindow(window3.get());
   EXPECT_EQ(item3->overview_item_view(), GetHighlightedView());
@@ -540,7 +550,7 @@ TEST_F(DesksOverviewHighlightControllerTest, TabbingMultiDisplay) {
   SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
-  EXPECT_EQ(desk_bar_view3->new_desk_button(), GetHighlightedView());
+  EXPECT_EQ(GetNewDeskButton(desk_bar_view3), GetHighlightedView());
   SendKey(ui::VKEY_TAB);
   auto* item4 = GetOverviewItemForWindow(window4.get());
   EXPECT_EQ(item4->overview_item_view(), GetHighlightedView());
@@ -553,6 +563,10 @@ TEST_F(DesksOverviewHighlightControllerTest, TabbingMultiDisplay) {
 
 TEST_F(DesksOverviewHighlightControllerTest,
        ActivateCloseHighlightOnNewDeskButton) {
+  // Tests the new desk button in classic desks.
+  if (features::IsBentoEnabled())
+    return;
+
   ToggleOverview();
   const auto* desk_bar_view =
       GetDesksBarViewForRoot(Shell::GetPrimaryRootWindow());
@@ -638,45 +652,50 @@ TEST_F(DesksOverviewHighlightControllerTest, CloseHighlightOnMiniView) {
   EXPECT_EQ(1u, desks_controller->desks().size());
   EXPECT_NE(desk2, desks_controller->desks()[0].get());
 
-  // Tests that hitting ctrl-w on the highlighted miniview if it is the last one
-  // does nothing.
-  while (mini_view1 != GetHighlightedView())
-    SendKey(ui::VKEY_TAB);
-  SendKey(ui::VKEY_W, ui::EF_CONTROL_DOWN);
-  EXPECT_EQ(1u, desks_controller->desks().size());
+  if (features::IsBentoEnabled()) {
+    // Go back to zero state since there is only a single desk and mini views
+    // are empty in zero state.
+    EXPECT_TRUE(desk_bar_view->IsZeroState());
+    EXPECT_TRUE(desk_bar_view->mini_views().empty());
+  } else {
+    // Tests that hitting ctrl-w on the highlighted miniview if it is the last
+    // one does nothing.
+    while (mini_view1 != GetHighlightedView())
+      SendKey(ui::VKEY_TAB);
+    SendKey(ui::VKEY_W, ui::EF_CONTROL_DOWN);
+    EXPECT_EQ(1u, desks_controller->desks().size());
+  }
 }
 
 TEST_F(DesksOverviewHighlightControllerTest, ActivateDeskNameView) {
   ToggleOverview();
   const auto* desk_bar_view =
       GetDesksBarViewForRoot(Shell::GetPrimaryRootWindow());
-  auto* desk_name_view_2 = desk_bar_view->mini_views()[1]->desk_name_view();
+  auto* desk_name_view_1 = desk_bar_view->mini_views()[0]->desk_name_view();
 
-  // Tab until the desk name view of the second desk is highlighted.
+  // Tab until the desk name view of the first desk is highlighted.
   SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
-  SendKey(ui::VKEY_TAB);
-  SendKey(ui::VKEY_TAB);
-  EXPECT_EQ(desk_name_view_2, GetHighlightedView());
+  EXPECT_EQ(desk_name_view_1, GetHighlightedView());
 
   // Press enter and expect that the desk name is being edited.
   SendKey(ui::VKEY_RETURN);
-  EXPECT_TRUE(desk_name_view_2->HasFocus());
+  EXPECT_TRUE(desk_name_view_1->HasFocus());
   EXPECT_TRUE(desk_bar_view->IsDeskNameBeingModified());
 
   // All should be selected.
-  EXPECT_TRUE(desk_name_view_2->HasSelection());
+  EXPECT_TRUE(desk_name_view_1->HasSelection());
   const auto* desks_controller = DesksController::Get();
-  auto* desk_2 = desks_controller->desks()[1].get();
-  EXPECT_EQ(desk_2->name(), desk_name_view_2->GetSelectedText());
+  auto* desk_1 = desks_controller->desks()[0].get();
+  EXPECT_EQ(desk_1->name(), desk_name_view_1->GetSelectedText());
 
   // Arrow keys should not change neither the focus nor the highlight.
   SendKey(ui::VKEY_RIGHT);
   SendKey(ui::VKEY_RIGHT);
   SendKey(ui::VKEY_RIGHT);
   SendKey(ui::VKEY_LEFT);
-  EXPECT_EQ(desk_name_view_2, GetHighlightedView());
-  EXPECT_TRUE(desk_name_view_2->HasFocus());
+  EXPECT_EQ(desk_name_view_1, GetHighlightedView());
+  EXPECT_TRUE(desk_name_view_1->HasFocus());
 
   // Select all and delete.
   SendKey(ui::VKEY_A, ui::EF_CONTROL_DOWN);
@@ -689,10 +708,10 @@ TEST_F(DesksOverviewHighlightControllerTest, ActivateDeskNameView) {
   SendKey(ui::VKEY_E);
   SendKey(ui::VKEY_TAB);
 
-  EXPECT_FALSE(desk_name_view_2->HasFocus());
-  EXPECT_EQ(desk_bar_view->new_desk_button(), GetHighlightedView());
-  EXPECT_EQ(base::UTF8ToUTF16("code"), desk_2->name());
-  EXPECT_TRUE(desk_2->is_name_set_by_user());
+  EXPECT_FALSE(desk_name_view_1->HasFocus());
+  EXPECT_EQ(desk_bar_view->mini_views()[1], GetHighlightedView());
+  EXPECT_EQ(base::UTF8ToUTF16("code"), desk_1->name());
+  EXPECT_TRUE(desk_1->is_name_set_by_user());
 }
 
 TEST_F(DesksOverviewHighlightControllerTest, RemoveDeskWhileNameIsHighlighted) {
@@ -713,7 +732,13 @@ TEST_F(DesksOverviewHighlightControllerTest, RemoveDeskWhileNameIsHighlighted) {
   // Tabbing again should cause no crashes.
   EXPECT_EQ(nullptr, GetHighlightedView());
   SendKey(ui::VKEY_TAB);
-  EXPECT_EQ(desk_bar_view->mini_views()[0], GetHighlightedView());
+  if (features::IsBentoEnabled()) {
+    EXPECT_TRUE(desk_bar_view->IsZeroState());
+    EXPECT_EQ(desk_bar_view->zero_state_default_desk_button(),
+              GetHighlightedView());
+  } else {
+    EXPECT_EQ(desk_bar_view->mini_views()[0], GetHighlightedView());
+  }
 }
 
 // A test class for testing Bento features.

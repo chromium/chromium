@@ -18,7 +18,7 @@ const base::Feature kAllowAmbientEQ{"AllowAmbientEQ",
 const base::Feature kAutoNightLight{"AutoNightLight",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kBento{"Bento", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kBento{"Bento", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kCaptureMode{"CaptureMode",
                                  base::FEATURE_DISABLED_BY_DEFAULT};

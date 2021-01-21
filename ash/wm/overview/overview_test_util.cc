@@ -4,6 +4,7 @@
 
 #include "ash/wm/overview/overview_test_util.h"
 
+#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/overview_test_api.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/shell.h"
@@ -42,8 +43,11 @@ void SendKey(ui::KeyboardCode key, int flags) {
 }
 
 bool HighlightOverviewWindow(const aura::Window* window) {
-  if (GetOverviewHighlightedWindow() == nullptr)
+  if (GetOverviewHighlightedWindow() == nullptr) {
     SendKey(ui::VKEY_TAB);
+    if (features::IsBentoEnabled())
+      SendKey(ui::VKEY_TAB);
+  }
   const aura::Window* start_window = GetOverviewHighlightedWindow();
   if (start_window == window)
     return true;

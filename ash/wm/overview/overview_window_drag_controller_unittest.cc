@@ -234,7 +234,7 @@ class OverviewWindowDragControllerDesksPortraitTabletTest : public AshTestBase {
     AshTestBase::SetUp();
 
     // Setup a portrait internal display in tablet mode.
-    UpdateDisplay("800x600");
+    UpdateDisplay("800x700");
     const int64_t display_id =
         display::Screen::GetScreen()->GetPrimaryDisplay().id();
     display::test::ScopedSetInternalDisplayId set_internal(display_manager(),

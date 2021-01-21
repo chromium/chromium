@@ -44,6 +44,8 @@ class ASH_EXPORT DeskButtonBase
 
   virtual void UpdateButtonState() {}
 
+  SkColor GetBackgroundColorForTesting() const { return background_color_; }
+
  protected:
   virtual void OnButtonPressed() = 0;
 
