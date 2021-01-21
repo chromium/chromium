@@ -115,6 +115,7 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
+#include "components/sync/driver/test_sync_service.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/test/model/fake_sync_change_processor.h"
 #include "components/sync/test/model/sync_error_factory_mock.h"
@@ -168,6 +169,11 @@ constexpr char kCrxAppPrefix[] = "_crx_";
 // Dummy app id is used to put at least one pin record to prevent initializing
 // pin model with default apps that can affect some tests.
 constexpr char kDummyAppId[] = "dummyappid_dummyappid_dummyappid";
+
+std::unique_ptr<KeyedService> BuildTestSyncService(
+    content::BrowserContext* context) {
+  return std::make_unique<syncer::TestSyncService>();
+}
 
 std::vector<arc::mojom::AppInfoPtr> GetArcSettingsAppInfo() {
   std::vector<arc::mojom::AppInfoPtr> apps;
@@ -366,6 +372,9 @@ class ChromeLauncherControllerTest : public BrowserWithTestWindowTest {
     manifest_platform_app.Set(
         extensions::manifest_keys::kPlatformAppBackgroundScripts,
         std::move(scripts));
+
+    ProfileSyncServiceFactory::GetInstance()->SetTestingFactory(
+        profile(), base::BindRepeating(&BuildTestSyncService));
 
     extensions::TestExtensionSystem* extension_system(
         static_cast<extensions::TestExtensionSystem*>(

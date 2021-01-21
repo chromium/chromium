@@ -237,7 +237,8 @@ bool IsSafeToApplyDefaultPinLayout(Profile* profile) {
       return false;
     }
   } else {
-    if (settings->GetSelectedTypes().Has(UserSelectableType::kApps) &&
+    if (sync_service->IsSyncFeatureEnabled() &&
+        settings->GetSelectedTypes().Has(UserSelectableType::kApps) &&
         !app_list::AppListSyncableServiceFactory::GetForProfile(profile)
              ->IsSyncing()) {
       return false;
@@ -254,7 +255,8 @@ bool IsSafeToApplyDefaultPinLayout(Profile* profile) {
       return false;
     }
   } else {
-    if (settings->GetSelectedTypes().Has(UserSelectableType::kPreferences) &&
+    if (sync_service->IsSyncFeatureEnabled() &&
+        settings->GetSelectedTypes().Has(UserSelectableType::kPreferences) &&
         !PrefServiceSyncableFromProfile(profile)->IsSyncing()) {
       return false;
     }
