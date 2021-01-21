@@ -22,6 +22,12 @@ const CGFloat kButtonPaddingH = 38.0f;
 const CGFloat kVerticalContentPadding = 70.0f;
 }  // namespace
 
+@interface IncognitoReauthView ()
+// The background view for the authenticate button.
+// Has to be separate from the button because it's a blur view (on iOS 13+).
+@property(nonatomic, weak) UIView* authenticateButtonBackgroundView;
+@end
+
 @implementation IncognitoReauthView
 
 - (instancetype)init {
@@ -53,18 +59,6 @@ const CGFloat kVerticalContentPadding = 70.0f;
                        constant:kVerticalContentPadding]
         .active = YES;
 
-    NSString* unlockButtonTitle = l10n_util::GetNSStringF(
-        IDS_IOS_INCOGNITO_REAUTH_UNLOCK_BUTTON,
-        base::SysNSStringToUTF16(biometricAuthenticationTypeString()));
-    _authenticateButton =
-        [IncognitoReauthView newRoundButtonWithBlurEffect:blurEffect];
-
-    [_authenticateButton setTitle:unlockButtonTitle
-                         forState:UIControlStateNormal];
-    _authenticateButton.accessibilityLabel = l10n_util::GetNSStringF(
-        IDS_IOS_INCOGNITO_REAUTH_UNLOCK_BUTTON_VOICEOVER_LABEL,
-        base::SysNSStringToUTF16(biometricAuthenticationTypeString()));
-
     _tabSwitcherButton = [[UIButton alloc] init];
     _tabSwitcherButton.translatesAutoresizingMaskIntoConstraints = NO;
     [_tabSwitcherButton setTitleColor:[UIColor whiteColor]
@@ -74,55 +68,120 @@ const CGFloat kVerticalContentPadding = 70.0f;
                         forState:UIControlStateNormal];
     _tabSwitcherButton.titleLabel.font =
         [UIFont preferredFontForTextStyle:UIFontTextStyleTitle2];
+    _tabSwitcherButton.titleLabel.adjustsFontSizeToFitWidth = YES;
+    _tabSwitcherButton.titleLabel.adjustsFontForContentSizeCategory = YES;
 
-    [blurBackgroundView.contentView addSubview:_authenticateButton];
-    AddSameCenterConstraints(blurBackgroundView, _authenticateButton);
+#if defined(__IPHONE_13_4)
+    if (@available(iOS 13.4, *)) {
+      _tabSwitcherButton.pointerInteractionEnabled = YES;
+    }
+#endif  // defined(__IPHONE_13_4)
+
+    UIView* authButtonContainer =
+        [self buildAuthenticateButtonWithBlurEffect:blurEffect];
+    [blurBackgroundView.contentView addSubview:authButtonContainer];
+    AddSameCenterConstraints(blurBackgroundView, authButtonContainer);
+    _authenticateButtonBackgroundView = authButtonContainer;
 
     [blurBackgroundView.contentView addSubview:_tabSwitcherButton];
     AddSameCenterXConstraint(_tabSwitcherButton, blurBackgroundView);
-    [_tabSwitcherButton.topAnchor
-        constraintEqualToAnchor:blurBackgroundView.safeAreaLayoutGuide
-                                    .bottomAnchor
-                       constant:-kVerticalContentPadding]
-        .active = YES;
+
+    [NSLayoutConstraint activateConstraints:@[
+      [_tabSwitcherButton.topAnchor
+          constraintEqualToAnchor:blurBackgroundView.safeAreaLayoutGuide
+                                      .bottomAnchor
+                         constant:-kVerticalContentPadding],
+      [_authenticateButton.widthAnchor
+          constraintLessThanOrEqualToAnchor:self.widthAnchor
+                                   constant:-2 * kButtonPaddingH],
+      [_tabSwitcherButton.widthAnchor
+          constraintLessThanOrEqualToAnchor:self.widthAnchor
+                                   constant:-2 * kButtonPaddingH],
+    ]];
+
+    [self setNeedsLayout];
+    [self layoutIfNeeded];
   }
 
   return self;
 }
 
-+ (UIButton*)newRoundButtonWithBlurEffect:(UIBlurEffect*)blurEffect {
-  UIButton* button = [[UIButton alloc] init];
-  button.backgroundColor = [UIColor clearColor];
-  button.titleLabel.font =
-      [UIFont preferredFontForTextStyle:UIFontTextStyleTitle2];
-  button.contentEdgeInsets = UIEdgeInsetsMake(kButtonPaddingV, kButtonPaddingH,
-                                              kButtonPaddingV, kButtonPaddingH);
-  [button
+- (void)layoutSubviews {
+  [super layoutSubviews];
+  self.authenticateButtonBackgroundView.layer.cornerRadius =
+      self.authenticateButtonBackgroundView.frame.size.height / 2;
+}
+
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  [self setNeedsLayout];
+  [self layoutIfNeeded];
+}
+
+// Creates _authenticateButton.
+// Returns a "decoration" pill-shaped view containing _authenticateButton.
+- (UIView*)buildAuthenticateButtonWithBlurEffect:(UIBlurEffect*)blurEffect {
+  DCHECK(!_authenticateButton);
+
+  // Use a UILabel for the button label, because the built-in UIButton's
+  // |titleLabel| does not correctly resize for multiline labels.
+  UILabel* titleLabel = [[UILabel alloc] init];
+  titleLabel.numberOfLines = 0;
+  titleLabel.textColor = [UIColor whiteColor];
+  titleLabel.textAlignment = NSTextAlignmentCenter;
+  titleLabel.adjustsFontForContentSizeCategory = YES;
+  titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleTitle2];
+  titleLabel.text = l10n_util::GetNSStringF(
+      IDS_IOS_INCOGNITO_REAUTH_UNLOCK_BUTTON,
+      base::SysNSStringToUTF16(biometricAuthenticationTypeString()));
+  [titleLabel
       setContentCompressionResistancePriority:UILayoutPriorityRequired
                                       forAxis:UILayoutConstraintAxisHorizontal];
-  [button
+  [titleLabel
       setContentCompressionResistancePriority:UILayoutPriorityRequired
                                       forAxis:UILayoutConstraintAxisVertical];
+  titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  // Disable a11y; below the UIButton will get a correct label.
+  titleLabel.accessibilityLabel = nil;
+
+  UIButton* button = [[UIButton alloc] init];
+  button.backgroundColor = [UIColor clearColor];
+
+  button.accessibilityLabel = l10n_util::GetNSStringF(
+      IDS_IOS_INCOGNITO_REAUTH_UNLOCK_BUTTON_VOICEOVER_LABEL,
+      base::SysNSStringToUTF16(biometricAuthenticationTypeString()));
   button.translatesAutoresizingMaskIntoConstraints = NO;
-  [button sizeToFit];
+  [button addSubview:titleLabel];
+  AddSameConstraintsWithInsets(
+
+      button, titleLabel,
+      ChromeDirectionalEdgeInsetsMake(-kButtonPaddingV, -kButtonPaddingH,
+                                      -kButtonPaddingV, -kButtonPaddingH));
+
+#if defined(__IPHONE_13_4)
+  if (@available(iOS 13.4, *)) {
+    button.pointerInteractionEnabled = YES;
+  }
+#endif  // defined(__IPHONE_13_4)
 
   UIView* backgroundView = nil;
   if (@available(iOS 13, *)) {
-    backgroundView = [[UIVisualEffectView alloc]
+    UIVisualEffectView* effectView = [[UIVisualEffectView alloc]
         initWithEffect:[UIVibrancyEffect
                            effectForBlurEffect:blurEffect
                                          style:UIVibrancyEffectStyleFill]];
+    [effectView.contentView addSubview:button];
+    backgroundView = effectView;
   } else {
     backgroundView = [[UIView alloc] init];
+    [backgroundView addSubview:button];
   }
   backgroundView.backgroundColor = [UIColor colorWithWhite:1 alpha:0.2];
-  backgroundView.layer.cornerRadius = button.frame.size.height / 2;
   backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
-  backgroundView.userInteractionEnabled = NO;
-  [button addSubview:backgroundView];
-  AddSameConstraints(backgroundView, button);
 
-  return button;
+  AddSameConstraints(backgroundView, button);
+  _authenticateButton = button;
+  return backgroundView;
 }
 
 #pragma mark - voiceover
