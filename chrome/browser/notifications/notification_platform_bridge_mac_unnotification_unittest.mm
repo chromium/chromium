@@ -79,7 +79,7 @@ API_AVAILABLE(macosx(10.14))
 @end
 
 @implementation FakeUNUserNotificationCenter {
-  base::scoped_nsobject<NSMutableArray> _banners;
+  base::scoped_nsobject<NSMutableDictionary> _banners;
   base::scoped_nsobject<NSSet> _categories;
 }
 
@@ -88,7 +88,7 @@ API_AVAILABLE(macosx(10.14))
 - (instancetype)init {
   if ((self = [super init])) {
     settings.reset([[FakeUNNotificationSettings alloc] init]);
-    _banners.reset([[NSMutableArray alloc] init]);
+    _banners.reset([[NSMutableDictionary alloc] init]);
     _categories.reset([[NSSet alloc] init]);
   }
   return self;
@@ -118,7 +118,7 @@ API_AVAILABLE(macosx(10.14))
   base::scoped_nsobject<FakeNotification> notification(
       [[FakeNotification alloc] init]);
   [notification setRequest:request];
-  [_banners addObject:notification];
+  [_banners setObject:notification forKey:[request identifier]];
   notificationDelivered(/*error=*/nil);
 }
 
@@ -127,13 +127,13 @@ API_AVAILABLE(macosx(10.14))
   base::scoped_nsobject<FakeNotification> notification(
       [[FakeNotification alloc] init]);
   [notification setRequest:request];
-  [_banners addObject:notification];
+  [_banners setObject:notification forKey:[request identifier]];
   completionHandler(/*error=*/nil);
 }
 
 - (void)getDeliveredNotificationsWithCompletionHandler:
     (void (^)(NSArray<UNNotification*>* notifications))completionHandler {
-  completionHandler([[_banners copy] autorelease]);
+  completionHandler([_banners allValues]);
 }
 
 - (void)getNotificationCategoriesWithCompletionHandler:
@@ -149,13 +149,7 @@ API_AVAILABLE(macosx(10.14))
 
 - (void)removeDeliveredNotificationsWithIdentifiers:
     (NSArray<NSString*>*)identifiers {
-  [_banners filterUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(
-                                                  UNNotification* notification,
-                                                  NSDictionary* bindings) {
-              NSString* toastId = [[[[notification request] content] userInfo]
-                  objectForKey:notification_constants::kNotificationId];
-              return ![identifiers containsObject:toastId];
-            }]];
+  [_banners removeObjectsForKeys:identifiers];
 }
 
 - (void)getNotificationSettingsWithCompletionHandler:
@@ -205,8 +199,6 @@ class UNNotificationPlatformBridgeMacTest : public testing::Test {
   std::unique_ptr<NotificationPlatformBridgeMacUNNotification> bridge_;
   TestingProfile* profile_ = nullptr;
   base::HistogramTester histogram_tester_;
-
- private:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager manager_;
 };
@@ -240,6 +232,24 @@ TEST_F(UNNotificationPlatformBridgeMacTest, TestDisplay) {
     [center_ getNotificationCategoriesWithCompletionHandler:^(
                  NSSet<UNNotificationCategory*>* categories) {
       EXPECT_EQ(1u, [categories count]);
+    }];
+  }
+}
+
+TEST_F(UNNotificationPlatformBridgeMacTest, TestDisplayMultipleProfiles) {
+  if (@available(macOS 10.14, *)) {
+    TestingProfile* profile_1 = manager_.CreateTestingProfile("P1");
+    TestingProfile* profile_2 = manager_.CreateTestingProfile("P2");
+
+    // Show two notifications with the same id from different profiles.
+    bridge_->Display(NotificationHandler::Type::WEB_PERSISTENT, profile_1,
+                     CreateNotification("id"), /*metadata=*/nullptr);
+    bridge_->Display(NotificationHandler::Type::WEB_PERSISTENT, profile_2,
+                     CreateNotification("id"), /*metadata=*/nullptr);
+
+    [center_ getDeliveredNotificationsWithCompletionHandler:^(
+                 NSArray<UNNotification*>* _Nonnull notifications) {
+      ASSERT_EQ(2u, [notifications count]);
     }];
   }
 }

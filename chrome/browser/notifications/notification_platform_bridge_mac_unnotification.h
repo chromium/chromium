@@ -63,6 +63,7 @@ class API_AVAILABLE(macosx(10.14)) NotificationPlatformBridgeMacUNNotification
 
   // Process notification request that got delivered successfully.
   void DeliveredSuccessfully(
+      const std::string& notification_id,
       base::scoped_nsobject<UNNotificationBuilder> builder);
 
   // Determine whether to start synchronization process of notifications or not.

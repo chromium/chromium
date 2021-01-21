@@ -136,10 +136,8 @@ void NotificationPlatformBridgeMacUNNotification::Display(
     [builder setButtons:buttonOne secondaryButton:buttonTwo];
   }
 
-  NSString* notification_id = base::SysUTF8ToNSString(notification.id());
-
   [builder setOrigin:base::SysUTF8ToNSString(notification.origin_url().spec())];
-  [builder setNotificationId:notification_id];
+  [builder setNotificationId:base::SysUTF8ToNSString(notification.id())];
   [builder setProfileId:base::SysUTF8ToNSString(GetProfileId(profile))];
   [builder setIncognito:profile->IsOffTheRecord()];
   [builder setCreatorPid:[NSNumber numberWithInteger:static_cast<NSInteger>(
@@ -155,6 +153,10 @@ void NotificationPlatformBridgeMacUNNotification::Display(
 
   // Create a new category from the desired action buttons.
   UNNotificationCategory* category = [builder buildCategory];
+
+  std::string system_notification_id =
+      DeriveMacNotificationId(GetProfileId(profile), notification.id());
+  NSString* notification_id = base::SysUTF8ToNSString(system_notification_id);
 
   // Check if this notification had an already existing category from a previous
   // call, if that is the case then remove it.
@@ -185,13 +187,16 @@ void NotificationPlatformBridgeMacUNNotification::Display(
         FROM_HERE,
         base::BindOnce(
             &NotificationPlatformBridgeMacUNNotification::DeliveredSuccessfully,
-            weak_ptr, std::move(builder)));
+            weak_ptr, system_notification_id, std::move(builder)));
   };
 
-  if ([notification_center_
-          respondsToSelector:@selector
-          (replaceContentForRequestWithIdentifier:
-                               replacementContent:completionHandler:)]) {
+  // If the renotify is not set try to replace the notification silently.
+  bool should_replace = !notification.renotify();
+  bool can_replace = [notification_center_
+      respondsToSelector:@selector
+      (replaceContentForRequestWithIdentifier:
+                           replacementContent:completionHandler:)];
+  if (should_replace && can_replace) {
     // If the notification has been delivered before, it will get updated in the
     // notification center. If it hasn't been delivered before it will deliver
     // it and show it on the screen.
@@ -213,27 +218,21 @@ void NotificationPlatformBridgeMacUNNotification::Display(
 void NotificationPlatformBridgeMacUNNotification::Close(
     Profile* profile,
     const std::string& notification_id) {
-  NSString* candidateId = base::SysUTF8ToNSString(notification_id);
-  NSString* currentProfileId = base::SysUTF8ToNSString(GetProfileId(profile));
+  NSString* notificationId = base::SysUTF8ToNSString(
+      DeriveMacNotificationId(GetProfileId(profile), notification_id));
   base::WeakPtr<NotificationPlatformBridgeMacUNNotification> weak_ptr =
       weak_factory_.GetWeakPtr();
 
   [notification_center_ getDeliveredNotificationsWithCompletionHandler:^(
                             NSArray<UNNotification*>* _Nonnull notifications) {
     for (UNNotification* notification in notifications) {
-      NSString* toastId = [[[[notification request] content] userInfo]
-          objectForKey:notification_constants::kNotificationId];
-      NSString* persistentProfileId =
-          [[[[notification request] content] userInfo]
-              objectForKey:notification_constants::kNotificationProfileId];
-
-      if ([toastId isEqualToString:candidateId] &&
-          [persistentProfileId isEqualToString:currentProfileId]) {
+      NSString* toastNotificationId = [[notification request] identifier];
+      if ([notificationId isEqualToString:toastNotificationId]) {
         content::GetUIThreadTaskRunner({})->PostTask(
             FROM_HERE,
             base::BindOnce(
                 &NotificationPlatformBridgeMacUNNotification::DoClose, weak_ptr,
-                base::SysNSStringToUTF8(toastId)));
+                base::SysNSStringToUTF8(notificationId)));
         break;
       }
     }
@@ -317,14 +316,14 @@ void NotificationPlatformBridgeMacUNNotification::DoClose(
 }
 
 void NotificationPlatformBridgeMacUNNotification::DeliveredSuccessfully(
+    const std::string& notification_id,
     base::scoped_nsobject<UNNotificationBuilder> builder) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   NSDictionary* dict = [builder buildDictionary];
 
-  [delivered_notifications_
-      setObject:dict
-         forKey:[dict objectForKey:notification_constants::kNotificationId]];
+  [delivered_notifications_ setObject:dict
+                               forKey:base::SysUTF8ToNSString(notification_id)];
 
   NotificationPlatformBridgeMacUNNotification::MaybeStartSynchronization();
 }
@@ -356,10 +355,11 @@ void NotificationPlatformBridgeMacUNNotification::SynchronizeNotifications() {
 
     for (UNNotification* notification in notifications) {
       std::string notification_id =
-          base::SysNSStringToUTF8([[[[notification request] content] userInfo]
-              objectForKey:notification_constants::kNotificationId]);
+          base::SysNSStringToUTF8([[notification request] identifier]);
       notification_ids.insert(std::move(notification_id));
     }
+
+    // TODO(crbug/1134570): Check for displayed alerts as well.
 
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(&NotificationPlatformBridgeMacUNNotification::

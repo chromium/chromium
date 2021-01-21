@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/i18n/number_formatting.h"
 #include "base/optional.h"
+#include "base/strings/strcat.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
@@ -122,6 +123,11 @@ base::string16 CreateMacNotificationContext(
     return origin;
 
   return etldplusone;
+}
+
+std::string DeriveMacNotificationId(const std::string& profile_id,
+                                    const std::string& notification_id) {
+  return base::StrCat({profile_id, "|", notification_id});
 }
 
 bool VerifyMacNotificationData(NSDictionary* response) {
