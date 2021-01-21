@@ -7650,9 +7650,11 @@ HRESULT AXPlatformNodeWin::GetNameAsBstr(BSTR* value_bstr) const {
 }
 
 HRESULT AXPlatformNodeWin::ComputeListItemNameAsBstr(BSTR* value_bstr) const {
-  DCHECK(GetData().role == ax::mojom::Role::kListItem);
+  DCHECK_EQ(GetData().role, ax::mojom::Role::kListItem);
   DCHECK(!HasStringAttribute(ax::mojom::StringAttribute::kName));
   base::string16 str;
+  // The list item name will result in the concatenation of its children's
+  // accessible names, excluding the list item marker.
   for (int i = 0; i < GetChildCount(); ++i) {
     auto* child = static_cast<AXPlatformNodeWin*>(
         FromNativeViewAccessible(ChildAtIndex(i)));
