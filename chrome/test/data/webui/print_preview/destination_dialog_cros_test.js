@@ -120,11 +120,10 @@ suite(destination_dialog_cros_test.suiteName, function() {
     assertEquals(
         'rgb(32, 33, 36)',
         window.getComputedStyle(printerItems[0].$$('.name')).color);
-    // FooName will be second since it was updated by capabilities fetch.
-    assertEquals('FooName', getDisplayedName(printerItems[1]));
-    Array.from(printerItems).slice(2).forEach((item, index) => {
+    Array.from(printerItems).slice(1, 5).forEach((item, index) => {
       assertEquals(destinations[index].displayName, getDisplayedName(item));
     });
+    assertEquals('FooName', getDisplayedName(printerItems[5]));
   });
 
   // Test that clicking a provisional destination shows the provisional

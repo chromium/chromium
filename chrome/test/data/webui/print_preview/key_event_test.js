@@ -46,6 +46,8 @@ suite(key_event_test.suiteName, function() {
     const initialSettings = getDefaultInitialSettings();
     nativeLayer = new NativeLayerStub();
     nativeLayer.setInitialSettings(initialSettings);
+    nativeLayer.setLocalDestinations(
+        [{deviceName: initialSettings.printerName, printerName: 'FooName'}]);
     // Use advanced settings so that we can test with the cr-button.
     nativeLayer.setLocalDestinationCapabilities(
         getCddTemplateWithAdvancedSettings(1, initialSettings.printerName));

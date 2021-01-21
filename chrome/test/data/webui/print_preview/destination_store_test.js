@@ -177,13 +177,13 @@ suite(destination_store_test.suiteName, function() {
           assertEquals('ID1', args.destinationId);
           assertEquals(PrinterType.LOCAL_PRINTER, args.printerType);
           assertEquals('ID1', destinationStore.selectedDestination.id);
-          // Verify that all the recent printers have been added to the store.
+          // Verify that all local printers have been added to the store.
           const reportedPrinters = destinationStore.destinations();
           destinations.forEach((destination, index) => {
             const match = reportedPrinters.find((reportedPrinter) => {
               return reportedPrinter.id === destination.id;
             });
-            assertEquals(index >= 3, typeof match === 'undefined');
+            assertFalse(typeof match === 'undefined');
           });
         });
       });
@@ -212,14 +212,13 @@ suite(destination_store_test.suiteName, function() {
           assertEquals(PrinterType.LOCAL_PRINTER, args.printerType);
           assertEquals('ID1', destinationStore.selectedDestination.id);
 
-          // The other recent destinations should be prefetched, but only one
+          // The other local destinations should be in the store, but only one
           // should have been selected so there was only one preview request.
           const reportedPrinters = destinationStore.destinations();
-          const expectedPrinters = isChromeOS && saveToDriveFlagEnabled ? 5 : 4;
+          const expectedPrinters = isChromeOS && saveToDriveFlagEnabled ? 7 : 6;
           assertEquals(expectedPrinters, reportedPrinters.length);
           destinations.forEach((destination, index) => {
-            assertEquals(
-                index < 3, reportedPrinters.some(p => p.id === destination.id));
+            assertTrue(reportedPrinters.some(p => p.id === destination.id));
           });
           assertEquals(1, numPrintersSelected);
         });
@@ -428,14 +427,12 @@ suite(destination_store_test.suiteName, function() {
               cloudPrintInterface.getEventTarget());
         };
 
-        // Wait for all three cloud printers to load.
+        // Wait for the first cloud printer to be fetched for selection.
         return Promise
             .all([
               setInitialSettings(false),
               waitForPrinterDone(),
             ])
-            .then(() => waitForPrinterDone())
-            .then(() => waitForPrinterDone())
             .then(() => {
               // Should have loaded Google Drive as the selected printer, since
               // it was most recent.
@@ -443,11 +440,12 @@ suite(destination_store_test.suiteName, function() {
                   Destination.GooglePromotedId.DOCS,
                   destinationStore.selectedDestination.id);
 
-              // Only the other cloud destination for the same user account
-              // should have been prefetched.
+              // Since the system default is local, local destinations will also
+              // have been loaded. Should have 5 local printers + 2 cloud
+              // printers for account 1 + Save as PDF.
               const loadedPrintersAccount1 =
                   destinationStore.destinations(account1);
-              assertEquals(3, loadedPrintersAccount1.length);
+              assertEquals(8, loadedPrintersAccount1.length);
               cloudDestinations.forEach((destination) => {
                 assertEquals(
                     destination.account === account1,
@@ -456,14 +454,19 @@ suite(destination_store_test.suiteName, function() {
               });
               assertEquals(1, numPrintersSelected);
 
-              // Cloud printer and Save as PDF exist when filtering for
-              // account 2.
+              // 5 local + Save as PDF for account 2. Cloud printers for this
+              // account won't be retrieved until
+              // reloadUserCookieBasedDestinations() is called when the active
+              // user changes.
               const loadedPrintersAccount2 =
                   destinationStore.destinations(account2);
-              assertEquals(2, loadedPrintersAccount2.length);
+              assertEquals(6, loadedPrintersAccount2.length);
               assertEquals(
                   Destination.GooglePromotedId.SAVE_AS_PDF,
                   loadedPrintersAccount2[0].id);
+              loadedPrintersAccount2.forEach(printer => {
+                assertFalse(printer.origin === DestinationOrigin.COOKIES);
+              });
             });
       });
 
@@ -582,18 +585,17 @@ suite(destination_store_test.suiteName, function() {
               setInitialSettings(false),
               waitForPrinterDone(),
             ])
-            .then(() => waitForPrinterDone())
-            .then(() => waitForPrinterDone())
             .then(() => {
               // Should have loaded FooCloud as the selected printer, since
               // it was most recent.
               assertEquals('FooCloud', destinationStore.selectedDestination.id);
 
-              // Only the other cloud destination for the same user account
-              // should have been prefetched.
+              // Since the system default is local, local destinations will also
+              // have been loaded. Should have 5 local printers + 2 cloud
+              // printers for account 1 + Save as PDF + Drive.
               const loadedPrintersAccount1 =
                   destinationStore.destinations(account1);
-              assertEquals(4, loadedPrintersAccount1.length);
+              assertEquals(9, loadedPrintersAccount1.length);
               cloudDestinations.forEach((destination) => {
                 assertEquals(
                     destination.account === account1,
@@ -602,11 +604,12 @@ suite(destination_store_test.suiteName, function() {
               });
               assertEquals(1, numPrintersSelected);
 
-              // Cloud printer, Save as PDF, and Save to Drive exist when
-              // filtering for account 2.
+              // 5 local, Save as PDF, and Save to Drive exist
+              // when filtering for account 2 because its cloud printers are not
+              // requested at startup.
               const loadedPrintersAccount2 =
                   destinationStore.destinations(account2);
-              assertEquals(3, loadedPrintersAccount2.length);
+              assertEquals(7, loadedPrintersAccount2.length);
               assertEquals(
                   Destination.GooglePromotedId.SAVE_AS_PDF,
                   loadedPrintersAccount2[0].id);

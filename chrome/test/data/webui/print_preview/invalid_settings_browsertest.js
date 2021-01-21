@@ -90,10 +90,6 @@ suite(invalid_settings_browsertest.suiteName, function() {
   function createPage(pluginCompatible) {
     nativeLayer.setInitialSettings(initialSettings);
     nativeLayer.setLocalDestinations(localDestinationInfos);
-    if (initialSettings.printerName) {
-      nativeLayer.setLocalDestinationCapabilities(
-          getCddTemplate(initialSettings.printerName));
-    }
     const pluginProxy = new TestPluginProxy();
     pluginProxy.setPluginCompatible(pluginCompatible);
     PluginProxyImpl.instance_ = pluginProxy;
@@ -132,8 +128,6 @@ suite(invalid_settings_browsertest.suiteName, function() {
   }
 
   // Test that error message is displayed when plugin doesn't exist.
-  // TODO (rbpotter): Fix this test so that it works again with calling
-  // appendChild() before setting checkPluginCompatibility.
   test(
       assert(invalid_settings_browsertest.TestNames.NoPDFPluginError),
       function() {

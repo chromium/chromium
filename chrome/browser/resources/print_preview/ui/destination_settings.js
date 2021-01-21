@@ -128,10 +128,10 @@ Polymer({
     /** @private {!Array<!Destination>} */
     displayedDestinations_: Array,
 
-    /** @private */
-    driveDestinationReady_: {
-      type: Boolean,
-      value: false,
+    /** @private {string} */
+    driveDestinationKey_: {
+      type: String,
+      value: '',
     },
 
     // <if expr="chromeos">
@@ -253,32 +253,7 @@ Polymer({
 
   /** @private */
   onActiveUserChanged_() {
-    this.destinationStore_.startLoadCookieDestination(
-        Destination.GooglePromotedId.DOCS);
-    this.updateDriveDestination_();
-    const recentDestinations = /** @type {!Array<!RecentDestination>} */ (
-        this.getSettingValue('recentDestinations'));
-    let numDestinationsChecked = 0;
-    for (const destination of recentDestinations) {
-      if (!this.destinationIsDriveOrPdf_(destination)) {
-        numDestinationsChecked++;
-      }
-      if (destination.origin === DestinationOrigin.COOKIES &&
-          (destination.account === this.activeUser_ ||
-           destination.account === '')) {
-        this.destinationStore_.startLoadCookieDestination(destination.id);
-      }
-      if (numDestinationsChecked === NUM_UNPINNED_DESTINATIONS) {
-        break;
-      }
-    }
-
-    // Re-filter the dropdown destinations for the new account.
-    if (!this.isDialogOpen_) {
-      // Don't update the destination settings UI while the dialog is open in
-      // front of it.
-      this.updateDropdownDestinations_();
-    }
+    this.updateDropdownDestinations_();
 
     if (!this.destination ||
         this.destination.origin !== DestinationOrigin.COOKIES) {

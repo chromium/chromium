@@ -86,6 +86,8 @@ suite(restore_state_test.suiteName, function() {
     initialSettings.serializedAppStateStr = JSON.stringify(stickySettings);
 
     nativeLayer.setInitialSettings(initialSettings);
+    nativeLayer.setLocalDestinations(
+        [{deviceName: initialSettings.printerName, printerName: 'FooName'}]);
     nativeLayer.setLocalDestinationCapabilities(
         getCddTemplateWithAdvancedSettings(2, initialSettings.printerName));
     const pluginProxy = new TestPluginProxy();
@@ -308,8 +310,8 @@ suite(restore_state_test.suiteName, function() {
 
     // Setup
     nativeLayer.setInitialSettings(initialSettings);
-    nativeLayer.setLocalDestinationCapabilities(
-        getCddTemplate(initialSettings.printerName));
+    nativeLayer.setLocalDestinations(
+        [{deviceName: initialSettings.printerName, printerName: 'FooName'}]);
 
     const pluginProxy = new TestPluginProxy();
     PluginProxyImpl.instance_ = pluginProxy;
