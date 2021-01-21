@@ -101,9 +101,24 @@ void PageFreezingPolicy::OnFreezingVoteChanged(
     }
   } else {
     DCHECK_EQ(freezing::FreezingVoteValue::kCanFreeze, freezing_vote->value());
+
+    // Don't attempt to freeze a page if it's not fully loaded yet.
+    if (page_node->GetLoadingState() != PageNode::LoadingState::kLoadedIdle)
+      return;
+
     if (!IsPageNodeFrozen(page_node)) {
       page_freezer_->MaybeFreezePageNode(page_node);
     }
+  }
+}
+
+void PageFreezingPolicy::OnLoadingStateChanged(const PageNode* page_node) {
+  if (page_node->GetLoadingState() != PageNode::LoadingState::kLoadedIdle)
+    return;
+  auto freezing_vote = page_node->GetFreezingVote();
+  if (freezing_vote.has_value() &&
+      freezing_vote->value() == freezing::FreezingVoteValue::kCanFreeze) {
+    page_freezer_->MaybeFreezePageNode(page_node);
   }
 }
 

@@ -98,6 +98,7 @@ class PageFreezingPolicy : public GraphOwned,
       const PageNode* page_node,
       base::Optional<performance_manager::freezing::FreezingVote> previous_vote)
       override;
+  void OnLoadingStateChanged(const PageNode* page_node) override;
 
   // PageLiveStateObserver:
   void OnIsConnectedToUSBDeviceChanged(const PageNode* page_node) override;

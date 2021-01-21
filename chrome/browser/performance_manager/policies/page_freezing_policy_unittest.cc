@@ -196,6 +196,7 @@ TEST_F(PageFreezingPolicyTest, FreezingVotes) {
       std::make_unique<MockPageFreezer>();
   auto* page_freezer_raw = page_freezer.get();
   policy()->SetPageFreezerForTesting(std::move(page_freezer));
+  page_node()->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
 
   EXPECT_CALL(*page_freezer_raw, MaybeFreezePageNodeImpl(page_node()));
   page_node()->set_freezing_vote(kCanFreezeVote);
@@ -220,6 +221,26 @@ TEST_F(PageFreezingPolicyTest, FreezingVotes) {
 
   // Same for removing a kCannotFreezeVote.
   page_node()->set_freezing_vote(base::nullopt);
+  ::testing::Mock::VerifyAndClearExpectations(page_freezer_raw);
+}
+
+TEST_F(PageFreezingPolicyTest, PageNodeIsntFrozenBeforeLoadingCompletes) {
+  std::unique_ptr<MockPageFreezer> page_freezer =
+      std::make_unique<MockPageFreezer>();
+  auto* page_freezer_raw = page_freezer.get();
+  policy()->SetPageFreezerForTesting(std::move(page_freezer));
+  page_node()->SetLoadingState(PageNode::LoadingState::kLoadedBusy);
+  page_node()->set_freezing_vote(kCanFreezeVote);
+  // The page freezer shouldn't be called as the page node isn't fully loaded
+  // yet.
+  ::testing::Mock::VerifyAndClearExpectations(page_freezer_raw);
+  EXPECT_EQ(page_node()->freezing_vote()->value(),
+            freezing::FreezingVoteValue::kCanFreeze);
+
+  EXPECT_CALL(*page_freezer_raw, MaybeFreezePageNodeImpl(page_node()));
+  // A transition to the fully loaded state should cause the page node to be
+  // frozen.
+  page_node()->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
   ::testing::Mock::VerifyAndClearExpectations(page_freezer_raw);
 }
 
