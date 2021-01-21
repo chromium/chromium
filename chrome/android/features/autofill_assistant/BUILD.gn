@@ -116,6 +116,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/autofill_assistant/DialogOnboardingCoordinator.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/FeedbackContext.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/LayoutUtils.java",
+    "java/src/org/chromium/chrome/browser/autofill_assistant/OnboardingCoordinatorFactory.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/ScrollToHideGestureListener.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/SizeListenableLinearLayout.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/carousel/AssistantActionsCarouselCoordinator.java",

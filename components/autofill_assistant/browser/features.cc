@@ -16,6 +16,10 @@ const base::Feature kAutofillAssistant{"AutofillAssistant",
 const base::Feature kAutofillAssistantChromeEntry{
     "AutofillAssistantChromeEntry", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Controls whether to enable dialog onboarding for Autofill Assistant
+const base::Feature kAutofillAssistantDialogOnboarding{
+    "AutofillAssistantDialogOnboarding", base::FEATURE_ENABLED_BY_DEFAULT};
+
 const base::Feature kAutofillAssistantDirectActions{
     "AutofillAssistantDirectActions", base::FEATURE_ENABLED_BY_DEFAULT};
 

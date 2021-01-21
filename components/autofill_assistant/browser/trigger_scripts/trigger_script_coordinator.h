@@ -47,6 +47,7 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
     virtual void OnTriggerScriptFinished(
         Metrics::LiteScriptFinishedState state) = 0;
     virtual void OnVisibilityChanged(bool visible) = 0;
+    virtual void OnOnboardingRequested(bool use_dialog_onboarding) = 0;
   };
 
   // |web_contents| must outlive this instance.
@@ -101,6 +102,9 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
   void AddObserver(Observer* observer);
   void RemoveObserver(const Observer* observer);
 
+  // Called when onboarding for trigger script is finished.
+  void OnOnboardingFinished(bool onboardingShown, bool accepted);
+
  private:
   friend class TriggerScriptCoordinatorTest;
 
@@ -120,6 +124,7 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
   void Stop(Metrics::LiteScriptFinishedState state);
   GURL GetCurrentURL() const;
   void OnEffectiveVisibilityChanged();
+  void OnboardingRequested();
 
   // Can be invoked to trigger an immediate check of the trigger condition,
   // reusing the dynamic results of the last time. Does nothing if there are no

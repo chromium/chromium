@@ -130,4 +130,14 @@ void Metrics::RecordLiteScriptShownToUser(ukm::UkmRecorder* ukm_recorder,
       .Record(ukm_recorder);
 }
 
+// static
+void Metrics::RecordLiteScriptOnboarding(ukm::UkmRecorder* ukm_recorder,
+                                         content::WebContents* web_contents,
+                                         LiteScriptOnboarding event) {
+  ukm::builders::AutofillAssistant_LiteScriptOnboarding(
+      ukm::GetSourceIdForWebContentsDocument(web_contents))
+      .SetLiteScriptOnboarding(static_cast<int64_t>(event))
+      .Record(ukm_recorder);
+}
+
 }  // namespace autofill_assistant

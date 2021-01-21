@@ -10,6 +10,7 @@
 
 #include "base/numerics/clamped_math.h"
 #include "components/autofill_assistant/browser/client_context.h"
+#include "components/autofill_assistant/browser/features.h"
 #include "components/autofill_assistant/browser/protocol_utils.h"
 #include "components/autofill_assistant/browser/url_utils.h"
 #include "components/ukm/content/source_url_recorder.h"
@@ -35,6 +36,11 @@ std::map<std::string, std::string> ExtractDebugScriptParameters(
     }
   }
   return debug_script_parameters;
+}
+
+bool IsDialogOnboardingEnabled() {
+  return base::FeatureList::IsEnabled(
+      autofill_assistant::features::kAutofillAssistantDialogOnboarding);
 }
 
 }  // namespace
@@ -154,14 +160,44 @@ void TriggerScriptCoordinator::PerformTriggerScriptAction(
         NOTREACHED();
         return;
       }
-      // Do not hide the trigger script here, to facilitate a smooth transition
-      // to the regular flow.
-      StopCheckingTriggerConditions();
-      NotifyOnTriggerScriptFinished(
-          Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_SUCCEEDED);
+      for (Observer& observer : observers_) {
+        observer.OnOnboardingRequested(IsDialogOnboardingEnabled());
+      }
       return;
     case TriggerScriptProto::UNDEFINED:
       return;
+  }
+}
+
+void TriggerScriptCoordinator::OnOnboardingFinished(bool onboardingShown,
+                                                    bool accepted) {
+  // TODO(b/174445633): Replace -1 with a constant like kTriggerScriptNotVisible
+  // at all relevant places
+  if (visible_trigger_script_ != -1) {
+    if (onboardingShown) {
+      Metrics::RecordLiteScriptOnboarding(
+          ukm_recorder_, web_contents(),
+          accepted ? Metrics::LiteScriptOnboarding::
+                         LITE_SCRIPT_ONBOARDING_SEEN_AND_ACCEPTED
+                   : Metrics::LiteScriptOnboarding::
+                         LITE_SCRIPT_ONBOARDING_SEEN_AND_REJECTED);
+    } else {
+      Metrics::RecordLiteScriptOnboarding(
+          ukm_recorder_, web_contents(),
+          Metrics::LiteScriptOnboarding::
+              LITE_SCRIPT_ONBOARDING_ALREADY_ACCEPTED);
+    }
+
+    if (accepted) {
+      // Do not hide the trigger script here, to facilitate a smooth
+      // transition to the regular flow.
+      StopCheckingTriggerConditions();
+      NotifyOnTriggerScriptFinished(
+          Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_SUCCEEDED);
+    } else if (!IsDialogOnboardingEnabled()) {
+      Stop(Metrics::LiteScriptFinishedState::
+               LITE_SCRIPT_BOTTOMSHEET_ONBOARDING_REJECTED);
+    }
   }
 }
 

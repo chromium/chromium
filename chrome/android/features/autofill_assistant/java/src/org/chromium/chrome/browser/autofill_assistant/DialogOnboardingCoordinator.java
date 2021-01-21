@@ -47,7 +47,6 @@ class DialogOnboardingCoordinator extends BaseOnboardingCoordinator {
                         DropOutReason.ONBOARDING_DIALOG_DISMISSED);
             }
         });
-
         mDialog.setView(mView);
     }
 
