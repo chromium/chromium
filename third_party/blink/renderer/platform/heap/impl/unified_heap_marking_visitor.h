@@ -7,6 +7,7 @@
 
 #include "base/macros.h"
 #include "third_party/blink/renderer/platform/heap/impl/marking_visitor.h"
+#include "v8/include/v8.h"
 
 namespace v8 {
 class EmbedderHeapTracer;
@@ -49,7 +50,10 @@ class PLATFORM_EXPORT UnifiedHeapMarkingVisitor
  public:
   // Write barriers for annotating a write during incremental marking.
   static void WriteBarrier(const TraceWrapperV8Reference<v8::Value>&);
-  static void WriteBarrier(v8::Isolate*, const WrapperTypeInfo*, const void*);
+  static void WriteBarrier(v8::Isolate*,
+                           v8::Local<v8::Object>&,
+                           const WrapperTypeInfo*,
+                           const void*);
 
   UnifiedHeapMarkingVisitor(ThreadState*, MarkingMode, v8::Isolate*);
   ~UnifiedHeapMarkingVisitor() override = default;

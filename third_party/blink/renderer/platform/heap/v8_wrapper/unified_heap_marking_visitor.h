@@ -5,20 +5,40 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_V8_WRAPPER_UNIFIED_HEAP_MARKING_VISITOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_V8_WRAPPER_UNIFIED_HEAP_MARKING_VISITOR_H_
 
+#include "base/compiler_specific.h"
+#include "third_party/blink/renderer/platform/bindings/wrapper_type_info.h"
+#include "third_party/blink/renderer/platform/heap/v8_wrapper/thread_state.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-cppgc.h"
 
 namespace blink {
 
-template <typename T>
-class TraceWrapperV8Reference;
-
-class UnifiedHeapMarkingVisitor final {
+class PLATFORM_EXPORT UnifiedHeapMarkingVisitor final {
   STATIC_ONLY(UnifiedHeapMarkingVisitor);
 
  public:
-  static void WriteBarrier(const TraceWrapperV8Reference<v8::Value>&) {
-    // TODO(mlippautz): Delegate to cppgc write barrier.
+  static ALWAYS_INLINE void WriteBarrier(
+      const v8::TracedReference<v8::Value>& ref) {
+    v8::JSHeapConsistency::WriteBarrierParams params;
+    if (v8::JSHeapConsistency::GetWriteBarrierType(ref, params) ==
+        v8::JSHeapConsistency::WriteBarrierType::kMarking) {
+      v8::JSHeapConsistency::DijkstraMarkingBarrier(
+          params, ThreadState::Current()->cpp_heap().GetHeapHandle(), ref);
+    }
+  }
+
+  static ALWAYS_INLINE void WriteBarrier(v8::Isolate*,
+                                         v8::Local<v8::Object>& wrapper,
+                                         const WrapperTypeInfo*,
+                                         const void* wrappable) {
+    v8::JSHeapConsistency::WriteBarrierParams params;
+    if (v8::JSHeapConsistency::GetWriteBarrierType(
+            wrapper, kV8DOMWrapperObjectIndex, wrappable, params) ==
+        v8::JSHeapConsistency::WriteBarrierType::kMarking) {
+      v8::JSHeapConsistency::DijkstraMarkingBarrier(
+          params, ThreadState::Current()->cpp_heap().GetHeapHandle(),
+          wrappable);
+    }
   }
 };
 

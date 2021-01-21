@@ -116,7 +116,7 @@ inline void V8DOMWrapper::SetNativeInfoInternal(
   // The following write barrier is necessary as V8 might not see the newly
   // created object during garbage collection, e.g., when the object is black
   // allocated.
-  UnifiedHeapMarkingVisitor::WriteBarrier(isolate, wrapper_type_info,
+  UnifiedHeapMarkingVisitor::WriteBarrier(isolate, wrapper, wrapper_type_info,
                                           wrappable);
 }
 

@@ -124,11 +124,19 @@ class TraceWrapperV8Reference {
  protected:
   ALWAYS_INLINE void InternalSet(v8::Isolate* isolate, v8::Local<T> handle) {
     handle_.Reset(isolate, handle);
+#if BUILDFLAG(USE_V8_OILPAN)
+    UnifiedHeapMarkingVisitor::WriteBarrier(UnsafeCast<v8::Value>().Get());
+#else   // !USE_V8_OILPAN
     UnifiedHeapMarkingVisitor::WriteBarrier(UnsafeCast<v8::Value>());
+#endif  // !USE_V8_OILPAN
   }
 
   ALWAYS_INLINE void WriteBarrier() const {
+#if BUILDFLAG(USE_V8_OILPAN)
+    UnifiedHeapMarkingVisitor::WriteBarrier(UnsafeCast<v8::Value>().Get());
+#else   // !USE_V8_OILPAN
     UnifiedHeapMarkingVisitor::WriteBarrier(UnsafeCast<v8::Value>());
+#endif  // !USE_V8_OILPAN
   }
 
   v8::TracedReference<T> handle_;
