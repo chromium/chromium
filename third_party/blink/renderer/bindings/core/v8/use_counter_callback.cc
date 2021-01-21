@@ -240,6 +240,7 @@ void UseCounterCallback(v8::Isolate* isolate,
       if (!CurrentExecutionContext(isolate)->CrossOriginIsolatedCapability()) {
         blink_feature =
             WebFeature::kV8SharedArrayBufferConstructedWithoutIsolation;
+        deprecated = true;
       } else {
         blink_feature = WebFeature::kV8SharedArrayBufferConstructed;
       }
