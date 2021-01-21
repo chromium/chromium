@@ -43,7 +43,6 @@
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/resources/grit/views_resources.h"
 #include "ui/views/views_delegate.h"
 #include "ui/views/window/frame_background.h"
@@ -110,6 +109,8 @@ class CaptionButtonBackgroundImageSource : public gfx::CanvasImageSource {
 
 ///////////////////////////////////////////////////////////////////////////////
 // OpaqueBrowserFrameView, public:
+
+const char OpaqueBrowserFrameView::kClassName[] = "OpaqueBrowserFrameView";
 
 OpaqueBrowserFrameView::OpaqueBrowserFrameView(
     BrowserFrame* frame,
@@ -215,7 +216,7 @@ gfx::Rect OpaqueBrowserFrameView::GetBoundsForTabStripRegion(
 }
 
 int OpaqueBrowserFrameView::GetTopInset(bool restored) const {
-  return browser_view()->GetTabStripVisible()
+  return browser_view()->IsTabStripVisible()
              ? layout_->GetTabStripInsetsTop(restored)
              : layout_->NonClientTopHeight(restored);
 }
@@ -258,7 +259,7 @@ int OpaqueBrowserFrameView::NonClientHitTest(const gfx::Point& point) {
   // See if we're in the sysmenu region.  We still have to check the tabstrip
   // first so that clicks in a tab don't get treated as sysmenu clicks.
   if (ShouldShowWindowIcon() && frame_component != HTCLIENT) {
-    gfx::Rect sysmenu_rect(GetIconBounds());
+    gfx::Rect sysmenu_rect(IconBounds());
     // In maximized mode we extend the rect to the screen corner to take
     // advantage of Fitts' Law.
     if (IsFrameCondensed())
@@ -337,6 +338,10 @@ void OpaqueBrowserFrameView::SizeConstraintsChanged() {}
 ///////////////////////////////////////////////////////////////////////////////
 // OpaqueBrowserFrameView, views::View overrides:
 
+const char* OpaqueBrowserFrameView::GetClassName() const {
+  return kClassName;
+}
+
 void OpaqueBrowserFrameView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kTitleBar;
 }
@@ -366,7 +371,7 @@ gfx::ImageSkia OpaqueBrowserFrameView::GetFaviconForTabIconView() {
 
 bool OpaqueBrowserFrameView::ShouldShowWindowIcon() const {
   views::WidgetDelegate* delegate = frame()->widget_delegate();
-  return GetShowWindowTitleBar() && delegate &&
+  return ShouldShowWindowTitleBar() && delegate &&
          delegate->ShouldShowWindowIcon();
 }
 
@@ -375,7 +380,7 @@ bool OpaqueBrowserFrameView::ShouldShowWindowTitle() const {
   // a window is being destroyed.
   // See more discussion at http://crosbug.com/8958
   views::WidgetDelegate* delegate = frame()->widget_delegate();
-  return GetShowWindowTitleBar() && delegate &&
+  return ShouldShowWindowTitleBar() && delegate &&
          delegate->ShouldShowWindowTitle();
 }
 
@@ -400,11 +405,11 @@ gfx::Size OpaqueBrowserFrameView::GetBrowserViewMinimumSize() const {
 }
 
 bool OpaqueBrowserFrameView::ShouldShowCaptionButtons() const {
-  return GetShowWindowTitleBar();
+  return ShouldShowWindowTitleBar();
 }
 
 bool OpaqueBrowserFrameView::IsRegularOrGuestSession() const {
-  return browser_view()->GetRegularOrGuestSession();
+  return browser_view()->IsRegularOrGuestSession();
 }
 
 bool OpaqueBrowserFrameView::IsMaximized() const {
@@ -420,7 +425,7 @@ bool OpaqueBrowserFrameView::IsFullscreen() const {
 }
 
 bool OpaqueBrowserFrameView::IsTabStripVisible() const {
-  return browser_view()->GetTabStripVisible();
+  return browser_view()->IsTabStripVisible();
 }
 
 bool OpaqueBrowserFrameView::IsToolbarVisible() const {
@@ -438,7 +443,7 @@ gfx::Size OpaqueBrowserFrameView::GetTabstripMinimumSize() const {
 
 int OpaqueBrowserFrameView::GetTopAreaHeight() const {
   const int non_client_top_height = layout_->NonClientTopHeight(false);
-  if (!browser_view()->GetTabStripVisible())
+  if (!browser_view()->IsTabStripVisible())
     return non_client_top_height;
   return std::max(
       non_client_top_height,
@@ -489,7 +494,7 @@ void OpaqueBrowserFrameView::OnPaint(gfx::Canvas* canvas) {
   frame_background_->set_is_active(active);
   frame_background_->set_theme_image(GetFrameImage());
   const int y_inset =
-      browser_view()->GetTabStripVisible()
+      browser_view()->IsTabStripVisible()
           ? (ThemeProperties::kFrameHeightAboveTabs - GetTopInset(false))
           : 0;
   frame_background_->set_theme_image_y_inset(y_inset);
@@ -556,7 +561,7 @@ views::Button* OpaqueBrowserFrameView::CreateImageButton(int normal_image_id,
   button->SetImage(views::Button::STATE_PRESSED,
                    tp->GetImageSkiaNamed(pushed_image_id));
   button->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
-  if (browser_view()->GetIsNormalType()) {
+  if (browser_view()->IsBrowserTypeNormal()) {
     // Get a custom processed version of the theme's background image so
     // that it appears to draw contiguously across all of the caption
     // buttons.
@@ -652,7 +657,7 @@ int OpaqueBrowserFrameView::FrameTopBorderThickness(bool restored) const {
   return layout_->FrameTopBorderThickness(restored);
 }
 
-gfx::Rect OpaqueBrowserFrameView::GetIconBounds() const {
+gfx::Rect OpaqueBrowserFrameView::IconBounds() const {
   return layout_->IconBounds();
 }
 
@@ -669,7 +674,7 @@ void OpaqueBrowserFrameView::WindowIconPressed() {
 #endif
 }
 
-bool OpaqueBrowserFrameView::GetShowWindowTitleBar() const {
+bool OpaqueBrowserFrameView::ShouldShowWindowTitleBar() const {
   // Do not show the custom title bar if the system title bar option is enabled.
   if (!frame()->UseCustomFrame())
     return false;
@@ -709,7 +714,7 @@ void OpaqueBrowserFrameView::PaintMaximizedFrameBorder(
 }
 
 void OpaqueBrowserFrameView::PaintClientEdge(gfx::Canvas* canvas) const {
-  const bool tabstrip_visible = browser_view()->GetTabStripVisible();
+  const bool tabstrip_visible = browser_view()->IsTabStripVisible();
   const gfx::Rect client_bounds =
       layout_->CalculateClientAreaBounds(width(), height());
 
@@ -735,8 +740,3 @@ void OpaqueBrowserFrameView::PaintClientEdge(gfx::Canvas* canvas) const {
     canvas->FillRect(side, location_bar_border_color);
   }
 }
-
-BEGIN_METADATA(OpaqueBrowserFrameView, BrowserNonClientFrameView)
-ADD_READONLY_PROPERTY_METADATA(gfx::Rect, IconBounds)
-ADD_READONLY_PROPERTY_METADATA(bool, ShowWindowTitleBar)
-END_METADATA

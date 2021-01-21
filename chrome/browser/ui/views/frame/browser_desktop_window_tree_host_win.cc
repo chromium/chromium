@@ -309,7 +309,8 @@ bool BrowserDesktopWindowTreeHostWin::GetClientAreaInsets(
 
   // Use default insets for popups and apps, unless we are custom drawing the
   // titlebar.
-  if (!ShouldCustomDrawSystemTitlebar() && !browser_view_->GetIsNormalType())
+  if (!ShouldCustomDrawSystemTitlebar() &&
+      !browser_view_->IsBrowserTypeNormal())
     return false;
 
   if (GetWidget()->IsFullscreen()) {
@@ -335,7 +336,7 @@ bool BrowserDesktopWindowTreeHostWin::GetDwmFrameInsetsInPixels(
   // an opaque frame, leading to graphical glitches behind the opaque frame.
   // Instead, we use that function below to tell us whether the frame is
   // currently native or opaque.
-  if (!GetWidget()->client_view() || !browser_view_->GetIsNormalType() ||
+  if (!GetWidget()->client_view() || !browser_view_->IsBrowserTypeNormal() ||
       !DesktopWindowTreeHostWin::ShouldUseNativeFrame())
     return false;
 
@@ -469,7 +470,7 @@ views::FrameMode BrowserDesktopWindowTreeHostWin::GetFrameMode() const {
   // We don't theme popup or app windows, so regardless of whether or not a
   // theme is active for normal browser windows, we don't want to use the custom
   // frame for popups/apps.
-  if (!browser_view_->GetIsNormalType() &&
+  if (!browser_view_->IsBrowserTypeNormal() &&
       DesktopWindowTreeHostWin::GetFrameMode() ==
           views::FrameMode::SYSTEM_DRAWN) {
     return system_frame_mode;
@@ -496,7 +497,7 @@ bool BrowserDesktopWindowTreeHostWin::ShouldUseNativeFrame() const {
   // We don't theme popup or app windows, so regardless of whether or not a
   // theme is active for normal browser windows, we don't want to use the custom
   // frame for popups/apps.
-  if (!browser_view_->GetIsNormalType())
+  if (!browser_view_->IsBrowserTypeNormal())
     return true;
   // Otherwise, we use the native frame when we're told we should by the theme
   // provider (e.g. no custom theme is active).
@@ -560,7 +561,7 @@ void BrowserDesktopWindowTreeHostWin::UpdateWorkspace() {
 bool BrowserDesktopWindowTreeHostWin::IsOpaqueHostedAppFrame() const {
   // TODO(https://crbug.com/868239): Support Windows 7 Aero glass for web-app
   // window titlebar controls.
-  return browser_view_->GetIsWebAppType() &&
+  return browser_view_->IsBrowserTypeWebApp() &&
          base::win::GetVersion() < base::win::Version::WIN10;
 }
 

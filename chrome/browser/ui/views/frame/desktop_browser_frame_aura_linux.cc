@@ -56,13 +56,17 @@ views::Widget::InitParams DesktopBrowserFrameAuraLinux::GetWidgetParams() {
 
 bool DesktopBrowserFrameAuraLinux::UseCustomFrame() const {
   // Normal browser windows get a custom frame (per the user's preference).
-  if (use_custom_frame_pref_.GetValue() && browser_view()->GetIsNormalType()) {
+  if (use_custom_frame_pref_.GetValue() &&
+      browser_view()->IsBrowserTypeNormal()) {
     return true;
   }
 
   // Hosted app windows get a custom frame (if the desktop PWA experimental
   // feature is enabled).
-  return browser_view()->GetIsWebAppType();
+  if (browser_view()->IsBrowserTypeWebApp())
+    return true;
+
+  return false;
 }
 
 void DesktopBrowserFrameAuraLinux::TabDraggingKindChanged(

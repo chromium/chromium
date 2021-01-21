@@ -52,7 +52,6 @@
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/rect_based_targeting_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -159,7 +158,7 @@ void BrowserNonClientFrameViewChromeOS::Init() {
   if (frame()->ShouldDrawFrameHeader())
     frame_header_ = CreateFrameHeader();
 
-  if (browser_view()->GetIsWebAppType() && !browser->is_type_app_popup()) {
+  if (browser_view()->IsBrowserTypeWebApp() && !browser->is_type_app_popup()) {
     // Add the container for extra web app buttons (e.g app menu button).
     set_web_app_frame_toolbar(AddChildView(
         std::make_unique<WebAppFrameToolbarView>(frame(), browser_view())));
@@ -180,7 +179,7 @@ gfx::Rect BrowserNonClientFrameViewChromeOS::GetBoundsForTabStripRegion(
 int BrowserNonClientFrameViewChromeOS::GetTopInset(bool restored) const {
   // TODO(estade): why do callsites in this class hardcode false for |restored|?
 
-  if (!GetShouldPaint()) {
+  if (!ShouldPaint()) {
     // When immersive fullscreen unrevealed, tabstrip is offscreen with normal
     // tapstrip bounds, the top inset should reach this topmost edge.
     const ImmersiveModeController* const immersive_controller =
@@ -193,8 +192,8 @@ int BrowserNonClientFrameViewChromeOS::GetTopInset(bool restored) const {
     // The header isn't painted for restored popup/app windows in overview mode,
     // but the inset is still calculated below, so the overview code can align
     // the window content with a fake header.
-    if (!GetOverviewMode() || frame()->IsFullscreen() ||
-        browser_view()->GetTabStripVisible() ||
+    if (!IsInOverviewMode() || frame()->IsFullscreen() ||
+        browser_view()->IsTabStripVisible() ||
         browser_view()->webui_tab_strip()) {
       return 0;
     }
@@ -207,7 +206,7 @@ int BrowserNonClientFrameViewChromeOS::GetTopInset(bool restored) const {
     header_height = std::max(
         header_height, web_app_frame_toolbar()->GetPreferredSize().height());
   }
-  if (browser_view()->GetTabStripVisible())
+  if (browser_view()->IsTabStripVisible())
     return header_height - browser_view()->GetTabStripHeight();
 
   return UsePackagedAppHeaderStyle(browser)
@@ -301,7 +300,7 @@ void BrowserNonClientFrameViewChromeOS::GetWindowMask(const gfx::Size& size,
 
 void BrowserNonClientFrameViewChromeOS::ResetWindowControls() {
   BrowserNonClientFrameView::ResetWindowControls();
-  caption_button_container_->SetVisible(GetShowCaptionButtons());
+  caption_button_container_->SetVisible(ShouldShowCaptionButtons());
   caption_button_container_->ResetWindowControls();
 }
 
@@ -323,7 +322,7 @@ void BrowserNonClientFrameViewChromeOS::UpdateWindowTitle() {
 void BrowserNonClientFrameViewChromeOS::SizeConstraintsChanged() {}
 
 void BrowserNonClientFrameViewChromeOS::OnPaint(gfx::Canvas* canvas) {
-  if (!GetShouldPaint())
+  if (!ShouldPaint())
     return;
 
   if (frame_header_)
@@ -338,7 +337,7 @@ void BrowserNonClientFrameViewChromeOS::Layout() {
     frame_header_->LayoutHeader();
 
   int painted_height = GetTopInset(false);
-  if (browser_view()->GetTabStripVisible())
+  if (browser_view()->IsTabStripVisible())
     painted_height += browser_view()->tabstrip()->GetPreferredSize().height();
 
   if (frame_header_)
@@ -363,6 +362,10 @@ void BrowserNonClientFrameViewChromeOS::Layout() {
   }
 }
 
+const char* BrowserNonClientFrameViewChromeOS::GetClassName() const {
+  return "BrowserNonClientFrameViewChromeOS";
+}
+
 void BrowserNonClientFrameViewChromeOS::GetAccessibleNodeData(
     ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kTitleBar;
@@ -381,7 +384,7 @@ gfx::Size BrowserNonClientFrameViewChromeOS::GetMinimumSize() const {
   const int min_frame_width =
       frame_header_ ? frame_header_->GetMinimumHeaderWidth() : 0;
   int min_width = std::max(min_frame_width, min_client_view_size.width());
-  if (browser_view()->GetTabStripVisible()) {
+  if (browser_view()->IsTabStripVisible()) {
     // Ensure that the minimum width is enough to hold a minimum width tab strip
     // at its usual insets.
     const int min_tabstrip_width =
@@ -407,7 +410,7 @@ void BrowserNonClientFrameViewChromeOS::ChildPreferredSizeChanged(
 }
 
 SkColor BrowserNonClientFrameViewChromeOS::GetTitleColor() {
-  return browser_view()->GetRegularOrGuestSession()
+  return browser_view()->IsRegularOrGuestSession()
              ? kNormalWindowTitleTextColor
              : kIncognitoWindowTitleTextColor;
 }
@@ -456,7 +459,7 @@ void BrowserNonClientFrameViewChromeOS::OnTabletModeToggled(bool enabled) {
     OnImmersiveRevealEnded();
   }
 
-  const bool should_show_caption_buttons = GetShowCaptionButtons();
+  const bool should_show_caption_buttons = ShouldShowCaptionButtons();
   caption_button_container_->SetVisible(should_show_caption_buttons);
   caption_button_container_->UpdateCaptionButtonState(true /*=animate*/);
   if (web_app_frame_toolbar())
@@ -468,7 +471,7 @@ void BrowserNonClientFrameViewChromeOS::OnTabletModeToggled(bool enabled) {
     // minimized are still put in immersive mode, since they may still be
     // visible but not activated due to something transparent and/or not
     // fullscreen (ie. fullscreen launcher).
-    if (!frame()->IsFullscreen() && !browser_view()->GetSupportsTabStrip() &&
+    if (!frame()->IsFullscreen() && !browser_view()->CanSupportTabStrip() &&
         !frame()->IsMinimized()) {
       browser_view()->immersive_mode_controller()->SetEnabled(true);
       return;
@@ -476,7 +479,7 @@ void BrowserNonClientFrameViewChromeOS::OnTabletModeToggled(bool enabled) {
   } else {
     // Exit immersive mode if the feature is enabled and the widget is not in
     // fullscreen mode.
-    if (!frame()->IsFullscreen() && !browser_view()->GetSupportsTabStrip()) {
+    if (!frame()->IsFullscreen() && !browser_view()->CanSupportTabStrip()) {
       browser_view()->immersive_mode_controller()->SetEnabled(false);
       return;
     }
@@ -492,7 +495,7 @@ void BrowserNonClientFrameViewChromeOS::OnTabletModeToggled(bool enabled) {
 
 bool BrowserNonClientFrameViewChromeOS::ShouldTabIconViewAnimate() const {
   // Web apps use their app icon and shouldn't show a throbber.
-  if (browser_view()->GetIsWebAppType())
+  if (browser_view()->IsBrowserTypeWebApp())
     return false;
 
   // This function is queried during the creation of the window as the
@@ -580,12 +583,12 @@ void BrowserNonClientFrameViewChromeOS::OnProfileAvatarChanged(
   UpdateProfileIcons();
 }
 
-bool BrowserNonClientFrameViewChromeOS::GetShowCaptionButtons() const {
-  return GetShowCaptionButtonsWhenNotInOverview() && !GetOverviewMode();
+bool BrowserNonClientFrameViewChromeOS::ShouldShowCaptionButtons() const {
+  return ShouldShowCaptionButtonsWhenNotInOverview() && !IsInOverviewMode();
 }
 
-bool BrowserNonClientFrameViewChromeOS::GetShowCaptionButtonsWhenNotInOverview()
-    const {
+bool BrowserNonClientFrameViewChromeOS::
+    ShouldShowCaptionButtonsWhenNotInOverview() const {
   return UsePackagedAppHeaderStyle(browser_view()->browser()) ||
          !chromeos::TabletState::Get()->InTabletMode();
 }
@@ -607,20 +610,20 @@ int BrowserNonClientFrameViewChromeOS::GetTabStripLeftInset() const {
 
 int BrowserNonClientFrameViewChromeOS::GetTabStripRightInset() const {
   int inset = 0;
-  if (GetShowCaptionButtonsWhenNotInOverview())
+  if (ShouldShowCaptionButtonsWhenNotInOverview())
     inset += caption_button_container_->GetPreferredSize().width();
   if (web_app_frame_toolbar())
     inset += web_app_frame_toolbar()->GetPreferredSize().width();
   return inset;
 }
 
-bool BrowserNonClientFrameViewChromeOS::GetShouldPaint() const {
+bool BrowserNonClientFrameViewChromeOS::ShouldPaint() const {
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
   // Normal windows that have a WebUI-based tab strip do not need a browser
   // frame as no tab strip is drawn on top of the browser frame.
   if (WebUITabStripContainerView::UseTouchableTabStrip(
           browser_view()->browser()) &&
-      browser_view()->GetSupportsTabStrip()) {
+      browser_view()->CanSupportTabStrip()) {
     return false;
   }
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
@@ -636,7 +639,7 @@ bool BrowserNonClientFrameViewChromeOS::GetShouldPaint() const {
 }
 
 void BrowserNonClientFrameViewChromeOS::OnAddedToOrRemovedFromOverview() {
-  const bool should_show_caption_buttons = GetShowCaptionButtons();
+  const bool should_show_caption_buttons = ShouldShowCaptionButtons();
   caption_button_container_->SetVisible(should_show_caption_buttons);
   if (web_app_frame_toolbar())
     web_app_frame_toolbar()->SetVisible(should_show_caption_buttons);
@@ -662,13 +665,13 @@ void BrowserNonClientFrameViewChromeOS::UpdateTopViewInset() {
   // In immersive fullscreen mode, the top view inset property should be 0.
   const bool immersive =
       browser_view()->immersive_mode_controller()->IsEnabled();
-  const bool tab_strip_visible = browser_view()->GetTabStripVisible();
+  const bool tab_strip_visible = browser_view()->IsTabStripVisible();
   const int inset =
       (tab_strip_visible || immersive) ? 0 : GetTopInset(/*restored=*/false);
   frame()->GetNativeWindow()->SetProperty(aura::client::kTopViewInset, inset);
 }
 
-bool BrowserNonClientFrameViewChromeOS::GetShowProfileIndicatorIcon() const {
+bool BrowserNonClientFrameViewChromeOS::ShouldShowProfileIndicatorIcon() const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // We only show the profile indicator for the teleported browser windows
   // between multi-user sessions. Note that you can't teleport an incognito
@@ -684,7 +687,7 @@ bool BrowserNonClientFrameViewChromeOS::GetShowProfileIndicatorIcon() const {
   // TODO(http://crbug.com/1059514): This check shouldn't be necessary.  Provide
   // an appropriate affordance for the profile icon with the webUI tabstrip and
   // remove this block.
-  if (!browser_view()->GetTabStripVisible())
+  if (!browser_view()->IsTabStripVisible())
     return false;
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 
@@ -700,7 +703,7 @@ void BrowserNonClientFrameViewChromeOS::UpdateProfileIcons() {
   // Multi-signin support is deprecated in Lacros, so only do this for ash.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   View* root_view = frame()->GetRootView();
-  if (GetShowProfileIndicatorIcon()) {
+  if (ShouldShowProfileIndicatorIcon()) {
     bool needs_layout = !profile_indicator_icon_;
     if (!profile_indicator_icon_) {
       profile_indicator_icon_ = new ProfileIndicatorIcon();
@@ -739,7 +742,7 @@ void BrowserNonClientFrameViewChromeOS::LayoutProfileIndicator() {
   DCHECK_LE(profile_indicator_icon_->height(), frame_height);
 }
 
-bool BrowserNonClientFrameViewChromeOS::GetOverviewMode() const {
+bool BrowserNonClientFrameViewChromeOS::IsInOverviewMode() const {
   return GetFrameWindow()->GetProperty(chromeos::kIsShowingInOverviewKey);
 }
 
@@ -749,7 +752,7 @@ void BrowserNonClientFrameViewChromeOS::OnUpdateFrameColor() {
   if (!UsePackagedAppHeaderStyle(browser_view()->browser())) {
     active_color = GetFrameColor(BrowserFrameActiveState::kActive);
     inactive_color = GetFrameColor(BrowserFrameActiveState::kInactive);
-  } else if (browser_view()->GetIsWebAppType()) {
+  } else if (browser_view()->IsBrowserTypeWebApp()) {
     active_color = browser_view()->browser()->app_controller()->GetThemeColor();
   } else if (!browser_view()->browser()->deprecated_is_app()) {
     // TODO(crbug.com/836128): Remove when System Web Apps flag is removed, as
@@ -777,15 +780,3 @@ const aura::Window* BrowserNonClientFrameViewChromeOS::GetFrameWindow() const {
 aura::Window* BrowserNonClientFrameViewChromeOS::GetFrameWindow() {
   return frame()->GetNativeWindow();
 }
-
-BEGIN_METADATA(BrowserNonClientFrameViewChromeOS, BrowserNonClientFrameView)
-ADD_READONLY_PROPERTY_METADATA(bool, ShowCaptionButtons)
-ADD_READONLY_PROPERTY_METADATA(bool, ShowCaptionButtonsWhenNotInOverview)
-ADD_READONLY_PROPERTY_METADATA(int, ToolbarLeftInset)
-ADD_READONLY_PROPERTY_METADATA(int, TabStripLeftInset)
-ADD_READONLY_PROPERTY_METADATA(int, TabStripRightInset)
-ADD_READONLY_PROPERTY_METADATA(bool, ShouldPaint)
-ADD_READONLY_PROPERTY_METADATA(bool, ShowProfileIndicatorIcon)
-ADD_READONLY_PROPERTY_METADATA(bool, OverviewMode)
-
-END_METADATA

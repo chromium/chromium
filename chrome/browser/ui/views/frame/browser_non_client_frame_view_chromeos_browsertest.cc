@@ -311,13 +311,13 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTestNoWebUiTabStrip,
   BrowserNonClientFrameViewChromeOS* frame_view = GetFrameViewAsh(browser_view);
 
   // Frame paints by default.
-  EXPECT_TRUE(frame_view->GetShouldPaint());
+  EXPECT_TRUE(frame_view->ShouldPaint());
 
   // No painting should occur in non-immersive fullscreen. (We enter into tab
   // fullscreen here because tab fullscreen is non-immersive even on ChromeOS).
   EnterFullscreenModeForTabAndWait(browser(), web_contents);
   EXPECT_FALSE(browser_view->immersive_mode_controller()->IsEnabled());
-  EXPECT_FALSE(frame_view->GetShouldPaint());
+  EXPECT_FALSE(frame_view->ShouldPaint());
 
   // The client view abuts top of the window.
   EXPECT_EQ(0, frame_view->GetBoundsForClientView().y());
@@ -325,7 +325,7 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTestNoWebUiTabStrip,
   // The frame should be painted again when fullscreen is exited and the caption
   // buttons should be visible.
   ToggleFullscreenModeAndWait(browser());
-  EXPECT_TRUE(frame_view->GetShouldPaint());
+  EXPECT_TRUE(frame_view->ShouldPaint());
 }
 
 // Tests that Avatar icon should show on the top left corner of the teleported
@@ -515,7 +515,7 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTestNoWebUiTabStrip,
   EXPECT_FALSE(immersive_mode_controller->IsEnabled());
 
   // Frame paints by default.
-  EXPECT_TRUE(frame_view->GetShouldPaint());
+  EXPECT_TRUE(frame_view->ShouldPaint());
   EXPECT_LT(0, frame_view
                    ->GetBoundsForTabStripRegion(
                        browser_view->tab_strip_region_view()->GetMinimumSize())
@@ -532,13 +532,13 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTestNoWebUiTabStrip,
       immersive_mode_controller->GetRevealedLock(
           ImmersiveModeController::ANIMATE_REVEAL_NO));
   EXPECT_TRUE(immersive_mode_controller->IsRevealed());
-  EXPECT_TRUE(frame_view->GetShouldPaint());
+  EXPECT_TRUE(frame_view->ShouldPaint());
 
   // End the reveal. When in both immersive browser fullscreen and tab
   // fullscreen.
   revealed_lock.reset();
   EXPECT_FALSE(immersive_mode_controller->IsRevealed());
-  EXPECT_FALSE(frame_view->GetShouldPaint());
+  EXPECT_FALSE(frame_view->ShouldPaint());
   EXPECT_EQ(0, frame_view
                    ->GetBoundsForTabStripRegion(
                        browser_view->tab_strip_region_view()->GetMinimumSize())
@@ -551,7 +551,7 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTestNoWebUiTabStrip,
   revealed_lock.reset(immersive_mode_controller->GetRevealedLock(
       ImmersiveModeController::ANIMATE_REVEAL_NO));
   EXPECT_TRUE(immersive_mode_controller->IsRevealed());
-  EXPECT_TRUE(frame_view->GetShouldPaint());
+  EXPECT_TRUE(frame_view->ShouldPaint());
   EXPECT_LT(0, frame_view
                    ->GetBoundsForTabStripRegion(
                        browser_view->tab_strip_region_view()->GetMinimumSize())
@@ -560,7 +560,7 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTestNoWebUiTabStrip,
   // Ending the reveal. Immersive browser should have the same behavior as full
   // screen, i.e., having an origin of (0,0).
   revealed_lock.reset();
-  EXPECT_FALSE(frame_view->GetShouldPaint());
+  EXPECT_FALSE(frame_view->ShouldPaint());
   EXPECT_EQ(0, frame_view
                    ->GetBoundsForTabStripRegion(
                        browser_view->tab_strip_region_view()->GetMinimumSize())
@@ -574,7 +574,7 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTestNoWebUiTabStrip,
     waiter.Wait();
   }
   EXPECT_FALSE(immersive_mode_controller->IsEnabled());
-  EXPECT_TRUE(frame_view->GetShouldPaint());
+  EXPECT_TRUE(frame_view->ShouldPaint());
   EXPECT_LT(0, frame_view
                    ->GetBoundsForTabStripRegion(
                        browser_view->tab_strip_region_view()->GetMinimumSize())
@@ -690,7 +690,7 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
   // Toggle fullscreen mode.
   chrome::ToggleFullscreenMode(browser);
   EXPECT_TRUE(browser_view->immersive_mode_controller()->IsEnabled());
-  EXPECT_FALSE(browser_view->GetTabStripVisible());
+  EXPECT_FALSE(browser_view->IsTabStripVisible());
 
   EXPECT_TRUE(browser->window()->IsFullscreen());
   EXPECT_FALSE(browser->window()->IsMaximized());

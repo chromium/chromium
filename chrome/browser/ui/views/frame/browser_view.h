@@ -13,6 +13,7 @@
 #include "base/callback_list.h"
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
+#include "base/macros.h"
 #include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -48,7 +49,6 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_observer.h"
 #include "ui/views/window/client_view.h"
@@ -114,10 +114,10 @@ class BrowserView : public BrowserWindow,
                     public ImmersiveModeController::Observer,
                     public webapps::AppBannerManager::Observer {
  public:
-  METADATA_HEADER(BrowserView);
+  // The browser view's class name.
+  static const char kViewClassName[];
+
   explicit BrowserView(std::unique_ptr<Browser> browser);
-  BrowserView(const BrowserView&) = delete;
-  BrowserView& operator=(const BrowserView&) = delete;
   ~BrowserView() override;
 
   void set_frame(BrowserFrame* frame) { frame_ = frame; }
@@ -223,19 +223,21 @@ class BrowserView : public BrowserWindow,
   TabSearchButton* GetTabSearchButton();
 
   // Returns true if various window components are visible.
-  bool GetTabStripVisible() const;
+  bool IsTabStripVisible() const;
+
+  bool IsInfoBarVisible() const;
 
   // Returns true if the profile associated with this Browser window is
   // incognito.
-  bool GetIncognito() const;
+  bool IsIncognito() const;
 
   // Returns true if the profile associated with this Browser window is
   // a guest session.
-  bool GetGuestSession() const;
+  bool IsGuestSession() const;
 
   // Returns true if the profile associated with this Browser window is
   // not incognito or a guest session.
-  bool GetRegularOrGuestSession() const;
+  bool IsRegularOrGuestSession() const;
 
   // Provides the containing frame with the accelerator for the specified
   // command id. This can be used to provide menu item shortcut hints etc.
@@ -256,29 +258,29 @@ class BrowserView : public BrowserWindow,
 
   // Returns true if the Browser object associated with this BrowserView
   // supports tabs, such as all normal browsers, and tabbed apps like terminal.
-  bool GetSupportsTabStrip() const;
+  bool CanSupportTabStrip() const;
 
   // Returns true if the Browser object associated with this BrowserView is a
   // normal window (i.e. a browser window, not an app or popup).
-  bool GetIsNormalType() const;
+  bool IsBrowserTypeNormal() const { return browser_->is_type_normal(); }
 
   // Returns true if the Browser object associated with this BrowserView is a
   // for an installed web app.
-  bool GetIsWebAppType() const;
+  bool IsBrowserTypeWebApp() const;
 
   // Returns true if the top browser controls (a.k.a. top-chrome UIs) are
   // allowed to slide up and down with the gesture scrolls on the current tab's
   // page.
-  bool GetTopControlsSlideBehaviorEnabled() const;
+  bool IsTopControlsSlideBehaviorEnabled() const;
 
 #if defined(OS_WIN)
   // Returns whether the browser can ever display a titlebar. Used in Windows
   // touch mode. Possibly expand to ChromeOS if we add a titlebar back there in
   // touch mode.
-  bool GetSupportsTitle() const;
+  bool CanShowWindowTitle() const;
 
   // Returns whether the browser can ever display a window icon.
-  bool GetSupportsIcon() const;
+  bool CanShowWindowIcon() const;
 #endif
 
   // Returns the current shown ratio of the top browser controls.
@@ -542,6 +544,7 @@ class BrowserView : public BrowserWindow,
   void InfoBarContainerStateChanged(bool is_animating) override;
 
   // views::View:
+  const char* GetClassName() const override;
   void Layout() override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   void ViewHierarchyChanged(
@@ -971,6 +974,8 @@ class BrowserView : public BrowserWindow,
 #endif
 
   mutable base::WeakPtrFactory<BrowserView> weak_ptr_factory_{this};
+
+  DISALLOW_COPY_AND_ASSIGN(BrowserView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_VIEW_H_

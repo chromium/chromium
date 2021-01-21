@@ -19,7 +19,6 @@
 #include "content/public/test/browser_test.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/views/test/test_views.h"
-#include "ui/views/view_utils.h"
 
 // Tests web-app windows that use the OpaqueBrowserFrameView implementation
 // for their non client frames.
@@ -53,7 +52,7 @@ class WebAppOpaqueBrowserFrameViewTest : public InProcessBrowserTest {
     // Not all platform configurations use OpaqueBrowserFrameView for their
     // browser windows, see |CreateBrowserNonClientFrameView()|.
     bool is_opaque_browser_frame_view =
-        views::IsViewClass<OpaqueBrowserFrameView>(frame_view);
+        frame_view->GetClassName() == OpaqueBrowserFrameView::kClassName;
 #if defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
     !BUILDFLAG(IS_CHROMEOS_LACROS)
     DCHECK(is_opaque_browser_frame_view);

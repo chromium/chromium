@@ -136,8 +136,9 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip) {
   layout_manager_->SetOrientation(views::LayoutOrientation::kHorizontal);
 
   tab_strip_ = tab_strip.get();
-  tab_strip->SetAvailableWidthCallback(base::BindRepeating(
-      &TabStripRegionView::GetTabStripAvailableWidth, base::Unretained(this)));
+  tab_strip->SetAvailableWidthCallback(
+      base::BindRepeating(&TabStripRegionView::CalculateTabStripAvailableWidth,
+                          base::Unretained(this)));
   if (base::FeatureList::IsEnabled(features::kScrollableTabStrip)) {
     // TODO(https://crbug.com/1132488): ScrollView doesn't propagate changes to
     // the TabStrip's preferred size; observe that manually.
@@ -302,6 +303,10 @@ void TabStripRegionView::FrameColorsChanged() {
   SchedulePaint();
 }
 
+const char* TabStripRegionView::GetClassName() const {
+  return "TabStripRegionView";
+}
+
 void TabStripRegionView::ChildPreferredSizeChanged(views::View* child) {
   PreferredSizeChanged();
 }
@@ -342,7 +347,7 @@ void TabStripRegionView::OnViewPreferredSizeChanged(View* view) {
   PreferredSizeChanged();
 }
 
-int TabStripRegionView::GetTabStripAvailableWidth() const {
+int TabStripRegionView::CalculateTabStripAvailableWidth() {
   // The tab strip can occupy the space not currently taken by its fixed-width
   // sibling views. First ask for the available size of the container.
   views::SizeBound width_bound = GetAvailableSize(tab_strip_container_).width();
@@ -395,7 +400,3 @@ void TabStripRegionView::UpdateNewTabButtonBorder() {
   new_tab_button_->SetBorder(views::CreateEmptyBorder(
       gfx::Insets(extra_vertical_space / 2, 0, 0, kHorizontalInset)));
 }
-
-BEGIN_METADATA(TabStripRegionView, views::AccessiblePaneView)
-ADD_READONLY_PROPERTY_METADATA(int, TabStripAvailableWidth)
-END_METADATA
