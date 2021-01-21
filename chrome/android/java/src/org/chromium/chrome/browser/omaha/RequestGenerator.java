@@ -176,9 +176,14 @@ public abstract class RequestGenerator {
      * Return a device-specific ID.
      */
     public String getDeviceID() {
-        return UniqueIdentificationGeneratorFactory
-                .getInstance(SettingsSecureBasedIdentificationGenerator.GENERATOR_ID)
-                .getUniqueId(SALT);
+        try {
+            return UniqueIdentificationGeneratorFactory
+                    .getInstance(SettingsSecureBasedIdentificationGenerator.GENERATOR_ID)
+                    .getUniqueId(SALT);
+        } catch (SecurityException unused) {
+            // In some cases the browser lacks permission to get the ID. Consult crbug.com/1158707.
+            return "";
+        }
     }
 
     /**
