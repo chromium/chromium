@@ -66,7 +66,7 @@ class FakeRecordingService : public recording::mojom::RecordingService {
     remote_client_.Bind(std::move(client));
     current_frame_sink_id_ = frame_sink_id;
     current_capture_source_ = CaptureModeSource::kRegion;
-    video_size_ = crop_region.size();
+    video_size_ = fullscreen_size;
   }
   void StopRecording() override {
     remote_client_->OnRecordingEnded(/*success=*/true);
@@ -78,6 +78,10 @@ class FakeRecordingService : public recording::mojom::RecordingService {
     DCHECK_EQ(current_capture_source_, CaptureModeSource::kWindow);
     current_frame_sink_id_ = new_frame_sink_id;
     video_size_ = new_max_video_size;
+  }
+  void OnDisplaySizeChanged(const gfx::Size& new_display_size) override {
+    DCHECK_NE(current_capture_source_, CaptureModeSource::kFullscreen);
+    video_size_ = new_display_size;
   }
 
  private:

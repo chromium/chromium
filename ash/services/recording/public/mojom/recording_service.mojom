@@ -110,4 +110,16 @@ interface RecordingService {
   OnRecordedWindowChangingRoot(
       viz.mojom.FrameSinkId new_frame_sink_id,
       gfx.mojom.Size new_max_video_size);
+
+  // Called by the client to let the service know that the display on which the
+  // recording is happening changed its dimensions to |new_display_size| in
+  // DIPs. The service will update the output video size to match this new size
+  // if needed. This is should be called when the display is rotated or its
+  // device scale factor is changed.
+  // This can *only* be called when the service is already recording a window or
+  // a partial region (i.e. RecordWindow() or RecordRegion() had already been
+  // called). Recording a fullscreen display doesn't need this, as the capturer
+  // already takes care of centering and letter-boxing the video content within
+  // the requested video resolution.
+  OnDisplaySizeChanged(gfx.mojom.Size new_display_size);
 };

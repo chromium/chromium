@@ -104,6 +104,18 @@ class WindowCaptureParams : public VideoCaptureParams {
     return should_reconfigure_video_encoder;
   }
 
+  bool OnDisplaySizeChanged(
+      mojo::Remote<viz::mojom::FrameSinkVideoCapturer>& capturer,
+      const gfx::Size& new_display_size) override {
+    if (new_display_size == max_video_size_)
+      return false;
+
+    max_video_size_ = new_display_size;
+    capturer->SetResolutionConstraints(initial_video_size_, max_video_size_,
+                                       /*use_fixed_aspect_ratio=*/false);
+    return true;
+  }
+
  private:
   const gfx::Size initial_video_size_;
   gfx::Size max_video_size_;
@@ -130,18 +142,36 @@ class RegionCaptureParams : public VideoCaptureParams {
     VideoCaptureParams::InitializeVideoCapturer(capturer);
     capturer->SetResolutionConstraints(full_capture_size_, full_capture_size_,
                                        /*use_fixed_aspect_ratio=*/true);
-    capturer->SetAutoThrottlingEnabled(false);
+    capturer->SetAutoThrottlingEnabled(true);
   }
 
   gfx::Rect GetVideoFrameVisibleRect(
       const gfx::Rect& original_frame_visible_rect) const override {
-    return crop_region_;
+    // We can't crop the video frame by an invalid bounds. The crop bounds must
+    // be contained within the original frame bounds.
+    gfx::Rect visible_rect = original_frame_visible_rect;
+    visible_rect.Intersect(crop_region_);
+    return visible_rect;
   }
 
-  gfx::Size GetCaptureSize() const override { return crop_region_.size(); }
+  gfx::Size GetCaptureSize() const override {
+    return GetVideoFrameVisibleRect(gfx::Rect(full_capture_size_)).size();
+  }
+
+  bool OnDisplaySizeChanged(
+      mojo::Remote<viz::mojom::FrameSinkVideoCapturer>& capturer,
+      const gfx::Size& new_display_size) override {
+    if (new_display_size == full_capture_size_)
+      return false;
+
+    full_capture_size_ = new_display_size;
+    capturer->SetResolutionConstraints(full_capture_size_, full_capture_size_,
+                                       /*use_fixed_aspect_ratio=*/true);
+    return true;
+  }
 
  private:
-  const gfx::Size full_capture_size_;
+  gfx::Size full_capture_size_;
   const gfx::Rect crop_region_;
 };
 
@@ -197,7 +227,15 @@ bool VideoCaptureParams::OnRecordedWindowChangingRoot(
     mojo::Remote<viz::mojom::FrameSinkVideoCapturer>& capturer,
     viz::FrameSinkId new_frame_sink_id,
     const gfx::Size& new_max_video_size) {
-  CHECK(false) << "This can only be called when recording a video";
+  CHECK(false) << "This can only be called when recording a window";
+  return false;
+}
+
+bool VideoCaptureParams::OnDisplaySizeChanged(
+    mojo::Remote<viz::mojom::FrameSinkVideoCapturer>& capturer,
+    const gfx::Size& new_display_size) {
+  CHECK(false)
+      << "This can only be called when recording a window or a partial region";
   return false;
 }
 

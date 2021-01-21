@@ -5,8 +5,10 @@
 #ifndef ASH_CAPTURE_MODE_VIDEO_RECORDING_WATCHER_H_
 #define ASH_CAPTURE_MODE_VIDEO_RECORDING_WATCHER_H_
 
+#include "ash/capture_mode/capture_mode_types.h"
 #include "ui/aura/scoped_window_capture_request.h"
 #include "ui/aura/window_observer.h"
+#include "ui/display/display_observer.h"
 
 namespace ash {
 
@@ -18,7 +20,8 @@ class CaptureModeController;
 // gets disconnected.
 // TODO(https://crbug.com/1145003): Use this to paint a border around the area
 // being recorded while recording is in progress.
-class VideoRecordingWatcher : public aura::WindowObserver {
+class VideoRecordingWatcher : public aura::WindowObserver,
+                              public display::DisplayObserver {
  public:
   VideoRecordingWatcher(CaptureModeController* controller,
                         aura::Window* window_being_recorded);
@@ -32,9 +35,14 @@ class VideoRecordingWatcher : public aura::WindowObserver {
   void OnWindowRemovingFromRootWindow(aura::Window* window,
                                       aura::Window* new_root) override;
 
+  // display::DisplayObserver:
+  void OnDisplayMetricsChanged(const display::Display& display,
+                               uint32_t metrics) override;
+
  private:
   CaptureModeController* const controller_;
   aura::Window* const window_being_recorded_;
+  const CaptureModeSource recording_source_;
 
   // If |window_being_recorded_| is not a root window, we must make a request to
   // make it capturable by the |FrameSinkVideoCapturer|.

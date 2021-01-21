@@ -160,9 +160,24 @@ void RecordingService::OnRecordedWindowChangingRoot(
   // encoder so that output video has the correct dimensions.
   if (current_video_capture_params_->OnRecordedWindowChangingRoot(
           video_capturer_remote_, new_frame_sink_id, new_max_video_size)) {
-    encoder_muxer_.AsyncCall(&RecordingEncoderMuxer::InitializeVideoEncoder)
-        .WithArgs(CreateVideoEncoderOptions(
-            current_video_capture_params_->GetCaptureSize()));
+    ReconfigureVideoEncoder();
+  }
+}
+
+void RecordingService::OnDisplaySizeChanged(const gfx::Size& new_display_size) {
+  DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
+
+  if (!current_video_capture_params_) {
+    // A recording might terminate before we signal the client with an
+    // |OnRecordingEnded()| call.
+    return;
+  }
+
+  // If there's a change in the new root's size, we must reconfigure the video
+  // encoder so that output video has the correct dimensions.
+  if (current_video_capture_params_->OnDisplaySizeChanged(
+          video_capturer_remote_, new_display_size)) {
+    ReconfigureVideoEncoder();
   }
 }
 
@@ -310,6 +325,15 @@ void RecordingService::StartNewRecording(
   DCHECK(audio_capturer_);
   audio_capturer_->Initialize(audio_parameters_, this);
   audio_capturer_->Start();
+}
+
+void RecordingService::ReconfigureVideoEncoder() {
+  DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
+  DCHECK(current_video_capture_params_);
+
+  encoder_muxer_.AsyncCall(&RecordingEncoderMuxer::InitializeVideoEncoder)
+      .WithArgs(CreateVideoEncoderOptions(
+          current_video_capture_params_->GetCaptureSize()));
 }
 
 void RecordingService::TerminateRecording(bool success) {
