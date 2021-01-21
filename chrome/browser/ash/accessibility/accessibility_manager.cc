@@ -693,6 +693,9 @@ void AccessibilityManager::OnAccessibilityCommonChanged(
 
 void AccessibilityManager::RequestAutoclickScrollableBoundsForPoint(
     gfx::Point& point_in_screen) {
+  if (!profile_)
+    return;
+
   extensions::EventRouter* event_router =
       extensions::EventRouter::Get(profile_);
   std::unique_ptr<base::ListValue> event_args = extensions::api::
