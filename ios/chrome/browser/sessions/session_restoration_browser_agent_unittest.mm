@@ -226,7 +226,7 @@ TEST_F(SessionRestorationBrowserAgentTest, SaveAndRestoreEmptySession) {
   NSString* state_path = base::SysUTF8ToNSString(
       chrome_browser_state_->GetStatePath().AsUTF8Unsafe());
   SessionIOS* session =
-      [test_session_service_ loadSessionFromDirectory:state_path];
+      [test_session_service_ loadSessionWithSessionID:nil directory:state_path];
   ASSERT_EQ(1u, session.sessionWindows.count);
   SessionWindowIOS* session_window = session.sessionWindows[0];
   session_restoration_agent_->RestoreSessionWindow(session_window);
@@ -256,7 +256,7 @@ TEST_F(SessionRestorationBrowserAgentTest, SaveAndRestoreSession) {
   NSString* state_path = base::SysUTF8ToNSString(
       chrome_browser_state_->GetStatePath().AsUTF8Unsafe());
   SessionIOS* session =
-      [test_session_service_ loadSessionFromDirectory:state_path];
+      [test_session_service_ loadSessionWithSessionID:nil directory:state_path];
   ASSERT_EQ(1u, session.sessionWindows.count);
   SessionWindowIOS* session_window = session.sessionWindows[0];
 

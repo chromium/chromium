@@ -99,7 +99,8 @@ void PerfTestWithBVC::SetUp() {
   NSString* state_path = base::SysUTF8ToNSString(
       chrome_browser_state_->GetStatePath().AsUTF8Unsafe());
   SessionIOS* session =
-      [[SessionServiceIOS sharedService] loadSessionFromDirectory:state_path];
+      [[SessionServiceIOS sharedService] loadSessionWithSessionID:nil
+                                                        directory:state_path];
   DCHECK_EQ(session.sessionWindows.count, 1u);
 
   browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get(),

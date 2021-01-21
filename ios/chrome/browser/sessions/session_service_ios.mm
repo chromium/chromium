@@ -103,9 +103,11 @@ NSString* const kSessionFileName =
 }
 
 - (void)saveSession:(__weak SessionIOSFactory*)factory
+          sessionID:(NSString*)sessionID
           directory:(NSString*)directory
         immediately:(BOOL)immediately {
-  NSString* sessionPath = [[self class] sessionPathForDirectory:directory];
+  NSString* sessionPath = [[self class] sessionPathForSessionID:sessionID
+                                                      directory:directory];
   BOOL hadPendingSession = [_pendingSessions objectForKey:sessionPath] != nil;
   [_pendingSessions setObject:factory forKey:sessionPath];
   if (immediately) {
@@ -120,8 +122,10 @@ NSString* const kSessionFileName =
   }
 }
 
-- (SessionIOS*)loadSessionFromDirectory:(NSString*)directory {
-  NSString* sessionPath = [[self class] sessionPathForDirectory:directory];
+- (SessionIOS*)loadSessionWithSessionID:(NSString*)sessionID
+                              directory:(NSString*)directory {
+  NSString* sessionPath = [[self class] sessionPathForSessionID:sessionID
+                                                      directory:directory];
   base::TimeTicks start_time = base::TimeTicks::Now();
   SessionIOS* session = [self loadSessionFromPath:sessionPath];
   UmaHistogramTimes("Session.WebStates.ReadFromFileTime",
@@ -189,9 +193,11 @@ NSString* const kSessionFileName =
 
   // If there were no session ids, then scenes are not supported fall back to
   // the original location
-  if (sessionFilesPaths.count == 0)
+  if (sessionFilesPaths.count == 0) {
     [sessionFilesPaths
-        addObject:[[self class] sessionPathForDirectory:directory]];
+        addObject:[[self class] sessionPathForSessionID:nil
+                                              directory:directory]];
+  }
 
   [self deletePaths:sessionFilesPaths completion:std::move(callback)];
 }
@@ -209,16 +215,18 @@ NSString* const kSessionFileName =
   [self deletePaths:paths completion:base::DoNothing()];
 }
 
-+ (NSString*)sessionPathForDirectory:(NSString*)directory {
-  return [directory stringByAppendingPathComponent:kSessionFileName];
-}
-
 + (NSString*)sessionPathForSessionID:(NSString*)sessionID
                            directory:(NSString*)directory {
+  // TODO(crbug.com/1165798): remove when the sessionID is guaranteed to
+  // always be an non-empty string.
   if (!sessionID.length)
-    return [[self class] sessionPathForDirectory:directory];
+    return [directory stringByAppendingPathComponent:kSessionFileName];
+
   return [NSString pathWithComponents:@[
-    directory, kSessionDirectory, sessionID, kSessionFileName
+    directory,
+    kSessionDirectory,
+    sessionID,
+    kSessionFileName,
   ]];
 }
 
