@@ -804,7 +804,7 @@ def _DepsFromPaths(dep_paths,
   current target) that we could then use to get a full transitive dependants
   list (eg using Deps#all). So filtering single elements out of this list,
   filters whole branches of dependencies. By resolving groups (i.e. expanding
-  them to their consituents), depending on a group is equivalent to directly
+  them to their constituents), depending on a group is equivalent to directly
   depending on each element of that group.
   """
   blocklist = []
@@ -1212,9 +1212,17 @@ def main(argv):
       build_utils.ParseGnList(options.annotation_processor_configs or ''),
       options.type, filter_root_targets=False)
 
-  all_inputs = sorted(
-      set(deps.AllConfigPaths() + processor_deps.AllConfigPaths() +
-          list(static_library_dependent_configs_by_path)))
+  all_inputs = (deps.AllConfigPaths() + processor_deps.AllConfigPaths() +
+                list(static_library_dependent_configs_by_path))
+
+  if options.recursive_resource_deps:
+    # Include java_library targets since changes to these targets can remove
+    # resource deps from the build, which would require rebuilding this target's
+    # build config file: crbug.com/1168655.
+    recursive_java_deps = _DepsFromPathsWithFilters(
+        GetAllDepsConfigsInOrder(deps_configs_paths),
+        allowlist=['java_library'])
+    all_inputs.extend(recursive_java_deps.AllConfigPaths())
 
   direct_deps = deps.Direct()
   system_library_deps = deps.Direct('system_java_library')
@@ -2014,7 +2022,8 @@ def main(argv):
   build_utils.WriteJson(config, options.build_config, only_if_changed=True)
 
   if options.depfile:
-    build_utils.WriteDepfile(options.depfile, options.build_config, all_inputs)
+    build_utils.WriteDepfile(options.depfile, options.build_config,
+                             sorted(set(all_inputs)))
 
 
 if __name__ == '__main__':
