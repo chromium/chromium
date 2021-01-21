@@ -16,6 +16,26 @@ public class SearchUrlHelper {
     private SearchUrlHelper() {}
 
     /**
+     * Checks whether the provided url is valid, the host is "www.google.<TLD>" with a valid TLD and
+     * has an HTTP or HTTPS scheme. Returns false if the url doesn't use the standard port for its
+     * scheme (80 for HTTP, 443 for HTTPS).
+     * @param url the url to check the criteria against.
+     * @return true if url satisfies all the requirements above.
+     */
+    public static boolean isGoogleDomainUrl(GURL url) {
+        return SearchUrlHelperJni.get().isGoogleDomainUrl(url);
+    }
+
+    /**
+     * Checks whether the provided url represents a valid Google search url.
+     * @param url the url to check.
+     * @return true if the url satisfies the criteria.
+     */
+    public static boolean isSrpUrl(GURL url) {
+        return SearchUrlHelperJni.get().isSrpUrl(url);
+    }
+
+    /**
      * Gets the query of the provided url if it is a SRP URL.
      * @param url The url to try to extract the query from.
      * @return the query of the url if the url is for a SRP or null otherwise.
@@ -26,6 +46,8 @@ public class SearchUrlHelper {
 
     @NativeMethods
     interface Natives {
+        boolean isGoogleDomainUrl(GURL url);
+        boolean isSrpUrl(GURL url);
         String getQueryIfSrpUrl(GURL url);
     }
 }

@@ -19,10 +19,11 @@ public class ContinuousSearchTabHelper {
      * @param tab to enable continuous search support for.
      */
     public static void createForTab(Tab tab) {
-        if (!FeatureList.isNativeInitialized()
-                || !ChromeFeatureList.isEnabled(ChromeFeatureList.CONTINUOUS_SEARCH)) {
-            return;
-        }
+        if (!FeatureList.isNativeInitialized()) return;
+
+        if (!tab.isIncognito()) new BackNavigationTabObserver(tab);
+
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.CONTINUOUS_SEARCH)) return;
 
         SearchResultUserData.createForTab(tab);
         SearchResultListCoordinator.createForTab(tab);

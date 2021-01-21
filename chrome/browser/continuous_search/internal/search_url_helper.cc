@@ -18,6 +18,26 @@
 
 namespace continuous_search {
 
+jboolean JNI_SearchUrlHelper_IsGoogleDomainUrl(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& j_gurl) {
+  std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, j_gurl);
+  if (!url->is_valid())
+    return false;
+  return static_cast<jboolean>(
+      google_util::IsGoogleDomainUrl(*url, google_util::DISALLOW_SUBDOMAIN,
+                                     google_util::DISALLOW_NON_STANDARD_PORTS));
+}
+
+jboolean JNI_SearchUrlHelper_IsSrpUrl(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& j_gurl) {
+  std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, j_gurl);
+  if (!url->is_valid())
+    return false;
+  return static_cast<jboolean>(google_util::IsGoogleSearchUrl(*url));
+}
+
 base::android::ScopedJavaLocalRef<jstring> JNI_SearchUrlHelper_GetQueryIfSrpUrl(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_gurl) {
