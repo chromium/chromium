@@ -39,9 +39,6 @@ bool CSPContext::IsAllowedByCsp(mojom::CSPDirectiveName directive_name,
                                 const mojom::SourceLocationPtr& source_location,
                                 CheckCSPDisposition check_csp_disposition,
                                 bool is_form_submission) {
-  if (SchemeShouldBypassCSP(url.scheme_piece()))
-    return true;
-
   bool allow = true;
   for (const auto& policy : policies_) {
     if (ShouldCheckPolicy(policy, check_csp_disposition)) {
