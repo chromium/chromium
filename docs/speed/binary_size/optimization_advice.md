@@ -201,10 +201,11 @@ Practical advice:
      .pak files.
    * Gut-check that all unique string literals being added are actually useful.
  * If there's a notable increase in `.text`:
-   * If there are a lot of symbols from C++ templates, try moving functions
-     that don't use template parameters to
-     [non-templated helper functions][template_bloat]).
-     * And extract parts of functions that don't use them into helper functions.
+   * If there are a lot of symbols from C++ templates:
+     * Try moving parts of the templatized function that don't use the template
+       parameters to [non-templated helper functions][template_bloat_one]).
+     * Or see if the signature can be re-worked such that there are
+       [fewer variants of template parameters](template_bloat_two).
    * Try to leverage identical-code-folding as much as possible by making the
      shape of your code consistent.
      * E.g. Use PODs wherever possible, and especially in containers. They will
@@ -231,9 +232,6 @@ Practical advice:
    * In C++, static objects are created at compile time, but in Java they
      are created by executing code within `<clinit>()`. There is often little
      advantage to initializing class fields statically vs. upon first use.
- * Don't use default interface methods on interfaces with multiple implementers.
-   * Desugaring causes the methods to be added to every implementer separately.
-   * It's more efficient to use a base class to add default methods.
  * Use `String.format()` instead of concatenation.
    * Concatenation causes a lot of StringBuilder code to be generated.
  * Try to use default values for fields rather than explicit initialization.
@@ -256,7 +254,8 @@ Practical advice:
 [size-trybot]: /tools/binary_size/README.md#Binary-Size-Trybot-android_binary_size
 [diagnose_bloat]: /tools/binary_size/README.md#diagnose_bloat_py
 [relocations]: /docs/native_relocations.md
-[template_bloat]: https://bugs.chromium.org/p/chromium/issues/detail?id=716393
+[template_bloat_one]: https://bugs.chromium.org/p/chromium/issues/detail?id=716393
+[template_bloat_two]: https://chromium-review.googlesource.com/c/chromium/src/+/2639396
 [supersize-console]: /tools/binary_size/README.md#Usage_console
 
 ### Optimizing Third-Party Android Dependencies
