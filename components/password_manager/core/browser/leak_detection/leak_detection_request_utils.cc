@@ -8,6 +8,7 @@
 
 #include "base/containers/span.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/string_util.h"
@@ -49,7 +50,8 @@ LookupSingleLeakPayload ProduceHashes(base::StringPiece username,
   LookupSingleLeakPayload payload;
   payload.username_hash_prefix = BucketizeUsername(canonicalized_username);
   payload.encrypted_payload =
-      ScryptHashUsernameAndPassword(canonicalized_username, password);
+      ScryptHashUsernameAndPassword(canonicalized_username, password)
+          .value_or("");
   if (payload.encrypted_payload.empty())
     return LookupSingleLeakPayload();
   return payload;
@@ -64,7 +66,8 @@ LookupSingleLeakData PrepareLookupSingleLeakData(base::StringPiece username,
   if (data.payload.encrypted_payload.empty())
     return LookupSingleLeakData();
   data.payload.encrypted_payload =
-      CipherEncrypt(data.payload.encrypted_payload, &data.encryption_key);
+      CipherEncrypt(data.payload.encrypted_payload, &data.encryption_key)
+          .value_or("");
   return data.payload.encrypted_payload.empty() ? LookupSingleLeakData()
                                                 : std::move(data);
 }
@@ -79,7 +82,8 @@ LookupSingleLeakPayload PrepareLookupSingleLeakDataWithKey(
   if (payload.encrypted_payload.empty())
     return LookupSingleLeakPayload();
   payload.encrypted_payload =
-      CipherEncryptWithKey(payload.encrypted_payload, encryption_key);
+      CipherEncryptWithKey(payload.encrypted_payload, encryption_key)
+          .value_or("");
   return payload.encrypted_payload.empty() ? LookupSingleLeakPayload()
                                            : std::move(payload);
 }
@@ -90,9 +94,9 @@ LookupSingleLeakPayload PrepareLookupSingleLeakDataWithKey(
 AnalyzeResponseResult CheckIfCredentialWasLeaked(
     std::unique_ptr<SingleLookupResponse> response,
     const std::string& encryption_key) {
-  std::string decrypted_username_password =
+  base::Optional<std::string> decrypted_username_password =
       CipherDecrypt(response->reencrypted_lookup_hash, encryption_key);
-  if (decrypted_username_password.empty()) {
+  if (!decrypted_username_password) {
     DLOG(ERROR) << "Can't decrypt data="
                 << base::HexEncode(base::as_bytes(
                        base::make_span(response->reencrypted_lookup_hash)));
@@ -100,7 +104,7 @@ AnalyzeResponseResult CheckIfCredentialWasLeaked(
   }
 
   std::string hash_username_password =
-      crypto::SHA256HashString(decrypted_username_password);
+      crypto::SHA256HashString(*decrypted_username_password);
 
   const ptrdiff_t matched_prefixes =
       std::count_if(response->encrypted_leak_match_prefixes.begin(),
