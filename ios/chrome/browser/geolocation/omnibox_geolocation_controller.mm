@@ -36,6 +36,44 @@
 
 namespace {
 
+// Feature to control how the location is use when sending omnibox requests.
+const base::Feature kSendLocationInOmnibox{"SendLocationInOmnibox",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
+const char kSendLocationInOmniboxParamName[] = "location";
+const char kSendLocationInOmniboxParamNoLocation[] = "none";
+const char kSendLocationInOmniboxParamCoarseLocation[] = "coarse";
+
+// Returns whether the geolocation should be omitted when sending omnibox
+// requests.
+bool ShouldOmitLocation() {
+  if (@available(iOS 14, *)) {
+    // Check only on iOS 14 as the restricted location is only available on
+    // iOS 14.
+    if (!base::FeatureList::IsEnabled(kSendLocationInOmnibox))
+      return false;
+
+    std::string field_trial_param = base::GetFieldTrialParamValueByFeature(
+        kSendLocationInOmnibox, kSendLocationInOmniboxParamName);
+    return field_trial_param == kSendLocationInOmniboxParamNoLocation;
+  }
+  return false;
+}
+
+// Returns whether the geolocation should be using the restricted settings when
+// sending omnibox requests.
+bool ShouldUseCoarseLocation() {
+  if (@available(iOS 14, *)) {
+    if (!base::FeatureList::IsEnabled(kSendLocationInOmnibox))
+      return false;
+
+    std::string field_trial_param = base::GetFieldTrialParamValueByFeature(
+        kSendLocationInOmnibox, kSendLocationInOmniboxParamName);
+    return field_trial_param == kSendLocationInOmniboxParamCoarseLocation;
+  }
+  return false;
+}
+
 // Values for the histogram that records whether we sent the X-Geo header for
 // an Omnibox query or why we did not do so. These match the definition of
 // GeolocationHeaderSentOrNot in Chromium
@@ -127,6 +165,12 @@ const char* const kGeolocationAuthorizationActionNewUser =
 // changes. This WebState will be observed and the pointer will be set to null
 // in webStateDestroyed.
 @property(nonatomic) web::WebState* webStateToReload;
+
+// Whether the accuracy has been/should be reduced or not.
+// TODO(crbug.com/1165794): Those properties have been added for an experiment.
+// Do not use them and remove them once the experiment is done.
+@property(nonatomic, assign) BOOL accuracyReduced;
+@property(nonatomic, assign) BOOL shouldReduceAccuracy;
 
 // Returns YES if and only if |url| and |transition| specify an Omnibox query
 // that is eligible for geolocation.
@@ -376,9 +420,20 @@ const char* const kGeolocationAuthorizationActionNewUser =
 #pragma mark - Private
 
 - (BOOL)enabled {
-  return self.locationManager.locationServicesEnabled &&
-         self.localState.authorizationState ==
-             geolocation::kAuthorizationStateAuthorized;
+  BOOL enabled = self.locationManager.locationServicesEnabled &&
+                 self.localState.authorizationState ==
+                     geolocation::kAuthorizationStateAuthorized;
+  if (enabled) {
+    // Check what to do with the location only if it was already enabled to
+    // avoid having bias in groups (users with location disabled in the
+    // "precise" group).
+    if (ShouldOmitLocation()) {
+      enabled = NO;
+    } else {
+      self.shouldReduceAccuracy = ShouldUseCoarseLocation();
+    }
+  }
+  return enabled;
 }
 
 - (OmniboxGeolocationLocalState*)localState {
@@ -393,6 +448,8 @@ const char* const kGeolocationAuthorizationActionNewUser =
   if (!_locationManager) {
     _locationManager = [[LocationManager alloc] init];
     [_locationManager setDelegate:self];
+    self.accuracyReduced = NO;
+    self.shouldReduceAccuracy = NO;
   }
   return _locationManager;
 }
@@ -443,6 +500,14 @@ const char* const kGeolocationAuthorizationActionNewUser =
 }
 
 - (void)startUpdatingLocation {
+  if (@available(iOS 14, *)) {
+    if (self.shouldReduceAccuracy && !self.accuracyReduced) {
+      [self.locationManager
+          setDesiredAccuracy:kCLLocationAccuracyReduced
+              distanceFilter:kCLLocationAccuracyHundredMeters];
+      self.accuracyReduced = YES;
+    }
+  }
   // Note that GeolocationUpdater will stop itself automatically after 5
   // seconds.
   [self.locationManager startUpdatingLocation];

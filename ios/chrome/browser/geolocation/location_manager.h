@@ -45,6 +45,12 @@
 // Stops updating device location.
 - (void)stopUpdatingLocation;
 
+// Changes the desired accuracy for the location.
+// TODO(crbug.com/1165794): This method has been added for an experiment. Do not
+// use it and remove it once the experiment is done.
+- (void)setDesiredAccuracy:(CLLocationAccuracy)desiredAccuracy
+            distanceFilter:(CLLocationDistance)distanceFilter;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_GEOLOCATION_LOCATION_MANAGER_H_
