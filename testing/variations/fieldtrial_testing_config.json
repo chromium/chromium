@@ -3859,27 +3859,6 @@
             ]
         }
     ],
-    "LowPriorityAdProcesses": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled0",
-                    "enable_features": [
-                        "UseFramePriorityInRenderProcessHost"
-                    ]
-                }
-            ]
-        }
-    ],
     "LowerJavaScriptPriorityWhenForceDeferred": [
         {
             "platforms": [
