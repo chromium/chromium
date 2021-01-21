@@ -1241,6 +1241,159 @@ void NGGridLayoutAlgorithm::ResolveIntrinsicTrackSizes(
   // by span) all items that do span a track with a flexible sizing function.
 }
 
+namespace {
+
+// Contains the information about where the grid tracks start, and the
+// gutter-size between them, taking into account the content alignment
+// properties.
+struct TrackAlignmentGeometry {
+  LayoutUnit start_offset;
+  LayoutUnit gutter_size;
+};
+
+TrackAlignmentGeometry ComputeTrackAlignmentGeometry(
+    const ComputedStyle& style,
+    const StyleContentAlignmentData& content_alignment,
+    const NGGridLayoutAlgorithmTrackCollection& track_collection,
+    LayoutUnit available_size,
+    LayoutUnit start_border_scrollbar_padding,
+    LayoutUnit grid_gap) {
+  // Iterating over all the track sets is typically unnecessary, i.e. if there
+  // is default alignment. Only compute this on-demand.
+  struct FreeSpaceAndTrackCount {
+    LayoutUnit free_space;
+    wtf_size_t track_count;
+  };
+  auto ComputeFreeSpaceAndTrackCount = [&track_collection, &available_size,
+                                        &grid_gap]() -> FreeSpaceAndTrackCount {
+    LayoutUnit total_track_size;
+    wtf_size_t track_count = 0u;
+    for (auto set_iterator = track_collection.GetSetIterator();
+         !set_iterator.IsAtEnd(); set_iterator.MoveToNextSet()) {
+      const auto& set = set_iterator.CurrentSet();
+      total_track_size += set.BaseSize() + set.TrackCount() * grid_gap;
+      track_count += set.TrackCount();
+    }
+
+    // Subtract the gap from the end of the last track. Only do this if there
+    // is at least one track.
+    if (track_count)
+      total_track_size -= grid_gap;
+
+    return {available_size - total_track_size, track_count};
+  };
+
+  // The default alignment, perform adjustments on top of this.
+  TrackAlignmentGeometry geometry = {start_border_scrollbar_padding, grid_gap};
+
+  // If we have an indefinite |available_size| we can't perform any alignment,
+  // just return the default alignment.
+  if (available_size == kIndefiniteSize)
+    return geometry;
+
+  // TODO(ikilpatrick): 'space-between', 'space-around', and 'space-evenly' all
+  // divide by the free-space, and may have a non-zero modulo. Investigate if
+  // this should be distributed between the tracks.
+  switch (content_alignment.Distribution()) {
+    case ContentDistributionType::kSpaceBetween: {
+      // Default behavior for 'space-between' is to start align content.
+      const auto result = ComputeFreeSpaceAndTrackCount();
+      if (result.track_count < 2 || result.free_space < LayoutUnit())
+        return geometry;
+
+      geometry.gutter_size += result.free_space / (result.track_count - 1);
+      return geometry;
+    }
+    case ContentDistributionType::kSpaceAround: {
+      // Default behaviour for 'space-around' is to center content.
+      const auto result = ComputeFreeSpaceAndTrackCount();
+      if (result.track_count < 1 || result.free_space < LayoutUnit()) {
+        geometry.start_offset += result.free_space / 2;
+        return geometry;
+      }
+
+      LayoutUnit track_space = result.free_space / result.track_count;
+      geometry.start_offset += track_space / 2;
+      geometry.gutter_size += track_space;
+      return geometry;
+    }
+    case ContentDistributionType::kSpaceEvenly: {
+      // Default behaviour for 'space-evenly' is to center content.
+      const auto result = ComputeFreeSpaceAndTrackCount();
+      if (result.free_space < LayoutUnit()) {
+        geometry.start_offset += result.free_space / 2;
+        return geometry;
+      }
+
+      LayoutUnit track_space = result.free_space / (result.track_count + 1);
+      geometry.start_offset += track_space;
+      geometry.gutter_size += track_space;
+      return geometry;
+    }
+    case ContentDistributionType::kStretch:
+    case ContentDistributionType::kDefault:
+      break;
+  }
+
+  switch (content_alignment.GetPosition()) {
+    case ContentPosition::kLeft: {
+      DCHECK(track_collection.IsForColumns());
+      if (IsLtr(style.Direction()))
+        return geometry;
+
+      const auto result = ComputeFreeSpaceAndTrackCount();
+      geometry.start_offset += result.free_space;
+      return geometry;
+    }
+    case ContentPosition::kRight: {
+      DCHECK(track_collection.IsForColumns());
+      if (IsRtl(style.Direction()))
+        return geometry;
+
+      const auto result = ComputeFreeSpaceAndTrackCount();
+      geometry.start_offset += result.free_space;
+      return geometry;
+      break;
+    }
+    case ContentPosition::kCenter: {
+      const auto result = ComputeFreeSpaceAndTrackCount();
+      geometry.start_offset += result.free_space / 2;
+      return geometry;
+    }
+    case ContentPosition::kEnd:
+    case ContentPosition::kFlexEnd: {
+      const auto result = ComputeFreeSpaceAndTrackCount();
+      geometry.start_offset += result.free_space;
+      return geometry;
+    }
+    case ContentPosition::kStart:
+    case ContentPosition::kFlexStart:
+    case ContentPosition::kNormal:
+    case ContentPosition::kBaseline:
+    case ContentPosition::kLastBaseline:
+      return geometry;
+  }
+}
+
+// Calculates the offsets for all sets.
+Vector<LayoutUnit> ComputeSetOffsets(
+    const NGGridLayoutAlgorithmTrackCollection& track_collection,
+    const TrackAlignmentGeometry& track_alignment_geometry) {
+  LayoutUnit set_offset = track_alignment_geometry.start_offset;
+  Vector<LayoutUnit> set_offsets = {set_offset};
+  set_offsets.ReserveCapacity(track_collection.SetCount() + 1);
+  for (auto set_iterator = track_collection.GetSetIterator();
+       !set_iterator.IsAtEnd(); set_iterator.MoveToNextSet()) {
+    const auto& set = set_iterator.CurrentSet();
+    set_offset += set.BaseSize() +
+                  set.TrackCount() * track_alignment_geometry.gutter_size;
+    set_offsets.push_back(set_offset);
+  }
+  return set_offsets;
+}
+
+}  // namespace
+
 void NGGridLayoutAlgorithm::PlaceItems(
     const Vector<GridItemData>& grid_items,
     const NGGridLayoutAlgorithmTrackCollection& column_track_collection,
@@ -1250,19 +1403,30 @@ void NGGridLayoutAlgorithm::PlaceItems(
     LayoutUnit* block_size) {
   DCHECK(intrinsic_block_size);
   DCHECK(block_size);
-  LayoutUnit column_grid_gap =
-      GridGap(kForColumns, ChildAvailableSize().inline_size);
+  const TrackAlignmentGeometry column_track_alignment_geometry =
+      ComputeTrackAlignmentGeometry(
+          Style(), Style().JustifyContent(), column_track_collection,
+          ChildAvailableSize().inline_size,
+          BorderScrollbarPadding().inline_start,
+          GridGap(kForColumns, ChildAvailableSize().inline_size));
+  const Vector<LayoutUnit> column_set_offsets = ComputeSetOffsets(
+      column_track_collection, column_track_alignment_geometry);
+
   LayoutUnit row_grid_gap = GridGap(kForRows, ChildAvailableSize().block_size);
-  Vector<LayoutUnit> column_set_offsets =
-      ComputeSetOffsets(column_track_collection, column_grid_gap);
+  TrackAlignmentGeometry row_track_alignment_geometry =
+      ComputeTrackAlignmentGeometry(
+          Style(), Style().AlignContent(), row_track_collection,
+          ChildAvailableSize().block_size, BorderScrollbarPadding().block_start,
+          row_grid_gap);
   Vector<LayoutUnit> row_set_offsets =
-      ComputeSetOffsets(row_track_collection, row_grid_gap);
+      ComputeSetOffsets(row_track_collection, row_track_alignment_geometry);
 
   // Intrinsic block size is based on the final row offset.
   // Because gaps are included in row offsets, subtract out the final gap.
   *intrinsic_block_size =
       row_set_offsets.back() -
-      (row_set_offsets.size() == 1 ? LayoutUnit() : row_grid_gap) +
+      (row_set_offsets.size() == 1 ? LayoutUnit()
+                                   : row_track_alignment_geometry.gutter_size) +
       BorderScrollbarPadding().block_end;
 
   *intrinsic_block_size =
@@ -1273,27 +1437,29 @@ void NGGridLayoutAlgorithm::PlaceItems(
       ConstraintSpace(), Style(), BorderPadding(), *intrinsic_block_size,
       border_box_size_.inline_size);
 
-  // If the row gap is percent or calc, it should be computed now that the
-  // intrinsic size is known. However, the gap should not be added to the
-  // intrinsic block size.
-  const bool is_row_gap_unresolvable =
-      Style().RowGap() && Style().RowGap()->IsPercentOrCalc() &&
-      ChildAvailableSize().block_size == kIndefiniteSize;
-  if (is_row_gap_unresolvable) {
+  // If we had an indefinite available block-size, we now need to re-calculate
+  // our grid-gap, and alignment using our new block-size.
+  if (ChildAvailableSize().block_size == kIndefiniteSize) {
     const LayoutUnit resolved_available_block_size =
         (*block_size - BorderScrollbarPadding().BlockSum())
             .ClampNegativeToZero();
 
-    row_grid_gap = GridGap(kForRows, resolved_available_block_size);
-    row_set_offsets = ComputeSetOffsets(row_track_collection, row_grid_gap);
+    row_track_alignment_geometry = ComputeTrackAlignmentGeometry(
+        Style(), Style().AlignContent(), row_track_collection,
+        resolved_available_block_size, BorderScrollbarPadding().block_start,
+        GridGap(kForRows, resolved_available_block_size));
+    row_set_offsets =
+        ComputeSetOffsets(row_track_collection, row_track_alignment_geometry);
   }
 
   PlaceGridItems(grid_items, column_set_offsets, row_set_offsets, *block_size,
-                 column_grid_gap, row_grid_gap);
+                 column_track_alignment_geometry.gutter_size,
+                 row_track_alignment_geometry.gutter_size);
 
   PlaceOutOfFlowItems(column_set_offsets, row_set_offsets,
                       column_track_collection, row_track_collection,
-                      *block_size, column_grid_gap, row_grid_gap,
+                      *block_size, column_track_alignment_geometry.gutter_size,
+                      row_track_alignment_geometry.gutter_size,
                       out_of_flow_items);
 }
 
@@ -1312,23 +1478,6 @@ LayoutUnit NGGridLayoutAlgorithm::GridGap(
     available_size = LayoutUnit();
 
   return MinimumValueForLength(*gap, available_size);
-}
-
-Vector<LayoutUnit> NGGridLayoutAlgorithm::ComputeSetOffsets(
-    const NGGridLayoutAlgorithmTrackCollection& track_collection,
-    LayoutUnit grid_gap) const {
-  LayoutUnit set_offset = track_collection.IsForColumns()
-                              ? BorderScrollbarPadding().inline_start
-                              : BorderScrollbarPadding().block_start;
-  Vector<LayoutUnit> set_offsets = {set_offset};
-  set_offsets.ReserveCapacity(track_collection.SetCount() + 1);
-  for (auto set_iterator = track_collection.GetSetIterator();
-       !set_iterator.IsAtEnd(); set_iterator.MoveToNextSet()) {
-    const auto& set = set_iterator.CurrentSet();
-    set_offset += set.BaseSize() + set.TrackCount() * grid_gap;
-    set_offsets.push_back(set_offset);
-  }
-  return set_offsets;
 }
 
 namespace {
@@ -1392,6 +1541,7 @@ void AlignmentOffsetForOutOfFlow(
       break;
   }
 }
+
 }  // namespace
 
 void NGGridLayoutAlgorithm::PlaceGridItems(
@@ -1399,14 +1549,14 @@ void NGGridLayoutAlgorithm::PlaceGridItems(
     const Vector<LayoutUnit>& column_set_offsets,
     const Vector<LayoutUnit>& row_set_offsets,
     LayoutUnit block_size,
-    LayoutUnit column_grid_gap,
-    LayoutUnit row_grid_gap) {
+    LayoutUnit column_gutter_size,
+    LayoutUnit row_gutter_size) {
   for (const GridItemData& grid_item : grid_items) {
     LogicalOffset offset;
     LogicalSize size;
-    ComputeOffsetAndSize(grid_item, column_set_offsets, column_grid_gap,
+    ComputeOffsetAndSize(grid_item, column_set_offsets, column_gutter_size,
                          &offset.inline_offset, &size.inline_size);
-    ComputeOffsetAndSize(grid_item, row_set_offsets, row_grid_gap,
+    ComputeOffsetAndSize(grid_item, row_set_offsets, row_gutter_size,
                          &offset.block_offset, &size.block_size, kForRows,
                          block_size);
     const auto& item_style = grid_item.node.Style();
@@ -1448,8 +1598,8 @@ void NGGridLayoutAlgorithm::PlaceOutOfFlowItems(
     const NGGridLayoutAlgorithmTrackCollection& column_track_collection,
     const NGGridLayoutAlgorithmTrackCollection& row_track_collection,
     LayoutUnit block_size,
-    LayoutUnit column_grid_gap,
-    LayoutUnit row_grid_gap,
+    LayoutUnit column_gutter_size,
+    LayoutUnit row_gutter_size,
     Vector<GridItemData>* out_of_flow_items) {
   // Cache set indices for out of flow items.
   CacheItemSetIndices(column_track_collection, out_of_flow_items);
@@ -1457,10 +1607,11 @@ void NGGridLayoutAlgorithm::PlaceOutOfFlowItems(
 
   for (const GridItemData& out_of_flow_item : *out_of_flow_items) {
     LogicalRect containing_block_rect;
-    ComputeOffsetAndSize(out_of_flow_item, column_set_offsets, column_grid_gap,
+    ComputeOffsetAndSize(out_of_flow_item, column_set_offsets,
+                         column_gutter_size,
                          &containing_block_rect.offset.inline_offset,
                          &containing_block_rect.size.inline_size);
-    ComputeOffsetAndSize(out_of_flow_item, row_set_offsets, row_grid_gap,
+    ComputeOffsetAndSize(out_of_flow_item, row_set_offsets, row_gutter_size,
                          &containing_block_rect.offset.block_offset,
                          &containing_block_rect.size.block_size, kForRows,
                          block_size);
@@ -1481,7 +1632,7 @@ void NGGridLayoutAlgorithm::PlaceOutOfFlowItems(
 void NGGridLayoutAlgorithm::ComputeOffsetAndSize(
     const GridItemData& item,
     const Vector<LayoutUnit>& set_offsets,
-    LayoutUnit grid_gap,
+    LayoutUnit gutter_size,
     LayoutUnit* start_offset,
     LayoutUnit* size,
     GridTrackSizingDirection track_direction,
@@ -1520,7 +1671,7 @@ void NGGridLayoutAlgorithm::ComputeOffsetAndSize(
   // tracks are subtracted from the offset at the end index.
   if (end_index != kNotFound) {
     end_offset = set_offsets[end_index];
-    *size = end_offset - *start_offset - grid_gap;
+    *size = end_offset - *start_offset - gutter_size;
   }
   if (start_index != kNotFound && end_index != kNotFound) {
     DCHECK_LT(start_index, end_index);

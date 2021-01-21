@@ -232,11 +232,6 @@ class CORE_EXPORT NGGridLayoutAlgorithm
   LayoutUnit GridGap(GridTrackSizingDirection track_direction,
                      LayoutUnit available_size = kIndefiniteSize) const;
 
-  // Calculates inline and block offsets for all tracks.
-  Vector<LayoutUnit> ComputeSetOffsets(
-      const NGGridLayoutAlgorithmTrackCollection& track_collection,
-      LayoutUnit grid_gap) const;
-
   // Layout the |grid_items| based on the offsets provided.
   void PlaceGridItems(const Vector<GridItemData>& grid_items,
                       const Vector<LayoutUnit>& column_set_offsets,
