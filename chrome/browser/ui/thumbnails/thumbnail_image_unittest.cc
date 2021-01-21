@@ -368,3 +368,29 @@ TEST_F(ThumbnailImageTest, UnsubscribeAfterDelegateDestroyed) {
   delegate.reset();
   subscription.reset();
 }
+
+// Ensures subscribers with a size hint get notified correctly on
+// thumbnail clear. Regression test for crbug.com/1168483 where
+// CropPreviewImage was called on blank thumbnails resulting in a
+// DCHECK.
+TEST_F(ThumbnailImageTest, DoesNotCropBlankThumbnails) {
+  auto image = base::MakeRefCounted<ThumbnailImage>(this);
+
+  std::unique_ptr<Subscription> subscription = image->Subscribe();
+  subscription->SetSizeHint(
+      gfx::Size(kTestBitmapWidth / 2, kTestBitmapHeight / 2));
+
+  CallbackWaiter uncompressed_image_waiter;
+  subscription->SetUncompressedImageCallback(
+      IgnoreArgs<gfx::ImageSkia>(uncompressed_image_waiter.callback()));
+
+  SkBitmap bitmap = CreateBitmap(kTestBitmapWidth, kTestBitmapHeight);
+  image->AssignSkBitmap(bitmap, base::nullopt);
+  uncompressed_image_waiter.Wait();
+  EXPECT_TRUE(uncompressed_image_waiter.called());
+  uncompressed_image_waiter.Reset();
+
+  image->ClearData();
+  uncompressed_image_waiter.Wait();
+  EXPECT_TRUE(uncompressed_image_waiter.called());
+}

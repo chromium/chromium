@@ -181,9 +181,12 @@ void ThumbnailImage::NotifyUncompressedDataObservers(base::Token thumbnail_id,
 
   for (Subscription* subscription : subscribers_) {
     auto size_hint = subscription->size_hint_;
-    if (subscription->uncompressed_image_callback_)
-      subscription->uncompressed_image_callback_.Run(
-          size_hint ? CropPreviewImage(image, *size_hint) : image);
+    if (subscription->uncompressed_image_callback_) {
+      auto cropped_image = size_hint && !image.isNull()
+                               ? CropPreviewImage(image, *size_hint)
+                               : image;
+      subscription->uncompressed_image_callback_.Run(cropped_image);
+    }
   }
 }
 
