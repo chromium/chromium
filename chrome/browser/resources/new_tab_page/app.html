@@ -253,12 +253,10 @@
         hidden$="[[!oneGoogleBarLoaded_]]">
     </ntp-iframe>
   </template>
-  <template is="dom-if" if="[[logoEnabled_]]">
-    <ntp-logo id="logo" doodle-allowed$="[[doodleAllowed_]]"
-        single-colored$="[[singleColoredLogo_]]" dark="[[theme_.isDark]]"
-        background-color="[[backgroundColor_]]">
-    </ntp-logo>
-  </template>
+  <ntp-logo id="logo" doodle-allowed$="[[doodleAllowed_]]"
+      single-colored$="[[singleColoredLogo_]]" dark="[[theme_.isDark]]"
+      background-color="[[backgroundColor_]]">
+  </ntp-logo>
   <ntp-realbox id="realbox" on-open-voice-search="onOpenVoiceSearch_"
       theme="[[theme_.searchBox]]" shown$="[[realboxShown_]]">
   </ntp-realbox>
