@@ -376,6 +376,11 @@ void CaptureModeController::CaptureScreenshotsOfAllDisplays() {
                                      : BuildImagePathForDisplay(display_index));
     ++display_index;
   }
+
+  // Since this doesn't create a capture mode session, log metrics here.
+  RecordCaptureModeEntryType(CaptureModeEntryType::kCaptureAllDisplays);
+  RecordCaptureModeConfiguration(CaptureModeType::kImage,
+                                 CaptureModeSource::kFullscreen);
 }
 
 void CaptureModeController::PerformCapture() {

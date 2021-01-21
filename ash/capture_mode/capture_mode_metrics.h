@@ -65,7 +65,8 @@ enum class CaptureModeEntryType {
   kStylusPalette,
   kPowerMenu,
   kSnipKey,
-  kMaxValue = kSnipKey,
+  kCaptureAllDisplays,
+  kMaxValue = kCaptureAllDisplays,
 };
 
 // Enumeration of quick actions on screenshot notification. Note that these
