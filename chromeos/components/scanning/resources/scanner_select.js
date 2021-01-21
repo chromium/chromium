@@ -15,7 +15,6 @@ import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 
 import {ScannerArr} from './scanning_app_types.js';
 import {alphabeticalCompare, getScannerDisplayName, tokenToString} from './scanning_app_util.js';
-import {SelectBehavior} from './select_behavior.js';
 
 /**
  * @fileoverview
@@ -26,9 +25,12 @@ Polymer({
 
   _template: html`{__html_template__}`,
 
-  behaviors: [I18nBehavior, SelectBehavior],
+  behaviors: [I18nBehavior],
 
   properties: {
+    /** @type {boolean} */
+    disabled: Boolean,
+
     /** @type {!ScannerArr} */
     scanners: {
       type: Array,

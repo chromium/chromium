@@ -5,11 +5,10 @@
   </span>
   <div slot="settings">
     <select id="sourceSelect" class="md-select"
-        value="{{selectedSource::change}}" disabled="[[disabled]]"
+        value="{{selectedOption::change}}" disabled="[[disabled]]"
         aria-labelledby="sourceLabel">
-      <template is="dom-repeat" items="[[sources]]" as="source">
-        <option value="[[source.name]]"
-            selected$='[[isDefaultSource_(source.type)]]'>
+      <template is="dom-repeat" items="[[options]]" as="source">
+        <option value="[[source.name]]" selected$='[[isDefaultOption(source)]]'>
           [[getSourceTypeString_(source.type)]]
         </option>
       </template>

@@ -190,9 +190,9 @@
                 loaded="[[scannersLoaded_]]"
                 disabled="[[settingsDisabled_]]"
                 selected-scanner-id="{{selectedScannerId}}"></scanner-select>
-            <source-select id="sourceSelect" sources="[[capabilities_.sources]]"
+            <source-select id="sourceSelect" options="[[capabilities_.sources]]"
                 disabled="[[settingsDisabled_]]"
-                selected-source="{{selectedSource}}"></source-select>
+                selected-option="{{selectedSource}}"></source-select>
             <scan-to-select id="scanToSelect"
                 disabled="[[settingsDisabled_]]"
                 selected-file-path="{{selectedFilePath}}"
@@ -211,19 +211,19 @@
             </cr-button>
             <iron-collapse id="collapse" opened="{{opened_}}">
               <color-mode-select id="colorModeSelect"
-                  color-modes="[[capabilities_.colorModes]]"
+                  options="[[capabilities_.colorModes]]"
                   disabled="[[settingsDisabled_]]"
-                  selected-color-mode="{{selectedColorMode}}">
+                  selected-option="{{selectedColorMode}}">
               </color-mode-select>
               <page-size-select id="pageSizeSelect"
-                  page-sizes="[[selectedSourcePageSizes_]]"
+                  options="[[selectedSourcePageSizes_]]"
                   disabled="[[settingsDisabled_]]"
-                  selected-page-size="{{selectedPageSize}}">
+                  selected-option="{{selectedPageSize}}">
               </page-size-select>
               <resolution-select id="resolutionSelect"
-                  resolutions="[[capabilities_.resolutions]]"
+                  options="[[capabilities_.resolutions]]"
                   disabled="[[settingsDisabled_]]"
-                  selected-resolution="{{selectedResolution}}">
+                  selected-option="{{selectedResolution}}">
               </resolution-select>
             </iron-collapse>
           </template>

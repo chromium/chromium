@@ -43,7 +43,7 @@ export function pageSizeSelectTest() {
 
     const firstPageSize = PageSize.A4;
     const secondPageSize = PageSize.Max;
-    pageSizeSelect.pageSizes = [firstPageSize, secondPageSize];
+    pageSizeSelect.options = [firstPageSize, secondPageSize];
     flush();
 
     // Verify that adding page sizes results in the dropdown displaying the
@@ -61,33 +61,33 @@ export function pageSizeSelectTest() {
                select, secondPageSize.toString(), /* selectedIndex */ null)
         .then(() => {
           assertEquals(
-              secondPageSize.toString(), pageSizeSelect.selectedPageSize);
+              secondPageSize.toString(), pageSizeSelect.selectedOption);
         });
   });
 
   test('pageSizesSortedCorrectly', () => {
-    pageSizeSelect.pageSizes = [PageSize.Letter, PageSize.Max, PageSize.A4];
+    pageSizeSelect.options = [PageSize.Letter, PageSize.Max, PageSize.A4];
     flush();
 
     // Verify the page sizes are sorted alphabetically except for the fit to
     // scan area option, which should always be last. Verify that Letter is
     // selected by default.
     assertOrderedAlphabetically(
-        pageSizeSelect.pageSizes.slice(0, pageSizeSelect.pageSizes.length - 1),
+        pageSizeSelect.options.slice(0, pageSizeSelect.options.length - 1),
         (pageSize) => getPageSizeString(pageSize));
     assertEquals(
         PageSize.Max,
-        pageSizeSelect.pageSizes[pageSizeSelect.pageSizes.length - 1]);
-    assertEquals(PageSize.Letter.toString(), pageSizeSelect.selectedPageSize);
+        pageSizeSelect.options[pageSizeSelect.options.length - 1]);
+    assertEquals(PageSize.Letter.toString(), pageSizeSelect.selectedOption);
   });
 
   test('firstPageSizeUsedWhenDefaultNotAvailable', () => {
-    pageSizeSelect.pageSizes = [PageSize.Max, PageSize.A4];
+    pageSizeSelect.options = [PageSize.Max, PageSize.A4];
     flush();
 
     // Verify the first page size in the sorted page sizes array is selected by
     // default when Letter is not an available option.
-    assertEquals(PageSize.A4.toString(), pageSizeSelect.selectedPageSize);
+    assertEquals(PageSize.A4.toString(), pageSizeSelect.selectedOption);
   });
 
   // Verify the correct default option is selected when a scanner is selected
@@ -95,19 +95,19 @@ export function pageSizeSelectTest() {
   test('selectDefaultWhenOptionsChange', () => {
     const select =
         /** @type {!HTMLSelectElement} */ (pageSizeSelect.$$('select'));
-    pageSizeSelect.pageSizes = [PageSize.Letter, PageSize.Max, PageSize.A4];
+    pageSizeSelect.options = [PageSize.Letter, PageSize.Max, PageSize.A4];
     flush();
     return changeSelect(select, /* value */ null, /* selectedIndex */ 0)
         .then(() => {
-          assertEquals(PageSize.A4.toString(), pageSizeSelect.selectedPageSize);
+          assertEquals(PageSize.A4.toString(), pageSizeSelect.selectedOption);
           assertEquals(
               PageSize.A4.toString(),
               select.options[select.selectedIndex].value);
 
-          pageSizeSelect.pageSizes = [PageSize.Letter, PageSize.Max];
+          pageSizeSelect.options = [PageSize.Letter, PageSize.Max];
           flush();
           assertEquals(
-              PageSize.Letter.toString(), pageSizeSelect.selectedPageSize);
+              PageSize.Letter.toString(), pageSizeSelect.selectedOption);
           assertEquals(
               PageSize.Letter.toString(),
               select.options[select.selectedIndex].value);

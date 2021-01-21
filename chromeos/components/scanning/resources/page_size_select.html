@@ -5,11 +5,10 @@
   </span>
   <div slot="settings">
     <select id="pageSizeSelect" class="md-select"
-        value="{{selectedPageSize::change}}" disabled="[[disabled]]"
+        value="{{selectedOption::change}}" disabled="[[disabled]]"
         aria-labelledby="pageSizeLabel">
-      <template is="dom-repeat" items="[[pageSizes]]" as="pageSize">
-        <option value="[[pageSize]]"
-            selected$="[[isDefaultPageSize_(pageSize)]]">
+      <template is="dom-repeat" items="[[options]]" as="pageSize">
+        <option value="[[pageSize]]" selected$="[[isDefaultOption(pageSize)]]">
           [[getPageSizeString_(pageSize)]]
         </option>
       </template>

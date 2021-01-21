@@ -9,7 +9,6 @@ import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ScanningBrowserProxy, ScanningBrowserProxyImpl, SelectedPath} from './scanning_browser_proxy.js';
-import {SelectBehavior} from './select_behavior.js';
 
 /**
  * @fileoverview
@@ -20,12 +19,15 @@ Polymer({
 
   _template: html`{__html_template__}`,
 
-  behaviors: [I18nBehavior, SelectBehavior],
+  behaviors: [I18nBehavior],
 
   /** @private {?ScanningBrowserProxy}*/
   browserProxy_: null,
 
   properties: {
+    /** @type {boolean} */
+    disabled: Boolean,
+
     /**
      * The lowest level directory in |selectedFilePath|.
      * @type {string}

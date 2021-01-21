@@ -27,24 +27,18 @@ Polymer({
 
   behaviors: [I18nBehavior, SelectBehavior],
 
-  properties: {
-    /** @type {!Array<chromeos.scanning.mojom.ColorMode>} */
-    colorModes: {
-      type: Array,
-      value: () => [],
-    },
+  /**
+   * @param {number} index
+   * @return {string}
+   */
+  getOptionAtIndex(index) {
+    assert(index < this.options.length);
 
-    /** @type {string} */
-    selectedColorMode: {
-      type: String,
-      notify: true,
-    },
+    return this.options[index].toString();
   },
 
-  observers: ['onColorModesChange_(colorModes.*)'],
-
   /**
-   * @param {chromeos.scanning.mojom.ColorMode} mojoColorMode
+   * @param {!chromeos.scanning.mojom.ColorMode} mojoColorMode
    * @return {string}
    * @private
    */
@@ -52,49 +46,17 @@ Polymer({
     return getColorModeString(mojoColorMode);
   },
 
-  /**
-   * Get the index of the default option if it exists. If not, use the index of
-   * the first color mode in the color modes array.
-   * @return {number}
-   * @private
-   */
-  getDefaultSelectedColorModeIndex_() {
-    assert(this.colorModes.length > 0);
-
-    const defaultColorModeIndex = this.colorModes.findIndex((colorMode) => {
-      return this.isDefaultColorMode_(colorMode);
+  sortOptions() {
+    this.options.sort((a, b) => {
+      return alphabeticalCompare(getColorModeString(a), getColorModeString(b));
     });
-
-    return defaultColorModeIndex === -1 ? 0 : defaultColorModeIndex;
   },
 
   /**
-   * Sorts the color modes and sets the selected color mode when the color modes
-   * array changes.
-   * @private
-   */
-  onColorModesChange_() {
-    if (this.colorModes.length > 1) {
-      this.colorModes.sort((a, b) => {
-        return alphabeticalCompare(
-            getColorModeString(a), getColorModeString(b));
-      });
-    }
-
-    if (this.colorModes.length > 0) {
-      const selectedColorModeIndex = this.getDefaultSelectedColorModeIndex_();
-      this.selectedColorMode =
-          this.colorModes[selectedColorModeIndex].toString();
-      this.$.colorModeSelect.selectedIndex = selectedColorModeIndex;
-    }
-  },
-
-  /**
-   * @param {!chromeos.scanning.mojom.ColorMode} colorMode
+   * @param {!chromeos.scanning.mojom.ColorMode} option
    * @return {boolean}
-   * @private
    */
-  isDefaultColorMode_(colorMode) {
-    return colorMode === DEFAULT_COLOR_MODE;
+  isDefaultOption(option) {
+    return option === DEFAULT_COLOR_MODE;
   },
 });

@@ -6,8 +6,8 @@ import './scanning.mojom-lite.js';
 import './scan_settings_section.js';
 import './strings.m.js';
 
+import {assert} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SelectBehavior} from './select_behavior.js';
@@ -26,21 +26,15 @@ Polymer({
 
   behaviors: [I18nBehavior, SelectBehavior],
 
-  properties: {
-    /** @type {!Array<number>} */
-    resolutions: {
-      type: Array,
-      value: () => [],
-    },
+  /**
+   * @param {number} index
+   * @return {string}
+   */
+  getOptionAtIndex(index) {
+    assert(index < this.options.length);
 
-    /** @type {string} */
-    selectedResolution: {
-      type: String,
-      notify: true,
-    },
+    return this.options[index].toString();
   },
-
-  observers: ['onResolutionsChange_(resolutions.*)'],
 
   /**
    * @param {number} resolution
@@ -48,51 +42,21 @@ Polymer({
    * @private
    */
   getResolutionString_(resolution) {
-    return loadTimeData.getStringF(
-        'resolutionOptionText', resolution.toString());
+    return this.i18n('resolutionOptionText', resolution);
   },
 
-  /**
-   * Get the index of the default option if it exists. If not, use the index of
-   * the first resolution in the resolutions array.
-   * @return {number}
-   * @private
-   */
-  getDefaultSelectedResolutionIndex_() {
-    const defaultResolutionIndex = this.resolutions.findIndex((resolution) => {
-      return this.isDefaultResolution_(resolution);
+  sortOptions() {
+    // Sort the resolutions in descending order.
+    this.options.sort(function(a, b) {
+      return b - a;
     });
-
-    return defaultResolutionIndex === -1 ? 0 : defaultResolutionIndex;
   },
 
   /**
-   * Sorts the resolutions and sets the selected resolution when the resolutions
-   * array changes.
-   * @private
-   */
-  onResolutionsChange_() {
-    if (this.resolutions.length > 1) {
-      // Sort the resolutions in descending order.
-      this.resolutions.sort(function(a, b) {
-        return b - a;
-      });
-    }
-
-    if (this.resolutions.length > 0) {
-      const selectedResolutionIndex = this.getDefaultSelectedResolutionIndex_();
-      this.selectedResolution =
-          this.resolutions[selectedResolutionIndex].toString();
-      this.$.resolutionSelect.selectedIndex = selectedResolutionIndex;
-    }
-  },
-
-  /**
-   * @param {number} resolution
+   * @param {number} option
    * @return {boolean}
-   * @private
    */
-  isDefaultResolution_(resolution) {
-    return resolution === DEFAULT_RESOLUTION;
+  isDefaultOption(option) {
+    return option === DEFAULT_RESOLUTION;
   },
 });
