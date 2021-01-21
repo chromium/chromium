@@ -24,7 +24,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="IOS.CommittedNavigationHasContext" enum="Boolean"
     expires_after="2021-09-24">
   <owner>ajuma@chromium.org</owner>
-  <owner>eugenebut@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <summary>
     When a navigation is committed, it should have a non-null NavigationContext.
@@ -39,7 +38,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="IOS.CommittedURLMatchesCurrentItem" enum="Boolean"
     expires_after="2021-09-24">
   <owner>ajuma@chromium.org</owner>
-  <owner>eugenebut@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <summary>
     When a navigation is committed, the web view URL is expected to match that
@@ -234,8 +232,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="IOS.CriticalActionBackgroundTimeRemaining" units="ms"
     expires_after="2021-05-30">
+  <obsolete>
+    Recording removed 12/2020.
+  </obsolete>
   <owner>justincohen@chromium.org</owner>
-  <owner>eugenebut@chromium.org</owner>
   <summary>
     Recorded when app is running in the background and posted a background task.
     This time is obtained by calling UIApplication.backgroundTimeRemaining. When
@@ -350,7 +350,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="IOS.FinishedURLMatchesCurrentItem" enum="Boolean"
     expires_after="2021-10-26">
   <owner>ajuma@chromium.org</owner>
-  <owner>eugenebut@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <summary>
     When a navigation is finished, the web view URL is expected to match that of
@@ -471,7 +470,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="IOS.MainThreadFreezeDetection.RecoveredAfter" units="ms"
     expires_after="2021-11-12">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
     The time during which main thread was not responding. 0 if application was
@@ -483,7 +482,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="IOS.MetricKit.ApplicationHangTime" units="ms"
     expires_after="2021-03-15">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
     The durations of time in which the app is too busy to handle user
@@ -494,7 +493,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="IOS.MetricKit.ApplicationResumeTime" units="ms"
     expires_after="2021-07-11">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
     The amount of time taken to resume the app from the background. Logged when
@@ -504,7 +503,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="IOS.MetricKit.AverageSuspendedMemory" units="MB"
     expires_after="2021-06-27">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
     The average amount of memory in use by the app when it's suspended. Logged
@@ -514,7 +513,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="IOS.MetricKit.BackgroundExitData" enum="MetricKitExitData"
     expires_after="2021-07-11">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
     The reason for the application termination in background. Logged when a
@@ -524,7 +523,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="IOS.MetricKit.BackgroundTimePerDay" units="ms"
     expires_after="2021-05-16">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
     The total time the app is in the background. Logged when a MXMetricPayload
@@ -535,7 +534,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="IOS.MetricKit.ForegroundExitData" enum="MetricKitExitData"
     expires_after="2021-07-18">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
     The reason for the application termination in background. Logged when a
@@ -545,7 +544,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="IOS.MetricKit.ForegroundTimePerDay" units="s"
     expires_after="2021-07-18">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
     The total time the app is in the foreground. Logged when a MXMetricPayload
@@ -556,7 +555,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="IOS.MetricKit.PeakMemoryUsage" units="MB"
     expires_after="2021-07-18">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>justinchhen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
     The largest amount of memory used by the app. Logged when a MXMetricPayload
@@ -566,7 +565,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="IOS.MetricKit.TimeToFirstDraw" units="ms"
     expires_after="2021-07-18">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
     The amount of time taken to launch the app. Logged when a MXMetricPayload is
@@ -658,7 +657,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="IOS.PageLoadTiming.OmnibarToPageLoaded" units="ms"
     expires_after="2021-09-22">
   <owner>ajuma@chromium.org</owner>
-  <owner>eugenebut@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <summary>
     Measures the time from the end of user input in the omnibox to when the page
@@ -699,7 +697,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="IOS.RestoreNavigationItemCount" units="rank"
     expires_after="2021-07-04">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
   <owner>justincohen@chromium.org</owner>
   <summary>
     [iOS] The number of items Navigation Manager was requested to restore. 100
@@ -713,7 +711,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="IOS.RestoreNavigationTime" units="ms"
     expires_after="2021-07-04">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
   <owner>justincohen@chromium.org</owner>
   <summary>
     [iOS] Time spent on restoring committed Navigation Manager's items. Recorded
@@ -728,7 +726,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="IOS.SafeBrowsing.RedirectedRequestResponseHostsMatch"
     enum="BooleanMatched" expires_after="2021-11-06">
   <owner>ajuma@chromium.org</owner>
-  <owner>eugenebut@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <summary>
     The URL in a navigation request should have the same host as the URL in the
@@ -962,7 +959,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="IOS.WKWebViewClobberedHistory" enum="Boolean"
     expires_after="2021-09-24">
   <owner>ajuma@chromium.org</owner>
-  <owner>eugenebut@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <summary>
     Measures the number of main frame navigations in slim navigation manager
