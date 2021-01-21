@@ -175,13 +175,15 @@ class LegacyDownloadProviderImpl implements DownloadObserver, LegacyDownloadProv
     }
 
     @Override
-    public void getAllItems(Callback<ArrayList<OfflineItem>> callback, boolean offTheRecord) {
+    public void getAllItems(Callback<ArrayList<OfflineItem>> callback, OTRProfileID otrProfileID) {
+        // TODO(crbug.com/1145502): Create a map to hold OTRProfileID as key and list of callbacks
+        // as value.
         List<Callback<ArrayList<OfflineItem>>> list =
-                offTheRecord ? mOffTheRecordRequests : mRequests;
+                otrProfileID != null ? mOffTheRecordRequests : mRequests;
 
         list.add(callback);
         if (list.size() > 1) return;
-        DownloadManagerService.getDownloadManagerService().getAllDownloads(offTheRecord);
+        DownloadManagerService.getDownloadManagerService().getAllDownloads(otrProfileID);
     }
 
     @Override

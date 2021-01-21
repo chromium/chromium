@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.download.home;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.OfflineContentProvider;
 import org.chromium.components.offline_items_collection.OfflineItem;
@@ -49,7 +50,7 @@ public interface LegacyDownloadProvider {
     void getItemById(ContentId id, Callback<OfflineItem> callback);
 
     /** @see OfflineContentProvider#getAllItems(Callback) */
-    void getAllItems(Callback<ArrayList<OfflineItem>> callback, boolean offTheRecord);
+    void getAllItems(Callback<ArrayList<OfflineItem>> callback, OTRProfileID otrProfileID);
 
     /** @see OfflineContentProvider#getVisualsForItem(ContentId, VisualsCallback) */
     void getVisualsForItem(ContentId id, VisualsCallback callback);

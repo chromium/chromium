@@ -67,6 +67,7 @@ public class DownloadActivity extends SnackbarActivity implements ModalDialogMan
         DownloadManagerUiConfig config =
                 DownloadManagerUiConfigHelper.fromFlags()
                         .setIsOffTheRecord(isOffTheRecord)
+                        .setOTRProfileID(mOtrProfileID)
                         .setIsSeparateActivity(true)
                         .setShowPaginationHeaders(DownloadUtils.shouldShowPaginationHeaders())
                         .setStartWithPrefetchedContent(showPrefetchContent)

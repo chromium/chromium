@@ -8,6 +8,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.chrome.browser.download.home.DownloadManagerUiConfig;
 import org.chromium.chrome.browser.download.home.LegacyDownloadProvider;
+import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.thumbnail.generator.ThumbnailProvider;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.LaunchLocation;
@@ -32,7 +33,7 @@ import java.util.List;
 public class OfflineContentProviderGlue implements OfflineContentProvider.Observer {
     private final ObserverList<OfflineContentProvider.Observer> mObservers = new ObserverList<>();
     private final OfflineContentProvider mProvider;
-    private final boolean mIsOffTheRecord;
+    private final OTRProfileID mOTRProfileID;
 
     private final boolean mUseNewDownloadPathThumbnails;
 
@@ -44,7 +45,8 @@ public class OfflineContentProviderGlue implements OfflineContentProvider.Observ
     public OfflineContentProviderGlue(OfflineContentProvider provider,
             LegacyDownloadProvider legacyProvider, DownloadManagerUiConfig config) {
         mProvider = provider;
-        mIsOffTheRecord = config.isOffTheRecord;
+        mOTRProfileID = config.otrProfileID;
+
         mLegacyProvider = legacyProvider;
         mUseNewDownloadPathThumbnails = config.useNewDownloadPathThumbnails;
 
@@ -73,7 +75,7 @@ public class OfflineContentProviderGlue implements OfflineContentProvider.Observ
             mLegacyProvider.openItem(item);
         } else {
             OpenParams openParams = new OpenParams(LaunchLocation.DOWNLOAD_HOME);
-            openParams.openInIncognito = mIsOffTheRecord;
+            openParams.openInIncognito = mOTRProfileID != null;
             mProvider.openItem(openParams, item.id);
         }
     }
@@ -221,17 +223,17 @@ public class OfflineContentProviderGlue implements OfflineContentProvider.Observ
 
         /** Creates a {@link Query} instance. */
         public Query() {
-            mDownloadProviderOffTheRecordResponded = !mIsOffTheRecord;
+            mDownloadProviderOffTheRecordResponded = mOTRProfileID == null;
 
             if (mLegacyProvider == null) {
                 mDownloadProviderResponded = true;
                 mDownloadProviderOffTheRecordResponded = true;
             } else {
-                if (mIsOffTheRecord) {
+                if (mOTRProfileID != null) {
                     mLegacyProvider.getAllItems(
-                            items -> addOffTheRecordDownloads(items), true /* offTheRecord */);
+                            items -> addOffTheRecordDownloads(items), mOTRProfileID);
                 }
-                mLegacyProvider.getAllItems(items -> addDownloads(items), false /* offTheRecord */);
+                mLegacyProvider.getAllItems(items -> addDownloads(items), null);
             }
 
             mProvider.getAllItems(items -> addOfflineItems(items));

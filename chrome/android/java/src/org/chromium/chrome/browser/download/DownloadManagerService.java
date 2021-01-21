@@ -117,7 +117,7 @@ public class DownloadManagerService implements DownloadController.Observer,
     // Deprecated after new download backend.
     /** Generic interface for notifying external UI components about downloads and their states. */
     public interface DownloadObserver extends DownloadSharedPreferenceHelper.Observer {
-        /** Called in response to {@link DownloadManagerService#getAllDownloads(boolean)}. */
+        /** Called in response to {@link DownloadManagerService#getAllDownloads(OTRProfileID)}. */
         void onAllDownloadsRetrieved(final List<DownloadItem> list, boolean isOffTheRecord);
 
         /** Called when a download is created. */
@@ -1351,12 +1351,13 @@ public class DownloadManagerService implements DownloadController.Observer,
      * {@link #onAllDownloadsRetrieved}.  If the DownloadHistory is not initialized yet, the
      * callback will be delayed.
      *
-     * @param isOffTheRecord Whether or not to get downloads for the off the record profile.
+     * @param otrProfileID The {@link OTRProfileID} of the download. Null if in regular mode.
      */
     // Deprecated after new download backend.
-    public void getAllDownloads(boolean isOffTheRecord) {
+    public void getAllDownloads(OTRProfileID otrProfileID) {
         DownloadManagerServiceJni.get().getAllDownloads(getNativeDownloadManagerService(),
-                DownloadManagerService.this, getProfileKey(isOffTheRecord));
+                DownloadManagerService.this,
+                IncognitoUtils.getProfileKeyFromOTRProfileID(otrProfileID));
     }
 
     /**

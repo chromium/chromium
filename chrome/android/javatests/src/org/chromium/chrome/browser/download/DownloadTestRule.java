@@ -186,7 +186,7 @@ public class DownloadTestRule extends ChromeTabbedActivityTestRule {
 
     public List<DownloadItem> getAllDownloads() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            DownloadManagerService.getDownloadManagerService().getAllDownloads(false);
+            DownloadManagerService.getDownloadManagerService().getAllDownloads(null);
         });
         return mAllDownloads;
     }
