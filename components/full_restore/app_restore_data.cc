@@ -277,4 +277,25 @@ void AppRestoreData::ModifyWindowInfo(const WindowInfo& window_info) {
     window_state_type = window_info.window_state_type.value();
 }
 
+std::unique_ptr<WindowInfo> AppRestoreData::GetWindowInfo() {
+  auto window_info = std::make_unique<WindowInfo>();
+
+  if (activation_index.has_value())
+    window_info->activation_index = activation_index;
+
+  if (desk_id.has_value())
+    window_info->desk_id = desk_id.value();
+
+  if (restore_bounds.has_value())
+    window_info->restore_bounds = restore_bounds.value();
+
+  if (current_bounds.has_value())
+    window_info->current_bounds = current_bounds.value();
+
+  if (window_state_type.has_value())
+    window_info->window_state_type = window_state_type.value();
+
+  return window_info;
+}
+
 }  // namespace full_restore

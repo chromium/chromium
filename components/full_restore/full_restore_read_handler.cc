@@ -12,7 +12,11 @@
 #include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/full_restore/full_restore_file_handler.h"
+#include "components/full_restore/full_restore_utils.h"
 #include "components/full_restore/restore_data.h"
+#include "components/full_restore/window_info.h"
+#include "components/sessions/core/session_id.h"
+#include "ui/aura/window.h"
 
 namespace full_restore {
 
@@ -46,12 +50,43 @@ void FullRestoreReadHandler::RemoveApp(const base::FilePath& profile_path,
   it->second->RemoveApp(app_id);
 }
 
+std::unique_ptr<WindowInfo> FullRestoreReadHandler::GetWindowInfo(
+    aura::Window* window) {
+  if (!window)
+    return nullptr;
+
+  // TODO(crbug.com/1146900): Handle ARC app windows.
+
+  int32_t restore_window_id =
+      window->GetProperty(::full_restore::kRestoreWindowIdKey);
+
+  if (!SessionID::IsValidValue(restore_window_id))
+    return nullptr;
+
+  auto it = window_id_to_app_restore_info_.find(restore_window_id);
+  if (it == window_id_to_app_restore_info_.end())
+    return nullptr;
+
+  return profile_path_to_restore_data_[it->second.first]->GetWindowInfo(
+      it->second.second, restore_window_id);
+}
+
 void FullRestoreReadHandler::OnGetRestoreData(
     const base::FilePath& profile_path,
     Callback callback,
     std::unique_ptr<RestoreData> restore_data) {
-  if (restore_data)
+  if (restore_data) {
     profile_path_to_restore_data_[profile_path] = restore_data->Clone();
+
+    for (auto it = restore_data->app_id_to_launch_list().begin();
+         it != restore_data->app_id_to_launch_list().end(); it++) {
+      for (auto data_it = it->second.begin(); data_it != it->second.end();
+           data_it++) {
+        window_id_to_app_restore_info_[data_it->first] =
+            std::make_pair(profile_path, it->first);
+      }
+    }
+  }
 
   std::move(callback).Run(std::move(restore_data));
 }

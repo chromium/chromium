@@ -9,6 +9,7 @@
 #include "components/account_id/account_id.h"
 #include "components/full_restore/app_launch_info.h"
 #include "components/full_restore/full_restore_info.h"
+#include "components/full_restore/full_restore_read_handler.h"
 #include "components/full_restore/full_restore_save_handler.h"
 #include "components/full_restore/window_info.h"
 
@@ -37,11 +38,7 @@ std::unique_ptr<WindowInfo> GetWindowInfo(aura::Window* window) {
   if (!ash::features::IsFullRestoreEnabled())
     return nullptr;
 
-  auto window_info = std::make_unique<WindowInfo>();
-
-  // TODO(crbug.com/1146900): Get the window information from the full restore
-  // file.
-  return window_info;
+  return FullRestoreReadHandler::GetInstance()->GetWindowInfo(window);
 }
 
 bool ShouldRestore(const AccountId& account_id) {

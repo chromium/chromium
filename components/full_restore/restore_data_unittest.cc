@@ -356,4 +356,40 @@ TEST_F(RestoreDataTest, ConvertNullData) {
   EXPECT_TRUE(app_id_to_launch_list(*restore_data).empty());
 }
 
+TEST_F(RestoreDataTest, GetWindowInfo) {
+  // The app id and window id doesn't exist;
+  auto window_info = restore_data().GetWindowInfo(kAppId1, kWindowId1);
+  EXPECT_FALSE(window_info);
+
+  // Add the app launch info, but do not modify the window info.
+  AddAppLaunchInfos();
+  window_info = restore_data().GetWindowInfo(kAppId1, kWindowId1);
+  EXPECT_TRUE(window_info);
+  EXPECT_FALSE(window_info->activation_index.has_value());
+  EXPECT_FALSE(window_info->desk_id.has_value());
+  EXPECT_FALSE(window_info->restore_bounds.has_value());
+  EXPECT_FALSE(window_info->current_bounds.has_value());
+  EXPECT_FALSE(window_info->window_state_type.has_value());
+
+  // Modify the window info.
+  ModifyWindowInfos();
+  window_info = restore_data().GetWindowInfo(kAppId1, kWindowId1);
+  EXPECT_TRUE(window_info);
+
+  EXPECT_TRUE(window_info->activation_index.has_value());
+  EXPECT_EQ(kActivationIndex1, window_info->activation_index.value());
+
+  EXPECT_TRUE(window_info->desk_id.has_value());
+  EXPECT_EQ(kDeskId1, window_info->desk_id.value());
+
+  EXPECT_TRUE(window_info->restore_bounds.has_value());
+  EXPECT_EQ(kRestoreBounds1, window_info->restore_bounds.value());
+
+  EXPECT_TRUE(window_info->current_bounds.has_value());
+  EXPECT_EQ(kCurrentBounds1, window_info->current_bounds.value());
+
+  EXPECT_TRUE(window_info->window_state_type.has_value());
+  EXPECT_EQ(kWindowStateType1, window_info->window_state_type.value());
+}
+
 }  // namespace full_restore

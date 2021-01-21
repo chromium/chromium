@@ -59,6 +59,9 @@ struct COMPONENT_EXPORT(FULL_RESTORE) AppRestoreData {
   // Modify the window's information based on |window_info|.
   void ModifyWindowInfo(const WindowInfo& window_info);
 
+  // Gets the window information.
+  std::unique_ptr<WindowInfo> GetWindowInfo();
+
   // App launch parameters.
   base::Optional<int32_t> event_flag;
   base::Optional<int32_t> container;

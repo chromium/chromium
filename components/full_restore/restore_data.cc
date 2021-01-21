@@ -121,4 +121,18 @@ void RestoreData::RemoveApp(const std::string& app_id) {
   app_id_to_launch_list_.erase(app_id);
 }
 
+std::unique_ptr<WindowInfo> RestoreData::GetWindowInfo(
+    const std::string& app_id,
+    int window_id) {
+  auto it = app_id_to_launch_list_.find(app_id);
+  if (it == app_id_to_launch_list_.end())
+    return nullptr;
+
+  auto data_it = it->second.find(window_id);
+  if (data_it == it->second.end())
+    return nullptr;
+
+  return data_it->second->GetWindowInfo();
+}
+
 }  // namespace full_restore
