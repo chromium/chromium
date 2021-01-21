@@ -790,8 +790,6 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_arm64_rel.chrome_public_test_apk.filter', # https://crbug.com/1010211
         ],
-        # TODO(crbug.com/1111436): Remove experimental when it works fine.
-        'experiment_percentage': 100,
       },
       'android-pie-x86-rel': {
         'args': [
