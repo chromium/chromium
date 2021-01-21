@@ -17,6 +17,8 @@ class PrefService;
 namespace chromeos {
 
 class AutoConnectHandler;
+class CellularInhibitor;
+class CellularMetricsLogger;
 class ClientCertResolver;
 class GeolocationHandler;
 class ManagedNetworkConfigurationHandler;
@@ -34,7 +36,6 @@ class NetworkStateHandler;
 class NetworkSmsHandler;
 class ProhibitedTechnologiesHandler;
 class UIProxyConfigService;
-class CellularMetricsLogger;
 
 // Class for handling initialization and access to chromeos network handlers.
 // This class should NOT be used in unit tests. Instead, construct individual
@@ -76,6 +77,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkHandler {
   // explicit so that classes can be constructed explicitly in tests without
   // NetworkHandler.
   AutoConnectHandler* auto_connect_handler();
+  CellularInhibitor* cellular_inhibitor();
   NetworkStateHandler* network_state_handler();
   NetworkDeviceHandler* network_device_handler();
   NetworkProfileHandler* network_profile_handler();
@@ -103,6 +105,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkHandler {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   std::unique_ptr<NetworkStateHandler> network_state_handler_;
   std::unique_ptr<NetworkDeviceHandlerImpl> network_device_handler_;
+  std::unique_ptr<CellularInhibitor> cellular_inhibitor_;
   std::unique_ptr<NetworkProfileHandler> network_profile_handler_;
   std::unique_ptr<NetworkConfigurationHandler> network_configuration_handler_;
   std::unique_ptr<ManagedNetworkConfigurationHandlerImpl>

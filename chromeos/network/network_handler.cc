@@ -6,6 +6,7 @@
 
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/network/auto_connect_handler.h"
+#include "chromeos/network/cellular_inhibitor.h"
 #include "chromeos/network/cellular_metrics_logger.h"
 #include "chromeos/network/client_cert_resolver.h"
 #include "chromeos/network/geolocation_handler.h"
@@ -34,6 +35,7 @@ NetworkHandler::NetworkHandler()
     : task_runner_(base::ThreadTaskRunnerHandle::Get()) {
   network_state_handler_.reset(new NetworkStateHandler());
   network_device_handler_.reset(new NetworkDeviceHandlerImpl());
+  cellular_inhibitor_.reset(new CellularInhibitor());
   network_profile_handler_.reset(new NetworkProfileHandler());
   network_configuration_handler_.reset(new NetworkConfigurationHandler());
   managed_network_configuration_handler_.reset(
@@ -59,6 +61,8 @@ NetworkHandler::~NetworkHandler() {
 void NetworkHandler::Init() {
   network_state_handler_->InitShillPropertyHandler();
   network_device_handler_->Init(network_state_handler_.get());
+  cellular_inhibitor_->Init(network_state_handler_.get(),
+                            network_device_handler_.get());
   network_profile_handler_->Init();
   network_configuration_handler_->Init(network_state_handler_.get(),
                                        network_device_handler_.get());
@@ -150,6 +154,10 @@ NetworkStateHandler* NetworkHandler::network_state_handler() {
 
 AutoConnectHandler* NetworkHandler::auto_connect_handler() {
   return auto_connect_handler_.get();
+}
+
+CellularInhibitor* NetworkHandler::cellular_inhibitor() {
+  return cellular_inhibitor_.get();
 }
 
 NetworkDeviceHandler* NetworkHandler::network_device_handler() {

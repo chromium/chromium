@@ -38,6 +38,8 @@ component("network") {
   sources = [
     "auto_connect_handler.cc",
     "auto_connect_handler.h",
+    "cellular_inhibitor.cc",
+    "cellular_inhibitor.h",
     "cellular_metrics_logger.cc",
     "cellular_metrics_logger.h",
     "certificate_helper.cc",
@@ -238,6 +240,7 @@ source_set("unit_tests") {
   ]
   sources = [
     "auto_connect_handler_unittest.cc",
+    "cellular_inhibitor_unittest.cc",
     "cellular_metrics_logger_unittest.cc",
     "certificate_helper_unittest.cc",
     "client_cert_resolver_unittest.cc",
