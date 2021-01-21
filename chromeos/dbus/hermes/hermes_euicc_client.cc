@@ -22,18 +22,13 @@ namespace chromeos {
 
 namespace {
 HermesEuiccClient* g_instance = nullptr;
-
-// TODO(1093185) Update with constants from cros_system_api when it uprevs.
-const char kEidProperty[] = "Eid";
-const char kRequestInstalledProfiles[] = "RequestInstalledProfiles";
-const char kRequestPendingProfiles[] = "RequestPendingProfiles";
 }  // namespace
 
 HermesEuiccClient::Properties::Properties(
     dbus::ObjectProxy* object_proxy,
     const PropertyChangedCallback& callback)
     : dbus::PropertySet(object_proxy, hermes::kHermesEuiccInterface, callback) {
-  RegisterProperty(kEidProperty, &eid_);
+  RegisterProperty(hermes::euicc::kEidProperty, &eid_);
   RegisterProperty(hermes::euicc::kIsActiveProperty, &is_active_);
   RegisterProperty(hermes::euicc::kInstalledProfilesProperty,
                    &installed_carrier_profiles_);
@@ -90,7 +85,7 @@ class HermesEuiccClientImpl : public HermesEuiccClient {
   void RequestInstalledProfiles(const dbus::ObjectPath& euicc_path,
                                 HermesResponseCallback callback) override {
     dbus::MethodCall method_call(hermes::kHermesEuiccInterface,
-                                 kRequestInstalledProfiles);
+                                 hermes::euicc::kRequestInstalledProfiles);
     dbus::ObjectProxy* object_proxy = GetOrCreateProperties(euicc_path).first;
     object_proxy->CallMethodWithErrorResponse(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
@@ -101,7 +96,7 @@ class HermesEuiccClientImpl : public HermesEuiccClient {
   void RequestPendingProfiles(const dbus::ObjectPath& euicc_path,
                               HermesResponseCallback callback) override {
     dbus::MethodCall method_call(hermes::kHermesEuiccInterface,
-                                 kRequestPendingProfiles);
+                                 hermes::euicc::kRequestPendingProfiles);
     dbus::ObjectProxy* object_proxy = GetOrCreateProperties(euicc_path).first;
     object_proxy->CallMethodWithErrorResponse(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
