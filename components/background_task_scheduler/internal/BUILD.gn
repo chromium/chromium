@@ -34,7 +34,7 @@ if (is_android) {
       "//base:base_java",
       "//components/background_task_scheduler:background_task_scheduler_task_ids_java",
       "//components/background_task_scheduler:public_java",
-      "//content/public/android:content_java",
+      "//content/public/android:content_main_dex_java",
       "//third_party/android_deps:androidx_annotation_annotation_java",
       "//third_party/android_deps:chromium_play_services_availability_java",
       "//third_party/android_deps:protobuf_lite_runtime_java",

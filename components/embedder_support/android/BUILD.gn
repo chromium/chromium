@@ -49,7 +49,7 @@ android_library("util_java") {
     "//base:base_java",
     "//base:jni_java",
     "//components/url_formatter/android:url_formatter_java",
-    "//content/public/android:content_java",
+    "//content/public/android:content_main_dex_java",
     "//net/android:net_java",
     "//third_party/android_deps:androidx_annotation_annotation_java",
     "//third_party/android_deps:androidx_core_core_java",

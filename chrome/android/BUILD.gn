@@ -2223,7 +2223,8 @@ android_library("base_module_java") {
     "//components/version_info/android:version_constants_java",
     "//components/viz/common:common_java",
     "//components/viz/service:service_java",
-    "//content/public/android:content_java",
+    "//content/public/android:content_main_dex_java",
+    "//media/base/android:media_java",
 
     # Deps for DFMs.
     "//chrome/android/modules/extra_icu/provider:java",
@@ -2245,6 +2246,10 @@ android_library("base_module_java") {
   }
 
   srcjar_deps = [ ":chrome_product_config" ]
+
+  # If this throws an error, try depending on
+  # //content/public/android:content_main_dex_java instead.
+  assert_no_deps = [ "//content/public/android:content_full_java" ]
 
   # Add the actual implementation where necessary so that downstream targets
   # can provide their own implementations.

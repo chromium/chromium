@@ -84,7 +84,7 @@ if (is_android) {
     deps = [
       ":background_task_scheduler_task_ids_java",
       "//base:base_java",
-      "//content/public/android:content_java",
+      "//content/public/android:content_main_dex_java",
       "//third_party/android_deps:androidx_annotation_annotation_java",
     ]
   }
