@@ -135,6 +135,23 @@ void AddAppManagementStrings(content::WebUIDataSource* html_source) {
   AddLocalizedStringsBulk(html_source, kLocalizedStrings);
 }
 
+void AddGuestOsStrings(content::WebUIDataSource* html_source) {
+  // These strings are used for both Crostini and Plugin VM.
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"guestOsSharedUsbDevicesLabel",
+       IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_LABEL},
+      {"guestOsSharedUsbDevicesExtraDescription",
+       IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_EXTRA_DESCRIPTION},
+      {"guestOsSharedUsbDevicesListEmptyMessage",
+       IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_LIST_EMPTY_MESSAGE},
+      {"guestOsSharedUsbDevicesInUse",
+       IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_IN_USE},
+      {"guestOsSharedUsbDevicesReassign",
+       IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_REASSIGN},
+  };
+  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+}
+
 bool ShowPluginVm(const Profile* profile, const PrefService& pref_service) {
   // Even if not allowed, we still want to show Plugin VM if the VM image is on
   // disk, so that users are still able to delete the image at will.
@@ -197,6 +214,7 @@ void AppsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       AppManagementPageHandler::IsCurrentArcVersionSupported(profile()));
 
   AddAppManagementStrings(html_source);
+  AddGuestOsStrings(html_source);
   AddAndroidAppStrings(html_source);
   AddPluginVmLoadTimeData(html_source);
 }
@@ -254,7 +272,7 @@ void AppsSection::RegisterHierarchy(HierarchyGenerator* generator) const {
                                    mojom::SearchResultDefaultRank::kMedium,
                                    mojom::kPluginVmSharedPathsSubpagePath);
   generator->RegisterNestedSubpage(
-      IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_USB_DEVICES_LABEL,
+      IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_LABEL,
       mojom::Subpage::kPluginVmUsbPreferences, mojom::Subpage::kAppManagement,
       mojom::SearchResultIcon::kAppsGrid,
       mojom::SearchResultDefaultRank::kMedium,
@@ -328,18 +346,8 @@ void AppsSection::AddPluginVmLoadTimeData(
        IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_PATHS_REMOVE_FAILURE_TRY_AGAIN},
       {"pluginVmSharedPathsListEmptyMessage",
        IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_PATHS_LIST_EMPTY_MESSAGE},
-      {"pluginVmSharedUsbDevicesLabel",
-       IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_USB_DEVICES_LABEL},
       {"pluginVmSharedUsbDevicesDescription",
        IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_USB_DEVICES_DESCRIPTION},
-      {"pluginVmSharedUsbDevicesExtraDescription",
-       IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_USB_DEVICES_EXTRA_DESCRIPTION},
-      {"pluginVmSharedUsbDevicesListEmptyMessage",
-       IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_USB_DEVICES_LIST_EMPTY_MESSAGE},
-      {"pluginVmSharedUsbDevicesInUse",
-       IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_USB_DEVICES_IN_USE},
-      {"pluginVmSharedUsbDevicesReassign",
-       IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_USB_DEVICES_REASSIGN},
       {"pluginVmPermissionDialogCameraLabel",
        IDS_SETTINGS_APPS_PLUGIN_VM_PERMISSION_DIALOG_CAMERA_LABEL},
       {"pluginVmPermissionDialogMicrophoneLabel",

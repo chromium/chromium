@@ -14,7 +14,6 @@ let crostiniBrowserProxy = null;
 function setCrostiniPrefs(enabled, optional = {}) {
   const {
     sharedPaths = {},
-    sharedUsbDevices = [],
     forwardedPorts = [],
     crostiniMicSharingEnabled = false,
     arcEnabled = false,
@@ -31,7 +30,6 @@ function setCrostiniPrefs(enabled, optional = {}) {
       paths_shared_to_vms: {value: sharedPaths},
     },
   };
-  guestOsBrowserProxy.sharedUsbDevices = sharedUsbDevices;
   crostiniBrowserProxy.crostiniMicSharingEnabled = crostiniMicSharingEnabled;
   Polymer.dom.flush();
 }
@@ -1060,99 +1058,42 @@ suite('CrostiniPageTests', function() {
     });
   });
 
+  // Functionality is already tested in OSSettingsGuestOsSharedUsbDevicesTest,
+  // so just check that we correctly set up the page for our 'termina' VM.
   suite('SubPageSharedUsbDevices', function() {
     let subpage;
 
     setup(async function() {
-      setCrostiniPrefs(true, {
-        sharedUsbDevices: [
-          {
-            guid: '0001',
-            name: 'usb_dev1',
-            sharedWith: 'otherVm',
-            promptBeforeSharing: false
-          },
-          {
-            guid: '0002',
-            name: 'usb_dev2',
-            sharedWith: 'termina',
-            promptBeforeSharing: false
-          },
-          {
-            guid: '0003',
-            name: 'usb_dev3',
-            sharedWith: null,
-            promptBeforeSharing: true
-          },
-        ]
-      });
+      setCrostiniPrefs(true);
+      guestOsBrowserProxy.sharedUsbDevices = [
+        {
+          guid: '0001',
+          name: 'usb_dev1',
+          sharedWith: 'termina',
+          promptBeforeSharing: false
+        },
+        {
+          guid: '0002',
+          name: 'usb_dev2',
+          sharedWith: null,
+          promptBeforeSharing: false
+        },
+      ];
 
       await test_util.flushTasks();
       settings.Router.getInstance().navigateTo(
           settings.routes.CROSTINI_SHARED_USB_DEVICES);
 
       await test_util.flushTasks();
-      subpage = crostiniPage.$$('settings-crostini-shared-usb-devices');
+      subpage = crostiniPage.$$('settings-guest-os-shared-usb-devices');
       assertTrue(!!subpage);
     });
 
     test('USB devices are shown', function() {
-      assertEquals(3, subpage.shadowRoot.querySelectorAll('.toggle').length);
-    });
-
-    test('USB shared state is updated by toggling', async function() {
-      assertTrue(!!subpage.$$('.toggle'));
-      subpage.$$('.toggle').click();
-
-      await test_util.flushTasks();
-      Polymer.dom.flush();
-
-      const args =
-          await guestOsBrowserProxy.whenCalled('setGuestOsUsbDeviceShared');
-      assertEquals('termina', args[0]);
-      assertEquals('0001', args[1]);
-      assertEquals(true, args[2]);
-
-      // Simulate a change in the underlying model.
-      cr.webUIListenerCallback('guest-os-shared-usb-devices-changed', [
-        {
-          guid: '0001',
-          name: 'usb_dev1',
-          sharedWith: 'termina',
-          prmoptBeforeSharing: true
-        },
-      ]);
-      Polymer.dom.flush();
-      assertEquals(1, subpage.shadowRoot.querySelectorAll('.toggle').length);
-    });
-
-    test('Show dialog for reassign', async function() {
       const items = subpage.shadowRoot.querySelectorAll('.toggle');
-      assertEquals(3, items.length);
-
-      // Clicking on item[2] should show dialog.
-      assertFalse(!!subpage.$$('#reassignDialog'));
-      items[2].click();
-      Polymer.dom.flush();
-      assertTrue(subpage.$$('#reassignDialog').open);
-
-      // Clicking cancel will close the dialog.
-      subpage.$$('#cancel').click();
-      Polymer.dom.flush();
-      assertFalse(!!subpage.$$('#reassignDialog'));
-
-      // Clicking continue will call the proxy and close the dialog.
-      items[2].click();
-      Polymer.dom.flush();
-      assertTrue(subpage.$$('#reassignDialog').open);
-      subpage.$$('#continue').click();
-      Polymer.dom.flush();
-      assertFalse(!!subpage.$$('#reassignDialog'));
-      const args =
-          await guestOsBrowserProxy.whenCalled('setGuestOsUsbDeviceShared');
-      assertEquals('termina', args[0]);
-      assertEquals('0003', args[1]);
-      assertEquals(true, args[2]);
+      assertEquals(2, items.length);
+      assertTrue(items[0].checked);
+      assertFalse(items[1].checked);
     });
   });
 

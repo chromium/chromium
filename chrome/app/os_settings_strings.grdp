@@ -1294,6 +1294,23 @@ Press an assigned switch to remove assignment.
     Primary account
   </message>
 
+  <!-- Used by both Crostini and Plugin VM -->
+  <message name="IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_LABEL" desc="Label for managing shared USB devices.">
+    Manage USB devices
+  </message>
+  <message name="IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_EXTRA_DESCRIPTION" desc="Extra description for managing shared USB devices.">
+    Only supported devices are shown.
+  </message>
+  <message name="IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_LIST_EMPTY_MESSAGE" desc="Message shown when there are no avaiable USB devices.">
+    Available USB devices will appear here.
+  </message>
+  <message name="IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_IN_USE" desc="Dialog title describing that a USB device is currently in use.">
+    Device in use
+  </message>
+  <message name="IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_REASSIGN" desc="Confirmation explaining to users that reassigning a USB device from being attached from one VM to another could cause errors.">
+     "<ph name="USB_DEVICE_NAME">$1<ex>Nexus 5</ex></ph>" is in use. Reassigning the device while it's in use could cause errors. Are you sure you want to continue?
+  </message>
+
   <!-- Crostini -->
   <message name="IDS_SETTINGS_CROSTINI_TITLE" desc="The title of Crostini section. It is meant to be used by software developers.">
     Developers
@@ -1355,23 +1372,8 @@ Press an assigned switch to remove assignment.
   <message name="IDS_SETTINGS_CROSTINI_REMOVE_BUTTON" desc="Label for the button to open a dialog confirming removal of Crostini.">
     Remove
   </message>
-  <message name="IDS_SETTINGS_CROSTINI_SHARED_USB_DEVICES_LABEL" desc="Label for managing shared USB devices.">
-    Manage USB devices
-  </message>
   <message name="IDS_SETTINGS_CROSTINI_SHARED_USB_DEVICES_DESCRIPTION" desc="Description for managing shared USB devices.">
     Give Linux apps permission to access USB devices. Linux won't remember a USB device after it's removed.
-  </message>
-  <message name="IDS_SETTINGS_CROSTINI_SHARED_USB_DEVICES_EXTRA_DESCRIPTION" desc="Extra description for managing shared USB devices.">
-    Only supported devices are shown.
-  </message>
-  <message name="IDS_SETTINGS_CROSTINI_SHARED_USB_DEVICES_LIST_EMPTY_MESSAGE" desc="Message shown when there are no avaiable USB devices.">
-    Available USB devices will appear here.
-  </message>
-  <message name="IDS_SETTINGS_CROSTINI_SHARED_USB_DEVICES_IN_USE" desc="Dialog title describing that a USB device is currently in use.">
-    Device in use
-  </message>
-  <message name="IDS_SETTINGS_CROSTINI_SHARED_USB_DEVICES_REASSIGN" desc="Confirmation explaining to users that reassigning a USB device from being attached from one VM to another could cause errors.">
-     "<ph name="USB_DEVICE_NAME">$1<ex>Nexus 5</ex></ph>" is in use. Reassigning the device while it's in use could cause errors. Are you sure you want to continue?
   </message>
   <message name="IDS_SETTINGS_CROSTINI_ARC_ADB_TITLE" desc="Title of ARC ADB sideloading section.">
     Develop Android apps
@@ -3401,23 +3403,8 @@ Press an assigned switch to remove assignment.
   <message name="IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_PATHS_LIST_EMPTY_MESSAGE" desc="Message shown when the user has not yet shared any folders in Parallels.">
     Shared folders will appear here
   </message>
-  <message name="IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_USB_DEVICES_LABEL" desc="Label for managing shared USB devices.">
-    Manage USB devices
-  </message>
   <message name="IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_USB_DEVICES_DESCRIPTION" desc="Description for managing shared USB devices. Do not translate 'Parallels Desktop'.">
     Give Parallels Desktop permission to access USB devices. Parallels Desktop won't remember a USB device after it's removed.
-  </message>
-  <message name="IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_USB_DEVICES_EXTRA_DESCRIPTION" desc="Extra description for managing shared USB devices.">
-    Only supported devices are shown.
-  </message>
-  <message name="IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_USB_DEVICES_LIST_EMPTY_MESSAGE" desc="Message shown when there are no avaiable USB devices.">
-    Available USB devices will appear here.
-  </message>
-  <message name="IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_USB_DEVICES_IN_USE" desc="Dialog title describing that a USB device is currently in use.">
-    Device in use
-  </message>
-  <message name="IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_USB_DEVICES_REASSIGN" desc="Confirmation explaining to users that reassigning a USB device from being attached from one VM to another could cause errors.">
-     "<ph name="USB_DEVICE_NAME">$1<ex>Nexus 5</ex></ph>" is in use. Reassigning the device while it's in use could cause errors. Are you sure you want to continue?
   </message>
 
   <!-- Storage -->

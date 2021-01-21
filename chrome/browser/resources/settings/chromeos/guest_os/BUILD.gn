@@ -8,11 +8,21 @@ import("//ui/webui/resources/tools/js_modulizer.gni")
 import("../os_settings.gni")
 
 js_type_check("closure_compile") {
-  deps = [ ":guest_os_browser_proxy" ]
+  deps = [
+    ":guest_os_browser_proxy",
+    ":guest_os_shared_usb_devices",
+  ]
 }
 
 js_library("guest_os_browser_proxy") {
   deps = [ "//ui/webui/resources/js:cr" ]
+}
+
+js_library("guest_os_shared_usb_devices") {
+  deps = [
+    ":guest_os_browser_proxy",
+    "..:metrics_recorder",
+  ]
 }
 
 js_type_check("closure_compile_module") {
@@ -29,8 +39,25 @@ js_library("guest_os_browser_proxy.m") {
   extra_deps = [ ":modulize" ]
 }
 
+js_library("guest_os_shared_usb_devices.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/guest_os/guest_os_shared_usb_devices.m.js" ]
+  deps = [
+    # TODO: Fill those in.
+  ]
+  extra_deps = [ ":guest_os_shared_usb_devices_module" ]
+}
+
 group("polymer3_elements") {
-  public_deps = [ ":modulize" ]
+  public_deps = [
+    ":guest_os_shared_usb_devices_module",
+    ":modulize",
+  ]
+}
+
+polymer_modulizer("guest_os_shared_usb_devices") {
+  js_file = "guest_os_shared_usb_devices.js"
+  html_file = "guest_os_shared_usb_devices.html"
+  html_type = "dom-module"
 }
 
 js_modulizer("modulize") {

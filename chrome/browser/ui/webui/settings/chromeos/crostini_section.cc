@@ -265,18 +265,8 @@ void CrostiniSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"crostiniImportConfirmationDialogConfirmationButton",
        IDS_SETTINGS_CROSTINI_IMPORT},
       {"crostiniRemoveButton", IDS_SETTINGS_CROSTINI_REMOVE_BUTTON},
-      {"crostiniSharedUsbDevicesLabel",
-       IDS_SETTINGS_CROSTINI_SHARED_USB_DEVICES_LABEL},
       {"crostiniSharedUsbDevicesDescription",
        IDS_SETTINGS_CROSTINI_SHARED_USB_DEVICES_DESCRIPTION},
-      {"crostiniSharedUsbDevicesExtraDescription",
-       IDS_SETTINGS_CROSTINI_SHARED_USB_DEVICES_EXTRA_DESCRIPTION},
-      {"crostiniSharedUsbDevicesListEmptyMessage",
-       IDS_SETTINGS_CROSTINI_SHARED_USB_DEVICES_LIST_EMPTY_MESSAGE},
-      {"crostiniSharedUsbDevicesInUse",
-       IDS_SETTINGS_CROSTINI_SHARED_USB_DEVICES_IN_USE},
-      {"crostiniSharedUsbDevicesReassign",
-       IDS_SETTINGS_CROSTINI_SHARED_USB_DEVICES_REASSIGN},
       {"crostiniArcAdbTitle", IDS_SETTINGS_CROSTINI_ARC_ADB_TITLE},
       {"crostiniArcAdbDescription", IDS_SETTINGS_CROSTINI_ARC_ADB_DESCRIPTION},
       {"crostiniArcAdbLabel", IDS_SETTINGS_CROSTINI_ARC_ADB_LABEL},
@@ -491,7 +481,7 @@ void CrostiniSection::RegisterHierarchy(HierarchyGenerator* generator) const {
 
   // USB preferences.
   generator->RegisterNestedSubpage(
-      IDS_SETTINGS_CROSTINI_SHARED_USB_DEVICES_LABEL,
+      IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_LABEL,
       mojom::Subpage::kCrostiniUsbPreferences, mojom::Subpage::kCrostiniDetails,
       mojom::SearchResultIcon::kPenguin,
       mojom::SearchResultDefaultRank::kMedium,

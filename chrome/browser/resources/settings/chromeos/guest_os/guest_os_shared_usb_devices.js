@@ -4,16 +4,24 @@
 
 /**
  * @fileoverview
- * 'plugin-vm-shared-usb-devices' is the settings shared usb devices subpage for
- * Plugin VM.
+ * 'guest-os-shared-usb-devices' is the settings shared usb devices subpage for
+ * guest OSes.
  */
 
+const CROSTINI_TYPE = 'crostini';
+const PLUGIN_VM_TYPE = 'pluginVm';
+
 Polymer({
-  is: 'settings-plugin-vm-shared-usb-devices',
+  is: 'settings-guest-os-shared-usb-devices',
 
   behaviors: [I18nBehavior, WebUIListenerBehavior],
 
   properties: {
+    /**
+     * The type of Guest OS to share with. Should be 'crostini' or 'pluginVm'.
+     */
+    guestOsType: String,
+
     /**
      * The USB Devices available for connection to a VM.
      * @private {Array<{shared: boolean, device: !GuestOsSharedUsbDevice}>}
@@ -30,13 +38,6 @@ Polymer({
       value: null,
     },
   },
-
-  /**
-   * The Plugin VM is named 'PvmDefault'.
-   * https://cs.chromium.org/chromium/src/chrome/browser/chromeos/plugin_vm/plugin_vm_util.h?q=kPluginVmName
-   * @private {string}
-   */
-  vmName_: 'PvmDefault',
 
   /** @private {settings.GuestOsBrowserProxy} */
   browserProxy_: null,
@@ -56,7 +57,7 @@ Polymer({
    */
   onGuestOsSharedUsbDevicesChanged_(devices) {
     this.sharedUsbDevices_ = devices.map((device) => {
-      return {shared: device.sharedWith === this.vmName_, device: device};
+      return {shared: device.sharedWith === this.vmName_(), device: device};
     });
   },
 
@@ -73,7 +74,7 @@ Polymer({
       return;
     }
     this.browserProxy_.setGuestOsUsbDeviceShared(
-        this.vmName_, device.guid, event.target.checked);
+        this.vmName_(), device.guid, event.target.checked);
     settings.recordSettingChange();
   },
 
@@ -85,16 +86,33 @@ Polymer({
   /** @private */
   onReassignContinueClick_() {
     this.browserProxy_.setGuestOsUsbDeviceShared(
-        this.vmName_, this.reassignDevice_.guid, true);
+        this.vmName_(), this.reassignDevice_.guid, true);
     this.reassignDevice_ = null;
     settings.recordSettingChange();
   },
 
   /**
+   * @private
+   * @return {string} The name of the VM to share devices with.
+   */
+  vmName_() {
+    return {crostini: 'termina', pluginVm: 'PvmDefault'}[this.guestOsType];
+  },
+
+  /**
+   * @private
+   * @return {string} Description for the page.
+   */
+  getDescriptionText_() {
+    return this.i18n(this.guestOsType + 'SharedUsbDevicesDescription');
+  },
+
+  /**
    * @param {!GuestOsSharedUsbDevice} device USB device.
    * @private
+   * @return {string} Confirmation prompt text.
    */
   getReassignDialogText_(device) {
-    return this.i18n('pluginVmSharedUsbDevicesReassign', device.label);
+    return this.i18n('guestOsSharedUsbDevicesReassign', device.label);
   },
 });

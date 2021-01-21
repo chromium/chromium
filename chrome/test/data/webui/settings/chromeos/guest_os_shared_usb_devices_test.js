@@ -26,7 +26,7 @@ class TestGuestOsBrowserProxy extends TestBrowserProxy {
 }
 
 suite('SharedUsbDevices', function() {
-  /** @type {?SettingsPluginVmSharedUsbDevicesElement} */
+  /** @type {?SettingsGuestOsSharedUsbDevicesElement} */
   let page = null;
 
   /** @type {?TestGuestOsBrowserProxy} */
@@ -56,7 +56,8 @@ suite('SharedUsbDevices', function() {
     ];
     settings.GuestOsBrowserProxyImpl.instance_ = guestOsBrowserProxy;
     PolymerTest.clearBody();
-    page = document.createElement('settings-plugin-vm-shared-usb-devices');
+    page = document.createElement('settings-guest-os-shared-usb-devices');
+    page.guestOsType = 'pluginVm';
     document.body.appendChild(page);
     await test_util.flushTasks();
   });
