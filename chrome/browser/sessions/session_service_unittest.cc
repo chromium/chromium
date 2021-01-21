@@ -15,6 +15,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
+#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/sessions/session_service_log.h"
 #include "chrome/browser/sessions/session_service_test_helper.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/url_constants.h"
@@ -80,6 +82,16 @@ class SessionServiceTest : public BrowserWithTestWindowTest {
   void TearDown() override {
     DestroySessionService();
     BrowserWithTestWindowTest::TearDown();
+  }
+
+  base::Optional<SessionServiceEvent> FindMostRecentEventOfType(
+      SessionServiceEventLogType type) {
+    auto events = GetSessionServiceEvents(browser()->profile());
+    for (auto i = events.rbegin(); i != events.rend(); ++i) {
+      if (i->type == type)
+        return *i;
+    }
+    return base::nullopt;
   }
 
   void DestroySessionService() {
@@ -1339,4 +1351,21 @@ TEST_F(SessionServiceTest, GetSessionsAndDestroy) {
   session_service_.reset();
   flag.Set();
   run_loop.Run();
+}
+
+TEST_F(SessionServiceTest, LogExit) {
+  EXPECT_FALSE(FindMostRecentEventOfType(SessionServiceEventLogType::kExit));
+  helper_.SetHasOpenTrackableBrowsers(false);
+  service()->WindowClosing(window_id);
+  auto exit_event =
+      FindMostRecentEventOfType(SessionServiceEventLogType::kExit);
+  ASSERT_TRUE(exit_event);
+  EXPECT_EQ(1, exit_event->data.exit.window_count);
+  EXPECT_EQ(browser()->tab_strip_model()->count(),
+            exit_event->data.exit.tab_count);
+
+  // Create another window, which should remove the exit.
+  SessionID window2_id = SessionID::NewUnique();
+  service()->SetWindowType(window2_id, Browser::TYPE_NORMAL);
+  EXPECT_FALSE(FindMostRecentEventOfType(SessionServiceEventLogType::kExit));
 }

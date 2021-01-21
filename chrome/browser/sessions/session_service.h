@@ -30,6 +30,8 @@
 #include "components/sessions/core/tab_restore_service_client.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "content/public/browser/notification_observer.h"
+#include "content/public/browser/notification_registrar.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ui_base_types.h"
 
@@ -69,7 +71,8 @@ struct SessionWindow;
 class SessionService : public sessions::CommandStorageManagerDelegate,
                        public sessions::SessionTabHelperDelegate,
                        public KeyedService,
-                       public BrowserListObserver {
+                       public BrowserListObserver,
+                       public content::NotificationObserver {
   friend class SessionServiceTestHelper;
  public:
   // Creates a SessionService for the specified profile.
@@ -248,6 +251,11 @@ class SessionService : public sessions::CommandStorageManagerDelegate,
   bool RestoreIfNecessary(const std::vector<GURL>& urls_to_open,
                           Browser* browser);
 
+  // content::NotificationObserver.
+  void Observe(int type,
+               const content::NotificationSource& source,
+               const content::NotificationDetails& details) override;
+
   // BrowserListObserver
   void OnBrowserAdded(Browser* browser) override {}
   void OnBrowserRemoved(Browser* browser) override {}
@@ -332,6 +340,14 @@ class SessionService : public sessions::CommandStorageManagerDelegate,
   bool GetAvailableRangeForTest(const SessionID& tab_id,
                                 std::pair<int, int>* range);
 
+  // If necessary, removes the current exit event and adds a new one. This
+  // does nothing if `pending_window_close_ids_` is empty, which means the user
+  // is potentially closing the last browser.
+  void LogExitEvent();
+
+  // If an exit event was logged, it is removed.
+  void RemoveExitEvent();
+
   // The profile. This may be null during testing.
   Profile* profile_;
 
@@ -395,6 +411,10 @@ class SessionService : public sessions::CommandStorageManagerDelegate,
   // Don't send duplicate SetSelectedTabInWindow commands when the selected
   // tab's index hasn't changed.
   std::map<SessionID, int> last_selected_tab_in_window_;
+
+  content::NotificationRegistrar registrar_;
+
+  bool did_log_exit_ = false;
 
   base::WeakPtrFactory<SessionService> weak_factory_{this};
 

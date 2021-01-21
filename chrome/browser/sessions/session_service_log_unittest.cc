@@ -91,3 +91,23 @@ TEST_F(SessionServiceLogTest, WriteErrorEventsCoalesce) {
   EXPECT_LE(start_time, restored_event.time);
   EXPECT_EQ(2, restored_event.data.write_error.error_count);
 }
+
+TEST_F(SessionServiceLogTest, RemoveLastSessionServiceEventOfType) {
+  LogSessionServiceExitEvent(&testing_profile_, 1, 2);
+  LogSessionServiceWriteErrorEvent(&testing_profile_);
+  LogSessionServiceExitEvent(&testing_profile_, 2, 3);
+  LogSessionServiceWriteErrorEvent(&testing_profile_);
+  RemoveLastSessionServiceEventOfType(&testing_profile_,
+                                      SessionServiceEventLogType::kExit);
+  auto events = GetSessionServiceEvents(&testing_profile_);
+  ASSERT_EQ(3u, events.size());
+  auto exit_event = *events.begin();
+  EXPECT_EQ(SessionServiceEventLogType::kExit, exit_event.type);
+  EXPECT_EQ(1, exit_event.data.exit.window_count);
+  EXPECT_EQ(2, exit_event.data.exit.tab_count);
+  auto iter = events.begin();
+  ++iter;
+  EXPECT_EQ(SessionServiceEventLogType::kWriteError, iter->type);
+  ++iter;
+  EXPECT_EQ(SessionServiceEventLogType::kWriteError, iter->type);
+}

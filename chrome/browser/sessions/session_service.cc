@@ -23,6 +23,7 @@
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/background/background_mode_manager.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
@@ -32,6 +33,7 @@
 #include "chrome/browser/sessions/session_common_utils.h"
 #include "chrome/browser/sessions/session_data_deleter.h"
 #include "chrome/browser/sessions/session_restore.h"
+#include "chrome/browser/sessions/session_service_log.h"
 #include "chrome/browser/sessions/session_service_utils.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -53,6 +55,7 @@
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/notification_service.h"
 #include "content/public/browser/session_storage_namespace.h"
 #include "content/public/browser/web_contents.h"
 
@@ -108,6 +111,11 @@ SessionService::SessionService(const base::FilePath& save_path)
 }
 
 SessionService::~SessionService() {
+  // Certain code paths explicitly destroy the SessionService as part of
+  // shutdown.
+  if (!did_log_exit_)
+    LogExitEvent();
+
   // The BrowserList should outlive the SessionService since it's static and
   // the SessionService is a KeyedService.
   BrowserList::RemoveObserver(this);
@@ -322,10 +330,12 @@ void SessionService::WindowClosing(const SessionID& window_id) {
       }
     }
   }
-  if (use_pending_close)
+  if (use_pending_close) {
+    LogExitEvent();
     pending_window_close_ids_.insert(window_id);
-  else
+  } else {
     window_closing_ids_.insert(window_id);
+  }
 }
 
 void SessionService::WindowClosed(const SessionID& window_id) {
@@ -345,10 +355,12 @@ void SessionService::WindowClosed(const SessionID& window_id) {
              pending_window_close_ids_.end()) {
     // We'll hit this if user closed the last tab in a window.
     has_open_trackable_browsers_ = HasOpenTrackableBrowsers(window_id);
-    if (!has_open_trackable_browsers_)
+    if (!has_open_trackable_browsers_) {
+      LogExitEvent();
       pending_window_close_ids_.insert(window_id);
-    else
+    } else {
       ScheduleCommand(sessions::CreateWindowClosedCommand(window_id));
+    }
   }
   MaybeDeleteSessionOnlyData();
 }
@@ -597,6 +609,8 @@ void SessionService::TabNavigationPathEntriesDeleted(const SessionID& window_id,
 
 void SessionService::Init() {
   BrowserList::AddObserver(this);
+  registrar_.Add(this, chrome::NOTIFICATION_CLOSE_ALL_BROWSERS_REQUEST,
+                 content::NotificationService::AllSources());
 }
 
 bool SessionService::ShouldRestoreWindowOfType(
@@ -649,6 +663,14 @@ bool SessionService::RestoreIfNecessary(const std::vector<GURL>& urls_to_open,
     }
   }
   return false;
+}
+
+void SessionService::Observe(int type,
+                             const content::NotificationSource& source,
+                             const content::NotificationDetails& details) {
+  // NOTE: this is necessary for the session-ending code path.
+  DCHECK_EQ(type, chrome::NOTIFICATION_CLOSE_ALL_BROWSERS_REQUEST);
+  LogExitEvent();
 }
 
 void SessionService::OnBrowserSetLastActive(Browser* browser) {
@@ -859,6 +881,7 @@ void SessionService::ScheduleCommand(
   DCHECK(command);
   if (ReplacePendingCommand(command_storage_manager_.get(), &command))
     return;
+
   bool is_closing_command = IsClosingCommand(command.get());
   command_storage_manager_->ScheduleCommand(std::move(command));
   // Don't schedule a reset on tab closed/window closed. Otherwise we may
@@ -883,6 +906,8 @@ void SessionService::CommitPendingCloses() {
     ScheduleCommand(sessions::CreateWindowClosedCommand(*i));
   }
   pending_window_close_ids_.clear();
+
+  RemoveExitEvent();
 }
 
 bool SessionService::IsOnlyOneTabLeft() const {
@@ -1004,4 +1029,34 @@ bool SessionService::GetAvailableRangeForTest(const SessionID& tab_id,
 
   *range = i->second;
   return true;
+}
+
+void SessionService::LogExitEvent() {
+  if (!profile_)
+    return;
+
+  // If there are pending closes, then we have already logged the exit.
+  if (!pending_window_close_ids_.empty())
+    return;
+
+  RemoveExitEvent();
+  int browser_count = 0;
+  int tab_count = 0;
+  for (auto* browser : *BrowserList::GetInstance()) {
+    if (browser->profile() == profile_) {
+      ++browser_count;
+      tab_count += browser->tab_strip_model()->count();
+    }
+  }
+  did_log_exit_ = true;
+  LogSessionServiceExitEvent(profile_, browser_count, tab_count);
+}
+
+void SessionService::RemoveExitEvent() {
+  if (!did_log_exit_)
+    return;
+
+  RemoveLastSessionServiceEventOfType(profile_,
+                                      SessionServiceEventLogType::kExit);
+  did_log_exit_ = false;
 }

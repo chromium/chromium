@@ -68,8 +68,8 @@ bool DeserializeEvent(const base::Value& serialized_event,
   auto type = serialized_event.FindIntKey(kEventTypeKey);
   if (!type)
     return false;
-  if (*type < SessionServiceEventLogType::kMinValue ||
-      *type > SessionServiceEventLogType::kMaxValue) {
+  if (*type < static_cast<int>(SessionServiceEventLogType::kMinValue) ||
+      *type > static_cast<int>(SessionServiceEventLogType::kMaxValue)) {
     return false;
   }
   event.type = static_cast<SessionServiceEventLogType>(*type);
@@ -198,6 +198,18 @@ void LogSessionServiceWriteErrorEvent(Profile* profile) {
   LogSessionServiceEvent(profile, event);
 }
 
+void RemoveLastSessionServiceEventOfType(Profile* profile,
+                                         SessionServiceEventLogType type) {
+  std::list<SessionServiceEvent> events = GetSessionServiceEvents(profile);
+  for (auto iter = events.rbegin(); iter != events.rend(); ++iter) {
+    if (iter->type == type) {
+      events.erase(std::next(iter).base());
+      SaveEventsToPrefs(profile, events);
+      return;
+    }
+  }
+}
+
 void RegisterSessionServiceLogProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterListPref(kEventPrefKey);
@@ -211,7 +223,7 @@ void LogSessionServiceEvent(Profile* profile,
       events.back().type == SessionServiceEventLogType::kWriteError) {
     events.back().data.write_error.error_count += 1;
   } else {
-    events.push_back(std::move(event));
+    events.push_back(event);
     if (events.size() >= kMaxEventCount)
       events.erase(events.begin());
   }

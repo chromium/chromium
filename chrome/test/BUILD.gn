@@ -1333,6 +1333,7 @@ if (!is_android) {
       "../browser/sessions/closed_tab_cache_browsertest.cc",
       "../browser/sessions/session_restore_browsertest.cc",
       "../browser/sessions/session_restore_observer_browsertest.cc",
+      "../browser/sessions/session_service_log_browsertest.cc",
       "../browser/sessions/tab_restore_browsertest.cc",
       "../browser/sessions/tab_restore_service_browsertest.cc",
       "../browser/signin/e2e_tests/live_sign_in_test.cc",

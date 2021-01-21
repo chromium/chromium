@@ -37,6 +37,7 @@
 #include "chrome/browser/sessions/session_restore_delegate.h"
 #include "chrome/browser/sessions/session_service.h"
 #include "chrome/browser/sessions/session_service_factory.h"
+#include "chrome/browser/sessions/session_service_log.h"
 #include "chrome/browser/sessions/session_service_utils.h"
 #include "chrome/browser/sessions/tab_loader.h"
 #include "chrome/browser/ui/browser.h"
@@ -109,6 +110,7 @@ class SessionRestoreImpl : public BrowserListObserver {
                      bool synchronous,
                      bool clobber_existing_tab,
                      bool always_create_tabbed_browser,
+                     bool log_event,
                      const std::vector<GURL>& urls_to_open,
                      SessionRestore::CallbackList* callbacks)
       : profile_(profile),
@@ -116,6 +118,7 @@ class SessionRestoreImpl : public BrowserListObserver {
         synchronous_(synchronous),
         clobber_existing_tab_(clobber_existing_tab),
         always_create_tabbed_browser_(always_create_tabbed_browser),
+        log_event_(log_event),
         urls_to_open_(urls_to_open),
         active_window_id_(SessionID::InvalidValue()),
         restore_started_(base::TimeTicks::Now()),
@@ -344,9 +347,14 @@ class SessionRestoreImpl : public BrowserListObserver {
   Browser* ProcessSessionWindowsAndNotify(
       std::vector<std::unique_ptr<sessions::SessionWindow>>* windows,
       SessionID active_window_id) {
+    int window_count = 0;
+    int tab_count = 0;
     std::vector<RestoredTab> contents;
-    Browser* result =
-        ProcessSessionWindows(windows, active_window_id, &contents);
+    Browser* result = ProcessSessionWindows(
+        windows, active_window_id, &contents, &window_count, &tab_count);
+    // TODO(sky): plumb through whether there is an error.
+    if (log_event_)
+      LogSessionServiceRestoreEvent(profile_, window_count, tab_count, false);
     on_session_restored_callbacks_->Notify(static_cast<int>(contents.size()));
     return result;
   }
@@ -354,7 +362,9 @@ class SessionRestoreImpl : public BrowserListObserver {
   Browser* ProcessSessionWindows(
       std::vector<std::unique_ptr<sessions::SessionWindow>>* windows,
       SessionID active_window_id,
-      std::vector<RestoredTab>* created_contents) {
+      std::vector<RestoredTab>* created_contents,
+      int* window_count,
+      int* tab_count) {
     DVLOG(1) << "ProcessSessionWindows " << windows->size();
 
     if (windows->empty()) {
@@ -392,6 +402,7 @@ class SessionRestoreImpl : public BrowserListObserver {
     }
 
     for (auto i = windows->begin(); i != windows->end(); ++i) {
+      ++(*window_count);
       // 1. Choose between restoring tabs in an existing browser or in a newly
       //    created browser.
       Browser* browser = nullptr;
@@ -446,6 +457,8 @@ class SessionRestoreImpl : public BrowserListObserver {
       // However, with desks restore enabled, a window is restored to its parent
       // desk, which can be non-active desk, and left invisible but unminimized.
       RestoreTabsToBrowser(*(*i), browser, initial_tab_count, created_contents);
+      (*tab_count) += (static_cast<int>(browser->tab_strip_model()->count()) -
+                       initial_tab_count);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       DCHECK(browser->window()->IsVisible() ||
              browser->window()->IsMinimized() ||
@@ -733,6 +746,9 @@ class SessionRestoreImpl : public BrowserListObserver {
   // at least one window is created.
   const bool always_create_tabbed_browser_;
 
+  // If true, LogSessionServiceRestoreEvent() is called after restore.
+  const bool log_event_;
+
   // Set of URLs to open in addition to those restored from the session.
   std::vector<GURL> urls_to_open_;
 
@@ -783,11 +799,12 @@ Browser* SessionRestore::RestoreSession(
   }
   profile->set_restored_last_session(true);
   // SessionRestoreImpl takes care of deleting itself when done.
-  SessionRestoreImpl* restorer = new SessionRestoreImpl(
-      profile, browser, (behavior & SYNCHRONOUS) != 0,
-      (behavior & CLOBBER_CURRENT_TAB) != 0,
-      (behavior & ALWAYS_CREATE_TABBED_BROWSER) != 0, urls_to_open,
-      SessionRestore::on_session_restored_callbacks());
+  SessionRestoreImpl* restorer =
+      new SessionRestoreImpl(profile, browser, (behavior & SYNCHRONOUS) != 0,
+                             (behavior & CLOBBER_CURRENT_TAB) != 0,
+                             (behavior & ALWAYS_CREATE_TABBED_BROWSER) != 0,
+                             /* log_event */ true, urls_to_open,
+                             SessionRestore::on_session_restored_callbacks());
   return restorer->Restore();
 }
 
@@ -834,7 +851,7 @@ std::vector<Browser*> SessionRestore::RestoreForeignSessionWindows(
     std::vector<const sessions::SessionWindow*>::const_iterator end) {
   std::vector<GURL> gurls;
   SessionRestoreImpl restorer(profile, static_cast<Browser*>(nullptr), true,
-                              false, true, gurls,
+                              false, true, /* log_event */ false, gurls,
                               on_session_restored_callbacks());
   return restorer.RestoreForeignSession(begin, end);
 }
@@ -847,7 +864,8 @@ WebContents* SessionRestore::RestoreForeignSessionTab(
   Browser* browser = chrome::FindBrowserWithWebContents(source_web_contents);
   Profile* profile = browser->profile();
   std::vector<GURL> gurls;
-  SessionRestoreImpl restorer(profile, browser, true, false, false, gurls,
+  SessionRestoreImpl restorer(profile, browser, true, false, false,
+                              /* log_event */ false, gurls,
                               on_session_restored_callbacks());
   return restorer.RestoreForeignTab(tab, disposition);
 }

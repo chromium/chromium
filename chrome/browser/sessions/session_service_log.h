@@ -23,7 +23,7 @@ class PrefRegistrySyncable;
 // tracked in prefs, and only a limited amount of data is kept around.
 
 // WARNING: these values are persisted to disk, do not change.
-enum SessionServiceEventLogType {
+enum class SessionServiceEventLogType {
   // The profile was started.
   kStart = 0,
 
@@ -100,6 +100,8 @@ void LogSessionServiceRestoreEvent(Profile* profile,
                                    int tab_count,
                                    bool encountered_error_reading);
 void LogSessionServiceWriteErrorEvent(Profile* profile);
+void RemoveLastSessionServiceEventOfType(Profile* profile,
+                                         SessionServiceEventLogType type);
 
 void RegisterSessionServiceLogProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry);
