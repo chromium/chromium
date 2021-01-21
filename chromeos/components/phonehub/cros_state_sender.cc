@@ -6,10 +6,24 @@
 
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/phonehub/message_sender.h"
+#include "chromeos/components/phonehub/phone_model.h"
 #include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 
 namespace chromeos {
 namespace phonehub {
+namespace {
+
+// The minimum time to wait before checking whether the phone has responded to
+// status messages sent by CrosStateSender, and re-sending the status messages
+// if there was no response (no phone status model exists).
+constexpr base::TimeDelta kMinimumRetryDelay = base::TimeDelta::FromSeconds(2u);
+
+// The amount the previous delay is multiplied by to determine the new amount
+// of time to wait before determining whether CrosStateSender should resend the
+// CrOS State. Follows a doubling sequence, e.g 2 sec, 4 sec, 8 sec... etc.
+constexpr int kRetryDelayMultiplier = 2;
+
+}  // namespace
 
 using multidevice_setup::mojom::Feature;
 using multidevice_setup::mojom::FeatureState;
@@ -17,13 +31,31 @@ using multidevice_setup::mojom::FeatureState;
 CrosStateSender::CrosStateSender(
     MessageSender* message_sender,
     ConnectionManager* connection_manager,
-    multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client)
+    multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
+    PhoneModel* phone_model)
+    : CrosStateSender(message_sender,
+                      connection_manager,
+                      multidevice_setup_client,
+                      phone_model,
+                      std::make_unique<base::OneShotTimer>()) {}
+
+CrosStateSender::CrosStateSender(
+    MessageSender* message_sender,
+    ConnectionManager* connection_manager,
+    multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
+    PhoneModel* phone_model,
+    std::unique_ptr<base::OneShotTimer> timer)
     : message_sender_(message_sender),
       connection_manager_(connection_manager),
-      multidevice_setup_client_(multidevice_setup_client) {
+      multidevice_setup_client_(multidevice_setup_client),
+      phone_model_(phone_model),
+      retry_timer_(std::move(timer)),
+      retry_delay_(kMinimumRetryDelay) {
   DCHECK(message_sender_);
   DCHECK(connection_manager_);
   DCHECK(multidevice_setup_client_);
+  DCHECK(phone_model_);
+  DCHECK(retry_timer_);
 
   connection_manager_->AddObserver(this);
   multidevice_setup_client_->AddObserver(this);
@@ -34,16 +66,25 @@ CrosStateSender::~CrosStateSender() {
   multidevice_setup_client_->RemoveObserver(this);
 }
 
-void CrosStateSender::AttemptUpdateCrosState() const {
+void CrosStateSender::AttemptUpdateCrosState() {
+  // Stop and cancel old timer if it is running, and reset the |retry_delay_| to
+  // |kMinimumRetryDelay|.
+  retry_timer_->Stop();
+  retry_delay_ = kMinimumRetryDelay;
+
   // Wait for connection to be established.
   if (connection_manager_->GetStatus() !=
       ConnectionManager::Status::kConnected) {
-    PA_LOG(INFO) << "Could not start AttemptUpdateCrosState() because "
-                 << "connection manager status is: "
-                 << connection_manager_->GetStatus();
+    PA_LOG(VERBOSE) << "Could not start AttemptUpdateCrosState() because "
+                    << "connection manager status is: "
+                    << connection_manager_->GetStatus();
     return;
   }
 
+  PerformUpdateCrosState();
+}
+
+void CrosStateSender::PerformUpdateCrosState() {
   bool are_notifications_enabled =
       multidevice_setup_client_->GetFeatureState(
           Feature::kPhoneHubNotifications) == FeatureState::kEnabledByUser;
@@ -51,6 +92,25 @@ void CrosStateSender::AttemptUpdateCrosState() const {
   PA_LOG(INFO) << "Attempting to send cros state with notifications enabled "
                << "state as: " << are_notifications_enabled;
   message_sender_->SendCrosState(are_notifications_enabled);
+
+  retry_timer_->Start(FROM_HERE, retry_delay_,
+                      base::BindOnce(&CrosStateSender::OnRetryTimerFired,
+                                     base::Unretained(this)));
+}
+
+void CrosStateSender::OnRetryTimerFired() {
+  // If the phone status model is non-null, implying that the phone has
+  // responded to the previous PerformUpdateCrosState(), or if the
+  // connection status is no longer in the connected state, do not
+  // retry sending the cros state.
+  if (phone_model_->phone_status_model().has_value() ||
+      connection_manager_->GetStatus() !=
+          ConnectionManager::Status::kConnected) {
+    return;
+  }
+
+  retry_delay_ *= kRetryDelayMultiplier;
+  PerformUpdateCrosState();
 }
 
 void CrosStateSender::OnConnectionStatusChanged() {
