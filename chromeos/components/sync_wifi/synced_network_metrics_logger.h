@@ -38,7 +38,7 @@ const char kApplyFailureReasonHistogram[] =
 const char kApplyResultHistogram[] =
     "Network.Wifi.Synced.UpdateOperation.Result";
 const char kZeroNetworksSyncedReasonHistogram[] =
-    "Network.Wifi.Synced.ZeroNetworksEligibleForSync.EligibilityStatus";
+    "Network.Wifi.Synced.ZeroNetworksEligibleForSync.Reason";
 
 const char kTotalCountHistogram[] = "Network.Wifi.Synced.TotalCount";
 
