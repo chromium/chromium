@@ -4,11 +4,11 @@
 
 #include "net/proxy_resolution/win/winhttp_api_wrapper.h"
 
+#include <string>
 #include <utility>
 
 #include "base/check_op.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "net/proxy_resolution/win/winhttp_proxy_resolver_functions.h"
 
 namespace net {
@@ -81,7 +81,7 @@ bool WinHttpAPIWrapper::CallWinHttpGetProxyForUrlEx(
     const std::string& url,
     WINHTTP_AUTOPROXY_OPTIONS* autoproxy_options,
     DWORD_PTR context) {
-  const base::string16 wide_url(url.begin(), url.end());
+  const std::wstring wide_url(url.begin(), url.end());
   // TODO(https://crbug.com/1032820): Upgrade to WinHttpGetProxyForUrlEx2()
   // if there is a clear reason to do so.
   const DWORD result =

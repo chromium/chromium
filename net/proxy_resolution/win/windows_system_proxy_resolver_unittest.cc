@@ -17,7 +17,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "net/base/net_errors.h"
@@ -38,10 +37,10 @@ namespace {
 
 constexpr char kUrl[] = "https://example.test:8080/";
 
-void CopySettingToIEProxyConfigString(const base::string16& setting,
+void CopySettingToIEProxyConfigString(const std::wstring& setting,
                                       LPWSTR* ie_proxy_config_string) {
   *ie_proxy_config_string = static_cast<LPWSTR>(
-      GlobalAlloc(GPTR, sizeof(base::char16) * (setting.length() + 1)));
+      GlobalAlloc(GPTR, sizeof(wchar_t) * (setting.length() + 1)));
   memcpy(*ie_proxy_config_string, setting.data(),
          sizeof(wchar_t) * setting.length());
 }
@@ -150,9 +149,9 @@ class MockWinHttpAPIWrapper : public WinHttpAPIWrapper {
     get_ie_proxy_config_success_ = get_ie_proxy_config_success;
   }
   void set_ie_proxy_config(bool is_autoproxy_enabled,
-                           const base::string16& pac_url,
-                           const base::string16& proxy,
-                           const base::string16& proxy_bypass) {
+                           const std::wstring& pac_url,
+                           const std::wstring& proxy,
+                           const std::wstring& proxy_bypass) {
     is_autoproxy_enabled_ = is_autoproxy_enabled;
     pac_url_ = pac_url;
     proxy_ = proxy;
@@ -306,8 +305,8 @@ class MockWinHttpAPIWrapper : public WinHttpAPIWrapper {
           break;
       }
 
-      base::string16 proxy_host(proxy_server.host_port_pair().host().begin(),
-                                proxy_server.host_port_pair().host().end());
+      std::wstring proxy_host(proxy_server.host_port_pair().host().begin(),
+                              proxy_server.host_port_pair().host().end());
       proxy_list_.push_back(proxy_host);
 
       wchar_t* proxy_host_raw = const_cast<wchar_t*>(proxy_list_.back().data());
@@ -384,11 +383,11 @@ class MockWinHttpAPIWrapper : public WinHttpAPIWrapper {
   DWORD callback_status_ = WINHTTP_CALLBACK_STATUS_GETPROXYFORURL_COMPLETE;
   std::unique_ptr<WINHTTP_ASYNC_RESULT> callback_info_;
   bool is_autoproxy_enabled_ = false;
-  base::string16 pac_url_;
-  base::string16 proxy_;
-  base::string16 proxy_bypass_;
+  std::wstring pac_url_;
+  std::wstring proxy_;
+  std::wstring proxy_bypass_;
   WINHTTP_PROXY_RESULT proxy_result_ = {0};
-  std::vector<base::string16> proxy_list_;
+  std::vector<std::wstring> proxy_list_;
 
   // Data used internally in the mock to function and validate its own behavior.
   bool did_call_open_ = false;
@@ -521,19 +520,19 @@ class WindowsSystemProxyResolverTest : public TestWithTaskEnvironment {
     ProxyList proxy_list;
     AddHTTPSProxyToResults(&proxy_list);
 
-    base::string16 pac_url;
+    std::wstring pac_url;
     if (proxy_config.has_pac_url())
-      pac_url = base::UTF8ToUTF16(proxy_config.pac_url().spec());
+      pac_url = base::UTF8ToWide(proxy_config.pac_url().spec());
 
-    base::string16 proxy;
+    std::wstring proxy;
     if (!proxy_config.proxy_rules().single_proxies.IsEmpty())
-      proxy = base::UTF8ToUTF16(
+      proxy = base::UTF8ToWide(
           proxy_config.proxy_rules().single_proxies.ToPacString());
 
-    base::string16 proxy_bypass;
+    std::wstring proxy_bypass;
     if (!proxy_config.proxy_rules().bypass_rules.ToString().empty())
       proxy_bypass =
-          base::UTF8ToUTF16(proxy_config.proxy_rules().bypass_rules.ToString());
+          base::UTF8ToWide(proxy_config.proxy_rules().bypass_rules.ToString());
 
     winhttp_api_wrapper_->set_ie_proxy_config(proxy_config.auto_detect(),
                                               pac_url, proxy, proxy_bypass);
