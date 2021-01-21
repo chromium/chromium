@@ -372,8 +372,6 @@ void TrayBackgroundView::OnLayerAnimationEnded(
     ui::LayerAnimationSequence* sequence) {
   if (!visible_preferred_)
     views::View::SetVisible(false);
-  else
-    UpdateBackground();
 }
 
 void TrayBackgroundView::FadeInAnimation() {
@@ -409,10 +407,6 @@ void TrayBackgroundView::FadeInAnimation() {
 }
 
 void TrayBackgroundView::BounceInAnimation() {
-  layer()->SetColor(color_utils::GetResultingPaintColor(
-      ShelfConfig::Get()->GetShelfControlButtonColor(),
-      AshColorProvider::Get()->GetBackgroundColor()));
-
   std::unique_ptr<ui::InterpolatedTransform> scale =
       std::make_unique<ui::InterpolatedScale>(
           gfx::Point3F(kAnimationBounceScaleFactor, kAnimationBounceScaleFactor,
