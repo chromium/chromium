@@ -335,7 +335,7 @@ bool LocaleNotChanged(const std::string& pref_locale,
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 bool IsDeviceAccountSignedIn(const Profile* const profile) {
-  const crosapi::mojom::LacrosInitParams* const init_params =
+  const crosapi::mojom::BrowserInitParams* const init_params =
       chromeos::LacrosChromeServiceImpl::Get()->init_params();
   // We will need to check for the presence of the Device Account in a few lines
   // below but for Guest and Managed Guest Sessions, "Device Account" is

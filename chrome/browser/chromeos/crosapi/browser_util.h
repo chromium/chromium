@@ -73,8 +73,7 @@ base::flat_map<base::Token, uint32_t> GetInterfaceVersions();
 // Invite the lacros-chrome to the mojo universe.
 // Queue messages to establish the mojo connection, so that the passed IPC is
 // available already when lacros-chrome accepts the invitation.
-mojo::Remote<crosapi::mojom::LacrosChromeService>
-SendMojoInvitationToLacrosChrome(
+mojo::Remote<crosapi::mojom::BrowserService> SendMojoInvitationToLacrosChrome(
     ::crosapi::EnvironmentProvider* environment_provider,
     mojo::PlatformChannelEndpoint local_endpoint,
     base::OnceClosure mojo_disconnected_callback,

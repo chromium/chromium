@@ -59,13 +59,13 @@ namespace {
 // Pointer to the global instance of BrowserManager.
 BrowserManager* g_instance = nullptr;
 
-// The min version of LacrosChromeService mojo interface that supports
+// The min version of BrowserService mojo interface that supports
 // GetFeedbackData API.
 constexpr uint32_t kGetFeedbackDataMinVersion = 6;
-// The min version of LacrosChromeService mojo interface that supports
+// The min version of BrowserService mojo interface that supports
 // GetHistograms API.
 constexpr uint32_t kGetHistogramsMinVersion = 7;
-// The min version of LacrosChromeService mojo interface that supports
+// The min version of BrowserService mojo interface that supports
 // GetActiveTabUrl API.
 constexpr uint32_t kGetActiveTabUrlMinVersion = 8;
 
@@ -230,38 +230,38 @@ void BrowserManager::NewWindow() {
     return;
   }
 
-  DCHECK(lacros_chrome_service_.is_connected());
-  lacros_chrome_service_->NewWindow(base::DoNothing());
+  DCHECK(browser_service_.is_connected());
+  browser_service_->NewWindow(base::DoNothing());
 }
 
 bool BrowserManager::GetFeedbackDataSupported() const {
-  return lacros_chrome_service_version_ >= kGetFeedbackDataMinVersion;
+  return browser_service_version_ >= kGetFeedbackDataMinVersion;
 }
 
 void BrowserManager::GetFeedbackData(GetFeedbackDataCallback callback) {
-  DCHECK(lacros_chrome_service_.is_connected());
+  DCHECK(browser_service_.is_connected());
   DCHECK(GetFeedbackDataSupported());
-  lacros_chrome_service_->GetFeedbackData(std::move(callback));
+  browser_service_->GetFeedbackData(std::move(callback));
 }
 
 bool BrowserManager::GetHistogramsSupported() const {
-  return lacros_chrome_service_version_ >= kGetHistogramsMinVersion;
+  return browser_service_version_ >= kGetHistogramsMinVersion;
 }
 
 void BrowserManager::GetHistograms(GetHistogramsCallback callback) {
-  DCHECK(lacros_chrome_service_.is_connected());
+  DCHECK(browser_service_.is_connected());
   DCHECK(GetHistogramsSupported());
-  lacros_chrome_service_->GetHistograms(std::move(callback));
+  browser_service_->GetHistograms(std::move(callback));
 }
 
 bool BrowserManager::GetActiveTabUrlSupported() const {
-  return lacros_chrome_service_version_ >= kGetActiveTabUrlMinVersion;
+  return browser_service_version_ >= kGetActiveTabUrlMinVersion;
 }
 
 void BrowserManager::GetActiveTabUrl(GetActiveTabUrlCallback callback) {
-  DCHECK(lacros_chrome_service_.is_connected());
+  DCHECK(browser_service_.is_connected());
   DCHECK(GetActiveTabUrlSupported());
-  lacros_chrome_service_->GetActiveTabUrl(std::move(callback));
+  browser_service_->GetActiveTabUrl(std::move(callback));
 }
 
 void BrowserManager::AddObserver(BrowserManagerObserver* observer) {
@@ -395,15 +395,15 @@ void BrowserManager::StartWithLogFile(base::ScopedFD logfd) {
   channel.PrepareToPassRemoteEndpoint(&options, &command_line);
 
   // TODO(crbug.com/1124490): Support multiple mojo connections from lacros.
-  lacros_chrome_service_ = browser_util::SendMojoInvitationToLacrosChrome(
+  browser_service_ = browser_util::SendMojoInvitationToLacrosChrome(
       environment_provider_.get(), channel.TakeLocalEndpoint(),
       base::BindOnce(&BrowserManager::OnMojoDisconnected,
                      weak_factory_.GetWeakPtr()),
       base::BindOnce(&BrowserManager::OnAshChromeServiceReceiverReceived,
                      weak_factory_.GetWeakPtr()));
 
-  lacros_chrome_service_.QueryVersion(
-      base::BindOnce(&BrowserManager::OnLacrosChromeServiceVersionReady,
+  browser_service_.QueryVersion(
+      base::BindOnce(&BrowserManager::OnBrowserServiceVersionReady,
                      weak_factory_.GetWeakPtr()));
 
   // Create the lacros-chrome subprocess.
@@ -443,7 +443,7 @@ void BrowserManager::OnMojoDisconnected() {
       << "Mojo to lacros-chrome is disconnected. Terminating lacros-chrome";
   state_ = State::TERMINATING;
 
-  lacros_chrome_service_.reset();
+  browser_service_.reset();
   ash_chrome_service_ = nullptr;
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE, {base::WithBaseSyncPrimitives()},
@@ -516,8 +516,8 @@ void BrowserManager::NotifyMojoDisconnected() {
     observer.OnMojoDisconnected();
 }
 
-void BrowserManager::OnLacrosChromeServiceVersionReady(uint32_t version) {
-  lacros_chrome_service_version_ = version;
+void BrowserManager::OnBrowserServiceVersionReady(uint32_t version) {
+  browser_service_version_ = version;
 }
 
 void BrowserManager::SetDeviceAccountPolicy(const std::string& policy_blob) {

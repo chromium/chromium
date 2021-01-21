@@ -188,8 +188,9 @@ void AshChromeServiceImpl::BindUrlHandler(
   url_handler_ash_->BindReceiver(std::move(receiver));
 }
 
-void AshChromeServiceImpl::OnLacrosStartup(mojom::LacrosInfoPtr lacros_info) {
-  BrowserManager::Get()->set_lacros_version(lacros_info->lacros_version);
+void AshChromeServiceImpl::OnBrowserStartup(
+    mojom::BrowserInfoPtr browser_info) {
+  BrowserManager::Get()->set_browser_version(browser_info->browser_version);
 }
 
 }  // namespace crosapi

@@ -31,21 +31,21 @@ bool g_disable_all_crosapi_for_tests = false;
 // testing.
 std::atomic<LacrosChromeServiceImpl*> g_instance = {nullptr};
 
-crosapi::mojom::LacrosInfoPtr ToMojo(const std::string& lacros_version) {
-  auto mojo_lacros_info = crosapi::mojom::LacrosInfo::New();
-  mojo_lacros_info->lacros_version = lacros_version;
-  return mojo_lacros_info;
+crosapi::mojom::BrowserInfoPtr ToMojo(const std::string& browser_version) {
+  auto info = crosapi::mojom::BrowserInfo::New();
+  info->browser_version = browser_version;
+  return info;
 }
 
-// Reads and parses the startup data to LacrosInitParams.
+// Reads and parses the startup data to BrowserInitParams.
 // If data is missing, or failed to parse, returns a null StructPtr.
-crosapi::mojom::LacrosInitParamsPtr ReadStartupLacrosInitParams() {
+crosapi::mojom::BrowserInitParamsPtr ReadStartupBrowserInitParams() {
   base::Optional<std::string> content = ReadStartupData();
   if (!content)
     return {};
 
-  crosapi::mojom::LacrosInitParamsPtr result;
-  if (!crosapi::mojom::LacrosInitParams::Deserialize(
+  crosapi::mojom::BrowserInitParamsPtr result;
+  if (!crosapi::mojom::BrowserInitParams::Deserialize(
           content->data(), content->size(), &result)) {
     LOG(ERROR) << "Failed to parse startup data";
     return {};
@@ -60,12 +60,12 @@ crosapi::mojom::LacrosInitParamsPtr ReadStartupLacrosInitParams() {
 // sequence. The sequence must be never-blocking to avoid deadlocks, see
 // https://crbug.com/1103765.
 class LacrosChromeServiceNeverBlockingState
-    : public crosapi::mojom::LacrosChromeService {
+    : public crosapi::mojom::BrowserService {
  public:
   LacrosChromeServiceNeverBlockingState(
       scoped_refptr<base::SequencedTaskRunner> owner_sequence,
       base::WeakPtr<LacrosChromeServiceImpl> owner,
-      crosapi::mojom::LacrosInitParamsPtr* init_params)
+      crosapi::mojom::BrowserInitParamsPtr* init_params)
       : owner_sequence_(owner_sequence),
         owner_(owner),
         init_params_(init_params) {
@@ -75,8 +75,8 @@ class LacrosChromeServiceNeverBlockingState
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   }
 
-  // crosapi::mojom::LacrosChromeService:
-  void InitDeprecated(crosapi::mojom::LacrosInitParamsPtr params) override {
+  // crosapi::mojom::BrowserService:
+  void InitDeprecated(crosapi::mojom::BrowserInitParamsPtr params) override {
     if (init_params_)
       *init_params_ = std::move(params);
     initialized_.Signal();
@@ -139,11 +139,11 @@ class LacrosChromeServiceNeverBlockingState
         ash_chrome_service_.BindNewPipeAndPassReceiver();
   }
 
-  // LacrosChromeService is the interface that ash-chrome uses to message
+  // BrowserService is the interface that ash-chrome uses to message
   // lacros-chrome. This handles and routes all incoming messages from
   // ash-chrome.
-  void BindLacrosChromeServiceReceiver(
-      mojo::PendingReceiver<crosapi::mojom::LacrosChromeService> receiver) {
+  void BindBrowserServiceReceiver(
+      mojo::PendingReceiver<crosapi::mojom::BrowserService> receiver) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     receiver_.Bind(std::move(receiver));
   }
@@ -200,9 +200,9 @@ class LacrosChromeServiceNeverBlockingState
     ash_chrome_service_->BindDeviceAttributes(std::move(pending_receiver));
   }
 
-  void OnLacrosStartup(crosapi::mojom::LacrosInfoPtr lacros_info) {
+  void OnBrowserStartup(crosapi::mojom::BrowserInfoPtr browser_info) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    ash_chrome_service_->OnLacrosStartup(std::move(lacros_info));
+    ash_chrome_service_->OnBrowserStartup(std::move(browser_info));
   }
 
   void BindAccountManagerReceiver(
@@ -278,7 +278,7 @@ class LacrosChromeServiceNeverBlockingState
 
  private:
   // Receives and routes messages from ash-chrome.
-  mojo::Receiver<crosapi::mojom::LacrosChromeService> receiver_{this};
+  mojo::Receiver<crosapi::mojom::BrowserService> receiver_{this};
 
   // This remote allows lacros-chrome to send messages to ash-chrome.
   mojo::Remote<crosapi::mojom::AshChromeService> ash_chrome_service_;
@@ -295,7 +295,7 @@ class LacrosChromeServiceNeverBlockingState
   base::WeakPtr<LacrosChromeServiceImpl> owner_;
 
   // Owned by LacrosChromeServiceImpl.
-  crosapi::mojom::LacrosInitParamsPtr* const init_params_;
+  crosapi::mojom::BrowserInitParamsPtr* const init_params_;
 
   // Lock to wait for InitDeprecated() invocation.
   // Because the parameters are needed before starting the affined thread's
@@ -318,13 +318,13 @@ LacrosChromeServiceImpl::LacrosChromeServiceImpl(
     : delegate_(std::move(delegate)),
       sequenced_state_(nullptr, base::OnTaskRunnerDeleter(nullptr)) {
   if (g_disable_all_crosapi_for_tests) {
-    // Tests don't call LacrosChromeService::InitDeprecated(), so provide
-    // LacrosInitParams with default values.
-    init_params_ = crosapi::mojom::LacrosInitParams::New();
+    // Tests don't call BrowserService::InitDeprecated(), so provide
+    // BrowserInitParams with default values.
+    init_params_ = crosapi::mojom::BrowserInitParams::New();
   } else {
     // Try to read the startup data. If ash-chrome is too old, the data
     // may not available, then fallback to the older approach.
-    init_params_ = ReadStartupLacrosInitParams();
+    init_params_ = ReadStartupBrowserInitParams();
   }
 
   // The sequence on which this object was constructed, and thus affine to.
@@ -360,12 +360,13 @@ LacrosChromeServiceImpl::~LacrosChromeServiceImpl() {
 }
 
 void LacrosChromeServiceImpl::BindReceiver(
-    mojo::PendingReceiver<crosapi::mojom::LacrosChromeService> receiver) {
+    mojo::PendingReceiver<crosapi::mojom::BrowserService> receiver) {
   never_blocking_sequence_->PostTask(
-      FROM_HERE, base::BindOnce(&LacrosChromeServiceNeverBlockingState::
-                                    BindLacrosChromeServiceReceiver,
-                                weak_sequenced_state_, std::move(receiver)));
-  // If ash-chrome is too old, LacrosInitParams may not be passed from
+      FROM_HERE,
+      base::BindOnce(
+          &LacrosChromeServiceNeverBlockingState::BindBrowserServiceReceiver,
+          weak_sequenced_state_, std::move(receiver)));
+  // If ash-chrome is too old, BrowserInitParams may not be passed from
   // a memory backed file directly. Then, try to wait for InitDeprecated()
   // invocation for backward compatibility.
   if (!init_params_)
@@ -448,10 +449,10 @@ void LacrosChromeServiceImpl::BindReceiver(
                        device_attributes_remote_.BindNewPipeAndPassReceiver()));
   }
 
-  if (IsOnLacrosStartupAvailable()) {
+  if (IsOnBrowserStartupAvailable()) {
     never_blocking_sequence_->PostTask(
         FROM_HERE,
-        base::BindOnce(&LacrosChromeServiceNeverBlockingState::OnLacrosStartup,
+        base::BindOnce(&LacrosChromeServiceNeverBlockingState::OnBrowserStartup,
                        weak_sequenced_state_,
                        ToMojo(delegate_->GetChromeVersion())));
   }
@@ -696,11 +697,11 @@ bool LacrosChromeServiceImpl::IsUrlHandlerAvailable() const {
              AshChromeService::MethodMinVersions::kBindUrlHandlerMinVersion;
 }
 
-bool LacrosChromeServiceImpl::IsOnLacrosStartupAvailable() const {
+bool LacrosChromeServiceImpl::IsOnBrowserStartupAvailable() const {
   base::Optional<uint32_t> version = AshChromeServiceVersion();
   return version &&
          version.value() >=
-             AshChromeService::MethodMinVersions::kOnLacrosStartupMinVersion;
+             AshChromeService::MethodMinVersions::kOnBrowserStartupMinVersion;
 }
 
 int LacrosChromeServiceImpl::GetInterfaceVersion(
@@ -718,7 +719,7 @@ int LacrosChromeServiceImpl::GetInterfaceVersion(
 }
 
 void LacrosChromeServiceImpl::SetInitParamsForTests(
-    crosapi::mojom::LacrosInitParamsPtr init_params) {
+    crosapi::mojom::BrowserInitParamsPtr init_params) {
   init_params_ = std::move(init_params);
 }
 

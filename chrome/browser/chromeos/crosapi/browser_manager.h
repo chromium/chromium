@@ -101,9 +101,9 @@ class BrowserManager : public session_manager::SessionManagerObserver {
   void AddObserver(BrowserManagerObserver* observer);
   void RemoveObserver(BrowserManagerObserver* observer);
 
-  const std::string& lacros_version() const { return lacros_version_; }
-  void set_lacros_version(const std::string& version) {
-    lacros_version_ = version;
+  const std::string& browser_version() const { return browser_version_; }
+  void set_browser_version(const std::string& version) {
+    browser_version_ = version;
   }
 
   // Set the data of device account policy. It is the serialized blob of
@@ -174,8 +174,8 @@ class BrowserManager : public session_manager::SessionManagerObserver {
   // Called on load completion.
   void OnLoadComplete(const base::FilePath& path);
 
-  // Callback of QueryVersion for LacrosChromeService.
-  void OnLacrosChromeServiceVersionReady(uint32_t version);
+  // Callback of QueryVersion for BrowserService.
+  void OnBrowserServiceVersionReady(uint32_t version);
 
   State state_ = State::NOT_INITIALIZED;
 
@@ -187,14 +187,14 @@ class BrowserManager : public session_manager::SessionManagerObserver {
   // Path to the lacros-chrome disk image directory.
   base::FilePath lacros_path_;
 
-  // Version of lacros-chrome displayed to user in feedback report, etc.
-  // It includes both browser version and channel in the format of:
+  // Version of the browser (e.g. lacros-chrome) displayed to user in feedback
+  // report, etc. It includes both browser version and channel in the format of:
   // {browser version} {channel}
   // For example, "87.0.0.1 dev", "86.0.4240.38 beta".
-  std::string lacros_version_;
+  std::string browser_version_;
 
-  // Version of LacrosChromeService mojo interface.
-  uint32_t lacros_chrome_service_version_ = 0;
+  // Version of BrowserService mojo interface.
+  uint32_t browser_service_version_ = 0;
 
   // Called when the binary download completes.
   LoadCompleteCallback load_complete_callback_;
@@ -205,9 +205,9 @@ class BrowserManager : public session_manager::SessionManagerObserver {
   // Process handle for the lacros-chrome process.
   base::Process lacros_process_;
 
-  // Proxy to LacrosChromeService mojo service in lacros-chrome.
+  // Proxy to BrowserService mojo service in lacros-chrome.
   // Available during lacros-chrome is running.
-  mojo::Remote<crosapi::mojom::LacrosChromeService> lacros_chrome_service_;
+  mojo::Remote<crosapi::mojom::BrowserService> browser_service_;
 
   // Implementation of AshChromeService Mojo APIs.
   // Instantiated on receiving the PendingReceiver from lacros-chrome.

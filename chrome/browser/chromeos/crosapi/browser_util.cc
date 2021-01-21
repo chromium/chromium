@@ -93,9 +93,9 @@ void AddVersion(InterfaceVersions* map) {
   (*map)[T::Uuid_] = T::Version_;
 }
 
-mojom::LacrosInitParamsPtr GetLacrosInitParams(
+mojom::BrowserInitParamsPtr GetBrowserInitParams(
     EnvironmentProvider* environment_provider) {
-  auto params = mojom::LacrosInitParams::New();
+  auto params = mojom::BrowserInitParams::New();
   params->ash_chrome_service_version =
       crosapi::mojom::AshChromeService::Version_;
   params->deprecated_ash_metrics_enabled_has_value = true;
@@ -242,8 +242,7 @@ base::flat_map<base::Token, uint32_t> GetInterfaceVersions() {
   return versions;
 }
 
-mojo::Remote<crosapi::mojom::LacrosChromeService>
-SendMojoInvitationToLacrosChrome(
+mojo::Remote<crosapi::mojom::BrowserService> SendMojoInvitationToLacrosChrome(
     EnvironmentProvider* environment_provider,
     mojo::PlatformChannelEndpoint local_endpoint,
     base::OnceClosure mojo_disconnected_callback,
@@ -251,31 +250,28 @@ SendMojoInvitationToLacrosChrome(
         void(mojo::PendingReceiver<crosapi::mojom::AshChromeService>)>
         ash_chrome_service_callback) {
   mojo::OutgoingInvitation invitation;
-  mojo::Remote<crosapi::mojom::LacrosChromeService> lacros_chrome_service;
-  lacros_chrome_service.Bind(
-      mojo::PendingRemote<crosapi::mojom::LacrosChromeService>(
-          invitation.AttachMessagePipe(0 /* token */), /*version=*/0));
-  lacros_chrome_service.set_disconnect_handler(
-      std::move(mojo_disconnected_callback));
+  mojo::Remote<crosapi::mojom::BrowserService> browser_service;
+  browser_service.Bind(mojo::PendingRemote<crosapi::mojom::BrowserService>(
+      invitation.AttachMessagePipe(0 /* token */), /*version=*/0));
+  browser_service.set_disconnect_handler(std::move(mojo_disconnected_callback));
 
   // This is for backward compatibility.
   // TODO(crbug.com/1156033): Remove InitDeprecated() invocation when lacros
   // becomes mature enough.
-  lacros_chrome_service->InitDeprecated(
-      GetLacrosInitParams(environment_provider));
+  browser_service->InitDeprecated(GetBrowserInitParams(environment_provider));
 
-  lacros_chrome_service->RequestAshChromeServiceReceiver(
+  browser_service->RequestAshChromeServiceReceiver(
       std::move(ash_chrome_service_callback));
   mojo::OutgoingInvitation::Send(std::move(invitation),
                                  base::kNullProcessHandle,
                                  std::move(local_endpoint));
-  return lacros_chrome_service;
+  return browser_service;
 }
 
 base::ScopedFD CreateStartupData(EnvironmentProvider* environment_provider) {
-  auto data = GetLacrosInitParams(environment_provider);
+  auto data = GetBrowserInitParams(environment_provider);
   std::vector<uint8_t> serialized =
-      crosapi::mojom::LacrosInitParams::Serialize(&data);
+      crosapi::mojom::BrowserInitParams::Serialize(&data);
 
   base::ScopedFD fd(memfd_create("startup_data", 0));
   if (!fd.is_valid()) {

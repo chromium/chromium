@@ -44,7 +44,7 @@ std::unique_ptr<PolicyBundle> PolicyLoaderLacros::Load() {
     LOG(ERROR) << "No LacrosChromeService is found.";
     return bundle;
   }
-  const crosapi::mojom::LacrosInitParams* init_params =
+  const crosapi::mojom::BrowserInitParams* init_params =
       lacros_chrome_service->init_params();
   if (!init_params) {
     LOG(ERROR) << "No init params";

@@ -33,16 +33,15 @@
 
 namespace crosapi {
 
-class TestLacrosChromeService : public crosapi::mojom::LacrosChromeService {
+class TestBrowserService : public crosapi::mojom::BrowserService {
  public:
-  TestLacrosChromeService(
-      mojo::PendingReceiver<mojom::LacrosChromeService> receiver,
-      base::RunLoop& run_loop)
+  TestBrowserService(mojo::PendingReceiver<mojom::BrowserService> receiver,
+                     base::RunLoop& run_loop)
       : receiver_(this, std::move(receiver)), run_loop_(run_loop) {}
 
-  ~TestLacrosChromeService() override = default;
+  ~TestBrowserService() override = default;
 
-  void InitDeprecated(crosapi::mojom::LacrosInitParamsPtr params) override {
+  void InitDeprecated(crosapi::mojom::BrowserInitParamsPtr params) override {
     init_is_called_ = true;
   }
 
@@ -66,7 +65,7 @@ class TestLacrosChromeService : public crosapi::mojom::LacrosChromeService {
   }
 
  private:
-  mojo::Receiver<mojom::LacrosChromeService> receiver_;
+  mojo::Receiver<mojom::BrowserService> receiver_;
 
   bool init_is_called_ = false;
   bool request_ash_chrome_service_is_called_ = false;
@@ -78,8 +77,8 @@ class TestLacrosChromeService : public crosapi::mojom::LacrosChromeService {
 
 using TestMojoConnectionManagerTest = testing::Test;
 
-TEST_F(TestMojoConnectionManagerTest, ConnectWithLacrosChrome) {
-  // Constructing LacrosInitParams requires local state prefs.
+TEST_F(TestMojoConnectionManagerTest, ConnectWithBrowser) {
+  // Constructing BrowserInitParams requires local state prefs.
   ScopedTestingLocalState local_state(TestingBrowserProcess::GetGlobal());
 
   // Create temp dir before task environment, just in case lingering tasks need
@@ -165,13 +164,13 @@ MULTIPROCESS_TEST_MAIN(LacrosMain) {
       mojo::PlatformChannel::RecoverPassedEndpointFromCommandLine(
           *base::CommandLine::ForCurrentProcess()));
   base::RunLoop run_loop;
-  TestLacrosChromeService test_lacros_chrome_service(
-      mojo::PendingReceiver<crosapi::mojom::LacrosChromeService>(
+  TestBrowserService test_browser_service(
+      mojo::PendingReceiver<crosapi::mojom::BrowserService>(
           invitation.ExtractMessagePipe(0)),
       run_loop);
   run_loop.Run();
-  DCHECK(test_lacros_chrome_service.init_is_called());
-  DCHECK(test_lacros_chrome_service.request_ash_chrome_service_is_called());
+  DCHECK(test_browser_service.init_is_called());
+  DCHECK(test_browser_service.request_ash_chrome_service_is_called());
   return 0;
 }
 

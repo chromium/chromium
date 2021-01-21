@@ -45,7 +45,7 @@ TEST_F(LacrosChromeServiceDelegateImplTest, DefaultPaths) {
   auto default_paths = crosapi::mojom::DefaultPaths::New();
   default_paths->documents = base::FilePath("/test/documents");
   default_paths->downloads = base::FilePath("/test/downloads");
-  auto init_params = crosapi::mojom::LacrosInitParams::New();
+  auto init_params = crosapi::mojom::BrowserInitParams::New();
   init_params->default_paths = std::move(default_paths);
   delegate_impl.OnInitialized(*init_params);
 
@@ -64,7 +64,7 @@ TEST_F(LacrosChromeServiceDelegateImplTest, DefaultPathsWithLegacyAsh) {
   LacrosChromeServiceDelegateImpl delegate_impl;
 
   // Simulate ash not sending paths at startup.
-  auto init_params = crosapi::mojom::LacrosInitParams::New();
+  auto init_params = crosapi::mojom::BrowserInitParams::New();
   ASSERT_TRUE(init_params->default_paths.is_null());
   delegate_impl.OnInitialized(*init_params);
 

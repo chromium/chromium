@@ -59,7 +59,7 @@ LacrosChromeServiceDelegateImpl::LacrosChromeServiceDelegateImpl() = default;
 LacrosChromeServiceDelegateImpl::~LacrosChromeServiceDelegateImpl() = default;
 
 void LacrosChromeServiceDelegateImpl::OnInitialized(
-    const crosapi::mojom::LacrosInitParams& init_params) {
+    const crosapi::mojom::BrowserInitParams& init_params) {
   if (init_params.default_paths) {
     // Set up default paths with values provided by ash.
     chrome::SetLacrosDefaultPaths(init_params.default_paths->documents,

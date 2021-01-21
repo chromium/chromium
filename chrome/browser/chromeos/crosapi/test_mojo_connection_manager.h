@@ -61,9 +61,10 @@ class TestMojoConnectionManager {
   // It may be "just a Mojo error" or "test is finished".
   void OnMojoDisconnected();
 
-  // Proxy to LacrosChromeService mojo service in lacros-chrome.
-  // Available during lacros-chrome is running.
-  mojo::Remote<crosapi::mojom::LacrosChromeService> lacros_chrome_service_;
+  // Proxy to BrowserService mojo service in a browser (e.g. testee
+  // lacros-chrome, or test executable such as lacros_browser_tests).
+  // Available during the connected browser is running.
+  mojo::Remote<crosapi::mojom::BrowserService> browser_service_;
 
   // Implementation of AshChromeService Mojo APIs.
   // Instantiated on receiving the PendingReceiver from lacros-chrome.

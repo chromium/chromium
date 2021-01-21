@@ -254,13 +254,13 @@ std::string GetChromeVersionString() {
     browser_version = kLTSChromeVersionPrefix + browser_version;
 
   // If lacros-chrome is allowed & supported, and launched before, which
-  // is indicated by |lacros_version| in BrowserManager being set to non-empty
+  // is indicated by |browser_version| in BrowserManager being set to non-empty
   // string during lacros startup, attach its version in the chrome
   // version string.
   if (crosapi::browser_util::IsLacrosEnabled() &&
-      !crosapi::BrowserManager::Get()->lacros_version().empty()) {
+      !crosapi::BrowserManager::Get()->browser_version().empty()) {
     std::string lacros_version =
-        crosapi::BrowserManager::Get()->lacros_version();
+        crosapi::BrowserManager::Get()->browser_version();
     return kLacrosChromeVersionPrefix + lacros_version + ", " +
            kAshChromeVersionPrefix + browser_version;
   }

@@ -16,7 +16,7 @@ class GURL;
 
 namespace crosapi {
 namespace mojom {
-class LacrosInitParams;
+class BrowserInitParams;
 }  // namespace mojom
 }  // namespace crosapi
 
@@ -30,7 +30,7 @@ class LacrosChromeServiceDelegate {
 
   // Called during startup when |init_params| become available.
   virtual void OnInitialized(
-      const crosapi::mojom::LacrosInitParams& init_params) = 0;
+      const crosapi::mojom::BrowserInitParams& init_params) = 0;
 
   // Opens a new browser window.
   virtual void NewWindow() = 0;

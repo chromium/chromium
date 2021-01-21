@@ -99,7 +99,7 @@ void TestMojoConnectionManager::OnTestingSocketAvailable() {
 
   // TODO(crbug.com/1124490): Support multiple mojo connections from lacros.
   mojo::PlatformChannel channel;
-  lacros_chrome_service_ = browser_util::SendMojoInvitationToLacrosChrome(
+  browser_service_ = browser_util::SendMojoInvitationToLacrosChrome(
       environment_provider_.get(), channel.TakeLocalEndpoint(),
       base::BindOnce(&TestMojoConnectionManager::OnMojoDisconnected,
                      weak_factory_.GetWeakPtr()),
@@ -137,7 +137,7 @@ void TestMojoConnectionManager::OnAshChromeServiceReceiverReceived(
 }
 
 void TestMojoConnectionManager::OnMojoDisconnected() {
-  lacros_chrome_service_.reset();
+  browser_service_.reset();
   ash_chrome_service_ = nullptr;
   LOG(WARNING) << "Mojo to lacros-chrome is disconnected.";
 }

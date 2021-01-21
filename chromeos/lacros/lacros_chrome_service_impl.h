@@ -75,7 +75,7 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
   // This can be called on any thread. This call allows LacrosChromeServiceImpl
   // to start receiving messages from ash-chrome.
   void BindReceiver(
-      mojo::PendingReceiver<crosapi::mojom::LacrosChromeService> receiver);
+      mojo::PendingReceiver<crosapi::mojom::BrowserService> receiver);
 
   // Called during tests on affine sequence to disable all crosapi
   // functionality.
@@ -272,11 +272,11 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
 
   // OnLacrosStartup method of AshChromeService crosapi can only be called
   // if this method returns true.
-  bool IsOnLacrosStartupAvailable() const;
+  bool IsOnBrowserStartupAvailable() const;
 
-  // Returns LacrosInitParams which is passed from ash-chrome. On launching
+  // Returns BrowserInitParams which is passed from ash-chrome. On launching
   // lacros-chrome from ash-chrome, ash-chrome creates a memory backed file
-  // serializes the LacrosInitParams to it, and the forked/executed
+  // serializes the BrowserInitParams to it, and the forked/executed
   // lacros-chrome process inherits the file descriptor. The data is read
   // in the constructor so is available from the beginning.
   // Note that, in older versions, ash-chrome passes the data via
@@ -284,7 +284,7 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
   // handled for backward compatibility, and planned to be removed in the
   // future (crbug.com/1156033). Though, until the removal, it is recommended
   // to consider both cases, specifically, at least not to cause a crash.
-  const crosapi::mojom::LacrosInitParams* init_params() const {
+  const crosapi::mojom::BrowserInitParams* init_params() const {
     return init_params_.get();
   }
 
@@ -297,7 +297,7 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
   // Sets `init_params_` to the provided value.
   // Useful for tests that cannot setup a full Lacros test environment with a
   // working Mojo connection to Ash.
-  void SetInitParamsForTests(crosapi::mojom::LacrosInitParamsPtr init_params);
+  void SetInitParamsForTests(crosapi::mojom::BrowserInitParamsPtr init_params);
 
  private:
   // LacrosChromeServiceNeverBlockingState is an implementation detail of this
@@ -336,7 +336,7 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
   std::unique_ptr<LacrosChromeServiceDelegate> delegate_;
 
   // Parameters passed from ash-chrome.
-  crosapi::mojom::LacrosInitParamsPtr init_params_;
+  crosapi::mojom::BrowserInitParamsPtr init_params_;
 
   // These members are affine to the affine sequence. They are initialized in
   // the constructor and are immediately available for use.

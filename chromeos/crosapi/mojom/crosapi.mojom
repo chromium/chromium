@@ -27,24 +27,25 @@ import "services/media_session/public/mojom/audio_focus.mojom";
 import "services/media_session/public/mojom/media_controller.mojom";
 import "url/mojom/url.mojom";
 
-// LacrosInfo is a set of parameters passed to ash from lacros-chrome
-// upon lacros startup, which contains the lacros information such as version,
-// etc.
-[Stable]
-struct LacrosInfo {
-  // Version of lacros-chrome displayed to user in feedback report, etc.
+// BrowserInfo is a set of parameters passed to ash from browser (such as
+// lacros-chrome) upon its startup, which contains the browser information
+// such as version, etc.
+[Stable, RenamedFrom="crosapi.mojom.LacrosInfo"]
+struct BrowserInfo {
+  // Version of the browser displayed to user in feedback report, etc.
   // It includes both browser version and channel in the format of:
   // {browser version} {channel}
   // For example, "87.0.0.1 dev", "86.0.4240.38 beta".
-  string lacros_version@0;
+  string browser_version@0;
 
   // TODO(crbug.com/1119925): Add more parameters later.
 };
 
 // AshChromeService defines the APIs that live in ash-chrome and are
-// accessed from lacros-chrome. When adding a major new API please note the
-// milestone when you added it, to help us reason about compatibility between
-// lacros-chrome and older ash-chrome binaries.
+// accessed from client applications (such as lacros-chrome). When adding a
+// major new API please note the milestone when you added it, to help us
+// reason about compatibility between the client applications and older
+// ash-chrome binaries.
 //
 // Next version: 14
 // Next method id: 19
@@ -56,7 +57,7 @@ interface AshChromeService {
   BindAccountManager@7(pending_receiver<AccountManager> receiver);
 
   // Binds the CertDatabase interface for initializing certificate database in
-  // Lacros-Chrome.
+  // client applications.
   // Added in M89.
   [MinVersion=7] BindCertDatabase@12(pending_receiver<CertDatabase> receiver);
 
@@ -136,10 +137,10 @@ interface AshChromeService {
   // Added in M90.
   [MinVersion=13] BindUrlHandler@18(pending_receiver<UrlHandler> receiver);
 
-  // Passes generic lacros information such as lacros version, etc into ash
-  // in |lacros_info| during startup.
+  // Passes generic browser information such as version, etc into ash in
+  // |browser_info| during startup.
   // Added in M87.
-  [MinVersion=3] OnLacrosStartup@6(LacrosInfo lacros_info);
+  [MinVersion=3] OnBrowserStartup@6(BrowserInfo browser_info);
 };
 
 [Stable, Extensible]
@@ -213,26 +214,26 @@ enum ExoImeSupport {
   [MinVersion=1] kSupported = 2,
 };
 
-// LacrosInitParams is a set of parameters for initialization of lacros-chrome,
-// which is passed from ash-chrome to lacros-chrome. Since ash-chrome and
-// lacros-chrome may have different versions, lacros-chrome must handle this
-// struct carefully.
+// BrowserInitParams is a set of parameters for initialization of browsers
+// (such as lacros-chrome), which is passed from ash-chrome to a browser.
+// Since ash-chrome and browsers may have different versions, the browsers must
+// handle this struct carefully.
 //
-// If ash-chrome is older than lacros-chrome, then some fields may not be
+// If ash-chrome is older than the browser, then some fields may not be
 // present in the serialized IPC message. This manifests as the newer (missing)
-// fields taking on default values in lacros-chrome. This means
-// that the default value for each field must always be interpreted to mean:
+// fields taking on default values in the browser. This means that the default
+// value for each field must always be interpreted to mean:
 // this field was not sent because ash-chrome was too old. If the default value
 // needs to have a different meaning, then we must also add a bool field
 // describing the validity of this field. Mojo currently does not support
 // optional primitives.
 //
-// If ash-chrome is newer than lacros-chrome, then some fields may not be
-// processed by lacros-chrome.
+// If ash-chrome is newer than the browser, then some fields may not be
+// processed by the browser.
 //
 // Next version: 12
-[Stable]
-struct LacrosInitParams {
+[Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
+struct BrowserInitParams {
   // This is ash-chrome's version of the AshChromeService interface. This is
   // used by lacros-chrome to determine which interface methods are safe to
   // call.
@@ -243,27 +244,27 @@ struct LacrosInitParams {
   [MinVersion=2]
   bool deprecated_ash_metrics_enabled_has_value@1;
 
-  // Whether metrics are enabled in ash-chrome. On lacros first run we inherit
+  // Whether metrics are enabled in ash-chrome. On browser first run we inherit
   // metrics consent from ash, because on Chrome OS metrics consent is chosen
-  // during the out-of-box experience. After first run lacros handles metrics
-  // consent via settings.
+  // during the out-of-box experience. After first run the browser handles
+  // metrics consent via settings.
   [MinVersion=2]
   bool ash_metrics_enabled@2;
 
-  // Type of the ash-chrome session at lacros startup time.
+  // Type of the ash-chrome session at the browser startup time.
   [MinVersion=3]
   SessionType session_type@3;
 
-  // Device mode at lacros startup time. If lacros is running during the
+  // Device mode at browser startup time. If the browser is running during the
   // out-of-box experience, the device mode might change later (e.g. if the
   // user chooses to enroll the device).
   [MinVersion=4]
   DeviceMode device_mode@4;
 
   // Ash sends all known crosapi interfaces and their versions at startup so
-  // that Lacros can synchronously query version info. Interfaces are identified
-  // by a UUID, which is manually generated and assigned via the UUID mojom
-  // qualifier.
+  // that a browser can synchronously query version info. Interfaces are
+  // identified by a UUID, which is manually generated and assigned via the
+  // UUID mojom qualifier.
   // Added in M88.
   [MinVersion=5]
   map<mojo_base.mojom.Token, uint32>? interface_versions@5;
@@ -288,8 +289,9 @@ struct LacrosInitParams {
   [MinVersion=8]
   MetricsReportingManaged ash_metrics_managed@8;
 
-  // How exo supports IME on Lacros. Lacros can control IME handling
-  // depending on the ash-chrome's support status via this flag.
+  // How exo supports IME on the wayland client (such as Lacros-chrome).
+  // The client can control IME handling depending on the ash-chrome's support
+  // status via this flag.
   [MinVersion=9]
   ExoImeSupport exo_ime_support@9;
 
@@ -307,30 +309,31 @@ struct LacrosInitParams {
   array<uint8>? device_account_policy@11;
 };
 
-// LacrosChromeService defines the APIs that live in lacros-chrome and
-// are accessed from ash-chrome.
-[Stable, Uuid="4e04dc16-b34c-40fd-9e3f-3c55c2c6cf91"]
-interface LacrosChromeService {
+// BrowserService defines the APIs that live in a browser (such as
+// lacros-chrome) and are accessed from ash-chrome.
+[Stable, Uuid="4e04dc16-b34c-40fd-9e3f-3c55c2c6cf91",
+ RenamedFrom="crosapi.mojom.LacrosChromeService"]
+interface BrowserService {
   // DEPRECATED: in M89. In new versions, memory backed file based
   // initialization data passing is used.
   //
   // Ash-chrome can pass initialize parameters via this method.
-  // The parameters are available on lacros-chrome startup.
-  InitDeprecated@2(LacrosInitParams params);
+  // The parameters are available on the browser startup.
+  InitDeprecated@2(BrowserInitParams params);
 
   // Returns the pending_receiver of AshChromeService.
   // Ash-chrome is expected to call this method on initialization.
-  // Lacros-chrome may call AshChromeService APIs earlier than this
+  // The browser may call AshChromeService APIs earlier than this
   // invocation. In the case, the calls are queued, and processed
   // sequentially, when ash-chrome binds the receiver to the service.
   RequestAshChromeServiceReceiver@0() => (
       pending_receiver<AshChromeService> receiver);
 
-  // Opens a new window in lacros-chrome with, currently, the last used profile.
+  // Opens a new window in the browser with, currently, the last used profile.
   // The callback is called on the command execution.
   NewWindow@1() => ();
 
-  // Returns lacros feedback data used for generating feedback report in
+  // Returns the browser's feedback data used for generating feedback report in
   // a dictionary object, each entry representing a log entry in the feedback
   // report, for example, "Lacros crash_report_ids: xxx",
   // "Lacros extensions: xxx", "Lacros mem_usage: xxx", etc.
@@ -338,12 +341,12 @@ interface LacrosChromeService {
   GetFeedbackData@3() => (
       mojo_base.mojom.DictionaryValue feedback_info);
 
-  // Returns the lacros histograms used for generating feedback report.
+  // Returns the browser histograms used for generating feedback report.
   // The histograms returned is zip compressed and is typically around 100KB.
   [MinVersion=7]
   GetHistograms@4() => (mojo_base.mojom.BigString compressed_histograms);
 
-  // Returns Url of the active tab from lacros if there is any.
+  // Returns Url of the active tab from the browser if there is any.
   [MinVersion=8]
   GetActiveTabUrl@5() => (url.mojom.Url? url);
 };

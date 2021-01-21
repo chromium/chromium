@@ -5978,8 +5978,7 @@ void ChromeContentBrowserClient::BindBrowserControlInterface(
     mojo::ScopedMessagePipeHandle pipe) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   chromeos::LacrosChromeServiceImpl::Get()->BindReceiver(
-      mojo::PendingReceiver<crosapi::mojom::LacrosChromeService>(
-          std::move(pipe)));
+      mojo::PendingReceiver<crosapi::mojom::BrowserService>(std::move(pipe)));
 #endif
 }
 

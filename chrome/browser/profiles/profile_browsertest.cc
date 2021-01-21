@@ -1096,8 +1096,8 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
         CreateProfile(profile_path, /* delegate= */ nullptr,
                       Profile::CREATE_MODE_SYNCHRONOUS));
 
-    crosapi::mojom::LacrosInitParamsPtr init_params =
-        crosapi::mojom::LacrosInitParams::New();
+    crosapi::mojom::BrowserInitParamsPtr init_params =
+        crosapi::mojom::BrowserInitParams::New();
     init_params->session_type = crosapi::mojom::SessionType::kPublicSession;
     chromeos::LacrosChromeServiceImpl::Get()->SetInitParamsForTests(
         std::move(init_params));
@@ -1126,8 +1126,8 @@ IN_PROC_BROWSER_TEST_F(
         CreateProfile(profile_path, /* delegate= */ nullptr,
                       Profile::CREATE_MODE_SYNCHRONOUS));
 
-    crosapi::mojom::LacrosInitParamsPtr init_params =
-        crosapi::mojom::LacrosInitParams::New();
+    crosapi::mojom::BrowserInitParamsPtr init_params =
+        crosapi::mojom::BrowserInitParams::New();
     init_params->session_type = crosapi::mojom::SessionType::kRegularSession;
     init_params->device_mode =
         crosapi::mojom::DeviceMode::kEnterpriseActiveDirectory;
@@ -1166,8 +1166,8 @@ IN_PROC_BROWSER_TEST_F(
       /*is_consented_primary_account=*/false, /*icon_index=*/0,
       /*supervised_user_id*/ std::string(), EmptyAccountId());
 
-  crosapi::mojom::LacrosInitParamsPtr init_params =
-      crosapi::mojom::LacrosInitParams::New();
+  crosapi::mojom::BrowserInitParamsPtr init_params =
+      crosapi::mojom::BrowserInitParams::New();
   init_params->session_type = crosapi::mojom::SessionType::kRegularSession;
   init_params->device_mode = crosapi::mojom::DeviceMode::kConsumer;
   init_params->device_account_gaia_id = kFakeGaiaId;
@@ -1200,8 +1200,8 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
       /*is_consented_primary_account=*/false, /*icon_index=*/0,
       /*supervised_user_id*/ std::string(), EmptyAccountId());
 
-  crosapi::mojom::LacrosInitParamsPtr init_params =
-      crosapi::mojom::LacrosInitParams::New();
+  crosapi::mojom::BrowserInitParamsPtr init_params =
+      crosapi::mojom::BrowserInitParams::New();
   init_params->session_type = crosapi::mojom::SessionType::kRegularSession;
   init_params->device_mode = crosapi::mojom::DeviceMode::kConsumer;
   init_params->device_account_gaia_id = kFakeGaiaId;

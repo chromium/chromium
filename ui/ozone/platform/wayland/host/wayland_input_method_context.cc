@@ -72,7 +72,7 @@ bool IsImeEnabled() {
   // Note: |init_params| may be null, if ash-chrome is too old.
   // TODO(crbug.com/1156033): Clean up the condition, after ash-chrome in the
   // world becomes new enough.
-  const crosapi::mojom::LacrosInitParams* init_params =
+  const crosapi::mojom::BrowserInitParams* init_params =
       lacros_chrome_service->init_params();
   if (init_params && init_params->exo_ime_support !=
                          crosapi::mojom::ExoImeSupport::kUnsupported) {
