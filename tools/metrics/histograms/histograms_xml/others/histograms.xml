@@ -7464,7 +7464,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Kerberos.AcquireKerberosTgtTime" units="ms"
-    expires_after="M90">
+    expires_after="M97">
   <owner>fsandrade@chromium.org</owner>
   <owner>tomdobro@chromium.org</owner>
   <summary>
@@ -7474,7 +7474,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Kerberos.DailyActiveUsers" enum="KerberosUserType"
-    expires_after="M90">
+    expires_after="M97">
   <owner>fsandrade@chromium.org</owner>
   <owner>tomdobro@chromium.org</owner>
   <summary>
@@ -7486,7 +7486,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Kerberos.EncryptionTypesAcquireKerberosTgt"
-    enum="KerberosEncryptionTypes" expires_after="M90">
+    enum="KerberosEncryptionTypes" expires_after="M97">
   <owner>fsandrade@chromium.org</owner>
   <owner>tomdobro@chromium.org</owner>
   <summary>
@@ -7497,7 +7497,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Kerberos.NumberOfAccounts.Managed" units="units"
-    expires_after="M90">
+    expires_after="M97">
   <owner>fsandrade@chromium.org</owner>
   <owner>tomdobro@chromium.org</owner>
   <summary>
@@ -7508,7 +7508,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Kerberos.NumberOfAccounts.RememberedPassword" units="units"
-    expires_after="M90">
+    expires_after="M97">
   <owner>fsandrade@chromium.org</owner>
   <owner>tomdobro@chromium.org</owner>
   <summary>
@@ -7520,7 +7520,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Kerberos.NumberOfAccounts.Total" units="units"
-    expires_after="M90">
+    expires_after="M97">
   <owner>fsandrade@chromium.org</owner>
   <owner>tomdobro@chromium.org</owner>
   <summary>
@@ -7530,7 +7530,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Kerberos.NumberOfAccounts.Unmanaged" units="units"
-    expires_after="M90">
+    expires_after="M97">
   <owner>fsandrade@chromium.org</owner>
   <owner>tomdobro@chromium.org</owner>
   <summary>
@@ -7541,7 +7541,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Kerberos.NumberOfAccounts.UseLoginPassword" units="units"
-    expires_after="M90">
+    expires_after="M97">
   <owner>fsandrade@chromium.org</owner>
   <owner>tomdobro@chromium.org</owner>
   <summary>
@@ -7553,7 +7553,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Kerberos.Result.AcquireKerberosTgt" enum="KerberosErrorType"
-    expires_after="M90">
+    expires_after="M97">
   <owner>fsandrade@chromium.org</owner>
   <owner>tomdobro@chromium.org</owner>
   <summary>
@@ -7563,7 +7563,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Kerberos.Result.AddAccount" enum="KerberosErrorType"
-    expires_after="M90">
+    expires_after="M97">
   <owner>fsandrade@chromium.org</owner>
   <owner>tomdobro@chromium.org</owner>
   <summary>
@@ -7573,7 +7573,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Kerberos.Result.ClearAccounts" enum="KerberosErrorType"
-    expires_after="M90">
+    expires_after="M97">
   <owner>fsandrade@chromium.org</owner>
   <owner>tomdobro@chromium.org</owner>
   <summary>
@@ -7584,7 +7584,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Kerberos.Result.GetKerberosFiles" enum="KerberosErrorType"
-    expires_after="M90">
+    expires_after="M97">
   <owner>fsandrade@chromium.org</owner>
   <owner>tomdobro@chromium.org</owner>
   <summary>
@@ -7595,7 +7595,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Kerberos.Result.ListAccounts" enum="KerberosErrorType"
-    expires_after="M90">
+    expires_after="M97">
   <owner>fsandrade@chromium.org</owner>
   <owner>tomdobro@chromium.org</owner>
   <summary>
@@ -7605,7 +7605,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Kerberos.Result.RemoveAccount" enum="KerberosErrorType"
-    expires_after="M90">
+    expires_after="M97">
   <owner>fsandrade@chromium.org</owner>
   <owner>tomdobro@chromium.org</owner>
   <summary>
@@ -7615,7 +7615,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Kerberos.Result.SetConfig" enum="KerberosErrorType"
-    expires_after="M90">
+    expires_after="M97">
   <owner>fsandrade@chromium.org</owner>
   <owner>tomdobro@chromium.org</owner>
   <summary>
@@ -7625,7 +7625,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Kerberos.Result.ValidateConfig" enum="KerberosErrorType"
-    expires_after="M90">
+    expires_after="M97">
   <owner>fsandrade@chromium.org</owner>
   <owner>tomdobro@chromium.org</owner>
   <summary>
@@ -7636,7 +7636,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Kerberos.ValidateConfigErrorCode"
-    enum="KerberosConfigErrorCode" expires_after="M90">
+    enum="KerberosConfigErrorCode" expires_after="M97">
   <owner>fsandrade@chromium.org</owner>
   <owner>tomdobro@chromium.org</owner>
   <summary>
