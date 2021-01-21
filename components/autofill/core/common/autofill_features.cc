@@ -58,9 +58,9 @@ const base::Feature kAutofillCreateDataForTest{
 const base::Feature kAutofillDisableFilling{"AutofillDisableFilling",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Kill switch for Autofill import.
-const base::Feature kAutofillDisableImport{"AutofillDisableImport",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
+// Kill switch for Autofill address import.
+const base::Feature kAutofillDisableAddressImport{
+    "AutofillDisableAddressImport", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Controls if Chrome support filling and importing apartment numbers.
 // TODO(crbug.com/1153715): Remove once launched.

@@ -426,6 +426,9 @@ class PersonalDataManager : public KeyedService,
     client_profile_validator_ = validator;
   }
 
+  // Returns true if the PDM is in the off-the-record mode.
+  bool IsOffTheRecord() { return is_off_the_record_; }
+
  protected:
   // Only PersonalDataManagerFactory and certain tests can create instances of
   // PersonalDataManager.

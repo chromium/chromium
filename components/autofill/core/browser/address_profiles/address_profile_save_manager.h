@@ -27,16 +27,14 @@ class AddressProfileSaveManager {
       delete;
   virtual ~AddressProfileSaveManager();
 
-  // Saves `profile` using the `personal_data_manager_`. Returns true
-  // if the profile was saved or updated, and false if no profile was
-  // saved.
-  bool SaveProfile(const AutofillProfile& profile);
+  // Saves `profile` using the `personal_data_manager_`.
+  void SaveProfile(const AutofillProfile& profile);
 
  private:
   void SaveProfilePromptCallback(
       AutofillClient::SaveAddressProfileOfferUserDecision user_decision,
       AutofillProfile profile);
-  bool SaveProfileInternal(const AutofillProfile& profile);
+  void SaveProfileInternal(const AutofillProfile& profile);
 
   AutofillClient* const client_;
 

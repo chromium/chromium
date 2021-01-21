@@ -754,10 +754,6 @@ void AutofillManager::OnFormSubmittedImpl(const FormData& form,
     return;
   }
 
-  if (base::FeatureList::IsEnabled(features::kAutofillDisableImport)) {
-    return;
-  }
-
   // Update Personal Data with the form's submitted data.
   // Also triggers offering local/upload credit card save, if applicable.
   client_->GetFormDataImporter()->ImportFormData(*submitted_form,

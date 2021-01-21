@@ -17,9 +17,9 @@ AddressProfileSaveManager::AddressProfileSaveManager(
 
 AddressProfileSaveManager::~AddressProfileSaveManager() = default;
 
-bool AddressProfileSaveManager::SaveProfile(const AutofillProfile& profile) {
+void AddressProfileSaveManager::SaveProfile(const AutofillProfile& profile) {
   if (!personal_data_manager_)
-    return false;
+    return;
 
   if (base::FeatureList::IsEnabled(
           features::kAutofillAddressProfileSavePrompt)) {
@@ -27,18 +27,14 @@ bool AddressProfileSaveManager::SaveProfile(const AutofillProfile& profile) {
         profile,
         base::BindOnce(&AddressProfileSaveManager::SaveProfilePromptCallback,
                        weak_ptr_factory_.GetWeakPtr()));
-    // TODO(crbug.com/1135178): The semantics of the return value are that the
-    // profile has been saved. At this point, we cannot tell if the profile is
-    // going to be saved or not since it depends on the user action. Revisit
-    // once the intended behavior of save prompts is final.
-    return true;
+    return;
   }
-  return SaveProfileInternal(profile);
+  SaveProfileInternal(profile);
 }
 
-bool AddressProfileSaveManager::SaveProfileInternal(
+void AddressProfileSaveManager::SaveProfileInternal(
     const AutofillProfile& profile) {
-  return !personal_data_manager_->SaveImportedProfile(profile).empty();
+  personal_data_manager_->SaveImportedProfile(profile);
 }
 
 void AddressProfileSaveManager::SaveProfilePromptCallback(

@@ -433,7 +433,10 @@ bool FormDataImporter::ImportFormData(
   // - ImportAddressProfiles may eventually save or update one or more address
   //   profiles.
   bool address_import = false;
-  if (profile_autofill_enabled) {
+
+  // Only import addresses if enabled.
+  if (profile_autofill_enabled &&
+      !base::FeatureList::IsEnabled(features::kAutofillDisableAddressImport)) {
     address_import = ImportAddressProfiles(submitted_form);
   }
 
@@ -455,7 +458,7 @@ bool FormDataImporter::ImportAddressProfiles(const FormStructure& form) {
   // We save a maximum of 2 profiles per submitted form (e.g. for shipping and
   // billing).
   static const size_t kMaxNumAddressProfilesSaved = 2;
-  size_t num_saved_profiles = 0;
+  size_t num_complete_profiles = 0;
 
   if (!form.field_count()) {
     import_log_buffer << LogMessage::kImportAddressProfileFromFormFailed
@@ -469,7 +472,7 @@ bool FormDataImporter::ImportAddressProfiles(const FormStructure& form) {
     }
 
     for (const std::string& section : sections) {
-      if (num_saved_profiles == kMaxNumAddressProfilesSaved)
+      if (num_complete_profiles == kMaxNumAddressProfilesSaved)
         break;
       // Log the output from a section in a separate div for readability.
       import_log_buffer << Tag{"div"}
@@ -478,38 +481,38 @@ bool FormDataImporter::ImportAddressProfiles(const FormStructure& form) {
                         << section << CTag{};
       // Try to import an address profile from the form fields of this section.
       if (ImportAddressProfileForSection(form, section, &import_log_buffer))
-        num_saved_profiles++;
+        num_complete_profiles++;
       // And close the div of the section import log.
       import_log_buffer << CTag{"div"};
     }
     // Run the import on the union of the section if the import was not
     // successful and if there is more than one section.
-    if (num_saved_profiles > 0) {
+    if (num_complete_profiles > 0) {
       AutofillMetrics::LogAddressFormImportStatustMetric(
           AutofillMetrics::AddressProfileImportStatusMetric::REGULAR_IMPORT);
     } else if (sections.size() > 1) {
       // Try to import by combining all sections.
       if (ImportAddressProfileForSection(form, "", &import_log_buffer)) {
-        num_saved_profiles++;
+        num_complete_profiles++;
         AutofillMetrics::LogAddressFormImportStatustMetric(
             AutofillMetrics::AddressProfileImportStatusMetric::
                 SECTION_UNION_IMPORT);
       }
     }
-    if (num_saved_profiles == 0) {
+    if (num_complete_profiles == 0) {
       AutofillMetrics::LogAddressFormImportStatustMetric(
           AutofillMetrics::AddressProfileImportStatusMetric::NO_IMPORT);
     }
   }
   import_log_buffer << LogMessage::kImportAddressProfileFromFormNumberOfImports
-                    << num_saved_profiles << CTag{};
+                    << num_complete_profiles << CTag{};
 
   // Write log buffer to autofill-internals.
   LogManager* log_manager = client_->GetLogManager();
   if (log_manager)
     log_manager->Log() << std::move(import_log_buffer);
 
-  return num_saved_profiles > 0;
+  return num_complete_profiles > 0;
 }
 
 bool FormDataImporter::ImportAddressProfileForSection(
@@ -716,7 +719,13 @@ bool FormDataImporter::ImportAddressProfileForSection(
   if (!candidate_profile.FinalizeAfterImport())
     return false;
 
-  return address_profile_save_manager_->SaveProfile(candidate_profile);
+  // At this stage, the saving of the profile can only be omitted by the
+  // incognito mode but the import is not triggered if the browser is in the
+  // incognito mode.
+  DCHECK(!personal_data_manager_->IsOffTheRecord());
+  address_profile_save_manager_->SaveProfile(candidate_profile);
+
+  return true;
 }
 
 bool FormDataImporter::ImportCreditCard(
