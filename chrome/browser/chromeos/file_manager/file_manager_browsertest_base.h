@@ -111,6 +111,9 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
 
     // Whether test should enable holding space.
     bool enable_holding_space = false;
+
+    // Whether test should run Files app UI as JS modules.
+    bool enable_js_modules = true;
   };
 
  protected:
