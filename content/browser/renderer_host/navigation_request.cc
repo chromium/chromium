@@ -1519,7 +1519,7 @@ void NavigationRequest::BeginNavigation() {
       base::debug::DumpWithoutCrashing();
     }
 
-    ComputeSandboxFlagsToCommit(/*response_head=*/nullptr);
+    ComputeSandboxFlagsToCommit(/*response_head=*/nullptr, required_csp_.get());
 
     // Same-document navigations occur in the currently loaded document. See
     // also RenderFrameHostManager::DidCreateNavigationRequest() which will
@@ -2274,7 +2274,7 @@ void NavigationRequest::OnResponseStarted(
     return;
   }
 
-  ComputeSandboxFlagsToCommit(response_head_.get());
+  ComputeSandboxFlagsToCommit(response_head_.get(), required_csp_.get());
 
   // The navigation may have encountered a header that requests isolation for
   // the url's origin. Before we pick the renderer, make sure we update the
@@ -3258,7 +3258,8 @@ void NavigationRequest::CommitErrorPage(
   // flags from their parent/opener. Document loaded from the network
   // shouldn't have any influence over Chrome's internal error page. We should
   // define our own flags, preferably the strictest ones instead.
-  ComputeSandboxFlagsToCommit(/*response_head=*/nullptr);
+  ComputeSandboxFlagsToCommit(/*response_head=*/nullptr,
+                              /*required_csp=*/nullptr);
 
   ReadyToCommitNavigation(true);
   // Use a separate cache shard, and no cookies, for error pages.
@@ -5459,7 +5460,8 @@ NavigationRequest::TakeCookieObservers() {
 }
 
 void NavigationRequest::ComputeSandboxFlagsToCommit(
-    const network::mojom::URLResponseHead* response_head) {
+    const network::mojom::URLResponseHead* response_head,
+    network::mojom::ContentSecurityPolicy* required_csp) {
   DCHECK(commit_params_);
   DCHECK(!HasCommitted());
   DCHECK(!IsErrorPage());
@@ -5474,6 +5476,11 @@ void NavigationRequest::ComputeSandboxFlagsToCommit(
       *sandbox_flags_to_commit_ |= csp->sandbox;
     }
   }
+
+  // If the embedee opts in, the embedder can force its HTMLIframeElement.csp
+  // attribute to be used by the embedee.
+  if (required_csp)
+    *sandbox_flags_to_commit_ |= required_csp->sandbox;
 
   // The URL of a document loaded from a MHTML archive is controlled by the
   // Content-Location header. This can be set to an arbitrary URL. This is

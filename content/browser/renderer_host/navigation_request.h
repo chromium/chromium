@@ -1166,10 +1166,11 @@ class CONTENT_EXPORT NavigationRequest
   NavigationControllerImpl* GetNavigationController();
 
   // Compute the sandbox policy of the document to be loaded. This is called
-  // once the final response is known. It is based on the current FramePolicy
-  // and the response's CSP.
+  // once the final response is known. It is based on the current FramePolicy,
+  // the response's CSP and the embedder's HTMLIframeElement.csp.
   void ComputeSandboxFlagsToCommit(
-      const network::mojom::URLResponseHead* response_head);
+      const network::mojom::URLResponseHead* response_head,
+      network::mojom::ContentSecurityPolicy* required_csp);
 
   // DCHECK that tranistioning from the current state to |state| valid. This
   // does nothing in non-debug builds.

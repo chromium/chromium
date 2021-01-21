@@ -9042,12 +9042,7 @@ void RenderFrameHostImpl::DidCommitNewDocument(
   // renderer one. The browser will just "push" the correct value.
   if (navigation_request->state() >=
       NavigationRequest::NavigationState::WILL_PROCESS_RESPONSE) {
-    // TODO(https://crbug.com/1163108):
-    // - params.sandbox_flags and
-    // - navigation_request->SandboxFlagsToCommit()
-    // must match here. They don't, because of CSP embedded enforcement.
-    //
-    // This should be fixed and the DCHECK restored.
+    DCHECK_EQ(params.sandbox_flags, navigation_request->SandboxFlagsToCommit());
   }
 
   // TODO(https://crbug.com/888079): The origin computed from the browser must
