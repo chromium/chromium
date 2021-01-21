@@ -2,8 +2,6 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-/* Only common styles should be declared here. */
-
 * {
   box-sizing: border-box;
 }
@@ -64,4 +62,17 @@ ul {
 /* Styling for text indicating a potential problem or error state. */
 .warning-text {
   color: rgb(238, 0, 0);
+}
+
+#sockets-view-close-idle-button,
+#sockets-view-flush-button {
+  margin-bottom: 2px;
+}
+
+#domain-security-policy-view-tab-content tt {
+  word-wrap: break-word;
+}
+
+input + label {
+  margin-inline-start: 10px;
 }

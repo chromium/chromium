@@ -44,6 +44,7 @@ content::WebUIDataSource* CreateNetInternalsHTMLSource() {
 
   source->SetDefaultResource(IDR_NET_INTERNALS_INDEX_HTML);
   source->AddResourcePath("index.js", IDR_NET_INTERNALS_INDEX_JS);
+  source->AddResourcePath("main.css", IDR_NET_INTERNALS_MAIN_CSS);
   source->UseStringsJs();
   return source;
 }
