@@ -23,6 +23,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Renderer.CompositedScrolling" enum="CompositedScrolling"
     expires_after="M85">
+  <obsolete>
+    Expired in M86.
+  </obsolete>
   <owner>hartmanng@chromium.org</owner>
   <summary>
     Total count of the number of RenderLayers which are scrollable areas, need
