@@ -17,6 +17,8 @@ extern const char kServiceName[];
 extern const char kHostConfigFileName[];
 extern const char kHostConfigFilePath[];
 
+// File that stores lightweight host settings as key-value pairs. See
+// HostSettings for more info.
 extern const char kHostSettingsFilePath[];
 
 // This helper script is executed as root to enable/disable/configure the host
