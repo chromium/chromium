@@ -21,8 +21,14 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacadeImpl
     : public account_manager::AccountManagerFacade,
       public crosapi::mojom::AccountManagerObserver {
  public:
+  // Constructs `AccountManagerFacadeImpl`.
+  // `account_manager_remote` is a Mojo `Remote` to Account Manager in Ash -
+  // either in-process or out-of-process.
+  // `remote_version` is the Mojo API version of the remote.
+  // `init_finished` is called after Account Manager has been fully initialized.
   AccountManagerFacadeImpl(
       mojo::Remote<crosapi::mojom::AccountManager> account_manager_remote,
+      uint32_t remote_version,
       base::OnceClosure init_finished = base::DoNothing());
   AccountManagerFacadeImpl(const AccountManagerFacadeImpl&) = delete;
   AccountManagerFacadeImpl& operator=(const AccountManagerFacadeImpl&) = delete;
@@ -44,11 +50,12 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacadeImpl
   void OnAccountRemoved(crosapi::mojom::AccountPtr account) override;
 
  private:
-  void OnVersionCheck(uint32_t version);
   void OnReceiverReceived(
       mojo::PendingReceiver<AccountManagerObserver> receiver);
   void OnInitialized(bool is_initialized);
 
+  // Mojo API version on the remote (Ash) side.
+  const uint32_t remote_version_;
   mojo::Remote<crosapi::mojom::AccountManager> account_manager_remote_;
   base::OnceClosure init_finished_;
   bool is_initialized_ = false;

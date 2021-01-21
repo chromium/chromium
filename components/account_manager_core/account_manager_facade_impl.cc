@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/logging.h"
 #include "components/account_manager_core/account_manager_util.h"
 
 namespace {
@@ -20,17 +21,23 @@ constexpr uint32_t kMinVersionWithObserver = 1;
 
 AccountManagerFacadeImpl::AccountManagerFacadeImpl(
     mojo::Remote<crosapi::mojom::AccountManager> account_manager_remote,
+    uint32_t remote_version,
     base::OnceClosure init_finished)
-    : account_manager_remote_(std::move(account_manager_remote)),
+    : remote_version_(remote_version),
+      account_manager_remote_(std::move(account_manager_remote)),
       init_finished_(std::move(init_finished)) {
   DCHECK(init_finished_);
-  if (!account_manager_remote_) {
+
+  if (!account_manager_remote_ || remote_version_ < kMinVersionWithObserver) {
+    LOG(WARNING) << "Found remote at: " << remote_version_
+                 << ", expected: " << kMinVersionWithObserver
+                 << ". Account consistency will be disabled";
     std::move(init_finished_).Run();
     return;
   }
-
-  account_manager_remote_.QueryVersion(base::BindOnce(
-      &AccountManagerFacadeImpl::OnVersionCheck, weak_factory_.GetWeakPtr()));
+  account_manager_remote_->AddObserver(
+      base::BindOnce(&AccountManagerFacadeImpl::OnReceiverReceived,
+                     weak_factory_.GetWeakPtr()));
 }
 
 AccountManagerFacadeImpl::~AccountManagerFacadeImpl() = default;
@@ -59,16 +66,6 @@ void AccountManagerFacadeImpl::ShowReauthAccountDialog(
   // TODO(crbug.com/1140469): implement this.
 }
 
-void AccountManagerFacadeImpl::OnVersionCheck(uint32_t version) {
-  if (version < kMinVersionWithObserver) {
-    std::move(init_finished_).Run();
-    return;
-  }
-
-  account_manager_remote_->AddObserver(
-      base::BindOnce(&AccountManagerFacadeImpl::OnReceiverReceived,
-                     weak_factory_.GetWeakPtr()));
-}
 
 void AccountManagerFacadeImpl::OnReceiverReceived(
     mojo::PendingReceiver<AccountManagerObserver> receiver) {

@@ -4,6 +4,8 @@
 
 #include "components/account_manager_core/account_manager_facade_impl.h"
 
+#include <limits>
+
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
@@ -100,7 +102,9 @@ class AccountManagerFacadeImplTest : public testing::Test {
   std::unique_ptr<AccountManagerFacadeImpl> CreateFacade() {
     base::RunLoop run_loop;
     auto result = std::make_unique<AccountManagerFacadeImpl>(
-        account_manager().CreateRemote(), run_loop.QuitClosure());
+        account_manager().CreateRemote(),
+        /* remote_version= */ std::numeric_limits<uint32_t>::max(),
+        run_loop.QuitClosure());
     run_loop.Run();
     return result;
   }

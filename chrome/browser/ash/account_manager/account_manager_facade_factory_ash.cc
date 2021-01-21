@@ -4,6 +4,7 @@
 
 #include "chrome/browser/account_manager_facade_factory.h"
 
+#include <limits>
 #include <map>
 #include <memory>
 #include <utility>
@@ -42,9 +43,14 @@ account_manager::AccountManagerFacade* GetAccountManagerFacade(
     mojo::Remote<crosapi::mojom::AccountManager> remote;
     GetAccountManagerAsh(profile_path)
         ->BindReceiver(remote.BindNewPipeAndPassReceiver());
+    // This is set to a sentinel value which will pass all minimum version
+    // checks.
+    // Calls within Ash are in the same process and don't need to check version
+    // compatibility with itself.
+    constexpr uint32_t remote_version = std::numeric_limits<uint32_t>::max();
     it = account_manager_facade_map
              ->emplace(profile_path, std::make_unique<AccountManagerFacadeImpl>(
-                                         std::move(remote)))
+                                         std::move(remote), remote_version))
              .first;
   }
 
