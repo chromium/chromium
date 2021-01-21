@@ -10,7 +10,7 @@ function triggerDocsHtmlFallbackMode() {
   `;
   const script = document.createElement('script');
   script.innerHTML = scriptContents;
-  document.body.appendChild(script);
+  document.head.appendChild(script);
 }
 
 function RemoveAriaHiddenFromGoogleDocsContent() {
