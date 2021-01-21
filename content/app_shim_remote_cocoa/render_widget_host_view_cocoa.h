@@ -135,10 +135,11 @@ struct DidOverscrollParams;
   // the whole content yet.
   NSRange _markedRange;
 
-  // The text selection, cached from the RenderWidgetHostView. This is only ever
-  // updated from the renderer.
-  base::string16 _textSelectionText;
-  size_t _textSelectionOffset;
+  // The text selection, cached from the RenderWidgetHostView.
+  // |_availableText| contains the selected text and is a substring of the
+  // full string in the renderer.
+  base::string16 _availableText;
+  size_t _availableTextOffset;
   gfx::Range _textSelectionRange;
 
   // The composition range, cached from the RenderWidgetHostView. This is only
