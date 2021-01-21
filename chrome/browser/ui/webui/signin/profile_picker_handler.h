@@ -7,7 +7,6 @@
 
 #include <unordered_map>
 
-#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -35,10 +34,6 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   void OnJavascriptDisallowed() override;
 
  private:
-  friend class ProfilePickerHandlerTest;
-  FRIEND_TEST_ALL_PREFIXES(ProfilePickerHandlerTest, MarkProfileAsOmitted);
-  FRIEND_TEST_ALL_PREFIXES(ProfilePickerHandlerTest, OmittedProfileOnInit);
-
   void HandleMainViewInitialize(const base::ListValue* args);
   void HandleLaunchSelectedProfile(bool open_settings,
                                    const base::ListValue* args);
@@ -75,14 +70,11 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
                                 Profile* profile);
   void PushProfilesList();
   base::Value GetProfilesList();
-  void AddProfileToList(const base::FilePath& profile_path);
-  void RemoveProfileFromList(const base::FilePath& profile_path);
 
   // ProfileAttributesStorage::Observer:
   void OnProfileAdded(const base::FilePath& profile_path) override;
   void OnProfileWasRemoved(const base::FilePath& profile_path,
                            const base::string16& profile_name) override;
-  void OnProfileIsOmittedChanged(const base::FilePath& profile_path) override;
   void OnProfileAvatarChanged(const base::FilePath& profile_path) override;
   void OnProfileHighResAvatarLoaded(
       const base::FilePath& profile_path) override;
