@@ -1553,21 +1553,6 @@ def check_check(clean_lines, line_number, error):
             break
 
 
-def check_for_comparisons_to_boolean(clean_lines, line_number, error):
-    # Get the line without comments and strings.
-    line = clean_lines.elided[line_number]
-
-    # Must include NULL here, as otherwise users will convert NULL to 0 and
-    # then we can't catch it, since it looks like a valid integer comparison.
-    if search(r'[=!]=\s*(NULL|nullptr|true|false)[^\w.]', line) or search(
-            r'[^\w.](NULL|nullptr|true|false)\s*[=!]=', line):
-        if not search('LIKELY', line) and not search('UNLIKELY', line):
-            error(
-                line_number, 'readability/comparison_to_boolean', 5,
-                'Tests for true/false and null/non-null should be done without equality comparisons.'
-            )
-
-
 def get_line_width(line):
     """Determines the width of the line in column positions.
 
@@ -1833,7 +1818,6 @@ def check_style(clean_lines, line_number, file_state, error):
     # Some more style checks
     check_ctype_functions(clean_lines, line_number, file_state, error)
     check_check(clean_lines, line_number, error)
-    check_for_comparisons_to_boolean(clean_lines, line_number, error)
 
 
 _RE_PATTERN_INCLUDE = re.compile(r'^\s*#\s*include\s*([<"])([^>"]*)[>"].*$')
@@ -2732,7 +2716,6 @@ class CppChecker(object):
         'legal/copyright',
         'readability/casting',
         'readability/check',
-        'readability/comparison_to_boolean',
         'readability/control_flow',
         'readability/enum_casing',
         'readability/fn_size',
