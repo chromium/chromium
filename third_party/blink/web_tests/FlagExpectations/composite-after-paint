@@ -39,6 +39,7 @@ crbug.com/918155 virtual/prefer_compositing_to_lcd_text/scrollbars/overlay-scrol
 crbug.com/918155 virtual/prefer_compositing_to_lcd_text/scrollbars/overlay-scrollbar-over-child-layer-nested.html [ Pass ]
 paint/invalidation/compositing/subpixel-offset-scaled-transform-composited.html [ Pass ]
 crbug.com/1135676 external/wpt/css/css-ui/resize-child-will-change-transform.html [ Pass ]
+crbug.com/148499 external/wpt/svg/extensibility/foreignObject/will-change-in-foreign-object-paint-order.html [ Pass ]
 
 # Raster invalidation doesn't work for huge layers.
 paint/invalidation/raster-under-invalidation-checking.html [ Failure ]

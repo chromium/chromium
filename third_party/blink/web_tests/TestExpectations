@@ -453,6 +453,7 @@ crbug.com/1054894 [ Mac ] http/tests/images/image-decode-in-frame.html [ Pass Fa
 
 # Fixed in CompositeAfterPaint.
 crbug.com/1135676 external/wpt/css/css-ui/resize-child-will-change-transform.html [ Failure ]
+crbug.com/148499 external/wpt/svg/extensibility/foreignObject/will-change-in-foreign-object-paint-order.html [ Failure ]
 
 # ====== Paint team owned tests to here ======
 
