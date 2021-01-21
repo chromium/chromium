@@ -91,8 +91,7 @@ WebVideoCaptureImplManager::~WebVideoCaptureImplManager() {
 }
 
 base::OnceClosure WebVideoCaptureImplManager::UseDevice(
-    const media::VideoCaptureSessionId& id,
-    BrowserInterfaceBrokerProxy* browser_interface_broker) {
+    const media::VideoCaptureSessionId& id) {
   DVLOG(1) << __func__ << " session id: " << id;
   DCHECK(render_main_task_runner_->BelongsToCurrentThread());
   auto it = std::find_if(
@@ -104,8 +103,8 @@ base::OnceClosure WebVideoCaptureImplManager::UseDevice(
     it->session_id = id;
     it->impl = CreateVideoCaptureImplForTesting(id);
     if (!it->impl) {
-      it->impl = std::make_unique<VideoCaptureImpl>(
-          id, render_main_task_runner_, browser_interface_broker);
+      it->impl =
+          std::make_unique<VideoCaptureImpl>(id, render_main_task_runner_);
     }
   }
   ++it->client_count;
