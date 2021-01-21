@@ -1105,8 +1105,10 @@ void TableView::SchedulePaintForSelection() {
   if (selection_model_.size() == 1) {
     const int first_model_row = GetFirstSelectedRow();
     SchedulePaintInRect(GetRowBounds(ModelToView(first_model_row)));
-    if (first_model_row != selection_model_.active())
-      SchedulePaintInRect(GetRowBounds(ModelToView(selection_model_.active())));
+
+    const int active_row = selection_model_.active();
+    if (active_row >= 0 && first_model_row != active_row)
+      SchedulePaintInRect(GetRowBounds(ModelToView(active_row)));
   } else if (selection_model_.size() > 1) {
     SchedulePaint();
   }

@@ -112,7 +112,10 @@ void ListSelectionModel::AddIndexToSelection(int index) {
 
 void ListSelectionModel::AddIndexRangeToSelection(int index_start,
                                                   int index_end) {
-  DCHECK_LT(index_start, index_end);
+  DCHECK_LE(index_start, index_end);
+
+  if (index_start == index_end)
+    return AddIndexToSelection(index_start);
 
   for (int i = index_start; i <= index_end; ++i) {
     selected_indices_.insert(i);
