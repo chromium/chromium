@@ -656,7 +656,9 @@ void NavigationSimulatorImpl::AbortFromRenderer() {
          "NavigationSimulatorImpl::Commit or  "
          "NavigationSimulatorImpl::CommitErrorPage.";
 
-  was_aborted_ = true;
+  if (state_ < READY_TO_COMMIT)
+    was_aborted_prior_to_ready_to_commit_ = true;
+
   request_->RendererAbortedNavigationForTesting();
   state_ = FINISHED;
 
@@ -1068,7 +1070,7 @@ void NavigationSimulatorImpl::DidFinishNavigation(
       state_ = FINISHED;
     }
     request_ = nullptr;
-    if (was_aborted_)
+    if (was_aborted_prior_to_ready_to_commit_)
       CHECK_EQ(net::ERR_ABORTED, request->GetNetErrorCode());
   }
 }

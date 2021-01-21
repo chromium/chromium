@@ -10,9 +10,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/macros.h"
-#include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
@@ -23,6 +21,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/test_navigation_throttle.h"
 #include "content/public/test/test_navigation_throttle_inserter.h"
+#include "content/test/task_runner_deferring_throttle.h"
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
@@ -31,48 +30,6 @@
 #include "url/gurl.h"
 
 namespace content {
-
-// This class defers a navigation via a no-op async task on the provided task
-// runner.
-class TaskRunnerDeferringThrottle : public NavigationThrottle {
- public:
-  TaskRunnerDeferringThrottle(scoped_refptr<base::TaskRunner> task_runner,
-                              NavigationHandle* handle)
-      : NavigationThrottle(handle), task_runner_(std::move(task_runner)) {}
-  ~TaskRunnerDeferringThrottle() override {}
-
-  static std::unique_ptr<NavigationThrottle> Create(
-      scoped_refptr<base::TaskRunner> task_runner,
-      NavigationHandle* handle) {
-    return base::WrapUnique(
-        new TaskRunnerDeferringThrottle(std::move(task_runner), handle));
-  }
-
-  // NavigationThrottle:
-  ThrottleCheckResult WillStartRequest() override { return DeferToPostTask(); }
-  ThrottleCheckResult WillRedirectRequest() override {
-    return DeferToPostTask();
-  }
-  ThrottleCheckResult WillProcessResponse() override {
-    return DeferToPostTask();
-  }
-  const char* GetNameForLogging() override {
-    return "TaskRunnerDeferringThrottle";
-  }
-
- private:
-  ThrottleCheckResult DeferToPostTask() {
-    task_runner_->PostTaskAndReply(
-        FROM_HERE, base::DoNothing(),
-        base::BindOnce(&TaskRunnerDeferringThrottle::Resume,
-                       weak_factory_.GetWeakPtr()));
-
-    return NavigationThrottle::DEFER;
-  }
-  scoped_refptr<base::TaskRunner> task_runner_;
-  base::WeakPtrFactory<TaskRunnerDeferringThrottle> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(TaskRunnerDeferringThrottle);
-};
 
 class NavigationSimulatorTest : public RenderViewHostImplTestHarness {};
 
@@ -194,8 +151,11 @@ TEST_F(NavigationSimulatorTest, AutoAdvanceOff) {
   auto task_runner = base::MakeRefCounted<base::TestSimpleTaskRunner>();
   auto* raw_runner = task_runner.get();
   TestNavigationThrottleInserter throttle_inserter(
-      web_contents(), base::BindRepeating(&TaskRunnerDeferringThrottle::Create,
-                                          std::move(task_runner)));
+      web_contents(),
+      base::BindRepeating(&TaskRunnerDeferringThrottle::Create,
+                          std::move(task_runner), true /* defer_start */,
+                          true /* defer_redirect */,
+                          true /* defer_response */));
 
   simulator->Start();
   EXPECT_EQ(1u, raw_runner->NumPendingTasks());

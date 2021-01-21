@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/stl_util.h"
+#include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
@@ -27,8 +28,10 @@
 #include "content/public/common/url_utils.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/test_navigation_throttle_inserter.h"
 #include "content/public/test/test_utils.h"
 #include "content/test/navigation_simulator_impl.h"
+#include "content/test/task_runner_deferring_throttle.h"
 #include "content/test/test_navigation_url_loader.h"
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_web_contents.h"
@@ -251,6 +254,134 @@ TEST_F(NavigatorTest, SimpleRendererInitiatedCrossSiteNavigation) {
     EXPECT_EQ(site_instance_1->GetId(),
               main_test_rfh()->GetSiteInstance()->GetId());
   }
+}
+
+// Tests that when a navigation to about:blank is renderer-aborted,
+// after another cross-site navigation has been initiated, that the
+// second navigation is undisturbed.
+TEST_F(NavigatorTest, RendererAbortedAboutBlankNavigation) {
+  const GURL kUrl0("http://www.google.com/");
+  const GURL kUrl1("about:blank");
+  const GURL kUrl2("http://www.chromium.org/Home");
+
+  contents()->NavigateAndCommit(kUrl0);
+  EXPECT_TRUE(main_test_rfh()->IsRenderFrameLive());
+  if (!ExpectSiteInstanceChange(main_test_rfh()->GetSiteInstance()))
+    return;
+
+  // Start a renderer-initiated navigation to about:blank.
+  EXPECT_FALSE(main_test_rfh()->is_loading());
+  auto navigation1 =
+      NavigationSimulator::CreateRendererInitiated(kUrl1, main_test_rfh());
+  navigation1->SetTransition(ui::PAGE_TRANSITION_LINK);
+  navigation1->Start();
+  navigation1->ReadyToCommit();
+
+  // about:blank should load on the main rfhi, not a speculative one,
+  // and automatically advance to READY_TO_COMMIT since it requires
+  // no network resources.
+  FrameTreeNode* node = main_test_rfh()->frame_tree_node();
+  ASSERT_FALSE(node->navigation_request());
+  EXPECT_TRUE(main_test_rfh()->is_loading());
+  EXPECT_FALSE(GetSpeculativeRenderFrameHost(node));
+
+  // Start a second, cross-origin navigation.
+  auto navigation2 =
+      NavigationSimulator::CreateRendererInitiated(kUrl2, main_test_rfh());
+  navigation2->SetTransition(ui::PAGE_TRANSITION_LINK);
+  navigation2->Start();
+  ASSERT_TRUE(node->navigation_request());
+  EXPECT_TRUE(GetSpeculativeRenderFrameHost(node));
+
+  // Abort the initial navigation.
+  navigation1->AbortFromRenderer();
+
+  // But the speculative rfhi and second navigation request
+  // should be unaffected.
+  ASSERT_TRUE(node->navigation_request());
+  EXPECT_TRUE(GetSpeculativeRenderFrameHost(node));
+}
+
+// Tests that when a navigation to about:blank is renderer-aborted,
+// after another cross-site navigation has been initiated, that the
+// second navigation is undisturbed. In this variation, the second
+// navigation is initially same-site, then redirects cross-site,
+// and a throttle DEFERs during WillProcessResponse(). The initial
+// navigation gets aborted during this defer.
+TEST_F(NavigatorTest,
+       RedirectedRendererAbortedAboutBlankNavigationwithDeferredCommit) {
+  const GURL kUrl0("http://www.google.com/");
+  const GURL kUrl0SameSiteVariation("http://www.google.com/home");
+  const GURL kUrl1("about:blank");
+  const GURL kUrl2("http://www.chromium.org/Home");
+
+  contents()->NavigateAndCommit(kUrl0);
+  EXPECT_TRUE(main_test_rfh()->IsRenderFrameLive());
+  if (!ExpectSiteInstanceChange(main_test_rfh()->GetSiteInstance()))
+    return;
+
+  // Start a renderer-initiated navigation to about:blank.
+  EXPECT_FALSE(main_test_rfh()->is_loading());
+  auto navigation1 =
+      NavigationSimulator::CreateRendererInitiated(kUrl1, main_test_rfh());
+  navigation1->SetTransition(ui::PAGE_TRANSITION_LINK);
+  navigation1->Start();
+  navigation1->ReadyToCommit();
+
+  // about:blank should load on the main rfhi, not a speculative one,
+  // and automatically advance to READY_TO_COMMIT since it requires
+  // no network resources.
+  FrameTreeNode* node = main_test_rfh()->frame_tree_node();
+  ASSERT_FALSE(node->navigation_request());
+  EXPECT_TRUE(main_test_rfh()->is_loading());
+  EXPECT_FALSE(GetSpeculativeRenderFrameHost(node));
+
+  // Start a second, same-origin navigation.
+  auto navigation2 = NavigationSimulator::CreateRendererInitiated(
+      kUrl0SameSiteVariation, main_test_rfh());
+  navigation2->SetTransition(ui::PAGE_TRANSITION_LINK);
+  navigation2->SetAutoAdvance(false);
+
+  // Insert a TaskRunnerDeferringThrottle that will defer
+  // during WillProcessResponse() of navigation2.
+  auto task_runner = base::MakeRefCounted<base::TestSimpleTaskRunner>();
+  auto* raw_runner = task_runner.get();
+  TestNavigationThrottleInserter throttle_inserter(
+      web_contents(),
+      base::BindRepeating(&TaskRunnerDeferringThrottle::Create,
+                          std::move(task_runner), false /* defer_start */,
+                          false /* defer-redirect */,
+                          true /* defer_response */));
+
+  navigation2->Start();
+  ASSERT_TRUE(node->navigation_request());
+  EXPECT_FALSE(GetSpeculativeRenderFrameHost(node));
+
+  // Redirect navigation2 cross-site, which, once ReadyCommit()
+  // is called, will force a speculative RFHI to be created,
+  // and update the associated site instance type of the
+  // NavigationRequest for navigation2. This will prevent
+  // the abort of navigation1 from destroying the speculative
+  // RFHI that navigation2 depends on.
+  navigation2->Redirect(kUrl2);
+  EXPECT_FALSE(GetSpeculativeRenderFrameHost(node));
+  EXPECT_TRUE(node->navigation_request()->associated_site_instance_type() ==
+              NavigationRequest::AssociatedSiteInstanceType::CURRENT);
+
+  navigation2->ReadyToCommit();
+  EXPECT_EQ(1u, raw_runner->NumPendingTasks());
+  EXPECT_TRUE(navigation2->IsDeferred());
+  EXPECT_TRUE(GetSpeculativeRenderFrameHost(node));
+  EXPECT_EQ(node->navigation_request()->associated_site_instance_type(),
+            NavigationRequest::AssociatedSiteInstanceType::SPECULATIVE);
+
+  // Abort the initial navigation.
+  navigation1->AbortFromRenderer();
+
+  // The speculative rfhi and second navigation request
+  // should be unaffected.
+  ASSERT_TRUE(node->navigation_request());
+  EXPECT_TRUE(GetSpeculativeRenderFrameHost(node));
 }
 
 // Tests that a beforeUnload denial cancels the navigation.
