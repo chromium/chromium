@@ -1160,7 +1160,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // prevent interaction with the web page.
   // TODO(crbug.com/637093): This coordinator should be managed by the
   // coordinator used to present BrowserViewController, when implemented.
-  [self showActivityOverlay:!active];
+  if (!_isShutdown) {
+    [self showActivityOverlay:!active];
+  }
 
   if (self.browserState) {
     ActiveStateManager* active_state_manager =

@@ -34,8 +34,7 @@ const char kPDFURL[] = "http://ios/testing/data/http_server_files/testpage.pdf";
 // in landscape.
 - (void)tearDown {
   // No-op if only one window presents.
-  [ChromeEarlGrey closeAllExtraWindowsAndForceRelaunchWithAppConfig:
-                      [self appConfigurationForTestCase]];
+  [ChromeEarlGrey closeAllExtraWindows];
   [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
   [super tearDown];
 }
@@ -160,8 +159,6 @@ const char kPDFURL[] = "http://ios/testing/data/http_server_files/testpage.pdf";
 
   // Verify the second window.
   [ChromeEarlGrey waitForForegroundWindowCount:2];
-  [ChromeEarlGrey closeAllExtraWindowsAndForceRelaunchWithAppConfig:
-                      [self appConfigurationForTestCase]];
 }
 
 // Navigates to a pdf page and verifies that the "Find in Page..." tool

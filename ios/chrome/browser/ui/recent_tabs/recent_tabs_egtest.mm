@@ -392,8 +392,7 @@ GURL TestPageURL() {
                                           grey_accessibilityElement(), nil)]
       assertWithMatcher:grey_notNil()];
 
-  [ChromeEarlGrey closeAllExtraWindowsAndForceRelaunchWithAppConfig:
-                      [self appConfigurationForTestCase]];
+  [ChromeEarlGrey closeAllExtraWindows];
 }
 
 // Tests the Share action on a recent tab's context menu.

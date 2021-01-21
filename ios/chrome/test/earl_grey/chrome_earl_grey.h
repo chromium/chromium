@@ -360,12 +360,9 @@ id ExecuteJavaScript(NSString* javascript, NSError** out_error);
 // or a GREYAssert is induced.
 - (void)waitForForegroundWindowCount:(NSUInteger)count;
 
-// Closes all but one window, including all non-foreground windows. Then kills
-// and relaunches app with launch args specified in |appConfig|. No-op if only
-// one window presents.
-// TODO(crbug.com/1143708): Remove the relaunch when EG2 slowness is fixed.
-- (void)closeAllExtraWindowsAndForceRelaunchWithAppConfig:
-    (AppLaunchConfiguration)appConfig;
+// Closes all but one window, including all non-foreground windows. No-op if
+// only one window presents.
+- (void)closeAllExtraWindows;
 
 #pragma mark - SignIn Utilities (EG2)
 

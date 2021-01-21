@@ -53,8 +53,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 // Tear down called once per test.
 - (void)tearDown {
   // No-op if only one window presents.
-  [ChromeEarlGrey closeAllExtraWindowsAndForceRelaunchWithAppConfig:
-                      [self appConfigurationForTestCase]];
+  [ChromeEarlGrey closeAllExtraWindows];
   [ChromeEarlGrey clearBookmarks];
   [BookmarkEarlGrey clearBookmarksPositionCache];
   [super tearDown];
@@ -220,8 +219,6 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
                                           GetFirstUrl().GetContent())]
       assertWithMatcher:grey_notNil()];
   [ChromeEarlGrey waitForForegroundWindowCount:2];
-  [ChromeEarlGrey closeAllExtraWindowsAndForceRelaunchWithAppConfig:
-                      [self appConfigurationForTestCase]];
 }
 
 // Verify Edit Text functionality on single URL selection.

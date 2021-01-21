@@ -138,8 +138,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 - (void)tearDown {
   // No-op if only one window presents.
-  [ChromeEarlGrey closeAllExtraWindowsAndForceRelaunchWithAppConfig:
-                      [self appConfigurationForTestCase]];
+  [ChromeEarlGrey closeAllExtraWindows];
   NSError* error = nil;
   // Dismiss search bar by pressing cancel, if present. Passing error prevents
   // failure if the element is not found.
@@ -419,9 +418,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(
                                           _URL1.GetContent())]
       assertWithMatcher:grey_notNil()];
-
-  [ChromeEarlGrey closeAllExtraWindowsAndForceRelaunchWithAppConfig:
-                      [self appConfigurationForTestCase]];
 }
 
 // Tests display and selection of 'Open in New Incognito Tab' in a context menu

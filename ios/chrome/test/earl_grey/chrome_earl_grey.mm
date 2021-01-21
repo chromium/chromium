@@ -824,20 +824,17 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeEarlGreyAppInterface)
 // Closes all but one window, including all non-foreground windows. Then kills
 // and relaunches app with launch args specified in |appConfig|. No-op if only
 // one window presents.
-// TODO(crbug.com/1143708): Remove the relaunch when EG2 slowness is fixed.
-- (void)closeAllExtraWindowsAndForceRelaunchWithAppConfig:
-    (AppLaunchConfiguration)appConfig {
+- (void)closeAllExtraWindows {
   if ([self windowCount] <= 1) {
     return;
   }
   [ChromeEarlGreyAppInterface closeAllExtraWindows];
-  // Tab changes are initiated through |WebStateList|. Need to wait its
-  // obeservers to complete UI changes at app.
-  GREYWaitForAppToIdle(@"App failed to idle");
 
-  appConfig.relaunch_policy = ForceRelaunchByKilling;
-  [[AppLaunchManager sharedManager]
-      ensureAppLaunchedWithConfiguration:appConfig];
+  // Tab changes are initiated through |WebStateList|. Need to wait its
+  // observers to complete UI changes at app. Wait until window count is
+  // officially 1 in the app, otherwise we may start a new test while the
+  // removed window is still partly registered.
+  [self waitForForegroundWindowCount:1];
 }
 
 - (void)waitForForegroundWindowCount:(NSUInteger)count {

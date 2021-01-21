@@ -241,8 +241,7 @@ id<GREYMatcher> CloseAllTabsConfirmationWithNumberOfTabs(
                                           _URL1.GetContent())]
       assertWithMatcher:grey_notNil()];
 
-  [ChromeEarlGrey closeAllExtraWindowsAndForceRelaunchWithAppConfig:
-                      [self appConfigurationForTestCase]];
+  [ChromeEarlGrey closeAllExtraWindows];
 }
 
 // Tests the Share action on a recent tab's context menu.
