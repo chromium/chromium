@@ -1686,13 +1686,16 @@ NSString* const kBrowserViewControllerSnackbarCategory =
         // Force updates of the toolbar updater as the toolbar height might
         // change on rotation.
         [_toolbarUIUpdater updateState];
+        // Resize horizontal viewport if Smooth Scrolling is on.
+        if (fullscreen::features::ShouldUseSmoothScrolling()) {
+          BrowserViewController* strongSelf = weakSelf;
+          if (strongSelf) {
+            strongSelf.fullscreenController->ResizeHorizontalViewport();
+          }
+        }
       }
       completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
         BrowserViewController* strongSelf = weakSelf;
-        // Resize horizontal viewport if Smooth Scrolling is on.
-        if (fullscreen::features::ShouldUseSmoothScrolling()) {
-          strongSelf.fullscreenController->ResizeHorizontalViewport();
-        }
         if (!base::FeatureList::IsEnabled(kModernTabStrip)) {
           if (strongSelf.tabStripView) {
             [strongSelf.legacyTabStripCoordinator tabStripSizeDidChange];
