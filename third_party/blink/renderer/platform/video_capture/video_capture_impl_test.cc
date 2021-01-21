@@ -19,7 +19,6 @@
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/platform/video_capture/gpu_memory_buffer_test_support.h"
 #include "third_party/blink/renderer/platform/video_capture/video_capture_impl.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -125,8 +124,7 @@ class VideoCaptureImplTest : public ::testing::Test {
   VideoCaptureImplTest()
       : video_capture_impl_(
             new VideoCaptureImpl(session_id_,
-                                 base::ThreadTaskRunnerHandle::Get(),
-                                 &GetEmptyBrowserInterfaceBroker())) {
+                                 base::ThreadTaskRunnerHandle::Get())) {
     params_small_.requested_format = media::VideoCaptureFormat(
         gfx::Size(176, 144), 30, media::PIXEL_FORMAT_I420);
     params_large_.requested_format = media::VideoCaptureFormat(

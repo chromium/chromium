@@ -1436,6 +1436,8 @@ component("platform") {
     "transforms/transformation_matrix.h",
     "transforms/translate_transform_operation.cc",
     "transforms/translate_transform_operation.h",
+    "video_capture/local_video_capturer_source.cc",
+    "video_capture/local_video_capturer_source.h",
     "video_capture/video_capture_impl.cc",
     "video_capture/video_capture_impl.h",
     "web_test_support.cc",
