@@ -2812,7 +2812,10 @@ const CSSValue* FloodColor::ParseSingleValue(
 const blink::Color FloodColor::ColorIncludingFallback(
     bool visited_link,
     const ComputedStyle& style) const {
-  return style.ResolvedColor(style.FloodColor());
+  StyleColor flood_color = style.FloodColor();
+  if (style.ShouldForceColor(flood_color))
+    return style.GetInternalForcedCurrentColor();
+  return style.ResolvedColor(flood_color);
 }
 
 const CSSValue* FloodColor::CSSValueFromComputedStyleInternal(
@@ -4299,7 +4302,10 @@ const CSSValue* LightingColor::ParseSingleValue(
 const blink::Color LightingColor::ColorIncludingFallback(
     bool visited_link,
     const ComputedStyle& style) const {
-  return style.ResolvedColor(style.LightingColor());
+  StyleColor lighting_color = style.LightingColor();
+  if (style.ShouldForceColor(lighting_color))
+    return style.GetInternalForcedCurrentColor();
+  return style.ResolvedColor(lighting_color);
 }
 
 const CSSValue* LightingColor::CSSValueFromComputedStyleInternal(
@@ -6496,7 +6502,10 @@ const CSSValue* StopColor::ParseSingleValue(
 const blink::Color StopColor::ColorIncludingFallback(
     bool visited_link,
     const ComputedStyle& style) const {
-  return style.ResolvedColor(style.StopColor());
+  StyleColor stop_color = style.StopColor();
+  if (style.ShouldForceColor(stop_color))
+    return style.GetInternalForcedCurrentColor();
+  return style.ResolvedColor(stop_color);
 }
 
 const CSSValue* StopColor::CSSValueFromComputedStyleInternal(
