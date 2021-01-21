@@ -167,6 +167,7 @@ extern const char kChromeUITermsHost[];
 extern const char kChromeUITermsURL[];
 extern const char kChromeUIThemeHost[];
 extern const char kChromeUIThemeURL[];
+extern const char kChromeUITopChromeDomain[];
 extern const char kChromeUIUntrustedThemeURL[];
 extern const char kChromeUIThumbnailHost2[];
 extern const char kChromeUIThumbnailHost[];

@@ -12,6 +12,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/lazy_instance.h"
 #include "base/macros.h"
+#include "base/strings/string_split.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/browsing_instance.h"
 #include "content/browser/child_process_security_policy_impl.h"
@@ -21,6 +22,7 @@
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/webui/url_data_manager_backend.h"
+#include "content/browser/webui/web_ui_controller_factory_registry.h"
 #include "content/public/browser/browser_or_resource_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_process_host_factory.h"
@@ -37,6 +39,45 @@
 namespace content {
 
 namespace {
+
+using WebUIDomains = std::vector<std::string>;
+
+// Parses the TLD and any lower level domains for WebUI URLs of the form
+// chrome://foo.bar/. Domains are returned in the same order they appear in the
+// host.
+WebUIDomains GetWebUIDomains(const GURL& url) {
+  return base::SplitString(url.host_piece(), ".", base::TRIM_WHITESPACE,
+                           base::SPLIT_WANT_ALL);
+}
+
+// Checks if the `url` is a special case WebUI URL of the form
+// chrome://foo.bar/. Such URLs will employ LockURLs based on their TLD (ie
+// chome://bar/). This will allow WebUI URLs of the above form with common TLDs
+// to share a process whilst maintaining independent SiteURLs to allow for
+// WebUIType differentiation.
+bool IsWebUIAndUsesTLDForProcessLockURL(BrowserContext* browser_context,
+                                        const GURL& url) {
+  if (!WebUIControllerFactoryRegistry::GetInstance()->UseWebUIForURL(
+          browser_context, url)) {
+    return false;
+  }
+
+  WebUIDomains domains = GetWebUIDomains(url);
+  // This only applies to WebUI urls with two or more non-empty domains.
+  return domains.size() >= 2 &&
+         std::all_of(domains.begin(), domains.end(),
+                     [](const std::string& domain) { return !domain.empty(); });
+}
+
+// For WebUI URLs of the form chrome://foo.bar/ creates the appropriate process
+// lock URL. See comment for `IsWebUIAndUsesTLDForProcessLockURL()`.
+GURL GetProcessLockForWebUIURL(BrowserContext* browser_context,
+                               const GURL& url) {
+  DCHECK(IsWebUIAndUsesTLDForProcessLockURL(browser_context, url));
+  WebUIDomains host_domains = GetWebUIDomains(url);
+  return GURL(url.scheme() + url::kStandardSchemeSeparator +
+              host_domains.back());
+}
 
 GURL SchemeAndHostToSite(const std::string& scheme, const std::string& host) {
   return GURL(scheme + url::kStandardSchemeSeparator + host);
@@ -1234,6 +1275,20 @@ SiteInfo SiteInstanceImpl::ComputeSiteInfo(
           ->ShouldOriginGetOptInIsolation(isolation_context,
                                           url::Origin::Create(url_info.url),
                                           url_info.origin_requests_isolation);
+
+  // For WebUI URLs of the form chrome://foo.bar/ compute SiteInfo such that
+  // WebUIType can continue to be differentiated via SiteURL but allows RPH
+  // sharing via LockURL based on the TLD (ie chrome://bar/).
+  // TODO(tluk): Remove this and replace it with SiteInstance groups once the
+  // support lands.
+  BrowserContext* browser_context =
+      isolation_context.browser_or_resource_context().ToBrowserContext();
+  DCHECK(browser_context);
+  if (IsWebUIAndUsesTLDForProcessLockURL(browser_context, url_info.url)) {
+    return SiteInfo(GetSiteForURL(isolation_context, url_info),
+                    GetProcessLockForWebUIURL(browser_context, url_info.url),
+                    is_origin_keyed, cross_origin_isolated_info);
+  }
 
   return SiteInfo(GetSiteForURL(isolation_context, url_info),
                   DetermineProcessLockURL(isolation_context, url_info),

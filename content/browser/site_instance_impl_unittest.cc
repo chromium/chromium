@@ -29,6 +29,8 @@
 #include "content/browser/webui/web_ui_controller_factory_registry.h"
 #include "content/public/browser/browser_or_resource_context.h"
 #include "content/public/browser/site_isolation_policy.h"
+#include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/web_ui_controller_factory.h"
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_constants.h"
@@ -189,6 +191,11 @@ class SiteInstanceTest : public testing::Test {
   SiteInfo GetSiteInfoForURL(const std::string& url) {
     return SiteInstanceImpl::ComputeSiteInfoForTesting(
         IsolationContext(&context_), GURL(url));
+  }
+
+  SiteInfo GetSiteInfoForURL(const GURL& url) {
+    return SiteInstanceImpl::ComputeSiteInfoForTesting(
+        IsolationContext(&context_), url);
   }
 
   static bool IsSameSite(BrowserContext* context,
@@ -1795,6 +1802,48 @@ TEST_F(SiteInstanceTest, DoesSiteRequireDedicatedProcess) {
               DoesURLRequireDedicatedProcess(isolation_context, GURL(url)));
   }
   SetBrowserClientForTesting(regular_client);
+}
+
+TEST_F(SiteInstanceTest, DoWebUIURLsWithSubdomainsUseTLDForProcessLock) {
+  class CustomWebUIWebUIControllerFactory : public WebUIControllerFactory {
+   public:
+    std::unique_ptr<WebUIController> CreateWebUIControllerForURL(
+        WebUI* web_ui,
+        const GURL& url) override {
+      return nullptr;
+    }
+    WebUI::TypeID GetWebUIType(BrowserContext* browser_context,
+                               const GURL& url) override {
+      return WebUI::kNoWebUI;
+    }
+    bool UseWebUIForURL(BrowserContext* browser_context,
+                        const GURL& url) override {
+      return HasWebUIScheme(url);
+    }
+  };
+  CustomWebUIWebUIControllerFactory factory;
+  WebUIControllerFactory::RegisterFactory(&factory);
+
+  const GURL webui_tld_url = GetWebUIURL("foo");
+  const GURL webui_host_bar_url = GetWebUIURL("bar.foo");
+  const GURL webui_host_baz_url = GetWebUIURL("baz.foo");
+
+  const SiteInfo webui_tld_site_info = GetSiteInfoForURL(webui_tld_url);
+  const SiteInfo webui_host_bar_site_info =
+      GetSiteInfoForURL(webui_host_bar_url);
+  const SiteInfo webui_host_baz_site_info =
+      GetSiteInfoForURL(webui_host_baz_url);
+
+  // WebUI URLs should result in SiteURLs with the full scheme and hostname
+  // of the WebUI URL.
+  EXPECT_EQ(webui_tld_url, webui_tld_site_info.site_url());
+  EXPECT_EQ(webui_host_bar_url, webui_host_bar_site_info.site_url());
+  EXPECT_EQ(webui_host_baz_url, webui_host_baz_site_info.site_url());
+
+  // WebUI URLs should use their TLD for ProcessLockURLs.
+  EXPECT_EQ(webui_tld_url, webui_tld_site_info.process_lock_url());
+  EXPECT_EQ(webui_tld_url, webui_host_bar_site_info.process_lock_url());
+  EXPECT_EQ(webui_tld_url, webui_host_baz_site_info.process_lock_url());
 }
 
 }  // namespace content

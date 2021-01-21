@@ -167,14 +167,15 @@ bool Navigator::CheckWebUIRendererDoesNotDisplayNormalURL(
     }
   }
 
-  // If |url| is one that is allowed in WebUI renderer process, ensure that its
-  // origin is either opaque or matches the origin of the process lock.
+  // If `url` is one that is allowed in WebUI renderer process, ensure that its
+  // origin is either opaque or its process lock matches the RFH process lock.
   if (is_allowed_in_web_ui_renderer) {
     url::Origin url_origin = url::Origin::Create(url.GetOrigin());
 
-    // Verify |url| matches the origin of the process lock, if one is in place.
+    // Verify `site_info`'s process lock matches the RFH's process lock, if one
+    // is in place.
     if (should_lock_process) {
-      if (!url_origin.opaque() && !process_lock.MatchesOrigin(url_origin))
+      if (!url_origin.opaque() && process_lock != ProcessLock(site_info))
         return false;
     }
   }
