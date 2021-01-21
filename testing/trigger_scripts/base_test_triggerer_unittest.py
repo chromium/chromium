@@ -1,4 +1,3 @@
-#!/usr/bin/env vpython
 # Copyright 2020 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -6,20 +5,12 @@
 """Tests for base_device_trigger.py."""
 
 import argparse
-import json
 import unittest
-
-import mock
-
-from pyfakefs import fake_filesystem_unittest
 
 import base_test_triggerer
 
 
-class UnitTest(fake_filesystem_unittest.TestCase):
-  def setUp(self):
-    self.setUpPyfakefs()
-
+class UnitTest(unittest.TestCase):
   def test_convert_to_go_swarming_args(self):
     args = [
         '--swarming', 'x.apphost.com', '--dimension', 'pool', 'ci',
@@ -67,36 +58,6 @@ class UnitTest(fake_filesystem_unittest.TestCase):
     for args, ex in invalid_args:
       self.assertRaises(ex, base_test_triggerer._convert_to_go_swarming_args,
                         args)
-
-  def test_run_swarming_go(self):
-    triggerer = base_test_triggerer.BaseTestTriggerer()
-
-    dump_json = 'dump_json'
-    with open(dump_json, 'w') as f:
-      f.write(json.dumps({
-        'tasks': [{
-          'request': {
-            'task_id': 'f0',
-          },
-        }]
-      }))
-
-    with mock.patch('subprocess.call', return_value=0) as mock_call:
-      triggerer.run_swarming_go([], False, dump_json, 0, 1, {})
-      mock_call.assert_called_once()
-
-    with open(dump_json) as f:
-      self.assertEqual(
-        json.load(f),
-        {
-          u'tasks': {
-            u'f0:0:1': {
-              u'shard_index': 0,
-              u'task_id': u'f0'
-            }
-          }
-        })
-
 
   def test_arg_parser(self):
     # Added for https://crbug.com/1143224
