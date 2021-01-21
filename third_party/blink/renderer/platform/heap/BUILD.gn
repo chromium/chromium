@@ -193,10 +193,19 @@ blink_platform_sources("heap") {
 source_set("test_support") {
   testonly = true
 
-  sources = [
-    "heap_test_utilities.cc",
-    "heap_test_utilities.h",
-  ]
+  sources = [ "heap_test_utilities.h" ]
+
+  if (enable_blink_heap_use_v8_oilpan) {
+    sources += [
+      "v8_wrapper/heap_test_utilities.cc",
+      "v8_wrapper/heap_test_utilities.h",
+    ]
+  } else {
+    sources += [
+      "impl/heap_test_utilities.cc",
+      "impl/heap_test_utilities.h",
+    ]
+  }
 
   deps = [
     ":blink_heap_buildflags",
@@ -223,32 +232,36 @@ test("blink_heap_unittests") {
 
 source_set("blink_heap_unittests_sources") {
   testonly = true
-  sources = [
-    "../testing/run_all_tests.cc",
-    "test/blink_gc_memory_dump_provider_test.cc",
-    "test/card_table_test.cc",
-    "test/concurrent_marking_test.cc",
-    "test/gc_info_test.cc",
-    "test/heap_compact_test.cc",
-    "test/heap_linked_stack_test.cc",
-    "test/heap_stats_collector_test.cc",
-    "test/heap_test.cc",
-    "test/heap_thread_test.cc",
-    "test/heap_traits_test.cc",
-    "test/incremental_marking_test.cc",
-    "test/marking_scheduling_oracle_test.cc",
-    "test/marking_verifier_test.cc",
-    "test/name_trait_test.cc",
-    "test/object_start_bitmap_test.cc",
-    "test/persistent_test.cc",
-    "test/thread_state_scheduling_test.cc",
-    "test/weakness_marking_test.cc",
-    "test/worklist_test.cc",
-    "test/write_barrier_perftest.cc",
-  ]
 
-  if (enable_blink_heap_young_generation) {
-    sources += [ "test/minor_gc_test.cc" ]
+  sources = [ "../testing/run_all_tests.cc" ]
+
+  if (!enable_blink_heap_use_v8_oilpan) {
+    sources += [
+      "test/blink_gc_memory_dump_provider_test.cc",
+      "test/card_table_test.cc",
+      "test/concurrent_marking_test.cc",
+      "test/gc_info_test.cc",
+      "test/heap_compact_test.cc",
+      "test/heap_linked_stack_test.cc",
+      "test/heap_stats_collector_test.cc",
+      "test/heap_test.cc",
+      "test/heap_thread_test.cc",
+      "test/heap_traits_test.cc",
+      "test/incremental_marking_test.cc",
+      "test/marking_scheduling_oracle_test.cc",
+      "test/marking_verifier_test.cc",
+      "test/name_trait_test.cc",
+      "test/object_start_bitmap_test.cc",
+      "test/persistent_test.cc",
+      "test/thread_state_scheduling_test.cc",
+      "test/weakness_marking_test.cc",
+      "test/worklist_test.cc",
+      "test/write_barrier_perftest.cc",
+    ]
+
+    if (enable_blink_heap_young_generation) {
+      sources += [ "test/minor_gc_test.cc" ]
+    }
   }
 
   configs += [
