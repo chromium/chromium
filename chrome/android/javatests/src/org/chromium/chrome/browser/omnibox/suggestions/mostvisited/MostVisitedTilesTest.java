@@ -250,6 +250,7 @@ public class MostVisitedTilesTest {
     @Test
     @MediumTest
     @EnableFeatures("OmniboxMostVisitedTiles")
+    @DisabledTest(message = "Test flaky: https://crbug.com/1168660")
     public void keyboardNavigation_highlightAlwaysStartsWithFirstElement()
             throws InterruptedException {
         // Skip past the 'what-you-typed' suggestion.
