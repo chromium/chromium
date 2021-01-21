@@ -183,7 +183,27 @@ TEST_F(LocalCardMigrationBubbleControllerImplTest,
       AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_CLOSED_DENIED, 1);
 }
 
-TEST_F(LocalCardMigrationBubbleControllerImplTest,
+// TODO(siyua): Remove in experiment clean-up.
+// Test class to ensure the local card migration bubble navigation is logged
+// correctly.
+class LocalCardMigrationBubbleControllerImplTestWithoutStickyBubble
+    : public LocalCardMigrationBubbleControllerImplTest {
+ public:
+  LocalCardMigrationBubbleControllerImplTestWithoutStickyBubble() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{
+            features::kAutofillEnableFixedPaymentsBubbleLogging,
+            features::kAutofillEnableStickyPaymentsBubble});
+  }
+  ~LocalCardMigrationBubbleControllerImplTestWithoutStickyBubble() override =
+      default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(LocalCardMigrationBubbleControllerImplTestWithoutStickyBubble,
        Metrics_FirstShow_NavigateWhileShowing) {
   ShowBubble();
 
@@ -207,7 +227,7 @@ TEST_F(LocalCardMigrationBubbleControllerImplTest,
       1);
 }
 
-TEST_F(LocalCardMigrationBubbleControllerImplTest,
+TEST_F(LocalCardMigrationBubbleControllerImplTestWithoutStickyBubble,
        Metrics_Reshows_NavigateWhileShowing) {
   ShowBubble();
   CloseAndReshowBubble();
@@ -232,7 +252,7 @@ TEST_F(LocalCardMigrationBubbleControllerImplTest,
       1);
 }
 
-TEST_F(LocalCardMigrationBubbleControllerImplTest,
+TEST_F(LocalCardMigrationBubbleControllerImplTestWithoutStickyBubble,
        Metrics_FirstShow_NavigateWhileHidden) {
   ShowBubble();
 
@@ -249,7 +269,7 @@ TEST_F(LocalCardMigrationBubbleControllerImplTest,
       1);
 }
 
-TEST_F(LocalCardMigrationBubbleControllerImplTest,
+TEST_F(LocalCardMigrationBubbleControllerImplTestWithoutStickyBubble,
        Metrics_Reshows_NavigateWhileHidden) {
   ShowBubble();
   CloseAndReshowBubble();

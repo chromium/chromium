@@ -238,7 +238,26 @@ TEST_F(SaveCardBubbleControllerImplTest,
   EXPECT_NE(nullptr, controller()->GetSaveCardBubbleView());
 }
 
-TEST_F(SaveCardBubbleControllerImplTest,
+// TODO(siyua): Remove in experiment clean-up.
+// Test class to ensure the save card bubble navigation is logged
+// correctly.
+class SaveCardBubbleControllerImplTestWithoutStickyBubble
+    : public SaveCardBubbleControllerImplTest {
+ public:
+  SaveCardBubbleControllerImplTestWithoutStickyBubble() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{
+            features::kAutofillEnableFixedPaymentsBubbleLogging,
+            features::kAutofillEnableStickyPaymentsBubble});
+  }
+  ~SaveCardBubbleControllerImplTestWithoutStickyBubble() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(SaveCardBubbleControllerImplTestWithoutStickyBubble,
        Metrics_Local_FirstShow_NavigateWhileShowing) {
   ShowLocalBubble();
 
@@ -264,7 +283,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
       AutofillMetrics::SAVE_CARD_PROMPT_END_NAVIGATION_SHOWING, 1);
 }
 
-TEST_F(SaveCardBubbleControllerImplTest,
+TEST_F(SaveCardBubbleControllerImplTestWithoutStickyBubble,
        Metrics_Local_FirstShow_FromDynamicChangeForm_NavigateWhileShowing) {
   ShowLocalBubble(/*card=*/nullptr, AutofillClient::SaveCreditCardOptions()
                                         .with_from_dynamic_change_form(true)
@@ -292,7 +311,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
       AutofillMetrics::SAVE_CARD_PROMPT_END_NAVIGATION_SHOWING, 1);
 }
 
-TEST_F(SaveCardBubbleControllerImplTest,
+TEST_F(SaveCardBubbleControllerImplTestWithoutStickyBubble,
        Metrics_Local_FirstShow_FromNonFocusableForm_NavigateWhileShowing) {
   ShowLocalBubble(/*card=*/nullptr, AutofillClient::SaveCreditCardOptions()
                                         .with_has_non_focusable_field(true)
@@ -320,7 +339,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
       AutofillMetrics::SAVE_CARD_PROMPT_END_NAVIGATION_SHOWING, 1);
 }
 
-TEST_F(SaveCardBubbleControllerImplTest,
+TEST_F(SaveCardBubbleControllerImplTestWithoutStickyBubble,
        Metrics_Local_Reshows_NavigateWhileShowing) {
   ShowLocalBubble();
   CloseAndReshowBubble();
@@ -347,7 +366,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
       AutofillMetrics::SAVE_CARD_PROMPT_END_NAVIGATION_SHOWING, 1);
 }
 
-TEST_F(SaveCardBubbleControllerImplTest,
+TEST_F(SaveCardBubbleControllerImplTestWithoutStickyBubble,
        Metrics_Upload_FirstShow_NavigateWhileShowing) {
   ShowUploadBubble();
 
@@ -373,7 +392,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
       AutofillMetrics::SAVE_CARD_PROMPT_END_NAVIGATION_SHOWING, 1);
 }
 
-TEST_F(SaveCardBubbleControllerImplTest,
+TEST_F(SaveCardBubbleControllerImplTestWithoutStickyBubble,
        Metrics_Upload_FirstShow_FromNonFocusableForm_NavigateWhileShowing) {
   ShowUploadBubble(AutofillClient::SaveCreditCardOptions()
                        .with_has_non_focusable_field(true)
@@ -400,7 +419,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
       AutofillMetrics::SAVE_CARD_PROMPT_END_NAVIGATION_SHOWING, 1);
 }
 
-TEST_F(SaveCardBubbleControllerImplTest,
+TEST_F(SaveCardBubbleControllerImplTestWithoutStickyBubble,
        Metrics_Upload_FirstShow_FromDynamicChangeForm_NavigateWhileShowing) {
   ShowUploadBubble(AutofillClient::SaveCreditCardOptions()
                        .with_from_dynamic_change_form(true)
@@ -428,7 +447,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
       AutofillMetrics::SAVE_CARD_PROMPT_END_NAVIGATION_SHOWING, 1);
 }
 
-TEST_F(SaveCardBubbleControllerImplTest,
+TEST_F(SaveCardBubbleControllerImplTestWithoutStickyBubble,
        Metrics_Upload_FirstShow_RequestingCardholderName_NavigateWhileShowing) {
   ShowUploadBubble(AutofillClient::SaveCreditCardOptions()
                        .with_should_request_name_from_user(true)
@@ -457,7 +476,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
       AutofillMetrics::SAVE_CARD_PROMPT_END_NAVIGATION_SHOWING, 1);
 }
 
-TEST_F(SaveCardBubbleControllerImplTest,
+TEST_F(SaveCardBubbleControllerImplTestWithoutStickyBubble,
        Metrics_Upload_FirstShow_RequestingExpirationDate_NavigateWhileShowing) {
   ShowUploadBubble(AutofillClient::SaveCreditCardOptions()
                        .with_should_request_expiration_date_from_user(true)
@@ -486,7 +505,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
       AutofillMetrics::SAVE_CARD_PROMPT_END_NAVIGATION_SHOWING, 1);
 }
 
-TEST_F(SaveCardBubbleControllerImplTest,
+TEST_F(SaveCardBubbleControllerImplTestWithoutStickyBubble,
        Metrics_Upload_Reshows_NavigateWhileShowing) {
   ShowUploadBubble();
   CloseAndReshowBubble();
@@ -513,7 +532,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
       AutofillMetrics::SAVE_CARD_PROMPT_END_NAVIGATION_SHOWING, 1);
 }
 
-TEST_F(SaveCardBubbleControllerImplTest,
+TEST_F(SaveCardBubbleControllerImplTestWithoutStickyBubble,
        Metrics_Upload_Reshows_RequestingCardholderName_NavigateWhileShowing) {
   ShowUploadBubble(AutofillClient::SaveCreditCardOptions()
                        .with_should_request_name_from_user(true)
@@ -543,7 +562,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
       AutofillMetrics::SAVE_CARD_PROMPT_END_NAVIGATION_SHOWING, 1);
 }
 
-TEST_F(SaveCardBubbleControllerImplTest,
+TEST_F(SaveCardBubbleControllerImplTestWithoutStickyBubble,
        Metrics_Upload_Reshows_RequestingExpirationDate_NavigateWhileShowing) {
   ShowUploadBubble(AutofillClient::SaveCreditCardOptions()
                        .with_should_request_expiration_date_from_user(true)
@@ -573,7 +592,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
       AutofillMetrics::SAVE_CARD_PROMPT_END_NAVIGATION_SHOWING, 1);
 }
 
-TEST_F(SaveCardBubbleControllerImplTest,
+TEST_F(SaveCardBubbleControllerImplTestWithoutStickyBubble,
        Metrics_Local_FirstShow_NavigateWhileHidden) {
   ShowLocalBubble();
 
@@ -588,7 +607,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
       AutofillMetrics::SAVE_CARD_PROMPT_END_NAVIGATION_HIDDEN, 1);
 }
 
-TEST_F(SaveCardBubbleControllerImplTest,
+TEST_F(SaveCardBubbleControllerImplTestWithoutStickyBubble,
        Metrics_Local_Reshows_NavigateWhileHidden) {
   ShowLocalBubble();
   CloseAndReshowBubble();
@@ -604,7 +623,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
       AutofillMetrics::SAVE_CARD_PROMPT_END_NAVIGATION_HIDDEN, 1);
 }
 
-TEST_F(SaveCardBubbleControllerImplTest,
+TEST_F(SaveCardBubbleControllerImplTestWithoutStickyBubble,
        Metrics_Upload_FirstShow_NavigateWhileHidden) {
   ShowUploadBubble();
 
@@ -619,7 +638,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
       AutofillMetrics::SAVE_CARD_PROMPT_END_NAVIGATION_HIDDEN, 1);
 }
 
-TEST_F(SaveCardBubbleControllerImplTest,
+TEST_F(SaveCardBubbleControllerImplTestWithoutStickyBubble,
        Metrics_Local_FirstShow_FromNonFocusableForm_NavigateWhileHidden) {
   ShowLocalBubble(/*card=*/nullptr, AutofillClient::SaveCreditCardOptions()
                                         .with_has_non_focusable_field(true)
@@ -636,7 +655,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
       AutofillMetrics::SAVE_CARD_PROMPT_END_NAVIGATION_HIDDEN, 1);
 }
 
-TEST_F(SaveCardBubbleControllerImplTest,
+TEST_F(SaveCardBubbleControllerImplTestWithoutStickyBubble,
        Metrics_Local_FirstShow_FromDynamicChangeForm_NavigateWhileHidden) {
   ShowLocalBubble(/*card=*/nullptr, AutofillClient::SaveCreditCardOptions()
                                         .with_from_dynamic_change_form(true)
@@ -653,7 +672,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
       AutofillMetrics::SAVE_CARD_PROMPT_END_NAVIGATION_HIDDEN, 1);
 }
 
-TEST_F(SaveCardBubbleControllerImplTest,
+TEST_F(SaveCardBubbleControllerImplTestWithoutStickyBubble,
        Metrics_Upload_FirstShow_FromDynamicChangeForm_NavigateWhileHidden) {
   ShowUploadBubble(AutofillClient::SaveCreditCardOptions()
                        .with_from_dynamic_change_form(true)
@@ -670,7 +689,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
       AutofillMetrics::SAVE_CARD_PROMPT_END_NAVIGATION_HIDDEN, 1);
 }
 
-TEST_F(SaveCardBubbleControllerImplTest,
+TEST_F(SaveCardBubbleControllerImplTestWithoutStickyBubble,
        Metrics_Upload_FirstShow_FromNonFocusableForm_NavigateWhileHidden) {
   ShowUploadBubble(AutofillClient::SaveCreditCardOptions()
                        .with_has_non_focusable_field(true)
@@ -687,7 +706,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
       AutofillMetrics::SAVE_CARD_PROMPT_END_NAVIGATION_HIDDEN, 1);
 }
 
-TEST_F(SaveCardBubbleControllerImplTest,
+TEST_F(SaveCardBubbleControllerImplTestWithoutStickyBubble,
        Metrics_Upload_FirstShow_RequestingCardholderName_NavigateWhileHidden) {
   ShowUploadBubble(AutofillClient::SaveCreditCardOptions()
                        .with_should_request_name_from_user(true)
@@ -704,7 +723,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
       AutofillMetrics::SAVE_CARD_PROMPT_END_NAVIGATION_HIDDEN, 1);
 }
 
-TEST_F(SaveCardBubbleControllerImplTest,
+TEST_F(SaveCardBubbleControllerImplTestWithoutStickyBubble,
        Metrics_Upload_FirstShow_RequestingExpirationDate_NavigateWhileHidden) {
   ShowUploadBubble(AutofillClient::SaveCreditCardOptions()
                        .with_should_request_expiration_date_from_user(true)
@@ -721,7 +740,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
       AutofillMetrics::SAVE_CARD_PROMPT_END_NAVIGATION_HIDDEN, 1);
 }
 
-TEST_F(SaveCardBubbleControllerImplTest,
+TEST_F(SaveCardBubbleControllerImplTestWithoutStickyBubble,
        Metrics_Upload_Reshows_NavigateWhileHidden) {
   ShowUploadBubble();
   CloseAndReshowBubble();
@@ -737,7 +756,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
       AutofillMetrics::SAVE_CARD_PROMPT_END_NAVIGATION_HIDDEN, 1);
 }
 
-TEST_F(SaveCardBubbleControllerImplTest,
+TEST_F(SaveCardBubbleControllerImplTestWithoutStickyBubble,
        Metrics_Upload_Reshows_FromDynamicChangeForm_NavigateWhileHidden) {
   ShowUploadBubble(AutofillClient::SaveCreditCardOptions()
                        .with_from_dynamic_change_form(true)
@@ -756,7 +775,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
       AutofillMetrics::SAVE_CARD_PROMPT_END_NAVIGATION_HIDDEN, 1);
 }
 
-TEST_F(SaveCardBubbleControllerImplTest,
+TEST_F(SaveCardBubbleControllerImplTestWithoutStickyBubble,
        Metrics_Upload_Reshows_FromNonFocusableForm_NavigateWhileHidden) {
   ShowUploadBubble(AutofillClient::SaveCreditCardOptions()
                        .with_has_non_focusable_field(true)
@@ -775,7 +794,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
       AutofillMetrics::SAVE_CARD_PROMPT_END_NAVIGATION_HIDDEN, 1);
 }
 
-TEST_F(SaveCardBubbleControllerImplTest,
+TEST_F(SaveCardBubbleControllerImplTestWithoutStickyBubble,
        Metrics_Upload_Reshows_RequestingCardholderName_NavigateWhileHidden) {
   ShowUploadBubble(AutofillClient::SaveCreditCardOptions()
                        .with_should_request_name_from_user(true)
@@ -793,7 +812,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
       AutofillMetrics::SAVE_CARD_PROMPT_END_NAVIGATION_HIDDEN, 1);
 }
 
-TEST_F(SaveCardBubbleControllerImplTest,
+TEST_F(SaveCardBubbleControllerImplTestWithoutStickyBubble,
        Metrics_Upload_Reshows_RequestingExpirationDate_NavigateWhileHidden) {
   ShowUploadBubble(AutofillClient::SaveCreditCardOptions()
                        .with_should_request_expiration_date_from_user(true)
@@ -1220,7 +1239,26 @@ class SaveCardBubbleControllerImplTestWithoutStatusChip
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(SaveCardBubbleControllerImplTestWithoutStatusChip,
+class SaveCardBubbleControllerImplTestWithoutStatusChipAndStickyBubble
+    : public SaveCardBubbleControllerImplTest {
+ public:
+  SaveCardBubbleControllerImplTestWithoutStatusChipAndStickyBubble() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{
+            features::kAutofillEnableFixedPaymentsBubbleLogging,
+            features::kAutofillEnableStickyPaymentsBubble,
+            features::kAutofillCreditCardUploadFeedback,
+            features::kAutofillEnableToolbarStatusChip});
+  }
+  ~SaveCardBubbleControllerImplTestWithoutStatusChipAndStickyBubble() override =
+      default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(SaveCardBubbleControllerImplTestWithoutStatusChipAndStickyBubble,
        Local_FirstShow_SaveButton_SigninPromo_Close_Reshow_Close_Navigate) {
   ShowLocalBubble();
   ClickSaveButton();
@@ -1288,7 +1326,7 @@ TEST_F(
 }
 
 TEST_F(
-    SaveCardBubbleControllerImplTestWithoutStatusChip,
+    SaveCardBubbleControllerImplTestWithoutStatusChipAndStickyBubble,
     Metrics_Local_FirstShow_SaveButton_SigninPromo_Close_Reshow_Close_Navigate) {
   base::HistogramTester histogram_tester;
   ShowLocalBubble();
@@ -1316,7 +1354,7 @@ TEST_F(
       ElementsAre(Bucket(AutofillMetrics::MANAGE_CARDS_SHOWN, 1)));
 }
 
-TEST_F(SaveCardBubbleControllerImplTestWithoutStatusChip,
+TEST_F(SaveCardBubbleControllerImplTestWithoutStatusChipAndStickyBubble,
        Metrics_Local_FirstShow_SaveButton_SigninPromo_Close_Reshow_Navigate) {
   base::HistogramTester histogram_tester;
   ShowLocalBubble();
