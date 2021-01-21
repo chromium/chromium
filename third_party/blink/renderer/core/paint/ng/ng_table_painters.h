@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_NG_NG_TABLE_PAINTERS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_NG_NG_TABLE_PAINTERS_H_
 
+#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_fragment_data.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -20,7 +21,9 @@ class NGTablePainter {
 
  public:
   explicit NGTablePainter(const NGPhysicalBoxFragment& table_wrapper_fragment)
-      : fragment_(table_wrapper_fragment) {}
+      : fragment_(table_wrapper_fragment) {
+    DCHECK(fragment_.IsTableNG());
+  }
 
   void PaintBoxDecorationBackground(const PaintInfo&,
                                     const PhysicalOffset&,
@@ -40,7 +43,9 @@ class NGTableSectionPainter {
  public:
   explicit NGTableSectionPainter(
       const NGPhysicalBoxFragment& table_section_fragment)
-      : fragment_(table_section_fragment) {}
+      : fragment_(table_section_fragment) {
+    DCHECK(fragment_.IsTableNGSection());
+  }
 
   void PaintBoxDecorationBackground(const PaintInfo&,
                                     const PhysicalOffset&,
@@ -60,7 +65,9 @@ class NGTableRowPainter {
 
  public:
   explicit NGTableRowPainter(const NGPhysicalBoxFragment& table_row_fragment)
-      : fragment_(table_row_fragment) {}
+      : fragment_(table_row_fragment) {
+    DCHECK(fragment_.IsTableNGRow());
+  }
 
   void PaintBoxDecorationBackground(const PaintInfo&,
                                     const PhysicalOffset&,

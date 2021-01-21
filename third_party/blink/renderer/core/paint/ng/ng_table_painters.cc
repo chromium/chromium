@@ -507,8 +507,11 @@ void NGTableSectionPainter::PaintBoxDecorationBackground(
         !box_decoration_data.ShouldPaintBackground());
   }
   for (const NGLink& child : fragment_.Children()) {
-    DCHECK(child.fragment->IsBox());
-    NGTableRowPainter(To<NGPhysicalBoxFragment>(*child.fragment))
+    const auto& child_fragment = *child;
+    DCHECK(child_fragment.IsBox());
+    if (!child_fragment.IsTableNGRow())
+      continue;
+    NGTableRowPainter(To<NGPhysicalBoxFragment>(child_fragment))
         .PaintTablePartBackgroundIntoCells(
             paint_info, layout_section,
             PhysicalRect(paint_offset, fragment_.Size()), child.offset);
@@ -525,6 +528,8 @@ void NGTableSectionPainter::PaintColumnsBackground(
     const PhysicalRect& columns_paint_rect,
     const NGTableFragmentData::ColumnGeometries& column_geometries) {
   for (const NGLink& row : fragment_.Children()) {
+    if (!row.fragment->IsTableNGRow())
+      continue;
     NGTableRowPainter(To<NGPhysicalBoxFragment>(*row.fragment))
         .PaintColumnsBackground(paint_info, section_offset + row.offset,
                                 columns_paint_rect, column_geometries);
@@ -568,8 +573,12 @@ void NGTableRowPainter::PaintTablePartBackgroundIntoCells(
     const PhysicalOffset& row_offset) {
   for (const NGLink& child : fragment_.Children()) {
     DCHECK(child.fragment->IsBox());
-    DCHECK(child.fragment->GetLayoutObject()->IsTableCell());
-    NGTableCellPainter(To<NGPhysicalBoxFragment>(*child.fragment))
+    DCHECK(child.fragment->GetLayoutObject()->IsTableCell() ||
+           child.fragment->GetLayoutObject()->IsOutOfFlowPositioned());
+    const auto& child_fragment = *child;
+    if (!child_fragment.IsTableNGCell())
+      continue;
+    NGTableCellPainter(To<NGPhysicalBoxFragment>(child_fragment))
         .PaintBackgroundForTablePart(paint_info, table_part,
                                      table_part_paint_rect,
                                      row_offset + child.offset);
