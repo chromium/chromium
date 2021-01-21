@@ -150,7 +150,7 @@ class ProfileHelperImpl : public ProfileHelper,
   void ProfileStartup(Profile* profile) override;
   base::FilePath GetActiveUserProfileDir() override;
   void Initialize() override;
-  void ClearSigninProfile(const base::Closure& on_clear_callback) override;
+  void ClearSigninProfile(base::OnceClosure on_clear_callback) override;
 
   Profile* GetProfileByAccountId(const AccountId& account_id) override;
   Profile* GetProfileByUser(const user_manager::User* user) override;
@@ -189,10 +189,10 @@ class ProfileHelperImpl : public ProfileHelper,
   std::string active_user_id_hash_;
 
   // List of callbacks called after signin profile clearance.
-  std::vector<base::Closure> on_clear_callbacks_;
+  std::vector<base::OnceClosure> on_clear_callbacks_;
 
   // Called when a single stage of profile clearing is finished.
-  base::Closure on_clear_profile_stage_finished_;
+  base::RepeatingClosure on_clear_profile_stage_finished_;
 
   // A currently running browsing data remover.
   content::BrowsingDataRemover* browsing_data_remover_ = nullptr;
@@ -454,8 +454,8 @@ void ProfileHelperImpl::Initialize() {
 }
 
 void ProfileHelperImpl::ClearSigninProfile(
-    const base::Closure& on_clear_callback) {
-  on_clear_callbacks_.push_back(on_clear_callback);
+    base::OnceClosure on_clear_callback) {
+  on_clear_callbacks_.push_back(std::move(on_clear_callback));
 
   // Profile is already clearing.
   if (on_clear_callbacks_.size() > 1)
@@ -642,11 +642,11 @@ user_manager::User* ProfileHelperImpl::GetUserByProfile(
 }
 
 void ProfileHelperImpl::OnSigninProfileCleared() {
-  std::vector<base::Closure> callbacks;
+  std::vector<base::OnceClosure> callbacks;
   callbacks.swap(on_clear_callbacks_);
-  for (const base::Closure& callback : callbacks) {
+  for (auto& callback : callbacks) {
     if (!callback.is_null())
-      callback.Run();
+      std::move(callback).Run();
   }
 }
 
@@ -674,7 +674,7 @@ void ProfileHelperImpl::OnSessionRestoreStateChanged(
         chromeos::OAuth2LoginManagerFactory::GetInstance()->GetForProfile(
             user_profile);
     login_manager->RemoveObserver(this);
-    ClearSigninProfile(base::Closure());
+    ClearSigninProfile(base::OnceClosure());
   }
 }
 
@@ -718,7 +718,7 @@ void ProfileHelperImpl::FlushProfile(Profile* profile) {
   // Flushes files directly under profile path since these are the critical
   // ones.
   profile_flusher_->RequestFlush(profile->GetPath(), /*recursive=*/false,
-                                 base::Closure());
+                                 base::OnceClosure());
 }
 
 }  // namespace chromeos

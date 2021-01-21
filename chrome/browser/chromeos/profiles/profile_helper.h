@@ -133,7 +133,7 @@ class ProfileHelper
 
   // Clears site data (cookies, history, etc) for signin profile.
   // Callback can be empty. Not thread-safe.
-  virtual void ClearSigninProfile(const base::Closure& on_clear_callback) = 0;
+  virtual void ClearSigninProfile(base::OnceClosure on_clear_callback) = 0;
 
   // Returns profile of the user associated with |account_id| if it is created
   // and fully initialized. Otherwise, returns NULL.
