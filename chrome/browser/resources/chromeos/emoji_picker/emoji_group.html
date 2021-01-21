@@ -1,14 +1,19 @@
 <style>
+  :root {
+    --emoji-per-row: 7;
+    --emoji-height: 32px;
+  }
+
   .emoji-group-emoji {
     display: flex;
     flex-wrap: wrap;
   }
   .emoji-button {
     font-size: 17px;
-    height: 20px;
-    margin: 8px;
+    height: var(--emoji-height);
+    line-height: var(--emoji-height);
     text-align: center;
-    width: 20px;
+    width: calc(100% / var(--emoji-per-row));
   }
   .emoji-button.variants {
     background-color: red;

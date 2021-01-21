@@ -59,7 +59,7 @@ export class EmojiPicker extends PolymerElement {
     // TODO(https://crbug.com/1164828): replace placeholder frequently used
     // data.
     this.history = {
-      'group': 'Frequently used',
+      'group': 'Recently Used',
       'emoji': [
         {
           'base': [128512],

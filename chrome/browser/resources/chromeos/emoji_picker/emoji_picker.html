@@ -1,22 +1,26 @@
 <style>
-  .w-100 {
-    width: 100%;
+  .emoji-picker {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 20px);
+    margin: 10px;
+    margin-top: 0;
+    width: calc(100vw - 20px);
   }
 
-  .emoji-picker {
-    max-height: 343px;
-    min-height: 343px;
-    width: calc(36px * 7);
+  #search {
+    display: none;
   }
 
   .emoji-tabs {
     display: flex;
+    flex-shrink: 0;
     overflow-x: scroll;
     width: 100%;
   }
 
   .emoji-groups {
-    max-height: 400px;
+    flex-grow: 1;
     overflow-y: scroll;
   }
 </style>

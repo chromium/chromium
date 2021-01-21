@@ -25,7 +25,7 @@ ui::ModalType EmojiPickerDialog::GetDialogModalType() const {
 }
 
 base::string16 EmojiPickerDialog::GetDialogTitle() const {
-  return base::UTF8ToUTF16("Emoji picker");
+  return base::UTF8ToUTF16("Emoji Picker");
 }
 
 GURL EmojiPickerDialog::GetDialogContentURL() const {
@@ -36,8 +36,8 @@ void EmojiPickerDialog::GetWebUIMessageHandlers(
     std::vector<content::WebUIMessageHandler*>* handlers) const {}
 
 void EmojiPickerDialog::GetDialogSize(gfx::Size* size) const {
-  const int kDefaultWidth = 544;
-  const int kDefaultHeight = 628;
+  const int kDefaultWidth = 280;
+  const int kDefaultHeight = 343;
   size->SetSize(kDefaultWidth, kDefaultHeight);
 }
 
