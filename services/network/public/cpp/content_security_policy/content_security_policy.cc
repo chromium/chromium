@@ -1463,4 +1463,31 @@ std::string ToString(CSPDirectiveName name) {
   return "";
 }
 
+bool AllowsBlanketEnforcementOfRequiredCSP(
+    const url::Origin& request_origin,
+    const GURL& response_url,
+    const network::mojom::AllowCSPFromHeaderValue* allow_csp_from) {
+  if (response_url.SchemeIs(url::kAboutScheme) ||
+      response_url.SchemeIs(url::kDataScheme) || response_url.SchemeIsFile() ||
+      response_url.SchemeIsFileSystem() || response_url.SchemeIsBlob()) {
+    return true;
+  }
+
+  if (request_origin.IsSameOriginWith(url::Origin::Create(response_url)))
+    return true;
+
+  if (!allow_csp_from)
+    return false;
+
+  if (allow_csp_from->is_allow_star())
+    return true;
+
+  if (allow_csp_from->is_origin() &&
+      request_origin.IsSameOriginWith(allow_csp_from->get_origin())) {
+    return true;
+  }
+
+  return false;
+}
+
 }  // namespace network

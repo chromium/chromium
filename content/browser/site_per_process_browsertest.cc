@@ -4166,7 +4166,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 }
 
 // Verify that "csp" property on frame elements propagates to child frames
-// correctly. See  https://crbug.com/647588
+// correctly. See https://crbug.com/647588
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                        FrameOwnerPropertiesPropagationCSP) {
   GURL main_url(embedded_test_server()->GetURL(
@@ -4177,11 +4177,12 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   FrameTreeNode* root = web_contents()->GetFrameTree()->root();
   ASSERT_EQ(1u, root->child_count());
 
+  // The document in the iframe is blocked by CSPEE. An error page is loaded, it
+  // stays in the process of the main document.
   EXPECT_EQ(
-      " Site A ------------ proxies for B\n"
-      "   +--Site B ------- proxies for A\n"
-      "Where A = http://a.com/\n"
-      "      B = http://b.com/",
+      " Site A\n"
+      "   +--Site A\n"
+      "Where A = http://a.com/",
       DepictFrameTree(root));
 
   FrameTreeNode* child = root->child_at(0);

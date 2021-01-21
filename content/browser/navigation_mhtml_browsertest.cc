@@ -529,6 +529,41 @@ IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest, CspFrameAncestor) {
   ASSERT_EQ(1u, sub_document->child_count());
 }
 
+// Tests CSP embedded enforcement blocking an iframes.
+// Regression test for https://crbug.com/1112965
+IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest, CSPEmbeddedEnforcement) {
+  MhtmlArchive mhtml_archive;
+  mhtml_archive.AddHtmlDocument(
+      GURL("http://a.com"),
+      "<iframe csp=\"sandbox\" src=\"http://a.com/\"></iframe>"
+      "<iframe csp=\"sandbox\" src=\"http://b.com/\"></iframe>"
+      "<iframe csp=\"sandbox\" src=\"http://b.com/allow\"></iframe>");
+  mhtml_archive.AddHtmlDocument(GURL("http://a.com/"), "");
+  mhtml_archive.AddHtmlDocument(GURL("http://b.com/"), "");
+  mhtml_archive.AddHtmlDocument(GURL("http://b.com/allow"), "Allow-CSP-From: *",
+                                "");
+  GURL mhtml_url = mhtml_archive.Write("index.mhtml");
+
+  EXPECT_TRUE(NavigateToURL(shell(), mhtml_url));
+
+  RenderFrameHostImpl* main_document = main_frame_host();
+  ASSERT_EQ(3u, main_document->child_count());
+  RenderFrameHostImpl* rfh_1 = main_document->child_at(0)->current_frame_host();
+  RenderFrameHostImpl* rfh_2 = main_document->child_at(0)->current_frame_host();
+  RenderFrameHostImpl* rfh_3 = main_document->child_at(0)->current_frame_host();
+
+  // Same-origin without Allow-CSP-From:* => response allowed.
+  EXPECT_FALSE(rfh_1->is_error_page());
+
+  // Cross-origin without Allow-CSP-From:* => response blocked;
+  // TODO(https://crbug.com/1112965) Add support for CSPEE in MHTML documents.
+  // An error page should be displayed here.
+  EXPECT_FALSE(rfh_2->is_error_page());
+
+  // Cross-origin with Allow-CSP-From:* => response allowed.
+  EXPECT_FALSE(rfh_3->is_error_page());
+}
+
 IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest,
                        SameDocumentNavigationWhileLoading) {
   // Load a MHTML archive normally so there's a renderer process for file://.

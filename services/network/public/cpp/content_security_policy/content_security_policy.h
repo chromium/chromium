@@ -11,6 +11,10 @@
 
 class GURL;
 
+namespace url {
+class Origin;
+}
+
 namespace net {
 class HttpResponseHeaders;
 }
@@ -100,6 +104,15 @@ mojom::CSPDirectiveName ToCSPDirectiveName(const std::string& name);
 
 COMPONENT_EXPORT(NETWORK_CPP)
 std::string ToString(mojom::CSPDirectiveName name);
+
+// Return true if the response allows the embedder to enforce arbitrary policy
+// on its behalf.
+// Specification: https://w3c.github.io/webappsec-cspee/#origin-allowed
+COMPONENT_EXPORT(NETWORK_CPP)
+bool AllowsBlanketEnforcementOfRequiredCSP(
+    const url::Origin& request_origin,
+    const GURL& response_url,
+    const network::mojom::AllowCSPFromHeaderValue* allow_csp_from);
 
 }  // namespace network
 

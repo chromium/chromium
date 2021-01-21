@@ -1812,4 +1812,120 @@ TEST(ContentSecurityPolicy, InvalidPolicyInReportTreatAsPublicAddress) {
       policy->parsing_errors[0]);
 }
 
+TEST(ContentSecurityPolicy, AllowsBlanketEnforcementOfRequiredCSP) {
+  struct TestCase {
+    const char* name;
+    const char* request_origin;
+    const char* response_origin;
+    const char* allow_csp_from;
+    bool expected_result;
+  } cases[] = {
+      {
+          "About scheme allows",
+          "http://example.com",
+          "about://me",
+          nullptr,
+          true,
+      },
+      {
+          "File scheme allows",
+          "http://example.com",
+          "file://me",
+          nullptr,
+          true,
+      },
+      {
+          "Data scheme allows",
+          "http://example.com",
+          "data://me",
+          nullptr,
+          true,
+      },
+      {
+          "Filesystem scheme allows",
+          "http://example.com",
+          "filesystem://me",
+          nullptr,
+          true,
+      },
+      {
+          "Blob scheme allows",
+          "http://example.com",
+          "blob://me",
+          nullptr,
+          true,
+      },
+      {
+          "Same origin allows",
+          "http://example.com",
+          "http://example.com",
+          nullptr,
+          true,
+      },
+      {
+          "Same origin allows independently of header",
+          "http://example.com",
+          "http://example.com",
+          "http://not-example.com",
+          true,
+      },
+      {
+          "Different origin does not allow",
+          "http://example.com",
+          "http://not.example.com",
+          nullptr,
+          false,
+      },
+      {
+          "Different origin with right header allows",
+          "http://example.com",
+          "http://not-example.com",
+          "http://example.com",
+          true,
+      },
+      {
+          "Different origin with right header 2 allows",
+          "http://example.com",
+          "http://not-example.com",
+          "http://example.com/",
+          true,
+      },
+      {
+          "Different origin with wrong header does not allow",
+          "http://example.com",
+          "http://not-example.com",
+          "http://not-example.com",
+          false,
+      },
+      {
+          "Wildcard header allows",
+          "http://example.com",
+          "http://not-example.com",
+          "*",
+          true,
+      },
+      {
+          "Malformed header does not allow",
+          "http://example.com",
+          "http://not-example.com",
+          "*; http://example.com",
+          false,
+      },
+  };
+
+  for (const auto& test : cases) {
+    SCOPED_TRACE(test.name);
+    auto headers =
+        base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
+    if (test.allow_csp_from)
+      headers->AddHeader("allow-csp-from", test.allow_csp_from);
+    auto allow_csp_from = network::ParseAllowCSPFromHeader(*headers);
+
+    bool actual = AllowsBlanketEnforcementOfRequiredCSP(
+        url::Origin::Create(GURL(test.request_origin)),
+        GURL(test.response_origin), allow_csp_from.get());
+    EXPECT_EQ(test.expected_result, actual);
+  }
+}
+
 }  // namespace network

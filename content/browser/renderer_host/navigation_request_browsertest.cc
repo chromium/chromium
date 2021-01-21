@@ -2962,4 +2962,118 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   EXPECT_FALSE(test_delegate.passive_insecure_content_found());
 }
 
+using CSPEmbeddedEnforcementBrowserTest = NavigationRequestBrowserTest;
+
+IN_PROC_BROWSER_TEST_F(CSPEmbeddedEnforcementBrowserTest,
+                       CheckCSPEmbeddedEnforcement) {
+  // We need one initial navigation to set up everything.
+  EXPECT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL(
+                                         "www.example.org", "/empty.html")));
+
+  struct TestCase {
+    const char* name;
+    const char* required_csp;
+    const char* frame_url;
+    const char* allow_csp_from;
+    const char* returned_csp;
+    bool expect_allow;
+  } cases[] = {
+      {
+          "No required csp",
+          "",
+          "www.not-example.org",
+          nullptr,
+          nullptr,
+          true,
+      },
+      {
+          "Required csp - Same origin",
+          "script-src 'none'",
+          "www.example.org",
+          nullptr,
+          nullptr,
+          true,
+      },
+      {
+          "Required csp - Cross origin",
+          "script-src 'none'",
+          "www.not-example.org",
+          nullptr,
+          nullptr,
+          false,
+      },
+      {
+          "Required csp - Cross origin with Allow-CSP-From",
+          "script-src 'none'",
+          "www.not-example.org",
+          "*",
+          nullptr,
+          true,
+      },
+      {
+          "Required csp - Cross origin with wrong Allow-CSP-From",
+          "script-src 'none'",
+          "www.not-example.org",
+          "www.another-example.org",
+          nullptr,
+          false,
+      },
+      {
+          "Required csp - Cross origin with non-subsuming CSPs",
+          "script-src 'none'",
+          "www.not-example.org",
+          nullptr,
+          "style-src 'none'",
+          false,
+      },
+      {
+          "Required csp - Cross origin with subsuming CSPs",
+          "script-src 'none'",
+          "www.not-example.org",
+          nullptr,
+          "script-src 'none'",
+          true,
+      },
+      {
+          "Required csp - Cross origin with wrong Allow-CSP-From but subsuming "
+          "CSPs",
+          "script-src 'none'",
+          "www.not-example.org",
+          "www.another-example.org",
+          "script-src 'none'",
+          true,
+      },
+  };
+
+  for (auto test : cases) {
+    SCOPED_TRACE(test.name);
+
+    std::string headers;
+    if (test.returned_csp) {
+      headers +=
+          base::StringPrintf("Content-Security-Policy: %s&", test.returned_csp);
+    }
+    if (test.allow_csp_from) {
+      headers += base::StringPrintf("Allow-CSP-From: %s&", test.allow_csp_from);
+    }
+
+    GURL frame_url = embedded_test_server()->GetURL(test.frame_url,
+                                                    "/set-header?" + headers);
+    content::TestNavigationManager observer(shell()->web_contents(), frame_url);
+
+    EXPECT_TRUE(ExecJs(shell()->web_contents(),
+                       JsReplace(R"(
+      const iframe = document.createElement("iframe");
+      iframe.src = $2;
+      if ($1)
+        iframe.csp = $1;
+      document.body.appendChild(iframe);
+    )",
+                                 test.required_csp, frame_url)));
+
+    observer.WaitForNavigationFinished();
+    EXPECT_EQ(test.expect_allow, observer.was_successful());
+  }
+}
+
 }  // namespace content

@@ -49,7 +49,7 @@ promise_test(async test => {
   const result = await iframe_reply;
   iframe.remove();
 
-  assert_equals(result.data, "document-domain-is-not-allowed");
+  assert_equals(result.data, "document-domain-is-disallowed");
 }, "initial empty document");
 
 promise_test(async test => {
@@ -70,7 +70,7 @@ promise_test(async test => {
     `javascript:${encodeURI(check_sandbox_script)}`;
   const result = await iframe_reply;
 
-  assert_equals(result.data, "document-domain-is-not-allowed");
+  assert_equals(result.data, "document-domain-is-disallowed");
 }, "about:blank");
 
 promise_test(async test => {
@@ -95,7 +95,7 @@ promise_test(async test => {
   document.body.appendChild(iframe);
   const result = await iframe_reply;
 
-  assert_equals(result.data, "document-domain-is-not-allowed");
+  assert_equals(result.data, "document-domain-is-disallowed");
 }, "srcdoc");
 
 promise_test(async test => {
