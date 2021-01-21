@@ -583,7 +583,7 @@ input[type="password" i]::-internal-input-suggested {
 }
 
 input[type="hidden" i], input[type="image" i], input[type="file" i] {
-    -webkit-appearance: initial; /* AutoAppearanceFor() should match to this. */
+    appearance: none;
     padding: initial;
     background-color: initial;
     border: initial;
@@ -608,7 +608,7 @@ input[type="image" i] {
 input:-internal-autofill-previewed,
 textarea:-internal-autofill-previewed,
 select:-internal-autofill-previewed {
-  -webkit-appearance:menulist-button;
+  appearance: menulist-button;
   background-color: #E8F0FE !important;
   background-image:none !important;
   color: -internal-light-dark(black, white) !important;
@@ -617,7 +617,7 @@ select:-internal-autofill-previewed {
 input:-internal-autofill-selected,
 textarea:-internal-autofill-selected,
 select:-internal-autofill-selected {
-  -webkit-appearance:menulist-button;
+  appearance: menulist-button;
   background-color: #E8F0FE !important;
   background-image:none !important;
   color: -internal-light-dark(black, white) !important;
@@ -659,7 +659,7 @@ input[type="button" i], input[type="submit" i], input[type="reset" i], input[typ
 }
 
 input[type="range" i] {
-    appearance: auto; /* AutoAppearanceFor() should match to this. */
+    appearance: auto;
     padding: initial;
     border: initial;
     margin: 2px;
@@ -781,7 +781,7 @@ input[type="color" i]::-webkit-color-swatch {
 }
 
 input[type="color" i][list] {
-    -webkit-appearance: menulist; /* AutoAppearanceFor() should match to this. */
+    appearance: auto;
     width: 88px;
     height: 23px
 }
@@ -838,7 +838,7 @@ input[readonly]::-webkit-calendar-picker-indicator {
 }
 
 select {
-    -webkit-appearance: menulist; /* AutoAppearanceFor() should match to this. */
+    appearance: auto;
     box-sizing: border-box;
     align-items: center;
     border: 1px solid;
@@ -854,7 +854,7 @@ select:not(:-internal-list-box) {
 }
 
 select:-internal-list-box {
-    -webkit-appearance: listbox; /* AutoAppearanceFor() should match to this. */
+    appearance: auto;
     align-items: flex-start;
     border: 1px inset gray;
     border-radius: initial;
