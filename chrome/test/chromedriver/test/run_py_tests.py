@@ -140,8 +140,6 @@ _INTEGRATION_NEGATIVE_FILTER = [
     'SessionHandlingTest.testGetSessions',
     # Flaky due to occasional timeout in starting Chrome
     'ZChromeStartRetryCountTest.testChromeStartRetryCount',
-    # Flaky failures on desktop bots. See http://crbug.com/1166314
-    'ChromeDriverTest.testCanSwitchToPrintPreviewDialog',
 ]
 
 
