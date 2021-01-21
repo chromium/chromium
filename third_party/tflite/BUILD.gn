@@ -16,11 +16,13 @@ config("tflite_flags") {
 
     # TODO(crbug.com/1147556): Try to clean/remove no-sign-compare if possible.
     "-Wno-sign-compare",
+    "-Wno-gnu-inline-cpp-without-extern",
   ]
 
   defines = [
     "TFLITE_WITHOUT_XNNPACK",
     "FARMHASH_NO_CXX_STRING",
+    "NEON2SSE_DISABLE_PERFORMANCE_WARNING",
   ]
 
   if (is_win) {
@@ -36,6 +38,12 @@ config("tflite_flags") {
 
   if (is_linux || is_chromeos_lacros) {
     defines += [ "GEMMLOWP_ALLOW_SLOW_SCALAR_FALLBACK" ]
+  }
+
+  if (is_chromeos) {
+    # TODO(crbug.com/1168787): Determine if neon can be supported
+    # on chromeos builds.
+    defines += [ "TF_LITE_DISABLE_X86_NEON" ]
   }
 }
 
@@ -53,7 +61,7 @@ source_set("tflite_public_headers") {
     "src/tensorflow/lite/graph_info.h",
     "src/tensorflow/lite/interpreter.h",
     "src/tensorflow/lite/interpreter_builder.h",
-    "src/tensorflow/lite/kernls/builtin_op_kernels.h",
+    "src/tensorflow/lite/kernels/builtin_op_kernels.h",
     "src/tensorflow/lite/model.h",
     "src/tensorflow/lite/model_builder.h",
     "src/tensorflow/lite/mutable_op_resolver.h",
