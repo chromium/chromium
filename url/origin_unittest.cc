@@ -262,8 +262,6 @@ TEST_F(OriginTest, OpaqueOriginComparison) {
       EXPECT_EQ(0, origin_copy.port());
       EXPECT_TRUE(origin_copy.opaque());
       EXPECT_EQ(origin, origin_copy);
-      // And it should always be cross-origin to another opaque Origin.
-      EXPECT_NE(origin, opaque_origin);
       // Re-creating from the URL should also be cross-origin.
       EXPECT_NE(origin, Origin::Create(url));
 
@@ -671,11 +669,6 @@ TEST_F(OriginTest, DebugAlias) {
   EXPECT_STREQ("https://foo.com", origin1_debug_alias);
 }
 
-TEST_F(OriginTest, NonStandardScheme) {
-  Origin origin = Origin::Create(GURL("cow://"));
-  EXPECT_TRUE(origin.opaque());
-}
-
 TEST_F(OriginTest, CanBeDerivedFrom) {
   AddStandardScheme("new-standard", SchemeType::SCHEME_WITH_HOST);
   Origin opaque_unique_origin = Origin();
@@ -965,24 +958,50 @@ TEST_F(OriginTest, DeserializeValidNonce) {
 
 class UrlOriginTestTraits final : public OriginTraitsBase<Origin> {
  public:
-  OriginType CreateOriginFromString(base::StringPiece s) const override {
+  OriginType CreateOriginFromString(base::StringPiece s) override {
     return Origin::Create(GURL(s));
   }
 
-  bool IsOpaque(const OriginType& origin) const override {
-    return origin.opaque();
+  OriginType CreateUniqueOpaqueOrigin() override { return Origin(); }
+
+  OriginType CreateWithReferenceOrigin(
+      base::StringPiece url,
+      const OriginType& reference_origin) override {
+    return Origin::Resolve(GURL(url), reference_origin);
   }
 
-  std::string GetScheme(const OriginType& origin) const override {
+  OriginType DeriveNewOpaqueOrigin(
+      const OriginType& reference_origin) override {
+    return reference_origin.DeriveNewOpaqueOrigin();
+  }
+
+  bool IsOpaque(const OriginType& origin) override { return origin.opaque(); }
+
+  std::string GetScheme(const OriginType& origin) override {
     return origin.scheme();
   }
 
-  std::string GetHost(const OriginType& origin) const override {
+  std::string GetHost(const OriginType& origin) override {
     return origin.host();
   }
 
-  uint16_t GetPort(const OriginType& origin) const override {
-    return origin.port();
+  uint16_t GetPort(const OriginType& origin) override { return origin.port(); }
+
+  SchemeHostPort GetTupleOrPrecursorTupleIfOpaque(
+      const OriginType& origin) override {
+    return origin.GetTupleOrPrecursorTupleIfOpaque();
+  }
+
+  bool IsSameOrigin(const OriginType& a, const OriginType& b) override {
+    return a.IsSameOriginWith(b);
+  }
+
+  std::string Serialize(const OriginType& origin) override {
+    return origin.Serialize();
+  }
+
+  bool IsValidUrl(base::StringPiece str) override {
+    return GURL(str).is_valid();
   }
 };
 

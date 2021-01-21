@@ -24,13 +24,31 @@ class OriginTraitsBase {
   OriginTraitsBase() = default;
 
   // Constructing an origin.
-  virtual OriginType CreateOriginFromString(base::StringPiece s) const = 0;
+  virtual OriginType CreateOriginFromString(base::StringPiece s) = 0;
+  virtual OriginType CreateUniqueOpaqueOrigin() = 0;
+  virtual OriginType CreateWithReferenceOrigin(
+      base::StringPiece url,
+      const OriginType& reference_origin) = 0;
+  virtual OriginType DeriveNewOpaqueOrigin(
+      const OriginType& reference_origin) = 0;
 
   // Accessors for origin properties.
-  virtual bool IsOpaque(const OriginType& origin) const = 0;
-  virtual std::string GetScheme(const OriginType& origin) const = 0;
-  virtual std::string GetHost(const OriginType& origin) const = 0;
-  virtual uint16_t GetPort(const OriginType& origin) const = 0;
+  virtual bool IsOpaque(const OriginType& origin) = 0;
+  virtual std::string GetScheme(const OriginType& origin) = 0;
+  virtual std::string GetHost(const OriginType& origin) = 0;
+  virtual uint16_t GetPort(const OriginType& origin) = 0;
+  virtual SchemeHostPort GetTupleOrPrecursorTupleIfOpaque(
+      const OriginType& origin) = 0;
+
+  // Wrappers for other instance methods of OriginType.
+  virtual bool IsSameOrigin(const OriginType& a, const OriginType& b) = 0;
+  virtual std::string Serialize(const OriginType& origin) = 0;
+
+  // "Accessors" of URL properties.
+  //
+  // TODO(lukasza): Consider merging together OriginTraitsBase here and
+  // UrlTraitsBase in //url/gurl_abstract_tests.h.
+  virtual bool IsValidUrl(base::StringPiece str) = 0;
 
   // This type is non-copyable and non-moveable.
   OriginTraitsBase(const OriginTraitsBase&) = delete;
@@ -45,43 +63,179 @@ class AbstractOriginTest : public testing::Test {
                       TOriginTraits>::value,
       "TOriginTraits needs to expose the right members.");
 
+ public:
+  void SetUp() override {
+    const char* kSchemesToRegister[] = {
+        "noaccess",
+        "std-with-host",
+        "noaccess-std-with-host",
+        "local",
+        "local-noaccess",
+        "local-std-with-host",
+        "local-noaccess-std-with-host",
+        "also-local",
+    };
+    for (const char* kScheme : kSchemesToRegister) {
+      std::string scheme(kScheme);
+      if (base::Contains(scheme, "noaccess"))
+        AddNoAccessScheme(kScheme);
+      if (base::Contains(scheme, "std-with-host"))
+        AddStandardScheme(kScheme, SchemeType::SCHEME_WITH_HOST);
+      if (base::Contains(scheme, "local"))
+        AddLocalScheme(kScheme);
+    }
+  }
+
  protected:
-  // Wrappers that allow tests to ignore presence of `origin_traits_`.
+  // Wrappers that allow tests to ignore presence of `origin_test_traits_`.
   //
   // Note that calling the wrappers needs to be prefixed with `this->...` to
   // avoid hitting: explicit qualification required to use member 'IsOpaque'
   // from dependent base class.
   using OriginType = typename TOriginTraits::OriginType;
-  OriginType CreateOriginFromString(base::StringPiece s) const {
+  OriginType CreateOriginFromString(base::StringPiece s) {
     return origin_traits_.CreateOriginFromString(s);
   }
-  bool IsOpaque(const OriginType& origin) const {
+  OriginType CreateUniqueOpaqueOrigin() {
+    return origin_traits_.CreateUniqueOpaqueOrigin();
+  }
+  OriginType CreateWithReferenceOrigin(base::StringPiece url,
+                                       const OriginType& reference_origin) {
+    return origin_traits_.CreateWithReferenceOrigin(url, reference_origin);
+  }
+  OriginType DeriveNewOpaqueOrigin(const OriginType& reference_origin) {
+    return origin_traits_.DeriveNewOpaqueOrigin(reference_origin);
+  }
+  bool IsOpaque(const OriginType& origin) {
     return origin_traits_.IsOpaque(origin);
   }
-  std::string GetScheme(const OriginType& origin) const {
+  std::string GetScheme(const OriginType& origin) {
     return origin_traits_.GetScheme(origin);
   }
-  std::string GetHost(const OriginType& origin) const {
+  std::string GetHost(const OriginType& origin) {
     return origin_traits_.GetHost(origin);
   }
-  uint16_t GetPort(const OriginType& origin) const {
+  uint16_t GetPort(const OriginType& origin) {
     return origin_traits_.GetPort(origin);
+  }
+  SchemeHostPort GetTupleOrPrecursorTupleIfOpaque(const OriginType& origin) {
+    return origin_traits_.GetTupleOrPrecursorTupleIfOpaque(origin);
+  }
+  bool IsSameOrigin(const OriginType& a, const OriginType& b) {
+    return origin_traits_.IsSameOrigin(a, b);
+  }
+  std::string Serialize(const OriginType& origin) {
+    return origin_traits_.Serialize(origin);
+  }
+  bool IsValidUrl(base::StringPiece str) {
+    return origin_traits_.IsValidUrl(str);
+  }
+
+#define EXPECT_SAME_ORIGIN(a, b)                                 \
+  EXPECT_TRUE(this->IsSameOrigin((a), (b)))                      \
+      << "When checking if \"" << this->Serialize(a) << "\" is " \
+      << "same-origin with \"" << this->Serialize(b) << "\""
+
+#define EXPECT_CROSS_ORIGIN(a, b)                                \
+  EXPECT_FALSE(this->IsSameOrigin((a), (b)))                     \
+      << "When checking if \"" << this->Serialize(a) << "\" is " \
+      << "cross-origin from \"" << this->Serialize(b) << "\""
+
+  void VerifyOriginInvariants(const OriginType& origin) {
+    // An origin is always same-origin with itself.
+    EXPECT_SAME_ORIGIN(origin, origin);
+
+    // An origin is always cross-origin from another, unique, opaque origin.
+    EXPECT_CROSS_ORIGIN(origin, this->CreateUniqueOpaqueOrigin());
+
+    // Derived opaque origins.
+    auto derived_opaque = this->DeriveNewOpaqueOrigin(origin);
+    auto derived_via_data_url =
+        this->CreateWithReferenceOrigin("data:text/html,baz", origin);
+    EXPECT_TRUE(this->IsOpaque(derived_opaque));
+    EXPECT_TRUE(this->IsOpaque(derived_via_data_url));
+    EXPECT_CROSS_ORIGIN(origin, derived_opaque);
+    EXPECT_CROSS_ORIGIN(origin, derived_via_data_url);
+    EXPECT_CROSS_ORIGIN(derived_opaque, derived_via_data_url);
+    EXPECT_EQ(this->GetTupleOrPrecursorTupleIfOpaque(origin),
+              this->GetTupleOrPrecursorTupleIfOpaque(derived_opaque));
+    EXPECT_EQ(this->GetTupleOrPrecursorTupleIfOpaque(origin),
+              this->GetTupleOrPrecursorTupleIfOpaque(derived_via_data_url));
+
+    // TODO(https://crbug.com/1020201): Unify how
+    // blink::SecurityOrigin::CreateWithReferenceOrigin and url::Origin::Resolve
+    // handle "about:blank" URLs and then add the following assertion below:
+    // EXPECT_EQ(origin, this->CreateWithReferenceOrigin("about:blank", origin))
+  }
+
+  void VerifyUniqueOpaqueOriginInvariants(const OriginType& origin) {
+    if (!this->IsOpaque(origin)) {
+      ADD_FAILURE() << "Got unexpectedly non-opaque origin: "
+                    << this->Serialize(origin);
+      return;  // Skip other test assertions.
+    }
+
+    // Opaque origins should have an "empty" scheme, host and port.
+    EXPECT_EQ("", this->GetScheme(origin));
+    EXPECT_EQ("", this->GetHost(origin));
+    EXPECT_EQ(0, this->GetPort(origin));
+
+    // Unique opaque origins should have an empty precursor tuple.
+    EXPECT_EQ(SchemeHostPort(), this->GetTupleOrPrecursorTupleIfOpaque(origin));
+
+    // Serialization test.
+    EXPECT_EQ("null", this->Serialize(origin));
+
+    // Invariants that should hold for any origin.
+    VerifyOriginInvariants(origin);
+  }
+
+  void VerifyTupleOrigin(const OriginType& origin,
+                         const SchemeHostPort& expected_tuple) {
+    if (this->IsOpaque(origin)) {
+      ADD_FAILURE() << "Got unexpectedly opaque origin";
+      return;  // Skip other test assertions.
+    }
+    SCOPED_TRACE(testing::Message()
+                 << "Actual origin: " << this->Serialize(origin));
+
+    // Compare `origin` against the `expected_tuple`.
+    EXPECT_EQ(expected_tuple.scheme(), this->GetScheme(origin));
+    EXPECT_EQ(expected_tuple.host(), this->GetHost(origin));
+    EXPECT_EQ(expected_tuple.port(), this->GetPort(origin));
+    EXPECT_EQ(expected_tuple, this->GetTupleOrPrecursorTupleIfOpaque(origin));
+
+    // Serialization test.
+    //
+    // TODO(lukasza): Consider preserving the hostname when serializing file:
+    // URLs.  Dropping the hostname seems incompatible with section 6 of
+    // rfc6454.  Even though section 4 says that "the implementation MAY
+    // return an implementation-defined value", it seems that Chromium
+    // implementation *does* include the hostname in the origin SchemeHostPort
+    // tuple.
+    if (expected_tuple.scheme() != kFileScheme || expected_tuple.host() == "") {
+      EXPECT_SAME_ORIGIN(origin,
+                         this->CreateOriginFromString(this->Serialize(origin)));
+    }
+
+    // Invariants that should hold for any origin.
+    VerifyOriginInvariants(origin);
   }
 
  private:
   TOriginTraits origin_traits_;
+  ScopedSchemeRegistryForTests scoped_scheme_registry_;
 };
 
 TYPED_TEST_SUITE_P(AbstractOriginTest);
 
 TYPED_TEST_P(AbstractOriginTest, NonStandardSchemeWithAndroidWebViewHack) {
-  ScopedSchemeRegistryForTests scoped_registry;
   EnableNonStandardSchemesForAndroidWebView();
 
   // Regression test for https://crbug.com/896059.
-  auto origin = this->CreateOriginFromString("cow://");
+  auto origin = this->CreateOriginFromString("unknown-scheme://");
   EXPECT_FALSE(this->IsOpaque(origin));
-  EXPECT_EQ("cow", this->GetScheme(origin));
+  EXPECT_EQ("unknown-scheme", this->GetScheme(origin));
   EXPECT_EQ("", this->GetHost(origin));
   EXPECT_EQ(0, this->GetPort(origin));
 
@@ -91,8 +245,249 @@ TYPED_TEST_P(AbstractOriginTest, NonStandardSchemeWithAndroidWebViewHack) {
   EXPECT_TRUE(this->IsOpaque(origin));
 }
 
+TYPED_TEST_P(AbstractOriginTest, OpaqueOriginsFromValidUrls) {
+  const char* kTestCases[] = {
+      // Built-in noaccess schemes.
+      "data:text/html,Hello!",
+      "javascript:alert(1)",
+      "about:blank",
+
+      // Opaque blob URLs.
+      "blob:null/foo",        // blob:null (actually a valid URL)
+      "blob:data:foo",        // blob + data (which is nonstandard)
+      "blob:about://blank/",  // blob + about (which is nonstandard)
+      "blob:about:blank/",    // blob + about (which is nonstandard)
+      "blob:blob:http://www.example.com/guid-goes-here",
+      "blob:filesystem:ws:b/.",
+      "blob:filesystem:ftp://a/b",
+      "blob:blob:file://localhost/foo/bar",
+  };
+
+  for (const char* test_input : kTestCases) {
+    SCOPED_TRACE(testing::Message() << "Test input: " << test_input);
+
+    // Verify that `origin` is opaque not just because `test_input` results is
+    // an invalid URL (because of a typo in the scheme name, or because of a
+    // technicality like having no host in a noaccess-std-with-host: scheme).
+    EXPECT_TRUE(this->IsValidUrl(test_input));
+
+    auto origin = this->CreateOriginFromString(test_input);
+    this->VerifyUniqueOpaqueOriginInvariants(origin);
+  }
+}
+
+TYPED_TEST_P(AbstractOriginTest, OpaqueOriginsFromInvalidUrls) {
+  // TODO(lukasza): Consider moving those to GURL/KURL tests that verify what
+  // inputs are parsed as an invalid URL.
+
+  const char* kTestCases[] = {
+      // Invalid file: URLs.
+      "file://example.com:443/etc/passwd",  // No port expected.
+
+      // Invalid HTTP URLs.
+      "http",
+      "http:",
+      "http:/",
+      "http://",
+      "http://:",
+      "http://:1",
+      "http::///invalid.example.com/",
+      "http://example.com:65536/",                    // Port out of range.
+      "http://example.com:-1/",                       // Port out of range.
+      "http://example.com:18446744073709551616/",     // Port = 2^64.
+      "http://example.com:18446744073709551616999/",  // Lots of port digits.
+
+      // Invalid filesystem URLs.
+      "filesystem:http://example.com/",  // Missing /type/.
+      "filesystem:local:baz./type/",
+      "filesystem:local://hostname/type/",
+      "filesystem:unknown-scheme://hostname/type/",
+      "filesystem:filesystem:http://example.org:88/foo/bar",
+
+      // Invalid IP addresses
+      "http://[]/",
+      "http://[2001:0db8:0000:0000:0000:0000:0000:0000:0001]/",  // 9 groups.
+
+      // Standard schemes require a hostname (and result in an opaque origin if
+      // the hostname is missing).
+      "local-std-with-host:",
+      "noaccess-std-with-host:",
+  };
+
+  for (const char* test_input : kTestCases) {
+    SCOPED_TRACE(testing::Message() << "Test input: " << test_input);
+
+    // All testcases here are expected to represent invalid URLs.
+    // an invalid URL (because of a type in scheme name, or because of a
+    // technicality like having no host in a noaccess-std-with-host: scheme).
+    EXPECT_FALSE(this->IsValidUrl(test_input));
+
+    // Invalid URLs should always result in an opaque origin.
+    auto origin = this->CreateOriginFromString(test_input);
+    this->VerifyUniqueOpaqueOriginInvariants(origin);
+  }
+}
+
+TYPED_TEST_P(AbstractOriginTest, TupleOrigins) {
+  struct TestCase {
+    const char* input;
+    SchemeHostPort expected_tuple;
+  } kTestCases[] = {
+      // file: URLs
+      {"file:///etc/passwd", {"file", "", 0}},
+      {"file://example.com/etc/passwd", {"file", "example.com", 0}},
+      {"file:///", {"file", "", 0}},
+
+      // HTTP URLs
+      {"http://example.com/", {"http", "example.com", 80}},
+      {"http://example.com:80/", {"http", "example.com", 80}},
+      {"http://example.com:123/", {"http", "example.com", 123}},
+      {"http://example.com:0/", {"http", "example.com", 0}},
+      {"http://example.com:65535/", {"http", "example.com", 65535}},
+      {"https://example.com/", {"https", "example.com", 443}},
+      {"https://example.com:443/", {"https", "example.com", 443}},
+      {"https://example.com:123/", {"https", "example.com", 123}},
+      {"https://example.com:0/", {"https", "example.com", 0}},
+      {"https://example.com:65535/", {"https", "example.com", 65535}},
+      {"http://user:pass@example.com/", {"http", "example.com", 80}},
+      {"http://example.com:123/?query", {"http", "example.com", 123}},
+      {"https://example.com/#1234", {"https", "example.com", 443}},
+      {"https://u:p@example.com:123/?query#1234",
+       {"https", "example.com", 123}},
+      {"http://example/", {"http", "example", 80}},
+
+      // Blob URLs.
+      {"blob:http://example.com/guid-goes-here", {"http", "example.com", 80}},
+      {"blob:http://example.com:123/guid-goes-here",
+       {"http", "example.com", 123}},
+      {"blob:https://example.com/guid-goes-here",
+       {"https", "example.com", 443}},
+      {"blob:http://u:p@example.com/guid-goes-here",
+       {"http", "example.com", 80}},
+
+      // Filesystem URLs.
+      {"filesystem:http://example.com/type/", {"http", "example.com", 80}},
+      {"filesystem:http://example.com:123/type/", {"http", "example.com", 123}},
+      {"filesystem:https://example.com/type/", {"https", "example.com", 443}},
+      {"filesystem:https://example.com:123/type/",
+       {"https", "example.com", 123}},
+      {"filesystem:local-std-with-host:baz./type/",
+       {"local-std-with-host", "baz.", 0}},
+
+      // IP Addresses
+      {"http://192.168.9.1/", {"http", "192.168.9.1", 80}},
+      {"http://[2001:db8::1]/", {"http", "[2001:db8::1]", 80}},
+      {"http://[2001:0db8:0000:0000:0000:0000:0000:0001]/",
+       {"http", "[2001:db8::1]", 80}},
+      {"http://1/", {"http", "0.0.0.1", 80}},
+      {"http://1:1/", {"http", "0.0.0.1", 1}},
+      {"http://3232237825/", {"http", "192.168.9.1", 80}},
+
+      // Punycode
+      {"http://☃.net/", {"http", "xn--n3h.net", 80}},
+      {"blob:http://☃.net/", {"http", "xn--n3h.net", 80}},
+      {"local-std-with-host:↑↑↓↓←→←→ba.↑↑↓↓←→←→ba.0.bg",
+       {"local-std-with-host", "xn--ba-rzuadaibfa.xn--ba-rzuadaibfa.0.bg", 0}},
+
+      // Registered URLs
+      {"ftp://example.com/", {"ftp", "example.com", 21}},
+      {"ws://example.com/", {"ws", "example.com", 80}},
+      {"wss://example.com/", {"wss", "example.com", 443}},
+      {"wss://user:pass@example.com/", {"wss", "example.com", 443}},
+  };
+
+  for (const TestCase& test : kTestCases) {
+    SCOPED_TRACE(testing::Message() << "Test input: " << test.input);
+
+    // Only valid URLs should translate into valid, non-opaque origins.
+    EXPECT_TRUE(this->IsValidUrl(test.input));
+
+    auto origin = this->CreateOriginFromString(test.input);
+    this->VerifyTupleOrigin(origin, test.expected_tuple);
+  }
+}
+
+TYPED_TEST_P(AbstractOriginTest, CustomSchemes_OpaqueOrigins) {
+  const char* kTestCases[] = {
+      // Unknown scheme
+      "unknown-scheme:foo",
+      "unknown-scheme://bar",
+
+      // Unknown scheme that is a prefix or suffix of a registered scheme.
+      "loca:foo",
+      "ocal:foo",
+      "local-suffix:foo",
+      "prefix-local:foo",
+
+      // Custom no-access schemes translate into an opaque origin (just like the
+      // built-in no-access schemes such as about:blank or data:).
+      "noaccess-std-with-host:foo",
+      "noaccess-std-with-host://bar",
+      "noaccess://host",
+      "local-noaccess://host",
+      "local-noaccess-std-with-host://host",
+  };
+
+  for (const char* test_input : kTestCases) {
+    SCOPED_TRACE(testing::Message() << "Test input: " << test_input);
+
+    // Verify that `origin` is opaque not just because `test_input` results is
+    // an invalid URL (because of a typo in the scheme name, or because of a
+    // technicality like having no host in a noaccess-std-with-host: scheme).
+    EXPECT_TRUE(this->IsValidUrl(test_input));
+
+    auto origin = this->CreateOriginFromString(test_input);
+    this->VerifyUniqueOpaqueOriginInvariants(origin);
+  }
+}
+
+TYPED_TEST_P(AbstractOriginTest, CustomSchemes_TupleOrigins) {
+  struct TestCase {
+    const char* input;
+    SchemeHostPort expected_tuple;
+  } kTestCases[] = {
+      // Scheme (registered in SetUp()) that's both local and standard.
+      // TODO: Is it really appropriate to do network-host canonicalization of
+      // schemes without ports?
+      {"local-std-with-host:20", {"local-std-with-host", "0.0.0.20", 0}},
+      {"local-std-with-host:20.", {"local-std-with-host", "0.0.0.20", 0}},
+      {"local-std-with-host:foo", {"local-std-with-host", "foo", 0}},
+      {"local-std-with-host://bar:20", {"local-std-with-host", "bar", 0}},
+      {"local-std-with-host:baz.", {"local-std-with-host", "baz.", 0}},
+      {"local-std-with-host:baz..", {"local-std-with-host", "baz..", 0}},
+      {"local-std-with-host:baz..bar", {"local-std-with-host", "baz..bar", 0}},
+      {"local-std-with-host:baz...", {"local-std-with-host", "baz...", 0}},
+
+      // Scheme (registered in SetUp()) that's local but nonstandard. These
+      // always have empty hostnames, but are allowed to be url::Origins.
+      {"local:", {"local", "", 0}},
+      {"local:foo", {"local", "", 0}},
+      {"local://bar", {"local", "", 0}},
+      {"also-local://bar", {"also-local", "", 0}},
+
+      {"std-with-host://host", {"std-with-host", "host", 0}},
+      {"local://host", {"local", "", 0}},
+      {"local-std-with-host://host", {"local-std-with-host", "host", 0}},
+  };
+
+  for (const TestCase& test : kTestCases) {
+    SCOPED_TRACE(testing::Message() << "Test input: " << test.input);
+
+    // Only valid URLs should translate into valid, non-opaque origins.
+    EXPECT_TRUE(this->IsValidUrl(test.input));
+
+    auto origin = this->CreateOriginFromString(test.input);
+    this->VerifyTupleOrigin(origin, test.expected_tuple);
+  }
+}
+
 REGISTER_TYPED_TEST_SUITE_P(AbstractOriginTest,
-                            NonStandardSchemeWithAndroidWebViewHack);
+                            NonStandardSchemeWithAndroidWebViewHack,
+                            OpaqueOriginsFromValidUrls,
+                            OpaqueOriginsFromInvalidUrls,
+                            TupleOrigins,
+                            CustomSchemes_OpaqueOrigins,
+                            CustomSchemes_TupleOrigins);
 
 }  // namespace url
 

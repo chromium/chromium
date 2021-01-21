@@ -647,24 +647,6 @@ TEST_F(SecurityOriginTest, PunycodeNotUnicode) {
   EXPECT_FALSE(origin->CanRequest(unicode_url));
 }
 
-TEST_F(SecurityOriginTest, Port) {
-  struct TestCase {
-    uint16_t port;
-    const char* origin;
-  } cases[] = {
-      {80, "http://example.com"},       {80, "http://example.com:80"},
-      {81, "http://example.com:81"},    {443, "https://example.com"},
-      {443, "https://example.com:443"}, {444, "https://example.com:444"},
-      {0, "https://example.com:0"},     {0, "file:///"},
-  };
-
-  for (const auto& test : cases) {
-    scoped_refptr<const SecurityOrigin> origin =
-        SecurityOrigin::CreateFromString(test.origin);
-    EXPECT_EQ(test.port, origin->Port());
-  }
-}
-
 TEST_F(SecurityOriginTest, CreateFromTuple) {
   struct TestCase {
     const char* scheme;
@@ -979,29 +961,6 @@ TEST_F(SecurityOriginTest, ToTokenForFastCheck) {
   }
 }
 
-// See also OriginTest.ConstructFromGURL_OpaqueOrigin and
-// NavigationUrlRewriteBrowserTest.RewriteToNoAccess.
-TEST_F(SecurityOriginTest, StandardNoAccessScheme) {
-  url::ScopedSchemeRegistryForTests scoped_registry;
-  url::AddStandardScheme("std-no-access", url::SCHEME_WITH_HOST);
-  url::AddNoAccessScheme("std-no-access");
-  url::AddStandardScheme("std", url::SCHEME_WITH_HOST);
-
-  scoped_refptr<const SecurityOrigin> custom_standard_noaccess_origin =
-      SecurityOrigin::CreateFromString("std-no-access://host");
-  EXPECT_TRUE(custom_standard_noaccess_origin->IsOpaque());
-
-  scoped_refptr<const SecurityOrigin> custom_standard_origin =
-      SecurityOrigin::CreateFromString("std://host");
-  EXPECT_FALSE(custom_standard_origin->IsOpaque());
-}
-
-TEST_F(SecurityOriginTest, NonStandardScheme) {
-  scoped_refptr<const SecurityOrigin> origin =
-      SecurityOrigin::CreateFromString("cow://");
-  EXPECT_TRUE(origin->IsOpaque());
-}
-
 TEST_F(SecurityOriginTest, OpaqueIsolatedCopy) {
   scoped_refptr<const SecurityOrigin> origin =
       SecurityOrigin::CreateUniqueOpaque();
@@ -1297,25 +1256,60 @@ namespace url {
 class BlinkSecurityOriginTestTraits final
     : public url::OriginTraitsBase<scoped_refptr<blink::SecurityOrigin>> {
  public:
-  OriginType CreateOriginFromString(base::StringPiece s) const override {
-    return blink::SecurityOrigin::CreateFromString(
-        String(s.data(), s.length()));
+  OriginType CreateOriginFromString(base::StringPiece s) override {
+    return blink::SecurityOrigin::CreateFromString(String::FromUTF8(s));
   }
 
-  bool IsOpaque(const OriginType& origin) const override {
+  OriginType CreateUniqueOpaqueOrigin() override {
+    return blink::SecurityOrigin::CreateUniqueOpaque();
+  }
+
+  OriginType CreateWithReferenceOrigin(
+      base::StringPiece url,
+      const OriginType& reference_origin) override {
+    return blink::SecurityOrigin::CreateWithReferenceOrigin(
+        blink::KURL(String::FromUTF8(url)), reference_origin.get());
+  }
+
+  OriginType DeriveNewOpaqueOrigin(
+      const OriginType& reference_origin) override {
+    return reference_origin->DeriveNewOpaqueOrigin();
+  }
+
+  bool IsOpaque(const OriginType& origin) override {
     return origin->IsOpaque();
   }
 
-  std::string GetScheme(const OriginType& origin) const override {
+  std::string GetScheme(const OriginType& origin) override {
     return origin->Protocol().Utf8();
   }
 
-  std::string GetHost(const OriginType& origin) const override {
+  std::string GetHost(const OriginType& origin) override {
     return origin->Host().Utf8();
   }
 
-  uint16_t GetPort(const OriginType& origin) const override {
-    return origin->Port();
+  uint16_t GetPort(const OriginType& origin) override { return origin->Port(); }
+
+  SchemeHostPort GetTupleOrPrecursorTupleIfOpaque(
+      const OriginType& origin) override {
+    const blink::SecurityOrigin* precursor =
+        origin->GetOriginOrPrecursorOriginIfOpaque();
+    if (!precursor)
+      return SchemeHostPort();
+    return SchemeHostPort(precursor->Protocol().Utf8(),
+                          precursor->Host().Utf8(), precursor->Port());
+  }
+
+  bool IsSameOrigin(const OriginType& a, const OriginType& b) override {
+    return a->IsSameOriginWith(b.get());
+  }
+
+  std::string Serialize(const OriginType& origin) override {
+    return origin->ToString().Utf8();
+  }
+
+  bool IsValidUrl(base::StringPiece str) override {
+    return blink::KURL(String::FromUTF8(str)).IsValid();
   }
 };
 
