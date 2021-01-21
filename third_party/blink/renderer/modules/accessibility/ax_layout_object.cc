@@ -631,12 +631,6 @@ bool AXLayoutObject::ComputeAccessibilityIsIgnored(
   if (semantic_inclusion == kIgnoreObject)
     return true;
 
-  if (layout_object_->IsAnonymousBlock() && !IsEditable()) {
-    if (ignored_reasons)
-      ignored_reasons->push_back(IgnoredReason(kAXUninteresting));
-    return true;
-  }
-
   // A LayoutEmbeddedContent is an iframe element or embedded object element or
   // something like that. We don't want to ignore those.
   if (layout_object_->IsLayoutEmbeddedContent())

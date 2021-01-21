@@ -141,8 +141,47 @@ bool ShouldCreateAXMenuListOptionFor(const Node* node) {
   return select->GetLayoutObject() && AXObjectCacheImpl::UseAXMenuList();
 }
 
-bool IsLayoutObjectRelevantForAccessibility(const Node* node) {
-  return !ShouldCreateAXMenuListOptionFor(node) && !IsA<HTMLAreaElement>(node);
+bool IsPseudoElementDescendant(const LayoutObject& layout_object) {
+  const LayoutObject* ancestor = &layout_object;
+  while (true) {
+    ancestor = ancestor->Parent();
+    if (!ancestor)
+      return false;
+    if (ancestor->IsPseudoElement())
+      return true;
+    if (!ancestor->IsAnonymous())
+      return false;
+  }
+}
+
+bool IsLayoutObjectRelevantForAccessibility(const LayoutObject& layout_object) {
+  if (layout_object.IsAnonymous()) {
+    // Anonymous means there is no DOM node, and it's been inserted by the
+    // layout engine within the tree. An example is an anonymous block that is
+    // inserted as a parent of an inline where there are block siblings.
+
+    // Visible anonymous content (text, image, layout quotes) is relevant.
+    if (!layout_object.CanHaveChildren())
+      return true;
+
+    // Anonymous containers are not relevant, unless inside a pseudo element.
+    // Allowing anonymous pseudo elements ensures that all visible descendant
+    // pseudo content will be reached, despite only being able to walk layout
+    // inside of pseudo content.
+    return IsPseudoElementDescendant(layout_object);
+  }
+
+  Node* node = layout_object.GetNode();
+  DCHECK(node) << "Non-anonymous layout objects always have a node";
+
+  // Menu list option and HTML area elements are indexed by DOM node, never by
+  // layout object.
+  if (ShouldCreateAXMenuListOptionFor(node))
+    return false;
+  if (IsA<HTMLAreaElement>(node))
+    return false;
+
+  return true;
 }
 
 bool IsNodeRelevantForAccessibility(const Node* node, bool parent_ax_known) {
@@ -373,7 +412,7 @@ AXObject* AXObjectCacheImpl::Get(const Node* node) {
   LayoutObject* layout_object = node->GetLayoutObject();
 
   // Some elements such as <area> are indexed by DOM node, not by layout object.
-  if (!IsLayoutObjectRelevantForAccessibility(node))
+  if (layout_object && !IsLayoutObjectRelevantForAccessibility(*layout_object))
     layout_object = nullptr;
 
   AXID layout_id = layout_object ? layout_object_mapping_.at(layout_object) : 0;
@@ -564,9 +603,10 @@ AXObject* AXObjectCacheImpl::CreateAndInit(Node* node,
   // If the node has a layout object, prefer using that as the primary key for
   // the AXObject, with the exception of the HTMLAreaElement and nodes within
   // a locked subtree, which are created based on its node.
-  if (node->GetLayoutObject() && IsLayoutObjectRelevantForAccessibility(node) &&
+  LayoutObject* layout_object = node->GetLayoutObject();
+  if (layout_object && IsLayoutObjectRelevantForAccessibility(*layout_object) &&
       !DisplayLockUtilities::NearestLockedExclusiveAncestor(*node)) {
-    return CreateAndInit(node->GetLayoutObject(), parent_if_known, use_axid);
+    return CreateAndInit(layout_object, parent_if_known, use_axid);
   }
 
   // Return null if inside a shadow tree of something that can't have children,
@@ -621,9 +661,10 @@ AXObject* AXObjectCacheImpl::CreateAndInit(LayoutObject* layout_object,
       << "Unclean document at lifecycle " << document->Lifecycle().ToString();
 #endif  // DCHECK_IS_ON()
 
+  if (!IsLayoutObjectRelevantForAccessibility(*layout_object))
+    return nullptr;
+
   Node* node = layout_object->GetNode();
-  DCHECK(!node || IsLayoutObjectRelevantForAccessibility(node))
-      << "Shouldn't get here if the layout object is not relevant for a11y";
 
   if (node && !IsNodeRelevantForAccessibility(node, parent_if_known))
     return nullptr;
@@ -1307,38 +1348,25 @@ void AXObjectCacheImpl::ChildrenChanged(const LayoutObject* layout_object) {
 
   // Ensure that this object is touched, so that Get() can Invalidate() it if
   // necessary, e.g. to change whether it's an AXNodeObject <--> AXLayoutObject.
-  AXObject* ax_layout_obj = Get(layout_object);
+  Get(layout_object);
 
   // Update using nearest node (walking ancestors if necessary).
   Node* node = GetClosestNodeForLayoutObject(layout_object);
 
-  if (node) {
-    // Don't enqueue a deferred event on the same node more than once.
-    if (!nodes_with_pending_children_changed_.insert(node).is_new_entry)
-      return;
-
-    DeferTreeUpdate(&AXObjectCacheImpl::ChildrenChangedWithCleanLayout, node);
-
-    if (layout_object->GetNode() == node)
-      return;  // Node matched the layout object passed in, no further updates.
-
-    // Node was for an ancestor of an anonymous layout object passed in.
-    // layout object was anonymous. Fall through to continue updating
-    // descendants of the matching AXObject for the layout object.
-  }
-
-  // Update using layout object.
-  // Only using the layout object when no node could be found to update.
-  if (!ax_layout_obj)
+  if (!node)
     return;
 
-  if (ax_layout_obj->LastKnownIsIncludedInTreeValue()) {
-    // Participates in tree: update children if they haven't already been.
-    DeferTreeUpdate(&AXObjectCacheImpl::ChildrenChangedWithCleanLayout,
-                    ax_layout_obj->GetNode(), ax_layout_obj);
-  }
+  // Don't enqueue a deferred event on the same node more than once.
+  if (!nodes_with_pending_children_changed_.insert(node).is_new_entry)
+    return;
 
-  // Invalidate child ax objects below an anonymous layout object.
+  DeferTreeUpdate(&AXObjectCacheImpl::ChildrenChangedWithCleanLayout, node);
+
+  if (!layout_object->IsAnonymous())
+    return;
+
+  DCHECK_NE(node->GetLayoutObject(), layout_object);
+
   // The passed-in layout object was anonymous, e.g. anonymous block flow
   // inserted by blink as an inline's parent when it had a block sibling.
   // If children change on an anonymous layout object, this can
@@ -1349,11 +1377,16 @@ void AXObjectCacheImpl::ChildrenChanged(const LayoutObject* layout_object) {
   // then we also process ChildrenChanged() on the <div> and <a>:
   // <div>
   //  |    \
-  // <p>  Anonymous block
+  // <p>  Anonymous block   (Note: Anonymous blocks do not get AXObjects)
   //         \
   //         <a>
   //           \
   //           text
+
+  // TODO(aleventhal) Why is this needed for shadow-distribution.js test?
+  if (GetDocument().IsFlatTreeTraversalForbidden())
+    return;
+
   for (Node* child = LayoutTreeBuilderTraversal::FirstChild(*node); child;
        child = LayoutTreeBuilderTraversal::NextSibling(*child)) {
     DeferTreeUpdate(&AXObjectCacheImpl::ChildrenChangedWithCleanLayout, child);

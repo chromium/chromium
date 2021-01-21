@@ -1,7 +1,19 @@
 rootWebArea
 ++genericContainer ignored
-++++genericContainer
+++++genericContainer ignored
 ++++++ruby description='ruby text' descriptionFrom=relatedElement
 ++++++++staticText name='ruby base'
 ++++++++++inlineTextBox name='ruby base'
 ++++++++rubyAnnotation ignored name='ruby text'
+++++++paragraph
+++++++++ruby description='ruby text' descriptionFrom=relatedElement
+++++++++++staticText name='ruby base'
+++++++++++++inlineTextBox name='ruby base'
+++++++++++rubyAnnotation ignored name='ruby text'
+++++++paragraph
+++++++++staticText name='Hi! '
+++++++++++inlineTextBox name='Hi! '
+++++++++ruby description='ruby text' descriptionFrom=relatedElement
+++++++++++staticText name='ruby base'
+++++++++++++inlineTextBox name='ruby base'
+++++++++++rubyAnnotation ignored name='ruby text'

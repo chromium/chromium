@@ -310,6 +310,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityCSSDisplayNone) {
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityCSSDisplayTablePseudoElements) {
+  RunCSSTest(FILE_PATH_LITERAL("display-table-pseudo-elements.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityCSSDisplayToNone) {
   RunCSSTest(FILE_PATH_LITERAL("display-to-none.html"));
 }
@@ -345,6 +350,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityCSSDOMElements) {
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityCSSTableIncomplete) {
   RunCSSTest(FILE_PATH_LITERAL("table-incomplete.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityCSSTableCellBadParent) {
+  RunCSSTest(FILE_PATH_LITERAL("table-cell-bad-parent.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,

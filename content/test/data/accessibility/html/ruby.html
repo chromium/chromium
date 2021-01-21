@@ -2,12 +2,29 @@
 <html>
 <body>
 
-<ruby> 
-<rb>ruby base</rb> 
-<rp>(</rp> 
-<rt>ruby text</rt> 
-<rp>)</rp> 
+<!-- ruby with base text inside of <rb> -->
+<ruby>
+  <rb>ruby base</rb>
+  <rp>(</rp>
+  <rt>ruby text</rt>
+  <rp>)</rp>
 </ruby>
+
+<!-- ruby with base text as direct child -->
+<p>
+  <ruby>
+    ruby base
+    <rt>ruby text</rt>
+  </ruby>
+</p>
+
+<!-- ruby inline with other content -->
+<p>
+  Hi! <ruby>
+    <rb>ruby base</rb>
+    <rt>ruby text</rt>
+  </ruby>
+</p>
 
 </body>
 </html>

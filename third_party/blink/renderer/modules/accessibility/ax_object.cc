@@ -762,13 +762,17 @@ void AXObject::EnsureCorrectParentComputation() {
     return;
 
   // Verify that the algorithm in ComputeParentImpl() provides same results as
-  // parents that init their children with themselvs as the parent_if_known.
+  // parents that init their children with themselves as the parent_if_known.
   // Inconsistency indicates a problem could potentially exist where a child's
   // parent does not include the child in its children.
+  DCHECK(ComputeParentImpl())
+      << "Computed parent was null for " << this << ", expected " << parent_;
   DCHECK_EQ(ComputeParentImpl(), parent_)
       << "\n**** ComputeParent should have provided the same result as "
-         "the known parent.\n**** Child was "
-      << this;
+         "the known parent.\n**** Computed parent layout object was "
+      << ComputeParentImpl()->GetLayoutObject()
+      << "\n**** Actual parent's layout object was "
+      << parent_->GetLayoutObject() << "\n**** Child was " << this;
 }
 #endif
 
