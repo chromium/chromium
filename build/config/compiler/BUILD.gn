@@ -610,19 +610,12 @@ config("compiler") {
       "-fsplit-lto-unit",
     ]
 
-    if (thin_lto_enable_optimizations) {
-      lto_opt_level = 2
-    } else {
-      lto_opt_level = 0
-    }
-
     # Limit the size of the ThinLTO cache to the lesser of 10% of
     # available disk space, 10GB and 100000 files.
     cache_policy = "cache_size=10%:cache_size_bytes=10g:cache_size_files=100000"
 
     if (is_win) {
       ldflags += [
-        "/opt:lldlto=" + lto_opt_level,
         "/opt:lldltojobs=all",
 
         # Experimentally determined to yield a reasonable trade-off between
@@ -652,7 +645,6 @@ config("compiler") {
         "-Wl,--thinlto-cache-policy,$cache_policy",
       ]
 
-      ldflags += [ "-Wl,--lto-O" + lto_opt_level ]
       if (thin_lto_enable_optimizations) {
         # TODO(gbiv): We ideally shouldn't need to specify this; ThinLTO
         # should be able to better manage binary size increases on its own.
@@ -749,6 +741,44 @@ config("compiler") {
   if (is_posix || is_fuchsia) {
     asmflags += cflags
     asmflags += cflags_c
+  }
+}
+
+# The BUILDCONFIG file sets this config on targets by default, which means when
+# building with ThinLTO, no optimization is performed in the link step.
+config("thinlto_optimize_default") {
+  if (!is_debug && use_thin_lto && is_a_target_toolchain) {
+    lto_opt_level = 0
+
+    if (is_win) {
+      ldflags = [ "/opt:lldlto=" + lto_opt_level ]
+    } else {
+      ldflags = [ "-Wl,--lto-O" + lto_opt_level ]
+    }
+  }
+}
+
+# Use this to enable optimization in the ThinLTO link step for select targets
+# when thin_lto_enable_optimizations is set by doing:
+#
+#   configs -= [ "//build/config/compiler:thinlto_optimize_default" ]
+#   configs += [ "//build/config/compiler:thinlto_optimize_max" ]
+#
+# Since it makes linking significantly slower and more resource intensive, only
+# use it on important targets such as the main browser executable or dll.
+config("thinlto_optimize_max") {
+  if (!is_debug && use_thin_lto && is_a_target_toolchain) {
+    if (thin_lto_enable_optimizations) {
+      lto_opt_level = 2
+    } else {
+      lto_opt_level = 0
+    }
+
+    if (is_win) {
+      ldflags = [ "/opt:lldlto=" + lto_opt_level ]
+    } else {
+      ldflags = [ "-Wl,--lto-O" + lto_opt_level ]
+    }
   }
 }
 

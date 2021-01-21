@@ -33,6 +33,10 @@ shared_library("chromium_android_linker") {
   # Disable coverage to avoid linker issue.
   configs -= [ "//build/config/coverage:default_coverage" ]
 
+  # ThinLTO optimizations save a few bytes of binary size.
+  configs -= [ "//build/config/compiler:thinlto_optimize_default" ]
+  configs += [ "//build/config/compiler:thinlto_optimize_max" ]
+
   # Disable orderfile instrumentation. Code in this target is in a different
   # .so, cannot call unexported instrumentation functions from another one (link
   # time error).
