@@ -338,7 +338,9 @@ void PasswordProtectionRequest::FillRequestProto(bool is_sampled_ping) {
   }
 
   if (IsClientSideDetectionEnabled()) {
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
     GetDomFeatures();
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   } else {
     SendRequest();
   }
