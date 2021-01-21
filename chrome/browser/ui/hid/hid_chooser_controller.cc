@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "chrome/browser/hid/hid_chooser_context.h"
 #include "chrome/browser/hid/hid_chooser_context_factory.h"
+#include "chrome/browser/hid/web_hid_histograms.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_contents.h"
@@ -111,7 +112,6 @@ bool HidChooserController::IsPaired(size_t index) const {
 }
 
 void HidChooserController::Select(const std::vector<size_t>& indices) {
-  // TODO(crbug.com/964041): Record metrics when an item is selected.
   DCHECK_EQ(1u, indices.size());
   size_t index = indices[0];
   DCHECK_LT(index, items_.size());
@@ -126,23 +126,34 @@ void HidChooserController::Select(const std::vector<size_t>& indices) {
   DCHECK_GT(device_infos.size(), 0u);
   std::vector<device::mojom::HidDeviceInfoPtr> devices;
   devices.reserve(device_infos.size());
+  bool any_persistent_permission_granted = false;
   for (auto& device : device_infos) {
     chooser_context_->GrantDevicePermission(requesting_origin_,
                                             embedding_origin_, *device);
+    if (HidChooserContext::CanStorePersistentEntry(*device))
+      any_persistent_permission_granted = true;
     devices.push_back(device->Clone());
   }
+
+  RecordWebHidChooserClosure(
+      any_persistent_permission_granted
+          ? WebHidChooserClosed::kPermissionGranted
+          : WebHidChooserClosed::kEphemeralPermissionGranted);
+
   std::move(callback_).Run(std::move(devices));
 }
 
 void HidChooserController::Cancel() {
   // Called when the user presses the Cancel button in the chooser dialog.
-  // TODO(crbug.com/964041): Record metrics when the chooser dialog is canceled.
+  RecordWebHidChooserClosure(device_map_.empty()
+                                 ? WebHidChooserClosed::kCancelledNoDevices
+                                 : WebHidChooserClosed::kCancelled);
 }
 
 void HidChooserController::Close() {
   // Called when the user dismisses the chooser by clicking outside the chooser
   // dialog, or when the dialog closes without the user taking action.
-  // TODO(crbug.com/964041): Record metrics when the chooser dialog is closed.
+  RecordWebHidChooserClosure(WebHidChooserClosed::kLostFocus);
 }
 
 void HidChooserController::OpenHelpCenterUrl() const {

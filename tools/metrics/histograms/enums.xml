@@ -78579,6 +78579,14 @@ others/histograms.xml -->
   <int value="2" label="Not styled, but used"/>
 </enum>
 
+<enum name="WebHidChooserClosed">
+  <int value="0" label="User cancelled"/>
+  <int value="1" label="User cancelled, no devices available"/>
+  <int value="2" label="Permission granted"/>
+  <int value="3" label="Ephemeral permission granted"/>
+  <int value="4" label="Dismissed due to loss of focus"/>
+</enum>
+
 <enum name="WebHistoryStatus">
   <int value="0" label="WEB_HISTORY_QUERY_FAILED">Failed</int>
   <int value="1" label="WEB_HISTORY_QUERY_SUCCEEDED">Succeeded</int>

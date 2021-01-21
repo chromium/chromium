@@ -3632,6 +3632,8 @@ static_library("browser") {
       "hid/hid_chooser_context.h",
       "hid/hid_chooser_context_factory.cc",
       "hid/hid_chooser_context_factory.h",
+      "hid/web_hid_histograms.cc",
+      "hid/web_hid_histograms.h",
       "importer/external_process_importer_client.cc",
       "importer/external_process_importer_client.h",
       "importer/external_process_importer_host.cc",

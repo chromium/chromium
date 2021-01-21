@@ -25,10 +25,6 @@ constexpr char kHidVendorIdKey[] = "vendor-id";
 constexpr char kHidProductIdKey[] = "product-id";
 constexpr char kHidSerialNumberKey[] = "serial-number";
 
-bool CanStorePersistentEntry(const device::mojom::HidDeviceInfo& device) {
-  return !device.serial_number.empty() && !device.product_name.empty();
-}
-
 base::Value DeviceInfoToValue(const device::mojom::HidDeviceInfo& device) {
   base::Value value(base::Value::Type::DICTIONARY);
   value.SetStringKey(
@@ -36,7 +32,7 @@ base::Value DeviceInfoToValue(const device::mojom::HidDeviceInfo& device) {
       base::UTF16ToUTF8(HidChooserContext::DisplayNameFromDeviceInfo(device)));
   value.SetIntKey(kHidVendorIdKey, device.vendor_id);
   value.SetIntKey(kHidProductIdKey, device.product_id);
-  if (CanStorePersistentEntry(device)) {
+  if (HidChooserContext::CanStorePersistentEntry(device)) {
     // Use the USB serial number as a persistent identifier. If it is
     // unavailable, only ephemeral permissions may be granted.
     value.SetStringKey(kHidSerialNumberKey, device.serial_number);
@@ -89,6 +85,12 @@ base::string16 HidChooserContext::DisplayNameFromDeviceInfo(
   return l10n_util::GetStringFUTF16(IDS_HID_CHOOSER_ITEM_WITH_NAME,
                                     base::UTF8ToUTF16(device.product_name),
                                     vendor_id_string, product_id_string);
+}
+
+// static
+bool HidChooserContext::CanStorePersistentEntry(
+    const device::mojom::HidDeviceInfo& device) {
+  return !device.serial_number.empty() && !device.product_name.empty();
 }
 
 base::string16 HidChooserContext::GetObjectDisplayName(

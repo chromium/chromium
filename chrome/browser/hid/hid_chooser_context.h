@@ -55,6 +55,10 @@ class HidChooserContext : public permissions::ChooserContextBase,
   static base::string16 DisplayNameFromDeviceInfo(
       const device::mojom::HidDeviceInfo& device);
 
+  // Returns true if a persistent permission can be granted for |device|.
+  static bool CanStorePersistentEntry(
+      const device::mojom::HidDeviceInfo& device);
+
   // permissions::ChooserContextBase implementation:
   bool IsValidObject(const base::Value& object) override;
   // In addition these methods from ChooserContextBase are overridden in order
