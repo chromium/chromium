@@ -90,8 +90,9 @@ if (enable_libaom) {
     # via global function pointer symbols, which hides the object dependency at
     # link time. On Mac, this results in undefined references to the intrinsic
     # symbols.
-
     source_set("libaom_intrinsics_sse2") {
+      # TODO(jianj): Align this with libvpx as this is not used there.
+      check_includes = false
       configs -= [ "//build/config/compiler:chromium_code" ]
       configs += [ "//build/config/compiler:no_chromium_code" ]
       configs += [ ":libaom_config" ]
@@ -105,6 +106,7 @@ if (enable_libaom) {
     }
 
     source_set("libaom_intrinsics_sse3") {
+      check_includes = false
       configs -= [ "//build/config/compiler:chromium_code" ]
       configs += [ "//build/config/compiler:no_chromium_code" ]
       configs += [ ":libaom_config" ]
@@ -115,6 +117,7 @@ if (enable_libaom) {
     }
 
     source_set("libaom_intrinsics_ssse3") {
+      check_includes = false
       configs -= [ "//build/config/compiler:chromium_code" ]
       configs += [ "//build/config/compiler:no_chromium_code" ]
       configs += [ ":libaom_config" ]
@@ -127,6 +130,7 @@ if (enable_libaom) {
     }
 
     source_set("libaom_intrinsics_sse4_1") {
+      check_includes = false
       configs -= [ "//build/config/compiler:chromium_code" ]
       configs += [ "//build/config/compiler:no_chromium_code" ]
       configs += [ ":libaom_config" ]
@@ -140,6 +144,7 @@ if (enable_libaom) {
     }
 
     source_set("libaom_intrinsics_sse4_2") {
+      check_includes = false
       configs -= [ "//build/config/compiler:chromium_code" ]
       configs += [ "//build/config/compiler:no_chromium_code" ]
       configs += [ ":libaom_config" ]
@@ -150,6 +155,7 @@ if (enable_libaom) {
     }
 
     source_set("libaom_intrinsics_avx") {
+      check_includes = false
       configs -= [ "//build/config/compiler:chromium_code" ]
       configs += [ "//build/config/compiler:no_chromium_code" ]
       configs += [ ":libaom_config" ]
@@ -162,6 +168,7 @@ if (enable_libaom) {
     }
 
     source_set("libaom_intrinsics_avx2") {
+      check_includes = false
       configs -= [ "//build/config/compiler:chromium_code" ]
       configs += [ "//build/config/compiler:no_chromium_code" ]
       configs += [ ":libaom_config" ]
@@ -180,6 +187,7 @@ if (enable_libaom) {
   if (current_cpu == "arm64" || cpu_arch_full == "arm-neon" ||
       cpu_arch_full == "arm-neon-cpu-detect") {
     source_set("libaom_intrinsics_neon") {
+      check_includes = false
       configs -= [ "//build/config/compiler:chromium_code" ]
       configs += [ "//build/config/compiler:no_chromium_code" ]
       if (current_cpu == "arm") {
@@ -206,6 +214,7 @@ if (enable_libaom) {
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [ "//build/config/compiler:no_chromium_code" ]
     configs += [ ":libaom_config" ]
+
     sources = aom_av1_common_sources
     sources += aom_av1_decoder_sources
     sources += aom_dsp_common_sources
