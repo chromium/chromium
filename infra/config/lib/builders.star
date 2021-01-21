@@ -259,6 +259,7 @@ defaults = args.defaults(
     builder_group = None,
     builderless = args.COMPUTE,
     configure_kitchen = False,
+    kitchen_emulate_gce = False,
     cores = None,
     cpu = None,
     fully_qualified_builder_dimension = False,
@@ -308,6 +309,7 @@ def builder(
         list_view = args.DEFAULT,
         project_trigger_overrides = args.DEFAULT,
         configure_kitchen = args.DEFAULT,
+        kitchen_emulate_gce = args.DEFAULT,
         goma_backend = args.DEFAULT,
         goma_debug = args.DEFAULT,
         goma_enable_ats = args.DEFAULT,
@@ -395,6 +397,9 @@ def builder(
       * configure_kitchen - a boolean indicating whether to configure kitchen. If
         True, emits a property to set the 'git_auth' and 'devshell' fields of the
         '$kitchen' property. By default, considered False.
+      * kitchen_emulate_gce - a boolean indicating whether to set 'emulate_gce'
+        of the '$kitchen' property. This is effective only when
+        configure_kitchen is True. By default, considered False.
       * goma_backend - a member of the `goma.backend` enum indicating the goma
         backend the builder should use. Will be incorporated into the
         '$build/goma' property. By default, considered None.
@@ -516,6 +521,8 @@ def builder(
             "devshell": True,
             "git_auth": True,
         }
+        if defaults.get_value("kitchen_emulate_gce", kitchen_emulate_gce):
+            properties["$kitchen"]["emulate_gce"] = True
 
     chromium_tests = _chromium_tests_property(
         project_trigger_overrides = project_trigger_overrides,
