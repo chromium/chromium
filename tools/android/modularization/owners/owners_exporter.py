@@ -33,6 +33,7 @@ def _to_data_dict(requested_path: owners_data.RequestedPath,
     return r
 
   owners = path_data.owner
+  dir_metadata = path_data.dir_metadata
   git_data = path_data.git_data
 
   return {
@@ -40,9 +41,9 @@ def _to_data_dict(requested_path: owners_data.RequestedPath,
       'feature': requested_path.feature,
       'owners_file': owners.owners_file,
       'owners_email': ', '.join(owners.owners),
-      'team': owners.team if owners.team else '',
-      'component': owners.component if owners.component else '',
-      'os': owners.os if owners.os else '',
+      'team': dir_metadata.team if dir_metadata.team else '',
+      'component': dir_metadata.component if dir_metadata.component else '',
+      'os': dir_metadata.os if dir_metadata.os else '',
       'lines_of_code': str(git_data.lines_of_code),
       'number_of_files': str(git_data.number_of_files),
       'latest_cl_date': git_data.latest_cl_date,
