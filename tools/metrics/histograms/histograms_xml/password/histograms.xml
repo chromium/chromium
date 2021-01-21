@@ -593,18 +593,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.Android.PasswordCredentialEntry"
-    enum="PasswordManagerAndroidPasswordEntryActions"
-    expires_after="2021-06-20">
+    enum="PasswordManagerAndroidPasswordEntryActions" expires_after="M95">
   <owner>fhorschig@chromium.org</owner>
   <owner>ioanap@chromium.org</owner>
   <summary>
     Records the action taken with a password credential entry in the preferences
-    on Android.
+    on Android. This includes opening the UI surface.
   </summary>
 </histogram>
 
 <histogram name="PasswordManager.Android.PasswordCredentialEntry.Password"
-    enum="PasswordManagerAndroidPasswordActions" expires_after="2021-06-20">
+    enum="PasswordManagerAndroidPasswordActions" expires_after="M95">
   <owner>fhorschig@chromium.org</owner>
   <owner>ioanap@chromium.org</owner>
   <summary>
@@ -614,42 +613,48 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.Android.PasswordCredentialEntry.Username"
-    enum="PasswordManagerAndroidUsernameActions" expires_after="2021-06-20">
+    enum="PasswordManagerAndroidUsernameActions" expires_after="M95">
   <owner>fhorschig@chromium.org</owner>
   <owner>ioanap@chromium.org</owner>
   <summary>
     Records the action taken with a username of a password credential entry in
-    the preferences on Android.
+    the preferences on Android. It can be analyzed together with
+    PasswordManager.Android.PasswordCredentialEntry which records how many times
+    this UI was shown.
   </summary>
 </histogram>
 
 <histogram name="PasswordManager.Android.PasswordCredentialEntry.Website"
-    enum="PasswordManagerAndroidWebsiteActions" expires_after="M90">
+    enum="PasswordManagerAndroidWebsiteActions" expires_after="M95">
   <owner>fhorschig@chromium.org</owner>
   <owner>ioanap@chromium.org</owner>
   <summary>
     Records the action taken with a website of a password credential entry on
-    Android.
+    Android. It can be analyzed together with
+    PasswordManager.Android.PasswordCredentialEntry which records how many times
+    this UI was shown.
   </summary>
 </histogram>
 
 <histogram name="PasswordManager.Android.PasswordExceptionEntry"
-    enum="PasswordManagerAndroidPasswordEntryActions" expires_after="M90">
+    enum="PasswordManagerAndroidPasswordEntryActions" expires_after="M95">
   <owner>fhorschig@chromium.org</owner>
   <owner>ioanap@chromium.org</owner>
   <summary>
     Records the action taken with a password exception entry in the preferences
-    on Android.
+    on Android. This includes opening the UI surface.
   </summary>
 </histogram>
 
 <histogram name="PasswordManager.Android.PasswordExceptionEntry.Website"
-    enum="PasswordManagerAndroidWebsiteActions" expires_after="M90">
+    enum="PasswordManagerAndroidWebsiteActions" expires_after="M95">
   <owner>fhorschig@chromium.org</owner>
   <owner>ioanap@chromium.org</owner>
   <summary>
     Records the action taken with a website of a password exception entry in the
-    preferences on Android.
+    preferences on Android. It can be analyzed together with
+    PasswordManager.Android.PasswordExceptionEntry which records how many times
+    this UI was shown.
   </summary>
 </histogram>
 

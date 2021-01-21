@@ -13522,12 +13522,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="PasswordManager.TotalAccountsHiRes.ByType"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="PasswordGenerationType" separator=".">
-  <suffix name="Automatic" label=""/>
-  <suffix name="Manual" label=""/>
-  <affected-histogram name="KeyboardAccessory.GenerationDialogChoice"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="PasswordManagerMonitor" separator="_">
   <obsolete>
     Removed as of 03/2016.

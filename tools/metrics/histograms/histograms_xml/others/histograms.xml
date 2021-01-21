@@ -7737,7 +7737,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="KeyboardAccessory.DisabledSavingAccessoryImpressions"
-    enum="BooleanShown" expires_after="M90">
+    enum="BooleanShown" expires_after="M95">
   <owner>ioanap@chromium.org</owner>
   <owner>fhorschig@chromium.org</owner>
   <summary>
@@ -7749,16 +7749,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="KeyboardAccessory.GenerationDialogChoice"
-    enum="GenerationDialogChoice" expires_after="M90">
-<!-- Name completed by histogram_suffixes name="PasswordGenerationType" -->
-
+<histogram name="KeyboardAccessory.GenerationDialogChoice.{GenerationType}"
+    enum="GenerationDialogChoice" expires_after="M95">
   <owner>ioanap@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
     Android only. Records the interactions with the password generation dialog
-    for automatic generation.
+    for {GenerationType}. Recorded when the user taps a button in the dialog or
+    dismsses it.
   </summary>
+  <token key="GenerationType">
+    <variant name="Automatic" summary="automatic generation"/>
+    <variant name="Manual" summary="manual generation"/>
+  </token>
 </histogram>
 
 <histogram name="Kiosk.Launch.CryptohomeFailure" enum="LoginFailureReason"
