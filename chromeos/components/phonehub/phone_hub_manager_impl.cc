@@ -53,10 +53,12 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
           std::make_unique<MessageReceiverImpl>(connection_manager_.get())),
       message_sender_(
           std::make_unique<MessageSenderImpl>(connection_manager_.get())),
+      phone_model_(std::make_unique<MutablePhoneModel>()),
       cros_state_sender_(
           std::make_unique<CrosStateSender>(message_sender_.get(),
                                             connection_manager_.get(),
-                                            multidevice_setup_client)),
+                                            multidevice_setup_client,
+                                            phone_model_.get())),
       do_not_disturb_controller_(std::make_unique<DoNotDisturbControllerImpl>(
           message_sender_.get(),
           user_action_recorder_.get())),
@@ -81,7 +83,6 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
           feature_status_provider_.get(),
           multidevice_setup_client,
           show_multidevice_setup_dialog_callback)),
-      phone_model_(std::make_unique<MutablePhoneModel>()),
       phone_status_processor_(std::make_unique<PhoneStatusProcessor>(
           do_not_disturb_controller_.get(),
           feature_status_provider_.get(),
@@ -166,7 +167,6 @@ void PhoneHubManagerImpl::Shutdown() {
   browser_tabs_model_provider_.reset();
   tether_controller_.reset();
   phone_status_processor_.reset();
-  phone_model_.reset();
   onboarding_ui_tracker_.reset();
   notification_manager_.reset();
   notification_access_manager_.reset();
@@ -174,6 +174,7 @@ void PhoneHubManagerImpl::Shutdown() {
   connection_scheduler_.reset();
   do_not_disturb_controller_.reset();
   cros_state_sender_.reset();
+  phone_model_.reset();
   message_sender_.reset();
   message_receiver_.reset();
   feature_status_provider_.reset();

@@ -76,6 +76,7 @@ class PhoneHubManagerImpl : public PhoneHubManager, public KeyedService {
   std::unique_ptr<FeatureStatusProvider> feature_status_provider_;
   std::unique_ptr<MessageReceiver> message_receiver_;
   std::unique_ptr<MessageSender> message_sender_;
+  std::unique_ptr<MutablePhoneModel> phone_model_;
   std::unique_ptr<CrosStateSender> cros_state_sender_;
   std::unique_ptr<DoNotDisturbController> do_not_disturb_controller_;
   std::unique_ptr<ConnectionScheduler> connection_scheduler_;
@@ -83,7 +84,6 @@ class PhoneHubManagerImpl : public PhoneHubManager, public KeyedService {
   std::unique_ptr<NotificationAccessManager> notification_access_manager_;
   std::unique_ptr<NotificationManager> notification_manager_;
   std::unique_ptr<OnboardingUiTracker> onboarding_ui_tracker_;
-  std::unique_ptr<MutablePhoneModel> phone_model_;
   std::unique_ptr<PhoneStatusProcessor> phone_status_processor_;
   std::unique_ptr<TetherController> tether_controller_;
   std::unique_ptr<BrowserTabsModelProvider> browser_tabs_model_provider_;
