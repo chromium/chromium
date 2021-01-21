@@ -17,6 +17,7 @@
 #include "components/autofill_assistant/browser/actions/fallback_handler/required_fields_fallback_handler.h"
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/field_formatter.h"
+#include "components/autofill_assistant/browser/user_data_util.h"
 #include "components/autofill_assistant/browser/user_model.h"
 #include "components/autofill_assistant/browser/value_util.h"
 
@@ -69,7 +70,7 @@ void UseAddressAction::InternalProcessAction(
         EndAction(ClientStatus(PRECONDITION_FAILED));
         return;
       }
-      profile_ = std::make_unique<autofill::AutofillProfile>(*profile);
+      profile_ = MakeUniqueFromProfile(*profile);
       break;
     }
     case UseAddressProto::kModelIdentifier: {
@@ -102,7 +103,7 @@ void UseAddressAction::InternalProcessAction(
         EndAction(ClientStatus(PRECONDITION_FAILED));
         return;
       }
-      profile_ = std::make_unique<autofill::AutofillProfile>(*profile);
+      profile_ = MakeUniqueFromProfile(*profile);
       break;
     }
     case UseAddressProto::ADDRESS_SOURCE_NOT_SET:
