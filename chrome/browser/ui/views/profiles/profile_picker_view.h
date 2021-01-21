@@ -132,9 +132,11 @@ class ProfilePickerView : public views::WidgetDelegateView,
   // `url` is empty, it only shows `contents` with its currently loaded url.
   void ShowScreen(content::WebContents* contents,
                   const GURL& url,
-                  bool show_toolbar);
+                  bool show_toolbar,
+                  bool enable_navigating_back = true);
 
   void BackButtonPressed(const ui::Event& event);
+  void NavigateBack();
 
   // Checks whether the sign-in flow is in progress.
   bool IsSigningIn() const;
@@ -188,6 +190,7 @@ class ProfilePickerView : public views::WidgetDelegateView,
 
   // A mapping between accelerators and command IDs.
   std::map<ui::Accelerator, int> accelerator_table_;
+  bool enable_navigating_back_ = true;
 
   // Handler for unhandled key events from renderer.
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
