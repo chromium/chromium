@@ -89,6 +89,7 @@ DecodeStatus H264VaapiVideoDecoderDelegate::SubmitFrameMetadata(
   VAPictureParameterBufferH264 pic_param;
   memset(&pic_param, 0, sizeof(pic_param));
   memset(&crypto_params_, 0, sizeof(crypto_params_));
+  full_sample_ = false;
 
 #define FROM_SPS_TO_PP(a) pic_param.a = sps->a
 #define FROM_SPS_TO_PP2(a, b) pic_param.b = sps->a
@@ -208,7 +209,7 @@ DecodeStatus H264VaapiVideoDecoderDelegate::ParseEncryptedSliceHeader(
   // extract the slice header parameters of interest and return them to the
   // caller.
 
-  VAEncryptionParameters crypto_params;
+  VAEncryptionParameters crypto_params = {};
   // Don't use the VAEncryptionSegmentInfo vector in the class since we do not
   // need to hold this data across calls.
   std::vector<VAEncryptionSegmentInfo> segment_info;
@@ -358,6 +359,7 @@ DecodeStatus H264VaapiVideoDecoderDelegate::SubmitSlice(
     // We do not need to submit all the slice data, instead we just submit the
     // index for what was already sent for parsing. The HW decoder already has
     // the full slice data from when we decrypted the header.
+    full_sample_ = true;
     VACencStatusParameters cenc_status = {};
     cenc_status.status_report_index_feedback = slice_hdr->full_sample_index;
     return vaapi_wrapper_->SubmitBuffer(VACencStatusParameterBufferType,
@@ -479,7 +481,7 @@ DecodeStatus H264VaapiVideoDecoderDelegate::SubmitDecode(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("media,gpu", "H264VaapiVideoDecoderDelegate::SubmitDecode");
 
-  if (IsEncryptedSession() &&
+  if (IsEncryptedSession() && !full_sample_ &&
       !vaapi_wrapper_->SubmitBuffer(VAEncryptionParameterBufferType,
                                     sizeof(crypto_params_), &crypto_params_)) {
     return DecodeStatus::kFail;

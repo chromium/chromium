@@ -77,6 +77,9 @@ class H264VaapiVideoDecoderDelegate : public H264Decoder::H264Accelerator,
   // the encryption details across all the slices.
   VAEncryptionParameters crypto_params_;
 
+  // We need to set this so we don't resubmit crypto params on decode.
+  bool full_sample_;
+
   DISALLOW_COPY_AND_ASSIGN(H264VaapiVideoDecoderDelegate);
 };
 
