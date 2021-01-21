@@ -91,7 +91,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordGeneration.SubmissionAvailableEvent"
-    enum="PasswordSubmissionEvent" expires_after="M90">
+    enum="PasswordSubmissionEvent" expires_after="M95">
   <owner>jdoerrie@chromium.org</owner>
   <owner>kolos@chromium.org</owner>
   <summary>
@@ -113,7 +113,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordGeneration.UploadStarted" enum="Boolean"
-    expires_after="M90">
+    expires_after="M95">
   <owner>jdoerrie@chromium.org</owner>
   <owner>kolos@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
@@ -959,7 +959,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.CredentialsWithDuplicates" units="units"
-    expires_after="M90">
+    expires_after="M95">
   <owner>jdoerrie@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -974,7 +974,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.CredentialsWithMismatchedDuplicates"
-    units="units" expires_after="M90">
+    units="units" expires_after="M95">
   <owner>jdoerrie@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -1074,7 +1074,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.FilledCredentialWasFromAndroidApp"
-    enum="PasswordManagerFilledAndroidCredentials" expires_after="M90">
+    enum="PasswordManagerFilledAndroidCredentials" expires_after="M95">
   <owner>jdoerrie@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -1119,7 +1119,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.FillSuggestionsIncludeAndroidAppCredentials"
-    enum="PasswordManagerOfferedAndroidCredentials" expires_after="M90">
+    enum="PasswordManagerOfferedAndroidCredentials" expires_after="M95">
   <owner>jdoerrie@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -1155,7 +1155,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.FormDataDeserializationStatus"
-    enum="FormDataDeserializationStatus" expires_after="M90">
+    enum="FormDataDeserializationStatus" expires_after="M95">
   <owner>jdoerrie@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -1166,7 +1166,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.GeneratedFormHasNoFormManager"
-    enum="BooleanFormManager" expires_after="M90">
+    enum="BooleanFormManager" expires_after="M95">
   <owner>jdoerrie@chromium.org</owner>
   <owner>kolos@chromium.org</owner>
   <summary>
@@ -1668,6 +1668,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PasswordManager.OtherPossibleUsernamesUsage"
     enum="OtherPossibleUsernamesUsage" expires_after="M90">
+  <obsolete>
+    Obsolete since M90.
+  </obsolete>
   <owner>jdoerrie@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -1870,7 +1873,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.ReauthToAccessPasswordInSettings"
-    enum="PasswordManager.ReauthResult" expires_after="M90">
+    enum="PasswordManager.ReauthResult" expires_after="M95">
   <owner>jdoerrie@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -2046,7 +2049,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.SubmittedFormType" enum="PasswordFormType"
-    expires_after="M90">
+    expires_after="M95">
   <owner>jdoerrie@chromium.org</owner>
   <owner>kolos@chromium.org</owner>
   <summary>

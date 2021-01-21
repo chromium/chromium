@@ -56563,6 +56563,9 @@ Called by update_net_trust_anchors.py.-->
 </enum>
 
 <enum name="OtherPossibleUsernamesUsage">
+  <obsolete>
+    Obsolete since M90.
+  </obsolete>
   <int value="0" label="Nothing to Autofill"/>
   <int value="1" label="No other possible usernames"/>
   <int value="2" label="Other possible usernames present, but none were shown"/>
