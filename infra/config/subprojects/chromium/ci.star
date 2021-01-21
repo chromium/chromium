@@ -8,7 +8,6 @@ load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//console-header.star", "HEADER")
 load("//project.star", "settings")
-load("./packager_vars.star", "CHROMIUM_3PP_PROPERTIES")
 
 def main_console_if_on_branch():
     return branches.value(for_branches = "main")
@@ -1691,7 +1690,9 @@ ci.cipd_3pp_builder(
     ),
     schedule = "0 7 * * 0 *",
     triggered_by = [],
-    properties = CHROMIUM_3PP_PROPERTIES["3pp-linux-amd64-packager"],
+    properties = {
+        "platform": "linux-amd64",
+    },
 )
 
 ci.cipd_builder(

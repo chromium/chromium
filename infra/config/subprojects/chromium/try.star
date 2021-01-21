@@ -7,7 +7,6 @@ load("//lib/builders.star", "cpu", "goma", "os", "xcode")
 load("//lib/consoles.star", "consoles")
 load("//lib/try.star", "try_")
 load("//project.star", "settings")
-load("./packager_vars.star", "CHROMIUM_3PP_PROPERTIES")
 
 try_.defaults.set(
     bucket = "try",
@@ -1587,7 +1586,10 @@ try_.chromium_win_builder(
 try_.cipd_3pp_builder(
     name = "3pp-linux-amd64-packager",
     os = os.LINUX_DEFAULT,
-    properties = CHROMIUM_3PP_PROPERTIES["3pp-linux-amd64-packager"],
+    properties = {
+        "platform": "linux-amd64",
+        "package_prefix": "chromium_3pp",
+    },
 )
 
 try_.gpu_chromium_android_builder(
