@@ -37,6 +37,13 @@ class POLICY_EXPORT PolicyMap {
   // added here in order to appear in the policy table.
   enum class MessageType { kInfo, kWarning, kError };
 
+  // Types of conflicts that can be associated with policies. New conflict types
+  // must be added here in order to appear in the policy table.
+  enum class ConflictType { None, Override, Supersede };
+
+  // Forward declare class so that it can be used in Entry.
+  class EntryConflict;
+
   // Each policy maps to an Entry which keeps the policy value as well as other
   // relevant data about the policy.
   class POLICY_EXPORT Entry {
@@ -46,7 +53,7 @@ class POLICY_EXPORT PolicyMap {
     // For debugging and displaying only. Set by provider delivering the policy.
     PolicySource source = POLICY_SOURCE_ENTERPRISE_DEFAULT;
     std::unique_ptr<ExternalDataFetcher> external_data_fetcher;
-    std::vector<Entry> conflicts;
+    std::vector<EntryConflict> conflicts;
 
     Entry();
     Entry(PolicyLevel level,
@@ -134,6 +141,28 @@ class POLICY_EXPORT PolicyMap {
     std::map<MessageType,
              std::map<int, base::Optional<std::vector<base::string16>>>>
         message_ids_;
+  };
+
+  // Associates an Entry with a ConflictType.
+  class POLICY_EXPORT EntryConflict {
+   public:
+    EntryConflict();
+    EntryConflict(ConflictType type, Entry&& entry);
+    ~EntryConflict();
+
+    EntryConflict(EntryConflict&&) noexcept;
+    EntryConflict& operator=(EntryConflict&&) noexcept;
+
+    // Accessor methods for conflict type.
+    void SetConflictType(ConflictType type);
+    ConflictType conflict_type() const;
+
+    // Accessor method for entry.
+    const Entry& entry() const;
+
+   private:
+    ConflictType conflict_type_;
+    Entry entry_;
   };
 
   typedef std::map<std::string, Entry> PolicyMapType;

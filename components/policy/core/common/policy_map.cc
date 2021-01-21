@@ -73,7 +73,7 @@ PolicyMap::Entry PolicyMap::Entry::DeepCopy() const {
   copy.is_default_value_ = is_default_value_;
   copy.conflicts.reserve(conflicts.size());
   for (const auto& conflict : conflicts) {
-    copy.AddConflictingPolicy(conflict.DeepCopy());
+    copy.AddConflictingPolicy(conflict.entry().DeepCopy());
   }
   return copy;
 }
@@ -91,7 +91,8 @@ bool PolicyMap::Entry::has_higher_priority_than(
 bool PolicyMap::Entry::Equals(const PolicyMap::Entry& other) const {
   bool conflicts_are_equal = conflicts.size() == other.conflicts.size();
   for (size_t i = 0; conflicts_are_equal && i < conflicts.size(); ++i)
-    conflicts_are_equal &= conflicts[i].Equals(other.conflicts[i]);
+    conflicts_are_equal &=
+        conflicts[i].entry().Equals(other.conflicts[i].entry());
 
   const bool equals =
       conflicts_are_equal && level == other.level && scope == other.scope &&
@@ -131,10 +132,21 @@ void PolicyMap::Entry::AddConflictingPolicy(Entry&& conflict) {
   std::move(conflict.conflicts.begin(), conflict.conflicts.end(),
             std::back_inserter(conflicts));
 
+  bool is_value_equal = (!this->value() && !conflict.value()) ||
+                        (this->value() && conflict.value() &&
+                         *this->value() == *conflict.value());
+
+  ConflictType type =
+      is_value_equal ? ConflictType::Supersede : ConflictType::Override;
+
+  // Clean up conflict Entry to ensure there's no duplication since entire Entry
+  // is moved and treated as a freshly constructed Entry.
+  conflict.ClearConflicts();
+  conflict.is_default_value_ = false;
+  conflict.message_ids_.clear();
+
   // Avoid conflict nesting
-  conflicts.emplace_back(conflict.level, conflict.scope, conflict.source,
-                         std::move(conflict.value_),
-                         std::move(conflict.external_data_fetcher));
+  conflicts.emplace_back(type, std::move(conflict));
 }
 
 void PolicyMap::Entry::ClearConflicts() {
@@ -188,6 +200,28 @@ void PolicyMap::Entry::SetIsDefaultValue() {
 
 bool PolicyMap::Entry::IsDefaultValue() const {
   return is_default_value_;
+}
+
+PolicyMap::EntryConflict::EntryConflict() = default;
+PolicyMap::EntryConflict::EntryConflict(ConflictType type, Entry&& entry)
+    : conflict_type_(type), entry_(std::move(entry)) {}
+
+PolicyMap::EntryConflict::~EntryConflict() = default;
+
+PolicyMap::EntryConflict::EntryConflict(EntryConflict&&) noexcept = default;
+PolicyMap::EntryConflict& PolicyMap::EntryConflict::operator=(
+    EntryConflict&&) noexcept = default;
+
+void PolicyMap::EntryConflict::SetConflictType(ConflictType type) {
+  conflict_type_ = type;
+}
+
+PolicyMap::ConflictType PolicyMap::EntryConflict::conflict_type() const {
+  return conflict_type_;
+}
+
+const PolicyMap::Entry& PolicyMap::EntryConflict::entry() const {
+  return entry_;
 }
 
 PolicyMap::PolicyMap() = default;
@@ -335,7 +369,7 @@ void PolicyMap::MergeFrom(const PolicyMap& other) {
     if (!overwriting_default_policy) {
       current_policy->value() &&
               *policy_and_entry.second.value() == *current_policy->value()
-          ? higher_policy.AddMessage(MessageType::kWarning,
+          ? higher_policy.AddMessage(MessageType::kInfo,
                                      IDS_POLICY_CONFLICT_SAME_VALUE)
           : higher_policy.AddMessage(MessageType::kWarning,
                                      IDS_POLICY_CONFLICT_DIFF_VALUE);

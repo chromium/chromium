@@ -41,6 +41,9 @@ void PolicyUIHandler::AddCommonLocalizedStringsToSource(
     web::WebUIIOSDataSource* source) {
   static constexpr webui::LocalizedString kStrings[] = {
       {"conflict", IDS_POLICY_LABEL_CONFLICT},
+      {"superseding", IDS_POLICY_LABEL_SUPERSEDING},
+      {"conflictValue", IDS_POLICY_LABEL_CONFLICT_VALUE},
+      {"supersededValue", IDS_POLICY_LABEL_SUPERSEDED_VALUE},
       {"headerLevel", IDS_POLICY_HEADER_LEVEL},
       {"headerName", IDS_POLICY_HEADER_NAME},
       {"headerScope", IDS_POLICY_HEADER_SCOPE},
@@ -53,6 +56,7 @@ void PolicyUIHandler::AddCommonLocalizedStringsToSource(
       {"error", IDS_POLICY_LABEL_ERROR},
       {"deprecated", IDS_POLICY_LABEL_DEPRECATED},
       {"future", IDS_POLICY_LABEL_FUTURE},
+      {"info", IDS_POLICY_LABEL_INFO},
       {"ignored", IDS_POLICY_LABEL_IGNORED},
       {"notSpecified", IDS_POLICY_NOT_SPECIFIED},
       {"ok", IDS_POLICY_OK},

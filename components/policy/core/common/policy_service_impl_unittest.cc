@@ -442,7 +442,7 @@ TEST_F(PolicyServiceTest, Priorities) {
 
   expected.Set("aaa", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                POLICY_SOURCE_CLOUD, base::Value(2), nullptr);
-  expected.GetMutable("aaa")->AddMessage(PolicyMap::MessageType::kWarning,
+  expected.GetMutable("aaa")->AddMessage(PolicyMap::MessageType::kInfo,
                                          IDS_POLICY_CONFLICT_SAME_VALUE);
   policy1_.Set("aaa", POLICY_LEVEL_RECOMMENDED, POLICY_SCOPE_USER,
                POLICY_SOURCE_CLOUD, base::Value(1), nullptr);

@@ -365,8 +365,17 @@ Additional details:
   <message name="IDS_POLICY_LABEL_REFRESH_INTERVAL" desc="Label for the refresh interval in the policy status boxes.">
     Fetch interval:
   </message>
-  <message name="IDS_POLICY_LABEL_CONFLICT" desc="Label for the conflict row in the policy table.">
+  <message name="IDS_POLICY_LABEL_CONFLICT" desc="Label for the conflict status column in the policy table.">
     Conflict
+  </message>
+  <message name="IDS_POLICY_LABEL_SUPERSEDING" desc="Label for the superseding status column in the policy table.">
+    Superseding
+  </message>
+  <message name="IDS_POLICY_LABEL_CONFLICT_VALUE" desc="Label for the conflict row in the policy table.">
+    Value (conflict)
+  </message>
+  <message name="IDS_POLICY_LABEL_SUPERSEDED_VALUE" desc="Label for the superseded row in the policy table.">
+    Value (superseded)
   </message>
   <message name="IDS_POLICY_LABEL_ERROR" desc="Label for the error row in the policy table.">
     Error
@@ -388,6 +397,9 @@ Additional details:
   </message>
   <message name="IDS_POLICY_LABEL_STATUS" desc="Label for the actual status in the policy status boxes.">
     Status:
+  </message>
+  <message name="IDS_POLICY_LABEL_INFO" desc="Label for the info row in the policy table.">
+    Info
   </message>
   <message name="IDS_POLICY_SHOW_UNSET" desc="Label for the checkbox that determines whether policies whose value has not been set are shown.">
     Show policies with no value set
@@ -505,10 +517,10 @@ Additional details:
     Warning: This policy was not merged as specified in PolicyDictionaryMultipleSourceMergeList policy because it is not part of the dictionary policies that can be merged.
   </message>
   <message name="IDS_POLICY_CONFLICT_SAME_VALUE" desc="Text explaining that a policy had conflicting sources, but with the same values.">
-    More than one source is present for the policy, but the values are the same.
+    This policy is working as intended but the same value is set elsewhere and is superseded by this policy.
   </message>
   <message name="IDS_POLICY_CONFLICT_DIFF_VALUE" desc="Text explaining that a policy had conflicting sources and values.">
-    More than one source with conflicting values is present for this policy!
+    This policy is working as intended but a conflicting value is set elsewhere and is overridden by this policy.
   </message>
   <message name="IDS_POLICY_MIGRATED_OLD_POLICY" desc="Text explaining that a policy is deprecated, and that admins should use the new policy instead">
     This policy is deprecated. You should use the <ph name="NEW_POLICY">$1<ex>AllowDinosaurEasterEgg</ex></ph> policy instead.

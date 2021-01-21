@@ -172,7 +172,7 @@ Value PolicyConversionsClient::GetPolicyValue(
   if (policy.source == POLICY_SOURCE_MERGED) {
     bool policy_has_unmerged_source = false;
     for (const auto& conflict : policy.conflicts) {
-      if (PolicyMerger::ConflictCanBeMerged(conflict, policy))
+      if (PolicyMerger::ConflictCanBeMerged(conflict.entry(), policy))
         continue;
       policy_has_unmerged_source = true;
       break;
@@ -212,6 +212,12 @@ Value PolicyConversionsClient::GetPolicyValue(
   if (!warning.empty())
     value.SetKey("warning", Value(warning));
 
+  base::string16 info = policy.GetLocalizedMessages(
+      PolicyMap::MessageType::kInfo,
+      base::BindRepeating(&l10n_util::GetStringUTF16));
+  if (!info.empty())
+    value.SetKey("info", Value(info));
+
   if (policy.ignored())
     value.SetBoolKey("ignored", true);
 
@@ -222,15 +228,34 @@ Value PolicyConversionsClient::GetPolicyValue(
     value.SetBoolKey("future", true);
 
   if (!policy.conflicts.empty()) {
-    Value conflict_values(Value::Type::LIST);
+    Value override_values(Value::Type::LIST);
+    Value supersede_values(Value::Type::LIST);
+
+    bool has_override_values = false;
+    bool has_supersede_values = false;
     for (const auto& conflict : policy.conflicts) {
       base::Value conflicted_policy_value =
-          GetPolicyValue(policy_name, conflict, deprecated_policies,
+          GetPolicyValue(policy_name, conflict.entry(), deprecated_policies,
                          future_policies, errors, known_policy_schemas);
-      conflict_values.Append(std::move(conflicted_policy_value));
+      switch (conflict.conflict_type()) {
+        case PolicyMap::ConflictType::Supersede:
+          supersede_values.Append(std::move(conflicted_policy_value));
+          has_supersede_values = true;
+          break;
+        case PolicyMap::ConflictType::Override:
+          override_values.Append(std::move(conflicted_policy_value));
+          has_override_values = true;
+          break;
+        default:
+          break;
+      }
     }
-
-    value.SetKey("conflicts", std::move(conflict_values));
+    if (has_override_values) {
+      value.SetKey("conflicts", std::move(override_values));
+    }
+    if (has_supersede_values) {
+      value.SetKey("superseded", std::move(supersede_values));
+    }
   }
 
   return value;

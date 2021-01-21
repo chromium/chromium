@@ -189,7 +189,7 @@ TEST_F(SchemaMapTest, FilterBundle) {
           expected_bundle.Get(chrome_ns).Get("ChromePolicy")->DeepCopy());
   expected_bundle.Get(chrome_ns)
       .GetMutable("ChromePolicy")
-      ->AddMessage(PolicyMap::MessageType::kWarning,
+      ->AddMessage(PolicyMap::MessageType::kInfo,
                    IDS_POLICY_CONFLICT_SAME_VALUE);
   EXPECT_TRUE(bundle.Equals(expected_bundle));
 

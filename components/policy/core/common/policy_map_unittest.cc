@@ -1081,27 +1081,80 @@ TEST_F(PolicyMapTest, EraseNonmatching) {
 }
 
 TEST_F(PolicyMapTest, EntryAddConflict) {
-  PolicyMap::Entry entry_a;
-  entry_a.level = POLICY_LEVEL_MANDATORY;
-  entry_a.source = POLICY_SOURCE_CLOUD;
-  entry_a.set_value(base::Value(true));
-  entry_a.scope = POLICY_SCOPE_USER;
-  PolicyMap::Entry entry_b = entry_a.DeepCopy();
-  entry_b.set_value(base::Value(false));
-  PolicyMap::Entry entry_b_no_conflicts = entry_b.DeepCopy();
-  PolicyMap::Entry entry_c = entry_a.DeepCopy();
-  entry_c.source = POLICY_SOURCE_PLATFORM;
+  std::vector<base::Value> ab = GetListStorage<std::string>({"a", "b"});
+  std::vector<base::Value> cd = GetListStorage<std::string>({"c", "d"});
+  std::vector<base::Value> ef = GetListStorage<std::string>({"e", "f"});
+  std::vector<base::Value> gh = GetListStorage<std::string>({"g", "h"});
 
-  entry_b.AddConflictingPolicy(entry_c.DeepCopy());
-  entry_a.AddConflictingPolicy(entry_b.DeepCopy());
+  // Case 1: Non-nested conflicts
+  PolicyMap::Entry case1(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+                         POLICY_SOURCE_PLATFORM, base::Value(ab), nullptr);
+  PolicyMap::Entry conflict11(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+                              POLICY_SOURCE_PLATFORM, base::Value(cd), nullptr);
+  PolicyMap::Entry conflict12(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+                              POLICY_SOURCE_PLATFORM, base::Value(ef), nullptr);
+  PolicyMap::Entry conflict13(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+                              POLICY_SOURCE_PLATFORM, base::Value(gh), nullptr);
+  PolicyMap::Entry conflict14(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+                              POLICY_SOURCE_PLATFORM, base::Value(ab), nullptr);
 
-  EXPECT_TRUE(entry_a.conflicts.size() == 2);
-  EXPECT_TRUE(entry_b.conflicts.size() == 1);
-  EXPECT_TRUE(entry_c.conflicts.empty());
+  case1.AddConflictingPolicy(conflict11.DeepCopy());
+  case1.AddConflictingPolicy(conflict12.DeepCopy());
+  case1.AddConflictingPolicy(conflict13.DeepCopy());
+  case1.AddConflictingPolicy(conflict14.DeepCopy());
 
-  EXPECT_TRUE(entry_a.conflicts[0].Equals(entry_c));
-  EXPECT_TRUE(entry_a.conflicts[1].Equals(entry_b_no_conflicts));
-  EXPECT_TRUE(entry_b.conflicts[0].Equals(entry_c));
+  EXPECT_TRUE(case1.conflicts.size() == 4);
+  EXPECT_TRUE(case1.conflicts.at(0).entry().Equals(conflict11));
+  EXPECT_TRUE(case1.conflicts.at(1).entry().Equals(conflict12));
+  EXPECT_TRUE(case1.conflicts.at(2).entry().Equals(conflict13));
+  EXPECT_TRUE(case1.conflicts.at(3).entry().Equals(conflict14));
+  EXPECT_EQ(case1.conflicts.at(0).conflict_type(),
+            PolicyMap::ConflictType::Override);
+  EXPECT_EQ(case1.conflicts.at(1).conflict_type(),
+            PolicyMap::ConflictType::Override);
+  EXPECT_EQ(case1.conflicts.at(2).conflict_type(),
+            PolicyMap::ConflictType::Override);
+  EXPECT_EQ(case1.conflicts.at(3).conflict_type(),
+            PolicyMap::ConflictType::Supersede);
+
+  // Case 2: Nested conflicts
+  PolicyMap::Entry case2(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+                         POLICY_SOURCE_PLATFORM, base::Value(ab), nullptr);
+  PolicyMap::Entry conflict21(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+                              POLICY_SOURCE_PLATFORM, base::Value(cd), nullptr);
+  PolicyMap::Entry conflict22(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+                              POLICY_SOURCE_PLATFORM, base::Value(cd), nullptr);
+  PolicyMap::Entry conflict23(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+                              POLICY_SOURCE_PLATFORM, base::Value(ef), nullptr);
+  PolicyMap::Entry conflict24(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+                              POLICY_SOURCE_PLATFORM, base::Value(gh), nullptr);
+
+  conflict21.AddConflictingPolicy(conflict22.DeepCopy());
+  conflict21.AddConflictingPolicy(conflict23.DeepCopy());
+  conflict21.AddConflictingPolicy(conflict24.DeepCopy());
+  case2.AddConflictingPolicy(conflict21.DeepCopy());
+
+  EXPECT_TRUE(case2.conflicts.size() == 4);
+  EXPECT_TRUE(case2.conflicts.at(0).entry().Equals(conflict22));
+  EXPECT_TRUE(case2.conflicts.at(1).entry().Equals(conflict23));
+  EXPECT_TRUE(case2.conflicts.at(2).entry().Equals(conflict24));
+  EXPECT_TRUE(conflict21.conflicts.at(0).entry().Equals(conflict22));
+  EXPECT_TRUE(conflict21.conflicts.at(1).entry().Equals(conflict23));
+  EXPECT_TRUE(conflict21.conflicts.at(2).entry().Equals(conflict24));
+  EXPECT_EQ(case2.conflicts.at(0).conflict_type(),
+            PolicyMap::ConflictType::Supersede);
+  EXPECT_EQ(case2.conflicts.at(1).conflict_type(),
+            PolicyMap::ConflictType::Override);
+  EXPECT_EQ(case2.conflicts.at(2).conflict_type(),
+            PolicyMap::ConflictType::Override);
+  EXPECT_EQ(case2.conflicts.at(3).conflict_type(),
+            PolicyMap::ConflictType::Override);
+  EXPECT_EQ(conflict21.conflicts.at(0).conflict_type(),
+            PolicyMap::ConflictType::Supersede);
+  EXPECT_EQ(conflict21.conflicts.at(1).conflict_type(),
+            PolicyMap::ConflictType::Override);
+  EXPECT_EQ(conflict21.conflicts.at(2).conflict_type(),
+            PolicyMap::ConflictType::Override);
 }
 
 TEST_F(PolicyMapTest, BlockedEntry) {
