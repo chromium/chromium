@@ -18,6 +18,8 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
  */
 public class LongScreenshotsCoordinator extends ScreenshotCoordinator {
     private LongScreenshotsTabService mLongScreenshotsTabService;
+    private Activity mActivity;
+    private LongScreenshotsMediator mMediator;
 
     private static final String DIR_NAME = "long_screenshots_dir";
 
@@ -35,6 +37,7 @@ public class LongScreenshotsCoordinator extends ScreenshotCoordinator {
             BottomSheetController sheetController,
             ImageEditorModuleProvider imageEditorModuleProvider) {
         super(activity, tab, chromeOptionShareCallback, sheetController, imageEditorModuleProvider);
+        mActivity = activity;
 
         PaintPreviewCompositorUtils.warmupCompositor();
     }
@@ -52,7 +55,8 @@ public class LongScreenshotsCoordinator extends ScreenshotCoordinator {
             @Override
             public void onResult(int status) {
                 mScreenshot = entry.getBitmap();
-                launchSharesheet();
+                mMediator = new LongScreenshotsMediator(mActivity, entryManager);
+                mMediator.showAreaSelectionDialog();
             }
         });
     }

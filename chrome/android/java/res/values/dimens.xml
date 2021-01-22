@@ -516,4 +516,9 @@
     <dimen name="sharing_hub_preview_inner_icon_size">24dp</dimen>
     <dimen name="sharing_hub_3p_icon_size">36dp</dimen>
     <dimen name="sharing_hub_3p_icon_padding_top">20dp</dimen>
+
+    <!-- Long Screenshots dimensions -->
+    <dimen name="long_screenshots_button_size">24dp</dimen>
+    <dimen name="long_screenshots_button_padding">17dp</dimen>
+
 </resources>

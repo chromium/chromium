@@ -816,6 +816,7 @@ chrome_java_resources = [
   "java/res/layout/location_status.xml",
   "java/res/layout/location_status_icon.xml",
   "java/res/layout/location_status_incognito_badge.xml",
+  "java/res/layout/long_screenshots_area_selection_dialog.xml",
   "java/res/layout/main.xml",
   "java/res/layout/manage_space_activity.xml",
   "java/res/layout/managed_by_menu_item.xml",
