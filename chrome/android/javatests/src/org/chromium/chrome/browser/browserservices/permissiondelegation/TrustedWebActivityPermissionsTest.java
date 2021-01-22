@@ -8,6 +8,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.base.test.util.Batch.PER_CLASS;
+
 import android.support.test.InstrumentationRegistry;
 
 import androidx.test.filters.MediumTest;
@@ -20,6 +22,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.browser.ChromeApplication;
@@ -46,6 +49,7 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 // See: https://crbug.com/1120707
 @DisableIf.Device(type = {UiDisableIf.TABLET})
+@Batch(PER_CLASS)
 public class TrustedWebActivityPermissionsTest {
     @Rule
     public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();
@@ -62,6 +66,7 @@ public class TrustedWebActivityPermissionsTest {
 
     @Before
     public void setUp() throws TimeoutException {
+        mCustomTabActivityTestRule.setFinishActivity(true);
         // Native needs to be initialized to start the test server.
         LibraryLoader.getInstance().ensureInitialized();
 
