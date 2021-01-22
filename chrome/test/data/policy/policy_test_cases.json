@@ -8342,7 +8342,7 @@
   },
   "ClearBrowsingDataOnExitList": {
     "os": ["win", "linux", "mac", "chromeos"],
-    "policy_pref_mapping_test": [
+    "policy_pref_mapping_tests": [
       {
         "policies": { "ClearBrowsingDataOnExitList": ["browsing_history"] },
         "prefs": { "browser.clear_data.clear_on_exit": { "value": ["browsing_history"]}}
