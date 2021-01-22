@@ -3224,6 +3224,7 @@ if (is_chromeos_lacros) {
       "../browser/lacros/message_center_lacros_browsertest.cc",
       "../browser/lacros/metrics_reporting_lacros_browsertest.cc",
       "../browser/lacros/overview_lacros_browsertest.cc",
+      "../browser/lacros/popup_lacros_browsertest.cc",
       "../browser/lacros/screen_manager_lacros_browsertest.cc",
       "../browser/lacros/tablet_mode_lacros_browsertest.cc",
     ]

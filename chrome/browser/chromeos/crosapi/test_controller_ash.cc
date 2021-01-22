@@ -9,6 +9,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/optional.h"
 #include "base/task/post_task.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/crosapi/window_util.h"
@@ -18,6 +19,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/events/event_source.h"
+#include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point.h"
 
 namespace crosapi {
@@ -25,14 +27,19 @@ namespace crosapi {
 namespace {
 
 // Returns whether the dispatcher or target was destroyed.
+bool Dispatch(aura::WindowTreeHost* host, ui::Event* event) {
+  ui::EventDispatchDetails dispatch_details =
+      host->GetEventSource()->SendEventToSink(event);
+  return dispatch_details.dispatcher_destroyed ||
+         dispatch_details.target_destroyed;
+}
+
+// Returns whether the dispatcher or target was destroyed.
 bool DispatchMouseEvent(aura::Window* window, ui::EventType type) {
   const gfx::Point center = window->bounds().CenterPoint();
   ui::MouseEvent press(type, center, center, ui::EventTimeForNow(),
                        ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
-  ui::EventDispatchDetails dispatch_details =
-      window->GetHost()->GetEventSource()->SendEventToSink(&press);
-  return dispatch_details.dispatcher_destroyed ||
-         dispatch_details.target_destroyed;
+  return Dispatch(window->GetHost(), &press);
 }
 
 // Enables or disables tablet mode and waits for the transition to finish.
@@ -96,6 +103,64 @@ void TestControllerAsh::EnterTabletMode(EnterTabletModeCallback callback) {
 void TestControllerAsh::ExitTabletMode(ExitTabletModeCallback callback) {
   SetTabletModeEnabled(false);
   std::move(callback).Run();
+}
+
+void TestControllerAsh::SendTouchEvent(const std::string& window_id,
+                                       mojom::TouchEventType type,
+                                       uint8_t pointer_id,
+                                       const gfx::PointF& location_in_window,
+                                       SendTouchEventCallback cb) {
+  aura::Window* window = GetShellSurfaceWindow(window_id);
+  if (!window) {
+    std::move(cb).Run();
+    return;
+  }
+  // Newer lacros might send an enum we don't know about.
+  if (!mojom::IsKnownEnumValue(type)) {
+    LOG(WARNING) << "Unknown event type: " << type;
+    std::move(cb).Run();
+    return;
+  }
+  ui::EventType event_type;
+  switch (type) {
+    case mojom::TouchEventType::kUnknown:
+      // |type| is not optional, so kUnknown is never expected.
+      NOTREACHED();
+      return;
+    case mojom::TouchEventType::kPressed:
+      event_type = ui::ET_TOUCH_PRESSED;
+      break;
+    case mojom::TouchEventType::kMoved:
+      event_type = ui::ET_TOUCH_MOVED;
+      break;
+    case mojom::TouchEventType::kReleased:
+      event_type = ui::ET_TOUCH_RELEASED;
+      break;
+    case mojom::TouchEventType::kCancelled:
+      event_type = ui::ET_TOUCH_CANCELLED;
+      break;
+  }
+  // Compute location relative to display root window.
+  gfx::PointF location_in_root(location_in_window);
+  aura::Window::ConvertPointToTarget(window, window->GetRootWindow(),
+                                     &location_in_root);
+  ui::PointerDetails details(ui::EventPointerType::kTouch, pointer_id, 1.0f,
+                             1.0f, 0.0f);
+  ui::TouchEvent touch_event(event_type, location_in_window, location_in_root,
+                             ui::EventTimeForNow(), details);
+  Dispatch(window->GetHost(), &touch_event);
+  std::move(cb).Run();
+}
+
+void TestControllerAsh::GetWindowPositionInScreen(
+    const std::string& window_id,
+    GetWindowPositionInScreenCallback cb) {
+  aura::Window* window = GetShellSurfaceWindow(window_id);
+  if (!window) {
+    std::move(cb).Run(base::nullopt);
+    return;
+  }
+  std::move(cb).Run(window->GetBoundsInScreen().origin());
 }
 
 void TestControllerAsh::WaiterFinished(OverviewWaiter* waiter) {

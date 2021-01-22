@@ -30,6 +30,13 @@ class TestControllerAsh : public mojom::TestController {
   void ExitOverviewMode(ExitOverviewModeCallback callback) override;
   void EnterTabletMode(EnterTabletModeCallback callback) override;
   void ExitTabletMode(ExitTabletModeCallback callback) override;
+  void SendTouchEvent(const std::string& window_id,
+                      mojom::TouchEventType type,
+                      uint8_t pointer_id,
+                      const gfx::PointF& location_in_window,
+                      SendTouchEventCallback cb) override;
+  void GetWindowPositionInScreen(const std::string& window_id,
+                                 GetWindowPositionInScreenCallback cb) override;
 
  private:
   class OverviewWaiter;

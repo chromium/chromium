@@ -4,11 +4,26 @@
 
 module crosapi.mojom;
 
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+[Stable, Extensible]
+enum TouchEventType {
+  kUnknown = 0,
+  kPressed = 1,
+  kMoved = 2,
+  kReleased = 3,
+  // Touch events can be cancelled if mouse capture or touch capture changes in
+  // the middle of a gesture. For example, a long-press might change window or
+  // focus activation state in a way that cancels the gesture, even though the
+  // user has not released their finger. See ui::GestureRecognizer.
+  kCancelled = 4
+};
+
 // This interface is implemented by Ash-Chrome.
 // This interface provides tests a mechanism to mutate or query ash.
 // In the future, this interface may merge with an automation or a11y interface.
-// Next version: 3
-// Next method id: 6
+// Next version: 4
+// Next method id: 8
 [Stable, Uuid="1f93f9d7-e466-466c-a675-c21b48cf30d3"]
 interface TestController {
   // Queries whether a window with the given |window_id| exists. |window_id|
@@ -39,4 +54,25 @@ interface TestController {
   // are finished.
   [MinVersion=2]
   ExitTabletMode@5() => ();
+
+  // Creates a touch event and dispatches it to the window with |window_id|.
+  // Returns immediately if the window does not exist. The |pointer_id|
+  // specifies which touch-point is involved in a multi-touch gesture.
+  // |pointer_id| is typically 0, meaning the first touch-point, usually the
+  // index finger. |location_in_window| is in DIPs, in coordinates relative to
+  // the window origin with 0,0 representing top-left. Note that the location
+  // is a float, as some input devices report sub-pixel positions for touch
+  // events.
+  [MinVersion=3]
+  SendTouchEvent@7(string window_id, TouchEventType type, uint8 pointer_id,
+                   gfx.mojom.PointF location_in_window) => ();
+
+  // Returns the position of a window's top-left corner in global "screen"
+  // coordinates in DIPs. By design, Wayland clients do not know the global
+  // position of their windows on the display. However, for window manager
+  // integration testing, some tests may need to assert a window is in a certain
+  // position (e.g. at the top of the display). Returns null if the window does
+  // not exist.
+  [MinVersion=3]
+  GetWindowPositionInScreen@8(string window_id) => (gfx.mojom.Point? position);
 };
