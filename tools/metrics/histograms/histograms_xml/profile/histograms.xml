@@ -207,6 +207,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Size of the favicons database.</summary>
 </histogram>
 
+<histogram name="Profile.Guest.ForcedByPolicy" enum="BooleanForced"
+    expires_after="M92">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-privacy-core@google.com</owner>
+  <summary>
+    Records if a Guest session is started by user's request or is forced by a
+    policy. This is recorded when a Guest profile is created.
+  </summary>
+</histogram>
+
 <histogram name="Profile.Guest.{Type}.Lifetime" units="minutes"
     expires_after="2021-06-01">
   <owner>rhalavati@chromium.org</owner>

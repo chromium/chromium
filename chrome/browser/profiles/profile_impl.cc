@@ -25,6 +25,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/sequenced_task_runner.h"
@@ -563,6 +564,16 @@ ProfileImpl::ProfileImpl(
     // Prefs were loaded synchronously so we can continue directly.
     OnPrefsLoaded(create_mode, true);
   }
+
+#if !defined(OS_ANDROID)
+  if (IsGuestSession() || IsEphemeralGuestProfile()) {
+    PrefService* local_state = g_browser_process->local_state();
+    DCHECK(local_state);
+    base::UmaHistogramBoolean(
+        "Profile.Guest.ForcedByPolicy",
+        local_state->GetBoolean(prefs::kBrowserGuestModeEnforced));
+  }
+#endif  // !defined(OS_ANDROID)
 }
 
 #if defined(OS_ANDROID)
