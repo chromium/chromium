@@ -85,7 +85,7 @@ export class TestPluginProxy extends TestBrowserProxy {
   sendKeyEvent(e) {}
 
   /** @override */
-  hideToolbar() {}
+  hideToolbars() {}
 
   /** @override */
   setPointerEvents(eventsOn) {}

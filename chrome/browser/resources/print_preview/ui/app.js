@@ -210,7 +210,7 @@ Polymer({
 
   /** @private */
   onSidebarFocus_() {
-    this.$.previewArea.hideToolbar();
+    this.$.previewArea.hideToolbars();
   },
 
   /**
