@@ -153,6 +153,10 @@ constexpr char kTestAPIJSPath[] = "test_api.js";
 constexpr char kWebviewSamlInjectedJSPath[] = "webview_saml_injected.js";
 
 // Components
+constexpr char kOobeSharedVarsCssHTML[] =
+    "components/oobe_shared_vars_css.html";
+constexpr char kOobeCustomVarsCssHTML[] =
+    "components/oobe_custom_vars_css.html";
 constexpr char kCommonStylesHTML[] = "components/common_styles.html";
 constexpr char kI18nBehaviorHTML[] = "components/oobe_i18n_behavior.html";
 constexpr char kI18nBehaviorJS[] = "components/oobe_i18n_behavior.js";
@@ -676,6 +680,8 @@ void OobeUI::AddOobeComponents(content::WebUIDataSource* source,
 
   source->AddResourcePath(kCommonStylesHTML,
                           IDR_OOBE_COMPONENTS_COMMON_STYLES_HTML);
+  source->AddResourcePath(kOobeSharedVarsCssHTML,
+                          IDR_OOBE_COMPONENTS_OOBE_SHARED_VARS_CSS_HTML);
 
   source->AddResourcePath(kHDIronIconHTML,
                           IDR_OOBE_COMPONENTS_HD_IRON_ICON_HTML);
@@ -686,11 +692,16 @@ void OobeUI::AddOobeComponents(content::WebUIDataSource* source,
   source->AddResourcePath(kOobeDialogJS, IDR_OOBE_COMPONENTS_OOBE_DIALOG_JS);
 
   if (features::IsNewOobeLayoutEnabled()) {
+    source->AddResourcePath(kOobeCustomVarsCssHTML,
+                            IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_CSS_HTML);
     source->AddResourcePath(kOobeAdaptiveDialogHTML,
                             IDR_OOBE_COMPONENTS_OOBE_ADAPTIVE_DIALOG_HTML);
     source->AddResourcePath(kOobeAdaptvieDialogJS,
                             IDR_OOBE_COMPONENTS_OOBE_ADAPTIVE_DIALOG_JS);
   } else {
+    source->AddResourcePath(
+        kOobeCustomVarsCssHTML,
+        IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_OLD_CSS_HTML);
     source->AddResourcePath(kOobeAdaptiveDialogHTML,
                             IDR_OOBE_COMPONENTS_OOBE_ADAPTIVE_DIALOG_OLD_HTML);
     source->AddResourcePath(kOobeAdaptvieDialogJS,

@@ -12,6 +12,7 @@
 <link rel="import" href="/components/common_styles.html">
 <link rel="import" href="/components/hd_iron_icon.html">
 <link rel="import" href="/components/oobe_i18n_behavior.html">
+<link rel="import" href="/components/oobe_custom_vars_css.html">
 
 <iron-iconset-svg name="oobe-buttons-20" size="20">
   <svg>
@@ -61,8 +62,20 @@
 -->
 <dom-module id="oobe-text-button">
   <template>
-    <style include="cr-shared-style oobe-common"></style>
-    <link rel="stylesheet" href="oobe_text_buttons.css">
+    <style include="cr-shared-style oobe-common oobe-buttons">
+      cr-button {
+        border-color: var(--oobe-button-border-color);
+        border-radius: var(--oobe-button-radius);
+        margin: 0 4px;
+        padding-inline-end: var(--oobe-button-padding-inline-end);
+        padding-inline-start: var(--oobe-button-padding-inline-start);
+      }
+      :host ::slotted(*),
+      .fallback {
+        font-family: var(--oobe-button-font-family);
+        font-size: var(--oobe-button-font-size);
+      }
+    </style>
     <cr-button id="textButton" on-click="onClick_" disabled="[[disabled]]"
         inverse$="[[inverse]]" aria-label$="[[labelForAriaText_]]"
         border$="[[border]]">
@@ -107,9 +120,27 @@
 -->
 <dom-module id="oobe-back-button">
   <template>
-    <style include="cr-icons cr-shared-style oobe-common"></style>
-    <link rel="stylesheet" href="oobe_text_buttons.css">
-    <link rel="stylesheet" href="oobe_back_button.css">
+    <style include="cr-icons cr-shared-style oobe-common oobe-buttons">
+      cr-button {
+        border-color: var(--oobe-button-border-color);
+        border-radius: var(--oobe-button-radius);
+        margin: 0 4px;
+        padding-inline-end: var(--oobe-back-button-padding-inline-end);
+        padding-inline-start: var(--oobe-back-button-padding-inline-start);
+      }
+      :host-context([dir=ltr]) hd-iron-icon {
+        padding-inline-start: var(--oobe-icon-button-image-margin);
+        transform: rotate(180deg);
+      }
+      :host-context([dir=rtl]) hd-iron-icon {
+        padding-inline-end: var(--oobe-icon-button-image-margin);
+      }
+      :host ::slotted(*),
+      .fallback {
+        font-family: var(--oobe-button-font-family);
+        font-size: var(--oobe-button-font-size);
+      }
+    </style>
     <cr-button id="button" on-click="onClick_" disabled="[[disabled]]"
         aria-label$="[[labelForAria_]]">
       <div class="flex horizontal layout start center">
@@ -127,9 +158,27 @@
 
 <dom-module id="oobe-next-button">
   <template>
-    <style include="cr-icons cr-shared-style oobe-common"></style>
-    <link rel="stylesheet" href="oobe_text_buttons.css">
-    <link rel="stylesheet" href="oobe_next_button.css">
+    <style include="cr-icons cr-shared-style oobe-common oobe-buttons">
+      cr-button {
+        border-color: var(--oobe-button-border-color);
+        border-radius: var(--oobe-button-radius);
+        margin: 0 4px;
+        padding-inline-end: var(--oobe-next-button-padding-inline-end);
+        padding-inline-start: var(--oobe-next-button-padding-inline-start);
+      }
+      :host-context([dir=rtl]) hd-iron-icon {
+        padding-inline-end: var(--oobe-icon-button-image-margin);
+        transform: rotate(180deg);
+      }
+      :host-context([dir=ltr]) hd-iron-icon {
+        padding-inline-start: var(--oobe-icon-button-image-margin);
+      }
+      :host ::slotted(*),
+      .fallback {
+        font-family: var(--oobe-button-font-family);
+        font-size: var(--oobe-button-font-size);
+      }
+    </style>
     <cr-button id="button" on-click="onClick_" disabled="[[disabled]]"
         aria-label$="[[labelForAria_]]" class="action-button">
       <div class="flex horizontal layout start center">
@@ -171,9 +220,26 @@
 -->
 <dom-module id="oobe-welcome-secondary-button">
   <template>
-    <style include="cr-icons cr-shared-style oobe-common"></style>
-    <link rel="stylesheet" href="oobe_text_buttons.css">
-    <link rel="stylesheet" href="oobe_welcome_secondary_button.css">
+    <style include="cr-icons cr-shared-style oobe-common oobe-buttons">
+      cr-button {
+        border-color: var(--oobe-button-border-color);
+        border-radius: var(--oobe-button-radius);
+        margin: 0 4px;
+      }
+      ::slotted(*) {
+        text-transform: none;
+      }
+      hd-iron-icon {
+        --iron-icon-height: 20px;
+        --iron-icon-width: 20px;
+        margin-inline-end: 4px;
+      }
+      :host ::slotted(*),
+      .fallback {
+        font-family: var(--oobe-button-font-family);
+        font-size: var(--oobe-button-font-size);
+      }
+    </style>
     <cr-button id="button" aria-label$="[[labelForAriaText_]]">
       <div id="container" class="flex vertical layout center self-stretch">
         <div class="flex layout horizontal center self-stretch center-justified">

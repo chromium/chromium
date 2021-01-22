@@ -15,6 +15,8 @@
   --oobe-header-font-weight: 400; /* regular */
   --oobe-modal-dialog-header-font-weight: 500; /* medium */
 
+  --oobe-button-font-size: 12px;
+
   --oobe-header-text-color: var(--google-grey-900);
   --oobe-subheader-text-color: var(--google-grey-700);
   --oobe-text-color: var(--google-grey-700);
