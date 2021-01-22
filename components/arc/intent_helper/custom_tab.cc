@@ -27,7 +27,10 @@ CustomTab::CustomTab(aura::Window* arc_app_window)
   widget->GetContentsView()->AddChildView(host_.get());
 }
 
-CustomTab::~CustomTab() = default;
+CustomTab::~CustomTab() {
+  if (host_->GetWidget())
+    host_->GetWidget()->GetContentsView()->RemoveChildView(host_.get());
+}
 
 void CustomTab::Attach(gfx::NativeView view) {
   DCHECK(view);
