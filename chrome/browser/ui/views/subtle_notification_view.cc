@@ -18,6 +18,8 @@
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/widget/widget.h"
 
@@ -52,13 +54,16 @@ const char kKeyNameDelimiter[] = "|";
 // key (not just a simple label).
 class SubtleNotificationView::InstructionView : public views::View {
  public:
+  METADATA_HEADER(InstructionView);
   // Creates an InstructionView with specific text. |text| may contain one or
   // more segments delimited by a pair of pipes ('|'); each of these segments
   // will be displayed as a keyboard key. e.g., "Press |Alt|+|Q| to exit" will
   // have "Alt" and "Q" rendered as keys.
   explicit InstructionView(const base::string16& text);
+  InstructionView(const InstructionView&) = delete;
+  InstructionView& operator=(const InstructionView&) = delete;
 
-  const base::string16 text() const { return text_; }
+  base::string16 GetText() const;
   void SetText(const base::string16& text);
 
  private:
@@ -68,8 +73,6 @@ class SubtleNotificationView::InstructionView : public views::View {
   void AddTextSegment(const base::string16& text, bool format_as_key);
 
   base::string16 text_;
-
-  DISALLOW_COPY_AND_ASSIGN(InstructionView);
 };
 
 SubtleNotificationView::InstructionView::InstructionView(
@@ -80,6 +83,10 @@ SubtleNotificationView::InstructionView::InstructionView(
       kKeyNameMarginHorizPx));
 
   SetText(text);
+}
+
+base::string16 SubtleNotificationView::InstructionView::GetText() const {
+  return text_;
 }
 
 void SubtleNotificationView::InstructionView::SetText(
@@ -139,6 +146,10 @@ void SubtleNotificationView::InstructionView::AddTextSegment(
   AddChildView(key);
 }
 
+BEGIN_NESTED_METADATA(SubtleNotificationView, InstructionView, views::View)
+ADD_PROPERTY_METADATA(base::string16, Text)
+END_METADATA
+
 SubtleNotificationView::SubtleNotificationView() : instruction_view_(nullptr) {
   std::unique_ptr<views::BubbleBorder> bubble_border(new views::BubbleBorder(
       views::BubbleBorder::NONE, views::BubbleBorder::NO_SHADOW,
@@ -193,7 +204,10 @@ views::Widget* SubtleNotificationView::CreatePopupWidget(
 void SubtleNotificationView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kAlert;
   base::string16 accessible_name;
-  base::RemoveChars(instruction_view_->text(),
+  base::RemoveChars(instruction_view_->GetText(),
                     base::ASCIIToUTF16(kKeyNameDelimiter), &accessible_name);
   node_data->SetName(accessible_name);
 }
+
+BEGIN_METADATA(SubtleNotificationView, views::View)
+END_METADATA

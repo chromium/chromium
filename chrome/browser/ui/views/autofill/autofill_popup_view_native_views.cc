@@ -51,6 +51,8 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"
 #include "ui/views/view.h"
@@ -210,7 +212,10 @@ namespace {
 // specified maximum.
 class ConstrainedWidthView : public views::View {
  public:
+  METADATA_HEADER(ConstrainedWidthView);
   ConstrainedWidthView(std::unique_ptr<views::View> child, int max_width);
+  ConstrainedWidthView(const ConstrainedWidthView&) = delete;
+  ConstrainedWidthView& operator=(const ConstrainedWidthView&) = delete;
   ~ConstrainedWidthView() override = default;
 
  private:
@@ -218,8 +223,6 @@ class ConstrainedWidthView : public views::View {
   gfx::Size CalculatePreferredSize() const override;
 
   int max_width_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConstrainedWidthView);
 };
 
 ConstrainedWidthView::ConstrainedWidthView(std::unique_ptr<views::View> child,
@@ -236,11 +239,15 @@ gfx::Size ConstrainedWidthView::CalculatePreferredSize() const {
   return gfx::Size(max_width_, GetHeightForWidth(max_width_));
 }
 
+BEGIN_METADATA(ConstrainedWidthView, views::View)
+END_METADATA
+
 // This represents a single selectable item. Subclasses distinguish between
 // footer and suggestion rows, which are structurally similar but have
 // distinct styling.
 class AutofillPopupItemView : public AutofillPopupRowView {
  public:
+  METADATA_HEADER(AutofillPopupItemView);
   ~AutofillPopupItemView() override = default;
 
   // views::View:
@@ -266,7 +273,7 @@ class AutofillPopupItemView : public AutofillPopupRowView {
   void RefreshStyle() override;
   std::unique_ptr<views::Background> CreateBackground() final;
 
-  int frontend_id() const { return frontend_id_; }
+  int GetFrontendId() const;
 
   virtual int GetPrimaryTextStyle() = 0;
   // Returns a value view. The label part is optional but allow caller to keep
@@ -301,10 +308,22 @@ class AutofillPopupItemView : public AutofillPopupRowView {
   std::vector<views::Label*> inner_labels_;
 };
 
+int AutofillPopupItemView::GetFrontendId() const {
+  return frontend_id_;
+}
+
+BEGIN_METADATA(AutofillPopupItemView, AutofillPopupRowView)
+ADD_READONLY_PROPERTY_METADATA(int, FrontendId)
+END_METADATA
+
 // This represents a suggestion, i.e., a row containing data that will be filled
 // into the page if selected.
 class AutofillPopupSuggestionView : public AutofillPopupItemView {
  public:
+  METADATA_HEADER(AutofillPopupSuggestionView);
+  AutofillPopupSuggestionView(const AutofillPopupSuggestionView&) = delete;
+  AutofillPopupSuggestionView& operator=(const AutofillPopupSuggestionView&) =
+      delete;
   ~AutofillPopupSuggestionView() override = default;
 
   static AutofillPopupSuggestionView* Create(
@@ -320,13 +339,18 @@ class AutofillPopupSuggestionView : public AutofillPopupItemView {
   AutofillPopupSuggestionView(AutofillPopupViewNativeViews* popup_view,
                               int line_number,
                               int frontend_id);
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillPopupSuggestionView);
 };
+
+BEGIN_METADATA(AutofillPopupSuggestionView, AutofillPopupItemView)
+END_METADATA
 
 // This represents a password suggestion row, i.e., a username and password.
 class PasswordPopupSuggestionView : public AutofillPopupSuggestionView {
  public:
+  METADATA_HEADER(PasswordPopupSuggestionView);
+  PasswordPopupSuggestionView(const PasswordPopupSuggestionView&) = delete;
+  PasswordPopupSuggestionView& operator=(const PasswordPopupSuggestionView&) =
+      delete;
   ~PasswordPopupSuggestionView() override = default;
 
   static PasswordPopupSuggestionView* Create(
@@ -347,14 +371,16 @@ class PasswordPopupSuggestionView : public AutofillPopupSuggestionView {
                               int frontend_id);
   base::string16 origin_;
   base::string16 masked_password_;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordPopupSuggestionView);
 };
+
+BEGIN_METADATA(PasswordPopupSuggestionView, AutofillPopupSuggestionView)
+END_METADATA
 
 // This represents an option which appears in the footer of the dropdown, such
 // as a row which will open the Autofill settings page when selected.
 class AutofillPopupFooterView : public AutofillPopupItemView {
  public:
+  METADATA_HEADER(AutofillPopupFooterView);
   ~AutofillPopupFooterView() override = default;
 
   static AutofillPopupFooterView* Create(
@@ -375,11 +401,18 @@ class AutofillPopupFooterView : public AutofillPopupItemView {
                           int frontend_id);
 };
 
+BEGIN_METADATA(AutofillPopupFooterView, AutofillPopupItemView)
+END_METADATA
+
 // Draws a separator between sections of the dropdown, namely between datalist
 // and Autofill suggestions. Note that this is NOT the same as the border on top
 // of the footer section or the border between footer items.
 class AutofillPopupSeparatorView : public AutofillPopupRowView {
  public:
+  METADATA_HEADER(AutofillPopupSeparatorView);
+  AutofillPopupSeparatorView(const AutofillPopupSeparatorView&) = delete;
+  AutofillPopupSeparatorView& operator=(const AutofillPopupSeparatorView&) =
+      delete;
   ~AutofillPopupSeparatorView() override = default;
 
   static AutofillPopupSeparatorView* Create(
@@ -401,13 +434,17 @@ class AutofillPopupSeparatorView : public AutofillPopupRowView {
  private:
   AutofillPopupSeparatorView(AutofillPopupViewNativeViews* popup_view,
                              int line_number);
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillPopupSeparatorView);
 };
+
+BEGIN_METADATA(AutofillPopupSeparatorView, AutofillPopupRowView)
+END_METADATA
 
 // Draws a row which contains a warning message.
 class AutofillPopupWarningView : public AutofillPopupRowView {
  public:
+  METADATA_HEADER(AutofillPopupWarningView);
+  AutofillPopupWarningView(const AutofillPopupWarningView&) = delete;
+  AutofillPopupWarningView& operator=(const AutofillPopupWarningView&) = delete;
   ~AutofillPopupWarningView() override = default;
 
   static AutofillPopupWarningView* Create(
@@ -429,15 +466,16 @@ class AutofillPopupWarningView : public AutofillPopupRowView {
   AutofillPopupWarningView(AutofillPopupViewNativeViews* popup_view,
                            int line_number)
       : AutofillPopupRowView(popup_view, line_number) {}
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillPopupWarningView);
 };
+
+BEGIN_METADATA(AutofillPopupWarningView, AutofillPopupRowView)
+END_METADATA
 
 /************** AutofillPopupItemView **************/
 
 void AutofillPopupItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   AutofillPopupController* controller = popup_view()->controller();
-  auto suggestion = controller->GetSuggestionAt(line_number());
+  auto suggestion = controller->GetSuggestionAt(GetLineNumber());
   std::vector<base::string16> text;
   text.push_back(suggestion.value);
 
@@ -461,17 +499,17 @@ void AutofillPopupItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // Options are selectable.
   node_data->role = ax::mojom::Role::kListBoxOption;
   node_data->AddBoolAttribute(ax::mojom::BoolAttribute::kSelected,
-                              is_selected());
+                              GetSelected());
 
   // Compute set size and position in set, by checking the frontend_id of each
   // row, summing the number of interactive rows, and subtracting the number
   // of separators found before this row from its |pos_in_set|.
   int set_size = 0;
-  int pos_in_set = line_number() + 1;
+  int pos_in_set = GetLineNumber() + 1;
   for (int i = 0; i < controller->GetLineCount(); ++i) {
     if (controller->GetSuggestionAt(i).frontend_id ==
         autofill::POPUP_ITEM_ID_SEPARATOR) {
-      if (i < line_number())
+      if (i < GetLineNumber())
         --pos_in_set;
     } else {
       ++set_size;
@@ -484,7 +522,7 @@ void AutofillPopupItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 void AutofillPopupItemView::OnMouseEntered(const ui::MouseEvent& event) {
   AutofillPopupController* controller = popup_view()->controller();
   if (controller)
-    controller->SetSelectedLine(line_number());
+    controller->SetSelectedLine(GetLineNumber());
 }
 
 void AutofillPopupItemView::OnMouseExited(const ui::MouseEvent& event) {
@@ -497,7 +535,7 @@ void AutofillPopupItemView::OnMouseReleased(const ui::MouseEvent& event) {
   AutofillPopupController* controller = popup_view()->controller();
   if (controller && event.IsOnlyLeftMouseButton() &&
       HitTestPoint(event.location())) {
-    controller->AcceptSuggestion(line_number());
+    controller->AcceptSuggestion(GetLineNumber());
   }
 }
 
@@ -507,10 +545,10 @@ void AutofillPopupItemView::OnGestureEvent(ui::GestureEvent* event) {
     return;
   switch (event->type()) {
     case ui::ET_GESTURE_TAP_DOWN:
-      controller->SetSelectedLine(line_number());
+      controller->SetSelectedLine(GetLineNumber());
       break;
     case ui::ET_GESTURE_TAP:
-      controller->AcceptSuggestion(line_number());
+      controller->AcceptSuggestion(GetLineNumber());
       break;
     case ui::ET_GESTURE_TAP_CANCEL:
     case ui::ET_GESTURE_END:
@@ -534,7 +572,7 @@ void AutofillPopupItemView::CreateContent() {
   std::vector<Suggestion> suggestions = controller->GetSuggestions();
 
   std::unique_ptr<views::ImageView> icon =
-      GetIconImageView(suggestions[line_number()]);
+      GetIconImageView(suggestions[GetLineNumber()]);
 
   if (icon) {
     AddChildView(std::move(icon));
@@ -570,7 +608,7 @@ void AutofillPopupItemView::CreateContent() {
 
   AddChildView(std::move(all_labels));
   std::unique_ptr<views::ImageView> store_indicator_icon =
-      GetStoreIndicatorIconImageView(suggestions[line_number()]);
+      GetStoreIndicatorIconImageView(suggestions[GetLineNumber()]);
   if (store_indicator_icon) {
     AddSpacerWithSize(GetHorizontalMargin(),
                       /*resize=*/true, layout_manager);
@@ -580,9 +618,9 @@ void AutofillPopupItemView::CreateContent() {
 
 void AutofillPopupItemView::RefreshStyle() {
   SetBackground(CreateBackground());
-  SkColor bk_color = is_selected() ? popup_view()->GetSelectedBackgroundColor()
+  SkColor bk_color = GetSelected() ? popup_view()->GetSelectedBackgroundColor()
                                    : popup_view()->GetBackgroundColor();
-  SkColor fg_color = is_selected() ? popup_view()->GetSelectedForegroundColor()
+  SkColor fg_color = GetSelected() ? popup_view()->GetSelectedForegroundColor()
                                    : popup_view()->GetForegroundColor();
   for (views::Label* label : inner_labels_) {
     label->SetAutoColorReadabilityEnabled(false);
@@ -600,7 +638,7 @@ void AutofillPopupItemView::RefreshStyle() {
 
 std::unique_ptr<views::Background> AutofillPopupItemView::CreateBackground() {
   return views::CreateSolidBackground(
-      is_selected() ? popup_view()->GetSelectedBackgroundColor()
+      GetSelected() ? popup_view()->GetSelectedBackgroundColor()
                     : popup_view()->GetBackgroundColor());
 }
 
@@ -608,10 +646,10 @@ AutofillPopupItemView::ViewWithLabel AutofillPopupItemView::CreateValueLabel() {
   // TODO(crbug.com/831603): Remove elision responsibilities from controller.
   ViewWithLabel view_and_label;
   base::string16 text =
-      popup_view()->controller()->GetSuggestionValueAt(line_number());
+      popup_view()->controller()->GetSuggestionValueAt(GetLineNumber());
   if (popup_view()
           ->controller()
-          ->GetSuggestionAt(line_number())
+          ->GetSuggestionAt(GetLineNumber())
           .is_value_secondary) {
     std::unique_ptr<views::Label> label = CreateLabelWithStyleAndContext(
         text, views::style::CONTEXT_DIALOG_BODY_TEXT,
@@ -622,7 +660,7 @@ AutofillPopupItemView::ViewWithLabel AutofillPopupItemView::CreateValueLabel() {
   }
 
   auto text_label = CreateLabelWithStyleAndContext(
-      popup_view()->controller()->GetSuggestionValueAt(line_number()),
+      popup_view()->controller()->GetSuggestionValueAt(GetLineNumber()),
       views::style::CONTEXT_DIALOG_BODY_TEXT, GetPrimaryTextStyle());
 
   const gfx::Font::Weight font_weight = GetPrimaryTextWeight();
@@ -708,9 +746,9 @@ AutofillPopupSuggestionView::AutofillPopupSuggestionView(
 std::vector<AutofillPopupItemView::ViewWithLabel>
 AutofillPopupSuggestionView::CreateSubtextLabels() {
   const base::string16& second_row_label =
-      popup_view()->controller()->GetSuggestionAt(line_number()).label;
+      popup_view()->controller()->GetSuggestionAt(GetLineNumber()).label;
   const base::string16& third_row_label =
-      popup_view()->controller()->GetSuggestionAt(line_number()).offer_label;
+      popup_view()->controller()->GetSuggestionAt(GetLineNumber()).offer_label;
 
   std::vector<AutofillPopupItemView::ViewWithLabel> labels;
   for (const base::string16& text : {second_row_label, third_row_label}) {
@@ -819,11 +857,11 @@ void AutofillPopupFooterView::CreateContent() {
   layout_manager->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
-  const Suggestion suggestion = controller->GetSuggestions()[line_number()];
+  const Suggestion suggestion = controller->GetSuggestions()[GetLineNumber()];
   std::unique_ptr<views::ImageView> icon = GetIconImageView(suggestion);
 
   const bool use_leading_icon =
-      base::Contains(kItemTypesUsingLeadingIcons, frontend_id());
+      base::Contains(kItemTypesUsingLeadingIcons, GetFrontendId());
 
   if (suggestion.is_loading) {
     SetEnabled(false);
@@ -949,7 +987,7 @@ void AutofillPopupWarningView::GetAccessibleNodeData(
   if (!controller)
     return;
 
-  node_data->SetName(controller->GetSuggestionAt(line_number()).value);
+  node_data->SetName(controller->GetSuggestionAt(GetLineNumber()).value);
   node_data->role = ax::mojom::Role::kStaticText;
 }
 
@@ -964,7 +1002,7 @@ void AutofillPopupWarningView::CreateContent() {
       gfx::Insets(vertical_margin, horizontal_margin)));
 
   auto text_label = std::make_unique<views::Label>(
-      controller->GetSuggestionValueAt(line_number()),
+      controller->GetSuggestionValueAt(GetLineNumber()),
       views::style::CONTEXT_DIALOG_BODY_TEXT, ChromeTextStyle::STYLE_RED);
   text_label->SetEnabledColor(popup_view()->GetWarningColor());
   text_label->SetMultiLine(true);
@@ -982,14 +1020,15 @@ AutofillPopupWarningView::CreateBackground() {
 
 /************** AutofillPopupRowView **************/
 
-void AutofillPopupRowView::SetSelected(bool is_selected) {
-  if (is_selected == is_selected_)
+void AutofillPopupRowView::SetSelected(bool selected) {
+  if (selected == selected_)
     return;
 
-  is_selected_ = is_selected;
-  if (is_selected)
+  selected_ = selected;
+  if (selected)
     popup_view_->NotifyAXSelection(this);
   RefreshStyle();
+  OnPropertyChanged(&selected_, views::kPropertyEffectsNone);
 }
 
 void AutofillPopupRowView::OnThemeChanged() {
@@ -1016,12 +1055,25 @@ void AutofillPopupRowView::Init() {
   CreateContent();
 }
 
+int AutofillPopupRowView::GetLineNumber() const {
+  return line_number_;
+}
+
+bool AutofillPopupRowView::GetSelected() const {
+  return selected_;
+}
+
 bool AutofillPopupRowView::HandleAccessibleAction(
     const ui::AXActionData& action_data) {
   if (action_data.action == ax::mojom::Action::kFocus)
     popup_view_->controller()->SetSelectedLine(line_number_);
   return View::HandleAccessibleAction(action_data);
 }
+
+BEGIN_METADATA(AutofillPopupRowView, views::View)
+ADD_PROPERTY_METADATA(bool, Selected)
+ADD_READONLY_PROPERTY_METADATA(int, LineNumber)
+END_METADATA
 
 /************** AutofillPopupViewNativeViews **************/
 
@@ -1305,6 +1357,9 @@ bool AutofillPopupViewNativeViews::DoUpdateBoundsAndRedrawPopup() {
   SchedulePaint();
   return true;
 }
+
+BEGIN_METADATA(AutofillPopupViewNativeViews, AutofillPopupBaseView)
+END_METADATA
 
 // static
 AutofillPopupView* AutofillPopupView::Create(

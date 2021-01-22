@@ -24,6 +24,8 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -39,6 +41,7 @@ constexpr int kPasswordGenerationMaxWidth = 480;
 class PasswordGenerationPopupViewViews::GeneratedPasswordBox
     : public views::View {
  public:
+  METADATA_HEADER(GeneratedPasswordBox);
   GeneratedPasswordBox() = default;
   ~GeneratedPasswordBox() override = default;
 
@@ -154,6 +157,11 @@ void PasswordGenerationPopupViewViews::GeneratedPasswordBox::BuildColumnSet(
                         1.0 /* resize_percent */,
                         views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
 }
+
+BEGIN_NESTED_METADATA(PasswordGenerationPopupViewViews,
+                      GeneratedPasswordBox,
+                      views::View)
+END_METADATA
 
 PasswordGenerationPopupViewViews::PasswordGenerationPopupViewViews(
     PasswordGenerationPopupController* controller,

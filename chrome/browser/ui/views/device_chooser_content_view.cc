@@ -31,6 +31,7 @@
 #include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 DeviceChooserContentView::DeviceChooserContentView(
@@ -379,3 +380,7 @@ views::Throbber* DeviceChooserContentView::ThrobberForTesting() {
 views::Label* DeviceChooserContentView::ThrobberLabelForTesting() {
   return throbber_label_;
 }
+
+BEGIN_METADATA(DeviceChooserContentView, views::View)
+ADD_READONLY_PROPERTY_METADATA(base::string16, WindowTitle)
+END_METADATA

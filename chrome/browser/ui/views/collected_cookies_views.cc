@@ -48,6 +48,8 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -171,6 +173,7 @@ bool CookiesTreeViewDrawingProvider::ShouldDrawIconForNode(
 // A custom view that conditionally displays an infobar.
 class InfobarView : public views::View {
  public:
+  METADATA_HEADER(InfobarView);
   InfobarView() {
     info_image_ = AddChildView(std::make_unique<views::ImageView>());
     info_image_->SetImage(gfx::CreateVectorIcon(vector_icons::kInfoOutlineIcon,
@@ -196,7 +199,9 @@ class InfobarView : public views::View {
         horizontal_spacing));
     SetVisible(false);
   }
-  ~InfobarView() override {}
+  InfobarView(const InfobarView&) = delete;
+  InfobarView& operator=(const InfobarView&) = delete;
+  ~InfobarView() override = default;
 
   // Set the InfobarView label text based on content |setting| and
   // |domain_name|. Ensure InfobarView is visible.
@@ -230,9 +235,10 @@ class InfobarView : public views::View {
   views::ImageView* info_image_;
   // The label responsible for rendering the text.
   views::Label* label_;
-
-  DISALLOW_COPY_AND_ASSIGN(InfobarView);
 };
+
+BEGIN_METADATA(InfobarView, views::View)
+END_METADATA
 
 ///////////////////////////////////////////////////////////////////////////////
 // CollectedCookiesViews, public:

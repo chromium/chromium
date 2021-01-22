@@ -29,6 +29,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
@@ -279,3 +280,7 @@ void ColorPickerView::OnColorSelected(ColorPickerElementView* element) {
   if (callback_)
     callback_.Run();
 }
+
+BEGIN_METADATA(ColorPickerView, views::View)
+ADD_READONLY_PROPERTY_METADATA(base::Optional<int>, SelectedElement)
+END_METADATA

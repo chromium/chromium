@@ -67,6 +67,8 @@
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
@@ -77,13 +79,16 @@ namespace {
 // button changes a layout is required.
 class AdvancedViewContainer : public views::View {
  public:
+  METADATA_HEADER(AdvancedViewContainer);
   AdvancedViewContainer() {}
+  AdvancedViewContainer(const AdvancedViewContainer&) = delete;
+  AdvancedViewContainer& operator=(const AdvancedViewContainer&) = delete;
 
   void ChildPreferredSizeChanged(views::View* child) override { Layout(); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AdvancedViewContainer);
 };
+
+BEGIN_METADATA(AdvancedViewContainer, views::View)
+END_METADATA
 
 bool UseGoogleTranslateBranding() {
   // Only use Google Translate branding in Chrome branded builds.

@@ -7,11 +7,11 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/chooser_controller/chooser_controller.h"
 #include "ui/base/models/table_model.h"
 #include "ui/gfx/range/range.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -29,9 +29,12 @@ class DeviceChooserContentView : public views::View,
                                  public ui::TableModel,
                                  public ChooserController::View {
  public:
+  METADATA_HEADER(DeviceChooserContentView);
   DeviceChooserContentView(
       views::TableViewObserver* table_view_observer,
       std::unique_ptr<ChooserController> chooser_controller);
+  DeviceChooserContentView(const DeviceChooserContentView&) = delete;
+  DeviceChooserContentView& operator=(const DeviceChooserContentView&) = delete;
   ~DeviceChooserContentView() override;
 
   // views::View:
@@ -91,8 +94,6 @@ class DeviceChooserContentView : public views::View,
 
   bool is_initialized_ = false;
   base::CallbackListSubscription select_all_subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceChooserContentView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_DEVICE_CHOOSER_CONTENT_VIEW_H_

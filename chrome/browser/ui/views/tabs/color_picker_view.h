@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/tabs/tab_group_editor_bubble_view.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -28,6 +29,8 @@ class ColorPickerElementView;
 // selection is made.
 class ColorPickerView : public views::View {
  public:
+  METADATA_HEADER(ColorPickerView);
+
   using ColorSelectedCallback = base::RepeatingCallback<void()>;
 
   // |colors| should contain the color values and accessible names. There should

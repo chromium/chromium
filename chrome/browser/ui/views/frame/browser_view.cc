@@ -199,6 +199,8 @@
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/focus/external_focus_tracker.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/native_widget.h"
 #include "ui/views/widget/root_view.h"
@@ -348,6 +350,7 @@ bool IsShowingWebContentsModalDialog(content::WebContents* web_contents) {
 // immersive fullscreen reveal).
 class TopContainerOverlayView : public views::View {
  public:
+  METADATA_HEADER(TopContainerOverlayView);
   explicit TopContainerOverlayView(base::WeakPtr<BrowserView> browser_view)
       : browser_view_(std::move(browser_view)) {}
   ~TopContainerOverlayView() override = default;
@@ -369,6 +372,9 @@ class TopContainerOverlayView : public views::View {
   // this view is held in a different hierarchy.
   base::WeakPtr<BrowserView> browser_view_;
 };
+
+BEGIN_METADATA(TopContainerOverlayView, views::View)
+END_METADATA
 
 // A view targeter for the overlay view, which makes sure the overlay view
 // itself is never a target for events, but its children (i.e. top_container)
@@ -394,6 +400,9 @@ class OverlayViewTargeterDelegate : public views::ViewTargeterDelegate {
 };
 
 class ContentsSeparator : public views::Separator {
+ public:
+  METADATA_HEADER(ContentsSeparator);
+
  private:
   // views::View:
   void OnThemeChanged() override {
@@ -410,6 +419,9 @@ class ContentsSeparator : public views::Separator {
         theme_provider->GetColor(ThemeProperties::COLOR_TOOLBAR)));
   }
 };
+
+BEGIN_METADATA(ContentsSeparator, views::Separator)
+END_METADATA
 
 bool ShouldShowWindowIcon(const Browser* browser) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
