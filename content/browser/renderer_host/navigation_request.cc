@@ -715,7 +715,6 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateBrowserInitiated(
     mojom::CommonNavigationParamsPtr common_params,
     mojom::CommitNavigationParamsPtr commit_params,
     bool browser_initiated,
-    bool is_prerendering,
     bool was_opener_suppressed,
     const base::UnguessableToken* initiator_frame_token,
     int initiator_process_id,
@@ -766,20 +765,13 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateBrowserInitiated(
     }
   }
 
-  // The prerendering state of a sub-frame is decided by its parent.
-  if (base::FeatureList::IsEnabled(blink::features::kPrerender2) &&
-      frame_tree_node->parent()) {
-    is_prerendering = frame_tree_node->parent()->IsPrerendering();
-  }
-
   std::unique_ptr<NavigationRequest> navigation_request(new NavigationRequest(
       frame_tree_node, std::move(common_params), std::move(navigation_params),
       std::move(commit_params), browser_initiated,
-      false /* from_begin_navigation */, false /* is_for_commit */,
-      is_prerendering, frame_entry, entry, std::move(navigation_ui_data),
-      mojo::NullAssociatedRemote(), mojo::NullRemote(),
-      rfh_restored_from_back_forward_cache, initiator_process_id,
-      was_opener_suppressed));
+      false /* from_begin_navigation */, false /* is_for_commit */, frame_entry,
+      entry, std::move(navigation_ui_data), mojo::NullAssociatedRemote(),
+      mojo::NullRemote(), rfh_restored_from_back_forward_cache,
+      initiator_process_id, was_opener_suppressed));
 
   if (frame_entry) {
     navigation_request->blob_url_loader_factory_ =
@@ -866,6 +858,9 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
           /*data_url_as_string=*/std::string(),
 #endif
           /*is_browser_initiated=*/false,
+          frame_tree_node->parent()
+              ? frame_tree_node->parent()->IsPrerendering()
+              : false,
           /*web_bundle_physical_url=*/GURL(),
           /*base_url_override_for_web_bundle=*/GURL(),
           /*document_ukm_source_id=*/ukm::kInvalidSourceId,
@@ -885,13 +880,6 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
   int initiator_process_id =
       frame_tree_node->current_frame_host()->GetProcess()->GetID();
 
-  // For sub-frame navigations, inherit the prerendering state from the parent.
-  bool is_prerendering = false;
-  if (base::FeatureList::IsEnabled(blink::features::kPrerender2) &&
-      frame_tree_node->parent()) {
-    is_prerendering = frame_tree_node->parent()->IsPrerendering();
-  }
-
   // `was_opener_suppressed` can be true for renderer initiated navigations, but
   // only in cases which get routed through `CreateBrowserInitiated()` instead.
   std::unique_ptr<NavigationRequest> navigation_request(new NavigationRequest(
@@ -900,7 +888,6 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
       false,  // browser_initiated
       true,   // from_begin_navigation
       false,  // is_for_commit
-      is_prerendering,
       nullptr,  // frame_entry
       entry,
       nullptr,  // navigation_ui_data
@@ -983,6 +970,9 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateForCommit(
           std::string() /* data_url_as_string */,
 #endif
           false /* is_browser_initiated */,
+          frame_tree_node->parent()
+              ? frame_tree_node->parent()->IsPrerendering()
+              : false,
           GURL() /* web_bundle_physical_url */,
           GURL() /* base_url_override_for_web_bundle */,
           ukm::kInvalidSourceId /* document_ukm_source_id */,
@@ -1000,10 +990,9 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateForCommit(
       frame_tree_node, std::move(common_params), std::move(begin_params),
       std::move(commit_params), false /* browser_initiated */,
       false /* from_begin_navigation */, true /* is_for_commit */,
-      false /* is_prerendering */, nullptr /* frame_navigation_entry */,
-      nullptr /* navigation_entry */, nullptr /* navigation_ui_data */,
-      mojo::NullAssociatedRemote(), mojo::NullRemote(),
-      nullptr /* rfh_restored_from_back_forward_cache */,
+      nullptr /* frame_navigation_entry */, nullptr /* navigation_entry */,
+      nullptr /* navigation_ui_data */, mojo::NullAssociatedRemote(),
+      mojo::NullRemote(), nullptr /* rfh_restored_from_back_forward_cache */,
       ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
       false /* was_opener_suppressed */));
 
@@ -1031,7 +1020,6 @@ NavigationRequest::NavigationRequest(
     bool browser_initiated,
     bool from_begin_navigation,
     bool is_for_commit,
-    bool is_prerendering,
     const FrameNavigationEntry* frame_entry,
     NavigationEntryImpl* entry,
     std::unique_ptr<NavigationUIData> navigation_ui_data,
@@ -1061,7 +1049,6 @@ NavigationRequest::NavigationRequest(
       initiator_csp_context_(std::make_unique<InitiatorCSPContext>(
           std::move(common_params_->initiator_csp_info->initiator_csp),
           std::move(navigation_initiator))),
-      is_prerendering_(is_prerendering),
       rfh_restored_from_back_forward_cache_(
           rfh_restored_from_back_forward_cache),
       // Store the old RenderFrameHost id at request creation to be used later.
@@ -5315,10 +5302,6 @@ ReloadType NavigationRequest::NavigationTypeToReloadType(
 
 bool NavigationRequest::IsNavigationStarted() const {
   return is_navigation_started_;
-}
-
-bool NavigationRequest::IsPrerendering() const {
-  return is_prerendering_;
 }
 
 bool NavigationRequest::RequiresInitiatorBasedSourceSiteInstance() const {

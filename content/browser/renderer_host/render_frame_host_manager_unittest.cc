@@ -416,8 +416,7 @@ class RenderFrameHostManagerTest
     std::unique_ptr<NavigationRequest> navigation_request =
         NavigationRequest::CreateBrowserInitiated(
             frame_tree_node, std::move(common_params), std::move(commit_params),
-            !entry->is_renderer_initiated(), false /* is_prerendering */,
-            false /* was_opener_suppressed */,
+            !entry->is_renderer_initiated(), false /* was_opener_suppressed */,
             nullptr /* initiator_frame_token */,
             ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
             entry->extra_headers(), frame_entry, entry, request_body,
@@ -2891,8 +2890,7 @@ TEST_P(RenderFrameHostManagerTest, NavigateFromDeadRendererToWebUI) {
   std::unique_ptr<NavigationRequest> navigation_request =
       NavigationRequest::CreateBrowserInitiated(
           frame_tree_node, std::move(common_params), std::move(commit_params),
-          !entry.is_renderer_initiated(), false /* is_prerendering */,
-          false /* was_opener_suppressed */,
+          !entry.is_renderer_initiated(), false /* was_opener_suppressed */,
           nullptr /* initiator_frame_token */,
           ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
           entry.extra_headers(), frame_entry, &entry,

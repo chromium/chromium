@@ -6373,7 +6373,7 @@ void RenderFrameHostImpl::CommitNavigation(
   DCHECK(navigation_request);
 
   if (base::FeatureList::IsEnabled(blink::features::kPrerender2)) {
-    is_prerendering_ = navigation_request->IsPrerendering();
+    is_prerendering_ = commit_params->is_prerendering;
     // TODO(https://crbug.com/1132752): Set cancellation_closure after replacing
     // is_prerendering with prerender_host_id.
     if (is_prerendering_) {
@@ -6828,6 +6828,11 @@ void RenderFrameHostImpl::CommitNavigation(
         navigation_request->policy_container_host()
             ->CreatePolicyContainerForBlink();
 
+    // TODO(crbug.com/1126305): Once the Prerender2 moves to use the MPArch, we
+    // need to check the relevant FrameTree to know the precise prerendering
+    // state to update commit_params.is_prerendering here.
+    // Current design doesn't capture the cases NavigationRequest is created via
+    // CreateRendererInitiated or CreateForCommit.
     SendCommitNavigation(
         navigation_client, navigation_request, std::move(common_params),
         std::move(commit_params), std::move(head), std::move(response_body),
@@ -7871,7 +7876,8 @@ void RenderFrameHostImpl::BindPrerenderProcessor(
 }
 
 bool RenderFrameHostImpl::IsPrerendering() const {
-  DCHECK(base::FeatureList::IsEnabled(blink::features::kPrerender2));
+  DCHECK(!is_prerendering_ ||
+         base::FeatureList::IsEnabled(blink::features::kPrerender2));
   return is_prerendering_;
 }
 

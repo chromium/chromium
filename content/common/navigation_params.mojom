@@ -407,6 +407,9 @@ struct CommitNavigationParams {
   // Whether this navigation was browser initiated.
   bool is_browser_initiated = false;
 
+  // Whether this navigation was for prerendering.
+  bool is_prerendering = false;
+
   // The physical URL of Web Bundle from which the document is loaded.
   // Used as an additional identifier for MemoryCache.
   url.mojom.Url web_bundle_physical_url;

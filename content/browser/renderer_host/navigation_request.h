@@ -172,7 +172,6 @@ class CONTENT_EXPORT NavigationRequest
       mojom::CommonNavigationParamsPtr common_params,
       mojom::CommitNavigationParamsPtr commit_params,
       bool browser_initiated,
-      bool is_prerendering,
       bool was_opener_suppressed,
       const base::UnguessableToken* initiator_frame_token,
       int initiator_process_id,
@@ -629,10 +628,6 @@ class CONTENT_EXPORT NavigationRequest
   // CreateForCommit().
   bool IsNavigationStarted() const;
 
-  // Prerender2:
-  // Returns true if it is a prerendering navigation.
-  bool IsPrerendering() const;
-
   // Restart the navigation restoring the page from the back-forward cache
   // as a regular non-bfcached history navigation.
   //
@@ -807,7 +802,6 @@ class CONTENT_EXPORT NavigationRequest
       bool browser_initiated,
       bool from_begin_navigation,
       bool is_for_commit,
-      bool is_prerendering,
       const FrameNavigationEntry* frame_navigation_entry,
       NavigationEntryImpl* navitation_entry,
       std::unique_ptr<NavigationUIData> navigation_ui_data,
@@ -1407,10 +1401,6 @@ class CONTENT_EXPORT NavigationRequest
 
   // Set in ReadyToCommitNavigation.
   bool is_same_process_ = true;
-
-  // Prerender2:
-  // Indicates if it is a prerendering navigation request.
-  const bool is_prerendering_ = false;
 
   // If set, starting the navigation will immediately result in an error page
   // with this html as content and |net_error| as the network error.

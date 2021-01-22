@@ -3467,6 +3467,8 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
           std::string(), /* data_url_as_string */
 #endif
           !params.is_renderer_initiated, /* is_browser_initiated */
+          node->parent() ? node->parent()->IsPrerendering()
+                         : params.is_prerendering,
           GURL() /* web_bundle_physical_url */,
           GURL() /* base_url_override_for_web_bundle */,
           ukm::kInvalidSourceId /* document_ukm_source_id */,
@@ -3496,8 +3498,7 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
 
   auto navigation_request = NavigationRequest::CreateBrowserInitiated(
       node, std::move(common_params), std::move(commit_params),
-      !params.is_renderer_initiated, params.is_prerendering,
-      params.was_opener_suppressed,
+      !params.is_renderer_initiated, params.was_opener_suppressed,
       params.initiator_frame_token.has_value()
           ? &(params.initiator_frame_token.value())
           : nullptr,
@@ -3621,8 +3622,8 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
 
   return NavigationRequest::CreateBrowserInitiated(
       frame_tree_node, std::move(common_params), std::move(commit_params),
-      !entry->is_renderer_initiated(), false /* is_prerendering */,
-      false /* was_opener_suppressed */, nullptr /* initiator_frame_token */,
+      !entry->is_renderer_initiated(), false /* was_opener_suppressed */,
+      nullptr /* initiator_frame_token */,
       ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
       entry->extra_headers(), frame_entry, entry, request_body,
       nullptr /* navigation_ui_data */, base::nullopt /* impression */);
@@ -3723,8 +3724,7 @@ void NavigationControllerImpl::LoadPostCommitErrorPage(
   std::unique_ptr<NavigationRequest> navigation_request =
       NavigationRequest::CreateBrowserInitiated(
           node, std::move(common_params), std::move(commit_params),
-          true /* browser_initiated */, false /* is_prerendering */,
-          false /* was_opener_suppressed */,
+          true /* browser_initiated */, false /* was_opener_suppressed */,
           nullptr /* initiator_frame_token */,
           ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
           "" /* extra_headers */, nullptr /* frame_entry */,
