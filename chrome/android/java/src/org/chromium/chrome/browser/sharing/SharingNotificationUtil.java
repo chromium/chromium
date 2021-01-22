@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
@@ -42,10 +43,12 @@ public final class SharingNotificationUtil {
      * @param contentText The notification content text.
      * @param largeIconId The large notification icon resource id, 0 if not used.
      * @param color The color to be used for the notification.
+     * @param startsActivity Whether the {@code contentIntent} starts an Activity.
      */
     public static void showNotification(@SystemNotificationType int type, String group, int id,
             PendingIntentProvider contentIntent, String contentTitle, String contentText,
-            @DrawableRes int smallIconId, @DrawableRes int largeIconId, int color) {
+            @DrawableRes int smallIconId, @DrawableRes int largeIconId, int color,
+            boolean startsActivity) {
         Context context = ContextUtils.getApplicationContext();
         Resources resources = context.getResources();
         NotificationWrapperBuilder builder =
@@ -54,7 +57,6 @@ public final class SharingNotificationUtil {
                                 ChromeChannelDefinitions.ChannelId.SHARING,
                                 /*remoteAppPackageName=*/null,
                                 new NotificationMetadata(type, group, id))
-                        .setContentIntent(contentIntent)
                         .setContentTitle(contentTitle)
                         .setContentText(contentText)
                         .setColor(ApiCompatibilityUtils.getColor(context.getResources(), color))
@@ -63,6 +65,15 @@ public final class SharingNotificationUtil {
                         .setSmallIcon(smallIconId)
                         .setAutoCancel(true)
                         .setDefaults(Notification.DEFAULT_ALL);
+
+        if (startsActivity && Build.VERSION.SDK_INT > Build.VERSION_CODES.R) {
+            // We can't use the NotificationIntentInterceptor to start Activities after Android R.
+            // Use the unmodified PendingIntent directly instead.
+            builder.setContentIntent(contentIntent.getPendingIntent());
+        } else {
+            builder.setContentIntent(contentIntent);
+        }
+
         if (largeIconId != 0) {
             Bitmap largeIcon = BitmapFactory.decodeResource(resources, largeIconId);
             if (largeIcon != null) builder.setLargeIcon(largeIcon);
