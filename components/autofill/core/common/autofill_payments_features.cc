@@ -65,6 +65,11 @@ const base::Feature kAutofillEnableFixedPaymentsBubbleLogging{
 const base::Feature kAutofillEnableGoogleIssuedCard{
     "AutofillEnableGoogleIssuedCard", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// When enabled, a notification will be displayed on page navigation if the
+// domain has an eligible credit card linked offer or reward.
+const base::Feature kAutofillEnableOfferNotification{
+    "AutofillEnableOfferNotification", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // When enabled, offers will be displayed in the Clank keyboard accessory during
 // downstream.
 const base::Feature kAutofillEnableOffersInClankKeyboardAccessory{

@@ -283,6 +283,11 @@
     "expiry_milestone": 92
   },
   {
+    "name": "autofill-enable-offer-notification",
+    "owners": [ "siyua", "manasverma@google.com" ],
+    "expiry_milestone": 95
+  },
+  {
     "name": "autofill-enable-offers-in-clank-keyboard-accessory",
     "owners": [ "siyua", "siashah@google.com" ],
     "expiry_milestone": 95

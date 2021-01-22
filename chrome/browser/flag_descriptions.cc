@@ -212,6 +212,12 @@ const char kAutofillEnableGoogleIssuedCardDescription[] =
     "When enabled, Google-issued cards will be available in the autofill "
     "suggestions.";
 
+const char kAutofillEnableOfferNotificationName[] =
+    "Enable Autofill offers and rewards notification";
+const char kAutofillEnableOfferNotificationDescription[] =
+    "When enabled, a notification will be displayed on page navigation if the "
+    "domain has an eligible credit card linked offer or reward.";
+
 const char kAutofillEnableOffersInClankKeyboardAccessoryName[] =
     "Enable Autofill offers in keyboard accessory";
 const char kAutofillEnableOffersInClankKeyboardAccessoryDescription[] =

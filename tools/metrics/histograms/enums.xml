@@ -45812,6 +45812,7 @@ from previous Chrome versions.
   <int value="1007444341" label="enable-prefixed-encrypted-media"/>
   <int value="1008677979"
       label="AutofillUseImprovedLabelDisambiguation:disabled"/>
+  <int value="1009437086" label="AutofillEnableOfferNotification:disabled"/>
   <int value="1009976778" label="SidePanel:disabled"/>
   <int value="1012942422" label="HorizontalTabSwitcherAndroid:disabled"/>
   <int value="1014740148" label="FilesCameraFolder:enabled"/>
@@ -46106,6 +46107,7 @@ from previous Chrome versions.
   <int value="1272923911" label="NewMessageListView:disabled"/>
   <int value="1274717741" label="top-chrome-touch-ui"/>
   <int value="1275507565" label="OfflinePagesRenovations:enabled"/>
+  <int value="1276120671" label="AutofillEnableOfferNotification:enabled"/>
   <int value="1276209777" label="ntp-switch-to-existing-tab"/>
   <int value="1277386636" label="QueryInOmnibox:disabled"/>
   <int value="1278512661" label="SmartDimNewMlAgent:disabled"/>

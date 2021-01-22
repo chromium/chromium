@@ -140,6 +140,9 @@ extern const char kAutofillCacheQueryResponsesDescription[];
 extern const char kAutofillEnableGoogleIssuedCardName[];
 extern const char kAutofillEnableGoogleIssuedCardDescription[];
 
+extern const char kAutofillEnableOfferNotificationName[];
+extern const char kAutofillEnableOfferNotificationDescription[];
+
 extern const char kAutofillEnableOffersInClankKeyboardAccessoryName[];
 extern const char kAutofillEnableOffersInClankKeyboardAccessoryDescription[];
 
