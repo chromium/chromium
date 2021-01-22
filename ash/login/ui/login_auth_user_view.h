@@ -216,6 +216,9 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
   // bool has_tap = HasAuthMethod(AUTH_TAP).
   bool HasAuthMethod(AuthMethods auth_method) const;
 
+  // Whether the authentication attempt should use the user's PIN.
+  bool ShouldAuthenticateWithPin() const;
+
   // TODO(crbug/899812): remove this and pass a handler in via the Callbacks
   // struct instead.
   void AttemptAuthenticateWithExternalBinary();
