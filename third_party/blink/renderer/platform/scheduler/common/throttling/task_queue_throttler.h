@@ -128,6 +128,10 @@ class PLATFORM_EXPORT TaskQueueThrottler : public BudgetPoolController {
   void AsValueInto(base::trace_event::TracedValue* state,
                    base::TimeTicks now) const;
 
+  base::WeakPtr<TaskQueueThrottler> AsWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
  private:
   class Metadata : public base::sequence_manager::TaskQueue::Observer {
    public:

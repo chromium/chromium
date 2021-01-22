@@ -843,12 +843,17 @@ void FrameSchedulerImpl::UpdatePolicy() {
   bool task_queues_were_throttled = task_queues_throttled_;
   task_queues_throttled_ = ShouldThrottleTaskQueues();
 
+  if (!task_queues_throttled_)
+    throttled_task_queue_handles_.clear();
+
   for (const auto& task_queue_and_voter :
        frame_task_queue_controller_->GetAllTaskQueuesAndVoters()) {
     UpdateQueuePolicy(task_queue_and_voter.first, task_queue_and_voter.second);
-    if (task_queues_were_throttled != task_queues_throttled_) {
-      UpdateTaskQueueThrottling(task_queue_and_voter.first,
-                                task_queues_throttled_);
+    if (task_queues_throttled_ && !task_queues_were_throttled &&
+        task_queue_and_voter.first->CanBeThrottled()) {
+      MainThreadTaskQueue::ThrottleHandle handle =
+          task_queue_and_voter.first->Throttle();
+      throttled_task_queue_handles_.push_back(std::move(handle));
     }
   }
 
@@ -966,20 +971,6 @@ bool FrameSchedulerImpl::ShouldThrottleTaskQueues() const {
   }
   return RuntimeEnabledFeatures::TimerThrottlingForHiddenFramesEnabled() &&
          !frame_visible_ && IsCrossOriginToMainFrame();
-}
-
-void FrameSchedulerImpl::UpdateTaskQueueThrottling(
-    MainThreadTaskQueue* task_queue,
-    bool should_throttle) {
-  if (!task_queue->CanBeThrottled())
-    return;
-  if (should_throttle) {
-    main_thread_scheduler_->task_queue_throttler()->IncreaseThrottleRefCount(
-        task_queue->GetTaskQueue());
-  } else {
-    main_thread_scheduler_->task_queue_throttler()->DecreaseThrottleRefCount(
-        task_queue->GetTaskQueue());
-  }
 }
 
 bool FrameSchedulerImpl::IsExemptFromBudgetBasedThrottling() const {
@@ -1216,7 +1207,8 @@ void FrameSchedulerImpl::OnTaskQueueCreated(
         task_queue, frame_origin_type_, &lazy_now);
 
     if (task_queues_throttled_) {
-      UpdateTaskQueueThrottling(task_queue, true);
+      MainThreadTaskQueue::ThrottleHandle handle = task_queue->Throttle();
+      throttled_task_queue_handles_.push_back(std::move(handle));
     }
   }
 }

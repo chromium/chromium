@@ -633,16 +633,16 @@ void PageSchedulerImpl::AddQueueToWakeUpBudgetPool(
     MainThreadTaskQueue* task_queue,
     FrameOriginType frame_origin_type,
     base::sequence_manager::LazyNow* lazy_now) {
-  GetWakeUpBudgetPool(task_queue, frame_origin_type)
-      ->AddQueue(lazy_now->Now(), task_queue->GetTaskQueue());
+  task_queue->AddToBudgetPool(
+      lazy_now->Now(), GetWakeUpBudgetPool(task_queue, frame_origin_type));
 }
 
 void PageSchedulerImpl::RemoveQueueFromWakeUpBudgetPool(
     MainThreadTaskQueue* task_queue,
     FrameOriginType frame_origin_type,
     base::sequence_manager::LazyNow* lazy_now) {
-  GetWakeUpBudgetPool(task_queue, frame_origin_type)
-      ->RemoveQueue(lazy_now->Now(), task_queue->GetTaskQueue());
+  task_queue->RemoveFromBudgetPool(
+      lazy_now->Now(), GetWakeUpBudgetPool(task_queue, frame_origin_type));
 }
 
 WakeUpBudgetPool* PageSchedulerImpl::GetWakeUpBudgetPool(

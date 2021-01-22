@@ -258,11 +258,6 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   void UpdateQueuePolicy(
       MainThreadTaskQueue* queue,
       base::sequence_manager::TaskQueue::QueueEnabledVoter* voter);
-  // Update throttling for |task_queue|. This changes the throttling ref counts
-  // and should only be called for new queues if throttling is enabled, or if
-  // the throttling state changes.
-  void UpdateTaskQueueThrottling(MainThreadTaskQueue* task_queue,
-                                 bool should_throttle);
 
   void AddPauseSubresourceLoadingHandle();
   void RemovePauseSubresourceLoadingHandle();
@@ -341,6 +336,7 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   TraceableState<bool, TracingCategoryName::kInfo> subresource_loading_paused_;
   StateTracer<TracingCategoryName::kInfo> url_tracer_;
   TraceableState<bool, TracingCategoryName::kInfo> task_queues_throttled_;
+  Vector<MainThreadTaskQueue::ThrottleHandle> throttled_task_queue_handles_;
   TraceableState<bool, TracingCategoryName::kInfo>
       preempted_for_cooperative_scheduling_;
   // TODO(https://crbug.com/827113): Trace the count of opt-outs.

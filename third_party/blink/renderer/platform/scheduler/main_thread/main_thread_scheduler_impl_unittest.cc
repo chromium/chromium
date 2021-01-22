@@ -2485,8 +2485,8 @@ TEST_F(MainThreadSchedulerImplTest, StopAndThrottleThrottleableQueue) {
 
   auto pause_handle = scheduler_->PauseRenderer();
   base::RunLoop().RunUntilIdle();
-  scheduler_->task_queue_throttler()->IncreaseThrottleRefCount(
-      throttleable_task_queue()->GetTaskQueue());
+  MainThreadTaskQueue::ThrottleHandle handle =
+      throttleable_task_queue()->Throttle();
   base::RunLoop().RunUntilIdle();
   EXPECT_THAT(run_order, testing::ElementsAre());
 }
@@ -2495,8 +2495,8 @@ TEST_F(MainThreadSchedulerImplTest, ThrottleAndPauseRenderer) {
   Vector<String> run_order;
   PostTestTasks(&run_order, "T1 T2");
 
-  scheduler_->task_queue_throttler()->IncreaseThrottleRefCount(
-      throttleable_task_queue()->GetTaskQueue());
+  MainThreadTaskQueue::ThrottleHandle handle =
+      throttleable_task_queue()->Throttle();
   base::RunLoop().RunUntilIdle();
   auto pause_handle = scheduler_->PauseRenderer();
   base::RunLoop().RunUntilIdle();
@@ -3199,15 +3199,13 @@ TEST_F(MainThreadSchedulerImplTest, EnableVirtualTimeAfterThrottling) {
 
   frame_scheduler->SetCrossOriginToMainFrame(true);
   frame_scheduler->SetFrameVisible(false);
-  EXPECT_TRUE(scheduler_->task_queue_throttler()->IsThrottled(
-      throttleable_tq->GetTaskQueue()));
+  EXPECT_TRUE(throttleable_tq->IsThrottled());
 
   scheduler_->EnableVirtualTime(
       MainThreadSchedulerImpl::BaseTimeOverridePolicy::DO_NOT_OVERRIDE);
   EXPECT_EQ(throttleable_tq->GetTaskQueue()->GetTimeDomain(),
             scheduler_->GetVirtualTimeDomain());
-  EXPECT_FALSE(scheduler_->task_queue_throttler()->IsThrottled(
-      throttleable_tq->GetTaskQueue()));
+  EXPECT_FALSE(throttleable_tq->IsThrottled());
 }
 
 TEST_F(MainThreadSchedulerImplTest, DisableVirtualTimeForTesting) {
@@ -4128,6 +4126,22 @@ TEST_F(BestEffortNonMainQueuesUntilOnFMPTimeoutTest,
 
   EXPECT_EQ(non_timer_tq->GetTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
+}
+
+TEST_F(MainThreadSchedulerImplTest, ThrottleHandleThrottlesQueue) {
+  EXPECT_FALSE(throttleable_task_queue()->IsThrottled());
+  {
+    MainThreadTaskQueue::ThrottleHandle handle =
+        throttleable_task_queue()->Throttle();
+    EXPECT_TRUE(throttleable_task_queue()->IsThrottled());
+    {
+      MainThreadTaskQueue::ThrottleHandle handle_2 =
+          throttleable_task_queue()->Throttle();
+      EXPECT_TRUE(throttleable_task_queue()->IsThrottled());
+    }
+    EXPECT_TRUE(throttleable_task_queue()->IsThrottled());
+  }
+  EXPECT_FALSE(throttleable_task_queue()->IsThrottled());
 }
 
 }  // namespace main_thread_scheduler_impl_unittest

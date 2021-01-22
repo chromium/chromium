@@ -887,9 +887,6 @@ void MainThreadSchedulerImpl::OnShutdownTaskQueue(
   if (was_shutdown_)
     return;
 
-  if (task_queue_throttler_)
-    task_queue_throttler_->ShutdownTaskQueue(task_queue->GetTaskQueue());
-
   task_queue.get()->DetachOnIPCTaskPostedWhileInBackForwardCache();
   task_runners_.erase(task_queue.get());
 }
@@ -1945,7 +1942,7 @@ void MainThreadSchedulerImpl::VirtualTimePaused() {
   for (const auto& pair : task_runners_) {
     if (pair.first->CanRunWhenVirtualTimePaused())
       continue;
-    DCHECK(!task_queue_throttler_->IsThrottled(pair.first->GetTaskQueue()));
+    DCHECK(!pair.first->IsThrottled());
     pair.first->GetTaskQueue()->InsertFence(
         TaskQueue::InsertFencePosition::kNow);
   }
@@ -1955,7 +1952,7 @@ void MainThreadSchedulerImpl::VirtualTimeResumed() {
   for (const auto& pair : task_runners_) {
     if (pair.first->CanRunWhenVirtualTimePaused())
       continue;
-    DCHECK(!task_queue_throttler_->IsThrottled(pair.first->GetTaskQueue()));
+    DCHECK(!pair.first->IsThrottled());
     DCHECK(pair.first->GetTaskQueue()->HasActiveFence());
     pair.first->GetTaskQueue()->RemoveFence();
   }
@@ -2710,11 +2707,8 @@ void MainThreadSchedulerImpl::OnTaskCompleted(
 
   DispatchOnTaskCompletionCallbacks();
 
-  if (queue) {
-    task_queue_throttler()->OnTaskRunTimeReported(queue->GetTaskQueue(),
-                                                  task_timing->start_time(),
-                                                  task_timing->end_time());
-  }
+  if (queue)
+    queue->OnTaskRunTimeReported(task_timing);
 
   // TODO(altimin): Per-page metrics should also be considered.
   main_thread_only().metrics_helper.RecordTaskMetrics(queue.get(), task,

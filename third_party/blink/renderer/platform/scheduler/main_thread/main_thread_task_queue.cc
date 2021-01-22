@@ -146,6 +146,12 @@ void MainThreadTaskQueue::OnTaskCompleted(
   }
 }
 
+void MainThreadTaskQueue::OnTaskRunTimeReported(
+    TaskQueue::TaskTiming* task_timing) {
+  main_thread_scheduler_->task_queue_throttler()->OnTaskRunTimeReported(
+      task_queue_.get(), task_timing->start_time(), task_timing->end_time());
+}
+
 void MainThreadTaskQueue::DetachFromMainThreadScheduler() {
   weak_ptr_factory_.InvalidateWeakPtrs();
 
@@ -203,8 +209,14 @@ WebAgentGroupScheduler* MainThreadTaskQueue::GetAgentGroupScheduler() {
 }
 
 void MainThreadTaskQueue::ClearReferencesToSchedulers() {
-  if (main_thread_scheduler_)
+  if (main_thread_scheduler_) {
     main_thread_scheduler_->OnShutdownTaskQueue(this);
+
+    if (main_thread_scheduler_->task_queue_throttler()) {
+      main_thread_scheduler_->task_queue_throttler()->ShutdownTaskQueue(
+          task_queue_.get());
+    }
+  }
   main_thread_scheduler_ = nullptr;
   agent_group_scheduler_ = nullptr;
   frame_scheduler_ = nullptr;
@@ -241,6 +253,40 @@ void MainThreadTaskQueue::SetWebSchedulingPriority(
 base::Optional<WebSchedulingPriority>
 MainThreadTaskQueue::web_scheduling_priority() const {
   return web_scheduling_priority_;
+}
+
+bool MainThreadTaskQueue::IsThrottled() const {
+  if (main_thread_scheduler_) {
+    return main_thread_scheduler_->task_queue_throttler()->IsThrottled(
+        task_queue_.get());
+  } else {
+    // When the frame detaches the task queue is removed from the throttler.
+    return false;
+  }
+}
+
+MainThreadTaskQueue::ThrottleHandle MainThreadTaskQueue::Throttle() {
+  DCHECK(CanBeThrottled());
+  return ThrottleHandle(
+      task_queue_.get()->AsWeakPtr(),
+      main_thread_scheduler_->task_queue_throttler()->AsWeakPtr());
+}
+
+void MainThreadTaskQueue::AddToBudgetPool(base::TimeTicks now,
+                                          BudgetPool* pool) {
+  pool->AddQueue(now, task_queue_.get());
+}
+
+void MainThreadTaskQueue::RemoveFromBudgetPool(base::TimeTicks now,
+                                               BudgetPool* pool) {
+  pool->RemoveQueue(now, task_queue_.get());
+}
+
+void MainThreadTaskQueue::SetImmediateWakeUpForTest() {
+  if (main_thread_scheduler_) {
+    main_thread_scheduler_->task_queue_throttler()->OnQueueNextWakeUpChanged(
+        task_queue_.get(), base::TimeTicks());
+  }
 }
 
 }  // namespace scheduler
