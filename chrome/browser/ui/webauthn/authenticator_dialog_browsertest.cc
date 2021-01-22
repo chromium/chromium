@@ -81,14 +81,6 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
       model->SetCurrentStep(
           AuthenticatorRequestDialogModel::Step::kCableV2Activate);
     } else if (name == "cable_v2_pair") {
-      // The caBLEv2 QR contents, set in this call, need to be realistic before
-      // trying to display the QR code otherwise the resulting QR code might
-      // have the wrong size, which causes a CHECK.
-      model->set_cable_transport_info(/*cable_extension_provided=*/false,
-                                      /*has_paired_phones=*/false,
-                                      "fido://"
-                                      "ogBYIQOk49lUTVYj9sGKWVu1Q5jHVySShDgZOqnM"
-                                      "XBP9Lh32EgFQefSUJIdftH_Eg_oxWPbBWw");
       model->SetCurrentStep(
           AuthenticatorRequestDialogModel::Step::kCableV2QRCode);
     } else if (name == "set_pin") {

@@ -20,13 +20,7 @@ static constexpr int kMaxVersionWithSmallLengths = 9;
 // A structure containing QR version-specific constants and data.
 // All versions currently use error correction at level M.
 struct QRVersionInfo {
-  enum class ECC {
-    kLow = 0,
-    kMedium = 1,
-  };
-
   constexpr QRVersionInfo(const int version,
-                          const ECC ecc,
                           const uint32_t encoded_version,
                           const int size,
                           const size_t group1_bytes,
@@ -37,7 +31,6 @@ struct QRVersionInfo {
                           const size_t group2_block_data_bytes,
                           const std::array<int, 3> alignment_locations)
       : version(version),
-        ecc(ecc),
         encoded_version(encoded_version),
         size(size),
         group1_bytes(group1_bytes),
@@ -65,9 +58,6 @@ struct QRVersionInfo {
 
   // The version of the QR code.
   const int version;
-
-  // The error correction level.
-  const ECC ecc;
 
   // An 18-bit value that contains the version, BCH (18,6)-encoded. Only valid
   // for versions seven and above. See table D.1 for values.
@@ -151,33 +141,10 @@ namespace {
 constexpr QRVersionInfo version_infos[] = {
     // See table 9 in the spec for the source of these numbers.
 
-    // 2-L
-    // 44 bytes in a single block.
-    {
-        2,  // version
-        QRVersionInfo::ECC::kLow,
-        0,   // encoded version (not included in this version)
-        25,  // size (num tiles in each axis)
-
-        // Block group 1:
-        44,  // Total bytes in group
-        1,   // Number of blocks
-        34,  // Data bytes per block
-
-        // Block group 2:
-        0,
-        0,
-        0,
-
-        // Alignment locations
-        {6, 18, 0},
-    },
-
     // 5-M
     // 134 bytes, as 2 blocks of 67.
     {
-        5,  // version
-        QRVersionInfo::ECC::kMedium,
+        5,   // version
         0,   // encoded version (not included in this version)
         37,  // size (num tiles in each axis)
 
@@ -198,8 +165,7 @@ constexpr QRVersionInfo version_infos[] = {
     // 7-M
     // 196 bytes, as 4 blocks of 49.
     {
-        7,  // version
-        QRVersionInfo::ECC::kMedium,
+        7,                     // version
         0b000111110010010100,  // encoded version
         45,                    // size (num tiles in each axis)
 
@@ -220,8 +186,7 @@ constexpr QRVersionInfo version_infos[] = {
     // 9-M
     // 292 bytes, as 3 blocks of 58 plus 2 blocks of 59.
     {
-        9,  // version
-        QRVersionInfo::ECC::kMedium,
+        9,                     // version
         0b001001101010011001,  // encoded version
         53,                    // size (num tiles in each axis)
 
@@ -242,8 +207,7 @@ constexpr QRVersionInfo version_infos[] = {
     // 12-M
     // 466 bytes, as 6 blocks of 58 and 2 blocks of 59.
     {
-        12,  // version
-        QRVersionInfo::ECC::kMedium,
+        12,                    // version
         0b001100011101100010,  // encoded version
         65,                    // size (num tiles in each axis)
 
@@ -307,23 +271,10 @@ static uint8_t (*const kMaskFunctions[kMaxMask + 1])(int x, int y) = {
 };
 
 // kFormatInformation is taken from table C.1 on page 80 and specifies the
-// format value for each masking function. The first eight values assume ECC
-// level 'L' and the rest assume ECC level 'M'.
-static const uint16_t kFormatInformation[2 * (kMaxMask + 1)] = {
-    0x77c4, 0x72f3, 0x7daa, 0x789d, 0x662f, 0x6318, 0x6c41, 0x6976,
+// format value for each masking function, assuming ECC level 'M'.
+static const uint16_t kFormatInformation[kMaxMask + 1] = {
     0x5412, 0x5125, 0x5e7c, 0x5b4b, 0x45f9, 0x40ce, 0x4f97, 0x4aa0,
 };
-
-// FormatInformationForECC returns an array of eight format values (one for each
-// mask) for the given ECC level.
-const uint16_t* FormatInformationForECC(QRVersionInfo::ECC ecc) {
-  switch (ecc) {
-    case QRVersionInfo::ECC::kLow:
-      return kFormatInformation;
-    case QRVersionInfo::ECC::kMedium:
-      return &kFormatInformation[8];
-  }
-}
 
 // kAlphanumValue maps from the beginning of the ASCII codespace to the value
 // of a character in QR's alphanumeric mode, or 255 if the ASCII byte isn't
@@ -634,14 +585,15 @@ base::Optional<QRCodeGenerator::GeneratedCode> QRCodeGenerator::Generate(
   // If |mask| was not specified, then evaluate each masking function to find
   // the one with the lowest penalty score.
   for (uint8_t mask_num = 0; !mask && mask_num <= kMaxMask; mask_num++) {
-    // FormatInformationForECC returns an array of encoded formatting words for
-    // the QR code that this code generates. See tables 10 and 12. For example:
+    // kFormatInformation is the encoded formatting word for the QR code that
+    // this code generates. See tables 10 and 12. For example:
     //                  00 011
     //                  --|---
     // error correction M | Mask pattern 3
     //
-    // It's translated into a 15-bit value using the table on page 80.
-    PutFormatBits(FormatInformationForECC(version_info_->ecc)[mask_num]);
+    // It's translated into a 15-bit value using the table on page 80, which is
+    // stored in |kFormatInformation|.
+    PutFormatBits(kFormatInformation[mask_num]);
 
     PutBits(interleaved_data, sizeof(interleaved_data),
             kMaskFunctions[mask_num]);
@@ -654,7 +606,7 @@ base::Optional<QRCodeGenerator::GeneratedCode> QRCodeGenerator::Generate(
   }
 
   // Repaint with the best mask function.
-  PutFormatBits(FormatInformationForECC(version_info_->ecc)[best_mask]);
+  PutFormatBits(kFormatInformation[best_mask]);
   PutBits(interleaved_data, sizeof(interleaved_data),
           kMaskFunctions[best_mask]);
 
@@ -937,11 +889,6 @@ void QRCodeGenerator::AddErrorCorrection(base::span<uint8_t> out,
   // gen = [toByte(x) for x in coeffs]
   // print 'uint8_t kGenerator[' + str(len(gen)) + '] = {' + str(gen) + '}'
 
-  // Used for 2-L: 10 error correction codewords per block.
-  static const uint8_t kGenerator10[] = {
-      193, 157, 113, 95, 94, 199, 111, 159, 194, 216, 1,
-  };
-
   // Used for 7-M: 18 error correction codewords per block.
   static const uint8_t kGenerator18[] = {
       146, 217, 67,  32,  75,  173, 82,  73,  220, 240,
@@ -962,9 +909,6 @@ void QRCodeGenerator::AddErrorCorrection(base::span<uint8_t> out,
 
   const uint8_t* generator = nullptr;
   switch (block_ec_bytes) {
-    case 10:
-      generator = kGenerator10;
-      break;
     case 18:
       generator = kGenerator18;
       break;
