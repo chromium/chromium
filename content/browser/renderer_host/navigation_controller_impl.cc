@@ -3446,8 +3446,8 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
 
   mojom::CommitNavigationParamsPtr commit_params =
       mojom::CommitNavigationParams::New(
-          frame_entry->committed_origin(), override_user_agent,
-          params.redirect_chain,
+          frame_entry->committed_origin(), network::mojom::WebSandboxFlags(),
+          override_user_agent, params.redirect_chain,
           std::vector<network::mojom::URLResponseHeadPtr>(),
           std::vector<net::RedirectInfo>(),
           std::string() /* post_content_type */, common_params->url,

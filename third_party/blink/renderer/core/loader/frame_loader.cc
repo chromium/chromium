@@ -243,15 +243,25 @@ void FrameLoader::Init() {
   ScriptForbiddenScope forbid_scripts;
 
   // Load the initial empty document:
+
+  ContentSecurityPolicy* csp = CreateCSPForInitialEmptyDocument();
+
   auto navigation_params = std::make_unique<WebNavigationParams>();
   navigation_params->url = KURL(g_empty_string);
   navigation_params->frame_policy =
       frame_->Owner() ? frame_->Owner()->GetFramePolicy() : FramePolicy();
-  navigation_params->frame_policy->sandbox_flags =
-      PendingEffectiveSandboxFlags();
+
+  // An interesting edge case to consider: A document has:
+  // CSP: sandbox allow-popups allow-popups-to-escape-sandbox
+  // It opens a blank popup.
+  //
+  // The popup's main frame doesn't inherit sandbox. However the initial empty
+  // document inherits sandbox from the opener, through inherited CSP.
+  navigation_params->sandbox_flags =
+      PendingEffectiveSandboxFlags() | csp->GetSandboxMask();
 
   DocumentLoader* new_document_loader = Client()->CreateDocumentLoader(
-      frame_, kWebNavigationTypeOther, CreateCSPForInitialEmptyDocument(),
+      frame_, kWebNavigationTypeOther, std::move(csp),
       std::move(navigation_params), nullptr /* extra_data */);
 
   CommitDocumentLoader(new_document_loader, base::nullopt, nullptr,

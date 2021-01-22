@@ -385,6 +385,14 @@ void WebViewPlugin::OnZoomLevelChanged() {
 void WebViewPlugin::LoadHTML(const std::string& html_data, const GURL& url) {
   auto params = std::make_unique<blink::WebNavigationParams>();
   params->url = url;
+  // The |html_data| comes from files in: chrome/renderer/resources/plugins/
+  // Executing scripts is the only capability required.
+  //
+  // WebSandboxFlags is a bit field. This removes all the capabilities, except
+  // script execution.
+  using network::mojom::WebSandboxFlags;
+  params->sandbox_flags = static_cast<WebSandboxFlags>(
+      ~static_cast<int>(WebSandboxFlags::kScripts));
   blink::WebNavigationParams::FillStaticResponse(params.get(), "text/html",
                                                  "UTF-8", html_data);
   web_view_helper_.main_frame()->CommitNavigation(std::move(params),
