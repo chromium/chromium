@@ -66,6 +66,13 @@ class PLATFORM_EXPORT HeapAllocator {
   static void FreeHashTableBacking(void* address);
   static bool ExpandHashTableBacking(void*, size_t);
 
+  template <typename Traits>
+  static bool CanReuseHashTableDeletedBucket() {
+    if (Traits::kEmptyValueIsZero || !Traits::kCanTraceConcurrently)
+      return true;
+    return !ThreadState::Current()->IsMarkingInProgress();
+  }
+
   static bool IsAllocationAllowed() {
     return ThreadState::Current()->IsAllocationAllowed();
   }

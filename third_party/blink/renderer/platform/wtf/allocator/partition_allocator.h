@@ -67,6 +67,11 @@ class WTF_EXPORT PartitionAllocator {
   }
 
   static inline bool ExpandHashTableBacking(void*, size_t) { return false; }
+  template <typename Traits>
+  static inline bool CanReuseHashTableDeletedBucket() {
+    return true;
+  }
+
   static void Free(void* address) { WTF::Partitions::FastFree(address); }
   template <typename T>
   static void* NewArray(size_t bytes) {
