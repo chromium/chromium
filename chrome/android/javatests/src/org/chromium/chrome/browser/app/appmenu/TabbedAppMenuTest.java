@@ -29,7 +29,6 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
@@ -55,7 +54,6 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.test.util.UiDisableIf;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.io.IOException;
@@ -250,7 +248,7 @@ public class TabbedAppMenuTest {
     @Feature({"Browser", "Main", "Bookmark", "RenderTest"})
     @DisableFeatures({ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_REGROUP,
             ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_ICONS})
-    @DisableIf.Device(type = {UiDisableIf.TABLET}) // See https://crbug.com/1065043.
+    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     public void
     testBookmarkMenuItem() throws IOException {
         MenuItem bookmarkStar =
