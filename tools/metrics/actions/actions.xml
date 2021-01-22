@@ -12977,7 +12977,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileAboutSettingsBack">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
   <owner>sczs@chromium.org</owner>
   <description>
     Reported when user goes back from Chrome About Settings UI to root Settings
@@ -12986,7 +12986,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileAboutSettingsClose">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
   <owner>sczs@chromium.org</owner>
   <description>
     Reported when Chrome About Settings UI was dismissed. iOS only.
@@ -13130,7 +13130,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileBandwidthSettingsBack">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
   <owner>sczs@chromium.org</owner>
   <description>
     Reported when user goes back from Bandwidth Settings UI to root Settings
@@ -13139,7 +13139,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileBandwidthSettingsClose">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
   <owner>sczs@chromium.org</owner>
   <description>
     Reported when Bandwidth Settings UI was dismissed. iOS only.
@@ -13465,7 +13465,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileContentSettingsBack">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
   <owner>sczs@chromium.org</owner>
   <description>
     Reported when user goes back from Content Settings UI to root Settings
@@ -13474,7 +13474,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileContentSettingsClose">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
   <owner>sczs@chromium.org</owner>
   <description>
     s Reported when Content Settings UI was dismissed. iOS only.
@@ -13836,7 +13836,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileGoogleServicesSettingsBack">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
   <owner>sczs@chromium.org</owner>
   <description>
     Reported when user goes back from Google Services Settings UI to root
@@ -21032,7 +21032,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.Bandwidth">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
   <owner>sczs@chromium.org</owner>
   <description>
     Reported when user navigates to Bandwidth Settings. iOS only.
@@ -21040,7 +21040,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.ContentSettings">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
   <owner>sczs@chromium.org</owner>
   <description>
     Reported when user navigates to Content Settings. iOS only.
