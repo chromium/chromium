@@ -52,8 +52,6 @@ class OwnerSettingsServiceChromeOS : public ownership::OwnerSettingsService,
                                      public SessionManagerClient::Observer,
                                      public DeviceSettingsService::Observer {
  public:
-  typedef base::Callback<void(bool success)> OnManagementSettingsSetCallback;
-
   struct ManagementSettings {
     ManagementSettings();
     ~ManagementSettings();

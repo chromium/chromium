@@ -776,8 +776,8 @@ void OwnerSettingsServiceChromeOS::OnPolicyAssembledAndSigned(
   }
   device_settings_service_->Store(
       std::move(policy_response),
-      base::Bind(&OwnerSettingsServiceChromeOS::OnSignedPolicyStored,
-                 store_settings_factory_.GetWeakPtr(), true /* success */));
+      base::BindOnce(&OwnerSettingsServiceChromeOS::OnSignedPolicyStored,
+                     store_settings_factory_.GetWeakPtr(), true /* success */));
 }
 
 void OwnerSettingsServiceChromeOS::OnSignedPolicyStored(bool success) {
