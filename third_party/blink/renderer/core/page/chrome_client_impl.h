@@ -53,7 +53,6 @@ class PagePopup;
 class PagePopupClient;
 class WebAutofillClient;
 class WebViewImpl;
-struct WebRect;
 
 // Handles window-level notifications from core on behalf of a WebView.
 class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
@@ -145,7 +144,7 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
   void ContentsSizeChanged(LocalFrame*, const IntSize&) const override;
   bool DoubleTapToZoomEnabled() const override;
   void EnablePreferredSizeChangedMode() override;
-  void ZoomToFindInPageRect(const WebRect& rect_in_root_frame) override;
+  void ZoomToFindInPageRect(const gfx::Rect& rect_in_root_frame) override;
   void PageScaleFactorChanged() const override;
   float ClampPageScaleFactorToLimits(float scale) const override;
   void MainFrameScrollOffsetChanged(LocalFrame& main_frame) const override;

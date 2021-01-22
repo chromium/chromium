@@ -380,7 +380,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void FullFramePluginZoomLevelChanged(double zoom_level);
 
   // Requests a page-scale animation based on the specified rect.
-  void ZoomToFindInPageRect(const WebRect&);
+  void ZoomToFindInPageRect(const gfx::Rect&);
 
   void ComputeScaleAndScrollForBlockRect(
       const gfx::Point& hit_point,

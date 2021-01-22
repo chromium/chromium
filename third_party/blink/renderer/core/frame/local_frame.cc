@@ -2704,8 +2704,7 @@ void LocalFrame::EnablePreferredSizeChangedMode() {
 }
 
 void LocalFrame::ZoomToFindInPageRect(const gfx::Rect& rect_in_root_frame) {
-  GetPage()->GetChromeClient().ZoomToFindInPageRect(
-      WebRect(rect_in_root_frame));
+  GetPage()->GetChromeClient().ZoomToFindInPageRect(rect_in_root_frame);
 }
 
 #if defined(OS_MAC)

@@ -3531,12 +3531,12 @@ void WebFrameWidgetImpl::ScrollFocusedEditableNodeIntoRect(
 }
 
 void WebFrameWidgetImpl::ZoomToFindInPageRect(
-    const WebRect& rect_in_root_frame) {
+    const gfx::Rect& rect_in_root_frame) {
   if (ForMainFrame()) {
     View()->ZoomToFindInPageRect(rect_in_root_frame);
   } else {
     GetAssociatedFrameWidgetHost()->ZoomToFindInPageRectInMainFrame(
-        gfx::Rect(rect_in_root_frame));
+        rect_in_root_frame);
   }
 }
 

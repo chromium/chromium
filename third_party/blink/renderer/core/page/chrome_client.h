@@ -107,7 +107,6 @@ struct FrameLoadRequest;
 struct ViewportDescription;
 struct ScreenInfo;
 struct WebWindowFeatures;
-struct WebRect;
 
 namespace mojom {
 namespace blink {
@@ -322,7 +321,7 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
 
   virtual void EnablePreferredSizeChangedMode() {}
 
-  virtual void ZoomToFindInPageRect(const WebRect&) {}
+  virtual void ZoomToFindInPageRect(const gfx::Rect&) {}
 
   virtual void ContentsSizeChanged(LocalFrame*, const IntSize&) const = 0;
   // Call during pinch gestures, or when page-scale changes on main-frame load.

@@ -56,6 +56,7 @@
 #include "third_party/blink/renderer/core/frame/find_in_page.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_shift_tracker.h"
@@ -762,7 +763,7 @@ int TextFinder::SelectFindMatch(unsigned index, gfx::Rect* selection_rect) {
     // Zoom to the active match.
     active_match_rect = OwnerFrame().GetFrameView()->ConvertToRootFrame(
         active_match_bounding_box);
-    OwnerFrame().LocalRoot()->FrameWidget()->ZoomToFindInPageRect(
+    OwnerFrame().LocalRoot()->FrameWidgetImpl()->ZoomToFindInPageRect(
         active_match_rect);
   }
 
@@ -935,7 +936,7 @@ void TextFinder::Scroll(std::unique_ptr<AsyncScrollContext> context) {
   // column where the next hit has been found. Doing this when autosizing is
   // not set will result in a zoom reset on small devices.
   if (GetFrame()->GetDocument()->GetTextAutosizer()->PageNeedsAutosizing()) {
-    OwnerFrame().LocalRoot()->FrameWidget()->ZoomToFindInPageRect(
+    OwnerFrame().LocalRoot()->FrameWidgetImpl()->ZoomToFindInPageRect(
         OwnerFrame().GetFrameView()->ConvertToRootFrame(
             ComputeTextRect(EphemeralRange(context->range))));
   }

@@ -313,7 +313,6 @@ class CORE_EXPORT WebFrameWidgetImpl
   void SetZoomLevelForTesting(double zoom_level) override;
   void ResetZoomLevelForTesting() override;
   void SetDeviceScaleFactorForTesting(float factor) override;
-  void ZoomToFindInPageRect(const WebRect& rect_in_root_frame) override;
   FrameWidgetTestHelper* GetFrameWidgetTestHelperForTesting() override;
 
   // Called when a drag-n-drop operation should begin.
@@ -466,6 +465,10 @@ class CORE_EXPORT WebFrameWidgetImpl
   // when hiding. The bottom controls scroll immediately and never translate the
   // content (only clip it).
   void SetBrowserControlsParams(cc::BrowserControlsParams params);
+
+  // This function provides zooming for find in page results when browsing with
+  // page autosize.
+  void ZoomToFindInPageRect(const gfx::Rect& rect_in_root_frame);
 
   // Return the compositor LayerTreeHost.
   cc::LayerTreeHost* LayerTreeHostForTesting() const;

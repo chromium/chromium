@@ -124,10 +124,6 @@ class WebFrameWidget : public WebWidget {
   // into the editable region which is performed in the main frame process.
   virtual bool ScrollFocusedEditableElementIntoView() = 0;
 
-  // This function provides zooming for find in page results when browsing with
-  // page autosize.
-  virtual void ZoomToFindInPageRect(const WebRect& rect_in_root_frame) = 0;
-
   // Applies viewport related properties that are normally provided by the
   // compositor. Useful for tests that don't use a compositor.
   virtual void ApplyViewportChangesForTesting(
