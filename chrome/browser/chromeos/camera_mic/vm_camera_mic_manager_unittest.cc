@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/containers/flat_map.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "chrome/browser/chromeos/login/users/mock_user_manager.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
@@ -41,6 +42,8 @@ constexpr NotificationType kCameraNotification =
     chromeos::VmCameraMicManager::kCameraNotification;
 constexpr NotificationType kCameraAndMicNotification =
     chromeos::VmCameraMicManager::kCameraAndMicNotification;
+
+constexpr auto kDebounceTime = chromeos::VmCameraMicManager::kDebounceTime;
 
 class FakeNotificationDisplayService : public NotificationDisplayService {
  public:
@@ -112,6 +115,10 @@ class VmCameraMicManagerTest : public testing::Test {
     }
   };
 
+  std::string GetNotificationId(VmType vm, NotificationType type) {
+    return VmCameraMicManager::GetNotificationId(vm, type);
+  }
+
   VmCameraMicManagerTest() {
     // Make the profile the primary one.
     auto mock_user_manager =
@@ -150,7 +157,7 @@ class VmCameraMicManagerTest : public testing::Test {
   }
 
   // Note that camera privacy is always set to off by this function.
-  void SetActive(const ActiveMap& active_map) {
+  void SetActiveAndForwardToStable(const ActiveMap& active_map) {
     SetCameraPrivacyIsOn(false);
     for (const auto& vm_and_device_active_map : active_map) {
       VmType vm = vm_and_device_active_map.first;
@@ -165,10 +172,21 @@ class VmCameraMicManagerTest : public testing::Test {
         }
       }
     }
+
+    ForwardToStable();
+  }
+
+  void ForwardToStable() {
+    // The manager at most does the debounce twice (once for "stage" and once
+    // for "target"), so waiting 2 times here is enough.
+    for (size_t i = 0; i < 2; ++i) {
+      task_environment_.FastForwardBy(kDebounceTime);
+    }
   }
 
  protected:
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingProfile testing_profile_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -182,24 +200,28 @@ class VmCameraMicManagerTest : public testing::Test {
 TEST_F(VmCameraMicManagerTest, CameraPrivacy) {
   SetCameraAccessing(kPluginVm, false);
   SetCameraPrivacyIsOn(false);
+  ForwardToStable();
   EXPECT_FALSE(vm_camera_mic_manager_->IsDeviceActive(kCamera));
   EXPECT_FALSE(
       vm_camera_mic_manager_->IsNotificationActive(kCameraNotification));
 
   SetCameraAccessing(kPluginVm, true);
   SetCameraPrivacyIsOn(false);
+  ForwardToStable();
   EXPECT_TRUE(vm_camera_mic_manager_->IsDeviceActive(kCamera));
   EXPECT_TRUE(
       vm_camera_mic_manager_->IsNotificationActive(kCameraNotification));
 
   SetCameraAccessing(kPluginVm, false);
   SetCameraPrivacyIsOn(true);
+  ForwardToStable();
   EXPECT_FALSE(vm_camera_mic_manager_->IsDeviceActive(kCamera));
   EXPECT_FALSE(
       vm_camera_mic_manager_->IsNotificationActive(kCameraNotification));
 
   SetCameraAccessing(kPluginVm, true);
   SetCameraPrivacyIsOn(true);
+  ForwardToStable();
   EXPECT_FALSE(vm_camera_mic_manager_->IsDeviceActive(kCamera));
   EXPECT_FALSE(
       vm_camera_mic_manager_->IsNotificationActive(kCameraNotification));
@@ -211,7 +233,7 @@ class VmCameraMicManagerIsActiveTest
       public testing::WithParamInterface<IsActiveTestParam> {};
 
 TEST_P(VmCameraMicManagerIsActiveTest, IsNotificationActive) {
-  SetActive(GetParam().active_map);
+  SetActiveAndForwardToStable(GetParam().active_map);
 
   for (auto device : {kCamera, kMic}) {
     EXPECT_EQ(vm_camera_mic_manager_->IsDeviceActive(device),
@@ -360,9 +382,9 @@ class VmCameraMicManagerNotificationTest
   }
 };
 
-TEST_P(VmCameraMicManagerNotificationTest, SetActive) {
+TEST_P(VmCameraMicManagerNotificationTest, SetActiveAndForwardToStable) {
   const NotificationTestParam& param = GetParam();
-  SetActive(param.active_map);
+  SetActiveAndForwardToStable(param.active_map);
   EXPECT_EQ(fake_display_service_->notification_ids(),
             param.expected_notifications);
 }
@@ -371,5 +393,141 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     VmCameraMicManagerNotificationTest,
     testing::ValuesIn(VmCameraMicManagerNotificationTest::GetTestValues()));
+
+// For testing the debounce behavior.
+class VmCameraMicManagerDebounceTest : public VmCameraMicManagerTest {
+ public:
+  void ForwardDebounceTime(double factor = 1) {
+    task_environment_.FastForwardBy(factor * kDebounceTime);
+  }
+};
+
+TEST_F(VmCameraMicManagerDebounceTest, Simple) {
+  SetMicActive(kPluginVm, true);
+  ForwardDebounceTime();
+  EXPECT_EQ(
+      fake_display_service_->notification_ids(),
+      std::set<std::string>{GetNotificationId(kPluginVm, kMicNotification)});
+
+  ForwardToStable();
+  EXPECT_EQ(
+      fake_display_service_->notification_ids(),
+      std::set<std::string>{GetNotificationId(kPluginVm, kMicNotification)});
+}
+
+TEST_F(VmCameraMicManagerDebounceTest, CombineCameraAndMic) {
+  SetMicActive(kPluginVm, true);
+  ForwardDebounceTime(/*factor=*/0.51);
+  // Within debounce time, so no notification.
+  EXPECT_EQ(fake_display_service_->notification_ids(), std::set<std::string>{});
+
+  SetCameraAccessing(kPluginVm, true);
+  ForwardDebounceTime(/*factor=*/0.51);
+  EXPECT_EQ(fake_display_service_->notification_ids(),
+            std::set<std::string>{
+                GetNotificationId(kPluginVm, kCameraAndMicNotification)});
+
+  ForwardToStable();
+  EXPECT_EQ(fake_display_service_->notification_ids(),
+            std::set<std::string>{
+                GetNotificationId(kPluginVm, kCameraAndMicNotification)});
+}
+
+// This test that if the devices are turned on and then immediately turned off,
+// we will still show notifications for at least kDebounceTime.
+TEST_F(VmCameraMicManagerDebounceTest, DisplayStageBeforeTarget) {
+  SetMicActive(kPluginVm, true);
+  SetMicActive(kPluginVm, false);
+  SetCameraAccessing(kPluginVm, true);
+  SetCameraAccessing(kPluginVm, false);
+
+  ForwardDebounceTime();
+  EXPECT_EQ(fake_display_service_->notification_ids(),
+            std::set<std::string>{
+                GetNotificationId(kPluginVm, kCameraAndMicNotification)});
+
+  // Will continue displaying for roughly kDebounceTime.
+  ForwardDebounceTime(/*factor=*/0.9);
+  EXPECT_EQ(fake_display_service_->notification_ids(),
+            std::set<std::string>{
+                GetNotificationId(kPluginVm, kCameraAndMicNotification)});
+
+  // Eventually display the "target" notification, which is no notification at
+  // all.
+  ForwardDebounceTime(/*factor=*/0.11);
+  EXPECT_EQ(fake_display_service_->notification_ids(), std::set<std::string>{});
+
+  ForwardToStable();
+  EXPECT_EQ(fake_display_service_->notification_ids(), std::set<std::string>{});
+}
+
+// This test that within debounce time, if the state is reverted back to the
+// stable status, then nothing will change.
+TEST_F(VmCameraMicManagerDebounceTest, RevertBackToStable) {
+  SetMicActive(kPluginVm, true);
+  SetCameraAccessing(kPluginVm, true);
+  ForwardToStable();
+  EXPECT_EQ(fake_display_service_->notification_ids(),
+            std::set<std::string>{
+                GetNotificationId(kPluginVm, kCameraAndMicNotification)});
+
+  // First turn both devices off, and then turn them back up. The state should
+  // become stable again so nothing should changed.
+  SetMicActive(kPluginVm, false);
+  SetCameraAccessing(kPluginVm, false);
+  ForwardDebounceTime(/*factor=*/0.5);
+  SetMicActive(kPluginVm, true);
+  SetCameraAccessing(kPluginVm, true);
+
+  // Nothing changed.
+  ForwardDebounceTime();
+  EXPECT_EQ(fake_display_service_->notification_ids(),
+            std::set<std::string>{
+                GetNotificationId(kPluginVm, kCameraAndMicNotification)});
+
+  ForwardToStable();
+  EXPECT_EQ(fake_display_service_->notification_ids(),
+            std::set<std::string>{
+                GetNotificationId(kPluginVm, kCameraAndMicNotification)});
+}
+
+// Simulate one of the more complicated case.
+TEST_F(VmCameraMicManagerDebounceTest, SimulateSkypeStartingMeeting) {
+  // Simulate the waiting to start screen, in which only the camera is active.
+  SetCameraAccessing(kPluginVm, true);
+  ForwardToStable();
+  EXPECT_EQ(
+      fake_display_service_->notification_ids(),
+      std::set<std::string>{GetNotificationId(kPluginVm, kCameraNotification)});
+
+  // Simulate what happens after clicking the starting button. Skype will turn
+  // on and off the devices multiple time. We should expect the notification
+  // only changes to "camera and mic" once.
+  SetCameraAccessing(kPluginVm, false);
+  ForwardDebounceTime(0.2);
+  SetMicActive(kPluginVm, true);
+  ForwardDebounceTime(0.2);
+  SetCameraAccessing(kPluginVm, true);
+  ForwardDebounceTime(0.7);
+  EXPECT_EQ(fake_display_service_->notification_ids(),
+            std::set<std::string>{
+                GetNotificationId(kPluginVm, kCameraAndMicNotification)});
+  ForwardToStable();
+  EXPECT_EQ(fake_display_service_->notification_ids(),
+            std::set<std::string>{
+                GetNotificationId(kPluginVm, kCameraAndMicNotification)});
+
+  SetCameraAccessing(kPluginVm, false);
+  ForwardDebounceTime(0.2);
+  SetCameraAccessing(kPluginVm, true);
+  ForwardDebounceTime(0.9);
+  EXPECT_EQ(fake_display_service_->notification_ids(),
+            std::set<std::string>{
+                GetNotificationId(kPluginVm, kCameraAndMicNotification)});
+  ForwardToStable();
+  EXPECT_EQ(fake_display_service_->notification_ids(),
+            std::set<std::string>{
+                GetNotificationId(kPluginVm, kCameraAndMicNotification)});
+}
 
 }  // namespace chromeos
