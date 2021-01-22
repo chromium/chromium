@@ -8,5 +8,7 @@ declare_args() {
   # Exclude openscreen in NaCl, since there is no packet support
   # in that build configuration. Once NaCl goes away, this check should be
   # removed.
-  enable_openscreen = !is_nacl && (target_os == "linux" || target_os == "mac")
+  enable_openscreen =
+      !is_nacl &&
+      (target_os == "linux" || target_os == "chromeos" || target_os == "mac")
 }
