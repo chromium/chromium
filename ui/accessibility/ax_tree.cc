@@ -2355,8 +2355,11 @@ AXTree::Selection AXTree::GetUnignoredSelection() const {
         data().sel_is_backward ? AXPositionAdjustmentBehavior::kMoveForward
                                : AXPositionAdjustmentBehavior::kMoveBackward);
 
-    // Any selection endpoint that is inside a leaf node is expressed as a text
-    // position in AXTreeData.
+    // Moving to an unignored position might have placed the position on a leaf
+    // node. Any selection endpoint that is inside a leaf node is expressed as a
+    // text position in AXTreeData. (Note that in this context "leaf node" means
+    // a node with no children or with only ignored children. This does not
+    // refer to a platform leaf.)
     if (anchor_position->IsLeafTreePosition())
       anchor_position = anchor_position->AsTextPosition();
 
@@ -2408,8 +2411,11 @@ AXTree::Selection AXTree::GetUnignoredSelection() const {
         !data().sel_is_backward ? AXPositionAdjustmentBehavior::kMoveForward
                                 : AXPositionAdjustmentBehavior::kMoveBackward);
 
-    // Any selection endpoint that is inside a leaf node is expressed as a text
-    // position in AXTreeData.
+    // Moving to an unignored position might have placed the position on a leaf
+    // node. Any selection endpoint that is inside a leaf node is expressed as a
+    // text position in AXTreeData. (Note that in this context "leaf node" means
+    // a node with no children or with only ignored children. This does not
+    // refer to a platform leaf.)
     if (focus_position->IsLeafTreePosition())
       focus_position = focus_position->AsTextPosition();
 
