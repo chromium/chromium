@@ -85,9 +85,10 @@ extern const base::Feature kPaymentHandlerSecurityIcon;
 extern const base::Feature kEnforceFullDelegation;
 
 // Browser-side feature flag for SecurePaymentConfirmation, which can be used to
-// disable the feature. The feature is also controlled by the Blink runtime
-// feature "SecurePaymentConfirmation". Both have to be enabled for
-// SecurePaymentConfirmation to be available.
+// disable the feature. Enabling the browser-side feature by itself does not
+// actually enable the feature by default. The feature is also controlled by the
+// Blink runtime feature "SecurePaymentConfirmation". Both have to be enabled
+// for SecurePaymentConfirmation to be available.
 extern const base::Feature kSecurePaymentConfirmation;
 
 // If enabled, the GooglePayPaymentApp handles communications between the native

@@ -1823,7 +1823,7 @@
     {
       name: "SecurePaymentConfirmation",
       origin_trial_feature_name: "SecurePaymentConfirmation",
-      origin_trial_os: ["mac"],
+      origin_trial_os: ["mac", "win"],
       status: "experimental",
     },
     {

@@ -82,7 +82,7 @@ const base::Feature kEnforceFullDelegation{"EnforceFullDelegation",
 
 const base::Feature kSecurePaymentConfirmation {
   "SecurePaymentConfirmation",
-#if defined(OS_MAC)
+#if defined(OS_MAC) || defined(OS_WIN)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT

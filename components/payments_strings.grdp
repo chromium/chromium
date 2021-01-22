@@ -623,9 +623,16 @@
   </message>
 
   <!-- Secure Payment Confirmation strings -->
-  <message name="IDS_SECURE_PAYMENT_CONFIRMATION_VERIFY_PURCHASE" desc="The title string on a payment confirmation dialog that confirms the details of the payment that the user is about to verify. The user has the option to click 'Cancel' or 'Verify', and clicking 'Verify' will open the system interface to verify their identity with the Touch ID fingerprint sensor.">
-    Use Touch ID to verify and complete your purchase?
-  </message>
+  <if expr="not is_win">
+    <message name="IDS_SECURE_PAYMENT_CONFIRMATION_VERIFY_PURCHASE" desc="The title string on a payment confirmation dialog that confirms the details of the payment that the user is about to verify. The user has the option to click 'Cancel' or 'Verify', and clicking 'Verify' will open the system interface to verify their identity with the Touch ID fingerprint sensor.">
+        Use Touch ID to verify and complete your purchase?
+    </message>
+  </if>  <!-- not is_win -->
+  <if expr="is_win">
+    <message name="IDS_SECURE_PAYMENT_CONFIRMATION_VERIFY_PURCHASE" desc="The title string on a payment confirmation dialog that confirms the details of the payment that the user is about to verify. The user has the option to click 'Cancel' or 'Verify', and clicking 'Verify' will open the system interface to verify their identity with the Windows Hello biometric sensor, such as fingerprint or face recognition.">
+        Use Windows Hello to verify and complete your purchase?
+    </message>
+  </if>  <!-- is_win -->
   <message name="IDS_SECURE_PAYMENT_CONFIRMATION_STORE_LABEL" desc="In a secure payment confirmation dialog, this is the label for the row of data that shows the store name, e.g. merchant.com.">
     Store
   </message>
