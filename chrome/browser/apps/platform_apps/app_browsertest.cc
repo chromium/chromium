@@ -811,16 +811,11 @@ IN_PROC_BROWSER_TEST_F(PlatformAppWithFileBrowserTest, LaunchNewFile) {
 
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// TODO(https://crbug.com/1000234): Re-enable this test.
-#define MAYBE_OpenLink DISABLED_OpenLink
-#else
-#define MAYBE_OpenLink OpenLink
-#endif
-IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, MAYBE_OpenLink) {
+IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, OpenLink) {
   ASSERT_TRUE(StartEmbeddedTestServer());
+  ui_test_utils::TabAddedWaiter tab_added_waiter(browser());
   LoadAndLaunchPlatformApp("open_link", "Launched");
-  ui_test_utils::TabAddedWaiter(browser()).Wait();
+  tab_added_waiter.Wait();
   ASSERT_EQ(2, browser()->tab_strip_model()->count());
 }
 
