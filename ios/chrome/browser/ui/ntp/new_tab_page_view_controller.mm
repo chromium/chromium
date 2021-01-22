@@ -140,31 +140,25 @@ const CGFloat kOffsetToPinOmnibox = 100;
 
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];
-  // Sets an inset to the Discover feed equal to the content suggestions height,
-  // so that the content suggestions could act as the feed header.
-  // TODO(crbug.com/1114792): Handle landscape/iPad layout.
-  UICollectionView* collectionView =
-      self.contentSuggestionsViewController.collectionView;
-  self.contentSuggestionsViewController.view.frame =
-      CGRectMake(0, -collectionView.contentSize.height,
-                 self.view.frame.size.width, collectionView.contentSize.height);
-  self.discoverFeedWrapperViewController.feedCollectionView.contentInset =
-      UIEdgeInsetsMake(collectionView.contentSize.height, 0, 0, 0);
-  self.headerSynchronizer.additionalOffset = collectionView.contentSize.height;
 
-  // If scroll position was not set from the saved scroll position, and content
-  // suggestions collection height has increased, then set the content offset to
-  // reach the top of the page.
+  // The scroll position should not be set if
+  // |initialContentOffsetFromContentSuggestions| is NaN, because this means
+  // that it was already set from the saved web state. The scroll position
+  // should only be adjutsed until the feed inset is correctly set, because this
+  // signifies that the view has appeared.
   if (!isnan(self.initialContentOffsetFromContentSuggestions) &&
-      -collectionView.contentSize.height <
-          self.initialContentOffsetFromContentSuggestions) {
-    [self setContentOffset:-collectionView.contentSize.height
+      self.discoverFeedWrapperViewController.feedCollectionView.contentInset
+              .top != [self adjustedContentSuggestionsHeight]) {
+    [self setContentOffset:-[self adjustedContentSuggestionsHeight]
             fromSavedState:NO];
   }
 }
 
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
+
+  [self updateFeedInsetsForContentSuggestions];
+
   self.headerSynchronizer.showing = YES;
   // Reload data to ensure the Most Visited tiles and fake omnibox are correctly
   // positioned, in particular during a rotation while a ViewController is
@@ -188,7 +182,8 @@ const CGFloat kOffsetToPinOmnibox = 100;
   // Only get the bottom safe area inset.
   UIEdgeInsets insets = UIEdgeInsetsZero;
   insets.bottom = self.view.safeAreaInsets.bottom;
-  self.collectionView.contentInset = insets;
+  self.discoverFeedWrapperViewController.feedCollectionView.contentInset =
+      insets;
 
   [self.headerSynchronizer
       updateFakeOmniboxOnNewWidth:self.collectionView.bounds.size.width];
@@ -234,6 +229,12 @@ const CGFloat kOffsetToPinOmnibox = 100;
 #pragma mark - UIScrollViewDelegate
 
 - (void)scrollViewDidScroll:(UIScrollView*)scrollView {
+  // Scroll events should not be handled until the content suggestions have been
+  // layed out.
+  if (!self.contentSuggestionsViewController.collectionView.contentSize
+           .height) {
+    return;
+  }
   [self.overscrollActionsController scrollViewDidScroll:scrollView];
   [self.headerSynchronizer updateFakeOmniboxOnCollectionScroll];
   self.scrolledToTop =
@@ -248,11 +249,9 @@ const CGFloat kOffsetToPinOmnibox = 100;
   // Changes ownership of fake omnibox view based on scroll position.
   if (!self.isScrolledIntoFeed &&
       scrollView.contentOffset.y > -kOffsetToPinOmnibox) {
-    [self setIsScrolledIntoFeed:YES];
     [self stickFakeOmniboxToTop];
   } else if (self.isScrolledIntoFeed &&
              scrollView.contentOffset.y <= -kOffsetToPinOmnibox) {
-    [self setIsScrolledIntoFeed:NO];
     [self resetFakeOmnibox];
   }
 }
@@ -322,7 +321,13 @@ const CGFloat kOffsetToPinOmnibox = 100;
 
 // Lets this view own the fake omnibox and sticks it to the top of the NTP.
 - (void)stickFakeOmniboxToTop {
+  [self setIsScrolledIntoFeed:YES];
+
+  [self.headerController removeFromParentViewController];
+  [self.headerController.view removeFromSuperview];
+
   [self.view addSubview:self.headerController.view];
+
   [NSLayoutConstraint activateConstraints:@[
     [self.headerController.view.topAnchor
         constraintEqualToAnchor:self.discoverFeedWrapperViewController.view
@@ -344,7 +349,11 @@ const CGFloat kOffsetToPinOmnibox = 100;
 // Gives content suggestions collection view ownership of the fake omnibox for
 // the width animation.
 - (void)resetFakeOmnibox {
+  [self setIsScrolledIntoFeed:NO];
+
+  [self.headerController removeFromParentViewController];
   [self.headerController.view removeFromSuperview];
+
   // Reload the content suggestions so that the fake omnibox goes back where it
   // belongs. This can probably be optimized by just reloading the header, if
   // that doesn't mess up any collection/header interactions.
@@ -361,6 +370,30 @@ const CGFloat kOffsetToPinOmnibox = 100;
       CGPointMake(0, offset);
   self.initialContentOffsetFromContentSuggestions =
       isFromSavedState ? NAN : offset;
+  self.scrolledIntoFeed =
+      self.discoverFeedWrapperViewController.feedCollectionView.contentOffset
+          .y > kOffsetToPinOmnibox;
+}
+
+// Sets an inset to the Discover feed equal to the content suggestions height,
+// so that the content suggestions could act as the feed header.
+- (void)updateFeedInsetsForContentSuggestions {
+  CGFloat contentSuggestionsHeight =
+      self.contentSuggestionsViewController.collectionView.contentSize.height;
+  // TODO(crbug.com/1114792): Handle landscape/iPad layout.
+  self.contentSuggestionsViewController.view.frame =
+      CGRectMake(0, -contentSuggestionsHeight, self.view.frame.size.width,
+                 contentSuggestionsHeight);
+  self.discoverFeedWrapperViewController.feedCollectionView.contentInset =
+      UIEdgeInsetsMake([self adjustedContentSuggestionsHeight], 0, 0, 0);
+  self.headerSynchronizer.additionalOffset = contentSuggestionsHeight;
+}
+
+// Content suggestions height adjusted with the safe area top insets.
+- (CGFloat)adjustedContentSuggestionsHeight {
+  return self.contentSuggestionsViewController.collectionView.contentSize
+             .height +
+         self.view.safeAreaInsets.top;
 }
 
 #pragma mark - Setters
