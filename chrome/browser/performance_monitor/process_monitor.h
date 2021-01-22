@@ -71,8 +71,15 @@ class ProcessMonitor {
 
   class Observer : public base::CheckedObserver {
    public:
+    // Provides the sampled metrics for every Chrome process. This is called
+    // once per process at a regular interval.
     virtual void OnMetricsSampled(const ProcessMetadata& process_metadata,
-                                  const Metrics& metrics) = 0;
+                                  const Metrics& metrics) {}
+
+    // Provides the aggregated sampled metrics from every Chrome process. This
+    // is called once at a regular interval regardless of the number of
+    // processes.
+    virtual void OnAggregatedMetricsSampled(const Metrics& metrics) {}
   };
 
   // Creates and returns the application-wide ProcessMonitor. Can only be called

@@ -73,6 +73,28 @@ void GatherMetricsForRenderProcess(content::RenderProcessHost* host,
 #endif
 }
 
+// Adds the values from |rhs| to |lhs|.
+ProcessMonitor::Metrics& operator+=(ProcessMonitor::Metrics& lhs,
+                                    const ProcessMonitor::Metrics& rhs) {
+  lhs.cpu_usage += rhs.cpu_usage;
+
+#if defined(OS_WIN)
+  lhs.disk_usage += rhs.disk_usage;
+#endif
+
+#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
+    defined(OS_AIX)
+  lhs.idle_wakeups += rhs.idle_wakeups;
+#endif
+
+#if defined(OS_MAC)
+  lhs.package_idle_wakeups += rhs.package_idle_wakeups;
+  lhs.energy_impact += rhs.energy_impact;
+#endif
+
+  return lhs;
+}
+
 }  // namespace
 
 // static
@@ -181,6 +203,8 @@ void ProcessMonitor::GatherMetricsMapOnIOThread(int current_update_sequence) {
   MarkProcessAsAlive(browser_process_data, current_update_sequence);
 
   // Update metrics for all watched processes; remove dead entries from the map.
+
+  Metrics aggregated_metrics;
   auto iter = metrics_map_.begin();
   while (iter != metrics_map_.end()) {
     ProcessMetricsHistory* process_metrics = iter->second.get();
@@ -189,11 +213,15 @@ void ProcessMonitor::GatherMetricsMapOnIOThread(int current_update_sequence) {
       metrics_map_.erase(iter++);
     } else {
       Metrics metrics = process_metrics->SampleMetrics();
+      aggregated_metrics += metrics;
       for (auto& observer : observer_list_)
         observer.OnMetricsSampled(process_metrics->metadata(), metrics);
       ++iter;
     }
   }
+
+  for (auto& observer : observer_list_)
+    observer.OnAggregatedMetricsSampled(aggregated_metrics);
 }
 
 }  // namespace performance_monitor
