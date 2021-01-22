@@ -42,7 +42,6 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.FlakyTest;
@@ -77,7 +76,6 @@ import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.util.TestWebServer;
 import org.chromium.ui.base.PageTransition;
-import org.chromium.ui.test.util.UiDisableIf;
 import org.chromium.url.GURL;
 
 import java.io.IOException;
@@ -252,18 +250,22 @@ public class NewTabPageTest {
      */
     @Test
     @SmallTest
-    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/1145195
     @Feature({"NewTabPage", "FeedNewTabPage"})
     public void testFocusFakebox() {
         int initialFakeboxTop = getFakeboxTop(mNtp);
+        boolean isTablet = mActivityTestRule.getActivity().isTablet();
 
         TouchCommon.singleClickView(mFakebox);
-        waitForFakeboxFocusAnimationComplete(mNtp);
+
+        // Tablet doesn't animate fakebox but simply focuses Omnibox upon click.
+        // Skip the check on animation.
+        if (!isTablet) waitForFakeboxFocusAnimationComplete(mNtp);
         UrlBar urlBar = (UrlBar) mActivityTestRule.getActivity().findViewById(R.id.url_bar);
         OmniboxTestUtils.waitForFocusAndKeyboardActive(urlBar, true);
-        int afterFocusFakeboxTop = getFakeboxTop(mNtp);
-        Assert.assertTrue(afterFocusFakeboxTop < initialFakeboxTop);
-
+        if (!isTablet) {
+            int afterFocusFakeboxTop = getFakeboxTop(mNtp);
+            Assert.assertTrue(afterFocusFakeboxTop < initialFakeboxTop);
+        }
         OmniboxTestUtils.toggleUrlBarFocus(urlBar, false);
         waitForFakeboxTopPosition(mNtp, initialFakeboxTop);
         OmniboxTestUtils.waitForFocusAndKeyboardActive(urlBar, false);
