@@ -4525,7 +4525,8 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   scoped_refptr<SiteInstance> error_site_instance =
       child->current_frame_host()->GetSiteInstance();
   EXPECT_EQ(success_site_instance, error_site_instance);
-  EXPECT_NE(GURL(kUnreachableWebDataURL), error_site_instance->GetSiteURL());
+  EXPECT_TRUE(IsExpectedSubframeErrorTransition(success_site_instance.get(),
+                                                error_site_instance.get()));
   EXPECT_TRUE(IsOriginOpaqueAndCompatibleWithURL(child, error_url));
 }
 
@@ -4922,6 +4923,8 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
         var child1 = window.open('', 'child1');
         child1.location = $1;
     )";
+    scoped_refptr<SiteInstance> initial_site_instance =
+        child2->current_frame_host()->GetSiteInstance();
     TestNavigationObserver nav_observer(shell()->web_contents());
     ASSERT_TRUE(ExecJs(child2, JsReplace(kScriptTemplate, test_url)));
     nav_observer.Wait();
@@ -4932,10 +4935,11 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
     // Error pages should commit in an opaque origin.
     EXPECT_TRUE(IsOriginOpaqueAndCompatibleWithURL(child1, test_url));
 
-    // net::ERR_BLOCKED_BY_CLIENT errors in subframes should commit in their
-    // initiator's process (not in their parent's process).
-    EXPECT_EQ(b_site_url,
-              child1->current_frame_host()->GetSiteInstance()->GetSiteURL());
+    // net::ERR_BLOCKED_BY_CLIENT errors in subframes should commit in the
+    // the correct process based on whether isolation is enabled or not.
+    EXPECT_TRUE(IsExpectedSubframeErrorTransition(
+        initial_site_instance.get(),
+        child1->current_frame_host()->GetSiteInstance()));
   }
 
   // Reload the subframe when no longer blocking the navigation.

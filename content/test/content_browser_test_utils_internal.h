@@ -64,6 +64,13 @@ RenderFrameHost* ConvertToRenderFrameHost(FrameTreeNode* frame_tree_node);
 WARN_UNUSED_RESULT bool NavigateToURLInSameBrowsingInstance(Shell* window,
                                                             const GURL& url);
 
+// Helper function to checks for a subframe navigation starting  in
+// `start_site_instance` and results in an error page correctly transitions to
+// `end_site_instance` based on whether error page isolation is enabled or not.
+WARN_UNUSED_RESULT bool IsExpectedSubframeErrorTransition(
+    SiteInstance* start_site_instance,
+    SiteInstance* end_site_instance);
+
 // Creates compact textual representations of the state of the frame tree that
 // is appropriate for use in assertions.
 //

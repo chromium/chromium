@@ -26,12 +26,14 @@
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
+#include "content/browser/site_instance_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "content/public/test/browser_test_utils.h"
@@ -108,6 +110,20 @@ bool NavigateToURLInSameBrowsingInstance(Shell* window, const GURL& url) {
   }
 
   return true;
+}
+
+bool IsExpectedSubframeErrorTransition(SiteInstance* start_site_instance,
+                                       SiteInstance* end_site_instance) {
+  bool site_instances_are_equal = (start_site_instance == end_site_instance);
+  bool is_error_page_site_instance =
+      (static_cast<SiteInstanceImpl*>(end_site_instance)->GetSiteInfo() ==
+       SiteInfo::CreateForErrorPage());
+  if (!SiteIsolationPolicy::IsErrorPageIsolationEnabled(
+          /*in_main_frame=*/false)) {
+    return site_instances_are_equal && !is_error_page_site_instance;
+  } else {
+    return !site_instances_are_equal && is_error_page_site_instance;
+  }
 }
 
 FrameTreeVisualizer::FrameTreeVisualizer() {

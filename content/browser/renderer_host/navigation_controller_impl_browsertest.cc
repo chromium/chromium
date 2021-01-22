@@ -9042,11 +9042,18 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     controller.GoForward();
     capturer.Wait();
     observer.Wait();
-    EXPECT_TRUE(capturer.is_same_document());
     EXPECT_EQ(start_url, root->current_url());
     EXPECT_EQ(x_frame_options_deny_url, root->child_at(0)->current_url());
-    EXPECT_TRUE(observer.last_navigation_succeeded());
-    EXPECT_EQ(net::OK, observer.last_net_error_code());
+    if (!SiteIsolationPolicy::IsErrorPageIsolationEnabled(
+            /*in_main_frame=*/false)) {
+      EXPECT_TRUE(capturer.is_same_document());
+      EXPECT_TRUE(observer.last_navigation_succeeded());
+      EXPECT_EQ(net::OK, observer.last_net_error_code());
+    } else {
+      EXPECT_FALSE(capturer.is_same_document());
+      EXPECT_FALSE(observer.last_navigation_succeeded());
+      EXPECT_EQ(net::ERR_BLOCKED_BY_RESPONSE, observer.last_net_error_code());
+    }
   }
 
   // Check that the renderer is still alive.
@@ -10520,18 +10527,18 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
                                      net::ERR_BLOCKED_BY_CLIENT);
   error_observer.Wait();
 
+  // If error page isolation is enabled the `child` pointer will be invalid
+  // and should be retrieved again. It is safe to do so even when disabled.
+  child = ChildFrameAt(shell()->web_contents()->GetMainFrame(), 0);
+
   EXPECT_FALSE(error_observer.last_navigation_succeeded());
   EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, error_observer.last_net_error_code());
   EXPECT_EQ(child->GetLastCommittedURL(), url);
   EXPECT_EQ(error_html, EvalJs(child, "document.body.innerHTML"));
 
-  // Verify that the subframe error page did not commit in the error page
-  // process.
-  // TODO(crbug.com/1092524): Update the expectation once we have subframe error
-  // page isolation.
-  scoped_refptr<SiteInstance> error_site_instance = child->GetSiteInstance();
-  EXPECT_EQ(success_site_instance, error_site_instance);
-  EXPECT_NE(GURL(kUnreachableWebDataURL), error_site_instance->GetSiteURL());
+  // Verify that the subframe error page committed in the correct SiteInstance.
+  EXPECT_TRUE(IsExpectedSubframeErrorTransition(success_site_instance.get(),
+                                                child->GetSiteInstance()));
 }
 
 // Checks that a browser initiated error page navigation in a frame pending
@@ -10609,18 +10616,19 @@ IN_PROC_BROWSER_TEST_P(
                                      net::ERR_BLOCKED_BY_CLIENT);
   error_observer.Wait();
 
+  // If error page isolation is enabled the `child` pointer will be invalid
+  // and should be retrieved again. It is safe to do so even when disabled.
+  child = ChildFrameAt(shell()->web_contents()->GetMainFrame(), 0);
+
   EXPECT_FALSE(error_observer.last_navigation_succeeded());
   EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, error_observer.last_net_error_code());
   EXPECT_EQ(child->GetLastCommittedURL(), error_url);
   EXPECT_EQ(error_html, EvalJs(child, "document.body.innerHTML"));
 
-  // Verify that the subframe error page did not commit in the error page
+  // Verify that the subframe error page committed in the correct SiteInstance.
   // process.
-  // TODO(crbug.com/1092524): Update the expectation once we have subframe error
-  // page isolation.
-  scoped_refptr<SiteInstance> error_site_instance = child->GetSiteInstance();
-  EXPECT_EQ(success_site_instance, error_site_instance);
-  EXPECT_NE(GURL(kUnreachableWebDataURL), error_site_instance->GetSiteURL());
+  EXPECT_TRUE(IsExpectedSubframeErrorTransition(success_site_instance.get(),
+                                                child->GetSiteInstance()));
 }
 
 // Test to verify that LoadPostCommitErrorPage works correctly when done on a

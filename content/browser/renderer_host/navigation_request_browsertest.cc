@@ -1930,8 +1930,8 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   installer.reset();
 
   {
-    // A blocked subframe navigation should commit an error page in the same
-    // process.
+    // A blocked subframe navigation should commit an error page in the error
+    // page process or stay in the same process, based on the isolation policy.
     EXPECT_TRUE(NavigateToURL(shell(), start_url));
     const std::string javascript =
         "var i = document.createElement('iframe');"
@@ -1946,6 +1946,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
         NavigationThrottle::PROCEED);
 
     content::RenderFrameHost* rfh = shell()->web_contents()->GetMainFrame();
+    scoped_refptr<SiteInstance> initial_site_instance = rfh->GetSiteInstance();
     TestNavigationObserver navigation_observer(shell()->web_contents(), 1);
     ASSERT_TRUE(content::ExecuteScript(rfh, javascript));
     navigation_observer.Wait();
@@ -1956,10 +1957,9 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
     ASSERT_EQ(1u, root->child_count());
     FrameTreeNode* child = root->child_at(0u);
 
-    EXPECT_EQ(root->current_frame_host()->GetSiteInstance(),
-              child->current_frame_host()->GetSiteInstance());
-    EXPECT_NE(kUnreachableWebDataURL,
-              child->current_frame_host()->GetSiteInstance()->GetSiteURL());
+    EXPECT_TRUE(IsExpectedSubframeErrorTransition(
+        initial_site_instance.get(),
+        child->current_frame_host()->GetSiteInstance()));
   }
 }
 
