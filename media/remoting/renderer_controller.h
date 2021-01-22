@@ -157,6 +157,7 @@ class RendererController final : public mojom::RemotingSource,
   bool HasVideoCapability(mojom::RemotingSinkVideoCapability capability) const;
   bool HasAudioCapability(mojom::RemotingSinkAudioCapability capability) const;
   bool HasFeatureCapability(mojom::RemotingSinkFeature capability) const;
+  bool SinkSupportsRemoting() const;
 
   // Callback from RpcBroker when sending message to remote sink.
   void SendMessageToSink(std::unique_ptr<std::vector<uint8_t>> message);

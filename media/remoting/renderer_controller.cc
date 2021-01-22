@@ -19,6 +19,7 @@ namespace media {
 namespace remoting {
 
 using mojom::RemotingSinkAudioCapability;
+using mojom::RemotingSinkFeature;
 using mojom::RemotingSinkVideoCapability;
 
 namespace {
@@ -129,7 +130,7 @@ void RendererController::OnSinkAvailable(
 
   sink_metadata_ = *metadata;
 
-  if (!HasFeatureCapability(mojom::RemotingSinkFeature::RENDERING)) {
+  if (!SinkSupportsRemoting()) {
     OnSinkGone();
     return;
   }
@@ -470,7 +471,8 @@ void RendererController::UpdateAndMaybeSwitch(StartTrigger start_trigger,
   // screen if switching to remoting while paused. Thus, the user experience is
   // improved by not starting remoting until playback resumes.
   bool should_be_remoting = client_ && !encountered_renderer_fatal_error_ &&
-                            is_dominant_content_ && !is_paused_;
+                            is_dominant_content_ && !is_paused_ &&
+                            SinkSupportsRemoting();
   if (should_be_remoting) {
     const RemotingCompatibility compatibility = GetCompatibility();
     metrics_recorder_.RecordCompatibility(compatibility);
@@ -610,10 +612,14 @@ bool RendererController::HasAudioCapability(
 }
 
 bool RendererController::HasFeatureCapability(
-    mojom::RemotingSinkFeature capability) const {
+    RemotingSinkFeature capability) const {
   return std::find(std::begin(sink_metadata_.features),
                    std::end(sink_metadata_.features),
                    capability) != std::end(sink_metadata_.features);
+}
+
+bool RendererController::SinkSupportsRemoting() const {
+  return HasFeatureCapability(RemotingSinkFeature::RENDERING);
 }
 
 void RendererController::SendMessageToSink(
