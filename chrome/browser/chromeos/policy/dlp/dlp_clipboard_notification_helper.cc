@@ -60,7 +60,7 @@ constexpr int kBubbleBlurRadius = 80;
 // The size of the managed icon.
 constexpr int kManagedIconSize = 20;
 
-// The maximum width of the label.
+// The maximum width of the bubble.
 constexpr int kBubbleWidth = 360;
 
 // The spacing between the icon and label in the bubble.
@@ -89,6 +89,9 @@ constexpr int kButtonPadding = 16;
 
 // The spacing between the button border and label.
 constexpr int kButtonLabelSpacing = 8;
+
+// The spacing between the buttons.
+constexpr int kButtonsSpacing = 8;
 
 constexpr base::TimeDelta kBubbleBoundsAnimationTime =
     base::TimeDelta::FromMilliseconds(250);
@@ -231,6 +234,59 @@ class ClipboardBlockBubble : public ClipboardBubbleView {
   Button* button_ = nullptr;
 };
 
+class ClipboardWarnBubble : public ClipboardBubbleView {
+ public:
+  explicit ClipboardWarnBubble(const base::string16& text)
+      : ClipboardBubbleView(text) {
+    // Add paste button.
+    base::string16 paste_label =
+        l10n_util::GetStringUTF16(IDS_POLICY_DLP_CLIPBOARD_WARN_PROCEED_BUTTON);
+    paste_button_ = AddChildView(std::make_unique<Button>(paste_label));
+    paste_button_->SetPaintToLayer();
+    paste_button_->layer()->SetFillsBoundsOpaquely(false);
+    paste_button_->SetPosition(
+        gfx::Point(kBubbleWidth - kBubblePadding - paste_button_->width(),
+                   kBubblePadding + label_->height() + kButtonLabelSpacing));
+
+    // Add cancel button.
+    base::string16 cancel_label =
+        l10n_util::GetStringUTF16(IDS_POLICY_DLP_CLIPBOARD_WARN_DISMISS_BUTTON);
+    cancel_button_ = AddChildView(std::make_unique<Button>(cancel_label));
+    cancel_button_->SetPaintToLayer();
+    cancel_button_->layer()->SetFillsBoundsOpaquely(false);
+    cancel_button_->SetPosition(
+        gfx::Point(kBubbleWidth - kBubblePadding - paste_button_->width() -
+                       kButtonsSpacing - cancel_button_->width(),
+                   kBubblePadding + label_->height() + kButtonLabelSpacing));
+
+    UpdateBorderSize(GetBubbleSize());
+  }
+
+  ~ClipboardWarnBubble() override = default;
+
+  gfx::Size GetBubbleSize() override {
+    DCHECK(label_);
+    DCHECK(cancel_button_);
+    DCHECK(paste_button_);
+    return {kBubbleWidth, 2 * kBubblePadding + label_->bounds().height() +
+                              kButtonLabelSpacing + paste_button_->height()};
+  }
+
+  void SetDismissCallback(base::RepeatingCallback<void()> cb) {
+    DCHECK(cancel_button_);
+    cancel_button_->SetCallback(std::move(cb));
+  }
+
+  void SetProceedCallback(base::RepeatingCallback<void()> cb) {
+    DCHECK(paste_button_);
+    // TODO(crbug.com/1168106): Add the logic for "paste".
+  }
+
+ private:
+  Button* cancel_button_ = nullptr;
+  Button* paste_button_ = nullptr;
+};
+
 bool IsRectContainedByAnyDisplay(const gfx::Rect& rect) {
   const std::vector<display::Display>& displays =
       display::Screen::GetScreen()->GetAllDisplays();
@@ -242,7 +298,7 @@ bool IsRectContainedByAnyDisplay(const gfx::Rect& rect) {
 }
 
 void CalculateAndSetWidgetBounds(views::Widget* widget,
-                                 ClipboardBubbleView* bubble_view) {
+                                 const gfx::Size& bubble_size) {
   display::Screen* screen = display::Screen::GetScreen();
   display::Display display = screen->GetPrimaryDisplay();
   auto* host = ash::GetWindowTreeHostForDisplay(display.id());
@@ -269,8 +325,6 @@ void CalculateAndSetWidgetBounds(views::Widget* widget,
         display::Screen::GetScreen()->GetCursorScreenPoint());
   }
 
-  // Calculate the bubble size to ensure the label text accurately fits.
-  const gfx::Size bubble_size = bubble_view->GetBubbleSize();
   const gfx::Rect widget_bounds =
       gfx::Rect(caret_bounds.x(), caret_bounds.y(), bubble_size.width(),
                 bubble_size.height());
@@ -286,6 +340,19 @@ void CalculateAndSetWidgetBounds(views::Widget* widget,
   }
 
   widget->SetBounds(widget_bounds);
+}
+
+views::Widget::InitParams GetWidgetInitParams() {
+  views::Widget::InitParams params(
+      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  params.z_order = ui::ZOrderLevel::kFloatingWindow;
+  params.activatable = views::Widget::InitParams::ACTIVATABLE_NO;
+  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  params.name = kBubbleName;
+  params.layer_type = ui::LAYER_NOT_DRAWN;
+  params.parent = nullptr;
+  params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
+  return params;
 }
 
 }  // namespace
@@ -336,21 +403,37 @@ void DlpClipboardNotificationHelper::NotifyBlockedPaste(
       IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_PASTE, host_name));
 }
 
+void DlpClipboardNotificationHelper::WarnOnPaste(
+    const ui::DataTransferEndpoint* const data_src,
+    const ui::DataTransferEndpoint* const data_dst) {
+  DCHECK(data_src);
+  DCHECK(data_src->origin());
+  const base::string16 host_name =
+      base::UTF8ToUTF16(data_src->origin()->host());
+
+  if (data_dst) {
+    if (data_dst->type() == ui::EndpointType::kCrostini) {
+      // TODO(crbug.com/1168104): Support toasts in warning mode.
+      return;
+    }
+    if (data_dst->type() == ui::EndpointType::kPluginVm) {
+      // TODO(crbug.com/1168104): Support toasts in warning mode.
+      return;
+    }
+    if (data_dst->type() == ui::EndpointType::kArc) {
+      // TODO(crbug.com/1168104): Support toasts in warning mode.
+      return;
+    }
+  }
+  ShowClipboardWarnBubble(l10n_util::GetStringFUTF16(
+      IDS_POLICY_DLP_CLIPBOARD_WARN_ON_PASTE, host_name));
+}
+
 void DlpClipboardNotificationHelper::ShowClipboardBlockBubble(
     const base::string16& text) {
   widget_ = std::make_unique<views::Widget>();
+  widget_->Init(GetWidgetInitParams());
 
-  views::Widget::InitParams params(
-      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-  params.z_order = ui::ZOrderLevel::kFloatingWindow;
-  params.activatable = views::Widget::InitParams::ACTIVATABLE_NO;
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-  params.name = kBubbleName;
-  params.layer_type = ui::LAYER_NOT_DRAWN;
-  params.parent = nullptr;
-  params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
-
-  widget_->Init(std::move(params));
   ClipboardBlockBubble* block_bubble =
       widget_->SetContentsView(std::make_unique<ClipboardBlockBubble>(text));
 
@@ -358,26 +441,34 @@ void DlpClipboardNotificationHelper::ShowClipboardBlockBubble(
       base::BindRepeating(&DlpClipboardNotificationHelper::OnWidgetClosing,
                           base::Unretained(this), widget_.get()));
 
-  CalculateAndSetWidgetBounds(widget_.get(), block_bubble);
-
-  widget_->Show();
-
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&DlpClipboardNotificationHelper::OnWidgetClosing,
-                     base::Unretained(this),
-                     widget_.get()),  // Safe as DlpClipboardNotificationHelper
-                                      // owns `widget_` and outlives it.
-      base::TimeDelta::FromMilliseconds(kClipboardDlpToastDurationMs));
+  ResizeAndShowWidget(block_bubble->GetBubbleSize(),
+                      kClipboardDlpBlockDurationMs);
 }
 
 void DlpClipboardNotificationHelper::ShowClipboardBlockToast(
     const std::string& id,
     const base::string16& text) {
-  ash::ToastData toast(id, text, kClipboardDlpToastDurationMs,
+  ash::ToastData toast(id, text, kClipboardDlpBlockDurationMs,
                        /*dismiss_text=*/base::nullopt);
   toast.is_managed = true;
   ash::ToastManager::Get()->Show(toast);
+}
+
+void DlpClipboardNotificationHelper::ShowClipboardWarnBubble(
+    const base::string16& text) {
+  widget_ = std::make_unique<views::Widget>();
+  widget_->Init(GetWidgetInitParams());
+
+  ClipboardWarnBubble* warn_bubble =
+      widget_->SetContentsView(std::make_unique<ClipboardWarnBubble>(text));
+
+  warn_bubble->SetDismissCallback(
+      base::BindRepeating(&DlpClipboardNotificationHelper::OnWidgetClosing,
+                          base::Unretained(this), widget_.get()));
+  // TODO(crbug.com/1168106): Set proceed callback.
+
+  ResizeAndShowWidget(warn_bubble->GetBubbleSize(),
+                      kClipboardDlpWarnDurationMs);
 }
 
 void DlpClipboardNotificationHelper::OnWidgetClosing(views::Widget* widget) {
@@ -392,6 +483,24 @@ void DlpClipboardNotificationHelper::OnWidgetDestroyed(views::Widget* widget) {
 
 void DlpClipboardNotificationHelper::OnClipboardDataChanged() {
   OnWidgetClosing(widget_.get());
+}
+
+void DlpClipboardNotificationHelper::ResizeAndShowWidget(
+    const gfx::Size& bubble_size,
+    int timeout_duration_ms) {
+  DCHECK(widget_);
+
+  CalculateAndSetWidgetBounds(widget_.get(), bubble_size);
+
+  widget_->Show();
+
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&DlpClipboardNotificationHelper::OnWidgetClosing,
+                     base::Unretained(this),
+                     widget_.get()),  // Safe as DlpClipboardNotificationHelper
+                                      // owns `widget_` and outlives it.
+      base::TimeDelta::FromMilliseconds(timeout_duration_ms));
 }
 
 }  // namespace policy

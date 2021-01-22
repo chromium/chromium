@@ -29,15 +29,21 @@ class DlpClipboardNotificationHelper : public views::WidgetObserver,
   void operator=(const DlpClipboardNotificationHelper&) = delete;
 
   // Shows a bubble that clipboard paste is not allowed. If the type of
-  // `data_dst` is kGuestOS or kArc, it will show a toast instead of a
-  // notification.
+  // `data_dst` is kCrostini, kPluginVm or kArc, it will show a toast instead of
+  // a notification.
   void NotifyBlockedPaste(const ui::DataTransferEndpoint* const data_src,
                           const ui::DataTransferEndpoint* const data_dst);
+  // Shows a bubble that warns the user that clipboard paste is not recommended.
+  // If the type of `data_dst` is kCrostini, kPluginVm or kArc, it will show a
+  // toast instead of a notification.
+  void WarnOnPaste(const ui::DataTransferEndpoint* const data_src,
+                   const ui::DataTransferEndpoint* const data_dst);
 
  private:
   virtual void ShowClipboardBlockBubble(const base::string16& text);
   virtual void ShowClipboardBlockToast(const std::string& id,
                                        const base::string16& text);
+  virtual void ShowClipboardWarnBubble(const base::string16& text);
 
   // views::WidgetObserver
   void OnWidgetClosing(views::Widget* widget) override;
@@ -45,6 +51,9 @@ class DlpClipboardNotificationHelper : public views::WidgetObserver,
 
   // ui::ClipboardObserver
   void OnClipboardDataChanged() override;
+
+  void ResizeAndShowWidget(const gfx::Size& bubble_size,
+                           int timeout_duration_ms);
 
   views::UniqueWidgetPtr widget_;
 };

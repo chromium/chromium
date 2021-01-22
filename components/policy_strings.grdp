@@ -603,6 +603,15 @@ Additional details:
   <message name="IDS_POLICY_DLP_CLIPBOARD_BLOCK_DISMISS_BUTTON" desc="Dismiss dialog button label for disabled paste notification.">
     Got it
   </message>
+  <message name="IDS_POLICY_DLP_CLIPBOARD_WARN_ON_PASTE" desc="A toast informing the user that paste is blocked.">
+    Pasting from <ph name="ORIGIN_NAME">$1<ex>corp.google.com</ex></ph> to this location is not recommended by administrator policy
+  </message>
+  <message name="IDS_POLICY_DLP_CLIPBOARD_WARN_PROCEED_BUTTON" desc="Proceed dialog button label for warning before paste.">
+    Paste anyway
+  </message>
+  <message name="IDS_POLICY_DLP_CLIPBOARD_WARN_DISMISS_BUTTON" desc="Dismiss dialog button label for warning before paste.">
+    Cancel
+  </message>
   <message name="IDS_POLICY_DLP_PRINTING_BLOCKED_TITLE" desc="The title for notification informing the user that printing is blocked.">
     Printing is blocked
   </message>

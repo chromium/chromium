@@ -16,8 +16,11 @@ constexpr char kClipboardDlpCrostiniToastId[] = "clipboard_dlp_block_crostini";
 // Clipboard Plugin VM toast ID.
 constexpr char kClipboardDlpPluginVmToastId[] = "clipboard_dlp_block_plugin_vm";
 
-// The duration of the clipboard toast.
-constexpr int kClipboardDlpToastDurationMs = 2500;
+// The duration of the clipboard toast/bubble shown on blocked paste.
+constexpr int kClipboardDlpBlockDurationMs = 2500;
+
+// The duration of the clipboard warning shown before paste.
+constexpr int kClipboardDlpWarnDurationMs = 20000;
 
 }  // namespace policy
 
