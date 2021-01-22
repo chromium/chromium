@@ -24,7 +24,6 @@ import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 import android.view.View;
@@ -145,7 +144,6 @@ public class AccountPickerBottomSheetTest {
     @Before
     public void setUp() {
         initMocks(this);
-        when(mAccountPickerDelegateMock.isIncognitoModeEnabled()).thenReturn(true);
         mAccountManagerTestRule.addAccount(PROFILE_DATA1);
         mAccountManagerTestRule.addAccount(PROFILE_DATA2);
         SharedPreferencesManager.getInstance().removeKey(
@@ -202,8 +200,14 @@ public class AccountPickerBottomSheetTest {
     @Test
     @MediumTest
     public void testExpandedSheetWithIncognitoModeDisabled() {
-        when(mAccountPickerDelegateMock.isIncognitoModeEnabled()).thenReturn(false);
-        buildAndShowExpandedBottomSheet();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mCoordinator = new AccountPickerBottomSheetCoordinator(sActivityTestRule.getActivity(),
+                    getBottomSheetController(), mAccountPickerDelegateMock,
+                    mIncognitoInterstitialDelegateMock, false);
+        });
+        CriteriaHelper.pollUiThread(mCoordinator.getBottomSheetViewForTesting().findViewById(
+                R.id.account_picker_selected_account)::isShown);
+        onView(withText(PROFILE_DATA1.getFullName())).perform(click());
         onVisibleView(withText(PROFILE_DATA1.getAccountEmail())).check(matches(isDisplayed()));
         onVisibleView(withText(PROFILE_DATA1.getFullName())).check(matches(isDisplayed()));
         onView(withText(PROFILE_DATA2.getAccountEmail())).check(matches(isDisplayed()));
@@ -226,7 +230,7 @@ public class AccountPickerBottomSheetTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mCoordinator = new AccountPickerBottomSheetCoordinator(sActivityTestRule.getActivity(),
                     getBottomSheetController(), mAccountPickerDelegateMock,
-                    mIncognitoInterstitialDelegateMock);
+                    mIncognitoInterstitialDelegateMock, true);
         });
         checkZeroAccountBottomSheet();
     }
@@ -331,7 +335,7 @@ public class AccountPickerBottomSheetTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mCoordinator = new AccountPickerBottomSheetCoordinator(sActivityTestRule.getActivity(),
                     getBottomSheetController(), mAccountPickerDelegateMock,
-                    mIncognitoInterstitialDelegateMock);
+                    mIncognitoInterstitialDelegateMock, true);
         });
         checkZeroAccountBottomSheet();
 
@@ -695,7 +699,7 @@ public class AccountPickerBottomSheetTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mCoordinator = new AccountPickerBottomSheetCoordinator(sActivityTestRule.getActivity(),
                     getBottomSheetController(), mAccountPickerDelegateMock, mTabModelMock,
-                    mTabCreatorMock, mHelpAndFeedbackLauncherMock);
+                    mTabCreatorMock, mHelpAndFeedbackLauncherMock, true);
         });
         CriteriaHelper.pollUiThread(mCoordinator.getBottomSheetViewForTesting().findViewById(
                 R.id.account_picker_selected_account)::isShown);
@@ -705,7 +709,7 @@ public class AccountPickerBottomSheetTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mCoordinator = new AccountPickerBottomSheetCoordinator(sActivityTestRule.getActivity(),
                     getBottomSheetController(), mAccountPickerDelegateMock,
-                    mIncognitoInterstitialDelegateMock);
+                    mIncognitoInterstitialDelegateMock, true);
         });
         CriteriaHelper.pollUiThread(mCoordinator.getBottomSheetViewForTesting().findViewById(
                 R.id.account_picker_selected_account)::isShown);

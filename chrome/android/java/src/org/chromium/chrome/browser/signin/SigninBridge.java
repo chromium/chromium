@@ -12,6 +12,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.account_picker.AccountPickerDelegateImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -103,7 +104,8 @@ final class SigninBridge {
                 activity, bottomSheetController,
                 new AccountPickerDelegateImpl(windowAndroid, activity.getActivityTab(),
                         new WebSigninBridge.Factory(), continueUrl),
-                regularTabModel, incognitoTabCreator, HelpAndFeedbackLauncherImpl.getInstance());
+                regularTabModel, incognitoTabCreator, HelpAndFeedbackLauncherImpl.getInstance(),
+                /* showIncognitoRow= */ IncognitoUtils.isIncognitoModeEnabled());
     }
 
     private SigninBridge() {}

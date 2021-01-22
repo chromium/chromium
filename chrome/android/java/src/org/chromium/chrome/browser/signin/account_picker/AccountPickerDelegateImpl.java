@@ -13,7 +13,6 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
-import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -146,14 +145,6 @@ public class AccountPickerDelegateImpl implements WebSigninBridge.Listener, Acco
         AccountManagerFacadeProvider.getInstance().updateCredentials(
                 AccountUtils.createAccountFromName(accountName), mActivity,
                 onUpdateCredentialsCallback);
-    }
-
-    /**
-     * Whether the incognito mode is enabled by policy.
-     */
-    @Override
-    public boolean isIncognitoModeEnabled() {
-        return IncognitoUtils.isIncognitoModeEnabled();
     }
 
     /**

@@ -32,7 +32,6 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -117,7 +116,6 @@ public class AccountPickerDelegateTest {
 
     @After
     public void tearDown() {
-        IncognitoUtils.setEnabledForTesting(null);
         mDelegate.onDismiss();
     }
 
@@ -185,13 +183,5 @@ public class AccountPickerDelegateTest {
                 .updateCredentials(AccountUtils.createAccountFromName(
                                            AccountManagerTestRule.TEST_ACCOUNT_EMAIL),
                         mActivity, callback);
-    }
-
-    @Test
-    public void testIsIncognitoModeEnabled() {
-        IncognitoUtils.setEnabledForTesting(true);
-        Assert.assertTrue(mDelegate.isIncognitoModeEnabled());
-        IncognitoUtils.setEnabledForTesting(false);
-        Assert.assertFalse(mDelegate.isIncognitoModeEnabled());
     }
 }

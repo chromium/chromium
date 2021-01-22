@@ -14,7 +14,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 import android.view.View;
@@ -114,7 +113,6 @@ public class AccountPickerBottomSheetRenderTest {
     @Before
     public void setUp() {
         initMocks(this);
-        when(mAccountPickerDelegateMock.isIncognitoModeEnabled()).thenReturn(true);
         mActivityTestRule.startMainActivityOnBlankPage();
     }
 
@@ -332,7 +330,7 @@ public class AccountPickerBottomSheetRenderTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mCoordinator = new AccountPickerBottomSheetCoordinator(mActivityTestRule.getActivity(),
                     getBottomSheetController(), mAccountPickerDelegateMock,
-                    mIncognitoInterstitialDelegateMock);
+                    mIncognitoInterstitialDelegateMock, true);
         });
         CriteriaHelper.pollUiThread(mCoordinator.getBottomSheetViewForTesting().findViewById(
                 R.id.account_picker_selected_account)::isShown);

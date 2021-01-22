@@ -32,9 +32,4 @@ public interface AccountPickerDelegate {
      * Updates credentials of the given account name.
      */
     void updateCredentials(String accountName, Callback<Boolean> onUpdateCredentialsCallback);
-
-    /**
-     * Whether the incognito mode is enabled by policy.
-     */
-    boolean isIncognitoModeEnabled();
 }
