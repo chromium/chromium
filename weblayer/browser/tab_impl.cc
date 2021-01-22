@@ -1347,7 +1347,9 @@ void TabImpl::InitializeAutofill() {
           autofill::AutofillHandler::DISABLE_AUTOFILL_DOWNLOAD_MANAGER;
 #if defined(OS_ANDROID)
   if (base::FeatureList::IsEnabled(
-          autofill::features::kAndroidAutofillQueryServerFieldTypes)) {
+          autofill::features::kAndroidAutofillQueryServerFieldTypes) &&
+      (!autofill::AutofillProvider::
+           is_download_manager_disabled_for_testing())) {
     enable_autofill_download_manager =
         autofill::AutofillHandler::ENABLE_AUTOFILL_DOWNLOAD_MANAGER;
   }

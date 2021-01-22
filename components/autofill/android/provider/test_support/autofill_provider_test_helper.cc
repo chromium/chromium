@@ -8,6 +8,8 @@
 #include "base/base64.h"
 #include "base/strings/string16.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/autofill/content/browser/content_autofill_driver_factory.h"
+#include "components/autofill/core/browser/autofill_provider.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "content/public/browser/web_contents.h"
@@ -15,21 +17,37 @@
 namespace autofill {
 
 namespace {
+AutofillHandler* GetAutofillHandler(content::WebContents* web_contents,
+                                    content::RenderFrameHost* rfh) {
+  // Avoid using ContentAutofillDriver::GetForRenderFrameHost(), it will create
+  // a new ContentAutofillDriver.
+  if (ContentAutofillDriverFactory* factory =
+          ContentAutofillDriverFactory::FromWebContents(web_contents)) {
+    if (ContentAutofillDriver* driver =
+            static_cast<ContentAutofillDriver*>(factory->DriverForKey(rfh))) {
+      return driver->autofill_handler();
+    }
+  }
+  return nullptr;
+}
 
 AutofillHandler* ToMainFrameAutofillHandler(
     const base::android::JavaParamRef<jobject>& jweb_contents) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
   CHECK(web_contents);
-  ContentAutofillDriver* driver = ContentAutofillDriver::GetForRenderFrameHost(
-      web_contents->GetMainFrame());
-  CHECK(driver);
-  AutofillHandler* autofill_handler = driver->autofill_handler();
+  AutofillHandler* autofill_handler =
+      GetAutofillHandler(web_contents, web_contents->GetMainFrame());
   CHECK(autofill_handler);
   return autofill_handler;
 }
 
 }  // namespace
+
+static void JNI_AutofillProviderTestHelper_DisableDownloadServerForTesting(
+    JNIEnv* env_md_ctx_st) {
+  AutofillProvider::set_is_download_manager_disabled_for_testing();
+}
 
 static jboolean
 JNI_AutofillProviderTestHelper_SimulateMainFrameAutofillServerResponseForTesting(

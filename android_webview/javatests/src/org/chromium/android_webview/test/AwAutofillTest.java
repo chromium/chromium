@@ -886,6 +886,8 @@ public class AwAutofillTest {
         mWebServer = TestWebServer.start();
         mUMATestHelper = new AwAutofillSessionUMATestHelper(this, mWebServer);
         mContentsClient = new AwAutofillTestClient();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> AutofillProviderTestHelper.disableDownloadServerForTesting());
         mTestContainerView = mRule.createAwTestContainerViewOnMainSync(
                 mContentsClient, false, new TestDependencyFactory() {
                     @Override

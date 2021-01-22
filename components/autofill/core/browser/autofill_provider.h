@@ -25,6 +25,9 @@ class AutofillProvider {
   AutofillProvider();
   virtual ~AutofillProvider();
 
+  static bool is_download_manager_disabled_for_testing();
+  static void set_is_download_manager_disabled_for_testing();
+
   virtual void OnQueryFormFieldAutofill(AutofillHandlerProxy* handler,
                                         int32_t id,
                                         const FormData& form,

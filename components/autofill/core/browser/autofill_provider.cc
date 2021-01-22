@@ -7,6 +7,18 @@
 #include "components/autofill/core/browser/autofill_handler_proxy.h"
 
 namespace autofill {
+namespace {
+bool g_is_download_manager_disabled_for_testing = false;
+}
+
+// static
+bool AutofillProvider::is_download_manager_disabled_for_testing() {
+  return g_is_download_manager_disabled_for_testing;
+}
+
+void AutofillProvider::set_is_download_manager_disabled_for_testing() {
+  g_is_download_manager_disabled_for_testing = true;
+}
 
 AutofillProvider::AutofillProvider() {}
 

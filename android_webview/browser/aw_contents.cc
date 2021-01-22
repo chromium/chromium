@@ -320,7 +320,9 @@ void AwContents::InitAutofillIfNecessary(bool autocomplete_enabled) {
       web_contents, AwAutofillClient::FromWebContents(web_contents),
       base::android::GetDefaultLocaleString(),
       base::FeatureList::IsEnabled(
-          autofill::features::kAndroidAutofillQueryServerFieldTypes)
+          autofill::features::kAndroidAutofillQueryServerFieldTypes) &&
+              (!autofill::AutofillProvider::
+                   is_download_manager_disabled_for_testing())
           ? autofill::AutofillHandler::ENABLE_AUTOFILL_DOWNLOAD_MANAGER
           : autofill::AutofillHandler::DISABLE_AUTOFILL_DOWNLOAD_MANAGER,
       autofill_provider_.get());
