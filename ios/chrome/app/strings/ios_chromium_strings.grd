@@ -325,6 +325,12 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_SIGN_IN_TO_CHROME_SETTING_TITLE" desc="The title for the setting item to Sign in to Chromium [iOS only]">
         Sign in to Chromium
       </message>
+      <message name="IDS_IOS_SIGNOUT_DIALOG_TITLE_WITH_MANAGED_ACCOUNT" desc="The signout dialog title. This dialog is used when the user have a managed account (other than gmail account). Related to IDS_IOS_SIGNOUT_DIALOG_MESSAGE_WITH_MANAGED_ACCOUNT [iOS only].">
+        Clear your Chromium data from this device?
+      </message>
+      <message name="IDS_IOS_SIGNOUT_DIALOG_MESSAGE_WITH_MANAGED_ACCOUNT" desc="The signout dialog message. This dialog is used when the user have a managed account (other than gmail account). Related to IDS_IOS_SIGNOUT_DIALOG_TITLE_WITH_MANAGED_ACCOUNT [iOS only].">
+        Because your account is managed by <ph name="HOSTED_DOMAIN">$1<ex>google.com</ex></ph>, your Chromium data will be deleted from this device when signing out. Your synced data will remain in your Google Account.
+      </message>
       <message name="IDS_IOS_TAB_SWITCHER_NO_TABS_TO_SYNC_PROMO" desc="The title of the paragraph IDS_OPEN_TABS_NO_SESSION_INSTRUCTIONS_IOS. The paragraph explains that tabs opened on other devices where the user is signed in will appear here, in the Tab Switcher. [iOS only]">
         Use Chromium Everywhere
       </message>

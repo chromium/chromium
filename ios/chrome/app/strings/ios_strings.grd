@@ -2160,6 +2160,24 @@ Try to use a unique password for every site.
       <message name="IDS_IOS_SIGNIN_ACCOUNT_NOTIFICATION_TITLE_WITH_USERNAME" desc="Notification title for the user's signed-in state that includes the user's full name [iOS only]">
       Signed in as <ph name="USER">$1<ex>Jane Doe</ex></ph>
       </message>
+      <message name="IDS_IOS_SIGNOUT_DIALOG_CLEAR_DATA_BUTTON" desc="This button signs the user out and clear all the data from the user device. The data is still remain in their Google account. Related to IDS_IOS_SIGNOUT_DIALOG_TITLE [iOS only].">
+        Clear from this Device
+      </message>
+      <message name="IDS_IOS_SIGNOUT_DIALOG_KEEP_DATA_BUTTON" desc="This button signs the user out and all its data stays on the device. Related to IDS_IOS_SIGNOUT_DIALOG_TITLE [iOS only].">
+        Keep on this Device
+      </message>
+      <message name="IDS_IOS_SIGNOUT_DIALOG_MESSAGE_WITH_SYNC" desc="The signout dialog message. This dialog is used when the user have a gmail account and sync is turned on. Related to IDS_IOS_SIGNOUT_DIALOG_TITLE [iOS only].">
+        Your synced data will remain in your Google Account.
+      </message>
+      <message name="IDS_IOS_SIGNOUT_DIALOG_TITLE_WITH_SYNC" desc="The signout dialog title. This dialog is used when the user have a gmail account and sync is turned on. Related to IDS_IOS_SIGNOUT_DIALOG_MESSAGE [iOS only].">
+        What would you like to do with your bookmarks, history and other data on this device?
+      </message>
+      <message name="IDS_IOS_SIGNOUT_DIALOG_TITLE_WITHOUT_SYNC" desc="The signout dialog title. This dialog is used when the user have a gmail account and sync is turned on. Related to IDS_IOS_SIGNOUT_DIALOG_MESSAGE [iOS only].">
+        Sign Out?
+      </message>
+      <message name="IDS_IOS_SIGNOUT_DIALOG_SIGN_OUT_BUTTON" desc="This button signs the user out. Related to IDS_IOS_SIGNOUT_DIALOG_TITLE [iOS only].">
+        Sign Out
+      </message>
       <message name="IDS_IOS_SPOTLIGHT_KEYWORD_EIGHT" desc="Keyword used in Spotlight that will be linked to the Chrome App. [iOS only]">
         Online
       </message>

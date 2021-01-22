@@ -29,7 +29,6 @@ source_set("authentication") {
     "resources:signin_confirmation_more",
     "resources:signin_promo_close_gray",
     "unified_consent",
-    "//base",
     "//components/consent_auditor",
     "//components/infobars/core",
     "//components/prefs",
@@ -67,6 +66,7 @@ source_set("authentication") {
     "//ui/gfx",
   ]
   public_deps = [
+    "//base",
     "//ios/chrome/browser/ui/authentication/signin:constants",
     "//ios/chrome/browser/ui/collection_view",
   ]
