@@ -109,14 +109,13 @@ public class NavigationTest {
                 mLoadError = navigation.getLoadError();
                 mNavigationState = navigation.getState();
                 mIsPageInitiatedNavigation = navigation.isPageInitiated();
-                mIsServedFromBackForwardCache = navigation.isServedFromBackForwardCache();
-                notifyCalled();
-
                 int majorVersion = TestThreadUtils.runOnUiThreadBlockingNoException(
                         () -> WebLayer.getSupportedMajorVersion(mActivityTestRule.getActivity()));
                 if (majorVersion >= 89) {
                     mIsKnownProtocol = navigation.isKnownProtocol();
+                    mIsServedFromBackForwardCache = navigation.isServedFromBackForwardCache();
                 }
+                notifyCalled();
             }
 
             public void assertCalledWith(int currentCallCount, String uri) throws TimeoutException {
