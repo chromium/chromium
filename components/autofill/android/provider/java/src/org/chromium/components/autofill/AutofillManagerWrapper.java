@@ -190,9 +190,9 @@ public class AutofillManagerWrapper {
         }
     }
 
-    public void notifyNewSessionStarted() {
+    public void notifyNewSessionStarted(boolean hasServerPrediction) {
         updateLogStat();
-        if (isLoggable()) log("Session starts");
+        if (isLoggable()) log("Session starts, has server prediction = " + hasServerPrediction);
     }
 
     public void onQueryDone(boolean success) {
