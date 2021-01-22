@@ -7375,7 +7375,13 @@ TEST_F(ExtensionServiceTest, ExternalInstallUpdatesFromWebstoreNewProfile) {
 
 // Test that clicking to remove the extension on an external install warning
 // uninstalls the extension.
-TEST_F(ExtensionServiceTest, ExternalInstallClickToRemove) {
+// Flaky on Win7 (dbg). http://crbug.com/1168464
+#if defined(OS_WIN) && !defined(NDEBUG)
+#define MAYBE_ExternalInstallClickToRemove DISABLED_ExternalInstallClickToRemove
+#else
+#define MAYBE_ExternalInstallClickToRemove ExternalInstallClickToRemove
+#endif
+TEST_F(ExtensionServiceTest, MAYBE_ExternalInstallClickToRemove) {
   FeatureSwitch::ScopedOverride prompt(
       FeatureSwitch::prompt_for_external_extensions(), true);
 
