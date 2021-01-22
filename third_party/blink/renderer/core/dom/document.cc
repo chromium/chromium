@@ -2405,7 +2405,11 @@ void Document::UpdateStyleAndLayoutTree() {
   UpdateUseShadowTreesIfNeeded();
 
   GetStyleEngine().UpdateActiveStyle();
+
+  // TODO(xiaochengh): These two functions are very similar. Try to unify.
   InvalidateStyleAndLayoutForFontUpdates();
+  GetStyleEngine().InvalidateStyleAndLayoutForCounterStyleUpdates();
+
   UpdateStyleInvalidationIfNeeded();
   UpdateStyle();
 

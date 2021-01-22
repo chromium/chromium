@@ -541,14 +541,6 @@ void StyleEngine::UpdateActiveStyleSheets() {
       active_tree_scopes_.erase(tree_scope);
   }
 
-  if (RuntimeEnabledFeatures::CSSAtRuleCounterStyleEnabled()) {
-    // TODO(crbug.com/687225): Add a flag to indicate whether counter styles
-    // need updates, so that we don't update them every time.
-    CounterStyleMap::MarkAllDirtyCounterStyles(GetDocument(),
-                                               active_tree_scopes_);
-    CounterStyleMap::ResolveAllReferences(GetDocument(), active_tree_scopes_);
-  }
-
   probe::ActiveStyleSheetsUpdated(document_);
 
   dirty_tree_scopes_.clear();
@@ -864,8 +856,27 @@ void StyleEngine::InvalidateStyleAndLayoutForFontUpdates() {
   }
 }
 
+void StyleEngine::InvalidateStyleAndLayoutForCounterStyleUpdates() {
+  if (!counter_styles_need_update_)
+    return;
+
+  DCHECK(RuntimeEnabledFeatures::CSSAtRuleCounterStyleEnabled());
+
+  counter_styles_need_update_ = false;
+  CounterStyleMap::MarkAllDirtyCounterStyles(GetDocument(),
+                                             active_tree_scopes_);
+  CounterStyleMap::ResolveAllReferences(GetDocument(), active_tree_scopes_);
+
+  // TODO(crbug.com/687225): Actually invalidate style and layout.
+}
+
 void StyleEngine::MarkFontsNeedUpdate() {
   fonts_need_update_ = true;
+  GetDocument().ScheduleLayoutTreeUpdateIfNeeded();
+}
+
+void StyleEngine::MarkCounterStylesNeedUpdate() {
+  counter_styles_need_update_ = true;
   GetDocument().ScheduleLayoutTreeUpdateIfNeeded();
 }
 
@@ -1572,7 +1583,7 @@ void StyleEngine::ApplyUserRuleSetChanges(
         EnsureUserCounterStyleMap().AddCounterStyles(*it->second);
     }
 
-    // TODO(crbug.com/687225): Trigger style/Layout invalidations.
+    MarkCounterStylesNeedUpdate();
   }
 
   if (changed_rule_flags & (kPropertyRules | kScrollTimelineRules)) {
@@ -1638,7 +1649,8 @@ void StyleEngine::ApplyRuleSetChanges(
   if (changed_rule_flags & kKeyframesRules)
     ScopedStyleResolver::KeyframesRulesAdded(tree_scope);
 
-  // TODO(crbug.com/687725): Style/layout invalidation for counter style rules.
+  if (changed_rule_flags & kCounterStyleRules)
+    MarkCounterStylesNeedUpdate();
 
   if ((changed_rule_flags & kPropertyRules) || rebuild_at_property_registry) {
     // @property rules are (for now) ignored in shadow trees, per spec.
