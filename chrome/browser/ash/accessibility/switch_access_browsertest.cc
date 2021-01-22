@@ -8,6 +8,7 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
+#include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/test/base/extension_load_waiter_one_shot.h"
@@ -62,6 +63,17 @@ class SwitchAccessTest : public InProcessBrowserTest {
     return output;
   }
 
+  void SetUpOnMainThread() override {
+    console_observer_ = std::make_unique<ExtensionConsoleErrorObserver>(
+        browser()->profile(), extension_misc::kSwitchAccessExtensionId);
+  }
+
+  void TearDownOnMainThread() override {
+    EXPECT_FALSE(console_observer_->HasErrorsOrWarnings())
+        << "Found console.log or console.warn with message: "
+        << console_observer_->GetErrorOrWarningAt(0);
+  }
+
  protected:
   SwitchAccessTest() = default;
   ~SwitchAccessTest() override = default;
@@ -110,6 +122,9 @@ class SwitchAccessTest : public InProcessBrowserTest {
             extensions::browsertest_util::ScriptUserActivation::kDontActivate);
     ASSERT_EQ(result, "ok");
   }
+
+ private:
+  std::unique_ptr<ExtensionConsoleErrorObserver> console_observer_;
 };
 
 // TODO(anastasi): Add a test for typing with the virtual keyboard.
@@ -237,4 +252,3 @@ IN_PROC_BROWSER_TEST_F(SwitchAccessTest, NavigateButtonsInTextFieldMenu) {
   // Wrap back around to the "keyboard" button.
   WaitForFocusRing("primary", "button", "Keyboard");
 }
-

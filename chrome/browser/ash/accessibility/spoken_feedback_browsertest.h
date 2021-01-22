@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_ACCESSIBILITY_SPOKEN_FEEDBACK_BROWSERTEST_H_
 
 #include "ash/public/cpp/accelerators.h"
+#include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
 #include "chrome/browser/ash/accessibility/speech_monitor.h"
 #include "chrome/browser/extensions/api/braille_display_private/stub_braille_controller.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -53,6 +54,7 @@ class LoggedInSpokenFeedbackTest : public InProcessBrowserTest {
  private:
   StubBrailleController braille_controller_;
   ui::ScopedAnimationDurationScaleMode animation_mode_;
+  std::unique_ptr<ExtensionConsoleErrorObserver> console_observer_;
 
   DISALLOW_COPY_AND_ASSIGN(LoggedInSpokenFeedbackTest);
 };

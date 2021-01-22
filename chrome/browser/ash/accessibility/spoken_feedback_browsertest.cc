@@ -67,6 +67,12 @@ void LoggedInSpokenFeedbackTest::SetUpInProcessBrowserTestFixture() {
 }
 
 void LoggedInSpokenFeedbackTest::TearDownOnMainThread() {
+  if (console_observer_) {
+    EXPECT_FALSE(console_observer_->HasErrorsOrWarnings())
+        << "Found console.log or console.warn with message: "
+        << console_observer_->GetErrorOrWarningAt(0);
+  }
+
   AccessibilityManager::SetBrailleControllerForTest(nullptr);
   // Unload the ChromeVox extension so the browser doesn't try to respond to
   // in-flight requests during test shutdown. https://crbug.com/923090
@@ -152,6 +158,8 @@ void LoggedInSpokenFeedbackTest::EnableChromeVox() {
   // Test setup.
   // Enable ChromeVox, wait for something to be spoken, and disable earcons.
   ASSERT_FALSE(AccessibilityManager::Get()->IsSpokenFeedbackEnabled());
+  // TODO(accessibility): fix console error/warnings and insantiate
+  // |console_observer_| here.
 
   AccessibilityManager::Get()->EnableSpokenFeedback(true);
   sm_.ExpectSpeechPattern("*");

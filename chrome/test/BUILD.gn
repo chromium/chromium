@@ -2395,6 +2395,8 @@ if (!is_android) {
         "../browser/apps/platform_apps/app_window_interactive_uitest_base.h",
         "../browser/ash/accessibility/accessibility_common_browsertest.cc",
         "../browser/ash/accessibility/accessibility_manager_browsertest.cc",
+        "../browser/ash/accessibility/accessibility_test_utils.cc",
+        "../browser/ash/accessibility/accessibility_test_utils.h",
         "../browser/ash/accessibility/dictation_browsertest.cc",
         "../browser/ash/accessibility/magnification_controller_browsertest.cc",
         "../browser/ash/accessibility/magnification_manager_browsertest.cc",

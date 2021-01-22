@@ -4,8 +4,10 @@
 
 #include "ash/public/cpp/ash_pref_names.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
+#include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/prefs/pref_service.h"
@@ -24,8 +26,22 @@ class AccessibilityCommonTest : public InProcessBrowserTest {
         ->Exists(id);
   }
 
+  void SetUpOnMainThread() override {
+    console_observer_ = std::make_unique<ExtensionConsoleErrorObserver>(
+        browser()->profile(), extension_misc::kAccessibilityCommonExtensionId);
+  }
+
+  void TearDownOnMainThread() override {
+    EXPECT_FALSE(console_observer_->HasErrorsOrWarnings())
+        << "Found console.log or console.warn with message: "
+        << console_observer_->GetErrorOrWarningAt(0);
+  }
+
  protected:
   AccessibilityCommonTest() = default;
+
+ private:
+  std::unique_ptr<ExtensionConsoleErrorObserver> console_observer_;
 };
 
 IN_PROC_BROWSER_TEST_F(AccessibilityCommonTest, ToggleFeatures) {

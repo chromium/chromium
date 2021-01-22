@@ -19,6 +19,7 @@
 #include "base/memory/weak_ptr.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
+#include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
 #include "chrome/browser/ash/accessibility/speech_monitor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -59,6 +60,8 @@ class SelectToSpeakTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     ASSERT_FALSE(AccessibilityManager::Get()->IsSelectToSpeakEnabled());
+    console_observer_ = std::make_unique<ExtensionConsoleErrorObserver>(
+        browser()->profile(), extension_misc::kSelectToSpeakExtensionId);
 
     tray_test_api_ = ash::SystemTrayTestApi::Create();
     content::WindowedNotificationObserver extension_load_waiter(
@@ -66,21 +69,6 @@ class SelectToSpeakTest : public InProcessBrowserTest {
         content::NotificationService::AllSources());
     AccessibilityManager::Get()->SetSelectToSpeakEnabled(true);
     extension_load_waiter.Wait();
-
-    extensions::ExtensionHost* host =
-        extensions::ProcessManager::Get(browser()->profile())
-            ->GetBackgroundHostForExtension(
-                extension_misc::kSelectToSpeakExtensionId);
-    console_observer_ = std::make_unique<content::WebContentsConsoleObserver>(
-        host->host_contents());
-    // STS should not log warnings or errors: these should cause test failures.
-    auto filter =
-        [](const content::WebContentsConsoleObserver::Message& message) {
-          return message.log_level ==
-                     blink::mojom::ConsoleMessageLevel::kWarning ||
-                 message.log_level == blink::mojom::ConsoleMessageLevel::kError;
-        };
-    console_observer_->SetFilter(base::BindRepeating(filter));
 
     aura::Window* root_window = ash::Shell::Get()->GetPrimaryRootWindow();
     generator_.reset(new ui::test::EventGenerator(root_window));
@@ -90,9 +78,9 @@ class SelectToSpeakTest : public InProcessBrowserTest {
 
   void TearDownOnMainThread() override {
     // Check STS has not generated any errors.
-    EXPECT_EQ(0u, console_observer_->messages().size())
+    EXPECT_FALSE(console_observer_->HasErrorsOrWarnings())
         << "Found console.log or console.warn with message: "
-        << console_observer_->GetMessageAt(0);
+        << console_observer_->GetErrorOrWarningAt(0);
   }
 
   test::SpeechMonitor sm_;
@@ -169,7 +157,7 @@ class SelectToSpeakTest : public InProcessBrowserTest {
  private:
   scoped_refptr<content::MessageLoopRunner> loop_runner_;
   scoped_refptr<content::MessageLoopRunner> tray_loop_runner_;
-  std::unique_ptr<content::WebContentsConsoleObserver> console_observer_;
+  std::unique_ptr<ExtensionConsoleErrorObserver> console_observer_;
   base::WeakPtrFactory<SelectToSpeakTest> weak_ptr_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(SelectToSpeakTest);
 };
