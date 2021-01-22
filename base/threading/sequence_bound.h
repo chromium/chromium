@@ -71,8 +71,16 @@ namespace base {
 //   // When `db` goes out of scope, the Database instance will also be
 //   // destroyed via a task posted to `GetDBTaskRunner()`.
 //
-// TODO(dcheng): SequenceBound should only be constructed, used, and destroyed
-// on a single sequence. This enforcement will gradually be enabled over time.
+// Sequence safety:
+//
+// Const-qualified methods may be used concurrently from multiple sequences,
+// e.g. `AsyncCall()` or `is_null()`. Calls that are forwarded to the
+// managed `T` will be posted to the bound sequence and executed serially
+// there.
+//
+// Mutable methods (e.g. `Reset()`, destruction, or move assignment) require
+// external synchronization if used concurrently with any other methods,
+// including const-qualified methods.
 template <typename T>
 class SequenceBound {
  public:
@@ -183,14 +191,12 @@ class SequenceBound {
   template <typename R, typename... Args>
   auto AsyncCall(R (T::*method)(Args...),
                  const Location& location = Location::Current()) const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return AsyncCallBuilder<R (T::*)(Args...)>(this, &location, method);
   }
 
   template <typename R, typename... Args>
   auto AsyncCall(R (T::*method)(Args...) const,
                  const Location& location = Location::Current()) const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return AsyncCallBuilder<R (T::*)(Args...) const>(this, &location, method);
   }
 
@@ -337,7 +343,6 @@ class SequenceBound {
           method_(method) {
       // Common entry point for `AsyncCall()`, so check preconditions here.
       DCHECK(sequence_bound_);
-      DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_bound_->sequence_checker_);
       DCHECK(sequence_bound_->t_);
     }
 
@@ -490,7 +495,6 @@ class SequenceBound {
           location_(location),
           callback_(std::move(callback)) {
       DCHECK(sequence_bound_);
-      DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_bound_->sequence_checker_);
       DCHECK(sequence_bound_->t_);
     }
 
@@ -583,7 +587,6 @@ class SequenceBound {
   void PostTaskAndThenHelper(const Location& location,
                              OnceCallback<void()> callback,
                              OnceClosure then_callback) const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     impl_task_runner_->PostTaskAndReply(location, std::move(callback),
                                         std::move(then_callback));
   }
@@ -596,7 +599,6 @@ class SequenceBound {
   void PostTaskAndThenHelper(const Location& location,
                              OnceCallback<ReturnType()> callback,
                              CallbackType<void(ThenArg)> then_callback) const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     OnceCallback<void(ThenArg)>&& once_then_callback = std::move(then_callback);
     impl_task_runner_->PostTaskAndReplyWithResult(
         location, std::move(callback), std::move(once_then_callback));
@@ -622,16 +624,13 @@ class SequenceBound {
     storage_ = std::exchange(other.storage_, nullptr);
   }
 
-  // Pointer to the managed `T`. This field is only read and written on
-  // the sequence associated with `sequence_checker_`.
+  // Pointer to the managed `T`.
   T* t_ = nullptr;
 
   // Storage originally allocated by `AlignedAlloc()`. Maintained separately
   // from  `t_` since the original, unadjusted pointer needs to be passed to
   // `AlignedFree()`.
   void* storage_ = nullptr;
-
-  SEQUENCE_CHECKER(sequence_checker_);
 
   // Task runner which manages `t_`. `t_` is constructed, destroyed, and
   // dereferenced only on this task runner.
