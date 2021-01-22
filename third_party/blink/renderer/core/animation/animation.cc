@@ -160,6 +160,16 @@ AtomicString GetCSSTransitionCSSPropertyName(const Animation* animation) {
       ->TransitionCSSPropertyName()
       .ToAtomicString();
 }
+
+bool GreaterThanOrEqualWithinTimeTolerance(const AnimationTimeDelta& a,
+                                           const AnimationTimeDelta& b) {
+  double a_ms = a.InMillisecondsF();
+  double b_ms = b.InMillisecondsF();
+  if (std::abs(a_ms - b_ms) < Animation::kTimeToleranceMs)
+    return true;
+
+  return a_ms > b_ms;
+}
 }  // namespace
 
 Animation* Animation::Create(AnimationEffect* effect,
@@ -287,9 +297,8 @@ bool Animation::Limited(base::Optional<AnimationTimeDelta> current_time) const {
   return (EffectivePlaybackRate() < 0 &&
           current_time <= AnimationTimeDelta()) ||
          (EffectivePlaybackRate() > 0 &&
-          GreaterThanOrEqualToWithinEpsilon(
-              current_time.value().InMillisecondsF(),
-              EffectEnd().InMillisecondsF()));
+          GreaterThanOrEqualWithinTimeTolerance(current_time.value(),
+                                                EffectEnd()));
 }
 
 Document* Animation::GetDocument() const {
@@ -1497,12 +1506,14 @@ void Animation::UpdateFinishedState(UpdateType update_type,
     double playback_rate = EffectivePlaybackRate();
     base::Optional<AnimationTimeDelta> hold_time;
     TimelinePhase hold_phase;
+
     if (playback_rate > 0 &&
-        unconstrained_current_time.value() >= EffectEnd()) {
+        GreaterThanOrEqualWithinTimeTolerance(
+            unconstrained_current_time.value(), EffectEnd())) {
       if (did_seek) {
         hold_time = unconstrained_current_time;
       } else {
-        if (previous_current_time_ >= EffectEnd()) {
+        if (previous_current_time_ > EffectEnd()) {
           hold_time = previous_current_time_;
         } else {
           hold_time = EffectEnd();

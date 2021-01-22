@@ -53,6 +53,10 @@ namespace {
 base::TimeTicks TimeTicksFromMillisecondsD(double seconds) {
   return base::TimeTicks() + base::TimeDelta::FromMillisecondsD(seconds);
 }
+
+#define EXPECT_TIME_NEAR(expected, value)                              \
+  EXPECT_NEAR((expected).InMillisecondsF(), (value).InMillisecondsF(), \
+              Animation::kTimeToleranceMs)
 }  // namespace
 
 namespace blink {
@@ -463,9 +467,9 @@ TEST_F(AnimationDocumentTimelineRealTimeTest,
   DocumentTimeline* timeline =
       MakeGarbageCollected<DocumentTimeline>(document.Get(), origin_time);
   timeline->SetPlaybackRate(0.5);
-  EXPECT_DOUBLE_EQ((AnimationTimeDelta(origin_time) * 2).InMillisecondsF(),
-                   (timeline->ZeroTime() - document->Timeline().ZeroTime())
-                       .InMillisecondsF());
+
+  EXPECT_TIME_NEAR(AnimationTimeDelta(origin_time) * 2,
+                   timeline->ZeroTime() - document->Timeline().ZeroTime());
 }
 
 }  // namespace blink

@@ -99,6 +99,10 @@ class CORE_EXPORT Animation : public EventTargetWithInlineData,
   // relative position.
   enum CompareAnimationsOrdering { kTreeOrder, kPointerOrder };
 
+  // Only expect timing accuracy to within 1 microsecond.
+  // drafts.csswg.org/web-animations/#precision-of-time-values.
+  static constexpr double kTimeToleranceMs = 0.001;
+
   static Animation* Create(AnimationEffect*,
                            AnimationTimeline*,
                            ExceptionState& = ASSERT_NO_EXCEPTION);
