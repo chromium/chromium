@@ -424,7 +424,7 @@ class NATIVE_THEME_EXPORT NativeTheme {
   void RemoveObserver(NativeThemeObserver* observer);
 
   // Notify observers of native theme changes.
-  void NotifyObservers();
+  virtual void NotifyObservers();
 
   // Returns whether the user has an explicit contrast preference, i.e. whether
   // we are in forced colors mode or PreferredContrast is set.

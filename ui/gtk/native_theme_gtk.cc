@@ -11,6 +11,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/skia_util.h"
 #include "ui/gtk/gtk_util.h"
+#include "ui/native_theme/native_theme_aura.h"
 
 namespace gtk {
 
@@ -456,6 +457,19 @@ void NativeThemeGtk::SetThemeCssOverride(ScopedCssProvider provider) {
         gdk_screen_get_default(), GTK_STYLE_PROVIDER(theme_css_override_.get()),
         GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
   }
+}
+
+void NativeThemeGtk::NotifyObservers() {
+  NativeTheme::NotifyObservers();
+
+  // Update the preferred contrast settings for the NativeThemeAura instance and
+  // notify its observers about the change.
+  ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
+  native_theme->set_preferred_contrast(
+      UserHasContrastPreference()
+          ? ui::NativeThemeBase::PreferredContrast::kMore
+          : ui::NativeThemeBase::PreferredContrast::kNoPreference);
+  native_theme->NotifyObservers();
 }
 
 void NativeThemeGtk::OnThemeChanged(GtkSettings* settings,

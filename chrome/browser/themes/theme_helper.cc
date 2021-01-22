@@ -5,6 +5,7 @@
 #include "chrome/browser/themes/theme_service.h"
 
 #include "base/no_destructor.h"
+#include "build/build_config.h"
 #include "chrome/browser/themes/browser_theme_pack.h"
 #include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/browser/themes/theme_properties.h"
@@ -300,7 +301,13 @@ bool ThemeHelper::ShouldUseNativeFrame(
 
 bool ThemeHelper::ShouldUseIncreasedContrastThemeSupplier(
     ui::NativeTheme* native_theme) const {
+#if defined(OS_LINUX)
+  // On Linux the GTK system theme provides the high contrast colors,
+  // so don't use the IncreasedContrastThemeSupplier.
+  return false;
+#else
   return native_theme && native_theme->UserHasContrastPreference();
+#endif
 }
 
 SkColor ThemeHelper::GetDefaultColor(
