@@ -17,6 +17,7 @@
 #include "remoting/base/logging.h"
 #include "remoting/host/host_setting_keys.h"
 #include "remoting/host/host_settings.h"
+#include "remoting/host/mac/permission_utils.h"
 #include "remoting/proto/audio.pb.h"
 
 namespace remoting {
@@ -265,6 +266,21 @@ bool AudioCapturerMac::StartInputQueue() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!input_queue_);
   DCHECK(!is_started_);
+
+  if (mac::CanCaptureAudio()) {
+    HOST_LOG << "Audio capture is allowed.";
+  } else {
+    HOST_LOG << "We have no audio capture permission. Requesting one...";
+    mac::RequestAudioCapturePermission(base::BindOnce([](bool granted) {
+      // We don't need to defer the AudioQueue setup process as the buffers will
+      // start being filled up immediately after the user approves the request.
+      if (granted) {
+        HOST_LOG << "Audio capture permission granted.";
+      } else {
+        LOG(ERROR) << "Audio capture permission not granted.";
+      }
+    }));
+  }
 
   // Setup input queue.
   // This runs on AudioQueue's internal thread. For some reason if we specify
