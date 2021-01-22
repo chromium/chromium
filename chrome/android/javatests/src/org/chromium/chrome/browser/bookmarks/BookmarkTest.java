@@ -1127,6 +1127,7 @@ public class BookmarkTest {
         BookmarkPromoHeader.forcePromoStateForTests(PromoState.PROMO_NONE);
         openBookmarkManager();
 
+        BookmarkTestUtil.waitForBookmarkModelLoaded();
         // Open the "Reading list" folder.
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mManager.openFolder(mBookmarkModel.getRootFolderId()));
@@ -1652,6 +1653,7 @@ public class BookmarkTest {
     public void testReadingListFolderShown() throws Exception {
         BookmarkPromoHeader.forcePromoStateForTests(PromoState.PROMO_NONE);
         openBookmarkManager();
+        BookmarkTestUtil.waitForBookmarkModelLoaded();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mManager.openFolder(mBookmarkModel.getRootFolderId()));
         RecyclerViewTestUtils.waitForStableRecyclerView(mItemsContainer);
