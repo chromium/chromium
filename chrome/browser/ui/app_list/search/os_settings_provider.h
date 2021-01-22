@@ -129,9 +129,6 @@ class OsSettingsProvider
   apps::AppServiceProxy* app_service_proxy_;
   gfx::ImageSkia icon_;
 
-  // Whether the app service has signalled the settings app as ready.
-  bool settings_app_ready_ = false;
-
   // Last query. It is reset when view is closed.
   base::string16 last_query_;
   mojo::Receiver<chromeos::settings::mojom::SearchResultsObserver>

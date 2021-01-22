@@ -186,6 +186,8 @@ OsSettingsProvider::OsSettingsProvider(Profile* profile)
       search_results_observer_receiver_.BindNewPipeAndPassRemote());
 
   app_service_proxy_ = apps::AppServiceProxyFactory::GetForProfile(profile_);
+  DCHECK(app_service_proxy_);
+
   Observe(&app_service_proxy_->AppRegistryCache());
   auto icon_type =
       (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
@@ -229,9 +231,6 @@ void OsSettingsProvider::Start(const base::string16& query) {
   //  - the settings app isn't ready
   //  - we don't have an icon to display with results.
   if (!search_handler_) {
-    return;
-  } else if (!settings_app_ready_) {
-    LogError(Error::kSettingsAppNotReady);
     return;
   } else if (icon_.isNull()) {
     LogError(Error::kNoSettingsIcon);
@@ -287,18 +286,14 @@ void OsSettingsProvider::OnAppUpdate(const apps::AppUpdate& update) {
   if (update.AppId() != web_app::kOsSettingsAppId)
     return;
 
-  // Request the Settings app icon when either the readiness is changed to
-  // kReady, or the icon has been updated, signalled by IconKeyChanged.
-  bool update_icon = false;
-  if (update.ReadinessChanged()) {
-    settings_app_ready_ = update.Readiness() == apps::mojom::Readiness::kReady;
-    if (settings_app_ready_)
-      update_icon = true;
-  } else if (update.IconKeyChanged()) {
-    update_icon = true;
-  }
+  // TODO(crbug.com/1068851): We previously disabled this search provider until
+  // the app service signalled that the settings app is ready. But this signal
+  // is flaky, so sometimes search provider was permanently disabled. Once the
+  // signal is reliable, we should re-add the check.
 
-  if (update_icon) {
+  // Request the Settings app icon when either the readiness or the icon has
+  // changed.
+  if (update.ReadinessChanged() || update.IconKeyChanged()) {
     auto icon_type =
         (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
             ? apps::mojom::IconType::kStandard
@@ -387,6 +382,9 @@ OsSettingsProvider::FilterResults(
 }
 
 void OsSettingsProvider::OnLoadIcon(apps::mojom::IconValuePtr icon_value) {
+  if (icon_value.is_null())
+    return;
+
   auto icon_type =
       (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
           ? apps::mojom::IconType::kStandard
