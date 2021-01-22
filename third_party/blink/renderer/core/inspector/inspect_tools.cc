@@ -236,6 +236,7 @@ bool SearchingForNodeTool::HandleMouseMove(const WebMouseEvent& event) {
   }
 
   // Store values for the highlight.
+  bool hovered_node_changed = node != hovered_node_;
   hovered_node_ = node;
   event_target_node_ = (event.GetModifiers() & WebInputEvent::kShiftKey)
                            ? HoveredNodeForEvent(frame, event, false)
@@ -246,7 +247,8 @@ bool SearchingForNodeTool::HandleMouseMove(const WebMouseEvent& event) {
                   (WebInputEvent::kControlKey | WebInputEvent::kMetaKey);
 
   contrast_info_ = FetchContrast(node);
-  NodeHighlightRequested(node);
+  if (hovered_node_changed)
+    NodeHighlightRequested(node);
   return true;
 }
 
