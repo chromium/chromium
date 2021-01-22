@@ -38,8 +38,14 @@ std::string PrettyPrintEscapedJson(const std::string& query) {
 }
 
 TEST(FileManagerUrlUtilTest, GetFileManagerMainPageUrl) {
-  EXPECT_EQ("chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/main.html",
-            GetFileManagerMainPageUrl().spec());
+  if (base::FeatureList::IsEnabled(chromeos::features::kFilesJsModules)) {
+    EXPECT_EQ(
+        "chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/main_modules.html",
+        GetFileManagerMainPageUrl().spec());
+  } else {
+    EXPECT_EQ("chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/main.html",
+              GetFileManagerMainPageUrl().spec());
+  }
 }
 
 TEST(FileManagerUrlUtilTest, GetFileManagerMainPageUrlWithParams_NoFileTypes) {

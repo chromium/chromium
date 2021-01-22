@@ -66,7 +66,11 @@ std::string GetDialogTypeAsString(
 }  // namespace
 
 GURL GetFileManagerMainPageUrl() {
-  return GetFileManagerUrl("/main.html");
+  if (base::FeatureList::IsEnabled(chromeos::features::kFilesJsModules)) {
+    return GetFileManagerUrl("/main_modules.html");
+  } else {
+    return GetFileManagerUrl("/main.html");
+  }
 }
 
 GURL GetFileManagerMainPageUrlWithParams(
