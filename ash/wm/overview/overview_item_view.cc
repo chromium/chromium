@@ -356,6 +356,8 @@ void OverviewItemView::MaybeCloseHighlightedView() {
     overview_item_->OnHighlightedViewClosed();
 }
 
+void OverviewItemView::MaybeSwapHighlightedView(bool right) {}
+
 void OverviewItemView::OnViewHighlighted() {
   UpdateBorderState(/*show=*/true);
 }

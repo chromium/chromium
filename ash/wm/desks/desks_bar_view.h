@@ -89,6 +89,9 @@ class ASH_EXPORT DesksBarView : public views::View,
   // it is dragged and hovered on this desks bar.
   float GetOnHoverWindowSizeScaleFactor() const;
 
+  // Get the index of a desk mini view in the |mini_views|.
+  int GetMiniViewIndex(const DeskMiniView* mini_view) const;
+
   // Updates the visibility state of the close buttons on all the mini_views as
   // a result of mouse and gesture events.
   void OnHoverStateMayHaveChanged();

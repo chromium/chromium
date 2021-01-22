@@ -177,6 +177,8 @@ void NewDeskButton::MaybeActivateHighlightedView() {
 
 void NewDeskButton::MaybeCloseHighlightedView() {}
 
+void NewDeskButton::MaybeSwapHighlightedView(bool right) {}
+
 void NewDeskButton::OnViewHighlighted() {
   UpdateBorderState();
 }

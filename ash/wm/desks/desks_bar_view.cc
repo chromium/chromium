@@ -434,6 +434,17 @@ float DesksBarView::GetOnHoverWindowSizeScaleFactor() const {
   return float{height()} / overview_grid_->root_window()->bounds().height();
 }
 
+int DesksBarView::GetMiniViewIndex(const DeskMiniView* mini_view) const {
+  auto begin_iter = mini_views_.cbegin();
+  auto end_iter = mini_views_.cend();
+  auto iter = std::find(begin_iter, end_iter, mini_view);
+
+  if (iter == end_iter)
+    return -1;
+
+  return std::distance(begin_iter, iter);
+}
+
 void DesksBarView::OnHoverStateMayHaveChanged() {
   for (auto* mini_view : mini_views_)
     mini_view->UpdateCloseButtonVisibility();
@@ -666,6 +677,10 @@ void DesksBarView::OnDeskRemoved(const Desk* desk) {
 
 void DesksBarView::OnDeskReordered(int old_index, int new_index) {
   desks_util::ReorderItem(mini_views_, old_index, new_index);
+
+  // Update the order of child views.
+  auto* reordered_view = mini_views_[new_index];
+  reordered_view->parent()->ReorderChildView(reordered_view, new_index);
 
   overview_grid_->OnDesksChanged();
 
