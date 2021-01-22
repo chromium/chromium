@@ -449,7 +449,7 @@ export class Camera extends View {
    * @override
    */
   playShutterEffect() {
-    sound.play('#sound-shutter');
+    sound.play(dom.get('#sound-shutter', HTMLAudioElement));
     animate.play(this.preview_.video);
   }
 

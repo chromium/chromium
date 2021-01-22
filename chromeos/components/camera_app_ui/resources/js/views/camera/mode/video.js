@@ -5,6 +5,7 @@
 import {AsyncJobQueue} from '../../../async_job_queue.js';
 import {browserProxy} from '../../../browser_proxy/browser_proxy.js';
 import {assert, assertString} from '../../../chrome_util.js';
+import * as dom from '../../../dom.js';
 import {Filenamer} from '../../../models/file_namer.js';
 import {
   VideoSaver,  // eslint-disable-line no-unused-vars
@@ -132,13 +133,6 @@ export class Video extends ModeBase {
     this.handler_ = handler;
 
     /**
-     * Promise for play start sound delay.
-     * @type {?{promise: !Promise, cancel: function()}}
-     * @private
-     */
-    this.startSound_ = null;
-
-    /**
      * MediaRecorder object to record motion pictures.
      * @type {?MediaRecorder}
      * @private
@@ -221,7 +215,9 @@ export class Video extends ModeBase {
     };
     const playEffect = async () => {
       state.set(state.State.RECORDING_UI_PAUSED, toBePaused);
-      await sound.play(toBePaused ? '#sound-rec-pause' : '#sound-rec-start');
+      await sound.play(dom.get(
+          toBePaused ? '#sound-rec-pause' : '#sound-rec-start',
+          HTMLAudioElement));
     };
 
     this.mediaRecorder_.addEventListener(toggledEvent, onToggled);
@@ -244,13 +240,8 @@ export class Video extends ModeBase {
   async start_() {
     this.snapshots_ = new AsyncJobQueue();
     this.togglePaused_ = null;
-    this.startSound_ = sound.play('#sound-rec-start');
     this.everPaused_ = false;
-    try {
-      await this.startSound_.promise;
-    } finally {
-      this.startSound_ = null;
-    }
+    await sound.play(dom.get('#sound-rec-start', HTMLAudioElement));
 
     if (this.mediaRecorder_ === null) {
       try {
@@ -276,7 +267,7 @@ export class Video extends ModeBase {
     } finally {
       duration = this.recordTime_.stop({pause: false});
     }
-    sound.play('#sound-rec-end');
+    sound.play(dom.get('#sound-rec-end', HTMLAudioElement));
 
     const settings = this.stream_.getVideoTracks()[0].getSettings();
     const resolution = new Resolution(settings.width, settings.height);
@@ -300,9 +291,8 @@ export class Video extends ModeBase {
    * @override
    */
   stop_() {
-    if (this.startSound_ !== null) {
-      this.startSound_.cancel();
-    }
+    sound.cancel(dom.get('#sound-rec-start', HTMLAudioElement));
+
     if (this.mediaRecorder_ &&
         (this.mediaRecorder_.state === 'recording' ||
          this.mediaRecorder_.state === 'paused')) {

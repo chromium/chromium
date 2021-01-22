@@ -46,7 +46,7 @@ export function start() {
         resolve();
       } else {
         if (sounds[tickCounter] !== undefined) {
-          play(sounds[tickCounter]);
+          play(dom.get(sounds[tickCounter], HTMLAudioElement));
         }
         tickMsg.textContent = tickCounter + '';
         animate.play(tickMsg);
