@@ -141,7 +141,7 @@ enum DeviceEventType {
 };
 
 // Drive sync error type.
-// Keep it synced with DriveSyncErrorType in operation_observer.h.
+// Keep it synced with DriveError::Type in drivefs.mojom.
 enum DriveSyncErrorType {
   // Request to delete a file without permission.
   delete_without_permission,
@@ -153,6 +153,26 @@ enum DriveSyncErrorType {
   no_local_space,
   // Miscellaneous errors other than listed above.
   misc
+};
+
+// Drive confirm dialog type.
+// Keep it synced with DialogReason::Type in drivefs.mojom.
+enum DriveConfirmDialogType {
+  // Request to enable Docs Offline to allow saving hosted files offline.
+  enable_docs_offline
+};
+
+// Possible result of dialog displayed as a result of the onDriveConfirmDialog
+// event. Sent back to the browser via notifyDriveDialogResult().
+enum DriveDialogResult {
+  // The dialog was not displayed to the user.
+  not_displayed,
+  // The user accepted the action proposed by the dialog.
+  accept,
+  // The user rejected the action proposed by the dialog.
+  reject,
+  // The user closed the dialog without selecting an option.
+  dismiss
 };
 
 // Result of task execution. If changing, update the strings used in
@@ -536,6 +556,16 @@ dictionary DriveSyncErrorEvent {
   DriveSyncErrorType type;
 
   // File URL of the entry that the error happens to.
+  DOMString fileUrl;
+};
+
+// Confirmation dialog from Drive asking the user to accept or reject an
+// action.
+dictionary DriveConfirmDialogEvent {
+  // Dialog type.
+  DriveConfirmDialogType type;
+
+  // File URL of the entry associated with the dialog.
   DOMString fileUrl;
 };
 
@@ -1389,6 +1419,10 @@ interface Functions {
 
   // Returns true via `callback` if tablet mode is enabled, false otherwise.
   static void isTabletModeEnabled(BooleanCallback callback);
+
+  // Notifies the browser of the result of a dialog displayed earlier as a
+  // result of the onDriveConfirmDialog event.
+  static void notifyDriveDialogResult(DriveDialogResult result);
 };
 
 interface Events {
@@ -1409,6 +1443,8 @@ interface Events {
   static void onDeviceChanged(DeviceEvent event);
 
   static void onDriveSyncError(DriveSyncErrorEvent event);
+
+  static void onDriveConfirmDialog(DriveConfirmDialogEvent event);
 
   static void onAppsUpdated();
 

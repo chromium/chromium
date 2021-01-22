@@ -39,6 +39,15 @@ class DriveFsEventRouter : public drivefs::DriveFsHostObserver {
   DriveFsEventRouter();
   virtual ~DriveFsEventRouter();
 
+  // Triggers an event in the UI to display a confirmation dialog.
+  void DisplayConfirmDialog(
+      const drivefs::mojom::DialogReason& reason,
+      base::OnceCallback<void(drivefs::mojom::DialogResult)> callback);
+
+  // Called from the UI to notify the caller of DisplayConfirmDialog() of the
+  // dialog's result.
+  void OnDialogResult(drivefs::mojom::DialogResult result);
+
  private:
   struct SyncingStatusState {
     SyncingStatusState();
@@ -100,6 +109,7 @@ class DriveFsEventRouter : public drivefs::DriveFsHostObserver {
 
   SyncingStatusState sync_status_state_;
   SyncingStatusState pin_status_state_;
+  base::OnceCallback<void(drivefs::mojom::DialogResult)> dialog_callback_;
 
   DISALLOW_COPY_AND_ASSIGN(DriveFsEventRouter);
 };

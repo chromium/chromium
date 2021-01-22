@@ -28,6 +28,8 @@
 #include "chrome/browser/chromeos/drive/drive_integration_service.h"
 #include "chrome/browser/chromeos/drive/drivefs_native_message_host.h"
 #include "chrome/browser/chromeos/drive/file_system_util.h"
+#include "chrome/browser/chromeos/extensions/file_manager/event_router.h"
+#include "chrome/browser/chromeos/extensions/file_manager/event_router_factory.h"
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_util.h"
 #include "chrome/browser/chromeos/file_manager/file_tasks.h"
 #include "chrome/browser/chromeos/file_manager/fileapi_util.h"
@@ -917,6 +919,40 @@ void FileManagerPrivateInternalGetDownloadUrlFunction::OnGotMetadata(
     drive::FileError error,
     drivefs::mojom::FileMetadataPtr metadata) {
   OnGotDownloadUrl(metadata ? GURL(metadata->download_url) : GURL());
+}
+
+ExtensionFunction::ResponseAction
+FileManagerPrivateNotifyDriveDialogResultFunction::Run() {
+  using api::file_manager_private::NotifyDriveDialogResult::Params;
+  const std::unique_ptr<Params> params(Params::Create(*args_));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  const ChromeExtensionFunctionDetails chrome_details(this);
+  file_manager::EventRouter* const event_router =
+      file_manager::EventRouterFactory::GetForProfile(
+          chrome_details.GetProfile());
+  if (event_router) {
+    drivefs::mojom::DialogResult result;
+    switch (params->result) {
+      case api::file_manager_private::DRIVE_DIALOG_RESULT_NONE:
+      case api::file_manager_private::DRIVE_DIALOG_RESULT_NOT_DISPLAYED:
+        result = drivefs::mojom::DialogResult::kNotDisplayed;
+        break;
+      case api::file_manager_private::DRIVE_DIALOG_RESULT_ACCEPT:
+        result = drivefs::mojom::DialogResult::kAccept;
+        break;
+      case api::file_manager_private::DRIVE_DIALOG_RESULT_REJECT:
+        result = drivefs::mojom::DialogResult::kReject;
+        break;
+      case api::file_manager_private::DRIVE_DIALOG_RESULT_DISMISS:
+        result = drivefs::mojom::DialogResult::kDismiss;
+        break;
+    }
+    event_router->OnDriveDialogResult(result);
+  } else {
+    return RespondNow(Error("Could not find event router"));
+  }
+  return RespondNow(NoArguments());
 }
 
 }  // namespace extensions

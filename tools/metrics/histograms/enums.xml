@@ -24450,6 +24450,7 @@ Called by update_extension_histograms.py.-->
   <int value="472" label="TAB_GROUPS_ON_MOVED"/>
   <int value="473" label="TAB_GROUPS_ON_REMOVED"/>
   <int value="474" label="TAB_GROUPS_ON_UPDATED"/>
+  <int value="475" label="FILE_MANAGER_PRIVATE_ON_DRIVE_CONFIRM_DIALOG"/>
 </enum>
 
 <enum name="ExtensionFileWriteResult">
@@ -26063,6 +26064,7 @@ Called by update_extension_histograms.py.-->
   <int value="1537" label="VIRTUALKEYBOARDPRIVATE_GETCLIPBOARDHISTORY"/>
   <int value="1538" label="VIRTUALKEYBOARDPRIVATE_DELETECLIPBOARDITEM"/>
   <int value="1539" label="FILEMANAGERPRIVATE_ISTABLETMODEENABLED"/>
+  <int value="1540" label="FILEMANAGERPRIVATE_NOTIFYDRIVEDIALOGRESULT"/>
 </enum>
 
 <enum name="ExtensionIconState">

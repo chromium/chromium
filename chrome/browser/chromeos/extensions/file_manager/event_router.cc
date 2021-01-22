@@ -464,6 +464,7 @@ void EventRouter::Shutdown() {
     integration_service->RemoveObserver(this);
     integration_service->GetDriveFsHost()->RemoveObserver(
         drivefs_event_router_.get());
+    integration_service->GetDriveFsHost()->set_dialog_handler({});
   }
 
   VolumeManager* const volume_manager = VolumeManager::Get(profile_);
@@ -509,6 +510,9 @@ void EventRouter::ObserveEvents() {
     integration_service->AddObserver(this);
     integration_service->GetDriveFsHost()->AddObserver(
         drivefs_event_router_.get());
+    integration_service->GetDriveFsHost()->set_dialog_handler(
+        base::BindRepeating(&EventRouter::DisplayDriveConfirmDialog,
+                            weak_factory_.GetWeakPtr()));
   }
 
   content::GetNetworkConnectionTracker()->AddNetworkConnectionObserver(this);
@@ -997,6 +1001,16 @@ void EventRouter::DropFailedPluginVmDirectoryNotShared() {
         file_manager_private::OnCrostiniChanged::kEventName,
         file_manager_private::OnCrostiniChanged::Create(event));
   }
+}
+
+void EventRouter::DisplayDriveConfirmDialog(
+    const drivefs::mojom::DialogReason& reason,
+    base::OnceCallback<void(drivefs::mojom::DialogResult)> callback) {
+  drivefs_event_router_->DisplayConfirmDialog(reason, std::move(callback));
+}
+
+void EventRouter::OnDriveDialogResult(drivefs::mojom::DialogResult result) {
+  drivefs_event_router_->OnDialogResult(result);
 }
 
 base::WeakPtr<EventRouter> EventRouter::GetWeakPtr() {

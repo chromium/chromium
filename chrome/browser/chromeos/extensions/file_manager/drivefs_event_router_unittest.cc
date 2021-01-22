@@ -10,6 +10,7 @@
 
 #include "base/macros.h"
 #include "base/strings/strcat.h"
+#include "base/test/bind.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "chromeos/components/drivefs/mojom/drivefs.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -18,6 +19,7 @@
 namespace file_manager {
 namespace file_manager_private = extensions::api::file_manager_private;
 
+using file_manager_private::DriveConfirmDialogEvent;
 using file_manager_private::DriveSyncErrorEvent;
 using file_manager_private::FileTransferStatus;
 using file_manager_private::FileWatchEvent;
@@ -109,10 +111,26 @@ class DriveFsEventRouterTest : public testing::Test {
     event_router_ = std::make_unique<TestDriveFsEventRouter>();
   }
 
+  void Unmount() {
+    EXPECT_CALL(
+        mock(),
+        DispatchEventToExtensionImpl(
+            "ext", file_manager_private::OnFileTransfersUpdated::kEventName,
+            MatchFileTransferStatus(
+                "", file_manager_private::TRANSFER_STATE_FAILED, 0, 0, 0)));
+    EXPECT_CALL(
+        mock(),
+        DispatchEventToExtensionImpl(
+            "ext", file_manager_private::OnPinTransfersUpdated::kEventName,
+            MatchFileTransferStatus(
+                "", file_manager_private::TRANSFER_STATE_FAILED, 0, 0, 0)));
+
+    observer().OnUnmounted();
+  }
+
   drivefs::DriveFsHostObserver& observer() { return *event_router_; }
   TestDriveFsEventRouter& mock() { return *event_router_; }
 
- private:
   std::unique_ptr<TestDriveFsEventRouter> event_router_;
 };
 
@@ -635,20 +653,7 @@ TEST_F(DriveFsEventRouterTest, OnSyncingStatusUpdate_QueuedOnly) {
 }
 
 TEST_F(DriveFsEventRouterTest, OnSyncingStatusUpdate_OnUnmounted) {
-  EXPECT_CALL(
-      mock(),
-      DispatchEventToExtensionImpl(
-          "ext", file_manager_private::OnFileTransfersUpdated::kEventName,
-          MatchFileTransferStatus(
-              "", file_manager_private::TRANSFER_STATE_FAILED, 0, 0, 0)));
-  EXPECT_CALL(
-      mock(),
-      DispatchEventToExtensionImpl(
-          "ext", file_manager_private::OnPinTransfersUpdated::kEventName,
-          MatchFileTransferStatus(
-              "", file_manager_private::TRANSFER_STATE_FAILED, 0, 0, 0)));
-
-  observer().OnUnmounted();
+  Unmount();
 }
 
 TEST_F(DriveFsEventRouterTest, OnFilesChanged_Basic) {
@@ -777,6 +782,102 @@ TEST_F(DriveFsEventRouterTest, OnError_CantPinDiskFull) {
 
   observer().OnError({drivefs::mojom::DriveError::Type::kPinningFailedDiskFull,
                       base::FilePath("a")});
+}
+
+TEST_F(DriveFsEventRouterTest, DisplayConfirmDialog_Display) {
+  DriveConfirmDialogEvent expected_event;
+  expected_event.type =
+      file_manager_private::DRIVE_CONFIRM_DIALOG_TYPE_ENABLE_DOCS_OFFLINE;
+  expected_event.file_url = "ext:a";
+  EXPECT_CALL(mock(),
+              DispatchEventToExtensionImpl(
+                  "ext", file_manager_private::OnDriveConfirmDialog::kEventName,
+                  testing::MakeMatcher(new ListValueMatcher(std::move(
+                      *file_manager_private::OnDriveConfirmDialog::Create(
+                          expected_event))))));
+
+  drivefs::mojom::DialogReason reason;
+  reason.type = drivefs::mojom::DialogReason::Type::kEnableDocsOffline;
+  reason.path = base::FilePath("a");
+  bool called = false;
+  event_router_->DisplayConfirmDialog(
+      reason,
+      base::BindLambdaForTesting([&](drivefs::mojom::DialogResult result) {
+        called = true;
+        EXPECT_EQ(drivefs::mojom::DialogResult::kAccept, result);
+      }));
+  EXPECT_FALSE(called);
+  event_router_->OnDialogResult(drivefs::mojom::DialogResult::kAccept);
+  EXPECT_TRUE(called);
+}
+
+TEST_F(DriveFsEventRouterTest, DisplayConfirmDialog_OneDialogAtATime) {
+  DriveConfirmDialogEvent expected_event;
+  expected_event.type =
+      file_manager_private::DRIVE_CONFIRM_DIALOG_TYPE_ENABLE_DOCS_OFFLINE;
+  expected_event.file_url = "ext:a";
+  EXPECT_CALL(mock(),
+              DispatchEventToExtensionImpl(
+                  "ext", file_manager_private::OnDriveConfirmDialog::kEventName,
+                  testing::MakeMatcher(new ListValueMatcher(std::move(
+                      *file_manager_private::OnDriveConfirmDialog::Create(
+                          expected_event))))));
+
+  drivefs::mojom::DialogReason reason;
+  reason.type = drivefs::mojom::DialogReason::Type::kEnableDocsOffline;
+  reason.path = base::FilePath("a");
+  bool called1 = false;
+  event_router_->DisplayConfirmDialog(
+      reason,
+      base::BindLambdaForTesting([&](drivefs::mojom::DialogResult result) {
+        called1 = true;
+        EXPECT_EQ(drivefs::mojom::DialogResult::kReject, result);
+      }));
+  EXPECT_FALSE(called1);
+
+  bool called2 = false;
+  event_router_->DisplayConfirmDialog(
+      reason,
+      base::BindLambdaForTesting([&](drivefs::mojom::DialogResult result) {
+        called2 = true;
+        EXPECT_EQ(drivefs::mojom::DialogResult::kNotDisplayed, result);
+      }));
+  EXPECT_TRUE(called2);
+  event_router_->OnDialogResult(drivefs::mojom::DialogResult::kReject);
+  EXPECT_TRUE(called1);
+}
+
+TEST_F(DriveFsEventRouterTest, DisplayConfirmDialog_UnmountBeforeResult) {
+  DriveConfirmDialogEvent expected_event;
+  expected_event.type =
+      file_manager_private::DRIVE_CONFIRM_DIALOG_TYPE_ENABLE_DOCS_OFFLINE;
+  expected_event.file_url = "ext:a";
+  EXPECT_CALL(mock(),
+              DispatchEventToExtensionImpl(
+                  "ext", file_manager_private::OnDriveConfirmDialog::kEventName,
+                  testing::MakeMatcher(new ListValueMatcher(std::move(
+                      *file_manager_private::OnDriveConfirmDialog::Create(
+                          expected_event))))))
+      .Times(2);
+
+  drivefs::mojom::DialogReason reason;
+  reason.type = drivefs::mojom::DialogReason::Type::kEnableDocsOffline;
+  reason.path = base::FilePath("a");
+  event_router_->DisplayConfirmDialog(
+      reason, base::BindLambdaForTesting(
+                  [&](drivefs::mojom::DialogResult result) { NOTREACHED(); }));
+  Unmount();
+  event_router_->OnDialogResult(drivefs::mojom::DialogResult::kAccept);
+
+  bool called = false;
+  event_router_->DisplayConfirmDialog(
+      reason,
+      base::BindLambdaForTesting([&](drivefs::mojom::DialogResult result) {
+        called = true;
+        EXPECT_EQ(drivefs::mojom::DialogResult::kDismiss, result);
+      }));
+  event_router_->OnDialogResult(drivefs::mojom::DialogResult::kDismiss);
+  EXPECT_TRUE(called);
 }
 
 }  // namespace

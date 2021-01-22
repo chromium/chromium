@@ -176,6 +176,19 @@ chrome.fileManagerPrivate.DriveSyncErrorType = {
 };
 
 /** @enum {string} */
+chrome.fileManagerPrivate.DriveConfirmDialogType = {
+  ENABLE_DOCS_OFFLINE: 'enable_docs_offline',
+};
+
+/** @enum {string} */
+chrome.fileManagerPrivate.DriveDialogResult = {
+  NOT_DISPLAYED: 'not_displayed',
+  ACCEPT: 'accept',
+  REJECT: 'reject',
+  DISMISS: 'dismiss',
+};
+
+/** @enum {string} */
 chrome.fileManagerPrivate.TaskResult = {
   OPENED: 'opened',
   MESSAGE_SENT: 'message_sent',
@@ -401,6 +414,14 @@ chrome.fileManagerPrivate.FileTransferStatus;
  * }}
  */
 chrome.fileManagerPrivate.DriveSyncErrorEvent;
+
+/**
+ * @typedef {{
+ *   type: !chrome.fileManagerPrivate.DriveConfirmDialogType,
+ *   fileUrl: string
+ * }}
+ */
+chrome.fileManagerPrivate.DriveConfirmDialogEvent;
 
 /**
  * @typedef {{
@@ -1204,6 +1225,12 @@ chrome.fileManagerPrivate.getHoldingSpaceState = function(callback) {};
  */
 chrome.fileManagerPrivate.isTabletModeEnabled = function(callback) {};
 
+/**
+ * Notifies Drive about the result of the last dialog shown.
+ * @param {chrome.fileManagerPrivate.DriveDialogResult} result
+ */
+chrome.fileManagerPrivate.notifyDriveDialogResult = function(result) {};
+
 /** @type {!ChromeEvent} */
 chrome.fileManagerPrivate.onMountCompleted;
 
@@ -1230,6 +1257,9 @@ chrome.fileManagerPrivate.onDeviceChanged;
 
 /** @type {!ChromeEvent} */
 chrome.fileManagerPrivate.onDriveSyncError;
+
+/** @type {!ChromeEvent} */
+chrome.fileManagerPrivate.onDriveConfirmDialog;
 
 /** @type {!ChromeEvent} */
 chrome.fileManagerPrivate.onAppsUpdated;
