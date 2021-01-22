@@ -124,7 +124,7 @@ class PasswordsPrivateDelegateImpl : public PasswordsPrivateDelegate,
 
   // Executes a given callback by either invoking it immediately if the class
   // has been initialized or by deferring it until initialization has completed.
-  void ExecuteFunction(const base::Closure& callback);
+  void ExecuteFunction(base::OnceClosure callback);
 
   void SendSavedPasswordsList();
   void SendPasswordExceptionsList();
@@ -185,7 +185,7 @@ class PasswordsPrivateDelegateImpl : public PasswordsPrivateDelegate,
   // initialized. Once both SetPasswordList() and SetPasswordExceptionList()
   // have been called, this class is considered initialized and can these
   // callbacks are invoked.
-  std::vector<base::Closure> pre_initialization_callbacks_;
+  std::vector<base::OnceClosure> pre_initialization_callbacks_;
   std::vector<UiEntriesCallback> get_saved_passwords_list_callbacks_;
   std::vector<ExceptionEntriesCallback> get_password_exception_list_callbacks_;
 
