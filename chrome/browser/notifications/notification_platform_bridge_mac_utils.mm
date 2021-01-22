@@ -125,9 +125,12 @@ base::string16 CreateMacNotificationContext(
   return etldplusone;
 }
 
-std::string DeriveMacNotificationId(const std::string& profile_id,
+std::string DeriveMacNotificationId(bool incognito,
+                                    const std::string& profile_id,
                                     const std::string& notification_id) {
-  return base::StrCat({profile_id, "|", notification_id});
+  // i: incognito, r: regular profile
+  return base::StrCat(
+      {incognito ? "i" : "r", "|", profile_id, "|", notification_id});
 }
 
 bool VerifyMacNotificationData(NSDictionary* response) {

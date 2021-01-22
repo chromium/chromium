@@ -154,8 +154,8 @@ void NotificationPlatformBridgeMacUNNotification::Display(
   // Create a new category from the desired action buttons.
   UNNotificationCategory* category = [builder buildCategory];
 
-  std::string system_notification_id =
-      DeriveMacNotificationId(GetProfileId(profile), notification.id());
+  std::string system_notification_id = DeriveMacNotificationId(
+      profile->IsOffTheRecord(), GetProfileId(profile), notification.id());
   NSString* notification_id = base::SysUTF8ToNSString(system_notification_id);
 
   // Check if this notification had an already existing category from a previous
@@ -218,8 +218,8 @@ void NotificationPlatformBridgeMacUNNotification::Display(
 void NotificationPlatformBridgeMacUNNotification::Close(
     Profile* profile,
     const std::string& notification_id) {
-  NSString* notificationId = base::SysUTF8ToNSString(
-      DeriveMacNotificationId(GetProfileId(profile), notification_id));
+  NSString* notificationId = base::SysUTF8ToNSString(DeriveMacNotificationId(
+      profile->IsOffTheRecord(), GetProfileId(profile), notification_id));
   base::WeakPtr<NotificationPlatformBridgeMacUNNotification> weak_ptr =
       weak_factory_.GetWeakPtr();
 

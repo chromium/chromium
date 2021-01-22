@@ -15,14 +15,17 @@
 // Deliver a notification to the XPC service to be displayed as an alert.
 - (void)dispatchNotification:(NSDictionary*)data;
 
-// Close a notification for a given |notificationId| and |profileId|.
+// Close a notification for a given |notificationId|, |profileId| and
+// |incognito|.
 - (void)closeNotificationWithId:(NSString*)notificationId
-                  withProfileId:(NSString*)profileId;
+                      profileId:(NSString*)profileId
+                      incognito:(BOOL)incognito;
 
 // Close all notifications.
 - (void)closeAllNotifications;
 
-// Get currently displayed notifications.
+// Get currently displayed notifications for |profileId| and |incognito|. The
+// returned ids are scoped to the passed profile and are not globally unique.
 - (void)
 getDisplayedAlertsForProfileId:(NSString*)profileId
                      incognito:(BOOL)incognito
