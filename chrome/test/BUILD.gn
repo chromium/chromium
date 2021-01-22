@@ -3330,11 +3330,14 @@ script_test("performance_test_suite") {
     "//gpu:gpu_perftests",
     "//media:media_perftests",
     "//testing:run_perf_test",
-    "//third_party/angle/src/tests:angle_perftests",
   ]
 
-  if (build_dawn_tests) {
+  if (build_dawn_tests && !is_chromeos_lacros) {
     data_deps += [ "//third_party/dawn/src/tests:dawn_perf_tests" ]
+  }
+
+  if (!is_chromeos_lacros) {
+    data_deps += [ "//third_party/angle/src/tests:angle_perftests" ]
   }
 
   if (!is_android && !is_fuchsia) {
