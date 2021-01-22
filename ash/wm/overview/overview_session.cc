@@ -208,7 +208,7 @@ class OverviewSession::AccessibilityFocusAnnotator {
 
 OverviewSession::OverviewSession(OverviewDelegate* delegate)
     : delegate_(delegate),
-      restore_focus_window_(window_util::GetFocusedWindow()),
+      active_window_before_overview_(window_util::GetActiveWindow()),
       overview_start_time_(base::Time::Now()),
       highlight_controller_(
           std::make_unique<OverviewHighlightController>(this)) {
@@ -235,8 +235,8 @@ void OverviewSession::Init(const WindowList& windows,
 
   hide_overview_windows_ = std::make_unique<ScopedOverviewHideWindows>(
       std::move(hide_windows), /*force_hidden=*/false);
-  if (restore_focus_window_)
-    restore_focus_window_->AddObserver(this);
+  if (active_window_before_overview_)
+    active_window_before_overview_->AddObserver(this);
 
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
   std::sort(root_windows.begin(), root_windows.end(),
@@ -353,12 +353,12 @@ void OverviewSession::Shutdown() {
   }
 
   // Setting focus after restoring windows' state avoids unnecessary animations.
-  // No need to restore if we are sliding to the home launcher screen, as all
+  // No need to restore if we are fading out to the home launcher screen, as all
   // windows will be minimized.
-  const bool should_focus =
+  const bool should_restore =
       enter_exit_overview_type_ == OverviewEnterExitType::kNormal ||
       enter_exit_overview_type_ == OverviewEnterExitType::kImmediateExit;
-  ResetFocusRestoreWindow(should_focus);
+  RestoreWindowActivation(should_restore);
   RemoveAllObservers();
 
   for (std::unique_ptr<OverviewGrid>& overview_grid : grid_list_)
@@ -574,9 +574,9 @@ void OverviewSession::RemoveItem(OverviewItem* overview_item) {
 void OverviewSession::RemoveItem(OverviewItem* overview_item,
                                  bool item_destroying,
                                  bool reposition) {
-  if (overview_item->GetWindow() == restore_focus_window_) {
-    restore_focus_window_->RemoveObserver(this);
-    restore_focus_window_ = nullptr;
+  if (overview_item->GetWindow() == active_window_before_overview_) {
+    active_window_before_overview_->RemoveObserver(this);
+    active_window_before_overview_ = nullptr;
   }
 
   overview_item->overview_grid()->RemoveItem(overview_item, item_destroying,
@@ -802,9 +802,9 @@ void OverviewSession::OnWindowActivating(
   }
 
   if (!gained_active) {
-    // Cancel overview session and do not restore focus when active window is
-    // set to nullptr. This happens when removing a display.
-    ResetFocusRestoreWindow(false);
+    // Cancel overview session and do not restore activation when active window
+    // is set to nullptr. This happens when removing a display.
+    RestoreWindowActivation(false);
     EndOverview();
     return;
   }
@@ -814,7 +814,7 @@ void OverviewSession::OnWindowActivating(
   // mode, so do not handle it here.
   if (gained_active == Shell::Get()->app_list_controller()->GetWindow() &&
       !Shell::Get()->tablet_mode_controller()->InTabletMode()) {
-    ResetFocusRestoreWindow(false);
+    RestoreWindowActivation(false);
     EndOverview();
     return;
   }
@@ -851,8 +851,8 @@ void OverviewSession::OnWindowActivating(
   if (iter != windows.end())
     selected_item_ = iter->get();
 
-  // Don't restore focus on exit if a window was just activated.
-  ResetFocusRestoreWindow(false);
+  // Don't restore window activation on exit if a window was just activated.
+  RestoreWindowActivation(false);
   EndOverview();
 }
 
@@ -888,23 +888,23 @@ bool OverviewSession::IsEmpty() const {
   return true;
 }
 
-void OverviewSession::ResetFocusRestoreWindow(bool focus) {
-  if (!restore_focus_window_)
+void OverviewSession::RestoreWindowActivation(bool restore) {
+  if (!active_window_before_overview_)
     return;
 
   // Do not restore focus to a window that exists on an inactive desk.
-  focus &= base::Contains(DesksController::Get()->active_desk()->windows(),
-                          restore_focus_window_);
+  restore &= base::Contains(DesksController::Get()->active_desk()->windows(),
+                            active_window_before_overview_);
 
   // Ensure the window is still in the window hierarchy and not in the middle
   // of teardown.
-  if (focus && restore_focus_window_->GetRootWindow()) {
+  if (restore && active_window_before_overview_->GetRootWindow()) {
     base::AutoReset<bool> restoring_focus(&ignore_activations_, true);
-    wm::ActivateWindow(restore_focus_window_);
+    wm::ActivateWindow(active_window_before_overview_);
   }
 
-  restore_focus_window_->RemoveObserver(this);
-  restore_focus_window_ = nullptr;
+  active_window_before_overview_->RemoveObserver(this);
+  active_window_before_overview_ = nullptr;
 }
 
 void OverviewSession::OnHighlightedItemActivated(OverviewItem* item) {
@@ -996,9 +996,9 @@ void OverviewSession::OnDisplayMetricsChanged(const display::Display& display,
 }
 
 void OverviewSession::OnWindowDestroying(aura::Window* window) {
-  DCHECK_EQ(restore_focus_window_, window);
-  restore_focus_window_->RemoveObserver(this);
-  restore_focus_window_ = nullptr;
+  DCHECK_EQ(active_window_before_overview_, window);
+  active_window_before_overview_->RemoveObserver(this);
+  active_window_before_overview_ = nullptr;
 }
 
 void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
@@ -1203,9 +1203,9 @@ bool OverviewSession::ProcessForScrolling(const ui::KeyEvent& event) {
 
 void OverviewSession::RemoveAllObservers() {
   display::Screen::GetScreen()->RemoveObserver(this);
-  if (restore_focus_window_)
-    restore_focus_window_->RemoveObserver(this);
-  restore_focus_window_ = nullptr;
+  if (active_window_before_overview_)
+    active_window_before_overview_->RemoveObserver(this);
+  active_window_before_overview_ = nullptr;
 }
 
 void OverviewSession::UpdateNoWindowsWidget() {

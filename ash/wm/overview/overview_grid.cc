@@ -949,7 +949,7 @@ void OverviewGrid::OnSplitViewStateChanged(
   // split view mode was ended by activating an unsnappable window.
   if (state != SplitViewController::State::kNoSnap ||
       unsnappable_window_activated) {
-    overview_session_->ResetFocusRestoreWindow(false);
+    overview_session_->RestoreWindowActivation(false);
   }
 
   // If two windows were snapped to both sides of the screen or an unsnappable
@@ -1020,7 +1020,6 @@ void OverviewGrid::OnStartingAnimationComplete(bool canceled) {
 
   for (auto& window : window_list())
     window->OnStartingAnimationComplete();
-
 }
 
 void OverviewGrid::CalculateWindowListAnimationStates(

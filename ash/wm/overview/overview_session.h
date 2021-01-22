@@ -227,9 +227,12 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   // Returns true if all its window grids don't have any window item.
   bool IsEmpty() const;
 
-  // If |focus| is true, restores focus to |restore_focus_window_|. Sets
-  // |restore_focus_window_| to null regardless of |focus|.
-  void ResetFocusRestoreWindow(bool focus);
+  // If |restore| is true, activate window |active_window_before_overview_|.
+  // This is usually called when exiting overview to restore window activation
+  // to the window that was active before entering overview. If |restore| is
+  // false, reset |active_window_before_overview_| to nullptr so that window
+  // activation will not be restore when overview is ended.
+  void RestoreWindowActivation(bool restore);
 
   // Handles requests to active or close the currently highlighted |item|.
   void OnHighlightedItemActivated(OverviewItem* item);
@@ -341,9 +344,9 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   // is made.
   OverviewDelegate* delegate_;
 
-  // A weak pointer to the window which was focused on starting overview. If
-  // overview is canceled the focus should be restored to this window.
-  aura::Window* restore_focus_window_ = nullptr;
+  // A weak pointer to the window which was active on starting overview. If
+  // overview is canceled the activation should be restored to this window.
+  aura::Window* active_window_before_overview_ = nullptr;
 
   // A hidden window that receives focus while in overview mode. It is needed
   // because accessibility needs something focused for it to work and we cannot
