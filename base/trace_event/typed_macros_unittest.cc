@@ -232,39 +232,73 @@ TEST_F(TypedTraceEventTest, InternedData) {
 TEST_F(TypedTraceEventTest, InstantThreadEvent) {
   TraceLog::GetInstance()->SetEnabled(TraceConfig(kRecordAllCategoryFilter, ""),
                                       TraceLog::RECORDING_MODE);
+
   TRACE_EVENT_INSTANT("cat", "ThreadEvent", [](perfetto::EventContext) {});
   auto track_event = ParseTrackEvent();
   EXPECT_FALSE(track_event.has_track_uuid());
+
+  CancelTrace();
 }
 
 TEST_F(TypedTraceEventTest, InstantProcessEvent) {
   TraceLog::GetInstance()->SetEnabled(TraceConfig(kRecordAllCategoryFilter, ""),
                                       TraceLog::RECORDING_MODE);
+
   TRACE_EVENT_INSTANT("cat", "ProcessEvent", perfetto::ProcessTrack::Current(),
                       [](perfetto::EventContext) {});
   auto track_event = ParseTrackEvent();
   EXPECT_TRUE(track_event.has_track_uuid());
   EXPECT_EQ(track_event.track_uuid(), perfetto::ProcessTrack::Current().uuid);
+
+  CancelTrace();
 }
 
 TEST_F(TypedTraceEventTest, InstantGlobalEvent) {
   TraceLog::GetInstance()->SetEnabled(TraceConfig(kRecordAllCategoryFilter, ""),
                                       TraceLog::RECORDING_MODE);
+
   TRACE_EVENT_INSTANT("cat", "GlobalEvent", perfetto::Track::Global(1234),
                       [](perfetto::EventContext) {});
   auto track_event = ParseTrackEvent();
   EXPECT_TRUE(track_event.has_track_uuid());
   EXPECT_EQ(track_event.track_uuid(), perfetto::Track::Global(1234).uuid);
+
+  CancelTrace();
 }
 
 TEST_F(TypedTraceEventTest, InstantGlobalDefaultEvent) {
   TraceLog::GetInstance()->SetEnabled(TraceConfig(kRecordAllCategoryFilter, ""),
                                       TraceLog::RECORDING_MODE);
+
   TRACE_EVENT_INSTANT("cat", "GlobalDefaultEvent", perfetto::Track::Global(0),
                       [](perfetto::EventContext) {});
   auto track_event = ParseTrackEvent();
   EXPECT_TRUE(track_event.has_track_uuid());
   EXPECT_EQ(track_event.track_uuid(), perfetto::Track::Global(0).uuid);
+
+  CancelTrace();
+}
+
+TEST_F(TypedTraceEventTest, BeginEventOnDefaultTrackDoesNotWriteTrackUuid) {
+  TraceLog::GetInstance()->SetEnabled(TraceConfig(kRecordAllCategoryFilter, ""),
+                                      TraceLog::RECORDING_MODE);
+
+  TRACE_EVENT_BEGIN("cat", "Name");
+  auto begin_event = ParseTrackEvent();
+  EXPECT_FALSE(begin_event.has_track_uuid());
+
+  CancelTrace();
+}
+
+TEST_F(TypedTraceEventTest, EndEventOnDefaultTrackDoesNotWriteTrackUuid) {
+  TraceLog::GetInstance()->SetEnabled(TraceConfig(kRecordAllCategoryFilter, ""),
+                                      TraceLog::RECORDING_MODE);
+
+  TRACE_EVENT_END("cat");
+  auto end_event = ParseTrackEvent();
+  EXPECT_FALSE(end_event.has_track_uuid());
+
+  CancelTrace();
 }
 
 }  // namespace trace_event
