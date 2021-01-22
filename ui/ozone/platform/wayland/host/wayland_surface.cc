@@ -219,19 +219,16 @@ wl::Object<wl_region> WaylandSurface::CreateAndAddRegion(
   wl::Object<wl_region> region(
       wl_compositor_create_region(connection_->compositor()));
 
-  auto add_region = [&](const gfx::Rect& r) {
-    gfx::Rect region_dip = gfx::ScaleToEnclosingRect(r, 1.f / buffer_scale_);
-    wl_region_add(region.get(), region_dip.x(), region_dip.y(),
-                  region_dip.width(), region_dip.height());
-  };
-
   auto window_shape_in_dips = root_window_->GetWindowShape();
   if (window_shape_in_dips.has_value()) {
     for (const auto& rect : window_shape_in_dips.value())
       wl_region_add(region.get(), rect.x(), rect.y(), rect.width(),
                     rect.height());
   } else {
-    add_region(region_px);
+    gfx::Rect region_dip =
+        gfx::ScaleToEnclosingRect(region_px, 1.f / buffer_scale_);
+    wl_region_add(region.get(), region_dip.x(), region_dip.y(),
+                  region_dip.width(), region_dip.height());
   }
   return region;
 }
