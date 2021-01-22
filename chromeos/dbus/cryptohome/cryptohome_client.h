@@ -26,8 +26,6 @@ class BaseReply;
 class CheckHealthRequest;
 class CheckKeyRequest;
 class EndFingerprintAuthSessionRequest;
-class FlushAndSignBootAttributesRequest;
-class GetBootAttributeRequest;
 class GetKeyDataRequest;
 class GetLoginStatusRequest;
 class GetSupportedKeyPoliciesRequest;
@@ -39,7 +37,6 @@ class MountGuestRequest;
 class MountRequest;
 class RemoveFirmwareManagementParametersRequest;
 class RemoveKeyRequest;
-class SetBootAttributeRequest;
 class SetFirmwareManagementParametersRequest;
 class StartFingerprintAuthSessionRequest;
 class UnmountRequest;
@@ -353,30 +350,6 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) CryptohomeClient {
   // If there is a reply, it is always an empty reply with no errors.
   virtual void EndFingerprintAuthSession(
       const cryptohome::EndFingerprintAuthSessionRequest& request,
-      DBusMethodCallback<cryptohome::BaseReply> callback) = 0;
-
-  // Asynchronously calls GetBootAttribute method. |callback| is called after
-  // method call, and with reply protobuf.
-  // GetBootAttribute gets the value of the specified boot attribute.
-  virtual void GetBootAttribute(
-      const cryptohome::GetBootAttributeRequest& request,
-      DBusMethodCallback<cryptohome::BaseReply> callback) = 0;
-
-  // Asynchronously calls SetBootAttribute method. |callback| is called after
-  // method call, and with reply protobuf.
-  // SetBootAttribute sets the value of the specified boot attribute. The value
-  // won't be available unitl FlushAndSignBootAttributes() is called.
-  virtual void SetBootAttribute(
-      const cryptohome::SetBootAttributeRequest& request,
-      DBusMethodCallback<cryptohome::BaseReply> callback) = 0;
-
-  // Asynchronously calls FlushAndSignBootAttributes method. |callback| is
-  // called after method call, and with reply protobuf.
-  // FlushAndSignBootAttributes makes all pending boot attribute settings
-  // available, and have them signed by a special TPM key. This method always
-  // fails after any user, publuc, or guest session starts.
-  virtual void FlushAndSignBootAttributes(
-      const cryptohome::FlushAndSignBootAttributesRequest& request,
       DBusMethodCallback<cryptohome::BaseReply> callback) = 0;
 
   // Asynchronously calls MigrateToDircrypto method. It tells cryptohomed to

@@ -407,28 +407,6 @@ void FakeCryptohomeClient::MassRemoveKeys(
   ReturnProtobufMethodCallback(cryptohome::BaseReply(), std::move(callback));
 }
 
-void FakeCryptohomeClient::GetBootAttribute(
-    const cryptohome::GetBootAttributeRequest& request,
-    DBusMethodCallback<cryptohome::BaseReply> callback) {
-  cryptohome::BaseReply reply;
-  cryptohome::GetBootAttributeReply* attr_reply =
-      reply.MutableExtension(cryptohome::GetBootAttributeReply::reply);
-  attr_reply->set_value("");
-  ReturnProtobufMethodCallback(reply, std::move(callback));
-}
-
-void FakeCryptohomeClient::SetBootAttribute(
-    const cryptohome::SetBootAttributeRequest& request,
-    DBusMethodCallback<cryptohome::BaseReply> callback) {
-  ReturnProtobufMethodCallback(cryptohome::BaseReply(), std::move(callback));
-}
-
-void FakeCryptohomeClient::FlushAndSignBootAttributes(
-    const cryptohome::FlushAndSignBootAttributesRequest& request,
-    DBusMethodCallback<cryptohome::BaseReply> callback) {
-  ReturnProtobufMethodCallback(cryptohome::BaseReply(), std::move(callback));
-}
-
 void FakeCryptohomeClient::MigrateToDircrypto(
     const cryptohome::AccountIdentifier& cryptohome_id,
     const cryptohome::MigrateToDircryptoRequest& request,

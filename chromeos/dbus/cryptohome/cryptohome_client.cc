@@ -533,27 +533,6 @@ class CryptohomeClientImpl : public CryptohomeClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
-  void GetBootAttribute(
-      const cryptohome::GetBootAttributeRequest& request,
-      DBusMethodCallback<cryptohome::BaseReply> callback) override {
-    CallCryptohomeMethod(cryptohome::kCryptohomeGetBootAttribute, request,
-                         std::move(callback));
-  }
-
-  void SetBootAttribute(
-      const cryptohome::SetBootAttributeRequest& request,
-      DBusMethodCallback<cryptohome::BaseReply> callback) override {
-    CallCryptohomeMethod(cryptohome::kCryptohomeSetBootAttribute, request,
-                         std::move(callback));
-  }
-
-  void FlushAndSignBootAttributes(
-      const cryptohome::FlushAndSignBootAttributesRequest& request,
-      DBusMethodCallback<cryptohome::BaseReply> callback) override {
-    CallCryptohomeMethod(cryptohome::kCryptohomeFlushAndSignBootAttributes,
-                         request, std::move(callback));
-  }
-
   void RemoveFirmwareManagementParametersFromTpm(
       const cryptohome::RemoveFirmwareManagementParametersRequest& request,
       DBusMethodCallback<cryptohome::BaseReply> callback) override {
