@@ -90,10 +90,7 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
   XlibDisplayWrapper GetXlibDisplay(
       XlibDisplayType type = XlibDisplayType::kNormal);
 
-  uint32_t extended_max_request_length() const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return extended_max_request_length_;
-  }
+  size_t MaxRequestSizeInBytes() const;
 
   const Setup& setup() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
