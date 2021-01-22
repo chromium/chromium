@@ -7,14 +7,37 @@
 #include <utility>
 
 #include "android_webview/browser/gfx/scoped_app_gl_state_restore.h"
+#include "ui/gl/gl_bindings.h"
+
+#define EGL_EXTERNAL_SURFACE_ANGLE 0x348F
 
 namespace android_webview {
 
-AwGLSurface::AwGLSurface() : size_(1, 1) {}
+AwGLSurface::AwGLSurface() = default;
 
-AwGLSurface::~AwGLSurface() {}
+AwGLSurface::~AwGLSurface() {
+  Destroy();
+}
+
+bool AwGLSurface::Initialize(gl::GLSurfaceFormat format) {
+  if (!IsANGLEExternalContextAndSurfaceSupported())
+    return true;
+
+  Destroy();
+
+  EGLint attribs[] = {EGL_WIDTH,      size_.width(), EGL_HEIGHT,
+                      size_.height(), EGL_NONE,      EGL_NONE};
+  surface_ = eglCreatePbufferFromClientBuffer(
+      GetDisplay(), EGL_EXTERNAL_SURFACE_ANGLE, nullptr, GetConfig(), attribs);
+  DCHECK_NE(surface_, EGL_NO_SURFACE);
+  return surface_ != EGL_NO_SURFACE;
+}
 
 void AwGLSurface::Destroy() {
+  if (surface_) {
+    eglDestroySurface(GetDisplay(), surface_);
+    surface_ = nullptr;
+  }
 }
 
 bool AwGLSurface::IsOffscreen() {
@@ -36,11 +59,13 @@ gfx::Size AwGLSurface::GetSize() {
 }
 
 void* AwGLSurface::GetHandle() {
-  return NULL;
+  return surface_;
 }
 
 void* AwGLSurface::GetDisplay() {
-  return NULL;
+  if (!IsANGLEExternalContextAndSurfaceSupported())
+    return nullptr;
+  return gl::GLSurfaceEGL::GetDisplay();
 }
 
 gl::GLSurfaceFormat AwGLSurface::GetFormat() {
@@ -51,8 +76,11 @@ bool AwGLSurface::Resize(const gfx::Size& size,
                          float scale_factor,
                          const gfx::ColorSpace& color_space,
                          bool has_alpha) {
+  if (size_ == size)
+    return true;
   size_ = size;
-  return true;
+
+  return Initialize(gl::GLSurfaceFormat());
 }
 
 void AwGLSurface::SetSize(const gfx::Size& size) {

@@ -24,6 +24,7 @@
 #include "ui/base/ui_base_switches.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_share_group.h"
+#include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/init/gl_factory.h"
 
 namespace android_webview {
@@ -80,7 +81,15 @@ OutputSurfaceProviderWebView::~OutputSurfaceProviderWebView() {
 
 void OutputSurfaceProviderWebView::InitializeContext() {
   DCHECK(!gl_surface_) << "InitializeContext() called twice";
-
+  // If EGL supports EGL_ANGLE_external_context_and_surface, then we will create
+  // an ANGLE context for the current native GL context.
+  const bool is_angle =
+      gl::GLSurfaceEGL::IsANGLEExternalContextAndSurfaceSupported();
+  // TODO(penghuang): should we support GLRenderer?
+  if (is_angle) {
+    CHECK(renderer_settings_.use_skia_renderer)
+        << "GLRenderer doesn't work with ANGLE.";
+  }
   if (renderer_settings_.use_skia_renderer && !enable_vulkan_) {
     // We need to draw to FBO for External Stencil support with SkiaRenderer
     gl_surface_ = base::MakeRefCounted<AwGLSurfaceExternalStencil>();
@@ -89,14 +98,21 @@ void OutputSurfaceProviderWebView::InitializeContext() {
     gl_surface_ = base::MakeRefCounted<AwGLSurface>();
   }
 
+  bool result = gl_surface_->Initialize(gl::GLSurfaceFormat());
+  DCHECK(result);
+
   if (renderer_settings_.use_skia_renderer) {
     auto share_group = base::MakeRefCounted<gl::GLShareGroup>();
     gpu::GpuDriverBugWorkarounds workarounds(
         GpuServiceWebView::GetInstance()
             ->gpu_feature_info()
             .enabled_gpu_driver_bug_workarounds);
-    auto gl_context = gl::init::CreateGLContext(
-        share_group.get(), gl_surface_.get(), gl::GLContextAttribs());
+    gl::GLContextAttribs attribs;
+    // For ANGLE EGL, we need to create ANGLE context from the current native
+    // EGL context.
+    attribs.angle_create_from_external_context = is_angle;
+    auto gl_context = gl::init::CreateGLContext(share_group.get(),
+                                                gl_surface_.get(), attribs);
     gl_context->MakeCurrent(gl_surface_.get());
 
     shared_context_state_ = base::MakeRefCounted<gpu::SharedContextState>(

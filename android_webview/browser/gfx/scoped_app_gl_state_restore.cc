@@ -7,7 +7,9 @@
 #include <string>
 
 #include "android_webview/browser/gfx/scoped_app_gl_state_restore_impl.h"
+#include "android_webview/browser/gfx/scoped_app_gl_state_restore_impl_angle.h"
 #include "base/trace_event/trace_event.h"
+#include "ui/gl/gl_surface_egl.h"
 
 namespace android_webview {
 
@@ -29,8 +31,13 @@ ScopedAppGLStateRestore::ScopedAppGLStateRestore(CallMode mode,
   g_current_instance = this;
 
   TRACE_EVENT0("android_webview", "AppGLStateSave");
-  impl_ = std::make_unique<internal::ScopedAppGLStateRestoreImpl>(mode,
-                                                                  save_restore);
+  if (gl::GLSurfaceEGL::IsANGLEExternalContextAndSurfaceSupported()) {
+    impl_ = std::make_unique<internal::ScopedAppGLStateRestoreImplAngle>(
+        mode, save_restore);
+  } else {
+    impl_ = std::make_unique<internal::ScopedAppGLStateRestoreImpl>(
+        mode, save_restore);
+  }
 }
 
 ScopedAppGLStateRestore::~ScopedAppGLStateRestore() {

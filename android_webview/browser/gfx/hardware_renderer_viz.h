@@ -35,7 +35,6 @@ class HardwareRendererViz : public HardwareRenderer {
   class OnViz;
 
   void InitializeOnViz(RootFrameSinkGetter root_frame_sink_getter);
-  void DestroyOnViz();
   bool IsUsingVulkan() const;
 
   // Information about last delegated frame.

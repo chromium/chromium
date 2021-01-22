@@ -62,6 +62,8 @@ source_set("gfx") {
     "scoped_app_gl_state_restore.h",
     "scoped_app_gl_state_restore_impl.cc",
     "scoped_app_gl_state_restore_impl.h",
+    "scoped_app_gl_state_restore_impl_angle.cc",
+    "scoped_app_gl_state_restore_impl_angle.h",
     "skia_output_surface_dependency_webview.cc",
     "skia_output_surface_dependency_webview.h",
     "surfaces_instance.cc",

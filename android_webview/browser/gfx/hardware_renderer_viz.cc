@@ -47,9 +47,22 @@
 #include "ui/gfx/transform.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_share_group.h"
+#include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/init/gl_factory.h"
 
 namespace android_webview {
+namespace {
+
+class ContextReleaser {
+ public:
+  explicit ContextReleaser(gpu::SharedContextState* state) : state_(state) {}
+  ~ContextReleaser() { state_->ReleaseCurrent(nullptr); }
+
+ private:
+  gpu::SharedContextState* const state_;
+};
+
+}  // namespace
 
 class HardwareRendererViz::OnViz : public viz::DisplayClient {
  public:
@@ -298,14 +311,8 @@ void HardwareRendererViz::InitializeOnViz(
 
 HardwareRendererViz::~HardwareRendererViz() {
   DCHECK_CALLED_ON_VALID_THREAD(render_thread_checker_);
-
   VizCompositorThreadRunnerWebView::GetInstance()->ScheduleOnVizAndBlock(
-      base::BindOnce(&HardwareRendererViz::DestroyOnViz,
-                     base::Unretained(this)));
-}
-
-void HardwareRendererViz::DestroyOnViz() {
-  on_viz_ = nullptr;
+      base::BindOnce([](std::unique_ptr<OnViz>) {}, std::move(on_viz_)));
 }
 
 bool HardwareRendererViz::IsUsingVulkan() const {
@@ -319,6 +326,12 @@ void HardwareRendererViz::DrawAndSwap(const HardwareRendererDrawParams& params,
   TRACE_EVENT1("android_webview", "HardwareRendererViz::Draw", "vulkan",
                IsUsingVulkan());
   DCHECK_CALLED_ON_VALID_THREAD(render_thread_checker_);
+
+  // Release the context before returning, it is required for the external ANGLE
+  // context. For non-ANGLE case, fake context and surface are used, so
+  // releasing current context should be very cheap.
+  ContextReleaser context_releaser(
+      output_surface_provider_.shared_context_state().get());
 
   viz::FrameTimingDetailsMap timing_details;
 
@@ -354,9 +367,13 @@ void HardwareRendererViz::DrawAndSwap(const HardwareRendererDrawParams& params,
   output_surface_provider_.gl_surface()->RecalculateClipAndTransform(
       &viewport, &clip, &transform);
 
-  DCHECK(output_surface_provider_.shared_context_state());
-  output_surface_provider_.shared_context_state()
-      ->PessimisticallyResetGrContext();
+  // ANGLE will restore GL context state for us, so we don't need to call
+  // GrContext::resetContext().
+  if (gl::GLSurfaceEGL::IsANGLEExternalContextAndSurfaceSupported()) {
+    DCHECK(output_surface_provider_.shared_context_state());
+    output_surface_provider_.shared_context_state()
+        ->PessimisticallyResetGrContext();
+  }
 
   VizCompositorThreadRunnerWebView::GetInstance()->ScheduleOnVizAndBlock(
       base::BindOnce(&HardwareRendererViz::OnViz::DrawAndSwapOnViz,
