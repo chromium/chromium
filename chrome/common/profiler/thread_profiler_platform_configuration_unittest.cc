@@ -88,9 +88,11 @@ TEST_F(ThreadProfilerPlatformConfigurationTest, IsSupported) {
   // https://crbug.com/1101399
   const bool on_canary = base::mac::IsAtMostOS10_15();
   const bool on_dev = base::mac::IsAtMostOS10_15();
+  const bool on_default = base::mac::IsAtMostOS10_15();
 #else
   const bool on_canary = true;
   const bool on_dev = true;
+  const bool on_default = true;
 #endif
   EXPECT_FALSE(config()->IsSupported(version_info::Channel::UNKNOWN));
   EXPECT_EQ(on_canary, config()->IsSupported(version_info::Channel::CANARY));
@@ -98,7 +100,7 @@ TEST_F(ThreadProfilerPlatformConfigurationTest, IsSupported) {
   EXPECT_FALSE(config()->IsSupported(version_info::Channel::BETA));
   EXPECT_FALSE(config()->IsSupported(version_info::Channel::STABLE));
 
-  EXPECT_TRUE(config()->IsSupported(base::nullopt));
+  EXPECT_EQ(on_default, config()->IsSupported(base::nullopt));
 #endif
 }
 
