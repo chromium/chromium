@@ -214,6 +214,7 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate {
     }
 
     private void setTabModelSelector(TabModelSelector tabModelSelector) {
+        if (tabModelSelector == null) return;
         if (mTabModelSelector != null) {
             mTabModelSelector.getTabModelFilterProvider().removeTabModelFilterObserver(
                     mTabModelObserver);
@@ -223,6 +224,7 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate {
     }
 
     private void setModalDialogManager(ModalDialogManager modalDialogManager) {
+        if (modalDialogManager == null) return;
         if (mModalDialogManager != null) {
             mModalDialogManager.removeObserver(mModalDialogManagerObserver);
         }
