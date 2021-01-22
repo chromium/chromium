@@ -33,33 +33,6 @@
             ]
         }
     ],
-    "AddToHomescreenMessaging": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Install app",
-                    "params": {
-                        "include_no_download_required": "false"
-                    },
-                    "enable_features": [
-                        "AddToHomescreenMessaging"
-                    ]
-                },
-                {
-                    "name": "Install app (no download required)",
-                    "params": {
-                        "include_no_download_required": "true"
-                    },
-                    "enable_features": [
-                        "AddToHomescreenMessaging"
-                    ]
-                }
-            ]
-        }
-    ],
     "AmpBackgroundTab": [
         {
             "platforms": [
