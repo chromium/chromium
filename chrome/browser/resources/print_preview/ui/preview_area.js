@@ -492,12 +492,12 @@ Polymer({
   /**
    * Sends a message to the plugin to hide the toolbars after a delay.
    */
-  hideToolbars() {
+  hideToolbar() {
     if (!this.pluginProxy_.pluginReady()) {
       return;
     }
 
-    this.pluginProxy_.hideToolbars();
+    this.pluginProxy_.hideToolbar();
   },
 
   /**

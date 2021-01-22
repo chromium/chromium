@@ -81,8 +81,7 @@ class PDFViewerPPElement extends PDFViewerBaseElement {
     /** @private {?PluginController} */
     this.pluginController_ = PluginController.getInstance();
 
-    this.toolbarManager_ =
-        new ToolbarManager(window, null, this.getZoomToolbar_());
+    this.toolbarManager_ = new ToolbarManager(window, this.getZoomToolbar_());
 
     // Setup the keyboard event listener.
     document.addEventListener(
@@ -101,7 +100,7 @@ class PDFViewerPPElement extends PDFViewerBaseElement {
       return;
     }
 
-    this.toolbarManager_.hideToolbarsAfterTimeout();
+    this.toolbarManager_.hideToolbarAfterTimeout();
     // Let the viewport handle directional key events.
     if (this.viewport.handleDirectionalKeyEvent(e, false)) {
       return;
@@ -109,7 +108,7 @@ class PDFViewerPPElement extends PDFViewerBaseElement {
 
     switch (e.key) {
       case 'Tab':
-        this.toolbarManager_.showToolbarsForKeyboardNavigation();
+        this.toolbarManager_.showToolbarForKeyboardNavigation();
         return;
       case 'Escape':
         break;  // Ensure escape falls through to the print-preview handler.
@@ -132,9 +131,9 @@ class PDFViewerPPElement extends PDFViewerBaseElement {
       this.sendScriptingMessage(
           {type: 'sendKeyEvent', keyEvent: SerializeKeyEvent(e)});
     } else {
-      // Show toolbars as a fallback.
+      // Show toolbar as a fallback.
       if (!(e.shiftKey || e.ctrlKey || e.altKey)) {
-        this.toolbarManager_.showToolbars();
+        this.getZoomToolbar_().show();
       }
     }
   }
@@ -248,8 +247,8 @@ class PDFViewerPPElement extends PDFViewerBaseElement {
         this.handleKeyEvent_(/** @type {!KeyboardEvent} */ (DeserializeKeyEvent(
             /** @type {{ keyEvent: Object }} */ (message.data).keyEvent)));
         return true;
-      case 'hideToolbars':
-        this.toolbarManager_.resetKeyboardNavigationAndHideToolbars();
+      case 'hideToolbar':
+        this.toolbarManager_.resetKeyboardNavigationAndHideToolbar();
         return true;
       case 'darkModeChanged':
         this.dark_ = /** @type {{darkMode: boolean}} */ (message.data).darkMode;
@@ -353,7 +352,7 @@ class PDFViewerPPElement extends PDFViewerBaseElement {
   updateProgress(progress) {
     super.updateProgress(progress);
     if (progress === 100) {
-      this.toolbarManager_.hideToolbarsAfterTimeout();
+      this.toolbarManager_.hideToolbarAfterTimeout();
     }
   }
 }

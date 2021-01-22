@@ -25,11 +25,6 @@ Polymer({
   _template: html`{__html_template__}`,
 
   properties: {
-    isPrintPreview: {
-      type: Boolean,
-      value: false,
-    },
-
     /** @private */
     keyboardNavigationActive_: {
       type: Boolean,
@@ -53,7 +48,7 @@ Polymer({
 
   /** @private */
   onFocus_() {
-    if (this.visible_ || !this.isPrintPreview) {
+    if (this.visible_) {
       return;
     }
 
@@ -65,17 +60,13 @@ Polymer({
 
   /** @private */
   onKeyUp_() {
-    if (this.isPrintPreview) {
-      this.fire('keyboard-navigation-active', true);
-    }
+    this.fire('keyboard-navigation-active', true);
     this.keyboardNavigationActive_ = true;
   },
 
   /** @private */
   onPointerDown_() {
-    if (this.isPrintPreview) {
-      this.fire('keyboard-navigation-active', false);
-    }
+    this.fire('keyboard-navigation-active', false);
     this.keyboardNavigationActive_ = false;
   },
 

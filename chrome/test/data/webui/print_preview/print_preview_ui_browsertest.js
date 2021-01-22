@@ -122,6 +122,33 @@ TEST_F('PrintPreviewPagesSettingsTest', 'NupChangesPages', function() {
 });
 
 // eslint-disable-next-line no-var
+var PrintPreviewPdfToolbarManagerTest = class extends PrintPreviewTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://print/test_loader.html?module=print_preview/pdf_toolbar_manager_test.js';
+  }
+
+  /** @override */
+  get suiteName() {
+    return pdf_toolbar_manager_test.suiteName;
+  }
+};
+
+TEST_F('PrintPreviewPdfToolbarManagerTest', 'KeyboardNavigation', function() {
+  this.runMochaTest(pdf_toolbar_manager_test.TestNames.KeyboardNavigation);
+});
+
+TEST_F(
+    'PrintPreviewPdfToolbarManagerTest', 'ResetKeyboardNavigation', function() {
+      this.runMochaTest(
+          pdf_toolbar_manager_test.TestNames.ResetKeyboardNavigation);
+    });
+
+TEST_F('PrintPreviewPdfToolbarManagerTest', 'TouchInteraction', function() {
+  this.runMochaTest(pdf_toolbar_manager_test.TestNames.TouchInteraction);
+});
+
+// eslint-disable-next-line no-var
 var PrintPreviewPdfViewerTest = class extends PrintPreviewTest {
   /** @override */
   get browsePreload() {

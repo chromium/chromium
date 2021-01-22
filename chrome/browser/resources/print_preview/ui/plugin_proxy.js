@@ -9,7 +9,7 @@ import {PDFCreateOutOfProcessPlugin} from '../pdf/pdf_scripting_api.js';
 
 /**
  * @typedef {{darkModeChanged: Function,
- *            hideToolbars: Function,
+ *            hideToolbar: Function,
  *            loadPreviewPage: Function,
  *            resetPrintPreviewMode: Function,
  *            scrollPosition: Function,
@@ -60,7 +60,7 @@ export class PluginProxy {
   /** @param {!KeyboardEvent} e Keyboard event to forward to the plugin. */
   sendKeyEvent(e) {}
 
-  hideToolbars() {}
+  hideToolbar() {}
 
   /**
    * @param {boolean} eventsEnabled Whether pointer events should be captured
@@ -150,8 +150,8 @@ export class PluginProxyImpl {
   }
 
   /** @override */
-  hideToolbars() {
-    this.plugin_.hideToolbars();
+  hideToolbar() {
+    this.plugin_.hideToolbar();
   }
 
   /** @override */

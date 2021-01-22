@@ -65,6 +65,7 @@ js_type_check("closure_compile") {
     #":other_options_settings_test",
     #":pages_per_sheet_settings_test",
     #":pages_settings_test",
+    #":pdf_toolbar_manager_test",
     #":pdf_viewer_test",
     #":pin_settings_test",
     ":test_plugin_proxy",

@@ -1,41 +1,27 @@
     <style include="cr-hidden-style">
       :host {
-        --button-position-offset: 48px;
+        --button-position-offset: 24px;
         bottom: 0;
+        left: 0;
         padding: 48px 0;
         position: fixed;
-        right: 0;
+        right: auto;
         user-select: none;
         z-index: 3;
       }
 
-      :host-context([is-print-preview]) {
-        --button-position-offset: 24px;
-      }
-
-      :host-context([is-print-preview][dir='ltr']),
       :host-context([dir='rtl']) {
-        left: 0;
-        right: auto;
-      }
-
-      :host-context([is-print-preview][dir='rtl']) {
         left: auto;
         right: 0;
       }
 
       #zoom-buttons {
-        position: relative;
-        right: var(--button-position-offset);
-      }
-
-      :host-context([is-print-preview][dir='ltr']) #zoom-buttons,
-      :host-context([dir='rtl']) #zoom-buttons {
         left: var(--button-position-offset);
+        position: relative;
         right: auto;
       }
 
-      :host-context([is-print-preview][dir='rtl']) #zoom-buttons {
+      :host-context([dir='rtl']) #zoom-buttons {
         left: auto;
         right: var(--button-position-offset);
       }

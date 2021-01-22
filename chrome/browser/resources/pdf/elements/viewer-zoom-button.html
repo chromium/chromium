@@ -1,9 +1,5 @@
     <style>
       :host {
-        --translate-x-distance: 132px;
-      }
-
-      :host-context([is-print-preview]) {
         --translate-x-distance: 96px;
       }
 
@@ -15,27 +11,19 @@
       :host([closed_]) #wrapper {
         /* 132px roughly flips the location of the button across the right edge
          * of the page. */
-        transform: translateX(var(--translate-x-distance));
+        transform: translateX(calc(-1 * var(--translate-x-distance)));
         transition-timing-function: cubic-bezier(0.4, 0, 1, 1);
       }
 
-      :host-context([is-print-preview][dir='ltr']):host([closed_]) #wrapper {
-        transform: translateX(calc(-1 * var(--translate-x-distance)));
-      }
-
       :host-context([dir='rtl']):host([closed_]) #wrapper {
-        transform: translateX(calc(-1 * var(--translate-x-distance)));
-      }
-
-      :host-context([is-print-preview][dir='rtl']):host([closed_]) #wrapper {
         transform: translateX(var(--translate-x-distance));
       }
 
       cr-icon-button {
-        --cr-icon-button-fill-color: var(--paper-grey-700);
+        --cr-icon-button-fill-color: white;
         --cr-icon-button-icon-size: 20px;
-        --cr-icon-button-size: 36px;
-        background-color: rgb(242, 242, 242);
+        --cr-icon-button-size: 32px;
+        background-color: var(--google-grey-600);
         border-radius: 50%;
         box-shadow: var(--cr-elevation-1);
         overflow: visible;
@@ -45,20 +33,14 @@
         box-shadow: none;
       }
 
-      :host-context([is-print-preview]) cr-icon-button {
-        --cr-icon-button-fill-color: white;
-        --cr-icon-button-size: 32px;
-        background-color: var(--google-grey-600);
-      }
-
       @media (prefers-color-scheme: light) {
-        :host-context([is-print-preview]) cr-icon-button {
+        cr-icon-button {
           --cr-icon-button-ripple-opacity: .5;
         }
       }
 
       @media (prefers-color-scheme: dark) {
-        :host-context([is-print-preview]) cr-icon-button {
+        cr-icon-button {
           --cr-icon-button-fill-color: var(--google-grey-200);
           background-color: var(--google-grey-900);
         }
