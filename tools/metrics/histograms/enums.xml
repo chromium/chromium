@@ -44536,6 +44536,7 @@ from previous Chrome versions.
   <int value="-135584175" label="EnableAggregatedMlAppRanking:enabled"/>
   <int value="-135223364" label="AutofillShowTypePredictions:disabled"/>
   <int value="-133098377" label="SyncPseudoUSSSearchEngines:disabled"/>
+  <int value="-132082004" label="CacheOneGoogleBar:enabled"/>
   <int value="-131673218" label="FileHandlingAPI:disabled"/>
   <int value="-131257916" label="OmniboxCompactSuggestions:disabled"/>
   <int value="-130318058" label="ExoGamepadVibration:enabled"/>
@@ -44693,6 +44694,7 @@ from previous Chrome versions.
   <int value="1558582" label="ResamplingInputEvents:enabled"/>
   <int value="2070488" label="EnablePasswordsAccountStorageSavingUi:disabled"/>
   <int value="3826348" label="DarkenWebsitesCheckboxInThemesSetting:disabled"/>
+  <int value="4588113" label="CacheOneGoogleBar:disabled"/>
   <int value="5654819" label="CrostiniGpuSupport:disabled"/>
   <int value="7444737" label="NTPSuggestionsStandaloneUI:disabled"/>
   <int value="7533886" label="disable-offer-store-unmasked-wallet-cards"/>

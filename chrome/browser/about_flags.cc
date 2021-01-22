@@ -4552,6 +4552,10 @@ const FeatureEntry kFeatureEntries[] = {
         // defined(OS_CHROMEOS)
 
 #if !defined(OS_ANDROID)
+    {"ntp-cache-one-google-bar", flag_descriptions::kNtpCacheOneGoogleBarName,
+     flag_descriptions::kNtpCacheOneGoogleBarDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_features::kCacheOneGoogleBar)},
+
     {"ntp-iframe-one-google-bar", flag_descriptions::kNtpIframeOneGoogleBarName,
      flag_descriptions::kNtpIframeOneGoogleBarDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kIframeOneGoogleBar)},

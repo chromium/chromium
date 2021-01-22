@@ -3342,6 +3342,11 @@ const char kMuteNotificationsDuringScreenShareDescription[] =
     "Prevents new notifications from being shown while a screen is being "
     "shared.";
 
+const char kNtpCacheOneGoogleBarName[] = "Cache OneGoogleBar";
+const char kNtpCacheOneGoogleBarDescription[] =
+    "Enables using the OneGoogleBar cached response in chrome://new-tab-page, "
+    "when available.";
+
 const char kNtpIframeOneGoogleBarName[] = "Load OneGoogleBar in an iframe";
 const char kNtpIframeOneGoogleBarDescription[] =
     "Enables loading the OneGoogleBar in an iframe. Otherwise, the "
