@@ -33,6 +33,8 @@ blink_modules_sources("mediastream") {
     "media_stream_audio_processor.h",
     "media_stream_audio_track_underlying_sink.cc",
     "media_stream_audio_track_underlying_sink.h",
+    "media_stream_audio_track_underlying_source.cc",
+    "media_stream_audio_track_underlying_source.h",
     "media_stream_constraints_util.cc",
     "media_stream_constraints_util.h",
     "media_stream_constraints_util_audio.cc",

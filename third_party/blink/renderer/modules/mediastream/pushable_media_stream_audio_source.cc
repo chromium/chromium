@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/mediastream/pushable_media_stream_audio_source.h"
 
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
+#include "third_party/blink/renderer/modules/webcodecs/audio_frame_serialization_data.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -21,13 +22,12 @@ void PushableMediaStreamAudioSource::LivenessBroker::
 }
 
 void PushableMediaStreamAudioSource::LivenessBroker::PushAudioData(
-    std::unique_ptr<PushableAudioData> data,
-    base::TimeTicks reference_time) {
+    std::unique_ptr<AudioFrameSerializationData> data) {
   WTF::MutexLocker locker(mutex_);
   if (!source_)
     return;
 
-  source_->DeliverData(std::move(data), reference_time);
+  source_->DeliverData(std::move(data));
 }
 
 PushableMediaStreamAudioSource::PushableMediaStreamAudioSource(
@@ -44,10 +44,9 @@ PushableMediaStreamAudioSource::~PushableMediaStreamAudioSource() {
 }
 
 void PushableMediaStreamAudioSource::PushAudioData(
-    std::unique_ptr<PushableAudioData> data,
-    base::TimeTicks reference_time) {
+    std::unique_ptr<AudioFrameSerializationData> data) {
   if (audio_task_runner_->RunsTasksInCurrentSequence()) {
-    DeliverData(std::move(data), reference_time);
+    DeliverData(std::move(data));
     return;
   }
 
@@ -55,16 +54,15 @@ void PushableMediaStreamAudioSource::PushAudioData(
       *audio_task_runner_, FROM_HERE,
       CrossThreadBindOnce(
           &PushableMediaStreamAudioSource::LivenessBroker::PushAudioData,
-          liveness_broker_, std::move(data), reference_time));
+          liveness_broker_, std::move(data)));
 }
 
 void PushableMediaStreamAudioSource::DeliverData(
-    std::unique_ptr<PushableAudioData> data,
-    base::TimeTicks reference_time) {
+    std::unique_ptr<AudioFrameSerializationData> data) {
   DCHECK(audio_task_runner_->RunsTasksInCurrentSequence());
 
   const media::AudioBus& audio_bus = *data->data();
-  int sample_rate = data->sampleRate();
+  int sample_rate = data->sample_rate();
 
   media::AudioParameters params = GetAudioParameters();
   if (!params.IsValid() ||
@@ -80,7 +78,7 @@ void PushableMediaStreamAudioSource::DeliverData(
     last_frames_ = audio_bus.frames();
   }
 
-  DeliverDataToTracks(audio_bus, reference_time);
+  DeliverDataToTracks(audio_bus, base::TimeTicks() + data->timestamp());
 }
 
 bool PushableMediaStreamAudioSource::EnsureSourceIsStarted() {

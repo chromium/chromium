@@ -12,6 +12,7 @@
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_audio_sink.h"
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_audio_sink.h"
+#include "third_party/blink/renderer/modules/webcodecs/audio_frame_serialization_data.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
@@ -22,25 +23,6 @@ using testing::_;
 using testing::WithArg;
 
 namespace blink {
-
-namespace {
-
-class FakeAudioData : public PushableAudioData {
- public:
-  FakeAudioData(int channels, int frames, int sample_rate)
-      : sample_rate_(sample_rate),
-        audio_bus_(media::AudioBus::Create(channels, frames)) {}
-
-  // PushableMediaStreamAudioSource::AudioData implementation.
-  media::AudioBus* data() override { return audio_bus_.get(); }
-  int sampleRate() override { return sample_rate_; }
-
- private:
-  int sample_rate_;
-  std::unique_ptr<media::AudioBus> audio_bus_;
-};
-
-}  // namespace
 
 class PushableMediaStreamAudioSourceTest : public testing::Test {
  public:
@@ -101,9 +83,9 @@ class PushableMediaStreamAudioSourceTest : public testing::Test {
           run_loop.Quit();
         }));
 
-    pushable_audio_source_->PushAudioData(
-        std::make_unique<FakeAudioData>(channels, frames, sample_rate),
-        reference_time);
+    pushable_audio_source_->PushAudioData(AudioFrameSerializationData::Wrap(
+        media::AudioBus::Create(channels, frames), sample_rate,
+        reference_time - base::TimeTicks()));
     run_loop.Run();
   }
 

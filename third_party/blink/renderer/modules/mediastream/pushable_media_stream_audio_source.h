@@ -13,14 +13,7 @@
 
 namespace blink {
 
-// Wrapper that abstracts how audio data is actually backed, to simplify
-// lifetime guarantees when jumping threads.
-class PushableAudioData {
- public:
-  virtual ~PushableAudioData() = default;
-  virtual media::AudioBus* data() = 0;
-  virtual int sampleRate() = 0;
-};
+class AudioFrameSerializationData;
 
 // Simplifies the creation of audio tracks.
 class MODULES_EXPORT PushableMediaStreamAudioSource
@@ -34,7 +27,7 @@ class MODULES_EXPORT PushableMediaStreamAudioSource
 
   // This can be called from any thread, and will push the data on
   // |audio_task_runner_|
-  void PushAudioData(std::unique_ptr<PushableAudioData> data, base::TimeTicks);
+  void PushAudioData(std::unique_ptr<AudioFrameSerializationData> data);
 
   bool running() const {
     DCHECK(GetTaskRunner()->BelongsToCurrentThread());
@@ -49,8 +42,7 @@ class MODULES_EXPORT PushableMediaStreamAudioSource
     explicit LivenessBroker(PushableMediaStreamAudioSource* source);
 
     void OnSourceDestroyedOrStopped();
-    void PushAudioData(std::unique_ptr<PushableAudioData> data,
-                       base::TimeTicks reference_time);
+    void PushAudioData(std::unique_ptr<AudioFrameSerializationData> data);
 
    private:
     WTF::Mutex mutex_;
@@ -59,8 +51,7 @@ class MODULES_EXPORT PushableMediaStreamAudioSource
 
   // Actually push data to the audio tracks. Only called on
   // |audio_task_runner_|.
-  void DeliverData(std::unique_ptr<PushableAudioData> data,
-                   base::TimeTicks reference_time);
+  void DeliverData(std::unique_ptr<AudioFrameSerializationData> data);
 
   // MediaStreamAudioSource implementation.
   bool EnsureSourceIsStarted() final;
