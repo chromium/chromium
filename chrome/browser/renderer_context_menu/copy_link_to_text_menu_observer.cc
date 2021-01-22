@@ -10,6 +10,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/renderer_context_menu/render_view_context_menu_proxy.h"
+#include "components/shared_highlighting/core/common/disabled_sites.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_view_host.h"
@@ -86,6 +87,17 @@ void CopyLinkToTextMenuObserver::ExecuteCommand(int command_id) {
       proxy_->GetWebContents()->GetMainFrame();
   if (!main_frame)
     return;
+
+  // Check whether current url is blocklisted for link to text generation. This
+  // check should happen before iframe check so that if both conditions are
+  // present then blocklist error is logged.
+  if (!shared_highlighting::ShouldOfferLinkToText(url_)) {
+    shared_highlighting::LogGenerateErrorBlockList();
+    OnGeneratedSelector(std::make_unique<ui::DataTransferEndpoint>(
+                            main_frame->GetLastCommittedOrigin()),
+                        std::string());
+    return;
+  }
 
   if (main_frame != proxy_->GetWebContents()->GetFocusedFrame()) {
     shared_highlighting::LogGenerateErrorIFrame();

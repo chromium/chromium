@@ -41633,6 +41633,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="9" label="Unknown"/>
   <int value="10" label="Iframe"/>
   <int value="11" label="Timeout"/>
+  <int value="12" label="BlockList"/>
 </enum>
 
 <enum name="LinkMonitorFailureType">
@@ -43384,6 +43385,7 @@ from previous Chrome versions.
   <int value="-1239262870" label="TextFragmentAnchor:enabled"/>
   <int value="-1238992816" label="ShelfDimming:enabled"/>
   <int value="-1237921078" label="SyncUSSNigori:enabled"/>
+  <int value="-1237821073" label="SharedHighlightingUseBlocklist:enabled"/>
   <int value="-1237621246" label="WebXRGamepadSupport:disabled"/>
   <int value="-1236065190" label="HardwareMediaKeyHandling:disabled"/>
   <int value="-1235586511" label="enable-datasaver-prompt"/>
@@ -45733,6 +45735,7 @@ from previous Chrome versions.
   <int value="1019623058" label="ash-enable-shelf-model-synchronization"/>
   <int value="1019857902"
       label="disable-hide-inactive-stacked-tab-close-buttons"/>
+  <int value="1021848000" label="SharedHighlightingUseBlocklist:disabled"/>
   <int value="1022424308" label="SignedExchangeSubresourcePrefetch:enabled"/>
   <int value="1022992701" label="enable-origin-chip-always"/>
   <int value="1023668536" label="PrintServerUi:enabled"/>

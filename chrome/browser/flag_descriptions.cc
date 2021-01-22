@@ -2560,6 +2560,14 @@ const char kZeroCopyDescription[] =
 const char kEnableVulkanName[] = "Vulkan";
 const char kEnableVulkanDescription[] = "Use vulkan as the graphics backend.";
 
+const char kSharedHighlightingUseBlocklistName[] =
+    "Shared Highlighting blocklist";
+const char kSharedHighlightingUseBlocklistDescription[] =
+    "Uses a blocklist to disable Shared Highlighting link generation on "
+    "certain sites where personalized or dynamic content or other technical "
+    "restrictions make it unlikely that a URL can be generated and actually "
+    "work when shared.";
+
 // Android ---------------------------------------------------------------------
 
 #if defined(OS_ANDROID)
