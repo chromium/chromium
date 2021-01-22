@@ -357,7 +357,8 @@ class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
       RenderWidgetHostDelegate* delegate,
       AgentSchedulingGroupHost& agent_scheduling_group_host,
       int32_t routing_id)
-      : RenderWidgetHostImpl(/*self_owned=*/false,
+      : RenderWidgetHostImpl(/*frame_tree=*/nullptr,
+                             /*self_owned=*/false,
                              delegate,
                              agent_scheduling_group_host,
                              routing_id,

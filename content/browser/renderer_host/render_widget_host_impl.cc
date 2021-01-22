@@ -326,6 +326,7 @@ base::LazyInstance<UnboundWidgetInputHandler>::Leaky g_unbound_input_handler =
 
 // static
 std::unique_ptr<RenderWidgetHostImpl> RenderWidgetHostImpl::Create(
+    FrameTree* frame_tree,
     RenderWidgetHostDelegate* delegate,
     AgentSchedulingGroupHost& agent_scheduling_host,
     int32_t routing_id,
@@ -333,24 +334,27 @@ std::unique_ptr<RenderWidgetHostImpl> RenderWidgetHostImpl::Create(
     bool renderer_initiated_creation,
     std::unique_ptr<FrameTokenMessageQueue> frame_token_message_queue) {
   return base::WrapUnique(new RenderWidgetHostImpl(
+      frame_tree,
       /*self_owned=*/false, delegate, agent_scheduling_host, routing_id, hidden,
       renderer_initiated_creation, std::move(frame_token_message_queue)));
 }
 
 // static
 RenderWidgetHostImpl* RenderWidgetHostImpl::CreateSelfOwned(
+    FrameTree* frame_tree,
     RenderWidgetHostDelegate* delegate,
     AgentSchedulingGroupHost& agent_scheduling_host,
     int32_t routing_id,
     bool hidden,
     std::unique_ptr<FrameTokenMessageQueue> frame_token_message_queue) {
-  return new RenderWidgetHostImpl(/*self_owned=*/true, delegate,
+  return new RenderWidgetHostImpl(frame_tree, /*self_owned=*/true, delegate,
                                   agent_scheduling_host, routing_id, hidden,
                                   /*renderer_initiated_creation=*/true,
                                   std::move(frame_token_message_queue));
 }
 
 RenderWidgetHostImpl::RenderWidgetHostImpl(
+    FrameTree* frame_tree,
     bool self_owned,
     RenderWidgetHostDelegate* delegate,
     AgentSchedulingGroupHost& agent_scheduling_group,
@@ -358,7 +362,8 @@ RenderWidgetHostImpl::RenderWidgetHostImpl(
     bool hidden,
     bool renderer_initiated_creation,
     std::unique_ptr<FrameTokenMessageQueue> frame_token_message_queue)
-    : self_owned_(self_owned),
+    : frame_tree_(frame_tree),
+      self_owned_(self_owned),
       waiting_for_init_(renderer_initiated_creation),
       delegate_(delegate),
       agent_scheduling_group_(agent_scheduling_group),

@@ -85,8 +85,9 @@ void RenderWidgetHostViewAndroidTest::SetUp() {
   process_ = std::make_unique<MockRenderProcessHost>(browser_context_.get());
   agent_scheduling_group_ =
       std::make_unique<AgentSchedulingGroupHost>(*process_);
-  host_ = MockRenderWidgetHost::Create(
-      delegate_.get(), *agent_scheduling_group_, process_->GetNextRoutingID());
+  host_ = MockRenderWidgetHost::Create(/*frame_tree=*/nullptr, delegate_.get(),
+                                       *agent_scheduling_group_,
+                                       process_->GetNextRoutingID());
   parent_layer_ = cc::Layer::Create();
   parent_view_.SetLayer(parent_layer_);
   layer_ = cc::Layer::Create();

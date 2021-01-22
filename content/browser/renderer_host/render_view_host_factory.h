@@ -11,6 +11,7 @@
 #include "content/common/content_export.h"
 
 namespace content {
+class FrameTree;
 class RenderViewHost;
 class RenderViewHostDelegate;
 class RenderWidgetHostDelegate;
@@ -24,7 +25,8 @@ class RenderViewHostFactory {
   // Creates a RenderViewHost using the currently registered factory, or the
   // default one if no factory is registered. Ownership of the returned
   // pointer will be passed to the caller.
-  static RenderViewHost* Create(SiteInstance* instance,
+  static RenderViewHost* Create(FrameTree* frame_tree,
+                                SiteInstance* instance,
                                 RenderViewHostDelegate* delegate,
                                 RenderWidgetHostDelegate* widget_delegate,
                                 int32_t main_frame_routing_id,
@@ -55,6 +57,7 @@ class RenderViewHostFactory {
   // You can derive from this class and specify an implementation for this
   // function to create a different kind of RenderViewHost for testing.
   virtual RenderViewHost* CreateRenderViewHost(
+      FrameTree* frame_tree,
       SiteInstance* instance,
       RenderViewHostDelegate* delegate,
       RenderWidgetHostDelegate* widget_delegate,

@@ -323,12 +323,6 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   // Notify the delegate that the screen orientation has been changed.
   virtual void DidChangeScreenOrientation() {}
 
-  // Returns the FrameTree that this RenderWidgetHost is attached to. If the
-  // RenderWidgetHost is attached to a frame, then its RenderFrameHost will be
-  // in the tree. Otherwise, the RenderWidgetHost is for a popup which was
-  // opened by a frame in the FrameTree.
-  virtual FrameTree* GetFrameTree();
-
   // Show the newly created widget with the specified bounds.
   // The widget is identified by the route_id passed to CreateNewWidget.
   virtual void ShowCreatedWidget(int process_id,

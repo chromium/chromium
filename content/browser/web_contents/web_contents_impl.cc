@@ -3665,7 +3665,7 @@ RenderWidgetHostImpl* WebContentsImpl::CreateNewPopupWidget(
   }
 
   RenderWidgetHostImpl* widget_host = RenderWidgetHostImpl::CreateSelfOwned(
-      this, agent_scheduling_group, route_id, IsHidden(),
+      &frame_tree_, this, agent_scheduling_group, route_id, IsHidden(),
       std::make_unique<FrameTokenMessageQueue>());
 
   widget_host->BindWidgetInterfaces(std::move(blink_widget_host),

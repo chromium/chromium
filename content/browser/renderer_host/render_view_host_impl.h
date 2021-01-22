@@ -52,6 +52,7 @@ struct WebPreferences;
 namespace content {
 
 class AgentSchedulingGroupHost;
+class FrameTree;
 class RenderProcessHost;
 class TimeoutMonitor;
 
@@ -110,7 +111,8 @@ class CONTENT_EXPORT RenderViewHostImpl
   static bool HasNonBackForwardCachedInstancesForProcess(
       RenderProcessHost* process);
 
-  RenderViewHostImpl(SiteInstance* instance,
+  RenderViewHostImpl(FrameTree* frame_tree,
+                     SiteInstance* instance,
                      std::unique_ptr<RenderWidgetHostImpl> widget,
                      RenderViewHostDelegate* delegate,
                      int32_t routing_id,
@@ -315,6 +317,8 @@ class CONTENT_EXPORT RenderViewHostImpl
   // trigger an eviction of this page.
   void PrepareToLeaveBackForwardCache(base::OnceClosure done_cb);
 
+  FrameTree* frame_tree() const { return frame_tree_; }
+
   // NOTE: Do not add functions that just send an IPC message that are called in
   // one or two places. Have the caller send the IPC message directly (unless
   // the caller places are in different platforms, in which case it's better
@@ -458,6 +462,8 @@ class CONTENT_EXPORT RenderViewHostImpl
       will_send_renderer_preferences_callback_for_testing_;
 
   mojo::AssociatedRemote<blink::mojom::PageBroadcast> page_broadcast_;
+
+  FrameTree* frame_tree_;
 
   base::WeakPtrFactory<RenderViewHostImpl> weak_factory_{this};
 

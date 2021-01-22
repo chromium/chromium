@@ -30,10 +30,6 @@ RenderViewHostDelegate::GetSessionStorageNamespaceMap() {
   return SessionStorageNamespaceMap();
 }
 
-FrameTree* RenderViewHostDelegate::GetFrameTree() {
-  return nullptr;
-}
-
 bool RenderViewHostDelegate::IsWebPreferencesSet() const {
   return false;
 }

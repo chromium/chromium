@@ -490,8 +490,7 @@ ui::TextInputClient* RenderWidgetHostViewAura::GetTextInputClient() {
 }
 
 RenderFrameHostImpl* RenderWidgetHostViewAura::GetFocusedFrame() const {
-  FrameTreeNode* focused_frame =
-      host()->delegate()->GetFrameTree()->GetFocusedFrame();
+  FrameTreeNode* focused_frame = host()->frame_tree()->GetFocusedFrame();
   if (!focused_frame)
     return nullptr;
   return focused_frame->current_frame_host();
@@ -2149,8 +2148,7 @@ void RenderWidgetHostViewAura::Shutdown() {
 
 bool RenderWidgetHostViewAura::ShouldVirtualKeyboardOverlayContent() const {
   // overlaycontent flag can only be set from main frame.
-  RenderFrameHostImpl* frame =
-      host()->delegate()->GetFrameTree()->GetMainFrame();
+  RenderFrameHostImpl* frame = host()->frame_tree()->GetMainFrame();
   if (!frame)
     return false;
 
@@ -2161,8 +2159,7 @@ void RenderWidgetHostViewAura::NotifyVirtualKeyboardOverlayRect(
     const gfx::Rect& keyboard_rect) {
   // geometrychange event can only be fired on main frame and not focused frame
   // which could be an iframe.
-  RenderFrameHostImpl* frame =
-      host()->delegate()->GetFrameTree()->GetMainFrame();
+  RenderFrameHostImpl* frame = host()->frame_tree()->GetMainFrame();
   if (!frame)
     return;
   frame->NotifyVirtualKeyboardOverlayRect(keyboard_rect);

@@ -1180,8 +1180,8 @@ RenderFrameHostImpl::RenderFrameHostImpl(
           site_instance->GetProcess()->GetNextRoutingID();
       DCHECK_EQ(nullptr, GetLocalRenderWidgetHost());
       owned_render_widget_host_ = RenderWidgetHostFactory::Create(
-          frame_tree_->render_widget_delegate(), agent_scheduling_group_,
-          widget_routing_id, /*hidden=*/true,
+          frame_tree_, frame_tree_->render_widget_delegate(),
+          agent_scheduling_group_, widget_routing_id, /*hidden=*/true,
           /*renderer_initiated_creation=*/false);
 #if defined(OS_ANDROID)
       owned_render_widget_host_->SetForceEnableZoom(

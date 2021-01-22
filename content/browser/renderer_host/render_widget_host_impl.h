@@ -100,6 +100,7 @@ namespace content {
 class AgentSchedulingGroupHost;
 class BrowserAccessibilityManager;
 class FlingSchedulerBase;
+class FrameTree;
 class InputRouter;
 class MockRenderWidgetHost;
 class PeakGpuMemoryTracker;
@@ -151,6 +152,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
  public:
   // See the constructor for documentations.
   static std::unique_ptr<RenderWidgetHostImpl> Create(
+      FrameTree* frame_tree,
       RenderWidgetHostDelegate* delegate,
       AgentSchedulingGroupHost& agent_scheduling_host,
       int32_t routing_id,
@@ -166,6 +168,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // - ShutdownAndDestroyWidget(also_delete = true) is called.
   // - its RenderProcess exit.
   static RenderWidgetHostImpl* CreateSelfOwned(
+      FrameTree* frame_tree,
       RenderWidgetHostDelegate* delegate,
       AgentSchedulingGroupHost& agent_scheduling_host,
       int32_t routing_id,
@@ -185,6 +188,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // Use RenderWidgetHostImpl::From(rwh) to downcast a RenderWidgetHost to a
   // RenderWidgetHostImpl.
   static RenderWidgetHostImpl* From(RenderWidgetHost* rwh);
+
+  FrameTree* frame_tree() const { return frame_tree_; }
 
   void set_new_content_rendering_delay_for_testing(
       const base::TimeDelta& delay) {
@@ -835,6 +840,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // If this object outlives |delegate|, DetachDelegate() must be called when
   // |delegate| goes away.
   RenderWidgetHostImpl(
+      FrameTree* frame_tree,
       bool self_owned,
       RenderWidgetHostDelegate* delegate,
       AgentSchedulingGroupHost& agent_scheduling_host,
@@ -1092,6 +1098,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
 
   // An expiry time for resetting the pending_user_activation_timer_.
   static const base::TimeDelta kActivationNotificationExpireTime;
+
+  FrameTree* frame_tree_;
 
   // RenderWidgetHost are either:
   // - Owned by RenderViewHostImpl.

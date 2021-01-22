@@ -86,7 +86,8 @@ class FlingSchedulerTest : public testing::Test,
     int32_t routing_id = process_host_->GetNextRoutingID();
     delegate_ = std::make_unique<MockRenderWidgetHostDelegate>();
     widget_host_ = TestRenderWidgetHost::Create(
-        delegate_.get(), *agent_scheduling_group_host_, routing_id, false);
+        /* frame_tree= */ nullptr, delegate_.get(),
+        *agent_scheduling_group_host_, routing_id, false);
     delegate_->set_widget_host(widget_host_.get());
     return std::make_unique<TestRenderWidgetHostView>(widget_host_.get());
   }

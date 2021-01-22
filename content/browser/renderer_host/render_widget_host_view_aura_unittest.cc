@@ -391,11 +391,12 @@ class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
   // Instance self-delete when its |agent_scheduling_groups|'s process will
   // exit.
   static MockRenderWidgetHostImpl* Create(
+      FrameTree* frame_tree,
       RenderWidgetHostDelegate* delegate,
       AgentSchedulingGroupHost& agent_scheduling_group,
       int32_t routing_id) {
-    return new MockRenderWidgetHostImpl(delegate, agent_scheduling_group,
-                                        routing_id);
+    return new MockRenderWidgetHostImpl(frame_tree, delegate,
+                                        agent_scheduling_group, routing_id);
   }
 
   MockWidgetInputHandler* input_handler() { return &input_handler_; }
@@ -421,10 +422,12 @@ class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
   }
 
  private:
-  MockRenderWidgetHostImpl(RenderWidgetHostDelegate* delegate,
+  MockRenderWidgetHostImpl(FrameTree* frame_tree,
+                           RenderWidgetHostDelegate* delegate,
                            AgentSchedulingGroupHost& agent_scheduling_group,
                            int32_t routing_id)
-      : RenderWidgetHostImpl(/*self_owned=*/true,
+      : RenderWidgetHostImpl(frame_tree,
+                             /*self_owned=*/true,
                              delegate,
                              agent_scheduling_group,
                              routing_id,
@@ -510,9 +513,9 @@ class RenderWidgetHostViewAuraTest : public testing::Test {
     int32_t routing_id = process_host_->GetNextRoutingID();
     delegates_.push_back(std::make_unique<MockRenderWidgetHostDelegate>());
     auto* widget_host = MockRenderWidgetHostImpl::Create(
-        delegates_.back().get(), *agent_scheduling_group_host_, routing_id);
+        GetFrameTree(), delegates_.back().get(), *agent_scheduling_group_host_,
+        routing_id);
     delegates_.back()->set_widget_host(widget_host);
-    delegates_.back()->set_frame_tree(GetFrameTree());
 
     return new FakeRenderWidgetHostViewAura(widget_host);
   }
@@ -552,9 +555,9 @@ class RenderWidgetHostViewAuraTest : public testing::Test {
     int32_t routing_id = process_host_->GetNextRoutingID();
     delegates_.push_back(std::make_unique<MockRenderWidgetHostDelegate>());
     parent_host_ = MockRenderWidgetHostImpl::Create(
-        delegates_.back().get(), *agent_scheduling_group_host_, routing_id);
+        GetFrameTree(), delegates_.back().get(), *agent_scheduling_group_host_,
+        routing_id);
     delegates_.back()->set_widget_host(parent_host_);
-    delegates_.back()->set_frame_tree(GetFrameTree());
 
     parent_view_ = new RenderWidgetHostViewAura(parent_host_);
     parent_view_->InitAsChild(nullptr);
@@ -3192,9 +3195,9 @@ TEST_F(RenderWidgetHostViewAuraTest, DiscardDelegatedFrames) {
     int32_t routing_id = process_host_->GetNextRoutingID();
     delegates_.push_back(base::WrapUnique(new MockRenderWidgetHostDelegate));
     hosts[i] = MockRenderWidgetHostImpl::Create(
-        delegates_.back().get(), *agent_scheduling_group_host_, routing_id);
+        GetFrameTree(), delegates_.back().get(), *agent_scheduling_group_host_,
+        routing_id);
     delegates_.back()->set_widget_host(hosts[i]);
-    delegates_.back()->set_frame_tree(GetFrameTree());
 
     views[i] = new FakeRenderWidgetHostViewAura(hosts[i]);
     // Prevent frames from being skipped due to resize, this test does not
@@ -3314,9 +3317,9 @@ TEST_F(RenderWidgetHostViewAuraTest, DiscardDelegatedFramesWithMemoryPressure) {
 
     delegates_.push_back(base::WrapUnique(new MockRenderWidgetHostDelegate));
     hosts[i] = MockRenderWidgetHostImpl::Create(
-        delegates_.back().get(), *agent_scheduling_group_host_, routing_id);
+        GetFrameTree(), delegates_.back().get(), *agent_scheduling_group_host_,
+        routing_id);
     delegates_.back()->set_widget_host(hosts[i]);
-    delegates_.back()->set_frame_tree(GetFrameTree());
 
     hosts[i]->BindWidgetInterfaces(
         mojo::PendingAssociatedRemote<blink::mojom::WidgetHost>()
@@ -5881,7 +5884,8 @@ class InputMethodAuraTestBase : public RenderWidgetHostViewAuraTest {
   MockRenderWidgetHostImpl* CreateRenderWidgetHostForAgentSchedulingGroup(
       AgentSchedulingGroupHost& agent_scheduling_group_host) {
     return MockRenderWidgetHostImpl::Create(
-        render_widget_host_delegate(), agent_scheduling_group_host,
+        GetFrameTree(), render_widget_host_delegate(),
+        agent_scheduling_group_host,
         agent_scheduling_group_host.GetProcess()->GetNextRoutingID());
   }
 

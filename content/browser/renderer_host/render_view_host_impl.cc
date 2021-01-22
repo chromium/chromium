@@ -281,6 +281,7 @@ bool RenderViewHostImpl::HasNonBackForwardCachedInstancesForProcess(
 }
 
 RenderViewHostImpl::RenderViewHostImpl(
+    FrameTree* frame_tree,
     SiteInstance* instance,
     std::unique_ptr<RenderWidgetHostImpl> widget,
     RenderViewHostDelegate* delegate,
@@ -292,7 +293,8 @@ RenderViewHostImpl::RenderViewHostImpl(
       delegate_(delegate),
       instance_(static_cast<SiteInstanceImpl*>(instance)),
       routing_id_(routing_id),
-      main_frame_routing_id_(main_frame_routing_id) {
+      main_frame_routing_id_(main_frame_routing_id),
+      frame_tree_(frame_tree) {
   DCHECK(instance_.get());
   DCHECK(delegate_);
   DCHECK_NE(GetRoutingID(), render_widget_host_->GetRoutingID());
@@ -332,7 +334,7 @@ RenderViewHostImpl::RenderViewHostImpl(
                               : blink::mojom::PageVisibilityState::kHidden);
 
   GetWidget()->set_owner_delegate(this);
-  GetDelegate()->GetFrameTree()->RegisterRenderViewHost(this);
+  frame_tree_->RegisterRenderViewHost(this);
 }
 
 RenderViewHostImpl::~RenderViewHostImpl() {
@@ -374,7 +376,7 @@ RenderViewHostImpl::~RenderViewHostImpl() {
   // If |this| is in the BackForwardCache, then it was already removed from
   // the FrameTree at the time it entered the BackForwardCache.
   if (!is_in_back_forward_cache_)
-    GetDelegate()->GetFrameTree()->UnregisterRenderViewHost(this);
+    frame_tree_->UnregisterRenderViewHost(this);
 }
 
 RenderViewHostDelegate* RenderViewHostImpl::GetDelegate() {
@@ -536,7 +538,7 @@ void RenderViewHostImpl::EnterBackForwardCache() {
     will_enter_back_forward_cache_callback_for_testing_.Run();
 
   TRACE_EVENT0("navigation", "RenderViewHostImpl::EnterBackForwardCache");
-  GetDelegate()->GetFrameTree()->UnregisterRenderViewHost(this);
+  frame_tree_->UnregisterRenderViewHost(this);
   is_in_back_forward_cache_ = true;
   page_lifecycle_state_manager_->SetIsInBackForwardCache(
       is_in_back_forward_cache_, /*page_restore_params=*/nullptr);
@@ -553,7 +555,7 @@ void RenderViewHostImpl::LeaveBackForwardCache(
   TRACE_EVENT0("navigation", "RenderViewHostImpl::LeaveBackForwardCache");
   // At this point, the frames |this| RenderViewHostImpl belongs to are
   // guaranteed to be committed, so it should be reused going forward.
-  GetDelegate()->GetFrameTree()->RegisterRenderViewHost(this);
+  frame_tree_->RegisterRenderViewHost(this);
   is_in_back_forward_cache_ = false;
   page_lifecycle_state_manager_->SetIsInBackForwardCache(
       is_in_back_forward_cache_, std::move(page_restore_params));
@@ -572,10 +574,8 @@ void RenderViewHostImpl::OnBackForwardCacheTimeout() {
   // TODO(yuzus): Implement a method to get a list of RenderFrameHosts
   // associated with |this|, instead of iterating through all the
   // RenderFrameHosts in bfcache.
-  const auto& entries = delegate_->GetFrameTree()
-                            ->controller()
-                            ->GetBackForwardCache()
-                            .GetEntries();
+  const auto& entries =
+      frame_tree_->controller()->GetBackForwardCache().GetEntries();
   for (auto& entry : entries) {
     for (auto* const rvh : entry->render_view_hosts) {
       if (rvh == this) {

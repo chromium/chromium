@@ -151,7 +151,8 @@ TEST_F(RenderWidgetHostViewMacEditCommandHelperWithTaskEnvTest,
     int32_t routing_id = process_host->GetNextRoutingID();
     std::unique_ptr<RenderWidgetHostImpl> render_widget =
         RenderWidgetHostImpl::Create(
-            &delegate, *agent_scheduling_group_host, routing_id,
+            /*frmae_tree=*/nullptr, &delegate, *agent_scheduling_group_host,
+            routing_id,
             /*hidden=*/false, /*renderer_initiated_creation=*/false,
             std::make_unique<FrameTokenMessageQueue>());
 

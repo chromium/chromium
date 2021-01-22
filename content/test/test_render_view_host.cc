@@ -228,13 +228,15 @@ base::Optional<DisplayFeature> TestRenderWidgetHostView::GetDisplayFeature() {
 }
 
 TestRenderViewHost::TestRenderViewHost(
+    FrameTree* frame_tree,
     SiteInstance* instance,
     std::unique_ptr<RenderWidgetHostImpl> widget,
     RenderViewHostDelegate* delegate,
     int32_t routing_id,
     int32_t main_frame_routing_id,
     bool swapped_out)
-    : RenderViewHostImpl(instance,
+    : RenderViewHostImpl(frame_tree,
+                         instance,
                          std::move(widget),
                          delegate,
                          routing_id,

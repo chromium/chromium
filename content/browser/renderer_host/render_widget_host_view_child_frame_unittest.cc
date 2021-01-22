@@ -126,7 +126,8 @@ class RenderWidgetHostViewChildFrameTest : public testing::Test {
     sink_ = &process_host_->sink();
 
     widget_host_ = RenderWidgetHostImpl::Create(
-        &delegate_, *agent_scheduling_group_host_, routing_id,
+        /*frame_tree=*/nullptr, &delegate_, *agent_scheduling_group_host_,
+        routing_id,
         /*hidden=*/false, /*renderer_initiated_creation=*/false,
         std::make_unique<FrameTokenMessageQueue>());
 

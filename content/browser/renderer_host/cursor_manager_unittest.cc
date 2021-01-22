@@ -64,7 +64,8 @@ class CursorManagerTest : public testing::Test {
   std::unique_ptr<RenderWidgetHostImpl> MakeNewWidgetHost() {
     int32_t routing_id = process_host_->GetNextRoutingID();
     return MockRenderWidgetHost::Create(
-        &delegate_, *agent_scheduling_group_host_, routing_id);
+        /*frame_tree=*/nullptr, &delegate_, *agent_scheduling_group_host_,
+        routing_id);
   }
 
   void TearDown() override {

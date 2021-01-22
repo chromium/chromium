@@ -76,11 +76,13 @@ namespace content {
 // the event could occur in either.
 class TracingRenderWidgetHost : public RenderWidgetHostImpl {
  public:
-  TracingRenderWidgetHost(RenderWidgetHostDelegate* delegate,
+  TracingRenderWidgetHost(FrameTree* frame_tree,
+                          RenderWidgetHostDelegate* delegate,
                           AgentSchedulingGroupHost& agent_scheduling_group,
                           int32_t routing_id,
                           bool hidden)
-      : RenderWidgetHostImpl(/*self_owned=*/false,
+      : RenderWidgetHostImpl(frame_tree,
+                             /*self_owned=*/false,
                              delegate,
                              agent_scheduling_group,
                              routing_id,
@@ -107,12 +109,13 @@ class TracingRenderWidgetHostFactory : public RenderWidgetHostFactory {
   }
 
   std::unique_ptr<RenderWidgetHostImpl> CreateRenderWidgetHost(
+      FrameTree* frame_tree,
       RenderWidgetHostDelegate* delegate,
       AgentSchedulingGroupHost& agent_scheduling_group,
       int32_t routing_id,
       bool hidden) override {
     return std::make_unique<TracingRenderWidgetHost>(
-        delegate, agent_scheduling_group, routing_id, hidden);
+        frame_tree, delegate, agent_scheduling_group, routing_id, hidden);
   }
 
  private:
