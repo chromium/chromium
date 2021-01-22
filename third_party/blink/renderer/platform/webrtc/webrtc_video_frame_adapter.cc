@@ -352,40 +352,68 @@ WebRtcVideoFrameAdapter::CreateFrameAdapter() const {
   }
   IsValidFrame(*frame_);
 
+  // If the frame is a software frame then it can be in I420, I420A or NV12.
+  // TODO(https://crbug.com/1169727): Move this check to somewhere else, and add
+  // tests for all pixel formats.
+  DCHECK(frame_->format() == media::PIXEL_FORMAT_NV12 ||
+         frame_->format() == media::PIXEL_FORMAT_I420 ||
+         frame_->format() == media::PIXEL_FORMAT_I420A)
+      << "Can not scale software frame of format "
+      << media::VideoPixelFormatToString(frame_->format());
+
   // Since scaling is required, hard-apply both the cropping and scaling
   // before we hand the frame over to WebRTC.
-  const bool has_alpha = frame_->format() == media::PIXEL_FORMAT_I420A;
-
   gfx::Size scaled_size = frame_->natural_size();
   scoped_refptr<media::VideoFrame> scaled_frame = frame_;
   if (scaled_size != frame_->visible_rect().size()) {
     CHECK(scaled_frame_pool_);
     scaled_frame = scaled_frame_pool_->CreateFrame(
-        has_alpha ? media::PIXEL_FORMAT_I420A : media::PIXEL_FORMAT_I420,
-        scaled_size, gfx::Rect(scaled_size), scaled_size, frame_->timestamp());
-    libyuv::I420Scale(
-        frame_->visible_data(media::VideoFrame::kYPlane),
-        frame_->stride(media::VideoFrame::kYPlane),
-        frame_->visible_data(media::VideoFrame::kUPlane),
-        frame_->stride(media::VideoFrame::kUPlane),
-        frame_->visible_data(media::VideoFrame::kVPlane),
-        frame_->stride(media::VideoFrame::kVPlane),
-        frame_->visible_rect().width(), frame_->visible_rect().height(),
-        scaled_frame->data(media::VideoFrame::kYPlane),
-        scaled_frame->stride(media::VideoFrame::kYPlane),
-        scaled_frame->data(media::VideoFrame::kUPlane),
-        scaled_frame->stride(media::VideoFrame::kUPlane),
-        scaled_frame->data(media::VideoFrame::kVPlane),
-        scaled_frame->stride(media::VideoFrame::kVPlane), scaled_size.width(),
-        scaled_size.height(), libyuv::kFilterBilinear);
-    if (has_alpha) {
-      libyuv::ScalePlane(
-          frame_->visible_data(media::VideoFrame::kAPlane),
-          frame_->stride(media::VideoFrame::kAPlane),
-          frame_->visible_rect().width(), frame_->visible_rect().height(),
-          scaled_frame->data(media::VideoFrame::kAPlane),
-          scaled_frame->stride(media::VideoFrame::kAPlane), scaled_size.width(),
-          scaled_size.height(), libyuv::kFilterBilinear);
+        frame_->format(), scaled_size, gfx::Rect(scaled_size), scaled_size,
+        frame_->timestamp());
+
+    switch (frame_->format()) {
+      case media::PIXEL_FORMAT_I420A:
+        libyuv::ScalePlane(
+            frame_->visible_data(media::VideoFrame::kAPlane),
+            frame_->stride(media::VideoFrame::kAPlane),
+            frame_->visible_rect().width(), frame_->visible_rect().height(),
+            scaled_frame->data(media::VideoFrame::kAPlane),
+            scaled_frame->stride(media::VideoFrame::kAPlane),
+            scaled_size.width(), scaled_size.height(), libyuv::kFilterBilinear);
+        // Fallthrough to I420 in order to scale the YUV planes as well.
+        ABSL_FALLTHROUGH_INTENDED;
+      case media::PIXEL_FORMAT_I420:
+        libyuv::I420Scale(
+            frame_->visible_data(media::VideoFrame::kYPlane),
+            frame_->stride(media::VideoFrame::kYPlane),
+            frame_->visible_data(media::VideoFrame::kUPlane),
+            frame_->stride(media::VideoFrame::kUPlane),
+            frame_->visible_data(media::VideoFrame::kVPlane),
+            frame_->stride(media::VideoFrame::kVPlane),
+            frame_->visible_rect().width(), frame_->visible_rect().height(),
+            scaled_frame->data(media::VideoFrame::kYPlane),
+            scaled_frame->stride(media::VideoFrame::kYPlane),
+            scaled_frame->data(media::VideoFrame::kUPlane),
+            scaled_frame->stride(media::VideoFrame::kUPlane),
+            scaled_frame->data(media::VideoFrame::kVPlane),
+            scaled_frame->stride(media::VideoFrame::kVPlane),
+            scaled_size.width(), scaled_size.height(), libyuv::kFilterBilinear);
+        break;
+      case media::PIXEL_FORMAT_NV12:
+        libyuv::NV12Scale(
+            frame_->visible_data(media::VideoFrame::kYPlane),
+            frame_->stride(media::VideoFrame::kYPlane),
+            frame_->visible_data(media::VideoFrame::kUVPlane),
+            frame_->stride(media::VideoFrame::kUVPlane),
+            frame_->visible_rect().width(), frame_->visible_rect().height(),
+            scaled_frame->data(media::VideoFrame::kYPlane),
+            scaled_frame->stride(media::VideoFrame::kYPlane),
+            scaled_frame->data(media::VideoFrame::kUVPlane),
+            scaled_frame->stride(media::VideoFrame::kUVPlane),
+            scaled_size.width(), scaled_size.height(), libyuv::kFilterBilinear);
+        break;
+      default:
+        NOTREACHED();
     }
   }
   return MakeFrameAdapter(std::move(scaled_frame));
