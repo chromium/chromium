@@ -5811,10 +5811,6 @@ crbug.com/1163176 external/wpt/css/css-sizing/aspect-ratio/replaced-element-031.
 crbug.com/1163176 external/wpt/css/css-sizing/aspect-ratio/replaced-element-032.html [ Failure ]
 crbug.com/1163178 external/wpt/svg/embedded/image-embedding-svg-with-auto-height.svg [ Failure ]
 
-# Wpt importer sheriff 2021-01-19
-crbug.com/1168130 external/wpt/css/css-flexbox/abspos/position-absolute-012.html [ Pass Failure ]
-crbug.com/1168130 external/wpt/css/css-flexbox/abspos/position-absolute-013.html [ Pass Failure ]
-
 # Sheriff 2020-12-14
 crbug.com/1046784 http/tests/devtools/console/console-context-selector.js [ Pass Timeout ]
 
