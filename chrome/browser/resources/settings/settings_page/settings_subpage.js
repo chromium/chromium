@@ -219,8 +219,13 @@ Polymer({
   },
 
   /** @private */
-  onTapBack_() {
+  onBackClick_() {
     settings.Router.getInstance().navigateToPreviousRoute();
+  },
+
+  /** @private */
+  onHelpClick_() {
+    window.open(this.learnMoreUrl);
   },
 
   /** @private */
