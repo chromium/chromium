@@ -75,6 +75,7 @@
 #include "chromeos/login/auth/challenge_response/cert_utils.h"
 #include "chromeos/login/auth/cryptohome_key_constants.h"
 #include "chromeos/login/auth/saml_password_attributes.h"
+#include "chromeos/login/auth/sync_trusted_vault_keys.h"
 #include "chromeos/login/auth/user_context.h"
 #include "chromeos/network/onc/certificate_scope.h"
 #include "chromeos/settings/cros_settings_names.h"
@@ -780,8 +781,6 @@ void GaiaScreenHandler::HandleCompleteAuthentication(
       base::BindOnce(&LoginDisplayHost::CompleteLogin,
                      base::Unretained(LoginDisplayHost::default_host())));
 
-  // TODO(crbug.com/1081651): Propagate |sync_trusted_vault_keys| into
-  // UserContext.
   pending_user_context_ = std::make_unique<UserContext>();
   std::string error_message;
   if (!login::BuildUserContextForGaiaSignIn(
@@ -789,6 +788,10 @@ void GaiaScreenHandler::HandleCompleteAuthentication(
           GetAccountId(email, gaia_id, AccountType::GOOGLE), using_saml,
           using_saml_api_, password,
           SamlPasswordAttributes::FromJs(*password_attributes),
+          IsSyncTrustedVaultKeysEnabled()
+              ? base::make_optional(
+                    SyncTrustedVaultKeys::FromJs(*sync_trusted_vault_keys))
+              : base::nullopt,
           *extension_provided_client_cert_usage_observer_,
           pending_user_context_.get(), &error_message)) {
     core_oobe_view_->ShowSignInError(0, error_message, std::string(),
@@ -822,8 +825,7 @@ void GaiaScreenHandler::HandleCompleteLogin(const std::string& gaia_id,
                                             const std::string& password,
                                             bool using_saml) {
   VLOG(1) << "HandleCompleteLogin";
-  DoCompleteLogin(gaia_id, typed_email, password, using_saml,
-                  SamlPasswordAttributes());
+  DoCompleteLogin(gaia_id, typed_email, password, using_saml);
 }
 
 void GaiaScreenHandler::HandleUsingSAMLAPI(bool is_third_party_idp) {
@@ -988,12 +990,10 @@ void GaiaScreenHandler::OnShowAddUser() {
   LoginDisplayHost::default_host()->ShowGaiaDialog(populated_account_id_);
 }
 
-void GaiaScreenHandler::DoCompleteLogin(
-    const std::string& gaia_id,
-    const std::string& typed_email,
-    const std::string& password,
-    bool using_saml,
-    const SamlPasswordAttributes& password_attributes) {
+void GaiaScreenHandler::DoCompleteLogin(const std::string& gaia_id,
+                                        const std::string& typed_email,
+                                        const std::string& password,
+                                        bool using_saml) {
   if (using_saml && !using_saml_api_)
     RecordSAMLScrapingVerificationResultInHistogram(true);
 
@@ -1011,7 +1011,8 @@ void GaiaScreenHandler::DoCompleteLogin(
   if (!login::BuildUserContextForGaiaSignIn(
           user ? user->GetType() : CalculateUserType(account_id),
           GetAccountId(typed_email, gaia_id, AccountType::GOOGLE), using_saml,
-          using_saml_api_, password, password_attributes,
+          using_saml_api_, password, SamlPasswordAttributes(),
+          /*sync_trusted_vault_keys=*/base::nullopt,
           *extension_provided_client_cert_usage_observer_, &user_context,
           &error_message)) {
     core_oobe_view_->ShowSignInError(0, error_message, std::string(),

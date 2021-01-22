@@ -51,6 +51,8 @@
 #include "chrome/browser/chromeos/scoped_test_system_nss_key_slot_mixin.h"
 #include "chrome/browser/chromeos/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/chromeos/settings/stub_cros_settings_provider.h"
+#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/login/login_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/eula_screen_handler.h"
@@ -75,6 +77,9 @@
 #include "components/policy/policy_constants.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/sync/driver/profile_sync_service.h"
+#include "components/sync/driver/sync_driver_switches.h"
+#include "components/sync/driver/trusted_vault_client.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_service.h"
@@ -102,6 +107,7 @@
 #include "net/test/spawned_test_server/spawned_test_server.h"
 #include "net/test/test_data_directory.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
 
 namespace em = enterprise_management;
@@ -454,6 +460,68 @@ IN_PROC_BROWSER_TEST_F(WebviewLoginTest, BackButton) {
   test::OobeJS().ClickOnPath(kPrimaryButton);
 
   test::WaitForPrimaryUserSessionStart();
+}
+
+class WebviewLoginTestWithSyncTrustedVaultEnabled : public WebviewLoginTest {
+ public:
+  WebviewLoginTestWithSyncTrustedVaultEnabled() {
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitAndEnableFeature(
+        ::switches::kSyncSupportTrustedVaultPassphraseRecovery);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(WebviewLoginTestWithSyncTrustedVaultEnabled,
+                       BasicWithKeys) {
+  // Set up some fake keys in the server.
+  FakeGaia::SyncTrustedVaultKeys fake_gaia_keys;
+  // Create an arbitrary encryption key, the precisely value is not relevant,
+  // but used as test expectation later down.
+  fake_gaia_keys.encryption_key.resize(16, 123);
+  fake_gaia_keys.encryption_key_version = 91;
+  fake_gaia_keys.trusted_public_keys.emplace_back();
+  // Create an arbitrary public key, the precisely value is not relevant.
+  fake_gaia_keys.trusted_public_keys.back().resize(16, 124);
+  fake_gaia_.fake_gaia()->SetSyncTrustedVaultKeys(FakeGaiaMixin::kFakeUserEmail,
+                                                  fake_gaia_keys);
+
+  WaitForGaiaPageLoadAndPropertyUpdate();
+
+  ExpectIdentifierPage();
+
+  SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserEmail, {"identifier"});
+  SigninFrameJS().TapOn("nextButton");
+  WaitForGaiaPageBackButtonUpdate();
+  ExpectPasswordPage();
+
+  ASSERT_TRUE(LoginDisplayHost::default_host());
+
+  SigninFrameJS().TypeIntoPath("[]", {"services"});
+  SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserPassword, {"password"});
+  SigninFrameJS().TapOn("nextButton");
+
+  Browser* browser = ui_test_utils::WaitForBrowserToOpen();
+  test::WaitForPrimaryUserSessionStart();
+
+  syncer::ProfileSyncService* sync_service =
+      ProfileSyncServiceFactory::GetAsProfileSyncServiceForProfile(
+          browser->profile());
+  syncer::TrustedVaultClient* trusted_vault_client =
+      sync_service->GetSyncClientForTest()->GetTrustedVaultClient();
+
+  // Verify that the sync trusted vault keys have been received and stored.
+  base::RunLoop loop;
+  std::vector<std::vector<uint8_t>> actual_keys;
+  trusted_vault_client->FetchKeys(
+      sync_service->GetAuthenticatedAccountInfo(),
+      base::BindLambdaForTesting(
+          [&](const std::vector<std::vector<uint8_t>>& keys) {
+            actual_keys = keys;
+            loop.Quit();
+          }));
+  loop.Run();
+
+  EXPECT_THAT(actual_keys, testing::ElementsAre(fake_gaia_keys.encryption_key));
 }
 
 class WebviewLoginTestWithChildSigninEnabled : public WebviewLoginTest {

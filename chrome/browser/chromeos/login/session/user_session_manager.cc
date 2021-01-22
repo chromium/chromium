@@ -138,6 +138,7 @@
 #include "components/signin/public/identity_manager/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
+#include "components/sync/driver/sync_service.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -377,6 +378,29 @@ policy::MinimumVersionPolicyHandler* GetMinimumVersionPolicyHandler() {
 
 void OnPrepareTpmDeviceFinished() {
   BootTimesRecorder::Get()->AddLoginTimeMarker("TPMOwn-End", false);
+}
+
+void SaveSyncTrustedVaultKeysToProfile(
+    const std::string& gaia_id,
+    const SyncTrustedVaultKeys& trusted_vault_keys,
+    Profile* profile) {
+  syncer::SyncService* sync_service =
+      ProfileSyncServiceFactory::GetForProfile(profile);
+  if (!sync_service) {
+    return;
+  }
+
+  if (!trusted_vault_keys.encryption_keys().empty()) {
+    sync_service->AddTrustedVaultDecryptionKeysFromWeb(
+        gaia_id, trusted_vault_keys.encryption_keys(),
+        trusted_vault_keys.last_encryption_key_version());
+  }
+
+  for (const std::vector<uint8_t>& trusted_public_key :
+       trusted_vault_keys.trusted_public_keys()) {
+    sync_service->AddTrustedVaultRecoveryMethodFromWeb(
+        gaia_id, trusted_public_key, base::DoNothing());
+  }
 }
 
 }  // namespace
@@ -1532,6 +1556,12 @@ void UserSessionManager::FinalizePrepareProfile(Profile* profile) {
 
   if (!user_context_.GetChallengeResponseKeys().empty())
     PersistChallengeResponseKeys(user_context_);
+
+  if (user_context_.GetSyncTrustedVaultKeys().has_value()) {
+    SaveSyncTrustedVaultKeysToProfile(user_context_.GetGaiaID(),
+                                      *user_context_.GetSyncTrustedVaultKeys(),
+                                      profile);
+  }
 
   VLOG(1) << "Clearing all secrets";
   user_context_.ClearSecrets();

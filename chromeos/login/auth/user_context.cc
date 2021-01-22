@@ -148,6 +148,11 @@ UserContext::GetSamlPasswordAttributes() const {
   return saml_password_attributes_;
 }
 
+const base::Optional<SyncTrustedVaultKeys>&
+UserContext::GetSyncTrustedVaultKeys() const {
+  return sync_trusted_vault_keys_;
+}
+
 bool UserContext::IsLockableManagedGuestSession() const {
   return !managed_guest_session_launch_extension_id_.empty();
 }
@@ -240,6 +245,11 @@ void UserContext::SetSamlPasswordAttributes(
   saml_password_attributes_ = saml_password_attributes;
 }
 
+void UserContext::SetSyncTrustedVaultKeys(
+    const SyncTrustedVaultKeys& sync_trusted_vault_keys) {
+  sync_trusted_vault_keys_ = sync_trusted_vault_keys;
+}
+
 void UserContext::SetIsUnderAdvancedProtection(
     bool is_under_advanced_protection) {
   is_under_advanced_protection_ = is_under_advanced_protection;
@@ -265,6 +275,7 @@ void UserContext::ClearSecrets() {
   password_key_.ClearSecret();
   auth_code_.clear();
   refresh_token_.clear();
+  sync_trusted_vault_keys_.reset();
 }
 
 }  // namespace chromeos

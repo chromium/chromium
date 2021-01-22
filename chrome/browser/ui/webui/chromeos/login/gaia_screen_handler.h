@@ -36,7 +36,6 @@ class NSSTempCertsCacheChromeOS;
 
 namespace chromeos {
 
-class SamlPasswordAttributes;
 class SigninScreenHandler;
 class PublicSamlUrlFetcher;
 class GaiaScreen;
@@ -241,8 +240,7 @@ class GaiaScreenHandler : public BaseScreenHandler,
   void DoCompleteLogin(const std::string& gaia_id,
                        const std::string& typed_email,
                        const std::string& password,
-                       bool using_saml,
-                       const SamlPasswordAttributes& password_attributes);
+                       bool using_saml);
 
   // Kick off cookie / local storage cleanup.
   void StartClearingCookies(base::OnceClosure on_clear_callback);

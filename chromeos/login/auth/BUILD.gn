@@ -72,6 +72,8 @@ component("auth") {
     "stub_authenticator.h",
     "stub_authenticator_builder.cc",
     "stub_authenticator_builder.h",
+    "sync_trusted_vault_keys.cc",
+    "sync_trusted_vault_keys.h",
     "test_attempt_state.cc",
     "test_attempt_state.h",
     "user_context.cc",
@@ -134,5 +136,6 @@ source_set("unit_tests") {
     "challenge_response/cert_utils_unittest.cc",
     "key_unittest.cc",
     "saml_password_attributes_unittest.cc",
+    "sync_trusted_vault_keys_unittest.cc",
   ]
 }

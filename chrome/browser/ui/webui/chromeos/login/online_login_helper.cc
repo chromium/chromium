@@ -15,6 +15,7 @@
 #include "chromeos/dbus/util/version_loader.h"
 #include "chromeos/login/auth/challenge_response/cert_utils.h"
 #include "chromeos/login/auth/cryptohome_key_constants.h"
+#include "components/sync/driver/sync_driver_switches.h"
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -109,6 +110,7 @@ bool BuildUserContextForGaiaSignIn(
     bool using_saml_api,
     const std::string& password,
     const SamlPasswordAttributes& password_attributes,
+    const base::Optional<SyncTrustedVaultKeys>& sync_trusted_vault_keys,
     const LoginClientCertUsageObserver&
         extension_provided_client_cert_usage_observer,
     UserContext* user_context,
@@ -150,6 +152,11 @@ bool BuildUserContextForGaiaSignIn(
       user_context->SetSamlPasswordAttributes(password_attributes);
     }
   }
+
+  if (sync_trusted_vault_keys.has_value()) {
+    user_context->SetSyncTrustedVaultKeys(*sync_trusted_vault_keys);
+  }
+
   return true;
 }
 

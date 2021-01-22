@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/optional.h"
 #include "chrome/browser/chromeos/login/login_client_cert_usage_observer.h"
 #include "chrome/browser/chromeos/login/signin_partition_manager.h"
 #include "chrome/browser/chromeos/login/ui/login_display_host.h"
@@ -20,6 +21,10 @@
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 
 namespace chromeos {
+
+class SyncTrustedVaultKeys;
+class UserContext;
+
 namespace login {
 
 // A class that's used to specify the way how Gaia should be loaded.
@@ -70,6 +75,7 @@ bool BuildUserContextForGaiaSignIn(
     bool using_saml_api,
     const std::string& password,
     const SamlPasswordAttributes& password_attributes,
+    const base::Optional<SyncTrustedVaultKeys>& sync_trusted_vault_keys,
     const LoginClientCertUsageObserver&
         extension_provided_client_cert_usage_observer,
     UserContext* user_context,
