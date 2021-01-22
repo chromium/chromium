@@ -195,17 +195,6 @@ void HTMLDialogElement::RemovedFrom(ContainerNode& insertion_point) {
   InertSubtreesChanged(GetDocument());
 }
 
-bool HTMLDialogElement::IsPresentationAttribute(
-    const QualifiedName& name) const {
-  // FIXME: Workaround for <https://bugs.webkit.org/show_bug.cgi?id=91058>:
-  // modifying an attribute for which there is an attribute selector in html.css
-  // sometimes does not trigger a style recalc.
-  if (name == html_names::kOpenAttr)
-    return true;
-
-  return HTMLElement::IsPresentationAttribute(name);
-}
-
 void HTMLDialogElement::DefaultEventHandler(Event& event) {
   if (event.type() == event_type_names::kCancel) {
     close();
