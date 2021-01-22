@@ -739,20 +739,24 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunAriaTest(FILE_PATH_LITERAL("aria-hidden-descendants.html"));
 }
 
+// TODO(crbug.com/1169854): Flaky
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityAriaHiddenSingleDescendant) {
+                       DISABLED_AccessibilityAriaHiddenSingleDescendant) {
   RunAriaTest(FILE_PATH_LITERAL("aria-hidden-single-descendant.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityAriaHiddenSingleDescendantDisplayNone) {
+// TODO(crbug.com/1169854): Flaky
+IN_PROC_BROWSER_TEST_P(
+    DumpAccessibilityTreeTest,
+    DISABLED_AccessibilityAriaHiddenSingleDescendantDisplayNone) {
   RunAriaTest(
       FILE_PATH_LITERAL("aria-hidden-single-descendant-display-none.html"));
 }
 
+// TODO(crbug.com/1169854): Flaky
 IN_PROC_BROWSER_TEST_P(
     DumpAccessibilityTreeTest,
-    AccessibilityAriaHiddenSingleDescendantVisibilityHidden) {
+    DISABLED_AccessibilityAriaHiddenSingleDescendantVisibilityHidden) {
   RunAriaTest(FILE_PATH_LITERAL(
       "aria-hidden-single-descendant-visibility-hidden.html"));
 }
