@@ -90,6 +90,7 @@ PASS oldChildWindow.onauxclick is newChildWindow.onauxclick
 PASS oldChildWindow.onbeforeinstallprompt is newChildWindow.onbeforeinstallprompt
 PASS oldChildWindow.onbeforeprint is newChildWindow.onbeforeprint
 PASS oldChildWindow.onbeforeunload is newChildWindow.onbeforeunload
+PASS oldChildWindow.onbeforexrselect is newChildWindow.onbeforexrselect
 PASS oldChildWindow.onblur is newChildWindow.onblur
 PASS oldChildWindow.oncancel is newChildWindow.oncancel
 PASS oldChildWindow.oncanplay is newChildWindow.oncanplay

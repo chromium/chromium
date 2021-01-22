@@ -1291,6 +1291,7 @@ interface Document : Node
     getter onbeforecopy
     getter onbeforecut
     getter onbeforepaste
+    getter onbeforexrselect
     getter onblur
     getter oncancel
     getter oncanplay
@@ -1488,6 +1489,7 @@ interface Document : Node
     setter onbeforecopy
     setter onbeforecut
     setter onbeforepaste
+    setter onbeforexrselect
     setter onblur
     setter oncancel
     setter oncanplay
@@ -1695,7 +1697,6 @@ interface Element : Node
     getter onbeforecopy
     getter onbeforecut
     getter onbeforepaste
-    getter onbeforexrselect
     getter onfullscreenchange
     getter onfullscreenerror
     getter onsearch
@@ -1811,7 +1812,6 @@ interface Element : Node
     setter onbeforecopy
     setter onbeforecut
     setter onbeforepaste
-    setter onbeforexrselect
     setter onfullscreenchange
     setter onfullscreenerror
     setter onsearch
@@ -2521,6 +2521,7 @@ interface HTMLElement : Element
     getter onanimationiteration
     getter onanimationstart
     getter onauxclick
+    getter onbeforexrselect
     getter onblur
     getter oncancel
     getter oncanplay
@@ -2636,6 +2637,7 @@ interface HTMLElement : Element
     setter onanimationiteration
     setter onanimationstart
     setter onauxclick
+    setter onbeforexrselect
     setter onblur
     setter oncancel
     setter oncanplay
@@ -5940,6 +5942,7 @@ interface SVGElement : Element
     getter onanimationiteration
     getter onanimationstart
     getter onauxclick
+    getter onbeforexrselect
     getter onblur
     getter oncancel
     getter oncanplay
@@ -6041,6 +6044,7 @@ interface SVGElement : Element
     setter onanimationiteration
     setter onanimationstart
     setter onauxclick
+    setter onbeforexrselect
     setter onblur
     setter oncancel
     setter oncanplay
@@ -9682,6 +9686,7 @@ namespace CSS
     getter onbeforeinstallprompt
     getter onbeforeprint
     getter onbeforeunload
+    getter onbeforexrselect
     getter onblur
     getter oncancel
     getter oncanplay
@@ -9883,6 +9888,7 @@ namespace CSS
     setter onbeforeinstallprompt
     setter onbeforeprint
     setter onbeforeunload
+    setter onbeforexrselect
     setter onblur
     setter oncancel
     setter oncanplay

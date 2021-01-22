@@ -66,6 +66,10 @@ modules_dictionary_idl_files = [
 modules_typedefs_enums_only_idl_files = [ "xr_webgl_context.idl" ]
 
 modules_dependency_idl_files = [
-  "element_xr.idl",
+  "document_xr.idl",
+  "html_element_xr.idl",
+  "mathml_element_xr.idl",
   "navigator_xr.idl",
+  "svg_element_xr.idl",
+  "window_xr.idl",
 ]

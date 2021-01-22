@@ -5,8 +5,8 @@
 // https://immersive-web.github.io/dom-overlays/#onbeforexrselect
 
 [
-    ImplementedAs=ElementXR
+    ImplementedAs=GlobalEventHandlersXR
 ]
-partial interface Element {
+partial interface HTMLElement {
   attribute EventHandler onbeforexrselect;
 };

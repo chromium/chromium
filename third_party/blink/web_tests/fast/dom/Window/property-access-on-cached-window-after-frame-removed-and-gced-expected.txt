@@ -54,6 +54,7 @@ PASS childWindow.onauxclick is null
 PASS childWindow.onbeforeinstallprompt is null
 PASS childWindow.onbeforeprint is null
 PASS childWindow.onbeforeunload is null
+PASS childWindow.onbeforexrselect is null
 PASS childWindow.onblur is null
 PASS childWindow.oncancel is null
 PASS childWindow.oncanplay is null
