@@ -195,7 +195,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   AXObject* GetOrCreate(Node*, AXObject* parent_if_known);
   AXObject* GetOrCreate(Node*);
   AXObject* GetOrCreate(const Node*);
-  AXObject* GetOrCreate(AbstractInlineTextBox*, AXObject* parent);
+  AXObject* GetOrCreate(AbstractInlineTextBox*, AXObject* parent_if_known);
 
   AXID GetAXID(Node*) override;
   Element* GetElementFromAXID(AXID) override;

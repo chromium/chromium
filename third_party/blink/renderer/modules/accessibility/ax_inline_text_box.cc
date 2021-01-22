@@ -200,7 +200,7 @@ AXObject* AXInlineTextBox::NextOnLine() const {
   scoped_refptr<AbstractInlineTextBox> next_on_line =
       inline_text_box_->NextOnLine();
   if (next_on_line)
-    return AXObjectCache().GetOrCreate(next_on_line.get(), parent_);
+    return AXObjectCache().GetOrCreate(next_on_line.get(), nullptr);
 
   return nullptr;
 }
@@ -215,7 +215,7 @@ AXObject* AXInlineTextBox::PreviousOnLine() const {
   scoped_refptr<AbstractInlineTextBox> previous_on_line =
       inline_text_box_->PreviousOnLine();
   if (previous_on_line)
-    return AXObjectCache().GetOrCreate(previous_on_line.get(), parent_);
+    return AXObjectCache().GetOrCreate(previous_on_line.get(), nullptr);
 
   return nullptr;
 }

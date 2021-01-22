@@ -1,0 +1,10 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++staticText name='SPAN NESTED INSIDE DIV'
+++++++++++inlineTextBox name='SPAN NESTED INSIDE DIV'
+++++++++++inlineTextBox name='SPAN NESTED INS'
+++++++++++inlineTextBox name='…'
+++++++++staticText name=' CONTAINER DIV'
+++++++++++inlineTextBox name=' CONTAINER DIV'

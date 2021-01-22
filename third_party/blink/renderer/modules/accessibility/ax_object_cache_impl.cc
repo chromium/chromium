@@ -721,14 +721,17 @@ AXObject* AXObjectCacheImpl::GetOrCreate(AbstractInlineTextBox* inline_text_box,
   if (!inline_text_box)
     return nullptr;
 
-  DCHECK(parent);
+  if (!parent) {
+    Node* text_parent = inline_text_box->GetLineLayoutItem().GetNode();
+    DCHECK(text_parent);
+    DCHECK(IsA<Text>(text_parent));
+    parent = GetOrCreate(text_parent);
+    DCHECK(parent);
+  }
+
   if (AXObject* obj = Get(inline_text_box)) {
-    if (obj->CachedParentObject()) {
-      // It is possible that the parent AXObject has changed, but the related
-      // text node will be the same.
-      // TODO(alventhal) When is the cached parent different?
+    if (obj->CachedParentObject())
       DCHECK_EQ(obj->CachedParentObject()->GetNode(), parent->GetNode());
-    }
     obj->SetParent(parent);
     return obj;
   }
