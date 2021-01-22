@@ -161,6 +161,8 @@ class CONTENT_EXPORT ProcessLock {
 
   bool operator==(const ProcessLock& rhs) const;
   bool operator!=(const ProcessLock& rhs) const;
+  // Defined to allow this object to act as a key for std::map.
+  bool operator<(const ProcessLock& rhs) const;
 
   std::string ToString() const;
 

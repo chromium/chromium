@@ -1160,6 +1160,11 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // Fields for recording MediaStream UMA.
   bool has_recorded_media_stream_frame_depth_metric_ = false;
 
+  // Stores the amount of time that this RenderProcessHost's shutdown has been
+  // delayed to run unload handlers, or zero if the process shutdown was not
+  // delayed due to unload handlers.
+  base::TimeDelta time_spent_in_delayed_shutdown_;
+
   // If the RenderProcessHost is being shutdown via Shutdown(), this records the
   // exit code.
   int shutdown_exit_code_;

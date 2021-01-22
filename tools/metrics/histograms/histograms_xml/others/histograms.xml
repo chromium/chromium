@@ -14558,6 +14558,20 @@ should be kept until we remove incident reporting. -->
   </summary>
 </histogram>
 
+<histogram
+    name="SiteIsolation.ReusePendingOrCommittedSite.TimeSinceReusableProcessDestroyed"
+    units="ms" expires_after="2021-07-01">
+  <owner>jessemckenna@google.com</owner>
+  <owner>olivierli@chromium.org</owner>
+  <summary>
+    Recorded on navigations with a ProcessReusePolicy of
+    REUSE_PENDING_OR_COMMITTED_SITE (mostly subframe navigations). Measures the
+    time since a RenderProcessHost hosting the destination URL was last
+    destroyed, up to 7 seconds. If no host matching the destination was recently
+    destroyed, a sentinel value of 20 seconds is used.
+  </summary>
+</histogram>
+
 <histogram name="SiteIsolation.SavedUserTriggeredIsolatedOrigins.Size"
     units="origins" expires_after="2021-09-30">
   <owner>alexmos@chromium.org</owner>

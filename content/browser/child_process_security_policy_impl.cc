@@ -5,6 +5,7 @@
 #include "content/browser/child_process_security_policy_impl.h"
 
 #include <algorithm>
+#include <tuple>
 #include <utility>
 
 #include "base/bind.h"
@@ -234,6 +235,19 @@ bool ProcessLock::operator==(const ProcessLock& rhs) const {
 
 bool ProcessLock::operator!=(const ProcessLock& rhs) const {
   return !(*this == rhs);
+}
+
+bool ProcessLock::operator<(const ProcessLock& rhs) const {
+  const auto this_is_origin_keyed = is_origin_keyed();
+  const auto this_coop_coep_cross_origin_isolated_info =
+      coop_coep_cross_origin_isolated_info();
+  const auto rhs_is_origin_keyed = is_origin_keyed();
+  const auto rhs_coop_coep_cross_origin_isolated_info =
+      coop_coep_cross_origin_isolated_info();
+  return std::tie(lock_url(), this_is_origin_keyed,
+                  this_coop_coep_cross_origin_isolated_info) <
+         std::tie(rhs.lock_url(), rhs_is_origin_keyed,
+                  rhs_coop_coep_cross_origin_isolated_info);
 }
 
 std::string ProcessLock::ToString() const {

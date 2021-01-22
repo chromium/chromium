@@ -916,6 +916,118 @@ class SiteProcessCountTracker : public base::SupportsUserData::Data,
   CountPerProcessPerSiteMap map_;
 };
 
+// Maintains a list of recently destroyed processes to gather metrics on the
+// potential for process reuse (crbug.com/894253).
+const void* const kRecentlyDestroyedHostTrackerKey =
+    "RecentlyDestroyedHostTrackerKey";
+// Information about recently destroyed processes is stored for 7 seconds, about
+// a second more than the longest time from process destruction to recreation
+// observed in local tests.
+static constexpr base::TimeDelta kRecentlyDestroyedTimeout =
+    base::TimeDelta::FromSeconds(7);
+// Sentinel value indicating that no recently destroyed process matches the
+// host currently seeking a process. Changing this invalidates the histogram.
+static constexpr base::TimeDelta kRecentlyDestroyedNotFoundSentinel =
+    base::TimeDelta::FromSeconds(20);
+class RecentlyDestroyedHosts : public base::SupportsUserData::Data {
+ public:
+  static base::WeakPtr<RecentlyDestroyedHosts> GetInstance(
+      BrowserContext* browser_context) {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+    RecentlyDestroyedHosts* recently_destroyed_hosts =
+        static_cast<RecentlyDestroyedHosts*>(
+            browser_context->GetUserData(kRecentlyDestroyedHostTrackerKey));
+    if (recently_destroyed_hosts)
+      return recently_destroyed_hosts->GetWeakPtr();
+
+    // Using WrapUnique() to access private constructor.
+    auto owned = base::WrapUnique(new RecentlyDestroyedHosts);
+    auto weak_ptr = owned->GetWeakPtr();
+    browser_context->SetUserData(kRecentlyDestroyedHostTrackerKey,
+                                 std::move(owned));
+    return weak_ptr;
+  }
+
+  RecentlyDestroyedHosts(const RecentlyDestroyedHosts& other) = delete;
+  RecentlyDestroyedHosts& operator=(const RecentlyDestroyedHosts& other) =
+      delete;
+
+  // If a host matching |process_lock| was recently destroyed, records the time
+  // between its destruction and |reusable_host_lookup_time|. If not, records a
+  // sentinel value.
+  void RecordMetricIfReusableHostRecentlyDestroyed(
+      const base::TimeTicks& reusable_host_lookup_time,
+      const ProcessLock& process_lock) {
+    if (map_.count(process_lock) == 1) {
+      RecordMetric(reusable_host_lookup_time - map_[process_lock]);
+      return;
+    }
+    RecordMetric(kRecentlyDestroyedNotFoundSentinel);
+  }
+
+  // Adds |host|'s process lock to the list of recently destroyed hosts, or
+  // updates its time if it's already present. Posts a task to remove it after
+  // |kRecentlyDestroyedTimeout|.
+  void Add(RenderProcessHost* host,
+           const base::TimeDelta& time_spent_in_delayed_shutdown) {
+    if (time_spent_in_delayed_shutdown > kRecentlyDestroyedTimeout)
+      return;
+
+    auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
+    ProcessLock process_lock = policy->GetProcessLock(host->GetID());
+
+    // Don't record sites with an empty process lock. This includes sites on
+    // Android that are not isolated, and some special cases on desktop (e.g.,
+    // chrome-extension://). These sites would not be affected by increased
+    // process reuse, so are irrelevant for the metric being recorded.
+    if (!process_lock.is_locked_to_site())
+      return;
+
+    // Record the time before |time_spent_in_delayed_shutdown| to exclude time
+    // spent running unload handlers from the metric. This makes it consistent
+    // across processes that were delayed by DelayProcessShutdownForUnload(),
+    // and those that weren't.
+    map_[process_lock] =
+        base::TimeTicks::Now() - time_spent_in_delayed_shutdown;
+    GetUIThreadTaskRunner({})->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&RecentlyDestroyedHosts::Remove, GetWeakPtr(),
+                       process_lock),
+        kRecentlyDestroyedTimeout - time_spent_in_delayed_shutdown);
+  }
+
+  base::WeakPtr<RecentlyDestroyedHosts> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  // Private constructor to ensure this class is only created via GetInstance().
+  RecentlyDestroyedHosts() = default;
+
+  void RecordMetric(base::TimeDelta value) {
+    UMA_HISTOGRAM_CUSTOM_TIMES(
+        "SiteIsolation.ReusePendingOrCommittedSite."
+        "TimeSinceReusableProcessDestroyed",
+        value, base::TimeDelta::FromMilliseconds(1),
+        kRecentlyDestroyedNotFoundSentinel, 50);
+  }
+
+  // Removes |process_lock| from the list of recently destroyed hosts if
+  // |kRecentlyDestroyedTimeout| has elapsed since a matching host was last
+  // destroyed. If not, the same process lock was re-added to the list since
+  // this task was posted, so a later task is waiting to remove it.
+  void Remove(const ProcessLock& process_lock) {
+    if (base::TimeTicks::Now() - map_[process_lock] >=
+        kRecentlyDestroyedTimeout) {
+      map_.erase(process_lock);
+    }
+  }
+
+  std::map<ProcessLock, base::TimeTicks> map_;
+  base::WeakPtrFactory<RecentlyDestroyedHosts> weak_ptr_factory_{this};
+};
+
 bool ShouldUseSiteProcessTracking(BrowserContext* browser_context,
                                   StoragePartition* dest_partition) {
   // TODO(alexmos): Sites should be tracked separately for each
@@ -2129,6 +2241,8 @@ void RenderProcessHostImpl::DelayProcessShutdownForUnload(
           &RenderProcessHostImpl::CancelProcessShutdownDelayForUnload,
           weak_factory_.GetWeakPtr()),
       timeout);
+
+  time_spent_in_delayed_shutdown_ = timeout;
 }
 
 // static
@@ -3722,6 +3836,9 @@ void RenderProcessHostImpl::Cleanup() {
       NOTIFICATION_RENDERER_PROCESS_TERMINATED, Source<RenderProcessHost>(this),
       NotificationService::NoDetails());
 
+  RecentlyDestroyedHosts::GetInstance(browser_context_)
+      ->Add(this, time_spent_in_delayed_shutdown_);
+
 #ifndef NDEBUG
   is_self_deleted_ = true;
 #endif
@@ -4241,21 +4358,31 @@ RenderProcessHost* RenderProcessHostImpl::GetProcessHostForSiteInstance(
 
   // First, attempt to reuse an existing RenderProcessHost if necessary.
   switch (process_reuse_policy) {
-    case SiteInstanceImpl::ProcessReusePolicy::PROCESS_PER_SITE:
+    case SiteInstanceImpl::ProcessReusePolicy::PROCESS_PER_SITE: {
       render_process_host = GetSoleProcessHostForSite(
           site_instance->GetIsolationContext(), site_info);
       break;
-    case SiteInstanceImpl::ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE:
+    }
+    case SiteInstanceImpl::ProcessReusePolicy::
+        REUSE_PENDING_OR_COMMITTED_SITE: {
       render_process_host =
           FindReusableProcessHostForSiteInstance(site_instance);
+      const base::TimeTicks reusable_host_lookup_time = base::TimeTicks::Now();
       UMA_HISTOGRAM_BOOLEAN(
           "SiteIsolation.ReusePendingOrCommittedSite.CouldReuse",
           render_process_host != nullptr);
+      if (!render_process_host) {
+        RecentlyDestroyedHosts::GetInstance(site_instance->GetBrowserContext())
+            ->RecordMetricIfReusableHostRecentlyDestroyed(
+                reusable_host_lookup_time, site_instance->GetProcessLock());
+      }
       if (render_process_host)
         is_unmatched_service_worker = false;
       break;
-    default:
+    }
+    default: {
       break;
+    }
   }
 
   // If not, attempt to reuse an existing process with an unmatched service
