@@ -365,7 +365,19 @@ void AmbientBackendControllerImpl::GetSettings(GetSettingsCallback callback) {
 void AmbientBackendControllerImpl::UpdateSettings(
     const AmbientSettings& settings,
     UpdateSettingsCallback callback) {
-  Shell::Get()->ambient_controller()->RequestAccessToken(base::BindOnce(
+  auto* ambient_controller = Shell::Get()->ambient_controller();
+
+  // Clear disk cache when Settings changes.
+  // TODO(wutao): Use observer pattern. Need to future narrow down
+  // the clear up only on albums changes, not on temperature unit
+  // changes. Do this synchronously and not in |OnUpdateSettings| to avoid
+  // race condition with |AmbientPhotoController| possibly being destructed if
+  // |kAmbientModeEnabled| pref is toggled off.
+  auto* photo_controller = ambient_controller->ambient_photo_controller();
+  DCHECK(photo_controller);
+  photo_controller->ClearCache();
+
+  ambient_controller->RequestAccessToken(base::BindOnce(
       &AmbientBackendControllerImpl::StartToUpdateSettings,
       weak_factory_.GetWeakPtr(), settings, std::move(callback)));
 }
@@ -586,17 +598,6 @@ void AmbientBackendControllerImpl::OnUpdateSettings(
   }
 
   std::move(callback).Run(success);
-
-  // Clear disk cache when Settings changes.
-  // TODO(wutao): Use observer pattern. Need to future narrow down
-  // the clear up only on albums changes, not on temperature unit
-  // changes.
-  if (success) {
-    Shell::Get()
-        ->ambient_controller()
-        ->ambient_photo_controller()
-        ->ClearCache();
-  }
 }
 
 void AmbientBackendControllerImpl::FetchSettingPreviewInternal(
