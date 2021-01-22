@@ -14,10 +14,8 @@ namespace content {
 
 PrerenderHost::PrerenderHost(
     blink::mojom::PrerenderAttributesPtr attributes,
-    const GlobalFrameRoutingId& initiator_render_frame_host_id,
     const url::Origin& initiator_origin)
     : attributes_(std::move(attributes)),
-      initiator_render_frame_host_id_(initiator_render_frame_host_id),
       initiator_origin_(initiator_origin) {
   DCHECK(base::FeatureList::IsEnabled(blink::features::kPrerender2));
 }
@@ -29,20 +27,9 @@ PrerenderHost::~PrerenderHost() = default;
 // TODO(https://crbug.com/1132746): Inspect diffs from the current
 // no-state-prefetch implementation. See PrerenderContents::StartPrerendering()
 // for example.
-void PrerenderHost::StartPrerendering() {
-  // The initiator render frame host may have already been closed. In that case,
-  // abort the prerendering request.
-  auto* initiator_render_frame_host =
-      RenderFrameHostImpl::FromID(initiator_render_frame_host_id_);
-  if (!initiator_render_frame_host)
-    return;
-
-  // TODO(https://crbug.com/1138711, https://crbug.com/1138723): Abort if the
-  // initiator frame is not the main frame (i.e., iframe or pop-up window).
-
+void PrerenderHost::StartPrerendering(BrowserContext& browser_context) {
   // Create a new WebContents for prerendering.
-  WebContents::CreateParams web_contents_params(
-      initiator_render_frame_host->GetBrowserContext());
+  WebContents::CreateParams web_contents_params(&browser_context);
   // TODO(https://crbug.com/1132746): Set up other fields of
   // `web_contents_params` as well, and add tests for them.
   prerendered_contents_ = WebContents::Create(web_contents_params);

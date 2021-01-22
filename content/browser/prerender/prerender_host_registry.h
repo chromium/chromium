@@ -8,13 +8,13 @@
 #include <map>
 
 #include "content/common/content_export.h"
-#include "content/public/browser/global_routing_id.h"
 #include "third_party/blink/public/mojom/prerender/prerender.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace content {
 
+class BrowserContext;
 class FrameTreeNode;
 class PrerenderHost;
 
@@ -22,13 +22,9 @@ class PrerenderHost;
 // PrerenderHostRegistry manages running prerender hosts and provides the host
 // to navigation code for activating prerendered contents. This is created and
 // owned by StoragePartitionImpl.
-//
-// TODO(https://crbug.com/1154501): Once the Prerender2 is migrated to the
-// MPArch, it would be more natural to make PrerenderHostRegistry scoped to
-// WebContents, that is, WebContents will own this.
 class CONTENT_EXPORT PrerenderHostRegistry {
  public:
-  PrerenderHostRegistry();
+  explicit PrerenderHostRegistry(BrowserContext& browser_context);
   ~PrerenderHostRegistry();
 
   PrerenderHostRegistry(const PrerenderHostRegistry&) = delete;
@@ -37,10 +33,8 @@ class CONTENT_EXPORT PrerenderHostRegistry {
   PrerenderHostRegistry& operator=(PrerenderHostRegistry&&) = delete;
 
   // Creates and starts a host for `prerendering_url`.
-  void CreateAndStartHost(
-      blink::mojom::PrerenderAttributesPtr attributes,
-      const GlobalFrameRoutingId& initiator_render_frame_host_id,
-      const url::Origin& initiator_origin);
+  void CreateAndStartHost(blink::mojom::PrerenderAttributesPtr attributes,
+                          const url::Origin& initiator_origin);
 
   // Destroys the host registered for `prerendering_url`.
   void AbandonHost(const GURL& prerendering_url);
@@ -56,6 +50,10 @@ class CONTENT_EXPORT PrerenderHostRegistry {
   PrerenderHost* FindHostByUrlForTesting(const GURL& prerendering_url);
 
  private:
+  // This outlives `this` because PrerenderHostRegistry is owned by
+  // StoragePartitionImpl, which in turn is owned by BrowserContext.
+  BrowserContext& browser_context_;
+
   // TODO(https://crbug.com/1132746): Expire prerendered contents if they are
   // not used for a while.
   std::map<GURL, std::unique_ptr<PrerenderHost>> prerender_host_by_url_;

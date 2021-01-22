@@ -15,6 +15,7 @@
 
 namespace content {
 
+class BrowserContext;
 class RenderFrameHostImpl;
 class WebContents;
 
@@ -31,7 +32,6 @@ class WebContents;
 class CONTENT_EXPORT PrerenderHost final : public WebContentsObserver {
  public:
   PrerenderHost(blink::mojom::PrerenderAttributesPtr attributes,
-                const GlobalFrameRoutingId& initiator_render_frame_host_id,
                 const url::Origin& initiator_origin);
   ~PrerenderHost() override;
 
@@ -40,7 +40,7 @@ class CONTENT_EXPORT PrerenderHost final : public WebContentsObserver {
   PrerenderHost(PrerenderHost&&) = delete;
   PrerenderHost& operator=(PrerenderHost&&) = delete;
 
-  void StartPrerendering();
+  void StartPrerendering(BrowserContext& browser_context);
 
   // WebContentsObserver implementation:
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
@@ -61,7 +61,6 @@ class CONTENT_EXPORT PrerenderHost final : public WebContentsObserver {
 
  private:
   const blink::mojom::PrerenderAttributesPtr attributes_;
-  const GlobalFrameRoutingId initiator_render_frame_host_id_;
   const url::Origin initiator_origin_;
 
   // WebContents for prerendering.

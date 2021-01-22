@@ -48,6 +48,8 @@ class PrerenderHostTest : public RenderViewHostImplTestHarness {
     return web_contents;
   }
 
+  BrowserContext& browser_context() { return *browser_context_; }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 
@@ -65,11 +67,10 @@ TEST_F(PrerenderHostTest, PrerenderAndActivate) {
   auto attributes = blink::mojom::PrerenderAttributes::New();
   attributes->url = kPrerenderingUrl;
   auto prerender_host = std::make_unique<PrerenderHost>(
-      std::move(attributes), initiator_rfh->GetGlobalFrameRoutingId(),
-      initiator_rfh->GetLastCommittedOrigin());
+      std::move(attributes), initiator_rfh->GetLastCommittedOrigin());
 
   // Start the prerendering navigation.
-  prerender_host->StartPrerendering();
+  prerender_host->StartPrerendering(browser_context());
 
   // Finish the prerendering navigation. Normally we could use
   // EmbeddedTestServer to provide a response, but this test uses

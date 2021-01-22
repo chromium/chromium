@@ -57,10 +57,8 @@ void PrerenderProcessor::Start(
 
   prerendering_url_ = attributes->url;
 
-  GetPrerenderHostRegistry().CreateAndStartHost(
-      std::move(attributes),
-      initiator_render_frame_host_.GetGlobalFrameRoutingId(),
-      initiator_origin_);
+  GetPrerenderHostRegistry().CreateAndStartHost(std::move(attributes),
+                                                initiator_origin_);
 }
 
 void PrerenderProcessor::Cancel() {

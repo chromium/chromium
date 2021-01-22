@@ -14,7 +14,8 @@
 
 namespace content {
 
-PrerenderHostRegistry::PrerenderHostRegistry() {
+PrerenderHostRegistry::PrerenderHostRegistry(BrowserContext& browser_context)
+    : browser_context_(browser_context) {
   DCHECK(base::FeatureList::IsEnabled(blink::features::kPrerender2));
 }
 
@@ -22,7 +23,6 @@ PrerenderHostRegistry::~PrerenderHostRegistry() = default;
 
 void PrerenderHostRegistry::CreateAndStartHost(
     blink::mojom::PrerenderAttributesPtr attributes,
-    const GlobalFrameRoutingId& initiator_render_frame_host_id,
     const url::Origin& initiator_origin) {
   DCHECK(attributes);
 
@@ -31,9 +31,9 @@ void PrerenderHostRegistry::CreateAndStartHost(
   if (base::Contains(prerender_host_by_url_, prerendering_url))
     return;
 
-  auto prerender_host = std::make_unique<PrerenderHost>(
-      std::move(attributes), initiator_render_frame_host_id, initiator_origin);
-  prerender_host->StartPrerendering();
+  auto prerender_host =
+      std::make_unique<PrerenderHost>(std::move(attributes), initiator_origin);
+  prerender_host->StartPrerendering(browser_context_);
   prerender_host_by_url_[prerendering_url] = std::move(prerender_host);
 }
 

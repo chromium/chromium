@@ -1334,8 +1334,10 @@ void StoragePartitionImpl::Initialize(
 
   font_access_manager_ = std::make_unique<FontAccessManagerImpl>();
 
-  if (base::FeatureList::IsEnabled(blink::features::kPrerender2))
-    prerender_host_registry_ = std::make_unique<PrerenderHostRegistry>();
+  if (base::FeatureList::IsEnabled(blink::features::kPrerender2)) {
+    prerender_host_registry_ =
+        std::make_unique<PrerenderHostRegistry>(*browser_context_);
+  }
 }
 
 void StoragePartitionImpl::OnStorageServiceDisconnected() {
