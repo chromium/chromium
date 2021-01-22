@@ -24,10 +24,4 @@ IPC_SYNC_MESSAGE_CONTROL2_1(
     std::string /* script_id */,
     bool /* allowed */)
 
-// A renderer sends this message when it wants to resize a guest.
-IPC_MESSAGE_CONTROL3(ExtensionsGuestViewHostMsg_ResizeGuest,
-                     int /* routing_id */,
-                     int /* element_instance_id*/,
-                     gfx::Size /* new_size */)
-
 #endif  // EXTENSIONS_COMMON_GUEST_VIEW_EXTENSIONS_GUEST_VIEW_MESSAGES_H_

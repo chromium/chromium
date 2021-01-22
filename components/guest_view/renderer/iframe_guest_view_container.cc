@@ -14,18 +14,12 @@ namespace guest_view {
 IframeGuestViewContainer::IframeGuestViewContainer(
     content::RenderFrame* render_frame)
     : GuestViewContainer(render_frame) {
-  // There is no BrowserPluginDelegate to wait for.
-  ready_ = true;
 }
 
 IframeGuestViewContainer::~IframeGuestViewContainer() {
 }
 
 bool IframeGuestViewContainer::OnMessage(const IPC::Message& message) {
-  // TODO(lazyboy): Do not send this message in --site-per-process.
-  if (message.type() == GuestViewMsg_GuestAttached::ID)
-    return true;
-
   if (message.type() != GuestViewMsg_AttachToEmbedderFrame_ACK::ID)
     return false;
 

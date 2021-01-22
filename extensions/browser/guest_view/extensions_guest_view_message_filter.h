@@ -51,8 +51,6 @@ class ExtensionsGuestViewMessageFilter
   ~ExtensionsGuestViewMessageFilter() override = default;
 
   // GuestViewMessageFilter implementation.
-  void OverrideThreadForMessage(const IPC::Message& message,
-                                content::BrowserThread::ID* thread) override;
   bool OnMessageReceived(const IPC::Message& message) override;
   guest_view::GuestViewManager* GetOrCreateGuestViewManager() override;
 
@@ -64,9 +62,6 @@ class ExtensionsGuestViewMessageFilter
                                     const std::string& view_id,
                                     int element_instance_id,
                                     const gfx::Size& element_size);
-  void OnResizeGuest(int render_frame_id,
-                     int element_instance_id,
-                     const gfx::Size& new_size);
 
   // mojom::GuestView implementation.
   void CreateEmbeddedMimeHandlerViewGuest(

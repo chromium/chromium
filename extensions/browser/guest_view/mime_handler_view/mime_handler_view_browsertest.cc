@@ -329,16 +329,13 @@ IN_PROC_BROWSER_TEST_F(MimeHandlerViewTest, PostMessage) {
 IN_PROC_BROWSER_TEST_F(MimeHandlerViewTest, Basic) {
   RunTest("testBasic.csv");
   // Verify that for a navigation to a MimeHandlerView MIME type, exactly one
-  // stream is intercepted. This means :
-  // a- For BrowserPlugin-based MHV the PluginDocument passes the |view_id| to
-  //    MimeHandlerViewContainer (so a new request is not sent).
-  // b- For frame-based MimeHandlerView we do not create a PluginDocument. If a
-  //    PluginDocument was created here, the |view_id| associated with the
-  //    stream intercepted from navigation response would be lost (
-  //    PluginDocument does not talk to a MimeHandlerViewFrameContainer). Then,
-  //    the newly added <embed> by the PluginDocument would send its own request
-  //    leading to a total of 2 intercepted streams. The first one (from
-  //    navigation) would never be released.
+  // stream is intercepted. This means we do not create a PluginDocument. If a
+  // PluginDocument was created here, the |view_id| associated with the
+  // stream intercepted from navigation response would be lost (
+  // PluginDocument does not talk to a MimeHandlerViewFrameContainer). Then,
+  // the newly added <embed> by the PluginDocument would send its own request
+  // leading to a total of 2 intercepted streams. The first one (from
+  // navigation) would never be released.
   EXPECT_EQ(0U, MimeHandlerStreamManager::Get(
                     GetEmbedderWebContents()->GetBrowserContext())
                     ->streams_.size());

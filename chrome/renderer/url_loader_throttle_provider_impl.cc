@@ -36,7 +36,6 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/common/switches.h"
 #include "extensions/renderer/extension_throttle_manager.h"
-#include "extensions/renderer/guest_view/mime_handler_view/mime_handler_view_container.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -159,22 +158,6 @@ URLLoaderThrottleProviderImpl::CreateThrottles(
   }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  if (type_ == content::URLLoaderThrottleProviderType::kFrame &&
-      request_destination == network::mojom::RequestDestination::kObject) {
-    content::RenderFrame* render_frame =
-        content::RenderFrame::FromRoutingID(render_frame_id);
-    auto mime_handlers =
-        extensions::MimeHandlerViewContainer::FromRenderFrame(render_frame);
-    GURL gurl(request.Url());
-    for (auto* handler : mime_handlers) {
-      auto throttle = handler->MaybeCreatePluginThrottle(gurl);
-      if (throttle) {
-        throttles.push_back(std::move(throttle));
-        break;
-      }
-    }
-  }
-
   if (!extension_throttle_manager_)
     extension_throttle_manager_ = CreateExtensionThrottleManager();
 

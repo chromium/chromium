@@ -55,25 +55,12 @@ ExtensionsGuestViewMessageFilter::ExtensionsGuestViewMessageFilter(
                              context),
       content::BrowserAssociatedInterface<mojom::GuestView>(this) {}
 
-void ExtensionsGuestViewMessageFilter::OverrideThreadForMessage(
-    const IPC::Message& message,
-    BrowserThread::ID* thread) {
-  switch (message.type()) {
-    case ExtensionsGuestViewHostMsg_ResizeGuest::ID:
-      *thread = BrowserThread::UI;
-      break;
-    default:
-      GuestViewMessageFilter::OverrideThreadForMessage(message, thread);
-  }
-}
-
 bool ExtensionsGuestViewMessageFilter::OnMessageReceived(
     const IPC::Message& message) {
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP(ExtensionsGuestViewMessageFilter, message)
     IPC_MESSAGE_HANDLER(ExtensionsGuestViewHostMsg_CanExecuteContentScriptSync,
                         OnCanExecuteContentScript)
-    IPC_MESSAGE_HANDLER(ExtensionsGuestViewHostMsg_ResizeGuest, OnResizeGuest)
     IPC_MESSAGE_UNHANDLED(
         handled = GuestViewMessageFilter::OnMessageReceived(message))
   IPC_END_MESSAGE_MAP()
@@ -168,31 +155,6 @@ void ExtensionsGuestViewMessageFilter::CreateMimeHandlerViewGuestOnUIThread(
   create_params.SetInteger(guest_view::kElementHeight, element_size.height());
   manager->CreateGuest(MimeHandlerViewGuest::Type, embedder_web_contents,
                        create_params, std::move(callback));
-}
-
-void ExtensionsGuestViewMessageFilter::OnResizeGuest(
-    int render_frame_id,
-    int element_instance_id,
-    const gfx::Size& new_size) {
-  if (!browser_context_)
-    return;
-
-  // We should have a GuestViewManager at this point. If we don't then the
-  // embedder is misbehaving.
-  auto* manager = GetGuestViewManagerOrKill();
-  if (!manager)
-    return;
-
-  auto* guest_web_contents =
-      manager->GetGuestByInstanceID(render_process_id_, element_instance_id);
-  auto* mhvg = MimeHandlerViewGuest::FromWebContents(guest_web_contents);
-  if (!mhvg)
-    return;
-
-  guest_view::SetSizeParams set_size_params;
-  set_size_params.enable_auto_size.reset(new bool(false));
-  set_size_params.normal_size.reset(new gfx::Size(new_size));
-  mhvg->SetSize(set_size_params);
 }
 
 void ExtensionsGuestViewMessageFilter::CreateEmbeddedMimeHandlerViewGuest(

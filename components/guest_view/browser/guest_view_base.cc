@@ -394,7 +394,7 @@ WebContents* GuestViewBase::CreateNewGuestWindow(
 
 void GuestViewBase::OnRenderFrameHostDeleted(int process_id, int routing_id) {}
 
-void GuestViewBase::DidAttach(int guest_proxy_routing_id) {
+void GuestViewBase::DidAttach() {
   DCHECK(attach_in_progress_);
   // Clear this flag here, as functions called below may check attached().
   attach_in_progress_ = false;
@@ -408,10 +408,6 @@ void GuestViewBase::DidAttach(int guest_proxy_routing_id) {
 
   // Give the derived class an opportunity to perform some actions.
   DidAttachToEmbedder();
-
-  // Inform the associated GuestViewContainer that the contentWindow is ready.
-  GetOwnerRenderWidgetHost()->GetProcess()->Send(new GuestViewMsg_GuestAttached(
-      element_instance_id_, guest_proxy_routing_id));
 
   SendQueuedEvents();
 }
@@ -737,8 +733,7 @@ void GuestViewBase::AttachToOuterWebContentsFrame(
     int32_t element_instance_id,
     bool is_full_page_plugin) {
   auto completion_callback =
-      base::BindOnce(&GuestViewBase::DidAttach, weak_ptr_factory_.GetWeakPtr(),
-                     MSG_ROUTING_NONE);
+      base::BindOnce(&GuestViewBase::DidAttach, weak_ptr_factory_.GetWeakPtr());
   WillAttach(WebContents::FromRenderFrameHost(embedder_frame), embedder_frame,
              element_instance_id, is_full_page_plugin,
              std::move(completion_callback));
