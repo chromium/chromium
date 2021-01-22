@@ -101,6 +101,13 @@ void AppServiceAppWindowCrostiniTracker::OnWindowVisibilityChanged(
   Profile* primary_account_profile =
       chromeos::ProfileHelper::Get()->GetProfileByAccountId(primary_account_id);
 
+  // Windows without an application id set will get filtered out here.
+  const std::string& crostini_shelf_app_id = crostini::GetCrostiniShelfAppId(
+      primary_account_profile, exo::GetShellApplicationId(window),
+      exo::GetShellStartupId(window));
+  if (crostini_shelf_app_id.empty())
+    return;
+
   auto* registry_service =
       guest_os::GuestOsRegistryServiceFactory::GetForProfile(
           primary_account_profile);
