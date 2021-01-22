@@ -84,14 +84,12 @@ crashpad::SimpleStringDictionary* GetCrashpadAnnotations() {
 }
 
 - (void)closeNotificationWithId:(NSString*)notificationId
-                      profileId:(NSString*)profileId
-                      incognito:(BOOL)incognito {
+                  withProfileId:(NSString*)profileId {
   DCHECK(_didSetExceptionPort);
   DCHECK(_notificationDelivery);
 
   [_notificationDelivery closeNotificationWithId:notificationId
-                                       profileId:profileId
-                                       incognito:incognito];
+                                   withProfileId:profileId];
 }
 
 - (void)closeAllNotifications {
@@ -102,13 +100,13 @@ crashpad::SimpleStringDictionary* GetCrashpadAnnotations() {
 }
 
 - (void)getDisplayedAlertsForProfileId:(NSString*)profileId
-                             incognito:(BOOL)incognito
-                                 reply:(void (^)(NSArray*))reply {
+                          andIncognito:(BOOL)incognito
+                             withReply:(void (^)(NSArray*))reply {
   DCHECK(_notificationDelivery);
 
   [_notificationDelivery getDisplayedAlertsForProfileId:profileId
-                                              incognito:incognito
-                                                  reply:reply];
+                                           andIncognito:incognito
+                                              withReply:reply];
 }
 
 @end

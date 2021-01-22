@@ -28,8 +28,7 @@ base::string16 CreateMacNotificationContext(
 
 // Derives a unique notification identifier to be used by the macOS system
 // notification center to uniquely identify a notification.
-std::string DeriveMacNotificationId(bool incognito,
-                                    const std::string& profile_id,
+std::string DeriveMacNotificationId(const std::string& profile_id,
                                     const std::string& notification_id);
 
 // Validates contents of the |response| dictionary as received from the system

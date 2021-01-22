@@ -24,10 +24,9 @@
 // |notificationData| is generated using a NofiticationBuilder object.
 - (void)deliverNotification:(NSDictionary*)notificationData;
 
-// Closes an alert with the given |notificationId|, |profileId| and |incognito|.
+// Closes an alert with the given |notificationId| and |profileId|.
 - (void)closeNotificationWithId:(NSString*)notificationId
-                      profileId:(NSString*)profileId
-                      incognito:(BOOL)incognito;
+                  withProfileId:(NSString*)profileId;
 
 // Closes all the alerts being displayed.
 - (void)closeAllNotifications;
@@ -35,9 +34,8 @@
 // Will invoke |reply| with an array of NSString notification IDs for all alerts
 // for |profileId| and |incognito| value currently displayed.
 - (void)getDisplayedAlertsForProfileId:(NSString*)profileId
-                             incognito:(BOOL)incognito
-                                 reply:(void (^)(NSArray*))reply;
-
+                          andIncognito:(BOOL)incognito
+                             withReply:(void (^)(NSArray*))reply;
 @end
 
 // Response protocol for the XPC notification service to notify Chrome of

@@ -144,42 +144,6 @@ TEST_F(NotificationPlatformBridgeMacTest, TestDisplayNoButtons) {
     EXPECT_NSEQ(@"Close", [delivered_notification otherButtonTitle]);
 }
 
-TEST_F(NotificationPlatformBridgeMacTest, TestIncognitoProfile) {
-  std::unique_ptr<NotificationPlatformBridgeMac> bridge(
-      new NotificationPlatformBridgeMac(notification_center(),
-                                        alert_dispatcher()));
-  std::unique_ptr<Notification> notification =
-      CreateBanner("Title", "Context", "https://gmail.com", nullptr, nullptr);
-
-  TestingProfile::Builder profile_builder;
-  profile_builder.SetPath(profile()->GetPath());
-  profile_builder.SetProfileName(profile()->GetProfileUserName());
-  Profile* incogito_profile = profile_builder.BuildIncognito(profile());
-
-  // Show two notifications with the same id from different profiles.
-  bridge->Display(NotificationHandler::Type::WEB_PERSISTENT, profile(),
-                  *notification, /*metadata=*/nullptr);
-  bridge->Display(NotificationHandler::Type::WEB_PERSISTENT, incogito_profile,
-                  *notification, /*metadata=*/nullptr);
-  EXPECT_EQ(2u, [[notification_center() deliveredNotifications] count]);
-
-  // Close the one for the incognito profile.
-  bridge->Close(incogito_profile, "id1");
-  NSArray* notifications = [notification_center() deliveredNotifications];
-  ASSERT_EQ(1u, [notifications count]);
-
-  // Expect that the remaining notification is for the regular profile.
-  NSUserNotification* remaining_notification = [notifications objectAtIndex:0];
-  EXPECT_EQ(false,
-            [[[remaining_notification userInfo]
-                objectForKey:notification_constants::kNotificationIncognito]
-                boolValue]);
-
-  // Close the one for the regular profile.
-  bridge->Close(profile(), "id1");
-  EXPECT_EQ(0u, [[notification_center() deliveredNotifications] count]);
-}
-
 TEST_F(NotificationPlatformBridgeMacTest, TestDisplayNoSettings) {
   std::unique_ptr<Notification> notification = CreateNotification(
       "Title", "Context", "https://gmail.com", nullptr, nullptr,
