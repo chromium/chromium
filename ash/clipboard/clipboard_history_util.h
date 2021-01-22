@@ -60,8 +60,9 @@ enum ClipboardHistoryMenuViewID {
 };
 
 // Used in histograms, each value corresponds with an underlying format
-// displayed by a ClipboardHistoryItemView. Do not reorder entries, if you must
-// add to it, add at the end.
+// displayed by a ClipboardHistoryItemView, shown as
+// ClipboardHistoryDisplayFormat in enums.xml. Do not reorder entries, if you
+// must add to it, add at the end.
 enum class ClipboardHistoryDisplayFormat {
   kText = 0,
   kBitmap = 1,
