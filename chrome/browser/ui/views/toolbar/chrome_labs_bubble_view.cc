@@ -23,6 +23,8 @@
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
 
@@ -73,6 +75,7 @@ ChromeLabsBubbleView* g_chrome_labs_bubble = nullptr;
 
 class ChromeLabsFooter : public views::View {
  public:
+  METADATA_HEADER(ChromeLabsFooter);
   ChromeLabsFooter() {
     SetLayoutManager(std::make_unique<views::FlexLayout>())
         ->SetOrientation(views::LayoutOrientation::kVertical)
@@ -114,6 +117,9 @@ class ChromeLabsFooter : public views::View {
   views::MdTextButton* restart_button_;
   views::Label* restart_label_;
 };
+
+BEGIN_METADATA(ChromeLabsFooter, views::View)
+END_METADATA
 
 }  // namespace
 

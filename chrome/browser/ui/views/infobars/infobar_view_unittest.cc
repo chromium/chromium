@@ -57,13 +57,13 @@ class InfoBarViewTest : public BrowserWithTestWindowTest {
   DISALLOW_COPY_AND_ASSIGN(InfoBarViewTest);
 };
 
-TEST_F(InfoBarViewTest, ShouldDrawSeparator) {
+TEST_F(InfoBarViewTest, GetDrawSeparator) {
   // Add multiple infobars.  The top infobar should not draw a separator; the
   // others should.
   for (int i = 0; i < 3; ++i) {
     InfoBarView* infobar = TestInfoBarDelegate::Create(infobar_service());
     ASSERT_TRUE(infobar);
-    EXPECT_EQ(i > 0, infobar->ShouldDrawSeparator());
+    EXPECT_EQ(i > 0, infobar->GetDrawSeparator());
   }
 }
 

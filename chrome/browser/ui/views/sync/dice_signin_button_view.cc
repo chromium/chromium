@@ -20,6 +20,7 @@
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 DiceSigninButtonView::DiceSigninButtonView(
     views::Button::PressedCallback callback,
@@ -77,3 +78,6 @@ DiceSigninButtonView::DiceSigninButtonView(
 }
 
 DiceSigninButtonView::~DiceSigninButtonView() = default;
+
+BEGIN_METADATA(DiceSigninButtonView, views::View)
+END_METADATA

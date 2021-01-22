@@ -278,9 +278,9 @@ void PaymentRequestDialogView::GoBack() {
 void PaymentRequestDialogView::GoBackToPaymentSheet(bool animate) {
   // This assumes that the Payment Sheet is the first view in the stack. Thus if
   // there is only one view, we are already showing the payment sheet.
-  if (view_stack_->size() > 1) {
+  if (view_stack_->GetSize() > 1) {
     // Do not animate views when the dialog size changes.
-    view_stack_->PopMany(view_stack_->size() - 1,
+    view_stack_->PopMany(view_stack_->GetSize() - 1,
                          animate && !is_showing_large_payment_handler_window_);
 
     // Back navigation from payment handler window should resize the dialog;

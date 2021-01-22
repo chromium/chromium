@@ -12,6 +12,7 @@
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/views/controls/menu/menu_types.h"
 #include "ui/views/focus/external_focus_tracker.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -26,7 +27,10 @@ class InfoBarView : public infobars::InfoBar,
                     public views::View,
                     public views::ExternalFocusTracker {
  public:
+  METADATA_HEADER(InfoBarView);
   explicit InfoBarView(std::unique_ptr<infobars::InfoBarDelegate> delegate);
+  InfoBarView(const InfoBarView&) = delete;
+  InfoBarView& operator=(const InfoBarView&) = delete;
   ~InfoBarView() override;
 
   // Requests that the infobar recompute its target height.
@@ -63,12 +67,12 @@ class InfoBarView : public infobars::InfoBar,
   // Returns the minimum width the content (that is, everything between the icon
   // and the close button) can be shrunk to.  This is used to prevent the close
   // button from overlapping views that cannot be shrunk any further.
-  virtual int ContentMinimumWidth() const;
+  virtual int GetContentMinimumWidth() const;
 
   // These return x coordinates delimiting the usable area for subclasses to lay
   // out their controls.
-  int StartX() const;
-  int EndX() const;
+  int GetStartX() const;
+  int GetEndX() const;
 
   // Given a |view|, returns the centered y position, taking into account
   // animation so the control "slides in" (or out) as we animate open and
@@ -81,14 +85,14 @@ class InfoBarView : public infobars::InfoBar,
   void PlatformSpecificOnHeightRecalculated() override;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(InfoBarViewTest, ShouldDrawSeparator);
+  FRIEND_TEST_ALL_PREFIXES(InfoBarViewTest, GetDrawSeparator);
 
   // Does the actual work for AssignWidths().  Assumes |views| is sorted by
   // decreasing preferred width.
   static void AssignWidthsSorted(Views* views, int available_width);
 
   // Returns whether this infobar should draw a 1 px separator at its top.
-  bool ShouldDrawSeparator() const;
+  bool GetDrawSeparator() const;
 
   // Returns how much space the container should reserve for a separator between
   // infobars, in addition to the height of the infobars themselves.
@@ -115,8 +119,6 @@ class InfoBarView : public infobars::InfoBar,
 
   // Used to run the menu.
   std::unique_ptr<views::MenuRunner> menu_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(InfoBarView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_INFOBARS_INFOBAR_VIEW_H_

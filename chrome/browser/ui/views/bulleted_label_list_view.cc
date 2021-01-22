@@ -8,17 +8,20 @@
 #include "ui/gfx/canvas.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
 constexpr int kColumnSetId = 0;
 
 class BulletView : public views::View {
  public:
+  METADATA_HEADER(BulletView);
   BulletView() = default;
+  BulletView(const BulletView&) = delete;
+  BulletView& operator=(const BulletView&) = delete;
 
   void OnPaint(gfx::Canvas* canvas) override;
-
-  DISALLOW_COPY_AND_ASSIGN(BulletView);
 };
 
 void BulletView::OnPaint(gfx::Canvas* canvas) {
@@ -38,6 +41,9 @@ void BulletView::OnPaint(gfx::Canvas* canvas) {
 
   canvas->DrawPath(path, flags);
 }
+
+BEGIN_METADATA(BulletView, views::View)
+END_METADATA
 
 }  // namespace
 
@@ -77,3 +83,6 @@ void BulletedLabelListView::AddLabel(const base::string16& text) {
   layout->AddView(std::make_unique<BulletView>());
   layout->AddView(std::move(label));
 }
+
+BEGIN_METADATA(BulletedLabelListView, views::View)
+END_METADATA

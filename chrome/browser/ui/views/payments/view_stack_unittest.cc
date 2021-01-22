@@ -209,20 +209,20 @@ TEST_F(ViewStackTest, TestLayoutUpdatesAnimations) {
 
 TEST_F(ViewStackTest, TestPopMany) {
   views::View* top = PushViewOnStackAndWait();
-  EXPECT_EQ(2U, view_stack_->size());
+  EXPECT_EQ(2U, view_stack_->GetSize());
 
   PopManyAndWait(1, top);
-  EXPECT_EQ(1U, view_stack_->size());
+  EXPECT_EQ(1U, view_stack_->GetSize());
 
   top = PushViewOnStackAndWait();
   top = PushViewOnStackAndWait();
   top = PushViewOnStackAndWait();
-  EXPECT_EQ(4U, view_stack_->size());
+  EXPECT_EQ(4U, view_stack_->GetSize());
 
   PopManyAndWait(3, top);
-  EXPECT_EQ(1U, view_stack_->size());
+  EXPECT_EQ(1U, view_stack_->GetSize());
 
   top = PushViewOnStackAndWait();
   top = PushViewOnStackAndWait();
-  EXPECT_EQ(3U, view_stack_->size());
+  EXPECT_EQ(3U, view_stack_->GetSize());
 }

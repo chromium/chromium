@@ -5,19 +5,19 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_BULLETED_LABEL_LIST_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_BULLETED_LABEL_LIST_VIEW_H_
 
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 class BulletedLabelListView : public views::View {
  public:
+  METADATA_HEADER(BulletedLabelListView);
   BulletedLabelListView();
   explicit BulletedLabelListView(const std::vector<base::string16>& texts);
-
+  BulletedLabelListView(const BulletedLabelListView&) = delete;
+  BulletedLabelListView& operator=(const BulletedLabelListView&) = delete;
   ~BulletedLabelListView() override;
 
   void AddLabel(const base::string16& text);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BulletedLabelListView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_BULLETED_LABEL_LIST_VIEW_H_

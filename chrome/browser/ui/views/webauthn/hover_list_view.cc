@@ -23,6 +23,7 @@
 #include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/vector_icons.h"
 
 namespace {
@@ -300,3 +301,7 @@ int HoverListView::GetPreferredViewHeight() const {
   }
   return std::min(kMaxViewHeight, size);
 }
+
+BEGIN_METADATA(HoverListView, views::View)
+ADD_READONLY_PROPERTY_METADATA(int, PreferredViewHeight)
+END_METADATA

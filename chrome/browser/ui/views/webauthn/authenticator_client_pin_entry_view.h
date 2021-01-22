@@ -5,10 +5,10 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_WEBAUTHN_AUTHENTICATOR_CLIENT_PIN_ENTRY_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_WEBAUTHN_AUTHENTICATOR_CLIENT_PIN_ENTRY_VIEW_H_
 
-#include "base/macros.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -22,6 +22,8 @@ class Textfield;
 class AuthenticatorClientPinEntryView : public views::View,
                                         public views::TextfieldController {
  public:
+  METADATA_HEADER(AuthenticatorClientPinEntryView);
+
   class Delegate {
    public:
     virtual void OnPincodeChanged(base::string16 pin_code) = 0;
@@ -30,6 +32,10 @@ class AuthenticatorClientPinEntryView : public views::View,
 
   explicit AuthenticatorClientPinEntryView(Delegate* delegate,
                                            bool show_confirmation_text_field);
+  AuthenticatorClientPinEntryView(const AuthenticatorClientPinEntryView&) =
+      delete;
+  AuthenticatorClientPinEntryView& operator=(
+      const AuthenticatorClientPinEntryView&) = delete;
   ~AuthenticatorClientPinEntryView() override;
 
  private:
@@ -46,8 +52,6 @@ class AuthenticatorClientPinEntryView : public views::View,
   views::Textfield* pin_text_field_ = nullptr;
   views::Textfield* confirmation_text_field_ = nullptr;
   const bool show_confirmation_text_field_;
-
-  DISALLOW_COPY_AND_ASSIGN(AuthenticatorClientPinEntryView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEBAUTHN_AUTHENTICATOR_CLIENT_PIN_ENTRY_VIEW_H_

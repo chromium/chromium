@@ -80,14 +80,14 @@ void AlternateNavInfoBarView::Layout() {
   labels.push_back(label_1_);
   labels.push_back(link_);
   labels.push_back(label_2_);
-  ElideLabels(&labels, EndX() - StartX());
+  ElideLabels(&labels, GetEndX() - GetStartX());
 
-  label_1_->SetPosition(gfx::Point(StartX(), OffsetY(label_1_)));
+  label_1_->SetPosition(gfx::Point(GetStartX(), OffsetY(label_1_)));
   link_->SetPosition(gfx::Point(label_1_->bounds().right(), OffsetY(link_)));
   label_2_->SetPosition(gfx::Point(link_->bounds().right(), OffsetY(label_2_)));
 }
 
-int AlternateNavInfoBarView::ContentMinimumWidth() const {
+int AlternateNavInfoBarView::GetContentMinimumWidth() const {
   int label_1_width = label_1_->GetMinimumSize().width();
   return label_1_width ? label_1_width : link_->GetMinimumSize().width();
 }

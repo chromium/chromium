@@ -12,7 +12,6 @@
 
 #include "base/bind.h"
 #include "base/i18n/rtl.h"
-#include "base/macros.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -80,6 +79,8 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/grid_layout.h"
 #include "ui/views/layout/layout_manager.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
@@ -123,7 +124,10 @@ void AddColumnWithSideMargin(views::GridLayout* layout, int margin, int id) {
 // and the name of the site's identity.
 class BubbleHeaderView : public views::View {
  public:
+  METADATA_HEADER(BubbleHeaderView);
   BubbleHeaderView(PageInfoBubbleView* bubble, int side_margin);
+  BubbleHeaderView(const BubbleHeaderView&) = delete;
+  BubbleHeaderView& operator=(const BubbleHeaderView&) = delete;
   ~BubbleHeaderView() override;
 
   // Sets the security summary for the current page.
@@ -168,8 +172,6 @@ class BubbleHeaderView : public views::View {
   // A container for the label buttons used to change password or mark the site
   // as safe.
   views::View* password_reuse_button_container_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(BubbleHeaderView);
 };
 
 // The regular PageInfoBubbleView is not supported for internal Chrome pages and
@@ -177,6 +179,7 @@ class BubbleHeaderView : public views::View {
 // |InternalPageInfoBubbleView| is displayed.
 class InternalPageInfoBubbleView : public PageInfoBubbleViewBase {
  public:
+  METADATA_HEADER(InternalPageInfoBubbleView);
   // If |anchor_view| is nullptr, or has no Widget, |parent_window| may be
   // provided to ensure this bubble is closed when the parent closes.
   InternalPageInfoBubbleView(views::View* anchor_view,
@@ -184,9 +187,10 @@ class InternalPageInfoBubbleView : public PageInfoBubbleViewBase {
                              gfx::NativeView parent_window,
                              content::WebContents* web_contents,
                              const GURL& url);
+  InternalPageInfoBubbleView(const InternalPageInfoBubbleView&) = delete;
+  InternalPageInfoBubbleView& operator=(const InternalPageInfoBubbleView&) =
+      delete;
   ~InternalPageInfoBubbleView() override;
-
-  DISALLOW_COPY_AND_ASSIGN(InternalPageInfoBubbleView);
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -355,6 +359,9 @@ void BubbleHeaderView::AddPasswordReuseButtons(
   InvalidateLayout();
 }
 
+BEGIN_METADATA(BubbleHeaderView, views::View)
+END_METADATA
+
 ////////////////////////////////////////////////////////////////////////////////
 // InternalPageInfoBubbleView
 ////////////////////////////////////////////////////////////////////////////////
@@ -419,6 +426,9 @@ InternalPageInfoBubbleView::InternalPageInfoBubbleView(
 }
 
 InternalPageInfoBubbleView::~InternalPageInfoBubbleView() {}
+
+BEGIN_METADATA(InternalPageInfoBubbleView, PageInfoBubbleViewBase)
+END_METADATA
 
 ////////////////////////////////////////////////////////////////////////////////
 // PageInfoBubbleView

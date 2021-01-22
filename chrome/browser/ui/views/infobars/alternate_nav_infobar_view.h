@@ -31,7 +31,7 @@ class AlternateNavInfoBarView : public InfoBarView {
 
   // InfoBarView:
   void Layout() override;
-  int ContentMinimumWidth() const override;
+  int GetContentMinimumWidth() const override;
 
   AlternateNavInfoBarDelegate* GetDelegate();
 

@@ -18,6 +18,7 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/typography.h"
 
 namespace {
@@ -119,3 +120,6 @@ bool AuthenticatorClientPinEntryView::HandleKeyEvent(
   // be further processed.
   return false;
 }
+
+BEGIN_METADATA(AuthenticatorClientPinEntryView, views::View)
+END_METADATA
