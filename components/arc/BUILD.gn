@@ -233,8 +233,6 @@ static_library("arc_base") {
     "session/arc_container_client_adapter.h",
     "session/arc_data_remover.cc",
     "session/arc_data_remover.h",
-    "session/arc_property_util.cc",
-    "session/arc_property_util.h",
     "session/arc_session.cc",
     "session/arc_session.h",
     "session/arc_session_impl.cc",
@@ -340,8 +338,6 @@ static_library("arc_test_support") {
     "test/fake_bluetooth_instance.h",
     "test/fake_clipboard_instance.cc",
     "test/fake_clipboard_instance.h",
-    "test/fake_cros_config.cc",
-    "test/fake_cros_config.h",
     "test/fake_file_system_instance.cc",
     "test/fake_file_system_instance.h",
     "test/fake_intent_helper_instance.cc",
@@ -416,7 +412,6 @@ source_set("unit_tests") {
     "property/arc_property_bridge_unittest.cc",
     "session/arc_container_client_adapter_unittest.cc",
     "session/arc_data_remover_unittest.cc",
-    "session/arc_property_util_unittest.cc",
     "session/arc_session_impl_unittest.cc",
     "session/arc_session_runner_unittest.cc",
     "session/arc_vm_client_adapter_unittest.cc",
@@ -474,14 +469,5 @@ source_set("unit_tests") {
     "//ui/views",
     "//ui/views:test_support",
     "//url:url",
-  ]
-}
-
-fuzzer_test("arc_property_util_expand_property_contents_fuzzer") {
-  sources = [ "session/arc_property_util_expand_property_contents_fuzzer.cc" ]
-  deps = [
-    ":arc",
-    ":arc_test_support",
-    "//base",
   ]
 }
