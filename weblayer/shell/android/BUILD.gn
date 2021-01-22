@@ -83,6 +83,7 @@ template("weblayer_shell_apk_helper") {
     android_manifest_dep = ":$_manifest_target"
 
     command_line_flags_file = "weblayer-command-line"
+    proguard_enabled = !is_java_debug
 
     # Add a native lib so the ABI is compatible with the implementation APK.
     native_lib_placeholders = [ "libdummy.so" ]

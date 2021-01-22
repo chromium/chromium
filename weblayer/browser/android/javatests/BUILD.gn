@@ -176,6 +176,7 @@ template("weblayer_instrumentation") {
     }
     additional_apks += [ "//net/android:net_test_support_apk" ]
     data = [ "//weblayer/test/data/" ]
+    proguard_enabled = !is_java_debug
   }
 }
 
