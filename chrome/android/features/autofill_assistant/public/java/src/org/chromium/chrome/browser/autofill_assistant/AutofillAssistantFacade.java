@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.FieldTrialList;
+import org.chromium.base.Log;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill_assistant.metrics.DropOutReason;
@@ -30,6 +31,9 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvi
 
 /** Facade for starting Autofill Assistant on a custom tab. */
 public class AutofillAssistantFacade {
+    /** Used for logging. */
+    private static final String TAG = "AutofillAssistant";
+
     /**
      * Synthetic field trial names and group names should match those specified in
      * google3/analysis/uma/dashboards/
@@ -129,6 +133,7 @@ public class AutofillAssistantFacade {
                         AutofillAssistantMetrics.recordLiteScriptStarted(tab.getWebContents(),
                                 LiteScriptStarted.LITE_SCRIPT_CANCELED_TWO_TIMES);
                     }
+                    Log.v(TAG, "TriggerScript stopping: proactive help setting is turned off");
                     return;
                 }
 
@@ -138,6 +143,9 @@ public class AutofillAssistantFacade {
                         && !ChromeFeatureList.isEnabled(
                                 ChromeFeatureList
                                         .AUTOFILL_ASSISTANT_LOAD_DFM_FOR_TRIGGER_SCRIPTS)) {
+                    Log.v(TAG,
+                            "TriggerScript stopping: DFM module not available and on-demand"
+                                    + " installation is disabled.");
                     return;
                 }
             }
@@ -149,6 +157,7 @@ public class AutofillAssistantFacade {
                         if (arguments.containsTriggerScript()) {
                             AutofillAssistantMetrics.recordLiteScriptFinished(tab.getWebContents(),
                                     LiteScriptStarted.LITE_SCRIPT_DFM_UNAVAILABLE);
+                            Log.v(TAG, "TriggerScript stopping: failed to install DFM");
                         }
                         return;
                     }

@@ -249,6 +249,7 @@ void TriggerScriptCoordinator::OnProactiveHelpSettingChanged(
 }
 
 void TriggerScriptCoordinator::Stop(Metrics::LiteScriptFinishedState state) {
+  VLOG(2) << "Stopping with status " << state;
   HideTriggerScript();
   StopCheckingTriggerConditions();
   NotifyOnTriggerScriptFinished(state);
@@ -288,6 +289,14 @@ void TriggerScriptCoordinator::DidFinishNavigation(
   if (!url_utils::IsInDomainOrSubDomain(GetCurrentURL(), deeplink_url_) &&
       !url_utils::IsInDomainOrSubDomain(GetCurrentURL(),
                                         additional_allowed_domains_)) {
+#ifndef NDEBUG
+    VLOG(2) << "Unexpected navigation to " << GetCurrentURL();
+    VLOG(2) << "List of allowed domains:";
+    VLOG(2) << "\t" << deeplink_url_.host();
+    for (const auto& domain : additional_allowed_domains_) {
+      VLOG(2) << "\t" << domain;
+    }
+#endif
     Stop(Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_FAILED_NAVIGATE);
     return;
   }
@@ -319,9 +328,11 @@ void TriggerScriptCoordinator::OnEffectiveVisibilityChanged() {
     // script that was shown before is still available, hence we need to fetch
     // it again.
     DCHECK(visible_trigger_script_ == -1);
+    VLOG(2) << "Restarting after tab became visible again";
     Start(deeplink_url_, std::move(trigger_context_));
   } else {
     // Hide UI on tab switch.
+    VLOG(2) << "Pausing after tab became invisible or non-interactable";
     StopCheckingTriggerConditions();
     HideTriggerScript();
   }
@@ -413,6 +424,7 @@ void TriggerScriptCoordinator::OnDynamicTriggerConditionsEvaluated(
     return;
   }
 
+  VLOG(3) << "Evaluating trigger conditions...";
   std::vector<bool> evaluated_trigger_conditions;
   for (const auto& trigger_script : trigger_scripts_) {
     evaluated_trigger_conditions.emplace_back(

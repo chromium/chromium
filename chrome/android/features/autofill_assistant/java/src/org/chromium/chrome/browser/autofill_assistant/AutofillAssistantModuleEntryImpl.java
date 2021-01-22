@@ -18,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Log;
 import org.chromium.base.annotations.UsedByReflection;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.autofill_assistant.metrics.LiteScriptFinishedState;
@@ -41,6 +42,9 @@ import java.util.Map;
  */
 @UsedByReflection("AutofillAssistantModuleEntryProvider.java")
 public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModuleEntry {
+    /** Used for logging. */
+    private static final String TAG = "AutofillAssistant";
+
     @Override
     public void start(BottomSheetController bottomSheetController,
             BrowserControlsStateProvider browserControls, CompositorViewHolder compositorViewHolder,
@@ -55,6 +59,7 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
                 // Opt-out users who have disabled the proactive help Chrome setting.
                 AutofillAssistantMetrics.recordLiteScriptStarted(
                         webContents, LiteScriptStarted.LITE_SCRIPT_PROACTIVE_TRIGGERING_DISABLED);
+                Log.v(TAG, "TriggerScript stopping: proactive help setting is turned off");
                 return;
             }
             if ((!TextUtils.isEmpty(parameters.get(PARAMETER_TRIGGER_FIRST_TIME_USER))
@@ -66,6 +71,10 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
                 // off. The proactive help setting will appear disabled to the user.
                 AutofillAssistantMetrics.recordLiteScriptStarted(
                         webContents, LiteScriptStarted.LITE_SCRIPT_PROACTIVE_TRIGGERING_DISABLED);
+                Log.v(TAG,
+                        "TriggerScript stopping: MSBB is turned off, but required by at least one"
+                                + " script parameter (REQUEST_TRIGGER_SCRIPT, "
+                                + "TRIGGER_FIRST_TIME_USER, TRIGGER_RETURNING_USER)");
                 return;
             }
 
