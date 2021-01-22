@@ -167,20 +167,21 @@ def main():
       '--output-directory',
       args.test_runner_outdir,
       '--runtime-deps-path',
-      os.path.join(args.client_outdir,
+      os.path.join(args.test_runner_outdir,
                    ('gen.runtime/weblayer/browser/android/javatests/' +
                     'weblayer_instrumentation_test_apk.runtime_deps')),
       '--test-apk',
-      os.path.join(args.client_outdir, 'apks/WebLayerInstrumentationTest.apk'),
+      os.path.join(args.test_runner_outdir,
+                   'apks/WebLayerInstrumentationTest.apk'),
       '--test-jar',
-      os.path.join(args.client_outdir,
+      os.path.join(args.test_runner_outdir,
                    'test.lib.java/WebLayerInstrumentationTest.jar'),
       '--apk-under-test',
       os.path.join(args.client_outdir, 'apks/WebLayerShellSystemWebView.apk'),
       '--use-webview-provider',
       os.path.join(args.implementation_outdir, 'apks/SystemWebView.apk'),
       '--additional-apk',
-      os.path.join(args.client_outdir, 'apks/ChromiumNetTestSupport.apk')]
+      os.path.join(args.test_runner_outdir, 'apks/ChromiumNetTestSupport.apk')]
 
   cmd = [sys.executable, executable_path] + executable_args + remaining_args
 
