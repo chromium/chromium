@@ -503,9 +503,9 @@ fuchsia::web::CreateContextParams CastRunner::GetCommonContextParams() {
         fuchsia::web::ContextFeatureFlags::VULKAN;
   }
 
-  // TODO(b/141956135): Fetch this information from the agent.
+  // TODO(crbug.com/1166790): Fetch UserAgent version strings from Agent.
   params.set_user_agent_product("CrKey");
-  params.set_user_agent_version("1.52.000000");
+  params.set_user_agent_version("1.52.999999");
 
   // When tests require that VULKAN be disabled, DRM must also be disabled.
   if (disable_vulkan_for_test_) {
