@@ -55,10 +55,7 @@ js_library("basic_plugin_test") {
 }
 
 js_library("basic_test") {
-  deps = [
-    "//chrome/browser/resources/pdf:pdf_viewer_wrapper",
-    "//third_party/polymer/v3_0/components-chromium/iron-test-helpers:mock-interactions",
-  ]
+  deps = [ "//chrome/browser/resources/pdf:pdf_viewer_wrapper" ]
   externs_list = [ "$externs_path/test.js" ]
 }
 
@@ -96,6 +93,7 @@ js_library("material_elements_test") {
     "//chrome/browser/resources/pdf:pdf_viewer_wrapper",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
+    "//ui/webui/resources/js:cr.m",
   ]
   externs_list = [ "$externs_path/test.js" ]
 }
