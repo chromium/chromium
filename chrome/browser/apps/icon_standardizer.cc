@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/app_list/icon_standardizer.h"
+#include "chrome/browser/apps/icon_standardizer.h"
 
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 
-namespace app_list {
+namespace apps {
 
 namespace {
 
@@ -280,7 +280,7 @@ gfx::ImageSkia StandardizeSize(const gfx::ImageSkia& image) {
 
 gfx::ImageSkia CreateStandardIconImage(const gfx::ImageSkia& image) {
   gfx::ImageSkia final_image;
-  gfx::ImageSkia standard_size_image = app_list::StandardizeSize(image);
+  gfx::ImageSkia standard_size_image = apps::StandardizeSize(image);
 
   // If icon is already circle shaped, then return the original image and make
   // sure the image is scaled down if its icon size takes up too much space
@@ -389,4 +389,4 @@ gfx::ImageSkia CreateStandardIconImage(const gfx::ImageSkia& image) {
   return final_image;
 }
 
-}  // namespace app_list
+}  // namespace apps

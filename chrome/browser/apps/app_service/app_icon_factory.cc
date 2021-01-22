@@ -55,8 +55,8 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/apps/icon_standardizer.h"
 #include "chrome/browser/chromeos/arc/icon_decode_request.h"
-#include "chrome/browser/ui/app_list/icon_standardizer.h"
 #include "chrome/browser/ui/app_list/md_icon_normalizer.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
@@ -1279,7 +1279,7 @@ void ApplyIconEffects(IconEffects icon_effects,
   }
 
   if (icon_effects & IconEffects::kCrOsStandardIcon) {
-    *image_skia = app_list::CreateStandardIconImage(*image_skia);
+    *image_skia = apps::CreateStandardIconImage(*image_skia);
   }
 #endif
 

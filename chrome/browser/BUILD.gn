@@ -4279,6 +4279,8 @@ static_library("browser") {
       "apps/app_service/uninstall_dialog.h",
       "apps/app_service/web_apps_chromeos.cc",
       "apps/app_service/web_apps_chromeos.h",
+      "apps/icon_standardizer.cc",
+      "apps/icon_standardizer.h",
       "browser_process_platform_part_chromeos.cc",
       "browser_process_platform_part_chromeos.h",
       "component_updater/cros_component_installer_chromeos.cc",

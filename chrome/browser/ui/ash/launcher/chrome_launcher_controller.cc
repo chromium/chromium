@@ -27,6 +27,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/icon_standardizer.h"
 #include "chrome/browser/chromeos/arc/arc_util.h"
 #include "chrome/browser/chromeos/crostini/crostini_features.h"
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
@@ -39,7 +40,6 @@
 #include "chrome/browser/ui/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ui/app_list/app_service/app_service_app_icon_loader.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
-#include "chrome/browser/ui/app_list/icon_standardizer.h"
 #include "chrome/browser/ui/app_list/md_icon_normalizer.h"
 #include "chrome/browser/ui/apps/app_info_dialog.h"
 #include "chrome/browser/ui/ash/chrome_launcher_prefs.h"
@@ -942,7 +942,7 @@ void ChromeLauncherController::OnAppImageUpdated(const std::string& app_id,
       continue;
     }
     item.image =
-        is_standard_icon ? image : app_list::CreateStandardIconImage(image);
+        is_standard_icon ? image : apps::CreateStandardIconImage(image);
     shelf_spinner_controller_->MaybeApplySpinningEffect(app_id, &item.image);
     model_->Set(index, item);
     // It's possible we're waiting on more than one item, so don't break.

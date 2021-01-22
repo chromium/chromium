@@ -19,10 +19,10 @@
 #include "base/logging.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/icon_standardizer.h"
 #include "chrome/browser/chromeos/note_taking_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
-#include "chrome/browser/ui/app_list/icon_standardizer.h"
 #include "chrome/browser/ui/ash/ash_util.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_context_menu.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
@@ -166,7 +166,7 @@ gfx::ImageSkia ChromeNativeAppWindowViewsAuraAsh::GetWindowIcon() {
 
   const gfx::ImageSkia& image_skia =
       ChromeNativeAppWindowViews::GetWindowIcon();
-  return !image_skia.isNull() ? app_list::CreateStandardIconImage(image_skia)
+  return !image_skia.isNull() ? apps::CreateStandardIconImage(image_skia)
                               : gfx::ImageSkia();
 }
 
@@ -553,9 +553,9 @@ gfx::Image ChromeNativeAppWindowViewsAuraAsh::GetCustomImage() {
     return ChromeNativeAppWindowViews::GetCustomImage();
 
   gfx::Image image = ChromeNativeAppWindowViews::GetCustomImage();
-  return !image.IsEmpty() ? gfx::Image(app_list::CreateStandardIconImage(
-                                image.AsImageSkia()))
-                          : gfx::Image();
+  return !image.IsEmpty()
+             ? gfx::Image(apps::CreateStandardIconImage(image.AsImageSkia()))
+             : gfx::Image();
 }
 
 gfx::Image ChromeNativeAppWindowViewsAuraAsh::GetAppIconImage() {

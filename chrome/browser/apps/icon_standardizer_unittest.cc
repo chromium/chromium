@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/app_list/icon_standardizer.h"
+#include "chrome/browser/apps/icon_standardizer.h"
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -43,7 +44,7 @@ TEST_F(CreateStandardIconTest, SquareIconToStandardIcon) {
   square_icon_bitmap.allocN32Pixels(kIconSize, kIconSize);
   square_icon_bitmap.eraseColor(SK_ColorRED);
 
-  gfx::ImageSkia standard_icon = app_list::CreateStandardIconImage(
+  gfx::ImageSkia standard_icon = apps::CreateStandardIconImage(
       gfx::ImageSkia::CreateFrom1xBitmap(square_icon_bitmap));
 
   // Create |test_standard_bitmap| which will be a manually created standard
@@ -86,7 +87,7 @@ TEST_F(CreateStandardIconTest, CircularIconToStandardIcon) {
                     paint_circle_icon);
 
   // Get the standard icon version of the red circle icon.
-  gfx::ImageSkia generated_standard_icon = app_list::CreateStandardIconImage(
+  gfx::ImageSkia generated_standard_icon = apps::CreateStandardIconImage(
       gfx::ImageSkia::CreateFromBitmap(circle_icon_bitmap, 2.0f));
 
   // Scale the bitmap to fit the size of a standardized circle icon.
@@ -122,7 +123,7 @@ TEST_F(CreateStandardIconTest, StandardCircularIconToStandardIcon) {
                     kStandardCircleRadius, paint_circle_icon);
 
   // Get the standard icon version of the red circle icon.
-  gfx::ImageSkia standard_icon = app_list::CreateStandardIconImage(
+  gfx::ImageSkia standard_icon = apps::CreateStandardIconImage(
       gfx::ImageSkia::CreateFromBitmap(circle_icon_bitmap, 2.0f));
 
   EXPECT_TRUE(AreBitmapsEqual(*standard_icon.bitmap(), circle_icon_bitmap));

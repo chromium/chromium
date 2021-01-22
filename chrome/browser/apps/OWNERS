@@ -1,1 +1,3 @@
 file://apps/OWNERS
+
+per-file icon_standardizer*=mmourgos@chromium.org

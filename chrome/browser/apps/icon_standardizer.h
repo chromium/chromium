@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_APP_LIST_ICON_STANDARDIZER_H_
-#define CHROME_BROWSER_UI_APP_LIST_ICON_STANDARDIZER_H_
+#ifndef CHROME_BROWSER_APPS_ICON_STANDARDIZER_H_
+#define CHROME_BROWSER_APPS_ICON_STANDARDIZER_H_
 
 namespace gfx {
 class ImageSkia;
 }  // namespace gfx
 
-// TODO(mmourgos): Look into possibly moving this code to ui/gfx/image.
-namespace app_list {
+namespace apps {
 
 // Takes an icon image and returns a standardized version of that icon. This
 // function consists of the following steps:
@@ -22,6 +21,6 @@ namespace app_list {
 //    generated icon as the standard icon.
 gfx::ImageSkia CreateStandardIconImage(const gfx::ImageSkia& image);
 
-}  // namespace app_list
+}  // namespace apps
 
-#endif  // CHROME_BROWSER_UI_APP_LIST_ICON_STANDARDIZER_H_
+#endif  // CHROME_BROWSER_APPS_ICON_STANDARDIZER_H_

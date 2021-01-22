@@ -43,8 +43,8 @@
 #include "ui/gfx/image/image_unittest_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/apps/icon_standardizer.h"
 #include "chrome/browser/chromeos/arc/icon_decode_request.h"
-#include "chrome/browser/ui/app_list/icon_standardizer.h"
 #include "chrome/browser/ui/app_list/md_icon_normalizer.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "components/arc/mojom/intent_helper.mojom.h"
@@ -200,7 +200,7 @@ class AppIconFactoryTest : public testing::Test {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
-      output_image_skia = app_list::CreateStandardIconImage(output_image_skia);
+      output_image_skia = apps::CreateStandardIconImage(output_image_skia);
     }
 #endif
     EnsureRepresentationsLoaded(output_image_skia);
@@ -617,8 +617,7 @@ class WebAppIconFactoryTest : public ChromeRenderViewHostTestHarness {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
       if (purpose == IconPurpose::ANY) {
-        output_image_skia =
-            app_list::CreateStandardIconImage(output_image_skia);
+        output_image_skia = apps::CreateStandardIconImage(output_image_skia);
       }
       if (purpose == IconPurpose::MASKABLE) {
         output_image_skia = apps::ApplyBackgroundAndMask(output_image_skia);

@@ -57,8 +57,8 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/apps/icon_standardizer.h"
 #include "chrome/browser/chromeos/crostini/crostini_terminal.h"
-#include "chrome/browser/ui/app_list/icon_standardizer.h"
 #endif
 
 namespace {
@@ -543,7 +543,7 @@ gfx::ImageSkia AppBrowserController::GetFallbackAppIcon() const {
   if (!page_icon.isNull()) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
-      return app_list::CreateStandardIconImage(page_icon);
+      return apps::CreateStandardIconImage(page_icon);
 #endif
     return page_icon;
   }
