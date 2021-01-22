@@ -25,6 +25,7 @@
 #include "components/sync/model/string_ordinal.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
+#include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension.h"
@@ -69,8 +70,8 @@ class AppLauncherHandler
                            base::DictionaryValue* value);
 
   // Registers values (strings etc.) for the page.
-  static void GetLocalizedValues(Profile* profile,
-                                 base::DictionaryValue* values);
+  static void RegisterLoadTimeData(Profile* profile,
+                                   content::WebUIDataSource* source);
 
   // Register per-profile preferences.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);

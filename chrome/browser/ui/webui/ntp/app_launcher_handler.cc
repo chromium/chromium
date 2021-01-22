@@ -404,11 +404,12 @@ void AppLauncherHandler::CreateExtensionInfo(const Extension* extension,
 }
 
 // static
-void AppLauncherHandler::GetLocalizedValues(Profile* profile,
-                                            base::DictionaryValue* values) {
+void AppLauncherHandler::RegisterLoadTimeData(
+    Profile* profile,
+    content::WebUIDataSource* source) {
   PrefService* prefs = profile->GetPrefs();
   int shown_page = prefs->GetInteger(prefs::kNtpShownPage);
-  values->SetInteger("shown_page_index", shown_page & INDEX_MASK);
+  source->AddInteger("shown_page_index", shown_page & INDEX_MASK);
 }
 
 // static
