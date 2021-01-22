@@ -75,8 +75,6 @@ void AutomationManagerAura::Enable() {
 
 void AutomationManagerAura::Disable() {
   enabled_ = false;
-  cache_ = std::make_unique<views::AXAuraObjCache>();
-  tree_.reset();
   Reset(true);
 }
 
