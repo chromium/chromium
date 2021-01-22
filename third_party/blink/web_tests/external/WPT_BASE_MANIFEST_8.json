@@ -200440,7 +200440,7 @@
        []
       ],
       "selection-input-011-ref.html": [
-       "b49b0b00fa2a8b4f802a95d1309cc26c7fde8935",
+       "ce9f129e119f12757371885a6748d6d81e976cf3",
        []
       ],
       "selection-intercharacter-011-ref.html": [
@@ -200460,7 +200460,7 @@
        []
       ],
       "selection-textarea-011-ref.html": [
-       "5c78176d606c8e5619b068f03611f8e0894ab138",
+       "34b9913cf3c5dc3ab4276020f1de7e03fc4ae788",
        []
       ]
      },
@@ -275757,55 +275757,10 @@
       }
      ]
     ],
-    "compression-with-detach.tentative.any.js": [
+    "compression-with-detach.tentative.window.js": [
      "786bba21c800ca9f067a6d033f0345a52bfbb218",
      [
-      "compression/compression-with-detach.tentative.any.html",
-      {
-       "script_metadata": [
-        [
-         "global",
-         "window,worker"
-        ],
-        [
-         "script",
-         "resources/concatenate-stream.js"
-        ]
-       ]
-      }
-     ],
-     [
-      "compression/compression-with-detach.tentative.any.serviceworker.html",
-      {
-       "script_metadata": [
-        [
-         "global",
-         "window,worker"
-        ],
-        [
-         "script",
-         "resources/concatenate-stream.js"
-        ]
-       ]
-      }
-     ],
-     [
-      "compression/compression-with-detach.tentative.any.sharedworker.html",
-      {
-       "script_metadata": [
-        [
-         "global",
-         "window,worker"
-        ],
-        [
-         "script",
-         "resources/concatenate-stream.js"
-        ]
-       ]
-      }
-     ],
-     [
-      "compression/compression-with-detach.tentative.any.worker.html",
+      "compression/compression-with-detach.tentative.window.html",
       {
        "script_metadata": [
         [
@@ -276180,55 +276135,10 @@
       }
      ]
     ],
-    "decompression-with-detach.tentative.any.js": [
+    "decompression-with-detach.tentative.window.js": [
      "a2f8bda09148f0d323022b1f93be78d83c4aa654",
      [
-      "compression/decompression-with-detach.tentative.any.html",
-      {
-       "script_metadata": [
-        [
-         "global",
-         "window,worker"
-        ],
-        [
-         "script",
-         "resources/concatenate-stream.js"
-        ]
-       ]
-      }
-     ],
-     [
-      "compression/decompression-with-detach.tentative.any.serviceworker.html",
-      {
-       "script_metadata": [
-        [
-         "global",
-         "window,worker"
-        ],
-        [
-         "script",
-         "resources/concatenate-stream.js"
-        ]
-       ]
-      }
-     ],
-     [
-      "compression/decompression-with-detach.tentative.any.sharedworker.html",
-      {
-       "script_metadata": [
-        [
-         "global",
-         "window,worker"
-        ],
-        [
-         "script",
-         "resources/concatenate-stream.js"
-        ]
-       ]
-      }
-     ],
-     [
-      "compression/decompression-with-detach.tentative.any.worker.html",
+      "compression/decompression-with-detach.tentative.window.html",
       {
        "script_metadata": [
         [
