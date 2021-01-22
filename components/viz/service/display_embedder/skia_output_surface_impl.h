@@ -97,7 +97,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
       sk_sp<SkColorSpace> image_color_space,
       SkYUVAInfo::PlaneConfig plane_config,
       SkYUVAInfo::Subsampling subsampling) override;
-  void SwapBuffersSkipped() override;
+  void SwapBuffersSkipped(const gfx::Rect root_pass_damage_rect) override;
   void ScheduleOutputSurfaceAsOverlay(
       OverlayProcessorInterface::OutputSurfaceOverlayPlane output_surface_plane)
       override;
@@ -305,8 +305,9 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   base::Optional<gfx::Rect> damage_of_current_buffer_;
   // Current buffer index.
   size_t current_buffer_ = 0;
-  // Damage area of the buffer. Differ to the last submit buffer.
-  std::vector<gfx::Rect> damage_of_buffers_;
+  // Accumulates framebuffer damage since last drawing to a particular buffer.
+  // There is one gfx::Rect per framebuffer.
+  std::vector<gfx::Rect> accumulated_buffer_damage_;
   // Track if the current buffer content is changed.
   bool current_buffer_modified_ = false;
 

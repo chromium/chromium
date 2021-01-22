@@ -99,7 +99,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
       SkYUVAInfo::Subsampling subsampling) = 0;
 
   // Called if SwapBuffers() will be skipped.
-  virtual void SwapBuffersSkipped() = 0;
+  virtual void SwapBuffersSkipped(const gfx::Rect root_pass_damage_rect) = 0;
 
   // TODO(weiliangc): This API should move to OverlayProcessor.
   // Schedule |output_surface_plane| as an overlay plane to be displayed.

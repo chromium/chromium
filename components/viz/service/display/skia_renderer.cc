@@ -782,7 +782,13 @@ void SkiaRenderer::SwapBuffers(SwapFrameData swap_frame_data) {
 }
 
 void SkiaRenderer::SwapBuffersSkipped() {
-  skia_output_surface_->SwapBuffersSkipped();
+  gfx::Rect root_pass_damage_rect = gfx::Rect(surface_size_for_swap_buffers());
+  if (use_partial_swap_)
+    root_pass_damage_rect.Intersect(swap_buffer_rect_);
+
+  skia_output_surface_->SwapBuffersSkipped(root_pass_damage_rect);
+  swap_buffer_rect_ = gfx::Rect();
+
   FlushOutputSurface();
 }
 

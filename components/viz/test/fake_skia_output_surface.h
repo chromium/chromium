@@ -74,7 +74,7 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
       sk_sp<SkColorSpace> image_color_space,
       SkYUVAInfo::PlaneConfig plane_config,
       SkYUVAInfo::Subsampling subsampling) override;
-  void SwapBuffersSkipped() override {}
+  void SwapBuffersSkipped(const gfx::Rect root_pass_damage_rect) override {}
   SkCanvas* BeginPaintRenderPass(const AggregatedRenderPassId& id,
                                  const gfx::Size& surface_size,
                                  ResourceFormat format,
