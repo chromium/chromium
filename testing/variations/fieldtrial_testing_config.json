@@ -4456,6 +4456,24 @@
             ]
         }
     ],
+    "OmniboxDNSInterceptionChecksPolicyRollout": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OmniboxDNSInterceptionChecksPolicyRollout"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxDocumentProviderNonDogfoodExperiments": [
         {
             "platforms": [
