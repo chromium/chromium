@@ -42,6 +42,11 @@ def main():
       '--limit-to-dir',
       help='Limit to a single directory. Used to restrict a smaller scope for '
       'debugging.')
+  # TODO(crbug.com/1135347): --dirmd-dir is currently unused, but will be used
+  # to parse DIR_METADATA files.
+  arg_parser.add_argument(
+      '--dirmd-path',
+      help="Path to dirmd. If not specified, assume it's in PATH.")
   arguments = arg_parser.parse_args()
 
   start_time = time.time()
