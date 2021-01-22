@@ -1661,10 +1661,6 @@
       name: "RawClipboard",
     },
     {
-      name: "ReadableByteStream",
-      status: "stable",
-    },
-    {
       name: "RemotePlayback",
       status: "stable",
     },

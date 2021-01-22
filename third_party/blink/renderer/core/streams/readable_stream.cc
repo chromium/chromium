@@ -43,7 +43,6 @@
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 
@@ -1416,11 +1415,6 @@ void ReadableStream::InitInternal(ScriptState* script_state,
 
     // 6. If typeString is "bytes",
     if (type_string == V8AtomicString(isolate, "bytes")) {
-      if (!RuntimeEnabledFeatures::ReadableByteStreamEnabled()) {
-        exception_state.ThrowRangeError("bytes type is not yet implemented");
-        return;
-      }
-
       UseCounter::Count(ExecutionContext::From(script_state),
                         WebFeature::kReadableStreamWithByteSource);
 
