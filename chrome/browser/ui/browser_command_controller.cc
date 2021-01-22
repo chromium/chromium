@@ -1462,6 +1462,7 @@ void BrowserCommandController::UpdateCommandsForDesks(int num_desks) {
     command_updater_.UpdateCommandEnabled(IDC_MOVE_TO_DESK_1 + i,
                                           i < num_desks);
   }
+  command_updater_.UpdateCommandEnabled(IDC_MOVE_TO_DESKS_MENU, num_desks > 1);
 }
 #endif
 

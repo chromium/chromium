@@ -27,6 +27,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/ash_features.h"
+#include "ash/public/cpp/desks_helper.h"
 #include "chrome/browser/ui/toolbar/move_to_desks_menu_model.h"
 #include "ui/views/widget/widget.h"
 #endif
@@ -52,6 +53,18 @@ bool WebAppMenuModel::IsCommandIdEnabled(int command_id) const {
     default:
       return AppMenuModel::IsCommandIdEnabled(command_id);
   }
+}
+
+bool WebAppMenuModel::IsCommandIdVisible(int command_id) const {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (command_id == IDC_MOVE_TO_DESKS_MENU) {
+    auto* desks_helper = ash::DesksHelper::Get();
+    const bool menu_is_visible =
+        desks_helper && desks_helper->GetNumberOfDesks() > 1;
+    return menu_is_visible;
+  }
+#endif
+  return AppMenuModel::IsCommandIdVisible(command_id);
 }
 
 void WebAppMenuModel::ExecuteCommand(int command_id, int event_flags) {
@@ -97,12 +110,15 @@ void WebAppMenuModel::Build() {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (ash::features::IsBentoEnabled()) {
-    AddSeparator(ui::NORMAL_SEPARATOR);
-    move_to_desks_submenu_ = std::make_unique<MoveToDesksMenuModel>(
-        this, views::Widget::GetWidgetForNativeWindow(
-                  browser()->window()->GetNativeWindow()));
-    AddSubMenuWithStringId(IDC_MOVE_TO_DESKS_MENU, IDS_MOVE_TO_DESKS_MENU,
-                           move_to_desks_submenu_.get());
+    auto* desks_helper = ash::DesksHelper::Get();
+    if (desks_helper && desks_helper->GetNumberOfDesks() > 1) {
+      AddSeparator(ui::NORMAL_SEPARATOR);
+      move_to_desks_submenu_ = std::make_unique<MoveToDesksMenuModel>(
+          this, views::Widget::GetWidgetForNativeWindow(
+                    browser()->window()->GetNativeWindow()));
+      AddSubMenuWithStringId(IDC_MOVE_TO_DESKS_MENU, IDS_MOVE_TO_DESKS_MENU,
+                             move_to_desks_submenu_.get());
+    }
   }
 #endif
 
