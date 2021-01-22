@@ -125,6 +125,47 @@ TEST_F(ShapeResultViewTest, ArabicSingleView) {
   EXPECT_EQ(last_glyphs.size(), 3u);
 }
 
+TEST_F(ShapeResultViewTest, PreviousSafeToBreak) {
+  String string =
+      u"\u0028\u05D1\u0029\u0020\u05D4\u05D1\u05DC\u0020\u05D0\u05DE\u05E8"
+      u"\u0020\u05E2\u05DC\u0020"
+      u"\u05D3\u05D1\u05E8\u05D9\u0020\u05D4\u05D1\u05DC\u05D9\u0020\u05D4"
+      u"\u05E2\u05D5\u05DC\u05DD\u002C"
+      u"\u0020\u05D5\u05E1\u05DE\u05DA\u0020\u05D4\u05B2\u05D1\u05B5\u05DC"
+      u"\u0020\u05D0\u05DC\u0020\u05D4"
+      u"\u05D1\u05DC\u05D9\u05DD\u0020\u05D5\u05D0\u05DD\u0020\u05DC\u05D0"
+      u"\u0020\u05D9\u05DE\u05E6\u05D0"
+      u"\u0020\u05DE\u05D4\u05E9\u05DE\u05D5\u05EA\u0020\u05E9\u05D4\u05DD"
+      u"\u0020\u05E2\u05DC\u0020\u05DE"
+      u"\u05E9\u05E7\u05DC\u0020\u05D0\u05E8\u05E5\u0020\u05E9\u05D9\u05E9"
+      u"\u05EA\u05E0\u05D4\u0020\u05D7"
+      u"\u05D5\u05E5\u0020\u05DE\u05B5\u05D7\u05B2\u05D3\u05B7\u05E8\u0020"
+      u"\u05DE\u05B4\u05E9\u05B0\u05C1"
+      u"\u05DB\u05B8\u05D1\u05B0\u05DA\u05B8\u0020\u0028\u05E9\u05DE\u05D5"
+      u"\u05EA\u0020\u05D6\u05F3\u003A"
+      u"\u05DB\u05F4\u05D7\u0029";
+  TextDirection direction = TextDirection::kRtl;
+  HarfBuzzShaper shaper(string);
+  const RunSegmenter::RunSegmenterRange range = {
+      51, 131, USCRIPT_HEBREW, blink::OrientationIterator::kOrientationKeep,
+      blink::FontFallbackPriority::kText};
+  scoped_refptr<ShapeResult> shape_result =
+      shaper.Shape(&font, direction, 51, 131, range);
+
+  unsigned start_offset = 59;
+  unsigned end_offset = 118;
+  scoped_refptr<const ShapeResultView> result_view =
+      ShapeResultView::Create(shape_result.get(), start_offset, end_offset);
+  scoped_refptr<ShapeResult> result = result_view->CreateShapeResult();
+
+  unsigned offset = end_offset;
+  do {
+    unsigned safe = result_view->PreviousSafeToBreakOffset(offset);
+    unsigned cached_safe = result->CachedPreviousSafeToBreakOffset(offset);
+    EXPECT_EQ(safe, cached_safe);
+  } while (--offset > start_offset);
+}
+
 TEST_F(ShapeResultViewTest, LatinMultiRun) {
   TextDirection direction = TextDirection::kLtr;
   HarfBuzzShaper shaper_a(To16Bit("hello", 5));

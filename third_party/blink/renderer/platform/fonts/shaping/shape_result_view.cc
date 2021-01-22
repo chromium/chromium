@@ -109,15 +109,16 @@ unsigned ShapeResultView::RunInfoPart::PreviousSafeToBreakOffset(
     unsigned offset) const {
   if (offset >= NumCharacters())
     return NumCharacters();
+  offset += offset_;
   if (!Rtl()) {
     for (const auto& glyph : base::Reversed(*this)) {
       if (glyph.safe_to_break_before && glyph.character_index <= offset)
-        return glyph.character_index;
+        return glyph.character_index - offset_;
     }
   } else {
     for (const auto& glyph : *this) {
       if (glyph.safe_to_break_before && glyph.character_index <= offset)
-        return glyph.character_index;
+        return glyph.character_index - offset_;
     }
   }
 
