@@ -18,6 +18,7 @@
 #include "chrome/browser/nearby_sharing/nearby_connections_manager_impl.h"
 #include "chrome/browser/nearby_sharing/nearby_process_manager.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_impl.h"
+#include "chrome/browser/nearby_sharing/power_client.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -29,9 +30,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
-#include "chrome/browser/nearby_sharing/power_client_chromeos.h"
-#else  // !BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/nearby_sharing/power_client.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
@@ -101,11 +99,7 @@ KeyedService* NearbySharingServiceFactory::BuildServiceInstanceFor(
   return new NearbySharingServiceImpl(
       pref_service, notification_display_service, profile,
       std::move(nearby_connections_manager), &process_manager,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      std::make_unique<PowerClientChromeos>());
-#else   // !BUILDFLAG(IS_CHROMEOS_ASH)
       std::make_unique<PowerClient>());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 content::BrowserContext* NearbySharingServiceFactory::GetBrowserContextToUse(
