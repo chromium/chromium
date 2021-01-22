@@ -8,15 +8,17 @@ File::File()
   LastWrite=false;
   HandleType=FILE_HANDLENORMAL;
   SkipClose=false;
-  IgnoreReadErrors=false;
   ErrorType=FILE_SUCCESS;
   OpenShared=false;
   AllowDelete=true;
   AllowExceptions=true;
+  PreserveAtime=false;
 #ifdef _WIN_ALL
   NoSequentialRead=false;
   CreateMode=FMF_UNDEFINED;
 #endif
+  ReadErrorMode=FREM_ASK;
+  TruncatedAfterReadError=false;
 
 #ifdef CHROMIUM_UNRAR
   hOpenFile=FILE_BAD_HANDLE;
@@ -40,6 +42,7 @@ void File::operator = (File &SrcFile)
   NewFile=SrcFile.NewFile;
   LastWrite=SrcFile.LastWrite;
   HandleType=SrcFile.HandleType;
+  TruncatedAfterReadError=SrcFile.TruncatedAfterReadError;
   wcsncpyz(FileName,SrcFile.FileName,ASIZE(FileName));
   SrcFile.SkipClose=true;
 }
@@ -65,6 +68,9 @@ bool File::Open(const wchar *Name,uint Mode)
   if (OpenShared)
     ShareMode|=FILE_SHARE_WRITE;
   uint Flags=NoSequentialRead ? 0:FILE_FLAG_SEQUENTIAL_SCAN;
+  FindData FD;
+  if (PreserveAtime)
+    Access|=FILE_WRITE_ATTRIBUTES; // Needed to preserve atime.
   hNewFile=CreateFile(Name,Access,ShareMode,NULL,OPEN_EXISTING,Flags,NULL);
 
   DWORD LastError;
@@ -95,7 +101,11 @@ bool File::Open(const wchar *Name,uint Mode)
   }
   if (hNewFile==FILE_BAD_HANDLE && LastError==ERROR_FILE_NOT_FOUND)
     ErrorType=FILE_NOTFOUND;
-
+  if (PreserveAtime && hNewFile!=FILE_BAD_HANDLE)
+  {
+    FILETIME ft={0xffffffff,0xffffffff}; // This value prevents atime modification.
+    SetFileTime(hNewFile,NULL,&ft,NULL);
+  }
 #endif  // defined(CHROMIUM_UNRAR)
 
 #else
@@ -112,8 +122,14 @@ bool File::Open(const wchar *Name,uint Mode)
   flags|=O_LARGEFILE;
 #endif
 #endif
+  // NDK r20 has O_NOATIME, but fails to create files with it in Android 7+.
+#if defined(O_NOATIME)
+  if (PreserveAtime)
+    flags|=O_NOATIME;
+#endif
   char NameA[NM];
   WideToChar(Name,NameA,ASIZE(NameA));
+
   int handle=open(NameA,flags);
 #endif  // defined(CHROMIUM_UNRAR)
 
@@ -122,12 +138,12 @@ bool File::Open(const wchar *Name,uint Mode)
 #ifdef _OSF_SOURCE
   extern "C" int flock(int, int);
 #endif
-
   if (!OpenShared && UpdateMode && handle>=0 && flock(handle,LOCK_EX|LOCK_NB)==-1)
   {
     close(handle);
     return false;
   }
+
 #endif
   if (handle==-1)
     hNewFile=FILE_BAD_HANDLE;
@@ -150,6 +166,7 @@ bool File::Open(const wchar *Name,uint Mode)
   {
     hFile=hNewFile;
     wcsncpyz(FileName,Name,ASIZE(FileName));
+    TruncatedAfterReadError=false;
   }
   return Success;
 }
@@ -256,7 +273,7 @@ bool File::Close()
 // unrar should not close the file handle since it wasn't opened by unrar.
 #ifdef _WIN_ALL
       // We use the standard system handle for stdout in Windows
-      // and it must not  be closed here.
+      // and it must not be closed here.
       if (HandleType==FILE_HANDLENORMAL)
         Success=CloseHandle(hFile)==TRUE;
 #else
@@ -382,9 +399,12 @@ bool File::Write(const void *Data,size_t Size)
 
 int File::Read(void *Data,size_t Size)
 {
+  if (TruncatedAfterReadError)
+    return 0;
+
   int64 FilePos=0; // Initialized only to suppress some compilers warning.
 
-  if (IgnoreReadErrors)
+  if (ReadErrorMode==FREM_IGNORE)
     FilePos=Tell();
   int ReadSize;
   while (true)
@@ -394,7 +414,7 @@ int File::Read(void *Data,size_t Size)
     {
       ErrorType=FILE_READERROR;
       if (AllowExceptions)
-        if (IgnoreReadErrors)
+        if (ReadErrorMode==FREM_IGNORE)
         {
           ReadSize=0;
           for (size_t I=0;I<Size;I+=512)
@@ -407,14 +427,24 @@ int File::Read(void *Data,size_t Size)
         }
         else
         {
-          if (HandleType==FILE_HANDLENORMAL && ErrHandler.AskRepeatRead(FileName))
-            continue;
+          bool Ignore=false,Retry=false,Quit=false;
+          if (ReadErrorMode==FREM_ASK && HandleType==FILE_HANDLENORMAL)
+          {
+            ErrHandler.AskRepeatRead(FileName,Ignore,Retry,Quit);
+            if (Retry)
+              continue;
+          }
+          if (Ignore || ReadErrorMode==FREM_TRUNCATE)
+          {
+            TruncatedAfterReadError=true;
+            return 0;
+          }
           ErrHandler.ReadError(FileName);
         }
     }
     break;
   }
-  return ReadSize;
+  return ReadSize; // It can return -1 only if AllowExceptions is disabled.
 }
 
 
@@ -697,9 +727,11 @@ void File::GetOpenFileTime(RarTime *ft)
 
 int64 File::FileLength()
 {
-  SaveFilePos SavePos(*this);
+  int64 SavePos=Tell();
   Seek(0,SEEK_END);
-  return Tell();
+  int64 Length=Tell();
+  Seek(SavePos,SEEK_SET);
+  return Length;
 }
 
 

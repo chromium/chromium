@@ -75,8 +75,14 @@ void Rijndael::Init(bool Encrypt,const byte *key,uint keyLen,const byte * initVe
   // Check SSE here instead of constructor, so if object is a part of some
   // structure memset'ed before use, this variable is not lost.
   int CPUInfo[4];
-  __cpuid(CPUInfo, 1);
-  AES_NI=(CPUInfo[2] & 0x2000000)!=0;
+  __cpuid(CPUInfo, 0x80000000); // Get the maximum supported cpuid function.
+  if ((CPUInfo[0] & 0x7fffffff)>=1)
+  {
+    __cpuid(CPUInfo, 1);
+    AES_NI=(CPUInfo[2] & 0x2000000)!=0;
+  }
+  else
+    AES_NI=0;
 #endif
 
   // Other developers asked us to initialize it to suppress "may be used
