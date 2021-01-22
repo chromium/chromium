@@ -190,9 +190,6 @@ void AddStrings(PdfViewerContext context, base::Value* dict) {
 }
 
 void AddAdditionalData(base::Value* dict) {
-  dict->SetKey("pdfFormSaveEnabled",
-               base::Value(base::FeatureList::IsEnabled(
-                   chrome_pdf::features::kSaveEditedPDFForm)));
   dict->SetKey("documentPropertiesEnabled",
                base::Value(base::FeatureList::IsEnabled(
                    chrome_pdf::features::kPdfViewerDocumentProperties)));

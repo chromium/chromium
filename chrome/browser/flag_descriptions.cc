@@ -4941,10 +4941,6 @@ const char kPaintPreviewStartupDescription[] =
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 
-const char kPdfFormSaveName[] = "Save PDF Forms";
-const char kPdfFormSaveDescription[] =
-    "Enable saving PDFs with filled form data.";
-
 const char kPdfViewerUpdateName[] = "PDF Viewer Update";
 const char kPdfViewerUpdateDescription[] =
     "When enabled, the PDF viewer will display an updated UI with new "

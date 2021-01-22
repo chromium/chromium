@@ -35,14 +35,6 @@ const base::Feature kPdfViewerPresentationMode = {
 const base::Feature kPdfXfaSupport = {"PdfXfaSupport",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kSaveEditedPDFForm = {"SaveEditedPDFForm",
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-                                          base::FEATURE_ENABLED_BY_DEFAULT
-#else
-                                          base::FEATURE_DISABLED_BY_DEFAULT
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-};
-
 const base::Feature kTabAcrossPDFAnnotations = {
     "TabAcrossPDFAnnotations", base::FEATURE_ENABLED_BY_DEFAULT};
 

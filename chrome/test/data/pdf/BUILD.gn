@@ -100,6 +100,7 @@ js_library("material_elements_test") {
 
 js_library("download_controls_test") {
   deps = [
+    "../webui:test_util.m",
     "//chrome/browser/resources/pdf:pdf_viewer_wrapper",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu.m",

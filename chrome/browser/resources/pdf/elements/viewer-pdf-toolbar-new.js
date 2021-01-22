@@ -64,7 +64,6 @@ export class ViewerPdfToolbarNewElement extends PolymerElement {
 
       pageNo: Number,
       pdfAnnotationsEnabled: Boolean,
-      pdfFormSaveEnabled: Boolean,
       presentationModeEnabled: Boolean,
       printingEnabled: Boolean,
       rotated: Boolean,

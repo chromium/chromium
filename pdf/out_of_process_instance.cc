@@ -165,7 +165,6 @@ constexpr char kJSSaveRequestType[] = "saveRequestType";
 constexpr char kJSSaveDataType[] = "saveData";
 constexpr char kJSFileName[] = "fileName";
 constexpr char kJSDataToSave[] = "dataToSave";
-constexpr char kJSHasUnsavedChanges[] = "hasUnsavedChanges";
 // Consume save token (Plugin -> Page)
 constexpr char kJSConsumeSaveTokenType[] = "consumeSaveToken";
 // Notify when touch selection occurs (Plugin -> Page)
@@ -690,7 +689,15 @@ bool OutOfProcessInstance::Init(uint32_t argc,
 
   LoadUrl(stream_url, /*is_print_preview=*/false);
   url_ = original_url;
+
+  // Not all edits go through the PDF plugin's form filler. The plugin instance
+  // can be restarted by exiting annotation mode on ChromeOS, which can set the
+  // document to an edited state.
   edit_mode_ = has_edits;
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  DCHECK(!edit_mode_);
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
   pp::PDF::SetCrashData(GetPluginInstance(), original_url, top_level_url);
   return engine()->New(original_url, headers);
 }
@@ -1454,11 +1461,6 @@ void OutOfProcessInstance::GetDocumentPassword(
   PostMessage(message);
 }
 
-bool OutOfProcessInstance::CanSaveEdits() const {
-  return edit_mode_ &&
-         base::FeatureList::IsEnabled(features::kSaveEditedPDFForm);
-}
-
 void OutOfProcessInstance::SaveToBuffer(const std::string& token) {
   engine()->KillFormFocus();
 
@@ -1468,11 +1470,8 @@ void OutOfProcessInstance::SaveToBuffer(const std::string& token) {
   message.Set(kJSFileName, pp::Var(GetFileNameFromUrl(url_)));
   // This will be overwritten if the save is successful.
   message.Set(kJSDataToSave, pp::Var(pp::Var::Null()));
-  const bool has_unsaved_changes =
-      edit_mode_ && !base::FeatureList::IsEnabled(features::kSaveEditedPDFForm);
-  message.Set(kJSHasUnsavedChanges, pp::Var(has_unsaved_changes));
 
-  if (CanSaveEdits()) {
+  if (edit_mode_) {
     std::vector<uint8_t> data = engine()->GetSaveData();
     if (IsSaveDataSizeValid(data.size())) {
       pp::VarArrayBuffer buffer(data.size());
@@ -1926,7 +1925,7 @@ void OutOfProcessInstance::HandleSaveMessage(const pp::VarDictionary& dict) {
     case SaveRequestType::kOriginal:
       pp::PDF::SetPluginCanSave(this, false);
       SaveToFile(dict.Get(pp::Var(kJSToken)).AsString());
-      pp::PDF::SetPluginCanSave(this, CanSaveEdits());
+      pp::PDF::SetPluginCanSave(this, edit_mode_);
       break;
     case SaveRequestType::kEdited:
       SaveToBuffer(dict.Get(pp::Var(kJSToken)).AsString());
@@ -2245,12 +2244,11 @@ void OutOfProcessInstance::IsSelectingChanged(bool is_selecting) {
 
 void OutOfProcessInstance::EnteredEditMode() {
   edit_mode_ = true;
-  pp::PDF::SetPluginCanSave(this, CanSaveEdits());
-  if (CanSaveEdits()) {
-    pp::VarDictionary message;
-    message.Set(kType, kJSSetIsEditingType);
-    PostMessage(message);
-  }
+  pp::PDF::SetPluginCanSave(this, true);
+
+  pp::VarDictionary message;
+  message.Set(kType, kJSSetIsEditingType);
+  PostMessage(message);
 }
 
 float OutOfProcessInstance::GetToolbarHeightInScreenCoords() {

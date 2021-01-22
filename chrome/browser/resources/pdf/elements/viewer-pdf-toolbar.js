@@ -83,9 +83,6 @@ Polymer({
 
     /** Whether the Printing feature is enabled. */
     printingEnabled: Boolean,
-
-    /** Whether the PDF Form save feature is enabled. */
-    pdfFormSaveEnabled: Boolean,
   },
 
   /** @type {?Object} */

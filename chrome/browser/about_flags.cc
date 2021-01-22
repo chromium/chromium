@@ -4682,10 +4682,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAccessiblePDFFormDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(chrome_pdf::features::kAccessiblePDFForm)},
 
-    {"pdf-form-save", flag_descriptions::kPdfFormSaveName,
-     flag_descriptions::kPdfFormSaveDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(chrome_pdf::features::kSaveEditedPDFForm)},
-
     {"pdf-viewer-update", flag_descriptions::kPdfViewerUpdateName,
      flag_descriptions::kPdfViewerUpdateDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(chrome_pdf::features::kPDFViewerUpdate)},

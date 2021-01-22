@@ -73,7 +73,6 @@ let GetThumbnailMessageData;
 
 /**
  * @typedef {{
- *   hasUnsavedChanges: (boolean|undefined),
  *   fileName: string,
  *   dataToSave: !ArrayBuffer
  * }}
@@ -228,12 +227,6 @@ export class PDFViewerElement extends PDFViewerBaseElement {
 
       /** @private */
       pdfAnnotationsEnabled_: {
-        type: Boolean,
-        value: false,
-      },
-
-      /** @private */
-      pdfFormSaveEnabled_: {
         type: Boolean,
         value: false,
       },
@@ -622,17 +615,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
           await this.pluginController_.save(SaveRequestType.ANNOTATION);
       // Data always exists when save is called with requestType = ANNOTATION.
       const result = /** @type {!RequiredSaveResult} */ (saveResult);
-      if (result.hasUnsavedChanges) {
-        assert(!loadTimeData.getBoolean('pdfFormSaveEnabled'));
-        try {
-          await this.$$('#form-warning').show();
-        } catch (e) {
-          // The user aborted entering annotation mode. Revert to the plugin.
-          this.getToolbar_().annotationMode = false;
-          this.updateProgress(100);
-          return;
-        }
-      }
+
       record(UserAction.ENTER_ANNOTATION_MODE);
       this.annotationMode_ = true;
       this.hasEnteredAnnotationMode_ = true;
@@ -877,7 +860,6 @@ export class PDFViewerElement extends PDFViewerBaseElement {
         loadTimeData.getBoolean('documentPropertiesEnabled');
     this.pdfAnnotationsEnabled_ =
         loadTimeData.getBoolean('pdfAnnotationsEnabled');
-    this.pdfFormSaveEnabled_ = loadTimeData.getBoolean('pdfFormSaveEnabled');
     this.presentationModeEnabled_ =
         loadTimeData.getBoolean('presentationModeEnabled');
     this.printingEnabled_ = loadTimeData.getBoolean('printingEnabled');
@@ -1157,8 +1139,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
     let saveMode;
     if (this.hasEnteredAnnotationMode_) {
       saveMode = SaveRequestType.ANNOTATION;
-    } else if (
-        loadTimeData.getBoolean('pdfFormSaveEnabled') && this.hasEdits_) {
+    } else if (this.hasEdits_) {
       saveMode = SaveRequestType.EDITED;
     } else {
       saveMode = SaveRequestType.ORIGINAL;

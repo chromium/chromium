@@ -533,10 +533,6 @@ export class PluginController {
    * @private
    */
   saveData_(messageData) {
-    assert(
-        loadTimeData.getBoolean('pdfFormSaveEnabled') ||
-        loadTimeData.getBoolean('pdfAnnotationsEnabled'));
-
     // Verify a token that was created by this instance is included to avoid
     // being spammed.
     const resolver = this.pendingTokens_.get(messageData.token);
