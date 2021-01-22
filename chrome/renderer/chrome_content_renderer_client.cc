@@ -1656,8 +1656,6 @@ bool ChromeContentRendererClient::RequiresHtmlImports(const GURL& url) {
            host_piece == chrome::kChromeUIAccountMigrationWelcomeHost ||
            // TODO(crbug.com/1111430): Remove when migrated to Polymer3.
            host_piece == chrome::kChromeUIAddSupervisionHost ||
-           // TODO(crbug.com/1111849): Remove when migrated to Polymer3.
-           host_piece == chrome::kChromeUIAssistantOptInHost ||
            // TODO(crbug.com/1111477): Remove when migrated to Polymer3.
            host_piece == chrome::kChromeUICellularSetupHost ||
            // TODO(crbug.com/1090884): Remove when migrated to Polymer3.
