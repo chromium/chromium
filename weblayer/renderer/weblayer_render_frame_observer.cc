@@ -133,11 +133,10 @@ void WebLayerRenderFrameObserver::CapturePageText(
 
   // Retrieve the frame's full text (up to kMaxIndexChars), and pass it to the
   // translate helper for language detection and possible translation.
-  // TODO(http://crbug.com/585164)): Update this when the corresponding usage of
+  // TODO(http://crbug.com/1163244): Update this when the corresponding usage of
   // this function in //chrome is updated.
   base::string16 contents =
-      blink::WebFrameContentDumper::DeprecatedDumpFrameTreeAsText(
-          frame, kMaxIndexChars)
+      blink::WebFrameContentDumper::DumpFrameTreeAsText(frame, kMaxIndexChars)
           .Utf16();
 
   UMA_HISTOGRAM_TIMES(kTranslateCaptureText,

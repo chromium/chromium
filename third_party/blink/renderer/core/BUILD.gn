@@ -259,13 +259,17 @@ component("core") {
     "//third_party/blink/renderer/core/exported",
     "//third_party/blink/renderer/core/probe",
     "//third_party/blink/renderer/core/typed_arrays",
+    "//third_party/blink/renderer/core/xml:xpath_generated",
     "//third_party/blink/renderer/platform",
+    "//third_party/blink/renderer/platform/wtf",
+    "//ui/accessibility:ax_base",
     "//ui/base/cursor:cursor_base",
     "//ui/base/dragdrop/mojom:mojom_blink_headers",
     "//ui/base/dragdrop/mojom:mojom_shared",
     "//url",
     "//v8",
   ]
+
   deps = [
     "//build:chromeos_buildflags",
     "//components/paint_preview/common",
@@ -287,10 +291,6 @@ component("core") {
     "//third_party/blink/public/common",
     "//third_party/blink/public/strings",
     "//third_party/blink/renderer/core/typed_arrays:typed_arrays",
-    "//third_party/blink/renderer/core/xml:xpath_generated",
-    "//third_party/blink/renderer/platform",
-    "//third_party/blink/renderer/platform/wtf",
-    "//ui/accessibility:ax_base",
     "//ui/base/cursor:cursor_base",
     "//ui/base/cursor/mojom:cursor_type_blink",
     "//ui/base/dragdrop/mojom:mojom_blink",

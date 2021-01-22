@@ -82,9 +82,9 @@
 #include "third_party/blink/public/platform/web_http_body.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url_response.h"
+#include "third_party/blink/public/test/test_web_frame_content_dumper.h"
 #include "third_party/blink/public/web/web_autofill_client.h"
 #include "third_party/blink/public/web/web_document_loader.h"
-#include "third_party/blink/public/web/web_frame_content_dumper.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_history_commit_type.h"
 #include "third_party/blink/public/web/web_history_entry.h"
@@ -138,8 +138,8 @@
 #endif
 
 using base::TimeDelta;
+using blink::TestWebFrameContentDumper;
 using blink::WebFrame;
-using blink::WebFrameContentDumper;
 using blink::WebGestureEvent;
 using blink::WebInputEvent;
 using blink::WebLocalFrame;
@@ -2071,7 +2071,7 @@ TEST_F(RenderViewImplTest, ImeComposition) {
       // Retrieve the content of this page and compare it with the expected
       // result.
       const int kMaxOutputCharacters = 128;
-      base::string16 output = WebFrameContentDumper::DumpWebViewAsText(
+      base::string16 output = TestWebFrameContentDumper::DumpWebViewAsText(
                                   view()->GetWebView(), kMaxOutputCharacters)
                                   .Utf16();
       EXPECT_EQ(base::WideToUTF16(ime_message->result), output);
@@ -2122,7 +2122,7 @@ TEST_F(RenderViewImplTest, OnSetTextDirection) {
     // Copy the document content to std::wstring and compare with the
     // expected result.
     const int kMaxOutputCharacters = 16;
-    base::string16 output = WebFrameContentDumper::DumpWebViewAsText(
+    base::string16 output = TestWebFrameContentDumper::DumpWebViewAsText(
                                 view()->GetWebView(), kMaxOutputCharacters)
                                 .Utf16();
     EXPECT_EQ(base::WideToUTF16(test_case.expected_result), output);
@@ -2537,7 +2537,7 @@ TEST_F(RenderViewImplTest, NavigateSubframe) {
   // Copy the document content to std::string and compare with the
   // expected result.
   const int kMaxOutputCharacters = 256;
-  std::string output = WebFrameContentDumper::DumpWebViewAsText(
+  std::string output = TestWebFrameContentDumper::DumpWebViewAsText(
                            view()->GetWebView(), kMaxOutputCharacters)
                            .Utf8();
   EXPECT_EQ(output, "hello \n\nworld");
@@ -2655,8 +2655,8 @@ TEST_F(RendererErrorPageTest, RegularError) {
   FrameLoadWaiter(main_frame).Wait();
   const int kMaxOutputCharacters = 22;
   EXPECT_EQ("A suffusion of yellow.",
-            WebFrameContentDumper::DumpWebViewAsText(view()->GetWebView(),
-                                                     kMaxOutputCharacters)
+            TestWebFrameContentDumper::DumpWebViewAsText(view()->GetWebView(),
+                                                         kMaxOutputCharacters)
                 .Ascii());
 }
 

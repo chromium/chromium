@@ -33,6 +33,8 @@ blink_core_sources_frame = [
   "csp/trusted_types_directive.h",
   "dactyloscoper.cc",
   "dactyloscoper.h",
+  "frame_content_as_text.h",
+  "frame_content_as_text.cc",
   "deprecated_schedule_style_recalc_during_layout.cc",
   "deprecated_schedule_style_recalc_during_layout.h",
   "deprecation.cc",

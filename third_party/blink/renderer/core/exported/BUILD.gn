@@ -4,6 +4,20 @@
 import("//build/config/dcheck_always_on.gni")
 import("//third_party/blink/renderer/core/core.gni")
 
+static_library("test_support") {
+  testonly = true
+
+  sources = [ "test_web_frame_content_dumper.cc" ]
+
+  deps = [
+    "//third_party/blink/public:test_headers",
+    "//third_party/blink/renderer/core",
+    "//third_party/blink/renderer/platform",
+  ]
+
+  visibility = [ "//third_party/blink/public:test_support" ]
+}
+
 blink_core_sources("exported") {
   configs += [ "//build/config/compiler:noshadowing" ]
 

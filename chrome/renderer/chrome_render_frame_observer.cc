@@ -464,12 +464,8 @@ void ChromeRenderFrameObserver::CapturePageText(TextCaptureType capture_type) {
 
   // Retrieve the frame's full text (up to kMaxIndexChars), and pass it to the
   // translate helper for language detection and possible translation.
-  // TODO(dglazkov): WebFrameContentDumper should only be used for
-  // testing purposes. See http://crbug.com/585164.
   base::string16 contents =
-      WebFrameContentDumper::DeprecatedDumpFrameTreeAsText(frame,
-                                                           kMaxIndexChars)
-          .Utf16();
+      WebFrameContentDumper::DumpFrameTreeAsText(frame, kMaxIndexChars).Utf16();
 
   UMA_HISTOGRAM_TIMES(kTranslateCaptureText,
                       base::TimeTicks::Now() - capture_begin_time);
@@ -489,7 +485,6 @@ void ChromeRenderFrameObserver::CapturePageText(TextCaptureType capture_type) {
                                        capture_type == PRELIMINARY_CAPTURE);
 #endif
 }
-
 
 // static
 bool ChromeRenderFrameObserver::NeedsDownscale(

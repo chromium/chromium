@@ -13,7 +13,7 @@
 #include "content/renderer/render_view_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
-#include "third_party/blink/public/web/web_frame_content_dumper.h"
+#include "third_party/blink/public/test/test_web_frame_content_dumper.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_view.h"
@@ -21,13 +21,13 @@
 #include <Carbon/Carbon.h>  // for the kVK_* constants.
 #include <Cocoa/Cocoa.h>
 
-using blink::WebFrameContentDumper;
+using blink::TestWebFrameContentDumper;
 
 namespace content {
 
 NSEvent* CmdDeadKeyEvent(NSEventType type, unsigned short code) {
   UniChar uniChar = 0;
-  switch(code) {
+  switch (code) {
     case kVK_UpArrow:
       uniChar = NSUpArrowFunctionKey;
       break;
@@ -54,28 +54,27 @@ NSEvent* CmdDeadKeyEvent(NSEventType type, unsigned short code) {
 // Test that cmd-up/down scrolls the page exactly if it is not intercepted by
 // javascript.
 TEST_F(RenderViewTest, MacTestCmdUp) {
-  const char* kRawHtml =
-      "<!DOCTYPE html>"
-      "<style>"
-      "  /* Add a vertical scrollbar */"
-      "  body { height: 10128px; }"
-      "</style>"
-      "<div id='keydown'></div>"
-      "<div id='scroll'></div>"
-      "<script>"
-      "  var allowKeyEvents = true;"
-      "  var scroll = document.getElementById('scroll');"
-      "  var result = document.getElementById('keydown');"
-      "  onkeydown = function(event) {"
-      "    result.textContent ="
-      "      event.keyCode + ',' +"
-      "      event.shiftKey + ',' +"
-      "      event.ctrlKey + ',' +"
-      "      event.metaKey + ',' +"
-      "      event.altKey;"
-      "    return allowKeyEvents;"
-      "  }"
-      "</script>";
+  const char* kRawHtml = "<!DOCTYPE html>"
+                         "<style>"
+                         "  /* Add a vertical scrollbar */"
+                         "  body { height: 10128px; }"
+                         "</style>"
+                         "<div id='keydown'></div>"
+                         "<div id='scroll'></div>"
+                         "<script>"
+                         "  var allowKeyEvents = true;"
+                         "  var scroll = document.getElementById('scroll');"
+                         "  var result = document.getElementById('keydown');"
+                         "  onkeydown = function(event) {"
+                         "    result.textContent ="
+                         "      event.keyCode + ',' +"
+                         "      event.shiftKey + ',' +"
+                         "      event.ctrlKey + ',' +"
+                         "      event.metaKey + ',' +"
+                         "      event.altKey;"
+                         "    return allowKeyEvents;"
+                         "  }"
+                         "</script>";
 
   blink::web_pref::WebPreferences prefs;
   prefs.enable_scroll_animator = false;
@@ -103,8 +102,8 @@ TEST_F(RenderViewTest, MacTestCmdUp) {
   SendNativeKeyEvent(NativeWebKeyboardEvent(arrowDownKeyDown));
   base::RunLoop().RunUntilIdle();
   ExecuteJavaScriptForTests("scroll.textContent = window.pageYOffset");
-  output = WebFrameContentDumper::DumpWebViewAsText(view->GetWebView(),
-                                                    kMaxOutputCharacters)
+  output = TestWebFrameContentDumper::DumpWebViewAsText(view->GetWebView(),
+                                                        kMaxOutputCharacters)
                .Ascii();
   EXPECT_EQ(kArrowDownScrollDown, output);
 
@@ -115,8 +114,8 @@ TEST_F(RenderViewTest, MacTestCmdUp) {
   SendNativeKeyEvent(NativeWebKeyboardEvent(arrowUpKeyDown));
   base::RunLoop().RunUntilIdle();
   ExecuteJavaScriptForTests("scroll.textContent = window.pageYOffset");
-  output = WebFrameContentDumper::DumpWebViewAsText(view->GetWebView(),
-                                                    kMaxOutputCharacters)
+  output = TestWebFrameContentDumper::DumpWebViewAsText(view->GetWebView(),
+                                                        kMaxOutputCharacters)
                .Ascii();
   EXPECT_EQ(kArrowUpScrollUp, output);
 
@@ -131,8 +130,8 @@ TEST_F(RenderViewTest, MacTestCmdUp) {
   SendNativeKeyEvent(NativeWebKeyboardEvent(arrowDownKeyDown));
   base::RunLoop().RunUntilIdle();
   ExecuteJavaScriptForTests("scroll.textContent = window.pageYOffset");
-  output = WebFrameContentDumper::DumpWebViewAsText(view->GetWebView(),
-                                                    kMaxOutputCharacters)
+  output = TestWebFrameContentDumper::DumpWebViewAsText(view->GetWebView(),
+                                                        kMaxOutputCharacters)
                .Ascii();
   EXPECT_EQ(kArrowDownNoScroll, output);
 
@@ -143,8 +142,8 @@ TEST_F(RenderViewTest, MacTestCmdUp) {
   SendNativeKeyEvent(NativeWebKeyboardEvent(arrowUpKeyDown));
   base::RunLoop().RunUntilIdle();
   ExecuteJavaScriptForTests("scroll.textContent = window.pageYOffset");
-  output = WebFrameContentDumper::DumpWebViewAsText(view->GetWebView(),
-                                                    kMaxOutputCharacters)
+  output = TestWebFrameContentDumper::DumpWebViewAsText(view->GetWebView(),
+                                                        kMaxOutputCharacters)
                .Ascii();
   EXPECT_EQ(kArrowUpNoScroll, output);
 }

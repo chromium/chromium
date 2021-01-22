@@ -19,7 +19,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
-#include "third_party/blink/public/web/web_frame_content_dumper.h"
+#include "third_party/blink/public/test/test_web_frame_content_dumper.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "url/gurl.h"
 #include "url/url_util.h"
@@ -494,14 +494,14 @@ TEST_F(ContentSettingsAgentImplBrowserTest, ContentSettingsNoscriptTag) {
   LoadHTML(kHtml);
   EXPECT_NE(
       std::string::npos,
-      blink::WebFrameContentDumper::DumpLayoutTreeAsText(
-          GetMainFrame(), blink::WebFrameContentDumper::kLayoutAsTextNormal)
+      blink::TestWebFrameContentDumper::DumpLayoutTreeAsText(
+          GetMainFrame(), blink::TestWebFrameContentDumper::kLayoutAsTextNormal)
           .Utf8()
           .find("JS_DISABLED"));
   EXPECT_EQ(
       std::string::npos,
-      blink::WebFrameContentDumper::DumpLayoutTreeAsText(
-          GetMainFrame(), blink::WebFrameContentDumper::kLayoutAsTextNormal)
+      blink::TestWebFrameContentDumper::DumpLayoutTreeAsText(
+          GetMainFrame(), blink::TestWebFrameContentDumper::kLayoutAsTextNormal)
           .Utf8()
           .find("JS_ENABLED"));
 
@@ -521,14 +521,14 @@ TEST_F(ContentSettingsAgentImplBrowserTest, ContentSettingsNoscriptTag) {
   Reload(url);
   EXPECT_NE(
       std::string::npos,
-      blink::WebFrameContentDumper::DumpLayoutTreeAsText(
-          GetMainFrame(), blink::WebFrameContentDumper::kLayoutAsTextNormal)
+      blink::TestWebFrameContentDumper::DumpLayoutTreeAsText(
+          GetMainFrame(), blink::TestWebFrameContentDumper::kLayoutAsTextNormal)
           .Utf8()
           .find("JS_ENABLED"));
   EXPECT_EQ(
       std::string::npos,
-      blink::WebFrameContentDumper::DumpLayoutTreeAsText(
-          GetMainFrame(), blink::WebFrameContentDumper::kLayoutAsTextNormal)
+      blink::TestWebFrameContentDumper::DumpLayoutTreeAsText(
+          GetMainFrame(), blink::TestWebFrameContentDumper::kLayoutAsTextNormal)
           .Utf8()
           .find("JS_DISABLED"));
 }

@@ -31,6 +31,7 @@ group("test_support") {
   testonly = true
   public_deps = [
     ":test_headers",
+    "//third_party/blink/renderer/core/exported:test_support",
     "//third_party/blink/renderer/modules/exported:test_support",
     "//third_party/blink/renderer/modules/mediastream:test_support",
     "//third_party/blink/renderer/modules/peerconnection:test_support",
@@ -96,6 +97,7 @@ source_set("test_headers") {
     "platform/scheduler/test/web_fake_thread_scheduler.h",
     "platform/scheduler/test/web_mock_thread_scheduler.h",
     "test/frame_widget_test_helper.h",
+    "test/test_web_frame_content_dumper.h",
   ]
   public_deps = [ ":blink_headers" ]
   deps = [

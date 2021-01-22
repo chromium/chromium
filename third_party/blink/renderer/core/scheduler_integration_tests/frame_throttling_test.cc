@@ -9,7 +9,7 @@
 #include "cc/layers/picture_layer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/web/web_frame_content_dumper.h"
+#include "third_party/blink/public/test/test_web_frame_content_dumper.h"
 #include "third_party/blink/public/web/web_hit_test_result.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
@@ -1169,7 +1169,8 @@ TEST_P(FrameThrottlingTest, DumpThrottledFrame) {
   EXPECT_FALSE(Compositor().NeedsBeginFrame());
 
   // The dumped contents should not include the throttled frame.
-  WebString result = WebFrameContentDumper::DumpWebViewAsText(&WebView(), 1024);
+  WebString result =
+      TestWebFrameContentDumper::DumpWebViewAsText(&WebView(), 1024);
   EXPECT_NE(std::string::npos, result.Utf8().find("main"));
   EXPECT_EQ(std::string::npos, result.Utf8().find("throttled"));
 }

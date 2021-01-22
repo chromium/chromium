@@ -67,12 +67,12 @@
 #include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/public/platform/web_url_loader_mock_factory.h"
 #include "third_party/blink/public/public_buildflags.h"
+#include "third_party/blink/public/test/test_web_frame_content_dumper.h"
 #include "third_party/blink/public/web/web_autofill_client.h"
 #include "third_party/blink/public/web/web_console_message.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_frame.h"
-#include "third_party/blink/public/web/web_frame_content_dumper.h"
 #include "third_party/blink/public/web/web_hit_test_result.h"
 #include "third_party/blink/public/web/web_input_method_controller.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -163,9 +163,9 @@
 #endif  // BUILDFLAG(ENABLE_UNHANDLED_TAP)
 
 using blink::frame_test_helpers::LoadFrame;
-using blink::url_test_helpers::ToKURL;
-using blink::url_test_helpers::RegisterMockedURLLoad;
 using blink::test::RunPendingTasks;
+using blink::url_test_helpers::RegisterMockedURLLoad;
+using blink::url_test_helpers::ToKURL;
 
 namespace blink {
 
@@ -4016,12 +4016,12 @@ TEST_F(WebViewTest, ChangeDisplayMode) {
   WebViewImpl* web_view =
       web_view_helper_.InitializeAndLoad(base_url_ + "display_mode.html");
 
-  String content = WebFrameContentDumper::DumpWebViewAsText(web_view, 21);
+  String content = TestWebFrameContentDumper::DumpWebViewAsText(web_view, 21);
   EXPECT_EQ("regular-ui", content);
 
   web_view->MainFrameImpl()->LocalRootFrameWidget()->SetDisplayMode(
       mojom::blink::DisplayMode::kMinimalUi);
-  content = WebFrameContentDumper::DumpWebViewAsText(web_view, 21);
+  content = TestWebFrameContentDumper::DumpWebViewAsText(web_view, 21);
   EXPECT_EQ("minimal-ui", content);
   web_view_helper_.Reset();
 }
@@ -4032,13 +4032,13 @@ TEST_F(WebViewTest, ChangeDisplayModeChildFrame) {
   WebViewImpl* web_view = web_view_helper_.InitializeAndLoad(
       base_url_ + "iframe-display_mode.html");
 
-  String content = WebFrameContentDumper::DumpWebViewAsText(web_view, 21);
+  String content = TestWebFrameContentDumper::DumpWebViewAsText(web_view, 21);
   // An iframe inserts whitespace into the content.
   EXPECT_EQ("regular-ui", content.StripWhiteSpace());
 
   web_view->MainFrameImpl()->LocalRootFrameWidget()->SetDisplayMode(
       mojom::blink::DisplayMode::kMinimalUi);
-  content = WebFrameContentDumper::DumpWebViewAsText(web_view, 21);
+  content = TestWebFrameContentDumper::DumpWebViewAsText(web_view, 21);
   // An iframe inserts whitespace into the content.
   EXPECT_EQ("minimal-ui", content.StripWhiteSpace());
   web_view_helper_.Reset();
@@ -4049,12 +4049,12 @@ TEST_F(WebViewTest, ChangeDisplayModeAlertsListener) {
   WebViewImpl* web_view = web_view_helper_.InitializeAndLoad(
       base_url_ + "display_mode_listener.html");
 
-  String content = WebFrameContentDumper::DumpWebViewAsText(web_view, 21);
+  String content = TestWebFrameContentDumper::DumpWebViewAsText(web_view, 21);
   EXPECT_EQ("regular-ui", content);
 
   web_view->MainFrameImpl()->LocalRootFrameWidget()->SetDisplayMode(
       mojom::blink::DisplayMode::kMinimalUi);
-  content = WebFrameContentDumper::DumpWebViewAsText(web_view, 21);
+  content = TestWebFrameContentDumper::DumpWebViewAsText(web_view, 21);
   EXPECT_EQ("minimal-ui", content);
   web_view_helper_.Reset();
 }
@@ -4065,13 +4065,13 @@ TEST_F(WebViewTest, ChangeDisplayModeChildFrameAlertsListener) {
   WebViewImpl* web_view = web_view_helper_.InitializeAndLoad(
       base_url_ + "iframe-display_mode_listener.html");
 
-  String content = WebFrameContentDumper::DumpWebViewAsText(web_view, 21);
+  String content = TestWebFrameContentDumper::DumpWebViewAsText(web_view, 21);
   // An iframe inserts whitespace into the content.
   EXPECT_EQ("regular-ui", content.StripWhiteSpace());
 
   web_view->MainFrameImpl()->LocalRootFrameWidget()->SetDisplayMode(
       mojom::blink::DisplayMode::kMinimalUi);
-  content = WebFrameContentDumper::DumpWebViewAsText(web_view, 21);
+  content = TestWebFrameContentDumper::DumpWebViewAsText(web_view, 21);
   // An iframe inserts whitespace into the content.
   EXPECT_EQ("minimal-ui", content.StripWhiteSpace());
   web_view_helper_.Reset();
@@ -4514,7 +4514,7 @@ TEST_F(WebViewTest, CompositionIsUserGesture) {
 }
 
 // Currently, SelectionAsText() is built upon TextIterator, but
-// WebFrameContentDumper is built upon TextDumperForTests. Their results can
+// TestWebFrameContentDumper is built upon TextDumperForTests. Their results can
 // be different, making the test fail.
 // TODO(crbug.com/781434): Build a selection serializer upon TextDumperForTests.
 TEST_F(WebViewTest, DISABLED_CompareSelectAllToContentAsText) {
@@ -4528,9 +4528,9 @@ TEST_F(WebViewTest, DISABLED_CompareSelectAllToContentAsText) {
   std::string actual = frame->SelectionAsText().Utf8();
 
   const int kMaxOutputCharacters = 1024;
-  std::string expected =
-      WebFrameContentDumper::DumpWebViewAsText(web_view, kMaxOutputCharacters)
-          .Utf8();
+  std::string expected = TestWebFrameContentDumper::DumpWebViewAsText(
+                             web_view, kMaxOutputCharacters)
+                             .Utf8();
   EXPECT_EQ(expected, actual);
 }
 
@@ -5114,10 +5114,7 @@ TEST_F(WebViewTest, ViewportOverrideIntegratesDeviceMetricsOffsetAndScale) {
   emulation_params.viewport_offset = gfx::PointF(5, 10);
   emulation_params.viewport_scale = 1.5f;
   web_view_impl->EnableDeviceEmulation(emulation_params);
-  expected_matrix.MakeIdentity()
-      .Scale(1.5f)
-      .Translate(-5, -10)
-      .Scale(2.f);
+  expected_matrix.MakeIdentity().Scale(1.5f).Translate(-5, -10).Scale(2.f);
   EXPECT_EQ(expected_matrix, web_view_impl->GetDeviceEmulationTransform());
 }
 

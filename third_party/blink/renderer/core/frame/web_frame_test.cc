@@ -78,12 +78,12 @@
 #include "third_party/blink/public/platform/web_url_loader_client.h"
 #include "third_party/blink/public/platform/web_url_loader_mock_factory.h"
 #include "third_party/blink/public/platform/web_url_response.h"
+#include "third_party/blink/public/test/test_web_frame_content_dumper.h"
 #include "third_party/blink/public/web/web_console_message.h"
 #include "third_party/blink/public/web/web_context_menu_data.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_document_loader.h"
 #include "third_party/blink/public/web/web_form_element.h"
-#include "third_party/blink/public/web/web_frame_content_dumper.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_history_item.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -462,7 +462,7 @@ TEST_F(WebFrameTest, ContentText) {
   web_view_helper.InitializeAndLoad(base_url_ + "iframes_test.html");
 
   // Now retrieve the frames text and test it only includes visible elements.
-  std::string content = WebFrameContentDumper::DumpWebViewAsText(
+  std::string content = TestWebFrameContentDumper::DumpWebViewAsText(
                             web_view_helper.GetWebView(), 1024)
                             .Utf8();
   EXPECT_NE(std::string::npos, content.find(" visible paragraph"));
@@ -807,7 +807,7 @@ TEST_F(WebFrameTest, ChromePageJavascript) {
 
   // Now retrieve the frame's text and ensure it was modified by running
   // javascript.
-  std::string content = WebFrameContentDumper::DumpWebViewAsText(
+  std::string content = TestWebFrameContentDumper::DumpWebViewAsText(
                             web_view_helper.GetWebView(), 1024)
                             .Utf8();
   EXPECT_NE(std::string::npos, content.find("Clobbered"));
@@ -827,7 +827,7 @@ TEST_F(WebFrameTest, ChromePageNoJavascript) {
 
   // Now retrieve the frame's text and ensure it wasn't modified by running
   // javascript.
-  std::string content = WebFrameContentDumper::DumpWebViewAsText(
+  std::string content = TestWebFrameContentDumper::DumpWebViewAsText(
                             web_view_helper.GetWebView(), 1024)
                             .Utf8();
   EXPECT_EQ(std::string::npos, content.find("Clobbered"));
@@ -852,7 +852,7 @@ TEST_F(WebFrameTest, LocationSetHostWithMissingPort) {
       web_view_helper.GetWebView()->MainFrameImpl(),
       "javascript:document.body.textContent = location.href; void 0;");
 
-  std::string content = WebFrameContentDumper::DumpWebViewAsText(
+  std::string content = TestWebFrameContentDumper::DumpWebViewAsText(
                             web_view_helper.GetWebView(), 1024)
                             .Utf8();
   EXPECT_EQ("http://internal.test/" + file_name, content);
@@ -875,7 +875,7 @@ TEST_F(WebFrameTest, LocationSetEmptyPort) {
       web_view_helper.GetWebView()->MainFrameImpl(),
       "javascript:document.body.textContent = location.href; void 0;");
 
-  std::string content = WebFrameContentDumper::DumpWebViewAsText(
+  std::string content = TestWebFrameContentDumper::DumpWebViewAsText(
                             web_view_helper.GetWebView(), 1024)
                             .Utf8();
   EXPECT_EQ("http://internal.test/" + file_name, content);
@@ -1262,7 +1262,7 @@ TEST_F(WebFrameTest, PostMessageEvent) {
       BlinkTransferableMessage::FromMessageEvent(message_event));
 
   // Verify that only the first addition is in the body of the page.
-  std::string content = WebFrameContentDumper::DumpWebViewAsText(
+  std::string content = TestWebFrameContentDumper::DumpWebViewAsText(
                             web_view_helper.GetWebView(), 1024)
                             .Utf8();
   EXPECT_NE(std::string::npos, content.find("Message 1."));
@@ -4720,14 +4720,14 @@ TEST_F(WebFrameTest, GetContentAsPlainText) {
 
   // Make sure it comes out OK.
   const std::string expected("Foo bar\nbaz");
-  WebString text = WebFrameContentDumper::DumpWebViewAsText(
+  WebString text = TestWebFrameContentDumper::DumpWebViewAsText(
       web_view_helper.GetWebView(), std::numeric_limits<size_t>::max());
   EXPECT_EQ(expected, text.Utf8());
 
   // Try reading the same one with clipping of the text.
   const int kLength = 5;
-  text = WebFrameContentDumper::DumpWebViewAsText(web_view_helper.GetWebView(),
-                                                  kLength);
+  text = TestWebFrameContentDumper::DumpWebViewAsText(
+      web_view_helper.GetWebView(), kLength);
   EXPECT_EQ(expected.substr(0, kLength), text.Utf8());
 
   // Now do a new test with a subframe.
@@ -4739,14 +4739,14 @@ TEST_F(WebFrameTest, GetContentAsPlainText) {
   ASSERT_TRUE(subframe);
   frame_test_helpers::LoadHTMLString(subframe, "sub<p>text", test_url);
 
-  text = WebFrameContentDumper::DumpWebViewAsText(
+  text = TestWebFrameContentDumper::DumpWebViewAsText(
       web_view_helper.GetWebView(), std::numeric_limits<size_t>::max());
   EXPECT_EQ("Hello world\n\nsub\n\ntext", text.Utf8());
 
   // Get the frame text where the subframe separator falls on the boundary of
   // what we'll take. There used to be a crash in this case.
-  text = WebFrameContentDumper::DumpWebViewAsText(web_view_helper.GetWebView(),
-                                                  12);
+  text = TestWebFrameContentDumper::DumpWebViewAsText(
+      web_view_helper.GetWebView(), 12);
   EXPECT_EQ("Hello world", text.Utf8());
 }
 
@@ -4760,18 +4760,19 @@ TEST_F(WebFrameTest, GetFullHtmlOfPage) {
   KURL test_url = ToKURL("about:blank");
   frame_test_helpers::LoadHTMLString(frame, kSimpleSource, test_url);
 
-  WebString text = WebFrameContentDumper::DumpWebViewAsText(
+  WebString text = TestWebFrameContentDumper::DumpWebViewAsText(
       web_view_helper.GetWebView(), std::numeric_limits<size_t>::max());
   EXPECT_EQ("Hello\n\nWorld", text.Utf8());
 
-  const std::string html = WebFrameContentDumper::DumpAsMarkup(frame).Utf8();
+  const std::string html =
+      TestWebFrameContentDumper::DumpAsMarkup(frame).Utf8();
 
   // Load again with the output html.
   frame_test_helpers::LoadHTMLString(frame, html, test_url);
 
-  EXPECT_EQ(html, WebFrameContentDumper::DumpAsMarkup(frame).Utf8());
+  EXPECT_EQ(html, TestWebFrameContentDumper::DumpAsMarkup(frame).Utf8());
 
-  text = WebFrameContentDumper::DumpWebViewAsText(
+  text = TestWebFrameContentDumper::DumpWebViewAsText(
       web_view_helper.GetWebView(), std::numeric_limits<size_t>::max());
   EXPECT_EQ("Hello\n\nWorld", text.Utf8());
 
@@ -6510,7 +6511,7 @@ TEST_F(WebFrameTest, ReplaceMisspelledRange) {
                                  DocumentMarker::MarkerTypes::Spelling()));
 
   frame->ReplaceMisspelledRange("welcome");
-  EXPECT_EQ("_welcome_.", WebFrameContentDumper::DumpWebViewAsText(
+  EXPECT_EQ("_welcome_.", TestWebFrameContentDumper::DumpWebViewAsText(
                               web_view_helper.GetWebView(),
                               std::numeric_limits<size_t>::max())
                               .Utf8());
@@ -8931,7 +8932,7 @@ TEST_F(WebFrameSwapTest, SwapMainFrame) {
   frame_test_helpers::LoadFrame(local_frame, base_url_ + "subframe-hello.html");
 
   std::string content =
-      WebFrameContentDumper::DumpWebViewAsText(WebView(), 1024).Utf8();
+      TestWebFrameContentDumper::DumpWebViewAsText(WebView(), 1024).Utf8();
   EXPECT_EQ("hello", content);
 }
 
@@ -9096,7 +9097,7 @@ TEST_F(WebFrameSwapTest, SwapFirstChild) {
   // back in works.
   frame_test_helpers::LoadFrame(local_frame, base_url_ + "subframe-hello.html");
   std::string content =
-      WebFrameContentDumper::DumpWebViewAsText(WebView(), 1024).Utf8();
+      TestWebFrameContentDumper::DumpWebViewAsText(WebView(), 1024).Utf8();
   EXPECT_EQ("  \n\nhello\n\nb \n\na\n\nc", content);
 }
 
@@ -9155,7 +9156,7 @@ TEST_F(WebFrameSwapTest, SwapMiddleChild) {
   // back in works.
   frame_test_helpers::LoadFrame(local_frame, base_url_ + "subframe-hello.html");
   std::string content =
-      WebFrameContentDumper::DumpWebViewAsText(WebView(), 1024).Utf8();
+      TestWebFrameContentDumper::DumpWebViewAsText(WebView(), 1024).Utf8();
   EXPECT_EQ("  \n\na\n\nhello\n\nc", content);
 }
 
@@ -9186,7 +9187,7 @@ TEST_F(WebFrameSwapTest, SwapLastChild) {
   // back in works.
   frame_test_helpers::LoadFrame(local_frame, base_url_ + "subframe-hello.html");
   std::string content =
-      WebFrameContentDumper::DumpWebViewAsText(WebView(), 1024).Utf8();
+      TestWebFrameContentDumper::DumpWebViewAsText(WebView(), 1024).Utf8();
   EXPECT_EQ("  \n\na\n\nb \n\na\n\nhello", content);
 }
 
@@ -9301,7 +9302,7 @@ TEST_F(WebFrameSwapTest, SwapParentShouldDetachChildren) {
   // back in works.
   frame_test_helpers::LoadFrame(local_frame, base_url_ + "subframe-hello.html");
   std::string content =
-      WebFrameContentDumper::DumpWebViewAsText(WebView(), 1024).Utf8();
+      TestWebFrameContentDumper::DumpWebViewAsText(WebView(), 1024).Utf8();
   EXPECT_EQ("  \n\na\n\nhello\n\nc", content);
 }
 

@@ -10,51 +10,41 @@
 namespace blink {
 
 class WebLocalFrame;
-class WebView;
 class WebString;
 
-// Functions in this class should only be used for
-// testing purposes.
-// The exceptions to this rule are tracked in http://crbug.com/585164.
+// This class exposes an API to dump the text of a WebFrame and all subframes to
+// a string, subject to the following limitations:
+// * OOPIFs are not supported. This class will only return text from direct
+// descendant frames that live in the same process. To get text from other
+// processes, use this class there.
+// * No guarantees are made regarding accuracy, the amount of page text that is
+// captured, or when a result is generated.
+// * No specification is given for how text from one frame will be delimited
+// from the next.
+// * The dumped text may contain text that is not visible to the user, whether
+// due to scrolling, display:none, unexpanded divs, etc.
+// * The ordering of the dumped text does not reflect the ordering of text on
+// the page as seen by the user. Each element's text may appear in a totally
+// different position in the dump from its position on the page.
+//
+// For the above reasons, this should not be used for any purpose that is
+// consumable by a human. For example: "Select All", "Text to Speech", "Find in
+// page", and other user-visible surfaces must not use this API.
+//
+// This utility is resource-intensive, consuming significant memory and CPU
+// during a text capture. Only one instance of this class should exist per
+// process, which should only be called when it is truly needed.
+//
+// TODO(crbug/1163244): Remove the static qualifier and make this an
+// instantiable class.
 class WebFrameContentDumper {
  public:
-  // Control of layoutTreeAsText output
-  enum LayoutAsTextControl {
-    kLayoutAsTextNormal = 0,
-    kLayoutAsTextDebug = 1 << 0,
-    kLayoutAsTextPrinting = 1 << 1,
-    kLayoutAsTextWithLineTrees = 1 << 2
-  };
-  typedef unsigned LayoutAsTextControls;
-
-  // Returns the contents of this frame as a string.  If the text is
-  // longer than maxChars, it will be clipped to that length.
-  //
-  // If there is room, subframe text will be recursively appended. Each
-  // frame will be separated by an empty line.
-  // TODO(dglazkov): WebFrameContentDumper should only be used for
-  // testing purposes and this function is being deprecated.
-  // Don't add new callsites, please.
-  // See http://crbug.com/585164 for details.
-  BLINK_EXPORT static WebString DeprecatedDumpFrameTreeAsText(WebLocalFrame*,
-                                                              size_t max_chars);
-
-  // Dumps the contents of of a WebView as text, starting from the main
-  // frame and recursively appending every subframe, separated by an
-  // empty line.
-  BLINK_EXPORT static WebString DumpWebViewAsText(WebView*, size_t max_chars);
-
-  // Returns HTML text for the contents of this frame, generated
-  // from the DOM.
-  BLINK_EXPORT static WebString DumpAsMarkup(WebLocalFrame*);
-
-  // Returns a text representation of the render tree.  This method is used
-  // to support web tests.
-  BLINK_EXPORT static WebString DumpLayoutTreeAsText(
-      WebLocalFrame*,
-      LayoutAsTextControls to_show = kLayoutAsTextNormal);
+  // Returns the contents of this frame's local subtree as a string.  If the
+  // text is longer than |max_chars|, it will be clipped to that length.
+  BLINK_EXPORT static WebString DumpFrameTreeAsText(WebLocalFrame* frame,
+                                                    size_t max_chars);
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_FRAME_CONTENT_DUMPER_H_
