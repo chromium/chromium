@@ -8,8 +8,8 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
+#include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "content/common/content_export.h"
-#include "storage/browser/quota/quota_client.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 #include "url/origin.h"
@@ -21,13 +21,14 @@ class CacheStorageManager;
 // CacheStorageQuotaClient is owned by the QuotaManager. There is one per
 // CacheStorageManager/CacheStorageOwner tuple.  Created and accessed on
 // the IO thread.
-class CONTENT_EXPORT CacheStorageQuotaClient : public storage::QuotaClient {
+class CONTENT_EXPORT CacheStorageQuotaClient
+    : public storage::mojom::QuotaClient {
  public:
   CacheStorageQuotaClient(scoped_refptr<CacheStorageManager> cache_manager,
                           storage::mojom::CacheStorageOwner owner);
+  ~CacheStorageQuotaClient() override;
 
   // QuotaClient.
-  void OnQuotaManagerDestroyed() override;
   void GetOriginUsage(const url::Origin& origin,
                       blink::mojom::StorageType type,
                       GetOriginUsageCallback callback) override;
@@ -46,8 +47,6 @@ class CONTENT_EXPORT CacheStorageQuotaClient : public storage::QuotaClient {
       storage::mojom::CacheStorageOwner owner);
 
  private:
-  ~CacheStorageQuotaClient() override;
-
   const scoped_refptr<CacheStorageManager> cache_manager_;
   const storage::mojom::CacheStorageOwner owner_;
 

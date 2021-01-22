@@ -19,8 +19,6 @@ CacheStorageQuotaClient::CacheStorageQuotaClient(
 
 CacheStorageQuotaClient::~CacheStorageQuotaClient() = default;
 
-void CacheStorageQuotaClient::OnQuotaManagerDestroyed() {}
-
 void CacheStorageQuotaClient::GetOriginUsage(const url::Origin& origin,
                                              blink::mojom::StorageType type,
                                              GetOriginUsageCallback callback) {

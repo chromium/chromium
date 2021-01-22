@@ -38,18 +38,18 @@ class CONTENT_EXPORT CrossSequenceCacheStorageManager
   void GetOriginUsage(
       const url::Origin& origin_url,
       storage::mojom::CacheStorageOwner owner,
-      storage::QuotaClient::GetOriginUsageCallback callback) override;
+      storage::mojom::QuotaClient::GetOriginUsageCallback callback) override;
   void GetOrigins(
       storage::mojom::CacheStorageOwner owner,
-      storage::QuotaClient::GetOriginsForTypeCallback callback) override;
+      storage::mojom::QuotaClient::GetOriginsForTypeCallback callback) override;
   void GetOriginsForHost(
       const std::string& host,
       storage::mojom::CacheStorageOwner owner,
-      storage::QuotaClient::GetOriginsForHostCallback callback) override;
+      storage::mojom::QuotaClient::GetOriginsForHostCallback callback) override;
   void DeleteOriginData(
       const url::Origin& origin,
       storage::mojom::CacheStorageOwner owner,
-      storage::QuotaClient::DeleteOriginDataCallback callback) override;
+      storage::mojom::QuotaClient::DeleteOriginDataCallback callback) override;
   void DeleteOriginData(const url::Origin& origin,
                         storage::mojom::CacheStorageOwner owner) override;
   void SetBlobParametersForCache(

@@ -16,6 +16,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
+#include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "content/browser/cache_storage/cache_storage_context_impl.h"
 #include "content/browser/cache_storage/cache_storage_manager.h"
 #include "content/browser/cache_storage/legacy/legacy_cache_storage.h"
@@ -24,7 +25,6 @@
 #include "content/public/browser/cache_storage_context.h"
 #include "content/public/browser/storage_usage_info.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "storage/browser/quota/quota_client.h"
 #include "url/origin.h"
 
 namespace base {
@@ -72,18 +72,18 @@ class CONTENT_EXPORT LegacyCacheStorageManager : public CacheStorageManager {
   void GetOriginUsage(
       const url::Origin& origin_url,
       storage::mojom::CacheStorageOwner owner,
-      storage::QuotaClient::GetOriginUsageCallback callback) override;
+      storage::mojom::QuotaClient::GetOriginUsageCallback callback) override;
   void GetOrigins(
       storage::mojom::CacheStorageOwner owner,
-      storage::QuotaClient::GetOriginsForTypeCallback callback) override;
+      storage::mojom::QuotaClient::GetOriginsForTypeCallback callback) override;
   void GetOriginsForHost(
       const std::string& host,
       storage::mojom::CacheStorageOwner owner,
-      storage::QuotaClient::GetOriginsForHostCallback callback) override;
+      storage::mojom::QuotaClient::GetOriginsForHostCallback callback) override;
   void DeleteOriginData(
       const url::Origin& origin,
       storage::mojom::CacheStorageOwner owner,
-      storage::QuotaClient::DeleteOriginDataCallback callback) override;
+      storage::mojom::QuotaClient::DeleteOriginDataCallback callback) override;
   void DeleteOriginData(const url::Origin& origin,
                         storage::mojom::CacheStorageOwner owner) override;
 
@@ -126,7 +126,7 @@ class CONTENT_EXPORT LegacyCacheStorageManager : public CacheStorageManager {
   void DeleteOriginDidClose(
       const url::Origin& origin,
       storage::mojom::CacheStorageOwner owner,
-      storage::QuotaClient::DeleteOriginDataCallback callback,
+      storage::mojom::QuotaClient::DeleteOriginDataCallback callback,
       std::unique_ptr<LegacyCacheStorage> cache_storage,
       int64_t origin_size);
 

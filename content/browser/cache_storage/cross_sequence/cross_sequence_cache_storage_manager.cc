@@ -31,15 +31,17 @@ class CrossSequenceCacheStorageManager::Inner {
     target_manager_->GetAllOriginsUsage(owner, std::move(callback));
   }
 
-  void GetOriginUsage(const url::Origin& origin_url,
-                      storage::mojom::CacheStorageOwner owner,
-                      storage::QuotaClient::GetOriginUsageCallback callback) {
+  void GetOriginUsage(
+      const url::Origin& origin_url,
+      storage::mojom::CacheStorageOwner owner,
+      storage::mojom::QuotaClient::GetOriginUsageCallback callback) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     target_manager_->GetOriginUsage(origin_url, owner, std::move(callback));
   }
 
-  void GetOrigins(storage::mojom::CacheStorageOwner owner,
-                  storage::QuotaClient::GetOriginsForTypeCallback callback) {
+  void GetOrigins(
+      storage::mojom::CacheStorageOwner owner,
+      storage::mojom::QuotaClient::GetOriginsForTypeCallback callback) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     target_manager_->GetOrigins(owner, std::move(callback));
   }
@@ -47,7 +49,7 @@ class CrossSequenceCacheStorageManager::Inner {
   void GetOriginsForHost(
       const std::string& host,
       storage::mojom::CacheStorageOwner owner,
-      storage::QuotaClient::GetOriginsForHostCallback callback) {
+      storage::mojom::QuotaClient::GetOriginsForHostCallback callback) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     target_manager_->GetOriginsForHost(host, owner, std::move(callback));
   }
@@ -55,7 +57,7 @@ class CrossSequenceCacheStorageManager::Inner {
   void DeleteOriginData(
       const url::Origin& origin,
       storage::mojom::CacheStorageOwner owner,
-      storage::QuotaClient::DeleteOriginDataCallback callback) {
+      storage::mojom::QuotaClient::DeleteOriginDataCallback callback) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     target_manager_->DeleteOriginData(origin, owner, std::move(callback));
   }
@@ -96,7 +98,7 @@ void CrossSequenceCacheStorageManager::GetAllOriginsUsage(
 void CrossSequenceCacheStorageManager::GetOriginUsage(
     const url::Origin& origin_url,
     storage::mojom::CacheStorageOwner owner,
-    storage::QuotaClient::GetOriginUsageCallback callback) {
+    storage::mojom::QuotaClient::GetOriginUsageCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   inner_.Post(FROM_HERE, &Inner::GetOriginUsage, origin_url, owner,
               WrapCallbackForCurrentSequence(std::move(callback)));
@@ -104,7 +106,7 @@ void CrossSequenceCacheStorageManager::GetOriginUsage(
 
 void CrossSequenceCacheStorageManager::GetOrigins(
     storage::mojom::CacheStorageOwner owner,
-    storage::QuotaClient::GetOriginsForTypeCallback callback) {
+    storage::mojom::QuotaClient::GetOriginsForTypeCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   inner_.Post(FROM_HERE, &Inner::GetOrigins, owner,
               WrapCallbackForCurrentSequence(std::move(callback)));
@@ -113,7 +115,7 @@ void CrossSequenceCacheStorageManager::GetOrigins(
 void CrossSequenceCacheStorageManager::GetOriginsForHost(
     const std::string& host,
     storage::mojom::CacheStorageOwner owner,
-    storage::QuotaClient::GetOriginsForHostCallback callback) {
+    storage::mojom::QuotaClient::GetOriginsForHostCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   inner_.Post(FROM_HERE, &Inner::GetOriginsForHost, host, owner,
               WrapCallbackForCurrentSequence(std::move(callback)));
@@ -122,7 +124,7 @@ void CrossSequenceCacheStorageManager::GetOriginsForHost(
 void CrossSequenceCacheStorageManager::DeleteOriginData(
     const url::Origin& origin,
     storage::mojom::CacheStorageOwner owner,
-    storage::QuotaClient::DeleteOriginDataCallback callback) {
+    storage::mojom::QuotaClient::DeleteOriginDataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   inner_.Post(FROM_HERE, &Inner::DeleteOriginData, origin, owner,
               WrapCallbackForCurrentSequence(std::move(callback)));

@@ -90,7 +90,6 @@ class CacheStorageBlobToDiskCacheTest : public testing::Test {
   }
 
   void TearDown() override {
-    quota_manager_proxy()->SimulateQuotaManagerDestroyed();
     quota_manager_ = nullptr;
     quota_manager_proxy_ = nullptr;
   }

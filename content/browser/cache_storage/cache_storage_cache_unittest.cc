@@ -597,7 +597,6 @@ class CacheStorageCacheTest : public testing::Test {
   }
 
   void TearDown() override {
-    quota_manager_proxy_->SimulateQuotaManagerDestroyed();
     disk_cache::FlushCacheThreadForTesting();
     content::RunAllTasksUntilIdle();
   }

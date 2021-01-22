@@ -180,20 +180,17 @@ class MockCacheStorageQuotaManagerProxy
       mojo::PendingRemote<storage::mojom::QuotaClient> client,
       storage::QuotaClientType client_type,
       const std::vector<blink::mojom::StorageType>& storage_types) override {
-    NOTREACHED();
+    registered_clients_.emplace_back(std::move(client));
   }
 
   void RegisterLegacyClient(
       scoped_refptr<storage::QuotaClient> client,
       storage::QuotaClientType client_type,
       const std::vector<blink::mojom::StorageType>& storage_types) override {
-    registered_clients_.push_back(std::move(client));
+    NOTREACHED();
   }
 
   void SimulateQuotaManagerDestroyed() override {
-    for (const auto& client : registered_clients_) {
-      client->OnQuotaManagerDestroyed();
-    }
     registered_clients_.clear();
   }
 
@@ -202,7 +199,7 @@ class MockCacheStorageQuotaManagerProxy
     DCHECK(registered_clients_.empty());
   }
 
-  std::vector<scoped_refptr<storage::QuotaClient>> registered_clients_;
+  std::vector<mojo::Remote<storage::mojom::QuotaClient>> registered_clients_;
 };
 
 bool IsIndexFileCurrent(const base::FilePath& cache_dir) {
@@ -2423,7 +2420,7 @@ class CacheStorageQuotaClientTest : public CacheStorageManagerTest {
 
   void SetUp() override {
     CacheStorageManagerTest::SetUp();
-    quota_client_ = base::MakeRefCounted<CacheStorageQuotaClient>(
+    quota_client_ = std::make_unique<CacheStorageQuotaClient>(
         cache_manager_, storage::mojom::CacheStorageOwner::kCacheAPI);
   }
 
@@ -2484,7 +2481,7 @@ class CacheStorageQuotaClientTest : public CacheStorageManagerTest {
     return callback_status_ == blink::mojom::QuotaStatusCode::kOk;
   }
 
-  scoped_refptr<CacheStorageQuotaClient> quota_client_;
+  std::unique_ptr<CacheStorageQuotaClient> quota_client_;
 
   blink::mojom::QuotaStatusCode callback_status_;
   int64_t callback_quota_usage_ = 0;
@@ -2590,7 +2587,7 @@ TEST_F(CacheStorageQuotaClientDiskOnlyTest, QuotaDeleteUnloadedOriginData) {
   // Create a new CacheStorageManager that hasn't yet loaded the origin.
   quota_manager_proxy_->SimulateQuotaManagerDestroyed();
   RecreateStorageManager();
-  quota_client_ = base::MakeRefCounted<CacheStorageQuotaClient>(
+  quota_client_ = std::make_unique<CacheStorageQuotaClient>(
       cache_manager_, storage::mojom::CacheStorageOwner::kCacheAPI);
 
   EXPECT_TRUE(QuotaDeleteOriginData(origin1_));

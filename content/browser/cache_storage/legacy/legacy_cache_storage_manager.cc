@@ -46,7 +46,7 @@ bool DeleteDir(const base::FilePath& path) {
 }
 
 void DeleteOriginDidDeleteDir(
-    storage::QuotaClient::DeleteOriginDataCallback callback,
+    storage::mojom::QuotaClient::DeleteOriginDataCallback callback,
     bool rv) {
   // On scheduler sequence.
   base::SequencedTaskRunnerHandle::Get()->PostTask(
@@ -202,7 +202,7 @@ std::vector<url::Origin> ListOriginsOnTaskRunner(
 
 void GetOriginsForHostDidListOrigins(
     const std::string& host,
-    storage::QuotaClient::GetOriginsForTypeCallback callback,
+    storage::mojom::QuotaClient::GetOriginsForHostCallback callback,
     const std::vector<url::Origin>& origins) {
   // On scheduler sequence.
   std::vector<url::Origin> out_origins;
@@ -404,7 +404,7 @@ void LegacyCacheStorageManager::GetAllOriginsUsageGetSizes(
 void LegacyCacheStorageManager::GetOriginUsage(
     const url::Origin& origin,
     storage::mojom::CacheStorageOwner owner,
-    storage::QuotaClient::GetOriginUsageCallback callback) {
+    storage::mojom::QuotaClient::GetOriginUsageCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   CacheStorageHandle cache_storage = OpenCacheStorage(origin, owner);
@@ -413,7 +413,7 @@ void LegacyCacheStorageManager::GetOriginUsage(
 
 void LegacyCacheStorageManager::GetOrigins(
     storage::mojom::CacheStorageOwner owner,
-    storage::QuotaClient::GetOriginsForTypeCallback callback) {
+    storage::mojom::QuotaClient::GetOriginsForTypeCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (IsMemoryBacked()) {
@@ -436,7 +436,7 @@ void LegacyCacheStorageManager::GetOrigins(
 void LegacyCacheStorageManager::GetOriginsForHost(
     const std::string& host,
     storage::mojom::CacheStorageOwner owner,
-    storage::QuotaClient::GetOriginsForHostCallback callback) {
+    storage::mojom::QuotaClient::GetOriginsForHostCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (IsMemoryBacked()) {
@@ -462,7 +462,7 @@ void LegacyCacheStorageManager::GetOriginsForHost(
 void LegacyCacheStorageManager::DeleteOriginData(
     const url::Origin& origin,
     storage::mojom::CacheStorageOwner owner,
-    storage::QuotaClient::DeleteOriginDataCallback callback) {
+    storage::mojom::QuotaClient::DeleteOriginDataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Create the CacheStorage for the origin if it hasn't been loaded yet.
@@ -490,7 +490,7 @@ void LegacyCacheStorageManager::DeleteOriginData(
 void LegacyCacheStorageManager::DeleteOriginDidClose(
     const url::Origin& origin,
     storage::mojom::CacheStorageOwner owner,
-    storage::QuotaClient::DeleteOriginDataCallback callback,
+    storage::mojom::QuotaClient::DeleteOriginDataCallback callback,
     std::unique_ptr<LegacyCacheStorage> cache_storage,
     int64_t origin_size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

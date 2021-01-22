@@ -10,6 +10,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/cache_storage/cache_storage_dispatcher_host.h"
 #include "content/browser/cache_storage/cache_storage_quota_client.h"
@@ -17,6 +18,7 @@
 #include "content/browser/cache_storage/legacy/legacy_cache_storage_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "storage/browser/blob/blob_storage_context.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
@@ -319,17 +321,23 @@ void CacheStorageContextImpl::CreateQuotaClientsOnIOThread(
   if (!manager)
     return;
 
-  // TODO(crbug.com/1163048): Use mojo and switch to RegisterClient().
-  quota_manager_proxy->RegisterLegacyClient(
-      base::MakeRefCounted<CacheStorageQuotaClient>(
+  mojo::PendingRemote<storage::mojom::QuotaClient> cache_storage_client;
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<CacheStorageQuotaClient>(
           manager, storage::mojom::CacheStorageOwner::kCacheAPI),
+      cache_storage_client.InitWithNewPipeAndPassReceiver());
+  quota_manager_proxy->RegisterClient(
+      std::move(cache_storage_client),
       storage::QuotaClientType::kServiceWorkerCache,
       {blink::mojom::StorageType::kTemporary});
 
-  // TODO(crbug.com/1163048): Use mojo and switch to RegisterClient().
-  quota_manager_proxy->RegisterLegacyClient(
-      base::MakeRefCounted<CacheStorageQuotaClient>(
+  mojo::PendingRemote<storage::mojom::QuotaClient> background_fetch_client;
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<CacheStorageQuotaClient>(
           manager, storage::mojom::CacheStorageOwner::kBackgroundFetch),
+      background_fetch_client.InitWithNewPipeAndPassReceiver());
+  quota_manager_proxy->RegisterClient(
+      std::move(background_fetch_client),
       storage::QuotaClientType::kBackgroundFetch,
       {blink::mojom::StorageType::kTemporary});
 }

@@ -9,13 +9,13 @@
 
 #include "base/macros.h"
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
+#include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "content/browser/blob_storage/blob_storage_context_wrapper.h"
 #include "content/browser/cache_storage/cache_storage_handle.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/cache_storage_context.h"
 #include "content/public/browser/storage_usage_info.h"
-#include "storage/browser/quota/quota_client.h"
 
 namespace url {
 class Origin;
@@ -43,18 +43,18 @@ class CONTENT_EXPORT CacheStorageManager
   virtual void GetOriginUsage(
       const url::Origin& origin_url,
       storage::mojom::CacheStorageOwner owner,
-      storage::QuotaClient::GetOriginUsageCallback callback) = 0;
+      storage::mojom::QuotaClient::GetOriginUsageCallback callback) = 0;
   virtual void GetOrigins(
       storage::mojom::CacheStorageOwner owner,
-      storage::QuotaClient::GetOriginsForTypeCallback callback) = 0;
+      storage::mojom::QuotaClient::GetOriginsForTypeCallback callback) = 0;
   virtual void GetOriginsForHost(
       const std::string& host,
       storage::mojom::CacheStorageOwner owner,
-      storage::QuotaClient::GetOriginsForHostCallback callback) = 0;
+      storage::mojom::QuotaClient::GetOriginsForHostCallback callback) = 0;
   virtual void DeleteOriginData(
       const url::Origin& origin,
       storage::mojom::CacheStorageOwner owner,
-      storage::QuotaClient::DeleteOriginDataCallback callback) = 0;
+      storage::mojom::QuotaClient::DeleteOriginDataCallback callback) = 0;
   virtual void DeleteOriginData(const url::Origin& origin,
                                 storage::mojom::CacheStorageOwner owner) = 0;
 
