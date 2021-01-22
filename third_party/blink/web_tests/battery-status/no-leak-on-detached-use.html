@@ -1,25 +1,22 @@
 <!DOCTYPE html>
 <html>
 <head>
-<script src="../resources/js-test.js"></script>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
 </head>
-<body onload="test()">
+<body>
 <script>
-description("Check if calling navigator.getBattery() on a detached frame doesn't leak.");
+promise_test(async _ => {
+  const iframe = document.createElement('iframe');
+  iframe.srcdoc = '<html></html>';
+  document.body.appendChild(iframe);
 
-window.jsTestIsAsync = true;
+  const frameNav = iframe.contentWindow.navigator;
+  document.body.removeChild(iframe);
 
-function test() {
-  old_nav = window.frames[0].navigator;
-  var p = document.getElementById('subframe');
-  p.parentNode.removeChild(p);
-  old_nav.getBattery();
-
-  testPassed('DONE');
-  finishJSTest();
-}
+  const battery = await frameNav.getBattery();
+  assert_equals(battery, undefined);
+}, 'navigator.getBattery() on a detached frame does not leak or crash');
 </script>
-<!-- iframe with some contents -->
-<iframe srcdoc="<html></html>" id="subframe"></iframe>
 </body>
 </html>

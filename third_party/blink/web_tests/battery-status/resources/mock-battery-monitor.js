@@ -69,17 +69,12 @@ function setAndFireMockBatteryInfo(charging, chargingTime, dischargingTime,
 
 // compare obtained battery values with the mock values
 function testIfBatteryStatusIsUpToDate(batteryManager) {
-  batteryInfo = batteryManager;
-  shouldBeDefined("batteryInfo");
-  shouldBeDefined("lastSetMockBatteryInfo");
-  shouldBe('batteryInfo.charging', 'lastSetMockBatteryInfo.charging');
-  shouldBe('batteryInfo.chargingTime', 'lastSetMockBatteryInfo.chargingTime');
-  shouldBe('batteryInfo.dischargingTime',
-           'lastSetMockBatteryInfo.dischargingTime');
-  shouldBe('batteryInfo.level', 'lastSetMockBatteryInfo.level');
-}
-
-function batteryStatusFailure() {
-  testFailed('failed to successfully resolve the promise');
-  setTimeout(finishJSTest, 0);
+  assert_not_equals(batteryManager, undefined);
+  assert_not_equals(lastSetMockBatteryInfo, undefined);
+  assert_equals(batteryManager.charging, lastSetMockBatteryInfo.charging);
+  assert_equals(
+      batteryManager.chargingTime, lastSetMockBatteryInfo.chargingTime);
+  assert_equals(
+      batteryManager.dischargingTime, lastSetMockBatteryInfo.dischargingTime);
+  assert_equals(batteryManager.level, lastSetMockBatteryInfo.level);
 }

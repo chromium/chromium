@@ -1,59 +1,33 @@
 <!DOCTYPE html>
 <html>
 <body>
-<script src="../resources/js-test.js"></script>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
 <script src="../resources/visibility.js"></script>
 <script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
 <script src="file:///gen/services/device/public/mojom/battery_monitor.mojom.js"></script>
 <script src="resources/mock-battery-monitor.js"></script>
 <script>
-description("Test with page visibility.");
+promise_test(async _ => {
+  setAndFireMockBatteryInfo(false, 10, 20, 0.5);
+  const battery = await navigator.getBattery();
 
-if (!window.testRunner)
-    debug('This test cannot be run without the TestRunner');
+  testIfBatteryStatusIsUpToDate(battery);
 
-// Clean-up any unused battery manager objects from previous tests.
-gc();
-jsTestIsAsync = true;
-testRunner.waitUntilDone();
+  const fail = () => { throw new Error('unexpected levelchange event'); };
+  battery.addEventListener('levelchange', fail);
+  await setMainWindowHidden(true);
+  setAndFireMockBatteryInfo(false, 10, 20, 0.55);
+  battery.removeEventListener('levelchange', fail);
 
-document.addEventListener("visibilitychange", function() {
-    debug("page is " + document.visibilityState);
-});
+  const change =
+      new Promise(resolve => battery.addEventListener('levelchange', resolve));
+  await setMainWindowHidden(false);
+  setAndFireMockBatteryInfo(false, 10, 20, 0.6);
+  await change;
 
-var battery;
-function batteryStatusSuccess(batteryManager) {
-    battery = batteryManager;
-    testIfBatteryStatusIsUpToDate(battery);
-    battery.addEventListener('levelchange', failAndFinish);
-    setMainWindowHidden(true).then(() => {
-        setAndFireMockBatteryInfo(false, 10, 20, 0.55);
-        setTimeout(testWithVisiblePage, 0);
-    });
-}
-
-function testWithVisiblePage() {
-    battery.removeEventListener('levelchange', failAndFinish);
-    battery.addEventListener('levelchange', onLevelChange);
-    setMainWindowHidden(false).then(() => {
-        setAndFireMockBatteryInfo(false, 10, 20, 0.6);
-    });
-}
-
-function onLevelChange() {
-    testIfBatteryStatusIsUpToDate(battery);
-    battery.removeEventListener('levelchange', onLevelChange);
-    setTimeout(finishJSTest, 0);
-}
-
-function failAndFinish() {
-    testFailed('received event while the page was hidden');
-    setTimeout(finishJSTest, 0);
-}
-
-debug("page is visible");
-navigator.getBattery().then(batteryStatusSuccess, batteryStatusFailure);
-setAndFireMockBatteryInfo(false, 10, 20, 0.5);
+  testIfBatteryStatusIsUpToDate(battery);
+}, 'battery status events only fire on visible pages');
 </script>
 </body>
 </html>

@@ -1,34 +1,21 @@
 <!DOCTYPE html>
 <html>
 <body>
-<script src="../resources/js-test.js"></script>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
 <script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
 <script src="file:///gen/services/device/public/mojom/battery_monitor.mojom.js"></script>
 <script src="resources/mock-battery-monitor.js"></script>
 <script>
-description("Test to ensure level is reported with restricted precision.");
+promise_test(async _ => {
+  const levelFullPrecision = 0.556789;
+  const levelRounded = 0.56;
 
-if (!window.testRunner)
-    debug('This test cannot be run without the TestRunner');
+  setAndFireMockBatteryInfo(false, 10, 20, levelFullPrecision);
 
-// Clean-up any unused battery manager objects from previous tests.
-gc();
-jsTestIsAsync = true;
-testRunner.waitUntilDone();
-
-var levelFullPrecision = 0.556789;
-var levelRounded = 0.56;
-
-var battery;
-function batteryStatusSuccess(batteryManager) {
-    debug('batteryStatusSuccess invoked');
-    battery = batteryManager;
-    shouldBe('battery.level', 'levelRounded');
-    setTimeout(finishJSTest, 0);
-}
-
-navigator.getBattery().then(batteryStatusSuccess, batteryStatusFailure);
-setAndFireMockBatteryInfo(false, 10, 20, levelFullPrecision);
+  const battery = await navigator.getBattery();
+  assert_equals(battery.level, levelRounded);
+}, 'battery level is reported with restricted precision');
 </script>
 </body>
 </html>
