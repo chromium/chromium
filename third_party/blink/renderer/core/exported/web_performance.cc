@@ -308,6 +308,18 @@ base::Optional<base::TimeTicks> WebPerformance::LastPortalActivatedPaint()
   return private_->timing()->LastPortalActivatedPaint();
 }
 
+base::Optional<base::TimeTicks> WebPerformance::UnloadStart() const {
+  return private_->timing()->UnloadStart();
+}
+
+base::Optional<base::TimeTicks> WebPerformance::UnloadEnd() const {
+  return private_->timing()->UnloadEnd();
+}
+
+base::Optional<base::TimeTicks> WebPerformance::CommitNavigationEnd() const {
+  return private_->timing()->CommitNavigationEnd();
+}
+
 WebPerformance::WebPerformance(WindowPerformance* performance)
     : private_(performance) {}
 

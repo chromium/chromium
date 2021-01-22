@@ -91,6 +91,10 @@ struct Navigator::NavigationMetricsData {
   // notifying the browser process about the navigation.
   base::Optional<base::TimeTicks> renderer_before_unload_start_;
   base::Optional<base::TimeTicks> renderer_before_unload_end_;
+
+  // Time at which the browser process dispatched the CommitNavigation to the
+  // renderer.
+  base::Optional<base::TimeTicks> commit_navigation_sent_;
 };
 
 Navigator::Navigator(NavigationControllerImpl* navigation_controller,
@@ -814,6 +818,13 @@ void Navigator::CancelNavigation(FrameTreeNode* frame_tree_node) {
     navigation_data_.reset();
 }
 
+void Navigator::LogCommitNavigationSent() {
+  if (!navigation_data_)
+    return;
+
+  navigation_data_->commit_navigation_sent_ = base::TimeTicks::Now();
+}
+
 void Navigator::LogBeforeUnloadTime(
     base::TimeTicks renderer_before_unload_start_time,
     base::TimeTicks renderer_before_unload_end_time,
@@ -905,10 +916,13 @@ void Navigator::RecordNavigationMetrics(
   }
 
   ukm::builders::Unload builder(navigation_data_->ukm_source_id_);
+  base::TimeTicks first_before_unload_start_time;
 
   if (navigation_data_->is_browser_initiated_before_unload_) {
     if (navigation_data_->before_unload_start_ &&
         navigation_data_->before_unload_end_) {
+      first_before_unload_start_time =
+          navigation_data_->before_unload_start_.value();
       builder.SetBeforeUnloadDuration(
           (navigation_data_->before_unload_end_.value() -
            navigation_data_->before_unload_start_.value())
@@ -917,6 +931,8 @@ void Navigator::RecordNavigationMetrics(
   } else {
     if (navigation_data_->renderer_before_unload_start_ &&
         navigation_data_->renderer_before_unload_end_) {
+      first_before_unload_start_time =
+          navigation_data_->renderer_before_unload_start_.value();
       base::TimeDelta before_unload_duration =
           navigation_data_->renderer_before_unload_end_.value() -
           navigation_data_->renderer_before_unload_start_.value();
@@ -942,6 +958,53 @@ void Navigator::RecordNavigationMetrics(
     builder.SetBeforeUnloadQueueingDuration(
         (navigation_data_->before_unload_start_.value() -
          navigation_data_->before_unload_sent_.value())
+            .InMilliseconds());
+  }
+
+  // If this is a same-process navigation and we have timestamps for unload
+  // durations, fill those metrics out as well.
+  if (params.unload_start && params.unload_end &&
+      params.commit_navigation_end &&
+      navigation_data_->commit_navigation_sent_) {
+    base::TimeTicks unload_start = params.unload_start.value();
+    base::TimeTicks unload_end = params.unload_end.value();
+    base::TimeTicks commit_navigation_end =
+        params.commit_navigation_end.value();
+
+    if (!base::TimeTicks::IsConsistentAcrossProcesses()) {
+      // These timestamps come directly from the renderer so they might need
+      // to be converted to local time stamps.
+      blink::InterProcessTimeTicksConverter converter(
+          blink::LocalTimeTicks::FromTimeTicks(first_before_unload_start_time),
+          blink::LocalTimeTicks::FromTimeTicks(base::TimeTicks::Now()),
+          blink::RemoteTimeTicks::FromTimeTicks(unload_start),
+          blink::RemoteTimeTicks::FromTimeTicks(unload_end));
+      blink::LocalTimeTicks converted_unload_start = converter.ToLocalTimeTicks(
+          blink::RemoteTimeTicks::FromTimeTicks(unload_start));
+      blink::LocalTimeTicks converted_unload_end = converter.ToLocalTimeTicks(
+          blink::RemoteTimeTicks::FromTimeTicks(unload_end));
+      blink::LocalTimeTicks converted_commit_navigation_end =
+          converter.ToLocalTimeTicks(
+              blink::RemoteTimeTicks::FromTimeTicks(commit_navigation_end));
+      unload_start = converted_unload_start.ToTimeTicks();
+      unload_end = converted_unload_end.ToTimeTicks();
+      commit_navigation_end = converted_commit_navigation_end.ToTimeTicks();
+    }
+    builder.SetUnloadDuration((unload_end - unload_start).InMilliseconds());
+    builder.SetUnloadQueueingDuration(
+        (unload_start - navigation_data_->commit_navigation_sent_.value())
+            .InMilliseconds());
+    if (navigation_data_->commit_navigation_sent_) {
+      builder.SetBeforeUnloadToCommit_SameProcess(
+          (commit_navigation_end - first_before_unload_start_time)
+              .InMilliseconds());
+    }
+  } else if (navigation_data_->commit_navigation_sent_) {
+    // The navigation is cross-process and we don't have unload timings as they
+    // are run in the old process and don't block the navigation.
+    builder.SetBeforeUnloadToCommit_CrossProcess(
+        (navigation_data_->commit_navigation_sent_.value() -
+         first_before_unload_start_time)
             .InMilliseconds());
   }
 

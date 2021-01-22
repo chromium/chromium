@@ -193,6 +193,10 @@ class CONTENT_EXPORT Navigator {
                            base::TimeTicks renderer_before_unload_end_time,
                            base::TimeTicks before_unload_sent_time);
 
+  // Called to record the time that the RenderFrameHost told the renderer to
+  // commit the current navigation.
+  void LogCommitNavigationSent();
+
   NavigationControllerImpl* controller() { return controller_; }
 
  private:

@@ -1258,11 +1258,13 @@ void FrameLoader::CommitDocumentLoader(
   // Update the DocumentLoadTiming with the timings from the previous document
   // unload event.
   if (unload_timing.has_value()) {
-    document_loader_->GetTiming().SetHasSameOriginAsPreviousDocument(true);
+    document_loader_->GetTiming().SetCanRequestFromPreviousDocument(
+        unload_timing->can_request);
     document_loader_->GetTiming().MarkUnloadEventStart(
         unload_timing->unload_event_start);
     document_loader_->GetTiming().MarkUnloadEventEnd(
         unload_timing->unload_event_end);
+    document_loader_->GetTiming().MarkCommitNavigationEnd();
   }
 
   TakeObjectSnapshot();

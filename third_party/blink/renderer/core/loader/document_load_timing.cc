@@ -39,7 +39,7 @@ namespace blink {
 DocumentLoadTiming::DocumentLoadTiming(DocumentLoader& document_loader)
     : redirect_count_(0),
       has_cross_origin_redirect_(false),
-      has_same_origin_as_previous_document_(false),
+      can_request_from_previous_document_(false),
       clock_(base::DefaultClock::GetInstance()),
       tick_clock_(base::DefaultTickClock::GetInstance()),
       document_loader_(document_loader) {}
@@ -245,6 +245,14 @@ void DocumentLoadTiming::MarkRedirectEnd() {
   redirect_end_ = tick_clock_->NowTicks();
   TRACE_EVENT_MARK_WITH_TIMESTAMP1("blink.user_timing", "redirectEnd",
                                    redirect_end_, "frame",
+                                   ToTraceValue(GetFrame()));
+  NotifyDocumentTimingChanged();
+}
+
+void DocumentLoadTiming::MarkCommitNavigationEnd() {
+  commit_navigation_end_ = tick_clock_->NowTicks();
+  TRACE_EVENT_MARK_WITH_TIMESTAMP1("blink.user_timing", "commitNavigationEnd",
+                                   commit_navigation_end_, "frame",
                                    ToTraceValue(GetFrame()));
   NotifyDocumentTimingChanged();
 }

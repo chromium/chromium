@@ -166,7 +166,7 @@ DOMHighResTimeStamp PerformanceNavigationTiming::unloadEventStart() const {
   DocumentLoadTiming* timing = GetDocumentLoadTiming();
 
   if (!allow_redirect_details || !timing ||
-      !timing->HasSameOriginAsPreviousDocument())
+      !timing->CanRequestFromPreviousDocument())
     return 0;
   return Performance::MonotonicTimeToDOMHighResTimeStamp(
       TimeOrigin(), timing->UnloadEventStart(),
@@ -178,7 +178,7 @@ DOMHighResTimeStamp PerformanceNavigationTiming::unloadEventEnd() const {
   DocumentLoadTiming* timing = GetDocumentLoadTiming();
 
   if (!allow_redirect_details || !timing ||
-      !timing->HasSameOriginAsPreviousDocument())
+      !timing->CanRequestFromPreviousDocument())
     return 0;
   return Performance::MonotonicTimeToDOMHighResTimeStamp(
       TimeOrigin(), timing->UnloadEventEnd(), false /* allow_negative_value */);

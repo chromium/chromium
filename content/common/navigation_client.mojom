@@ -6,6 +6,7 @@ module content.mojom;
 
 import "content/common/frame_messages.mojom";
 import "content/common/navigation_params.mojom";
+import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/network/public/mojom/host_resolver.mojom";
 import "services/network/public/mojom/url_loader.mojom";
@@ -164,6 +165,16 @@ struct DidCommitProvisionalLoadParams {
   // its parent. This is populated for cross-document navigations including
   // sub-documents and the main document.
   mojo_base.mojom.UnguessableToken? embedding_token;
+
+  // Start and end timestamps for running the unload event on the old document
+  // before this navigation replaced it. This is only valid for same-process
+  // navigations, where the unload handler on the old document runs
+  // synchronously before the new document is allowed to commit.
+  mojo_base.mojom.TimeTicks? unload_start;
+  mojo_base.mojom.TimeTicks? unload_end;
+
+  // Timestamp of when this frame committed its navigation.
+  mojo_base.mojom.TimeTicks? commit_navigation_end;
 };
 
 // Similar to DidCommitProvisionalLoadParams, but only used for

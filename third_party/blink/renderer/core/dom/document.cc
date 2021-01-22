@@ -4136,13 +4136,10 @@ void Document::DispatchUnloadEvents(
         ("DocumentEventTiming.UnloadDuration", 0, 10000000, 50));
     unload_histogram.CountMicroseconds(unload_event_end - unload_event_start);
 
-    // Fill in the unload timing if the new document origin has access to
-    // them.
-    if (committing_origin->CanRequest(Url())) {
-      auto& timing = unload_timing->emplace();
-      timing.unload_event_start = unload_event_start;
-      timing.unload_event_end = unload_event_end;
-    }
+    auto& timing = unload_timing->emplace();
+    timing.can_request = committing_origin->CanRequest(Url());
+    timing.unload_event_start = unload_event_start;
+    timing.unload_event_end = unload_event_end;
   }
   load_event_progress_ = kUnloadEventHandled;
 }

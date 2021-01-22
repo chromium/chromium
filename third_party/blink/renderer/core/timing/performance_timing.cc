@@ -85,7 +85,7 @@ uint64_t PerformanceTiming::unloadEventStart() const {
     return 0;
 
   if (timing->HasCrossOriginRedirect() ||
-      !timing->HasSameOriginAsPreviousDocument())
+      !timing->CanRequestFromPreviousDocument())
     return 0;
 
   return MonotonicTimeToIntegerMilliseconds(timing->UnloadEventStart());
@@ -97,7 +97,7 @@ uint64_t PerformanceTiming::unloadEventEnd() const {
     return 0;
 
   if (timing->HasCrossOriginRedirect() ||
-      !timing->HasSameOriginAsPreviousDocument())
+      !timing->CanRequestFromPreviousDocument())
     return 0;
 
   return MonotonicTimeToIntegerMilliseconds(timing->UnloadEventEnd());
@@ -631,6 +631,30 @@ base::Optional<base::TimeTicks> PerformanceTiming::LastPortalActivatedPaint()
     return base::nullopt;
 
   return timing->LastPortalActivatedPaint();
+}
+
+base::Optional<base::TimeTicks> PerformanceTiming::UnloadStart() const {
+  DocumentLoadTiming* timing = GetDocumentLoadTiming();
+  if (!timing)
+    return base::nullopt;
+
+  return timing->UnloadEventStart();
+}
+
+base::Optional<base::TimeTicks> PerformanceTiming::UnloadEnd() const {
+  DocumentLoadTiming* timing = GetDocumentLoadTiming();
+  if (!timing)
+    return base::nullopt;
+
+  return timing->UnloadEventEnd();
+}
+
+base::Optional<base::TimeTicks> PerformanceTiming::CommitNavigationEnd() const {
+  DocumentLoadTiming* timing = GetDocumentLoadTiming();
+  if (!timing)
+    return base::nullopt;
+
+  return timing->CommitNavigationEnd();
 }
 
 DocumentLoader* PerformanceTiming::GetDocumentLoader() const {

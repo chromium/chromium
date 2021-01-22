@@ -14025,6 +14025,70 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric name="BeforeUnloadToCommit.CrossProcess">
+    <summary>
+      Measures the time in milliseconds from when the browser sends the request
+      to dispatch before unload handlers (for browser-intitated navigations) or
+      from when the renderer started running before unload handlers (for
+      renderer-initiated navigations) to when the commit navigation was sent to
+      the renderer process. For cross-process navigations this represents the
+      total amount of time the navigation is blocked since it was initiated.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="BeforeUnloadToCommit.SameProcess">
+    <summary>
+      Measures the time in milliseconds from when the browser sends the request
+      to dispatch before unload handlers (for browser-intitated navigations) or
+      from when the renderer started running before unload handlers (for
+      renderer-initiated navigations) to when the navigation was committed. For
+      same-process navigations this represents the total amount of time the
+      navigation is blocked since it was initiated.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="UnloadDuration">
+    <summary>
+      Measures the time in milliseconds to run the unload handlers in the old
+      document where the navigation was committed. Only records for same-process
+      navigations since there are no unload handlers to be run in the new
+      process during a cross-process navigation.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="UnloadQueueingDuration">
+    <summary>
+      Measures the time in miliseconds from when the browser sends the commit
+      navigation request to the renderer to when the renderer dispatches unload
+      events. Only records for same-process navigations since unload handlers
+      are run in a different process for cross-process navigations.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
 </event>
 
 <event name="UserActivity">
