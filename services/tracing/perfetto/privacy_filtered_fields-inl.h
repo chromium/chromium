@@ -162,7 +162,7 @@ constexpr MessageInfo kChromeLatencyInfo = {kChromeLatencyInfoIndices,
                                             kChromeLatencyInfoComplexMessages};
 
 // Proto Message: ChromeFrameReporter
-constexpr int kChromeFrameReporterIndices[] = {1, 2, 3, 4, -1};
+constexpr int kChromeFrameReporterIndices[] = {1, 2, 3, 4, 5, -1};
 constexpr MessageInfo kChromeFrameReporter = {kChromeFrameReporterIndices,
                                               nullptr};
 
@@ -190,10 +190,15 @@ constexpr int kChromeWindowHandleEventInfoIndices[] = {1, 2, -1};
 constexpr MessageInfo kChromeWindowHandleEventInfo = {
     kChromeWindowHandleEventInfoIndices, nullptr};
 
+// Proto Message: ChromeContentSettingsEventInfo
+constexpr int kChromeContentSettingsEventInfoIndices[] = {1, -1};
+constexpr MessageInfo kChromeContentSettingsEventInfo = {
+    kChromeContentSettingsEventInfoIndices, nullptr};
+
 // Proto Message: TrackEvent
-constexpr int kTrackEventIndices[] = {1,  2,  3,  5,  6,  9,  10, 11, 12, 16,
-                                      17, 24, 25, 26, 27, 28, 29, 30, 31, 32,
-                                      33, 34, 35, 36, 38, 39, 40, 41, 42, -1};
+constexpr int kTrackEventIndices[] = {
+    1,  2,  3,  5,  6,  9,  10, 11, 12, 16, 17, 24, 25, 26, 27, 28,
+    29, 30, 31, 32, 33, 34, 35, 36, 38, 39, 40, 41, 42, 43, -1};
 constexpr MessageInfo const* kTrackEventComplexMessages[] = {
     nullptr,
     nullptr,
@@ -223,7 +228,8 @@ constexpr MessageInfo const* kTrackEventComplexMessages[] = {
     &kChromeApplicationStateInfo,
     &kChromeRendererSchedulerState,
     &kChromeWindowHandleEventInfo,
-    nullptr};
+    nullptr,
+    &kChromeContentSettingsEventInfo};
 constexpr MessageInfo kTrackEvent = {kTrackEventIndices,
                                      kTrackEventComplexMessages};
 

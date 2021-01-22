@@ -86,6 +86,8 @@ const AllowlistEntry kEventArgsAllowlist[] = {
      kMemoryPressureEventsAllowedArgs},
     {"renderer_host", "*", kRendererHostAllowedArgs},
     {"shutdown", "*", nullptr},
+    // Now recorded in perfetto proto:
+    // perfetto/trace/track_event/chrome_content_settings_event_info.proto.
     {"startup", "PrefProvider::PrefProvider", nullptr},
     {"startup", "TestAllowlist*", nullptr},
     {"toplevel", "*", nullptr},

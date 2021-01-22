@@ -34,6 +34,8 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "services/preferences/public/cpp/dictionary_value_update.h"
 #include "services/preferences/public/cpp/scoped_pref_update.h"
+#include "services/tracing/public/cpp/perfetto/macros.h"
+#include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_content_settings_event_info.pbzero.h"
 
 namespace content_settings {
 
@@ -117,7 +119,7 @@ PrefProvider::PrefProvider(PrefService* prefs,
       off_the_record_(off_the_record),
       store_last_modified_(store_last_modified),
       clock_(base::DefaultClock::GetInstance()) {
-  TRACE_EVENT_BEGIN0("startup", "PrefProvider::PrefProvider");
+  TRACE_EVENT_BEGIN("startup", "PrefProvider::PrefProvider");
   DCHECK(prefs_);
   // Verify preferences version.
   if (!prefs_->HasPrefPath(prefs::kContentSettingsVersion)) {
@@ -126,7 +128,7 @@ PrefProvider::PrefProvider(PrefService* prefs,
   }
   if (prefs_->GetInteger(prefs::kContentSettingsVersion) >
       ContentSettingsPattern::kContentSettingsPatternVersion) {
-    TRACE_EVENT_END0("startup", "PrefProvider::PrefProvider");
+    TRACE_EVENT_END("startup");  // PrefProvider::PrefProvider.
     return;
   }
 
@@ -163,8 +165,12 @@ PrefProvider::PrefProvider(PrefService* prefs,
                             num_exceptions);
   }
 
-  TRACE_EVENT_END1("startup", "PrefProvider::PrefProvider",
-                   "NumberOfExceptions", num_exceptions);
+  TRACE_EVENT_END("startup", [num_exceptions](perfetto::EventContext ctx) {
+    perfetto::protos::pbzero::ChromeContentSettingsEventInfo* event_args =
+        ctx.event()->set_chrome_content_settings_event_info();
+    event_args->set_number_of_exceptions(
+        num_exceptions);  // PrefProvider::PrefProvider.
+  });
 }
 
 PrefProvider::~PrefProvider() {
