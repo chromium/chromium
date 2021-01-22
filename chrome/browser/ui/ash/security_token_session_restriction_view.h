@@ -10,11 +10,14 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/chromeos/login/security_token_session_controller.h"
 #include "chrome/browser/ui/views/apps/app_dialog/app_dialog_view.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 // The dialog informing the user they are about to be logged out or locked
 // because they removed their security token (smart card).
 class SecurityTokenSessionRestrictionView : public AppDialogView {
  public:
+  METADATA_HEADER(SecurityTokenSessionRestrictionView);
+
   // Creates the dialog.
   // `duration`: Initial countdown time, will be displayed in seconds.
   // `accept_callback`: Callback when the user accepts the dialog.
@@ -26,7 +29,6 @@ class SecurityTokenSessionRestrictionView : public AppDialogView {
   SecurityTokenSessionRestrictionView(
       base::TimeDelta duration,
       base::OnceClosure accept_callback,
-      base::OnceClosure window_closing_callback,
       chromeos::login::SecurityTokenSessionController::Behavior behavior,
       const std::string& domain);
   SecurityTokenSessionRestrictionView(

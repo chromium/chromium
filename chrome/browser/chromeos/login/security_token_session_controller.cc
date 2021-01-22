@@ -5,25 +5,46 @@
 #include "chrome/browser/chromeos/login/security_token_session_controller.h"
 
 #include <string>
+#include <vector>
 
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
+#include "base/notreached.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/chromeos/certificate_provider/certificate_info.h"
+#include "chrome/browser/chromeos/certificate_provider/certificate_provider.h"
+#include "chrome/browser/chromeos/certificate_provider/certificate_provider_service.h"
+#include "chrome/browser/chromeos/certificate_provider/certificate_provider_service_factory.h"
+#include "chrome/browser/chromeos/login/lock/screen_locker.h"
+#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/security_token_session_restriction_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/login/auth/challenge_response/known_user_pref_utils.h"
+#include "chromeos/login/auth/challenge_response_key.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"
+#include "extensions/common/extension_id.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "net/cert/asn1_util.h"
+#include "net/cert/x509_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/message_center/public/cpp/notification.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/window/dialog_delegate.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -104,36 +125,125 @@ void DisplayNotification(const base::string16& title,
   SystemNotificationHelper::GetInstance()->Display(*notification);
 }
 
+// Loads the persistently stored information about the challenge-response keys
+// that can be used for authenticating the user.
+void LoadStoredChallengeResponseSpkiKeysForUser(
+    const AccountId& account_id,
+    base::flat_map<std::string, std::vector<std::string>>* extension_to_spkis,
+    base::flat_set<std::string>* extension_ids) {
+  // TODO(crbug.com/1164373) This approach does not work for ephemeral users.
+  // Instead, only get the certificate that was actually used on the last login.
+  const base::Value known_user_value =
+      user_manager::known_user::GetChallengeResponseKeys(account_id);
+  std::vector<DeserializedChallengeResponseKey>
+      deserialized_challenge_response_keys;
+  DeserializeChallengeResponseKeyFromKnownUser(
+      known_user_value, &deserialized_challenge_response_keys);
+  for (const DeserializedChallengeResponseKey& challenge_response_key :
+       deserialized_challenge_response_keys) {
+    if (challenge_response_key.extension_id.empty())
+      continue;
+
+    extension_ids->insert(challenge_response_key.extension_id);
+    if (!extension_to_spkis->contains(challenge_response_key.extension_id)) {
+      (*extension_to_spkis)[challenge_response_key.extension_id] = {};
+    }
+    if (!challenge_response_key.public_key_spki_der.empty()) {
+      (*extension_to_spkis)[challenge_response_key.extension_id].push_back(
+          challenge_response_key.public_key_spki_der);
+    }
+  }
+}
+
+std::string GetSubjectPublicKeyInfo(const net::X509Certificate& certificate) {
+  base::StringPiece spki_bytes;
+  if (!net::asn1::ExtractSPKIFromDERCert(
+          net::x509_util::CryptoBufferAsStringPiece(certificate.cert_buffer()),
+          &spki_bytes)) {
+    return {};
+  }
+  return spki_bytes.as_string();
+}
+
 }  // namespace
 
 SecurityTokenSessionController::SecurityTokenSessionController(
     PrefService* local_state,
     PrefService* profile_prefs,
-    const user_manager::User* user)
-    : local_state_(local_state), profile_prefs_(profile_prefs), user_(user) {
+    const user_manager::User* user,
+    CertificateProviderService* certificate_provider_service)
+    : local_state_(local_state),
+      profile_prefs_(profile_prefs),
+      user_(user),
+      certificate_provider_service_(certificate_provider_service) {
   DCHECK(local_state_);
   DCHECK(profile_prefs_);
   DCHECK(user_);
+  DCHECK(certificate_provider_service_);
+  certificate_provider_ =
+      certificate_provider_service_->CreateCertificateProvider();
+  LoadStoredChallengeResponseSpkiKeysForUser(
+      user_->GetAccountId(), &extension_to_spkis_, &observed_extensions_);
   UpdateNotificationPref();
-  UpdateBehaviorPref();
+  behavior_ = GetBehaviorFromPref();
   pref_change_registrar_.Init(profile_prefs_);
   base::RepeatingClosure behavior_pref_changed_callback =
       base::BindRepeating(&SecurityTokenSessionController::UpdateBehaviorPref,
-                          base::Unretained(this));
+                          weak_ptr_factory_.GetWeakPtr());
   base::RepeatingClosure notification_pref_changed_callback =
       base::BindRepeating(
           &SecurityTokenSessionController::UpdateNotificationPref,
-          base::Unretained(this));
+          weak_ptr_factory_.GetWeakPtr());
   pref_change_registrar_.Add(prefs::kSecurityTokenSessionBehavior,
                              behavior_pref_changed_callback);
   pref_change_registrar_.Add(prefs::kSecurityTokenSessionNotificationSeconds,
                              notification_pref_changed_callback);
+  certificate_provider_service_->AddObserver(this);
 }
 
-SecurityTokenSessionController::~SecurityTokenSessionController() = default;
+SecurityTokenSessionController::~SecurityTokenSessionController() {
+  certificate_provider_service_->RemoveObserver(this);
+}
 
 void SecurityTokenSessionController::Shutdown() {
   pref_change_registrar_.RemoveAll();
+}
+
+void SecurityTokenSessionController::OnCertificatesUpdated(
+    const std::string& extension_id,
+    const std::vector<certificate_provider::CertificateInfo>&
+        certificate_infos) {
+  if (behavior_ == Behavior::kIgnore)
+    return;
+
+  if (!observed_extensions_.contains(extension_id))
+    return;
+
+  if (extension_to_spkis_[extension_id].empty())
+    return;
+
+  bool extension_provides_all_required_certificates = true;
+
+  std::vector<std::string> provided_spki_vector;
+  for (auto certificate_info : certificate_infos) {
+    provided_spki_vector.emplace_back(
+        GetSubjectPublicKeyInfo(*certificate_info.certificate.get()));
+  }
+  base::flat_set<std::string> provided_spkis(provided_spki_vector.begin(),
+                                             provided_spki_vector.end());
+  auto& expected_spkis = extension_to_spkis_[extension_id];
+  for (const auto& expected_spki : expected_spkis) {
+    if (!provided_spkis.contains(expected_spki)) {
+      extension_provides_all_required_certificates = false;
+      break;
+    }
+  }
+
+  if (extension_provides_all_required_certificates) {
+    ExtensionProvidesAllRequiredCertificates(extension_id);
+  } else {
+    ExtensionStopsProvidingCertificate(extension_id);
+  }
 }
 
 // static
@@ -166,13 +276,13 @@ void SecurityTokenSessionController::MaybeDisplayLoginScreenNotification() {
     // No notification is scheduled.
     return;
   }
-  local_state->ClearPref(
-      prefs::kSecurityTokenSessionNotificationScheduledDomain);
   // Sanitize `scheduled_notification_domain`, as values coming from local state
   // are not trusted.
+  std::string domain = scheduled_notification_domain->GetValue()->GetString();
+  local_state->ClearPref(
+      prefs::kSecurityTokenSessionNotificationScheduledDomain);
   std::string sanitized_domain;
-  if (!SanitizeDomain(scheduled_notification_domain->GetValue()->GetString(),
-                      sanitized_domain)) {
+  if (!SanitizeDomain(domain, sanitized_domain)) {
     // The pref value is invalid.
     return;
   }
@@ -184,7 +294,15 @@ void SecurityTokenSessionController::MaybeDisplayLoginScreenNotification() {
 }
 
 void SecurityTokenSessionController::UpdateBehaviorPref() {
+  Behavior previous_behavior = behavior_;
   behavior_ = GetBehaviorFromPref();
+  if (behavior_ == Behavior::kIgnore) {
+    Reset();
+  } else if (previous_behavior == Behavior::kIgnore) {
+    // Request all available certificates to ensure that all required
+    // certificates are still present.
+    certificate_provider_->GetCertificates(base::DoNothing());
+  }
 }
 
 void SecurityTokenSessionController::UpdateNotificationPref() {
@@ -197,6 +315,60 @@ SecurityTokenSessionController::Behavior
 SecurityTokenSessionController::GetBehaviorFromPref() const {
   return ParseBehaviorPrefValue(
       profile_prefs_->GetString(prefs::kSecurityTokenSessionBehavior));
+}
+
+void SecurityTokenSessionController::TriggerAction() {
+  if (fullscreen_notification_ && !fullscreen_notification_->IsClosed()) {
+    fullscreen_notification_->CloseWithReason(
+        views::Widget::ClosedReason::kAcceptButtonClicked);
+  }
+  Reset();
+  switch (behavior_) {
+    case Behavior::kIgnore:
+      return;
+    case Behavior::kLock:
+      chromeos::ScreenLocker::Show();
+      AddLockNotification();
+      return;
+    case Behavior::kLogout:
+      chrome::AttemptExit();
+      ScheduleLogoutNotification();
+      return;
+  }
+  NOTREACHED();
+}
+
+void SecurityTokenSessionController::ExtensionProvidesAllRequiredCertificates(
+    const extensions::ExtensionId& extension_id) {
+  extensions_missing_required_certificates_.erase(extension_id);
+  if (extensions_missing_required_certificates_.empty())
+    Reset();
+}
+
+void SecurityTokenSessionController::ExtensionStopsProvidingCertificate(
+    const extensions::ExtensionId& extension_id) {
+  extensions_missing_required_certificates_.insert(extension_id);
+
+  if (fullscreen_notification_)
+    // There was already a security token missing.
+    return;
+
+  // Schedule session lock / logout.
+  action_timer_.Start(
+      FROM_HERE, notification_seconds_,
+      base::BindOnce(&SecurityTokenSessionController::TriggerAction,
+                     weak_ptr_factory_.GetWeakPtr()));
+
+  if (!notification_seconds_.is_zero()) {
+    fullscreen_notification_ = views::DialogDelegate::CreateDialogWidget(
+        std::make_unique<SecurityTokenSessionRestrictionView>(
+            notification_seconds_,
+            base::BindOnce(&SecurityTokenSessionController::TriggerAction,
+                           weak_ptr_factory_.GetWeakPtr()),
+            behavior_, GetEnterpriseDomainFromEmail(user_->GetDisplayEmail())),
+        nullptr, nullptr);
+    fullscreen_notification_->Show();
+  }
 }
 
 void SecurityTokenSessionController::AddLockNotification() const {
@@ -232,6 +404,18 @@ void SecurityTokenSessionController::ScheduleLogoutNotification() const {
   local_state_->SetString(
       prefs::kSecurityTokenSessionNotificationScheduledDomain,
       GetEnterpriseDomainFromEmail(user_->GetDisplayEmail()));
+}
+
+void SecurityTokenSessionController::Reset() {
+  action_timer_.Stop();
+  extensions_missing_required_certificates_.clear();
+  if (fullscreen_notification_) {
+    if (!fullscreen_notification_->IsClosed()) {
+      fullscreen_notification_->CloseWithReason(
+          views::Widget::ClosedReason::kEscKeyPressed);
+    }
+    fullscreen_notification_ = nullptr;
+  }
 }
 
 }  // namespace login

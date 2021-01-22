@@ -205,7 +205,7 @@ void TestCertificateProviderExtension::TriggerSetCertificates() {
   base::Value message_data(base::Value::Type::DICTIONARY);
   message_data.SetStringKey("name", "setCertificates");
   base::Value cert_info_values(base::Value::Type::LIST);
-  if (!should_fail_certificate_requests_)
+  if (should_provide_certificates_)
     cert_info_values.Append(MakeClientCertificateInfoValue(*certificate_));
   message_data.SetKey("certificateInfoList", std::move(cert_info_values));
 
@@ -266,7 +266,7 @@ void TestCertificateProviderExtension::HandleCertificatesRequest(
     ReplyToJsCallback callback) {
   ++certificate_request_count_;
   base::Value cert_info_values(base::Value::Type::LIST);
-  if (!should_fail_certificate_requests_)
+  if (should_provide_certificates_)
     cert_info_values.Append(MakeClientCertificateInfoValue(*certificate_));
   std::move(callback).Run(cert_info_values);
 }

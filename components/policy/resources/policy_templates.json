@@ -7679,7 +7679,7 @@
           'caption': '''Lock the current session.''',
         },
       ],
-      'future_on': ['chrome_os'],
+      'supported_on': ['chrome_os:90-'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -7695,7 +7695,7 @@
       'owners': ['fabiansommer@chromium.org, emaxx@chromium.org'],
       'type': 'int',
       'schema': { 'type': 'integer', 'minimum': 0, 'maximum': 9999 },
-      'future_on': ['chrome_os'],
+      'supported_on': ['chrome_os:90-'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,

@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "ash/public/cpp/login_screen_test_api.h"
+#include "ash/public/cpp/session/session_controller.h"
+#include "ash/public/cpp/session/session_observer.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/span.h"
@@ -18,16 +20,18 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/chromeos/certificate_provider/certificate_provider_service.h"
 #include "chrome/browser/chromeos/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/chromeos/certificate_provider/test_certificate_provider_extension.h"
 #include "chrome/browser/chromeos/login/existing_user_controller.h"
-#include "chrome/browser/chromeos/login/test/device_state_mixin.h"
 #include "chrome/browser/chromeos/login/test/login_manager_mixin.h"
 #include "chrome/browser/chromeos/login/test/test_predicate_waiter.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/policy/extension_force_install_mixin.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/dbus/cryptohome/cryptohome_client.h"
@@ -38,6 +42,9 @@
 #include "chromeos/login/auth/auth_status_consumer.h"
 #include "chromeos/login/auth/challenge_response/known_user_pref_utils.h"
 #include "components/account_id/account_id.h"
+#include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/session_manager/session_manager_types.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -47,6 +54,8 @@
 #include "net/base/net_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
+#include "ui/views/test/widget_test.h"
+#include "ui/views/widget/any_widget_observer.h"
 
 using ash::LoginScreenTestApi;
 
@@ -168,6 +177,35 @@ class AuthFailureWaiter final : public AuthStatusConsumer {
   AuthFailure::FailureReason failure_reason_ = AuthFailure::NONE;
 };
 
+// A helper class that blocks execution until Chrome is locking or terminating.
+class ChromeSessionObserver : public ash::SessionObserver {
+ public:
+  ChromeSessionObserver() { ash::SessionController::Get()->AddObserver(this); }
+
+  ChromeSessionObserver(const ChromeSessionObserver&) = delete;
+  ChromeSessionObserver& operator=(const ChromeSessionObserver&) = delete;
+
+  ~ChromeSessionObserver() override {
+    ash::SessionController::Get()->RemoveObserver(this);
+  }
+
+  void WaitForSessionLocked() { session_locked_loop_.Run(); }
+
+  void WaitForChromeTerminating() { termination_loop_.Run(); }
+
+  // ash::SessionObserver
+  void OnChromeTerminating() override { termination_loop_.Quit(); }
+
+  void OnSessionStateChanged(session_manager::SessionState state) override {
+    if (state == session_manager::SessionState::LOCKED)
+      session_locked_loop_.Quit();
+  }
+
+ private:
+  base::RunLoop session_locked_loop_;
+  base::RunLoop termination_loop_;
+};
+
 }  // namespace
 
 // Tests the challenge-response based login (e.g., using a smart card) for an
@@ -202,6 +240,18 @@ class SecurityTokenLoginTest : public MixinBasedInProcessBrowserTest,
     // faked in the test.
     command_line->AppendSwitch(
         chromeos::switches::kAllowFailedPolicyFetchForTest);
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
+    // Init the user policy provider.
+    EXPECT_CALL(policy_provider_, IsInitializationComplete(testing::_))
+        .WillRepeatedly(testing::Return(true));
+    EXPECT_CALL(policy_provider_, IsFirstPolicyLoadComplete(testing::_))
+        .WillRepeatedly(testing::Return(true));
+    policy_provider_.SetAutoRefresh();
+    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
+        &policy_provider_);
   }
 
   void SetUpOnMainThread() override {
@@ -257,19 +307,32 @@ class SecurityTokenLoginTest : public MixinBasedInProcessBrowserTest,
 
   void WaitForActiveSession() { login_manager_mixin_.WaitForActiveSession(); }
 
-  // Configures and installs the test certificate provider extension.
+  // Configures and installs the login screen certificate provider extension.
   void PrepareCertificateProviderExtension() {
     certificate_provider_extension_ =
         std::make_unique<TestCertificateProviderExtension>(
             GetOriginalSigninProfile());
     certificate_provider_extension_->set_require_pin(kCorrectPin);
-    extension_force_install_mixin_.InitWithDeviceStateMixin(
-        GetOriginalSigninProfile(), &device_state_mixin_);
+    extension_force_install_mixin_.InitWithMockPolicyProvider(
+        GetOriginalSigninProfile(), policy_provider());
     EXPECT_TRUE(extension_force_install_mixin_.ForceInstallFromSourceDir(
         TestCertificateProviderExtension::GetExtensionSourcePath(),
         TestCertificateProviderExtension::GetExtensionPemPath(),
         ExtensionForceInstallMixin::WaitMode::kBackgroundPageFirstLoad));
     certificate_provider_extension_->TriggerSetCertificates();
+  }
+
+  // Waits until the Login or Lock screen is shown.
+  void WaitForLoginScreenWidgetShown() {
+    base::RunLoop run_loop;
+    LoginScreenTestApi::AddOnLockScreenShownCallback(run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  LoginManagerMixin* login_manager_mixin() { return &login_manager_mixin_; }
+
+  policy::MockConfigurationPolicyProvider* policy_provider() {
+    return &policy_provider_;
   }
 
  private:
@@ -294,23 +357,16 @@ class SecurityTokenLoginTest : public MixinBasedInProcessBrowserTest,
         std::move(challenge_response_keys_value));
   }
 
-  void WaitForLoginScreenWidgetShown() {
-    base::RunLoop run_loop;
-    LoginScreenTestApi::AddOnLockScreenShownCallback(run_loop.QuitClosure());
-    run_loop.Run();
-  }
-
   // Bypass "signin_screen" feature only enabled for allowlisted extensions.
   extensions::SimpleFeature::ScopedThreadUnsafeAllowlistForTest
       feature_allowlist_{TestCertificateProviderExtension::extension_id()};
 
   // Unowned (referencing a global singleton)
   ChallengeResponseFakeCryptohomeClient* const cryptohome_client_;
-  DeviceStateMixin device_state_mixin_{
-      &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
   LoginManagerMixin login_manager_mixin_{&mixin_host_};
   LocalStateMixin local_state_mixin_{&mixin_host_, this};
   ExtensionForceInstallMixin extension_force_install_mixin_{&mixin_host_};
+  policy::MockConfigurationPolicyProvider policy_provider_;
 
   std::unique_ptr<TestCertificateProviderExtension>
       certificate_provider_extension_;
@@ -438,6 +494,152 @@ IN_PROC_BROWSER_TEST_F(SecurityTokenLoginTest, SigningFailure) {
   EXPECT_EQ(LoginScreenTestApi::GetChallengeResponseLabel(
                 GetChallengeResponseAccountId()),
             base::UTF8ToUTF16(kChallengeResponseErrorLabel));
+}
+
+// Tests for the SecurityTokenSessionBehavior and
+// SecurityTokenSessionNotificationSeconds policies.
+class SecurityTokenSessionBehaviorTest : public SecurityTokenLoginTest {
+ protected:
+  SecurityTokenSessionBehaviorTest() = default;
+  SecurityTokenSessionBehaviorTest(const SecurityTokenSessionBehaviorTest&) =
+      delete;
+  SecurityTokenSessionBehaviorTest& operator=(
+      const SecurityTokenSessionBehaviorTest&) = delete;
+  ~SecurityTokenSessionBehaviorTest() override = default;
+
+  void Login() {
+    PrepareCertificateProviderExtension();
+    StartLoginAndWaitForPinDialog();
+    LoginScreenTestApi::SubmitPinRequestWidget(kCorrectPin);
+    WaitForActiveSession();
+    profile_ = chromeos::ProfileHelper::Get()->GetProfileByAccountId(
+        GetChallengeResponseAccountId());
+  }
+
+  // Configures and installs the user session certificate provider extension.
+  void PrepareUserCertificateProviderExtension() {
+    user_certificate_provider_extension_ =
+        std::make_unique<TestCertificateProviderExtension>(profile());
+    user_extension_mixin_.InitWithMockPolicyProvider(profile(),
+                                                     policy_provider());
+    EXPECT_TRUE(user_extension_mixin_.ForceInstallFromSourceDir(
+        TestCertificateProviderExtension::GetExtensionSourcePath(),
+        TestCertificateProviderExtension::GetExtensionPemPath(),
+        ExtensionForceInstallMixin::WaitMode::kBackgroundPageFirstLoad));
+  }
+
+  // Makes the user session extension call certificateProvider.setCertificates()
+  // without providing any certificates, thus simulating the removal of a
+  // security token.
+  void SimulateSecurityTokenRemoval() {
+    ASSERT_TRUE(user_certificate_provider_extension_);
+    user_certificate_provider_extension()->set_should_provide_certificates(
+        false);
+    user_certificate_provider_extension()->TriggerSetCertificates();
+  }
+
+  bool ProfileHasNotification(Profile* profile,
+                              const std::string& notification_id) {
+    NotificationDisplayService* notification_display_service =
+        NotificationDisplayService::GetForProfile(profile);
+    if (!notification_display_service) {
+      ADD_FAILURE() << "NotificationDisplayService could not be found.";
+      return false;
+    }
+    base::RunLoop run_loop;
+    bool has_notification = false;
+    notification_display_service->GetDisplayed(
+        base::BindLambdaForTesting([&](std::set<std::string> notification_ids,
+                                       bool /* supports_synchronization */) {
+          has_notification = notification_ids.count(notification_id) >= 1;
+          run_loop.Quit();
+        }));
+
+    run_loop.Run();
+    return has_notification;
+  }
+
+  Profile* profile() const { return profile_; }
+
+  TestCertificateProviderExtension* user_certificate_provider_extension()
+      const {
+    return user_certificate_provider_extension_.get();
+  }
+
+ private:
+  ExtensionForceInstallMixin user_extension_mixin_{&mixin_host_};
+  std::unique_ptr<TestCertificateProviderExtension>
+      user_certificate_provider_extension_;
+  Profile* profile_ = nullptr;
+};
+
+// Tests the SecurityTokenSessionBehavior policy with value "LOCK".
+IN_PROC_BROWSER_TEST_F(SecurityTokenSessionBehaviorTest, Lock) {
+  Login();
+  profile()->GetPrefs()->SetString(prefs::kSecurityTokenSessionBehavior,
+                                   "LOCK");
+  PrepareUserCertificateProviderExtension();
+  ChromeSessionObserver chrome_session_observer;
+
+  SimulateSecurityTokenRemoval();
+  chrome_session_observer.WaitForSessionLocked();
+
+  EXPECT_TRUE(ProfileHasNotification(
+      profile(), "security_token_session_controller_notification"));
+  EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(
+      prefs::kSecurityTokenSessionNotificationDisplayed));
+}
+
+// Tests the SecurityTokenSessionBehavior policy with value "LOGOUT".
+IN_PROC_BROWSER_TEST_F(SecurityTokenSessionBehaviorTest, PRE_Logout) {
+  Login();
+  ChromeSessionObserver chrome_session_observer;
+  profile()->GetPrefs()->SetString(prefs::kSecurityTokenSessionBehavior,
+                                   "LOGOUT");
+  PrepareUserCertificateProviderExtension();
+
+  // Removal of the certificate should lead to the end of the current session.
+  SimulateSecurityTokenRemoval();
+  chrome_session_observer.WaitForChromeTerminating();
+
+  // Check login screen notification is scheduled.
+  EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(
+      prefs::kSecurityTokenSessionNotificationDisplayed));
+}
+
+IN_PROC_BROWSER_TEST_F(SecurityTokenSessionBehaviorTest, Logout) {
+  // Check login screen notification is displayed.
+  EXPECT_TRUE(
+      ProfileHasNotification(GetOriginalSigninProfile(),
+                             "security_token_session_controller_notification"));
+}
+
+// Tests the SecurityTokenSessionNotificationSeconds policy.
+IN_PROC_BROWSER_TEST_F(SecurityTokenSessionBehaviorTest, NotificationSeconds) {
+  Login();
+  profile()->GetPrefs()->SetString(prefs::kSecurityTokenSessionBehavior,
+                                   "LOCK");
+  profile()->GetPrefs()->SetInteger(
+      prefs::kSecurityTokenSessionNotificationSeconds, 1);
+  PrepareUserCertificateProviderExtension();
+  ChromeSessionObserver chrome_session_observer;
+
+  views::NamedWidgetShownWaiter notification_waiter(
+      views::test::AnyWidgetTestPasskey{},
+      "SecurityTokenSessionRestrictionView");
+
+  SimulateSecurityTokenRemoval();
+
+  views::Widget* notification = notification_waiter.WaitIfNeededAndGet();
+  views::test::WidgetClosingObserver notification_closing_observer(
+      notification);
+  notification_closing_observer.Wait();
+
+  // After the notification expires, the device gets locked.
+  chrome_session_observer.WaitForSessionLocked();
+
+  // The notification no longer exists.
+  EXPECT_TRUE(notification_closing_observer.widget_closed());
 }
 
 }  // namespace chromeos

@@ -22,6 +22,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -112,7 +113,6 @@ base::string16 GetDialogText(
 SecurityTokenSessionRestrictionView::SecurityTokenSessionRestrictionView(
     base::TimeDelta duration,
     base::OnceClosure accept_callback,
-    base::OnceClosure window_closing_callback,
     chromeos::login::SecurityTokenSessionController::Behavior behavior,
     const std::string& domain)
     : AppDialogView(GetImage()),
@@ -125,7 +125,6 @@ SecurityTokenSessionRestrictionView::SecurityTokenSessionRestrictionView(
   SetTitle(GetTitle(behavior));
 
   SetAcceptCallback(std::move(accept_callback));
-  RegisterWindowClosingCallback(std::move(window_closing_callback));
 
   InitializeView(/*heading_text=*/base::string16());
   UpdateLabel();
@@ -144,3 +143,6 @@ void SecurityTokenSessionRestrictionView::UpdateLabel() {
     update_timer_.Stop();
   }
 }
+
+BEGIN_METADATA(SecurityTokenSessionRestrictionView, AppDialogView);
+END_METADATA

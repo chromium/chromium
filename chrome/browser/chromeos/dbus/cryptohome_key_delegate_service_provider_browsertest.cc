@@ -250,7 +250,7 @@ IN_PROC_BROWSER_TEST_F(CryptohomeKeyDelegateServiceProviderTest,
 // by the test provider anymore.
 IN_PROC_BROWSER_TEST_F(CryptohomeKeyDelegateServiceProviderTest,
                        SignatureErrorKeyRemoved) {
-  certificate_provider_extension()->set_should_fail_certificate_requests(true);
+  certificate_provider_extension()->set_should_provide_certificates(false);
   RefreshCertsFromCertProviders();
 
   std::vector<uint8_t> signature;

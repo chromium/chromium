@@ -73,11 +73,10 @@ class TestCertificateProviderExtension final
     remaining_pin_attempts_ = remaining_pin_attempts;
   }
 
-  // Sets whether the extension should respond with a failure to the
-  // onCertificatesRequested requests.
-  void set_should_fail_certificate_requests(
-      bool should_fail_certificate_requests) {
-    should_fail_certificate_requests_ = should_fail_certificate_requests;
+  // Sets whether the extension should return any certificates in response to a
+  // onCertificatesRequested request or a TriggerSetCertificates() call.
+  void set_should_provide_certificates(bool should_provide_certificates) {
+    should_provide_certificates_ = should_provide_certificates;
   }
 
   // Sets whether the extension should respond with a failure to the
@@ -113,7 +112,7 @@ class TestCertificateProviderExtension final
   // When equal to zero, signature requests will be failed immediately; when is
   // negative, infinite number of attempts is allowed.
   int remaining_pin_attempts_ = -1;
-  bool should_fail_certificate_requests_ = false;
+  bool should_provide_certificates_ = true;
   bool should_fail_sign_digest_requests_ = false;
   content::NotificationRegistrar notification_registrar_;
 
