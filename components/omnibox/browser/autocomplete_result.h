@@ -238,6 +238,8 @@ class AutocompleteResult {
   FRIEND_TEST_ALL_PREFIXES(AutocompleteResultTest,
                            DemoteOnDeviceSearchSuggestions);
   FRIEND_TEST_ALL_PREFIXES(AutocompleteResultTest, BubbleURLSuggestions);
+  FRIEND_TEST_ALL_PREFIXES(AutocompleteResultTest,
+                           SortAndCullKeepGroupedSuggestionsLast);
   friend class HistoryURLProviderTest;
 
   typedef std::map<AutocompleteProvider*, ACMatches> ProviderToMatches;
