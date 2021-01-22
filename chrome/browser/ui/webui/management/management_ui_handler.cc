@@ -88,13 +88,11 @@ const char kOnPremReportingExtensionStableId[] =
     "emahakmocgideepebncgnmlmliepgpgb";
 const char kOnPremReportingExtensionBetaId[] =
     "kigjhoekjcpdfjpimbdjegmgecmlicaf";
-const char kCloudReportingExtensionId[] = "oempjldejiginopiohodkdoklcjklbaa";
 const char kPolicyKeyReportMachineIdData[] = "report_machine_id_data";
 const char kPolicyKeyReportUserIdData[] = "report_user_id_data";
 const char kPolicyKeyReportVersionData[] = "report_version_data";
 const char kPolicyKeyReportPolicyData[] = "report_policy_data";
 const char kPolicyKeyReportExtensionsData[] = "report_extensions_data";
-const char kPolicyKeyReportSafeBrowsingData[] = "report_safe_browsing_data";
 const char kPolicyKeyReportSystemTelemetryData[] =
     "report_system_telemetry_data";
 const char kPolicyKeyReportUserBrowsingData[] = "report_user_browsing_data";
@@ -109,8 +107,6 @@ const char kManagementExtensionReportVersion[] =
     "managementExtensionReportVersion";
 const char kManagementExtensionReportExtensionsPlugin[] =
     "managementExtensionReportExtensionsPlugin";
-const char kManagementExtensionReportSafeBrowsingWarnings[] =
-    "managementExtensionReportSafeBrowsingWarnings";
 const char kManagementExtensionReportPerfCrash[] =
     "managementExtensionReportPerfCrash";
 const char kManagementExtensionReportUserBrowsingData[] =
@@ -368,8 +364,7 @@ std::string ManagementUIHandler::GetAccountManager(Profile* profile) {
 
 ManagementUIHandler::ManagementUIHandler() {
   reporting_extension_ids_ = {kOnPremReportingExtensionStableId,
-                              kOnPremReportingExtensionBetaId,
-                              kCloudReportingExtensionId};
+                              kOnPremReportingExtensionBetaId};
 }
 
 ManagementUIHandler::~ManagementUIHandler() {
@@ -439,9 +434,6 @@ void ManagementUIHandler::OnJavascriptDisallowed() {
 }
 
 void ManagementUIHandler::AddReportingInfo(base::Value* report_sources) {
-  const extensions::Extension* cloud_reporting_extension =
-      GetEnabledExtension(kCloudReportingExtensionId);
-
   const policy::PolicyService* policy_service = GetPolicyService();
 
   const policy::PolicyNamespace
@@ -464,8 +456,6 @@ void ManagementUIHandler::AddReportingInfo(base::Value* report_sources) {
       &on_prem_reporting_extension_stable_policy_map,
       &on_prem_reporting_extension_beta_policy_map};
 
-  const bool cloud_reporting_extension_installed =
-      cloud_reporting_extension != nullptr;
   const auto* cloud_reporting_policy_value =
       GetPolicyService()
           ->GetPolicies(policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME,
@@ -482,25 +472,19 @@ void ManagementUIHandler::AddReportingInfo(base::Value* report_sources) {
     const bool enabled_by_default;
   } report_definitions[] = {
       {kPolicyKeyReportMachineIdData, kManagementExtensionReportMachineName,
-       ReportingType::kDevice,
-       cloud_reporting_extension_installed || cloud_reporting_policy_enabled},
+       ReportingType::kDevice, cloud_reporting_policy_enabled},
       {kPolicyKeyReportMachineIdData,
        kManagementExtensionReportMachineNameAddress, ReportingType::kDevice,
        false},
       {kPolicyKeyReportVersionData, kManagementExtensionReportVersion,
-       ReportingType::kDevice,
-       cloud_reporting_extension_installed || cloud_reporting_policy_enabled},
+       ReportingType::kDevice, cloud_reporting_policy_enabled},
       {kPolicyKeyReportSystemTelemetryData, kManagementExtensionReportPerfCrash,
        ReportingType::kDevice, false},
       {kPolicyKeyReportUserIdData, kManagementExtensionReportUsername,
-       ReportingType::kUser,
-       cloud_reporting_extension_installed || cloud_reporting_policy_enabled},
-      {kPolicyKeyReportSafeBrowsingData,
-       kManagementExtensionReportSafeBrowsingWarnings, ReportingType::kSecurity,
-       cloud_reporting_extension_installed},
+       ReportingType::kUser, cloud_reporting_policy_enabled},
       {kPolicyKeyReportExtensionsData,
        kManagementExtensionReportExtensionsPlugin, ReportingType::kExtensions,
-       cloud_reporting_extension_installed || cloud_reporting_policy_enabled},
+       cloud_reporting_policy_enabled},
       {kPolicyKeyReportUserBrowsingData,
        kManagementExtensionReportUserBrowsingData, ReportingType::kUserActivity,
        false},
@@ -847,13 +831,6 @@ policy::PolicyService* ManagementUIHandler::GetPolicyService() const {
   return Profile::FromWebUI(web_ui())
       ->GetProfilePolicyConnector()
       ->policy_service();
-}
-
-const extensions::Extension* ManagementUIHandler::GetEnabledExtension(
-    const std::string& extensionId) const {
-  return extensions::ExtensionRegistry::Get(Profile::FromWebUI(web_ui()))
-      ->GetExtensionById(kCloudReportingExtensionId,
-                         extensions::ExtensionRegistry::ENABLED);
 }
 
 void ManagementUIHandler::AsyncUpdateLogo() {

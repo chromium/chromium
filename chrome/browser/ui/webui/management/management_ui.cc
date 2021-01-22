@@ -17,7 +17,6 @@
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
-#include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -125,10 +124,6 @@ content::WebUIDataSource* CreateManagementUIHtmlSource(Profile* profile) {
 
   AddLocalizedStringsBulk(source, kLocalizedStrings);
 
-  source->AddString(kManagementExtensionReportSafeBrowsingWarnings,
-                    l10n_util::GetStringFUTF16(
-                        IDS_MANAGEMENT_EXTENSION_REPORT_SAFE_BROWSING_WARNINGS,
-                        base::UTF8ToUTF16(safe_browsing::kSafeBrowsingUrl)));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   source->AddString("managementDeviceLearnMoreUrl",
                     chrome::kLearnMoreEnterpriseURL);

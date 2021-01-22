@@ -42,7 +42,6 @@ extern const char kManagementReportExtensions[];
 extern const char kManagementReportAndroidApplications[];
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-extern const char kCloudReportingExtensionId[];
 extern const char kOnPremReportingExtensionStableId[];
 extern const char kOnPremReportingExtensionBetaId[];
 
@@ -51,7 +50,6 @@ extern const char kManagementExtensionReportMachineNameAddress[];
 extern const char kManagementExtensionReportUsername[];
 extern const char kManagementExtensionReportVersion[];
 extern const char kManagementExtensionReportExtensionsPlugin[];
-extern const char kManagementExtensionReportSafeBrowsingWarnings[];
 extern const char kManagementExtensionReportPerfCrash[];
 extern const char kManagementExtensionReportUserBrowsingData[];
 
@@ -76,7 +74,6 @@ extern const char kPolicyKeyReportUserIdData[];
 extern const char kPolicyKeyReportVersionData[];
 extern const char kPolicyKeyReportPolicyData[];
 extern const char kPolicyKeyReportExtensionsData[];
-extern const char kPolicyKeyReportSafeBrowsingData[];
 extern const char kPolicyKeyReportSystemTelemetryData[];
 extern const char kPolicyKeyReportUserBrowsingData[];
 
@@ -143,8 +140,6 @@ class ManagementUIHandler : public content::WebUIMessageHandler,
   base::Value GetContextualManagedData(Profile* profile);
   base::Value GetThreatProtectionInfo(Profile* profile) const;
   virtual policy::PolicyService* GetPolicyService() const;
-  virtual const extensions::Extension* GetEnabledExtension(
-      const std::string& extensionId) const;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Protected for testing.
