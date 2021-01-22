@@ -59768,11 +59768,17 @@ Called by update_net_trust_anchors.py.-->
   <int value="3"
       label="PluginVM DLC not installed as dlcservice/update_engine is busy."/>
   <int value="4" label="PluginVM DLC not installed due to reboot required."/>
+  <int value="5"
+      label="PluginVM DLC not installed due to insufficient disk space."/>
 </enum>
 
 <enum name="PluginVmLaunchResult">
   <int value="0" label="Success"/>
   <int value="1" label="Error"/>
+  <int value="2" label="Invalid license"/>
+  <int value="3" label="VM missing"/>
+  <int value="4" label="Expired license"/>
+  <int value="5" label="Network error"/>
 </enum>
 
 <enum name="PluginVmSetupFailureReason">
@@ -59799,6 +59805,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="23" label="INSUFFICIENT_DISK_SPACE"/>
   <int value="24" label="INVALID_LICENSE"/>
   <int value="25" label="OFFLINE"/>
+  <int value="26" label="LIST_VM_DISKS_FAILED"/>
 </enum>
 
 <enum name="PluginVmSetupResult">
@@ -59820,6 +59827,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="14" label="User cancelled without starting installation"/>
   <int value="15"
       label="User cancelled setup while validating Plugin VM license"/>
+  <int value="16" label="User cancelled while starting the dispatcher"/>
 </enum>
 
 <enum name="PNaClOptionsOptLevelEnum">
