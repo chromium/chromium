@@ -254,11 +254,19 @@ FrameTreeNode* FrameTree::AddFrame(
   // Now that the new node is part of the FrameTree and has a RenderFrameHost,
   // we can announce the creation of the initial RenderFrame which already
   // exists in the renderer process.
+  // For consistency with navigating to a new RenderFrameHost case, we dispatch
+  // RenderFrameCreated before RenderFrameHostChanged.
   if (added_node->frame_owner_element_type() !=
       blink::mojom::FrameOwnerElementType::kPortal) {
     // Portals do not have a live RenderFrame in the renderer process.
     added_node->current_frame_host()->RenderFrameCreated();
   }
+
+  // Notify the delegate of the creation of the current RenderFrameHost.
+  // This is only for subframes, as the main frame case is taken care of by
+  // WebContentsImpl::Init.
+  manager_delegate_->NotifySwappedFromRenderManager(
+      nullptr, added_node->current_frame_host(), false /* is_main_frame */);
   return added_node;
 }
 

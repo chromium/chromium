@@ -233,11 +233,6 @@ void RenderFrameHostManager::InitChild(
       CreateFrameCase::kInitChild, site_instance, frame_routing_id,
       std::move(frame_remote), frame_token,
       /*renderer_initiated_creation=*/false));
-  // Notify the delegate of the creation of the current RenderFrameHost.
-  // Do this only for subframes, as the main frame case is taken care of by
-  // WebContentsImpl::Init.
-  delegate_->NotifySwappedFromRenderManager(nullptr, render_frame_host_.get(),
-                                            false);
 }
 
 RenderViewHostImpl* RenderFrameHostManager::current_host() const {

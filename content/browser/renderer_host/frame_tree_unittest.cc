@@ -506,8 +506,8 @@ TEST_F(FrameTreeTest, ObserverWalksTreeDuringFrameCreation) {
       false, base::UnguessableToken::Create(), base::UnguessableToken::Create(),
       blink::FramePolicy(), blink::mojom::FrameOwnerProperties(), kOwnerType);
   EXPECT_EQ(
-      "RenderFrameHostChanged(new)(14) -> 1: []\n"
-      "RenderFrameCreated(14) -> 1: [14: []]",
+      "RenderFrameCreated(14) -> 1: [14: []]\n"
+      "RenderFrameHostChanged(new)(14) -> 1: [14: []]",
       activity.GetLog());
   main_test_rfh()->OnCreateChildFrame(
       18, CreateStubFrameRemote(), CreateStubBrowserInterfaceBrokerReceiver(),
@@ -516,8 +516,8 @@ TEST_F(FrameTreeTest, ObserverWalksTreeDuringFrameCreation) {
       false, base::UnguessableToken::Create(), base::UnguessableToken::Create(),
       blink::FramePolicy(), blink::mojom::FrameOwnerProperties(), kOwnerType);
   EXPECT_EQ(
-      "RenderFrameHostChanged(new)(18) -> 1: [14: []]\n"
-      "RenderFrameCreated(18) -> 1: [14: [], 18: []]",
+      "RenderFrameCreated(18) -> 1: [14: [], 18: []]\n"
+      "RenderFrameHostChanged(new)(18) -> 1: [14: [], 18: []]",
       activity.GetLog());
   frame_tree->RemoveFrame(root->child_at(0));
   EXPECT_EQ("RenderFrameDeleted(14) -> 1: [18: []]", activity.GetLog());
@@ -540,8 +540,8 @@ TEST_F(FrameTreeTest, ObserverWalksTreeAfterCrash) {
       false, base::UnguessableToken::Create(), base::UnguessableToken::Create(),
       blink::FramePolicy(), blink::mojom::FrameOwnerProperties(), kOwnerType);
   EXPECT_EQ(
-      "RenderFrameHostChanged(new)(22) -> 1: []\n"
-      "RenderFrameCreated(22) -> 1: [22: []]",
+      "RenderFrameCreated(22) -> 1: [22: []]\n"
+      "RenderFrameHostChanged(new)(22) -> 1: [22: []]",
       activity.GetLog());
   main_test_rfh()->OnCreateChildFrame(
       23, CreateStubFrameRemote(), CreateStubBrowserInterfaceBrokerReceiver(),
@@ -550,8 +550,8 @@ TEST_F(FrameTreeTest, ObserverWalksTreeAfterCrash) {
       false, base::UnguessableToken::Create(), base::UnguessableToken::Create(),
       blink::FramePolicy(), blink::mojom::FrameOwnerProperties(), kOwnerType);
   EXPECT_EQ(
-      "RenderFrameHostChanged(new)(23) -> 1: [22: []]\n"
-      "RenderFrameCreated(23) -> 1: [22: [], 23: []]",
+      "RenderFrameCreated(23) -> 1: [22: [], 23: []]\n"
+      "RenderFrameHostChanged(new)(23) -> 1: [22: [], 23: []]",
       activity.GetLog());
 
   // Crash the renderer
