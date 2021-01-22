@@ -893,16 +893,15 @@ void ArcBluetoothBridge::OnGattServerPrepareWrite(
     return;
   }
 
-  base::RepeatingClosure repeating_sucess_callback =
-      base::AdaptCallbackForRepeating(std::move(success_callback));
-  base::RepeatingClosure repeating_error_callback =
-      base::AdaptCallbackForRepeating(std::move(error_callback));
-  if (!success)
-    repeating_sucess_callback = repeating_error_callback;
+  if (!success) {
+    auto split_callback = base::SplitOnceCallback(std::move(error_callback));
+    success_callback = std::move(split_callback.first);
+    error_callback = std::move(split_callback.second);
+  }
   bluetooth_instance->RequestGattExecuteWrite(
       std::move(addr), success,
-      base::BindOnce(&OnGattServerWrite, repeating_sucess_callback,
-                     repeating_error_callback));
+      base::BindOnce(&OnGattServerWrite, std::move(success_callback),
+                     std::move(error_callback)));
 }
 
 template <class LocalGattAttribute>
@@ -1124,10 +1123,10 @@ void ArcBluetoothBridge::SetDiscoverable(bool discoverable, uint32_t timeout) {
 
   bluetooth_adapter_->SetDiscoverable(
       discoverable,
-      base::Bind(&ArcBluetoothBridge::OnSetDiscoverable,
-                 weak_factory_.GetWeakPtr(), discoverable, true, timeout),
-      base::Bind(&ArcBluetoothBridge::OnSetDiscoverable,
-                 weak_factory_.GetWeakPtr(), discoverable, false, timeout));
+      base::BindOnce(&ArcBluetoothBridge::OnSetDiscoverable,
+                     weak_factory_.GetWeakPtr(), discoverable, true, timeout),
+      base::BindOnce(&ArcBluetoothBridge::OnSetDiscoverable,
+                     weak_factory_.GetWeakPtr(), discoverable, false, timeout));
 }
 
 void ArcBluetoothBridge::OnSetAdapterProperty(
@@ -1160,12 +1159,12 @@ void ArcBluetoothBridge::SetAdapterProperty(
     auto property_clone = property.Clone();
     bluetooth_adapter_->SetName(
         property->get_bdname(),
-        base::Bind(&ArcBluetoothBridge::OnSetAdapterProperty,
-                   weak_factory_.GetWeakPtr(), mojom::BluetoothStatus::SUCCESS,
-                   base::Passed(&property)),
-        base::Bind(&ArcBluetoothBridge::OnSetAdapterProperty,
-                   weak_factory_.GetWeakPtr(), mojom::BluetoothStatus::FAIL,
-                   base::Passed(&property_clone)));
+        base::BindOnce(&ArcBluetoothBridge::OnSetAdapterProperty,
+                       weak_factory_.GetWeakPtr(),
+                       mojom::BluetoothStatus::SUCCESS, std::move(property)),
+        base::BindOnce(&ArcBluetoothBridge::OnSetAdapterProperty,
+                       weak_factory_.GetWeakPtr(), mojom::BluetoothStatus::FAIL,
+                       std::move(property_clone)));
   } else if (property->is_adapter_scan_mode()) {
     // Only set the BT scan mode to discoverable if requested and Android has
     // set a discovery timeout previously.
@@ -1207,10 +1206,10 @@ void ArcBluetoothBridge::StartDiscoveryImpl() {
   }
 
   bluetooth_adapter_->StartDiscoverySession(
-      base::Bind(&ArcBluetoothBridge::OnDiscoveryStarted,
-                 weak_factory_.GetWeakPtr()),
-      base::Bind(&ArcBluetoothBridge::OnDiscoveryError,
-                 weak_factory_.GetWeakPtr()));
+      base::BindOnce(&ArcBluetoothBridge::OnDiscoveryStarted,
+                     weak_factory_.GetWeakPtr()),
+      base::BindOnce(&ArcBluetoothBridge::OnDiscoveryError,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void ArcBluetoothBridge::CancelDiscovery() {
@@ -1238,10 +1237,10 @@ void ArcBluetoothBridge::StartLEScanImpl() {
   bluetooth_adapter_->StartDiscoverySessionWithFilter(
       std::make_unique<BluetoothDiscoveryFilter>(
           device::BLUETOOTH_TRANSPORT_LE),
-      base::Bind(&ArcBluetoothBridge::OnLEScanStarted,
-                 weak_factory_.GetWeakPtr()),
-      base::Bind(&ArcBluetoothBridge::OnLEScanError,
-                 weak_factory_.GetWeakPtr()));
+      base::BindOnce(&ArcBluetoothBridge::OnLEScanStarted,
+                     weak_factory_.GetWeakPtr()),
+      base::BindOnce(&ArcBluetoothBridge::OnLEScanError,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void ArcBluetoothBridge::CancelDiscoveryImpl() {
@@ -1373,9 +1372,10 @@ void ArcBluetoothBridge::RemoveBond(mojom::BluetoothAddressPtr addr) {
 
   // If unpairing finished successfully, DevicePairedChanged will notify Android
   // on paired state change event, so DoNothing is passed as a success callback.
-  device->Forget(base::DoNothing(),
-                 base::Bind(&ArcBluetoothBridge::OnForgetError,
-                            weak_factory_.GetWeakPtr(), base::Passed(&addr)));
+  device->Forget(
+      base::DoNothing(),
+      base::BindOnce(&ArcBluetoothBridge::OnForgetError,
+                     weak_factory_.GetWeakPtr(), base::Passed(&addr)));
 }
 
 void ArcBluetoothBridge::CancelBond(mojom::BluetoothAddressPtr addr) {
@@ -1690,13 +1690,10 @@ void ArcBluetoothBridge::ReadGattCharacteristic(
   DCHECK(characteristic);
   DCHECK(characteristic->GetPermissions() & kGattReadPermission);
 
-  // TODO(crbug.com/730593): Remove AdaptCallbackForRepeating() by updating
-  // the callee interface.
-  auto repeating_callback =
-      base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   characteristic->ReadRemoteCharacteristic(
-      base::BindOnce(&OnGattReadDone, repeating_callback),
-      base::BindOnce(&OnGattReadError, repeating_callback));
+      base::BindOnce(&OnGattReadDone, std::move(split_callback.first)),
+      base::BindOnce(&OnGattReadError, std::move(split_callback.second)));
 }
 
 void ArcBluetoothBridge::WriteGattCharacteristic(
@@ -1711,18 +1708,19 @@ void ArcBluetoothBridge::WriteGattCharacteristic(
   DCHECK(characteristic);
   DCHECK(characteristic->GetPermissions() & kGattWritePermission);
 
-  // TODO(crbug.com/730593): Remove AdaptCallbackForRepeating() by updating
-  // the callee interface.
-  auto repeating_callback =
-      base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   if (prepare) {
     characteristic->PrepareWriteRemoteCharacteristic(
-        value->value, base::BindOnce(&OnGattOperationDone, repeating_callback),
-        base::BindOnce(&OnGattOperationError, repeating_callback));
+        value->value,
+        base::BindOnce(&OnGattOperationDone, std::move(split_callback.first)),
+        base::BindOnce(&OnGattOperationError,
+                       std::move(split_callback.second)));
   } else {
     characteristic->DeprecatedWriteRemoteCharacteristic(
-        value->value, base::BindOnce(&OnGattOperationDone, repeating_callback),
-        base::BindOnce(&OnGattOperationError, repeating_callback));
+        value->value,
+        base::BindOnce(&OnGattOperationDone, std::move(split_callback.first)),
+        base::BindOnce(&OnGattOperationError,
+                       std::move(split_callback.second)));
   }
 }
 
@@ -1738,13 +1736,10 @@ void ArcBluetoothBridge::ReadGattDescriptor(
   DCHECK(descriptor);
   DCHECK(descriptor->GetPermissions() & kGattReadPermission);
 
-  // TODO(crbug.com/730593): Remove AdaptCallbackForRepeating() by updating
-  // the callee interface.
-  auto repeating_callback =
-      base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   descriptor->ReadRemoteDescriptor(
-      base::BindOnce(&OnGattReadDone, repeating_callback),
-      base::BindOnce(&OnGattReadError, repeating_callback));
+      base::BindOnce(&OnGattReadDone, std::move(split_callback.first)),
+      base::BindOnce(&OnGattReadError, std::move(split_callback.second)));
 }
 
 void ArcBluetoothBridge::WriteGattDescriptor(
@@ -1760,20 +1755,19 @@ void ArcBluetoothBridge::WriteGattDescriptor(
   DCHECK(descriptor);
   DCHECK(descriptor->GetPermissions() & kGattWritePermission);
 
-  // TODO(crbug.com/730593): Remove AdaptCallbackForRepeating() by updating
-  // the callee interface.
-  auto repeating_callback =
-      base::AdaptCallbackForRepeating(std::move(callback));
   if (value->value.empty()) {
-    repeating_callback.Run(mojom::BluetoothGattStatus::GATT_FAILURE);
+    std::move(callback).Run(mojom::BluetoothGattStatus::GATT_FAILURE);
     return;
   }
 
   if (descriptor->GetUUID() !=
       BluetoothGattDescriptor::ClientCharacteristicConfigurationUuid()) {
+    auto split_callback = base::SplitOnceCallback(std::move(callback));
     descriptor->WriteRemoteDescriptor(
-        value->value, base::BindOnce(&OnGattOperationDone, repeating_callback),
-        base::BindOnce(&OnGattOperationError, repeating_callback));
+        value->value,
+        base::BindOnce(&OnGattOperationDone, std::move(split_callback.first)),
+        base::BindOnce(&OnGattOperationError,
+                       std::move(split_callback.second)));
     return;
   }
 
@@ -1782,7 +1776,7 @@ void ArcBluetoothBridge::WriteGattDescriptor(
   std::string char_id_str = characteristic->GetIdentifier();
   auto it = notification_session_.find(char_id_str);
   if (it == notification_session_.end()) {
-    repeating_callback.Run(mojom::BluetoothGattStatus::GATT_FAILURE);
+    std::move(callback).Run(mojom::BluetoothGattStatus::GATT_FAILURE);
     return;
   }
 
@@ -1790,26 +1784,32 @@ void ArcBluetoothBridge::WriteGattDescriptor(
   it->second.reset();
   switch (value->value[0]) {
     case DISABLE_NOTIFICATION_VALUE:
-      repeating_callback.Run(mojom::BluetoothGattStatus::GATT_SUCCESS);
+      std::move(callback).Run(mojom::BluetoothGattStatus::GATT_SUCCESS);
       return;
-    case ENABLE_NOTIFICATION_VALUE:
+    case ENABLE_NOTIFICATION_VALUE: {
+      auto split_callback = base::SplitOnceCallback(std::move(callback));
       characteristic->StartNotifySession(
           device::BluetoothGattCharacteristic::NotificationType::kNotification,
           base::BindOnce(&ArcBluetoothBridge::OnGattNotifyStartDone,
-                         weak_factory_.GetWeakPtr(), repeating_callback,
-                         char_id_str),
-          base::BindOnce(&OnGattOperationError, repeating_callback));
+                         weak_factory_.GetWeakPtr(),
+                         std::move(split_callback.first), char_id_str),
+          base::BindOnce(&OnGattOperationError,
+                         std::move(split_callback.second)));
       return;
-    case ENABLE_INDICATION_VALUE:
+    }
+    case ENABLE_INDICATION_VALUE: {
+      auto split_callback = base::SplitOnceCallback(std::move(callback));
       characteristic->StartNotifySession(
           device::BluetoothGattCharacteristic::NotificationType::kIndication,
           base::BindOnce(&ArcBluetoothBridge::OnGattNotifyStartDone,
-                         weak_factory_.GetWeakPtr(), repeating_callback,
-                         char_id_str),
-          base::BindOnce(&OnGattOperationError, repeating_callback));
+                         weak_factory_.GetWeakPtr(),
+                         std::move(split_callback.first), char_id_str),
+          base::BindOnce(&OnGattOperationError,
+                         std::move(split_callback.first)));
       return;
+    }
     default:
-      repeating_callback.Run(mojom::BluetoothGattStatus::GATT_FAILURE);
+      std::move(callback).Run(mojom::BluetoothGattStatus::GATT_FAILURE);
   }
 }
 
@@ -1824,16 +1824,17 @@ void ArcBluetoothBridge::ExecuteWrite(mojom::BluetoothAddressPtr remote_addr,
     return;
   }
 
-  // TODO(crbug.com/730593): Remove AdaptCallbackForRepeating() by updating
-  // the callee interface.
-  auto repeating_callback =
-      base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   if (execute) {
-    device->ExecuteWrite(base::Bind(&OnGattOperationDone, repeating_callback),
-                         base::Bind(&OnGattOperationError, repeating_callback));
+    device->ExecuteWrite(
+        base::BindOnce(&OnGattOperationDone, std::move(split_callback.first)),
+        base::BindOnce(&OnGattOperationError,
+                       std::move(split_callback.second)));
   } else {
-    device->AbortWrite(base::Bind(&OnGattOperationDone, repeating_callback),
-                       base::Bind(&OnGattOperationError, repeating_callback));
+    device->AbortWrite(
+        base::BindOnce(&OnGattOperationDone, std::move(split_callback.first)),
+        base::BindOnce(&OnGattOperationError,
+                       std::move(split_callback.second)));
   }
 }
 
@@ -1908,8 +1909,8 @@ void ArcBluetoothBridge::ReadRemoteRssi(mojom::BluetoothAddressPtr remote_addr,
   }
 
   if (device->IsConnected()) {
-    device->GetConnectionInfo(base::AdaptCallbackForRepeating(
-        base::BindOnce(&SendRssiOnGetConnectionInfoDone, std::move(callback))));
+    device->GetConnectionInfo(
+        base::BindOnce(&SendRssiOnGetConnectionInfoDone, std::move(callback)));
   } else {
     std::move(callback).Run(
         device->GetInquiryRSSI().value_or(mojom::kUnknownPower));
@@ -2048,12 +2049,11 @@ void ArcBluetoothBridge::StartService(int32_t service_handle,
   BluetoothLocalGattService* service =
       bluetooth_adapter_->GetGattService(gatt_identifier_[service_handle]);
   DCHECK(service);
-  // TODO(crbug.com/730593): Remove AdaptCallbackForRepeating() by updating
-  // the callee interface.
-  auto repeating_callback =
-      base::AdaptCallbackForRepeating(std::move(callback));
-  service->Register(base::Bind(&OnGattOperationDone, repeating_callback),
-                    base::BindOnce(&OnGattOperationError, repeating_callback));
+
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
+  service->Register(
+      base::BindOnce(&OnGattOperationDone, std::move(split_callback.first)),
+      base::BindOnce(&OnGattOperationError, std::move(split_callback.second)));
 }
 
 void ArcBluetoothBridge::StopService(int32_t service_handle,
@@ -2063,13 +2063,11 @@ void ArcBluetoothBridge::StopService(int32_t service_handle,
   BluetoothLocalGattService* service =
       bluetooth_adapter_->GetGattService(gatt_identifier_[service_handle]);
   DCHECK(service);
-  // TODO(crbug.com/730593): Remove AdaptCallbackForRepeating() by updating
-  // the callee interface.
-  auto repeating_callback =
-      base::AdaptCallbackForRepeating(std::move(callback));
+
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   service->Unregister(
-      base::Bind(&OnGattOperationDone, repeating_callback),
-      base::BindOnce(&OnGattOperationError, repeating_callback));
+      base::BindOnce(&OnGattOperationDone, std::move(split_callback.first)),
+      base::BindOnce(&OnGattOperationError, std::move(split_callback.second)));
 }
 
 void ArcBluetoothBridge::DeleteService(int32_t service_handle,
@@ -2140,12 +2138,12 @@ void ArcBluetoothBridge::GetSdpRecords(mojom::BluetoothAddressPtr remote_addr,
   mojom::BluetoothAddressPtr remote_addr_clone = remote_addr.Clone();
 
   device_bluez->GetServiceRecords(
-      base::Bind(&ArcBluetoothBridge::OnGetServiceRecordsDone,
-                 weak_factory_.GetWeakPtr(), base::Passed(&remote_addr),
-                 target_uuid),
-      base::Bind(&ArcBluetoothBridge::OnGetServiceRecordsError,
-                 weak_factory_.GetWeakPtr(), base::Passed(&remote_addr_clone),
-                 target_uuid));
+      base::BindOnce(&ArcBluetoothBridge::OnGetServiceRecordsDone,
+                     weak_factory_.GetWeakPtr(), std::move(remote_addr),
+                     target_uuid),
+      base::BindOnce(&ArcBluetoothBridge::OnGetServiceRecordsError,
+                     weak_factory_.GetWeakPtr(), std::move(remote_addr_clone),
+                     target_uuid));
 }
 
 void ArcBluetoothBridge::CreateSdpRecord(
@@ -2163,25 +2161,24 @@ void ArcBluetoothBridge::CreateSdpRecord(
     return;
   }
 
-  // TODO(crbug.com/730593): Remove AdaptCallbackForRepeating() by updating
-  // the callee interface.
-  auto repeating_callback =
-      base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   bluetooth_adapter_->CreateServiceRecord(
-      record, base::Bind(&OnCreateServiceRecordDone, repeating_callback),
-      base::Bind(&OnCreateServiceRecordError, repeating_callback));
+      record,
+      base::BindOnce(&OnCreateServiceRecordDone,
+                     std::move(split_callback.first)),
+      base::BindOnce(&OnCreateServiceRecordError,
+                     std::move(split_callback.second)));
 }
 
 void ArcBluetoothBridge::RemoveSdpRecord(uint32_t service_handle,
                                          RemoveSdpRecordCallback callback) {
-  // TODO(crbug.com/730593): Remove AdaptCallbackForRepeating() by updating
-  // the callee interface.
-  auto repeating_callback =
-      base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   bluetooth_adapter_->RemoveServiceRecord(
       service_handle,
-      base::Bind(&OnRemoveServiceRecordDone, repeating_callback),
-      base::Bind(&OnRemoveServiceRecordError, repeating_callback));
+      base::BindOnce(&OnRemoveServiceRecordDone,
+                     std::move(split_callback.first)),
+      base::BindOnce(&OnRemoveServiceRecordError,
+                     std::move(split_callback.second)));
 }
 
 bool ArcBluetoothBridge::GetAdvertisementHandle(int32_t* adv_handle) {
@@ -2239,18 +2236,15 @@ void ArcBluetoothBridge::EnableAdvertisementImpl(
     EnableAdvertisementCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  // TODO(crbug.com/730593): Remove AdaptCallbackForRepeating() by
-  // updating the callee interface.
-  auto repeating_callback =
-      base::AdaptCallbackForRepeating(std::move(callback));
-  base::Closure done_callback =
-      base::Bind(&ArcBluetoothBridge::OnReadyToRegisterAdvertisement,
-                 weak_factory_.GetWeakPtr(), repeating_callback, adv_handle,
-                 base::Passed(std::move(advertisement)));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
+  base::OnceClosure done_callback = base::BindOnce(
+      &ArcBluetoothBridge::OnReadyToRegisterAdvertisement,
+      weak_factory_.GetWeakPtr(), std::move(split_callback.first), adv_handle,
+      std::move(advertisement));
   base::OnceCallback<void(BluetoothAdvertisement::ErrorCode)> error_callback =
       base::BindOnce(&ArcBluetoothBridge::OnRegisterAdvertisementError,
-                     weak_factory_.GetWeakPtr(), repeating_callback,
-                     adv_handle);
+                     weak_factory_.GetWeakPtr(),
+                     std::move(split_callback.second), adv_handle);
 
   auto it = advertisements_.find(adv_handle);
   if (it == advertisements_.end()) {
@@ -2263,7 +2257,7 @@ void ArcBluetoothBridge::EnableAdvertisementImpl(
     std::move(done_callback).Run();
     return;
   }
-  it->second->Unregister(done_callback, std::move(error_callback));
+  it->second->Unregister(std::move(done_callback), std::move(error_callback));
 }
 
 void ArcBluetoothBridge::DisableAdvertisement(
@@ -2279,17 +2273,14 @@ void ArcBluetoothBridge::DisableAdvertisementImpl(
     EnableAdvertisementCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  // TODO(crbug.com/730593): Remove AdaptCallbackForRepeating() by
-  // updating the callee interface.
-  auto repeating_callback =
-      base::AdaptCallbackForRepeating(std::move(callback));
-  base::Closure done_callback =
-      base::Bind(&ArcBluetoothBridge::OnUnregisterAdvertisementDone,
-                 weak_factory_.GetWeakPtr(), repeating_callback, adv_handle);
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
+  base::OnceClosure done_callback = base::BindOnce(
+      &ArcBluetoothBridge::OnUnregisterAdvertisementDone,
+      weak_factory_.GetWeakPtr(), std::move(split_callback.first), adv_handle);
   base::OnceCallback<void(BluetoothAdvertisement::ErrorCode)> error_callback =
       base::BindOnce(&ArcBluetoothBridge::OnUnregisterAdvertisementError,
-                     weak_factory_.GetWeakPtr(), repeating_callback,
-                     adv_handle);
+                     weak_factory_.GetWeakPtr(),
+                     std::move(split_callback.second), adv_handle);
 
   auto it = advertisements_.find(adv_handle);
   if (it == advertisements_.end()) {
@@ -2299,10 +2290,10 @@ void ArcBluetoothBridge::DisableAdvertisementImpl(
     return;
   }
   if (it->second == nullptr) {
-    done_callback.Run();
+    std::move(done_callback).Run();
     return;
   }
-  it->second->Unregister(done_callback, std::move(error_callback));
+  it->second->Unregister(std::move(done_callback), std::move(error_callback));
 }
 
 void ArcBluetoothBridge::ReleaseAdvertisementHandle(
@@ -2330,15 +2321,14 @@ void ArcBluetoothBridge::ReleaseAdvertisementHandleImpl(
     return;
   }
 
-  // TODO(crbug.com/730593): Remove AdaptCallbackForRepeating() by
-  // updating the callee interface.
-  auto repeating_callback =
-      base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   advertisements_[adv_handle]->Unregister(
-      base::Bind(&ArcBluetoothBridge::OnReleaseAdvertisementHandleDone,
-                 weak_factory_.GetWeakPtr(), repeating_callback, adv_handle),
-      base::Bind(&ArcBluetoothBridge::OnReleaseAdvertisementHandleError,
-                 weak_factory_.GetWeakPtr(), repeating_callback, adv_handle));
+      base::BindOnce(&ArcBluetoothBridge::OnReleaseAdvertisementHandleDone,
+                     weak_factory_.GetWeakPtr(),
+                     std::move(split_callback.first), adv_handle),
+      base::BindOnce(&ArcBluetoothBridge::OnReleaseAdvertisementHandleError,
+                     weak_factory_.GetWeakPtr(),
+                     std::move(split_callback.second), adv_handle));
 }
 
 void ArcBluetoothBridge::OnReadyToRegisterAdvertisement(
@@ -2346,16 +2336,16 @@ void ArcBluetoothBridge::OnReadyToRegisterAdvertisement(
     int32_t adv_handle,
     std::unique_ptr<device::BluetoothAdvertisement::Data> data) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  // TODO(crbug.com/730593): Remove AdaptCallbackForRepeating() by updating
-  // the callee interface.
-  auto repeating_callback =
-      base::AdaptCallbackForRepeating(std::move(callback));
+
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   bluetooth_adapter_->RegisterAdvertisement(
       std::move(data),
-      base::Bind(&ArcBluetoothBridge::OnRegisterAdvertisementDone,
-                 weak_factory_.GetWeakPtr(), repeating_callback, adv_handle),
-      base::Bind(&ArcBluetoothBridge::OnRegisterAdvertisementError,
-                 weak_factory_.GetWeakPtr(), repeating_callback, adv_handle));
+      base::BindOnce(&ArcBluetoothBridge::OnRegisterAdvertisementDone,
+                     weak_factory_.GetWeakPtr(),
+                     std::move(split_callback.first), adv_handle),
+      base::BindOnce(&ArcBluetoothBridge::OnRegisterAdvertisementError,
+                     weak_factory_.GetWeakPtr(),
+                     std::move(split_callback.second), adv_handle));
 }
 
 void ArcBluetoothBridge::OnRegisterAdvertisementDone(
@@ -2577,19 +2567,18 @@ void ArcBluetoothBridge::EnqueueRemotePowerChange(
   remote_power_changes_.push(powered);
 
   bool turn_on = (powered == AdapterPowerState::TURN_ON);
-  // TODO(crbug.com/730593): Remove AdaptCallbackForRepeating() by updating
-  // the callee interface.
-  auto repeating_callback =
-      base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   BLUETOOTH_LOG(EVENT) << "ARC bluetooth set power: " << turn_on;
   bluetooth_adapter_->SetPowered(
       turn_on,
-      base::Bind(turn_on ? &ArcBluetoothBridge::OnPoweredOn
-                         : &ArcBluetoothBridge::OnPoweredOff,
-                 weak_factory_.GetWeakPtr(), repeating_callback,
-                 true /* save_user_pref */),
-      base::Bind(&ArcBluetoothBridge::OnPoweredError,
-                 weak_factory_.GetWeakPtr(), repeating_callback));
+      base::BindOnce(turn_on ? &ArcBluetoothBridge::OnPoweredOn
+                             : &ArcBluetoothBridge::OnPoweredOff,
+                     weak_factory_.GetWeakPtr(),
+                     std::move(split_callback.first),
+                     /*save_user_pref=*/true),
+      base::BindOnce(&ArcBluetoothBridge::OnPoweredError,
+                     weak_factory_.GetWeakPtr(),
+                     std::move(split_callback.second)));
 }
 
 void ArcBluetoothBridge::DequeueRemotePowerChange(

@@ -91,31 +91,32 @@ void ArcDocumentsProviderFileStreamReader::RunPendingRead(
     net::CompletionOnceCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(content_url_resolved_);
-  // Create |copyable_callback| which is copyable, though it can still only
-  // called at most once.  This is safe, because Read() is guaranteed not to
-  // call |callback| if it returns synchronously.
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+  // Create two copies of |callback| though it can still only called at most
+  // once. This is safe because Read() is guaranteed not to call |callback| if
+  // it returns synchronously.
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   int result = underlying_reader_
                    ? underlying_reader_->Read(buffer.get(), buffer_length,
-                                              copyable_callback)
+                                              std::move(split_callback.first))
                    : net::ERR_FILE_NOT_FOUND;
   if (result != net::ERR_IO_PENDING)
-    copyable_callback.Run(result);
+    std::move(split_callback.second).Run(result);
 }
 
 void ArcDocumentsProviderFileStreamReader::RunPendingGetLength(
     net::Int64CompletionOnceCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(content_url_resolved_);
-  // Create |copyable_callback| which is copyable, though it can still only
-  // called at most once.  This is safe, because GetLength() is guaranteed not
-  // to call |callback| if it returns synchronously.
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
-  int64_t result = underlying_reader_
-                       ? underlying_reader_->GetLength(copyable_callback)
-                       : net::ERR_FILE_NOT_FOUND;
+  // Create two copies of |callback| though it can still only called at most
+  // once. This is safe because GetLength() is guaranteed not to call |callback|
+  // if it returns synchronously.
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
+  int64_t result =
+      underlying_reader_
+          ? underlying_reader_->GetLength(std::move(split_callback.first))
+          : net::ERR_FILE_NOT_FOUND;
   if (result != net::ERR_IO_PENDING)
-    copyable_callback.Run(result);
+    std::move(split_callback.second).Run(result);
 }
 
 }  // namespace arc

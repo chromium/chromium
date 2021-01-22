@@ -55,8 +55,8 @@ void ArcSnapshotRebootNotificationImpl::Show() {
       base::string16() /* display_source */, GURL(), notifier_id,
       optional_fields,
       new message_center::HandleNotificationClickDelegate(
-          base::Bind(&ArcSnapshotRebootNotificationImpl::HandleClick,
-                     weak_ptr_factory_.GetWeakPtr())),
+          base::BindRepeating(&ArcSnapshotRebootNotificationImpl::HandleClick,
+                              weak_ptr_factory_.GetWeakPtr())),
       vector_icons::kBusinessIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
   SystemNotificationHelper::GetInstance()->Display(*notification);

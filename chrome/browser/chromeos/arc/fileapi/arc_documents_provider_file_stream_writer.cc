@@ -110,45 +110,46 @@ void ArcDocumentsProviderFileStreamWriter::RunPendingWrite(
     net::CompletionOnceCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(content_url_resolved_);
-  // Create |copyable_callback| which is copyable, though it can still only
-  // called at most once.  This is safe, because Write() is guaranteed not to
-  // call |callback| if it returns synchronously.
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+  // Create two copies of |callback| though it can still only called at most
+  // once. This is safe because Write() is guaranteed not to call |callback| if
+  // it returns synchronously.
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   int result = underlying_writer_
                    ? underlying_writer_->Write(buffer.get(), buffer_length,
-                                               copyable_callback)
+                                               std::move(split_callback.first))
                    : net::ERR_FILE_NOT_FOUND;
   if (result != net::ERR_IO_PENDING)
-    copyable_callback.Run(result);
+    std::move(split_callback.second).Run(result);
 }
 
 void ArcDocumentsProviderFileStreamWriter::RunPendingCancel(
     net::CompletionOnceCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(content_url_resolved_);
-  // Create |copyable_callback| which is copyable, though it can still only
-  // called at most once.  This is safe, because Cancel() is guaranteed not to
-  // call |callback| if it returns synchronously.
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+  // Create two copies of |callback| though it can still only called at most
+  // once. This is safe because Cancel() is guaranteed not to call |callback| if
+  // it returns synchronously.
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   int result = underlying_writer_
-                   ? underlying_writer_->Cancel(copyable_callback)
+                   ? underlying_writer_->Cancel(std::move(split_callback.first))
                    : net::ERR_FILE_NOT_FOUND;
   if (result != net::ERR_IO_PENDING)
-    copyable_callback.Run(result);
+    std::move(split_callback.second).Run(result);
 }
 
 void ArcDocumentsProviderFileStreamWriter::RunPendingFlush(
     net::CompletionOnceCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(content_url_resolved_);
-  // Create |copyable_callback| which is copyable, though it can still only
-  // called at most once.  This is safe, because Flush() is guaranteed not to
-  // call |callback| if it returns synchronously.
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
-  int result = underlying_writer_ ? underlying_writer_->Flush(copyable_callback)
-                                  : net::ERR_FILE_NOT_FOUND;
+  // Create two copies of |callback| though it can still only called at most
+  // once. This is safe because Flush() is guaranteed not to call |callback| if
+  // it returns synchronously.
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
+  int result = underlying_writer_
+                   ? underlying_writer_->Flush(std::move(split_callback.first))
+                   : net::ERR_FILE_NOT_FOUND;
   if (result != net::ERR_IO_PENDING)
-    copyable_callback.Run(result);
+    std::move(split_callback.second).Run(result);
 }
 
 }  // namespace arc

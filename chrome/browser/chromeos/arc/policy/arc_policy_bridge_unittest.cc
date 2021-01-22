@@ -173,13 +173,13 @@ void ExpectString(std::unique_ptr<CheckedBoolean> was_run,
   was_run->set_value(true);
 }
 
-void ExpectStringWithClosure(base::Closure quit_closure,
+void ExpectStringWithClosure(base::OnceClosure quit_closure,
                              std::unique_ptr<CheckedBoolean> was_run,
                              const std::string& expected,
                              const std::string& received) {
   EXPECT_EQ(expected, received);
   was_run->set_value(true);
-  quit_closure.Run();
+  std::move(quit_closure).Run();
 }
 
 arc::ArcPolicyBridge::GetPoliciesCallback PolicyStringCallback(
@@ -189,10 +189,10 @@ arc::ArcPolicyBridge::GetPoliciesCallback PolicyStringCallback(
 }
 
 arc::ArcPolicyBridge::ReportComplianceCallback PolicyComplianceCallback(
-    base::Closure quit_closure,
+    base::OnceClosure quit_closure,
     const std::string& expected) {
   auto was_run = std::make_unique<CheckedBoolean>();
-  return base::BindOnce(&ExpectStringWithClosure, quit_closure,
+  return base::BindOnce(&ExpectStringWithClosure, std::move(quit_closure),
                         std::move(was_run), expected);
 }
 

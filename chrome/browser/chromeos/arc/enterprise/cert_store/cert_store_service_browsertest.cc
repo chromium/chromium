@@ -351,17 +351,17 @@ class CertStoreServiceTest : public MixinBasedInProcessBrowserTest {
   void OnKeyRegisteredForCorporateUsage(
       std::unique_ptr<chromeos::platform_keys::ExtensionKeyPermissionsService>
           extension_key_permissions_service,
-      const base::Closure& done_callback,
+      base::OnceClosure done_callback,
       chromeos::platform_keys::Status status) {
     ASSERT_EQ(status, chromeos::platform_keys::Status::kSuccess);
-    done_callback.Run();
+    std::move(done_callback).Run();
   }
 
   // Register only client_cert1_ for corporate usage to test that
   // client_cert2_ is not allowed.
   void GotPermissionsForExtension(
       CERTCertificate* cert,
-      const base::Closure& done_callback,
+      base::OnceClosure done_callback,
       std::unique_ptr<chromeos::platform_keys::ExtensionKeyPermissionsService>
           extension_key_permissions_service) {
     auto* extension_key_permissions_service_unowned =
@@ -374,11 +374,11 @@ class CertStoreServiceTest : public MixinBasedInProcessBrowserTest {
         base::BindOnce(&CertStoreServiceTest::OnKeyRegisteredForCorporateUsage,
                        base::Unretained(this),
                        std::move(extension_key_permissions_service),
-                       done_callback));
+                       std::move(done_callback)));
   }
 
   void SetUpTestClientCerts(const std::vector<std::string>& key_file_names,
-                            const base::Closure& done_callback,
+                            base::OnceClosure done_callback,
                             net::NSSCertDatabase* cert_db) {
     for (const auto& file_name : key_file_names) {
       base::ScopedAllowBlockingForTesting allow_io;
@@ -391,31 +391,31 @@ class CertStoreServiceTest : public MixinBasedInProcessBrowserTest {
               net::X509Certificate::FORMAT_AUTO);
       EXPECT_EQ(1U, certs.size());
       if (certs.size() != 1U) {
-        done_callback.Run();
+        std::move(done_callback).Run();
         return;
       }
 
       client_certs_.emplace_back(
           net::x509_util::DupCERTCertificate(certs[0].get()));
     }
-    done_callback.Run();
+    std::move(done_callback).Run();
   }
 
-  void ImportTestClientCerts(const base::Closure& done_callback,
+  void ImportTestClientCerts(base::OnceClosure done_callback,
                              net::NSSCertDatabase* cert_db) {
     for (const auto& cert : client_certs_) {
       // Import user certificate properly how it's done in PlatfromKeys.
       cert_db->ImportUserCert(cert.get());
     }
-    done_callback.Run();
+    std::move(done_callback).Run();
   }
 
   void DeleteCertAndKey(CERTCertificate* cert,
-                        const base::Closure& done_callback,
+                        base::OnceClosure done_callback,
                         net::NSSCertDatabase* cert_db) {
     base::ScopedAllowBlockingForTesting allow_io;
     EXPECT_TRUE(cert_db->DeleteCertAndKey(cert));
-    done_callback.Run();
+    std::move(done_callback).Run();
   }
 
   std::unique_ptr<policy::UserPolicyTestHelper> policy_helper_;
