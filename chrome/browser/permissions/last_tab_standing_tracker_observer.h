@@ -13,6 +13,12 @@ class LastTabStandingTrackerObserver : public base::CheckedObserver {
   // Event fired when the last tab in a given Profile whose top-level document
   // is from |origin| is closed or navigated away.
   virtual void OnLastPageFromOriginClosed(const url::Origin&) = 0;
+
+  // Event fired to let the observers know that the BrowserContext is going to
+  // shut down.
+  // The observers don't need to take care of removing themselves as an
+  // observer.
+  virtual void OnShutdown() = 0;
 };
 
 #endif  // CHROME_BROWSER_PERMISSIONS_LAST_TAB_STANDING_TRACKER_OBSERVER_H_

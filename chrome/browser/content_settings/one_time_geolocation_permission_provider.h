@@ -15,6 +15,7 @@
 namespace content {
 class BrowserContext;
 }
+class LastTabStandingTracker;
 
 // Stores one-time per-origin geolocation permissions grants that expire as
 // soon as the last tab from an origin is closed but after one day at the
@@ -59,9 +60,11 @@ class OneTimeGeolocationPermissionProvider
   // LastTabStandingTrackerObserver:
   void OnLastPageFromOriginClosed(const url::Origin&) override;
 
+  void OnShutdown() override;
+
  private:
   PatternToGrantTimeMap grants_with_open_tabs_;
-  content::BrowserContext* browser_context_;
+  LastTabStandingTracker* last_tab_standing_tracker_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_CONTENT_SETTINGS_ONE_TIME_GEOLOCATION_PERMISSION_PROVIDER_H_
