@@ -1242,6 +1242,8 @@ static_library("browser") {
     "policy/messaging_layer/upload/upload_client.h",
     "policy/messaging_layer/util/backoff_settings.cc",
     "policy/messaging_layer/util/backoff_settings.h",
+    "policy/messaging_layer/util/report_queue_manual_test_context.cc",
+    "policy/messaging_layer/util/report_queue_manual_test_context.h",
     "policy/messaging_layer/util/shared_queue.h",
     "policy/messaging_layer/util/shared_vector.h",
     "policy/messaging_layer/util/status.cc",
