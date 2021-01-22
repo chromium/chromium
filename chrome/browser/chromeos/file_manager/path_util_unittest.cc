@@ -434,6 +434,9 @@ TEST_F(FileManagerPathUtilTest, ConvertBetweenFileSystemURLAndPathInsideVM) {
     EXPECT_TRUE(ConvertPathInsideVMToFileSystemURL(
         profile_.get(), base::FilePath(test.inside), vm_mount,
         /*map_crostini_home=*/false, &url));
+    EXPECT_TRUE(url.is_valid());
+    EXPECT_EQ("chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/",
+              url.origin().GetURL());
     EXPECT_EQ(test.mount_name, url.filesystem_id());
     EXPECT_EQ(test.mount_name + "/" + test.relative_path,
               url.virtual_path().value());
@@ -465,6 +468,9 @@ TEST_F(FileManagerPathUtilTest, ConvertBetweenFileSystemURLAndPathInsideVM) {
   EXPECT_TRUE(ConvertPathInsideVMToFileSystemURL(
       profile_.get(), base::FilePath("/home/testuser/path/in/crostini"),
       vm_mount, /*map_crostini_home=*/true, &url));
+  EXPECT_TRUE(url.is_valid());
+  EXPECT_EQ("chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/",
+            url.origin().GetURL());
   EXPECT_EQ("crostini_0123456789abcdef_termina_penguin/path/in/crostini",
             url.virtual_path().value());
   EXPECT_FALSE(ConvertPathInsideVMToFileSystemURL(

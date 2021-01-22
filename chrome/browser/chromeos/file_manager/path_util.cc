@@ -22,6 +22,7 @@
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
 #include "chrome/browser/chromeos/drive/drive_integration_service.h"
 #include "chrome/browser/chromeos/drive/file_system_util.h"
+#include "chrome/browser/chromeos/file_manager/app_id.h"
 #include "chrome/browser/chromeos/fileapi/external_file_url_util.h"
 #include "chrome/browser/chromeos/fileapi/file_system_backend.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
@@ -40,6 +41,7 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_thread.h"
+#include "extensions/common/extension.h"
 #include "net/base/escape.h"
 #include "net/base/filename_util.h"
 #include "storage/browser/file_system/external_mount_points.h"
@@ -479,7 +481,9 @@ bool ConvertPathInsideVMToFileSystemURL(
     if (container_info &&
         AppendRelativePath(container_info->homedir, inside, &relative_path)) {
       *file_system_url = mount_points->CreateExternalFileSystemURL(
-          url::Origin(), GetCrostiniMountPointName(profile), relative_path);
+          url::Origin::Create(extensions::Extension::GetBaseURLFromExtensionId(
+              file_manager::kFileManagerAppId)),
+          GetCrostiniMountPointName(profile), relative_path);
       return file_system_url->is_valid();
     }
   }
@@ -545,7 +549,9 @@ bool ConvertPathInsideVMToFileSystemURL(
   }
 
   *file_system_url = mount_points->CreateExternalFileSystemURL(
-      url::Origin(), mount_name, path);
+      url::Origin::Create(extensions::Extension::GetBaseURLFromExtensionId(
+          file_manager::kFileManagerAppId)),
+      mount_name, path);
   return file_system_url->is_valid();
 }
 
