@@ -23,6 +23,7 @@
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/writable_shared_memory_region.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/optional.h"
 #include "base/path_service.h"
@@ -720,6 +721,18 @@ class SessionManagerClientImpl : public SessionManagerClient {
     std::move(callback).Run(response);
   }
 
+  // Called when `StorePolicyEx()` finishes.
+  void OnStorePolicyEx(base::TimeTicks store_policy_ex_start_time,
+                       VoidDBusMethodCallback callback,
+                       dbus::Response* response) {
+    base::TimeTicks now = base::TimeTicks::Now();
+    DCHECK(!store_policy_ex_start_time.is_null());
+    base::TimeDelta delta = now - store_policy_ex_start_time;
+    base::UmaHistogramMediumTimes("Enterprise.StorePolicy.Duration", delta);
+
+    OnVoidMethod(std::move(callback), response);
+  }
+
   // Non-blocking call to Session Manager to retrieve policy.
   void CallRetrievePolicy(const login_manager::PolicyDescriptor& descriptor,
                           RetrievePolicyCallback callback) {
@@ -786,12 +799,15 @@ class SessionManagerClientImpl : public SessionManagerClient {
         policy_blob.size());
     // TODO(crbug/1155533) On grunt devices, initially storing device policy may
     // take about 45s, which is longer than the default timeout for dbus calls.
-    // We need to investiage why this is happening. In the meantime, increase
+    // We need to investigate why this is happening. In the meantime, increase
     // the timeout to make sure enrollment does not fail.
+    // Record the timing to find a reasonable timeout value.
+    base::TimeTicks store_policy_ex_start_time = base::TimeTicks::Now();
     session_manager_proxy_->CallMethod(
         &method_call, /*timeout_ms=*/90000,
-        base::BindOnce(&SessionManagerClientImpl::OnVoidMethod,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+        base::BindOnce(&SessionManagerClientImpl::OnStorePolicyEx,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       store_policy_ex_start_time, std::move(callback)));
   }
 
   // Called when kSessionManagerRetrieveActiveSessions method is complete.
