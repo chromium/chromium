@@ -2353,6 +2353,150 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   }
 }
 
+// Similar to FromBackgroundPage_ActiveTabPermission_SplitMode, but goes through
+// steps that (at one point) forced additional, persistent leaking of incognito
+// permission into the regular profile's background page.  See also
+// https://crbug.com/1167262.
+IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
+                       FromBackgroundPage_ActiveTabPermission_SplitMode2) {
+  TestExtensionDir extension_dir;
+  constexpr char kManifest[] = R"(
+      {
+        "name": "ActiveTab permissions vs CORS from extension background page",
+        "version": "1.0",
+        "manifest_version": 2,
+        "browser_action": {
+          "default_title": "activeTab"
+        },
+        "incognito": "split",
+        "permissions": ["activeTab"],
+        "background": {
+          "scripts": ["bg_script.js"]
+        }
+      } )";
+  extension_dir.WriteManifest(kManifest);
+  extension_dir.WriteFile(FILE_PATH_LITERAL("bg_script.js"), "");
+  const Extension* extension =
+      LoadExtensionIncognito(extension_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  // Set up a test scenario:
+  // - regular window: top-level frame: kRegularHost
+  // - incognito window: top-level frame: kIncognitoHost
+  ASSERT_TRUE(embedded_test_server()->Start());
+  constexpr char kIncognitoHost[] = "active-tab-in-incognito-profile.example";
+  constexpr char kRegularHost[] = "active-tab-in-regular-profile.example";
+  GURL incognito_page_url =
+      embedded_test_server()->GetURL(kIncognitoHost, "/title1.html");
+  GURL incognito_resource_url =
+      embedded_test_server()->GetURL(kIncognitoHost, "/nosniff.xml");
+  GURL regular_page_url =
+      embedded_test_server()->GetURL(kRegularHost, "/title2.html");
+  GURL regular_resource_url =
+      embedded_test_server()->GetURL(kRegularHost, "/nosniff.xml");
+  Profile* regular_profile = browser()->profile();
+  Browser* regular_browser = browser();
+  Profile* incognito_profile = regular_profile->GetPrimaryOTRProfile();
+  Browser* incognito_browser =
+      Browser::Create(Browser::CreateParams(incognito_profile, true));
+  {
+    content::WindowedNotificationObserver observer(
+        content::NOTIFICATION_LOAD_STOP,
+        content::NotificationService::AllSources());
+    chrome::AddSelectedTabWithURL(incognito_browser, incognito_page_url,
+                                  ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
+    observer.Wait();
+    incognito_browser->window()->Show();
+  }
+  ui_test_utils::NavigateToURL(regular_browser, regular_page_url);
+
+  // No CORS exception for `kIncognitoHost` should be initially granted based on
+  // ActiveTab.
+  {
+    SCOPED_TRACE("TEST STEP 1: Initial fetch.");
+    {
+      SCOPED_TRACE("Regular profile's background page");
+      std::string fetch_result = FetchViaBackgroundPage(
+          incognito_resource_url, extension, regular_profile);
+      EXPECT_EQ(kCorsErrorWhenFetching, fetch_result);
+    }
+    {
+      SCOPED_TRACE("Incognito profile's background page");
+      std::string fetch_result = FetchViaBackgroundPage(
+          incognito_resource_url, extension, incognito_profile);
+      EXPECT_EQ(kCorsErrorWhenFetching, fetch_result);
+    }
+  }
+
+  // Granting ActiveTab permission in the *incognito* window should give the
+  // extension access to the tab's origin, but only in the incognito profile
+  // (since the extension uses "split" mode).
+  ExtensionActionRunner::GetForWebContents(
+      incognito_browser->tab_strip_model()->GetActiveWebContents())
+      ->RunAction(extension, true);
+  {
+    SCOPED_TRACE("TEST STEP 2: After granting 'incognito' ActiveTab access.");
+    {
+      SCOPED_TRACE("Regular profile's background page");
+      std::string fetch_result = FetchViaBackgroundPage(
+          incognito_resource_url, extension, regular_profile);
+      EXPECT_EQ(kCorsErrorWhenFetching, fetch_result);
+    }
+    {
+      SCOPED_TRACE("Incognito profile's background page");
+      std::string fetch_result = FetchViaBackgroundPage(
+          incognito_resource_url, extension, incognito_profile);
+      EXPECT_EQ("nosniff.xml - body\n", fetch_result);
+    }
+  }
+
+  // Granting ActiveTab permission in the *regular* window (for a separate,
+  // `kRegularHost`) should not affect how CORS behaved in the previous step
+  // (unless there is a bug and we leak incognito permissions to the regular
+  // background page).
+  content::WebContents* regular_contents =
+      regular_browser->tab_strip_model()->GetActiveWebContents();
+  EXPECT_EQ(kRegularHost,
+            regular_contents->GetMainFrame()->GetLastCommittedOrigin().host());
+  EXPECT_NE(kRegularHost, kIncognitoHost);
+  ExtensionActionRunner::GetForWebContents(regular_contents)
+      ->RunAction(extension, true);
+  {
+    SCOPED_TRACE("TEST STEP 3: After granting 'regular' ActiveTab access.");
+    {
+      SCOPED_TRACE("Regular profile's background page");
+      std::string fetch_result = FetchViaBackgroundPage(
+          incognito_resource_url, extension, regular_profile);
+      // TODO(https://crbug.com/1167262): Change to EXPECT_EQ after fixing the
+      // leak of permissions from incognito profile to regular profile.
+      EXPECT_NE(kCorsErrorWhenFetching, fetch_result);
+    }
+    {
+      SCOPED_TRACE("Incognito profile's background page");
+      std::string fetch_result = FetchViaBackgroundPage(
+          incognito_resource_url, extension, incognito_profile);
+      EXPECT_EQ("nosniff.xml - body\n", fetch_result);
+    }
+  }
+
+  // After closing the incognito window, the regular background page should
+  // still have no access to the `kIncognitoHost` (or, hopefully, the potential
+  // leaks of permissions from the previous steps should be fixed/recovered-from
+  // at this point).
+  incognito_browser->tab_strip_model()->GetActiveWebContents()->Close();
+  {
+    SCOPED_TRACE("TEST STEP 4: After closing the incognito tab.");
+    {
+      SCOPED_TRACE("Regular profile's background page");
+      std::string fetch_result = FetchViaBackgroundPage(
+          incognito_resource_url, extension, regular_profile);
+      // TODO(https://crbug.com/1167262): Change to EXPECT_EQ after fixing the
+      // leak of permissions from incognito profile to regular profile.
+      EXPECT_NE(kCorsErrorWhenFetching, fetch_result);
+    }
+  }
+}
+
 // Similar to FromBackgroundPage_ActiveTabPermission, but focues on behavior
 // of the background page when it is shared between the regular and the
 // incognito profiles in "spanning" mode.
