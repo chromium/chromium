@@ -2636,6 +2636,9 @@ void LocalFrame::ClosePage(
     mojom::blink::LocalMainFrame::ClosePageCallback completion_callback) {
   SECURITY_CHECK(IsMainFrame());
 
+  // TODO(crbug.com/1161996): Remove this VLOG once the investigation is done.
+  VLOG(1) << "LocalFrame::ClosePage() URL = " << GetDocument()->Url();
+
   // There are two ways to close a page:
   //
   // 1/ Via webview()->Close() that currently sets the WebView's delegate_ to
