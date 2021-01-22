@@ -224,8 +224,12 @@ void JSChecker::ExpectFocused(
 
 std::unique_ptr<TestConditionWaiter> JSChecker::CreateFocusWaiter(
     const std::initializer_list<base::StringPiece>& path) {
-  return std::make_unique<TestPredicateWaiter>(
+  auto result = std::make_unique<TestPredicateWaiter>(
       base::BindRepeating(&IsFocused, base::Unretained(web_contents_), path));
+  std::string description;
+  description.append(DescribePath(path)).append(" focused");
+  result->set_description(description);
+  return result;
 }
 
 std::unique_ptr<TestConditionWaiter> JSChecker::CreateWaiter(
