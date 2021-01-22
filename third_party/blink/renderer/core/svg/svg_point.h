@@ -37,7 +37,6 @@
 
 namespace blink {
 
-class AffineTransform;
 class SVGPointTearOff;
 
 class SVGPoint final : public SVGListablePropertyBase {
@@ -57,8 +56,6 @@ class SVGPoint final : public SVGListablePropertyBase {
   float Y() const { return value_.Y(); }
   void SetX(float f) { value_.SetX(f); }
   void SetY(float f) { value_.SetY(f); }
-
-  FloatPoint MatrixTransform(const AffineTransform&) const;
 
   String ValueAsString() const override;
 

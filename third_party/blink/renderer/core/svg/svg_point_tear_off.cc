@@ -62,8 +62,7 @@ void SVGPointTearOff::setY(float f, ExceptionState& exception_state) {
 }
 
 SVGPointTearOff* SVGPointTearOff::matrixTransform(SVGMatrixTearOff* matrix) {
-  FloatPoint point = Target()->MatrixTransform(matrix->Value());
-  return CreateDetached(point);
+  return CreateDetached(matrix->Value().MapPoint(Target()->Value()));
 }
 
 SVGPointTearOff* SVGPointTearOff::CreateDetached(const FloatPoint& point) {

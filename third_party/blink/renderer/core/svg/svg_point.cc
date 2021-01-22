@@ -31,7 +31,6 @@
 #include "third_party/blink/renderer/core/svg/svg_point.h"
 
 #include "third_party/blink/renderer/platform/heap/heap.h"
-#include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -49,13 +48,6 @@ SVGPropertyBase* SVGPoint::CloneForAnimation(const String& value) const {
   // SVGPoint is not animated by itself.
   NOTREACHED();
   return nullptr;
-}
-
-FloatPoint SVGPoint::MatrixTransform(const AffineTransform& transform) const {
-  double new_x, new_y;
-  transform.Map(static_cast<double>(X()), static_cast<double>(Y()), new_x,
-                new_y);
-  return FloatPoint::NarrowPrecision(new_x, new_y);
 }
 
 String SVGPoint::ValueAsString() const {
