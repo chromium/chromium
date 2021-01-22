@@ -26,7 +26,7 @@ constexpr int kHoldingSpaceFocusInsets = -4;
 constexpr int kHoldingSpaceIconSize = 20;
 constexpr gfx::Size kHoldingSpaceScreenCaptureSize(104, 80);
 constexpr int kHoldingSpaceSectionChildSpacing = 16;
-constexpr float kHoldingSpaceSelectedOverlayOpacity = 0.24f;
+constexpr float kHoldingSpaceSelectedOverlayOpacity = 0.3f;
 constexpr int kHoldingSpaceTrayIconMaxVisiblePreviews = 3;
 constexpr int kHoldingSpaceTrayIconDefaultPreviewSize = 32;
 constexpr int kHoldingSpaceTrayIconSmallPreviewSize = 28;
