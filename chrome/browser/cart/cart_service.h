@@ -39,6 +39,15 @@ class CartService : public history::HistoryServiceObserver,
   bool IsRemoved();
   // Get the proto database owned by the service.
   CartDB* GetDB();
+  // Load the cart for a domain.
+  void LoadCart(const std::string& domain, CartDB::LoadCallback callback);
+  // Load all carts in this service.
+  void LoadAllCarts(CartDB::LoadCallback callback);
+  // Add a cart to the cart service.
+  void AddCart(const std::string& domain,
+               const cart_db::ChromeCartContentProto& proto);
+  // Delete the cart from certain domain in the cart service.
+  void DeleteCart(const std::string& domain);
   // history::HistoryServiceObserver:
   void OnURLsDeleted(history::HistoryService* history_service,
                      const history::DeletionInfo& deletion_info) override;
