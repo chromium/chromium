@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+PASS page-created Error (worker)
+PASS page-created Error (cross-site iframe)
+PASS page-created DOMException (worker)
+PASS page-created DOMException (cross-site iframe)
+PASS JS-engine-created TypeError (worker)
+PASS JS-engine-created TypeError (cross-site iframe)
+PASS web API-created TypeError (worker)
+PASS web API-created TypeError (cross-site iframe)
+FAIL web API-created DOMException (worker) assert_equals: expected (string) "Error: Failed to execute 'createElement' on 'Document': The tag name provided ('') is not a valid name.\n    at http://web-platform.test:8001/html/infrastructure/safe-passing-of-structured-data/structured-cloning-error-stack-optional.sub.window.js:33:14\n    at Test.<anonymous> (http://web-platform.test:8001/html/infrastructure/safe-passing-of-structured-data/structured-cloning-error-stack-optional.sub.window.js:41:19)\n    at Test.step (http://web-platform.test:8001/resources/testharness.js:2044:25)\n    at async_test (http://web-platform.test:8001/resources/testharness.js:609:34)\n    at stackTests (http://web-platform.test:8001/html/infrastructure/safe-passing-of-structured-data/structured-cloning-error-stack-optional.sub.window.js:40:3)\n    at http://web-platform.test:8001/html/infrastructure/safe-passing-of-structured-data/structured-cloning-error-stack-optional.sub.window.js:31:1" but got (undefined) undefined
+FAIL web API-created DOMException (cross-site iframe) assert_equals: expected (string) "Error: Failed to execute 'createElement' on 'Document': The tag name provided ('') is not a valid name.\n    at http://web-platform.test:8001/html/infrastructure/safe-passing-of-structured-data/structured-cloning-error-stack-optional.sub.window.js:33:14\n    at Test.<anonymous> (http://web-platform.test:8001/html/infrastructure/safe-passing-of-structured-data/structured-cloning-error-stack-optional.sub.window.js:60:19)\n    at Test.step (http://web-platform.test:8001/resources/testharness.js:2044:25)\n    at async_test (http://web-platform.test:8001/resources/testharness.js:609:34)\n    at stackTests (http://web-platform.test:8001/html/infrastructure/safe-passing-of-structured-data/structured-cloning-error-stack-optional.sub.window.js:57:3)\n    at http://web-platform.test:8001/html/infrastructure/safe-passing-of-structured-data/structured-cloning-error-stack-optional.sub.window.js:31:1" but got (undefined) undefined
+Harness: the test ran to completion.
+

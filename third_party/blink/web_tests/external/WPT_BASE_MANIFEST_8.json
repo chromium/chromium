@@ -168530,6 +168530,19 @@
         {}
        ]
       ],
+      "pattern-inheritance-template-pattern-removed.svg": [
+       "b80f81095ac0ab2275cf8d21696f92694757f2f1",
+       [
+        null,
+        [
+         [
+          "/svg/pservers/reftests/reference/green-100x100.svg",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "radialgradient-basic-002.svg": [
        "04d8d3025ee0f039a05bdd439f2dc02c13f49a23",
        [
@@ -229975,7 +229988,7 @@
        ]
       },
       "structured-cloning-error-stack-optional.sub.window-expected.txt": [
-       "769d662bee3f7df08699e34915c837f6781b0e2e",
+       "1861ebad7dc45c2c2bf79f54d044795326aacaf7",
        []
       ],
       "transfer-errors.window-expected.txt": [
@@ -244175,7 +244188,7 @@
      []
     ],
     "testharness.js": [
-     "f7fe7531710d235976d036e4b022f21d53b286b1",
+     "c463082d23249bedae12af25f6df5d95e9db8d08",
      []
     ],
     "testharness.js.headers": [
@@ -340313,7 +340326,7 @@
        ]
       ],
       "sandbox-inherited-from-required-csp.html": [
-       "e717775b27f3490dab77af9e8ddd581557d3e848",
+       "04f485cc663af203c83e75a23a28c46c5034a9ce",
        [
         null,
         {}
