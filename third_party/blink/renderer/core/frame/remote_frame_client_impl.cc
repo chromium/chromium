@@ -126,8 +126,4 @@ viz::FrameSinkId RemoteFrameClientImpl::GetFrameSinkId() {
   return web_frame_->Client()->GetFrameSinkId();
 }
 
-void RemoteFrameClientImpl::WasEvicted() {
-  return web_frame_->Client()->WasEvicted();
-}
-
 }  // namespace blink

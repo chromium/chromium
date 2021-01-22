@@ -70,9 +70,6 @@ class WebRemoteFrameClient {
     return viz::FrameSinkId();
   }
 
-  // Inform the widget that it was evicted.
-  virtual void WasEvicted() {}
-
  protected:
   virtual ~WebRemoteFrameClient() = default;
 };

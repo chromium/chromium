@@ -524,12 +524,6 @@ RenderFrameProxy::GetRemoteAssociatedInterfaces() {
   return remote_associated_interfaces_.get();
 }
 
-void RenderFrameProxy::WasEvicted() {
-  // On eviction, the last SurfaceId is invalidated. We need to allocate a new
-  // id.
-  web_frame_->ResendVisualProperties();
-}
-
 void RenderFrameProxy::FrameSinkIdChanged(
     const viz::FrameSinkId& frame_sink_id) {
   remote_process_gone_ = false;

@@ -161,7 +161,6 @@ class CONTENT_EXPORT RenderFrameProxy : public IPC::Listener,
   bool RemoteProcessGone() const override;
   base::UnguessableToken GetDevToolsFrameToken() override;
   viz::FrameSinkId GetFrameSinkId() const override;
-  void WasEvicted() override;
 
   void DidStartLoading();
 

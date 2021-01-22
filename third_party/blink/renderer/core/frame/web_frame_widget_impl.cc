@@ -3807,7 +3807,9 @@ void WebFrameWidgetImpl::WasShown(bool was_evicted) {
   if (was_evicted) {
     ForEachRemoteFrameControlledByWidget(
         WTF::BindRepeating([](RemoteFrame* remote_frame) {
-          remote_frame->Client()->WasEvicted();
+          // On eviction, the last SurfaceId is invalidated. We need to
+          // allocate a new id.
+          remote_frame->ResendVisualProperties();
         }));
   }
 }
