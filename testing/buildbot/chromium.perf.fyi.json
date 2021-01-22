@@ -220,6 +220,15 @@
       }
     ]
   },
+  "fuchsia-builder-perf-fyi": {
+    "additional_compile_targets": [
+      "web_engine_shell",
+      "web_engine_unittests",
+      "cast_runner_unittests",
+      "chromedriver",
+      "chromium_builder_perf"
+    ]
+  },
   "fuchsia-perf-fyi": {
     "isolated_scripts": [
       {

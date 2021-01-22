@@ -264,6 +264,12 @@ FYI_BUILDERS = {
             'device_type': 'kevin',
         },
     },
+    'fuchsia-builder-perf-fyi': {
+        'additional_compile_targets': [
+            'web_engine_shell', 'web_engine_unittests', 'cast_runner_unittests',
+            'chromedriver', 'chromium_builder_perf'
+        ],
+    },
     'lacros-eve-perf-fyi': {
         'tests': [
             {

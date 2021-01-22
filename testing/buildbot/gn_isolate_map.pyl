@@ -1860,6 +1860,10 @@
     "label": "//fuchsia/engine:web_engine_integration_tests",
     "type": "console_test_launcher",
   },
+  "web_engine_shell": {
+    "label": "//fuchsia/engine:web_engine_shell",
+    "type": "additional_compile_target",
+  },
   "web_engine_unittests": {
     "label": "//fuchsia/engine:web_engine_unittests",
     "type": "console_test_launcher",
