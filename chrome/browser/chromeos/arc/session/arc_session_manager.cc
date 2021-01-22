@@ -62,7 +62,6 @@
 #include "components/arc/metrics/stability_metrics_manager.h"
 #include "components/arc/session/arc_data_remover.h"
 #include "components/arc/session/arc_instance_mode.h"
-#include "components/arc/session/arc_property_util.h"
 #include "components/arc/session/arc_session.h"
 #include "components/arc/session/arc_session_runner.h"
 #include "components/arc/session/arc_supervision_transition.h"
@@ -90,10 +89,11 @@ bool g_enable_arc_terms_of_service_oobe_negotiator_in_tests = false;
 
 base::Optional<bool> g_enable_check_android_management_in_tests;
 
-constexpr const char kPropertyFilesPathVm[] = "/usr/share/arcvm/properties";
-constexpr const char kPropertyFilesPath[] = "/usr/share/arc/properties";
 constexpr const char kArcSaltPath[] = "/var/lib/misc/arc_salt";
 constexpr const size_t kArcSaltFileSize = 16;
+
+constexpr const char kArcPrepareHostGeneratedDirJobName[] =
+    "arc_2dprepare_2dhost_2dgenerated_2ddir";
 
 // Generates a unique, 20-character hex string from |chromeos_user| and
 // |salt| which can be used as Android's ro.boot.serialno and ro.serialno
@@ -413,25 +413,10 @@ ArcSupportHost::Error GetSupportHostError(const ArcProvisioningResult& result) {
   return ArcSupportHost::Error::SIGN_IN_UNKNOWN_ERROR;
 }
 
-ArcSessionManager::ExpansionResult ExpandPropertyFilesAndReadSaltInternal(
-    const base::FilePath& source_path,
-    const base::FilePath& dest_path,
-    bool single_file,
-    bool add_native_bridge_64bit_support) {
-  if (!arc::ExpandPropertyFiles(source_path, dest_path, single_file,
-                                add_native_bridge_64bit_support)) {
-    return ArcSessionManager::ExpansionResult{{}, false};
-  }
-  if (!arc::IsArcVmEnabled())
-    return ArcSessionManager::ExpansionResult{{}, true};
+ArcSessionManager::ExpansionResult ReadSaltInternal() {
+  DCHECK(arc::IsArcVmEnabled());
 
-  // For ARCVM, the first stage fstab file needs to be generated.
-  if (!arc::GenerateFirstStageFstab(dest_path,
-                                    dest_path.DirName().Append("fstab"))) {
-    return ArcSessionManager::ExpansionResult{{}, false};
-  }
-
-  // Finally, for ARCVM, read |kArcSaltPath| if that exists.
+  // For ARCVM, read |kArcSaltPath| if that exists.
   std::string salt;
   if (!ReadSaltOnDisk(base::FilePath(kArcSaltPath), &salt))
     return ArcSessionManager::ExpansionResult{{}, false};
@@ -503,12 +488,8 @@ ArcSessionManager::ArcSessionManager(
     : arc_session_runner_(std::move(arc_session_runner)),
       adb_sideloading_availability_delegate_(
           std::move(adb_sideloading_availability_delegate)),
-      attempt_user_exit_callback_(base::BindRepeating(chrome::AttemptUserExit)),
-      property_files_source_dir_(base::FilePath(
-          IsArcVmEnabled() ? kPropertyFilesPathVm : kPropertyFilesPath)),
-      property_files_dest_dir_(
-          base::FilePath(IsArcVmEnabled() ? kGeneratedPropertyFilesPathVm
-                                          : kGeneratedPropertyFilesPath)) {
+      attempt_user_exit_callback_(
+          base::BindRepeating(chrome::AttemptUserExit)) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!g_arc_session_manager);
   g_arc_session_manager = this;
@@ -1639,13 +1620,36 @@ void ArcSessionManager::ExpandPropertyFilesAndReadSalt() {
     add_native_bridge_64bit_support = local_pref_service->GetBoolean(
         prefs::kNativeBridge64BitSupportExperimentEnabled);
   }
+
+  std::deque<JobDesc> jobs = {
+      JobDesc{kArcPrepareHostGeneratedDirJobName,
+              UpstartOperation::JOB_START,
+              {std::string("IS_ARCVM=") + (is_arcvm ? "1" : "0"),
+               std::string("ADD_NATIVE_BRIDGE_64BIT_SUPPORT=") +
+                   (add_native_bridge_64bit_support ? "1" : "0")}},
+  };
+  ConfigureUpstartJobs(std::move(jobs),
+                       base::BindOnce(&ArcSessionManager::OnExpandPropertyFiles,
+                                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ArcSessionManager::OnExpandPropertyFiles(bool result) {
+  if (!result) {
+    LOG(ERROR) << "Failed to expand property files";
+    OnExpandPropertyFilesAndReadSalt(
+        ArcSessionManager::ExpansionResult{{}, false});
+    return;
+  }
+
+  if (!arc::IsArcVmEnabled()) {
+    OnExpandPropertyFilesAndReadSalt(
+        ArcSessionManager::ExpansionResult{{}, true});
+    return;
+  }
+
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-      base::BindOnce(&ExpandPropertyFilesAndReadSaltInternal,
-                     property_files_source_dir_,
-                     is_arcvm ? property_files_dest_dir_.Append("combined.prop")
-                              : property_files_dest_dir_,
-                     /*single_file=*/is_arcvm, add_native_bridge_64bit_support),
+      base::BindOnce(&ReadSaltInternal),
       base::BindOnce(&ArcSessionManager::OnExpandPropertyFilesAndReadSalt,
                      weak_ptr_factory_.GetWeakPtr()));
 }
