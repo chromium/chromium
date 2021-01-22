@@ -95,6 +95,16 @@ struct GL_EXPORT GLContextAttribs {
   // (True by default to match previous behavior.)
   bool lose_context_on_reset = true;
 
+  // If true, EGL_ANGLE_external_context_and_surface extension will be used to
+  // create ANGLE context from the current native EGL context.
+  bool angle_create_from_external_context = false;
+
+  // If true, an ANGLE external context will be created with
+  // EGL_EXTERNAL_CONTEXT_SAVE_STATE_ANGLE is true, so when ReleaseCurrent is
+  // called, ANGLE will restore the GL state of the native EGL context to the
+  // state when MakeCurrent was previously called.
+  bool angle_restore_external_context_state = false;
+
   ContextPriority context_priority = ContextPriorityMedium;
 };
 

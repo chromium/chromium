@@ -206,6 +206,7 @@ bool g_egl_android_native_fence_sync_supported = false;
 bool g_egl_ext_pixel_format_float_supported = false;
 bool g_egl_angle_feature_control_supported = false;
 bool g_egl_angle_power_preference_supported = false;
+bool g_egl_angle_external_context_and_surface_supported = false;
 EGLGpuSwitchingObserver* g_egl_gpu_switching_observer = nullptr;
 
 constexpr const char kSwapEventTraceCategories[] = "gpu";
@@ -1062,6 +1063,9 @@ bool GLSurfaceEGL::InitializeOneOffCommon() {
   g_egl_angle_power_preference_supported =
       HasEGLExtension("EGL_ANGLE_power_preference");
 
+  g_egl_angle_external_context_and_surface_supported =
+      HasEGLExtension("EGL_ANGLE_external_context_and_surface");
+
   if (g_egl_angle_power_preference_supported) {
     g_egl_gpu_switching_observer = new EGLGpuSwitchingObserver();
     ui::GpuSwitchingManager::GetInstance()->AddObserver(
@@ -1214,7 +1218,11 @@ bool GLSurfaceEGL::IsANGLEPowerPreferenceSupported() {
   return g_egl_angle_power_preference_supported;
 }
 
-GLSurfaceEGL::~GLSurfaceEGL() {}
+bool GLSurfaceEGL::IsANGLEExternalContextAndSurfaceSupported() {
+  return g_egl_angle_external_context_and_surface_supported;
+}
+
+GLSurfaceEGL::~GLSurfaceEGL() = default;
 
 // InitializeDisplay is necessary because the static binding code
 // needs a full Display init before it can query the Display extensions.

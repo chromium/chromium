@@ -127,6 +127,7 @@ class GL_EXPORT GLSurfaceEGL : public GLSurface {
   static bool IsPixelFormatFloatSupported();
   static bool IsANGLEFeatureControlSupported();
   static bool IsANGLEPowerPreferenceSupported();
+  static bool IsANGLEExternalContextAndSurfaceSupported();
 
  protected:
   ~GLSurfaceEGL() override;
