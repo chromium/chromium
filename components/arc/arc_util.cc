@@ -11,8 +11,6 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/optional.h"
 #include "base/process/launch.h"
@@ -350,28 +348,6 @@ int32_t GetLcdDensityForDeviceScaleFactor(float device_scale_factor) {
   return static_cast<int32_t>(
       std::max(1.0f, device_scale_factor * kChromeScaleToAndroidScaleRatio) *
       kDefaultDensityDpi);
-}
-
-bool GenerateFirstStageFstab(const base::FilePath& combined_property_file_name,
-                             const base::FilePath& fstab_path) {
-  DCHECK(IsArcVmEnabled());
-  // The file is exposed to the guest by crosvm via /sys/firmware/devicetree,
-  // which in turn allows the guest's init process to mount /vendor very early,
-  // in its first stage (device) initialization step. crosvm also special-cases
-  // #dt-vendor line and expose |combined_property_file_name| via the device
-  // tree file system too. This also allow the init process to load the expanded
-  // properties very early even before all file systems are mounted.
-  //
-  // The device name for /vendor has to match what arc_vm_client_adapter.cc
-  // configures.
-  constexpr const char kFirstStageFstabTemplate[] =
-      "/dev/block/vdb /vendor squashfs ro,noatime,nosuid,nodev "
-      "wait,check,formattable,reservedsize=128M\n"
-      "#dt-vendor build.prop %s default default\n";
-  return base::WriteFile(
-      fstab_path,
-      base::StringPrintf(kFirstStageFstabTemplate,
-                         combined_property_file_name.value().c_str()));
 }
 
 int GetSystemPropertyInt(const std::string& property) {

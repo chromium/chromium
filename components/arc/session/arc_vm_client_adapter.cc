@@ -303,7 +303,7 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
                               file_system_status.is_system_image_ext_format());
 
   // Add /vendor as /dev/block/vdb. The device name has to be consistent with
-  // the one in GenerateFirstStageFstab() in ../arc_util.cc.
+  // the one in GenerateFirstStageFstab() in platform2/arc/setup/.
   vm_tools::concierge::DiskImage* disk_image = request.add_disks();
   disk_image->set_path(file_system_status.vendor_image_path().value());
   disk_image->set_image_type(vm_tools::concierge::DISK_IMAGE_AUTO);
