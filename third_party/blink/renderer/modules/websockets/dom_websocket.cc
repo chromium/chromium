@@ -363,22 +363,21 @@ void DOMWebSocket::send(DOMArrayBuffer* binary_data,
 void DOMWebSocket::send(NotShared<DOMArrayBufferView> array_buffer_view,
                         ExceptionState& exception_state) {
   NETWORK_DVLOG(1) << "WebSocket " << this << " send() Sending ArrayBufferView "
-                   << array_buffer_view.View();
+                   << array_buffer_view.Get();
   DCHECK(array_buffer_view);
   if (common_.GetState() == kConnecting) {
     SetInvalidStateErrorForSendMethod(exception_state);
     return;
   }
   if (common_.GetState() == kClosing || common_.GetState() == kClosed) {
-    UpdateBufferedAmountAfterClose(array_buffer_view.View()->byteLength());
+    UpdateBufferedAmountAfterClose(array_buffer_view->byteLength());
     return;
   }
   RecordSendTypeHistogram(WebSocketSendType::kArrayBufferView);
   DCHECK(channel_);
-  buffered_amount_ += array_buffer_view.View()->byteLength();
-  channel_->Send(*array_buffer_view.View()->buffer(),
-                 array_buffer_view.View()->byteOffset(),
-                 array_buffer_view.View()->byteLength(), base::OnceClosure());
+  buffered_amount_ += array_buffer_view->byteLength();
+  channel_->Send(*array_buffer_view->buffer(), array_buffer_view->byteOffset(),
+                 array_buffer_view->byteLength(), base::OnceClosure());
 }
 
 void DOMWebSocket::send(Blob* binary_data, ExceptionState& exception_state) {

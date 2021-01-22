@@ -477,7 +477,7 @@ void PresentationConnection::send(
   DCHECK(array_buffer_view);
   if (!CanSendMessage(exception_state))
     return;
-  if (!base::CheckedNumeric<wtf_size_t>(array_buffer_view.View()->byteLength())
+  if (!base::CheckedNumeric<wtf_size_t>(array_buffer_view->byteLength())
            .IsValid()) {
     static_assert(
         4294967295 == std::numeric_limits<wtf_size_t>::max(),
@@ -488,7 +488,7 @@ void PresentationConnection::send(
   }
 
   messages_.push_back(
-      MakeGarbageCollected<Message>(array_buffer_view.View()->buffer()));
+      MakeGarbageCollected<Message>(array_buffer_view->buffer()));
   HandleMessageQueue();
 }
 

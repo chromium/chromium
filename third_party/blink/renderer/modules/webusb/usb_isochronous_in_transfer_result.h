@@ -29,7 +29,7 @@ class USBIsochronousInTransferResult final : public ScriptWrappable {
   static USBIsochronousInTransferResult* Create(
       const HeapVector<Member<USBIsochronousInTransferPacket>>& packets,
       NotShared<DOMDataView> data) {
-    return MakeGarbageCollected<USBIsochronousInTransferResult>(data.View(),
+    return MakeGarbageCollected<USBIsochronousInTransferResult>(data.Get(),
                                                                 packets);
   }
 

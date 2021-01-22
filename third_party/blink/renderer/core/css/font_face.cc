@@ -121,7 +121,7 @@ FontFace* FontFace::Create(ExecutionContext* context,
   if (source.IsArrayBuffer())
     return Create(context, family, source.GetAsArrayBuffer(), descriptors);
   if (source.IsArrayBufferView()) {
-    return Create(context, family, source.GetAsArrayBufferView().View(),
+    return Create(context, family, source.GetAsArrayBufferView().Get(),
                   descriptors);
   }
   NOTREACHED();

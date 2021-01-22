@@ -106,10 +106,9 @@ class QuicTransport::DatagramUnderlyingSink final : public UnderlyingSinkBase {
         return ScriptPromise();
       }
 
-      return SendDatagram(
-          {static_cast<const uint8_t*>(data.View()->buffer()->Data()) +
-               data.View()->byteOffset(),
-           data.View()->byteLength()});
+      return SendDatagram({static_cast<const uint8_t*>(data->buffer()->Data()) +
+                               data->byteOffset(),
+                           data->byteLength()});
     }
 
     exception_state.ThrowTypeError(

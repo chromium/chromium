@@ -151,7 +151,7 @@ ScriptPromise FileSystemUnderlyingSink::WriteData(
     DOMArrayBuffer* array_buffer = data.GetAsArrayBuffer();
     blob_data->AppendBytes(array_buffer->Data(), array_buffer->ByteLength());
   } else if (data.IsArrayBufferView()) {
-    DOMArrayBufferView* array_buffer_view = data.GetAsArrayBufferView().View();
+    DOMArrayBufferView* array_buffer_view = data.GetAsArrayBufferView().Get();
     blob_data->AppendBytes(array_buffer_view->BaseAddress(),
                            array_buffer_view->byteLength());
   } else if (data.IsBlob()) {

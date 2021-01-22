@@ -161,7 +161,7 @@ bool ConvertBufferSource(const ArrayBufferOrArrayBufferView& buffer_source,
     vector->Append(static_cast<uint8_t*>(array_buffer->Data()),
                    static_cast<wtf_size_t>(array_buffer->ByteLength()));
   } else {
-    DOMArrayBufferView* view = buffer_source.GetAsArrayBufferView().View();
+    DOMArrayBufferView* view = buffer_source.GetAsArrayBufferView().Get();
     if (!view->buffer() || view->buffer()->IsDetached()) {
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kInvalidStateError, kDetachedBuffer));

@@ -215,7 +215,7 @@ ScriptPromise TCPWritableStreamWrapper::SinkWrite(
                            array_buffer->ByteLength());
   } else {
     DCHECK(buffer_source.IsArrayBufferView());
-    const auto* array_buffer_view = buffer_source.GetAsArrayBufferView().View();
+    const auto* array_buffer_view = buffer_source.GetAsArrayBufferView().Get();
     data = base::make_span(
         static_cast<const uint8_t*>(array_buffer_view->BaseAddress()),
         array_buffer_view->byteLength());

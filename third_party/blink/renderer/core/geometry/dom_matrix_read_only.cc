@@ -147,31 +147,27 @@ DOMMatrixReadOnly* DOMMatrixReadOnly::CreateForSerialization(double sequence[],
 DOMMatrixReadOnly* DOMMatrixReadOnly::fromFloat32Array(
     NotShared<DOMFloat32Array> float32_array,
     ExceptionState& exception_state) {
-  if (float32_array.View()->length() != 6 &&
-      float32_array.View()->length() != 16) {
+  if (float32_array->length() != 6 && float32_array->length() != 16) {
     exception_state.ThrowTypeError(
         "The sequence must contain 6 elements for a 2D matrix or 16 elements a "
         "for 3D matrix.");
     return nullptr;
   }
   return MakeGarbageCollected<DOMMatrixReadOnly>(
-      float32_array.View()->Data(),
-      static_cast<int>(float32_array.View()->length()));
+      float32_array->Data(), static_cast<int>(float32_array->length()));
 }
 
 DOMMatrixReadOnly* DOMMatrixReadOnly::fromFloat64Array(
     NotShared<DOMFloat64Array> float64_array,
     ExceptionState& exception_state) {
-  if (float64_array.View()->length() != 6 &&
-      float64_array.View()->length() != 16) {
+  if (float64_array->length() != 6 && float64_array->length() != 16) {
     exception_state.ThrowTypeError(
         "The sequence must contain 6 elements for a 2D matrix or 16 elements "
         "for a 3D matrix.");
     return nullptr;
   }
   return MakeGarbageCollected<DOMMatrixReadOnly>(
-      float64_array.View()->Data(),
-      static_cast<int>(float64_array.View()->length()));
+      float64_array->Data(), static_cast<int>(float64_array->length()));
 }
 
 DOMMatrixReadOnly* DOMMatrixReadOnly::fromMatrix2D(

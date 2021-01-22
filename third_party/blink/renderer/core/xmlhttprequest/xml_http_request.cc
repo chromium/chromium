@@ -791,7 +791,7 @@ void XMLHttpRequest::send(
   }
 
   if (body.IsArrayBufferView()) {
-    send(body.GetAsArrayBufferView().View(), exception_state);
+    send(body.GetAsArrayBufferView().Get(), exception_state);
     return;
   }
 

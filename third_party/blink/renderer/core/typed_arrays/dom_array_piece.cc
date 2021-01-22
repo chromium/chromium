@@ -15,7 +15,7 @@ DOMArrayPiece::DOMArrayPiece(
     InitWithArrayBuffer(array_buffer);
   } else if (array_buffer_or_view.IsArrayBufferView()) {
     DOMArrayBufferView* array_buffer_view =
-        array_buffer_or_view.GetAsArrayBufferView().View();
+        array_buffer_or_view.GetAsArrayBufferView().Get();
     InitWithArrayBufferView(array_buffer_view);
   }
 }

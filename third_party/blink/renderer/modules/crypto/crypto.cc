@@ -36,7 +36,7 @@ namespace blink {
 
 namespace {
 
-bool IsIntegerArray(DOMArrayBufferView* array) {
+bool IsIntegerArray(NotShared<DOMArrayBufferView> array) {
   DOMArrayBufferView::ViewType type = array->GetType();
   return type == DOMArrayBufferView::kTypeInt8 ||
          type == DOMArrayBufferView::kTypeUint8 ||
@@ -53,24 +53,24 @@ NotShared<DOMArrayBufferView> Crypto::getRandomValues(
     NotShared<DOMArrayBufferView> array,
     ExceptionState& exception_state) {
   DCHECK(array);
-  if (!IsIntegerArray(array.View())) {
+  if (!IsIntegerArray(array)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kTypeMismatchError,
         String::Format("The provided ArrayBufferView is of type '%s', which is "
                        "not an integer array type.",
-                       array.View()->TypeName()));
+                       array->TypeName()));
     return NotShared<DOMArrayBufferView>(nullptr);
   }
-  if (array.View()->byteLength() > 65536) {
+  if (array->byteLength() > 65536) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kQuotaExceededError,
         String::Format("The ArrayBufferView's byte length (%zu) exceeds the "
                        "number of bytes of entropy available via this API "
                        "(65536).",
-                       array.View()->byteLength()));
+                       array->byteLength()));
     return NotShared<DOMArrayBufferView>(nullptr);
   }
-  crypto::RandBytes(array.View()->BaseAddress(), array.View()->byteLength());
+  crypto::RandBytes(array->BaseAddress(), array->byteLength());
   return array;
 }
 

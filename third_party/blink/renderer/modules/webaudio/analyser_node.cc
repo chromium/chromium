@@ -274,21 +274,21 @@ double AnalyserNode::smoothingTimeConstant() const {
 }
 
 void AnalyserNode::getFloatFrequencyData(NotShared<DOMFloat32Array> array) {
-  GetAnalyserHandler().GetFloatFrequencyData(array.View(),
+  GetAnalyserHandler().GetFloatFrequencyData(array.Get(),
                                              context()->currentTime());
 }
 
 void AnalyserNode::getByteFrequencyData(NotShared<DOMUint8Array> array) {
-  GetAnalyserHandler().GetByteFrequencyData(array.View(),
+  GetAnalyserHandler().GetByteFrequencyData(array.Get(),
                                             context()->currentTime());
 }
 
 void AnalyserNode::getFloatTimeDomainData(NotShared<DOMFloat32Array> array) {
-  GetAnalyserHandler().GetFloatTimeDomainData(array.View());
+  GetAnalyserHandler().GetFloatTimeDomainData(array.Get());
 }
 
 void AnalyserNode::getByteTimeDomainData(NotShared<DOMUint8Array> array) {
-  GetAnalyserHandler().GetByteTimeDomainData(array.View());
+  GetAnalyserHandler().GetByteTimeDomainData(array.Get());
 }
 
 void AnalyserNode::ReportDidCreate() {

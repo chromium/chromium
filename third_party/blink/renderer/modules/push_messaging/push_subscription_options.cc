@@ -34,9 +34,8 @@ Vector<uint8_t> BufferSourceToVector(
     length = application_server_key.GetAsArrayBuffer()->ByteLength();
   } else if (application_server_key.IsArrayBufferView()) {
     input = static_cast<char*>(
-        application_server_key.GetAsArrayBufferView().View()->buffer()->Data());
+        application_server_key.GetAsArrayBufferView()->buffer()->Data());
     length = application_server_key.GetAsArrayBufferView()
-                 .View()
                  ->buffer()
                  ->ByteLength();
   } else if (application_server_key.IsString()) {

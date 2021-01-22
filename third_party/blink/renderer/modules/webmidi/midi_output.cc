@@ -262,7 +262,7 @@ void MIDIOutput::send(NotShared<DOMUint8Array> array,
     timestamp = GetTimeOrigin(context) +
                 base::TimeDelta::FromMillisecondsD(timestamp_in_milliseconds);
   }
-  SendInternal(array.View(), timestamp, exception_state);
+  SendInternal(array.Get(), timestamp, exception_state);
 }
 
 void MIDIOutput::send(Vector<unsigned> unsigned_data,
@@ -288,7 +288,7 @@ void MIDIOutput::send(NotShared<DOMUint8Array> data,
     return;
 
   DCHECK(data);
-  SendInternal(data.View(), base::TimeTicks::Now(), exception_state);
+  SendInternal(data.Get(), base::TimeTicks::Now(), exception_state);
 }
 
 void MIDIOutput::send(Vector<unsigned> unsigned_data,

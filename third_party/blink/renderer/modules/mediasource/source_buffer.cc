@@ -613,13 +613,11 @@ void SourceBuffer::appendBuffer(DOMArrayBuffer* data,
 
 void SourceBuffer::appendBuffer(NotShared<DOMArrayBufferView> data,
                                 ExceptionState& exception_state) {
-  DVLOG(3) << __func__ << " this=" << this
-           << " size=" << data.View()->byteLength();
+  DVLOG(3) << __func__ << " this=" << this << " size=" << data->byteLength();
   // Section 3.2 appendBuffer()
   // https://dvcs.w3.org/hg/html-media/raw-file/default/media-source/media-source.html#widl-SourceBuffer-appendBuffer-void-ArrayBufferView-data
-  AppendBufferInternal(
-      static_cast<const unsigned char*>(data.View()->BaseAddress()),
-      data.View()->byteLength(), exception_state);
+  AppendBufferInternal(static_cast<const unsigned char*>(data->BaseAddress()),
+                       data->byteLength(), exception_state);
 }
 
 // Note that |chunks| may be a sequence of mixed audio and video encoded chunks

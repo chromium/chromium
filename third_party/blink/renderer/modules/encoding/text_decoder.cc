@@ -83,9 +83,9 @@ String TextDecoder::decode(const BufferSource& input,
   DCHECK(options);
   DCHECK(!input.IsNull());
   if (input.IsArrayBufferView()) {
-    const char* start = static_cast<const char*>(
-        input.GetAsArrayBufferView().View()->BaseAddress());
-    size_t length = input.GetAsArrayBufferView().View()->byteLength();
+    const char* start =
+        static_cast<const char*>(input.GetAsArrayBufferView()->BaseAddress());
+    size_t length = input.GetAsArrayBufferView()->byteLength();
     if (length > std::numeric_limits<uint32_t>::max()) {
       exception_state.ThrowRangeError(
           "Buffer size exceeds maximum heap object size.");

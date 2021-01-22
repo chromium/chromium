@@ -99,7 +99,7 @@ bool NavigatorBeacon::SendBeaconImpl(
     }
     allowed = PingLoader::SendBeacon(*script_state, frame, url, data_buffer);
   } else if (data.IsArrayBufferView()) {
-    auto* data_view = data.GetAsArrayBufferView().View();
+    auto* data_view = data.GetAsArrayBufferView().Get();
     if (!base::CheckedNumeric<wtf_size_t>(data_view->byteLength()).IsValid()) {
       // At the moment the PingLoader::SendBeacon implementation cannot deal
       // with huge ArrayBuffers.

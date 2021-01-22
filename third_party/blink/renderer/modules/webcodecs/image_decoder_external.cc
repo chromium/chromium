@@ -110,7 +110,7 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
   if (init->data().IsArrayBuffer()) {
     buffer = DOMArrayPiece(init->data().GetAsArrayBuffer());
   } else if (init->data().IsArrayBufferView()) {
-    buffer = DOMArrayPiece(init->data().GetAsArrayBufferView().View());
+    buffer = DOMArrayPiece(init->data().GetAsArrayBufferView().Get());
   } else {
     NOTREACHED();
     return;

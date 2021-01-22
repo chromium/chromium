@@ -407,7 +407,7 @@ ScriptPromise SubtleCrypto::importKey(
       if (raw_key_data.IsArrayBuffer()) {
         key_data = CopyBytes(raw_key_data.GetAsArrayBuffer());
       } else if (raw_key_data.IsArrayBufferView()) {
-        key_data = CopyBytes(raw_key_data.GetAsArrayBufferView().View());
+        key_data = CopyBytes(raw_key_data.GetAsArrayBufferView().Get());
       } else {
         result->CompleteWithError(
             kWebCryptoErrorTypeType,

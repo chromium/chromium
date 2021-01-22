@@ -43,10 +43,10 @@ Vector<uint8_t> ConvertBufferSource(
                   base::checked_cast<wtf_size_t>(
                       buffer.GetAsArrayBuffer()->ByteLength()));
   } else {
-    vector.Append(static_cast<uint8_t*>(
-                      buffer.GetAsArrayBufferView().View()->BaseAddress()),
-                  base::checked_cast<wtf_size_t>(
-                      buffer.GetAsArrayBufferView().View()->byteLength()));
+    vector.Append(
+        static_cast<uint8_t*>(buffer.GetAsArrayBufferView()->BaseAddress()),
+        base::checked_cast<wtf_size_t>(
+            buffer.GetAsArrayBufferView()->byteLength()));
   }
   return vector;
 }
@@ -320,7 +320,7 @@ ScriptPromise HIDDevice::sendReport(ScriptState* script_state,
 
   size_t data_size = data.IsArrayBuffer()
                          ? data.GetAsArrayBuffer()->ByteLength()
-                         : data.GetAsArrayBufferView().View()->byteLength();
+                         : data.GetAsArrayBufferView()->byteLength();
 
   if (!base::CheckedNumeric<wtf_size_t>(data_size).IsValid()) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -353,7 +353,7 @@ ScriptPromise HIDDevice::sendFeatureReport(
 
   size_t data_size = data.IsArrayBuffer()
                          ? data.GetAsArrayBuffer()->ByteLength()
-                         : data.GetAsArrayBufferView().View()->byteLength();
+                         : data.GetAsArrayBufferView()->byteLength();
 
   if (!base::CheckedNumeric<wtf_size_t>(data_size).IsValid()) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
