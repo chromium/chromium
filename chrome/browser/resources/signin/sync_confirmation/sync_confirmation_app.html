@@ -8,20 +8,6 @@
     display: block;
   }
 
-  @media (prefers-color-scheme: dark) {
-    /* Old design */
-    #illustration {
-      background-image:
-          url(./images/sync_confirmation_illustration_dark.svg);
-    }
-
-    /* New design */
-    #syncPromoBanner {
-      background-image:
-          url(images/sync_confirmation_refreshed_illustration_dark.svg);
-    }
-  }
-
   .secondary {
     color: var(--cr-secondary-text-color);
   }
@@ -195,6 +181,20 @@
 
   #actionContainer #notNowButton {
     font-weight: normal;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    /* Old design */
+    #illustration {
+      background-image:
+          url(./images/sync_confirmation_illustration_dark.svg);
+    }
+
+    /* New design */
+    #syncPromoBanner {
+      background-image:
+          url(images/sync_confirmation_refreshed_illustration_dark.svg);
+    }
   }
 </style>
 
