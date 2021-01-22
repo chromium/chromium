@@ -251,6 +251,16 @@ class FakeDatabase {
     return {PasswordStoreChange(PasswordStoreChange::UPDATE, form, key)};
   }
 
+  bool UpdateCompromisedCredentialsSync(
+      const PasswordForm& form,
+      base::span<const CompromisedCredentials> credentials) {
+    int key = GetPrimaryKey(form);
+    if (key == -1)
+      return false;
+    security_issues_[key].assign(credentials.begin(), credentials.end());
+    return true;
+  }
+
   PasswordStoreChangeList RemoveLogin(int key) {
     DCHECK_NE(0U, data_.count(key));
     PasswordForm form = *data_[key];
@@ -344,6 +354,12 @@ class MockPasswordStoreSync : public PasswordStoreSync {
               UpdateLoginSync,
               (const PasswordForm&, UpdateLoginError*),
               (override));
+  MOCK_METHOD(
+      bool,
+      UpdateCompromisedCredentialsSync,
+      (const PasswordForm& form,
+       base::span<const CompromisedCredentials> comrpomised_credentials),
+      (override));
   MOCK_METHOD(PasswordStoreChangeList,
               RemoveLoginSync,
               (const PasswordForm&),
@@ -384,6 +400,8 @@ class PasswordSyncBridgeTest : public testing::Test {
     ON_CALL(mock_password_store_sync_, AddCompromisedCredentialsSync)
         .WillByDefault(
             Invoke(&fake_db_, &FakeDatabase::AddCompromisedCredentials));
+    ON_CALL(mock_password_store_sync_, UpdateLoginSync)
+        .WillByDefault(Invoke(&fake_db_, &FakeDatabase::UpdateLogin));
     ON_CALL(mock_password_store_sync_, UpdateLoginSync)
         .WillByDefault(Invoke(&fake_db_, &FakeDatabase::UpdateLogin));
     ON_CALL(mock_password_store_sync_, RemoveLoginByPrimaryKeySync)
@@ -1322,6 +1340,34 @@ TEST_F(PasswordSyncBridgeTest, GetDataWithIssuesForStorageKey) {
   ASSERT_TRUE(SpecificsHasExpectedCompromiseTypes(
       optional_specifics.value().client_only_encrypted_data().password_issues(),
       kIssuesTypes));
+}
+
+TEST_F(PasswordSyncBridgeTest,
+       ShouldUpdateCompromisedCredentialsDuringRemoteUpdate) {
+  const int kPrimaryKey = 1000;
+  const std::string kStorageKey = "1000";
+  // Add the form to the DB.
+  fake_db()->AddLoginForPrimaryKey(kPrimaryKey,
+                                   MakePasswordForm(kSignonRealm1));
+
+  const std::vector<CompromiseType> kIssuesTypes = {CompromiseType::kLeaked,
+                                                    CompromiseType::kReused};
+  const std::vector<CompromisedCredentials> kIssues =
+      MakeCompromisedCredentials(MakePasswordForm(kSignonRealm1), kIssuesTypes);
+
+  EXPECT_CALL(
+      *mock_password_store_sync(),
+      UpdateCompromisedCredentialsSync(FormHasSignonRealm(kSignonRealm1),
+                                       UnorderedElementsAreArray(kIssues)));
+
+  sync_pb::PasswordSpecifics specifics =
+      CreateSpecificsWithSignonRealmAndIssues(kSignonRealm1, kIssuesTypes);
+  syncer::EntityChangeList entity_change_list;
+  entity_change_list.push_back(syncer::EntityChange::CreateUpdate(
+      kStorageKey, SpecificsToEntity(specifics)));
+  base::Optional<syncer::ModelError> error = bridge()->ApplySyncChanges(
+      bridge()->CreateMetadataChangeList(), std::move(entity_change_list));
+  EXPECT_FALSE(error);
 }
 
 }  // namespace password_manager

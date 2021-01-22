@@ -147,6 +147,12 @@ class PasswordStoreSync {
       const PasswordForm& form,
       UpdateLoginError* error = nullptr) = 0;
 
+  // Synchronous implementation to replace existing compromised credentials for
+  // the |form| with |credentials|.
+  virtual bool UpdateCompromisedCredentialsSync(
+      const PasswordForm& form,
+      base::span<const CompromisedCredentials> credentials) = 0;
+
   // Synchronous implementation to remove the given login.
   virtual PasswordStoreChangeList RemoveLoginSync(const PasswordForm& form) = 0;
 

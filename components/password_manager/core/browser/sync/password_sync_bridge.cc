@@ -735,7 +735,7 @@ base::Optional<syncer::ModelError> PasswordSyncBridge::ApplySyncChanges(
               base::NumberToString(changes.back().primary_key()),
               metadata_change_list.get());
           break;
-        case syncer::EntityChange::ACTION_UPDATE:
+        case syncer::EntityChange::ACTION_UPDATE: {
           // TODO(mamir): This had been added to mitigate some potential issues
           // in the login database. Once the underlying cause is verified, we
           // should remove this check.
@@ -743,9 +743,13 @@ base::Optional<syncer::ModelError> PasswordSyncBridge::ApplySyncChanges(
             continue;
           }
           UpdateLoginError update_login_error;
-          changes = password_store_sync_->UpdateLoginSync(
-              PasswordFromEntityChange(*entity_change, /*sync_time=*/time_now),
-              &update_login_error);
+          PasswordForm form =
+              PasswordFromEntityChange(*entity_change, /*sync_time=*/time_now);
+          changes =
+              password_store_sync_->UpdateLoginSync(form, &update_login_error);
+          // TODO(vsemeniuk): Check if update is required.
+          password_store_sync_->UpdateCompromisedCredentialsSync(
+              form, CompromisedCredentialsFromEntityChange(*entity_change));
           base::UmaHistogramEnumeration(
               "PasswordManager.ApplySyncChanges.UpdateLoginSyncError",
               update_login_error);
@@ -766,6 +770,7 @@ base::Optional<syncer::ModelError> PasswordSyncBridge::ApplySyncChanges(
           DCHECK(changes[0].primary_key() ==
                  ParsePrimaryKey(entity_change->storage_key()));
           break;
+        }
         case syncer::EntityChange::ACTION_DELETE: {
           // TODO(mamir): This had been added to mitigate some potential issues
           // in the login database. Once the underlying cause is verified, we

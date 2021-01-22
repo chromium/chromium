@@ -1846,4 +1846,60 @@ TEST_F(PasswordStoreTest, AddCompromisedCredentialsSync) {
   store->ShutdownOnUIThread();
 }
 
+TEST_F(PasswordStoreTest, UpdateCompromisedCredentialsSync) {
+  scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
+  store->Init(/*prefs=*/nullptr);
+
+  constexpr PasswordFormData kTestCredential = {
+      PasswordForm::Scheme::kHtml,
+      kTestWebRealm1,
+      kTestWebOrigin1,
+      "",
+      L"",
+      L"username_element_1",
+      L"password_element_1",
+      L"username",
+      L"",
+      kTestLastUsageTime,
+      1,
+  };
+
+  std::unique_ptr<PasswordForm> test_form =
+      FillPasswordFormWithData(kTestCredential);
+  store->AddLogin(*test_form);
+  WaitForPasswordStore();
+
+  // Add one compromised credentials that is of typed Leaked and is NOT muted.
+  CompromisedCredentials credential(test_form->signon_realm,
+                                    test_form->username_value, base::Time(),
+                                    CompromiseType::kLeaked, IsMuted(false));
+  store->AddCompromisedCredentials(credential);
+  WaitForPasswordStore();
+
+  std::vector<CompromisedCredentials> new_compromised_credentials;
+  new_compromised_credentials.push_back(credential);
+  // Make that "Leaked" credentials muted
+  new_compromised_credentials[0].is_muted = IsMuted(true);
+  // Add another compromised credentials of type "Reused"
+  new_compromised_credentials.emplace_back(CompromisedCredentials(
+      test_form->signon_realm, test_form->username_value, base::Time(),
+      CompromiseType::kReused, IsMuted(false)));
+
+  // Update the password store with the new compromised credentials.
+  store->ScheduleTask(base::BindOnce(
+      IgnoreResult(&PasswordStore::UpdateCompromisedCredentialsSync), store,
+      *test_form, new_compromised_credentials));
+  WaitForPasswordStore();
+
+  MockCompromisedCredentialsConsumer consumer;
+  // Verify the password store has been updated.
+  EXPECT_CALL(consumer, OnGetCompromisedCredentials(UnorderedElementsAre(
+                            new_compromised_credentials[0],
+                            new_compromised_credentials[1])));
+  store->GetAllCompromisedCredentials(&consumer);
+  WaitForPasswordStore();
+
+  store->ShutdownOnUIThread();
+}
+
 }  // namespace password_manager
