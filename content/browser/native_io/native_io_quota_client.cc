@@ -10,10 +10,7 @@
 
 namespace content {
 
-NativeIOQuotaClient::NativeIOQuotaClient() {
-  // Constructed on the UI thread and used on the IO thread.
-  DETACH_FROM_SEQUENCE(sequence_checker_);
-}
+NativeIOQuotaClient::NativeIOQuotaClient() = default;
 
 NativeIOQuotaClient::~NativeIOQuotaClient() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

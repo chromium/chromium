@@ -15,11 +15,10 @@
 namespace content {
 
 class NativeIOManager;
-enum class NativeIOOwner;
 
-// NativeIOQuotaClient is owned by the QuotaManager. There is one per
-// NativeIOManager/NativeIOOwner tuple. Created and accessed on
-// the IO thread.
+// Integrates NativeIO with the quota system.
+//
+// Each NativeIOManager owns exactly one NativeIOQuotaClient.
 class CONTENT_EXPORT NativeIOQuotaClient : public storage::mojom::QuotaClient {
  public:
   NativeIOQuotaClient();

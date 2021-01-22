@@ -36,14 +36,13 @@ NativeIOManager::NativeIOManager(
     scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy)
     : root_path_(GetNativeIORootPath(profile_root)),
       special_storage_policy_(std::move(special_storage_policy)),
-      quota_manager_proxy_(std::move(quota_manager_proxy)) {
-  if (quota_manager_proxy) {
+      quota_manager_proxy_(std::move(quota_manager_proxy)),
+      quota_client_receiver_(&quota_client_) {
+  if (quota_manager_proxy_) {
     // Quota client assumes all backends have registered.
-    mojo::PendingRemote<storage::mojom::QuotaClient> quota_client;
-    mojo::MakeSelfOwnedReceiver(std::make_unique<NativeIOQuotaClient>(),
-                                quota_client.InitWithNewPipeAndPassReceiver());
-    quota_manager_proxy->RegisterClient(
-        std::move(quota_client), storage::QuotaClientType::kNativeIO,
+    quota_manager_proxy_->RegisterClient(
+        quota_client_receiver_.BindNewPipeAndPassRemote(),
+        storage::QuotaClientType::kNativeIO,
         {blink::mojom::StorageType::kTemporary});
   }
 }

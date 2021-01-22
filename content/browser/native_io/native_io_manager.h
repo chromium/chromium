@@ -11,8 +11,11 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
+#include "components/services/storage/public/mojom/quota_client.mojom-forward.h"
+#include "content/browser/native_io/native_io_quota_client.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "third_party/blink/public/mojom/native_io/native_io.mojom-forward.h"
@@ -72,6 +75,8 @@ class CONTENT_EXPORT NativeIOManager {
       std::string message = "");
 
  private:
+  SEQUENCE_CHECKER(sequence_checker_);
+
   std::map<url::Origin, std::unique_ptr<NativeIOHost>> hosts_;
 
   // Points to the root directory for NativeIO files.
@@ -84,7 +89,14 @@ class CONTENT_EXPORT NativeIOManager {
 
   const scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;
 
-  SEQUENCE_CHECKER(sequence_checker_);
+  NativeIOQuotaClient quota_client_;
+
+  // Once the QuotaClient receiver is destroyed, the underlying mojo connection
+  // is closed. Callbacks associated with mojo calls received over this
+  // connection may only be dropped after the connection is closed. For this
+  // reason, it's preferable to have the receiver be destroyed as early as
+  // possible during the NativeIOManager destruction process.
+  mojo::Receiver<storage::mojom::QuotaClient> quota_client_receiver_;
 };
 
 }  // namespace content
