@@ -141,9 +141,9 @@ class WinTool(object):
     # Read output one line at a time as it shows up to avoid OOM failures when
     # GBs of output is produced.
     for line in link.stdout:
-      if (not line.startswith('   Creating library ') and
-          not line.startswith('Generating code') and
-          not line.startswith('Finished generating code')):
+      if (not line.startswith(b'   Creating library ')
+          and not line.startswith(b'Generating code')
+          and not line.startswith(b'Finished generating code')):
         print(line)
     return link.wait()
 
