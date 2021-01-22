@@ -31,13 +31,32 @@ class CORE_EXPORT CounterStyle final : public GarbageCollected<CounterStyle> {
   // Returns nullptr if the @counter-style rule is invalid.
   static CounterStyle* Create(const StyleRuleCounterStyle&);
 
+  const StyleRuleCounterStyle& GetStyleRule() const { return *style_rule_; }
+
   AtomicString GetName() const;
   CounterStyleSystem GetSystem() const { return system_; }
+
+  bool IsPredefined() const { return is_predefined_; }
+  void SetIsPredefined() { is_predefined_ = true; }
 
   // Returns true for the predefined symbolic counter styles 'disc', 'circle',
   // 'square', 'disclosure-open' and 'disclosure-closed'.
   bool IsPredefinedSymbolMarker() const { return is_predefined_symbol_marker_; }
   void SetIsPredefinedSymbolMarker() { is_predefined_symbol_marker_ = true; }
+
+  // A CounterStyle object is dirtied when the information it holds becomes
+  // stale, e.g., when the style rule mutated or the 'extends' or 'fallback'
+  // counter styles mutated, etc. Once dirtied, it will never be reused, and
+  // will be removed or replaced by a newly created clean CounterStyle.
+  // Elements using dirty CounterStyles should update style and layout.
+  bool IsDirty() const { return is_dirty_; }
+  void SetIsDirty() { is_dirty_ = true; }
+
+  void TraverseAndMarkDirtyIfNeeded(HeapHashSet<Member<CounterStyle>>& visited);
+
+  // Set to true when there's no counter style matching 'extends' or 'fallback',
+  // and therefore we are resorting to 'decimal'.
+  void SetHasInexistentReferences() { has_inexistent_references_ = true; }
 
   // https://drafts.csswg.org/css-counter-styles/#generate-a-counter
   String GenerateRepresentation(int value) const;
@@ -50,18 +69,12 @@ class CORE_EXPORT CounterStyle final : public GarbageCollected<CounterStyle> {
   bool HasUnresolvedExtends() const {
     return system_ == CounterStyleSystem::kUnresolvedExtends;
   }
-  void ResolveExtends(const CounterStyle& extended);
+  void ResolveExtends(CounterStyle& extended);
 
   AtomicString GetFallbackName() const { return fallback_name_; }
   const CounterStyle& GetFallbackStyle() const { return *fallback_style_; }
   bool HasUnresolvedFallback() const { return !fallback_style_; }
-  void ResolveFallback(const CounterStyle& fallback) {
-    fallback_style_ = &fallback;
-  }
-
-  // Resets the resolution of 'extends' and 'fallback' for recomputing it.
-  void ResetExtends();
-  void ResetFallback();
+  void ResolveFallback(CounterStyle& fallback) { fallback_style_ = &fallback; }
 
   void Trace(Visitor*) const;
 
@@ -93,10 +106,10 @@ class CORE_EXPORT CounterStyle final : public GarbageCollected<CounterStyle> {
   CounterStyleSystem system_ = CounterStyleSystem::kSymbolic;
 
   AtomicString extends_name_;
-  Member<const CounterStyle> extended_style_;
+  Member<CounterStyle> extended_style_;
 
   AtomicString fallback_name_ = "decimal";
-  Member<const CounterStyle> fallback_style_;
+  Member<CounterStyle> fallback_style_;
 
   // True if we are looking for a fallback counter style to generate a counter
   // value. Supports cycle detection in fallback.
@@ -124,7 +137,10 @@ class CORE_EXPORT CounterStyle final : public GarbageCollected<CounterStyle> {
   // First symbol value, for 'fixed' system only.
   wtf_size_t first_symbol_value_ = 1;
 
+  bool is_predefined_ = false;
   bool is_predefined_symbol_marker_ = false;
+  bool has_inexistent_references_ = false;
+  bool is_dirty_ = false;
 
   friend class CounterStyleMapTest;
 };

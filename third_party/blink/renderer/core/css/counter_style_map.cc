@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/style_rule_counter_style.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 
 namespace blink {
 
@@ -22,15 +23,22 @@ CounterStyleMap* CreateUACounterStyleMap() {
   CounterStyleMap* map =
       MakeGarbageCollected<CounterStyleMap>(nullptr, nullptr);
   map->AddCounterStyles(*CSSDefaultStyleSheets::Instance().DefaultStyle());
+  map->SetIsPredefined();
   for (const char* symbol_marker : predefined_symbol_markers) {
     map->FindCounterStyleAcrossScopes(symbol_marker)
-        .SetIsPredefinedSymbolMarker();
+        ->SetIsPredefinedSymbolMarker();
   }
-  map->ResolveReferences();
+  HeapHashSet<Member<CounterStyleMap>> dummy_visited;
+  map->ResolveReferences(dummy_visited);
   return map;
 }
 
 }  // namespace
+
+void CounterStyleMap::SetIsPredefined() {
+  for (CounterStyle* counter_style : counter_styles_.Values())
+    counter_style->SetIsPredefined();
+}
 
 // static
 CounterStyleMap* CounterStyleMap::GetUACounterStyleMap() {
@@ -79,9 +87,6 @@ void CounterStyleMap::AddCounterStyles(const RuleSet& rule_set) {
     if (!counter_style)
       continue;
     counter_styles_.Set(rule->GetName(), counter_style);
-    if (counter_style->HasUnresolvedExtends() ||
-        counter_style->HasUnresolvedFallback())
-      has_unresolved_references_ = true;
   }
 }
 
@@ -107,15 +112,15 @@ CounterStyleMap* CounterStyleMap::GetAncestorMap() const {
   return nullptr;
 }
 
-CounterStyle& CounterStyleMap::FindCounterStyleAcrossScopes(
+CounterStyle* CounterStyleMap::FindCounterStyleAcrossScopes(
     const AtomicString& name) const {
   if (CounterStyle* style = counter_styles_.at(name))
-    return *style;
+    return style;
 
   if (CounterStyleMap* ancestor_map = GetAncestorMap())
     return ancestor_map->FindCounterStyleAcrossScopes(name);
 
-  return CounterStyle::GetDecimal();
+  return nullptr;
 }
 
 void CounterStyleMap::ResolveExtendsFor(CounterStyle& counter_style) {
@@ -127,14 +132,15 @@ void CounterStyleMap::ResolveExtendsFor(CounterStyle& counter_style) {
   do {
     unresolved_styles.insert(extends_chain.back());
     AtomicString extends_name = extends_chain.back()->GetExtendsName();
-    extends_chain.push_back(&FindCounterStyleAcrossScopes(extends_name));
-  } while (extends_chain.back()->HasUnresolvedExtends() &&
+    extends_chain.push_back(FindCounterStyleAcrossScopes(extends_name));
+  } while (extends_chain.back() &&
+           extends_chain.back()->HasUnresolvedExtends() &&
            !unresolved_styles.Contains(extends_chain.back()));
 
   // If one or more @counter-style rules form a cycle with their extends values,
   // all of the counter styles participating in the cycle must be treated as if
   // they were extending the 'decimal' counter style instead.
-  if (extends_chain.back()->HasUnresolvedExtends()) {
+  if (extends_chain.back() && extends_chain.back()->HasUnresolvedExtends()) {
     CounterStyle* cycle_start = extends_chain.back();
     do {
       extends_chain.back()->ResolveExtends(CounterStyle::GetDecimal());
@@ -145,7 +151,13 @@ void CounterStyleMap::ResolveExtendsFor(CounterStyle& counter_style) {
   CounterStyle* next = extends_chain.back();
   while (extends_chain.size() > 1u) {
     extends_chain.pop_back();
-    extends_chain.back()->ResolveExtends(*next);
+    if (next) {
+      extends_chain.back()->ResolveExtends(*next);
+    } else {
+      extends_chain.back()->ResolveExtends(CounterStyle::GetDecimal());
+      extends_chain.back()->SetHasInexistentReferences();
+    }
+
     next = extends_chain.back();
   }
 }
@@ -153,37 +165,68 @@ void CounterStyleMap::ResolveExtendsFor(CounterStyle& counter_style) {
 void CounterStyleMap::ResolveFallbackFor(CounterStyle& counter_style) {
   DCHECK(counter_style.HasUnresolvedFallback());
   AtomicString fallback_name = counter_style.GetFallbackName();
-  CounterStyle& fallback_style = FindCounterStyleAcrossScopes(fallback_name);
-  counter_style.ResolveFallback(fallback_style);
+  CounterStyle* fallback_style = FindCounterStyleAcrossScopes(fallback_name);
+  if (fallback_style) {
+    counter_style.ResolveFallback(*fallback_style);
+  } else {
+    counter_style.ResolveFallback(CounterStyle::GetDecimal());
+    counter_style.SetHasInexistentReferences();
+  }
 }
 
-void CounterStyleMap::ResolveReferences() {
-  // References in ancestor scopes must be resolved first.
-  if (ancestors_have_unresolved_references_) {
-    if (CounterStyleMap* ancestor_map = GetAncestorMap())
-      ancestor_map->ResolveReferences();
-    ancestors_have_unresolved_references_ = false;
-  }
-
-  if (!has_unresolved_references_)
+void CounterStyleMap::ResolveReferences(
+    HeapHashSet<Member<CounterStyleMap>>& visited_maps) {
+  if (visited_maps.Contains(this))
     return;
-  has_unresolved_references_ = false;
-  for (auto iter : counter_styles_) {
-    if (iter.value->HasUnresolvedExtends())
-      ResolveExtendsFor(*iter.value);
-    if (iter.value->HasUnresolvedFallback())
-      ResolveFallbackFor(*iter.value);
+  visited_maps.insert(this);
+
+  // References in ancestor scopes must be resolved first.
+  if (CounterStyleMap* ancestor_map = GetAncestorMap())
+    ancestor_map->ResolveReferences(visited_maps);
+
+  for (CounterStyle* counter_style : counter_styles_.Values()) {
+    if (counter_style->HasUnresolvedExtends())
+      ResolveExtendsFor(*counter_style);
+    if (counter_style->HasUnresolvedFallback())
+      ResolveFallbackFor(*counter_style);
   }
 }
 
-void CounterStyleMap::ResetReferences() {
-  for (auto iter : counter_styles_) {
-    CounterStyle* counter_style = iter.value;
-    counter_style->ResetExtends();
-    counter_style->ResetFallback();
-    if (counter_style->HasUnresolvedExtends() ||
-        counter_style->HasUnresolvedFallback())
-      has_unresolved_references_ = true;
+void CounterStyleMap::MarkDirtyCounterStyles(
+    HeapHashSet<Member<CounterStyle>>& visited_counter_styles) {
+  for (CounterStyle* counter_style : counter_styles_.Values())
+    counter_style->TraverseAndMarkDirtyIfNeeded(visited_counter_styles);
+
+  // Replace dirty CounterStyles by clean ones with unresolved references.
+  for (Member<CounterStyle>& counter_style_ref : counter_styles_.Values()) {
+    if (counter_style_ref->IsDirty()) {
+      CounterStyle* clean_style =
+          MakeGarbageCollected<CounterStyle>(counter_style_ref->GetStyleRule());
+      counter_style_ref = clean_style;
+    }
+  }
+}
+
+// static
+void CounterStyleMap::MarkAllDirtyCounterStyles(
+    Document& document,
+    const HeapHashSet<Member<TreeScope>>& active_tree_scopes) {
+  // Traverse all CounterStyle objects in the document to mark dirtiness.
+  // We assume that there are not too many CounterStyle objects, so this won't
+  // be a performance bottleneck.
+  TRACE_EVENT0("blink", "CounterStyleMap::MarkAllDirtyCounterStyles");
+
+  HeapHashSet<Member<CounterStyle>> visited_counter_styles;
+
+  if (CounterStyleMap* user_map = GetUserCounterStyleMap(document))
+    user_map->MarkDirtyCounterStyles(visited_counter_styles);
+
+  if (CounterStyleMap* document_map = GetAuthorCounterStyleMap(document))
+    document_map->MarkDirtyCounterStyles(visited_counter_styles);
+
+  for (const TreeScope* scope : active_tree_scopes) {
+    if (CounterStyleMap* scoped_map = GetAuthorCounterStyleMap(*scope))
+      scoped_map->MarkDirtyCounterStyles(visited_counter_styles);
   }
 }
 
@@ -191,33 +234,39 @@ void CounterStyleMap::ResetReferences() {
 void CounterStyleMap::ResolveAllReferences(
     Document& document,
     const HeapHashSet<Member<TreeScope>>& active_tree_scopes) {
-  // Make sure the UA counter style map is already set up, so that we don't
-  // enter a recursion when resolving references in user and author rules.
-  GetUACounterStyleMap();
+  // Traverse all counter style maps to find and update CounterStyles that are
+  // dirty or have unresolved references. We assume there are not too many
+  // CounterStyles, so that this won't be a performance bottleneck.
+  TRACE_EVENT0("blink", "CounterStyleMap::ResolveAllReferences");
+
+  HeapHashSet<Member<CounterStyleMap>> visited_maps;
+  visited_maps.insert(GetUACounterStyleMap());
 
   if (CounterStyleMap* user_map = GetUserCounterStyleMap(document))
-    user_map->ResolveReferences();
+    user_map->ResolveReferences(visited_maps);
 
   if (CounterStyleMap* document_map = GetAuthorCounterStyleMap(document))
-    document_map->ResolveReferences();
+    document_map->ResolveReferences(visited_maps);
 
-  // It is hard to keep track of whether we should update references in a
-  // shadow tree scope. They may need update even when the active style
-  // sheets remain unchanged in the scope, but some ancestor scope changed.
-  // So we reset and re-resolve all shadow tree scopes unconditionally.
-  // TODO(crbug.com/687225): This might need optimizations in some cases. For
-  // example, we don't want to invalidate the whole document when inserting a
-  // web component.
   for (const TreeScope* scope : active_tree_scopes) {
     if (CounterStyleMap* scoped_map = GetAuthorCounterStyleMap(*scope)) {
-      scoped_map->ResetReferences();
-      scoped_map->ancestors_have_unresolved_references_ = true;
+      scoped_map->ResolveReferences(visited_maps);
+
+#if DCHECK_IS_ON()
+      for (CounterStyle* counter_style : scoped_map->counter_styles_.Values()) {
+        DCHECK(!counter_style->IsDirty());
+        DCHECK(!counter_style->HasUnresolvedExtends());
+        DCHECK(!counter_style->HasUnresolvedFallback());
+      }
+#endif
     }
   }
-  for (const TreeScope* scope : active_tree_scopes) {
-    if (CounterStyleMap* scoped_map = GetAuthorCounterStyleMap(*scope))
-      scoped_map->ResolveReferences();
-  }
+}
+
+void CounterStyleMap::Dispose() {
+  for (CounterStyle* counter_style : counter_styles_.Values())
+    counter_style->SetIsDirty();
+  counter_styles_.clear();
 }
 
 void CounterStyleMap::Trace(Visitor* visitor) const {

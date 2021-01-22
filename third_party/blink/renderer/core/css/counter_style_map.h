@@ -26,18 +26,20 @@ class CORE_EXPORT CounterStyleMap : public GarbageCollected<CounterStyleMap> {
   static CounterStyleMap* CreateUserCounterStyleMap(Document&);
   static CounterStyleMap* CreateAuthorCounterStyleMap(TreeScope&);
 
-  CounterStyle& FindCounterStyleAcrossScopes(const AtomicString& name) const;
+  CounterStyle* FindCounterStyleAcrossScopes(const AtomicString& name) const;
 
   void AddCounterStyles(const RuleSet&);
+  void SetIsPredefined();
 
-  // Resets all 'extends' and 'fallback' references to unresolved. Used when the
-  // counter styles in an ancestor scope are changed, which may affect the
-  // references in the current scope;
-  void ResetReferences();
-
-  void ResolveReferences();
+  void ResolveReferences(HeapHashSet<Member<CounterStyleMap>>& resolved_maps);
   static void ResolveAllReferences(Document&,
                                    const HeapHashSet<Member<TreeScope>>&);
+
+  void MarkDirtyCounterStyles(HeapHashSet<Member<CounterStyle>>& visited);
+  static void MarkAllDirtyCounterStyles(Document&,
+                                        const HeapHashSet<Member<TreeScope>>&);
+
+  void Dispose();
 
   CounterStyleMap(Document* document, TreeScope* tree_scope);
   void Trace(Visitor*) const;
@@ -55,9 +57,6 @@ class CORE_EXPORT CounterStyleMap : public GarbageCollected<CounterStyleMap> {
   Member<TreeScope> tree_scope_;
 
   HeapHashMap<AtomicString, Member<CounterStyle>> counter_styles_;
-
-  bool has_unresolved_references_ = false;
-  bool ancestors_have_unresolved_references_ = false;
 
   friend class CounterStyleMapTest;
 };

@@ -20,9 +20,9 @@ class CounterStyleTest : public PageTestBase,
   const CounterStyle& GetCounterStyle(const AtomicString& name) {
     if (const CounterStyleMap* document_map =
             CounterStyleMap::GetAuthorCounterStyleMap(GetDocument()))
-      return document_map->FindCounterStyleAcrossScopes(name);
-    return CounterStyleMap::GetUACounterStyleMap()
-        ->FindCounterStyleAcrossScopes(name);
+      return *document_map->FindCounterStyleAcrossScopes(name);
+    return *CounterStyleMap::GetUACounterStyleMap()
+                ->FindCounterStyleAcrossScopes(name);
   }
 
   const CounterStyle AddCounterStyle(const AtomicString& name,

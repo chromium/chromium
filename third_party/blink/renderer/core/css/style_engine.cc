@@ -542,6 +542,10 @@ void StyleEngine::UpdateActiveStyleSheets() {
   }
 
   if (RuntimeEnabledFeatures::CSSAtRuleCounterStyleEnabled()) {
+    // TODO(crbug.com/687225): Add a flag to indicate whether counter styles
+    // need updates, so that we don't update them every time.
+    CounterStyleMap::MarkAllDirtyCounterStyles(GetDocument(),
+                                               active_tree_scopes_);
     CounterStyleMap::ResolveAllReferences(GetDocument(), active_tree_scopes_);
   }
 
@@ -1558,8 +1562,8 @@ void StyleEngine::ApplyUserRuleSetChanges(
   }
 
   if (changed_rule_flags & kCounterStyleRules) {
-    if (change == kActiveSheetsChanged)
-      user_counter_style_map_.Clear();
+    if (change == kActiveSheetsChanged && user_counter_style_map_)
+      user_counter_style_map_->Dispose();
 
     for (auto* it = new_style_sheets.begin(); it != new_style_sheets.end();
          it++) {
@@ -1567,10 +1571,6 @@ void StyleEngine::ApplyUserRuleSetChanges(
       if (!it->second->CounterStyleRules().IsEmpty())
         EnsureUserCounterStyleMap().AddCounterStyles(*it->second);
     }
-
-    if (CounterStyleMap* doc_map =
-            CounterStyleMap::GetAuthorCounterStyleMap(GetDocument()))
-      doc_map->ResetReferences();
 
     // TODO(crbug.com/687225): Trigger style/Layout invalidations.
   }
@@ -2391,16 +2391,22 @@ CounterStyleMap& StyleEngine::EnsureUserCounterStyleMap() {
 const CounterStyle& StyleEngine::FindCounterStyleAcrossScopes(
     const AtomicString& name,
     const TreeScope* scope) const {
+  CounterStyleMap* target_map = nullptr;
   while (scope) {
     if (CounterStyleMap* map =
-            CounterStyleMap::GetAuthorCounterStyleMap(*scope))
-      return map->FindCounterStyleAcrossScopes(name);
+            CounterStyleMap::GetAuthorCounterStyleMap(*scope)) {
+      target_map = map;
+      break;
+    }
     scope = scope->ParentTreeScope();
   }
-  if (user_counter_style_map_)
-    return user_counter_style_map_->FindCounterStyleAcrossScopes(name);
-  return CounterStyleMap::GetUACounterStyleMap()->FindCounterStyleAcrossScopes(
-      name);
+  if (!target_map && user_counter_style_map_)
+    target_map = user_counter_style_map_;
+  if (!target_map)
+    target_map = CounterStyleMap::GetUACounterStyleMap();
+  if (CounterStyle* result = target_map->FindCounterStyleAcrossScopes(name))
+    return *result;
+  return CounterStyle::GetDecimal();
 }
 
 void StyleEngine::Trace(Visitor* visitor) const {

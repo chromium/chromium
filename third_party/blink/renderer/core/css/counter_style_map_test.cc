@@ -183,15 +183,22 @@ TEST_F(CounterStyleMapTest, UpdateReferencesInChildScope) {
       "<style>@counter-style bar { system: extends foo; }</style>");
   UpdateAllLifecyclePhasesForTest();
 
+  const CounterStyle& foo = GetCounterStyle(GetDocument(), "foo");
   const CounterStyle& bar = GetCounterStyle(shadow, "bar");
-  EXPECT_EQ("foo", bar.GetExtendedStyle().GetName());
+  EXPECT_EQ(&foo, &bar.GetExtendedStyle());
 
   GetDocument().QuerySelector("style")->remove();
   UpdateAllLifecyclePhasesForTest();
 
-  // Counter styles in child scopes should be updated after chaning the counter
-  // styles in the parent scope.
-  EXPECT_EQ("decimal", bar.GetExtendedStyle().GetName());
+  // After counter style rule changes in the parent scope, the original
+  // CounterStyle for 'bar' in child scopes will be dirtied, and will be
+  // replaced by a new CounterStyle object.
+  EXPECT_TRUE(foo.IsDirty());
+  EXPECT_TRUE(bar.IsDirty());
+
+  const CounterStyle& new_bar = GetCounterStyle(shadow, "bar");
+  EXPECT_NE(&bar, &new_bar);
+  EXPECT_EQ("decimal", new_bar.GetExtendedStyle().GetName());
 }
 
 }  // namespace blink

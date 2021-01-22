@@ -140,7 +140,8 @@ void ScopedStyleResolver::ResetStyle() {
   viewport_dependent_media_query_results_.clear();
   device_dependent_media_query_results_.clear();
   keyframes_rule_map_.clear();
-  counter_style_map_.Clear();
+  if (counter_style_map_)
+    counter_style_map_->Dispose();
   slotted_rule_set_ = nullptr;
   needs_append_all_sheets_ = false;
 }

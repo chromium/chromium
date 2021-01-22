@@ -294,7 +294,7 @@ CounterStyle::CounterStyle(const StyleRuleCounterStyle& rule)
   // TODO(crbug.com/687225): Implement 'speak-as'.
 }
 
-void CounterStyle::ResolveExtends(const CounterStyle& extended) {
+void CounterStyle::ResolveExtends(CounterStyle& extended) {
   DCHECK_NE(extended.system_, CounterStyleSystem::kUnresolvedExtends);
   extended_style_ = extended;
 
@@ -331,20 +331,6 @@ void CounterStyle::ResolveExtends(const CounterStyle& extended) {
     suffix_ = extended.suffix_;
 
   // TODO(crbug.com/687225): Implement 'speak-as'.
-}
-
-void CounterStyle::ResetExtends() {
-  if (extends_name_.IsNull() || extends_name_ == "decimal" ||
-      extends_name_ == "disc")
-    return;
-  system_ = CounterStyleSystem::kUnresolvedExtends;
-  extended_style_.Clear();
-}
-
-void CounterStyle::ResetFallback() {
-  if (fallback_name_ == "decimal" || fallback_name_ == "disc")
-    return;
-  fallback_style_.Clear();
 }
 
 bool CounterStyle::RangeContains(int value) const {
@@ -467,6 +453,34 @@ String CounterStyle::GenerateInitialRepresentation(int value) const {
   for (wtf_size_t index : symbol_indexes)
     result.Append(symbols_[index]);
   return result.ToString();
+}
+
+void CounterStyle::TraverseAndMarkDirtyIfNeeded(
+    HeapHashSet<Member<CounterStyle>>& visited_counter_styles) {
+  if (IsPredefined() || visited_counter_styles.Contains(this))
+    return;
+  visited_counter_styles.insert(this);
+
+  if (has_inexistent_references_) {
+    SetIsDirty();
+    return;
+  }
+
+  if (extended_style_) {
+    extended_style_->TraverseAndMarkDirtyIfNeeded(visited_counter_styles);
+    if (extended_style_->IsDirty()) {
+      SetIsDirty();
+      return;
+    }
+  }
+
+  if (fallback_style_) {
+    fallback_style_->TraverseAndMarkDirtyIfNeeded(visited_counter_styles);
+    if (fallback_style_->IsDirty()) {
+      SetIsDirty();
+      return;
+    }
+  }
 }
 
 void CounterStyle::Trace(Visitor* visitor) const {
