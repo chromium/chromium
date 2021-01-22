@@ -8,6 +8,14 @@
     android:layout_width="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <!-- Dummy view used to collect focus when RadioButtonWithEditText loses focus.
+     TODO(https://crbug.com/11692150): Remove this. -->
+    <View
+        android:layout_height="1dp"
+        android:layout_width="match_parent"
+        android:focusable="true"
+        android:focusableInTouchMode="true" />
+
     <org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout
         android:id="@+id/test_radio_button_layout"
         android:layout_width="match_parent"
