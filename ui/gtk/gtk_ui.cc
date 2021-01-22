@@ -1073,13 +1073,12 @@ float GtkUi::GetRawDeviceScaleFactor() {
   DCHECK_GT(scale, 0.0);
 
   gdouble resolution = gdk_screen_get_resolution(screen);
-  // TODO(https://crbug.com/1033552): Remove this hack once the Trusty bots are
-  // fixed to have a resolution of 96, or when the Trusty bots are removed
-  // altogether.
-  if (std::abs(resolution - 95.8486) < 0.001)
-    resolution = 96;
   if (resolution > 0)
     scale *= resolution / kDefaultDPI;
+
+  // Round to 2 decimal places to address problems with some Linux desktop
+  // environments that result in scales of 1.002... and the like.
+  scale = roundf(scale * 100.0) / 100;
 
   return scale;
 }
