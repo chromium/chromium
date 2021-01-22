@@ -409,6 +409,7 @@ bool RichAutocompletionSplitTitleCompletion();
 bool RichAutocompletionSplitUrlCompletion();
 size_t RichAutocompletionSplitCompletionMinChar();
 bool RichAutocompletionCounterfactual();
+bool RichAutocompletionAutocompletePreferUrlsOverPrefixes();
 
 // On Device Head Suggestions feature and its helper functions.
 bool IsOnDeviceHeadSuggestEnabledForIncognito();
@@ -546,6 +547,7 @@ extern const char kRichAutocompletionSplitTitleCompletionParam[];
 extern const char kRichAutocompletionSplitUrlCompletionParam[];
 extern const char kRichAutocompletionSplitCompletionMinCharParam[];
 extern const char kRichAutocompletionCounterfactualParam[];
+extern const char kRichAutocompletionAutocompletePreferUrlsOverPrefixesParam[];
 
 // Parameter names used by omnibox experiments that hide the path (and
 // optionally subdomains) in the steady state.

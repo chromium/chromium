@@ -731,6 +731,12 @@ bool OmniboxFieldTrial::RichAutocompletionCounterfactual() {
       false);
 }
 
+bool OmniboxFieldTrial::RichAutocompletionAutocompletePreferUrlsOverPrefixes() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      omnibox::kRichAutocompletion,
+      kRichAutocompletionAutocompletePreferUrlsOverPrefixesParam, false);
+}
+
 bool OmniboxFieldTrial::IsOnDeviceHeadSuggestEnabledForIncognito() {
   return base::FeatureList::IsEnabled(omnibox::kOnDeviceHeadProviderIncognito);
 }
@@ -952,6 +958,9 @@ const char OmniboxFieldTrial::kRichAutocompletionSplitCompletionMinCharParam[] =
     "RichAutocompletionSplitCompletionMinChar";
 const char OmniboxFieldTrial::kRichAutocompletionCounterfactualParam[] =
     "RichAutocompletionCounterfactual";
+const char OmniboxFieldTrial::
+    kRichAutocompletionAutocompletePreferUrlsOverPrefixesParam[] =
+        "RichAutocompletionAutocompletePreferUrlsOverPrefixes";
 
 const char OmniboxFieldTrial::kOmniboxUIUnelideURLOnHoverThresholdMsParam[] =
     "OmniboxUIUnelideURLOnHoverThresholdMsdMs";

@@ -597,6 +597,7 @@ TEST(AutocompleteMatchTest, TryRichAutocompletion) {
     }
   }
 
+  // Check min char limits.
   {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeatureWithParameters(
@@ -640,8 +641,9 @@ TEST(AutocompleteMatchTest, TryRichAutocompletion) {
          "", "", false);
   }
 
-  // Don't autocomplete if RichAutocompletionCounterfactual param is enabled;
-  // do set rich_autocompletion_triggered if it would have autocompleted.
+  // Don't autocomplete if the RichAutocompletionCounterfactual param is
+  // enabled; do set |rich_autocompletion_triggered| if it would have
+  // autocompleted.
   {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeatureWithParameters(
@@ -675,6 +677,25 @@ TEST(AutocompleteMatchTest, TryRichAutocompletion) {
       SCOPED_TRACE("min char longer than input, counterfactual");
       test("x", false, "y_mixd_x_primary", "x_mixd_x_secondary", false, false,
            "", "", "", false);
+    }
+  }
+
+  {
+    // Prefer non-prefix URLs to prefix title autocompletion only if the
+    // RichAutocompletionCounterfactual param is enabled.
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        omnibox::kRichAutocompletion,
+        {
+            {"RichAutocompletionAutocompleteTitles", "true"},
+            {"RichAutocompletionAutocompleteNonPrefixAll", "true"},
+            {"RichAutocompletionAutocompletePreferUrlsOverPrefixes", "true"},
+        });
+
+    {
+      SCOPED_TRACE("prefer URLs over prefixes");
+      test("x", false, "y_mixd_x_primary", "x_mixd_x_secondary", true, true,
+           "_primary", "y_mixd_", "", true);
     }
   }
 }

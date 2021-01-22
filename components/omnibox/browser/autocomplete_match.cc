@@ -471,6 +471,15 @@ bool AutocompleteMatch::BetterDuplicate(const AutocompleteMatch& match1,
   if (!match1.allowed_to_be_default_match && match2.allowed_to_be_default_match)
     return false;
 
+  // Prefer URL autocompleted default matches if the appropriate param is true.
+  if (OmniboxFieldTrial::
+          RichAutocompletionAutocompletePreferUrlsOverPrefixes()) {
+    if (match1.additional_text.empty() && !match2.additional_text.empty())
+      return true;
+    if (!match1.additional_text.empty() && match2.additional_text.empty())
+      return false;
+  }
+
   // Prefer live document suggestions. We check provider type instead of match
   // type in order to distinguish live suggestions from the document provider
   // from stale suggestions from the shortcuts providers, because the latter
@@ -1218,24 +1227,12 @@ bool AutocompleteMatch::TryRichAutocompletion(
     return true;
   }
 
+  // Check if title autocompletion is possible. I.e., the input must be longer
+  // than the threshold |...TitleMinChar|.
   const bool can_autocomplete_titles =
       OmniboxFieldTrial::RichAutocompletionAutocompleteTitles() &&
       input.text().size() >=
           OmniboxFieldTrial::RichAutocompletionAutocompleteTitlesMinChar();
-
-  // Try matching the prefix of |secondary_text|.
-  if (can_autocomplete_titles &&
-      base::StartsWith(secondary_text_lower, input_text_lower,
-                       base::CompareCase::SENSITIVE)) {
-    rich_autocompletion_triggered = true;
-    if (counterfactual)
-      return false;
-    additional_text = primary_text;
-    inline_autocompletion = secondary_text.substr(input_text_lower.length());
-    allowed_to_be_default_match = true;
-    RecordAdditionalInfo("autocompletion", "secondary & prefix");
-    return true;
-  }
 
   // Check if non-prefix autocompletion is possible. I.e., these 2 conditions
   // must be truthy:
@@ -1251,11 +1248,19 @@ bool AutocompleteMatch::TryRichAutocompletion(
       input.text().size() >=
           OmniboxFieldTrial::RichAutocompletionAutocompleteNonPrefixMinChar();
 
-  // Try matching a non-prefix of |primary_text|.
+  // All else equal, prefer matching primary over secondary texts and prefixes
+  // over non-prefixes. |prefer_primary_non_prefix_over_secondary_prefix|
+  // determines whether to prefer matching primary text non-prefixes or
+  // secondary text prefixes.
+  bool prefer_primary_non_prefix_over_secondary_prefix =
+      OmniboxFieldTrial::RichAutocompletionAutocompletePreferUrlsOverPrefixes();
+
   size_t find_index;
-  if (can_autocomplete_non_prefix &&
-      (find_index = FindAtWordbreak(primary_text_lower, input_text_lower)) !=
-          base::string16::npos) {
+
+  // A helper to avoid duplicate code. Depending on the
+  // |prefer_primary_non_prefix_over_secondary_prefix|, this may be invoked
+  // either before or after trying prefix secondary autocompletion.
+  auto NonPrefixPrimaryHelper = [&]() {
     rich_autocompletion_triggered = true;
     if (counterfactual)
       return false;
@@ -1265,6 +1270,40 @@ bool AutocompleteMatch::TryRichAutocompletion(
     allowed_to_be_default_match = true;
     RecordAdditionalInfo("autocompletion", "primary & non-prefix");
     return true;
+  };
+
+  // Try matching a non-prefix of |primary_text| if
+  // |prefer_primary_non_prefix_over_secondary_prefix| is true; otherwise, we'll
+  // try this only after tying to match the prefix of |secondary_text|.
+  if (prefer_primary_non_prefix_over_secondary_prefix &&
+      can_autocomplete_non_prefix &&
+      (find_index = FindAtWordbreak(primary_text_lower, input_text_lower)) !=
+          base::string16::npos) {
+    return NonPrefixPrimaryHelper();
+  }
+
+  // Try matching the prefix of |secondary_text|.
+  if (can_autocomplete_titles &&
+      base::StartsWith(secondary_text_lower, input_text_lower,
+                       base::CompareCase::SENSITIVE)) {
+    rich_autocompletion_triggered = true;
+    if (counterfactual)
+      return false;
+    additional_text = primary_text;
+    inline_autocompletion = secondary_text.substr(input_text_lower.length());
+    allowed_to_be_default_match = true;
+    RecordAdditionalInfo("autocompletion", "secondary & prefix");
+    return true;
+  }
+
+  // Try matching a non-prefix of |primary_text|. If
+  // |prefer_primary_non_prefix_over_secondary_prefix| is false; otherwise, this
+  // was already tried above.
+  if (!prefer_primary_non_prefix_over_secondary_prefix &&
+      can_autocomplete_non_prefix &&
+      (find_index = FindAtWordbreak(primary_text_lower, input_text_lower)) !=
+          base::string16::npos) {
+    return NonPrefixPrimaryHelper();
   }
 
   // Try matching a non-prefix of |secondary_text|.

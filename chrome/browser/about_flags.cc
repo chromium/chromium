@@ -1094,6 +1094,23 @@ const FeatureEntry::FeatureVariation
             nullptr,
         }};
 
+const FeatureEntry::FeatureVariation
+    kOmniboxRichAutocompletionPreferUrlsOverPrefixesVariations[] = {
+        {
+            "Prefer prefixes",
+            (FeatureEntry::FeatureParam[]){},
+            0,
+            nullptr,
+        },
+        {
+            "Prefer URLs",
+            (FeatureEntry::FeatureParam[]){
+                {"RichAutocompletionAutocompletePreferUrlsOverPrefixes",
+                 "true"}},
+            1,
+            nullptr,
+        }};
+
 // A limited number of combinations of the above variations that are most
 // promising.
 const FeatureEntry::FeatureVariation
@@ -4151,6 +4168,15 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kRichAutocompletion,
                                     kOmniboxRichAutocompletionSplitVariations,
                                     "OmniboxBundledExperimentV1")},
+    {"omnibox-rich-autocompletion-prefer-urls-over-prefixes",
+     flag_descriptions::kOmniboxRichAutocompletionPreferUrlsOverPrefixesName,
+     flag_descriptions::
+         kOmniboxRichAutocompletionPreferUrlsOverPrefixesDescription,
+     kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         omnibox::kRichAutocompletion,
+         kOmniboxRichAutocompletionPreferUrlsOverPrefixesVariations,
+         "OmniboxBundledExperimentV1")},
     {"omnibox-rich-autocompletion-promising",
      flag_descriptions::kOmniboxRichAutocompletionPromisingName,
      flag_descriptions::kOmniboxRichAutocompletionPromisingDescription,
