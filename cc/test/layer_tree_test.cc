@@ -53,7 +53,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/size_conversions.h"
-#include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_switches.h"
 
 namespace cc {
@@ -969,13 +968,6 @@ void LayerTreeTest::RealEndTest() {
   }
 
   base::RunLoop::QuitCurrentWhenIdleDeprecated();
-}
-
-bool LayerTreeTest::use_swangle() const {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  return (gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE) &&
-         (command_line->GetSwitchValueASCII(::switches::kUseANGLE) ==
-          gl::kANGLEImplementationSwiftShaderName);
 }
 
 void LayerTreeTest::DispatchAddNoDamageAnimation(
