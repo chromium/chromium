@@ -65,6 +65,7 @@ TREE_CLOSING_STEPS_REGEXP = "\\b({})\\b".format("|".join([
     "gclient runhooks",
     "runhooks",
     "update",
+    "\\w*nocompile_test",
 ]))
 
 # This results in a notifier with no recipients, so nothing will actually be
