@@ -97,7 +97,9 @@ namespace ash {
 namespace {
 
 void NewDesk() {
-  DesksController::Get()->NewDesk(DesksCreationRemovalSource::kButton);
+  // Create a desk through keyboard. Do not use |kButton| to avoid empty name
+  // while in Bento.
+  DesksController::Get()->NewDesk(DesksCreationRemovalSource::kKeyboard);
 }
 
 std::unique_ptr<aura::Window> CreateTransientWindow(
@@ -343,6 +345,14 @@ class DesksTest : public AshTestBase,
   DesksTest() = default;
   ~DesksTest() override = default;
 
+  views::LabelButton* GetNewDeskButton(const DesksBarView* bar_view) {
+    DCHECK(bar_view);
+    if (features::IsBentoEnabled())
+      return bar_view->expanded_state_new_desk_button()->new_desk_button();
+
+    return bar_view->new_desk_button();
+  }
+
  private:
   DISALLOW_COPY_AND_ASSIGN(DesksTest);
 };
@@ -390,28 +400,25 @@ TEST_F(DesksTest, DesksBarViewDeskCreation) {
   const auto* overview_grid =
       GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
 
-  // Initially the grid is not offset down when there are no desk mini_views
-  // once animations are added.
+  const auto* desks_bar_view = overview_grid->desks_bar_view();
   EXPECT_FALSE(overview_grid->IsDesksBarViewActive());
 
-  const auto* desks_bar_view = overview_grid->desks_bar_view();
-
-  // Since we have a single default desk, there should be no mini_views, and the
-  // new desk button is enabled.
   DCHECK(desks_bar_view);
   EXPECT_TRUE(desks_bar_view->mini_views().empty());
-  auto* new_desk_button = desks_bar_view->new_desk_button();
-  EXPECT_TRUE(new_desk_button->GetEnabled());
-
-  // Click many times on the new desk button and expect only the max number of
-  // desks will be created, and the button is no longer enabled.
-  const gfx::Point button_center =
-      new_desk_button->GetBoundsInScreen().CenterPoint();
 
   auto* event_generator = GetEventGenerator();
-  event_generator->MoveMouseTo(button_center);
+  if (features::IsBentoEnabled()) {
+    ClickOnView(desks_bar_view->zero_state_default_desk_button(),
+                event_generator);
+    EXPECT_FALSE(desks_bar_view->IsZeroState());
+  }
+
+  auto* new_desk_button = GetNewDeskButton(desks_bar_view);
+  EXPECT_TRUE(new_desk_button->GetEnabled());
+  // Click many times on the expanded new desk button and expect only the max
+  // number of desks will be created, and the button is no longer enabled.
   for (size_t i = 0; i < desks_util::GetMaxNumberOfDesks() + 2; ++i)
-    event_generator->ClickLeftButton();
+    ClickOnView(new_desk_button, event_generator);
 
   EXPECT_TRUE(overview_grid->IsDesksBarViewActive());
   EXPECT_EQ(desks_util::GetMaxNumberOfDesks(), controller->desks().size());
@@ -423,7 +430,7 @@ TEST_F(DesksTest, DesksBarViewDeskCreation) {
 
   // Hover over one of the mini_views, and expect that the close button becomes
   // visible.
-  const auto* mini_view = desks_bar_view->mini_views().back();
+  const auto* mini_view = desks_bar_view->mini_views().front();
   EXPECT_FALSE(mini_view->close_desk_button()->GetVisible());
   const gfx::Point mini_view_center =
       mini_view->GetBoundsInScreen().CenterPoint();
@@ -459,7 +466,7 @@ TEST_F(DesksTest, DesksBarViewDeskCreation) {
 
   DCHECK(desks_bar_view);
   EXPECT_EQ(controller->desks().size(), desks_bar_view->mini_views().size());
-  EXPECT_TRUE(desks_bar_view->new_desk_button()->GetEnabled());
+  EXPECT_TRUE(GetNewDeskButton(desks_bar_view)->GetEnabled());
 }
 
 // Test that gesture taps do not reset the button state to normal when the
@@ -473,13 +480,17 @@ TEST_F(DesksTest, GestureTapOnNewDeskButton) {
       GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
 
   const auto* desks_bar_view = overview_grid->desks_bar_view();
+  auto* event_generator = GetEventGenerator();
   DCHECK(desks_bar_view);
-  auto* new_desk_button = desks_bar_view->new_desk_button();
+  if (features::IsBentoEnabled()) {
+    ClickOnView(desks_bar_view->zero_state_default_desk_button(),
+                event_generator);
+  }
+  auto* new_desk_button = GetNewDeskButton(desks_bar_view);
   EXPECT_TRUE(new_desk_button->GetEnabled());
 
   // Gesture tap multiple times on the new desk button until it's disabled, and
   // verify the button state.
-  auto* event_generator = GetEventGenerator();
   for (size_t i = 0; i < desks_util::GetMaxNumberOfDesks() + 2; ++i)
     GestureTapOnView(new_desk_button, event_generator);
 
@@ -488,6 +499,10 @@ TEST_F(DesksTest, GestureTapOnNewDeskButton) {
 }
 
 TEST_F(DesksTest, DesksBarViewScreenLayoutTest) {
+  // Compact layout is used only in classic desks.
+  if (features::IsBentoEnabled())
+    return;
+
   UpdateDisplay("1600x1200");
   DesksController* controller = DesksController::Get();
   OverviewController* overview_controller = Shell::Get()->overview_controller();
@@ -1128,9 +1143,13 @@ TEST_F(DesksTest, RemoveActiveDeskFromOverview) {
 
   // desk_1 will become active, and windows from desk_2 will move to desk_1 such
   // that they become last in MRU order, and therefore appended at the end of
-  // the overview grid.
+  // the overview grid. Desks bar should go back to zero state since there is a
+  // single desk after removing.
   ASSERT_EQ(1u, controller->desks().size());
-  ASSERT_EQ(1u, desks_bar_view->mini_views().size());
+  size_t mini_view_size_after_removing = 0;
+  if (!features::IsBentoEnabled())
+    mini_view_size_after_removing = 1;
+  ASSERT_EQ(mini_view_size_after_removing, desks_bar_view->mini_views().size());
   EXPECT_TRUE(desk_1->is_active());
   EXPECT_TRUE(overview_controller->InOverviewSession());
   EXPECT_EQ(4u, overview_grid->window_list().size());
@@ -1435,7 +1454,7 @@ TEST_P(DesksTest, DragWindowToNonMiniViewPoints) {
   // returned back to its original target bounds.
   DragItemToPoint(
       overview_item,
-      desks_bar_view->new_desk_button()->GetBoundsInScreen().CenterPoint(),
+      GetNewDeskButton(desks_bar_view)->GetBoundsInScreen().CenterPoint(),
       GetEventGenerator(),
       /*by_touch_gestures=*/GetParam());
   EXPECT_TRUE(overview_controller->InOverviewSession());
@@ -1567,7 +1586,8 @@ TEST_F(DesksTest, NoMiniViewsUpdateOnOverviewEnter) {
 // Tests that the new desk button's state and color are as expected.
 TEST_F(DesksTest, NewDeskButtonStateAndColor) {
   auto* controller = DesksController::Get();
-  ASSERT_EQ(1u, controller->desks().size());
+  NewDesk();
+  ASSERT_EQ(2u, controller->desks().size());
 
   auto* overview_controller = Shell::Get()->overview_controller();
   overview_controller->StartOverview();
@@ -1575,7 +1595,15 @@ TEST_F(DesksTest, NewDeskButtonStateAndColor) {
       GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
   const auto* desks_bar_view = overview_grid->desks_bar_view();
   ASSERT_TRUE(desks_bar_view);
-  const auto* new_desk_button = desks_bar_view->new_desk_button();
+  auto new_desk_button_background_color = [](const DesksBarView* bar_view) {
+    if (features::IsBentoEnabled()) {
+      return bar_view->expanded_state_new_desk_button()
+          ->new_desk_button()
+          ->GetBackgroundColorForTesting();
+    }
+    return bar_view->new_desk_button()->GetBackgroundColorForTesting();
+  };
+  const auto* new_desk_button = GetNewDeskButton(desks_bar_view);
 
   // Tests that with one or two desks, the new desk button has an enabled state
   // and color.
@@ -1585,27 +1613,24 @@ TEST_F(DesksTest, NewDeskButtonStateAndColor) {
   const SkColor disabled_background_color =
       AshColorProvider::GetDisabledColor(background_color);
   EXPECT_TRUE(new_desk_button->GetEnabled());
-  EXPECT_EQ(background_color, new_desk_button->GetBackgroundColorForTesting());
+  EXPECT_EQ(background_color, new_desk_button_background_color(desks_bar_view));
 
-  const gfx::Point button_center =
-      new_desk_button->GetBoundsInScreen().CenterPoint();
   auto* event_generator = GetEventGenerator();
-  event_generator->MoveMouseTo(button_center);
-  event_generator->ClickLeftButton();
+  ClickOnView(new_desk_button, event_generator);
   EXPECT_TRUE(new_desk_button->GetEnabled());
-  EXPECT_EQ(background_color, new_desk_button->GetBackgroundColorForTesting());
+  EXPECT_EQ(background_color, new_desk_button_background_color(desks_bar_view));
 
   // Tests that adding desks until we reach the desks limit should change the
   // state and color of the new desk button.
   size_t prev_size = controller->desks().size();
   while (controller->CanCreateDesks()) {
-    event_generator->ClickLeftButton();
+    ClickOnView(new_desk_button, event_generator);
     EXPECT_EQ(prev_size + 1, controller->desks().size());
     prev_size = controller->desks().size();
   }
   EXPECT_FALSE(new_desk_button->GetEnabled());
   EXPECT_EQ(disabled_background_color,
-            new_desk_button->GetBackgroundColorForTesting());
+            new_desk_button_background_color(desks_bar_view));
 }
 
 class DesksWithMultiDisplayOverview : public AshTestBase {
@@ -1732,7 +1757,7 @@ void VerifyDesksRestoreData(PrefService* user_prefs,
 
 }  // namespace
 
-class DesksEditableNamesTest : public AshTestBase {
+class DesksEditableNamesTest : public DesksTest {
  public:
   DesksEditableNamesTest() = default;
   DesksEditableNamesTest(const DesksEditableNamesTest&) = delete;
@@ -1743,9 +1768,9 @@ class DesksEditableNamesTest : public AshTestBase {
   OverviewGrid* overview_grid() { return overview_grid_; }
   const DesksBarView* desks_bar_view() { return desks_bar_view_; }
 
-  // AshTestBase:
+  // DesksTest:
   void SetUp() override {
-    AshTestBase::SetUp();
+    DesksTest::SetUp();
 
     // Begin all tests with two desks and start overview.
     NewDesk();
@@ -1913,11 +1938,9 @@ TEST_F(DesksEditableNamesTest, EventsThatCommitChanges) {
   EXPECT_TRUE(desk_name_view->HasFocus());
 
   // Creating a new desk commits the changes.
-  auto* new_desk_button = desks_bar_view()->new_desk_button();
+  auto* new_desk_button = GetNewDeskButton(desks_bar_view());
   auto* event_generator = GetEventGenerator();
-  event_generator->MoveMouseTo(
-      new_desk_button->GetBoundsInScreen().CenterPoint());
-  event_generator->ClickLeftButton();
+  ClickOnView(new_desk_button, event_generator);
   ASSERT_EQ(3u, controller()->desks().size());
   EXPECT_FALSE(desk_name_view->HasFocus());
 
@@ -3761,17 +3784,17 @@ TEST_F(DesksMockTimeTest, DISABLED_DeskTraversalNonTouchpadMetrics) {
 }
 
 // A test class for testing Bento features.
-class DesksBentoTest : public DesksTest {
+class DesksBentoTest : public AshTestBase {
  public:
   DesksBentoTest() = default;
   DesksBentoTest(const DesksBentoTest&) = delete;
   DesksBentoTest& operator=(const DesksBentoTest&) = delete;
   ~DesksBentoTest() override = default;
 
-  // DesksTest:
+  // AshTestBase::
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(features::kBento);
-    DesksTest::SetUp();
+    AshTestBase::SetUp();
   }
 
  private:
@@ -4052,7 +4075,7 @@ TEST_F(DesksBentoTest, VisibleOnAllDesksMoveWindowToDeskViaDragAndDrop) {
 }
 
 // Tests the behavior of a window that is visible on all desks when a user tries
-// to move it to another desk using keyboard shorcuts.
+// to move it to another desk using keyboard shortcuts.
 TEST_F(DesksBentoTest, VisibleOnAllDesksMoveWindowToDeskViaShortcuts) {
   auto* controller = DesksController::Get();
   auto* root = Shell::GetPrimaryRootWindow();
