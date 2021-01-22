@@ -47,8 +47,6 @@ class AddToHomescreenInstaller {
           event_callback);
   static void InstallWebApk(content::WebContents* web_contents,
                             const AddToHomescreenParams& params);
-  static void InstallShortcut(content::WebContents* web_contents,
-                              const AddToHomescreenParams& params);
 
   AddToHomescreenInstaller() = delete;
   AddToHomescreenInstaller(const AddToHomescreenInstaller&) = delete;

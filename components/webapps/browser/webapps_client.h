@@ -57,6 +57,9 @@ class WebappsClient {
 
   virtual void InstallWebApk(content::WebContents* web_contents,
                              const AddToHomescreenParams& params) = 0;
+
+  virtual void InstallShortcut(content::WebContents* web_contents,
+                               const AddToHomescreenParams& params) = 0;
 #endif
 };
 

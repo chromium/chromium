@@ -8,7 +8,6 @@
 
 #include "base/callback.h"
 #include "chrome/android/chrome_jni_headers/AddToHomescreenInstaller_jni.h"
-#include "chrome/browser/android/shortcut_helper.h"
 #include "chrome/browser/android/tab_android.h"
 #include "components/webapps/browser/webapps_client.h"
 #include "content/public/browser/web_contents.h"
@@ -35,7 +34,7 @@ void AddToHomescreenInstaller::Install(
       WebappsClient::Get()->InstallWebApk(web_contents, params);
       break;
     case AddToHomescreenParams::AppType::SHORTCUT:
-      InstallShortcut(web_contents, params);
+      WebappsClient::Get()->InstallShortcut(web_contents, params);
       break;
   }
   event_callback.Run(Event::INSTALL_REQUEST_FINISHED, params);
@@ -60,15 +59,6 @@ void AddToHomescreenInstaller::InstallOrOpenNativeApp(
   event_callback.Run(was_successful ? Event::NATIVE_INSTALL_OR_OPEN_SUCCEEDED
                                     : Event::NATIVE_INSTALL_OR_OPEN_FAILED,
                      params);
-}
-
-// static
-void AddToHomescreenInstaller::InstallShortcut(
-    content::WebContents* web_contents,
-    const AddToHomescreenParams& params) {
-  ShortcutHelper::AddToLauncherWithSkBitmap(
-      web_contents, *(params.shortcut_info), params.primary_icon,
-      params.has_maskable_primary_icon);
 }
 
 }  // namespace webapps

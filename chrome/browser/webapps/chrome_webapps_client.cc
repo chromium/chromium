@@ -11,6 +11,7 @@
 #include "content/public/browser/web_contents.h"
 
 #if defined(OS_ANDROID)
+#include "chrome/browser/android/shortcut_helper.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/android/tab_web_contents_delegate_android.h"
 #include "chrome/browser/android/webapk/webapk_install_service.h"
@@ -104,6 +105,13 @@ void ChromeWebappsClient::InstallWebApk(content::WebContents* web_contents,
   WebApkInstallService::Get(web_contents->GetBrowserContext())
       ->InstallAsync(web_contents, *(params.shortcut_info), params.primary_icon,
                      params.has_maskable_primary_icon, params.install_source);
+}
+
+void ChromeWebappsClient::InstallShortcut(content::WebContents* web_contents,
+                                          const AddToHomescreenParams& params) {
+  ShortcutHelper::AddToLauncherWithSkBitmap(
+      web_contents, *(params.shortcut_info), params.primary_icon,
+      params.has_maskable_primary_icon);
 }
 #endif
 

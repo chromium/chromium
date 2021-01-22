@@ -33,6 +33,8 @@ class ChromeWebappsClient : public WebappsClient {
       content::WebContents* web_contents) override;
   void InstallWebApk(content::WebContents* web_contents,
                      const AddToHomescreenParams& params) override;
+  void InstallShortcut(content::WebContents* web_contents,
+                       const AddToHomescreenParams& params) override;
 #endif
 
  private:
