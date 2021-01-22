@@ -99,6 +99,8 @@ blink_platform_sources("heap") {
     sources += [
       "v8_wrapper/blink_gc.h",
       "v8_wrapper/blink_gc_memory_dump_provider.h",
+      "v8_wrapper/collection_support/heap_hash_table_backing.h",
+      "v8_wrapper/collection_support/heap_vector_backing.h",
       "v8_wrapper/disallow_new_wrapper.h",
       "v8_wrapper/garbage_collected.h",
       "v8_wrapper/gc_task_runner.h",
@@ -126,6 +128,8 @@ blink_platform_sources("heap") {
       "impl/blink_gc.h",
       "impl/blink_gc_memory_dump_provider.cc",
       "impl/blink_gc_memory_dump_provider.h",
+      "impl/collection_support/heap_hash_table_backing.h",
+      "impl/collection_support/heap_vector_backing.h",
       "impl/finalizer_traits.h",
       "impl/garbage_collected.h",
       "impl/gc_info.cc",

@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "v8/include/cppgc/liveness-broker.h"
 
 namespace blink {
 
@@ -20,6 +21,8 @@ class PLATFORM_EXPORT BlinkGC final {
   // the stack.
   enum StackState { kNoHeapPointersOnStack, kHeapPointersOnStack };
 };
+
+using WeakCallback = void (*)(const cppgc::LivenessBroker&, const void*);
 
 }  // namespace blink
 
