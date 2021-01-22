@@ -4,8 +4,8 @@
 
 #include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
 
-#include "chrome/browser/prefetch/no_state_prefetch/chrome_prerender_contents_delegate.h"
-#include "components/no_state_prefetch/browser/prerender_contents.h"
+#include "chrome/browser/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "components/no_state_prefetch/browser/prerender_histograms.h"
 #include "content/public/browser/navigation_handle.h"
 #include "extensions/buildflags/buildflags.h"
@@ -35,13 +35,14 @@ ChromeNavigationUIData::ChromeNavigationUIData(
       navigation_handle, tab_id, window_id);
 #endif
 
-  auto* prerender_contents =
-      prerender::ChromePrerenderContentsDelegate::FromWebContents(web_contents);
-  if (prerender_contents) {
+  auto* no_state_prefetch_contents =
+      prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(
+          web_contents);
+  if (no_state_prefetch_contents) {
     is_no_state_prefetching_ = true;
     prerender_histogram_prefix_ =
         prerender::PrerenderHistograms::GetHistogramPrefix(
-            prerender_contents->origin());
+            no_state_prefetch_contents->origin());
   }
 }
 

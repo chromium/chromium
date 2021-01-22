@@ -136,7 +136,7 @@ class MockUrlCheckerDelegate : public UrlCheckerDelegate {
         threat_types_(
             SBThreatTypeSet({safe_browsing::SB_THREAT_TYPE_URL_PHISHING})) {}
 
-  MOCK_METHOD1(MaybeDestroyPrerenderContents,
+  MOCK_METHOD1(MaybeDestroyNoStatePrefetchContents,
                void(base::OnceCallback<content::WebContents*()>));
   MOCK_METHOD5(StartDisplayingBlockingPageHelper,
                void(const security_interstitials::UnsafeResource&,

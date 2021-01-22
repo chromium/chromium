@@ -39,10 +39,10 @@
 #include "chrome/browser/page_load_metrics/observers/tab_restore_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/third_party_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/translate_page_load_metrics_observer.h"
-#include "chrome/browser/prefetch/no_state_prefetch/chrome_prerender_contents_delegate.h"
+#include "chrome/browser/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
-#include "components/no_state_prefetch/browser/prerender_contents.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_embedder_base.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
@@ -171,7 +171,7 @@ void PageLoadMetricsEmbedder::RegisterEmbedderObservers(
 }
 
 bool PageLoadMetricsEmbedder::IsPrerendering() const {
-  return prerender::ChromePrerenderContentsDelegate::FromWebContents(
+  return prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(
              web_contents()) != nullptr;
 }
 
@@ -184,7 +184,7 @@ bool PageLoadMetricsEmbedder::IsNewTabPageUrl(const GURL& url) {
 }
 
 bool PageLoadMetricsEmbedder::IsPrerender(content::WebContents* web_contents) {
-  return prerender::ChromePrerenderContentsDelegate::FromWebContents(
+  return prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(
       web_contents);
 }
 

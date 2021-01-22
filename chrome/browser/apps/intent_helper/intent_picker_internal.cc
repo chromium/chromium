@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "chrome/browser/apps/intent_helper/page_transition_util.h"
-#include "chrome/browser/prefetch/no_state_prefetch/chrome_prerender_contents_delegate.h"
+#include "chrome/browser/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -16,7 +16,7 @@
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
-#include "components/no_state_prefetch/browser/prerender_contents.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -40,9 +40,10 @@ bool IsGoogleRedirectorUrl(const GURL& url) {
 
 bool ShouldCheckAppsForUrl(content::WebContents* web_contents) {
   // Do not check apps for url if no apps can be installed.
-  // Do not check apps for url in incognito or for a prerender navigation.
+  // Do not check apps for url in incognito or for a no-state prefetcher
+  // navigation.
   if (web_contents->GetBrowserContext()->IsOffTheRecord() ||
-      prerender::ChromePrerenderContentsDelegate::FromWebContents(
+      prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(
           web_contents) != nullptr) {
     return false;
   }

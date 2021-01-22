@@ -53,7 +53,7 @@ class PrerenderHistory {
     // The Origin describing where the prerender originated from.
     Origin origin;
 
-    // Time the PrerenderContents was destroyed.
+    // Time the NoStatePrefetchContents was destroyed.
     base::Time end_time;
   };
 

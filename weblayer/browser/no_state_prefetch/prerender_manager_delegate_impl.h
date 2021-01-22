@@ -23,8 +23,8 @@ class PrerenderManagerDelegateImpl
 
   // PrerenderManagerDelegate overrides.
   scoped_refptr<content_settings::CookieSettings> GetCookieSettings() override;
-  std::unique_ptr<prerender::PrerenderContentsDelegate>
-  GetPrerenderContentsDelegate() override;
+  std::unique_ptr<prerender::NoStatePrefetchContentsDelegate>
+  GetNoStatePrefetchContentsDelegate() override;
   bool IsNetworkPredictionPreferenceEnabled() override;
   std::string GetReasonForDisablingPrediction() override;
 

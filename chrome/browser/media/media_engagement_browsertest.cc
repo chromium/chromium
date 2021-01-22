@@ -745,18 +745,18 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest, MAYBE_Ignored) {
           browser()->profile());
   ASSERT_TRUE(prerender_manager);
 
-  prerender::test_utils::TestPrerenderContentsFactory*
-      prerender_contents_factory =
-          new prerender::test_utils::TestPrerenderContentsFactory();
-  prerender_manager->SetPrerenderContentsFactoryForTest(
-      prerender_contents_factory);
+  prerender::test_utils::TestNoStatePrefetchContentsFactory*
+      no_state_prefetch_contents_factory =
+          new prerender::test_utils::TestNoStatePrefetchContentsFactory();
+  prerender_manager->SetNoStatePrefetchContentsFactoryForTest(
+      no_state_prefetch_contents_factory);
 
   content::SessionStorageNamespace* storage_namespace =
       GetWebContents()->GetController().GetDefaultSessionStorageNamespace();
   ASSERT_TRUE(storage_namespace);
 
   std::unique_ptr<prerender::test_utils::TestPrerender> test_prerender =
-      prerender_contents_factory->ExpectPrerenderContents(
+      no_state_prefetch_contents_factory->ExpectNoStatePrefetchContents(
           prerender::FINAL_STATUS_NOSTATE_PREFETCH_FINISHED);
 
   std::unique_ptr<prerender::PrerenderHandle> prerender_handle =

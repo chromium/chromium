@@ -14,7 +14,7 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
-#include "components/no_state_prefetch/browser/prerender_contents.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "components/no_state_prefetch/browser/prerender_handle.h"
 #include "components/no_state_prefetch/browser/prerender_manager.h"
 #include "content/public/browser/render_process_host.h"
@@ -54,7 +54,7 @@ PrerenderLinkManager::LinkPrerender::LinkPrerender(
     blink::mojom::PrerenderAttributesPtr attributes,
     const url::Origin& initiator_origin,
     base::TimeTicks creation_time,
-    PrerenderContents* deferred_launcher)
+    NoStatePrefetchContents* deferred_launcher)
     : launcher_render_process_id(launcher_render_process_id),
       launcher_render_view_id(launcher_render_view_id),
       url(attributes->url),
@@ -104,28 +104,28 @@ base::Optional<int> PrerenderLinkManager::OnStartPrerender(
 #endif
 
   // Check if the launcher is itself an unswapped prerender.
-  PrerenderContents* prerender_contents =
-      manager_->GetPrerenderContentsForRoute(launcher_render_process_id,
-                                             launcher_render_view_id);
-  if (prerender_contents &&
-      prerender_contents->final_status() != FINAL_STATUS_UNKNOWN) {
+  NoStatePrefetchContents* no_state_prefetch_contents =
+      manager_->GetNoStatePrefetchContentsForRoute(launcher_render_process_id,
+                                                   launcher_render_view_id);
+  if (no_state_prefetch_contents &&
+      no_state_prefetch_contents->final_status() != FINAL_STATUS_UNKNOWN) {
     // The launcher is a prerender about to be destroyed asynchronously, but
     // its AddLinkRelPrerender message raced with shutdown. Ignore it.
-    DCHECK_NE(FINAL_STATUS_USED, prerender_contents->final_status());
+    DCHECK_NE(FINAL_STATUS_USED, no_state_prefetch_contents->final_status());
     return base::nullopt;
   }
 
   auto prerender = std::make_unique<LinkPrerender>(
       launcher_render_process_id, launcher_render_view_id,
       std::move(attributes), initiator_origin, manager_->GetCurrentTimeTicks(),
-      prerender_contents);
+      no_state_prefetch_contents);
 
   // Stash pointer used only for comparison later.
   const LinkPrerender* prerender_ptr = prerender.get();
 
   prerenders_.push_back(std::move(prerender));
 
-  if (!prerender_contents)
+  if (!no_state_prefetch_contents)
     StartPrerenders();
 
   // Check if the prerender we added is still at the end of the list. It

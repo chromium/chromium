@@ -71,7 +71,7 @@ class PrerenderLinkManager : public KeyedService,
                   blink::mojom::PrerenderAttributesPtr attributes,
                   const url::Origin& initiator_origin,
                   base::TimeTicks creation_time,
-                  PrerenderContents* deferred_launcher);
+                  NoStatePrefetchContents* deferred_launcher);
     ~LinkPrerender();
 
     LinkPrerender(const LinkPrerender& other) = delete;
@@ -92,7 +92,7 @@ class PrerenderLinkManager : public KeyedService,
     // If non-null, this link prerender was launched by an unswapped prerender,
     // |deferred_launcher|. When |deferred_launcher| is swapped in, the field is
     // set to null.
-    const PrerenderContents* deferred_launcher;
+    const NoStatePrefetchContents* deferred_launcher;
 
     // Initially null, |handle| is set once we start this prerender. It is owned
     // by this struct, and must be deleted before destructing this struct.

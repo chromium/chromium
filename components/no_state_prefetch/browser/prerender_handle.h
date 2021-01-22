@@ -13,7 +13,7 @@
 
 namespace prerender {
 
-class PrerenderContents;
+class NoStatePrefetchContents;
 
 // A class representing a running prerender to a client of the PrerenderManager.
 // Methods on PrerenderManager which start prerenders return a caller-owned
@@ -22,7 +22,7 @@ class PrerenderContents;
 // Destroying a handle before a prerender starts will prevent it from ever
 // starting. Destroying a handle while a prerendering is running will stop the
 // prerender, without making any calls to the observer.
-class PrerenderHandle : public PrerenderContents::Observer {
+class PrerenderHandle : public NoStatePrefetchContents::Observer {
  public:
   class Observer {
    public:
@@ -64,7 +64,7 @@ class PrerenderHandle : public PrerenderContents::Observer {
   // True if the prerender is currently active, but is abandoned.
   bool IsAbandoned() const;
 
-  PrerenderContents* contents() const;
+  NoStatePrefetchContents* contents() const;
 
   // Returns whether this PrerenderHandle represents the same prerender as
   // the other PrerenderHandle object specified.
@@ -75,10 +75,11 @@ class PrerenderHandle : public PrerenderContents::Observer {
 
   explicit PrerenderHandle(PrerenderManager::PrerenderData* prerender_data);
 
-  // From PrerenderContents::Observer:
-  void OnPrerenderStop(PrerenderContents* prerender_contents) override;
+  // From NoStatePrefetchContents::Observer:
+  void OnPrerenderStop(
+      NoStatePrefetchContents* no_state_prefetch_contents) override;
   void OnPrerenderNetworkBytesChanged(
-      PrerenderContents* prerender_contents) override;
+      NoStatePrefetchContents* no_state_prefetch_contents) override;
 
   Observer* observer_;
 

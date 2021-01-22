@@ -19,8 +19,8 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "components/no_state_prefetch/browser/prerender_config.h"
-#include "components/no_state_prefetch/browser/prerender_contents.h"
 #include "components/no_state_prefetch/browser/prerender_histograms.h"
 #include "components/no_state_prefetch/browser/prerender_manager_delegate.h"
 #include "components/no_state_prefetch/common/prerender_final_status.h"
@@ -154,9 +154,9 @@ class PrerenderManager : public content::RenderProcessHostObserver,
   // Cancels all active prerenders.
   void CancelAllPrerenders();
 
-  // Moves a PrerenderContents to the pending delete list from the list of
+  // Moves a NoStatePrefetchContents to the pending delete list from the list of
   // active prerenders when prerendering should be cancelled.
-  virtual void MoveEntryToPendingDelete(PrerenderContents* entry,
+  virtual void MoveEntryToPendingDelete(NoStatePrefetchContents* entry,
                                         FinalStatus final_status);
 
   // Query the list of current prerender pages to see if the given web contents
@@ -164,17 +164,18 @@ class PrerenderManager : public content::RenderProcessHostObserver,
   bool IsWebContentsPrerendering(
       const content::WebContents* web_contents) const;
 
-  // Returns the PrerenderContents object for the given web_contents, otherwise
-  // returns NULL. Note that the PrerenderContents may have been Destroy()ed,
-  // but not yet deleted.
-  PrerenderContents* GetPrerenderContents(
+  // Returns the NoStatePrefetchContents object for the given web_contents,
+  // otherwise returns NULL. Note that the NoStatePrefetchContents may have been
+  // Destroy()ed, but not yet deleted.
+  NoStatePrefetchContents* GetNoStatePrefetchContents(
       const content::WebContents* web_contents) const;
 
-  // Returns the PrerenderContents object for a given child_id, route_id pair,
-  // otherwise returns NULL. Note that the PrerenderContents may have been
-  // Destroy()ed, but not yet deleted.
-  virtual PrerenderContents* GetPrerenderContentsForRoute(int child_id,
-                                                          int route_id) const;
+  // Returns the NoStatePrefetchContents object for a given child_id, route_id
+  // pair, otherwise returns NULL. Note that the NoStatePrefetchContents may
+  // have been Destroy()ed, but not yet deleted.
+  virtual NoStatePrefetchContents* GetNoStatePrefetchContentsForRoute(
+      int child_id,
+      int route_id) const;
 
   // Returns a list of all WebContents being prerendered.
   std::vector<content::WebContents*> GetAllPrerenderingContents() const;
@@ -234,7 +235,7 @@ class PrerenderManager : public content::RenderProcessHostObserver,
   void RecordNetworkBytesConsumed(Origin origin, int64_t prerender_bytes);
 
   // Registers a new ProcessHost performing a prerender. Called by
-  // PrerenderContents.
+  // NoStatePrefetchContents.
   void AddPrerenderProcessHost(content::RenderProcessHost* process_host);
 
   // Returns whether or not |process_host| may be reused for new navigations
@@ -254,8 +255,8 @@ class PrerenderManager : public content::RenderProcessHostObserver,
                               FinalStatus* final_status,
                               Origin* origin);
 
-  void SetPrerenderContentsFactoryForTest(
-      PrerenderContents::Factory* prerender_contents_factory);
+  void SetNoStatePrefetchContentsFactoryForTest(
+      NoStatePrefetchContents::Factory* no_state_prefetch_contents_factory);
 
   base::WeakPtr<PrerenderManager> AsWeakPtr();
 
@@ -280,7 +281,7 @@ class PrerenderManager : public content::RenderProcessHostObserver,
     struct OrderByExpiryTime;
 
     PrerenderData(PrerenderManager* manager,
-                  std::unique_ptr<PrerenderContents> contents,
+                  std::unique_ptr<NoStatePrefetchContents> contents,
                   base::TimeTicks expiry_time);
 
     ~PrerenderData();
@@ -299,9 +300,9 @@ class PrerenderManager : public content::RenderProcessHostObserver,
     // other handles continue to track it.
     void OnHandleCanceled(PrerenderHandle* prerender_handle);
 
-    PrerenderContents* contents() { return contents_.get(); }
+    NoStatePrefetchContents* contents() { return contents_.get(); }
 
-    std::unique_ptr<PrerenderContents> ReleaseContents();
+    std::unique_ptr<NoStatePrefetchContents> ReleaseContents();
 
     int handle_count() const { return handle_count_; }
 
@@ -314,7 +315,7 @@ class PrerenderManager : public content::RenderProcessHostObserver,
 
    private:
     PrerenderManager* const manager_;
-    std::unique_ptr<PrerenderContents> contents_;
+    std::unique_ptr<NoStatePrefetchContents> contents_;
 
     // The number of distinct PrerenderHandles created for |this|, including
     // ones that have called PrerenderData::OnHandleNavigatedAway(), but not
@@ -348,7 +349,7 @@ class PrerenderManager : public content::RenderProcessHostObserver,
 
  private:
   friend class test_utils::PrerenderInProcessBrowserTest;
-  friend class PrerenderContents;
+  friend class NoStatePrefetchContents;
   friend class PrerenderHandle;
   friend class UnitTestPrerenderManager;
 
@@ -364,7 +365,7 @@ class PrerenderManager : public content::RenderProcessHostObserver,
 
   // Adds a prerender for |url| from |referrer|. The |origin| specifies how the
   // prerender was added. If |bounds| is empty, then
-  // PrerenderContents::StartPrerendering will instead use a default from
+  // NoStatePrefetchContents::StartPrerendering will instead use a default from
   // PrerenderConfig. Returns a PrerenderHandle or NULL.
   std::unique_ptr<PrerenderHandle> AddPrerenderWithPreconnectFallback(
       Origin origin,
@@ -379,9 +380,9 @@ class PrerenderManager : public content::RenderProcessHostObserver,
 
   void EvictOldestPrerendersIfNecessary();
 
-  // Deletes stale and cancelled prerendered PrerenderContents, as well as
+  // Deletes stale and cancelled prerendered NoStatePrefetchContents, as well as
   // WebContents that have been replaced by prerendered WebContents.
-  // Also identifies and kills PrerenderContents that use too much
+  // Also identifies and kills NoStatePrefetchContents that use too much
   // resources.
   void PeriodicCleanup();
 
@@ -398,7 +399,8 @@ class PrerenderManager : public content::RenderProcessHostObserver,
   void DeleteToDeletePrerenders();
 
   // Virtual so unit tests can override this.
-  virtual std::unique_ptr<PrerenderContents> CreatePrerenderContents(
+  virtual std::unique_ptr<NoStatePrefetchContents>
+  CreateNoStatePrefetchContents(
       const GURL& url,
       const content::Referrer& referrer,
       const base::Optional<url::Origin>& initiator_origin,
@@ -415,10 +417,10 @@ class PrerenderManager : public content::RenderProcessHostObserver,
       const GURL& url,
       content::SessionStorageNamespace* session_storage_namespace);
 
-  // Given the |prerender_contents|, find the iterator in |active_prerenders_|
-  // correponding to the given prerender.
-  PrerenderDataVector::iterator FindIteratorForPrerenderContents(
-      PrerenderContents* prerender_contents);
+  // Given the |no_state_prefetch_contents|, find the iterator in
+  // |active_prerenders_| corresponding to the given prerender.
+  PrerenderDataVector::iterator FindIteratorForNoStatePrefetchContents(
+      NoStatePrefetchContents* no_state_prefetch_contents);
 
   bool DoesRateLimitAllowPrerender(Origin origin) const;
 
@@ -427,8 +429,8 @@ class PrerenderManager : public content::RenderProcessHostObserver,
   // so cannot immediately be deleted.
   void DeleteOldWebContents();
 
-  // Called when PrerenderContents gets destroyed. Attaches the |final_status|
-  // to the most recent prefetch matching the |url|.
+  // Called when NoStatePrefetchContents gets destroyed. Attaches the
+  // |final_status| to the most recent prefetch matching the |url|.
   void SetPrefetchFinalStatusForUrl(const GURL& url, FinalStatus final_status);
 
   // Called when a prefetch has been used. Prefetches avoid cache revalidation
@@ -445,7 +447,7 @@ class PrerenderManager : public content::RenderProcessHostObserver,
                                     OnCloseWebContentsDeleter* deleter);
 
   // Adds to the history list.
-  void AddToHistory(PrerenderContents* contents);
+  void AddToHistory(NoStatePrefetchContents* contents);
 
   // Returns a new Value representing the pages currently being prerendered.
   std::unique_ptr<base::ListValue> GetActivePrerendersAsValue() const;
@@ -455,12 +457,13 @@ class PrerenderManager : public content::RenderProcessHostObserver,
   // Used both on destruction, and when clearing the browsing history.
   void DestroyAllContents(FinalStatus final_status);
 
-  // Records the final status a prerender in the case that a PrerenderContents
-  // was never created, adds a PrerenderHistory entry, and may also initiate a
-  // preconnect to |url|.
-  void SkipPrerenderContentsAndMaybePreconnect(const GURL& url,
-                                               Origin origin,
-                                               FinalStatus final_status) const;
+  // Records the final status a prerender in the case that a
+  // NoStatePrefetchContents was never created, adds a PrerenderHistory entry,
+  // and may also initiate a preconnect to |url|.
+  void SkipNoStatePrefetchContentsAndMaybePreconnect(
+      const GURL& url,
+      Origin origin,
+      FinalStatus final_status) const;
 
   // May initiate a preconnect to |url_arg| based on |origin|.
   void MaybePreconnect(Origin origin, const GURL& url_arg) const;
@@ -488,7 +491,8 @@ class PrerenderManager : public content::RenderProcessHostObserver,
   // List of recent prefetches, sorted by ascending navigate time.
   std::vector<NavigationRecord> prefetches_;
 
-  std::unique_ptr<PrerenderContents::Factory> prerender_contents_factory_;
+  std::unique_ptr<NoStatePrefetchContents::Factory>
+      no_state_prefetch_contents_factory_;
 
   // RepeatingTimer to perform periodic cleanups of pending prerendered
   // pages.

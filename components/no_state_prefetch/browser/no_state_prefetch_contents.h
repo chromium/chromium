@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_NO_STATE_PREFETCH_BROWSER_PRERENDER_CONTENTS_H_
-#define COMPONENTS_NO_STATE_PREFETCH_BROWSER_PRERENDER_CONTENTS_H_
+#ifndef COMPONENTS_NO_STATE_PREFETCH_BROWSER_NO_STATE_PREFETCH_CONTENTS_H_
+#define COMPONENTS_NO_STATE_PREFETCH_BROWSER_NO_STATE_PREFETCH_CONTENTS_H_
 
 #include <stdint.h>
 
@@ -18,7 +18,7 @@
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "components/no_state_prefetch/browser/prerender_contents_delegate.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_contents_delegate.h"
 #include "components/no_state_prefetch/common/prerender_canceler.mojom.h"
 #include "components/no_state_prefetch/common/prerender_final_status.h"
 #include "components/no_state_prefetch/common/prerender_origin.h"
@@ -49,12 +49,12 @@ namespace prerender {
 
 class PrerenderManager;
 
-class PrerenderContents : public content::NotificationObserver,
-                          public content::WebContentsObserver,
-                          public prerender::mojom::PrerenderCanceler {
+class NoStatePrefetchContents : public content::NotificationObserver,
+                                public content::WebContentsObserver,
+                                public prerender::mojom::PrerenderCanceler {
  public:
-  // PrerenderContents::Create uses the currently registered Factory to create
-  // the PrerenderContents. Factory is intended for testing.
+  // NoStatePrefetchContents::Create uses the currently registered Factory to
+  // create the NoStatePrefetchContents. Factory is intended for testing.
   class Factory {
    public:
     Factory() {}
@@ -62,8 +62,8 @@ class PrerenderContents : public content::NotificationObserver,
 
     // Ownership is not transferred through this interface as prerender_manager
     // and browser_context are stored as weak pointers.
-    virtual PrerenderContents* CreatePrerenderContents(
-        std::unique_ptr<PrerenderContentsDelegate> delegate,
+    virtual NoStatePrefetchContents* CreateNoStatePrefetchContents(
+        std::unique_ptr<NoStatePrefetchContentsDelegate> delegate,
         PrerenderManager* prerender_manager,
         content::BrowserContext* browser_context,
         const GURL& url,
@@ -78,33 +78,35 @@ class PrerenderContents : public content::NotificationObserver,
   class Observer {
    public:
     // Signals that the prerender has started running.
-    virtual void OnPrerenderStart(PrerenderContents* contents) {}
+    virtual void OnPrerenderStart(NoStatePrefetchContents* contents) {}
 
     // Signals that the prerender has had its load event.
-    virtual void OnPrerenderStopLoading(PrerenderContents* contents) {}
+    virtual void OnPrerenderStopLoading(NoStatePrefetchContents* contents) {}
 
     // Signals that the prerender has had its 'DOMContentLoaded' event.
-    virtual void OnPrerenderDomContentLoaded(PrerenderContents* contents) {}
+    virtual void OnPrerenderDomContentLoaded(
+        NoStatePrefetchContents* contents) {}
 
-    // Signals that the prerender has stopped running. A PrerenderContents with
-    // an unset final status will always call OnPrerenderStop before being
+    // Signals that the prerender has stopped running. A NoStatePrefetchContents
+    // with an unset final status will always call OnPrerenderStop before being
     // destroyed.
-    virtual void OnPrerenderStop(PrerenderContents* contents) {}
+    virtual void OnPrerenderStop(NoStatePrefetchContents* contents) {}
 
     // Signals that a resource finished loading and altered the running byte
     // count.
-    virtual void OnPrerenderNetworkBytesChanged(PrerenderContents* contents) {}
+    virtual void OnPrerenderNetworkBytesChanged(
+        NoStatePrefetchContents* contents) {}
 
    protected:
     Observer() {}
     virtual ~Observer() = 0;
   };
 
-  ~PrerenderContents() override;
+  ~NoStatePrefetchContents() override;
 
-  // All observers of a PrerenderContents are removed after the OnPrerenderStop
-  // event is sent, so there is no need to call RemoveObserver() in the normal
-  // use case.
+  // All observers of a NoStatePrefetchContents are removed after the
+  // OnPrerenderStop event is sent, so there is no need to call RemoveObserver()
+  // in the normal use case.
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
@@ -173,12 +175,12 @@ class PrerenderContents : public content::NotificationObserver,
   // destroyed and false is returned.
   bool AddAliasURL(const GURL& url);
 
-  // The prerender WebContents (may be NULL).
-  content::WebContents* prerender_contents() const {
-    return prerender_contents_.get();
+  // The WebContents for NoStatePrefetch (may be NULL).
+  content::WebContents* no_state_prefetch_contents() const {
+    return no_state_prefetch_contents_.get();
   }
 
-  std::unique_ptr<content::WebContents> ReleasePrerenderContents();
+  std::unique_ptr<content::WebContents> ReleaseNoStatePrefetchContents();
 
   // Sets the final status, calls OnDestroy and adds |this| to the
   // PrerenderManager's pending deletes list.
@@ -205,15 +207,16 @@ class PrerenderContents : public content::NotificationObserver,
       mojo::PendingReceiver<prerender::mojom::PrerenderCanceler> receiver);
 
  protected:
-  PrerenderContents(std::unique_ptr<PrerenderContentsDelegate> delegate,
-                    PrerenderManager* prerender_manager,
-                    content::BrowserContext* browser_context,
-                    const GURL& url,
-                    const content::Referrer& referrer,
-                    const base::Optional<url::Origin>& initiator_origin,
-                    Origin origin);
+  NoStatePrefetchContents(
+      std::unique_ptr<NoStatePrefetchContentsDelegate> delegate,
+      PrerenderManager* prerender_manager,
+      content::BrowserContext* browser_context,
+      const GURL& url,
+      const content::Referrer& referrer,
+      const base::Optional<url::Origin>& initiator_origin,
+      Origin origin);
 
-  // Set the final status for how the PrerenderContents was used. This
+  // Set the final status for how the NoStatePrefetchContents was used. This
   // should only be called once, and should be called before the prerender
   // contents are destroyed.
   void SetFinalStatus(FinalStatus final_status);
@@ -240,8 +243,8 @@ class PrerenderContents : public content::NotificationObserver,
   // (potentially only partially) prerendered page is shown to the user.
   base::TimeTicks load_start_time_;
 
-  // The prerendered WebContents; may be null.
-  std::unique_ptr<content::WebContents> prerender_contents_;
+  // The WebContents for NoStatePrefetch; may be null.
+  std::unique_ptr<content::WebContents> no_state_prefetch_contents_;
 
   // The session storage namespace id for use in matching. We must save it
   // rather than get it from the RenderViewHost since in the control group
@@ -252,7 +255,7 @@ class PrerenderContents : public content::NotificationObserver,
   class WebContentsDelegateImpl;
 
   // Needs to be able to call the constructor.
-  friend class PrerenderContentsFactoryImpl;
+  friend class NoStatePrefetchContentsFactoryImpl;
 
   // Returns the ProcessMetrics for the render process, if it exists.
   void DidGetMemoryUsage(
@@ -272,7 +275,7 @@ class PrerenderContents : public content::NotificationObserver,
   PrerenderManager* prerender_manager_;
 
   // The delegate that content embedders use to override this class's logic.
-  std::unique_ptr<PrerenderContentsDelegate> delegate_;
+  std::unique_ptr<NoStatePrefetchContentsDelegate> delegate_;
 
   // The URL being prerendered.
   const GURL prerender_url_;
@@ -319,11 +322,11 @@ class PrerenderContents : public content::NotificationObserver,
   // transferred over the network for resources.  Updated with AddNetworkBytes.
   int64_t network_bytes_;
 
-  base::WeakPtrFactory<PrerenderContents> weak_factory_{this};
+  base::WeakPtrFactory<NoStatePrefetchContents> weak_factory_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(PrerenderContents);
+  DISALLOW_COPY_AND_ASSIGN(NoStatePrefetchContents);
 };
 
 }  // namespace prerender
 
-#endif  // COMPONENTS_NO_STATE_PREFETCH_BROWSER_PRERENDER_CONTENTS_H_
+#endif  // COMPONENTS_NO_STATE_PREFETCH_BROWSER_NO_STATE_PREFETCH_CONTENTS_H_

@@ -87,7 +87,7 @@ void PrerenderURLLoaderThrottle::WillStartRequest(
     // resource to allow chrome://crash to actually crash in the
     // *RendererCrash tests instead of being intercepted here. The
     // unsupported scheme for the main resource is checked in
-    // WillRedirectRequest() and PrerenderContents::CheckURL(). See
+    // WillRedirectRequest() and NoStatePrefetchContents::CheckURL(). See
     // http://crbug.com/673771.
     delegate_->CancelWithError(net::ERR_ABORTED);
     CallCancelPrerenderForUnsupportedScheme(std::move(canceler_));

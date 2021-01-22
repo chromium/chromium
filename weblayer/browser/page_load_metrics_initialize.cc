@@ -31,7 +31,7 @@ class PageLoadMetricsEmbedder
   // page_load_metrics::PageLoadMetricsEmbedderBase:
   bool IsNewTabPageUrl(const GURL& url) override { return false; }
   bool IsPrerender(content::WebContents* web_contents) override {
-    return PrerenderContentsFromWebContents(web_contents);
+    return NoStatePrefetchContentsFromWebContents(web_contents);
   }
   bool IsExtensionUrl(const GURL& url) override { return false; }
 
@@ -45,7 +45,7 @@ class PageLoadMetricsEmbedder
       (*g_callback_for_testing).Run(tracker);
   }
   bool IsPrerendering() const override {
-    return PrerenderContentsFromWebContents(web_contents());
+    return NoStatePrefetchContentsFromWebContents(web_contents());
   }
 };
 

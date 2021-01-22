@@ -4,13 +4,13 @@
 
 #include "weblayer/browser/no_state_prefetch/prerender_utils.h"
 
-#include "components/no_state_prefetch/browser/prerender_contents.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "components/no_state_prefetch/browser/prerender_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "weblayer/browser/no_state_prefetch/prerender_manager_factory.h"
 
 namespace weblayer {
-prerender::PrerenderContents* PrerenderContentsFromWebContents(
+prerender::NoStatePrefetchContents* NoStatePrefetchContentsFromWebContents(
     content::WebContents* web_contents) {
   if (!web_contents)
     return nullptr;
@@ -21,7 +21,7 @@ prerender::PrerenderContents* PrerenderContentsFromWebContents(
   if (!prerender_manager)
     return nullptr;
 
-  return prerender_manager->GetPrerenderContents(web_contents);
+  return prerender_manager->GetNoStatePrefetchContents(web_contents);
 }
 
 }  // namespace weblayer

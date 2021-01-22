@@ -71,7 +71,7 @@ AwUrlCheckerDelegateImpl::AwUrlCheckerDelegateImpl(
 
 AwUrlCheckerDelegateImpl::~AwUrlCheckerDelegateImpl() = default;
 
-void AwUrlCheckerDelegateImpl::MaybeDestroyPrerenderContents(
+void AwUrlCheckerDelegateImpl::MaybeDestroyNoStatePrefetchContents(
     content::WebContents::OnceGetter web_contents_getter) {}
 
 void AwUrlCheckerDelegateImpl::StartDisplayingBlockingPageHelper(

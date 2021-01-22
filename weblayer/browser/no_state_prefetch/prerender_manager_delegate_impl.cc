@@ -4,7 +4,7 @@
 
 #include "weblayer/browser/no_state_prefetch/prerender_manager_delegate_impl.h"
 
-#include "components/no_state_prefetch/browser/prerender_contents_delegate.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_contents_delegate.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "weblayer/browser/browser_context_impl.h"
@@ -25,9 +25,9 @@ PrerenderManagerDelegateImpl::GetCookieSettings() {
   return CookieSettingsFactory::GetForBrowserContext(browser_context_);
 }
 
-std::unique_ptr<prerender::PrerenderContentsDelegate>
-PrerenderManagerDelegateImpl::GetPrerenderContentsDelegate() {
-  return std::make_unique<prerender::PrerenderContentsDelegate>();
+std::unique_ptr<prerender::NoStatePrefetchContentsDelegate>
+PrerenderManagerDelegateImpl::GetNoStatePrefetchContentsDelegate() {
+  return std::make_unique<prerender::NoStatePrefetchContentsDelegate>();
 }
 
 bool PrerenderManagerDelegateImpl::IsNetworkPredictionPreferenceEnabled() {

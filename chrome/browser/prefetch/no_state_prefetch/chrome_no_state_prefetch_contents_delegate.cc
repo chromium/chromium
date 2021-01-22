@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/prefetch/no_state_prefetch/chrome_prerender_contents_delegate.h"
+#include "chrome/browser/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/prefetch/no_state_prefetch/prerender_manager_factory.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/ui/tab_helpers.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
-#include "components/no_state_prefetch/browser/prerender_contents.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "components/no_state_prefetch/browser/prerender_histograms.h"
 #include "components/no_state_prefetch/browser/prerender_manager.h"
 #include "content/public/browser/web_contents.h"
@@ -17,7 +17,7 @@
 namespace prerender {
 
 // static
-PrerenderContents* ChromePrerenderContentsDelegate::FromWebContents(
+NoStatePrefetchContents* ChromeNoStatePrefetchContentsDelegate::FromWebContents(
     content::WebContents* web_contents) {
   if (!web_contents)
     return nullptr;
@@ -26,25 +26,25 @@ PrerenderContents* ChromePrerenderContentsDelegate::FromWebContents(
           web_contents->GetBrowserContext());
   if (!prerender_manager)
     return nullptr;
-  return prerender_manager->GetPrerenderContents(web_contents);
+  return prerender_manager->GetNoStatePrefetchContents(web_contents);
 }
 
-void ChromePrerenderContentsDelegate::OnPrerenderContentsCreated(
+void ChromeNoStatePrefetchContentsDelegate::OnNoStatePrefetchContentsCreated(
     content::WebContents* web_contents) {
   DCHECK(web_contents);
   TabHelpers::AttachTabHelpers(web_contents);
 
-  // Tag the prerender contents with the task manager specific prerender tag, so
-  // that it shows up in the task manager.
-  task_manager::WebContentsTags::CreateForPrerenderContents(web_contents);
+  // Tag the NoStatePrefetch contents with the task manager specific prerender
+  // tag, so that it shows up in the task manager.
+  task_manager::WebContentsTags::CreateForNoStatePrefetchContents(web_contents);
 }
 
-void ChromePrerenderContentsDelegate::ReleasePrerenderContents(
+void ChromeNoStatePrefetchContentsDelegate::ReleaseNoStatePrefetchContents(
     content::WebContents* web_contents) {
   DCHECK(web_contents);
 
   // Clear the task manager tag we added earlier to our
-  // WebContents since it's no longer a prerender contents.
+  // WebContents since it's no longer a NoStatePrefetch contents.
   task_manager::WebContentsTags::ClearTag(web_contents);
 }
 

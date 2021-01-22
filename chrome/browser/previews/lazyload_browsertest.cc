@@ -380,7 +380,7 @@ IN_PROC_BROWSER_TEST_F(LazyLoadPrerenderBrowserTest, ImagesIgnored) {
   UseHttpsSrcServer();
 
   std::unique_ptr<prerender::test_utils::TestPrerender> test_prerender =
-      prerender_contents_factory()->ExpectPrerenderContents(
+      no_state_prefetch_contents_factory()->ExpectNoStatePrefetchContents(
           prerender::FINAL_STATUS_NOSTATE_PREFETCH_FINISHED);
 
   std::unique_ptr<prerender::PrerenderHandle> prerender_handle =

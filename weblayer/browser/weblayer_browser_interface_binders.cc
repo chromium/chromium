@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "build/build_config.h"
-#include "components/no_state_prefetch/browser/prerender_contents.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "components/no_state_prefetch/browser/prerender_processor_impl.h"
 #include "components/no_state_prefetch/common/prerender_canceler.mojom.h"
 #include "content/public/browser/browser_context.h"
@@ -88,10 +88,11 @@ void BindPrerenderCanceler(
   if (!web_contents)
     return;
 
-  auto* prerender_contents = PrerenderContentsFromWebContents(web_contents);
-  if (!prerender_contents)
+  auto* no_state_prefetch_contents =
+      NoStatePrefetchContentsFromWebContents(web_contents);
+  if (!no_state_prefetch_contents)
     return;
-  prerender_contents->AddPrerenderCancelerReceiver(std::move(receiver));
+  no_state_prefetch_contents->AddPrerenderCancelerReceiver(std::move(receiver));
 }
 
 #if defined(OS_ANDROID)

@@ -24,7 +24,7 @@ class UrlCheckerDelegateImpl : public UrlCheckerDelegate {
   ~UrlCheckerDelegateImpl() override;
 
   // Implementation of UrlCheckerDelegate:
-  void MaybeDestroyPrerenderContents(
+  void MaybeDestroyNoStatePrefetchContents(
       content::WebContents::OnceGetter web_contents_getter) override;
   // Only uses |resource| and ignores the rest of parameters.
   void StartDisplayingBlockingPageHelper(

@@ -7,7 +7,7 @@
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
-#include "chrome/browser/prefetch/no_state_prefetch/chrome_prerender_contents_delegate.h"
+#include "chrome/browser/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_contents/tab_util.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -48,9 +48,9 @@ void ChromePrerenderManagerDelegate::MaybePreconnect(const GURL& url) {
   }
 }
 
-std::unique_ptr<PrerenderContentsDelegate>
-ChromePrerenderManagerDelegate::GetPrerenderContentsDelegate() {
-  return std::make_unique<ChromePrerenderContentsDelegate>();
+std::unique_ptr<NoStatePrefetchContentsDelegate>
+ChromePrerenderManagerDelegate::GetNoStatePrefetchContentsDelegate() {
+  return std::make_unique<ChromeNoStatePrefetchContentsDelegate>();
 }
 
 bool ChromePrerenderManagerDelegate::IsNetworkPredictionPreferenceEnabled() {

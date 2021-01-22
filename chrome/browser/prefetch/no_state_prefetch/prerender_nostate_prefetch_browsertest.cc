@@ -326,15 +326,16 @@ class NoStatePrefetchBrowserTest
     prerenders[0]->WaitForLoads(0);
 
     if (ShouldAbortPrerenderBeforeSwap(expected_final_status_queue.front())) {
-      // The prerender will abort on its own. Assert it does so correctly.
+      // The prefetcher will abort on its own. Assert it does so correctly.
       prerenders[0]->WaitForStop();
       EXPECT_FALSE(prerenders[0]->contents());
     } else {
-      // Otherwise, check that it prerendered correctly.
-      test_utils::TestPrerenderContents* prerender_contents =
+      // Otherwise, check that it prefetched correctly.
+      test_utils::TestNoStatePrefetchContents* no_state_prefetch_contents =
           prerenders[0]->contents();
-      if (prerender_contents) {
-        EXPECT_EQ(FINAL_STATUS_UNKNOWN, prerender_contents->final_status());
+      if (no_state_prefetch_contents) {
+        EXPECT_EQ(FINAL_STATUS_UNKNOWN,
+                  no_state_prefetch_contents->final_status());
       }
     }
 
@@ -1129,9 +1130,9 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, NoPrefetchRecursive) {
   WaitForRequestCount(src_server()->GetURL(kPrefetchNostorePage), 0);
 
   // When the first page is loaded, the image page should be prefetched. The
-  // test may finish before the prerender is torn down, so
-  // IgnorePrerenderContents() is called to skip the final status check.
-  prerender_contents_factory()->IgnorePrerenderContents();
+  // test may finish before the prefetcher is torn down, so
+  // IgnoreNoStatePrefetchContents() is called to skip the final status check.
+  no_state_prefetch_contents_factory()->IgnoreNoStatePrefetchContents();
   ui_test_utils::NavigateToURL(current_browser(),
                                src_server()->GetURL(kPrefetchRecursePage));
   WaitForRequestCount(src_server()->GetURL(kPrefetchNostorePage), 1);
@@ -1302,7 +1303,7 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, RendererCrash) {
   // URLs are ignored in renderers, and the test server has no support for them.
   const gfx::Size kSize(640, 480);
   std::unique_ptr<TestPrerender> test_prerender =
-      prerender_contents_factory()->ExpectPrerenderContents(
+      no_state_prefetch_contents_factory()->ExpectNoStatePrefetchContents(
           FINAL_STATUS_RENDERER_CRASHED);
   content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
   std::unique_ptr<PrerenderHandle> prerender_handle(
@@ -1732,7 +1733,7 @@ class NoStatePrefetchOmniboxBrowserTest : public NoStatePrefetchBrowserTest {
 
   std::unique_ptr<TestPrerender> ExpectPrerender(
       FinalStatus expected_final_status) {
-    return prerender_contents_factory()->ExpectPrerenderContents(
+    return no_state_prefetch_contents_factory()->ExpectNoStatePrefetchContents(
         expected_final_status);
   }
 

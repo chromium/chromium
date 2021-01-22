@@ -10,9 +10,9 @@
 #include "base/stl_util.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
-#include "chrome/browser/prefetch/no_state_prefetch/chrome_prerender_contents_delegate.h"
+#include "chrome/browser/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/no_state_prefetch/browser/prerender_contents.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "components/site_engagement/content/engagement_type.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -221,20 +221,20 @@ void SiteEngagementService::Helper::DidFinishNavigation(
   input_tracker_.Stop();
   media_tracker_.Stop();
 
-  // Ignore prerender loads. This means that prerenders will not receive
-  // navigation engagement. The implications are as follows:
+  // Ignore no-state prefetcher loads. This means that no-state prefetchers will
+  // not receive navigation engagement. The implications are as follows:
   //
-  // - Instant search prerenders from the omnibox trigger DidFinishNavigation
-  //   twice: once for the prerender, and again when the page swaps in. The
+  // - Instant search prefetchers from the omnibox trigger DidFinishNavigation
+  //   twice: once for the prefetcher, and again when the page swaps in. The
   //   second trigger has transition GENERATED and receives navigation
   //   engagement.
-  // - Prerenders initiated by <link rel="prerender"> (e.g. search results) are
+  // - Prefetchers initiated by <link rel="prerender"> (e.g. search results) are
   //   always assigned the LINK transition, which is ignored for navigation
   //   engagement.
   //
-  // Prerenders trigger WasShown() when they are swapped in, so input engagement
-  // will activate even if navigation engagement is not scored.
-  if (prerender::ChromePrerenderContentsDelegate::FromWebContents(
+  // Prefetchers trigger WasShown() when they are swapped in, so input
+  // engagement will activate even if navigation engagement is not scored.
+  if (prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(
           web_contents()) != nullptr)
     return;
 

@@ -27,7 +27,7 @@ class UrlCheckerDelegateImpl : public safe_browsing::UrlCheckerDelegate {
   ~UrlCheckerDelegateImpl() override;
 
   // safe_browsing::UrlCheckerDelegate implementation
-  void MaybeDestroyPrerenderContents(
+  void MaybeDestroyNoStatePrefetchContents(
       base::OnceCallback<content::WebContents*()> web_contents_getter) override;
   void StartDisplayingBlockingPageHelper(
       const security_interstitials::UnsafeResource& resource,

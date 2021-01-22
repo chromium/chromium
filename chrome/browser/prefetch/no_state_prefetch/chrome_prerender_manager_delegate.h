@@ -25,8 +25,8 @@ class ChromePrerenderManagerDelegate : public PrerenderManagerDelegate {
   // PrerenderManagerDelegate overrides.
   scoped_refptr<content_settings::CookieSettings> GetCookieSettings() override;
   void MaybePreconnect(const GURL& url) override;
-  std::unique_ptr<PrerenderContentsDelegate> GetPrerenderContentsDelegate()
-      override;
+  std::unique_ptr<NoStatePrefetchContentsDelegate>
+  GetNoStatePrefetchContentsDelegate() override;
   bool IsNetworkPredictionPreferenceEnabled() override;
   bool IsPredictionDisabledDueToNetwork(Origin origin) override;
   std::string GetReasonForDisablingPrediction() override;

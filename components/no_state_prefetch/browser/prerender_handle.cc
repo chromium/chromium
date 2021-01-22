@@ -7,7 +7,7 @@
 #include <algorithm>
 
 #include "base/check_op.h"
-#include "components/no_state_prefetch/browser/prerender_contents.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 
@@ -58,7 +58,7 @@ bool PrerenderHandle::IsAbandoned() const {
   return prerender_data_ && !prerender_data_->abandon_time().is_null();
 }
 
-PrerenderContents* PrerenderHandle::contents() const {
+NoStatePrefetchContents* PrerenderHandle::contents() const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return prerender_data_ ? prerender_data_->contents() : nullptr;
 }
@@ -73,14 +73,15 @@ PrerenderHandle::PrerenderHandle(
   }
 }
 
-void PrerenderHandle::OnPrerenderStop(PrerenderContents* prerender_contents) {
+void PrerenderHandle::OnPrerenderStop(
+    NoStatePrefetchContents* no_state_prefetch_contents) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (observer_)
     observer_->OnPrerenderStop(this);
 }
 
 void PrerenderHandle::OnPrerenderNetworkBytesChanged(
-    PrerenderContents* prerender_contents) {
+    NoStatePrefetchContents* no_state_prefetch_contents) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (observer_)
     observer_->OnPrerenderNetworkBytesChanged(this);

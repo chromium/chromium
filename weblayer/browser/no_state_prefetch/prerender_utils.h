@@ -10,12 +10,12 @@ class WebContents;
 }
 
 namespace prerender {
-class PrerenderContents;
+class NoStatePrefetchContents;
 }
 
 namespace weblayer {
 
-prerender::PrerenderContents* PrerenderContentsFromWebContents(
+prerender::NoStatePrefetchContents* NoStatePrefetchContentsFromWebContents(
     content::WebContents* web_contents);
 
 }  // namespace weblayer

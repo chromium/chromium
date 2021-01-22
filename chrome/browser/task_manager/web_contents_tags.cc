@@ -97,7 +97,7 @@ void WebContentsTags::CreateForDevToolsContents(
 }
 
 // static
-void WebContentsTags::CreateForPrerenderContents(
+void WebContentsTags::CreateForNoStatePrefetchContents(
     content::WebContents* web_contents) {
 #if !defined(OS_ANDROID)
   if (!WebContentsTag::FromWebContents(web_contents)) {

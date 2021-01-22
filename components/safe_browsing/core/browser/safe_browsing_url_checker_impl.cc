@@ -276,7 +276,7 @@ void SafeBrowsingUrlCheckerImpl::OnUrlResult(const GURL& url,
   if (is_prefetch) {
     // Destroy the prefetch with FINAL_STATUS_SAFE_BROWSING.
     if (request_destination_ == network::mojom::RequestDestination::kDocument) {
-      url_checker_delegate_->MaybeDestroyPrerenderContents(
+      url_checker_delegate_->MaybeDestroyNoStatePrefetchContents(
           web_contents_getter_);
     }
     // Record the result of canceled unsafe prefetch. This is used as a signal

@@ -80,7 +80,7 @@ bool PrefetchProxySubresourceManager::ShouldProxyForPrerenderNavigation(
   }
 
   content::WebContents* web_contents =
-      nsp_handle_->contents()->prerender_contents();
+      nsp_handle_->contents()->no_state_prefetch_contents();
   if (!web_contents) {
     // This shouldn't happen, so abort the prerender just to be safe.
     OnPrerenderStop(nsp_handle_.get());

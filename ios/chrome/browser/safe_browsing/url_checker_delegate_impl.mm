@@ -90,7 +90,7 @@ UrlCheckerDelegateImpl::UrlCheckerDelegateImpl(
 
 UrlCheckerDelegateImpl::~UrlCheckerDelegateImpl() = default;
 
-void UrlCheckerDelegateImpl::MaybeDestroyPrerenderContents(
+void UrlCheckerDelegateImpl::MaybeDestroyNoStatePrefetchContents(
     base::OnceCallback<content::WebContents*()> web_contents_getter) {}
 
 void UrlCheckerDelegateImpl::StartDisplayingBlockingPageHelper(

@@ -15,13 +15,13 @@
 #include "chrome/browser/media/media_engagement_contents_observer.h"
 #include "chrome/browser/media/media_engagement_score.h"
 #include "chrome/browser/media/media_engagement_service_factory.h"
-#include "chrome/browser/prefetch/no_state_prefetch/chrome_prerender_contents_delegate.h"
+#include "chrome/browser/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/history/core/browser/history_service.h"
-#include "components/no_state_prefetch/browser/prerender_contents.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "media/base/media_switches.h"
@@ -83,8 +83,9 @@ void MediaEngagementService::CreateWebContentsObserver(
     content::WebContents* web_contents) {
   DCHECK(IsEnabled());
 
-  // Ignore WebContents that are used for prerender/prefetch.
-  if (prerender::ChromePrerenderContentsDelegate::FromWebContents(web_contents))
+  // Ignore WebContents that are used for NoStatePrefetch.
+  if (prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(
+          web_contents))
     return;
 
   MediaEngagementService* service =

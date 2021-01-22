@@ -264,7 +264,7 @@ void RegisterPrefs(PrefRegistrySimple* pref_registry) {
 mojo::PendingRemote<prerender::mojom::PrerenderCanceler> GetPrerenderCanceler(
     content::WebContents* web_contents) {
   mojo::PendingRemote<prerender::mojom::PrerenderCanceler> canceler;
-  weblayer::PrerenderContentsFromWebContents(web_contents)
+  weblayer::NoStatePrefetchContentsFromWebContents(web_contents)
       ->AddPrerenderCancelerReceiver(canceler.InitWithNewPipeAndPassReceiver());
   return canceler;
 }
@@ -441,11 +441,12 @@ ContentBrowserClientImpl::CreateURLLoaderThrottles(
 
   // Create prerender URL throttle.
   auto* web_contents = wc_getter.Run();
-  auto* prerender_contents = PrerenderContentsFromWebContents(web_contents);
-  if (prerender_contents) {
+  auto* no_state_prefetch_contents =
+      NoStatePrefetchContentsFromWebContents(web_contents);
+  if (no_state_prefetch_contents) {
     result.push_back(std::make_unique<prerender::PrerenderURLLoaderThrottle>(
         prerender::PrerenderHistograms::GetHistogramPrefix(
-            prerender_contents->origin()),
+            no_state_prefetch_contents->origin()),
         GetPrerenderCanceler(web_contents)));
   }
 

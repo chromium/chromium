@@ -6,7 +6,7 @@
 #define COMPONENTS_NO_STATE_PREFETCH_BROWSER_PRERENDER_MANAGER_DELEGATE_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "components/no_state_prefetch/browser/prerender_contents_delegate.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_contents_delegate.h"
 #include "components/no_state_prefetch/common/prerender_origin.h"
 #include "url/gurl.h"
 
@@ -31,8 +31,8 @@ class PrerenderManagerDelegate {
   virtual void MaybePreconnect(const GURL& url);
 
   // Get the prerender contents delegate.
-  virtual std::unique_ptr<PrerenderContentsDelegate>
-  GetPrerenderContentsDelegate() = 0;
+  virtual std::unique_ptr<NoStatePrefetchContentsDelegate>
+  GetNoStatePrefetchContentsDelegate() = 0;
 
   // Check whether the user has enabled predictive loading of web pages.
   virtual bool IsNetworkPredictionPreferenceEnabled();
