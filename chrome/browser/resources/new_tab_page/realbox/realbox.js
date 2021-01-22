@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './strings.m.js';
 import './realbox_dropdown.js';
 import './realbox_icon.js';
 
@@ -11,8 +10,9 @@ import {skColorToRgba} from 'chrome://resources/js/color_utils.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {decodeString16, mojoString16, mojoTimeDelta} from '../utils.js';
+
 import {RealboxBrowserProxy} from './realbox_browser_proxy.js';
-import {decodeString16, mojoString16, mojoTimeDelta} from './utils.js';
 
 /** @typedef {{text: string, inline: string,}} */
 let Input;

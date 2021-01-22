@@ -29,5 +29,5 @@ export {ModuleRegistry} from './modules/module_registry.js';
 export {recipeTasksDescriptor, shoppingTasksDescriptor} from './modules/task_module/module.js';
 export {TaskModuleHandlerProxy} from './modules/task_module/task_module_handler_proxy.js';
 export {PromoBrowserCommandProxy} from './promo_browser_command_proxy.js';
-export {RealboxBrowserProxy} from './realbox_browser_proxy.js';
+export {RealboxBrowserProxy} from './realbox/realbox_browser_proxy.js';
 export {$$, createScrollBorders, decodeString16, mojoString16} from './utils.js';

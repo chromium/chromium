@@ -115,7 +115,7 @@ TEST_F('NewTabPageVoiceSearchOverlayTest', 'All', function() {
 var NewTabPageRealboxTest = class extends NewTabPageBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://new-tab-page/test_loader.html?module=new_tab_page/realbox_test.js';
+    return 'chrome://new-tab-page/test_loader.html?module=new_tab_page/realbox/realbox_test.js';
   }
 };
 

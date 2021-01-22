@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './strings.m.js';
 import './realbox_match.js';
 import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
@@ -14,7 +13,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {RealboxBrowserProxy} from './realbox_browser_proxy.js';
-import {decodeString16} from './utils.js';
+import {decodeString16} from '../utils.js';
 
 // A dropdown element that contains autocomplete matches. Provides an API for
 // the embedder (i.e., <ntp-realbox>) to change the selection.

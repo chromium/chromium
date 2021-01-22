@@ -1281,8 +1281,7 @@ suite('NewTabPageRealboxTest', () => {
         realbox.$.matches.shadowRoot.querySelectorAll('ntp-realbox-match');
     assertEquals(2, matchEls.length);
 
-    assertEquals(
-        window.getComputedStyle(matchEls[0].$.remove).display, 'none');
+    assertEquals(window.getComputedStyle(matchEls[0].$.remove).display, 'none');
     assertNotEquals(
         window.getComputedStyle(matchEls[1].$.remove).display, 'none');
   });

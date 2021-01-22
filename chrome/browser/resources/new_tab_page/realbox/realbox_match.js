@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import './realbox_icon.js';
-import './strings.m.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import 'chrome://resources/cr_elements/cr_icons_css.m.js';
 import 'chrome://resources/cr_elements/hidden_style_css.m.js';
@@ -11,7 +10,7 @@ import 'chrome://resources/cr_elements/hidden_style_css.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {decodeString16} from './utils.js';
+import {decodeString16} from '../utils.js';
 
 // clang-format off
 /**
@@ -214,7 +213,7 @@ class RealboxMatchElement extends PolymerElement {
       detail: this.matchIndex,
     }));
 
-    e.preventDefault();  // Prevents default browser action (navigation).
+    e.preventDefault();   // Prevents default browser action (navigation).
     e.stopPropagation();  // Prevents <iron-selector> from selecting the match.
   }
 

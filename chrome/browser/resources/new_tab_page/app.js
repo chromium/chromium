@@ -4,7 +4,7 @@
 
 import './strings.m.js';
 import './iframe.js';
-import './realbox.js';
+import './realbox/realbox.js';
 import './logo.js';
 import './modules/module_wrapper.js';
 import './modules/modules.js'; // Registers module descriptors.
