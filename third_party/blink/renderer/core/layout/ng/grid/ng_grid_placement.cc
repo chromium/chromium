@@ -328,4 +328,46 @@ bool NGGridPlacement::HasSparsePacking() const {
   return packing_behavior_ == PackingBehavior::kSparse;
 }
 
+void NGGridPlacement::ResolveOutOfFlowItemGridLines(
+    const NGGridLayoutAlgorithmTrackCollection& track_collection,
+    const ComputedStyle& out_of_flow_item_style,
+    wtf_size_t* start_line,
+    wtf_size_t* end_line) const {
+  DCHECK(start_line);
+  DCHECK(end_line);
+
+  const GridTrackSizingDirection track_direction = track_collection.Direction();
+  GridSpan span = GridPositionsResolver::ResolveGridPositionsFromStyle(
+      grid_style_, out_of_flow_item_style, track_direction,
+      AutoRepeatTrackCount(track_direction));
+
+  if (span.IsIndefinite()) {
+    *start_line = kNotFound;
+    *end_line = kNotFound;
+    return;
+  }
+
+  if (span.UntranslatedStartLine() > -1) {
+    // TODO(ansollan): Handle out of flow positioned items with negative
+    // indexes.
+    span.Translate(StartOffset(track_direction));
+  }
+
+  *start_line = span.StartLine();
+  *end_line = span.EndLine();
+
+  bool is_start_line_auto =
+      (track_direction == kForColumns)
+          ? out_of_flow_item_style.GridColumnStart().IsAuto()
+          : out_of_flow_item_style.GridRowStart().IsAuto();
+  if (is_start_line_auto || !track_collection.IsTrackWithinBounds(*start_line))
+    *start_line = kNotFound;
+
+  bool is_end_line_auto = (track_direction == kForColumns)
+                              ? out_of_flow_item_style.GridColumnEnd().IsAuto()
+                              : out_of_flow_item_style.GridRowEnd().IsAuto();
+  if (is_end_line_auto || !track_collection.IsTrackWithinBounds(*end_line - 1))
+    *end_line = kNotFound;
+}
+
 }  // namespace blink

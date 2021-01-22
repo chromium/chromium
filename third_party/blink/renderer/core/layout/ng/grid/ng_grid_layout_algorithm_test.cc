@@ -54,12 +54,6 @@ class NGGridLayoutAlgorithmTest
         &grid_items_, &algorithm_column_track_collection_,
         &algorithm_row_track_collection_, &grid_placement);
 
-    // Cache set indices.
-    algorithm.CacheItemSetIndices(algorithm_column_track_collection_,
-                                  &grid_items_);
-    algorithm.CacheItemSetIndices(algorithm_row_track_collection_,
-                                  &grid_items_);
-
     // Create a vector of grid item indices using |NGGridChildIterator| order.
     Vector<wtf_size_t> reordered_item_indices(grid_items_.size());
     for (wtf_size_t i = 0; i < grid_items_.size(); ++i)

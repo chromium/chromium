@@ -36,6 +36,11 @@ class CORE_EXPORT NGGridLayoutAlgorithm
     kForMaxContentMaximums
   };
 
+  struct ItemSetIndices {
+    wtf_size_t begin;
+    wtf_size_t end;
+  };
+
   struct GridItemData {
     explicit GridItemData(const NGBlockNode node) : node(node) {}
 
@@ -59,19 +64,19 @@ class CORE_EXPORT NGGridLayoutAlgorithm
     bool IsSpanningIntrinsicTrack(
         GridTrackSizingDirection track_direction) const;
 
+    // For this item and track direction, computes and stores the pair of
+    // indices "begin" and "end" such that the item spans every set from the
+    // respective collection's |sets_| with an index in the range [begin, end).
+    ItemSetIndices SetIndices(
+        const NGGridLayoutAlgorithmTrackCollection& track_collection,
+        NGGridPlacement* grid_placement = nullptr);
+
     const NGBlockNode node;
     GridArea resolved_position;
 
     NGBoxStrut margins;
     LayoutUnit inline_size;
     MinMaxSizes min_max_sizes;
-
-    // These fields are used to determine the sets this item spans in the
-    // respective track collection; see |CacheItemSetIndices|.
-    wtf_size_t columns_begin_set_index;
-    wtf_size_t columns_end_set_index;
-    wtf_size_t rows_begin_set_index;
-    wtf_size_t rows_end_set_index;
 
     AxisEdge inline_axis_alignment;
     AxisEdge block_axis_alignment;
@@ -83,6 +88,12 @@ class CORE_EXPORT NGGridLayoutAlgorithm
 
     TrackSpanProperties column_span_properties;
     TrackSpanProperties row_span_properties;
+
+    // These fields are used to determine the sets this item spans in the
+    // respective track collection; see |SetIndices|. We use optional since some
+    // scenarios don't require to compute the indices at all.
+    base::Optional<ItemSetIndices> column_set_indices;
+    base::Optional<ItemSetIndices> row_set_indices;
   };
 
   explicit NGGridLayoutAlgorithm(const NGLayoutAlgorithmParams& params);
@@ -132,13 +143,6 @@ class CORE_EXPORT NGGridLayoutAlgorithm
     Vector<GridItemData>& grid_items_;
   };
 
-
-  // Returns an iterator for every |NGGridSet| contained within an item's span
-  // in the relevant track collection.
-  static NGGridLayoutAlgorithmTrackCollection::SetIterator
-  GetSetIteratorForItem(const GridItemData& item,
-                        NGGridLayoutAlgorithmTrackCollection& track_collection);
-
   // Returns the size that a grid item will distribute across the tracks with an
   // intrinsic sizing function it spans in the relevant track direction.
   LayoutUnit ContributionSizeForGridItem(
@@ -175,18 +179,6 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       const Vector<GridItemData>& grid_items,
       NGGridBlockTrackCollection* track_collection) const;
 
-  // For every item and track direction, computes and stores the pair of indices
-  // "begin" and "end" such that the item spans every set from the respective
-  // collection's |sets_| with an index in the range [begin, end).
-  void CacheItemSetIndices(
-      const NGGridLayoutAlgorithmTrackCollection& track_collection,
-      Vector<GridItemData>* items) const;
-  // Helper function to resolve start and end lines of out of flow items.
-  void ResolveOutOfFlowItemGridLines(
-      const GridItemData& out_of_flow_item,
-      const NGGridLayoutAlgorithmTrackCollection& track_collection,
-      wtf_size_t* start_line,
-      wtf_size_t* end_line) const;
   // For every grid item, caches properties of the track sizing functions it
   // spans (i.e. whether an item spans intrinsic or flexible tracks).
   void CacheGridItemsTrackSpanProperties(
@@ -221,10 +213,11 @@ class CORE_EXPORT NGGridLayoutAlgorithm
 
   // Lays out and computes inline and block offsets for grid items.
   void PlaceItems(
-      const Vector<GridItemData>& grid_items,
       const NGGridLayoutAlgorithmTrackCollection& column_track_collection,
       const NGGridLayoutAlgorithmTrackCollection& row_track_collection,
+      Vector<GridItemData>* grid_items,
       Vector<GridItemData>* out_of_flow_items,
+      NGGridPlacement* grid_placement,
       LayoutUnit* intrinsic_block_size,
       LayoutUnit* block_size);
 
@@ -236,21 +229,18 @@ class CORE_EXPORT NGGridLayoutAlgorithm
   void PlaceGridItems(const Vector<GridItemData>& grid_items,
                       const Vector<LayoutUnit>& column_set_offsets,
                       const Vector<LayoutUnit>& row_set_offsets,
-                      LayoutUnit intrinsic_block_size,
+                      LayoutUnit block_size,
                       LayoutUnit column_grid_gap,
                       LayoutUnit row_grid_gap);
 
   // Computes the static position, grid area and its offset of out of flow
   // elements in the grid.
-  void PlaceOutOfFlowItems(
-      const Vector<LayoutUnit>& column_set_offsets,
-      const Vector<LayoutUnit>& row_set_offsets,
-      const NGGridLayoutAlgorithmTrackCollection& column_track_collection,
-      const NGGridLayoutAlgorithmTrackCollection& row_track_collection,
-      LayoutUnit block_size,
-      LayoutUnit column_grid_gap,
-      LayoutUnit row_grid_gap,
-      Vector<GridItemData>* out_of_flow_items);
+  void PlaceOutOfFlowItems(const Vector<GridItemData>& out_of_flow_items,
+                           const Vector<LayoutUnit>& column_set_offsets,
+                           const Vector<LayoutUnit>& row_set_offsets,
+                           LayoutUnit block_size,
+                           LayoutUnit column_grid_gap,
+                           LayoutUnit row_grid_gap);
 
   // Helper method that computes the offset and size of an item.
   void ComputeOffsetAndSize(
