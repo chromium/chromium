@@ -15,6 +15,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "media/base/decryptor.h"
 #include "media/base/encryption_scheme.h"
@@ -118,6 +119,7 @@ class VaapiVideoDecoderDelegate {
   std::unique_ptr<DecryptConfig> decrypt_config_;
   std::vector<uint8_t> hw_identifier_;
   std::map<std::string, std::vector<uint8_t>> hw_key_data_map_;
+  base::TimeTicks last_key_retrieval_time_;
 
   base::WeakPtrFactory<VaapiVideoDecoderDelegate> weak_factory_{this};
 };
