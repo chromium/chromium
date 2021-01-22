@@ -3388,8 +3388,7 @@ void WebViewImpl::DidChangeRootLayer(bool root_layer_exists) {
     return;
   }
   if (root_layer_exists) {
-    if (!device_emulation_transform_.IsIdentity())
-      UpdateDeviceEmulationTransform();
+    UpdateDeviceEmulationTransform();
   } else {
     // When the document in an already-attached main frame is being replaced by
     // a navigation then DidChangeRootLayer(false) will be called. Since we are
@@ -3473,18 +3472,13 @@ Node* WebViewImpl::FindNodeFromScrollableCompositorElementId(
 void WebViewImpl::UpdateDeviceEmulationTransform() {
   GetPage()->GetVisualViewport().SetNeedsPaintPropertyUpdate();
 
-  if (auto* main_frame = MainFrameImpl()) {
+  if (MainFrameImpl()) {
     // When the device emulation transform is updated, to avoid incorrect
     // scales and fuzzy raster from the compositor, force all content to
     // pick ideal raster scales.
     // TODO(wjmaclean): This is only done on the main frame's widget currently,
     // it should update all local frames.
-    main_frame->FrameWidgetImpl()->SetNeedsRecalculateRasterScales();
-
-    // Device emulation transform also affects the overriding visible rect
-    // which is used as the overflow rect of the main frame layout view.
-    if (auto* view = main_frame->GetFrameView())
-      view->SetNeedsPaintPropertyUpdate();
+    MainFrameImpl()->FrameWidgetImpl()->SetNeedsRecalculateRasterScales();
   }
 }
 
