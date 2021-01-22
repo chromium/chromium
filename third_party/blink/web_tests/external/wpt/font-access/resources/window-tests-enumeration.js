@@ -1,8 +1,6 @@
 'use strict';
 
 const standard_fonts_tests = [
-  null,
-  undefined,
   {},
   {select: []},
 ];
@@ -13,47 +11,31 @@ for (const test of standard_fonts_tests) {
   font_access_test(async t => {
     if (!isPlatformSupported()) {
       await promise_rejects_dom(
-          t, 'NotSupportedError', (async () => {
-            for await (const f of navigator.fonts.query()) {
-            }
-          })());
+          t, 'NotSupportedError', navigator.fonts.query());
       return;
     }
 
-    const iterator = navigator.fonts.query();
+    const fonts =
+        await navigator.fonts.query({persistentAccess: true, ...test});
 
-    assert_equals(typeof iterator, 'object', 'query() should return an Object');
-    assert_true(
-        !!iterator[Symbol.asyncIterator],
-        'query() has an asyncIterator method');
-
-    const availableFonts = [];
-    for await (const f of iterator) {
-      availableFonts.push(f);
-    }
-
-    assert_fonts_exist(availableFonts, getEnumerationTestSet());
+    assert_fonts_exist(fonts, getEnumerationTestSet());
   }, `query(): standard fonts returned for input: ${inputAsString}`);
 }
 
 font_access_test(async t => {
-  const iterator = navigator.fonts.query();
-
   if (!isPlatformSupported()) {
-    await promise_rejects_dom(t, 'NotSupportedError', (async () => {
-                                for await (const f of iterator) {
-                                }
-                              })());
+    await promise_rejects_dom(t, 'NotSupportedError', navigator.fonts.query());
     return;
   }
 
+  const fonts = await navigator.fonts.query({persistentAccess: true});
   // The following tests that fonts are sorted. Postscript names are expected to
   // be encoded in a subset of the ASCII character set.
   // See: https://docs.microsoft.com/en-us/typography/opentype/spec/name
   // Should the Postscript name contain characters that are multi-byte, this
   // test may erroneously fail.
   let previousFont = null;
-  for await (const font of iterator) {
+  for (const font of fonts) {
     if (previousFont) {
       assert_true(
           previousFont.postscriptName < font.postscriptName,
@@ -67,20 +49,16 @@ font_access_test(async t => {
 
 font_access_test(async t => {
   if (!isPlatformSupported()) {
-    await promise_rejects_dom(t, 'NotSupportedError', (async () => {
-                                for await (const f of navigator.fonts.query()) {
-                                }
-                              })());
+    await promise_rejects_dom(t, 'NotSupportedError', navigator.fonts.query());
     return;
   }
 
-  const test = {select: [getEnumerationTestSet()[0].postscriptName]};
-  const iterator = navigator.fonts.query(test);
+  const test = {
+    persistentAccess: true,
+    select: [getEnumerationTestSet()[0].postscriptName]
+  };
+  const fonts = await navigator.fonts.query(test);
 
-  const fonts = [];
-  for await (const f of iterator) {
-    fonts.push(f);
-  }
   assert_postscript_name_exists(fonts, test.select);
   assert_equals(
       fonts.length, test.select.length,
@@ -109,18 +87,12 @@ for (const test of non_ascii_input) {
   font_access_test(async t => {
     if (!isPlatformSupported()) {
       await promise_rejects_dom(
-          t, 'NotSupportedError', (async () => {
-            for await (const f of navigator.fonts.query()) {
-            }
-          })());
+          t, 'NotSupportedError', navigator.fonts.query());
       return;
     }
 
-    const fonts = [];
-    const iterator = navigator.fonts.query(test);
-    for await (const f of iterator) {
-      fonts.push(f);
-    }
+    const fonts =
+        await navigator.fonts.query({persistentAccess: true, ...test});
     assert_equals(
         fonts.length, 0,
         `There should be no results. Instead got: ${JSON.stringify(fonts)}`);

@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_FONT_ACCESS_FONT_MANAGER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_FONT_ACCESS_FONT_MANAGER_H_
 
+#include "base/memory/read_only_shared_memory_region.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/font_access/font_access.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -16,7 +17,6 @@
 namespace blink {
 
 class ScriptState;
-class ScriptValue;
 class ScriptPromise;
 class ScriptPromiseResolver;
 class QueryOptions;
@@ -33,8 +33,7 @@ class FontManager final : public ScriptWrappable,
   FontManager operator=(const FontManager&) = delete;
 
   // FontManager IDL interface implementation.
-  ScriptValue query(ScriptState*, const QueryOptions* options, ExceptionState&);
-  ScriptPromise showFontChooser(ScriptState*, const QueryOptions* options);
+  ScriptPromise query(ScriptState*, const QueryOptions* options);
 
   void Trace(blink::Visitor*) const override;
 
@@ -42,6 +41,14 @@ class FontManager final : public ScriptWrappable,
   void DidShowFontChooser(ScriptPromiseResolver* resolver,
                           mojom::blink::FontEnumerationStatus status,
                           Vector<mojom::blink::FontMetadataPtr> fonts);
+  void DidGetEnumerationResponse(ScriptPromiseResolver* resolver,
+                                 const Vector<String>& selection,
+                                 mojom::blink::FontEnumerationStatus,
+                                 base::ReadOnlySharedMemoryRegion);
+  // Returns whether the resolver has rejected.
+  bool RejectPromiseIfNecessary(
+      const mojom::blink::FontEnumerationStatus& status,
+      ScriptPromiseResolver* resolver);
   void ContextDestroyed() override;
   void OnDisconnect();
 

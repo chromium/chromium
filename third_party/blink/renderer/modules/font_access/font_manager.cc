@@ -9,27 +9,20 @@
 #include "base/feature_list.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/font_access/font_enumeration_table.pb.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/modules/font_access/font_iterator.h"
 #include "third_party/blink/renderer/modules/font_access/font_metadata.h"
 #include "third_party/blink/renderer/modules/font_access/query_options.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 
 namespace blink {
 
-namespace {
-
-void ReturnDataFunction(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  V8SetReturnValue(info, info.Data());
-}
-
-}  // namespace
+using mojom::blink::FontEnumerationStatus;
 
 FontManager::FontManager(ExecutionContext* context)
     : ExecutionContextLifecycleObserver(context) {
@@ -43,36 +36,18 @@ FontManager::FontManager(ExecutionContext* context)
   }
 }
 
-ScriptValue FontManager::query(ScriptState* script_state,
-                               const QueryOptions* options,
-                               ExceptionState& exception_state) {
-  DCHECK(options->hasSelect());
-
-  if (exception_state.HadException())
-    return ScriptValue();
-
-  auto* iterator = MakeGarbageCollected<FontIterator>(
-      ExecutionContext::From(script_state), options->select());
-  auto* isolate = script_state->GetIsolate();
-  auto context = script_state->GetContext();
-
-  v8::Local<v8::Object> result = v8::Object::New(isolate);
-  if (!result
-           ->Set(context, v8::Symbol::GetAsyncIterator(isolate),
-                 v8::Function::New(context, &ReturnDataFunction,
-                                   ToV8(iterator, script_state))
-                     .ToLocalChecked())
-           .ToChecked()) {
-    return ScriptValue();
-  }
-  return ScriptValue(script_state->GetIsolate(), result);
-}
-
-ScriptPromise FontManager::showFontChooser(ScriptState* script_state,
-                                           const QueryOptions* options) {
+ScriptPromise FontManager::query(ScriptState* script_state,
+                                 const QueryOptions* options) {
   DCHECK(options->hasSelect());
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
+
+  if (options->persistentAccess()) {
+    remote_manager_->EnumerateLocalFonts(WTF::Bind(
+        &FontManager::DidGetEnumerationResponse, WrapWeakPersistent(this),
+        WrapPersistent(resolver), options->select()));
+    return promise;
+  }
 
   remote_manager_->ChooseLocalFonts(
       options->select(),
@@ -89,30 +64,10 @@ void FontManager::Trace(blink::Visitor* visitor) const {
 
 void FontManager::DidShowFontChooser(
     ScriptPromiseResolver* resolver,
-    mojom::blink::FontEnumerationStatus status,
+    FontEnumerationStatus status,
     Vector<mojom::blink::FontMetadataPtr> fonts) {
-  switch (status) {
-    case mojom::blink::FontEnumerationStatus::kOk:
-      break;
-    case mojom::blink::FontEnumerationStatus::kUnimplemented:
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kNotSupportedError,
-          "Not yet supported on this platform."));
-      return;
-    case mojom::blink::FontEnumerationStatus::kCanceled:
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kAbortError, "The user canceled the operation."));
-      return;
-    case mojom::blink::FontEnumerationStatus::kNeedsUserActivation:
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kSecurityError, "User activation is required."));
-      return;
-    case mojom::blink::FontEnumerationStatus::kUnexpectedError:
-    default:
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kUnknownError, "An unexpected error occured."));
-      return;
-  }
+  if (RejectPromiseIfNecessary(status, resolver))
+    return;
 
   auto entries = HeapVector<Member<FontMetadata>>();
   for (const auto& font : fonts) {
@@ -121,6 +76,86 @@ void FontManager::DidShowFontChooser(
     entries.push_back(FontMetadata::Create(std::move(entry)));
   }
   resolver->Resolve(std::move(entries));
+}
+
+void FontManager::DidGetEnumerationResponse(
+    ScriptPromiseResolver* resolver,
+    const Vector<String>& selection,
+    FontEnumerationStatus status,
+    base::ReadOnlySharedMemoryRegion region) {
+  if (RejectPromiseIfNecessary(status, resolver))
+    return;
+
+  base::ReadOnlySharedMemoryMapping mapping = region.Map();
+  FontEnumerationTable table;
+
+  if (mapping.size() > INT_MAX) {
+    // Cannot deserialize without overflow.
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kDataError, "Font data exceeds memory limit."));
+    return;
+  }
+
+  // Used to compare with data coming from the browser to avoid conversions.
+  std::set<std::string> selection_utf8;
+  for (const String& postscriptName : selection) {
+    // While postscript names are encoded in a subset of ASCII, we convert the
+    // input into UTF8. This will still allow exact matches to occur.
+    selection_utf8.insert(postscriptName.Utf8());
+  }
+
+  HeapVector<Member<FontMetadata>> entries;
+  table.ParseFromArray(mapping.memory(), static_cast<int>(mapping.size()));
+  for (const auto& element : table.fonts()) {
+    // If the selection list contains items, only allow items that match.
+    if (!selection_utf8.empty() &&
+        selection_utf8.find(element.postscript_name().c_str()) ==
+            selection_utf8.end())
+      continue;
+
+    auto entry = FontEnumerationEntry{
+        String::FromUTF8(element.postscript_name().c_str()),
+        String::FromUTF8(element.full_name().c_str()),
+        String::FromUTF8(element.family().c_str())};
+    entries.push_back(FontMetadata::Create(std::move(entry)));
+  }
+
+  resolver->Resolve(std::move(entries));
+}
+
+bool FontManager::RejectPromiseIfNecessary(const FontEnumerationStatus& status,
+                                           ScriptPromiseResolver* resolver) {
+  switch (status) {
+    case FontEnumerationStatus::kOk:
+      break;
+    case FontEnumerationStatus::kUnimplemented:
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotSupportedError,
+          "Not yet supported on this platform."));
+      return true;
+    case FontEnumerationStatus::kCanceled:
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kAbortError, "The user canceled the operation."));
+      return true;
+    case FontEnumerationStatus::kNeedsUserActivation:
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kSecurityError, "User activation is required."));
+      return true;
+    case FontEnumerationStatus::kNotVisible:
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kSecurityError, "Page needs to be visible."));
+      return true;
+    case FontEnumerationStatus::kPermissionDenied:
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotAllowedError, "Permission not granted."));
+      return true;
+    case FontEnumerationStatus::kUnexpectedError:
+    default:
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kUnknownError, "An unexpected error occured."));
+      return true;
+  }
+  return false;
 }
 
 void FontManager::ContextDestroyed() {

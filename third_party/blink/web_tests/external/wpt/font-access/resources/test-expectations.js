@@ -306,14 +306,14 @@ function getMoreExpectedTables(expectations) {
   return output;
 }
 
-async function filterEnumeration(iterator, expectedFonts) {
+async function filterEnumeration(fonts, expectedFonts) {
   const nameSet = new Set();
   for (const e of expectedFonts) {
     nameSet.add(e.postscriptName);
   }
 
   const output = [];
-  for await (const f of iterator) {
+  for (const f of fonts) {
     if (nameSet.has(f.postscriptName)) {
       output.push(f);
     }

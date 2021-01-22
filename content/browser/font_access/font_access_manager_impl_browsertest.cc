@@ -99,7 +99,9 @@ IN_PROC_BROWSER_TEST_F(FontAccessManagerImplBrowserTest, EnumerationTest) {
   int result = EvalJs(shell(),
                       "(async () => {"
                       "  let count = 0;"
-                      "  for await (const item of navigator.fonts.query()) {"
+                      "  const fonts = await "
+                      "navigator.fonts.query({persistentAccess: true});"
+                      "  for (const item of fonts) {"
                       "    count++;"
                       "  }"
                       "  return count;"
@@ -119,7 +121,9 @@ IN_PROC_BROWSER_TEST_F(FontAccessManagerImplBrowserTest, LocaleTest) {
       EvalJs(shell(),
              "(async () => {"
              "  let fullName = '';"
-             "  for await (const item of navigator.fonts.query()) {"
+             "  const fonts = await navigator.fonts.query({persistentAccess: "
+             "true});"
+             "  for (const item of fonts) {"
              "    if (item.postscriptName == 'MicrosoftYaHei') {"
              "      fullName = item.fullName;"
              "      break;"

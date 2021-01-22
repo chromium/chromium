@@ -254,8 +254,6 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/filesystem/metadata_callback.idl",
           "//third_party/blink/renderer/modules/filesystem/shared_worker_global_scope_file_system.idl",
           "//third_party/blink/renderer/modules/filesystem/window_file_system.idl",
-          "//third_party/blink/renderer/modules/font_access/font_iterator.idl",
-          "//third_party/blink/renderer/modules/font_access/font_iterator_entry.idl",
           "//third_party/blink/renderer/modules/font_access/font_manager.idl",
           "//third_party/blink/renderer/modules/font_access/font_metadata.idl",
           "//third_party/blink/renderer/modules/font_access/font_table_map.idl",

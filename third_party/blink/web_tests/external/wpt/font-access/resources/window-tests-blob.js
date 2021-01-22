@@ -1,19 +1,14 @@
 'use strict';
 
 font_access_test(async t => {
-  const iterator = navigator.fonts.query();
-
   if (!isPlatformSupported()) {
-    await promise_rejects_dom(t, 'NotSupportedError', (async () => {
-      for await (const f of iterator) {
-      }
-    })());
+    await promise_rejects_dom(t, 'NotSupportedError', navigator.fonts.query());
     return;
   }
 
-  const expectedFonts = await filterEnumeration(iterator,
-                                                getEnumerationTestSet({
-                                                  labelFilter: [TEST_SIZE_CATEGORY.small]}));
+  const fonts = await navigator.fonts.query({persistentAccess: true});
+  const expectedFonts = await filterEnumeration(
+      fonts, getEnumerationTestSet({labelFilter: [TEST_SIZE_CATEGORY.small]}));
   const additionalExpectedTables = getMoreExpectedTables(expectedFonts);
 
   for (const f of expectedFonts) {
