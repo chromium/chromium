@@ -88,12 +88,16 @@ void ClipboardHistory::OnClipboardDataChanged() {
 
   // Debounce calls to `OnClipboardOperation()`. Certain surfaces
   // (Omnibox) may Read/Write to the clipboard multiple times in one user
-  // initiated operation.
+  // initiated operation. Add a delay because PostTask is too fast to debounce
+  // multiple operations through the async web clipboard API. See
+  // https://crbug.com/1167403.
   clipboard_histogram_weak_factory_.InvalidateWeakPtrs();
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&ClipboardHistory::OnClipboardOperation,
-                                clipboard_histogram_weak_factory_.GetWeakPtr(),
-                                /*copy=*/true));
+  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&ClipboardHistory::OnClipboardOperation,
+                     clipboard_histogram_weak_factory_.GetWeakPtr(),
+                     /*copy=*/true),
+      base::TimeDelta::FromMilliseconds(100));
 
   // We post commit |clipboard_data| at the end of the current task sequence to
   // debounce the case where multiple copies are programmatically performed.
@@ -116,12 +120,16 @@ void ClipboardHistory::OnClipboardDataRead() {
 
   // Debounce calls to `OnClipboardOperation()`. Certain surfaces
   // (Omnibox) may Read/Write to the clipboard multiple times in one user
-  // initiated operation.
+  // initiated operation. Add a delay because PostTask is too fast to debounce
+  // multiple operations through the async web clipboard API. See
+  // https://crbug.com/1167403.
   clipboard_histogram_weak_factory_.InvalidateWeakPtrs();
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&ClipboardHistory::OnClipboardOperation,
-                                clipboard_histogram_weak_factory_.GetWeakPtr(),
-                                /*copy=*/false));
+  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&ClipboardHistory::OnClipboardOperation,
+                     clipboard_histogram_weak_factory_.GetWeakPtr(),
+                     /*copy=*/false),
+      base::TimeDelta::FromMilliseconds(100));
 }
 
 void ClipboardHistory::OnClipboardOperation(bool copy) {
