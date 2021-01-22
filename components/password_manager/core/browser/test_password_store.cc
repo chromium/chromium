@@ -331,15 +331,24 @@ std::vector<InteractionsStats> TestPasswordStore::GetAllSiteStatsImpl() {
   return std::vector<InteractionsStats>();
 }
 
-bool TestPasswordStore::AddCompromisedCredentialsImpl(
+PasswordStoreChangeList TestPasswordStore::AddCompromisedCredentialsImpl(
     const CompromisedCredentials& compromised_credentials) {
   CompromisedCredentials cred = compromised_credentials;
   cred.in_store = IsAccountStore() ? PasswordForm::Store::kAccountStore
                                    : PasswordForm::Store::kProfileStore;
-  return compromised_credentials_.insert(std::move(cred)).second;
+  if (!compromised_credentials_.insert(std::move(cred)).second)
+    return {};
+
+  PasswordStoreChangeList changes;
+  for (const auto& form :
+       stored_passwords_[compromised_credentials.signon_realm]) {
+    if (form.username_value == compromised_credentials.username)
+      changes.emplace_back(PasswordStoreChange::UPDATE, form);
+  }
+  return changes;
 }
 
-bool TestPasswordStore::RemoveCompromisedCredentialsImpl(
+PasswordStoreChangeList TestPasswordStore::RemoveCompromisedCredentialsImpl(
     const std::string& signon_realm,
     const base::string16& username,
     RemoveCompromisedCredentialsReason reason) {
@@ -349,7 +358,15 @@ bool TestPasswordStore::RemoveCompromisedCredentialsImpl(
            credential.username == username;
   });
 
-  return old_size != compromised_credentials_.size();
+  if (old_size == compromised_credentials_.size())
+    return {};
+
+  PasswordStoreChangeList changes;
+  for (const auto& form : stored_passwords_[signon_realm]) {
+    if (form.username_value == username)
+      changes.emplace_back(PasswordStoreChange::UPDATE, form);
+  }
+  return changes;
 }
 
 std::vector<CompromisedCredentials>

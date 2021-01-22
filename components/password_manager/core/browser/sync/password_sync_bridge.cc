@@ -531,10 +531,14 @@ base::Optional<syncer::ModelError> PasswordSyncBridge::MergeSyncData(
       } else {
         // The remote password is more recent, update the local model.
         UpdateLoginError update_login_error;
-        PasswordStoreChangeList changes = password_store_sync_->UpdateLoginSync(
+        const PasswordForm form =
             PasswordFromEntityChange(remote_entity_change,
-                                     /*sync_time=*/time_now),
-            &update_login_error);
+                                     /*sync_time=*/time_now);
+        PasswordStoreChangeList changes =
+            password_store_sync_->UpdateLoginSync(form, &update_login_error);
+        // TODO(1167109): Check if update is required.
+        password_store_sync_->UpdateCompromisedCredentialsSync(
+            form, CompromisedCredentialsFromEntityChange(remote_entity_change));
         DCHECK_LE(changes.size(), 1U);
         base::UmaHistogramEnumeration(
             "PasswordManager.MergeSyncData.UpdateLoginSyncError",
@@ -643,6 +647,7 @@ base::Optional<syncer::ModelError> PasswordSyncBridge::MergeSyncData(
     // there would be no changes to the password store other than the sync
     // metadata changes, and no need to notify observers since they aren't
     // interested in changes to sync metadata.
+    // TODO(1137775): Notify CompromisedCredentials observers about changes.
     password_store_sync_->NotifyLoginsChanged(password_store_changes);
   }
 
@@ -819,6 +824,7 @@ base::Optional<syncer::ModelError> PasswordSyncBridge::ApplySyncChanges(
     // It could be the case that there are no password store changes, and all
     // changes are only metadata changes. In such case, no need to notify
     // observers since they aren't interested in changes to sync metadata.
+    // TODO(1137775): Notify CompromisedCredentials observers about changes.
     password_store_sync_->NotifyLoginsChanged(password_store_changes);
   }
   metrics_util::LogApplySyncChangesState(

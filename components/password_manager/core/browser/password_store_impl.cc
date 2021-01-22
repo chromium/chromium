@@ -16,6 +16,27 @@
 
 namespace password_manager {
 
+namespace {
+
+// Generates PasswordStoreChangeList for affected signon_realm and username.
+PasswordStoreChangeList BuildPasswordChangeListForCompromisedCredentialUpdate(
+    PrimaryKeyToFormMap& key_to_form_map,
+    const std::string& signon_realm,
+    const base::string16& username) {
+  PasswordStoreChangeList changes;
+
+  for (auto& pair : key_to_form_map) {
+    if (pair.second->username_value == username &&
+        pair.second->signon_realm == signon_realm) {
+      changes.emplace_back(PasswordStoreChange::UPDATE, std::move(*pair.second),
+                           pair.first);
+    }
+  }
+  return changes;
+}
+
+}  // namespace
+
 PasswordStoreImpl::PasswordStoreImpl(std::unique_ptr<LoginDatabase> login_db)
     : login_db_(std::move(login_db)) {}
 
@@ -221,20 +242,46 @@ std::vector<InteractionsStats> PasswordStoreImpl::GetSiteStatsImpl(
                    : std::vector<InteractionsStats>();
 }
 
-bool PasswordStoreImpl::AddCompromisedCredentialsImpl(
+PasswordStoreChangeList PasswordStoreImpl::AddCompromisedCredentialsImpl(
     const CompromisedCredentials& credentials) {
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
-  return login_db_ &&
-         login_db_->insecure_credentials_table().AddRow(credentials);
+  if (!login_db_ ||
+      !login_db_->insecure_credentials_table().AddRow(credentials)) {
+    return {};
+  }
+
+  PrimaryKeyToFormMap key_to_form_map;
+  // TODO(vsemeneiuk): Replace with a function to obtain logins by signon_realm
+  // and username.
+  if (login_db_->GetAllLogins(&key_to_form_map) !=
+      FormRetrievalResult::kSuccess) {
+    return {};
+  }
+
+  return BuildPasswordChangeListForCompromisedCredentialUpdate(
+      key_to_form_map, credentials.signon_realm, credentials.username);
 }
 
-bool PasswordStoreImpl::RemoveCompromisedCredentialsImpl(
+PasswordStoreChangeList PasswordStoreImpl::RemoveCompromisedCredentialsImpl(
     const std::string& signon_realm,
     const base::string16& username,
     RemoveCompromisedCredentialsReason reason) {
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
-  return login_db_ && login_db_->insecure_credentials_table().RemoveRow(
-                          signon_realm, username, reason);
+  if (!login_db_ || !login_db_->insecure_credentials_table().RemoveRow(
+                        signon_realm, username, reason)) {
+    return {};
+  }
+
+  PrimaryKeyToFormMap key_to_form_map;
+  // TODO(vsemeneiuk): Replace with a function to obtain logins by signon_realm
+  // and username.
+  if (login_db_->GetAllLogins(&key_to_form_map) !=
+      FormRetrievalResult::kSuccess) {
+    return {};
+  }
+
+  return BuildPasswordChangeListForCompromisedCredentialUpdate(
+      key_to_form_map, signon_realm, username);
 }
 
 std::vector<CompromisedCredentials>

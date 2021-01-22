@@ -69,7 +69,8 @@ bool operator==(const CompromisedCredentials& lhs,
                 const CompromisedCredentials& rhs) {
   return lhs.signon_realm == rhs.signon_realm && lhs.username == rhs.username &&
          lhs.create_time == rhs.create_time &&
-         lhs.compromise_type == rhs.compromise_type;
+         lhs.compromise_type == rhs.compromise_type &&
+         *lhs.is_muted == *rhs.is_muted;
 }
 
 const char InsecureCredentialsTable::kTableName[] = "insecure_credentials";

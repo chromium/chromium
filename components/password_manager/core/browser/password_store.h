@@ -542,9 +542,10 @@ class PasswordStore : protected PasswordStoreSync,
 
   // Synchronous implementation for manipulating with information about
   // compromised credentials.
-  virtual bool AddCompromisedCredentialsImpl(
+  // Returns PasswordStoreChangeList for the updated password forms.
+  virtual PasswordStoreChangeList AddCompromisedCredentialsImpl(
       const CompromisedCredentials& compromised_credentials) = 0;
-  virtual bool RemoveCompromisedCredentialsImpl(
+  virtual PasswordStoreChangeList RemoveCompromisedCredentialsImpl(
       const std::string& signon_realm,
       const base::string16& username,
       RemoveCompromisedCredentialsReason reason) = 0;
@@ -588,9 +589,10 @@ class PasswordStore : protected PasswordStoreSync,
       std::vector<PasswordForm> unsynced_credentials) override;
 
   // Invokes callback and notifies observers if there was a change to the list
-  // of compromised passwords.
+  // of compromised passwords. It also informs Sync about the updated password
+  // forms to sync up the changes in the compromised credentials.
   void InvokeAndNotifyAboutCompromisedPasswordsChange(
-      base::OnceCallback<bool()> callback);
+      base::OnceCallback<PasswordStoreChangeList()> callback);
 
   // Saves |username| and a hash of |password| for password reuse checking.
   // |is_gaia_password| indicates if it is a Gaia account. |event| is used for
@@ -724,7 +726,7 @@ class PasswordStore : protected PasswordStoreSync,
       base::OnceClosure completion);
   void UnblocklistInternal(const PasswordStore::FormDigest& form_digest,
                            base::OnceClosure completion);
-  bool RemoveCompromisedCredentialsByUrlAndTimeInternal(
+  PasswordStoreChangeList RemoveCompromisedCredentialsByUrlAndTimeInternal(
       const base::RepeatingCallback<bool(const GURL&)>& url_filter,
       base::Time remove_begin,
       base::Time remove_end,

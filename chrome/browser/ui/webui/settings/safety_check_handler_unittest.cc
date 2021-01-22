@@ -161,12 +161,22 @@ class TestPasswordsDelegate : public extensions::TestPasswordsPrivateDelegate {
   }
 
   void InvokeOnCompromisedCredentialsChanged() {
+    // Compromised credentials can be added only after password form to which
+    // they corresponds exists.
+    password_manager::PasswordForm form;
+    form.signon_realm = std::string("test.com");
+    form.url = GURL("test.com");
     // Credentials have to be unique, so the callback is always invoked.
+    form.username_value = base::ASCIIToUTF16(
+        "test" + base::NumberToString(test_credential_counter_++));
+    form.password_value = base::ASCIIToUTF16("password");
+    form.username_element = base::ASCIIToUTF16("username_element");
+    store_->AddLogin(form);
+    base::RunLoop().RunUntilIdle();
+
     store_->AddCompromisedCredentials(password_manager::CompromisedCredentials(
-        "test.com",
-        base::ASCIIToUTF16("test" +
-                           base::NumberToString(test_credential_counter_++)),
-        base::Time(), password_manager::CompromiseType::kLeaked,
+        form.signon_realm, form.username_value, base::Time(),
+        password_manager::CompromiseType::kLeaked,
         password_manager::IsMuted(false)));
     base::RunLoop().RunUntilIdle();
   }

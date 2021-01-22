@@ -99,6 +99,13 @@ TEST_F(InsecureCredentialsTableTest, Reload) {
   EXPECT_THAT(db()->GetAllRows(), ElementsAre(test_data()));
 }
 
+TEST_F(InsecureCredentialsTableTest, IsMutedAccountedInCompare) {
+  CompromisedCredentials credential1 = test_data();
+  CompromisedCredentials credential2 = test_data();
+  credential2.is_muted = IsMuted(true);
+  EXPECT_FALSE(credential1 == credential2);
+}
+
 TEST_F(InsecureCredentialsTableTest, AddWithoutPassword) {
   // The call fails because there is no password stored.
   EXPECT_FALSE(db()->AddRow(test_data()));

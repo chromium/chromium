@@ -569,6 +569,8 @@ TEST_F(PasswordCheckDelegateTest, OnGetCompromisedCredentials) {
 
   // Verify that a subsequent call to AddCompromisedCredentials results in the
   // expected event.
+  store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1));
+  RunUntilIdle();
   store().AddCompromisedCredentials(MakeCompromised(kExampleCom, kUsername1));
   RunUntilIdle();
   EXPECT_EQ(events::PASSWORDS_PRIVATE_ON_COMPROMISED_CREDENTIALS_INFO_CHANGED,

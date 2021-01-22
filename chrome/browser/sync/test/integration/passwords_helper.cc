@@ -21,6 +21,7 @@
 #include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
+#include "components/password_manager/core/browser/compromised_credentials_consumer.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
@@ -30,6 +31,7 @@
 #include "net/base/escape.h"
 #include "url/gurl.h"
 
+using password_manager::CompromisedCredentials;
 using password_manager::PasswordForm;
 using password_manager::PasswordStore;
 using sync_datatype_helper::test;
@@ -69,6 +71,30 @@ class PasswordStoreConsumerHelper
   std::vector<std::unique_ptr<PasswordForm>> result_;
 
   DISALLOW_COPY_AND_ASSIGN(PasswordStoreConsumerHelper);
+};
+
+class CompromisedCredentialsConsumerHelper
+    : public password_manager::CompromisedCredentialsConsumer {
+ public:
+  CompromisedCredentialsConsumerHelper() = default;
+
+  void OnGetCompromisedCredentials(
+      std::vector<CompromisedCredentials> compromised_credentials) override {
+    compromised_credentials_ = std::move(compromised_credentials);
+    run_loop_.Quit();
+  }
+
+  std::vector<CompromisedCredentials> WaitForResult() {
+    DCHECK(!run_loop_.running());
+    content::RunThisRunLoop(&run_loop_);
+    return compromised_credentials_;
+  }
+
+ private:
+  base::RunLoop run_loop_;
+  std::vector<CompromisedCredentials> compromised_credentials_;
+
+  DISALLOW_COPY_AND_ASSIGN(CompromisedCredentialsConsumerHelper);
 };
 
 // PasswordForm::date_synced is a local field. Therefore it may be different
@@ -150,6 +176,17 @@ void AddLogin(PasswordStore* store, const PasswordForm& form) {
   wait_event.Wait();
 }
 
+void AddCompromisedCredentials(PasswordStore* store,
+                               const CompromisedCredentials& issue) {
+  ASSERT_TRUE(store);
+  base::WaitableEvent wait_event(
+      base::WaitableEvent::ResetPolicy::MANUAL,
+      base::WaitableEvent::InitialState::NOT_SIGNALED);
+  store->AddCompromisedCredentials(issue);
+  store->ScheduleTask(base::BindOnce(&PasswordStoreCallback, &wait_event));
+  wait_event.Wait();
+}
+
 void UpdateLogin(PasswordStore* store, const PasswordForm& form) {
   ASSERT_TRUE(store);
   base::WaitableEvent wait_event(
@@ -188,6 +225,14 @@ std::vector<std::unique_ptr<PasswordForm>> GetAllLogins(PasswordStore* store) {
   return consumer.WaitForResult();
 }
 
+std::vector<CompromisedCredentials> GetAllCompromisedCredentials(
+    PasswordStore* store) {
+  DCHECK(store);
+  CompromisedCredentialsConsumerHelper consumer;
+  store->GetAllCompromisedCredentials(&consumer);
+  return consumer.WaitForResult();
+}
+
 void RemoveLogin(PasswordStore* store, const PasswordForm& form) {
   ASSERT_TRUE(store);
   base::WaitableEvent wait_event(
@@ -203,6 +248,20 @@ void RemoveLogins(PasswordStore* store) {
   for (const auto& form : forms) {
     RemoveLogin(store, *form);
   }
+}
+
+void RemoveCompromisedCredentials(PasswordStore* store,
+                                  const CompromisedCredentials& credential) {
+  ASSERT_TRUE(store);
+  base::WaitableEvent wait_event(
+      base::WaitableEvent::ResetPolicy::MANUAL,
+      base::WaitableEvent::InitialState::NOT_SIGNALED);
+  store->RemoveCompromisedCredentials(
+      credential.signon_realm, credential.username,
+      // kRemove used for arbitrary reason just for test.
+      password_manager::RemoveCompromisedCredentialsReason::kRemove);
+  store->ScheduleTask(base::BindOnce(&PasswordStoreCallback, &wait_event));
+  wait_event.Wait();
 }
 
 PasswordStore* GetPasswordStore(int index) {
@@ -286,6 +345,20 @@ bool AllProfilesContainSamePasswordForms() {
   return true;
 }
 
+bool AllProfilesContainSameCompromisedPasswords() {
+  auto MatchesProfile0 = testing::Matches(testing::UnorderedElementsAreArray(
+      GetAllCompromisedCredentials(GetPasswordStore(0))));
+  for (int i = 1; i < test()->num_clients(); ++i) {
+    if (!MatchesProfile0(GetAllCompromisedCredentials(GetPasswordStore(i)))) {
+      DVLOG(1)
+          << "Profile " << i
+          << " does not contain the same compromised passwords as Profile 0.";
+      return false;
+    }
+  }
+  return true;
+}
+
 int GetPasswordCount(int index) {
   return GetLogins(GetPasswordStore(index)).size();
 }
@@ -305,6 +378,19 @@ PasswordForm CreateTestPasswordForm(int index) {
   form.date_created = base::Time::Now();
   form.in_store = password_manager::PasswordForm::Store::kProfileStore;
   return form;
+}
+
+CompromisedCredentials CreateCompromisedCredentials(
+    int index,
+    password_manager::CompromiseType type) {
+  CompromisedCredentials issue;
+  issue.signon_realm = kFakeSignonRealm;
+  // This should stay compatible with the implementation of
+  // CreateTestPasswordForm() and use the same username format.
+  issue.username = base::ASCIIToUTF16(base::StringPrintf("username%d", index));
+  issue.create_time = base::Time::Now();
+  issue.compromise_type = type;
+  return issue;
 }
 
 void InjectEncryptedServerPassword(
@@ -359,10 +445,15 @@ bool PasswordSyncActiveChecker::IsExitConditionSatisfied(std::ostream* os) {
 }
 
 SamePasswordFormsChecker::SamePasswordFormsChecker()
+    : SamePasswordFormsChecker(CheckForCompromised(false)) {}
+
+SamePasswordFormsChecker::SamePasswordFormsChecker(
+    CheckForCompromised check_for_compromised)
     : MultiClientStatusChangeChecker(
           sync_datatype_helper::test()->GetSyncServices()),
-      in_progress_(false),
-      needs_recheck_(false) {}
+      check_for_compromised_(check_for_compromised) {}
+
+SamePasswordFormsChecker::~SamePasswordFormsChecker() = default;
 
 // This method needs protection against re-entrancy.
 //
@@ -392,7 +483,9 @@ bool SamePasswordFormsChecker::IsExitConditionSatisfied(std::ostream* os) {
   in_progress_ = true;
   do {
     needs_recheck_ = false;
-    result = passwords_helper::AllProfilesContainSamePasswordForms();
+    result = passwords_helper::AllProfilesContainSamePasswordForms() &&
+             (!check_for_compromised_ ||
+              passwords_helper::AllProfilesContainSameCompromisedPasswords());
   } while (needs_recheck_);
   in_progress_ = false;
   return result;
