@@ -443,8 +443,11 @@ public class ChromeTabCreator extends TabCreator {
             case TabLaunchType.FROM_START_SURFACE:
                 transition = originalTransitionType;
                 break;
+            case TabLaunchType.FROM_RESTORE:
+            case TabLaunchType.FROM_LINK:
             case TabLaunchType.FROM_EXTERNAL_APP:
             case TabLaunchType.FROM_BROWSER_ACTIONS:
+                // FROM_API ensures intent handling isn't used.
                 transition = PageTransition.LINK | PageTransition.FROM_API;
                 break;
             case TabLaunchType.FROM_CHROME_UI:
@@ -453,9 +456,7 @@ public class ChromeTabCreator extends TabCreator {
             case TabLaunchType.FROM_LAUNCH_NEW_INCOGNITO_TAB:
                 transition = PageTransition.AUTO_TOPLEVEL;
                 break;
-            case TabLaunchType.FROM_LINK:
             case TabLaunchType.FROM_LONGPRESS_FOREGROUND:
-            case TabLaunchType.FROM_RESTORE:
                 transition = PageTransition.LINK;
                 break;
             case TabLaunchType.FROM_LONGPRESS_BACKGROUND:
