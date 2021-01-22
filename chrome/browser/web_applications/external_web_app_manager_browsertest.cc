@@ -184,6 +184,37 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppManagerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ExternalWebAppManagerBrowserTest,
+                       LaunchQueryParamsMultiple) {
+  ExternalWebAppManager::BypassOfflineManifestRequirementForTesting();
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL start_url = embedded_test_server()->GetURL("/web_apps/basic.html");
+  GURL launch_url = embedded_test_server()->GetURL(
+      "/web_apps/basic.html?more=than&one=query&param");
+  AppId app_id = GenerateAppIdFromURL(start_url);
+  EXPECT_FALSE(registrar().IsInstalled(app_id));
+
+  EXPECT_EQ(SyncDefaultAppConfig(start_url, base::ReplaceStringPlaceholders(
+                                                R"({
+                "app_url": "$1",
+                "launch_container": "window",
+                "user_type": ["unmanaged"],
+                "launch_query_params": "more=than&one=query&param"
+              })",
+                                                {start_url.spec()}, nullptr)),
+            InstallResultCode::kSuccessNewInstall);
+
+  EXPECT_TRUE(registrar().IsInstalled(app_id));
+  EXPECT_EQ(registrar().GetAppStartUrl(app_id).spec(), start_url);
+  EXPECT_EQ(registrar().GetAppLaunchUrl(app_id), launch_url);
+
+  Browser* app_browser = LaunchWebAppBrowserAndWait(profile(), app_id);
+  EXPECT_EQ(
+      app_browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      launch_url);
+}
+
+IN_PROC_BROWSER_TEST_F(ExternalWebAppManagerBrowserTest,
                        LaunchQueryParamsComplex) {
   ExternalWebAppManager::BypassOfflineManifestRequirementForTesting();
   ASSERT_TRUE(embedded_test_server()->Start());
