@@ -107,6 +107,12 @@ const NSTimeInterval kLocationUpdateInterval = 365.0 * 24.0 * 60.0 * 60.0;
   [_locationUpdater setEnabled:NO];
 }
 
+- (void)setDesiredAccuracy:(CLLocationAccuracy)desiredAccuracy
+            distanceFilter:(CLLocationDistance)distanceFilter {
+  [_locationUpdater setDesiredAccuracy:desiredAccuracy
+                        distanceFilter:distanceFilter];
+}
+
 #pragma mark - Private
 
 - (void)handleLocationUpdateNotification:(NSNotification*)notification {
