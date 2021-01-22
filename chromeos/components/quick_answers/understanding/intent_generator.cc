@@ -159,11 +159,20 @@ void IntentGenerator::LoadModelCallback(const QuickAnswersRequest& request,
   }
 
   if (text_classifier_) {
-    language_detector_ =
-        std::make_unique<LanguageDetector>(text_classifier_.get());
-    language_detector_->DetectLanguage(
-        request.context.surrounding_text, request.selected_text,
-        base::BindOnce(&IntentGenerator::LanguageDetectorCallback,
+    TextAnnotationRequestPtr text_annotation_request =
+        machine_learning::mojom::TextAnnotationRequest::New();
+
+    // TODO(b/159664194): There is a issue with text classifier that some
+    // capitalized words are not annotated properly. Convert the text to lower
+    // case for now. Clean up after the issue is fixed.
+    text_annotation_request->text = base::UTF16ToUTF8(
+        base::i18n::ToLower(base::UTF8ToUTF16(request.selected_text)));
+    text_annotation_request->default_locales =
+        request.context.device_properties.language;
+
+    text_classifier_->Annotate(
+        std::move(text_annotation_request),
+        base::BindOnce(&IntentGenerator::AnnotationCallback,
                        weak_factory_.GetWeakPtr(), request));
   }
 }
@@ -181,8 +190,8 @@ void IntentGenerator::AnnotationCallback(
       // Skip the entity for definition annonation.
       if (it->second == IntentType::kDictionary &&
           ShouldSkipDefinition(request.selected_text)) {
-        std::move(complete_callback_)
-            .Run(IntentInfo(request.selected_text, IntentType::kUnknown));
+        // Fallback to language detection for generating translation intent.
+        MaybeGenerateTranslationIntent(request);
         return;
       }
       std::move(complete_callback_)
@@ -191,46 +200,12 @@ void IntentGenerator::AnnotationCallback(
       return;
     }
   }
-  std::move(complete_callback_)
-      .Run(IntentInfo(request.selected_text, IntentType::kUnknown));
-}
-
-void IntentGenerator::LanguageDetectorCallback(
-    const QuickAnswersRequest& request,
-    base::Optional<std::string> detected_language) {
-  language_detector_.reset();
-
-  // Generate translation intent if the detected language is different to the
-  // system language and is not one of the preferred languages.
-  if (detected_language.has_value() &&
-      detected_language.value() != request.context.device_properties.language &&
-      !IsPreferredLanguage(
-          detected_language.value(),
-          request.context.device_properties.preferred_languages)) {
-    MaybeGenerateTranslationIntent(request, detected_language.value());
-    return;
-  }
-
-  TextAnnotationRequestPtr text_annotation_request =
-      machine_learning::mojom::TextAnnotationRequest::New();
-
-  // TODO(b/159664194): There is a issue with text classifier that some
-  // capitalized words are not annotated properly. Convert the text to lower
-  // case for now. Clean up after the issue is fixed.
-  text_annotation_request->text = base::UTF16ToUTF8(
-      base::i18n::ToLower(base::UTF8ToUTF16(request.selected_text)));
-  text_annotation_request->default_locales =
-      request.context.device_properties.language;
-
-  text_classifier_->Annotate(
-      std::move(text_annotation_request),
-      base::BindOnce(&IntentGenerator::AnnotationCallback,
-                     weak_factory_.GetWeakPtr(), request));
+  // Fallback to language detection for generating translation intent.
+  MaybeGenerateTranslationIntent(request);
 }
 
 void IntentGenerator::MaybeGenerateTranslationIntent(
-    const QuickAnswersRequest& request,
-    const std::string& detected_language) {
+    const QuickAnswersRequest& request) {
   DCHECK(complete_callback_);
 
   if (!features::IsQuickAnswersTranslationEnabled()) {
@@ -249,10 +224,35 @@ void IntentGenerator::MaybeGenerateTranslationIntent(
     return;
   }
 
+  language_detector_ =
+      std::make_unique<LanguageDetector>(text_classifier_.get());
+  language_detector_->DetectLanguage(
+      request.context.surrounding_text, request.selected_text,
+      base::BindOnce(&IntentGenerator::LanguageDetectorCallback,
+                     weak_factory_.GetWeakPtr(), request));
+}
+
+void IntentGenerator::LanguageDetectorCallback(
+    const QuickAnswersRequest& request,
+    base::Optional<std::string> detected_language) {
+  language_detector_.reset();
+
+  // Generate translation intent if the detected language is different to the
+  // system language and is not one of the preferred languages.
+  if (detected_language.has_value() &&
+      detected_language.value() != request.context.device_properties.language &&
+      !IsPreferredLanguage(
+          detected_language.value(),
+          request.context.device_properties.preferred_languages)) {
+    std::move(complete_callback_)
+        .Run(IntentInfo(request.selected_text, IntentType::kTranslation,
+                        detected_language.value(),
+                        request.context.device_properties.language));
+    return;
+  }
+
   std::move(complete_callback_)
-      .Run(IntentInfo(request.selected_text, IntentType::kTranslation,
-                      detected_language,
-                      request.context.device_properties.language));
+      .Run(IntentInfo(request.selected_text, IntentType::kUnknown));
 }
 
 }  // namespace quick_answers

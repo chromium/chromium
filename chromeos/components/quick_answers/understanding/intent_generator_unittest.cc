@@ -212,12 +212,10 @@ TEST_F(IntentGeneratorTest, TranslationIntentWithAnnotation) {
 
   task_environment_.RunUntilIdle();
 
-  // Should generate translation intent which is prioritized against
-  // annotations.
-  EXPECT_EQ(IntentType::kTranslation, intent_info_.intent_type);
+  // Should generate dictionary intent which is prioritized against
+  // translation.
+  EXPECT_EQ(IntentType::kDictionary, intent_info_.intent_type);
   EXPECT_EQ("unfathomable", intent_info_.intent_text);
-  EXPECT_EQ("en", intent_info_.source_language);
-  EXPECT_EQ("es", intent_info_.target_language);
 }
 
 TEST_F(IntentGeneratorTest, TranslationIntentNotEnabled) {
