@@ -541,6 +541,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Variations.WebViewDownloadJobFetchResult"
     enum="VariationsSeedFetchResult" expires_after="2021-01-31">
+  <obsolete>
+    Removed from code January 2021.
+  </obsolete>
   <owner>rmcelrath@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -551,6 +554,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Variations.WebViewDownloadJobFetchTime2" units="ms"
     expires_after="2021-01-31">
+  <obsolete>
+    Removed from code January 2021.
+  </obsolete>
   <owner>rmcelrath@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -560,8 +566,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Variations.WebViewDownloadJobInterval" units="minutes"
-    expires_after="2021-01-31">
-  <owner>rmcelrath@chromium.org</owner>
+    expires_after="2022-01-20">
+  <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     The time between the start of two consecutive WebView seed downloads by
@@ -571,8 +577,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Variations.WebViewDownloadJobQueueTime" units="minutes"
-    expires_after="2021-01-31">
-  <owner>rmcelrath@chromium.org</owner>
+    expires_after="2022-01-20">
+  <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     The delay between when a WebView seed download was scheduled by the service

@@ -176,7 +176,7 @@ public class AwVariationsSeedFetcher extends JobService {
                         VariationsSeedFetcher.VariationsPlatform.ANDROID_WEBVIEW,
                         /*restrictMode=*/null, milestone, getChannelStr());
 
-                saveMetrics(fetchInfo.seedFetchResult, startTime, /*endTime=*/currentTimeMillis());
+                saveMetrics(startTime, /*endTime=*/currentTimeMillis());
 
                 if (isCancelled()) {
                     return null;
@@ -202,12 +202,10 @@ public class AwVariationsSeedFetcher extends JobService {
             return null;
         }
 
-        private void saveMetrics(int seedFetchResult, long startTime, long endTime) {
+        private void saveMetrics(long startTime, long endTime) {
             Context context = ContextUtils.getApplicationContext();
             VariationsServiceMetricsHelper metrics =
                     VariationsServiceMetricsHelper.fromVariationsSharedPreferences(context);
-            metrics.setSeedFetchResult(seedFetchResult);
-            metrics.setSeedFetchTime(endTime - startTime);
             if (metrics.hasLastEnqueueTime()) {
                 metrics.setJobQueueTime(startTime - metrics.getLastEnqueueTime());
             }

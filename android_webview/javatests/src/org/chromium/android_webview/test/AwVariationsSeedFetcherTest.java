@@ -419,8 +419,6 @@ public class AwVariationsSeedFetcherTest {
 
             VariationsServiceMetricsHelper metrics =
                     VariationsServiceMetricsHelper.fromVariationsSharedPreferences(mContext);
-            Assert.assertEquals(HTTP_NOT_FOUND, metrics.getSeedFetchResult());
-            Assert.assertEquals(DOWNLOAD_DURATION, metrics.getSeedFetchTime());
             Assert.assertEquals(START_TIME, metrics.getLastJobStartTime());
             Assert.assertFalse(metrics.hasLastEnqueueTime());
             Assert.assertFalse(metrics.hasJobInterval());
@@ -455,8 +453,6 @@ public class AwVariationsSeedFetcherTest {
 
             VariationsServiceMetricsHelper metrics =
                     VariationsServiceMetricsHelper.fromVariationsSharedPreferences(mContext);
-            Assert.assertEquals(HTTP_NOT_FOUND, metrics.getSeedFetchResult());
-            Assert.assertEquals(DOWNLOAD_DURATION, metrics.getSeedFetchTime());
             Assert.assertEquals(START_TIME + JOB_DELAY, metrics.getLastJobStartTime());
             Assert.assertEquals(JOB_DELAY, metrics.getJobQueueTime());
             Assert.assertFalse(metrics.hasLastEnqueueTime());
@@ -494,8 +490,6 @@ public class AwVariationsSeedFetcherTest {
 
             VariationsServiceMetricsHelper metrics =
                     VariationsServiceMetricsHelper.fromVariationsSharedPreferences(mContext);
-            Assert.assertEquals(HTTP_NOT_FOUND, metrics.getSeedFetchResult());
-            Assert.assertEquals(DOWNLOAD_DURATION, metrics.getSeedFetchTime());
             Assert.assertEquals(
                     START_TIME + appRunDelay + JOB_DELAY, metrics.getLastJobStartTime());
             Assert.assertEquals(appRunDelay + JOB_DELAY, metrics.getJobInterval());
