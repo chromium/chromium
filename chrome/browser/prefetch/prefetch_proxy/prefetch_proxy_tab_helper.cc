@@ -190,9 +190,8 @@ PrefetchProxyTabHelper::CurrentPageLoad::CurrentPageLoad(
 
 PrefetchProxyTabHelper::CurrentPageLoad::~CurrentPageLoad() {
   if (PrefetchProxyStartsSpareRenderer()) {
-    UMA_HISTOGRAM_COUNTS_100(
-        "IsolatedPrerender.SpareRenderer.CountStartedOnSRP",
-        number_of_spare_renderers_started_);
+    UMA_HISTOGRAM_COUNTS_100("PrefetchProxy.SpareRenderer.CountStartedOnSRP",
+                             number_of_spare_renderers_started_);
   }
 
   if (!profile_)
@@ -327,7 +326,7 @@ void PrefetchProxyTabHelper::DidStartNavigation(
 
   if (page_->srp_metrics_->prefetch_attempted_count_ > 0) {
     UMA_HISTOGRAM_COUNTS_100(
-        "IsolatedPrerender.Prefetch.Mainframe.TotalRedirects",
+        "PrefetchProxy.Prefetch.Mainframe.TotalRedirects",
         page_->srp_metrics_->prefetch_total_redirect_count_);
   }
 
@@ -803,7 +802,7 @@ void PrefetchProxyTabHelper::OnPrefetchComplete(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(PrefetchingActive());
 
-  base::UmaHistogramSparse("IsolatedPrerender.Prefetch.Mainframe.NetError",
+  base::UmaHistogramSparse("PrefetchProxy.Prefetch.Mainframe.NetError",
                            std::abs(loader->NetError()));
 
   if (loader->CompletionStatus()) {
@@ -848,12 +847,12 @@ void PrefetchProxyTabHelper::HandlePrefetchResponse(
   if (!head->headers)
     return;
 
-  UMA_HISTOGRAM_COUNTS_10M("IsolatedPrerender.Prefetch.Mainframe.BodyLength",
+  UMA_HISTOGRAM_COUNTS_10M("PrefetchProxy.Prefetch.Mainframe.BodyLength",
                            body->size());
 
   base::Optional<base::TimeDelta> total_time = GetTotalPrefetchTime(head.get());
   if (total_time) {
-    UMA_HISTOGRAM_CUSTOM_TIMES("IsolatedPrerender.Prefetch.Mainframe.TotalTime",
+    UMA_HISTOGRAM_CUSTOM_TIMES("PrefetchProxy.Prefetch.Mainframe.TotalTime",
                                *total_time,
                                base::TimeDelta::FromMilliseconds(10),
                                base::TimeDelta::FromSeconds(30), 100);
@@ -862,13 +861,13 @@ void PrefetchProxyTabHelper::HandlePrefetchResponse(
   base::Optional<base::TimeDelta> connect_time =
       GetPrefetchConnectTime(head.get());
   if (connect_time) {
-    UMA_HISTOGRAM_TIMES("IsolatedPrerender.Prefetch.Mainframe.ConnectTime",
+    UMA_HISTOGRAM_TIMES("PrefetchProxy.Prefetch.Mainframe.ConnectTime",
                         *connect_time);
   }
 
   int response_code = head->headers->response_code();
 
-  base::UmaHistogramSparse("IsolatedPrerender.Prefetch.Mainframe.RespCode",
+  base::UmaHistogramSparse("PrefetchProxy.Prefetch.Mainframe.RespCode",
                            response_code);
 
   if (response_code < 200 || response_code >= 300) {
@@ -1343,7 +1342,7 @@ void PrefetchProxyTabHelper::OnGotIsolatedCookiesToCopyAfterSRPClick(
     const net::CookieAccessResultList& excluded_cookies) {
   DCHECK(IsWaitingForAfterSRPCookiesCopy());
 
-  UMA_HISTOGRAM_COUNTS_100("IsolatedPrerender.Prefetch.Mainframe.CookiesToCopy",
+  UMA_HISTOGRAM_COUNTS_100("PrefetchProxy.Prefetch.Mainframe.CookiesToCopy",
                            cookie_list.size());
 
   if (cookie_list.empty()) {

@@ -1019,8 +1019,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
   MakeNavigationPrediction(doc_url, {error_url});
   run_loop.Run();
 
-  histogram_tester.ExpectUniqueSample("IsolatedPrerender.Proxy.RespCode", 400,
-                                      1);
+  histogram_tester.ExpectUniqueSample("PrefetchProxy.Proxy.RespCode", 400, 1);
   EXPECT_EQ(1U, tab_helper->srp_metrics().predicted_urls_count_);
   EXPECT_EQ(1U, tab_helper->srp_metrics().prefetch_attempted_count_);
   EXPECT_EQ(0U, tab_helper->srp_metrics().prefetch_successful_count_);
@@ -1299,14 +1298,14 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
   // successfully done and processed.
   run_loop.Run();
 
+  histogram_tester.ExpectTotalCount("PrefetchProxy.Prefetch.Mainframe.RespCode",
+                                    3);
   histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.RespCode", 3);
+      "PrefetchProxy.Prefetch.Mainframe.BodyLength", 3);
   histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.BodyLength", 3);
+      "PrefetchProxy.Prefetch.Mainframe.TotalTime", 3);
   histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.TotalTime", 3);
-  histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.ConnectTime", 3);
+      "PrefetchProxy.Prefetch.Mainframe.ConnectTime", 3);
 
   // Navigate to a prefetched page to trigger UKM recording.
   ui_test_utils::NavigateToURL(browser(), eligible_link_2);
@@ -1485,7 +1484,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
     run_loop.Run();
 
     histogram_tester.ExpectUniqueSample(
-        "IsolatedPrerender.Prefetch.Mainframe.RespCode",
+        "PrefetchProxy.Prefetch.Mainframe.RespCode",
         net::HTTP_SERVICE_UNAVAILABLE, 1);
     EXPECT_EQ(1U, tab_helper->srp_metrics().predicted_urls_count_);
     EXPECT_EQ(1U, tab_helper->srp_metrics().prefetch_attempted_count_);
@@ -1562,7 +1561,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
   run_loop.Run();
 
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.RespCode", 204, 1);
+      "PrefetchProxy.Prefetch.Mainframe.RespCode", 204, 1);
 
   // Navigate to a prefetched page to trigger UKM recording. Note that because
   // the navigation is never committed, the UKM recording happens immediately.
@@ -1949,9 +1948,9 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
   EXPECT_TRUE(inspected_image_request);
 
   histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.AfterClick.Mainframe.CookieWaitTime", 1);
+      "PrefetchProxy.AfterClick.Mainframe.CookieWaitTime", 1);
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.CookiesToCopy", 1, 1);
+      "PrefetchProxy.Prefetch.Mainframe.CookiesToCopy", 1, 1);
 
   // The cookie from prefetch should also be present in the CookieManager API.
   EXPECT_EQ("type=ChocolateChip",
@@ -2849,9 +2848,9 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyWithNSPBrowserTest,
                 net::CookieOptions::SameSiteCookieContext::MakeInclusive()));
 
   histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.AfterClick.Mainframe.CookieWaitTime", 1);
+      "PrefetchProxy.AfterClick.Mainframe.CookieWaitTime", 1);
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.CookiesToCopy", 1, 1);
+      "PrefetchProxy.Prefetch.Mainframe.CookiesToCopy", 1, 1);
 
   // Check that the JavaScript ran.
   EXPECT_EQ(base::ASCIIToUTF16("JavaScript Executed"),
@@ -2869,13 +2868,13 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyWithNSPBrowserTest,
                              kSRPClickPrefetchStatusName));
 
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Subresources.NetError", net::OK, 2);
+      "PrefetchProxy.Prefetch.Subresources.NetError", net::OK, 2);
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Subresources.Quantity", 4, 1);
+      "PrefetchProxy.Prefetch.Subresources.Quantity", 4, 1);
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Subresources.RespCode", 200, 2);
+      "PrefetchProxy.Prefetch.Subresources.RespCode", 200, 2);
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.AfterClick.Subresources.UsedCache", true, 2);
+      "PrefetchProxy.AfterClick.Subresources.UsedCache", true, 2);
 }
 
 IN_PROC_BROWSER_TEST_F(PrefetchProxyWithNSPBrowserTest,
@@ -2919,7 +2918,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyWithNSPBrowserTest,
   ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
 
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.SpareRenderer.CountStartedOnSRP", 1, 1);
+      "PrefetchProxy.SpareRenderer.CountStartedOnSRP", 1, 1);
 }
 
 namespace {
@@ -3371,7 +3370,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyWithNSPBrowserTest,
 
   // Checks that only one resource was used from cache.
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.AfterClick.Subresources.UsedCache", true, 1);
+      "PrefetchProxy.AfterClick.Subresources.UsedCache", true, 1);
 
   // Navigate again to trigger UKM recording.
   ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));

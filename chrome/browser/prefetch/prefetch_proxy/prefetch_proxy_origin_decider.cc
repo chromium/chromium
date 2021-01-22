@@ -63,7 +63,7 @@ void PrefetchProxyOriginDecider::ReportOriginRetryAfter(
     return;
   }
 
-  UMA_HISTOGRAM_CUSTOM_TIMES("IsolatedPrerender.Prefetch.Mainframe.RetryAfter",
+  UMA_HISTOGRAM_CUSTOM_TIMES("PrefetchProxy.Prefetch.Mainframe.RetryAfter",
                              retry_after, base::TimeDelta::FromSeconds(1),
                              base::TimeDelta::FromDays(7), 100);
 

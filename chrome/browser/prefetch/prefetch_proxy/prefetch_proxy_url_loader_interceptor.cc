@@ -68,7 +68,7 @@ void ReportProbeResult(int frame_tree_node_id,
 
 void RecordCookieWaitTime(base::TimeDelta wait_time) {
   UMA_HISTOGRAM_CUSTOM_TIMES(
-      "IsolatedPrerender.AfterClick.Mainframe.CookieWaitTime", wait_time,
+      "PrefetchProxy.AfterClick.Mainframe.CookieWaitTime", wait_time,
       base::TimeDelta(), base::TimeDelta::FromSeconds(5), 50);
 }
 

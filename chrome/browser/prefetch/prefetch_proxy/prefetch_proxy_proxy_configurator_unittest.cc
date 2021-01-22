@@ -142,9 +142,8 @@ TEST_F(PrefetchProxyProxyConfiguratorTest,
 
   configurator()->OnFallback(proxy, net::ERR_FAILED);
   EXPECT_FALSE(configurator()->IsPrefetchProxyAvailable());
-  histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Proxy.Fallback.NetError", std::abs(net::ERR_FAILED),
-      1);
+  histogram_tester.ExpectUniqueSample("PrefetchProxy.Proxy.Fallback.NetError",
+                                      std::abs(net::ERR_FAILED), 1);
 
   FastForwardBy(base::TimeDelta::FromSeconds(5 * 60 + 1));
 
@@ -166,8 +165,8 @@ TEST_F(PrefetchProxyProxyConfiguratorTest, FallbackDoesRandomBackoff_ErrOK) {
 
   configurator()->OnFallback(proxy, net::OK);
   EXPECT_FALSE(configurator()->IsPrefetchProxyAvailable());
-  histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Proxy.Fallback.NetError", net::OK, 1);
+  histogram_tester.ExpectUniqueSample("PrefetchProxy.Proxy.Fallback.NetError",
+                                      net::OK, 1);
 
   FastForwardBy(base::TimeDelta::FromSeconds(5 * 60 + 1));
 
@@ -189,8 +188,7 @@ TEST_F(PrefetchProxyProxyConfiguratorTest, Fallback_DifferentProxy) {
 
   configurator()->OnFallback(proxy, net::OK);
   EXPECT_TRUE(configurator()->IsPrefetchProxyAvailable());
-  histogram_tester.ExpectTotalCount("IsolatedPrerender.Proxy.Fallback.NetError",
-                                    0);
+  histogram_tester.ExpectTotalCount("PrefetchProxy.Proxy.Fallback.NetError", 0);
 }
 
 TEST_F(PrefetchProxyProxyConfiguratorTest, TunnelHeaders_200OK) {
@@ -209,8 +207,7 @@ TEST_F(PrefetchProxyProxyConfiguratorTest, TunnelHeaders_200OK) {
   configurator()->OnTunnelHeadersReceived(
       proxy, base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK"));
   EXPECT_TRUE(configurator()->IsPrefetchProxyAvailable());
-  histogram_tester.ExpectUniqueSample("IsolatedPrerender.Proxy.RespCode", 200,
-                                      1);
+  histogram_tester.ExpectUniqueSample("PrefetchProxy.Proxy.RespCode", 200, 1);
 }
 
 TEST_F(PrefetchProxyProxyConfiguratorTest, TunnelHeaders_DifferentProxy) {
@@ -229,7 +226,7 @@ TEST_F(PrefetchProxyProxyConfiguratorTest, TunnelHeaders_DifferentProxy) {
   configurator()->OnTunnelHeadersReceived(
       proxy, base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK"));
   EXPECT_TRUE(configurator()->IsPrefetchProxyAvailable());
-  histogram_tester.ExpectTotalCount("IsolatedPrerender.Proxy.RespCode", 0);
+  histogram_tester.ExpectTotalCount("PrefetchProxy.Proxy.RespCode", 0);
 }
 
 TEST_F(PrefetchProxyProxyConfiguratorTest, TunnelHeaders_500NoRetryAfter) {
@@ -249,8 +246,7 @@ TEST_F(PrefetchProxyProxyConfiguratorTest, TunnelHeaders_500NoRetryAfter) {
       proxy, base::MakeRefCounted<net::HttpResponseHeaders>(
                  "HTTP/1.1 500 Internal Server Error"));
   EXPECT_FALSE(configurator()->IsPrefetchProxyAvailable());
-  histogram_tester.ExpectUniqueSample("IsolatedPrerender.Proxy.RespCode", 500,
-                                      1);
+  histogram_tester.ExpectUniqueSample("PrefetchProxy.Proxy.RespCode", 500, 1);
 
   FastForwardBy(base::TimeDelta::FromSeconds(5 * 60 + 1));
   EXPECT_TRUE(configurator()->IsPrefetchProxyAvailable());
@@ -275,8 +271,7 @@ TEST_F(PrefetchProxyProxyConfiguratorTest, TunnelHeaders_500WithRetryAfter) {
           net::HttpResponseHeaders>(net::HttpUtil::AssembleRawHeaders(
           "HTTP/1.1 500 Internal Server Error\r\nRetry-After: 120\r\n\r\n")));
   EXPECT_FALSE(configurator()->IsPrefetchProxyAvailable());
-  histogram_tester.ExpectUniqueSample("IsolatedPrerender.Proxy.RespCode", 500,
-                                      1);
+  histogram_tester.ExpectUniqueSample("PrefetchProxy.Proxy.RespCode", 500, 1);
 
   FastForwardBy(base::TimeDelta::FromSeconds(119));
   EXPECT_FALSE(configurator()->IsPrefetchProxyAvailable());

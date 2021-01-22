@@ -391,19 +391,19 @@ TEST_F(PrefetchProxyTabHelperTest, FeatureDisabled) {
   EXPECT_EQ(prefetch_total_redirect_count(), 0U);
   EXPECT_FALSE(navigation_to_prefetch_start().has_value());
 
+  histogram_tester.ExpectTotalCount("PrefetchProxy.Prefetch.Mainframe.RespCode",
+                                    0);
   histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.RespCode", 0);
+      "PrefetchProxy.Prefetch.Mainframe.BodyLength", 0);
   histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.BodyLength", 0);
+      "PrefetchProxy.Prefetch.Mainframe.TotalTime", 0);
   histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.TotalTime", 0);
-  histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.ConnectTime", 0);
+      "PrefetchProxy.Prefetch.Mainframe.ConnectTime", 0);
 
   Navigate(prediction_url);
 
   histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.TotalRedirects", 0);
+      "PrefetchProxy.Prefetch.Mainframe.TotalRedirects", 0);
 
   EXPECT_FALSE(HasAfterSRPMetrics());
 }
@@ -429,19 +429,19 @@ TEST_F(PrefetchProxyTabHelperTest, DataSaverDisabled_Required) {
   EXPECT_EQ(prefetch_total_redirect_count(), 0U);
   EXPECT_FALSE(navigation_to_prefetch_start().has_value());
 
+  histogram_tester.ExpectTotalCount("PrefetchProxy.Prefetch.Mainframe.RespCode",
+                                    0);
   histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.RespCode", 0);
+      "PrefetchProxy.Prefetch.Mainframe.BodyLength", 0);
   histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.BodyLength", 0);
+      "PrefetchProxy.Prefetch.Mainframe.TotalTime", 0);
   histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.TotalTime", 0);
-  histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.ConnectTime", 0);
+      "PrefetchProxy.Prefetch.Mainframe.ConnectTime", 0);
 
   Navigate(prediction_url);
 
   histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.TotalRedirects", 0);
+      "PrefetchProxy.Prefetch.Mainframe.TotalRedirects", 0);
 
   EXPECT_FALSE(HasAfterSRPMetrics());
 }
@@ -486,19 +486,19 @@ TEST_F(PrefetchProxyTabHelperTest, GoogleSRPOnly) {
   EXPECT_EQ(prefetch_total_redirect_count(), 0U);
   EXPECT_FALSE(navigation_to_prefetch_start().has_value());
 
+  histogram_tester.ExpectTotalCount("PrefetchProxy.Prefetch.Mainframe.RespCode",
+                                    0);
   histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.RespCode", 0);
+      "PrefetchProxy.Prefetch.Mainframe.BodyLength", 0);
   histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.BodyLength", 0);
+      "PrefetchProxy.Prefetch.Mainframe.TotalTime", 0);
   histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.TotalTime", 0);
-  histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.ConnectTime", 0);
+      "PrefetchProxy.Prefetch.Mainframe.ConnectTime", 0);
 
   Navigate(prediction_url);
 
   histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.TotalRedirects", 0);
+      "PrefetchProxy.Prefetch.Mainframe.TotalRedirects", 0);
 
   EXPECT_FALSE(HasAfterSRPMetrics());
 }
@@ -521,19 +521,19 @@ TEST_F(PrefetchProxyTabHelperTest, SRPOnly) {
   EXPECT_EQ(prefetch_total_redirect_count(), 0U);
   EXPECT_FALSE(navigation_to_prefetch_start().has_value());
 
+  histogram_tester.ExpectTotalCount("PrefetchProxy.Prefetch.Mainframe.RespCode",
+                                    0);
   histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.RespCode", 0);
+      "PrefetchProxy.Prefetch.Mainframe.BodyLength", 0);
   histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.BodyLength", 0);
+      "PrefetchProxy.Prefetch.Mainframe.TotalTime", 0);
   histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.TotalTime", 0);
-  histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.ConnectTime", 0);
+      "PrefetchProxy.Prefetch.Mainframe.ConnectTime", 0);
 
   Navigate(prediction_url);
 
   histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.TotalRedirects", 0);
+      "PrefetchProxy.Prefetch.Mainframe.TotalRedirects", 0);
 
   EXPECT_FALSE(HasAfterSRPMetrics());
 }
@@ -556,14 +556,14 @@ TEST_F(PrefetchProxyTabHelperTest, HTTPSPredictionsOnly) {
   EXPECT_EQ(prefetch_total_redirect_count(), 0U);
   EXPECT_FALSE(navigation_to_prefetch_start().has_value());
 
+  histogram_tester.ExpectTotalCount("PrefetchProxy.Prefetch.Mainframe.RespCode",
+                                    0);
   histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.RespCode", 0);
+      "PrefetchProxy.Prefetch.Mainframe.BodyLength", 0);
   histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.BodyLength", 0);
+      "PrefetchProxy.Prefetch.Mainframe.TotalTime", 0);
   histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.TotalTime", 0);
-  histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.ConnectTime", 0);
+      "PrefetchProxy.Prefetch.Mainframe.ConnectTime", 0);
 
   NavigateAndVerifyPrefetchStatus(
       prediction_url,
@@ -572,7 +572,7 @@ TEST_F(PrefetchProxyTabHelperTest, HTTPSPredictionsOnly) {
   EXPECT_EQ(base::Optional<size_t>(0), after_srp_clicked_link_srp_position());
 
   histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.TotalRedirects", 0);
+      "PrefetchProxy.Prefetch.Mainframe.TotalRedirects", 0);
 }
 
 TEST_F(PrefetchProxyTabHelperTest, DontFetchGoogleLinks) {
@@ -593,14 +593,14 @@ TEST_F(PrefetchProxyTabHelperTest, DontFetchGoogleLinks) {
   EXPECT_EQ(prefetch_total_redirect_count(), 0U);
   EXPECT_FALSE(navigation_to_prefetch_start().has_value());
 
+  histogram_tester.ExpectTotalCount("PrefetchProxy.Prefetch.Mainframe.RespCode",
+                                    0);
   histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.RespCode", 0);
+      "PrefetchProxy.Prefetch.Mainframe.BodyLength", 0);
   histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.BodyLength", 0);
+      "PrefetchProxy.Prefetch.Mainframe.TotalTime", 0);
   histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.TotalTime", 0);
-  histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.ConnectTime", 0);
+      "PrefetchProxy.Prefetch.Mainframe.ConnectTime", 0);
 
   NavigateAndVerifyPrefetchStatus(
       prediction_url,
@@ -609,7 +609,7 @@ TEST_F(PrefetchProxyTabHelperTest, DontFetchGoogleLinks) {
   EXPECT_EQ(base::Optional<size_t>(0), after_srp_clicked_link_srp_position());
 
   histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.TotalRedirects", 0);
+      "PrefetchProxy.Prefetch.Mainframe.TotalRedirects", 0);
 }
 
 TEST_F(PrefetchProxyTabHelperTest, DontFetchIPAddresses) {
@@ -630,14 +630,14 @@ TEST_F(PrefetchProxyTabHelperTest, DontFetchIPAddresses) {
   EXPECT_EQ(prefetch_total_redirect_count(), 0U);
   EXPECT_FALSE(navigation_to_prefetch_start().has_value());
 
+  histogram_tester.ExpectTotalCount("PrefetchProxy.Prefetch.Mainframe.RespCode",
+                                    0);
   histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.RespCode", 0);
+      "PrefetchProxy.Prefetch.Mainframe.BodyLength", 0);
   histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.BodyLength", 0);
+      "PrefetchProxy.Prefetch.Mainframe.TotalTime", 0);
   histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.TotalTime", 0);
-  histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.ConnectTime", 0);
+      "PrefetchProxy.Prefetch.Mainframe.ConnectTime", 0);
 
   NavigateAndVerifyPrefetchStatus(
       prediction_url,
@@ -646,7 +646,7 @@ TEST_F(PrefetchProxyTabHelperTest, DontFetchIPAddresses) {
   EXPECT_EQ(base::Optional<size_t>(0), after_srp_clicked_link_srp_position());
 
   histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.TotalRedirects", 0);
+      "PrefetchProxy.Prefetch.Mainframe.TotalRedirects", 0);
 }
 
 TEST_F(PrefetchProxyTabHelperTest, WrongWebContents) {
@@ -667,21 +667,21 @@ TEST_F(PrefetchProxyTabHelperTest, WrongWebContents) {
   EXPECT_EQ(prefetch_total_redirect_count(), 0U);
   EXPECT_FALSE(navigation_to_prefetch_start().has_value());
 
+  histogram_tester.ExpectTotalCount("PrefetchProxy.Prefetch.Mainframe.RespCode",
+                                    0);
   histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.RespCode", 0);
+      "PrefetchProxy.Prefetch.Mainframe.BodyLength", 0);
   histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.BodyLength", 0);
+      "PrefetchProxy.Prefetch.Mainframe.TotalTime", 0);
   histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.TotalTime", 0);
-  histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.ConnectTime", 0);
+      "PrefetchProxy.Prefetch.Mainframe.ConnectTime", 0);
 
   Navigate(prediction_url);
 
   EXPECT_FALSE(HasAfterSRPMetrics());
 
   histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.TotalRedirects", 0);
+      "PrefetchProxy.Prefetch.Mainframe.TotalRedirects", 0);
 }
 
 TEST_F(PrefetchProxyTabHelperTest, HasPurposePrefetchHeader) {
@@ -727,14 +727,14 @@ TEST_F(PrefetchProxyTabHelperTest, NoCookies) {
   EXPECT_EQ(prefetch_total_redirect_count(), 0U);
   EXPECT_FALSE(navigation_to_prefetch_start().has_value());
 
+  histogram_tester.ExpectTotalCount("PrefetchProxy.Prefetch.Mainframe.RespCode",
+                                    0);
   histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.RespCode", 0);
+      "PrefetchProxy.Prefetch.Mainframe.BodyLength", 0);
   histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.BodyLength", 0);
+      "PrefetchProxy.Prefetch.Mainframe.TotalTime", 0);
   histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.TotalTime", 0);
-  histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.ConnectTime", 0);
+      "PrefetchProxy.Prefetch.Mainframe.ConnectTime", 0);
 
   NavigateAndVerifyPrefetchStatus(
       prediction_url,
@@ -743,7 +743,7 @@ TEST_F(PrefetchProxyTabHelperTest, NoCookies) {
   EXPECT_EQ(base::Optional<size_t>(0), after_srp_clicked_link_srp_position());
 
   histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.TotalRedirects", 0);
+      "PrefetchProxy.Prefetch.Mainframe.TotalRedirects", 0);
 }
 
 TEST_F(PrefetchProxyTabHelperTest, 2XXOnly) {
@@ -768,17 +768,15 @@ TEST_F(PrefetchProxyTabHelperTest, 2XXOnly) {
   EXPECT_TRUE(navigation_to_prefetch_start().has_value());
 
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.NetError", net::OK, 1);
+      "PrefetchProxy.Prefetch.Mainframe.NetError", net::OK, 1);
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.RespCode", net::HTTP_NOT_FOUND, 1);
+      "PrefetchProxy.Prefetch.Mainframe.RespCode", net::HTTP_NOT_FOUND, 1);
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.BodyLength", base::size(kHTMLBody),
-      1);
+      "PrefetchProxy.Prefetch.Mainframe.BodyLength", base::size(kHTMLBody), 1);
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.TotalTime", kTotalTimeDuration, 1);
+      "PrefetchProxy.Prefetch.Mainframe.TotalTime", kTotalTimeDuration, 1);
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.ConnectTime", kConnectTimeDuration,
-      1);
+      "PrefetchProxy.Prefetch.Mainframe.ConnectTime", kConnectTimeDuration, 1);
 
   NavigateAndVerifyPrefetchStatus(
       prediction_url, PrefetchProxyPrefetchStatus::kPrefetchFailedNon2XX);
@@ -786,7 +784,7 @@ TEST_F(PrefetchProxyTabHelperTest, 2XXOnly) {
   EXPECT_EQ(base::Optional<size_t>(0), after_srp_clicked_link_srp_position());
 
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.TotalRedirects", 0, 1);
+      "PrefetchProxy.Prefetch.Mainframe.TotalRedirects", 0, 1);
 }
 
 TEST_F(PrefetchProxyTabHelperTest, NetErrorOKOnly) {
@@ -811,16 +809,16 @@ TEST_F(PrefetchProxyTabHelperTest, NetErrorOKOnly) {
   EXPECT_TRUE(navigation_to_prefetch_start().has_value());
 
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.NetError",
-      std::abs(net::ERR_FAILED), 1);
+      "PrefetchProxy.Prefetch.Mainframe.NetError", std::abs(net::ERR_FAILED),
+      1);
+  histogram_tester.ExpectTotalCount("PrefetchProxy.Prefetch.Mainframe.RespCode",
+                                    0);
   histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.RespCode", 0);
+      "PrefetchProxy.Prefetch.Mainframe.BodyLength", 0);
   histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.BodyLength", 0);
+      "PrefetchProxy.Prefetch.Mainframe.TotalTime", 0);
   histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.TotalTime", 0);
-  histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.ConnectTime", 0);
+      "PrefetchProxy.Prefetch.Mainframe.ConnectTime", 0);
 
   NavigateAndVerifyPrefetchStatus(
       prediction_url, PrefetchProxyPrefetchStatus::kPrefetchFailedNetError);
@@ -828,7 +826,7 @@ TEST_F(PrefetchProxyTabHelperTest, NetErrorOKOnly) {
   EXPECT_EQ(base::Optional<size_t>(0), after_srp_clicked_link_srp_position());
 
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.TotalRedirects", 0, 1);
+      "PrefetchProxy.Prefetch.Mainframe.TotalRedirects", 0, 1);
 }
 
 TEST_F(PrefetchProxyTabHelperTest, ResponseBodyLimit) {
@@ -854,16 +852,16 @@ TEST_F(PrefetchProxyTabHelperTest, ResponseBodyLimit) {
   EXPECT_TRUE(navigation_to_prefetch_start().has_value());
 
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.NetError",
+      "PrefetchProxy.Prefetch.Mainframe.NetError",
       std::abs(net::ERR_INSUFFICIENT_RESOURCES), 1);
+  histogram_tester.ExpectTotalCount("PrefetchProxy.Prefetch.Mainframe.RespCode",
+                                    0);
   histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.RespCode", 0);
+      "PrefetchProxy.Prefetch.Mainframe.BodyLength", 0);
   histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.BodyLength", 0);
+      "PrefetchProxy.Prefetch.Mainframe.TotalTime", 0);
   histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.TotalTime", 0);
-  histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.ConnectTime", 0);
+      "PrefetchProxy.Prefetch.Mainframe.ConnectTime", 0);
 
   NavigateAndVerifyPrefetchStatus(
       prediction_url, PrefetchProxyPrefetchStatus::kPrefetchFailedNetError);
@@ -871,7 +869,7 @@ TEST_F(PrefetchProxyTabHelperTest, ResponseBodyLimit) {
   EXPECT_EQ(base::Optional<size_t>(0), after_srp_clicked_link_srp_position());
 
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.TotalRedirects", 0, 1);
+      "PrefetchProxy.Prefetch.Mainframe.TotalRedirects", 0, 1);
 }
 
 TEST_F(PrefetchProxyTabHelperTest, NonHTML) {
@@ -897,16 +895,15 @@ TEST_F(PrefetchProxyTabHelperTest, NonHTML) {
   EXPECT_TRUE(navigation_to_prefetch_start().has_value());
 
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.NetError", net::OK, 1);
+      "PrefetchProxy.Prefetch.Mainframe.NetError", net::OK, 1);
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.RespCode", net::HTTP_OK, 1);
+      "PrefetchProxy.Prefetch.Mainframe.RespCode", net::HTTP_OK, 1);
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.BodyLength", body.size(), 1);
+      "PrefetchProxy.Prefetch.Mainframe.BodyLength", body.size(), 1);
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.TotalTime", kTotalTimeDuration, 1);
+      "PrefetchProxy.Prefetch.Mainframe.TotalTime", kTotalTimeDuration, 1);
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.ConnectTime", kConnectTimeDuration,
-      1);
+      "PrefetchProxy.Prefetch.Mainframe.ConnectTime", kConnectTimeDuration, 1);
 
   NavigateAndVerifyPrefetchStatus(
       prediction_url, PrefetchProxyPrefetchStatus::kPrefetchFailedNotHTML);
@@ -914,7 +911,7 @@ TEST_F(PrefetchProxyTabHelperTest, NonHTML) {
   EXPECT_EQ(base::Optional<size_t>(0), after_srp_clicked_link_srp_position());
 
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.TotalRedirects", 0, 1);
+      "PrefetchProxy.Prefetch.Mainframe.TotalRedirects", 0, 1);
 }
 
 TEST_F(PrefetchProxyTabHelperTest, EligiblePredictionPositions) {
@@ -967,21 +964,21 @@ TEST_F(PrefetchProxyTabHelperTest, UserSettingDisabled) {
   EXPECT_EQ(prefetch_total_redirect_count(), 0U);
   EXPECT_FALSE(navigation_to_prefetch_start().has_value());
 
+  histogram_tester.ExpectTotalCount("PrefetchProxy.Prefetch.Mainframe.RespCode",
+                                    0);
   histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.RespCode", 0);
+      "PrefetchProxy.Prefetch.Mainframe.BodyLength", 0);
   histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.BodyLength", 0);
+      "PrefetchProxy.Prefetch.Mainframe.TotalTime", 0);
   histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.TotalTime", 0);
-  histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.ConnectTime", 0);
+      "PrefetchProxy.Prefetch.Mainframe.ConnectTime", 0);
 
   Navigate(prediction_url);
 
   EXPECT_FALSE(HasAfterSRPMetrics());
 
   histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.TotalRedirects", 0);
+      "PrefetchProxy.Prefetch.Mainframe.TotalRedirects", 0);
 }
 
 // Verify that prefetch proxy is not triggered if the predictions for next
@@ -1023,17 +1020,15 @@ TEST_F(PrefetchProxyTabHelperTest, IgnoreSameDocNavigations) {
   EXPECT_TRUE(navigation_to_prefetch_start().has_value());
 
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.NetError", net::OK, 1);
+      "PrefetchProxy.Prefetch.Mainframe.NetError", net::OK, 1);
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.RespCode", net::HTTP_OK, 1);
+      "PrefetchProxy.Prefetch.Mainframe.RespCode", net::HTTP_OK, 1);
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.BodyLength", base::size(kHTMLBody),
-      1);
+      "PrefetchProxy.Prefetch.Mainframe.BodyLength", base::size(kHTMLBody), 1);
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.TotalTime", kTotalTimeDuration, 1);
+      "PrefetchProxy.Prefetch.Mainframe.TotalTime", kTotalTimeDuration, 1);
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.ConnectTime", kConnectTimeDuration,
-      1);
+      "PrefetchProxy.Prefetch.Mainframe.ConnectTime", kConnectTimeDuration, 1);
 
   NavigateAndVerifyPrefetchStatus(
       prediction_url, PrefetchProxyPrefetchStatus::kPrefetchSuccessful);
@@ -1041,7 +1036,7 @@ TEST_F(PrefetchProxyTabHelperTest, IgnoreSameDocNavigations) {
   EXPECT_EQ(base::Optional<size_t>(0), after_srp_clicked_link_srp_position());
 
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.TotalRedirects", 0, 1);
+      "PrefetchProxy.Prefetch.Mainframe.TotalRedirects", 0, 1);
 }
 
 TEST_F(PrefetchProxyTabHelperTest, SuccessCase) {
@@ -1078,17 +1073,15 @@ TEST_F(PrefetchProxyTabHelperTest, SuccessCase) {
   EXPECT_TRUE(navigation_to_prefetch_start().has_value());
 
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.NetError", net::OK, 1);
+      "PrefetchProxy.Prefetch.Mainframe.NetError", net::OK, 1);
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.RespCode", net::HTTP_OK, 1);
+      "PrefetchProxy.Prefetch.Mainframe.RespCode", net::HTTP_OK, 1);
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.BodyLength", base::size(kHTMLBody),
-      1);
+      "PrefetchProxy.Prefetch.Mainframe.BodyLength", base::size(kHTMLBody), 1);
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.TotalTime", kTotalTimeDuration, 1);
+      "PrefetchProxy.Prefetch.Mainframe.TotalTime", kTotalTimeDuration, 1);
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.ConnectTime", kConnectTimeDuration,
-      1);
+      "PrefetchProxy.Prefetch.Mainframe.ConnectTime", kConnectTimeDuration, 1);
 
   NavigateAndVerifyPrefetchStatus(
       prediction_url, PrefetchProxyPrefetchStatus::kPrefetchSuccessful);
@@ -1096,7 +1089,7 @@ TEST_F(PrefetchProxyTabHelperTest, SuccessCase) {
   EXPECT_EQ(base::Optional<size_t>(0), after_srp_clicked_link_srp_position());
 
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.TotalRedirects", 0, 1);
+      "PrefetchProxy.Prefetch.Mainframe.TotalRedirects", 0, 1);
 }
 
 TEST_F(PrefetchProxyTabHelperTest, AfterSRPLinkNotOnSRP) {
@@ -1121,17 +1114,15 @@ TEST_F(PrefetchProxyTabHelperTest, AfterSRPLinkNotOnSRP) {
   EXPECT_TRUE(navigation_to_prefetch_start().has_value());
 
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.NetError", net::OK, 1);
+      "PrefetchProxy.Prefetch.Mainframe.NetError", net::OK, 1);
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.RespCode", net::HTTP_OK, 1);
+      "PrefetchProxy.Prefetch.Mainframe.RespCode", net::HTTP_OK, 1);
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.BodyLength", base::size(kHTMLBody),
-      1);
+      "PrefetchProxy.Prefetch.Mainframe.BodyLength", base::size(kHTMLBody), 1);
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.TotalTime", kTotalTimeDuration, 1);
+      "PrefetchProxy.Prefetch.Mainframe.TotalTime", kTotalTimeDuration, 1);
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.ConnectTime", kConnectTimeDuration,
-      1);
+      "PrefetchProxy.Prefetch.Mainframe.ConnectTime", kConnectTimeDuration, 1);
 
   NavigateAndVerifyPrefetchStatus(
       GURL("https://wasnt-on-srp.com"),
@@ -1140,7 +1131,7 @@ TEST_F(PrefetchProxyTabHelperTest, AfterSRPLinkNotOnSRP) {
   EXPECT_EQ(base::nullopt, after_srp_clicked_link_srp_position());
 
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.TotalRedirects", 0, 1);
+      "PrefetchProxy.Prefetch.Mainframe.TotalRedirects", 0, 1);
 }
 
 TEST_F(PrefetchProxyTabHelperTest, LimitedNumberOfPrefetches_Zero) {
@@ -1163,14 +1154,14 @@ TEST_F(PrefetchProxyTabHelperTest, LimitedNumberOfPrefetches_Zero) {
   EXPECT_EQ(prefetch_total_redirect_count(), 0U);
   EXPECT_TRUE(navigation_to_prefetch_start().has_value());
 
+  histogram_tester.ExpectTotalCount("PrefetchProxy.Prefetch.Mainframe.RespCode",
+                                    0);
   histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.RespCode", 0);
+      "PrefetchProxy.Prefetch.Mainframe.BodyLength", 0);
   histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.BodyLength", 0);
+      "PrefetchProxy.Prefetch.Mainframe.TotalTime", 0);
   histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.TotalTime", 0);
-  histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.ConnectTime", 0);
+      "PrefetchProxy.Prefetch.Mainframe.ConnectTime", 0);
 
   NavigateAndVerifyPrefetchStatus(
       prediction_url, PrefetchProxyPrefetchStatus::kPrefetchNotStarted);
@@ -1178,7 +1169,7 @@ TEST_F(PrefetchProxyTabHelperTest, LimitedNumberOfPrefetches_Zero) {
   EXPECT_EQ(base::Optional<size_t>(0), after_srp_clicked_link_srp_position());
 
   histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.TotalRedirects", 0);
+      "PrefetchProxy.Prefetch.Mainframe.TotalRedirects", 0);
 }
 
 TEST_F(PrefetchProxyTabHelperTest, NumberOfPrefetches_UnlimitedByExperiment) {
@@ -1214,25 +1205,23 @@ TEST_F(PrefetchProxyTabHelperTest, NumberOfPrefetches_UnlimitedByExperiment) {
   EXPECT_TRUE(navigation_to_prefetch_start().has_value());
 
   histogram_tester.ExpectBucketCount(
-      "IsolatedPrerender.Prefetch.Mainframe.NetError", net::OK, 2);
+      "PrefetchProxy.Prefetch.Mainframe.NetError", net::OK, 2);
   histogram_tester.ExpectBucketCount(
-      "IsolatedPrerender.Prefetch.Mainframe.NetError",
-      std::abs(net::ERR_FAILED), 1);
-  histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.NetError", 3);
+      "PrefetchProxy.Prefetch.Mainframe.NetError", std::abs(net::ERR_FAILED),
+      1);
+  histogram_tester.ExpectTotalCount("PrefetchProxy.Prefetch.Mainframe.NetError",
+                                    3);
 
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.RespCode", net::HTTP_OK, 2);
+      "PrefetchProxy.Prefetch.Mainframe.RespCode", net::HTTP_OK, 2);
 
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.BodyLength", base::size(kHTMLBody),
-      2);
+      "PrefetchProxy.Prefetch.Mainframe.BodyLength", base::size(kHTMLBody), 2);
 
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.TotalTime", kTotalTimeDuration, 2);
+      "PrefetchProxy.Prefetch.Mainframe.TotalTime", kTotalTimeDuration, 2);
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.ConnectTime", kConnectTimeDuration,
-      2);
+      "PrefetchProxy.Prefetch.Mainframe.ConnectTime", kConnectTimeDuration, 2);
 
   NavigateAndVerifyPrefetchStatus(
       prediction_url_3, PrefetchProxyPrefetchStatus::kPrefetchSuccessful);
@@ -1240,7 +1229,7 @@ TEST_F(PrefetchProxyTabHelperTest, NumberOfPrefetches_UnlimitedByExperiment) {
   EXPECT_EQ(base::Optional<size_t>(2), after_srp_clicked_link_srp_position());
 
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.TotalRedirects", 0, 1);
+      "PrefetchProxy.Prefetch.Mainframe.TotalRedirects", 0, 1);
 }
 
 TEST_F(PrefetchProxyTabHelperTest, ConcurrentPrefetches) {
@@ -1276,17 +1265,15 @@ TEST_F(PrefetchProxyTabHelperTest, ConcurrentPrefetches) {
   EXPECT_TRUE(navigation_to_prefetch_start().has_value());
 
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.NetError", net::OK, 2);
+      "PrefetchProxy.Prefetch.Mainframe.NetError", net::OK, 2);
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.RespCode", net::HTTP_OK, 2);
+      "PrefetchProxy.Prefetch.Mainframe.RespCode", net::HTTP_OK, 2);
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.BodyLength", base::size(kHTMLBody),
-      2);
+      "PrefetchProxy.Prefetch.Mainframe.BodyLength", base::size(kHTMLBody), 2);
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.TotalTime", kTotalTimeDuration, 2);
+      "PrefetchProxy.Prefetch.Mainframe.TotalTime", kTotalTimeDuration, 2);
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.ConnectTime", kConnectTimeDuration,
-      2);
+      "PrefetchProxy.Prefetch.Mainframe.ConnectTime", kConnectTimeDuration, 2);
 
   NavigateAndVerifyPrefetchStatus(
       prediction_url_2, PrefetchProxyPrefetchStatus::kPrefetchSuccessful);
@@ -1294,7 +1281,7 @@ TEST_F(PrefetchProxyTabHelperTest, ConcurrentPrefetches) {
   EXPECT_EQ(base::Optional<size_t>(1), after_srp_clicked_link_srp_position());
 
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.TotalRedirects", 0, 1);
+      "PrefetchProxy.Prefetch.Mainframe.TotalRedirects", 0, 1);
 }
 
 TEST_F(PrefetchProxyTabHelperTest, OrderedBitMask) {
@@ -1356,25 +1343,23 @@ TEST_F(PrefetchProxyTabHelperTest, NumberOfPrefetches_UnlimitedByCmdLine) {
   EXPECT_TRUE(navigation_to_prefetch_start().has_value());
 
   histogram_tester.ExpectBucketCount(
-      "IsolatedPrerender.Prefetch.Mainframe.NetError", net::OK, 2);
+      "PrefetchProxy.Prefetch.Mainframe.NetError", net::OK, 2);
   histogram_tester.ExpectBucketCount(
-      "IsolatedPrerender.Prefetch.Mainframe.NetError",
-      std::abs(net::ERR_FAILED), 1);
-  histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.NetError", 3);
+      "PrefetchProxy.Prefetch.Mainframe.NetError", std::abs(net::ERR_FAILED),
+      1);
+  histogram_tester.ExpectTotalCount("PrefetchProxy.Prefetch.Mainframe.NetError",
+                                    3);
 
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.RespCode", net::HTTP_OK, 2);
+      "PrefetchProxy.Prefetch.Mainframe.RespCode", net::HTTP_OK, 2);
 
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.BodyLength", base::size(kHTMLBody),
-      2);
+      "PrefetchProxy.Prefetch.Mainframe.BodyLength", base::size(kHTMLBody), 2);
 
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.TotalTime", kTotalTimeDuration, 2);
+      "PrefetchProxy.Prefetch.Mainframe.TotalTime", kTotalTimeDuration, 2);
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.ConnectTime", kConnectTimeDuration,
-      2);
+      "PrefetchProxy.Prefetch.Mainframe.ConnectTime", kConnectTimeDuration, 2);
 
   NavigateAndVerifyPrefetchStatus(
       prediction_url_1, PrefetchProxyPrefetchStatus::kPrefetchSuccessful);
@@ -1382,7 +1367,7 @@ TEST_F(PrefetchProxyTabHelperTest, NumberOfPrefetches_UnlimitedByCmdLine) {
   EXPECT_EQ(base::Optional<size_t>(0), after_srp_clicked_link_srp_position());
 
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.TotalRedirects", 0, 1);
+      "PrefetchProxy.Prefetch.Mainframe.TotalRedirects", 0, 1);
 }
 
 TEST_F(PrefetchProxyTabHelperTest, LimitedNumberOfPrefetches) {
@@ -1416,29 +1401,27 @@ TEST_F(PrefetchProxyTabHelperTest, LimitedNumberOfPrefetches) {
   EXPECT_TRUE(navigation_to_prefetch_start().has_value());
 
   histogram_tester.ExpectBucketCount(
-      "IsolatedPrerender.Prefetch.Mainframe.NetError", net::OK, 1);
+      "PrefetchProxy.Prefetch.Mainframe.NetError", net::OK, 1);
   histogram_tester.ExpectBucketCount(
-      "IsolatedPrerender.Prefetch.Mainframe.NetError",
-      std::abs(net::ERR_FAILED), 1);
-  histogram_tester.ExpectTotalCount(
-      "IsolatedPrerender.Prefetch.Mainframe.NetError", 2);
-
-  histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.RespCode", net::HTTP_OK, 1);
-
-  histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.BodyLength", base::size(kHTMLBody),
+      "PrefetchProxy.Prefetch.Mainframe.NetError", std::abs(net::ERR_FAILED),
       1);
+  histogram_tester.ExpectTotalCount("PrefetchProxy.Prefetch.Mainframe.NetError",
+                                    2);
 
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.TotalTime", kTotalTimeDuration, 1);
+      "PrefetchProxy.Prefetch.Mainframe.RespCode", net::HTTP_OK, 1);
+
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.ConnectTime", kConnectTimeDuration,
-      1);
+      "PrefetchProxy.Prefetch.Mainframe.BodyLength", base::size(kHTMLBody), 1);
+
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.Mainframe.TotalTime", kTotalTimeDuration, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.Mainframe.ConnectTime", kConnectTimeDuration, 1);
 
   TriggerRedirectHistogramRecording();
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.TotalRedirects", 0, 1);
+      "PrefetchProxy.Prefetch.Mainframe.TotalRedirects", 0, 1);
 }
 
 TEST_F(PrefetchProxyTabHelperTest, PrefetchingNotStartedWhileInvisible) {
@@ -1491,21 +1474,19 @@ TEST_F(PrefetchProxyTabHelperTest, PrefetchingPausedWhenInvisible) {
   EXPECT_TRUE(navigation_to_prefetch_start().has_value());
 
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.NetError", net::OK, 1);
+      "PrefetchProxy.Prefetch.Mainframe.NetError", net::OK, 1);
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.RespCode", net::HTTP_OK, 1);
+      "PrefetchProxy.Prefetch.Mainframe.RespCode", net::HTTP_OK, 1);
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.BodyLength", base::size(kHTMLBody),
-      1);
+      "PrefetchProxy.Prefetch.Mainframe.BodyLength", base::size(kHTMLBody), 1);
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.TotalTime", kTotalTimeDuration, 1);
+      "PrefetchProxy.Prefetch.Mainframe.TotalTime", kTotalTimeDuration, 1);
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.ConnectTime", kConnectTimeDuration,
-      1);
+      "PrefetchProxy.Prefetch.Mainframe.ConnectTime", kConnectTimeDuration, 1);
 
   TriggerRedirectHistogramRecording();
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.TotalRedirects", 0, 1);
+      "PrefetchProxy.Prefetch.Mainframe.TotalRedirects", 0, 1);
 }
 
 TEST_F(PrefetchProxyTabHelperTest, PrefetchingRestartedWhenVisible) {
@@ -1849,17 +1830,15 @@ TEST_F(PrefetchProxyTabHelperRedirectTest, SuccessfulRedirect) {
   EXPECT_TRUE(navigation_to_prefetch_start().has_value());
 
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.NetError", net::OK, 1);
+      "PrefetchProxy.Prefetch.Mainframe.NetError", net::OK, 1);
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.RespCode", net::HTTP_OK, 1);
+      "PrefetchProxy.Prefetch.Mainframe.RespCode", net::HTTP_OK, 1);
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.BodyLength", base::size(kHTMLBody),
-      1);
+      "PrefetchProxy.Prefetch.Mainframe.BodyLength", base::size(kHTMLBody), 1);
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.TotalTime", kTotalTimeDuration, 1);
+      "PrefetchProxy.Prefetch.Mainframe.TotalTime", kTotalTimeDuration, 1);
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.ConnectTime", kConnectTimeDuration,
-      1);
+      "PrefetchProxy.Prefetch.Mainframe.ConnectTime", kConnectTimeDuration, 1);
 
   NavigateAndVerifyPrefetchStatus(
       redirect_url, PrefetchProxyPrefetchStatus::kPrefetchSuccessful);
@@ -1867,5 +1846,5 @@ TEST_F(PrefetchProxyTabHelperRedirectTest, SuccessfulRedirect) {
   EXPECT_EQ(base::Optional<size_t>(0), after_srp_clicked_link_srp_position());
 
   histogram_tester.ExpectUniqueSample(
-      "IsolatedPrerender.Prefetch.Mainframe.TotalRedirects", 1, 1);
+      "PrefetchProxy.Prefetch.Mainframe.TotalRedirects", 1, 1);
 }

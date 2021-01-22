@@ -90,7 +90,7 @@ void PrefetchProxyProxyConfigurator::OnFallback(
     return;
   }
 
-  base::UmaHistogramSparse("IsolatedPrerender.Proxy.Fallback.NetError",
+  base::UmaHistogramSparse("PrefetchProxy.Proxy.Fallback.NetError",
                            std::abs(net_error));
 
   OnTunnelProxyConnectionError(base::nullopt);
@@ -105,7 +105,7 @@ void PrefetchProxyProxyConfigurator::OnTunnelHeadersReceived(
     return;
   }
 
-  base::UmaHistogramSparse("IsolatedPrerender.Proxy.RespCode",
+  base::UmaHistogramSparse("PrefetchProxy.Proxy.RespCode",
                            response_headers->response_code());
 
   if (response_headers->response_code() == net::HTTP_OK) {
