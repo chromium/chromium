@@ -142,8 +142,15 @@ void StyleFetchedImage::ImageNotifyFinished(ImageResourceContent*) {
   if (image_ && image_->HasImage()) {
     Image& image = *image_->GetImage();
 
-    if (auto* svg_image = DynamicTo<SVGImage>(image))
+    if (auto* svg_image = DynamicTo<SVGImage>(image)) {
+      // SVG's document should be completely loaded before access control
+      // checks, which can occur anytime after ImageNotifyFinished()
+      // (See SVGImage::CurrentFrameHasSingleSecurityOrigin()).
+      // We check the document is loaded here to catch violation of the
+      // assumption reliably.
+      svg_image->CheckLoaded();
       svg_image->UpdateUseCounters(*document_);
+    }
   }
 
   if (LocalDOMWindow* window = document_->domWindow())
