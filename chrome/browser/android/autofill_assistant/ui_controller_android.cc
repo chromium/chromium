@@ -538,6 +538,10 @@ void UiControllerAndroid::OnFeedbackButtonClicked() {
       ConvertUTF8ToJavaString(env, ui_delegate_->GetDebugContext()));
 }
 
+void UiControllerAndroid::OnFeedbackFormRequested() {
+  OnFeedbackButtonClicked();
+}
+
 void UiControllerAndroid::OnViewEvent(const EventHandler::EventKey& key) {
   ui_delegate_->DispatchEvent(key);
 }
@@ -1858,6 +1862,7 @@ void UiControllerAndroid::OnFatalError(
     return;
   ui_delegate_->OnFatalError(
       base::android::ConvertJavaStringToUTF8(env, jmessage),
+      /*show_feedback_chip=*/false,
       static_cast<Metrics::DropOutReason>(jreason));
 }
 
