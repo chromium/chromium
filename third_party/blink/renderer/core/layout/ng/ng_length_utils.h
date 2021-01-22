@@ -618,6 +618,7 @@ LayoutUnit CalculateChildPercentageBlockSizeForMinMax(
     const NGConstraintSpace& constraint_space,
     const NGBlockNode node,
     const NGBoxStrut& border_padding,
+    const NGBoxStrut& scrollbar,
     LayoutUnit input_percentage_block_size,
     bool* uses_input_percentage_block_size);
 

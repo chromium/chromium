@@ -771,9 +771,9 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
       block_size = input.percentage_resolution_block_size;
     }
 
-    NGFragmentGeometry fragment_geometry =
+    const NGFragmentGeometry fragment_geometry =
         CalculateInitialMinMaxFragmentGeometry(*constraint_space, *this);
-    NGBoxStrut border_padding =
+    const NGBoxStrut border_padding =
         fragment_geometry.border + fragment_geometry.padding;
     LayoutUnit size_from_ar = ComputeInlineSizeFromAspectRatio(
         *constraint_space, Style(), border_padding, block_size);
@@ -801,7 +801,7 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
     return {sizes, depends_on_percentage_block_size};
   }
 
-  NGFragmentGeometry fragment_geometry =
+  const NGFragmentGeometry fragment_geometry =
       CalculateInitialMinMaxFragmentGeometry(*constraint_space, *this);
 
   // Calculate the %-block-size for our children up front. This allows us to
@@ -811,7 +811,7 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
   bool uses_input_percentage_block_size = false;
   LayoutUnit child_percentage_resolution_block_size =
       CalculateChildPercentageBlockSizeForMinMax(
-          *constraint_space, *this, border_padding,
+          *constraint_space, *this, border_padding, fragment_geometry.scrollbar,
           input.percentage_resolution_block_size,
           &uses_input_percentage_block_size);
 

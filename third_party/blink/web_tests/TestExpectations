@@ -548,7 +548,6 @@ crbug.com/417223 external/wpt/css/css-position/position-relative-table-tr-top.ht
 crbug.com/1164135 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-025.html [ Failure ]
 crbug.com/1164135 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-026.html [ Failure ]
 crbug.com/1164474 external/wpt/css/css-sizing/aspect-ratio/table-element-001.html [ Failure ]
-crbug.com/1158406 external/wpt/css/css-sizing/intrinsic-percent-replaced-009.html [ Failure ]
 
 crbug.com/1008951 external/wpt/css/css-text-decor/text-decoration-subelements-002.html [ Failure ]
 crbug.com/1008951 external/wpt/css/css-text-decor/text-decoration-subelements-003.html [ Failure ]

@@ -1395,38 +1395,46 @@ LayoutUnit CalculateChildPercentageBlockSizeForMinMax(
     const NGConstraintSpace& space,
     const NGBlockNode node,
     const NGBoxStrut& border_padding,
+    const NGBoxStrut& scrollbar,
     LayoutUnit input_percentage_block_size,
     bool* uses_input_percentage_block_size) {
   *uses_input_percentage_block_size = false;
 
   // Anonymous block or spaces should pass the percent size straight through.
-  // If this node is OOF-positioned, our size was pre-calculated and we should
-  // pass this through to our children.
-  if (space.IsAnonymous() || node.IsAnonymousBlock() ||
-      node.IsOutOfFlowPositioned()) {
+  if (space.IsAnonymous() || node.IsAnonymousBlock()) {
     *uses_input_percentage_block_size = true;
     return input_percentage_block_size;
   }
 
   const ComputedStyle& style = node.Style();
-  LayoutUnit block_size = ComputeBlockSizeForFragmentInternal(
-      space, style, border_padding,
-      CalculateDefaultBlockSize(space, node, border_padding),
-      /* inline_size */ base::nullopt,
-      /* available_block_size_adjustment */ LayoutUnit(),
-      &input_percentage_block_size);
+  const NGBoxStrut& border_scrollbar_padding = border_padding + scrollbar;
+  LayoutUnit block_size;
 
-  if (style.LogicalMinHeight().IsPercentOrCalc() ||
-      style.LogicalHeight().IsPercentOrCalc() ||
-      style.LogicalMaxHeight().IsPercentOrCalc())
+  if (node.IsOutOfFlowPositioned()) {
+    // If this node is OOF-positioned, our size was pre-calculated.
+    block_size = input_percentage_block_size;
     *uses_input_percentage_block_size = true;
+  } else {
+    block_size = ComputeBlockSizeForFragmentInternal(
+        space, style, border_padding,
+        CalculateDefaultBlockSize(space, node, border_scrollbar_padding),
+        /* inline_size */ base::nullopt,
+        /* available_block_size_adjustment */ LayoutUnit(),
+        &input_percentage_block_size);
+
+    if (style.LogicalMinHeight().IsPercentOrCalc() ||
+        style.LogicalHeight().IsPercentOrCalc() ||
+        style.LogicalMaxHeight().IsPercentOrCalc())
+      *uses_input_percentage_block_size = true;
+  }
 
   LayoutUnit child_percentage_block_size =
       block_size == kIndefiniteSize
           ? kIndefiniteSize
-          : (block_size - border_padding.BlockSum()).ClampNegativeToZero();
+          : (block_size - border_scrollbar_padding.BlockSum())
+                .ClampNegativeToZero();
 
-  // For OOF-positioned nodes, use the parent (containing-block) size.
+  // In quirks mode some 'auto' block-size nodes pass the %-block-size through.
   if (child_percentage_block_size == kIndefiniteSize &&
       node.UseParentPercentageResolutionBlockSizeForChildren()) {
     *uses_input_percentage_block_size = true;
