@@ -75,8 +75,6 @@ class CORE_EXPORT NGGridLayoutAlgorithm
     GridArea resolved_position;
 
     NGBoxStrut margins;
-    LayoutUnit inline_size;
-    MinMaxSizes min_max_sizes;
 
     AxisEdge inline_axis_alignment;
     AxisEdge block_axis_alignment;
@@ -157,7 +155,6 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       Vector<GridItemData>* grid_items,
       Vector<GridItemData>* out_of_flow_items = nullptr) const;
   GridItemData MeasureGridItem(const NGBlockNode node) const;
-  NGConstraintSpace BuildSpaceForGridItem(const NGBlockNode node) const;
 
   void BuildBlockTrackCollections(
       Vector<GridItemData>* grid_items,

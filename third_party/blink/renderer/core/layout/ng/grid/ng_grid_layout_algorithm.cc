@@ -359,21 +359,81 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
     const GridItemData& grid_item,
     GridTrackSizingDirection track_direction,
     GridItemContributionType contribution_type) const {
-  const ComputedStyle& grid_item_style = grid_item.node.Style();
-  GridTrackSizingDirection grid_item_track_direction = track_direction;
+  const NGBlockNode& node = grid_item.node;
+  const ComputedStyle& item_style = node.Style();
 
-  bool is_orthogonal_grid_item = Style().IsHorizontalWritingMode() ==
-                                 grid_item_style.IsHorizontalWritingMode();
-  if (is_orthogonal_grid_item) {
-    grid_item_track_direction =
-        (track_direction == kForColumns) ? kForRows : kForColumns;
+  bool is_parallel_with_track_direction =
+      (track_direction == kForColumns) ==
+      IsParallelWritingMode(Style().GetWritingMode(),
+                            item_style.GetWritingMode());
+
+  auto MinMaxContentSizes = [&]() -> MinMaxSizes {
+    DCHECK(is_parallel_with_track_direction);
+    // TODO(ikilpatrick): kIndefiniteSize is incorrect for the %-block-size.
+    // We'll want to determine this using the base or used track-sizes instead.
+    // This should match the %-resolution sizes we use for layout during
+    // measuring.
+    MinMaxSizesInput input(kIndefiniteSize, MinMaxSizesType::kContent);
+    return ComputeMinAndMaxContentContribution(Style(), node, input).sizes;
+  };
+
+  // TODO(ikilpatrick): This function is just an initial approximation, and
+  // should be removed. Specifically it is incorrect for:
+  //  - Replaced elements.
+  //  - Items with non-visible overflow.
+  //  - Incorrect %-resolution sizes, and available sizes.
+  auto MainSize = [&]() -> LayoutUnit {
+    // TODO(ikilpatrick): This constraint space is incorrect. Specifically the
+    // available, and percentages sizes should be determined from the base or
+    // used track-sizes instead.
+    NGConstraintSpaceBuilder builder(ConstraintSpace(),
+                                     item_style.GetWritingDirection(),
+                                     /* is_new_fc */ true);
+    SetOrthogonalFallbackInlineSizeIfNeeded(Style(), node, &builder);
+    builder.SetCacheSlot(NGCacheSlot::kMeasure);
+    builder.SetIsPaintedAtomically(true);
+    builder.SetAvailableSize(ChildAvailableSize());
+    builder.SetPercentageResolutionSize(child_percentage_size_);
+    const NGConstraintSpace space = builder.ToConstraintSpace();
+
+    if (is_parallel_with_track_direction) {
+      // TODO(ikilpatrick): ComputeInlineSizeForFragment is incorrect for
+      // replaced elements.
+      const NGBoxStrut border_padding =
+          ComputeBorders(space, node) + ComputePadding(space, item_style);
+      return ComputeInlineSizeForFragment(space, node, border_padding);
+    }
+
+    scoped_refptr<const NGLayoutResult> result = node.Layout(space);
+    return NGFragment(ConstraintSpace().GetWritingDirection(),
+                      result->PhysicalFragment())
+        .BlockSize();
+  };
+
+  LayoutUnit contribution;
+  switch (contribution_type) {
+    case GridItemContributionType::kForContentBasedMinimums:
+    case GridItemContributionType::kForIntrinsicMaximums:
+      if (is_parallel_with_track_direction)
+        contribution = MinMaxContentSizes().min_size;
+      else
+        contribution = MainSize();
+      break;
+    case GridItemContributionType::kForIntrinsicMinimums:
+      contribution = MainSize();
+      break;
+    case GridItemContributionType::kForMaxContentMinimums:
+    case GridItemContributionType::kForMaxContentMaximums:
+      if (is_parallel_with_track_direction)
+        contribution = MinMaxContentSizes().max_size;
+      else
+        contribution = MainSize();
+      break;
   }
 
-  Length length = (grid_item_track_direction == kForColumns)
-                      ? grid_item_style.LogicalWidth()
-                      : grid_item_style.LogicalHeight();
-  return length.IsFixed() ? MinimumValueForLength(length, kIndefiniteSize)
-                          : LayoutUnit();
+  return contribution + ((track_direction == kForColumns)
+                             ? grid_item.margins.InlineSum()
+                             : grid_item.margins.BlockSum());
 }
 
 void NGGridLayoutAlgorithm::ConstructAndAppendGridItems(
@@ -504,25 +564,7 @@ NGGridLayoutAlgorithm::GridItemData NGGridLayoutAlgorithm::MeasureGridItem(
   // have all child inline and min/max sizes measured for content-based width
   // resolution.
   GridItemData grid_item(node);
-  const ComputedStyle& child_style = node.Style();
-  bool is_orthogonal_flow_root = !IsParallelWritingMode(
-      container_style.GetWritingMode(), child_style.GetWritingMode());
-  NGConstraintSpace constraint_space = BuildSpaceForGridItem(node);
-
-  // Children with orthogonal writing modes require a full layout pass to
-  // determine inline size.
-  if (is_orthogonal_flow_root) {
-    scoped_refptr<const NGLayoutResult> result = node.Layout(constraint_space);
-    grid_item.inline_size = NGFragment(ConstraintSpace().GetWritingDirection(),
-                                       result->PhysicalFragment())
-                                .InlineSize();
-  } else {
-    NGBoxStrut border_padding_in_child_writing_mode =
-        ComputeBorders(constraint_space, node) +
-        ComputePadding(constraint_space, child_style);
-    grid_item.inline_size = ComputeInlineSizeForFragment(
-        constraint_space, node, border_padding_in_child_writing_mode);
-  }
+  const ComputedStyle& item_style = node.Style();
 
   const ItemPosition normal_behaviour =
       node.IsReplaced() ? ItemPosition::kStart : ItemPosition::kStretch;
@@ -531,43 +573,26 @@ NGGridLayoutAlgorithm::GridItemData NGGridLayoutAlgorithm::MeasureGridItem(
   // know if it stretches ahead of time to correctly determine any block-axis
   // contribution).
   grid_item.inline_axis_alignment = AxisEdgeFromItemPosition(
-      container_style, child_style,
-      child_style.ResolvedJustifySelf(normal_behaviour, &container_style)
+      container_style, item_style,
+      item_style.ResolvedJustifySelf(normal_behaviour, &container_style)
           .GetPosition(),
       /* is_inline_axis */ true, &grid_item.is_inline_axis_stretched);
   grid_item.block_axis_alignment = AxisEdgeFromItemPosition(
-      container_style, child_style,
-      child_style.ResolvedAlignSelf(normal_behaviour, &container_style)
+      container_style, item_style,
+      item_style.ResolvedAlignSelf(normal_behaviour, &container_style)
           .GetPosition(),
       /* is_inline_axis */ false, &grid_item.is_block_axis_stretched);
 
+  // TODO(ikilpatrick): This is likely incorrect for margins in the
+  // ComputeMinMaxSizes phase.
   grid_item.margins =
-      ComputeMarginsFor(constraint_space, child_style, ConstraintSpace());
-  grid_item.min_max_sizes =
-      node.ComputeMinMaxSizes(
-              container_style.GetWritingMode(),
-              MinMaxSizesInput(child_percentage_size_.block_size,
-                               MinMaxSizesType::kContent),
-              &constraint_space)
-          .sizes;
+      ComputePhysicalMargins(item_style, ChildAvailableSize().inline_size)
+          .ConvertToLogical(ConstraintSpace().GetWritingDirection());
+
   grid_item.item_type = node.IsOutOfFlowPositioned() ? ItemType::kOutOfFlow
                                                      : ItemType::kInGridFlow;
 
   return grid_item;
-}
-
-NGConstraintSpace NGGridLayoutAlgorithm::BuildSpaceForGridItem(
-    const NGBlockNode node) const {
-  const auto& style = node.Style();
-  NGConstraintSpaceBuilder builder(ConstraintSpace(),
-                                   style.GetWritingDirection(),
-                                   /* is_new_fc */ true);
-  SetOrthogonalFallbackInlineSizeIfNeeded(Style(), node, &builder);
-  builder.SetCacheSlot(NGCacheSlot::kMeasure);
-  builder.SetIsPaintedAtomically(true);
-  builder.SetAvailableSize(ChildAvailableSize());
-  builder.SetPercentageResolutionSize(child_percentage_size_);
-  return builder.ToConstraintSpace();
 }
 
 void NGGridLayoutAlgorithm::BuildBlockTrackCollections(

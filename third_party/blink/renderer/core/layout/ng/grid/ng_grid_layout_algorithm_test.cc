@@ -86,29 +86,11 @@ class NGGridLayoutAlgorithmTest
     return grid_items_.size();
   }
 
-  Vector<LayoutUnit> GridItemInlineSizes(
-      const NGGridLayoutAlgorithm& algorithm) {
-    Vector<LayoutUnit> results;
-    for (const auto& item : grid_items_) {
-      results.push_back(item.inline_size);
-    }
-    return results;
-  }
-
   Vector<LayoutUnit> GridItemInlineMarginSum(
       const NGGridLayoutAlgorithm& algorithm) {
     Vector<LayoutUnit> results;
     for (const auto& item : grid_items_) {
       results.push_back(item.margins.InlineSum());
-    }
-    return results;
-  }
-
-  Vector<MinMaxSizes> GridItemMinMaxSizes(
-      const NGGridLayoutAlgorithm& algorithm) {
-    Vector<MinMaxSizes> results;
-    for (const auto& item : grid_items_) {
-      results.push_back(item.min_max_sizes);
     }
     return results;
   }
@@ -342,14 +324,6 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmMeasuring) {
   BuildGridItemsAndTrackCollections(algorithm);
   EXPECT_EQ(GridItemCount(algorithm), 9U);
 
-  Vector<LayoutUnit> actual_inline_sizes = GridItemInlineSizes(algorithm);
-  EXPECT_EQ(GridItemCount(algorithm), actual_inline_sizes.size());
-
-  LayoutUnit expected_inline_sizes[] = {
-      LayoutUnit(50),  LayoutUnit(116), LayoutUnit(100),
-      LayoutUnit(100), LayoutUnit(300), LayoutUnit(100),
-      LayoutUnit(400), LayoutUnit(100), LayoutUnit(10)};
-
   Vector<LayoutUnit> actual_inline_margin_sums =
       GridItemInlineMarginSum(algorithm);
   EXPECT_EQ(GridItemCount(algorithm), actual_inline_margin_sums.size());
@@ -359,26 +333,8 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmMeasuring) {
       LayoutUnit(0),   LayoutUnit(0),   LayoutUnit(0),
       LayoutUnit(10),  LayoutUnit(100), LayoutUnit(0)};
 
-  Vector<MinMaxSizes> actual_min_max_sizes = GridItemMinMaxSizes(algorithm);
-  EXPECT_EQ(GridItemCount(algorithm), actual_min_max_sizes.size());
-
-  MinMaxSizes expected_min_max_sizes[] = {
-      {LayoutUnit(40), LayoutUnit(60)},   {LayoutUnit(116), LayoutUnit(116)},
-      {LayoutUnit(40), LayoutUnit(60)},   {LayoutUnit(100), LayoutUnit(100)},
-      {LayoutUnit(300), LayoutUnit(300)}, {LayoutUnit(300), LayoutUnit(300)},
-      {LayoutUnit(300), LayoutUnit(300)}, {LayoutUnit(100), LayoutUnit(100)},
-      {LayoutUnit(40), LayoutUnit(40)}};
-
   for (size_t i = 0; i < GridItemCount(algorithm); ++i) {
-    EXPECT_EQ(actual_inline_sizes[i], expected_inline_sizes[i])
-        << " index: " << i;
     EXPECT_EQ(actual_inline_margin_sums[i], expected_inline_margin_sums[i])
-        << " index: " << i;
-    EXPECT_EQ(actual_min_max_sizes[i].min_size,
-              expected_min_max_sizes[i].min_size)
-        << " index: " << i;
-    EXPECT_EQ(actual_min_max_sizes[i].max_size,
-              expected_min_max_sizes[i].max_size)
         << " index: " << i;
   }
 }
