@@ -36,6 +36,46 @@ struct Account {
   string raw_email@1;
 };
 
+// See google_apis/gaia/google_service_auth_error.h
+// Currently sent from ash to lacros.
+// Next value: 14.
+[Stable]
+struct GoogleServiceAuthError {
+  [Stable, Extensible]
+  enum State {
+    kNone = 0,
+    kInvalidGaiaCredentials = 1,
+    kUserNotSignedUp = 2,
+    kConnectionFailed = 3,
+    // DEPRECATED kCaptchaRequired = 4,
+    // DEPRECATED kAccountDeleted = 5,
+    // DEPRECATED kAccountDisabled = 6,
+    kServiceUnavailable = 7,
+    // DEPRECATED kTwoFactor = 8,
+    kRequestCanceled = 9,
+    // DEPRECATED kHostedNotAllowedDeprecated = 10,
+    kUnexpectedServiceResponse = 11,
+    kServiceError = 12,
+    // DEPRECATED kWebLoginRequired = 13,
+  };
+
+  // Next value: 4.
+  [Stable, Extensible]
+  enum InvalidGaiaCredentialsReason {
+    kUnknown = 0,
+    kCredentialsRejectedByServer = 1,
+    kCredentialsRejectedByClient = 2,
+    kCredentialsMissing = 3,
+  };
+
+  State state@0;
+  // Network error is set only if `state` is set to `kConnectionFailed`.
+  // In case of no network error, `network_error` is set to 0.
+  int64 network_error@1;
+  string error_message@2;
+  InvalidGaiaCredentialsReason invalid_gaia_credentials_reason@3;
+};
+
 // Interface for observers of Chrome OS Account Manager.
 // This interface is implemented by lacros-chrome, and is used by ash-chrome to
 // send account update notifications.

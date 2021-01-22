@@ -9,6 +9,8 @@
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
 #include "components/account_manager_core/account.h"
 
+class GoogleServiceAuthError;
+
 namespace account_manager {
 
 // Returns `base::nullopt` if `mojom_account` cannot be parsed.
@@ -37,6 +39,17 @@ base::Optional<account_manager::AccountType> FromMojoAccountType(
 COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE)
 crosapi::mojom::AccountType ToMojoAccountType(
     const account_manager::AccountType& account_type);
+
+// Returns `base::nullopt` if `mojo_error` cannot be parsed. This probably means
+// that a new error type was added, so it should be considered a persistent
+// error.
+COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE)
+base::Optional<GoogleServiceAuthError> FromMojoGoogleServiceAuthError(
+    const crosapi::mojom::GoogleServiceAuthErrorPtr& mojo_error);
+
+COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE)
+crosapi::mojom::GoogleServiceAuthErrorPtr ToMojoGoogleServiceAuthError(
+    GoogleServiceAuthError error);
 
 }  // namespace account_manager
 
