@@ -160,7 +160,6 @@ source_set("browser_view") {
     "//ios/chrome/browser/ui/toolbar_container:feature_flags",
     "//ios/chrome/browser/ui/translate:legacy_translate",
     "//ios/chrome/browser/ui/util",
-    "//ios/chrome/browser/ui/util:multiwindow_util",
     "//ios/chrome/browser/ui/voice",
     "//ios/chrome/browser/ui/whats_new",
     "//ios/chrome/browser/upgrade",

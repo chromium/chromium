@@ -10,6 +10,7 @@
 #import <MaterialComponents/MaterialSnackbar.h>
 
 #include "base/base64.h"
+#import "base/ios/ios_util.h"
 #include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
 #include "base/metrics/histogram_macros.h"
@@ -143,7 +144,6 @@
 #import "ios/chrome/browser/ui/toolbar_container/toolbar_container_features.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/keyboard_observer_helper.h"
-#import "ios/chrome/browser/ui/util/multi_window_support.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
 #import "ios/chrome/browser/ui/util/named_guide_util.h"
 #import "ios/chrome/browser/ui/util/page_animation_util.h"
@@ -3400,7 +3400,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
                                          action:action
                                           style:UIAlertActionStyleDefault];
 
-      if (IsMultipleScenesSupported()) {
+      if (base::ios::IsMultipleScenesSupported()) {
         // Open in New Window.
         title = l10n_util::GetNSStringWithFixup(
             IDS_IOS_CONTENT_CONTEXT_OPENINNEWWINDOW);
@@ -3716,7 +3716,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       [menuElements addObject:openIncognitoTab];
     }
 
-    if (IsMultipleScenesSupported()) {
+    if (base::ios::IsMultipleScenesSupported()) {
       // Open in New Window.
       UIAction* openNewWindow = [actionFactory
           actionToOpenInNewWindowWithURL:link

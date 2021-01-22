@@ -24,7 +24,6 @@
 #import "ios/chrome/browser/ui/main/scene_controller.h"
 #import "ios/chrome/browser/ui/main/scene_delegate.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
-#include "ios/chrome/browser/ui/util/multi_window_support.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #include "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 #import "ios/testing/perf/startupLoggers.h"
@@ -86,7 +85,7 @@ const int kMainIntentCheckDelay = 1;
                                       applicationDelegate:self];
     [_mainController setAppState:_appState];
 
-    if (!IsSceneStartupSupported()) {
+    if (!base::ios::IsSceneStartupSupported()) {
       // When the UIScene APU is not supported, this object holds a "scene"
       // state and a "scene" controller. This allows the rest of the app to be
       // mostly multiwindow-agnostic.
@@ -132,14 +131,14 @@ const int kMainIntentCheckDelay = 1;
   BOOL requiresHandling =
       [_appState requiresHandlingAfterLaunchWithOptions:launchOptions
                                         stateBackground:inBackground];
-  if (!IsSceneStartupSupported()) {
+  if (!base::ios::IsSceneStartupSupported()) {
     self.sceneState.activationLevel =
         inBackground ? SceneActivationLevelBackground
                      : SceneActivationLevelForegroundInactive;
   }
 
   if (@available(iOS 13, *)) {
-    if (IsSceneStartupSupported()) {
+    if (base::ios::IsSceneStartupSupported()) {
       [[NSNotificationCenter defaultCenter]
           addObserver:self
              selector:@selector(sceneWillConnect:)
@@ -166,7 +165,7 @@ const int kMainIntentCheckDelay = 1;
 }
 
 - (void)applicationDidBecomeActive:(UIApplication*)application {
-  if (!IsSceneStartupSupported()) {
+  if (!base::ios::IsSceneStartupSupported()) {
     self.sceneState.activationLevel = SceneActivationLevelForegroundActive;
   }
 
@@ -174,7 +173,7 @@ const int kMainIntentCheckDelay = 1;
   if ([_appState isInSafeMode])
     return;
 
-  if (!IsSceneStartupSupported()) {
+  if (!base::ios::IsSceneStartupSupported()) {
     [_appState resumeSessionWithTabOpener:_tabOpener
                               tabSwitcher:_tabSwitcherProtocol
                     connectionInformation:self.sceneController];
@@ -182,7 +181,7 @@ const int kMainIntentCheckDelay = 1;
 }
 
 - (void)applicationWillResignActive:(UIApplication*)application {
-  if (!IsSceneStartupSupported()) {
+  if (!base::ios::IsSceneStartupSupported()) {
     self.sceneState.activationLevel = SceneActivationLevelForegroundInactive;
   }
 
@@ -195,7 +194,7 @@ const int kMainIntentCheckDelay = 1;
 // Called when going into the background. iOS already broadcasts, so
 // stakeholders can register for it directly.
 - (void)applicationDidEnterBackground:(UIApplication*)application {
-  if (!IsSceneStartupSupported()) {
+  if (!base::ios::IsSceneStartupSupported()) {
     self.sceneState.activationLevel = SceneActivationLevelBackground;
   }
 
@@ -205,7 +204,7 @@ const int kMainIntentCheckDelay = 1;
 
 // Called when returning to the foreground.
 - (void)applicationWillEnterForeground:(UIApplication*)application {
-  if (!IsSceneStartupSupported()) {
+  if (!base::ios::IsSceneStartupSupported()) {
     self.sceneState.activationLevel = SceneActivationLevelForegroundInactive;
   }
 
@@ -250,7 +249,7 @@ const int kMainIntentCheckDelay = 1;
 #pragma mark - Scenes lifecycle
 
 - (NSInteger)foregroundSceneCount {
-  DCHECK(IsSceneStartupSupported());
+  DCHECK(base::ios::IsSceneStartupSupported());
   if (@available(iOS 13, *)) {
     NSInteger foregroundSceneCount = 0;
     for (UIScene* scene in UIApplication.sharedApplication.connectedScenes) {
@@ -265,7 +264,7 @@ const int kMainIntentCheckDelay = 1;
 }
 
 - (void)sceneWillConnect:(NSNotification*)notification {
-  DCHECK(IsSceneStartupSupported());
+  DCHECK(base::ios::IsSceneStartupSupported());
   if (@available(iOS 13, *)) {
     UIWindowScene* scene = (UIWindowScene*)notification.object;
     SceneDelegate* sceneDelegate = (SceneDelegate*)scene.delegate;
@@ -285,7 +284,7 @@ const int kMainIntentCheckDelay = 1;
 }
 
 - (void)lastSceneDidEnterBackground:(NSNotification*)notification {
-  DCHECK(IsSceneStartupSupported());
+  DCHECK(base::ios::IsSceneStartupSupported());
   // Reset |startupHadExternalIntent| for all Scenes in case external intents
   // were triggered while the application was in the foreground.
   for (SceneState* scene in self.appState.connectedScenes) {
@@ -300,7 +299,7 @@ const int kMainIntentCheckDelay = 1;
 }
 
 - (void)firstSceneWillEnterForeground:(NSNotification*)notification {
-  DCHECK(IsSceneStartupSupported());
+  DCHECK(base::ios::IsSceneStartupSupported());
   if (@available(iOS 13, *)) {
     __weak MainApplicationDelegate* weakSelf = self;
     // Delay Main Intent check since signals for intents like spotlight actions

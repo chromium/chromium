@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#import "base/ios/ios_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -37,7 +38,6 @@
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
-#import "ios/chrome/browser/ui/util/multi_window_support.h"
 #include "ios/chrome/browser/web_state_list/web_state_list.h"
 #include "ios/chrome/grit/ios_theme_resources.h"
 #import "ios/web/public/web_state.h"
@@ -344,7 +344,7 @@ int SessionCrashedInfoBarDelegate::GetIconId() const {
 
 + (NSArray<NSString*>*)backedupSessionIDsForBrowserState:
     (ChromeBrowserState*)browserState {
-  if (!IsMultiwindowSupported())
+  if (!base::ios::IsMultiwindowSupported())
     return @[ @"" ];
   const base::FilePath backupDirectory =
       browserState->GetStatePath().Append(kSessionBackupDirectory);
@@ -423,7 +423,7 @@ int SessionCrashedInfoBarDelegate::GetIconId() const {
 
     // Remove the backup directory for this session as it will not be moved
     // back to its original browser state directory.
-    if (IsMultiwindowSupported()) {
+    if (base::ios::IsMultiwindowSupported()) {
       [fileManager
           removeItemAtPath:[backupPath stringByDeletingLastPathComponent]
                      error:&error];
@@ -432,7 +432,7 @@ int SessionCrashedInfoBarDelegate::GetIconId() const {
 
   // If this is not multiwindow platform, there are no more sessions to deal
   // with.
-  if (!IsMultiwindowSupported())
+  if (!base::ios::IsMultiwindowSupported())
     return success;
 
   // Now put non restored sessions files to its original location in the browser
@@ -504,7 +504,7 @@ int SessionCrashedInfoBarDelegate::GetIconId() const {
       // tabModel.
       tabRestoreService->CreateHistoricalTab(live_tab.get(), 0);
     }
-    if (IsMultiwindowSupported()) {
+    if (base::ios::IsMultiwindowSupported()) {
       [fileManager
           removeItemAtPath:[backupPath stringByDeletingLastPathComponent]
                      error:&error];

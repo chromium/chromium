@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/critical_closure.h"
 #import "base/ios/crb_protocol_observers.h"
+#import "base/ios/ios_util.h"
 #include "base/mac/foundation_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/post_task.h"
@@ -52,7 +53,6 @@
 #import "ios/chrome/browser/ui/main/scene_delegate.h"
 #import "ios/chrome/browser/ui/safe_mode/safe_mode_coordinator.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
-#import "ios/chrome/browser/ui/util/multi_window_support.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #include "ios/chrome/browser/web_state_list/session_metrics.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_metrics_browser_agent.h"
@@ -182,7 +182,7 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
     // Subscribe to scene-related notifications when using scenes.
     // Note these are also sent when not using scenes, so avoid subscribing to
     // them unless necessary.
-    if (IsSceneStartupSupported()) {
+    if (base::ios::IsSceneStartupSupported()) {
       if (@available(iOS 13, *)) {
         // Subscribe to scene connection notifications.
         [[NSNotificationCenter defaultCenter]
@@ -383,7 +383,7 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
                        tabSwitcher:(id<TabSwitching>)tabSwitcher
              connectionInformation:
                  (id<ConnectionInformation>)connectionInformation {
-  DCHECK(!IsSceneStartupSupported());
+  DCHECK(!base::ios::IsSceneStartupSupported());
   DCHECK([_browserLauncher browserInitializationStage] ==
          INITIALIZATION_STAGE_FOREGROUND);
 
@@ -462,7 +462,7 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   }
 
   // Trigger UI teardown on iOS 12.
-  if (!IsSceneStartupSupported()) {
+  if (!base::ios::IsSceneStartupSupported()) {
     self.mainSceneState.activationLevel = SceneActivationLevelUnattached;
   }
 
@@ -587,7 +587,7 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 }
 
 - (NSArray<SceneState*>*)connectedScenes {
-  if (IsSceneStartupSupported()) {
+  if (base::ios::IsSceneStartupSupported()) {
     if (@available(iOS 13, *)) {
       NSMutableArray* sceneStates = [[NSMutableArray alloc] init];
       NSSet* connectedScenes =
@@ -636,7 +636,7 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 #pragma mark - Internal methods.
 
 - (void)startSafeMode {
-  if (!IsSceneStartupSupported()) {
+  if (!base::ios::IsSceneStartupSupported()) {
     self.mainSceneState.activationLevel = SceneActivationLevelForegroundActive;
   }
   DCHECK(self.foregroundActiveScene);
@@ -652,7 +652,7 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 
   [self.safeModeCoordinator start];
 
-  if (IsMultipleScenesSupported()) {
+  if (base::ios::IsMultipleScenesSupported()) {
     _safeModeBlocker =
         std::make_unique<ScopedUIBlocker>(self.foregroundActiveScene);
   }
@@ -672,7 +672,7 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 
   if ([SafeModeCoordinator shouldStart]) {
     self.inSafeMode = YES;
-    if (!IsMultiwindowSupported()) {
+    if (!base::ios::IsMultiwindowSupported()) {
       // Start safe mode immediately. Otherwise it should only start when a
       // scene is connected and activates to allow displaying the safe mode UI.
       [self startSafeMode];
@@ -761,7 +761,7 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 }
 
 - (void)sceneWillConnect:(NSNotification*)notification {
-  DCHECK(IsSceneStartupSupported());
+  DCHECK(base::ios::IsSceneStartupSupported());
   if (@available(iOS 13, *)) {
     UIWindowScene* scene =
         base::mac::ObjCCastStrict<UIWindowScene>(notification.object);

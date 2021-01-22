@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#import "base/ios/ios_util.h"
 #include "base/strings/sys_string_conversions.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #include "ios/chrome/browser/application_context.h"
@@ -27,7 +28,6 @@
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
-#import "ios/chrome/browser/ui/util/multi_window_support.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -431,7 +431,7 @@
   //
   // TODO(crbug.com/1165798): clean up this by using fixed identifier when the
   // device do no support multi-windows.
-  if (!IsMultipleScenesSupported() && restoreSession) {
+  if (!base::ios::IsMultipleScenesSupported() && restoreSession) {
     NSString* previousSessionID =
         _sceneState.appState.previousSingleWindowSessionID;
     if (previousSessionID &&

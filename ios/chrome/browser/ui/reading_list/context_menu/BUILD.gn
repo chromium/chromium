@@ -18,7 +18,6 @@ source_set("context_menu") {
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/ui/alert_coordinator",
     "//ios/chrome/browser/ui/commands",
-    "//ios/chrome/browser/ui/util:multiwindow_util",
     "//ui/base",
     "//ui/strings:ui_strings_grit",
     "//url",

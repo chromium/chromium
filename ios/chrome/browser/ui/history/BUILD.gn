@@ -34,7 +34,6 @@ source_set("history") {
     "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/browser/ui/table_view:feature_flags",
     "//ios/chrome/browser/ui/util",
-    "//ios/chrome/browser/ui/util:multiwindow_util",
   ]
   frameworks = [
     "MobileCoreServices.framework",
@@ -105,7 +104,6 @@ source_set("history_ui") {
     "//ios/chrome/browser/ui/table_view/cells",
     "//ios/chrome/browser/ui/table_view/cells:cells_constants",
     "//ios/chrome/browser/ui/util",
-    "//ios/chrome/browser/ui/util:multiwindow_util",
     "//ios/chrome/browser/url_loading",
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/browser/window_activities",
@@ -171,7 +169,6 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/ui/settings/cells:clear_browsing_data_constants",
     "//ios/chrome/browser/ui/table_view:constants",
     "//ios/chrome/browser/ui/table_view:feature_flags",
-    "//ios/chrome/browser/ui/util:multiwindow_util",
     "//ios/chrome/common",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",

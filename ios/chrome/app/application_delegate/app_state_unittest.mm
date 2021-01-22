@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/ios/block_types.h"
+#import "base/ios/ios_util.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/app/app_startup_parameters.h"
 #import "ios/chrome/app/application_delegate/app_state_testing.h"
@@ -43,7 +44,6 @@
 #import "ios/chrome/browser/ui/main/test/stub_browser_interface_provider.h"
 #import "ios/chrome/browser/ui/safe_mode/safe_mode_coordinator.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
-#import "ios/chrome/browser/ui/util/multi_window_support.h"
 #include "ios/chrome/test/block_cleanup_test.h"
 #include "ios/chrome/test/ios_chrome_scoped_testing_chrome_browser_provider.h"
 #import "ios/chrome/test/scoped_key_window.h"
@@ -428,7 +428,7 @@ TEST_F(AppStateTest, requiresHandlingAfterLaunchWithOptionsForegroundSafeMode) {
   BOOL result = [appState requiresHandlingAfterLaunchWithOptions:launchOptions
                                                  stateBackground:NO];
 
-  if (IsMultiwindowSupported()) {
+  if (base::ios::IsMultiwindowSupported()) {
     [appState startSafeMode];
   }
 
@@ -438,7 +438,7 @@ TEST_F(AppStateTest, requiresHandlingAfterLaunchWithOptionsForegroundSafeMode) {
   EXPECT_OCMOCK_VERIFY(browserLauncherMock);
   EXPECT_OCMOCK_VERIFY(windowMock);
 
-  if (IsMultiwindowSupported()) {
+  if (base::ios::IsMultiwindowSupported()) {
     [appState stopSafeMode];
   }
 }
@@ -544,7 +544,7 @@ TEST_F(AppStateWithThreadTest, willTerminate) {
                             applicationDelegate:applicationDelegate];
 
   // Create a scene state so that full shutdown will run.
-  if (!IsSceneStartupSupported()) {
+  if (!base::ios::IsSceneStartupSupported()) {
     appState.mainSceneState = [[SceneState alloc] initWithAppState:appState];
   }
 
@@ -566,7 +566,7 @@ TEST_F(AppStateWithThreadTest, willTerminate) {
 // Test that -resumeSessionWithTabOpener
 // restart metrics and launchs from StartupParameters if they exist.
 TEST_F(AppStateTest, resumeSessionWithStartupParameters) {
-  if (IsSceneStartupSupported()) {
+  if (base::ios::IsSceneStartupSupported()) {
     // TODO(crbug.com/1045579): Session restoration not available yet in MW.
     return;
   }
@@ -618,7 +618,7 @@ TEST_F(AppStateTest, resumeSessionWithStartupParameters) {
 // restart metrics and creates a new tab from tab switcher if shouldOpenNTP is
 // YES.
 TEST_F(AppStateTest, resumeSessionShouldOpenNTPTabSwitcher) {
-  if (IsSceneStartupSupported()) {
+  if (base::ios::IsSceneStartupSupported()) {
     // TODO(crbug.com/1045579): Session restoration not available yet in MW.
     return;
   }
@@ -666,7 +666,7 @@ TEST_F(AppStateTest, resumeSessionShouldOpenNTPTabSwitcher) {
 // Test that -resumeSessionWithTabOpener,
 // restart metrics and creates a new tab if shouldOpenNTP is YES.
 TEST_F(AppStateTest, resumeSessionShouldOpenNTPNoTabSwitcher) {
-  if (IsSceneStartupSupported()) {
+  if (base::ios::IsSceneStartupSupported()) {
     // TODO(crbug.com/1045579): Session restoration not available yet in MW.
     return;
   }
@@ -811,7 +811,7 @@ TEST_F(AppStateTest, applicationWillEnterForegroundFromBackground) {
 // application is in background.
 TEST_F(AppStateTest,
        applicationWillEnterForegroundFromBackgroundShouldStartSafeMode) {
-  if (IsMultiwindowSupported()) {
+  if (base::ios::IsMultiwindowSupported()) {
     // In Multi Window, this is not the case. Skip this test.
     return;
   }

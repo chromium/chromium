@@ -87,7 +87,6 @@ source_set("metrics") {
     "//ios/chrome/browser/translate",
     "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/ui/overscroll_actions",
-    "//ios/chrome/browser/ui/util:multiwindow_util",
     "//ios/chrome/browser/ui/whats_new:utils",
     "//ios/chrome/browser/variations",
     "//ios/chrome/browser/variations:ios_chrome_ui_string_overrider_factory",

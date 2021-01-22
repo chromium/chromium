@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/bookmarks/bookmark_home_view_controller.h"
 
+#import "base/ios/ios_util.h"
 #include "base/mac/foundation_util.h"
 #include "base/metrics/user_metrics.h"
 #include "base/numerics/safe_conversions.h"
@@ -67,7 +68,6 @@
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/menu_util.h"
-#import "ios/chrome/browser/ui/util/multi_window_support.h"
 #import "ios/chrome/browser/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
@@ -1858,7 +1858,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
                          }
                           style:UIAlertActionStyleDefault];
 
-  if (IsMultipleScenesSupported()) {
+  if (base::ios::IsMultipleScenesSupported()) {
     titleString = GetNSString(IDS_IOS_CONTENT_CONTEXT_OPENINNEWWINDOW);
     id<ApplicationCommands> windowOpener = HandlerForProtocol(
         self.browser->GetCommandDispatcher(), ApplicationCommands);
@@ -2349,7 +2349,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
             [weakSelf openAllURLs:{nodeURL} inIncognito:YES newTab:YES];
           }]];
 
-      if (IsMultipleScenesSupported()) {
+      if (base::ios::IsMultipleScenesSupported()) {
         [menuElements
             addObject:[actionFactory
                           actionToOpenInNewWindowWithURL:nodeURL

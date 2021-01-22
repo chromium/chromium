@@ -6,6 +6,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/i18n/message_formatter.h"
+#import "base/ios/ios_util.h"
 #import "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -90,7 +91,6 @@
 #include "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
-#import "ios/chrome/browser/ui/util/multi_window_support.h"
 #import "ios/chrome/browser/ui/util/top_view_controller.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/whats_new/default_browser_utils.h"
@@ -265,7 +265,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
     // should be created right away.
     // When multiwindow is supported, the window is created by SceneDelegate,
     // and fetched by SceneState from UIScene's windows.
-    if (!IsSceneStartupSupported() && !self.sceneState.window) {
+    if (!base::ios::IsSceneStartupSupported() && !self.sceneState.window) {
       self.sceneState.window = [[ChromeOverlayWindow alloc]
           initWithFrame:[[UIScreen mainScreen] bounds]];
       CustomizeUIWindowAppearance(self.sceneState.window);
@@ -348,7 +348,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
                                    !self.sceneState.hasInitializedUI;
   if (initializingUIInColdStart) {
     [self initializeUI];
-    if (IsMultiwindowSupported()) {
+    if (base::ios::IsMultiwindowSupported()) {
       if (@available(iOS 13, *)) {
         // Add the scene to the list of connected scene, to restore in case of
         // crashes.
@@ -395,9 +395,9 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 
   if (self.sceneState.hasInitializedUI &&
       level == SceneActivationLevelUnattached) {
-    if (IsMultiwindowSupported()) {
+    if (base::ios::IsMultiwindowSupported()) {
       if (@available(iOS 13, *)) {
-        if (IsMultipleScenesSupported()) {
+        if (base::ios::IsMultipleScenesSupported()) {
           // If Multiple scenes are not supported, the session shouldn't be
           // removed as it can be used for normal restoration.
           [[PreviousSessionInfo sharedInstance]
@@ -414,7 +414,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
       self.sceneState.presentingModalOverlay) {
     return;
   }
-  if (IsSceneStartupSupported()) {
+  if (base::ios::IsSceneStartupSupported()) {
     if (@available(iOS 13, *)) {
       // Handle URL opening from
       // |UIWindowSceneDelegate scene:willConnectToSession:options:|.
@@ -503,7 +503,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 
 - (void)recordWindowCreationForSceneState:(SceneState*)sceneState {
   // Don't record window creation for single-window environments
-  if (!IsMultipleScenesSupported())
+  if (!base::ios::IsMultipleScenesSupported())
     return;
 
   // Don't record restored window creation.
@@ -622,7 +622,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 // and the user will not have a chance to restore the session.
 - (BOOL)shouldShowRestorePrompt {
   BOOL shouldShow = !self.startupParameters;
-  if (shouldShow && IsSceneStartupSupported()) {
+  if (shouldShow && base::ios::IsSceneStartupSupported()) {
     if (@available(iOS 13, *)) {
       for (NSUserActivity* activity in self.sceneState.connectionOptions
                .userActivities) {
@@ -666,7 +666,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
                                                  ->GetCommandDispatcher()]];
 
   if (@available(iOS 14, *)) {
-    if (IsSceneStartupSupported() &&
+    if (base::ios::IsSceneStartupSupported() &&
         base::FeatureList::IsEnabled(kEnableFullPageScreenshot)) {
       self.screenshotDelegate = [[ScreenshotDelegate alloc]
           initWithBrowserInterfaceProvider:self.browserViewWrangler];
@@ -679,7 +679,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   // id was backed up successfully.
   if (self.sceneState.appState.sessionRestorationRequired) {
     Browser* mainBrowser = self.mainInterface.browser;
-    if (!IsMultiwindowSupported() ||
+    if (!base::ios::IsMultiwindowSupported() ||
         [CrashRestoreHelper
             isBackedUpSessionID:self.sceneState.sceneSessionID
                    browserState:mainBrowser->GetBrowserState()]) {
@@ -1370,7 +1370,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 }
 
 - (void)openNewWindowWithActivity:(NSUserActivity*)userActivity {
-  if (!IsMultipleScenesSupported())
+  if (!base::ios::IsMultipleScenesSupported())
     return;  // silent no-op.
 
   if (@available(iOS 13, *)) {
@@ -1884,7 +1884,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 - (BOOL)shouldOpenNTPTabOnActivationOfBrowser:(Browser*)browser {
   // Check if there are pending actions that would result in opening a new tab.
   // In that case, it is not useful to open another tab.
-  if (IsSceneStartupSupported()) {
+  if (base::ios::IsSceneStartupSupported()) {
     if (@available(iOS 13, *)) {
       for (NSUserActivity* activity in self.sceneState.connectionOptions
                .userActivities) {

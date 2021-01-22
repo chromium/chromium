@@ -39,7 +39,6 @@ source_set("recent_tabs") {
     "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/browser/ui/table_view:feature_flags",
     "//ios/chrome/browser/ui/util",
-    "//ios/chrome/browser/ui/util:multiwindow_util",
     "//ios/chrome/browser/url_loading",
     "//ios/chrome/browser/web_state_list",
     "//ui/base",
@@ -157,7 +156,6 @@ source_set("app_support+eg2") {
     "//base/test:test_support",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/ui/list_model",
-    "//ios/chrome/browser/ui/util:multiwindow_util",
     "//ios/chrome/test/app:test_support",
   ]
 }

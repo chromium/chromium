@@ -6,6 +6,7 @@
 #import "base/test/ios/wait_util.h"
 
 #include "base/command_line.h"
+#import "base/ios/ios_util.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -31,7 +32,6 @@
 #import "ios/chrome/browser/ui/table_view/feature_flags.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/menu_util.h"
-#import "ios/chrome/browser/ui/util/multi_window_support.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
 #import "ios/chrome/browser/unified_consent/unified_consent_service_factory.h"
 #import "ios/chrome/browser/web/tab_id_tab_helper.h"
@@ -350,7 +350,7 @@ base::test::ScopedFeatureList closeAllTabsScopedFeatureList;
 }
 
 + (void)closeAllExtraWindows {
-  if (!IsMultipleScenesSupported())
+  if (!base::ios::IsMultipleScenesSupported())
     return;
 
   if (@available(iOS 13, *)) {
@@ -860,7 +860,7 @@ base::test::ScopedFeatureList closeAllTabsScopedFeatureList;
 }
 
 + (BOOL)areMultipleWindowsSupported {
-  return IsMultipleScenesSupported();
+  return base::ios::IsMultipleScenesSupported();
 }
 
 + (BOOL)isCloseAllTabsConfirmationEnabled {

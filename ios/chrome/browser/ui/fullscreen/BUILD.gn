@@ -39,7 +39,6 @@ source_set("feature_flags") {
   deps = [
     "//base",
     "//components/flags_ui",
-    "//ios/chrome/browser/ui/util:multiwindow_util",
   ]
 }
 

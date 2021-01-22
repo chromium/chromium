@@ -5,7 +5,7 @@
 #import "ios/chrome/test/scoped_key_window.h"
 
 #include "base/check_op.h"
-#import "ios/chrome/browser/ui/util/multi_window_support.h"
+#import "base/ios/ios_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -13,7 +13,7 @@
 #endif
 
 ScopedKeyWindow::ScopedKeyWindow() {
-  if (IsSceneStartupSupported()) {
+  if (base::ios::IsSceneStartupSupported()) {
     if (@available(iOS 13, *)) {
       NSSet<UIScene*>* scenes =
           ([[UIApplication sharedApplication] connectedScenes]);

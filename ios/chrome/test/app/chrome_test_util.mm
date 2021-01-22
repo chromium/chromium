@@ -5,6 +5,7 @@
 #import "ios/chrome/test/app/chrome_test_util.h"
 
 #include "base/check.h"
+#import "base/ios/ios_util.h"
 #include "base/mac/foundation_util.h"
 #import "base/test/ios/wait_util.h"
 #include "components/metrics/metrics_pref_names.h"
@@ -30,7 +31,6 @@
 #import "ios/chrome/browser/ui/main/scene_controller.h"
 #import "ios/chrome/browser/ui/main/scene_controller_testing.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
-#import "ios/chrome/browser/ui/util/multi_window_support.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #include "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/test/app/tab_test_util.h"
@@ -234,7 +234,7 @@ void WaitForBreakpadQueue() {
 }
 
 void OpenChromeFromExternalApp(const GURL& url) {
-  if (IsMultiwindowSupported()) {
+  if (base::ios::IsMultiwindowSupported()) {
     if (@available(iOS 13, *)) {
       UIScene* scene =
           [[UIApplication sharedApplication].connectedScenes anyObject];

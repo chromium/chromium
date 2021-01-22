@@ -4,6 +4,7 @@
 
 #include "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
 
+#import "base/ios/ios_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/favicon/ios/web_favicon_driver.h"
@@ -16,7 +17,6 @@
 #import "ios/chrome/browser/sessions/session_restoration_observer.h"
 #import "ios/chrome/browser/sessions/session_service_ios.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
-#import "ios/chrome/browser/ui/util/multi_window_support.h"
 #import "ios/chrome/browser/web/page_placeholder_tab_helper.h"
 #import "ios/chrome/browser/web_state_list/all_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -176,10 +176,10 @@ bool SessionRestorationBrowserAgent::RestoreSession() {
   PreviousSessionInfo* session_info = [PreviousSessionInfo sharedInstance];
   auto scoped_restore = [session_info startSessionRestoration];
 
-  NSString* session_id =
-      (IsMultiwindowSupported() && session_info.isMultiWindowEnabledSession)
-          ? base::SysUTF8ToNSString(session_identifier_)
-          : nil;
+  NSString* session_id = (base::ios::IsMultiwindowSupported() &&
+                          session_info.isMultiWindowEnabledSession)
+                             ? base::SysUTF8ToNSString(session_identifier_)
+                             : nil;
 
   SessionIOS* session = [session_service_
       loadSessionWithSessionID:session_id
@@ -294,7 +294,7 @@ void SessionRestorationBrowserAgent::WebStateMoved(WebStateList* web_state_list,
 base::FilePath SessionRestorationBrowserAgent::GetSessionStoragePath(
     bool force_single_window) {
   base::FilePath path = browser_state_->GetStatePath();
-  if (!force_single_window && IsMultiwindowSupported() &&
+  if (!force_single_window && base::ios::IsMultiwindowSupported() &&
       !session_identifier_.empty()) {
     path = path.Append(kSessionDirectory)
                .Append(session_identifier_)
