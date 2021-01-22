@@ -45,6 +45,8 @@ class AddToHomescreenInstaller {
       const AddToHomescreenParams& params,
       const base::RepeatingCallback<void(Event, const AddToHomescreenParams&)>&
           event_callback);
+  static void InstallShortcut(content::WebContents* web_contents,
+                              const AddToHomescreenParams& params);
   static void InstallWebApk(content::WebContents* web_contents,
                             const AddToHomescreenParams& params);
 

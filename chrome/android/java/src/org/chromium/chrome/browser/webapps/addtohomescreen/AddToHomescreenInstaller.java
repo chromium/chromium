@@ -13,8 +13,8 @@ import org.chromium.base.Log;
 import org.chromium.base.PackageUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.browser.banners.AppData;
-import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabUtils;
+import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.WindowAndroid;
 
 /**
  * Provides functionality related to native Android apps for its C++ counterpart,
@@ -24,7 +24,7 @@ class AddToHomescreenInstaller {
     private static final String TAG = "AddToHomescreen";
 
     @CalledByNative
-    private static boolean installOrOpenNativeApp(Tab tab, AppData appData) {
+    private static boolean installOrOpenNativeApp(WebContents webContents, AppData appData) {
         Context context = ContextUtils.getApplicationContext();
         Intent launchIntent;
         if (PackageUtils.isPackageInstalled(context, appData.packageName())) {
@@ -33,14 +33,20 @@ class AddToHomescreenInstaller {
         } else {
             launchIntent = appData.installIntent();
         }
-        if (launchIntent != null && TabUtils.getActivity(tab) != null) {
-            try {
-                TabUtils.getActivity(tab).startActivity(launchIntent);
-            } catch (ActivityNotFoundException e) {
-                Log.e(TAG, "Failed to install or open app : %s!", appData.packageName(), e);
-                return false;
+
+        if (launchIntent != null) {
+            WindowAndroid window = webContents.getTopLevelNativeWindow();
+            Context intentLauncher = window == null ? null : window.getActivity().get();
+            if (intentLauncher != null) {
+                try {
+                    intentLauncher.startActivity(launchIntent);
+                } catch (ActivityNotFoundException e) {
+                    Log.e(TAG, "Failed to install or open app : %s!", appData.packageName(), e);
+                    return false;
+                }
             }
         }
+
         return true;
     }
 }

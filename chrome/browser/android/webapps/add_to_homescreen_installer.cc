@@ -8,7 +8,6 @@
 
 #include "base/callback.h"
 #include "chrome/android/chrome_jni_headers/AddToHomescreenInstaller_jni.h"
-#include "chrome/browser/android/tab_android.h"
 #include "components/webapps/browser/webapps_client.h"
 #include "content/public/browser/web_contents.h"
 
@@ -47,15 +46,9 @@ void AddToHomescreenInstaller::InstallOrOpenNativeApp(
     const base::RepeatingCallback<void(Event, const AddToHomescreenParams&)>&
         event_callback) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  TabAndroid* tab = TabAndroid::FromWebContents(web_contents);
-
-  if (tab == nullptr) {
-    event_callback.Run(Event::INSTALL_FAILED, params);
-    return;
-  }
 
   bool was_successful = Java_AddToHomescreenInstaller_installOrOpenNativeApp(
-      env, tab->GetJavaObject(), params.native_app_data);
+      env, web_contents->GetJavaWebContents(), params.native_app_data);
   event_callback.Run(was_successful ? Event::NATIVE_INSTALL_OR_OPEN_SUCCEEDED
                                     : Event::NATIVE_INSTALL_OR_OPEN_FAILED,
                      params);
