@@ -50,8 +50,8 @@
 // Called when a snapshot of the content will be taken.
 - (void)willUpdateSnapshot;
 
-// Sets the collection contentOffset to |offset|, or caches the value and
-// applies it after the first layout.
+// Sets the feed collection contentOffset to |offset| to set the initial scroll
+// position.
 - (void)setContentOffset:(CGFloat)offset;
 
 @end
