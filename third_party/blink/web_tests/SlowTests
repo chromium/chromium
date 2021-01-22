@@ -737,6 +737,8 @@ crbug.com/1097094 external/wpt/window-segments/getWindowSegments-iframes.tentati
 crbug.com/1097810 [ Mac10.13 Debug ] external/wpt/editing/other/white-spaces-after-execCommand-delete.tentative.html [ Slow ]
 crbug.com/1105270 [ Mac10.15 ] fast/events/open-window-from-another-frame.html [ Slow ]
 crbug.com/1094436 http/tests/devtools/sources/debugger-ui/snippet-edit-breakpoint.js [ Slow ]
+crbug.com/1046784 http/tests/devtools/sources/source-frame-toolbar-items.js [ Slow ]
+crbug.com/1046784 http/tests/devtools/profiler/cpu-profiler-bottom-up-large-tree-search.js [ Slow ]
 crbug.com/1108423 external/wpt/referrer-policy/gen/worker-classic.http-rp/unset/worker-classic.http.html [ Slow ]
 crbug.com/1112304 external/wpt/html/cross-origin-opener-policy/popup-coop-by-sw-from-coop.https.html [ Slow ]
 crbug.com/1115091 [ Linux ] external/wpt/secure-payment-confirmation/secure-payment-confirmation.tenative.https.html [ Slow ]
