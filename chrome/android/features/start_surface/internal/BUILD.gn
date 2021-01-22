@@ -82,7 +82,7 @@ android_library("java") {
     "//chrome/browser/ui/messages/android:java",
     "//chrome/browser/util:java",
     "//chrome/browser/version:java",
-    "//components/browser_ui/android/bottomsheet:java",
+    "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/prefs/android:java",
     "//components/user_prefs/android:java",

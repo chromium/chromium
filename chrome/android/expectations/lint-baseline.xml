@@ -1547,7 +1547,7 @@
         errorLine1="    public boolean onTouchEvent(MotionEvent e) {"
         errorLine2="                   ~~~~~~~~~~~~">
         <location
-            file="../../components/browser_ui/android/bottomsheet/internal/java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheet.java"
+            file="../../components/browser_ui/bottomsheet/android/internal/java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheet.java"
             line="278"
             column="20"/>
     </issue>
@@ -1844,7 +1844,7 @@
         errorLine1="    public boolean onTouchEvent(MotionEvent event) {"
         errorLine2="                   ~~~~~~~~~~~~">
         <location
-            file="../../components/browser_ui/android/bottomsheet/internal/java/src/org/chromium/components/browser_ui/bottomsheet/TouchRestrictingFrameLayout.java"
+            file="../../components/browser_ui/bottomsheet/android/internal/java/src/org/chromium/components/browser_ui/bottomsheet/TouchRestrictingFrameLayout.java"
             line="46"
             column="20"/>
     </issue>

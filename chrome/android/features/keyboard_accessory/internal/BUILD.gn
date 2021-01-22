@@ -25,7 +25,7 @@ android_library("internal_java") {
     "//chrome/browser/ui/android/favicon:java",
     "//chrome/browser/util:java",
     "//components/autofill/android:autofill_java",
-    "//components/browser_ui/android/bottomsheet:java",
+    "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/modaldialog/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/embedder_support/android:util_java",
