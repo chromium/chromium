@@ -92,12 +92,6 @@ const char kAutoOpenDevToolsForTabs[]       = "auto-open-devtools-for-tabs";
 const char kAutoSelectDesktopCaptureSource[] =
     "auto-select-desktop-capture-source";
 
-// This flag causes the user engagement checks for showing app banners to be
-// bypassed. It is intended to be used by developers who wish to test that their
-// sites otherwise meet the criteria needed to show app banners.
-const char kBypassAppBannerEngagementChecks[] =
-    "bypass-app-banner-engagement-checks";
-
 // How often (in seconds) to check for updates. Should only be used for testing
 // purposes.
 const char kCheckForUpdateIntervalSec[]     = "check-for-update-interval";

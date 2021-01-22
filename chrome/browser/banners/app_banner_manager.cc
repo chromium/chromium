@@ -18,12 +18,11 @@
 #include "base/time/time.h"
 #include "chrome/browser/banners/app_banner_metrics.h"
 #include "chrome/browser/banners/app_banner_settings_helper.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/common/chrome_switches.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/common/switches.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -208,7 +207,7 @@ AppBannerManager::GetInstallableWebAppCheckResultForTesting() {
 AppBannerManager::AppBannerManager(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
       SiteEngagementObserver(site_engagement::SiteEngagementService::Get(
-          Profile::FromBrowserContext(web_contents->GetBrowserContext()))),
+          web_contents->GetBrowserContext())),
       has_maskable_primary_icon_(false),
       state_(State::INACTIVE),
       manager_(InstallableManager::FromWebContents(web_contents)),
