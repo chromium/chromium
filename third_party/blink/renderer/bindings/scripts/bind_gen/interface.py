@@ -583,7 +583,7 @@ def _make_blink_api_call(code_node,
                          overriding_args=None):
     assert isinstance(code_node, SymbolScopeNode)
     assert isinstance(cg_context, CodeGenContext)
-    assert num_of_args is None or isinstance(num_of_args, (int, long))
+    assert num_of_args is None or isinstance(num_of_args, int)
     assert (overriding_args is None
             or (isinstance(overriding_args, (list, tuple))
                 and all(isinstance(arg, str) for arg in overriding_args)))
@@ -4639,7 +4639,7 @@ class _PropEntryConstructorGroup(_PropEntryBase):
     def __init__(self, is_context_dependent, exposure_conditional, world,
                  constructor_group, ctor_callback_name, ctor_func_length):
         assert isinstance(ctor_callback_name, str)
-        assert isinstance(ctor_func_length, (int, long))
+        assert isinstance(ctor_func_length, int)
 
         _PropEntryBase.__init__(self, is_context_dependent,
                                 exposure_conditional, world, constructor_group)
@@ -4667,7 +4667,7 @@ class _PropEntryOperationGroup(_PropEntryBase):
                  op_func_length,
                  no_alloc_direct_callback_name=None):
         assert isinstance(op_callback_name, str)
-        assert isinstance(op_func_length, (int, long))
+        assert isinstance(op_func_length, int)
 
         _PropEntryBase.__init__(self, is_context_dependent,
                                 exposure_conditional, world, operation_group)

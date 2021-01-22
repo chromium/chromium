@@ -503,13 +503,13 @@ class CompositeNode(CodeNode):
         gensym_kwargs = {}
         template_vars = {}
         for arg in args:
-            assert isinstance(arg, (CodeNode, int, long, str))
+            assert isinstance(arg, (CodeNode, int, str))
             gensym = CodeNode.gensym()
             gensym_args.append("${{{}}}".format(gensym))
             template_vars[gensym] = arg
         for key, value in kwargs.items():
-            assert isinstance(key, (int, long, str))
-            assert isinstance(value, (CodeNode, int, long, str))
+            assert isinstance(key, (int, str))
+            assert isinstance(value, (CodeNode, int, str))
             gensym = CodeNode.gensym()
             gensym_kwargs[key] = "${{{}}}".format(gensym)
             template_vars[gensym] = value
@@ -602,7 +602,7 @@ class ListNode(CodeNode):
     def insert(self, index, node):
         if node is None:
             return
-        assert isinstance(index, (int, long))
+        assert isinstance(index, int)
         assert isinstance(node, CodeNode)
         assert node.outer is None and node.prev is None
 

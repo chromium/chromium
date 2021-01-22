@@ -3,6 +3,13 @@
 # found in the LICENSE file.
 
 
+import sys
+
+# TODO: Remove this once Python2 is obsoleted.
+if sys.version_info.major != 2:
+    long = int
+
+
 def make_copy(obj, memo=None):
     """
     Creates a copy of the given object, which should be an IR or part of IR.

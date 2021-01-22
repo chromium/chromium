@@ -171,8 +171,7 @@ class OverloadGroup(WithIdentifier):
         Returns the effective overload set.
         https://heycam.github.io/webidl/#compute-the-effective-overload-set
         """
-        assert argument_count is None or isinstance(argument_count,
-                                                    (int, long))
+        assert argument_count is None or isinstance(argument_count, int)
 
         N = argument_count
         S = []

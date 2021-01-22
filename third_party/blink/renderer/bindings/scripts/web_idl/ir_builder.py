@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import sys
+
 from .argument import Argument
 from .ast_group import AstGroup
 from .attribute import Attribute
@@ -28,6 +30,11 @@ from .literal_constant import LiteralConstant
 from .namespace import Namespace
 from .operation import Operation
 from .typedef import Typedef
+
+
+# TODO: Remove this once Python2 is obsoleted.
+if sys.version_info.major != 2:
+    long = int
 
 
 def load_and_register_idl_definitions(filepaths, register_ir,
