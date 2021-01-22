@@ -17,6 +17,7 @@
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -405,6 +406,8 @@ void SiteEngagementService::AfterStartupTask() {
 
 void SiteEngagementService::CleanupEngagementScores(
     bool update_last_engagement_time) const {
+  TRACE_EVENT0("navigation", "SiteEngagementService::CleanupEngagementScores");
+
   // We want to rebase last engagement times relative to MaxDecaysPerScore
   // periods of decay in the past.
   base::Time now = clock_->Now();
@@ -515,6 +518,7 @@ void SiteEngagementService::MaybeRecordMetrics() {
 
 void SiteEngagementService::RecordMetrics(
     std::vector<mojom::SiteEngagementDetails> details) {
+  TRACE_EVENT0("navigation", "SiteEngagementService::RecordMetrics");
   std::sort(details.begin(), details.end(),
             [](const mojom::SiteEngagementDetails& lhs,
                const mojom::SiteEngagementDetails& rhs) {
