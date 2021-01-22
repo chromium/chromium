@@ -3768,7 +3768,7 @@ TEST_P(AppListPresenterDelegateHomeLauncherTest, BackgroundOpacity) {
   const U8CPU clamshell_background_opacity = static_cast<U8CPU>(255 * 0.8);
   EXPECT_EQ(SkColorSetA(AppListColorProvider::Get()->GetAppListBackgroundColor(
                             /*is_tablet_mode*/
-                            false),
+                            false, /*default_color*/ gfx::kGoogleGrey900),
                         clamshell_background_opacity),
             GetAppListView()->GetAppListBackgroundShieldColorForTest());
   EXPECT_EQ(1, GetAppListView()
@@ -3782,7 +3782,7 @@ TEST_P(AppListPresenterDelegateHomeLauncherTest, BackgroundOpacity) {
   const U8CPU tablet_background_opacity = static_cast<U8CPU>(0);
   EXPECT_EQ(SkColorSetA(AppListColorProvider::Get()->GetAppListBackgroundColor(
                             /*is_tablet_mode*/
-                            true),
+                            true, /*default_color*/ gfx::kGoogleGrey900),
                         tablet_background_opacity),
             GetAppListView()->GetAppListBackgroundShieldColorForTest());
   EXPECT_EQ(1, GetAppListView()

@@ -70,6 +70,9 @@ namespace ash {
 
 namespace {
 
+// Default color for classic, unthemed app list.
+constexpr SkColor kAppListBackgroundColor = gfx::kGoogleGrey900;
+
 // The height of the half app list from the bottom of the screen.
 constexpr int kHalfAppListHeight = 545;
 
@@ -160,9 +163,26 @@ SkColor GetBackgroundShieldColor(const std::vector<SkColor>& colors,
                                  float color_opacity,
                                  bool is_tablet_mode) {
   const U8CPU sk_opacity_value = static_cast<U8CPU>(255 * color_opacity);
-  return SkColorSetA(
-      AppListColorProvider::Get()->GetAppListBackgroundColor(is_tablet_mode),
-      sk_opacity_value);
+  SkColor default_color =
+      SkColorSetA(kAppListBackgroundColor, sk_opacity_value);
+
+  if (!colors.empty()) {
+    DCHECK_EQ(static_cast<size_t>(ColorProfileType::NUM_OF_COLOR_PROFILES),
+              colors.size());
+    const SkColor dark_muted =
+        colors[static_cast<int>(ColorProfileType::DARK_MUTED)];
+    if (SK_ColorTRANSPARENT != dark_muted) {
+      default_color = SkColorSetA(
+          color_utils::GetResultingPaintColor(
+              SkColorSetA(SK_ColorBLACK, AppListView::kAppListColorDarkenAlpha),
+              dark_muted),
+          sk_opacity_value);
+    }
+  }
+
+  return SkColorSetA(AppListColorProvider::Get()->GetAppListBackgroundColor(
+                         is_tablet_mode, default_color),
+                     sk_opacity_value);
 }
 
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kExcludeWindowFromEventHandling, false)
@@ -480,7 +500,8 @@ class AppListBackgroundShieldView : public views::View {
   explicit AppListBackgroundShieldView(int shelf_background_corner_radius,
                                        bool is_tablet_mode)
       : color_(AppListColorProvider::Get()->GetAppListBackgroundColor(
-            is_tablet_mode)),
+            is_tablet_mode,
+            /*default_color*/ kAppListBackgroundColor)),
         shelf_background_corner_radius_(shelf_background_corner_radius) {
     SetPaintToLayer(ui::LAYER_SOLID_COLOR);
     layer()->SetFillsBoundsOpaquely(false);

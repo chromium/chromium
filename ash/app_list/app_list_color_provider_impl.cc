@@ -40,11 +40,12 @@ SkColor AppListColorProviderImpl::GetExpandArrowIconBackgroundColor() const {
 }
 
 SkColor AppListColorProviderImpl::GetAppListBackgroundColor(
-    bool is_tablet_mode) const {
+    bool is_tablet_mode,
+    SkColor default_color) const {
   return DeprecatedGetShieldLayerColor(
       is_tablet_mode ? AshColorProvider::ShieldLayerType::kShield40
                      : AshColorProvider::ShieldLayerType::kShield80,
-      /*default_color*/ gfx::kGoogleGrey900);
+      default_color);
 }
 
 SkColor AppListColorProviderImpl::GetSearchBoxBackgroundColor() const {
