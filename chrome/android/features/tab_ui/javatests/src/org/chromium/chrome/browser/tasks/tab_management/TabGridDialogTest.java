@@ -47,7 +47,6 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.f
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.getSwipeToDismissAction;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.mergeAllNormalTabsToAGroup;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.prepareTabsWithThumbnail;
-import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.rotateDeviceToOrientation;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyAllTabsHaveThumbnail;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyTabStripFaviconCount;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyTabSwitcherCardCount;
@@ -57,7 +56,6 @@ import static org.chromium.chrome.test.util.ViewUtils.onViewWaiting;
 import static org.chromium.chrome.test.util.ViewUtils.waitForView;
 
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Rect;
@@ -106,6 +104,7 @@ import org.chromium.chrome.features.start_surface.StartSurfaceLayout;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.util.ActivityUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
@@ -173,8 +172,7 @@ public class TabGridDialogTest {
     @After
     public void tearDown() {
         TabUiFeatureUtilities.setTabManagementModuleSupportedForTesting(null);
-        mActivityTestRule.getActivity().setRequestedOrientation(
-                ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+        ActivityUtils.clearActivityOrientation(mActivityTestRule.getActivity());
     }
 
     @Test
@@ -563,7 +561,7 @@ public class TabGridDialogTest {
         checkPosition(cta, false, true);
 
         // Verify the size and position of TabSelectionEditor in landscape mode.
-        rotateDeviceToOrientation(cta, Configuration.ORIENTATION_LANDSCAPE);
+        ActivityUtils.rotateActivityToOrientation(cta, Configuration.ORIENTATION_LANDSCAPE);
         CriteriaHelper.pollUiThread(() -> parentView.getHeight() < parentView.getWidth());
         checkPosition(cta, false, false);
 
@@ -575,7 +573,7 @@ public class TabGridDialogTest {
 
         // Verify the positioning in multi-window mode. Adjusting the height of the root view to
         // mock entering/exiting multi-window mode.
-        rotateDeviceToOrientation(cta, Configuration.ORIENTATION_PORTRAIT);
+        ActivityUtils.rotateActivityToOrientation(cta, Configuration.ORIENTATION_PORTRAIT);
         CriteriaHelper.pollUiThread(() -> parentView.getHeight() > parentView.getWidth());
         View rootView = cta.findViewById(R.id.coordinator);
         int rootViewHeight = rootView.getHeight();
@@ -721,7 +719,7 @@ public class TabGridDialogTest {
         verifyAllTabsHaveThumbnail(cta.getCurrentTabModel());
 
         // Rotate to landscape mode and create a tab group.
-        rotateDeviceToOrientation(cta, Configuration.ORIENTATION_LANDSCAPE);
+        ActivityUtils.rotateActivityToOrientation(cta, Configuration.ORIENTATION_LANDSCAPE);
         mergeAllNormalTabsToAGroup(cta);
         verifyTabSwitcherCardCount(cta, 1);
         openDialogFromTabSwitcherAndVerify(cta, 3, null);

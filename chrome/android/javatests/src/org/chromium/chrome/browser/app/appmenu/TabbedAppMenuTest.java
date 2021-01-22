@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.app.appmenu;
 
-import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.support.test.InstrumentationRegistry;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -17,6 +17,7 @@ import android.widget.TextView;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -29,7 +30,6 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuTestSupport;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.util.ActivityUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
@@ -97,6 +98,11 @@ public class TabbedAppMenuTest {
         CriteriaHelper.pollInstrumentationThread(
                 () -> Criteria.checkThat(getCurrentFocusedRow(), Matchers.is(0)));
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+    }
+
+    @After
+    public void tearDown() {
+        ActivityUtils.clearActivityOrientation(mActivityTestRule.getActivity());
     }
 
     /**
@@ -169,15 +175,12 @@ public class TabbedAppMenuTest {
      * Test that hitting ENTER on the top item actually triggers the top item.
      * Catches regressions for https://crbug.com/191239 for shrunken menus.
      */
-    /*
     @SmallTest
     @Feature({"Browser", "Main"})
-    */
     @Test
-    @DisabledTest(message = "crbug.com/945861")
     public void testKeyboardMenuEnterOnTopItemLandscape() {
-        mActivityTestRule.getActivity().setRequestedOrientation(
-                ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        ActivityUtils.rotateActivityToOrientation(
+                mActivityTestRule.getActivity(), Configuration.ORIENTATION_LANDSCAPE);
         showAppMenuAndAssertMenuShown();
         moveToBoundary(true, false);
         Assert.assertEquals(0, getCurrentFocusedRow());
@@ -191,8 +194,8 @@ public class TabbedAppMenuTest {
     @SmallTest
     @Feature({"Browser", "Main"})
     public void testKeyboardMenuEnterOnTopItemPortrait() {
-        mActivityTestRule.getActivity().setRequestedOrientation(
-                ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        ActivityUtils.rotateActivityToOrientation(
+                mActivityTestRule.getActivity(), Configuration.ORIENTATION_PORTRAIT);
         showAppMenuAndAssertMenuShown();
         moveToBoundary(true, false);
         Assert.assertEquals(0, getCurrentFocusedRow());

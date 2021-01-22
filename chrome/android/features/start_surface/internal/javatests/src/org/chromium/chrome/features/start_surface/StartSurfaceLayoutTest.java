@@ -41,7 +41,6 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.f
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.getSwipeToDismissAction;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.leaveTabSwitcher;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.mergeAllNormalTabsToAGroup;
-import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.rotateDeviceToOrientation;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.switchTabModel;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyTabModelTabCount;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyTabSwitcherCardCount;
@@ -49,7 +48,6 @@ import static org.chromium.chrome.test.util.ViewUtils.onViewWaiting;
 import static org.chromium.chrome.test.util.ViewUtils.waitForView;
 import static org.chromium.components.embedder_support.util.UrlConstants.NTP_URL;
 
-import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -224,8 +222,7 @@ public class StartSurfaceLayoutTest {
 
     @After
     public void tearDown() {
-        mActivityTestRule.getActivity().setRequestedOrientation(
-                ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+        ActivityUtils.clearActivityOrientation(mActivityTestRule.getActivity());
         TestThreadUtils.runOnUiThreadBlocking(
                 ChromeNightModeTestUtils::tearDownNightModeAfterChromeActivityDestroyed);
         TestThreadUtils.runOnUiThreadBlocking(
@@ -1009,12 +1006,12 @@ public class StartSurfaceLayoutTest {
         CriteriaHelper.pollUiThread(TabSwitcherCoordinator::hasAppendedMessagesForTesting);
 
         // Force portrait mode since the device can be wrongly in landscape. See crbug/1063639.
-        rotateDeviceToOrientation(cta, Configuration.ORIENTATION_PORTRAIT);
+        ActivityUtils.rotateActivityToOrientation(cta, Configuration.ORIENTATION_PORTRAIT);
 
         onView(withId(R.id.tab_list_view))
                 .check(MessageCardWidthAssertion.checkMessageItemSpanSize(3, 2));
 
-        rotateDeviceToOrientation(cta, Configuration.ORIENTATION_LANDSCAPE);
+        ActivityUtils.rotateActivityToOrientation(cta, Configuration.ORIENTATION_LANDSCAPE);
 
         onView(withId(R.id.tab_list_view))
                 .check(MessageCardWidthAssertion.checkMessageItemSpanSize(3, 3));

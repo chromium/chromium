@@ -4,11 +4,16 @@
 
 package org.chromium.chrome.test.util;
 
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertTrue;
+
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.app.Instrumentation.ActivityMonitor;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -192,5 +197,38 @@ public class ActivityUtils {
             Criteria.checkThat(activity.getMainFragment(), Matchers.instanceOf(fragmentClass));
         }, ACTIVITY_START_TIMEOUT_MS, CONDITION_POLL_INTERVAL_MS);
         return (T) activity.getMainFragment();
+    }
+
+    /**
+     * Rotate device to the target orientation. Do nothing if the screen is already in that
+     * orientation. As a best practice, unset orientation in teardown using
+     * {@link #clearActivityOrientation(Activity)}.
+     *
+     * @param activity The activity on which to set requested orientation.
+     * @param orientation The target orientation we want the screen to rotate to. Expects one of
+     *                    either {@link Configuration#ORIENTATION_LANDSCAPE} or
+     *                    {@link Configuration#ORIENTATION_PORTRAIT}.
+     */
+    public static void rotateActivityToOrientation(Activity activity, int orientation) {
+        if (activity.getResources().getConfiguration().orientation == orientation) return;
+        assertTrue("Incorrect orientation supplied.",
+                orientation == Configuration.ORIENTATION_LANDSCAPE
+                        || orientation == Configuration.ORIENTATION_PORTRAIT);
+        activity.setRequestedOrientation(orientation == Configuration.ORIENTATION_LANDSCAPE
+                        ? ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+                        : ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(
+                    activity.getResources().getConfiguration().orientation, is(orientation));
+        });
+    }
+
+    /**
+     * Clear the requested orientation on the given activity (by setting it to unspecified).
+     *
+     * @param activity The activity on which to clear requested orientation.
+     */
+    public static void clearActivityOrientation(Activity activity) {
+        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
     }
 }
