@@ -335,7 +335,9 @@ class LoadingPredictorTabHelperOptimizationGuideDeciderTest
         {features::kLoadingPredictorUseOptimizationGuide,
          // Need to add otherwise GetForProfile() returns null.
          optimization_guide::features::kOptimizationHints},
-        {});
+        // Disabling prefetch here to test preconnect passthrough. Prefetch is
+        // tested in following test class.
+        {features::kLoadingPredictorPrefetch});
   }
 
   void NavigateToGwsInMainFrame() {
