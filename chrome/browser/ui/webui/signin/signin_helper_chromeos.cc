@@ -20,7 +20,7 @@ SigninHelper::SigninHelper(
       close_dialog_closure_(close_dialog_closure),
       email_(email),
       url_loader_factory_(std::move(url_loader_factory)),
-      gaia_auth_fetcher_(this, gaia::GaiaSource::kChrome, url_loader_factory) {
+      gaia_auth_fetcher_(this, gaia::GaiaSource::kChrome, url_loader_factory_) {
   account_key_ = ::account_manager::AccountKey{
       gaia_id, ::account_manager::AccountType::kGaia};
 
