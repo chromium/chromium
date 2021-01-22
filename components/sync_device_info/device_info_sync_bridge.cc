@@ -613,7 +613,13 @@ void DeviceInfoSyncBridge::OnReadAllMetadata(
   // we save the new one to prefs.
   device_info_prefs_->AddLocalCacheGuid(local_cache_guid_);
   ExpireOldEntries();
-  ReconcileLocalAndStored();
+  if (!ReconcileLocalAndStored()) {
+    // If the device info list has not been changed, notify observers explicitly
+    // that the list of devices has been successfully loaded from the storage.
+    // Otherwise, all observers should already have been notified during
+    // ReconcileLocalAndStored().
+    NotifyObservers();
+  }
 }
 
 void DeviceInfoSyncBridge::OnCommit(
