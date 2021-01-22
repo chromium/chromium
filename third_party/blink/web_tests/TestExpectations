@@ -5705,7 +5705,7 @@ crbug.com/1152088 [ Mac10.13 Debug ] fast/dom/cssTarget-crash.html [ Pass Timeou
 crbug.com/1149734 http/tests/devtools/sources/source-frame-toolbar-items.js [ Pass Failure Timeout ]
 crbug.com/1149734 http/tests/devtools/sources/debugger-frameworks/frameworks-sourcemap.js [ Pass Failure ]
 crbug.com/1149734 http/tests/devtools/sources/debugger-ui/continue-to-location-markers.js [ Pass Failure ]
-crbug.com/1149734 http/tests/devtools/sources/debugger-ui/inline-scope-variables.js [ Pass Failure ]
+crbug.com/1149734 http/tests/devtools/sources/debugger-ui/inline-scope-variables.js [ Pass Failure Timeout ]
 
 #Sheriff 2020-11-24
 crbug.com/1152496 [ Win ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-shadow.html [ Pass Timeout ]
