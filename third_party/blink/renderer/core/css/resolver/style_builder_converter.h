@@ -277,7 +277,7 @@ class StyleBuilderConverter {
 
   static LengthSize ConvertIntrinsicSize(StyleResolverState&, const CSSValue&);
 
-  static StyleAspectRatio ConvertAspectRatio(StyleResolverState&,
+  static StyleAspectRatio ConvertAspectRatio(const StyleResolverState&,
                                              const CSSValue&);
 
   static bool ConvertInternalAlignSelfBlock(StyleResolverState& state,

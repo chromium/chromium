@@ -2036,7 +2036,7 @@ bool ListHasAuto(const CSSValueList& list) {
 }  // namespace
 
 StyleAspectRatio StyleBuilderConverter::ConvertAspectRatio(
-    StyleResolverState& state,
+    const StyleResolverState& state,
     const CSSValue& value) {
   auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
   if (identifier_value && identifier_value->GetValueID() == CSSValueID::kAuto)

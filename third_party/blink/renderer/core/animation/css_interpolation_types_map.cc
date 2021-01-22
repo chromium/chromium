@@ -9,6 +9,7 @@
 
 #include "third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/animation/css_angle_interpolation_type.h"
+#include "third_party/blink/renderer/core/animation/css_aspect_ratio_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_basic_shape_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_border_image_length_box_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_clip_interpolation_type.h"
@@ -178,6 +179,10 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
       case CSSPropertyID::kY:
         applicable_types->push_back(
             std::make_unique<CSSLengthInterpolationType>(used_property));
+        break;
+      case CSSPropertyID::kAspectRatio:
+        applicable_types->push_back(
+            std::make_unique<CSSAspectRatioInterpolationType>(used_property));
         break;
       case CSSPropertyID::kFlexGrow:
       case CSSPropertyID::kFlexShrink:

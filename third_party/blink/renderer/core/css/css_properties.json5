@@ -1115,7 +1115,7 @@
     {
       name: "aspect-ratio",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
-      interpolable: false,
+      interpolable: true,
       field_group: "box",
       field_template: "external",
       keywords: ["auto"],
