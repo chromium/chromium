@@ -18,8 +18,10 @@
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/win/windows_version.h"
+#include "media/base/media_switches.h"
 #include "media/capture/video/win/video_capture_device_factory_win.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -1336,6 +1338,104 @@ class VideoCaptureDeviceFactoryMFWinTest
 };
 
 TEST_P(VideoCaptureDeviceFactoryMFWinTest, GetDevicesInfo) {
+  if (ShouldSkipMFTest())
+    return;
+
+  const bool use_d3d11 = GetParam();
+  if (use_d3d11 && ShouldSkipD3D11Test())
+    return;
+  factory_.set_use_d3d11_with_media_foundation_for_testing(use_d3d11);
+
+  std::vector<VideoCaptureDeviceInfo> devices_info;
+  base::RunLoop run_loop;
+  factory_.GetDevicesInfo(base::BindLambdaForTesting(
+      [&devices_info, &run_loop](std::vector<VideoCaptureDeviceInfo> result) {
+        devices_info = std::move(result);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+
+  EXPECT_EQ(devices_info.size(), 6U);
+  for (auto it = devices_info.begin(); it != devices_info.end(); it++) {
+    // Verify that there are no duplicates.
+    EXPECT_EQ(
+        FindDeviceInRange(devices_info.begin(), it, it->descriptor.device_id),
+        it);
+  }
+  iterator it = FindDeviceInRange(devices_info.begin(), devices_info.end(),
+                                  base::SysWideToUTF8(kMFDeviceId0));
+  ASSERT_NE(it, devices_info.end());
+  EXPECT_EQ(it->descriptor.capture_api, VideoCaptureApi::WIN_MEDIA_FOUNDATION);
+  EXPECT_EQ(it->descriptor.display_name(), base::SysWideToUTF8(kMFDeviceName0));
+  // No IAMCameraControl and no IAMVideoProcAmp interfaces.
+  EXPECT_FALSE(it->descriptor.control_support().pan);
+  EXPECT_FALSE(it->descriptor.control_support().tilt);
+  EXPECT_FALSE(it->descriptor.control_support().zoom);
+
+  it = FindDeviceInRange(devices_info.begin(), devices_info.end(),
+                         base::SysWideToUTF8(kMFDeviceId1));
+  ASSERT_NE(it, devices_info.end());
+  EXPECT_EQ(it->descriptor.capture_api, VideoCaptureApi::WIN_MEDIA_FOUNDATION);
+  EXPECT_EQ(it->descriptor.display_name(), base::SysWideToUTF8(kMFDeviceName1));
+  // No pan/tilt/zoom in IAMCameraControl interface.
+  EXPECT_FALSE(it->descriptor.control_support().pan);
+  EXPECT_FALSE(it->descriptor.control_support().tilt);
+  EXPECT_FALSE(it->descriptor.control_support().zoom);
+
+  it = FindDeviceInRange(devices_info.begin(), devices_info.end(),
+                         base::SysWideToUTF8(kDirectShowDeviceId3));
+  ASSERT_NE(it, devices_info.end());
+  EXPECT_EQ(it->descriptor.capture_api, VideoCaptureApi::WIN_DIRECT_SHOW);
+  EXPECT_EQ(it->descriptor.display_name(),
+            base::SysWideToUTF8(kDirectShowDeviceName3));
+  // No ICameraControl interface.
+  EXPECT_FALSE(it->descriptor.control_support().pan);
+  EXPECT_FALSE(it->descriptor.control_support().tilt);
+  EXPECT_FALSE(it->descriptor.control_support().zoom);
+
+  it = FindDeviceInRange(devices_info.begin(), devices_info.end(),
+                         base::SysWideToUTF8(kDirectShowDeviceId4));
+  ASSERT_NE(it, devices_info.end());
+  EXPECT_EQ(it->descriptor.capture_api, VideoCaptureApi::WIN_DIRECT_SHOW);
+  EXPECT_EQ(it->descriptor.display_name(),
+            base::SysWideToUTF8(kDirectShowDeviceName4));
+  // No IVideoProcAmp interface.
+  EXPECT_FALSE(it->descriptor.control_support().pan);
+  EXPECT_FALSE(it->descriptor.control_support().tilt);
+  EXPECT_FALSE(it->descriptor.control_support().zoom);
+
+  // Devices that are listed in MediaFoundation but only report supported
+  // formats in DirectShow are expected to get enumerated with
+  // VideoCaptureApi::WIN_DIRECT_SHOW
+  it = FindDeviceInRange(devices_info.begin(), devices_info.end(),
+                         base::SysWideToUTF8(kDirectShowDeviceId5));
+  ASSERT_NE(it, devices_info.end());
+  EXPECT_EQ(it->descriptor.capture_api, VideoCaptureApi::WIN_DIRECT_SHOW);
+  EXPECT_EQ(it->descriptor.display_name(),
+            base::SysWideToUTF8(kDirectShowDeviceName5));
+  // No pan, tilt, or zoom ranges in ICameraControl interface.
+  EXPECT_FALSE(it->descriptor.control_support().pan);
+  EXPECT_FALSE(it->descriptor.control_support().tilt);
+  EXPECT_FALSE(it->descriptor.control_support().zoom);
+
+  // Devices that are listed in both MediaFoundation and DirectShow but are
+  // blocked for use with MediaFoundation are expected to get enumerated with
+  // VideoCaptureApi::WIN_DIRECT_SHOW.
+  it = FindDeviceInRange(devices_info.begin(), devices_info.end(),
+                         base::SysWideToUTF8(kDirectShowDeviceId6));
+  ASSERT_NE(it, devices_info.end());
+  EXPECT_EQ(it->descriptor.capture_api, VideoCaptureApi::WIN_DIRECT_SHOW);
+  EXPECT_EQ(it->descriptor.display_name(),
+            base::SysWideToUTF8(kDirectShowDeviceName6));
+  EXPECT_TRUE(it->descriptor.control_support().pan);
+  EXPECT_TRUE(it->descriptor.control_support().tilt);
+  EXPECT_TRUE(it->descriptor.control_support().zoom);
+}
+
+TEST_P(VideoCaptureDeviceFactoryMFWinTest, GetDevicesInfo_IncludeIRCameras) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kIncludeIRCamerasInDeviceEnumeration);
+
   if (ShouldSkipMFTest())
     return;
 

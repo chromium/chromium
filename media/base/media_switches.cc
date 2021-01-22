@@ -672,6 +672,11 @@ const base::Feature kDelayCopyNV12Textures{"DelayCopyNV12Textures",
 const base::Feature kDirectShowGetPhotoState{"DirectShowGetPhotoState",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Includes Infrared cameras in the list returned for EnumerateDevices() on
+// Windows.
+const base::Feature kIncludeIRCamerasInDeviceEnumeration{
+    "IncludeIRCamerasInDeviceEnumeration", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables asynchronous H264 HW encode acceleration using Media Foundation for
 // Windows.
 const base::Feature kMediaFoundationAsyncH264Encoding{
