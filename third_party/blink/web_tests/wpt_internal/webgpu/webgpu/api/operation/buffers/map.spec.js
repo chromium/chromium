@@ -1,6 +1,15 @@
 /**
  * AUTO-GENERATED - DO NOT EDIT. Source: https://github.com/gpuweb/cts
- **/ export const description = '';
+ **/ export const description = `
+TODO: review and make sure these cases are covered:
+> - making sure writes/reads are to the right address (and get flushed)
+>     - TODO: various mapAsync offset/size
+>     - various getMappedRange offset/size
+>     - TODO: with non-overlapping getMappedRanges
+>     - TODO: with various TypedArray/DataView types
+>     - TODO: mapAsync is not a multiple of 8 but getMappedRange is, if that's allowed (probably won't be allowed, there's an issue in the spec about this)
+>     - x= {read, write, mappedAtCreation {mappable, non-mappable}}
+`;
 import { pbool, params } from '../../../../common/framework/params_builder.js';
 import { makeTestGroup } from '../../../../common/framework/test_group.js';
 import { assert } from '../../../../common/framework/util/util.js';

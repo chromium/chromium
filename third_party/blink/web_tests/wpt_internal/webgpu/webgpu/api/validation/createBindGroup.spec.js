@@ -2,6 +2,8 @@
  * AUTO-GENERATED - DO NOT EDIT. Source: https://github.com/gpuweb/cts
  **/ export const description = `
 createBindGroup validation tests.
+
+TODO: review existing tests, write descriptions, and make sure tests are complete.
 `;
 import { poptions, params } from '../../../common/framework/params_builder.js';
 import { makeTestGroup } from '../../../common/framework/test_group.js';
@@ -14,6 +16,7 @@ import {
   kTextureBindingTypes,
   kTextureBindingTypeInfo,
 } from '../../capability_info.js';
+import { GPUConst } from '../../constants.js';
 
 import { ValidationTest } from './validation_test.js';
 
@@ -106,6 +109,11 @@ g.test('texture_binding_must_have_correct_usage')
     params()
       .combine(poptions('type', kTextureBindingTypes))
       .combine(poptions('usage', kTextureUsages))
+      .unless(({ type, usage }) => {
+        const info = kTextureBindingTypeInfo[type];
+        // Can't create the texture for this (usage=STORAGE and sampleCount=4), so skip.
+        return usage === GPUConst.TextureUsage.STORAGE && info.resource === 'sampledTexMS';
+      })
   )
   .fn(async t => {
     const { type, usage } = t.params;
@@ -120,12 +128,15 @@ g.test('texture_binding_must_have_correct_usage')
       size: { width: 16, height: 16, depth: 1 },
       format: 'rgba8unorm',
       usage,
+      sampleCount: info.resource === 'sampledTexMS' ? 4 : 1,
     };
+
+    const resource = t.device.createTexture(descriptor).createView();
 
     const shouldError = usage !== info.usage;
     t.expectValidationError(() => {
       t.device.createBindGroup({
-        entries: [{ binding: 0, resource: t.device.createTexture(descriptor).createView() }],
+        entries: [{ binding: 0, resource }],
         layout: bindGroupLayout,
       });
     }, shouldError);
@@ -241,6 +252,11 @@ g.test('texture_must_have_correct_dimension').fn(async t => {
 });
 
 g.test('buffer_offset_and_size_for_bind_groups_match')
+  .desc(
+    `TODO: describe
+
+TODO(#234): disallow zero-sized bindings`
+  )
   .params([
     { offset: 0, size: 512, _success: true }, // offset 0 is valid
     { offset: 256, size: 256, _success: true }, // offset 256 (aligned) is valid

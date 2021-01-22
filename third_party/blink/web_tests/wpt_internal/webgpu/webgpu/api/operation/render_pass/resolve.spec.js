@@ -3,11 +3,16 @@
  **/ export const description = `API Operation Tests for RenderPass StoreOp.
 Tests a render pass with a resolveTarget resolves correctly for many combinations of:
   - number of color attachments, some with and some without a resolveTarget
-  - renderPass storeOp set to {‘store’, ‘clear’}
-  - resolveTarget mip level set to {‘0’, base mip > ‘0’}
-  - resolveTarget base array layer set to {‘0’, base layer > '0'} for 2D textures
-  TODO: test all renderable color formats
-  TODO: test that any not-resolved attachments are rendered to correctly.
+  - renderPass storeOp set to {'store', 'clear'}
+  - resolveTarget mip level {0, >0} (TODO?: different mip level from colorAttachment)
+  - resolveTarget {2d array layer, TODO: 3d slice} {0, >0} with {2d, TODO: 3d} resolveTarget
+    (TODO?: different z from colorAttachment)
+  - TODO: test all renderable color formats
+  - TODO: test that any not-resolved attachments are rendered to correctly.
+  - TODO: test different loadOps
+  - TODO?: resolveTarget mip level {0, >0} (TODO?: different mip level from colorAttachment)
+  - TODO?: resolveTarget {2d array layer, TODO: 3d slice} {0, >0} with {2d, TODO: 3d} resolveTarget
+    (different z from colorAttachment)
 `;
 import { params, poptions } from '../../../../common/framework/params_builder.js';
 import { makeTestGroup } from '../../../../common/framework/test_group.js';

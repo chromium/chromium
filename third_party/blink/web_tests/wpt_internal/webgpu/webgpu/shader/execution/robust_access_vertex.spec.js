@@ -356,10 +356,10 @@ g.test('vertexAccess')
                    VertexIndex < ${vertexIndexOffset + numVertices}u);
 
               if (attributesInBounds && (${!p.indexed} || indexInBounds)) {
-                # Success case, move the vertex out of the viewport
+                // Success case, move the vertex out of the viewport
                 Position = vec4<f32>(-1.0, 0.0, 0.0, 1.0);
               } else {
-                # Failure case, move the vertex inside the viewport
+                // Failure case, move the vertex inside the viewport
                 Position = vec4<f32>(0.0, 0.0, 0.0, 1.0);
               }
             }`,

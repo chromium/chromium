@@ -2,6 +2,19 @@
  * AUTO-GENERATED - DO NOT EDIT. Source: https://github.com/gpuweb/cts
  **/ export const description = `
 vertexState validation tests.
+
+TODO: review existing tests, write descriptions, and make sure tests are complete.
+      Make sure the following is covered.
+> - In createRenderPipeline():
+> - An attribute is unused by the shader
+> - If invalid, test these (if valid, they should be operation tests instead):
+>     - Vertex buffer with zero attributes
+>     - Overlapping attributes
+>         - Verify correct sizing of every vertex format
+>     - Overlapping vertex buffer elements (an attribute offset + its size > arrayStride)
+>     - Shader tries to use an attribute location that's not bound
+>     - Alignment constraints on attributes, if any
+>     - Alignment constraints on arrayStride, if any
 `;
 import { makeTestGroup } from '../../../common/framework/test_group.js';
 

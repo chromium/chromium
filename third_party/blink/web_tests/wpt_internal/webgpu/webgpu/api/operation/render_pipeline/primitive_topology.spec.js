@@ -330,7 +330,7 @@ export const g = makeTestGroup(PrimitiveTopologyTest);
 // Compute test locations for valid and invalid pixels for each topology.
 // If the primitive covers the pixel, the color value will be |kValidPixelColor|.
 // Otherwise, a non-covered pixel will be |kInvalidPixelColor|.
-g.test('render_pipeline,primitive_topology_point_list').fn(async t => {
+g.test('point_list').fn(async t => {
   // Check valid test locations
   const testLocations = getPointTestLocations(kValidPixelColor);
 
@@ -342,7 +342,7 @@ g.test('render_pipeline,primitive_topology_point_list').fn(async t => {
   t.run('point-list', testLocations, /*usePrimitiveRestart=*/ false);
 });
 
-g.test('render_pipeline,primitive_topology_line_list').fn(async t => {
+g.test('line_list').fn(async t => {
   // Check valid test locations
   const testLocations = getLineTestLocations(kValidPixelColor);
 
@@ -353,7 +353,7 @@ g.test('render_pipeline,primitive_topology_line_list').fn(async t => {
   t.run('line-list', testLocations, /*usePrimitiveRestart=*/ false);
 });
 
-g.test('render_pipeline,primitive_topology_line_strip').fn(async t => {
+g.test('line_strip').fn(async t => {
   // Check valid test locations
   const testLocations = getLineTestLocations(kValidPixelColor);
   testLocations.concat(getLineStripTestLocations(kValidPixelColor));
@@ -365,7 +365,7 @@ g.test('render_pipeline,primitive_topology_line_strip').fn(async t => {
   t.run('line-strip', testLocations, /*usePrimitiveRestart=*/ false);
 });
 
-g.test('render_pipeline,primitive_topology_line_strip,primitive_restart').fn(async t => {
+g.test('line_strip,primitive_restart').fn(async t => {
   // Check valid test locations
   const testLocations = getPrimitiveRestartLineTestLocations(kValidPixelColor);
   testLocations.concat(getLineStripTestLocations(kValidPixelColor));
@@ -377,7 +377,7 @@ g.test('render_pipeline,primitive_topology_line_strip,primitive_restart').fn(asy
   t.run('line-strip', testLocations, /*usePrimitiveRestart=*/ true);
 });
 
-g.test('render_pipeline,primitive_topology_triangle_list').fn(async t => {
+g.test('triangle_list').fn(async t => {
   // Check valid test locations
   const testLocations = getTriangleListTestLocations(kValidPixelColor);
 
@@ -387,7 +387,7 @@ g.test('render_pipeline,primitive_topology_triangle_list').fn(async t => {
   t.run('triangle-list', testLocations, /*usePrimitiveRestart=*/ false);
 });
 
-g.test('render_pipeline,primitive_topology_triangle_strip').fn(async t => {
+g.test('triangle_strip').fn(async t => {
   // Check valid test locations
   const testLocations = getTriangleListTestLocations(kValidPixelColor);
   testLocations.concat(getTriangleStripTestLocations(kValidPixelColor));
@@ -395,7 +395,7 @@ g.test('render_pipeline,primitive_topology_triangle_strip').fn(async t => {
   t.run('triangle-strip', testLocations, /*usePrimitiveRestart=*/ false);
 });
 
-g.test('render_pipeline,primitive_topology_triangle_strip,primitive_restart').fn(async t => {
+g.test('triangle_strip,primitive_restart').fn(async t => {
   // Check valid test locations
   const testLocations = getTriangleListTestLocations(kValidPixelColor);
   testLocations.concat(getTriangleStripTestLocations(kInvalidPixelColor));

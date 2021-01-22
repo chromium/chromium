@@ -2,6 +2,36 @@
  * AUTO-GENERATED - DO NOT EDIT. Source: https://github.com/gpuweb/cts
  **/ export const description = `
 createTexture validation tests.
+
+TODO: review existing tests and merge with this plan:
+> All x= every texture format
+>
+> - {any dimension, mipLevelCount} = 0
+>     - x= every texture format
+> - sampleCount = {0, 1, 4, 8, 16, 256} with format/dimension that supports multisample
+>     - x= every texture format
+> - sampleCount = {1, 4}
+>     - with format that supports multisample, with all possible dimensions
+>     - with dimension that support multisample, with all possible formats
+>     - with format-dimension that support multisample, with {mipLevelCount, array layer count} = {1, 2}
+> - 1d, {width, height, depth} > whatever the max is
+>     - height max is 1 (unless 1d-array is added)
+>     - depth max is 1
+>     - x= every texture format
+> - 2d, {width, height, depth} > whatever the max is
+>     - depth (array layers) max differs from width/height
+>     - x= every texture format
+> - 3d, {width, height, depth} > whatever the max is
+>     - x= every texture format
+> - usage flags
+>     - {0, ... each single usage flag}
+>     - x= every texture format
+> - every possible pair of usage flags
+>     - with one common texture format
+> - any other conditions from the spec
+> - ...?
+
+TODO: move destroy tests out of this file
 `;
 import { poptions } from '../../../common/framework/params_builder.js';
 import { makeTestGroup } from '../../../common/framework/test_group.js';

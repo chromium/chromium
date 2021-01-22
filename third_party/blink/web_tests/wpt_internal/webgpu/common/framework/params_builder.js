@@ -2,7 +2,8 @@
  * AUTO-GENERATED - DO NOT EDIT. Source: https://github.com/gpuweb/cts
  **/ import { publicParamsEquals } from './params_utils.js';
 import { assert } from './util/util.js';
-/** Forces a type to resolve its type definitions, to make it readable/debuggable. */
+
+/** Conditionally chooses between two types depending on whether T is a union. */
 
 function typeAssert() {}
 {

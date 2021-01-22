@@ -146,7 +146,10 @@ g.test('render_pass_store_op,color_attachment_only')
     params()
       .combine(poptions('colorFormat', kEncodableTextureFormats))
       // Filter out any non-renderable formats
-      .filter(({ colorFormat }) => kEncodableTextureFormatInfo[colorFormat].renderable)
+      .filter(({ colorFormat }) => {
+        const info = kEncodableTextureFormatInfo[colorFormat];
+        return info.color && info.renderable;
+      })
       .combine(poptions('storeOperation', kStoreOps))
       .combine(poptions('mipLevel', kMipLevel))
       .combine(poptions('arrayLayer', kArrayLayers))

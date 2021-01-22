@@ -3,6 +3,8 @@
  **/ export const description = `
 fences validation tests.
 
+TODO: per-test descriptions, make names more succinct
+TODO: fences are removed; replace still-relevant tests with equivalents for (multiple?) queues
 TODO: Add some more tests/cases (may replace some existing tests), e.g.:
   For fence values 0 < x < y < z:
   - initialValue=0, signal(0)

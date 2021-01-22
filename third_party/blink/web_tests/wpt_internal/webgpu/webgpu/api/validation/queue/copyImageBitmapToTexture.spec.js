@@ -2,6 +2,7 @@
  * AUTO-GENERATED - DO NOT EDIT. Source: https://github.com/gpuweb/cts
  **/ export const description = `
 copyImageBitmapToTexture Validation Tests in Queue.
+TODO: Should this be the same file as, or next to, web_platform/copyImageBitmapToTexture.spec.ts?
 
 TODO: Split this test plan per-test.
 
@@ -20,10 +21,10 @@ Test Plan:
     - Check that an error is generated when texture format is not valid.
 
 - For copySize:
-  - Noop copy shouldn't throw any exception or return any validation error.
+  - No-op copy shouldn't throw any exception or return any validation error.
   - Check that an error is generated when destination.texture.origin + copySize is too large.
 
-TODO: 1d, 3d texture and 2d array textures.
+TODO: copying into slices of 2d array textures. 1d and 3d as well if they're not invalid.
 `;
 import { poptions, params, pbool } from '../../../../common/framework/params_builder.js';
 import { makeTestGroup } from '../../../../common/framework/test_group.js';
@@ -58,7 +59,7 @@ function computeMipMapSize(width, height, mipLevel) {
 
 // Helper function to generate copySize for src OOB test
 function generateCopySizeForSrcOOB({ srcOrigin }) {
-  // OOB origin fails even with noop copy.
+  // OOB origin fails even with no-op copy.
   if (srcOrigin.x > kDefaultWidth || srcOrigin.y > kDefaultHeight) {
     return poptions('copySize', [{ width: 0, height: 0, depth: 0 }]);
   }
@@ -70,7 +71,7 @@ function generateCopySizeForSrcOOB({ srcOrigin }) {
   };
 
   return poptions('copySize', [
-    justFitCopySize, // correct size, maybe noop copy.
+    justFitCopySize, // correct size, maybe no-op copy.
     { width: justFitCopySize.width + 1, height: justFitCopySize.height, depth: 1 }, // OOB in width
     { width: justFitCopySize.width, height: justFitCopySize.height + 1, depth: 1 }, // OOB in height
     { width: justFitCopySize.width, height: justFitCopySize.height, depth: 2 }, // OOB in depth
@@ -98,7 +99,7 @@ function generateDstOriginValue({ mipLevel }) {
 function generateCopySizeForDstOOB({ mipLevel, dstOrigin }) {
   const dstMipMapSize = computeMipMapSize(kDefaultWidth, kDefaultHeight, mipLevel);
 
-  // OOB origin fails even with noop copy.
+  // OOB origin fails even with no-op copy.
   if (
     dstOrigin.x > dstMipMapSize.mipWidth ||
     dstOrigin.y > dstMipMapSize.mipHeight ||

@@ -2,11 +2,21 @@
  * AUTO-GENERATED - DO NOT EDIT. Source: https://github.com/gpuweb/cts
  **/ export const description = `
 indexed draws validation tests.
+
+TODO: review and make sure these notes are covered:
+> - indexed draws:
+>     - index access out of bounds (make sure this doesn't overlap with robust access)
+>         - bound index buffer **range** is {exact size, just under exact size} needed for draws with:
+>             - indexCount largeish
+>             - firstIndex {=, >} 0
+>     - x= {drawIndexed, drawIndexedIndirect}
+
+TODO: Since there are no errors here, these should be "robustness" operation tests (with multiple
+valid results).
 `;
 import { params, poptions, pbool } from '../../../../../common/framework/params_builder.js';
 import { makeTestGroup } from '../../../../../common/framework/test_group.js';
-
-import { ValidationTest } from './../../validation_test.js';
+import { ValidationTest } from '../../validation_test.js';
 
 class F extends ValidationTest {
   createIndexBuffer() {

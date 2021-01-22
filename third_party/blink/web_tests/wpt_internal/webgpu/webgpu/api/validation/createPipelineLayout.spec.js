@@ -2,6 +2,8 @@
  * AUTO-GENERATED - DO NOT EDIT. Source: https://github.com/gpuweb/cts
  **/ export const description = `
 createPipelineLayout validation tests.
+
+TODO: review existing tests, write descriptions, and make sure tests are complete.
 `;
 import { poptions, params } from '../../../common/framework/params_builder.js';
 import { makeTestGroup } from '../../../common/framework/test_group.js';
@@ -16,6 +18,11 @@ function clone(descriptor) {
 export const g = makeTestGroup(ValidationTest);
 
 g.test('number_of_dynamic_buffers_exceeds_the_maximum_value')
+  .desc(
+    `TODO: describe
+
+TODO(#230): Update to enforce per-stage and per-pipeline-layout limits on BGLs as well.`
+  )
   .params(
     params()
       .combine(poptions('visibility', [0, 2, 4, 6]))

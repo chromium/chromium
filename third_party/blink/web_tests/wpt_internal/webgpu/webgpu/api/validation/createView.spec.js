@@ -2,6 +2,24 @@
  * AUTO-GENERATED - DO NOT EDIT. Source: https://github.com/gpuweb/cts
  **/ export const description = `
 createView validation tests.
+
+TODO: review existing tests and merge with this plan:
+> All x= every texture format for the underlying texture
+>
+> - view format doesn't match/isn't compatible
+>     - with/without flag set <- I don't think this flag exists yet
+>     - x= every possible view format
+> - dimension isn't one of the following compatible options:
+>     - texture 1d -> view 1d
+>     - texture 2d -> view 2d, 2d-array, cube, cube-array
+>     - texture 3d -> view 3d
+> - {cube, cube-array} not enough layers
+> - all aspects
+>     - "depth-only" only allowed for D and DS
+>     - "stencil-only" only allowed for S and DS
+>     - "all" allowed for any format
+> - baseMipLevel+mipLevelCount various values {in, out of} range
+> - baseArrayLayer+arrayLayerCount various values {in, out of} range
 `;
 import { makeTestGroup } from '../../../common/framework/test_group.js';
 

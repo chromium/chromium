@@ -5,7 +5,7 @@ Examples of writing CTS tests with various features.
 
 Start here when looking for examples of basic framework usage.
 `;
-import { pbool } from '../common/framework/params_builder.js';
+import { params, pbool, poptions } from '../common/framework/params_builder.js';
 import { makeTestGroup } from '../common/framework/test_group.js';
 
 import { GPUTest } from './gpu_test.js';
@@ -91,6 +91,19 @@ g.test('basic,params')
     t.expect(t.params.x + t.params.y === t.params._result);
   });
 // (note the blank comment above to enforce newlines on autoformat)
+
+// Runs the following cases:
+// { x: 2, y: 2 }
+// { x: 2, z: 3 }
+// { x: 3, y: 2 }
+// { x: 3, z: 3 }
+g.test('basic,params_builder')
+  .params(
+    params()
+      .combine(poptions('x', [2, 3]))
+      .combine([{ y: 2 }, { z: 3 }])
+  )
+  .fn(() => {});
 
 g.test('gpu,async').fn(async t => {
   const fence = t.queue.createFence();

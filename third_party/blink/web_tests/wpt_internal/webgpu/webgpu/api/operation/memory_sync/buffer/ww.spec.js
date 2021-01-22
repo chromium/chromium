@@ -11,6 +11,8 @@ Wait on another fence, then call expectContents to verify the written buffer.
   - x= 2nd write type: {storage buffer in {compute, render, render-via-bundle}, t2b-copy, b2b-copy, writeBuffer}
   - if pass type is the same, x= {single pass, separate passes} (note: render has loose guarantees)
   - if not single pass, x= writes in {same cmdbuf, separate cmdbufs, separate submits, separate queues}
+
+TODO: Tests with more than one buffer to try to stress implementations a little bit more.
 `;
 import { pbool, poptions, params } from '../../../../../common/framework/params_builder.js';
 import { makeTestGroup } from '../../../../../common/framework/test_group.js';

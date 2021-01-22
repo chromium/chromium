@@ -2,6 +2,8 @@
  * AUTO-GENERATED - DO NOT EDIT. Source: https://github.com/gpuweb/cts
  **/ export const description = `
 createBindGroupLayout validation tests.
+
+TODO: review existing tests, write descriptions, and make sure tests are complete.
 `;
 import { pbool, poptions, params } from '../../../common/framework/params_builder.js';
 import { makeTestGroup } from '../../../common/framework/test_group.js';
@@ -57,11 +59,14 @@ g.test('visibility')
   .fn(async t => {
     const { type, visibility } = t.params;
 
+    const info = kBindingTypeInfo[type];
+    const storageTextureFormat = info.resource === 'storageTex' ? 'rgba8unorm' : undefined;
+
     const success = (visibility & ~kBindingTypeInfo[type].validStages) === 0;
 
     t.expectValidationError(() => {
       t.device.createBindGroupLayout({
-        entries: [{ binding: 0, visibility, type }],
+        entries: [{ binding: 0, visibility, type, storageTextureFormat }],
       });
     }, !success);
   });
@@ -157,6 +162,11 @@ g.test('multisample_requires_2d_view_dimension')
   });
 
 g.test('number_of_dynamic_buffers_exceeds_the_maximum_value')
+  .desc(
+    `TODO: describe
+
+TODO(#230): Update to enforce per-stage and per-pipeline-layout limits on BGLs as well.`
+  )
   .params([
     { type: 'storage-buffer', maxDynamicBufferCount: 4 },
     { type: 'uniform-buffer', maxDynamicBufferCount: 8 },
@@ -236,6 +246,11 @@ const kCasesForMaxResourcesPerStageTests = params()
 // Should never fail unless kMaxBindingsPerBindGroup is exceeded, because the validation for
 // resources-of-type-per-stage is in pipeline layout creation.
 g.test('max_resources_per_stage,in_bind_group_layout')
+  .desc(
+    `TODO: describe
+
+TODO(#230): Update to enforce per-stage and per-pipeline-layout limits on BGLs as well.`
+  )
   .params(kCasesForMaxResourcesPerStageTests)
   .fn(async t => {
     const { maxedType, extraType, maxedVisibility, extraVisibility } = t.params;

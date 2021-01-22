@@ -40,10 +40,12 @@ export class Fixture {
 
     // Loop to exhaust the eventualExpectations in case they chain off each other.
     while (this.eventualExpectations.length) {
-      const previousExpectations = this.eventualExpectations;
-      this.eventualExpectations = [];
-
-      await Promise.all(previousExpectations);
+      const p = this.eventualExpectations.shift();
+      try {
+        await p;
+      } catch (ex) {
+        this.rec.threw(ex);
+      }
     }
   }
 

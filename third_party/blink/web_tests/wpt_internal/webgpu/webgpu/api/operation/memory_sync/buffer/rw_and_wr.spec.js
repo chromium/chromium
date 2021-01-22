@@ -13,6 +13,8 @@ This is a read-after write test but if the write and read operations are reverse
   - x= read-write sequence: {read then write, write then read}
   - if pass type is the same, x= {single pass, separate passes} (note: render has loose guarantees)
   - if not single pass, x= writes in {same cmdbuf, separate cmdbufs, separate submits, separate queues}
+
+TODO: Tests with more than one buffer to try to stress implementations a little bit more.
 `;
 import { makeTestGroup } from '../../../../../common/framework/test_group.js';
 

@@ -2,29 +2,25 @@
  * AUTO-GENERATED - DO NOT EDIT. Source: https://github.com/gpuweb/cts
  **/ import { assert } from '../../../../../common/framework/util/util.js';
 import { kEncodableTextureFormatInfo } from '../../../../capability_info.js';
-import { getTexelDataRepresentation } from '../../../../util/texture/texelData.js';
+import {
+  kTexelRepresentationInfo,
+  getSingleDataType,
+  getComponentReadbackTraits,
+} from '../../../../util/texture/texel_data.js';
 
 export const checkContentsBySampling = (t, params, texture, state, subresourceRange) => {
   assert(params.dimension === '2d');
   assert(params.format in kEncodableTextureFormatInfo);
   const format = params.format;
-  const rep = getTexelDataRepresentation(format);
+  const rep = kTexelRepresentationInfo[format];
 
   for (const { level, slices } of subresourceRange.mipLevels()) {
     const width = t.textureWidth >> level;
     const height = t.textureHeight >> level;
 
-    let ReadbackTypedArray = Float32Array;
-
-    // TODO: look up component type in texture format tables
-    let shaderType = 'f32';
-    if (params.format.indexOf('sint') !== -1) {
-      shaderType = 'i32';
-      ReadbackTypedArray = Int32Array;
-    } else if (params.format.indexOf('uint') !== -1) {
-      shaderType = 'u32';
-      ReadbackTypedArray = Uint32Array;
-    }
+    const { ReadbackTypedArray, shaderType } = getComponentReadbackTraits(
+      getSingleDataType(format)
+    );
 
     const componentOrder = rep.componentOrder;
     const componentCount = componentOrder.length;

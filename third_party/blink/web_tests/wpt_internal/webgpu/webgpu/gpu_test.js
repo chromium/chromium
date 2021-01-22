@@ -7,7 +7,7 @@ import { assert } from '../common/framework/util/util.js';
 import { DevicePool, TestOOMedShouldAttemptGC } from './util/device_pool.js';
 import { align } from './util/math.js';
 import { fillTextureDataWithTexelValue, getTextureCopyLayout } from './util/texture/layout.js';
-import { getTexelDataRepresentation } from './util/texture/texelData.js';
+import { kTexelRepresentationInfo } from './util/texture/texel_data.js';
 
 const devicePool = new DevicePool();
 
@@ -242,7 +242,8 @@ got [${failedByteActualValues.join(', ')}]`;
       layout
     );
 
-    const expectedTexelData = getTexelDataRepresentation(format).getBytes(exp);
+    const rep = kTexelRepresentationInfo[format];
+    const expectedTexelData = rep.pack(rep.encode(exp));
 
     const buffer = this.device.createBuffer({
       size: byteLength,

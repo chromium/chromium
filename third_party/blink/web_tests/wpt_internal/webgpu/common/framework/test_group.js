@@ -80,6 +80,8 @@ class TestBuilder {
   }
 
   fn(fn) {
+    // TODO: add TODO if there's no description? (and make sure it only ends up on actual tests,
+    // not on test parents in the tree, which is what happens if you do it here, not sure why)
     assert(this.testFn === undefined);
     this.testFn = fn;
   }
