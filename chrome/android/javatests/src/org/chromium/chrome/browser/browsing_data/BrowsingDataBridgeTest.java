@@ -118,6 +118,21 @@ public class BrowsingDataBridgeTest {
     }
 
     /**
+     * Test deleting SameSite=None cookies.
+     */
+    @Test
+    @SmallTest
+    public void testSameSiteNoneCookiesDeleted() throws Exception {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            BrowsingDataBridge.getInstance().clearSameSiteNoneData(
+                    () -> { mCallbackHelper.notifyCalled(); }, false);
+        });
+        mCallbackHelper.waitForCallback(0);
+        assertThat(mActionTester.toString(), getActions(),
+                Matchers.contains("ClearBrowsingData_SameSiteNoneData"));
+    }
+
+    /**
      * Get ClearBrowsingData related actions, filter all other actions to avoid flakes.
      */
     private List<String> getActions() {

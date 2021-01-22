@@ -122,6 +122,16 @@ public final class BrowsingDataBridge {
     }
 
     /**
+     * Clear SameSite=None cookies and related storage asynchronously.
+     * @param callback Invoked when the clearing is done.
+     * @param clearStorage If true, clears any storage associated with SameSite=None cookies.
+     */
+    public void clearSameSiteNoneData(Runnable callback, boolean clearStorage) {
+        BrowsingDataBridgeJni.get().clearSameSiteNoneData(
+                BrowsingDataBridge.this, getProfile(), callback, clearStorage);
+    }
+
+    /**
      * This method tests clearing of specified types of browsing data for primary Incognito profile.
      * @param dataTypes An array of browsing data types to delete, represented as values from
      *                  the shared enum {@link BrowsingDataType}.
@@ -253,6 +263,8 @@ public final class BrowsingDataBridge {
         void clearBrowsingData(BrowsingDataBridge caller, Profile profile, int[] dataTypes,
                 int timePeriod, String[] excludedDomains, int[] excludedDomainReasons,
                 String[] ignoredDomains, int[] ignoredDomainReasons);
+        void clearSameSiteNoneData(BrowsingDataBridge caller, Profile profile, Runnable callback,
+                boolean clearStorage);
         void requestInfoAboutOtherFormsOfBrowsingHistory(BrowsingDataBridge caller, Profile profile,
                 OtherFormsOfBrowsingHistoryListener listener);
         void fetchImportantSites(Profile profile, ImportantSitesCallback callback);

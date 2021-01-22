@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
@@ -37,6 +38,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/browsing_data_remover.h"
+#include "content/public/browser/same_site_data_remover.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;
@@ -166,6 +168,20 @@ static void JNI_BrowsingDataBridge_ClearBrowsingData(
   browsing_data_important_sites_util::Remove(
       remove_mask, BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB, period,
       std::move(filter_builder), browsing_data_remover, std::move(callback));
+}
+
+static void JNI_BrowsingDataBridge_ClearSameSiteNoneData(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    const JavaParamRef<jobject>& jprofile,
+    const JavaParamRef<jobject>& jcallback,
+    jboolean jclear_storage) {
+  TRACE_EVENT0("browsing_data", "BrowsingDataBridge_ClearSameSiteNoneData");
+  Profile* profile = ProfileAndroid::FromProfileAndroid(jprofile);
+  content::ClearSameSiteNoneData(
+      base::BindOnce(&base::android::RunRunnableAndroid,
+                     ScopedJavaGlobalRef<jobject>(jcallback)),
+      profile, jclear_storage);
 }
 
 static void EnableDialogAboutOtherFormsOfBrowsingHistory(

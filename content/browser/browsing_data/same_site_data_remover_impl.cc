@@ -13,6 +13,7 @@
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/metrics/user_metrics.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/same_site_data_remover.h"
 #include "content/public/browser/storage_partition.h"
@@ -124,6 +125,8 @@ void SameSiteDataRemoverImpl::ClearStoragePartitionData(
 void ClearSameSiteNoneData(base::OnceClosure closure,
                            BrowserContext* context,
                            bool clear_storage) {
+  base::RecordAction(
+      base::UserMetricsAction("ClearBrowsingData_SameSiteNoneData"));
   auto same_site_remover = std::make_unique<SameSiteDataRemoverImpl>(context);
   SameSiteDataRemoverImpl* remover = same_site_remover.get();
 
