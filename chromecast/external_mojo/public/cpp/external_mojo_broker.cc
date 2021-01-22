@@ -441,6 +441,11 @@ ExternalMojoBroker::CreateConnector() {
   return remote;
 }
 
+void ExternalMojoBroker::BindConnector(
+    mojo::PendingReceiver<mojom::ExternalConnector> receiver) {
+  connector_->AddReceiver(std::move(receiver));
+}
+
 ExternalMojoBroker::~ExternalMojoBroker() = default;
 
 }  // namespace external_mojo

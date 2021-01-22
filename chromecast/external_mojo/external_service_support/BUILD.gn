@@ -14,12 +14,29 @@ source_set("external_service") {
   ]
   deps = [
     "//base",
+    "//chromecast/external_mojo/broker_service",
     "//chromecast/external_mojo/public/mojom",
     "//chromecast/mojo",
     "//mojo/core/embedder",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/platform",
     "//mojo/public/cpp/system",
+    "//services/service_manager/public/cpp",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_external_connector.cc",
+    "fake_external_connector.h",
+  ]
+
+  deps = [
+    ":external_service",
+    "//base",
+    "//mojo/public/cpp/bindings",
   ]
 }
 

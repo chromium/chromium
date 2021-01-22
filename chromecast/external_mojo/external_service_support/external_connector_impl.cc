@@ -15,10 +15,13 @@
 #include "base/thread_annotations.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
+#include "chromecast/external_mojo/broker_service/broker_service.h"
 #include "chromecast/external_mojo/external_service_support/external_service.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 #include "mojo/public/cpp/system/invitation.h"
+#include "services/service_manager/public/cpp/connector.h"
 
 namespace chromecast {
 namespace external_service_support {
@@ -141,6 +144,21 @@ std::unique_ptr<ExternalConnector> ExternalConnector::Create(
   return std::make_unique<ExternalConnectorImpl>(broker_path);
 }
 
+// static
+std::unique_ptr<ExternalConnector> ExternalConnector::Create(
+    mojo::PendingRemote<external_mojo::mojom::ExternalConnector> remote) {
+  return std::make_unique<ExternalConnectorImpl>(std::move(remote));
+}
+
+// static
+std::unique_ptr<ExternalConnector> ExternalConnector::Create(
+    service_manager::Connector* connector) {
+  mojo::PendingRemote<external_mojo::mojom::ExternalConnector> pending_remote;
+  connector->BindInterface(external_mojo::BrokerService::kServiceName,
+                           pending_remote.InitWithNewPipeAndPassReceiver());
+  return std::make_unique<ExternalConnectorImpl>(std::move(pending_remote));
+}
+
 ExternalConnectorImpl::ExternalConnectorImpl(const std::string& broker_path)
     : broker_connection_(base::MakeRefCounted<BrokerConnection>(broker_path)) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
@@ -247,11 +265,13 @@ void ExternalConnectorImpl::BindInterfaceImmediately(
 std::unique_ptr<ExternalConnector> ExternalConnectorImpl::Clone() {
   if (broker_connection_) {
     return std::make_unique<ExternalConnectorImpl>(broker_connection_);
-  } else {
-    mojo::PendingRemote<external_mojo::mojom::ExternalConnector> remote;
-    connector_->Clone(remote.InitWithNewPipeAndPassReceiver());
-    return std::make_unique<ExternalConnectorImpl>(std::move(remote));
   }
+  DCHECK(connector_.is_bound())
+      << "Cannot clone an ExternalConnector before it "
+      << "is bound to a sequence.";
+  mojo::PendingRemote<external_mojo::mojom::ExternalConnector> remote;
+  connector_->Clone(remote.InitWithNewPipeAndPassReceiver());
+  return std::make_unique<ExternalConnectorImpl>(std::move(remote));
 }
 
 void ExternalConnectorImpl::SendChromiumConnectorRequest(

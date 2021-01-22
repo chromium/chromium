@@ -17,6 +17,10 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 
+namespace service_manager {
+class Connector;
+}  // namespace service_manager
+
 namespace chromecast {
 namespace external_service_support {
 class ExternalService;
@@ -35,6 +39,14 @@ class ExternalConnector {
 
   static std::unique_ptr<ExternalConnector> Create(
       const std::string& broker_path);
+
+  static std::unique_ptr<ExternalConnector> Create(
+      mojo::PendingRemote<external_mojo::mojom::ExternalConnector> remote);
+
+  // Acquires a connector from the BrokerService via the Chromium service
+  // manager.
+  static std::unique_ptr<ExternalConnector> Create(
+      ::service_manager::Connector* connector);
 
   virtual ~ExternalConnector() = default;
 

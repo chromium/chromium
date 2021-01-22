@@ -11,6 +11,8 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/sequence_bound.h"
+#include "chromecast/external_mojo/public/mojom/connector.mojom.h"
+#include "chromecast/mojo/interface_bundle.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/service_manager/public/cpp/manifest.h"
 #include "services/service_manager/public/cpp/service.h"
@@ -22,6 +24,10 @@ class SequencedTaskRunner;
 class Thread;
 }  // namespace base
 
+namespace service_manager {
+class Connector;
+}  // namespace service_manager
+
 namespace chromecast {
 namespace external_mojo {
 class ExternalMojoBroker;
@@ -29,8 +35,13 @@ class ExternalMojoBroker;
 // A Mojo service (intended to run within cast_shell or some other Chromium
 // ServiceManager environment) that allows Mojo services built into external
 // processes to interoperate with the Mojo services within cast_shell.
-class BrokerService : public ::service_manager::Service {
+class BrokerService : public ::service_manager::Service,
+                      public mojom::ConnectorFactory {
  public:
+  static BrokerService* GetInstance();
+  static void ServiceRequestHandler(
+      mojo::PendingReceiver<service_manager::mojom::Service> receiver);
+
   static constexpr char const* kServiceName = "external_mojo_broker";
 
   // Adds a manifest for an external Mojo service (ie, one that is running in
@@ -45,15 +56,32 @@ class BrokerService : public ::service_manager::Service {
   // Returns the manifest for this service.
   static const service_manager::Manifest& GetManifest();
 
-  explicit BrokerService(
-      mojo::PendingReceiver<service_manager::mojom::Service> receiver);
+  explicit BrokerService(service_manager::Connector* connector);
   ~BrokerService() override;
 
+  // ::service_manager::Service implementation:
+  void OnConnect(const service_manager::BindSourceInfo& source,
+                 const std::string& interface_name,
+                 mojo::ScopedMessagePipeHandle interface_pipe) override;
+
+  // mojom::ConnectorFactory implementation:
+  void BindConnector(
+      mojo::PendingReceiver<mojom::ExternalConnector> receiver) override;
+
+  // Dispenses a connector for use in a remote process. The remote process must
+  // already belong to the same process network as the BrokerService.
+  mojo::PendingRemote<mojom::ExternalConnector> CreateConnector();
+
  private:
-  service_manager::ServiceReceiver service_receiver_;
+  void BindServiceRequest(
+      mojo::PendingReceiver<service_manager::mojom::Service> receiver);
+
+  service_manager::ServiceReceiver service_receiver_{this};
 
   std::unique_ptr<base::Thread> io_thread_;
   scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
+
+  InterfaceBundle bundle_;
 
   base::SequenceBound<ExternalMojoBroker> broker_;
 
