@@ -6,5 +6,6 @@ tbarzic@chromium.org
 # (in CET)
 antrim@chromium.org
 rsorokin@chromium.org
+raleksandrov@google.com
 
 per-file *security_token*=emaxx@chromium.org
