@@ -740,6 +740,24 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAriaHiddenSingleDescendant) {
+  RunAriaTest(FILE_PATH_LITERAL("aria-hidden-single-descendant.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAriaHiddenSingleDescendantDisplayNone) {
+  RunAriaTest(
+      FILE_PATH_LITERAL("aria-hidden-single-descendant-display-none.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(
+    DumpAccessibilityTreeTest,
+    AccessibilityAriaHiddenSingleDescendantVisibilityHidden) {
+  RunAriaTest(FILE_PATH_LITERAL(
+      "aria-hidden-single-descendant-visibility-hidden.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityAriaHiddenDescendantTabindexChange) {
   RunAriaTest(FILE_PATH_LITERAL("aria-hidden-descendant-tabindex-change.html"));
 }

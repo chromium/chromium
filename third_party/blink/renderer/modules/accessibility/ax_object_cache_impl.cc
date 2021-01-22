@@ -2004,6 +2004,58 @@ void AXObjectCacheImpl::HandleRoleChangeWithCleanLayout(Node* node) {
   }
 }
 
+void AXObjectCacheImpl::HandleAriaHiddenChangedWithCleanLayout(Node* node) {
+  if (!node)
+    return;
+
+  SCOPED_DISALLOW_LIFECYCLE_TRANSITION(node->GetDocument());
+  DCHECK(!node->GetDocument().NeedsLayoutTreeUpdateForNode(*node));
+
+  AXObject* obj = GetOrCreate(node);
+  if (!obj)
+    return;
+
+  // https://www.w3.org/TR/wai-aria-1.1/#aria-hidden
+  // An element is considered hidden if it, or any of its ancestors are not
+  // rendered or have their aria-hidden attribute value set to true.
+  AXObject* parent = obj->ParentObject();
+  if (parent) {
+    // If the parent is inert or aria-hidden, then the subtree will be
+    // ignored and changing aria-hidden will have no effect.
+    // |IsInertOrAriaHidden| returns true if the element or one of its
+    // ancestors is either inert or within an aria-hidden subtree.
+    if (parent->IsInertOrAriaHidden())
+      return;
+    // If the parent is 'display: none', then the subtree will be ignored and
+    // changing aria-hidden will have no effect.
+    if (parent->GetLayoutObject()) {
+      // For elements with layout objects we can get their style directly.
+      if (parent->GetLayoutObject()->Style()->Display() == EDisplay::kNone)
+        return;
+    } else if (Element* parent_element = parent->GetElement()) {
+      // No layout object: must ensure computed style.
+      const ComputedStyle* parent_style = parent_element->EnsureComputedStyle();
+      if (!parent_style || parent_style->IsEnsuredInDisplayNone())
+        return;
+    }
+    // Unlike AXObject's |IsVisible| or |IsHiddenViaStyle| this method does not
+    // consider 'visibility: [hidden|collapse]', because while the visibility
+    // property is inherited it can be overridden by any descendant by providing
+    // 'visibility: visible' so it would be safest to invalidate the subtree in
+    // such a case.
+  }
+
+  // Changing the aria hidden state should trigger recomputing all
+  // cached values even if it doesn't result in a notification, because
+  // it affects accessibility ignored state.
+  modification_count_++;
+
+  // Invalidate the subtree because aria-hidden affects the
+  // accessibility ignored state for the entire subtree.
+  MarkAXObjectDirty(obj, /*subtree=*/true);
+  ChildrenChangedWithCleanLayout(node->parentNode());
+}
+
 void AXObjectCacheImpl::HandleAttributeChanged(const QualifiedName& attr_name,
                                                Element* element) {
   DCHECK(element);
@@ -2073,7 +2125,7 @@ void AXObjectCacheImpl::HandleAttributeChangedWithCleanLayout(
   } else if (attr_name == html_names::kAriaExpandedAttr) {
     HandleAriaExpandedChangeWithCleanLayout(element);
   } else if (attr_name == html_names::kAriaHiddenAttr) {
-    ChildrenChangedWithCleanLayout(element->parentNode());
+    HandleAriaHiddenChangedWithCleanLayout(element);
   } else if (attr_name == html_names::kAriaInvalidAttr) {
     MarkElementDirty(element, false);
   } else if (attr_name == html_names::kAriaErrormessageAttr) {
