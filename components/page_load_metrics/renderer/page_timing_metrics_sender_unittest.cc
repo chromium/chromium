@@ -448,4 +448,16 @@ TEST_F(PageTimingMetricsSenderTest, SendFrameIntersectionUpdate) {
   validator_.VerifyExpectedFrameIntersectionUpdate();
 }
 
+TEST_F(PageTimingMetricsSenderTest, FirstContentfulPaintForcesSend) {
+  mojom::PageLoadTiming timing;
+  InitPageLoadTimingForTest(&timing);
+  timing.paint_timing->first_contentful_paint = base::TimeDelta::FromSeconds(1);
+  validator_.ExpectPageLoadTiming(timing);
+  // Updating when |timing| has FCP will cause the metrics to be sent right
+  // away.
+  metrics_sender_->Update(timing.Clone(),
+                          PageTimingMetadataRecorder::MonotonicTiming());
+  EXPECT_FALSE(metrics_sender_->mock_timer()->IsRunning());
+}
+
 }  // namespace page_load_metrics
