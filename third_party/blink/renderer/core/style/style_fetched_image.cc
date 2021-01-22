@@ -136,18 +136,18 @@ void StyleFetchedImage::RemoveClient(ImageResourceObserver* observer) {
 }
 
 void StyleFetchedImage::ImageNotifyFinished(ImageResourceContent*) {
+  if (!document_)
+    return;
+
   if (image_ && image_->HasImage()) {
     Image& image = *image_->GetImage();
 
-    auto* svg_image = DynamicTo<SVGImage>(image);
-    if (document_ && svg_image)
+    if (auto* svg_image = DynamicTo<SVGImage>(image))
       svg_image->UpdateUseCounters(*document_);
   }
 
-  if (document_) {
-    if (LocalDOMWindow* window = document_->domWindow())
-      ImageElementTiming::From(*window).NotifyBackgroundImageFinished(this);
-  }
+  if (LocalDOMWindow* window = document_->domWindow())
+    ImageElementTiming::From(*window).NotifyBackgroundImageFinished(this);
 
   // Oilpan: do not prolong the Document's lifetime.
   document_.Clear();
