@@ -9257,7 +9257,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="IOS.SearchEngines.RecentlyViewed.Delete">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>sczs@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <description>
     Recorded when user deletes for recently viewed search engines. iOS only.
@@ -9265,7 +9265,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="IOS.SearchEngines.RecentlyViewed.Edit">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>sczs@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <description>
     Recorded when user enters edit mode for recently viewed search engines. iOS
@@ -9403,7 +9403,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="IOSLanguagesSettingsCloseWithSwipe">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>sczs@chromium.org</owner>
   <owner>pkl@chromium.org</owner>
   <description>
     Reported when Languages Settings UI was dismissed using swipe down gesture.
