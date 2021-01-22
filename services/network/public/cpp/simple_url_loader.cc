@@ -1135,6 +1135,10 @@ class DownloadAsStreamBodyHandler : public BodyHandler,
                                     weak_ptr_factory_.GetWeakPtr()));
       return;
     }
+    if (!body_reader_) {
+      // If Resume was delayed, body_reader_ could have been deleted.
+      return;
+    }
     body_reader_->Resume();
   }
 
