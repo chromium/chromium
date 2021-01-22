@@ -997,12 +997,15 @@ class Generator(generator.Generator):
       #  - Enums: NamespaceUid.Enum.CONSTANT_NAME
       #  - Struct: NamespaceUid.Struct_CONSTANT_NAME
 
-      name_prefix = []
+      namespace_components = []
       qualified = (not for_module) or (token.module is not self.module)
       if token.module and qualified:
-        name_prefix.append(token.module.namespace)
+        namespace_components.append(token.module.namespace)
       if token.parent_kind:
-        name_prefix.append(token.parent_kind.name)
+        namespace_components.append(token.parent_kind.name)
+      name_prefix = '.'.join(namespace_components)
+      if for_module:
+        name_prefix = name_prefix.replace('.', '_')
 
       name = []
       if isinstance(token, mojom.EnumValue):
@@ -1014,7 +1017,7 @@ class Generator(generator.Generator):
         separator = "_"
 
       if len(name_prefix) > 0:
-        return ".".join(name_prefix) + separator + ".".join(name)
+        return name_prefix + separator + ".".join(name)
 
       return ".".join(name)
 

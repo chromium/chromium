@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
-<script src="/gen/third_party/blink/public/mojom/webshare/webshare.mojom.js"></script>
-<script src="resources/mock-share-service.js"></script>
-<script>
+<script type="module">
+import {callWithKeyDown, share_test} from './resources/share-test.js';
+import {ShareError} from '/gen/third_party/blink/public/mojom/webshare/share_error.mojom.m.js';
 
 function getAbsoluteUrl(url) {
   return new URL(url, document.baseURI).toString();
@@ -13,7 +12,7 @@ function getAbsoluteUrl(url) {
 share_test(mock => {
   const url = 'https://www.example.com/some/path?some_query#some_fragment';
   mock.pushShareResult('the title', 'the message', getAbsoluteUrl(url),
-                       blink.mojom.ShareError.OK);
+                       ShareError.OK);
   return callWithKeyDown(() => navigator.share(
         {title: 'the title', text: 'the message', url: url})).then(
         result => assert_equals(result, undefined));
@@ -21,25 +20,25 @@ share_test(mock => {
 
 share_test(mock => {
   const url = '//www.example.com/some/path?some_query#some_fragment';
-  mock.pushShareResult('', '', getAbsoluteUrl(url), blink.mojom.ShareError.OK);
+  mock.pushShareResult('', '', getAbsoluteUrl(url), ShareError.OK);
   return callWithKeyDown(() => navigator.share({url: url}));
 }, 'successful share with URL without a scheme');
 
 share_test(mock => {
   const url =  '/some/path?some_query#some_fragment';
-  mock.pushShareResult('', '', getAbsoluteUrl(url), blink.mojom.ShareError.OK);
+  mock.pushShareResult('', '', getAbsoluteUrl(url), ShareError.OK);
   return callWithKeyDown(() => navigator.share({url: url}));
 }, 'successful share with a path-only URL');
 
 share_test(mock => {
   const url = 'foo';
-  mock.pushShareResult('', '', getAbsoluteUrl(url), blink.mojom.ShareError.OK);
+  mock.pushShareResult('', '', getAbsoluteUrl(url), ShareError.OK);
   return callWithKeyDown(() => navigator.share({url: url}));
 }, 'successful share with a relative URL');
 
 share_test(mock => {
   const url = '';
-  mock.pushShareResult('', '', document.baseURI, blink.mojom.ShareError.OK);
+  mock.pushShareResult('', '', document.baseURI, ShareError.OK);
   return callWithKeyDown(() => navigator.share({url: url}));
 }, 'successful share with an empty URL');
 
@@ -48,7 +47,7 @@ share_test(mock => {
   // Expect '\' to normalize to '/', "%63" to normalize to 'c', '\r\n\t'
   // to be removed, and all the other illegal characters to be percent-escaped.
   const url_encoded = 'http://example.com/foo/abc%20%22%3C%3E%60%7B%7D';
-  mock.pushShareResult('', '', url_encoded, blink.mojom.ShareError.OK);
+  mock.pushShareResult('', '', url_encoded, ShareError.OK);
   return callWithKeyDown(() => navigator.share({url: url}));
 }, 'successful share with percent-encoded URL characters');
 
@@ -60,7 +59,7 @@ share_test(mock => {
   const url = 'https://\u6d4b\u8bd5.example.com/\ud83d\udcc4';
   // Host is IDNA-encoded. Path is percent-encoded.
   const url_ascii = 'https://xn--0zwm56d.example.com/%F0%9F%93%84';
-  mock.pushShareResult(title, '\ufffdx', url_ascii, blink.mojom.ShareError.OK);
+  mock.pushShareResult(title, '\ufffdx', url_ascii, ShareError.OK);
   return callWithKeyDown(() => navigator.share(
         {title: title, text: '\ud9a3x', url: url}));
 }, 'successful share with Unicode characters');

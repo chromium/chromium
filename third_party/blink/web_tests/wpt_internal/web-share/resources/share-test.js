@@ -1,12 +1,12 @@
-'use strict';
+import {ShareService, ShareServiceReceiver} from '/gen/third_party/blink/public/mojom/webshare/webshare.mojom.m.js';
 
 class MockShareService {
-  constructor(interfaceProvider) {
-    this.bindingSet_ = new mojo.BindingSet(blink.mojom.ShareService);
+  constructor() {
+    this.receiver_ = new ShareServiceReceiver(this);
     this.interceptor_ =
-        new MojoInterfaceInterceptor(blink.mojom.ShareService.name);
+        new MojoInterfaceInterceptor(ShareService.$interfaceName);
     this.interceptor_.oninterfacerequest =
-        e => this.bindingSet_.addBinding(this, e.handle);
+        e => this.receiver_.$.bindHandle(e.handle);
     this.interceptor_.start();
   }
 
@@ -50,7 +50,7 @@ class MockShareService {
 
 let mockShareService = new MockShareService();
 
-function share_test(func, name, properties) {
+export function share_test(func, name, properties) {
   promise_test(() => {
     let mockPromise = mockShareService.init_();
     return Promise.race([func(mockShareService), mockPromise]);
@@ -58,7 +58,7 @@ function share_test(func, name, properties) {
 }
 
 // Copied from resources/bluetooth/bluetooth-helpers.js.
-function callWithKeyDown(functionCalledOnKeyPress) {
+export function callWithKeyDown(functionCalledOnKeyPress) {
   return new Promise((resolve, reject) => {
     function onKeyPress() {
       document.removeEventListener('keypress', onKeyPress, false);

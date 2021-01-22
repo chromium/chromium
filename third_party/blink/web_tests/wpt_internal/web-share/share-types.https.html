@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
-<script src="/gen/third_party/blink/public/mojom/webshare/webshare.mojom.js"></script>
-<script src="resources/mock-share-service.js"></script>
-<script>
+<script type="module">
+import {callWithKeyDown, share_test} from './resources/share-test.js';
+import {ShareError} from '/gen/third_party/blink/public/mojom/webshare/share_error.mojom.m.js';
 
 function getAbsoluteUrl(url) {
   return new URL(url, document.baseURI).toString();
@@ -12,7 +11,7 @@ function getAbsoluteUrl(url) {
 
 share_test(mock => {
   mock.pushShareResult('true', 'the object', 'http://example.com/',
-                       blink.mojom.ShareError.OK);
+                       ShareError.OK);
 
   const textWithToString = {toString() { return 'the object'; }};
   const urlWithToString = {toString() { return 'http://example.com/'; }};
@@ -23,8 +22,7 @@ share_test(mock => {
 share_test(mock => {
   // null fields should convert into the string 'null' (because the field is
   // not nullable, it just converts to a string like any other type).
-  mock.pushShareResult('null', '', '',
-                       blink.mojom.ShareError.OK);
+  mock.pushShareResult('null', '', '', ShareError.OK);
   return callWithKeyDown(() => navigator.share(
         {title: null, text: undefined}));
 }, 'share of null/undefined dict values');
