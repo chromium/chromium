@@ -12,7 +12,7 @@ include_rules = [
   "+chrome/browser/flags/android",
   "+chrome/browser/fullscreen/android",
   "+chrome/browser/image_descriptions",
-  "+chrome/browser/ui/android/layouts/java",
+  "+chrome/browser/ui/android/layouts",
   "+chrome/browser/notifications",
   "+chrome/browser/password_manager/android",
   "+chrome/browser/policy/android",

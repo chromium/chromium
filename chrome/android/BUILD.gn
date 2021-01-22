@@ -350,6 +350,7 @@ android_library("chrome_java") {
     "//chrome/browser/ui/android/default_browser_promo:java",
     "//chrome/browser/ui/android/favicon:java",
     "//chrome/browser/ui/android/layouts:java",
+    "//chrome/browser/ui/android/layouts/glue:java",
     "//chrome/browser/ui/android/layouts/third_party/float_property:java",
     "//chrome/browser/ui/android/native_page:java",
     "//chrome/browser/ui/android/theme:java",

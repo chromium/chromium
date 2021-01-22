@@ -112,6 +112,7 @@ import org.chromium.chrome.browser.init.ProcessInitializationHandler;
 import org.chromium.chrome.browser.init.StartupTabPreloader;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponent;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponentFactory;
+import org.chromium.chrome.browser.layouts.LayoutManagerAppUtils;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.media.PictureInPictureController;
 import org.chromium.chrome.browser.metrics.ActivityTabStartupMetricsTracker;
@@ -1281,6 +1282,12 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             mTabModelSelectorTabObserver = null;
         }
 
+        // TODO(1168131): Destruction and detaching of the LayoutManager should be moved to the
+        //                RootUiCoordinator.
+        if (mLayoutManagerSupplier.get() != null) {
+            LayoutManagerAppUtils.detach(mLayoutManagerSupplier.get());
+        }
+
         if (mCompositorViewHolder != null) {
             if (mCompositorViewHolder.getLayoutManager() != null) {
                 mCompositorViewHolder.getLayoutManager().removeSceneChangeObserver(this);
@@ -1789,6 +1796,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     @Override
     public void initializeCompositorContent(LayoutManagerImpl layoutManager, View urlBar,
             ViewGroup contentContainer, ControlContainer controlContainer) {
+        // TODO(1168131): The responsibility of managing the availability of the LayoutManager
+        //                should be moved to the RootUiCoordinator.
+        LayoutManagerAppUtils.attach(getWindowAndroid(), layoutManager);
         mLayoutManagerSupplier.set(layoutManager);
 
         layoutManager.addSceneChangeObserver(this);
