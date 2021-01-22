@@ -160,8 +160,7 @@ TEST_F(SiteDataCountingHelperTest, CookiesAndLocalStorage) {
   EXPECT_EQ(3, CountEntries(base::Time(), base::Time::Max()));
 }
 
-// Flaky on a few platforms: crbug.com/1168198
-TEST_F(SiteDataCountingHelperTest, DISABLED_SameHostDifferentScheme) {
+TEST_F(SiteDataCountingHelperTest, SameHostDifferentScheme) {
   base::Time now = base::Time::Now();
   CreateCookies(now, {"http://google.com", "https://google.com"});
   CreateLocalStorage(now,
