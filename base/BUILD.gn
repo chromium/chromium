@@ -542,7 +542,6 @@ component("base") {
     "strings/strcat.cc",
     "strings/strcat.h",
     "strings/strcat_internal.h",
-    "strings/string16.cc",
     "strings/string16.h",
     "strings/string_number_conversions.cc",
     "strings/string_number_conversions.h",
@@ -1861,7 +1860,6 @@ component("base") {
     sources -= [
       "file_descriptor_store.cc",
       "file_descriptor_store.h",
-      "strings/string16.cc",
     ]
 
     deps += [ "//base/win:base_win_buildflags" ]
@@ -3539,7 +3537,6 @@ if (build_base_unittests) {
         "observer_list_unittest.nc",
         "optional_unittest.nc",
         "sequence_checker_unittest.nc",
-        "strings/string16_unittest.nc",
         "task/task_traits_extension_unittest.nc",
         "task/task_traits_unittest.nc",
         "thread_annotations_unittest.nc",
