@@ -2846,7 +2846,7 @@ class KioskAutoLaunchViewsTest : public OobeBaseTest,
     // The AutoLoginState is taken from KioskAppManager::AutoLoginState.
     dict_update->SetInteger(
         KioskAppManager::kKeyAutoLoginState,
-        KioskAppManager::AutoLoginState::AUTOLOGIN_REQUESTED);
+        static_cast<int>(KioskAppManager::AutoLoginState::kRequested));
   }
 
   void TearDownOnMainThread() override {

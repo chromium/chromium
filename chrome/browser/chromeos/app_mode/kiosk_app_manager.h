@@ -254,11 +254,11 @@ class KioskAppManager : public KioskAppManagerBase,
   friend class KioskTest;
   friend class KioskUpdateTest;
 
-  enum AutoLoginState {
-    AUTOLOGIN_NONE      = 0,
-    AUTOLOGIN_REQUESTED = 1,
-    AUTOLOGIN_APPROVED  = 2,
-    AUTOLOGIN_REJECTED  = 3,
+  enum class AutoLoginState {
+    kNone = 0,
+    kRequested = 1,
+    kApproved = 2,
+    kRejected = 3,
   };
 
   KioskAppManager();

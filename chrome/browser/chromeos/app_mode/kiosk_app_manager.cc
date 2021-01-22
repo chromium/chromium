@@ -185,7 +185,7 @@ std::string KioskAppManager::GetAutoLaunchApp() const {
 
 void KioskAppManager::SetAutoLaunchApp(const std::string& app_id,
                                        OwnerSettingsServiceChromeOS* service) {
-  SetAutoLoginState(AUTOLOGIN_REQUESTED);
+  SetAutoLoginState(AutoLoginState::kRequested);
   // Clean first, so the proper change callbacks are triggered even
   // if we are only changing AutoLoginState here.
   if (!auto_launch_app_id_.empty()) {
@@ -405,7 +405,8 @@ void KioskAppManager::OnReadImmutableAttributes(
 }
 
 void KioskAppManager::SetEnableAutoLaunch(bool value) {
-  SetAutoLoginState(value ? AUTOLOGIN_APPROVED : AUTOLOGIN_REJECTED);
+  SetAutoLoginState(value ? AutoLoginState::kApproved
+                          : AutoLoginState::kRejected);
 }
 
 bool KioskAppManager::IsAutoLaunchRequested() const {
@@ -419,7 +420,7 @@ bool KioskAppManager::IsAutoLaunchRequested() const {
   if (connector->IsEnterpriseManaged())
     return false;
 
-  return GetAutoLoginState() == AUTOLOGIN_REQUESTED;
+  return GetAutoLoginState() == AutoLoginState::kRequested;
 }
 
 bool KioskAppManager::IsAutoLaunchEnabled() const {
@@ -433,7 +434,7 @@ bool KioskAppManager::IsAutoLaunchEnabled() const {
   if (connector->IsEnterpriseManaged())
     return true;
 
-  return GetAutoLoginState() == AUTOLOGIN_APPROVED;
+  return GetAutoLoginState() == AutoLoginState::kApproved;
 }
 
 std::string KioskAppManager::GetAutoLaunchAppRequiredPlatformVersion() const {
@@ -839,7 +840,7 @@ KioskAppManager::AutoLoginState KioskAppManager::GetAutoLoginState() const {
       prefs->GetDictionary(KioskAppManager::kKioskDictionaryName);
   int value;
   if (!dict->GetInteger(kKeyAutoLoginState, &value))
-    return AUTOLOGIN_NONE;
+    return AutoLoginState::kNone;
 
   return static_cast<AutoLoginState>(value);
 }
@@ -848,7 +849,7 @@ void KioskAppManager::SetAutoLoginState(AutoLoginState state) {
   PrefService* prefs = g_browser_process->local_state();
   DictionaryPrefUpdate dict_update(prefs,
                                    KioskAppManager::kKioskDictionaryName);
-  dict_update->SetInteger(kKeyAutoLoginState, state);
+  dict_update->SetInteger(kKeyAutoLoginState, static_cast<int>(state));
   prefs->CommitPendingWrite();
 }
 
