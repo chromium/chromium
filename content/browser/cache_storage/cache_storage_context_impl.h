@@ -20,6 +20,7 @@
 #include "content/public/browser/cache_storage_context.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom.h"
 #include "storage/browser/quota/special_storage_policy.h"
@@ -51,6 +52,8 @@ class CacheStorageManager;
 class CONTENT_EXPORT CacheStorageContextWithManager
     : public CacheStorageContext {
  public:
+  CacheStorageContextWithManager();
+
   // Callable on any sequence.  May return nullptr during shutdown.
   virtual scoped_refptr<CacheStorageManager> CacheManager() = 0;
 
@@ -86,6 +89,8 @@ class CONTENT_EXPORT CacheStorageContextImpl
             scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
             scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy);
   void Shutdown();
+
+  void Bind(mojo::PendingReceiver<storage::mojom::CacheStorageControl> control);
 
   // Only callable on the UI thread.
   void AddReceiver(
@@ -163,6 +168,8 @@ class CONTENT_EXPORT CacheStorageContextImpl
   // sequence in ShutdownOnTaskRunner() or the destructor via
   // SequencedTaskRunner::ReleaseSoon().
   scoped_refptr<CacheStorageManager> cache_manager_;
+
+  mojo::ReceiverSet<storage::mojom::CacheStorageControl> receivers_;
 
   // Initialized from the UI thread and bound to |task_runner_|.
   base::SequenceBound<CacheStorageDispatcherHost> dispatcher_host_;

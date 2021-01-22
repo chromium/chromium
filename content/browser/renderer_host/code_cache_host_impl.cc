@@ -12,7 +12,6 @@
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
-#include "content/browser/cache_storage/cache_storage_context_impl.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/code_cache/generated_code_cache.h"
 #include "content/browser/code_cache/generated_code_cache_context.h"
@@ -92,21 +91,23 @@ base::Optional<GURL> GetSecondaryKeyForCodeCache(const GURL& resource_url,
 
 CodeCacheHostImpl::CodeCacheHostImpl(
     int render_process_id,
-    scoped_refptr<CacheStorageContextImpl> cache_storage_context,
+    RenderProcessHostImpl* render_process_host_impl,
     scoped_refptr<GeneratedCodeCacheContext> generated_code_cache_context,
     mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver)
     : render_process_id_(render_process_id),
-      cache_storage_context_(std::move(cache_storage_context)),
+      render_process_host_impl_(render_process_host_impl),
       generated_code_cache_context_(std::move(generated_code_cache_context)),
-      receiver_(this, std::move(receiver)) {}
+      receiver_(this, std::move(receiver)) {
+  // render_process_host_impl may be null in tests.
+}
 
 CodeCacheHostImpl::~CodeCacheHostImpl() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 
-void CodeCacheHostImpl::SetCacheStorageContextForTesting(
-    scoped_refptr<CacheStorageContextImpl> context) {
-  cache_storage_context_ = std::move(context);
+void CodeCacheHostImpl::SetCacheStorageControlForTesting(
+    storage::mojom::CacheStorageControl* cache_storage_control) {
+  cache_storage_control_for_testing_ = cache_storage_control;
 }
 
 void CodeCacheHostImpl::DidGenerateCacheableMetadata(
@@ -201,15 +202,15 @@ void CodeCacheHostImpl::DidGenerateCacheableMetadataInCacheStorage(
       "CodeCacheHostImpl::DidGenerateCacheableMetadataInCacheStorage",
       TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_OUT, "url", url.spec());
 
-  if (!cache_storage_context_)
-    return;
-
   mojo::Remote<blink::mojom::CacheStorage> remote;
   network::CrossOriginEmbedderPolicy cross_origin_embedder_policy;
-  DCHECK(cache_storage_context_);
-  // TODO(enne): replace this direct use of CacheStorageContext with a new
-  // storage::mojom::CacheStorageControl remote, similar to IndexedDBControl.
-  cache_storage_context_->AddReceiver(
+
+  storage::mojom::CacheStorageControl* cache_storage_control =
+      cache_storage_control_for_testing_
+          ? cache_storage_control_for_testing_
+          : render_process_host_impl_->GetStoragePartition()
+                ->GetCacheStorageControl();
+  cache_storage_control->AddReceiver(
       cross_origin_embedder_policy, mojo::NullRemote(), cache_storage_origin,
       storage::mojom::CacheStorageOwner::kCacheAPI,
       remote.BindNewPipeAndPassReceiver());

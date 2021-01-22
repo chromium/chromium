@@ -34,7 +34,6 @@ class BackgroundFetchRegistrationNotifier;
 class BackgroundFetchRequestMatchParams;
 class BackgroundFetchScheduler;
 class BrowserContext;
-class CacheStorageContextImpl;
 class ServiceWorkerContextWrapper;
 
 // The BackgroundFetchContext is the central moderator of ongoing background
@@ -52,8 +51,8 @@ class CONTENT_EXPORT BackgroundFetchContext
   // that it can respond to service worker events such as unregister.
   BackgroundFetchContext(
       BrowserContext* browser_context,
+      StoragePartition* storage_partition,
       const scoped_refptr<ServiceWorkerContextWrapper>& service_worker_context,
-      const scoped_refptr<CacheStorageContextImpl>& cache_storage_context,
       scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
       scoped_refptr<DevToolsBackgroundServicesContextImpl> devtools_context);
 

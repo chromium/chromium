@@ -59,7 +59,7 @@ class CONTENT_EXPORT CrossSequenceCacheStorageManager
   ~CrossSequenceCacheStorageManager() override;
 
   const scoped_refptr<base::SequencedTaskRunner> target_task_runner_;
-  const scoped_refptr<CacheStorageContextWithManager> context_;
+  scoped_refptr<CacheStorageContextWithManager> context_;
 
   // The |inner_| object is SequenceBound<> to the target sequence used by the
   // real manager.

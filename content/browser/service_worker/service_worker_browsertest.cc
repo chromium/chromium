@@ -2384,17 +2384,20 @@ class CodeCacheHostInterceptor
   CodeCacheHostImpl* code_cache_host_impl_;
 };
 
-class CacheStorageContextForBadOrigin : public CacheStorageContextImpl {
+class CacheStorageControlForBadOrigin
+    : public storage::mojom::CacheStorageControl {
  public:
-  scoped_refptr<CacheStorageManager> CacheManager() override {
-    // The CodeCacheHostImpl should not try to access the CacheManager()
-    // if the origin is bad.
+  void AddReceiver(
+      const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
+      mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
+          coep_reporter_remote,
+      const url::Origin& origin,
+      storage::mojom::CacheStorageOwner owner,
+      mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) override {
+    // The CodeCacheHostImpl should not try to add a receiver if the origin is
+    // bad.
     NOTREACHED();
-    return nullptr;
   }
-
- private:
-  ~CacheStorageContextForBadOrigin() override = default;
 };
 
 }  // namespace
@@ -2404,7 +2407,9 @@ class CacheStorageContextForBadOrigin : public CacheStorageContextImpl {
 class ServiceWorkerV8CodeCacheForCacheStorageBadOriginTest
     : public ServiceWorkerV8CodeCacheForCacheStorageTest {
  public:
-  ServiceWorkerV8CodeCacheForCacheStorageBadOriginTest() {
+  ServiceWorkerV8CodeCacheForCacheStorageBadOriginTest()
+      : cache_storage_control_(
+            std::make_unique<CacheStorageControlForBadOrigin>()) {
     // Register a callback to be notified of new CodeCacheHostImpl objects.
     RenderProcessHostImpl::SetCodeCacheHostReceiverHandlerForTesting(
         base::BindRepeating(
@@ -2432,8 +2437,8 @@ class ServiceWorkerV8CodeCacheForCacheStorageBadOriginTest
                                CodeCacheHostImpl* code_cache_host_impl) {
     // Override the cache_storage context to assert that CodeCacheHostImpl
     // does not try to access it when given a bad origin.
-    code_cache_host_impl->SetCacheStorageContextForTesting(
-        base::MakeRefCounted<CacheStorageContextForBadOrigin>());
+    code_cache_host_impl->SetCacheStorageControlForTesting(
+        cache_storage_control_.get());
 
     // Create an interceptor that passes a bad origin to CodeCacheHostImpl.
     interceptors_.push_back(
@@ -2441,6 +2446,8 @@ class ServiceWorkerV8CodeCacheForCacheStorageBadOriginTest
   }
 
  private:
+  std::unique_ptr<CacheStorageControlForBadOrigin> cache_storage_control_;
+
   // Track the CodeCacheHostIntercptor objects so we can delete them in
   // the test destructor.
   std::vector<std::unique_ptr<CodeCacheHostInterceptor>> interceptors_;

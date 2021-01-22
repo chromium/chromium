@@ -169,6 +169,7 @@ class CodeCacheHostTestcase {
   // Prerequisite state.
   std::unique_ptr<content::TestBrowserContext> browser_context_;
   scoped_refptr<content::CacheStorageContextImpl> cache_storage_context_;
+  mojo::Remote<storage::mojom::CacheStorageControl> cache_storage_control_;
   scoped_refptr<content::GeneratedCodeCacheContext>
       generated_code_cache_context_;
 
@@ -209,6 +210,8 @@ void CodeCacheHostTestcase::SetUpOnUIThread() {
   cache_storage_context_->Init(browser_context_->GetPath(),
                                browser_context_->GetSpecialStoragePolicy(),
                                nullptr);
+  cache_storage_context_->Bind(
+      cache_storage_control_.BindNewPipeAndPassReceiver());
 
   generated_code_cache_context_ =
       base::MakeRefCounted<content::GeneratedCodeCacheContext>();
@@ -290,9 +293,12 @@ void CodeCacheHostTestcase::AddCodeCacheHostImpl(
     int renderer_id,
     const Origin& origin,
     mojo::PendingReceiver<::blink::mojom::CodeCacheHost>&& receiver) {
-  code_cache_hosts_[renderer_id] = std::make_unique<content::CodeCacheHostImpl>(
-      renderer_id, cache_storage_context_, generated_code_cache_context_,
-      std::move(receiver));
+  auto code_cache_host = std::make_unique<content::CodeCacheHostImpl>(
+      renderer_id, /*render_process_host_impl=*/nullptr,
+      generated_code_cache_context_, std::move(receiver));
+  code_cache_host->SetCacheStorageControlForTesting(
+      cache_storage_control_.get());
+  code_cache_hosts_[renderer_id] = std::move(code_cache_host);
 }
 
 void CodeCacheHostTestcase::AddCodeCacheHost(

@@ -24,7 +24,6 @@
 #include "content/browser/background_fetch/background_fetch_scheduler.h"
 #include "content/browser/background_fetch/storage/database_task.h"
 #include "content/browser/background_fetch/storage/get_initialization_data_task.h"
-#include "content/browser/cache_storage/cache_storage_context_impl.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/background_fetch/background_fetch.mojom.h"
 #include "url/origin.h"
@@ -40,9 +39,9 @@ class BackgroundFetchDataManagerObserver;
 class BackgroundFetchRequestInfo;
 class BackgroundFetchRequestMatchParams;
 class BrowserContext;
-class CacheStorageManager;
 class ChromeBlobStorageContext;
 class ServiceWorkerContextWrapper;
+class StoragePartition;
 
 // The BackgroundFetchDataManager is a wrapper around persistent storage (the
 // Service Worker database), exposing APIs for the read and write queries needed
@@ -86,8 +85,8 @@ class CONTENT_EXPORT BackgroundFetchDataManager
 
   BackgroundFetchDataManager(
       BrowserContext* browser_context,
+      StoragePartition* storage_partition,
       scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
-      scoped_refptr<CacheStorageContextImpl> cache_storage_context,
       scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy);
 
   ~BackgroundFetchDataManager() override;
@@ -245,7 +244,9 @@ class CONTENT_EXPORT BackgroundFetchDataManager
 
   scoped_refptr<ServiceWorkerContextWrapper> service_worker_context_;
 
-  scoped_refptr<CacheStorageContextImpl> cache_storage_context_;
+  // BackgroundFetchDataManager is owned by BackgroundFetchContext which
+  // itself is owned by the StoragePartitionImpl.
+  StoragePartition* storage_partition_;
 
   scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;
 

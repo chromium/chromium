@@ -1098,8 +1098,8 @@ StoragePartitionImpl::~StoragePartitionImpl() {
   if (GetIndexedDBContextInternal())
     GetIndexedDBContextInternal()->Shutdown();
 
-  if (GetCacheStorageContext())
-    GetCacheStorageContext()->Shutdown();
+  if (cache_storage_context_)
+    cache_storage_context_->Shutdown();
 
   if (GetPlatformNotificationContext())
     GetPlatformNotificationContext()->Shutdown();
@@ -1223,6 +1223,8 @@ void StoragePartitionImpl::Initialize(
   cache_storage_context_ = base::MakeRefCounted<CacheStorageContextImpl>();
   cache_storage_context_->Init(
       path, browser_context_->GetSpecialStoragePolicy(), quota_manager_proxy);
+  cache_storage_context_->Bind(
+      cache_storage_control_.BindNewPipeAndPassReceiver());
 
   service_worker_context_ = new ServiceWorkerContextWrapper(browser_context_);
   service_worker_context_->set_storage_partition(this);
@@ -1261,8 +1263,8 @@ void StoragePartitionImpl::Initialize(
       browser_context_, service_worker_context_);
 
   background_fetch_context_ = base::MakeRefCounted<BackgroundFetchContext>(
-      browser_context_, service_worker_context_, cache_storage_context_,
-      quota_manager_proxy, devtools_background_services_context_);
+      browser_context_, this, service_worker_context_, quota_manager_proxy,
+      devtools_background_services_context_);
 
   background_sync_context_ = base::MakeRefCounted<BackgroundSyncContextImpl>();
   background_sync_context_->Init(service_worker_context_,
@@ -1490,13 +1492,13 @@ QuotaContext* StoragePartitionImpl::GetQuotaContext() {
   return quota_context_.get();
 }
 
-CacheStorageContextImpl* StoragePartitionImpl::GetCacheStorageContext() {
+storage::mojom::CacheStorageControl*
+StoragePartitionImpl::GetCacheStorageControl() {
   DCHECK(initialized_);
-  return cache_storage_context_.get();
+  return cache_storage_control_.get();
 }
 
-CacheStorageContextImpl*
-StoragePartitionImpl::GetCacheStorageContextImplForTesting() {
+CacheStorageContextImpl* StoragePartitionImpl::GetCacheStorageContext() {
   DCHECK(initialized_);
   return cache_storage_context_.get();
 }

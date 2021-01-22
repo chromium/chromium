@@ -61,11 +61,10 @@ BackgroundFetchTestDataManager::BackgroundFetchTestDataManager(
     BrowserContext* browser_context,
     StoragePartition* storage_partition,
     scoped_refptr<ServiceWorkerContextWrapper> service_worker_context)
-    : BackgroundFetchDataManager(
-          browser_context,
-          service_worker_context,
-          storage_partition->GetCacheStorageContextImplForTesting(),  // IN-TEST
-          /* quota_manager_proxy= */ nullptr),
+    : BackgroundFetchDataManager(browser_context,
+                                 storage_partition,
+                                 service_worker_context,
+                                 /* quota_manager_proxy= */ nullptr),
       browser_context_(browser_context),
       storage_partition_(storage_partition) {}
 

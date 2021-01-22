@@ -22,6 +22,7 @@
 #include "base/process/process_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "components/services/storage/public/mojom/indexed_db_control.mojom.h"
 #include "components/services/storage/public/mojom/partition.mojom.h"
 #include "components/services/storage/public/mojom/storage_service.mojom.h"
@@ -151,9 +152,9 @@ class CONTENT_EXPORT StoragePartitionImpl
   LockManager* GetLockManager();  // override; TODO: Add to interface
   storage::mojom::IndexedDBControl& GetIndexedDBControl() override;
   FileSystemAccessEntryFactory* GetFileSystemAccessEntryFactory() override;
+  storage::mojom::CacheStorageControl* GetCacheStorageControl() override;
+  // TODO(enne): transition callers of this to GetCacheStorageControl
   CacheStorageContextImpl* GetCacheStorageContext() override;
-  // TODO(enne): add CacheStorageControl mojom and remove this
-  CacheStorageContextImpl* GetCacheStorageContextImplForTesting() override;
   ServiceWorkerContextWrapper* GetServiceWorkerContext() override;
   DedicatedWorkerServiceImpl* GetDedicatedWorkerService() override;
   SharedWorkerServiceImpl* GetSharedWorkerService() override;
@@ -521,6 +522,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   std::unique_ptr<LockManager> lock_manager_;
   std::unique_ptr<IndexedDBControlWrapper> indexed_db_control_wrapper_;
   scoped_refptr<CacheStorageContextImpl> cache_storage_context_;
+  mojo::Remote<storage::mojom::CacheStorageControl> cache_storage_control_;
   scoped_refptr<ServiceWorkerContextWrapper> service_worker_context_;
   std::unique_ptr<DedicatedWorkerServiceImpl> dedicated_worker_service_;
   std::unique_ptr<SharedWorkerServiceImpl> shared_worker_service_;

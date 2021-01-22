@@ -34,6 +34,9 @@ scoped_refptr<base::SequencedTaskRunner> CreateSchedulerTaskRunner() {
 
 }  // namespace
 
+CacheStorageContextWithManager::CacheStorageContextWithManager()
+    : CacheStorageContext(GetUIThreadTaskRunner({})) {}
+
 CacheStorageContextImpl::CacheStorageContextImpl()
     : task_runner_(CreateSchedulerTaskRunner()),
       observers_(base::MakeRefCounted<ObserverList>()) {
@@ -41,7 +44,7 @@ CacheStorageContextImpl::CacheStorageContextImpl()
 }
 
 CacheStorageContextImpl::~CacheStorageContextImpl() {
-  // Can be destroyed on any thread.
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   task_runner_->ReleaseSoon(FROM_HERE, std::move(cache_manager_));
 }
 
@@ -96,6 +99,12 @@ void CacheStorageContextImpl::Shutdown() {
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&CacheStorageContextImpl::ShutdownOnTaskRunner, this));
+}
+
+void CacheStorageContextImpl::Bind(
+    mojo::PendingReceiver<storage::mojom::CacheStorageControl> control) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  receivers_.Add(this, std::move(control));
 }
 
 void CacheStorageContextImpl::AddReceiver(

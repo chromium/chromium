@@ -1945,7 +1945,7 @@ void RenderProcessHostImpl::BindCacheStorage(
     const url::Origin& origin,
     mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  storage_partition_impl_->GetCacheStorageContext()->AddReceiver(
+  storage_partition_impl_->GetCacheStorageControl()->AddReceiver(
       cross_origin_embedder_policy, std::move(coep_reporter_remote), origin,
       storage::mojom::CacheStorageOwner::kCacheAPI, std::move(receiver));
 }
@@ -2478,8 +2478,7 @@ void RenderProcessHostImpl::CreateCodeCacheHost(
 
   // Create a new CodeCacheHostImpl and bind it to the given receiver.
   code_cache_host_impl_ = std::make_unique<CodeCacheHostImpl>(
-      GetID(), storage_partition_impl_->GetCacheStorageContext(),
-      storage_partition_impl_->GetGeneratedCodeCacheContext(),
+      GetID(), this, storage_partition_impl_->GetGeneratedCodeCacheContext(),
       std::move(receiver));
 
   // If there is a callback registered, then invoke it with the newly

@@ -100,14 +100,17 @@ SharedWorkerService* TestStoragePartition::GetSharedWorkerService() {
   return shared_worker_service_;
 }
 
-CacheStorageContext* TestStoragePartition::GetCacheStorageContext() {
-  return cache_storage_context_;
+storage::mojom::CacheStorageControl*
+TestStoragePartition::GetCacheStorageControl() {
+  // Bind and throw away the receiver. If testing is required, then add a method
+  // to set the remote.
+  if (!cache_storage_control_.is_bound())
+    ignore_result(cache_storage_control_.BindNewPipeAndPassReceiver());
+  return cache_storage_control_.get();
 }
 
-CacheStorageContextImpl*
-TestStoragePartition::GetCacheStorageContextImplForTesting() {
-  NOTREACHED();
-  return nullptr;
+CacheStorageContext* TestStoragePartition::GetCacheStorageContext() {
+  return cache_storage_context_;
 }
 
 GeneratedCodeCacheContext*
