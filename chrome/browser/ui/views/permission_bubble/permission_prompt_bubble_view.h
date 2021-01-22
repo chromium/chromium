@@ -11,6 +11,10 @@
 #include "components/permissions/permission_prompt.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
+namespace permissions {
+enum class RequestType;
+}
+
 class Browser;
 
 // Bubble that prompts the user to grant or deny a permission request from a
@@ -50,9 +54,9 @@ class PermissionPromptBubbleView : public views::BubbleDialogDelegateView {
     bool is_origin;
   };
 
-  std::vector<permissions::PermissionRequest*> GetVisibleRequests();
-  bool ShouldShowPermissionRequest(permissions::PermissionRequest* request);
-  void AddPermissionRequestLine(permissions::PermissionRequest* request);
+  bool ShouldShowRequest(permissions::RequestType type) const;
+  std::vector<permissions::PermissionRequest*> GetVisibleRequests() const;
+  void AddRequestLine(permissions::PermissionRequest* request);
 
   // Returns the origin to be displayed in the permission prompt. May return
   // a non-origin, e.g. extension URLs use the name of the extension.
@@ -71,9 +75,6 @@ class PermissionPromptBubbleView : public views::BubbleDialogDelegateView {
 
   Browser* const browser_;
   permissions::PermissionPrompt::Delegate* const delegate_;
-
-  // List of permission requests that should be visible in the bubble.
-  std::vector<permissions::PermissionRequest*> visible_requests_;
 
   // The requesting domain's name or origin.
   const DisplayNameOrOrigin name_or_origin_;

@@ -51,7 +51,6 @@ PermissionPromptBubbleView::PermissionPromptBubbleView(
     PermissionPromptStyle prompt_style)
     : browser_(browser),
       delegate_(delegate),
-      visible_requests_(GetVisibleRequests()),
       name_or_origin_(GetDisplayNameOrOrigin()),
       permission_requested_time_(permission_requested_time) {
   // Note that browser_ may be null in unit tests.
@@ -133,8 +132,8 @@ PermissionPromptBubbleView::PermissionPromptBubbleView(
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
 
-  for (permissions::PermissionRequest* request : visible_requests_)
-    AddPermissionRequestLine(request);
+  for (permissions::PermissionRequest* request : GetVisibleRequests())
+    AddRequestLine(request);
 
   base::Optional<base::string16> extra_text = GetExtraText();
   if (extra_text.has_value()) {
@@ -167,34 +166,30 @@ void PermissionPromptBubbleView::Show() {
   chrome::RecordDialogCreation(chrome::DialogIdentifier::PERMISSIONS);
 }
 
-std::vector<permissions::PermissionRequest*>
-PermissionPromptBubbleView::GetVisibleRequests() {
-  std::vector<permissions::PermissionRequest*> visible_requests;
+bool PermissionPromptBubbleView::ShouldShowRequest(
+    permissions::RequestType type) const {
+  if (type == permissions::RequestType::kCameraStream) {
+    // Hide camera request if camera PTZ request is present as well.
+    auto requests = delegate_->Requests();
+    return std::find_if(requests.begin(), requests.end(), [](auto* request) {
+             return request->GetRequestType() ==
+                    permissions::RequestType::kCameraPanTiltZoom;
+           }) == requests.end();
+  }
+  return true;
+}
 
+std::vector<permissions::PermissionRequest*>
+PermissionPromptBubbleView::GetVisibleRequests() const {
+  std::vector<permissions::PermissionRequest*> visible_requests;
   for (permissions::PermissionRequest* request : delegate_->Requests()) {
-    if (ShouldShowPermissionRequest(request))
+    if (ShouldShowRequest(request->GetRequestType()))
       visible_requests.push_back(request);
   }
   return visible_requests;
 }
 
-bool PermissionPromptBubbleView::ShouldShowPermissionRequest(
-    permissions::PermissionRequest* request) {
-  if (request->GetRequestType() != permissions::RequestType::kCameraStream)
-    return true;
-
-  // Hide camera request only if camera PTZ request is present as well.
-  for (permissions::PermissionRequest* request : delegate_->Requests()) {
-    if (request->GetRequestType() ==
-        permissions::RequestType::kCameraPanTiltZoom) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
-void PermissionPromptBubbleView::AddPermissionRequestLine(
+void PermissionPromptBubbleView::AddRequestLine(
     permissions::PermissionRequest* request) {
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
 
@@ -287,28 +282,29 @@ base::string16 PermissionPromptBubbleView::GetAccessibleWindowTitle() const {
   // There are three separate internationalized messages used, one for each
   // format of title, to provide for accurate i18n. See https://crbug.com/434574
   // for more details.
-  DCHECK(!visible_requests_.empty());
+  auto visible_requests = GetVisibleRequests();
+  DCHECK(!visible_requests.empty());
 
-  if (visible_requests_.size() == 1) {
+  if (visible_requests.size() == 1) {
     return l10n_util::GetStringFUTF16(
         IDS_PERMISSIONS_BUBBLE_PROMPT_ACCESSIBLE_TITLE_ONE_PERM,
         name_or_origin_.name_or_origin,
-        visible_requests_[0]->GetMessageTextFragment());
+        visible_requests[0]->GetMessageTextFragment());
   }
 
   int template_id =
-      visible_requests_.size() == 2
+      visible_requests.size() == 2
           ? IDS_PERMISSIONS_BUBBLE_PROMPT_ACCESSIBLE_TITLE_TWO_PERMS
           : IDS_PERMISSIONS_BUBBLE_PROMPT_ACCESSIBLE_TITLE_TWO_PERMS_MORE;
   return l10n_util::GetStringFUTF16(
       template_id, name_or_origin_.name_or_origin,
-      visible_requests_[0]->GetMessageTextFragment(),
-      visible_requests_[1]->GetMessageTextFragment());
+      visible_requests[0]->GetMessageTextFragment(),
+      visible_requests[1]->GetMessageTextFragment());
 }
 
 PermissionPromptBubbleView::DisplayNameOrOrigin
 PermissionPromptBubbleView::GetDisplayNameOrOrigin() const {
-  DCHECK(!visible_requests_.empty());
+  DCHECK(!delegate_->Requests().empty());
   GURL origin_url = delegate_->GetRequestingOrigin();
 
   if (origin_url.SchemeIs(extensions::kExtensionScheme)) {
@@ -333,7 +329,7 @@ PermissionPromptBubbleView::GetDisplayNameOrOrigin() const {
 
 base::Optional<base::string16> PermissionPromptBubbleView::GetExtraText()
     const {
-  switch (visible_requests_[0]->GetRequestType()) {
+  switch (delegate_->Requests()[0]->GetRequestType()) {
     case permissions::RequestType::kStorageAccess:
       return l10n_util::GetStringFUTF16(
           IDS_STORAGE_ACCESS_PERMISSION_EXPLANATION,
