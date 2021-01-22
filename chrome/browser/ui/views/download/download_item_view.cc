@@ -15,11 +15,10 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/containers/flat_map.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
-#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/numerics/math_constants.h"
 #include "base/ranges/algorithm.h"
@@ -852,13 +851,13 @@ void DownloadItemView::UpdateAccessibleAlertAndAnimationsForNormalMode() {
     // for "in progress but paused", as the button ends up being refocused in
     // the actual use case, and the name of the button reports that the download
     // has been paused.
-    static const base::NoDestructor<base::flat_map<State, int>> kMap({
+    static constexpr auto kMap = base::MakeFixedFlatMap<State, int>({
         {State::INTERRUPTED, IDS_DOWNLOAD_FAILED_ACCESSIBLE_ALERT},
         {State::COMPLETE, IDS_DOWNLOAD_COMPLETE_ACCESSIBLE_ALERT},
         {State::CANCELLED, IDS_DOWNLOAD_CANCELLED_ACCESSIBLE_ALERT},
     });
     const base::string16 alert_text = l10n_util::GetStringFUTF16(
-        kMap->at(state), model_->GetFileNameToReportUser().LossyDisplayName());
+        kMap.at(state), model_->GetFileNameToReportUser().LossyDisplayName());
     announce_accessible_alert_soon_ = true;
     UpdateAccessibleAlert(alert_text);
   }

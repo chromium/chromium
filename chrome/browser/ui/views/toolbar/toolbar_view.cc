@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
 #include "base/i18n/number_formatting.h"
 #include "base/metrics/user_metrics.h"
@@ -133,14 +134,14 @@ ToolbarView::DisplayMode GetDisplayMode(Browser* browser) {
   return ToolbarView::DisplayMode::LOCATION;
 }
 
-const base::flat_map<int, int>& GetViewCommandMap() {
-  static const base::NoDestructor<base::flat_map<int, int>> kViewCommandMap(
+auto GetViewCommandMap() {
+  static constexpr auto kViewCommandMap = base::MakeFixedFlatMap<int, int>(
       {{VIEW_ID_BACK_BUTTON, IDC_BACK},
        {VIEW_ID_FORWARD_BUTTON, IDC_FORWARD},
        {VIEW_ID_HOME_BUTTON, IDC_HOME},
        {VIEW_ID_RELOAD_BUTTON, IDC_RELOAD},
        {VIEW_ID_AVATAR_BUTTON, IDC_SHOW_AVATAR_MENU}});
-  return *kViewCommandMap;
+  return kViewCommandMap;
 }
 
 }  // namespace
