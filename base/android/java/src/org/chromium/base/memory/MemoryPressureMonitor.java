@@ -7,7 +7,6 @@ package org.chromium.base.memory;
 import android.app.ActivityManager;
 import android.content.ComponentCallbacks2;
 import android.content.res.Configuration;
-import android.os.Build;
 import android.os.SystemClock;
 
 import androidx.annotation.VisibleForTesting;
@@ -243,7 +242,7 @@ public class MemoryPressureMonitor {
      * Returns null if the pressure couldn't be determined.
      */
     private static @MemoryPressureLevel Integer getCurrentMemoryPressure() {
-        long startNanos = elapsedRealtimeNanos();
+        long startNanos = SystemClock.elapsedRealtimeNanos();
         try {
             ActivityManager.RunningAppProcessInfo processInfo =
                     new ActivityManager.RunningAppProcessInfo();
@@ -266,17 +265,10 @@ public class MemoryPressureMonitor {
 
     private static int elapsedDurationSample(long startNanos) {
         // We're using Count1MHistogram, so we need to calculate duration in microseconds
-        long durationUs = TimeUnit.NANOSECONDS.toMicros(elapsedRealtimeNanos() - startNanos);
+        long durationUs =
+                TimeUnit.NANOSECONDS.toMicros(SystemClock.elapsedRealtimeNanos() - startNanos);
         // record() takes int, so we need to clamp.
         return (int) Math.min(durationUs, Integer.MAX_VALUE);
-    }
-
-    private static long elapsedRealtimeNanos() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            return SystemClock.elapsedRealtimeNanos();
-        } else {
-            return SystemClock.elapsedRealtime() * 1000000;
-        }
     }
 
     /**

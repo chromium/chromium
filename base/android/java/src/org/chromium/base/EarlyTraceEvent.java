@@ -4,8 +4,6 @@
 
 package org.chromium.base;
 
-import android.annotation.SuppressLint;
-import android.os.Build;
 import android.os.Process;
 import android.os.StrictMode;
 import android.os.SystemClock;
@@ -60,18 +58,8 @@ public class EarlyTraceEvent {
             mIsToplevel = isToplevel;
             mName = name;
             mThreadId = Process.myTid();
-            mTimeNanos = elapsedRealtimeNanos();
+            mTimeNanos = SystemClock.elapsedRealtimeNanos();
             mThreadTimeMillis = SystemClock.currentThreadTimeMillis();
-        }
-
-        @VisibleForTesting
-        @SuppressLint("NewApi")
-        static long elapsedRealtimeNanos() {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                return SystemClock.elapsedRealtimeNanos();
-            } else {
-                return SystemClock.elapsedRealtime() * 1000000;
-            }
         }
     }
 
@@ -86,7 +74,7 @@ public class EarlyTraceEvent {
             mName = name;
             mId = id;
             mIsStart = isStart;
-            mTimestampNanos = Event.elapsedRealtimeNanos();
+            mTimestampNanos = SystemClock.elapsedRealtimeNanos();
         }
     }
 
@@ -295,7 +283,7 @@ public class EarlyTraceEvent {
 
     private static long getOffsetNanos() {
         long nativeNowNanos = TimeUtilsJni.get().getTimeTicksNowUs() * 1000;
-        long javaNowNanos = Event.elapsedRealtimeNanos();
+        long javaNowNanos = SystemClock.elapsedRealtimeNanos();
         return nativeNowNanos - javaNowNanos;
     }
 

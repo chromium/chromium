@@ -57,11 +57,11 @@ public class EarlyTraceEventTest {
     public void testCanRecordEvent() {
         EarlyTraceEvent.enable();
         long myThreadId = Process.myTid();
-        long beforeNanos = Event.elapsedRealtimeNanos();
+        long beforeNanos = SystemClock.elapsedRealtimeNanos();
         long beforeThreadMillis = SystemClock.currentThreadTimeMillis();
         EarlyTraceEvent.begin(EVENT_NAME, false /*isToplevel*/);
         EarlyTraceEvent.end(EVENT_NAME, false /*isToplevel*/);
-        long afterNanos = Event.elapsedRealtimeNanos();
+        long afterNanos = SystemClock.elapsedRealtimeNanos();
         long afterThreadMillis = SystemClock.currentThreadTimeMillis();
 
         List<Event> matchingEvents = getMatchingCompletedEvents(EVENT_NAME);
@@ -85,10 +85,10 @@ public class EarlyTraceEventTest {
     @Feature({"Android-AppBase"})
     public void testCanRecordAsyncEvent() {
         EarlyTraceEvent.enable();
-        long beforeNanos = Event.elapsedRealtimeNanos();
+        long beforeNanos = SystemClock.elapsedRealtimeNanos();
         EarlyTraceEvent.startAsync(EVENT_NAME, EVENT_ID);
         EarlyTraceEvent.finishAsync(EVENT_NAME, EVENT_ID);
-        long afterNanos = Event.elapsedRealtimeNanos();
+        long afterNanos = SystemClock.elapsedRealtimeNanos();
 
         List<AsyncEvent> matchingEvents = new ArrayList<AsyncEvent>();
         for (AsyncEvent evt : EarlyTraceEvent.sAsyncEvents) {
@@ -114,11 +114,11 @@ public class EarlyTraceEventTest {
     public void testCanRecordEventUsingTryWith() {
         EarlyTraceEvent.enable();
         long myThreadId = Process.myTid();
-        long beforeNanos = Event.elapsedRealtimeNanos();
+        long beforeNanos = SystemClock.elapsedRealtimeNanos();
         try (TraceEvent e = TraceEvent.scoped(EVENT_NAME)) {
             // Required comment to pass presubmit checks.
         }
-        long afterNanos = Event.elapsedRealtimeNanos();
+        long afterNanos = SystemClock.elapsedRealtimeNanos();
 
         List<Event> matchingEvents = getMatchingCompletedEvents(EVENT_NAME);
         Assert.assertEquals(2, matchingEvents.size());
