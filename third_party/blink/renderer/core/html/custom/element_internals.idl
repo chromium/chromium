@@ -25,8 +25,8 @@ interface ElementInternals {
   [RaisesException] readonly attribute NodeList labels;
 
   // Custom state
-  // https://github.com/w3c/webcomponents/blob/gh-pages/proposals/custom-states-and-state-pseudo-class.md
-  [RuntimeEnabled=CustomStatePseudoClass] readonly attribute DOMTokenList states;
+  // https://wicg.github.io/custom-state-pseudo-class/#dom-elementinternals-states
+  [RuntimeEnabled=CustomStatePseudoClass] readonly attribute CustomStateSet states;
 
   // Access to shadowRoot from custom elements. See crbug.com/1042130 and
   // https://github.com/w3c/webcomponents/issues/871#issuecomment-672082936

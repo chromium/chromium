@@ -14,7 +14,7 @@
 
 namespace blink {
 
-class DOMTokenList;
+class CustomStateSet;
 class HTMLElement;
 class ValidityStateFlags;
 
@@ -50,7 +50,7 @@ class CORE_EXPORT ElementInternals : public ScriptWrappable,
   bool checkValidity(ExceptionState& exception_state);
   bool reportValidity(ExceptionState& exception_state);
   LabelsNodeList* labels(ExceptionState& exception_state);
-  DOMTokenList* states();
+  CustomStateSet* states();
 
   bool HasState(const AtomicString& state) const;
 
@@ -107,7 +107,7 @@ class CORE_EXPORT ElementInternals : public ScriptWrappable,
   Member<ValidityStateFlags> validity_flags_;
   Member<Element> validation_anchor_;
 
-  Member<DOMTokenList> custom_states_;
+  Member<CustomStateSet> custom_states_;
 
   HashMap<QualifiedName, AtomicString> accessibility_semantics_map_;
 

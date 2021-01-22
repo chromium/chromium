@@ -58,6 +58,8 @@ blink_core_sources_html = [
   "custom/custom_element_registry.h",
   "custom/custom_element_upgrade_sorter.cc",
   "custom/custom_element_upgrade_sorter.h",
+  "custom/custom_state_set.cc",
+  "custom/custom_state_set.h",
   "custom/element_internals.cc",
   "custom/element_internals.h",
   "document_all_name_collection.cc",

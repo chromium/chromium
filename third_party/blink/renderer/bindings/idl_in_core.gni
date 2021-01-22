@@ -322,6 +322,7 @@ static_idl_files_in_core = get_path_info(
           "//third_party/blink/renderer/core/html/canvas/image_encode_options.idl",
           "//third_party/blink/renderer/core/html/canvas/text_metrics.idl",
           "//third_party/blink/renderer/core/html/custom/custom_element_registry.idl",
+          "//third_party/blink/renderer/core/html/custom/custom_state_set.idl",
           "//third_party/blink/renderer/core/html/custom/element_internals.idl",
           "//third_party/blink/renderer/core/html/custom/validity_state_flags.idl",
           "//third_party/blink/renderer/core/html/event_handler.idl",

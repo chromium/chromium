@@ -645,6 +645,8 @@ generated_interface_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_custom_element_registry.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_custom_event.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_custom_event.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_custom_state_set.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_custom_state_set.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_data_transfer.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_data_transfer.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_data_transfer_item.cc",

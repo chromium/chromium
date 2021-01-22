@@ -216,6 +216,7 @@ core_interface_idl_files_core_only =
                     "html/canvas/image_data.idl",
                     "html/canvas/text_metrics.idl",
                     "html/custom/custom_element_registry.idl",
+                    "html/custom/custom_state_set.idl",
                     "html/custom/element_internals.idl",
                     "html/forms/form_data.idl",
                     "html/forms/form_data_event.idl",
