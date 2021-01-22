@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/test/web_app_navigation_browsertest.h"
 #include "chrome/browser/web_applications/components/app_registry_controller.h"
+#include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
@@ -24,7 +25,10 @@ namespace web_app {
 
 class WebAppLinkCapturingBrowserTest : public WebAppNavigationBrowserTest {
  public:
-  WebAppLinkCapturingBrowserTest() = default;
+  WebAppLinkCapturingBrowserTest() {
+    os_hooks_supress_ = OsIntegrationManager::ScopedSuppressOsHooksForTesting();
+  }
+
   ~WebAppLinkCapturingBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -92,6 +96,8 @@ class WebAppLinkCapturingBrowserTest : public WebAppNavigationBrowserTest {
 
   const GURL about_blank_{"about:blank"};
   const GURL out_of_scope_{"https://other-domain.org/"};
+
+  ScopedOsHooksSuppress os_hooks_supress_;
 };
 
 class WebAppTabStripLinkCapturingBrowserTest
@@ -256,6 +262,33 @@ IN_PROC_BROWSER_TEST_F(WebAppDeclarativeLinkCapturingBrowserTest,
   Navigate(browser(), in_scope_2_);
   EXPECT_EQ(browser(), BrowserList::GetInstance()->GetLastActive());
   ExpectTabs(browser(), {about_blank_, in_scope_2_});
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppDeclarativeLinkCapturingBrowserTest,
+                       CaptureLinksExistingClientNavigate) {
+  InstallTestApp("/web_apps/capture_links_existing_client_navigate.html");
+
+  Navigate(browser(), out_of_scope_);
+
+  // In scope navigation should open an app window (because there are none
+  // already open).
+  Navigate(browser(), in_scope_1_);
+  Browser* app_browser = BrowserList::GetInstance()->GetLastActive();
+  EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser, app_id_));
+  ExpectTabs(browser(), {out_of_scope_});
+  ExpectTabs(app_browser, {in_scope_1_});
+
+  // In scope navigation should navigate the existing app window.
+  Navigate(browser(), in_scope_2_);
+  EXPECT_EQ(app_browser, BrowserList::GetInstance()->GetLastActive());
+  ExpectTabs(browser(), {out_of_scope_});
+  ExpectTabs(app_browser, {in_scope_2_});
+
+  // In scope navigation should navigate the existing app window.
+  Navigate(browser(), in_scope_1_);
+  EXPECT_EQ(app_browser, BrowserList::GetInstance()->GetLastActive());
+  ExpectTabs(browser(), {out_of_scope_});
+  ExpectTabs(app_browser, {in_scope_1_});
 }
 
 }  // namespace web_app
