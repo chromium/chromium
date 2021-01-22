@@ -64,7 +64,7 @@ CustomizationWallpaperDownloader::CustomizationWallpaperDownloader(
     const GURL& wallpaper_url,
     const base::FilePath& wallpaper_dir,
     const base::FilePath& wallpaper_downloaded_file,
-    base::Callback<void(bool success, const GURL&)>
+    base::OnceCallback<void(bool success, const GURL&)>
         on_wallpaper_fetch_completed)
     : wallpaper_url_(wallpaper_url),
       wallpaper_dir_(wallpaper_dir),
@@ -73,7 +73,7 @@ CustomizationWallpaperDownloader::CustomizationWallpaperDownloader(
                                 kTemporarySuffix),
       retries_(0),
       retry_delay_(base::TimeDelta::FromSeconds(kRetrySleepSeconds)),
-      on_wallpaper_fetch_completed_(on_wallpaper_fetch_completed) {
+      on_wallpaper_fetch_completed_(std::move(on_wallpaper_fetch_completed)) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
@@ -180,7 +180,7 @@ void CustomizationWallpaperDownloader::OnSimpleLoaderComplete(
 void CustomizationWallpaperDownloader::OnTemporaryFileRenamed(
     std::unique_ptr<bool> success) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  on_wallpaper_fetch_completed_.Run(*success, wallpaper_url_);
+  std::move(on_wallpaper_fetch_completed_).Run(*success, wallpaper_url_);
 }
 
 }  //   namespace chromeos

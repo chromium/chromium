@@ -155,8 +155,8 @@ class ServicesCustomizationDocument : public CustomizationDocument {
   // If customization has not been applied, start fetching and applying.
   void EnsureCustomizationApplied();
 
-  // Returns Closure with the EnsureCustomizationApplied() method.
-  base::Closure EnsureCustomizationAppliedClosure();
+  // Returns OnceClosure with the EnsureCustomizationApplied() method.
+  base::OnceClosure EnsureCustomizationAppliedClosure();
 
   // Start fetching customization document.
   void StartFetching();

@@ -520,10 +520,11 @@ void ServicesCustomizationDocument::EnsureCustomizationApplied() {
   StartFetching();
 }
 
-base::Closure
+base::OnceClosure
 ServicesCustomizationDocument::EnsureCustomizationAppliedClosure() {
-  return base::Bind(&ServicesCustomizationDocument::EnsureCustomizationApplied,
-                    weak_ptr_factory_.GetWeakPtr());
+  return base::BindOnce(
+      &ServicesCustomizationDocument::EnsureCustomizationApplied,
+      weak_ptr_factory_.GetWeakPtr());
 }
 
 void ServicesCustomizationDocument::StartFetching() {
@@ -824,9 +825,9 @@ void ServicesCustomizationDocument::StartOEMWallpaperDownload(
 
   wallpaper_downloader_.reset(new CustomizationWallpaperDownloader(
       wallpaper_url, dir, file,
-      base::Bind(&ServicesCustomizationDocument::OnOEMWallpaperDownloaded,
-                 weak_ptr_factory_.GetWeakPtr(),
-                 base::Passed(std::move(applying)))));
+      base::BindOnce(&ServicesCustomizationDocument::OnOEMWallpaperDownloaded,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     base::Passed(std::move(applying)))));
 
   wallpaper_downloader_->Start();
 }
