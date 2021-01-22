@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/optional.h"
+#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/ax_node_data.h"

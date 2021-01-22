@@ -4,10 +4,11 @@
 
 #include "ui/accessibility/ax_node.h"
 
+#include <string.h>
+
 #include <algorithm>
 #include <utility>
 
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -417,6 +418,9 @@ void AXNode::Destroy() {
 }
 
 bool AXNode::IsDescendantOf(const AXNode* ancestor) const {
+  if (!ancestor)
+    return false;
+
   if (this == ancestor)
     return true;
   if (parent())
@@ -1346,13 +1350,12 @@ bool AXNode::IsInListMarker() const {
   if (data().role == ax::mojom::Role::kListMarker)
     return true;
 
-  // List marker node's children can only be text elements.
+  // The children of a list marker node can only be text nodes.
   if (!IsText())
     return false;
 
-  // There is no need to iterate over all the ancestors of the current anchor
-  // since a list marker node only has children on 2 levels.
-  // i.e.:
+  // There is no need to iterate over all the ancestors of the current node
+  // since a list marker has descendants that are only 2 levels deep, i.e.:
   // AXLayoutObject role=kListMarker
   // ++StaticText
   // ++++InlineTextBox
