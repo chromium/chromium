@@ -82,28 +82,7 @@ class VmCameraMicManager : public media::CameraActiveClientObserver,
 
   static constexpr NotificationType kNoNotification{};
 
-  class VmInfo {
-   public:
-    VmInfo();
-    VmInfo(const VmInfo&);
-    ~VmInfo();
-
-    NotificationType notification_type() const { return notification_type_; }
-
-    void SetMicActive(bool active);
-    void SetCameraAccessing(bool accessing);
-    void SetCameraPrivacyIsOn(bool on);
-
-   private:
-    void OnCameraUpdated();
-
-    bool camera_accessing_ = false;
-    // We don't actually need to store this separately for each VM, but this
-    // makes code simpler.
-    bool camera_privacy_is_on_ = false;
-
-    NotificationType notification_type_;
-  };
+  class VmInfo;
 
   class VmNotificationObserver : public message_center::NotificationObserver {
    public:
@@ -138,6 +117,10 @@ class VmCameraMicManager : public media::CameraActiveClientObserver,
 
   // CrasAudioHandler::AudioObserver
   void OnNumberOfInputStreamsWithPermissionChanged() override;
+
+  void SetCameraAccessing(VmType vm, bool accessing);
+  void SetCameraPrivacyIsOn(bool is_on);
+  void SetMicActive(VmType vm, bool active);
 
   static std::string GetNotificationId(VmType vm, NotificationType type);
 
