@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_CROSAPI_ASH_CHROME_SERVICE_IMPL_H_
-#define CHROME_BROWSER_CHROMEOS_CROSAPI_ASH_CHROME_SERVICE_IMPL_H_
+#ifndef CHROME_BROWSER_CHROMEOS_CROSAPI_CROSAPI_ASH_H_
+#define CHROME_BROWSER_CHROMEOS_CROSAPI_CROSAPI_ASH_H_
 
 #include <memory>
 
@@ -27,15 +27,14 @@ class SelectFileAsh;
 class TestControllerAsh;
 class UrlHandlerAsh;
 
-// Implementation of AshChromeService. It provides a set of APIs that
-// lacros-chrome can call into.
-class AshChromeServiceImpl : public mojom::AshChromeService {
+// Implementation of Crosapi in Ash. It provides a set of APIs that
+// crosapi clients, such as lacros-chrome, can call into.
+class CrosapiAsh : public mojom::Crosapi {
  public:
-  explicit AshChromeServiceImpl(
-      mojo::PendingReceiver<mojom::AshChromeService> pending_receiver);
-  ~AshChromeServiceImpl() override;
+  explicit CrosapiAsh(mojo::PendingReceiver<mojom::Crosapi> pending_receiver);
+  ~CrosapiAsh() override;
 
-  // crosapi::mojom::AshChromeService:
+  // crosapi::mojom::Crosapi:
   void BindAccountManager(
       mojo::PendingReceiver<mojom::AccountManager> receiver) override;
   void BindCertDatabase(
@@ -75,7 +74,7 @@ class AshChromeServiceImpl : public mojom::AshChromeService {
       mojo::PendingReceiver<mojom::UrlHandler> receiver) override;
 
  private:
-  mojo::Receiver<mojom::AshChromeService> receiver_;
+  mojo::Receiver<mojom::Crosapi> receiver_;
 
   std::unique_ptr<DeviceAttributesAsh> device_attributes_ash_;
   std::unique_ptr<FileManagerAsh> file_manager_ash_;
@@ -94,4 +93,4 @@ class AshChromeServiceImpl : public mojom::AshChromeService {
 
 }  // namespace crosapi
 
-#endif  // CHROME_BROWSER_CHROMEOS_CROSAPI_ASH_CHROME_SERVICE_IMPL_H_
+#endif  // CHROME_BROWSER_CHROMEOS_CROSAPI_CROSAPI_ASH_H_

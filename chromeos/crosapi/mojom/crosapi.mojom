@@ -41,16 +41,16 @@ struct BrowserInfo {
   // TODO(crbug.com/1119925): Add more parameters later.
 };
 
-// AshChromeService defines the APIs that live in ash-chrome and are
-// accessed from client applications (such as lacros-chrome). When adding a
-// major new API please note the milestone when you added it, to help us
-// reason about compatibility between the client applications and older
-// ash-chrome binaries.
+// Crosapi defines the APIs that live in ash-chrome and are accessed from
+// client applications (such as lacros-chrome). When adding a major new API
+// please note the milestone when you added it, to help us reason about
+// compatibility between the client applications and older ash-chrome binaries.
 //
 // Next version: 14
 // Next method id: 19
-[Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e"]
-interface AshChromeService {
+[Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
+ RenamedFrom="crosapi.mojom.AshChromeService"]
+interface Crosapi {
   // Binds Chrome OS Account Manager for Identity management.
   // Added in M87.
   [MinVersion=4]
@@ -234,11 +234,10 @@ enum ExoImeSupport {
 // Next version: 12
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
-  // This is ash-chrome's version of the AshChromeService interface. This is
-  // used by lacros-chrome to determine which interface methods are safe to
-  // call.
+  // This is ash-chrome's version of the Crosapi interface. This is used by
+  // lacros-chrome to determine which interface methods are safe to call.
   [MinVersion=1]
-  uint32 ash_chrome_service_version@0;
+  uint32 crosapi_version@0;
 
   // Deprecated in M88. |ash_metrics_enabled| always has a value.
   [MinVersion=2]
@@ -321,13 +320,12 @@ interface BrowserService {
   // The parameters are available on the browser startup.
   InitDeprecated@2(BrowserInitParams params);
 
-  // Returns the pending_receiver of AshChromeService.
+  // Returns the pending_receiver of Crosapi.
   // Ash-chrome is expected to call this method on initialization.
-  // The browser may call AshChromeService APIs earlier than this
-  // invocation. In the case, the calls are queued, and processed
-  // sequentially, when ash-chrome binds the receiver to the service.
-  RequestAshChromeServiceReceiver@0() => (
-      pending_receiver<AshChromeService> receiver);
+  // The browser may call Crosapi APIs earlier than this invocation.
+  // In the case, the calls are queued, and processed sequentially, when
+  // ash-chrome binds the receiver to the service.
+  RequestCrosapiReceiver@0() => (pending_receiver<Crosapi> receiver);
 
   // Opens a new window in the browser with, currently, the last used profile.
   // The callback is called on the command execution.

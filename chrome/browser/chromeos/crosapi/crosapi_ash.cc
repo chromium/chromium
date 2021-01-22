@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/crosapi/ash_chrome_service_impl.h"
+#include "chrome/browser/chromeos/crosapi/crosapi_ash.h"
 
 #include <memory>
 #include <utility>
@@ -43,8 +43,7 @@
 
 namespace crosapi {
 
-AshChromeServiceImpl::AshChromeServiceImpl(
-    mojo::PendingReceiver<mojom::AshChromeService> pending_receiver)
+CrosapiAsh::CrosapiAsh(mojo::PendingReceiver<mojom::Crosapi> pending_receiver)
     : receiver_(this, std::move(pending_receiver)),
       device_attributes_ash_(std::make_unique<DeviceAttributesAsh>()),
       file_manager_ash_(std::make_unique<FileManagerAsh>()),
@@ -64,12 +63,12 @@ AshChromeServiceImpl::AshChromeServiceImpl(
       url_handler_ash_(std::make_unique<UrlHandlerAsh>()) {
   // TODO(hidehiko): Remove non-critical log from here.
   // Currently this is the signal that the connection is established.
-  LOG(WARNING) << "AshChromeService connected.";
+  LOG(WARNING) << "Crosapi connected.";
 }
 
-AshChromeServiceImpl::~AshChromeServiceImpl() = default;
+CrosapiAsh::~CrosapiAsh() = default;
 
-void AshChromeServiceImpl::BindAccountManager(
+void CrosapiAsh::BindAccountManager(
     mojo::PendingReceiver<mojom::AccountManager> receiver) {
   // Assumptions:
   // 1. TODO(https://crbug.com/1102768): Multi-Signin / Fast-User-Switching is
@@ -99,97 +98,94 @@ void AshChromeServiceImpl::BindAccountManager(
   account_manager_ash->BindReceiver(std::move(receiver));
 }
 
-void AshChromeServiceImpl::BindFileManager(
+void CrosapiAsh::BindFileManager(
     mojo::PendingReceiver<crosapi::mojom::FileManager> receiver) {
   file_manager_ash_->BindReceiver(std::move(receiver));
 }
 
-void AshChromeServiceImpl::BindKeystoreService(
+void CrosapiAsh::BindKeystoreService(
     mojo::PendingReceiver<crosapi::mojom::KeystoreService> receiver) {
   keystore_service_ash_->BindReceiver(std::move(receiver));
 }
 
-void AshChromeServiceImpl::BindMessageCenter(
+void CrosapiAsh::BindMessageCenter(
     mojo::PendingReceiver<mojom::MessageCenter> receiver) {
   message_center_ash_->BindReceiver(std::move(receiver));
 }
 
-void AshChromeServiceImpl::BindMetricsReporting(
+void CrosapiAsh::BindMetricsReporting(
     mojo::PendingReceiver<mojom::MetricsReporting> receiver) {
   metrics_reporting_ash_->BindReceiver(std::move(receiver));
 }
 
-void AshChromeServiceImpl::BindSelectFile(
+void CrosapiAsh::BindSelectFile(
     mojo::PendingReceiver<mojom::SelectFile> receiver) {
   select_file_ash_->BindReceiver(std::move(receiver));
 }
 
-void AshChromeServiceImpl::BindScreenManager(
+void CrosapiAsh::BindScreenManager(
     mojo::PendingReceiver<mojom::ScreenManager> receiver) {
   screen_manager_ash_->BindReceiver(std::move(receiver));
 }
 
-void AshChromeServiceImpl::BindHidManager(
+void CrosapiAsh::BindHidManager(
     mojo::PendingReceiver<device::mojom::HidManager> receiver) {
   content::GetDeviceService().BindHidManager(std::move(receiver));
 }
 
-void AshChromeServiceImpl::BindFeedback(
-    mojo::PendingReceiver<mojom::Feedback> receiver) {
+void CrosapiAsh::BindFeedback(mojo::PendingReceiver<mojom::Feedback> receiver) {
   feedback_ash_->BindReceiver(std::move(receiver));
 }
 
-void AshChromeServiceImpl::BindMediaSessionController(
+void CrosapiAsh::BindMediaSessionController(
     mojo::PendingReceiver<media_session::mojom::MediaControllerManager>
         receiver) {
   content::GetMediaSessionService().BindMediaControllerManager(
       std::move(receiver));
 }
 
-void AshChromeServiceImpl::BindMediaSessionAudioFocus(
+void CrosapiAsh::BindMediaSessionAudioFocus(
     mojo::PendingReceiver<media_session::mojom::AudioFocusManager> receiver) {
   content::GetMediaSessionService().BindAudioFocusManager(std::move(receiver));
 }
 
-void AshChromeServiceImpl::BindMediaSessionAudioFocusDebug(
+void CrosapiAsh::BindMediaSessionAudioFocusDebug(
     mojo::PendingReceiver<media_session::mojom::AudioFocusManagerDebug>
         receiver) {
   content::GetMediaSessionService().BindAudioFocusManagerDebug(
       std::move(receiver));
 }
 
-void AshChromeServiceImpl::BindCertDatabase(
+void CrosapiAsh::BindCertDatabase(
     mojo::PendingReceiver<mojom::CertDatabase> receiver) {
   cert_database_ash_->BindReceiver(std::move(receiver));
 }
 
-void AshChromeServiceImpl::BindTestController(
+void CrosapiAsh::BindTestController(
     mojo::PendingReceiver<mojom::TestController> receiver) {
   test_controller_ash_->BindReceiver(std::move(receiver));
 }
 
-void AshChromeServiceImpl::BindClipboard(
+void CrosapiAsh::BindClipboard(
     mojo::PendingReceiver<mojom::Clipboard> receiver) {
   clipboard_ash_->BindReceiver(std::move(receiver));
 }
 
-void AshChromeServiceImpl::BindDeviceAttributes(
+void CrosapiAsh::BindDeviceAttributes(
     mojo::PendingReceiver<mojom::DeviceAttributes> receiver) {
   device_attributes_ash_->BindReceiver(std::move(receiver));
 }
 
-void AshChromeServiceImpl::BindPrefs(
-    mojo::PendingReceiver<mojom::Prefs> receiver) {
+void CrosapiAsh::BindPrefs(mojo::PendingReceiver<mojom::Prefs> receiver) {
   prefs_ash_->BindReceiver(std::move(receiver));
 }
 
-void AshChromeServiceImpl::BindUrlHandler(
+void CrosapiAsh::BindUrlHandler(
     mojo::PendingReceiver<mojom::UrlHandler> receiver) {
   url_handler_ash_->BindReceiver(std::move(receiver));
 }
 
-void AshChromeServiceImpl::OnBrowserStartup(
-    mojom::BrowserInfoPtr browser_info) {
+void CrosapiAsh::OnBrowserStartup(mojom::BrowserInfoPtr browser_info) {
   BrowserManager::Get()->set_browser_version(browser_info->browser_version);
 }
 

@@ -44,7 +44,7 @@ class LacrosChromeServiceNeverBlockingState;
 // This class is responsible for receiving and routing mojo messages from
 // ash-chrome via the mojo::Receiver |sequenced_state_.receiver_|. This class is
 // responsible for sending and routing messages to ash-chrome via the
-// mojo::Remote |sequenced_state_.ash_chrome_service_|. Messages are sent and
+// mojo::Remote |sequenced_state_.crosapi_|. Messages are sent and
 // received on a dedicated, never-blocking sequence to avoid deadlocks.
 //
 // This object is constructed, destroyed, and mostly used on an "affine
@@ -270,8 +270,8 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
   void BindAccountManagerReceiver(
       mojo::PendingReceiver<crosapi::mojom::AccountManager> pending_receiver);
 
-  // OnLacrosStartup method of AshChromeService crosapi can only be called
-  // if this method returns true.
+  // OnLacrosStartup method of Crosapi can only be called if this method
+  // returns true.
   bool IsOnBrowserStartupAvailable() const;
 
   // Returns BrowserInitParams which is passed from ash-chrome. On launching
@@ -326,10 +326,10 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
       scoped_refptr<base::TaskRunner> callback_task_runner,
       GetActiveTabUrlCallback callback);
 
-  // Returns ash's version of the AshChromeService mojo interface version. This
+  // Returns ash's version of the Crosapi mojo interface version. This
   // determines which interface methods are available. This is safe to call from
   // any sequence. This can only be called after BindReceiver().
-  base::Optional<uint32_t> AshChromeServiceVersion() const;
+  base::Optional<uint32_t> CrosapiVersion() const;
 
   // Delegate instance to inject Chrome dependent code. Must only be used on the
   // affine sequence.

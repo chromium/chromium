@@ -25,8 +25,10 @@ class CrOSComponentManager;
 }  // namespace component_updater
 
 namespace crosapi {
+namespace mojom {
+class Crosapi;
+}  // namespace mojom
 
-class AshChromeServiceImpl;
 class BrowserLoader;
 class TestMojoConnectionManager;
 
@@ -154,10 +156,9 @@ class BrowserManager : public session_manager::SessionManagerObserver {
   // by logfd.
   void StartWithLogFile(base::ScopedFD logfd);
 
-  // Called when PendingReceiver of AshChromeService is passed from
-  // lacros-chrome.
-  void OnAshChromeServiceReceiverReceived(
-      mojo::PendingReceiver<crosapi::mojom::AshChromeService> pending_receiver);
+  // Called when PendingReceiver of Crosapi is passed from lacros-chrome.
+  void OnCrosapiReceiverReceived(
+      mojo::PendingReceiver<mojom::Crosapi> pending_receiver);
 
   // Called when the Mojo connection to lacros-chrome is disconnected.
   // It may be "just a Mojo error" or "lacros-chrome crash".
@@ -207,11 +208,11 @@ class BrowserManager : public session_manager::SessionManagerObserver {
 
   // Proxy to BrowserService mojo service in lacros-chrome.
   // Available during lacros-chrome is running.
-  mojo::Remote<crosapi::mojom::BrowserService> browser_service_;
+  mojo::Remote<mojom::BrowserService> browser_service_;
 
-  // Implementation of AshChromeService Mojo APIs.
+  // Implementation of Crosapi Mojo APIs.
   // Instantiated on receiving the PendingReceiver from lacros-chrome.
-  std::unique_ptr<AshChromeServiceImpl> ash_chrome_service_;
+  std::unique_ptr<mojom::Crosapi> crosapi_;
 
   // Helps set up and manage the mojo connections between lacros-chrome and
   // ash-chrome in testing environment. Only applicable when

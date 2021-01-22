@@ -96,8 +96,7 @@ void AddVersion(InterfaceVersions* map) {
 mojom::BrowserInitParamsPtr GetBrowserInitParams(
     EnvironmentProvider* environment_provider) {
   auto params = mojom::BrowserInitParams::New();
-  params->ash_chrome_service_version =
-      crosapi::mojom::AshChromeService::Version_;
+  params->crosapi_version = crosapi::mojom::Crosapi::Version_;
   params->deprecated_ash_metrics_enabled_has_value = true;
   PrefService* local_state = g_browser_process->local_state();
   params->ash_metrics_enabled =
@@ -216,13 +215,13 @@ bool IsLacrosWindow(const aura::Window* window) {
 
 base::flat_map<base::Token, uint32_t> GetInterfaceVersions() {
   static_assert(
-      crosapi::mojom::AshChromeService::Version_ == 13,
+      crosapi::mojom::Crosapi::Version_ == 13,
       "if you add a new crosapi, please add it to the version map here");
   InterfaceVersions versions;
   AddVersion<crosapi::mojom::AccountManager>(&versions);
-  AddVersion<crosapi::mojom::AshChromeService>(&versions);
   AddVersion<crosapi::mojom::CertDatabase>(&versions);
   AddVersion<crosapi::mojom::Clipboard>(&versions);
+  AddVersion<crosapi::mojom::Crosapi>(&versions);
   AddVersion<crosapi::mojom::DeviceAttributes>(&versions);
   AddVersion<crosapi::mojom::Feedback>(&versions);
   AddVersion<crosapi::mojom::FileManager>(&versions);
@@ -246,9 +245,8 @@ mojo::Remote<crosapi::mojom::BrowserService> SendMojoInvitationToLacrosChrome(
     EnvironmentProvider* environment_provider,
     mojo::PlatformChannelEndpoint local_endpoint,
     base::OnceClosure mojo_disconnected_callback,
-    base::OnceCallback<
-        void(mojo::PendingReceiver<crosapi::mojom::AshChromeService>)>
-        ash_chrome_service_callback) {
+    base::OnceCallback<void(mojo::PendingReceiver<crosapi::mojom::Crosapi>)>
+        crosapi_callback) {
   mojo::OutgoingInvitation invitation;
   mojo::Remote<crosapi::mojom::BrowserService> browser_service;
   browser_service.Bind(mojo::PendingRemote<crosapi::mojom::BrowserService>(
@@ -260,8 +258,7 @@ mojo::Remote<crosapi::mojom::BrowserService> SendMojoInvitationToLacrosChrome(
   // becomes mature enough.
   browser_service->InitDeprecated(GetBrowserInitParams(environment_provider));
 
-  browser_service->RequestAshChromeServiceReceiver(
-      std::move(ash_chrome_service_callback));
+  browser_service->RequestCrosapiReceiver(std::move(crosapi_callback));
   mojo::OutgoingInvitation::Send(std::move(invitation),
                                  base::kNullProcessHandle,
                                  std::move(local_endpoint));

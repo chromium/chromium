@@ -77,9 +77,8 @@ mojo::Remote<crosapi::mojom::BrowserService> SendMojoInvitationToLacrosChrome(
     ::crosapi::EnvironmentProvider* environment_provider,
     mojo::PlatformChannelEndpoint local_endpoint,
     base::OnceClosure mojo_disconnected_callback,
-    base::OnceCallback<
-        void(mojo::PendingReceiver<crosapi::mojom::AshChromeService>)>
-        ash_chrome_service_callback);
+    base::OnceCallback<void(mojo::PendingReceiver<crosapi::mojom::Crosapi>)>
+        crosapi_callback);
 
 // Creates a memory backed file containing the serialized |params|,
 // and returns its FD.

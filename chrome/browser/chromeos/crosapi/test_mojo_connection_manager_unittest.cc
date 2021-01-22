@@ -45,11 +45,11 @@ class TestBrowserService : public crosapi::mojom::BrowserService {
     init_is_called_ = true;
   }
 
-  void RequestAshChromeServiceReceiver(
-      RequestAshChromeServiceReceiverCallback callback) override {
+  void RequestCrosapiReceiver(
+      RequestCrosapiReceiverCallback callback) override {
     EXPECT_TRUE(init_is_called_);
-    std::move(callback).Run(ash_chrome_service_.BindNewPipeAndPassReceiver());
-    request_ash_chrome_service_is_called_ = true;
+    std::move(callback).Run(crosapi_.BindNewPipeAndPassReceiver());
+    request_crosapi_is_called_ = true;
     run_loop_.Quit();
   }
 
@@ -60,19 +60,17 @@ class TestBrowserService : public crosapi::mojom::BrowserService {
 
   bool init_is_called() { return init_is_called_; }
 
-  bool request_ash_chrome_service_is_called() {
-    return request_ash_chrome_service_is_called_;
-  }
+  bool request_crosapi_is_called() { return request_crosapi_is_called_; }
 
  private:
   mojo::Receiver<mojom::BrowserService> receiver_;
 
   bool init_is_called_ = false;
-  bool request_ash_chrome_service_is_called_ = false;
+  bool request_crosapi_is_called_ = false;
 
   base::RunLoop& run_loop_;
 
-  mojo::Remote<crosapi::mojom::AshChromeService> ash_chrome_service_;
+  mojo::Remote<crosapi::mojom::Crosapi> crosapi_;
 };
 
 using TestMojoConnectionManagerTest = testing::Test;
@@ -170,7 +168,7 @@ MULTIPROCESS_TEST_MAIN(LacrosMain) {
       run_loop);
   run_loop.Run();
   DCHECK(test_browser_service.init_is_called());
-  DCHECK(test_browser_service.request_ash_chrome_service_is_called());
+  DCHECK(test_browser_service.request_crosapi_is_called());
   return 0;
 }
 

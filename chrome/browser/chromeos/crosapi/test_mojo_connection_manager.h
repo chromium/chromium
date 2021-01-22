@@ -18,8 +18,9 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace crosapi {
-
-class AshChromeServiceImpl;
+namespace mojom {
+class Crosapi;
+}  // namespace mojom
 
 // An extension of BrowserManager to help set up and manage the mojo connections
 // between the test executable and ash-chrome in testing environment.
@@ -52,10 +53,9 @@ class TestMojoConnectionManager {
   // Called when a client, such as a test launcher, attempts to connect.
   void OnTestingSocketAvailable();
 
-  // Called when PendingReceiver of AshChromeService is passed from
-  // lacros-chrome.
-  void OnAshChromeServiceReceiverReceived(
-      mojo::PendingReceiver<crosapi::mojom::AshChromeService> pending_receiver);
+  // Called when PendingReceiver of Crosapi is passed from lacros-chrome.
+  void OnCrosapiReceiverReceived(
+      mojo::PendingReceiver<crosapi::mojom::Crosapi> pending_receiver);
 
   // Called when the Mojo connection to lacros-chrome is disconnected.
   // It may be "just a Mojo error" or "test is finished".
@@ -66,9 +66,9 @@ class TestMojoConnectionManager {
   // Available during the connected browser is running.
   mojo::Remote<crosapi::mojom::BrowserService> browser_service_;
 
-  // Implementation of AshChromeService Mojo APIs.
+  // Implementation of Crosapi Mojo APIs.
   // Instantiated on receiving the PendingReceiver from lacros-chrome.
-  std::unique_ptr<AshChromeServiceImpl> ash_chrome_service_;
+  std::unique_ptr<crosapi::mojom::Crosapi> crosapi_;
 
   // A socket for a client, such as a test launcher, to connect to.
   base::ScopedFD testing_socket_;

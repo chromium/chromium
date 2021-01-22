@@ -13,8 +13,8 @@
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/chromeos/crosapi/ash_chrome_service_impl.h"
 #include "chrome/browser/chromeos/crosapi/browser_util.h"
+#include "chrome/browser/chromeos/crosapi/crosapi_ash.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
@@ -103,9 +103,8 @@ void TestMojoConnectionManager::OnTestingSocketAvailable() {
       environment_provider_.get(), channel.TakeLocalEndpoint(),
       base::BindOnce(&TestMojoConnectionManager::OnMojoDisconnected,
                      weak_factory_.GetWeakPtr()),
-      base::BindOnce(
-          &TestMojoConnectionManager::OnAshChromeServiceReceiverReceived,
-          weak_factory_.GetWeakPtr()));
+      base::BindOnce(&TestMojoConnectionManager::OnCrosapiReceiverReceived,
+                     weak_factory_.GetWeakPtr()));
 
   base::ScopedFD startup_fd =
       browser_util::CreateStartupData(environment_provider_.get());
@@ -129,16 +128,15 @@ void TestMojoConnectionManager::OnTestingSocketAvailable() {
   }
 }
 
-void TestMojoConnectionManager::OnAshChromeServiceReceiverReceived(
-    mojo::PendingReceiver<crosapi::mojom::AshChromeService> pending_receiver) {
-  ash_chrome_service_ =
-      std::make_unique<AshChromeServiceImpl>(std::move(pending_receiver));
+void TestMojoConnectionManager::OnCrosapiReceiverReceived(
+    mojo::PendingReceiver<crosapi::mojom::Crosapi> pending_receiver) {
+  crosapi_ = std::make_unique<CrosapiAsh>(std::move(pending_receiver));
   LOG(INFO) << "Connection to lacros-chrome is established.";
 }
 
 void TestMojoConnectionManager::OnMojoDisconnected() {
   browser_service_.reset();
-  ash_chrome_service_ = nullptr;
+  crosapi_ = nullptr;
   LOG(WARNING) << "Mojo to lacros-chrome is disconnected.";
 }
 
