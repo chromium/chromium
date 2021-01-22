@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 import './icons.js';
-import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {createCustomEvent, GROUP_BUTTON_EVENT} from './events.js';
 
-class EmojiGroupButton extends PolymerElement {
+export class EmojiGroupButton extends PolymerElement {
   static get is() {
     return 'emoji-group-button';
   }
@@ -37,7 +37,7 @@ class EmojiGroupButton extends PolymerElement {
   }
 
   _className(active) {
-    return active ? 'active' : '';
+    return active ? 'emoji-group-active' : '';
   }
 }
 

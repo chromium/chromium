@@ -16,7 +16,12 @@
     width: calc(100% / var(--emoji-per-row));
   }
   .emoji-button.variants {
-    background-color: red;
+    /* 4px grey triangle in bottom-right. 
+     * 315 degrees means starting at bottom-right towards top-left.
+     */
+    background: linear-gradient(
+        315deg, var(--google-grey-refresh-500) 4px, 
+        transparent 4px, transparent);
   }
 </style>
 

@@ -6,6 +6,8 @@ import './icons.js';
 import './emoji_group.js';
 import './emoji_group_button.js';
 
+import 'chrome://resources/cr_elements/cr_icons_css.m.js';
+
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

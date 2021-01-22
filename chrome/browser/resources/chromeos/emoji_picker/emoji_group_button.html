@@ -1,23 +1,34 @@
 <style>
-  button {
-    background-color: transparent;
-    border: 5px solid transparent;
-    font-size: 24px;
+  :host {
+    display: flex;
+    flex-direction: column;
+  }
+
+  cr-icon-button {
+    font-size: 32px;
     height: 36px;
+    margin: 0;
     padding: 0;
     width: 36px;
   }
 
-  button:hover {
-    color: red;
+  cr-icon-button.emoji-group-active {
+    --cr-icon-button-fill-color: var(--cr-checked-color);
   }
 
-  .active {
-    border-bottom: 5px solid blue;
-    color: blue;
+  div {
+    background-color: transparent;
+    border-radius: 2px;
+    height: 4px;
+    width: 100%;
+  }
+
+  div.emoji-group-active {
+    background-color: var(--cr-checked-color);
   }
 </style>
 
-<button class$="[[_className(active)]]" on-click="handleClick">
-  <iron-icon icon="[[icon]]"></iron-icon>
-</button>
+<cr-icon-button iron-icon="[[icon]]"
+    class$="[[_className(active)]]" on-click="handleClick">
+</cr-icon-button>
+<div class$="[[_className(active)]]" on-click="handleClick"></div>
