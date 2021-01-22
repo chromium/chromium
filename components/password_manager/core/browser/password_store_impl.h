@@ -81,10 +81,6 @@ class PasswordStoreImpl : public PasswordStore {
       override;
   std::vector<CompromisedCredentials> GetMatchingCompromisedCredentialsImpl(
       const std::string& signon_realm) override;
-  bool RemoveCompromisedCredentialsByUrlAndTimeImpl(
-      const base::RepeatingCallback<bool(const GURL&)>& url_filter,
-      base::Time remove_begin,
-      base::Time remove_end) override;
 
   void AddFieldInfoImpl(const FieldInfo& field_info) override;
   std::vector<FieldInfo> GetAllFieldInfoImpl() override;

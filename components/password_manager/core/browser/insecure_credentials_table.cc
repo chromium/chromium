@@ -193,68 +193,6 @@ std::vector<CompromisedCredentials> InsecureCredentialsTable::GetRows(
   return StatementToCompromisedCredentials(&s);
 }
 
-bool InsecureCredentialsTable::RemoveRowsByUrlAndTime(
-    const base::RepeatingCallback<bool(const GURL&)>& url_filter,
-    base::Time remove_begin,
-    base::Time remove_end) {
-  DCHECK(db_);
-  DCHECK(db_->DoesTableExist(kTableName));
-
-  const int64_t remove_begin_us =
-      remove_begin.ToDeltaSinceWindowsEpoch().InMicroseconds();
-  const int64_t remove_end_us =
-      remove_end.ToDeltaSinceWindowsEpoch().InMicroseconds();
-
-  // If |url_filter| is null, remove all records in given date range.
-  if (!url_filter) {
-    sql::Statement s(db_->GetCachedStatement(
-        SQL_FROM_HERE,
-        base::StringPrintf("DELETE FROM %s WHERE "
-                           "create_time >= ? AND create_time < ?",
-                           kTableName)
-            .c_str()));
-    s.BindInt64(0, remove_begin_us);
-    s.BindInt64(1, remove_end_us);
-    return s.Run();
-  }
-
-  // Otherwise, filter signon_realms.
-  sql::Statement s(db_->GetCachedStatement(
-      SQL_FROM_HERE,
-      base::StringPrintf(
-          "SELECT DISTINCT signon_realm, id FROM logins INNER JOIN "
-          "%s ON parent_id = logins.id WHERE create_time >= ? AND create_time "
-          "< ?",
-          kTableName)
-          .c_str()));
-  s.BindInt64(0, remove_begin_us);
-  s.BindInt64(1, remove_end_us);
-
-  std::vector<int64_t> ids;
-  while (s.Step()) {
-    std::string signon_realm = s.ColumnString(0);
-    int64_t id = s.ColumnInt64(1);
-    if (url_filter.Run(GURL(signon_realm))) {
-      ids.push_back(id);
-    }
-  }
-
-  bool success = true;
-  for (int64_t id : ids) {
-    sql::Statement s(db_->GetCachedStatement(
-        SQL_FROM_HERE,
-        base::StringPrintf("DELETE FROM %s WHERE parent_id = ? "
-                           "AND create_time >= ? AND create_time < ?",
-                           kTableName)
-            .c_str()));
-    s.BindInt64(0, id);
-    s.BindInt64(1, remove_begin_us);
-    s.BindInt64(2, remove_end_us);
-    success = success && s.Run();
-  }
-  return success;
-}
-
 std::vector<CompromisedCredentials> InsecureCredentialsTable::GetAllRows() {
   DCHECK(db_);
   DCHECK(db_->DoesTableExist(kTableName));
