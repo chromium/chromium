@@ -5,6 +5,7 @@
 #import "ios/web/navigation/crw_wk_navigation_handler.h"
 
 #include "base/feature_list.h"
+#include "base/ios/ios_util.h"
 #import "base/ios/ns_error_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -1817,11 +1818,8 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
         web::RequiresProvisionalNavigationFailureWorkaround()) {
       // It is likely that |navigationContext| is null because
       // didStartProvisionalNavigation: was not called with this WKNavigation
-      // object. Log UMA to know when this workaround can be removed and
-      // do not call OnNavigationFinished() to avoid crash on null pointer
-      // dereferencing. See crbug.com/973653 and crbug.com/1004634 for details.
-      UMA_HISTOGRAM_BOOLEAN(
-          "Navigation.IOSNullContextInDidFailProvisionalNavigation", true);
+      // object, which was pretty common on iOS 12 and fixed on iOS 13.
+      // See crbug.com/973653 and crbug.com/1004634 for details.
       return;
     }
   }
@@ -2059,16 +2057,10 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
     }
 
     if (provisionalLoad) {
-      if (!navigationContext &&
-          web::RequiresProvisionalNavigationFailureWorkaround()) {
+      if (base::ios::IsRunningOnIOS13OrLater() || navigationContext) {
         // It is likely that |navigationContext| is null because
         // didStartProvisionalNavigation: was not called with this WKNavigation
-        // object. Log UMA to know when this workaround can be removed and
-        // do not call OnNavigationFinished() to avoid crash on null pointer
-        // dereferencing. See crbug.com/973653 for details.
-        UMA_HISTOGRAM_BOOLEAN(
-            "Navigation.IOSNullContextInDidFailProvisionalNavigation", true);
-      } else {
+        // object. See crbug.com/973653 for details.
         self.webStateImpl->OnNavigationFinished(navigationContext.get());
       }
     }

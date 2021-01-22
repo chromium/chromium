@@ -671,8 +671,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Navigation.IOSNullContextInDidFailProvisionalNavigation"
     enum="Boolean" expires_after="M85">
+  <obsolete>
+    Removed from code in Jan 2021.
+  </obsolete>
   <owner>ajuma@chromium.org</owner>
-  <owner>eugenebut@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
   <summary>
     Logged when NavigationContext is null inside -[WKNavigationDelegate
     webView:didFailProvisionalNavigation]. If Chrome stopped logging this metric
