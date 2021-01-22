@@ -28,8 +28,8 @@ class LayerTreeMutator;
 class ScrollTree;
 
 // Used as the return value of GetAnimationScales() to indicate that there is
-// no active scale animation or the scale cannot be computed.
-const float kNotScaled = 0;
+// no active transform animation or the scale cannot be computed.
+constexpr float kInvalidScale = 0.f;
 
 // A MutatorHost owns all the animation and mutation effects.
 // There is just one MutatorHost for LayerTreeHost on main renderer thread
@@ -121,8 +121,8 @@ class MutatorHost {
   virtual bool AnimationsPreserveAxisAlignment(ElementId element_id) const = 0;
 
   // Returns the maximum scale along any dimension at any destination in active
-  // scale animations, or kNotScaled if there is no active scale animation or
-  // the scales cannot be computed.
+  // scale animations, or kInvalidScale if there is no active transform
+  // animation or the scale cannot be computed.
   virtual float MaximumScale(ElementId element_id,
                              ElementListType list_type) const = 0;
 

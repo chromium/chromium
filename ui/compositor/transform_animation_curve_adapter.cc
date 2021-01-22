@@ -62,11 +62,6 @@ cc::TransformOperations TransformAnimationCurveAdapter::GetValue(
   return WrapTransform(gfx::ComposeTransform(to_return));
 }
 
-bool TransformAnimationCurveAdapter::IsTranslation() const {
-  return initial_value_.IsIdentityOrTranslation() &&
-         target_value_.IsIdentityOrTranslation();
-}
-
 bool TransformAnimationCurveAdapter::PreservesAxisAlignment() const {
   return (initial_value_.IsIdentity() ||
           initial_value_.IsScaleOrTranslation()) &&
@@ -116,11 +111,6 @@ cc::TransformOperations InverseTransformCurveAdapter::GetValue(
   to_return.PreconcatTransform(effective_initial_value_);
 
   return WrapTransform(to_return);
-}
-
-bool InverseTransformCurveAdapter::IsTranslation() const {
-  return initial_value_.IsIdentityOrTranslation() &&
-         base_curve_.IsTranslation();
 }
 
 bool InverseTransformCurveAdapter::PreservesAxisAlignment() const {

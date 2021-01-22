@@ -650,7 +650,7 @@ float AnimationHost::MaximumScale(ElementId element_id,
                                   ElementListType list_type) const {
   if (auto element_animations = GetElementAnimationsForElementId(element_id))
     return element_animations->MaximumScale(list_type);
-  return kNotScaled;
+  return kInvalidScale;
 }
 
 bool AnimationHost::IsElementAnimating(ElementId element_id) const {

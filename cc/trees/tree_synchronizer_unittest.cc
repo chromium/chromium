@@ -742,7 +742,7 @@ TEST_F(TreeSynchronizerTest, RefreshPropertyTreesCachedData) {
   host_->CommitAndCreatePendingTree();
   host_impl->ActivateSyncTree();
   EXPECT_EQ(
-      kNotScaled,
+      2.0f,
       host_impl->active_tree()->property_trees()->MaximumAnimationToScreenScale(
           transform_layer->transform_tree_index()));
 }

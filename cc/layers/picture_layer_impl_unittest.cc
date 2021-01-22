@@ -2752,7 +2752,7 @@ TEST_F(LegacySWPictureLayerImplTest, HighResTilingDuringAnimation) {
   // When animating with an unknown animation scale factors, a new high-res
   // tiling should be created at the current contents scale.
   contents_scale = 2.f;
-  maximum_animation_scale = kNotScaled;
+  maximum_animation_scale = kInvalidScale;
 
   SetContentsAndAnimationScalesOnBothLayers(
       contents_scale, device_scale, page_scale, maximum_animation_scale);
@@ -2828,7 +2828,7 @@ TEST_F(LegacySWPictureLayerImplTest, HighResTilingDuringAnimation) {
   // tiling should be created at the native scale if the current contents
   // scale is smaller.
   contents_scale = 0.5f;
-  maximum_animation_scale = kNotScaled;
+  maximum_animation_scale = kInvalidScale;
 
   SetContentsAndAnimationScalesOnBothLayers(
       contents_scale, device_scale, page_scale, maximum_animation_scale);

@@ -1501,7 +1501,7 @@ void PictureLayerImpl::AdjustRasterScaleForTransformAnimation(
   float maximum_animation_scale =
       layer_tree_impl()->property_trees()->MaximumAnimationToScreenScale(
           transform_tree_index());
-  if (maximum_animation_scale == kNotScaled) {
+  if (maximum_animation_scale == kInvalidScale) {
     // Use at least the native scale if the animation scale is unknown.
     raster_contents_scale_ = std::max(raster_contents_scale_,
                                       ideal_page_scale_ * ideal_device_scale_);
@@ -1509,7 +1509,7 @@ void PictureLayerImpl::AdjustRasterScaleForTransformAnimation(
     // We rasterize at the maximum scale that will occur during the animation.
     raster_contents_scale_ = maximum_animation_scale;
   }
-  DCHECK_NE(raster_contents_scale_, kNotScaled);
+  DCHECK_NE(raster_contents_scale_, kInvalidScale);
 
   // However we want to avoid excessive memory use. Choose a scale at which this
   // layer's rastered content is not larger than the viewport.

@@ -58,8 +58,8 @@ ElementAnimations::ElementAnimations(AnimationHost* host, ElementId element_id)
       has_element_in_active_list_(false),
       has_element_in_pending_list_(false),
       needs_push_properties_(false),
-      active_maximum_scale_(kNotScaled),
-      pending_maximum_scale_(kNotScaled) {
+      active_maximum_scale_(kInvalidScale),
+      pending_maximum_scale_(kInvalidScale) {
   InitAffectedElementTypes();
 }
 
@@ -189,12 +189,12 @@ bool ElementAnimations::AnimationsPreserveAxisAlignment() const {
 }
 
 float ElementAnimations::MaximumScale(ElementListType list_type) const {
-  float maximum_scale = kNotScaled;
+  float maximum_scale = kInvalidScale;
   for (auto& keyframe_effect : keyframe_effects_list_) {
     float keyframe_effect_maximum_scale =
         keyframe_effect.MaximumScale(list_type);
-    if (keyframe_effect_maximum_scale == kNotScaled)
-      return kNotScaled;
+    if (keyframe_effect_maximum_scale == kInvalidScale)
+      return kInvalidScale;
     maximum_scale = std::max(maximum_scale, keyframe_effect_maximum_scale);
   }
   return maximum_scale;
@@ -346,7 +346,7 @@ void ElementAnimations::UpdateClientAnimationState() {
 
     float maximum_scale = transform_element_id
                               ? MaximumScale(ElementListType::ACTIVE)
-                              : kNotScaled;
+                              : kInvalidScale;
     if (maximum_scale != active_maximum_scale_) {
       animation_host_->mutator_host_client()->MaximumScaleChanged(
           transform_element_id, ElementListType::ACTIVE, maximum_scale);
@@ -364,7 +364,7 @@ void ElementAnimations::UpdateClientAnimationState() {
 
     float maximum_scale = transform_element_id
                               ? MaximumScale(ElementListType::PENDING)
-                              : kNotScaled;
+                              : kInvalidScale;
     if (maximum_scale != pending_maximum_scale_) {
       animation_host_->mutator_host_client()->MaximumScaleChanged(
           transform_element_id, ElementListType::PENDING, maximum_scale);

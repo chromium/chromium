@@ -35,7 +35,7 @@ TransformNode::TransformNode()
       delegates_to_parent_for_backface(false),
       will_change_transform(false),
       node_or_ancestors_will_change_transform(false),
-      maximum_animation_scale(kNotScaled) {}
+      maximum_animation_scale(kInvalidScale) {}
 
 TransformNode::TransformNode(const TransformNode&) = default;
 
