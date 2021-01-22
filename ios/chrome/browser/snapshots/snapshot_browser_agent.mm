@@ -20,9 +20,12 @@
 
 namespace {
 
-const std::string kLegacyBaseDirectory = "Chromium";
-const std::string kSessionsDirectory = "Sessions";
-const std::string kSnapshotsDirectory = "Snapshots";
+const base::FilePath::CharType kLegacyBaseDirectory[] =
+    FILE_PATH_LITERAL("Chromium");
+const base::FilePath::CharType kSessionsDirectory[] =
+    FILE_PATH_LITERAL("Sessions");
+const base::FilePath::CharType kSnapshotsDirectory[] =
+    FILE_PATH_LITERAL("Snapshots");
 
 }  // namespace
 

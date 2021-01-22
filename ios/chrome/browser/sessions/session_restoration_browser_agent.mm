@@ -36,7 +36,8 @@
 BROWSER_USER_DATA_KEY_IMPL(SessionRestorationBrowserAgent)
 
 namespace {
-const std::string kSessionDirectory = "Sessions";
+const base::FilePath::CharType kSessionDirectory[] =
+    FILE_PATH_LITERAL("Sessions");
 }
 
 // static
