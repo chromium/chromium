@@ -246,6 +246,26 @@ def _isolated_property(*, isolated_server):
 
     return isolated or None
 
+def _reclient_property(*, instance, service, jobs, rewrapper_env):
+    reclient = {}
+    instance = defaults.get_value("reclient_instance", instance)
+    if instance:
+        reclient["instance"] = instance
+    service = defaults.get_value("reclient_service", service)
+    if service:
+        reclient["service"] = service
+    jobs = defaults.get_value("reclient_jobs", jobs)
+    if jobs:
+        reclient["jobs"] = jobs
+    rewrapper_env = defaults.get_value("reclient_rewrapper_env", rewrapper_env)
+    if rewrapper_env:
+        for k in rewrapper_env:
+            if not k.startswith("RBE_"):
+                fail("Environment variables in rewrapper_env must start with " +
+                     "'RBE_', got '%s'" % k)
+        reclient["rewrapper_env"] = rewrapper_env
+    return reclient or None
+
 ################################################################################
 # Builder defaults and function                                                #
 ################################################################################
@@ -280,6 +300,10 @@ defaults = args.defaults(
     coverage_test_types = None,
     resultdb_bigquery_exports = [],
     isolated_server = "https://isolateserver.appspot.com",
+    reclient_instance = None,
+    reclient_service = None,
+    reclient_jobs = None,
+    reclient_rewrapper_env = None,
 
     # Provide vars for bucket and executable so users don't have to
     # unnecessarily make wrapper functions
@@ -321,6 +345,10 @@ def builder(
         coverage_test_types = args.DEFAULT,
         resultdb_bigquery_exports = args.DEFAULT,
         isolated_server = args.DEFAULT,
+        reclient_instance = args.DEFAULT,
+        reclient_service = args.DEFAULT,
+        reclient_jobs = args.DEFAULT,
+        reclient_rewrapper_env = args.DEFAULT,
         **kwargs):
     """Define a builder.
 
@@ -434,6 +462,15 @@ def builder(
       * isolated_server - a string indicating the host of the isolated server.
         Will be incorporated into the '$recipe_engine/isolated' property. By
         default, this is "https://isolateserver.appspot.com".
+      * reclient_instance - a string indicating the GCP project hosting the RBE
+        instance for re-client to use.
+      * reclient_service - a string indicating the RBE service to dial via gRPC.
+        By default, this is "remotebuildexecution.googleapis.com:443" (set in
+        the reclient recipe module).
+      * reclient_jobs - an integer indicating the number of concurrent
+        compilations to run when using re-client as the compiler.
+      * reclient_rewrapper_env - a map that sets the rewrapper flags via the
+        environment variables. All such vars must start with the "RBE_" prefix.
       * kwargs - Additional keyword arguments to forward on to `luci.builder`.
     """
 
@@ -459,6 +496,9 @@ def builder(
     if "$recipe_engine/isolated" in properties:
         fail('Setting "$recipe_engine/isolated" property is not supported: ' +
              "use isolated_server instead")
+    if "$build/reclient" in properties:
+        fail('Setting "$build/reclient" property is not supported: ' +
+             "use reclient_instance and reclient_rewrapper_env instead")
     properties = dict(properties)
 
     os = defaults.get_value("os", os)
@@ -555,6 +595,15 @@ def builder(
     )
     if isolated != None:
         properties["$recipe_engine/isolated"] = isolated
+
+    reclient = _reclient_property(
+        instance = reclient_instance,
+        service = reclient_service,
+        jobs = reclient_jobs,
+        rewrapper_env = reclient_rewrapper_env,
+    )
+    if reclient != None:
+        properties["$build/reclient"] = reclient
 
     kwargs = dict(kwargs)
     if bucket != args.COMPUTE:
