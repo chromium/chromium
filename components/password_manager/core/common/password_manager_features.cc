@@ -28,7 +28,11 @@ const base::Feature kDetectFormSubmissionOnFormClear = {
 
 // Enables the editing of passwords in Chrome settings.
 const base::Feature kEditPasswordsInSettings = {
+#if defined(OS_ANDROID) || defined(OS_IOS)
     "EditPasswordsInSettings", base::FEATURE_DISABLED_BY_DEFAULT};
+#else
+    "EditPasswordsInSettings", base::FEATURE_ENABLED_BY_DEFAULT};
+#endif
 
 // Enables UI in settings that allows the user to move multiple passwords to the
 // account storage.
