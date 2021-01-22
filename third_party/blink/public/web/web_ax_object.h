@@ -34,7 +34,6 @@
 #include <memory>
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_private_ptr.h"
-#include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_ax_enums.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
@@ -45,6 +44,8 @@ class SkMatrix44;
 namespace gfx {
 class Point;
 class RectF;
+class Rect;
+class Size;
 }
 
 namespace ui {
@@ -59,8 +60,6 @@ class WebNode;
 class WebDocument;
 class WebString;
 class WebURL;
-struct WebRect;
-struct WebSize;
 
 // A container for passing around a reference to AXObject.
 class WebAXObject {
@@ -164,15 +163,15 @@ class WebAXObject {
   BLINK_EXPORT bool CanvasHasFallbackContent() const;
   BLINK_EXPORT WebAXObject ErrorMessage() const;
   // If this is an image, returns the image (scaled to maxSize) as a data url.
-  BLINK_EXPORT WebString ImageDataUrl(const WebSize& max_size) const;
+  BLINK_EXPORT WebString ImageDataUrl(const gfx::Size& max_size) const;
   BLINK_EXPORT ax::mojom::InvalidState InvalidState() const;
   // Only used when invalidState() returns WebAXInvalidStateOther.
   BLINK_EXPORT WebString AriaInvalidValue() const;
   BLINK_EXPORT int HeadingLevel() const;
   BLINK_EXPORT int HierarchicalLevel() const;
   BLINK_EXPORT WebAXObject HitTest(const gfx::Point&) const;
-  // Get the WebAXObject's bounds in frame-relative coordinates as a WebRect.
-  BLINK_EXPORT WebRect GetBoundsInFrameCoordinates() const;
+  // Get the WebAXObject's bounds in frame-relative coordinates as a gfx::Rect.
+  BLINK_EXPORT gfx::Rect GetBoundsInFrameCoordinates() const;
   BLINK_EXPORT WebString KeyboardShortcut() const;
   BLINK_EXPORT WebString Language() const;
   BLINK_EXPORT WebAXObject InPageLinkTarget() const;
@@ -279,7 +278,7 @@ class WebAXObject {
   // in local coordinates. We also allow passing horizontal and vertical scroll
   // alignments. These specify where in the content area to scroll the object.
   BLINK_EXPORT bool ScrollToMakeVisibleWithSubFocus(
-      const WebRect&,
+      const gfx::Rect&,
       ax::mojom::ScrollAlignment horizontal_scroll_alignment =
           ax::mojom::ScrollAlignment::kScrollAlignmentCenter,
       ax::mojom::ScrollAlignment vertical_scroll_alignment =

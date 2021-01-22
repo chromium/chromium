@@ -375,7 +375,7 @@ void MetricsRenderFrameObserver::OnAdResourceObserved(int request_id) {
 }
 
 void MetricsRenderFrameObserver::OnMainFrameIntersectionChanged(
-    const blink::WebRect& main_frame_intersection) {
+    const gfx::Rect& main_frame_intersection) {
   if (page_timing_metrics_sender_)
     page_timing_metrics_sender_->OnMainFrameIntersectionChanged(
         main_frame_intersection);

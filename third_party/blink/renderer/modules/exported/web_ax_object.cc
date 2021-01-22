@@ -475,11 +475,11 @@ bool WebAXObject::CanvasHasFallbackContent() const {
   return private_->CanvasHasFallbackContent();
 }
 
-WebString WebAXObject::ImageDataUrl(const WebSize& max_size) const {
+WebString WebAXObject::ImageDataUrl(const gfx::Size& max_size) const {
   if (IsDetached())
     return WebString();
 
-  return private_->ImageDataUrl(max_size);
+  return private_->ImageDataUrl(IntSize(max_size));
 }
 
 ax::mojom::InvalidState WebAXObject::InvalidState() const {
@@ -543,9 +543,9 @@ WebAXObject WebAXObject::HitTest(const gfx::Point& point) const {
   return WebAXObject();
 }
 
-WebRect WebAXObject::GetBoundsInFrameCoordinates() const {
+gfx::Rect WebAXObject::GetBoundsInFrameCoordinates() const {
   LayoutRect rect = private_->GetBoundsInFrameCoordinates();
-  return WebRect(EnclosingIntRect(rect));
+  return EnclosingIntRect(rect);
 }
 
 WebString WebAXObject::KeyboardShortcut() const {
@@ -1322,7 +1322,7 @@ bool WebAXObject::ScrollToMakeVisible() const {
 }
 
 bool WebAXObject::ScrollToMakeVisibleWithSubFocus(
-    const WebRect& subfocus,
+    const gfx::Rect& subfocus,
     ax::mojom::ScrollAlignment horizontal_scroll_alignment,
     ax::mojom::ScrollAlignment vertical_scroll_alignment,
     ax::mojom::ScrollBehavior scroll_behavior) const {
@@ -1349,7 +1349,7 @@ bool WebAXObject::ScrollToMakeVisibleWithSubFocus(
   blink::mojom::blink::ScrollAlignment blink_vertical_scroll_alignment = {
       visible_vertical_behavior, vertical_behavior, vertical_behavior};
   return private_->RequestScrollToMakeVisibleWithSubFocusAction(
-      subfocus, blink_horizontal_scroll_alignment,
+      IntRect(subfocus), blink_horizontal_scroll_alignment,
       blink_vertical_scroll_alignment);
 }
 

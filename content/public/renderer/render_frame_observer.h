@@ -45,6 +45,10 @@ namespace network {
 struct URLLoaderCompletionStatus;
 }  // namespace network
 
+namespace gfx {
+class Rect;
+}  // namespace gfx
+
 namespace content {
 
 class RendererPpapiHost;
@@ -264,8 +268,8 @@ class CONTENT_EXPORT RenderFrameObserver : public IPC::Listener,
   virtual void WillCreateWorkerFetchContext(blink::WebWorkerFetchContext*) {}
 
   // Called when a frame's intersection with the main frame changes.
-  virtual void OnMainFrameIntersectionChanged(
-      const blink::WebRect& intersect_rect) {}
+  virtual void OnMainFrameIntersectionChanged(const gfx::Rect& intersect_rect) {
+  }
 
   // Overlay-popup-ad violates The Better Ads Standards
   // (https://www.betterads.org/standards/). This method will be called when an

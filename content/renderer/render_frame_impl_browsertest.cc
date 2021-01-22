@@ -196,16 +196,16 @@ class RenderFrameTestObserver : public RenderFrameObserver {
   void WasHidden() override { visible_ = false; }
   void OnDestruct() override { delete this; }
   void OnMainFrameIntersectionChanged(
-      const blink::WebRect& intersection_rect) override {
+      const gfx::Rect& intersection_rect) override {
     last_intersection_rect_ = intersection_rect;
   }
 
   bool visible() { return visible_; }
-  blink::WebRect last_intersection_rect() { return last_intersection_rect_; }
+  gfx::Rect last_intersection_rect() { return last_intersection_rect_; }
 
  private:
   bool visible_;
-  blink::WebRect last_intersection_rect_;
+  gfx::Rect last_intersection_rect_;
 };
 
 // Verify that a frame with a RenderFrameProxy as a parent has its own
@@ -437,7 +437,7 @@ TEST_F(RenderFrameImplTest, MainFrameIntersectionRecorded) {
   frame()->OnMainFrameIntersectionChanged(mainframe_intersection);
   // Setting a new frame intersection in a local frame triggers the render frame
   // observer call.
-  EXPECT_EQ(observer.last_intersection_rect(), blink::WebRect(0, 0, 200, 140));
+  EXPECT_EQ(observer.last_intersection_rect(), mainframe_intersection);
 }
 
 // Used to annotate the source of an interface request.
