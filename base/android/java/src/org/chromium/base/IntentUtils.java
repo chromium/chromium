@@ -22,6 +22,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.app.BundleCompat;
 
+import org.chromium.base.compat.ApiHelperForM;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -40,6 +42,9 @@ public class IntentUtils {
     @VisibleForTesting
     public static final String EPHEMERAL_INSTALLER_CLASS =
             "com.google.android.gms.instantapps.routing.EphemeralInstallerActivity";
+
+    // TODO(mthiesse): Move to ApiHelperForS when it exist.
+    private static final int FLAG_MUTABLE = 1 << 25;
 
     /**
      * Whether the given ResolveInfo object refers to Instant Apps as a launcher.
@@ -482,5 +487,22 @@ public class IntentUtils {
         return intent != null && TextUtils.equals(intent.getAction(), Intent.ACTION_MAIN)
                 && intent.hasCategory(Intent.CATEGORY_LAUNCHER)
                 && 0 == (intent.getFlags() & Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY);
+    }
+
+    /**
+     * Gets the PendingIntent flag for the specified mutability.
+     * PendingIntent.FLAG_IMMUTABLE was added in API level 23 (M), and FLAG_MUTABLE was added in
+     * Android S.
+     *
+     * Unless mutability is required, PendingIntents should always be marked as Immutable as this
+     * is the more secure default.
+     */
+    public static int getPendingIntentMutabilityFlag(boolean mutable) {
+        if (!mutable && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return ApiHelperForM.getPendingIntentImmutableFlag();
+        } else if (mutable && Build.VERSION.SDK_INT > Build.VERSION_CODES.R) {
+            return FLAG_MUTABLE;
+        }
+        return 0;
     }
 }

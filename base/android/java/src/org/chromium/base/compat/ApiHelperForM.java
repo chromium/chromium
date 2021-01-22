@@ -6,6 +6,7 @@ package org.chromium.base.compat;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.PendingIntent;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkInfo;
@@ -116,5 +117,9 @@ public final class ApiHelperForM {
 
     public static void hideActionMode(ActionMode actionMode, long duration) {
         actionMode.hide(duration);
+    }
+
+    public static int getPendingIntentImmutableFlag() {
+        return PendingIntent.FLAG_IMMUTABLE;
     }
 }
