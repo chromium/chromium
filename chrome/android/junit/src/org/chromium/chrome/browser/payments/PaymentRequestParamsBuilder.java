@@ -12,7 +12,6 @@ import androidx.annotation.Nullable;
 
 import org.mockito.Mockito;
 
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.payments.ui.PaymentUiService;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -208,12 +207,6 @@ public class PaymentRequestParamsBuilder implements ChromePaymentRequestService.
     @Override
     public TabModel getTabModel(WebContents webContents) {
         return Mockito.mock(TabModel.class);
-    }
-
-    @Nullable
-    @Override
-    public OverviewModeBehavior getOverviewModeBehavior(WebContents webContents) {
-        return Mockito.mock(OverviewModeBehavior.class);
     }
 
     @Nullable

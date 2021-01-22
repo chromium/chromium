@@ -12,10 +12,8 @@ import androidx.annotation.Nullable;
 import androidx.collection.ArrayMap;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.payments.ui.PaymentUiService;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -218,18 +216,6 @@ public class ChromePaymentRequestService
 
         /**
          * @param webContents Any WebContents.
-         * @return The OverviewModeBehavior of the given WebContents.
-         */
-        @Nullable
-        default OverviewModeBehavior getOverviewModeBehavior(WebContents webContents) {
-            ChromeActivity activity = ChromeActivity.fromWebContents(webContents);
-            if (activity == null) return null;
-            if (!(activity instanceof ChromeTabbedActivity)) return null;
-            return ((ChromeTabbedActivity) activity).getOverviewModeBehaviorSupplier().get();
-        }
-
-        /**
-         * @param webContents Any WebContents.
          * @return The ActivityLifecycleDispatcher of the ChromeActivity that contains the given
          *         WebContents.
          */
@@ -375,7 +361,7 @@ public class ChromePaymentRequestService
         if (tabModel == null) return ErrorStrings.TAB_NOT_FOUND;
         String error = mPaymentUiService.buildPaymentRequestUI(
                 /*isWebContentsActive=*/mDelegate.isWebContentsActive(mRenderFrameHost), activity,
-                tabModelSelector, tabModel, mDelegate.getOverviewModeBehavior(mWebContents));
+                tabModelSelector, tabModel);
         if (error != null) return error;
         // Calculate skip ui and build ui only after all payment apps are ready and
         // request.show() is called.

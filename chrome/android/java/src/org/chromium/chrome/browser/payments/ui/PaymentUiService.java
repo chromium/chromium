@@ -19,9 +19,10 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.NormalizedAddressRequestDelegate;
-import org.chromium.chrome.browser.compositor.layouts.EmptyOverviewModeObserver;
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior.OverviewModeObserver;
+import org.chromium.chrome.browser.layouts.LayoutManagerProvider;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.payments.AddressEditor;
 import org.chromium.chrome.browser.payments.AutofillAddress;
@@ -103,10 +104,10 @@ import java.util.Set;
  * This class manages all of the UIs related to payment. The UI logic of {@link
  * ChromePaymentRequestService} should be moved into this class.
  */
-public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Observer,
-                                         PaymentHandlerUiObserver, FocusChangedObserver,
-                                         PaymentUiServiceTestInterface,
-                                         NormalizedAddressRequestDelegate, PaymentRequestUI.Client {
+public class PaymentUiService
+        implements SettingsAutofillAndPaymentsObserver.Observer, PaymentHandlerUiObserver,
+                   FocusChangedObserver, PaymentUiServiceTestInterface,
+                   NormalizedAddressRequestDelegate, PaymentRequestUI.Client, LayoutStateObserver {
     /** Limit in the number of suggested items in a section. */
     /* package */ static final int SUGGESTIONS_LIMIT = 4;
 
@@ -118,7 +119,6 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
     private final boolean mIsOffTheRecord;
     private final Handler mHandler = new Handler();
     private final Queue<Runnable> mRetryQueue = new LinkedList<>();
-    private final OverviewModeObserver mOverviewModeObserver;
     private final TabModelSelectorObserver mSelectorObserver;
     private final TabModelObserver mTabModelObserver;
     private ContactEditor mContactEditor;
@@ -150,7 +150,7 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
     private boolean mCanUserAddCreditCard;
     private TabModelSelector mObservedTabModelSelector;
     private TabModel mObservedTabModel;
-    private OverviewModeBehavior mOverviewModeBehavior;
+    private LayoutStateProvider mLayoutStateProvider;
     private MinimalUICoordinator mMinimalUi;
 
     /** The delegate of this class. */
@@ -328,12 +328,12 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
                 }
             }
         };
-        mOverviewModeObserver = new EmptyOverviewModeObserver() {
-            @Override
-            public void onOverviewModeStartedShowing(boolean showToolbar) {
-                mDelegate.onLeavingCurrentTab(ErrorStrings.TAB_OVERVIEW_MODE);
-            }
-        };
+    }
+
+    // Implements LayoutStateObserver:
+    @Override
+    public void onStartedShowing(int layoutType, boolean showToolbar) {
+        mDelegate.onLeavingCurrentTab(ErrorStrings.TAB_OVERVIEW_MODE);
     }
 
     /**
@@ -1204,13 +1204,11 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
      * @param activity The activity of the current tab.
      * @param tabModelSelector The tab model selector of the current tab.
      * @param tabModel The tab model of the current tab.
-     * @param overviewModeBehavior The overview model behaviour of the current tab, can be null.
      * @return The error message if built unsuccessfully; null otherwise.
      */
     @Nullable
     public String buildPaymentRequestUI(boolean isWebContentsActive, Activity activity,
-            TabModelSelector tabModelSelector, TabModel tabModel,
-            @Nullable OverviewModeBehavior overviewModeBehavior) {
+            TabModelSelector tabModelSelector, TabModel tabModel) {
         // Payment methods section must be ready before building the rest of the UI. This is because
         // shipping and contact sections (when requested by merchant) are populated depending on
         // whether or not the selected payment app (if such exists) can provide the required
@@ -1220,7 +1218,6 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
         assert activity != null;
         assert tabModelSelector != null;
         assert tabModel != null;
-        assert overviewModeBehavior != null;
 
         // Only the currently selected tab is allowed to show the payment UI.
         if (!isWebContentsActive) return ErrorStrings.CANNOT_SHOW_IN_BACKGROUND_TAB;
@@ -1241,15 +1238,17 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
         mObservedTabModel.addObserver(mTabModelObserver);
 
         // Catch any time the user enters the overview mode and dismiss the payment UI.
-        if (overviewModeBehavior != null) {
-            if (mOverviewModeBehavior != null) {
-                mOverviewModeBehavior.removeOverviewModeObserver(mOverviewModeObserver);
+        LayoutStateProvider layoutStateProvider =
+                LayoutManagerProvider.from(mWebContents.getTopLevelNativeWindow());
+        if (layoutStateProvider != null) {
+            if (mLayoutStateProvider != null) {
+                mLayoutStateProvider.removeObserver(this);
             }
-            mOverviewModeBehavior = overviewModeBehavior;
-
-            assert mOverviewModeBehavior != null;
-            if (mOverviewModeBehavior.overviewVisible()) return ErrorStrings.TAB_OVERVIEW_MODE;
-            mOverviewModeBehavior.addOverviewModeObserver(mOverviewModeObserver);
+            if (layoutStateProvider.isLayoutVisible(LayoutType.TAB_SWITCHER)) {
+                return ErrorStrings.TAB_OVERVIEW_MODE;
+            }
+            mLayoutStateProvider = layoutStateProvider;
+            mLayoutStateProvider.addObserver(this);
         }
 
         if (shouldShowContactSection()) {
@@ -1537,9 +1536,9 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
             mObservedTabModel = null;
         }
 
-        if (mOverviewModeBehavior != null) {
-            mOverviewModeBehavior.removeOverviewModeObserver(mOverviewModeObserver);
-            mOverviewModeBehavior = null;
+        if (mLayoutStateProvider != null) {
+            mLayoutStateProvider.removeObserver(this);
+            mLayoutStateProvider = null;
         }
     }
 
