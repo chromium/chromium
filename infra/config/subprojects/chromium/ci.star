@@ -3366,6 +3366,19 @@ ci.fyi_builder(
     triggered_by = [],
 )
 
+ci.fyi_builder(
+    name = "Linux Builder (reclient)",
+    console_view_entry = consoles.console_view_entry(
+        category = "linux",
+        short_name = "re",
+    ),
+    goma_backend = None,
+    reclient_instance = "goma-foundry-experiments",
+    configure_kitchen = True,
+    kitchen_emulate_gce = True,
+    os = os.LINUX_DEFAULT,
+)
+
 ci.fyi_celab_builder(
     name = "win-celab-builder-rel",
     console_view_entry = consoles.console_view_entry(
