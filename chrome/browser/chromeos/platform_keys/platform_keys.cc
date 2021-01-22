@@ -105,8 +105,7 @@ std::string StatusToString(Status status) {
 void IntersectCertificates(
     const net::CertificateList& certs1,
     const net::CertificateList& certs2,
-    const base::Callback<void(std::unique_ptr<net::CertificateList>)>&
-        callback) {
+    base::OnceCallback<void(std::unique_ptr<net::CertificateList>)> callback) {
   std::unique_ptr<net::CertificateList> intersection(new net::CertificateList);
   net::CertificateList* const intersection_ptr = intersection.get();
 
@@ -119,7 +118,7 @@ void IntersectCertificates(
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&IntersectOnWorkerThread, certs1, certs2,
                      intersection_ptr),
-      base::BindOnce(callback, base::Passed(&intersection)));
+      base::BindOnce(std::move(callback), std::move(intersection)));
 }
 
 GetPublicKeyAndAlgorithmOutput::GetPublicKeyAndAlgorithmOutput() = default;

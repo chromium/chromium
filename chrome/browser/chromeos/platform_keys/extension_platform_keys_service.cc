@@ -83,11 +83,11 @@ class ExtensionPlatformKeysService::GenerateKeyTask : public Task {
 
   GenerateKeyTask(platform_keys::TokenId token_id,
                   const std::string& extension_id,
-                  const GenerateKeyCallback& callback,
+                  GenerateKeyCallback callback,
                   ExtensionPlatformKeysService* service)
       : token_id_(token_id),
         extension_id_(extension_id),
-        callback_(callback),
+        callback_(std::move(callback)),
         service_(service) {}
 
   ~GenerateKeyTask() override = default;
@@ -115,8 +115,8 @@ class ExtensionPlatformKeysService::GenerateKeyTask : public Task {
     switch (next_step_) {
       case Step::GENERATE_KEY:
         next_step_ = Step::GET_EXTENSION_PERMISSIONS;
-        GenerateKey(base::Bind(&GenerateKeyTask::GeneratedKey,
-                               weak_factory_.GetWeakPtr()));
+        GenerateKey(base::BindOnce(&GenerateKeyTask::GeneratedKey,
+                                   weak_factory_.GetWeakPtr()));
         return;
       case Step::GET_EXTENSION_PERMISSIONS:
         next_step_ = Step::UPDATE_PERMISSIONS_AND_CALLBACK;
@@ -139,7 +139,7 @@ class ExtensionPlatformKeysService::GenerateKeyTask : public Task {
                     platform_keys::Status status) {
     if (status != platform_keys::Status::kSuccess) {
       next_step_ = Step::DONE;
-      callback_.Run(std::string() /* no public key */, status);
+      std::move(callback_).Run(std::string() /* no public key */, status);
       DoStep();
       return;
     }
@@ -159,7 +159,7 @@ class ExtensionPlatformKeysService::GenerateKeyTask : public Task {
 
   void OnKeyRegisteredForCorporateUsage(platform_keys::Status status) {
     if (status == platform_keys::Status::kSuccess) {
-      callback_.Run(public_key_spki_der_, status);
+      std::move(callback_).Run(public_key_spki_der_, status);
       DoStep();
       return;
     }
@@ -187,8 +187,8 @@ class ExtensionPlatformKeysService::GenerateKeyTask : public Task {
     }
 
     next_step_ = Step::DONE;
-    callback_.Run(std::string() /* no public key */,
-                  corporate_key_registration_error_status);
+    std::move(callback_).Run(std::string() /* no public key */,
+                             corporate_key_registration_error_status);
     DoStep();
   }
 
@@ -223,9 +223,9 @@ class ExtensionPlatformKeysService::GenerateRSAKeyTask
   GenerateRSAKeyTask(platform_keys::TokenId token_id,
                      unsigned int modulus_length,
                      const std::string& extension_id,
-                     const GenerateKeyCallback& callback,
+                     GenerateKeyCallback callback,
                      ExtensionPlatformKeysService* service)
-      : GenerateKeyTask(token_id, extension_id, callback, service),
+      : GenerateKeyTask(token_id, extension_id, std::move(callback), service),
         modulus_length_(modulus_length) {}
 
   ~GenerateRSAKeyTask() override {}
@@ -234,7 +234,7 @@ class ExtensionPlatformKeysService::GenerateRSAKeyTask
   // Generates the RSA key.
   void GenerateKey(GenerateKeyCallback callback) override {
     service_->platform_keys_service_->GenerateRSAKey(token_id_, modulus_length_,
-                                                     callback);
+                                                     std::move(callback));
   }
 
   const unsigned int modulus_length_;
@@ -248,9 +248,9 @@ class ExtensionPlatformKeysService::GenerateECKeyTask : public GenerateKeyTask {
   GenerateECKeyTask(platform_keys::TokenId token_id,
                     const std::string& named_curve,
                     const std::string& extension_id,
-                    const GenerateKeyCallback& callback,
+                    GenerateKeyCallback callback,
                     ExtensionPlatformKeysService* service)
-      : GenerateKeyTask(token_id, extension_id, callback, service),
+      : GenerateKeyTask(token_id, extension_id, std::move(callback), service),
         named_curve_(named_curve) {}
 
   ~GenerateECKeyTask() override {}
@@ -259,7 +259,7 @@ class ExtensionPlatformKeysService::GenerateECKeyTask : public GenerateKeyTask {
   // Generates the EC key.
   void GenerateKey(GenerateKeyCallback callback) override {
     service_->platform_keys_service_->GenerateECKey(token_id_, named_curve_,
-                                                    callback);
+                                                    std::move(callback));
   }
 
   const std::string named_curve_;
@@ -410,19 +410,19 @@ class ExtensionPlatformKeysService::SignTask : public Task {
         if (raw_pkcs1_) {
           service_->platform_keys_service_->SignRSAPKCS1Raw(
               token_id_, data_, public_key_spki_der_,
-              base::Bind(&SignTask::DidSign, weak_factory_.GetWeakPtr()));
+              base::BindOnce(&SignTask::DidSign, weak_factory_.GetWeakPtr()));
         } else {
           service_->platform_keys_service_->SignRSAPKCS1Digest(
               token_id_, data_, public_key_spki_der_, hash_algorithm_,
 
-              base::Bind(&SignTask::DidSign, weak_factory_.GetWeakPtr()));
+              base::BindOnce(&SignTask::DidSign, weak_factory_.GetWeakPtr()));
         }
         break;
       }
       case platform_keys::KeyType::kEcdsa: {
         service_->platform_keys_service_->SignECDSADigest(
             token_id_, data_, public_key_spki_der_, hash_algorithm_,
-            base::Bind(&SignTask::DidSign, weak_factory_.GetWeakPtr()));
+            base::BindOnce(&SignTask::DidSign, weak_factory_.GetWeakPtr()));
         break;
       }
     }
@@ -479,14 +479,14 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
              std::unique_ptr<net::CertificateList> input_client_certificates,
              bool interactive,
              const std::string& extension_id,
-             const SelectCertificatesCallback& callback,
+             SelectCertificatesCallback callback,
              content::WebContents* web_contents,
              ExtensionPlatformKeysService* service)
       : request_(request),
         input_client_certificates_(std::move(input_client_certificates)),
         interactive_(interactive),
         extension_id_(extension_id),
-        callback_(callback),
+        callback_(std::move(callback)),
         web_contents_(web_contents),
         service_(service) {}
   ~SelectTask() override {}
@@ -562,7 +562,8 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
   void GetMatchingCerts() {
     service_->platform_keys_service_->SelectClientCertificates(
         request_.certificate_authorities,
-        base::Bind(&SelectTask::GotMatchingCerts, weak_factory_.GetWeakPtr()));
+        base::BindOnce(&SelectTask::GotMatchingCerts,
+                       weak_factory_.GetWeakPtr()));
   }
 
   // If the certificate request could be processed successfully, |matches| will
@@ -574,7 +575,7 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
                         platform_keys::Status status) {
     if (status != platform_keys::Status::kSuccess) {
       next_step_ = Step::DONE;
-      callback_.Run(nullptr /* no certificates */, status);
+      std::move(callback_).Run(nullptr /* no certificates */, status);
       DoStep();
       return;
     }
@@ -666,7 +667,8 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
     }
     platform_keys::IntersectCertificates(
         matches_, *input_client_certificates_,
-        base::Bind(&SelectTask::GotIntersection, weak_factory_.GetWeakPtr()));
+        base::BindOnce(&SelectTask::GotIntersection,
+                       weak_factory_.GetWeakPtr()));
   }
 
   void GotIntersection(std::unique_ptr<net::CertificateList> intersection) {
@@ -686,7 +688,7 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
     }
     service_->select_delegate_->Select(
         extension_id_, matches_,
-        base::Bind(&SelectTask::GotSelection, base::Unretained(this)),
+        base::BindOnce(&SelectTask::GotSelection, base::Unretained(this)),
         web_contents_, service_->browser_context_);
   }
 
@@ -731,7 +733,8 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
       selection->assign(matches_.begin(), matches_.end());
     }
 
-    callback_.Run(std::move(selection), platform_keys::Status::kSuccess);
+    std::move(callback_).Run(std::move(selection),
+                             platform_keys::Status::kSuccess);
     DoStep();
   }
 
@@ -745,7 +748,7 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
   std::unique_ptr<net::CertificateList> input_client_certificates_;
   const bool interactive_;
   const std::string extension_id_;
-  const SelectCertificatesCallback callback_;
+  SelectCertificatesCallback callback_;
   content::WebContents* const web_contents_;
   std::unique_ptr<platform_keys::ExtensionKeyPermissionsService>
       extension_key_permissions_service_;
@@ -788,20 +791,20 @@ void ExtensionPlatformKeysService::GenerateRSAKey(
     platform_keys::TokenId token_id,
     unsigned int modulus_length,
     const std::string& extension_id,
-    const GenerateKeyCallback& callback) {
+    GenerateKeyCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   StartOrQueueTask(std::make_unique<GenerateRSAKeyTask>(
-      token_id, modulus_length, extension_id, callback, this));
+      token_id, modulus_length, extension_id, std::move(callback), this));
 }
 
 void ExtensionPlatformKeysService::GenerateECKey(
     platform_keys::TokenId token_id,
     const std::string& named_curve,
     const std::string& extension_id,
-    const GenerateKeyCallback& callback) {
+    GenerateKeyCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   StartOrQueueTask(std::make_unique<GenerateECKeyTask>(
-      token_id, named_curve, extension_id, callback, this));
+      token_id, named_curve, extension_id, std::move(callback), this));
 }
 
 bool ExtensionPlatformKeysService::IsUsingSigninProfile() {
@@ -843,12 +846,12 @@ void ExtensionPlatformKeysService::SelectClientCertificates(
     std::unique_ptr<net::CertificateList> client_certificates,
     bool interactive,
     const std::string& extension_id,
-    const SelectCertificatesCallback& callback,
+    SelectCertificatesCallback callback,
     content::WebContents* web_contents) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   StartOrQueueTask(std::make_unique<SelectTask>(
       request, std::move(client_certificates), interactive, extension_id,
-      callback, web_contents, this));
+      std::move(callback), web_contents, this));
 }
 
 void ExtensionPlatformKeysService::StartOrQueueTask(

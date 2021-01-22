@@ -38,11 +38,11 @@ class ExecutionWaiter {
 
   // Returns the callback to be passed to the PlatformKeysService operation
   // invocation.
-  base::RepeatingCallback<void(ResultCallbackArgs... result_callback_args,
-                               Status status)>
+  base::OnceCallback<void(ResultCallbackArgs... result_callback_args,
+                          Status status)>
   GetCallback() {
-    return base::BindRepeating(&ExecutionWaiter::OnExecutionDone,
-                               weak_ptr_factory_.GetWeakPtr());
+    return base::BindOnce(&ExecutionWaiter::OnExecutionDone,
+                          weak_ptr_factory_.GetWeakPtr());
   }
 
   // Waits until the callback returned by GetCallback() has been called.

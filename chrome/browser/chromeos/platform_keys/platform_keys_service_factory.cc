@@ -51,7 +51,7 @@ void GetCertDatabaseOnIoThread(
 
   base::RepeatingCallback<void(net::NSSCertDatabase*)> on_got_on_io_thread =
       base::BindRepeating(&DidGetCertDbOnIoThread, origin_task_runner,
-                          base::AdaptCallbackForRepeating(std::move(callback)));
+                          base::Passed(&callback));
   net::NSSCertDatabase* cert_db =
       GetNSSCertDatabaseForResourceContext(context, on_got_on_io_thread);
 

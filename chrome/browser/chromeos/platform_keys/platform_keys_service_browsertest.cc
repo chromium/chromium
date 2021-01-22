@@ -235,10 +235,9 @@ class PlatformKeysServiceBrowserTestBase
   }
 
  private:
-  void SetUserSlot(const base::Closure& done_callback,
-                   net::NSSCertDatabase* db) {
+  void SetUserSlot(base::OnceClosure done_callback, net::NSSCertDatabase* db) {
     user_slot_ = db->GetPrivateSlot();
-    done_callback.Run();
+    std::move(done_callback).Run();
   }
 
   const AccountId test_user_account_id_ = AccountId::FromUserEmailGaiaId(

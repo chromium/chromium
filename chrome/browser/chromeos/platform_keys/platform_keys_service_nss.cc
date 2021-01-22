@@ -1873,7 +1873,7 @@ void PlatformKeysServiceImpl::GetTokens(GetTokensCallback callback) {
   // Get the pointer to |state| before base::Passed releases |state|.
   NSSOperationState* state_ptr = state.get();
   GetCertDatabase(/*token_id=*/base::nullopt /* don't get any specific slot */,
-                  base::Bind(&GetTokensWithDB, base::Passed(&state)),
+                  base::BindOnce(&GetTokensWithDB, std::move(state)),
                   delegate_.get(), state_ptr);
 }
 
@@ -1891,7 +1891,7 @@ void PlatformKeysServiceImpl::GetKeyLocations(
 
   GetCertDatabase(
       /*token_id=*/base::nullopt /* don't get any specific slot */,
-      base::BindRepeating(&GetKeyLocationsWithDB, base::Passed(&state)),
+      base::BindOnce(&GetKeyLocationsWithDB, base::Passed(&state)),
       delegate_.get(), state_ptr);
 }
 

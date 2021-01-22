@@ -78,8 +78,7 @@ std::string GetSubjectPublicKeyInfo(
 void IntersectCertificates(
     const net::CertificateList& certs1,
     const net::CertificateList& certs2,
-    const base::Callback<void(std::unique_ptr<net::CertificateList>)>&
-        callback);
+    base::OnceCallback<void(std::unique_ptr<net::CertificateList>)> callback);
 
 // The output for GetPublicKeyAndAlgorithm.
 struct GetPublicKeyAndAlgorithmOutput {
