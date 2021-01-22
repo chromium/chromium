@@ -23,9 +23,18 @@ namespace remoting {
 
 namespace {
 
+// Standard path to CGSession (pre-Big Sur).
+// Note: This binary was removed for the official Big Sur release.
+// See tracking issues crbug://1169841 and rdar://8977508.
 const char* kCGSessionPath =
     "/System/Library/CoreServices/Menu Extras/User.menu/Contents/Resources/"
     "CGSession";
+
+// Alternate path to search for CGSession.
+// Admins can copy the CGSession binary here to get curtain mode to work again
+// on Mac hosts. This is a temporary workaround for CGSession being removed
+// on Big Sur.
+const char* kCGSessionAltPath = "/usr/local/sbin/CGSession";
 
 // Most machines will have < 4 displays but a larger upper bound won't hurt.
 const UInt32 kMaxDisplaysToQuery = 32;
@@ -179,9 +188,24 @@ void SessionWatcher::ActivateCurtain() {
     // could try reconnecting in that case (until we had a real fix deployed).
     // Issue is tracked via: rdar://42733382
     bool is_headless = IsRunningHeadless();
+
+    // Check to see if the CGSession binary is available. If we cannot find it,
+    // then we can't enable curtain mode and need to disconnect the session.
+    const char* cgsession_path = NULL;
+    if (access(kCGSessionPath, X_OK) == 0) {
+      cgsession_path = kCGSessionPath;
+    } else if (access(kCGSessionAltPath, X_OK) == 0) {
+      cgsession_path = kCGSessionAltPath;
+    } else {
+      // Disconnect the session since we are unable to enter curtain mode.
+      LOG(ERROR) << "Can't find CGSession - unable to enter curtain mode.";
+      DisconnectSession(protocol::ErrorCode::HOST_CONFIGURATION_ERROR);
+      return;
+    }
+
     pid_t child = fork();
     if (child == 0) {
-      execl(kCGSessionPath, kCGSessionPath, "-suspend", nullptr);
+      execl(cgsession_path, cgsession_path, "-suspend", nullptr);
       _exit(1);
     } else if (child > 0) {
       int status = 0;
