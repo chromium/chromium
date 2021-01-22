@@ -56,16 +56,17 @@ template <typename T>
 struct VectorTraits<blink::CrossThreadWeakPersistent<T>>
     : PersistentVectorTraitsBase<blink::CrossThreadWeakPersistent<T>> {};
 
-template <typename T, typename H>
-struct HandleHashTraits : SimpleClassHashTraits<H> {
-  STATIC_ONLY(HandleHashTraits);
+template <typename T, typename PersistentType>
+struct BasePersistentHashTraits : SimpleClassHashTraits<PersistentType> {
+  STATIC_ONLY(BasePersistentHashTraits);
+
   // TODO: Implement proper const'ness for iterator types. Requires support
   // in the marking Visitor.
   using PeekInType = T*;
-  using IteratorGetType = H*;
-  using IteratorConstGetType = const H*;
-  using IteratorReferenceType = H&;
-  using IteratorConstReferenceType = const H&;
+  using IteratorGetType = PersistentType*;
+  using IteratorConstGetType = const PersistentType*;
+  using IteratorReferenceType = PersistentType&;
+  using IteratorConstReferenceType = const PersistentType&;
   static IteratorReferenceType GetToReferenceConversion(IteratorGetType x) {
     return *x;
   }
@@ -77,20 +78,36 @@ struct HandleHashTraits : SimpleClassHashTraits<H> {
   using PeekOutType = T*;
 
   template <typename U>
-  static void Store(const U& value, H& storage) {
+  static void Store(const U& value, PersistentType& storage) {
     storage = value;
   }
 
-  static PeekOutType Peek(const H& value) { return value; }
+  static PeekOutType Peek(const PersistentType& value) { return value; }
+
+  static void ConstructDeletedValue(PersistentType& slot, bool) {
+#if BUILDFLAG(USE_V8_OILPAN)
+    slot = cppgc::kSentinelPointer;
+#else   // !USE_V8_OILPAN
+    slot = WTF::kHashTableDeletedValue;
+#endif  // !USE_V8_OILPAN
+  }
+
+  static bool IsDeletedValue(const PersistentType& value) {
+#if BUILDFLAG(USE_V8_OILPAN)
+    return value.Get() == cppgc::kSentinelPointer;
+#else   // !USE_V8_OILPAN
+    return value.IsHashTableDeletedValue();
+#endif  // !USE_V8_OILPAN
+  }
 };
 
 template <typename T>
 struct HashTraits<blink::Persistent<T>>
-    : HandleHashTraits<T, blink::Persistent<T>> {};
+    : BasePersistentHashTraits<T, blink::Persistent<T>> {};
 
 template <typename T>
 struct HashTraits<blink::CrossThreadPersistent<T>>
-    : HandleHashTraits<T, blink::CrossThreadPersistent<T>> {};
+    : BasePersistentHashTraits<T, blink::CrossThreadPersistent<T>> {};
 
 template <typename T>
 struct DefaultHash<blink::Persistent<T>> {
