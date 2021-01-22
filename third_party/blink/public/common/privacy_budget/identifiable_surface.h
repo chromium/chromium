@@ -65,25 +65,6 @@ class IdentifiableSurface {
   // {Type::kReservedInternal, 0} which is not possible for a valid surface.
   static constexpr uint64_t kInvalidHash = 0;
 
-  // HTML canvas readback -- bits [0-3] of the 64-bit input are the context type
-  // (Type::kCanvasReadback), bits [4-6] are skipped ops, sensitive ops, and
-  // partial image ops bits, respectively. The remaining bits are for the canvas
-  // operations digest. If the digest wasn't calculated (there's no digest for
-  // WebGL, for instance), the digest field is 0.
-  enum CanvasTaintBit : uint64_t {
-    // At least one drawing operation didn't update the digest -- this is ether
-    // due to performance or resource consumption reasons.
-    kSkipped = UINT64_C(0x10),
-
-    // At least one drawing operation operated on a sensitive string. Sensitive
-    // strings use a 16-bit hash digest.
-    kSensitive = UINT64_C(0x20),
-
-    // At least one drawing operation was only partially digested, for
-    // performance reasons.
-    kPartiallyDigested = UINT64_C(0x40)
-  };
-
   // Type of identifiable surface.
   //
   // Even though the data type is uint64_t, we can only use 8 bits due to how we
@@ -190,7 +171,7 @@ class IdentifiableSurface {
 
     // A type for recording reads of the offsetWidth and offsetHeight properties
     // when we believe it may be trying to detect the size of the scrollbar.
-    // The input for this surface should be a member of ScrollbarSurfaces.
+    // The input for this surface should be a member of `ScrollbarSurface`.
     kScrollbarSize = 17,
 
     // WebGL2RenderingContext.getInternal
@@ -248,10 +229,39 @@ class IdentifiableSurface {
     // (audio or video).
     kRtcRtpReceiverGetCapabilities = 32,
 
+    // Metadata that is not reported by the client. Different from
+    // kReservedInternal in that the inputs are not required to be defined in
+    // `ukm.xml`.
+    //
+    // This surface type should not be used in the client (browser). It's meant
+    // to be a reservation for additional surfaces that are determined during
+    // analysis.
+    kReservedMetadata = 34,
+
     // We can use values up to and including |kMax|.
     kMax = (1 << kTypeBits) - 1
   };
 
+  // HTML canvas readback -- bits [0-3] of the 64-bit input are the context type
+  // (Type::kCanvasReadback), bits [4-6] are skipped ops, sensitive ops, and
+  // partial image ops bits, respectively. The remaining bits are for the canvas
+  // operations digest. If the digest wasn't calculated (there's no digest for
+  // WebGL, for instance), the digest field is 0.
+  enum CanvasTaintBit : uint64_t {
+    // At least one drawing operation didn't update the digest -- this is ether
+    // due to performance or resource consumption reasons.
+    kSkipped = UINT64_C(0x10),
+
+    // At least one drawing operation operated on a sensitive string. Sensitive
+    // strings use a 16-bit hash digest.
+    kSensitive = UINT64_C(0x20),
+
+    // At least one drawing operation was only partially digested, for
+    // performance reasons.
+    kPartiallyDigested = UINT64_C(0x40)
+  };
+
+  // Possible inputs for Type::kScrollbarSize.
   enum class ScrollbarSurface : uint64_t {
     kScrollingElementWidth = 0,
     kScrollingElementHeight = 1,
