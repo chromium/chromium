@@ -27,6 +27,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>The frequency of ways that new user profiles are added.</summary>
 </histogram>
 
+<histogram name="Profile.AddSignInFlowOutcome"
+    enum="ProfileAddSignInFlowOutcome" expires_after="2021-07-18">
+  <owner>jkrcal@chromium.org</owner>
+  <owner>droger@chromium.org</owner>
+  <summary>
+    Records the outcome of signed-in profile creation whenever it's started (by
+    user choosing to sign-in in the first screen of the profile creation flow).
+  </summary>
+</histogram>
+
 <histogram name="Profile.AllAccounts.Categories"
     enum="ProfileAllAccountsCategories" expires_after="2021-05-16">
   <owner>jkrcal@chromium.org</owner>

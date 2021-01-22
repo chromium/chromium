@@ -177,6 +177,9 @@ void ContinueSAMLSignin(std::unique_ptr<content::WebContents> saml_wc,
       GURL(chrome::kChromeUINewTabURL));
 
   browser->tab_strip_model()->ReplaceWebContentsAt(0, std::move(saml_wc));
+
+  ProfileMetrics::LogProfileAddSignInFlowOutcome(
+      ProfileMetrics::ProfileAddSignInFlowOutcome::kSAML);
 }
 
 class ProfilePickerWidget : public views::Widget {
@@ -343,6 +346,17 @@ ProfilePickerView::~ProfilePickerView() {
     new_profile_contents_->SetDelegate(nullptr);
   if (system_profile_contents_)
     system_profile_contents_->SetDelegate(nullptr);
+
+  // Log profile creation flow abortion.
+  if (signed_in_profile_being_created_ && state_ != kFinalizing) {
+    if (name_for_signed_in_profile_.empty()) {
+      ProfileMetrics::LogProfileAddSignInFlowOutcome(
+          ProfileMetrics::ProfileAddSignInFlowOutcome::kAbortedBeforeSignIn);
+    } else {
+      ProfileMetrics::LogProfileAddSignInFlowOutcome(
+          ProfileMetrics::ProfileAddSignInFlowOutcome::kAbortedAfterSignIn);
+    }
+  }
 }
 
 void ProfilePickerView::Display(ProfilePicker::EntryPoint entry_point) {

@@ -56,6 +56,25 @@ class ProfileMetrics {
     kMaxValue = ADD_NEW_PROFILE_PICKER_SIGNED_IN
   };
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class ProfileAddSignInFlowOutcome {
+    kConsumerSync = 0,
+    kConsumerSigninOnly = 1,
+    kConsumerSyncSettings = 2,
+    kEnterpriseSync = 3,
+    kEnterpriseSigninOnly = 4,
+    kEnterpriseSigninOnlyNotLinked = 5,
+    kEnterpriseSyncSettings = 6,
+    kEnterpriseSyncDisabled = 7,
+    // Includes the case that the account is already syncing in another profile.
+    kLoginError = 8,
+    kSAML = 9,
+    kAbortedBeforeSignIn = 10,
+    kAbortedAfterSignIn = 11,
+    kMaxValue = kAbortedAfterSignIn,
+  };
+
   enum ProfileDelete {
     // Delete profile from settings page.
     DELETE_PROFILE_SETTINGS = 0,
@@ -149,6 +168,8 @@ class ProfileMetrics {
 
   static void LogNumberOfProfiles(ProfileAttributesStorage* storage);
   static void LogProfileAddNewUser(ProfileAdd metric);
+  static void LogProfileAddSignInFlowOutcome(
+      ProfileAddSignInFlowOutcome outcome);
   static void LogProfileAvatarSelection(size_t icon_index);
   static void LogProfileDeleteUser(ProfileDelete metric);
   static void LogProfileSwitchGaia(ProfileGaia metric);

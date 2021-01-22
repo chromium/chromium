@@ -243,6 +243,12 @@ void ProfileMetrics::LogProfileAddNewUser(ProfileAdd metric) {
                                 ProfileNetUserCounts::ADD_NEW_USER);
 }
 
+// static
+void ProfileMetrics::LogProfileAddSignInFlowOutcome(
+    ProfileAddSignInFlowOutcome outcome) {
+  base::UmaHistogramEnumeration("Profile.AddSignInFlowOutcome", outcome);
+}
+
 void ProfileMetrics::LogProfileAvatarSelection(size_t icon_index) {
   ProfileAvatar icon_name = AVATAR_UNKNOWN;
   switch (icon_index) {
