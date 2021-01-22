@@ -60,7 +60,7 @@ inline bool SkipOptionalSVGSpacesOrDelimiter(const CharType*& ptr,
   if (ptr < end && !IsHTMLSpace<CharType>(*ptr) && *ptr != delimiter)
     return false;
   if (SkipOptionalSVGSpaces(ptr, end)) {
-    if (ptr < end && *ptr == delimiter) {
+    if (*ptr == delimiter) {
       ptr++;
       SkipOptionalSVGSpaces(ptr, end);
     }
