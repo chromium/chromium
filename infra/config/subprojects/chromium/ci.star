@@ -5381,13 +5381,6 @@ ci.mojo_builder(
 )
 
 ci.mojo_builder(
-    name = "android-mojo-webview-rel",
-    console_view_entry = consoles.console_view_entry(
-        short_name = "aw",
-    ),
-)
-
-ci.mojo_builder(
     name = "mac-mojo-rel",
     console_view_entry = consoles.console_view_entry(
         short_name = "mac",

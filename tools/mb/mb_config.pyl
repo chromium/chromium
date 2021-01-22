@@ -537,7 +537,6 @@
       'Mojo ChromiumOS': 'chromeos_with_codecs_release_trybot',
       'Mojo Linux': 'release_trybot',
       'Mojo Windows': 'release_bot_x86_minimal_symbols',
-      'android-mojo-webview-rel': 'android_release_bot_minimal_symbols_arm64',
       'mac-mojo-rel': 'release_trybot',
     },
 

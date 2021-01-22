@@ -5339,24 +5339,6 @@
           'gtest_tests': 'mojo_windows_gtests',
         },
       },
-      'android-mojo-webview-rel': {
-        'swarming': {
-          'dimension_sets': [
-            {
-              'device_os': 'MMB29Q',
-              'device_type': 'bullhead',
-              'os': 'Android',
-            },
-          ],
-        },
-        'os_type': 'android',
-        'test_suites': {
-          'gtest_tests': 'network_service_android_gtests',
-        },
-        'mixins': [
-          'enable_resultdb',
-        ],
-      },
       'mac-mojo-rel': {
         'mixins': [
           'mac_10.13',
