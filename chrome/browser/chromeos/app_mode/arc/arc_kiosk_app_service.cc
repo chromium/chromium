@@ -227,7 +227,8 @@ void ArcKioskAppService::PreconditionsChanged() {
       VLOG(2) << "Starting kiosk app";
       app_launcher_ = std::make_unique<ArcKioskAppLauncher>(
           profile_, ArcAppListPrefs::Get(profile_), app_id_, this);
-      delegate_->OnAppPrepared();
+      if (delegate_)
+        delegate_->OnAppPrepared();
     }
   } else if (task_id_ != -1) {
     VLOG(2) << "Kiosk app should be closed";
