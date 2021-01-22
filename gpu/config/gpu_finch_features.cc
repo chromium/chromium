@@ -183,20 +183,21 @@ bool IsUsingVulkan() {
           features::kVulkan.name, base::FeatureList::OVERRIDE_ENABLE_FEATURE))
     return true;
 
+  // WebView checks, which do not use (and disables) kVulkan.
+  // Do this above the Android version check because there are test devices
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kWebViewDrawFunctorUsesVulkan) &&
+      base::FeatureList::IsEnabled(kWebViewVulkan)) {
+    return true;
+  }
+
   // No support for devices before Q -- exit before checking feature flags
   // so that devices are not counted in finch trials.
   if (base::android::BuildInfo::GetInstance()->sdk_int() <
       base::android::SDK_VERSION_Q)
     return false;
 
-  // WebView defaults disables Vulkan in AwMainDelegate::BasicStartupComplete.
-  bool enable = base::FeatureList::IsEnabled(kVulkan);
-
-  // Check WebView support.
-  enable = enable || (base::CommandLine::ForCurrentProcess()->HasSwitch(
-                          switches::kWebViewDrawFunctorUsesVulkan) &&
-                      base::FeatureList::IsEnabled(kWebViewVulkan));
-  return enable;
+  return base::FeatureList::IsEnabled(kVulkan);
 #else
   return base::FeatureList::IsEnabled(kVulkan);
 #endif
