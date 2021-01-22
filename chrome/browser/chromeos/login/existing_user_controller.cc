@@ -824,7 +824,7 @@ void ExistingUserController::LocalStateChanged(
 
 void ExistingUserController::OnConsumerKioskAutoLaunchCheckCompleted(
     KioskAppManager::ConsumerKioskAutoLaunchStatus status) {
-  if (status == KioskAppManager::CONSUMER_KIOSK_AUTO_LAUNCH_CONFIGURABLE)
+  if (status == KioskAppManager::ConsumerKioskAutoLaunchStatus::kConfigurable)
     ShowKioskEnableScreen();
 }
 

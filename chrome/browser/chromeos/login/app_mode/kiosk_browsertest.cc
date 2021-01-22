@@ -257,7 +257,8 @@ void ConsumerKioskAutoLaunchStatusCheck(
     KioskAppManager::ConsumerKioskAutoLaunchStatus* out_status,
     base::OnceClosure runner_quit_task,
     KioskAppManager::ConsumerKioskAutoLaunchStatus in_status) {
-  LOG(INFO) << "KioskAppManager::ConsumerKioskModeStatus = " << in_status;
+  LOG(INFO) << "KioskAppManager::ConsumerKioskModeStatus = "
+            << static_cast<int>(in_status);
   *out_status = in_status;
   std::move(runner_quit_task).Run();
 }
@@ -1191,7 +1192,7 @@ IN_PROC_BROWSER_TEST_F(KioskTest, KioskEnableCancel) {
   ASSERT_TRUE(wizard_controller);
 
   // Check Kiosk mode status.
-  EXPECT_EQ(KioskAppManager::CONSUMER_KIOSK_AUTO_LAUNCH_CONFIGURABLE,
+  EXPECT_EQ(KioskAppManager::ConsumerKioskAutoLaunchStatus::kConfigurable,
             GetConsumerKioskModeStatus());
 
   // Wait for the login UI to come up and switch to the kiosk_enable screen.
@@ -1208,7 +1209,7 @@ IN_PROC_BROWSER_TEST_F(KioskTest, KioskEnableCancel) {
   OobeScreenWaiter(GetFirstSigninScreen()).Wait();
 
   // Check that the status still says configurable.
-  EXPECT_EQ(KioskAppManager::CONSUMER_KIOSK_AUTO_LAUNCH_CONFIGURABLE,
+  EXPECT_EQ(KioskAppManager::ConsumerKioskAutoLaunchStatus::kConfigurable,
             GetConsumerKioskModeStatus());
 }
 
@@ -1220,7 +1221,7 @@ IN_PROC_BROWSER_TEST_F(KioskTest, KioskEnableConfirmed) {
   ASSERT_TRUE(wizard_controller);
 
   // Check Kiosk mode status.
-  EXPECT_EQ(KioskAppManager::CONSUMER_KIOSK_AUTO_LAUNCH_CONFIGURABLE,
+  EXPECT_EQ(KioskAppManager::ConsumerKioskAutoLaunchStatus::kConfigurable,
             GetConsumerKioskModeStatus());
 
   // Wait for the login UI to come up and switch to the kiosk_enable screen.
@@ -1239,7 +1240,7 @@ IN_PROC_BROWSER_TEST_F(KioskTest, KioskEnableConfirmed) {
                     ".state_ == 'success'")
       ->Wait();
 
-  EXPECT_EQ(KioskAppManager::CONSUMER_KIOSK_AUTO_LAUNCH_ENABLED,
+  EXPECT_EQ(KioskAppManager::ConsumerKioskAutoLaunchStatus::kEnabled,
             GetConsumerKioskModeStatus());
 }
 
@@ -1250,7 +1251,7 @@ IN_PROC_BROWSER_TEST_F(KioskTest, KioskEnableAfter2ndSigninScreen) {
   ASSERT_TRUE(wizard_controller);
 
   // Check Kiosk mode status.
-  EXPECT_EQ(KioskAppManager::CONSUMER_KIOSK_AUTO_LAUNCH_CONFIGURABLE,
+  EXPECT_EQ(KioskAppManager::ConsumerKioskAutoLaunchStatus::kConfigurable,
             GetConsumerKioskModeStatus());
 
   // Wait for the login UI to come up and switch to the kiosk_enable screen.

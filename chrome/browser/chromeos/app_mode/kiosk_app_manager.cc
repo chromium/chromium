@@ -324,7 +324,7 @@ void KioskAppManager::GetConsumerKioskAutoLaunchStatus(
     KioskAppManager::GetConsumerKioskAutoLaunchStatusCallback callback) {
   if (!IsConsumerKioskEnabled()) {
     if (callback)
-      std::move(callback).Run(CONSUMER_KIOSK_AUTO_LAUNCH_DISABLED);
+      std::move(callback).Run(ConsumerKioskAutoLaunchStatus::kDisabled);
     return;
   }
 
@@ -363,9 +363,9 @@ void KioskAppManager::OnOwnerFileChecked(
   // If we have owner already established on the machine, don't let
   // consumer kiosk to be enabled.
   if (ownership_established_)
-    std::move(callback).Run(CONSUMER_KIOSK_AUTO_LAUNCH_DISABLED);
+    std::move(callback).Run(ConsumerKioskAutoLaunchStatus::kDisabled);
   else
-    std::move(callback).Run(CONSUMER_KIOSK_AUTO_LAUNCH_CONFIGURABLE);
+    std::move(callback).Run(ConsumerKioskAutoLaunchStatus::kConfigurable);
 }
 
 void KioskAppManager::OnReadImmutableAttributes(
@@ -374,14 +374,14 @@ void KioskAppManager::OnReadImmutableAttributes(
     return;
 
   ConsumerKioskAutoLaunchStatus status =
-      CONSUMER_KIOSK_AUTO_LAUNCH_DISABLED;
+      ConsumerKioskAutoLaunchStatus::kDisabled;
   policy::BrowserPolicyConnectorChromeOS* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
   InstallAttributes* attributes = connector->GetInstallAttributes();
   switch (attributes->GetMode()) {
     case policy::DEVICE_MODE_NOT_SET: {
       if (!base::SysInfo::IsRunningOnChromeOS()) {
-        status = CONSUMER_KIOSK_AUTO_LAUNCH_CONFIGURABLE;
+        status = ConsumerKioskAutoLaunchStatus::kConfigurable;
       } else if (!ownership_established_) {
         bool* owner_present = new bool(false);
         base::ThreadPool::PostTaskAndReply(
@@ -395,7 +395,7 @@ void KioskAppManager::OnReadImmutableAttributes(
       break;
     }
     case policy::DEVICE_MODE_CONSUMER_KIOSK_AUTOLAUNCH:
-      status = CONSUMER_KIOSK_AUTO_LAUNCH_ENABLED;
+      status = ConsumerKioskAutoLaunchStatus::kEnabled;
       break;
     default:
       break;

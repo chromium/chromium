@@ -187,7 +187,7 @@ void KioskAppsHandler::OnGetConsumerKioskAutoLaunchStatus(
       is_kiosk_enabled_ =
           ProfileHelper::IsOwnerProfile(Profile::FromWebUI(web_ui()));
       is_auto_launch_enabled_ =
-          status == KioskAppManager::CONSUMER_KIOSK_AUTO_LAUNCH_ENABLED;
+          status == KioskAppManager::ConsumerKioskAutoLaunchStatus::kEnabled;
     }
   } else {
     // Otherwise, consumer kiosk is disabled.

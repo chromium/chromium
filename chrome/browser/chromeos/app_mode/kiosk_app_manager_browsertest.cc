@@ -73,7 +73,8 @@ void ConsumerKioskAutoLaunchStatusCheck(
     KioskAppManager::ConsumerKioskAutoLaunchStatus* out_status,
     base::OnceClosure runner_quit_task,
     KioskAppManager::ConsumerKioskAutoLaunchStatus in_status) {
-  LOG(INFO) << "ConsumerKioskAutoLaunchStatus = " << in_status;
+  LOG(INFO) << "ConsumerKioskAutoLaunchStatus = "
+            << static_cast<int>(in_status);
   *out_status = in_status;
   std::move(runner_quit_task).Run();
 }
@@ -901,14 +902,15 @@ IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, EnableConsumerKiosk) {
       switches::kEnableConsumerKiosk);
 
   KioskAppManager::ConsumerKioskAutoLaunchStatus status =
-      KioskAppManager::CONSUMER_KIOSK_AUTO_LAUNCH_DISABLED;
+      KioskAppManager::ConsumerKioskAutoLaunchStatus::kDisabled;
   bool locked = false;
 
   base::RunLoop run_loop;
   manager()->GetConsumerKioskAutoLaunchStatus(base::BindOnce(
       &ConsumerKioskAutoLaunchStatusCheck, &status, run_loop.QuitClosure()));
   run_loop.Run();
-  EXPECT_EQ(status, KioskAppManager::CONSUMER_KIOSK_AUTO_LAUNCH_CONFIGURABLE);
+  EXPECT_EQ(status,
+            KioskAppManager::ConsumerKioskAutoLaunchStatus::kConfigurable);
 
   base::RunLoop run_loop2;
   manager()->EnableConsumerKioskAutoLaunch(base::BindOnce(
@@ -920,18 +922,18 @@ IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, EnableConsumerKiosk) {
   manager()->GetConsumerKioskAutoLaunchStatus(base::BindOnce(
       &ConsumerKioskAutoLaunchStatusCheck, &status, run_loop3.QuitClosure()));
   run_loop3.Run();
-  EXPECT_EQ(status, KioskAppManager::CONSUMER_KIOSK_AUTO_LAUNCH_ENABLED);
+  EXPECT_EQ(status, KioskAppManager::ConsumerKioskAutoLaunchStatus::kEnabled);
 }
 
 IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, ConsumerKioskDisabled) {
   KioskAppManager::ConsumerKioskAutoLaunchStatus status =
-      KioskAppManager::CONSUMER_KIOSK_AUTO_LAUNCH_CONFIGURABLE;
+      KioskAppManager::ConsumerKioskAutoLaunchStatus::kConfigurable;
 
   base::RunLoop run_loop;
   manager()->GetConsumerKioskAutoLaunchStatus(base::BindOnce(
       &ConsumerKioskAutoLaunchStatusCheck, &status, run_loop.QuitClosure()));
   run_loop.Run();
-  EXPECT_EQ(status, KioskAppManager::CONSUMER_KIOSK_AUTO_LAUNCH_DISABLED);
+  EXPECT_EQ(status, KioskAppManager::ConsumerKioskAutoLaunchStatus::kDisabled);
 }
 
 IN_PROC_BROWSER_TEST_F(KioskAppManagerTest,
@@ -944,14 +946,14 @@ IN_PROC_BROWSER_TEST_F(KioskAppManagerTest,
   EXPECT_EQ(LockDeviceForEnterprise(), InstallAttributes::LOCK_SUCCESS);
 
   KioskAppManager::ConsumerKioskAutoLaunchStatus status =
-      KioskAppManager::CONSUMER_KIOSK_AUTO_LAUNCH_DISABLED;
+      KioskAppManager::ConsumerKioskAutoLaunchStatus::kDisabled;
   bool locked = true;
 
   base::RunLoop run_loop;
   manager()->GetConsumerKioskAutoLaunchStatus(base::BindOnce(
       &ConsumerKioskAutoLaunchStatusCheck, &status, run_loop.QuitClosure()));
   run_loop.Run();
-  EXPECT_EQ(status, KioskAppManager::CONSUMER_KIOSK_AUTO_LAUNCH_DISABLED);
+  EXPECT_EQ(status, KioskAppManager::ConsumerKioskAutoLaunchStatus::kDisabled);
 
   base::RunLoop run_loop2;
   manager()->EnableConsumerKioskAutoLaunch(base::BindOnce(
@@ -963,7 +965,7 @@ IN_PROC_BROWSER_TEST_F(KioskAppManagerTest,
   manager()->GetConsumerKioskAutoLaunchStatus(base::BindOnce(
       &ConsumerKioskAutoLaunchStatusCheck, &status, run_loop3.QuitClosure()));
   run_loop3.Run();
-  EXPECT_EQ(status, KioskAppManager::CONSUMER_KIOSK_AUTO_LAUNCH_DISABLED);
+  EXPECT_EQ(status, KioskAppManager::ConsumerKioskAutoLaunchStatus::kDisabled);
 }
 
 IN_PROC_BROWSER_TEST_F(KioskAppManagerTest,

@@ -46,14 +46,14 @@ class OwnerSettingsServiceChromeOS;
 class KioskAppManager : public KioskAppManagerBase,
                         public ExternalCacheDelegate {
  public:
-  enum ConsumerKioskAutoLaunchStatus {
+  enum class ConsumerKioskAutoLaunchStatus {
     // Consumer kiosk mode auto-launch feature can be enabled on this machine.
-    CONSUMER_KIOSK_AUTO_LAUNCH_CONFIGURABLE,
+    kConfigurable,
     // Consumer kiosk auto-launch feature is enabled on this machine.
-    CONSUMER_KIOSK_AUTO_LAUNCH_ENABLED,
+    kEnabled,
     // Consumer kiosk mode auto-launch feature is disabled and cannot any longer
     // be enabled on this machine.
-    CONSUMER_KIOSK_AUTO_LAUNCH_DISABLED,
+    kDisabled,
   };
 
   using EnableKioskAutoLaunchCallback = base::OnceCallback<void(bool success)>;

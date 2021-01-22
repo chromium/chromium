@@ -49,7 +49,7 @@ void KioskEnableScreen::ShowImpl() {
 void KioskEnableScreen::OnGetConsumerKioskAutoLaunchStatus(
     KioskAppManager::ConsumerKioskAutoLaunchStatus status) {
   is_configurable_ =
-      (status == KioskAppManager::CONSUMER_KIOSK_AUTO_LAUNCH_CONFIGURABLE);
+      (status == KioskAppManager::ConsumerKioskAutoLaunchStatus::kConfigurable);
   if (!is_configurable_) {
     LOG(WARNING) << "Consumer kiosk auto launch feature is not configurable!";
     HandleClose();
