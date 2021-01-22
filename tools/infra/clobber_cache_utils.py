@@ -35,7 +35,6 @@ def _trigger_clobber(swarming_server, pool, cache, bot, mount_rel_path,
   cmd = [
       _SWARMING_CLIENT,
       'trigger',
-      '-raw-cmd',
       '-S',
       swarming_server,
       '-dimension',
