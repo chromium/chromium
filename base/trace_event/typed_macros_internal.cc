@@ -51,6 +51,10 @@ GetPhaseAndIdForTraceLog(bool explicit_track, uint64_t track_uuid, char phase) {
 
 }  // namespace
 
+namespace trace_event_internal {
+const perfetto::Track kDefaultTrack{};
+}  // namespace trace_event_internal
+
 namespace base {
 namespace trace_event {
 

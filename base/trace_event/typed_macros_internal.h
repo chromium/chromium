@@ -59,7 +59,7 @@
 
 namespace trace_event_internal {
 
-static const perfetto::Track kDefaultTrack{};
+extern BASE_EXPORT const perfetto::Track kDefaultTrack;
 
 // Copy of function with the same name from Perfetto client library.
 template <typename T>
