@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/layout/layout_shift_tracker.h"
 
 #include "third_party/blink/public/common/input/web_mouse_event.h"
+#include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
@@ -621,6 +622,48 @@ TEST_F(LayoutShiftTrackerTest, ClipByVisualViewport) {
   // 100.0 / 500.0: shift distance fraction
   EXPECT_FLOAT_EQ(50.0 * (100.0 + 100.0) / (200.0 * 500.0) * (100.0 / 500.0),
                   GetLayoutShiftTracker().Score());
+}
+
+TEST_F(LayoutShiftTrackerTest, ScrollThenCauseScrollAnchoring) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      .big {
+        width: 100px;
+        height: 500px;
+        background: blue;
+      }
+      .small {
+        width: 100px;
+        height: 100px;
+        background: green;
+      }
+    </style>
+    <div class=big id=target></div>
+    <div class=big></div>
+    <div class=big></div>
+    <div class=big></div>
+    <div class=big></div>
+    <div class=big></div>
+  )HTML");
+  auto* target_element = GetDocument().getElementById("target");
+
+  // Scroll the window which accumulates a scroll in the layout shift tracker.
+  GetDocument().domWindow()->scrollBy(0, 1000);
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
+
+  target_element->classList().Remove("big");
+  target_element->classList().Add("small");
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
+
+  target_element->classList().Remove("small");
+  target_element->classList().Add("big");
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
 }
 
 }  // namespace blink

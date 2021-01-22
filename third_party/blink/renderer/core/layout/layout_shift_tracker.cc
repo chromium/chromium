@@ -423,7 +423,7 @@ double LayoutShiftTracker::SubframeWeightingFactor() const {
          main_frame_size.Area();
 }
 
-void LayoutShiftTracker::NotifyPrePaintFinished() {
+void LayoutShiftTracker::NotifyPrePaintFinishedInternal() {
   if (!is_active_)
     return;
   if (region_.IsEmpty())
@@ -465,8 +465,13 @@ void LayoutShiftTracker::NotifyPrePaintFinished() {
 
   if (!region_.IsEmpty())
     SetLayoutShiftRects(region_.GetRects());
-  region_.Reset();
+}
 
+void LayoutShiftTracker::NotifyPrePaintFinished() {
+  NotifyPrePaintFinishedInternal();
+
+  // Reset accumulated state.
+  region_.Reset();
   frame_max_distance_ = 0.0;
   frame_scroll_delta_ = ScrollOffset();
   attributions_.fill(Attribution());

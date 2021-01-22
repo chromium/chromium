@@ -157,6 +157,7 @@ class CORE_EXPORT LayoutShiftTracker final
   void UpdateInputTimestamp(base::TimeTicks timestamp);
   LayoutShift::AttributionList CreateAttributionList() const;
   void SubmitPerformanceEntry(double score_delta, bool input_detected) const;
+  void NotifyPrePaintFinishedInternal();
 
   Member<LocalFrameView> frame_view_;
   bool is_active_;
