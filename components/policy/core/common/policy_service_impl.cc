@@ -166,7 +166,7 @@ void DowngradeMetricsReportingToRecommendedPolicy(PolicyMap* policies) {
   if (policy && policy->level != POLICY_LEVEL_RECOMMENDED && policy->value() &&
       policy->value()->is_bool() && policy->value()->GetBool()) {
     policy->level = POLICY_LEVEL_RECOMMENDED;
-    policy->AddMessage(PolicyMap::MessageType::kError,
+    policy->AddMessage(PolicyMap::MessageType::kInfo,
                        IDS_POLICY_IGNORED_MANDATORY_REPORTING_POLICY);
   }
 }
