@@ -136,6 +136,9 @@ class COMPONENT_EXPORT(UI_BASE_X) SelectionOwner {
   // The time that this instance took ownership of its selection.
   x11::Time acquired_selection_timestamp_;
 
+  // The maximum size of data we can put in XChangeProperty().
+  size_t max_request_size_;
+
   // The data we are currently serving.
   SelectionFormatMap format_map_;
 

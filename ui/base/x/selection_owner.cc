@@ -39,11 +39,16 @@ const int kIncrementalTransferTimeoutMs = 10000;
 static_assert(KSelectionOwnerTimerPeriodMs <= kIncrementalTransferTimeoutMs,
               "timer period must be <= transfer timeout");
 
-size_t GetMaxIncrementalTransferSize() {
-  ssize_t size = x11::Connection::Get()->MaxRequestSizeInBytes();
-  // Conservatively subtract 100 bytes for the GetProperty request, padding etc.
-  DCHECK_GT(size, 100);
-  return std::min(size - 100, 0x100000l);
+// Returns a conservative max size of the data we can pass into
+// XChangeProperty(). Copied from GTK.
+size_t GetMaxRequestSize(x11::Connection* connection) {
+  long extended_max_size = connection->extended_max_request_length();
+  long max_size =
+      (extended_max_size ? extended_max_size
+                         : connection->setup().maximum_request_length) -
+      100;
+  return std::min(static_cast<long>(0x40000),
+                  std::max(static_cast<long>(0), max_size));
 }
 
 // Gets the value of an atom pair array property. On success, true is returned
@@ -80,7 +85,9 @@ void SetSelectionOwner(x11::Window window,
 SelectionOwner::SelectionOwner(x11::Connection* connection,
                                x11::Window x_window,
                                x11::Atom selection_name)
-    : x_window_(x_window), selection_name_(selection_name) {}
+    : x_window_(x_window),
+      selection_name_(selection_name),
+      max_request_size_(GetMaxRequestSize(connection)) {}
 
 SelectionOwner::~SelectionOwner() {
   // If we are the selection owner, we need to release the selection so we
@@ -210,7 +217,7 @@ bool SelectionOwner::ProcessTarget(x11::Atom target,
   // Try to find the data type in map.
   auto it = format_map_.find(target);
   if (it != format_map_.end()) {
-    if (it->second->size() > GetMaxIncrementalTransferSize()) {
+    if (it->second->size() > max_request_size_) {
       // We must send the data back in several chunks due to a limitation in
       // the size of X requests. Notify the selection requestor that the data
       // will be sent incrementally by returning data of type "INCR".
@@ -253,7 +260,7 @@ bool SelectionOwner::ProcessTarget(x11::Atom target,
 
 void SelectionOwner::ProcessIncrementalTransfer(IncrementalTransfer* transfer) {
   size_t remaining = transfer->data->size() - transfer->offset;
-  size_t chunk_length = std::min(remaining, GetMaxIncrementalTransferSize());
+  size_t chunk_length = std::min(remaining, max_request_size_);
   const uint8_t* data = transfer->data->front() + transfer->offset;
   std::vector<uint8_t> buf(data, data + chunk_length);
   SetArrayProperty(transfer->window, transfer->property, transfer->target, buf);
