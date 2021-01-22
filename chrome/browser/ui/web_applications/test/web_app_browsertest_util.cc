@@ -88,6 +88,17 @@ class BrowserRemovedWaiter final : public BrowserListObserver {
   base::RunLoop run_loop_;
 };
 
+void AutoAcceptDialogCallback(
+    content::WebContents* initiator_web_contents,
+    std::unique_ptr<WebApplicationInfo> web_app_info,
+    ForInstallableSite for_installable_site,
+    InstallManager::WebAppInstallationAcceptanceCallback acceptance_callback) {
+  web_app_info->open_as_window = true;
+  std::move(acceptance_callback)
+      .Run(
+          /*user_accepted=*/true, std::move(web_app_info));
+}
+
 }  // namespace
 
 AppId InstallWebApp(Profile* profile,
@@ -114,6 +125,32 @@ AppId InstallWebApp(Profile* profile,
   return app_id;
 }
 
+AppId InstallWebAppFromPage(Browser* browser, const GURL& app_url) {
+  NavigateToURLAndWait(browser, app_url);
+
+  AppId app_id;
+  base::RunLoop run_loop;
+
+  auto* provider = WebAppProvider::Get(browser->profile());
+  DCHECK(provider);
+  WaitUntilReady(provider);
+  provider->install_manager().InstallWebAppFromManifestWithFallback(
+      browser->tab_strip_model()->GetActiveWebContents(),
+      /*force_shortcut_app=*/true,
+      webapps::WebappInstallSource::MENU_BROWSER_TAB,
+      base::BindOnce(&AutoAcceptDialogCallback),
+      base::BindLambdaForTesting(
+          [&run_loop, &app_id](const AppId& installed_app_id,
+                               InstallResultCode code) {
+            DCHECK_EQ(code, InstallResultCode::kSuccessNewInstall);
+            app_id = installed_app_id;
+            run_loop.Quit();
+          }));
+
+  run_loop.Run();
+  return app_id;
+}
+
 AppId InstallWebAppFromManifest(Browser* browser, const GURL& app_url) {
   ServiceWorkerRegistrationWaiter registration_waiter(browser->profile(),
                                                       app_url);
@@ -130,16 +167,7 @@ AppId InstallWebAppFromManifest(Browser* browser, const GURL& app_url) {
       browser->tab_strip_model()->GetActiveWebContents(),
       /*force_shortcut_app=*/false,
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
-      base::BindLambdaForTesting(
-          [](content::WebContents* initiator_web_contents,
-             std::unique_ptr<WebApplicationInfo> web_app_info,
-             ForInstallableSite for_installable_site,
-             InstallManager::WebAppInstallationAcceptanceCallback
-                 acceptance_callback) {
-            std::move(acceptance_callback)
-                .Run(
-                    /*user_accepted=*/true, std::move(web_app_info));
-          }),
+      base::BindOnce(&AutoAcceptDialogCallback),
       base::BindLambdaForTesting(
           [&run_loop, &app_id](const AppId& installed_app_id,
                                InstallResultCode code) {

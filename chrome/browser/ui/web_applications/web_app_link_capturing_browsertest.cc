@@ -18,6 +18,7 @@
 #include "chrome/common/chrome_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace web_app {
 
@@ -26,23 +27,26 @@ class WebAppLinkCapturingBrowserTest : public WebAppNavigationBrowserTest {
   WebAppLinkCapturingBrowserTest() = default;
   ~WebAppLinkCapturingBrowserTest() override = default;
 
-  void SetUp() override {
-    // TODO(crbug.com/1092789): Migrate the implementation to make web app link
-    // capturing feature to work with AppServiceIntentHandling.
-    features_.InitWithFeatures({features::kDesktopPWAsTabStrip,
-                                features::kDesktopPWAsTabStripLinkCapturing},
-                               {});
-    WebAppNavigationBrowserTest::SetUp();
-  }
-
   void SetUpOnMainThread() override {
     WebAppNavigationBrowserTest::SetUpOnMainThread();
-    auto web_app_info = std::make_unique<WebApplicationInfo>();
-    web_app_info->start_url = start_url_;
-    web_app_info->open_as_window = true;
-    app_id_ = web_app::InstallWebApp(profile(), std::move(web_app_info));
-    provider().registry_controller().SetExperimentalTabbedWindowMode(
-        app_id_, true, /*is_user_action=*/false);
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+  void InstallTestApp(const char* path) {
+    start_url_ = embedded_test_server()->GetURL(path);
+    in_scope_1_ = start_url_.Resolve("page1.html");
+    in_scope_2_ = start_url_.Resolve("page2.html");
+    scope_ = start_url_.GetWithoutFilename();
+
+    // Create new tab to navigate, install, automatically pop out and then
+    // close. This sequence avoids altering the browser window state we started
+    // with.
+    AddTab(browser(), about_blank_);
+    app_id_ = web_app::InstallWebAppFromPage(browser(), start_url_);
+    Browser* app_browser = BrowserList::GetInstance()->GetLastActive();
+    EXPECT_NE(app_browser, browser());
+    EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser, app_id_));
+    chrome::CloseWindow(app_browser);
   }
 
   WebAppProviderBase& provider() {
@@ -51,8 +55,15 @@ class WebAppLinkCapturingBrowserTest : public WebAppNavigationBrowserTest {
     return *provider;
   }
 
-  void NavigateMainBrowser(const GURL& url) {
-    ClickLinkAndWait(browser()->tab_strip_model()->GetActiveWebContents(), url,
+  void AddTab(Browser* browser, GURL url) {
+    auto observer = std::make_unique<content::TestNavigationObserver>(url);
+    observer->StartWatchingNewWebContents();
+    chrome::AddTabAt(browser, url, /*index=*/-1, /*foreground=*/true);
+    observer->Wait();
+  }
+
+  void Navigate(Browser* browser, const GURL& url) {
+    ClickLinkAndWait(browser->tab_strip_model()->GetActiveWebContents(), url,
                      LinkTarget::SELF, "");
   }
 
@@ -74,55 +85,76 @@ class WebAppLinkCapturingBrowserTest : public WebAppNavigationBrowserTest {
 
  protected:
   AppId app_id_;
-  GURL start_url_{"https://example.org/dir/start.html"};
-  GURL about_blank_{"about:blank"};
-  GURL in_scope_1_{"https://example.org/dir/page1.html"};
-  GURL in_scope_2_{"https://example.org/dir/page2.html"};
-  GURL origin_{"https://example.org/"};
-  GURL out_of_scope_{"https://other-domain.org/"};
+  GURL start_url_;
+  GURL in_scope_1_;
+  GURL in_scope_2_;
+  GURL scope_;
+
+  const GURL about_blank_{"about:blank"};
+  const GURL out_of_scope_{"https://other-domain.org/"};
+};
+
+class WebAppTabStripLinkCapturingBrowserTest
+    : public WebAppLinkCapturingBrowserTest {
+ public:
+  WebAppTabStripLinkCapturingBrowserTest() {
+    features_.InitWithFeatures({features::kDesktopPWAsTabStrip,
+                                features::kDesktopPWAsTabStripLinkCapturing},
+                               {});
+  }
+
+  void InstallTestApp() {
+    WebAppLinkCapturingBrowserTest::InstallTestApp("/web_apps/basic.html");
+    provider().registry_controller().SetExperimentalTabbedWindowMode(
+        app_id_, true, /*is_user_action=*/false);
+  }
 
  private:
   base::test::ScopedFeatureList features_;
 };
 
-IN_PROC_BROWSER_TEST_F(WebAppLinkCapturingBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppTabStripLinkCapturingBrowserTest,
                        InScopeNavigationsCaptured) {
+  InstallTestApp();
+
   // Start browser at an out of scope page.
-  NavigateMainBrowser(out_of_scope_);
+  Navigate(browser(), out_of_scope_);
 
   // In scope navigation should open app window.
-  NavigateMainBrowser(in_scope_1_);
+  Navigate(browser(), in_scope_1_);
   Browser* app_browser = BrowserList::GetInstance()->GetLastActive();
   EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser, app_id_));
   ExpectTabs(browser(), {out_of_scope_});
   ExpectTabs(app_browser, {in_scope_1_});
 
   // Another in scope navigation should open a new tab in the same app window.
-  NavigateMainBrowser(in_scope_2_);
+  Navigate(browser(), in_scope_2_);
   ExpectTabs(browser(), {out_of_scope_});
   ExpectTabs(app_browser, {in_scope_1_, in_scope_2_});
 
   // Whole origin should count as in scope.
-  NavigateMainBrowser(origin_);
+  Navigate(browser(), scope_);
   ExpectTabs(browser(), {out_of_scope_});
-  ExpectTabs(app_browser, {in_scope_1_, in_scope_2_, origin_});
+  ExpectTabs(app_browser, {in_scope_1_, in_scope_2_, scope_});
 
   // Out of scope should behave as usual.
-  NavigateMainBrowser(out_of_scope_);
+  Navigate(browser(), out_of_scope_);
   ExpectTabs(browser(), {out_of_scope_});
-  ExpectTabs(app_browser, {in_scope_1_, in_scope_2_, origin_});
+  ExpectTabs(app_browser, {in_scope_1_, in_scope_2_, scope_});
 }
 
 // First about:blank captures in scope navigations.
-IN_PROC_BROWSER_TEST_F(WebAppLinkCapturingBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppTabStripLinkCapturingBrowserTest,
                        AboutBlankNavigationReparented) {
+  InstallTestApp();
+
   ExpectTabs(browser(), {about_blank_});
   content::WebContents* reparent_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
   // Navigations from a fresh about:blank page should reparent.
   // When no app window is open one should be created.
-  NavigateMainBrowser(in_scope_1_);
+  Navigate(browser(), in_scope_1_);
   Browser* app_browser = BrowserList::GetInstance()->GetLastActive();
   EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser, app_id_));
   ExpectTabs(browser(), {NtpUrl()});
@@ -133,7 +165,7 @@ IN_PROC_BROWSER_TEST_F(WebAppLinkCapturingBrowserTest,
   // Navigations from a fresh about:blank page via JavaScript should also
   // reparent. When there is already an app window open we should reparent into
   // it.
-  chrome::AddTabAt(browser(), about_blank_, /*index=*/-1, /*foreground=*/true);
+  AddTab(browser(), about_blank_);
   ExpectTabs(browser(), {NtpUrl(), about_blank_});
   reparent_web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   {
@@ -149,6 +181,81 @@ IN_PROC_BROWSER_TEST_F(WebAppLinkCapturingBrowserTest,
   ExpectTabs(app_browser, {in_scope_1_, in_scope_2_});
   EXPECT_EQ(reparent_web_contents,
             app_browser->tab_strip_model()->GetActiveWebContents());
+}
+
+class WebAppDeclarativeLinkCapturingBrowserTest
+    : public WebAppLinkCapturingBrowserTest {
+ public:
+  WebAppDeclarativeLinkCapturingBrowserTest() {
+    features_.InitAndEnableFeature(blink::features::kWebAppEnableLinkCapturing);
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebAppDeclarativeLinkCapturingBrowserTest,
+                       CaptureLinksUnset) {
+  InstallTestApp("/web_apps/basic.html");
+
+  // No link capturing should happen.
+  Navigate(browser(), start_url_);
+  EXPECT_EQ(browser(), BrowserList::GetInstance()->GetLastActive());
+  ExpectTabs(browser(), {start_url_});
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppDeclarativeLinkCapturingBrowserTest,
+                       CaptureLinksNone) {
+  InstallTestApp("/web_apps/capture_links_none.html");
+
+  // No link capturing should happen.
+  Navigate(browser(), start_url_);
+  EXPECT_EQ(browser(), BrowserList::GetInstance()->GetLastActive());
+  ExpectTabs(browser(), {start_url_});
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppDeclarativeLinkCapturingBrowserTest,
+                       CaptureLinksNewClient) {
+  InstallTestApp("/web_apps/capture_links_new_client.html");
+
+  Navigate(browser(), out_of_scope_);
+
+  // In scope navigation should open an app window.
+  Navigate(browser(), in_scope_1_);
+  Browser* app_browser_1 = BrowserList::GetInstance()->GetLastActive();
+  EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser_1, app_id_));
+  ExpectTabs(browser(), {out_of_scope_});
+  ExpectTabs(app_browser_1, {in_scope_1_});
+
+  // In scope navigation should open a new app window.
+  Navigate(browser(), in_scope_2_);
+  Browser* app_browser_2 = BrowserList::GetInstance()->GetLastActive();
+  EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser_2, app_id_));
+  EXPECT_NE(app_browser_1, app_browser_2);
+  ExpectTabs(browser(), {out_of_scope_});
+  ExpectTabs(app_browser_1, {in_scope_1_});
+  ExpectTabs(app_browser_2, {in_scope_2_});
+
+  // In scope navigation from app window should not capture.
+  Navigate(app_browser_1, in_scope_2_);
+  EXPECT_EQ(app_browser_2, BrowserList::GetInstance()->GetLastActive());
+  ExpectTabs(browser(), {out_of_scope_});
+  ExpectTabs(app_browser_1, {in_scope_2_});
+  ExpectTabs(app_browser_2, {in_scope_2_});
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppDeclarativeLinkCapturingBrowserTest,
+                       InAppScopeNavigationIgnored) {
+  InstallTestApp("/web_apps/capture_links_new_client.html");
+
+  // Start browser in app scope.
+  AddTab(browser(), in_scope_1_);
+
+  // Navigations that happen inside the app scope should not capture even if
+  // done outside of an app window.
+  Navigate(browser(), in_scope_2_);
+  EXPECT_EQ(browser(), BrowserList::GetInstance()->GetLastActive());
+  ExpectTabs(browser(), {about_blank_, in_scope_2_});
 }
 
 }  // namespace web_app

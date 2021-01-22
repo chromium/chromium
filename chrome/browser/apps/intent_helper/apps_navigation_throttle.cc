@@ -21,12 +21,15 @@
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/components/web_app_tab_helper_base.h"
+#include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/gfx/image/image.h"
 #include "url/origin.h"
 
@@ -108,10 +111,10 @@ ThrottleCheckResult AppsNavigationThrottle::HandleRequest() {
 
   MaybeRemoveComingFromArcFlag(web_contents, starting_url_, url);
 
-  base::Optional<ThrottleCheckResult> tab_strip_capture =
-      CaptureExperimentalTabStripWebAppScopeNavigations(web_contents, handle);
-  if (tab_strip_capture.has_value())
-    return tab_strip_capture.value();
+  base::Optional<ThrottleCheckResult> web_app_capture =
+      CaptureWebAppScopeNavigations(web_contents, handle);
+  if (web_app_capture.has_value())
+    return web_app_capture.value();
 
   // Do not pop up the intent picker bubble or automatically launch the app if
   // we shouldn't override url loading, or if we don't have a browser, or we are
@@ -141,17 +144,21 @@ ThrottleCheckResult AppsNavigationThrottle::HandleRequest() {
 }
 
 base::Optional<ThrottleCheckResult>
-AppsNavigationThrottle::CaptureExperimentalTabStripWebAppScopeNavigations(
+AppsNavigationThrottle::CaptureWebAppScopeNavigations(
     content::WebContents* web_contents,
     content::NavigationHandle* handle) const {
   if (!navigate_from_link())
     return base::nullopt;
 
-  if (!base::FeatureList::IsEnabled(features::kDesktopPWAsTabStrip) ||
-      !base::FeatureList::IsEnabled(
-          features::kDesktopPWAsTabStripLinkCapturing)) {
+  bool tabbed_web_apps =
+      base::FeatureList::IsEnabled(features::kDesktopPWAsTabStrip);
+  bool tabbed_link_capturing =
+      base::FeatureList::IsEnabled(features::kDesktopPWAsTabStripLinkCapturing);
+  bool link_capturing =
+      base::FeatureList::IsEnabled(blink::features::kWebAppEnableLinkCapturing);
+
+  if (!link_capturing && (!tabbed_web_apps || !tabbed_link_capturing))
     return base::nullopt;
-  }
 
   Profile* const profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
@@ -166,8 +173,17 @@ AppsNavigationThrottle::CaptureExperimentalTabStripWebAppScopeNavigations(
   if (!app_id)
     return base::nullopt;
 
-  if (!provider->registrar().IsInExperimentalTabbedWindowMode(*app_id))
+  bool app_in_tabbed_mode =
+      provider->registrar().IsInExperimentalTabbedWindowMode(*app_id);
+  if (!link_capturing && !app_in_tabbed_mode)
     return base::nullopt;
+
+  auto* tab_helper =
+      web_app::WebAppTabHelperBase::FromWebContents(web_contents);
+  if (tab_helper && tab_helper->GetAppId() == *app_id) {
+    // Already in app scope, do not alter window state while using the app.
+    return base::nullopt;
+  }
 
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
   if (web_app::AppBrowserController::IsForWebApp(browser, *app_id)) {
@@ -175,24 +191,48 @@ AppsNavigationThrottle::CaptureExperimentalTabStripWebAppScopeNavigations(
     return base::nullopt;
   }
 
-  // If |web_contents| hasn't loaded yet or has only loaded about:blank we
-  // should reparent it into the app window to avoid leaving behind a blank tab.
-  auto* tab_helper =
-      web_app::WebAppTabHelperBase::FromWebContents(web_contents);
-  if (tab_helper && !tab_helper->HasLoadedNonAboutBlankPage()) {
-    web_app::ReparentWebContentsIntoAppBrowser(web_contents, *app_id);
-    return content::NavigationThrottle::PROCEED;
+  blink::mojom::CaptureLinks capture_links = provider->registrar()
+                                                 .AsWebAppRegistrar()
+                                                 ->GetAppById(*app_id)
+                                                 ->capture_links();
+
+  // Experimental tabbed web app link capturing behaves like new-client.
+  // This will be removed once we phase out kDesktopPWAsTabStripLinkCapturing in
+  // favor of kWebAppEnableLinkCapturing.
+  if (capture_links == blink::mojom::CaptureLinks::kUndefined &&
+      app_in_tabbed_mode && tabbed_link_capturing) {
+    capture_links = blink::mojom::CaptureLinks::kNewClient;
   }
 
-  apps::AppLaunchParams launch_params(
-      *app_id, apps::mojom::LaunchContainer::kLaunchContainerWindow,
-      WindowOpenDisposition::CURRENT_TAB,
-      apps::mojom::AppLaunchSource::kSourceUrlHandler);
-  launch_params.override_url = handle->GetURL();
-  apps::AppServiceProxyFactory::GetForProfile(profile)
-      ->BrowserAppLauncher()
-      ->LaunchAppWithParams(std::move(launch_params));
-  return content::NavigationThrottle::CANCEL_AND_IGNORE;
+  switch (capture_links) {
+    case blink::mojom::CaptureLinks::kUndefined:
+    case blink::mojom::CaptureLinks::kNone:
+      return base::nullopt;
+
+    case blink::mojom::CaptureLinks::kNewClient: {
+      // If |web_contents| hasn't loaded yet or has only loaded about:blank we
+      // should reparent it into the app window to avoid leaving behind a blank
+      // tab.
+      if (tab_helper && !tab_helper->HasLoadedNonAboutBlankPage()) {
+        web_app::ReparentWebContentsIntoAppBrowser(web_contents, *app_id);
+        return content::NavigationThrottle::PROCEED;
+      }
+
+      apps::AppLaunchParams launch_params(
+          *app_id, apps::mojom::LaunchContainer::kLaunchContainerWindow,
+          WindowOpenDisposition::CURRENT_TAB,
+          apps::mojom::AppLaunchSource::kSourceUrlHandler);
+      launch_params.override_url = handle->GetURL();
+      apps::AppServiceProxyFactory::GetForProfile(profile)
+          ->BrowserAppLauncher()
+          ->LaunchAppWithParams(std::move(launch_params));
+      return content::NavigationThrottle::CANCEL_AND_IGNORE;
+    }
+
+    case blink::mojom::CaptureLinks::kExistingClientNavigate:
+      // TODO(crbug.com/1163398): Implement.
+      return base::nullopt;
+  }
 }
 
 }  // namespace apps
