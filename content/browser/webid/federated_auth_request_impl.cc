@@ -101,9 +101,14 @@ void FederatedAuthRequestImpl::RequestIdToken(const GURL& provider,
   request_dialog_controller_ =
       GetContentClient()->browser()->CreateIdentityRequestDialogController();
 
-  network_manager_->FetchIDPWellKnown(
-      base::BindOnce(&FederatedAuthRequestImpl::OnWellKnownFetched,
-                     weak_ptr_factory_.GetWeakPtr()));
+  // Use the web contents of the page that initiated the WebID request (i.e.
+  // the Relying Party) for showing the initial permission dialog.
+  WebContents* web_contents =
+      WebContents::FromRenderFrameHost(render_frame_host());
+
+  request_dialog_controller_->ShowInitialPermissionDialog(
+      web_contents, base::BindOnce(&FederatedAuthRequestImpl::OnSigninApproved,
+                                   weak_ptr_factory_.GetWeakPtr()));
 }
 
 void FederatedAuthRequestImpl::OnWellKnownFetched(
@@ -139,14 +144,11 @@ void FederatedAuthRequestImpl::OnWellKnownFetched(
     CompleteRequest(RequestIdTokenStatus::kError, "");
     return;
   }
-  // Use the web contents of the page that initiated the WebID request (i.e.
-  // the Relying Party) for showing the initial permission dialog.
-  WebContents* web_contents =
-      WebContents::FromRenderFrameHost(render_frame_host());
 
-  request_dialog_controller_->ShowInitialPermissionDialog(
-      web_contents, base::BindOnce(&FederatedAuthRequestImpl::OnSigninApproved,
-                                   weak_ptr_factory_.GetWeakPtr()));
+  network_manager_->SendSigninRequest(
+      idp_endpoint_url_, id_request_,
+      base::BindOnce(&FederatedAuthRequestImpl::OnSigninResponseReceived,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void FederatedAuthRequestImpl::OnSigninApproved(
@@ -156,9 +158,8 @@ void FederatedAuthRequestImpl::OnSigninApproved(
     return;
   }
 
-  network_manager_->SendSigninRequest(
-      idp_endpoint_url_, id_request_,
-      base::BindOnce(&FederatedAuthRequestImpl::OnSigninResponseReceived,
+  network_manager_->FetchIDPWellKnown(
+      base::BindOnce(&FederatedAuthRequestImpl::OnWellKnownFetched,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
