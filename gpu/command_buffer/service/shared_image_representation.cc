@@ -137,8 +137,10 @@ SharedImageRepresentationSkia::BeginScopedWriteAccess(
     sk_sp<SkSurface> surface =
         BeginWriteAccess(final_msaa_count, surface_props, begin_semaphores,
                          end_semaphores, &end_state);
-    if (!surface)
+    if (!surface) {
+      LOG(ERROR) << "Unable to initialize SkSurface";
       return nullptr;
+    }
 
     backing()->OnWriteSucceeded();
 
@@ -148,8 +150,10 @@ SharedImageRepresentationSkia::BeginScopedWriteAccess(
   }
   sk_sp<SkPromiseImageTexture> promise_image_texture =
       BeginWriteAccess(begin_semaphores, end_semaphores, &end_state);
-  if (!promise_image_texture)
+  if (!promise_image_texture) {
+    LOG(ERROR) << "Unable to initialize SkPromiseImageTexture";
     return nullptr;
+  }
 
   backing()->OnWriteSucceeded();
 
