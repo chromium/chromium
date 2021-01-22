@@ -396,7 +396,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Compositing.Renderer.LayerSkippedForDrawPropertiesDueToBackface"
-    units="boolean" expires_after="M90">
+    units="boolean" expires_after="M94">
   <owner>chrishtr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
