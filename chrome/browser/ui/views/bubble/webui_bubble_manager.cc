@@ -16,17 +16,8 @@ constexpr base::TimeDelta kWebViewRetentionTime =
 
 }  // namespace
 
-WebUIBubbleManagerBase::WebUIBubbleManagerBase(
-    int task_manager_string_id,
-    views::View* anchor_view,
-    content::BrowserContext* browser_context,
-    const GURL& webui_url,
-    bool enable_extension_apis)
-    : task_manager_string_id_(task_manager_string_id),
-      anchor_view_(anchor_view),
-      browser_context_(browser_context),
-      webui_url_(webui_url),
-      enable_extension_apis_(enable_extension_apis),
+WebUIBubbleManagerBase::WebUIBubbleManagerBase(views::View* anchor_view)
+    : anchor_view_(anchor_view),
       cache_timer_(std::make_unique<base::RetainingOneShotTimer>(
           FROM_HERE,
           kWebViewRetentionTime,
@@ -82,6 +73,7 @@ void WebUIBubbleManagerBase::OnWidgetDestroying(views::Widget* widget) {
   bubble_widget_observation_.Reset();
   DCHECK(close_bubble_helper_);
   close_bubble_helper_.reset();
+  WebViewHidden();
   cache_timer_->Reset();
   bubble_using_cached_webview_ = false;
 }
