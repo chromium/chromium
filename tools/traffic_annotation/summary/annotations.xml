@@ -29,6 +29,7 @@ Refer to README.md for content description and update process.
  <item id="blob_read" added_in_milestone="62" hash_code="112303907" type="0" deprecated="2019-08-09" content_hash_code="135449692" file_path=""/>
  <item id="blob_reader" added_in_milestone="62" hash_code="5154306" type="0" deprecated="2018-06-14" content_hash_code="39702178" file_path=""/>
  <item id="bluetooth_socket" added_in_milestone="65" hash_code="94099818" type="0" content_hash_code="30932349" os_list="linux,windows" file_path="device/bluetooth/bluetooth_socket_net.cc"/>
+ <item id="box_access_token_fetcher" added_in_milestone="89" hash_code="90263263" type="0" content_hash_code="120150044" os_list="linux,windows" file_path="chrome/browser/enterprise/connectors/file_system/box_access_token_fetcher.cc"/>
  <item id="brandcode_config" added_in_milestone="62" hash_code="109679553" type="0" content_hash_code="128843792" os_list="linux,windows" file_path="chrome/browser/profile_resetter/brandcode_config_fetcher.cc"/>
  <item id="browser_switcher_ieem_sitelist" added_in_milestone="72" hash_code="97159948" type="0" content_hash_code="129062966" os_list="linux,windows" file_path="chrome/browser/browser_switcher/browser_switcher_service.cc"/>
  <item id="cablev2_websocket_from_authenticator" added_in_milestone="87" hash_code="28613769" type="0" content_hash_code="119863612" os_list="linux,windows" file_path="device/fido/cable/v2_authenticator.cc"/>

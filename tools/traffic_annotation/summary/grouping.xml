@@ -161,6 +161,7 @@ hidden="true" so that these annotations don't show up in the document.
       <traffic_annotation unique_id="kaleidoscope_service"/>
       <traffic_annotation unique_id="webid"/>
       <traffic_annotation unique_id="managed_configuration_loader"/>
+      <traffic_annotation unique_id="box_access_token_fetcher"/>
     </sender>
   </group>
   <group name="Admin Features">

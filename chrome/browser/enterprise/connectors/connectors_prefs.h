@@ -28,6 +28,11 @@ extern const char kOnFileDownloadedScopePref[];
 extern const char kOnBulkDataEntryScopePref[];
 extern const char kOnSecurityEventScopePref[];
 
+// Prefs used by the FileSystem Connector to store OAuth2 Tokens for accessing
+// the APIs the connector talks to.
+extern const char kFileSystemBoxAccessTokenPref[];
+extern const char kFileSystemBoxRefreshTokenPref[];
+
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
 }  // namespace enterprise_connectors

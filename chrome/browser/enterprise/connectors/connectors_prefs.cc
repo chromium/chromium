@@ -25,6 +25,12 @@ const char kOnBulkDataEntryScopePref[] =
 const char kOnSecurityEventScopePref[] =
     "enterprise_connectors.scope.on_security_event";
 
+const char kFileSystemBoxAccessTokenPref[] =
+    "enterprise_connectors.file_system.box.access_token";
+
+const char kFileSystemBoxRefreshTokenPref[] =
+    "enterprise_connectors.file_system.box.refresh_token";
+
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(kOnFileAttachedPref);
   registry->RegisterListPref(kOnFileDownloadedPref);
@@ -34,6 +40,9 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kOnFileDownloadedScopePref, 0);
   registry->RegisterIntegerPref(kOnBulkDataEntryScopePref, 0);
   registry->RegisterIntegerPref(kOnSecurityEventScopePref, 0);
+  registry->RegisterStringPref(kFileSystemBoxAccessTokenPref, std::string());
+  registry->RegisterStringPref(kFileSystemBoxRefreshTokenPref, std::string());
+  // TODO(1157641) store folder_id in profile pref to handle indexing latency.
 }
 
 }  // namespace enterprise_connectors
