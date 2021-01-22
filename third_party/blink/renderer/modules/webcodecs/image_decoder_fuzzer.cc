@@ -113,8 +113,13 @@ DEFINE_BINARY_PROTO_FUZZER(
         ToPremultiplyAlpha(proto.config().options().premultiply_alpha()));
     options->setColorSpaceConversion(ToColorSpaceConversion(
         proto.config().options().color_space_conversion()));
-    options->setResizeWidth(proto.config().options().resize_width());
-    options->setResizeHeight(proto.config().options().resize_height());
+
+    // Limit resize support to a reasonable value to prevent fuzzer oom.
+    constexpr uint32_t kMaxDimension = 4096u;
+    options->setResizeWidth(
+        std::min(proto.config().options().resize_width(), kMaxDimension));
+    options->setResizeHeight(
+        std::min(proto.config().options().resize_height(), kMaxDimension));
     options->setResizeQuality(
         ToResizeQuality(proto.config().options().resize_quality()));
     image_decoder_init->setOptions(options);
