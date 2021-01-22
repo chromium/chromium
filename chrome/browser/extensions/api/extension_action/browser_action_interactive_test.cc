@@ -104,7 +104,7 @@ class PopupHostWatcher : public content::NotificationObserver {
 
  private:
   content::NotificationRegistrar registrar_;
-  base::Closure quit_closure_;
+  base::RepeatingClosure quit_closure_;
   int created_ = 0;
   int destroyed_ = 0;
 
