@@ -34,9 +34,14 @@ def _ParseArgs(args):
   return options
 
 
-def DexJdkLibJar(r8_path, min_api, desugar_jdk_libs_json, desugar_jdk_libs_jar,
-                 desugar_jdk_libs_configuration_jar, keep_rule_file, output,
-                 warnings_as_errors):
+def DexJdkLibJar(r8_path,
+                 min_api,
+                 desugar_jdk_libs_json,
+                 desugar_jdk_libs_jar,
+                 desugar_jdk_libs_configuration_jar,
+                 output,
+                 warnings_as_errors,
+                 config_paths=None):
   # TODO(agrieve): Spews a lot of stderr about missing classes.
   with build_utils.TempDir() as tmp_dir:
     cmd = build_utils.JavaCmd(warnings_as_errors) + [
@@ -53,8 +58,9 @@ def DexJdkLibJar(r8_path, min_api, desugar_jdk_libs_json, desugar_jdk_libs_jar,
 
     # If no desugaring is required, no keep rules are generated, and the keep
     # file will not be created.
-    if keep_rule_file is not None and os.path.exists(keep_rule_file):
-      cmd += ['--pg-conf', keep_rule_file]
+    if config_paths is not None:
+      for path in config_paths:
+        cmd += ['--pg-conf', path]
 
     cmd += [
         '--output', tmp_dir, desugar_jdk_libs_jar,
@@ -79,7 +85,7 @@ def main(args):
   options = _ParseArgs(args)
   DexJdkLibJar(options.r8_path, options.min_api, options.desugar_jdk_libs_json,
                options.desugar_jdk_libs_jar,
-               options.desugar_jdk_libs_configuration_jar, None, options.output,
+               options.desugar_jdk_libs_configuration_jar, options.output,
                options.warnings_as_errors)
 
 

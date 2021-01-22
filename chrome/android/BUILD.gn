@@ -2731,10 +2731,6 @@ if (enable_arcore) {
     }
 
     additional_apks = [ "//net/android:net_test_support_apk" ]
-    proguard_enabled = !is_java_debug
-    if (proguard_enabled && !enable_proguard_obfuscation) {
-      proguard_configs = [ "//base/android/proguard/enable_obfuscation.flags" ]
-    }
   }
 }
 

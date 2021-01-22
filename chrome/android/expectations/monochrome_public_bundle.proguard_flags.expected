@@ -257,15 +257,6 @@
   @org.chromium.base.annotations.RemovableInRelease *;
 }
 
-# File: ../../base/android/proguard/enable_obfuscation.flags
-# Copyright 2016 The Chromium Authors. All rights reserved.
-# Use of this source code is governed by a BSD-style license that can be
-# found in the LICENSE file.
-
-# As of August 11, 2016, obfuscation was found to save 660kb on our .dex size
-# and 53kb memory/process (through shrinking method/string counts).
--repackageclasses ''
-
 # File: ../../chrome/android/proguard/isolated_splits.flags
 # Copyright 2020 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -863,6 +854,7 @@
 
 # File: //build/android/gyp/proguard.py (generated rules)
 # THIS LINE WAS OMITTED
+-repackageclasses ''
 -keep @interface org.chromium.base.annotations.VerifiesOnNMR1
 -if @org.chromium.base.annotations.VerifiesOnNMR1 class * {
     *** *(...);

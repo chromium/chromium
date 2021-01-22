@@ -218,13 +218,6 @@ template("system_webview_apk_or_module_tmpl") {
         "//base/android/proguard/chromium_apk.flags",
         "//base/android/proguard/chromium_code.flags",
       ]
-      if (enable_proguard_obfuscation) {
-        proguard_configs +=
-            [ "//base/android/proguard/enable_obfuscation.flags" ]
-      } else {
-        proguard_configs +=
-            [ "//base/android/proguard/disable_all_obfuscation.flags" ]
-      }
       png_to_webp = true
     }
 

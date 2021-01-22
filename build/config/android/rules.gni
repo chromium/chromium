@@ -1644,6 +1644,7 @@ if (enable_java_templates) {
   #   output: Path to the output dex.
   #   proguard_enabled: Whether to enable R8.
   #   proguard_configs: List of proguard configs.
+  #   proguard_enable_obfuscation: Whether to enable obfuscation (default=true).
   #
   # Example
   #   dist_dex("lib_fatjar") {
@@ -1681,6 +1682,7 @@ if (enable_java_templates) {
                                    "data_deps",
                                    "proguard_configs",
                                    "proguard_enabled",
+                                   "proguard_enable_obfuscation",
                                    "min_sdk_version",
                                  ])
       deps = _deps
@@ -2917,6 +2919,7 @@ if (enable_java_templates) {
                                  "disable_r8_outlining",
                                  "dexlayout_profile",
                                  "enable_proguard_checks",
+                                 "proguard_enable_obfuscation",
                                ])
         min_sdk_version = _min_sdk_version
         proguard_enabled = _proguard_enabled
@@ -3516,6 +3519,7 @@ if (enable_java_templates) {
                                "product_version_resources_dep",
                                "proguard_configs",
                                "proguard_enabled",
+                               "proguard_enable_obfuscation",
                                "r_java_root_package_name",
                                "resource_exclusion_exceptions",
                                "resource_exclusion_regex",
@@ -3649,6 +3653,7 @@ if (enable_java_templates) {
                                "product_version_resources_dep",
                                "proguard_configs",
                                "proguard_enabled",
+                               "proguard_enable_obfuscation",
                                "resource_exclusion_exceptions",
                                "resource_exclusion_regex",
                                "resource_ids_provider_dep",
@@ -3878,6 +3883,7 @@ if (enable_java_templates) {
                                "modules",
                                "never_incremental",
                                "proguard_enabled",
+                               "proguard_enable_obfuscation",
                                "public_deps",
                                "use_webview_provider",
                              ])
@@ -4491,6 +4497,8 @@ if (enable_java_templates) {
   #      bundle. Default is to enable this only for release builds. Note that
   #      this will always perform synchronized proguarding.
   #
+  #    proguard_enable_obfuscation: Whether to enable obfuscation (default=true)
+  #
   #    enable_multidex: Optional. Enable multidexing of optimized modules jars
   #      when using synchronized proguarding. Only applies to base module.
   #
@@ -4750,6 +4758,7 @@ if (enable_java_templates) {
                                    "expected_proguard_config",
                                    "expected_proguard_config_base",
                                    "min_sdk_version",
+                                   "proguard_enable_obfuscation",
                                  ])
           if (defined(expected_proguard_config)) {
             top_target_name = _target_name

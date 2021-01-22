@@ -290,13 +290,6 @@ template("chrome_public_common_apk_or_module_tmpl") {
         "//base/android/proguard/chromium_apk.flags",
         "//base/android/proguard/chromium_code.flags",
       ]
-      if (enable_proguard_obfuscation) {
-        proguard_configs +=
-            [ "//base/android/proguard/enable_obfuscation.flags" ]
-      } else {
-        proguard_configs +=
-            [ "//base/android/proguard/disable_all_obfuscation.flags" ]
-      }
       if (_enable_chrome_module) {
         proguard_configs +=
             [ "//chrome/android/proguard/isolated_splits.flags" ]

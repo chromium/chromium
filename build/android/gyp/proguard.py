@@ -77,6 +77,9 @@ def _ParseOptions():
       '- only works with R8.')
   parser.add_argument(
       '--min-api', help='Minimum Android API level compatibility.')
+  parser.add_argument('--enable-obfuscation',
+                      action='store_true',
+                      help='Minify symbol names')
   parser.add_argument(
       '--verbose', '-v', action='store_true', help='Print all ProGuard output')
   parser.add_argument(
@@ -210,10 +213,10 @@ def _OptimizeWithR8(options,
                     print_stdout=False):
   with build_utils.TempDir() as tmp_dir:
     if dynamic_config_data:
-      tmp_config_path = os.path.join(tmp_dir, 'proguard_config.txt')
-      with open(tmp_config_path, 'w') as f:
+      dynamic_config_path = os.path.join(tmp_dir, 'dynamic_config.flags')
+      with open(dynamic_config_path, 'w') as f:
         f.write(dynamic_config_data)
-      config_paths = config_paths + [tmp_config_path]
+      config_paths = config_paths + [dynamic_config_path]
 
     tmp_mapping_path = os.path.join(tmp_dir, 'mapping.txt')
     # If there is no output (no classes are kept), this prevents this script
@@ -338,12 +341,20 @@ def _OptimizeWithR8(options,
       existing_files = build_utils.FindInDirectory(base_dex_context.staging_dir)
       jdk_dex_output = os.path.join(base_dex_context.staging_dir,
                                     'classes%d.dex' % (len(existing_files) + 1))
+      # Use -applymapping to avoid name collisions.
+      l8_dynamic_config_path = os.path.join(tmp_dir, 'l8_dynamic_config.flags')
+      with open(l8_dynamic_config_path, 'w') as f:
+        f.write("-applymapping '{}'\n".format(tmp_mapping_path))
+      # Pass the dynamic config so that obfuscation options are picked up.
+      l8_config_paths = [dynamic_config_path, l8_dynamic_config_path]
+      if os.path.exists(options.desugared_library_keep_rule_output):
+        l8_config_paths.append(options.desugared_library_keep_rule_output)
+
       base_has_imported_lib = dex_jdk_libs.DexJdkLibJar(
           options.r8_path, options.min_api, options.desugar_jdk_libs_json,
           options.desugar_jdk_libs_jar,
-          options.desugar_jdk_libs_configuration_jar,
-          options.desugared_library_keep_rule_output, jdk_dex_output,
-          options.warnings_as_errors)
+          options.desugar_jdk_libs_configuration_jar, jdk_dex_output,
+          options.warnings_as_errors, l8_config_paths)
       if int(options.min_api) >= 24 and base_has_imported_lib:
         with open(jdk_dex_output, 'rb') as f:
           dexfile = dex_parser.DexFile(bytearray(f.read()))
@@ -591,10 +602,13 @@ def _CreateDynamicConfig(options):
     ret.append("-renamesourcefileattribute '%s' # OMIT FROM EXPECTATIONS" %
                options.sourcefile)
 
+  if options.enable_obfuscation:
+    ret.append("-repackageclasses ''")
+  else:
+    ret.append("-keepnames,allowoptimization class *** { *; }")
+
   if options.apply_mapping:
-    ret.append("-applymapping '%s'" % os.path.abspath(options.apply_mapping))
-  if options.repackage_classes:
-    ret.append("-repackageclasses '%s'" % options.repackage_classes)
+    ret.append("-applymapping '%s'" % options.apply_mapping)
 
   _min_api = int(options.min_api) if options.min_api else 0
   for api_level, version_code in _API_LEVEL_VERSION_CODE:

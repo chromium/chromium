@@ -199,8 +199,7 @@ template("trichrome_library_apk_tmpl") {
         # workaround for crbug.com/1012842. There were naming conflicts between
         # Library and Chrome, since each Proguard run doesn't know about the
         # other, and thus handed out the first names (a, b, c) to both.
-        proguard_configs +=
-            [ "//base/android/proguard/disable_all_obfuscation.flags" ]
+        proguard_enable_obfuscation = false
       }
     }
     deps += [ "//chrome/android:trichrome_dummy_resources" ]
