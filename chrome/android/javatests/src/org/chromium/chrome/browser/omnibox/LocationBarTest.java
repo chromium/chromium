@@ -32,6 +32,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.CommandLine;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -373,6 +374,7 @@ public class LocationBarTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "Flaky test: https://crbug.com/1169250")
     public void testFocusLogic_keyboardVisibility() {
         startActivityNormally();
         OmniboxTestUtils.waitForFocusAndKeyboardActive(mUrlBar, false);
