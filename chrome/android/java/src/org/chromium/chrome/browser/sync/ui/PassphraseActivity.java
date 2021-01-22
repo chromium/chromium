@@ -134,7 +134,7 @@ public class PassphraseActivity extends AppCompatActivity
     @Override
     public void onPassphraseCanceled() {
         // Re add the notification.
-        SyncController.get().getSyncNotificationController().syncStateChanged();
+        SyncController.get().getSyncErrorNotifier().syncStateChanged();
         finish();
     }
 

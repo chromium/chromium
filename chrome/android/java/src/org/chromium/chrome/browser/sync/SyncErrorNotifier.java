@@ -37,17 +37,16 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.sync.PassphraseType;
 
 /**
- * {@link SyncNotificationController} displays Android notifications regarding sync errors.
+ * {@link SyncErrorNotifier} displays Android notifications regarding sync errors.
  * Errors can be fixed by clicking the notification.
  */
-// TODO(victorvianna): Rename to SyncErrorNotificationController.
-public class SyncNotificationController implements ProfileSyncService.SyncStateChangedListener {
+public class SyncErrorNotifier implements ProfileSyncService.SyncStateChangedListener {
     private static final String TAG = "SyncUI";
     private final NotificationManagerProxy mNotificationManager;
     private final ProfileSyncService mProfileSyncService;
     private boolean mTrustedVaultNotificationShownOrCreating;
 
-    public SyncNotificationController() {
+    public SyncErrorNotifier() {
         mNotificationManager =
                 new NotificationManagerProxyImpl(ContextUtils.getApplicationContext());
         mProfileSyncService = ProfileSyncService.get();
