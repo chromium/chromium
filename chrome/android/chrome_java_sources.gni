@@ -1272,8 +1272,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/suggestions/ThumbnailGradient.java",
   "java/src/org/chromium/chrome/browser/suggestions/mostvisited/MostVisitedSites.java",
   "java/src/org/chromium/chrome/browser/suggestions/mostvisited/MostVisitedSitesBridge.java",
-  "java/src/org/chromium/chrome/browser/suggestions/mostvisited/MostVisitedSitesFaviconHelper.java",
-  "java/src/org/chromium/chrome/browser/suggestions/mostvisited/MostVisitedSitesHost.java",
   "java/src/org/chromium/chrome/browser/suggestions/mostvisited/MostVisitedSitesMetadataUtils.java",
   "java/src/org/chromium/chrome/browser/suggestions/tile/SiteSection.java",
   "java/src/org/chromium/chrome/browser/suggestions/tile/SiteSectionViewHolder.java",
