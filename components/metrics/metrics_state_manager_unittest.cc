@@ -85,6 +85,9 @@ class MetricsStateManagerTest : public testing::Test {
         client_info.reporting_enabled_date;
   }
 
+  // The number of times that the code tries to load ClientInfo.
+  int client_info_load_count_ = 0;
+
  protected:
   TestingPrefServiceSimple prefs_;
 
@@ -118,6 +121,7 @@ class MetricsStateManagerTest : public testing::Test {
 
   // Hands out a copy of |fake_client_info_backup_| if it is set.
   std::unique_ptr<ClientInfo> LoadFakeClientInfoBackup() {
+    ++client_info_load_count_;
     if (!fake_client_info_backup_)
       return nullptr;
 
@@ -207,6 +211,7 @@ TEST_F(MetricsStateManagerTest, ResetMetricsIDs) {
     EXPECT_NE(kInitialClientId, state_manager->client_id());
     EXPECT_TRUE(state_manager->metrics_ids_were_reset_);
     EXPECT_EQ(kInitialClientId, state_manager->previous_client_id_);
+    EXPECT_EQ(0, client_info_load_count_);
 
     state_manager->GetLowEntropySource();
 
@@ -238,6 +243,7 @@ TEST_F(MetricsStateManagerTest, ForceClientIdCreation) {
               test_begin_time_);
 
     ASSERT_TRUE(stored_client_info_backup_);
+    EXPECT_EQ(1, client_info_load_count_);
     EXPECT_EQ(state_manager->client_id(),
               stored_client_info_backup_->client_id);
     EXPECT_EQ(kFakeInstallationDate,
@@ -257,6 +263,7 @@ TEST_F(MetricsStateManagerTest,
 
   ASSERT_TRUE(stored_client_info_backup_);
   EXPECT_NE(0, stored_client_info_backup_->installation_date);
+  EXPECT_EQ(1, client_info_load_count_);
 }
 
 #if !defined(OS_WIN)
@@ -283,6 +290,7 @@ TEST_F(MetricsStateManagerTest, ProvisionalClientId_PromotedToClientId) {
   EXPECT_EQ(client_id, prefs_.GetString(prefs::kMetricsClientID));
   EXPECT_TRUE(state_manager->provisional_client_id_.empty());
   EXPECT_EQ(low_entropy_source, state_manager->GetLowEntropySource());
+  EXPECT_EQ(1, client_info_load_count_);
 }
 
 TEST_F(MetricsStateManagerTest, ProvisionalClientId_NotPersisted) {
@@ -349,6 +357,7 @@ TEST_F(MetricsStateManagerTest, LoadPrefs) {
     state_manager->ForceClientIdCreation();
     EXPECT_FALSE(stored_client_info_backup_);
     EXPECT_EQ(client_info.client_id, state_manager->client_id());
+    EXPECT_EQ(0, client_info_load_count_);
   }
 }
 
@@ -376,6 +385,7 @@ TEST_F(MetricsStateManagerTest, PreferPrefs) {
 
     // The backup should not be modified.
     ASSERT_FALSE(stored_client_info_backup_);
+    EXPECT_EQ(0, client_info_load_count_);
   }
 }
 
@@ -410,6 +420,7 @@ TEST_F(MetricsStateManagerTest, RestoreBackup) {
               prefs_.GetInt64(prefs::kMetricsReportingEnabledTimestamp));
 
     EXPECT_TRUE(stored_client_info_backup_);
+    EXPECT_EQ(1, client_info_load_count_);
   }
 }
 
@@ -437,6 +448,7 @@ TEST_F(MetricsStateManagerTest, ResetBackup) {
     EXPECT_TRUE(state_manager->metrics_ids_were_reset_);
     EXPECT_EQ(client_info.client_id, state_manager->previous_client_id_);
     EXPECT_TRUE(stored_client_info_backup_);
+    EXPECT_EQ(0, client_info_load_count_);
 
     // The installation date should not have been affected.
     EXPECT_EQ(client_info.installation_date,
@@ -536,6 +548,7 @@ TEST_F(MetricsStateManagerTest, CheckProviderResetIds) {
   EXPECT_NE(client_info.client_id, state_manager->client_id());
   EXPECT_TRUE(state_manager->metrics_ids_were_reset_);
   EXPECT_EQ(client_info.client_id, state_manager->previous_client_id_);
+  EXPECT_EQ(0, client_info_load_count_);
 
   std::unique_ptr<MetricsProvider> provider = state_manager->GetProvider();
   SystemProfileProto system_profile;
