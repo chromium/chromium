@@ -33,6 +33,8 @@
 
 namespace {
 
+NSString* const kAlternateDiscoverFeedServerURL =
+    @"AlternateDiscoverFeedServerURL";
 NSString* const kDisableDCHECKCrashes = @"DisableDCHECKCrashes";
 NSString* const kEnableStartupCrash = @"EnableStartupCrash";
 NSString* const kFirstRunForceEnabled = @"FirstRunForceEnabled";
@@ -79,6 +81,12 @@ WhatsNewPromoStatus GetWhatsNewPromoStatus() {
     [defaults setInteger:status forKey:kWhatsNewPromoStatus];
   }
   return static_cast<WhatsNewPromoStatus>(status);
+}
+
+std::string getAlternateDiscoverFeedServerURL() {
+  NSString* alternateServerURL = [[NSUserDefaults standardUserDefaults]
+      stringForKey:kAlternateDiscoverFeedServerURL];
+  return base::SysNSStringToUTF8(alternateServerURL);
 }
 
 bool IsMemoryDebuggingEnabled() {

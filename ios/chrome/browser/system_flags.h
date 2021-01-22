@@ -44,6 +44,9 @@ std::string GetOriginServerHost();
 // If |WHATS_NEW_DEFAULT| is returned, no promo is force enabled.
 WhatsNewPromoStatus GetWhatsNewPromoStatus();
 
+// Returns the URL for the alternative Discover Feed server.
+std::string getAlternateDiscoverFeedServerURL();
+
 // Whether memory debugging tools are enabled.
 bool IsMemoryDebuggingEnabled();
 
