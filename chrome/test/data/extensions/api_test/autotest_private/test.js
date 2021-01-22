@@ -39,6 +39,18 @@ function onRaf(rafWin) {
   rafWin.close();
 }
 
+function promisify(f, ...args) {
+  return new Promise((resolve, reject) => {
+    f(...args, (result) => {
+      if (chrome.runtime.lastError) {
+        reject(chrome.runtime.lastError);
+      } else {
+        resolve(result);
+      }
+    });
+  });
+}
+
 var defaultTests = [
   // logout/restart/shutdown don't do anything as we don't want to kill the
   // browser with these tests.
@@ -463,6 +475,17 @@ var defaultTests = [
           chrome.test.assertNoLastError();
           chrome.test.succeed();
         });
+  },
+  function waitForLauncherStateInTabletMode() {
+    promisify(chrome.autotestPrivate.setTabletModeEnabled, true)
+      .then(promisify(chrome.autotestPrivate.waitForLauncherState,
+                      'FullscreenAllApps'))
+      .then(promisify(chrome.autotestPrivate.setTabletModeEnabled, false))
+      .then(function() {
+        chrome.test.succeed();
+      }).catch(function(err) {
+        chrome.test.fail(err);
+      });
   },
   // Check if tablet mode is enabled.
   function isTabletModeEnabled() {
