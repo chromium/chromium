@@ -6943,6 +6943,16 @@ Called by update_bad_message_reasons.py.-->
   <int value="5" label="Blacklist disabled."/>
 </enum>
 
+<enum name="BlinkSubresourceRedirectIneligibility">
+  <int value="0" label="Javascript created, same-origin resource"/>
+  <int value="1" label="Javascript created, cross-origin resource"/>
+  <int value="2"
+      label="Restricted by Content-Security-Policy default-src directive"/>
+  <int value="3"
+      label="Restricted by Content-Security-Policy img-src directive"/>
+  <int value="4" label="Crossorigin attribute was set"/>
+</enum>
+
 <enum name="BloatedRendererHandlingInBrowser">
   <int value="0" label="Reloaded the bloated tab"/>
   <int value="1" label="Cannot reload the bloated tab"/>
