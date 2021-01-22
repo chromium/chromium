@@ -14,12 +14,12 @@ import java.lang.annotation.RetentionPolicy;
         DialogDismissalCause.DISMISSED_BY_NATIVE,
         DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE, DialogDismissalCause.TAB_SWITCHED,
         DialogDismissalCause.TAB_DESTROYED, DialogDismissalCause.ACTIVITY_DESTROYED,
-        DialogDismissalCause.NOT_ATTACHED_TO_WINDOW, DialogDismissalCause.NAVIGATE})
+        DialogDismissalCause.NOT_ATTACHED_TO_WINDOW, DialogDismissalCause.NAVIGATE,
+        DialogDismissalCause.WEB_CONTENTS_DESTROYED})
 @Retention(RetentionPolicy.SOURCE)
 public @interface DialogDismissalCause {
-    // Please do not remove or change the order of the existing values, and add new value at the end
-    // of the enum. Dismissal causes that are fully controlled by clients (i.e. are not used inside
-    // the dialog manager or the dialog presenters) are marked "Controlled by client" on comments.
+    // Dismissal causes that are fully controlled by clients (i.e. are not used inside the
+    // dialog manager or the dialog presenters) are marked "Controlled by client" on comments.
 
     /** No specified reason for the dialog dismissal. */
     int UNKNOWN = 0;
@@ -43,4 +43,6 @@ public @interface DialogDismissalCause {
     int NOT_ATTACHED_TO_WINDOW = 9;
     /** User has navigated, e.g. by typing a URL in the location bar. */
     int NAVIGATE = 10;
+    /** Controlled by client: The web contents associated with the dialog is destroyed. */
+    int WEB_CONTENTS_DESTROYED = 11;
 }

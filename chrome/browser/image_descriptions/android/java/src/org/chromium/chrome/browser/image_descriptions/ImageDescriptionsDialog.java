@@ -47,6 +47,7 @@ public class ImageDescriptionsDialog
     private boolean mShouldShowDontAskAgainOption;
     private boolean mOnlyOnWifiState;
     private boolean mDontAskAgainState;
+    private @DialogDismissalCause int mDismissalCause;
     private WebContents mWebContents;
     private Profile mProfile;
     private Context mContext;
@@ -64,6 +65,7 @@ public class ImageDescriptionsDialog
         mShouldShowDontAskAgainOption = shouldShowDontAskAgainOption;
         mOnlyOnWifiState = true;
         mDontAskAgainState = false;
+        mDismissalCause = DialogDismissalCause.UNKNOWN;
 
         // Inflate our custom view layout for this dialog.
         LayoutInflater inflater = LayoutInflater.from(mContext);
@@ -97,24 +99,33 @@ public class ImageDescriptionsDialog
         mWebContentsObserver = new WebContentsObserver(mWebContents) {
             @Override
             public void wasHidden() {
-                unregisterObserver();
+                mDismissalCause = DialogDismissalCause.TAB_SWITCHED;
+                unregisterObserverAndDismiss();
             }
 
             @Override
             public void navigationEntryCommitted() {
-                unregisterObserver();
+                mDismissalCause = DialogDismissalCause.NAVIGATE;
+                unregisterObserverAndDismiss();
             }
 
             @Override
             public void onTopLevelNativeWindowChanged(@Nullable WindowAndroid windowAndroid) {
                 // Dismiss the dialog when the associated WebContents is detached from the window.
-                if (windowAndroid == null) unregisterObserver();
+                if (windowAndroid == null) {
+                    mDismissalCause = DialogDismissalCause.NOT_ATTACHED_TO_WINDOW;
+                    unregisterObserverAndDismiss();
+                }
             }
 
             @Override
             public void destroy() {
                 super.destroy();
-                dismissEarly();
+                // If no dismissal cause has been set, web contents were destroyed.
+                if (mDismissalCause == DialogDismissalCause.UNKNOWN) {
+                    mDismissalCause = DialogDismissalCause.WEB_CONTENTS_DESTROYED;
+                }
+                dismiss();
             }
         };
 
@@ -152,7 +163,6 @@ public class ImageDescriptionsDialog
 
     @Override
     public void onClick(PropertyModel model, int buttonType) {
-        int dismissalCause;
         int toastMessage = -1;
 
         // User has elected to get image descriptions
@@ -174,16 +184,16 @@ public class ImageDescriptionsDialog
                 toastMessage = R.string.image_descriptions_toast_just_once;
             }
 
-            dismissalCause = DialogDismissalCause.POSITIVE_BUTTON_CLICKED;
+            mDismissalCause = DialogDismissalCause.POSITIVE_BUTTON_CLICKED;
         } else {
-            dismissalCause = DialogDismissalCause.NEGATIVE_BUTTON_CLICKED;
+            mDismissalCause = DialogDismissalCause.NEGATIVE_BUTTON_CLICKED;
         }
 
         // Make a toast, if necessary.
         if (toastMessage != -1) Toast.makeText(mContext, toastMessage, Toast.LENGTH_LONG).show();
 
-        // Dismiss the dialog.
-        dismiss(dismissalCause);
+        // Dismiss the dialog and unregister observer.
+        unregisterObserverAndDismiss();
     }
 
     @Override
@@ -201,10 +211,10 @@ public class ImageDescriptionsDialog
     }
 
     /**
-     * Helper method to unregister |mWebContentsObserver| during changes in state to |mWebContents|.
-     * The call to #destroy() will also dismiss the dialog.
+     * Helper method to unregister |mWebContentsObserver| during changes in state to |mWebContents|
+     * or on user action. The call to #destroy() will also dismiss the dialog.
      */
-    private void unregisterObserver() {
+    private void unregisterObserverAndDismiss() {
         mWebContentsObserver.destroy();
     }
 
@@ -216,18 +226,9 @@ public class ImageDescriptionsDialog
     }
 
     /**
-     * Helper method to dismiss this dialog from changes to state of the |mWebContents|.
-     * Consider proactively dismissing the dialog to be a negative button click.
+     * Helper method to dismiss this dialog. Dismisses the dialog with cause |mDismissalCause|.
      */
-    private void dismissEarly() {
-        dismiss(DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
-    }
-
-    /**
-     * Helper method to dismiss this dialog.
-     * @param dialogDismissableCause        DialogDismissalCause, e.g. positive or negative
-     */
-    private void dismiss(int dialogDismissableCause) {
-        mModalDialogManager.dismissDialog(mPropertyModel, dialogDismissableCause);
+    private void dismiss() {
+        mModalDialogManager.dismissDialog(mPropertyModel, mDismissalCause);
     }
 }
