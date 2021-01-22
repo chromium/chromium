@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
+// #import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
 // Identifiers for the default Crostini VM and container.
-/** @type {string} */ const DEFAULT_CROSTINI_VM = 'termina';
-/** @type {string} */ const DEFAULT_CROSTINI_CONTAINER = 'penguin';
+/** @type {string} */ /* #export */ const DEFAULT_CROSTINI_VM = 'termina';
+/** @type {string} */ /* #export */ const DEFAULT_CROSTINI_CONTAINER =
+    'penguin';
 
 
 /**
@@ -14,7 +15,7 @@
  * (chrome/browser/chromeos/crostini/crostini_port_forwarder.h).
  * @enum {number}
  */
-const CrostiniPortProtocol = {
+/* #export */ const CrostiniPortProtocol = {
   TCP: 0,
   UDP: 1,
 };
@@ -23,7 +24,7 @@ const CrostiniPortProtocol = {
  * @typedef {{path: string,
  *            pathDisplayText: string}}
  */
-let CrostiniSharedPath;
+/* #export */ let CrostiniSharedPath;
 
 /**
  * @typedef {{label: string,
@@ -31,14 +32,14 @@ let CrostiniSharedPath;
  *            shared: boolean,
  *            shareWillReassign: boolean}}
  */
-let CrostiniSharedUsbDevice;
+/* #export */ let CrostiniSharedUsbDevice;
 
 /**
  * @typedef {{label: string,
  *            port_number: number,
  *            protocol_type: !CrostiniPortProtocol}}
  */
-let CrostiniPortSetting;
+/* #export */ let CrostiniPortSetting;
 
 /**
  * @typedef {{succeeded: boolean,
@@ -48,21 +49,22 @@ let CrostiniPortSetting;
  *            defaultIndex: number,
  *            ticks: !Array}}
  */
-let CrostiniDiskInfo;
+/* #export */ let CrostiniDiskInfo;
 
 /**
  * @typedef {{port_number: number,
  *            protocol_type: !CrostiniPortProtocol}}
  */
-let CrostiniPortActiveSetting;
+/* #export */ let CrostiniPortActiveSetting;
 
 /**
  * @fileoverview A helper object used by the "Linux Apps" (Crostini) section
  * to install and uninstall Crostini.
  */
+
 cr.define('settings', function() {
   /** @interface */
-  class CrostiniBrowserProxy {
+  /* #export */ class CrostiniBrowserProxy {
     /* Show crostini installer. */
     requestCrostiniInstallerView() {}
 
@@ -75,7 +77,10 @@ cr.define('settings', function() {
      */
     getCrostiniSharedPathsDisplayText(paths) {}
 
-    /** Called when page is ready. */
+    /**
+     * Called when page is ready.
+     * @return {!Promise<boolean>}
+     */
     notifyCrostiniSharedUsbDevicesPageReady() {}
 
     /**
@@ -249,8 +254,10 @@ cr.define('settings', function() {
     getCrostiniMicSharingEnabled() {}
   }
 
-  /** @implements {settings.CrostiniBrowserProxy} */
-  class CrostiniBrowserProxyImpl {
+  /**
+   * @implements {settings.CrostiniBrowserProxy}
+   */
+  /* #export */ class CrostiniBrowserProxyImpl {
     /** @override */
     requestCrostiniInstallerView() {
       chrome.send('requestCrostiniInstallerView');

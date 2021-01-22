@@ -55,6 +55,7 @@ export {AmbientModeTemperatureUnit, AmbientModeTopicSource} from './ambient_mode
 export {bluetoothApis} from './bluetooth_page/bluetooth_page.m.js';
 export {GoogleAssistantBrowserProxyImpl} from './google_assistant_page/google_assistant_browser_proxy.m.js';
 export {ConsentStatus, DspHotwordState} from './google_assistant_page/google_assistant_page.m.js';
+export {CrostiniBrowserProxy, CrostiniBrowserProxyImpl} from './crostini_page/crostini_browser_proxy.m.js';
 export {InternetPageBrowserProxy, InternetPageBrowserProxyImpl} from './internet_page/internet_page_browser_proxy.m.js';
 export {MultiDeviceBrowserProxy, MultiDeviceBrowserProxyImpl} from './multidevice_page/multidevice_browser_proxy.m.js';
 export {MultiDeviceFeature, MultiDeviceFeatureState, MultiDevicePageContentData, MultiDeviceSettingsMode, PhoneHubNotificationAccessStatus, SmartLockSignInEnabledState} from './multidevice_page/multidevice_constants.m.js';

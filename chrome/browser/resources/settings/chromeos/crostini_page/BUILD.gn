@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
+import("../os_settings.gni")
 
 js_type_check("closure_compile") {
   deps = [
@@ -108,24 +109,25 @@ js_library("crostini_subpage") {
 }
 
 # TODO: Uncomment as the Polymer3 migration makes progress.
-#js_type_check("closure_compile_module") {
-#  is_polymer3 = true
-#  deps = [
-#    ":crostini_arc_adb.m",
-#    ":crostini_arc_adb_confirmation_dialog.m",
-#    ":crostini_browser_proxy.m",
-#    ":crostini_disk_resize_dialog.m",
-#    ":crostini_disk_resize_confirmation_dialog.m",
-#    ":crostini_export_import.m",
-#    ":crostini_import_confirmation_dialog.m",
-#    ":crostini_mic_sharing_dialog.m",
-#    ":crostini_page.m",
-#    ":crostini_port_forwarding.m",
-#    ":crostini_port_forwarding_add_port_dialog.m",
-#    ":crostini_shared_paths.m",
-#    ":crostini_subpage.m"
-#  ]
-#}
+js_type_check("closure_compile_module") {
+  is_polymer3 = true
+  deps = [
+    #    ":crostini_arc_adb.m",
+    #    ":crostini_arc_adb_confirmation_dialog.m",
+    ":crostini_browser_proxy.m",
+    #    ":crostini_disk_resize_dialog.m",
+    #    ":crostini_disk_resize_confirmation_dialog.m",
+    #    ":crostini_export_import.m",
+    #    ":crostini_import_confirmation_dialog.m",
+    #    ":crostini_mic_sharing_dialog.m",
+    #    ":crostini_page.m",
+    #    ":crostini_port_forwarding.m",
+    #    ":crostini_port_forwarding_add_port_dialog.m",
+    #    ":crostini_shared_paths.m",
+    #    ":crostini_shared_usb_devices.m",
+    #    ":crostini_subpage.m"
+  ]
+}
 
 js_library("crostini_arc_adb.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/crostini_page/crostini_arc_adb.m.js" ]
@@ -146,7 +148,7 @@ js_library("crostini_arc_adb_confirmation_dialog.m") {
 js_library("crostini_browser_proxy.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/crostini_page/crostini_browser_proxy.m.js" ]
   deps = [
-    # TODO: Fill those in.
+    "//ui/webui/resources/js:cr.m",
   ]
   extra_deps = [ ":modulize" ]
 }
@@ -326,4 +328,5 @@ import("//ui/webui/resources/tools/js_modulizer.gni")
 
 js_modulizer("modulize") {
   input_files = [ "crostini_browser_proxy.js" ]
+  namespace_rewrites = os_settings_namespace_rewrites
 }
