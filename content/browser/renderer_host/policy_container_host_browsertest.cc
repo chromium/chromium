@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
+#include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -686,6 +687,110 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest,
   // modification coming from blink.
   ASSERT_EQ(network::mojom::ReferrerPolicy::kAlways,
             entry1->GetFrameEntry(child)->document_policies()->referrer_policy);
+}
+
+// The following tests shows the behavior of the policy container during the
+// early commit following a crashed frame: If an embedder pauses the navigation
+// that causing the early commit, they can then execute javascript in the
+// committed frame and blink's PolicyContainer would not be connected to
+// browser's PolicyContainerHost. This has limited impact in practice.
+IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest,
+                       CheckRendererPolicyContainerAccessesAfterCrash) {
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title2.html"));
+  IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+
+  std::string add_referrer_script = R"(
+    new Promise(async resolve => {
+      // Make sure the DOM is ready before modifying <header>.
+      if (document.readyState !== "complete")
+        await new Promise(r => addEventListener("DOMContentLoaded", r));
+
+      // Add <meta name="referrer" content=$1>
+      let meta = document.createElement("meta");
+      meta.name = "referrer";
+      meta.content= $1;
+      document.head.append(meta);
+      resolve(true);
+    })
+  )";
+
+  // Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+
+  // The referrer policy is initially default.
+  EXPECT_EQ(network::mojom::ReferrerPolicy::kDefault,
+            current_frame_host()->policy_container_host()->referrer_policy());
+
+  // Deliver a new referrer policy in the renderer with
+  // <meta name="referrer" content="none">.
+  EXPECT_EQ(true, EvalJs(current_frame_host(),
+                         content::JsReplace(add_referrer_script, "none")));
+  // The policy is propagated to the browser by policy container.
+  EXPECT_EQ(network::mojom::ReferrerPolicy::kNever,
+            current_frame_host()->policy_container_host()->referrer_policy());
+
+  // Crash the renderer.
+  RenderProcessHost* renderer_process = current_frame_host()->GetProcess();
+  RenderProcessHostWatcher crash_observer(
+      renderer_process, RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+  renderer_process->Shutdown(0);
+  crash_observer.Wait();
+
+  // Start navigation to B, but don't commit yet.
+  TestNavigationManager manager(web_contents(), url_b);
+  shell()->LoadURL(url_b);
+  EXPECT_TRUE(manager.WaitForRequestStart());
+
+  NavigationRequest* navigation_request =
+      NavigationRequest::From(manager.GetNavigationHandle());
+  if (ShouldSkipEarlyCommitPendingForCrashedFrame()) {
+    EXPECT_EQ(navigation_request->associated_site_instance_type(),
+              NavigationRequest::AssociatedSiteInstanceType::SPECULATIVE);
+  } else {
+    // Policy container is properly initialized in the early committed
+    // render frame host.
+    EXPECT_TRUE(current_frame_host()->policy_container_host());
+    EXPECT_EQ(navigation_request->associated_site_instance_type(),
+              NavigationRequest::AssociatedSiteInstanceType::CURRENT);
+
+    // The policy is copied from the previous RFH following the crash.
+    EXPECT_EQ(network::mojom::ReferrerPolicy::kNever,
+              current_frame_host()->policy_container_host()->referrer_policy());
+
+    // Deliver a new referrer policy in the renderer with
+    // <meta name="referrer" content="origin">. Using "origin" to differ from
+    // previous "none" and "default".
+
+    EXPECT_EQ(true, EvalJs(current_frame_host(),
+                           content::JsReplace(add_referrer_script, "origin")));
+    // The previous referrer policy is not propagated to the browser since
+    // blink's policy container is not linked with browser's policy container
+    // host. Never (a.k.a. "None") is copied from the previous RFH.
+    EXPECT_EQ(network::mojom::ReferrerPolicy::kNever,
+              current_frame_host()->policy_container_host()->referrer_policy());
+  }
+
+  // Let the navigation finish.
+  manager.WaitForNavigationFinished();
+
+  EXPECT_EQ(url_b, web_contents()->GetMainFrame()->GetLastCommittedURL());
+
+  // The referrer policy is initialized to default during the navigation (no
+  // referrer-policy header in the response).
+  EXPECT_EQ(network::mojom::ReferrerPolicy::kDefault,
+            current_frame_host()->policy_container_host()->referrer_policy());
+
+  // Deliver a new referrer policy in the renderer with
+  // <meta name="referrer" content="strict-origin">. Using "strict-origin" to
+  // differ again from the previous uses.
+  EXPECT_EQ(true,
+            EvalJs(current_frame_host(),
+                   content::JsReplace(add_referrer_script, "strict-origin")));
+  // This time renderer's policy container properly propagates the referrer
+  // policy to the browser.
+  EXPECT_EQ(network::mojom::ReferrerPolicy::kStrictOrigin,
+            current_frame_host()->policy_container_host()->referrer_policy());
 }
 
 }  // namespace content
