@@ -1568,6 +1568,7 @@ void AXObjectCacheImpl::ProcessInvalidatedObjects(Document& document) {
       }
 
       AXObject* new_object = refresh(object);
+      MarkAXObjectDirty(new_object, false);
 
       // Children might change because child traversal style changed.
       if (new_object &&
