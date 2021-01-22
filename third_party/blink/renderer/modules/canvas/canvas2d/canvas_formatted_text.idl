@@ -1,0 +1,15 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+[
+    RuntimeEnabled=CanvasFormattedText,
+    Exposed=Window
+]
+interface CanvasFormattedText{
+  [CallWith=ExecutionContext] constructor();
+
+  [RaisesException] getter CanvasFormattedTextRun getRun(unsigned long index);
+  CanvasFormattedTextRun appendRun(CanvasFormattedTextRun newRun);
+
+  readonly attribute unsigned long length;
+};

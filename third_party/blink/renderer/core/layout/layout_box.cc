@@ -3335,7 +3335,7 @@ scoped_refptr<const NGLayoutResult> LayoutBox::CachedLayoutResult(
   // necessarily be marked for layout, since we don't detect that anything in
   // there has changed (and detecting that would be more expensive). So just
   // refuse to hit the cache, so that we force re-layout.
-  if (UNLIKELY(IsAnonymous() && Parent()->IsLayoutNGFieldset()))
+  if (UNLIKELY(IsAnonymous() && Parent() && Parent()->IsLayoutNGFieldset()))
     return nullptr;
 
   DCHECK_EQ(cached_layout_result->Status(), NGLayoutResult::kSuccess);

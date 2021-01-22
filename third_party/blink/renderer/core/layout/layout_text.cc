@@ -188,6 +188,18 @@ LayoutText* LayoutText::CreateEmptyAnonymous(
   return text;
 }
 
+LayoutText* LayoutText::CreateAnonymous(
+    Document& doc,
+    scoped_refptr<const ComputedStyle> style,
+    scoped_refptr<StringImpl> text,
+    LegacyLayout legacy) {
+  LayoutText* layout_text =
+      LayoutObjectFactory::CreateText(nullptr, std::move(text), legacy);
+  layout_text->SetDocumentForAnonymous(&doc);
+  layout_text->SetStyle(std::move(style));
+  return layout_text;
+}
+
 bool LayoutText::IsWordBreak() const {
   NOT_DESTROYED();
   return false;

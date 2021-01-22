@@ -116,6 +116,9 @@ interface CanvasRenderingContext2D {
     void strokeText(DOMString text, unrestricted double x, unrestricted double y, optional unrestricted double maxWidth);
     TextMetrics measureText(DOMString text);
 
+    // Render entire CanvasFormattedText with line wrapping (one-shot)
+    [RuntimeEnabled=CanvasFormattedText] void fillFormattedText(CanvasFormattedText formattedText, double x, double y, double wrapWidth);
+
     // drawing images
     [CallWith=ScriptState, RaisesException] void drawImage(CanvasImageSource image, unrestricted double x, unrestricted double y);
     [CallWith=ScriptState, RaisesException] void drawImage(CanvasImageSource image, unrestricted double x, unrestricted double y, unrestricted double width, unrestricted double height);

@@ -86,6 +86,11 @@ class CORE_EXPORT LayoutText : public LayoutObject {
                                           scoped_refptr<const ComputedStyle>,
                                           LegacyLayout);
 
+  static LayoutText* CreateAnonymous(Document&,
+                                     scoped_refptr<const ComputedStyle>,
+                                     scoped_refptr<StringImpl>,
+                                     LegacyLayout legacy);
+
   const char* GetName() const override {
     NOT_DESTROYED();
     return "LayoutText";

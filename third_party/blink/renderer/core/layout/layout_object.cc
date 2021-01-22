@@ -453,7 +453,8 @@ DISABLE_CFI_PERF
 void LayoutObject::AddChild(LayoutObject* new_child,
                             LayoutObject* before_child) {
   NOT_DESTROYED();
-  DCHECK(IsAllowedToModifyLayoutTreeStructure(GetDocument()));
+  DCHECK(IsAllowedToModifyLayoutTreeStructure(GetDocument()) ||
+         IsLayoutNGObjectForCanvasFormattedText());
 
   LayoutObjectChildList* children = VirtualChildren();
   DCHECK(children);

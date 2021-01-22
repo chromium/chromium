@@ -534,6 +534,9 @@ void LayoutBoxModelObject::InvalidateStickyConstraints() {
   NOT_DESTROYED();
   PaintLayer* enclosing = EnclosingLayer();
 
+  if (!enclosing)
+    return;
+
   if (PaintLayerScrollableArea* scrollable_area =
           enclosing->GetScrollableArea()) {
     scrollable_area->InvalidateAllStickyConstraints();

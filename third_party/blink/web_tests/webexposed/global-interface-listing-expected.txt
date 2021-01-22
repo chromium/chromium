@@ -974,6 +974,13 @@ interface CanvasCaptureMediaStreamTrack : MediaStreamTrack
     getter canvas
     method constructor
     method requestFrame
+interface CanvasFormattedText
+    attribute @@toStringTag
+    getter length
+    method @@iterator
+    method appendRun
+    method constructor
+    method getRun
 interface CanvasGradient
     attribute @@toStringTag
     method addColorStop
@@ -1030,6 +1037,7 @@ interface CanvasRenderingContext2D
     method drawImage
     method ellipse
     method fill
+    method fillFormattedText
     method fillRect
     method fillText
     method getContextAttributes

@@ -318,6 +318,10 @@
       status: "experimental",
     },
     {
+      name: "CanvasFormattedText",
+      status: "experimental",
+    },
+    {
       name: "CanvasHitRegion",
       status: "experimental",
     },

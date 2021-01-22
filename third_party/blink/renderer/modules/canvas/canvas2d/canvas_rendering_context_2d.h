@@ -31,6 +31,7 @@
 
 #include "base/macros.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_formatted_text.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_rendering_context_2d_settings.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_context_creation_attributes_core.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
@@ -39,6 +40,7 @@
 #include "third_party/blink/renderer/core/style/filter_operations.h"
 #include "third_party/blink/renderer/core/svg/svg_resource_client.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/base_rendering_context_2d.h"
+#include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_formatted_text.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_rendering_context_2d_state.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/identifiability_study_helper.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -141,6 +143,11 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   TextMetrics* measureText(const String& text);
 
   CanvasRenderingContext2DSettings* getContextAttributes() const;
+
+  void fillFormattedText(CanvasFormattedText* formatted_text,
+                         double x,
+                         double y,
+                         double wrap_width);
 
   void drawFocusIfNeeded(Element*);
   void drawFocusIfNeeded(Path2D*, Element*);

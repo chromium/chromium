@@ -861,7 +861,8 @@ const NGInlineNodeData& NGInlineNode::EnsureData() const {
 }
 
 const NGOffsetMapping* NGInlineNode::ComputeOffsetMappingIfNeeded() const {
-  DCHECK(!GetLayoutBlockFlow()->GetDocument().NeedsLayoutTreeUpdate());
+  DCHECK(!GetLayoutBlockFlow()->GetDocument().NeedsLayoutTreeUpdate() ||
+         GetLayoutBlockFlow()->IsLayoutNGObjectForCanvasFormattedText());
 
   NGInlineNodeData* data = MutableData();
   if (!data->offset_mapping) {
@@ -876,7 +877,8 @@ const NGOffsetMapping* NGInlineNode::ComputeOffsetMappingIfNeeded() const {
 void NGInlineNode::ComputeOffsetMapping(LayoutBlockFlow* layout_block_flow,
                                         NGInlineNodeData* data) {
   DCHECK(!data->offset_mapping);
-  DCHECK(!layout_block_flow->GetDocument().NeedsLayoutTreeUpdate());
+  DCHECK(!layout_block_flow->GetDocument().NeedsLayoutTreeUpdate() ||
+         layout_block_flow->IsLayoutNGObjectForCanvasFormattedText());
 
   // TODO(xiaochengh): ComputeOffsetMappingIfNeeded() discards the
   // NGInlineItems and text content built by |builder|, because they are

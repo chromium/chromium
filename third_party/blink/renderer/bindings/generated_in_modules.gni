@@ -1341,6 +1341,7 @@ generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_can_make_payment_event.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_canvas_capture_media_stream_track.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_canvas_capture_media_stream_track.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_canvas_formatted_text.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_canvas_gradient.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_canvas_gradient.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_canvas_pattern.cc",

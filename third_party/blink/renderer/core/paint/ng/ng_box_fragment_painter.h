@@ -30,7 +30,7 @@ struct PaintInfo;
 
 // Painter for LayoutNG box fragments, paints borders and background. Delegates
 // to NGTextFragmentPainter to paint line box fragments.
-class NGBoxFragmentPainter : public BoxPainterBase {
+class CORE_EXPORT NGBoxFragmentPainter : public BoxPainterBase {
   STACK_ALLOCATED();
 
  public:
