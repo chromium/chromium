@@ -1039,8 +1039,25 @@ const std::vector<AccountReconcilorTestTableParam> kDiceParams = {
 };
 // clang-format on
 
+// Parameterized version of AccountReconcilorTest that tests Dice
+// implementation with MergeSession endpoint.
+class AccountReconcilorTestDiceMergeSession
+    : public AccountReconcilorTestTable {
+ public:
+  AccountReconcilorTestDiceMergeSession() = default;
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(AccountReconcilorTestDiceMergeSession);
+};
+
 // Checks one row of the kDiceParams table above.
-TEST_P(AccountReconcilorTestTable, TableRowTest) {
+TEST_P(AccountReconcilorTestDiceMergeSession, TableRowTest) {
+  SetAccountConsistency(signin::AccountConsistencyMethod::kDice);
+  scoped_feature_list_.InitAndDisableFeature(kUseMultiloginEndpoint);
+
   // Enable Dice.
   SetAccountConsistency(signin::AccountConsistencyMethod::kDice);
 
@@ -1052,7 +1069,7 @@ TEST_P(AccountReconcilorTestTable, TableRowTest) {
 
 INSTANTIATE_TEST_SUITE_P(
     DiceTable,
-    AccountReconcilorTestTable,
+    AccountReconcilorTestDiceMergeSession,
     ::testing::ValuesIn(GenerateTestCasesFromParams(kDiceParams)));
 
 class AccountReconcilorTestForceDiceMigration
@@ -1065,9 +1082,17 @@ class AccountReconcilorTestForceDiceMigration
                                        IsFirstReconcile::kFirst,
                                        GetParam().gaia_api_calls,
                                        GetParam().tokens_after_reconcile,
-                                       GetParam().cookies_after_reconcile) {}
+                                       GetParam().cookies_after_reconcile) {
+    // ForceDiceMigration is temporary and the migration was enabled in in
+    // Q1 2020. It is expected to be removed in 2021 Q2.
+    // Simply disable the OAuthmultilogin endpoint instead of migrating the
+    // tests.
+    scoped_feature_list_.InitAndDisableFeature(kUseMultiloginEndpoint);
+  }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
   DISALLOW_COPY_AND_ASSIGN(AccountReconcilorTestForceDiceMigration);
 };
 
@@ -1257,6 +1282,8 @@ class AccountReconcilorDiceEndpointParamTest
     SetAccountConsistency(signin::AccountConsistencyMethod::kDice);
     if (IsMultiloginEnabled())
       scoped_feature_list_.InitAndEnableFeature(kUseMultiloginEndpoint);
+    else
+      scoped_feature_list_.InitAndDisableFeature(kUseMultiloginEndpoint);
   }
   bool IsMultiloginEnabled() { return GetParam(); }
 
@@ -2567,7 +2594,7 @@ TEST_P(AccountReconcilorMethodParamTest,
       case signin::AccountConsistencyMethod::kDice: {
         signin::MultiloginParameters params(
             gaia::MultiloginMode::MULTILOGIN_PRESERVE_COOKIE_ACCOUNTS_ORDER,
-            {account_id2, account_id});
+            {account_id, account_id2});
         EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction(params));
         break;
       }

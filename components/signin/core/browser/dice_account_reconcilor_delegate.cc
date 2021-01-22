@@ -15,7 +15,7 @@
 #include "components/signin/public/base/signin_pref_names.h"
 
 const base::Feature kUseMultiloginEndpoint{"UseMultiloginEndpoint",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
+                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
 namespace signin {
 
