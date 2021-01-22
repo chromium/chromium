@@ -226,9 +226,9 @@ export class PDFScriptingAPI {
     });
   }
 
-  /** Hide the toolbars after a delay. */
-  hideToolbars() {
-    this.sendMessage_({type: 'hideToolbars'});
+  /** Hide the toolbar after a delay. */
+  hideToolbar() {
+    this.sendMessage_({type: 'hideToolbar'});
   }
 
   /**
@@ -333,7 +333,7 @@ export function PDFCreateOutOfProcessPlugin(src, baseUrl) {
 
   // Add the functions to the iframe so that they can be called directly.
   iframe.darkModeChanged = client.darkModeChanged.bind(client);
-  iframe.hideToolbars = client.hideToolbars.bind(client);
+  iframe.hideToolbar = client.hideToolbar.bind(client);
   iframe.loadPreviewPage = client.loadPreviewPage.bind(client);
   iframe.resetPrintPreviewMode = client.resetPrintPreviewMode.bind(client);
   iframe.scrollPosition = client.scrollPosition.bind(client);

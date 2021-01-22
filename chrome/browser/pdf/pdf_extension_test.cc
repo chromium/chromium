@@ -853,20 +853,6 @@ class PDFExtensionJSTestBase : public PDFExtensionTest {
   }
 };
 
-// TODO(crbug.com/1164004): Either move this test to Print Preview or delete.
-// The toolbar manager UI no longer exists in the PDF Viewer.
-class PDFExtensionJSUpdatesDisabledTest : public PDFExtensionJSTestBase {
- public:
-  ~PDFExtensionJSUpdatesDisabledTest() override = default;
-};
-
-// Zoom toolbar doesn't exist and the top toolbar is sticky with the new PDF
-// viewer updates, so run this test only with the updates disabled.
-IN_PROC_BROWSER_TEST_F(PDFExtensionJSUpdatesDisabledTest,
-                       DISABLED_ToolbarManager) {
-  RunTestsInJsModule("toolbar_manager_test.js", "test.pdf");
-}
-
 class PDFExtensionJSUpdatesEnabledTest : public PDFExtensionJSTestBase {
  public:
   ~PDFExtensionJSUpdatesEnabledTest() override = default;

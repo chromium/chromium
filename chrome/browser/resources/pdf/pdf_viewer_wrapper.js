@@ -19,6 +19,5 @@ export {OpenPdfParamsParser} from './open_pdf_params_parser.js';
 export {PDFScriptingAPI} from './pdf_scripting_api.js';
 export {getFilenameFromURL, PDFViewerElement} from './pdf_viewer.js';
 export {shouldIgnoreKeyEvents} from './pdf_viewer_utils.js';
-export {ToolbarManager} from './toolbar_manager.js';
 export {LayoutOptions, PAGE_SHADOW, Viewport} from './viewport.js';
 export {ZoomManager} from './zoom_manager.js';
