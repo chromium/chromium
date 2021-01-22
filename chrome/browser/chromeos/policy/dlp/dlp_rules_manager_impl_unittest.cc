@@ -24,25 +24,27 @@ namespace policy {
 
 namespace {
 
-constexpr char kUrlStr1[] = "https://wwww.example.com";
-constexpr char kUrlStr2[] = "https://wwww.google.com";
-constexpr char kUrlStr3[] = "*";
-constexpr char kUrlStr4[] = "https://www.gmail.com";
+constexpr char kExampleUrl[] = "https://wwww.example.com";
+constexpr char kGoogleUrl[] = "https://wwww.google.com";
+constexpr char kWildCardMatching[] = "*";
+constexpr char kGmailUrl[] = "https://www.gmail.com";
 
 constexpr char kHttpsPrefix[] = "https://www.";
 
-constexpr char kUrlPattern1[] = "chat.google.com";
-constexpr char kUrlPattern2[] = "salesforce.com";
-constexpr char kUrlPattern3[] = "docs.google.com";
-constexpr char kUrlPattern4[] = "drive.google.com";
-constexpr char kUrlPattern5[] = "*.company.com";
+constexpr char kChatPattern[] = "chat.google.com";
+constexpr char kSalesforcePattern[] = "salesforce.com";
+constexpr char kDocsPattern[] = "docs.google.com";
+constexpr char kDrivePattern[] = "drive.google.com";
+constexpr char kCompanyPattern[] = "*.company.com";
+constexpr char kGooglePatten[] = "google.com";
+constexpr char kMailPattern[] = "mail.google.com";
 
 base::Value GenerateClipboardCopyDisallowedRule() {
   base::Value rules(base::Value::Type::LIST);
   base::Value src_urls(base::Value::Type::LIST);
-  src_urls.Append(kUrlStr1);
+  src_urls.Append(kExampleUrl);
   base::Value dst_urls(base::Value::Type::LIST);
-  dst_urls.Append(kUrlStr3);
+  dst_urls.Append(kWildCardMatching);
   base::Value restrictions(base::Value::Type::LIST);
   restrictions.Append(dlp_test_util::CreateRestrictionWithLevel(
       dlp::kClipboardRestriction, dlp::kBlockLevel));
@@ -78,22 +80,22 @@ TEST_F(DlpRulesManagerImplTest, EmptyPref) {
 
   EXPECT_EQ(DlpRulesManager::Level::kAllow,
             dlp_rules_manager_.IsRestricted(
-                GURL(kUrlStr1), DlpRulesManager::Restriction::kPrinting));
+                GURL(kExampleUrl), DlpRulesManager::Restriction::kPrinting));
   EXPECT_EQ(DlpRulesManager::Level::kAllow,
             dlp_rules_manager_.IsRestrictedDestination(
-                GURL(kUrlStr1), GURL(kUrlStr2),
+                GURL(kExampleUrl), GURL(kGoogleUrl),
                 DlpRulesManager::Restriction::kClipboard));
 }
 
-TEST_F(DlpRulesManagerImplTest, IsRestricted_LevelPrecedence) {
+TEST_F(DlpRulesManagerImplTest, BlockPriority) {
   base::Value rules(base::Value::Type::LIST);
 
   // First Rule
   base::Value src_urls_1(base::Value::Type::LIST);
-  src_urls_1.Append(kUrlStr1);
+  src_urls_1.Append(kExampleUrl);
 
   base::Value dst_urls_1(base::Value::Type::LIST);
-  dst_urls_1.Append(kUrlStr3);
+  dst_urls_1.Append(kWildCardMatching);
 
   base::Value restrictions_1(base::Value::Type::LIST);
   restrictions_1.Append(dlp_test_util::CreateRestrictionWithLevel(
@@ -108,10 +110,10 @@ TEST_F(DlpRulesManagerImplTest, IsRestricted_LevelPrecedence) {
 
   // Second Rule
   base::Value src_urls_2(base::Value::Type::LIST);
-  src_urls_2.Append(kUrlStr1);
+  src_urls_2.Append(kExampleUrl);
 
   base::Value dst_urls_2(base::Value::Type::LIST);
-  dst_urls_2.Append(kUrlStr2);
+  dst_urls_2.Append(kGoogleUrl);
 
   base::Value restrictions_2(base::Value::Type::LIST);
   restrictions_2.Append(dlp_test_util::CreateRestrictionWithLevel(
@@ -126,34 +128,34 @@ TEST_F(DlpRulesManagerImplTest, IsRestricted_LevelPrecedence) {
 
   EXPECT_EQ(DlpRulesManager::Level::kAllow,
             dlp_rules_manager_.IsRestrictedDestination(
-                GURL(kUrlStr1), GURL(kUrlStr2),
+                GURL(kExampleUrl), GURL(kGoogleUrl),
                 DlpRulesManager::Restriction::kClipboard));
 
   EXPECT_EQ(DlpRulesManager::Level::kBlock,
             dlp_rules_manager_.IsRestrictedDestination(
-                GURL(kUrlStr1), GURL(kUrlStr4),
+                GURL(kExampleUrl), GURL(kGmailUrl),
                 DlpRulesManager::Restriction::kClipboard));
 
   EXPECT_EQ(DlpRulesManager::Level::kBlock,
             dlp_rules_manager_.IsRestricted(
-                GURL(kUrlStr1), DlpRulesManager::Restriction::kScreenshot));
+                GURL(kExampleUrl), DlpRulesManager::Restriction::kScreenshot));
 
   // Clear pref
   UpdatePolicyPref(base::Value(base::Value::Type::LIST));
 
   EXPECT_EQ(DlpRulesManager::Level::kAllow,
             dlp_rules_manager_.IsRestrictedDestination(
-                GURL(kUrlStr1), GURL(kUrlStr2),
+                GURL(kExampleUrl), GURL(kGoogleUrl),
                 DlpRulesManager::Restriction::kClipboard));
 
   EXPECT_EQ(DlpRulesManager::Level::kAllow,
             dlp_rules_manager_.IsRestrictedDestination(
-                GURL(kUrlStr1), GURL(kUrlStr4),
+                GURL(kExampleUrl), GURL(kGmailUrl),
                 DlpRulesManager::Restriction::kClipboard));
 
   EXPECT_EQ(DlpRulesManager::Level::kAllow,
             dlp_rules_manager_.IsRestricted(
-                GURL(kUrlStr1), DlpRulesManager::Restriction::kScreenshot));
+                GURL(kExampleUrl), DlpRulesManager::Restriction::kScreenshot));
 }
 
 TEST_F(DlpRulesManagerImplTest, UpdatePref) {
@@ -161,7 +163,7 @@ TEST_F(DlpRulesManagerImplTest, UpdatePref) {
   base::Value rules_1(base::Value::Type::LIST);
 
   base::Value src_urls_1(base::Value::Type::LIST);
-  src_urls_1.Append(kUrlStr1);
+  src_urls_1.Append(kExampleUrl);
 
   base::Value restrictions_1(base::Value::Type::LIST);
   restrictions_1.Append(dlp_test_util::CreateRestrictionWithLevel(
@@ -176,13 +178,13 @@ TEST_F(DlpRulesManagerImplTest, UpdatePref) {
 
   EXPECT_EQ(DlpRulesManager::Level::kBlock,
             dlp_rules_manager_.IsRestricted(
-                GURL(kUrlStr1), DlpRulesManager::Restriction::kScreenshot));
+                GURL(kExampleUrl), DlpRulesManager::Restriction::kScreenshot));
 
   // Second DLP rule
   base::Value rules_2(base::Value::Type::LIST);
 
   base::Value src_urls_2(base::Value::Type::LIST);
-  src_urls_2.Append(kUrlStr2);
+  src_urls_2.Append(kGoogleUrl);
 
   base::Value restrictions_2(base::Value::Type::LIST);
   restrictions_2.Append(dlp_test_util::CreateRestrictionWithLevel(
@@ -197,17 +199,17 @@ TEST_F(DlpRulesManagerImplTest, UpdatePref) {
 
   EXPECT_EQ(DlpRulesManager::Level::kAllow,
             dlp_rules_manager_.IsRestricted(
-                GURL(kUrlStr1), DlpRulesManager::Restriction::kScreenshot));
+                GURL(kExampleUrl), DlpRulesManager::Restriction::kScreenshot));
   EXPECT_EQ(DlpRulesManager::Level::kBlock,
             dlp_rules_manager_.IsRestricted(
-                GURL(kUrlStr2), DlpRulesManager::Restriction::kScreenshot));
+                GURL(kGoogleUrl), DlpRulesManager::Restriction::kScreenshot));
 }
 
 TEST_F(DlpRulesManagerImplTest, IsRestrictedComponent_Clipboard) {
   base::Value rules(base::Value::Type::LIST);
 
   base::Value src_urls(base::Value::Type::LIST);
-  src_urls.Append(kUrlStr1);
+  src_urls.Append(kExampleUrl);
 
   base::Value dst_components(base::Value::Type::LIST);
   dst_components.Append("ARC");
@@ -224,11 +226,11 @@ TEST_F(DlpRulesManagerImplTest, IsRestrictedComponent_Clipboard) {
 
   EXPECT_EQ(DlpRulesManager::Level::kBlock,
             dlp_rules_manager_.IsRestrictedComponent(
-                GURL(kUrlStr1), DlpRulesManager::Component::kArc,
+                GURL(kExampleUrl), DlpRulesManager::Component::kArc,
                 DlpRulesManager::Restriction::kClipboard));
   EXPECT_EQ(DlpRulesManager::Level::kAllow,
             dlp_rules_manager_.IsRestrictedComponent(
-                GURL(kUrlStr1), DlpRulesManager::Component::kCrostini,
+                GURL(kExampleUrl), DlpRulesManager::Component::kCrostini,
                 DlpRulesManager::Restriction::kClipboard));
 }
 
@@ -239,7 +241,7 @@ TEST_F(DlpRulesManagerImplTest, SameSrcDst_Clipboard) {
 
   EXPECT_EQ(DlpRulesManager::Level::kAllow,
             dlp_rules_manager_.IsRestrictedDestination(
-                GURL(kUrlStr1), GURL(kUrlStr1),
+                GURL(kExampleUrl), GURL(kExampleUrl),
                 DlpRulesManager::Restriction::kClipboard));
 }
 
@@ -248,10 +250,10 @@ TEST_F(DlpRulesManagerImplTest, EmptyUrl_Clipboard) {
 
   // Second Rule
   base::Value src_urls_2(base::Value::Type::LIST);
-  src_urls_2.Append(kUrlStr4);
+  src_urls_2.Append(kGmailUrl);
 
   base::Value dst_urls_2(base::Value::Type::LIST);
-  dst_urls_2.Append(kUrlStr2);
+  dst_urls_2.Append(kGoogleUrl);
 
   base::Value restrictions_2(base::Value::Type::LIST);
   restrictions_2.Append(dlp_test_util::CreateRestrictionWithLevel(
@@ -267,22 +269,22 @@ TEST_F(DlpRulesManagerImplTest, EmptyUrl_Clipboard) {
   EXPECT_EQ(
       DlpRulesManager::Level::kBlock,
       dlp_rules_manager_.IsRestrictedDestination(
-          GURL(kUrlStr1), GURL(), DlpRulesManager::Restriction::kClipboard));
+          GURL(kExampleUrl), GURL(), DlpRulesManager::Restriction::kClipboard));
   EXPECT_EQ(
       DlpRulesManager::Level::kAllow,
       dlp_rules_manager_.IsRestrictedDestination(
-          GURL(kUrlStr4), GURL(), DlpRulesManager::Restriction::kClipboard));
+          GURL(kGmailUrl), GURL(), DlpRulesManager::Restriction::kClipboard));
 }
 
 TEST_F(DlpRulesManagerImplTest, IsRestricted_MultipleURLs) {
   base::Value rules(base::Value::Type::LIST);
 
   base::Value src_urls_1(base::Value::Type::LIST);
-  src_urls_1.Append(kUrlPattern1);
-  src_urls_1.Append(kUrlPattern2);
-  src_urls_1.Append(kUrlPattern3);
-  src_urls_1.Append(kUrlPattern4);
-  src_urls_1.Append(kUrlPattern5);
+  src_urls_1.Append(kChatPattern);
+  src_urls_1.Append(kSalesforcePattern);
+  src_urls_1.Append(kDocsPattern);
+  src_urls_1.Append(kDrivePattern);
+  src_urls_1.Append(kCompanyPattern);
 
   base::Value dst_urls_1 = src_urls_1.Clone();
   base::Value src_urls_2 = src_urls_1.Clone();
@@ -298,7 +300,7 @@ TEST_F(DlpRulesManagerImplTest, IsRestricted_MultipleURLs) {
       std::move(restrictions_1)));
 
   base::Value dst_urls_2(base::Value::Type::LIST);
-  dst_urls_2.Append(kUrlStr3);
+  dst_urls_2.Append(kWildCardMatching);
 
   base::Value restrictions_2(base::Value::Type::LIST);
   restrictions_2.Append(dlp_test_util::CreateRestrictionWithLevel(
@@ -315,41 +317,41 @@ TEST_F(DlpRulesManagerImplTest, IsRestricted_MultipleURLs) {
 
   EXPECT_EQ(DlpRulesManager::Level::kAllow,
             dlp_rules_manager_.IsRestrictedDestination(
-                GURL(base::StrCat({kHttpsPrefix, kUrlPattern1})),
-                GURL(base::StrCat({kHttpsPrefix, kUrlPattern2})),
+                GURL(base::StrCat({kHttpsPrefix, kChatPattern})),
+                GURL(base::StrCat({kHttpsPrefix, kSalesforcePattern})),
                 DlpRulesManager::Restriction::kClipboard));
   EXPECT_EQ(DlpRulesManager::Level::kAllow,
             dlp_rules_manager_.IsRestrictedDestination(
-                GURL(base::StrCat({kHttpsPrefix, kUrlPattern3})),
-                GURL(base::StrCat({kHttpsPrefix, kUrlPattern4})),
+                GURL(base::StrCat({kHttpsPrefix, kDocsPattern})),
+                GURL(base::StrCat({kHttpsPrefix, kDrivePattern})),
                 DlpRulesManager::Restriction::kClipboard));
   EXPECT_EQ(DlpRulesManager::Level::kAllow,
             dlp_rules_manager_.IsRestrictedDestination(
-                GURL(base::StrCat({kHttpsPrefix, kUrlPattern5})),
-                GURL(base::StrCat({kHttpsPrefix, kUrlPattern2})),
+                GURL(base::StrCat({kHttpsPrefix, kCompanyPattern})),
+                GURL(base::StrCat({kHttpsPrefix, kSalesforcePattern})),
                 DlpRulesManager::Restriction::kClipboard));
   EXPECT_EQ(DlpRulesManager::Level::kAllow,
             dlp_rules_manager_.IsRestrictedDestination(
-                GURL(base::StrCat({kHttpsPrefix, kUrlPattern2})),
-                GURL(base::StrCat({kHttpsPrefix, kUrlPattern3})),
+                GURL(base::StrCat({kHttpsPrefix, kSalesforcePattern})),
+                GURL(base::StrCat({kHttpsPrefix, kDocsPattern})),
                 DlpRulesManager::Restriction::kClipboard));
 
   EXPECT_EQ(DlpRulesManager::Level::kBlock,
             dlp_rules_manager_.IsRestrictedDestination(
-                GURL(base::StrCat({kHttpsPrefix, kUrlPattern1})),
-                GURL(kUrlStr2), DlpRulesManager::Restriction::kClipboard));
+                GURL(base::StrCat({kHttpsPrefix, kChatPattern})),
+                GURL(kGoogleUrl), DlpRulesManager::Restriction::kClipboard));
   EXPECT_EQ(DlpRulesManager::Level::kBlock,
             dlp_rules_manager_.IsRestrictedDestination(
-                GURL(base::StrCat({kHttpsPrefix, kUrlPattern2})),
-                GURL(kUrlStr1), DlpRulesManager::Restriction::kClipboard));
+                GURL(base::StrCat({kHttpsPrefix, kSalesforcePattern})),
+                GURL(kExampleUrl), DlpRulesManager::Restriction::kClipboard));
   EXPECT_EQ(DlpRulesManager::Level::kBlock,
             dlp_rules_manager_.IsRestrictedDestination(
-                GURL(base::StrCat({kHttpsPrefix, kUrlPattern3})),
-                GURL(kUrlStr2), DlpRulesManager::Restriction::kClipboard));
+                GURL(base::StrCat({kHttpsPrefix, kDocsPattern})),
+                GURL(kGoogleUrl), DlpRulesManager::Restriction::kClipboard));
   EXPECT_EQ(DlpRulesManager::Level::kBlock,
             dlp_rules_manager_.IsRestrictedDestination(
-                GURL(base::StrCat({kHttpsPrefix, kUrlPattern4})),
-                GURL(kUrlStr1), DlpRulesManager::Restriction::kClipboard));
+                GURL(base::StrCat({kHttpsPrefix, kDrivePattern})),
+                GURL(kExampleUrl), DlpRulesManager::Restriction::kClipboard));
 }
 
 TEST_F(DlpRulesManagerImplTest, DisabledByFeature) {
@@ -359,11 +361,11 @@ TEST_F(DlpRulesManagerImplTest, DisabledByFeature) {
 
   EXPECT_EQ(DlpRulesManager::Level::kBlock,
             dlp_rules_manager_.IsRestrictedDestination(
-                GURL(kUrlStr1), GURL(kUrlStr3),
+                GURL(kExampleUrl), GURL(kWildCardMatching),
                 DlpRulesManager::Restriction::kClipboard));
   EXPECT_EQ(DlpRulesManager::Level::kBlock,
             dlp_rules_manager_.IsRestricted(
-                GURL(kUrlStr1), DlpRulesManager::Restriction::kScreenshot));
+                GURL(kExampleUrl), DlpRulesManager::Restriction::kScreenshot));
 
   // Disable feature
   base::test::ScopedFeatureList scoped_feature_list;
@@ -373,11 +375,87 @@ TEST_F(DlpRulesManagerImplTest, DisabledByFeature) {
 
   EXPECT_EQ(DlpRulesManager::Level::kAllow,
             dlp_rules_manager_.IsRestrictedDestination(
-                GURL(kUrlStr1), GURL(kUrlStr3),
+                GURL(kExampleUrl), GURL(kWildCardMatching),
                 DlpRulesManager::Restriction::kClipboard));
   EXPECT_EQ(DlpRulesManager::Level::kAllow,
             dlp_rules_manager_.IsRestricted(
-                GURL(kUrlStr1), DlpRulesManager::Restriction::kScreenshot));
+                GURL(kExampleUrl), DlpRulesManager::Restriction::kScreenshot));
+}
+
+TEST_F(DlpRulesManagerImplTest, WarnPriority) {
+  base::Value rules(base::Value::Type::LIST);
+
+  // First Rule
+  base::Value src_urls_1(base::Value::Type::LIST);
+  src_urls_1.Append(kGooglePatten);
+
+  base::Value dst_urls_1(base::Value::Type::LIST);
+  dst_urls_1.Append(kWildCardMatching);
+
+  base::Value restrictions_1(base::Value::Type::LIST);
+  restrictions_1.Append(dlp_test_util::CreateRestrictionWithLevel(
+      dlp::kClipboardRestriction, dlp::kWarnLevel));
+
+  rules.Append(dlp_test_util::CreateRule(
+      "rule #1", "Warn on every copy from google.com", std::move(src_urls_1),
+      std::move(dst_urls_1),
+      /*dst_components=*/base::Value(base::Value::Type::LIST),
+      std::move(restrictions_1)));
+
+  // Second Rule
+  base::Value src_urls_2(base::Value::Type::LIST);
+  src_urls_2.Append(kDocsPattern);
+  src_urls_2.Append(kDrivePattern);
+  src_urls_2.Append(kMailPattern);
+  base::Value src_urls_3 = src_urls_2.Clone();
+
+  base::Value dst_urls_2(base::Value::Type::LIST);
+  dst_urls_2.Append(kWildCardMatching);
+
+  base::Value restrictions_2(base::Value::Type::LIST);
+  restrictions_2.Append(dlp_test_util::CreateRestrictionWithLevel(
+      dlp::kClipboardRestriction, dlp::kBlockLevel));
+
+  rules.Append(dlp_test_util::CreateRule(
+      "rule #2", "Block copy/paste from docs, drive, gmail",
+      std::move(src_urls_2), std::move(dst_urls_2),
+      /*dst_components=*/base::Value(base::Value::Type::LIST),
+      std::move(restrictions_2)));
+
+  // Third Rule
+  base::Value dst_urls_3 = src_urls_3.Clone();
+
+  base::Value restrictions_3(base::Value::Type::LIST);
+  restrictions_3.Append(dlp_test_util::CreateRestrictionWithLevel(
+      dlp::kClipboardRestriction, dlp::kAllowLevel));
+
+  rules.Append(dlp_test_util::CreateRule(
+      "rule #3", "Allow copy/paste inside docs, drive, gmail",
+      std::move(src_urls_3), std::move(dst_urls_3),
+      /*dst_components=*/base::Value(base::Value::Type::LIST),
+      std::move(restrictions_3)));
+
+  UpdatePolicyPref(std::move(rules));
+
+  // Copy/paste from chat.google to example.com should be warned.
+  EXPECT_EQ(DlpRulesManager::Level::kWarn,
+            dlp_rules_manager_.IsRestrictedDestination(
+                GURL(base::StrCat({kHttpsPrefix, kChatPattern})),
+                GURL(kExampleUrl), DlpRulesManager::Restriction::kClipboard));
+
+  // Copy/paste from docs to salesforce should be blocked.
+  EXPECT_EQ(DlpRulesManager::Level::kBlock,
+            dlp_rules_manager_.IsRestrictedDestination(
+                GURL(base::StrCat({kHttpsPrefix, kDocsPattern})),
+                GURL(base::StrCat({kHttpsPrefix, kSalesforcePattern})),
+                DlpRulesManager::Restriction::kClipboard));
+
+  // Copy/paste from docs to gmail should be allowed.
+  EXPECT_EQ(DlpRulesManager::Level::kAllow,
+            dlp_rules_manager_.IsRestrictedDestination(
+                GURL(base::StrCat({kHttpsPrefix, kDocsPattern})),
+                GURL(base::StrCat({kHttpsPrefix, kMailPattern})),
+                DlpRulesManager::Restriction::kClipboard));
 }
 
 }  // namespace policy

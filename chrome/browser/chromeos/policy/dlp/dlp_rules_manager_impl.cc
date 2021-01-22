@@ -52,7 +52,8 @@ DlpRulesManager::Level GetLevelMapping(const std::string& level) {
   static constexpr auto kLevelsMap =
       base::MakeFixedFlatMap<base::StringPiece, DlpRulesManager::Level>(
           {{dlp::kAllowLevel, DlpRulesManager::Level::kAllow},
-           {dlp::kBlockLevel, DlpRulesManager::Level::kBlock}});
+           {dlp::kBlockLevel, DlpRulesManager::Level::kBlock},
+           {dlp::kWarnLevel, DlpRulesManager::Level::kWarn}});
   auto* it = kLevelsMap.find(level);
   return (it == kLevelsMap.end()) ? DlpRulesManager::Level::kNotSet
                                   : it->second;
@@ -75,8 +76,9 @@ uint8_t GetPriorityMapping(const DlpRulesManager::Level level) {
   static constexpr auto kPrioritiesMap =
       base::MakeFixedFlatMap<DlpRulesManager::Level, uint8_t>(
           {{DlpRulesManager::Level::kNotSet, 0},
-           {DlpRulesManager::Level::kBlock, 1},
-           {DlpRulesManager::Level::kAllow, 2}});
+           {DlpRulesManager::Level::kWarn, 1},
+           {DlpRulesManager::Level::kBlock, 2},
+           {DlpRulesManager::Level::kAllow, 3}});
   return kPrioritiesMap.at(level);
 }
 

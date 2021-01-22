@@ -48,7 +48,8 @@ class DlpRulesManager : public KeyedService {
     kNotSet,  // Restriction level is not set.
     kBlock,   // Sets the restriction level to block the user on every action.
     kAllow,   // Sets the restriction level to allow (no restriction).
-    kMaxValue = kAllow
+    kWarn,    // Sets the restriction level to warn the user on every action.
+    kMaxValue = kWarn
   };
 
   ~DlpRulesManager() override = default;
