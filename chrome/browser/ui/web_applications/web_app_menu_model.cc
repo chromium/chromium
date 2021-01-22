@@ -27,7 +27,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/ash_features.h"
-#include "chrome/browser/ui/toolbar/assign_to_desks_menu_model.h"
+#include "chrome/browser/ui/toolbar/move_to_desks_menu_model.h"
 #include "ui/views/widget/widget.h"
 #endif
 
@@ -98,11 +98,11 @@ void WebAppMenuModel::Build() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (ash::features::IsBentoEnabled()) {
     AddSeparator(ui::NORMAL_SEPARATOR);
-    assign_to_desks_submenu_ = std::make_unique<AssignToDesksMenuModel>(
+    move_to_desks_submenu_ = std::make_unique<MoveToDesksMenuModel>(
         this, views::Widget::GetWidgetForNativeWindow(
                   browser()->window()->GetNativeWindow()));
-    AddSubMenuWithStringId(IDC_ASSIGN_TO_DESKS_MENU, IDS_ASSIGN_TO_DESKS_MENU,
-                           assign_to_desks_submenu_.get());
+    AddSubMenuWithStringId(IDC_MOVE_TO_DESKS_MENU, IDS_MOVE_TO_DESKS_MENU,
+                           move_to_desks_submenu_.get());
   }
 #endif
 

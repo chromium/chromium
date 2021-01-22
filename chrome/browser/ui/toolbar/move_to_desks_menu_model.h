@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_TOOLBAR_ASSIGN_TO_DESKS_MENU_MODEL_H_
-#define CHROME_BROWSER_UI_TOOLBAR_ASSIGN_TO_DESKS_MENU_MODEL_H_
+#ifndef CHROME_BROWSER_UI_TOOLBAR_MOVE_TO_DESKS_MENU_MODEL_H_
+#define CHROME_BROWSER_UI_TOOLBAR_MOVE_TO_DESKS_MENU_MODEL_H_
 
 #include "ui/base/models/simple_menu_model.h"
 
@@ -15,12 +15,12 @@ namespace views {
 class Widget;
 }
 
-// A menu model that builds the contents of the assign to desks menu.
-class AssignToDesksMenuModel : public ui::SimpleMenuModel {
+// A menu model that builds the contents of the move to desks menu.
+class MoveToDesksMenuModel : public ui::SimpleMenuModel {
  public:
-  AssignToDesksMenuModel(ui::SimpleMenuModel::Delegate* delegate,
-                         views::Widget* browser_widget);
-  ~AssignToDesksMenuModel() override = default;
+  MoveToDesksMenuModel(ui::SimpleMenuModel::Delegate* delegate,
+                       views::Widget* browser_widget);
+  ~MoveToDesksMenuModel() override = default;
 
   // SimpleMenuModel:
   bool IsVisibleAt(int index) const override;
@@ -28,10 +28,10 @@ class AssignToDesksMenuModel : public ui::SimpleMenuModel {
   bool IsItemCheckedAt(int index) const override;
 
  private:
-  // Returns |index| - |send_to_desk_group_offset_|. This value is the relative
-  // index within the group of send to desk items. This value must be greater
+  // Returns |index| - |move_to_desk_group_offset_|. This value is the relative
+  // index within the group of move to desk items. This value must be greater
   // than or equal to 0.
-  int OffsetIndexForSendToDeskGroup(int index) const;
+  int OffsetIndexForMoveToDeskGroup(int index) const;
 
   const ash::DesksHelper* const desks_helper_;
   const views::Widget* const browser_widget_;
@@ -40,8 +40,8 @@ class AssignToDesksMenuModel : public ui::SimpleMenuModel {
   int assign_to_all_desks_item_index_;
 
   // This is the number of items in the menu model that occurs before the group
-  // of send to desk items.
-  int send_to_desk_group_offset_;
+  // of move to desk items.
+  int move_to_desk_group_offset_;
 };
 
-#endif  // CHROME_BROWSER_UI_TOOLBAR_ASSIGN_TO_DESKS_MENU_MODEL_H_
+#endif  // CHROME_BROWSER_UI_TOOLBAR_MOVE_TO_DESKS_MENU_MODEL_H_
