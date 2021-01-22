@@ -70,8 +70,13 @@ def gn_format(contents, filename=None):
 
 
 def _invoke_format_command(command_line, filename, contents):
-    proc = subprocess.Popen(
-        command_line, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+    kwargs = {}
+    if sys.version_info.major != 2:
+        kwargs['encoding'] = 'utf-8'
+    proc = subprocess.Popen(command_line,
+                            stdin=subprocess.PIPE,
+                            stdout=subprocess.PIPE,
+                            **kwargs)
     stdout_output, stderr_output = proc.communicate(input=contents)
     exit_code = proc.wait()
 

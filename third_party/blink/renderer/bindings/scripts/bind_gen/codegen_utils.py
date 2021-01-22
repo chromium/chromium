@@ -179,4 +179,5 @@ def write_code_node_to_file(code_node, filepath):
                                filename=format_result.filename,
                                stderr=format_result.error_message))
 
-    web_idl.file_io.write_to_file_if_changed(filepath, format_result.contents)
+    web_idl.file_io.write_to_file_if_changed(
+        filepath, format_result.contents.encode('utf-8'))
