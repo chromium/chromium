@@ -1199,8 +1199,8 @@ export class Viewport {
   /**
    * Go to the given y position in the given page index.
    * @param {number} page the index of the page to go to. zero-based.
-   * @param {number} x the x position in the page to go to.
-   * @param {number} y the y position in the page to go to.
+   * @param {number|undefined} x the x position in the page to go to.
+   * @param {number|undefined} y the y position in the page to go to.
    */
   goToPageAndXY(page, x, y) {
     this.mightZoom_(() => {
@@ -1221,6 +1221,18 @@ export class Viewport {
       if (!this.isPagedMode_()) {
         toolbarOffset = this.topToolbarHeight_;
       }
+
+      // If `x` or `y` is not a valid number or specified, then that
+      // coordinate of the current viewport position should be retained.
+      const currentCoords =
+          /** @type {!Point} */ (this.retrieveCurrentScreenCoordinates_());
+      if (x === undefined || Number.isNaN(x)) {
+        x = currentCoords.x;
+      }
+      if (y === undefined || Number.isNaN(y)) {
+        y = currentCoords.y;
+      }
+
       this.position = {
         x: (dimensions.x + x) * this.getZoom(),
         y: (dimensions.y + y) * this.getZoom() - toolbarOffset
@@ -1346,11 +1358,7 @@ export class Viewport {
     if (zoom) {
       this.setZoom(zoom);
     }
-    const currentCoords =
-        /** @type {!Point} */ (this.retrieveCurrentScreenCoordinates_());
-    this.goToPageAndXY(
-        page, x === undefined ? currentCoords.x : x,
-        y === undefined ? currentCoords.y : y);
+    this.goToPageAndXY(page, x, y);
   }
 
   /**

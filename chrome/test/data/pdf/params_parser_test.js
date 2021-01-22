@@ -34,43 +34,64 @@ const tests = [
           pageNumber: 10
         });
       }
-      if (destination === 'DestWithXYZAtZoom0') {
+      if (destination === 'DestWithXYZAtZoomNull') {
         return Promise.resolve({
           messageId: 'getNamedDestination_5',
-          namedDestinationView: 'XYZ,111,222,0',
+          namedDestinationView: 'XYZ,111,222,null',
           pageNumber: 10
         });
       }
-      if (destination === 'DestWithXYZWithNullParameter') {
+      if (destination === 'DestWithXYZWithX0') {
         return Promise.resolve({
           messageId: 'getNamedDestination_6',
-          namedDestinationView: 'XYZ,111,null,1.7',
-          pageNumber: 13
+          namedDestinationView: 'XYZ,0,200,1.7',
+          pageNumber: 11
+        });
+      }
+      if (destination === 'DestWithXYZWithXNull') {
+        return Promise.resolve({
+          messageId: 'getNamedDestination_7',
+          namedDestinationView: 'XYZ,null,200,1.7',
+          pageNumber: 11
+        });
+      }
+      if (destination === 'DestWithXYZWithY0') {
+        return Promise.resolve({
+          messageId: 'getNamedDestination_8',
+          namedDestinationView: 'XYZ,100,0,1.7',
+          pageNumber: 11
+        });
+      }
+      if (destination === 'DestWithXYZWithYNull') {
+        return Promise.resolve({
+          messageId: 'getNamedDestination_9',
+          namedDestinationView: 'XYZ,100,null,1.7',
+          pageNumber: 11
         });
       }
       if (destination === 'DestWithFitR') {
         return Promise.resolve({
-          messageId: 'getNamedDestination_7',
+          messageId: 'getNamedDestination_10',
           namedDestinationView: 'FitR,20,100,120,300',
           pageNumber: 0
         });
       }
       if (destination === 'DestWithFitRReversedCoordinates') {
         return Promise.resolve({
-          messageId: 'getNamedDestination_8',
+          messageId: 'getNamedDestination_11',
           namedDestinationView: 'FitR,120,300,20,100',
           pageNumber: 0
         });
       }
       if (destination === 'DestWithFitRWithNull') {
         return Promise.resolve({
-          messageId: 'getNamedDestination_9',
+          messageId: 'getNamedDestination_12',
           namedDestinationView: 'FitR,null,100,100,300',
           pageNumber: 0
         });
       }
       return Promise.resolve(
-          {messageId: 'getNamedDestination_10', pageNumber: -1});
+          {messageId: 'getNamedDestination_13', pageNumber: -1});
     });
 
     const url = 'http://xyz.pdf';
@@ -138,9 +159,9 @@ const tests = [
     chrome.test.assertEq(undefined, params.viewPosition);
 
     // Checking #nameddest=name with a nameddest that specifies the view fit
-    // type is "XYZ" with a zoom parameter of 0.
+    // type is "XYZ" with a zoom parameter of null.
     params = await paramsParser.getViewportFromUrlParams(
-        `${url}#nameddest=DestWithXYZAtZoom0`);
+        `${url}#nameddest=DestWithXYZAtZoomNull`);
     chrome.test.assertEq(10, params.page);
     chrome.test.assertEq(undefined, params.zoom);
     chrome.test.assertEq(111, params.position.x);
@@ -148,12 +169,43 @@ const tests = [
     chrome.test.assertEq(undefined, params.viewPosition);
 
     // Checking #nameddest=name with a nameddest that specifies the view fit
-    // type is "XYZ" and one of its parameters is null.
+    // type is "XYZ" and its X parameter is 0.
     params = await paramsParser.getViewportFromUrlParams(
-        `${url}#nameddest=DestWithXYZWithNullParameter`);
-    chrome.test.assertEq(13, params.page);
-    chrome.test.assertEq(undefined, params.zoom);
-    chrome.test.assertEq(undefined, params.position);
+        `${url}#nameddest=DestWithXYZWithX0`);
+    chrome.test.assertEq(11, params.page);
+    chrome.test.assertEq(1.7, params.zoom);
+    chrome.test.assertEq(0, params.position.x);
+    chrome.test.assertEq(200, params.position.y);
+    chrome.test.assertEq(undefined, params.viewPosition);
+
+    // Checking #nameddest=name with a nameddest that specifies the view fit
+    // type is "XYZ" and its X parameter is null.
+    params = await paramsParser.getViewportFromUrlParams(
+        `${url}#nameddest=DestWithXYZWithXNull`);
+    chrome.test.assertEq(11, params.page);
+    chrome.test.assertEq(1.7, params.zoom);
+    chrome.test.assertTrue(Number.isNaN(params.position.x));
+    chrome.test.assertEq(200, params.position.y);
+    chrome.test.assertEq(undefined, params.viewPosition);
+
+    // Checking #nameddest=name with a nameddest that specifies the view fit
+    // type is "XYZ" and its Y parameter is 0.
+    params = await paramsParser.getViewportFromUrlParams(
+        `${url}#nameddest=DestWithXYZWithY0`);
+    chrome.test.assertEq(11, params.page);
+    chrome.test.assertEq(1.7, params.zoom);
+    chrome.test.assertEq(100, params.position.x);
+    chrome.test.assertEq(0, params.position.y);
+    chrome.test.assertEq(undefined, params.viewPosition);
+
+    // Checking #nameddest=name with a nameddest that specifies the view fit
+    // type is "XYZ" and its Y parameter is null.
+    params = await paramsParser.getViewportFromUrlParams(
+        `${url}#nameddest=DestWithXYZWithYNull`);
+    chrome.test.assertEq(11, params.page);
+    chrome.test.assertEq(1.7, params.zoom);
+    chrome.test.assertEq(100, params.position.x);
+    chrome.test.assertTrue(Number.isNaN(params.position.y));
     chrome.test.assertEq(undefined, params.viewPosition);
 
     // Checking #nameddest=name with a nameddest that specifies the view fit

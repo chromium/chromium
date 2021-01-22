@@ -138,15 +138,16 @@ export class OpenPdfParamsParser {
       const x = parseFloat(viewModeComponents[1]);
       const y = parseFloat(viewModeComponents[2]);
       const zoom = parseFloat(viewModeComponents[3]);
-      // If |x|, |y| or |zoom| is NaN, the values of the current positions and
-      // zoom level are retained.
-      if (!Number.isNaN(x) && !Number.isNaN(y) && !Number.isNaN(zoom)) {
+
+      // If zoom is originally 0 for the XYZ view, it is guaranteed to be
+      // transformed into "null" by the backend.
+      assert(zoom !== 0);
+
+      if (!Number.isNaN(zoom)) {
+        params['zoom'] = zoom;
+      }
+      if (!Number.isNaN(x) || !Number.isNaN(y)) {
         params['position'] = {x: x, y: y};
-        // A zoom of 0 should be treated as a zoom of null (See table 151 in ISO
-        // 32000-1 standard for more details about syntax of "XYZ".
-        if (zoom !== 0) {
-          params['zoom'] = zoom;
-        }
       }
       return params;
     }

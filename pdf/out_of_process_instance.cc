@@ -1750,9 +1750,13 @@ void OutOfProcessInstance::HandleGetNamedDestinationMessage(
   if (named_destination && !named_destination->view.empty()) {
     std::ostringstream view_stream;
     view_stream << named_destination->view;
-    for (unsigned long i = 0; i < named_destination->num_params; ++i)
-      view_stream << "," << named_destination->params[i];
 
+    if (named_destination->xyz_params.empty()) {
+      for (unsigned long i = 0; i < named_destination->num_params; ++i)
+        view_stream << "," << named_destination->params[i];
+    } else {
+      view_stream << "," << named_destination->xyz_params;
+    }
     reply.Set(pp::Var(kJSNamedDestinationView), view_stream.str());
   }
   PostMessage(reply);

@@ -380,6 +380,46 @@ base::string16 GetAttachmentName(FPDF_ATTACHMENT attachment) {
       /*check_expected_size=*/true);
 }
 
+std::string GetXYZParamsString(FPDF_DEST dest, PDFiumPage* page) {
+  FPDF_BOOL has_x_coord;
+  FPDF_BOOL has_y_coord;
+  FPDF_BOOL has_zoom;
+  FS_FLOAT x;
+  FS_FLOAT y;
+  FS_FLOAT zoom;
+  if (!FPDFDest_GetLocationInPage(dest, &has_x_coord, &has_y_coord, &has_zoom,
+                                  &x, &y, &zoom)) {
+    return "";
+  }
+
+  // Convert in-page coordinates to in-screen coordinates.
+  gfx::PointF xy(x, y);
+  gfx::PointF screen_coords = page->TransformPageToScreenXY(xy);
+
+  // Generate a string of the parameters
+  std::string xyz_params;
+  if (has_x_coord)
+    xyz_params = base::NumberToString(screen_coords.x()) + ",";
+  else
+    xyz_params = "null,";
+
+  if (has_y_coord)
+    xyz_params += base::NumberToString(screen_coords.y()) + ",";
+  else
+    xyz_params += "null,";
+
+  if (has_zoom) {
+    if (zoom == 0.0f)
+      NOTREACHED();
+
+    xyz_params += base::NumberToString(zoom);
+  } else {
+    xyz_params += "null";
+  }
+
+  return xyz_params;
+}
+
 void SetXYZParamsInScreenCoords(PDFiumPage* page, float* params) {
   gfx::PointF page_coords(params[0], params[1]);
   gfx::PointF screen_coords = page->TransformPageToScreenXY(page_coords);
@@ -2496,6 +2536,9 @@ base::Optional<PDFEngine::NamedDestination> PDFiumEngine::GetNamedDestination(
   // coordinates before getting sent to the viewport.
   PDFiumPage* page_ptr = pages_[page].get();
   ParamsTransformPageToScreen(view_int, page_ptr, result.params);
+
+  if (view_int == PDFDEST_VIEW_XYZ)
+    result.xyz_params = GetXYZParamsString(dest, page_ptr);
 
   result.view = ConvertViewIntToViewString(view_int);
   return result;

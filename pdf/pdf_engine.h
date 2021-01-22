@@ -113,6 +113,13 @@ class PDFEngine {
     // into the corresponding in-screen coordinates before it's sent to the
     // viewport.
     float params[kMaxViewParams];
+
+    // A string of parameters for view fit type XYZ in the format of "x,y,zoom",
+    // where x and y parameters are the in-screen coordinates and zoom is the
+    // zoom level. If a parameter is "null", then current value of that
+    // parameter in the viewport should be retained. Note: This string is empty
+    // if the view's fit type is not XYZ.
+    std::string xyz_params;
   };
 
   // Features in a document that are relevant to measure.
