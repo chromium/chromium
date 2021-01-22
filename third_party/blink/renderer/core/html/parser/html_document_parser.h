@@ -169,6 +169,8 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
                      ParserSynchronizationPolicy,
                      ParserPrefetchPolicy);
 
+  enum NextTokenStatus { NoTokens, HaveTokens, HaveTokensAfterScript };
+
   // DocumentParser
   void Detach() final;
   bool HasInsertionPoint() final;
@@ -205,7 +207,7 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
       bool*);
   void PumpPendingSpeculations();
 
-  bool CanTakeNextToken();
+  NextTokenStatus CanTakeNextToken();
   bool PumpTokenizer();
   void PumpTokenizerIfPossible();
   void DeferredPumpTokenizerIfPossible();

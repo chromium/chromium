@@ -89,6 +89,7 @@ constexpr int kDefaultMaxTokenizationBudget = 250;
 
 class EndIfDelayedForbiddenScope;
 class ShouldCompleteScope;
+class AttemptToEndForbiddenScope;
 
 // This class encapsulates the internal state needed for synchronous foreground
 // HTML parsing (e.g. if HTMLDocumentParser::PumpTokenizer yields, this class
@@ -97,6 +98,7 @@ class HTMLDocumentParserState
     : public GarbageCollected<HTMLDocumentParserState> {
   friend EndIfDelayedForbiddenScope;
   friend ShouldCompleteScope;
+  friend AttemptToEndForbiddenScope;
 
  public:
   // Keeps track of whether the parser needs to complete tokenization work,
@@ -132,6 +134,7 @@ class HTMLDocumentParserState
         mode_(mode),
         end_if_delayed_forbidden_(0),
         should_complete_(0),
+        should_attempt_to_end_on_eof_(0),
         needs_viewport_update_(false),
         needs_link_header_dispatch_(true) {}
 
@@ -166,6 +169,19 @@ class HTMLDocumentParserState
     needs_link_header_dispatch_ = true;
   }
 
+  // Keeps track of whether Document::Finish has been called whilst parsing
+  // asynchronously. ShouldAttemptToEndOnEOF() means that the parser should
+  // close when there's no more input.
+  bool ShouldAttemptToEndOnEOF() const {
+    return should_attempt_to_end_on_eof_ > 0;
+  }
+  void SetAttemptToEndOnEOF() {
+    // This method should only be called from ::Finish.
+    should_attempt_to_end_on_eof_++;
+    // Should only ever call ::Finish once.
+    DCHECK(should_attempt_to_end_on_eof_ < 2);
+  }
+
   bool ShouldEndIfDelayed() const { return end_if_delayed_forbidden_ == 0; }
   bool ShouldComplete() const {
     return should_complete_ || GetMode() != kAllowDeferredParsing;
@@ -198,6 +214,11 @@ class HTMLDocumentParserState
     DCHECK_GE(end_if_delayed_forbidden_, 0);
   }
 
+  void EnterAttemptToEndForbidden() {
+    DCHECK(should_attempt_to_end_on_eof_ > 0);
+    should_attempt_to_end_on_eof_ = 0;
+  }
+
   void EnterShouldComplete() { should_complete_++; }
   void ExitShouldComplete() {
     should_complete_--;
@@ -209,6 +230,9 @@ class HTMLDocumentParserState
   ParserSynchronizationPolicy mode_;
   int end_if_delayed_forbidden_;
   int should_complete_;
+  // Set to non-zero if Document::Finish has been called and we're operating
+  // asynchronously.
+  int should_attempt_to_end_on_eof_;
   bool needs_viewport_update_;
   bool needs_link_header_dispatch_;
 };
@@ -222,6 +246,19 @@ class EndIfDelayedForbiddenScope {
     state_->EnterEndIfDelayedForbidden();
   }
   ~EndIfDelayedForbiddenScope() { state_->ExitEndIfDelayedForbidden(); }
+
+ private:
+  HTMLDocumentParserState* state_;
+};
+
+class AttemptToEndForbiddenScope {
+  STACK_ALLOCATED();
+
+ public:
+  explicit AttemptToEndForbiddenScope(HTMLDocumentParserState* state)
+      : state_(state) {
+    state_->EnterAttemptToEndForbidden();
+  }
 
  private:
   HTMLDocumentParserState* state_;
@@ -575,6 +612,10 @@ void HTMLDocumentParser::PumpTokenizerIfPossible() {
   if (yielded) {
     DCHECK(!task_runner_state_->ShouldComplete());
     SchedulePumpTokenizer();
+  } else if (task_runner_state_->ShouldAttemptToEndOnEOF()) {
+    // Fall into this branch if ::Finish has been previously called and we've
+    // just finished asynchronously parsing everything.
+    AttemptToEnd();
   } else if (task_runner_state_->ShouldEndIfDelayed()) {
     // If we did not exceed the budget or parsed everything there was to
     // parse, check if we should complete the document.
@@ -619,17 +660,20 @@ void HTMLDocumentParser::RunScriptsForPausedTreeBuilder() {
   CheckIfBlockingStylesheetAdded();
 }
 
-bool HTMLDocumentParser::CanTakeNextToken() {
+HTMLDocumentParser::NextTokenStatus HTMLDocumentParser::CanTakeNextToken() {
   if (IsStopped())
-    return false;
+    return NoTokens;
 
   // If we're paused waiting for a script, we try to execute scripts before
   // continuing.
-  if (tree_builder_->HasParserBlockingScript())
+  auto ret = HaveTokens;
+  if (tree_builder_->HasParserBlockingScript()) {
     RunScriptsForPausedTreeBuilder();
+    ret = HaveTokensAfterScript;
+  }
   if (IsStopped() || IsPaused())
-    return false;
-  return true;
+    return NoTokens;
+  return ret;
 }
 
 void HTMLDocumentParser::EnqueueTokenizedChunk(
@@ -982,7 +1026,18 @@ bool HTMLDocumentParser::PumpTokenizer() {
   bool should_yield = false;
   int budget = max_tokenization_budget_;
 
-  while (CanTakeNextToken() && !should_yield) {
+  while (!should_yield) {
+    const auto next_token_status = CanTakeNextToken();
+    if (next_token_status == NoTokens) {
+      // No tokens left to process in this pump, so break
+      break;
+    } else if (next_token_status == HaveTokensAfterScript &&
+               task_runner_state_->HaveExitedHeader()) {
+      // Just executed a parser-blocking script in the body (which is usually
+      // very expensive), so expire the budget, yield, and permit paint if
+      // needed.
+      budget = 0;
+    }
     {
       RUNTIME_CALL_TIMER_SCOPE(
           V8PerIsolateData::MainThreadIsolate(),
@@ -1325,7 +1380,11 @@ void HTMLDocumentParser::AttemptToEnd() {
   // an external script to load, we can't finish parsing quite yet.
   TRACE_EVENT1("blink", "HTMLDocumentParser::AttemptToEnd", "parser",
                (void*)this);
-
+  DCHECK(task_runner_state_->ShouldAttemptToEndOnEOF());
+  AttemptToEndForbiddenScope should_not_attempt_to_end(task_runner_state_);
+  // We should only be in this state once after calling Finish.
+  // If there are pending scripts, future control flow should pass to
+  // EndIfDelayed.
   if (ShouldDelayEnd()) {
     end_was_delayed_ = true;
     return;
@@ -1386,10 +1445,11 @@ void HTMLDocumentParser::Finish() {
   if (!input_.HaveSeenEndOfFile())
     input_.MarkEndOfFile();
 
+  // If there's any deferred work remaining, signal that we
+  // want to end the document once all work's complete.
+  task_runner_state_->SetAttemptToEndOnEOF();
   if (task_runner_state_->IsScheduled() && !GetDocument()->IsPrefetchOnly()) {
-    // If there's any deferred work remaining, synchronously pump the tokenizer
-    // one last time to make sure that everything's added to the document.
-    PumpTokenizerIfPossible();
+    return;
   }
 
   AttemptToEnd();
