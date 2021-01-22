@@ -409,9 +409,10 @@ FormStructure* AutofillHandler::ParseForm(const FormData& form,
       value_from_dynamic_change_form_ = true;
   }
 
-  form_structure->set_current_page_language(GetPageLanguage());
+  form_structure->set_current_page_language(GetCurrentPageLanguage());
 
-  form_structure->DetermineHeuristicTypes(log_manager_);
+  form_structure->DetermineHeuristicTypes(form_interactions_ukm_logger(),
+                                          log_manager_);
 
   // Hold the parsed_form_structure we intend to return. We can use this to
   // reference the form_signature when transferring ownership below.
@@ -428,7 +429,7 @@ FormStructure* AutofillHandler::ParseForm(const FormData& form,
   return parsed_form_structure;
 }
 
-LanguageCode AutofillHandler::GetPageLanguage() const {
+LanguageCode AutofillHandler::GetCurrentPageLanguage() const {
   return LanguageCode();
 }
 

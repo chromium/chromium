@@ -55,6 +55,7 @@ extern const base::Feature kAutofillLabelAffixRemoval;
 extern const base::Feature kAutofillPruneSuggestions;
 extern const base::Feature kAutofillMetadataUploads;
 extern const base::Feature kAutofillParsingPatternsFromRemote;
+extern const base::Feature kAutofillParsingPatternsLanguageDetection;
 extern const base::Feature kAutofillParsingPatternsNegativeMatching;
 extern const base::Feature kAutofillParsingPatternsLanguageDependent;
 extern const base::Feature kAutofillPreventMixedFormsFilling;

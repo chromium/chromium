@@ -57,6 +57,7 @@
 #include "components/autofill/core/common/signatures.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/driver/test_sync_service.h"
+#include "components/translate/core/common/language_detection_details.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/webdata/common/web_data_results.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -2922,7 +2923,7 @@ TEST_F(AutofillMetricsTest, QualityMetrics_BasedOnAutocomplete) {
   std::unique_ptr<TestFormStructure> form_structure =
       std::make_unique<TestFormStructure>(form);
   TestFormStructure* form_structure_ptr = form_structure.get();
-  form_structure->DetermineHeuristicTypes();
+  form_structure->DetermineHeuristicTypes(nullptr, nullptr);
   ASSERT_TRUE(autofill_manager_->mutable_form_structures_for_test()
                   ->emplace(form_structure_ptr->unique_renderer_id(),
                             std::move(form_structure))
@@ -11049,6 +11050,9 @@ TEST_F(AutofillMetricsTest, PageLanguageMetricsExpectedCase) {
   CreateSimpleForm(autofill_client_.form_origin(), form);
 
   // Set up language state.
+  translate::LanguageDetectionDetails language_detection_details;
+  language_detection_details.adopted_language = "ub";
+  autofill_manager_->OnLanguageDetermined(language_detection_details);
   autofill_client_.GetLanguageState()->SetOriginalLanguage("ub");
   autofill_client_.GetLanguageState()->SetCurrentLanguage("ub");
   int language_code = 'u' * 256 + 'b';
@@ -11071,7 +11075,10 @@ TEST_F(AutofillMetricsTest, PageLanguageMetricsInvalidLanguage) {
   CreateSimpleForm(autofill_client_.form_origin(), form);
 
   // Set up language state.
-  autofill_client_.GetLanguageState()->SetOriginalLanguage("!ab");
+  translate::LanguageDetectionDetails language_detection_details;
+  language_detection_details.adopted_language = "en";
+  autofill_manager_->OnLanguageDetermined(language_detection_details);
+  autofill_client_.GetLanguageState()->SetOriginalLanguage("en");
   autofill_client_.GetLanguageState()->SetCurrentLanguage("other");
 
   // Simulate form submission.

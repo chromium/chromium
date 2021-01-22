@@ -7,7 +7,11 @@
 namespace translate {
 
 TranslateDriver::TranslateDriver() = default;
-TranslateDriver::~TranslateDriver() = default;
+
+TranslateDriver::~TranslateDriver() {
+  for (auto& observer : language_detection_observers())
+    observer.OnTranslateDriverDestroyed(this);
+}
 
 void TranslateDriver::AddLanguageDetectionObserver(
     LanguageDetectionObserver* observer) {

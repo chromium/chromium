@@ -155,6 +155,10 @@ const translate::LanguageState* WebViewAutofillClientIOS::GetLanguageState() {
   return nullptr;
 }
 
+translate::TranslateDriver* WebViewAutofillClientIOS::GetTranslateDriver() {
+  return nullptr;
+}
+
 void WebViewAutofillClientIOS::ShowAutofillSettings(
     bool show_credit_card_settings) {
   NOTREACHED();

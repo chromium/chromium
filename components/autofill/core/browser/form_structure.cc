@@ -672,14 +672,15 @@ FormStructure::FormStructure(
 
 FormStructure::~FormStructure() = default;
 
-void FormStructure::DetermineHeuristicTypes(LogManager* log_manager) {
+void FormStructure::DetermineHeuristicTypes(
+    AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    LogManager* log_manager) {
   const auto determine_heuristic_types_start_time =
       AutofillTickClock::NowTicks();
 
   // First, try to detect field types based on each field's |autocomplete|
   // attribute value.
-  if (!was_parsed_for_autocomplete_attributes_)
-    ParseFieldTypesFromAutocompleteAttributes();
+  ParseFieldTypesFromAutocompleteAttributes();
 
   // Then if there are enough active fields, and if we are dealing with either a
   // proper <form> or a <form>-less checkout, run the heuristics and server
@@ -715,6 +716,10 @@ void FormStructure::DetermineHeuristicTypes(LogManager* log_manager) {
         1 << AutofillMetrics::FORM_CONTAINS_UPI_VPA_HINT;
   }
 
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillParsingPatternsLanguageDetection)) {
+    RationalizeRepeatedFields(form_interactions_ukm_logger);
+  }
   RationalizeFieldTypePredictions();
 
   AutofillMetrics::LogDetermineHeuristicTypesTiming(
@@ -1331,6 +1336,9 @@ void FormStructure::LogQualityMetricsBasedOnAutocomplete(
 }
 
 void FormStructure::ParseFieldTypesFromAutocompleteAttributes() {
+  if (was_parsed_for_autocomplete_attributes_)
+    return;
+
   has_author_specified_types_ = false;
   has_author_specified_sections_ = false;
   has_author_specified_upi_vpa_hint_ = false;
@@ -2238,8 +2246,14 @@ void FormStructure::IdentifySectionsWithNewMethod() {
     else
       field->section = field->section + "-default";
   }
+
+  // Since this function has changed the sections, subsequent calls to
+  // ParseFieldTypesFromAutocompleteAttributes(), which modifies the
+  // sections, too, should not be no-ops.
+  was_parsed_for_autocomplete_attributes_ = false;
 }
 
+// TODO(crbug/1153539): Make sectioning less stateful, less std::string-based.
 void FormStructure::IdentifySections(bool has_author_specified_sections) {
   if (fields_.empty())
     return;
@@ -2376,6 +2390,11 @@ void FormStructure::IdentifySections(bool has_author_specified_sections) {
     else
       field->section = field->section + "-default";
   }
+
+  // Since this function has changed the sections, subsequent calls to
+  // ParseFieldTypesFromAutocompleteAttributes(), which modifies the
+  // sections, too, should not be no-ops.
+  was_parsed_for_autocomplete_attributes_ = false;
 }
 
 bool FormStructure::ShouldSkipField(const FormFieldData& field) const {

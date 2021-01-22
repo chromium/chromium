@@ -204,6 +204,14 @@ const translate::LanguageState* ChromeAutofillClientIOS::GetLanguageState() {
   return nullptr;
 }
 
+translate::TranslateDriver* ChromeAutofillClientIOS::GetTranslateDriver() {
+  auto* translate_client = ChromeIOSTranslateClient::FromWebState(web_state_);
+  if (translate_client) {
+    return translate_client->GetTranslateDriver();
+  }
+  return nullptr;
+}
+
 std::string ChromeAutofillClientIOS::GetVariationConfigCountryCode() const {
   variations::VariationsService* variation_service =
       GetApplicationContext()->GetVariationsService();

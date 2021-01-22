@@ -18,6 +18,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -40,6 +41,7 @@
 #include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/signatures.h"
+#include "components/translate/core/browser/translate_driver.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace gfx {
@@ -74,9 +76,11 @@ enum class ValuePatternsMetric {
 
 // Manages saving and restoring the user's personal information entered into web
 // forms. One per frame; owned by the AutofillDriver.
-class AutofillManager : public AutofillHandler,
-                        public AutocompleteHistoryManager::SuggestionsHandler,
-                        public CreditCardAccessManager::Accessor {
+class AutofillManager
+    : public AutofillHandler,
+      public AutocompleteHistoryManager::SuggestionsHandler,
+      public CreditCardAccessManager::Accessor,
+      public translate::TranslateDriver::LanguageDetectionObserver {
  public:
   AutofillManager(AutofillDriver* driver,
                   AutofillClient* client,
@@ -220,6 +224,16 @@ class AutofillManager : public AutofillHandler,
       content::RenderFrameHost* rfh,
       const std::vector<FormStructure*>& forms) override;
   void Reset() override;
+
+  // translate::TranslateDriver::LanguageDetectionObserver:
+  void OnTranslateDriverDestroyed(
+      translate::TranslateDriver* translate_driver) override;
+  // Invoked when the language has been detected by the Translate component.
+  // As this usually happens after Autofill has parsed the forms for the first
+  // time, the heuristics need to be re-run by this function in order to run
+  // use language-specific patterns.
+  void OnLanguageDetermined(
+      const translate::LanguageDetectionDetails& details) override;
 
   // AutocompleteHistoryManager::SuggestionsHandler:
   void OnSuggestionsReturned(
@@ -597,7 +611,7 @@ class AutofillManager : public AutofillHandler,
                                SuggestionsContext* context);
 
   // Retrieves the page language from |client_|
-  LanguageCode GetPageLanguage() const override;
+  LanguageCode GetCurrentPageLanguage() const override;
 
   // For each submitted field in the |form_structure|, it determines whether
   // |ADDRESS_HOME_STATE| is a possible matching type.
@@ -632,6 +646,14 @@ class AutofillManager : public AutofillHandler,
   LogManager* log_manager_;
 
   std::string app_locale_;
+
+  // Observer needed to re-run heuristics when the language has been detected.
+  base::ScopedObservation<
+      translate::TranslateDriver,
+      translate::TranslateDriver::LanguageDetectionObserver,
+      &translate::TranslateDriver::AddLanguageDetectionObserver,
+      &translate::TranslateDriver::RemoveLanguageDetectionObserver>
+      translate_observation_{this};
 
   // The personal data manager, used to save and load personal data to/from the
   // web database.  This is overridden by the AutofillManagerTest.

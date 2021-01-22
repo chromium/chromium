@@ -90,6 +90,7 @@
 #include "components/security_interstitials/core/pref_names.h"
 #include "components/security_state/core/security_state.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/translate/core/common/language_detection_details.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/rect.h"
@@ -471,6 +472,10 @@ AutofillManager::AutofillManager(
           autocomplete_history_manager->GetWeakPtr()) {
   DCHECK(driver);
   DCHECK(client_);
+  translate::TranslateDriver* translate_driver = client->GetTranslateDriver();
+  if (translate_driver) {
+    translate_observation_.Observe(translate_driver);
+  }
   // The factory callback must be set first because the logger is used to create
   // |address_form_event_logger_| and |credit_card_form_event_logger_|; and the
   // callback can't be set in constructor of AutofillHandler because |client_|
@@ -505,6 +510,27 @@ AutofillManager::~AutofillManager() {
   if (autocomplete_history_manager_) {
     autocomplete_history_manager_->CancelPendingQueries(this);
   }
+  translate_observation_.Reset();
+}
+
+void AutofillManager::OnLanguageDetermined(
+    const translate::LanguageDetectionDetails& details) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillParsingPatternsLanguageDetection)) {
+    return;
+  }
+  for (auto& p : *mutable_form_structures()) {
+    std::unique_ptr<FormStructure>& form_structure = p.second;
+    form_structure->set_current_page_language(
+        LanguageCode(details.adopted_language));
+    form_structure->DetermineHeuristicTypes(form_interactions_ukm_logger(),
+                                            log_manager_);
+  }
+}
+
+void AutofillManager::OnTranslateDriverDestroyed(
+    translate::TranslateDriver* translate_driver) {
+  translate_observation_.Reset();
 }
 
 void AutofillManager::ShowAutofillSettings(bool show_credit_card_settings) {
@@ -801,7 +827,7 @@ bool AutofillManager::MaybeStartVoteUploadProcess(
     copied_credit_cards.push_back(*card);
 
   // Annotate the form with the source language of the page.
-  form_structure->set_current_page_language(GetPageLanguage());
+  form_structure->set_current_page_language(GetCurrentPageLanguage());
 
   // Attach the Randomized Encoder.
   form_structure->set_randomized_encoder(
@@ -2677,7 +2703,7 @@ FormEventLoggerBase* AutofillManager::GetEventFormLogger(
   return nullptr;
 }
 
-LanguageCode AutofillManager::GetPageLanguage() const {
+LanguageCode AutofillManager::GetCurrentPageLanguage() const {
   DCHECK(client_);
   const translate::LanguageState* language_state = client_->GetLanguageState();
   if (!language_state)

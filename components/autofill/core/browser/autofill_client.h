@@ -303,6 +303,9 @@ class AutofillClient : public RiskDataLoader {
   // Returns the language state, if available.
   virtual const translate::LanguageState* GetLanguageState() = 0;
 
+  // Returns the translate driver, if available.
+  virtual translate::TranslateDriver* GetTranslateDriver() = 0;
+
   // Retrieves the country code of the user from Chrome variation service.
   // If the variation service is not available, return an empty string.
   virtual std::string GetVariationConfigCountryCode() const;

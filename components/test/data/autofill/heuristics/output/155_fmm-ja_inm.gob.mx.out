@@ -9,7 +9,7 @@ NAME_LAST | apellidos | 姓 |  | internacion_1-default
 UNKNOWN_TYPE | sexo | 性別 | 0 | internacion_1-default
 UNKNOWN_TYPE | fechaNacimiento | 生年月日 |  | internacion_1-default
 ADDRESS_HOME_COUNTRY | nacionalidad | 国籍(国名) | 0 | internacion_1-default
-ADDRESS_HOME_COUNTRY | paisNacimiento | 出生国 | 0 | internacion_1-default
+ADDRESS_HOME_STATE | paisNacimiento | 出生国 | 0 | internacion_1-default
 UNKNOWN_TYPE | tipoDocumento | 書類の種類 | 0 | internacion_1-default
 UNKNOWN_TYPE | numeroDocumento | 書類番号 |  | internacion_1-default
 UNKNOWN_TYPE | confirmarNumeroDocumento | 書類番号(再入力） |  | internacion_1-default

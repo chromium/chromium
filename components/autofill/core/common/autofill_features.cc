@@ -208,6 +208,12 @@ const base::Feature kAutofillMetadataUploads{"AutofillMetadataUploads",
 extern const base::Feature kAutofillParsingPatternsFromRemote{
     "AutofillParsingPatternsFromRemote", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables detection of language from Translate.
+// TODO(crbug/1150895): Cleanup when launched.
+const base::Feature kAutofillParsingPatternsLanguageDetection{
+    "AutofillParsingPatternsLanguageDetection",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether negative patterns are used to parse the field type.
 // TODO(crbug.com/1132831): Remove once launched.
 const base::Feature kAutofillParsingPatternsNegativeMatching{

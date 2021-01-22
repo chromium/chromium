@@ -179,7 +179,9 @@ FormStructureBrowserTest::FormStructureBrowserTest()
        // Remove once launched
        autofill::features::kAutofillEnableAugmentedPhoneCountryCode,
        // TODO(crbug.com/1157405) Remove once launched.
-       autofill::features::kAutofillEnableDependentLocalityParsing},
+       autofill::features::kAutofillEnableDependentLocalityParsing,
+       // TODO(crbug.com/1150895) Remove once launched.
+       autofill::features::kAutofillParsingPatternsLanguageDetection},
       // Disabled
       {autofill::features::kAutofillRestrictUnownedFieldsToFormlessCheckout});
 }

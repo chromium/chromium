@@ -60,23 +60,6 @@ class MockAutofillClient : public TestAutofillClient {
   DISALLOW_COPY_AND_ASSIGN(MockAutofillClient);
 };
 
-// Subclass ContentAutofillDriver so we can create an ContentAutofillDriver
-// instance.
-class TestContentAutofillDriver : public ContentAutofillDriver {
- public:
-  TestContentAutofillDriver(content::RenderFrameHost* rfh,
-                            AutofillClient* client)
-      : ContentAutofillDriver(rfh,
-                              client,
-                              g_browser_process->GetApplicationLocale(),
-                              AutofillManager::ENABLE_AUTOFILL_DOWNLOAD_MANAGER,
-                              nullptr) {}
-  ~TestContentAutofillDriver() override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestContentAutofillDriver);
-};
-
 }  // namespace
 
 class ContentAutofillDriverBrowserTest : public InProcessBrowserTest,

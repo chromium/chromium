@@ -93,6 +93,10 @@ translate::LanguageState* TestAutofillClient::GetLanguageState() {
   return &mock_translate_driver_.GetLanguageState();
 }
 
+translate::TranslateDriver* TestAutofillClient::GetTranslateDriver() {
+  return &mock_translate_driver_;
+}
+
 #if !defined(OS_IOS)
 std::unique_ptr<InternalAuthenticator>
 TestAutofillClient::CreateCreditCardInternalAuthenticator(

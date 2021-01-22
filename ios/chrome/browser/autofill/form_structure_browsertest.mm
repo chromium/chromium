@@ -131,20 +131,20 @@ FormStructureBrowserTest::FormStructureBrowserTest()
       DataDrivenTest(GetTestDataDir()) {
   feature_list_.InitWithFeatures(
       // Enabled
-      {
-          // TODO(crbug.com/1098943): Remove once experiment is over.
-          autofill::features::kAutofillEnableSupportForMoreStructureInNames,
-          // TODO(crbug.com/1125978): Remove once launched.
-          autofill::features::kAutofillEnableSupportForMoreStructureInAddresses,
-          // TODO(crbug.com/896689): Remove once launched.
-          autofill::features::kAutofillNameSectionsWithRendererIds,
-          // TODO(crbug.com/1076175) Remove once launched.
-          autofill::features::kAutofillUseNewSectioningMethod,
-          // TODO(crbug.com/1150890) Remove once launched
-          autofill::features::kAutofillEnableAugmentedPhoneCountryCode,
-          // TODO(crbug.com/1157405) Remove once launched.
-          autofill::features::kAutofillEnableDependentLocalityParsing,
-      },
+      {// TODO(crbug.com/1098943): Remove once experiment is over.
+       autofill::features::kAutofillEnableSupportForMoreStructureInNames,
+       // TODO(crbug.com/1125978): Remove once launched.
+       autofill::features::kAutofillEnableSupportForMoreStructureInAddresses,
+       // TODO(crbug.com/896689): Remove once launched.
+       autofill::features::kAutofillNameSectionsWithRendererIds,
+       // TODO(crbug.com/1076175) Remove once launched.
+       autofill::features::kAutofillUseNewSectioningMethod,
+       // TODO(crbug.com/1150890) Remove once launched
+       autofill::features::kAutofillEnableAugmentedPhoneCountryCode,
+       // TODO(crbug.com/1157405) Remove once launched.
+       autofill::features::kAutofillEnableDependentLocalityParsing,
+       // TODO(crbug.com/1150895) Remove once launched.
+       autofill::features::kAutofillParsingPatternsLanguageDetection},
       // Disabled
       {autofill::features::kAutofillRestrictUnownedFieldsToFormlessCheckout});
 }

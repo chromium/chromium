@@ -280,7 +280,7 @@ class AutofillHandler : public AutofillDownloadManager::Observer {
                            const FormStructure* cached_form);
 
   // Returns the page language, if available.
-  virtual LanguageCode GetPageLanguage() const;
+  virtual LanguageCode GetCurrentPageLanguage() const;
 
   bool value_from_dynamic_change_form_ = false;
 

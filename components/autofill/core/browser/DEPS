@@ -13,6 +13,7 @@ include_rules = [
   "+components/signin/public",
   "+components/sync",
   "+components/translate/core/browser",
+  "+components/translate/core/common",
   "+components/variations",
   "+components/version_info",
   "+components/webdata/common",

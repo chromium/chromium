@@ -113,6 +113,10 @@ const translate::LanguageState* AwAutofillClient::GetLanguageState() {
   return nullptr;
 }
 
+translate::TranslateDriver* AwAutofillClient::GetTranslateDriver() {
+  return nullptr;
+}
+
 void AwAutofillClient::ShowAutofillSettings(bool show_credit_card_settings) {
   NOTIMPLEMENTED();
 }

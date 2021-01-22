@@ -84,6 +84,10 @@ const translate::LanguageState* AutofillClientImpl::GetLanguageState() {
   return nullptr;
 }
 
+translate::TranslateDriver* AutofillClientImpl::GetTranslateDriver() {
+  return nullptr;
+}
+
 void AutofillClientImpl::ShowAutofillSettings(bool show_credit_card_settings) {
   NOTREACHED();
 }

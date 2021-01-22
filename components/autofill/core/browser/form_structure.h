@@ -67,7 +67,9 @@ class FormStructure {
 
   // Runs several heuristics against the form fields to determine their possible
   // types.
-  void DetermineHeuristicTypes(LogManager* log_manager = nullptr);
+  void DetermineHeuristicTypes(
+      AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+      LogManager* log_manager);
 
   // Encodes the proto |upload| request from this FormStructure, and stores
   // the (single) FormSignature and the signatures of the fields to be uploaded

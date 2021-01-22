@@ -70,6 +70,7 @@
 #include "components/security_state/core/security_state.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/driver/test_sync_service.h"
+#include "components/translate/core/common/language_detection_details.h"
 #include "components/variations/variations_associated_data.h"
 #include "components/version_info/channel.h"
 #include "net/base/url_util.h"
@@ -5122,7 +5123,7 @@ TEST_P(AutofillManagerStructuredProfileTest, OnLoadedServerPredictionsFromApi) {
   auto form_structure_instance = std::make_unique<TestFormStructure>(form);
   // This pointer is valid as long as autofill manager lives.
   TestFormStructure* form_structure = form_structure_instance.get();
-  form_structure->DetermineHeuristicTypes();
+  form_structure->DetermineHeuristicTypes(nullptr, nullptr);
   autofill_manager_->AddSeenFormStructure(std::move(form_structure_instance));
 
   // Second form on the page.
@@ -5140,7 +5141,7 @@ TEST_P(AutofillManagerStructuredProfileTest, OnLoadedServerPredictionsFromApi) {
   auto form_structure_instance2 = std::make_unique<TestFormStructure>(form2);
   // This pointer is valid as long as autofill manager lives.
   TestFormStructure* form_structure2 = form_structure_instance2.get();
-  form_structure2->DetermineHeuristicTypes();
+  form_structure2->DetermineHeuristicTypes(nullptr, nullptr);
   autofill_manager_->AddSeenFormStructure(std::move(form_structure_instance2));
 
   // Make API response with suggestions.
@@ -5211,7 +5212,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
   // Simulate having seen this form on page load.
   // |form_structure| will be owned by |autofill_manager_|.
   TestFormStructure* form_structure = new TestFormStructure(form);
-  form_structure->DetermineHeuristicTypes();
+  form_structure->DetermineHeuristicTypes(nullptr, nullptr);
   std::vector<FormSignature> signatures =
       test::GetEncodedSignatures(*form_structure);
   autofill_manager_->AddSeenFormStructure(
@@ -5271,7 +5272,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
   // Simulate having seen this form on page load.
   // |form_structure| will be owned by |autofill_manager_|.
   TestFormStructure* form_structure = new TestFormStructure(form);
-  form_structure->DetermineHeuristicTypes();
+  form_structure->DetermineHeuristicTypes(nullptr, nullptr);
   autofill_manager_->AddSeenFormStructure(
       std::unique_ptr<TestFormStructure>(form_structure));
 
@@ -5345,7 +5346,7 @@ TEST_P(AutofillManagerStructuredProfileTest, FormSubmittedServerTypes) {
   // Simulate having seen this form on page load.
   // |form_structure| will be owned by |autofill_manager_|.
   TestFormStructure* form_structure = new TestFormStructure(form);
-  form_structure->DetermineHeuristicTypes();
+  form_structure->DetermineHeuristicTypes(nullptr, nullptr);
 
   // Clear the heuristic types, and instead set the appropriate server types.
   std::vector<ServerFieldType> heuristic_types, server_types;
@@ -7456,7 +7457,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
   form.fields.push_back(field);
 
   auto form_structure = std::make_unique<TestFormStructure>(form);
-  form_structure->DetermineHeuristicTypes();
+  form_structure->DetermineHeuristicTypes(nullptr, nullptr);
   // Make sure the form can not be autofilled now.
   ASSERT_EQ(0u, form_structure->autofill_count());
   for (size_t idx = 0; idx < form_structure->field_count(); ++idx) {
@@ -8463,18 +8464,43 @@ TEST_F(AutofillManagerTest, PageLanguageGetsCorrectlySet) {
   FormData form;
   test::CreateTestAddressFormData(&form);
 
-  autofill_client_.GetLanguageState()->SetCurrentLanguage("und");
+  autofill_manager_->OnFormsSeen({form});
+  FormStructure* parsed_form =
+      autofill_manager_->FindCachedFormByRendererId(form.unique_renderer_id);
+
+  ASSERT_TRUE(parsed_form);
+  ASSERT_EQ(LanguageCode(), parsed_form->current_page_language());
+
+  autofill_client_.GetLanguageState()->SetCurrentLanguage("zh");
+
+  autofill_manager_->OnFormsSeen({form});
+  parsed_form =
+      autofill_manager_->FindCachedFormByRendererId(form.unique_renderer_id);
+
+  ASSERT_EQ(LanguageCode("zh"), parsed_form->current_page_language());
+}
+
+TEST_F(AutofillManagerTest, PageLanguageGetsCorrectlyDetected) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillParsingPatternsLanguageDetection);
+
+  FormData form;
+  test::CreateTestAddressFormData(&form);
 
   autofill_manager_->OnFormsSeen({form});
   FormStructure* parsed_form =
       autofill_manager_->FindCachedFormByRendererId(form.unique_renderer_id);
 
   ASSERT_TRUE(parsed_form);
-  ASSERT_EQ(LanguageCode("und"), parsed_form->current_page_language());
+  ASSERT_EQ(LanguageCode(), parsed_form->current_page_language());
+
+  translate::LanguageDetectionDetails language_detection_details;
+  language_detection_details.adopted_language = "zh";
+  autofill_manager_->OnLanguageDetermined(language_detection_details);
 
   autofill_client_.GetLanguageState()->SetCurrentLanguage("zh");
 
-  autofill_manager_->OnFormsSeen({form});
   parsed_form =
       autofill_manager_->FindCachedFormByRendererId(form.unique_renderer_id);
 
