@@ -54,6 +54,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "components/vector_icons/vector_icons.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_frame_host.h"
@@ -524,6 +525,13 @@ void ProfilePickerView::OnProfileForSigninCreated(
       content::WebContents::CreateParams(signed_in_profile_being_created_));
   new_profile_contents_->SetDelegate(this);
 
+  // Create a manager that supports modal dialogs, such as for webauthn.
+  web_modal::WebContentsModalDialogManager::CreateForWebContents(
+      new_profile_contents_.get());
+  web_modal::WebContentsModalDialogManager::FromWebContents(
+      new_profile_contents_.get())
+      ->SetDelegate(this);
+
   // Make sure the web contents used for sign-in has proper background to match
   // the toolbar (for dark mode).
   views::WebContentsSetBackgroundColor::CreateForWebContentsWithColor(
@@ -795,6 +803,30 @@ void ProfilePickerView::OnExtendedAccountInfoUpdated(
   // Extended info arrived on time, no need for the timeout callback any more.
   extended_account_info_timeout_closure_.Cancel();
 }
+
+web_modal::WebContentsModalDialogHost*
+ProfilePickerView::GetWebContentsModalDialogHost() {
+  return this;
+}
+
+gfx::NativeView ProfilePickerView::GetHostView() const {
+  return GetWidget()->GetNativeView();
+}
+
+gfx::Point ProfilePickerView::GetDialogPosition(const gfx::Size& size) {
+  gfx::Size widget_size = GetWidget()->GetWindowBoundsInScreen().size();
+  return gfx::Point(std::max(0, (widget_size.width() - size.width()) / 2), 0);
+}
+
+gfx::Size ProfilePickerView::GetMaximumDialogSize() {
+  return GetWidget()->GetWindowBoundsInScreen().size();
+}
+
+void ProfilePickerView::AddObserver(
+    web_modal::ModalDialogHostObserver* observer) {}
+
+void ProfilePickerView::RemoveObserver(
+    web_modal::ModalDialogHostObserver* observer) {}
 
 void ProfilePickerView::SetExtendedAccountInfoTimeoutForTesting(
     base::TimeDelta timeout) {
