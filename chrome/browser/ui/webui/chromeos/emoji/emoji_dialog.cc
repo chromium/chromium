@@ -5,15 +5,26 @@
 #include "chrome/browser/ui/webui/chromeos/emoji/emoji_dialog.h"
 
 #include "base/strings/utf_string_conversions.h"
+
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/webui/constrained_web_dialog_ui.h"
 #include "chrome/common/url_constants.h"
 
+#include "ui/base/ime/chromeos/ime_bridge.h"
+
 namespace chromeos {
 
-EmojiPickerDialog::EmojiPickerDialog() {}
+ui::TextInputClient* EmojiPickerDialog::input_client = nullptr;
+gfx::Range EmojiPickerDialog::selection_range = gfx::Range();
+
+EmojiPickerDialog::EmojiPickerDialog() {
+  ui::InputMethod* input_method =
+      ui::IMEBridge::Get()->GetInputContextHandler()->GetInputMethod();
+  input_client = input_method->GetTextInputClient();
+  input_client->GetEditableSelectionRange(&selection_range);
+}
 
 void EmojiPickerDialog::Show() {
   chrome::ShowWebDialog(nullptr, ProfileManager::GetActiveUserProfile(),
@@ -50,6 +61,7 @@ void EmojiPickerDialog::OnDialogShown(content::WebUI* webui) {
 }
 
 void EmojiPickerDialog::OnDialogClosed(const std::string& json_retval) {
+  input_client = nullptr;
   delete this;
 }
 

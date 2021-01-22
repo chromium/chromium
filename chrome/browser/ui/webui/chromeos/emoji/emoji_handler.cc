@@ -5,10 +5,13 @@
 #include "chrome/browser/ui/webui/chromeos/emoji/emoji_handler.h"
 
 #include "base/logging.h"
+#include "base/strings/utf_string_conversions.h"
+
+#include "chrome/browser/ui/webui/chromeos/emoji/emoji_dialog.h"
 
 namespace chromeos {
 
-EmojiHandler::EmojiHandler() = default;
+EmojiHandler::EmojiHandler() : selection_range_set(false) {}
 EmojiHandler::~EmojiHandler() = default;
 
 void EmojiHandler::RegisterMessages() {
@@ -24,8 +27,28 @@ void EmojiHandler::HandleInsertEmoji(const base::ListValue* args) {
     return;
   }
 
-  // Example usage:
-  // const std::string& emoji = args->GetList()[0].GetString();
+  const std::string& emoji = args->GetList()[0].GetString();
+
+  ui::TextInputClient* input_client = EmojiPickerDialog::input_client;
+
+  if (!input_client) {
+    LOG(WARNING) << "no input_client found";
+    return;
+  }
+
+  if (input_client->GetTextInputType() ==
+      ui::TextInputType::TEXT_INPUT_TYPE_NONE) {
+    LOG(WARNING) << "attempt to insert into input_client with type none";
+  }
+
+  if (!selection_range_set) {
+    input_client->SetEditableSelectionRange(EmojiPickerDialog::selection_range);
+    selection_range_set = true;
+  }
+
+  input_client->InsertText(
+      base::UTF8ToUTF16(emoji),
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
 }
 
 }  // namespace chromeos
