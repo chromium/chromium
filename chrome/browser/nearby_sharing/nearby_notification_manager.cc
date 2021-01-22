@@ -376,20 +376,21 @@ class SuccessNotificationDelegate : public NearbyNotificationDelegate {
   // NearbyNotificationDelegate:
   void OnClick(const std::string& notification_id,
                const base::Optional<int>& action_index) override {
-    // Ignore clicks on notification body.
-    if (!action_index)
-      return;
-
     switch (type_) {
       case NearbyNotificationManager::ReceivedContentType::kText:
-        DCHECK_EQ(0, *action_index);
-        CopyTextToClipboard();
+        if (action_index.has_value() && action_index.value() == 0) {
+          // Don't overwrite clipboard if user clicks notification body
+          CopyTextToClipboard();
+        }
         break;
       case NearbyNotificationManager::ReceivedContentType::kSingleUrl:
-        DCHECK_EQ(0, *action_index);
         OpenTextLink();
         break;
       case NearbyNotificationManager::ReceivedContentType::kSingleImage:
+        if (!action_index.has_value()) {
+          OpenDownloadsFolder();
+          break;
+        }
         switch (*action_index) {
           case 0:
             OpenDownloadsFolder();
@@ -403,7 +404,6 @@ class SuccessNotificationDelegate : public NearbyNotificationDelegate {
         }
         break;
       case NearbyNotificationManager::ReceivedContentType::kFiles:
-        DCHECK_EQ(0, *action_index);
         OpenDownloadsFolder();
         break;
     }
