@@ -355,13 +355,6 @@ BLINK_COMMON_EXPORT extern const base::Feature kInterestCohortAPIOriginTrial;
 
 BLINK_COMMON_EXPORT extern const base::Feature kInterestCohortFeaturePolicy;
 
-// Flags used to test DocumentPolicy's default value being controlled by
-// different runtime flag states.
-BLINK_COMMON_EXPORT extern const base::Feature
-    kDocumentPolicyRuntimeFlag1ForTest;
-BLINK_COMMON_EXPORT extern const base::Feature
-    kDocumentPolicyRuntimeFlag2ForTest;
-
 BLINK_COMMON_EXPORT extern const base::Feature kTextFragmentColorChange;
 
 }  // namespace features

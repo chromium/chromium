@@ -50,19 +50,6 @@
 
   data: [
     {
-      name: "DefaultValueFeatureForTest",
-      // Setting document_policy_name to "", so that it will not be recognized
-      // by the parser, as structured header token cannot be empty.
-      document_policy_name: "",
-      value_type: "Bool",
-      default_value: "true",
-      depends_on: [],
-      default_value_behind_flag: [
-        ["DocumentPolicyRuntimeFlag1ForTest", "false"],
-        ["DocumentPolicyRuntimeFlag2ForTest", "true"],
-      ]
-    },
-    {
       name: "Default",
       document_policy_name: "*",
       value_type: "Bool",
