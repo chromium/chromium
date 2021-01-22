@@ -85,8 +85,8 @@ SaveCardBubbleView* AutofillBubbleHandlerImpl::ShowSaveCreditCardBubble(
     bubble->SetHighlightedButton(icon_view);
 
   views::BubbleDialogDelegateView::CreateBubble(bubble);
-  bubble->Show(is_user_gesture ? SaveCardBubbleViews::USER_GESTURE
-                               : SaveCardBubbleViews::AUTOMATIC);
+  bubble->Show(is_user_gesture ? LocationBarBubbleDelegateView::USER_GESTURE
+                               : LocationBarBubbleDelegateView::AUTOMATIC);
   return bubble;
 }
 
@@ -107,8 +107,8 @@ AutofillBubbleHandlerImpl::ShowLocalCardMigrationBubble(
     bubble->SetHighlightedButton(icon_view);
 
   views::BubbleDialogDelegateView::CreateBubble(bubble);
-  bubble->Show(is_user_gesture ? LocalCardMigrationBubbleViews::USER_GESTURE
-                               : LocalCardMigrationBubbleViews::AUTOMATIC);
+  bubble->Show(is_user_gesture ? LocationBarBubbleDelegateView::USER_GESTURE
+                               : LocationBarBubbleDelegateView::AUTOMATIC);
   return bubble;
 }
 
