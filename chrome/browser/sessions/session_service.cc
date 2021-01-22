@@ -80,34 +80,16 @@ static const int kWritesPerReset = 250;
 
 SessionService::SessionService(Profile* profile)
     : profile_(profile),
-      should_use_delayed_save_(true),
       command_storage_manager_(
           std::make_unique<sessions::CommandStorageManager>(
               sessions::CommandStorageManager::kSessionRestore,
               profile->GetPath(),
-              this)),
-      has_open_trackable_browsers_(false),
-      move_on_new_browser_(false),
-      force_browser_not_alive_with_no_windows_(false),
-      rebuild_on_next_save_(false) {
+              this)) {
   // We should never be created when incognito.
   DCHECK(!profile->IsOffTheRecord());
-  Init();
-}
-
-SessionService::SessionService(const base::FilePath& save_path)
-    : profile_(nullptr),
-      should_use_delayed_save_(false),
-      command_storage_manager_(
-          std::make_unique<sessions::CommandStorageManager>(
-              sessions::CommandStorageManager::kSessionRestore,
-              save_path,
-              this)),
-      has_open_trackable_browsers_(false),
-      move_on_new_browser_(false),
-      force_browser_not_alive_with_no_windows_(false),
-      rebuild_on_next_save_(false) {
-  Init();
+  BrowserList::AddObserver(this);
+  registrar_.Add(this, chrome::NOTIFICATION_CLOSE_ALL_BROWSERS_REQUEST,
+                 content::NotificationService::AllSources());
 }
 
 SessionService::~SessionService() {
@@ -607,12 +589,6 @@ void SessionService::TabNavigationPathEntriesDeleted(const SessionID& window_id,
   command_storage_manager_->StartSaveTimer();
 }
 
-void SessionService::Init() {
-  BrowserList::AddObserver(this);
-  registrar_.Add(this, chrome::NOTIFICATION_CLOSE_ALL_BROWSERS_REQUEST,
-                 content::NotificationService::AllSources());
-}
-
 bool SessionService::ShouldRestoreWindowOfType(
     sessions::SessionWindow::WindowType window_type) const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -911,9 +887,8 @@ void SessionService::CommitPendingCloses() {
 }
 
 bool SessionService::IsOnlyOneTabLeft() const {
-  if (!profile() || profile()->AsTestingProfile()) {
+  if (profile()->AsTestingProfile())
     return is_only_one_tab_left_for_test_;
-  }
 
   int window_count = 0;
   for (auto* browser : *BrowserList::GetInstance()) {
@@ -933,9 +908,8 @@ bool SessionService::IsOnlyOneTabLeft() const {
 
 bool SessionService::HasOpenTrackableBrowsers(
     const SessionID& window_id) const {
-  if (!profile() || profile()->AsTestingProfile()) {
+  if (profile()->AsTestingProfile())
     return has_open_trackable_browser_for_test_;
-  }
 
   for (auto* browser : *BrowserList::GetInstance()) {
     const SessionID browser_id = browser->session_id();
@@ -990,7 +964,7 @@ bool SessionService::ShouldTrackBrowser(Browser* browser) const {
 void SessionService::MaybeDeleteSessionOnlyData() {
   // Don't try anything if we're testing.  The browser_process is not fully
   // created and DeleteSession will crash if we actually attempt it.
-  if (!profile() || profile()->AsTestingProfile())
+  if (profile()->AsTestingProfile())
     return;
 
   // Clear session data if the last window for a profile has been closed and
@@ -1032,9 +1006,6 @@ bool SessionService::GetAvailableRangeForTest(const SessionID& tab_id,
 }
 
 void SessionService::LogExitEvent() {
-  if (!profile_)
-    return;
-
   // If there are pending closes, then we have already logged the exit.
   if (!pending_window_close_ids_.empty())
     return;

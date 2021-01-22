@@ -13,7 +13,6 @@
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
-#include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
@@ -66,10 +65,7 @@ class SessionServiceTest : public BrowserWithTestWindowTest {
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
 
-    Profile* profile = browser()->profile();
-    session_service_ = std::make_unique<SessionService>(profile);
-    path_ = profile->GetPath();
-
+    session_service_ = std::make_unique<SessionService>(browser()->profile());
     helper_.SetService(session_service_.get());
 
     service()->SetWindowType(window_id, Browser::TYPE_NORMAL);
@@ -128,7 +124,7 @@ class SessionServiceTest : public BrowserWithTestWindowTest {
       SessionID* active_window_id) {
     DestroySessionService();
 
-    session_service_ = std::make_unique<SessionService>(path_);
+    session_service_ = std::make_unique<SessionService>(browser()->profile());
     helper_.SetService(session_service_.get());
 
     SessionID* non_null_active_window_id = active_window_id;
@@ -197,10 +193,6 @@ class SessionServiceTest : public BrowserWithTestWindowTest {
   const std::string window_workspace = "abc";
 
   const SessionID window_id = SessionID::NewUnique();
-
-  // Path used in testing.
-  base::ScopedTempDir temp_dir_;
-  base::FilePath path_;
 
   std::unique_ptr<SessionService> session_service_;
   SessionServiceTestHelper helper_;

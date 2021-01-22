@@ -77,12 +77,8 @@ class SessionService : public sessions::CommandStorageManagerDelegate,
  public:
   // Creates a SessionService for the specified profile.
   explicit SessionService(Profile* profile);
-  // For testing.
-  explicit SessionService(const base::FilePath& save_path);
-
   ~SessionService() override;
 
-  // This may be NULL during testing.
   Profile* profile() const { return profile_; }
 
   // Returns true if a new window opening should really be treated like the
@@ -233,9 +229,7 @@ class SessionService : public sessions::CommandStorageManagerDelegate,
   FRIEND_TEST_ALL_PREFIXES(SessionServiceTest, WorkspaceSavedOnOpened);
   FRIEND_TEST_ALL_PREFIXES(NoStartupWindowTest, DontInitSessionServiceForApps);
 
-  typedef std::map<SessionID, std::pair<int, int>> IdToRange;
-
-  void Init();
+  using IdToRange = std::map<SessionID, std::pair<int, int>>;
 
   // Returns true if a window of given |window_type| should get
   // restored upon session restore.
@@ -348,12 +342,12 @@ class SessionService : public sessions::CommandStorageManagerDelegate,
   // If an exit event was logged, it is removed.
   void RemoveExitEvent();
 
-  // The profile. This may be null during testing.
+  // This is always non-null.
   Profile* profile_;
 
   // Whether to use delayed save. Set to false when constructed with a FilePath
   // (which should only be used for testing).
-  bool should_use_delayed_save_;
+  bool should_use_delayed_save_ = true;
 
   std::unique_ptr<sessions::CommandStorageManager> command_storage_manager_;
 
@@ -368,26 +362,26 @@ class SessionService : public sessions::CommandStorageManagerDelegate,
   // last tabbed browser and no more tabbed browsers are open with the same
   // profile, the window ID is added here. These IDs are only committed (which
   // marks them as closed) if the user creates a new tabbed browser.
-  typedef std::set<SessionID> PendingWindowCloseIDs;
+  using PendingWindowCloseIDs = std::set<SessionID>;
   PendingWindowCloseIDs pending_window_close_ids_;
 
   // Set of tabs that have been closed by way of the last window or last tab
   // closing, but not yet committed.
-  typedef std::set<SessionID> PendingTabCloseIDs;
+  using PendingTabCloseIDs = std::set<SessionID>;
   PendingTabCloseIDs pending_tab_close_ids_;
 
   // When a window other than the last window (see description of
   // pending_window_close_ids) is closed, the id is added to this set.
-  typedef std::set<SessionID> WindowClosingIDs;
+  using WindowClosingIDs = std::set<SessionID>;
   WindowClosingIDs window_closing_ids_;
 
   // Set of windows we're tracking changes to. This is only browsers that
   // return true from |ShouldRestoreWindowOfType|.
-  typedef std::set<SessionID> WindowsTracking;
+  using WindowsTracking = std::set<SessionID>;
   WindowsTracking windows_tracking_;
 
   // Are there any open trackable browsers?
-  bool has_open_trackable_browsers_;
+  bool has_open_trackable_browsers_ = false;
 
   // Used to override HasOpenTrackableBrowsers()
   bool has_open_trackable_browser_for_test_ = true;
@@ -399,14 +393,14 @@ class SessionService : public sessions::CommandStorageManagerDelegate,
   // browser (has_open_trackable_browsers_ is false), then the current session
   // is made the last session. See description above class for details on
   // current/last session.
-  bool move_on_new_browser_;
+  bool move_on_new_browser_ = false;
 
   // For browser_tests, since we want to simulate the browser shutting down
   // without quitting.
-  bool force_browser_not_alive_with_no_windows_;
+  bool force_browser_not_alive_with_no_windows_ = false;
 
   // Force session commands to be rebuild before next save event.
-  bool rebuild_on_next_save_;
+  bool rebuild_on_next_save_ = false;
 
   // Don't send duplicate SetSelectedTabInWindow commands when the selected
   // tab's index hasn't changed.
