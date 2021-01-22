@@ -38,7 +38,6 @@
 <translation id="1662989795263954667">Oprită – Cerneală epuizată</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Rezolvitor DNS prezent</translation>
-<translation id="1743558184855585519">Se consideră că bateria este consumată când atinge limita</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">Se anulează scanarea</translation>
 <translation id="1851218745569890714">Conferințe video</translation>
@@ -203,11 +202,11 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="5669267381087807207">Se activează</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Familie</translation>
-<translation id="5719918614880940190">Indică utilizarea procesorului și este o valoare cumulată pentru toate nucleele</translation>
 <translation id="5760715441271661976">Starea portalului</translation>
 <translation id="5781694279199921985">Salvează jurnalul de sesiune</translation>
 <translation id="5797428682393400134">TRECUT</translation>
 <translation id="5832805196449965646">Adăugați un utilizator</translation>
+<translation id="5844247382766192936">Testul <ph name="TEST_NAME" /> a fost anulat</translation>
 <translation id="5849570051105887917">Codul furnizorului local</translation>
 <translation id="5866840822086176774">Foarte puternic</translation>
 <translation id="5895138241574237353">Reîncepe</translation>
@@ -261,6 +260,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="6977381486153291903">Versiune firmware</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gestionează acest dispozitiv și are acces la toată activitatea utilizatorului, inclusiv la paginile web accesate, parole și e-mail.</translation>
 <translation id="7040230719604914234">Operator</translation>
+<translation id="708426984172631313">OPRIT</translation>
 <translation id="7143207342074048698">Se conectează</translation>
 <translation id="714876143603641390">Conectivitatea prin LAN</translation>
 <translation id="7162487448488904999">Galerie</translation>
@@ -271,7 +271,6 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Scanare finalizată. S-a scanat o pagină.}few{Scanare finalizată. S-au scanat {NUMBER_OF_PAGES} pagini.}other{Scanare finalizată. S-au scanat {NUMBER_OF_PAGES} de pagini.}}</translation>
-<translation id="7441459999606975924">Capacitatea bateriei scade pe măsura utilizării</translation>
 <translation id="7469648432129124067">S-a detectat un portal</translation>
 <translation id="7487067081878637334">Tehnologie</translation>
 <translation id="7490813197707563893">Adresă MAC</translation>

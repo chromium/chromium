@@ -84,7 +84,7 @@
 <translation id="1571304935088121812">Kopiatu erabiltzaile-izena</translation>
 <translation id="1592864538817356322">Babes estandarra:</translation>
 <translation id="1612196535745283361">Chrome-k kokapenerako sarbidea izan behar du gailuak bilatzeko. Kokapenerako sarbidea <ph name="BEGIN_LINK" />desaktibatuta dago gailu honetan<ph name="END_LINK" />.</translation>
-<translation id="1613577519914241527">Aktibatuta dagoenean, webguneek ezingo dute erabili pertsonalki identifikatzen zaituen informazioa esanguratsuago izateko. Kontzertu bateko ikus-entzuleak balira bezala, milaka erabiltzailek interes bera dutela baino ezingo dute jakin webguneek.\n\nBisitatu dituzun webguneetan daude oinarrituta "ikus-entzule" horiek. "Ikus-entzuleek" bisitatzen dituzten webguneak soilik ikus ditzakete iragarleek, ez zeuk bisitatzen dituzunak.</translation>
+<translation id="1613577519914241527">Aktibatuta dagoenean, webguneek ezingo dute erabili pertsonalki identifikatzen zaituen informazioa haiek esanguratsuago bihurtzeko. Kontzertu bateko ikus-entzuleak balira bezala, milaka erabiltzailek interes bera dutela baino ezingo dute jakin webguneek.\n\nBisitatu dituzun webguneetan daude oinarrituta "ikus-entzule" horiek. "Ikus-entzuleek" bisitatzen dituzten webguneak soilik ikus ditzakete iragarleek, ez zeuk bisitatzen dituzunak.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Kendu hautatutako elementua}other{Kendu hautatutako # elementuak}}</translation>
 <translation id="1641113438599504367">Arakatze segurua</translation>
 <translation id="164269334534774161">Orri honen konexiorik gabeko kopia ikusten ari zara (kopiaren data: <ph name="CREATION_TIME" />)</translation>

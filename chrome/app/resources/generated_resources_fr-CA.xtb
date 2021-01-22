@@ -1057,7 +1057,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2166369534954157698">Voici à quoi ressemblera votre texte.</translation>
 <translation id="2169062631698640254">Se connecter quand même</translation>
 <translation id="2170054054876170358">Assurez-vous que votre téléphone est à proximité, qu'il est déverrouillé et que le Bluetooth et le Wi-Fi sont activés.</translation>
-<translation id="2172784515318616985">Continuer</translation>
 <translation id="2173302385160625112">Vérifiez votre connexion Internet</translation>
 <translation id="2173801458090845390">Ajouter un identifiant de réquisition à cet appareil</translation>
 <translation id="2174948148799307353">Compte géré par <ph name="PARENT_EMAIL" />. Pour vous déconnecter du compte principal sur cet appareil, cliquez sur l'horloge à l'écran. Dans le menu qui s'affiche, cliquez sur « Déconnexion ».</translation>
@@ -5417,7 +5416,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7250616558727237648">L'appareil avec lequel vous tentez de partager le fichier ne répond pas. Veuillez réessayer.</translation>
 <translation id="725109152065019550">Désolés, votre administrateur a désactivé le stockage externe pour votre compte.</translation>
 <translation id="7251346854160851420">Fond d'écran par défaut</translation>
-<translation id="7251979364707973467"><ph name="WEBSITE" /> a émis votre clé de sécurité et souhaite apprendre son numéro d'identification. Le site saura exactement quelle clé de sécurité vous utilisez.</translation>
+<translation id="7251979364707973467"><ph name="WEBSITE" /> a délivré votre clé de sécurité et souhaite apprendre son numéro d'identification. Le site saura exactement quelle clé de sécurité vous utilisez.</translation>
 <translation id="7253521419891527137">En savoir p&amp;lus</translation>
 <translation id="7254951428499890870">Voulez-vous vraiment lancer l'application « <ph name="APP_NAME" /> » en mode diagnostic?</translation>
 <translation id="725497546968438223">Bouton du dossier de favoris</translation>
@@ -5780,7 +5779,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7674542105240814168">Accès à la position refusé</translation>
 <translation id="7676119992609591770"><ph name="NUM" /> onglet trouvé pour « <ph name="SEARCH_TEXT" /> »</translation>
 <translation id="7676867886086876795">Envoyez votre voix à Google pour autoriser la dictée dans n'importe quel champ de texte.</translation>
-<translation id="7678280409648629969">Les données de connexion seront stockées dans Chrome lorsque vous quitterez le mode de navigation privée. Cela vous permettra d'utiliser Touch ID avec ce site Web à nouveau plus tard.</translation>
 <translation id="7680416688940118410">Calibration de l'écran tactile</translation>
 <translation id="7681095912841365527">Le site peut utiliser le Bluetooth</translation>
 <translation id="7682634383739326341">Empêcher les sites de se connecter à des appareils USB</translation>
@@ -6078,7 +6076,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7982083145464587921">Veuillez redémarrer votre appareil pour corriger cette erreur.</translation>
 <translation id="7982789257301363584">Réseau</translation>
 <translation id="7984068253310542383">Dupliquer l'écran de <ph name="DISPLAY_NAME" /></translation>
-<translation id="7985283639530788531">Voulez-vous utiliser Touch ID avec l'application <ph name="APP_NAME" /> en mode de navigation privée?</translation>
 <translation id="7986295104073916105">Consulter et modifier les paramètres de mots de passe enregistrés</translation>
 <translation id="7987814697832569482">Toujours se connecter au moyen de ce RPV</translation>
 <translation id="7988355189918024273">Activer les fonctionnalités d'accessibilité</translation>

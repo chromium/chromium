@@ -38,7 +38,6 @@
 <translation id="1662989795263954667">停止 - インク切れ</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS Resolver の存在</translation>
-<translation id="1743558184855585519">バッテリーの制限値に達すると消費したものと見なされます</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">スキャンをキャンセルしています</translation>
 <translation id="1851218745569890714">ビデオ会議</translation>
@@ -203,7 +202,6 @@
 <translation id="5669267381087807207">有効化中</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">ファミリー</translation>
-<translation id="5719918614880940190">コア CPU 全体の使用状況を測定します</translation>
 <translation id="5760715441271661976">ポータル状態</translation>
 <translation id="5781694279199921985">セッションログを保存</translation>
 <translation id="5797428682393400134">成功</translation>
@@ -271,7 +269,6 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{スキャンが完了しました。1 ページをスキャンしました}other{スキャンが完了しました。{NUMBER_OF_PAGES} ページをスキャンしました}}</translation>
-<translation id="7441459999606975924">バッテリー容量は使用に伴って減少します</translation>
 <translation id="7469648432129124067">ポータルが検出されました</translation>
 <translation id="7487067081878637334">テクノロジー</translation>
 <translation id="7490813197707563893">MAC アドレス</translation>

@@ -115,7 +115,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1923539912171292317">Clics automáticos</translation>
 <translation id="1928739107511554905">Para recibir la actualización, usa la pantalla táctil para reiniciar tu Chromebook con el teclado conectado.</translation>
 <translation id="1951012854035635156">Asistente</translation>
-<translation id="1954252331066828794">Se ha completado la grabación de pantalla</translation>
+<translation id="1954252331066828794">Grabación de pantalla completada</translation>
 <translation id="1957803754585243749">0°</translation>
 <translation id="1957958912175573503">Elegir el idioma</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
@@ -424,7 +424,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="4570957409596482333">Botón Enunciar Selección</translation>
 <translation id="4577274620589681794">Tiempo agotado · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Mostrar vistas previas</translation>
-<translation id="4578906031062871102">Se ha abierto el menú Ajustes</translation>
+<translation id="4578906031062871102">Menú Ajustes abierto</translation>
 <translation id="4585337515783392668">Dejar de enviar contenido a un receptor desconocido</translation>
 <translation id="4596144739579517758">Tema oscuro está desactivado</translation>
 <translation id="4623167406982293031">Verificar cuenta</translation>
@@ -507,7 +507,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5379115545237091094">Demasiados intentos</translation>
 <translation id="5397578532367286026">El administrador puede consultar el uso y el historial de este usuario (<ph name="MANAGER_EMAIL" />) en la página chrome.com.</translation>
 <translation id="5400461572260843123">Ajustes rápidos. Pulsa la tecla de búsqueda y la flecha izquierda para acceder al centro de notificaciones.</translation>
-<translation id="5426063383988017631">Se ha cerrado el menú Ajustes</translation>
+<translation id="5426063383988017631">Menú Ajustes cerrado</translation>
 <translation id="5428899915242071344">Empezar a seleccionar</translation>
 <translation id="5430931332414098647">Conexión compartida instantánea</translation>
 <translation id="5431825016875453137">OpenVPN/L2TP</translation>
@@ -532,7 +532,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5619862035903135339">La política del administrador inhabilita la captura de pantalla</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Clavija para micrófono</translation>
-<translation id="5662709761327382534">Grabar micrófono: <ph name="CURRENT_STATE" />. Pulsa Intro para cambiar el estado de grabación a <ph name="NEW_STATE" /></translation>
+<translation id="5662709761327382534">Grabar micrófono <ph name="CURRENT_STATE" />. Pulsa Intro para cambiar el estado de grabación del micrófono a <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">Activando</translation>
 <translation id="5673434351075758678">De "<ph name="FROM_LOCALE" />" a "<ph name="TO_LOCALE" />" después de sincronizar tu configuración.</translation>
 <translation id="5677928146339483299">Bloqueado</translation>
@@ -730,7 +730,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="742608627846767349">Buenos días,</translation>
 <translation id="743058460480092004">La cámara y el micrófono se están utilizando.</translation>
 <translation id="7452560014878697800">Una aplicación está usando tu cámara</translation>
-<translation id="7456049842111127849">El modo de captura predeterminado es <ph name="TYPE" /> de <ph name="SOURCE" />.</translation>
+<translation id="7456049842111127849">Modo de captura, establecido en <ph name="TYPE" /> <ph name="SOURCE" />.</translation>
 <translation id="7461924472993315131">Fijar</translation>
 <translation id="746232733191930409">Modo de grabación de pantalla</translation>
 <translation id="7466449121337984263">Toca el sensor</translation>
@@ -763,7 +763,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7662283695561029522">Toca para configurar</translation>
 <translation id="7705524343798198388">VPN</translation>
-<translation id="7714767791242455379">Añadir una nueva red móvil</translation>
+<translation id="7714767791242455379">Añadir nueva red móvil</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notificación}other{# notificaciones}}</translation>
 <translation id="7724603315864178912">Cortar</translation>
 <translation id="7745560842763881396">Mostrar aplicaciones de la estantería</translation>
@@ -844,7 +844,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="8388750414311082622">No se puede quitar el último escritorio.</translation>
 <translation id="8394567579869570560">Tu padre, madre o tutor han bloqueado este dispositivo</translation>
 <translation id="8412677897383510995">Mostrar ajustes de pantalla</translation>
-<translation id="8413272770729657668">La grabación empezará en 3… 2… 1…</translation>
+<translation id="8413272770729657668">La grabación empezará en 3, 2. 1…</translation>
 <translation id="8425213833346101688">Cambiar</translation>
 <translation id="8426708595819210923">Buenas noches, <ph name="GIVEN_NAME" /></translation>
 <translation id="8427213022735114808">Dictado envía tu voz a Google para que puedas usar el dictado por voz en cualquier campo de texto.</translation>
@@ -881,7 +881,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="8673028979667498656">270°</translation>
 <translation id="8676770494376880701">Cargador de baja potencia conectado</translation>
 <translation id="8683506306463609433">Control del rendimiento activo</translation>
-<translation id="8703634754197148428">Inicia la grabación. Cuando la grabación haya empezado, pulsa Alt+Mayús+L para ir a la estantería donde se encuentra el botón para pararla.</translation>
+<translation id="8703634754197148428">Inicia la grabación. Cuando la grabación haya empezado, pulsa Alt + Mayús + L para ir a la estantería donde se encuentra el botón para pararla.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Usa las teclas de flecha izquierda y derecha para gestionar esta función.</translation>
 <translation id="8712637175834984815">Listo</translation>
 <translation id="8721053961083920564">Activa o desactiva el volumen. <ph name="STATE_TEXT" /></translation>

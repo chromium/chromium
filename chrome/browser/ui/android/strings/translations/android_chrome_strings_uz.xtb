@@ -84,7 +84,7 @@
 <translation id="1571304935088121812">Foydalanuvchi nomidan nusxa olish</translation>
 <translation id="1592864538817356322">Standart himoya:</translation>
 <translation id="1612196535745283361">Qurilmalarni tekshirish uchun Chrome brauzeriga joylashuv ma’lumotlarini ko‘rish ruxsati zarur. <ph name="BEGIN_LINK" />Ushbu qurilma uchun joylashuv ma’lumotlariga ruxsat o‘chirib qo‘yilgan<ph name="END_LINK" />.</translation>
-<translation id="1613577519914241527">Yoniq boʻlsa, saytlarga dolzarbligini oshirish uchun shaxsiy maʼlumotlaringizdan foydalanish taqiqlanadi. Konsertlardagi kabi saytlar auditoriyasi ham minglab qiziqishlari oʻxshash foydalanuvchilardan iborat.\n\n“Auditoriyangiz” siz kirgan saytlarga asoslanadi. Reklama beruvchilar bu auditoriyaning qaysi saytlarga kirayotganini koʻrishlari mumkin, ammo aynan sizning qaysi saytlarga kirayotganingizni bilishmaydi.</translation>
+<translation id="1613577519914241527">Yoniq boʻlsa, saytlarga dolzarbligini oshirish uchun shaxsiy axborotlaringizdan foydalanish taqiqlanadi. Konsertlardagi kabi saytlar auditoriyasi ham qiziqishlari oʻxshash minglab foydalanuvchilardan iborat.\n\n“Auditoriyangiz” siz kirgan saytlarga asoslanadi. Reklama beruvchilar bu auditoriyaning qaysi saytlarga kirayotganini koʻrishlari mumkin, ammo aynan sizning qaysi saytlarga kirayotganingizni bilishmaydi.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Tanlangan 1 ta elementni olib tashlash}other{Tanlangan # ta elementni olib tashlash}}</translation>
 <translation id="1641113438599504367">Saytlarni xavfsiz kezish</translation>
 <translation id="164269334534774161">Ushbu sahifaning <ph name="CREATION_TIME" /> sanasida saqlangan oflayn nusxasini ko‘ryapsiz.</translation>
@@ -1074,7 +1074,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="8442258441309440798">Maqolalar topilmadi</translation>
 <translation id="8443209985646068659">Chrome yangilanmadi</translation>
 <translation id="8445448999790540984">Parollar eksport qilinmadi</translation>
-<translation id="8447219758310755868">Shaxsiy axborotlarni yopish</translation>
+<translation id="8447219758310755868">Crowdmasking</translation>
 <translation id="8461694314515752532">Sinxronlangan ma’lumotlarni kodli ibora bilan shifrlash</translation>
 <translation id="8466613982764129868"><ph name="TARGET_DEVICE_NAME" /> internetga ulanganini tekshiring.</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>

@@ -84,7 +84,7 @@
 <translation id="1571304935088121812">Copiar nombre de usuario</translation>
 <translation id="1592864538817356322">Protección estándar:</translation>
 <translation id="1612196535745283361">Chrome necesita acceder a la ubicación para buscar dispositivos. El acceso a la ubicación está <ph name="BEGIN_LINK" />desactivado en este dispositivo<ph name="END_LINK" />.</translation>
-<translation id="1613577519914241527">Cuando está activada, los sitios web no podrán usar información que te identifique personalmente para ganar relevancia. Puede compararse con la multitud que acude a un concierto: los sitios solo pueden saber que hay miles de usuarios con un interés similar.\n\nTu "comunidad" se basa en los sitios que has visitado. Los anunciantes solo pueden ver qué sitios visita una comunidad, no qué sitios visitas tú personalmente.</translation>
+<translation id="1613577519914241527">Cuando esté activada, los sitios web no podrán usar información que te identifique personalmente para ganar relevancia. Puede compararse con la multitud que acude a un concierto: los sitios solo pueden saber que hay miles de usuarios con un interés similar.\n\nLa "multitud" a la que perteneces se basa en los sitios que has visitado. Los anunciantes solo pueden ver qué sitios visita esa multitud, no qué sitios visitas tú personalmente.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Quitar 1 elemento seleccionado}other{Quitar # elementos seleccionados}}</translation>
 <translation id="1641113438599504367">Navegación segura</translation>
 <translation id="164269334534774161">Estás viendo una copia sin conexión de esta página del <ph name="CREATION_TIME" /></translation>
@@ -469,7 +469,7 @@ Mantén pulsada cualquier palabra para buscarla. Para acotar la búsqueda, selec
 <translation id="4440958355523780886">Página básica ofrecida por Google. Toca para cargar la original.</translation>
 <translation id="4452411734226507615">Cerrar la pestaña <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Marcador añadido a <ph name="FOLDER_NAME" /></translation>
-<translation id="4465314970046116177">La zona de pruebas de seguridad es un conjunto de nuevas tecnologías que en última instancia protegerá a los usuarios de mecanismos de seguimiento entre sitios web, como cookies de terceros, al mismo tiempo que preserva el contenido y los servicios web que dependen de estos mecanismos en la actualidad. Chrome trabaja con desarrolladores de sitios web, editores, anunciantes y otros navegadores para desarrollar esta nueva tecnología.</translation>
+<translation id="4465314970046116177">La zona de pruebas de seguridad es un conjunto de nuevas tecnologías cuyo objetivo es llegar a proteger en un futuro a los usuarios de los mecanismos de seguimiento entre sitios web, como cookies de terceros, al mismo tiempo que preserva el contenido y los servicios web que dependen de estos mecanismos en la actualidad. Chrome trabaja con desarrolladores de sitios web, editores, anunciantes y otros navegadores para desarrollar esta nueva tecnología.</translation>
 <translation id="4472118726404937099">Inicia sesión y activa la sincronización para sincronizar y personalizar todos tus dispositivos</translation>
 <translation id="447252321002412580">Ayudar a mejorar las funciones y el rendimiento de Chrome</translation>
 <translation id="4479972344484327217">Instalando <ph name="MODULE" /> para Chrome…</translation>
@@ -746,7 +746,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="6243852395147506234">Disponible sin conexión</translation>
 <translation id="624789221780392884">Actualización lista</translation>
 <translation id="6255999984061454636">Sugerencias de contenido</translation>
-<translation id="6266591733731644292">El lanzamiento de la zona de pruebas de privacidad aún no es muy amplio. Durante el periodo de prueba:\n<ph name="BEGIN_LIST_ITEM1" />Los desarrolladores de sitios web y aplicaciones pueden probar la función de crear experiencias adecuadas sin acceder a información que te identifique únicamente a ti<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />Los usuarios pueden dejar de participar en la prueba usando los controles de esta página.<ph name="END_LIST_ITEM2" /></translation>
+<translation id="6266591733731644292">La zona de pruebas de privacidad no está disponible aún en todas partes. Durante el periodo de prueba:\n<ph name="BEGIN_LIST_ITEM1" />Los desarrolladores de sitios web y aplicaciones pueden probar la función de crear experiencias adecuadas sin acceder a información que te identifique únicamente a ti.<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />Los usuarios pueden dejar de participar en la prueba usando los controles de esta página.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="6277522088822131679">Se ha producido un problema al imprimir la página. Vuelve a intentarlo.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6292420053234093573">Al utilizar Chrome, aceptas los <ph name="BEGIN_LINK1" />Términos del Servicio de Google<ph name="END_LINK1" /> y los <ph name="BEGIN_LINK2" />Términos del Servicio Adicionales de Google Chrome y Chrome OS<ph name="END_LINK2" />.</translation>
@@ -1074,7 +1074,7 @@ Los datos de las sesiones de incógnito se borran de Chrome solo cuando <ph name
 <translation id="8442258441309440798">No hay historias disponibles</translation>
 <translation id="8443209985646068659">No se puede actualizar Chrome.</translation>
 <translation id="8445448999790540984">No se pueden exportar las contraseñas</translation>
-<translation id="8447219758310755868">Enmascaración de la comunidad</translation>
+<translation id="8447219758310755868">Enmascarar la multitud</translation>
 <translation id="8461694314515752532">Cifrar datos sincronizados con tu propia frase de contraseña de sincronización</translation>
 <translation id="8466613982764129868">Comprueba que tu <ph name="TARGET_DEVICE_NAME" /> esté conectado a Internet</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>

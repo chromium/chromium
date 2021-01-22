@@ -38,7 +38,6 @@
 <translation id="1662989795263954667">Zatrzymano – brak tuszu</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Resolver DNS – obecność</translation>
-<translation id="1743558184855585519">Kiedy bateria osiągnie limit, uważana jest za zużytą</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">Anuluję skanowanie</translation>
 <translation id="1851218745569890714">Rozmowy wideo</translation>
@@ -203,11 +202,11 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="5669267381087807207">Aktywowanie</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Rodzina</translation>
-<translation id="5719918614880940190">To narzędzie mierzy obciążenie procesora (wszystkich rdzeni)</translation>
 <translation id="5760715441271661976">Stan portalu</translation>
 <translation id="5781694279199921985">Zapisz dziennik sesji</translation>
 <translation id="5797428682393400134">POZYTYWNY</translation>
 <translation id="5832805196449965646">Dodaj osobę</translation>
+<translation id="5844247382766192936">Test <ph name="TEST_NAME" /> został anulowany</translation>
 <translation id="5849570051105887917">Kod operatora macierzystego</translation>
 <translation id="5866840822086176774">Bardzo silny</translation>
 <translation id="5895138241574237353">Uruchom ponownie</translation>
@@ -261,6 +260,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="6977381486153291903">Wersja oprogramowania</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> zarządza tym urządzeniem i ma dostęp do wszelkiej aktywności użytkownika, w tym odwiedzanych stron internetowych, haseł i e-maili.</translation>
 <translation id="7040230719604914234">Operator</translation>
+<translation id="708426984172631313">ZATRZYMANO</translation>
 <translation id="7143207342074048698">Łączenie</translation>
 <translation id="714876143603641390">Łączność LAN</translation>
 <translation id="7162487448488904999">Galeria</translation>
@@ -271,7 +271,6 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Gotowe. Zeskanowano 1 stronę.}few{Gotowe. Zeskanowano {NUMBER_OF_PAGES} strony.}many{Gotowe. Zeskanowano {NUMBER_OF_PAGES} stron.}other{Gotowe. Zeskanowano {NUMBER_OF_PAGES} strony.}}</translation>
-<translation id="7441459999606975924">Pojemność baterii zmniejsza się w miarę jej zużycia</translation>
 <translation id="7469648432129124067">Wykryto portal</translation>
 <translation id="7487067081878637334">Technologia</translation>
 <translation id="7490813197707563893">Adres MAC</translation>

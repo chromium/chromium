@@ -38,7 +38,6 @@
 <translation id="1662989795263954667">Печать прервана: нет чернил</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Наличие DNS-резолвера</translation>
-<translation id="1743558184855585519">Ресурс батареи считается исчерпанным, когда достигнут предел по количеству циклов перезарядки</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">Отмена сканирования</translation>
 <translation id="1851218745569890714">Видеоконференции</translation>
@@ -203,11 +202,11 @@
 <translation id="5669267381087807207">Активация</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Семейство</translation>
-<translation id="5719918614880940190">Использование ЦП всеми ядрами</translation>
 <translation id="5760715441271661976">Состояние страницы входа</translation>
 <translation id="5781694279199921985">Сохранить журнал сеанса</translation>
 <translation id="5797428682393400134">ВЫПОЛНЕНО</translation>
 <translation id="5832805196449965646">Добавить пользователя</translation>
+<translation id="5844247382766192936"><ph name="TEST_NAME" />-тест отменен.</translation>
 <translation id="5849570051105887917">Код провайдера</translation>
 <translation id="5866840822086176774">Очень сильный</translation>
 <translation id="5895138241574237353">Перезапустить</translation>
@@ -261,6 +260,7 @@
 <translation id="6977381486153291903">Версия встроенного ПО</translation>
 <translation id="7028979494427204405">Этим устройством управляет <ph name="MANAGER" />. Администратору доступна информация обо всех действиях пользователя, в том числе о посещенных веб-страницах, а также адрес электронной почты и пароли.</translation>
 <translation id="7040230719604914234">Оператор</translation>
+<translation id="708426984172631313">ОСТАНОВЛЕН</translation>
 <translation id="7143207342074048698">Подключение</translation>
 <translation id="714876143603641390">Подключение к локальной сети</translation>
 <translation id="7162487448488904999">Галерея</translation>
@@ -271,7 +271,6 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Сканирование завершено. Отсканирована 1 страница.}one{Сканирование завершено. Отсканирована {NUMBER_OF_PAGES} страница.}few{Сканирование завершено. Отсканировано {NUMBER_OF_PAGES} страницы.}many{Сканирование завершено. Отсканировано {NUMBER_OF_PAGES} страниц.}other{Сканирование завершено. Отсканировано {NUMBER_OF_PAGES} страницы.}}</translation>
-<translation id="7441459999606975924">Емкость батареи со временем уменьшается</translation>
 <translation id="7469648432129124067">Обнаружен сетевой портал.</translation>
 <translation id="7487067081878637334">Технологии</translation>
 <translation id="7490813197707563893">MAC-адрес</translation>

@@ -38,7 +38,6 @@
 <translation id="1662989795263954667">ရပ်သွားသည် - မင်ကုန်နေသည်</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS Resolver ရှိသည်</translation>
-<translation id="1743558184855585519">ကန့်သတ်ပမာဏသို့ ရောက်သွားသောအခါ ဘက်ထရီကုန်ပြီဟု သတ်မှတ်လိုက်သည်</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">စကင်ဖတ်ခြင်းကို ပယ်ဖျက်နေသည်</translation>
 <translation id="1851218745569890714">ဗီဒီယိုအစည်းအဝေး</translation>
@@ -202,11 +201,11 @@
 <translation id="5669267381087807207">အစပြုနေသည်</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">မိသားစု</translation>
-<translation id="5719918614880940190">၎င်းက CPU အသုံးပြုမှုကို တိုင်းတာပြီး core အားလုံး၏ ပေါင်းစည်းဆောင်ရွက်မှု ဖြစ်သည်</translation>
 <translation id="5760715441271661976">စာမျက်နှာအခြေအနေ</translation>
 <translation id="5781694279199921985">'စက်ရှင်မှတ်တမ်း' ကို သိမ်းရန်</translation>
 <translation id="5797428682393400134">အောင်မြင်ပါသည်</translation>
 <translation id="5832805196449965646">လူကို ထည့်ပေးရန်</translation>
+<translation id="5844247382766192936">'<ph name="TEST_NAME" /> စစ်ဆေးမှု' ကို ပယ်ဖျက်လိုက်သည်</translation>
 <translation id="5849570051105887917">ပင်မထောက်ပံ့သူကုဒ်</translation>
 <translation id="5866840822086176774">အလွန်အားကောင်းပါသည်</translation>
 <translation id="5895138241574237353">ပြန်စတင်မည</translation>
@@ -260,6 +259,7 @@
 <translation id="6977381486153291903">ဖာမ်းဝဲ ပြန်လည်စိစစ်ခြင်း</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> က ဤကိရိယာကို စီမံခန့်ခွဲပြီး ဝင်ကြည့်ထားသည့် ဝဘ်စာမျက်နှာများ၊ စကားဝှက်များနှင့် အီးမေးလ်အပါအဝင် အသုံးပြုသူ၏ လုပ်ဆောင်ချက်အားလုံးကို အသုံးပြုခွင့်ရှိပါသည်။</translation>
 <translation id="7040230719604914234">မိုဘိုင်းဝန်ဆောင်မှုပေးသူ</translation>
+<translation id="708426984172631313">ရပ်ထားသည်</translation>
 <translation id="7143207342074048698">ချိတ်ဆက်နေသည်</translation>
 <translation id="714876143603641390">Lan ချိတ်ဆက်မှု</translation>
 <translation id="7162487448488904999">ပြခန်း</translation>
@@ -270,7 +270,6 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{စကင်ဖတ်၍ ပြီးပြီ။ စာမျက်နှာ 1 မျက်နှာကို စကင်ဖတ်ထားသည်}other{စကင်ဖတ်၍ ပြီးပြီ။ စာမျက်နှာ {NUMBER_OF_PAGES} မျက်နှာကို စကင်ဖတ်ထားသည်}}</translation>
-<translation id="7441459999606975924">အသုံးပြုသည်နှင့်အမျှ ဘက်ထရီပမာဏ လျော့ကျသွားသည်</translation>
 <translation id="7469648432129124067">စာမျက်နှာကို တွေ့ရှိသည်</translation>
 <translation id="7487067081878637334">နည်းပညာ</translation>
 <translation id="7490813197707563893">MAC လိပ်စာ</translation>

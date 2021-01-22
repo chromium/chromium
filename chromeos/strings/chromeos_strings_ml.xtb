@@ -38,7 +38,6 @@
 <translation id="1662989795263954667">പ്രിന്റ് ജോലി നിർത്തി - മഷിയില്ല</translation>
 <translation id="1703835215927279855">ലെറ്റർ</translation>
 <translation id="1706391837335750954">DNS റിസോൾവർ അവതരണം</translation>
-<translation id="1743558184855585519">ബാറ്ററി അതിന്റെ പരിധിയിലെത്തിക്കഴിഞ്ഞാൽ അത് ഉപയോഗമായി കണക്കാക്കപ്പെടുന്നു</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">സ്കാൻ ചെയ്യൽ റദ്ദാക്കുന്നു</translation>
 <translation id="1851218745569890714">വീഡിയോ കോൺഫറൻസിംഗ്</translation>
@@ -202,7 +201,6 @@
 <translation id="5669267381087807207">സജീവമാക്കുന്നു</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">കുടുംബം</translation>
-<translation id="5719918614880940190">ഇത് CPU ഉപയോഗം കണക്കാക്കുന്നു, എല്ലാ കോറുകളുടെയും സംഗ്രഹവുമാണ് ഇത്</translation>
 <translation id="5760715441271661976">പോര്‍ട്ടല്‍ നില</translation>
 <translation id="5781694279199921985">സെഷൻ ലോഗ് സംരക്ഷിക്കുക</translation>
 <translation id="5797428682393400134">വിജയകരം</translation>
@@ -270,7 +268,6 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{സ്‌കാൻ ചെയ്യൽ പൂർത്തിയായി. 1 പേജ് സ്‌കാൻ ചെയ്‌തു}other{സ്‌കാൻ ചെയ്യൽ പൂർത്തിയായി. {NUMBER_OF_PAGES} പേജുകൾ സ്‌കാൻ ചെയ്‌തു}}</translation>
-<translation id="7441459999606975924">ഉപയോഗത്തിനനുസരിച്ച് ബാറ്ററികളുടെ ശേഷി കുറയുന്നു</translation>
 <translation id="7469648432129124067">പോര്‍ട്ടല്‍ തിരിച്ചറിഞ്ഞു</translation>
 <translation id="7487067081878637334">സാങ്കേതികവിദ്യ</translation>
 <translation id="7490813197707563893">MAC വിലാസം</translation>

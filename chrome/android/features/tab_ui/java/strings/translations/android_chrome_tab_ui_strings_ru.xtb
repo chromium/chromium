@@ -4,6 +4,8 @@
 <translation id="1075622780330595106">Вы давно не использовали некоторые вкладки (всего: <ph name="NUMBER_OF_TABS" />). Закрыть их?</translation>
 <translation id="1181037720776840403">Удалить</translation>
 <translation id="125153950246128346">Нажмите, чтобы перейти на другую вкладку</translation>
+<translation id="1302104331113804646">Настройки отслеживания цен</translation>
+<translation id="1378979118429748177">Получать уведомления о скидках</translation>
 <translation id="1657719826150349398">Переместить вкладку вниз</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> вкладка}one{<ph name="TABS_COUNT_MANY" /> вкладка}few{<ph name="TABS_COUNT_MANY" /> вкладки}many{<ph name="TABS_COUNT_MANY" /> вкладок}other{<ph name="TABS_COUNT_MANY" /> вкладки}}</translation>
 <translation id="2277224997687551299">Изменить название группы</translation>
@@ -18,10 +20,13 @@
 <translation id="3328308545011660196">Подсказка: обнаружены похожие вкладки (<ph name="NUMBER_OF_TABS" />). Сгруппировать их?</translation>
 <translation id="3340978935015468852">настройках</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Свернуть <ph name="TABS_COUNT_ONE" /> вкладку.}one{Свернуть группу из <ph name="TABS_COUNT_MANY" /> вкладки под названием "<ph name="TITLE_OF_GROUP" />".}few{Свернуть группу из <ph name="TABS_COUNT_MANY" /> вкладок под названием "<ph name="TITLE_OF_GROUP" />".}many{Свернуть группу из <ph name="TABS_COUNT_MANY" /> вкладок под названием "<ph name="TITLE_OF_GROUP" />".}other{Свернуть группу из <ph name="TABS_COUNT_MANY" /> вкладки под названием "<ph name="TITLE_OF_GROUP" />".}}</translation>
+<translation id="3940195383040445971">Отслеживать цены на вкладках</translation>
+<translation id="3996880007329611795">Получать уведомления</translation>
 <translation id="4133493477912226187">Обнаружены похожие вкладки (<ph name="NUMBER_OF_TABS" />). Сгруппировать их?</translation>
 <translation id="4212246570487010370">Продолжить просмотр</translation>
 <translation id="4450893287417543264">Больше не показывать</translation>
 <translation id="4648718555153979859">Вкладки сгруппированы здесь</translation>
+<translation id="4831000417970606741">Если цена на открытой вкладке снизится, вы получите оповещение. Чтобы отключить эту функцию, откройте <ph name="SETTINGS" />.</translation>
 <translation id="492284538114688557">Обнаружено снижение цены</translation>
 <translation id="5007392906805964215">Посмотреть</translation>
 <translation id="5073204694187207510">Скрыть полноэкранную сетку с вкладками</translation>
@@ -30,6 +35,7 @@
 <translation id="5533021382642990449">Показать позже</translation>
 <translation id="5558362125926932819">Закрыть группу вкладок. Количество вкладок в ней – <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="5580090775658607195">Вкладки сгруппированы (всего <ph name="TAB_COUNT" />).</translation>
+<translation id="575494663145460764">Получать оповещения о скидках?</translation>
 <translation id="58326064309361797">Перетаскивайте вкладки, чтобы группировать их</translation>
 <translation id="5846292395804797011">Закрыть группу вкладок "<ph name="TITLE_OF_GROUP" />". Количество вкладок в ней – <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="6040143037577758943">Закрыть</translation>
@@ -41,6 +47,7 @@
 <translation id="6856809498882026482">Выйти из режима выбора вкладок</translation>
 <translation id="7151209024774799310">Удалить вкладки из группы</translation>
 <translation id="7204204600596740190">Режим выбора вкладок</translation>
+<translation id="7352298686197644113">Узнайте, какой из товаров на открытых вкладках стал дешевле.</translation>
 <translation id="753732157349120914">Переключатель вкладок</translation>
 <translation id="7559245342362162951">Показать сетку с вкладками группы на весь экран</translation>
 <translation id="7792771145871471484">Подробнее.</translation>
@@ -52,7 +59,10 @@
 <translation id="8304833501377495048">Больше не показывать панель вкладок?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Закрыть <ph name="TABS_COUNT_ONE" /> выбранную вкладку}one{Закрыть <ph name="TABS_COUNT_MANY" /> выбранную вкладку}few{Закрыть <ph name="TABS_COUNT_MANY" /> выбранные вкладки}many{Закрыть <ph name="TABS_COUNT_MANY" /> выбранных вкладок}other{Закрыть <ph name="TABS_COUNT_MANY" /> выбранной вкладки}}</translation>
 <translation id="8557923272772633250">Развернуть группу вкладок. Количество вкладок в ней – <ph name="NUMBER_OF_TABS" />.</translation>
+<translation id="860282621117673749">Оповещения о скидках</translation>
+<translation id="8714939927607906138">Более низкая цена</translation>
 <translation id="8749939518995770034">Панель вкладок закрыта.</translation>
+<translation id="8820741577754260431">Показывать скидки на вкладках</translation>
 <translation id="9150694013019234766">В нижней части экрана можно переключаться между вкладками, объединенными в группы</translation>
 <translation id="9169594135889675189">Добавить новую вкладку в группу</translation>
 <translation id="959682366969460160">Организация работы</translation>

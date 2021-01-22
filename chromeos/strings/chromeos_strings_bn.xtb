@@ -38,7 +38,6 @@
 <translation id="1662989795263954667">বন্ধ হয়ে গেছে - প্রিন্টারে কালি ফুরিয়ে গেছে</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS সমাধানকারী স্ক্রিন পিন করা</translation>
-<translation id="1743558184855585519">ব্যাটারি নির্ধারিত সীমাতে পৌঁছে গেলেই শেষ হয়ে গেছে বলে ধরে নেওয়া হয়</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">স্ক্যানিং বাতিল করা হচ্ছে</translation>
 <translation id="1851218745569890714">ভিডিও কনফারেন্সিং</translation>
@@ -202,7 +201,6 @@
 <translation id="5669267381087807207">সক্রিয় করা হচ্ছে</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">পরিবারিক</translation>
-<translation id="5719918614880940190">এটি সিপিইউয়ের ব্যবহার পরিমাপ করে এবং এটি সব কোরের সংমিশ্রণ</translation>
 <translation id="5760715441271661976">পোর্টালের স্থিতি</translation>
 <translation id="5781694279199921985">সেশন লগ সেভ করুন</translation>
 <translation id="5797428682393400134">সফল হয়েছে</translation>
@@ -270,7 +268,6 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{স্ক্যান করা সম্পূর্ণ হয়েছে। ১টি পৃষ্ঠা স্ক্যান করা হয়েছে}one{স্ক্যান করা সম্পূর্ণ হয়েছে। {NUMBER_OF_PAGES}টি পৃষ্ঠা স্ক্যান করা হয়েছে}other{স্ক্যান করা সম্পূর্ণ হয়েছে। {NUMBER_OF_PAGES}টি পৃষ্ঠা স্ক্যান করা হয়েছে}}</translation>
-<translation id="7441459999606975924">ব্যবহার করতে করতে ব্যাটারি ক্ষমতা কমে যায়</translation>
 <translation id="7469648432129124067">পোর্টাল শনাক্ত করা হয়েছে</translation>
 <translation id="7487067081878637334">প্রযুক্তি</translation>
 <translation id="7490813197707563893">MAC ঠিকানা</translation>

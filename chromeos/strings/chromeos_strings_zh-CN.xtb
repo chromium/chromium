@@ -38,7 +38,6 @@
 <translation id="1662989795263954667">已停止 - 墨水已用完</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">存在 DNS 解析器</translation>
-<translation id="1743558184855585519">电池达到循环计数上限后，就会被视为已耗尽</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">正在取消扫描</translation>
 <translation id="1851218745569890714">视频会议</translation>
@@ -203,7 +202,6 @@
 <translation id="5669267381087807207">正在激活</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">家用</translation>
-<translation id="5719918614880940190">此指标旨在衡量 CPU 使用情况，是所有核心的汇总数据</translation>
 <translation id="5760715441271661976">门户状态</translation>
 <translation id="5781694279199921985">保存会话日志</translation>
 <translation id="5797428682393400134">成功</translation>
@@ -212,6 +210,7 @@
 <translation id="5866840822086176774">非常强</translation>
 <translation id="5895138241574237353">重新启动</translation>
 <translation id="5916084858004523819">已禁止</translation>
+<translation id="5921506667911082617">{COUNT,plural, =1{系统已成功扫描完您的文件并已将扫描版保存至<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />。}other{系统已成功扫描完您的文件并已将扫描版保存至<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />。}}</translation>
 <translation id="5931523347251946569">未找到文件</translation>
 <translation id="5982592372228113572">（<ph name="BOARD_NAME" />，版本 <ph name="MILESTONE_VERSION" />）</translation>
 <translation id="6040143037577758943">关闭</translation>
@@ -270,7 +269,6 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{已完成扫描。扫描了 1 页}other{已完成扫描。扫描了 {NUMBER_OF_PAGES} 页}}</translation>
-<translation id="7441459999606975924">电池容量会随使用时长的增加而减少</translation>
 <translation id="7469648432129124067">检测到门户</translation>
 <translation id="7487067081878637334">技术</translation>
 <translation id="7490813197707563893">MAC 地址</translation>

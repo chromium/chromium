@@ -38,7 +38,6 @@
 <translation id="1662989795263954667">Gestop – ink is op</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS-ontbinder is teenwoordig</translation>
-<translation id="1743558184855585519">Die battery word as verbruik beskou sodra dit die limiet bereik</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">Kanselleer skandering</translation>
 <translation id="1851218745569890714">Videokonferensies</translation>
@@ -203,11 +202,11 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="5669267381087807207">Aktiveer tans</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Familie</translation>
-<translation id="5719918614880940190">Dit meet die CPU-gebruik en is 'n samevoeging van alle kerns</translation>
 <translation id="5760715441271661976">Portaalstatus</translation>
 <translation id="5781694279199921985">Stoor Sessie-loglêer</translation>
 <translation id="5797428682393400134">SUKSES</translation>
 <translation id="5832805196449965646">Voeg persoon by</translation>
+<translation id="5844247382766192936"><ph name="TEST_NAME" />-toets is gekanselleer</translation>
 <translation id="5849570051105887917">Tuisverskafferkode</translation>
 <translation id="5866840822086176774">Baie sterk</translation>
 <translation id="5895138241574237353">Herbegin</translation>
@@ -261,6 +260,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="6977381486153291903">Fermwarehersiening</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> bestuur hierdie toestel en het toegang tot alle gebruikeraktiwiteit, insluitend webblaaie wat besoek is, wagwoorde en e-pos.</translation>
 <translation id="7040230719604914234">Diensverskaffer</translation>
+<translation id="708426984172631313">GESTOP</translation>
 <translation id="7143207342074048698">Koppel tans</translation>
 <translation id="714876143603641390">LAN-konnektiwiteit</translation>
 <translation id="7162487448488904999">Galery</translation>
@@ -271,7 +271,6 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skandering is voltooi. 1 bladsy is geskandeer}other{Skandering is voltooi. {NUMBER_OF_PAGES} bladsye is geskandeer}}</translation>
-<translation id="7441459999606975924">Batterye se kapasiteit neem af met gebruik</translation>
 <translation id="7469648432129124067">Portaal is bespeur</translation>
 <translation id="7487067081878637334">Tegnologie</translation>
 <translation id="7490813197707563893">MAC-adres</translation>

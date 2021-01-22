@@ -38,7 +38,6 @@
 <translation id="1662989795263954667">Detívose (esgotouse a tinta)</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Presenza do solucionador de DNS</translation>
-<translation id="1743558184855585519">Considérase que a batería está esgotada cando alcanza o límite</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">Cancelando escaneo</translation>
 <translation id="1851218745569890714">Videoconferencias</translation>
@@ -203,11 +202,11 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="5669267381087807207">Activando</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Familia</translation>
-<translation id="5719918614880940190">Mide o uso da CPU sumando o de todos os núcleos</translation>
 <translation id="5760715441271661976">Estado do portal</translation>
 <translation id="5781694279199921985">Gardar rexistro da sesión</translation>
 <translation id="5797428682393400134">SUPEROUSE</translation>
 <translation id="5832805196449965646">Engadir unha persoa</translation>
+<translation id="5844247382766192936">Cancelouse a proba de <ph name="TEST_NAME" /></translation>
 <translation id="5849570051105887917">Código do fornecedor de orixe</translation>
 <translation id="5866840822086176774">Moi forte</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
@@ -261,6 +260,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="6977381486153291903">Revisión do firmware</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> xestiona este dispositivo e ten acceso a toda a actividade dos usuarios, como as páxinas web visitadas, os contrasinais e o correo electrónico.</translation>
 <translation id="7040230719604914234">Operador</translation>
+<translation id="708426984172631313">PROBA DETIDA</translation>
 <translation id="7143207342074048698">Conectando</translation>
 <translation id="714876143603641390">Conectividade LAN</translation>
 <translation id="7162487448488904999">Galería</translation>
@@ -271,7 +271,6 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{A operación rematou. Escaneouse 1 páxina}other{A operación rematou. Escaneáronse {NUMBER_OF_PAGES} páxinas}}</translation>
-<translation id="7441459999606975924">A capacidade das baterías diminúe co uso</translation>
 <translation id="7469648432129124067">Detectouse un portal</translation>
 <translation id="7487067081878637334">Tecnoloxía</translation>
 <translation id="7490813197707563893">Enderezo MAC</translation>

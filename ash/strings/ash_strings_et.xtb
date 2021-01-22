@@ -238,7 +238,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3033545621352269033">Sees</translation>
 <translation id="3036649622769666520">Failide avamine</translation>
 <translation id="3038571455154067151">Sisselogimiseks sisestage oma Family Linki vanema pääsukood</translation>
-<translation id="3039939407102840004">Elektronpliiatsi aku on <ph name="PERCENTAGE" />%.</translation>
+<translation id="3039939407102840004">Elektronpliiatsi aku laetuse tase on <ph name="PERCENTAGE" />%.</translation>
 <translation id="3045488863354895414">Tere päevast!</translation>
 <translation id="3055162170959710888">Kasutasite seda seadet täna <ph name="USED_TIME" /></translation>
 <translation id="3077734595579995578">tõstuklahv</translation>
@@ -312,7 +312,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3621202678540785336">Sisend</translation>
 <translation id="3621712662352432595">Heliseaded</translation>
 <translation id="3626281679859535460">Eredus</translation>
-<translation id="3630697955794050612">väljas</translation>
+<translation id="3630697955794050612">välja</translation>
 <translation id="3631369015426612114">Luba märguanded järgmistest kohtadest</translation>
 <translation id="3638400994746983214">Privaatsuskuvale lülitamine. <ph name="STATE_TEXT" />.</translation>
 <translation id="366222428570480733">Kontoga <ph name="USER_EMAIL_ADDRESS" /> hallatav kasutaja</translation>
@@ -778,7 +778,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="7842569679327885685">Hoiatus: katseline funktsioon</translation>
 <translation id="7846634333498149051">Klaviatuur</translation>
 <translation id="7860671499921112077">Ülevaate avamiseks pühkige kolme sõrmega üles</translation>
-<translation id="7866482334467279021">sees</translation>
+<translation id="7866482334467279021">sisse</translation>
 <translation id="7868900307798234037">Sõrmejäljega avamine</translation>
 <translation id="7872786842639831132">Väljas</translation>
 <translation id="7875575368831396199">Näib, et Bluetooth on teie seadmes <ph name="DEVICE_TYPE" /> välja lülitatud. Lülitage Bluetooth Phone Hubi kasutamiseks sisse.</translation>

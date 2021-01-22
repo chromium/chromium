@@ -317,6 +317,7 @@
 <translation id="1354045473509304750">繼續允許 <ph name="HOST" /> 使用和移動相機</translation>
 <translation id="1355088139103479645">要刪除所有資料嗎？</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> 已遭封鎖</translation>
+<translation id="1357896526834120583">已要求重新啟動</translation>
 <translation id="1358741672408003399">拼字與文法</translation>
 <translation id="1359923111303110318">你可以用 Smart Lock 解鎖裝置。㩒 Enter 掣就可以解鎖。</translation>
 <translation id="1361164813881551742">手動新增</translation>
@@ -1056,7 +1057,6 @@
 <translation id="2166369534954157698">繁體中文字體範例 The quick brown fox jumps over the lazy dog</translation>
 <translation id="2169062631698640254">繼續登入</translation>
 <translation id="2170054054876170358">請確認您的手機在附近並已解鎖，且已開啟藍牙和 Wi-Fi。</translation>
-<translation id="2172784515318616985">繼續</translation>
 <translation id="2173302385160625112">檢查互聯網連線</translation>
 <translation id="2173801458090845390">新增此裝置的申請 ID</translation>
 <translation id="2174948148799307353">帳戶由 <ph name="PARENT_EMAIL" /> 管理如要登出此裝置上的主要帳戶，請按一下螢幕上的時間。當畫面顯示選單時，按一下 [登出]。</translation>
@@ -1211,6 +1211,7 @@
 <translation id="2345723121311404059">將 1 頁傳送至「<ph name="PRINTER_NAME" />」列印</translation>
 <translation id="2347644257713614136">Hangouts 和 Cast for Education 的使用受《Google 私隱權政策》管限。</translation>
 <translation id="2348176352564285430">應用程式：<ph name="ARC_PROCESS_NAME" /></translation>
+<translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> - 要求咗權限，㩒 Ctrl + 向前鍵就可以回覆</translation>
 <translation id="234889437187286781">載入資料時發生錯誤</translation>
 <translation id="2349610121459545414">繼續允許此網站存取您的位置</translation>
 <translation id="2349896577940037438">如果您已開啟其他「網絡及應用程式活動記錄」設定，此資料可能會儲存在您的 Google 帳戶中。您可以前往 account.google.com 查看和刪除資料，以及變更帳戶設定。</translation>
@@ -1757,6 +1758,7 @@
 <translation id="29488703364906173">一款快速、簡單又安全的新世代網絡瀏覽器。</translation>
 <translation id="2949289451367477459">使用定位服務。允許擁有位置資訊存取權的應用程式和服務使用此裝置的位置資訊。Google 可能會定期收集位置資訊資料，並以匿名方式使用這些資料，以提高定位的精確度及改善適地性服務。<ph name="BEGIN_LINK1" />瞭解詳情<ph name="END_LINK1" /></translation>
 <translation id="2950666755714083615">我要訂閱</translation>
+<translation id="2953019166882260872">使用連接線連接手機</translation>
 <translation id="2956070239128776395">群組中具有巢狀部份：<ph name="ERROR_LINE" /></translation>
 <translation id="2957117904572187936">不允許任何網站編輯裝置上的檔案或資料夾</translation>
 <translation id="2958721676848865875">封裝擴充功能警告</translation>
@@ -1777,6 +1779,7 @@
 <translation id="2979520980928493164">既安全又順暢的 Chrome 體驗</translation>
 <translation id="2979639724566107830">在新視窗中開啟</translation>
 <translation id="2981113813906970160">顯示大型滑鼠游標</translation>
+<translation id="2983175648295374032"><ph name="WEBSITE" /> 已傳送通知到您的手機。請輕按 [是] 以確認身分。<ph name="LINK" /></translation>
 <translation id="2984956121108740037">{COUNT,plural, =1{此裝置上有 {COUNT} 個密碼可供存取}other{此裝置上有 {COUNT} 個密碼可供存取}}</translation>
 <translation id="2985348301114641460">要向管理員傳送「<ph name="EXTENSION_NAME" />」的安裝要求嗎？</translation>
 <translation id="2987620471460279764">從其他裝置分享的文字</translation>
@@ -2847,6 +2850,7 @@
 <translation id="420283545744377356">關閉螢幕保護程式</translation>
 <translation id="4206144641569145248">外星人</translation>
 <translation id="4206323443866416204">意見反映報告</translation>
+<translation id="4207932031282227921">要求咗權限，㩒 F6 掣就可以回覆</translation>
 <translation id="4208390505124702064">搜尋 <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">大</translation>
 <translation id="4209251085232852247">已關閉</translation>
@@ -3309,6 +3313,7 @@
 <translation id="4763408175235639573">系統在您瀏覽此網頁時已設定下列 Cookie</translation>
 <translation id="4765582662863429759">允許「Android 訊息」由您的手機轉送短訊至 Chromebook</translation>
 <translation id="4768332406694066911">您具備下列組織的識別憑證</translation>
+<translation id="4770119228883592393">要求咗權限，㩒 ⌘ + Option + 向下箭咀就可以回覆</translation>
 <translation id="4773112038801431077">升級 Linux</translation>
 <translation id="4774357366578243684">如要在所有裝置上使用這些密碼，請將密碼移至 Google 帳戶</translation>
 <translation id="477647109558161443">建立桌面捷徑</translation>
@@ -3550,6 +3555,7 @@
 <translation id="5067867186035333991">當 <ph name="HOST" /> 要求存取麥克風時詢問我。</translation>
 <translation id="5068918910148307423">不允許最近關閉的網站完成傳送和接收資料的動作</translation>
 <translation id="5068919226082848014">薄餅</translation>
+<translation id="5070773577685395116">沒有收到通知嗎？</translation>
 <translation id="5072052264945641674">調整游標大小</translation>
 <translation id="5072836811783999860">顯示受管理書籤</translation>
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" />、<ph name="FILE2" />}other{<ph name="FILE1" />、<ph name="FILE2" /> 和另外 # 個檔案}}</translation>
@@ -3816,6 +3822,7 @@
 <translation id="5382591305415226340">管理支援的連結</translation>
 <translation id="5383377866517186886">已關閉 Mac 系統偏好設定中的相機</translation>
 <translation id="5383740867328871413">未命名嘅群組 - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="5387466398175703340">自動建立英文媒體字幕。音訊和字幕絕不會外洩。</translation>
 <translation id="5388885445722491159">已配對</translation>
 <translation id="5389237414310520250">無法建立新的使用者。請檢查您的硬碟空間和權限，然後再試一次。</translation>
 <translation id="5390100381392048184">允許網站播放音效</translation>
@@ -4039,6 +4046,7 @@
 <translation id="5627676517703583263">使用 Chrome 享受智能瀏覽體驗</translation>
 <translation id="5627832140542566187">顯示方向</translation>
 <translation id="562935524653278697">您的管理員已停用書籤、記錄、密碼和其他設定的同步處理功能。</translation>
+<translation id="5632059346822207074">要求咗權限，㩒 Ctrl + 向前鍵就可以回覆</translation>
 <translation id="5632566673632479864">您的帳戶 <ph name="EMAIL" /> 已無法用作主要帳戶。 由於此帳戶由 <ph name="DOMAIN" /> 管理，因此系統將會從此裝置中清除您的書籤、記錄、密碼和其他設定。</translation>
 <translation id="5632592977009207922">下載中，尚餘 <ph name="PERCENT_REMAINING" />%</translation>
 <translation id="563371367637259496">流動網絡</translation>
@@ -4673,6 +4681,7 @@
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">再試一次</translation>
 <translation id="6377268785556383139">有 1 個同「<ph name="SEARCH_TEXT" />」相關嘅搜尋結果</translation>
+<translation id="6377571698477774687">自動建立英文媒體字幕 (目前僅支援 Chrome 瀏覽器)。音訊和字幕絕不會外洩。</translation>
 <translation id="6380143666419481200">接受並繼續</translation>
 <translation id="6384275966486438344">變更您的搜尋設定為：<ph name="SEARCH_HOST" /></translation>
 <translation id="6385149369087767061">請連接互聯網，然後再試一次</translation>
@@ -5449,6 +5458,7 @@
 <translation id="7287411021188441799">還原預設背景</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
 <translation id="7289225569524511578">開啟桌布應用程式</translation>
+<translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> - 要求咗權限，㩒 F6 掣就可以回覆</translation>
 <translation id="7290242001003353852">此登入服務商 (由 <ph name="SAML_DOMAIN" /> 代管) 正在存取您的相機。</translation>
 <translation id="7295614427631867477">請注意，Android、Google Play 以及相關聯的應用程式受各自的資料收集政策和使用政策管限。</translation>
 <translation id="729583233778673644">強制使用 AES 和 RC4 加密。由於 RC4 加密不安全，因此使用此選項會提高風險。</translation>
@@ -5778,7 +5788,6 @@
 <translation id="7674542105240814168">存取位置被拒</translation>
 <translation id="7676119992609591770">搵到 <ph name="NUM" /> 個同「<ph name="SEARCH_TEXT" />」相關嘅分頁</translation>
 <translation id="7676867886086876795">傳送語音給 Google，透過語音輸入填寫文字欄位。</translation>
-<translation id="7678280409648629969">離開無痕模式後，登入資料會儲存在 Chrome 中；這讓您日後在此網站上再次使用 Touch ID。</translation>
 <translation id="7680416688940118410">觸控螢幕校正</translation>
 <translation id="7681095912841365527">網站可以使用藍牙</translation>
 <translation id="7682634383739326341">禁止網站連接 USB 裝置</translation>
@@ -5815,6 +5824,7 @@
 <translation id="7707922173985738739">使用流動數據</translation>
 <translation id="7709152031285164251">失敗 - <ph name="INTERRUPT_REASON" /></translation>
 <translation id="7710568461918838723">和 Cast…</translation>
+<translation id="7711900714716399411">使用 USB 連接線將手機連接電腦。如果手機已連接電腦，請拔掉連接線再重新連接。</translation>
 <translation id="7712739869553853093">列印預覽對話框</translation>
 <translation id="7712836429117959503">不明的擴充程式 (ID 為 <ph name="EXTENSION_ID" />)</translation>
 <translation id="7714307061282548371">已允許來自 <ph name="DOMAIN" /> 的 Cookie</translation>
@@ -6076,7 +6086,6 @@
 <translation id="7982083145464587921">請重新啟動裝置以修正這個錯誤。</translation>
 <translation id="7982789257301363584">網絡</translation>
 <translation id="7984068253310542383">鏡射「<ph name="DISPLAY_NAME" />」</translation>
-<translation id="7985283639530788531">您要在無痕模式下使用 Touch ID 登入 <ph name="APP_NAME" /> 嗎？</translation>
 <translation id="7986295104073916105">讀取及變更已儲存的密碼設定</translation>
 <translation id="7987814697832569482">永遠透過此 VPN 連接</translation>
 <translation id="7988355189918024273">啟用無障礙功能</translation>
@@ -6112,6 +6121,7 @@
 <translation id="8028060951694135607">Microsoft 金鑰復原</translation>
 <translation id="8028803902702117856">下載緊 <ph name="FILE_NAME" />，檔案大小係 <ph name="SIZE" /></translation>
 <translation id="8028993641010258682">大小</translation>
+<translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> - 要求咗權限，㩒 ⌘ + Option + 向上箭咀就可以回覆</translation>
 <translation id="8030852056903932865">核准</translation>
 <translation id="8032244173881942855">無法投放分頁。</translation>
 <translation id="8033827949643255796">已選取</translation>
@@ -7119,6 +7129,7 @@
 <translation id="917350715406657904">您已達到家長為 <ph name="APP_NAME" /> 設定的使用時間限制。明天可以使用 <ph name="TIME_LIMIT" />。</translation>
 <translation id="9173787391779732995">網站可顯示圖片 (建議)</translation>
 <translation id="9173995187295789444">正在掃瞄藍牙裝置…</translation>
+<translation id="9174052566244514547">管理員已要求重新啟動裝置並更新應用程式。此操作可能需要幾分鐘才能完成</translation>
 <translation id="9174401638287877180">傳送使用情況和診斷資料。自動將診斷、裝置及應用程式的使用情況資料傳送至 Google，協助改善您子女的 Android 使用體驗。這些資料不會用來識別您子女的身分，而是用於改善系統和應用程式的穩定性和其他效能。部分彙整資料也會用於協助 Google 應用程式與合作夥伴 (例如 Android 開發人員)。如果您為子女開啟其他「網絡及應用程式活動記錄」設定，此資料可能會儲存在他們的 Google 帳戶中。</translation>
 <translation id="917510707618656279">在網站要求存取藍牙裝置時詢問您</translation>
 <translation id="9176476835295860688">傳送使用情況和診斷資料。此裝置目前會自動將診斷、裝置及應用程式的使用情況資料傳送至 Google。這些資料將有助改善系統和應用程式的穩定性和其他效能。部分彙整資料也會用於協助 Google 應用程式與合作夥伴 (例如 Android 開發人員)。擁有者可強制執行此<ph name="BEGIN_LINK1" />設定<ph name="END_LINK1" />。如果已開啟其他「網絡及應用程式活動記錄」設定，系統可能會將此資料儲存至您的 Google 帳戶。<ph name="BEGIN_LINK2" />瞭解詳情<ph name="END_LINK2" /></translation>

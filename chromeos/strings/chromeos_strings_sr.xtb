@@ -38,7 +38,6 @@
 <translation id="1662989795263954667">Заустављено – нема више мастила</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Присутан је DNS разрешивач</translation>
-<translation id="1743558184855585519">Батерија се сматра потрошеном када достигне ограничење</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">Отказује се скенирање</translation>
 <translation id="1851218745569890714">Видео конференције</translation>
@@ -203,11 +202,11 @@
 <translation id="5669267381087807207">Активирање</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Породица</translation>
-<translation id="5719918614880940190">Овим се мери коришћење процесора и збир је свих језгара</translation>
 <translation id="5760715441271661976">Статус портала</translation>
 <translation id="5781694279199921985">Сачувај евиденцију сесије</translation>
 <translation id="5797428682393400134">УСПЕЛО ЈЕ</translation>
 <translation id="5832805196449965646">Додај особу</translation>
+<translation id="5844247382766192936">Тест <ph name="TEST_NAME" /> је отказан</translation>
 <translation id="5849570051105887917">Кôд добављача за Home</translation>
 <translation id="5866840822086176774">Веома јак</translation>
 <translation id="5895138241574237353">Покрени поново</translation>
@@ -261,6 +260,7 @@
 <translation id="6977381486153291903">Ревизија фирмвера</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> управља овим уређајем и има приступ свим активностима корисника, укључујући посећене веб-странице, лозинке и имејлове.</translation>
 <translation id="7040230719604914234">Мобилни оператер</translation>
+<translation id="708426984172631313">ЗАУСТАВЉЕНО</translation>
 <translation id="7143207342074048698">Повезивање</translation>
 <translation id="714876143603641390">Повезивање LAN-а</translation>
 <translation id="7162487448488904999">Галерија</translation>
@@ -271,7 +271,6 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Скенирање је завршено. Скенирана је 1 страница}one{Скенирање је завршено. Скенирана је {NUMBER_OF_PAGES} страница}few{Скенирање је завршено. Скениране су {NUMBER_OF_PAGES} странице}other{Скенирање је завршено. Скенирано је {NUMBER_OF_PAGES} страница}}</translation>
-<translation id="7441459999606975924">Капацитет батерије се смањује током коришћења</translation>
 <translation id="7469648432129124067">Откривен је портал</translation>
 <translation id="7487067081878637334">Технологија</translation>
 <translation id="7490813197707563893">MAC адреса</translation>

@@ -38,7 +38,6 @@
 <translation id="1662989795263954667">توقّفت الطابعة - نفد الحبر</translation>
 <translation id="1703835215927279855">خطاب</translation>
 <translation id="1706391837335750954">توفُّر برنامج تعيين نظام أسماء النطاقات</translation>
-<translation id="1743558184855585519">تُعتبر البطارية مستهلكة عند وصولها إلى الحدّ.</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">جارٍ إلغاء المسح الضوئي</translation>
 <translation id="1851218745569890714">اختبار اجتماعات الفيديو</translation>
@@ -203,11 +202,11 @@
 <translation id="5669267381087807207">تفعيل</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">العائلة</translation>
-<translation id="5719918614880940190">‏هذا يقيس استخدام وحدة المعالجة المركزية (CPU)، ويقدِّم بيانات مجمّعة عن كل النوى.</translation>
 <translation id="5760715441271661976">حالة المدخل</translation>
 <translation id="5781694279199921985">حفظ سجلّ الجلسة</translation>
 <translation id="5797428682393400134">نجح الاختبار</translation>
 <translation id="5832805196449965646">إضافة شخص</translation>
+<translation id="5844247382766192936">تم إلغاء اختبار <ph name="TEST_NAME" />.</translation>
 <translation id="5849570051105887917">رمز مقدم الخدمة الرئيسي</translation>
 <translation id="5866840822086176774">قوية جدًا</translation>
 <translation id="5895138241574237353">إعادة التشغيل</translation>
@@ -261,6 +260,7 @@
 <translation id="6977381486153291903">مراجعة البرامج الثابتة</translation>
 <translation id="7028979494427204405">يُدير <ph name="MANAGER" /> هذا الجهاز ويمكنه الوصول إلى جميع أنشطة المستخدم، بما في ذلك صفحات الويب التي تمت زيارتها وكلمات المرور والبريد الإلكتروني.</translation>
 <translation id="7040230719604914234">مشغل شبكة الجوّال</translation>
+<translation id="708426984172631313">متوقّف</translation>
 <translation id="7143207342074048698">اتصال</translation>
 <translation id="714876143603641390">‏الاتصال بشبكة LAN</translation>
 <translation id="7162487448488904999">معرض الصور</translation>
@@ -271,7 +271,6 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{اكتمل المسح الضوئي. تم مسح صفحة واحدة ضوئيًا.}zero{اكتمل المسح الضوئي. تم مسح {NUMBER_OF_PAGES} صفحة ضوئيًا.}two{اكتمل المسح الضوئي. تم مسح صفحتَين ({NUMBER_OF_PAGES}) ضوئيًا.}few{اكتمل المسح الضوئي. تم مسح {NUMBER_OF_PAGES} صفحات ضوئيًا.}many{اكتمل المسح الضوئي. تم مسح {NUMBER_OF_PAGES} صفحة ضوئيًا.}other{اكتمل المسح الضوئي. تم مسح {NUMBER_OF_PAGES} صفحة ضوئيًا.}}</translation>
-<translation id="7441459999606975924">تقلّ سعة البطاريات عند استخدامها.</translation>
 <translation id="7469648432129124067">تم رصد مدخل.</translation>
 <translation id="7487067081878637334">التقنية</translation>
 <translation id="7490813197707563893">‏عنوان MAC</translation>

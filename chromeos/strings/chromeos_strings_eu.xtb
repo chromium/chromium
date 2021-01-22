@@ -38,7 +38,6 @@
 <translation id="1662989795263954667">Geldituta: ez dago tintarik</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS bidezko ebazlea badago</translation>
-<translation id="1743558184855585519">Bateria agortutzat jotzen da mugara iritsitakoan</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">Eskaneatzeko prozesua bertan behera uzten</translation>
 <translation id="1851218745569890714">Bideo-konferentziak</translation>
@@ -203,11 +202,11 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="5669267381087807207">Aktibatzen</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Familia</translation>
-<translation id="5719918614880940190">PUZaren erabilera neurtzen du honek, eta nukleo guztien multzokatze bat da</translation>
 <translation id="5760715441271661976">Atariaren egoera</translation>
 <translation id="5781694279199921985">Gorde saioaren erregistroa</translation>
 <translation id="5797428682393400134">GAINDITU DA</translation>
 <translation id="5832805196449965646">Gehitu pertsona bat</translation>
+<translation id="5844247382766192936"><ph name="TEST_NAME" /> proba bertan behera utzi da</translation>
 <translation id="5849570051105887917">Hasierako hornitzailearen kodea</translation>
 <translation id="5866840822086176774">Oso indartsua</translation>
 <translation id="5895138241574237353">Berrabiarazi</translation>
@@ -261,6 +260,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="6977381486153291903">Firmwarearen berrikuspena</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> domeinuak kudeatzen du gailu hau, eta erabiltzaileen jarduera guztiak atzi ditzake; besteak beste, bisitatutako webguneak, erabilitako pasahitzak eta posta elektronikoa.</translation>
 <translation id="7040230719604914234">Operadorea</translation>
+<translation id="708426984172631313">GELDITUTA</translation>
 <translation id="7143207342074048698">Konektatzen</translation>
 <translation id="714876143603641390">LAN sarearen konexioa</translation>
 <translation id="7162487448488904999">Galeria</translation>
@@ -271,7 +271,6 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Amaitu da eskaneatzen. 1 orri eskaneatu da.}other{Amaitu da eskaneatzen. {NUMBER_OF_PAGES} orri eskaneatu dira.}}</translation>
-<translation id="7441459999606975924">Bateriak erabiltzearekin batera jaisten da haien ahalmena</translation>
 <translation id="7469648432129124067">Ataria hauteman da</translation>
 <translation id="7487067081878637334">Teknologia</translation>
 <translation id="7490813197707563893">MAC helbidea</translation>

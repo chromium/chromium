@@ -1057,7 +1057,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2166369534954157698">The quick brown fox jumps over the lazy dog</translation>
 <translation id="2169062631698640254">Sign in anyway</translation>
 <translation id="2170054054876170358">Make sure that your phone is nearby, unlocked and has Bluetooth and Wi-Fi turned on.</translation>
-<translation id="2172784515318616985">Continue</translation>
 <translation id="2173302385160625112">Check your Internet connection</translation>
 <translation id="2173801458090845390">Add requisition ID to this device</translation>
 <translation id="2174948148799307353">Account managed by <ph name="PARENT_EMAIL" />. To sign out of the primary account on this device, click the time on your screen. In the menu that appears, click 'Sign out'.</translation>
@@ -5790,7 +5789,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="7674542105240814168">Location access denied</translation>
 <translation id="7676119992609591770">Found <ph name="NUM" /> tab for '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="7676867886086876795">Send your voice to Google to allow dictation into any text field.</translation>
-<translation id="7678280409648629969">Sign-in data will be stored in Chrome after you exit Incognito mode. This will let you use Touch ID with this website again later.</translation>
 <translation id="7680416688940118410">Touchscreen calibration</translation>
 <translation id="7681095912841365527">Site can use Bluetooth</translation>
 <translation id="7682634383739326341">Block sites from connecting to USB devices</translation>
@@ -6089,7 +6087,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="7982083145464587921">Please restart your device to fix this error.</translation>
 <translation id="7982789257301363584">Network</translation>
 <translation id="7984068253310542383">Mirror <ph name="DISPLAY_NAME" /></translation>
-<translation id="7985283639530788531">Do you want to use Touch ID with <ph name="APP_NAME" /> in Incognito mode?</translation>
 <translation id="7986295104073916105">Read and change saved password settings</translation>
 <translation id="7987814697832569482">Always connect through this VPN</translation>
 <translation id="7988355189918024273">Enable accessibility features</translation>

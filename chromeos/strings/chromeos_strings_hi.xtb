@@ -38,7 +38,6 @@
 <translation id="1662989795263954667">बंद हो गया - स्याही खत्म हो गई</translation>
 <translation id="1703835215927279855">लेटर</translation>
 <translation id="1706391837335750954">डीएनएस रिज़ॉल्वर मौजूद है</translation>
-<translation id="1743558184855585519">सीमा पूरी होने का मतलब है कि बैटरी खत्म हो गई है</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">स्कैन करने की प्रोसेस रद्द की जा रही है</translation>
 <translation id="1851218745569890714">वीडियो कॉन्फ़्रेंसिंग</translation>
@@ -203,7 +202,6 @@
 <translation id="5669267381087807207">चालू हो रहा है</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">परिवार</translation>
-<translation id="5719918614880940190">इससे यह मापा जाता है कि सीपीयू का कितना इस्तेमाल किया गया है और यह सभी कोर का एग्रीगेट है</translation>
 <translation id="5760715441271661976">पोर्टल की स्थिति</translation>
 <translation id="5781694279199921985">सेशन लॉग सेव करें</translation>
 <translation id="5797428682393400134">सफल</translation>
@@ -271,7 +269,6 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{स्कैन करने की प्रोसेस पूरी हुई. 1 पेज स्कैन हो गया}one{स्कैन करने की प्रोसेस पूरी हुई. {NUMBER_OF_PAGES} पेज स्कैन हो गया}other{स्कैन करने की प्रोसेस पूरी हुई. {NUMBER_OF_PAGES} पेज स्कैन हो गए}}</translation>
-<translation id="7441459999606975924">इस्तेमाल के साथ, बैटरी की क्षमता में कमी आती जाती है</translation>
 <translation id="7469648432129124067">पोर्टल पहचाना गया</translation>
 <translation id="7487067081878637334">तकनीक</translation>
 <translation id="7490813197707563893">MAC पता</translation>

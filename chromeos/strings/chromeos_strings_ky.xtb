@@ -38,7 +38,6 @@
 <translation id="1662989795263954667">Токтоду – Сыя түгөнүп калды</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS которгучун текшерүү</translation>
-<translation id="1743558184855585519">Чекке жеткенде батарея сарпталды деп эсептелет</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">Скандоо токтотулууда</translation>
 <translation id="1851218745569890714">Видео конференция</translation>
@@ -203,11 +202,11 @@
 <translation id="5669267381087807207">Жандырылууда</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Үй-бүлөлүк</translation>
-<translation id="5719918614880940190">Бул процессордун колдонулушун ченеп, бардык зымдардын бириктирилген жери болуп эсептелет</translation>
 <translation id="5760715441271661976">Порталдын абалы</translation>
 <translation id="5781694279199921985">Сеанстын таржымалын сактоо</translation>
 <translation id="5797428682393400134">ИЙГИЛИК</translation>
 <translation id="5832805196449965646">Адам кошуу</translation>
+<translation id="5844247382766192936"><ph name="TEST_NAME" /> сыноосу жокко чыгарылды</translation>
 <translation id="5849570051105887917">Баштапкы жабдуучунун коду</translation>
 <translation id="5866840822086176774">Абдан күчтүү</translation>
 <translation id="5895138241574237353">Өчүрүп күйгүзүү</translation>
@@ -261,6 +260,7 @@
 <translation id="6977381486153291903">Орнотулган программаны оңдоо</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> бул түзмөктү башкарып, андагы колдонуучунун бардык аракеттерине, анын ичинде баш баккан веб-барактарга, сырсөздөргө жана электрондук каттарга кирүү мүмкүнчүлүгү бар.</translation>
 <translation id="7040230719604914234">Оператор</translation>
+<translation id="708426984172631313">ТОКТОТУЛДУ</translation>
 <translation id="7143207342074048698">Туташууда</translation>
 <translation id="714876143603641390">LAN байланышы</translation>
 <translation id="7162487448488904999">Gallery</translation>
@@ -271,7 +271,6 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Скандалып бүттү. 1 бет скандалды}other{Скандалып бүттү. {NUMBER_OF_PAGES} бет скандалды}}</translation>
-<translation id="7441459999606975924">Батарея колдонулган сайын анын сыйымдуулугу төмөндөйт</translation>
 <translation id="7469648432129124067">Портал аныкталды</translation>
 <translation id="7487067081878637334">Технология</translation>
 <translation id="7490813197707563893">MAC дареги</translation>

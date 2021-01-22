@@ -23,7 +23,7 @@
 <translation id="169515659049020177">Shift</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">অ্যাড্রেস বারে আপনার ইনপুটে www. এবং .com যোগ করে পৃষ্ঠা খুলুন</translation>
-<translation id="1768987374400973299">স্ক্রিনশন নিন/রেকর্ডিং করুন</translation>
+<translation id="1768987374400973299">স্ক্রিনশন নিন/রেকর্ড করুন</translation>
 <translation id="1872219238824176091">বর্তমান ডেস্কটি সরিয়ে দিন</translation>
 <translation id="1920446759863417809"><ph name="SHIFT1" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, তারপর <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="TAB" /> অথবা <ph name="LEFT" /></translation>
 <translation id="1996162290124031907">পরের ট্যাবে যান</translation>
@@ -152,7 +152,7 @@
 <translation id="6445033640292336367">ট্যাবটিকে তার আসল অবস্থানে ফেরত নিয়ে যান</translation>
 <translation id="6474744297082284761">জুম কমান (যখন ডক করা থাকে বা ফুলস্ক্রিন ম্যাগনিফায়ার চালু থাকে)</translation>
 <translation id="649811797655257835">ফাইল বেছে নিয়ে <ph name="SPACE" /> টিপুন</translation>
-<translation id="6551886416582667425">আংশিক স্ক্রিনশট/রেকর্ডিং নিন</translation>
+<translation id="6551886416582667425">আংশিক স্ক্রিনশন নিন/রেকর্ড করুন</translation>
 <translation id="6556040137485212400">যে উইন্ডোটি সবথেকে বেশিক্ষণ ব্যবহার করা হয়নি সেটিতে যান</translation>
 <translation id="666343722268997814">হাইলাইট করা আইটেমের জন্য রাইট ক্লিক মেনু খুলুন</translation>
 <translation id="6671538777808758331">আপনার সার্চের জন্য পরের ম্যাচে যান</translation>
@@ -179,7 +179,7 @@
 <translation id="7611271430932669992">পপআপ এবং ডায়ালগগুলিতে ফোকাস সরান</translation>
 <translation id="7635348532214572995">অ্যাপ গ্রিডে একটি অ্যাপ আইকন সরান</translation>
 <translation id="766326951329901120">ক্লিপবোর্ড থেকে সাধারণ টেক্সট হিসেবে কন্টেন্ট পেস্ট করুন</translation>
-<translation id="7673453620027697230">উইন্ডো স্ক্রিনশট নিন/উইন্ডো রেকর্ডিং করুন</translation>
+<translation id="7673453620027697230">উইন্ডো স্ক্রিনশট নিন/উইন্ডো রেকর্ড করুন</translation>
 <translation id="7703010453515335249">বাঁদিকের ব্র্যাকেট দেওয়ার বোতাম</translation>
 <translation id="7724603315864178912">কাটুন</translation>
 <translation id="7730490981846175479"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, তারপর <ph name="SPACE" /> অথবা <ph name="ENTER" /></translation>

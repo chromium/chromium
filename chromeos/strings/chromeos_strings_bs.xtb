@@ -38,7 +38,6 @@
 <translation id="1662989795263954667">Zaustavljeno – nema tinte</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS razrješivač je prisutan</translation>
-<translation id="1743558184855585519">Smatra se da je baterija potrošena kada se dostigne ograničenje</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">Otkazivanje skeniranja</translation>
 <translation id="1851218745569890714">Videokonferencija</translation>
@@ -203,12 +202,11 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="5669267381087807207">Aktiviranje</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Porodica</translation>
-<translation id="5719918614880940190">Ovim se mjeri korištenje CPU-a i predstavlja zbir svih jezgri</translation>
 <translation id="5760715441271661976">Stanje portala</translation>
 <translation id="5781694279199921985">Sačuvaj zapisnik sesije</translation>
 <translation id="5797428682393400134">USPJEŠNO</translation>
 <translation id="5832805196449965646">Dodaj osobu</translation>
-<translation id="5844247382766192936"><ph name="TEST_NAME" /> Test je otkazan</translation>
+<translation id="5844247382766192936">Test "<ph name="TEST_NAME" />" je otkazan</translation>
 <translation id="5849570051105887917">Kôd domaćeg mobilnog operatera</translation>
 <translation id="5866840822086176774">Veoma jaka</translation>
 <translation id="5895138241574237353">Ponovo pokreni</translation>
@@ -273,7 +271,6 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skeniranje je završeno. Skenirana je 1 stranica}one{Skeniranje je završeno. Skenirana je {NUMBER_OF_PAGES} stranica}few{Skeniranje je završeno. Skenirane su {NUMBER_OF_PAGES} stranice}other{Skeniranje je završeno. Skenirano je {NUMBER_OF_PAGES} stranica}}</translation>
-<translation id="7441459999606975924">Kapacitet baterija opada s korištenjem</translation>
 <translation id="7469648432129124067">Otkriven je portal</translation>
 <translation id="7487067081878637334">Tehnologija</translation>
 <translation id="7490813197707563893">MAC adresa</translation>

@@ -681,6 +681,7 @@
       注意：略過欄位即表示對相關值不設限。舉例來說，如果不指定連線能力，系統在執行預覽列印時會尋找所有類型的印表機，包括 <ph name="PRINTER_TYPE_LOCAL" /> 和 <ph name="PRINTER_TYPE_CLOUD" /> 印表機。規則運算式模式須符合 JavaScript RegExp 語法，且比對機制須區分大小寫。</translation>
 <translation id="2005506794355327448">機蓋蓋上時採取的動作</translation>
 <translation id="2006530844219044261">電源管理</translation>
+<translation id="2011151221807385794">受管理訪客工作階段的使用者可以儲存裝置通用的顯示設定。</translation>
 <translation id="2013285471046373727">指定應用程式的安裝方式。OPTIONAL：應用程式不會自動安裝，但使用者可自行安裝。如未指定這項政策，系統會預設採用這個值。PRELOAD：應用程式會自動安裝，但使用者可以解除安裝。FORCE_INSTALLED：應用程式會自動安裝，且使用者無法解除安裝。BLOCKED：應用程式遭到封鎖且無法安裝。如果應用程式是依據先前的政策而安裝，則會解除安裝。</translation>
 <translation id="2014757022750736514">控管登入畫面的行為，使用者會從該畫面登入帳戶。可調整的設定包含可登入的人員、系統允許的帳戶類型、應使用何種驗證方法，以及一般無障礙、輸入法和語言代碼設定。</translation>
 <translation id="201557587962247231">裝置狀態報告上傳頻率</translation>
@@ -730,6 +731,11 @@
       想進一步瞭解有效的<ph name="URL_LABEL" />模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是這項政策許可的值。</translation>
 <translation id="2043749682619281558">在登入畫面上啟用游標醒目顯示功能</translation>
 <translation id="2043770014371753404">停用的企業印表機</translation>
+<translation id="2044730764993088298">設定 <ph name="PRODUCT_NAME" /> 的瀏覽資料生命週期。管理員可以透過這項政策設定瀏覽器刪除資料 (依資料類型) 的時間點。這很適合需要處理敏感客戶資料的客戶。這項政策只有在 <ph name="SYNC_DISABLED_POLICY_NAME" /> 設為 True 時才會生效。
+
+      可選擇的資料類型有 <ph name="DATA_TYPE_BROWSING_HISTORY" />、<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />、<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />、<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />、<ph name="DATA_TYPE_PASSWORD" />、<ph name="DATA_TYPE_AUTOFILL" />、<ph name="DATA_TYPE_SITE_SETTINGS" /> 和 <ph name="DATA_TYPE_HOSTED_APP_DATA" />。
+
+      瀏覽器會根據選擇的資料類型，自動在資料存放時間超過 <ph name="TIME_TO_LIVE_IN_HOURS" />後執行刪除作業。下限值是 1 小時。在極少數情況下，瀏覽器可能會延遲資料刪除作業，但最終仍會刪除資料。</translation>
 <translation id="2057317273526988987">允許存取網址清單</translation>
 <translation id="2061810934846663491">為遠端存取主機設定必要的網域名稱</translation>
 <translation id="2069350366303315077">如果將這項政策設為啟用，<ph name="PRODUCT_NAME" /> 會強制執行訪客工作階段，並禁止使用者登入設定檔。訪客可以登入 <ph name="PRODUCT_NAME" /> 設定檔，登入後，視窗會以無痕模式開啟。
@@ -764,6 +770,13 @@
       如要進一步瞭解「安全瀏覽」服務，請前往 https://developers.google.com/safe-browsing。</translation>
 <translation id="2127599828444728326">允許這些網站的通知</translation>
 <translation id="2131902621292742709">在電池供電環境下執行時的螢幕調暗延遲時間</translation>
+<translation id="2131915994539959070">啟用 <ph name="PRODUCT_NAME" /> 中的視窗遮蔽功能。
+
+      如果啟用這項設定，為降低 CPU 用量和耗電量，<ph name="PRODUCT_NAME" /> 會偵測是否有視窗覆蓋情形，並在發生覆蓋時暫停繪製像素的工作。
+
+      如果停用這項設定，<ph name="PRODUCT_NAME" /> 不會偵測是否有視窗覆蓋情形。
+
+      如果未設定這項政策，系統會啟用遮蔽偵測功能。</translation>
 <translation id="2132424782557550556">設定雲端報告政策。
 
       如果不設定 <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> 政策或設為停用，系統會忽略這些政策。
@@ -876,6 +889,7 @@
 <translation id="2303795211377219696">啟用信用卡的自動填入功能</translation>
 <translation id="2307496301287881990">回報顯示狀態和圖形狀態</translation>
 <translation id="2309390639296060546">預設地理位置設定</translation>
+<translation id="2318651066908490266">受管理訪客工作階段的使用者無法儲存裝置通用的顯示設定。</translation>
 <translation id="2327252517317514801">定義可存取 G Suite 的網域</translation>
 <translation id="2331354174913096226">所需 DNS-over-HTTPS 解析器的 URI 範本。如要指定多個 DNS-over-HTTPS 解析器，請以半形空格分隔相應的 URI 範本。
 
@@ -985,6 +999,15 @@
       </translation>
 <translation id="2454228136871844693">穩定性最佳化。</translation>
 <translation id="2455033019778127130">使用預設的瀏覽器行為，顯示《服務條款》並等待使用者接受。</translation>
+<translation id="2460127623195247744">這項政策已淘汰，請改用「<ph name="WINDOW_OCCLUSION_ENABLED_POLICY_NAME" />」政策。
+
+      啟用 <ph name="PRODUCT_NAME" /> 中的原生視窗遮蔽功能。
+
+      如果啟用這項設定，為降低 CPU 用量和耗電量，<ph name="PRODUCT_NAME" /> 會偵測是否有視窗覆蓋情形，並在發生覆蓋時暫停繪製像素的工作。
+
+      如果停用這項設定，<ph name="PRODUCT_NAME" /> 不會偵測是否有視窗覆蓋情形。
+
+      如果未設定這項政策，系統會啟用遮蔽偵測功能。</translation>
 <translation id="2463034609187171371">在傳輸層安全標準 (TLS) 中啟用 DHE 加密套件</translation>
 <translation id="2463365186486772703">應用程式語言代碼</translation>
 <translation id="2463832514638083341">這項政策可控管將列印工作中繼資料儲存在裝置上的時間範圍 (以天為單位)。
@@ -2204,6 +2227,7 @@
       這些限制適用於網頁內容和 [下載連結] 選單選項所觸發的下載作業，但不適用於目前顯示網頁的儲存或下載作業，或透過列印選項另存為 PDF 檔的作業。
 
       在 <ph name="MS_WIN_NAME" /> 上，這項功能僅適用於已加入 <ph name="MS_AD_NAME" /> 網域的執行個體、在 Windows 10 專業版上執行的執行個體，或是已註冊 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />服務的執行個體。在 <ph name="MAC_OS_NAME" /> 上，這項功能僅適用於透過行動裝置管理 (MDM) 軟體進行管理或透過 MCX 加入網域的執行個體。</translation>
+<translation id="4051723201852944592">啟用視窗遮蔽功能</translation>
 <translation id="4056910949759281379">停用 SPDY 通訊協定</translation>
 <translation id="4061590579642538878">回報當機報告相關資訊。</translation>
 <translation id="4075675819066819571">將檔案櫃放在畫面的左側</translation>
@@ -3146,6 +3170,7 @@
 <translation id="5470500958458209831">可下載 Ansible Playbook 的網址。</translation>
 <translation id="5475361623548884387">啟用列印功能</translation>
 <translation id="547601067149622666">禁止含侵入式廣告的網站顯示廣告</translation>
+<translation id="5480380613778757009">如果停用或不設定這項政策，當受管理訪客工作階段結束後，系統就會立即重設在此期間配置的所有顯示設定。如果將這項政策設為 True，系統就會在受管理的訪客工作階段結束後保留顯示屬性。</translation>
 <translation id="5483065054530244863">允許本機信任錨點核發的 SHA-1 簽署憑證</translation>
 <translation id="5497565614013170656">用於比對印表機 ID 的規則運算式。</translation>
 <translation id="5499375345075963939">這項政策僅於零售模式中有效。
@@ -3212,6 +3237,7 @@
       如果不設定這項政策，在預設情況下，受企業管理的使用者將無法使用即時網路共用功能，其他一般使用者則可使用這項功能。</translation>
 <translation id="5584132346604748282">控制 Android Google 定位服務</translation>
 <translation id="5586942249556966598">不要處理</translation>
+<translation id="5598417829613725146">畫布 (自 90 版開始支援)</translation>
 <translation id="5599461642204007579"><ph name="MS_AD_NAME" /> 管理設定</translation>
 <translation id="5614865701790130558">記錄以政策為根據的擴充功能安裝事件</translation>
 <translation id="5618398258385745432">我們先前曾以類似設定來控管使用者是否可查看密碼，但在新增重新驗證功能後，該設定與這項政策已不再適用於 Chrome 的運作方式。目前 Chrome 的運作方式，相當於這項政策禁止在密碼管理員設定頁面以純文字顯示密碼。也就是說，設定頁面只會顯示預留位置，使用者必須點選 [顯示] 並重新驗證 (如果適用)，Chrome 才會顯示密碼。這項政策的原始說明如下：
@@ -3491,6 +3517,7 @@
 <translation id="603410445099326293">使用 POST 的建議網址參數</translation>
 <translation id="6034341625190551415">控管公開工作階段和資訊站帳戶類型。</translation>
 <translation id="6034603289689965535">允許網頁在卸載時顯示彈出式視窗。</translation>
+<translation id="6035597431797865964">允許受管理的訪客工作階段保留顯示屬性</translation>
 <translation id="6036459377708946958">每月應執行更新檢查的日期 [1-31] (根據裝置當地時區)，僅適用於「frequency」設為「MONTHLY」的情況。如果這個值大於指定月份的天數上限，系統會選擇當月的最後一天。</translation>
 <translation id="6036523166753287175">允許遠端存取主機穿越防火牆</translation>
 <translation id="603768430528561926">如果將這項政策設為啟用或不設定，企業裝置使用者可透過 <ph name="PRODUCT_OS_NAME" />註冊兌換優惠。
@@ -4725,6 +4752,7 @@
       如果不設定，系統會套用 <ph name="BLOCK_POPUPS_POLICY_NAME" />，但使用者可以變更這項設定。</translation>
 <translation id="7731026922044991970">將所有網站上的 Cookie 還原成舊版的 <ph name="ATTRIBUTE_SAMESITE_NAME" /> 行為</translation>
 <translation id="7732907212083471072">已移除的政策</translation>
+<translation id="7737077721564799856">設定要停用的攝影機、瀏覽器設定、作業系統設定、掃描功能、線上應用程式商店和畫布功能</translation>
 <translation id="77379430721695807">你可以透過這項政策指定網址清單，系統會將這份清單中的模式與要求網址的安全性來源進行比對。如果模式相符，系統會直接授予影片擷取裝置存取權限，而不會顯示提示
 
       如果想進一步瞭解有效的<ph name="URL_LABEL" />模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。</translation>
@@ -5442,6 +5470,7 @@
       如果將這項政策設為停用，則 USB 連接埠不會供應任何電力。
 
       如果不設定這項政策，系統會將政策預設為啟用，且使用者無法予以停用。</translation>
+<translation id="879697755145469671">不偵測被覆蓋的視窗</translation>
 <translation id="8798099450830957504">預設</translation>
 <translation id="8799492680917278474">如果設定這項政策，遠端存取連線會根據政策設定的時間長度 (單位為分鐘) 自動中斷連線。這項政策不禁止用戶端在達到工作階段持續時間上限後重新連線。如果為這項政策設定低於下限或高於上限的值，可能會導致主機無法啟動。這項政策不適用於遠端支援情境。
 
@@ -5709,6 +5738,7 @@
 
       如果不設定這項政策，在預設情況下，受企業管理的使用者將無法開啟 Phone Hub 功能，其他一般使用者則可開啟這項功能。</translation>
 <translation id="9096086085182305205">驗證伺服器許可清單</translation>
+<translation id="9098409326885953506">偵測被覆蓋的視窗並暫停相關繪製工作</translation>
 <translation id="9105265795073104888">只有一部分 Proxy 設定可供 Android 應用程式使用，Android 應用程式可以選擇是否使用。你無法強制 Android 應用程式使用 Proxy。</translation>
 <translation id="9106865192244721694">在這些網站上允許 WebUSB</translation>
 <translation id="9111850884577810507">這個欄位必須符合其中一個代表 <ph name="PRODUCT_NAME" />相容印表機的字串。系統會利用這個字串找出並安裝印表機適用的 PPD。詳情請參閱 https://support.google.com/chrome?p=noncloudprint。</translation>

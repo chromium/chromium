@@ -1050,7 +1050,6 @@
 <translation id="2166369534954157698">चपळ तपकिरी कोल्ह्याने आळशी कुत्र्यावर उडी मारली</translation>
 <translation id="2169062631698640254">तरीही साइन इन करा</translation>
 <translation id="2170054054876170358">तुमचा फोन जवळपास असल्याची, अनलॉक केलेला असल्याची आणि त्याचे ब्लूटूथ व वाय-फाय सुरू असल्याची खात्री करा.</translation>
-<translation id="2172784515318616985">सुरू ठेवा</translation>
 <translation id="2173302385160625112">तुमचे इंटरनेट कनेक्शन तपासा</translation>
 <translation id="2173801458090845390">या डीव्हाइसवर मागणी आयडी जोडा</translation>
 <translation id="2174948148799307353">खाते <ph name="PARENT_EMAIL" /> ने व्‍यवस्‍थापित केले आहे. या डिव्हाइसवरील प्राथमिक खात्यामधून साइन आउट करण्यासाठी, तुमच्या स्क्रीनवरील वेळेवर क्लिक करा. दिसणाऱ्या मेनूमध्ये, "साइन आउट करा" वर क्लिक करा.</translation>
@@ -1633,6 +1632,7 @@
 <translation id="281504910091592009">तुमच्या <ph name="BEGIN_LINK" />Google खात्यामध्ये<ph name="END_LINK" /> सेव्ह केलेले पासवर्ड पाहा आणि व्यवस्थापित करा</translation>
 <translation id="2815693974042551705">बुकमार्क फोल्डर</translation>
 <translation id="2816319641769218778">तुमच्या Google खाते मध्ये पासवर्ड सेव्ह करण्यासाठी सिंक सुरू करा.</translation>
+<translation id="2816628817680324566">या साइटला तुमची सिक्युरिटी की ओळखण्याची अनुमती द्यायची का?</translation>
 <translation id="2818476747334107629">प्रिंटर तपशील</translation>
 <translation id="2820957248982571256">स्कॅन होत आहे...</translation>
 <translation id="2822634587701817431">कोलॅप्स / विस्तार करा</translation>
@@ -3722,6 +3722,7 @@
 <translation id="5300287940468717207">साइट परवानग्या रीसेट करायच्या?</translation>
 <translation id="5300589172476337783">दर्शवा</translation>
 <translation id="5300719150368506519">Google ला तुम्ही भेट दिलेल्या पेजच्या URL पाठवते</translation>
+<translation id="5300814202279832142">विंडो या डेस्कवर हलवा</translation>
 <translation id="5301751748813680278">अतिथी म्हणून एंटर होत आहे.</translation>
 <translation id="5301954838959518834">ठीक आहे, समजले</translation>
 <translation id="5302048478445481009">भाषा</translation>
@@ -5386,6 +5387,7 @@
 <translation id="7250616558727237648">तुम्ही ज्या डिव्हाइससह शेअर करत आहात त्याने प्रतिसाद दिला नाही. कृपया पुन्हा प्रयत्न करा.</translation>
 <translation id="725109152065019550">क्षमस्व, तुमच्या ॲडमिनिस्ट्रेटरने तुमच्या खात्यावरील बाह्य स्टोरेज अक्षम केले आहे.</translation>
 <translation id="7251346854160851420">डीफॉल्ट वॉलपेपर</translation>
+<translation id="7251979364707973467"><ph name="WEBSITE" /> ने तुमची सिक्युरिटी की जारी केली आहे आणि तिला त्या सिक्युरिटी कीचा आयडी नंबर जाणून घ्यायचा आहे. तुम्ही नेमकी कोणती सिक्युरिटी की वापरत आहात ते साइटला कळेल.</translation>
 <translation id="7253521419891527137">&amp;अधिक जाणून घ्या</translation>
 <translation id="7254951428499890870">तुम्ही निदान मोडमध्ये "<ph name="APP_NAME" />" लाँच करू इच्छिता याची तुम्हाला खात्री आहे?</translation>
 <translation id="725497546968438223">बुकमार्क फोल्डरचे बटण</translation>
@@ -5744,7 +5746,6 @@
 <translation id="7674542105240814168">स्थान अ‍ॅक्सेस नाकारला</translation>
 <translation id="7676119992609591770">'<ph name="SEARCH_TEXT" />' साठी <ph name="NUM" /> टॅब आढळला</translation>
 <translation id="7676867886086876795">कोणत्याही मजकूर फील्डमध्ये डिक्टेशनला अनुमती देण्यासाठी Google ला तुमचा व्हॉइस पाठवा.</translation>
-<translation id="7678280409648629969">गुप्त मोडमधून बाहेर आल्यावर साइन इन डेटा Chrome मध्ये स्टोअर केला जाईल. हे तुम्हाला पुन्हा या वेबसाइटसह टच आयडीचा वापर करू देईल.</translation>
 <translation id="7680416688940118410">टचस्क्रीन कॅलिब्रेशन</translation>
 <translation id="7681095912841365527">साइट ब्लूटूथ वापरू शकते</translation>
 <translation id="7682634383739326341">साइटना USB डिव्हाइसशी कनेक्ट करण्यापासून ब्लॉक करा</translation>
@@ -6039,7 +6040,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7982083145464587921">कृपया या एररचे निराकरण करण्यासाठी तुमचे डिव्हाइस रीस्टार्ट करा.</translation>
 <translation id="7982789257301363584">नेटवर्क</translation>
 <translation id="7984068253310542383">मिरर <ph name="DISPLAY_NAME" /></translation>
-<translation id="7985283639530788531">तुम्ही गुप्त मोडमध्ये <ph name="APP_NAME" /> सह टच आयडी वापरू इच्छिता का?</translation>
 <translation id="7986295104073916105">सेव्ह केलेल्या पासवर्ड सेटिंग्ज वाचा आणि बदला</translation>
 <translation id="7987814697832569482">नेहमीच या VPN द्वारे कनेक्ट करा</translation>
 <translation id="7988355189918024273">ॲक्सेस वैशिष्ट्ये सक्षम करा</translation>

@@ -147,9 +147,8 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="4600710005438004015">Chrome kan niet worden geüpdatet naar de nieuwste versie, dus je loopt nieuwe functies en beveiligingsoplossingen mis.</translation>
 <translation id="4631713731678262610">Verbergen in Chrome-menu</translation>
 <translation id="4633000520311261472">Om Chrome veiliger te maken, hebben we een aantal extensies uitgeschakeld die niet worden vermeld in de <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> en mogelijk zonder je medeweten zijn geïnstalleerd.</translation>
-<translation id="4666328473657283332">Als je toegang tot je Chrome-gegevens wilt, log je in zodat je synchronisatie kunt aanzetten.</translation>
+<translation id="4666328473657283332">Log in en zet synchronisatie aan voor toegang tot je Chromium-gegevens op al je apparaten.</translation>
 <translation id="4728575227883772061">De installatie is mislukt wegens een onbekende fout. Als Google Chrome momenteel actief is, sluit je het programma af en probeer je het opnieuw.</translation>
-<translation id="4750550185319565338">Start Chrome opnieuw op om <ph name="PLUGIN_NAME" /> in te schakelen</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4771048833395599659">Dit bestand kan gevaarlijk zijn en is daarom door Chrome geblokkeerd.</translation>
 <translation id="479167709087336770">Hiervoor wordt dezelfde spellingcontrole gebruikt als voor Google Zoeken. Tekst die je in de browser typt, wordt naar Google gestuurd. Je kunt dit altijd wijzigen in de instellingen.</translation>
@@ -296,7 +295,7 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="911206726377975832">Ook browsegegevens wissen?</translation>
 <translation id="9138603949443464873">Als je de wijzigingen wilt toepassen, start je Chrome opnieuw</translation>
 <translation id="919706545465235479">Chrome updaten om de synchronisatie te starten</translation>
-<translation id="940313311831216333">Log in voor toegang tot je Chrome-gegevens op al je apparaten en zet daarna synchronisatie aan.</translation>
+<translation id="940313311831216333">Log in en zet synchronisatie aan voor toegang tot je Chromium-gegevens op al je apparaten.</translation>
 <translation id="94743460404517794">Als je meerdere Google-accounts hebt, kun je deze toevoegen aan je <ph name="DEVICE_TYPE" />. Je accounts zijn beschikbaar in de Chrome-browser en de Play Store. Je kunt ze ook gebruiken in services zoals Gmail, Drive en YouTube. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="989369509083708165">Google Chrome is je standaardbrowser</translation>
 </translationbundle>

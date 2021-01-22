@@ -38,7 +38,6 @@
 <translation id="1662989795263954667">ବନ୍ଦ ହୋଇଯାଇଛି - ସ୍ୟାହି ସରିଯାଇଛି</translation>
 <translation id="1703835215927279855">ଲେଟର୍</translation>
 <translation id="1706391837335750954">DNS ରିଜଲଭର୍ ଉପସ୍ଥିତ ଅଛି</translation>
-<translation id="1743558184855585519">ବ୍ୟାଟେରୀ ଏହାର ସୀମାରେ ପହଞ୍ଚିବା ପରେ ଏହାର ଉପଯୋଗ ଶେଷ ହୋଇଯାଇଛି ବୋଲି ବିଚାର କରାଯାଏ</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">ସ୍କାନିଂ ବାତିଲ୍ କରାଯାଉଛି</translation>
 <translation id="1851218745569890714">ଭିଡିଓ କନଫରେନସିଂ</translation>
@@ -203,7 +202,6 @@
 <translation id="5669267381087807207">ସକ୍ରିୟ ହେଉଛି</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">ଫ୍ୟାମିଲି</translation>
-<translation id="5719918614880940190">ଏହା CPUର ବ୍ୟବହାରକୁ ମାପେ ଏବଂ ସମସ୍ତ କୋରର ଏକତ୍ରୀକରଣ ଅଟେ</translation>
 <translation id="5760715441271661976">ପୋର୍ଟାଲ୍ ସ୍ଥିତି</translation>
 <translation id="5781694279199921985">ସେସନ୍ ଲଗ୍ ସେଭ୍ କରନ୍ତୁ</translation>
 <translation id="5797428682393400134">ସଫଳ</translation>
@@ -271,7 +269,6 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{ସ୍କାନ୍ ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଯାଇଛି। 1ଟି ପୃଷ୍ଠାକୁ ସ୍କାନ୍ କରାଯାଇଛି}other{ସ୍କାନ୍ ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଯାଇଛି। {NUMBER_OF_PAGES}ଟି ପୃଷ୍ଠାକୁ ସ୍କାନ୍ କରାଯାଇଛି}}</translation>
-<translation id="7441459999606975924">ବ୍ୟବହାର ସହିତ ବ୍ୟାଟେରୀଗୁଡ଼ିକର କ୍ଷମତା ହ୍ରାସ ପାଏ</translation>
 <translation id="7469648432129124067">ପୋର୍ଟାଲକୁ ଚିହ୍ନଟ କରାଯାଇଛି</translation>
 <translation id="7487067081878637334">ଟେକ୍ନୋଲୋଜି</translation>
 <translation id="7490813197707563893">MAC ଠିକଣା</translation>

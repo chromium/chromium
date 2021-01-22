@@ -38,7 +38,6 @@
 <translation id="1662989795263954667">Angehalten – Keine Tinte</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS-Resolver vorhanden</translation>
-<translation id="1743558184855585519">Der Akku gilt als verbraucht, wenn er das Limit erreicht hat</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">Scannen wird abgebrochen</translation>
 <translation id="1851218745569890714">Videokonferenz</translation>
@@ -203,7 +202,6 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="5669267381087807207">Wird aktiviert</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Familie</translation>
-<translation id="5719918614880940190">Hier wird die CPU-Auslastung angezeigt (alle Kerne zusammengerechnet)</translation>
 <translation id="5760715441271661976">Portal-Status</translation>
 <translation id="5781694279199921985">Sitzungsprotokoll speichern</translation>
 <translation id="5797428682393400134">FERTIG</translation>
@@ -271,7 +269,6 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Scan abgeschlossen. 1 Seite gescannt.}other{Scan abgeschlossen. {NUMBER_OF_PAGES} Seiten gescannt.}}</translation>
-<translation id="7441459999606975924">Die Akkukapazität sinkt mit fortschreitender Nutzung</translation>
 <translation id="7469648432129124067">Portal erkannt</translation>
 <translation id="7487067081878637334">Technik</translation>
 <translation id="7490813197707563893">MAC-Adresse</translation>

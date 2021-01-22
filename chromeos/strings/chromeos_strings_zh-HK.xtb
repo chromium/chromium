@@ -38,7 +38,6 @@
 <translation id="1662989795263954667">已停止 - 墨水已用完</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS 解析器存在</translation>
-<translation id="1743558184855585519">當電池到達上限時，即表示已耗盡電力</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">取消掃瞄中</translation>
 <translation id="1851218745569890714">視像會議</translation>
@@ -203,11 +202,11 @@
 <translation id="5669267381087807207">啟用</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">家庭</translation>
-<translation id="5719918614880940190">此數據測量 CPU 使用情況，並且為所有核心的彙整資料</translation>
 <translation id="5760715441271661976">入口網站狀態</translation>
 <translation id="5781694279199921985">儲存工作階段記錄</translation>
 <translation id="5797428682393400134">成功</translation>
 <translation id="5832805196449965646">新增使用者</translation>
+<translation id="5844247382766192936"><ph name="TEST_NAME" />測試已取消</translation>
 <translation id="5849570051105887917">家庭網絡供應商代碼</translation>
 <translation id="5866840822086176774">非常強</translation>
 <translation id="5895138241574237353">重新啟動</translation>
@@ -261,6 +260,7 @@
 <translation id="6977381486153291903">韌體版本</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> 會管理此裝置並可存取所有使用者活動，包括網頁瀏覽記錄、密碼和電郵。</translation>
 <translation id="7040230719604914234">流動網絡供應商</translation>
+<translation id="708426984172631313">已停止</translation>
 <translation id="7143207342074048698">正在連接</translation>
 <translation id="714876143603641390">LAN 連接性</translation>
 <translation id="7162487448488904999">媒體庫</translation>
@@ -271,7 +271,6 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{完成咗掃瞄。掃瞄咗 1 個頁面}other{完成咗掃瞄。掃瞄咗 {NUMBER_OF_PAGES} 個頁面}}</translation>
-<translation id="7441459999606975924">電池容量會隨使用時間增加而下降</translation>
 <translation id="7469648432129124067">已偵測到網絡入口</translation>
 <translation id="7487067081878637334">科技資訊</translation>
 <translation id="7490813197707563893">MAC 地址</translation>

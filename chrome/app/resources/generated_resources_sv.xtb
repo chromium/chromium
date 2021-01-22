@@ -317,6 +317,7 @@
 <translation id="1354045473509304750">Tillåt <ph name="HOST" /> att använda och röra din kamera även i fortsättningen</translation>
 <translation id="1355088139103479645">Vill du radera all data?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> har blockerats</translation>
+<translation id="1357896526834120583">Omstart har begärts</translation>
 <translation id="1358741672408003399">Stavning och grammatik</translation>
 <translation id="1359923111303110318">Enheten kan låsas upp med Smart Lock. Tryck på Retur för att låsa upp.</translation>
 <translation id="1361164813881551742">Lägg till manuellt</translation>
@@ -1056,7 +1057,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2166369534954157698">Den snabba röda räven hoppar över den lata hunden</translation>
 <translation id="2169062631698640254">Logga in ändå</translation>
 <translation id="2170054054876170358">Kontrollera att telefonen finns i närheten, att den är olåst och att Bluetooth och Wi-Fi är aktiverat på den.</translation>
-<translation id="2172784515318616985">Fortsätt</translation>
 <translation id="2173302385160625112">Kontrollera internetanslutningen</translation>
 <translation id="2173801458090845390">Lägg till rekvirerings-id på enheten</translation>
 <translation id="2174948148799307353">Kontot hanteras av <ph name="PARENT_EMAIL" />. Klicka på klockan på skärmen om du vill logga ut från det primära kontot på den här enheten. Klicka på Logga ut i menyn som visas.</translation>
@@ -1211,6 +1211,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2345723121311404059">1 sida till <ph name="PRINTER_NAME" /></translation>
 <translation id="2347644257713614136">Användning av Hangouts och Cast for Education regleras av Googles sekretesspolicy.</translation>
 <translation id="2348176352564285430">App: <ph name="ARC_PROCESS_NAME" /></translation>
+<translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> – Behörighet har begärts, tryck på Ctrl + framåt för att svara</translation>
 <translation id="234889437187286781">Fel vid inläsning av data</translation>
 <translation id="2349610121459545414">Fortsätt ge den här webbplatsen åtkomst till din plats</translation>
 <translation id="2349896577940037438">Om ytterligare webb- och appaktivitet har aktiverats kan denna data sparas i Google-kontot. Du kan visa din data, radera den och ändra inställningarna på account.google.com.</translation>
@@ -1758,6 +1759,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="29488703364906173">En snabb, enkel och säker webbläsare som är anpassad för den moderna webben.</translation>
 <translation id="2949289451367477459">Använd plats. Tillåt att appar och tjänster med platsbehörighet använder enhetens plats. Google kan med jämna mellanrum samla in data som används anonymt i syfte att förbättra platsangivelsens exakthet och platsbaserade tjänster.<ph name="BEGIN_LINK1" />Läs mer<ph name="END_LINK1" /></translation>
 <translation id="2950666755714083615">Jag vill registrera mig</translation>
+<translation id="2953019166882260872">Anslut telefonen med en kabel</translation>
 <translation id="2956070239128776395">Ett avsnitt har kapslats in i en grupp: <ph name="ERROR_LINE" /></translation>
 <translation id="2957117904572187936">Tillåt inga webbplatser att redigera filer eller mappar på enheten</translation>
 <translation id="2958721676848865875">Varning vid paketering av tillägg</translation>
@@ -1778,6 +1780,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2979520980928493164">Håll Chrome i trim</translation>
 <translation id="2979639724566107830">Öppna i nytt fönster</translation>
 <translation id="2981113813906970160">Visa stor muspekare</translation>
+<translation id="2983175648295374032"><ph name="WEBSITE" /> har skickat en avisering till din telefon. Tryck på Ja för att bekräfta att det är du. <ph name="LINK" /></translation>
 <translation id="2984956121108740037">{COUNT,plural, =1{{COUNT} lösenord är tillgängligt på den här enheten}other{{COUNT} lösenord är tillgängliga på den här enheten}}</translation>
 <translation id="2985348301114641460">Vill du skicka en begäran om att installera <ph name="EXTENSION_NAME" /> till administratören?</translation>
 <translation id="2987620471460279764">Text delad från annan enhet</translation>
@@ -2848,6 +2851,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="420283545744377356">Inaktivera skärmsläckare</translation>
 <translation id="4206144641569145248">Utomjording</translation>
 <translation id="4206323443866416204">Feedbackrapport</translation>
+<translation id="4207932031282227921">Behörighet har begärts, tryck på F6 för att svara</translation>
 <translation id="4208390505124702064">Sök på <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Stor</translation>
 <translation id="4209251085232852247">Inaktiverade</translation>
@@ -3310,6 +3314,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4763408175235639573">Följande cookies sparades när du visade denna sida</translation>
 <translation id="4765582662863429759">Tillåter Android Messages att dirigera sms från mobilen till Chromebook</translation>
 <translation id="4768332406694066911">Du har certifikat från dessa organisationer som identifierar dig</translation>
+<translation id="4770119228883592393">Behörighet har begärts, tryck på ⌘ + Alt + nedåtpil för att svara</translation>
 <translation id="4773112038801431077">Uppgradera Linux</translation>
 <translation id="4774357366578243684">Flytta dem till Google-kontot så att du kan använda dem på alla enheter</translation>
 <translation id="477647109558161443">Skapa en skrivbordsgenväg</translation>
@@ -3551,6 +3556,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="5067867186035333991">Fråga om <ph name="HOST" /> vill använda din mikrofon</translation>
 <translation id="5068918910148307423">Tillåt inte att webbplatser som nyligen har stängts får slutföra överföringen av data som skickas och tas emot</translation>
 <translation id="5068919226082848014">Pizza</translation>
+<translation id="5070773577685395116">Fick du den inte?</translation>
 <translation id="5072052264945641674">Ändra markörstorlek</translation>
 <translation id="5072836811783999860">Visa hanterade bokmärken</translation>
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" />, <ph name="FILE2" />}other{<ph name="FILE1" />, <ph name="FILE2" /> och # till}}</translation>
@@ -3817,6 +3823,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="5382591305415226340">Hantera länkar som stöds</translation>
 <translation id="5383377866517186886">Kamera har inaktiverats i systeminställningarna för Mac.</translation>
 <translation id="5383740867328871413">Namnlös grupp – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
+<translation id="5387466398175703340">Media textas automatiskt på engelska. Ljudet och textningen lämnar aldrig enheten.</translation>
 <translation id="5388885445722491159">Kopplad</translation>
 <translation id="5389237414310520250">Det gick inte att skapa den nya användaren. Kontrollera hårddiskutrymmet och dina behörigheter och försök igen.</translation>
 <translation id="5390100381392048184">Tillåt att ljud spelas upp på webbplatser</translation>
@@ -4040,6 +4047,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="5627676517703583263">Surfa smart med Chrome</translation>
 <translation id="5627832140542566187">Skärmriktning</translation>
 <translation id="562935524653278697">Administratören har inaktiverat synkronisering av bokmärken, historik, lösenord och andra inställningar.</translation>
+<translation id="5632059346822207074">Behörighet har begärts, tryck på Ctrl + framåt för att svara</translation>
 <translation id="5632566673632479864">Kontot <ph name="EMAIL" /> får inte längre användas som primärt konto. Eftersom kontot hanteras av <ph name="DOMAIN" /> raderas bokmärken, historik, lösenord och andra inställningar från enheten.</translation>
 <translation id="5632592977009207922">Laddar ned, <ph name="PERCENT_REMAINING" /> % återstår</translation>
 <translation id="563371367637259496">Mobilt</translation>
@@ -4674,6 +4682,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Försök igen</translation>
 <translation id="6377268785556383139">1 resultat för <ph name="SEARCH_TEXT" /></translation>
+<translation id="6377571698477774687">Media textas automatiskt på engelska (endast tillgängligt i webbläsaren Chrome för närvarande). Ljudet och textningen lämnar aldrig enheten.</translation>
 <translation id="6380143666419481200">Godkänn och fortsätt</translation>
 <translation id="6384275966486438344">Ändra sökinställningarna till: <ph name="SEARCH_HOST" /></translation>
 <translation id="6385149369087767061">Anslut till internet och försök igen</translation>
@@ -5450,6 +5459,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="7287411021188441799">Återställ standardbakgrund</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
 <translation id="7289225569524511578">Öppna bakgrundsappen</translation>
+<translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> – Behörighet har begärts, tryck på F6 för att svara</translation>
 <translation id="7290242001003353852">Inloggningstjänsten som tillhandahålls av <ph name="SAML_DOMAIN" /> använder din kamera.</translation>
 <translation id="7295614427631867477">Observera att Android, Play och dithörande appar omfattas av sina egna policyer för insamling och användning av data.</translation>
 <translation id="729583233778673644">Tillåt AES- och RC4-kryptering. Det här alternativet är mer riskabelt eftersom RC4-chiffer är osäkra.</translation>
@@ -5779,7 +5789,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="7674542105240814168">Platsåtkomst har nekats</translation>
 <translation id="7676119992609591770"><ph name="NUM" /> flikar för <ph name="SEARCH_TEXT" /> hittades</translation>
 <translation id="7676867886086876795">Skicka det du säger till Google så att du kan tala in text i vilket textfält som helst.</translation>
-<translation id="7678280409648629969">Inloggningsuppgifter sparas i Chrome när du har avslutat inkognitoläget. Då kan du använda Touch ID på den här webbplatsen igen senare.</translation>
 <translation id="7680416688940118410">Pekskärmskalibrering</translation>
 <translation id="7681095912841365527">Webbplatsen har åtkomst till Bluetooth</translation>
 <translation id="7682634383739326341">Förhindra att webbplatser ansluter till USB-enheter</translation>
@@ -5816,6 +5825,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="7707922173985738739">Mobildata används</translation>
 <translation id="7709152031285164251">Misslyckades – <ph name="INTERRUPT_REASON" /></translation>
 <translation id="7710568461918838723">&amp;Casta …</translation>
+<translation id="7711900714716399411">Anslut telefonen till datorn med en USB-kabel. Om telefonen redan är ansluten kopplar du bort den och kopplar sedan in den igen.</translation>
 <translation id="7712739869553853093">Dialogruta för förhandsgranskning av utskrift</translation>
 <translation id="7712836429117959503">Okänt tillägg med id <ph name="EXTENSION_ID" /></translation>
 <translation id="7714307061282548371">Cookies från <ph name="DOMAIN" /> tillåts</translation>
@@ -6077,7 +6087,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="7982083145464587921">Starta om enheten om du vill åtgärda felet.</translation>
 <translation id="7982789257301363584">Nätverk</translation>
 <translation id="7984068253310542383">Spegla <ph name="DISPLAY_NAME" /></translation>
-<translation id="7985283639530788531">Vill du använda Touch ID med <ph name="APP_NAME" /> i inkognitoläget?</translation>
 <translation id="7986295104073916105">Läsa och ändra inställningar för sparade lösenord</translation>
 <translation id="7987814697832569482">Anslut alltid via detta VPN</translation>
 <translation id="7988355189918024273">Aktivera tillgänglighetsfunktioner</translation>
@@ -6113,6 +6122,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8028060951694135607">Microsofts nyckelåterställning</translation>
 <translation id="8028803902702117856">Laddar ned <ph name="SIZE" />, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">Storlek</translation>
+<translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> – Behörighet har begärts, tryck på ⌘ + Alt + uppåtpil för att svara</translation>
 <translation id="8030852056903932865">Godkänn</translation>
 <translation id="8032244173881942855">Det gick inte att casta fliken.</translation>
 <translation id="8033827949643255796">markerat</translation>
@@ -7122,6 +7132,7 @@ Tryck på en tilldelad brytare för att ta bort tilldelningen.</translation>
 <translation id="917350715406657904">Du har nått gränsen som din förälder har ställt in för <ph name="APP_NAME" />. Du kan använda den i <ph name="TIME_LIMIT" /> i morgon.</translation>
 <translation id="9173787391779732995">Webbplatser får visa bilder (rekommenderas)</translation>
 <translation id="9173995187295789444">Söker efter Bluetooth-enheter …</translation>
+<translation id="9174052566244514547">Administratören har begärt att få starta om enheten för att uppdatera appar. Det här kan ta flera minuter</translation>
 <translation id="9174401638287877180">Skicka diagnostik- och användningsdata. Hjälp till att göra Android bättre för ditt barn genom att skicka diagnostikdata, enhetsdata och data om appanvändning till Google automatiskt. Denna data används till att förbättra systemets och apparnas stabilitet med mera och inte till att identifiera ditt barn. Viss samlad data används även till att förbättra appar från Google och Googles partner, till exempel Android-utvecklare. Om ytterligare webb- och appaktivitet har aktiverats för ditt barn kan denna data sparas i Google-kontot.</translation>
 <translation id="917510707618656279">Fråga när en webbplats vill få åtkomst till Bluetooth-enheter</translation>
 <translation id="9176476835295860688">Skicka diagnostik- och användningsdata. Den här enheten skickar för närvarande diagnostikdata, enhetsdata och data om appanvändning till Google automatiskt. Denna data används till att förbättra systemets och apparnas stabilitet med mera. Viss samlad data används även till att förbättra appar från Google och partner, till exempel Android-utvecklare. Ägaren har gjort denna <ph name="BEGIN_LINK1" />inställning<ph name="END_LINK1" /> obligatorisk. Om ytterligare webb- och appaktivitet har aktiverats kan denna data sparas i Google-kontot. <ph name="BEGIN_LINK2" />Läs mer<ph name="END_LINK2" /></translation>

@@ -38,7 +38,6 @@
 <translation id="1662989795263954667">S'ha aturat: no hi ha tinta</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Solucionador de DNS present</translation>
-<translation id="1743558184855585519">La bateria es considera acabada quan arriba al límit</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">S'està cancel·lant l'escaneig</translation>
 <translation id="1851218745569890714">Videoconferències</translation>
@@ -203,11 +202,11 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="5669267381087807207">Activant</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Família</translation>
-<translation id="5719918614880940190">Mesura l'ús de la CPU i és una suma de tots els nuclis</translation>
 <translation id="5760715441271661976">Estat del portal</translation>
 <translation id="5781694279199921985">Desa el registre de sessió</translation>
 <translation id="5797428682393400134">SUPERADA</translation>
 <translation id="5832805196449965646">Afegeix una persona</translation>
+<translation id="5844247382766192936">La prova <ph name="TEST_NAME" /> s'ha cancel·lat</translation>
 <translation id="5849570051105887917">Codi del proveïdor domèstic</translation>
 <translation id="5866840822086176774">Molt forta</translation>
 <translation id="5895138241574237353">Reinicia</translation>
@@ -261,6 +260,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="6977381486153291903">Revisió de microprogramari</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gestiona aquest dispositiu i té accés a tota l'activitat dels usuaris, com ara les pàgines web visitades, les contrasenyes i el correu electrònic.</translation>
 <translation id="7040230719604914234">Operador</translation>
+<translation id="708426984172631313">ATURAT</translation>
 <translation id="7143207342074048698">Connectant</translation>
 <translation id="714876143603641390">Connectivitat de la LAN</translation>
 <translation id="7162487448488904999">Galeria</translation>
@@ -271,7 +271,6 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{S'ha completat l'escaneig. S'ha escanejat 1 pàgina}other{S'ha completat l'escaneig. S'han escanejat {NUMBER_OF_PAGES} pàgines}}</translation>
-<translation id="7441459999606975924">La capacitat de les bateries es redueix amb l'ús</translation>
 <translation id="7469648432129124067">S'ha detectat un portal</translation>
 <translation id="7487067081878637334">Tecnologia</translation>
 <translation id="7490813197707563893">Adreça MAC</translation>

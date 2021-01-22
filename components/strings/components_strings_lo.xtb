@@ -939,6 +939,7 @@
 <translation id="4644670975240021822">ລຳດັບຍ້ອນກັບຂວ້າມໜ້າລົງ</translation>
 <translation id="4646534391647090355">ນຳຂ້ອຍໄປທີ່ນັ້ນຕອນນີ້ເລີຍ</translation>
 <translation id="4658638640878098064">ໜີບກະຫຼັບເຟີຢູ່ເທິງສຸດເບື້ອງຊ້າຍ</translation>
+<translation id="4660119392514473465">ຕອນນີ້ທ່ານສາມາດທ່ອງເວັບແບບສ່ວນຕົວໄດ້ແລ້ວ ແລະ ຄົນອື່ນທີ່ໃຊ້ອຸປະກອນນີ້ຈະບໍ່ເຫັນການເຄື່ອນໄຫວຂອງທ່ານ. ແນວໃດກໍຕາມ, ການດາວໂຫຼດ, ບຸກມາກ ແລະ ລາຍຊື່ການອ່ານຈະຖືກບັນທຶກໄວ້.</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">ເວີຊົວ ຣິອາຣິທີ</translation>
 <translation id="4675657451653251260">ທ່ານຈະບໍ່ເຫັນຂໍ້ມູນໂປຣໄຟລ໌ Chrome ໃດໆໃນໂໝດແຂກ. ທ່ານສາມາດ <ph name="LINK_BEGIN" />ເຂົ້າສູ່ລະບົບ<ph name="LINK_END" /> ເພື່ອເຂົ້າເຖິງຂໍ້ມູນບັນຊີ Google ຂອງທ່ານ ເຊັ່ນ: ລະຫັດຜ່ານ ແລະ ວິທີການຈ່າຍເງິນໄດ້.</translation>
@@ -1363,7 +1364,7 @@
 <translation id="6290238015253830360">ບົດຄວາມທີ່ແນະນຳຂອງທ່ານຈະປາກົດຢູ່ບ່ອນນີ້</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">ກຳລັງຢຸດຜູ້ຊ່ວຍ Google ໃນ Chrome</translation>
-<translation id="6304463939629872728">ຊຳລະເງິນດ້ວຍ</translation>
+<translation id="6304463939629872728">ຈ່າຍເງິນດ້ວຍ</translation>
 <translation id="6305205051461490394"><ph name="URL" /> ບໍ່ສາມາດເຂົ້າເຖິງໄດ້</translation>
 <translation id="6312113039770857350">ບໍ່​ມີ​ໜ້າ​ເວັບ​ຢູ່</translation>
 <translation id="6321917430147971392">ກວດເບິ່ງການຕັ້ງຄ່າ DNS ຂອງ​ທ່ານ</translation>

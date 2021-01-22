@@ -38,7 +38,6 @@
 <translation id="1662989795263954667">Dihentikan - Tinta habis</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Keberadaan DNS Resolver</translation>
-<translation id="1743558184855585519">Daya baterai akan dianggap habis jika telah mencapai batas</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">Membatalkan pemindaian</translation>
 <translation id="1851218745569890714">Konferensi Video</translation>
@@ -203,11 +202,11 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="5669267381087807207">Mengaktifkan</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Keluarga</translation>
-<translation id="5719918614880940190">Ini mengukur penggunaan CPU, dan merupakan gabungan dari semua core</translation>
 <translation id="5760715441271661976">Status Portal</translation>
 <translation id="5781694279199921985">Simpan Log sesi</translation>
 <translation id="5797428682393400134">BERHASIL</translation>
 <translation id="5832805196449965646">Tambahkan Pengguna</translation>
+<translation id="5844247382766192936">Pengujian <ph name="TEST_NAME" /> telah dibatalkan</translation>
 <translation id="5849570051105887917">Kode penyedia rumah</translation>
 <translation id="5866840822086176774">Sangat kuat</translation>
 <translation id="5895138241574237353">Mulai Ulang</translation>
@@ -260,6 +259,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="6977381486153291903">Revisi firmware</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> akan mengelola perangkat ini dan memiliki akses ke semua aktivitas pengguna, termasuk halaman yang dikunjungi, sandi, dan email.</translation>
 <translation id="7040230719604914234">Operator</translation>
+<translation id="708426984172631313">DIHENTIKAN</translation>
 <translation id="7143207342074048698">Menghubungkan</translation>
 <translation id="714876143603641390">Konektivitas LAN</translation>
 <translation id="7162487448488904999">Galeri</translation>
@@ -270,7 +270,6 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Pemindaian selesai. 1 halaman dipindai}other{Pemindaian selesai. {NUMBER_OF_PAGES} halaman dipindai}}</translation>
-<translation id="7441459999606975924">Kapasitas baterai menurun seiring penggunaan</translation>
 <translation id="7469648432129124067">Portal terdeteksi</translation>
 <translation id="7487067081878637334">Teknologi</translation>
 <translation id="7490813197707563893">Alamat MAC</translation>

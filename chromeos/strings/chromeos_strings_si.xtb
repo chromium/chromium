@@ -38,7 +38,6 @@
 <translation id="1662989795263954667">නැවතිණි - තීන්ත අවසන් විය</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS විසඳුම්කාරක පැවතීම</translation>
-<translation id="1743558184855585519">බැටරිය සීමාවට ළඟා වූ පසු එය පරිභෝජන කළ ලෙස සැලකේ</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">ස්කෑන් කිරීම අවලංගු කරමින්</translation>
 <translation id="1851218745569890714">වීඩියෝ සම්මන්ත්‍රණය</translation>
@@ -203,11 +202,11 @@
 <translation id="5669267381087807207">සක්‍රීය වෙමින්...</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">පවුල</translation>
-<translation id="5719918614880940190">මෙය CPU භාවිතය මනින අතර එය සියලු හරයන්ගේ එකතුවකි</translation>
 <translation id="5760715441271661976">ද්වාර තත්වය</translation>
 <translation id="5781694279199921985">සැසි ලොගය සුරකින්න</translation>
 <translation id="5797428682393400134">සාර්ථකයි</translation>
 <translation id="5832805196449965646">පුද්ගලයා එක් කරන්න</translation>
+<translation id="5844247382766192936"><ph name="TEST_NAME" /> පරීක්ෂණය අවලංගු කර ඇත</translation>
 <translation id="5849570051105887917">නිවෙස් සපයන්නාගේ කේතය</translation>
 <translation id="5866840822086176774">ඉතා ශක්තිමත්</translation>
 <translation id="5895138241574237353">යළි අරඹන්න</translation>
@@ -261,6 +260,7 @@
 <translation id="6977381486153291903">නිත්‍ය මෘදුකාංග සංශෝධනය</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> මෙම උපාංගය කළමනාකරණය කරන අතර, එයට පිවිසි වෙබ් පිටු, මුරපද සහ ඉ-තැපෑල ඇතුළුව සියලු පරිශීලක ක්‍රියාකාරකම් වෙත ප්‍රවේශය තිබේ.</translation>
 <translation id="7040230719604914234">මෙහෙයවනය</translation>
+<translation id="708426984172631313">නවත්වන ලදි</translation>
 <translation id="7143207342074048698">සම්බන්ධ වෙමින්…</translation>
 <translation id="714876143603641390">LAN සබැඳුම් හැකියාව</translation>
 <translation id="7162487448488904999">ගැලරිය</translation>
@@ -271,7 +271,6 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{ස්කෑන් කිරීම සම්පූර්ණ කරන ලදි. පිටු 1ක් ස්කෑන් කරන ලදි}one{ස්කෑන් කිරීම සම්පූර්ණ කරන ලදි. පිටු {NUMBER_OF_PAGES}ක් ස්කෑන් කරන ලදි}other{ස්කෑන් කිරීම සම්පූර්ණ කරන ලදි. පිටු {NUMBER_OF_PAGES}ක් ස්කෑන් කරන ලදි}}</translation>
-<translation id="7441459999606975924">භාවිතය සමඟ බැටරි ධාරිතාව පහත වැටේ</translation>
 <translation id="7469648432129124067">ද්වාරය අනාවරණය කර ගන්නා ලදි</translation>
 <translation id="7487067081878637334">තාක්ෂණය</translation>
 <translation id="7490813197707563893">MAC ලිපිනය</translation>

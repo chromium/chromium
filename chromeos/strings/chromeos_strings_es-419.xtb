@@ -38,7 +38,6 @@
 <translation id="1662989795263954667">Se detuvo: sin tinta</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Agente de resolución de DNS disponible</translation>
-<translation id="1743558184855585519">Se considera que la batería está agotada una vez que se alcanza el límite</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">Cancelando el escaneo</translation>
 <translation id="1851218745569890714">Videoconferencias</translation>
@@ -203,15 +202,16 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="5669267381087807207">Activando</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Familia</translation>
-<translation id="5719918614880940190">Este valor mide el uso de la CPU y es una combinación de todos los núcleos</translation>
 <translation id="5760715441271661976">Estado del portal</translation>
 <translation id="5781694279199921985">Guardar el registro de la sesión</translation>
 <translation id="5797428682393400134">COMPLETA</translation>
 <translation id="5832805196449965646">Agregar a una persona</translation>
+<translation id="5844247382766192936">Se canceló la prueba de <ph name="TEST_NAME" />.</translation>
 <translation id="5849570051105887917">Código del proveedor de origen</translation>
 <translation id="5866840822086176774">Muy fuerte</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="5916084858004523819">Prohibido</translation>
+<translation id="5921506667911082617">{COUNT,plural, =1{Tu archivo se escaneó correctamente y se guardó en <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Tus archivos se escanearon correctamente y se guardaron en <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">No se encontró el archivo</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, versión <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Cerrar</translation>
@@ -260,6 +260,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="6977381486153291903">Revisión de firmware</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> administra este dispositivo y tiene acceso a toda la actividad del usuario, incluso las páginas web que visitó, su correo electrónico y sus contraseñas.</translation>
 <translation id="7040230719604914234">Operador</translation>
+<translation id="708426984172631313">DETENIDA</translation>
 <translation id="7143207342074048698">Conectando</translation>
 <translation id="714876143603641390">Conectividad LAN</translation>
 <translation id="7162487448488904999">Galería</translation>
@@ -270,7 +271,6 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Se completó el escaneo. Se escaneó 1 página}other{Se completó el escaneo. Se escanearon {NUMBER_OF_PAGES} páginas}}</translation>
-<translation id="7441459999606975924">La capacidad de las baterías se reduce con el uso</translation>
 <translation id="7469648432129124067">Se detectó un portal</translation>
 <translation id="7487067081878637334">Tecnología</translation>
 <translation id="7490813197707563893">Dirección MAC</translation>

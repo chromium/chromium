@@ -38,7 +38,6 @@
 <translation id="1662989795263954667">பிரிண்டரில் மை தீர்ந்துவிட்டதால் அச்சிட முடியவில்லை</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS ரிசால்வர் இருப்பது</translation>
-<translation id="1743558184855585519">பேட்டரி அதன் வரம்பை அடைந்ததும் முழுவதுமாக உபயோகப்படுத்தப்பட்டதாகக் கருதப்படுகிறது</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">ஸ்கேன் செய்வதை ரத்துசெய்கிறது</translation>
 <translation id="1851218745569890714">வீடியோ கான்ஃபிரன்ஸ்</translation>
@@ -203,7 +202,6 @@
 <translation id="5669267381087807207">செயலாக்குகிறது</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">குடும்பம்</translation>
-<translation id="5719918614880940190">இது CPU பயன்பாட்டையும் அனைத்துக் கோர்களின் ஒருங்கிணைத்தலையும் அளவிடுகிறது</translation>
 <translation id="5760715441271661976">போர்டல் நிலை</translation>
 <translation id="5781694279199921985">அமர்வுப் பதிவைச் சேமி</translation>
 <translation id="5797428682393400134">நிறைவடைந்தது</translation>
@@ -271,7 +269,6 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{ஸ்கேன் செய்யப்பட்டது. ஒரு பக்கம் ஸ்கேன் செய்யப்பட்டது}other{ஸ்கேன் செய்யப்பட்டது. {NUMBER_OF_PAGES} பக்கங்கள் ஸ்கேன் செய்யப்பட்டன}}</translation>
-<translation id="7441459999606975924">உபயோகத்தால் பேட்டரிகளின் திறன் குறைகிறது</translation>
 <translation id="7469648432129124067">போர்டல் கண்டறியப்பட்டது</translation>
 <translation id="7487067081878637334">தொழில்நுட்பம்</translation>
 <translation id="7490813197707563893">MAC முகவரி</translation>

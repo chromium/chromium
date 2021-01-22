@@ -38,7 +38,6 @@
 <translation id="1662989795263954667">Sustabdyta – baigėsi rašalas</translation>
 <translation id="1703835215927279855">Laiškas</translation>
 <translation id="1706391837335750954">DNS pavadinimų vertimo programos aptikimas</translation>
-<translation id="1743558184855585519">Akumuliatorius laikomas išeikvotu, kai pasiekia apribojimą</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">Atšaukiamas nuskaitymas</translation>
 <translation id="1851218745569890714">Vaizdo konferencijos</translation>
@@ -203,11 +202,11 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="5669267381087807207">Aktyvinama</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Šeima</translation>
-<translation id="5719918614880940190">Tai įvertina centrinio procesoriaus naudojimą ir nurodo apibendrintus visų branduolių duomenis</translation>
 <translation id="5760715441271661976">Portalo būsena</translation>
 <translation id="5781694279199921985">Išsaugoti seanso žurnalą</translation>
 <translation id="5797428682393400134">SĖKMINGAS</translation>
 <translation id="5832805196449965646">Pridėti asmenį</translation>
+<translation id="5844247382766192936">Bandymas „<ph name="TEST_NAME" />“ atšauktas</translation>
 <translation id="5849570051105887917">Namų paslaugos teikėjo kodas</translation>
 <translation id="5866840822086176774">Labai stiprus</translation>
 <translation id="5895138241574237353">Paleisti iš naujo</translation>
@@ -261,6 +260,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="6977381486153291903">Programinės aparatinės įrangos taisymas</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> tvarko šį įrenginį ir gali pasiekti visus naudotojo veiklos duomenis, įskaitant tinklalapius, kuriuose lankėsi, slaptažodžius ir el. paštą.</translation>
 <translation id="7040230719604914234">Operatorius</translation>
+<translation id="708426984172631313">SUSTABDYTA</translation>
 <translation id="7143207342074048698">Jungiama</translation>
 <translation id="714876143603641390">LAN ryšys</translation>
 <translation id="7162487448488904999">Galerija</translation>
@@ -271,7 +271,6 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Nuskaitymas baigtas. Nuskaitytas vienas puslapis}one{Nuskaitymas baigtas. Nuskaitytas {NUMBER_OF_PAGES} puslapis}few{Nuskaitymas baigtas. Nuskaityti {NUMBER_OF_PAGES} puslapiai}many{Nuskaitymas baigtas. Nuskaityta {NUMBER_OF_PAGES} puslapio}other{Nuskaitymas baigtas. Nuskaityta {NUMBER_OF_PAGES} puslapių}}</translation>
-<translation id="7441459999606975924">Akumuliatoriaus galia mažėja jį naudojant</translation>
 <translation id="7469648432129124067">Aptiktas portalas</translation>
 <translation id="7487067081878637334">Technologija</translation>
 <translation id="7490813197707563893">MAC adresas</translation>

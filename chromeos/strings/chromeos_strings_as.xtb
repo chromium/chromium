@@ -38,7 +38,6 @@
 <translation id="1662989795263954667">বন্ধ হৈছে - চিয়াঁহী শেষ হৈছে</translation>
 <translation id="1703835215927279855">লেটাৰ</translation>
 <translation id="1706391837335750954">DNS ৰিজলভাৰ প্ৰেজেণ্ট</translation>
-<translation id="1743558184855585519">বেটাৰীটোৱে সীমাটোত উপনীত হোৱাৰ পাছত ইয়াক খৰচ হোৱা বুলি ধৰা হয়</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">স্কেন বাতিল কৰি থকা হৈছে</translation>
 <translation id="1851218745569890714">ভিডিঅ’ কনফাৰেন্সিং</translation>
@@ -203,7 +202,6 @@
 <translation id="5669267381087807207">সক্ৰিয় কৰা হৈছে</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">পৰিয়াল</translation>
-<translation id="5719918614880940190">এইটোৱে চিপিইউৰ ব্যৱহাৰ জোখে আৰু ই সকলো মুখ্য বস্তুৰ একত্ৰীকৰণ</translation>
 <translation id="5760715441271661976">প’ৰ্টেল ষ্টে’ট</translation>
 <translation id="5781694279199921985">ছেশ্বনৰ লগ ছেভ কৰক</translation>
 <translation id="5797428682393400134">সফল</translation>
@@ -271,7 +269,6 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{স্কেনিং সম্পূৰ্ণ হ’ল। ১ খন পৃষ্ঠা স্কেন কৰা হ’ল}one{স্কেনিং সম্পূৰ্ণ হ’ল। {NUMBER_OF_PAGES} খন পৃষ্ঠা স্কেন কৰা হ’ল}other{স্কেনিং সম্পূৰ্ণ হ’ল। {NUMBER_OF_PAGES} খন পৃষ্ঠা স্কেন কৰা হ’ল}}</translation>
-<translation id="7441459999606975924">ব্যৱহাৰ কৰাৰ সমান্তৰালভাৱে বেটাৰীৰ ক্ষমতা কমি আহে</translation>
 <translation id="7469648432129124067">প’ৰ্টেল চিনাক্ত কৰা হৈছে</translation>
 <translation id="7487067081878637334">প্ৰযুক্তিবিদ্যা</translation>
 <translation id="7490813197707563893">MAC ঠিকনা</translation>

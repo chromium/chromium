@@ -38,7 +38,6 @@
 <translation id="1662989795263954667">Leállt – Kifogyott a tinta</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS-névfeloldó működik</translation>
-<translation id="1743558184855585519">Az akkumulátor lemerültnek tekinthető, ha elérte a korlátot</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">Beolvasás megszakítása…</translation>
 <translation id="1851218745569890714">Videokonferencia</translation>
@@ -203,11 +202,11 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="5669267381087807207">Aktiválás</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Család</translation>
-<translation id="5719918614880940190">Ez méri a processzorhasználatot, az összes magot egybevéve.</translation>
 <translation id="5760715441271661976">Portál állapota</translation>
 <translation id="5781694279199921985">Munkamenetnapló mentése</translation>
 <translation id="5797428682393400134">SIKERÜLT</translation>
 <translation id="5832805196449965646">Személy hozzáadása</translation>
+<translation id="5844247382766192936">Teszt (<ph name="TEST_NAME" />) megszakítva</translation>
 <translation id="5849570051105887917">Otthoni szolgáltató kódja</translation>
 <translation id="5866840822086176774">Nagyon erős</translation>
 <translation id="5895138241574237353">Újraindítás</translation>
@@ -261,6 +260,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="6977381486153291903">Firmware ellenőrzése</translation>
 <translation id="7028979494427204405">A(z) <ph name="MANAGER" /> kezeli ezt az eszközt, ezért hozzáfér az összes felhasználói tevékenységhez, köztük a felkeresett webhelyekhez, a jelszavakhoz és az e-mailekhez.</translation>
 <translation id="7040230719604914234">Szolgáltató</translation>
+<translation id="708426984172631313">LEÁLLÍTVA</translation>
 <translation id="7143207342074048698">Csatlakozás</translation>
 <translation id="714876143603641390">LAN-csatlakozás</translation>
 <translation id="7162487448488904999">Galéria</translation>
@@ -271,7 +271,6 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Szkennelés kész. 1 oldal beolvasva}other{Szkennelés kész. {NUMBER_OF_PAGES} oldal beolvasva}}</translation>
-<translation id="7441459999606975924">Az akkumulátorok kapacitása egyre csökken a folyamatos használattal</translation>
 <translation id="7469648432129124067">Portál észlelve</translation>
 <translation id="7487067081878637334">Technológia</translation>
 <translation id="7490813197707563893">MAC-cím</translation>
