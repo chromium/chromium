@@ -774,6 +774,45 @@ TEST(BackupRefPtrImpl, ZeroSized) {
   }
 }
 
+TEST(BackupRefPtrImpl, EndPointer) {
+  // This test works only if GigaCage is enabled. Bail out otherwise.
+  if (!features::IsPartitionAllocGigaCageEnabled())
+    return;
+
+  // This test requires a fresh partition with an empty free list.
+  PartitionAllocGlobalInit(HandleOOM);
+  PartitionAllocator<ThreadSafe> allocator;
+  allocator.init({});
+
+  // Check multiple size buckets and levels of slot filling.
+  for (int size = 0; size < 1024; size += sizeof(void*)) {
+    // Creating a CheckedPtr from an address right past the end of an allocation
+    // should not result in a crash or corrupt the free list.
+    char* raw_ptr1 = reinterpret_cast<char*>(allocator.root()->Alloc(size, ""));
+    CheckedPtr<char> checked_ptr = raw_ptr1 + size;
+    checked_ptr = nullptr;
+    // We need to make two more allocations to turn the possible free list
+    // corruption into an observable crash.
+    char* raw_ptr2 = reinterpret_cast<char*>(allocator.root()->Alloc(size, ""));
+    char* raw_ptr3 = reinterpret_cast<char*>(allocator.root()->Alloc(size, ""));
+
+    // Similarly for operator+=.
+    char* raw_ptr4 = reinterpret_cast<char*>(allocator.root()->Alloc(size, ""));
+    checked_ptr = raw_ptr4;
+    checked_ptr += size;
+    checked_ptr = nullptr;
+    char* raw_ptr5 = reinterpret_cast<char*>(allocator.root()->Alloc(size, ""));
+    char* raw_ptr6 = reinterpret_cast<char*>(allocator.root()->Alloc(size, ""));
+
+    allocator.root()->Free(raw_ptr1);
+    allocator.root()->Free(raw_ptr2);
+    allocator.root()->Free(raw_ptr3);
+    allocator.root()->Free(raw_ptr4);
+    allocator.root()->Free(raw_ptr5);
+    allocator.root()->Free(raw_ptr6);
+  }
+}
+
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC) && ENABLE_BACKUP_REF_PTR_IMPL &&
         // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
 }  // namespace internal

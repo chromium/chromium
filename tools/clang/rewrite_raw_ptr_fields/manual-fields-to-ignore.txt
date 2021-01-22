@@ -128,11 +128,6 @@ views::internal::ClassPropertyValueSetter::property_  # passed to templated para
 (anonymous namespace)::ScopedFunctionHelper::function_  # function pointer template
 KeyedServiceBaseFactory::service_name_ # used in decltype
 
-# Populated manually - this field points past the end of an allocation;
-# therefore, it can refer to an invalid allocation slot
-base::BigEndianWriter::end_
-base::BigEndianWriter::ptr_
-
 # ELEMENT() treats the CheckedPtr as a void*, and so when a pointer is written
 # AddRef() won't be called, causing AddRef/Deref mismatch.
 device::AttestedCredentialData::ConsumeFromCtapResponse(base::span<const uint8_t>)::COSEKey::alg
