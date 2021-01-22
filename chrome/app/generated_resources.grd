@@ -5592,7 +5592,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Custom color
       </message>
       <message name="IDS_NTP_CUSTOMIZE_DEFAULT_LABEL" desc="The label for the Default theme in the customization menu on the New Tab Page">
-        Default
+        Default color
       </message>
       <message name="IDS_NTP_COLORS_WARM_GREY" desc="A color option in the customization menu on the New Tab Page.">
         Warm grey
