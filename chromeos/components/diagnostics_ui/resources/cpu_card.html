@@ -23,6 +23,8 @@
   <div slot="body" class="divider"></div>
   <data-point slot="body" id="cpuSpeed" class="data-point-margin-end"
     header="[[i18n('cpuSpeedLabel')]]"
+    tooltip-text="[[getCpuThrottleTooltipText_(cpuBeingThrottled_)]]"
+    warning-state="[[cpuBeingThrottled_]]"
     value="[[getCpuSpeed_(cpuUsage_.scalingCurrentFrequencyKhz)]]">
   </data-point>
   <routine-section slot="routines" routines="[[routines_]]"

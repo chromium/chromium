@@ -698,6 +698,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_DIAGNOSTICS_CPU_USAGE_TOOLTIP_TEXT" desc="The tooltip for CPU usage.">
         This is an aggregation of all cores
       </message>
+      <message name="IDS_DIAGNOSTICS_CPU_THROTTLE_TOOLTIP_TEXT" desc="The tooltip for CPU throttling.">
+        CPU speed is currently limited to preserve battery or reduce temperature
+      </message>
       <message name="IDS_DIANOSTICS_ROUTINE_NAME_TEXT" desc="The text that informs the user which test is currently running.">
         Running <ph name="TEST_NAME">$1<ex>Charging rate</ex></ph> test...
       </message>

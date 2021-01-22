@@ -24,6 +24,10 @@
     @apply --diagnostics-data-point-subtitle-font;
     color: var(--diagnostics-data-point-subtitle-color);
   }
+
+  .text-red {
+    color: var(--google-red-600);
+  }
 </style>
 <div class="data-point">
   <div class="header">
@@ -33,5 +37,5 @@
     </iron-icon>
     <paper-tooltip for="infoIcon">[[tooltipText]]</paper-tooltip>
   </div>
-  <div class="value">[[value]]</div>
+  <div class$="[[getValueClass_(warningState)]]">[[value]]</div>
 </div>

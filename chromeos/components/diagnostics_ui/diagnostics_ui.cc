@@ -55,6 +55,7 @@ void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
       {"cpuTempLabel", IDS_DIAGNOSTICS_CPU_TEMPERATURE_LABEL},
       {"cpuTempText", IDS_DIAGNOSTICS_CPU_TEMPERATURE_TEXT},
       {"cpuTitle", IDS_DIAGNOSTICS_CPU_TITLE},
+      {"cpuThrottleTooltipText", IDS_DIAGNOSTICS_CPU_THROTTLE_TOOLTIP_TEXT},
       {"cpuUsageLabel", IDS_DIAGNOSTICS_CPU_USAGE_LABEL},
       {"cpuUsageText", IDS_DIAGNOSTICS_CPU_USAGE_TEXT},
       {"cpuUsageTooltipText", IDS_DIAGNOSTICS_CPU_USAGE_TOOLTIP_TEXT},

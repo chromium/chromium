@@ -88,7 +88,7 @@ export const fakeCpuUsage = [
     averageCpuTempCelsius: 106,
     percentUsageSystem: 30,
     percentUsageUser: 40,
-    scalingCurrentFrequencyKhz: 900,
+    scalingCurrentFrequencyKhz: 1000,
   },
   {
     averageCpuTempCelsius: 107,

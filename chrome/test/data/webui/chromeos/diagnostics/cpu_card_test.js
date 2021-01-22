@@ -111,6 +111,10 @@ export function cpuCardTestSuite() {
       dx_utils.assertTextContains(
           dataPoints[2].value,
           `${convertkhzToGhz(cpuElement.cpuMaxClockSpeedKhz_)}`);
+      dx_utils.assertTextContains(
+          dataPoints[2].tooltipText,
+          loadTimeData.getString('cpuThrottleTooltipText'));
+
       dx_utils.assertElementContainsText(
           cpuElement.$$('#cpuChipInfo'), `${fakeSystemInfo.cpuModelName}`);
       dx_utils.assertElementContainsText(
@@ -129,5 +133,17 @@ export function cpuCardTestSuite() {
       const diagnosticsCard = dx_utils.getDiagnosticsCard(cpuElement);
       assertTrue(isChildVisible(diagnosticsCard, '.data-points'));
     });
+  });
+
+  test('CpuCardUpdates', () => {
+    return initializeCpuCard(fakeCpuUsage, fakeSystemInfo)
+        .then(() => {
+          provider.triggerCpuUsageObserver();
+          return flushTasks();
+        })
+        .then(() => {
+          const dataPoints = dx_utils.getDataPointElements(cpuElement);
+          assertEquals(dataPoints[2].tooltipText, '');
+        });
   });
 }

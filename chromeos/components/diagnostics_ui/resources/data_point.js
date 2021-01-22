@@ -38,5 +38,16 @@ Polymer({
       type: String,
       value: '',
     },
+
+    /** @type {boolean} */
+    warningState: {
+      type: Boolean,
+      value: false,
+    }
+  },
+
+  /** @protected */
+  getValueClass_() {
+    return this.warningState ? 'value text-red' : 'value';
   },
 });

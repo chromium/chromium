@@ -75,6 +75,12 @@ Polymer({
     /** @type {number} */
     cpuMaxClockSpeedKhz_: {
       type: Number,
+    },
+
+    /** @type {boolean} */
+    cpuBeingThrottled_: {
+      type: Boolean,
+      computed: 'isCpuBeingThrottled_(cpuUsage_.scalingCurrentFrequencyKhz)',
     }
   },
 
@@ -148,6 +154,19 @@ Polymer({
   getCpuUsageTooltipText_() {
     // TODO(michaelcheco): Update when number of cores is added to the api.
     return loadTimeData.getString('cpuUsageTooltipText');
+  },
+
+  /** @protected */
+  getCpuThrottleTooltipText_() {
+    return this.cpuBeingThrottled_ ?
+        loadTimeData.getString('cpuThrottleTooltipText') :
+        '';
+  },
+
+  /** @protected */
+  isCpuBeingThrottled_() {
+    return this.cpuUsage_ &&
+        (this.cpuUsage_.scalingCurrentFrequencyKhz < this.cpuMaxClockSpeedKhz_);
   },
 
   /**
