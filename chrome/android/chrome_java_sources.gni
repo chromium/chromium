@@ -1228,6 +1228,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/share/ShareButtonController.java",
   "java/src/org/chromium/chrome/browser/share/ShareDelegate.java",
   "java/src/org/chromium/chrome/browser/share/ShareDelegateImpl.java",
+  "java/src/org/chromium/chrome/browser/share/ShareDelegateSupplier.java",
   "java/src/org/chromium/chrome/browser/share/ShareHelper.java",
   "java/src/org/chromium/chrome/browser/share/ShareUtils.java",
   "java/src/org/chromium/chrome/browser/sharing/SharingAdapter.java",

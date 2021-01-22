@@ -136,6 +136,8 @@ public final class UnownedUserDataKey<T extends UnownedUserData> {
     /**
      * Detaches the {@link UnownedUserData} from all hosts that it is currently attached to with
      * this key. It is OK to call this for already detached objects.
+     *
+     * @param object The object to detach from all hosts.
      */
     public final void detachFromAllHosts(@NonNull T object) {
         assertNoDestroyedAttachments();

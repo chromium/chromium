@@ -53,6 +53,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.UnownedUserDataSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.AppHooks;
@@ -136,6 +137,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegateImpl;
+import org.chromium.chrome.browser.share.ShareDelegateSupplier;
 import org.chromium.chrome.browser.sync.ProfileSyncService;
 import org.chromium.chrome.browser.tab.AccessibilityVisibilityHandler;
 import org.chromium.chrome.browser.tab.Tab;
@@ -278,8 +280,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     private CompositorViewHolder mCompositorViewHolder;
     private ObservableSupplierImpl<LayoutManagerImpl> mLayoutManagerSupplier =
             new ObservableSupplierImpl<>();
-    private ObservableSupplierImpl<ShareDelegate> mShareDelegateSupplier =
-            new ObservableSupplierImpl<>();
+    private UnownedUserDataSupplier<ShareDelegate> mShareDelegateSupplier;
     private InsetObserverView mInsetObserverView;
     private ContextualSearchManager mContextualSearchManager;
     private SnackbarManager mSnackbarManager;
@@ -351,6 +352,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
     @Override
     public void performPreInflationStartup() {
+        // Setup UnownedUserData suppliers before they're used.
+        mShareDelegateSupplier = new ShareDelegateSupplier(getWindowAndroid());
+
         // Make sure the root coordinator is created prior to calling super to ensure all the
         // activity lifecycle events are called.
         mRootUiCoordinator = createRootUiCoordinator();
@@ -1328,6 +1332,11 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             BookmarkBridge bookmarkBridge = mBookmarkBridgeSupplier.get();
             if (bookmarkBridge != null) bookmarkBridge.destroy();
             mBookmarkBridgeSupplier = null;
+        }
+
+        if (mShareDelegateSupplier != null) {
+            mShareDelegateSupplier.destroy();
+            mShareDelegateSupplier = null;
         }
 
         mActivityTabProvider.destroy();

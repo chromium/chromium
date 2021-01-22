@@ -343,7 +343,4 @@ specific_include_rules = {
   "Fido2CredentialRequest\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
-  "ShareServiceImplementationFactory\.java": [
-    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
-  ],
 }
