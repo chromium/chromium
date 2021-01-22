@@ -20302,6 +20302,36 @@ Called by update_document_policy_enum.py.-->
   <int value="1" label="D3D11"/>
 </enum>
 
+<enum name="DXVALifetimeProgression">
+  <int value="0" label="kInitializeStarted">
+    A decoder has started the initialization step.
+  </int>
+  <int value="1" label="kDX11InitializeSucceeded">
+    A decoder has completed the initialization step for DX11 successfully.
+  </int>
+  <int value="2" label="kDX11PlaybackFailedBeforeFirstFrame">
+    A decoder failed DX11 playback without sending a frame to the client.
+  </int>
+  <int value="3" label="kDX11PlaybackFailedAfterFirstFrame">
+    A decoder failed DX11 playback after sending a frame to the client.
+  </int>
+  <int value="4" label="kDX11PlaybackSucceeded">
+    A decoder has finished playing with DX11.
+  </int>
+  <int value="5" label="kDX9InitializeSucceeded">
+    A decoder has completed the initialization step for DX9 successfully.
+  </int>
+  <int value="6" label="kDX9PlaybackFailedBeforeFirstFrame">
+    A decoder failed DX9 playback without sending a frame to the client.
+  </int>
+  <int value="7" label="kDX9PlaybackFailedAfterFirstFrame">
+    A decoder failed DX9 playback after sending a frame to the client.
+  </int>
+  <int value="8" label="kDX9PlaybackSucceeded">
+    A decoder has finished playing with DX9.
+  </int>
+</enum>
+
 <enum name="EAPInnerProtocol">
   <int value="0" label="UNKNOWN"/>
   <int value="1" label="NONE"/>

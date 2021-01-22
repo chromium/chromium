@@ -153,20 +153,41 @@ class MEDIA_GPU_EXPORT DXVAVideoDecodeAccelerator
     // update this to be the last one.
     kMaxValue = BIND
   };
-
+  
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum class DXVALifetimeProgression {
     kInitializeStarted = 0,
-    kInitializeSucceeded = 1,
-    kPlaybackSucceeded = 2,
+
+    // DX11 init completed successfully.
+    kDX11InitializeSucceeded = 1,
+
+    // An error occurred after successful init, split up by whether a frame was
+    // delivered to the client yet or not.
+    kDX11PlaybackFailedBeforeFirstFrame = 2,
+    kDX11PlaybackFailedAfterFirstFrame = 3,
+
+    // Playback succeeded, which requires successful init.
+    kDX11PlaybackSucceeded = 4,
+
+    // DX9 variants of the above.
+    kDX9InitializeSucceeded = 5,
+    kDX9PlaybackFailedBeforeFirstFrame = 6,
+    kDX9PlaybackFailedAfterFirstFrame = 7,
+    kDX9PlaybackSucceeded = 8,
 
     // For UMA. Must be the last entry. It should be initialized to the
     // numerically largest value above; if you add more entries, then please
     // update this to the last one.
-    kMaxValue = kPlaybackSucceeded
+    kMaxValue = kDX9PlaybackSucceeded
   };
 
   // Log UMA progression state.
   void AddLifetimeProgressionStage(DXVALifetimeProgression stage);
+
+  // Logs the appropriate PlaybackSucceeded lifetime stage, if we've completed
+  // init successfully and not logged an error or playback success since then.
+  void AddPlaybackSucceededLifetimeStageIfNeeded();
 
   // Creates and initializes an instance of the D3D device and the
   // corresponding device manager. The device manager instance is eventually
@@ -421,6 +442,9 @@ class MEDIA_GPU_EXPORT DXVAVideoDecodeAccelerator
 
   int processor_width_ = 0;
   int processor_height_ = 0;
+
+  // Used for lifetime progression logging.  Have we logged that initialization
+  // was successful, and nothing since?
   bool already_initialized_ = false;
 
   Microsoft::WRL::ComPtr<IDirectXVideoProcessorService>
@@ -611,6 +635,9 @@ class MEDIA_GPU_EXPORT DXVAVideoDecodeAccelerator
 
   base::Optional<gl::HDRMetadataHelperWin> hdr_metadata_helper_;
   bool use_empty_video_hdr_metadata_ = false;
+
+  // Have we delivered any decoded frames since the last call to Initialize()?
+  bool decoded_any_frames_ = false;
 
   // WeakPtrFactory for posting tasks back to |this|.
   base::WeakPtrFactory<DXVAVideoDecodeAccelerator> weak_this_factory_{this};

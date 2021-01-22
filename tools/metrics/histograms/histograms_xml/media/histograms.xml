@@ -1425,6 +1425,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Media.DXVAVDA.DecoderLifetimeProgression"
+    enum="DXVALifetimeProgression" expires_after="2021-06-13">
+  <owner>liberato@chromium.org</owner>
+  <owner>tmathmeyer@chromium.org</owner>
+  <summary>
+    This enum allows us to count DXVAVideoDecoderWin specific crashes and
+    initialization failures. This is recorded whenever the decoder is
+    initialized or destroyed, or encounters an error.
+  </summary>
+</histogram>
+
 <histogram name="Media.DXVAVDA.PictureBufferMechanism"
     enum="PictureBufferMechanism" expires_after="2020-10-11">
   <owner>liberato@chromium.org</owner>
