@@ -163,8 +163,8 @@ public class ProfileSyncService {
      *
      * @return true if Sync is active, false otherwise.
      */
-    public boolean isSyncActive() {
-        return ProfileSyncServiceJni.get().isSyncActive(
+    public boolean isSyncFeatureActive() {
+        return ProfileSyncServiceJni.get().isSyncFeatureActive(
                 mNativeProfileSyncServiceAndroid, ProfileSyncService.this);
     }
 
@@ -729,7 +729,8 @@ public class ProfileSyncService {
         boolean isSyncRequested(long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
         boolean canSyncFeatureStart(
                 long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
-        boolean isSyncActive(long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
+        boolean isSyncFeatureActive(
+                long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
         boolean isSyncDisabledByEnterprisePolicy(
                 long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
         boolean hasKeepEverythingSynced(

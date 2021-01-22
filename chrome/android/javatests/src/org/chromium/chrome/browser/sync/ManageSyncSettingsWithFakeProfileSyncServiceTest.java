@@ -59,7 +59,7 @@ public class ManageSyncSettingsWithFakeProfileSyncServiceTest {
                 (FakeProfileSyncService) mSyncTestRule.getProfileSyncService();
 
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
-        SyncTestUtil.waitForSyncActive();
+        SyncTestUtil.waitForSyncFeatureActive();
         // Trigger PassphraseDialogFragment to be shown when taping on Encryption.
         fakeProfileSyncService.setPassphraseRequiredForPreferredDataTypes(true);
 

@@ -64,7 +64,7 @@ public class SyncAndServicesSettingsTest {
     @Feature({"Sync", "Preferences"})
     public void testSyncSwitch() {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
-        SyncTestUtil.waitForSyncActive();
+        SyncTestUtil.waitForSyncFeatureActive();
         SyncAndServicesSettings fragment = startSyncAndServicesPreferences();
         final ChromeSwitchPreference syncSwitch = getSyncSwitch(fragment);
 
@@ -125,7 +125,7 @@ public class SyncAndServicesSettingsTest {
     @Feature({"Sync", "Preferences"})
     public void testDefaultControlStatesWithSyncOnThenOff() {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
-        SyncTestUtil.waitForSyncActive();
+        SyncTestUtil.waitForSyncFeatureActive();
         SyncAndServicesSettings fragment = startSyncAndServicesPreferences();
         assertSyncOnState(fragment);
         mSyncTestRule.togglePreference(getSyncSwitch(fragment));

@@ -45,7 +45,7 @@ public class SyncAndServicesSettingsWithFakeProfileSyncServiceTest {
         FakeProfileSyncService fakeProfileSyncService =
                 (FakeProfileSyncService) mSyncTestRule.getProfileSyncService();
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
-        SyncTestUtil.waitForSyncActive();
+        SyncTestUtil.waitForSyncFeatureActive();
         fakeProfileSyncService.setEngineInitialized(true);
         fakeProfileSyncService.setTrustedVaultKeyRequiredForPreferredDataTypes(true);
 

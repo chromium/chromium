@@ -146,7 +146,7 @@ public class FirstRunTest {
 
         processFirstRun(testAccountInfo.getEmail(), false /* ShowSettings */);
         Assert.assertEquals(testAccountInfo, mSyncTestRule.getCurrentSignedInAccount());
-        SyncTestUtil.waitForSyncActive();
+        SyncTestUtil.waitForSyncFeatureActive();
     }
 
     // Test that signing in and opening settings through FirstRun signs in and doesn't fully start
@@ -166,7 +166,7 @@ public class FirstRunTest {
         // become fully active until the settings page is closed.
         Assert.assertEquals(testAccountInfo, mSyncTestRule.getCurrentSignedInAccount());
         SyncTestUtil.waitForEngineInitialized();
-        Assert.assertFalse(SyncTestUtil.isSyncActive());
+        Assert.assertFalse(SyncTestUtil.isSyncFeatureActive());
 
         // Close the settings fragment.
         AccountManagementFragment fragment =
@@ -175,7 +175,7 @@ public class FirstRunTest {
         settingsActivity.getSupportFragmentManager().beginTransaction().remove(fragment).commit();
 
         // Sync should immediately become active.
-        Assert.assertTrue(SyncTestUtil.isSyncActive());
+        Assert.assertTrue(SyncTestUtil.isSyncFeatureActive());
     }
 
     // Test that not signing in through FirstRun does not sign in sync.

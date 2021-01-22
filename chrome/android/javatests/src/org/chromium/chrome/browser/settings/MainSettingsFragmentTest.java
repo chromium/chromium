@@ -186,7 +186,7 @@ public class MainSettingsFragmentTest {
 
         // Sign in and render changes.
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
-        SyncTestUtil.waitForSyncActive();
+        SyncTestUtil.waitForSyncFeatureActive();
         mRenderTestRule.render(view, "main_settings_signed_in");
     }
 
@@ -214,7 +214,7 @@ public class MainSettingsFragmentTest {
 
         // Sign in and render changes.
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
-        SyncTestUtil.waitForSyncActive();
+        SyncTestUtil.waitForSyncFeatureActive();
         mRenderTestRule.render(view, "main_settings_signed_in_mobile_identity_consistency");
     }
 
@@ -234,7 +234,7 @@ public class MainSettingsFragmentTest {
 
         // Sign in and render changes.
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
-        SyncTestUtil.waitForSyncActive();
+        SyncTestUtil.waitForSyncFeatureActive();
         mRenderTestRule.render(view, "main_settings_signed_in_safety_check");
     }
 
@@ -264,7 +264,7 @@ public class MainSettingsFragmentTest {
 
         // Sign in and render changes.
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
-        SyncTestUtil.waitForSyncActive();
+        SyncTestUtil.waitForSyncFeatureActive();
         mRenderTestRule.render(
                 view, "main_settings_signed_in_safety_check_mobile_identity_consistency");
     }
@@ -456,7 +456,7 @@ public class MainSettingsFragmentTest {
 
         // SignIn to see the changes
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
-        SyncTestUtil.waitForSyncActive();
+        SyncTestUtil.waitForSyncFeatureActive();
         SignInPreference signInPreference =
                 (SignInPreference) assertSettingsExists(MainSettings.PREF_SIGN_IN, null);
         Assert.assertEquals("SignInPreference should be at the signed in state. ",
@@ -487,7 +487,7 @@ public class MainSettingsFragmentTest {
 
         // SignIn to see the changes
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
-        SyncTestUtil.waitForSyncActive();
+        SyncTestUtil.waitForSyncFeatureActive();
         SignInPreference signInPreference =
                 (SignInPreference) assertSettingsExists(MainSettings.PREF_SIGN_IN, null);
         Assert.assertEquals("SignInPreference should be at the signed in state. ",

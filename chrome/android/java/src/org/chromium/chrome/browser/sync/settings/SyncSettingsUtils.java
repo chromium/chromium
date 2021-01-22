@@ -233,7 +233,7 @@ public class SyncSettingsUtils {
                     : context.getString(R.string.sync_is_disabled);
         }
 
-        if (!profileSyncService.isSyncActive()) {
+        if (!profileSyncService.isSyncFeatureActive()) {
             return context.getString(R.string.sync_setup_progress);
         }
 

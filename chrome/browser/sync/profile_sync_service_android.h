@@ -50,8 +50,8 @@ class ProfileSyncServiceAndroid : public syncer::SyncServiceObserver {
   void SetSyncAllowedByPlatform(JNIEnv* env,
                                 const base::android::JavaParamRef<jobject>& obj,
                                 jboolean allowed);
-  jboolean IsSyncActive(JNIEnv* env,
-                        const base::android::JavaParamRef<jobject>& obj);
+  jboolean IsSyncFeatureActive(JNIEnv* env,
+                               const base::android::JavaParamRef<jobject>& obj);
   jboolean IsSyncDisabledByEnterprisePolicy(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);

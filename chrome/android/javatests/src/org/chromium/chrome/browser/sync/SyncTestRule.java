@@ -207,7 +207,7 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
                 mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync(mProfileSyncService);
         // Enable UKM when enabling sync as it is done by the sync confirmation UI.
         enableUKM();
-        SyncTestUtil.waitForSyncActive();
+        SyncTestUtil.waitForSyncFeatureActive();
         SyncTestUtil.triggerSyncAndWaitForCompletion();
         return accountInfo;
     }
@@ -240,7 +240,7 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
 
     public void startSyncAndWait() {
         startSync();
-        SyncTestUtil.waitForSyncActive();
+        SyncTestUtil.waitForSyncFeatureActive();
     }
 
     public void stopSync() {
@@ -253,7 +253,7 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
         SigninTestUtil.signinAndEnableSync(accountInfo, mProfileSyncService);
         // Enable UKM when enabling sync as it is done by the sync confirmation UI.
         enableUKM();
-        SyncTestUtil.waitForSyncActive();
+        SyncTestUtil.waitForSyncFeatureActive();
         SyncTestUtil.triggerSyncAndWaitForCompletion();
     }
 

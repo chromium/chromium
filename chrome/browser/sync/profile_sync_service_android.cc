@@ -151,7 +151,7 @@ void ProfileSyncServiceAndroid::SetSyncAllowedByPlatform(
   sync_service_->GetUserSettings()->SetSyncAllowedByPlatform(allowed);
 }
 
-jboolean ProfileSyncServiceAndroid::IsSyncActive(
+jboolean ProfileSyncServiceAndroid::IsSyncFeatureActive(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
