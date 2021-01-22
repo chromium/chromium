@@ -168,6 +168,58 @@ struct FileInfo {
   storage::FileSystemURL url;
 };
 
+// Parse text/uri-list data into FilePath and FileSystemURL.
+std::vector<FileInfo> GetFileInfo(ui::EndpointType source,
+                                  const std::vector<uint8_t>& data) {
+  std::vector<FileInfo> file_info;
+  Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
+  bool is_crostini = source == ui::EndpointType::kCrostini;
+  bool is_plugin_vm = source == ui::EndpointType::kPluginVm;
+
+  base::FilePath vm_mount;
+  std::string vm_name;
+  if (is_crostini) {
+    vm_mount = crostini::ContainerChromeOSBaseDirectory();
+    vm_name = crostini::kCrostiniDefaultVmName;
+  } else if (is_plugin_vm) {
+    vm_mount = plugin_vm::ChromeOSBaseDirectory();
+    vm_name = plugin_vm::kPluginVmName;
+  }
+
+  std::string data_str = std::string(data.begin(), data.end());
+  std::vector<std::string> lines =
+      base::SplitString(data_str, kUriListSeparator, base::TRIM_WHITESPACE,
+                        base::SPLIT_WANT_NONEMPTY);
+  for (const auto& line : lines) {
+    if (line.empty() || line[0] == '#')
+      continue;
+    std::string path_str;
+    if (!URLToPath(line, &path_str)) {
+      LOG(WARNING) << "Invalid drop file path: " << line;
+      continue;
+    }
+    base::FilePath path(path_str);
+    storage::FileSystemURL url;
+
+    // Convert the VM path to a path in the host if possible (in homedir or
+    // /mnt/chromeos for crostini; in //ChromeOS for Plugin VM), otherwise
+    // prefix with 'vmfile:<vm_name>:' to avoid VMs spoofing host paths.
+    // E.g. crostini /etc/mime.types => vmfile:termina:/etc/mime.types.
+    if (is_crostini || is_plugin_vm) {
+      if (file_manager::util::ConvertPathInsideVMToFileSystemURL(
+              primary_profile, path, vm_mount,
+              /*map_crostini_home=*/is_crostini, &url)) {
+        path = url.path();
+      } else {
+        path = base::FilePath(
+            base::StrCat({kVmFileScheme, ":", vm_name, ":", path.value()}));
+      }
+    }
+    file_info.push_back({std::move(path), std::move(url)});
+  }
+  return file_info;
+}
+
 void ShareAndSend(ui::EndpointType target,
                   std::vector<FileInfo> files,
                   exo::DataExchangeDelegate::SendDataCallback callback) {
@@ -293,53 +345,11 @@ ui::EndpointType ChromeDataExchangeDelegate::GetDataTransferEndpointType(
 std::vector<ui::FileInfo> ChromeDataExchangeDelegate::GetFilenames(
     ui::EndpointType source,
     const std::vector<uint8_t>& data) const {
-  std::vector<ui::FileInfo> filenames;
-  Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
-  bool is_crostini = source == ui::EndpointType::kCrostini;
-  bool is_plugin_vm = source == ui::EndpointType::kPluginVm;
-
-  base::FilePath vm_mount;
-  std::string vm_name;
-  if (is_crostini) {
-    vm_mount = crostini::ContainerChromeOSBaseDirectory();
-    vm_name = crostini::kCrostiniDefaultVmName;
-  } else if (is_plugin_vm) {
-    vm_mount = plugin_vm::ChromeOSBaseDirectory();
-    vm_name = plugin_vm::kPluginVmName;
-  }
-
-  std::string data_str(data.begin(), data.end());
-  std::vector<std::string> lines =
-      base::SplitString(data_str, kUriListSeparator, base::TRIM_WHITESPACE,
-                        base::SPLIT_WANT_NONEMPTY);
-  storage::FileSystemURL url;
-  for (const auto& line : lines) {
-    if (line.empty() || line[0] == '#')
-      continue;
-    std::string path_str;
-    if (!URLToPath(line, &path_str)) {
-      LOG(WARNING) << "Invalid drop file path: " << line;
-      continue;
-    }
-    base::FilePath path(path_str);
-
-    // Convert the VM path to a path in the host if possible (in homedir or
-    // /mnt/chromeos for crostini; in //ChromeOS for Plugin VM), otherwise
-    // prefix with 'vmfile:<vm_name>:' to avoid VMs spoofing host paths.
-    // E.g. crostini /etc/mime.types => vmfile:termina:/etc/mime.types.
-    if (is_crostini || is_plugin_vm) {
-      if (file_manager::util::ConvertPathInsideVMToFileSystemURL(
-              primary_profile, path, vm_mount,
-              /*map_crostini_home=*/is_crostini, &url)) {
-        path = url.path();
-      } else {
-        path = base::FilePath(
-            base::StrCat({kVmFileScheme, ":", vm_name, ":", path.value()}));
-      }
-    }
-    filenames.emplace_back(ui::FileInfo(std::move(path), base::FilePath()));
-  }
-  return filenames;
+  std::vector<ui::FileInfo> result;
+  std::vector<FileInfo> file_info = GetFileInfo(source, data);
+  for (const auto& info : file_info)
+    result.emplace_back(ui::FileInfo(std::move(info.path), base::FilePath()));
+  return result;
 }
 
 std::string ChromeDataExchangeDelegate::GetMimeTypeForUriList(
