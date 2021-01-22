@@ -447,6 +447,8 @@ const struct QuicErrorMapping {
     {quic::QUIC_TLS_UNRECOGNIZED_NAME, "quic::quic_tls_unrecognized_name"},
     {quic::QUIC_TLS_CERTIFICATE_REQUIRED,
      "quic::quic_tls_certificate_required"},
+    {quic::QUIC_CONNECTION_ID_LIMIT_ERROR,
+     "quic::quic_connection_id_limit_error"},
 
     // No error. Used as bound while iterating.
     {quic::QUIC_LAST_ERROR, "quic.last_error"}};
