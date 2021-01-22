@@ -1225,12 +1225,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SafeBrowsing.V4GetHash.CountOfPrefixes" units="prefixes"
-    expires_after="2020-12-03">
+    expires_after="2021-12-03">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     The number of prefixes included in a full hash request sent to the Google
-    Safe Browsing servers.
+    Safe Browsing servers. This is recorded each time there's a match found in
+    the local database and requires sending a full hash request.
   </summary>
 </histogram>
 
