@@ -1190,6 +1190,53 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
   }
 }
 
+// Verify that a warning, when ignored, applies to the entire eTLD+1, not just
+// the navigated origin.
+IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
+                       AllowlistAppliesToETLDPlusOne) {
+  {
+    const GURL kNavigatedUrl = GetURL("sub1.googlé.com");
+    SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
+    LoadAndCheckInterstitialAt(browser(), kNavigatedUrl);
+    SendInterstitialCommandSync(browser(),
+                                SecurityInterstitialCommand::CMD_PROCEED);
+  }
+
+  // TestInterstitialNotShown assumes there's not an interstitial already
+  // showing (since otherwise it can't be sure that the navigation caused it).
+  NavigateToURLSync(browser(), GetURL("example.com"));
+
+  {
+    const GURL kNavigatedUrl = GetURL("sub2.googlé.com");
+    SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
+    TestInterstitialNotShown(browser(), kNavigatedUrl);
+  }
+
+  // We respect private registries for this manual allowlisting so that
+  // different (independent) subdomains each show their own warning.
+  if (!target_embedding_enabled()) {
+    // Since subdomains are only used for target embedding, if that's not
+    // enabled, we can bail out now.
+    return;
+  }
+  NavigateToURLSync(browser(), GetURL("example.com"));
+  {
+    // Note: This uses blogspot.cv because blogspot.com is a top domain, and top
+    // domains don't show warnings.
+    const GURL kNavigatedUrl = GetURL("google-com.blogspot.cv");
+    SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
+    LoadAndCheckInterstitialAt(browser(), kNavigatedUrl);
+    SendInterstitialCommandSync(browser(),
+                                SecurityInterstitialCommand::CMD_PROCEED);
+  }
+  NavigateToURLSync(browser(), GetURL("example.com"));
+  {
+    const GURL kNavigatedUrl = GetURL("google-com-unrelated.blogspot.cv");
+    SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
+    LoadAndCheckInterstitialAt(browser(), kNavigatedUrl);
+  }
+}
+
 // Verify that the user action in UKM is recorded even when we navigate away
 // from the interstitial without interacting with it.
 IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
