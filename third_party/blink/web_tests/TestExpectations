@@ -5859,13 +5859,6 @@ crbug.com/1168373 [ Debug ] http/tests/devtools/layers/layers-3d-view-hit-testin
 # Sheriff 2021-01-20
 crbug.com/1168522 external/wpt/focus/iframe-activeelement-after-focusing-out-iframes.html [ Pass Failure ]
 
-# DevTools - Temporarily disable for new Trust Token panel that requires tests to be rebaselined after the roll.
-crbug.com/1126824 http/tests/devtools/application-panel/resources-panel-iframe-idb.js [ Pass Failure ]
-crbug.com/1126824 http/tests/devtools/application-panel/resources-panel-on-navigation.js [ Pass Failure ]
-crbug.com/1126824 http/tests/devtools/application-panel/resources-panel-resource-preview.js [ Pass Failure ]
-crbug.com/1126824 http/tests/devtools/application-panel/resources-panel-selection-on-reload.js [ Pass Failure ]
-crbug.com/1126824 http/tests/devtools/application-panel/resources-panel-websql.js [ Pass Failure ]
-
 # DevTools roll
 crbug.com/1050549 http/tests/devtools/network/preview-searchable.js [ Pass Failure ]
 crbug.com/1050549 http/tests/devtools/console/console-correct-suggestions.js [ Pass Failure ]

@@ -14,6 +14,7 @@ Storage
   Web SQL
   Cookies
     http://127.0.0.1:8000
+  Trust Tokens
 Cache
   Cache Storage
   Application Cache
@@ -45,6 +46,7 @@ Storage
     inspector-test-db (selected)
   Cookies
     http://127.0.0.1:8000
+  Trust Tokens
 Cache
   Cache Storage
   Application Cache
@@ -76,6 +78,7 @@ Storage
       table1
   Cookies
     http://127.0.0.1:8000
+  Trust Tokens
 Cache
   Cache Storage
   Application Cache
