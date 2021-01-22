@@ -62,6 +62,8 @@ class ASH_EXPORT ActiveNetworkIcon : public TrayNetworkStateObserver {
                           network_icon::IconType icon_type,
                           bool* animating);
 
+  void PurgeNetworkIconCache();
+
  private:
   gfx::ImageSkia GetSingleImage(network_icon::IconType icon_type,
                                 bool* animating);
@@ -86,7 +88,6 @@ class ASH_EXPORT ActiveNetworkIcon : public TrayNetworkStateObserver {
   void ActiveNetworkStateChanged() override;
   void NetworkListChanged() override;
 
-  void PurgeNetworkIconCache();
   const chromeos::network_config::mojom::NetworkStateProperties*
   GetNetworkForType(Type type);
 

@@ -136,6 +136,17 @@ void NetworkFeaturePodButton::ActiveNetworkStateChanged() {
   Update();
 }
 
+void NetworkFeaturePodButton::OnThemeChanged() {
+  FeaturePodButton::OnThemeChanged();
+
+  // Need to redraw all network icons with new colors.
+  Shell::Get()
+      ->system_tray_model()
+      ->active_network_icon()
+      ->PurgeNetworkIconCache();
+  NetworkIconChanged();
+}
+
 const char* NetworkFeaturePodButton::GetClassName() const {
   return "NetworkFeaturePodButton";
 }

@@ -79,6 +79,7 @@ class NetworkIconImpl {
   Badge technology_badge_ = {};
   bool show_vpn_badge_ = false;
   bool is_roaming_ = false;
+  bool is_dark_themed_ = false;
 
   // Generated icon image.
   gfx::ImageSkia image_;
@@ -300,7 +301,8 @@ gfx::ImageSkia GetConnectingVpnImage(IconType icon_type) {
 NetworkIconImpl::NetworkIconImpl(const std::string& guid,
                                  IconType icon_type,
                                  NetworkType network_type)
-    : icon_type_(icon_type) {
+    : icon_type_(icon_type),
+      is_dark_themed_(AshColorProvider::Get()->IsDarkModeEnabled()) {
   // Default image is null.
 }
 
@@ -329,6 +331,11 @@ void NetworkIconImpl::Update(const NetworkStateProperties* network,
   if (new_show_vpn_badge != show_vpn_badge_) {
     VLOG(2) << "Update VPN badge: " << new_show_vpn_badge;
     show_vpn_badge_ = new_show_vpn_badge;
+    dirty = true;
+  }
+
+  if (is_dark_themed_ != AshColorProvider::Get()->IsDarkModeEnabled()) {
+    is_dark_themed_ = AshColorProvider::Get()->IsDarkModeEnabled();
     dirty = true;
   }
 

@@ -31,6 +31,7 @@ class NetworkFeaturePodButton : public FeaturePodButton,
   void ActiveNetworkStateChanged() override;
 
   // views::Button:
+  void OnThemeChanged() override;
   const char* GetClassName() const override;
 
  private:
