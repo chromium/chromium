@@ -156,7 +156,8 @@ class MockFrameHost : public mojom::FrameHost {
   void CreatePortal(mojo::PendingAssociatedReceiver<blink::mojom::Portal>,
                     mojo::PendingAssociatedRemote<blink::mojom::PortalClient>,
                     CreatePortalCallback callback) override {
-    std::move(callback).Run(MSG_ROUTING_NONE, FrameReplicationState(),
+    std::move(callback).Run(MSG_ROUTING_NONE,
+                            mojom::FrameReplicationState::New(),
                             blink::PortalToken(), base::UnguessableToken(),
                             base::UnguessableToken());
   }
@@ -164,8 +165,8 @@ class MockFrameHost : public mojom::FrameHost {
   void AdoptPortal(const blink::PortalToken&,
                    AdoptPortalCallback callback) override {
     std::move(callback).Run(MSG_ROUTING_NONE, viz::FrameSinkId(),
-                            FrameReplicationState(), base::UnguessableToken(),
-                            base::UnguessableToken());
+                            mojom::FrameReplicationState::New(),
+                            base::UnguessableToken(), base::UnguessableToken());
   }
 
   void DidCommitSameDocumentNavigation(

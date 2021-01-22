@@ -500,7 +500,7 @@ void RenderViewTest::SetUp() {
                     .InitWithNewPipeAndPassReceiver());
   view_params->session_storage_namespace_id =
       blink::AllocateSessionStorageNamespaceId();
-  view_params->replicated_frame_state = FrameReplicationState();
+  view_params->replicated_frame_state = mojom::FrameReplicationState::New();
   view_params->proxy_routing_id = MSG_ROUTING_NONE;
   view_params->hidden = false;
   view_params->never_composited = false;

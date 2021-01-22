@@ -12,6 +12,7 @@
 #include "content/common/content_export.h"
 #include "content/common/frame_messages.h"
 #include "content/common/frame_proxy.mojom.h"
+#include "content/common/frame_replication_state.mojom-forward.h"
 #include "content/renderer/child_frame_compositor.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_sender.h"
@@ -42,7 +43,6 @@ class BlinkInterfaceRegistryImpl;
 class ChildFrameCompositingHelper;
 class RenderFrameImpl;
 class RenderViewImpl;
-struct FrameReplicationState;
 
 // When a page's frames are rendered by multiple processes, each renderer has a
 // full copy of the frame tree. It has full RenderFrames for the frames it is
@@ -101,7 +101,7 @@ class CONTENT_EXPORT RenderFrameProxy : public IPC::Listener,
       int render_view_routing_id,
       const base::Optional<base::UnguessableToken>& opener_frame_token,
       int parent_routing_id,
-      const FrameReplicationState& replicated_state,
+      mojom::FrameReplicationStatePtr replicated_state,
       const base::UnguessableToken& frame_token,
       const base::UnguessableToken& devtools_frame_token);
 
@@ -135,7 +135,7 @@ class CONTENT_EXPORT RenderFrameProxy : public IPC::Listener,
 
   // Pass replicated information, such as security origin, to this
   // RenderFrameProxy's WebRemoteFrame.
-  void SetReplicatedState(const FrameReplicationState& state);
+  void SetReplicatedState(mojom::FrameReplicationStatePtr state);
 
   int routing_id() { return routing_id_; }
   RenderViewImpl* render_view() { return render_view_; }

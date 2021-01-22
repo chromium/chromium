@@ -2361,7 +2361,8 @@ bool RenderFrameHostImpl::CreateRenderFrame(
   params->opener_frame_token = opener_frame_token;
   params->parent_routing_id = parent_routing_id;
   params->previous_sibling_routing_id = previous_sibling_routing_id;
-  params->replication_state = frame_tree_node()->current_replication_state();
+  params->replication_state =
+      frame_tree_node()->current_replication_state().Clone();
   params->frame_token = frame_token_;
   params->devtools_frame_token = frame_tree_node()->devtools_frame_token();
 
@@ -2381,7 +2382,7 @@ bool RenderFrameHostImpl::CreateRenderFrame(
   // policy, since it is being created as part of the navigation that will
   // commit it. (I.e., the RenderFrame needs to know the policy to use when
   // initializing the new document once it commits).
-  params->replication_state.frame_policy =
+  params->replication_state->frame_policy =
       frame_tree_node()->pending_frame_policy();
 
   // If we switched BrowsingInstances because of the COOP header, we should
@@ -2397,9 +2398,9 @@ bool RenderFrameHostImpl::CreateRenderFrame(
             features::kClearCrossBrowsingContextGroupMainFrameName)));
 
   if (should_clear_browsing_instance_name) {
-    params->replication_state.name = "";
+    params->replication_state->name = "";
     // The "swaps" only affect main frames, that have an empty unique name.
-    DCHECK(params->replication_state.unique_name.empty());
+    DCHECK(params->replication_state->unique_name.empty());
   }
 
   params->frame_owner_properties =
@@ -3383,7 +3384,7 @@ void RenderFrameHostImpl::Unload(RenderFrameProxyHost* proxy, bool is_loading) {
     if (IsRenderFrameCreated()) {
       GetMojomFrameInRenderer()->Unload(
           proxy->GetRoutingID(), is_loading,
-          proxy->frame_tree_node()->current_replication_state(),
+          proxy->frame_tree_node()->current_replication_state().Clone(),
           proxy->GetFrameToken());
       // Remember that a RenderFrameProxy was created as part of processing the
       // Unload message above.
@@ -3416,7 +3417,8 @@ void RenderFrameHostImpl::Unload(RenderFrameProxyHost* proxy, bool is_loading) {
 void RenderFrameHostImpl::SwapOuterDelegateFrame(RenderFrameProxyHost* proxy) {
   GetMojomFrameInRenderer()->Unload(
       proxy->GetRoutingID(), /*is_loading=*/false,
-      frame_tree_node()->current_replication_state(), proxy->GetFrameToken());
+      frame_tree_node()->current_replication_state().Clone(),
+      proxy->GetFrameToken());
 }
 
 void RenderFrameHostImpl::DetachFromProxy() {
@@ -5591,11 +5593,12 @@ void RenderFrameHostImpl::CreatePortal(
 
   // Since the portal is newly created and has yet to commit a navigation, this
   // state is trivial.
-  const FrameReplicationState& initial_replicated_state =
+  const mojom::FrameReplicationState& initial_replicated_state =
       proxy_host->frame_tree_node()->current_replication_state();
   DCHECK(initial_replicated_state.origin.opaque());
 
-  std::move(callback).Run(proxy_host->GetRoutingID(), initial_replicated_state,
+  std::move(callback).Run(proxy_host->GetRoutingID(),
+                          initial_replicated_state.Clone(),
                           (*it)->portal_token(), proxy_host->GetFrameToken(),
                           (*it)->GetDevToolsFrameToken());
 }
@@ -5616,7 +5619,7 @@ void RenderFrameHostImpl::AdoptPortal(const blink::PortalToken& portal_token,
                                                  ->render_manager()
                                                  ->GetRenderWidgetHostView())
           ->GetFrameSinkId(),
-      proxy_host->frame_tree_node()->current_replication_state(),
+      proxy_host->frame_tree_node()->current_replication_state().Clone(),
       proxy_host->GetFrameToken(), portal->GetDevToolsFrameToken());
 }
 

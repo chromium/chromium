@@ -121,13 +121,14 @@ class RenderFrameImplTest : public RenderViewTest {
     widget_params->widget = std::move(blink_widget_receiver);
     widget_params->widget_host = blink_widget_host.Unbind();
 
-    FrameReplicationState frame_replication_state;
-    frame_replication_state.name = "frame";
-    frame_replication_state.unique_name = "frame-uniqueName";
+    mojom::FrameReplicationStatePtr frame_replication_state =
+        mojom::FrameReplicationState::New();
+    frame_replication_state->name = "frame";
+    frame_replication_state->unique_name = "frame-uniqueName";
 
     RenderFrameImpl::FromWebFrame(
         view_->GetMainRenderFrame()->GetWebFrame()->FirstChild())
-        ->Unload(kFrameProxyRouteId, false, frame_replication_state,
+        ->Unload(kFrameProxyRouteId, false, frame_replication_state->Clone(),
                  base::UnguessableToken::Create());
     RenderFrameImpl::CreateFrame(
         *agent_scheduling_group_, kSubframeRouteId,
@@ -135,8 +136,8 @@ class RenderFrameImplTest : public RenderViewTest {
         TestRenderFrame::CreateStubBrowserInterfaceBrokerRemote(),
         MSG_ROUTING_NONE, base::nullopt, kFrameProxyRouteId, MSG_ROUTING_NONE,
         base::UnguessableToken::Create(), base::UnguessableToken::Create(),
-        frame_replication_state, &compositor_deps_, std::move(widget_params),
-        blink::mojom::FrameOwnerProperties::New(),
+        std::move(frame_replication_state), &compositor_deps_,
+        std::move(widget_params), blink::mojom::FrameOwnerProperties::New(),
         /*has_committed_real_load=*/true, CreateStubPolicyContainer());
 
     frame_ = static_cast<TestRenderFrame*>(

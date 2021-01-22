@@ -458,7 +458,8 @@ bool RenderViewHostImpl::CreateRenderView(
       delegate_->GetSessionStorageNamespace(instance_.get())->id();
   // Ensure the RenderView sets its opener correctly.
   params->opener_frame_token = opener_frame_token;
-  params->replicated_frame_state = frame_tree_node->current_replication_state();
+  params->replicated_frame_state =
+      frame_tree_node->current_replication_state().Clone();
   params->proxy_routing_id = proxy_route_id;
   params->hidden = GetWidget()->delegate()->IsHidden();
   params->never_composited = delegate_->IsNeverComposited();

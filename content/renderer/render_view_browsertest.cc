@@ -28,7 +28,6 @@
 #include "cc/input/browser_controls_state.h"
 #include "cc/trees/layer_tree_host.h"
 #include "content/common/frame_messages.h"
-#include "content/common/frame_replication_state.h"
 #include "content/common/renderer.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/native_web_keyboard_event.h"
@@ -202,18 +201,18 @@ class WebUITestWebUIControllerFactory : public WebUIControllerFactory {
 // by content-layer, renderer code (still the constructed, partial
 // FrameReplicationState is sufficiently complete to avoid trigerring
 // asserts that a default/empty FrameReplicationState would).
-FrameReplicationState ReconstructReplicationStateForTesting(
+mojom::FrameReplicationStatePtr ReconstructReplicationStateForTesting(
     TestRenderFrame* test_render_frame) {
   blink::WebLocalFrame* frame = test_render_frame->GetWebFrame();
 
-  FrameReplicationState result;
+  mojom::FrameReplicationStatePtr result = mojom::FrameReplicationState::New();
   // can't recover result.scope - no way to get blink::mojom::TreeScopeType via
   // public blink API...
-  result.name = frame->AssignedName().Utf8();
-  result.unique_name = test_render_frame->unique_name();
+  result->name = frame->AssignedName().Utf8();
+  result->unique_name = test_render_frame->unique_name();
   // result.should_enforce_strict_mixed_content_checking is calculated in the
   // browser...
-  result.origin = frame->GetSecurityOrigin();
+  result->origin = frame->GetSecurityOrigin();
 
   return result;
 }
@@ -1166,11 +1165,11 @@ TEST_F(RenderViewImplTest, OriginReplicationForUnload) {
 
   // Unload the child frame and pass a replicated origin to be set for
   // WebRemoteFrame.
-  content::FrameReplicationState replication_state =
+  content::mojom::FrameReplicationStatePtr replication_state =
       ReconstructReplicationStateForTesting(child_frame);
-  replication_state.origin = url::Origin::Create(GURL("http://foo.com"));
+  replication_state->origin = url::Origin::Create(GURL("http://foo.com"));
   static_cast<mojom::Frame*>(child_frame)
-      ->Unload(kProxyRoutingId, true, replication_state,
+      ->Unload(kProxyRoutingId, true, replication_state->Clone(),
                base::UnguessableToken::Create());
 
   // The child frame should now be a WebRemoteFrame.
@@ -1180,16 +1179,16 @@ TEST_F(RenderViewImplTest, OriginReplicationForUnload) {
   blink::WebSecurityOrigin origin =
       web_frame->FirstChild()->GetSecurityOrigin();
   EXPECT_EQ(origin.ToString(),
-            WebString::FromUTF8(replication_state.origin.Serialize()));
+            WebString::FromUTF8(replication_state->origin.Serialize()));
 
   // Now, unload the second frame using a unique origin and verify that it is
   // replicated correctly.
-  replication_state.origin = url::Origin();
+  replication_state->origin = url::Origin();
   TestRenderFrame* child_frame2 =
       static_cast<TestRenderFrame*>(RenderFrame::FromWebFrame(
           web_frame->FirstChild()->NextSibling()->ToWebLocalFrame()));
   static_cast<mojom::Frame*>(child_frame2)
-      ->Unload(kProxyRoutingId + 1, true, replication_state,
+      ->Unload(kProxyRoutingId + 1, true, std::move(replication_state),
                base::UnguessableToken::Create());
   EXPECT_TRUE(web_frame->FirstChild()->NextSibling()->IsWebRemoteFrame());
   EXPECT_TRUE(
@@ -1214,11 +1213,11 @@ TEST_F(RenderViewImplEnableZoomForDSFTest,
       MakeVisualPropertiesWithDeviceScaleFactor(device_scale);
 
   // Unload the main frame after which it should become a WebRemoteFrame.
-  content::FrameReplicationState replication_state =
+  mojom::FrameReplicationStatePtr replication_state =
       ReconstructReplicationStateForTesting(frame());
   // replication_state.origin = url::Origin(GURL("http://foo.com"));
   static_cast<mojom::Frame*>(frame())->Unload(kProxyRoutingId, true,
-                                              replication_state,
+                                              replication_state->Clone(),
                                               base::UnguessableToken::Create());
   EXPECT_TRUE(view()->GetWebView()->MainFrame()->IsWebRemoteFrame());
 
@@ -1260,8 +1259,8 @@ TEST_F(RenderViewImplEnableZoomForDSFTest,
       TestRenderFrame::CreateStubBrowserInterfaceBrokerRemote(),
       kProxyRoutingId, base::nullopt, MSG_ROUTING_NONE, MSG_ROUTING_NONE,
       base::UnguessableToken::Create(), base::UnguessableToken::Create(),
-      replication_state, compositor_deps_.get(), std::move(widget_params),
-      blink::mojom::FrameOwnerProperties::New(),
+      std::move(replication_state), compositor_deps_.get(),
+      std::move(widget_params), blink::mojom::FrameOwnerProperties::New(),
       /*has_committed_real_load=*/true, CreateStubPolicyContainer());
 
   TestRenderFrame* provisional_frame =
@@ -1308,10 +1307,10 @@ TEST_F(RenderViewImplTest, DetachingProxyAlsoDestroysProvisionalFrame) {
       RenderFrame::FromWebFrame(web_frame->FirstChild()->ToWebLocalFrame()));
 
   // Unload the child frame.
-  FrameReplicationState replication_state =
+  mojom::FrameReplicationStatePtr replication_state =
       ReconstructReplicationStateForTesting(child_frame);
   static_cast<mojom::Frame*>(child_frame)
-      ->Unload(kProxyRoutingId, true, replication_state,
+      ->Unload(kProxyRoutingId, true, replication_state.Clone(),
                base::UnguessableToken::Create());
   EXPECT_TRUE(web_frame->FirstChild()->IsWebRemoteFrame());
 
@@ -1324,7 +1323,7 @@ TEST_F(RenderViewImplTest, DetachingProxyAlsoDestroysProvisionalFrame) {
       TestRenderFrame::CreateStubBrowserInterfaceBrokerRemote(),
       kProxyRoutingId, base::nullopt, frame()->GetRoutingID(), MSG_ROUTING_NONE,
       base::UnguessableToken::Create(), base::UnguessableToken::Create(),
-      replication_state, nullptr,
+      std::move(replication_state), nullptr,
       /*widget_params=*/nullptr, blink::mojom::FrameOwnerProperties::New(),
       /*has_committed_real_load=*/true, CreateStubPolicyContainer());
   {
@@ -2973,7 +2972,7 @@ TEST_F(RenderViewImplTest, DispatchBeforeUnloadCanDetachFrame) {
 
         // Unloads the main frame.
         static_cast<mojom::Frame*>(frame())->Unload(
-            1, false, FrameReplicationState(),
+            1, false, mojom::FrameReplicationState::New(),
             base::UnguessableToken::Create());
 
         was_callback_run = true;

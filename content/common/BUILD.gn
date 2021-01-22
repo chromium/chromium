@@ -84,8 +84,6 @@ source_set("common") {
     "font_list.h",
     "font_list_fontconfig.cc",
     "frame_messages.h",
-    "frame_replication_state.cc",
-    "frame_replication_state.h",
     "gin_java_bridge_messages.h",
     "in_process_child_thread_params.cc",
     "in_process_child_thread_params.h",
@@ -444,6 +442,7 @@ mojom("mojo_bindings") {
     "frame.mojom",
     "frame_messages.mojom",
     "frame_proxy.mojom",
+    "frame_replication_state.mojom",
     "histogram_fetcher.mojom",
     "input/input_injector.mojom",
     "media/media_log_records.mojom",
@@ -480,10 +479,6 @@ mojom("mojo_bindings") {
         {
           mojom = "content.mojom.ContentSecurityPolicy"
           cpp = "::content::ContentSecurityPolicy"
-        },
-        {
-          mojom = "content.mojom.FrameReplicationState"
-          cpp = "::content::FrameReplicationState"
         },
         {
           mojom = "content.mojom.NavigationDownloadPolicy"
@@ -541,7 +536,6 @@ mojom("mojo_bindings") {
 
       traits_headers = [
         "//cc/input/touch_action.h",
-        "//content/common/frame_replication_state.h",
         "//content/common/input/synthetic_pinch_gesture_params.h",
         "//content/common/input/synthetic_pointer_action_list_params.h",
         "//content/common/input/synthetic_smooth_drag_gesture_params.h",

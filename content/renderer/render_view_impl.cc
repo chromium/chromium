@@ -162,8 +162,8 @@ void RenderViewImpl::Initialize(
     RenderFrameProxy::CreateFrameProxy(
         agent_scheduling_group_, params->proxy_routing_id, GetRoutingID(),
         params->opener_frame_token, MSG_ROUTING_NONE,
-        params->replicated_frame_state, params->main_frame_frame_token,
-        params->devtools_main_frame_token);
+        std::move(params->replicated_frame_state),
+        params->main_frame_frame_token, params->devtools_main_frame_token);
   }
 
   // TODO(davidben): Move this state from Blink into content.
@@ -455,9 +455,10 @@ WebView* RenderViewImpl::CreateView(
       reply->cloned_session_storage_namespace_id;
   DCHECK(!view_params->session_storage_namespace_id.empty())
       << "Session storage namespace must be populated.";
-  view_params->replicated_frame_state.frame_policy.sandbox_flags =
+  view_params->replicated_frame_state = mojom::FrameReplicationState::New();
+  view_params->replicated_frame_state->frame_policy.sandbox_flags =
       sandbox_flags;
-  view_params->replicated_frame_state.name = frame_name_utf8;
+  view_params->replicated_frame_state->name = frame_name_utf8;
   view_params->devtools_main_frame_token = reply->devtools_main_frame_token;
   view_params->hidden = is_background_tab;
   view_params->never_composited = never_composited;

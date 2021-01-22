@@ -88,7 +88,7 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
       int32_t render_view_routing_id,
       const base::Optional<base::UnguessableToken>& opener_frame_token,
       int32_t parent_routing_id,
-      const FrameReplicationState& replicated_state,
+      mojom::FrameReplicationStatePtr replicated_state,
       const base::UnguessableToken& frame_token,
       const base::UnguessableToken& devtools_frame_token);
 

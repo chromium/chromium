@@ -34,7 +34,6 @@
 #include "content/common/agent_scheduling_group.mojom.h"
 #include "content/common/content_export.h"
 #include "content/common/frame.mojom.h"
-#include "content/common/frame_replication_state.h"
 #include "content/common/render_message_filter.mojom.h"
 #include "content/common/renderer.mojom.h"
 #include "content/common/renderer_host.mojom.h"

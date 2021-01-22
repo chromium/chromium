@@ -43,7 +43,7 @@ void PortalCreatedObserver::CreatePortal(
   RenderFrameProxyHost* proxy_host = portal_->CreateProxyAndAttachPortal();
   std::move(callback).Run(
       proxy_host->GetRoutingID(),
-      proxy_host->frame_tree_node()->current_replication_state(),
+      proxy_host->frame_tree_node()->current_replication_state().Clone(),
       portal_->portal_token(), proxy_host->GetFrameToken(),
       portal_->GetDevToolsFrameToken());
 
@@ -63,7 +63,7 @@ void PortalCreatedObserver::AdoptPortal(const blink::PortalToken& portal_token,
                                                  ->render_manager()
                                                  ->GetRenderWidgetHostView())
           ->GetFrameSinkId(),
-      proxy_host->frame_tree_node()->current_replication_state(),
+      proxy_host->frame_tree_node()->current_replication_state().Clone(),
       proxy_host->GetFrameToken(), portal->GetDevToolsFrameToken());
 
   DidCreatePortal();

@@ -14,7 +14,6 @@
 #include "base/memory/ptr_util.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "content/common/content_switches_internal.h"
-#include "content/common/frame_replication_state.h"
 #include "content/common/input_messages.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
@@ -113,7 +112,7 @@ RenderFrameProxy* RenderFrameProxy::CreateFrameProxy(
     int render_view_routing_id,
     const base::Optional<base::UnguessableToken>& opener_frame_token,
     int parent_routing_id,
-    const FrameReplicationState& replicated_state,
+    mojom::FrameReplicationStatePtr replicated_state,
     const base::UnguessableToken& frame_token,
     const base::UnguessableToken& devtools_frame_token) {
   RenderFrameProxy* parent = nullptr;
@@ -153,10 +152,10 @@ RenderFrameProxy* RenderFrameProxy::CreateFrameProxy(
     // to be a RenderFrameProxy, because navigations initiated by local frames
     // should not wind up here.
     web_frame = parent->web_frame()->CreateRemoteChild(
-        replicated_state.scope,
-        blink::WebString::FromUTF8(replicated_state.name),
-        replicated_state.frame_policy,
-        replicated_state.frame_owner_element_type, proxy.get(),
+        replicated_state->scope,
+        blink::WebString::FromUTF8(replicated_state->name),
+        replicated_state->frame_policy,
+        replicated_state->frame_owner_element_type, proxy.get(),
         proxy->blink_interface_registry_.get(),
         proxy->GetRemoteAssociatedInterfaces(), frame_token, opener);
     render_view = parent->render_view();
@@ -172,7 +171,7 @@ RenderFrameProxy* RenderFrameProxy::CreateFrameProxy(
   // createLocalChild(). We should update the Blink interface so it also takes
   // the origin. Then it will be clear that the replication call is only needed
   // for the case of setting up a main frame proxy.
-  proxy->SetReplicatedState(replicated_state);
+  proxy->SetReplicatedState(std::move(replicated_state));
 
   return proxy.release();
 }
@@ -267,40 +266,42 @@ viz::FrameSinkId RenderFrameProxy::GetFrameSinkId() const {
   return frame_sink_id_;
 }
 
-void RenderFrameProxy::SetReplicatedState(const FrameReplicationState& state) {
+void RenderFrameProxy::SetReplicatedState(
+    mojom::FrameReplicationStatePtr state) {
   DCHECK(web_frame_);
 
   web_frame_->SetReplicatedOrigin(
-      state.origin, state.has_potentially_trustworthy_unique_origin);
+      state->origin, state->has_potentially_trustworthy_unique_origin);
 
 #if DCHECK_IS_ON()
   blink::WebSecurityOrigin security_origin_before_sandbox_flags =
       web_frame_->GetSecurityOrigin();
 #endif
 
-  web_frame_->SetReplicatedSandboxFlags(state.active_sandbox_flags);
+  web_frame_->SetReplicatedSandboxFlags(state->active_sandbox_flags);
 
 #if DCHECK_IS_ON()
-  // If |state.has_potentially_trustworthy_unique_origin| is set,
-  // - |state.origin| should be unique (this is checked in
+  // If |state->has_potentially_trustworthy_unique_origin| is set,
+  // - |state->origin| should be unique (this is checked in
   //   blink::SecurityOrigin::SetUniqueOriginIsPotentiallyTrustworthy() in
   //   SetReplicatedOrigin()), and thus
   // - The security origin is not updated by SetReplicatedSandboxFlags() and
   //   thus we don't have to apply |has_potentially_trustworthy_unique_origin|
   //   flag after SetReplicatedSandboxFlags().
-  if (state.has_potentially_trustworthy_unique_origin)
+  if (state->has_potentially_trustworthy_unique_origin)
     DCHECK(security_origin_before_sandbox_flags ==
            web_frame_->GetSecurityOrigin());
 #endif
 
-  web_frame_->SetReplicatedName(blink::WebString::FromUTF8(state.name),
-                                blink::WebString::FromUTF8(state.unique_name));
-  web_frame_->SetReplicatedInsecureRequestPolicy(state.insecure_request_policy);
+  web_frame_->SetReplicatedName(blink::WebString::FromUTF8(state->name),
+                                blink::WebString::FromUTF8(state->unique_name));
+  web_frame_->SetReplicatedInsecureRequestPolicy(
+      state->insecure_request_policy);
   web_frame_->SetReplicatedInsecureNavigationsSet(
-      state.insecure_navigations_set);
-  web_frame_->SetReplicatedAdFrameType(state.ad_frame_type);
-  web_frame_->SetReplicatedFeaturePolicyHeader(state.feature_policy_header);
-  if (state.has_active_user_gesture) {
+      state->insecure_navigations_set);
+  web_frame_->SetReplicatedAdFrameType(state->ad_frame_type);
+  web_frame_->SetReplicatedFeaturePolicyHeader(state->feature_policy_header);
+  if (state->has_active_user_gesture) {
     // TODO(crbug.com/1087963): This should be hearing about sticky activations
     // and setting those (as well as the active one?). But the call to
     // UpdateUserActivationState sets the transient activation.
@@ -309,13 +310,13 @@ void RenderFrameProxy::SetReplicatedState(const FrameReplicationState& state) {
         blink::mojom::UserActivationNotificationType::kMedia);
   }
   web_frame_->SetHadStickyUserActivationBeforeNavigation(
-      state.has_received_user_gesture_before_nav);
+      state->has_received_user_gesture_before_nav);
 
   web_frame_->ResetReplicatedContentSecurityPolicy();
-  for (const auto& header : state.accumulated_csp_headers) {
+  for (const auto& header : state->accumulated_csp_headers) {
     web_frame_->AddReplicatedContentSecurityPolicyHeader(
-        blink::WebString::FromUTF8(header.header_value), header.type,
-        header.source);
+        blink::WebString::FromUTF8(header->header_value), header->type,
+        header->source);
   }
 }
 

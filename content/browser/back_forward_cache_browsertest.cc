@@ -9105,13 +9105,13 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // Check that CSP was set.
   {
-    const std::vector<network::mojom::ContentSecurityPolicyHeader>& root_csp =
-        current_frame_host()
-            ->frame_tree_node()
-            ->current_replication_state()
-            .accumulated_csp_headers;
+    const std::vector<network::mojom::ContentSecurityPolicyHeaderPtr>&
+        root_csp = current_frame_host()
+                       ->frame_tree_node()
+                       ->current_replication_state()
+                       .accumulated_csp_headers;
     EXPECT_EQ(1u, root_csp.size());
-    EXPECT_EQ("frame-src 'none'", root_csp[0].header_value);
+    EXPECT_EQ("frame-src 'none'", root_csp[0]->header_value);
   }
 
   // 2) Navigate to B.
@@ -9127,13 +9127,13 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // Check that CSP was restored.
   {
-    const std::vector<network::mojom::ContentSecurityPolicyHeader>& root_csp =
-        current_frame_host()
-            ->frame_tree_node()
-            ->current_replication_state()
-            .accumulated_csp_headers;
+    const std::vector<network::mojom::ContentSecurityPolicyHeaderPtr>&
+        root_csp = current_frame_host()
+                       ->frame_tree_node()
+                       ->current_replication_state()
+                       .accumulated_csp_headers;
     EXPECT_EQ(1u, root_csp.size());
-    EXPECT_EQ("frame-src 'none'", root_csp[0].header_value);
+    EXPECT_EQ("frame-src 'none'", root_csp[0]->header_value);
   }
 }
 
@@ -9153,13 +9153,13 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, CspSandbox) {
   RenderFrameHostImpl* rfh_a = current_frame_host();
   RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
   {
-    const std::vector<network::mojom::ContentSecurityPolicyHeader>& root_csp =
-        current_frame_host()
-            ->frame_tree_node()
-            ->current_replication_state()
-            .accumulated_csp_headers;
+    const std::vector<network::mojom::ContentSecurityPolicyHeaderPtr>&
+        root_csp = current_frame_host()
+                       ->frame_tree_node()
+                       ->current_replication_state()
+                       .accumulated_csp_headers;
     ASSERT_EQ(1u, root_csp.size());
-    ASSERT_EQ("sandbox", root_csp[0].header_value);
+    ASSERT_EQ("sandbox", root_csp[0]->header_value);
     ASSERT_EQ(network::mojom::WebSandboxFlags::kAll,
               current_frame_host()->active_sandbox_flags());
   };
@@ -9169,11 +9169,11 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, CspSandbox) {
   EXPECT_FALSE(delete_observer_rfh_a.deleted());
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
   {
-    const std::vector<network::mojom::ContentSecurityPolicyHeader>& root_csp =
-        current_frame_host()
-            ->frame_tree_node()
-            ->current_replication_state()
-            .accumulated_csp_headers;
+    const std::vector<network::mojom::ContentSecurityPolicyHeaderPtr>&
+        root_csp = current_frame_host()
+                       ->frame_tree_node()
+                       ->current_replication_state()
+                       .accumulated_csp_headers;
     ASSERT_EQ(0u, root_csp.size());
     ASSERT_EQ(network::mojom::WebSandboxFlags::kNone,
               current_frame_host()->active_sandbox_flags());
@@ -9186,13 +9186,13 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, CspSandbox) {
   EXPECT_FALSE(delete_observer_rfh_a.deleted());
   EXPECT_EQ(current_frame_host(), rfh_a);
   {
-    const std::vector<network::mojom::ContentSecurityPolicyHeader>& root_csp =
-        current_frame_host()
-            ->frame_tree_node()
-            ->current_replication_state()
-            .accumulated_csp_headers;
+    const std::vector<network::mojom::ContentSecurityPolicyHeaderPtr>&
+        root_csp = current_frame_host()
+                       ->frame_tree_node()
+                       ->current_replication_state()
+                       .accumulated_csp_headers;
     ASSERT_EQ(1u, root_csp.size());
-    ASSERT_EQ("sandbox", root_csp[0].header_value);
+    ASSERT_EQ("sandbox", root_csp[0]->header_value);
     ASSERT_EQ(network::mojom::WebSandboxFlags::kAll,
               current_frame_host()->active_sandbox_flags());
   };

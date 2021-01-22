@@ -8,9 +8,6 @@ module content.mojom;
 // ParamTraits for serialization. All of these should eventually be converted to
 // proper mojom definitions.
 
-[Native]
-struct FrameReplicationState;
-
 // NOTE: This type is only mapped and usable on Mac.
 [Native]
 enum ScrollbarButtonsPlacement;

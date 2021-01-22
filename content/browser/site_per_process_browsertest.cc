@@ -6253,7 +6253,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // anymore.
   agent_scheduling_group_a->CreateFrameProxy(
       new_routing_id, view_routing_id, base::nullopt, parent_routing_id,
-      FrameReplicationState(), base::UnguessableToken::Create(),
+      mojom::FrameReplicationState::New(), base::UnguessableToken::Create(),
       base::UnguessableToken::Create());
 
   // Ensure the subframe is detached in the browser process.
@@ -6330,6 +6330,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
     params->frame_token = frame_token;
     params->devtools_frame_token = base::UnguessableToken::Create();
     params->policy_container = CreateStubPolicyContainer();
+    params->replication_state = mojom::FrameReplicationState::New();
     agent_scheduling_group->CreateFrame(std::move(params));
   }
 
@@ -6418,8 +6419,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ParentDetachRemoteChild) {
                       .InitWithNewEndpointAndPassReceiver());
     ignore_result(params->widget_params->widget_host
                       .InitWithNewEndpointAndPassReceiver());
-    params->replication_state.name = "name";
-    params->replication_state.unique_name = "name";
+    params->replication_state = mojom::FrameReplicationState::New();
+    params->replication_state->name = "name";
+    params->replication_state->unique_name = "name";
     params->frame_token = frame_token;
     params->devtools_frame_token = base::UnguessableToken::Create();
     params->policy_container = CreateStubPolicyContainer();
@@ -7381,10 +7383,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       embedded_test_server()->GetURL("b.com", "/title2.html"));
   EXPECT_FALSE(root->child_at(0)->HasSameOrigin(*root));
   EXPECT_EQ(old_subframe_url, root->child_at(0)->current_url());
-  const std::vector<network::mojom::ContentSecurityPolicyHeader>& root_csp =
+  const std::vector<network::mojom::ContentSecurityPolicyHeaderPtr>& root_csp =
       root->current_replication_state().accumulated_csp_headers;
   EXPECT_EQ(1u, root_csp.size());
-  EXPECT_EQ("frame-src 'self' http://b.com:*", root_csp[0].header_value);
+  EXPECT_EQ("frame-src 'self' http://b.com:*", root_csp[0]->header_value);
 
   // Monitor subframe's load events via main frame's title.
   EXPECT_TRUE(ExecuteScript(shell(),
@@ -7452,10 +7454,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // (the CSP should not have an effect on the already loaded frames).
   EXPECT_FALSE(root->child_at(0)->HasSameOrigin(*root));
   EXPECT_EQ(old_subframe_url, root->child_at(0)->current_url());
-  const std::vector<network::mojom::ContentSecurityPolicyHeader>& root_csp =
+  const std::vector<network::mojom::ContentSecurityPolicyHeaderPtr>& root_csp =
       root->current_replication_state().accumulated_csp_headers;
   EXPECT_EQ(1u, root_csp.size());
-  EXPECT_EQ("frame-src https://a.com:*", root_csp[0].header_value);
+  EXPECT_EQ("frame-src https://a.com:*", root_csp[0]->header_value);
 
   // Monitor subframe's load events via main frame's title.
   EXPECT_TRUE(ExecJs(shell(),
@@ -7514,10 +7516,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_TRUE(srcdoc_frame->HasSameOrigin(*root));
   EXPECT_FALSE(srcdoc_frame->HasSameOrigin(*navigating_frame));
   EXPECT_EQ(old_subframe_url, navigating_frame->current_url());
-  const std::vector<network::mojom::ContentSecurityPolicyHeader>& srcdoc_csp =
-      srcdoc_frame->current_replication_state().accumulated_csp_headers;
+  const std::vector<network::mojom::ContentSecurityPolicyHeaderPtr>&
+      srcdoc_csp =
+          srcdoc_frame->current_replication_state().accumulated_csp_headers;
   EXPECT_EQ(1u, srcdoc_csp.size());
-  EXPECT_EQ("frame-src 'self' http://b.com:*", srcdoc_csp[0].header_value);
+  EXPECT_EQ("frame-src 'self' http://b.com:*", srcdoc_csp[0]->header_value);
 
   // Monitor navigating_frame's load events via srcdoc_frame posting
   // a message to the parent frame.

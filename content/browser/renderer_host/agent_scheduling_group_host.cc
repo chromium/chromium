@@ -327,13 +327,13 @@ void AgentSchedulingGroupHost::CreateFrameProxy(
     int32_t render_view_routing_id,
     const base::Optional<base::UnguessableToken>& opener_frame_token,
     int32_t parent_routing_id,
-    const FrameReplicationState& replicated_state,
+    mojom::FrameReplicationStatePtr replicated_state,
     const base::UnguessableToken& frame_token,
     const base::UnguessableToken& devtools_frame_token) {
   DCHECK_EQ(state_, LifecycleState::kBound);
   mojo_remote_.get()->CreateFrameProxy(
       routing_id, render_view_routing_id, opener_frame_token, parent_routing_id,
-      replicated_state, frame_token, devtools_frame_token);
+      std::move(replicated_state), frame_token, devtools_frame_token);
 }
 
 // static

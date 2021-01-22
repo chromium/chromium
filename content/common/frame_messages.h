@@ -25,7 +25,6 @@
 #include "content/common/common_param_traits_macros.h"
 #include "content/common/content_export.h"
 #include "content/common/content_param_traits.h"
-#include "content/common/frame_replication_state.h"
 #include "content/common/navigation_gesture.h"
 #include "content/common/navigation_params.h"
 #include "content/public/common/common_param_traits.h"
@@ -39,7 +38,6 @@
 #include "ipc/ipc_platform_file.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "ppapi/buildflags/buildflags.h"
-#include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "third_party/blink/public/common/feature_policy/feature_policy.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
 #include "third_party/blink/public/common/frame/frame_visual_properties.h"
@@ -55,15 +53,12 @@
 #include "third_party/blink/public/mojom/feature_policy/policy_disposition.mojom.h"
 #include "third_party/blink/public/mojom/frame/blocked_navigation_types.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
-#include "third_party/blink/public/mojom/frame/frame_owner_element_type.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom.h"
-#include "third_party/blink/public/mojom/frame/tree_scope_type.mojom.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom.h"
-#include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom.h"
 #include "third_party/blink/public/web/web_frame_owner_properties.h"
 #include "ui/gfx/geometry/rect.h"
@@ -81,10 +76,6 @@
 #define IPC_MESSAGE_EXPORT CONTENT_EXPORT
 
 #define IPC_MESSAGE_START FrameMsgStart
-IPC_ENUM_TRAITS_MAX_VALUE(blink::mojom::FrameOwnerElementType,
-                          blink::mojom::FrameOwnerElementType::kMaxValue)
-IPC_ENUM_TRAITS_MAX_VALUE(blink::mojom::AdFrameType,
-                          blink::mojom::AdFrameType::kMaxValue)
 IPC_ENUM_TRAITS_MAX_VALUE(blink::mojom::ContextMenuDataMediaType,
                           blink::mojom::ContextMenuDataMediaType::kMaxValue)
 IPC_ENUM_TRAITS_MAX_VALUE(blink::ContextMenuDataInputFieldType,
@@ -94,11 +85,7 @@ IPC_ENUM_TRAITS_MAX_VALUE(blink::mojom::ScrollbarMode,
 IPC_ENUM_TRAITS_MAX_VALUE(content::StopFindAction,
                           content::STOP_FIND_ACTION_LAST)
 IPC_ENUM_TRAITS(network::mojom::WebSandboxFlags)  // Bitmask.
-IPC_ENUM_TRAITS_MAX_VALUE(blink::mojom::TreeScopeType,
-                          blink::mojom::TreeScopeType::kMaxValue)
 IPC_ENUM_TRAITS_MAX_VALUE(ui::MenuSourceType, ui::MENU_SOURCE_TYPE_LAST)
-IPC_ENUM_TRAITS_MAX_VALUE(network::mojom::CSPDirectiveName,
-                          network::mojom::CSPDirectiveName::kMaxValue)
 IPC_ENUM_TRAITS_MAX_VALUE(blink::mojom::FeaturePolicyFeature,
                           blink::mojom::FeaturePolicyFeature::kMaxValue)
 IPC_ENUM_TRAITS_MAX_VALUE(blink::mojom::DocumentPolicyFeature,
@@ -111,8 +98,6 @@ IPC_ENUM_TRAITS_MAX_VALUE(blink::mojom::FrameVisibility,
                           blink::mojom::FrameVisibility::kMaxValue)
 IPC_ENUM_TRAITS_MAX_VALUE(blink::mojom::WebFeature,
                           blink::mojom::WebFeature::kMaxValue)
-IPC_ENUM_TRAITS_MAX_VALUE(blink::mojom::InsecureRequestPolicy,
-                          blink::mojom::InsecureRequestPolicy::kMaxValue)
 
 IPC_STRUCT_TRAITS_BEGIN(content::NavigationDownloadPolicy)
   IPC_STRUCT_TRAITS_MEMBER(observed_types)
@@ -192,30 +177,6 @@ IPC_STRUCT_TRAITS_BEGIN(blink::ParsedFeaturePolicyDeclaration)
   IPC_STRUCT_TRAITS_MEMBER(allowed_origins)
   IPC_STRUCT_TRAITS_MEMBER(matches_all_origins)
   IPC_STRUCT_TRAITS_MEMBER(matches_opaque_src)
-IPC_STRUCT_TRAITS_END()
-
-IPC_STRUCT_TRAITS_BEGIN(content::FrameReplicationState)
-  IPC_STRUCT_TRAITS_MEMBER(origin)
-  IPC_STRUCT_TRAITS_MEMBER(name)
-  IPC_STRUCT_TRAITS_MEMBER(unique_name)
-  IPC_STRUCT_TRAITS_MEMBER(feature_policy_header)
-  IPC_STRUCT_TRAITS_MEMBER(active_sandbox_flags)
-  IPC_STRUCT_TRAITS_MEMBER(frame_policy)
-  IPC_STRUCT_TRAITS_MEMBER(accumulated_csp_headers)
-  IPC_STRUCT_TRAITS_MEMBER(scope)
-  IPC_STRUCT_TRAITS_MEMBER(insecure_request_policy)
-  IPC_STRUCT_TRAITS_MEMBER(insecure_navigations_set)
-  IPC_STRUCT_TRAITS_MEMBER(has_potentially_trustworthy_unique_origin)
-  IPC_STRUCT_TRAITS_MEMBER(has_active_user_gesture)
-  IPC_STRUCT_TRAITS_MEMBER(has_received_user_gesture_before_nav)
-  IPC_STRUCT_TRAITS_MEMBER(frame_owner_element_type)
-  IPC_STRUCT_TRAITS_MEMBER(ad_frame_type)
-IPC_STRUCT_TRAITS_END()
-
-IPC_STRUCT_TRAITS_BEGIN(network::mojom::ContentSecurityPolicyHeader)
-  IPC_STRUCT_TRAITS_MEMBER(header_value)
-  IPC_STRUCT_TRAITS_MEMBER(type)
-  IPC_STRUCT_TRAITS_MEMBER(source)
 IPC_STRUCT_TRAITS_END()
 
 // -----------------------------------------------------------------------------

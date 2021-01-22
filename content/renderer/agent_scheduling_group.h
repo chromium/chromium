@@ -9,6 +9,7 @@
 #include "content/common/agent_scheduling_group.mojom.h"
 #include "content/common/associated_interfaces.mojom.h"
 #include "content/common/content_export.h"
+#include "content/common/frame_replication_state.mojom-forward.h"
 #include "content/public/common/content_features.h"
 #include "ipc/ipc.mojom.h"
 #include "ipc/ipc_listener.h"
@@ -90,7 +91,7 @@ class CONTENT_EXPORT AgentSchedulingGroup
       int32_t render_view_routing_id,
       const base::Optional<base::UnguessableToken>& opener_frame_token,
       int32_t parent_routing_id,
-      const FrameReplicationState& replicated_state,
+      mojom::FrameReplicationStatePtr replicated_state,
       const base::UnguessableToken& frame_token,
       const base::UnguessableToken& devtools_frame_token) override;
 

@@ -35,6 +35,7 @@
 #include "content/common/buildflags.h"
 #include "content/common/download/mhtml_file_writer.mojom.h"
 #include "content/common/frame.mojom.h"
+#include "content/common/frame_replication_state.mojom-forward.h"
 #include "content/common/navigation_params.mojom.h"
 #include "content/common/render_accessibility.mojom.h"
 #include "content/common/renderer.mojom.h"
@@ -158,7 +159,6 @@ class RenderAccessibilityManager;
 class RenderFrameObserver;
 class RenderViewImpl;
 struct CustomContextMenuContext;
-struct FrameReplicationState;
 
 class CONTENT_EXPORT RenderFrameImpl
     : public RenderFrame,
@@ -212,7 +212,7 @@ class CONTENT_EXPORT RenderFrameImpl
       int previous_sibling_routing_id,
       const base::UnguessableToken& frame_token,
       const base::UnguessableToken& devtools_frame_token,
-      const FrameReplicationState& replicated_state,
+      mojom::FrameReplicationStatePtr replicated_state,
       CompositorDependencies* compositor_deps,
       mojom::CreateFrameWidgetParamsPtr widget_params,
       blink::mojom::FrameOwnerPropertiesPtr frame_owner_properties,
@@ -854,7 +854,7 @@ class CONTENT_EXPORT RenderFrameImpl
   void SetWantErrorMessageStackTrace() override;
   void Unload(int proxy_routing_id,
               bool is_loading,
-              const FrameReplicationState& replicated_frame_state,
+              mojom::FrameReplicationStatePtr replicated_frame_state,
               const base::UnguessableToken& frame_token) override;
   void Delete(mojom::FrameDeleteIntention intent) override;
   void BlockRequests() override;

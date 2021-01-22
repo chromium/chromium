@@ -20,7 +20,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_frame_host_manager.h"
 #include "content/common/content_export.h"
-#include "content/common/frame_replication_state.h"
+#include "content/common/frame_replication_state.mojom-forward.h"
 #include "services/network/public/mojom/content_security_policy.mojom-forward.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
 #include "third_party/blink/public/common/frame/user_activation_state.h"
@@ -106,10 +106,10 @@ class CONTENT_EXPORT FrameTreeNode {
 
   RenderFrameHostManager* render_manager() { return &render_manager_; }
   int frame_tree_node_id() const { return frame_tree_node_id_; }
-  const std::string& frame_name() const { return replication_state_.name; }
+  const std::string& frame_name() const { return replication_state_->name; }
 
   const std::string& unique_name() const {
-    return replication_state_.unique_name;
+    return replication_state_->unique_name;
   }
 
   // See comment on the member declaration.
@@ -189,7 +189,7 @@ class CONTENT_EXPORT FrameTreeNode {
   // which will behave correctly even when the RenderFrameHost is not the
   // current one for this frame (such as when it's pending deletion).
   const url::Origin& current_origin() const {
-    return replication_state_.origin;
+    return replication_state_->origin;
   }
 
   // Set the current origin and notify proxies about the update.
@@ -243,7 +243,7 @@ class CONTENT_EXPORT FrameTreeNode {
   // element attributes since the frame was last navigated; use
   // pending_frame_policy() for those.
   const blink::FramePolicy& effective_frame_policy() const {
-    return replication_state_.frame_policy;
+    return replication_state_->frame_policy;
   }
 
   // Set the frame_policy provided in function parameter as active frame policy,
@@ -269,12 +269,12 @@ class CONTENT_EXPORT FrameTreeNode {
   }
 
   bool HasSameOrigin(const FrameTreeNode& node) const {
-    return replication_state_.origin.IsSameOriginWith(
-        node.replication_state_.origin);
+    return replication_state_->origin.IsSameOriginWith(
+        node.replication_state_->origin);
   }
 
-  const FrameReplicationState& current_replication_state() const {
-    return replication_state_;
+  const mojom::FrameReplicationState& current_replication_state() const {
+    return *replication_state_;
   }
 
   RenderFrameHostImpl* current_frame_host() const {
@@ -375,7 +375,7 @@ class CONTENT_EXPORT FrameTreeNode {
   // on navigation (which does not include the CSP-set flags), use
   // effective_frame_policy().
   network::mojom::WebSandboxFlags active_sandbox_flags() const {
-    return replication_state_.active_sandbox_flags;
+    return replication_state_->active_sandbox_flags;
   }
 
   // Updates the active sandbox flags in this frame, in response to a
@@ -393,7 +393,7 @@ class CONTENT_EXPORT FrameTreeNode {
   // Returns whether the frame received a user gesture on a previous navigation
   // on the same eTLD+1.
   bool has_received_user_gesture_before_nav() const {
-    return replication_state_.has_received_user_gesture_before_nav;
+    return replication_state_->has_received_user_gesture_before_nav;
   }
 
   // When a tab is discarded, WebContents sets was_discarded on its
@@ -423,7 +423,7 @@ class CONTENT_EXPORT FrameTreeNode {
   void PruneChildFrameNavigationEntries(NavigationEntryImpl* entry);
 
   blink::mojom::FrameOwnerElementType frame_owner_element_type() const {
-    return replication_state_.frame_owner_element_type;
+    return replication_state_->frame_owner_element_type;
   }
 
   void SetAdFrameType(blink::mojom::AdFrameType ad_frame_type);
@@ -530,12 +530,12 @@ class CONTENT_EXPORT FrameTreeNode {
 
   // Track information that needs to be replicated to processes that have
   // proxies for this frame.
-  FrameReplicationState replication_state_;
+  mojom::FrameReplicationStatePtr replication_state_;
 
   // Track the pending sandbox flags and container policy for this frame. When a
   // parent frame dynamically updates 'sandbox', 'allow', 'allowfullscreen',
   // 'allowpaymentrequest' or 'src' attributes, the updated policy for the frame
-  // is stored here, and transferred into replication_state_.frame_policy when
+  // is stored here, and transferred into replication_state_->frame_policy when
   // they take effect on the next frame navigation.
   blink::FramePolicy pending_frame_policy_;
 

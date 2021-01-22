@@ -6,6 +6,7 @@ module content.mojom;
 
 import "content/common/associated_interfaces.mojom";
 import "content/common/frame.mojom";
+import "content/common/frame_replication_state.mojom";
 import "content/common/native_types.mojom";
 import "ipc/constants.mojom";
 import "mojo/public/mojom/base/generic_pending_receiver.mojom";
