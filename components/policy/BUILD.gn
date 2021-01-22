@@ -125,7 +125,6 @@ python2_action("policy_code_generate") {
   args = [
     # Input information
     "--chrome-version-file=" + chrome_version_path,
-    "--target-platform=" + target_os,
     "--policy-templates-file=" +
         rebase_path("resources/policy_templates.json", root_build_dir),
 
@@ -142,6 +141,14 @@ python2_action("policy_code_generate") {
         rebase_path(app_restrictions_path, root_build_dir),
     "--risk-tag-header=" + rebase_path(risk_tag_header_path, root_build_dir),
   ]
+
+  #TODO(crbug.com/1169547): Switch lacros-chrome to chromeos policy.
+  if (is_chromeos_lacros) {
+    # Currently lacros-chrome uses linux's policy instead of chromeos policy.
+    args += [ "--target-platform=linux" ]
+  } else {
+    args += [ "--target-platform=" + target_os ]
+  }
 }
 
 # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
@@ -178,6 +185,14 @@ python2_action("full_runtime_code_generate") {
         rebase_path(policy_common_definitions_full_runtime_proto_path,
                     root_build_dir),
   ]
+
+  #TODO(crbug.com/1169547): Switch lacros-chrome to chromeos policy.
+  if (is_chromeos_lacros) {
+    # Currently lacros-chrome uses linux's policy instead of chromeos policy.
+    args += [ "--target-platform=linux" ]
+  } else {
+    args += [ "--target-platform=" + target_os ]
+  }
 }
 
 policy_templates_grd_file = "resources/policy_templates.grd"
@@ -376,7 +391,10 @@ static_library("generated") {
     "//components/policy/proto:policy_common_definitions_compile_proto",
     "//third_party/protobuf:protobuf_lite",
   ]
-  deps = [ "//build:branding_buildflags" ]
+  deps = [
+    "//build:branding_buildflags",
+    "//build:chromeos_buildflags",
+  ]
 }
 
 if (gen_policy_templates_android && is_android) {

@@ -477,6 +477,7 @@ def _WritePolicyConstantHeader(policies, policy_atomic_groups, target_platform,
           '#include <string>\n'
           '\n'
           '#include "base/values.h"\n'
+          '#include "build/chromeos_buildflags.h"\n'
           '#include "components/policy/core/common/policy_details.h"\n'
           '#include "components/policy/core/common/policy_map.h"\n'
           '#include "components/policy/proto/cloud_policy.pb.h"\n'
@@ -492,7 +493,7 @@ def _WritePolicyConstantHeader(policies, policy_atomic_groups, target_platform,
             'configuration resides.\n'
             'extern const wchar_t kRegistryChromePolicyKey[];\n')
 
-  f.write('#if defined (OS_CHROMEOS)\n'
+  f.write('#if BUILDFLAG(IS_CHROMEOS_ASH)\n'
           '// Sets default values for enterprise users.\n'
           'void SetEnterpriseUsersDefaults(PolicyMap* policy_map);\n'
           '#endif\n'
@@ -1127,7 +1128,7 @@ namespace policy {
           '  return &kChromeSchemaData;\n'
           '}\n\n')
 
-  f.write('#if defined (OS_CHROMEOS)\n'
+  f.write('#if BUILDFLAG(IS_CHROMEOS_ASH)\n'
           'void SetEnterpriseUsersDefaults(PolicyMap* policy_map) {\n')
 
   for policy in policies:
