@@ -57,11 +57,16 @@ void SafeBrowsingTokenFetchTracker::OnTokenFetchTimeout(
 
 void SafeBrowsingTokenFetchTracker::Finish(int request_id,
                                            const std::string& access_token) {
-  if (callbacks_.contains(request_id)) {
-    std::move(callbacks_[request_id]).Run(access_token);
-  }
+  if (!callbacks_.contains(request_id))
+    return;
 
+  // Remove the callback from the map before running it so that this object
+  // doesn't try to run this callback again if deleted from within the
+  // callback.
+  auto callback = std::move(callbacks_[request_id]);
   callbacks_.erase(request_id);
+
+  std::move(callback).Run(access_token);
 }
 
 }  // namespace safe_browsing

@@ -87,6 +87,28 @@ TEST_F(SafeBrowsingTokenFetchTrackerTest, FetcherDestruction) {
   EXPECT_EQ(access_token2, "");
 }
 
+// Verifies that destruction of a SafeBrowsingTokenFetchTracker instance from
+// within the client callback that the token was fetched doesn't cause a crash.
+TEST_F(SafeBrowsingTokenFetchTrackerTest,
+       FetcherDestroyedFromWithinOnTokenFetchedCallback) {
+  // Destroyed in the token fetch callback.
+  auto* fetcher = new SafeBrowsingTokenFetchTracker();
+
+  std::string access_token;
+  int request_id = fetcher->StartTrackingTokenFetch(
+      base::BindOnce(
+          [](std::string* target_token, SafeBrowsingTokenFetchTracker* fetcher,
+             const std::string& token) {
+            *target_token = token;
+            delete fetcher;
+          },
+          &access_token, fetcher),
+      base::BindOnce([](int request_id) {}));
+
+  fetcher->OnTokenFetchComplete(request_id, "token");
+  EXPECT_EQ(access_token, "token");
+}
+
 TEST_F(SafeBrowsingTokenFetchTrackerTest, Timeout) {
   SafeBrowsingTokenFetchTracker fetcher;
   std::string access_token1 = "dummy_value1";
