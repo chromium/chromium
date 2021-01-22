@@ -154,6 +154,17 @@ TEST_F(ImageDecoderTest, DecodeUnsupported) {
   EXPECT_TRUE(v8_scope.GetExceptionState().HadException());
 }
 
+TEST_F(ImageDecoderTest, DecoderCreationMixedCaseMimeType) {
+  V8TestingScope v8_scope;
+  constexpr char kImageType[] = "image/GiF";
+  EXPECT_TRUE(ImageDecoderExternal::canDecodeType(kImageType));
+  auto* decoder =
+      CreateDecoder(&v8_scope, "images/resources/animated.gif", kImageType);
+  ASSERT_TRUE(decoder);
+  ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
+  EXPECT_EQ(decoder->type(), "image/gif");
+}
+
 TEST_F(ImageDecoderTest, DecodeGif) {
   V8TestingScope v8_scope;
   constexpr char kImageType[] = "image/gif";

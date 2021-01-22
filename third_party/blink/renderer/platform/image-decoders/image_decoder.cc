@@ -181,8 +181,9 @@ std::unique_ptr<ImageDecoder> ImageDecoder::CreateByMimeType(
       CalculateMaxDecodedBytes(high_bit_depth_decoding_option, desired_size);
 
   // Note: The mime types below should match those supported by
-  // MimeUtil::IsSupportedImageMimeType().
+  // MimeUtil::IsSupportedImageMimeType() (which forces lowercase).
   std::unique_ptr<ImageDecoder> decoder;
+  mime_type = mime_type.LowerASCII();
   if (mime_type == "image/jpeg" || mime_type == "image/pjpeg" ||
       mime_type == "image/jpg") {
     decoder = std::make_unique<JPEGImageDecoder>(alpha_option, color_behavior,

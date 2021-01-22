@@ -73,7 +73,7 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
   options_ =
       init->hasOptions() ? init->options() : ImageBitmapOptions::Create();
 
-  mime_type_ = init->type();
+  mime_type_ = init->type().LowerASCII();
   if (!canDecodeType(mime_type_)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "Unsupported image format");
@@ -311,7 +311,7 @@ void ImageDecoderExternal::CreateImageDecoder() {
 
   // CreateByImageType() can't fail if we use a supported image type. Which we
   // DCHECK above via canDecodeType().
-  DCHECK(decoder_);
+  DCHECK(decoder_) << mime_type_;
 }
 
 void ImageDecoderExternal::MaybeSatisfyPendingDecodes() {
