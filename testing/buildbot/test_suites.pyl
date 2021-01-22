@@ -847,6 +847,8 @@
 
     'chromium_swarm_android_gtests': {
       'base_unittests': {},
+      'chrome_modern_public_bundle_fake_modules_smoke_test': {},
+      'chrome_modern_public_bundle_smoke_test': {},
       'content_browsertests': {
         'swarming': {
           'shards': 10,
@@ -872,6 +874,7 @@
           'shards': 5,
         },
       },
+      'weblayer_bundle_test': {},
       'webview_instrumentation_test_apk': {
         'swarming': {
           'shards': 7,
