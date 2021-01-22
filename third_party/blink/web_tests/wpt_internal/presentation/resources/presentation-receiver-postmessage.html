@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
 <body>
-<script src="../../resources/testharness.js"></script>
-<script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
-<script src="file:///gen/third_party/blink/public/mojom/presentation/presentation.mojom.js"></script>
-<script src="presentation-service-mock.js"></script>
-<script>
+<script src="/resources/testharness.js"></script>
+<script type="module">
+import {PresentationServiceMock} from './presentation-service-mock.js';
+
+const mock = new PresentationServiceMock();
 
 // Parent window sets parameter for this page.
 assert_not_equals(controllerConnectionPtr, null);
@@ -18,8 +18,8 @@ var connection = null;
 const pageUrl = 'https://example.com/a.html';
 const id = 'fakeSessionId';
 
-presentationServiceMock.onSetReceiver = () => {
-  presentationServiceMock.onReceiverConnectionAvailable(
+mock.onSetReceiver = () => {
+  mock.onReceiverConnectionAvailable(
       pageUrl, id, controllerConnectionPtr, receiverConnectionRequest);
 };
 

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<button>click me</button>
+<script type="module">
+import {PresentationServiceMock, waitForClick} from './resources/presentation-service-mock.js';
+
+const mock = new PresentationServiceMock();
+const button = document.querySelector('button');
+
+promise_test(async _ => {
+  await waitForClick(button);
+  return new Promise(async resolve => {
+    const connection =
+        await new PresentationRequest('https://example.com').start();
+    connection.onconnect = () => connection.terminate();
+    connection.onterminate = resolve;
+
+    // Open a receiver page and pass controller connection's
+    // controllerConnectionPtr and receiverConnectionRequest to it.
+    const w = window.open("resources/presentation-receiver-close-connection.html");
+    w.controllerConnectionPtr = mock.getControllerConnectionPtr();
+    w.receiverConnectionRequest = mock.getReceiverConnectionRequest();
+    w.shouldCallClose = false;
+  });
+}, "Test that controller connection.terminate() fires onterminate event handler.");
+
+</script>
+</body>
+</html>

@@ -847,7 +847,6 @@ plugins/instance-available-before-stylesheets-loaded.html
 pointer-lock/lock-already-locked.html
 pointer-lock/mouse-event-api.html
 pointer-lock/pointerlockelement-null-when-pending.html
-presentation/presentationconnectionavailableevent-ctor-mock.html
 printing/css2.1/page-break-after-000.html
 printing/css2.1/page-break-before-001.html
 screen_orientation/screenorientation-api.html
@@ -987,4 +986,5 @@ webexposed/internal-properties-should-not-be-exposed.html
 webexposed/permissions-attribute.html
 webexposed/web-animations-api.html
 wpt_internal/geolocation-api/enabled.html
+wpt_internal/presentation/presentationconnectionavailableevent-ctor-mock.html
 wpt_internal/webmidi/permission.html

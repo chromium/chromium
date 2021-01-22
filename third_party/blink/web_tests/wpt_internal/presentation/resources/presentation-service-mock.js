@@ -2,22 +2,19 @@
  * Mock implementation of mojo PresentationService.
  */
 
-"use strict";
+import {PresentationConnectionRemote, PresentationConnectionState, PresentationService, PresentationServiceReceiver} from '/gen/third_party/blink/public/mojom/presentation/presentation.mojom.m.js';
 
-class MockPresentationConnection {
-};
-
-class PresentationServiceMock {
+export class PresentationServiceMock {
   constructor() {
     this.pendingResponse_ = null;
-    this.bindingSet_ = new mojo.BindingSet(blink.mojom.PresentationService);
+    this.serviceReceiver_ = new PresentationServiceReceiver(this);
     this.controllerConnectionPtr_ = null;
     this.receiverConnectionRequest_ = null;
 
     this.interceptor_ =
-        new MojoInterfaceInterceptor(blink.mojom.PresentationService.name);
+        new MojoInterfaceInterceptor(PresentationService.$interfaceName);
     this.interceptor_.oninterfacerequest =
-        e => this.bindingSet_.addBinding(this, e.handle);
+        e => this.serviceReceiver_.$.bindHandle(e.handle);
     this.interceptor_.start();
 
     this.controller_ = null;
@@ -28,7 +25,7 @@ class PresentationServiceMock {
   }
 
   reset() {
-    this.bindingSet_.closeAllBindings();
+    this.serviceReceiver_.closeBindings();
     this.interceptor_.stop();
   }
 
@@ -47,59 +44,65 @@ class PresentationServiceMock {
       this.onSetReceiver();
   }
 
-  async startPresentation(urls) {
-    const controller_ptr = new blink.mojom.PresentationConnectionPtr();
-    const receiver_ptr = new blink.mojom.PresentationConnectionPtr();
+  setDefaultPresentationUrls(urls) {}
+
+  listenForScreenAvailability(url) {}
+
+  stopListeningForScreenAvailability(url) {}
+
+  startPresentation(urls) {
+    const controller_ptr = new PresentationConnectionRemote();
+    const receiver_ptr = new PresentationConnectionRemote();
     this.controllerConnectionPtr_ = controller_ptr;
-    this.receiverConnectionRequest_ = mojo.makeRequest(receiver_ptr);
+    this.receiverConnectionRequest_ =
+        receiver_ptr.$.bindNewPipeAndPassReceiver();
     return {
       result: {
         presentationInfo: {url: urls[0], id: 'fakePresentationId'},
         connectionRemote: receiver_ptr,
-        connectionReceiver: mojo.makeRequest(controller_ptr),
+        connectionReceiver: controller_ptr.$.bindNewPipeAndPassReceiver(),
       },
       error: null,
     };
   }
 
-  async reconnectPresentation(urls) {
-    const controller_ptr = new blink.mojom.PresentationConnectionPtr();
-    const receiver_ptr = new blink.mojom.PresentationConnectionPtr();
+  reconnectPresentation(urls) {
+    const controller_ptr = new PresentationConnectionRemote();
+    const receiver_ptr = new PresentationConnectionRemote();
     this.controllerConnectionPtr_ = controller_ptr;
-    this.receiverConnectionRequest_ = mojo.makeRequest(receiver_ptr);
+    this.receiverConnectionRequest_ =
+        receiver_ptr.$.bindNewPipeAndPassReceiver();
     return {
       result: {
         presentationInfo: {url: urls[0], id: 'fakePresentationId'},
         connectionRemote: receiver_ptr,
-        connectionReceiver: mojo.makeRequest(controller_ptr),
+        connectionReceiver: controller_ptr.$.bindNewPipeAndPassReceiver(),
       },
       error: null,
     };
   }
+
+  closeConnection(url, id) {}
 
   terminate(presentationUrl, presentationId) {
     this.controller_.onConnectionStateChanged(
         { url: presentationUrl, id: presentationId },
-        blink.mojom.PresentationConnectionState.TERMINATED);
+        PresentationConnectionState.TERMINATED);
   }
 
   onReceiverConnectionAvailable(
       strUrl, id, opt_controllerConnectionPtr, opt_receiverConnectionRequest) {
-    const mojoUrl = new url.mojom.Url();
-    mojoUrl.url = strUrl;
+    const mojoUrl = {url: strUrl}
     var controllerConnectionPtr = opt_controllerConnectionPtr;
     if (!controllerConnectionPtr) {
-      controllerConnectionPtr = new blink.mojom.PresentationConnectionPtr();
-      const connectionBinding = new mojo.Binding(
-          blink.mojom.PresentationConnection,
-          new MockPresentationConnection(),
-          mojo.makeRequest(controllerConnectionPtr));
+      controllerConnectionPtr = new PresentationConnectionRemote();
+      controllerConnectionPtr.$.bindNewPipeAndPassReceiver();
     }
 
     var receiverConnectionRequest = opt_receiverConnectionRequest;
     if (!receiverConnectionRequest) {
-      receiverConnectionRequest = mojo.makeRequest(
-          new blink.mojom.PresentationConnectionPtr());
+      const remote = new PresentationConnectionRemote();
+      receiverConnectionRequest = remote.$.bindNewPipeAndPassReceiver();
     }
 
     console.log('onReceiverConnectionAvailable: ' + mojoUrl + ',' + id);
@@ -118,19 +121,19 @@ class PresentationServiceMock {
   }
 }
 
-function waitForClick(callback, button) {
-  button.addEventListener('click', callback, { once: true });
+export function waitForClick(button) {
+  return new Promise(resolve => {
+    button.addEventListener('click', resolve, {once: true});
 
-  if (!('eventSender' in window))
-    return;
+    if (!('eventSender' in window))
+      return;
 
-  const boundingRect = button.getBoundingClientRect();
-  const x = boundingRect.left + boundingRect.width / 2;
-  const y = boundingRect.top + boundingRect.height / 2;
+    const boundingRect = button.getBoundingClientRect();
+    const x = boundingRect.left + boundingRect.width / 2;
+    const y = boundingRect.top + boundingRect.height / 2;
 
-  eventSender.mouseMoveTo(x, y);
-  eventSender.mouseDown();
-  eventSender.mouseUp();
+    eventSender.mouseMoveTo(x, y);
+    eventSender.mouseDown();
+    eventSender.mouseUp();
+  });
 }
-
-let presentationServiceMock = new PresentationServiceMock();

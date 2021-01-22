@@ -1552,9 +1552,6 @@ mojo.internal.InterfaceProxy = function(type) {
   return {
     $: {
       encode: function(value, encoder, byteOffset, bitOffset, nullable) {
-        if (!(value instanceof type))
-          throw new Error('Invalid proxy type. Expected ' + type.name);
-
         const endpoint = value.proxy.unbind();
         console.assert(endpoint, `unexpected null ${type.name}`);
 
@@ -1582,8 +1579,6 @@ mojo.internal.InterfaceRequest = function(type) {
   return {
     $: {
       encode: function(value, encoder, byteOffset, bitOffset, nullable) {
-        if (!(value instanceof type))
-          throw new Error('Invalid request type. Expected ' + type.name);
         if (!value.handle)
           throw new Error('Unexpected null ' + type.name);
 
@@ -1610,9 +1605,6 @@ mojo.internal.AssociatedInterfaceProxy = function(type) {
     $: {
       type: type,
       encode: function(value, encoder, byteOffset, bitOffset, nullable) {
-        console.assert(
-            value instanceof type,
-            `unexpected object in place of ${type.name}: `, value);
         console.assert(
             value.proxy.endpoint && value.proxy.endpoint.isPendingAssociation,
             `expected ${type.name} to be associated and unbound`);
@@ -1644,9 +1636,6 @@ mojo.internal.AssociatedInterfaceRequest = function(type) {
     $: {
       type: type,
       encode: function(value, encoder, byteOffset, bitOffset, nullable) {
-        console.assert(
-            value instanceof type,
-            `unexpected object in place of ${type.name}: `, value);
         console.assert(
             value.handle && value.handle.isPendingAssociation,
             `expected ${type.name} to be associated and unbound`);

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<button>click me</button>
+<script type="module">
+import {PresentationErrorType} from '/gen/third_party/blink/public/mojom/presentation/presentation.mojom.m.js';
+import {PresentationServiceMock, waitForClick} from './resources/presentation-service-mock.js';
+
+const mock = new PresentationServiceMock();
+const button = document.querySelector('button');
+
+promise_test(async _ => {
+  mock.startPresentation = async urls => {
+    return {
+      presentationInfo: null,
+      error: {
+        errorType: PresentationErrorType.PREVIOUS_START_IN_PROGRESS,
+        message: 'Previous start in progress'
+      }
+    };
+  };
+
+  await waitForClick(button);
+  const request = new PresentationRequest("https://example.com");
+  return request.start().catch(e => assert_equals(e.name, 'OperationError'));
+}, "Test that the PresentationRequest.start() rejects with OperationError if PresentationService reports PREVIOUS_START_IN_PROGRESS error");
+
+</script>
+</body>
+</html>

@@ -4334,7 +4334,6 @@ crbug.com/778467 [ Fuchsia ] mhtml/mhtml_in_iframe.html [ Failure ]
 
 # These tests load resources from file:///gen/... .
 crbug.com/919639 [ Fuchsia ] fast/speech/scripted/speechrecognition-re-restart.html [ Failure ]
-crbug.com/919639 [ Fuchsia ] presentation/presentationconnectionavailableevent-ctor-mock.html [ Failure ]
 
 # These tests timeout when using Scenic ozone platform.
 crbug.com/1067477 [ Fuchsia ] fast/media/matchmedium-query-api.html [ Skip ]

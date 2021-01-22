@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<button>click me</button>
+<script type="module">
+import {PresentationServiceMock, waitForClick} from './resources/presentation-service-mock.js';
+
+const mock = new PresentationServiceMock();
+const button = document.querySelector('button');
+
+promise_test(async _ => {
+  await waitForClick(button);
+
+  const request = new PresentationRequest('https://example.com');
+  const connection = await request.start();
+  assert_not_equals(connection, null);
+
+  const newConnection = await request.reconnect(connection.id);
+  assert_equals(connection, newConnection);
+}, "Test that Presentation.reconnect() resolves with existing presentation connection.");
+
+</script>
+</body>
+</html>
