@@ -90,16 +90,44 @@ struct ClientSettings {
   // Snackbar.
   base::Optional<ClientSettingsProto::BackButtonSettings> back_button_settings;
 
+  // Whether to show warnings related to a slow connection to the user.
   bool enable_slow_connection_warnings = false;
+
+  // Whether to show warnings related to a slow website to the user.
   bool enable_slow_website_warnings = false;
-  bool only_show_warning_once = false;
-  base::TimeDelta timeout_warning_delay =
-      base::TimeDelta::FromMilliseconds(1000);
+
+  // If true, the slow connection or website warning will be only shown once.
+  bool only_show_warning_once = true;
+
+  // Defines the maximum wait on a dom find element operation before showing
+  // the slow website warning.
+  base::TimeDelta warning_delay = base::TimeDelta::FromMilliseconds(1500);
+
+  // Defines the number of consecutive slow roundtrips allowed before showing
+  // the slow connection warning.
   int max_consecutive_slow_roundtrips = 3;
+
+  // Defines the threshold above which a roundtrip is considered too slow.
   base::TimeDelta slow_roundtrip_threshold =
-      base::TimeDelta::FromMilliseconds(500);
+      base::TimeDelta::FromMilliseconds(1500);
+
+  // The message to show as a warning to inform the user of a slow connection.
+  // If this is not set, no warning will be shown in case of slow connection.
   std::string slow_connection_message = "";
+
+  // The message to show as a warning to inform the user of a slow website.
+  // If this is not set, no warning will be shown in case of a slow website.
   std::string slow_website_message = "";
+
+  // The minimum duration that the message will be shown for (only applies to
+  // the slow connection messages).
+  base::TimeDelta minimum_warning_duration =
+      base::TimeDelta::FromMilliseconds(1500);
+
+  // Whether the warning message should replace the current status message or
+  // should be concatenated.
+  ClientSettingsProto::SlowWarningSettings::MessageMode message_mode =
+      ClientSettingsProto::SlowWarningSettings::REPLACE;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(ClientSettings);

@@ -235,6 +235,13 @@ message ClientSettingsProto {
   // Settings to define the behavior for showing warnings about slow connection
   // and/or websites to users.
   message SlowWarningSettings {
+    enum MessageMode {
+      UNKNOWN = 0;
+      // The warning message will be appended to the existing status message.
+      CONCATENATE = 1;
+      // The warning message will replace the current status message.
+      REPLACE = 2;
+    }
     // Whether to show warnings related to a slow connection to the user.
     optional bool enable_slow_connection_warnings = 1;
     // Whether to show warnings related to a slow website to the user.
@@ -255,6 +262,12 @@ message ClientSettingsProto {
     // The message to show as a warning to inform the user of a slow website.
     // If this is not set, no warning will be shown in case of a slow website.
     optional string slow_website_message = 8;
+    // The minimum duration that the message will be shown for (only applies to
+    // the slow connection messages).
+    optional int32 minimum_warning_message_duration_ms = 9;
+    // Whether the warning message should replace the current status message or
+    // should be concatenated.
+    optional MessageMode message_mode = 10;
   }
   optional SlowWarningSettings slow_warning_settings = 21;
 
