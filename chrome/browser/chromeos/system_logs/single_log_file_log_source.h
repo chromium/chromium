@@ -59,7 +59,7 @@ class SingleLogFileLogSource : public SystemLogsSource {
   // system_logs::SystemLogsSource:
   void Fetch(SysLogsSourceCallback callback) override;
 
-  void SetMaxReadSizeForTesting(int64_t max_read_size);
+  void SetMaxReadSizeForTesting(size_t max_read_size);
 
  private:
   friend class SingleLogFileLogSourceTest;
@@ -104,7 +104,7 @@ class SingleLogFileLogSource : public SystemLogsSource {
   base::FilePath log_file_dir_path_;
 
   // The maximum size of a read from |file_|.
-  int64_t max_read_size_;
+  size_t max_read_size_;
 
   // Keeps track of how much data has been read or skipped from |file_|.
   size_t file_cursor_position_;

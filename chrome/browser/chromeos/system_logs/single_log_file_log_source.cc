@@ -28,7 +28,7 @@ constexpr int kMaxNumAllowedLogRotationsDuringFileRead = 3;
 // responsible for further bundling and truncating.
 //  * This cap is applied to the read buffer before dropping trailing incomplete
 //    lines.
-constexpr int64_t kMaxReadSize = 5 * 1024 * 1024;
+constexpr size_t kMaxReadSize = 5 * 1024 * 1024;
 
 // A custom timestamp for when the current Chrome session started. Used during
 // testing to override the actual time.
@@ -117,7 +117,7 @@ void SingleLogFileLogSource::Fetch(SysLogsSourceCallback callback) {
 }
 
 void SingleLogFileLogSource::SetMaxReadSizeForTesting(
-    const int64_t max_read_size) {
+    const size_t max_read_size) {
   max_read_size_ = max_read_size;
 }
 
