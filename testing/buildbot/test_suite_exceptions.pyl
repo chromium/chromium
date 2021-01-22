@@ -2020,6 +2020,11 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.ozone_unittests.filter',
         ],
       },
+      'chromeos-betty-pi-arc-chrome-dchecks': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.ozone_unittests.filter',
+        ],
+      },
       'chromeos-betty-pi-arc-chrome-ltc': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.ozone_unittests.filter',
