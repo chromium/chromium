@@ -50,31 +50,6 @@ class COMPOSITOR_EXPORT TransformAnimationCurveAdapter
   DISALLOW_ASSIGN(TransformAnimationCurveAdapter);
 };
 
-class COMPOSITOR_EXPORT InverseTransformCurveAdapter
-    : public cc::TransformAnimationCurve {
- public:
-  InverseTransformCurveAdapter(TransformAnimationCurveAdapter base_curve,
-                               gfx::Transform initial_value,
-                               base::TimeDelta duration);
-
-  ~InverseTransformCurveAdapter() override;
-
-  base::TimeDelta Duration() const override;
-  std::unique_ptr<AnimationCurve> Clone() const override;
-  cc::TransformOperations GetValue(base::TimeDelta t) const override;
-  bool PreservesAxisAlignment() const override;
-  bool MaximumScale(float* max_scale) const override;
-
- private:
-  TransformAnimationCurveAdapter base_curve_;
-  gfx::Transform initial_value_;
-  cc::TransformOperations initial_wrapped_value_;
-  gfx::Transform effective_initial_value_;
-  base::TimeDelta duration_;
-
-  DISALLOW_ASSIGN(InverseTransformCurveAdapter);
-};
-
 }  // namespace ui
 
 #endif  // UI_COMPOSITOR_TRANSFORM_ANIMATION_CURVE_ADAPTER_H_
