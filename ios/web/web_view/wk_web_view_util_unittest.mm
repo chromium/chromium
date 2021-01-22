@@ -90,9 +90,9 @@ TEST_F(WKWebViewUtilTest, IOS14EnsureCallbackIsCalledWithNil) {
 }
 #endif
 
-// Tests that CreateFullPagePDF invokes the callback with NSData.
+// Tests that CreateFullPagePDF invokes the callback with nil on iOS 13.
 TEST_F(WKWebViewUtilTest, IOS13EnsureCallbackIsCalled) {
-  // Expeted: The callback is called with valid NSData.
+  // Expected: The callback is called with nil.
   if (@available(iOS 14, *))
     return;
 
@@ -108,11 +108,8 @@ TEST_F(WKWebViewUtilTest, IOS13EnsureCallbackIsCalled) {
                       callback_data = [data copy];
                     }));
 
-  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForPageLoadTimeout, ^bool {
-        return callback_called;
-      }));
-  EXPECT_TRUE(callback_data);
+  EXPECT_TRUE(callback_called);
+  EXPECT_EQ(nil, callback_data);
 }
 
 // Tests that CreateFullPagePDF invokes the callback with NULL if

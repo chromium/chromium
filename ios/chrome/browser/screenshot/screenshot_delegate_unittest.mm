@@ -49,7 +49,7 @@ class ScreenshotDelegateTest : public PlatformTest {
 // be set and that data can be generated from it.
 TEST_F(ScreenshotDelegateTest, ScreenshotService) {
   // Expected: Empty NSData.
-  if (@available(iOS 13, *)) {
+  if (@available(iOS 14, *)) {
     auto web_state = std::make_unique<web::FakeWebState>();
     TestBrowser browser;
 
@@ -111,7 +111,7 @@ TEST_F(ScreenshotDelegateTest, ScreenshotService) {
 // Browser screenshotService will return nil.
 TEST_F(ScreenshotDelegateTest, NilBrowser) {
   // Expected: nil NSData.
-  if (@available(iOS 13, *)) {
+  if (@available(iOS 14, *)) {
     // Add the StubBrowserInterface with no set Browser to
     // StubBrowserInterfaceProvider.
     browser_interface_provider_.currentInterface = browser_interface_;
@@ -135,7 +135,7 @@ TEST_F(ScreenshotDelegateTest, NilBrowser) {
 // WebSatate screenshotService will return nil.
 TEST_F(ScreenshotDelegateTest, NilWebState) {
   // Expected: nil NSData.
-  if (@available(iOS 13, *)) {
+  if (@available(iOS 14, *)) {
     TestBrowser browser;
 
     // Add the empty Browser to StubBrowserInterface.
