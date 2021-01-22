@@ -335,6 +335,7 @@ dialog.config {
 }
 
 .port-forwarding-container {
+  align-items: center;
   display: flex;
 }
 
