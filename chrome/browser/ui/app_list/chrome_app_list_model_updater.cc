@@ -352,17 +352,12 @@ void ChromeAppListModelUpdater::GetContextMenuModel(
 
 syncer::StringOrdinal ChromeAppListModelUpdater::GetFirstAvailablePosition()
     const {
-  std::vector<ChromeAppListItem*> top_level_items;
-  for (auto& entry : items_) {
-    ChromeAppListItem* item = entry.second.get();
-    DCHECK(item->position().IsValid())
-        << "Item with invalid position: id=" << item->id()
-        << ", name=" << item->name() << ", is_folder=" << item->is_folder()
-        << ", is_page_break=" << item->is_page_break();
-    if (item->folder_id().empty() && item->position().IsValid())
-      top_level_items.emplace_back(item);
-  }
-  return GetFirstAvailablePositionInternal(top_level_items);
+  return GetFirstAvailablePositionInternal(GetTopLevelItems());
+}
+
+syncer::StringOrdinal ChromeAppListModelUpdater::GetPositionBeforeFirstItem()
+    const {
+  return GetPositionBeforeFirstItemInternal(GetTopLevelItems());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -546,4 +541,19 @@ void ChromeAppListModelUpdater::OnPageBreakItemDeleted(const std::string& id) {
   for (AppListModelUpdaterObserver& observer : observers_)
     observer.OnAppListItemWillBeDeleted(chrome_item);
   items_.erase(id);
+}
+
+std::vector<ChromeAppListItem*> ChromeAppListModelUpdater::GetTopLevelItems()
+    const {
+  std::vector<ChromeAppListItem*> top_level_items;
+  for (auto& entry : items_) {
+    ChromeAppListItem* item = entry.second.get();
+    DCHECK(item->position().IsValid())
+        << "Item with invalid position: id=" << item->id()
+        << ", name=" << item->name() << ", is_folder=" << item->is_folder()
+        << ", is_page_break=" << item->is_page_break();
+    if (item->folder_id().empty() && item->position().IsValid())
+      top_level_items.emplace_back(item);
+  }
+  return top_level_items;
 }

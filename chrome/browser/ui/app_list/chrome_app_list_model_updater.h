@@ -83,6 +83,7 @@ class ChromeAppListModelUpdater : public AppListModelUpdater {
   void GetContextMenuModel(const std::string& id,
                            GetMenuModelCallback callback) override;
   syncer::StringOrdinal GetFirstAvailablePosition() const override;
+  syncer::StringOrdinal GetPositionBeforeFirstItem() const override;
 
   // Methods for AppListSyncableService:
   void AddItemToOemFolder(
@@ -109,6 +110,8 @@ class ChromeAppListModelUpdater : public AppListModelUpdater {
   void RemoveObserver(AppListModelUpdaterObserver* observer) override;
 
  private:
+  std::vector<ChromeAppListItem*> GetTopLevelItems() const;
+
   // A map from a ChromeAppListItem's id to its unique pointer. This item set
   // matches the one in AppListModel.
   std::map<std::string, std::unique_ptr<ChromeAppListItem>> items_;

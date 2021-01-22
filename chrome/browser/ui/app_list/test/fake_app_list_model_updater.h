@@ -56,6 +56,7 @@ class FakeAppListModelUpdater : public AppListModelUpdater {
   bool FindItemIndexForTest(const std::string& id, size_t* index) override;
   void GetIdToAppListIndexMap(GetIdToAppListIndexMapCallback callback) override;
   syncer::StringOrdinal GetFirstAvailablePosition() const override;
+  syncer::StringOrdinal GetPositionBeforeFirstItem() const override;
   void GetContextMenuModel(const std::string& id,
                            GetMenuModelCallback callback) override;
   size_t BadgedItemCount() override;
@@ -77,6 +78,8 @@ class FakeAppListModelUpdater : public AppListModelUpdater {
   void WaitForIconUpdates(size_t expected_updates);
 
   size_t update_image_count() const { return update_image_count_; }
+
+  std::vector<ChromeAppListItem*> GetTopLevelItems() const;
 
  private:
   bool search_engine_is_google_ = false;

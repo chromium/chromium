@@ -100,6 +100,8 @@ class AppListModelUpdater {
   virtual void GetIdToAppListIndexMap(GetIdToAppListIndexMapCallback callback) {
   }
   virtual syncer::StringOrdinal GetFirstAvailablePosition() const = 0;
+  // Returns a position which is before the first item in the item list.
+  virtual syncer::StringOrdinal GetPositionBeforeFirstItem() const = 0;
 
   // Methods for AppListSyncableService:
   virtual void AddItemToOemFolder(
@@ -144,6 +146,11 @@ class AppListModelUpdater {
   // items without parents. Note that all items in |top_level_items| should have
   // valid position.
   static syncer::StringOrdinal GetFirstAvailablePositionInternal(
+      const std::vector<ChromeAppListItem*>& top_level_items);
+
+  // Returns a position which is before the first item in the app list. If
+  // |top_level_items| is empty, creates an initial position instead.
+  static syncer::StringOrdinal GetPositionBeforeFirstItemInternal(
       const std::vector<ChromeAppListItem*>& top_level_items);
 
  private:
