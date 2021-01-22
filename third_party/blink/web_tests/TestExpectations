@@ -1488,8 +1488,6 @@ crbug.com/1002937 external/wpt/editing/run/caret-navigation-around-line-break.ht
 
 crbug.com/821455 editing/pasteboard/drag-files-to-editable-element.html [ Failure ]
 
-crbug.com/688613 external/wpt/mediacapture-streams/MediaStreamTrack-MediaElement-disabled-audio-is-silence.https.html [ Skip ]
-
 crbug.com/766135 fast/dom/Window/redirect-with-timer.html [ Timeout Pass ]
 
 # Ref tests that needs investigation.
@@ -2526,10 +2524,8 @@ crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-20
 # ====== New tests from wpt-importer added here ======
 crbug.com/626703 [ Mac11.0 ] external/wpt/css/css-scroll-snap/snap-after-initial-layout/scroll-snap-writing-mode-000.html [ Failure ]
 crbug.com/626703 [ Mac10.13 ] virtual/threaded/external/wpt/web-animations/timing-model/animations/updating-the-finished-state.html [ Timeout ]
-crbug.com/626703 [ Mac11.0 ] virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaStream-default-feature-policy.https.html [ Crash ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/editing/other/typing-around-link-element-at-non-collapsed-selection.tentative.html?target=ContentEditable&parent=b [ Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/editing/other/typing-around-link-element-at-collapsed-selection.tentative.html?target=ContentEditable [ Timeout ]
-crbug.com/626703 [ Mac10.12 ] virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaStream-default-feature-policy.https.html [ Crash ]
 crbug.com/626703 external/wpt/css/css-sizing/aspect-ratio/intrinsic-size-010.html [ Failure ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/editing/other/typing-around-link-element-at-collapsed-selection.tentative.html?target=ContentEditable&parent=b [ Timeout ]
 crbug.com/626703 [ Mac11.0 ] virtual/threaded/external/wpt/css/css-scroll-snap/snap-after-initial-layout/scroll-snap-writing-mode-000.html [ Failure ]
@@ -2913,7 +2909,6 @@ crbug.com/626703 external/wpt/css/css-text/letter-spacing/letter-spacing-nesting
 crbug.com/626703 external/wpt/css/css-text/letter-spacing/letter-spacing-nesting-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/letter-spacing/letter-spacing-bidi-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/letter-spacing/letter-spacing-end-of-line-001.html [ Failure ]
-crbug.com/626703 external/wpt/mediacapture-record/MediaRecorder-destroy-script-execution.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-will-change/will-change-abspos-cb-dynamic-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-will-change/will-change-abspos-cb-001.html [ Failure ]
 ### See crbug.com/891427 comment near the top of this file:
@@ -5698,7 +5693,7 @@ crbug.com/1140329 http/tests/devtools/network/network-filter-service-worker.js [
 crbug.com/1141206 scrollbars/overflow-scrollbar-combinations.html [ Pass Failure ]
 
 #Sheriff 2020-10-26
-crbug.com/1142877 external/wpt/mediacapture-fromelement/capture.html [ Pass Failure Crash ]
+crbug.com/1142877 [ Mac ] external/wpt/mediacapture-fromelement/capture.html [ Pass Failure Crash ]
 
 #Sheriff 2020-10-29
 crbug.com/1143720 [ Win7 ] external/wpt/media-source/mediasource-detach.html [ Pass Failure ]
@@ -5804,7 +5799,6 @@ crbug.com/1157861 http/tests/devtools/console/paintworklet-console-selector.js [
 
 # Wpt importer Sheriff 2020-12-11
 crbug.com/626703 [ Linux ] wpt_internal/storage/estimate-usage-details-filesystem.https.tentative.any.html [ Pass Failure ]
-crbug.com/626703 [ Mac ] external/wpt/mediacapture-image/MediaStreamTrack-getConstraints.https.html [ Pass Failure ]
 
 # Wpt importer sheriff 2020-12-23
 crbug.com/1161590 external/wpt/html/semantics/forms/textfieldselection/select-event.html [ Failure Timeout ]
