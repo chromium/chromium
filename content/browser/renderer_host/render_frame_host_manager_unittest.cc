@@ -2514,8 +2514,8 @@ TEST_P(RenderFrameHostManagerTest,
   DidNavigateFrame(child, hostB);
 
   // Ensure that the main page is focused.
-  main_test_rfh()->GetView()->Focus();
-  EXPECT_TRUE(main_test_rfh()->GetView()->HasFocus());
+  main_test_rfh()->GetRenderWidgetHost()->SetPageFocus(true);
+  EXPECT_TRUE(main_test_rfh()->GetRenderWidgetHost()->is_focused());
 
   // Navigate the subframe to C.
   NavigationEntryImpl entryC(

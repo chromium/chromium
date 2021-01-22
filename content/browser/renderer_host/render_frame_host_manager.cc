@@ -2973,7 +2973,8 @@ void RenderFrameHostManager::CommitPending(
 
   // Remember if the page was focused so we can focus the new renderer in
   // that case.
-  bool focus_render_view = old_view && old_view->HasFocus();
+  bool focus_render_view =
+      render_frame_host_->GetMainFrame()->GetRenderWidgetHost()->is_focused();
 
   // Remove the current frame and its descendants from the set of fullscreen
   // frames immediately. They can stay in pending deletion for some time.
@@ -3072,7 +3073,7 @@ void RenderFrameHostManager::CommitPending(
     if (is_main_frame) {
       new_view->Focus();
     } else {
-      // The current tab has page-level focus, so we need to propagate
+      // The current WebContents has page-level focus, so we need to propagate
       // page-level focus to the subframe's renderer. Before doing that, also
       // tell the new renderer what the focused frame is if that frame is not
       // in its process, so that Blink's page-level focus logic won't try to

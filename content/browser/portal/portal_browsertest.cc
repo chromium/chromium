@@ -1808,6 +1808,70 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, DidFocusIPCFromFrameInsidePortal) {
   EXPECT_EQ(web_contents_impl->GetFocusedFrame(), main_frame);
 }
 
+IN_PROC_BROWSER_TEST_F(PortalBrowserTest, DidFocusIPCFromOrphanedPortal) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
+  WebContentsImpl* web_contents_impl =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  RenderFrameHostImpl* main_frame = web_contents_impl->GetMainFrame();
+
+  GURL a_url = embedded_test_server()->GetURL("a.com", "/title1.html");
+  Portal* portal = CreatePortalToUrl(web_contents_impl, a_url);
+  WebContentsImpl* portal_contents = portal->GetPortalContents();
+  RenderFrameHostImpl* portal_main_frame = portal_contents->GetMainFrame();
+
+  EXPECT_EQ(web_contents_impl->GetFocusedWebContents(), web_contents_impl);
+  EXPECT_EQ(web_contents_impl->GetFocusedFrame(), main_frame);
+  EXPECT_EQ(portal_contents->GetFocusedFrame(), nullptr);
+  EXPECT_TRUE(main_frame->GetRenderWidgetHost()->is_focused());
+
+  // Activate portal, keep in orphaned state for a while, and then adopt and
+  // insert predecessor.
+  // TODO(mcnee): Ideally, we would have a test interceptor to precisely
+  // control when to proceed with adoption.
+  const int time_in_orphaned_state =
+      TestTimeouts::tiny_timeout().InMilliseconds();
+  EXPECT_TRUE(
+      ExecJs(portal_main_frame,
+             JsReplace("window.addEventListener('portalactivate', e => { "
+                       "  var stop = performance.now() + $1;"
+                       "  while (performance.now() < stop) {}"
+                       "  var portal = e.adoptPredecessor(); "
+                       "  document.body.appendChild(portal);"
+                       "});",
+                       time_in_orphaned_state)));
+  {
+    PortalActivatedObserver activated_observer(portal);
+    PortalCreatedObserver adoption_observer(portal_main_frame);
+    EXPECT_TRUE(ExecJs(main_frame,
+                       "let portal = document.querySelector('portal');"
+                       "portal.activate();"));
+    activated_observer.WaitForActivate();
+
+    // |web_contents_impl| is orphaned and therefore still points to itself
+    // as the focused WebContents node in its tree. It shouldn't have a view
+    // and it shouldn't have page focus.
+    EXPECT_EQ(web_contents_impl->GetFocusedWebContents(), web_contents_impl);
+    EXPECT_EQ(web_contents_impl->GetRenderWidgetHostView(), nullptr);
+    EXPECT_FALSE(main_frame->GetRenderWidgetHost()->is_focused());
+
+    // Simulate DidFocusFrame IPC being sent from the renderer while orphaned.
+    main_frame->DidFocusFrame();
+    EXPECT_EQ(web_contents_impl->GetFocusedFrame(), main_frame);
+    EXPECT_FALSE(main_frame->GetRenderWidgetHost()->is_focused());
+
+    EXPECT_EQ(blink::mojom::PortalActivateResult::kPredecessorWasAdopted,
+              activated_observer.WaitForActivateResult());
+    adoption_observer.WaitUntilPortalCreated();
+  }
+
+  // Adoption is complete, so |web_contents_impl_| is no longer orphaned and is
+  // an inner WebContents.
+  EXPECT_EQ(web_contents_impl->GetFocusedWebContents(), portal_contents);
+  EXPECT_EQ(web_contents_impl->GetFocusedFrame(), main_frame);
+  EXPECT_FALSE(main_frame->GetRenderWidgetHost()->is_focused());
+}
+
 // Test that a renderer process is killed if it sends an AdvanceFocus IPC to
 // advance focus into a portal.
 IN_PROC_BROWSER_TEST_F(PortalBrowserTest, AdvanceFocusIntoPortal) {

@@ -616,6 +616,9 @@ void Portal::ActivateImpl(blink::TransferableMessage data,
     outer_contents_main_frame_view->Destroy();
   }
 
+  // Remove page focus from the now orphaned predecessor.
+  outer_contents->GetMainFrame()->GetRenderWidgetHost()->Blur();
+
   // These pointers are cleared so that they don't dangle in the event this
   // object isn't immediately deleted. It isn't done sooner because
   // ActivatePortalWebContents misbehaves if the WebContents doesn't appear to
