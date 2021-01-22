@@ -1066,12 +1066,12 @@ body.recording-ui-paused #record-time {
 }
 
 body.recording-ui-paused #record-time .icon,
-body:not(.recording-ui-paused) #record-time [i18n-content=record_video_paused_msg] {
+body:not(.recording-ui-paused) #record-time [i18n-text=record_video_paused_msg] {
   display: none;
 }
 
 #record-time #record-time-msg,
-#record-time [i18n-content=record_video_paused_msg] {
+#record-time [i18n-text=record_video_paused_msg] {
   color: white;
   flex-shrink: 0;
   font-size: 13px;
@@ -1355,11 +1355,11 @@ body:not(.has-front-camera):not(.has-back-camera) #builtin-video-header {
   display: none;
 }
 
-body.grid-3x3 .description span[i18n-content=label_grid_3x3],
-body.grid-4x4 .description span[i18n-content=label_grid_4x4],
-body.grid-golden .description span[i18n-content=label_grid_golden],
-body.timer-3s .description span[i18n-content=label_timer_3s],
-body.timer-10s .description span[i18n-content=label_timer_10s],
+body.grid-3x3 .description span[i18n-text=label_grid_3x3],
+body.grid-4x4 .description span[i18n-text=label_grid_4x4],
+body.grid-golden .description span[i18n-text=label_grid_golden],
+body.timer-3s .description span[i18n-text=label_timer_3s],
+body.timer-10s .description span[i18n-text=label_timer_10s],
 .menu-item.resol-item .description span {
   display: inline;
 }

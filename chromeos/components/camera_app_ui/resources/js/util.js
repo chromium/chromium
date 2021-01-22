@@ -98,10 +98,9 @@ export function setupI18nElements(rootElement) {
   const setAriaLabel = (element, attr) =>
       element.setAttribute('aria-label', getMessage(element, attr));
 
-  getElements('i18n-content')
+  getElements('i18n-text')
       .forEach(
-          (element) => element.textContent =
-              getMessage(element, 'i18n-content'));
+          (element) => element.textContent = getMessage(element, 'i18n-text'));
   getElements('i18n-tooltip-true')
       .forEach(
           (element) => element.setAttribute(
