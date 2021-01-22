@@ -113,4 +113,26 @@ TEST(TextSearcherICUTest, FindControlCharacter) {
   EXPECT_EQ(0u, result.length);
 }
 
+// For http://crbug.com/1138877
+TEST(TextSearcherICUTest, BrokenSurrogate) {
+  TextSearcherICU searcher;
+  UChar one[1];
+  one[0] = 0xDB00;
+  const String pattern(one, 1);
+  searcher.SetPattern(pattern, kWholeWord);
+
+  UChar two[2];
+  two[0] = 0x0022;
+  two[1] = 0xDB00;
+  const String text(two, 2);
+  searcher.SetText(text.Characters16(), text.length());
+
+  // Note: Because even if ICU find U+DB00 but ICU doesn't think U+DB00 as
+  // word, we consider it doesn't match whole word.
+  MatchResultICU result;
+  EXPECT_FALSE(searcher.NextMatchResult(result));
+  EXPECT_EQ(0u, result.start);
+  EXPECT_EQ(0u, result.length);
+}
+
 }  // namespace blink

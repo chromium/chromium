@@ -104,9 +104,10 @@ class ICULockableSearcher {
 static bool IsWholeWordMatch(const UChar* text,
                              int text_length,
                              MatchResultICU& result) {
-  DCHECK_LE((int)(result.start + result.length), text_length);
+  const wtf_size_t result_end = result.start + result.length;
+  DCHECK_LE(result_end, static_cast<wtf_size_t>(text_length));
   UChar32 first_character;
-  U16_GET(text, 0, result.start, result.length, first_character);
+  U16_GET(text, 0, result.start, result_end, first_character);
 
   // Chinese and Japanese lack word boundary marks, and there is no clear
   // agreement on what constitutes a word, so treat the position before any CJK
@@ -114,15 +115,15 @@ static bool IsWholeWordMatch(const UChar* text,
   if (Character::IsCJKIdeographOrSymbol(first_character))
     return true;
 
-  wtf_size_t word_break_search_start = result.start + result.length;
+  wtf_size_t word_break_search_start = result_end;
   while (word_break_search_start > result.start) {
     word_break_search_start =
         FindNextWordBackward(text, text_length, word_break_search_start);
   }
   if (word_break_search_start != result.start)
     return false;
-  return static_cast<int>(result.start + result.length) ==
-         FindWordEndBoundary(text, text_length, word_break_search_start);
+  return result_end == static_cast<wtf_size_t>(FindWordEndBoundary(
+                           text, text_length, word_break_search_start));
 }
 
 // Grab the single global searcher.
