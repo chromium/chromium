@@ -105,7 +105,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
 
   // PdfViewPluginBase:
   void ProposeDocumentLayout(const DocumentLayout& layout) override;
-  void Invalidate(const gfx::Rect& rect) override;
   void DidScroll(const gfx::Vector2d& offset) override;
   void ScrollToX(int x_in_screen_coords) override;
   void ScrollToY(int y_in_screen_coords, bool compensate_for_toolbar) override;
@@ -331,9 +330,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   // Callback to print without re-entrancy issues.
   void OnPrint(int32_t /*unused_but_required*/);
 
-  // Callback to do invalidation after painting finishes.
-  void InvalidateAfterPaintDone(int32_t /*unused_but_required*/);
-
   // Helper for HandleInputEvent(). Returns whether engine() handled the event
   // or not.
   bool SendInputEventToEngine(const pp::InputEvent& event);
@@ -367,9 +363,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   bool last_bitmap_smaller_ = false;
   // True if the plugin is full-page.
   bool full_ = false;
-
-  // Deferred invalidates while |in_paint_| is true.
-  std::vector<gfx::Rect> deferred_invalidates_;
 
   struct PrintSettings {
     PrintSettings() { Clear(); }

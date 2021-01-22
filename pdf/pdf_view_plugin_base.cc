@@ -27,6 +27,16 @@ PdfViewPluginBase::PdfViewPluginBase() = default;
 
 PdfViewPluginBase::~PdfViewPluginBase() = default;
 
+void PdfViewPluginBase::Invalidate(const gfx::Rect& rect) {
+  if (in_paint_) {
+    deferred_invalidates_.push_back(rect);
+    return;
+  }
+
+  gfx::Rect offset_rect = rect + available_area_.OffsetFromOrigin();
+  paint_manager_.InvalidateRect(offset_rect);
+}
+
 uint32_t PdfViewPluginBase::GetBackgroundColor() {
   return background_color_;
 }
@@ -62,6 +72,14 @@ void PdfViewPluginBase::LoadUrl(const std::string& url, bool is_print_preview) {
                      GetWeakPtr(), std::move(loader)));
 }
 
+void PdfViewPluginBase::InvalidateAfterPaintDone(
+    int32_t /*unused_but_required*/) {
+  DCHECK(!in_paint_);
+  for (const gfx::Rect& rect : deferred_invalidates_)
+    Invalidate(rect);
+  deferred_invalidates_.clear();
+}
+
 void PdfViewPluginBase::RecalculateAreas(double old_zoom,
                                          float old_device_scale) {
   if (zoom_ != old_zoom || device_scale_ != old_device_scale)
@@ -90,7 +108,7 @@ void PdfViewPluginBase::RecalculateAreas(double old_zoom,
 
   if (document_size_.IsEmpty())
     return;
-  paint_manager().InvalidateRect(gfx::Rect(plugin_size_));
+  paint_manager_.InvalidateRect(gfx::Rect(plugin_size_));
 }
 
 void PdfViewPluginBase::CalculateBackgroundParts() {

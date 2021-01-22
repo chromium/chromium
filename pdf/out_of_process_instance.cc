@@ -1235,7 +1235,7 @@ void OutOfProcessInstance::DoPaint(const std::vector<gfx::Rect>& paint_rects,
 
   engine()->PostPaint();
 
-  if (!deferred_invalidates_.empty()) {
+  if (!deferred_invalidates().empty()) {
     ScheduleTaskOnMainThread(
         base::TimeDelta(),
         base::BindOnce(&OutOfProcessInstance::InvalidateAfterPaintDone,
@@ -1303,16 +1303,6 @@ void OutOfProcessInstance::ProposeDocumentLayout(const DocumentLayout& layout) {
   // bounds are no longer valid.
   if (layout.dirty() && accessibility_state_ == ACCESSIBILITY_STATE_LOADED)
     LoadAccessibility();
-}
-
-void OutOfProcessInstance::Invalidate(const gfx::Rect& rect) {
-  if (in_paint()) {
-    deferred_invalidates_.push_back(rect);
-    return;
-  }
-
-  gfx::Rect offset_rect = rect + available_area().OffsetFromOrigin();
-  paint_manager().InvalidateRect(offset_rect);
 }
 
 void OutOfProcessInstance::DidScroll(const gfx::Vector2d& offset) {
@@ -2547,14 +2537,6 @@ void OutOfProcessInstance::HistogramCustomCounts(const char* name,
 
 void OutOfProcessInstance::OnPrint(int32_t /*unused_but_required*/) {
   pp::PDF::Print(this);
-}
-
-void OutOfProcessInstance::InvalidateAfterPaintDone(
-    int32_t /*unused_but_required*/) {
-  DCHECK(!in_paint());
-  for (const gfx::Rect& rect : deferred_invalidates_)
-    Invalidate(rect);
-  deferred_invalidates_.clear();
 }
 
 void OutOfProcessInstance::PrintSettings::Clear() {

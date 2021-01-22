@@ -181,8 +181,6 @@ void PdfViewWebPlugin::DidFailLoading(const blink::WebURLError& error) {}
 
 void PdfViewWebPlugin::ProposeDocumentLayout(const DocumentLayout& layout) {}
 
-void PdfViewWebPlugin::Invalidate(const gfx::Rect& rect) {}
-
 void PdfViewWebPlugin::DidScroll(const gfx::Vector2d& offset) {}
 
 void PdfViewWebPlugin::ScrollToX(int x_in_screen_coords) {}

@@ -5,15 +5,15 @@
 #ifndef PDF_PDF_VIEW_PLUGIN_BASE_H_
 #define PDF_PDF_VIEW_PLUGIN_BASE_H_
 
-#include "pdf/pdf_engine.h"
-
 #include <stdint.h>
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/memory/weak_ptr.h"
 #include "pdf/paint_manager.h"
+#include "pdf/pdf_engine.h"
 #include "pdf/pdfium/pdfium_form_filler.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -31,6 +31,7 @@ class PdfViewPluginBase : public PDFEngine::Client,
   PdfViewPluginBase& operator=(const PdfViewPluginBase& other) = delete;
 
   // PDFEngine::Client:
+  void Invalidate(const gfx::Rect& rect) override;
   uint32_t GetBackgroundColor() override;
 
   // PaintManager::Client
@@ -85,6 +86,9 @@ class PdfViewPluginBase : public PDFEngine::Client,
                        std::vector<PaintReadyRect>* ready,
                        std::vector<gfx::Rect>* pending) = 0;
 
+  // Callback to do invalidation after painting finishes.
+  void InvalidateAfterPaintDone(int32_t /*unused_but_required*/);
+
   // Updates the available area and the background parts, notifies the PDF
   // engine, and updates the accessibility information.
   virtual void OnGeometryChanged(double old_zoom, float old_device_scale) = 0;
@@ -104,6 +108,10 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   const std::vector<BackgroundPart>& background_parts() const {
     return background_parts_;
+  }
+
+  const std::vector<gfx::Rect>& deferred_invalidates() const {
+    return deferred_invalidates_;
   }
 
   const gfx::Rect& available_area() const { return available_area_; }
@@ -143,13 +151,14 @@ class PdfViewPluginBase : public PDFEngine::Client,
   bool first_paint() const { return first_paint_; }
   void set_first_paint(bool first_paint) { first_paint_ = first_paint; }
 
-  bool in_paint() const { return in_paint_; }
-
  private:
   std::unique_ptr<PDFiumEngine> engine_;
   PaintManager paint_manager_{this};
 
   std::vector<BackgroundPart> background_parts_;
+
+  // Deferred invalidates while |in_paint_| is true.
+  std::vector<gfx::Rect> deferred_invalidates_;
 
   // Remaining area, in pixels, to render the pdf in after accounting for
   // horizontal centering.

@@ -49,7 +49,6 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
 
   // PdfViewPluginBase:
   void ProposeDocumentLayout(const DocumentLayout& layout) override;
-  void Invalidate(const gfx::Rect& rect) override;
   void DidScroll(const gfx::Vector2d& offset) override;
   void ScrollToX(int x_in_screen_coords) override;
   void ScrollToY(int y_in_screen_coords, bool compensate_for_toolbar) override;
