@@ -36,6 +36,7 @@ extern const base::Feature kAutofillEnableToolbarStatusChip;
 extern const base::Feature kAutofillEnableVirtualCard;
 extern const base::Feature kAutofillSaveCardDismissOnNavigation;
 extern const base::Feature kAutofillSaveCardInfobarEditSupport;
+extern const base::Feature kAutofillSortSuggestionsBasedOnOfferPresence;
 extern const base::Feature kAutofillUpstream;
 extern const base::Feature kAutofillUpstreamAllowAllEmailDomains;
 

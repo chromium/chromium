@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
@@ -14,6 +15,7 @@
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_clock.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,6 +26,7 @@ namespace autofill {
 
 namespace {
 const char kTestGuid[] = "00000000-0000-0000-0000-000000000001";
+const char kTestGuid2[] = "00000000-0000-0000-0000-000000000002";
 const char kTestNumber[] = "4234567890123456";  // Visa
 const char kTestUrl[] = "http://www.example.com/";
 const char kTestUrlWithParam[] =
@@ -52,12 +55,14 @@ class AutofillOfferManagerTest : public testing::Test {
   }
 
   CreditCard CreateCreditCard(std::string guid,
-                              std::string number = kTestNumber) {
+                              std::string number = kTestNumber,
+                              int64_t instrument_id = 0) {
     CreditCard card = CreditCard();
     test::SetCreditCardInfo(&card, "Jane Doe", number.c_str(),
                             test::NextMonth().c_str(), test::NextYear().c_str(),
                             "1");
     card.set_guid(guid);
+    card.set_instrument_id(instrument_id);
     card.set_record_type(CreditCard::MASKED_SERVER_CARD);
 
     personal_data_manager_.AddServerCreditCard(card);
@@ -87,6 +92,7 @@ class AutofillOfferManagerTest : public testing::Test {
   scoped_refptr<AutofillWebDataService> database_;
   TestPersonalDataManager personal_data_manager_;
   std::unique_ptr<AutofillOfferManager> autofill_offer_manager_ = nullptr;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(AutofillOfferManagerTest, UpdateSuggestionsWithOffers_EligibleCashback) {
@@ -124,6 +130,68 @@ TEST_F(AutofillOfferManagerTest, UpdateSuggestionsWithOffers_WrongUrl) {
       GURL("http://wrongurl.com/"), suggestions);
 
   EXPECT_TRUE(suggestions[0].offer_label.empty());
+}
+
+TEST_F(AutofillOfferManagerTest,
+       UpdateSuggestionsWithOffer_SuggestionsSortedByOfferPresence) {
+  CreditCard cardWithoutOffer = CreateCreditCard(kTestGuid);
+  CreditCard cardWithOffer =
+      CreateCreditCard(kTestGuid2, "4111111111111111", 100);
+  CreateCreditCardOfferForCard(cardWithOffer, "5%");
+
+  std::vector<Suggestion> suggestions = {Suggestion(), Suggestion()};
+  suggestions[0].backend_id = kTestGuid;
+  suggestions[1].backend_id = kTestGuid2;
+  autofill_offer_manager_->UpdateSuggestionsWithOffers(GURL(kTestUrlWithParam),
+                                                       suggestions);
+
+  // offer_label was set on suggestions[1] but then was sorted to become
+  // suggestion[0]
+  EXPECT_TRUE(!suggestions[0].offer_label.empty());
+  EXPECT_TRUE(suggestions[1].offer_label.empty());
+  EXPECT_EQ(suggestions[0].backend_id, kTestGuid2);
+  EXPECT_EQ(suggestions[1].backend_id, kTestGuid);
+}
+
+TEST_F(AutofillOfferManagerTest,
+       UpdateSuggestionsWithOffer_SuggestionsNotSortedByOfferPresence_ExpOff) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndDisableFeature(
+      features::kAutofillSortSuggestionsBasedOnOfferPresence);
+  CreditCard cardWithoutOffer = CreateCreditCard(kTestGuid);
+  CreditCard cardWithOffer =
+      CreateCreditCard(kTestGuid2, "4111111111111111", 100);
+  CreateCreditCardOfferForCard(cardWithOffer, "5%");
+
+  std::vector<Suggestion> suggestions = {Suggestion(), Suggestion()};
+  suggestions[0].backend_id = kTestGuid;
+  suggestions[1].backend_id = kTestGuid2;
+  autofill_offer_manager_->UpdateSuggestionsWithOffers(GURL(kTestUrlWithParam),
+                                                       suggestions);
+
+  // offer_label was set on suggestions[1] and wasn't sorted because experiment
+  // is turned off.
+  EXPECT_TRUE(suggestions[0].offer_label.empty());
+  EXPECT_TRUE(!suggestions[1].offer_label.empty());
+  EXPECT_EQ(suggestions[0].backend_id, kTestGuid);
+  EXPECT_EQ(suggestions[1].backend_id, kTestGuid2);
+}
+
+TEST_F(AutofillOfferManagerTest,
+       UpdateSuggestionsWithOffer_SuggestionsNotSortedIfAllCardsHaveOffers) {
+  CreditCard card1 = CreateCreditCard(kTestGuid, kTestNumber, 100);
+  CreditCard card2 = CreateCreditCard(kTestGuid2, "4111111111111111", 101);
+  CreateCreditCardOfferForCard(card1, "5%");
+  CreateCreditCardOfferForCard(card2, "5%");
+
+  std::vector<Suggestion> suggestions = {Suggestion(), Suggestion()};
+  suggestions[0].backend_id = kTestGuid;
+  suggestions[1].backend_id = kTestGuid2;
+  autofill_offer_manager_->UpdateSuggestionsWithOffers(GURL(kTestUrlWithParam),
+                                                       suggestions);
+
+  EXPECT_EQ(suggestions[0].backend_id, kTestGuid);
+  EXPECT_EQ(suggestions[1].backend_id, kTestGuid2);
 }
 
 }  // namespace autofill

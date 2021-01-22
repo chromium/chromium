@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
 #include "components/autofill/core/common/autofill_clock.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -65,6 +66,18 @@ void AutofillOfferManager::UpdateSuggestionsWithOffers(
       suggestion.offer_label =
           l10n_util::GetStringUTF16(IDS_AUTOFILL_OFFERS_CASHBACK);
     }
+  }
+  // Sort the suggestions such that suggestions with offers are shown at the
+  // top.
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillSortSuggestionsBasedOnOfferPresence)) {
+    std::sort(suggestions.begin(), suggestions.end(),
+              [](const Suggestion& a, const Suggestion& b) {
+                if (!a.offer_label.empty() && b.offer_label.empty()) {
+                  return true;
+                }
+                return false;
+              });
   }
 }
 
