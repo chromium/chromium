@@ -298,8 +298,8 @@ void NetworkPortalDetectorImpl::ScheduleAttempt(const base::TimeDelta& delay) {
   state_ = STATE_PORTAL_CHECK_PENDING;
 
   next_attempt_delay_ = std::max(delay, strategy_->GetDelayTillNextAttempt());
-  attempt_task_.Reset(base::Bind(&NetworkPortalDetectorImpl::StartAttempt,
-                                 weak_factory_.GetWeakPtr()));
+  attempt_task_.Reset(base::BindOnce(&NetworkPortalDetectorImpl::StartAttempt,
+                                     weak_factory_.GetWeakPtr()));
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, attempt_task_.callback(), next_attempt_delay_);
 }
@@ -317,8 +317,8 @@ void NetworkPortalDetectorImpl::StartAttempt() {
                      weak_factory_.GetWeakPtr()),
       NO_TRAFFIC_ANNOTATION_YET);
   attempt_timeout_.Reset(
-      base::Bind(&NetworkPortalDetectorImpl::OnAttemptTimeout,
-                 weak_factory_.GetWeakPtr()));
+      base::BindOnce(&NetworkPortalDetectorImpl::OnAttemptTimeout,
+                     weak_factory_.GetWeakPtr()));
 
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, attempt_timeout_.callback(),
