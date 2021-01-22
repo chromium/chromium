@@ -42,7 +42,8 @@ class AppManagerImpl : public AppManager,
   // AppManager implementation:
   void Initialize(Profile* primary_profile,
                   LockScreenProfileCreator* profile_creator) override;
-  void Start(const base::Closure& note_taking_changed_callback) override;
+  void Start(
+      const base::RepeatingClosure& note_taking_changed_callback) override;
   void Stop() override;
   bool LaunchNoteTaking() override;
   bool IsNoteTakingAppAvailable() const override;
@@ -168,7 +169,7 @@ class AppManagerImpl : public AppManager,
                  chromeos::NoteTakingHelper::Observer>
       note_taking_helper_observer_;
 
-  base::Closure note_taking_changed_callback_;
+  base::RepeatingClosure note_taking_changed_callback_;
 
   // Counts app installs. Passed to app install callback as install request
   // identifier to determine whether the completed install is stale.

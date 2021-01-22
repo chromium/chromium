@@ -158,7 +158,7 @@ class PendingProfileCreation : public Profile::Delegate {
 
   base::FilePath path_;
   Profile::Delegate* delegate_ = nullptr;
-  base::Closure wait_quit_closure_;
+  base::OnceClosure wait_quit_closure_;
 
   Profile* profile_ = nullptr;
   bool success_ = false;

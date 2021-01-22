@@ -41,7 +41,7 @@ namespace lock_screen_apps {
 
 namespace {
 
-using ExtensionCallback = base::Callback<void(
+using ExtensionCallback = base::OnceCallback<void(
     const scoped_refptr<const extensions::Extension>& extension)>;
 
 // The max number of times the lock screen app can be relaoded if it gets
@@ -94,10 +94,11 @@ ActionAvailability GetLockScreenNoteTakingAvailability(
 }
 
 void InvokeCallbackOnTaskRunner(
-    const ExtensionCallback& callback,
+    ExtensionCallback callback,
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
     const scoped_refptr<const extensions::Extension>& extension) {
-  task_runner->PostTask(FROM_HERE, base::BindOnce(callback, extension));
+  task_runner->PostTask(FROM_HERE,
+                        base::BindOnce(std::move(callback), extension));
 }
 
 // Loads extension with the provided |extension_id|, |location|, and
@@ -111,10 +112,10 @@ void LoadInstalledExtension(const std::string& extension_id,
                             extensions::Manifest::Location install_source,
                             int creation_flags,
                             std::unique_ptr<base::ScopedTempDir> temp_copy,
-                            const ExtensionCallback& callback,
+                            ExtensionCallback callback,
                             const base::FilePath& version_dir) {
   if (version_dir.empty()) {
-    callback.Run(nullptr);
+    std::move(callback).Run(nullptr);
     return;
   }
 
@@ -122,7 +123,7 @@ void LoadInstalledExtension(const std::string& extension_id,
   scoped_refptr<const extensions::Extension> extension =
       extensions::file_util::LoadExtension(
           version_dir, extension_id, install_source, creation_flags, &error);
-  callback.Run(extension);
+  std::move(callback).Run(extension);
 }
 
 // Installs |extension| as a copy of an extension unpacked at |original_path|
@@ -135,14 +136,14 @@ void InstallExtensionCopy(
     const base::FilePath& target_install_dir,
     Profile* profile,
     bool updates_from_webstore_or_empty_update_url,
-    const ExtensionCallback& callback) {
+    ExtensionCallback callback) {
   base::FilePath target_dir = target_install_dir.Append(extension->id());
   base::FilePath install_temp_dir =
       extensions::file_util::GetInstallTempDir(target_dir);
   auto extension_temp_dir = std::make_unique<base::ScopedTempDir>();
   if (install_temp_dir.empty() ||
       !extension_temp_dir->CreateUniqueTempDirUnderPath(install_temp_dir)) {
-    callback.Run(nullptr);
+    std::move(callback).Run(nullptr);
     return;
   }
 
@@ -152,7 +153,7 @@ void InstallExtensionCopy(
   base::FilePath temp_copy =
       extension_temp_dir->GetPath().Append(original_path.BaseName());
   if (!base::CopyDirectory(original_path, temp_copy, true /* recursive */)) {
-    callback.Run(nullptr);
+    std::move(callback).Run(nullptr);
     return;
   }
 
@@ -160,9 +161,9 @@ void InstallExtensionCopy(
   // until the app installation is done.
   extensions::ExtensionAssetsManager::GetInstance()->InstallExtension(
       extension.get(), temp_copy, target_install_dir, profile,
-      base::Bind(&LoadInstalledExtension, extension->id(),
-                 extension->location(), extension->creation_flags(),
-                 base::Passed(std::move(extension_temp_dir)), callback),
+      base::BindOnce(&LoadInstalledExtension, extension->id(),
+                     extension->location(), extension->creation_flags(),
+                     std::move(extension_temp_dir), std::move(callback)),
       updates_from_webstore_or_empty_update_url);
 }
 
@@ -216,7 +217,8 @@ void AppManagerImpl::OnLockScreenProfileLoaded() {
   OnNoteTakingExtensionChanged();
 }
 
-void AppManagerImpl::Start(const base::Closure& note_taking_changed_callback) {
+void AppManagerImpl::Start(
+    const base::RepeatingClosure& note_taking_changed_callback) {
   DCHECK_NE(State::kNotInitialized, state_);
 
   note_taking_changed_callback_ = note_taking_changed_callback;
@@ -440,11 +442,12 @@ AppManagerImpl::State AppManagerImpl::AddAppToLockScreenProfile(
           &InstallExtensionCopy, lock_profile_app, app->path(),
           lock_screen_service->install_directory(), lock_screen_profile_,
           updates_from_webstore_or_empty_update_url,
-          base::Bind(&InvokeCallbackOnTaskRunner,
-                     base::Bind(&AppManagerImpl::CompleteLockScreenAppInstall,
-                                weak_ptr_factory_.GetWeakPtr(), install_count_,
-                                tick_clock_->NowTicks()),
-                     base::ThreadTaskRunnerHandle::Get())));
+          base::BindOnce(
+              &InvokeCallbackOnTaskRunner,
+              base::BindOnce(&AppManagerImpl::CompleteLockScreenAppInstall,
+                             weak_ptr_factory_.GetWeakPtr(), install_count_,
+                             tick_clock_->NowTicks()),
+              base::ThreadTaskRunnerHandle::Get())));
   return State::kActivating;
 }
 

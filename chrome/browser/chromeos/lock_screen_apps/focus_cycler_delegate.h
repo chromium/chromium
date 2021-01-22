@@ -19,7 +19,8 @@ class FocusCyclerDelegate {
 
   // Registers a callback that should be called when the focus should be moved
   // to the app window.
-  using LockScreenAppFocusCallback = base::Callback<void(bool reverse)>;
+  using LockScreenAppFocusCallback =
+      base::RepeatingCallback<void(bool reverse)>;
   virtual void RegisterLockScreenAppFocusHandler(
       const LockScreenAppFocusCallback& focus_handler) = 0;
 

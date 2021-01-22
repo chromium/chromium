@@ -382,15 +382,15 @@ class LockScreenAppManagerImplTest
     if (create_lock_screen_profile)
       CreateLockScreenProfile();
     app_manager()->Start(
-        base::Bind(&LockScreenAppManagerImplTest::OnNoteTakingChanged,
-                   base::Unretained(this)));
+        base::BindRepeating(&LockScreenAppManagerImplTest::OnNoteTakingChanged,
+                            base::Unretained(this)));
   }
 
   void RestartLockScreenAppManager() {
     app_manager()->Stop();
     app_manager()->Start(
-        base::Bind(&LockScreenAppManagerImplTest::OnNoteTakingChanged,
-                   base::Unretained(this)));
+        base::BindRepeating(&LockScreenAppManagerImplTest::OnNoteTakingChanged,
+                            base::Unretained(this)));
   }
 
   void CreateLockScreenProfile() {

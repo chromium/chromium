@@ -68,7 +68,7 @@ class LockScreenAppsEnabledWaiter : public lock_screen_apps::StateObserver {
                  lock_screen_apps::StateObserver>
       lock_screen_apps_state_observer_;
 
-  base::Closure state_change_callback_;
+  base::OnceClosure state_change_callback_;
 
   DISALLOW_COPY_AND_ASSIGN(LockScreenAppsEnabledWaiter);
 };

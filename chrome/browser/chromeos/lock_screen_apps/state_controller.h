@@ -85,7 +85,7 @@ class StateController : public ash::mojom::TrayActionClient,
   void FlushTrayActionForTesting();
   // Sets the callback that will be run when the state controller is fully
   // initialized and ready for action.
-  void SetReadyCallbackForTesting(const base::Closure& ready_callback);
+  void SetReadyCallbackForTesting(base::OnceClosure ready_callback);
   // Sets the tick clock to be used in tests.
   void SetTickClockForTesting(const base::TickClock* clock);
   // Sets test AppManager implementation. Should be called before
@@ -262,7 +262,7 @@ class StateController : public ash::mojom::TrayActionClient,
   // initialized. It can be used to throttle tests until state controller
   // is ready for action - i.e. until the state controller starts reacting
   // to session / app manager changes.
-  base::Closure ready_callback_;
+  base::OnceClosure ready_callback_;
 
   // The clock used to keep track of time, for example to report app window
   // lifetime metrics.

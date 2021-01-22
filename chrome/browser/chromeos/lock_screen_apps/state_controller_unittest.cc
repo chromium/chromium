@@ -177,7 +177,7 @@ class TestAppManager : public lock_screen_apps::AppManager {
     state_ = State::kStopped;
   }
 
-  void Start(const base::Closure& change_callback) override {
+  void Start(const base::RepeatingClosure& change_callback) override {
     ASSERT_TRUE(change_callback_.is_null());
     ASSERT_FALSE(change_callback.is_null());
     change_callback_ = change_callback;
@@ -232,7 +232,7 @@ class TestAppManager : public lock_screen_apps::AppManager {
   const Profile* const expected_primary_profile_;
   lock_screen_apps::LockScreenProfileCreator* lock_screen_profile_creator_;
 
-  base::Closure change_callback_;
+  base::RepeatingClosure change_callback_;
 
   State state_ = State::kNotInitialized;
 

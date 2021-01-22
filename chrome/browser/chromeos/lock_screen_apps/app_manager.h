@@ -43,7 +43,8 @@ class AppManager {
   //      taking app availability changes. It's cleared when the AppManager is
   //      stopped. It is not expected to be run after the app manager instance
   //      is destroyed.
-  virtual void Start(const base::Closure& note_taking_changed_callback) = 0;
+  virtual void Start(
+      const base::RepeatingClosure& note_taking_changed_callback) = 0;
 
   // Stops the manager. After this is called, the app can be unloaded from the
   // lock screen enabled profile. Subsequent launch requests should not be
