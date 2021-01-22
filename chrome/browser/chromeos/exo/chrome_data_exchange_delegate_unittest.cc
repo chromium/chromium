@@ -197,6 +197,31 @@ TEST_F(ChromeDataExchangeDelegateTest, GetFilenames) {
                                               Data("file:///etc/hosts"));
   EXPECT_EQ("vmfile:termina:/etc/hosts", files[0].path.value());
 
+  // file:/path should fail.
+  files = data_exchange_delegate.GetFilenames(
+      ui::EndpointType::kCrostini, Data("file:/mnt/chromeos/MyFiles/file"));
+  EXPECT_EQ(0, files.size());
+
+  // file:path should fail.
+  files = data_exchange_delegate.GetFilenames(
+      ui::EndpointType::kCrostini, Data("file:mnt/chromeos/MyFiles/file"));
+  EXPECT_EQ(0, files.size());
+
+  // file:// should fail.
+  files = data_exchange_delegate.GetFilenames(ui::EndpointType::kCrostini,
+                                              Data("file://"));
+  EXPECT_EQ(0, files.size());
+
+  // file:/// maps to internal root.
+  files = data_exchange_delegate.GetFilenames(ui::EndpointType::kCrostini,
+                                              Data("file:///"));
+  EXPECT_EQ("vmfile:termina:/", files[0].path.value());
+
+  // /path should fail.
+  files = data_exchange_delegate.GetFilenames(
+      ui::EndpointType::kCrostini, Data("/mnt/chromeos/MyFiles/file"));
+  EXPECT_EQ(0, files.size());
+
   // Plugin VM shared paths should be mapped.
   files = data_exchange_delegate.GetFilenames(
       ui::EndpointType::kPluginVm, Data("file://ChromeOS/MyFiles/file"));
