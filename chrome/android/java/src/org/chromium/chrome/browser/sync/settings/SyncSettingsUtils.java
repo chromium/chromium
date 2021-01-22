@@ -7,14 +7,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
-import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.Browser;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.fragment.app.Fragment;
@@ -183,86 +181,64 @@ public class SyncSettingsUtils {
     }
 
     /**
-     * Gets the corresponding message id of a given {@link GoogleServiceAuthError.State}.
-     */
-    public static @StringRes int getMessageID(@GoogleServiceAuthError.State int state) {
-        switch (state) {
-            case GoogleServiceAuthError.State.INVALID_GAIA_CREDENTIALS:
-                return R.string.sync_error_ga;
-            case GoogleServiceAuthError.State.CONNECTION_FAILED:
-                return R.string.sync_error_connection;
-            case GoogleServiceAuthError.State.SERVICE_UNAVAILABLE:
-                return R.string.sync_error_service_unavailable;
-            // case State.NONE:
-            // case State.REQUEST_CANCELED:
-            // case State.UNEXPECTED_SERVICE_RESPONSE:
-            // case State.SERVICE_ERROR:
-            default:
-                return R.string.sync_error_generic;
-        }
-    }
-
-    /**
      * Return a short summary of the current sync status.
      * TODO(https://crbug.com/1129930): Refactor this method
      */
     public static String getSyncStatusSummary(Context context) {
-        Resources res = context.getResources();
-
         if (!IdentityServicesProvider.get()
                         .getIdentityManager(Profile.getLastUsedRegularProfile())
                         .hasPrimaryAccount()) {
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)) {
                 // There is no account with sync consent available.
-                return res.getString(R.string.sync_is_disabled);
+                return context.getString(R.string.sync_is_disabled);
             }
             return "";
         }
 
         ProfileSyncService profileSyncService = ProfileSyncService.get();
         if (profileSyncService == null) {
-            return res.getString(R.string.sync_is_disabled);
+            return context.getString(R.string.sync_is_disabled);
         }
 
         if (!profileSyncService.isSyncAllowedByPlatform()) {
-            return res.getString(R.string.sync_android_system_sync_disabled);
+            return context.getString(R.string.sync_android_system_sync_disabled);
         }
 
         if (profileSyncService.isSyncDisabledByEnterprisePolicy()) {
-            return res.getString(R.string.sync_is_disabled_by_administrator);
+            return context.getString(R.string.sync_is_disabled_by_administrator);
         }
 
         if (!profileSyncService.isFirstSetupComplete()) {
             return ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
-                    ? res.getString(R.string.sync_settings_not_confirmed)
-                    : res.getString(R.string.sync_settings_not_confirmed_legacy);
+                    ? context.getString(R.string.sync_settings_not_confirmed)
+                    : context.getString(R.string.sync_settings_not_confirmed_legacy);
         }
 
         if (profileSyncService.getAuthError() != GoogleServiceAuthError.State.NONE) {
-            return res.getString(getMessageID(profileSyncService.getAuthError()));
+            return getSyncStatusSummaryForAuthError(context, profileSyncService.getAuthError());
         }
 
         if (profileSyncService.requiresClientUpgrade()) {
-            return res.getString(
+            return context.getString(
                     R.string.sync_error_upgrade_client, BuildInfo.getInstance().hostPackageLabel);
         }
 
         if (profileSyncService.hasUnrecoverableError()) {
-            return res.getString(R.string.sync_error_generic);
+            return context.getString(R.string.sync_error_generic);
         }
 
         if (!profileSyncService.isSyncRequested()) {
             return ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
-                    ? res.getString(R.string.sync_data_types_off)
+                    ? context.getString(R.string.sync_data_types_off)
                     : context.getString(R.string.sync_is_disabled);
         }
 
         if (!profileSyncService.isSyncActive()) {
-            return res.getString(R.string.sync_setup_progress);
+            return context.getString(R.string.sync_setup_progress);
         }
 
         if (profileSyncService.isPassphraseRequiredForPreferredDataTypes()) {
-            return res.getString(R.string.sync_need_passphrase);
+            return context.getString(R.string.sync_need_passphrase);
         }
 
         if (profileSyncService.isTrustedVaultKeyRequiredForPreferredDataTypes()) {
@@ -272,6 +248,33 @@ public class SyncSettingsUtils {
         }
 
         return context.getString(R.string.sync_and_services_summary_sync_on);
+    }
+
+    /**
+     * Gets the sync status summary for a given {@link GoogleServiceAuthError.State}.
+     * @param context The application context, used by the method to get string resources.
+     * @param state Must not be GoogleServiceAuthError.State.None.
+     */
+    public static String getSyncStatusSummaryForAuthError(
+            Context context, @GoogleServiceAuthError.State int state) {
+        switch (state) {
+            case GoogleServiceAuthError.State.INVALID_GAIA_CREDENTIALS:
+                return context.getString(R.string.sync_error_ga);
+            case GoogleServiceAuthError.State.CONNECTION_FAILED:
+                return context.getString(R.string.sync_error_connection);
+            case GoogleServiceAuthError.State.SERVICE_UNAVAILABLE:
+                return context.getString(R.string.sync_error_service_unavailable);
+            case GoogleServiceAuthError.State.REQUEST_CANCELED:
+            case GoogleServiceAuthError.State.UNEXPECTED_SERVICE_RESPONSE:
+            case GoogleServiceAuthError.State.SERVICE_ERROR:
+                return context.getString(R.string.sync_error_generic);
+            case GoogleServiceAuthError.State.NONE:
+                assert false : "No summary if there's no auth error";
+                return "";
+            default:
+                assert false : "Unknown auth error state";
+                return "";
+        }
     }
 
     /**

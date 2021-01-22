@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.sync;
 
 import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 
@@ -30,7 +29,6 @@ import org.chromium.components.browser_ui.notifications.NotificationManagerProxy
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
-import org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -39,9 +37,10 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.sync.PassphraseType;
 
 /**
- * {@link SyncNotificationController} provides functionality for displaying Android notifications
- * regarding the user sync status.
+ * {@link SyncNotificationController} displays Android notifications regarding sync errors.
+ * Errors can be fixed by clicking the notification.
  */
+// TODO(victorvianna): Rename to SyncErrorNotificationController.
 public class SyncNotificationController implements ProfileSyncService.SyncStateChangedListener {
     private static final String TAG = "SyncUI";
     private final NotificationManagerProxy mNotificationManager;
@@ -56,19 +55,20 @@ public class SyncNotificationController implements ProfileSyncService.SyncStateC
     }
 
     /**
-     * Callback for {@link ProfileSyncService.SyncStateChangedListener}.
+     * {@link ProfileSyncService.SyncStateChangedListener} implementation.
+     * Decides which error notification to show (if any), based on the sync state.
      */
     @Override
     public void syncStateChanged() {
         ThreadUtils.assertOnUiThread();
 
-        // Auth errors take precedence over passphrase errors.
         if (!mProfileSyncService.isSyncRequested()) {
             cancelNotifications();
-            return;
-        }
-        if (shouldSyncAuthErrorBeShown()) {
-            showSyncNotification(SyncSettingsUtils.getMessageID(mProfileSyncService.getAuthError()),
+        } else if (shouldSyncAuthErrorBeShown()) {
+            // Auth errors take precedence over passphrase errors.
+            showNotification(SyncSettingsUtils.getSyncStatusSummaryForAuthError(
+                                     ContextUtils.getApplicationContext(),
+                                     mProfileSyncService.getAuthError()),
                     createSettingsIntent());
         } else if (mProfileSyncService.isEngineInitialized()
                 && mProfileSyncService.isPassphraseRequiredForPreferredDataTypes()) {
@@ -77,61 +77,65 @@ public class SyncNotificationController implements ProfileSyncService.SyncStateC
             if (mProfileSyncService.isPassphrasePrompted()) {
                 return;
             }
+
             switch (mProfileSyncService.getPassphraseType()) {
-                case PassphraseType.IMPLICIT_PASSPHRASE: // Falling through intentionally.
-                case PassphraseType.FROZEN_IMPLICIT_PASSPHRASE: // Falling through intentionally.
+                case PassphraseType.IMPLICIT_PASSPHRASE:
+                case PassphraseType.FROZEN_IMPLICIT_PASSPHRASE:
                 case PassphraseType.CUSTOM_PASSPHRASE:
-                    showSyncNotification(R.string.sync_need_passphrase, createPasswordIntent());
+                    showNotification(
+                            getString(R.string.sync_need_passphrase), createPassphraseIntent());
                     break;
                 case PassphraseType.TRUSTED_VAULT_PASSPHRASE:
                     assert false : "Passphrase cannot be required with trusted vault passphrase";
-                    return;
-                case PassphraseType.KEYSTORE_PASSPHRASE: // Falling through intentionally.
-                default:
+                    break;
+                case PassphraseType.KEYSTORE_PASSPHRASE:
                     cancelNotifications();
-                    return;
+                    break;
+                default:
+                    assert false : "Unknown passphrase type";
+                    break;
             }
         } else if (mProfileSyncService.isEngineInitialized()
                 && mProfileSyncService.isTrustedVaultKeyRequiredForPreferredDataTypes()) {
-            maybeCreateKeyRetrievalNotification();
+            maybeShowKeyRetrievalNotification();
         } else {
             cancelNotifications();
         }
     }
 
-    /**
-     * Cancels existing notification if there is any.
-     */
     private void cancelNotifications() {
         mNotificationManager.cancel(NotificationConstants.NOTIFICATION_ID_SYNC);
         mTrustedVaultNotificationShownOrCreating = false;
     }
 
     /**
-     * Builds and shows a notification for the |message|.
-     *
-     * @param message Resource id of the message to display in the notification.
-     * @param contentIntent represents intent to send when the user activates the notification.
+     * Displays the error notification. Its title is fixed and its body is customized by the caller
+     * via errorMessage. The exact strings may depend on the Android version, to account for
+     * differences in the notification system.
      */
-    private void showSyncNotificationForPendingIntent(
-            @StringRes int message, PendingIntentProvider contentIntent) {
-        Context applicationContext = ContextUtils.getApplicationContext();
-        String title = null;
-        String text = null;
-        // From Android N, notification by default has the app name and title should not be the same
-        // as app name.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            title = applicationContext.getString(R.string.sign_in_sync);
-            text = applicationContext.getString(message);
-        } else {
-            title = applicationContext.getString(R.string.app_name);
-            text = applicationContext.getString(R.string.sign_in_sync) + ": "
-                    + applicationContext.getString(message);
+    private void showNotification(String errorMessage, Intent intentTriggeredOnClick) {
+        String title = getString(R.string.sign_in_sync);
+        String textBody = errorMessage;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            // For versions older than Android N, the notification doesn't show the app name by
+            // default, so use the app name as title.
+            title = getString(R.string.app_name);
+            textBody = getString(R.string.sign_in_sync) + ": " + errorMessage;
         }
 
-        // There is no need to provide a group summary notification because the NOTIFICATION_ID_SYNC
-        // notification id ensures there's only one sync notification at a time.
-        NotificationWrapperBuilder builder =
+        // Converting |intentTriggeredOnClick| into a PendingIntent is needed because it will be
+        // handed over to the Android notification manager, a foreign application.
+        // FLAG_UPDATE_CURRENT ensures any cached intent extras are updated.
+        // TODO(crbug.com/1071377): TrustedVaultKeyRetrievalProxyActivity is the only one to add
+        // extras to the intent, so it should probably be responsible for passing
+        // FLAG_UPDATE_CURRENT.
+        PendingIntentProvider pendingIntent =
+                PendingIntentProvider.getActivity(ContextUtils.getApplicationContext(), 0,
+                        intentTriggeredOnClick, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        // There is no need to provide a group summary notification because NOTIFICATION_ID_SYNC
+        // ensures there's only one sync notification at a time.
+        NotificationWrapper notification =
                 NotificationWrapperBuilderFactory
                         .createNotificationWrapperBuilder(true /* preferCompat */,
                                 ChromeChannelDefinitions.ChannelId.BROWSER,
@@ -140,34 +144,17 @@ public class SyncNotificationController implements ProfileSyncService.SyncStateC
                                         NotificationUmaTracker.SystemNotificationType.SYNC, null,
                                         NotificationConstants.NOTIFICATION_ID_SYNC))
                         .setAutoCancel(true)
-                        .setContentIntent(contentIntent)
+                        .setContentIntent(pendingIntent)
                         .setContentTitle(title)
-                        .setContentText(text)
+                        .setContentText(textBody)
                         .setSmallIcon(R.drawable.ic_chrome)
-                        .setTicker(text)
+                        .setTicker(textBody)
                         .setLocalOnly(true)
-                        .setGroup(NotificationConstants.GROUP_SYNC);
-
-        NotificationWrapper notification = builder.buildWithBigTextStyle(text);
-
+                        .setGroup(NotificationConstants.GROUP_SYNC)
+                        .buildWithBigTextStyle(textBody);
         mNotificationManager.notify(notification);
         NotificationUmaTracker.getInstance().onNotificationShown(
                 NotificationUmaTracker.SystemNotificationType.SYNC, notification.getNotification());
-    }
-
-    /**
-     * Builds and shows a notification for the |message|.
-     *
-     * @param message Resource id of the message to display in the notification.
-     * @param intent Intent to send when the user activates the notification.
-     */
-    private void showSyncNotification(@StringRes int message, Intent intent) {
-        Context applicationContext = ContextUtils.getApplicationContext();
-        // There might be cached PendingIntent for sync notification and this PendingIntent might
-        // be outdated. FLAG_UPDATE_CURRENT updates cached PendingIntent.
-        PendingIntentProvider contentIntent = PendingIntentProvider.getActivity(
-                applicationContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        showSyncNotificationForPendingIntent(message, contentIntent);
     }
 
     private boolean shouldSyncAuthErrorBeShown() {
@@ -200,11 +187,11 @@ public class SyncNotificationController implements ProfileSyncService.SyncStateC
     }
 
     /**
-     * Creates an intent that launches an activity that requests the users password/passphrase.
+     * Creates an intent that launches an activity that requests the sync passphrase.
      *
-     * @return the intent for opening the password/passphrase activity
+     * @return the intent for opening the passphrase activity
      */
-    private Intent createPasswordIntent() {
+    private Intent createPassphraseIntent() {
         // Make sure we don't prompt too many times.
         mProfileSyncService.setPassphrasePrompted(true);
 
@@ -217,40 +204,43 @@ public class SyncNotificationController implements ProfileSyncService.SyncStateC
     }
 
     /**
-     * Attempts to asynchronously create and show key retrieval notification if no one is already
-     * created or creating and there is a primary account with SYNC ConsentLevel.
+     * Attempts to asynchronously show a key retrieval notification if a) one doesn't
+     * already exist or is being created; and b) there is a primary account with ConsentLevel.SYNC.
      */
-    private void maybeCreateKeyRetrievalNotification() {
+    private void maybeShowKeyRetrievalNotification() {
         CoreAccountInfo primaryAccountInfo =
                 IdentityServicesProvider.get()
                         .getIdentityManager(Profile.getLastUsedRegularProfile())
                         .getPrimaryAccountInfo(ConsentLevel.SYNC);
-        // Check/set |mTrustedVaultNotificationShownOrCreating| here to ensure notification is not
-        // shown again immediately after cancelling (Sync state might be changed often) and there
-        // is only one asynchronous createKeyRetrievalIntent() attempt at the time triggered by
-        // this function.
-        // TODO(crbug.com/1071377): if the user dismissed the notification, it will reappear only
+        // Check/set |mTrustedVaultNotificationShownOrCreating| here to ensure the notification is
+        // not shown again immediately after cancelling (Sync state might be changed often) and
+        // there is only one asynchronous createKeyRetrievalIntent() attempt at a time.
+        // TODO(crbug.com/1071377): If the user dismissed the notification, it will reappear only
         // after browser restart or disable-enable Sync action. This is sub-optimal behavior and
         // it's better to find a way to show it more often, but not on each Sync state change.
         if (primaryAccountInfo == null || mTrustedVaultNotificationShownOrCreating) {
             return;
         }
         mTrustedVaultNotificationShownOrCreating = true;
+
+        String notificationTextBody = getString(mProfileSyncService.isEncryptEverythingEnabled()
+                        ? R.string.sync_error_card_title
+                        : R.string.sync_passwords_error_card_title);
+
         TrustedVaultClient.get()
                 .createKeyRetrievalIntent(primaryAccountInfo)
-                .then(
-                        (pendingIntent)
-                                -> {
-                            // TODO(crbug.com/1071377): Sync state might be changed already, so
-                            // this notification won't make sense.
-                            showSyncNotification(mProfileSyncService.isEncryptEverythingEnabled()
-                                            ? R.string.sync_error_card_title
-                                            : R.string.sync_passwords_error_card_title,
-                                    TrustedVaultKeyRetrievalProxyActivity
-                                            .createKeyRetrievalProxyIntent(pendingIntent));
-                        },
-                        (exception) -> {
-                            Log.w(TAG, "Error creating key retrieval intent: ", exception);
-                        });
+                // Cf. TrustedVaultKeyRetrievalProxyActivity as to why use a proxy intent.
+                // TODO(crbug.com/1071377): Sync state might have changed by the time |realIntent|
+                // is available, so showing the notification won't make sense.
+                .then((realIntent)
+                                -> showNotification(notificationTextBody,
+                                        TrustedVaultKeyRetrievalProxyActivity
+                                                .createKeyRetrievalProxyIntent(realIntent)),
+                        (exception)
+                                -> Log.w(TAG, "Error creating key retrieval intent: ", exception));
+    }
+
+    private String getString(@StringRes int messageId) {
+        return ContextUtils.getApplicationContext().getString(messageId);
     }
 }
