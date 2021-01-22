@@ -532,4 +532,26 @@ TEST_F(MediaStreamAudioProcessorTest, TestAgcEnableHybridAgcSimdNotAllowed) {
   EXPECT_FALSE(apm_config->gain_controller2.adaptive_digital.neon_allowed);
 }
 
+// Ensure that discrete channel layouts do not crash with audio processing
+// enabled.
+TEST_F(MediaStreamAudioProcessorTest, DiscreteChannelLayout) {
+  blink::AudioProcessingProperties properties;
+  scoped_refptr<WebRtcAudioDeviceImpl> webrtc_audio_device(
+      new rtc::RefCountedObject<WebRtcAudioDeviceImpl>());
+  scoped_refptr<MediaStreamAudioProcessor> audio_processor(
+      new rtc::RefCountedObject<MediaStreamAudioProcessor>(
+          properties, webrtc_audio_device.get()));
+  EXPECT_TRUE(audio_processor->has_audio_processing());
+
+  media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                                media::CHANNEL_LAYOUT_DISCRETE, 48000, 480);
+  // Test both 1 and 2 discrete channels.
+  for (int channels = 1; channels <= 2; ++channels) {
+    params.set_channels_for_discrete(channels);
+    audio_processor->OnCaptureFormatChanged(params);
+  }
+
+  audio_processor->Stop();
+}
+
 }  // namespace blink

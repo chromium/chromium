@@ -725,6 +725,10 @@ void MediaStreamAudioProcessor::InitializeCaptureFifo(
   output_format_ = media::AudioParameters(
       media::AudioParameters::AUDIO_PCM_LOW_LATENCY, output_channel_layout,
       output_sample_rate, output_frames);
+  if (output_channel_layout == media::CHANNEL_LAYOUT_DISCRETE) {
+    // Explicitly set number of channels for discrete channel layouts.
+    output_format_.set_channels_for_discrete(input_format.channels());
+  }
 
   capture_fifo_.reset(
       new MediaStreamAudioFifo(input_format.channels(), fifo_output_channels,
