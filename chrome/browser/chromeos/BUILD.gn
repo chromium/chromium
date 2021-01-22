@@ -7,6 +7,7 @@ import("//build/config/features.gni")
 import("//build/config/python.gni")
 import("//build/config/ui.gni")
 import("//chromeos/components/chromebox_for_meetings/buildflags/buildflags.gni")
+import("//chromeos/components/sensors/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//media/media_options.gni")
 import("//printing/buildflags/buildflags.gni")
@@ -139,6 +140,7 @@ source_set("chromeos") {
     "//chromeos/components/scanning",
     "//chromeos/components/scanning/mojom",
     "//chromeos/components/sensors",
+    "//chromeos/components/sensors:buildflags",
     "//chromeos/components/sensors/mojom",
     "//chromeos/components/smbfs",
     "//chromeos/components/smbfs/mojom",
@@ -3062,6 +3064,19 @@ source_set("chromeos") {
     "extensions/wallpaper_private_api.h",
   ]
 
+  if (use_iioservice) {
+    sources -= [
+      "power/auto_screen_brightness/als_file_reader.cc",
+      "power/auto_screen_brightness/als_file_reader.h",
+    ]
+    sources += [
+      "power/auto_screen_brightness/light_provider_mojo.cc",
+      "power/auto_screen_brightness/light_provider_mojo.h",
+      "power/auto_screen_brightness/light_samples_observer.cc",
+      "power/auto_screen_brightness/light_samples_observer.h",
+    ]
+  }
+
   if (use_cups) {
     configs += [ "//printing:cups" ]
     deps += [
@@ -4210,6 +4225,15 @@ source_set("unit_tests") {
     "//ui/events/devices:test_support",
     "//ui/shell_dialogs",
   ]
+  if (use_iioservice) {
+    sources -= [ "power/auto_screen_brightness/als_file_reader_unittest.cc" ]
+    sources += [
+      "power/auto_screen_brightness/light_provider_mojo_unittest.cc",
+      "power/auto_screen_brightness/light_samples_observer_unittest.cc",
+    ]
+    deps += [ "//chromeos/components/sensors:test_support" ]
+  }
+
   if (use_udev) {
     deps += [ "//device/udev_linux:test_support" ]
   }
