@@ -383,8 +383,7 @@ class SystemWebAppSessionRestoreTestChromeOS
   SystemWebAppSessionRestoreTestChromeOS()
       : SystemWebAppManagerBrowserTest(/*install_mock=*/false) {
     maybe_installation_ =
-        web_app::TestSystemWebAppInstallation::SetUpStandaloneSingleWindowApp(
-            install_from_web_app_info());
+        web_app::TestSystemWebAppInstallation::SetUpStandaloneSingleWindowApp();
     maybe_installation_->set_update_policy(
         web_app::SystemWebAppManager::UpdatePolicy::kOnVersionChange);
   }
@@ -429,6 +428,6 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppSessionRestoreTestChromeOS,
   }
 }
 
-INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_MANIFEST_INSTALL_P(
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppSessionRestoreTestChromeOS);
 INSTANTIATE_TEST_SUITE_P(All, SessionRestoreTestChromeOS, ::testing::Bool());

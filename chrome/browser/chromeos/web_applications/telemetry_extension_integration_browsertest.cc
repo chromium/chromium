@@ -92,9 +92,7 @@ class TelemetryExtensionWithDirIntegrationTest
   }
 };
 
-// TODO: Change MANIFEST_INSTALL to ALL_INSTALL_TYPES when a
-// WebApplicationProvider is ready.
-INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_MANIFEST_INSTALL_P(
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     TelemetryExtensionIntegrationTest);
 
 // Tests that TelemetryExtensionUntrustedSource can successfully load a resource
@@ -133,7 +131,5 @@ IN_PROC_BROWSER_TEST_P(
       content::NavigateToURL(web_contents, non_existent_resource_gurl));
 }
 
-// TODO: Change MANIFEST_INSTALL to ALL_INSTALL_TYPES when a
-// WebApplicationProvider is ready.
-INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_MANIFEST_INSTALL_P(
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     TelemetryExtensionWithDirIntegrationTest);

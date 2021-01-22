@@ -184,8 +184,7 @@ SystemWebAppManagerBrowserTest::SystemWebAppManagerBrowserTest(
     : SystemWebAppManagerBrowserTestBase(install_mock) {
   if (install_mock) {
     maybe_installation_ =
-        TestSystemWebAppInstallation::SetUpStandaloneSingleWindowApp(
-            install_from_web_app_info());
+        TestSystemWebAppInstallation::SetUpStandaloneSingleWindowApp();
   }
 }
 
@@ -241,10 +240,7 @@ std::string SystemWebAppManagerTestParamsToString(
     const ::testing::TestParamInfo<SystemWebAppManagerTestParams>& param_info) {
   std::string output;
 
-  if (std::get<0>(param_info.param) == InstallationType::kWebAppInfoInstall) {
-    output.append("_WebAppInfoInstall");
-  }
-  switch (std::get<1>(param_info.param)) {
+  switch (std::get<0>(param_info.param)) {
     case TestProfileType::kRegular:
       break;
     case TestProfileType::kIncognito:
@@ -378,8 +374,7 @@ class SystemWebAppManagerFileHandlingBrowserTestBase
 
     maybe_installation_ =
         TestSystemWebAppInstallation::SetUpAppThatReceivesLaunchFiles(
-            include_launch_directory,
-            std::get<0>(GetParam()) == InstallationType::kWebAppInfoInstall);
+            include_launch_directory);
   }
 
   content::WebContents* LaunchApp(
@@ -915,8 +910,7 @@ class SystemWebAppManagerFileHandlingOriginTrialsBrowserTest
     maybe_installation_ =
         TestSystemWebAppInstallation::SetUpAppWithEnabledOriginTrials(
             OriginTrialsMap({{GetOrigin(GURL("chrome://test-system-app/")),
-                              {"FileHandling"}}}),
-            install_from_web_app_info());
+                              {"FileHandling"}}}));
   }
 
   ~SystemWebAppManagerFileHandlingOriginTrialsBrowserTest() override = default;
@@ -977,8 +971,7 @@ class SystemWebAppManagerNotShownInLauncherTest
   SystemWebAppManagerNotShownInLauncherTest()
       : SystemWebAppManagerBrowserTest(/*install_mock=*/false) {
     maybe_installation_ =
-        TestSystemWebAppInstallation::SetUpAppNotShownInLauncher(
-            install_from_web_app_info());
+        TestSystemWebAppInstallation::SetUpAppNotShownInLauncher();
   }
 };
 
@@ -1013,8 +1006,7 @@ class SystemWebAppManagerNotShownInSearchTest
   SystemWebAppManagerNotShownInSearchTest()
       : SystemWebAppManagerBrowserTest(/*install_mock=*/false) {
     maybe_installation_ =
-        TestSystemWebAppInstallation::SetUpAppNotShownInSearch(
-            install_from_web_app_info());
+        TestSystemWebAppInstallation::SetUpAppNotShownInSearch();
   }
 };
 
@@ -1039,8 +1031,7 @@ class SystemWebAppManagerAdditionalSearchTermsTest
   SystemWebAppManagerAdditionalSearchTermsTest()
       : SystemWebAppManagerBrowserTest(/*install_mock=*/false) {
     maybe_installation_ =
-        TestSystemWebAppInstallation::SetUpAppWithAdditionalSearchTerms(
-            install_from_web_app_info());
+        TestSystemWebAppInstallation::SetUpAppWithAdditionalSearchTerms();
   }
 };
 
@@ -1073,8 +1064,7 @@ class SystemWebAppManagerUninstallBrowserTest
           TestSystemWebAppInstallation::SetUpAppWithEnabledOriginTrials(
               OriginTrialsMap(
                   {{url::Origin::Create(GURL("chrome://test-system-app/")),
-                    {"FileHandling"}}}),
-              install_from_web_app_info());
+                    {"FileHandling"}}}));
     } else {
       maybe_installation_ = TestSystemWebAppInstallation::SetUpWithoutApps();
     }
@@ -1156,7 +1146,7 @@ class SystemWebAppManagerMigrationTest
   SystemWebAppManagerMigrationTest()
       : SystemWebAppManagerBrowserTestBase(/*install_mock=*/false) {
     maybe_installation_ =
-        TestSystemWebAppInstallation::SetUpAppWithAdditionalSearchTerms(false);
+        TestSystemWebAppInstallation::SetUpAppWithAdditionalSearchTerms();
     maybe_installation_->set_update_policy(
         SystemWebAppManager::UpdatePolicy::kOnVersionChange);
 
@@ -1221,8 +1211,8 @@ class SystemWebAppManagerChromeUntrustedTest
  public:
   SystemWebAppManagerChromeUntrustedTest()
       : SystemWebAppManagerBrowserTest(/*install_mock=*/false) {
-    maybe_installation_ = TestSystemWebAppInstallation::SetUpChromeUntrustedApp(
-        install_from_web_app_info());
+    maybe_installation_ =
+        TestSystemWebAppInstallation::SetUpChromeUntrustedApp();
   }
 };
 
@@ -1259,8 +1249,7 @@ class SystemWebAppManagerOriginTrialsBrowserTest
     maybe_installation_ =
         TestSystemWebAppInstallation::SetUpAppWithEnabledOriginTrials(
             OriginTrialsMap({{GetOrigin(main_url_), main_url_trials_},
-                             {GetOrigin(trial_url_), trial_url_trials_}}),
-            install_from_web_app_info());
+                             {GetOrigin(trial_url_), trial_url_trials_}}));
   }
 
   ~SystemWebAppManagerOriginTrialsBrowserTest() override = default;
@@ -1516,48 +1505,48 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerAppSuspensionBrowserTest,
                GetAppIconKey(*settings_id)->icon_effects);
 }
 // This feature will only work when DesktopPWAsWithoutExtensions launches.
-INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_INSTALL_TYPES_P(
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppManagerAppSuspensionBrowserTest);
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_INSTALL_TYPES_P(
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppManagerWebAppInfoBrowserTest);
 
-INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_INSTALL_TYPES_P(
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppManagerLaunchFilesBrowserTest);
 
-INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_INSTALL_TYPES_P(
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppManagerLaunchDirectoryBrowserTest);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_INSTALL_TYPES_P(
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppManagerLaunchDirectoryFileSystemProviderBrowserTest);
 #endif
 
-INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_INSTALL_TYPES_P(
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppManagerNotShownInLauncherTest);
 
-INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_INSTALL_TYPES_P(
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppManagerNotShownInSearchTest);
 
-INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_INSTALL_TYPES_P(
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppManagerAdditionalSearchTermsTest);
 
-INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_INSTALL_TYPES_P(
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppManagerChromeUntrustedTest);
 
-INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_INSTALL_TYPES_P(
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppManagerOriginTrialsBrowserTest);
 
-INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_INSTALL_TYPES_P(
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppManagerFileHandlingOriginTrialsBrowserTest);
 
-INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_INSTALL_TYPES_P(
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppManagerUninstallBrowserTest);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_INSTALL_TYPES_P(
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppManagerUpgradeBrowserTest);
 #endif
 

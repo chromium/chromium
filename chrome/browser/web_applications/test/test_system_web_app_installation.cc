@@ -149,14 +149,10 @@ TestSystemWebAppInstallation::SetUpWithoutApps() {
 
 // static
 std::unique_ptr<TestSystemWebAppInstallation>
-TestSystemWebAppInstallation::SetUpTabbedMultiWindowApp(
-    const bool use_web_app_info) {
+TestSystemWebAppInstallation::SetUpTabbedMultiWindowApp() {
   SystemAppInfo terminal_system_app_info(
-      "Terminal", GURL("chrome://test-system-app/pwa.html"));
-  if (use_web_app_info) {
-    terminal_system_app_info.app_info_factory =
-        base::BindRepeating(&GenerateWebApplicationInfoForTestApp);
-  }
+      "Terminal", GURL("chrome://test-system-app/pwa.html"),
+      base::BindRepeating(&GenerateWebApplicationInfoForTestApp));
   terminal_system_app_info.single_window = false;
 
   return base::WrapUnique(new TestSystemWebAppInstallation(
@@ -165,33 +161,21 @@ TestSystemWebAppInstallation::SetUpTabbedMultiWindowApp(
 
 // static
 std::unique_ptr<TestSystemWebAppInstallation>
-TestSystemWebAppInstallation::SetUpStandaloneSingleWindowApp(
-    const bool use_web_app_info) {
-  if (use_web_app_info) {
-    return base::WrapUnique(new TestSystemWebAppInstallation(
-        SystemAppType::SETTINGS,
-        SystemAppInfo(
-            "OSSettings", GURL("chrome://test-system-app/pwa.html"),
-            base::BindRepeating(&GenerateWebApplicationInfoForTestApp))));
-  } else {
-    return base::WrapUnique(new TestSystemWebAppInstallation(
-        SystemAppType::SETTINGS,
-        SystemAppInfo("OSSettings",
-                      GURL("chrome://test-system-app/pwa.html"))));
-  }
+TestSystemWebAppInstallation::SetUpStandaloneSingleWindowApp() {
+  return base::WrapUnique(new TestSystemWebAppInstallation(
+      SystemAppType::SETTINGS,
+      SystemAppInfo(
+          "OSSettings", GURL("chrome://test-system-app/pwa.html"),
+          base::BindRepeating(&GenerateWebApplicationInfoForTestApp))));
 }
 
 // static
 std::unique_ptr<TestSystemWebAppInstallation>
 TestSystemWebAppInstallation::SetUpAppThatReceivesLaunchFiles(
-    IncludeLaunchDirectory include_launch_directory,
-    const bool use_web_app_info) {
+    IncludeLaunchDirectory include_launch_directory) {
   SystemAppInfo media_system_app_info(
-      "Media", GURL("chrome://test-system-app/pwa.html"));
-  if (use_web_app_info) {
-    media_system_app_info.app_info_factory =
-        base::BindRepeating(&GenerateWebApplicationInfoForTestApp);
-  }
+      "Media", GURL("chrome://test-system-app/pwa.html"),
+      base::BindRepeating(&GenerateWebApplicationInfoForTestApp));
 
   if (include_launch_directory == IncludeLaunchDirectory::kYes)
     media_system_app_info.include_launch_directory = true;
@@ -211,72 +195,58 @@ TestSystemWebAppInstallation::SetUpAppThatReceivesLaunchFiles(
 // static
 std::unique_ptr<TestSystemWebAppInstallation>
 TestSystemWebAppInstallation::SetUpAppWithEnabledOriginTrials(
-    const OriginTrialsMap& origin_to_trials,
-    const bool use_web_app_info) {
+    const OriginTrialsMap& origin_to_trials) {
   SystemAppInfo media_system_app_info(
-      "Media", GURL("chrome://test-system-app/pwa.html"));
-  if (use_web_app_info) {
-    media_system_app_info.app_info_factory =
-        base::BindRepeating(&GenerateWebApplicationInfoForTestApp);
-  }
+      "Media", GURL("chrome://test-system-app/pwa.html"),
+      base::BindRepeating(&GenerateWebApplicationInfoForTestApp));
   media_system_app_info.enabled_origin_trials = origin_to_trials;
+
   return base::WrapUnique(new TestSystemWebAppInstallation(
       SystemAppType::MEDIA, media_system_app_info));
 }
 
 // static
 std::unique_ptr<TestSystemWebAppInstallation>
-TestSystemWebAppInstallation::SetUpAppNotShownInLauncher(
-    const bool use_web_app_info) {
-  SystemAppInfo app_info("Test", GURL("chrome://test-system-app/pwa.html"));
+TestSystemWebAppInstallation::SetUpAppNotShownInLauncher() {
+  SystemAppInfo app_info(
+      "Test", GURL("chrome://test-system-app/pwa.html"),
+      base::BindRepeating(&GenerateWebApplicationInfoForTestApp));
   app_info.show_in_launcher = false;
-  if (use_web_app_info) {
-    app_info.app_info_factory =
-        base::BindRepeating(&GenerateWebApplicationInfoForTestApp);
-  }
+
   return base::WrapUnique(new TestSystemWebAppInstallation(
       SystemAppType::SETTINGS, std::move(app_info)));
 }
 
 // static
 std::unique_ptr<TestSystemWebAppInstallation>
-TestSystemWebAppInstallation::SetUpAppNotShownInSearch(
-    const bool use_web_app_info) {
-  SystemAppInfo app_info("Test", GURL("chrome://test-system-app/pwa.html"));
+TestSystemWebAppInstallation::SetUpAppNotShownInSearch() {
+  SystemAppInfo app_info(
+      "Test", GURL("chrome://test-system-app/pwa.html"),
+      base::BindRepeating(&GenerateWebApplicationInfoForTestApp));
   app_info.show_in_search = false;
-  if (use_web_app_info) {
-    app_info.app_info_factory =
-        base::BindRepeating(&GenerateWebApplicationInfoForTestApp);
-  }
+
   return base::WrapUnique(new TestSystemWebAppInstallation(
       SystemAppType::SETTINGS, std::move(app_info)));
 }
 
 // static
 std::unique_ptr<TestSystemWebAppInstallation>
-TestSystemWebAppInstallation::SetUpAppWithAdditionalSearchTerms(
-    const bool use_web_app_info) {
-  SystemAppInfo app_info("Test", GURL("chrome://test-system-app/pwa.html"));
+TestSystemWebAppInstallation::SetUpAppWithAdditionalSearchTerms() {
+  SystemAppInfo app_info(
+      "Test", GURL("chrome://test-system-app/pwa.html"),
+      base::BindRepeating(&GenerateWebApplicationInfoForTestApp));
   app_info.additional_search_terms = {IDS_SETTINGS_SECURITY};
-  if (use_web_app_info) {
-    app_info.app_info_factory =
-        base::BindRepeating(&GenerateWebApplicationInfoForTestApp);
-  }
+
   return base::WrapUnique(new TestSystemWebAppInstallation(
       SystemAppType::SETTINGS, std::move(app_info)));
 }
 
 // static
 std::unique_ptr<TestSystemWebAppInstallation>
-TestSystemWebAppInstallation::SetUpAppThatCapturesNavigation(
-    const bool use_web_app_info) {
-  SystemAppInfo app_info("Test", GURL("chrome://test-system-web-app/pwa.html"));
-
-  if (use_web_app_info) {
-    app_info.app_info_factory =
-        base::BindRepeating(&GenerateWebApplicationInfoForTestApp);
-  }
-
+TestSystemWebAppInstallation::SetUpAppThatCapturesNavigation() {
+  SystemAppInfo app_info(
+      "Test", GURL("chrome://test-system-web-app/pwa.html"),
+      base::BindRepeating(&GenerateWebApplicationInfoForTestApp));
   app_info.capture_navigations = true;
 
   auto* installation = new TestSystemWebAppInstallation(SystemAppType::HELP,
@@ -286,7 +256,26 @@ TestSystemWebAppInstallation::SetUpAppThatCapturesNavigation(
   const GURL kInitiatingAppUrl = GURL("chrome://initiating-app/pwa.html");
   installation->extra_apps_.insert_or_assign(
       SystemAppType::SETTINGS,
-      SystemAppInfo("Initiating App", kInitiatingAppUrl));
+      SystemAppInfo("Initiating App", kInitiatingAppUrl,
+                    base::BindLambdaForTesting([]() {
+                      auto info = std::make_unique<WebApplicationInfo>();
+                      // the pwa.html is arguably wrong, but the manifest
+                      // version uses it incorrectly as well, and it's a lot of
+                      // work to fix it. App ids are generated from this, and
+                      // it's important to keep it stable across the
+                      // installation modes.
+                      info->start_url =
+                          GURL("chrome://initiating-app/pwa.html");
+                      info->scope = GURL("chrome://initiating-app/");
+                      info->title = base::UTF8ToUTF16("Test System App");
+                      info->theme_color = 0xFF00FF00;
+                      info->display_mode =
+                          blink::mojom::DisplayMode::kStandalone;
+                      info->open_as_window = true;
+                      return info;
+                    }
+
+                                               )));
   auto factory = std::make_unique<TestSystemWebAppWebUIControllerFactory>(
       kInitiatingAppUrl.host());
   content::WebUIControllerFactory::RegisterFactory(factory.get());
@@ -297,21 +286,12 @@ TestSystemWebAppInstallation::SetUpAppThatCapturesNavigation(
 
 // static
 std::unique_ptr<TestSystemWebAppInstallation>
-TestSystemWebAppInstallation::SetUpChromeUntrustedApp(
-    const bool use_web_app_info) {
-  if (use_web_app_info) {
-    return base::WrapUnique(new TestSystemWebAppInstallation(
-        SystemAppType::SETTINGS,
-        SystemAppInfo("Test",
-                      GURL("chrome-untrusted://test-system-app/pwa.html"),
-                      base::BindRepeating(
-                          &GenerateWebApplicationInfoForTestAppUntrusted))));
-  } else {
-    return base::WrapUnique(new TestSystemWebAppInstallation(
-        SystemAppType::SETTINGS,
-        SystemAppInfo("Test",
-                      GURL("chrome-untrusted://test-system-app/pwa.html"))));
-  }
+TestSystemWebAppInstallation::SetUpChromeUntrustedApp() {
+  return base::WrapUnique(new TestSystemWebAppInstallation(
+      SystemAppType::SETTINGS,
+      SystemAppInfo("Test", GURL("chrome-untrusted://test-system-app/pwa.html"),
+                    base::BindRepeating(
+                        &GenerateWebApplicationInfoForTestAppUntrusted))));
 }
 
 // static

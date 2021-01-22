@@ -50,8 +50,7 @@ class SystemWebAppLinkCaptureBrowserTest
   SystemWebAppLinkCaptureBrowserTest()
       : SystemWebAppManagerBrowserTest(/*install_mock*/ false) {
     maybe_installation_ =
-        TestSystemWebAppInstallation::SetUpAppThatCapturesNavigation(
-            install_from_web_app_info());
+        TestSystemWebAppInstallation::SetUpAppThatCapturesNavigation();
   }
   ~SystemWebAppLinkCaptureBrowserTest() override = default;
 
@@ -480,8 +479,7 @@ class SystemWebAppManagerMultiDesktopLaunchBrowserTest
     account_id1_ = login_mixin_.users()[0].account_id;
     account_id2_ = login_mixin_.users()[1].account_id;
     installation_ =
-        TestSystemWebAppInstallation::SetUpAppThatCapturesNavigation(
-            /* use_web_app_info*/ true);
+        TestSystemWebAppInstallation::SetUpAppThatCapturesNavigation();
   }
 
   ~SystemWebAppManagerMultiDesktopLaunchBrowserTest() override = default;
@@ -727,18 +725,18 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLaunchProfileGuestSessionBrowserTest,
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) && !DCHECK_IS_ON()
 
-INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_INSTALL_TYPES_P(
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppLinkCaptureBrowserTest);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) && !DCHECK_IS_ON()
-INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_INSTALL_TYPES_P(
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppLaunchProfileBrowserTest);
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_GUEST_SESSION_P(
     SystemWebAppLaunchProfileGuestSessionBrowserTest);
 #endif
 
-INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_WEB_APP_INFO_INSTALL_P(
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppManagerNonResizeableWindowTest);
 
 }  // namespace web_app

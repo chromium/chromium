@@ -1131,8 +1131,7 @@ class ManifestUpdateManagerSystemAppBrowserTest
 
   ManifestUpdateManagerSystemAppBrowserTest()
       : system_app_(
-            TestSystemWebAppInstallation::SetUpStandaloneSingleWindowApp(
-                false)) {
+            TestSystemWebAppInstallation::SetUpStandaloneSingleWindowApp()) {
     system_app_->SetManifest(base::ReplaceStringPlaceholders(
         kSystemAppManifestText, {"#0f0"}, nullptr));
   }

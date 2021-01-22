@@ -101,8 +101,7 @@ class SystemWebAppManagerBrowserTestBase : public InProcessBrowserTest {
 
 enum class InstallationType { kManifestInstall, kWebAppInfoInstall };
 
-using SystemWebAppManagerTestParams =
-    std::tuple<InstallationType, TestProfileType>;
+using SystemWebAppManagerTestParams = std::tuple<TestProfileType>;
 
 class SystemWebAppManagerBrowserTest
     : public SystemWebAppManagerBrowserTestBase,
@@ -111,10 +110,7 @@ class SystemWebAppManagerBrowserTest
   explicit SystemWebAppManagerBrowserTest(bool install_mock = true);
   ~SystemWebAppManagerBrowserTest() override = default;
 
-  bool install_from_web_app_info() const {
-    return std::get<0>(GetParam()) == InstallationType::kWebAppInfoInstall;
-  }
-  TestProfileType profile_type() const { return std::get<1>(GetParam()); }
+  TestProfileType profile_type() const { return std::get<0>(GetParam()); }
 
   // InProcessBrowserTest:
   void SetUpCommandLine(base::CommandLine* command_line) override;
@@ -131,53 +127,23 @@ std::string SystemWebAppManagerTestParamsToString(
   INSTANTIATE_TEST_SUITE_P(All, SUITE, PARAMS,                         \
                            web_app::SystemWebAppManagerTestParamsToString)
 
-#define INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_INSTALL_TYPES_P(  \
-    SUITE)                                                                  \
-  INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_P(                          \
-      SUITE,                                                                \
-      ::testing::Combine(                                                   \
-          ::testing::Values(web_app::InstallationType::kManifestInstall,    \
-                            web_app::InstallationType::kWebAppInfoInstall), \
-          ::testing::Values(TestProfileType::kRegular)))
+// Instantiates 3 versions of each test in |SUITE| to ensure coverage of
+// Guest and Incognito profiles, as well as regular profiles. This is currently
+// only used on ChromeOS. Other platforms will likely need a differently defined
+// macro because there is no such thing as Guest mode.
+#define INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_PROFILE_TYPES_P( \
+    SUITE)                                                                 \
+  INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_P(                         \
+      SUITE,                                                               \
+      ::testing::Values(TestProfileType::kRegular,                         \
+                        TestProfileType::kIncognito, TestProfileType::kGuest))
 
-#define INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_MANIFEST_INSTALL_P( \
-    SUITE)                                                                \
-  INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_P(                        \
-      SUITE,                                                              \
-      ::testing::Combine(                                                 \
-          ::testing::Values(web_app::InstallationType::kManifestInstall), \
-          ::testing::Values(TestProfileType::kRegular)))
+#define INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(SUITE) \
+  INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_P(                             \
+      SUITE, ::testing::Values(TestProfileType::kRegular))
 
-#define INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_WEB_APP_INFO_INSTALL_P( \
-    SUITE)                                                                    \
-  INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_P(                            \
-      SUITE,                                                                  \
-      ::testing::Combine(                                                     \
-          ::testing::Values(web_app::InstallationType::kWebAppInfoInstall),   \
-          ::testing::Values(TestProfileType::kRegular)))
-
-// Instantiates 2x1x3 = 6 versions of each test in |SUITE| to ensure coverage of
-// Guest and Incognito profiles, as well as regular profiles. This is designed
-// for testing specific apps that are present in these profile types, so only
-// one |INSTALL_TYPE| is used: either kManifestInstall or kWebAppInfoInstall.
-// This is currently only used on ChromeOS. Other platforms will likely need a
-// differently defined macro because there is no such thing as Guest mode.
-#define INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_PROFILE_TYPES_P(   \
-    SUITE, INSTALL_TYPE)                                                     \
-  INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_P(                           \
-      SUITE, ::testing::Combine(                                             \
-                 ::testing::Values(web_app::InstallationType::INSTALL_TYPE), \
-                 ::testing::Values(TestProfileType::kRegular,                \
-                                   TestProfileType::kIncognito,              \
-                                   TestProfileType::kGuest)))
-
-// Instantiate |SUITE| for all install types, on a Chrome OS guest session.
 #define INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_GUEST_SESSION_P(SUITE) \
   INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_P(                           \
-      SUITE,                                                                 \
-      ::testing::Combine(                                                    \
-          ::testing::Values(web_app::InstallationType::kManifestInstall,     \
-                            web_app::InstallationType::kWebAppInfoInstall),  \
-          ::testing::Values(TestProfileType::kGuest)))
+      SUITE, ::testing::Values(TestProfileType::kGuest))
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_SYSTEM_WEB_APP_MANAGER_BROWSERTEST_H_

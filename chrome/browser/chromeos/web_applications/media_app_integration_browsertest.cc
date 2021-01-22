@@ -607,17 +607,15 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppAllProfilesTest,
   EXPECT_EQ(expected_contents, renamed_contents);
 }
 
-INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_WEB_APP_INFO_INSTALL_P(
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     MediaAppIntegrationTest);
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_PROFILE_TYPES_P(
-    MediaAppIntegrationAllProfilesTest,
-    kWebAppInfoInstall);
+    MediaAppIntegrationAllProfilesTest);
 
 // Note: All MediaAppIntegrationWithFilesAppTest cases above currently want
 // coverage for all profile types, so the "less" prarameterized prefix is not
 // instantiated to avoid a gtest warning.
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_PROFILE_TYPES_P(
-    MediaAppIntegrationWithFilesAppAllProfilesTest,
-    kWebAppInfoInstall);
+    MediaAppIntegrationWithFilesAppAllProfilesTest);

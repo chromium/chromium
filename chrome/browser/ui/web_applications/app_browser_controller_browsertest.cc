@@ -94,7 +94,7 @@ class AppBrowserControllerBrowserTest : public InProcessBrowserTest {
  public:
   AppBrowserControllerBrowserTest()
       : test_system_web_app_installation_(
-            TestSystemWebAppInstallation::SetUpTabbedMultiWindowApp(false)) {}
+            TestSystemWebAppInstallation::SetUpTabbedMultiWindowApp()) {}
   AppBrowserControllerBrowserTest(const AppBrowserControllerBrowserTest&) =
       delete;
   AppBrowserControllerBrowserTest& operator=(
@@ -320,7 +320,7 @@ class AppBrowserControllerChromeUntrustedBrowserTest
  public:
   AppBrowserControllerChromeUntrustedBrowserTest()
       : test_system_web_app_installation_(
-            TestSystemWebAppInstallation::SetUpChromeUntrustedApp(false)) {}
+            TestSystemWebAppInstallation::SetUpChromeUntrustedApp()) {}
 
  protected:
   Browser* InstallAndLaunchMockApp() {

@@ -342,8 +342,7 @@ class AutotestPrivateSystemWebAppsTest : public AutotestPrivateApiTest {
  public:
   AutotestPrivateSystemWebAppsTest() {
     installation_ =
-        web_app::TestSystemWebAppInstallation::SetUpStandaloneSingleWindowApp(
-            true);
+        web_app::TestSystemWebAppInstallation::SetUpStandaloneSingleWindowApp();
   }
   ~AutotestPrivateSystemWebAppsTest() override = default;
 

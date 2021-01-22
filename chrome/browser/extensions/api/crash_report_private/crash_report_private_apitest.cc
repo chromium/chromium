@@ -398,7 +398,7 @@ IN_PROC_BROWSER_TEST_P(CrashReportPrivateCalledFromSwaTest,
   EXPECT_EQ(report.content, "");
 }
 
-INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_WEB_APP_INFO_INSTALL_P(
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     CrashReportPrivateCalledFromSwaTest);
 
 }  // namespace extensions

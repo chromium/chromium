@@ -18,5 +18,5 @@ IN_PROC_BROWSER_TEST_P(SampleSystemWebAppIntegrationTest, SampleSystemWebApp) {
       web_app::SystemAppType::SAMPLE, url, "Sample System Web App"));
 }
 
-INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_MANIFEST_INSTALL_P(
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SampleSystemWebAppIntegrationTest);

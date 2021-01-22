@@ -61,5 +61,5 @@ IN_PROC_BROWSER_TEST_P(CameraAppIntegrationTest, OtherPageUrlNavigation) {
       browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL());
 }
 
-INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_MANIFEST_INSTALL_P(
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     CameraAppIntegrationTest);

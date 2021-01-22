@@ -28,40 +28,38 @@ class TestSystemWebAppInstallation {
   static std::unique_ptr<TestSystemWebAppInstallation> SetUpWithoutApps();
 
   static std::unique_ptr<TestSystemWebAppInstallation>
-  SetUpTabbedMultiWindowApp(const bool use_web_app_info);
+  SetUpTabbedMultiWindowApp();
 
   static std::unique_ptr<TestSystemWebAppInstallation>
-  SetUpStandaloneSingleWindowApp(const bool use_web_app_info);
+  SetUpStandaloneSingleWindowApp();
 
   // This method automatically grants Native File System read and write
   // permissions to the App.
   static std::unique_ptr<TestSystemWebAppInstallation>
   SetUpAppThatReceivesLaunchFiles(
-      IncludeLaunchDirectory include_launch_directory,
-      const bool use_web_app_info);
+      IncludeLaunchDirectory include_launch_directory);
 
   static std::unique_ptr<TestSystemWebAppInstallation>
-  SetUpAppWithEnabledOriginTrials(const OriginTrialsMap& origin_to_trials,
-                                  const bool use_web_app_info);
+  SetUpAppWithEnabledOriginTrials(const OriginTrialsMap& origin_to_trials);
 
   static std::unique_ptr<TestSystemWebAppInstallation>
-  SetUpAppNotShownInLauncher(const bool use_web_app_info);
-
-  static std::unique_ptr<TestSystemWebAppInstallation> SetUpAppNotShownInSearch(
-      const bool use_web_app_info);
+  SetUpAppNotShownInLauncher();
 
   static std::unique_ptr<TestSystemWebAppInstallation>
-  SetUpAppWithAdditionalSearchTerms(const bool use_web_app_info);
+  SetUpAppNotShownInSearch();
+
+  static std::unique_ptr<TestSystemWebAppInstallation>
+  SetUpAppWithAdditionalSearchTerms();
 
   // This method additionally sets up a helper SystemAppType::SETTING system app
   // for testing capturing links from a different SWA.
   static std::unique_ptr<TestSystemWebAppInstallation>
-  SetUpAppThatCapturesNavigation(const bool use_web_app_info);
+  SetUpAppThatCapturesNavigation();
+
+  static std::unique_ptr<TestSystemWebAppInstallation>
+  SetUpChromeUntrustedApp();
 
   static std::unique_ptr<TestSystemWebAppInstallation> SetUpNonResizeableApp();
-
-  static std::unique_ptr<TestSystemWebAppInstallation> SetUpChromeUntrustedApp(
-      const bool use_web_app_info);
 
   ~TestSystemWebAppInstallation();
 
