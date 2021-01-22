@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/system_web_app_manager.h"
+#include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -31,16 +32,39 @@ base::Optional<apps::AppLaunchParams> CreateSystemWebAppLaunchParams(
     SystemAppType app_type,
     int64_t display_id);
 
-// Launches a System App to the given URL, reusing any existing window for the
-// app. Returns the browser for the System App, or nullptr if launch/focus
-// failed. CreateSystemWebAppLaunchParams() can be used to create |params|.
-// |did_create| will reflect whether a new window was created if passed.
-Browser* LaunchSystemWebApp(
+// Additional parameters to control LaunchSystemAppAsync behaviors.
+struct SystemAppLaunchParams {
+  // If provided (i.e. the URL is valid), launches System Apps into |url|
+  // instead of it's start_url (as specified its WebApplicationInfo).
+  GURL url;
+
+  // Where the app is launched from.
+  apps::mojom::LaunchSource launch_source =
+      apps::mojom::LaunchSource::kFromChromeInternal;
+};
+
+// Launch the given System Web App |type|, |params| can be used to tweak the
+// launch behavior (e.g. launch to app's subpage, specifying launch source for
+// metrics). Terminal App should use crostini::LaunchTerminal*.
+//
+// In tests, remember to call FlushSystemWebAppLaunchesForTesting on the same
+// |profile|, or use TestNavigationObserver to wait the navigation.
+void LaunchSystemWebAppAsync(
     Profile* profile,
-    SystemAppType app_type,
-    const GURL& url,
-    base::Optional<apps::AppLaunchParams> params = base::nullopt,
-    bool* did_create = nullptr);
+    const SystemAppType type,
+    const SystemAppLaunchParams& params = SystemAppLaunchParams());
+
+// When this method returns, it makes sure all previous LaunchSystemWebAppAsync
+// calls on |profile| are processed (i.e. LaunchSystemWebAppImpl finishes
+// executing). Useful for testing SWA launch behaviors.
+void FlushSystemWebAppLaunchesForTesting(Profile* profile);
+
+// Implementation of LaunchSystemWebApp. Do not use this before discussing your
+// use case with the System Web Apps team.
+Browser* LaunchSystemWebAppImpl(Profile* profile,
+                                SystemAppType type,
+                                const GURL& url,
+                                apps::AppLaunchParams& params);
 
 // Returns a browser that is hosting the given system app type and browser type,
 // or nullptr if not found.

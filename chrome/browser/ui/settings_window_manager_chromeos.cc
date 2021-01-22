@@ -31,12 +31,21 @@ namespace chrome {
 namespace {
 
 bool g_force_deprecated_settings_window_for_testing = false;
+SettingsWindowManager* g_settings_window_manager_for_testing = nullptr;
 
 }  // namespace
 
 // static
 SettingsWindowManager* SettingsWindowManager::GetInstance() {
-  return base::Singleton<SettingsWindowManager>::get();
+  return g_settings_window_manager_for_testing
+             ? g_settings_window_manager_for_testing
+             : base::Singleton<SettingsWindowManager>::get();
+}
+
+// static
+void SettingsWindowManager::SetInstanceForTesting(
+    SettingsWindowManager* manager) {
+  g_settings_window_manager_for_testing = manager;
 }
 
 // static
@@ -71,8 +80,8 @@ void SettingsWindowManager::ShowChromePageForProfile(Profile* profile,
 
   // TODO(crbug.com/1067073): Remove legacy Settings Window.
   if (!UseDeprecatedSettingsWindow(profile)) {
-    web_app::LaunchSystemWebApp(profile, web_app::SystemAppType::SETTINGS,
-                                gurl);
+    web_app::LaunchSystemWebAppAsync(profile, web_app::SystemAppType::SETTINGS,
+                                     {.url = gurl});
     // SWA OS Settings don't use SettingsWindowManager to manage windows, don't
     // notify SettingsWindowObservers.
     return;

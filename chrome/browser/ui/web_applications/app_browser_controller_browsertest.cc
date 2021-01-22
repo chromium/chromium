@@ -126,9 +126,10 @@ class AppBrowserControllerBrowserTest : public InProcessBrowserTest {
         display::kInvalidDisplayId);
     EXPECT_TRUE(params.has_value());
     params->disposition = WindowOpenDisposition::NEW_POPUP;
-    app_browser_ = web_app::LaunchSystemWebApp(
+
+    app_browser_ = web_app::LaunchSystemWebAppImpl(
         profile(), test_system_web_app_installation_->GetType(),
-        test_system_web_app_installation_->GetAppUrl(), std::move(*params));
+        test_system_web_app_installation_->GetAppUrl(), *params);
   }
 
   void InstallAndLaunchMockApp() {
@@ -154,7 +155,6 @@ class AppBrowserControllerBrowserTest : public InProcessBrowserTest {
  private:
   std::unique_ptr<TestSystemWebAppInstallation>
       test_system_web_app_installation_;
-
 };
 
 IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTest, TabsTest) {

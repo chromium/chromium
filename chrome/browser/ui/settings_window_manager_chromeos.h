@@ -29,6 +29,9 @@ class SettingsWindowManager {
  public:
   static SettingsWindowManager* GetInstance();
 
+  // Caller is responsible for |manager|'s life time.
+  static void SetInstanceForTesting(SettingsWindowManager* manager);
+
   // See https://crbug.com/1067073.
   static void ForceDeprecatedSettingsWindowForTesting();
   static bool UseDeprecatedSettingsWindow(const Profile* profile);
@@ -38,7 +41,7 @@ class SettingsWindowManager {
 
   // Shows a chrome:// page (e.g. Settings, About) in an an existing system
   // Browser window for |profile| or creates a new one.
-  void ShowChromePageForProfile(Profile* profile, const GURL& gurl);
+  virtual void ShowChromePageForProfile(Profile* profile, const GURL& gurl);
 
   // Shows the OS settings window for |profile|. When feature SplitSettings is
   // disabled, this behaves like ShowChromePageForProfile().
@@ -54,12 +57,13 @@ class SettingsWindowManager {
   // Returns true if |browser| is a settings window.
   bool IsSettingsBrowser(Browser* browser) const;
 
+ protected:
+  SettingsWindowManager();
+  virtual ~SettingsWindowManager();
+
  private:
   friend struct base::DefaultSingletonTraits<SettingsWindowManager>;
   typedef std::map<Profile*, SessionID> ProfileSessionMap;
-
-  SettingsWindowManager();
-  ~SettingsWindowManager();
 
   base::ObserverList<SettingsWindowManagerObserver>::Unchecked observers_;
 

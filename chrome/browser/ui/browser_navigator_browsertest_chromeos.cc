@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_switches.h"
@@ -60,15 +61,24 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestChromeOS, NavigateToOSSettings) {
   params.transition = ui::PageTransition::PAGE_TRANSITION_TYPED;
   Navigate(&params);
 
+  // The above Navigate() should trigger an asynchronous call to launch OS
+  // Settings SWA. Flush Mojo calls so the browser window is created.
+  web_app::FlushSystemWebAppLaunchesForTesting(browser()->profile());
+
   // Verify that navigating to chrome://os-settings/ via typing does not cause
   // the browser itself to navigate to the OS Settings page.
-  EXPECT_NE(1u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
   EXPECT_NE(GURL("chrome://os-settings/"),
             browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
 
   // Navigate to OS Settings page via clicking a link on another page.
   params.transition = ui::PageTransition::PAGE_TRANSITION_LINK;
   Navigate(&params);
+
+  // The above Navigate() should trigger  an asynchronous call to launch OS
+  // Settings SWA. Flush Mojo calls so the browser window is created.
+  web_app::FlushSystemWebAppLaunchesForTesting(browser()->profile());
+
   Browser* os_settings_browser =
       chrome::SettingsWindowManager::GetInstance()->FindBrowserForProfile(
           browser()->profile());

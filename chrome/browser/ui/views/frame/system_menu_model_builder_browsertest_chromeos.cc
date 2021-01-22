@@ -58,6 +58,11 @@ IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderMultiUserTest,
   // Open the settings window and record the |settings_browser|.
   auto* manager = SettingsWindowManager::GetInstance();
   manager->ShowOSSettings(profile);
+
+  // The above ShowOSSettings() should trigger an asynchronous call to launch
+  // OS Settings SWA. Flush Mojo calls so the browser window is created.
+  web_app::FlushSystemWebAppLaunchesForTesting(profile);
+
   auto* settings_browser = manager->FindBrowserForProfile(profile);
   ASSERT_TRUE(settings_browser);
 
