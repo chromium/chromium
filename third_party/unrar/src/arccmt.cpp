@@ -4,15 +4,8 @@ bool Archive::GetComment(Array<wchar> *CmtData)
 {
   if (!MainComment)
     return false;
-  int64 SavePos=Tell();
-  bool Success=DoGetComment(CmtData);
-  Seek(SavePos,SEEK_SET);
-  return Success;
-}
+  SaveFilePos SavePos(*this);
 
-
-bool Archive::DoGetComment(Array<wchar> *CmtData)
-{
 #ifndef SFX_MODULE
   uint CmtLength;
   if (Format==RARFMT14)
@@ -143,7 +136,7 @@ bool Archive::DoGetComment(Array<wchar> *CmtData)
 bool Archive::ReadCommentData(Array<wchar> *CmtData)
 {
   Array<byte> CmtRaw;
-  if (!ReadSubData(&CmtRaw,NULL,false))
+  if (!ReadSubData(&CmtRaw,NULL))
     return false;
   size_t CmtSize=CmtRaw.Size();
   CmtRaw.Push(0);

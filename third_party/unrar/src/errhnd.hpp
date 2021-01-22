@@ -15,10 +15,8 @@ enum RAR_EXIT // RAR exit code.
   RARX_CREATE    =   9,
   RARX_NOFILES   =  10,
   RARX_BADPWD    =  11,
-  RARX_READ      =  12,
   RARX_USERBREAK = 255
 };
-
 
 class ErrorHandler
 {
@@ -28,14 +26,13 @@ class ErrorHandler
     bool EnableBreak = true;
     bool Silent = false;
     bool DisableShutdown = false; // Shutdown is not suitable after last error.
-    bool ReadErrIgnoreAll = false;
   public:
     void Clean();
     void MemoryError();
     void OpenError(const wchar *FileName);
     void CloseError(const wchar *FileName);
     void ReadError(const wchar *FileName);
-    void AskRepeatRead(const wchar *FileName,bool &Ignore,bool &Retry,bool &Quit);
+    bool AskRepeatRead(const wchar *FileName);
     void WriteError(const wchar *ArcName,const wchar *FileName);
     void WriteErrorFAT(const wchar *FileName);
     bool AskRepeatWrite(const wchar *FileName,bool DiskFull);

@@ -31,12 +31,12 @@ bool RecVolumesRestore(RAROptions *Cmd,const wchar *Name,bool Silent)
   // handling exceptions. So it can close and delete files on Cancel.
   if (Fmt==RARFMT15)
   {
-    RecVolumes3 RecVol(Cmd,false);
+    RecVolumes3 RecVol(false);
     return RecVol.Restore(Cmd,Name,Silent);
   }
   else
   {
-    RecVolumes5 RecVol(Cmd,false);
+    RecVolumes5 RecVol(false);
     return RecVol.Restore(Cmd,Name,Silent);
   }
 }
@@ -100,12 +100,12 @@ void RecVolumesTest(RAROptions *Cmd,Archive *Arc,const wchar *Name)
   RevFile.Close();
   if (Rev5)
   {
-    RecVolumes5 RecVol(Cmd,true);
+    RecVolumes5 RecVol(true);
     RecVol.Test(Cmd,Name);
   }
   else
   {
-    RecVolumes3 RecVol(Cmd,true);
+    RecVolumes3 RecVol(true);
     RecVol.Test(Cmd,Name);
   }
 }

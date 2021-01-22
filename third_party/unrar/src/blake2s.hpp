@@ -3,7 +3,6 @@
 #define _RAR_BLAKE2_
 
 #define BLAKE2_DIGEST_SIZE 32
-#define BLAKE2_THREADS_NUMBER 8
 
 enum blake2s_constant
 {

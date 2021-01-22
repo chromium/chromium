@@ -20,12 +20,8 @@ class CmdExtract
     void ExtrCreateDir(Archive &Arc,const wchar *ArcFileName);
     bool ExtrCreateFile(Archive &Arc,File &CurFile);
     bool CheckUnpVer(Archive &Arc,const wchar *ArcFileName);
-#ifndef SFX_MODULE
-    bool DetectStartVolume(const wchar *VolName,bool NewNumbering);
-    void GetFirstVolIfFullSet(const wchar *SrcName,bool NewNumbering,wchar *DestName,size_t DestSize);
-#endif
 
-    RarTime StartTime; // Time when extraction started.
+    RarTime StartTime; // time when extraction started
 
     CommandData *Cmd;
 
@@ -38,7 +34,6 @@ class CmdExtract
     bool FirstFile;
     bool AllMatchesExact;
     bool ReconstructDone;
-    bool UseExactVolName;
 
     // If any non-zero solid file was successfully unpacked before current.
     // If true and if current encrypted file is broken, obviously

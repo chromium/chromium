@@ -104,8 +104,7 @@ void ExtractStreams(Archive &Arc,const wchar *FileName,bool TestMode)
 
   if (TestMode)
   {
-    File CurFile;
-    Arc.ReadSubData(NULL,&CurFile,true);
+    Arc.ReadSubData(NULL,NULL);
     return;
   }
 
@@ -117,7 +116,7 @@ void ExtractStreams(Archive &Arc,const wchar *FileName,bool TestMode)
   if ((fd.FileAttr & FILE_ATTRIBUTE_READONLY)!=0)
     SetFileAttr(FileName,fd.FileAttr & ~FILE_ATTRIBUTE_READONLY);
   File CurFile;
-  if (CurFile.WCreate(FullName) && Arc.ReadSubData(NULL,&CurFile,false))
+  if (CurFile.WCreate(FullName) && Arc.ReadSubData(NULL,&CurFile))
     CurFile.Close();
   File HostFile;
   if (Found && HostFile.Open(FileName,FMF_OPENSHARED|FMF_UPDATE))

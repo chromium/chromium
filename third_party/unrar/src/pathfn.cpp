@@ -170,17 +170,14 @@ int GetPathDisk(const wchar *Path)
 void AddEndSlash(wchar *Path,size_t MaxLength)
 {
   size_t Length=wcslen(Path);
-  if (Length>0 && Path[Length-1]!=CPATHDIVIDER && Length+1<MaxLength)
-  {
-    Path[Length]=CPATHDIVIDER;
-    Path[Length+1]=0;
-  }
+  if (Length>0 && Path[Length-1]!=CPATHDIVIDER)
+    wcsncatz(Path,SPATHDIVIDER,MaxLength);
 }
 
 
 void MakeName(const wchar *Path,const wchar *Name,wchar *Pathname,size_t MaxSize)
 {
-  // 'Path', 'Name' and 'Pathname' can point to same memory area. So we use
+  // 'Name' and 'Pathname' can point to same memory area. This is why we use
   // the temporary buffer instead of constructing the name in 'Pathname'.
   wchar OutName[NM];
   wcsncpyz(OutName,Path,ASIZE(OutName));
@@ -655,7 +652,7 @@ wchar* VolNameToFirstName(const wchar *VolName,wchar *FirstName,size_t MaxSize,b
   }
   if (!FileExist(FirstName))
   {
-    // If the first volume, which name we just generated, does not exist,
+    // If the first volume, which name we just generated, is not exist,
     // check if volume with same name and any other extension is available.
     // It can help in case of *.exe or *.sfx first volume.
     wchar Mask[NM];

@@ -67,7 +67,7 @@ void ExtractACL20(Archive &Arc,const wchar *FileName)
 void ExtractACL(Archive &Arc,const wchar *FileName)
 {
   Array<byte> SubData;
-  if (!Arc.ReadSubData(&SubData,NULL,false))
+  if (!Arc.ReadSubData(&SubData,NULL))
     return;
 
   SetACLPrivileges();

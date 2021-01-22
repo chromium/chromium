@@ -29,6 +29,7 @@ class Archive:public File
     void UpdateLatestTime(FileHeader *CurBlock);
     void ConvertNameCase(wchar *Name);
     void ConvertFileHeader(FileHeader *hd);
+    void WriteBlock50(HEADER_TYPE HeaderType,BaseBlock *wb,bool OnlySetSize,bool NonFinalWrite);
     size_t ReadHeader14();
     size_t ReadHeader15();
     size_t ReadHeader50();
@@ -37,7 +38,6 @@ class Archive:public File
     void UnexpEndArcMsg();
     void BrokenHeaderMsg();
     void UnkEncVerMsg(const wchar *Name,const wchar *Info);
-    bool DoGetComment(Array<wchar> *CmtData);
     bool ReadCommentData(Array<wchar> *CmtData);
 
 #if !defined(RAR_NOCRYPT)
@@ -72,6 +72,8 @@ class Archive:public File
     size_t SearchBlock(HEADER_TYPE HeaderType);
     size_t SearchSubBlock(const wchar *Type);
     size_t SearchRR();
+    void WriteBlock(HEADER_TYPE HeaderType,BaseBlock *wb=NULL,bool OnlySetSize=false,bool NonFinalWrite=false);
+    void SetBlockSize(HEADER_TYPE HeaderType,BaseBlock *wb=NULL) {WriteBlock(HeaderType,wb,true);}
     size_t ReadHeader();
     void CheckArc(bool EnableBroken);
     void CheckOpen(const wchar *Name);
@@ -88,7 +90,7 @@ class Archive:public File
     int64 GetStartPos();
     void AddSubData(byte *SrcData,uint64 DataSize,File *SrcFile,
          const wchar *Name,uint Flags);
-    bool ReadSubData(Array<byte> *UnpData,File *DestFile,bool TestMode);
+    bool ReadSubData(Array<byte> *UnpData,File *DestFile);
     HEADER_TYPE GetHeaderType() {return CurHeaderType;}
     RAROptions* GetRAROptions() {return Cmd;}
     void SetSilentOpen(bool Mode) {SilentOpen=Mode;}

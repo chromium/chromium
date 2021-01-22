@@ -170,13 +170,12 @@ void ThreadPool::AddTask(PTHREAD_PROC Proc,void *Data)
     CreateThreads();
   
   // If queue is full, wait until it is empty.
-  if (ActiveThreads>=ASIZE(TaskQueue))
+  if ((QueueTop + 1) % ASIZE(TaskQueue) == QueueBottom)
     WaitDone();
 
   TaskQueue[QueueTop].Proc = Proc;
   TaskQueue[QueueTop].Param = Data;
   QueueTop = (QueueTop + 1) % ASIZE(TaskQueue);
-  ActiveThreads++;
 }
 
 
@@ -185,6 +184,9 @@ void ThreadPool::AddTask(PTHREAD_PROC Proc,void *Data)
 // are sleeping yet.
 void ThreadPool::WaitDone()
 {
+  // We add ASIZE(TaskQueue) for case if TaskQueue array size is not
+  // a power of two. Negative numbers would not suit our purpose here.
+  ActiveThreads=(QueueTop+ASIZE(TaskQueue)-QueueBottom) % ASIZE(TaskQueue);
   if (ActiveThreads==0)
     return;
 #ifdef _WIN_ALL

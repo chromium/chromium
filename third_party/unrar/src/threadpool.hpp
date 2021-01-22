@@ -4,10 +4,7 @@
 #ifndef RAR_SMP
 const uint MaxPoolThreads=1; // For single threaded version.
 #else
-// We need to use the processor groups API to increase it beyond 64.
-// Also be sure to check and adjust if needed per thread and total block size
-// when compressing if going above 64.
-const uint MaxPoolThreads=64;
+const uint MaxPoolThreads=32;
 
 
 #ifdef _UNIX
@@ -100,6 +97,9 @@ class ThreadPool
     static void SetPriority(int Priority) {ThreadPriority=Priority;}
 #endif
 };
+
+ThreadPool* CreateThreadPool();
+void DestroyThreadPool(ThreadPool *Pool);
 
 #endif // RAR_SMP
 

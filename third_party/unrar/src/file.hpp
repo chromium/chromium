@@ -46,12 +46,6 @@ enum FILE_MODE_FLAGS {
   FMF_UNDEFINED=256
 };
 
-enum FILE_READ_ERROR_MODE {
-  FREM_ASK,          // Propose to use the already read part, retry or abort.
-  FREM_TRUNCATE,     // Use the already read part without additional prompt.
-  FREM_IGNORE        // Try to skip unreadable block and read further.
-};
-
 
 class File
 {
@@ -60,7 +54,7 @@ class File
     bool LastWrite;
     FILE_HANDLETYPE HandleType;
     bool SkipClose;
-    FILE_READ_ERROR_MODE ReadErrorMode;
+    bool IgnoreReadErrors;
     bool NewFile;
     bool AllowDelete;
     bool AllowExceptions;
@@ -68,8 +62,6 @@ class File
     bool NoSequentialRead;
     uint CreateMode;
 #endif
-    bool PreserveAtime;
-    bool TruncatedAfterReadError;
   protected:
     bool OpenShared; // Set by 'Archive' class.
   public:
@@ -119,15 +111,13 @@ class File
     static bool RemoveCreated();
     FileHandle GetHandle() {return hFile;}
     void SetHandle(FileHandle Handle) {Close();hFile=Handle;}
-    void SetReadErrorMode(FILE_READ_ERROR_MODE Mode) {ReadErrorMode=Mode;}
+    void SetIgnoreReadErrors(bool Mode) {IgnoreReadErrors=Mode;}
     int64 Copy(File &Dest,int64 Length=INT64NDF);
     void SetAllowDelete(bool Allow) {AllowDelete=Allow;}
     void SetExceptions(bool Allow) {AllowExceptions=Allow;}
 #ifdef _WIN_ALL
     void RemoveSequentialFlag() {NoSequentialRead=true;}
 #endif
-    void SetPreserveAtime(bool Preserve) {PreserveAtime=Preserve;}
-    bool IsTruncatedAfterReadError() {return TruncatedAfterReadError;}
 
 #if defined(CHROMIUM_UNRAR)
     // Since unrar runs in a sandbox, it doesn't have the permission to open

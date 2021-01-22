@@ -62,5 +62,4 @@ inline void InitDBCS() {SupportDBCS::GetInstance().Init();}
 inline void copychrd(char *dest,const char *src) {*dest=*src;}
 #endif
 
-
 #endif

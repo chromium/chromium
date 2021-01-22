@@ -56,6 +56,7 @@ void CommandData::ParseCommandLine(bool Preprocess,int argc, char *argv[])
   // In Windows we may prefer to implement our own command line parser
   // to avoid replacing \" by " in standard parser. Such replacing corrupts
   // destination paths like "dest path\" in extraction commands.
+  // Also our own parser is Unicode compatible.
   const wchar *CmdLine=GetCommandLine();
 
   wchar *Par;
@@ -122,7 +123,6 @@ void CommandData::ParseArg(wchar *Arg)
         wchar CmdChar=toupperw(*Command);
         bool Add=wcschr(L"AFUM",CmdChar)!=NULL;
         bool Extract=CmdChar=='X' || CmdChar=='E';
-        bool Repair=CmdChar=='R' && Command[1]==0;
         if (EndSeparator && !Add)
           wcsncpyz(ExtrPath,Arg,ASIZE(ExtrPath));
         else
@@ -140,8 +140,8 @@ void CommandData::ParseArg(wchar *Arg)
               ReadTextFile(Arg+1,&FileArgs,false,true,FilelistCharset,true,true,true);
 
             }
-            else // We use 'destpath\' when extracting and reparing.
-              if (Found && FileData.IsDir && (Extract || Repair) && *ExtrPath==0)
+            else
+              if (Found && FileData.IsDir && Extract && *ExtrPath==0)
               {
                 wcsncpyz(ExtrPath,Arg,ASIZE(ExtrPath));
                 AddEndSlash(ExtrPath,ASIZE(ExtrPath));
@@ -287,23 +287,17 @@ void CommandData::ProcessSwitch(const wchar *Switch)
             AppendArcNameToPath=APPENDARCNAME_DESTPATH;
           else
             if (Switch[2]=='1')
-              AppendArcNameToPath=APPENDARCNAME_OWNSUBDIR;
-            else
-              if (Switch[2]=='2')
-                AppendArcNameToPath=APPENDARCNAME_OWNDIR;
+              AppendArcNameToPath=APPENDARCNAME_OWNDIR;
           break;
 #ifndef SFX_MODULE
         case 'G':
           if (Switch[2]=='-' && Switch[3]==0)
             GenerateArcName=0;
           else
-            if (toupperw(Switch[2])=='F')
-              wcsncpyz(DefGenerateMask,Switch+3,ASIZE(DefGenerateMask));
-            else
-            {
-              GenerateArcName=true;
-              wcsncpyz(GenerateMask,Switch+2,ASIZE(GenerateMask));
-            }
+          {
+            GenerateArcName=true;
+            wcsncpyz(GenerateMask,Switch+2,ASIZE(GenerateMask));
+          }
           break;
 #endif
         case 'I':
@@ -378,11 +372,11 @@ void CommandData::ProcessSwitch(const wchar *Switch)
         default:
           if (Switch[1]=='+')
           {
-            InclFileAttr|=GetExclAttr(Switch+2,InclDir);
+            InclFileAttr|=GetExclAttr(Switch+2);
             InclAttrSet=true;
           }
           else
-            ExclFileAttr|=GetExclAttr(Switch+1,ExclDir);
+            ExclFileAttr|=GetExclAttr(Switch+1);
           break;
       }
       break;
@@ -438,9 +432,9 @@ void CommandData::ProcessSwitch(const wchar *Switch)
         wcsncpyz(EmailTo,Switch[4]!=0 ? Switch+4:L"@",ASIZE(EmailTo));
         break;
       }
-      if (wcsicomp(Switch+1,L"M")==0) // For compatibility with pre-WinRAR 6.0 -im syntax. Replaced with -idv.
+      if (wcsicomp(Switch+1,L"M")==0)
       {
-        VerboseOutput=true;
+        MoreInfo=true;
         break;
       }
       if (wcsicomp(Switch+1,L"NUL")==0)
@@ -466,12 +460,6 @@ void CommandData::ProcessSwitch(const wchar *Switch)
               break;
             case 'P':
               DisablePercentage=true;
-              break;
-            case 'N':
-              DisableNames=true;
-              break;
-            case 'V':
-              VerboseOutput=true;
               break;
           }
         break;
@@ -547,6 +535,7 @@ void CommandData::ProcessSwitch(const wchar *Switch)
                   case 'D': Type=FILTER_DELTA;       break;
                   case 'A': Type=FILTER_AUDIO;       break;
                   case 'C': Type=FILTER_RGB;         break;
+                  case 'I': Type=FILTER_ITANIUM;     break;
                   case 'R': Type=FILTER_ARM;         break;
                 }
                 if (*Str=='+' || *Str=='-')
@@ -835,7 +824,39 @@ void CommandData::ProcessSwitch(const wchar *Switch)
           SetTimeFilters(Switch+2,false,false);
           break;
         case 'S':
-          SetStoreTimeMode(Switch+2);
+          {
+            EXTTIME_MODE Mode=EXTTIME_HIGH3;
+            bool CommonMode=Switch[2]>='0' && Switch[2]<='4';
+            if (CommonMode)
+              Mode=(EXTTIME_MODE)(Switch[2]-'0');
+            if (Mode==EXTTIME_HIGH1 || Mode==EXTTIME_HIGH2) // '2' and '3' not supported anymore.
+              Mode=EXTTIME_HIGH3;
+            if (Switch[2]=='-')
+              Mode=EXTTIME_NONE;
+            if (CommonMode || Switch[2]=='-' || Switch[2]=='+' || Switch[2]==0)
+              xmtime=xctime=xatime=Mode;
+            else
+            {
+              if (Switch[3]>='0' && Switch[3]<='4')
+                Mode=(EXTTIME_MODE)(Switch[3]-'0');
+              if (Mode==EXTTIME_HIGH1 || Mode==EXTTIME_HIGH2) // '2' and '3' not supported anymore.
+                Mode=EXTTIME_HIGH3;
+              if (Switch[3]=='-')
+                Mode=EXTTIME_NONE;
+              switch(toupperw(Switch[2]))
+              {
+                case 'M':
+                  xmtime=Mode;
+                  break;
+                case 'C':
+                  xctime=Mode;
+                  break;
+                case 'A':
+                  xatime=Mode;
+                  break;
+              }
+            }
+          }
           break;
         case '-':
           Test=false;
@@ -938,10 +959,7 @@ void CommandData::ProcessCommand()
   if (wcschr(L"AFUMD",*Command)==NULL)
   {
     if (GenerateArcName)
-    {
-      const wchar *Mask=*GenerateMask!=0 ? GenerateMask:DefGenerateMask;
-      GenerateArchiveName(ArcName,ASIZE(ArcName),Mask,false);
-    }
+      GenerateArchiveName(ArcName,ASIZE(ArcName),GenerateMask,false);
 
     StringList ArcMasks;
     ArcMasks.AddString(ArcName);
@@ -960,6 +978,7 @@ void CommandData::ProcessCommand()
     case 'X':
     case 'E':
     case 'T':
+    case 'I':
       {
         CmdExtract Extract(this);
         Extract.DoExtract();
@@ -1002,7 +1021,7 @@ bool CommandData::IsSwitch(int Ch)
 
 
 #ifndef SFX_MODULE
-uint CommandData::GetExclAttr(const wchar *Str,bool &Dir)
+uint CommandData::GetExclAttr(const wchar *Str)
 {
   if (IsDigit(*Str))
     return wcstol(Str,NULL,0);
@@ -1012,10 +1031,10 @@ uint CommandData::GetExclAttr(const wchar *Str,bool &Dir)
   {
     switch(toupperw(*Str))
     {
-      case 'D':
-        Dir=true;
-        break;
 #ifdef _UNIX
+      case 'D':
+        Attr|=S_IFDIR;
+        break;
       case 'V':
         Attr|=S_IFCHR;
         break;
@@ -1028,6 +1047,9 @@ uint CommandData::GetExclAttr(const wchar *Str,bool &Dir)
         break;
       case 'S':
         Attr|=0x4;
+        break;
+      case 'D':
+        Attr|=0x10;
         break;
       case 'A':
         Attr|=0x20;
