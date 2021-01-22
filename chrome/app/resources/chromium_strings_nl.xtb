@@ -48,6 +48,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="2615699638672665509">Deze computer ontvangt binnenkort geen Chromium-updates meer omdat de hardware van de computer niet meer wordt ondersteund.</translation>
 <translation id="2648074677641340862">Er is tijdens de installatie een fout opgetreden in het besturingssysteem. Download Chromium opnieuw.</translation>
 <translation id="2661879430930417727">Als je een apparaat deelt, kunnen vrienden en familie afzonderlijk surfen en Chromium instellen zoals zij dat willen.</translation>
+<translation id="270245676623587882">Chromium raadt je aan om deze extensie uit te zetten omdat deze op dit moment niet voldoet aan de standaard van de uitgebreide versie van Safe Browsing.</translation>
 <translation id="2711502716910134313">Chromium-tabblad</translation>
 <translation id="2718390899429598676">Je gegevens worden voor extra beveiliging door Chromium gecodeerd.</translation>
 <translation id="2770231113462710648">Standaardbrowser wijzigen in:</translation>
@@ -189,7 +190,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 Sommige functies zijn mogelijk niet beschikbaar. Geef een andere profieldirectory op of gebruik een recentere versie van Chromium.</translation>
 <translation id="6734080038664603509">&amp;Chromium updaten</translation>
 <translation id="6734291798041940871">Chromium is al geïnstalleerd voor alle gebruikers op je computer.</translation>
-<translation id="673636774878526923">Log in voor toegang tot je Chromium-gegevens op al je apparaten en zet daarna synchronisatie aan.</translation>
+<translation id="673636774878526923">Log in en zet synchronisatie aan voor toegang tot je Chromium-gegevens op al je apparaten</translation>
 <translation id="6774082503108938489">Je ouder heeft 'Rechten voor sites, apps en extensies' uitgeschakeld voor Chromium. Je mag deze <ph name="EXTENSION_TYPE_PARAMETER" /> niet inschakelen.</translation>
 <translation id="6847869444787758381">Chromium laat het je weten als je wachtwoorden mogelijk niet veilig meer zijn</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>

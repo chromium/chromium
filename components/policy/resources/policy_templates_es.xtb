@@ -872,11 +872,11 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
       Si se inhabilita esta opción, <ph name="PRODUCT_NAME" /> verificará los certificados de los servidores utilizando el verificador de certificados antiguo proporcionado por la plataforma.
       Si no se configura esta opción, se podrá utilizar el verificador de certificados integrado o el antiguo.
 
-      Esta política se eliminará en la versión 81 de <ph name="PRODUCT_OS_NAME" />, en la que el verificador de certificados antiguo dejará de ser compatible con <ph name="PRODUCT_OS_NAME" />.
+      Se prevé que esta política se elimine en la versión 81 de <ph name="PRODUCT_OS_NAME" />, en la que el verificador de certificados antiguo dejará de ser compatible con <ph name="PRODUCT_OS_NAME" />.
 
-      Esta política se eliminará en la versión 83 de <ph name="PRODUCT_NAME" /> para Linux, en la que el verificador de certificados antiguo dejará de ser compatible con Linux.
+      Se prevé que esta política se elimine en la versión 83 de <ph name="PRODUCT_NAME" /> para Linux, en la que el verificador de certificados antiguo dejará de ser compatible con Linux.
 
-      Esta política se eliminará en la versión 92 de <ph name="PRODUCT_NAME" /> para Mac OS X, en la que el verificador de certificados antiguo dejará de ser compatible con Mac OS X.
+      Se prevé que esta política se elimine en la versión 92 de <ph name="PRODUCT_NAME" /> para Mac OS X, en la que el verificador de certificados antiguo dejará de ser compatible con Mac OS X.
       </translation>
 <translation id="2223582957891074498">Si se asigna el valor "Verdadero" a esta política, no se permitirá hacer capturas de pantalla utilizando combinaciones de teclas ni API de extensiones. Si se le asigna el valor "Falso", se permitirán las capturas de pantalla.</translation>
 <translation id="2223598546285729819">Configuración de notificación predeterminada</translation>
@@ -5548,7 +5548,7 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
 
       Si no se le asigna ningún valor a esta política, implica que está activada y los usuarios no pueden desactivarla.</translation>
 <translation id="8798099450830957504">Predeterminado</translation>
-<translation id="8799492680917278474">Si esta política se habilita, las conexiones de acceso remoto se desconectarán automáticamente después de que hayan pasado el número de minutos definido en la política. Esto no evita que el cliente pueda volver a conectarse después de que se haya alcanzado la duración máxima de la sesión. La asignación de un valor que no esté dentro del intérvalo mínimo/máximo puede evitar que el host se inicie. Esta política no afecta a las situaciones de asistencia remota.
+<translation id="8799492680917278474">Si esta política se habilita, las conexiones de acceso remoto se desconectarán automáticamente después de que hayan pasado el número de minutos definido en la política. Esto no evita que el cliente pueda volver a conectarse después de que se haya alcanzado la duración máxima de la sesión. La asignación de un valor que no esté dentro del intervalo mínimo/máximo puede evitar que el host se inicie. Esta política no afecta a las situaciones de asistencia remota.
 
           Esta política no tendrá efecto si no se le asigna ningún valor. En este caso, las conexiones de acceso remoto no tendrán duración máxima en este equipo.</translation>
 <translation id="8800453707696044281">Define un porcentaje personalizado de la parada de carga de la batería</translation>

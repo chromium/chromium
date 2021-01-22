@@ -88,6 +88,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1708345662127501511">Escritorio: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Configuración de red</translation>
 <translation id="1719094688023114093">Subtítulos automáticos activados.</translation>
+<translation id="1720011244392820496">Activar Sincronización Wi‑Fi</translation>
 <translation id="1743570585616704562">No se ha reconocido</translation>
 <translation id="1746730358044914197">El administrador configura los métodos de introducción.</translation>
 <translation id="1747827819627189109">Teclado en pantalla habilitado</translation>
@@ -310,6 +311,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="3631369015426612114">Permitir notificaciones de:</translation>
 <translation id="3638400994746983214">Activar/Desactivar la pantalla de privacidad. <ph name="STATE_TEXT" />.</translation>
 <translation id="366222428570480733">Usuario administrado (<ph name="USER_EMAIL_ADDRESS" />)</translation>
+<translation id="36813544980941320">Tu teléfono y el dispositivo <ph name="DEVICE_NAME" /> compartirán las redes Wi‑Fi</translation>
 <translation id="3702846122927433391">Población de Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="370665806235115550">Cargando...</translation>
@@ -415,7 +417,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="4570957409596482333">Botón Enunciar Selección</translation>
 <translation id="4577274620589681794">Tiempo agotado · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Mostrar vistas previas</translation>
-<translation id="4578906031062871102">Se ha abierto el menú Ajustes</translation>
+<translation id="4578906031062871102">Menú Ajustes abierto</translation>
 <translation id="4585337515783392668">Dejar de enviar contenido a un receptor desconocido</translation>
 <translation id="4596144739579517758">Tema oscuro está desactivado</translation>
 <translation id="4623167406982293031">Verificar cuenta</translation>
@@ -498,7 +500,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5379115545237091094">Demasiados intentos</translation>
 <translation id="5397578532367286026">El administrador puede consultar el uso y el historial de este usuario (<ph name="MANAGER_EMAIL" />) en la página chrome.com.</translation>
 <translation id="5400461572260843123">Ajustes rápidos. Pulsa la tecla de búsqueda y la flecha izquierda para acceder al centro de notificaciones.</translation>
-<translation id="5426063383988017631">Se ha cerrado el menú Ajustes</translation>
+<translation id="5426063383988017631">Menú Ajustes cerrado</translation>
 <translation id="5428899915242071344">Empezar a seleccionar</translation>
 <translation id="5430931332414098647">Conexión compartida instantánea</translation>
 <translation id="5431825016875453137">OpenVPN/L2TP</translation>
@@ -523,7 +525,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5619862035903135339">La política del administrador inhabilita la captura de pantalla</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Clavija para micrófono</translation>
-<translation id="5662709761327382534">Grabar micrófono: <ph name="CURRENT_STATE" />. Pulsa Intro para cambiar el estado de grabación a <ph name="NEW_STATE" /></translation>
+<translation id="5662709761327382534">Grabar micrófono <ph name="CURRENT_STATE" />. Pulsa Intro para cambiar el estado de grabación del micrófono a <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">Activando</translation>
 <translation id="5673434351075758678">De "<ph name="FROM_LOCALE" />" a "<ph name="TO_LOCALE" />" después de sincronizar tu configuración.</translation>
 <translation id="5677928146339483299">Bloqueado</translation>
@@ -750,7 +752,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7662283695561029522">Toca para configurar</translation>
 <translation id="7705524343798198388">VPN</translation>
-<translation id="7714767791242455379">Añadir una nueva red móvil</translation>
+<translation id="7714767791242455379">Añadir nueva red móvil</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notificación}other{# notificaciones}}</translation>
 <translation id="7724603315864178912">Cortar</translation>
 <translation id="7745560842763881396">Mostrar aplicaciones de la estantería</translation>
@@ -867,7 +869,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="8673028979667498656">270°</translation>
 <translation id="8676770494376880701">Cargador de baja potencia conectado</translation>
 <translation id="8683506306463609433">Control del rendimiento activo</translation>
-<translation id="8703634754197148428">Inicia la grabación. Cuando la grabación haya empezado, pulsa Alt+Mayús+L para ir a la estantería donde se encuentra el botón para pararla.</translation>
+<translation id="8703634754197148428">Inicia la grabación. Cuando la grabación haya empezado, pulsa Alt + Mayús + L para ir a la estantería donde se encuentra el botón para pararla.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Usa las teclas de flecha izquierda y derecha para gestionar esta función.</translation>
 <translation id="8712637175834984815">Listo</translation>
 <translation id="8721053961083920564">Activa o desactiva el volumen. <ph name="STATE_TEXT" /></translation>

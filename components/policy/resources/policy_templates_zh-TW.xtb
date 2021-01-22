@@ -2592,7 +2592,7 @@
       如果不設定這項政策或設為啟用，系統會執行 DNS 攔截檢查。如果明確指定停用這項政策，系統就不會執行 DNS 攔截檢查。</translation>
 <translation id="4700190441681139987">不允許任何網站存取感應器</translation>
 <translation id="4703402283970867140">啟用智慧型調光模式來延長使用時間，直到螢幕變暗為止</translation>
-<translation id="4715026656747891013">指定要套用至 <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> Enterprise 連接器的 Chrome Enterprise 連接器服務設定清單，這份清單會在 Chrome 中發生安全性事件時觸發。安全性事件包含分析 Enterprise 連接器後得到負面的結果、重複使用密碼、瀏覽不安全的頁面，以及其他攸關安全性的使用者動作。
+<translation id="4715026656747891013">指定要套用至 <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> Enterprise 連接器的 Chrome Enterprise 連接器服務設定清單，這份清單會在 Chrome 中發生安全性事件時觸發。安全性事件包含分析 Enterprise 連接器指出的負面結果、重複使用密碼、瀏覽不安全的頁面，以及其他攸關安全性的使用者動作。
 
       <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> 欄位可用來指定與設定對應的報告服務供應商，<ph name="ENTERPRISE_CONNECTOR_ENABLED_EVENT_NAMES_FIELD" /> 欄位則可用來指定針對這個供應商啟用的事件。
 
@@ -5459,7 +5459,7 @@
 
       如果不設定這項政策，系統會將政策預設為啟用，且使用者無法予以停用。</translation>
 <translation id="8798099450830957504">預設</translation>
-<translation id="8799492680917278474">如果設定這項政策，遠端存取連線就會在政策中設定的分鐘時間過去後自動中斷連線。這項政策不禁止用戶端在達到工作階段持續時間上限後重新連線。如果為這項政策設定低於下限或高於上限的值，可能會導致主機無法啟動。這項政策不適用於遠端支援情境。
+<translation id="8799492680917278474">如果設定這項政策，遠端存取連線會根據政策設定的時間長度 (單位為分鐘) 自動中斷連線。這項政策不禁止用戶端在達到工作階段持續時間上限後重新連線。如果為這項政策設定低於下限或高於上限的值，可能會導致主機無法啟動。這項政策不適用於遠端支援情境。
 
           在未設定的情況下，這項政策不會有任何作用。也就是說，這部裝置上的遠端存取連線將沒有持續時間上限。</translation>
 <translation id="8800453707696044281">自訂電池停止充電值 (以百分比表示)</translation>

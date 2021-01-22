@@ -18,6 +18,7 @@
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1399397803214730675">ຄອມພິວເຕີນີ້ມີ Google Chrome ລຸ້ນໃໝ່ກ່ວາຢູ່ຮຽບຮ້ອຍແລ້ວ. ຖ້າຊອບແວບໍ່ເຮັດວຽກ, ກະລຸນາຖອນຕິດຕັ້ງ Google Chrome ແລະລອງໃໝ່ອີກ.</translation>
 <translation id="1434626383986940139">ແອັບ Chrome Canary</translation>
+<translation id="147727933880789532">Chrome ແນະນຳໃຫ້ປິດການນຳໃຊ້ສ່ວນຂະຫຍາຍນີ້ ເພາະວ່າໃນປັດຈຸບັນມັນບໍ່ຕອບສະໜອງໄດ້ມາດຕະຖານ Safe Browsing ທີ່ປັບປຸງດີຂຶ້ນ.</translation>
 <translation id="1553358976309200471">ອັບ​ເດດ Chrome</translation>
 <translation id="1587223624401073077">Google Chrome ກໍາລັງໃຊ້ກ້ອງຖ່າຍຮູບຂອງທ່ານ.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> ອັນຕະລາຍ, ສະນັ້ນ Chrome ໄດ້ບລັອກມັນໄວ້ແລ້ວ.</translation>
@@ -76,7 +77,7 @@
 <translation id="2799223571221894425">ເລີ່ມເປີດໃຊ້ໃໝ່</translation>
 <translation id="2847461019998147611">ສະ​ແດງ Google Chrome ເປັນພາສານີ້</translation>
 <translation id="2857540653560290388">ກຳລັງເປີດໃຊ້ Chrome...</translation>
-<translation id="2857972467023607093">ໂປຣໄຟລ໌ Chrome ພ້ອມກັບບັນຊີນີ້ມີຢູ່ແລ້ວ</translation>
+<translation id="2857972467023607093">ມີໂປຣໄຟລ໌ Chrome ກັບບັນຊີນີ້ຢູ່ກ່ອນແລ້ວ</translation>
 <translation id="2871893339301912279">ທ່ານລົງຊື່ເຂົ້າໃຊ້ Chrome ແລ້ວ.</translation>
 <translation id="2885378588091291677">ຕົວຈັດການໜ້າວຽກ</translation>
 <translation id="2888126860611144412">ກ່ຽວ​ກັບ Chrome</translation>
@@ -146,7 +147,7 @@
 <translation id="4600710005438004015">Chrome ບໍ່ສາມາດອັບເດດເປັນເວີຊັນຫຼ້າສຸດໄດ້, ສະນັ້ນທ່ານກຳລັງພາດຄຸນສົມບັດ ແລະ ການແກ້ໄຂດ້ານຄວາມປອດໄພໃໝ່ໆຢູ່.</translation>
 <translation id="4631713731678262610">ເຊື່ອງ​ຢູ່​ໃນ​ເມ​ນູ Chrome</translation>
 <translation id="4633000520311261472">ເພື່ອເຮັດໃຫ້  Chrome ປອດໄພຂຶ້ນ, ພວກເຮົາປິດໃຊ້ງານບາງສ່ວນຂະຫຍາຍທີ່ບໍ່ໄດ້ມີລາຍຊື່ຢູ່ໃນ <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ແລະອາດຈະຖືກເພີ່ມເຂົ້າໂດຍທີ່ທ່ານບໍ່ຮູ້ຈັກ.</translation>
-<translation id="4666328473657283332">ເພື່ອເຂົ້າເຖິງຂໍ້ມູນ Chrome ຂອງທ່ານໃນອຸປະກອນທັງໝົດຂອງທ່ານ, ກະລຸນາເຂົ້າສູ່ລະບົບເພື່ອໃຫ້ທ່ານສາມາດເປີດການຊິ້ງຂໍ້ມູນໄດ້.</translation>
+<translation id="4666328473657283332">ເພື່ອເຂົ້າເຖິງຂໍ້ມູນ Chrome ຂອງທ່ານໃນອຸປະກອນທັງໝົດ ກະລຸນາເຂົ້າສູ່ລະບົບເພື່ອໃຫ້ທ່ານສາມາດເປີດການຊິ້ງຂໍ້ມູນໄດ້.</translation>
 <translation id="4728575227883772061">ການ​ຕິດ​ຕັ້ງ​ບໍ່​ສໍາ​ເລັດ​ ​ເນື່ອງ​ມາ​ຈາກ​ຄວາມ​ຜິດພາດທີ່ບໍ່ລະບຸໄວ້​. ຖ້າ Google Chrome ກໍາລັງແລ່ນຢູ່ໃນປະຈຸບັນ​, ກະ​ລຸ​ນາ​ປິດ​ມັນ ​ແລະ​ລອງໃໝ່​ອີກ​.</translation>
 <translation id="4750550185319565338">ເປິດເປີດ Chrome ຄືນໃໝ່ເພື່ອເປີດນຳໃຊ້ <ph name="PLUGIN_NAME" /></translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
@@ -166,7 +167,7 @@
 
 ອາດຈະບໍ່ມີບາງຄຸນສົມບັດຢູ່. ກະລຸນາລະບຸໄດເຣັກຕໍຣີໂປຣໄຟລ໌ອື່ນ ຫຼືໃຊ້ Chrome ລຸ້ນໃໝ່ກ່ວາ.</translation>
 <translation id="5193136243808726294">Google Chrome OS ບໍ່ສາມາດເປີດໜ້ານີ້ໄດ້.</translation>
-<translation id="521447420733633466">ຖ້າທ່ານໃຊ້ອຸປະກອນຮ່ວມກັນ, ໝູ່ ແລະ ຄອບຄົວສາມາດທ່ອງເວັບແຍກກັນ ແລະ ຕັ້ງຄ່າ Chrome ໃນແບບທີ່ພວກເຂົາຕ້ອງການໄດ້</translation>
+<translation id="521447420733633466">ຖ້າທ່ານໃຊ້ອຸປະກອນຮ່ວມກັນ, ໝູ່ ແລະ ຄອບຄົວສາມາດທ່ອງເວັບແຍກກັນ ແລະ ຕັ້ງຄ່າ Chrome ໃນແບບທີ່ເຂົາເຈົ້າຕ້ອງການໄດ້</translation>
 <translation id="5251420635869119124">ແຂກສາມາດໃຊ້  Chrome ໂດຍ​ບໍ່​ມີ​ການປະອັນໃດໄວ້ເບື້ອງຫຼັງໄດ້.</translation>
 <translation id="532046782124376502">ຄຳເຕືອນ: Google Chrome ບໍ່ສາມາດປ້ອງກັນບໍ່ໃຫ້ສ່ວນຂະຫຍາຍບັນທຶກປະຫວັດການທ່ອງເວັບຂອງທ່ານໄດ້. ເພື່ອປິດນຳໃຊ້ສ່ວນຂະຫຍາຍນີ້ໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ, ກະລຸນາຍົກເລີກການເລືອກຕົວເລືອກນີ້.</translation>
 <translation id="5386244825306882791">ມັນຍັງຄວບຄຸມວ່າຈະໃຫ້ສະແດງໜ້າໃດຂຶ້ນ ເມື່ອທ່ານເລີ່ມຕົ້ນເປີດ Chrome ຫຼືຄົ້ນຫາຈາກ Omnibox.</translation>
@@ -204,7 +205,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="6291549208091401781">ຕິດຕັ້ງ Google Chrome ສຳລັບຜູ້ໃຊ້ທຸກຄົນໃນຄອມພິວເຕີຂອງທ່ານແລ້ວ.</translation>
 <translation id="6338556085225130112">ກໍາລັງອັບເດດ Google Chrome</translation>
 <translation id="6368958679917195344">Chrome OS ເຮັດໃຫ້ເປັນໄປໄດ້ໂດຍ <ph name="BEGIN_LINK_CROS_OSS" />ຊອບແວ open source<ph name="END_LINK_CROS_OSS" /> ເພີ່ມເຕີມ.</translation>
-<translation id="6418662306461808273">ປ່ຽນເປັນໂປຣໄຟລ໌ Chrome ບໍ?</translation>
+<translation id="6418662306461808273">ສະຫຼັບໄປຫາໂປຣໄຟລ໌ Chrome ທີ່ມີຢູ່ກ່ອນແລ້ວບໍ?</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6566149418543181476">ກຳລັງອັບເດດ Google Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">ລະບົບ Chrome OS</translation>
@@ -229,7 +230,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="7242029209006116544">ທ່ານກໍາລັງລົງຊື່ເຂົ້າໃຊ້ດ້ວຍບັນຊີທີ່ມີການຄຸ້ມຄອງ ແລະໃຫ້ຜູ້ຄວບຄຸມຂອງມັນຄວບຄຸມໂປຣໄຟລ໌ Google Chrome ຂອງທ່ານ. ຂໍ້ມູນ Chrome ຂອງທ່ານ, ເຊັ່ນ ແອັບ, ບຸກມາກສ໌, ປະຫວັດ, ລະຫັດຜ່ານ, ແລະການຕັ້ງຄ່າອື່ນໆຂອງທ່ານຈະຖືກຜູກ​ມັດກັບ <ph name="USER_NAME" /> ຢ່າງຖາວອນ. ທ່ານຈະສາມາດລຶບຂໍ້ມູນນີ້ໄດ້ຜ່ານ Google Accounts Dashboard, ແຕ່ທ່ານຈະບໍ່ສາມາດເອົາຂໍ້ມູນນີ້ເຂົ້າຮ່ວມກັບບັນຊີອື່ນໄດ້. ​ໂດຍ​ເລືອກ​ໄດ້ ທ່ານສາມາດສ້າງໂປຣໄຟລ໌​ໃໝ່ ເພື່ອຮັກສາຂໍ້ມູນ Chrome ທີ່​ມີ​ຢູ່ຂອງທ່ານ​ແຍກຕ່າງຫາກ. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">ລະບົບໃຊ້ພາສານີ້ເພື່ອສະແດງສ່ວນຕິດຕໍ່ຜູ້ໃຊ້ Google Chrome</translation>
 <translation id="7296210096911315575">ຂໍ້ມູນດ້ານການໃຊ້ ແລະ ຄວາມປອດໄພທີ່ສຳຄັນ</translation>
-<translation id="7303916856901595720">ຍ້າຍບັນຊີໄປຍັງໂປຣໄຟລ໌ Chrome ໃໝ່ບໍ?</translation>
+<translation id="7303916856901595720">ຍ້າຍບັນຊີໄປໃສ່ໂປຣໄຟລ໌ Chrome ໃໝ່ບໍ?</translation>
 <translation id="7308322188646931570">Chrome ຕ້ອງການເຂົ້າເຖິງບ່ອນເກັບຂໍ້ມູນເພື່ອດາວໂຫຼດໄຟລ໌</translation>
 <translation id="7339898014177206373">ໜ້າ​ຕ່າງໃໝ່</translation>
 <translation id="7398801000654795464">ທ່ານ​ໄດ້ລົງຊື່ເຂົ້າ​ໃຊ້ Chrome ເປັນ <ph name="USER_EMAIL_ADDRESS" />. ກະ​ລຸ​ນາ​​ໃຊ້​ບັນ​ຊີ​ດຽວ​ກັນ​ ເພື່ອລົງຊື່ເຂົ້າ​ໃຊ້ອີກ.</translation>
@@ -298,7 +299,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="911206726377975832">ລຶບຂໍ້ມູນການທ່ອງເນັດຂອງທ່ານນໍາບໍ?</translation>
 <translation id="9138603949443464873">ເພື່ອນຳໃຊ້ການປ່ຽນແປງຂອງທ່ານ, ກະລຸນາເປີດ Chrome ຄືນໃໝ່</translation>
 <translation id="919706545465235479">ອັບເດດ Chrome ເພື່ອເລີ່ມຊິ້ງຂໍ້ມູນ</translation>
-<translation id="940313311831216333">ເພື່ອເຂົ້າເຖິງຂໍ້ມູນໃນ Chrome ຂອງທ່ານຢູ່ໃນອຸປະກອນທັງໝົດຂອງທ່ານ, ກະລຸນາເຂົ້າສູ່ລະບົບ ແລ້ວເປີດການຊິ້ງຂໍ້ມູນ.</translation>
+<translation id="940313311831216333">ເພື່ອເຂົ້າເຖິງຂໍ້ມູນໃນ Chrome ຂອງທ່ານຢູ່ໃນອຸປະກອນທັງໝົດ, ກະລຸນາເຂົ້າສູ່ລະບົບ ແລ້ວເປີດການຊິ້ງຂໍ້ມູນ.</translation>
 <translation id="94743460404517794">ຖ້າທ່ານມີບັນຊີ Google ຫຼາຍບັນຊີ, ທ່ານສາມາດເພີ່ມພວກມັນໃສ່ <ph name="DEVICE_TYPE" /> ຂອງທ່ານໄດ້. ບັນຊີຂອງທ່ານຈະມີໃຫ້ນຳໃຊ້ໃນໂປຣແກຣມທ່ອງເວັບ Chrome ແລະ Play Store, ເຊັ່ນດຽວກັບການບໍລິການຕ່າງໆ ເຊັ່ນ: Gmail, Drive ແລະ YouTube. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
 <translation id="989369509083708165">Google Chrome ແມ່ນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນຂອງທ່ານ</translation>
 </translationbundle>

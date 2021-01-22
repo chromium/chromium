@@ -186,7 +186,7 @@
 <translation id="5832805196449965646">ເພີ່ມບຸກຄົນ</translation>
 <translation id="5895138241574237353">ເລີ່ມຕົ້ນໃໝ່</translation>
 <translation id="5916084858004523819">ຫ້າມໃຊ້</translation>
-<translation id="5921506667911082617">{COUNT,plural, =1{ໄຟລ໌ຂອງທ່ານໄດ້ຖືກສະແກນ ແລະ ບັນທຶກໄວ້ໃນ <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ແລ້ວ.}other{ໄຟລ໌ຂອງທ່ານໄດ້ຖືກສະແກນ ແລະ ບັນທຶກໄວ້ໃນ <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ແລ້ວ.}}</translation>
+<translation id="5921506667911082617">{COUNT,plural, =1{ສະແກນ ແລະ ບັນທຶກໄຟລ໌ຂອງທ່ານໄວ້ໃນ <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ແລ້ວ.}other{ສະແກນ ແລະ ບັນທຶກໄຟລ໌ຂອງທ່ານໄວ້ໃນ <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ແລ້ວ.}}</translation>
 <translation id="5931523347251946569">ບໍ່ພົບໄຟລ໌</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, ເວີຊັນ <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">ປິດ</translation>

@@ -1514,7 +1514,7 @@
 <translation id="2673135533890720193">อ่านประวัติการเข้าชม</translation>
 <translation id="2673589024369449924">สร้างทางลัดบนเดสก์ท็อปสำหรับผู้ใช้นี้</translation>
 <translation id="2674764818721168631">ปิด</translation>
-<translation id="2676518761349096749"><ph name="DOMAIN" /> ต้องการระบุอุปกรณ์ของคุณเพื่อให้เล่นวิดีโอและเสียงที่มีการปกป้องเป็นคุณภาพสูงสุดได้</translation>
+<translation id="2676518761349096749"><ph name="DOMAIN" /> ต้องการระบุอุปกรณ์ของคุณเพื่อให้เล่นวิดีโอและเสียงที่ได้รับการคุ้มครองเป็นคุณภาพสูงสุดได้</translation>
 <translation id="2678063897982469759">เปิดการใช้งานอีกครั้ง</translation>
 <translation id="268053382412112343">ประวั&amp;ติ</translation>
 <translation id="2682498795777673382">อัปเดตจากผู้ปกครองของคุณ</translation>
@@ -4057,7 +4057,7 @@
 <translation id="561698261642843490">ปิด Firefox</translation>
 <translation id="5618333180342767515">(การดำเนินการนี้อาจใช้เวลาสองถึงสามนาที)</translation>
 <translation id="56197088284879152">การเชื่อมต่อไปยังอุปกรณ์ระยะไกลนี้มีความคับคั่ง: "<ph name="DEVICE_NAME" />"</translation>
-<translation id="5619862035903135339">นโยบายของผู้ดูแลระบบบปิดใช้การจับภาพหน้าจอ</translation>
+<translation id="5619862035903135339">นโยบายของผู้ดูแลระบบปิดใช้การจับภาพหน้าจอ</translation>
 <translation id="5620568081365989559">DevTools ขอเข้าถึง <ph name="FOLDER_PATH" /> แบบเต็มรูปแบบ โปรดตรวจสอบว่าคุณไม่ได้เปิดเผยข้อมูลที่ละเอียดอ่อนใดๆ</translation>
 <translation id="5620612546311710611">สถิติการใช้งาน</translation>
 <translation id="5620655347161642930">ส่งออกรหัสผ่าน...</translation>

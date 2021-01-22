@@ -575,7 +575,7 @@
 <translation id="1623132449929929218">Las imágenes no están disponibles en este momento. Vuelve a conectarte a Internet para ver colecciones de fondos de pantalla.</translation>
 <translation id="1623723619460186680">Reducción de luz azul</translation>
 <translation id="1624012933569991823">Configuración</translation>
-<translation id="1624599281783425761">No verás <ph name="MERCHANT" /> más</translation>
+<translation id="1624599281783425761">No volverás a ver <ph name="MERCHANT" /></translation>
 <translation id="1627276047960621195">Descriptores de archivo</translation>
 <translation id="1627408615528139100">Ya se ha descargado</translation>
 <translation id="1628948239858170093">¿Analizar archivo antes de abrirlo?</translation>
@@ -3067,7 +3067,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4462159676511157176">Servidores de nombres personalizados</translation>
 <translation id="4465236939126352372">Se ha definido un límite de tiempo de <ph name="TIME" /> para <ph name="APP_NAME" /></translation>
 <translation id="4465725236958772856">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, gestionada por el administrador, conectar</translation>
-<translation id="4466068638972170851">Selecciona lo que quieras escuchar y pulsa la tecla de búsqueda + S. También puedes mantener pulsada la tecla de búsqueda o tocar el icono Enunciar Selección, situado junto a la bandeja de estado, para hacer una selección.</translation>
+<translation id="4466068638972170851">Selecciona lo que quieras escuchar y pulsa la tecla de búsqueda + S. También puedes mantener pulsada la tecla de búsqueda o tocar el icono Enunciar selección, situado junto a la bandeja de estado, para hacer una selección.</translation>
 <translation id="4469477701382819144">Bloqueados en sitios que muestran anuncios invasivos o engañosos</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> puede editar los archivos que haya en <ph name="FOLDERNAME" /></translation>
 <translation id="4470957202018033307">Preferencias de almacenamiento externo</translation>
@@ -3091,7 +3091,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4488257340342212116">Puede usar tu cámara</translation>
 <translation id="4488502501195719518">¿Quieres borrar todos los datos?</translation>
 <translation id="449232563137139956">Los sitios suelen mostrar imágenes a modo ilustrativo, como fotos de tiendas online o artículos de prensa.</translation>
-<translation id="4492698018379445570">Encuentra lo que has añadido a los carritos de la compra y paga cuando lo tengas todo</translation>
+<translation id="4492698018379445570">Encuentra lo que has añadido a los carritos de la compra y paga cuando tengas todo listo</translation>
 <translation id="4493468155686877504">Recomendado (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495419450179050807">No mostrar en esta página</translation>
 <translation id="4496054781541092778">bloqueado automáticamente: <ph name="PERMISSION" /></translation>
@@ -3356,7 +3356,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4808667324955055115">Pop-ups bloqueados</translation>
 <translation id="4809079943450490359">Instrucciones del administrador de tu dispositivo:</translation>
 <translation id="480990236307250886">Abrir la página principal</translation>
-<translation id="4810383437107234249">No mostrar nunca el carrito</translation>
+<translation id="4810383437107234249">No mostrar nunca carritos</translation>
 <translation id="4811212958317149293">Búsqueda automática de teclado de accesibilidad con interruptores</translation>
 <translation id="4811503964269049987">Agrupar pestañas seleccionadas</translation>
 <translation id="4813136279048157860">Mis imágenes</translation>
@@ -5180,7 +5180,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6935286146439255109">Falta una bandeja de papel</translation>
 <translation id="693807610556624488">La operación de escritura supera la longitud máxima permitida del atributo para "<ph name="DEVICE_NAME" />".</translation>
 <translation id="6938386202199793006">Tienes 1 impresora guardada.</translation>
-<translation id="6938606182859551396">Para recibir notificaciones de tu teléfono en tu dispositivo <ph name="DEVICE_TYPE" />, sigue las instrucciones en el teléfono para conceder acceso a las notificaciones a los Servicios de Google Play.</translation>
+<translation id="6938606182859551396">Para recibir notificaciones de tu teléfono en tu <ph name="DEVICE_TYPE" />, sigue las instrucciones en el teléfono para que las notificaciones puedan acceder a Servicios de Google Play.</translation>
 <translation id="6938789263968032501">Usuarios</translation>
 <translation id="6939815295902433669">Revisar software del dispositivo</translation>
 <translation id="6941937518557314510">Inicia sesión en <ph name="TOKEN_NAME" /> para identificarte en <ph name="HOST_NAME" /> con tu certificado.</translation>

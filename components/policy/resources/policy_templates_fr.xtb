@@ -5534,7 +5534,7 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
 
       Si cette règle n'est pas configurée, elle est activée, et les utilisateurs ne peuvent pas la désactiver.</translation>
 <translation id="8798099450830957504">Par défaut</translation>
-<translation id="8799492680917278474">Si cette règle est activée, les connexions d'accès à distance se termineront automatiquement après le nombre de minutes défini. Cela n'empêche pas le client de se reconnecter après avoir atteint la durée maximale de session. Si la durée définie dans cette règle n'est pas comprise dans les limites indiquées, l'hôte risque de ne pas démarrer. Cette règle ne concerne pas les cas d'assistance à distance.
+<translation id="8799492680917278474">Si cette règle est activée, les connexions d'accès à distance se termineront automatiquement une fois le nombre de minutes défini écoulé. Cela n'empêche pas le client de se reconnecter après avoir atteint la durée maximale de session. Si la durée définie dans cette règle n'est pas comprise dans les limites indiquées, l'hôte risque de ne pas démarrer. Cette règle ne concerne pas les cas d'assistance à distance.
 
           Elle n'a aucun effet si elle n'est pas définie. Dans ce cas, les connexions d'accès à distance n'auront pas de limite de durée sur cet ordinateur.</translation>
 <translation id="8800453707696044281">Personnaliser le pourcentage auquel la recharge de la batterie doit s'arrêter</translation>

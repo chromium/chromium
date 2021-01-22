@@ -88,6 +88,7 @@
 <translation id="1708345662127501511">Робочий стіл: "<ph name="DESK_NAME" />"</translation>
 <translation id="1709762881904163296">Мережеві налаштування</translation>
 <translation id="1719094688023114093">Живі субтитри ввімкнено.</translation>
+<translation id="1720011244392820496">Увімкніть синхронізацію Wi-Fi</translation>
 <translation id="1743570585616704562">Не розпізнано</translation>
 <translation id="1746730358044914197">Адміністратор налаштував методи введення.</translation>
 <translation id="1747827819627189109">Екранну клавіатуру ввімкнено</translation>
@@ -310,6 +311,7 @@
 <translation id="3631369015426612114">Дозволити сповіщення з перелічених нижче джерел</translation>
 <translation id="3638400994746983214">Перемикає екран конфіденційності. <ph name="STATE_TEXT" />.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> – керований користувач</translation>
+<translation id="36813544980941320">Ваш телефон і пристрій <ph name="DEVICE_NAME" /> підключатимуться до однакових мереж Wi-Fi</translation>
 <translation id="3702846122927433391">Яка чисельність населення в Нігерії</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="370665806235115550">Завантаження...</translation>

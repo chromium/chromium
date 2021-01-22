@@ -88,6 +88,7 @@
 <translation id="1708345662127501511">डेस्क: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">नेटवर्क सेटिंग</translation>
 <translation id="1719094688023114093">लाइव कैप्शन की सुविधा चालू है.</translation>
+<translation id="1720011244392820496">'वाई-फ़ाई सिंक' चालू करें</translation>
 <translation id="1743570585616704562">उंगली की पहचान नहीं हो सकी</translation>
 <translation id="1746730358044914197">इनपुट विधियों को आपका व्यवस्थापक कॉन्फ़िगर करता है.</translation>
 <translation id="1747827819627189109">ऑन-स्‍क्रीन कीबोर्ड सक्षम है</translation>
@@ -310,6 +311,7 @@
 <translation id="3631369015426612114">इनसे आने वाली सूचनाओं की अनुमति दें</translation>
 <translation id="3638400994746983214">निजता वाली स्क्रीन टॉगल करें. <ph name="STATE_TEXT" />.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> प्रबंधित उपयोगकर्ता</translation>
+<translation id="36813544980941320">आपके फ़ोन और <ph name="DEVICE_NAME" /> के बीच वाई-फ़ाई नेटवर्क शेयर किए जाएंगे</translation>
 <translation id="3702846122927433391">नाइजीरिया की जनसंख्या बताओ</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="370665806235115550">लोड हो रही हैं...</translation>
@@ -523,7 +525,7 @@
 <translation id="5619862035903135339">एडमिन नीति के तहत, स्क्रीन कैप्चर की सुविधा को बंद कर दिया जाता है</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">माइक जैक</translation>
-<translation id="5662709761327382534">माइक्रोफ़ोन रिकॉर्ड करें <ph name="CURRENT_STATE" />, माइक्रोफ़ोन रिकॉर्डिंग करने के लिए enter दबाएं <ph name="NEW_STATE" /></translation>
+<translation id="5662709761327382534">माइक्रोफ़ोन से ऑडियो रिकॉर्ड <ph name="CURRENT_STATE" />, माइक्रोफ़ोन से ऑडियो रिकॉर्ड करने के लिए enter दबाएं <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">चालू हो रहा है</translation>
 <translation id="5673434351075758678">अपनी सेटिंग सिंक करने के बाद "<ph name="FROM_LOCALE" />" से "<ph name="TO_LOCALE" />".</translation>
 <translation id="5677928146339483299">ब्लॉक किया गया है</translation>
@@ -571,7 +573,7 @@
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" />, आपका एडमिन प्रबंधित करता है</translation>
 <translation id="6030495522958826102">मेन्यू, स्क्रीन के सबसे नीचे बाएं कोने में चला गया है.</translation>
 <translation id="6032620807120418574">फ़ुल स्क्रीन को रिकॉर्ड करने के लिए कहीं पर भी क्लिक करें</translation>
-<translation id="6040071906258664830">माइक्रोफ़ोन रिकॉर्ड करें <ph name="STATE" /></translation>
+<translation id="6040071906258664830">माइक्रोफ़ोन से ऑडियो रिकॉर्ड <ph name="STATE" /></translation>
 <translation id="6040143037577758943">बंद करें</translation>
 <translation id="6043212731627905357">यह मॉनीटर आपके <ph name="DEVICE_TYPE" /> के साथ काम नहीं कर रहा है (मॉनीटर समर्थित नहीं है).</translation>
 <translation id="6043994281159824495">अब प्रस्थान करें</translation>

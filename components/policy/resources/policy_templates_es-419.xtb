@@ -864,6 +864,16 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
       Si estableces <ph name="CRITICAL_VARIATIONS_ONLY_OPTION_NAME" /> (valor 1), solo se permitirá la aplicación a <ph name="PRODUCT_OS_NAME" /> de variaciones que se consideren correcciones críticas de estabilidad o seguridad.
 
       Si estableces <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (valor 2), no podrá aplicarse ninguna variación en el navegador en la pantalla de acceso. Ten en cuenta que no se recomienda este modo porque podría impedir que los desarrolladores de <ph name="PRODUCT_OS_NAME" /> proporcionen correcciones críticas de seguridad de manera oportuna.</translation>
+<translation id="2221850122314326571">Si habilitas esta configuración, <ph name="PRODUCT_NAME" /> verificará los certificados de servidores mediante el verificador de certificados integrado.
+      Si la inhabilitas, <ph name="PRODUCT_NAME" /> verificará los certificados de servidores mediante el verificador de certificados heredado que incluye la plataforma.
+      Si no la estableces, podrán utilizarse el verificador de certificados integrado o el heredado.
+
+      Se planea quitar esta política en la versión 81 de <ph name="PRODUCT_OS_NAME" />, cuando se quite la compatibilidad con el verificador de certificados heredado de <ph name="PRODUCT_OS_NAME" />.
+
+      Se planea quitar esta política en la versión 83 de <ph name="PRODUCT_NAME" /> para Linux, cuando se quite la compatibilidad con el verificador de certificados heredado de Linux.
+
+      Se planea quitar esta política en la versión 92 de <ph name="PRODUCT_NAME" /> para Mac OS X, cuando se quite la compatibilidad con el verificador de certificados heredado de Mac OS X.
+      </translation>
 <translation id="2223582957891074498">Si estableces la política como verdadera, no se permitirá realizar capturas de pantalla con combinaciones de teclas ni API de extensiones. Si la estableces como falsa, se permitirá realizar capturas de pantalla.</translation>
 <translation id="2223598546285729819">Configuración de notificación predeterminada</translation>
 <translation id="2231817271680715693">Importar historial de navegación del navegador predeterminado en la primera ejecución</translation>
@@ -877,6 +887,7 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
 <translation id="2261329877420573811">Si eliges <ph name="PRINTERS_WHITELIST" /> para <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, la configuración de <ph name="DEVICE_NATIVE_PRINTERS_WHITELIST_POLICY_NAME" /> especificará las impresoras que podrán utilizar los usuarios. Los usuarios solo podrán acceder a las impresoras con los ID que coincidan con los valores indicados en esta política. Los ID deben coincidir con los valores de los campos <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> en el archivo que se especifica en <ph name="DEVICE_PRINTERS_POLICY_NAME" />.
 
       Esta política dejó de estar disponible; usa <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> en su lugar.</translation>
+<translation id="2261648512244797294">Inhabilita la impresión Privet obsoleta</translation>
 <translation id="2266422599396179941">Permitir que los usuarios envíen comentarios</translation>
 <translation id="2269319728625047531">Habilitar que se muestre el consentimiento de sincronización durante el acceso</translation>
 <translation id="2270747976331889601">Habilita una función de seguridad TLS 1.3 para los anclajes de confianza locales</translation>
@@ -2630,6 +2641,11 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
       Si no se establece esta política, o está habilitada, se llevarán a cabo las revisiones de intercepción de DNS. Si se inhabilita explícitamente, no se llevarán a cabo.</translation>
 <translation id="4700190441681139987">No permite que ningún sitio acceda a los sensores</translation>
 <translation id="4703402283970867140">Habilitar un modelo de atenuación inteligente para extender el tiempo de atenuación de la pantalla</translation>
+<translation id="4715026656747891013">Lista de configuraciones para los servicios de Chrome Enterprise Connectors que se aplicarán al conector empresarial <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" />, el cual se activa cuando se produce un evento de seguridad en Chrome. Esto incluye los veredictos negativos de los análisis de Enterprise Connectors, la reutilización de contraseñas, la navegación en páginas no seguras y otras actividades del usuario que afectan la seguridad.
+
+      El campo <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> identifica a qué proveedor de servicios de informes le corresponden las configuraciones, y el campo <ph name="ENTERPRISE_CONNECTOR_ENABLED_EVENT_NAMES_FIELD" /> identifica qué eventos están habilitados para este proveedor.
+
+      Esta política solo se puede establecer en la Consola del administrador de Google.</translation>
 <translation id="4722122254122249791">Permite el aislamiento de sitios específicos</translation>
 <translation id="4723122879352880315">Esta configuración les permite a los usuarios utilizar las credenciales de acceso de <ph name="PRODUCT_OS_NAME" /> para autenticarse en un proxy administrado y protegido con la autenticación NTLM.
 
@@ -2903,6 +2919,7 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
           Si no se configura esta política, se utilizará la línea de comandos predeterminada.</translation>
 <translation id="5152393033264257734">Permite las revisiones de intercepción de DNS y las barras de información de "http://intranetsite/" para "quisiste decir".</translation>
 <translation id="5152787786897382519">Chromium y Google Chrome tienen algunos grupos de políticas que dependen unos de otros para controlar una función. Los siguientes grupos de políticas representan estos conjuntos. Como las políticas pueden tener diferentes fuentes, solo se aplicarán los valores que provengan de la fuente de mayor prioridad. Se ignorarán los valores que provengan de una fuente de menor prioridad perteneciente al mismo grupo. El orden de prioridad se define en <ph name="POLICY_PRIORITY_DOC_URL" />.</translation>
+<translation id="5153187201534281749">Ícono de experimentos del navegador de la barra de herramientas</translation>
 <translation id="515816885693899426">Esta política dejó de estar disponible. Usa la política "<ph name="URL_BLOCKLIST_POLICY_NAME" />" en su lugar.
 
       Si estableces la política, no podrán cargarse las páginas web que tengan URL prohibidas. Proporciona una lista de patrones de URL donde se especifican URL prohibidas. Si no estableces la política, no se prohibirá ninguna URL en el navegador. El patrón de una URL debe presentar un formato conforme a lo especificado en https://www.chromium.org/administrators/url-blacklist-filter-format. Se pueden definir 1,000 excepciones como máximo en la política <ph name="URL_ALLOWLIST_POLICY_NAME" />.
@@ -4060,6 +4077,11 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 <translation id="6789422336869764846">Si habilitas la política o no la estableces, los dispositivos inscritos informarán el estado del interruptor del modo de desarrollador del dispositivo cuando se inicia la máquina.
 
       Si la inhabilitas, los dispositivos inscritos no informarán el estado del interruptor del modo de desarrollador.</translation>
+<translation id="6789441722870183939">Si habilitas o no estableces esta política, los usuarios podrán acceder a las funciones experimentales del navegador a través de un ícono de la barra de herramientas
+
+      Si la inhabilitas, se quitará el ícono de funciones experimentales de la barra de herramientas.
+
+      chrome://flags y cualquier otra forma de activar y desactivar las funciones del navegador seguirán comportándose según lo esperado, independientemente de si esta política está habilitada o inhabilitada.</translation>
 <translation id="6793420507738858152">Si se habilita la política, la función de <ph name="PRODUCT_NAME" /> enviará encabezados de solicitud detallados con información sobre el entorno y el navegador del usuario.
 
       Esta es una función adicional, pero los nuevos encabezados pueden ocasionar fallos en algunos sitios web que restrinjan los caracteres que pueden contener las solicitudes.
@@ -4796,6 +4818,7 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 
       Si inhabilitas la política, los usuarios no podrán hacer clic para omitir las páginas de advertencia.</translation>
 <translation id="7750991880413385988">Abrir la página Nueva pestaña</translation>
+<translation id="7753678409577376761">Habilita el punto de entrada de la barra de herramientas para las funciones experimentales del navegador</translation>
 <translation id="7754704193130578113">Preguntar ubicación antes de descargar</translation>
 <translation id="7754893969683595513">Si estableces la política, se especificará el período (expresado en milisegundos) durante el cual se consultará al servicio de administración del dispositivo para obtener la información de política del usuario. Los valores válidos son de 1,800,000 (30 minutos) a 86,400,000 (1 día). Los valores fuera de este rango se ajustarán conforme al límite correspondiente.
 
@@ -4896,6 +4919,9 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 <translation id="791267408364877739">Muestra las advertencias de seguridad cuando se utilizan marcas de la línea de comandos potencialmente peligrosas</translation>
 <translation id="7922358664346625612">Mantener la última pestaña abierta en Chrome</translation>
 <translation id="7924321157669251966">El porcentaje de brillo de la pantalla cuando el dispositivo esté funcionando con batería.</translation>
+<translation id="7925224837072026018">Si estableces la política, se otorgará acceso a claves empresariales para extensiones o aplicaciones para Android. Solo se designan las claves para uso corporativo si se generan con la API chrome.enterprise.platformKeys en una cuenta administrada. Los usuarios no pueden otorgar ni quitar acceso a claves empresariales para extensiones ni aplicaciones para Android.
+
+      De forma predeterminada, una extensión o una aplicación para Android puede usar claves designadas para uso corporativo, lo cual equivale a establecer la política allowCorporateKeyUsage como falsa. Solo si estableces allowCorporateKeyUsage como verdadera para una extensión o una aplicación para Android, estas podrán usar cualquier clave de plataforma designada para uso corporativo a fin de firmar datos arbitrarios. Otorga este permiso solo si la extensión o la aplicación para Android es de confianza, a fin de proteger el acceso a la clave ante posibles atacantes.</translation>
 <translation id="793134539373873765">Especifica si se debe utilizar la conexión P2P para cargas de actualizaciones del sistema operativo. Si esta política se establece en True, los dispositivos compartirán e intentarán consumir cargas de actualizaciones en la red LAN, y reducirán de forma potencial la congestión y el uso del ancho de banda de Internet. Si la carga de actualizaciones no está disponible en la red LAN, el dispositivo deberá realizar la descarga desde un servidor de actualizaciones. Si se establece en False o no se configura, no se utilizará la conexión P2P.</translation>
 <translation id="7933141401888114454">Habilita la creación de usuarios supervisados.</translation>
 <translation id="793473937901685727">Establecer la disponibilidad de certificados para apps de ARC</translation>
@@ -4922,6 +4948,9 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 <translation id="7956210013490975468">Configura el servicio de proxy del sistema para <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="7958537754689366707">Se requiere el ingreso de la contraseña cada doce horas.</translation>
 <translation id="7961779417826583251">Inhabilitar la aplicación del Certificado de transparencia para una lista de autoridades certificadoras heredadas</translation>
+<translation id="7962093600142350905">Esta política controla si el usuario visualiza las impresoras Privet disponibles en el diálogo de la vista previa de impresión.
+      Si habilitas esta política, se mostrarán las impresoras Privet disponibles.
+      Si la inhabilitas o no la estableces, no se mostrarán impresoras Privet en la vista previa, ya que el método de impresión estará obsoleto.</translation>
 <translation id="7973609468423251675">Ten en cuenta que esta política es obsoleta y se quitará en la versión 85 de <ph name="PRODUCT_OS_NAME" />. En su lugar, utiliza <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
 
           Especifica el período sin intervención del usuario después del cual se atenuará la pantalla cuando el dispositivo esté funcionando con batería.
@@ -4960,6 +4989,7 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 <translation id="8011935490612940798">Controla la función <ph name="PRODUCT_NAME" /></translation>
 <translation id="802147957407376460">Rotar la pantalla 0 grados</translation>
 <translation id="802776363472387903">El hash SHA-256 de la imagen del <ph name="PLUGIN_VM_NAME" />.</translation>
+<translation id="8029201909194194377">Duración máxima de la sesión que se permite para las conexiones de acceso remoto</translation>
 <translation id="8033913082323846868">Esta política deja de estar disponible en M70. En su lugar, utiliza AutofillAddressEnabled y AutofillCreditCardEnabled.
 
       Habilita la función de "Autocompletar" de <ph name="PRODUCT_NAME" /> y permite que los usuarios completen automáticamente los formularios web con la información que se haya almacenado, como la dirección o información de la tarjeta de crédito.
@@ -4997,6 +5027,7 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 <translation id="8078297389450285582">Si habilitas la política o no la estableces, se activará el modelo de atenuación inteligente y podrá extenderse el tiempo indicado para la atenuación de la pantalla. Si se cambia el tiempo de espera, se modificarán el apagado de la pantalla, el bloqueo de pantalla y los tiempos de espera de inactividad a fin de mantener las mismas distancias con respecto al tiempo de espera para la atenuación de la pantalla según la configuración original.
 
       Si inhabilitas la política, el modelo de atenuación inteligente no influenciará la atenuación de la pantalla.</translation>
+<translation id="8089200718228084417">Habilita la impresión Privet obsoleta</translation>
 <translation id="8091982561085048989">Función experimental booleana que indica si se debe usar IPP Everywhere para configurar la impresora. Esta función experimental es compatible con <ph name="PRODUCT_OS_NAME" /> 76 y versiones posteriores.</translation>
 <translation id="8099880303030573137">Demora de inactividad con batería</translation>
 <translation id="8101381354936029836">Grupo atómico de la política:</translation>
@@ -5085,6 +5116,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
           Si estableces esta política, los usuarios no podrán cambiarla ni anularla.
 
           Si no la estableces, la función de resaltar la posición del cursor estará inicialmente inhabilitada, pero el usuario podrá habilitarla en cualquier momento.</translation>
+<translation id="8164144100557223371">Inhabilita el punto de entrada de la barra de herramientas para las funciones experimentales del navegador</translation>
 <translation id="8164687848393015214">Si habilitas la política, se enviarán paquetes de red de control (<ph name="HEARTBEATS_TERM" />) al servidor de administración para controlar el estado de conexión, lo que permite que el servidor detecte si el dispositivo está desconectado de Internet.
 
       Si la inhabilitas o no la estableces, no se enviarán paquetes.</translation>
@@ -5511,6 +5543,9 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 
       Si no la estableces, la política estará activada, y los usuarios no podrán desactivarla.</translation>
 <translation id="8798099450830957504">Predeterminado</translation>
+<translation id="8799492680917278474">Si estableces esta política, las conexiones de acceso remoto se desconectarán de forma automática después de que transcurra el tiempo (en minutos) definido en la política. Esta acción no impide que el cliente se reconecte después de que se alcance la duración máxima de la sesión. Si estableces la política en un valor que está fuera del rango establecido, es posible que el host no se inicie. Esta política no afecta el servicio de asistencia remota.
+
+          Si no la estableces, esta política no tendrá efecto. En este caso, las conexiones de acceso remoto no tendrán duración máxima en esta máquina.</translation>
 <translation id="8800453707696044281">Establecer el porcentaje del nivel de la batería en el que se debe detener la carga</translation>
 <translation id="8801680448782904838">Notificar a un usuario que se recomienda o es obligatorio reiniciar el navegador o el dispositivo</translation>
 <translation id="8816671955985738552">No permite cambiar las contraseñas de SAML durante la sesión en chrome://password-change</translation>
@@ -5851,6 +5886,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="9194447412184412480">Controla la configuración para los usuarios autenticados mediante SAML con un IdP externo</translation>
 <translation id="9197740283131855199">Indica el porcentaje en el que debe ajustarse el tiempo de espera de inactividad de la pantalla si el usuario vuelve a estar activo después de la inactividad.</translation>
 <translation id="9200828125069750521">Parámetros para URL de imagen que utiliza POST</translation>
+<translation id="9204863016826119209">Las aplicaciones de Android que estén instaladas y se mencionen en esta política podrán usar las claves empresariales.</translation>
 <translation id="9213751049772256263">Inhabilitar todas las variaciones</translation>
 <translation id="9217154963008402249">Frecuencia de envío de paquetes de red de control</translation>
 <translation id="922540222991413931">Configurar fuentes de instalación de secuencias de comandos de usuario, aplicaciones y extensiones</translation>

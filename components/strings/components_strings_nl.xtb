@@ -322,7 +322,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2164510882479075877">Check of <ph name="HOST_NAME" /> een typfout bevat.</translation>
 <translation id="2166049586286450108">Volledige beheerderstoegang</translation>
 <translation id="2166378884831602661">Deze site kan geen beveiligde verbinding leveren</translation>
-<translation id="2168151236314517198">Het afdrukken van deze content is geblokkeerd door het beheerdersbeleid</translation>
+<translation id="2168151236314517198">Het afdrukken van deze content is geblokkeerd op basis van het beheerdersbeleid</translation>
 <translation id="2169984857010174799">Kaku2 (envelop)</translation>
 <translation id="2181821976797666341">Beleid</translation>
 <translation id="2183608646556468874">Telefoonnummer</translation>
@@ -1347,7 +1347,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="6290238015253830360">Je voorgestelde artikelen worden hier weergegeven</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">De Google Assistent in Chrome wordt gestopt</translation>
-<translation id="6304463939629872728">Betalen met</translation>
+<translation id="6304463939629872728">Afrekenen met</translation>
 <translation id="6305205051461490394"><ph name="URL" /> is niet bereikbaar.</translation>
 <translation id="6312113039770857350">Webpagina niet beschikbaar</translation>
 <translation id="6321917430147971392">Controleer je DNS-instellingen</translation>
