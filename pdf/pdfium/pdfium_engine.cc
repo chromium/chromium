@@ -392,6 +392,10 @@ std::string GetXYZParamsString(FPDF_DEST dest, PDFiumPage* page) {
     return "";
   }
 
+  // Handle out-of-range page coordinates.
+  x = has_x_coord ? page->PreProcessInPageCoordX(x) : 0;
+  y = has_y_coord ? page->PreProcessInPageCoordY(y) : 0;
+
   // Convert in-page coordinates to in-screen coordinates.
   gfx::PointF xy(x, y);
   gfx::PointF screen_coords = page->TransformPageToScreenXY(xy);

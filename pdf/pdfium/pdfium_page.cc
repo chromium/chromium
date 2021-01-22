@@ -852,10 +852,15 @@ PDFiumPage::Area PDFiumPage::GetDestinationTarget(FPDF_DEST destination,
   base::Optional<float> x;
   base::Optional<float> y;
   GetPageDestinationTarget(destination, &x, &y, &target->zoom);
-  if (x)
-    target->x_in_pixels = TransformPageToScreenX(x.value());
-  if (y)
-    target->y_in_pixels = TransformPageToScreenY(y.value());
+
+  if (x) {
+    target->x_in_pixels =
+        TransformPageToScreenX(PreProcessInPageCoordX(x.value()));
+  }
+  if (y) {
+    target->y_in_pixels =
+        TransformPageToScreenY(PreProcessInPageCoordY(y.value()));
+  }
 
   return DOCLINK_AREA;
 }
@@ -888,6 +893,18 @@ void PDFiumPage::GetPageDestinationTarget(FPDF_DEST destination,
     *dest_y = y;
   if (has_zoom)
     *zoom_value = zoom;
+}
+
+float PDFiumPage::PreProcessInPageCoordX(float x) {
+  // If `x` < 0, scroll to the left side of the page.
+  // If `x` > width, scroll to the right side of the page.
+  return std::max<float>(std::min<float>(x, FPDF_GetPageWidthF(GetPage())), 0);
+}
+
+float PDFiumPage::PreProcessInPageCoordY(float y) {
+  // If `y` < 0, it is a valid input, no extra handling is needed.
+  // If `y` > height, scroll to the top of the page.
+  return std::min<float>(y, FPDF_GetPageHeightF(GetPage()));
 }
 
 gfx::PointF PDFiumPage::TransformPageToScreenXY(const gfx::PointF& xy) {

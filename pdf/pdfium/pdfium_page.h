@@ -118,6 +118,11 @@ class PDFiumPage {
                                 base::Optional<float>* dest_y,
                                 base::Optional<float>* zoom_value);
 
+  // For a named destination with "XYZ" view fit type, pre-processes the in-page
+  // x/y coordinate in case it's out of the range of the page dimension.
+  float PreProcessInPageCoordX(float x);
+  float PreProcessInPageCoordY(float y);
+
   // Transforms an (x, y) position in page coordinates to screen coordinates.
   gfx::PointF TransformPageToScreenXY(const gfx::PointF& xy);
 
