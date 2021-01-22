@@ -145,7 +145,7 @@ sync_pb::PasswordSpecifics CreateSpecifics(
 
 sync_pb::PasswordSpecifics CreateSpecificsWithSignonRealm(
     const std::string& signon_realm) {
-  return CreateSpecifics("http://www.origin.com", "username_element",
+  return CreateSpecifics("http://www.origin.com/", "username_element",
                          "username_value", "password_element", signon_realm,
                          {});
 }
@@ -153,7 +153,7 @@ sync_pb::PasswordSpecifics CreateSpecificsWithSignonRealm(
 sync_pb::PasswordSpecifics CreateSpecificsWithSignonRealmAndIssues(
     const std::string& signon_realm,
     const std::vector<CompromiseType>& issue_types) {
-  return CreateSpecifics("http://www.origin.com", "username_element",
+  return CreateSpecifics("http://www.origin.com/", "username_element",
                          "username_value", "password_element", signon_realm,
                          issue_types);
 }
@@ -747,6 +747,13 @@ TEST_P(PasswordSyncBridgeTest, ShouldMergeSyncRemoteAndLocalPasswords) {
       CreateSpecificsWithSignonRealm(kSignonRealm2);
   sync_pb::PasswordSpecifics specifics3 =
       CreateSpecificsWithSignonRealm(kSignonRealm3);
+
+  base::Time now = base::Time::Now();
+  base::Time yesterday = now - base::TimeDelta::FromDays(1);
+
+  form2.date_created = yesterday;
+  specifics2.mutable_client_only_encrypted_data()->set_date_created(
+      now.ToDeltaSinceWindowsEpoch().InMicroseconds());
 
   fake_db()->AddLoginForPrimaryKey(kPrimaryKey1, form1);
   fake_db()->AddLoginForPrimaryKey(kPrimaryKey2, form2);
@@ -1441,5 +1448,85 @@ TEST_P(PasswordSyncBridgeTest,
 INSTANTIATE_TEST_SUITE_P(SyncingCompromisedCredentialsDisabledAndEnabled,
                          PasswordSyncBridgeTest,
                          ::testing::Bool());
+
+TEST_P(PasswordSyncBridgeTest,
+       EqualPasswordsDifferentCompromisedCredentialsDuringMerge) {
+  // This test is relevant only for syncing compromised credentials feature.
+  if (!GetParam())
+    return;
+  const int kPrimaryKey = 1000;
+  // Test that during merge when Passwords are equal but have different
+  // compromised credentials, local data get updated.
+  const std::string kStorageKey = "1000";
+  const PasswordForm kForm = MakePasswordForm(kSignonRealm1);
+  std::vector<CompromiseType> kRemoteIssuesTypes = {CompromiseType::kReused,
+                                                    CompromiseType::kWeak};
+  const std::vector<CompromisedCredentials> kRemoteIssues =
+      MakeCompromisedCredentials(kForm, kRemoteIssuesTypes);
+  const std::vector<CompromisedCredentials> kLocalIssues =
+      MakeCompromisedCredentials(kForm, {CompromiseType::kLeaked});
+
+  fake_db()->AddLoginForPrimaryKey(kPrimaryKey, kForm);
+  fake_db()->AddCompromisedCredentials(kLocalIssues);
+
+  sync_pb::PasswordSpecifics specifics =
+      CreateSpecificsWithSignonRealmAndIssues(kSignonRealm1,
+                                              kRemoteIssuesTypes);
+
+  // Test that UpdateLoginSync and UpdateCompromisedCredentialsSync() are
+  // invoked with remote compromised credentials.
+  EXPECT_CALL(*mock_password_store_sync(),
+              UpdateLoginSync(FormHasSignonRealm(kSignonRealm1), _));
+  EXPECT_CALL(*mock_password_store_sync(),
+              UpdateCompromisedCredentialsSync(
+                  FormHasSignonRealm(kSignonRealm1),
+                  UnorderedElementsAreArray(kRemoteIssues)));
+
+  syncer::EntityChangeList entity_change_list;
+  entity_change_list.push_back(syncer::EntityChange::CreateAdd(
+      kStorageKey, SpecificsToEntity(specifics)));
+  base::Optional<syncer::ModelError> error = bridge()->MergeSyncData(
+      bridge()->CreateMetadataChangeList(), std::move(entity_change_list));
+  EXPECT_FALSE(error);
+}
+
+TEST_P(PasswordSyncBridgeTest,
+       EqualPasswordsAndEqualCompromisedCredentialsDuringMerge) {
+  if (!GetParam())
+    return;
+  // Test that during merge when Passwords and compromised credentials are equal
+  // there are no updates.
+  const int kPrimaryKey = 1000;
+  const std::string kStorageKey = "1000";
+  PasswordForm kForm = MakePasswordForm(kSignonRealm1);
+  std::vector<CompromiseType> kIssuesTypes = {CompromiseType::kReused,
+                                              CompromiseType::kWeak};
+  const std::vector<CompromisedCredentials> kIssues =
+      MakeCompromisedCredentials(kForm, kIssuesTypes);
+
+  base::Time now = base::Time::Now();
+  kForm.date_created = now;
+
+  fake_db()->AddLoginForPrimaryKey(kPrimaryKey, kForm);
+  fake_db()->AddCompromisedCredentials(kIssues);
+
+  sync_pb::PasswordSpecifics specifics =
+      CreateSpecificsWithSignonRealmAndIssues(kSignonRealm1, kIssuesTypes);
+  specifics.mutable_client_only_encrypted_data()->set_date_created(
+      now.ToDeltaSinceWindowsEpoch().InMicroseconds());
+
+  // Test that neither password store nor processor is invoked.
+  EXPECT_CALL(*mock_password_store_sync(), UpdateLoginSync).Times(0);
+  EXPECT_CALL(*mock_password_store_sync(), UpdateCompromisedCredentialsSync)
+      .Times(0);
+  EXPECT_CALL(mock_processor(), Put).Times(0);
+
+  syncer::EntityChangeList entity_change_list;
+  entity_change_list.push_back(syncer::EntityChange::CreateAdd(
+      kStorageKey, SpecificsToEntity(specifics)));
+  base::Optional<syncer::ModelError> error = bridge()->MergeSyncData(
+      bridge()->CreateMetadataChangeList(), std::move(entity_change_list));
+  EXPECT_FALSE(error);
+}
 
 }  // namespace password_manager
