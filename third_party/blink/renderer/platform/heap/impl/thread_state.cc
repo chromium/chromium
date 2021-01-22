@@ -975,15 +975,6 @@ void ThreadState::RemoveObserver(BlinkGCObserver* observer) {
   observers_.erase(observer);
 }
 
-void ThreadState::EnterStaticReferenceRegistrationDisabledScope() {
-  static_persistent_registration_disabled_count_++;
-}
-
-void ThreadState::LeaveStaticReferenceRegistrationDisabledScope() {
-  DCHECK(static_persistent_registration_disabled_count_);
-  static_persistent_registration_disabled_count_--;
-}
-
 void ThreadState::InvokePreFinalizers() {
   DCHECK(CheckThread());
   DCHECK(!SweepForbidden());

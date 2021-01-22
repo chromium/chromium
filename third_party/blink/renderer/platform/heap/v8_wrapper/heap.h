@@ -8,8 +8,11 @@
 #include "third_party/blink/renderer/platform/heap/v8_wrapper/thread_state.h"
 #include "v8/include/cppgc/allocation.h"
 #include "v8/include/cppgc/garbage-collected.h"
+#include "v8/include/cppgc/liveness-broker.h"
 
 namespace blink {
+
+using LivenessBroker = cppgc::LivenessBroker;
 
 template <typename T>
 using GarbageCollected = cppgc::GarbageCollected<T>;

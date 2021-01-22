@@ -196,10 +196,7 @@ source_set("test_support") {
   sources = [ "heap_test_utilities.h" ]
 
   if (enable_blink_heap_use_v8_oilpan) {
-    sources += [
-      "v8_wrapper/heap_test_utilities.cc",
-      "v8_wrapper/heap_test_utilities.h",
-    ]
+    sources += [ "v8_wrapper/heap_test_utilities.h" ]
   } else {
     sources += [
       "impl/heap_test_utilities.cc",

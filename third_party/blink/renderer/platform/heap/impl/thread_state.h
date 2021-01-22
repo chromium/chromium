@@ -461,9 +461,6 @@ class PLATFORM_EXPORT ThreadState final {
     gc_forbidden_count_--;
   }
 
-  void EnterStaticReferenceRegistrationDisabledScope();
-  void LeaveStaticReferenceRegistrationDisabledScope();
-
   // Performs stand-alone garbage collections considering only C++ objects.
   //
   // Use the public *ForTesting calls for calling GC in tests.
@@ -614,7 +611,6 @@ class PLATFORM_EXPORT ThreadState final {
   bool forced_scheduled_gc_for_testing_ = false;
   size_t no_allocation_count_ = 0;
   size_t gc_forbidden_count_ = 0;
-  size_t static_persistent_registration_disabled_count_ = 0;
 
   GCState gc_state_ = GCState::kNoGCScheduled;
   GCPhase gc_phase_ = GCPhase::kNone;

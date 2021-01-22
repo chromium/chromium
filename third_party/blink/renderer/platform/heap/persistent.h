@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/platform/wtf/buildflags.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
+#include "third_party/blink/renderer/platform/wtf/vector_traits.h"
 
 #if BUILDFLAG(USE_V8_OILPAN)
 #include "third_party/blink/renderer/platform/heap/v8_wrapper/persistent.h"

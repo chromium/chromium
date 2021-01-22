@@ -11,8 +11,6 @@
 
 namespace blink {
 
-class LivenessBroker;
-
 // ActiveScriptWrappableManager (ASWM) is integrated into the garbage collector
 // and keeps ActiveScriptWrappable alive as long as they have
 // HasPendingActivity() returning true and are attached to a live
