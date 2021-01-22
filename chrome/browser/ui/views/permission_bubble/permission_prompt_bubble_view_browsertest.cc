@@ -349,3 +349,25 @@ IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleViewBrowserTest,
 INSTANTIATE_TEST_SUITE_P(All,
                          PermissionPromptBubbleViewBrowserTest,
                          ::testing::Values(false, true));
+
+class OneTimePermissionPromptBubbleViewBrowserTest
+    : public PermissionPromptBubbleViewBrowserTest {
+ public:
+  OneTimePermissionPromptBubbleViewBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        permissions::features::kOneTimeGeolocationPermission,
+        {{"OkButtonBehavesAsAllowAlways", GetParam() ? "true" : "false"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(OneTimePermissionPromptBubbleViewBrowserTest,
+                       InvokeUi_geolocation) {
+  ShowAndVerifyUi();
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         OneTimePermissionPromptBubbleViewBrowserTest,
+                         ::testing::Values(false, true));

@@ -866,6 +866,9 @@ void PermissionRequestManager::LogWarningToConsole(const char* message) {
 
 void PermissionRequestManager::DoAutoResponseForTesting() {
   switch (auto_response_for_test_) {
+    case ACCEPT_ONCE:
+      AcceptThisTime();
+      break;
     case ACCEPT_ALL:
       Accept();
       break;

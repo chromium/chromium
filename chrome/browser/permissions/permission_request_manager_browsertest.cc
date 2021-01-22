@@ -47,6 +47,7 @@
 #include "content/public/test/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -100,6 +101,10 @@ class PermissionRequestManagerBrowserTest : public InProcessBrowserTest {
   }
 
   void TearDownOnMainThread() override {
+    ShutDownFirstTabMockPermissionPromptFactory();
+  }
+
+  void ShutDownFirstTabMockPermissionPromptFactory() {
     mock_permission_prompt_factory_.reset();
   }
 
@@ -842,6 +847,107 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerWithBackForwardCacheBrowserTest,
 
   // Cleanup before we delete the requests.
   GetPermissionRequestManager()->Closing();
+}
+
+class PermissionRequestManagerOneTimeGeolocationPermissionBrowserTest
+    : public PermissionRequestManagerBrowserTest {
+ public:
+  PermissionRequestManagerOneTimeGeolocationPermissionBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        permissions::features::kOneTimeGeolocationPermission);
+    geolocation_overrider_ =
+        std::make_unique<device::ScopedGeolocationOverrider>(0, 0);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<device::ScopedGeolocationOverrider> geolocation_overrider_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    PermissionRequestManagerOneTimeGeolocationPermissionBrowserTest,
+    RequestForPermission) {
+  const char kQueryCurrentPosition[] = R"(
+        navigator.geolocation.getCurrentPosition(
+          _ => domAutomationController.send('success'),
+          _ => domAutomationController.send('failure'));
+      )";
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
+      browser(), embedded_test_server()->GetURL("/title1.html"), 1);
+  bubble_factory()->set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ONCE);
+
+  // Request 'geolocation' permission.
+  std::string result = content::EvalJsWithManualReply(GetActiveMainFrame(),
+                                                      kQueryCurrentPosition)
+                           .ExtractString();
+  EXPECT_EQ("success", result);
+  EXPECT_EQ(1, bubble_factory()->TotalRequestCount());
+
+  // Request 'geolocation' permission. There should not be a 2nd prompt.
+  result = content::EvalJsWithManualReply(GetActiveMainFrame(),
+                                          kQueryCurrentPosition)
+               .ExtractString();
+  EXPECT_EQ("success", result);
+  EXPECT_EQ(1, bubble_factory()->TotalRequestCount());
+
+  // Open a new tab with same domain.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), embedded_test_server()->GetURL("/title1.html"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  // Create a new mock permission prompt factory for the second tab.
+  std::unique_ptr<permissions::MockPermissionPromptFactory>
+      second_tab_bubble_factory(
+          std::make_unique<permissions::MockPermissionPromptFactory>(
+              GetPermissionRequestManager()));
+
+  // Request 'geolocation' permission.
+  result = content::EvalJsWithManualReply(GetActiveMainFrame(),
+                                          kQueryCurrentPosition)
+               .ExtractString();
+  EXPECT_EQ("success", result);
+  // There should be no permission prompt.
+  EXPECT_EQ(0, second_tab_bubble_factory.get()->TotalRequestCount());
+
+  // Open a new empty tab before closing the first two tabs.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(url::kAboutBlankURL),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  // Need to close the mock permission managers before closing the tabs.
+  // Otherwise the tab instances can't be destroyed due to a DCHECK
+  ShutDownFirstTabMockPermissionPromptFactory();
+  second_tab_bubble_factory.reset();
+
+  // Close the first two tabs.
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  tab_strip_model->CloseWebContentsAt(0, TabStripModel::CLOSE_USER_GESTURE);
+  tab_strip_model->CloseWebContentsAt(0, TabStripModel::CLOSE_USER_GESTURE);
+
+  ASSERT_EQ(1, tab_strip_model->count());
+
+  // Create a new mock permission prompt factory for the third tab.
+  std::unique_ptr<permissions::MockPermissionPromptFactory>
+      third_tab_bubble_factory(
+          std::make_unique<permissions::MockPermissionPromptFactory>(
+              GetPermissionRequestManager()));
+
+  ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
+      browser(), embedded_test_server()->GetURL("/title1.html"), 1);
+  third_tab_bubble_factory.get()->set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ONCE);
+
+  // Request 'geolocation' permission. We should get a prompt.
+  result = content::EvalJsWithManualReply(GetActiveMainFrame(),
+                                          kQueryCurrentPosition)
+               .ExtractString();
+  EXPECT_EQ("success", result);
+
+  EXPECT_EQ(1, third_tab_bubble_factory.get()->TotalRequestCount());
 }
 
 }  // anonymous namespace

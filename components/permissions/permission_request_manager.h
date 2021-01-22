@@ -78,7 +78,7 @@ class PermissionRequestManager
     virtual ~Observer() = default;
   };
 
-  enum AutoResponseType { NONE, ACCEPT_ALL, DENY_ALL, DISMISS };
+  enum AutoResponseType { NONE, ACCEPT_ONCE, ACCEPT_ALL, DENY_ALL, DISMISS };
 
   using UiDecision = NotificationPermissionUiSelector::Decision;
   using QuietUiReason = NotificationPermissionUiSelector::QuietUiReason;
