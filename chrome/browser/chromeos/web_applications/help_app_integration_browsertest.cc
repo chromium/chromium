@@ -118,8 +118,9 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2AppServiceMetrics) {
   WaitForTestSystemAppInstall();
   base::HistogramTester histogram_tester;
 
-  // Using AppServiceProxy gives more coverage of the launch path and ensures
-  // the metric is not recorded twice.
+  // The metric is recorded in LaunchSystemWebApp (crbug/1112660), but using
+  // AppServiceProxy gives more coverage of the launch path and ensures the
+  // metric is not recorded twice.
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
   content::TestNavigationObserver navigation_observer(
       GURL("chrome://help-app/"));

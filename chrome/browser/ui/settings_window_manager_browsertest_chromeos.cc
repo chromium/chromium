@@ -82,7 +82,6 @@ class SettingsWindowManagerTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(SettingsWindowManagerTest, OpenSettingsWindow) {
   // Open a settings window.
   settings_manager_->ShowOSSettings(browser()->profile());
-  web_app::FlushSystemWebAppLaunchesForTesting(browser()->profile());
   Browser* settings_browser =
       settings_manager_->FindBrowserForProfile(browser()->profile());
   ASSERT_TRUE(settings_browser);
@@ -90,7 +89,6 @@ IN_PROC_BROWSER_TEST_F(SettingsWindowManagerTest, OpenSettingsWindow) {
 
   // Open the settings again: no new window.
   settings_manager_->ShowOSSettings(browser()->profile());
-  web_app::FlushSystemWebAppLaunchesForTesting(browser()->profile());
   EXPECT_EQ(settings_browser,
             settings_manager_->FindBrowserForProfile(browser()->profile()));
   EXPECT_EQ(1u, GetNumberOfSettingsWindows());
@@ -106,7 +104,6 @@ IN_PROC_BROWSER_TEST_F(SettingsWindowManagerTest, OpenSettingsWindow) {
               apps::mojom::LaunchContainer::kLaunchContainerWindow,
               WindowOpenDisposition::NEW_WINDOW,
               apps::mojom::AppLaunchSource::kSourceCommandLine));
-  web_app::FlushSystemWebAppLaunchesForTesting(browser()->profile());
   EXPECT_EQ(contents,
             settings_browser->tab_strip_model()->GetActiveWebContents());
   EXPECT_EQ(1u, GetNumberOfSettingsWindows());
@@ -117,7 +114,6 @@ IN_PROC_BROWSER_TEST_F(SettingsWindowManagerTest, OpenSettingsWindow) {
 
   // Open a new settings window.
   settings_manager_->ShowOSSettings(browser()->profile());
-  web_app::FlushSystemWebAppLaunchesForTesting(browser()->profile());
   Browser* settings_browser2 =
       settings_manager_->FindBrowserForProfile(browser()->profile());
   ASSERT_TRUE(settings_browser2);
@@ -135,7 +131,6 @@ IN_PROC_BROWSER_TEST_F(SettingsWindowManagerTest, OpenChromePages) {
 
   // Settings should open a new browser window.
   settings_manager_->ShowOSSettings(browser()->profile());
-  web_app::FlushSystemWebAppLaunchesForTesting(browser()->profile());
   EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
 
   // About should reuse the existing Settings window.
@@ -169,7 +164,6 @@ IN_PROC_BROWSER_TEST_F(SettingsWindowManagerTest, OpenSettings) {
 
   // OS settings opens in a new window.
   settings_manager_->ShowOSSettings(browser()->profile());
-  web_app::FlushSystemWebAppLaunchesForTesting(browser()->profile());
   EXPECT_EQ(1u, GetNumberOfSettingsWindows());
   EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
 
@@ -182,7 +176,6 @@ IN_PROC_BROWSER_TEST_F(SettingsWindowManagerTest, OpenSettings) {
   settings_manager_->ShowOSSettings(
       browser()->profile(),
       chromeos::settings::mojom::kBluetoothDevicesSubpagePath);
-  web_app::FlushSystemWebAppLaunchesForTesting(browser()->profile());
   EXPECT_EQ(1u, GetNumberOfSettingsWindows());
   EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
 
