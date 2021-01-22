@@ -178,6 +178,9 @@ void RasterImplementationGLES::WritePixels(const gpu::Mailbox& dest_mailbox,
   BeginSharedImageAccessDirectCHROMIUM(
       texture_id, GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
 
+  GLint old_align = 0;
+  gl_->GetIntegerv(GL_UNPACK_ALIGNMENT, &old_align);
+  gl_->PixelStorei(GL_UNPACK_ALIGNMENT, 1);
   gl_->PixelStorei(GL_UNPACK_ROW_LENGTH, row_bytes / src_info.bytesPerPixel());
   gl_->BindTexture(texture_target, texture_id);
   gl_->TexSubImage2D(texture_target, 0, dst_x_offset, dst_y_offset,
@@ -186,6 +189,7 @@ void RasterImplementationGLES::WritePixels(const gpu::Mailbox& dest_mailbox,
                      SkColorTypeToGLDataType(src_info.colorType()), src_pixels);
   gl_->BindTexture(texture_target, 0);
   gl_->PixelStorei(GL_UNPACK_ROW_LENGTH, 0);
+  gl_->PixelStorei(GL_UNPACK_ALIGNMENT, old_align);
 
   EndSharedImageAccessDirectCHROMIUM(texture_id);
   DeleteGpuRasterTexture(texture_id);
