@@ -29,6 +29,8 @@ Polymer({
     this.$.submit.disabled = false;
     this.invalid = true;
     password.select();
+
+    this.fire('password-denied-for-testing');
   },
 
   submit() {

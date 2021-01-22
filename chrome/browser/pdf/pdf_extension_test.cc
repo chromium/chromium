@@ -994,6 +994,10 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, Metrics) {
   RunTestsInJsModule("metrics_test.js", "test.pdf");
 }
 
+IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, ViewerPasswordDialog) {
+  RunTestsInJsModule("viewer_password_dialog_test.js", "encrypted.pdf");
+}
+
 IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, ArrayBufferAllocator) {
   // Run several times to see if there are issues with unloading.
   RunTestsInJsModule("beep_test.js", "array_buffer.pdf");

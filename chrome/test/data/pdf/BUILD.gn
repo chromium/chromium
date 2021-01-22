@@ -37,6 +37,7 @@ js_type_check("closure_compile") {
 
     #":toolbar_manager_test",
     #":touch_handling_test",
+    ":viewer_password_dialog_test",
     ":viewer_pdf_sidenav_test",
     ":viewer_pdf_toolbar_new_test",
     ":viewer_properties_dialog_test",
@@ -162,6 +163,16 @@ js_library("test_util") {
 }
 
 js_library("title_test") {
+  externs_list = [ "$externs_path/test.js" ]
+}
+
+js_library("viewer_password_dialog_test") {
+  deps = [
+    "../webui:test_util.m",
+    "//chrome/browser/resources/pdf:pdf_viewer_wrapper",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
+  ]
   externs_list = [ "$externs_path/test.js" ]
 }
 
