@@ -244,7 +244,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="ChromeMLService.EvaluationLatency" units="ms"
-    expires_after="2021-02-27">
+    expires_after="M92">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -255,7 +255,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="ChromeMLService.LoadModelResult"
-    enum="ChromeMLServiceLoadModelResult" expires_after="2021-02-27">
+    enum="ChromeMLServiceLoadModelResult" expires_after="M92">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -264,8 +264,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeMLService.PredictionResult.DecisionTreeModel"
-    enum="ChromeMLServiceDecisionTreePredictionResult"
-    expires_after="2021-02-27">
+    enum="ChromeMLServiceDecisionTreePredictionResult" expires_after="M92">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -274,7 +273,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeMLService.ServiceAliveDuration" units="ms"
-    expires_after="2021-02-27">
+    expires_after="M92">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -285,28 +284,28 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeMLService.ServiceCrash" enum="Boolean"
-    expires_after="2021-02-27">
+    expires_after="M92">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>Records if the Chrome ML Service crashed.</summary>
 </histogram>
 
 <histogram name="ChromeMLService.ServiceLaunch" enum="Boolean"
-    expires_after="2021-02-27">
+    expires_after="M92">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>Records if the Chrome ML Service launched successfully.</summary>
 </histogram>
 
 <histogram name="ChromeMLService.ServiceNormalTermination" enum="Boolean"
-    expires_after="2021-02-27">
+    expires_after="M92">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>Records if the Chrome ML Service terminated normally.</summary>
 </histogram>
 
 <histogram name="ChromeMLService.ServiceStatusWhenRequested"
-    enum="ChromeMLServiceRequestStatus" expires_after="2021-02-27">
+    enum="ChromeMLServiceRequestStatus" expires_after="M92">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -315,7 +314,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="ChromeMLService.ValidationLatency" units="ms"
-    expires_after="2021-02-27">
+    expires_after="M92">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
