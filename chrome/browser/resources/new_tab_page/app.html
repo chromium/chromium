@@ -96,7 +96,9 @@
     --tile-hover-color: rgba(255, 255, 255, .1);
   }
 
-  ntp-middle-slot-promo:not([hidden]) + ntp-module-wrapper,
+  /* ~ because the dom-if results in a template between the middle-slot-promo
+     and the first ntp-module-wrapper. */
+  ntp-middle-slot-promo:not([hidden]) ~ ntp-module-wrapper,
   ntp-module-wrapper + ntp-module-wrapper {
     margin-top: 16px;
   }
@@ -270,9 +272,11 @@
             use-title-pill$="[[theme_.shortcutUseTitlePill]]">
         </ntp-most-visited>
       </template>
-      <ntp-middle-slot-promo
-          on-ntp-middle-slot-promo-loaded="onMiddleSlotPromoLoaded_">
-      </ntp-middle-slot-promo>
+      <template is="dom-if" if="[[middleSlotPromoEnabled_]]">
+        <ntp-middle-slot-promo
+            on-ntp-middle-slot-promo-loaded="onMiddleSlotPromoLoaded_">
+        </ntp-middle-slot-promo>
+      </template>
       <template is="dom-repeat" items="[[moduleDescriptors_]]" id="modules"
           on-dom-change="onModulesLoaded_">
         <ntp-module-wrapper descriptor="[[item]]"
