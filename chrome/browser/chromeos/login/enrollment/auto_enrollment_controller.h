@@ -45,7 +45,7 @@ class AutoEnrollmentController {
   static const char kInitialEnrollmentNever[];
   static const char kInitialEnrollmentOfficialBuild[];
 
-  // Parameter values for the kEnterpriseEnablePrivateSetMembership flag.
+  // Parameter values for the kEnterpriseEnablePsm flag.
   static const char kEnablePsmAlways[];
   static const char kEnablePsmNever[];
 
@@ -104,9 +104,9 @@ class AutoEnrollmentController {
   // Returns true if any either FRE or initial enrollment are enabled.
   static bool IsEnabled();
 
-  // Returns true if the use of private set membership is enabled based on
+  // Returns true if the use of PSM (private set membership) is enabled based on
   // command-line flags.
-  static bool IsPrivateSetMembershipEnabled();
+  static bool IsPsmEnabled();
 
   // Returns whether the FRE auto-enrollment check is required. When
   // kCheckEnrollmentKey VPD entry is present, it is explicitly stating whether

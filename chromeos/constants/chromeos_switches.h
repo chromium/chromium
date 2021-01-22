@@ -122,7 +122,7 @@ extern const char kEnterpriseEnableForcedReEnrollment[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const char kEnterpriseEnableInitialEnrollment[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-extern const char kEnterpriseEnablePrivateSetMembership[];
+extern const char kEnterpriseEnablePsm[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const char kEnterpriseEnableZeroTouchEnrollment[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)

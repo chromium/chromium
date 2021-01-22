@@ -387,14 +387,14 @@ bool AutoEnrollmentController::IsInitialEnrollmentEnabled() {
 }
 
 // static
-bool AutoEnrollmentController::IsPrivateSetMembershipEnabled() {
+bool AutoEnrollmentController::IsPsmEnabled() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
-  if (!command_line->HasSwitch(switches::kEnterpriseEnablePrivateSetMembership))
+  if (!command_line->HasSwitch(switches::kEnterpriseEnablePsm))
     return true;  // Enabled by default.
 
-  std::string command_line_mode = command_line->GetSwitchValueASCII(
-      switches::kEnterpriseEnablePrivateSetMembership);
+  std::string command_line_mode =
+      command_line->GetSwitchValueASCII(switches::kEnterpriseEnablePsm);
   if (command_line_mode.empty() || command_line_mode == kEnablePsmAlways)
     return true;
 
