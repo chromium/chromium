@@ -87,6 +87,15 @@ class FakeGaia {
     std::string email;
   };
 
+  struct SyncTrustedVaultKeys {
+    SyncTrustedVaultKeys();
+    ~SyncTrustedVaultKeys();
+
+    std::vector<uint8_t> encryption_key;
+    int encryption_key_version = 0;
+    std::vector<std::vector<uint8_t>> trusted_public_keys;
+  };
+
   FakeGaia();
   virtual ~FakeGaia();
 
@@ -104,6 +113,11 @@ class FakeGaia {
   // address when setting GAIA response headers.  If no mapping is given for
   // an email address, a default GAIA Id is used.
   void MapEmailToGaiaId(const std::string& email, const std::string& gaia_id);
+
+  // Adds sync trusted vault keys for |email|.
+  void SetSyncTrustedVaultKeys(
+      const std::string& email,
+      const SyncTrustedVaultKeys& sync_trusted_vault_keys);
 
   // Initializes HTTP request handlers. Should be called after switches
   // for tweaking GaiaUrls are in place.
@@ -191,6 +205,8 @@ class FakeGaia {
   using EmailToGaiaIdMap = std::map<std::string, std::string>;
   using SamlAccountIdpMap = std::map<std::string, GURL>;
   using SamlDomainRedirectUrlMap = std::map<std::string, GURL>;
+  using EmailToSyncTrustedVaultKeysMap =
+      std::map<std::string, SyncTrustedVaultKeys>;
 
   std::string GetGaiaIdOfEmail(const std::string& email) const;
 
@@ -200,6 +216,10 @@ class FakeGaia {
 
   void SetOAuthCodeCookie(
       net::test_server::BasicHttpResponse* http_response) const;
+
+  void AddSyncTrustedKeysHeader(
+      net::test_server::BasicHttpResponse* http_response,
+      const std::string& email) const;
 
   // Formats a JSON response with the data in |value|, setting the http status
   // to |status|.
@@ -306,6 +326,7 @@ class FakeGaia {
   SamlDomainRedirectUrlMap saml_domain_url_map_;
   bool issue_oauth_code_cookie_;
   RefreshTokenToDeviceIdMap refresh_token_to_device_id_map_;
+  EmailToSyncTrustedVaultKeysMap email_to_sync_trusted_vault_keys_map_;
   std::string prefilled_email_;
   std::string is_supervised_;
   std::string is_device_owner_;
