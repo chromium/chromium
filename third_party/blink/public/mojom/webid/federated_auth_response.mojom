@@ -1,0 +1,28 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// Implementation of the proposed WebId API.
+//
+// Proposal: https://github.com/WICG/WebID
+
+enum ProvideIdTokenStatus {
+  kSuccess,
+  kErrorTooManyResponses,
+  kError,
+};
+
+
+// Creates a federated sign-in response.
+// This interface is called from the provider renderer process and is
+// implemented in the browser process.
+interface FederatedAuthResponse {
+  // Provides an IdToken that is passed to the pending request. This is meant to
+  // be used by the IDP generating the token. Empty string resolves the pending
+  // request with an error.
+  // Returns a status indicating if the the pending RP request was resolved.
+  ProvideIdToken(string id_token) => (ProvideIdTokenStatus status);
+};
+

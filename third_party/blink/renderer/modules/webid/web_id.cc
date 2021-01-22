@@ -90,7 +90,9 @@ void OnProvideIdToken(ScriptPromiseResolver* resolver,
 }  // namespace
 
 WebID::WebID(ExecutionContext& context)
-    : ExecutionContextClient(&context), auth_request_(&context) {}
+    : ExecutionContextClient(&context),
+      auth_request_(&context),
+      auth_response_(&context) {}
 
 ScriptPromise WebID::get(ScriptState* script_state,
                          const WebIDRequestOptions* options,
@@ -115,7 +117,7 @@ ScriptPromise WebID::get(ScriptState* script_state,
     return ScriptPromise();
   }
 
-  BindAuthRequest();
+  BindRemote(auth_request_);
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
@@ -128,29 +130,30 @@ ScriptPromise WebID::get(ScriptState* script_state,
 }
 
 ScriptPromise WebID::provide(ScriptState* script_state, String id_token) {
-  BindAuthRequest();
+  BindRemote(auth_response_);
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
-  auth_request_->ProvideIdToken(
+  auth_response_->ProvideIdToken(
       id_token, WTF::Bind(&OnProvideIdToken, WrapPersistent(resolver)));
 
   return promise;
 }
 
-void WebID::BindAuthRequest() {
+template <typename Interface>
+void WebID::BindRemote(HeapMojoRemote<Interface>& remote) {
   auto* context = GetExecutionContext();
 
-  if (auth_request_.is_bound())
+  if (remote.is_bound())
     return;
 
   // TODO(kenrb): Work out whether kUserInteraction is the best task type
   // here. It might be appropriate to create a new one.
   context->GetBrowserInterfaceBroker().GetInterface(
-      auth_request_.BindNewPipeAndPassReceiver(
+      remote.BindNewPipeAndPassReceiver(
           context->GetTaskRunner(TaskType::kUserInteraction)));
-  auth_request_.set_disconnect_handler(
+  remote.set_disconnect_handler(
       WTF::Bind(&WebID::OnConnectionError, WrapWeakPersistent(this)));
 }
 
@@ -158,10 +161,15 @@ void WebID::Trace(blink::Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
   visitor->Trace(auth_request_);
+  visitor->Trace(auth_response_);
 }
 
 void WebID::OnConnectionError() {
   auth_request_.reset();
+  // TODO(majidvp): We should handle connection errors for request and response
+  // separately.
+  auth_response_.reset();
+
   // TODO(kenrb): Cache the resolver and resolve the promise with an
   // appropriate error message.
 }

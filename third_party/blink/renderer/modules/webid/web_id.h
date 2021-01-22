@@ -7,6 +7,7 @@
 
 #include "mojo/public/cpp/bindings/binding.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-blink.h"
+#include "third_party/blink/public/mojom/webid/federated_auth_response.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
@@ -33,10 +34,12 @@ class WebID final : public ScriptWrappable, public ExecutionContextClient {
   void Trace(blink::Visitor*) const override;
 
  private:
-  void BindAuthRequest();
+  template <typename Interface>
+  void BindRemote(HeapMojoRemote<Interface>& remote);
   void OnConnectionError();
 
   HeapMojoRemote<mojom::blink::FederatedAuthRequest> auth_request_;
+  HeapMojoRemote<mojom::blink::FederatedAuthResponse> auth_response_;
 };
 
 }  // namespace blink

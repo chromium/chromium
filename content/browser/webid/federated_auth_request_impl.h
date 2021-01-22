@@ -46,9 +46,6 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
                       const std::string& id_request,
                       RequestIdTokenCallback) override;
 
-  void ProvideIdToken(const std::string& id_token,
-                      ProvideIdTokenCallback) override;
-
  private:
   FederatedAuthRequestImpl(
       RenderFrameHost*,
