@@ -284,8 +284,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Memory.Browser.MemoryFootprint.NumLiveOverscroll" units="tabs"
     expires_after="2021-07-11">
+  <owner>ajuma@chromium.org</owner>
   <owner>rkgibson@google.com</owner>
-  <owner>eugenebut@chromium.org</owner>
   <summary>
     Investigation into crbug.com/1102494 shows that OverscrollActionsController
     is allocating thousands of objects in it's -initWithScrollView:. This is
@@ -299,8 +299,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Memory.Browser.MemoryFootprint.NumOpenTabs" units="tabs"
     expires_after="2021-07-11">
+  <owner>ajuma@chromium.org</owner>
   <owner>rkgibson@google.com</owner>
-  <owner>eugenebut@chromium.org</owner>
   <summary>
     Investigation into crbug.com/1102494 shows that OverscrollActionsController
     is allocating thousands of objects in it's -initWithScrollView:. This is

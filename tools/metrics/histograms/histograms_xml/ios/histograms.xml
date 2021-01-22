@@ -818,16 +818,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.Snapshots.CacheSize" units="KB" expires_after="2021-07-11">
+  <owner>ajuma@chromium.org</owner>
   <owner>edchin@chromium.org</owner>
-  <owner>eugenebut@chromium.org</owner>
   <summary>
     The overall size of snapshots cache. Recorded when new snapshot is cached.
   </summary>
 </histogram>
 
 <histogram name="IOS.Snapshots.ImageSize" units="KB" expires_after="2021-07-11">
+  <owner>ajuma@chromium.org</owner>
   <owner>edchin@chromium.org</owner>
-  <owner>eugenebut@chromium.org</owner>
   <summary>
     The size of a single snapshot image. Recorded when new snapshot is taken and
     RecordSnapshotSize flag is enabled.
@@ -835,8 +835,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.Snapshots.PDFSize" units="KB" expires_after="2021-07-11">
+  <owner>ajuma@chromium.org</owner>
   <owner>edchin@chromium.org</owner>
-  <owner>eugenebut@chromium.org</owner>
   <summary>
     The size of a single snapshot PDF. Recorded when new snapshot is taken and
     RecordSnapshotSize flag is enabled.
