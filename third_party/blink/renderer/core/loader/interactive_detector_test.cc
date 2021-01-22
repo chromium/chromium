@@ -567,32 +567,6 @@ TEST_F(InteractiveDetectorTest, LongTaskAfterTTIDoesNothing) {
   EXPECT_EQ(GetInteractiveTime(), long_task_1_end_time);
 }
 
-TEST_F(InteractiveDetectorTest, RecordInputDelayUKM) {
-  base::TimeDelta input_delay = base::TimeDelta::FromMilliseconds(20);
-  base::TimeDelta processing_time = base::TimeDelta::FromMilliseconds(10);
-  base::TimeDelta time_to_next_paint = base::TimeDelta::FromMilliseconds(10);
-
-  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
-  GetDetector()->SetUkmRecorderForTesting(&test_ukm_recorder);
-  GetDetector()->RecordInputEventTimingUKM(input_delay, processing_time,
-                                           time_to_next_paint);
-  auto entries = test_ukm_recorder.GetEntriesByName(InputEvent::kEntryName);
-  EXPECT_EQ(1ul, entries.size());
-  auto* entry = entries[0];
-  test_ukm_recorder.ExpectEntryMetric(
-      entry, InputEvent::kInteractiveTiming_InputDelayName,
-      input_delay.InMilliseconds());
-  test_ukm_recorder.ExpectEntryMetric(
-      entry, InputEvent::kInteractiveTiming_ProcessingTimeName,
-      processing_time.InMilliseconds());
-  test_ukm_recorder.ExpectEntryMetric(
-      entry, InputEvent::kInteractiveTiming_ProcessingFinishedToNextPaintName,
-      time_to_next_paint.InMilliseconds());
-  EXPECT_EQ(
-      GetDetector()->GetFirstInputProcessingTime().value().InMilliseconds(),
-      processing_time.InMilliseconds());
-}
-
 // In tests for Total Blocking Time (TBT) we call SetTimeToInteractive() instead
 // of allowing TimeToInteractive to occur because the computation is gated
 // behind tracing being enabled, which means that they won't run by default. In
