@@ -11,9 +11,11 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
 #include "components/autofill/core/common/autofill_clock.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -1065,6 +1067,121 @@ TEST_F(CreditCardFieldTest, ParseNonConsecutiveCvc) {
   ASSERT_TRUE(field_candidates_map_.find(unknown) ==
               field_candidates_map_.end());
   ASSERT_TRUE(field_candidates_map_.find(cvc2) == field_candidates_map_.end());
+}
+
+TEST_F(CreditCardFieldTest, ParseCreditCardContextualNameNotCard) {
+  base::test::ScopedFeatureList enabled;
+  enabled.InitWithFeatures(
+      {features::kAutofillStrictContextualCardNameConditions}, {});
+
+  FormFieldData field;
+  field.form_control_type = "text";
+
+  field.label = ASCIIToUTF16("Account ID");
+  field.name = ASCIIToUTF16("acctNum");
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+
+  field.label = ASCIIToUTF16("Account Name");
+  field.name = ASCIIToUTF16("name");
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+
+  field.label = ASCIIToUTF16("Move to Account ID");
+  field.name = ASCIIToUTF16("toAcctNum");
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+
+  Parse();
+  ASSERT_EQ(nullptr, field_.get());
+}
+
+TEST_F(CreditCardFieldTest, ParseCreditCardContextualNameNotCardAcctMatch) {
+  base::test::ScopedFeatureList enabled;
+  enabled.InitWithFeatures(
+      {features::kAutofillStrictContextualCardNameConditions}, {});
+
+  FormFieldData field;
+  field.form_control_type = "text";
+
+  field.label = ASCIIToUTF16("Account ID");
+  field.name = ASCIIToUTF16("acctNum");
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+
+  field.label = ASCIIToUTF16("Account Name");
+  field.name = ASCIIToUTF16("acctName");
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+
+  field.label = ASCIIToUTF16("Move to Account ID");
+  field.name = ASCIIToUTF16("toAcctNum");
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+
+  Parse();
+  // TODO(crbug.com/1167977): This should be null, but waiting before changing
+  // kNameOnCardRe to use word boundaries.
+  ASSERT_NE(nullptr, field_.get());
+}
+
+TEST_F(CreditCardFieldTest, ParseCreditCardContextualNameWithExpiration) {
+  base::test::ScopedFeatureList enabled;
+  enabled.InitWithFeatures(
+      {features::kAutofillStrictContextualCardNameConditions}, {});
+
+  FormFieldData field;
+  field.form_control_type = "text";
+
+  field.label = ASCIIToUTF16("Account ID");
+  field.name = ASCIIToUTF16("acctNum");
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+
+  field.label = ASCIIToUTF16("Account Name");
+  field.name = ASCIIToUTF16("name");
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+
+  field.label = ASCIIToUTF16("Exp Month");
+  field.name = ASCIIToUTF16("ccmonth");
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+
+  field.label = ASCIIToUTF16("Exp Year");
+  field.name = ASCIIToUTF16("ccyear");
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+
+  Parse();
+  ASSERT_NE(nullptr, field_.get());
+}
+
+TEST_F(CreditCardFieldTest, ParseCreditCardContextualNameWithVerification) {
+  base::test::ScopedFeatureList enabled;
+  enabled.InitWithFeatures(
+      {features::kAutofillStrictContextualCardNameConditions}, {});
+
+  FormFieldData field;
+  field.form_control_type = "text";
+
+  field.label = ASCIIToUTF16("Account ID");
+  field.name = ASCIIToUTF16("acctNum");
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+
+  field.label = ASCIIToUTF16("Account Name");
+  field.name = ASCIIToUTF16("name");
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+
+  field.label = ASCIIToUTF16("Verification");
+  field.name = ASCIIToUTF16("cvv");
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+
+  Parse();
+  ASSERT_NE(nullptr, field_.get());
 }
 
 }  // namespace autofill

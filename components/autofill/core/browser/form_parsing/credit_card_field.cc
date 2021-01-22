@@ -24,6 +24,7 @@
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
 #include "components/autofill/core/browser/form_parsing/form_field.h"
 #include "components/autofill/core/common/autofill_clock.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -91,6 +92,7 @@ std::unique_ptr<FormField> CreditCardField::Parse(
   auto credit_card_field = std::make_unique<CreditCardField>(log_manager);
   size_t saved_cursor = scanner->SaveCursor();
   int nb_unknown_fields = 0;
+  bool cardholder_name_match_has_low_confidence = false;
 
   const std::vector<MatchingPattern>& name_on_card_patterns =
       PatternProvider::GetInstance().GetMatchPatterns("NAME_ON_CARD",
@@ -135,6 +137,7 @@ std::unique_ptr<FormField> CreditCardField::Parse(
                      name_on_card_contextual_patterns,
                      &credit_card_field->cardholder_,
                      {log_manager, "kNameOnCardContextualRe"})) {
+        cardholder_name_match_has_low_confidence = true;
         continue;
       }
     } else if (!credit_card_field->cardholder_last_) {
@@ -277,8 +280,18 @@ std::unique_ptr<FormField> CreditCardField::Parse(
   // Some pages have a billing address field after the cardholder name field.
   // For that case, allow only just the cardholder name field.  The remaining
   // CC fields will be picked up in a following CreditCardField.
-  if (credit_card_field->cardholder_)
-    return std::move(credit_card_field);
+  if (credit_card_field->cardholder_) {
+    // If we got the cardholder name with a dangerous check, require at least a
+    // card number and one of expiration or verification fields.
+    if (!base::FeatureList::IsEnabled(
+            features::kAutofillStrictContextualCardNameConditions) ||
+        !cardholder_name_match_has_low_confidence ||
+        (!credit_card_field->numbers_.empty() &&
+         (credit_card_field->verification_ ||
+          credit_card_field->HasExpiration()))) {
+      return std::move(credit_card_field);
+    }
+  }
 
   // On some pages, the user selects a card type using radio buttons
   // (e.g. test page Apple Store Billing.html).  We can't handle that yet,
