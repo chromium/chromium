@@ -15,13 +15,16 @@ testing::AssertionResult EnsurePDFHasLoaded(
   if (!content::ExecuteScriptAndExtractBool(
           web_contents,
           "window.addEventListener('message', event => {"
-          "  if (event.origin !="
-          "          'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai' ||"
-          "      event.data.type != 'documentLoaded') {"
+          "  if (event.origin !=="
+          "          'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai') {"
           "    return;"
           "  }"
-          "  window.domAutomationController.send("
-          "       event.data.load_state == 'success');"
+          "  if (event.data.type === 'documentLoaded') {"
+          "    window.domAutomationController.send("
+          "        event.data.load_state === 'success');"
+          "  } else if (event.data.type === 'passwordPrompted') {"
+          "    window.domAutomationController.send(true);"
+          "  }"
           "});"
           "document.getElementsByTagName('embed')[0].postMessage("
           "    {type: 'initialize'});",

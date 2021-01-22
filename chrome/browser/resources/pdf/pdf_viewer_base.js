@@ -556,11 +556,13 @@ export class PDFViewerBaseElement extends PolymerElement {
       let targetOrigin;
       // Only send data back to the embedder if it is from the same origin,
       // unless we're sending it to ourselves (which could happen in the case
-      // of tests). We also allow documentLoaded messages through as this won't
-      // leak important information.
+      // of tests). We also allow 'documentLoaded' and 'passwordPrompted'
+      // messages through as they do not leak sensitive information.
       if (this.parentOrigin_ === window.location.origin) {
         targetOrigin = this.parentOrigin_;
-      } else if (message.type === 'documentLoaded') {
+      } else if (
+          message.type === 'documentLoaded' ||
+          message.type === 'passwordPrompted') {
         targetOrigin = '*';
       } else {
         targetOrigin = this.originalUrl;

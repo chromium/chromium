@@ -969,6 +969,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
     // to an incorrect password.
     if (!this.showPasswordDialog_) {
       this.showPasswordDialog_ = true;
+      this.sendScriptingMessage({type: 'passwordPrompted'});
     } else {
       const passwordDialog = this.shadowRoot.querySelector('#password-dialog');
       assert(passwordDialog);
