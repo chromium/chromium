@@ -137,29 +137,30 @@ std::string LegacyCanonicalizedTitleFromSpecifics(
 // title, two bookmarks match by semantics if they have the same title and url.
 // A folder and a bookmark never match.
 bool NodeSemanticsMatch(const bookmarks::BookmarkNode* local_node,
-                        const EntityData& remote_node) {
-  if (local_node->is_folder() != remote_node.is_folder) {
+                        const std::string& remote_canonicalized_title,
+                        const GURL& remote_url,
+                        bool remote_is_folder) {
+  if (local_node->is_folder() != remote_is_folder) {
     return false;
   }
-  const sync_pb::BookmarkSpecifics& specifics =
-      remote_node.specifics.bookmark();
+
+  if (!remote_is_folder && local_node->url() != remote_url) {
+    return false;
+  }
+
   const std::string local_title = base::UTF16ToUTF8(local_node->GetTitle());
-  const std::string remote_title =
-      LegacyCanonicalizedTitleFromSpecifics(specifics);
   // Titles match if they are identical or the remote one is the canonical form
   // of the local one. The latter is the case when a legacy client has
   // canonicalized the same local title before committing it. Modern clients
   // don't canonicalize titles anymore.
   // TODO(rushans): the comment above is off.
-  if (local_title != remote_title &&
+  if (local_title != remote_canonicalized_title &&
       sync_bookmarks::FullTitleToLegacyCanonicalizedTitle(local_title) !=
-          remote_title) {
+          remote_canonicalized_title) {
     return false;
   }
-  if (remote_node.is_folder) {
-    return true;
-  }
-  return local_node->url() == GURL(specifics.url());
+
+  return true;
 }
 
 BookmarksGUIDDuplicates MatchBookmarksGUIDDuplicates(
@@ -876,12 +877,24 @@ size_t BookmarkModelMerger::FindMatchingChildBySemanticsStartingAt(
   const auto& children = local_parent->children();
   DCHECK_LE(starting_child_index, children.size());
   const EntityData& remote_entity = remote_node.entity();
-  const auto it =
-      std::find_if(children.cbegin() + starting_child_index, children.cend(),
-                   [this, &remote_entity](const auto& child) {
-                     return NodeSemanticsMatch(child.get(), remote_entity) &&
-                            !FindMatchingRemoteNodeByGUID(child.get());
-                   });
+
+  // Precompute the remote title and URL before searching for a matching local
+  // node.
+  const std::string remote_canonicalized_title =
+      LegacyCanonicalizedTitleFromSpecifics(remote_entity.specifics.bookmark());
+  const bool remote_is_folder = remote_entity.is_folder;
+  GURL remote_url;
+  if (!remote_entity.is_folder) {
+    remote_url = GURL(remote_entity.specifics.bookmark().url());
+  }
+  const auto it = std::find_if(
+      children.cbegin() + starting_child_index, children.cend(),
+      [this, &remote_canonicalized_title, &remote_url,
+       remote_is_folder](const auto& child) {
+        return !FindMatchingRemoteNodeByGUID(child.get()) &&
+               NodeSemanticsMatch(child.get(), remote_canonicalized_title,
+                                  remote_url, remote_is_folder);
+      });
   return (it == children.cend()) ? kInvalidIndex : (it - children.cbegin());
 }
 
