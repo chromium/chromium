@@ -10,7 +10,7 @@ import './shared_style.js';
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {NearbyUiTriggerBrowserProxy} from './nearby_ui_trigger_browser_proxy.js';
-import {ShareTarget, ShareTargetDiscoveryChange, ShareTargetSelectOption, StatusCode, TimestampedMessage, TransferMetadataStatus} from './types.js';
+import {NearbyShareStates, ShareTarget, ShareTargetDiscoveryChange, ShareTargetSelectOption, StatusCode, TimestampedMessage, TransferMetadataStatus} from './types.js';
 
 Polymer({
   is: 'ui-trigger-tab',
@@ -143,6 +143,24 @@ Polymer({
   },
 
   /**
+   * Updates state variables based on the dictionary returned once triggered
+   * by |GetState|.
+   * @param {!NearbyShareStates} currentStates
+   * @private
+   */
+  onCurrentStatesReturned_(currentStates) {
+    const time = currentStates.time;
+    const message =
+        `Is Scanning? : ${currentStates.isScanning}\nIs Transferring? : ${
+            currentStates.isTransferring}\nIs Receiving? : ${
+            currentStates.isReceiving}\nIs Sending? : ${
+            currentStates.isSending}\nIs Connecting? : ${
+            currentStates.isConnecting}\nIs In High Visibility? : ${
+            currentStates.isInHighVisibility}`;
+    this.unshift('uiTriggerObjectList_', {'message': message, 'time': time});
+  },
+
+  /**
    * Triggers sendText with selected |shareTargetId|.
    * @private
    */
@@ -181,6 +199,17 @@ Polymer({
    */
   onOpenClicked_() {
     this.browserProxy_.open(this.selectedShareTargetId_);
+  },
+
+
+  /**
+   * Triggers GetState to retrieve current states and update display
+   * accordingly.
+   * @private
+   */
+  onGetStatesClicked_() {
+    this.browserProxy_.getState().then(
+        currentStates => this.onCurrentStatesReturned_(currentStates));
   },
 
   /**

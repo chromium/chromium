@@ -112,10 +112,23 @@ class NearbySharingService : public KeyedService {
   virtual StatusCodes ClearForegroundReceiveSurfaces() = 0;
 
   // Returns true if a foreground receive surface is registered.
-  virtual bool IsInHighVisibility() = 0;
+  virtual bool IsInHighVisibility() const = 0;
 
   // Returns true if there is an ongoing file transfer.
   virtual bool IsTransferring() const = 0;
+
+  // Returns true if we're currently receiving a file.
+  virtual bool IsReceivingFile() const = 0;
+
+  // Returns true if we're currently sending a file.
+  virtual bool IsSendingFile() const = 0;
+
+  // Returns true if we're currently attempting to connect to a
+  // remote device.
+  virtual bool IsConnecting() const = 0;
+
+  // Returns true if we are currently scanning for remote devices.
+  virtual bool IsScanning() const = 0;
 
   // Sends |attachments| to the remote |share_target|.
   virtual StatusCodes SendAttachments(

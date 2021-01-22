@@ -125,3 +125,15 @@ export const ShareTargetDiscoveryChange = {
  *            value: string}}
  */
 export let ShareTargetSelectOption;
+
+/**
+ * Dictionary for Nearby Share State booleans
+ * @typedef {{isScanning: boolean,
+ *            isTransferring: boolean,
+ *            isSending: boolean,
+ *            isReceiving: boolean,
+ *            isConnecting: boolean,
+ *            isInHighVisibility: boolean,
+ *            time: number}}
+ */
+export let NearbyShareStates;

@@ -598,8 +598,28 @@ NearbySharingServiceImpl::ClearForegroundReceiveSurfaces() {
   return status;
 }
 
-bool NearbySharingServiceImpl::IsInHighVisibility() {
+bool NearbySharingServiceImpl::IsInHighVisibility() const {
   return in_high_visibility;
+}
+
+bool NearbySharingServiceImpl::IsTransferring() const {
+  return is_transferring_;
+}
+
+bool NearbySharingServiceImpl::IsReceivingFile() const {
+  return is_receiving_files_;
+}
+
+bool NearbySharingServiceImpl::IsSendingFile() const {
+  return is_sending_files_;
+}
+
+bool NearbySharingServiceImpl::IsScanning() const {
+  return is_scanning_;
+}
+
+bool NearbySharingServiceImpl::IsConnecting() const {
+  return is_connecting_;
 }
 
 NearbySharingService::StatusCodes NearbySharingServiceImpl::SendAttachments(
@@ -3143,10 +3163,6 @@ void NearbySharingServiceImpl::OnIncomingConnectionDisconnected(
                           .build());
   }
   UnregisterShareTarget(share_target);
-}
-
-bool NearbySharingServiceImpl::IsTransferring() const {
-  return is_transferring_;
 }
 
 void NearbySharingServiceImpl::OnOutgoingConnectionDisconnected(

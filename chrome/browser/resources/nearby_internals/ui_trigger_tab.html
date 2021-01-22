@@ -18,7 +18,10 @@
   }
 
   #logging-section {
-    width: 100%;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    white-space: pre-wrap;
   }
 
   #share-select {
@@ -75,6 +78,9 @@
     <cr-button class="internals-button"
         on-click="onUnregisterReceiveSurfaceClicked_">
       Unregister Current ReceiveSurface
+    </cr-button>
+    <cr-button class="internals-button" on-click="onGetStatesClicked_">
+      Get States
     </cr-button>
     <span id="flex"></span>
     <select id="share-select" on-change="onSelectChange_">

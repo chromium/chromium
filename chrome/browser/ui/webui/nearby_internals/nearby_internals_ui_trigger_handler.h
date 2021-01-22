@@ -108,6 +108,12 @@ class NearbyInternalsUiTriggerHandler : public content::WebUIMessageHandler,
   // the receive surface to be unregistered.
   void UnregisterReceiveSurface(const base::ListValue* args);
 
+  // Message handler callback that calls IsScanning, IsTransferring,
+  // IsReceivingFile, IsSendingFile, IsConnecting, and IsInHighVisibility in the
+  // NearbySharingService and passes booleans to JavaScript to eventually be
+  // displayed.
+  void GetState(const base::ListValue* args);
+
   content::BrowserContext* const context_;
   base::flat_map<std::string, ShareTarget> id_to_share_target_map_;
   base::WeakPtrFactory<NearbyInternalsUiTriggerHandler> weak_ptr_factory_{this};

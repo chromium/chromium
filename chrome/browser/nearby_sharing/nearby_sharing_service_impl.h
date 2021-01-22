@@ -91,7 +91,12 @@ class NearbySharingServiceImpl
   StatusCodes UnregisterReceiveSurface(
       TransferUpdateCallback* transfer_callback) override;
   StatusCodes ClearForegroundReceiveSurfaces() override;
-  bool IsInHighVisibility() override;
+  bool IsInHighVisibility() const override;
+  bool IsTransferring() const override;
+  bool IsReceivingFile() const override;
+  bool IsSendingFile() const override;
+  bool IsScanning() const override;
+  bool IsConnecting() const override;
   StatusCodes SendAttachments(
       const ShareTarget& share_target,
       std::vector<std::unique_ptr<Attachment>> attachments) override;
@@ -121,8 +126,6 @@ class NearbySharingServiceImpl
   void OnIncomingConnection(const std::string& endpoint_id,
                             const std::vector<uint8_t>& endpoint_info,
                             NearbyConnection* connection) override;
-
-  bool IsTransferring() const override;
 
   // Test methods
   void FlushMojoForTesting();
