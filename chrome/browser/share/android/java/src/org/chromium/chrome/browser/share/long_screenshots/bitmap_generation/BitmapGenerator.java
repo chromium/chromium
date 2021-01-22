@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.share.long_screenshots;
+package org.chromium.chrome.browser.share.long_screenshots.bitmap_generation;
 
 import android.content.Context;
 import android.graphics.Bitmap;

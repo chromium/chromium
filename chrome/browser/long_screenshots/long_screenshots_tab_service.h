@@ -45,7 +45,7 @@ class LongScreenshotsTabService
   //
   // A Java counterpart will be generated for this enum.
   // GENERATED_JAVA_ENUM_PACKAGE: (
-  // org.chromium.chrome.browser.share.long_screenshots)
+  // org.chromium.chrome.browser.share.long_screenshots.bitmap_generation)
   enum Status {
     kUnknown = 0,
     kOk = 1,
