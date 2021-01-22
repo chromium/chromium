@@ -128,9 +128,8 @@ const onSubmitButtonTouchEnd = function(evt) {
  * @return {HTMLInputElement}
  */
 const findInputByUniqueFieldId = function(inputs, identifier) {
-  const uniqueID = Symbol.for(__gCrWeb.fill.UNIQUE_ID_SYMBOL_NAME);
   for (let i = 0; i < inputs.length; ++i) {
-    if (identifier === inputs[i][uniqueID]) {
+    if (identifier.toString() === __gCrWeb.fill.getUniqueID(inputs[i])) {
       return inputs[i];
     }
   }
