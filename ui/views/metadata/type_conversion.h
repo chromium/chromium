@@ -209,6 +209,7 @@ struct TypeConverter<base::Optional<T>>
 template <typename T>
 struct TypeConverter<std::unique_ptr<T>> : BaseTypeConverter<false> {
   static base::string16 ToString(const std::unique_ptr<T>& source_value);
+  static base::string16 ToString(const T* source_value);
   static base::Optional<std::unique_ptr<T>> FromString(
       const base::string16& source_value);
   static ValidStrings GetValidStrings() { return {}; }

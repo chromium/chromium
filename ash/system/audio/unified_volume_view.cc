@@ -161,7 +161,7 @@ class LiveCaptionButton
     views::SetToggledImageFromVectorIconWithColor(
         this, vector_icons::kLiveCaptionOnIcon, icon_size,
         GetToggledIconColor(), GetToggledIconColor());
-    toggled_background()->SetNativeControlColor(GetToggledBackgroundColor());
+    GetToggledBackground()->SetNativeControlColor(GetToggledBackgroundColor());
   }
 
   SkColor GetToggledIconColor() {

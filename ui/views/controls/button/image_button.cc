@@ -357,6 +357,7 @@ END_METADATA
 
 BEGIN_METADATA(ToggleImageButton, ImageButton)
 ADD_PROPERTY_METADATA(bool, Toggled)
+ADD_PROPERTY_METADATA(std::unique_ptr<Background>, ToggledBackground)
 ADD_PROPERTY_METADATA(base::string16, ToggledTooltipText)
 ADD_PROPERTY_METADATA(base::string16, ToggledAccessibleName)
 END_METADATA

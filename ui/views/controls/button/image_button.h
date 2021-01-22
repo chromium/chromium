@@ -141,7 +141,7 @@ class VIEWS_EXPORT ToggleImageButton : public ImageButton {
   // Like Views::SetBackground(), but to set the background color used for the
   // "has been toggled" state.
   void SetToggledBackground(std::unique_ptr<Background> b);
-  Background* toggled_background() { return toggled_background_.get(); }
+  Background* GetToggledBackground() const { return toggled_background_.get(); }
 
   // Get/Set the tooltip text displayed when the button is toggled.
   base::string16 GetToggledTooltipText() const;
@@ -184,6 +184,7 @@ class VIEWS_EXPORT ToggleImageButton : public ImageButton {
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, ToggleImageButton, ImageButton)
 VIEW_BUILDER_PROPERTY(bool, Toggled)
+VIEW_BUILDER_PROPERTY(std::unique_ptr<Background>, ToggledBackground)
 VIEW_BUILDER_PROPERTY(base::string16, ToggledTooltipText)
 VIEW_BUILDER_PROPERTY(base::string16, ToggledAccessibleName)
 END_VIEW_BUILDER
