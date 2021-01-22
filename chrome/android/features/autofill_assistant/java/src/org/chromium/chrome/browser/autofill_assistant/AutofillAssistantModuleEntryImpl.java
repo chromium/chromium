@@ -53,7 +53,8 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
             ApplicationViewportInsetSupplier bottomInsetProvider,
             ActivityTabProvider activityTabProvider, boolean isChromeCustomTab,
             @NonNull String initialUrl, Map<String, String> parameters, String experimentIds,
-            @Nullable String callerAccount, @Nullable String userName) {
+            @Nullable String callerAccount, @Nullable String userName,
+            @Nullable String originalDeeplink) {
         if (shouldStartTriggerScript(parameters)) {
             if (!AutofillAssistantPreferencesUtil.isProactiveHelpOn()) {
                 // Opt-out users who have disabled the proactive help Chrome setting.
@@ -91,8 +92,9 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
                         new AssistantTriggerScriptBridge();
                 triggerScriptBridge.start(bottomSheetController, browserControls,
                         compositorViewHolder, context, keyboardVisibilityDelegate,
-                        bottomInsetProvider, activityTabProvider, webContents, initialUrl,
-                        parameters, experimentIds, new AssistantTriggerScriptBridge.Delegate() {
+                        bottomInsetProvider, activityTabProvider, webContents,
+                        originalDeeplink != null ? originalDeeplink : initialUrl, parameters,
+                        experimentIds, new AssistantTriggerScriptBridge.Delegate() {
                             @Override
                             public void onTriggerScriptFinished(
                                     @LiteScriptFinishedState int finishedState) {

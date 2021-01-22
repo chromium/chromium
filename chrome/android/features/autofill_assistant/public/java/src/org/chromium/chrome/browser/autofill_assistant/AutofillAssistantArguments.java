@@ -139,6 +139,13 @@ public class AutofillAssistantArguments {
      */
     private static final String PARAMETER_EXPERIMENT_IDS = "EXPERIMENT_IDS";
 
+    /**
+     * The original deeplink as indicated by the caller. Use this parameter instead of the
+     * initial URL when available to avoid issues where the initial URL points to a redirect
+     * rather than the actual deeplink.
+     */
+    private static final String PARAMETER_ORIGINAL_DEEPLINK = "ORIGINAL_DEEPLINK";
+
     private Map<String, Object> mAutofillAssistantParameters;
     private Map<String, Object> mIntentExtras;
     private StringBuilder mExperimentIds;
@@ -265,6 +272,10 @@ public class AutofillAssistantArguments {
 
     public String getInitialUrl() {
         return mInitialUrl;
+    }
+
+    public String getOriginalDeeplink() {
+        return getStringParameter(PARAMETER_ORIGINAL_DEEPLINK);
     }
 
     /** Whether the caller requests the client to fetch trigger scripts from a remote endpoint. */
