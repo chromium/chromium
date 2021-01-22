@@ -376,10 +376,6 @@ SystemAppType TestSystemWebAppInstallation::GetType() {
   return type_.value();
 }
 
-void TestSystemWebAppInstallation::SetManifest(std::string manifest) {
-  web_ui_controller_factories_[0]->set_manifest(std::move(manifest));
-}
-
 void TestSystemWebAppInstallation::RegisterAutoGrantedPermissions(
     ContentSettingsType permission) {
   auto_granted_permissions_.insert(permission);

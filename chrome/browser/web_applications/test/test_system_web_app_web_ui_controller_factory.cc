@@ -17,11 +17,10 @@ namespace {
 class TestSystemWebAppWebUIController : public content::WebUIController {
  public:
   explicit TestSystemWebAppWebUIController(std::string source_name,
-                                           const std::string* manifest,
                                            content::WebUI* web_ui)
       : WebUIController(web_ui) {
     web_app::AddTestURLDataSource(
-        source_name, manifest, web_ui->GetWebContents()->GetBrowserContext());
+        source_name, web_ui->GetWebContents()->GetBrowserContext());
   }
   TestSystemWebAppWebUIController(const TestSystemWebAppWebUIController&) =
       delete;
@@ -33,8 +32,7 @@ class TestSystemWebAppWebUIController : public content::WebUIController {
 
 TestSystemWebAppWebUIControllerFactory::TestSystemWebAppWebUIControllerFactory(
     std::string source_name)
-    : source_name_(std::move(source_name)),
-      manifest_(web_app::kSystemAppManifestText) {}
+    : source_name_(std::move(source_name)) {}
 
 std::unique_ptr<content::WebUIController>
 TestSystemWebAppWebUIControllerFactory::CreateWebUIControllerForURL(
@@ -46,7 +44,7 @@ TestSystemWebAppWebUIControllerFactory::CreateWebUIControllerForURL(
   }
 
   return std::make_unique<TestSystemWebAppWebUIController>(source_name_,
-                                                           &manifest_, web_ui);
+                                                           web_ui);
 }
 
 content::WebUI::TypeID TestSystemWebAppWebUIControllerFactory::GetWebUIType(

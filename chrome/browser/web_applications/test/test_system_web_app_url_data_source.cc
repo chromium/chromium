@@ -16,6 +16,21 @@ namespace web_app {
 
 namespace {
 
+constexpr char kManifestText[] =
+    R"({
+      "name": "Test System App",
+      "display": "standalone",
+      "icons": [
+        {
+          "src": "icon-256.png",
+          "sizes": "256x256",
+          "type": "image/png"
+        }
+      ],
+      "start_url": "/pwa.html",
+      "theme_color": "#00FF00"
+    })";
+
 constexpr char kPwaHtml[] =
     R"(
 <html>
@@ -39,13 +54,6 @@ constexpr char kSwJs[] = "globalThis.addEventListener('fetch', event => {});";
 
 void AddTestURLDataSource(const std::string& source_name,
                           content::BrowserContext* browser_context) {
-  static std::string manifest(kSystemAppManifestText);
-  AddTestURLDataSource(source_name, &manifest, browser_context);
-}
-
-void AddTestURLDataSource(const std::string& source_name,
-                          const std::string* manifest_text,
-                          content::BrowserContext* browser_context) {
   content::WebUIDataSource* data_source =
       content::WebUIDataSource::Create(source_name);
   data_source->DisableTrustedTypesCSP();
@@ -56,12 +64,12 @@ void AddTestURLDataSource(const std::string& source_name,
                path == "page2.html";
       }),
       base::BindLambdaForTesting(
-          [manifest_text](const std::string& id,
-                          content::WebUIDataSource::GotDataCallback callback) {
+          [](const std::string& id,
+             content::WebUIDataSource::GotDataCallback callback) {
             scoped_refptr<base::RefCountedString> ref_contents(
                 new base::RefCountedString);
             if (id == "manifest.json")
-              ref_contents->data() = *manifest_text;
+              ref_contents->data() = kManifestText;
             else if (id == "pwa.html")
               ref_contents->data() = kPwaHtml;
             else if (id == "sw.js")
