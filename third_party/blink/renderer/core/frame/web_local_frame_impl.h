@@ -277,7 +277,7 @@ class CORE_EXPORT WebLocalFrameImpl final
   void SetScrollOffset(const WebSize&) override;
   WebSize DocumentSize() const override;
   bool HasVisibleContent() const override;
-  WebRect VisibleContentRect() const override;
+  gfx::Rect VisibleContentRect() const override;
   void DispatchBeforePrintEvent(
       base::WeakPtr<WebPrintClient> print_client) override;
   WebPlugin* GetPluginToPrint(const WebNode& constrain_to_node) override;
@@ -289,7 +289,7 @@ class CORE_EXPORT WebLocalFrameImpl final
   void DispatchAfterPrintEvent() override;
   bool GetPrintPresetOptionsForPlugin(const WebNode&,
                                       WebPrintPresetOptions*) override;
-  bool CapturePaintPreview(const WebRect& bounds,
+  bool CapturePaintPreview(const gfx::Rect& bounds,
                            cc::PaintCanvas* canvas,
                            bool include_linked_destinations) override;
   bool ShouldSuppressKeyboardForFocusedElement() override;

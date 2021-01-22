@@ -6341,7 +6341,7 @@ gfx::RectF RenderFrameImpl::ElementBoundsInWindow(
       element.BoundsInViewport()));
 }
 
-void RenderFrameImpl::ConvertViewportToWindow(blink::WebRect* rect) {
+void RenderFrameImpl::ConvertViewportToWindow(gfx::Rect* rect) {
   *rect = GetLocalRootWebFrameWidget()->BlinkSpaceToEnclosedDIPs(*rect);
 }
 

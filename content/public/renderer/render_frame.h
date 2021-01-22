@@ -43,11 +43,11 @@ class WebFrame;
 class WebLocalFrame;
 class WebPlugin;
 struct WebPluginParams;
-struct WebRect;
 }  // namespace blink
 
 namespace gfx {
 class Range;
+class Rect;
 class RectF;
 }  // namespace gfx
 
@@ -295,7 +295,7 @@ class CONTENT_EXPORT RenderFrame : public IPC::Listener,
 
   // Converts the |rect| to Window coordinates which are device scale
   // independent.
-  virtual void ConvertViewportToWindow(blink::WebRect* rect) = 0;
+  virtual void ConvertViewportToWindow(gfx::Rect* rect) = 0;
 
   // Returns the device scale factor of the display the render frame is in.
   virtual float GetDeviceScaleFactor() = 0;

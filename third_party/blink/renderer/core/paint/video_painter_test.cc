@@ -185,7 +185,7 @@ TEST_P(VideoPaintPreviewTest, URLIsRecordedWhenPaintingPreview) {
       recorder.beginRecording(bounds().width(), bounds().height());
   canvas->SetPaintPreviewTracker(&tracker);
 
-  GetLocalMainFrame().CapturePaintPreview(WebRect(bounds()), canvas,
+  GetLocalMainFrame().CapturePaintPreview(bounds(), canvas,
                                           /*include_linked_destinations=*/true);
   auto record = recorder.finishRecordingAsPicture();
   std::vector<std::pair<GURL, SkRect>> links;

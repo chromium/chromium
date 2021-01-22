@@ -819,10 +819,10 @@ bool WebLocalFrameImpl::HasVisibleContent() const {
   return false;
 }
 
-WebRect WebLocalFrameImpl::VisibleContentRect() const {
+gfx::Rect WebLocalFrameImpl::VisibleContentRect() const {
   if (LocalFrameView* view = GetFrameView())
     return view->LayoutViewport()->VisibleContentRect();
-  return WebRect();
+  return gfx::Rect();
 }
 
 WebView* WebLocalFrameImpl::View() const {
@@ -1739,10 +1739,10 @@ bool WebLocalFrameImpl::GetPrintPresetOptionsForPlugin(
   return plugin_container->GetPrintPresetOptionsFromDocument(preset_options);
 }
 
-bool WebLocalFrameImpl::CapturePaintPreview(const WebRect& bounds,
+bool WebLocalFrameImpl::CapturePaintPreview(const gfx::Rect& bounds,
                                             cc::PaintCanvas* canvas,
                                             bool include_linked_destinations) {
-  FloatSize float_bounds(bounds.width, bounds.height);
+  FloatSize float_bounds(bounds.width(), bounds.height());
   bool success = false;
   {
     Document::PaintPreviewScope paint_preview(*GetFrame()->GetDocument());

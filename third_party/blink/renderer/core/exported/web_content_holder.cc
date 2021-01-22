@@ -27,8 +27,8 @@ WebString WebContentHolder::GetValue() const {
   return private_->node()->nodeValue();
 }
 
-WebRect WebContentHolder::GetBoundingBox() const {
-  return WebRect(private_->rect());
+gfx::Rect WebContentHolder::GetBoundingBox() const {
+  return private_->rect();
 }
 
 uint64_t WebContentHolder::GetId() const {

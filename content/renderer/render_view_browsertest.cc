@@ -509,7 +509,10 @@ class RenderViewImplTest : public RenderViewTest {
   int GetScrollbarWidth() {
     blink::WebView* webview = view()->GetWebView();
     return webview->MainFrameWidget()->Size().width() -
-           webview->MainFrame()->ToWebLocalFrame()->VisibleContentRect().width;
+           webview->MainFrame()
+               ->ToWebLocalFrame()
+               ->VisibleContentRect()
+               .width();
   }
 
  private:

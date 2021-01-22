@@ -670,7 +670,7 @@ class WebLocalFrame : public WebFrame {
 
   // Returns the visible content rect (minus scrollbars), relative to the
   // document.
-  virtual WebRect VisibleContentRect() const = 0;
+  virtual gfx::Rect VisibleContentRect() const = 0;
 
   // Printing ------------------------------------------------------------
 
@@ -722,7 +722,7 @@ class WebLocalFrame : public WebFrame {
   // Captures a full frame paint preview of the WebFrame including subframes. If
   // |include_linked_destinations| is true, the capture will include annotations
   // about linked destinations within the document.
-  virtual bool CapturePaintPreview(const WebRect& bounds,
+  virtual bool CapturePaintPreview(const gfx::Rect& bounds,
                                    cc::PaintCanvas* canvas,
                                    bool include_linked_destinations) = 0;
 
