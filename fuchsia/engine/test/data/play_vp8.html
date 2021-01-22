@@ -1,5 +1,5 @@
 <html>
-  <head><title>initial title</title></head>
+  <head><title>document loading</title></head>
   <body>
     <script>
       var bear = document.createElement('video');
@@ -32,6 +32,10 @@
       }
       bear.onstalled = function() { document.title = 'stalled'; }
       bear.src = 'bear-vp8a.webm';
+
+      // Programatically set the title, to provide an externally-visible
+      // indication that the page's scripts have executed.
+      document.title = 'initial title';
     </script>
   </body>
 </html>
