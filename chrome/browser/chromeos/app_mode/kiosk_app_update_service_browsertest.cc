@@ -55,11 +55,11 @@ constexpr base::TimeDelta kAutomaticRebootManagerInitTimeout =
 // |success_out| to false and runs |quit_closure|.
 void WaitForAutomaticRebootManagerInit(system::AutomaticRebootManager* manager,
                                        const base::TimeDelta& timeout,
-                                       const base::Closure& quit_closure,
+                                       base::OnceClosure quit_closure,
                                        bool* success_out) {
   base::ScopedAllowBaseSyncPrimitivesForTesting allow_base_sync_primitives;
   *success_out = manager->WaitForInitForTesting(timeout);
-  quit_closure.Run();
+  std::move(quit_closure).Run();
 }
 
 } // namespace

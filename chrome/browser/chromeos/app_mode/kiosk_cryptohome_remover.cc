@@ -146,7 +146,7 @@ void KioskCryptohomeRemover::CancelDelayedCryptohomeRemoval(
 
 void KioskCryptohomeRemover::RemoveCryptohomesAndExitIfNeeded(
     const std::vector<AccountId>& account_ids) {
-  base::Closure cryptohomes_barrier_closure;
+  base::RepeatingClosure cryptohomes_barrier_closure;
   const user_manager::User* active_user =
       user_manager::UserManager::Get()->GetActiveUser();
   AccountId active_account_id;

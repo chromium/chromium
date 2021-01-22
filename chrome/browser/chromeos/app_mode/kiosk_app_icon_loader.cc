@@ -24,21 +24,22 @@ class IconImageRequest : public ImageDecoder::ImageRequest {
  public:
   IconImageRequest(const scoped_refptr<base::SequencedTaskRunner>& task_runner,
                    KioskAppIconLoader::ResultCallback result_callback)
-      : ImageRequest(task_runner), result_callback_(result_callback) {}
+      : ImageRequest(task_runner),
+        result_callback_(std::move(result_callback)) {}
 
   void OnImageDecoded(const SkBitmap& decoded_image) override {
     gfx::ImageSkia image = gfx::ImageSkia::CreateFrom1xBitmap(decoded_image);
     image.MakeThreadSafe();
     content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(result_callback_, image));
+        FROM_HERE, base::BindOnce(std::move(result_callback_), image));
     delete this;
   }
 
   void OnDecodeImageFailed() override {
     LOG(ERROR) << "Failed to decode icon image.";
     content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(result_callback_, base::Optional<gfx::ImageSkia>()));
+        FROM_HERE, base::BindOnce(std::move(result_callback_),
+                                  base::Optional<gfx::ImageSkia>()));
     delete this;
   }
 
@@ -57,14 +58,14 @@ void LoadOnBlockingPool(
   if (!base::ReadFileToString(base::FilePath(icon_path), &data)) {
     LOG(ERROR) << "Failed to read icon file.";
     content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(result_callback, base::Optional<gfx::ImageSkia>()));
+        FROM_HERE, base::BindOnce(std::move(result_callback),
+                                  base::Optional<gfx::ImageSkia>()));
     return;
   }
 
   // IconImageRequest will delete itself on completion of ImageDecoder callback.
   IconImageRequest* image_request =
-      new IconImageRequest(callback_task_runner, result_callback);
+      new IconImageRequest(callback_task_runner, std::move(result_callback));
   ImageDecoder::Start(image_request,
                       std::vector<uint8_t>(data.begin(), data.end()));
 }
@@ -80,9 +81,10 @@ void KioskAppIconLoader::Start(const base::FilePath& icon_path) {
           {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
   task_runner->PostTask(
       FROM_HERE,
-      base::BindOnce(&LoadOnBlockingPool, icon_path, task_runner,
-                     base::Bind(&KioskAppIconLoader::OnImageDecodingFinished,
-                                weak_factory_.GetWeakPtr())));
+      base::BindOnce(
+          &LoadOnBlockingPool, icon_path, task_runner,
+          base::BindOnce(&KioskAppIconLoader::OnImageDecodingFinished,
+                         weak_factory_.GetWeakPtr())));
 }
 
 void KioskAppIconLoader::OnImageDecodingFinished(

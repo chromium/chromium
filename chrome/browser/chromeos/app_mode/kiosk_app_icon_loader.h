@@ -31,7 +31,7 @@ class KioskAppIconLoader {
   };
 
   using ResultCallback =
-      base::Callback<void(base::Optional<gfx::ImageSkia> result)>;
+      base::OnceCallback<void(base::Optional<gfx::ImageSkia> result)>;
 
   explicit KioskAppIconLoader(Delegate* delegate);
 

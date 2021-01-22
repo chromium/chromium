@@ -200,7 +200,7 @@ void FakeCWS::Init(net::EmbeddedTestServer* embedded_test_server) {
   SetupWebStoreURL(embedded_test_server->base_url());
   OverrideGalleryCommandlineSwitches();
   embedded_test_server->RegisterRequestHandler(
-      base::Bind(&FakeCWS::HandleRequest, base::Unretained(this)));
+      base::BindRepeating(&FakeCWS::HandleRequest, base::Unretained(this)));
 }
 
 void FakeCWS::InitAsPrivateStore(net::EmbeddedTestServer* embedded_test_server,
@@ -212,7 +212,7 @@ void FakeCWS::InitAsPrivateStore(net::EmbeddedTestServer* embedded_test_server,
   OverrideGalleryCommandlineSwitches();
 
   embedded_test_server->RegisterRequestHandler(
-      base::Bind(&FakeCWS::HandleRequest, base::Unretained(this)));
+      base::BindRepeating(&FakeCWS::HandleRequest, base::Unretained(this)));
 }
 
 void FakeCWS::SetUpdateCrx(const std::string& app_id,
