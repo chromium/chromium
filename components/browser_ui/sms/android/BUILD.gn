@@ -25,6 +25,21 @@ source_set("android") {
   ]
 }
 
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "sms_infobar_delegate_unittest.cc" ]
+  deps = [
+    ":android",
+    "//base/test:test_support",
+    "//components/content_settings/browser",
+    "//components/content_settings/browser:test_support",
+    "//components/content_settings/core/browser",
+    "//components/infobars/content",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}
+
 generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/components/browser_ui/sms/WebOTPServiceInfoBar.java",

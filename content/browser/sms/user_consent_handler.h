@@ -45,9 +45,12 @@ class CONTENT_EXPORT NoopUserConsentHandler : public UserConsentHandler {
 
 class CONTENT_EXPORT PromptBasedUserConsentHandler : public UserConsentHandler {
  public:
+  using OriginList = std::vector<url::Origin>;
+
   PromptBasedUserConsentHandler(RenderFrameHost* frame_host,
-                                const url::Origin& origin);
+                                const OriginList& origin_list);
   ~PromptBasedUserConsentHandler() override;
+
   void RequestUserConsent(const std::string& one_time_code,
                           CompletionCallback on_complete) override;
   bool is_active() const override;
@@ -58,7 +61,7 @@ class CONTENT_EXPORT PromptBasedUserConsentHandler : public UserConsentHandler {
 
  private:
   RenderFrameHost* frame_host_;
-  const url::Origin origin_;
+  const OriginList origin_list_;
   bool is_prompt_open_{false};
   CompletionCallback on_complete_;
 

@@ -1392,7 +1392,7 @@ blink::SecurityStyle Browser::GetSecurityStyle(
 }
 
 void Browser::CreateSmsPrompt(content::RenderFrameHost*,
-                              const url::Origin&,
+                              const std::vector<url::Origin>&,
                               const std::string& one_time_code,
                               base::OnceClosure on_confirm,
                               base::OnceClosure on_cancel) {

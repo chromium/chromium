@@ -192,13 +192,13 @@ void TabWebContentsDelegateAndroid::RunFileChooser(
 
 void TabWebContentsDelegateAndroid::CreateSmsPrompt(
     content::RenderFrameHost* host,
-    const url::Origin& origin,
+    const std::vector<url::Origin>& origin_list,
     const std::string& one_time_code,
     base::OnceClosure on_confirm,
     base::OnceClosure on_cancel) {
   auto* web_contents = content::WebContents::FromRenderFrameHost(host);
   sms::SmsInfoBar::Create(
-      web_contents, InfoBarService::FromWebContents(web_contents), origin,
+      web_contents, InfoBarService::FromWebContents(web_contents), origin_list,
       one_time_code, std::move(on_confirm), std::move(on_cancel));
 }
 

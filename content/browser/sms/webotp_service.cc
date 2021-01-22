@@ -305,12 +305,8 @@ UserConsentHandler* WebOTPService::CreateConsentHandler(
     return consent_handler_for_test_;
 
   if (consent_requirement == UserConsent::kNotObtained) {
-    // If WebOTP is used in a cross-origin iframe then the first origin in the
-    // list is the one who calls the WebOTP API. We show it to users in the
-    // prompt to make sure that they are aware of which frame / origin they are
-    // granting OTP access.
     consent_handler_ = std::make_unique<PromptBasedUserConsentHandler>(
-        render_frame_host(), origin_list_[0]);
+        render_frame_host(), origin_list_);
   } else {
     consent_handler_ = std::make_unique<NoopUserConsentHandler>();
   }

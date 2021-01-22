@@ -137,7 +137,7 @@ class SmsBrowserTest : public ContentBrowserTest {
 
   void ExpectSmsPrompt() {
     EXPECT_CALL(delegate_, CreateSmsPrompt(_, _, _, _, _))
-        .WillOnce(Invoke([&](RenderFrameHost*, const url::Origin&,
+        .WillOnce(Invoke([&](RenderFrameHost*, const OriginList&,
                              const std::string&, base::OnceClosure on_confirm,
                              base::OnceClosure on_cancel) {
           confirm_callback_ = std::move(on_confirm);

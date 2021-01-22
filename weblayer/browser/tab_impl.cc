@@ -972,7 +972,7 @@ content::ColorChooser* TabImpl::OpenColorChooser(
 }
 
 void TabImpl::CreateSmsPrompt(content::RenderFrameHost* render_frame_host,
-                              const url::Origin& origin,
+                              const std::vector<url::Origin>& origin_list,
                               const std::string& one_time_code,
                               base::OnceClosure on_confirm,
                               base::OnceClosure on_cancel) {
@@ -980,7 +980,7 @@ void TabImpl::CreateSmsPrompt(content::RenderFrameHost* render_frame_host,
   auto* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host);
   sms::SmsInfoBar::Create(
-      web_contents, InfoBarService::FromWebContents(web_contents), origin,
+      web_contents, InfoBarService::FromWebContents(web_contents), origin_list,
       one_time_code, std::move(on_confirm), std::move(on_cancel));
 #else
   NOTREACHED();

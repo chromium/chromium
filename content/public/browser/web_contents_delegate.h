@@ -430,7 +430,7 @@ class CONTENT_EXPORT WebContentsDelegate {
 
   // Creates an info bar for the user to control the receiving of the SMS.
   virtual void CreateSmsPrompt(RenderFrameHost*,
-                               const url::Origin&,
+                               const std::vector<url::Origin>&,
                                const std::string& one_time_code,
                                base::OnceCallback<void()> on_confirm,
                                base::OnceCallback<void()> on_cancel);

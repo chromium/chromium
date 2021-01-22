@@ -614,7 +614,7 @@ class Browser : public TabStripModelObserver,
       content::WebContents* web_contents,
       content::SecurityStyleExplanations* security_style_explanations) override;
   void CreateSmsPrompt(content::RenderFrameHost*,
-                       const url::Origin&,
+                       const std::vector<url::Origin>&,
                        const std::string& one_time_code,
                        base::OnceClosure on_confirm,
                        base::OnceClosure on_cancel) override;

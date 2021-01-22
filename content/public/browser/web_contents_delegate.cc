@@ -152,7 +152,7 @@ JavaScriptDialogManager* WebContentsDelegate::GetJavaScriptDialogManager(
 
 void WebContentsDelegate::CreateSmsPrompt(
     RenderFrameHost* host,
-    const url::Origin& origin,
+    const std::vector<url::Origin>& origin_list,
     const std::string& one_time_code,
     base::OnceCallback<void()> on_confirm,
     base::OnceCallback<void()> on_cancel) {}

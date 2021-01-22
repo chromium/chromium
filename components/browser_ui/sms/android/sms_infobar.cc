@@ -20,12 +20,12 @@ namespace sms {
 // static
 void SmsInfoBar::Create(content::WebContents* web_contents,
                         infobars::InfoBarManager* manager,
-                        const url::Origin& origin,
+                        const std::vector<url::Origin>& origin_list,
                         const std::string& one_time_code,
                         base::OnceClosure on_confirm,
                         base::OnceClosure on_cancel) {
   auto delegate = std::make_unique<SmsInfoBarDelegate>(
-      origin, one_time_code, std::move(on_confirm), std::move(on_cancel));
+      origin_list, one_time_code, std::move(on_confirm), std::move(on_cancel));
   auto infobar =
       std::make_unique<SmsInfoBar>(web_contents, std::move(delegate));
   manager->AddInfoBar(std::move(infobar));

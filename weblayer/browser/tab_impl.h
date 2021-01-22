@@ -267,7 +267,7 @@ class TabImpl : public Tab,
                       scoped_refptr<content::FileSelectListener> listener,
                       const blink::mojom::FileChooserParams& params) override;
   void CreateSmsPrompt(content::RenderFrameHost*,
-                       const url::Origin&,
+                       const std::vector<url::Origin>&,
                        const std::string& one_time_code,
                        base::OnceClosure on_confirm,
                        base::OnceClosure on_cancel) override;
