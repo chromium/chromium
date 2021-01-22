@@ -729,14 +729,21 @@ TEST_F(TreeSynchronizerTest, RefreshPropertyTreesCachedData) {
 
   // This arbitrarily set the animation scale for transform_layer and see if it
   // is refreshed when pushing layer trees.
+  float maximum_animation_scale = 123.f;
+  bool animation_affected_by_invalid_scale = true;
   host_impl->active_tree()
       ->property_trees()
       ->SetMaximumAnimationToScreenScaleForTesting(
-          transform_layer->transform_tree_index(), 10.f);
+          transform_layer->transform_tree_index(), maximum_animation_scale,
+          animation_affected_by_invalid_scale);
   EXPECT_EQ(
-      10.f,
+      maximum_animation_scale,
       host_impl->active_tree()->property_trees()->MaximumAnimationToScreenScale(
           transform_layer->transform_tree_index()));
+  EXPECT_TRUE(host_impl->active_tree()
+                  ->property_trees()
+                  ->AnimationAffectedByInvalidScale(
+                      transform_layer->transform_tree_index()));
 
   host_impl->CreatePendingTree();
   host_->CommitAndCreatePendingTree();
@@ -745,6 +752,10 @@ TEST_F(TreeSynchronizerTest, RefreshPropertyTreesCachedData) {
       2.0f,
       host_impl->active_tree()->property_trees()->MaximumAnimationToScreenScale(
           transform_layer->transform_tree_index()));
+  EXPECT_FALSE(host_impl->active_tree()
+                   ->property_trees()
+                   ->AnimationAffectedByInvalidScale(
+                       transform_layer->transform_tree_index()));
 }
 
 TEST_F(TreeSynchronizerTest, RoundedScrollDeltasOnCommit) {

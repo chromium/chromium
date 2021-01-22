@@ -553,6 +553,10 @@ struct AnimationScaleData {
   // node or its ancestors. A scale animation having maximum scale of 1 is
   // treated as not affecting |maximum_to_screen_scale|.
   bool affected_by_animation_scale = false;
+
+  // Whether |maximum_to_screen_scale| is affected by any non-calculatable
+  // scale.
+  bool affected_by_invalid_scale = false;
 };
 
 struct DrawTransforms {
@@ -690,8 +694,12 @@ class CC_EXPORT PropertyTrees final {
   std::string ToString() const;
 
   float MaximumAnimationToScreenScale(int transform_id);
-  void SetMaximumAnimationToScreenScaleForTesting(int transform_id,
-                                                  float maximum_scale);
+  bool AnimationAffectedByInvalidScale(int transform_id);
+
+  void SetMaximumAnimationToScreenScaleForTesting(
+      int transform_id,
+      float maximum_scale,
+      bool affected_by_invalid_scale);
 
   bool GetToTarget(int transform_id,
                    int effect_id,

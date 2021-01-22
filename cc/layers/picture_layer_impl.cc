@@ -66,6 +66,15 @@ const float kMaxIdealContentsScale = 10000.f;
 // the native scale.
 const float kMinScaleRatioForWillChangeTransform = 0.25f;
 
+// Used to avoid raster scale adjustment during a transform animation by
+// using the maximum animation scale, but sometimes the maximum animation scale
+// can't be accurately calculated (e.g. with nested scale transforms). We'll
+// adjust raster scale if it is not affected by invalid scale and is smaller
+// than the ideal scale divided by this ratio. The situation is rare.
+// See PropertyTrees::MaximumAnimationToScreenScale() and
+// AnimationAffectedByInvalidScale().
+const float kRatioToAdjustRasterScaleForTransformAnimation = 1.5f;
+
 // Intersect rects which may have right() and bottom() that overflow integer
 // boundaries. This code is similar to gfx::Rect::Intersect with the exception
 // that the types are promoted to int64_t when there is a chance of overflow.
@@ -1352,11 +1361,23 @@ bool PictureLayerImpl::ShouldAdjustRasterScale() const {
   if (raster_contents_scale_ < MinimumContentsScale())
     return true;
 
-  // Don't change the raster scale if we have an animating transform, except
-  // when the device viewport rect has changed because the raster scale may
-  // depend on the rect.
-  if (draw_properties().screen_space_transform_is_animating)
-    return layer_tree_impl()->device_viewport_rect_changed();
+  // Avoid frequent raster scale changes if we have an animating transform.
+  if (draw_properties().screen_space_transform_is_animating) {
+    // Except when the device viewport rect has changed because the raster scale
+    // may depend on the rect.
+    if (layer_tree_impl()->device_viewport_rect_changed())
+      return true;
+    // Or when the raster scale is not affected by invalid scale and is too
+    // small compared to the ideal scale.
+    if (ideal_contents_scale_ >
+            raster_contents_scale_ *
+                kRatioToAdjustRasterScaleForTransformAnimation &&
+        !layer_tree_impl()->property_trees()->AnimationAffectedByInvalidScale(
+            transform_tree_index())) {
+      return true;
+    }
+    return false;
+  }
 
   // Don't change the raster scale if the raster scale is already ideal.
   if (raster_source_scale_ == ideal_source_scale_)
@@ -1501,15 +1522,8 @@ void PictureLayerImpl::AdjustRasterScaleForTransformAnimation(
   float maximum_animation_scale =
       layer_tree_impl()->property_trees()->MaximumAnimationToScreenScale(
           transform_tree_index());
-  if (maximum_animation_scale == kInvalidScale) {
-    // Use at least the native scale if the animation scale is unknown.
-    raster_contents_scale_ = std::max(raster_contents_scale_,
-                                      ideal_page_scale_ * ideal_device_scale_);
-  } else {
-    // We rasterize at the maximum scale that will occur during the animation.
-    raster_contents_scale_ = maximum_animation_scale;
-  }
-  DCHECK_NE(raster_contents_scale_, kInvalidScale);
+  raster_contents_scale_ =
+      std::max(raster_contents_scale_, maximum_animation_scale);
 
   // However we want to avoid excessive memory use. Choose a scale at which this
   // layer's rastered content is not larger than the viewport.

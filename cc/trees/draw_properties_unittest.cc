@@ -72,6 +72,11 @@ class DrawPropertiesTestBase : public LayerTreeImplTestBase {
         ->property_trees()
         ->MaximumAnimationToScreenScale(layer_impl->transform_tree_index());
   }
+  static bool AnimationAffectedByInvalidScale(LayerImpl* layer_impl) {
+    return layer_impl->layer_tree_impl()
+        ->property_trees()
+        ->AnimationAffectedByInvalidScale(layer_impl->transform_tree_index());
+  }
 
   void UpdateMainDrawProperties(float device_scale_factor = 1.0f) {
     SetDeviceScaleAndUpdateViewportRect(host(), device_scale_factor);
@@ -5477,6 +5482,11 @@ TEST_F(DrawPropertiesTest, MaximumAnimationScaleFactor) {
   EXPECT_EQ(1.f, MaximumAnimationToScreenScale(parent));
   EXPECT_EQ(1.f, MaximumAnimationToScreenScale(grand_parent));
 
+  EXPECT_FALSE(AnimationAffectedByInvalidScale(grand_child));
+  EXPECT_FALSE(AnimationAffectedByInvalidScale(child));
+  EXPECT_FALSE(AnimationAffectedByInvalidScale(parent));
+  EXPECT_FALSE(AnimationAffectedByInvalidScale(grand_parent));
+
   TransformOperations translation;
   translation.AppendTranslate(1.f, 2.f, 3.f);
 
@@ -5509,6 +5519,11 @@ TEST_F(DrawPropertiesTest, MaximumAnimationScaleFactor) {
   EXPECT_EQ(1.f, MaximumAnimationToScreenScale(parent));
   EXPECT_EQ(1.f, MaximumAnimationToScreenScale(grand_parent));
 
+  EXPECT_FALSE(AnimationAffectedByInvalidScale(grand_child));
+  EXPECT_FALSE(AnimationAffectedByInvalidScale(child));
+  EXPECT_FALSE(AnimationAffectedByInvalidScale(parent));
+  EXPECT_FALSE(AnimationAffectedByInvalidScale(grand_parent));
+
   TransformOperations scale;
   scale.AppendScale(5.f, 4.f, 3.f);
 
@@ -5522,27 +5537,44 @@ TEST_F(DrawPropertiesTest, MaximumAnimationScaleFactor) {
   EXPECT_EQ(1.f, MaximumAnimationToScreenScale(parent));
   EXPECT_EQ(1.f, MaximumAnimationToScreenScale(grand_parent));
 
+  EXPECT_FALSE(AnimationAffectedByInvalidScale(grand_child));
+  EXPECT_FALSE(AnimationAffectedByInvalidScale(child));
+  EXPECT_FALSE(AnimationAffectedByInvalidScale(parent));
+  EXPECT_FALSE(AnimationAffectedByInvalidScale(grand_parent));
+
   AddAnimatedTransformToAnimation(grand_parent_animation.get(), 1.0,
                                   TransformOperations(), scale);
   UpdateActiveTreeDrawProperties();
 
   // |grand_parent| and |child| have scale-affecting animations.
-  // We don't support combining animated scales from two nodes;
-  // kInvalidScale means that the maximum scale could not be computed.
-  EXPECT_EQ(kInvalidScale, MaximumAnimationToScreenScale(grand_child));
-  EXPECT_EQ(kInvalidScale, MaximumAnimationToScreenScale(child));
+  // With nested animated scales, the child will use the parent's maximum
+  // animation scale, without combining the multiple animated scales.
+  EXPECT_EQ(5.f, MaximumAnimationToScreenScale(grand_child));
+  EXPECT_EQ(5.f, MaximumAnimationToScreenScale(child));
   EXPECT_EQ(5.f, MaximumAnimationToScreenScale(parent));
   EXPECT_EQ(5.f, MaximumAnimationToScreenScale(grand_parent));
+
+  EXPECT_FALSE(AnimationAffectedByInvalidScale(grand_child));
+  EXPECT_FALSE(AnimationAffectedByInvalidScale(child));
+  EXPECT_FALSE(AnimationAffectedByInvalidScale(parent));
+  EXPECT_FALSE(AnimationAffectedByInvalidScale(grand_parent));
 
   AddAnimatedTransformToAnimation(parent_animation.get(), 1.0,
                                   TransformOperations(), scale);
   UpdateActiveTreeDrawProperties();
 
   // |grand_parent|, |parent|, and |child| have scale-affecting animations.
-  EXPECT_EQ(kInvalidScale, MaximumAnimationToScreenScale(grand_child));
-  EXPECT_EQ(kInvalidScale, MaximumAnimationToScreenScale(child));
-  EXPECT_EQ(kInvalidScale, MaximumAnimationToScreenScale(parent));
+  // For nested scale animations, the child uses the parent's maximum scale
+  // instead of combining them.
+  EXPECT_EQ(5.f, MaximumAnimationToScreenScale(grand_child));
+  EXPECT_EQ(5.f, MaximumAnimationToScreenScale(child));
+  EXPECT_EQ(5.f, MaximumAnimationToScreenScale(parent));
   EXPECT_EQ(5.f, MaximumAnimationToScreenScale(grand_parent));
+
+  EXPECT_FALSE(AnimationAffectedByInvalidScale(grand_child));
+  EXPECT_FALSE(AnimationAffectedByInvalidScale(child));
+  EXPECT_FALSE(AnimationAffectedByInvalidScale(parent));
+  EXPECT_FALSE(AnimationAffectedByInvalidScale(grand_parent));
 
   grand_parent_animation->AbortKeyframeModelsWithProperty(
       TargetProperty::TRANSFORM, false);
@@ -5560,10 +5592,15 @@ TEST_F(DrawPropertiesTest, MaximumAnimationScaleFactor) {
 
   // |child| has a scale-affecting animation but computing the maximum of this
   // animation is not supported.
-  EXPECT_EQ(kInvalidScale, MaximumAnimationToScreenScale(grand_child));
-  EXPECT_EQ(kInvalidScale, MaximumAnimationToScreenScale(child));
+  EXPECT_EQ(1.f, MaximumAnimationToScreenScale(grand_child));
+  EXPECT_EQ(1.f, MaximumAnimationToScreenScale(child));
   EXPECT_EQ(1.f, MaximumAnimationToScreenScale(parent));
   EXPECT_EQ(1.f, MaximumAnimationToScreenScale(grand_parent));
+
+  EXPECT_TRUE(AnimationAffectedByInvalidScale(grand_child));
+  EXPECT_TRUE(AnimationAffectedByInvalidScale(child));
+  EXPECT_FALSE(AnimationAffectedByInvalidScale(parent));
+  EXPECT_FALSE(AnimationAffectedByInvalidScale(grand_parent));
 
   child_animation->AbortKeyframeModelsWithProperty(TargetProperty::TRANSFORM,
                                                    false);
@@ -5572,17 +5609,23 @@ TEST_F(DrawPropertiesTest, MaximumAnimationScaleFactor) {
   scale_matrix.Scale(1.f, 2.f);
   SetTransform(grand_parent, scale_matrix);
   SetTransform(parent, scale_matrix);
+  SetTransform(child, scale_matrix);
 
   AddAnimatedTransformToAnimation(parent_animation.get(), 1.0,
                                   TransformOperations(), scale);
   UpdateActiveTreeDrawProperties();
 
-  // |grand_parent| and |parent| each have scale 2.f. |parent| has a scale
-  // animation with maximum scale 5.f.
-  EXPECT_EQ(10.f, MaximumAnimationToScreenScale(grand_child));
-  EXPECT_EQ(10.f, MaximumAnimationToScreenScale(child));
+  // |grand_parent|, |parent| and |child| each has scale 2.f. |parent| has a
+  // scale animation with maximum scale 5.f.
+  EXPECT_EQ(20.f, MaximumAnimationToScreenScale(grand_child));
+  EXPECT_EQ(20.f, MaximumAnimationToScreenScale(child));
   EXPECT_EQ(10.f, MaximumAnimationToScreenScale(parent));
   EXPECT_EQ(2.f, MaximumAnimationToScreenScale(grand_parent));
+
+  EXPECT_FALSE(AnimationAffectedByInvalidScale(grand_child));
+  EXPECT_FALSE(AnimationAffectedByInvalidScale(child));
+  EXPECT_FALSE(AnimationAffectedByInvalidScale(parent));
+  EXPECT_FALSE(AnimationAffectedByInvalidScale(grand_parent));
 
   gfx::Transform perspective_matrix;
   perspective_matrix.ApplyPerspectiveDepth(2.f);
@@ -5590,20 +5633,31 @@ TEST_F(DrawPropertiesTest, MaximumAnimationScaleFactor) {
   UpdateActiveTreeDrawProperties();
 
   // |child| has a transform that's neither a translation nor a scale.
-  EXPECT_EQ(kInvalidScale, MaximumAnimationToScreenScale(grand_child));
-  EXPECT_EQ(kInvalidScale, MaximumAnimationToScreenScale(child));
+  // Use |parent|'s maximum animation scale.
+  EXPECT_EQ(10.f, MaximumAnimationToScreenScale(grand_child));
+  EXPECT_EQ(10.f, MaximumAnimationToScreenScale(child));
   EXPECT_EQ(10.f, MaximumAnimationToScreenScale(parent));
   EXPECT_EQ(2.f, MaximumAnimationToScreenScale(grand_parent));
+
+  EXPECT_TRUE(AnimationAffectedByInvalidScale(grand_child));
+  EXPECT_TRUE(AnimationAffectedByInvalidScale(child));
+  EXPECT_FALSE(AnimationAffectedByInvalidScale(parent));
+  EXPECT_FALSE(AnimationAffectedByInvalidScale(grand_parent));
 
   SetTransform(parent, perspective_matrix);
   UpdateActiveTreeDrawProperties();
 
   // |parent| and |child| have transforms that are neither translations nor
-  // scales.
-  EXPECT_EQ(kInvalidScale, MaximumAnimationToScreenScale(grand_child));
-  EXPECT_EQ(kInvalidScale, MaximumAnimationToScreenScale(child));
-  EXPECT_EQ(kInvalidScale, MaximumAnimationToScreenScale(parent));
+  // scales. Use |grand_parent|'s maximum animation scale.
+  EXPECT_EQ(2.f, MaximumAnimationToScreenScale(grand_child));
+  EXPECT_EQ(2.f, MaximumAnimationToScreenScale(child));
+  EXPECT_EQ(2.f, MaximumAnimationToScreenScale(parent));
   EXPECT_EQ(2.f, MaximumAnimationToScreenScale(grand_parent));
+
+  EXPECT_TRUE(AnimationAffectedByInvalidScale(grand_child));
+  EXPECT_TRUE(AnimationAffectedByInvalidScale(child));
+  EXPECT_TRUE(AnimationAffectedByInvalidScale(parent));
+  EXPECT_FALSE(AnimationAffectedByInvalidScale(grand_parent));
 
   SetTransform(parent, gfx::Transform());
   SetTransform(child, gfx::Transform());
@@ -5611,10 +5665,15 @@ TEST_F(DrawPropertiesTest, MaximumAnimationScaleFactor) {
   UpdateActiveTreeDrawProperties();
 
   // |grand_parent| has a transform that's neither a translation nor a scale.
-  EXPECT_EQ(kInvalidScale, MaximumAnimationToScreenScale(grand_child));
-  EXPECT_EQ(kInvalidScale, MaximumAnimationToScreenScale(child));
-  EXPECT_EQ(kInvalidScale, MaximumAnimationToScreenScale(parent));
-  EXPECT_EQ(kInvalidScale, MaximumAnimationToScreenScale(grand_parent));
+  EXPECT_EQ(1.f, MaximumAnimationToScreenScale(grand_child));
+  EXPECT_EQ(1.f, MaximumAnimationToScreenScale(child));
+  EXPECT_EQ(1.f, MaximumAnimationToScreenScale(parent));
+  EXPECT_EQ(1.f, MaximumAnimationToScreenScale(grand_parent));
+
+  EXPECT_TRUE(AnimationAffectedByInvalidScale(grand_child));
+  EXPECT_TRUE(AnimationAffectedByInvalidScale(child));
+  EXPECT_TRUE(AnimationAffectedByInvalidScale(parent));
+  EXPECT_TRUE(AnimationAffectedByInvalidScale(grand_parent));
 }
 
 static void GatherDrawnLayers(LayerTreeImpl* tree_impl,
@@ -6011,6 +6070,9 @@ TEST_F(DrawPropertiesTest, AnimationScales) {
   EXPECT_FLOAT_EQ(24.f, MaximumAnimationToScreenScale(child2));
   EXPECT_FLOAT_EQ(3.f, MaximumAnimationToScreenScale(child1));
   EXPECT_FLOAT_EQ(1.f, MaximumAnimationToScreenScale(root));
+  EXPECT_FALSE(AnimationAffectedByInvalidScale(child2));
+  EXPECT_FALSE(AnimationAffectedByInvalidScale(child1));
+  EXPECT_FALSE(AnimationAffectedByInvalidScale(root));
 
   // Correctly updates animation scale when layer property changes.
   SetTransform(child1, gfx::Transform());
@@ -6020,12 +6082,14 @@ TEST_F(DrawPropertiesTest, AnimationScales) {
   EXPECT_FLOAT_EQ(8.f, MaximumAnimationToScreenScale(child2));
 
   // Do not update animation scale if already updated.
+  bool affected_by_invalid_scale = true;
   host_impl()
       ->active_tree()
       ->property_trees()
       ->SetMaximumAnimationToScreenScaleForTesting(
-          child2->transform_tree_index(), 100.f);
+          child2->transform_tree_index(), 100.f, affected_by_invalid_scale);
   EXPECT_FLOAT_EQ(100.f, MaximumAnimationToScreenScale(child2));
+  EXPECT_TRUE(AnimationAffectedByInvalidScale(child2));
 }
 
 TEST_F(DrawPropertiesTest, VisibleContentRectInChildRenderSurface) {
