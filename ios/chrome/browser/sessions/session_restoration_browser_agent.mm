@@ -176,7 +176,6 @@ bool SessionRestorationBrowserAgent::RestoreSession() {
   PreviousSessionInfo* session_info = [PreviousSessionInfo sharedInstance];
   auto scoped_restore = [session_info startSessionRestoration];
 
-  const base::FilePath& path = browser_state_->GetStatePath();
   NSString* session_id =
       (IsMultiwindowSupported() && session_info.isMultiWindowEnabledSession)
           ? base::SysUTF8ToNSString(session_identifier_)
@@ -184,7 +183,7 @@ bool SessionRestorationBrowserAgent::RestoreSession() {
 
   SessionIOS* session = [session_service_
       loadSessionWithSessionID:session_id
-                     directory:base::SysUTF8ToNSString(path.AsUTF8Unsafe())];
+                     directory:browser_state_->GetStatePath()];
   SessionWindowIOS* session_window = nil;
 
   if (session) {
@@ -203,10 +202,9 @@ void SessionRestorationBrowserAgent::SaveSession(bool immediately) {
   if (!CanSaveSession())
     return;
 
-  const base::FilePath& path = browser_state_->GetStatePath();
   [session_service_ saveSession:session_ios_factory_
                       sessionID:base::SysUTF8ToNSString(session_identifier_)
-                      directory:base::SysUTF8ToNSString(path.AsUTF8Unsafe())
+                      directory:browser_state_->GetStatePath()
                     immediately:immediately];
 }
 

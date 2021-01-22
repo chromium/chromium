@@ -53,8 +53,7 @@ class CrashRestoreHelperTest : public PlatformTest {
     };
     NSData* data = [NSData dataWithBytes:"hello" length:5];
     for (size_t index = 0; index < base::size(browser_states); ++index) {
-      NSString* state_path = base::SysUTF8ToNSString(
-          browser_states[index]->GetStatePath().value());
+      const base::FilePath& state_path = browser_states[index]->GetStatePath();
       NSString* backup_path =
           [CrashRestoreHelper backupPathForSessionID:session_id
                                            directory:state_path];
@@ -86,8 +85,7 @@ class CrashRestoreHelperTest : public PlatformTest {
     };
 
     for (size_t index = 0; index < base::size(browser_states); ++index) {
-      NSString* state_path = base::SysUTF8ToNSString(
-          browser_states[index]->GetStatePath().value());
+      const base::FilePath& state_path = browser_states[index]->GetStatePath();
       NSString* session_path =
           [SessionServiceIOS sessionPathForSessionID:session_id
                                            directory:state_path];
@@ -105,9 +103,7 @@ class CrashRestoreHelperTest : public PlatformTest {
     NSFileManager* file_manager = [NSFileManager defaultManager];
     NSString* backup_path = [CrashRestoreHelper
         backupPathForSessionID:session_id
-                     directory:base::SysUTF8ToNSString(
-                                   browser_state->GetStatePath()
-                                       .AsUTF8Unsafe())];
+                     directory:browser_state->GetStatePath()];
     if (![file_manager fileExistsAtPath:backup_path])
       return false;
     [file_manager removeItemAtPath:backup_path error:nil];

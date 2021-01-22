@@ -96,8 +96,7 @@ void PerfTestWithBVC::SetUp() {
       chrome_browser_state_.get());
 
   // Use the session to create a window which will contain the tabs.
-  NSString* state_path = base::SysUTF8ToNSString(
-      chrome_browser_state_->GetStatePath().AsUTF8Unsafe());
+  const base::FilePath& state_path = chrome_browser_state_->GetStatePath();
   SessionIOS* session =
       [[SessionServiceIOS sharedService] loadSessionWithSessionID:nil
                                                         directory:state_path];

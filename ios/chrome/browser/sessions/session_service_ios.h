@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #include "base/callback.h"
+#include "base/files/file_path.h"
 #include "base/sequenced_task_runner.h"
 
 @class SessionIOS;
@@ -35,32 +36,31 @@
 // avoid blocking the UI thread.
 - (void)saveSession:(__weak SessionIOSFactory*)factory
           sessionID:(NSString*)sessionID
-          directory:(NSString*)directory
+          directory:(const base::FilePath&)directory
         immediately:(BOOL)immediately;
 
 // Loads a session (list of tabs) from the save location derived from the scene
 // identifier |sessionID| and the ChromeBrowserState |directory|.
 - (SessionIOS*)loadSessionWithSessionID:(NSString*)sessionID
-                              directory:(NSString*)directory;
+                              directory:(const base::FilePath&)directory;
 
 // Loads the session from |sessionPath| on the main thread. Returns nil in case
 // of errors.
 - (SessionIOS*)loadSessionFromPath:(NSString*)sessionPath;
 
-// Schedules deletion of the all session files from a specific browser state
-// |directory|.
-- (void)deleteAllSessionFilesInBrowserStateDirectory:(NSString*)directory
-                                          completion:
-                                              (base::OnceClosure)callback;
+// Schedules deletion of the all session files from a specific |directory|.
+- (void)deleteAllSessionFilesInDirectory:(const base::FilePath&)directory
+                              completion:(base::OnceClosure)callback;
 
 // Schedule deletion of session directories with |sessionIDs| which resides in
 // a specific browser state |directory|.
 - (void)deleteSessions:(NSArray<NSString*>*)sessionIDs
-    fromBrowserStateDirectory:(NSString*)directory;
+             directory:(const base::FilePath&)directory
+            completion:(base::OnceClosure)callback;
 
 // Returns the path of the session with |sessionID| within a |directory|.
 + (NSString*)sessionPathForSessionID:(NSString*)sessionID
-                           directory:(NSString*)directory;
+                           directory:(const base::FilePath&)directory;
 
 @end
 

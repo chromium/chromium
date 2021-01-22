@@ -276,10 +276,11 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
 
   if (IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::REMOVE_HISTORY)) {
     if (session_service_) {
-      NSString* state_path = base::SysUTF8ToNSString(
-          browser_state_->GetStatePath().AsUTF8Unsafe());
-      [session_service_ deleteAllSessionFilesInBrowserStateDirectory:state_path
-          completion:CreatePendingTaskCompletionClosure()];
+      const base::FilePath& state_path = browser_state_->GetStatePath();
+      [session_service_
+          deleteAllSessionFilesInDirectory:state_path
+                                completion:
+                                    CreatePendingTaskCompletionClosure()];
     }
 
     // Remove the screenshots taken by the system when backgrounding the
@@ -558,10 +559,9 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
 void BrowsingDataRemoverImpl::RemoveSessionsData(
     NSArray<NSString*>* session_ids) {
   [[SessionServiceIOS sharedService]
-                 deleteSessions:session_ids
-      fromBrowserStateDirectory:base::SysUTF8ToNSString(
-                                    browser_state_->GetStatePath()
-                                        .AsUTF8Unsafe())];
+      deleteSessions:session_ids
+           directory:browser_state_->GetStatePath()
+          completion:base::DoNothing()];
 }
 
 // TODO(crbug.com/619783): removing data from WkWebsiteDataStore should be

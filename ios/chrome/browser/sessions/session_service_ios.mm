@@ -45,11 +45,20 @@
 namespace {
 const NSTimeInterval kSaveDelay = 2.5;     // Value taken from Desktop Chrome.
 NSString* const kRootObjectKey = @"root";  // Key for the root object.
-NSString* const kSessionDirectory =
-    @"Sessions";  // The directory name inside BrowserState directory which
-                  // contain all sessions directories.
-NSString* const kSessionFileName =
-    @"session.plist";  // The session file name on disk.
+
+// The directory name inside BrowserStatedirectory which contain all sessions
+// directories.
+const base::FilePath::CharType kSessionDirectory[] =
+    FILE_PATH_LITERAL("Sessions");
+
+// The session file name on disk.
+const base::FilePath::CharType kSessionFileName[] =
+    FILE_PATH_LITERAL("session.plist");
+
+// Convert |path| to NSString.
+NSString* PathAsNSString(const base::FilePath& path) {
+  return base::SysUTF8ToNSString(path.AsUTF8Unsafe());
+}
 }
 
 @implementation NSKeyedUnarchiver (CrLegacySessionCompatibility)
@@ -104,7 +113,7 @@ NSString* const kSessionFileName =
 
 - (void)saveSession:(__weak SessionIOSFactory*)factory
           sessionID:(NSString*)sessionID
-          directory:(NSString*)directory
+          directory:(const base::FilePath&)directory
         immediately:(BOOL)immediately {
   NSString* sessionPath = [[self class] sessionPathForSessionID:sessionID
                                                       directory:directory];
@@ -123,7 +132,7 @@ NSString* const kSessionFileName =
 }
 
 - (SessionIOS*)loadSessionWithSessionID:(NSString*)sessionID
-                              directory:(NSString*)directory {
+                              directory:(const base::FilePath&)directory {
   NSString* sessionPath = [[self class] sessionPathForSessionID:sessionID
                                                       directory:directory];
   base::TimeTicks start_time = base::TimeTicks::Now();
@@ -175,59 +184,46 @@ NSString* const kSessionFileName =
   return base::mac::ObjCCastStrict<SessionIOS>(rootObject);
 }
 
-- (void)deleteAllSessionFilesInBrowserStateDirectory:(NSString*)directory
-                                          completion:
-                                              (base::OnceClosure)callback {
-  NSMutableArray<NSString*>* sessionFilesPaths = [[NSMutableArray alloc] init];
-  NSString* sessionsDirectoryPath =
-      [directory stringByAppendingPathComponent:kSessionDirectory];
+- (void)deleteAllSessionFilesInDirectory:(const base::FilePath&)directory
+                              completion:(base::OnceClosure)callback {
+  const base::FilePath sessionDirectory = directory.Append(kSessionDirectory);
   NSArray<NSString*>* allSessionIDs = [[NSFileManager defaultManager]
-      contentsOfDirectoryAtPath:sessionsDirectoryPath
+      contentsOfDirectoryAtPath:PathAsNSString(sessionDirectory)
                           error:nil];
-  for (NSString* sessionID in allSessionIDs) {
-    NSString* sessionPath =
-        [SessionServiceIOS sessionPathForSessionID:sessionID
-                                         directory:directory];
-    [sessionFilesPaths addObject:sessionPath];
-  }
 
   // If there were no session ids, then scenes are not supported fall back to
-  // the original location
-  if (sessionFilesPaths.count == 0) {
-    [sessionFilesPaths
-        addObject:[[self class] sessionPathForSessionID:nil
-                                              directory:directory]];
+  // the original location.
+  if ([allSessionIDs count] == 0) {
+    allSessionIDs = @[ @"" ];
   }
 
-  [self deletePaths:sessionFilesPaths completion:std::move(callback)];
+  [self deleteSessions:allSessionIDs
+             directory:directory
+            completion:std::move(callback)];
 }
 
 - (void)deleteSessions:(NSArray<NSString*>*)sessionIDs
-    fromBrowserStateDirectory:(NSString*)directory {
-  NSString* sessionsDirectoryPath =
-      [directory stringByAppendingPathComponent:kSessionDirectory];
+             directory:(const base::FilePath&)directory
+            completion:(base::OnceClosure)callback {
   NSMutableArray<NSString*>* paths =
       [NSMutableArray arrayWithCapacity:sessionIDs.count];
   for (NSString* sessionID : sessionIDs) {
-    [paths addObject:[sessionsDirectoryPath
-                         stringByAppendingPathComponent:sessionID]];
+    [paths addObject:[SessionServiceIOS sessionPathForSessionID:sessionID
+                                                      directory:directory]];
   }
-  [self deletePaths:paths completion:base::DoNothing()];
+  [self deletePaths:paths completion:std::move(callback)];
 }
 
 + (NSString*)sessionPathForSessionID:(NSString*)sessionID
-                           directory:(NSString*)directory {
+                           directory:(const base::FilePath&)directory {
   // TODO(crbug.com/1165798): remove when the sessionID is guaranteed to
   // always be an non-empty string.
   if (!sessionID.length)
-    return [directory stringByAppendingPathComponent:kSessionFileName];
+    return PathAsNSString(directory.Append(kSessionFileName));
 
-  return [NSString pathWithComponents:@[
-    directory,
-    kSessionDirectory,
-    sessionID,
-    kSessionFileName,
-  ]];
+  return PathAsNSString(directory.Append(kSessionDirectory)
+                            .Append(base::SysNSStringToUTF8(sessionID))
+                            .Append(kSessionFileName));
 }
 
 #pragma mark - Private methods

@@ -71,12 +71,19 @@
 
 namespace {
 
-NSString* const kSessionBackupDirectory =
-    @"Backups";  // The name for directory which contains all session backup
-                 // subdirectories for multiple sessions.
+// The name for directory which contains all session backup subdirectories for
+// multiple sessions.
+const base::FilePath::CharType kSessionBackupDirectory[] =
+    FILE_PATH_LITERAL("Backups");
 
-NSString* const kSessionBackupFileName =
-    @"session.backup.plist";  // The session file name on disk.
+// The session file name on disk.
+const base::FilePath::CharType kSessionBackupFileName[] =
+    FILE_PATH_LITERAL("session.backup.plist");
+
+// Convert |path| to NSString.
+NSString* PathAsNSString(const base::FilePath& path) {
+  return base::SysUTF8ToNSString(path.AsUTF8Unsafe());
+}
 
 class InfoBarManagerObserverBridge : infobars::InfoBarManager::Observer {
  public:
@@ -261,8 +268,7 @@ int SessionCrashedInfoBarDelegate::GetIconId() const {
        forBrowserState:(ChromeBrowserState*)browserState
           shouldBackup:(BOOL)shouldBackup {
   BOOL partialSuccess = NO;
-  NSString* stashPath =
-      base::SysUTF8ToNSString(browserState->GetStatePath().value());
+  const base::FilePath& stashPath = browserState->GetStatePath();
 
   for (NSString* sessionID in sessionIDs) {
     NSString* sessionPath =
@@ -325,27 +331,25 @@ int SessionCrashedInfoBarDelegate::GetIconId() const {
 }
 
 + (NSString*)backupPathForSessionID:(NSString*)sessionID
-                          directory:(NSString*)directory {
+                          directory:(const base::FilePath&)directory {
+  // TODO(crbug.com/1165798): remove when the sessionID is guaranteed to
+  // always be an non-empty string.
   if (!sessionID.length)
-    return [directory stringByAppendingPathComponent:kSessionBackupFileName];
+    return PathAsNSString(directory.Append(kSessionBackupFileName));
 
-  return [NSString pathWithComponents:@[
-    directory,
-    kSessionBackupDirectory,
-    sessionID,
-    kSessionBackupFileName,
-  ]];
+  return PathAsNSString(directory.Append(kSessionBackupDirectory)
+                            .Append(base::SysNSStringToUTF8(sessionID))
+                            .Append(kSessionBackupFileName));
 }
 
 + (NSArray<NSString*>*)backedupSessionIDsForBrowserState:
     (ChromeBrowserState*)browserState {
   if (!IsMultiwindowSupported())
     return @[ @"" ];
-  NSString* stashPath =
-      base::SysUTF8ToNSString(browserState->GetStatePath().AsUTF8Unsafe());
+  const base::FilePath backupDirectory =
+      browserState->GetStatePath().Append(kSessionBackupDirectory);
   return [[NSFileManager defaultManager]
-      contentsOfDirectoryAtPath:
-          [stashPath stringByAppendingPathComponent:kSessionBackupDirectory]
+      contentsOfDirectoryAtPath:PathAsNSString(backupDirectory)
                           error:nil];
 }
 
@@ -389,8 +393,7 @@ int SessionCrashedInfoBarDelegate::GetIconId() const {
 
 + (BOOL)restoreSessionsAfterCrashForBrowserState:
     (ChromeBrowserState*)browserState {
-  NSString* stashPath =
-      base::SysUTF8ToNSString(browserState->GetStatePath().AsUTF8Unsafe());
+  const base::FilePath& stashPath = browserState->GetStatePath();
 
   BrowserList* browserList =
       BrowserListFactory::GetForBrowserState(browserState);
@@ -472,8 +475,7 @@ int SessionCrashedInfoBarDelegate::GetIconId() const {
   _sessionRestored = YES;
 
   ChromeBrowserState* browserState = _browser->GetBrowserState();
-  NSString* stashPath =
-      base::SysUTF8ToNSString(browserState->GetStatePath().AsUTF8Unsafe());
+  const base::FilePath& stashPath = browserState->GetStatePath();
 
   NSArray<NSString*>* sessionsIDs =
       [CrashRestoreHelper backedupSessionIDsForBrowserState:browserState];

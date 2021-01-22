@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#include "base/files/file_path.h"
+
 class Browser;
 class ChromeBrowserState;
 
@@ -40,7 +42,7 @@ class ChromeBrowserState;
 
 // Returns the path for back of session |sessionID| relative in |directory|.
 + (NSString*)backupPathForSessionID:(NSString*)sessionID
-                          directory:(NSString*)directory;
+                          directory:(const base::FilePath&)directory;
 
 @end
 

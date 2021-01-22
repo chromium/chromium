@@ -20,7 +20,7 @@
 
 - (void)saveSession:(__weak SessionIOSFactory*)factory
           sessionID:(NSString*)sessionID
-          directory:(NSString*)directory
+          directory:(const base::FilePath&)directory
         immediately:(BOOL)immediately {
   NSString* sessionPath = [[self class] sessionPathForSessionID:sessionID
                                                       directory:directory];

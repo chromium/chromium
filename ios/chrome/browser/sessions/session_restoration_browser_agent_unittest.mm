@@ -223,8 +223,7 @@ TEST_F(SessionRestorationBrowserAgentTest, SaveAndRestoreEmptySession) {
   [test_session_service_ setPerformIO:NO];
 
   // Restore, expect that there are no sessions.
-  NSString* state_path = base::SysUTF8ToNSString(
-      chrome_browser_state_->GetStatePath().AsUTF8Unsafe());
+  const base::FilePath& state_path = chrome_browser_state_->GetStatePath();
   SessionIOS* session =
       [test_session_service_ loadSessionWithSessionID:nil directory:state_path];
   ASSERT_EQ(1u, session.sessionWindows.count);
@@ -253,8 +252,7 @@ TEST_F(SessionRestorationBrowserAgentTest, SaveAndRestoreSession) {
   // close all the webStates
   web_state_list_->CloseAllWebStates(WebStateList::CLOSE_NO_FLAGS);
 
-  NSString* state_path = base::SysUTF8ToNSString(
-      chrome_browser_state_->GetStatePath().AsUTF8Unsafe());
+  const base::FilePath& state_path = chrome_browser_state_->GetStatePath();
   SessionIOS* session =
       [test_session_service_ loadSessionWithSessionID:nil directory:state_path];
   ASSERT_EQ(1u, session.sessionWindows.count);
