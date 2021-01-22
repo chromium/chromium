@@ -1443,14 +1443,15 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
     void AddObserver(WebContentsObserver* observer);
     void RemoveObserver(WebContentsObserver* observer);
 
-    template <class ForEachCallable>
-    void ForEachObserver(const ForEachCallable& callable) {
-      TRACE_EVENT0("content", "Iterating over WebContentsObservers");
+    // T1 must be a pointer to a WebContentsObserver method.
+    template <typename T1, typename... P1>
+    void NotifyObservers(T1 func, P1&&... args) {
+      TRACE_EVENT0("content", "WebContentsObserverList::NotifyObservers");
       base::AutoReset<bool> scope(&is_notifying_observers_, true);
       for (WebContentsObserver& observer : observers_) {
         TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("content.verbose"),
                      "Dispatching WebContentsObserver callback");
-        callable(&observer);
+        ((observer).*(func))(std::forward<P1>(args)...);
       }
     }
 
