@@ -4,6 +4,7 @@ include_rules = [
   "+components/subresource_redirect",
   "+components/subresource_redirect/proto/robots_rules.pb.h",
   "+services/network/test/test_utils.h",
+  "+third_party/icu/fuzzers/fuzzer_utils.h",
 ]
 
 # These are browser tests that access both code from the browser and the

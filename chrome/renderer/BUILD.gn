@@ -12,6 +12,7 @@ import("//components/spellcheck/spellcheck_build_features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//media/media_options.gni")
 import("//ppapi/buildflags/buildflags.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/widevine/cdm/widevine.gni")
 import("//tools/grit/grit_rule.gni")
 
@@ -420,4 +421,22 @@ static_library("renderer") {
 
     deps += [ "//chrome/common/performance_manager/mojom" ]
   }
+}
+
+fuzzer_test("robots_rules_parser_fuzzer") {
+  sources = [
+    "subresource_redirect/robots_rules_parser.cc",
+    "subresource_redirect/robots_rules_parser.h",
+    "subresource_redirect/robots_rules_parser_fuzzer.cc",
+    "subresource_redirect/subresource_redirect_params.cc",
+    "subresource_redirect/subresource_redirect_params.h",
+  ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//chrome/common:constants",
+    "//components/subresource_redirect/proto",
+    "//third_party/blink/public/common",
+    "//third_party/icu/fuzzers:fuzzer_support",
+  ]
 }
