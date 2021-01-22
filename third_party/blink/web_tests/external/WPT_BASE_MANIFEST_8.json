@@ -53988,12 +53988,12 @@
       ]
      ],
      "lab-001.html": [
-      "f507f86c79c45181d16714893db5f6c97c079086",
+      "177cf96ef1dfede4a1194d72182d97191e866cb2",
       [
        null,
        [
         [
-         "/css/css-color/greentext-ref.html",
+         "/css/css-color/greensquare-ref.html",
          "=="
         ]
        ],
@@ -54001,12 +54001,12 @@
       ]
      ],
      "lab-002.html": [
-      "bcf04e36835b491b494af36b2ae6bf9d593d29f1",
+      "e30696995dbc2a582ae17b83ff216cc1c66d726d",
       [
        null,
        [
         [
-         "/css/css-color/blacktext-ref.html",
+         "/css/css-color/blacksquare-ref.html",
          "=="
         ]
        ],
@@ -54014,12 +54014,12 @@
       ]
      ],
      "lab-003.html": [
-      "ddf2d1780ec639e495e66feb6e576a9ba20ccedc",
+      "9308e16456cd5746ddd60c23066dff4c94dad7d8",
       [
        null,
        [
         [
-         "/css/css-color/whitetext-ref.html",
+         "/css/css-color/whitesquare-ref.html",
          "=="
         ]
        ],
@@ -54027,7 +54027,7 @@
       ]
      ],
      "lab-004.html": [
-      "056835ac477cdb8dda3637125a14561949dcca73",
+      "b2ebfc187a7a3bd30acfccf4609442fd5693af69",
       [
        null,
        [
@@ -54040,7 +54040,7 @@
       ]
      ],
      "lab-005.html": [
-      "8149771fb64049e7b27d9c67b7f6e79853eff12f",
+      "69285d583252a65de89e4078de511da0b6504d24",
       [
        null,
        [
@@ -54053,7 +54053,7 @@
       ]
      ],
      "lab-006.html": [
-      "0f175ab5ec73d95c2ca2470516c888dd2238554f",
+      "55d6351ddb6aca74c93368b1d7a0a026ae0df668",
       [
        null,
        [
@@ -54066,7 +54066,7 @@
       ]
      ],
      "lab-007.html": [
-      "a99cebd2572c02288cb25b1440ee5f71413aa803",
+      "89edbb75496a9056cb7250eb1ac31f6914ec21fb",
       [
        null,
        [
@@ -54079,12 +54079,12 @@
       ]
      ],
      "lch-001.html": [
-      "6bc0c5f7da6054d2f1a4d6662410210e8a6dea7f",
+      "904e2e5bd7c75dade264e22aa3a145ad56625d67",
       [
        null,
        [
         [
-         "/css/css-color/greentext-ref.html",
+         "/css/css-color/greensquare-ref.html",
          "=="
         ]
        ],
@@ -54092,12 +54092,12 @@
       ]
      ],
      "lch-002.html": [
-      "52a546290719dae3bc4af371f0e6ea100a1dc9a0",
+      "7eec1a14ac6bfa9d23f8c55869e317e1689f1759",
       [
        null,
        [
         [
-         "/css/css-color/blacktext-ref.html",
+         "/css/css-color/blacksquare-ref.html",
          "=="
         ]
        ],
@@ -54105,12 +54105,12 @@
       ]
      ],
      "lch-003.html": [
-      "7539e9d583f15e3a39abf3dcd773d3ceb8fe1ce0",
+      "f323d4978c94730c4a098bd5ae23dfce146fd2b6",
       [
        null,
        [
         [
-         "/css/css-color/whitetext-ref.html",
+         "/css/css-color/whitesquare-ref.html",
          "=="
         ]
        ],
@@ -54118,12 +54118,12 @@
       ]
      ],
      "lch-004.html": [
-      "67d71a8ba3673fb004c059e666f9c8dadecfe992",
+      "30eac4542286b7af9cee2a2d3cb7b4b1081cbbec",
       [
        null,
        [
         [
-         "/css/css-color/lab-004-ref.html",
+         "/css/css-color/lch-004-ref.html",
          "=="
         ]
        ],
@@ -54131,12 +54131,12 @@
       ]
      ],
      "lch-005.html": [
-      "571f7aaab7b20387b433b699fbe6bd288c6bee10",
+      "ed32cb92cb402c6875c9ab95d7d6b523cd63f833",
       [
        null,
        [
         [
-         "/css/css-color/lab-005-ref.html",
+         "/css/css-color/lch-005-ref.html",
          "=="
         ]
        ],
@@ -54144,12 +54144,12 @@
       ]
      ],
      "lch-006.html": [
-      "ea490937c57d7590cef519e1b7f9084e038a9861",
+      "457e88d405d8f840e4b238dfa39b2a80676481f6",
       [
        null,
        [
         [
-         "/css/css-color/lab-006-ref.html",
+         "/css/css-color/lch-006-ref.html",
          "=="
         ]
        ],
@@ -54157,12 +54157,12 @@
       ]
      ],
      "lch-007.html": [
-      "6d9a9740414494139ac8dd537a8d2d32ce61d06e",
+      "009347c1af72a295656b0f6a16e8fea94d789744",
       [
        null,
        [
         [
-         "/css/css-color/lab-007-ref.html",
+         "/css/css-color/lch-007-ref.html",
          "=="
         ]
        ],
@@ -91837,6 +91837,19 @@
        {}
       ]
      ],
+     "incremental-scroll.html": [
+      "be1a1cbb74c33394a2ab3afd0a14eb635818fc23",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/incremental-scroll-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "input-scrollable-region-001.html": [
       "96fedfed746e903f06c3f3fd5e13a47bc54466e5",
       [
@@ -94860,7 +94873,7 @@
       ]
      ],
      "position-relative-table-tfoot-top-absolute-child.html": [
-      "e23585af8539ebbdf09b456d1f3cfc9befbfe426",
+      "e98712b22bb62a14709ddcbd1b6ee5a8ba1a273d",
       [
        null,
        [
@@ -167265,6 +167278,19 @@
         {}
        ]
       ],
+      "will-change-in-foreign-object-paint-order.html": [
+       "b6f50cfa75ddcd44e1313d66474aad81509f7400",
+       [
+        null,
+        [
+         [
+          "/svg/extensibility/foreignObject/will-change-in-foreign-object-paint-order-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "will-change-in-transformed-foreign-object.html": [
        "4b6e940b2f5f0b093208bd3d9a7ecd1f1776e736",
        [
@@ -184488,6 +184514,10 @@
       "a0e70aa6539e88373bc8615c3f4e1453010e85d5",
       []
      ],
+     "blacksquare-ref.html": [
+      "14bc74b33fa848b6f3056adf24fa9645483e7e2e",
+      []
+     ],
      "blacktext-ref.html": [
       "ddfa9100cbef6094375df8b40eeb9673e690d4f7",
       []
@@ -184521,19 +184551,35 @@
       []
      ],
      "lab-004-ref.html": [
-      "1919ab4e4f6e29bcdfd3d5730705d7f13299742a",
+      "d7c83b0766fee7bf62156254ee824ed4864cf2a5",
       []
      ],
      "lab-005-ref.html": [
-      "207973e38ebc4269f669bb20760f3da73998227d",
+      "7c6fd236d428e88df6cd91fe44f943a8dcc2bd9f",
       []
      ],
      "lab-006-ref.html": [
-      "8747c97bbfb235a8e993b15cce7a31df3dc50ee3",
+      "1525205772eb17d8a43ef1cc7891b0bc29d8050f",
       []
      ],
      "lab-007-ref.html": [
-      "00bdb09d4f6e6f04c012535e08066bff788e5d23",
+      "9d0bc0c6c765b45b54b76bfeeb2e8e9720f9540d",
+      []
+     ],
+     "lch-004-ref.html": [
+      "2bc1e8285720e69646f1f17fd2c1fd7a0c4d76fd",
+      []
+     ],
+     "lch-005-ref.html": [
+      "3636541afde40b85dee9132f537518aa09bfe24c",
+      []
+     ],
+     "lch-006-ref.html": [
+      "bfe6d8dbf71b04e6fbaa49a4996fc3eb4949c6d2",
+      []
+     ],
+     "lch-007-ref.html": [
+      "95a260e8f2f4ae9085a33734c28a7d16da73fa82",
       []
      ],
      "opacity-overlapping-letters-ref.html": [
@@ -184754,6 +184800,10 @@
      ],
      "t44-currentcolor-inherited-c-ref.xht": [
       "85a391d5a2cdaf43b62819f20d9879ed1dead584",
+      []
+     ],
+     "whitesquare-ref.html": [
+      "ea7103759ba65a30434c7f996e9957c5519b11fd",
       []
      ],
      "whitetext-ref.html": [
@@ -199010,6 +199060,10 @@
      ],
      "clip-005-ref.html": [
       "09081e25039a2a07c6dd798fc68ff7b8a07bc333",
+      []
+     ],
+     "incremental-scroll-ref.html": [
+      "131e54ec2913621bd0cd6e3adf8e22e03b129d8a",
       []
      ],
      "inheritance-expected.txt": [
@@ -248241,6 +248295,10 @@
       ],
       "stacking-context-ref.html": [
        "28e7e310c07b4443693cc6150b5690b16b95d829",
+       []
+      ],
+      "will-change-in-foreign-object-paint-order-ref.html": [
+       "684de0cf0cbb59fdbe488573b19d9b55974ce93a",
        []
       ],
       "will-change-in-transformed-foreign-object-ref.html": [
