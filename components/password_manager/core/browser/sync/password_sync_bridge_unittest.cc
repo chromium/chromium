@@ -5,6 +5,7 @@
 #include "components/password_manager/core/browser/sync/password_sync_bridge.h"
 
 #include <memory>
+#include <random>
 #include <string>
 #include <utility>
 
@@ -1362,6 +1363,47 @@ TEST_F(PasswordSyncBridgeTest,
 
   sync_pb::PasswordSpecifics specifics =
       CreateSpecificsWithSignonRealmAndIssues(kSignonRealm1, kIssuesTypes);
+  syncer::EntityChangeList entity_change_list;
+  entity_change_list.push_back(syncer::EntityChange::CreateUpdate(
+      kStorageKey, SpecificsToEntity(specifics)));
+  base::Optional<syncer::ModelError> error = bridge()->ApplySyncChanges(
+      bridge()->CreateMetadataChangeList(), std::move(entity_change_list));
+  EXPECT_FALSE(error);
+}
+
+TEST_F(PasswordSyncBridgeTest,
+       EqualCompromisedCredentialsRequireNoUpdateDuringRemoteUpdate) {
+  const int kPrimaryKey = 1000;
+  // Add a password form with a corresponding list of compromised credentials of
+  // types Leaked and Reused.
+  const std::string kStorageKey = "1000";
+  const PasswordForm kForm = MakePasswordForm(kSignonRealm1);
+  std::vector<CompromiseType> kIssuesTypes = {
+      CompromiseType::kLeaked, CompromiseType::kReused, CompromiseType::kWeak};
+  const std::vector<CompromisedCredentials> kIssues =
+      MakeCompromisedCredentials(kForm, kIssuesTypes);
+
+  fake_db()->AddLoginForPrimaryKey(kPrimaryKey, kForm);
+  fake_db()->AddCompromisedCredentials(kIssues);
+
+  // Simulate a remote update to the password that contains the same set of
+  // issues.
+  std::shuffle(kIssuesTypes.begin(), kIssuesTypes.end(),
+               std::default_random_engine{});
+  sync_pb::PasswordSpecifics specifics =
+      CreateSpecificsWithSignonRealmAndIssues(kSignonRealm1, kIssuesTypes);
+  sync_pb::PasswordSpecificsData* password_data =
+      specifics.mutable_client_only_encrypted_data();
+  password_data->set_times_used(1);
+
+  // Test that only UpdateLoginSync() is invoked,
+  // UpdateCompromisedCredentialsSync() isn't invoked because there are no
+  // change in the compromised credentials information.
+  EXPECT_CALL(*mock_password_store_sync(),
+              UpdateLoginSync(FormHasSignonRealm(kSignonRealm1), _));
+  EXPECT_CALL(*mock_password_store_sync(), UpdateCompromisedCredentialsSync)
+      .Times(0);
+
   syncer::EntityChangeList entity_change_list;
   entity_change_list.push_back(syncer::EntityChange::CreateUpdate(
       kStorageKey, SpecificsToEntity(specifics)));
