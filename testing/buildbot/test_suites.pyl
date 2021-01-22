@@ -4818,9 +4818,20 @@
       }
     },
 
-    'weblayer_instrumentation_version_tests': {
+    'weblayer_instrumentation_version_x86_marshmallow_10_tests': {
       'weblayer_instrumentation_test_versions_apk': {
-      }
+	'args': [
+	  '--webview-apk-path=apks/AOSP_SystemWebView.apk',
+        ],
+      },
+    },
+
+    'weblayer_instrumentation_version_x86_pie_oreo_tests': {
+      'weblayer_instrumentation_test_versions_apk': {
+	'args': [
+	  '--webview-apk-path=apks/SystemWebView.apk',
+        ],
+      },
     },
 
     'weblayer_shell_wpt': {
@@ -6405,13 +6416,26 @@
   ##############################################################################
 
   'matrix_compound_suites': {
-    'android_weblayer_x86_gtests': {
+    'android_weblayer_x86_marshmallow_10_gtests': {
+      'weblayer_instrumentation_version_x86_marshmallow_10_tests': {
+        'variants': [
+          'WEBLAYER_IMPL_SKEW_TESTS_NTH_MILESTONE',
+          'WEBLAYER_IMPL_SKEW_TESTS_NTH_MINUS_ONE_MILESTONE',
+          'WEBLAYER_IMPL_SKEW_TESTS_NTH_MINUS_TWO_MILESTONE',
+          'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MILESTONE',
+          'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MINUS_ONE_MILESTONE',
+          'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MINUS_TWO_MILESTONE',
+        ]
+      }
+    },
+
+    'android_weblayer_x86_pie_oreo_gtests': {
       'weblayer_instrumentation_tests': {
         'variants': [
           {'identifier': 'ToT_Tests'}
         ]
       },
-      'weblayer_instrumentation_version_tests': {
+      'weblayer_instrumentation_version_x86_pie_oreo_tests': {
         'variants': [
           'WEBLAYER_IMPL_SKEW_TESTS_NTH_MILESTONE',
           'WEBLAYER_IMPL_SKEW_TESTS_NTH_MINUS_ONE_MILESTONE',

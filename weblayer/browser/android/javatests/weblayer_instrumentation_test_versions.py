@@ -140,6 +140,15 @@ def main():
       help=('Test expectations file describing which tests are failing at '
             'different versions.'))
 
+  # There are two Webview apks that are available for WebLayer skew tests.
+  # crbug.com/1163652.
+  parser.add_argument(
+      '--webview-apk-path',
+      required=True,
+      help=('Relative path for the WebLayer implementation library apk. '
+            'The path is relative to the WebLayer implementation '
+            'output directory.'))
+
   version_group = parser.add_mutually_exclusive_group(required=True)
   version_group.add_argument(
       '--client-version',
@@ -179,7 +188,7 @@ def main():
       '--apk-under-test',
       os.path.join(args.client_outdir, 'apks/WebLayerShellSystemWebView.apk'),
       '--use-webview-provider',
-      os.path.join(args.implementation_outdir, 'apks/SystemWebView.apk'),
+      os.path.join(args.implementation_outdir, args.webview_apk_path),
       '--additional-apk',
       os.path.join(args.test_runner_outdir, 'apks/ChromiumNetTestSupport.apk')]
 
