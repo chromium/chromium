@@ -447,4 +447,7 @@
     [RaisesException] void setIsAdSubframe(HTMLIFrameElement iframe);
 
     [RaisesException, CallWith=ScriptState] ReadableStream createReadableStream(long queueSize, DOMString optimizer);
+    // The return value consists of a WritableStream (.stream) and a promise of
+    // a sink object (.sink).
+    [RaisesException, CallWith=ScriptState] any createWritableStreamAndSink(long queueSize, DOMString optimizer);
 };

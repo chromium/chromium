@@ -618,6 +618,11 @@ class Internals final : public ScriptWrappable {
                                        const String& optimizer,
                                        ExceptionState&);
 
+  ScriptValue createWritableStreamAndSink(ScriptState* script_state,
+                                          int32_t queueSize,
+                                          const String& optimizer,
+                                          ExceptionState&);
+
  private:
   Document* ContextDocument() const;
   Vector<String> IconURLs(Document*, int icon_types_mask) const;

@@ -26,6 +26,7 @@
 
 #include "third_party/blink/renderer/core/testing/internals.h"
 
+#include <atomic>
 #include <memory>
 
 #include "base/macros.h"
@@ -142,7 +143,10 @@
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_transferring_optimizer.h"
+#include "third_party/blink/renderer/core/streams/underlying_sink_base.h"
 #include "third_party/blink/renderer/core/streams/underlying_source_base.h"
+#include "third_party/blink/renderer/core/streams/writable_stream.h"
+#include "third_party/blink/renderer/core/streams/writable_stream_transferring_optimizer.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
 #include "third_party/blink/renderer/core/svg/svg_image_element.h"
 #include "third_party/blink/renderer/core/svg_names.h"
@@ -375,6 +379,223 @@ TestReadableStreamSource::Optimizer::PerformInProcessOptimization(
                           context->GetTaskRunner(TaskType::kInternalDefault),
                           std::move(reply)));
   return source;
+}
+
+class TestWritableStreamSink final : public UnderlyingSinkBase {
+ public:
+  class InternalSink;
+
+  using Reply = CrossThreadOnceFunction<void(std::unique_ptr<InternalSink>)>;
+  using OptimizerCallback =
+      CrossThreadOnceFunction<void(scoped_refptr<base::SingleThreadTaskRunner>,
+                                   Reply)>;
+  enum class Type {
+    kWithNullOptimizer,
+    kWithPerformNullOptimizer,
+    kWithObservableOptimizer,
+    kWithPerfectOptimizer,
+  };
+
+  class InternalSink final {
+    USING_FAST_MALLOC(InternalSink);
+
+   public:
+    InternalSink(scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+                 CrossThreadOnceFunction<void(std::string)> success_callback,
+                 CrossThreadOnceFunction<void()> error_callback)
+        : task_runner_(std::move(task_runner)),
+          success_callback_(std::move(success_callback)),
+          error_callback_(std::move(error_callback)) {}
+
+    void Append(const std::string& s) { result_.append(s); }
+    void Close() {
+      PostCrossThreadTask(
+          *task_runner_, FROM_HERE,
+          CrossThreadBindOnce(std::move(success_callback_), result_));
+    }
+    void Abort() {
+      PostCrossThreadTask(*task_runner_, FROM_HERE, std::move(error_callback_));
+    }
+
+    // We don't use WTF::String because this object can be accessed from
+    // multiple threads.
+    std::string result_;
+
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+    CrossThreadOnceFunction<void(std::string)> success_callback_;
+    CrossThreadOnceFunction<void()> error_callback_;
+  };
+
+  class Optimizer final : public WritableStreamTransferringOptimizer {
+    USING_FAST_MALLOC(Optimizer);
+
+   public:
+    Optimizer(
+        scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+        OptimizerCallback callback,
+        scoped_refptr<base::RefCountedData<std::atomic_bool>> optimizer_flag,
+        Type type)
+        : task_runner_(std::move(task_runner)),
+          callback_(std::move(callback)),
+          optimizer_flag_(std::move(optimizer_flag)),
+          type_(type) {}
+
+    UnderlyingSinkBase* PerformInProcessOptimization(
+        ScriptState* script_state) override;
+
+   private:
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+    OptimizerCallback callback_;
+    scoped_refptr<base::RefCountedData<std::atomic_bool>> optimizer_flag_;
+    const Type type_;
+  };
+
+  explicit TestWritableStreamSink(ScriptState* script_state, Type type)
+      : type_(type),
+        optimizer_flag_(
+            base::MakeRefCounted<base::RefCountedData<std::atomic_bool>>(
+                base::in_place,
+                false)) {}
+
+  ScriptPromise start(ScriptState* script_state,
+                      WritableStreamDefaultController*,
+                      ExceptionState&) override {
+    if (internal_sink_) {
+      return ScriptPromise::CastUndefined(script_state);
+    }
+    start_resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+    return start_resolver_->Promise();
+  }
+  ScriptPromise write(ScriptState* script_state,
+                      ScriptValue chunk,
+                      WritableStreamDefaultController*,
+                      ExceptionState&) override {
+    DCHECK(internal_sink_);
+    internal_sink_->Append(
+        ToCoreString(chunk.V8Value()
+                         ->ToString(script_state->GetContext())
+                         .ToLocalChecked())
+            .Utf8());
+    return ScriptPromise::CastUndefined(script_state);
+  }
+  ScriptPromise close(ScriptState* script_state, ExceptionState&) override {
+    DCHECK(internal_sink_);
+    closed_ = true;
+    if (!optimizer_flag_->data.load()) {
+      // The normal closure case.
+      internal_sink_->Close();
+      return ScriptPromise::CastUndefined(script_state);
+    }
+
+    // When the optimizer is active, we need to detach `internal_sink_` and
+    // pass it to the optimizer (i.e., the sink in the destination realm).
+    if (detached_) {
+      PostCrossThreadTask(
+          *reply_task_runner_, FROM_HERE,
+          CrossThreadBindOnce(std::move(reply_), std::move(internal_sink_)));
+    }
+    return ScriptPromise::CastUndefined(script_state);
+  }
+  ScriptPromise abort(ScriptState* script_state,
+                      ScriptValue reason,
+                      ExceptionState&) override {
+    return ScriptPromise::CastUndefined(script_state);
+  }
+
+  void Attach(std::unique_ptr<InternalSink> internal_sink) {
+    DCHECK(!internal_sink_);
+
+    if (type_ == Type::kWithObservableOptimizer) {
+      internal_sink->Append("A");
+    }
+
+    internal_sink_ = std::move(internal_sink);
+    if (start_resolver_) {
+      start_resolver_->Resolve();
+    }
+  }
+
+  void Detach(scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+              Reply reply) {
+    detached_ = true;
+
+    // We need to wait for the close signal before actually detaching
+    // `internal_sink_`.
+    if (closed_) {
+      PostCrossThreadTask(
+          *task_runner, FROM_HERE,
+          CrossThreadBindOnce(std::move(reply), std::move(internal_sink_)));
+    } else {
+      reply_ = std::move(reply);
+      reply_task_runner_ = std::move(task_runner);
+    }
+  }
+
+  std::unique_ptr<WritableStreamTransferringOptimizer>
+  CreateTransferringOptimizer(ScriptState* script_state) {
+    DCHECK(internal_sink_);
+
+    if (type_ == Type::kWithNullOptimizer) {
+      return nullptr;
+    }
+
+    ExecutionContext* context = ExecutionContext::From(script_state);
+    return std::make_unique<Optimizer>(
+        context->GetTaskRunner(TaskType::kInternalDefault),
+        CrossThreadBindOnce(&TestWritableStreamSink::Detach,
+                            WrapCrossThreadWeakPersistent(this)),
+        optimizer_flag_, type_);
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(start_resolver_);
+    UnderlyingSinkBase::Trace(visitor);
+  }
+
+  static void Resolve(ScriptPromiseResolver* resolver, std::string result) {
+    resolver->Resolve(String::FromUTF8(result));
+  }
+  static void Reject(ScriptPromiseResolver* resolver) {
+    ScriptState* script_state = resolver->GetScriptState();
+    ScriptState::Scope scope(script_state);
+    resolver->Reject(
+        V8ThrowException::CreateTypeError(script_state->GetIsolate(), "error"));
+  }
+
+ private:
+  const Type type_;
+  // `optimizer_flag_` is always non_null. The flag referenced is false
+  // initially, and set atomically when the associated optimizer is activated.
+  scoped_refptr<base::RefCountedData<std::atomic_bool>> optimizer_flag_;
+  std::unique_ptr<InternalSink> internal_sink_;
+  Member<ScriptPromiseResolver> start_resolver_;
+  bool closed_ = false;
+  bool detached_ = false;
+  Reply reply_;
+  scoped_refptr<base::SingleThreadTaskRunner> reply_task_runner_;
+};
+
+UnderlyingSinkBase*
+TestWritableStreamSink::Optimizer::PerformInProcessOptimization(
+    ScriptState* script_state) {
+  if (type_ == Type::kWithPerformNullOptimizer) {
+    return nullptr;
+  }
+  TestWritableStreamSink* sink =
+      MakeGarbageCollected<TestWritableStreamSink>(script_state, type_);
+
+  // Set the flag atomically, to notify that this optimizer is active.
+  optimizer_flag_->data.store(true);
+
+  ExecutionContext* context = ExecutionContext::From(script_state);
+  Reply reply = CrossThreadBindOnce(&TestWritableStreamSink::Attach,
+                                    WrapCrossThreadPersistent(sink));
+  PostCrossThreadTask(
+      *task_runner_, FROM_HERE,
+      CrossThreadBindOnce(std::move(callback_),
+                          context->GetTaskRunner(TaskType::kInternalDefault),
+                          std::move(reply)));
+  return sink;
 }
 
 }  // namespace
@@ -3664,6 +3885,56 @@ ReadableStream* Internals::createReadableStream(
   return ReadableStream::CreateWithCountQueueingStrategy(
       script_state, source, queue_size,
       source->CreateTransferringOptimizer(script_state));
+}
+
+ScriptValue Internals::createWritableStreamAndSink(
+    ScriptState* script_state,
+    int32_t queue_size,
+    const String& optimizer,
+    ExceptionState& exception_state) {
+  TestWritableStreamSink::Type type;
+  if (optimizer.IsEmpty()) {
+    type = TestWritableStreamSink::Type::kWithNullOptimizer;
+  } else if (optimizer == "perform-null") {
+    type = TestWritableStreamSink::Type::kWithPerformNullOptimizer;
+  } else if (optimizer == "observable") {
+    type = TestWritableStreamSink::Type::kWithObservableOptimizer;
+  } else if (optimizer == "perfect") {
+    type = TestWritableStreamSink::Type::kWithPerfectOptimizer;
+  } else {
+    exception_state.ThrowRangeError(
+        "The \"optimizer\" parameter is not correctly set.");
+    return ScriptValue();
+  }
+
+  ExecutionContext* context = ExecutionContext::From(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto internal_sink = std::make_unique<TestWritableStreamSink::InternalSink>(
+      context->GetTaskRunner(TaskType::kInternalDefault),
+      CrossThreadBindOnce(&TestWritableStreamSink::Resolve,
+                          WrapCrossThreadPersistent(resolver)),
+      CrossThreadBindOnce(&TestWritableStreamSink::Reject,
+                          WrapCrossThreadPersistent(resolver)));
+  auto* sink = MakeGarbageCollected<TestWritableStreamSink>(script_state, type);
+
+  sink->Attach(std::move(internal_sink));
+  auto* stream = WritableStream::CreateWithCountQueueingStrategy(
+      script_state, sink, queue_size,
+      sink->CreateTransferringOptimizer(script_state));
+
+  v8::Local<v8::Object> object = v8::Object::New(script_state->GetIsolate());
+  object
+      ->Set(script_state->GetContext(),
+            V8String(script_state->GetIsolate(), "stream"),
+            ToV8(stream, script_state))
+
+      .Check();
+  object
+      ->Set(script_state->GetContext(),
+            V8String(script_state->GetIsolate(), "sink"),
+            ToV8(resolver->Promise(), script_state))
+      .Check();
+  return ScriptValue(script_state->GetIsolate(), object);
 }
 
 }  // namespace blink

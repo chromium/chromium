@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/streams/underlying_source_base.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_default_writer.h"
+#include "third_party/blink/renderer/core/streams/writable_stream_transferring_optimizer.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
@@ -161,7 +162,8 @@ TEST(TransferableStreamsTest, SmokeTest) {
       MakeGarbageCollected<MessageChannel>(scope.GetExecutionContext());
   auto* script_state = scope.GetScriptState();
   auto* writable = CreateCrossRealmTransformWritable(
-      script_state, channel->port1(), ASSERT_NO_EXCEPTION);
+      script_state, channel->port1(), /*optimizer=*/nullptr,
+      ASSERT_NO_EXCEPTION);
   ASSERT_TRUE(writable);
   auto* readable = CreateCrossRealmTransformReadable(
       script_state, channel->port2(), /*optimizer=*/nullptr,
