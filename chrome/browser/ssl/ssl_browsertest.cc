@@ -1850,31 +1850,28 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestWSSInvalidCertAndClose) {
   watcher.AlsoWaitForTitle(base::ASCIIToUTF16("FAIL"));
 
   // Create GURLs to test pages.
-  std::string master_url_path = base::StringPrintf(
+  std::string wss_close_url_path = base::StringPrintf(
       "%s?%d",
       embedded_test_server()->GetURL("/ssl/wss_close.html").spec().c_str(),
       wss_server_expired_.host_port_pair().port());
-  GURL master_url(master_url_path);
-  std::string slave_url_path =
-      base::StringPrintf("%s?%d",
-                         embedded_test_server()
-                             ->GetURL("/ssl/wss_close_slave.html")
-                             .spec()
-                             .c_str(),
-                         wss_server_expired_.host_port_pair().port());
-  GURL slave_url(slave_url_path);
+  GURL wss_close_url(wss_close_url_path);
+  std::string wss_loop_url_path = base::StringPrintf(
+      "%s?%d",
+      embedded_test_server()->GetURL("/ssl/wss_close_loop.html").spec().c_str(),
+      wss_server_expired_.host_port_pair().port());
+  GURL wss_loop_url(wss_loop_url_path);
 
   // Create tabs and visit pages which keep on creating wss connections.
   WebContents* tabs[16];
   for (int i = 0; i < 16; ++i) {
-    tabs[i] = chrome::AddSelectedTabWithURL(browser(), slave_url,
+    tabs[i] = chrome::AddSelectedTabWithURL(browser(), wss_loop_url,
                                             ui::PAGE_TRANSITION_LINK);
   }
   chrome::SelectNextTab(browser());
 
   // Visit a page which waits for one TLS handshake failure.
   // The title will be changed to 'PASS'.
-  ui_test_utils::NavigateToURL(browser(), master_url);
+  ui_test_utils::NavigateToURL(browser(), wss_close_url);
   const base::string16 result = watcher.WaitAndGetTitle();
   EXPECT_TRUE(base::LowerCaseEqualsASCII(result, "pass"));
 
