@@ -184,7 +184,8 @@ TEST(PerformanceLifetimeTest, SurviveContextSwitch) {
 
   // Simulate changing the document while keeping the window.
   std::unique_ptr<WebNavigationParams> params =
-      WebNavigationParams::CreateWithHTMLBuffer(SharedBuffer::Create(), url);
+      WebNavigationParams::CreateWithHTMLBufferForTesting(
+          SharedBuffer::Create(), url);
   page_holder->GetFrame().Loader().CommitNavigation(std::move(params), nullptr);
 
   EXPECT_EQ(perf, DOMWindowPerformance::performance(

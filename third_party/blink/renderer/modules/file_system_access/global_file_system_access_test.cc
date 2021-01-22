@@ -114,7 +114,8 @@ class GlobalFileSystemAccessTest : public PageTestBase {
   void Navigate(const String& destinationUrl) {
     const KURL& url = KURL(NullURL(), destinationUrl);
     auto navigation_params =
-        WebNavigationParams::CreateWithHTMLBuffer(SharedBuffer::Create(), url);
+        WebNavigationParams::CreateWithHTMLBufferForTesting(
+            SharedBuffer::Create(), url);
     GetDocument().GetFrame()->Loader().CommitNavigation(
         std::move(navigation_params), /*extra_data=*/nullptr);
     blink::test::RunPendingTasks();

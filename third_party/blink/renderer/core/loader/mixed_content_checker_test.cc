@@ -77,8 +77,8 @@ TEST(MixedContentCheckerTest, IsMixedContent) {
 TEST(MixedContentCheckerTest, ContextTypeForInspector) {
   auto dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(1, 1));
   dummy_page_holder->GetFrame().Loader().CommitNavigation(
-      WebNavigationParams::CreateWithHTMLBuffer(SharedBuffer::Create(),
-                                                KURL("http://example.test")),
+      WebNavigationParams::CreateWithHTMLBufferForTesting(
+          SharedBuffer::Create(), KURL("http://example.test")),
       nullptr /* extra_data */);
   blink::test::RunPendingTasks();
 
@@ -89,8 +89,8 @@ TEST(MixedContentCheckerTest, ContextTypeForInspector) {
                 &dummy_page_holder->GetFrame(), not_mixed_content));
 
   dummy_page_holder->GetFrame().Loader().CommitNavigation(
-      WebNavigationParams::CreateWithHTMLBuffer(SharedBuffer::Create(),
-                                                KURL("https://example.test")),
+      WebNavigationParams::CreateWithHTMLBufferForTesting(
+          SharedBuffer::Create(), KURL("https://example.test")),
       nullptr /* extra_data */);
   blink::test::RunPendingTasks();
 
@@ -156,8 +156,8 @@ TEST(MixedContentCheckerTest, DetectMixedForm) {
   auto dummy_page_holder = std::make_unique<DummyPageHolder>(
       IntSize(1, 1), nullptr, MakeGarbageCollected<EmptyLocalFrameClient>());
   dummy_page_holder->GetFrame().Loader().CommitNavigation(
-      WebNavigationParams::CreateWithHTMLBuffer(SharedBuffer::Create(),
-                                                main_resource_url),
+      WebNavigationParams::CreateWithHTMLBufferForTesting(
+          SharedBuffer::Create(), main_resource_url),
       nullptr /* extra_data */);
   blink::test::RunPendingTasks();
 
@@ -186,8 +186,8 @@ TEST(MixedContentCheckerTest, DetectMixedFavicon) {
   auto dummy_page_holder = std::make_unique<DummyPageHolder>(
       IntSize(1, 1), nullptr, MakeGarbageCollected<EmptyLocalFrameClient>());
   dummy_page_holder->GetFrame().Loader().CommitNavigation(
-      WebNavigationParams::CreateWithHTMLBuffer(SharedBuffer::Create(),
-                                                main_resource_url),
+      WebNavigationParams::CreateWithHTMLBufferForTesting(
+          SharedBuffer::Create(), main_resource_url),
       nullptr /* extra_data */);
   blink::test::RunPendingTasks();
   dummy_page_holder->GetFrame().GetSettings()->SetAllowRunningOfInsecureContent(

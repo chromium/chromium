@@ -320,8 +320,9 @@ void TestRenderFrame::BeginNavigation(
   if (next_navigation_html_override_.has_value()) {
     AssertNavigationCommits assert_navigation_commits(
         this, kMayReplaceInitialEmptyDocument);
-    auto navigation_params = blink::WebNavigationParams::CreateWithHTMLString(
-        next_navigation_html_override_.value(), info->url_request.Url());
+    auto navigation_params =
+        blink::WebNavigationParams::CreateWithHTMLStringForTesting(
+            next_navigation_html_override_.value(), info->url_request.Url());
     next_navigation_html_override_ = base::nullopt;
     frame_->CommitNavigation(std::move(navigation_params),
                              nullptr /* extra_data */);

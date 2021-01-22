@@ -47,9 +47,9 @@ std::unique_ptr<WebNavigationParams> WebNavigationParams::CreateFromInfo(
 }
 
 // static
-std::unique_ptr<WebNavigationParams> WebNavigationParams::CreateWithHTMLString(
-    base::span<const char> html,
-    const WebURL& base_url) {
+std::unique_ptr<WebNavigationParams>
+WebNavigationParams::CreateWithHTMLStringForTesting(base::span<const char> html,
+                                                    const WebURL& base_url) {
   auto result = std::make_unique<WebNavigationParams>();
   result->url = base_url;
   FillStaticResponse(result.get(), "text/html", "UTF-8", html);
@@ -58,7 +58,8 @@ std::unique_ptr<WebNavigationParams> WebNavigationParams::CreateWithHTMLString(
 
 #if INSIDE_BLINK
 // static
-std::unique_ptr<WebNavigationParams> WebNavigationParams::CreateWithHTMLBuffer(
+std::unique_ptr<WebNavigationParams>
+WebNavigationParams::CreateWithHTMLBufferForTesting(
     scoped_refptr<SharedBuffer> buffer,
     const KURL& base_url) {
   auto result = std::make_unique<WebNavigationParams>();

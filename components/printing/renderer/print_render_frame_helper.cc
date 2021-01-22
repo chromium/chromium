@@ -980,10 +980,12 @@ void PrepareFrameAndViewForPrint::CopySelection(
 
   // When loading is done this will call didStopLoading() and that will do the
   // actual printing.
-  navigation_control_->CommitNavigation(
-      blink::WebNavigationParams::CreateWithHTMLString(
-          html, GURL(url::kAboutBlankURL)),
-      nullptr /* extra_data */);
+  auto params = std::make_unique<blink::WebNavigationParams>();
+  params->url = GURL(url::kAboutBlankURL);
+  blink::WebNavigationParams::FillStaticResponse(params.get(), "text/html",
+                                                 "UTF-8", std::move(html));
+  navigation_control_->CommitNavigation(std::move(params),
+                                        /*extra_data=*/nullptr);
 }
 
 void PrepareFrameAndViewForPrint::DidStopLoading() {

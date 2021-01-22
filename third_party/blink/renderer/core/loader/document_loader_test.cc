@@ -715,8 +715,8 @@ TEST_F(DocumentLoaderTest, CommitsDeferredOnSameOriginNavigation) {
   const KURL& same_origin_url =
       KURL(NullURL(), "https://www.example.com/bar.html");
   std::unique_ptr<WebNavigationParams> params =
-      WebNavigationParams::CreateWithHTMLBuffer(SharedBuffer::Create(),
-                                                same_origin_url);
+      WebNavigationParams::CreateWithHTMLBufferForTesting(
+          SharedBuffer::Create(), same_origin_url);
   params->requestor_origin = WebSecurityOrigin::Create(WebURL(requestor_url));
   LocalFrame* local_frame =
       To<LocalFrame>(web_view_impl->GetPage()->MainFrame());
@@ -734,8 +734,8 @@ TEST_F(DocumentLoaderTest, CommitsNotDeferredOnDifferentOriginNavigation) {
   const KURL& other_origin_url =
       KURL(NullURL(), "https://www.another.com/bar.html");
   std::unique_ptr<WebNavigationParams> params =
-      WebNavigationParams::CreateWithHTMLBuffer(SharedBuffer::Create(),
-                                                other_origin_url);
+      WebNavigationParams::CreateWithHTMLBufferForTesting(
+          SharedBuffer::Create(), other_origin_url);
   params->requestor_origin = WebSecurityOrigin::Create(WebURL(requestor_url));
   LocalFrame* local_frame =
       To<LocalFrame>(web_view_impl->GetPage()->MainFrame());
@@ -757,8 +757,8 @@ TEST_F(DocumentLoaderTest,
   const KURL& other_origin_url =
       KURL(NullURL(), "https://www.another.com/bar.html");
   std::unique_ptr<WebNavigationParams> params =
-      WebNavigationParams::CreateWithHTMLBuffer(SharedBuffer::Create(),
-                                                other_origin_url);
+      WebNavigationParams::CreateWithHTMLBufferForTesting(
+          SharedBuffer::Create(), other_origin_url);
   params->requestor_origin = WebSecurityOrigin::Create(WebURL(requestor_url));
   LocalFrame* local_frame =
       To<LocalFrame>(web_view_impl->GetPage()->MainFrame());
@@ -776,8 +776,8 @@ TEST_F(DocumentLoaderTest, CommitsNotDeferredOnDifferentPortNavigation) {
   const KURL& different_port_url =
       KURL(NullURL(), "https://www.example.com:8080/bar.html");
   std::unique_ptr<WebNavigationParams> params =
-      WebNavigationParams::CreateWithHTMLBuffer(SharedBuffer::Create(),
-                                                different_port_url);
+      WebNavigationParams::CreateWithHTMLBufferForTesting(
+          SharedBuffer::Create(), different_port_url);
   params->requestor_origin = WebSecurityOrigin::Create(WebURL(requestor_url));
   LocalFrame* local_frame =
       To<LocalFrame>(web_view_impl->GetPage()->MainFrame());
@@ -799,8 +799,8 @@ TEST_F(DocumentLoaderTest,
   const KURL& different_port_url =
       KURL(NullURL(), "https://www.example.com:8080/bar.html");
   std::unique_ptr<WebNavigationParams> params =
-      WebNavigationParams::CreateWithHTMLBuffer(SharedBuffer::Create(),
-                                                different_port_url);
+      WebNavigationParams::CreateWithHTMLBufferForTesting(
+          SharedBuffer::Create(), different_port_url);
   params->requestor_origin = WebSecurityOrigin::Create(WebURL(requestor_url));
   LocalFrame* local_frame =
       To<LocalFrame>(web_view_impl->GetPage()->MainFrame());
@@ -817,8 +817,8 @@ TEST_F(DocumentLoaderTest, CommitsNotDeferredOnDataURLNavigation) {
 
   const KURL& data_url = KURL(NullURL(), "data:,Hello%2C%20World!");
   std::unique_ptr<WebNavigationParams> params =
-      WebNavigationParams::CreateWithHTMLBuffer(SharedBuffer::Create(),
-                                                data_url);
+      WebNavigationParams::CreateWithHTMLBufferForTesting(
+          SharedBuffer::Create(), data_url);
   params->requestor_origin = WebSecurityOrigin::Create(WebURL(requestor_url));
   LocalFrame* local_frame =
       To<LocalFrame>(web_view_impl->GetPage()->MainFrame());
@@ -839,8 +839,8 @@ TEST_F(DocumentLoaderTest,
 
   const KURL& data_url = KURL(NullURL(), "data:,Hello%2C%20World!");
   std::unique_ptr<WebNavigationParams> params =
-      WebNavigationParams::CreateWithHTMLBuffer(SharedBuffer::Create(),
-                                                data_url);
+      WebNavigationParams::CreateWithHTMLBufferForTesting(
+          SharedBuffer::Create(), data_url);
   params->requestor_origin = WebSecurityOrigin::Create(WebURL(requestor_url));
   LocalFrame* local_frame =
       To<LocalFrame>(web_view_impl->GetPage()->MainFrame());
@@ -858,8 +858,8 @@ TEST_F(DocumentLoaderTest, SameOriginNavigation) {
   const KURL& same_origin_url =
       KURL(NullURL(), "https://www.example.com/bar.html");
   std::unique_ptr<WebNavigationParams> params =
-      WebNavigationParams::CreateWithHTMLBuffer(SharedBuffer::Create(),
-                                                same_origin_url);
+      WebNavigationParams::CreateWithHTMLBufferForTesting(
+          SharedBuffer::Create(), same_origin_url);
   params->requestor_origin = WebSecurityOrigin::Create(WebURL(requestor_url));
   LocalFrame* local_frame =
       To<LocalFrame>(web_view_impl->GetPage()->MainFrame());
@@ -878,8 +878,8 @@ TEST_F(DocumentLoaderTest, CrossOriginNavigation) {
   const KURL& other_origin_url =
       KURL(NullURL(), "https://www.another.com/bar.html");
   std::unique_ptr<WebNavigationParams> params =
-      WebNavigationParams::CreateWithHTMLBuffer(SharedBuffer::Create(),
-                                                other_origin_url);
+      WebNavigationParams::CreateWithHTMLBufferForTesting(
+          SharedBuffer::Create(), other_origin_url);
   params->requestor_origin = WebSecurityOrigin::Create(WebURL(requestor_url));
   LocalFrame* local_frame =
       To<LocalFrame>(web_view_impl->GetPage()->MainFrame());

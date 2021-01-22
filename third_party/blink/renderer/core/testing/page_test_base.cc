@@ -201,8 +201,8 @@ void PageTestBase::InsertStyleElement(const std::string& style_rules) {
 
 void PageTestBase::NavigateTo(const KURL& url,
                               const WTF::HashMap<String, String>& headers) {
-  auto params =
-      WebNavigationParams::CreateWithHTMLBuffer(SharedBuffer::Create(), url);
+  auto params = WebNavigationParams::CreateWithHTMLBufferForTesting(
+      SharedBuffer::Create(), url);
 
   for (const auto& header : headers)
     params->response.SetHttpHeaderField(header.key, header.value);

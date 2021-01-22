@@ -383,9 +383,12 @@ void WebViewPlugin::OnZoomLevelChanged() {
 }
 
 void WebViewPlugin::LoadHTML(const std::string& html_data, const GURL& url) {
-  web_view_helper_.main_frame()->CommitNavigation(
-      blink::WebNavigationParams::CreateWithHTMLString(html_data, url),
-      nullptr /* extra_data */);
+  auto params = std::make_unique<blink::WebNavigationParams>();
+  params->url = url;
+  blink::WebNavigationParams::FillStaticResponse(params.get(), "text/html",
+                                                 "UTF-8", html_data);
+  web_view_helper_.main_frame()->CommitNavigation(std::move(params),
+                                                  /*extra_data=*/nullptr);
 }
 
 void WebViewPlugin::UpdatePluginForNewGeometry(

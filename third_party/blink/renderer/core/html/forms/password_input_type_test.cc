@@ -71,8 +71,8 @@ TEST(PasswordInputTypeTest, DidEditFieldEvent) {
 TEST(PasswordInputTypeTest, DidEditFieldEventNotSentFromSecureContext) {
   auto page_holder = std::make_unique<DummyPageHolder>(IntSize(2000, 2000));
   page_holder->GetFrame().Loader().CommitNavigation(
-      WebNavigationParams::CreateWithHTMLBuffer(SharedBuffer::Create(),
-                                                KURL("https://example.test")),
+      WebNavigationParams::CreateWithHTMLBufferForTesting(
+          SharedBuffer::Create(), KURL("https://example.test")),
       nullptr /* extra_data */);
   blink::test::RunPendingTasks();
   MockInsecureInputService mock_service(page_holder->GetFrame());

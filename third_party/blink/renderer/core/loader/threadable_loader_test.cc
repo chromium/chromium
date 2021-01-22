@@ -135,7 +135,8 @@ class ThreadableLoaderTestHelper final {
       : dummy_page_holder_(std::make_unique<DummyPageHolder>(IntSize(1, 1))) {
     KURL url("http://fake.url/");
     dummy_page_holder_->GetFrame().Loader().CommitNavigation(
-        WebNavigationParams::CreateWithHTMLBuffer(SharedBuffer::Create(), url),
+        WebNavigationParams::CreateWithHTMLBufferForTesting(
+            SharedBuffer::Create(), url),
         nullptr /* extra_data */);
     blink::test::RunPendingTasks();
   }

@@ -180,7 +180,7 @@ void LoadHTMLString(WebLocalFrame* frame,
                     const base::TickClock* clock) {
   auto* impl = To<WebLocalFrameImpl>(frame);
   std::unique_ptr<WebNavigationParams> navigation_params =
-      WebNavigationParams::CreateWithHTMLString(html, base_url);
+      WebNavigationParams::CreateWithHTMLStringForTesting(html, base_url);
   navigation_params->tick_clock = clock;
   impl->CommitNavigation(std::move(navigation_params),
                          nullptr /* extra_data */);
