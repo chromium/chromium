@@ -187,6 +187,11 @@ AppsNavigationThrottle::CaptureWebAppScopeNavigations(
   }
 
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  if (!browser) {
+    // This is a middle click open in new tab action; do not capture.
+    return base::nullopt;
+  }
+
   if (web_app::AppBrowserController::IsForWebApp(browser, *app_id)) {
     // Already in the app window; navigation already captured.
     return base::nullopt;

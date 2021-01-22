@@ -112,7 +112,8 @@ void WebAppNavigationBrowserTest::ClickLinkWithModifiersAndWaitForURL(
     const GURL& target_url,
     WebAppNavigationBrowserTest::LinkTarget target,
     const std::string& rel,
-    int modifiers) {
+    int modifiers,
+    blink::WebMouseEvent::Button button) {
   auto observer = GetTestNavigationObserver(target_url);
   std::string script = base::StringPrintf(
       "(() => {"
@@ -134,8 +135,7 @@ void WebAppNavigationBrowserTest::ClickLinkWithModifiersAndWaitForURL(
       rel.c_str());
   ASSERT_TRUE(content::ExecuteScript(web_contents, script));
 
-  content::SimulateMouseClick(web_contents, modifiers,
-                              blink::WebMouseEvent::Button::kLeft);
+  content::SimulateMouseClick(web_contents, modifiers, button);
 
   observer->Wait();
 }

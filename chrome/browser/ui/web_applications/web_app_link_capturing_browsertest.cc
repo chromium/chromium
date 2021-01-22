@@ -143,9 +143,17 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripLinkCapturingBrowserTest,
   ExpectTabs(browser(), {out_of_scope_});
   ExpectTabs(app_browser, {in_scope_1_, in_scope_2_, scope_});
 
+  // Middle clicking links should not be captured.
+  ClickLinkWithModifiersAndWaitForURL(
+      browser()->tab_strip_model()->GetActiveWebContents(), scope_, scope_,
+      LinkTarget::SELF, "", blink::WebInputEvent::Modifiers::kNoModifiers,
+      blink::WebMouseEvent::Button::kMiddle);
+  ExpectTabs(browser(), {out_of_scope_, scope_});
+  ExpectTabs(app_browser, {in_scope_1_, in_scope_2_, scope_});
+
   // Out of scope should behave as usual.
   Navigate(browser(), out_of_scope_);
-  ExpectTabs(browser(), {out_of_scope_});
+  ExpectTabs(browser(), {out_of_scope_, scope_});
   ExpectTabs(app_browser, {in_scope_1_, in_scope_2_, scope_});
 }
 
