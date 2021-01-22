@@ -35,7 +35,7 @@
     Your contacts can share with you when they are nearby. Transfers won't start until you accept.
   </message>
   <message name="IDS_NEARBY_CONTACT_VISIBILITY_OWN_NONE" desc="Describes who can see the local device when the Nearby Share visibility setting is set to 'Hidden'.">
-    No one can share with you until you make yourself visible.<ph name="BR">&lt;br&gt;</ph><ph name="BR">&lt;br&gt;</ph>To make yourself visible temporarily, open the status area by selecting the time, then turn on Nearby visibility.
+    No one can share with you until you make yourself visible.<ph name="BR">&lt;br&gt;</ph><ph name="BR">&lt;br&gt;</ph>To make yourself visible temporarily, open the status area, then turn on Nearby visibility.
   </message>
   <message name="IDS_NEARBY_CONTACT_VISIBILITY_OWN_SOME" desc="Describes who can see the local device when the Nearby Share visibility setting is set to 'Some contacts'.">
     Selected contacts can share with you when nearby. Transfers won't start until you accept.
@@ -60,7 +60,7 @@
 
   <!-- Discovery page -->
   <message name="IDS_NEARBY_DISCOVERY_PAGE_INFO" desc="Help text on how to use the Nearby Share feature. Explains how to enable it on a nearby Chromebook to share with it.">
-    Make sure both devices are unlocked, close together, and have Bluetooth turned on. If you’re sharing with a Chromebook not in your contacts, make sure it has Nearby visibility turned on (open the status area by selecting the time, then select Nearby visibility). <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+    Make sure both devices are unlocked, close together, and have Bluetooth turned on. If you’re sharing with a Chromebook not in your contacts, make sure it has Nearby visibility turned on (open the status area, then turn on Nearby visibility). <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_NEARBY_DISCOVERY_PAGE_SUBTITLE" desc="Subtitle of the Nearby Share device discovery page. This is where users select a device to share files with.">
     Select the device you’d like to share files with
@@ -80,7 +80,7 @@
     How your device appears to others
   </message>
   <message name="IDS_NEARBY_ONBOARDING_PAGE_SUBTITLE" desc="Subtitle of the Nearby Share onboarding page that sets up the local device for the feature which provides a way for nearby devices to share files, text, and urls.">
-    Share files with people around you
+    Share files with Chromebooks and Android devices around you
   </message>
   <message name="IDS_NEARBY_ONBOARDING_PAGE_TITLE" desc="Title of the Nearby Share onboarding page that sets up the local device for the feature. Nearby Share is the feature name.">
     Set up Nearby Share
