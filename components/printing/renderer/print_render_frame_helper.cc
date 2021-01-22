@@ -2400,8 +2400,8 @@ void PrintRenderFrameHelper::RequestPrintPreview(PrintPreviewRequestType type) {
   switch (type) {
     case PRINT_PREVIEW_SCRIPTED: {
       // Shows scripted print preview in two stages.
-      // 1. PrintHostMsg_SetupScriptedPrintPreview blocks this call and JS by
-      //    pumping messages here.
+      // 1. SetupScriptedPrintPreview() blocks this call and JS by running a
+      //    nested run loop.
       // 2. ShowScriptedPrintPreview() shows preview once the document has been
       //    loaded.
       is_scripted_preview_delayed_ = true;
@@ -2418,11 +2418,11 @@ void PrintRenderFrameHelper::RequestPrintPreview(PrintPreviewRequestType type) {
             base::BindOnce(&PrintRenderFrameHelper::ShowScriptedPrintPreview,
                            weak_ptr_factory_.GetWeakPtr()));
       }
-      auto msg = std::make_unique<PrintHostMsg_SetupScriptedPrintPreview>(
-          routing_id());
-      msg->EnableMessagePumping();
       auto self = weak_ptr_factory_.GetWeakPtr();
-      Send(msg.release());
+      base::RunLoop loop{base::RunLoop::Type::kNestableTasksAllowed};
+      GetPrintManagerHost()->SetupScriptedPrintPreview(loop.QuitClosure());
+      loop.Run();
+
       // Check if |this| is still valid.
       if (self)
         is_scripted_preview_delayed_ = false;

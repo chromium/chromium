@@ -229,7 +229,7 @@ class TestPrintManagerHost
   }
   ~TestPrintManagerHost() override = default;
 
-  // mojom::PrintManagerInterceptorForTesting
+  // mojom::PrintManagerHostInterceptorForTesting
   mojom::PrintManagerHost* GetForwardingInterface() override { return nullptr; }
   void DidGetPrintedPagesCount(int32_t cookie, uint32_t number_pages) override {
     if (number_pages_ > 0)
@@ -348,6 +348,11 @@ class TestPrintManagerHost
     std::move(callback).Run(std::move(settings));
   }
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+  void SetupScriptedPrintPreview(
+      SetupScriptedPrintPreviewCallback callback) override {
+    is_setup_scripted_print_preview_ = true;
+    std::move(callback).Run();
+  }
   void ShowScriptedPrintPreview(bool source_is_modifiable) override {}
   void RequestPrintPreview(
       mojom::RequestPrintPreviewParamsPtr params) override {}
@@ -358,6 +363,12 @@ class TestPrintManagerHost
   }
 #endif
 
+  bool IsSetupScriptedPrintPreview() {
+    return is_setup_scripted_print_preview_;
+  }
+  void ResetSetupScriptedPrintPreview() {
+    is_setup_scripted_print_preview_ = false;
+  }
   bool IsPrinted() { return is_printed_; }
   void SetExpectedPagesCount(uint32_t number_pages) {
     number_pages_ = number_pages;
@@ -394,6 +405,7 @@ class TestPrintManagerHost
   }
 
   uint32_t number_pages_ = 0;
+  bool is_setup_scripted_print_preview_ = false;
   bool is_printed_ = false;
   MockPrinter* printer_;
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
@@ -452,6 +464,7 @@ class PrintRenderFrameHelperTestBase : public content::RenderViewTest {
   void ClearPrintManagerHost() { frame_to_print_manager_map_.clear(); }
 
   void PrintWithJavaScript() {
+    print_manager()->ResetSetupScriptedPrintPreview();
     ExecuteJavaScriptForTests("window.print();");
     base::RunLoop().RunUntilIdle();
   }
@@ -509,11 +522,7 @@ class PrintRenderFrameHelperTestBase : public content::RenderViewTest {
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   void VerifyPreviewRequest(bool expect_request) {
-    const IPC::Message* print_msg =
-        render_thread_->sink().GetUniqueMessageMatching(
-            PrintHostMsg_SetupScriptedPrintPreview::ID);
-    bool got_preview_request = !!print_msg;
-    EXPECT_EQ(expect_request, got_preview_request);
+    EXPECT_EQ(expect_request, print_manager()->IsSetupScriptedPrintPreview());
   }
 
   void OnPrintPreview(const base::DictionaryValue& dict) {

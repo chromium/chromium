@@ -67,6 +67,11 @@ void PrintManager::PrintingFailed(int32_t cookie) {
 }
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+void PrintManager::SetupScriptedPrintPreview(
+    SetupScriptedPrintPreviewCallback callback) {
+  std::move(callback).Run();
+}
+
 void PrintManager::ShowScriptedPrintPreview(bool source_is_modifiable) {}
 
 void PrintManager::RequestPrintPreview(

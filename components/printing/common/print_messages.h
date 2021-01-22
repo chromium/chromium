@@ -265,9 +265,6 @@ IPC_MESSAGE_ROUTED2(PrintHostMsg_MetafileReadyForPrinting,
                     printing::mojom::DidPreviewDocumentParams /* params */,
                     printing::mojom::PreviewIds /* ids */)
 
-// Run a nested run loop in the renderer until print preview for
-// window.print() finishes.
-IPC_SYNC_MESSAGE_ROUTED0_0(PrintHostMsg_SetupScriptedPrintPreview)
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
 #endif  // COMPONENTS_PRINTING_COMMON_PRINT_MESSAGES_H_

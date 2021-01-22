@@ -57,6 +57,8 @@ class PrintManager : public content::WebContentsObserver,
   void ShowInvalidPrinterSettingsError() override;
   void PrintingFailed(int32_t cookie) override;
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+  void SetupScriptedPrintPreview(
+      SetupScriptedPrintPreviewCallback callback) override;
   void ShowScriptedPrintPreview(bool source_is_modifiable) override;
   void RequestPrintPreview(mojom::RequestPrintPreviewParamsPtr params) override;
   void CheckForCancel(int32_t preview_ui_id,

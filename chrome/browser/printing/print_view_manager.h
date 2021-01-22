@@ -60,6 +60,8 @@ class PrintViewManager : public PrintViewManagerBase,
 
   // mojom::PrintManagerHost:
   void DidShowPrintDialog() override;
+  void SetupScriptedPrintPreview(
+      SetupScriptedPrintPreviewCallback callback) override;
   void ShowScriptedPrintPreview(bool source_is_modifiable) override;
   void RequestPrintPreview(mojom::RequestPrintPreviewParamsPtr params) override;
   void CheckForCancel(int32_t preview_ui_id,
@@ -69,8 +71,6 @@ class PrintViewManager : public PrintViewManagerBase,
   // content::WebContentsObserver implementation.
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
-  bool OnMessageReceived(const IPC::Message& message,
-                         content::RenderFrameHost* render_frame_host) override;
 
   content::RenderFrameHost* print_preview_rfh() { return print_preview_rfh_; }
 
@@ -86,8 +86,6 @@ class PrintViewManager : public PrintViewManagerBase,
     SCRIPTED_PREVIEW,
   };
 
-  struct FrameDispatchHelper;
-
   // Helper method for PrintPreviewNow() and PrintPreviewWithRenderer().
   // Initiate print preview of the current document by first notifying the
   // renderer. Since this happens asynchronously, the print preview dialog
@@ -98,10 +96,7 @@ class PrintViewManager : public PrintViewManagerBase,
       mojo::PendingAssociatedRemote<mojom::PrintRenderer> print_renderer,
       bool has_selection);
 
-  // IPC Message handlers.
-  void OnSetupScriptedPrintPreview(content::RenderFrameHost* rfh,
-                                   IPC::Message* reply_msg);
-  void OnScriptedPrintPreviewReply(IPC::Message* reply_msg);
+  void OnScriptedPrintPreviewReply(SetupScriptedPrintPreviewCallback callback);
 
   void MaybeUnblockScriptedPreviewRPH();
 
