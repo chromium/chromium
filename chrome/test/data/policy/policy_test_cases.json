@@ -4807,6 +4807,18 @@
     ]
   },
 
+  "SSLErrorOverrideAllowedForUrls": {
+    "os": ["win", "mac", "linux", "chromeos"],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": { "SSLErrorOverrideAllowedForUrls": ["google.com"] },
+        "prefs": {
+          "ssl.error_override_allowed_for_urls": {"value" : ["google.com"] }
+        }
+      }
+    ]
+  },
+
   "AllowDinosaurEasterEgg": {
     "os": ["win", "linux", "mac", "chromeos"],
     "policy_pref_mapping_tests": [

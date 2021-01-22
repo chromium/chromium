@@ -14451,6 +14451,31 @@
       Setting the policy to Disabled prevent users from clicking through any warning pages.''',
     },
     {
+      'name': 'SSLErrorOverrideAllowedForUrls',
+      'owners': ['agl@chromium.org', 'niarci@microsoft.com'],
+      'type': 'list',
+      'schema': {
+        'type': 'array',
+        'items': { 'type': 'string' },
+      },
+      'supported_on': ['chrome.*:90-', 'chrome_os:90-', 'android:90-'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'example_value': ['https://www.example.com', '[*.]example.edu'],
+      'id': 819,
+      'caption': '''Allow proceeding from the SSL warning page on specific pages''',
+      'tags': [],
+      'desc': '''Setting the policy lets you set a list of URL patterns that specify the sites where a user can click through warning pages <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> shows when users navigate to sites that have SSL errors. Users will not be able to click through SSL warning pages on sites that are not on this list.
+
+      If <ph name="SSL_ERROR_OVERRIDE_ALLOWED_POLICY_NAME">SSLErrorOverrideAllowed</ph> is Disabled, this policy does nothing.
+
+      Leaving the policy unset means <ph name="SSL_ERROR_OVERRIDE_ALLOWED_POLICY_NAME">SSLErrorOverrideAllowed</ph> applies for all sites.
+
+      For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy.''',
+    },
+    {
       'name': 'QuicAllowed',
       'owners': ['file://components/policy/resources/OWNERS'],
       'type': 'main',
@@ -25287,6 +25312,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 818,
+  'highest_id_currently_used': 819,
   'highest_atomic_group_id_currently_used': 40
 }
