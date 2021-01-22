@@ -319,14 +319,6 @@ void PaintLayerCompositor::UpdateAssignmentsIfNeeded(
       update_type = std::max(update_type, kCompositingUpdateRebuildTree);
   }
 
-  GraphicsLayer* current_parent = nullptr;
-  // Save off our current parent. We need this in subframes, because our
-  // parent attached us to itself via AttachFrameContentLayersToIframeLayer().
-  if (!IsMainFrame() && update_root->GetCompositedLayerMapping()) {
-    current_parent =
-        update_root->GetCompositedLayerMapping()->MainGraphicsLayer()->Parent();
-  }
-
 #if DCHECK_IS_ON()
   if (update_root->GetCompositingState() != kPaintsIntoOwnBacking) {
     AssertWholeTreeNotComposited(*update_root);
