@@ -9593,8 +9593,27 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram
+    name="Nearby.Share.Certificates.Manager.BluetoothMacAddressPresentForPrivateCertificateCreation"
+    enum="BooleanPresent" expires_after="2021-08-19">
+  <owner>nohle@chromium.org</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records whether or not a Bluetooth MAC address was able to be fetched during
+    the local device's private certificate creation. Emitted after private
+    certificates attempt to be created, which typically occurs every three days
+    if Nearby Share is enabled. This will only be emitted once if multiple
+    certificates are created at a time, for example, when all certificates are
+    created after onboarding.
+  </summary>
+</histogram>
+
+<histogram
     name="Nearby.Share.Certificates.Manager.BluetoothMacAddressSetInPrivateCertificate"
     enum="BooleanSet" expires_after="2021-08-19">
+  <obsolete>
+    Replaced 01/2021 with
+    Nearby.Share.Certificates.Manager.BluetoothMacAddressPresentForPrivateCertificateCreation
+  </obsolete>
   <owner>nohle@chromium.org</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>

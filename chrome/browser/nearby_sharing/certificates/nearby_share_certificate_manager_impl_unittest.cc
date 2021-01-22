@@ -120,6 +120,9 @@ class NearbyShareCertificateManagerImplTest
     ON_CALL(*mock_adapter_, GetAddress()).WillByDefault([this] {
       return bluetooth_mac_address_;
     });
+    ON_CALL(*mock_adapter_, IsPresent()).WillByDefault([this] {
+      return is_bluetooth_adapter_present_;
+    });
     device::BluetoothAdapterFactory::SetAdapterForTesting(mock_adapter_);
   }
 
@@ -133,6 +136,10 @@ class NearbyShareCertificateManagerImplTest
 
   void SetBluetoothMacAddress(const std::string& bluetooth_mac_address) {
     bluetooth_mac_address_ = bluetooth_mac_address;
+  }
+
+  void SetBluetoothAdapterIsPresent(bool is_present) {
+    is_bluetooth_adapter_present_ = is_present;
   }
 
   // NearbyShareCertificateManager::Observer:
@@ -395,6 +402,7 @@ class NearbyShareCertificateManagerImplTest
   FakeNearbyShareScheduler* public_cert_exp_scheduler_;
   FakeNearbyShareScheduler* upload_scheduler_;
   FakeNearbyShareScheduler* download_scheduler_;
+  bool is_bluetooth_adapter_present_ = true;
   std::string bluetooth_mac_address_ = kTestUnparsedBluetoothMacAddress;
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> mock_adapter_;
   size_t num_public_certs_downloaded_notifications_ = 0;
@@ -699,6 +707,20 @@ TEST_F(NearbyShareCertificateManagerImplTest,
 }
 
 TEST_F(NearbyShareCertificateManagerImplTest,
+       RefreshPrivateCertificates_BluetoothAdapterNotPresent) {
+  cert_store_->ReplacePrivateCertificates(
+      std::vector<NearbySharePrivateCertificate>());
+
+  SetBluetoothAdapterIsPresent(false);
+
+  cert_manager_->Start();
+
+  // Expect failure because a Bluetooth MAC address is required.
+  HandlePrivateCertificateRefresh(/*expect_private_cert_refresh=*/true,
+                                  /*expected_success=*/false);
+}
+
+TEST_F(NearbyShareCertificateManagerImplTest,
        RefreshPrivateCertificates_InvalidBluetoothMacAddress) {
   cert_store_->ReplacePrivateCertificates(
       std::vector<NearbySharePrivateCertificate>());
@@ -707,15 +729,10 @@ TEST_F(NearbyShareCertificateManagerImplTest,
   SetBluetoothMacAddress("invalid_mac_address");
 
   cert_manager_->Start();
+
+  // Expect failure because a Bluetooth MAC address is required.
   HandlePrivateCertificateRefresh(/*expect_private_cert_refresh=*/true,
-                                  /*expected_success=*/true);
-  RunUpload(/*success=*/true);
-
-  // The MAC address is not set.
-  nearbyshare::proto::EncryptedMetadata metadata = GetNearbyShareTestMetadata();
-  metadata.clear_bluetooth_mac_address();
-
-  VerifyPrivateCertificates(/*expected_metadata=*/metadata);
+                                  /*expected_success=*/false);
 }
 
 TEST_F(NearbyShareCertificateManagerImplTest,
