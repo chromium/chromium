@@ -23,9 +23,9 @@ class ContentCaptureReceiverManagerAndroid
       content::WebContents* web_contents);
 
   void DidCaptureContent(const ContentCaptureSession& parent_session,
-                         const ContentCaptureData& data) override;
+                         const ContentCaptureFrame& data) override;
   void DidUpdateContent(const ContentCaptureSession& parent_session,
-                        const ContentCaptureData& data) override;
+                        const ContentCaptureFrame& data) override;
   void DidRemoveContent(const ContentCaptureSession& session,
                         const std::vector<int64_t>& data) override;
   void DidRemoveSession(const ContentCaptureSession& session) override;

@@ -55,23 +55,23 @@ void ContentCaptureReceiver::DidCaptureContent(const ContentCaptureData& data,
     // The parent frame might be captured after child, we need to check if url
     // is changed, otherwise the child frame's session will be removed.
     if (frame_content_capture_data_.id != 0 &&
-        frame_content_capture_data_.value != data.value) {
+        frame_content_capture_data_.url != data.value) {
       RemoveSession();
     }
 
     frame_content_capture_data_.id = id_;
     // Copies everything except id and children.
-    frame_content_capture_data_.value = data.value;
+    frame_content_capture_data_.url = data.value;
     frame_content_capture_data_.bounds = data.bounds;
     has_session_ = true;
   }
   // We can't avoid copy the data here, because id need to be overridden.
-  ContentCaptureData content(data);
+  ContentCaptureFrame content(data);
   content.id = id_;
   // Always have frame URL attached, since the ContentCaptureConsumer will
   // be reset once activity is resumed, URL is needed to rebuild session.
   if (!first_data)
-    content.value = frame_content_capture_data_.value;
+    content.url = frame_content_capture_data_.url;
   manager->DidCaptureContent(this, content);
 }
 
@@ -81,9 +81,9 @@ void ContentCaptureReceiver::DidUpdateContent(const ContentCaptureData& data) {
     return;
 
   // We can't avoid copy the data here, because id need to be overridden.
-  ContentCaptureData content(data);
+  ContentCaptureFrame content(data);
   content.id = id_;
-  content.value = frame_content_capture_data_.value;
+  content.url = frame_content_capture_data_.url;
   manager->DidUpdateContent(this, content);
 }
 
@@ -139,16 +139,16 @@ ContentCaptureReceiver::GetContentCaptureSender() {
   return content_capture_sender_;
 }
 
-const ContentCaptureData& ContentCaptureReceiver::GetFrameContentCaptureData() {
+const ContentCaptureFrame& ContentCaptureReceiver::GetContentCaptureFrame() {
   base::string16 url = base::UTF8ToUTF16(rfh_->GetLastCommittedURL().spec());
-  if (url == frame_content_capture_data_.value && has_session_)
+  if (url == frame_content_capture_data_.url && has_session_)
     return frame_content_capture_data_;
 
   if (frame_content_capture_data_.id != 0 && has_session_)
     RemoveSession();
 
   frame_content_capture_data_.id = id_;
-  frame_content_capture_data_.value = url;
+  frame_content_capture_data_.url = url;
   const base::Optional<gfx::Size>& size = rfh_->GetFrameSize();
   if (size.has_value())
     frame_content_capture_data_.bounds = gfx::Rect(size.value());

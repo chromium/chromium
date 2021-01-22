@@ -4,6 +4,8 @@
 
 source_set("browser") {
   sources = [
+    "content_capture_frame.cc",
+    "content_capture_frame.h",
     "content_capture_receiver.cc",
     "content_capture_receiver.h",
     "content_capture_receiver_manager.cc",

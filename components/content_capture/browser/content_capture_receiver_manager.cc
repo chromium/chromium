@@ -110,7 +110,7 @@ void ContentCaptureReceiverManager::ReadyToCommitNavigation(
 
 void ContentCaptureReceiverManager::DidCaptureContent(
     ContentCaptureReceiver* content_capture_receiver,
-    const ContentCaptureData& data) {
+    const ContentCaptureFrame& data) {
   // The root of |data| is frame, we need get its ancestor only.
   ContentCaptureSession parent_session;
   BuildContentCaptureSession(content_capture_receiver, true /* ancestor_only */,
@@ -120,7 +120,7 @@ void ContentCaptureReceiverManager::DidCaptureContent(
 
 void ContentCaptureReceiverManager::DidUpdateContent(
     ContentCaptureReceiver* content_capture_receiver,
-    const ContentCaptureData& data) {
+    const ContentCaptureFrame& data) {
   ContentCaptureSession parent_session;
   BuildContentCaptureSession(content_capture_receiver, true /* ancestor_only */,
                              &parent_session);
@@ -160,7 +160,7 @@ void ContentCaptureReceiverManager::BuildContentCaptureSession(
     bool ancestor_only,
     ContentCaptureSession* session) {
   if (!ancestor_only)
-    session->push_back(content_capture_receiver->GetFrameContentCaptureData());
+    session->push_back(content_capture_receiver->GetContentCaptureFrame());
 
   content::RenderFrameHost* rfh = content_capture_receiver->rfh()->GetParent();
   while (rfh) {
@@ -172,7 +172,7 @@ void ContentCaptureReceiverManager::BuildContentCaptureSession(
       receiver = ContentCaptureReceiverForFrame(rfh);
       DCHECK(receiver);
     }
-    session->push_back(receiver->GetFrameContentCaptureData());
+    session->push_back(receiver->GetContentCaptureFrame());
     rfh = receiver->rfh()->GetParent();
   }
 }
@@ -181,13 +181,13 @@ bool ContentCaptureReceiverManager::BuildContentCaptureSessionLastSeen(
     ContentCaptureReceiver* content_capture_receiver,
     ContentCaptureSession* session) {
   session->push_back(
-      content_capture_receiver->GetFrameContentCaptureDataLastSeen());
+      content_capture_receiver->GetContentCaptureFrameLastSeen());
   content::RenderFrameHost* rfh = content_capture_receiver->rfh()->GetParent();
   while (rfh) {
     ContentCaptureReceiver* receiver = ContentCaptureReceiverForFrame(rfh);
     if (!receiver)
       return false;
-    session->push_back(receiver->GetFrameContentCaptureDataLastSeen());
+    session->push_back(receiver->GetContentCaptureFrameLastSeen());
     rfh = receiver->rfh()->GetParent();
   }
   return true;

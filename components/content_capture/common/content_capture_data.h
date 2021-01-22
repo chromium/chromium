@@ -17,6 +17,13 @@ namespace content_capture {
 // this tree is frame, the child could be the scrollable area or the text
 // content, scrollable area can have scrollable area or text as child. Text
 // cannot have any child.
+//
+// ContentCapture render side only uses ContentCaptureData tree, after it is
+// sent to browser side, it is converted to ContentCaptureFrame.
+//
+// There is no ContentCaptureDataBase.java peer in c++ because
+// ContentCaptureData is used in mojom, otherwise, the ContentCaptureDataBase
+// must be part of mojom interface.
 struct ContentCaptureData {
   ContentCaptureData();
   ContentCaptureData(const ContentCaptureData& data);
@@ -41,12 +48,6 @@ struct ContentCaptureData {
     return !(*this == other);
   }
 };
-
-// This defines a session, is a list of frames from current frame to root.
-// This represents the frame hierarchy, starting from the current frame to the
-// root frame, in the upward order. Note that ContentCaptureData here can only
-// have URL as value, and no ContentCaptureData has children in it.
-using ContentCaptureSession = std::vector<ContentCaptureData>;
 
 }  // namespace content_capture
 

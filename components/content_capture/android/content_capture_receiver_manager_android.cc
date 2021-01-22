@@ -11,6 +11,7 @@
 #include "base/android/jni_string.h"
 #include "components/content_capture/android/content_capture_controller.h"
 #include "components/content_capture/android/jni_headers/ContentCaptureData_jni.h"
+#include "components/content_capture/android/jni_headers/ContentCaptureFrame_jni.h"
 #include "components/content_capture/android/jni_headers/ContentCaptureReceiverManager_jni.h"
 #include "components/content_capture/common/content_capture_features.h"
 #include "content/public/browser/web_contents.h"
@@ -55,13 +56,31 @@ ScopedJavaLocalRef<jobject> ToJavaObjectOfContentCaptureData(
           data.bounds.width(), data.bounds.height());
   if (jdata.is_null())
     return jdata;
-  for (auto child : data.children) {
+  for (const auto& child : data.children) {
     ToJavaObjectOfContentCaptureData(env, child, jdata);
   }
   return jdata;
 }
 
-ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfContentCaptureData(
+ScopedJavaLocalRef<jobject> ToJavaObjectOfContentCaptureFrame(
+    JNIEnv* env,
+    const ContentCaptureFrame& data) {
+  ScopedJavaLocalRef<jstring> jurl = ConvertUTF16ToJavaString(env, data.url);
+  ScopedJavaLocalRef<jstring> jtitle =
+      ConvertUTF16ToJavaString(env, data.title);
+  ScopedJavaLocalRef<jobject> jdata =
+      Java_ContentCaptureFrame_createContentCaptureFrame(
+          env, data.id, jurl, data.bounds.x(), data.bounds.y(),
+          data.bounds.width(), data.bounds.height(), jtitle);
+  if (jdata.is_null())
+    return jdata;
+  for (const auto& child : data.children) {
+    ToJavaObjectOfContentCaptureData(env, child, jdata);
+  }
+  return jdata;
+}
+
+ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfContentCaptureFrame(
     JNIEnv* env,
     const ContentCaptureSession& session) {
   ScopedJavaLocalRef<jclass> object_clazz =
@@ -72,7 +91,7 @@ ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfContentCaptureData(
 
   for (size_t i = 0; i < session.size(); ++i) {
     ScopedJavaLocalRef<jobject> item =
-        ToJavaObjectOfContentCaptureData(env, session[i], JavaRef<jobject>());
+        ToJavaObjectOfContentCaptureFrame(env, session[i]);
     env->SetObjectArrayElement(joa, i, item.obj());
   }
   return ScopedJavaLocalRef<jobjectArray>(env, joa);
@@ -101,31 +120,31 @@ ContentCaptureReceiverManagerAndroid::Create(
 
 void ContentCaptureReceiverManagerAndroid::DidCaptureContent(
     const ContentCaptureSession& parent_session,
-    const ContentCaptureData& data) {
+    const ContentCaptureFrame& data) {
   JNIEnv* env = AttachCurrentThread();
   DCHECK(java_ref_.obj());
 
   ScopedJavaLocalRef<jobject> jdata =
-      ToJavaObjectOfContentCaptureData(env, data, JavaRef<jobject>());
+      ToJavaObjectOfContentCaptureFrame(env, data);
   if (jdata.is_null())
     return;
   Java_ContentCaptureReceiverManager_didCaptureContent(
-      env, java_ref_, ToJavaArrayOfContentCaptureData(env, parent_session),
+      env, java_ref_, ToJavaArrayOfContentCaptureFrame(env, parent_session),
       jdata);
 }
 
 void ContentCaptureReceiverManagerAndroid::DidUpdateContent(
     const ContentCaptureSession& parent_session,
-    const ContentCaptureData& data) {
+    const ContentCaptureFrame& data) {
   JNIEnv* env = AttachCurrentThread();
   DCHECK(java_ref_.obj());
 
   ScopedJavaLocalRef<jobject> jdata =
-      ToJavaObjectOfContentCaptureData(env, data, JavaRef<jobject>());
+      ToJavaObjectOfContentCaptureFrame(env, data);
   if (jdata.is_null())
     return;
   Java_ContentCaptureReceiverManager_didUpdateContent(
-      env, java_ref_, ToJavaArrayOfContentCaptureData(env, parent_session),
+      env, java_ref_, ToJavaArrayOfContentCaptureFrame(env, parent_session),
       jdata);
 }
 
@@ -135,7 +154,7 @@ void ContentCaptureReceiverManagerAndroid::DidRemoveContent(
   JNIEnv* env = AttachCurrentThread();
   DCHECK(java_ref_.obj());
   Java_ContentCaptureReceiverManager_didRemoveContent(
-      env, java_ref_, ToJavaArrayOfContentCaptureData(env, session),
+      env, java_ref_, ToJavaArrayOfContentCaptureFrame(env, session),
       ToJavaLongArray(env, data));
 }
 
@@ -144,7 +163,7 @@ void ContentCaptureReceiverManagerAndroid::DidRemoveSession(
   JNIEnv* env = AttachCurrentThread();
   DCHECK(java_ref_.obj());
   Java_ContentCaptureReceiverManager_didRemoveSession(
-      env, java_ref_, ToJavaArrayOfContentCaptureData(env, session));
+      env, java_ref_, ToJavaArrayOfContentCaptureFrame(env, session));
 }
 
 bool ContentCaptureReceiverManagerAndroid::ShouldCapture(const GURL& url) {

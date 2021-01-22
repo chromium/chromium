@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "components/content_capture/browser/content_capture_frame.h"
 #include "components/content_capture/common/content_capture.mojom.h"
 #include "components/content_capture/common/content_capture_data.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -44,9 +45,9 @@ class ContentCaptureReceiver : public mojom::ContentCaptureReceiver {
 
   content::RenderFrameHost* rfh() const { return rfh_; }
 
-  // Return ContentCaptureData of the associated frame.
-  const ContentCaptureData& GetFrameContentCaptureData();
-  const ContentCaptureData& GetFrameContentCaptureDataLastSeen() const {
+  // Return ContentCaptureFrame of the associated frame.
+  const ContentCaptureFrame& GetContentCaptureFrame();
+  const ContentCaptureFrame& GetContentCaptureFrameLastSeen() const {
     return frame_content_capture_data_;
   }
 
@@ -60,7 +61,7 @@ class ContentCaptureReceiver : public mojom::ContentCaptureReceiver {
 
   mojo::AssociatedReceiver<mojom::ContentCaptureReceiver> receiver_{this};
   content::RenderFrameHost* rfh_;
-  ContentCaptureData frame_content_capture_data_;
+  ContentCaptureFrame frame_content_capture_data_;
 
   // The content id of the associated frame, it is composed of RenderProcessHost
   // unique ID and frame routing ID, and is unique in a WebContents.

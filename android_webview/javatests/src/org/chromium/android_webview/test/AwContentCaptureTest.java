@@ -27,6 +27,8 @@ import org.chromium.base.test.util.FlakyTest;
 import org.chromium.components.content_capture.ContentCaptureConsumer;
 import org.chromium.components.content_capture.ContentCaptureController;
 import org.chromium.components.content_capture.ContentCaptureData;
+import org.chromium.components.content_capture.ContentCaptureDataBase;
+import org.chromium.components.content_capture.ContentCaptureFrame;
 import org.chromium.components.content_capture.ExperimentContentCaptureConsumer;
 import org.chromium.components.content_capture.FrameSession;
 import org.chromium.content_public.browser.WebContents;
@@ -103,10 +105,10 @@ public class AwContentCaptureTest {
 
         @Override
         public void onContentCaptured(
-                FrameSession parentFrame, ContentCaptureData contentCaptureData) {
+                FrameSession parentFrame, ContentCaptureFrame contentCaptureFrame) {
             mParentFrame = parentFrame;
-            mCapturedContent = contentCaptureData;
-            for (ContentCaptureData child : contentCaptureData.getChildren()) {
+            mCapturedContent = contentCaptureFrame;
+            for (ContentCaptureDataBase child : contentCaptureFrame.getChildren()) {
                 mCapturedContentIds.add(child.getId());
             }
             mCallbacks.add(CONTENT_CAPTURED);
@@ -115,9 +117,9 @@ public class AwContentCaptureTest {
 
         @Override
         public void onContentUpdated(
-                FrameSession parentFrame, ContentCaptureData contentCaptureData) {
+                FrameSession parentFrame, ContentCaptureFrame contentCaptureFrame) {
             mParentFrame = parentFrame;
-            mUpdatedContent = contentCaptureData;
+            mUpdatedContent = contentCaptureFrame;
             mCallbacks.add(CONTENT_UPDATED);
             mCallbackHelper.notifyCalled();
         }
@@ -151,11 +153,11 @@ public class AwContentCaptureTest {
             return mParentFrame;
         }
 
-        public ContentCaptureData getCapturedContent() {
+        public ContentCaptureFrame getCapturedContent() {
             return mCapturedContent;
         }
 
-        public ContentCaptureData getUpdatedContent() {
+        public ContentCaptureFrame getUpdatedContent() {
             return mUpdatedContent;
         }
 
@@ -213,8 +215,8 @@ public class AwContentCaptureTest {
         // TODO: (crbug.com/1121827) Remove volatile if possible.
         private volatile Set<Long> mCapturedContentIds;
         private volatile FrameSession mParentFrame;
-        private volatile ContentCaptureData mCapturedContent;
-        private volatile ContentCaptureData mUpdatedContent;
+        private volatile ContentCaptureFrame mCapturedContent;
+        private volatile ContentCaptureFrame mUpdatedContent;
         private volatile FrameSession mCurrentFrameSession;
         private volatile FrameSession mRemovedSession;
         private volatile long[] mRemovedIds;
@@ -314,13 +316,13 @@ public class AwContentCaptureTest {
     }
 
     private static void verifyFrame(
-            Long expectedId, String expectedUrl, ContentCaptureData result) {
+            Long expectedId, String expectedUrl, ContentCaptureFrame result) {
         if (expectedId == null || expectedId.longValue() == 0) {
             Assert.assertNotEquals(0, result.getId());
         } else {
             Assert.assertEquals(expectedId.longValue(), result.getId());
         }
-        Assert.assertEquals(expectedUrl, result.getValue());
+        Assert.assertEquals(expectedUrl, result.getUrl());
         Assert.assertFalse(result.getBounds().isEmpty());
     }
 
@@ -328,19 +330,19 @@ public class AwContentCaptureTest {
         if (expected == null && (result == null || result.isEmpty())) return;
         Assert.assertEquals(expected.size(), result.size());
         for (int i = 0; i < expected.size(); i++) {
-            verifyFrame(expected.get(i).getId(), expected.get(i).getValue(), result.get(i));
+            verifyFrame(expected.get(i).getId(), expected.get(i).getUrl(), result.get(i));
         }
     }
 
     private static void verifyContent(Set<String> expectedContent, Set<Long> unexpectedIds,
-            Set<Long> expectedIds, ContentCaptureData result) {
+            Set<Long> expectedIds, ContentCaptureFrame result) {
         Assert.assertEquals(expectedContent.size(), result.getChildren().size());
         if (expectedIds != null) {
             Assert.assertEquals(expectedIds.size(), result.getChildren().size());
         }
-        for (ContentCaptureData child : result.getChildren()) {
-            Assert.assertTrue(expectedContent.contains(child.getValue()));
-            expectedContent.remove(child.getValue());
+        for (ContentCaptureDataBase child : result.getChildren()) {
+            Assert.assertTrue(expectedContent.contains(((ContentCaptureData) child).getValue()));
+            expectedContent.remove(((ContentCaptureData) child).getValue());
             if (unexpectedIds != null) {
                 Assert.assertFalse(unexpectedIds.contains(child.getId()));
             }
@@ -354,7 +356,7 @@ public class AwContentCaptureTest {
 
     private static void verifyCapturedContent(FrameSession expectedParentSession,
             Long expectedFrameId, String expectedUrl, Set<String> expectedContent,
-            Set<Long> unexpectedContentIds, FrameSession parentResult, ContentCaptureData result) {
+            Set<Long> unexpectedContentIds, FrameSession parentResult, ContentCaptureFrame result) {
         verifyFrameSession(expectedParentSession, parentResult);
         verifyFrame(expectedFrameId, expectedUrl, result);
         verifyContent(expectedContent, unexpectedContentIds, null, result);
@@ -362,7 +364,7 @@ public class AwContentCaptureTest {
 
     private static void verifyUpdatedContent(FrameSession expectedParentSession,
             Long expectedFrameId, String expectedUrl, Set<String> expectedContent,
-            Set<Long> expectedContentIds, FrameSession parentResult, ContentCaptureData result) {
+            Set<Long> expectedContentIds, FrameSession parentResult, ContentCaptureFrame result) {
         verifyFrameSession(expectedParentSession, parentResult);
         verifyFrame(expectedFrameId, expectedUrl, result);
         verifyContent(expectedContent, null, expectedContentIds, result);
@@ -402,24 +404,24 @@ public class AwContentCaptureTest {
         }
     }
 
-    private FrameSession createFrameSession(ContentCaptureData data) {
+    private FrameSession createFrameSession(ContentCaptureFrame data) {
         FrameSession session = new FrameSession(1);
-        ContentCaptureData c = data;
+        ContentCaptureFrame c = data;
         Rect r = c.getBounds();
-        session.add(ContentCaptureData.createContentCaptureData(
-                null, c.getId(), c.getValue(), r.left, r.top, r.width(), r.height()));
+        session.add(ContentCaptureFrame.createContentCaptureFrame(
+                c.getId(), c.getUrl(), r.left, r.top, r.width(), r.height(), null));
         return session;
     }
 
     private FrameSession createFrameSession(String url) {
         FrameSession session = new FrameSession(1);
-        session.add(ContentCaptureData.createContentCaptureData(null, 0, url, 0, 0, 0, 0));
+        session.add(ContentCaptureFrame.createContentCaptureFrame(0, url, 0, 0, 0, 0, null));
         return session;
     }
 
-    private FrameSession createFrameSession(ContentCaptureData... frames) {
+    private FrameSession createFrameSession(ContentCaptureFrame... frames) {
         FrameSession result = new FrameSession(frames.length);
-        for (ContentCaptureData f : frames) {
+        for (ContentCaptureFrame f : frames) {
             result.addAll(createFrameSession(f));
         }
         return result;

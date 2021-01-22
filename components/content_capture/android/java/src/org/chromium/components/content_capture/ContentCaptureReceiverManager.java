@@ -36,7 +36,7 @@ public class ContentCaptureReceiverManager {
     }
 
     @CalledByNative
-    private void didCaptureContent(Object[] session, ContentCaptureData data) {
+    private void didCaptureContent(Object[] session, ContentCaptureFrame data) {
         FrameSession frameSession = toFrameSession(session);
         String[] urls = buildUrls(frameSession, data);
         for (ContentCaptureConsumer consumer : mContentCaptureConsumers) {
@@ -48,7 +48,7 @@ public class ContentCaptureReceiverManager {
     }
 
     @CalledByNative
-    private void didUpdateContent(Object[] session, ContentCaptureData data) {
+    private void didUpdateContent(Object[] session, ContentCaptureFrame data) {
         FrameSession frameSession = toFrameSession(session);
         String[] urls = buildUrls(frameSession, data);
         for (ContentCaptureConsumer consumer : mContentCaptureConsumers) {
@@ -87,18 +87,18 @@ public class ContentCaptureReceiverManager {
 
     private FrameSession toFrameSession(Object[] session) {
         FrameSession frameSession = new FrameSession(session.length);
-        for (Object s : session) frameSession.add((ContentCaptureData) s);
+        for (Object s : session) frameSession.add((ContentCaptureFrame) s);
         return frameSession;
     }
 
-    private String[] buildUrls(FrameSession session, ContentCaptureData data) {
+    private String[] buildUrls(FrameSession session, ContentCaptureFrame data) {
         ArrayList<String> urls = new ArrayList<String>();
         if (session != null) {
-            for (ContentCaptureData d : session) {
-                urls.add(d.getValue());
+            for (ContentCaptureFrame d : session) {
+                urls.add(d.getUrl());
             }
         }
-        if (data != null) urls.add(data.getValue());
+        if (data != null) urls.add(data.getUrl());
         String[] result = new String[urls.size()];
         urls.toArray(result);
         return result;

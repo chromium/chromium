@@ -33,7 +33,9 @@ android_library("java") {
     "java/src/org/chromium/components/content_capture/ContentCaptureController.java",
     "java/src/org/chromium/components/content_capture/ContentCaptureControllerImpl.java",
     "java/src/org/chromium/components/content_capture/ContentCaptureData.java",
+    "java/src/org/chromium/components/content_capture/ContentCaptureDataBase.java",
     "java/src/org/chromium/components/content_capture/ContentCaptureFeatures.java",
+    "java/src/org/chromium/components/content_capture/ContentCaptureFrame.java",
     "java/src/org/chromium/components/content_capture/ContentCaptureReceiverManager.java",
     "java/src/org/chromium/components/content_capture/ContentCapturedTask.java",
     "java/src/org/chromium/components/content_capture/ContentRemovedTask.java",
@@ -54,6 +56,7 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/components/content_capture/ContentCaptureController.java",
     "java/src/org/chromium/components/content_capture/ContentCaptureData.java",
     "java/src/org/chromium/components/content_capture/ContentCaptureFeatures.java",
+    "java/src/org/chromium/components/content_capture/ContentCaptureFrame.java",
     "java/src/org/chromium/components/content_capture/ContentCaptureReceiverManager.java",
   ]
 }

@@ -14,14 +14,14 @@ import java.util.List;
  * The base class to process the ContentCaptureData.
  */
 abstract class ProcessContentCaptureDataTask extends NotificationTask {
-    private final ContentCaptureData mContentCaptureData;
+    private final ContentCaptureFrame mContentCaptureData;
     /**
      * @param session
      * @param contentCaptureData
      * @param platformSession
      */
     public ProcessContentCaptureDataTask(FrameSession session,
-            ContentCaptureData contentCaptureData, PlatformSession platformSession) {
+            ContentCaptureFrame contentCaptureData, PlatformSession platformSession) {
         super(session, platformSession);
         mContentCaptureData = contentCaptureData;
     }
@@ -35,31 +35,40 @@ abstract class ProcessContentCaptureDataTask extends NotificationTask {
         log("ProcessContentTaskBase.processContent");
         PlatformSessionData platformSessionData = buildCurrentSession();
         if (platformSessionData == null) return;
-        processCaptureData(platformSessionData, mContentCaptureData);
+        processCaptureFrame(platformSessionData, mContentCaptureData);
+    }
+
+    private boolean processCaptureFrame(
+            PlatformSessionData parentPlatformSessionData, ContentCaptureFrame data) {
+        if (data == null || data.getUrl() == null) return false;
+        PlatformSessionData platformSessionData =
+                createOrGetSession(parentPlatformSessionData, data);
+        if (platformSessionData == null) return false;
+        List<ContentCaptureDataBase> children = data.getChildren();
+        for (ContentCaptureDataBase child : children) {
+            if (!processCaptureData(platformSessionData, (ContentCaptureData) child)) return false;
+        }
+        return true;
     }
 
     private boolean processCaptureData(
             PlatformSessionData parentPlatformSessionData, ContentCaptureData data) {
         if (data == null) return false;
         if (data.hasChildren()) {
-            PlatformSessionData platformSessionData;
-            if (data.getValue() != null) {
-                // This is frame.
-                platformSessionData = createOrGetSession(parentPlatformSessionData, data);
-                if (platformSessionData == null) return false;
-            } else {
-                // This is scrollable area.
-                AutofillId autofillId = notifyPlatform(parentPlatformSessionData, data);
-                // To add children below scrollable area in frame, the ContentCaptureSession
-                // of the scrollable area is the frame the scrollable area belong to, AutofillId
-                // is scrollable area's AutofillId.
-                if (autofillId == null) return false;
-                platformSessionData = new PlatformSessionData(
-                        parentPlatformSessionData.contentCaptureSession, autofillId);
-            }
-            List<ContentCaptureData> children = data.getChildren();
-            for (ContentCaptureData child : children) {
-                if (!processCaptureData(platformSessionData, child)) return false;
+            // This is scrollable area.
+            AutofillId autofillId = notifyPlatform(parentPlatformSessionData, data);
+            // To add children below scrollable area in frame, the ContentCaptureSession
+            // of the scrollable area is the frame the scrollable area belong to, AutofillId
+            // is scrollable area's AutofillId.
+            if (autofillId == null) return false;
+            PlatformSessionData platformSessionData = new PlatformSessionData(
+                    parentPlatformSessionData.contentCaptureSession, autofillId);
+
+            List<ContentCaptureDataBase> children = data.getChildren();
+            for (ContentCaptureDataBase child : children) {
+                if (!processCaptureData(platformSessionData, (ContentCaptureData) child)) {
+                    return false;
+                }
             }
             return true;
         } else {
@@ -69,5 +78,5 @@ abstract class ProcessContentCaptureDataTask extends NotificationTask {
     }
 
     protected abstract AutofillId notifyPlatform(
-            PlatformSessionData parentPlatformSessionData, ContentCaptureData data);
+            PlatformSessionData parentPlatformSessionData, ContentCaptureDataBase data);
 }

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/supports_user_data.h"
+#include "components/content_capture/browser/content_capture_frame.h"
 #include "components/content_capture/common/content_capture.mojom.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -43,9 +44,9 @@ class ContentCaptureReceiverManager : public content::WebContentsObserver,
 
   // The methods called by ContentCaptureReceiver.
   void DidCaptureContent(ContentCaptureReceiver* content_capture_receiver,
-                         const ContentCaptureData& data);
+                         const ContentCaptureFrame& data);
   void DidUpdateContent(ContentCaptureReceiver* content_capture_receiver,
-                        const ContentCaptureData& data);
+                        const ContentCaptureFrame& data);
   void DidRemoveContent(ContentCaptureReceiver* content_capture_receiver,
                         const std::vector<int64_t>& data);
   void DidRemoveSession(ContentCaptureReceiver* content_capture_receiver);
@@ -59,16 +60,16 @@ class ContentCaptureReceiverManager : public content::WebContentsObserver,
   size_t GetFrameMapSizeForTesting() const { return frame_map_.size(); }
 
  protected:
-  ContentCaptureReceiverManager(content::WebContents* web_contents);
+  explicit ContentCaptureReceiverManager(content::WebContents* web_contents);
 
   // Invoked when the captured content |data| from the |parent_session| was
   // received.
   virtual void DidCaptureContent(const ContentCaptureSession& parent_session,
-                                 const ContentCaptureData& data) = 0;
+                                 const ContentCaptureFrame& data) = 0;
   // Invoked when the updated content |data| from the |parent_session| was
   // received.
   virtual void DidUpdateContent(const ContentCaptureSession& parent_session,
-                                const ContentCaptureData& data) = 0;
+                                const ContentCaptureFrame& data) = 0;
   // Invoked when the list of content |ids| of the given |session| was removed.
   virtual void DidRemoveContent(const ContentCaptureSession& session,
                                 const std::vector<int64_t>& ids) = 0;
