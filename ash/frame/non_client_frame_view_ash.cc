@@ -32,6 +32,7 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/view_targeter.h"
@@ -156,6 +157,7 @@ class NonClientFrameViewAshImmersiveHelper : public WindowStateObserver,
 class NonClientFrameViewAsh::OverlayView : public views::View,
                                            public views::ViewTargeterDelegate {
  public:
+  METADATA_HEADER(OverlayView);
   explicit OverlayView(HeaderView* header_view);
   OverlayView(const OverlayView&) = delete;
   OverlayView& operator=(const OverlayView&) = delete;
@@ -163,7 +165,6 @@ class NonClientFrameViewAsh::OverlayView : public views::View,
 
   // views::View:
   void Layout() override;
-  const char* GetClassName() const override { return "OverlayView"; }
 
  private:
   // views::ViewTargeterDelegate:
@@ -207,6 +208,9 @@ bool NonClientFrameViewAsh::OverlayView::DoesIntersectRect(
   // can be handled by the client view.
   return header_view_->HitTestRect(rect);
 }
+
+BEGIN_NESTED_METADATA(NonClientFrameViewAsh, OverlayView, views::View)
+END_METADATA
 
 NonClientFrameViewAsh::NonClientFrameViewAsh(views::Widget* frame)
     : frame_(frame),

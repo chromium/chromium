@@ -16,12 +16,19 @@
 // Generate the implementation of the metadata accessors and internal class with
 // additional macros for defining the class' properties.
 
-#define BEGIN_METADATA_BASE(class_name) BEGIN_METADATA_INTERNAL(class_name)
+#define BEGIN_METADATA_BASE(class_name) \
+  BEGIN_METADATA_INTERNAL(              \
+      class_name, METADATA_CLASS_NAME_INTERNAL(class_name), class_name)
 
-#define BEGIN_METADATA(class_name, parent_class_name)                  \
-  static_assert(std::is_base_of<parent_class_name, class_name>::value, \
-                "class not child of parent");                          \
-  BEGIN_METADATA_INTERNAL(class_name)                                  \
+#define BEGIN_NESTED_METADATA(outer_class, class_name, parent_class_name) \
+  BEGIN_METADATA_INTERNAL(outer_class::class_name,                        \
+                          METADATA_CLASS_NAME_INTERNAL(class_name),       \
+                          parent_class_name)                              \
+  METADATA_PARENT_CLASS_INTERNAL(parent_class_name)
+
+#define BEGIN_METADATA(class_name, parent_class_name)                          \
+  BEGIN_METADATA_INTERNAL(                                                     \
+      class_name, METADATA_CLASS_NAME_INTERNAL(class_name), parent_class_name) \
   METADATA_PARENT_CLASS_INTERNAL(parent_class_name)
 
 #define END_METADATA }
