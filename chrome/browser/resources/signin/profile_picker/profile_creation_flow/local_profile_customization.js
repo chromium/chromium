@@ -163,6 +163,9 @@ Polymer({
 
   /** @private */
   onViewEnterStart_() {
+    if (this.profileName_.length === 0) {
+      this.$.nameInput.invalid = false;
+    }
     this.$.nameInput.focusInput();
     this.$.wrapper.scrollTop = 0;
   },

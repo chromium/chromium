@@ -93,6 +93,10 @@ suite('LocalProfileCustomizationFocusTest', function() {
     await whenCheck(
         customization, () => customization.classList.contains('active'));
     await verifyProfileName(true, true);
+
+    // Invalid profile name.
+    customization.$$('#nameInput').value = '  ';
+    await verifyProfileName(true, false);
     customization.$$('#backButton').focus();
     await verifyProfileName(false, false);
 
@@ -134,7 +138,9 @@ suite('LocalProfileCustomizationFocusTest', function() {
     navigateToProfileCreationFromMainView(mainView);
     await whenCheck(
         customization, () => customization.classList.contains('active'));
-    await verifyProfileName(true, false);
+
+    // The invalid state should not stick if the profile name is empty.
+    await verifyProfileName(true, true);
 
     // Open the profile creation flow directly.
     await resetTestElement(Routes.NEW_PROFILE);
