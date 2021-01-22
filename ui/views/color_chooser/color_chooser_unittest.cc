@@ -22,6 +22,7 @@
 #include "ui/views/color_chooser/color_chooser_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/views_test_base.h"
+#include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_utils.h"
 
 namespace {
@@ -42,11 +43,18 @@ class ColorChooserTest : public views::ViewsTestBase {
 
   void SetUp() override {
     ViewsTestBase::SetUp();
-    chooser_ =
-        std::make_unique<views::ColorChooserView>(&listener_, SK_ColorGREEN);
-    chooser_->SetBounds(0, 0, 400, 300);
+    chooser_ = std::make_unique<views::ColorChooser>(&listener_, SK_ColorGREEN);
+
+    // Icky: we can't use our own WidgetDelegate for CreateTestWidget, but we
+    // want to follow the production code path here regardless, so we create our
+    // own delegate, pull the contents view out of it, and stick it into the
+    // test widget. In production Views would handle that step itself.
+    auto delegate = chooser_->MakeWidgetDelegate();
+    auto* view = delegate->TransferOwnershipOfContentsView();
+
+    view->SetBounds(0, 0, 400, 300);
     widget_ = CreateTestWidget(views::Widget::InitParams::TYPE_WINDOW);
-    widget_->GetContentsView()->AddChildView(chooser());
+    widget_->GetContentsView()->AddChildView(std::move(view));
     generator_ = std::make_unique<ui::test::EventGenerator>(
         views::GetRootWindow(widget_.get()), widget_->GetNativeWindow());
     generator_->set_assume_window_at_origin(false);
@@ -58,7 +66,7 @@ class ColorChooserTest : public views::ViewsTestBase {
     ViewsTestBase::TearDown();
   }
 
-  views::ColorChooserView* chooser() { return chooser_.get(); }
+  views::ColorChooser* chooser() { return chooser_.get(); }
   ui::test::EventGenerator* generator() { return generator_.get(); }
 
   void ExpectExactHSV(float h, float s, float v) const {
@@ -115,7 +123,7 @@ class ColorChooserTest : public views::ViewsTestBase {
 
  private:
   TestChooserListener listener_;
-  std::unique_ptr<views::ColorChooserView> chooser_;
+  std::unique_ptr<views::ColorChooser> chooser_;
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<ui::test::EventGenerator> generator_;
 };

@@ -35,6 +35,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/grid_layout.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
 
 namespace {
 
@@ -124,13 +125,14 @@ void DrawGradientRect(const gfx::Rect& rect,
 namespace views {
 
 ////////////////////////////////////////////////////////////////////////////////
-// ColorChooserView::HueView
+// HueView
 //
 // The class to choose the hue of the color.  It draws a vertical bar and
 // the indicator for the currently selected hue.
-class ColorChooserView::HueView : public LocatedEventHandlerView {
+class HueView : public LocatedEventHandlerView {
  public:
-  explicit HueView(ColorChooserView* chooser_view);
+  using HueChangedCallback = base::RepeatingCallback<void(SkScalar)>;
+  explicit HueView(const HueChangedCallback& changed_callback);
 
   void OnHueChanged(SkScalar hue);
 
@@ -142,16 +144,16 @@ class ColorChooserView::HueView : public LocatedEventHandlerView {
   gfx::Size CalculatePreferredSize() const override;
   void OnPaint(gfx::Canvas* canvas) override;
 
-  ColorChooserView* chooser_view_;
+  HueChangedCallback changed_callback_;
   int level_;
 
   DISALLOW_COPY_AND_ASSIGN(HueView);
 };
 
-ColorChooserView::HueView::HueView(ColorChooserView* chooser_view)
-    : chooser_view_(chooser_view), level_(0) {}
+HueView::HueView(const HueChangedCallback& changed_callback)
+    : changed_callback_(changed_callback), level_(0) {}
 
-void ColorChooserView::HueView::OnHueChanged(SkScalar hue) {
+void HueView::OnHueChanged(SkScalar hue) {
   SkScalar height = SkIntToScalar(kSaturationValueSize - 1);
   SkScalar hue_max = SkIntToScalar(360);
   int level = (hue_max - hue) * height / hue_max;
@@ -162,23 +164,22 @@ void ColorChooserView::HueView::OnHueChanged(SkScalar hue) {
   }
 }
 
-void ColorChooserView::HueView::ProcessEventAtLocation(
-    const gfx::Point& point) {
+void HueView::ProcessEventAtLocation(const gfx::Point& point) {
   level_ =
       std::max(kBorderWidth, std::min(height() - 1 - kBorderWidth, point.y()));
   int base_height = kSaturationValueSize - 1;
-  chooser_view_->OnHueChosen(360.f * (base_height - (level_ - kBorderWidth)) /
-                             base_height);
+  changed_callback_.Run(360.f * (base_height - (level_ - kBorderWidth)) /
+                        base_height);
   SchedulePaint();
 }
 
-gfx::Size ColorChooserView::HueView::CalculatePreferredSize() const {
+gfx::Size HueView::CalculatePreferredSize() const {
   // We put indicators on the both sides of the hue bar.
   return gfx::Size(kHueBarWidth + kHueIndicatorSize * 2 + kBorderWidth * 2,
                    kSaturationValueSize + kBorderWidth * 2);
 }
 
-void ColorChooserView::HueView::OnPaint(gfx::Canvas* canvas) {
+void HueView::OnPaint(gfx::Canvas* canvas) {
   SkScalar hsv[3];
   // In the hue bar, saturation and value for the color should be always 100%.
   hsv[1] = SK_Scalar1;
@@ -223,14 +224,17 @@ void ColorChooserView::HueView::OnPaint(gfx::Canvas* canvas) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// ColorChooserView::SaturationValueView
+// SaturationValueView
 //
 // The class to choose the saturation and the value of the color.  It draws
 // a square area and the indicator for the currently selected saturation and
 // value.
-class ColorChooserView::SaturationValueView : public LocatedEventHandlerView {
+class SaturationValueView : public LocatedEventHandlerView {
  public:
-  explicit SaturationValueView(ColorChooserView* chooser_view);
+  using SaturationValueChangedCallback =
+      base::RepeatingCallback<void(SkScalar, SkScalar)>;
+  explicit SaturationValueView(
+      const SaturationValueChangedCallback& changed_callback);
 
   void OnHueChanged(SkScalar hue);
   void OnSaturationValueChanged(SkScalar saturation, SkScalar value);
@@ -243,29 +247,28 @@ class ColorChooserView::SaturationValueView : public LocatedEventHandlerView {
   gfx::Size CalculatePreferredSize() const override;
   void OnPaint(gfx::Canvas* canvas) override;
 
-  ColorChooserView* chooser_view_;
+  SaturationValueChangedCallback changed_callback_;
   SkScalar hue_;
   gfx::Point marker_position_;
 
   DISALLOW_COPY_AND_ASSIGN(SaturationValueView);
 };
 
-ColorChooserView::SaturationValueView::SaturationValueView(
-    ColorChooserView* chooser_view)
-    : chooser_view_(chooser_view), hue_(0) {
+SaturationValueView::SaturationValueView(
+    const SaturationValueChangedCallback& changed_callback)
+    : changed_callback_(changed_callback), hue_(0) {
   SetBorder(CreateSolidBorder(kBorderWidth, SK_ColorGRAY));
 }
 
-void ColorChooserView::SaturationValueView::OnHueChanged(SkScalar hue) {
+void SaturationValueView::OnHueChanged(SkScalar hue) {
   if (hue_ != hue) {
     hue_ = hue;
     SchedulePaint();
   }
 }
 
-void ColorChooserView::SaturationValueView::OnSaturationValueChanged(
-    SkScalar saturation,
-    SkScalar value) {
+void SaturationValueView::OnSaturationValueChanged(SkScalar saturation,
+                                                   SkScalar value) {
   SkScalar scalar_size = SkIntToScalar(kSaturationValueSize - 1);
   int x = SkScalarFloorToInt(saturation * scalar_size) + kBorderWidth;
   int y = SkScalarFloorToInt((SK_Scalar1 - value) * scalar_size) + kBorderWidth;
@@ -277,24 +280,22 @@ void ColorChooserView::SaturationValueView::OnSaturationValueChanged(
   SchedulePaint();
 }
 
-void ColorChooserView::SaturationValueView::ProcessEventAtLocation(
-    const gfx::Point& point) {
+void SaturationValueView::ProcessEventAtLocation(const gfx::Point& point) {
   SkScalar scalar_size = SkIntToScalar(kSaturationValueSize - 1);
   SkScalar saturation = (point.x() - kBorderWidth) / scalar_size;
   SkScalar value = SK_Scalar1 - (point.y() - kBorderWidth) / scalar_size;
   saturation = base::ClampToRange(saturation, 0.0f, SK_Scalar1);
   value = base::ClampToRange(value, 0.0f, SK_Scalar1);
   OnSaturationValueChanged(saturation, value);
-  chooser_view_->OnSaturationValueChosen(saturation, value);
+  changed_callback_.Run(saturation, value);
 }
 
-gfx::Size ColorChooserView::SaturationValueView::CalculatePreferredSize()
-    const {
+gfx::Size SaturationValueView::CalculatePreferredSize() const {
   return gfx::Size(kSaturationValueSize + kBorderWidth * 2,
                    kSaturationValueSize + kBorderWidth * 2);
 }
 
-void ColorChooserView::SaturationValueView::OnPaint(gfx::Canvas* canvas) {
+void SaturationValueView::OnPaint(gfx::Canvas* canvas) {
   gfx::Rect color_bounds = bounds();
   color_bounds.Inset(GetInsets());
 
@@ -329,10 +330,10 @@ void ColorChooserView::SaturationValueView::OnPaint(gfx::Canvas* canvas) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// ColorChooserView::SelectedColorPatchView
+// SelectedColorPatchView
 //
 // A view to simply show the selected color in a rectangle.
-class ColorChooserView::SelectedColorPatchView : public views::View {
+class SelectedColorPatchView : public views::View {
  public:
   SelectedColorPatchView();
 
@@ -342,12 +343,12 @@ class ColorChooserView::SelectedColorPatchView : public views::View {
   DISALLOW_COPY_AND_ASSIGN(SelectedColorPatchView);
 };
 
-ColorChooserView::SelectedColorPatchView::SelectedColorPatchView() {
+SelectedColorPatchView::SelectedColorPatchView() {
   SetVisible(true);
   SetBorder(CreateSolidBorder(kBorderWidth, SK_ColorGRAY));
 }
 
-void ColorChooserView::SelectedColorPatchView::SetColor(SkColor color) {
+void SelectedColorPatchView::SetColor(SkColor color) {
   if (!background())
     SetBackground(CreateSolidBackground(color));
   else
@@ -355,29 +356,23 @@ void ColorChooserView::SelectedColorPatchView::SetColor(SkColor color) {
   SchedulePaint();
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// ColorChooserView
-//
-
-ColorChooserView::ColorChooserView(ColorChooserListener* listener,
-                                   SkColor initial_color)
-    : listener_(listener) {
-  DCHECK(listener_);
-
-  SetModalType(ui::MODAL_TYPE_WINDOW);
-
-  SetBackground(CreateSolidBackground(SK_ColorLTGRAY));
-  SetLayoutManager(
+std::unique_ptr<View> ColorChooser::BuildView() {
+  auto view = std::make_unique<View>();
+  tracker_.SetView(view.get());
+  view->SetBackground(CreateSolidBackground(SK_ColorLTGRAY));
+  view->SetLayoutManager(
       std::make_unique<BoxLayout>(BoxLayout::Orientation::kVertical,
                                   gfx::Insets(kMarginWidth), kMarginWidth));
 
   auto container = std::make_unique<View>();
   container->SetLayoutManager(std::make_unique<BoxLayout>(
       BoxLayout::Orientation::kHorizontal, gfx::Insets(), kMarginWidth));
-  saturation_value_ =
-      container->AddChildView(std::make_unique<SaturationValueView>(this));
-  hue_ = container->AddChildView(std::make_unique<HueView>(this));
-  AddChildView(std::move(container));
+  saturation_value_ = container->AddChildView(
+      std::make_unique<SaturationValueView>(base::BindRepeating(
+          &ColorChooser::OnSaturationValueChosen, this->AsWeakPtr())));
+  hue_ = container->AddChildView(std::make_unique<HueView>(
+      base::BindRepeating(&ColorChooser::OnHueChosen, this->AsWeakPtr())));
+  view->AddChildView(std::move(container));
 
   auto container2 = std::make_unique<View>();
   GridLayout* layout =
@@ -397,95 +392,128 @@ ColorChooserView::ColorChooserView(ColorChooserListener* listener,
   textfield_ = layout->AddView(std::move(textfield));
   selected_color_patch_ =
       layout->AddView(std::make_unique<SelectedColorPatchView>());
-  AddChildView(std::move(container2));
+  view->AddChildView(std::move(container2));
 
-  OnColorChanged(initial_color);
+  OnColorChanged(initial_color_);
+
+  return view;
 }
 
-ColorChooserView::~ColorChooserView() = default;
-
-void ColorChooserView::OnColorChanged(SkColor color) {
-  SkColorToHSV(color, hsv_);
-  hue_->OnHueChanged(hsv_[0]);
-  saturation_value_->OnHueChanged(hsv_[0]);
-  saturation_value_->OnSaturationValueChanged(hsv_[1], hsv_[2]);
-  selected_color_patch_->SetColor(color);
-  textfield_->SetText(GetColorText(color));
+bool ColorChooser::IsViewAttached() const {
+  return tracker_.view();
 }
 
-void ColorChooserView::OnHueChosen(SkScalar hue) {
-  hsv_[0] = hue;
-  SkColor color = SkHSVToColor(255, hsv_);
-  if (listener_)
-    listener_->OnColorChosen(color);
+void ColorChooser::OnColorChanged(SkColor color) {
+  SetColor(color);
+  if (IsViewAttached()) {
+    hue_->OnHueChanged(hue());
+    saturation_value_->OnHueChanged(hue());
+    saturation_value_->OnSaturationValueChanged(saturation(), value());
+    selected_color_patch_->SetColor(color);
+    textfield_->SetText(GetColorText(color));
+  }
+}
+
+void ColorChooser::OnHueChosen(SkScalar hue) {
+  SetHue(hue);
+  SkColor color = GetColor();
   saturation_value_->OnHueChanged(hue);
   selected_color_patch_->SetColor(color);
   textfield_->SetText(GetColorText(color));
 }
 
-void ColorChooserView::OnSaturationValueChosen(SkScalar saturation,
-                                               SkScalar value) {
-  hsv_[1] = saturation;
-  hsv_[2] = value;
-  SkColor color = SkHSVToColor(255, hsv_);
-  if (listener_)
-    listener_->OnColorChosen(color);
+void ColorChooser::OnSaturationValueChosen(SkScalar saturation,
+                                           SkScalar value) {
+  SetSaturationValue(saturation, value);
+  SkColor color = GetColor();
   selected_color_patch_->SetColor(color);
   textfield_->SetText(GetColorText(color));
 }
 
-View* ColorChooserView::hue_view_for_testing() {
+View* ColorChooser::hue_view_for_testing() {
   return hue_;
 }
 
-View* ColorChooserView::saturation_value_view_for_testing() {
+View* ColorChooser::saturation_value_view_for_testing() {
   return saturation_value_;
 }
 
-Textfield* ColorChooserView::textfield_for_testing() {
+Textfield* ColorChooser::textfield_for_testing() {
   return textfield_;
 }
 
-View* ColorChooserView::selected_color_patch_for_testing() {
+View* ColorChooser::selected_color_patch_for_testing() {
   return selected_color_patch_;
 }
 
-void ColorChooserView::ContentsChanged(Textfield* sender,
-                                       const base::string16& new_contents) {
+void ColorChooser::ContentsChanged(Textfield* sender,
+                                   const base::string16& new_contents) {
+  DCHECK(IsViewAttached());
+
   SkColor color = SK_ColorBLACK;
   if (GetColorFromText(new_contents, &color)) {
-    SkColorToHSV(color, hsv_);
-    if (listener_)
-      listener_->OnColorChosen(color);
-    hue_->OnHueChanged(hsv_[0]);
-    saturation_value_->OnHueChanged(hsv_[0]);
-    saturation_value_->OnSaturationValueChanged(hsv_[1], hsv_[2]);
+    SetColor(color);
+    hue_->OnHueChanged(hue());
+    saturation_value_->OnHueChanged(hue());
+    saturation_value_->OnSaturationValueChanged(saturation(), value());
     selected_color_patch_->SetColor(color);
   }
 }
 
-bool ColorChooserView::HandleKeyEvent(Textfield* sender,
-                                      const ui::KeyEvent& key_event) {
+bool ColorChooser::HandleKeyEvent(Textfield* sender,
+                                  const ui::KeyEvent& key_event) {
+  DCHECK(IsViewAttached());
+
   if (key_event.type() != ui::ET_KEY_PRESSED ||
       (key_event.key_code() != ui::VKEY_RETURN &&
        key_event.key_code() != ui::VKEY_ESCAPE))
     return false;
 
-  GetWidget()->Close();
+  tracker_.view()->GetWidget()->Close();
   return true;
 }
 
-bool ColorChooserView::CanMinimize() const {
-  return false;
+std::unique_ptr<WidgetDelegate> ColorChooser::MakeWidgetDelegate() {
+  DCHECK(!IsViewAttached());
+
+  auto delegate = std::make_unique<WidgetDelegate>();
+  delegate->SetCanMinimize(false);
+  delegate->SetContentsView(BuildView());
+  delegate->SetInitiallyFocusedView(textfield_);
+  delegate->SetModalType(ui::MODAL_TYPE_WINDOW);
+  delegate->RegisterWindowClosingCallback(
+      base::BindOnce(&ColorChooser::OnViewClosing, base::Unretained(this)));
+
+  return delegate;
 }
 
-View* ColorChooserView::GetInitiallyFocusedView() {
-  return textfield_;
+ColorChooser::ColorChooser(ColorChooserListener* listener, SkColor initial)
+    : listener_(listener), initial_color_(initial) {}
+
+ColorChooser::~ColorChooser() = default;
+
+void ColorChooser::SetColor(SkColor color) {
+  SkColorToHSV(color, hsv_);
+  listener_->OnColorChosen(GetColor());
 }
 
-void ColorChooserView::WindowClosing() {
-  if (listener_)
-    listener_->OnColorChooserDialogClosed();
+void ColorChooser::SetHue(SkScalar hue) {
+  hsv_[0] = hue;
+  listener_->OnColorChosen(GetColor());
+}
+
+void ColorChooser::SetSaturationValue(SkScalar saturation, SkScalar value) {
+  hsv_[1] = saturation;
+  hsv_[2] = value;
+  listener_->OnColorChosen(GetColor());
+}
+
+SkColor ColorChooser::GetColor() const {
+  return SkHSVToColor(255, hsv_);
+}
+
+void ColorChooser::OnViewClosing() {
+  listener_->OnColorChooserDialogClosed();
 }
 
 }  // namespace views

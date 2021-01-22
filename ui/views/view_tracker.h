@@ -21,6 +21,7 @@ class VIEWS_EXPORT ViewTracker : public ViewObserver {
 
   void SetView(View* view);
   View* view() { return view_; }
+  const View* view() const { return view_; }
 
   // ViewObserver:
   void OnViewIsDeleting(View* observed_view) override;
