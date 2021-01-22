@@ -18,9 +18,12 @@
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track_generator.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
+#include "third_party/blink/renderer/modules/mediastream/mock_media_stream_audio_sink.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_sink.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
+#include "third_party/blink/renderer/modules/mediastream/pushable_media_stream_audio_source.h"
 #include "third_party/blink/renderer/modules/mediastream/pushable_media_stream_video_source.h"
+#include "third_party/blink/renderer/modules/webcodecs/audio_frame_serialization_data.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
@@ -32,6 +35,13 @@ using testing::_;
 namespace blink {
 
 namespace {
+
+std::unique_ptr<PushableMediaStreamAudioSource> CreatePushableAudioSource() {
+  // Use the IO thread for testing purposes.
+  return std::make_unique<PushableMediaStreamAudioSource>(
+      Thread::MainThread()->GetTaskRunner(),
+      Platform::Current()->GetIOTaskRunner());
+}
 
 PushableMediaStreamVideoSource* CreatePushableVideoSource() {
   PushableMediaStreamVideoSource* pushable_video_source =
@@ -53,21 +63,22 @@ MediaStreamTrack* CreateVideoMediaStreamTrack(ExecutionContext* context,
                    /*enabled=*/true));
 }
 
-MediaStreamTrack* CreateAudioMediaStreamTrack(ExecutionContext* context) {
-  std::unique_ptr<MediaStreamAudioSource> audio_source =
-      std::make_unique<MediaStreamAudioSource>(
-          blink::scheduler::GetSingleThreadTaskRunnerForTesting(),
-          /*is_local_source=*/false);
+MediaStreamTrack* CreateAudioMediaStreamTrack(
+    ExecutionContext* context,
+    std::unique_ptr<PushableMediaStreamAudioSource> source) {
+  auto* source_ptr = source.get();
+
   MediaStreamSource* media_stream_source =
       MakeGarbageCollected<MediaStreamSource>(
           "source_id", MediaStreamSource::kTypeAudio, "source_name",
-          /*is_remote=*/false);
-  media_stream_source->SetPlatformSource(std::move(audio_source));
-  std::unique_ptr<MediaStreamAudioTrack> audio_track =
-      std::make_unique<MediaStreamAudioTrack>(/*is_local_track=*/false);
+          /*remote=*/false);
+  media_stream_source->SetPlatformSource(std::move(source));
+
   MediaStreamComponent* component =
       MakeGarbageCollected<MediaStreamComponent>(media_stream_source);
-  component->SetPlatformTrack(std::move(audio_track));
+
+  source_ptr->ConnectToTrack(component);
+
   return MakeGarbageCollected<MediaStreamTrack>(context, component);
 }
 
@@ -129,6 +140,53 @@ TEST_F(MediaStreamTrackProcessorTest, VideoFramesAreExposed) {
   sink_loop.Run();
   EXPECT_EQ(mock_video_sink.number_of_frames(), 1);
   EXPECT_EQ(mock_video_sink.last_frame(), frame);
+}
+
+TEST_F(MediaStreamTrackProcessorTest, AudioFramesAreExposed) {
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+  ExceptionState& exception_state = v8_scope.GetExceptionState();
+  std::unique_ptr<PushableMediaStreamAudioSource> pushable_audio_source =
+      CreatePushableAudioSource();
+  auto* pushable_source_ptr = pushable_audio_source.get();
+  MediaStreamTrackProcessor* track_processor =
+      MediaStreamTrackProcessor::Create(
+          script_state,
+          CreateAudioMediaStreamTrack(v8_scope.GetExecutionContext(),
+                                      std::move(pushable_audio_source)),
+          exception_state);
+  EXPECT_FALSE(exception_state.HadException());
+  EXPECT_EQ(track_processor->input_track()->Source()->GetPlatformSource(),
+            pushable_source_ptr);
+
+  MockMediaStreamAudioSink mock_audio_sink;
+  WebMediaStreamAudioSink::AddToAudioTrack(
+      &mock_audio_sink, WebMediaStreamTrack(track_processor->input_track()));
+
+  auto* reader =
+      track_processor->readable(script_state)
+          ->GetDefaultReaderForTesting(script_state, exception_state);
+  EXPECT_FALSE(exception_state.HadException());
+
+  // Deliver a frame.
+  base::RunLoop sink_loop;
+  EXPECT_CALL(mock_audio_sink, OnData(_, _))
+      .WillOnce(base::test::RunOnceClosure(sink_loop.QuitClosure()));
+  pushable_source_ptr->PushAudioData(AudioFrameSerializationData::Wrap(
+      media::AudioBus::Create(/*channels=*/2, /*frames=*/100),
+      /*sample_rate=*/8000, base::TimeDelta::FromSeconds(1)));
+
+  ScriptPromiseTester read_tester(script_state,
+                                  reader->read(script_state, exception_state));
+  EXPECT_FALSE(read_tester.IsFulfilled());
+  read_tester.WaitUntilSettled();
+  EXPECT_FALSE(exception_state.HadException());
+  EXPECT_TRUE(read_tester.IsFulfilled());
+  EXPECT_TRUE(read_tester.Value().IsObject());
+  sink_loop.Run();
+
+  WebMediaStreamAudioSink::RemoveFromAudioTrack(
+      &mock_audio_sink, WebMediaStreamTrack(track_processor->input_track()));
 }
 
 TEST_F(MediaStreamTrackProcessorTest, CanceledReadableDisconnects) {
@@ -233,8 +291,8 @@ TEST_F(MediaStreamTrackProcessorTest, NullInputTrack) {
 
   EXPECT_EQ(track_processor, nullptr);
   EXPECT_TRUE(exception_state.HadException());
-  EXPECT_EQ(static_cast<DOMExceptionCode>(v8_scope.GetExceptionState().Code()),
-            DOMExceptionCode::kOperationError);
+  EXPECT_EQ(static_cast<ESErrorType>(v8_scope.GetExceptionState().Code()),
+            ESErrorType::kTypeError);
 }
 
 TEST_F(MediaStreamTrackProcessorTest, EndedTrack) {
@@ -251,25 +309,8 @@ TEST_F(MediaStreamTrackProcessorTest, EndedTrack) {
 
   EXPECT_EQ(track_processor, nullptr);
   EXPECT_TRUE(exception_state.HadException());
-  EXPECT_EQ(static_cast<DOMExceptionCode>(v8_scope.GetExceptionState().Code()),
-            DOMExceptionCode::kInvalidStateError);
-}
-
-// TODO(crbug.com/1142955): Add support for audio.
-TEST_F(MediaStreamTrackProcessorTest, Audio) {
-  V8TestingScope v8_scope;
-  ScriptState* script_state = v8_scope.GetScriptState();
-  ExceptionState& exception_state = v8_scope.GetExceptionState();
-  MediaStreamTrack* media_stream_track =
-      CreateAudioMediaStreamTrack(v8_scope.GetExecutionContext());
-  MediaStreamTrackProcessor* track_processor =
-      MediaStreamTrackProcessor::Create(script_state, media_stream_track,
-                                        exception_state);
-
-  EXPECT_EQ(track_processor, nullptr);
-  EXPECT_TRUE(exception_state.HadException());
-  EXPECT_EQ(static_cast<DOMExceptionCode>(v8_scope.GetExceptionState().Code()),
-            DOMExceptionCode::kNotSupportedError);
+  EXPECT_EQ(static_cast<ESErrorType>(v8_scope.GetExceptionState().Code()),
+            ESErrorType::kTypeError);
 }
 
 }  // namespace blink

@@ -111,7 +111,7 @@ MediaStreamTrackGenerator* MediaStreamTrackGenerator::Create(
     const String& kind,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid context");
     return nullptr;
   }
