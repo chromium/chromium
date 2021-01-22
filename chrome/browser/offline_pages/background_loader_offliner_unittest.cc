@@ -817,64 +817,6 @@ TEST_F(BackgroundLoaderOfflinerTest, DoesNotCrashWithNullResponseHeaders) {
   offliner()->DidFinishNavigation(&handle);
 }
 
-TEST_F(BackgroundLoaderOfflinerTest, OffliningPreviewsStatusOffHistogram) {
-  base::Time creation_time = base::Time::Now();
-  SavePageRequest request(kRequestId, HttpUrl(), kClientId, creation_time,
-                          kUserRequested);
-  EXPECT_TRUE(offliner()->LoadAndSave(request, completion_callback(),
-                                      progress_callback()));
-
-  // Called after calling LoadAndSave so we have web_contents to work with.
-  content::MockNavigationHandle handle(
-      HttpUrl(), offliner()->web_contents()->GetMainFrame());
-  handle.set_has_committed(true);
-  // Set up PreviewsUserData on the handle.
-  PreviewsUITabHelper::CreateForWebContents(offliner()->web_contents());
-  PreviewsUITabHelper::FromWebContents(offliner()->web_contents())
-      ->CreatePreviewsUserDataForNavigationHandle(&handle, 1u)
-      ->set_committed_previews_state(
-          blink::PreviewsTypes::PREVIEWS_NO_TRANSFORM);
-  scoped_refptr<net::HttpResponseHeaders> header(
-      new net::HttpResponseHeaders("HTTP/1.1 200 OK"));
-  handle.set_response_headers(header.get());
-  // Call DidFinishNavigation with handle.
-  offliner()->DidFinishNavigation(&handle);
-
-  histograms().ExpectBucketCount(
-      "OfflinePages.Background.OffliningPreviewStatus.async_loading",
-      0,  // Previews Disabled
-      1);
-}
-
-TEST_F(BackgroundLoaderOfflinerTest, OffliningPreviewsStatusOnHistogram) {
-  base::Time creation_time = base::Time::Now();
-  SavePageRequest request(kRequestId, HttpUrl(), kClientId, creation_time,
-                          kUserRequested);
-  EXPECT_TRUE(offliner()->LoadAndSave(request, completion_callback(),
-                                      progress_callback()));
-
-  // Called after calling LoadAndSave so we have web_contents to work with.
-  content::MockNavigationHandle handle(
-      HttpUrl(), offliner()->web_contents()->GetMainFrame());
-  handle.set_has_committed(true);
-  // Set up PreviewsUserData on the handle.
-  PreviewsUITabHelper::CreateForWebContents(offliner()->web_contents());
-  PreviewsUITabHelper::FromWebContents(offliner()->web_contents())
-      ->CreatePreviewsUserDataForNavigationHandle(&handle, 1u)
-      ->set_committed_previews_state(blink::PreviewsTypes::DEFER_ALL_SCRIPT_ON);
-  scoped_refptr<net::HttpResponseHeaders> header(
-      new net::HttpResponseHeaders("HTTP/1.1 200 OK"));
-  handle.set_response_headers(header.get());
-
-  // Call DidFinishNavigation with handle.
-  offliner()->DidFinishNavigation(&handle);
-
-  histograms().ExpectBucketCount(
-      "OfflinePages.Background.OffliningPreviewStatus.async_loading",
-      1,  // Previews Enabled
-      1);
-}
-
 TEST_F(BackgroundLoaderOfflinerTest, OnlySavesOnceOnMultipleLoads) {
   base::Time creation_time = base::Time::Now();
   SavePageRequest request(kRequestId, HttpUrl(), kClientId, creation_time,

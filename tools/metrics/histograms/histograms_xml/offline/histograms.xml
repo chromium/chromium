@@ -309,6 +309,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="OfflinePages.Background.OffliningPreviewStatus"
     enum="BooleanEnabled" expires_after="2021-01-25">
+  <obsolete>
+    Removed 22 Jan 2021.
+  </obsolete>
   <owner>petewil@chromium.org</owner>
   <owner>offline-dev@chromium.org</owner>
   <summary>

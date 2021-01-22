@@ -65,18 +65,6 @@ void RecordErrorCauseUMA(const ClientId& client_id, int error_code) {
       error_code);
 }
 
-void RecordOffliningPreviewsUMA(const ClientId& client_id,
-                                blink::PreviewsState previews_state) {
-  bool is_previews_enabled =
-      (previews_state != blink::PreviewsTypes::PREVIEWS_OFF &&
-       previews_state != blink::PreviewsTypes::PREVIEWS_NO_TRANSFORM);
-
-  base::UmaHistogramBoolean(
-      AddHistogramSuffix(client_id,
-                         "OfflinePages.Background.OffliningPreviewStatus"),
-      is_previews_enabled);
-}
-
 void HandleLoadTerminationCancel(
     Offliner::CompletionCallback completion_callback,
     const SavePageRequest& canceled_request) {
@@ -339,7 +327,6 @@ void BackgroundLoaderOffliner::DidFinishNavigation(
       previews_state = previews_user_data->CommittedPreviewsState();
   }
 
-  RecordOffliningPreviewsUMA(pending_request_->client_id(), previews_state);
 }
 
 void BackgroundLoaderOffliner::SetBackgroundSnapshotControllerForTest(
