@@ -94,53 +94,101 @@ TextAttachment::Type GetCommonTextAttachmentType(
   return type;
 }
 
-int GetFileAttachmentsStringId(const std::vector<FileAttachment>& files) {
+int GetFileAttachmentsCapitalizedStringId(
+    const std::vector<FileAttachment>& files) {
   switch (GetCommonFileAttachmentType(files)) {
     case FileAttachment::Type::kApp:
-      return IDS_NEARBY_FILE_ATTACHMENTS_APPS;
+      return IDS_NEARBY_FILE_ATTACHMENTS_CAPITALIZED_APPS;
     case FileAttachment::Type::kImage:
-      return IDS_NEARBY_FILE_ATTACHMENTS_IMAGES;
+      return IDS_NEARBY_FILE_ATTACHMENTS_CAPITALIZED_IMAGES;
     case FileAttachment::Type::kUnknown:
-      return IDS_NEARBY_FILE_ATTACHMENTS_UNKNOWN;
+      return IDS_NEARBY_FILE_ATTACHMENTS_CAPITALIZED_UNKNOWN;
     case FileAttachment::Type::kVideo:
-      return IDS_NEARBY_FILE_ATTACHMENTS_VIDEOS;
+      return IDS_NEARBY_FILE_ATTACHMENTS_CAPITALIZED_VIDEOS;
     default:
-      return IDS_NEARBY_UNKNOWN_ATTACHMENTS;
+      return IDS_NEARBY_CAPITALIZED_UNKNOWN_ATTACHMENTS;
   }
 }
 
-int GetTextAttachmentsStringId(const std::vector<TextAttachment>& texts) {
+int GetFileAttachmentsNotCapitalizedStringId(
+    const std::vector<FileAttachment>& files) {
+  switch (GetCommonFileAttachmentType(files)) {
+    case FileAttachment::Type::kApp:
+      return IDS_NEARBY_FILE_ATTACHMENTS_NOT_CAPITALIZED_APPS;
+    case FileAttachment::Type::kImage:
+      return IDS_NEARBY_FILE_ATTACHMENTS_NOT_CAPITALIZED_IMAGES;
+    case FileAttachment::Type::kUnknown:
+      return IDS_NEARBY_FILE_ATTACHMENTS_NOT_CAPITALIZED_UNKNOWN;
+    case FileAttachment::Type::kVideo:
+      return IDS_NEARBY_FILE_ATTACHMENTS_NOT_CAPITALIZED_VIDEOS;
+    default:
+      return IDS_NEARBY_NOT_CAPITALIZED_UNKNOWN_ATTACHMENTS;
+  }
+}
+
+int GetTextAttachmentsCapitalizedStringId(
+    const std::vector<TextAttachment>& texts) {
   switch (GetCommonTextAttachmentType(texts)) {
     case TextAttachment::Type::kAddress:
-      return IDS_NEARBY_TEXT_ATTACHMENTS_ADDRESSES;
+      return IDS_NEARBY_TEXT_ATTACHMENTS_CAPITALIZED_ADDRESSES;
     case TextAttachment::Type::kPhoneNumber:
-      return IDS_NEARBY_TEXT_ATTACHMENTS_PHONE_NUMBERS;
+      return IDS_NEARBY_TEXT_ATTACHMENTS_CAPITALIZED_PHONE_NUMBERS;
     case TextAttachment::Type::kText:
-      return IDS_NEARBY_TEXT_ATTACHMENTS_UNKNOWN;
+      return IDS_NEARBY_TEXT_ATTACHMENTS_CAPITALIZED_UNKNOWN;
     case TextAttachment::Type::kUrl:
-      return IDS_NEARBY_TEXT_ATTACHMENTS_LINKS;
+      return IDS_NEARBY_TEXT_ATTACHMENTS_CAPITALIZED_LINKS;
     default:
-      return IDS_NEARBY_TEXT_ATTACHMENTS_UNKNOWN;
+      return IDS_NEARBY_TEXT_ATTACHMENTS_CAPITALIZED_UNKNOWN;
   }
 }
 
-base::string16 GetAttachmentsString(const ShareTarget& share_target) {
+int GetTextAttachmentsNotCapitalizedStringId(
+    const std::vector<TextAttachment>& texts) {
+  switch (GetCommonTextAttachmentType(texts)) {
+    case TextAttachment::Type::kAddress:
+      return IDS_NEARBY_TEXT_ATTACHMENTS_NOT_CAPITALIZED_ADDRESSES;
+    case TextAttachment::Type::kPhoneNumber:
+      return IDS_NEARBY_TEXT_ATTACHMENTS_NOT_CAPITALIZED_PHONE_NUMBERS;
+    case TextAttachment::Type::kText:
+      return IDS_NEARBY_TEXT_ATTACHMENTS_NOT_CAPITALIZED_UNKNOWN;
+    case TextAttachment::Type::kUrl:
+      return IDS_NEARBY_TEXT_ATTACHMENTS_NOT_CAPITALIZED_LINKS;
+    default:
+      return IDS_NEARBY_TEXT_ATTACHMENTS_NOT_CAPITALIZED_UNKNOWN;
+  }
+}
+
+base::string16 GetAttachmentsString(const ShareTarget& share_target,
+                                    bool use_capitalized_attachments) {
   size_t file_count = share_target.file_attachments.size();
   size_t text_count = share_target.text_attachments.size();
-  int resource_id = IDS_NEARBY_UNKNOWN_ATTACHMENTS;
+  int resource_id = use_capitalized_attachments
+                        ? IDS_NEARBY_CAPITALIZED_UNKNOWN_ATTACHMENTS
+                        : IDS_NEARBY_NOT_CAPITALIZED_UNKNOWN_ATTACHMENTS;
 
   if (file_count > 0 && text_count == 0)
-    resource_id = GetFileAttachmentsStringId(share_target.file_attachments);
+    resource_id = use_capitalized_attachments
+                      ? GetFileAttachmentsCapitalizedStringId(
+                            share_target.file_attachments)
+                      : GetFileAttachmentsNotCapitalizedStringId(
+                            share_target.file_attachments);
 
   if (text_count > 0 && file_count == 0)
-    resource_id = GetTextAttachmentsStringId(share_target.text_attachments);
+    resource_id = use_capitalized_attachments
+                      ? GetTextAttachmentsCapitalizedStringId(
+                            share_target.text_attachments)
+                      : GetTextAttachmentsNotCapitalizedStringId(
+                            share_target.text_attachments);
 
   return l10n_util::GetPluralStringFUTF16(resource_id, text_count + file_count);
 }
 
 base::string16 FormatNotificationTitle(const ShareTarget& share_target,
-                                       int resource_id) {
-  base::string16 attachments = GetAttachmentsString(share_target);
+                                       int resource_id,
+                                       bool use_capitalized_attachments) {
+  base::string16 attachments =
+      GetAttachmentsString(share_target, use_capitalized_attachments);
+
   base::string16 device_name = base::ASCIIToUTF16(share_target.device_name);
   size_t attachment_count = share_target.file_attachments.size() +
                             share_target.text_attachments.size();
@@ -152,23 +200,26 @@ base::string16 FormatNotificationTitle(const ShareTarget& share_target,
 
 base::string16 GetProgressNotificationTitle(const ShareTarget& share_target) {
   return FormatNotificationTitle(
-      share_target, share_target.is_incoming
-                        ? IDS_NEARBY_NOTIFICATION_RECEIVE_PROGRESS_TITLE
-                        : IDS_NEARBY_NOTIFICATION_SEND_PROGRESS_TITLE);
+      share_target,
+      share_target.is_incoming ? IDS_NEARBY_NOTIFICATION_RECEIVE_PROGRESS_TITLE
+                               : IDS_NEARBY_NOTIFICATION_SEND_PROGRESS_TITLE,
+      /*use_capitalized_attachments=*/false);
 }
 
 base::string16 GetSuccessNotificationTitle(const ShareTarget& share_target) {
   return FormatNotificationTitle(
-      share_target, share_target.is_incoming
-                        ? IDS_NEARBY_NOTIFICATION_RECEIVE_SUCCESS_TITLE
-                        : IDS_NEARBY_NOTIFICATION_SEND_SUCCESS_TITLE);
+      share_target,
+      share_target.is_incoming ? IDS_NEARBY_NOTIFICATION_RECEIVE_SUCCESS_TITLE
+                               : IDS_NEARBY_NOTIFICATION_SEND_SUCCESS_TITLE,
+      /*use_capitalized_attachments=*/true);
 }
 
 base::string16 GetFailureNotificationTitle(const ShareTarget& share_target) {
   return FormatNotificationTitle(
-      share_target, share_target.is_incoming
-                        ? IDS_NEARBY_NOTIFICATION_RECEIVE_FAILURE_TITLE
-                        : IDS_NEARBY_NOTIFICATION_SEND_FAILURE_TITLE);
+      share_target,
+      share_target.is_incoming ? IDS_NEARBY_NOTIFICATION_RECEIVE_FAILURE_TITLE
+                               : IDS_NEARBY_NOTIFICATION_SEND_FAILURE_TITLE,
+      /*use_capitalized_attachments=*/false);
 }
 
 base::Optional<base::string16> GetFailureNotificationMessage(
@@ -188,7 +239,8 @@ base::Optional<base::string16> GetFailureNotificationMessage(
 base::string16 GetConnectionRequestNotificationMessage(
     const ShareTarget& share_target,
     const TransferMetadata& transfer_metadata) {
-  base::string16 attachments = GetAttachmentsString(share_target);
+  base::string16 attachments =
+      GetAttachmentsString(share_target, /*use_capitalized_attachments=*/false);
   base::string16 device_name = base::ASCIIToUTF16(share_target.device_name);
 
   size_t attachment_count = share_target.file_attachments.size() +

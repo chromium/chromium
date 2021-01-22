@@ -232,45 +232,76 @@ class NearbyNotificationManagerTest : public testing::Test {
 struct AttachmentsTestParamInternal {
   std::vector<TextAttachment::Type> text_attachments;
   std::vector<FileAttachment::Type> file_attachments;
-  int expected_resource_id;
+  int expected_capitalized_resource_id;
+  int expected_not_capitalized_resource_id;
 };
 
 AttachmentsTestParamInternal kAttachmentsTestParams[] = {
     // No attachments.
-    {{}, {}, IDS_NEARBY_UNKNOWN_ATTACHMENTS},
+    {{},
+     {},
+     IDS_NEARBY_CAPITALIZED_UNKNOWN_ATTACHMENTS,
+     IDS_NEARBY_NOT_CAPITALIZED_UNKNOWN_ATTACHMENTS},
 
     // Mixed attachments.
-    {{TextAttachment::Type::kText},
-     {FileAttachment::Type::kUnknown},
-     IDS_NEARBY_UNKNOWN_ATTACHMENTS},
+    {
+        {TextAttachment::Type::kText},
+        {FileAttachment::Type::kUnknown},
+        IDS_NEARBY_CAPITALIZED_UNKNOWN_ATTACHMENTS,
+        IDS_NEARBY_NOT_CAPITALIZED_UNKNOWN_ATTACHMENTS,
+    },
 
     // Text attachments.
-    {{TextAttachment::Type::kUrl}, {}, IDS_NEARBY_TEXT_ATTACHMENTS_LINKS},
-    {{TextAttachment::Type::kText}, {}, IDS_NEARBY_TEXT_ATTACHMENTS_UNKNOWN},
+    {{TextAttachment::Type::kUrl},
+     {},
+     IDS_NEARBY_TEXT_ATTACHMENTS_CAPITALIZED_LINKS,
+     IDS_NEARBY_TEXT_ATTACHMENTS_NOT_CAPITALIZED_LINKS},
+    {{TextAttachment::Type::kText},
+     {},
+     IDS_NEARBY_TEXT_ATTACHMENTS_CAPITALIZED_UNKNOWN,
+     IDS_NEARBY_TEXT_ATTACHMENTS_NOT_CAPITALIZED_UNKNOWN},
     {{TextAttachment::Type::kAddress},
      {},
-     IDS_NEARBY_TEXT_ATTACHMENTS_ADDRESSES},
+     IDS_NEARBY_TEXT_ATTACHMENTS_CAPITALIZED_ADDRESSES,
+     IDS_NEARBY_TEXT_ATTACHMENTS_NOT_CAPITALIZED_ADDRESSES},
     {{TextAttachment::Type::kPhoneNumber},
      {},
-     IDS_NEARBY_TEXT_ATTACHMENTS_PHONE_NUMBERS},
+     IDS_NEARBY_TEXT_ATTACHMENTS_CAPITALIZED_PHONE_NUMBERS,
+     IDS_NEARBY_TEXT_ATTACHMENTS_NOT_CAPITALIZED_PHONE_NUMBERS},
     {{TextAttachment::Type::kAddress, TextAttachment::Type::kAddress},
      {},
-     IDS_NEARBY_TEXT_ATTACHMENTS_ADDRESSES},
+     IDS_NEARBY_TEXT_ATTACHMENTS_CAPITALIZED_ADDRESSES,
+     IDS_NEARBY_TEXT_ATTACHMENTS_NOT_CAPITALIZED_ADDRESSES},
     {{TextAttachment::Type::kAddress, TextAttachment::Type::kUrl},
      {},
-     IDS_NEARBY_TEXT_ATTACHMENTS_UNKNOWN},
+     IDS_NEARBY_TEXT_ATTACHMENTS_CAPITALIZED_UNKNOWN,
+     IDS_NEARBY_TEXT_ATTACHMENTS_NOT_CAPITALIZED_UNKNOWN},
 
     // File attachments.
-    {{}, {FileAttachment::Type::kApp}, IDS_NEARBY_FILE_ATTACHMENTS_APPS},
-    {{}, {FileAttachment::Type::kImage}, IDS_NEARBY_FILE_ATTACHMENTS_IMAGES},
-    {{}, {FileAttachment::Type::kUnknown}, IDS_NEARBY_FILE_ATTACHMENTS_UNKNOWN},
-    {{}, {FileAttachment::Type::kVideo}, IDS_NEARBY_FILE_ATTACHMENTS_VIDEOS},
+    {{},
+     {FileAttachment::Type::kApp},
+     IDS_NEARBY_FILE_ATTACHMENTS_CAPITALIZED_APPS,
+     IDS_NEARBY_FILE_ATTACHMENTS_NOT_CAPITALIZED_APPS},
+    {{},
+     {FileAttachment::Type::kImage},
+     IDS_NEARBY_FILE_ATTACHMENTS_CAPITALIZED_IMAGES,
+     IDS_NEARBY_FILE_ATTACHMENTS_NOT_CAPITALIZED_IMAGES},
+    {{},
+     {FileAttachment::Type::kUnknown},
+     IDS_NEARBY_FILE_ATTACHMENTS_CAPITALIZED_UNKNOWN,
+     IDS_NEARBY_FILE_ATTACHMENTS_NOT_CAPITALIZED_UNKNOWN},
+    {{},
+     {FileAttachment::Type::kVideo},
+     IDS_NEARBY_FILE_ATTACHMENTS_CAPITALIZED_VIDEOS,
+     IDS_NEARBY_FILE_ATTACHMENTS_NOT_CAPITALIZED_VIDEOS},
     {{},
      {FileAttachment::Type::kApp, FileAttachment::Type::kApp},
-     IDS_NEARBY_FILE_ATTACHMENTS_APPS},
+     IDS_NEARBY_FILE_ATTACHMENTS_CAPITALIZED_APPS,
+     IDS_NEARBY_FILE_ATTACHMENTS_NOT_CAPITALIZED_APPS},
     {{},
      {FileAttachment::Type::kApp, FileAttachment::Type::kImage},
-     IDS_NEARBY_FILE_ATTACHMENTS_UNKNOWN},
+     IDS_NEARBY_FILE_ATTACHMENTS_CAPITALIZED_UNKNOWN,
+     IDS_NEARBY_FILE_ATTACHMENTS_NOT_CAPITALIZED_UNKNOWN},
 };
 
 using AttachmentsTestParam = std::tuple<AttachmentsTestParamInternal, bool>;
@@ -288,11 +319,15 @@ class NearbyNotificationManagerConnectionRequestTest
 base::string16 FormatNotificationTitle(
     int resource_id,
     const AttachmentsTestParamInternal& param,
-    const std::string& device_name) {
+    const std::string& device_name,
+    bool use_capitalized_resource) {
   size_t total = param.text_attachments.size() + param.file_attachments.size();
+  int attachments_resource_id =
+      use_capitalized_resource ? param.expected_capitalized_resource_id
+                               : param.expected_not_capitalized_resource_id;
   return base::ReplaceStringPlaceholders(
       l10n_util::GetPluralStringFUTF16(resource_id, total),
-      {l10n_util::GetPluralStringFUTF16(param.expected_resource_id, total),
+      {l10n_util::GetPluralStringFUTF16(attachments_resource_id, total),
        base::ASCIIToUTF16(device_name)},
       /*offsets=*/nullptr);
 }
@@ -419,7 +454,7 @@ TEST_P(NearbyNotificationManagerAttachmentsTest, ShowProgress) {
   base::string16 expected = FormatNotificationTitle(
       is_incoming ? IDS_NEARBY_NOTIFICATION_RECEIVE_PROGRESS_TITLE
                   : IDS_NEARBY_NOTIFICATION_SEND_PROGRESS_TITLE,
-      param, device_name);
+      param, device_name, /*use_capitalized_resource=*/false);
 
   std::vector<message_center::Notification> notifications =
       GetDisplayedNotifications();
@@ -449,7 +484,7 @@ TEST_P(NearbyNotificationManagerAttachmentsTest, ShowSuccess) {
   base::string16 expected = FormatNotificationTitle(
       is_incoming ? IDS_NEARBY_NOTIFICATION_RECEIVE_SUCCESS_TITLE
                   : IDS_NEARBY_NOTIFICATION_SEND_SUCCESS_TITLE,
-      param, device_name);
+      param, device_name, /*use_capitalized_resource=*/true);
 
   std::vector<message_center::Notification> notifications =
       GetDisplayedNotifications();
@@ -490,7 +525,7 @@ TEST_P(NearbyNotificationManagerAttachmentsTest, ShowFailure) {
     base::string16 expected_title = FormatNotificationTitle(
         is_incoming ? IDS_NEARBY_NOTIFICATION_RECEIVE_FAILURE_TITLE
                     : IDS_NEARBY_NOTIFICATION_SEND_FAILURE_TITLE,
-        param, device_name);
+        param, device_name, /*use_capitalized_resource=*/false);
     base::string16 expected_message =
         error.second ? l10n_util::GetStringUTF16(error.second)
                      : base::string16();
@@ -550,7 +585,8 @@ TEST_P(NearbyNotificationManagerConnectionRequestTest,
   base::string16 expected_message = base::ReplaceStringPlaceholders(
       plural_message,
       {base::ASCIIToUTF16(device_name),
-       l10n_util::GetPluralStringFUTF16(IDS_NEARBY_FILE_ATTACHMENTS_IMAGES, 1)},
+       l10n_util::GetPluralStringFUTF16(
+           IDS_NEARBY_FILE_ATTACHMENTS_NOT_CAPITALIZED_IMAGES, 1)},
       /*offsets=*/nullptr);
 
   if (with_token) {
