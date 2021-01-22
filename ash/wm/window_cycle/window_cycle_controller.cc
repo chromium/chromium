@@ -9,6 +9,7 @@
 #include "ash/metrics/task_switch_source.h"
 #include "ash/metrics/user_metrics_recorder.h"
 #include "ash/public/cpp/ash_features.h"
+#include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -24,6 +25,8 @@
 #include "ash/wm/window_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "components/prefs/pref_change_registrar.h"
+#include "components/prefs/pref_service.h"
 
 namespace ash {
 
@@ -69,9 +72,15 @@ void ReportPossibleDesksSwitchStats(int active_desk_container_id_before_cycle) {
 //////////////////////////////////////////////////////////////////////////////
 // WindowCycleController, public:
 
-WindowCycleController::WindowCycleController() = default;
+WindowCycleController::WindowCycleController() {
+  if (features::IsBentoEnabled())
+    Shell::Get()->session_controller()->AddObserver(this);
+}
 
-WindowCycleController::~WindowCycleController() = default;
+WindowCycleController::~WindowCycleController() {
+  if (features::IsBentoEnabled())
+    Shell::Get()->session_controller()->RemoveObserver(this);
+}
 
 // static
 bool WindowCycleController::CanCycle() {
@@ -80,6 +89,14 @@ bool WindowCycleController::CanCycle() {
          !Shell::Get()->screen_pinning_controller()->IsPinned() &&
          !window_util::IsAnyWindowDragged() &&
          !Shell::Get()->desks_controller()->AreDesksBeingModified();
+}
+
+// static
+void WindowCycleController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  if (features::IsBentoEnabled()) {
+    registry->RegisterBooleanPref(prefs::kAltTabPerDesk,
+                                  DesksMruType::kAllDesks);
+  }
 }
 
 void WindowCycleController::HandleCycleWindow(Direction direction) {
@@ -157,6 +174,29 @@ bool WindowCycleController::IsWindowListVisible() {
   return window_cycle_list_ && window_cycle_list_->ShouldShowUi();
 }
 
+bool WindowCycleController::IsInteractiveAltTabModeAllowed() {
+  return features::IsBentoEnabled() &&
+         Shell::Get()->desks_controller()->GetNumberOfDesks() > 1;
+}
+
+bool WindowCycleController::IsAltTabPerActiveDesk() {
+  return IsInteractiveAltTabModeAllowed() && active_user_pref_service_
+             ? active_user_pref_service_->GetBoolean(prefs::kAltTabPerDesk)
+             : features::IsAltTabLimitedToActiveDesk();
+}
+
+bool WindowCycleController::IsSwitchingMode() {
+  return features::IsBentoEnabled() && is_switching_mode_;
+}
+
+void WindowCycleController::OnActiveUserPrefServiceChanged(
+    PrefService* pref_service) {
+  if (!features::IsBentoEnabled())
+    return;
+  active_user_pref_service_ = pref_service;
+  InitFromUserPrefs();
+}
+
 //////////////////////////////////////////////////////////////////////////////
 // WindowCycleController, private:
 
@@ -170,36 +210,6 @@ WindowCycleController::WindowList WindowCycleController::CreateWindowList() {
   // the window.
   window_util::EnsureTransientRoots(&window_list);
   return window_list;
-}
-
-void WindowCycleController::SetAltTabMode(DesksMruType alt_tab_mode) {
-  if (!IsInteractiveAltTabModeAllowed() || alt_tab_mode_ == alt_tab_mode)
-    return;
-  alt_tab_mode_ = alt_tab_mode;
-  MaybeResetCycleList();
-
-  is_switching_mode_ = true;
-  // When user first press alt + tab, `HandleCycleForwardMRU` triggers
-  // `HandleCycleWindow(WindowCycleController::FORWARD)` since it considers
-  // the initial tab as forward cycling. Therefore, switching the mode
-  // should imitate the same forward cycling behavior after the cycle is reset.
-  HandleCycleWindow(WindowCycleController::FORWARD);
-  is_switching_mode_ = false;
-}
-
-bool WindowCycleController::IsSwitchingMode() {
-  return features::IsBentoEnabled() && is_switching_mode_;
-}
-
-bool WindowCycleController::IsInteractiveAltTabModeAllowed() {
-  return features::IsBentoEnabled() &&
-         Shell::Get()->desks_controller()->GetNumberOfDesks() > 1;
-}
-
-bool WindowCycleController::IsAltTabPerActiveDesk() {
-  return IsInteractiveAltTabModeAllowed()
-             ? alt_tab_mode_ == kActiveDesk
-             : features::IsAltTabLimitedToActiveDesk();
 }
 
 void WindowCycleController::SaveCurrentActiveDeskAndWindow(
@@ -239,6 +249,42 @@ void WindowCycleController::StopCycling() {
   active_desk_container_id_before_cycle_ = kShellWindowId_Invalid;
   Shell::Get()->event_rewriter_controller()->SetAltLeftClickRemappingEnabled(
       true);
+}
+
+void WindowCycleController::InitFromUserPrefs() {
+  DCHECK(active_user_pref_service_);
+  DCHECK(features::IsBentoEnabled());
+
+  pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
+  pref_change_registrar_->Init(active_user_pref_service_);
+  pref_change_registrar_->Add(
+      prefs::kAltTabPerDesk,
+      base::BindRepeating(&WindowCycleController::OnAltTabModePrefChanged,
+                          base::Unretained(this)));
+
+  OnAltTabModePrefChanged();
+}
+
+void WindowCycleController::OnAltTabModePrefChanged() {
+  if (!IsInteractiveAltTabModeAllowed())
+    return;
+
+  is_switching_mode_ = true;
+
+  // Update the window cycle list.
+  MaybeResetCycleList();
+  // Update the highlighted window in the window cycle list.
+  // When user first press alt + tab, `HandleCycleForwardMRU` triggers
+  // `HandleCycleWindow(WindowCycleController::FORWARD)` since it considers
+  // the initial tab as forward cycling. Therefore, switching the mode
+  // should imitate the same forward cycling behavior after the cycle is reset.
+  HandleCycleWindow(WindowCycleController::FORWARD);
+
+  // Update tab slider button UI.
+  if (window_cycle_list_)
+    window_cycle_list_->OnModePrefsChanged();
+
+  is_switching_mode_ = false;
 }
 
 }  // namespace ash

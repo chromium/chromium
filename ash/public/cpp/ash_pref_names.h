@@ -57,6 +57,8 @@ ASH_PUBLIC_EXPORT extern const char kAccessibilityDictationEnabled[];
 ASH_PUBLIC_EXPORT extern const char kLiveCaptionEnabled[];
 ASH_PUBLIC_EXPORT extern const char kShouldAlwaysShowAccessibilityMenu[];
 
+ASH_PUBLIC_EXPORT extern const char kAltTabPerDesk[];
+
 ASH_PUBLIC_EXPORT extern const char kContextualTooltips[];
 
 ASH_PUBLIC_EXPORT extern const char kDesksNamesList[];

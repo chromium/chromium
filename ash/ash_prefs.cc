@@ -38,6 +38,7 @@
 #include "ash/touch/touch_devices_controller.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/desks/desks_restore_util.h"
+#include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "chromeos/constants/chromeos_pref_names.h"
 #include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
@@ -77,6 +78,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
   TouchDevicesController::RegisterProfilePrefs(registry, for_test);
   tray::VPNListView::RegisterProfilePrefs(registry);
   MediaTray::RegisterProfilePrefs(registry);
+  WindowCycleController::RegisterProfilePrefs(registry);
 
   // Provide prefs registered in the browser for ash_unittests.
   if (for_test) {

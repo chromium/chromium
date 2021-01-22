@@ -4,12 +4,15 @@
 
 #include "ash/wm/window_cycle/window_cycle_tab_slider.h"
 
+#include "ash/public/cpp/ash_pref_names.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/background.h"
@@ -48,21 +51,30 @@ WindowCycleTabSlider::WindowCycleTabSlider()
           AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive),
       tab_slider_round_radius));
 
-  per_desk_mode_ =
-      Shell::Get()->window_cycle_controller()->IsAltTabPerActiveDesk();
-
-  all_desks_tab_slider_button_->SetToggled(!per_desk_mode_);
-  current_desk_tab_slider_button_->SetToggled(per_desk_mode_);
+  OnModePrefsChanged();
 }
 
 void WindowCycleTabSlider::OnModeChanged(bool per_desk) {
-  if (per_desk_mode_ == per_desk)
+  // Save to the active user prefs.
+  auto* prefs = Shell::Get()->session_controller()->GetActivePrefService();
+  if (!prefs) {
+    // Can be null in tests.
     return;
-  per_desk_mode_ = per_desk;
-  all_desks_tab_slider_button_->SetToggled(!per_desk_mode_);
-  current_desk_tab_slider_button_->SetToggled(per_desk_mode_);
-  Shell::Get()->window_cycle_controller()->SetAltTabMode(
-      per_desk_mode_ ? DesksMruType::kActiveDesk : DesksMruType::kAllDesks);
+  }
+  // Avoid an unnecessary update if any.
+  if (per_desk == prefs->GetBoolean(prefs::kAltTabPerDesk))
+    return;
+  prefs->SetBoolean(prefs::kAltTabPerDesk, per_desk);
+  OnModePrefsChanged();
+}
+
+void WindowCycleTabSlider::OnModePrefsChanged() {
+  // Read alt-tab mode from user prefs via |IsAltTabPerActiveDesk|, which
+  // handle multiple cases of different flags enabled and the number of desk.
+  bool per_desk =
+      Shell::Get()->window_cycle_controller()->IsAltTabPerActiveDesk();
+  all_desks_tab_slider_button_->SetToggled(!per_desk);
+  current_desk_tab_slider_button_->SetToggled(per_desk);
 }
 
 BEGIN_METADATA(WindowCycleTabSlider, views::View)

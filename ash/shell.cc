@@ -558,7 +558,6 @@ Shell::Shell(std::unique_ptr<ShellDelegate> shell_delegate)
       shell_delegate_(std::move(shell_delegate)),
       shutdown_controller_(std::make_unique<ShutdownControllerImpl>()),
       system_tray_notifier_(std::make_unique<SystemTrayNotifier>()),
-      window_cycle_controller_(std::make_unique<WindowCycleController>()),
       native_cursor_manager_(nullptr) {
   // Ash doesn't properly remove pre-target-handlers.
   ui::EventHandler::DisableCheckTargets();
@@ -946,6 +945,7 @@ void Shell::Init(
   peripheral_battery_notifier_ = std::make_unique<PeripheralBatteryNotifier>(
       peripheral_battery_listener_.get());
   power_event_observer_.reset(new PowerEventObserver());
+  window_cycle_controller_ = std::make_unique<WindowCycleController>();
 
   if (features::IsCaptureModeEnabled()) {
     capture_mode_controller_ = std::make_unique<CaptureModeController>(
