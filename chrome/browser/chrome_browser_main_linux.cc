@@ -22,7 +22,6 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #include "device/bluetooth/dbus/bluez_dbus_thread_manager.h"
-#include "media/audio/audio_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -56,9 +55,6 @@ void ChromeBrowserMainPartsLinux::PreProfileInit() {
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(base::IgnoreResult(&base::GetLinuxDistro)));
 #endif
-
-  media::AudioManager::SetGlobalAppName(
-      l10n_util::GetStringUTF8(IDS_SHORT_PRODUCT_NAME));
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Set up crypt config. This should be kept in sync with the OSCrypt parts of

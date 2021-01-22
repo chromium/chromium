@@ -60,14 +60,11 @@ class MEDIA_EXPORT AudioManager {
   static std::unique_ptr<AudioManager> CreateForTesting(
       std::unique_ptr<AudioThread> audio_thread);
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-  // Sets the name of the audio source as seen by external apps. Only actually
-  // used with PulseAudio as of this writing.
+  // Sets the name of the audio source as seen by external apps.
   static void SetGlobalAppName(const std::string& app_name);
 
   // Returns the app name or an empty string if it is not set.
   static const std::string& GetGlobalAppName();
-#endif
 
   // Returns the pointer to the last created instance, or NULL if not yet
   // created. This is a utility method for the code outside of media directory,

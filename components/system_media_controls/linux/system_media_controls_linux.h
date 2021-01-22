@@ -31,7 +31,7 @@ class SystemMediaControlsObserver;
 namespace internal {
 
 COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS)
-extern const char kMprisAPIServiceNamePrefix[];
+extern const char kMprisAPIServiceNameFormatString[];
 COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS) extern const char kMprisAPIObjectPath[];
 COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS)
 extern const char kMprisAPIInterfaceName[];
@@ -43,7 +43,7 @@ extern const char kMprisAPIPlayerInterfaceName[];
 class COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS) SystemMediaControlsLinux
     : public SystemMediaControls {
  public:
-  SystemMediaControlsLinux();
+  explicit SystemMediaControlsLinux(const std::string& product_name);
   ~SystemMediaControlsLinux() override;
 
   // Starts the DBus service.
@@ -103,6 +103,8 @@ class COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS) SystemMediaControlsLinux
   // signal if necessary.
   void SetMetadataPropertyInternal(const std::string& property_name,
                                    DbusVariant&& new_value);
+
+  const std::string product_name_;
 
   std::unique_ptr<DbusProperties> properties_;
 

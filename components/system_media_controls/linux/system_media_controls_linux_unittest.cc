@@ -32,6 +32,7 @@ namespace internal {
 namespace {
 
 constexpr uint32_t kFakeSerial = 123;
+const char kTestProductName[] = "Foo";
 
 }  // anonymous namespace
 
@@ -89,7 +90,7 @@ class SystemMediaControlsLinuxTest : public testing::Test,
  private:
   void StartMprisServiceAndWaitForReady() {
     service_wait_loop_ = std::make_unique<base::RunLoop>();
-    service_ = std::make_unique<SystemMediaControlsLinux>();
+    service_ = std::make_unique<SystemMediaControlsLinux>(kTestProductName);
 
     SetUpMocks();
 

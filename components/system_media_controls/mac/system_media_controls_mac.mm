@@ -7,9 +7,12 @@
 namespace system_media_controls {
 
 // static
-std::unique_ptr<SystemMediaControls> SystemMediaControls::Create() {
+std::unique_ptr<SystemMediaControls> SystemMediaControls::Create(
+    const std::string& product_name) {
   // The required APIs for interacting with the Now Playing Info Center only
   // exist on 10.12.2 or later.
+  // TODO(https://crbug.com/942114): Use the |product_name| string in
+  // NowPlayingInfoCenterDelegateCocoa instead of using branding build args.
   if (@available(macOS 10.12.2, *))
     return std::make_unique<internal::SystemMediaControlsMac>();
   return nullptr;

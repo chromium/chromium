@@ -26,7 +26,8 @@ class COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS) SystemMediaControls {
     kStopped,
   };
 
-  static std::unique_ptr<SystemMediaControls> Create();
+  static std::unique_ptr<SystemMediaControls> Create(
+      const std::string& product_name);
 
   virtual ~SystemMediaControls() = default;
 

@@ -7,7 +7,8 @@
 namespace system_media_controls {
 
 // static
-std::unique_ptr<SystemMediaControls> SystemMediaControls::Create() {
+std::unique_ptr<SystemMediaControls> SystemMediaControls::Create(
+    const std::string& product_name) {
   return nullptr;
 }
 

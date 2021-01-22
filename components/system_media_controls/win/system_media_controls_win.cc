@@ -19,7 +19,8 @@
 namespace system_media_controls {
 
 // static
-std::unique_ptr<SystemMediaControls> SystemMediaControls::Create() {
+std::unique_ptr<SystemMediaControls> SystemMediaControls::Create(
+    const std::string& product_name) {
   auto service = std::make_unique<internal::SystemMediaControlsWin>();
   if (service->Initialize())
     return std::move(service);

@@ -12,6 +12,7 @@
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/media/active_media_session_controller.h"
 #include "content/browser/media/system_media_controls_notifier.h"
+#include "media/audio/audio_manager.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/idle/idle.h"
 
@@ -215,9 +216,11 @@ void MediaKeysListenerManagerImpl::StartListeningForMediaKeysIfNecessary() {
   if (system_media_controls_ || media_keys_listener_)
     return;
 
-  // Create an instance of SystemMediaControls to listen for media control
-  // events.
-  system_media_controls_ = system_media_controls::SystemMediaControls::Create();
+#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
+  system_media_controls_ = system_media_controls::SystemMediaControls::Create(
+      media::AudioManager::GetGlobalAppName());
+#endif
+
   if (system_media_controls_) {
     system_media_controls_->AddObserver(this);
     system_media_controls_notifier_ =

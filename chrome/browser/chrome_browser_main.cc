@@ -111,6 +111,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/profiler/thread_profiler.h"
 #include "chrome/common/profiler/thread_profiler_configuration.h"
+#include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/installer/util/google_update_settings.h"
 #include "components/device_event_log/device_event_log.h"
@@ -164,6 +165,7 @@
 #include "content/public/common/main_function_params.h"
 #include "content/public/common/profiling.h"
 #include "extensions/buildflags/buildflags.h"
+#include "media/audio/audio_manager.h"
 #include "media/base/localized_strings.h"
 #include "media/media_buildflags.h"
 #include "net/base/net_module.h"
@@ -175,6 +177,7 @@
 #include "rlz/buildflags/buildflags.h"
 #include "services/tracing/public/cpp/stack_sampling/tracing_sampler_profiler.h"
 #include "third_party/blink/public/common/experiments/memory_ablation_experiment.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/layout.h"
 #include "ui/base/resource/resource_bundle.h"
 
@@ -191,7 +194,6 @@
 #include "chrome/browser/ui/uma_browsing_activity_observer.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/browser/usb/web_usb_detector.h"
-#include "ui/base/l10n/l10n_util.h"
 #endif  // defined(OS_ANDROID)
 
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1057,6 +1059,9 @@ void ChromeBrowserMainParts::PreMainMessageLoopRun() {
 
 void ChromeBrowserMainParts::PreProfileInit() {
   TRACE_EVENT0("startup", "ChromeBrowserMainParts::PreProfileInit");
+
+  media::AudioManager::SetGlobalAppName(
+      l10n_util::GetStringUTF8(IDS_SHORT_PRODUCT_NAME));
 
   for (size_t i = 0; i < chrome_extra_parts_.size(); ++i)
     chrome_extra_parts_[i]->PreProfileInit();

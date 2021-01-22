@@ -12,8 +12,8 @@
 #include "base/callback_helpers.h"
 #include "base/process/process.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "build/branding_buildflags.h"
 #include "components/dbus/properties/dbus_properties.h"
 #include "components/dbus/properties/success_barrier_callback.h"
 #include "components/dbus/thread_linux/dbus_thread_linux.h"
@@ -27,8 +27,10 @@
 namespace system_media_controls {
 
 // static
-std::unique_ptr<SystemMediaControls> SystemMediaControls::Create() {
-  auto service = std::make_unique<internal::SystemMediaControlsLinux>();
+std::unique_ptr<SystemMediaControls> SystemMediaControls::Create(
+    const std::string& product_name) {
+  auto service =
+      std::make_unique<internal::SystemMediaControlsLinux>(product_name);
   service->StartService();
   return std::move(service);
 }
@@ -41,20 +43,17 @@ constexpr int kNumMethodsToExport = 11;
 
 }  // namespace
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-const char kMprisAPIServiceNamePrefix[] =
-    "org.mpris.MediaPlayer2.chrome.instance";
-#else
-const char kMprisAPIServiceNamePrefix[] =
-    "org.mpris.MediaPlayer2.chromium.instance";
-#endif
+const char kMprisAPIServiceNameFormatString[] =
+    "org.mpris.MediaPlayer2.chromium.instance%i";
 const char kMprisAPIObjectPath[] = "/org/mpris/MediaPlayer2";
 const char kMprisAPIInterfaceName[] = "org.mpris.MediaPlayer2";
 const char kMprisAPIPlayerInterfaceName[] = "org.mpris.MediaPlayer2.Player";
 
-SystemMediaControlsLinux::SystemMediaControlsLinux()
-    : service_name_(std::string(kMprisAPIServiceNamePrefix) +
-                    base::NumberToString(base::Process::Current().Pid())) {}
+SystemMediaControlsLinux::SystemMediaControlsLinux(
+    const std::string& product_name)
+    : product_name_(product_name),
+      service_name_(base::StringPrintf(kMprisAPIServiceNameFormatString,
+                                       base::Process::Current().Pid())) {}
 
 SystemMediaControlsLinux::~SystemMediaControlsLinux() {
   if (bus_) {
@@ -152,11 +151,7 @@ void SystemMediaControlsLinux::InitializeProperties() {
   set_property("CanRaise", DbusBoolean(false));
   set_property("HasTrackList", DbusBoolean(false));
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  set_property("Identity", DbusString("Chrome"));
-#else
-  set_property("Identity", DbusString("Chromium"));
-#endif
+  set_property("Identity", DbusString(product_name_));
   set_property("SupportedUriSchemes", DbusArray<DbusString>());
   set_property("SupportedMimeTypes", DbusArray<DbusString>());
 
