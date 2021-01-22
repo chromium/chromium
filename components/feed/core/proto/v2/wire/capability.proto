@@ -26,6 +26,7 @@ enum Capability {
   CARD_MENU = 19;
   REQUEST_SCHEDULE = 20;
   HEART = 23;
+  SHARE = 24;
   OPEN_IN_TAB = 27;
   DOWNLOAD_LINK = 28;
   LOTTIE_ANIMATIONS = 37;

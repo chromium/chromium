@@ -81,6 +81,19 @@ TEST(ProtoUtilTest, HeartsEnabled) {
               testing::Contains(feedwire::Capability::HEART));
 }
 
+TEST(ProtoUtilTest, ShareEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({kFeedShare}, {});
+  feedwire::FeedRequest request =
+      CreateFeedQueryRefreshRequest(feedwire::FeedQuery::MANUAL_REFRESH,
+                                    /*request_metadata=*/{},
+                                    /*consistency_token=*/std::string())
+          .feed_request();
+
+  ASSERT_THAT(request.client_capability(),
+              testing::Contains(feedwire::Capability::SHARE));
+}
+
 TEST(ProtoUtilTest, DisableCapabilitiesWithFinch) {
   // Try to disable BASE_UI and _INFINITE_FEED. BASE_UI is not an experimental
   // capability, and should not be affected.

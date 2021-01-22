@@ -2659,6 +2659,11 @@
     "expiry_milestone": 94
   },
   {
+    "name": "feed-share",
+    "owners": ["//chrome/android/feed/OWNERS", "chili@chromium.org"],
+    "expiry_milestone": 95
+  },
+  {
     "name": "feed-v2-hearts",
     "owners": [ "//chrome/android/feed/OWNERS", "feed@chromium.org" ],
     "expiry_milestone": 96

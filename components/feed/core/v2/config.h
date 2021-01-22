@@ -61,14 +61,14 @@ struct Config {
   // Set of optional capabilities included in requests. See
   // CreateFeedQueryRequest() for required capabilities.
   base::flat_set<feedwire::Capability> experimental_capabilities = {
-      feedwire::Capability::REQUEST_SCHEDULE,
-      feedwire::Capability::OPEN_IN_TAB,
+      feedwire::Capability::DISMISS_COMMAND,
       feedwire::Capability::DOWNLOAD_LINK,
       feedwire::Capability::INFINITE_FEED,
-      feedwire::Capability::DISMISS_COMMAND,
+      feedwire::Capability::OPEN_IN_TAB,
+      feedwire::Capability::PREFETCH_METADATA,
+      feedwire::Capability::REQUEST_SCHEDULE,
       feedwire::Capability::UI_THEME_V2,
       feedwire::Capability::UNDO_FOR_DISMISS_COMMAND,
-      feedwire::Capability::PREFETCH_METADATA,
   };
 
   Config();

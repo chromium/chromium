@@ -1684,6 +1684,9 @@ extern const char kInterestFeedV2Description[];
 extern const char kInterestFeedV2HeartsName[];
 extern const char kInterestFeedV2HeartsDescription[];
 
+extern const char kFeedShareName[];
+extern const char kFeedShareDescription[];
+
 extern const char kInterestFeedV1ClickAndViewActionsConditionalUploadName[];
 extern const char
     kInterestFeedV1ClickAndViewActionsConditionalUploadDescription[];
