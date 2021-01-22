@@ -299,6 +299,7 @@ defaults = args.defaults(
     coverage_exclude_sources = None,
     coverage_test_types = None,
     resultdb_bigquery_exports = [],
+    resultdb_index_by_timestamp = False,
     isolated_server = "https://isolateserver.appspot.com",
     reclient_instance = None,
     reclient_service = None,
@@ -344,6 +345,7 @@ def builder(
         coverage_exclude_sources = args.DEFAULT,
         coverage_test_types = args.DEFAULT,
         resultdb_bigquery_exports = args.DEFAULT,
+        resultdb_index_by_timestamp = args.DEFAULT,
         isolated_server = args.DEFAULT,
         reclient_instance = args.DEFAULT,
         reclient_service = args.DEFAULT,
@@ -459,6 +461,10 @@ def builder(
       * resultdb_bigquery_exports - a list of resultdb.export_test_results(...)
         specifying parameters for exporting test results to BigQuery. By default,
         do not export.
+      * resultdb_index_by_timestamp - a boolean specifying whether ResultDB should
+        index the results of the tests run on this builder by timestamp, i.e.
+        for purposes of retrieving a test's history. If false, the results will not
+        be searchable by timestamp on ResultDB's test history api.
       * isolated_server - a string indicating the host of the isolated server.
         Will be incorporated into the '$recipe_engine/isolated' property. By
         default, this is "https://isolateserver.appspot.com".
@@ -622,6 +628,16 @@ def builder(
         )]
         properties.setdefault("xcode_build_version", xcode.version)
 
+    history_options = None
+    resultdb_index_by_timestamp = defaults.get_value(
+        "resultdb_index_by_timestamp",
+        resultdb_index_by_timestamp,
+    )
+    if resultdb_index_by_timestamp:
+        history_options = resultdb.history_options(
+            by_timestamp = resultdb_index_by_timestamp,
+        )
+
     builder = branches.builder(
         name = name,
         branch_selector = branch_selector,
@@ -633,6 +649,7 @@ def builder(
                 "resultdb_bigquery_exports",
                 resultdb_bigquery_exports,
             ),
+            history_options = history_options,
         ),
         **kwargs
     )
