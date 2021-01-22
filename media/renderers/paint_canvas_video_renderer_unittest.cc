@@ -405,29 +405,15 @@ static SkBitmap AllocBitmap(int width, int height) {
   return bitmap;
 }
 
-PaintCanvasVideoRendererTest::PaintCanvasVideoRendererTest()
-    : natural_frame_(VideoFrame::CreateBlackFrame(gfx::Size(kWidth, kHeight))),
-      larger_frame_(
-          VideoFrame::CreateBlackFrame(gfx::Size(kWidth * 2, kHeight * 2))),
-      smaller_frame_(
-          VideoFrame::CreateBlackFrame(gfx::Size(kWidth / 2, kHeight / 2))),
-      cropped_frame_(
-          VideoFrame::CreateFrame(PIXEL_FORMAT_I420,
-                                  gfx::Size(16, 16),
-                                  gfx::Rect(6, 6, 8, 6),
-                                  gfx::Size(8, 6),
-                                  base::TimeDelta::FromMilliseconds(4))),
-      bitmap_(AllocBitmap(kWidth, kHeight)),
-      target_canvas_(bitmap_) {
-  // Give each frame a unique timestamp.
-  natural_frame_->set_timestamp(base::TimeDelta::FromMilliseconds(1));
-  larger_frame_->set_timestamp(base::TimeDelta::FromMilliseconds(2));
-  smaller_frame_->set_timestamp(base::TimeDelta::FromMilliseconds(3));
-
+static scoped_refptr<VideoFrame> CreateCroppedFrame() {
+  scoped_refptr<VideoFrame> cropped_frame;
+  cropped_frame = VideoFrame::CreateFrame(
+      PIXEL_FORMAT_I420, gfx::Size(16, 16), gfx::Rect(6, 6, 8, 6),
+      gfx::Size(8, 6), base::TimeDelta::FromMilliseconds(4));
   // Make sure the cropped video frame's aspect ratio matches the output device.
   // Update cropped_frame_'s crop dimensions if this is not the case.
-  EXPECT_EQ(cropped_frame()->visible_rect().width() * kHeight,
-            cropped_frame()->visible_rect().height() * kWidth);
+  EXPECT_EQ(cropped_frame->visible_rect().width() * kHeight,
+            cropped_frame->visible_rect().height() * kWidth);
 
   // Fill in the cropped frame's entire data with colors:
   //
@@ -495,12 +481,29 @@ PaintCanvasVideoRendererTest::PaintCanvasVideoRendererTest()
   };
 
   libyuv::I420Copy(cropped_y_plane, 16, cropped_u_plane, 8, cropped_v_plane, 8,
-                   cropped_frame()->data(VideoFrame::kYPlane),
-                   cropped_frame()->stride(VideoFrame::kYPlane),
-                   cropped_frame()->data(VideoFrame::kUPlane),
-                   cropped_frame()->stride(VideoFrame::kUPlane),
-                   cropped_frame()->data(VideoFrame::kVPlane),
-                   cropped_frame()->stride(VideoFrame::kVPlane), 16, 16);
+                   cropped_frame->data(VideoFrame::kYPlane),
+                   cropped_frame->stride(VideoFrame::kYPlane),
+                   cropped_frame->data(VideoFrame::kUPlane),
+                   cropped_frame->stride(VideoFrame::kUPlane),
+                   cropped_frame->data(VideoFrame::kVPlane),
+                   cropped_frame->stride(VideoFrame::kVPlane), 16, 16);
+
+  return cropped_frame;
+}
+
+PaintCanvasVideoRendererTest::PaintCanvasVideoRendererTest()
+    : natural_frame_(VideoFrame::CreateBlackFrame(gfx::Size(kWidth, kHeight))),
+      larger_frame_(
+          VideoFrame::CreateBlackFrame(gfx::Size(kWidth * 2, kHeight * 2))),
+      smaller_frame_(
+          VideoFrame::CreateBlackFrame(gfx::Size(kWidth / 2, kHeight / 2))),
+      cropped_frame_(CreateCroppedFrame()),
+      bitmap_(AllocBitmap(kWidth, kHeight)),
+      target_canvas_(bitmap_) {
+  // Give each frame a unique timestamp.
+  natural_frame_->set_timestamp(base::TimeDelta::FromMilliseconds(1));
+  larger_frame_->set_timestamp(base::TimeDelta::FromMilliseconds(2));
+  smaller_frame_->set_timestamp(base::TimeDelta::FromMilliseconds(3));
 }
 
 PaintCanvasVideoRendererTest::~PaintCanvasVideoRendererTest() = default;
@@ -1127,8 +1130,9 @@ TEST_F(PaintCanvasVideoRendererTest, TexSubImage2D_Y16_R32F) {
       2 /*xoffset*/, 1 /*yoffset*/, false /*flip_y*/, true);
 }
 
-// Fixture for tests that require a GL context.
-class PaintCanvasVideoRendererWithGLTest : public PaintCanvasVideoRendererTest {
+// Fixture for tests that require a GL context. The input parameter indicates
+// whether OOPR mode is enabled.
+class PaintCanvasVideoRendererWithGLTest : public testing::TestWithParam<bool> {
  public:
   using GetColorCallback = base::RepeatingCallback<SkColor(int, int)>;
 
@@ -1137,8 +1141,14 @@ class PaintCanvasVideoRendererWithGLTest : public PaintCanvasVideoRendererTest {
     enable_pixels_.emplace();
     media_context_ = base::MakeRefCounted<viz::TestInProcessContextProvider>(
         /*enable_gpu_rasterization=*/false,
-        /*enable_oop_rasterization=*/false, /*support_locking=*/false);
+        /*enable_oop_rasterization=*/GetParam(), /*support_locking=*/false);
     gpu::ContextResult result = media_context_->BindToCurrentThread();
+    ASSERT_EQ(result, gpu::ContextResult::kSuccess);
+
+    gles2_context_ = base::MakeRefCounted<viz::TestInProcessContextProvider>(
+        /*enable_gpu_rasterization=*/false,
+        /*enable_oop_rasterization=*/false, /*support_locking=*/false);
+    result = gles2_context_->BindToCurrentThread();
     ASSERT_EQ(result, gpu::ContextResult::kSuccess);
 
     destination_context_ =
@@ -1147,11 +1157,13 @@ class PaintCanvasVideoRendererWithGLTest : public PaintCanvasVideoRendererTest {
             /*enable_oop_rasterization=*/false, /*support_locking=*/false);
     result = destination_context_->BindToCurrentThread();
     ASSERT_EQ(result, gpu::ContextResult::kSuccess);
+    cropped_frame_ = CreateCroppedFrame();
   }
 
   void TearDown() override {
     renderer_.ResetCache();
     destination_context_.reset();
+    gles2_context_.reset();
     media_context_.reset();
     enable_pixels_.reset();
     viz::TestGpuServiceHolder::ResetInstance();
@@ -1211,7 +1223,7 @@ class PaintCanvasVideoRendererWithGLTest : public PaintCanvasVideoRendererTest {
   // Creates a cropped RGBA VideoFrame. |closure| is run once the shared images
   // backing the VideoFrame have been destroyed.
   scoped_refptr<VideoFrame> CreateTestRGBAFrame(base::OnceClosure closure) {
-    return CreateSharedImageRGBAFrame(media_context_, gfx::Size(16, 8),
+    return CreateSharedImageRGBAFrame(gles2_context_, gfx::Size(16, 8),
                                       gfx::Rect(3, 3, 12, 4),
                                       std::move(closure));
   }
@@ -1243,7 +1255,7 @@ class PaintCanvasVideoRendererWithGLTest : public PaintCanvasVideoRendererTest {
   // Creates a cropped I420 VideoFrame. |closure| is run once the shared images
   // backing the VideoFrame have been destroyed.
   scoped_refptr<VideoFrame> CreateTestI420Frame(base::OnceClosure closure) {
-    return CreateSharedImageI420Frame(media_context_, gfx::Size(16, 8),
+    return CreateSharedImageI420Frame(gles2_context_, gfx::Size(16, 8),
                                       gfx::Rect(2, 2, 12, 4),
                                       std::move(closure));
   }
@@ -1251,7 +1263,7 @@ class PaintCanvasVideoRendererWithGLTest : public PaintCanvasVideoRendererTest {
   // backing the VideoFrame have been destroyed.
   scoped_refptr<VideoFrame> CreateTestI420FrameNotSubset(
       base::OnceClosure closure) {
-    return CreateSharedImageI420Frame(media_context_, gfx::Size(16, 8),
+    return CreateSharedImageI420Frame(gles2_context_, gfx::Size(16, 8),
                                       gfx::Rect(0, 0, 16, 8),
                                       std::move(closure));
   }
@@ -1294,7 +1306,7 @@ class PaintCanvasVideoRendererWithGLTest : public PaintCanvasVideoRendererTest {
   // not available. |closure| is run once the shared images backing the
   // VideoFrame have been destroyed.
   scoped_refptr<VideoFrame> CreateTestNV12Frame(base::OnceClosure closure) {
-    return CreateSharedImageNV12Frame(media_context_, gfx::Size(16, 8),
+    return CreateSharedImageNV12Frame(gles2_context_, gfx::Size(16, 8),
                                       gfx::Rect(2, 2, 12, 4),
                                       std::move(closure));
   }
@@ -1307,13 +1319,24 @@ class PaintCanvasVideoRendererWithGLTest : public PaintCanvasVideoRendererTest {
     CheckI420FramePixels(std::move(get_color));
   }
 
+  scoped_refptr<VideoFrame> cropped_frame() { return cropped_frame_; }
+
  protected:
   base::Optional<gl::DisableNullDrawGLBindings> enable_pixels_;
   scoped_refptr<viz::TestInProcessContextProvider> media_context_;
+  scoped_refptr<viz::TestInProcessContextProvider> gles2_context_;
   scoped_refptr<viz::TestInProcessContextProvider> destination_context_;
+
+  PaintCanvasVideoRenderer renderer_;
+  scoped_refptr<VideoFrame> cropped_frame_;
+  base::test::TaskEnvironment task_environment_;
 };
 
-TEST_F(PaintCanvasVideoRendererWithGLTest, CopyVideoFrameYUVDataToGLTexture) {
+INSTANTIATE_TEST_SUITE_P(OopRasterMode,
+                         PaintCanvasVideoRendererWithGLTest,
+                         testing::Bool());
+
+TEST_P(PaintCanvasVideoRendererWithGLTest, CopyVideoFrameYUVDataToGLTexture) {
   auto* destination_gl = destination_context_->ContextGL();
   DCHECK(destination_gl);
   GLenum target = GL_TEXTURE_2D;
@@ -1344,7 +1367,7 @@ TEST_F(PaintCanvasVideoRendererWithGLTest, CopyVideoFrameYUVDataToGLTexture) {
   destination_gl->DeleteTextures(1, &texture);
 }
 
-TEST_F(PaintCanvasVideoRendererWithGLTest,
+TEST_P(PaintCanvasVideoRendererWithGLTest,
        CopyVideoFrameYUVDataToGLTexture_FlipY) {
   auto* destination_gl = destination_context_->ContextGL();
   DCHECK(destination_gl);
@@ -1378,7 +1401,7 @@ TEST_F(PaintCanvasVideoRendererWithGLTest,
 
 // Checks that we correctly copy a RGBA shared image VideoFrame when using
 // CopyVideoFrameYUVDataToGLTexture, including correct cropping.
-TEST_F(PaintCanvasVideoRendererWithGLTest,
+TEST_P(PaintCanvasVideoRendererWithGLTest,
        CopyVideoFrameTexturesToGLTextureRGBA) {
   base::RunLoop run_loop;
   scoped_refptr<VideoFrame> frame = CreateTestRGBAFrame(run_loop.QuitClosure());
@@ -1392,7 +1415,7 @@ TEST_F(PaintCanvasVideoRendererWithGLTest,
 // Checks that we correctly copy a RGBA shared image VideoFrame that needs read
 // lock fences, when using CopyVideoFrameYUVDataToGLTexture, including correct
 // cropping.
-TEST_F(PaintCanvasVideoRendererWithGLTest,
+TEST_P(PaintCanvasVideoRendererWithGLTest,
        CopyVideoFrameTexturesToGLTextureRGBA_ReadLockFence) {
   base::RunLoop run_loop;
   scoped_refptr<VideoFrame> frame = CreateTestRGBAFrame(run_loop.QuitClosure());
@@ -1406,7 +1429,7 @@ TEST_F(PaintCanvasVideoRendererWithGLTest,
 
 // Checks that we correctly paint a RGBA shared image VideoFrame, including
 // correct cropping.
-TEST_F(PaintCanvasVideoRendererWithGLTest, PaintRGBA) {
+TEST_P(PaintCanvasVideoRendererWithGLTest, PaintRGBA) {
   base::RunLoop run_loop;
   scoped_refptr<VideoFrame> frame = CreateTestRGBAFrame(run_loop.QuitClosure());
 
@@ -1418,7 +1441,7 @@ TEST_F(PaintCanvasVideoRendererWithGLTest, PaintRGBA) {
 
 // Checks that we correctly copy an I420 shared image VideoFrame when using
 // CopyVideoFrameYUVDataToGLTexture, including correct cropping.
-TEST_F(PaintCanvasVideoRendererWithGLTest,
+TEST_P(PaintCanvasVideoRendererWithGLTest,
        CopyVideoFrameTexturesToGLTextureI420) {
   base::RunLoop run_loop;
   scoped_refptr<VideoFrame> frame = CreateTestI420Frame(run_loop.QuitClosure());
@@ -1431,7 +1454,7 @@ TEST_F(PaintCanvasVideoRendererWithGLTest,
 
 // Checks that we correctly paint a I420 shared image VideoFrame, including
 // correct cropping.
-TEST_F(PaintCanvasVideoRendererWithGLTest, PaintI420) {
+TEST_P(PaintCanvasVideoRendererWithGLTest, PaintI420) {
   base::RunLoop run_loop;
   scoped_refptr<VideoFrame> frame = CreateTestI420Frame(run_loop.QuitClosure());
 
@@ -1443,7 +1466,7 @@ TEST_F(PaintCanvasVideoRendererWithGLTest, PaintI420) {
 
 // Checks that we correctly paint a I420 shared image VideoFrame, including
 // correct cropping.
-TEST_F(PaintCanvasVideoRendererWithGLTest, PaintI420NotSubset) {
+TEST_P(PaintCanvasVideoRendererWithGLTest, PaintI420NotSubset) {
   base::RunLoop run_loop;
   scoped_refptr<VideoFrame> frame =
       CreateTestI420FrameNotSubset(run_loop.QuitClosure());
@@ -1456,7 +1479,7 @@ TEST_F(PaintCanvasVideoRendererWithGLTest, PaintI420NotSubset) {
 
 // Checks that we correctly copy a NV12 shared image VideoFrame when using
 // CopyVideoFrameYUVDataToGLTexture, including correct cropping.
-TEST_F(PaintCanvasVideoRendererWithGLTest,
+TEST_P(PaintCanvasVideoRendererWithGLTest,
        CopyVideoFrameTexturesToGLTextureNV12) {
   base::RunLoop run_loop;
   scoped_refptr<VideoFrame> frame = CreateTestNV12Frame(run_loop.QuitClosure());
@@ -1473,7 +1496,7 @@ TEST_F(PaintCanvasVideoRendererWithGLTest,
 
 // Checks that we correctly paint a NV12 shared image VideoFrame, including
 // correct cropping.
-TEST_F(PaintCanvasVideoRendererWithGLTest, PaintNV12) {
+TEST_P(PaintCanvasVideoRendererWithGLTest, PaintNV12) {
   base::RunLoop run_loop;
   scoped_refptr<VideoFrame> frame = CreateTestNV12Frame(run_loop.QuitClosure());
   if (!frame) {

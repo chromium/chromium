@@ -13,10 +13,6 @@
 #include "gpu/ipc/command_buffer_task_executor.h"
 #include "gpu/ipc/in_process_command_buffer.h"
 
-namespace base {
-class TestSimpleTaskRunner;
-}  // namespace base
-
 namespace gpu {
 class CommandBufferHelper;
 class ContextSupport;
@@ -76,7 +72,6 @@ class RasterInProcessContext {
   std::unique_ptr<TransferBuffer> transfer_buffer_;
   std::unique_ptr<raster::RasterImplementation> raster_implementation_;
   std::unique_ptr<InProcessCommandBuffer> command_buffer_;
-  scoped_refptr<base::TestSimpleTaskRunner> client_task_runner_;
 
   DISALLOW_COPY_AND_ASSIGN(RasterInProcessContext);
 };

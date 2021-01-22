@@ -619,7 +619,7 @@ class RasterDecoderImpl final : public RasterDecoder,
                                            GLenum subsampling,
                                            const volatile GLbyte* mailboxes);
 
-  void DoLoseContextCHROMIUM(GLenum current, GLenum other) { NOTIMPLEMENTED(); }
+  void DoLoseContextCHROMIUM(GLenum current, GLenum other);
   void DoBeginRasterCHROMIUM(GLuint sk_color,
                              GLuint msaa_sample_count,
                              GLboolean can_use_lcd_text,
@@ -2874,6 +2874,10 @@ void RasterDecoderImpl::DoConvertYUVAMailboxesToRGBINTERNAL(
   if (!images[kDestIndex]->IsCleared() && drew_image) {
     images[kDestIndex]->SetCleared();
   }
+}
+
+void RasterDecoderImpl::DoLoseContextCHROMIUM(GLenum current, GLenum other) {
+  MarkContextLost(gles2::GetContextLostReasonFromResetStatus(current));
 }
 
 namespace {

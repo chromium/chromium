@@ -107,6 +107,12 @@ GLuint GetGrGLBackendTextureFormat(const gles2::FeatureInfo* feature_info,
   use_version_es2 = base::FeatureList::IsEnabled(features::kUseGles2ForOopR);
 #endif
 
+  // Use R8 when using later GLs where LUMINANCE8 is deprecated
+  if (feature_info->gl_version_info().NeedsLuminanceAlphaEmulation() &&
+      internal_format == GL_LUMINANCE8) {
+    internal_format = GL_R8_EXT;
+  }
+
   // We tell Skia to use es2 which does not have GL_R8_EXT
   if (feature_info->gl_version_info().is_es3 && use_version_es2) {
     if (internal_format == GL_R8_EXT)
