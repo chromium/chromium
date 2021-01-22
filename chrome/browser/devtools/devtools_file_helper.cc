@@ -236,11 +236,11 @@ DevToolsFileHelper::~DevToolsFileHelper() = default;
 void DevToolsFileHelper::Save(const std::string& url,
                               const std::string& content,
                               bool save_as,
-                              const SaveCallback& saveCallback,
-                              const CancelCallback& cancelCallback) {
+                              SaveCallback saveCallback,
+                              base::OnceClosure cancelCallback) {
   auto it = saved_files_.find(url);
   if (it != saved_files_.end() && !save_as) {
-    SaveAsFileSelected(url, content, saveCallback, it->second);
+    SaveAsFileSelected(url, content, std::move(saveCallback), it->second);
     return;
   }
 
@@ -273,27 +273,28 @@ void DevToolsFileHelper::Save(const std::string& url,
     }
   }
 
-  SelectFileDialog::Show(
-      base::BindOnce(&DevToolsFileHelper::SaveAsFileSelected,
-                     weak_factory_.GetWeakPtr(), url, content, saveCallback),
-      cancelCallback, web_contents_, ui::SelectFileDialog::SELECT_SAVEAS_FILE,
-      initial_path);
+  SelectFileDialog::Show(base::BindOnce(&DevToolsFileHelper::SaveAsFileSelected,
+                                        weak_factory_.GetWeakPtr(), url,
+                                        content, std::move(saveCallback)),
+                         std::move(cancelCallback), web_contents_,
+                         ui::SelectFileDialog::SELECT_SAVEAS_FILE,
+                         initial_path);
 }
 
 void DevToolsFileHelper::Append(const std::string& url,
                                 const std::string& content,
-                                const AppendCallback& callback) {
+                                base::OnceClosure callback) {
   auto it = saved_files_.find(url);
   if (it == saved_files_.end())
     return;
-  callback.Run();
+  std::move(callback).Run();
   file_task_runner_->PostTask(FROM_HERE,
                               BindOnce(&AppendToFile, it->second, content));
 }
 
 void DevToolsFileHelper::SaveAsFileSelected(const std::string& url,
                                             const std::string& content,
-                                            const SaveCallback& callback,
+                                            SaveCallback callback,
                                             const base::FilePath& path) {
   *g_last_save_path.Pointer() = path;
   saved_files_[url] = path;
@@ -303,7 +304,7 @@ void DevToolsFileHelper::SaveAsFileSelected(const std::string& url,
   base::DictionaryValue* files_map = update.Get();
   files_map->SetKey(base::MD5String(url), util::FilePathToValue(path));
   std::string file_system_path = path.AsUTF8Unsafe();
-  callback.Run(file_system_path);
+  std::move(callback).Run(file_system_path);
   file_task_runner_->PostTask(FROM_HERE, BindOnce(&WriteToFile, path, content));
 }
 
@@ -350,8 +351,8 @@ void DevToolsFileHelper::InnerAddFileSystem(
       IDS_DEV_TOOLS_CONFIRM_ADD_FILE_SYSTEM_MESSAGE,
       base::UTF8ToUTF16(path_display_name));
   show_info_bar_callback.Run(
-      message, Bind(&DevToolsFileHelper::AddUserConfirmedFileSystem,
-                    weak_factory_.GetWeakPtr(), type, path));
+      message, BindOnce(&DevToolsFileHelper::AddUserConfirmedFileSystem,
+                        weak_factory_.GetWeakPtr(), type, path));
 }
 
 void DevToolsFileHelper::AddUserConfirmedFileSystem(const std::string& type,

@@ -10,19 +10,19 @@
 
 // static
 void DevToolsInfoBarDelegate::Create(const base::string16& message,
-                                     const Callback& callback) {
+                                     Callback callback) {
   std::unique_ptr<ConfirmInfoBarDelegate> delegate(
-      new DevToolsInfoBarDelegate(message, callback));
+      new DevToolsInfoBarDelegate(message, std::move(callback)));
   GlobalConfirmInfoBar::Show(std::move(delegate));
 }
 
 DevToolsInfoBarDelegate::DevToolsInfoBarDelegate(const base::string16& message,
-                                                 const Callback& callback)
-    : ConfirmInfoBarDelegate(), message_(message), callback_(callback) {}
+                                                 Callback callback)
+    : message_(message), callback_(std::move(callback)) {}
 
 DevToolsInfoBarDelegate::~DevToolsInfoBarDelegate() {
   if (!callback_.is_null())
-    callback_.Run(false);
+    std::move(callback_).Run(false);
 }
 
 infobars::InfoBarDelegate::InfoBarIdentifier
@@ -42,13 +42,11 @@ base::string16 DevToolsInfoBarDelegate::GetButtonLabel(
 }
 
 bool DevToolsInfoBarDelegate::Accept() {
-  callback_.Run(true);
-  callback_.Reset();
+  std::move(callback_).Run(true);
   return true;
 }
 
 bool DevToolsInfoBarDelegate::Cancel() {
-  callback_.Run(false);
-  callback_.Reset();
+  std::move(callback_).Run(false);
   return true;
 }

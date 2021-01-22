@@ -224,7 +224,7 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
                        const std::string& file_system_path,
                        const std::vector<std::string>& file_paths);
   void ShowDevToolsInfoBar(const base::string16& message,
-                           const DevToolsInfoBarDelegate::Callback& callback);
+                           DevToolsInfoBarDelegate::Callback callback);
 
   // Extensions support.
   void AddDevToolsExtensionsToClient();

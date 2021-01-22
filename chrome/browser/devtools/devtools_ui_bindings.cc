@@ -745,8 +745,8 @@ void DevToolsUIBindings::HandleMessageFromDevToolsFrontend(
   base::ListValue* params_list;
   params->GetAsList(&params_list);
   embedder_message_dispatcher_->Dispatch(
-      base::Bind(&DevToolsUIBindings::SendMessageAck,
-                 weak_factory_.GetWeakPtr(), id),
+      base::BindOnce(&DevToolsUIBindings::SendMessageAck,
+                     weak_factory_.GetWeakPtr(), id),
       *method, params_list);
 }
 
@@ -972,17 +972,17 @@ void DevToolsUIBindings::SaveToFile(const std::string& url,
                                     const std::string& content,
                                     bool save_as) {
   file_helper_->Save(url, content, save_as,
-                     base::Bind(&DevToolsUIBindings::FileSavedAs,
-                                weak_factory_.GetWeakPtr(), url),
-                     base::Bind(&DevToolsUIBindings::CanceledFileSaveAs,
-                                weak_factory_.GetWeakPtr(), url));
+                     base::BindOnce(&DevToolsUIBindings::FileSavedAs,
+                                    weak_factory_.GetWeakPtr(), url),
+                     base::BindOnce(&DevToolsUIBindings::CanceledFileSaveAs,
+                                    weak_factory_.GetWeakPtr(), url));
 }
 
 void DevToolsUIBindings::AppendToFile(const std::string& url,
                                       const std::string& content) {
   file_helper_->Append(url, content,
-                       base::Bind(&DevToolsUIBindings::AppendedTo,
-                                  weak_factory_.GetWeakPtr(), url));
+                       base::BindOnce(&DevToolsUIBindings::AppendedTo,
+                                      weak_factory_.GetWeakPtr(), url));
 }
 
 void DevToolsUIBindings::RequestFileSystems() {
@@ -997,8 +997,8 @@ void DevToolsUIBindings::RequestFileSystems() {
 void DevToolsUIBindings::AddFileSystem(const std::string& type) {
   CHECK(IsValidFrontendURL(web_contents_->GetURL()) && frontend_host_);
   file_helper_->AddFileSystem(
-      type, base::Bind(&DevToolsUIBindings::ShowDevToolsInfoBar,
-                       weak_factory_.GetWeakPtr()));
+      type, base::BindRepeating(&DevToolsUIBindings::ShowDevToolsInfoBar,
+                                weak_factory_.GetWeakPtr()));
 }
 
 void DevToolsUIBindings::RemoveFileSystem(const std::string& file_system_path) {
@@ -1010,8 +1010,9 @@ void DevToolsUIBindings::UpgradeDraggedFileSystemPermissions(
     const std::string& file_system_url) {
   CHECK(IsValidFrontendURL(web_contents_->GetURL()) && frontend_host_);
   file_helper_->UpgradeDraggedFileSystemPermissions(
-      file_system_url, base::Bind(&DevToolsUIBindings::ShowDevToolsInfoBar,
-                                  weak_factory_.GetWeakPtr()));
+      file_system_url,
+      base::BindRepeating(&DevToolsUIBindings::ShowDevToolsInfoBar,
+                          weak_factory_.GetWeakPtr()));
 }
 
 void DevToolsUIBindings::IndexPath(
@@ -1171,31 +1172,34 @@ void DevToolsUIBindings::SetDevicesUpdatesEnabled(bool enabled) {
   devices_updates_enabled_ = enabled;
   if (enabled) {
     remote_targets_handler_ = DevToolsTargetsUIHandler::CreateForAdb(
-        base::Bind(&DevToolsUIBindings::DevicesUpdated,
-                   base::Unretained(this)),
+        base::BindRepeating(&DevToolsUIBindings::DevicesUpdated,
+                            base::Unretained(this)),
         profile_);
     pref_change_registrar_.Init(profile_->GetPrefs());
-    pref_change_registrar_.Add(prefs::kDevToolsDiscoverUsbDevicesEnabled,
-        base::Bind(&DevToolsUIBindings::DevicesDiscoveryConfigUpdated,
-                   base::Unretained(this)));
-    pref_change_registrar_.Add(prefs::kDevToolsPortForwardingEnabled,
-        base::Bind(&DevToolsUIBindings::DevicesDiscoveryConfigUpdated,
-                   base::Unretained(this)));
-    pref_change_registrar_.Add(prefs::kDevToolsPortForwardingConfig,
-        base::Bind(&DevToolsUIBindings::DevicesDiscoveryConfigUpdated,
-                   base::Unretained(this)));
+    pref_change_registrar_.Add(
+        prefs::kDevToolsDiscoverUsbDevicesEnabled,
+        base::BindRepeating(&DevToolsUIBindings::DevicesDiscoveryConfigUpdated,
+                            base::Unretained(this)));
+    pref_change_registrar_.Add(
+        prefs::kDevToolsPortForwardingEnabled,
+        base::BindRepeating(&DevToolsUIBindings::DevicesDiscoveryConfigUpdated,
+                            base::Unretained(this)));
+    pref_change_registrar_.Add(
+        prefs::kDevToolsPortForwardingConfig,
+        base::BindRepeating(&DevToolsUIBindings::DevicesDiscoveryConfigUpdated,
+                            base::Unretained(this)));
     pref_change_registrar_.Add(
         prefs::kDevToolsDiscoverTCPTargetsEnabled,
-        base::Bind(&DevToolsUIBindings::DevicesDiscoveryConfigUpdated,
-                   base::Unretained(this)));
+        base::BindRepeating(&DevToolsUIBindings::DevicesDiscoveryConfigUpdated,
+                            base::Unretained(this)));
     pref_change_registrar_.Add(
         prefs::kDevToolsTCPDiscoveryConfig,
-        base::Bind(&DevToolsUIBindings::DevicesDiscoveryConfigUpdated,
-                   base::Unretained(this)));
-    port_status_serializer_.reset(new PortForwardingStatusSerializer(
-        base::Bind(&DevToolsUIBindings::SendPortForwardingStatus,
-                   base::Unretained(this)),
-        profile_));
+        base::BindRepeating(&DevToolsUIBindings::DevicesDiscoveryConfigUpdated,
+                            base::Unretained(this)));
+    port_status_serializer_ = std::make_unique<PortForwardingStatusSerializer>(
+        base::BindRepeating(&DevToolsUIBindings::SendPortForwardingStatus,
+                            base::Unretained(this)),
+        profile_);
     DevicesDiscoveryConfigUpdated();
   } else {
     remote_targets_handler_.reset();
@@ -1485,12 +1489,12 @@ void DevToolsUIBindings::SearchCompleted(
 
 void DevToolsUIBindings::ShowDevToolsInfoBar(
     const base::string16& message,
-    const DevToolsInfoBarDelegate::Callback& callback) {
+    DevToolsInfoBarDelegate::Callback callback) {
   if (!delegate_->GetInfoBarService()) {
-    callback.Run(false);
+    std::move(callback).Run(false);
     return;
   }
-  DevToolsInfoBarDelegate::Create(message, callback);
+  DevToolsInfoBarDelegate::Create(message, std::move(callback));
 }
 
 void DevToolsUIBindings::AddDevToolsExtensionsToClient() {
@@ -1648,8 +1652,9 @@ void DevToolsUIBindings::ReadyToCommitNavigation(
     }
     frontend_host_ = content::DevToolsFrontendHost::Create(
         navigation_handle->GetRenderFrameHost(),
-        base::Bind(&DevToolsUIBindings::HandleMessageFromDevToolsFrontend,
-                   base::Unretained(this)));
+        base::BindRepeating(
+            &DevToolsUIBindings::HandleMessageFromDevToolsFrontend,
+            base::Unretained(this)));
     return;
   }
 

@@ -388,9 +388,10 @@ class DevToolsBeforeUnloadTest: public DevToolsSanityTest {
     content::PrepContentsForBeforeUnloadTest(web_contents);
   }
 
-  void RunBeforeUnloadSanityTest(bool is_docked,
-                                 base::Callback<void(void)> close_method,
-                                 bool wait_for_browser_close = true) {
+  void RunBeforeUnloadSanityTest(
+      bool is_docked,
+      base::RepeatingCallback<void(void)> close_method,
+      bool wait_for_browser_close = true) {
     OpenDevToolsWindow(kDebuggerTestPage, is_docked);
     auto runner = base::MakeRefCounted<content::MessageLoopRunner>();
     DevToolsWindowTesting::Get(window_)->
@@ -604,8 +605,8 @@ class DevToolsExtensionTest : public DevToolsSanityTest,
     registrar.Add(this,
                   extensions::NOTIFICATION_EXTENSION_HOST_DID_STOP_FIRST_LOAD,
                   content::NotificationService::AllSources());
-    base::CancelableClosure timeout(
-        base::Bind(&TimeoutCallback, "Extension host load timed out."));
+    base::CancelableOnceClosure timeout(
+        base::BindOnce(&TimeoutCallback, "Extension host load timed out."));
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE, timeout.callback(), TestTimeouts::action_timeout());
 
@@ -657,8 +658,8 @@ class WorkerDevToolsSanityTest : public InProcessBrowserTest {
    public:
     WorkerCreationObserver(const std::string& path,
                            scoped_refptr<DevToolsAgentHost>* out_host,
-                           base::Closure quit)
-        : path_(path), out_host_(out_host), quit_(quit) {
+                           base::OnceClosure quit)
+        : path_(path), out_host_(out_host), quit_(std::move(quit)) {
       DevToolsAgentHost::AddObserver(this);
     }
 
@@ -671,14 +672,15 @@ class WorkerDevToolsSanityTest : public InProcessBrowserTest {
       if (host->GetType() == DevToolsAgentHost::kTypeSharedWorker &&
           host->GetURL().path().rfind(path_) != std::string::npos) {
         *out_host_ = host;
-        content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, quit_);
+        content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE,
+                                                     std::move(quit_));
         delete this;
       }
     }
 
     std::string path_;
     scoped_refptr<DevToolsAgentHost>* out_host_;
-    base::Closure quit_;
+    base::OnceClosure quit_;
   };
 
   static scoped_refptr<DevToolsAgentHost> WaitForFirstSharedWorker(
@@ -712,9 +714,11 @@ class WorkerDevToolsSanityTest : public InProcessBrowserTest {
 // Tests that BeforeUnload event gets called on docked devtools if
 // we try to close them.
 IN_PROC_BROWSER_TEST_F(DevToolsBeforeUnloadTest, TestDockedDevToolsClose) {
-  RunBeforeUnloadSanityTest(true, base::Bind(
-      &DevToolsBeforeUnloadTest::CloseDevToolsWindowAsync,
-      base::Unretained(this)), false);
+  RunBeforeUnloadSanityTest(
+      true,
+      base::BindRepeating(&DevToolsBeforeUnloadTest::CloseDevToolsWindowAsync,
+                          base::Unretained(this)),
+      false);
 }
 
 // Tests that BeforeUnload event gets called on docked devtools if
@@ -730,52 +734,56 @@ IN_PROC_BROWSER_TEST_F(DevToolsBeforeUnloadTest, TestDockedDevToolsClose) {
 #endif
 IN_PROC_BROWSER_TEST_F(DevToolsBeforeUnloadTest,
                        MAYBE_TestDockedDevToolsInspectedTabClose) {
-  RunBeforeUnloadSanityTest(true, base::Bind(
-      &DevToolsBeforeUnloadTest::CloseInspectedTab,
-      base::Unretained(this)));
+  RunBeforeUnloadSanityTest(
+      true, base::BindRepeating(&DevToolsBeforeUnloadTest::CloseInspectedTab,
+                                base::Unretained(this)));
 }
 
 // Tests that BeforeUnload event gets called on docked devtools if
 // we try to close the inspected browser.
 IN_PROC_BROWSER_TEST_F(DevToolsBeforeUnloadTest,
                        TestDockedDevToolsInspectedBrowserClose) {
-  RunBeforeUnloadSanityTest(true, base::Bind(
-      &DevToolsBeforeUnloadTest::CloseInspectedBrowser,
-      base::Unretained(this)));
+  RunBeforeUnloadSanityTest(
+      true,
+      base::BindRepeating(&DevToolsBeforeUnloadTest::CloseInspectedBrowser,
+                          base::Unretained(this)));
 }
 
 // Tests that BeforeUnload event gets called on undocked devtools if
 // we try to close them.
 IN_PROC_BROWSER_TEST_F(DevToolsBeforeUnloadTest, TestUndockedDevToolsClose) {
-  RunBeforeUnloadSanityTest(false, base::Bind(
-      &DevToolsBeforeUnloadTest::CloseDevToolsWindowAsync,
-      base::Unretained(this)), false);
+  RunBeforeUnloadSanityTest(
+      false,
+      base::BindRepeating(&DevToolsBeforeUnloadTest::CloseDevToolsWindowAsync,
+                          base::Unretained(this)),
+      false);
 }
 
 // Tests that BeforeUnload event gets called on undocked devtools if
 // we try to close the inspected page.
 IN_PROC_BROWSER_TEST_F(DevToolsBeforeUnloadTest,
                        TestUndockedDevToolsInspectedTabClose) {
-  RunBeforeUnloadSanityTest(false, base::Bind(
-      &DevToolsBeforeUnloadTest::CloseInspectedTab,
-      base::Unretained(this)));
+  RunBeforeUnloadSanityTest(
+      false, base::BindRepeating(&DevToolsBeforeUnloadTest::CloseInspectedTab,
+                                 base::Unretained(this)));
 }
 
 // Tests that BeforeUnload event gets called on undocked devtools if
 // we try to close the inspected browser.
 IN_PROC_BROWSER_TEST_F(DevToolsBeforeUnloadTest,
                        TestUndockedDevToolsInspectedBrowserClose) {
-  RunBeforeUnloadSanityTest(false, base::Bind(
-      &DevToolsBeforeUnloadTest::CloseInspectedBrowser,
-      base::Unretained(this)));
+  RunBeforeUnloadSanityTest(
+      false,
+      base::BindRepeating(&DevToolsBeforeUnloadTest::CloseInspectedBrowser,
+                          base::Unretained(this)));
 }
 
 // Tests that BeforeUnload event gets called on undocked devtools if
 // we try to exit application.
 IN_PROC_BROWSER_TEST_F(DevToolsBeforeUnloadTest,
                        TestUndockedDevToolsApplicationClose) {
-  RunBeforeUnloadSanityTest(false, base::Bind(
-      &chrome::CloseAllBrowsers));
+  RunBeforeUnloadSanityTest(false,
+                            base::BindRepeating(&chrome::CloseAllBrowsers));
 }
 
 // Tests that inspected tab gets closed if devtools renderer

@@ -11,13 +11,12 @@
 
 class DevToolsInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
-  using Callback = base::Callback<void(bool)>;
+  using Callback = base::OnceCallback<void(bool)>;
 
-  static void Create(const base::string16& message, const Callback& callback);
+  static void Create(const base::string16& message, Callback callback);
 
  private:
-  DevToolsInfoBarDelegate(const base::string16& message,
-                          const Callback& callback);
+  DevToolsInfoBarDelegate(const base::string16& message, Callback callback);
   ~DevToolsInfoBarDelegate() override;
 
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;

@@ -324,9 +324,10 @@ void ChromeDevToolsManagerDelegate::UpdateDeviceDiscovery() {
     providers.push_back(new TCPDeviceProvider(remote_locations));
     device_manager_->SetDeviceProviders(providers);
 
-    device_discovery_.reset(new DevToolsDeviceDiscovery(device_manager_.get(),
-        base::Bind(&ChromeDevToolsManagerDelegate::DevicesAvailable,
-                   base::Unretained(this))));
+    device_discovery_ = std::make_unique<DevToolsDeviceDiscovery>(
+        device_manager_.get(),
+        base::BindRepeating(&ChromeDevToolsManagerDelegate::DevicesAvailable,
+                            base::Unretained(this)));
   }
   remote_locations_.swap(remote_locations);
 }
