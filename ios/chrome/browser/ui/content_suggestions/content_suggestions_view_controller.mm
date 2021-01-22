@@ -340,6 +340,15 @@ NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
   self.headerSynchronizer.showing = NO;
 }
 
+- (void)didMoveToParentViewController:(UIViewController*)parent {
+  [super didMoveToParentViewController:parent];
+  if (!parent)
+    return;
+  [self.headerSynchronizer
+      updateFakeOmniboxOnNewWidth:self.parentViewController.view.bounds.size
+                                      .width];
+}
+
 - (void)viewWillTransitionToSize:(CGSize)size
        withTransitionCoordinator:
            (id<UIViewControllerTransitionCoordinator>)coordinator {
