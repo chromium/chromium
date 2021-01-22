@@ -140,6 +140,13 @@ void WebContentsObserverConsistencyChecker::RenderFrameHostChanged(
   EnsureStableParentValue(new_host);
   if (new_host->GetParent()) {
     AssertRenderFrameExists(new_host->GetParent());
+    // RenderFrameCreated should be called before RenderFrameHostChanged for all
+    // the subframes except for Portals which do not have a live RenderFrame in
+    // the renderer process.
+    if (new_host->GetFrameOwnerElementType() !=
+        blink::mojom::FrameOwnerElementType::kPortal) {
+      AssertRenderFrameExists(new_host);
+    }
     CHECK(current_hosts_.count(GetRoutingPair(new_host->GetParent())))
         << "Parent of frame being committed must be current.";
   }
