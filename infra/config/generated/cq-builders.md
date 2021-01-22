@@ -386,3 +386,6 @@ as required builders.
 * [linux-rel-builderful](https://ci.chromium.org/p/chromium/builders/try/linux-rel-builderful) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+linux-rel-builderful)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+linux-rel-builderful))
   * Experiment percentage: 5.0
 
+* [linux-rel-rts](https://ci.chromium.org/p/chromium/builders/try/linux-rel-rts) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+linux-rel-rts)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+linux-rel-rts))
+  * Experiment percentage: 1.0
+

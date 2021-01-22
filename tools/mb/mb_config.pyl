@@ -963,7 +963,7 @@
       'linux-perfetto-rel': 'perfetto_release_trybot',
       'linux-rel': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage',
       'linux-rel-builderful': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage',
-      'linux-rts': 'release_trybot_rts',
+      'linux-rel-rts': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_rts',
       'linux-trusty-rel': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange',
       'linux-viz-rel': 'release_trybot',
       'linux-wpt-fyi-rel': 'release_trybot',
@@ -2135,6 +2135,11 @@
       'use_clang_coverage', 'partial_code_coverage_instrumentation',
     ],
 
+    'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_rts': [
+      'gpu_tests', 'release_trybot', 'no_symbols', 'use_dummy_lastchange',
+      'use_clang_coverage', 'partial_code_coverage_instrumentation', 'rts_bot',
+    ],
+
     'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_invert_fieldtrials': [
       'gpu_tests', 'release_trybot', 'no_symbols', 'use_dummy_lastchange',
       'invert_fieldtrials',
@@ -2574,10 +2579,6 @@
     'release_bot_x86_minimal_symbols_no_clang_cxx11': [
       'release_bot', 'x86', 'minimal_symbols', 'no_clang', 'use_cxx11',
       'no_goma',
-    ],
-
-    'release_trybot_rts': [
-      'release_bot', 'rts_bot',
     ],
 
     'tsan_disable_nacl_debug_bot': [

@@ -1058,6 +1058,14 @@ try_.chromium_linux_builder(
 )
 
 try_.chromium_linux_builder(
+    name = "linux-rel-rts",
+    builderless = True,
+    goma_jobs = goma.jobs.J150,
+    tryjob = try_.job(experiment_percentage = 1),
+    use_clang_coverage = True,
+)
+
+try_.chromium_linux_builder(
     name = "linux-trusty-rel",
     goma_jobs = goma.jobs.J150,
     os = os.LINUX_TRUSTY,
