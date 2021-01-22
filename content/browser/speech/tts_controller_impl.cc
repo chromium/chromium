@@ -303,8 +303,10 @@ void TtsControllerImpl::GetVoices(BrowserContext* browser_context,
   if (TtsPlatformReady())
     tts_platform->GetVoices(out_voices);
 
-  if (browser_context && engine_delegate_)
+  if (browser_context && engine_delegate_ &&
+      engine_delegate_->IsBuiltInTtsEngineInitialized(browser_context)) {
     engine_delegate_->GetVoices(browser_context, out_voices);
+  }
 }
 
 bool TtsControllerImpl::IsSpeaking() {
@@ -521,6 +523,8 @@ void TtsControllerImpl::OnSpeakFinished(int utterance_id, bool success) {
   // the browser has built-in TTS that isn't loaded yet.
   if (GetTtsPlatform()->LoadBuiltInTtsEngine(
           current_utterance_->GetBrowserContext())) {
+    // Careful here; we're adding this utterance back to the queue, which can
+    // lead to hangs processing speech. See SpeakNextUtterance.
     utterance_list_.emplace_back(std::move(current_utterance_));
     return;
   }
@@ -562,14 +566,19 @@ void TtsControllerImpl::SpeakNextUtterance() {
 
   // Start speaking the next utterance in the queue.  Keep trying in case
   // one fails but there are still more in the queue to try.
+  TtsUtterance* previous_utterance = nullptr;
   while (!utterance_list_.empty() && !current_utterance_) {
     std::unique_ptr<TtsUtterance> utterance =
         std::move(utterance_list_.front());
     utterance_list_.pop_front();
+    DCHECK(previous_utterance != utterance.get());
+
     if (ShouldSpeakUtterance(utterance.get()))
       SpeakNow(std::move(utterance));
     else
       utterance->Finish();
+
+    previous_utterance = utterance.get();
   }
 }
 
