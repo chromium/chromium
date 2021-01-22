@@ -90,9 +90,7 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.compositor.layouts.phone.StackLayout;
 import org.chromium.chrome.browser.feed.FeedSurfaceCoordinator;
 import org.chromium.chrome.browser.feed.FeedSurfaceMediator;
@@ -177,7 +175,6 @@ public class StartSurfaceTest {
      * because of its {@link org.chromium.chrome.browser.tab.Tab} dependency.
      */
     private void startMainActivityFromLauncher() {
-        DeferredStartupHandler.setExpectingActivityStartupForTesting();
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
         mActivityTestRule.prepareUrlIntent(intent, null);
@@ -1221,9 +1218,7 @@ public class StartSurfaceTest {
                         && mActivityTestRule.getActivity().getLayoutManager().overviewVisible());
         mActivityTestRule.waitForActivityNativeInitializationComplete();
 
-        assertTrue("Deferred startup never completed",
-                DeferredStartupHandler.waitForDeferredStartupCompleteForTesting(
-                        ScalableTimeout.scaleTimeout(20000L)));
+        assertTrue("Deferred startup never completed", mActivityTestRule.waitForDeferredStartup());
 
         boolean isInstantStart = TabUiFeatureUtilities.supportInstantStart(false);
         Assert.assertEquals(1,

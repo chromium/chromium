@@ -91,9 +91,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.StaticLayout;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
@@ -1933,9 +1931,8 @@ public class StartSurfaceLayoutTest {
         AtomicBoolean tabModelRestoreCompleted = new AtomicBoolean(false);
         AtomicBoolean normalModelIsEmpty = new AtomicBoolean(true);
 
-        DeferredStartupHandler.setExpectingActivityStartupForTesting();
-        ChromeTabbedActivity newActivity =
-                ApplicationTestUtils.recreateActivity(mActivityTestRule.getActivity());
+        mActivityTestRule.recreateActivity();
+        ChromeTabbedActivity newActivity = mActivityTestRule.getActivity();
 
         new TabModelSelectorTabModelObserver(newActivity.getTabModelSelector()) {
             @Override
@@ -1969,9 +1966,7 @@ public class StartSurfaceLayoutTest {
                 "New Activity current TabModel is not incognito");
         TestThreadUtils.runOnUiThreadBlocking(IncognitoUtils::closeAllIncognitoTabs);
 
-        assertTrue("Deferred startup never completed",
-                DeferredStartupHandler.waitForDeferredStartupCompleteForTesting(
-                        ScalableTimeout.scaleTimeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL)));
+        assertTrue("Deferred startup never completed", mActivityTestRule.waitForDeferredStartup());
 
         CriteriaHelper.pollUiThread(()
                                             -> tabModelRestoreCompleted.get(),

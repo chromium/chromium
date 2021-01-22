@@ -336,7 +336,6 @@ public class FirstRunIntegrationTest {
         // policy set in this test case.
         FirstRunStatus.setFirstRunSkippedByPolicy(true);
 
-        DeferredStartupHandler.setExpectingActivityStartupForTesting();
         Intent intent = CustomTabsTestUtils.createMinimalCustomTabIntent(mContext, "about:blank");
         mContext.startActivity(intent);
         CustomTabActivity activity = waitForActivity(CustomTabActivity.class);
@@ -344,6 +343,7 @@ public class FirstRunIntegrationTest {
 
         // DeferredStartupHandler could not finish with CriteriaHelper#DEFAULT_MAX_TIME_TO_POLL.
         // Use longer timeout here to avoid flakiness. See https://crbug.com/1157611.
+        CriteriaHelper.pollUiThread(() -> activity.deferredStartupPostedForTesting());
         Assert.assertTrue("Deferred startup never completed",
                 DeferredStartupHandler.waitForDeferredStartupCompleteForTesting(
                         ScalableTimeout.scaleTimeout(DEFERRED_START_UP_POLL_TIME)));

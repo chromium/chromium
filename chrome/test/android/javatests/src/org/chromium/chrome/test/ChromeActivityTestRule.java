@@ -199,7 +199,6 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
      * Similar to #launchActivity(Intent), but waits for the Activity tab to be initialized.
      */
     public void startActivityCompletely(Intent intent) {
-        DeferredStartupHandler.setExpectingActivityStartupForTesting();
         launchActivity(intent);
         waitForActivityNativeInitializationComplete();
 
@@ -214,13 +213,16 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
             NewTabPageTestUtils.waitForNtpLoaded(tab);
         }
 
-        Assert.assertTrue("Deferred startup never completed. Did you try to start an Activity "
-                        + "that was already started?",
-                DeferredStartupHandler.waitForDeferredStartupCompleteForTesting(
-                        ScalableTimeout.scaleTimeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL)));
+        Assert.assertTrue(waitForDeferredStartup());
 
         Assert.assertNotNull(tab);
         Assert.assertNotNull(tab.getView());
+    }
+
+    public boolean waitForDeferredStartup() {
+        CriteriaHelper.pollUiThread(() -> getActivity().deferredStartupPostedForTesting());
+        return DeferredStartupHandler.waitForDeferredStartupCompleteForTesting(
+                ScalableTimeout.scaleTimeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL));
     }
 
     @Override

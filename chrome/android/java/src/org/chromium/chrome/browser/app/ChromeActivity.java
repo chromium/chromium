@@ -2468,4 +2468,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     public Configuration getSavedConfigurationForTesting() {
         return mConfig;
     }
+
+    @VisibleForTesting
+    public boolean deferredStartupPostedForTesting() {
+        return mDeferredStartupPosted;
+    }
 }
