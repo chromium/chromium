@@ -237,13 +237,14 @@ void MaybeShowIntentPickerChromeOs(
     return;
   }
 
+  IntentPickerTabHelper::SetShouldShowIcon(web_contents, true);
+
   IntentPickerAutoDisplayService* ui_auto_display_service =
       IntentPickerAutoDisplayService::Get(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()));
 
   if (GetPickerShowState(navigation_handle, apps) ==
       PickerShowState::kOmnibox) {
-    IntentPickerTabHelper::SetShouldShowIcon(web_contents, true);
     return;
   }
 
