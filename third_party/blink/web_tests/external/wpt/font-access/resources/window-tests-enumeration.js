@@ -9,12 +9,6 @@ for (const test of standard_fonts_tests) {
   const inputAsString = JSON.stringify(test) ? JSON.stringify(test) : test;
 
   font_access_test(async t => {
-    if (!isPlatformSupported()) {
-      await promise_rejects_dom(
-          t, 'NotSupportedError', navigator.fonts.query());
-      return;
-    }
-
     const fonts =
         await navigator.fonts.query({persistentAccess: true, ...test});
 
@@ -23,11 +17,6 @@ for (const test of standard_fonts_tests) {
 }
 
 font_access_test(async t => {
-  if (!isPlatformSupported()) {
-    await promise_rejects_dom(t, 'NotSupportedError', navigator.fonts.query());
-    return;
-  }
-
   const fonts = await navigator.fonts.query({persistentAccess: true});
   // The following tests that fonts are sorted. Postscript names are expected to
   // be encoded in a subset of the ASCII character set.
@@ -48,11 +37,6 @@ font_access_test(async t => {
 }, 'query(): fonts are sorted');
 
 font_access_test(async t => {
-  if (!isPlatformSupported()) {
-    await promise_rejects_dom(t, 'NotSupportedError', navigator.fonts.query());
-    return;
-  }
-
   const test = {
     persistentAccess: true,
     select: [getEnumerationTestSet()[0].postscriptName]
@@ -85,12 +69,6 @@ const non_ascii_input = [
 
 for (const test of non_ascii_input) {
   font_access_test(async t => {
-    if (!isPlatformSupported()) {
-      await promise_rejects_dom(
-          t, 'NotSupportedError', navigator.fonts.query());
-      return;
-    }
-
     const fonts =
         await navigator.fonts.query({persistentAccess: true, ...test});
     assert_equals(

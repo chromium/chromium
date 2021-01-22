@@ -492,6 +492,11 @@ async function simulateUserActivation() {
 
 function font_access_test(test_function, name, properties) {
   return promise_test(async (t) => {
+    if (!isPlatformSupported()) {
+      await promise_rejects_dom(
+          t, 'NotSupportedError', navigator.fonts.query());
+      return;
+    }
     await test_driver.set_permission({name: 'font-access'}, 'granted');
     await simulateUserActivation();
     await test_function(t, name, properties);
