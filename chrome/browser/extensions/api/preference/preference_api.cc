@@ -368,9 +368,10 @@ PreferenceEventRouter::PreferenceEventRouter(Profile* profile)
     : profile_(profile) {
   registrar_.Init(profile_->GetPrefs());
   for (const auto& pref : kPrefMapping) {
-    registrar_.Add(pref.browser_pref,
-                   base::Bind(&PreferenceEventRouter::OnPrefChanged,
-                              base::Unretained(this), registrar_.prefs()));
+    registrar_.Add(
+        pref.browser_pref,
+        base::BindRepeating(&PreferenceEventRouter::OnPrefChanged,
+                            base::Unretained(this), registrar_.prefs()));
   }
   DCHECK(!profile_->IsOffTheRecord());
   observed_profiles_.Add(profile_);
@@ -453,8 +454,9 @@ void PreferenceEventRouter::ObserveOffTheRecordPrefs(PrefService* prefs) {
   for (const auto& pref : kPrefMapping) {
     incognito_registrar_->Add(
         pref.browser_pref,
-        base::Bind(&PreferenceEventRouter::OnPrefChanged,
-                   base::Unretained(this), incognito_registrar_->prefs()));
+        base::BindRepeating(&PreferenceEventRouter::OnPrefChanged,
+                            base::Unretained(this),
+                            incognito_registrar_->prefs()));
   }
 }
 
