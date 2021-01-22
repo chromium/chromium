@@ -3,3 +3,9 @@ include_rules = [
   "+components/pwg_encoder",
   "+pdf/pdf.h",
 ]
+
+specific_include_rules = {
+  "print_backend_service_test_impl.cc": [
+    "+chrome/browser/printing/print_backend_service.h",
+  ]
+}

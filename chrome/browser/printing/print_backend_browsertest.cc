@@ -14,12 +14,12 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
-#include "chrome/services/printing/print_backend_service_impl.h"
+#include "chrome/services/printing/print_backend_service_test_impl.h"
 #include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "printing/backend/print_backend.h"
 #include "printing/backend/test_print_backend.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -35,50 +35,20 @@ constexpr int32_t kCopiesMax = 123;
 
 }  // namespace
 
-// PrintBackendServiceTestImpl uses a TestPrintBackend to enable testing of the
-// PrintBackendService without relying upon the presence of real printer
-// drivers.
-class PrintBackendServiceTestImpl : public PrintBackendServiceImpl {
- public:
-  explicit PrintBackendServiceTestImpl(
-      mojo::PendingReceiver<mojom::PrintBackendService> receiver)
-      : PrintBackendServiceImpl(std::move(receiver)) {}
-  PrintBackendServiceTestImpl(const PrintBackendServiceTestImpl&) = delete;
-  PrintBackendServiceTestImpl& operator=(const PrintBackendServiceTestImpl&) =
-      delete;
-  ~PrintBackendServiceTestImpl() override = default;
-
-  // Overrides which need special handling for using `test_print_backend_`.
-  void Init(const std::string& locale) override {
-    test_print_backend_ = base::MakeRefCounted<TestPrintBackend>();
-    print_backend_ = test_print_backend_;
-  }
-
- private:
-  friend class PrintBackendBrowserTest;
-
-  scoped_refptr<TestPrintBackend> test_print_backend_;
-};
-
 class PrintBackendBrowserTest : public InProcessBrowserTest {
  public:
   PrintBackendBrowserTest() = default;
   ~PrintBackendBrowserTest() override = default;
 
-  void PreRunTestOnMainThread() override {
-    InProcessBrowserTest::PreRunTestOnMainThread();
-
-    // Launch the service, and bind the testing interface to it.
-    mojo::PendingReceiver<mojom::PrintBackendService> receiver =
-        mojo::PendingRemote<mojom::PrintBackendService>()
-            .InitWithNewPipeAndPassReceiver();
+  void LaunchUninitialized() {
     print_backend_service_ =
-        std::make_unique<PrintBackendServiceTestImpl>(std::move(receiver));
+        PrintBackendServiceTestImpl::LaunchUninitialized(remote_);
   }
 
   // Initialize and load the backend service with some test print drivers.
   void DoInitAndSetupTestData() {
-    print_backend_service_->Init(/*locale=*/"");
+    print_backend_service_ = PrintBackendServiceTestImpl::LaunchForTesting(
+        remote_, test_print_backend_);
 
     auto printer_info = std::make_unique<PrinterBasicInfo>(
         /*printer_name=*/kDefaultPrinterName,
@@ -91,7 +61,7 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
     // tests.
     auto default_caps = std::make_unique<PrinterSemanticCapsAndDefaults>();
     default_caps->copies_max = kCopiesMax;
-    print_backend_service_->test_print_backend_->AddValidPrinter(
+    test_print_backend_->AddValidPrinter(
         kDefaultPrinterName, std::move(default_caps), std::move(printer_info));
   }
 
@@ -155,6 +125,9 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
   bool received_message_ = false;
   base::OnceClosure quit_callback_;
 
+  mojo::Remote<mojom::PrintBackendService> remote_;
+  scoped_refptr<TestPrintBackend> test_print_backend_ =
+      base::MakeRefCounted<TestPrintBackend>();
   std::unique_ptr<PrintBackendServiceTestImpl> print_backend_service_;
 };
 
@@ -164,6 +137,9 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, FailWithoutInit) {
   base::Optional<std::string> default_printer_name;
   base::Optional<PrinterSemanticCapsAndDefaults> printer_caps;
+
+  // Launch the service, but without initializing to desired locale.
+  LaunchUninitialized();
 
   // Safe to use base::Unretained(this) since waiting locally on the callback
   // forces a shorter lifetime than `this`.

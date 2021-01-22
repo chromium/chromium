@@ -3087,7 +3087,11 @@ if (!is_android) {
     }
     if (enable_basic_printing &&
         (is_win || is_mac || is_linux || is_chromeos)) {
-      sources += [ "../browser/printing/print_backend_browsertest.cc" ]
+      sources += [
+        "../browser/printing/print_backend_browsertest.cc",
+        "../services/printing/print_backend_service_test_impl.cc",
+        "../services/printing/print_backend_service_test_impl.h",
+      ]
       deps += [
         "//chrome/services/printing:lib",
         "//printing:test_support",
