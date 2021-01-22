@@ -147,7 +147,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DomDistiller.Time.ActivelyViewingArticleBeforeDistilling"
-    units="ms" expires_after="2021-02-01">
+    units="ms" expires_after="2021-08-19">
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@chromium.org</owner>
   <summary>
@@ -161,7 +161,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DomDistiller.Time.ActivelyViewingReaderModePage" units="ms"
-    expires_after="2021-06-06">
+    expires_after="2021-08-19">
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@chromium.org</owner>
   <summary>
