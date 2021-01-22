@@ -176,6 +176,7 @@ source_set("url_test_support") {
 
   sources = [
     "gurl_abstract_tests.h",
+    "origin_abstract_tests.cc",
     "origin_abstract_tests.h",
   ]
 

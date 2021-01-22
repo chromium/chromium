@@ -956,55 +956,6 @@ TEST_F(OriginTest, DeserializeValidNonce) {
   EXPECT_EQ(opaque.GetDebugString(), deserialized.value().GetDebugString());
 }
 
-class UrlOriginTestTraits final : public OriginTraitsBase<Origin> {
- public:
-  OriginType CreateOriginFromString(base::StringPiece s) override {
-    return Origin::Create(GURL(s));
-  }
-
-  OriginType CreateUniqueOpaqueOrigin() override { return Origin(); }
-
-  OriginType CreateWithReferenceOrigin(
-      base::StringPiece url,
-      const OriginType& reference_origin) override {
-    return Origin::Resolve(GURL(url), reference_origin);
-  }
-
-  OriginType DeriveNewOpaqueOrigin(
-      const OriginType& reference_origin) override {
-    return reference_origin.DeriveNewOpaqueOrigin();
-  }
-
-  bool IsOpaque(const OriginType& origin) override { return origin.opaque(); }
-
-  std::string GetScheme(const OriginType& origin) override {
-    return origin.scheme();
-  }
-
-  std::string GetHost(const OriginType& origin) override {
-    return origin.host();
-  }
-
-  uint16_t GetPort(const OriginType& origin) override { return origin.port(); }
-
-  SchemeHostPort GetTupleOrPrecursorTupleIfOpaque(
-      const OriginType& origin) override {
-    return origin.GetTupleOrPrecursorTupleIfOpaque();
-  }
-
-  bool IsSameOrigin(const OriginType& a, const OriginType& b) override {
-    return a.IsSameOriginWith(b);
-  }
-
-  std::string Serialize(const OriginType& origin) override {
-    return origin.Serialize();
-  }
-
-  bool IsValidUrl(base::StringPiece str) override {
-    return GURL(str).is_valid();
-  }
-};
-
 INSTANTIATE_TYPED_TEST_SUITE_P(UrlOrigin,
                                AbstractOriginTest,
                                UrlOriginTestTraits);

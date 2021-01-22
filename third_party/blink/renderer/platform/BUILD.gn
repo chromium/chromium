@@ -2174,6 +2174,7 @@ source_set("blink_platform_unittests_sources") {
     "//mojo/public/cpp/bindings/tests:for_blink_tests",
     "//mojo/public/cpp/test_support:test_utils",
     "//mojo/public/interfaces/bindings/tests:test_interfaces_blink",
+    "//services/network/public/cpp:test_support",
     "//services/viz/public/mojom",
     "//skia",
     "//skia:skcms",

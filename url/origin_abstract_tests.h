@@ -8,8 +8,13 @@
 #include <string>
 #include <type_traits>
 
+#include "base/containers/contains.h"
+#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+#include "url/origin.h"
+#include "url/scheme_host_port.h"
 #include "url/url_util.h"
 
 namespace url {
@@ -74,6 +79,9 @@ class AbstractOriginTest : public testing::Test {
         "local-std-with-host",
         "local-noaccess-std-with-host",
         "also-local",
+        "sec",
+        "sec-std-with-host",
+        "sec-noaccess",
     };
     for (const char* kScheme : kSchemesToRegister) {
       std::string scheme(kScheme);
@@ -83,6 +91,8 @@ class AbstractOriginTest : public testing::Test {
         AddStandardScheme(kScheme, SchemeType::SCHEME_WITH_HOST);
       if (base::Contains(scheme, "local"))
         AddLocalScheme(kScheme);
+      if (base::Contains(scheme, "sec"))
+        AddSecureScheme(kScheme);
     }
   }
 
@@ -488,6 +498,25 @@ REGISTER_TYPED_TEST_SUITE_P(AbstractOriginTest,
                             TupleOrigins,
                             CustomSchemes_OpaqueOrigins,
                             CustomSchemes_TupleOrigins);
+
+class UrlOriginTestTraits : public virtual OriginTraitsBase<Origin> {
+ public:
+  OriginType CreateOriginFromString(base::StringPiece s) override;
+  OriginType CreateUniqueOpaqueOrigin() override;
+  OriginType CreateWithReferenceOrigin(
+      base::StringPiece url,
+      const OriginType& reference_origin) override;
+  OriginType DeriveNewOpaqueOrigin(const OriginType& reference_origin) override;
+  bool IsOpaque(const OriginType& origin) override;
+  std::string GetScheme(const OriginType& origin) override;
+  std::string GetHost(const OriginType& origin) override;
+  uint16_t GetPort(const OriginType& origin) override;
+  SchemeHostPort GetTupleOrPrecursorTupleIfOpaque(
+      const OriginType& origin) override;
+  bool IsSameOrigin(const OriginType& a, const OriginType& b) override;
+  std::string Serialize(const OriginType& origin) override;
+  bool IsValidUrl(base::StringPiece str) override;
+};
 
 }  // namespace url
 
