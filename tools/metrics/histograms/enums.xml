@@ -44663,6 +44663,7 @@ from previous Chrome versions.
   <int value="-108468535" label="ChromeColorsCustomColorPicker:disabled"/>
   <int value="-106631643" label="TurnOffStreamingMediaCachingAlways:disabled"/>
   <int value="-106373261" label="PaintPreviewDemo:enabled"/>
+  <int value="-104106119" label="WebViewJavaJsBridgeMojo:disabled"/>
   <int value="-102537270" label="extension-content-verification"/>
   <int value="-102227288" label="PasswordExport:disabled"/>
   <int value="-100148609" label="EvDetailsInPageInfo:disabled"/>
@@ -44913,6 +44914,7 @@ from previous Chrome versions.
   <int value="121684313" label="QuickUnlockPin:enabled"/>
   <int value="121858954" label="enable-supervised-user-safesites"/>
   <int value="121911155" label="DesktopPWAsElidedExtensionsMenu:enabled"/>
+  <int value="122959683" label="WebViewJavaJsBridgeMojo:enabled"/>
   <int value="123097915" label="FaviconsFromWebManifest:enabled"/>
   <int value="125581289" label="WebRtcHWVP8Encoding:disabled"/>
   <int value="125934378" label="enable-password-link"/>
