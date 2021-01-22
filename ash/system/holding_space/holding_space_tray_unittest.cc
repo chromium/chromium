@@ -396,6 +396,27 @@ TEST_P(HoldingSpaceTrayTest, HideButtonOnChangeToNonEmptyModel) {
   UnregisterModelForUser("user@secondary");
 }
 
+TEST_P(HoldingSpaceTrayTest, HideButtonOnUserAddingScreen) {
+  MarkTimeOfFirstPin();
+  StartSession();
+
+  // The tray button should be hidden if the user has previously pinned an item
+  // and the holding space is empty.
+  EXPECT_FALSE(test_api()->IsShowingInShelf());
+
+  // The tray button should be showing if the user has an item in holding space.
+  AddItem(HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/fake_1"));
+  EXPECT_TRUE(test_api()->IsShowingInShelf());
+
+  // The tray button should be hidden if the user adding screen is running.
+  SetUserAddingScreenRunning(true);
+  EXPECT_FALSE(test_api()->IsShowingInShelf());
+
+  // The tray button should be showing if the user adding screen is finished.
+  SetUserAddingScreenRunning(false);
+  EXPECT_TRUE(test_api()->IsShowingInShelf());
+}
+
 TEST_P(HoldingSpaceTrayTest, AddingItemShowsTrayBubble) {
   MarkTimeOfFirstPin();
   StartSession();

@@ -69,6 +69,7 @@ std::unique_ptr<views::ImageView> CreateDefaultTrayIcon() {
 
 HoldingSpaceTray::HoldingSpaceTray(Shelf* shelf) : TrayBackgroundView(shelf) {
   controller_observer_.Observe(HoldingSpaceController::Get());
+  session_observer_.Observe(Shell::Get()->session_controller());
   SetVisible(false);
 
   // Icon.
@@ -82,7 +83,6 @@ HoldingSpaceTray::HoldingSpaceTray(Shelf* shelf) : TrayBackgroundView(shelf) {
 
     // If previews feature is enabled, the preview icon is displayed
     // conditionally, depending on user prefs state.
-    session_observer_.Observe(Shell::Get()->session_controller());
     auto* prefs = Shell::Get()->session_controller()->GetActivePrefService();
     if (prefs)
       ObservePrefService(prefs);
@@ -212,11 +212,8 @@ void HoldingSpaceTray::FirePreviewsUpdateTimerIfRunningForTesting() {
 }
 
 void HoldingSpaceTray::UpdateVisibility() {
-  HoldingSpaceModel* model = HoldingSpaceController::Get()->model();
-  LoginStatus login_status = shelf()->GetStatusAreaWidget()->login_status();
-  const bool in_active_session = login_status != LoginStatus::NOT_LOGGED_IN &&
-                                 login_status != LoginStatus::LOCKED;
-  if (!model || !in_active_session) {
+  HoldingSpaceModel* const model = HoldingSpaceController::Get()->model();
+  if (!model || Shell::Get()->session_controller()->IsUserSessionBlocked()) {
     SetVisiblePreferred(false);
     return;
   }
@@ -363,8 +360,16 @@ void HoldingSpaceTray::OnWidgetDestroying(views::Widget* widget) {
 }
 
 void HoldingSpaceTray::OnActiveUserPrefServiceChanged(PrefService* prefs) {
+  if (!features::IsTemporaryHoldingSpacePreviewsEnabled())
+    return;
+
   UpdatePreviewsState();
   ObservePrefService(prefs);
+}
+
+void HoldingSpaceTray::OnSessionStateChanged(
+    session_manager::SessionState state) {
+  UpdateVisibility();
 }
 
 void HoldingSpaceTray::ObservePrefService(PrefService* prefs) {
