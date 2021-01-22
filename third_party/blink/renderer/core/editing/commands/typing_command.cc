@@ -144,9 +144,13 @@ SelectionInDOMTree CreateSelection(const wtf_size_t start,
   return selection;
 }
 
-bool CanAppendNewLineFeedToSelection(const VisibleSelection& selection,
+bool CanAppendNewLineFeedToSelection(const SelectionInDOMTree& selection,
                                      EditingState* editing_state) {
-  Element* element = selection.RootEditableElement();
+  // We use SelectionForUndoStep because it is resilient to DOM
+  // mutation.
+  const SelectionForUndoStep& selection_as_undo_step =
+      SelectionForUndoStep::From(selection);
+  Element* element = selection_as_undo_step.RootEditableElement();
   if (!element)
     return false;
 
@@ -154,7 +158,7 @@ bool CanAppendNewLineFeedToSelection(const VisibleSelection& selection,
   auto* event = MakeGarbageCollected<BeforeTextInsertedEvent>(String("\n"));
   element->DispatchEvent(*event);
   // event may invalidate frame or selection
-  if (IsValidDocument(document) && selection.IsValidFor(document))
+  if (IsValidDocument(document) && selection_as_undo_step.IsValidFor(document))
     return event->GetText().length();
   // editing/inserting/webkitBeforeTextInserted-removes-frame.html
   // and
@@ -723,7 +727,8 @@ void TypingCommand::InsertTextRunWithoutNewlines(const String& text,
 }
 
 void TypingCommand::InsertLineBreak(EditingState* editing_state) {
-  if (!CanAppendNewLineFeedToSelection(EndingVisibleSelection(), editing_state))
+  if (!CanAppendNewLineFeedToSelection(EndingSelection().AsSelection(),
+                                       editing_state))
     return;
 
   ApplyCommandToComposite(
@@ -735,7 +740,8 @@ void TypingCommand::InsertLineBreak(EditingState* editing_state) {
 }
 
 void TypingCommand::InsertParagraphSeparator(EditingState* editing_state) {
-  if (!CanAppendNewLineFeedToSelection(EndingVisibleSelection(), editing_state))
+  if (!CanAppendNewLineFeedToSelection(EndingSelection().AsSelection(),
+                                       editing_state))
     return;
 
   ApplyCommandToComposite(
