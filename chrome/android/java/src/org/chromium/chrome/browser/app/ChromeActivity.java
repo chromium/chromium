@@ -1428,6 +1428,14 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                             getTabModelSelector()),
                     AsyncTabParamsManagerSingleton.getInstance());
         }
+
+        // Make sure the user is reporting into one of the feed spinner groups, so that we can
+        // analyze daily power impact for a typical Chrome user. The flag only has an effect if the
+        // spinner is shown, but our earlier UMA analysis shows that it may have a side-effect on
+        // a future browsing session's power, even if the spinner is not shown (by causing more
+        // cold-starts).
+        // TODO(crbug.com/1151391): Remove after analysis is complete.
+        ChromeFeatureList.isEnabled(ChromeFeatureList.INTEREST_FEED_SPINNER_ALWAYS_ANIMATE);
     }
 
     /**
