@@ -124,7 +124,7 @@
     Edit
   </message>
   <message name="IDS_SETTINGS_NEARBY_SHARE_UPDATE_DATA_USAGE" desc="Label for the button that allows a user to confirm their choice of data usage setting for the Nearby Share feature.">
-    Update
+    Done
   </message>
   <message name="IDS_SETTINGS_NEARBY_SHARE_DATA_USAGE_DIALOG_TITLE" desc="Title for the dialog where a user can select the data usage setting for the Nearby Share feature.">
     Data usage
