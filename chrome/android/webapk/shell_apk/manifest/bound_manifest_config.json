@@ -38,5 +38,6 @@
             "mime_type": "image/*"
           }]
   }],
-  "has_maskable_icon": true
+  "has_maskable_icon": true,
+  "enable_site_settings_shortcut": true
 }

@@ -26,6 +26,7 @@ import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
 import org.chromium.webapk.lib.common.WebApkConstants;
 
 import java.util.Collections;
@@ -65,7 +66,7 @@ public class ManageDataLauncherActivity extends Activity {
         mProviderPackage = getIntent().getStringExtra(EXTRA_PROVIDER_PACKAGE);
         mUrl = Uri.parse(getIntent().getStringExtra(EXTRA_SITE_SETTINGS_URL));
 
-        if (!supportsLaunchSettings(this, mProviderPackage)) {
+        if (!siteSettingsShortcutEnabled(this, mProviderPackage)) {
             handleNoSupportForLaunchSettings();
             return;
         }
@@ -126,7 +127,13 @@ public class ManageDataLauncherActivity extends Activity {
         }
     }
 
-    private static boolean supportsLaunchSettings(Context context, String providerPackage) {
+    private static boolean siteSettingsShortcutEnabled(Context context, String providerPackage) {
+        Bundle metadata = WebApkUtils.readMetaData(context);
+        if (metadata == null
+                || !metadata.getBoolean(WebApkMetaDataKeys.ENABLE_SITE_SETTINGS_SHORTCUT)) {
+            return false;
+        }
+
         Intent intent = new Intent(ACTION_CUSTOM_TABS_CONNECTION);
         intent.addCategory(CATEGORY_LAUNCH_WEBAPK_SITE_SETTINGS);
         intent.setPackage(providerPackage);
@@ -177,7 +184,7 @@ public class ManageDataLauncherActivity extends Activity {
         ShortcutManager shortcutManager = context.getSystemService(ShortcutManager.class);
 
         // Remove potentially existing shortcut if package does not support shortcuts.
-        if (!supportsLaunchSettings(context, params.getHostBrowserPackageName())) {
+        if (!siteSettingsShortcutEnabled(context, params.getHostBrowserPackageName())) {
             shortcutManager.removeDynamicShortcuts(Collections.singletonList(
                     ManageDataLauncherActivity.SITE_SETTINGS_SHORTCUT_ID));
             return;

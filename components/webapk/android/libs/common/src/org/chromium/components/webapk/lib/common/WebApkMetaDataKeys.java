@@ -44,4 +44,6 @@ public final class WebApkMetaDataKeys {
     public static final String SHARE_PARAM_NAMES = "org.chromium.webapk.shell_apk.shareParamNames";
     public static final String SHARE_PARAM_ACCEPTS =
             "org.chromium.webapk.shell_apk.shareParamAccepts";
+    public static final String ENABLE_SITE_SETTINGS_SHORTCUT =
+            "org.chromium.webapk.shell_apk.enableSiteSettingsShortcut";
 }
