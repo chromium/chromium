@@ -69,6 +69,20 @@ class MhtmlArchive {
     content_ += "\n--MHTML_BOUNDARY\n" + content;
   }
 
+  void AddResource(const GURL& url,
+                   const std::string mime_type,
+                   const std::string headers,
+                   const std::string body) {
+    const char* document_template =
+        "Content-Type: $1\n"
+        "Content-Location: $2\n"
+        "$3"
+        "\n"
+        "$4";
+    AddResource(base::ReplaceStringPlaceholders(
+        document_template, {mime_type, url.spec(), headers, body}, nullptr));
+  }
+
   void AddHtmlDocument(const GURL& url,
                        const std::string headers,
                        const std::string body) {
@@ -734,6 +748,33 @@ IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest, DataIframe) {
     EXPECT_TRUE(frame->GetLastCommittedOrigin().opaque())
         << "frame->GetLastCommittedURL() = " << frame->GetLastCommittedURL();
   }
+}
+
+// Regression test for https://crbug.com/1168249.
+IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest, PreloadedTextTrack) {
+  // The test uses a cross-site subframe, so any HTTP requests that reach the
+  // NetworkService will have `network::ResourceRequest::request_initiator` with
+  // a tuple (or precursor tuple in case of opaque origins expected for MHTML
+  // documents) that is incompatible with `request_initiator_origin_lock` in
+  // `network::mojom::URLLoaderFactoryParams`.
+  MhtmlArchive mhtml_archive;
+  mhtml_archive.AddHtmlDocument(
+      GURL("http://main.com/main.html"), "",
+      R"( <iframe src="http://subframe.com/subframe.html"></iframe> )");
+  mhtml_archive.AddHtmlDocument(
+      GURL("http://subframe.com/subframe.html"), "",
+      R"( <link rel="preload" href="http://resource.com/track" as="track"> )");
+  mhtml_archive.AddResource(GURL("http://resource.com/track"), "text/vtt", "",
+                            "fake text track body");
+  GURL mhtml_url = mhtml_archive.Write("index.mhtml");
+
+  EXPECT_TRUE(NavigateToURL(shell(), mhtml_url));
+
+  // The main verification is that ResourceFetcher::StartLoad didn't reach
+  // NOTREACHED assertion (against HTTP resource loads triggered from MHTML
+  // documents). To detect such NOTREACHED (via renderer crash) it is sufficient
+  // for the test to wait for DidStopLoading notification (which is done
+  // underneath NavigateToURL called above).
 }
 
 }  // namespace content

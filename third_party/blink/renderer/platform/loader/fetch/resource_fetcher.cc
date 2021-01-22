@@ -616,6 +616,11 @@ ResourceFetcher::IsControlledByServiceWorker() const {
 bool ResourceFetcher::ResourceNeedsLoad(Resource* resource,
                                         const FetchParameters& params,
                                         RevalidationPolicy policy) {
+  // MHTML documents should not trigger actual loads (i.e. all resource requests
+  // should be fulfilled by the MHTML archive).
+  if (archive_)
+    return false;
+
   // Defer a font load until it is actually needed unless this is a link
   // preload.
   if (resource->GetType() == ResourceType::kFont && !params.IsLinkPreload())
@@ -1986,6 +1991,15 @@ bool ResourceFetcher::StartLoad(Resource* resource,
 
   ResourceLoader* loader = nullptr;
 
+  if (archive_ && resource->Url().ProtocolIsInHTTPFamily()) {
+    // MHTML documents should not trigger HTTP requests.
+    //
+    // TODO(lukasza): https://crbug.com/1151438: Remove the ad-hoc DwoC below,
+    // once the bug is fixed and verified.
+    NOTREACHED();
+    base::debug::DumpWithoutCrashing();
+  }
+
   {
     // Forbids JavaScript/revalidation until start()
     // to prevent unintended state transitions.
@@ -2138,6 +2152,11 @@ String ResourceFetcher::GetCacheIdentifier(const KURL& url) const {
   if (properties_->WebBundlePhysicalUrl().IsValid())
     return properties_->WebBundlePhysicalUrl().GetString();
 
+  // Requests that can be satisfied via `archive_` (i.e. MHTML) or
+  // `subresource_web_bundles_` should not participate in the global caching,
+  // but should use a bundle/mhtml-specific cache.
+  if (archive_)
+    return archive_->GetCacheIdentifier();
   for (auto& bundle : subresource_web_bundles_) {
     if (bundle->CanHandleRequest(url))
       return bundle->GetCacheIdentifier();

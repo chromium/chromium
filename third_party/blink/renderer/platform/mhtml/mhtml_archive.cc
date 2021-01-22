@@ -221,6 +221,7 @@ MHTMLArchive* MHTMLArchive::CreateArchive(
     const KURL& url,
     scoped_refptr<const SharedBuffer> data) {
   MHTMLArchive* archive = MakeGarbageCollected<MHTMLArchive>();
+  archive->archive_url_ = url;
 
   // |data| may be null if archive file is empty.
   if (!data || data->IsEmpty()) {
@@ -439,6 +440,10 @@ void MHTMLArchive::AddSubresource(ArchiveResource* resource) {
 
 ArchiveResource* MHTMLArchive::SubresourceForURL(const KURL& url) const {
   return subresources_.at(url.GetString());
+}
+
+String MHTMLArchive::GetCacheIdentifier() const {
+  return archive_url_.GetString();
 }
 
 void MHTMLArchive::Trace(Visitor* visitor) const {
