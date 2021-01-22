@@ -4,11 +4,16 @@
 
 #import "ios/chrome/test/wpt/cwt_request_handler.h"
 
+#import <XCTest/XCTest.h>
+
 #include "base/debug/stack_trace.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/guid.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/test/ios/wait_util.h"
 #include "components/version_info/version_info.h"
 #import "ios/chrome/test/wpt/cwt_constants.h"
 #import "ios/chrome/test/wpt/cwt_webdriver_app_interface.h"
@@ -40,6 +45,17 @@ const char kWebDriverAsyncScriptCommand[] = "async";
 const char kWebDriverScreenshotCommand[] = "screenshot";
 const char kWebDriverWindowRectCommand[] = "rect";
 
+// Non-standard commands used only for testing Chrome.
+// This command is similar to the standard "url" command. It loads the URL
+// specified by the kWebDriverURLRequestField argument, waits up till the
+// currently-set page load time (see the standard "timeouts" command) for the
+// page to finish loading, but then waits an additional amount of time
+// (specified in seconds by the kChromeCrashWaitTime argument) for the page to
+// crash. It then returns the stderr produced by the app during this time, in
+// the kChromeStderrValueField response field. If the given URL is a file URL,
+// the given file is copied and served from a local EmbeddedTestServer.
+const char kChromeCrashTestCommand[] = "chrome_crashtest";
+
 // WebDriver error codes.
 const char kWebDriverInvalidArgumentError[] = "invalid argument";
 const char kWebDriverInvalidSessionError[] = "invalid session id";
@@ -66,6 +82,13 @@ const char kWebDriverNoMatchingWindowMessage[] =
 const char kWebDriverMissingScriptMessage[] = "No script argument";
 const char kWebDriverScriptTimeoutMessage[] = "Script execution timed out";
 
+// Non-standard error messages, used only for testing Chrome.
+const char kChromeInvalidExtraWaitMessage[] =
+    "Extra wait must be a non-negative integer";
+const char kChromeInvalidUrlMessage[] = "The provided URL is not valid";
+const char kChromeFileCannotBeCopiedMessage[] =
+    "The provided input file cannot be copied";
+
 // WebDriver request field names. These are fields that are contained within
 // the body of a POST request.
 const char kWebDriverURLRequestField[] = "url";
@@ -73,6 +96,11 @@ const char kWebDriverScriptTimeoutRequestField[] = "script";
 const char kWebDriverPageLoadTimeoutRequestField[] = "pageLoad";
 const char kWebDriverWindowHandleRequestField[] = "handle";
 const char kWebDriverScriptRequestField[] = "script";
+
+// Non-standard request field names, used only for testing Chrome.
+// The additional time (in seconds) to wait for a crash after a successful page
+// load.
+const char kChromeCrashWaitTime[] = "chrome_crashWaitTime";
 
 // WebDriver response field name. This is the top-level field in the JSON object
 // contained in a response.
@@ -86,6 +114,10 @@ const char kWebDriverErrorCodeValueField[] = "error";
 const char kWebDriverErrorMessageValueField[] = "message";
 const char kWebDriverSessionIdValueField[] = "sessionId";
 const char kWebDriverStackTraceValueField[] = "stacktrace";
+
+// Non-standard value field names, used only when testing Chrome.
+// Stderr output from the app.
+const char kChromeStderrValueField[] = "chrome_stderr";
 
 // Field names for the "capabilities" struct that's included in the response
 // when creating a session.
@@ -124,7 +156,16 @@ bool IsErrorValue(const base::Value& value) {
 CWTRequestHandler::CWTRequestHandler(ProceduralBlock session_completion_handler)
     : session_completion_handler_(session_completion_handler),
       script_timeout_(kDefaultScriptTimeout),
-      page_load_timeout_(kDefaultPageLoadTimeout) {}
+      page_load_timeout_(kDefaultPageLoadTimeout) {
+  base::CreateNewTempDirectory(base::FilePath::StringType(),
+                               &test_case_directory_);
+  test_case_server_.ServeFilesFromDirectory(test_case_directory_);
+  if (!test_case_server_.Start()) {
+    XCTFail("Unable to start test case server.");
+  }
+}
+
+CWTRequestHandler::~CWTRequestHandler() = default;
 
 base::Optional<base::Value> CWTRequestHandler::ProcessCommand(
     const std::string& command,
@@ -163,6 +204,9 @@ base::Optional<base::Value> CWTRequestHandler::ProcessCommand(
       return CreateErrorValue(kWebDriverInvalidSessionError,
                               kWebDriverNoActiveSessionMessage);
     }
+
+    if (command == kChromeCrashTestCommand)
+      return NavigateToUrlForCrashTest(*content);
 
     if (command == kWebDriverNavigationCommand)
       return NavigateToUrl(content->FindKey(kWebDriverURLRequestField));
@@ -294,6 +338,81 @@ base::Value CWTRequestHandler::NavigateToUrl(const base::Value* url) {
 
   return CreateErrorValue(kWebDriverTimeoutError,
                           kWebDriverPageLoadTimeoutMessage);
+}
+
+base::Value CWTRequestHandler::NavigateToUrlForCrashTest(
+    const base::Value& input) {
+  const base::Value* url_str = input.FindKey(kWebDriverURLRequestField);
+  if (!url_str || !url_str->is_string()) {
+    return CreateErrorValue(kWebDriverInvalidArgumentError,
+                            kWebDriverMissingURLMessage);
+  }
+
+  GURL url(url_str->GetString());
+  if (!url.is_valid()) {
+    return CreateErrorValue(kWebDriverInvalidArgumentError,
+                            kChromeInvalidUrlMessage);
+  }
+
+  if (url.SchemeIsFile()) {
+    // Copy the file to the directory being served by the test server.
+    base::FilePath test_input_file(url.GetContent());
+    base::FilePath test_destination_file =
+        test_case_directory_.Append(test_input_file.BaseName());
+    bool copied_file = base::CopyFile(test_input_file, test_destination_file);
+    if (!copied_file) {
+      return CreateErrorValue(kWebDriverInvalidArgumentError,
+                              kChromeFileCannotBeCopiedMessage);
+    }
+    url = test_case_server_.GetURL("/" + test_input_file.BaseName().value());
+  }
+
+  base::FilePath log_file;
+  base::CreateTemporaryFile(&log_file);
+  [CWTWebDriverAppInterface
+      logStderrToFilePath:base::SysUTF8ToNSString(log_file.value())];
+
+  // Once the test page is loaded, the app might crash at any time until the
+  // tab is closed. Re-launch the app if it crashes.
+  @try {
+    NSError* error = [CWTWebDriverAppInterface
+                 loadURL:base::SysUTF8ToNSString(url.spec())
+                   inTab:base::SysUTF8ToNSString(target_tab_id_)
+        timeoutInSeconds:page_load_timeout_];
+
+    if (!error) {
+      const base::Value* extra_wait = input.FindKey(kChromeCrashWaitTime);
+      if (extra_wait) {
+        if (!extra_wait->is_int() || extra_wait->GetInt() < 0) {
+          return CreateErrorValue(kWebDriverInvalidArgumentError,
+                                  kChromeInvalidExtraWaitMessage);
+        }
+        base::test::ios::SpinRunLoopWithMinDelay(
+            base::TimeDelta::FromSeconds(extra_wait->GetInt()));
+      }
+    }
+
+    [CWTWebDriverAppInterface openNewTab];
+    [CWTWebDriverAppInterface
+        closeTabWithID:base::SysUTF8ToNSString(target_tab_id_)];
+    target_tab_id_ =
+        base::SysNSStringToUTF8([CWTWebDriverAppInterface currentTabID]);
+
+    [CWTWebDriverAppInterface stopLoggingStderr];
+  } @catch (NSException* exception) {
+    dispatch_sync(dispatch_get_main_queue(), ^{
+      [[[XCUIApplication alloc] init] launch];
+    });
+    target_tab_id_ =
+        base::SysNSStringToUTF8([CWTWebDriverAppInterface currentTabID]);
+  }
+
+  std::string stderr_contents;
+  base::ReadFileToString(log_file, &stderr_contents);
+
+  base::Value result(base::Value::Type::DICTIONARY);
+  result.SetStringKey(kChromeStderrValueField, stderr_contents);
+  return result;
 }
 
 base::Value CWTRequestHandler::SetTimeouts(const base::Value& timeouts) {

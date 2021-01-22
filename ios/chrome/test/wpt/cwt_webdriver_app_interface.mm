@@ -4,6 +4,8 @@
 
 #import "ios/chrome/test/wpt/cwt_webdriver_app_interface.h"
 
+#include "base/files/file.h"
+#include "base/files/file_path.h"
 #include "base/json/json_writer.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
@@ -17,6 +19,7 @@
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/settings_test_util.h"
 #import "ios/chrome/test/app/tab_test_util.h"
+#import "ios/chrome/test/wpt/cwt_stderr_logger.h"
 #import "ios/testing/nserror_util.h"
 #import "ios/web/public/test/navigation_test_util.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
@@ -157,6 +160,16 @@ void DispatchSyncOnMainThread(void (^block)(void)) {
   return error;
 }
 
++ (NSString*)openNewTab {
+  __block NSString* tabID = nil;
+  DispatchSyncOnMainThread(^{
+    chrome_test_util::OpenNewTab();
+    tabID = GetIdForWebState(chrome_test_util::GetCurrentWebState());
+  });
+
+  return tabID;
+}
+
 + (NSError*)switchToTabWithID:(NSString*)ID {
   __block NSError* error = nil;
   DispatchSyncOnMainThread(^{
@@ -288,6 +301,15 @@ void DispatchSyncOnMainThread(void (^block)(void)) {
 
   NSData* snapshotAsPNG = UIImagePNGRepresentation(snapshot);
   return [snapshotAsPNG base64EncodedStringWithOptions:0];
+}
+
++ (void)logStderrToFilePath:(NSString*)filePath {
+  base::FilePath stderrPath(base::SysNSStringToUTF8(filePath));
+  CWTStderrLogger::GetInstance()->StartRedirectingToFile(stderrPath);
+}
+
++ (void)stopLoggingStderr {
+  CWTStderrLogger::GetInstance()->StopRedirectingToFile();
 }
 
 @end

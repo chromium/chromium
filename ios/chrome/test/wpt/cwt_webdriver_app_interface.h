@@ -32,6 +32,9 @@
 // tab.
 + (NSError*)closeTabWithID:(NSString*)ID;
 
+// Opens a new tab, makes this tab the current tab, and return its id.
++ (NSString*)openNewTab;
+
 // Makes the tab identified by |ID| the current tab. Returns an error if there
 // is no such tab.
 + (NSError*)switchToTabWithID:(NSString*)ID;
@@ -51,6 +54,12 @@
 // Takes a snapshot of the specified tab. Returns the snapshot as a base64-
 // encoded image. If no such tab exists, returns nil.
 + (NSString*)takeSnapshotOfTabWithID:(NSString*)ID;
+
+// Starts redirecting stderr output to the file with the given path.
++ (void)logStderrToFilePath:(NSString*)filePath;
+
+// Stops redirecting stderr output to a file.
++ (void)stopLoggingStderr;
 
 @end
 

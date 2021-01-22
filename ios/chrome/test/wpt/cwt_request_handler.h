@@ -8,10 +8,12 @@
 #import <Foundation/Foundation.h>
 #include <string>
 
+#include "base/files/file_path.h"
 #include "base/ios/block_types.h"
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/values.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 
@@ -40,6 +42,8 @@ class CWTRequestHandler {
   // closed.
   CWTRequestHandler(ProceduralBlock sesssion_completion_handler);
 
+  ~CWTRequestHandler();
+
   // Creates responses for HTTP requests according to the WebDriver protocol.
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request);
@@ -55,6 +59,11 @@ class CWTRequestHandler {
   // Navigates the target tab to the given URL, and waits for the page load to
   // complete.
   base::Value NavigateToUrl(const base::Value* url);
+
+  // Navigates the target tab to the URL given in |input|, waits for the page
+  // load to complete, and then waits for the additional time specified in
+  // |input|. Returns the stderr output produced by the app during page load.
+  base::Value NavigateToUrlForCrashTest(const base::Value& input);
 
   // Sets timeouts used when performing browser operations.
   base::Value SetTimeouts(const base::Value& timeouts);
@@ -123,6 +132,12 @@ class CWTRequestHandler {
   // Timeouts used when performing browser operations.
   NSTimeInterval script_timeout_;
   NSTimeInterval page_load_timeout_;
+
+  // A server for test files used in crash tests.
+  net::EmbeddedTestServer test_case_server_;
+
+  // The directory used for test files for crash tests.
+  base::FilePath test_case_directory_;
 
   DISALLOW_COPY_AND_ASSIGN(CWTRequestHandler);
 };

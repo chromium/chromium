@@ -80,6 +80,8 @@ source_set("app_support") {
   configs += [ "//build/config/compiler:enable_arc" ]
 
   sources = [
+    "cwt_stderr_logger.h",
+    "cwt_stderr_logger.mm",
     "cwt_tests_hook.mm",
     "cwt_webdriver_app_interface.mm",
   ]
