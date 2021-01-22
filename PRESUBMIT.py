@@ -337,7 +337,6 @@ _NOT_CONVERTED_TO_MODERN_BIND_AND_CALLBACK = '|'.join((
   '^chrome/browser/chromeos/',
   '^chrome/browser/component_updater/',
   '^chrome/browser/device_identity/chromeos/device_oauth2_token_store_chromeos.cc', # pylint: disable=line-too-long
-  '^chrome/browser/devtools/',
   '^chrome/browser/download/',
   '^chrome/browser/extensions/',
   '^chrome/browser/history/',
