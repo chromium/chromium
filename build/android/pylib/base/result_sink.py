@@ -80,12 +80,12 @@ class ResultSinkClient(object):
 
     # Slightly smaller to allow addition of <pre> tags and message.
     report_check_size = MAX_REPORT_LEN - 45
-    test_log_formatted = cgi.escape(test_log)
-    if len(test_log) > report_check_size:
-      test_log_formatted = ('<pre>' + test_log_formatted[:report_check_size] +
+    test_log_escaped = cgi.escape(test_log)
+    if len(test_log_escaped) > report_check_size:
+      test_log_formatted = ('<pre>' + test_log_escaped[:report_check_size] +
                             '...Full output in Artifact.</pre>')
-    elif test_log:
-      test_log_formatted = '<pre>' + test_log_formatted + '</pre>'
+    else:
+      test_log_formatted = '<pre>' + test_log_escaped + '</pre>'
 
     tr = {
         'expected': expected,
@@ -98,7 +98,8 @@ class ResultSinkClient(object):
         'testId': test_id,
     }
     artifacts = artifacts or {}
-    if len(test_log) > report_check_size:
+    if len(test_log_escaped) > report_check_size:
+      # Upload the original log without any modifications.
       artifacts.update({'Test Log': {'contents': base64.b64encode(test_log)}})
     if artifacts:
       tr['artifacts'] = artifacts
