@@ -196,8 +196,21 @@ void PaintLayerCompositor::UpdateAssignmentsIfNeededRecursiveInternal(
   if (target_state == DocumentLifecycle::kCompositingInputsClean)
     return;
 
-  if (layout_view_->GetFrameView()->ShouldThrottleRendering())
+  if (layout_view_->GetFrameView()->ShouldThrottleRendering()) {
+    if (auto* owner = layout_view_->GetFrame()->OwnerLayoutObject()) {
+      auto* parent_compositor = owner->View()->Compositor();
+      DCHECK(parent_compositor);
+      DisableCompositingQueryAsserts query_assert_disabler;
+      // TODO(szager): It's not clear how this can happen. Even if the child
+      // frame is throttled, if the child compositor has a root graphics layer,
+      // then the parent compositor should be in compositing mode.
+      DCHECK(parent_compositor->StaleInCompositingMode() ||
+             !RootGraphicsLayer());
+      if (!parent_compositor->StaleInCompositingMode() && RootGraphicsLayer())
+        root_layer_attachment_dirty_ = true;
+    }
     return;
+  }
 
   if (DisplayLockUtilities::PrePaintBlockedInParentFrame(layout_view_))
     return;
