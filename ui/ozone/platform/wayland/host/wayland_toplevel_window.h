@@ -150,7 +150,7 @@ class WaylandToplevelWindow : public WaylandWindow,
   // e.g. lacros-taskmanager.
   bool use_native_frame_ = false;
 
-  base::Optional<std::vector<gfx::Rect>> window_shape_;
+  base::Optional<std::vector<gfx::Rect>> window_shape_in_dips_;
 };
 
 }  // namespace ui

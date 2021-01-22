@@ -91,6 +91,9 @@ gfx::Rect TranslateWindowBoundsToParentDIP(ui::WaylandWindow* window,
 // Returns rectangles dictated by SkPath.
 std::vector<gfx::Rect> CreateRectsFromSkPath(const SkPath& path);
 
+// Returns converted SkPath in DIPs from the one in pixels.
+SkPath ConvertPathToDIP(const SkPath& path_in_pixels, const int32_t scale);
+
 }  // namespace wl
 
 #endif  // UI_OZONE_PLATFORM_WAYLAND_COMMON_WAYLAND_UTIL_H_

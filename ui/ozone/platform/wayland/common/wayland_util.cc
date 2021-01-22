@@ -11,6 +11,7 @@
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/base/hit_test.h"
 #include "ui/gfx/skia_util.h"
+#include "ui/gfx/transform.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_shm_buffer.h"
 #include "ui/ozone/platform/wayland/host/wayland_surface.h"
@@ -290,6 +291,15 @@ std::vector<gfx::Rect> CreateRectsFromSkPath(const SkPath& path) {
     rects.push_back(gfx::SkIRectToRect(it.rect()));
 
   return rects;
+}
+
+SkPath ConvertPathToDIP(const SkPath& path_in_pixels, const int32_t scale) {
+  SkScalar sk_scale = SkFloatToScalar(1.0f / scale);
+  gfx::Transform transform;
+  transform.Scale(sk_scale, sk_scale);
+  SkPath path_in_dips;
+  path_in_pixels.transform(SkMatrix(transform.matrix()), &path_in_dips);
+  return path_in_dips;
 }
 
 }  // namespace wl

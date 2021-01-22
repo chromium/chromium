@@ -231,7 +231,7 @@ bool WaylandToplevelWindow::ShouldUseNativeFrame() const {
 
 base::Optional<std::vector<gfx::Rect>> WaylandToplevelWindow::GetWindowShape()
     const {
-  return window_shape_;
+  return window_shape_in_dips_;
 }
 
 void WaylandToplevelWindow::HandleSurfaceConfigure(int32_t width,
@@ -438,15 +438,18 @@ void WaylandToplevelWindow::UpdateWindowMask() {
 }
 
 void WaylandToplevelWindow::UpdateWindowShape() {
-  // Create |window_shape_| using the window mask of PlatformWindowDelegate
-  // otherwise resets it.
-  base::Optional<SkPath> window_mask = delegate()->GetWindowMaskForWindowShape(
-      gfx::Size(GetBounds().width(), GetBounds().height()));
-  if (window_mask.has_value()) {
-    window_shape_ = wl::CreateRectsFromSkPath(window_mask.value());
-  } else {
-    window_shape_.reset();
+  // Create |window_shape_in_dips_| using the window mask of
+  // PlatformWindowDelegate otherwise resets it.
+  base::Optional<SkPath> window_mask_in_pixels =
+      delegate()->GetWindowMaskForWindowShape(
+          gfx::Size(GetBounds().width(), GetBounds().height()));
+  if (!window_mask_in_pixels.has_value()) {
+    window_shape_in_dips_.reset();
+    return;
   }
+  SkPath window_mask_in_dips =
+      wl::ConvertPathToDIP(window_mask_in_pixels.value(), buffer_scale());
+  window_shape_in_dips_ = wl::CreateRectsFromSkPath(window_mask_in_dips);
 }
 
 }  // namespace ui

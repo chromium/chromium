@@ -225,10 +225,11 @@ wl::Object<wl_region> WaylandSurface::CreateAndAddRegion(
                   region_dip.width(), region_dip.height());
   };
 
-  if (root_window_->GetWindowShape().has_value()) {
-    std::vector<gfx::Rect> rectangles = root_window_->GetWindowShape().value();
-    for (const auto& rect : rectangles)
-      add_region(rect);
+  auto window_shape_in_dips = root_window_->GetWindowShape();
+  if (window_shape_in_dips.has_value()) {
+    for (const auto& rect : window_shape_in_dips.value())
+      wl_region_add(region.get(), rect.x(), rect.y(), rect.width(),
+                    rect.height());
   } else {
     add_region(region_px);
   }
