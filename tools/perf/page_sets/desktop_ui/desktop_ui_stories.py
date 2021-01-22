@@ -20,6 +20,7 @@ class DesktopUIStorySet(story.StorySet):
       tab_search_story.TabSearchStoryCleanSlate,
       tab_search_story.TabSearchStoryMeasureMemoryBefore,
       tab_search_story.TabSearchStoryMeasureMemoryAfter,
+      tab_search_story.TabSearchStoryMeasureMemoryMultiwindow,
   ]
 
   def __init__(self):

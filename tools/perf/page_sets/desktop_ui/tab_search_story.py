@@ -242,6 +242,18 @@ class TabSearchStoryMeasureMemoryAfter(TabSearchStoryMeasureMemory):
     action_runner.MeasureMemory(deterministic_mode=True)
 
 
+class TabSearchStoryMeasureMemoryMultiwindow(TabSearchStoryMeasureMemory):
+  NAME = 'tab_search:measure_memory:multiwindow'
+
+  def InteractWithPage(self, action_runner):
+    action_runner.Wait(2)
+    tabs = action_runner.tab.browser.tabs
+    new_tab = tabs.New(in_new_window=True)
+    new_tab.browser.ExecuteBrowserCommand('openTabSearch')
+    action_runner.Wait(2)
+    action_runner.MeasureMemory(deterministic_mode=True)
+
+
 SCROLL_ELEMENT_FUNCTION = '''
 document.querySelector('tab-search-app').shadowRoot.getElementById('tabsList')
 '''
