@@ -311,6 +311,7 @@ void HardwareRendererViz::InitializeOnViz(
 
 HardwareRendererViz::~HardwareRendererViz() {
   DCHECK_CALLED_ON_VALID_THREAD(render_thread_checker_);
+  output_surface_provider_.shared_context_state()->MakeCurrent(nullptr);
   VizCompositorThreadRunnerWebView::GetInstance()->ScheduleOnVizAndBlock(
       base::BindOnce([](std::unique_ptr<OnViz>) {}, std::move(on_viz_)));
 }
