@@ -216,7 +216,11 @@ function runChecksWithPauseAPI(checks) {
         internals.pauseAnimations(timeMs / 1000);
         checks[k].forEach(function(check) { check(); });
     }
-    endTest();
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() {
+        endTest();
+      });
+    });
 }
 
 function startTest(checks)
