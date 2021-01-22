@@ -72,7 +72,7 @@
   {
     "name": "allow-insecure-localhost",
     "owners": [ "security-dev" ],
-    "expiry_milestone": 87
+    "expiry_milestone": 95
   },
   {
     "name": "allow-previews",
