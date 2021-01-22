@@ -1613,15 +1613,6 @@ void WebFrameWidgetImpl::SetBrowserControlsParams(
   widget_base_->LayerTreeHost()->SetBrowserControlsParams(params);
 }
 
-cc::LayerTreeDebugState WebFrameWidgetImpl::GetLayerTreeDebugState() {
-  return widget_base_->LayerTreeHost()->GetDebugState();
-}
-
-void WebFrameWidgetImpl::SetLayerTreeDebugState(
-    const cc::LayerTreeDebugState& state) {
-  widget_base_->LayerTreeHost()->SetDebugState(state);
-}
-
 void WebFrameWidgetImpl::SynchronouslyCompositeForTesting(
     base::TimeTicks frame_time) {
   widget_base_->LayerTreeHost()->CompositeForTest(frame_time, false);
@@ -3659,6 +3650,15 @@ void WebFrameWidgetImpl::SetScreenInfoAndSize(
 
 float WebFrameWidgetImpl::GetCompositingScaleFactor() {
   return compositing_scale_factor_;
+}
+
+const cc::LayerTreeDebugState& WebFrameWidgetImpl::GetLayerTreeDebugState() {
+  return widget_base_->LayerTreeHost()->GetDebugState();
+}
+
+void WebFrameWidgetImpl::SetLayerTreeDebugState(
+    const cc::LayerTreeDebugState& state) {
+  widget_base_->LayerTreeHost()->SetDebugState(state);
 }
 
 void WebFrameWidgetImpl::NotifyCompositingScaleFactorChanged(

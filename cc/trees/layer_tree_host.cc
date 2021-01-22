@@ -658,10 +658,7 @@ void LayerTreeHost::SetNeedsCommitWithForcedRedraw() {
   proxy_->SetNeedsCommit();
 }
 
-void LayerTreeHost::SetDebugState(const LayerTreeDebugState& debug_state) {
-  LayerTreeDebugState new_debug_state =
-      LayerTreeDebugState::Unite(settings_.initial_debug_state, debug_state);
-
+void LayerTreeHost::SetDebugState(const LayerTreeDebugState& new_debug_state) {
   if (LayerTreeDebugState::Equal(debug_state_, new_debug_state))
     return;
 

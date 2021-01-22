@@ -53,6 +53,7 @@
 
 namespace cc {
 class Layer;
+class LayerTreeDebugState;
 }
 
 namespace blink {
@@ -307,6 +308,8 @@ class CORE_EXPORT InspectorOverlayAgent final
       document_to_ax_context_;
   bool swallow_next_mouse_up_;
   bool is_page_scrolling_ = false;
+  std::unique_ptr<cc::LayerTreeDebugState> original_layer_tree_debug_state_;
+
   DOMNodeId backend_node_id_to_inspect_;
   InspectorAgentState::Boolean enabled_;
   InspectorAgentState::Boolean show_ad_highlights_;

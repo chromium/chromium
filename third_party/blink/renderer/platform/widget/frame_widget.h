@@ -23,6 +23,7 @@ enum class EventListenerClass;
 enum class EventListenerProperties;
 class Layer;
 class LayerTreeSettings;
+class LayerTreeDebugState;
 class PaintImage;
 }  // namespace cc
 
@@ -256,6 +257,11 @@ class PLATFORM_EXPORT FrameWidget {
   // Returns the raster scale factor for the local root frame associated with
   // this widget, taking into account its transform to main frame space.
   virtual float GetCompositingScaleFactor() = 0;
+
+  // Get and set the configuration for the debugging overlay managed by the
+  // underlaying LayerTreeHost.
+  virtual const cc::LayerTreeDebugState& GetLayerTreeDebugState() = 0;
+  virtual void SetLayerTreeDebugState(const cc::LayerTreeDebugState& state) = 0;
 };
 
 }  // namespace blink

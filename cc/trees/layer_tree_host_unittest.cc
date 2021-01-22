@@ -9503,5 +9503,23 @@ class LayerTreeHostTestDocumentTransitionsPropagatedToMetadata
 SINGLE_AND_MULTI_THREAD_TEST_F(
     LayerTreeHostTestDocumentTransitionsPropagatedToMetadata);
 
+class LayerTreeHostTestDebugStateDowngrade : public LayerTreeHostTest {
+  void InitializeSettings(LayerTreeSettings* settings) override {
+    settings->initial_debug_state.show_fps_counter = true;
+  }
+
+  void BeginTest() override {
+    LayerTreeHost* host = layer_tree_host();
+    LayerTreeDebugState state = host->GetDebugState();
+    EXPECT_TRUE(state.show_fps_counter);
+    state.show_fps_counter = false;
+    host->SetDebugState(state);
+    EXPECT_FALSE(host->GetDebugState().show_fps_counter);
+    EndTest();
+  }
+};
+
+SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostTestDebugStateDowngrade);
+
 }  // namespace
 }  // namespace cc

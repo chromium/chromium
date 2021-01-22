@@ -67,8 +67,6 @@ class CC_DEBUG_EXPORT LayerTreeDebugState {
   bool ShouldDrawHudInfo() const;
 
   static bool Equal(const LayerTreeDebugState& a, const LayerTreeDebugState& b);
-  static LayerTreeDebugState Unite(const LayerTreeDebugState& a,
-                                   const LayerTreeDebugState& b);
 
  private:
   bool record_rendering_stats_ = false;
