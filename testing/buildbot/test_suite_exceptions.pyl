@@ -2668,7 +2668,6 @@
       # Too slow on this configuration, which is severely hardware
       # constrained. crbug.com/950690
       'Mac FYI Retina Debug (NVIDIA)',
-      'Fuchsia x64' # https://crbug.com/1058255
     ],
   },
   'webgl_conformance_validating_tests': {

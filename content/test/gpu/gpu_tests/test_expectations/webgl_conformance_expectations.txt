@@ -279,6 +279,9 @@ crbug.com/1136414 [ fuchsia ] conformance/ogles/GL/mat/mat_009_to_016.html [ Ski
 # Anti-aliasing disabled on Fuchsia
 [ fuchsia ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
 
+# Fails when dcheck_always_on set to true
+[ fuchsia ] deqp/data/gles2/shaders/preprocessor.html [ Skip ]
+
 ####################
 # Win failures     #
 ####################
