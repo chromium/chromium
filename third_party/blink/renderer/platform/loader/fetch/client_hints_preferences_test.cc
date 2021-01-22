@@ -45,16 +45,18 @@ TEST_F(ClientHintsPreferencesTest, BasicSecure) {
        false, false, false},
       {"DPRW", false, false, false, false, false, false, false, false, false,
        false, false, false},
-      {"ua", false, false, false, false, false, false, false, true, false,
-       false, false, false},
-      {"ua-arch", false, false, false, false, false, false, false, false, true,
-       false, false, false},
-      {"ua-platform", false, false, false, false, false, false, false, false,
-       false, true, false, false},
-      {"ua-model", false, false, false, false, false, false, false, false,
-       false, false, true, false},
-      {"ua, ua-arch, ua-platform, ua-model, ua-full-version", false, false,
-       false, false, false, false, false, true, true, true, true, true},
+      {"sec-ch-ua", false, false, false, false, false, false, false, true,
+       false, false, false, false},
+      {"sec-ch-ua-arch", false, false, false, false, false, false, false, false,
+       true, false, false, false},
+      {"sec-ch-ua-platform", false, false, false, false, false, false, false,
+       false, false, true, false, false},
+      {"sec-ch-ua-model", false, false, false, false, false, false, false,
+       false, false, false, true, false},
+      {"sec-ch-ua, sec-ch-ua-arch, sec-ch-ua-platform, sec-ch-ua-model, "
+       "sec-ch-ua-full-version",
+       false, false, false, false, false, false, false, true, true, true, true,
+       true},
   };
 
   for (const auto& test_case : cases) {
@@ -254,8 +256,10 @@ TEST_F(ClientHintsPreferencesTest, ParseHeaders) {
        false, false, false, false, false},
       {"dpr rtt", false, false, false, false, false, false, false, false, false,
        false, false, false, false},
-      {"ua, ua-arch, ua-platform, ua-model, ua-full-version", false, false,
-       false, false, false, false, false, false, true, true, true, true, true},
+      {"sec-ch-ua, sec-ch-ua-arch, sec-ch-ua-platform, sec-ch-ua-model, "
+       "sec-ch-ua-full-version",
+       false, false, false, false, false, false, false, false, true, true, true,
+       true, true},
   };
 
   for (const auto& test : test_cases) {
