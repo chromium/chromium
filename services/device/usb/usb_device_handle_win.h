@@ -171,19 +171,16 @@ class UsbDeviceHandleWin : public UsbDeviceHandle {
       Interface* interface);
   Request* MakeRequest(Interface* interface);
   std::unique_ptr<Request> UnlinkRequest(Request* request);
-  void GotNodeConnectionInformation(TransferCallback callback,
-                                    void* node_connection_info,
-                                    scoped_refptr<base::RefCountedBytes> buffer,
-                                    Request* request_ptr,
-                                    DWORD win32_result,
-                                    size_t bytes_transferred);
+  void GotNodeConnectionInformation(
+      TransferCallback callback,
+      void* node_connection_info,
+      scoped_refptr<base::RefCountedBytes> buffer,
+      std::pair<DWORD, DWORD> result_and_bytes_transferred);
   void GotDescriptorFromNodeConnection(
       TransferCallback callback,
       scoped_refptr<base::RefCountedBytes> request_buffer,
       scoped_refptr<base::RefCountedBytes> original_buffer,
-      Request* request_ptr,
-      DWORD win32_result,
-      size_t bytes_transferred);
+      std::pair<DWORD, DWORD> result_and_bytes_transferred);
   void TransferComplete(TransferCallback callback,
                         scoped_refptr<base::RefCountedBytes> buffer,
                         Request* request_ptr,
