@@ -897,6 +897,10 @@ html element param
     property valueType
 html element picture
 html element plaintext
+html element popup
+    property hide
+    property open
+    property show
 html element pre
     property width
 html element progress

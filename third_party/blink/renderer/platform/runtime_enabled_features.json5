@@ -1003,6 +1003,10 @@
       status: "test",
     },
     {
+      name: "HTMLPopupElement",
+      status: "experimental",
+    },
+    {
       name: "IDBObserver",
       status: "experimental",
     },

@@ -340,6 +340,8 @@ blink_core_sources_html = [
   "html_picture_element.h",
   "html_plugin_element.cc",
   "html_plugin_element.h",
+  "html_popup_element.cc",
+  "html_popup_element.h",
   "html_pre_element.cc",
   "html_pre_element.h",
   "html_progress_element.cc",

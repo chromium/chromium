@@ -273,6 +273,7 @@ core_interface_idl_files_core_only =
                     "html/html_paragraph_element.idl",
                     "html/html_param_element.idl",
                     "html/html_picture_element.idl",
+                    "html/html_popup_element.idl",
                     "html/html_pre_element.idl",
                     "html/html_progress_element.idl",
                     "html/html_quote_element.idl",

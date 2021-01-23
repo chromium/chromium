@@ -368,8 +368,8 @@ bool RequestFullscreenConditionsMet(Element& pending, Document& document) {
   if (!pending.IsHTMLElement() && !IsA<SVGSVGElement>(pending))
     return false;
 
-  // |pending| is not a dialog element.
-  if (IsA<HTMLDialogElement>(pending))
+  // |pending| is not a dialog or popup element.
+  if (IsA<HTMLDialogElement>(pending) || IsA<HTMLPopupElement>(pending))
     return false;
 
   // The fullscreen element ready check for |pending| returns false.

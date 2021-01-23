@@ -31079,6 +31079,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3778" label="V8TCPSocket_RemoteAddress_AttributeGetter"/>
   <int value="3779" label="V8TCPSocket_RemotePort_AttributeGetter"/>
   <int value="3780" label="CSSSelectorTargetText"/>
+  <int value="3781" label="PopupElement"/>
+  <int value="3782" label="V8HTMLPopupElement_Show_Method"/>
+  <int value="3783" label="V8HTMLPopupElement_Hide_Method"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

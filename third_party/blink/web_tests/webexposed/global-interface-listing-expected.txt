@@ -3946,6 +3946,13 @@ interface HTMLParamElement : HTMLElement
 interface HTMLPictureElement : HTMLElement
     attribute @@toStringTag
     method constructor
+interface HTMLPopupElement : HTMLElement
+    attribute @@toStringTag
+    getter open
+    method constructor
+    method hide
+    method show
+    setter open
 interface HTMLPreElement : HTMLElement
     attribute @@toStringTag
     getter width

@@ -388,6 +388,7 @@ static_idl_files_in_core = get_path_info(
           "//third_party/blink/renderer/core/html/html_paragraph_element.idl",
           "//third_party/blink/renderer/core/html/html_param_element.idl",
           "//third_party/blink/renderer/core/html/html_picture_element.idl",
+          "//third_party/blink/renderer/core/html/html_popup_element.idl",
           "//third_party/blink/renderer/core/html/html_pre_element.idl",
           "//third_party/blink/renderer/core/html/html_progress_element.idl",
           "//third_party/blink/renderer/core/html/html_quote_element.idl",
