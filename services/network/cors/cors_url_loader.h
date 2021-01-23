@@ -51,6 +51,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
       mojom::URLLoaderFactory* network_loader_factory,
       const OriginAccessList* origin_access_list,
+      const OriginAccessList* factory_bound_origin_access_list,
       PreflightController* preflight_controller,
       const base::flat_set<std::string>* allowed_exempt_headers,
       bool allow_any_cors_exempt_header,
@@ -117,8 +118,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
 
   void SetCorsFlagIfNeeded();
 
-  // Returns true if request's origin has special access to the destination URL
-  // (via |origin_access_list_|).
+  // Returns true if request's origin has special access to the destination
+  // URL (via |origin_access_list_| and |factory_bound_origin_access_list_|).
   bool HasSpecialAccessToDestination() const;
 
   bool PassesTimingAllowOriginCheck(
@@ -183,6 +184,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
 
   // Outlives |this|.
   const OriginAccessList* const origin_access_list_;
+  const OriginAccessList* const factory_bound_origin_access_list_;
   PreflightController* preflight_controller_;
   const base::flat_set<std::string>* allowed_exempt_headers_;
 

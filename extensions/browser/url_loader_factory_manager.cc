@@ -95,8 +95,26 @@ bool ShouldCreateSeparateFactoryForContentScripts(const Extension& extension) {
 void OverrideFactoryParams(const Extension& extension,
                            FactoryUser factory_user,
                            network::mojom::URLLoaderFactoryParams* params) {
-  if (ShouldDisableCorb(extension, factory_user))
+  if (ShouldDisableCorb(extension, factory_user)) {
+    // TODO(lukasza): https://crbug.com/1016904: Use more granular CORB
+    // enforcement based on the specific |extension|'s permissions reflected
+    // in the |factory_bound_access_patterns| above.
     params->is_corb_enabled = false;
+
+    // Setup factory bound allow list that overwrites per-profile common list to
+    // allow tab specific permissions only for this newly created factory.
+    //
+    // TODO(lukasza): Setting |factory_bound_access_patterns| together with
+    // |is_corb_enabled| seems accidental.
+    params->factory_bound_access_patterns =
+        network::mojom::CorsOriginAccessPatterns::New();
+    params->factory_bound_access_patterns->source_origin =
+        url::Origin::Create(extension.url());
+    params->factory_bound_access_patterns->allow_patterns =
+        CreateCorsOriginAccessAllowList(extension);
+    params->factory_bound_access_patterns->block_patterns =
+        CreateCorsOriginAccessBlockList(extension);
+  }
 
   if (ShouldInspectIsolatedWorldOrigin(extension, factory_user))
     params->ignore_isolated_world_origin = false;

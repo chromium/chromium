@@ -201,6 +201,15 @@ CorsURLLoaderFactory::CorsURLLoaderFactory(
     // assigned IsolationInfo, to prevent cross-site information leaks.
     DCHECK_EQ(mojom::kBrowserProcessId, process_id_);
   }
+  factory_bound_origin_access_list_ = std::make_unique<OriginAccessList>();
+  if (params->factory_bound_access_patterns) {
+    factory_bound_origin_access_list_->SetAllowListForOrigin(
+        params->factory_bound_access_patterns->source_origin,
+        params->factory_bound_access_patterns->allow_patterns);
+    factory_bound_origin_access_list_->SetBlockListForOrigin(
+        params->factory_bound_access_patterns->source_origin,
+        params->factory_bound_access_patterns->block_patterns);
+  }
 
   auto factory_override = std::move(params->factory_override);
   auto network_loader_factory = std::make_unique<network::URLLoaderFactory>(
@@ -267,7 +276,8 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
         factory_override_ &&
             factory_override_->ShouldSkipCorsEnabledSchemeCheck(),
         std::move(client), traffic_annotation, inner_url_loader_factory,
-        origin_access_list_, context_->cors_preflight_controller(),
+        origin_access_list_, factory_bound_origin_access_list_.get(),
+        context_->cors_preflight_controller(),
         context_->cors_exempt_header_list(),
         GetAllowAnyCorsExemptHeaderForBrowser(), isolation_info_);
     auto* raw_loader = loader.get();
