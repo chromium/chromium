@@ -32,43 +32,25 @@ public class AutofillContactTest {
     @Parameters
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {
-            {"Jon Doe", "555-5555", "j@d.co", true,
-             "Jon Doe", "555-5555", "j@d.co",
-             "Jon Doe", "555-5555", "j@d.co"},
-            {null, "555-5555", "j@d.co", true,
-             "555-5555", "j@d.co", null,
-             null, "555-5555", "j@d.co"},
-            {"", "555-5555", "j@d.co", true,
-             "555-5555", "j@d.co", null,
-             null, "555-5555", "j@d.co"},
-            {"Jon Doe", null, "j@d.co", true,
-             "Jon Doe", "j@d.co", null,
-             "Jon Doe", null, "j@d.co"},
-            {"Jon Doe", "", "j@d.co", true,
-             "Jon Doe", "j@d.co", null,
-             "Jon Doe", null, "j@d.co"},
-            {"Jon Doe", "555-5555", null, true,
-             "Jon Doe", "555-5555", null,
-             "Jon Doe", "555-5555", null},
-            {"Jon Doe", "555-5555", "", true,
-             "Jon Doe", "555-5555", null,
-             "Jon Doe", "555-5555", null},
-            {null, "555-5555", null, true,
-             "555-5555", null, null,
-             null, "555-5555", null},
-            {"", "555-5555", "", true,
-             "555-5555", null, null,
-             null, "555-5555", null},
-            {null, null, "j@d.co", true,
-             "j@d.co", null, null,
-             null, null, "j@d.co"},
-            {"", "", "j@d.co", true,
-             "j@d.co", null, null,
-             null, null, "j@d.co"},
-            {"", "555-5555", "", false,
-             "555-5555", null, null,
-             null, "555-5555", null}
-        });
+                {"Jon Doe", "555-5555", "j@d.co", true, "Jon Doe", "555-5555", "j@d.co", "Jon Doe",
+                        "555-5555", "j@d.co"},
+                {null, "555-5555", "j@d.co", true, "555-5555", "j@d.co", null, null, "555-5555",
+                        "j@d.co"},
+                {"", "555-5555", "j@d.co", true, "555-5555", "j@d.co", null, null, "555-5555",
+                        "j@d.co"},
+                {"Jon Doe", null, "j@d.co", true, "Jon Doe", "j@d.co", null, "Jon Doe", null,
+                        "j@d.co"},
+                {"Jon Doe", "", "j@d.co", true, "Jon Doe", "j@d.co", null, "Jon Doe", null,
+                        "j@d.co"},
+                {"Jon Doe", "555-5555", null, true, "Jon Doe", "555-5555", null, "Jon Doe",
+                        "555-5555", null},
+                {"Jon Doe", "555-5555", "", true, "Jon Doe", "555-5555", null, "Jon Doe",
+                        "555-5555", null},
+                {null, "555-5555", null, true, "555-5555", null, null, null, "555-5555", null},
+                {"", "555-5555", "", true, "555-5555", null, null, null, "555-5555", null},
+                {null, null, "j@d.co", true, "j@d.co", null, null, null, null, "j@d.co"},
+                {"", "", "j@d.co", true, "j@d.co", null, null, null, null, "j@d.co"},
+                {"", "555-5555", "", false, "555-5555", null, null, null, "555-5555", null}});
     }
 
     private static final String INCOMPLETE_MESSAGE = "incomplete";
@@ -106,10 +88,11 @@ public class AutofillContactTest {
     @Test
     public void test() {
         AutofillProfile profile = new AutofillProfile();
-        AutofillContact contact = new AutofillContact(mContext, profile, mPayerName, mPayerPhone,
-                mPayerEmail, mIsComplete ? ContactEditor.COMPLETE
-                                         : ContactEditor.INVALID_NAME | ContactEditor.INVALID_EMAIL,
-                true, true, true);
+        AutofillContact contact =
+                new AutofillContact(mContext, profile, mPayerName, mPayerPhone, mPayerEmail,
+                        mIsComplete ? ContactEditor.COMPLETE
+                                    : ContactEditor.INVALID_NAME | ContactEditor.INVALID_EMAIL,
+                        true, true, true);
 
         Assert.assertEquals(
                 mIsComplete ? "Contact should be complete" : "Contact should be incomplete",
@@ -122,8 +105,8 @@ public class AutofillContactTest {
 
         contact.completeContact("some-guid-here", "Jon Doe", "999-9999", "a@b.com");
         Assert.assertTrue("Contact should be complete", contact.isComplete());
-        assertContact("some-guid-here", "Jon Doe", "999-9999", "a@b.com",
-                "Jon Doe", "999-9999", "a@b.com", contact);
+        assertContact("some-guid-here", "Jon Doe", "999-9999", "a@b.com", "Jon Doe", "999-9999",
+                "a@b.com", contact);
     }
 
     private void assertContact(String id, String expectedName, String expectedPhone,

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.payments;
+package org.chromium.chrome.browser.payments.test_support;
 
 import android.app.Activity;
 import android.content.Context;
@@ -13,6 +13,8 @@ import androidx.annotation.Nullable;
 import org.mockito.Mockito;
 
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.payments.ChromePaymentRequestService;
+import org.chromium.chrome.browser.payments.ChromePaymentRequestService.Delegate;
 import org.chromium.chrome.browser.payments.ui.PaymentUiService;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -45,9 +47,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** The builder of the PaymentRequest parameters. */
-public class PaymentRequestParamsBuilder implements ChromePaymentRequestService.Delegate {
+public class PaymentRequestParamsBuilder implements Delegate {
     private final PaymentRequestClient mClient;
-    private final ChromePaymentRequestService.Delegate mDelegate;
+    private final Delegate mDelegate;
     private final RenderFrameHost mRenderFrameHost;
     private final PaymentMethodData[] mMethodData;
     private final PaymentDetails mDetails;
@@ -58,12 +60,12 @@ public class PaymentRequestParamsBuilder implements ChromePaymentRequestService.
     private final boolean mGoogleBridgeEligible;
     private final PaymentOptions mOptions;
 
-    /* package */ static PaymentRequestParamsBuilder defaultBuilder(
+    public static PaymentRequestParamsBuilder defaultBuilder(
             PaymentRequestClient client, PaymentUiService paymentUiService) {
         return new PaymentRequestParamsBuilder(client, paymentUiService);
     }
 
-    /* package */ PaymentRequestParamsBuilder(
+    public PaymentRequestParamsBuilder(
             PaymentRequestClient client, PaymentUiService paymentUiService) {
         mClient = client;
         mDelegate = this;
@@ -100,7 +102,7 @@ public class PaymentRequestParamsBuilder implements ChromePaymentRequestService.
         mGoogleBridgeEligible = false;
     }
 
-    /* package */ PaymentRequest buildAndInit() {
+    public PaymentRequest buildAndInit() {
         PaymentRequest request = new MojoPaymentRequestGateKeeper(
                 (client, onClosed)
                         -> new PaymentRequestService(mRenderFrameHost, client, onClosed, this));

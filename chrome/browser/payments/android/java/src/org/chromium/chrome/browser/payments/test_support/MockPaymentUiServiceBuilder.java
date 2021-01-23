@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.payments;
+package org.chromium.chrome.browser.payments.test_support;
 
 import org.mockito.Mockito;
 
@@ -16,11 +16,11 @@ import java.util.List;
 public class MockPaymentUiServiceBuilder {
     PaymentUiService mPaymentUiService;
 
-    /* package */ static MockPaymentUiServiceBuilder defaultBuilder(PaymentApp app) {
+    public static MockPaymentUiServiceBuilder defaultBuilder(PaymentApp app) {
         return new MockPaymentUiServiceBuilder(app);
     }
 
-    /* package */ MockPaymentUiServiceBuilder(PaymentApp app) {
+    public MockPaymentUiServiceBuilder(PaymentApp app) {
         mPaymentUiService = Mockito.mock(PaymentUiService.class);
         Mockito.doReturn(null)
                 .when(mPaymentUiService)
@@ -33,7 +33,7 @@ public class MockPaymentUiServiceBuilder {
         Mockito.doReturn(app).when(mPaymentUiService).getSelectedPaymentApp();
     }
 
-    /* package */ MockPaymentUiServiceBuilder setBuildPaymentRequestUIResult(String result) {
+    public MockPaymentUiServiceBuilder setBuildPaymentRequestUIResult(String result) {
         Mockito.doReturn(result)
                 .when(mPaymentUiService)
                 .buildPaymentRequestUI(
@@ -41,7 +41,7 @@ public class MockPaymentUiServiceBuilder {
         return this;
     }
 
-    /* package */ PaymentUiService build() {
+    public PaymentUiService build() {
         return mPaymentUiService;
     }
 

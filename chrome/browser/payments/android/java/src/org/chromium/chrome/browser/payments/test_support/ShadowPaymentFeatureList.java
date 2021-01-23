@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.payments;
+package org.chromium.chrome.browser.payments.test_support;
 
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;

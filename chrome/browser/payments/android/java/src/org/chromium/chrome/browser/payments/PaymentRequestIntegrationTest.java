@@ -20,6 +20,9 @@ import org.robolectric.annotation.Implements;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.payments.test_support.MockPaymentUiServiceBuilder;
+import org.chromium.chrome.browser.payments.test_support.PaymentRequestParamsBuilder;
+import org.chromium.chrome.browser.payments.test_support.ShadowPaymentFeatureList;
 import org.chromium.chrome.browser.payments.ui.PaymentUiService;
 import org.chromium.components.payments.ErrorMessageUtil;
 import org.chromium.components.payments.PayerData;

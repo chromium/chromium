@@ -832,6 +832,7 @@ junit_binary("chrome_junit_tests") {
     "//chrome/browser/incognito/interstitial/android:junit",
     "//chrome/browser/omaha/android:java",
     "//chrome/browser/optimization_guide/android:java",
+    "//chrome/browser/payments/android:junit",
     "//chrome/browser/performance_hints/android:java",
     "//chrome/browser/policy/android:java",
     "//chrome/browser/preferences:java",
