@@ -71,11 +71,6 @@ gpu::SharedImageStub* VideoDecodeAccelerator::Client::GetSharedImageStub()
   return nullptr;
 }
 
-CommandBufferHelper* VideoDecodeAccelerator::Client::GetCommandBufferHelper()
-    const {
-  return nullptr;
-}
-
 VideoDecodeAccelerator::~VideoDecodeAccelerator() = default;
 
 void VideoDecodeAccelerator::Decode(scoped_refptr<DecoderBuffer> buffer,

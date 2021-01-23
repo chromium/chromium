@@ -768,10 +768,6 @@ gpu::SharedImageStub* VdaVideoDecoder::GetSharedImageStub() const {
   return command_buffer_helper_->GetSharedImageStub();
 }
 
-CommandBufferHelper* VdaVideoDecoder::GetCommandBufferHelper() const {
-  return command_buffer_helper_.get();
-}
-
 void VdaVideoDecoder::NotifyErrorOnParentThread(
     VideoDecodeAccelerator::Error error) {
   DVLOG(1) << __func__ << "(" << error << ")";

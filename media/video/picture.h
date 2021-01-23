@@ -13,7 +13,6 @@
 #include "base/memory/ref_counted.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "media/base/media_export.h"
-#include "media/base/video_frame.h"
 #include "media/base/video_types.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
@@ -26,7 +25,6 @@ namespace media {
 class MEDIA_EXPORT PictureBuffer {
  public:
   using TextureIds = std::vector<uint32_t>;
-  using TextureSizes = std::vector<gfx::Size>;
 
   PictureBuffer(int32_t id, const gfx::Size& size);
   PictureBuffer(int32_t id,
@@ -42,13 +40,6 @@ class MEDIA_EXPORT PictureBuffer {
                 const gfx::Size& size,
                 const TextureIds& client_texture_ids,
                 const std::vector<gpu::Mailbox>& texture_mailboxes,
-                uint32_t texture_target,
-                VideoPixelFormat pixel_format);
-  PictureBuffer(int32_t id,
-                const gfx::Size& size,
-                const TextureSizes& texture_sizes,
-                const TextureIds& client_texture_ids,
-                const TextureIds& service_texture_ids,
                 uint32_t texture_target,
                 VideoPixelFormat pixel_format);
   PictureBuffer(const PictureBuffer& other);
@@ -73,12 +64,11 @@ class MEDIA_EXPORT PictureBuffer {
 
   VideoPixelFormat pixel_format() const { return pixel_format_; }
 
-  gfx::Size texture_size(size_t plane) const;
+  gpu::Mailbox texture_mailbox(size_t plane) const;
 
  private:
   int32_t id_;
   gfx::Size size_;
-  TextureSizes texture_sizes_;
   TextureIds client_texture_ids_;
   TextureIds service_texture_ids_;
   std::vector<gpu::Mailbox> texture_mailboxes_;
@@ -161,16 +151,11 @@ class MEDIA_EXPORT Picture {
   }
 
   void set_scoped_shared_image(
-      scoped_refptr<ScopedSharedImage> scoped_shared_image,
-      uint32_t plane = 0) {
-    DCHECK(plane < scoped_shared_images_.size());
-    scoped_shared_images_[plane] = scoped_shared_image;
+      scoped_refptr<ScopedSharedImage> scoped_shared_image) {
+    scoped_shared_image_ = scoped_shared_image;
   }
-
-  scoped_refptr<ScopedSharedImage> scoped_shared_image(
-      uint32_t plane = 0) const {
-    DCHECK(plane < scoped_shared_images_.size());
-    return scoped_shared_images_[plane];
+  scoped_refptr<ScopedSharedImage> scoped_shared_image() const {
+    return scoped_shared_image_;
   }
 
  private:
@@ -183,8 +168,7 @@ class MEDIA_EXPORT Picture {
   bool size_changed_;
   bool texture_owner_;
   bool wants_promotion_hint_;
-  std::array<scoped_refptr<ScopedSharedImage>, VideoFrame::kMaxPlanes>
-      scoped_shared_images_;
+  scoped_refptr<ScopedSharedImage> scoped_shared_image_;
 };
 
 }  // namespace media
