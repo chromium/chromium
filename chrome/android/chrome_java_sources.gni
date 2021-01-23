@@ -1389,7 +1389,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/toolbar/top/StartSurfaceToolbarViewBinder.java",
   "java/src/org/chromium/chrome/browser/toolbar/top/TabSwitcherModeTTCoordinatorPhone.java",
   "java/src/org/chromium/chrome/browser/toolbar/top/TabSwitcherModeTTPhone.java",
-  "java/src/org/chromium/chrome/browser/toolbar/top/Toolbar.java",
   "java/src/org/chromium/chrome/browser/toolbar/top/ToolbarControlContainer.java",
   "java/src/org/chromium/chrome/browser/toolbar/top/ToolbarLayout.java",
   "java/src/org/chromium/chrome/browser/toolbar/top/ToolbarPhone.java",
