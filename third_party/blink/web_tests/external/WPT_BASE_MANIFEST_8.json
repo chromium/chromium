@@ -250419,7 +250419,7 @@
        []
       ],
       "constructor-reftypes.tentative.any.worker-expected.txt": [
-       "7d6bf80291cd295caabfe4c09d1f60144101d655",
+       "a5f0bd156dab085c7f140b4d6200608efb37170f",
        []
       ],
       "constructor-types.tentative.any-expected.txt": [
@@ -250443,7 +250443,7 @@
        []
       ],
       "set-reftypes.tentative.any.worker-expected.txt": [
-       "7d6bf80291cd295caabfe4c09d1f60144101d655",
+       "5bbd32152ea4fcda8b6b8514dfe036e4ff3104ce",
        []
       ]
      },
@@ -425151,7 +425151,7 @@
      ],
      "table": {
       "constructor-reftypes.tentative.any.js": [
-       "35db2c73599b945b6b8843f3747f2d4212ced0f0",
+       "9bac1409f5a2897a869138bb188f8c5dda8aef89",
        [
         null,
         {
@@ -425164,10 +425164,6 @@
           [
            "script",
            "assertions.js"
-          ],
-          [
-           "script",
-           "/wasm/jsapi/wasm-constants.js"
           ],
           [
            "script",
@@ -425190,10 +425186,6 @@
           ],
           [
            "script",
-           "/wasm/jsapi/wasm-constants.js"
-          ],
-          [
-           "script",
            "/wasm/jsapi/wasm-module-builder.js"
           ]
          ]
@@ -425210,10 +425202,6 @@
           [
            "script",
            "assertions.js"
-          ],
-          [
-           "script",
-           "/wasm/jsapi/wasm-constants.js"
           ],
           [
            "script",
@@ -425566,7 +425554,7 @@
        ]
       ],
       "set-reftypes.tentative.any.js": [
-       "83b36a32415cf0981514617f1e67acee625c6c4b",
+       "e9488d0d4fab68c9f80967536ff75bf7bde14b5a",
        [
         null,
         {
@@ -425579,10 +425567,6 @@
           [
            "script",
            "assertions.js"
-          ],
-          [
-           "script",
-           "/wasm/jsapi/wasm-constants.js"
           ],
           [
            "script",
@@ -425605,10 +425589,6 @@
           ],
           [
            "script",
-           "/wasm/jsapi/wasm-constants.js"
-          ],
-          [
-           "script",
            "/wasm/jsapi/wasm-module-builder.js"
           ]
          ]
@@ -425625,10 +425605,6 @@
           [
            "script",
            "assertions.js"
-          ],
-          [
-           "script",
-           "/wasm/jsapi/wasm-constants.js"
           ],
           [
            "script",
