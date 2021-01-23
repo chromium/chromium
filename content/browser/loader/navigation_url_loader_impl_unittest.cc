@@ -40,6 +40,7 @@
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "ppapi/buildflags/buildflags.h"
+#include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/resource_scheduler/resource_scheduler_client.h"
 #include "services/network/url_loader.h"
@@ -103,8 +104,7 @@ class TestNavigationLoaderInterceptor : public NavigationLoaderInterceptor {
         nullptr /* keepalive_statistics_recorder */,
         nullptr /* network_usage_accumulator */, nullptr /* header_client */,
         nullptr /* origin_policy_manager */, nullptr /* trust_token_helper */,
-        nullptr /* origin_access_list */,
-        mojo::NullRemote() /* cookie_observer */);
+        kEmptyOriginAccessList, mojo::NullRemote() /* cookie_observer */);
   }
 
   bool MaybeCreateLoaderForResponse(
@@ -131,6 +131,8 @@ class TestNavigationLoaderInterceptor : public NavigationLoaderInterceptor {
   std::unique_ptr<net::URLRequestContext> context_;
   scoped_refptr<network::ResourceSchedulerClient> resource_scheduler_client_;
   std::unique_ptr<network::URLLoader> url_loader_;
+
+  const network::cors::OriginAccessList kEmptyOriginAccessList;
 };
 
 }  // namespace

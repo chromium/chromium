@@ -526,8 +526,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   // Returns the current same-origin-policy exceptions.  For more details see
   // network::mojom::NetworkContextParams::cors_origin_access_list and
   // network::mojom::NetworkContext::SetCorsOriginAccessListsForOrigin.
-  const cors::OriginAccessList* cors_origin_access_list() {
-    return &cors_origin_access_list_;
+  const cors::OriginAccessList& cors_origin_access_list() {
+    return cors_origin_access_list_;
   }
 
   bool require_network_isolation_key() const {

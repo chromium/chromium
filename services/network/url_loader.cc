@@ -461,7 +461,7 @@ URLLoader::URLLoader(
     mojom::TrustedURLLoaderHeaderClient* url_loader_header_client,
     mojom::OriginPolicyManager* origin_policy_manager,
     std::unique_ptr<TrustTokenRequestHelperFactory> trust_token_helper_factory,
-    const cors::OriginAccessList* origin_access_list,
+    const cors::OriginAccessList& origin_access_list,
     mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer)
     : url_request_context_(url_request_context),
       network_service_client_(network_service_client),
@@ -2182,16 +2182,12 @@ void URLLoader::OnOriginPolicyManagerRetrieveDone(
 
 bool URLLoader::ShouldForceIgnoreSiteForCookies(
     const ResourceRequest& request) {
-  // `origin_access_list_` may be null in unit tests.
-  if (!origin_access_list_)
-    return false;
-
   // Ignore site for cookies in requests from an initiator covered by the
   // same-origin-policy exclusions in `origin_access_list_` (typically requests
   // initiated by Chrome Extensions).
   if (request.request_initiator.has_value() &&
       cors::OriginAccessList::AccessState::kAllowed ==
-          origin_access_list_->CheckAccessState(
+          origin_access_list_.CheckAccessState(
               request.request_initiator.value(), request.url)) {
     return true;
   }
@@ -2243,10 +2239,10 @@ bool URLLoader::ShouldForceIgnoreSiteForCookies(
   if (!site_origin.opaque() && request.request_initiator.has_value()) {
     bool site_can_access_target =
         cors::OriginAccessList::AccessState::kAllowed ==
-        origin_access_list_->CheckAccessState(site_origin, request.url);
+        origin_access_list_.CheckAccessState(site_origin, request.url);
     bool site_can_access_initiator =
         cors::OriginAccessList::AccessState::kAllowed ==
-        origin_access_list_->CheckAccessState(
+        origin_access_list_.CheckAccessState(
             site_origin, request.request_initiator->GetURL());
     net::SiteForCookies site_of_initiator =
         net::SiteForCookies::FromOrigin(request.request_initiator.value());

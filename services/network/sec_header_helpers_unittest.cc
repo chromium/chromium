@@ -175,7 +175,7 @@ TEST_F(SecHeaderHelpersTest, UnprivilegedRequestOnExtension) {
   SetFetchMetadataHeaders(current_url_request,
                           network::mojom::RequestMode::kCors, false,
                           network::mojom::RequestDestination::kIframe, &url,
-                          params, &origin_access_list);
+                          params, origin_access_list);
   ASSERT_EQ(3, static_cast<int>(current_url_request->extra_request_headers()
                                     .GetHeaderVector()
                                     .size()));
@@ -216,7 +216,7 @@ TEST_F(SecHeaderHelpersTest, PrivilegedRequestOnExtension) {
   SetFetchMetadataHeaders(current_url_request,
                           network::mojom::RequestMode::kCors, true,
                           network::mojom::RequestDestination::kEmbed, &url,
-                          params, &origin_access_list);
+                          params, origin_access_list);
 
   ASSERT_EQ(4, static_cast<int>(current_url_request->extra_request_headers()
                                     .GetHeaderVector()

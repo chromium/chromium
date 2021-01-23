@@ -76,6 +76,7 @@
 #include "net/url_request/url_request_job.h"
 #include "net/url_request/url_request_test_job.h"
 #include "net/url_request/url_request_test_util.h"
+#include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom-forward.h"
@@ -616,7 +617,7 @@ class URLLoaderTest : public testing::Test {
         false /* require_network_isolation_key */, resource_scheduler_client(),
         nullptr, nullptr /* network_usage_accumulator */,
         nullptr /* header_client */, nullptr /* origin_policy_manager */,
-        nullptr /* trust_token_helper */, nullptr /* origin_access_list */,
+        nullptr /* trust_token_helper */, kEmptyOriginAccessList,
         mojo::NullRemote() /* cookie_observer */);
 
     ran_ = true;
@@ -924,6 +925,8 @@ class URLLoaderTest : public testing::Test {
   bool ran_ = false;
   net::test_server::HttpRequest sent_request_;
   TestURLLoaderClient client_;
+
+  const cors::OriginAccessList kEmptyOriginAccessList;
 };
 
 class URLLoaderMockSocketTest : public URLLoaderTest {
@@ -1556,8 +1559,7 @@ TEST_F(URLLoaderTest, DestroyOnURLLoaderPipeClosed) {
       resource_scheduler_client(), nullptr,
       nullptr /* network_usage_accumulator */, nullptr /* header_client */,
       nullptr /* origin_policy_manager */, nullptr /* trust_token_helper */,
-      nullptr /* origin_access_list */,
-      mojo::NullRemote() /* cookie_observer */);
+      kEmptyOriginAccessList, mojo::NullRemote() /* cookie_observer */);
 
   // Run until the response body pipe arrives, to make sure that a live body
   // pipe does not result in keeping the loader alive when the URLLoader pipe is
@@ -1615,8 +1617,7 @@ TEST_F(URLLoaderTest, CloseResponseBodyConsumerBeforeProducer) {
       resource_scheduler_client(), nullptr,
       nullptr /* network_usage_accumulator */, nullptr /* header_client */,
       nullptr /* origin_policy_manager */, nullptr /* trust_token_helper */,
-      nullptr /* origin_access_list */,
-      mojo::NullRemote() /* cookie_observer */);
+      kEmptyOriginAccessList, mojo::NullRemote() /* cookie_observer */);
 
   client()->RunUntilResponseBodyArrived();
   EXPECT_TRUE(client()->has_received_response());
@@ -1675,8 +1676,7 @@ TEST_F(URLLoaderTest, PauseReadingBodyFromNetBeforeResponseHeaders) {
       resource_scheduler_client(), nullptr,
       nullptr /* network_usage_accumulator */, nullptr /* header_client */,
       nullptr /* origin_policy_manager */, nullptr /* trust_token_helper */,
-      nullptr /* origin_access_list */,
-      mojo::NullRemote() /* cookie_observer */);
+      kEmptyOriginAccessList, mojo::NullRemote() /* cookie_observer */);
 
   // Pausing reading response body from network stops future reads from the
   // underlying URLRequest. So no data should be sent using the response body
@@ -1757,8 +1757,7 @@ TEST_F(URLLoaderTest, PauseReadingBodyFromNetWhenReadIsPending) {
       resource_scheduler_client(), nullptr,
       nullptr /* network_usage_accumulator */, nullptr /* header_client */,
       nullptr /* origin_policy_manager */, nullptr /* trust_token_helper */,
-      nullptr /* origin_access_list */,
-      mojo::NullRemote() /* cookie_observer */);
+      kEmptyOriginAccessList, mojo::NullRemote() /* cookie_observer */);
 
   response_controller.WaitForRequest();
   response_controller.Send(
@@ -1828,8 +1827,7 @@ TEST_F(URLLoaderTest, ResumeReadingBodyFromNetAfterClosingConsumer) {
       resource_scheduler_client(), nullptr,
       nullptr /* network_usage_accumulator */, nullptr /* header_client */,
       nullptr /* origin_policy_manager */, nullptr /* trust_token_helper */,
-      nullptr /* origin_access_list */,
-      mojo::NullRemote() /* cookie_observer */);
+      kEmptyOriginAccessList, mojo::NullRemote() /* cookie_observer */);
 
   loader->PauseReadingBodyFromNet();
   loader.FlushForTesting();
@@ -1894,8 +1892,7 @@ TEST_F(URLLoaderTest, MultiplePauseResumeReadingBodyFromNet) {
       resource_scheduler_client(), nullptr,
       nullptr /* network_usage_accumulator */, nullptr /* header_client */,
       nullptr /* origin_policy_manager */, nullptr /* trust_token_helper */,
-      nullptr /* origin_access_list */,
-      mojo::NullRemote() /* cookie_observer */);
+      kEmptyOriginAccessList, mojo::NullRemote() /* cookie_observer */);
 
   // It is okay to call ResumeReadingBodyFromNet() even if there is no prior
   // PauseReadingBodyFromNet().
@@ -2151,8 +2148,7 @@ TEST_F(URLLoaderTest, UploadFileCanceled) {
       resource_scheduler_client(), nullptr,
       nullptr /* network_usage_accumulator */, nullptr /* header_client */,
       nullptr /* origin_policy_manager */, nullptr /* trust_token_helper */,
-      nullptr /* origin_access_list */,
-      mojo::NullRemote() /* cookie_observer */);
+      kEmptyOriginAccessList, mojo::NullRemote() /* cookie_observer */);
 
   mojom::NetworkContextClient::OnFileUploadRequestedCallback callback;
   network_context_client->RunUntilUploadRequested(&callback);
@@ -2285,8 +2281,7 @@ TEST_F(URLLoaderTest, UploadChunkedDataPipe) {
       nullptr /* keepalive_statistics_reporter */,
       nullptr /* network_usage_accumulator */, nullptr /* header_client */,
       nullptr /* origin_policy_manager */, nullptr /* trust_token_helper */,
-      nullptr /* origin_access_list */,
-      mojo::NullRemote() /* cookie_observer */);
+      kEmptyOriginAccessList, mojo::NullRemote() /* cookie_observer */);
 
   mojom::ChunkedDataPipeGetter::GetSizeCallback get_size_callback =
       data_pipe_getter.WaitForGetSize();
@@ -2338,8 +2333,7 @@ TEST_F(URLLoaderTest, UploadReadOnceStream) {
       nullptr /* keepalive_statistics_reporter */,
       nullptr /* network_usage_accumulator */, nullptr /* header_client */,
       nullptr /* origin_policy_manager */, nullptr /* trust_token_helper */,
-      nullptr /* origin_access_list */,
-      mojo::NullRemote() /* cookie_observer */);
+      kEmptyOriginAccessList, mojo::NullRemote() /* cookie_observer */);
 
   mojom::ChunkedDataPipeGetter::GetSizeCallback get_size_callback =
       data_pipe_getter.WaitForGetSize();
@@ -2451,8 +2445,7 @@ TEST_F(URLLoaderTest, SSLInfoOnRedirectWithCertificateError) {
       resource_scheduler_client(), nullptr,
       nullptr /* network_usage_accumulator */, nullptr /* header_client */,
       nullptr /* origin_policy_manager */, nullptr /* trust_token_helper */,
-      nullptr /* origin_access_list */,
-      mojo::NullRemote() /* cookie_observer */);
+      kEmptyOriginAccessList, mojo::NullRemote() /* cookie_observer */);
 
   client.RunUntilRedirectReceived();
   ASSERT_TRUE(client.response_head()->ssl_info.has_value());
@@ -2486,8 +2479,7 @@ TEST_F(URLLoaderTest, RedirectModifiedHeaders) {
       resource_scheduler_client(), nullptr,
       nullptr /* network_usage_accumulator */, nullptr /* header_client */,
       nullptr /* origin_policy_manager */, nullptr /* trust_token_helper */,
-      nullptr /* origin_access_list */,
-      mojo::NullRemote() /* cookie_observer */);
+      kEmptyOriginAccessList, mojo::NullRemote() /* cookie_observer */);
 
   client()->RunUntilRedirectReceived();
 
@@ -2545,7 +2537,7 @@ TEST_F(URLLoaderTest, RedirectFailsOnModifyUnsafeHeader) {
         false /* require_network_isolation_key */, resource_scheduler_client(),
         nullptr, nullptr /* network_usage_accumulator */,
         nullptr /* header_client */, nullptr /* origin_policy_manager */,
-        nullptr /* trust_token_helper */, nullptr /* origin_access_list */,
+        nullptr /* trust_token_helper */, kEmptyOriginAccessList,
         mojo::NullRemote() /* cookie_observer */);
 
     client.RunUntilRedirectReceived();
@@ -2589,8 +2581,7 @@ TEST_F(URLLoaderTest, RedirectLogsModifiedConcerningHeader) {
       resource_scheduler_client(), nullptr,
       nullptr /* network_usage_accumulator */, nullptr /* header_client */,
       nullptr /* origin_policy_manager */, nullptr /* trust_token_helper */,
-      nullptr /* origin_access_list */,
-      mojo::NullRemote() /* cookie_observer */);
+      kEmptyOriginAccessList, mojo::NullRemote() /* cookie_observer */);
 
   client.RunUntilRedirectReceived();
 
@@ -2647,8 +2638,7 @@ TEST_F(URLLoaderTest, RedirectRemoveHeader) {
       resource_scheduler_client(), nullptr,
       nullptr /* network_usage_accumulator */, nullptr /* header_client */,
       nullptr /* origin_policy_manager */, nullptr /* trust_token_helper */,
-      nullptr /* origin_access_list */,
-      mojo::NullRemote() /* cookie_observer */);
+      kEmptyOriginAccessList, mojo::NullRemote() /* cookie_observer */);
 
   client()->RunUntilRedirectReceived();
 
@@ -2695,8 +2685,7 @@ TEST_F(URLLoaderTest, RedirectRemoveHeaderAndAddItBack) {
       resource_scheduler_client(), nullptr,
       nullptr /* network_usage_accumulator */, nullptr /* header_client */,
       nullptr /* origin_policy_manager */, nullptr /* trust_token_helper */,
-      nullptr /* origin_access_list */,
-      mojo::NullRemote() /* cookie_observer */);
+      kEmptyOriginAccessList, mojo::NullRemote() /* cookie_observer */);
 
   client()->RunUntilRedirectReceived();
 
@@ -2747,8 +2736,7 @@ TEST_F(URLLoaderTest, UpgradeAddsSecHeaders) {
       resource_scheduler_client(), nullptr,
       nullptr /* network_usage_accumulator */, nullptr /* header_client */,
       nullptr /* origin_policy_manager */, nullptr /* trust_token_helper */,
-      nullptr /* origin_access_list */,
-      mojo::NullRemote() /* cookie_observer */);
+      kEmptyOriginAccessList, mojo::NullRemote() /* cookie_observer */);
 
   client()->RunUntilRedirectReceived();
 
@@ -2803,8 +2791,7 @@ TEST_F(URLLoaderTest, DowngradeRemovesSecHeaders) {
       resource_scheduler_client(), nullptr,
       nullptr /* network_usage_accumulator */, nullptr /* header_client */,
       nullptr /* origin_policy_manager */, nullptr /* trust_token_helper */,
-      nullptr /* origin_access_list */,
-      mojo::NullRemote() /* cookie_observer */);
+      kEmptyOriginAccessList, mojo::NullRemote() /* cookie_observer */);
 
   client()->RunUntilRedirectReceived();
 
@@ -2868,8 +2855,7 @@ TEST_F(URLLoaderTest, RedirectChainRemovesAndAddsSecHeaders) {
       resource_scheduler_client(), nullptr,
       nullptr /* network_usage_accumulator */, nullptr /* header_client */,
       nullptr /* origin_policy_manager */, nullptr /* trust_token_helper */,
-      nullptr /* origin_access_list */,
-      mojo::NullRemote() /* cookie_observer */);
+      kEmptyOriginAccessList, mojo::NullRemote() /* cookie_observer */);
 
   client()->RunUntilRedirectReceived();
 
@@ -2940,8 +2926,7 @@ TEST_F(URLLoaderTest, RedirectSecHeadersUser) {
       resource_scheduler_client(), nullptr,
       nullptr /* network_usage_accumulator */, nullptr /* header_client */,
       nullptr /* origin_policy_manager */, nullptr /* trust_token_helper */,
-      nullptr /* origin_access_list */,
-      mojo::NullRemote() /* cookie_observer */);
+      kEmptyOriginAccessList, mojo::NullRemote() /* cookie_observer */);
 
   client()->RunUntilRedirectReceived();
 
@@ -2978,8 +2963,7 @@ TEST_F(URLLoaderTest, RedirectDirectlyModifiedSecHeadersUser) {
       resource_scheduler_client(), nullptr,
       nullptr /* network_usage_accumulator */, nullptr /* header_client */,
       nullptr /* origin_policy_manager */, nullptr /* trust_token_helper */,
-      nullptr /* origin_access_list */,
-      mojo::NullRemote() /* cookie_observer */);
+      kEmptyOriginAccessList, mojo::NullRemote() /* cookie_observer */);
 
   client()->RunUntilRedirectReceived();
 
@@ -3085,7 +3069,7 @@ TEST_F(URLLoaderTest, ResourceSchedulerIntegration) {
         false /* require_network_isolation_key */, resource_scheduler_client(),
         nullptr, nullptr /* network_usage_accumulator */,
         nullptr /* header_client */, nullptr /* origin_policy_manager */,
-        nullptr /* trust_token_helper */, nullptr /* origin_access_list */,
+        nullptr /* trust_token_helper */, kEmptyOriginAccessList,
         mojo::NullRemote() /* cookie_observer */);
 
     loaders.emplace_back(
@@ -3112,8 +3096,7 @@ TEST_F(URLLoaderTest, ResourceSchedulerIntegration) {
       resource_scheduler_client(), nullptr,
       nullptr /* network_usage_accumulator */, nullptr /* header_client */,
       nullptr /* origin_policy_manager */, nullptr /* trust_token_helper */,
-      nullptr /* origin_access_list */,
-      mojo::NullRemote() /* cookie_observer */);
+      kEmptyOriginAccessList, mojo::NullRemote() /* cookie_observer */);
   base::RunLoop().RunUntilIdle();
 
   // Make sure that the ResourceScheduler throttles this request.
@@ -3155,8 +3138,7 @@ TEST_F(URLLoaderTest, ReadPipeClosedWhileReadTaskPosted) {
       resource_scheduler_client(), nullptr,
       nullptr /* network_usage_accumulator */, nullptr /* header_client */,
       nullptr /* origin_policy_manager */, nullptr /* trust_token_helper */,
-      nullptr /* origin_access_list */,
-      mojo::NullRemote() /* cookie_observer */);
+      kEmptyOriginAccessList, mojo::NullRemote() /* cookie_observer */);
 
   client()->RunUntilResponseBodyArrived();
   client()->response_body_release();
@@ -3553,8 +3535,7 @@ TEST_F(URLLoaderTest, SetAuth) {
       resource_scheduler_client(), nullptr,
       nullptr /* network_usage_accumulator */, nullptr /* header_client */,
       nullptr /* origin_policy_manager */, nullptr /* trust_token_helper */,
-      nullptr /* origin_access_list */,
-      mojo::NullRemote() /* cookie_observer */);
+      kEmptyOriginAccessList, mojo::NullRemote() /* cookie_observer */);
   base::RunLoop().RunUntilIdle();
 
   ASSERT_TRUE(url_loader);
@@ -3602,8 +3583,7 @@ TEST_F(URLLoaderTest, CancelAuth) {
       resource_scheduler_client(), nullptr,
       nullptr /* network_usage_accumulator */, nullptr /* header_client */,
       nullptr /* origin_policy_manager */, nullptr /* trust_token_helper */,
-      nullptr /* origin_access_list */,
-      mojo::NullRemote() /* cookie_observer */);
+      kEmptyOriginAccessList, mojo::NullRemote() /* cookie_observer */);
   base::RunLoop().RunUntilIdle();
 
   ASSERT_TRUE(url_loader);
@@ -3651,8 +3631,7 @@ TEST_F(URLLoaderTest, TwoChallenges) {
       resource_scheduler_client(), nullptr,
       nullptr /* network_usage_accumulator */, nullptr /* header_client */,
       nullptr /* origin_policy_manager */, nullptr /* trust_token_helper */,
-      nullptr /* origin_access_list */,
-      mojo::NullRemote() /* cookie_observer */);
+      kEmptyOriginAccessList, mojo::NullRemote() /* cookie_observer */);
   base::RunLoop().RunUntilIdle();
 
   ASSERT_TRUE(url_loader);
@@ -3701,8 +3680,7 @@ TEST_F(URLLoaderTest, NoAuthRequiredForFavicon) {
       resource_scheduler_client(), nullptr,
       nullptr /* network_usage_accumulator */, nullptr /* header_client */,
       nullptr /* origin_policy_manager */, nullptr /* trust_token_helper */,
-      nullptr /* origin_access_list */,
-      mojo::NullRemote() /* cookie_observer */);
+      kEmptyOriginAccessList, mojo::NullRemote() /* cookie_observer */);
   base::RunLoop().RunUntilIdle();
 
   ASSERT_TRUE(url_loader);
@@ -3750,8 +3728,7 @@ TEST_F(URLLoaderTest, HttpAuthResponseHeadersAvailable) {
       resource_scheduler_client(), nullptr,
       nullptr /* network_usage_accumulator */, nullptr /* header_client */,
       nullptr /* origin_policy_manager */, nullptr /* trust_token_helper */,
-      nullptr /* origin_access_list */,
-      mojo::NullRemote() /* cookie_observer */);
+      kEmptyOriginAccessList, mojo::NullRemote() /* cookie_observer */);
   base::RunLoop().RunUntilIdle();
 
   ASSERT_TRUE(url_loader);
@@ -3796,8 +3773,7 @@ TEST_F(URLLoaderTest, CorbEffectiveWithCors) {
       resource_scheduler_client(), nullptr,
       nullptr /* network_usage_accumulator */, nullptr /* header_client */,
       nullptr /* origin_policy_manager */, nullptr /* trust_token_helper */,
-      nullptr /* origin_access_list */,
-      mojo::NullRemote() /* cookie_observer */);
+      kEmptyOriginAccessList, mojo::NullRemote() /* cookie_observer */);
 
   client()->RunUntilResponseBodyArrived();
   std::string body = ReadBody();
@@ -3842,8 +3818,7 @@ TEST_F(URLLoaderTest, CorbEffectiveWithNoCorsWhenNoActualPlugin) {
       resource_scheduler_client(), nullptr,
       nullptr /* network_usage_accumulator */, nullptr /* header_client */,
       nullptr /* origin_policy_manager */, nullptr /* trust_token_helper */,
-      nullptr /* origin_access_list */,
-      mojo::NullRemote() /* cookie_observer */);
+      kEmptyOriginAccessList, mojo::NullRemote() /* cookie_observer */);
 
   client()->RunUntilResponseBodyArrived();
   std::string body = ReadBody();
@@ -3883,8 +3858,7 @@ TEST_F(URLLoaderTest, FollowRedirectTwice) {
       resource_scheduler_client(), nullptr,
       nullptr /* network_usage_accumulator */, nullptr /* header_client */,
       nullptr /* origin_policy_manager */, nullptr /* trust_token_helper */,
-      nullptr /* origin_access_list */,
-      mojo::NullRemote() /* cookie_observer */);
+      kEmptyOriginAccessList, mojo::NullRemote() /* cookie_observer */);
 
   client()->RunUntilRedirectReceived();
 
@@ -3990,8 +3964,7 @@ TEST_F(URLLoaderTest, ClientAuthRespondTwice) {
       resource_scheduler_client(), nullptr,
       nullptr /* network_usage_accumulator */, nullptr /* header_client */,
       nullptr /* origin_policy_manager */, nullptr /* trust_token_helper */,
-      nullptr /* origin_access_list */,
-      mojo::NullRemote() /* cookie_observer */);
+      kEmptyOriginAccessList, mojo::NullRemote() /* cookie_observer */);
 
   EXPECT_EQ(0, network_context_client.on_certificate_requested_counter());
   EXPECT_EQ(0, private_key->sign_count());
@@ -4045,8 +4018,7 @@ TEST_F(URLLoaderTest, ClientAuthDestroyResponder) {
       resource_scheduler_client(), nullptr,
       nullptr /* network_usage_accumulator */, nullptr /* header_client */,
       nullptr /* origin_policy_manager */, nullptr /* trust_token_helper */,
-      nullptr /* origin_access_list */,
-      mojo::NullRemote() /* cookie_observer */);
+      kEmptyOriginAccessList, mojo::NullRemote() /* cookie_observer */);
   network_context_client.set_url_loader_remote(&loader);
 
   RunUntilIdle();
@@ -4091,8 +4063,7 @@ TEST_F(URLLoaderTest, ClientAuthCancelConnection) {
       resource_scheduler_client(), nullptr,
       nullptr /* network_usage_accumulator */, nullptr /* header_client */,
       nullptr /* origin_policy_manager */, nullptr /* trust_token_helper */,
-      nullptr /* origin_access_list */,
-      mojo::NullRemote() /* cookie_observer */);
+      kEmptyOriginAccessList, mojo::NullRemote() /* cookie_observer */);
   network_context_client.set_url_loader_remote(&loader);
 
   RunUntilIdle();
@@ -4137,8 +4108,7 @@ TEST_F(URLLoaderTest, ClientAuthCancelCertificateSelection) {
       resource_scheduler_client(), nullptr,
       nullptr /* network_usage_accumulator */, nullptr /* header_client */,
       nullptr /* origin_policy_manager */, nullptr /* trust_token_helper */,
-      nullptr /* origin_access_list */,
-      mojo::NullRemote() /* cookie_observer */);
+      kEmptyOriginAccessList, mojo::NullRemote() /* cookie_observer */);
 
   RunUntilIdle();
   ASSERT_TRUE(url_loader);
@@ -4192,8 +4162,7 @@ TEST_F(URLLoaderTest, ClientAuthNoCertificate) {
       resource_scheduler_client(), nullptr,
       nullptr /* network_usage_accumulator */, nullptr /* header_client */,
       nullptr /* origin_policy_manager */, nullptr /* trust_token_helper */,
-      nullptr /* origin_access_list */,
-      mojo::NullRemote() /* cookie_observer */);
+      kEmptyOriginAccessList, mojo::NullRemote() /* cookie_observer */);
 
   RunUntilIdle();
   ASSERT_TRUE(url_loader);
@@ -4252,8 +4221,7 @@ TEST_F(URLLoaderTest, ClientAuthCertificateWithValidSignature) {
       resource_scheduler_client(), nullptr,
       nullptr /* network_usage_accumulator */, nullptr /* header_client */,
       nullptr /* origin_policy_manager */, nullptr /* trust_token_helper */,
-      nullptr /* origin_access_list */,
-      mojo::NullRemote() /* cookie_observer */);
+      kEmptyOriginAccessList, mojo::NullRemote() /* cookie_observer */);
 
   RunUntilIdle();
   ASSERT_TRUE(url_loader);
@@ -4314,8 +4282,7 @@ TEST_F(URLLoaderTest, ClientAuthCertificateWithInvalidSignature) {
       resource_scheduler_client(), nullptr,
       nullptr /* network_usage_accumulator */, nullptr /* header_client */,
       nullptr /* origin_policy_manager */, nullptr /* trust_token_helper */,
-      nullptr /* origin_access_list */,
-      mojo::NullRemote() /* cookie_observer */);
+      kEmptyOriginAccessList, mojo::NullRemote() /* cookie_observer */);
 
   RunUntilIdle();
   ASSERT_TRUE(url_loader);
@@ -4357,8 +4324,7 @@ TEST_F(URLLoaderTest, BlockAllCookies) {
       resource_scheduler_client(), nullptr,
       nullptr /* network_usage_accumulator */, nullptr /* header_client */,
       nullptr /* origin_policy_manager */, nullptr /* trust_token_helper */,
-      nullptr /* origin_access_list */,
-      mojo::NullRemote() /* cookie_observer */);
+      kEmptyOriginAccessList, mojo::NullRemote() /* cookie_observer */);
 
   EXPECT_FALSE(url_loader->AllowCookies(first_party_url, site_for_cookies));
   EXPECT_FALSE(url_loader->AllowCookies(third_party_url, site_for_cookies));
@@ -4390,8 +4356,7 @@ TEST_F(URLLoaderTest, BlockOnlyThirdPartyCookies) {
       resource_scheduler_client(), nullptr,
       nullptr /* network_usage_accumulator */, nullptr /* header_client */,
       nullptr /* origin_policy_manager */, nullptr /* trust_token_helper */,
-      nullptr /* origin_access_list */,
-      mojo::NullRemote() /* cookie_observer */);
+      kEmptyOriginAccessList, mojo::NullRemote() /* cookie_observer */);
 
   EXPECT_TRUE(url_loader->AllowCookies(first_party_url, site_for_cookies));
   EXPECT_FALSE(url_loader->AllowCookies(third_party_url, site_for_cookies));
@@ -4423,8 +4388,7 @@ TEST_F(URLLoaderTest, AllowAllCookies) {
       resource_scheduler_client(), nullptr,
       nullptr /* network_usage_accumulator */, nullptr /* header_client */,
       nullptr /* origin_policy_manager */, nullptr /* trust_token_helper */,
-      nullptr /* origin_access_list */,
-      mojo::NullRemote() /* cookie_observer */);
+      kEmptyOriginAccessList, mojo::NullRemote() /* cookie_observer */);
 
   EXPECT_TRUE(url_loader->AllowCookies(first_party_url, site_for_cookies));
   EXPECT_TRUE(url_loader->AllowCookies(third_party_url, site_for_cookies));
@@ -4480,8 +4444,7 @@ TEST_F(URLLoaderTest, CredentialsModeOmit) {
       resource_scheduler_client(), nullptr,
       nullptr /* network_usage_accumulator */, nullptr /* header_client */,
       nullptr /* origin_policy_manager */, nullptr /* trust_token_helper */,
-      nullptr /* origin_access_list */,
-      mojo::NullRemote() /* cookie_observer */);
+      kEmptyOriginAccessList, mojo::NullRemote() /* cookie_observer */);
 
   client()->RunUntilComplete();
   delete_run_loop.Run();
@@ -4539,8 +4502,7 @@ TEST_F(URLLoaderTest, CredentialsModeOmitWorkaround) {
       resource_scheduler_client(), nullptr,
       nullptr /* network_usage_accumulator */, nullptr /* header_client */,
       nullptr /* origin_policy_manager */, nullptr /* trust_token_helper */,
-      nullptr /* origin_access_list */,
-      mojo::NullRemote() /* cookie_observer */);
+      kEmptyOriginAccessList, mojo::NullRemote() /* cookie_observer */);
 
   client()->RunUntilComplete();
   delete_run_loop.Run();
@@ -4600,8 +4562,7 @@ TEST_F(URLLoaderTest, CredentialsModeOmitWorkaroundWithOptionalCerts) {
       resource_scheduler_client(), nullptr,
       nullptr /* network_usage_accumulator */, nullptr /* header_client */,
       nullptr /* origin_policy_manager */, nullptr /* trust_token_helper */,
-      nullptr /* origin_access_list */,
-      mojo::NullRemote() /* cookie_observer */);
+      kEmptyOriginAccessList, mojo::NullRemote() /* cookie_observer */);
 
   client()->RunUntilComplete();
   delete_run_loop.Run();
@@ -4637,7 +4598,7 @@ TEST_F(URLLoaderTest, CookieReporting) {
         false /* require_network_isolation_key */, resource_scheduler_client(),
         nullptr, nullptr /* network_usage_accumulator */,
         nullptr /* header_client */, nullptr /* origin_policy_manager */,
-        nullptr /* trust_token_helper */, nullptr /* origin_access_list */,
+        nullptr /* trust_token_helper */, kEmptyOriginAccessList,
         cookie_observer.GetRemote());
 
     delete_run_loop.Run();
@@ -4672,7 +4633,7 @@ TEST_F(URLLoaderTest, CookieReporting) {
         false /* require_network_isolation_key */, resource_scheduler_client(),
         nullptr, nullptr /* network_usage_accumulator */,
         nullptr /* header_client */, nullptr /* origin_policy_manager */,
-        nullptr /* trust_token_helper */, nullptr /* origin_access_list */,
+        nullptr /* trust_token_helper */, kEmptyOriginAccessList,
         cookie_observer.GetRemote());
 
     delete_run_loop.Run();
@@ -4714,7 +4675,7 @@ TEST_F(URLLoaderTest, CookieReportingRedirect) {
       resource_scheduler_client(), nullptr,
       nullptr /* network_usage_accumulator */, nullptr /* header_client */,
       nullptr /* origin_policy_manager */, nullptr /* trust_token_helper */,
-      nullptr /* origin_access_list */, cookie_observer.GetRemote());
+      kEmptyOriginAccessList, cookie_observer.GetRemote());
 
   loader_client.RunUntilRedirectReceived();
   loader->FollowRedirect({}, {}, {}, base::nullopt);
@@ -4760,7 +4721,7 @@ TEST_F(URLLoaderTest, CookieReportingAuth) {
         false /* require_network_isolation_key */, resource_scheduler_client(),
         nullptr, nullptr /* network_usage_accumulator */,
         nullptr /* header_client */, nullptr /* origin_policy_manager */,
-        nullptr /* trust_token_helper */, nullptr /* origin_access_list */,
+        nullptr /* trust_token_helper */, kEmptyOriginAccessList,
         cookie_observer.GetRemote());
 
     loader_client.RunUntilComplete();
@@ -4808,7 +4769,7 @@ TEST_F(URLLoaderTest, RawRequestCookies) {
         false /* require_network_isolation_key */, resource_scheduler_client(),
         nullptr, nullptr /* network_usage_accumulator */,
         nullptr /* header_client */, nullptr /* origin_policy_manager */,
-        nullptr /* trust_token_helper */, nullptr /* origin_access_list */,
+        nullptr /* trust_token_helper */, kEmptyOriginAccessList,
         mojo::NullRemote() /* cookie_observer */);
 
     delete_run_loop.Run();
@@ -4862,7 +4823,7 @@ TEST_F(URLLoaderTest, RawRequestCookiesFlagged) {
         false /* require_network_isolation_key */, resource_scheduler_client(),
         nullptr, nullptr /* network_usage_accumulator */,
         nullptr /* header_client */, nullptr /* origin_policy_manager */,
-        nullptr /* trust_token_helper */, nullptr /* origin_access_list */,
+        nullptr /* trust_token_helper */, kEmptyOriginAccessList,
         mojo::NullRemote() /* cookie_observer */);
 
     delete_run_loop.Run();
@@ -4908,7 +4869,7 @@ TEST_F(URLLoaderTest, RawResponseCookies) {
         false /* require_network_isolation_key */, resource_scheduler_client(),
         nullptr, nullptr /* network_usage_accumulator */,
         nullptr /* header_client */, nullptr /* origin_policy_manager */,
-        nullptr /* trust_token_helper */, nullptr /* origin_access_list */,
+        nullptr /* trust_token_helper */, kEmptyOriginAccessList,
         mojo::NullRemote() /* cookie_observer */);
 
     delete_run_loop.Run();
@@ -4958,7 +4919,7 @@ TEST_F(URLLoaderTest, RawResponseCookiesInvalid) {
         false /* require_network_isolation_key */, resource_scheduler_client(),
         nullptr, nullptr /* network_usage_accumulator */,
         nullptr /* header_client */, nullptr /* origin_policy_manager */,
-        nullptr /* trust_token_helper */, nullptr /* origin_access_list */,
+        nullptr /* trust_token_helper */, kEmptyOriginAccessList,
         mojo::NullRemote() /* cookie_observer */);
 
     delete_run_loop.Run();
@@ -5008,7 +4969,7 @@ TEST_F(URLLoaderTest, RawResponseCookiesRedirect) {
         false /* require_network_isolation_key */, resource_scheduler_client(),
         nullptr, nullptr /* network_usage_accumulator */,
         nullptr /* header_client */, nullptr /* origin_policy_manager */,
-        nullptr /* trust_token_helper */, nullptr /* origin_access_list */,
+        nullptr /* trust_token_helper */, kEmptyOriginAccessList,
         mojo::NullRemote() /* cookie_observer */);
 
     loader_client.RunUntilRedirectReceived();
@@ -5064,7 +5025,7 @@ TEST_F(URLLoaderTest, RawResponseCookiesRedirect) {
         false /* require_network_isolation_key */, resource_scheduler_client(),
         nullptr, nullptr /* network_usage_accumulator */,
         nullptr /* header_client */, nullptr /* origin_policy_manager */,
-        nullptr /* trust_token_helper */, nullptr /* origin_access_list */,
+        nullptr /* trust_token_helper */, kEmptyOriginAccessList,
         mojo::NullRemote() /* cookie_observer */);
 
     loader_client.RunUntilRedirectReceived();
@@ -5114,7 +5075,7 @@ TEST_F(URLLoaderTest, RawResponseCookiesAuth) {
         false /* require_network_isolation_key */, resource_scheduler_client(),
         nullptr, nullptr /* network_usage_accumulator */,
         nullptr /* header_client */, nullptr /* origin_policy_manager */,
-        nullptr /* trust_token_helper */, nullptr /* origin_access_list */,
+        nullptr /* trust_token_helper */, kEmptyOriginAccessList,
         mojo::NullRemote() /* cookie_observer */);
 
     loader_client.RunUntilComplete();
@@ -5162,7 +5123,7 @@ TEST_F(URLLoaderTest, RawResponseCookiesAuth) {
         false /* require_network_isolation_key */, resource_scheduler_client(),
         nullptr, nullptr /* network_usage_accumulator */,
         nullptr /* header_client */, nullptr /* origin_policy_manager */,
-        nullptr /* trust_token_helper */, nullptr /* origin_access_list */,
+        nullptr /* trust_token_helper */, kEmptyOriginAccessList,
         mojo::NullRemote() /* cookie_observer */);
 
     loader_client.RunUntilComplete();
@@ -5207,7 +5168,7 @@ TEST_F(URLLoaderTest, RawResponseQUIC) {
         false /* require_network_isolation_key */, resource_scheduler_client(),
         nullptr, nullptr /* network_usage_accumulator */,
         nullptr /* header_client */, nullptr /* origin_policy_manager */,
-        nullptr /* trust_token_helper */, nullptr /* origin_access_list */,
+        nullptr /* trust_token_helper */, kEmptyOriginAccessList,
         mojo::NullRemote() /* cookie_observer */);
 
     delete_run_loop.Run();
@@ -5264,7 +5225,7 @@ TEST_F(URLLoaderTest, CookieReportingCategories) {
         false /* require_network_isolation_key */, resource_scheduler_client(),
         nullptr, nullptr /* network_usage_accumulator */,
         nullptr /* header_client */, nullptr /* origin_policy_manager */,
-        nullptr /* trust_token_helper */, nullptr /* origin_access_list */,
+        nullptr /* trust_token_helper */, kEmptyOriginAccessList,
         cookie_observer.GetRemote());
 
     delete_run_loop.Run();
@@ -5322,7 +5283,7 @@ TEST_F(URLLoaderTest, CookieReportingCategories) {
         false /* require_network_isolation_key */, resource_scheduler_client(),
         nullptr, nullptr /* network_usage_accumulator */,
         nullptr /* header_client */, nullptr /* origin_policy_manager */,
-        nullptr /* trust_token_helper */, nullptr /* origin_access_list */,
+        nullptr /* trust_token_helper */, kEmptyOriginAccessList,
         cookie_observer.GetRemote());
 
     delete_run_loop.Run();
@@ -5367,7 +5328,7 @@ TEST_F(URLLoaderTest, CookieReportingCategories) {
         false /* require_network_isolation_key */, resource_scheduler_client(),
         nullptr, nullptr /* network_usage_accumulator */,
         nullptr /* header_client */, nullptr /* origin_policy_manager */,
-        nullptr /* trust_token_helper */, nullptr /* origin_access_list */,
+        nullptr /* trust_token_helper */, kEmptyOriginAccessList,
         cookie_observer.GetRemote());
 
     delete_run_loop.Run();
@@ -5463,7 +5424,7 @@ TEST_F(URLLoaderTest, OriginPolicyManagerCalled) {
         false /* require_network_isolation_key */, resource_scheduler_client(),
         nullptr, nullptr /* network_usage_accumulator */,
         nullptr /* header_client */, &mock_origin_policy_manager,
-        nullptr /* trust_token_helper */, nullptr /* origin_access_list */,
+        nullptr /* trust_token_helper */, kEmptyOriginAccessList,
         mojo::NullRemote() /* cookie_observer */);
 
     loader_client.RunUntilComplete();
@@ -5519,7 +5480,7 @@ TEST_F(URLLoaderTest, OriginPolicyManagerCalled) {
         false /* require_network_isolation_key */, resource_scheduler_client(),
         nullptr, nullptr /* network_usage_accumulator */,
         nullptr /* header_client */, &mock_origin_policy_manager,
-        nullptr /* trust_token_helper */, nullptr /* origin_access_list */,
+        nullptr /* trust_token_helper */, kEmptyOriginAccessList,
         mojo::NullRemote() /* cookie_observer */);
 
     loader_client.RunUntilComplete();
@@ -5562,7 +5523,7 @@ TEST_F(URLLoaderTest, OriginPolicyManagerCalled) {
         false /* require_network_isolation_key */, resource_scheduler_client(),
         nullptr, nullptr /* network_usage_accumulator */,
         nullptr /* header_client */, &mock_origin_policy_manager,
-        nullptr /* trust_token_helper */, nullptr /* origin_access_list */,
+        nullptr /* trust_token_helper */, kEmptyOriginAccessList,
         mojo::NullRemote() /* cookie_observer */);
 
     loader_client.RunUntilResponseBodyArrived();
@@ -5611,7 +5572,7 @@ TEST_F(URLLoaderTest, OriginPolicyManagerCalled) {
         false /* require_network_isolation_key */, resource_scheduler_client(),
         nullptr, nullptr /* network_usage_accumulator */,
         nullptr /* header_client */, &mock_origin_policy_manager,
-        nullptr /* trust_token_helper */, nullptr /* origin_access_list */,
+        nullptr /* trust_token_helper */, kEmptyOriginAccessList,
         mojo::NullRemote() /* cookie_observer */);
 
     loader_client.RunUntilComplete();
@@ -5911,8 +5872,7 @@ TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
           mojom::TrustTokenOperationStatus::kOk /* on_begin */,
           mojom::TrustTokenOperationStatus::kOk /* on_finalize */, GetParam(),
           &outbound_trust_token_operation_was_successful_),
-      nullptr /* origin_access_list */,
-      mojo::NullRemote() /* cookie_observer */);
+      kEmptyOriginAccessList, mojo::NullRemote() /* cookie_observer */);
 
   client()->RunUntilComplete();
   delete_run_loop.Run();
@@ -5969,7 +5929,7 @@ TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
           mojom::TrustTokenOperationStatus::kAlreadyExists /* on_begin */,
           base::nullopt /* on_finalize */, GetParam(),
           &outbound_trust_token_operation_was_successful_),
-      nullptr /* origin_access_list */, mojo::NullRemote() /* cookie_observer */
+      kEmptyOriginAccessList, mojo::NullRemote() /* cookie_observer */
   );
 
   client()->RunUntilComplete();
@@ -6015,8 +5975,7 @@ TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
           mojom::TrustTokenOperationStatus::kFailedPrecondition /* on_begin */,
           base::nullopt /* on_finalize */, GetParam(),
           &outbound_trust_token_operation_was_successful_),
-      nullptr /* origin_access_list */,
-      mojo::NullRemote() /* cookie_observer */);
+      kEmptyOriginAccessList, mojo::NullRemote() /* cookie_observer */);
 
   client()->RunUntilComplete();
   delete_run_loop.Run();
@@ -6061,8 +6020,7 @@ TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
           mojom::TrustTokenOperationStatus::kOk /* on_begin */,
           mojom::TrustTokenOperationStatus::kBadResponse /* on_finalize */,
           GetParam(), &outbound_trust_token_operation_was_successful_),
-      nullptr /* origin_access_list */,
-      mojo::NullRemote() /* cookie_observer */);
+      kEmptyOriginAccessList, mojo::NullRemote() /* cookie_observer */);
 
   client()->RunUntilComplete();
   delete_run_loop.Run();
@@ -6106,8 +6064,7 @@ TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
           mojom::TrustTokenOperationStatus::
               kInternalError /* helper_creation_error */,
           GetParam()),
-      nullptr /* origin_access_list */,
-      mojo::NullRemote() /* cookie_observer */);
+      kEmptyOriginAccessList, mojo::NullRemote() /* cookie_observer */);
 
   client()->RunUntilComplete();
   delete_run_loop.Run();
@@ -6151,8 +6108,7 @@ TEST_F(URLLoaderTest, OnRawRequestClientSecurityStateFactory) {
       resource_scheduler_client(), nullptr,
       nullptr /* network_usage_accumulator */, nullptr /* header_client */,
       nullptr /* origin_policy_manager */, nullptr /* trust_token_helper */,
-      nullptr /* origin_access_list */,
-      mojo::NullRemote() /* cookie_observer */);
+      kEmptyOriginAccessList, mojo::NullRemote() /* cookie_observer */);
 
   delete_run_loop.Run();
   client()->RunUntilComplete();
@@ -6201,8 +6157,7 @@ TEST_F(URLLoaderTest, OnRawRequestClientSecurityStateRequest) {
       resource_scheduler_client(), nullptr,
       nullptr /* network_usage_accumulator */, nullptr /* header_client */,
       nullptr /* origin_policy_manager */, nullptr /* trust_token_helper */,
-      nullptr /* origin_access_list */,
-      mojo::NullRemote() /* cookie_observer */);
+      kEmptyOriginAccessList, mojo::NullRemote() /* cookie_observer */);
   delete_run_loop.Run();
   client()->RunUntilComplete();
   EXPECT_EQ(net::OK, client()->completion_status().error_code);
@@ -6243,8 +6198,7 @@ TEST_F(URLLoaderTest, OnRawRequestClientSecurityStateNotPresent) {
       resource_scheduler_client(), nullptr,
       nullptr /* network_usage_accumulator */, nullptr /* header_client */,
       nullptr /* origin_policy_manager */, nullptr /* trust_token_helper */,
-      nullptr /* origin_access_list */,
-      mojo::NullRemote() /* cookie_observer */);
+      kEmptyOriginAccessList, mojo::NullRemote() /* cookie_observer */);
   delete_run_loop.Run();
   client()->RunUntilComplete();
   EXPECT_EQ(net::OK, client()->completion_status().error_code);

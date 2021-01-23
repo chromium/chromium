@@ -132,7 +132,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       mojom::OriginPolicyManager* origin_policy_manager,
       std::unique_ptr<TrustTokenRequestHelperFactory>
           trust_token_helper_factory,
-      const cors::OriginAccessList* origin_access_list,
+      const cors::OriginAccessList& origin_access_list,
       mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer);
   ~URLLoader() override;
 
@@ -520,7 +520,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   base::Optional<mojom::TrustTokenOperationStatus> trust_token_status_;
 
   // Outlives `this`.
-  const cors::OriginAccessList* const origin_access_list_;
+  const cors::OriginAccessList& origin_access_list_;
 
   // Observer listening to all cookie reads and writes made by this request.
   mojo::Remote<mojom::CookieAccessObserver> cookie_observer_;
