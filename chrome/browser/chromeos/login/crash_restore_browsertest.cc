@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -20,9 +19,7 @@
 #include "base/values.h"
 #include "chrome/browser/chromeos/login/session/user_session_manager.h"
 #include "chrome/browser/chromeos/login/session/user_session_manager_test_api.h"
-#include "chrome/browser/chromeos/login/test/embedded_test_server_mixin.h"
-#include "chrome/browser/chromeos/login/test/fake_gaia_mixin.h"
-#include "chrome/browser/chromeos/login/test/local_policy_test_server_mixin.h"
+#include "chrome/browser/chromeos/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/chromeos/login/test/login_manager_mixin.h"
 #include "chrome/browser/chromeos/login/test/user_policy_mixin.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
@@ -42,9 +39,7 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/test_launcher.h"
 #include "content/public/test/test_utils.h"
-#include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
@@ -273,24 +268,7 @@ IN_PROC_BROWSER_TEST_F(CrashRestoreComplexTest, RestoreSessionForThreeUsers) {
 class CrashRestoreChildUserTest : public MixinBasedInProcessBrowserTest {
  protected:
   CrashRestoreChildUserTest() {
-    login_manager_.set_session_restore_enabled();
-
-    // Setup mixins needed for smoother child login in PRE test only, as this is
-    // the test that goes through login flow. These are set up to provide OAuth2
-    // token and fresh child user policy during login (session start is blocked
-    // on fetching the policy - this eventually times out, but adds unnecessary
-    // test runtime).
-    if (content::IsPreTest()) {
-      embedded_test_server_setup_ =
-          std::make_unique<EmbeddedTestServerSetupMixin>(
-              &mixin_host_, embedded_test_server());
-      fake_gaia_ =
-          std::make_unique<FakeGaiaMixin>(&mixin_host_, embedded_test_server());
-      policy_server_ =
-          std::make_unique<LocalPolicyTestServerMixin>(&mixin_host_);
-    }
-    user_policy_mixin_ = std::make_unique<UserPolicyMixin>(
-        &mixin_host_, test_user_.account_id, policy_server_.get());
+    logged_in_user_mixin_.GetLoginManagerMixin()->set_session_restore_enabled();
   }
 
   ~CrashRestoreChildUserTest() override = default;
@@ -299,42 +277,19 @@ class CrashRestoreChildUserTest : public MixinBasedInProcessBrowserTest {
   void SetUpInProcessBrowserTestFixture() override {
     // Child users require a user policy, set up an empty one so the user can
     // get through login.
-    ASSERT_TRUE(user_policy_mixin_->RequestPolicyUpdate());
+    ASSERT_TRUE(
+        logged_in_user_mixin_.GetUserPolicyMixin()->RequestPolicyUpdate());
     MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
   }
 
-  void SetUpOnMainThread() override {
-    if (fake_gaia_) {
-      host_resolver()->AddRule("*", "127.0.0.1");
-      fake_gaia_->SetupFakeGaiaForChildUser(
-          test_user_.account_id.GetUserEmail(),
-          test_user_.account_id.GetGaiaId(), "fake-refresh-token",
-          false /*issue_any_scope_token*/);
-    }
-
-    MixinBasedInProcessBrowserTest::SetUpOnMainThread();
-  }
-
-  const LoginManagerMixin::TestUserInfo test_user_{
-      AccountId::FromUserEmailGaiaId("user@test.com", "123456789"),
-      user_manager::USER_TYPE_CHILD};
-
-  LoginManagerMixin login_manager_{&mixin_host_, {test_user_}};
-
-  std::unique_ptr<LocalPolicyTestServerMixin> policy_server_;
-  std::unique_ptr<UserPolicyMixin> user_policy_mixin_;
-
-  std::unique_ptr<EmbeddedTestServerSetupMixin> embedded_test_server_setup_;
-  std::unique_ptr<FakeGaiaMixin> fake_gaia_;
+  LoggedInUserMixin logged_in_user_mixin_{
+      &mixin_host_, LoggedInUserMixin::LogInType::kChild,
+      embedded_test_server(), this, /*should_launch_browser=*/false};
 };
 
 IN_PROC_BROWSER_TEST_F(CrashRestoreChildUserTest, PRE_SessionRestore) {
-  UserContext user_context =
-      LoginManagerMixin::CreateDefaultUserContext(test_user_);
-  user_context.SetRefreshToken("fake-refresh-token");
-
   // Verify that child user can log in.
-  login_manager_.LoginAndWaitForActiveSession(user_context);
+  logged_in_user_mixin_.LogInUser();
 }
 
 IN_PROC_BROWSER_TEST_F(CrashRestoreChildUserTest, SessionRestore) {
