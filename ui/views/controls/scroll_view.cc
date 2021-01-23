@@ -365,6 +365,47 @@ void ScrollView::SetDrawOverflowIndicator(bool draw_overflow_indicator) {
   OnPropertyChanged(&draw_overflow_indicator_, kPropertyEffectsPaint);
 }
 
+View* ScrollView::SetCustomOverflowIndicator(OverflowIndicatorAlignment side,
+                                             std::unique_ptr<View> indicator,
+                                             int thickness,
+                                             bool fills_opaquely) {
+  if (thickness < 0)
+    thickness = 0;
+
+  if (ScrollsWithLayers()) {
+    indicator->SetPaintToLayer();
+    indicator->layer()->SetFillsBoundsOpaquely(fills_opaquely);
+  }
+
+  View* indicator_ptr = indicator.get();
+  switch (side) {
+    case OverflowIndicatorAlignment::kLeft:
+      more_content_left_ = std::move(indicator);
+      more_content_left_thickness_ = thickness;
+      break;
+    case OverflowIndicatorAlignment::kTop:
+      more_content_top_ = std::move(indicator);
+      more_content_top_thickness_ = thickness;
+      break;
+    case OverflowIndicatorAlignment::kRight:
+      more_content_right_ = std::move(indicator);
+      more_content_right_thickness_ = thickness;
+      break;
+    case OverflowIndicatorAlignment::kBottom:
+      more_content_bottom_ = std::move(indicator);
+      more_content_bottom_thickness_ = thickness;
+      break;
+    default:
+      NOTREACHED();
+      break;
+  }
+
+  UpdateOverflowIndicatorVisibility(CurrentOffset());
+  PositionOverflowIndicators();
+
+  return indicator_ptr;
+}
+
 void ScrollView::ClipHeightTo(int min_height, int max_height) {
   min_height_ = min_height;
   max_height_ = max_height;
@@ -1114,16 +1155,23 @@ base::Optional<ui::NativeTheme::ColorId> ScrollView::GetBackgroundThemeColorId()
 }
 
 void ScrollView::PositionOverflowIndicators() {
-  const gfx::Rect bounds = GetContentsBounds();
-  const int x = bounds.x();
-  const int y = bounds.y();
-  const int w = bounds.width();
-  const int h = bounds.height();
-  const int t = Separator::kThickness;
-  more_content_left_->SetBounds(x, y, t, h);
-  more_content_top_->SetBounds(x, y, w, t);
-  more_content_right_->SetBounds(bounds.right() - t, y, t, h);
-  more_content_bottom_->SetBounds(x, bounds.bottom() - t, w, t);
+  // TODO(https://crbug.com/1166949): Use a layout manager to position these.
+  const gfx::Rect contents_bounds = GetContentsBounds();
+  const int x = contents_bounds.x();
+  const int y = contents_bounds.y();
+  const int w = contents_bounds.width();
+  const int h = contents_bounds.height();
+
+  more_content_left_->SetBoundsRect(
+      gfx::Rect(x, y, more_content_left_thickness_, h));
+  more_content_top_->SetBoundsRect(
+      gfx::Rect(x, y, w, more_content_top_thickness_));
+  more_content_right_->SetBoundsRect(
+      gfx::Rect(contents_bounds.right() - more_content_right_thickness_, y,
+                more_content_right_thickness_, h));
+  more_content_bottom_->SetBoundsRect(
+      gfx::Rect(x, contents_bounds.bottom() - more_content_bottom_thickness_, w,
+                more_content_bottom_thickness_));
 }
 
 void ScrollView::UpdateOverflowIndicatorVisibility(
@@ -1134,7 +1182,7 @@ void ScrollView::UpdateOverflowIndicatorVisibility(
                            draw_overflow_indicator_);
   SetControlVisibility(
       more_content_bottom_.get(),
-      !draw_border_ && vert_sb_->GetVisible() && !horiz_sb_->GetVisible() &&
+      !draw_border_ && IsVerticalScrollEnabled() && !horiz_sb_->GetVisible() &&
           offset.y() < vert_sb_->GetMaxPosition() && draw_overflow_indicator_);
 
   SetControlVisibility(more_content_left_.get(),

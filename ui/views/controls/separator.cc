@@ -15,6 +15,8 @@
 
 namespace views {
 
+constexpr int Separator::kThickness;
+
 Separator::Separator() = default;
 
 Separator::~Separator() = default;
