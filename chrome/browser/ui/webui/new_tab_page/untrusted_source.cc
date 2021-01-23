@@ -121,8 +121,10 @@ void UntrustedSource::StartDataRequest(
         base::FeatureList::IsEnabled(ntp_features::kCacheOneGoogleBar)) {
       OnOneGoogleBarDataUpdated();
     }
-    one_google_bar_load_start_time_ = base::TimeTicks::Now();
-    one_google_bar_service_->Refresh();
+    if (one_google_bar_callbacks_.size() == 1) {
+      one_google_bar_load_start_time_ = base::TimeTicks::Now();
+      one_google_bar_service_->Refresh();
+    }
     return;
   }
   if (path == "one_google_bar.js") {
@@ -263,8 +265,9 @@ void UntrustedSource::OnOneGoogleBarDataUpdated() {
     html = FormatTemplate(IDR_NEW_TAB_PAGE_UNTRUSTED_ONE_GOOGLE_BAR_HTML,
                           replacements);
   }
+  auto html_ref_counted = base::RefCountedString::TakeString(&html);
   for (auto& callback : one_google_bar_callbacks_) {
-    std::move(callback).Run(base::RefCountedString::TakeString(&html));
+    std::move(callback).Run(html_ref_counted);
   }
   one_google_bar_callbacks_.clear();
 }
