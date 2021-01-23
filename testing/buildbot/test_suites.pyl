@@ -1007,13 +1007,12 @@
         # high_dpi_blink_web_tests provides coverage for
         # running Layout Tests with forced device scale factor.
         'args': [
-          '--additional-driver-flag=--force-device-scale-factor=1.5',
+          '--flag-specific=highdpi',
 
           # layout test failures are retried 3 times when '--test-list' is not
           # passed, but 0 times when '--test-list' is passed. We want to always
           # retry 3 times, so we explicitly specify it.
           '--num-retries=3',
-          '--additional-expectations=../../third_party/blink/web_tests/FlagExpectations/force-device-scale-factor=1.5',
         ],
         'isolate_name': 'blink_web_tests',
         'merge': {
