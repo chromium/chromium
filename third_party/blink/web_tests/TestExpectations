@@ -2514,6 +2514,11 @@ crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-20
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-206.xht [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Mac10.13 ] external/wpt/html/canvas/offscreen/text/2d.text.draw.fill.maxWidth.NaN.worker.html [ Timeout ]
+crbug.com/626703 [ Mac10.13 ] external/wpt/html/canvas/element/drawing-text-to-the-canvas/2d.text.draw.fill.maxWidth.NaN.html [ Timeout ]
+crbug.com/626703 [ Mac10.13 ] external/wpt/webmessaging/without-ports/011.html [ Timeout ]
+crbug.com/626703 [ Mac10.13 ] external/wpt/html/canvas/element/drawing-text-to-the-canvas/2d.text.draw.fill.maxWidth.negative.html [ Timeout ]
+crbug.com/626703 [ Mac10.13 ] external/wpt/html/canvas/offscreen/text/2d.text.draw.fill.maxWidth.zero.worker.html [ Timeout ]
 crbug.com/626703 virtual/v8-off-thread-finalization/external/wpt/html/semantics/scripting-1/the-script-element/module/evaluation-order-1-sharedworker.html [ Timeout ]
 crbug.com/626703 virtual/v8-off-thread-finalization/external/wpt/html/semantics/scripting-1/the-script-element/module/evaluation-order-1-worker.html [ Timeout ]
 crbug.com/626703 [ Win10 ] external/wpt/html/canvas/offscreen/text/2d.text.draw.fill.maxWidth.NaN.html [ Timeout ]
