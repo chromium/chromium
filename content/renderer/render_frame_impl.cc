@@ -71,7 +71,6 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/common/navigation_policy.h"
-#include "content/public/common/untrustworthy_context_menu_params.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/common/url_utils.h"
 #include "content/public/renderer/content_renderer_client.h"
@@ -141,6 +140,8 @@
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
 #include "third_party/blink/public/common/action_after_pagehide.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
+#include "third_party/blink/public/common/context_menu_data/untrustworthy_context_menu_params.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/common/loader/record_load_histograms.h"
@@ -245,8 +246,8 @@
 
 using base::Time;
 using base::TimeDelta;
+using blink::ContextMenuData;
 using blink::WebContentDecryptionModule;
-using blink::WebContextMenuData;
 using blink::WebData;
 using blink::WebDocument;
 using blink::WebDocumentLoader;
@@ -2395,7 +2396,7 @@ void RenderFrameImpl::Delete(mojom::FrameDeleteIntention intent) {
 }
 
 void RenderFrameImpl::OnContextMenuClosed(
-    const CustomContextMenuContext& custom_context) {
+    const blink::CustomContextMenuContext& custom_context) {
   if (custom_context.request_id) {
     // External request, should be in our map.
     ContextMenuClient* client =
@@ -2413,7 +2414,7 @@ void RenderFrameImpl::OnContextMenuClosed(
 }
 
 void RenderFrameImpl::OnCustomContextMenuAction(
-    const CustomContextMenuContext& custom_context,
+    const blink::CustomContextMenuContext& custom_context,
     unsigned action) {
   if (custom_context.request_id) {
     // External context menu request, look in our map.
@@ -2698,9 +2699,9 @@ const blink::RendererPreferences& RenderFrameImpl::GetRendererPreferences()
 
 int RenderFrameImpl::ShowContextMenu(
     ContextMenuClient* client,
-    const UntrustworthyContextMenuParams& params) {
+    const blink::UntrustworthyContextMenuParams& params) {
   DCHECK(client);  // A null client means "internal" when we issue callbacks.
-  UntrustworthyContextMenuParams our_params(params);
+  blink::UntrustworthyContextMenuParams our_params(params);
 
   // TODO(crbug.com/1093904): This essentially is a floor of the coordinates.
   // Determine if rounding is more appropriate.
@@ -4392,9 +4393,10 @@ void RenderFrameImpl::DidChangeSelection(bool is_empty_selection) {
 }
 
 void RenderFrameImpl::ShowContextMenu(
-    const blink::WebContextMenuData& data,
+    const blink::ContextMenuData& data,
     const base::Optional<gfx::Point>& host_context_menu_location) {
-  UntrustworthyContextMenuParams params = ContextMenuParamsBuilder::Build(data);
+  blink::UntrustworthyContextMenuParams params =
+      ContextMenuParamsBuilder::Build(data);
   if (host_context_menu_location.has_value()) {
     // If the context menu request came from the browser, it came with a
     // position that was stored on blink::WebFrameWidgetImpl and is relative to
@@ -4442,7 +4444,7 @@ void RenderFrameImpl::ShowContextMenu(
 }
 
 void RenderFrameImpl::ShowDeferredContextMenu(
-    const UntrustworthyContextMenuParams& params) {
+    const blink::UntrustworthyContextMenuParams& params) {
   Send(new FrameHostMsg_ContextMenu(routing_id_, params));
 }
 

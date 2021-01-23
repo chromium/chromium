@@ -6,7 +6,7 @@
 #define CONTENT_PUBLIC_BROWSER_CONTEXT_MENU_PARAMS_H_
 
 #include "content/common/content_export.h"
-#include "content/public/common/untrustworthy_context_menu_params.h"
+#include "third_party/blink/public/common/context_menu_data/untrustworthy_context_menu_params.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -20,12 +20,12 @@ class RenderFrameHostImpl;
 //              could be used for more contextual actions.
 //
 // SECURITY NOTE: This struct should be populated by the browser process,
-// after validating the IPC payload from UntrustworthyContextMenuParams.
+// after validating the IPC payload from blink::UntrustworthyContextMenuParams.
 // Note that the fields declared in ContextMenuParams can be populated based on
 // the trustworthy, browser-side data (i.e. don't need to be sent over IPC and
-// therefore don't need to be covered by UntrustworthyContextMenuParams).
+// therefore don't need to be covered by blink::UntrustworthyContextMenuParams).
 struct CONTENT_EXPORT ContextMenuParams
-    : public UntrustworthyContextMenuParams {
+    : public blink::UntrustworthyContextMenuParams {
   ContextMenuParams();
   ContextMenuParams(const ContextMenuParams& other);
   ~ContextMenuParams();
@@ -42,10 +42,11 @@ struct CONTENT_EXPORT ContextMenuParams
 
  private:
   // RenderFrameHostImpl is responsible for validating and sanitizing
-  // UntrustworthyContextMenuParams into ContextMenuParams and therefore is a
-  // friend.
+  // blink::UntrustworthyContextMenuParams into ContextMenuParams and therefore
+  // is a friend.
   friend class RenderFrameHostImpl;
-  explicit ContextMenuParams(const UntrustworthyContextMenuParams& other);
+  explicit ContextMenuParams(
+      const blink::UntrustworthyContextMenuParams& other);
 };
 
 }  // namespace content

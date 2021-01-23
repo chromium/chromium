@@ -41,7 +41,7 @@ class Document;
 class LocalFrame;
 class MouseEvent;
 class Page;
-struct WebContextMenuData;
+struct ContextMenuData;
 
 class CORE_EXPORT ContextMenuController final
     : public GarbageCollected<ContextMenuController> {
@@ -72,7 +72,7 @@ class CORE_EXPORT ContextMenuController final
                        const PhysicalOffset&,
                        WebMenuSourceType,
                        const MouseEvent* mouse_event = nullptr);
-  bool ShouldShowContextMenuFromTouch(const WebContextMenuData&);
+  bool ShouldShowContextMenuFromTouch(const ContextMenuData&);
 
   void UpdateTextFragmentSelectorGenerator(LocalFrame*);
 

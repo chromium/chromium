@@ -116,7 +116,7 @@ include_rules = [
   "+third_party/blink/public/strings/grit/blink_strings.h",
   "+third_party/blink/public/web/web_ax_enums.h",
   "+third_party/blink/public/web/web_console_message.h",
-  "+third_party/blink/public/web/web_context_menu_data.h",
+  "+third_party/blink/public/common/context_menu_data/context_menu_data.h",
   "+third_party/blink/public/common/widget/device_emulation_params.h",
   "+third_party/blink/public/web/web_drag_status.h",
   "+third_party/blink/public/web/web_serialized_script_value_version.h",

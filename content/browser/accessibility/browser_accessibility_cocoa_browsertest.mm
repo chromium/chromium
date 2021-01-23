@@ -58,7 +58,8 @@ class BrowserAccessibilityCocoaBrowserTest : public ContentBrowserTest {
     [element accessibilityPerformAction:NSAccessibilityShowMenuAction];
     filter->Wait();
 
-    UntrustworthyContextMenuParams context_menu_params = filter->get_params();
+    blink::UntrustworthyContextMenuParams context_menu_params =
+        filter->get_params();
     return gfx::Point(context_menu_params.x, context_menu_params.y);
 #pragma clang diagnostic pop
   }

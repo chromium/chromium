@@ -154,8 +154,6 @@ source_set("common_sources") {
     "stop_find_action.h",
     "storage_quota_params.h",
     "three_d_api_types.h",
-    "untrustworthy_context_menu_params.cc",
-    "untrustworthy_context_menu_params.h",
     "url_constants.cc",
     "url_constants.h",
     "url_utils.cc",

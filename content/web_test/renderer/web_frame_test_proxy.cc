@@ -407,7 +407,7 @@ WebFrameTestProxy::GetEffectiveConnectionType() {
 }
 
 void WebFrameTestProxy::ShowContextMenu(
-    const blink::WebContextMenuData& context_menu_data,
+    const blink::ContextMenuData& context_menu_data,
     const base::Optional<gfx::Point>& location) {
   blink::FrameWidgetTestHelper* frame_widget =
       GetLocalRootFrameWidgetTestHelper();

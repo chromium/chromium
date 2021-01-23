@@ -128,8 +128,9 @@ class WebMediaStreamDeviceObserver;
 class WebSecurityOrigin;
 class WebString;
 class WebURL;
+struct CustomContextMenuContext;
 struct FramePolicy;
-struct WebContextMenuData;
+struct ContextMenuData;
 }  // namespace blink
 
 namespace gfx {
@@ -353,8 +354,9 @@ class CONTENT_EXPORT RenderFrameImpl
   int GetRoutingID() override;
   blink::WebLocalFrame* GetWebFrame() override;
   const blink::web_pref::WebPreferences& GetBlinkPreferences() override;
-  int ShowContextMenu(ContextMenuClient* client,
-                      const UntrustworthyContextMenuParams& params) override;
+  int ShowContextMenu(
+      ContextMenuClient* client,
+      const blink::UntrustworthyContextMenuParams& params) override;
   void CancelContextMenu(int request_id) override;
   void ShowVirtualKeyboard() override;
   blink::WebPlugin* CreatePlugin(const WebPluginInfo& info,
@@ -569,7 +571,7 @@ class CONTENT_EXPORT RenderFrameImpl
   void AbortClientNavigation() override;
   void DidChangeSelection(bool is_empty_selection) override;
   void ShowContextMenu(
-      const blink::WebContextMenuData& data,
+      const blink::ContextMenuData& data,
       const base::Optional<gfx::Point>& host_context_menu_location) override;
   void FrameRectsChanged(const gfx::Rect& frame_rect) override;
   void FocusedElementChanged(const blink::WebElement& element) override;
@@ -880,9 +882,11 @@ class CONTENT_EXPORT RenderFrameImpl
   // The documentation for these functions should be in
   // content/common/*_messages.h for the message that the function is handling.
   void OnShowContextMenu(const gfx::Point& location);
-  void OnContextMenuClosed(const CustomContextMenuContext& custom_context);
-  void OnCustomContextMenuAction(const CustomContextMenuContext& custom_context,
-                                 unsigned action);
+  void OnContextMenuClosed(
+      const blink::CustomContextMenuContext& custom_context);
+  void OnCustomContextMenuAction(
+      const blink::CustomContextMenuContext& custom_context,
+      unsigned action);
   void OnMoveCaret(const gfx::Point& point);
   void OnScrollFocusedEditableNodeIntoRect(const gfx::Rect& rect);
   void OnSelectRange(const gfx::Point& base, const gfx::Point& extent);
@@ -1021,7 +1025,8 @@ class CONTENT_EXPORT RenderFrameImpl
 
   void BindWebUIReceiver(mojo::PendingReceiver<mojom::WebUI> receiver);
 
-  void ShowDeferredContextMenu(const UntrustworthyContextMenuParams& params);
+  void ShowDeferredContextMenu(
+      const blink::UntrustworthyContextMenuParams& params);
 
   // Build DidCommitProvisionalLoadParams based on the frame internal state.
   mojom::DidCommitProvisionalLoadParamsPtr MakeDidCommitProvisionalLoadParams(

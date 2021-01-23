@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_PUBLIC_COMMON_UNTRUSTWORTHY_CONTEXT_MENU_PARAMS_H_
-#define CONTENT_PUBLIC_COMMON_UNTRUSTWORTHY_CONTEXT_MENU_PARAMS_H_
+#ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_CONTEXT_MENU_DATA_UNTRUSTWORTHY_CONTEXT_MENU_PARAMS_H_
+#define THIRD_PARTY_BLINK_PUBLIC_COMMON_CONTEXT_MENU_DATA_UNTRUSTWORTHY_CONTEXT_MENU_PARAMS_H_
 
 #include <stdint.h>
 
@@ -14,18 +14,17 @@
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "build/build_config.h"
-#include "content/common/content_export.h"
 #include "services/network/public/mojom/referrer_policy.mojom.h"
 #include "third_party/blink/public/common/context_menu_data/menu_item.h"
 #include "third_party/blink/public/common/navigation/impression.h"
-#include "third_party/blink/public/web/web_context_menu_data.h"
+#include "third_party/blink/public/mojom/context_menu/context_menu.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 
-namespace content {
+namespace blink {
 
-struct CONTENT_EXPORT CustomContextMenuContext {
+struct BLINK_COMMON_EXPORT CustomContextMenuContext {
   static const int32_t kCurrentRenderWidget;
 
   CustomContextMenuContext();
@@ -48,7 +47,7 @@ struct CONTENT_EXPORT CustomContextMenuContext {
 // IPC from a renderer process.  The browser process should use
 // ContextMenuParams, after validating UntrustworthyContextMenuParams in an IPC
 // handling routine.
-struct CONTENT_EXPORT UntrustworthyContextMenuParams {
+struct BLINK_COMMON_EXPORT UntrustworthyContextMenuParams {
   UntrustworthyContextMenuParams();
   UntrustworthyContextMenuParams(const UntrustworthyContextMenuParams& other);
   ~UntrustworthyContextMenuParams();
@@ -153,6 +152,6 @@ struct CONTENT_EXPORT UntrustworthyContextMenuParams {
   int selection_start_offset;
 };
 
-}  // namespace content
+}  // namespace blink
 
-#endif  // CONTENT_PUBLIC_COMMON_UNTRUSTWORTHY_CONTEXT_MENU_PARAMS_H_
+#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_CONTEXT_MENU_DATA_UNTRUSTWORTHY_CONTEXT_MENU_PARAMS_H_

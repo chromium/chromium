@@ -6,16 +6,16 @@
 #define CONTENT_RENDERER_CONTEXT_MENU_PARAMS_BUILDER_H_
 
 namespace blink {
-struct WebContextMenuData;
+struct UntrustworthyContextMenuParams;
+struct ContextMenuData;
 }
 
 namespace content {
-struct UntrustworthyContextMenuParams;
 
 class ContextMenuParamsBuilder {
  public:
-  static UntrustworthyContextMenuParams Build(
-      const blink::WebContextMenuData& data);
+  static blink::UntrustworthyContextMenuParams Build(
+      const blink::ContextMenuData& data);
 };
 
 }  // namespace content

@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/spellcheck/common/spellcheck.mojom.h"
@@ -261,7 +262,7 @@ void SpellCheckProvider::CheckSpelling(
     const WebString& text,
     size_t& offset,
     size_t& length,
-    WebVector<WebString>* optional_suggestions) {
+    blink::WebVector<blink::WebString>* optional_suggestions) {
   base::string16 word = text.Utf16();
   const int kWordStart = 0;
 

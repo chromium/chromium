@@ -4376,7 +4376,7 @@ void WebContentsImpl::ReplaceMisspelling(const base::string16& word) {
 }
 
 void WebContentsImpl::NotifyContextMenuClosed(
-    const CustomContextMenuContext& context) {
+    const blink::CustomContextMenuContext& context) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::NotifyContextMenuClosed");
   RenderFrameHost* focused_frame = GetFocusedFrame();
   if (!focused_frame)
@@ -4387,7 +4387,8 @@ void WebContentsImpl::NotifyContextMenuClosed(
 }
 
 void WebContentsImpl::ExecuteCustomContextMenuCommand(
-    int action, const CustomContextMenuContext& context) {
+    int action,
+    const blink::CustomContextMenuContext& context) {
   OPTIONAL_TRACE_EVENT1("content",
                         "WebContentsImpl::ExecuteCustomContextMenuCommand",
                         "action", action);

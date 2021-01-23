@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/public/common/untrustworthy_context_menu_params.h"
+#include "third_party/blink/public/common/context_menu_data/untrustworthy_context_menu_params.h"
 
-namespace content {
+#include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
+
+namespace blink {
 
 const int32_t CustomContextMenuContext::kCurrentRenderWidget = INT32_MAX;
 
@@ -22,11 +24,11 @@ UntrustworthyContextMenuParams::UntrustworthyContextMenuParams()
       spellcheck_enabled(false),
       is_editable(false),
       writing_direction_default(
-          blink::WebContextMenuData::kCheckableMenuItemDisabled),
+          blink::ContextMenuData::kCheckableMenuItemDisabled),
       writing_direction_left_to_right(
-          blink::WebContextMenuData::kCheckableMenuItemEnabled),
+          blink::ContextMenuData::kCheckableMenuItemEnabled),
       writing_direction_right_to_left(
-          blink::WebContextMenuData::kCheckableMenuItemEnabled),
+          blink::ContextMenuData::kCheckableMenuItemEnabled),
       edit_flags(0),
       referrer_policy(network::mojom::ReferrerPolicy::kDefault),
       source_type(ui::MENU_SOURCE_NONE),
@@ -38,4 +40,4 @@ UntrustworthyContextMenuParams::UntrustworthyContextMenuParams(
 
 UntrustworthyContextMenuParams::~UntrustworthyContextMenuParams() = default;
 
-}  // namespace content
+}  // namespace blink

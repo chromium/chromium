@@ -54,6 +54,7 @@ namespace blink {
 namespace web_pref {
 struct WebPreferences;
 }
+struct CustomContextMenuContext;
 struct Manifest;
 struct UserAgentOverride;
 struct RendererPreferences;
@@ -90,7 +91,6 @@ class RenderViewHost;
 class RenderWidgetHostView;
 class WebContentsDelegate;
 class WebUI;
-struct CustomContextMenuContext;
 struct DropData;
 struct MHTMLGenerationParams;
 
@@ -756,11 +756,12 @@ class WebContents : public PageNavigator,
 
   // Let the renderer know that the menu has been closed.
   virtual void NotifyContextMenuClosed(
-      const CustomContextMenuContext& context) = 0;
+      const blink::CustomContextMenuContext& context) = 0;
 
   // Executes custom context menu action that was provided from Blink.
   virtual void ExecuteCustomContextMenuCommand(
-      int action, const CustomContextMenuContext& context) = 0;
+      int action,
+      const blink::CustomContextMenuContext& context) = 0;
 
   // Views and focus -----------------------------------------------------------
 

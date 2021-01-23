@@ -22,8 +22,6 @@
 #include "third_party/blink/public/common/context_menu_data/menu_item.h"
 #include "ui/base/models/image_model.h"
 
-using blink::WebString;
-using blink::WebURL;
 using content::BrowserContext;
 using content::GlobalFrameRoutingId;
 using content::OpenURLParams;
@@ -371,7 +369,7 @@ void RenderViewContextMenuBase::ExecuteCommand(int id, int event_flags) {
   // Process custom actions range.
   if (IsContentCustomCommandId(id)) {
     unsigned action = id - content_context_custom_first;
-    const content::CustomContextMenuContext& context = params_.custom_context;
+    const blink::CustomContextMenuContext& context = params_.custom_context;
 #if BUILDFLAG(ENABLE_PLUGINS)
     if (context.request_id && !context.is_pepper_menu)
       HandleAuthorizeAllPlugins();

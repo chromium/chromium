@@ -128,7 +128,7 @@ class WebURLResponse;
 struct FramePolicy;
 struct MobileFriendliness;
 struct WebConsoleMessage;
-struct WebContextMenuData;
+struct ContextMenuData;
 struct WebPluginParams;
 
 class BLINK_EXPORT WebLocalFrameClient {
@@ -463,7 +463,7 @@ class BLINK_EXPORT WebLocalFrameClient {
 
   // Shows a context menu with commands relevant to a specific element on
   // the given frame. Additional context data and location are supplied.
-  virtual void ShowContextMenu(const WebContextMenuData&,
+  virtual void ShowContextMenu(const ContextMenuData&,
                                const base::Optional<gfx::Point>&) {}
 
   // Called when the frame rects changed.

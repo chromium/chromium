@@ -40,13 +40,13 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/common/page_type.h"
-#include "content/public/common/untrustworthy_context_menu_params.h"
 #include "content/public/test/fake_frame_widget.h"
 #include "ipc/message_filter.h"
 #include "net/base/load_flags.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/context_menu_data/untrustworthy_context_menu_params.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
@@ -1734,16 +1734,16 @@ class ContextMenuFilter : public content::BrowserMessageFilter {
   void Wait();
   void Reset();
 
-  content::UntrustworthyContextMenuParams get_params() { return last_params_; }
+  blink::UntrustworthyContextMenuParams get_params() { return last_params_; }
 
  private:
   ~ContextMenuFilter() override;
 
-  void OnContextMenu(const content::UntrustworthyContextMenuParams& params);
+  void OnContextMenu(const blink::UntrustworthyContextMenuParams& params);
 
   std::unique_ptr<base::RunLoop> run_loop_;
   base::OnceClosure quit_closure_;
-  content::UntrustworthyContextMenuParams last_params_;
+  blink::UntrustworthyContextMenuParams last_params_;
   const ShowBehavior show_behavior_;
 
   DISALLOW_COPY_AND_ASSIGN(ContextMenuFilter);

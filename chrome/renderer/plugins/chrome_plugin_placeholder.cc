@@ -24,7 +24,6 @@
 #include "components/no_state_prefetch/renderer/prerender_observer_list.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/untrustworthy_context_menu_params.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "gin/object_template_builder.h"
@@ -32,6 +31,7 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
+#include "third_party/blink/public/common/context_menu_data/untrustworthy_context_menu_params.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
@@ -292,7 +292,7 @@ void ChromePluginPlaceholder::ShowContextMenu(
   if (!render_frame())
     return;
 
-  content::UntrustworthyContextMenuParams params;
+  blink::UntrustworthyContextMenuParams params;
 
   if (!title_.empty()) {
     blink::MenuItem name_item;

@@ -32,12 +32,12 @@
 #include "content/public/common/referrer.h"
 #include "content/public/common/stop_find_action.h"
 #include "content/public/common/three_d_api_types.h"
-#include "content/public/common/untrustworthy_context_menu_params.h"
 #include "ipc/ipc_channel_handle.h"
 #include "ipc/ipc_message_macros.h"
 #include "ipc/ipc_platform_file.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "ppapi/buildflags/buildflags.h"
+#include "third_party/blink/public/common/context_menu_data/untrustworthy_context_menu_params.h"
 #include "third_party/blink/public/common/feature_policy/feature_policy.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
 #include "third_party/blink/public/common/frame/frame_visual_properties.h"
@@ -113,7 +113,7 @@ IPC_STRUCT_TRAITS_BEGIN(blink::Impression)
   IPC_STRUCT_TRAITS_MEMBER(expiry)
 IPC_STRUCT_TRAITS_END()
 
-IPC_STRUCT_TRAITS_BEGIN(content::UntrustworthyContextMenuParams)
+IPC_STRUCT_TRAITS_BEGIN(blink::UntrustworthyContextMenuParams)
   IPC_STRUCT_TRAITS_MEMBER(media_type)
   IPC_STRUCT_TRAITS_MEMBER(x)
   IPC_STRUCT_TRAITS_MEMBER(y)
@@ -146,7 +146,7 @@ IPC_STRUCT_TRAITS_BEGIN(content::UntrustworthyContextMenuParams)
   IPC_STRUCT_TRAITS_MEMBER(selection_start_offset)
 IPC_STRUCT_TRAITS_END()
 
-IPC_STRUCT_TRAITS_BEGIN(content::CustomContextMenuContext)
+IPC_STRUCT_TRAITS_BEGIN(blink::CustomContextMenuContext)
   IPC_STRUCT_TRAITS_MEMBER(is_pepper_menu)
   IPC_STRUCT_TRAITS_MEMBER(request_id)
   IPC_STRUCT_TRAITS_MEMBER(render_widget_id)
@@ -186,11 +186,11 @@ IPC_STRUCT_TRAITS_END()
 // Sent in response to a FrameHostMsg_ContextMenu to let the renderer know that
 // the menu has been closed.
 IPC_MESSAGE_ROUTED1(FrameMsg_ContextMenuClosed,
-                    content::CustomContextMenuContext /* custom_context */)
+                    blink::CustomContextMenuContext /* custom_context */)
 
 // Executes custom context menu action that was provided from Blink.
 IPC_MESSAGE_ROUTED2(FrameMsg_CustomContextMenuAction,
-                    content::CustomContextMenuContext /* custom_context */,
+                    blink::CustomContextMenuContext /* custom_context */,
                     unsigned /* action */)
 
 // -----------------------------------------------------------------------------
@@ -201,7 +201,7 @@ IPC_MESSAGE_ROUTED2(FrameMsg_CustomContextMenuAction,
 // object contains information about the node(s) that were selected when the
 // user right clicked.
 IPC_MESSAGE_ROUTED1(FrameHostMsg_ContextMenu,
-                    content::UntrustworthyContextMenuParams)
+                    blink::UntrustworthyContextMenuParams)
 
 // Adding a new message? Stick to the sort order above: first platform
 // independent FrameMsg, then ifdefs for platform specific FrameMsg, then

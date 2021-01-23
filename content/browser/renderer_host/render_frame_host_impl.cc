@@ -3643,7 +3643,7 @@ void RenderFrameHostImpl::SetSubframeUnloadTimeoutForTesting(
 }
 
 void RenderFrameHostImpl::OnContextMenu(
-    const UntrustworthyContextMenuParams& params) {
+    const blink::UntrustworthyContextMenuParams& params) {
   if (IsInactiveAndDisallowReactivation())
     return;
 

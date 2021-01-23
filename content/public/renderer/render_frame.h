@@ -42,6 +42,7 @@ class WebElement;
 class WebFrame;
 class WebLocalFrame;
 class WebPlugin;
+struct UntrustworthyContextMenuParams;
 struct WebPluginParams;
 }  // namespace blink
 
@@ -62,7 +63,6 @@ class RenderAccessibility;
 struct RenderFrameMediaPlaybackOptions;
 class RenderFrameVisitor;
 class RenderView;
-struct UntrustworthyContextMenuParams;
 struct WebPluginInfo;
 
 // A class that takes a snapshot of the accessibility tree. Accessibility
@@ -171,8 +171,9 @@ class CONTENT_EXPORT RenderFrame : public IPC::Listener,
   //
   // Note: if you end up having clients outliving the RenderFrame, we should add
   // a CancelContextMenuCallback function that takes a request id.
-  virtual int ShowContextMenu(ContextMenuClient* client,
-                              const UntrustworthyContextMenuParams& params) = 0;
+  virtual int ShowContextMenu(
+      ContextMenuClient* client,
+      const blink::UntrustworthyContextMenuParams& params) = 0;
 
   // Cancels a context menu in the event that the client is destroyed before the
   // menu is closed.

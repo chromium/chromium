@@ -176,6 +176,7 @@ class AssociatedInterfaceProvider;
 class AssociatedInterfaceRegistry;
 struct FramePolicy;
 struct TransferableMessage;
+struct UntrustworthyContextMenuParams;
 
 namespace mojom {
 class CacheStorage;
@@ -237,7 +238,6 @@ class WebAuthRequestSecurityChecker;
 class WebBluetoothServiceImpl;
 class WebBundleHandle;
 class WebBundleHandleTracker;
-struct UntrustworthyContextMenuParams;
 struct PendingNavigation;
 struct RenderFrameHostOrProxy;
 struct ResourceTimingInfo;
@@ -2082,7 +2082,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void UpdateRenderProcessHostFramePriorities();
 
   // IPC Message handlers.
-  void OnContextMenu(const UntrustworthyContextMenuParams& params);
+  void OnContextMenu(const blink::UntrustworthyContextMenuParams& params);
   void OnForwardResourceTimingToParent(
       const ResourceTimingInfo& resource_timing);
   void OnSetNeedsOcclusionTracking(bool needs_tracking);

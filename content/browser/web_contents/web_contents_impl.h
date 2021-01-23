@@ -440,10 +440,10 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void Replace(const base::string16& word) override;
   void ReplaceMisspelling(const base::string16& word) override;
   void NotifyContextMenuClosed(
-      const CustomContextMenuContext& context) override;
+      const blink::CustomContextMenuContext& context) override;
   void ExecuteCustomContextMenuCommand(
       int action,
-      const CustomContextMenuContext& context) override;
+      const blink::CustomContextMenuContext& context) override;
   gfx::NativeView GetNativeView() override;
   gfx::NativeView GetContentNativeView() override;
   gfx::NativeWindow GetTopLevelNativeWindow() override;

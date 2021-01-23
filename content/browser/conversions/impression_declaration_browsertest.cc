@@ -473,7 +473,7 @@ IN_PROC_BROWSER_TEST_F(ImpressionDeclarationBrowserTest,
                                 gfx::Point(100, 100));
 
   context_menu_filter->Wait();
-  content::UntrustworthyContextMenuParams params =
+  blink::UntrustworthyContextMenuParams params =
       context_menu_filter->get_params();
   EXPECT_TRUE(params.impression);
   EXPECT_EQ(10UL, params.impression->impression_data);

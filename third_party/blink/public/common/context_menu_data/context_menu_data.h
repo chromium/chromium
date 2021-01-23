@@ -28,24 +28,24 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_CONTEXT_MENU_DATA_H_
-#define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_CONTEXT_MENU_DATA_H_
+#ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_CONTEXT_MENU_DATA_CONTEXT_MENU_DATA_H_
+#define THIRD_PARTY_BLINK_PUBLIC_COMMON_CONTEXT_MENU_DATA_CONTEXT_MENU_DATA_H_
+
+#include <vector>
 
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "third_party/blink/public/common/context_menu_data/menu_item_info.h"
 #include "third_party/blink/public/common/input/web_menu_source_type.h"
+#include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom-shared.h"
-#include "third_party/blink/public/platform/web_impression.h"
-#include "third_party/blink/public/platform/web_rect.h"
-#include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/platform/web_url.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
+#include "url/gurl.h"
 
 namespace blink {
 
 // This struct is passed to WebViewClient::ShowContextMenu.
-struct WebContextMenuData {
+struct ContextMenuData {
   // The type of media the context menu is being invoked on.
   // using MediaType = blink::mojom::ContextMenuDataMediaType;
   blink::mojom::ContextMenuDataMediaType media_type;
@@ -54,16 +54,16 @@ struct WebContextMenuData {
   gfx::Point mouse_position;
 
   // The absolute URL of the link that is in context.
-  WebURL link_url;
+  GURL link_url;
 
   // The absolute URL of the image/video/audio that is in context.
-  WebURL src_url;
+  GURL src_url;
 
   // Whether the image in context is a null.
   bool has_image_contents;
 
   // The encoding for the frame in context.
-  WebString frame_encoding;
+  std::string frame_encoding;
 
   enum MediaFlags {
     kMediaNone = 0x0,
@@ -86,32 +86,32 @@ struct WebContextMenuData {
   int media_flags;
 
   // The text of the link that is in the context.
-  WebString link_text;
+  std::string link_text;
 
   // If the node is a link, the impression declared by the link's conversion
   // measurement attributes.
-  base::Optional<WebImpression> impression;
+  base::Optional<Impression> impression;
 
   // The raw text of the selection in context.
-  WebString selected_text;
+  std::string selected_text;
 
   // Title attribute of the selection in context.
-  WebString title_text;
+  std::string title_text;
 
   // Alt attribute of the selection in context.
-  WebString alt_text;
+  std::string alt_text;
 
   // Whether spell checking is enabled.
   bool is_spell_checking_enabled;
 
   // Suggested filename for saving file.
-  WebString suggested_filename;
+  std::string suggested_filename;
 
   // The editable (possibily) misspelled word.
-  WebString misspelled_word;
+  base::string16 misspelled_word;
 
   // If misspelledWord is not empty, holds suggestions from the dictionary.
-  WebVector<WebString> dictionary_suggestions;
+  std::vector<base::string16> dictionary_suggestions;
 
   // Whether context is editable.
   bool is_editable;
@@ -138,10 +138,10 @@ struct WebContextMenuData {
   network::mojom::ReferrerPolicy referrer_policy;
 
   // Custom context menu items provided by the WebCore internals.
-  WebVector<MenuItemInfo> custom_items;
+  std::vector<MenuItemInfo> custom_items;
 
   // Selection in viewport coordinates.
-  WebRect selection_rect;
+  gfx::Rect selection_rect;
 
   // TODO(https://crbug.com/781914): Remove this field after we done with Blink
   // side tracking.
@@ -153,7 +153,7 @@ struct WebContextMenuData {
 
   WebMenuSourceType source_type;
 
-  WebContextMenuData()
+  ContextMenuData()
       : media_type(blink::mojom::ContextMenuDataMediaType::kNone),
         has_image_contents(false),
         media_flags(kMediaNone),
@@ -167,4 +167,4 @@ struct WebContextMenuData {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_CONTEXT_MENU_DATA_CONTEXT_MENU_DATA_H_

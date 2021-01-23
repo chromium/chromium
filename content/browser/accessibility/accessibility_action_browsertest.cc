@@ -526,7 +526,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, ShowContextMenu) {
   target_node->AccessibilityPerformAction(context_menu_action);
   context_menu_filter->Wait();
 
-  UntrustworthyContextMenuParams context_menu_params =
+  blink::UntrustworthyContextMenuParams context_menu_params =
       context_menu_filter->get_params();
   EXPECT_EQ(base::ASCIIToUTF16("2"), context_menu_params.link_text);
   EXPECT_EQ(ui::MenuSourceType::MENU_SOURCE_KEYBOARD,
@@ -557,7 +557,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
   target_node->AccessibilityPerformAction(context_menu_action);
   context_menu_filter->Wait();
 
-  UntrustworthyContextMenuParams context_menu_params =
+  blink::UntrustworthyContextMenuParams context_menu_params =
       context_menu_filter->get_params();
   std::string link_text = base::UTF16ToUTF8(context_menu_params.link_text);
   base::ReplaceChars(link_text, "\n", "\\n", &link_text);
@@ -595,7 +595,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
   target_node->AccessibilityPerformAction(context_menu_action);
   context_menu_filter->Wait();
 
-  UntrustworthyContextMenuParams context_menu_params =
+  blink::UntrustworthyContextMenuParams context_menu_params =
       context_menu_filter->get_params();
   EXPECT_EQ(base::ASCIIToUTF16("Offscreen"), context_menu_params.link_text);
   EXPECT_EQ(ui::MenuSourceType::MENU_SOURCE_KEYBOARD,
@@ -630,7 +630,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
   target_node->AccessibilityPerformAction(context_menu_action);
   context_menu_filter->Wait();
 
-  UntrustworthyContextMenuParams context_menu_params =
+  blink::UntrustworthyContextMenuParams context_menu_params =
       context_menu_filter->get_params();
   EXPECT_EQ(base::ASCIIToUTF16("Obscured"), context_menu_params.link_text);
   EXPECT_EQ(ui::MenuSourceType::MENU_SOURCE_KEYBOARD,

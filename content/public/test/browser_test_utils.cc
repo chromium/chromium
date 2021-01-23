@@ -3282,7 +3282,7 @@ bool ContextMenuFilter::OnMessageReceived(const IPC::Message& message) {
   if (message.type() == FrameHostMsg_ContextMenu::ID) {
     FrameHostMsg_ContextMenu::Param params;
     FrameHostMsg_ContextMenu::Read(&message, &params);
-    UntrustworthyContextMenuParams menu_params = std::get<0>(params);
+    blink::UntrustworthyContextMenuParams menu_params = std::get<0>(params);
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&ContextMenuFilter::OnContextMenu, this, menu_params));
@@ -3308,7 +3308,7 @@ void ContextMenuFilter::Reset() {
 ContextMenuFilter::~ContextMenuFilter() = default;
 
 void ContextMenuFilter::OnContextMenu(
-    const content::UntrustworthyContextMenuParams& params) {
+    const blink::UntrustworthyContextMenuParams& params) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   last_params_ = params;
   std::move(quit_closure_).Run();

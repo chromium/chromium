@@ -76,7 +76,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/untrustworthy_context_menu_params.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/browser_test.h"
@@ -94,6 +93,7 @@
 #include "pdf/pdf_features.h"
 #include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/context_menu_data/untrustworthy_context_menu_params.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enum_util.h"
@@ -1635,7 +1635,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, PdfAccessibilityContextMenuAction) {
   menu_waiter.WaitForMenuOpenAndClose();
 
   context_menu_filter->Wait();
-  content::UntrustworthyContextMenuParams params =
+  blink::UntrustworthyContextMenuParams params =
       context_menu_filter->get_params();
 
   // Validate the context menu params for selection.
@@ -2562,7 +2562,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionHitTestTest, ContextMenuCoordinates) {
 
   // We expect the IPC, received from the renderer, to be using local coords.
   context_menu_filter->Wait();
-  content::UntrustworthyContextMenuParams params =
+  blink::UntrustworthyContextMenuParams params =
       context_menu_filter->get_params();
   EXPECT_EQ(local_context_menu_position.x(), params.x);
   EXPECT_EQ(local_context_menu_position.y(), params.y);

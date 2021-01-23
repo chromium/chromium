@@ -990,8 +990,8 @@ TEST_F(RenderWidgetHostTest, SynchronizeVisualProperties) {
 TEST_F(RenderWidgetHostTest, ResizeScreenInfo) {
   blink::ScreenInfo screen_info;
   screen_info.device_scale_factor = 1.f;
-  screen_info.rect = blink::WebRect(0, 0, 800, 600);
-  screen_info.available_rect = blink::WebRect(0, 0, 800, 600);
+  screen_info.rect = gfx::Rect(0, 0, 800, 600);
+  screen_info.available_rect = gfx::Rect(0, 0, 800, 600);
   screen_info.orientation_angle = 0;
   screen_info.orientation_type =
       blink::mojom::ScreenOrientation::kPortraitPrimary;

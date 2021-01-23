@@ -55,6 +55,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
@@ -80,7 +81,6 @@
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/public/test/test_web_frame_content_dumper.h"
 #include "third_party/blink/public/web/web_console_message.h"
-#include "third_party/blink/public/web/web_context_menu_data.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_document_loader.h"
 #include "third_party/blink/public/web/web_form_element.h"
@@ -12843,15 +12843,15 @@ class ContextMenuWebFrameClient
   ~ContextMenuWebFrameClient() override = default;
 
   // WebLocalFrameClient:
-  void ShowContextMenu(const WebContextMenuData& data,
+  void ShowContextMenu(const ContextMenuData& data,
                        const base::Optional<gfx::Point>&) override {
     menu_data_ = data;
   }
 
-  WebContextMenuData GetMenuData() { return menu_data_; }
+  ContextMenuData GetMenuData() { return menu_data_; }
 
  private:
-  WebContextMenuData menu_data_;
+  ContextMenuData menu_data_;
   DISALLOW_COPY_AND_ASSIGN(ContextMenuWebFrameClient);
 };
 
@@ -12951,7 +12951,7 @@ TEST_F(WebFrameTest, ContextMenuDataPasswordSelectedText) {
   web_view_helper.Reset();
   EXPECT_EQ(frame.GetMenuData().input_field_type,
             blink::mojom::ContextMenuDataInputFieldType::kPassword);
-  EXPECT_FALSE(frame.GetMenuData().selected_text.IsEmpty());
+  EXPECT_FALSE(frame.GetMenuData().selected_text.empty());
 }
 
 TEST_F(WebFrameTest, ContextMenuDataNonLocatedMenu) {
@@ -12986,7 +12986,7 @@ TEST_F(WebFrameTest, ContextMenuDataNonLocatedMenu) {
   RunPendingTasks();
   web_view_helper.Reset();
   EXPECT_EQ(frame.GetMenuData().source_type, kMenuSourceTouch);
-  EXPECT_FALSE(frame.GetMenuData().selected_text.IsEmpty());
+  EXPECT_FALSE(frame.GetMenuData().selected_text.empty());
 }
 
 TEST_F(WebFrameTest, LocalFrameWithRemoteParentIsTransparent) {

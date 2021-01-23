@@ -32,6 +32,7 @@
 #include "gin/object_template_builder.h"
 #include "gin/wrappable.h"
 #include "net/base/filename_util.h"
+#include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
@@ -44,7 +45,6 @@
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/blink.h"
-#include "third_party/blink/public/web/web_context_menu_data.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_page_popup.h"
@@ -56,9 +56,9 @@
 #include "ui/gfx/geometry/point_conversions.h"
 #include "v8/include/v8.h"
 
+using blink::ContextMenuData;
 using blink::DragOperationsMask;
 using blink::MenuItemInfo;
-using blink::WebContextMenuData;
 using blink::WebDragData;
 using blink::WebGestureEvent;
 using blink::WebInputEvent;
@@ -446,8 +446,7 @@ void PopulateCustomItems(const WebVector<MenuItemInfo>& customItems,
 // flags.
 // - Some test even checks actual string content. So providing it would be also
 // helpful.
-std::vector<std::string> MakeMenuItemStringsFor(
-    WebContextMenuData* context_menu) {
+std::vector<std::string> MakeMenuItemStringsFor(ContextMenuData* context_menu) {
   // These constants are based on Safari's context menu because tests are made
   // for it.
   static const char* kNonEditableMenuStrings[] = {
@@ -480,8 +479,8 @@ std::vector<std::string> MakeMenuItemStringsFor(
       strings.push_back(*item);
     }
     WebVector<WebString> suggestions;
-    WebTestSpellChecker::FillSuggestionList(context_menu->misspelled_word,
-                                            &suggestions);
+    WebTestSpellChecker::FillSuggestionList(
+        WebString::FromUTF16(context_menu->misspelled_word), &suggestions);
     for (const WebString& suggestion : suggestions)
       strings.push_back(suggestion.Utf8());
   } else {
@@ -1299,8 +1298,8 @@ void EventSender::Install(WebLocalFrame* frame) {
   EventSenderBindings::Install(weak_factory_.GetWeakPtr(), frame);
 }
 
-void EventSender::SetContextMenuData(const WebContextMenuData& data) {
-  last_context_menu_data_.reset(new WebContextMenuData(data));
+void EventSender::SetContextMenuData(const ContextMenuData& data) {
+  last_context_menu_data_.reset(new ContextMenuData(data));
 }
 
 int EventSender::ModifiersForPointer(int pointer_id) {

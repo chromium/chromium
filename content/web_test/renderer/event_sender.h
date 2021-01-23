@@ -32,7 +32,7 @@ class WebFrameWidget;
 class WebLocalFrame;
 class WebView;
 class WebWidget;
-struct WebContextMenuData;
+struct ContextMenuData;
 }  // namespace blink
 
 namespace gin {
@@ -60,7 +60,7 @@ class EventSender {
   void Reset();
   void Install(blink::WebLocalFrame*);
 
-  void SetContextMenuData(const blink::WebContextMenuData&);
+  void SetContextMenuData(const blink::ContextMenuData&);
 
   void DoDragDrop(const blink::WebDragData&, blink::DragOperationsMask);
 
@@ -274,7 +274,7 @@ class EventSender {
   bool touch_cancelable_;
   std::vector<blink::WebTouchPoint> touch_points_;
 
-  std::unique_ptr<blink::WebContextMenuData> last_context_menu_data_;
+  std::unique_ptr<blink::ContextMenuData> last_context_menu_data_;
 
   base::Optional<blink::WebDragData> current_drag_data_;
 

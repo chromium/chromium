@@ -14,6 +14,7 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/resources/grit/ui_resources.h"
@@ -65,13 +66,13 @@ base::string16 RenderViewContextMenuMac::GetSelectedText() const {
 bool RenderViewContextMenuMac::IsTextDirectionEnabled(
     base::i18n::TextDirection direction) const {
   return ParamsForTextDirection(direction) &
-         blink::WebContextMenuData::kCheckableMenuItemEnabled;
+         blink::ContextMenuData::kCheckableMenuItemEnabled;
 }
 
 bool RenderViewContextMenuMac::IsTextDirectionChecked(
     base::i18n::TextDirection direction) const {
   return ParamsForTextDirection(direction) &
-         blink::WebContextMenuData::kCheckableMenuItemChecked;
+         blink::ContextMenuData::kCheckableMenuItemChecked;
 }
 
 void RenderViewContextMenuMac::UpdateTextDirection(
