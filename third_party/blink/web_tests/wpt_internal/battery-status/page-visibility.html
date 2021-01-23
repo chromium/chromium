@@ -1,13 +1,19 @@
 <!DOCTYPE html>
 <html>
 <body>
-<script src="../resources/testharness.js"></script>
-<script src="../resources/testharnessreport.js"></script>
-<script src="../resources/visibility.js"></script>
-<script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
-<script src="file:///gen/services/device/public/mojom/battery_monitor.mojom.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+<script src="/gen/services/device/public/mojom/battery_monitor.mojom.js"></script>
 <script src="resources/mock-battery-monitor.js"></script>
 <script>
+function setMainWindowHidden(hidden) {
+  return new Promise(resolve => {
+    document.addEventListener('visibilitychange', resolve, {once: true});
+    testRunner.setMainWindowHidden(hidden);
+  });
+}
+
 promise_test(async _ => {
   setAndFireMockBatteryInfo(false, 10, 20, 0.5);
   const battery = await navigator.getBattery();

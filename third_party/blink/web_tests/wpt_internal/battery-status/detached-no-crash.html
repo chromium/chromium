@@ -1,8 +1,8 @@
 <!DOCTYPE HTML>
 <body>
 <head>
-<script src="../resources/testharness.js"></script>
-<script src="../resources/testharnessreport.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
 </head>
 <script>
 function waitForMessage(data) {
@@ -17,7 +17,7 @@ function waitForMessage(data) {
 }
 
 promise_test(async _ => {
-  const w = window.open('../resources/window-postmessage-open-close.html');
+  const w = window.open('resources/window-postmessage-open-close.html');
   await waitForMessage('opened');
 
   const nav = w.navigator;
