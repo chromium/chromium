@@ -1,41 +1,38 @@
-"use strict";
+import {BatteryMonitor, BatteryMonitorReceiver} from '/gen/services/device/public/mojom/battery_monitor.mojom.m.js';
 
-class BatteryMonitorImpl {
-  constructor(mock) {
-    this.mock_ = mock;
-  }
-
-  queryNextStatus() {
-    return this.mock_.queryNextStatus();
-  }
-}
-
-class MockBatteryMonitor {
+export class MockBatteryMonitor {
   constructor() {
     this.pendingRequests_ = [];
     this.status_ = null;
-    this.bindingSet_ = new mojo.BindingSet(device.mojom.BatteryMonitor);
-
+    this.lastKnownStatus_ = null;
+    this.receiver_ = new BatteryMonitorReceiver(this);
     this.interceptor_ = new MojoInterfaceInterceptor(
-        device.mojom.BatteryMonitor.name);
-    this.interceptor_.oninterfacerequest = e => this.bindRequest(e.handle);
+        BatteryMonitor.$interfaceName);
+    this.interceptor_.oninterfacerequest =
+        e => this.receiver_.$.bindHandle(e.handle);
     this.interceptor_.start();
   }
 
-  bindRequest(handle) {
-    let impl = new BatteryMonitorImpl(this);
-    this.bindingSet_.addBinding(impl, handle);
-  }
-
   queryNextStatus() {
-    let result = new Promise(resolve => this.pendingRequests_.push(resolve));
+    const result = new Promise(resolve => this.pendingRequests_.push(resolve));
     this.runCallbacks_();
     return result;
   }
 
-  updateBatteryStatus(status) {
-    this.status_ = status;
+  setBatteryStatus(charging, chargingTime, dischargingTime, level) {
+    this.status_ = {charging, chargingTime, dischargingTime, level};
+    this.lastKnownStatus_ = this.status_;
     this.runCallbacks_();
+  }
+
+  verifyBatteryStatus(manager) {
+    assert_not_equals(manager, undefined);
+    assert_not_equals(this.lastKnownStatus_, null);
+    assert_equals(manager.charging, this.lastKnownStatus_.charging);
+    assert_equals(manager.chargingTime, this.lastKnownStatus_.chargingTime);
+    assert_equals(
+        manager.dischargingTime, this.lastKnownStatus_.dischargingTime);
+    assert_equals(manager.level, this.lastKnownStatus_.level);
   }
 
   runCallbacks_() {
@@ -48,33 +45,4 @@ class MockBatteryMonitor {
     }
     this.status_ = null;
   }
-}
-
-let mockBatteryMonitor = new MockBatteryMonitor();
-
-let batteryInfo;
-let lastSetMockBatteryInfo;
-
-function setAndFireMockBatteryInfo(charging, chargingTime, dischargingTime,
-                                   level) {
-  let status = new device.mojom.BatteryStatus();
-  status.charging = charging;
-  status.chargingTime = chargingTime;
-  status.dischargingTime = dischargingTime;
-  status.level = level;
-
-  lastSetMockBatteryInfo = status;
-  mockBatteryMonitor.updateBatteryStatus(status);
-}
-
-// compare obtained battery values with the mock values
-function testIfBatteryStatusIsUpToDate(batteryManager) {
-  assert_not_equals(batteryManager, undefined);
-  assert_not_equals(lastSetMockBatteryInfo, undefined);
-  assert_equals(batteryManager.charging, lastSetMockBatteryInfo.charging);
-  assert_equals(
-      batteryManager.chargingTime, lastSetMockBatteryInfo.chargingTime);
-  assert_equals(
-      batteryManager.dischargingTime, lastSetMockBatteryInfo.dischargingTime);
-  assert_equals(batteryManager.level, lastSetMockBatteryInfo.level);
 }

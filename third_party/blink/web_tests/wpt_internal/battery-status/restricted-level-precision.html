@@ -3,15 +3,16 @@
 <body>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
-<script src="/gen/services/device/public/mojom/battery_monitor.mojom.js"></script>
-<script src="resources/mock-battery-monitor.js"></script>
-<script>
+<script type="module">
+import {MockBatteryMonitor} from './resources/mock-battery-monitor.js';
+
+const mock = new MockBatteryMonitor();
+
 promise_test(async _ => {
   const levelFullPrecision = 0.556789;
   const levelRounded = 0.56;
 
-  setAndFireMockBatteryInfo(false, 10, 20, levelFullPrecision);
+  mock.setBatteryStatus(false, 10, 20, levelFullPrecision);
 
   const battery = await navigator.getBattery();
   assert_equals(battery.level, levelRounded);
