@@ -95,7 +95,7 @@ void RenderViewContextMenuMac::AppendPlatformEditableItems() {
 
 void RenderViewContextMenuMac::InitToolkitMenu() {
   if (params_.input_field_type ==
-      blink::ContextMenuDataInputFieldType::kPassword)
+      blink::mojom::ContextMenuDataInputFieldType::kPassword)
     return;
 
   if (!params_.selection_text.empty() && params_.link_url.is_empty()) {

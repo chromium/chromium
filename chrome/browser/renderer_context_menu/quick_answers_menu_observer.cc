@@ -76,7 +76,7 @@ void QuickAnswersMenuObserver::OnContextMenuShown(
 
   // Skip password input field.
   if (params.input_field_type ==
-      blink::ContextMenuDataInputFieldType::kPassword) {
+      blink::mojom::ContextMenuDataInputFieldType::kPassword) {
     return;
   }
 

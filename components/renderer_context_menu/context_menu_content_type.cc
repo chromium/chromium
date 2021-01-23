@@ -8,7 +8,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "printing/buildflags/buildflags.h"
-#include "third_party/blink/public/common/context_menu_data/input_field_type.h"
+#include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 
 using blink::mojom::ContextMenuDataMediaType;
 using content::WebContents;
@@ -69,8 +69,9 @@ bool ContextMenuContentType::SupportsGroup(int group) {
 bool ContextMenuContentType::SupportsGroupInternal(int group) {
   const bool has_link = !params_.unfiltered_link_url.is_empty();
   const bool has_selection = !params_.selection_text.empty();
-  const bool is_password = params_.input_field_type ==
-                           blink::ContextMenuDataInputFieldType::kPassword;
+  const bool is_password =
+      params_.input_field_type ==
+      blink::mojom::ContextMenuDataInputFieldType::kPassword;
 
   switch (group) {
     case ITEM_GROUP_CUSTOM:
@@ -155,7 +156,7 @@ bool ContextMenuContentType::SupportsGroupInternal(int group) {
 
     case ITEM_GROUP_PASSWORD:
       return params_.input_field_type ==
-             blink::ContextMenuDataInputFieldType::kPassword;
+             blink::mojom::ContextMenuDataInputFieldType::kPassword;
 
     default:
       NOTREACHED();

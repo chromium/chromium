@@ -32,7 +32,6 @@
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_CONTEXT_MENU_DATA_H_
 
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
-#include "third_party/blink/public/common/context_menu_data/input_field_type.h"
 #include "third_party/blink/public/common/context_menu_data/menu_item_info.h"
 #include "third_party/blink/public/common/input/web_menu_source_type.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom-shared.h"
@@ -118,7 +117,7 @@ struct WebContextMenuData {
   bool is_editable;
 
   // If this node is an input field, the type of that field.
-  ContextMenuDataInputFieldType input_field_type;
+  blink::mojom::ContextMenuDataInputFieldType input_field_type;
 
   enum CheckableMenuItemFlags {
     kCheckableMenuItemDisabled = 0x0,

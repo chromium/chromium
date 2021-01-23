@@ -28,3 +28,23 @@ enum ContextMenuDataMediaType {
   // A plugin node is selected.
   kPlugin,
 };
+
+enum ContextMenuDataInputFieldType {
+  // Not an input field.
+  kNone,
+
+  // type = text, search, email, url
+  kPlainText,
+
+  // type = password
+  kPassword,
+
+  // type = number
+  kNumber,
+
+  // type = tel
+  kTelephone,
+
+  // type = <etc.>
+  kOther,
+};

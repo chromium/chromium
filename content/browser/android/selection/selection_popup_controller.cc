@@ -14,7 +14,7 @@
 #include "content/public/android/content_jni_headers/SelectionPopupControllerImpl_jni.h"
 #include "content/public/browser/context_menu_params.h"
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
-#include "third_party/blink/public/common/context_menu_data/input_field_type.h"
+#include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 #include "ui/gfx/geometry/point_conversions.h"
 
 using base::android::AttachCurrentThread;
@@ -184,8 +184,9 @@ bool SelectionPopupController::ShowSelectionMenu(
       !!(params.edit_flags & blink::ContextMenuDataEditFlags::kCanSelectAll);
   const bool can_edit_richly =
       !!(params.edit_flags & blink::ContextMenuDataEditFlags::kCanEditRichly);
-  const bool is_password_type = params.input_field_type ==
-                                blink::ContextMenuDataInputFieldType::kPassword;
+  const bool is_password_type =
+      params.input_field_type ==
+      blink::mojom::ContextMenuDataInputFieldType::kPassword;
   const ScopedJavaLocalRef<jstring> jselected_text =
       ConvertUTF16ToJavaString(env, params.selection_text);
   const bool should_suggest = params.source_type == ui::MENU_SOURCE_TOUCH ||

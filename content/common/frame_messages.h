@@ -78,8 +78,9 @@
 #define IPC_MESSAGE_START FrameMsgStart
 IPC_ENUM_TRAITS_MAX_VALUE(blink::mojom::ContextMenuDataMediaType,
                           blink::mojom::ContextMenuDataMediaType::kMaxValue)
-IPC_ENUM_TRAITS_MAX_VALUE(blink::ContextMenuDataInputFieldType,
-                          blink::ContextMenuDataInputFieldType::kMaxValue)
+IPC_ENUM_TRAITS_MAX_VALUE(
+    blink::mojom::ContextMenuDataInputFieldType,
+    blink::mojom::ContextMenuDataInputFieldType::kMaxValue)
 IPC_ENUM_TRAITS_MAX_VALUE(blink::mojom::ScrollbarMode,
                           blink::mojom::ScrollbarMode::kMaxValue)
 IPC_ENUM_TRAITS_MAX_VALUE(content::StopFindAction,

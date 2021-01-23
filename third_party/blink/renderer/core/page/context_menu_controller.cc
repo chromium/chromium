@@ -162,20 +162,20 @@ static int ComputeEditFlags(Document& selected_document, Editor& editor) {
   return edit_flags;
 }
 
-static ContextMenuDataInputFieldType ComputeInputFieldType(
+static mojom::blink::ContextMenuDataInputFieldType ComputeInputFieldType(
     HitTestResult& result) {
   if (auto* input = DynamicTo<HTMLInputElement>(result.InnerNode())) {
     if (input->type() == input_type_names::kPassword)
-      return ContextMenuDataInputFieldType::kPassword;
+      return mojom::blink::ContextMenuDataInputFieldType::kPassword;
     if (input->type() == input_type_names::kNumber)
-      return ContextMenuDataInputFieldType::kNumber;
+      return mojom::blink::ContextMenuDataInputFieldType::kNumber;
     if (input->type() == input_type_names::kTel)
-      return ContextMenuDataInputFieldType::kTelephone;
+      return mojom::blink::ContextMenuDataInputFieldType::kTelephone;
     if (input->IsTextField())
-      return ContextMenuDataInputFieldType::kPlainText;
-    return ContextMenuDataInputFieldType::kOther;
+      return mojom::blink::ContextMenuDataInputFieldType::kPlainText;
+    return mojom::blink::ContextMenuDataInputFieldType::kOther;
   }
-  return ContextMenuDataInputFieldType::kNone;
+  return mojom::blink::ContextMenuDataInputFieldType::kNone;
 }
 
 static WebRect ComputeSelectionRect(LocalFrame* selected_frame) {
