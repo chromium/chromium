@@ -192,6 +192,8 @@ PaintLayer::PaintLayer(LayoutBoxModelObject& layout_object)
       lost_grouped_mapping_(false),
       self_needs_repaint_(false),
       descendant_needs_repaint_(false),
+      needs_cull_rect_update_(false),
+      descendant_needs_cull_rect_update_(false),
       previous_paint_result_(kFullyPainted),
       needs_paint_phase_descendant_outlines_(false),
       needs_paint_phase_float_(false),
@@ -3738,6 +3740,43 @@ const PaintLayer* PaintLayer::CommonAncestor(const PaintLayer* other) const {
   DCHECK(!this_iterator);
   DCHECK(!other_iterator);
   return nullptr;
+}
+
+void PaintLayer::SetNeedsCullRectUpdate() {
+  DCHECK(RuntimeEnabledFeatures::CullRectUpdateEnabled());
+
+  if (needs_cull_rect_update_)
+    return;
+  needs_cull_rect_update_ = true;
+
+  // Mark compositing container chain for needing cull rect update. This is
+  // similar to MarkCompositingContainerChainForNeedsRepaint().
+  PaintLayer* layer = this;
+  while (true) {
+    // For a non-self-painting layer having self-painting descendant, the
+    // descendant will be painted through this layer's Parent() instead of
+    // this layer's Container(), so in addition to the CompositingContainer()
+    // chain, we also need to mark NeedsRepaint for Parent().
+    // TODO(crbug.com/828103): clean up this.
+    if (layer->Parent() && !layer->IsSelfPaintingLayer())
+      layer->Parent()->SetNeedsCullRectUpdate();
+
+    PaintLayer* container = layer->CompositingContainer();
+    if (!container) {
+      auto* owner = layer->GetLayoutObject().GetFrame()->OwnerLayoutObject();
+      if (!owner)
+        break;
+      container = owner->EnclosingLayer();
+    }
+
+    DCHECK(!container->GetLayoutObject().ChildPrePaintBlockedByDisplayLock());
+
+    if (container->descendant_needs_cull_rect_update_)
+      break;
+
+    container->descendant_needs_cull_rect_update_ = true;
+    layer = container;
+  }
 }
 
 void PaintLayer::DirtyStackingContextZOrderLists() {

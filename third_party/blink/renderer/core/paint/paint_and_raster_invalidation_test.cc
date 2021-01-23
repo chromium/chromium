@@ -855,6 +855,10 @@ TEST_P(PaintAndRasterInvalidationTest, SVGHiddenContainer) {
 }
 
 TEST_P(PaintAndRasterInvalidationTest, PaintPropertyChange) {
+  // TODO(wangxianzhu): See the TODO in CullRectUpdater::SetFragmentCullRects().
+  if (RuntimeEnabledFeatures::CullRectUpdateEnabled())
+    return;
+
   SetUpHTML(*this);
   Element* target = GetDocument().getElementById("target");
   auto* object = target->GetLayoutObject();

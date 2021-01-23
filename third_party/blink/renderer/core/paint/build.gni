@@ -59,6 +59,8 @@ blink_core_sources_paint = [
   "compositing/paint_layer_compositor.h",
   "css_mask_painter.cc",
   "css_mask_painter.h",
+  "cull_rect_updater.cc",
+  "cull_rect_updater.h",
   "custom_scrollbar_theme.cc",
   "custom_scrollbar_theme.h",
   "details_marker_painter.cc",

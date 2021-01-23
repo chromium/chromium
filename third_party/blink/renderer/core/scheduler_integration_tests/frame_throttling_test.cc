@@ -1180,6 +1180,10 @@ TEST_P(FrameThrottlingTest, PaintingViaGraphicsLayerIsThrottled) {
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
     return;
 
+  // TODO(wangxianzhu): See the TODO in CullRectUpdater::SetFragmentCullRects().
+  if (RuntimeEnabledFeatures::CullRectUpdateEnabled())
+    return;
+
   WebView().GetSettings()->SetPreferCompositingToLCDTextEnabled(true);
 
   // Create a hidden frame which is throttled.

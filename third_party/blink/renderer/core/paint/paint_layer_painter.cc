@@ -159,42 +159,6 @@ static bool ShouldRepaintSubsequence(
   return false;
 }
 
-static bool ShouldUseInfiniteCullRect(const PaintLayer& layer,
-                                      PaintLayerPaintingInfo& painting_info) {
-  // Cull rects and clips can't be propagated across a filter which moves
-  // pixels, since the input of the filter may be outside the cull rect /
-  // clips yet still result in painted output.
-  if (layer.HasFilterThatMovesPixels() &&
-      // However during printing, we don't want filter outset to cross page
-      // boundaries. This also avoids performance issue because the PDF renderer
-      // is super slow for big filters. Otherwise all filtered contents would
-      // appear in the painted result of every page.
-      // TODO(crbug.com/1098995): For now we don't adjust cull rect for clips.
-      // When we do, we need to check if we are painting under a real clip.
-      // This won't be a problem when we use block fragments for printing.
-      !layer.GetLayoutObject().GetDocument().Printing())
-    return true;
-
-  // Cull rect mapping doesn't work under perspective in some cases.
-  // See http://crbug.com/887558 for details.
-  if (painting_info.root_layer->GetLayoutObject().StyleRef().HasPerspective())
-    return true;
-
-  // We do not apply cull rect optimizations across transforms for two
-  // reasons:
-  //   1) Performance: We can optimize transform changes by not repainting.
-  //   2) Complexity: Difficulty updating clips when ancestor transforms
-  //      change.
-  // For these reasons, we use an infinite dirty rect here.
-  if (layer.PaintsWithTransform(painting_info.GetGlobalPaintFlags()) &&
-      // The reasons don't apply for printing though, because when we enter and
-      // leaving printing mode, full invalidations occur.
-      !layer.GetLayoutObject().GetDocument().Printing())
-    return true;
-
-  return false;
-}
-
 static bool IsUnclippedLayoutView(const PaintLayer& layer) {
   // If MainFrameClipsContent is false which means that WebPreferences::
   // record_whole_document is true, we should not cull the scrolling contents
@@ -210,20 +174,61 @@ static bool IsUnclippedLayoutView(const PaintLayer& layer) {
   return false;
 }
 
+bool PaintLayerPainter::ShouldUseInfiniteCullRect(
+    GlobalPaintFlags global_flags) {
+  if (IsUnclippedLayoutView(paint_layer_))
+    return true;
+
+  // Cull rects and clips can't be propagated across a filter which moves
+  // pixels, since the input of the filter may be outside the cull rect /
+  // clips yet still result in painted output.
+  // TODO(wangxianzhu): With CullRectUpdate, we can let CullRect support
+  // mapping for pixel moving filters to avoid this infinite cull rect.
+  if (paint_layer_.HasFilterThatMovesPixels() &&
+      // However during printing, we don't want filter outset to cross page
+      // boundaries. This also avoids performance issue because the PDF renderer
+      // is super slow for big filters. Otherwise all filtered contents would
+      // appear in the painted result of every page.
+      // TODO(crbug.com/1098995): For now we don't adjust cull rect for clips.
+      // When we do, we need to check if we are painting under a real clip.
+      // This won't be a problem when we use block fragments for printing.
+      !paint_layer_.GetLayoutObject().GetDocument().Printing())
+    return true;
+
+  // Cull rect mapping doesn't work under perspective in some cases.
+  // See http://crbug.com/887558 for details.
+  if (paint_layer_.GetLayoutObject().StyleRef().HasPerspective())
+    return true;
+
+  // We do not apply cull rect optimizations across transforms for two
+  // reasons:
+  //   1) Performance: We can optimize transform changes by not repainting.
+  //   2) Complexity: Difficulty updating clips when ancestor transforms
+  //      change.
+  // For these reasons, we use an infinite dirty rect here.
+  // The reasons don't apply for CullRectUpdate.
+  if (!RuntimeEnabledFeatures::CullRectUpdateEnabled() &&
+      paint_layer_.PaintsWithTransform(global_flags) &&
+      // The reasons don't apply for printing though, because when we enter and
+      // leaving printing mode, full invalidations occur.
+      !paint_layer_.GetLayoutObject().GetDocument().Printing())
+    return true;
+
+  return false;
+}
+
 void PaintLayerPainter::AdjustForPaintProperties(
     const GraphicsContext& context,
     PaintLayerPaintingInfo& painting_info,
     PaintLayerFlags& paint_flags) {
   const auto& first_fragment = paint_layer_.GetLayoutObject().FirstFragment();
 
-  bool is_unclipped_layout_view = IsUnclippedLayoutView(paint_layer_);
   bool should_use_infinite_cull_rect =
-      is_unclipped_layout_view ||
-      ShouldUseInfiniteCullRect(paint_layer_, painting_info);
+      ShouldUseInfiniteCullRect(painting_info.GetGlobalPaintFlags());
   if (should_use_infinite_cull_rect) {
     painting_info.cull_rect = CullRect::Infinite();
     // Avoid clipping during CollectFragments.
-    if (is_unclipped_layout_view)
+    if (IsUnclippedLayoutView(paint_layer_))
       paint_flags |= kPaintLayerPaintingOverflowContents;
   }
 

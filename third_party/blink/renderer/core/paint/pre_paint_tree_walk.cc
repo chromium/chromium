@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
 #include "third_party/blink/renderer/core/paint/compositing/paint_layer_compositor.h"
+#include "third_party/blink/renderer/core/paint/cull_rect_updater.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_property_tree_printer.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
@@ -179,8 +180,8 @@ void PrePaintTreeWalk::WalkTree(LocalFrameView& root_frame_view) {
     return;
   }
 
-  DCHECK(root_frame_view.GetFrame().GetDocument()->Lifecycle().GetState() ==
-         DocumentLifecycle::kInPrePaint);
+  DCHECK_EQ(root_frame_view.GetFrame().GetDocument()->Lifecycle().GetState(),
+            DocumentLifecycle::kInPrePaint);
 
   // Reserve 50 elements for a really deep DOM. If the nesting is deeper than
   // this, then the vector will reallocate, but it shouldn't be a big deal. This
@@ -211,6 +212,11 @@ void PrePaintTreeWalk::WalkTree(LocalFrameView& root_frame_view) {
   Walk(root_frame_view);
   paint_invalidator_.ProcessPendingDelayedPaintInvalidations();
   context_storage_.pop_back();
+
+  if (RuntimeEnabledFeatures::CullRectUpdateEnabled()) {
+    if (auto* layout_view = root_frame_view.GetLayoutView())
+      CullRectUpdater(*layout_view->Layer()).Update();
+  }
 
 #if DCHECK_IS_ON()
   if (needs_tree_builder_context_update) {
@@ -635,10 +641,12 @@ void PrePaintTreeWalk::WalkInternal(const LayoutObject& object,
     property_changed =
         std::max(property_changed, property_tree_builder->UpdateForChildren());
 
-    // Save clip_changed flag in |context| so that all descendants will see it
-    // even if we don't create tree_builder_context.
-    if (context.tree_builder_context->clip_changed)
+    if (!RuntimeEnabledFeatures::CullRectUpdateEnabled() &&
+        context.tree_builder_context->clip_changed) {
+      // Save clip_changed flag in |context| so that all descendants will see it
+      // even if we don't create tree_builder_context.
       context.clip_changed = true;
+    }
 
     if (property_changed != PaintPropertyChangeType::kUnchanged) {
       if (property_changed >
@@ -676,10 +684,18 @@ void PrePaintTreeWalk::WalkInternal(const LayoutObject& object,
     }
   }
 
-  // When this or ancestor clip changed, the layer needs repaint because it
-  // may paint more or less results according to the changed clip.
-  if (context.clip_changed && object.HasLayer())
+  if (RuntimeEnabledFeatures::CullRectUpdateEnabled()) {
+    if (property_changed != PaintPropertyChangeType::kUnchanged)
+      context.needs_cull_rect_update = true;
+    if (context.needs_cull_rect_update && object.HasLayer()) {
+      To<LayoutBoxModelObject>(object).Layer()->SetNeedsCullRectUpdate();
+      context.needs_cull_rect_update = false;
+    }
+  } else if (context.clip_changed && object.HasLayer()) {
+    // When this or ancestor clip changed, the layer needs repaint because it
+    // may paint more or less results according to the changed clip.
     To<LayoutBoxModelObject>(object).Layer()->SetNeedsRepaint();
+  }
 }
 
 LocalFrameView* FindWebViewPluginContentFrameView(
@@ -930,8 +946,8 @@ void PrePaintTreeWalk::Walk(const LayoutObject& object,
     return context_storage_.back();
   };
 
-  // Ignore clip changes from ancestor across transform boundaries.
   if (object.StyleRef().HasTransform()) {
+    // Ignore clip changes from ancestor across transform boundaries.
     context().clip_changed = false;
     if (context().tree_builder_context)
       context().tree_builder_context->clip_changed = false;

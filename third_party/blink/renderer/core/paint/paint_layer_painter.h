@@ -56,6 +56,8 @@ class CORE_EXPORT PaintLayerPainter {
   // invisible and therefore can't impact painted output.
   static bool PaintedOutputInvisible(const ComputedStyle&);
 
+  bool ShouldUseInfiniteCullRect(GlobalPaintFlags);
+
  private:
   friend class PaintLayerPainterTest;
 

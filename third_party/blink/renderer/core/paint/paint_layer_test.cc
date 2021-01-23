@@ -220,12 +220,6 @@ TEST_P(PaintLayerTest, CompositedScrollingNoNeedsRepaint) {
 }
 
 TEST_P(PaintLayerTest, NonCompositedScrollingNeedsRepaint) {
-  // CAP scrolling raster invalidation decisions are made in
-  // ContentLayerClientImpl::GenerateRasterInvalidations through
-  // PaintArtifactCompositor.
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-
   SetBodyInnerHTML(R"HTML(
     <style>
      /* to prevent the mock overlay scrollbar from affecting compositing. */
@@ -238,6 +232,11 @@ TEST_P(PaintLayerTest, NonCompositedScrollingNeedsRepaint) {
   )HTML");
 
   PaintLayer* scroll_layer = GetPaintLayerByElementId("scroll");
+  EXPECT_FALSE(scroll_layer->GetLayoutObject()
+                   .FirstFragment()
+                   .PaintProperties()
+                   ->ScrollTranslation()
+                   ->HasDirectCompositingReasons());
   EXPECT_EQ(kNotComposited, scroll_layer->GetCompositingState());
 
   PaintLayer* content_layer = GetPaintLayerByElementId("content");
@@ -254,7 +253,14 @@ TEST_P(PaintLayerTest, NonCompositedScrollingNeedsRepaint) {
       content_layer->ContainingLayer()->PixelSnappedScrolledContentOffset());
 
   EXPECT_TRUE(scroll_layer->SelfNeedsRepaint());
-  EXPECT_FALSE(content_layer->SelfNeedsRepaint());
+  if (RuntimeEnabledFeatures::CullRectUpdateEnabled()) {
+    // The content layer needs repaint because its cull rect changed.
+    EXPECT_TRUE(content_layer->SelfNeedsRepaint());
+  } else {
+    // We don't set the layer needing repaint, but will repaint the layer when
+    // we find that the cull rect changes during paint.
+    EXPECT_FALSE(content_layer->SelfNeedsRepaint());
+  }
   UpdateAllLifecyclePhasesForTest();
 }
 

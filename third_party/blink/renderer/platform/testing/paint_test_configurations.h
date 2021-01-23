@@ -11,15 +11,21 @@
 
 namespace blink {
 
-enum { kCompositeAfterPaint = 1 << 0, kUnderInvalidationChecking = 1 << 1 };
+enum {
+  kCullRectUpdate = 1 << 0,
+  kCompositeAfterPaint = 1 << 1,
+  kUnderInvalidationChecking = 1 << 2
+};
 
 class PaintTestConfigurations
     : public testing::WithParamInterface<unsigned>,
+      private ScopedCullRectUpdateForTest,
       private ScopedCompositeAfterPaintForTest,
       private ScopedPaintUnderInvalidationCheckingForTest {
  public:
   PaintTestConfigurations()
-      : ScopedCompositeAfterPaintForTest(GetParam() & kCompositeAfterPaint),
+      : ScopedCullRectUpdateForTest(GetParam() & kCullRectUpdate),
+        ScopedCompositeAfterPaintForTest(GetParam() & kCompositeAfterPaint),
         ScopedPaintUnderInvalidationCheckingForTest(
             GetParam() & kUnderInvalidationChecking) {}
   ~PaintTestConfigurations() {
@@ -29,8 +35,13 @@ class PaintTestConfigurations
 };
 
 #define INSTANTIATE_PAINT_TEST_SUITE_P(test_class) \
-  INSTANTIATE_TEST_SUITE_P(All, test_class,        \
-                           ::testing::Values(0, kCompositeAfterPaint))
+  INSTANTIATE_TEST_SUITE_P(                        \
+      All, test_class,                             \
+      ::testing::Values(0, kCullRectUpdate, kCompositeAfterPaint))
+
+#define INSTANTIATE_PRE_CAP_TEST_SUITE_P(test_class) \
+  INSTANTIATE_TEST_SUITE_P(All, test_class,          \
+                           ::testing::Values(0, kCullRectUpdate))
 
 #define INSTANTIATE_CAP_TEST_SUITE_P(test_class) \
   INSTANTIATE_TEST_SUITE_P(All, test_class,      \

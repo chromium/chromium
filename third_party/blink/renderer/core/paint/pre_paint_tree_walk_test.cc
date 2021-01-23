@@ -245,13 +245,13 @@ TEST_P(PrePaintTreeWalkTest, ClearSubsequenceCachingClipChangePosFixed) {
 TEST_P(PrePaintTreeWalkTest, ClipChangeRepaintsDescendants) {
   SetBodyInnerHTML(R"HTML(
     <style>
-      #parent { height: 75px; position: relative; width: 100px; }
+      #parent { position: relative; width: 100px; }
       #child { overflow: hidden; width: 10%; height: 100%; position: relative; }
       #greatgrandchild {
-        width: 5px; height: 5px; z-index: 100; position: relative;
+        width: 100px; height: 100px; z-index: 100; position: relative;
       }
     </style>
-    <div id='parent' style='height: 100px;'>
+    <div id='parent' style='height: 10px'>
       <div id='child'>
         <div id='grandchild'>
           <div id='greatgrandchild'></div>
@@ -260,7 +260,8 @@ TEST_P(PrePaintTreeWalkTest, ClipChangeRepaintsDescendants) {
     </div>
   )HTML");
 
-  GetDocument().getElementById("parent")->removeAttribute("style");
+  GetDocument().getElementById("parent")->setAttribute(html_names::kStyleAttr,
+                                                       "height: 100px");
   UpdateAllLifecyclePhasesExceptPaint();
 
   auto* paint_layer = GetPaintLayerByElementId("greatgrandchild");

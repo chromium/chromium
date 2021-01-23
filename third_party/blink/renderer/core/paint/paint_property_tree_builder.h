@@ -205,7 +205,7 @@ struct PaintPropertyTreeBuilderContext {
   // its clip since this variable was last set to false. This is used
   // to find out whether a clip changed since the last transform update.
   // Code outside of this class resets clip_changed to false when transforms
-  // change.
+  // change. Used only when CullRectUpdate is not enabled.
   unsigned clip_changed : 1;
 
   // When printing, fixed-position objects and their descendants need to repeat
