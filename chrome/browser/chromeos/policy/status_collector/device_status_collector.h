@@ -119,7 +119,7 @@ class DeviceStatusCollector : public StatusCollector,
                               public chromeos::PowerManagerClient::Observer {
  public:
   using VolumeInfoFetcher =
-      base::Callback<std::vector<enterprise_management::VolumeInfo>(
+      base::RepeatingCallback<std::vector<enterprise_management::VolumeInfo>(
           const std::vector<std::string>& mount_points)>;
 
   // Reads the first CPU line from /proc/stat. Returns an empty string if
@@ -128,12 +128,12 @@ class DeviceStatusCollector : public StatusCollector,
   //
   // The format of this line from /proc/stat is:
   //   cpu  user_time nice_time system_time idle_time
-  using CPUStatisticsFetcher = base::Callback<std::string(void)>;
+  using CPUStatisticsFetcher = base::RepeatingCallback<std::string(void)>;
 
   // Reads CPU temperatures from /sys/class/hwmon/hwmon*/temp*_input and
   // appropriate labels from /sys/class/hwmon/hwmon*/temp*_label.
-  using CPUTempFetcher =
-      base::Callback<std::vector<enterprise_management::CPUTempInfo>()>;
+  using CPUTempFetcher = base::RepeatingCallback<
+      std::vector<enterprise_management::CPUTempInfo>()>;
 
   // Format of the function that asynchronously receives TpmStatusInfo.
   using TpmStatusReceiver = base::OnceCallback<void(const TpmStatusInfo&)>;
@@ -172,7 +172,7 @@ class DeviceStatusCollector : public StatusCollector,
           void)>;
   // Reads the stateful partition info from /home/.shadow
   using StatefulPartitionInfoFetcher =
-      base::Callback<enterprise_management::StatefulPartitionInfo()>;
+      base::RepeatingCallback<enterprise_management::StatefulPartitionInfo()>;
 
   // Constructor. Callers can inject their own *Fetcher callbacks, e.g. for unit
   // testing. A null callback can be passed for any *Fetcher parameter, to use
@@ -202,7 +202,7 @@ class DeviceStatusCollector : public StatusCollector,
   ~DeviceStatusCollector() override;
 
   // StatusCollector:
-  void GetStatusAsync(const StatusCollectorCallback& response) override;
+  void GetStatusAsync(StatusCollectorCallback response) override;
   void OnSubmittedSuccessfully() override;
   bool ShouldReportActivityTimes() const override;
   bool ShouldReportNetworkInterfaces() const override;

@@ -17,8 +17,8 @@ BluetoothPolicyHandler::BluetoothPolicyHandler(
     : cros_settings_(cros_settings) {
   bluetooth_policy_subscription_ = cros_settings_->AddSettingsObserver(
       chromeos::kAllowBluetooth,
-      base::Bind(&BluetoothPolicyHandler::OnBluetoothPolicyChanged,
-                 weak_factory_.GetWeakPtr()));
+      base::BindRepeating(&BluetoothPolicyHandler::OnBluetoothPolicyChanged,
+                          weak_factory_.GetWeakPtr()));
 
   // Fire it once so we're sure we get an invocation on startup.
   OnBluetoothPolicyChanged();

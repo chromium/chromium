@@ -154,8 +154,7 @@ class TestDeviceStatusCollector : public policy::DeviceStatusCollector {
 
   // empty methods that need to be implemented but are of no use for this
   // case.
-  void GetStatusAsync(
-      const policy::StatusCollectorCallback& callback) override {}
+  void GetStatusAsync(policy::StatusCollectorCallback callback) override {}
   void OnSubmittedSuccessfully() override {}
 
  private:

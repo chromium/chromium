@@ -90,8 +90,8 @@ void LocalStateValueWaiter::QuitLoopIfExpectedValueFound() {
 void LocalStateValueWaiter::Wait() {
   pref_change_registrar_.Add(
       pref_.c_str(),
-      base::Bind(&LocalStateValueWaiter::QuitLoopIfExpectedValueFound,
-                 base::Unretained(this)));
+      base::BindRepeating(&LocalStateValueWaiter::QuitLoopIfExpectedValueFound,
+                          base::Unretained(this)));
   // Necessary if the pref value changes before the run loop is run. It is
   // safe to call RunLoop::Quit before RunLoop::Run (in which case the call
   // to Run will do nothing).

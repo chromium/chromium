@@ -57,8 +57,8 @@ StatusUploader::StatusUploader(
   upload_frequency_subscription_ =
       chromeos::CrosSettings::Get()->AddSettingsObserver(
           chromeos::kReportUploadFrequency,
-          base::Bind(&StatusUploader::RefreshUploadFrequency,
-                     base::Unretained(this)));
+          base::BindRepeating(&StatusUploader::RefreshUploadFrequency,
+                              base::Unretained(this)));
 
   // Update the upload frequency from settings.
   RefreshUploadFrequency();
@@ -96,8 +96,8 @@ bool StatusUploader::ScheduleNextStatusUpload(bool immediately) {
     delay = std::max((last_upload_ + kMinImmediateUploadInterval) - now,
                      base::TimeDelta());
 
-  upload_callback_.Reset(base::Bind(&StatusUploader::UploadStatus,
-                                    base::Unretained(this)));
+  upload_callback_.Reset(
+      base::BindOnce(&StatusUploader::UploadStatus, base::Unretained(this)));
   task_runner_->PostDelayedTask(FROM_HERE, upload_callback_.callback(), delay);
   return true;
 }
@@ -186,8 +186,8 @@ bool StatusUploader::ScheduleNextStatusUploadImmediately() {
 void StatusUploader::UploadStatus() {
   status_upload_in_progress_ = true;
   // Gather status in the background.
-  collector_->GetStatusAsync(base::Bind(&StatusUploader::OnStatusReceived,
-                                        weak_factory_.GetWeakPtr()));
+  collector_->GetStatusAsync(base::BindOnce(&StatusUploader::OnStatusReceived,
+                                            weak_factory_.GetWeakPtr()));
 }
 
 void StatusUploader::OnStatusReceived(StatusCollectorParams callback_params) {

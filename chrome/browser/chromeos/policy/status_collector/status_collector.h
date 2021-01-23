@@ -61,8 +61,7 @@ struct StatusCollectorParams {
 
 // Called in the UI thread after the statuses have been collected
 // asynchronously.
-using StatusCollectorCallback =
-    base::RepeatingCallback<void(StatusCollectorParams)>;
+using StatusCollectorCallback = base::OnceCallback<void(StatusCollectorParams)>;
 
 // Defines the API for a status collector.
 class StatusCollector {
@@ -91,7 +90,7 @@ class StatusCollector {
   virtual ~StatusCollector();
 
   // Gathers status information and calls the passed response callback.
-  virtual void GetStatusAsync(const StatusCollectorCallback& callback) = 0;
+  virtual void GetStatusAsync(StatusCollectorCallback callback) = 0;
 
   // Called after the status information has successfully been submitted to
   // the server.

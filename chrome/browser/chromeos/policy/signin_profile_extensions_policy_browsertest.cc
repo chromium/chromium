@@ -109,8 +109,9 @@ class ExtensionInstallErrorObserver final {
         extension_id_(extension_id),
         notification_observer_(
             extensions::NOTIFICATION_EXTENSION_INSTALL_ERROR,
-            base::Bind(&ExtensionInstallErrorObserver::IsNotificationRelevant,
-                       base::Unretained(this))) {}
+            base::BindRepeating(
+                &ExtensionInstallErrorObserver::IsNotificationRelevant,
+                base::Unretained(this))) {}
 
   void Wait() { notification_observer_.Wait(); }
 
@@ -471,7 +472,7 @@ class SigninProfileExtensionsAutoUpdatePolicyTest
     : public SigninProfileExtensionsPolicyTest {
  public:
   SigninProfileExtensionsAutoUpdatePolicyTest() {
-    embedded_test_server()->RegisterRequestHandler(base::Bind(
+    embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
         &SigninProfileExtensionsAutoUpdatePolicyTest::HandleTestServerRequest,
         base::Unretained(this)));
   }

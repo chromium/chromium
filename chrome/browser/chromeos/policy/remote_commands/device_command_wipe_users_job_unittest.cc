@@ -111,7 +111,7 @@ TEST_F(DeviceCommandWipeUsersJobTest, TestCommandLifetime) {
       CreateWipeUsersJob(kVeryoldCommandAge, service_.get());
 
   EXPECT_TRUE(
-      job->Run(base::Time::Now(), base::TimeTicks::Now(), base::Closure()));
+      job->Run(base::Time::Now(), base::TimeTicks::Now(), base::OnceClosure()));
 }
 
 // Make sure that the command's succeeded_callback is being invoked.

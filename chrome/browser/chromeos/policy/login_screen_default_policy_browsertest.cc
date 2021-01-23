@@ -63,8 +63,9 @@ PrefChangeWatcher::PrefChangeWatcher(const char* pref_name,
                                      PrefService* prefs)
     : pref_changed_(false) {
   registrar_.Init(prefs);
-  registrar_.Add(pref_name, base::Bind(&PrefChangeWatcher::OnPrefChange,
-                                       base::Unretained(this)));
+  registrar_.Add(pref_name,
+                 base::BindRepeating(&PrefChangeWatcher::OnPrefChange,
+                                     base::Unretained(this)));
 }
 
 void PrefChangeWatcher::Wait() {

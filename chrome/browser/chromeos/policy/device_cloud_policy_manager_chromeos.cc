@@ -105,8 +105,8 @@ void DeviceCloudPolicyManagerChromeOS::Initialize(PrefService* local_state) {
   local_state_ = local_state;
 
   state_keys_update_subscription_ = state_keys_broker_->RegisterUpdateCallback(
-      base::Bind(&DeviceCloudPolicyManagerChromeOS::OnStateKeysUpdated,
-                 base::Unretained(this)));
+      base::BindRepeating(&DeviceCloudPolicyManagerChromeOS::OnStateKeysUpdated,
+                          base::Unretained(this)));
 }
 
 void DeviceCloudPolicyManagerChromeOS::AddDeviceCloudPolicyManagerObserver(
@@ -237,16 +237,15 @@ void DeviceCloudPolicyManagerChromeOS::StartConnection(
   NotifyConnected();
 }
 
-void DeviceCloudPolicyManagerChromeOS::Unregister(
-    const UnregisterCallback& callback) {
+void DeviceCloudPolicyManagerChromeOS::Unregister(UnregisterCallback callback) {
   if (!service()) {
     LOG(ERROR) << "Tried to unregister but DeviceCloudPolicyManagerChromeOS is "
                << "not connected.";
-    callback.Run(false);
+    std::move(callback).Run(false);
     return;
   }
 
-  service()->Unregister(callback);
+  service()->Unregister(std::move(callback));
 }
 
 void DeviceCloudPolicyManagerChromeOS::Disconnect() {

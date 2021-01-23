@@ -336,8 +336,8 @@ SystemLogUploader::SystemLogUploader(
   upload_enabled_subscription_ =
       chromeos::CrosSettings::Get()->AddSettingsObserver(
           chromeos::kSystemLogUploadEnabled,
-          base::Bind(&SystemLogUploader::RefreshUploadSettings,
-                     base::Unretained(this)));
+          base::BindRepeating(&SystemLogUploader::RefreshUploadSettings,
+                              base::Unretained(this)));
 
   // Fetch the current value of the policy.
   RefreshUploadSettings();

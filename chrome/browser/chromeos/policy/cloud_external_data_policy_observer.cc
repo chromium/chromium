@@ -140,8 +140,9 @@ CloudExternalDataPolicyObserver::CloudExternalDataPolicyObserver(
 
   device_local_accounts_subscription_ = cros_settings_->AddSettingsObserver(
       chromeos::kAccountsPrefDeviceLocalAccounts,
-      base::Bind(&CloudExternalDataPolicyObserver::RetrieveDeviceLocalAccounts,
-                 base::Unretained(this)));
+      base::BindRepeating(
+          &CloudExternalDataPolicyObserver::RetrieveDeviceLocalAccounts,
+          base::Unretained(this)));
 }
 
 CloudExternalDataPolicyObserver::~CloudExternalDataPolicyObserver() {

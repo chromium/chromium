@@ -56,7 +56,7 @@ class EnrollmentStatus;
 // handles the enrollment process.
 class DeviceCloudPolicyInitializer : public CloudPolicyStore::Observer {
  public:
-  using EnrollmentCallback = base::Callback<void(EnrollmentStatus)>;
+  using EnrollmentCallback = base::OnceCallback<void(EnrollmentStatus)>;
 
   // |background_task_runner| is used to execute long-running background tasks
   // that may involve file I/O.
@@ -85,7 +85,7 @@ class DeviceCloudPolicyInitializer : public CloudPolicyStore::Observer {
       chromeos::ActiveDirectoryJoinDelegate* ad_join_delegate,
       const EnrollmentConfig& enrollment_config,
       DMAuth dm_auth,
-      const EnrollmentCallback& enrollment_callback);
+      EnrollmentCallback enrollment_callback);
 
   // Starts enrollment.
   virtual void StartEnrollment();
@@ -141,7 +141,7 @@ class DeviceCloudPolicyInitializer : public CloudPolicyStore::Observer {
       SigningFailure);
 
   // Handles completion signaled by |enrollment_handler_|.
-  void EnrollmentCompleted(const EnrollmentCallback& enrollment_callback,
+  void EnrollmentCompleted(EnrollmentCallback enrollment_callback,
                            EnrollmentStatus status);
 
   // Creates a new CloudPolicyClient.

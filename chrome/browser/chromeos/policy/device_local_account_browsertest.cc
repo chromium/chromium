@@ -389,10 +389,10 @@ bool IsSessionStarted() {
   return session_manager::SessionManager::Get()->IsSessionStarted();
 }
 
-void PolicyChangedCallback(const base::Closure& callback,
+void PolicyChangedCallback(base::OnceClosure callback,
                            const base::Value* old_value,
                            const base::Value* new_value) {
-  callback.Run();
+  std::move(callback).Run();
 }
 
 }  // namespace
@@ -986,7 +986,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, AccountListChange) {
       em::DeviceLocalAccountInfoProto::ACCOUNT_TYPE_PUBLIC_SESSION);
 
   local_policy_mixin_.UpdateDevicePolicy(policy);
-  g_browser_process->policy_service()->RefreshPolicies(base::Closure());
+  g_browser_process->policy_service()->RefreshPolicies(base::OnceClosure());
 
   // Make sure the second device-local account disappears.
   WaitUntilLocalStateChanged();
@@ -1067,8 +1067,8 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, ExtensionsUncached) {
       kGoodExtensionID, kGoodExtensionVersion,
       embedded_test_server()->GetURL(std::string("/") + kGoodExtensionCRXPath));
   embedded_test_server()->RegisterRequestHandler(
-      base::Bind(&TestingUpdateManifestProvider::HandleRequest,
-                 testing_update_manifest_provider));
+      base::BindRepeating(&TestingUpdateManifestProvider::HandleRequest,
+                          testing_update_manifest_provider));
   embedded_test_server()->StartAcceptingConnections();
 
   // Specify policy to force-install the hosted app and the extension.
@@ -1092,7 +1092,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, ExtensionsUncached) {
   ExtensionInstallObserver install_observer(kHostedAppID);
   content::WindowedNotificationObserver extension_observer(
       extensions::NOTIFICATION_EXTENSION_INSTALL_ERROR,
-      base::Bind(DoesInstallFailureReferToId, kGoodExtensionID));
+      base::BindRepeating(DoesInstallFailureReferToId, kGoodExtensionID));
   ASSERT_NO_FATAL_FAILURE(StartLogin(std::string(), std::string()));
 
   // Wait for the hosted app installation to succeed and the extension
@@ -1177,7 +1177,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, ExtensionsCached) {
   ExtensionInstallObserver install_observer(kHostedAppID);
   content::WindowedNotificationObserver extension_observer(
       extensions::NOTIFICATION_EXTENSION_INSTALL_ERROR,
-      base::Bind(DoesInstallFailureReferToId, kGoodExtensionID));
+      base::BindRepeating(DoesInstallFailureReferToId, kGoodExtensionID));
 
   ASSERT_NO_FATAL_FAILURE(StartLogin(std::string(), std::string()));
 
@@ -1250,8 +1250,8 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, ExtensionCacheImplTest) {
       kGoodExtensionID, kGoodExtensionVersion,
       embedded_test_server()->GetURL(std::string("/") + kGoodExtensionCRXPath));
   embedded_test_server()->RegisterRequestHandler(
-      base::Bind(&TestingUpdateManifestProvider::HandleRequest,
-                 testing_update_manifest_provider));
+      base::BindRepeating(&TestingUpdateManifestProvider::HandleRequest,
+                          testing_update_manifest_provider));
   embedded_test_server()->StartAcceptingConnections();
   // Create and initialize local cache.
   base::FilePath impl_path;
@@ -1268,7 +1268,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, ExtensionCacheImplTest) {
       std::make_unique<extensions::ChromeOSExtensionCacheDelegate>(impl_path));
   std::unique_ptr<base::RunLoop> run_loop;
   run_loop.reset(new base::RunLoop);
-  cache_impl.Start(base::Bind(&OnExtensionCacheImplInitialized, &run_loop));
+  cache_impl.Start(base::BindOnce(&OnExtensionCacheImplInitialized, &run_loop));
   run_loop->Run();
 
   // Put extension in the local cache.
@@ -1292,7 +1292,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, ExtensionCacheImplTest) {
   run_loop.reset(new base::RunLoop);
   cache_impl.PutExtension(kGoodExtensionID, hash, temp_file,
                           kGoodExtensionVersion,
-                          base::Bind(&OnPutExtension, &run_loop));
+                          base::BindOnce(&OnPutExtension, &run_loop));
   run_loop->Run();
 
   // Verify that the extension file was added to the local cache.
@@ -1324,7 +1324,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, ExtensionCacheImplTest) {
   ExtensionInstallObserver install_observer(kHostedAppID);
   content::WindowedNotificationObserver extension_observer(
       extensions::NOTIFICATION_EXTENSION_INSTALL_ERROR,
-      base::Bind(DoesInstallFailureReferToId, kGoodExtensionID));
+      base::BindRepeating(DoesInstallFailureReferToId, kGoodExtensionID));
 
   ASSERT_NO_FATAL_FAILURE(StartLogin(std::string(), std::string()));
 
@@ -2126,8 +2126,8 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, PolicyForExtensions) {
       embedded_test_server()->GetURL(std::string("/") +
                                      kShowManagedStorageCRXPath));
   embedded_test_server()->RegisterRequestHandler(
-      base::Bind(&TestingUpdateManifestProvider::HandleRequest,
-                 testing_update_manifest_provider));
+      base::BindRepeating(&TestingUpdateManifestProvider::HandleRequest,
+                          testing_update_manifest_provider));
   embedded_test_server()->StartAcceptingConnections();
 
   // Force-install the Show Managed Storage app. This app can be installed in
@@ -2181,7 +2181,8 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, PolicyForExtensions) {
     PolicyChangeRegistrar policy_registrar(policy_service, ns);
     base::RunLoop run_loop;
     policy_registrar.Observe(
-        "string", base::Bind(&PolicyChangedCallback, run_loop.QuitClosure()));
+        "string",
+        base::BindRepeating(&PolicyChangedCallback, run_loop.QuitClosure()));
     run_loop.Run();
   }
 
@@ -2204,8 +2205,9 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, PolicyForExtensions) {
     PolicyChangeRegistrar policy_registrar(policy_service, ns);
     base::RunLoop run_loop;
     policy_registrar.Observe(
-        "string", base::Bind(&PolicyChangedCallback, run_loop.QuitClosure()));
-    policy_service->RefreshPolicies(base::Closure());
+        "string",
+        base::BindRepeating(&PolicyChangedCallback, run_loop.QuitClosure()));
+    policy_service->RefreshPolicies(base::OnceClosure());
     run_loop.Run();
   }
 

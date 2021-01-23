@@ -49,8 +49,8 @@ void WildcardLoginChecker::StartWithRefreshToken(
       refresh_token,
       g_browser_process->system_network_context_manager()
           ->GetSharedURLLoaderFactory(),
-      base::Bind(&WildcardLoginChecker::OnPolicyTokenFetched,
-                 base::Unretained(this)));
+      base::BindOnce(&WildcardLoginChecker::OnPolicyTokenFetched,
+                     base::Unretained(this)));
 }
 
 void WildcardLoginChecker::StartWithAccessToken(const std::string& access_token,

@@ -94,8 +94,8 @@ class ChildStatusCollectorState : public StatusCollectorState {
  public:
   explicit ChildStatusCollectorState(
       const scoped_refptr<base::SequencedTaskRunner> task_runner,
-      const StatusCollectorCallback& response)
-      : StatusCollectorState(task_runner, response) {}
+      StatusCollectorCallback response)
+      : StatusCollectorState(task_runner, std::move(response)) {}
 
   bool FetchAndroidStatus(
       const StatusCollector::AndroidStatusFetcher& android_status_fetcher) {
@@ -143,7 +143,7 @@ ChildStatusCollector::ChildStatusCollector(
                                   &ChildStatusCollector::UpdateChildUsageTime);
   // Watch for changes to the individual policies that control what the status
   // reports contain.
-  base::Closure callback = base::BindRepeating(
+  auto callback = base::BindRepeating(
       &ChildStatusCollector::UpdateReportingSettings, base::Unretained(this));
   version_info_subscription_ = cros_settings_->AddSettingsObserver(
       chromeos::kReportDeviceVersionInfo, callback);
@@ -309,8 +309,7 @@ bool ChildStatusCollector::GetVersionInfo(
   return true;
 }
 
-void ChildStatusCollector::GetStatusAsync(
-    const StatusCollectorCallback& response) {
+void ChildStatusCollector::GetStatusAsync(StatusCollectorCallback response) {
   // Must be on creation thread since some stats are written to in that thread
   // and accessing them from another thread would lead to race conditions.
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -318,7 +317,7 @@ void ChildStatusCollector::GetStatusAsync(
   // Some of the data we're collecting is gathered in background threads.
   // This object keeps track of the state of each async request.
   scoped_refptr<ChildStatusCollectorState> state(
-      new ChildStatusCollectorState(task_runner_, response));
+      new ChildStatusCollectorState(task_runner_, std::move(response)));
 
   // Gather status data might queue some async queries.
   FillChildStatusReportRequest(state);

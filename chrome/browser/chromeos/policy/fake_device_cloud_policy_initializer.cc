@@ -43,13 +43,13 @@ void FakeDeviceCloudPolicyInitializer::PrepareEnrollment(
     chromeos::ActiveDirectoryJoinDelegate* ad_join_delegate,
     const EnrollmentConfig& enrollment_config,
     DMAuth auth,
-    const EnrollmentCallback& enrollment_callback) {
-  enrollment_callback_ = enrollment_callback;
+    EnrollmentCallback enrollment_callback) {
+  enrollment_callback_ = std::move(enrollment_callback);
 }
 
 void FakeDeviceCloudPolicyInitializer::StartEnrollment() {
   if (enrollment_callback_)
-    enrollment_callback_.Run(enrollment_status_);
+    std::move(enrollment_callback_).Run(enrollment_status_);
   was_start_enrollment_called_ = true;
 }
 

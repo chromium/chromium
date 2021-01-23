@@ -74,7 +74,7 @@ DeviceNetworkConfigurationUpdater::DeviceNetworkConfigurationUpdater(
   DCHECK(network_device_handler_);
   data_roaming_setting_subscription_ = cros_settings->AddSettingsObserver(
       chromeos::kSignedDataRoamingEnabled,
-      base::Bind(
+      base::BindRepeating(
           &DeviceNetworkConfigurationUpdater::OnDataRoamingSettingChanged,
           base::Unretained(this)));
   if (device_asset_id_fetcher_.is_null())

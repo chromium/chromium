@@ -161,8 +161,8 @@ MinimumVersionPolicyHandler::MinimumVersionPolicyHandler(
       clock_(base::DefaultClock::GetInstance()) {
   policy_subscription_ = cros_settings_->AddSettingsObserver(
       chromeos::kDeviceMinimumVersion,
-      base::Bind(&MinimumVersionPolicyHandler::OnPolicyChanged,
-                 weak_factory_.GetWeakPtr()));
+      base::BindRepeating(&MinimumVersionPolicyHandler::OnPolicyChanged,
+                          weak_factory_.GetWeakPtr()));
 
   // Fire it once so we're sure we get an invocation on startup.
   OnPolicyChanged();

@@ -619,8 +619,9 @@ void UserCloudPolicyManagerChromeOS::FetchPolicyOAuthToken() {
     token_fetcher_ = PolicyOAuth2TokenFetcher::CreateInstance();
     token_fetcher_->StartWithRefreshToken(
         refresh_token, system_url_loader_factory,
-        base::Bind(&UserCloudPolicyManagerChromeOS::OnOAuth2PolicyTokenFetched,
-                   base::Unretained(this)));
+        base::BindOnce(
+            &UserCloudPolicyManagerChromeOS::OnOAuth2PolicyTokenFetched,
+            base::Unretained(this)));
     return;
   }
 

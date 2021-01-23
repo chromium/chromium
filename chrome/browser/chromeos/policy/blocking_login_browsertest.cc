@@ -213,8 +213,8 @@ class BlockingLoginTest
 
  protected:
   void RegisterAdditionalRequestHandlers() override {
-    embedded_test_server()->RegisterRequestHandler(
-        base::Bind(&BlockingLoginTest::HandleRequest, base::Unretained(this)));
+    embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+        &BlockingLoginTest::HandleRequest, base::Unretained(this)));
   }
 
   Profile* profile_added_;

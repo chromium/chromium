@@ -103,8 +103,8 @@ class ActivityStorage {
   // Retrieves all activity periods that are in the pref keys that can be parsed
   // by |ParseActivityPeriodPrefKey|.
   void ForEachActivityPeriodFromPref(
-      base::RepeatingCallback<
-          void(const int64_t, const int64_t, const std::string&)> f) const;
+      const base::RepeatingCallback<
+          void(const int64_t, const int64_t, const std::string&)>& f) const;
 
   PrefService* const pref_service_ = nullptr;
   const std::string pref_name_;

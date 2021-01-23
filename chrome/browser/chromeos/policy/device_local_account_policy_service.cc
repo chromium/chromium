@@ -128,7 +128,7 @@ DeviceLocalAccountPolicyBroker::DeviceLocalAccountPolicyBroker(
     const base::FilePath& component_policy_cache_path,
     std::unique_ptr<DeviceLocalAccountPolicyStore> store,
     scoped_refptr<DeviceLocalAccountExternalDataManager> external_data_manager,
-    const base::Closure& policy_update_callback,
+    const base::RepeatingClosure& policy_update_callback,
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
     const scoped_refptr<base::SequencedTaskRunner>& resource_cache_task_runner,
     AffiliatedInvalidationServiceProvider* invalidation_service_provider)
@@ -273,7 +273,7 @@ DeviceLocalAccountPolicyService::DeviceLocalAccountPolicyService(
       url_loader_factory_(url_loader_factory),
       local_accounts_subscription_(cros_settings_->AddSettingsObserver(
           chromeos::kAccountsPrefDeviceLocalAccounts,
-          base::Bind(
+          base::BindRepeating(
               &DeviceLocalAccountPolicyService::UpdateAccountListIfNonePending,
               base::Unretained(this)))),
       component_policy_cache_root_(base::PathService::CheckedGet(
@@ -467,8 +467,9 @@ void DeviceLocalAccountPolicyService::UpdateAccountList() {
           component_policy_cache_root_.Append(
               GetCacheSubdirectoryForAccountID(it->account_id)),
           std::move(store), external_data_manager,
-          base::Bind(&DeviceLocalAccountPolicyService::NotifyPolicyUpdated,
-                     base::Unretained(this), it->user_id),
+          base::BindRepeating(
+              &DeviceLocalAccountPolicyService::NotifyPolicyUpdated,
+              base::Unretained(this), it->user_id),
           base::ThreadTaskRunnerHandle::Get(), resource_cache_task_runner_,
           invalidation_service_provider_));
     }

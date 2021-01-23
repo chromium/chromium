@@ -183,8 +183,8 @@ void DeviceCloudPolicyStoreChromeOS::OnPolicyToStoreValidated(
 
   device_settings_service_->Store(
       std::move(validator->policy()),
-      base::Bind(&DeviceCloudPolicyStoreChromeOS::OnPolicyStored,
-                 weak_factory_.GetWeakPtr()));
+      base::BindOnce(&DeviceCloudPolicyStoreChromeOS::OnPolicyStored,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void DeviceCloudPolicyStoreChromeOS::OnPolicyStored() {

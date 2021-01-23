@@ -80,14 +80,14 @@ const char* const HeartbeatScheduler::kHeartbeatSignalHistogram =
 // errors, etc).
 class HeartbeatRegistrationHelper {
  public:
-  typedef base::Callback<void(const std::string& registration_id)>
-      RegistrationHelperCallback;
+  using RegistrationHelperCallback =
+      base::OnceCallback<void(const std::string& registration_id)>;
 
   HeartbeatRegistrationHelper(
       gcm::GCMDriver* gcm_driver,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner);
 
-  void Register(const RegistrationHelperCallback& callback);
+  void Register(RegistrationHelperCallback callback);
 
  private:
   void AttemptRegistration();
@@ -118,10 +118,10 @@ HeartbeatRegistrationHelper::HeartbeatRegistrationHelper(
     : gcm_driver_(gcm_driver), task_runner_(task_runner) {}
 
 void HeartbeatRegistrationHelper::Register(
-    const RegistrationHelperCallback& callback) {
+    RegistrationHelperCallback callback) {
   // Should only call Register() once.
   DCHECK(callback_.is_null());
-  callback_ = callback;
+  callback_ = std::move(callback);
   AttemptRegistration();
 }
 
@@ -140,16 +140,10 @@ void HeartbeatRegistrationHelper::OnRegisterAttemptComplete(
   // TODO(atwilson): Track GCM errors via UMA (http://crbug.com/459238).
   switch (result) {
     case gcm::GCMClient::SUCCESS:
-      {
-        // Copy the callback, because the callback may free this object and
-        // we don't want to free the callback object and any bound variables
-        // until the callback exits.
-        RegistrationHelperCallback callback = callback_;
-        callback.Run(registration_id);
-        // This helper may be freed now, so do not access any member variables
-        // after this point.
-        return;
-      }
+      std::move(callback_).Run(registration_id);
+      // This helper may be freed now, so do not access any member variables
+      // after this point.
+      return;
 
     case gcm::GCMClient::NETWORK_ERROR:
     case gcm::GCMClient::SERVER_ERROR:
@@ -199,14 +193,14 @@ HeartbeatScheduler::HeartbeatScheduler(
   heartbeat_frequency_subscription_ =
       chromeos::CrosSettings::Get()->AddSettingsObserver(
           chromeos::kHeartbeatFrequency,
-          base::Bind(&HeartbeatScheduler::RefreshHeartbeatSettings,
-                     base::Unretained(this)));
+          base::BindRepeating(&HeartbeatScheduler::RefreshHeartbeatSettings,
+                              base::Unretained(this)));
 
   heartbeat_enabled_subscription_ =
       chromeos::CrosSettings::Get()->AddSettingsObserver(
           chromeos::kHeartbeatEnabled,
-          base::Bind(&HeartbeatScheduler::RefreshHeartbeatSettings,
-                     base::Unretained(this)));
+          base::BindRepeating(&HeartbeatScheduler::RefreshHeartbeatSettings,
+                              base::Unretained(this)));
 
   // Update the heartbeat frequency from settings. This will trigger a
   // heartbeat as appropriate once the settings have been refreshed.
@@ -301,8 +295,8 @@ void HeartbeatScheduler::ScheduleNextHeartbeat() {
       registration_helper_.reset(new HeartbeatRegistrationHelper(
           gcm_driver_, task_runner_));
       registration_helper_->Register(
-          base::Bind(&HeartbeatScheduler::OnRegistrationComplete,
-                     weak_factory_.GetWeakPtr()));
+          base::BindOnce(&HeartbeatScheduler::OnRegistrationComplete,
+                         weak_factory_.GetWeakPtr()));
     }
     return;
   }
@@ -318,8 +312,8 @@ void HeartbeatScheduler::ScheduleNextHeartbeat() {
       last_heartbeat_ + heartbeat_interval_ - base::Time::NowFromSystemTime(),
       base::TimeDelta());
 
-  heartbeat_callback_.Reset(base::Bind(&HeartbeatScheduler::SendHeartbeat,
-                                       base::Unretained(this)));
+  heartbeat_callback_.Reset(base::BindOnce(&HeartbeatScheduler::SendHeartbeat,
+                                           base::Unretained(this)));
   task_runner_->PostDelayedTask(
       FROM_HERE, heartbeat_callback_.callback(), delay);
 }

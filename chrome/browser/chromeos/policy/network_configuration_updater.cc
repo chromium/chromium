@@ -160,8 +160,8 @@ NetworkConfigurationUpdater::NetworkConfigurationUpdater(
 void NetworkConfigurationUpdater::Init() {
   policy_change_registrar_.Observe(
       policy_key_,
-      base::Bind(&NetworkConfigurationUpdater::OnPolicyChanged,
-                 base::Unretained(this)));
+      base::BindRepeating(&NetworkConfigurationUpdater::OnPolicyChanged,
+                          base::Unretained(this)));
 
   if (policy_service_->IsInitializationComplete(POLICY_DOMAIN_CHROME)) {
     VLOG(1) << LogHeader() << " is already initialized.";

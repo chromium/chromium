@@ -568,8 +568,8 @@ class DeviceCloudPolicyManagerChromeOSEnrollmentTest
     initializer_->PrepareEnrollment(
         &device_management_service_, nullptr, enrollment_config,
         std::move(auth),
-        base::Bind(&DeviceCloudPolicyManagerChromeOSEnrollmentTest::Done,
-                   base::Unretained(this)));
+        base::BindOnce(&DeviceCloudPolicyManagerChromeOSEnrollmentTest::Done,
+                       base::Unretained(this)));
     initializer_->StartEnrollment();
     base::RunLoop().RunUntilIdle();
     Mock::VerifyAndClearExpectations(&device_management_service_);
@@ -878,7 +878,7 @@ TEST_P(DeviceCloudPolicyManagerChromeOSEnrollmentTest, UnregisterSucceeds) {
   EXPECT_CALL(*this, OnUnregistered(true));
 
   // Start unregistering.
-  manager_->Unregister(base::Bind(
+  manager_->Unregister(base::BindOnce(
       &DeviceCloudPolicyManagerChromeOSEnrollmentTest::OnUnregistered,
       base::Unretained(this)));
 
@@ -902,7 +902,7 @@ TEST_P(DeviceCloudPolicyManagerChromeOSEnrollmentTest, UnregisterFails) {
   EXPECT_CALL(*this, OnUnregistered(false));
 
   // Start unregistering.
-  manager_->Unregister(base::Bind(
+  manager_->Unregister(base::BindOnce(
       &DeviceCloudPolicyManagerChromeOSEnrollmentTest::OnUnregistered,
       base::Unretained(this)));
 

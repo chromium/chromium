@@ -399,12 +399,12 @@ class MultiProfilePolicyProviderHelper {
   // Called when an additional profile has been created.
   // The created profile is stored in *|out_created_profile|.
   static void OnProfileInitialized(Profile** out_created_profile,
-                                   const base::Closure& closure,
+                                   base::OnceClosure closure,
                                    Profile* profile,
                                    Profile::CreateStatus status) {
     if (status == Profile::CREATE_STATUS_INITIALIZED) {
       *out_created_profile = profile;
-      closure.Run();
+      std::move(closure).Run();
     }
   }
   Profile* profile_1_ = nullptr;

@@ -632,8 +632,8 @@ class DeviceStatusCollectorState : public StatusCollectorState {
  public:
   explicit DeviceStatusCollectorState(
       const scoped_refptr<base::SequencedTaskRunner> task_runner,
-      const StatusCollectorCallback& response)
-      : StatusCollectorState(task_runner, response) {}
+      StatusCollectorCallback response)
+      : StatusCollectorState(task_runner, std::move(response)) {}
 
   // Queues an async callback to query disk volume information.
   void SampleVolumeInfo(
@@ -1390,7 +1390,7 @@ DeviceStatusCollector::DeviceStatusCollector(
 
   // Watch for changes to the individual policies that control what the status
   // reports contain.
-  base::Closure callback = base::BindRepeating(
+  auto callback = base::BindRepeating(
       &DeviceStatusCollector::UpdateReportingSettings, base::Unretained(this));
   version_info_subscription_ = cros_settings_->AddSettingsObserver(
       chromeos::kReportDeviceVersionInfo, callback);
@@ -2432,8 +2432,7 @@ bool DeviceStatusCollector::GetCrashReportInfo(
   return true;
 }
 
-void DeviceStatusCollector::GetStatusAsync(
-    const StatusCollectorCallback& response) {
+void DeviceStatusCollector::GetStatusAsync(StatusCollectorCallback response) {
   last_requested_ = clock_->Now();
 
   app_info_generator_.OnWillReport();
@@ -2444,7 +2443,7 @@ void DeviceStatusCollector::GetStatusAsync(
   // Some of the data we're collecting is gathered in background threads.
   // This object keeps track of the state of each async request.
   scoped_refptr<DeviceStatusCollectorState> state(
-      new DeviceStatusCollectorState(task_runner_, response));
+      new DeviceStatusCollectorState(task_runner_, std::move(response)));
   // Gather device status (might queue some async queries)
   GetDeviceStatus(state);
 

@@ -62,7 +62,7 @@ class ChildStatusCollector : public StatusCollector,
   ~ChildStatusCollector() override;
 
   // StatusCollector:
-  void GetStatusAsync(const StatusCollectorCallback& response) override;
+  void GetStatusAsync(StatusCollectorCallback response) override;
   void OnSubmittedSuccessfully() override;
   bool ShouldReportActivityTimes() const override;
   bool ShouldReportNetworkInterfaces() const override;

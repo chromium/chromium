@@ -66,7 +66,7 @@ class DeviceLocalAccountPolicyBroker
       std::unique_ptr<DeviceLocalAccountPolicyStore> store,
       scoped_refptr<DeviceLocalAccountExternalDataManager>
           external_data_manager,
-      const base::Closure& policy_updated_callback,
+      const base::RepeatingClosure& policy_updated_callback,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       const scoped_refptr<base::SequencedTaskRunner>&
           resource_cache_task_runner,
@@ -138,7 +138,7 @@ class DeviceLocalAccountPolicyBroker
       extension_loader_;
   CloudPolicyCore core_;
   std::unique_ptr<ComponentCloudPolicyService> component_policy_service_;
-  base::Closure policy_update_callback_;
+  base::RepeatingClosure policy_update_callback_;
   std::unique_ptr<AffiliatedCloudPolicyInvalidator> invalidator_;
   const scoped_refptr<base::SequencedTaskRunner> resource_cache_task_runner_;
 

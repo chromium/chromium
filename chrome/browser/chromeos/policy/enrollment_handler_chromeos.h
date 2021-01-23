@@ -78,7 +78,7 @@ class EnrollmentHandlerChromeOS : public CloudPolicyClient::Observer,
       const std::string& client_id,
       const std::string& requisition,
       const std::string& sub_organization,
-      const EnrollmentCallback& completion_callback);
+      EnrollmentCallback completion_callback);
   ~EnrollmentHandlerChromeOS() override;
 
   // Starts the enrollment process and reports the result to

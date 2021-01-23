@@ -74,10 +74,8 @@ scoped_refptr<DeviceLocalAccountExternalDataManager>
       external_data_managers_[account_id];
   if (!external_data_manager.get()) {
     external_data_manager = new DeviceLocalAccountExternalDataManager(
-        account_id,
-        base::Bind(&GetChromePolicyDetails),
-        backend_task_runner_,
-        resource_cache_.get());
+        account_id, base::BindRepeating(&GetChromePolicyDetails),
+        backend_task_runner_, resource_cache_.get());
   }
   external_data_manager->SetPolicyStore(policy_store);
   return external_data_manager;

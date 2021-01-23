@@ -103,7 +103,7 @@ class StatusUploader : public MediaCaptureDevicesDispatcher::Observer {
   base::Time last_upload_;
 
   // Callback invoked via a delay to upload device status.
-  base::CancelableClosure upload_callback_;
+  base::CancelableOnceClosure upload_callback_;
 
   // True if there has been any captured media in this session.
   bool has_captured_media_;

@@ -74,20 +74,18 @@ class DMTokenStorageTest : public testing::Test {
     run_loop.Run();
   }
 
-  void OnStoreCallback(const base::Closure& closure,
-                       bool expected,
-                       bool success) {
+  void OnStoreCallback(base::OnceClosure closure, bool expected, bool success) {
     EXPECT_EQ(expected, success);
     if (!closure.is_null())
-      closure.Run();
+      std::move(closure).Run();
   }
 
-  void OnRetrieveCallback(const base::Closure& closure,
+  void OnRetrieveCallback(base::OnceClosure closure,
                           const std::string& expected,
                           const std::string& actual) {
     EXPECT_EQ(expected, actual);
     if (!closure.is_null())
-      closure.Run();
+      std::move(closure).Run();
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -211,7 +209,7 @@ TEST_F(DMTokenStorageTest, RetrieveFailIfStoreRunning) {
                      base::Unretained(this), run_loop.QuitClosure(), true));
   dm_token_storage_->RetrieveDMToken(
       base::BindOnce(&DMTokenStorageTest::OnRetrieveCallback,
-                     base::Unretained(this), base::Closure(), ""));
+                     base::Unretained(this), base::OnceClosure(), ""));
   SetSaltAvailable();
   run_loop.Run();
 }
@@ -227,7 +225,7 @@ TEST_F(DMTokenStorageTest, StoreFailIfAnotherStoreRunning) {
   dm_token_storage_->StoreDMToken(
       "test-token",
       base::BindOnce(&DMTokenStorageTest::OnStoreCallback,
-                     base::Unretained(this), base::Closure(), false));
+                     base::Unretained(this), base::OnceClosure(), false));
   SetSaltAvailable();
   run_loop.Run();
 }

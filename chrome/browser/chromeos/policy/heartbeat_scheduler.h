@@ -137,7 +137,7 @@ class HeartbeatScheduler : public gcm::GCMAppHandler,
   base::Time last_heartbeat_;
 
   // Callback invoked via a delay to send a heartbeat.
-  base::CancelableClosure heartbeat_callback_;
+  base::CancelableOnceClosure heartbeat_callback_;
 
   policy::CloudPolicyClient* cloud_policy_client_;
 
