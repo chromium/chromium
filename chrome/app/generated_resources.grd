@@ -6015,10 +6015,10 @@ Keep your key file in a safe place. You will need it to create new versions of y
         To browse privately, click the dots icon menu to open an incognito window
       </message>
       <message name="IDS_LIVE_CAPTION_PROMO" desc="Text shown on promotional UI appearing next to the global media controls button">
-        Get captions for your media
+        Get captions for your audio and video
       </message>
       <message name="IDS_LIVE_CAPTION_PROMO_SCREENREADER" desc="Text announced encouraging users to open live caption">
-        Get captions for your media by enabling Live Caption in settings
+        Get captions for your audio and video by enabling Live Caption in settings
       </message>
       <message name="IDS_NEWTAB_PROMO_0" desc="Variations option 1. Text shown on promotional UI appearing next to the New Tab button, which encourages users to use it.">
         Open a new tab with one click
