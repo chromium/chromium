@@ -65,7 +65,7 @@ def ClangFormat(source, filename):
   clang_format_cmd = [GetClangFormatPath(), '--assume-filename=' + filename]
   proc = subprocess.Popen(
       clang_format_cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-  stdout_output, stderr_output = proc.communicate(input=source)
+  stdout_output, stderr_output = proc.communicate(input=source.encode('utf8'))
   retcode = proc.wait()
   if retcode != 0:
       raise CalledProcessError(retcode, 'clang-format error: ' + stderr_output)
@@ -82,7 +82,7 @@ def WriteIfChanged(contents, filename):
     with open(filename) as in_fi:
       if in_fi.read() == contents:
         return
-  with open(filename, 'w') as out_fi:
+  with open(filename, 'wb') as out_fi:
     out_fi.write(contents)
 
 
