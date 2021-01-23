@@ -1972,7 +1972,9 @@
   {
     "name": "enable-new-badge-on-menu-items",
     "owners": [ "dfried" ],
-    "expiry_milestone": 90
+    // Flag transitioned to default-on in 89, should no longer be used directly
+    // in trade studies.
+    "expiry_milestone": 88
   },
   {
     "name": "enable-new-download-backend",

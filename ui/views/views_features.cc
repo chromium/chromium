@@ -31,7 +31,7 @@ const base::Feature kTextfieldFocusOnTapUp{"TextfieldFocusOnTapUp",
 // Allows a "New" badge to be displayed on menu items that provide access to new
 // features.
 const base::Feature kEnableNewBadgeOnMenuItems{
-    "EnableNewBadgeOnMenuItems", base::FEATURE_DISABLED_BY_DEFAULT};
+    "EnableNewBadgeOnMenuItems", base::FEATURE_ENABLED_BY_DEFAULT};
 
 }  // namespace features
 }  // namespace views
