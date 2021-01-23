@@ -9,6 +9,10 @@ import("//media/media_options.gni")
 assert(is_android)
 
 cast_shared_library("libcast_shell_android") {
+  # TODO: Remove the ldflags after migrating away from protobuf_lite to
+  # protobuf_full.
+  ldflags = [ "-Wl,-z,muldefs" ]
+
   sources = [ "//chromecast/app/android/cast_jni_loader.cc" ]
 
   deps = [
