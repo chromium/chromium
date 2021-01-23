@@ -23,18 +23,19 @@ namespace subresource_redirect {
 
 class OriginRobotsRulesCache;
 
-// Contains the subresource redirect scoped to document's lifetime. This gets
-// created when navigation commits and lives until a different navigation
-// happens or the web contents is destroyed.
-class SubresourceRedirectDocumentHost
+// Contains the subresource redirect for scoped to document's lifetime. This
+// gets created when navigation commits and lives until a different navigation
+// happens or the web contents is destroyed. This should be created only when
+// subresource redirect compression is allowed for the document.
+class ImageCompressionAppliedDocument
     : public content::RenderDocumentHostUserData<
-          SubresourceRedirectDocumentHost> {
+          ImageCompressionAppliedDocument> {
  public:
-  ~SubresourceRedirectDocumentHost() override;
-  SubresourceRedirectDocumentHost(const SubresourceRedirectDocumentHost&) =
+  ~ImageCompressionAppliedDocument() override;
+  ImageCompressionAppliedDocument(const ImageCompressionAppliedDocument&) =
       delete;
-  SubresourceRedirectDocumentHost& operator=(
-      const SubresourceRedirectDocumentHost&) = delete;
+  ImageCompressionAppliedDocument& operator=(
+      const ImageCompressionAppliedDocument&) = delete;
 
   // Gets the robots rules for |origin| from the |rules_cache| and invokes the
   // |callback|.
@@ -44,10 +45,10 @@ class SubresourceRedirectDocumentHost
       mojom::SubresourceRedirectService::GetRobotsRulesCallback callback);
 
  private:
-  explicit SubresourceRedirectDocumentHost(
+  explicit ImageCompressionAppliedDocument(
       content::RenderFrameHost* render_frame_host);
   friend class content::RenderDocumentHostUserData<
-      SubresourceRedirectDocumentHost>;
+      ImageCompressionAppliedDocument>;
 
   content::RenderFrameHost* render_frame_host_;
   RENDER_DOCUMENT_HOST_USER_DATA_KEY_DECL();
@@ -96,12 +97,20 @@ class SubresourceRedirectObserver
       optimization_guide::OptimizationGuideDecision decision,
       const optimization_guide::OptimizationMetadata& optimization_metadata);
 
+  // Returns whether the navigation is allowed to subresource redirect based on
+  // the current logged-in status. For the subframes to be considered allowed,
+  // all the parent frames should be allowed for subresource redirect too. Login
+  // detection feature should be enabled to retrieve logged-in status, otherwise
+  // subresource redirect will be disallowed.
+  bool IsAllowedForCurrentLoginState(
+      content::NavigationHandle* navigation_handle);
+
   // Maintains whether https image compression was attempted for the last
   // navigation. Even though image compression was attempted, it doesn't mean at
   // least one image will get compressed, since that depends on a public image
   // present in this page. This is not an issue since most pages tend to have at
   // least one public image even though they are fully private.
-  bool is_https_image_compression_applied_ = false;
+  bool is_mainframe_https_image_compression_applied_ = false;
 
   content::WebContentsFrameReceiverSet<mojom::SubresourceRedirectService>
       receivers_;
