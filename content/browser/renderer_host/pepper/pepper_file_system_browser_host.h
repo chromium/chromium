@@ -126,7 +126,7 @@ class CONTENT_EXPORT PepperFileSystemBrowserHost
   void SetFileSystemContext(
       scoped_refptr<storage::FileSystemContext> file_system_context);
 
-  bool ShouldCreateQuotaReservation() const;
+  void ShouldCreateQuotaReservation(base::OnceCallback<void(bool)> callback) const;
   void CreateQuotaReservation(base::OnceClosure callback);
   void GotQuotaReservation(base::OnceClosure callback,
                            scoped_refptr<QuotaReservation> quota_reservation);

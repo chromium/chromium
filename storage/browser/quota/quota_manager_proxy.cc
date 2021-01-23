@@ -203,6 +203,31 @@ void QuotaManagerProxy::GetUsageAndQuota(
                      std::move(callback)));
 }
 
+void QuotaManagerProxy::IsStorageUnlimited(
+    const url::Origin& origin,
+    blink::mojom::StorageType type,
+    scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+    base::OnceCallback<void(bool)> callback) {
+  if (!quota_manager_task_runner_->RunsTasksInCurrentSequence()) {
+    quota_manager_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&QuotaManagerProxy::IsStorageUnlimited, this,
+                                  origin, type,
+                                  std::move(callback_task_runner), std::move(callback)));
+    return;
+  }
+
+  DCHECK_CALLED_ON_VALID_SEQUENCE(quota_manager_sequence_checker_);
+  bool is_storage_unlimited =
+      quota_manager_ ? quota_manager_->IsStorageUnlimited(origin, type) : false;
+
+  if (callback_task_runner->RunsTasksInCurrentSequence()) {
+    std::move(callback).Run(is_storage_unlimited);
+    return;
+  }
+  callback_task_runner->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), is_storage_unlimited));
+}
+
 std::unique_ptr<QuotaOverrideHandle>
 QuotaManagerProxy::GetQuotaOverrideHandle() {
   return std::make_unique<QuotaOverrideHandle>(this);

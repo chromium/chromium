@@ -92,6 +92,12 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
                                 blink::mojom::StorageType type,
                                 UsageAndQuotaCallback callback);
 
+  virtual void IsStorageUnlimited(
+      const url::Origin& origin,
+      blink::mojom::StorageType type,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      base::OnceCallback<void(bool)> callback);
+
   // DevTools Quota Override methods:
   std::unique_ptr<QuotaOverrideHandle> GetQuotaOverrideHandle();
   // Called by QuotaOverrideHandle upon construction to asynchronously

@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/task/post_task.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "content/browser/renderer_host/pepper/pepper_file_io_host.h"
 #include "content/browser/renderer_host/pepper/quota_reservation.h"
 #include "content/common/pepper_file_util.h"
@@ -209,10 +210,16 @@ void PepperFileSystemBrowserHost::OpenExistingFileSystem(
   }
   SetFileSystemContext(file_system_context);
 
-  if (ShouldCreateQuotaReservation())
-    CreateQuotaReservation(std::move(callback));
-  else
-    std::move(callback).Run();
+  ShouldCreateQuotaReservation(base::BindOnce(
+      [](base::WeakPtr<PepperFileSystemBrowserHost> host,
+         base::OnceClosure callback,
+         bool should_create_quota_reservation) {
+        if (host && should_create_quota_reservation)
+          host->CreateQuotaReservation(std::move(callback));
+        else
+          std::move(callback).Run();
+      },
+      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void PepperFileSystemBrowserHost::OpenFileSystem(
@@ -246,13 +253,24 @@ void PepperFileSystemBrowserHost::OpenFileSystemComplete(
     opened_ = true;
     root_url_ = root;
 
-    if (ShouldCreateQuotaReservation()) {
-      CreateQuotaReservation(
-          base::BindOnce(&PepperFileSystemBrowserHost::SendReplyForFileSystem,
-                         weak_factory_.GetWeakPtr(), reply_context,
-                         static_cast<int32_t>(PP_OK)));
-      return;
-    }
+    ShouldCreateQuotaReservation(base::BindOnce(
+        [](base::WeakPtr<PepperFileSystemBrowserHost> host,
+           ppapi::host::ReplyMessageContext reply_context,
+           bool should_create_quota_reservation) {
+          if (!host)
+            return;
+
+          if (should_create_quota_reservation) {
+            host->CreateQuotaReservation(base::BindOnce(
+                &PepperFileSystemBrowserHost::SendReplyForFileSystem,
+                host->weak_factory_.GetWeakPtr(), reply_context,
+                static_cast<int32_t>(PP_OK)));
+          } else {
+            host->SendReplyForFileSystem(reply_context, PP_OK);
+          }
+        },
+        weak_factory_.GetWeakPtr(), reply_context));
+    return;
   }
   SendReplyForFileSystem(reply_context, pp_error);
 }
@@ -414,21 +432,29 @@ void PepperFileSystemBrowserHost::SetFileSystemContext(
   }
 }
 
-bool PepperFileSystemBrowserHost::ShouldCreateQuotaReservation() const {
+void PepperFileSystemBrowserHost::ShouldCreateQuotaReservation(
+    base::OnceCallback<void(bool)> callback) const {
   // Some file system types don't have quota.
-  if (!ppapi::FileSystemTypeHasQuota(type_))
-    return false;
+  if (!ppapi::FileSystemTypeHasQuota(type_)) {
+    std::move(callback).Run(false);
+    return;
+  }
 
   // For file system types with quota, some origins have unlimited storage.
   storage::QuotaManagerProxy* quota_manager_proxy =
       file_system_context_->quota_manager_proxy();
   CHECK(quota_manager_proxy);
-  CHECK(quota_manager_proxy->quota_manager());
   storage::FileSystemType file_system_type =
       PepperFileSystemTypeToFileSystemType(type_);
-  return !quota_manager_proxy->quota_manager()->IsStorageUnlimited(
+  quota_manager_proxy->IsStorageUnlimited(
       url::Origin::Create(root_url_),
-      storage::FileSystemTypeToQuotaStorageType(file_system_type));
+      storage::FileSystemTypeToQuotaStorageType(file_system_type),
+      base::SequencedTaskRunnerHandle::Get(),
+      base::BindOnce(
+          [](base::OnceCallback<void(bool)> callback, bool is_storage_unlimited) {
+            std::move(callback).Run(!is_storage_unlimited);
+          },
+          std::move(callback)));
 }
 
 void PepperFileSystemBrowserHost::CreateQuotaReservation(
