@@ -16,9 +16,9 @@ OAuth2TokenInitializer::OAuth2TokenInitializer() {}
 OAuth2TokenInitializer::~OAuth2TokenInitializer() {}
 
 void OAuth2TokenInitializer::Start(const UserContext& user_context,
-                                   const FetchOAuth2TokensCallback& callback) {
+                                   FetchOAuth2TokensCallback callback) {
   DCHECK(!user_context.GetAuthCode().empty());
-  callback_ = callback;
+  callback_ = std::move(callback);
   user_context_ = user_context;
   oauth2_token_fetcher_.reset(new OAuth2TokenFetcher(
       this, g_browser_process->system_network_context_manager()
@@ -47,12 +47,12 @@ void OAuth2TokenInitializer::OnOAuth2TokensAvailable(
              !result.is_child_account && !support_usm) {
     LOG(FATAL) << "Incorrect non-child token for the child user.";
   }
-  callback_.Run(true, user_context_);
+  std::move(callback_).Run(true, user_context_);
 }
 
 void OAuth2TokenInitializer::OnOAuth2TokensFetchFailed() {
   LOG(WARNING) << "OAuth2TokenInitializer - OAuth2 token fetch failed";
-  callback_.Run(false, user_context_);
+  std::move(callback_).Run(false, user_context_);
 }
 
 }  // namespace chromeos

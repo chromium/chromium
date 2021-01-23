@@ -73,9 +73,10 @@ void SAMLOfflineSigninLimiter::SignedIn(UserContext::AuthFlow auth_flow) {
 
   // Start listening for pref changes.
   pref_change_registrar_.Init(prefs);
-  pref_change_registrar_.Add(prefs::kSAMLOfflineSigninTimeLimit,
-                             base::Bind(&SAMLOfflineSigninLimiter::UpdateLimit,
-                                        base::Unretained(this)));
+  pref_change_registrar_.Add(
+      prefs::kSAMLOfflineSigninTimeLimit,
+      base::BindRepeating(&SAMLOfflineSigninLimiter::UpdateLimit,
+                          base::Unretained(this)));
 
   // Start listening to power state.
   base::PowerMonitor::AddObserver(this);

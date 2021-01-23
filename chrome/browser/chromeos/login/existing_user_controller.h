@@ -277,7 +277,7 @@ class ExistingUserController : public LoginDisplay::Delegate,
                                             bool service_is_available);
 
   // Invokes `continuation` after verifying that the device is not disabled.
-  void ContinueLoginIfDeviceNotDisabled(const base::Closure& continuation);
+  void ContinueLoginIfDeviceNotDisabled(base::OnceClosure continuation);
 
   // Signs in as a new user. This is a continuation of CompleteLogin() that gets
   // invoked after it has been verified that the device is not disabled.

@@ -136,8 +136,8 @@ class PasswordChangeExtensionTest : public extensions::ExtensionBrowserTest {
   // here because ExtensionBrowserTest doesn't inherit from that class.
   void SetUp() override {
     embedded_test_server_.RegisterRequestHandler(
-        base::Bind(&FakeChangePasswordIdp::HandleHttpRequest,
-                   base::Unretained(&fake_idp_)));
+        base::BindRepeating(&FakeChangePasswordIdp::HandleHttpRequest,
+                            base::Unretained(&fake_idp_)));
     mixin_host_.SetUp();
     extensions::ExtensionBrowserTest::SetUp();
   }

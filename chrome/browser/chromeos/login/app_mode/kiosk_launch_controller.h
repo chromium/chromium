@@ -59,7 +59,7 @@ class KioskLaunchController
       public KioskAppLauncher::Delegate,
       public extensions::ForceInstalledTracker::Observer {
  public:
-  using ReturnBoolCallback = base::Callback<bool()>;
+  using ReturnBoolCallback = base::RepeatingCallback<bool()>;
 
   explicit KioskLaunchController(OobeUI* oobe_ui);
   KioskLaunchController(const KioskLaunchController&) = delete;

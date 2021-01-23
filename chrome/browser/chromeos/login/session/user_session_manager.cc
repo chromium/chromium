@@ -1751,8 +1751,8 @@ void UserSessionManager::NotifyUserProfileLoaded(
         token_handle_fetcher_.reset(new TokenHandleFetcher(
             token_handle_util_.get(), user->GetAccountId()));
         token_handle_fetcher_->BackfillToken(
-            profile, base::Bind(&UserSessionManager::OnTokenHandleObtained,
-                                weak_factory_.GetWeakPtr()));
+            profile, base::BindOnce(&UserSessionManager::OnTokenHandleObtained,
+                                    weak_factory_.GetWeakPtr()));
         token_handle_backfill_tried_for_testing_ = true;
       }
     }
@@ -1945,8 +1945,8 @@ void UserSessionManager::UpdateEasyUnlockKeys(const UserContext& user_context) {
   running_easy_unlock_key_ops_ = true;
   key_manager->RefreshKeys(
       user_context, *device_list,
-      base::Bind(&UserSessionManager::OnEasyUnlockKeyOpsFinished, AsWeakPtr(),
-                 user_context.GetAccountId().GetUserEmail()));
+      base::BindOnce(&UserSessionManager::OnEasyUnlockKeyOpsFinished,
+                     AsWeakPtr(), user_context.GetAccountId().GetUserEmail()));
 }
 
 void UserSessionManager::OnEasyUnlockKeyOpsFinished(const std::string& user_id,
@@ -2162,8 +2162,8 @@ void UserSessionManager::OnOAuth2TokensFetched(UserContext context) {
                                                        context.GetAccountId()));
     token_handle_fetcher_->FillForNewUser(
         context.GetAccessToken(),
-        base::Bind(&UserSessionManager::OnTokenHandleObtained,
-                   weak_factory_.GetWeakPtr()));
+        base::BindOnce(&UserSessionManager::OnTokenHandleObtained,
+                       weak_factory_.GetWeakPtr()));
   }
 }
 

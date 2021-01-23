@@ -115,8 +115,8 @@ SigninErrorNotifier::SigninErrorNotifier(SigninErrorController* controller,
     token_handle_util_ = std::make_unique<TokenHandleUtil>();
     token_handle_util_->CheckToken(
         account_id, profile->GetURLLoaderFactory(),
-        base::Bind(&SigninErrorNotifier::OnTokenHandleCheck,
-                   weak_factory_.GetWeakPtr()));
+        base::BindOnce(&SigninErrorNotifier::OnTokenHandleCheck,
+                       weak_factory_.GetWeakPtr()));
   }
   OnErrorChanged();
 }

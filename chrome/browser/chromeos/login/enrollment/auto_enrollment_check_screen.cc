@@ -81,7 +81,7 @@ void AutoEnrollmentCheckScreen::ShowImpl() {
 
   // Set up state change observers.
   auto_enrollment_progress_subscription_ =
-      auto_enrollment_controller_->RegisterProgressCallback(base::Bind(
+      auto_enrollment_controller_->RegisterProgressCallback(base::BindRepeating(
           &AutoEnrollmentCheckScreen::OnAutoEnrollmentCheckProgressed,
           base::Unretained(this)));
   network_portal_detector::GetInstance()->AddObserver(this);
@@ -236,8 +236,8 @@ void AutoEnrollmentCheckScreen::ShowErrorScreen(
   error_screen_->SetErrorState(error_state,
                                network ? network->name() : std::string());
   connect_request_subscription_ = error_screen_->RegisterConnectRequestCallback(
-      base::Bind(&AutoEnrollmentCheckScreen::OnConnectRequested,
-                 base::Unretained(this)));
+      base::BindRepeating(&AutoEnrollmentCheckScreen::OnConnectRequested,
+                          base::Unretained(this)));
   error_screen_->SetHideCallback(
       base::BindOnce(&AutoEnrollmentCheckScreen::OnErrorScreenHidden,
                      weak_ptr_factory_.GetWeakPtr()));

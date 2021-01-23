@@ -467,15 +467,6 @@ IN_PROC_BROWSER_TEST_F(WizardControllerTest, VolumeIsAdjustedForChromeVox) {
             cras->GetOutputVolumePercent());
 }
 
-class TimeZoneTestRunner {
- public:
-  void OnResolved() { loop_.Quit(); }
-  void Run() { loop_.Run(); }
-
- private:
-  base::RunLoop loop_;
-};
-
 class WizardControllerFlowTest : public WizardControllerTest {
  protected:
   WizardControllerFlowTest() {}
@@ -651,15 +642,13 @@ class WizardControllerFlowTest : public WizardControllerTest {
   }
 
   void WaitUntilTimezoneResolved() {
-    auto runner = std::make_unique<TimeZoneTestRunner>();
+    base::RunLoop loop;
     if (!WizardController::default_controller()
-             ->SetOnTimeZoneResolvedForTesting(
-                 base::Bind(&TimeZoneTestRunner::OnResolved,
-                            base::Unretained(runner.get())))) {
+             ->SetOnTimeZoneResolvedForTesting(loop.QuitClosure())) {
       return;
     }
 
-    runner->Run();
+    loop.Run();
   }
 
   void ResetAutoEnrollmentCheckScreen() {

@@ -96,7 +96,7 @@ void VersionInfoUpdater::StartUpdate(bool is_chrome_branded) {
   }
 
   // Watch for changes to the reporting flags.
-  base::Closure callback = base::Bind(&VersionInfoUpdater::UpdateEnterpriseInfo,
+  auto callback = base::BindRepeating(&VersionInfoUpdater::UpdateEnterpriseInfo,
                                       base::Unretained(this));
   for (unsigned int i = 0; i < base::size(kReportingFlags); ++i) {
     subscriptions_.push_back(

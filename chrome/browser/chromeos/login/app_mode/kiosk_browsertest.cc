@@ -524,7 +524,7 @@ class KioskTest : public OobeBaseTest {
     OobeBaseTest::SetUpOnMainThread();
     // Needed to avoid showing Gaia screen instead of owner signin for
     // consumer network down test cases.
-    StartupUtils::MarkDeviceRegistered(base::Closure());
+    StartupUtils::MarkDeviceRegistered(base::OnceClosure());
     settings_helper_.ReplaceDeviceSettingsProviderWithStub();
     owner_settings_service_ = settings_helper_.CreateOwnerSettingsService(
         ProfileManager::GetPrimaryUserProfile());

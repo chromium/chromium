@@ -28,8 +28,8 @@ class ProxyAuthDialogWaiter : public content::WindowedNotificationObserver {
   ProxyAuthDialogWaiter()
       : WindowedNotificationObserver(
             chrome::NOTIFICATION_AUTH_NEEDED,
-            base::Bind(&ProxyAuthDialogWaiter::SetLoginHandler,
-                       base::Unretained(this))),
+            base::BindRepeating(&ProxyAuthDialogWaiter::SetLoginHandler,
+                                base::Unretained(this))),
         login_handler_(nullptr) {}
 
   ~ProxyAuthDialogWaiter() override {}

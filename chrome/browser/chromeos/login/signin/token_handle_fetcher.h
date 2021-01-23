@@ -34,15 +34,15 @@ class TokenHandleFetcher : public gaia::GaiaOAuthClient::Delegate {
   ~TokenHandleFetcher() override;
 
   using TokenFetchingCallback =
-      base::Callback<void(const AccountId&, bool success)>;
+      base::OnceCallback<void(const AccountId&, bool success)>;
 
   // Get token handle for user who have just signed in via GAIA. This
   // request will be performed using signin profile.
   void FillForNewUser(const std::string& access_token,
-                      const TokenFetchingCallback& callback);
+                      TokenFetchingCallback callback);
 
   // Get token handle for existing user.
-  void BackfillToken(Profile* profile, const TokenFetchingCallback& callback);
+  void BackfillToken(Profile* profile, TokenFetchingCallback callback);
 
  private:
   // AccessTokenFetcher::TokenCallback for PrimaryAccountAccessTokenFetcher.

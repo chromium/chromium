@@ -187,19 +187,19 @@ void EnrollmentScreen::CreateEnrollmentHelper() {
   }
 }
 
-void EnrollmentScreen::ClearAuth(const base::Closure& callback) {
+void EnrollmentScreen::ClearAuth(base::OnceClosure callback) {
   if (!enrollment_helper_) {
-    callback.Run();
+    std::move(callback).Run();
     return;
   }
   enrollment_helper_->ClearAuth(base::BindOnce(&EnrollmentScreen::OnAuthCleared,
                                                weak_ptr_factory_.GetWeakPtr(),
-                                               callback));
+                                               std::move(callback)));
 }
 
-void EnrollmentScreen::OnAuthCleared(const base::Closure& callback) {
+void EnrollmentScreen::OnAuthCleared(base::OnceClosure callback) {
   enrollment_helper_ = nullptr;
-  callback.Run();
+  std::move(callback).Run();
 }
 
 bool EnrollmentScreen::MaybeSkip(WizardContext* context) {
@@ -236,8 +236,8 @@ void EnrollmentScreen::ShowImpl() {
 }
 
 void EnrollmentScreen::ShowInteractiveScreen() {
-  ClearAuth(base::Bind(&EnrollmentScreen::ShowSigninScreen,
-                       weak_ptr_factory_.GetWeakPtr()));
+  ClearAuth(base::BindOnce(&EnrollmentScreen::ShowSigninScreen,
+                           weak_ptr_factory_.GetWeakPtr()));
 }
 
 void EnrollmentScreen::HideImpl() {
@@ -289,8 +289,8 @@ void EnrollmentScreen::OnRetry() {
 
 void EnrollmentScreen::AutomaticRetry() {
   retry_backoff_->InformOfRequest(false);
-  retry_task_.Reset(base::Bind(&EnrollmentScreen::ProcessRetry,
-                               weak_ptr_factory_.GetWeakPtr()));
+  retry_task_.Reset(base::BindOnce(&EnrollmentScreen::ProcessRetry,
+                                   weak_ptr_factory_.GetWeakPtr()));
 
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, retry_task_.callback(), retry_backoff_->GetTimeUntilRelease());

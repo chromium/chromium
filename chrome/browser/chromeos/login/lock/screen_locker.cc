@@ -493,8 +493,8 @@ void ScreenLocker::ContinueAuthenticate(
       FROM_HERE,
       base::BindOnce(&ExtendedAuthenticator::AuthenticateToCheck,
                      extended_authenticator_.get(), user_context,
-                     base::Bind(&ScreenLocker::OnPasswordAuthSuccess,
-                                weak_factory_.GetWeakPtr(), user_context)));
+                     base::BindOnce(&ScreenLocker::OnPasswordAuthSuccess,
+                                    weak_factory_.GetWeakPtr(), user_context)));
 }
 
 const user_manager::User* ScreenLocker::FindUnlockUser(

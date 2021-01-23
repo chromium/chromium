@@ -61,8 +61,8 @@ UpdateRequiredScreen::UpdateRequiredScreen(UpdateRequiredView* view,
 
   eol_message_subscription_ = CrosSettings::Get()->AddSettingsObserver(
       chromeos::kDeviceMinimumVersionAueMessage,
-      base::Bind(&UpdateRequiredScreen::OnEolMessageChanged,
-                 weak_factory_.GetWeakPtr()));
+      base::BindRepeating(&UpdateRequiredScreen::OnEolMessageChanged,
+                          weak_factory_.GetWeakPtr()));
   if (view_)
     view_->Bind(this);
 }

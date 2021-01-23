@@ -206,8 +206,9 @@ class PrefChangeWatcher {
 PrefChangeWatcher::PrefChangeWatcher(const std::string& pref_name,
                                      PrefService* prefs) {
   registrar_.Init(prefs);
-  registrar_.Add(pref_name, base::Bind(&PrefChangeWatcher::OnPrefChange,
-                                       base::Unretained(this)));
+  registrar_.Add(pref_name,
+                 base::BindRepeating(&PrefChangeWatcher::OnPrefChange,
+                                     base::Unretained(this)));
 }
 
 void PrefChangeWatcher::Wait() {

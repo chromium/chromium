@@ -78,7 +78,7 @@ class NetworkStateHelper {
   virtual bool IsConnecting() const;
 
  private:
-  void OnCreateConfiguration(const base::Closure& success_callback,
+  void OnCreateConfiguration(base::OnceClosure success_callback,
                              network_handler::ErrorCallback error_callback,
                              const std::string& service_path,
                              const std::string& guid) const;

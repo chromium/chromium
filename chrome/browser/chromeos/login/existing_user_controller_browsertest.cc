@@ -132,14 +132,16 @@ const int kAutoLoginShortDelay = 1;
 const int kAutoLoginLongDelay = 10000;
 
 // Wait for cros settings to become permanently untrusted and run `callback`.
-void WaitForPermanentlyUntrustedStatusAndRun(const base::Closure& callback) {
+void WaitForPermanentlyUntrustedStatusAndRun(base::OnceClosure callback) {
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   while (true) {
     const CrosSettingsProvider::TrustedStatus status =
         CrosSettings::Get()->PrepareTrustedValues(
-            base::BindOnce(&WaitForPermanentlyUntrustedStatusAndRun, callback));
+            base::BindOnce(&WaitForPermanentlyUntrustedStatusAndRun,
+                           std::move(split_callback.first)));
     switch (status) {
       case CrosSettingsProvider::PERMANENTLY_UNTRUSTED:
-        callback.Run();
+        std::move(split_callback.second).Run();
         return;
       case CrosSettingsProvider::TEMPORARILY_UNTRUSTED:
         return;

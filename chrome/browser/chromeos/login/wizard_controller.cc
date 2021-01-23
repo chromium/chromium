@@ -384,8 +384,8 @@ WizardController::WizardController()
   if (accessibility_manager) {
     // accessibility_manager could be null in Tests.
     accessibility_subscription_ = accessibility_manager->RegisterCallback(
-        base::Bind(&WizardController::OnAccessibilityStatusChanged,
-                   weak_factory_.GetWeakPtr()));
+        base::BindRepeating(&WizardController::OnAccessibilityStatusChanged,
+                            weak_factory_.GetWeakPtr()));
   }
   if (GetOobeUI()) {
     // could be null in unit tests.
@@ -448,10 +448,9 @@ void WizardController::Init(OobeScreenId first_screen) {
   // Do not show the HID Detection screen if device is owned.
   if (!device_is_owned && CanShowHIDDetectionScreen() &&
       first_screen == OobeScreen::SCREEN_UNKNOWN) {
-    base::Callback<void(bool)> on_check =
-        base::Bind(&WizardController::OnHIDScreenNecessityCheck,
-                   weak_factory_.GetWeakPtr());
-    GetScreen<HIDDetectionScreen>()->CheckIsScreenRequired(on_check);
+    GetScreen<HIDDetectionScreen>()->CheckIsScreenRequired(
+        base::BindOnce(&WizardController::OnHIDScreenNecessityCheck,
+                       weak_factory_.GetWeakPtr()));
     return;
   }
 
@@ -464,8 +463,8 @@ void WizardController::AdvanceToScreenAfterHIDDetection(
   if (actual_first_screen == OobeScreen::SCREEN_UNKNOWN) {
     if (!is_out_of_box_) {
       DeviceSettingsService::Get()->GetOwnershipStatusAsync(
-          base::Bind(&WizardController::OnOwnershipStatusCheckDone,
-                     weak_factory_.GetWeakPtr()));
+          base::BindOnce(&WizardController::OnOwnershipStatusCheckDone,
+                         weak_factory_.GetWeakPtr()));
       return;
     }
 
@@ -1669,8 +1668,8 @@ void WizardController::StartNetworkTimezoneResolve() {
 
   DelayNetworkCall(
       base::TimeDelta::FromMilliseconds(kDefaultNetworkRetryDelayMS),
-      base::Bind(&WizardController::StartTimezoneResolve,
-                 weak_factory_.GetWeakPtr()));
+      base::BindOnce(&WizardController::StartTimezoneResolve,
+                     weak_factory_.GetWeakPtr()));
 }
 
 // Resolving the timezone consists of first determining the location,
@@ -2099,8 +2098,8 @@ void WizardController::OnTimezoneResolved(
   DCHECK(timezone);
 
   timezone_resolved_ = true;
-  base::ScopedClosureRunner inform_test(on_timezone_resolved_for_testing_);
-  on_timezone_resolved_for_testing_.Reset();
+  base::ScopedClosureRunner inform_test(
+      std::move(on_timezone_resolved_for_testing_));
 
   VLOG(1) << "Resolved local timezone={" << timezone->ToStringForDebug()
           << "}.";
@@ -2173,11 +2172,11 @@ void WizardController::OnLocationResolved(const Geoposition& position,
 }
 
 bool WizardController::SetOnTimeZoneResolvedForTesting(
-    const base::Closure& callback) {
+    base::OnceClosure callback) {
   if (timezone_resolved_)
     return false;
 
-  on_timezone_resolved_for_testing_ = callback;
+  on_timezone_resolved_for_testing_ = std::move(callback);
   return true;
 }
 

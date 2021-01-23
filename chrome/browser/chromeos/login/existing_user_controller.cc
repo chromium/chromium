@@ -159,7 +159,7 @@ const long int kSafeModeRestartUiDelayMs = 30000;
 // authentication change.
 void RefreshPoliciesOnUIThread() {
   if (g_browser_process->policy_service())
-    g_browser_process->policy_service()->RefreshPolicies(base::Closure());
+    g_browser_process->policy_service()->RefreshPolicies(base::OnceClosure());
 }
 
 void OnTranferredHttpAuthCaches() {
@@ -414,34 +414,34 @@ ExistingUserController::ExistingUserController()
                  content::NotificationService::AllSources());
   show_user_names_subscription_ = cros_settings_->AddSettingsObserver(
       kAccountsPrefShowUserNamesOnSignIn,
-      base::Bind(&ExistingUserController::DeviceSettingsChanged,
-                 base::Unretained(this)));
+      base::BindRepeating(&ExistingUserController::DeviceSettingsChanged,
+                          base::Unretained(this)));
   allow_new_user_subscription_ = cros_settings_->AddSettingsObserver(
       kAccountsPrefAllowNewUser,
-      base::Bind(&ExistingUserController::DeviceSettingsChanged,
-                 base::Unretained(this)));
+      base::BindRepeating(&ExistingUserController::DeviceSettingsChanged,
+                          base::Unretained(this)));
   allow_guest_subscription_ = cros_settings_->AddSettingsObserver(
       kAccountsPrefAllowGuest,
-      base::Bind(&ExistingUserController::DeviceSettingsChanged,
-                 base::Unretained(this)));
+      base::BindRepeating(&ExistingUserController::DeviceSettingsChanged,
+                          base::Unretained(this)));
   users_subscription_ = cros_settings_->AddSettingsObserver(
       kAccountsPrefUsers,
-      base::Bind(&ExistingUserController::DeviceSettingsChanged,
-                 base::Unretained(this)));
+      base::BindRepeating(&ExistingUserController::DeviceSettingsChanged,
+                          base::Unretained(this)));
   local_account_auto_login_id_subscription_ =
       cros_settings_->AddSettingsObserver(
           kAccountsPrefDeviceLocalAccountAutoLoginId,
-          base::Bind(&ExistingUserController::ConfigureAutoLogin,
-                     base::Unretained(this)));
+          base::BindRepeating(&ExistingUserController::ConfigureAutoLogin,
+                              base::Unretained(this)));
   local_account_auto_login_delay_subscription_ =
       cros_settings_->AddSettingsObserver(
           kAccountsPrefDeviceLocalAccountAutoLoginDelay,
-          base::Bind(&ExistingUserController::ConfigureAutoLogin,
-                     base::Unretained(this)));
+          base::BindRepeating(&ExistingUserController::ConfigureAutoLogin,
+                              base::Unretained(this)));
   family_link_allowed_subscription_ = cros_settings_->AddSettingsObserver(
       kAccountsPrefFamilyLinkAccountsAllowed,
-      base::Bind(&ExistingUserController::DeviceSettingsChanged,
-                 base::Unretained(this)));
+      base::BindRepeating(&ExistingUserController::DeviceSettingsChanged,
+                          base::Unretained(this)));
 
   observed_user_manager_.Add(user_manager::UserManager::Get());
 }
@@ -630,8 +630,8 @@ void ExistingUserController::CompleteLogin(const UserContext& user_context) {
   is_login_in_progress_ = true;
 
   ContinueLoginIfDeviceNotDisabled(
-      base::Bind(&ExistingUserController::DoCompleteLogin,
-                 weak_factory_.GetWeakPtr(), user_context));
+      base::BindOnce(&ExistingUserController::DoCompleteLogin,
+                     weak_factory_.GetWeakPtr(), user_context));
 }
 
 base::string16 ExistingUserController::GetConnectedNetworkName() {
@@ -662,9 +662,9 @@ void ExistingUserController::Login(const UserContext& user_context,
     return;
   }
 
-  ContinueLoginIfDeviceNotDisabled(base::Bind(&ExistingUserController::DoLogin,
-                                              weak_factory_.GetWeakPtr(),
-                                              user_context, specifics));
+  ContinueLoginIfDeviceNotDisabled(
+      base::BindOnce(&ExistingUserController::DoLogin,
+                     weak_factory_.GetWeakPtr(), user_context, specifics));
 }
 
 void ExistingUserController::PerformLogin(
@@ -778,9 +778,9 @@ void ExistingUserController::OnStartEnterpriseEnrollment() {
     return;
   }
 
-  DeviceSettingsService::Get()->GetOwnershipStatusAsync(
-      base::Bind(&ExistingUserController::OnEnrollmentOwnershipCheckCompleted,
-                 weak_factory_.GetWeakPtr()));
+  DeviceSettingsService::Get()->GetOwnershipStatusAsync(base::BindOnce(
+      &ExistingUserController::OnEnrollmentOwnershipCheckCompleted,
+      weak_factory_.GetWeakPtr()));
 }
 
 void ExistingUserController::OnStartKioskEnableScreen() {
@@ -1141,7 +1141,7 @@ void ExistingUserController::OnOffTheRecordAuthSuccess() {
 
   // Mark the device as registered., i.e. the second part of OOBE as completed.
   if (!StartupUtils::IsDeviceRegistered())
-    StartupUtils::MarkDeviceRegistered(base::Closure());
+    StartupUtils::MarkDeviceRegistered(base::OnceClosure());
 
   UserSessionManager::GetInstance()->CompleteGuestSessionLogin(guest_mode_url_);
 
@@ -1606,19 +1606,21 @@ void ExistingUserController::ContinueLoginWhenCryptohomeAvailable(
 }
 
 void ExistingUserController::ContinueLoginIfDeviceNotDisabled(
-    const base::Closure& continuation) {
+    base::OnceClosure continuation) {
   // Disable clicking on other windows and status tray.
   GetLoginDisplay()->SetUIEnabled(false);
 
   // Stop the auto-login timer.
   StopAutoLoginTimer();
 
+  auto split_continuation = base::SplitOnceCallback(std::move(continuation));
+
   // Wait for the `cros_settings_` to become either trusted or permanently
   // untrusted.
   const CrosSettingsProvider::TrustedStatus status =
       cros_settings_->PrepareTrustedValues(base::BindOnce(
           &ExistingUserController::ContinueLoginIfDeviceNotDisabled,
-          weak_factory_.GetWeakPtr(), continuation));
+          weak_factory_.GetWeakPtr(), std::move(split_continuation.first)));
   if (status == CrosSettingsProvider::TEMPORARILY_UNTRUSTED)
     return;
 
@@ -1647,7 +1649,7 @@ void ExistingUserController::ContinueLoginIfDeviceNotDisabled(
 
   CryptohomeClient::Get()->WaitForServiceToBeAvailable(base::BindOnce(
       &ExistingUserController::ContinueLoginWhenCryptohomeAvailable,
-      weak_factory_.GetWeakPtr(), continuation));
+      weak_factory_.GetWeakPtr(), std::move(split_continuation.second)));
 }
 
 void ExistingUserController::DoCompleteLogin(
@@ -1681,8 +1683,9 @@ void ExistingUserController::DoCompleteLogin(
   if (!user_context.GetAuthCode().empty()) {
     oauth2_token_initializer_.reset(new OAuth2TokenInitializer);
     oauth2_token_initializer_->Start(
-        user_context, base::Bind(&ExistingUserController::OnOAuth2TokensFetched,
-                                 weak_factory_.GetWeakPtr()));
+        user_context,
+        base::BindOnce(&ExistingUserController::OnOAuth2TokensFetched,
+                       weak_factory_.GetWeakPtr()));
     return;
   }
 

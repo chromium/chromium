@@ -102,13 +102,13 @@ bool NetworkStateHelper::IsConnecting() const {
 }
 
 void NetworkStateHelper::OnCreateConfiguration(
-    const base::Closure& success_callback,
+    base::OnceClosure success_callback,
     network_handler::ErrorCallback error_callback,
     const std::string& service_path,
     const std::string& guid) const {
   // Connect to the network.
   NetworkHandler::Get()->network_connection_handler()->ConnectToNetwork(
-      service_path, success_callback, std::move(error_callback),
+      service_path, std::move(success_callback), std::move(error_callback),
       false /* check_error_state */, ConnectCallbackMode::ON_COMPLETED);
 }
 

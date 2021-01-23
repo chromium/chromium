@@ -655,7 +655,7 @@ class SamlTest : public OobeBaseTest {
         saml_test_users::kFirstUserCorpExampleComEmail, kTestAuthSIDCookie1,
         kTestAuthLSIDCookie1);
 
-    embedded_test_server()->RegisterRequestHandler(base::Bind(
+    embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
         &FakeSamlIdp::HandleRequest, base::Unretained(&fake_saml_idp_)));
 
     OobeBaseTest::SetUpOnMainThread();

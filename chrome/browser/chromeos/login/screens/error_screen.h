@@ -97,7 +97,7 @@ class ErrorScreen : public BaseScreen,
   // Register a callback to be invoked when the user indicates that an attempt
   // to connect to the network should be made.
   base::CallbackListSubscription RegisterConnectRequestCallback(
-      const base::Closure& callback);
+      base::RepeatingClosure callback);
 
   // Creates an instance of CaptivePortalWindowProxy, if one has not already
   // been created.
@@ -173,7 +173,7 @@ class ErrorScreen : public BaseScreen,
   base::OnceClosure on_hide_callback_;
 
   // Callbacks to be invoked when a connection attempt is requested.
-  base::CallbackList<void()> connect_request_callbacks_;
+  base::RepeatingCallbackList<void()> connect_request_callbacks_;
 
   base::WeakPtrFactory<ErrorScreen> weak_factory_{this};
 

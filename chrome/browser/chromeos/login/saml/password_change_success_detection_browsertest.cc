@@ -135,7 +135,7 @@ class PasswordChangeSuccessDetectionTest
       const PasswordChangeSuccessDetectionTest&) = delete;
 
   void SetUp() override {
-    embedded_test_server_.RegisterRequestHandler(base::Bind(
+    embedded_test_server_.RegisterRequestHandler(base::BindRepeating(
         &FakeChangePasswordIdp::HandleRequest, base::Unretained(&fake_idp_)));
 
     MixinBasedInProcessBrowserTest::SetUp();

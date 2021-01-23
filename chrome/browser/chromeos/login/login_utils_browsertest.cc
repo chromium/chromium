@@ -87,8 +87,8 @@ IN_PROC_BROWSER_TEST_F(LoginUtilsTest, RlzInitialized) {
     base::string16 rlz_string;
     base::ThreadPool::PostTaskAndReply(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-        base::Bind(&GetAccessPointRlzInBackgroundThread,
-                   rlz::RLZTracker::ChromeHomePage(), &rlz_string),
+        base::BindOnce(&GetAccessPointRlzInBackgroundThread,
+                       rlz::RLZTracker::ChromeHomePage(), &rlz_string),
         loop.QuitClosure());
     loop.Run();
     EXPECT_EQ(base::string16(), rlz_string);

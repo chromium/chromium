@@ -20,14 +20,13 @@ class OAuth2TokenInitializer final : public OAuth2TokenFetcher::Delegate {
  public:
   // Callback to be invoked after initialization is done.
   using FetchOAuth2TokensCallback =
-      base::Callback<void(bool success, const UserContext& user_context)>;
+      base::OnceCallback<void(bool success, const UserContext& user_context)>;
 
   OAuth2TokenInitializer();
   ~OAuth2TokenInitializer() override;
 
   // Fetch OAuth2 tokens.
-  void Start(const UserContext& context,
-             const FetchOAuth2TokensCallback& callback);
+  void Start(const UserContext& context, FetchOAuth2TokensCallback callback);
 
  private:
   // OAuth2TokenFetcher::Delegate overrides.

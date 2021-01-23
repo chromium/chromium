@@ -62,28 +62,29 @@ void OAuth2TokenFetcher::OnClientOAuthFailure(
     const GoogleServiceAuthError& error) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!auth_code_.empty());
-  RetryOnError(error,
-               base::Bind(&OAuth2TokenFetcher::StartExchangeFromAuthCode,
-                          AsWeakPtr(), auth_code_, signin_scoped_device_id_),
-               base::Bind(&Delegate::OnOAuth2TokensFetchFailed,
-                          base::Unretained(delegate_)));
+  RetryOnError(
+      error,
+      base::BindOnce(&OAuth2TokenFetcher::StartExchangeFromAuthCode,
+                     AsWeakPtr(), auth_code_, signin_scoped_device_id_),
+      base::BindOnce(&Delegate::OnOAuth2TokensFetchFailed,
+                     base::Unretained(delegate_)));
 }
 
 void OAuth2TokenFetcher::RetryOnError(const GoogleServiceAuthError& error,
-                                      const base::Closure& task,
-                                      const base::Closure& error_handler) {
+                                      base::OnceClosure task,
+                                      base::OnceClosure error_handler) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (error.IsTransientError() && retry_count_ < kMaxRequestAttemptCount) {
     retry_count_++;
     content::GetUIThreadTaskRunner({})->PostDelayedTask(
-        FROM_HERE, task,
+        FROM_HERE, std::move(task),
         base::TimeDelta::FromMilliseconds(kRequestRestartDelay));
     return;
   }
   LOG(ERROR) << "Unrecoverable error or retry count max reached. State: "
              << error.state() << ", network error: " << error.network_error()
              << ", message: " << error.error_message();
-  error_handler.Run();
+  std::move(error_handler).Run();
 }
 
 }  // namespace chromeos

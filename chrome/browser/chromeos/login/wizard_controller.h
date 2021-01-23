@@ -403,7 +403,7 @@ class WizardController {
 
   // Returns true if callback has been installed.
   // Returns false if timezone has already been resolved.
-  bool SetOnTimeZoneResolvedForTesting(const base::Closure& callback);
+  bool SetOnTimeZoneResolvedForTesting(base::OnceClosure callback);
 
   // Start the enrollment screen using the config from
   // `prescribed_enrollment_config_`. If `force_interactive` is true,
@@ -496,7 +496,7 @@ class WizardController {
 
   // Tests check result of timezone resolve.
   bool timezone_resolved_ = false;
-  base::Closure on_timezone_resolved_for_testing_;
+  base::OnceClosure on_timezone_resolved_for_testing_;
 
   bool is_initialized_ = false;
 

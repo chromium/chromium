@@ -497,8 +497,9 @@ UserSelectionScreen::UserSelectionScreen(DisplayedScreen display_type)
   allowed_input_methods_subscription_ =
       CrosSettings::Get()->AddSettingsObserver(
           kDeviceLoginScreenInputMethods,
-          base::Bind(&UserSelectionScreen::OnAllowedInputMethodsChanged,
-                     base::Unretained(this)));
+          base::BindRepeating(
+              &UserSelectionScreen::OnAllowedInputMethodsChanged,
+              base::Unretained(this)));
   OnAllowedInputMethodsChanged();
 }
 
@@ -799,8 +800,8 @@ void UserSelectionScreen::CheckUserStatus(const AccountId& account_id) {
         chromeos::ProfileHelper::Get()
             ->GetSigninProfile()
             ->GetURLLoaderFactory(),
-        base::Bind(&UserSelectionScreen::OnUserStatusChecked,
-                   weak_factory_.GetWeakPtr()));
+        base::BindOnce(&UserSelectionScreen::OnUserStatusChecked,
+                       weak_factory_.GetWeakPtr()));
   }
 
   // Run dircrypto migration check only on the login screen when necessary.

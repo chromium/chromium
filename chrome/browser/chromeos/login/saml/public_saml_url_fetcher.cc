@@ -78,8 +78,8 @@ void PublicSamlUrlFetcher::Fetch(base::OnceClosure callback) {
       /*oauth_token=*/base::nullopt,
       g_browser_process->system_network_context_manager()
           ->GetSharedURLLoaderFactory(),
-      base::Bind(&PublicSamlUrlFetcher::OnPublicSamlUrlReceived,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&PublicSamlUrlFetcher::OnPublicSamlUrlReceived,
+                     weak_ptr_factory_.GetWeakPtr()));
 
   em::PublicSamlUserRequest* saml_url_request =
       config->request()->mutable_public_saml_user_request();

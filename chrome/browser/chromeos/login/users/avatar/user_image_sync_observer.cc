@@ -75,8 +75,9 @@ void UserImageSyncObserver::OnProfileGained(Profile* profile) {
   pref_change_registrar_.reset(new PrefChangeRegistrar);
   pref_change_registrar_->Init(prefs_);
   pref_change_registrar_->Add(
-      kUserImageInfo, base::Bind(&UserImageSyncObserver::OnPreferenceChanged,
-                                 base::Unretained(this)));
+      kUserImageInfo,
+      base::BindRepeating(&UserImageSyncObserver::OnPreferenceChanged,
+                          base::Unretained(this)));
   is_synced_ = chromeos::features::IsSplitSettingsSyncEnabled()
                    ? prefs_->AreOsPriorityPrefsSyncing()
                    : prefs_->IsPrioritySyncing();

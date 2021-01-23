@@ -506,8 +506,8 @@ void AutoEnrollmentController::StartWithSystemClockSyncState() {
   // Start by checking if the device has already been owned.
   UpdateState(policy::AUTO_ENROLLMENT_STATE_PENDING);
   DeviceSettingsService::Get()->GetOwnershipStatusAsync(
-      base::Bind(&AutoEnrollmentController::OnOwnershipStatusCheckDone,
-                 client_start_weak_factory_.GetWeakPtr()));
+      base::BindOnce(&AutoEnrollmentController::OnOwnershipStatusCheckDone,
+                     client_start_weak_factory_.GetWeakPtr()));
 }
 
 void AutoEnrollmentController::Retry() {

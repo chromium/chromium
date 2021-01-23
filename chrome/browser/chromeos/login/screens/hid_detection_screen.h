@@ -58,7 +58,7 @@ class HIDDetectionScreen : public BaseScreen,
   // Checks if this screen should be displayed. `on_check_done` should be
   // invoked with the result; true if the screen should be displayed, false
   // otherwise.
-  void CheckIsScreenRequired(const base::Callback<void(bool)>& on_check_done);
+  void CheckIsScreenRequired(base::OnceCallback<void(bool)> on_check_done);
 
   // Allows tests to override how this class binds InputDeviceManager receivers.
   using InputDeviceManagerBinder = base::RepeatingCallback<void(
@@ -141,7 +141,7 @@ class HIDDetectionScreen : public BaseScreen,
   // that expects true if screen is required. The returned devices list is not
   // saved.
   void OnGetInputDevicesListForCheck(
-      const base::Callback<void(bool)>& on_check_done,
+      base::OnceCallback<void(bool)> on_check_done,
       std::vector<InputDeviceInfoPtr> devices);
 
   // Saves and processes the list of input devices returned by the request made

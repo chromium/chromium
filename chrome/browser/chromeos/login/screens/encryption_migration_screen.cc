@@ -243,8 +243,8 @@ EncryptionMigrationScreen::EncryptionMigrationScreen(
     : BaseScreen(EncryptionMigrationScreenView::kScreenId,
                  OobeScreenPriority::DEFAULT),
       view_(view) {
-  free_disk_space_fetcher_ = base::Bind(&base::SysInfo::AmountOfFreeDiskSpace,
-                                        base::FilePath(kCheckStoragePath));
+  free_disk_space_fetcher_ = base::BindRepeating(
+      &base::SysInfo::AmountOfFreeDiskSpace, base::FilePath(kCheckStoragePath));
   DCHECK(view_);
   if (view_)
     view_->SetDelegate(this);
@@ -401,7 +401,7 @@ void EncryptionMigrationScreen::HandleOpenFeedbackDialog() {
       base::NumberToString(base::Time::Now().ToInternalValue()).c_str());
   login_feedback_ = std::make_unique<LoginFeedback>(Profile::FromWebUI(
       LoginDisplayHost::default_host()->GetOobeUI()->web_ui()));
-  login_feedback_->Request(description, base::Closure());
+  login_feedback_->Request(description, base::OnceClosure());
 }
 
 void EncryptionMigrationScreen::UpdateUIState(

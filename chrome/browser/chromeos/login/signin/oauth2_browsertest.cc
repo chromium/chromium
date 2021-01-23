@@ -251,8 +251,8 @@ class OAuth2Test : public OobeBaseTest {
   }
 
   void RegisterAdditionalRequestHandlers() override {
-    embedded_test_server()->RegisterRequestMonitor(
-        base::Bind(&OAuth2Test::InterceptRequest, base::Unretained(this)));
+    embedded_test_server()->RegisterRequestMonitor(base::BindRepeating(
+        &OAuth2Test::InterceptRequest, base::Unretained(this)));
   }
 
   void SetupGaiaServerForNewAccount(bool is_under_advanced_protection) {

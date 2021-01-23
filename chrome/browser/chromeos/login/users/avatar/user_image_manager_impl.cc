@@ -584,8 +584,8 @@ void UserImageManagerImpl::UserProfileCreated() {
     // Schedule periodic refreshes of the profile data.
     profile_download_periodic_timer_.Start(
         FROM_HERE, base::TimeDelta::FromSeconds(kProfileRefreshIntervalSec),
-        base::Bind(&UserImageManagerImpl::DownloadProfileData,
-                   base::Unretained(this)));
+        base::BindRepeating(&UserImageManagerImpl::DownloadProfileData,
+                            base::Unretained(this)));
   } else {
     profile_download_one_shot_timer_.Stop();
     profile_download_periodic_timer_.Stop();

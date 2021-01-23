@@ -44,9 +44,9 @@ ScopedCanConfigureNetwork::ScopedCanConfigureNetwork(bool can_configure,
     : can_configure_(can_configure),
       needs_owner_auth_(needs_owner_auth),
       can_configure_network_callback_(
-          base::Bind(&ScopedCanConfigureNetwork::CanConfigureNetwork,
-                     base::Unretained(this))),
-      needs_owner_auth_callback_(base::Bind(
+          base::BindRepeating(&ScopedCanConfigureNetwork::CanConfigureNetwork,
+                              base::Unretained(this))),
+      needs_owner_auth_callback_(base::BindRepeating(
           &ScopedCanConfigureNetwork::NeedsOwnerAuthToConfigureNetwork,
           base::Unretained(this))) {
   KioskLaunchController::SetCanConfigureNetworkCallbackForTesting(

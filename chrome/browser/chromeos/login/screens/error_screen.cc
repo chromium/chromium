@@ -173,8 +173,8 @@ void ErrorScreen::SetIsPersistentError(bool is_persistent) {
 }
 
 base::CallbackListSubscription ErrorScreen::RegisterConnectRequestCallback(
-    const base::Closure& callback) {
-  return connect_request_callbacks_.Add(callback);
+    base::RepeatingClosure callback) {
+  return connect_request_callbacks_.Add(std::move(callback));
 }
 
 void ErrorScreen::MaybeInitCaptivePortalWindowProxy(
@@ -354,8 +354,8 @@ void ErrorScreen::OnDiagnoseButtonClicked() {
 
 void ErrorScreen::OnLaunchOobeGuestSession() {
   DeviceSettingsService::Get()->GetOwnershipStatusAsync(
-      base::Bind(&ErrorScreen::StartGuestSessionAfterOwnershipCheck,
-                 weak_factory_.GetWeakPtr()));
+      base::BindOnce(&ErrorScreen::StartGuestSessionAfterOwnershipCheck,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void ErrorScreen::OnLocalStateErrorPowerwashButtonClicked() {

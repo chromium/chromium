@@ -49,8 +49,8 @@ class OAuth2TokenFetcher : public base::SupportsWeakPtr<OAuth2TokenFetcher>,
   // If retry count runs out, or error condition is unrecoverable, it runs
   // `error_handler`.
   void RetryOnError(const GoogleServiceAuthError& error,
-                    const base::Closure& task,
-                    const base::Closure& error_handler);
+                    base::OnceClosure task,
+                    base::OnceClosure error_handler);
 
   // GaiaAuthConsumer overrides.
   void OnClientOAuthSuccess(

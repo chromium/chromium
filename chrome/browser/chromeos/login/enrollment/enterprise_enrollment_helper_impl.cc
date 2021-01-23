@@ -109,8 +109,8 @@ void EnterpriseEnrollmentHelperImpl::EnrollUsingAuthCode(
       auth_code,
       g_browser_process->system_network_context_manager()
           ->GetSharedURLLoaderFactory(),
-      base::Bind(&EnterpriseEnrollmentHelperImpl::OnTokenFetched,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&EnterpriseEnrollmentHelperImpl::OnTokenFetched,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void EnterpriseEnrollmentHelperImpl::EnrollUsingToken(
@@ -283,8 +283,8 @@ void EnterpriseEnrollmentHelperImpl::DoEnroll(policy::DMAuth auth_data) {
   dcp_initializer->PrepareEnrollment(
       connector->device_management_service(), ad_join_delegate_,
       enrollment_config_, auth_data_.Clone(),
-      base::Bind(&EnterpriseEnrollmentHelperImpl::OnEnrollmentFinished,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&EnterpriseEnrollmentHelperImpl::OnEnrollmentFinished,
+                     weak_ptr_factory_.GetWeakPtr()));
   dcp_initializer->StartEnrollment();
 }
 

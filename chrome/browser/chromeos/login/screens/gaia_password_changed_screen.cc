@@ -91,8 +91,8 @@ void GaiaPasswordChangedScreen::CancelPasswordChangedFlow() {
   }
   ProfileHelper* profile_helper = ProfileHelper::Get();
   profile_helper->ClearSigninProfile(
-      base::Bind(&GaiaPasswordChangedScreen::OnCookiesCleared,
-                 weak_factory_.GetWeakPtr()));
+      base::BindOnce(&GaiaPasswordChangedScreen::OnCookiesCleared,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void GaiaPasswordChangedScreen::OnCookiesCleared() {

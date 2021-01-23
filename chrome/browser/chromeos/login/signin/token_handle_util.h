@@ -33,7 +33,7 @@ class TokenHandleUtil {
   enum TokenHandleStatus { VALID, INVALID, UNKNOWN };
 
   using TokenValidationCallback =
-      base::Callback<void(const AccountId&, TokenHandleStatus)>;
+      base::OnceCallback<void(const AccountId&, TokenHandleStatus)>;
 
   // Returns true if UserManager has token handle associated with `account_id`.
   static bool HasToken(const AccountId& account_id);
@@ -50,7 +50,7 @@ class TokenHandleUtil {
   void CheckToken(
       const AccountId& account_id,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      const TokenValidationCallback& callback);
+      TokenValidationCallback callback);
 
   // Given the token `handle` store it for `account_id`.
   static void StoreTokenHandle(const AccountId& account_id,
@@ -70,7 +70,7 @@ class TokenHandleUtil {
         const AccountId& account_id,
         const std::string& token,
         scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-        const TokenValidationCallback& callback);
+        TokenValidationCallback callback);
     ~TokenDelegate() override;
 
     void OnOAuthError() override;

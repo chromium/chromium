@@ -341,22 +341,22 @@ ChromeUserManagerImpl::ChromeUserManagerImpl()
 
   allow_guest_subscription_ = cros_settings_->AddSettingsObserver(
       kAccountsPrefAllowGuest,
-      base::Bind(&UserManager::NotifyUsersSignInConstraintsChanged,
-                 weak_factory_.GetWeakPtr()));
+      base::BindRepeating(&UserManager::NotifyUsersSignInConstraintsChanged,
+                          weak_factory_.GetWeakPtr()));
   // For user allowlist.
   users_subscription_ = cros_settings_->AddSettingsObserver(
       kAccountsPrefUsers,
-      base::Bind(&UserManager::NotifyUsersSignInConstraintsChanged,
-                 weak_factory_.GetWeakPtr()));
+      base::BindRepeating(&UserManager::NotifyUsersSignInConstraintsChanged,
+                          weak_factory_.GetWeakPtr()));
   users_subscription_ = cros_settings_->AddSettingsObserver(
       kAccountsPrefFamilyLinkAccountsAllowed,
-      base::Bind(&UserManager::NotifyUsersSignInConstraintsChanged,
-                 weak_factory_.GetWeakPtr()));
+      base::BindRepeating(&UserManager::NotifyUsersSignInConstraintsChanged,
+                          weak_factory_.GetWeakPtr()));
 
   local_accounts_subscription_ = cros_settings_->AddSettingsObserver(
       kAccountsPrefDeviceLocalAccounts,
-      base::Bind(&ChromeUserManagerImpl::RetrieveTrustedDevicePolicies,
-                 weak_factory_.GetWeakPtr()));
+      base::BindRepeating(&ChromeUserManagerImpl::RetrieveTrustedDevicePolicies,
+                          weak_factory_.GetWeakPtr()));
   multi_profile_user_controller_.reset(
       new MultiProfileUserController(this, GetLocalState()));
 
@@ -540,13 +540,13 @@ void ChromeUserManagerImpl::RemoveUserInternal(
     user_manager::RemoveUserDelegate* delegate) {
   CrosSettings* cros_settings = CrosSettings::Get();
 
-  const base::Closure& callback =
-      base::Bind(&ChromeUserManagerImpl::RemoveUserInternal,
-                 weak_factory_.GetWeakPtr(), account_id, delegate);
+  auto callback =
+      base::BindOnce(&ChromeUserManagerImpl::RemoveUserInternal,
+                     weak_factory_.GetWeakPtr(), account_id, delegate);
 
   // Ensure the value of owner email has been fetched.
   if (CrosSettingsProvider::TRUSTED !=
-      cros_settings->PrepareTrustedValues(callback)) {
+      cros_settings->PrepareTrustedValues(std::move(callback))) {
     // Value of owner email is not fetched yet.  RemoveUserInternal will be
     // called again after fetch completion.
     return;

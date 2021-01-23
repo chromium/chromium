@@ -38,8 +38,9 @@ class HIDDetectionScreenTest : public InProcessBrowserTest {
         std::make_unique<device::FakeInputServiceLinux>();
 
     HIDDetectionScreen::OverrideInputDeviceManagerBinderForTesting(
-        base::Bind(&device::FakeInputServiceLinux::Bind,
-                   base::Unretained(fake_input_service_manager_.get())));
+        base::BindRepeating(
+            &device::FakeInputServiceLinux::Bind,
+            base::Unretained(fake_input_service_manager_.get())));
   }
 
   ~HIDDetectionScreenTest() override {

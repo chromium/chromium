@@ -95,8 +95,8 @@ void MarketingBackendConnector::UpdateEmailPreferences(
   scoped_refptr<MarketingBackendConnector> ref =
       new MarketingBackendConnector(profile);
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::Bind(&MarketingBackendConnector::PerformRequest, ref,
-                            country_code));
+      FROM_HERE, base::BindOnce(&MarketingBackendConnector::PerformRequest, ref,
+                                country_code));
 }
 
 MarketingBackendConnector::MarketingBackendConnector(Profile* profile)

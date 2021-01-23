@@ -148,18 +148,18 @@ const int kDefaultFadeTimeMs = 200;
 // animation is completed.
 class AnimationObserver : public ui::ImplicitAnimationObserver {
  public:
-  explicit AnimationObserver(const base::Closure& callback)
-      : callback_(callback) {}
+  explicit AnimationObserver(base::OnceClosure callback)
+      : callback_(std::move(callback)) {}
   ~AnimationObserver() override {}
 
  private:
   // ui::ImplicitAnimationObserver implementation:
   void OnImplicitAnimationsCompleted() override {
-    callback_.Run();
+    std::move(callback_).Run();
     delete this;
   }
 
-  base::Closure callback_;
+  base::OnceClosure callback_;
 
   DISALLOW_COPY_AND_ASSIGN(AnimationObserver);
 };
@@ -868,8 +868,8 @@ void LoginDisplayHostWebUI::ScheduleFadeOutAnimation(int animation_speed_ms) {
   ui::Layer* layer = login_window_->GetLayer();
   ui::ScopedLayerAnimationSettings animation(layer->GetAnimator());
   animation.AddObserver(new AnimationObserver(
-      base::Bind(&LoginDisplayHostWebUI::ShutdownDisplayHost,
-                 weak_factory_.GetWeakPtr())));
+      base::BindOnce(&LoginDisplayHostWebUI::ShutdownDisplayHost,
+                     weak_factory_.GetWeakPtr())));
   animation.SetTransitionDuration(
       base::TimeDelta::FromMilliseconds(animation_speed_ms));
   layer->SetOpacity(0);

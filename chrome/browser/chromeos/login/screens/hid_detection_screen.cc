@@ -144,11 +144,11 @@ void HIDDetectionScreen::OnViewDestroyed(HIDDetectionView* view) {
 }
 
 void HIDDetectionScreen::CheckIsScreenRequired(
-    const base::Callback<void(bool)>& on_check_done) {
+    base::OnceCallback<void(bool)> on_check_done) {
   DCHECK(input_device_manager_);
   input_device_manager_->GetDevices(
       base::BindOnce(&HIDDetectionScreen::OnGetInputDevicesListForCheck,
-                     weak_ptr_factory_.GetWeakPtr(), on_check_done));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(on_check_done)));
 }
 
 bool HIDDetectionScreen::MaybeSkip(WizardContext* context) {
@@ -276,10 +276,10 @@ void HIDDetectionScreen::AdapterPresentChanged(
     adapter_initially_powered_.reset(new bool(adapter_->IsPowered()));
     adapter_->SetPowered(
         true,
-        base::Bind(&HIDDetectionScreen::StartBTDiscoverySession,
-                   weak_ptr_factory_.GetWeakPtr()),
-        base::Bind(&HIDDetectionScreen::SetPoweredError,
-                   weak_ptr_factory_.GetWeakPtr()));
+        base::BindOnce(&HIDDetectionScreen::StartBTDiscoverySession,
+                       weak_ptr_factory_.GetWeakPtr()),
+        base::BindOnce(&HIDDetectionScreen::SetPoweredError,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
@@ -526,10 +526,10 @@ void HIDDetectionScreen::TryInitiateBTDevicesUpdate() {
       adapter_initially_powered_.reset(new bool(false));
       adapter_->SetPowered(
           true,
-          base::Bind(&HIDDetectionScreen::StartBTDiscoverySession,
-                     weak_ptr_factory_.GetWeakPtr()),
-          base::Bind(&HIDDetectionScreen::SetPoweredError,
-                     weak_ptr_factory_.GetWeakPtr()));
+          base::BindOnce(&HIDDetectionScreen::StartBTDiscoverySession,
+                         weak_ptr_factory_.GetWeakPtr()),
+          base::BindOnce(&HIDDetectionScreen::SetPoweredError,
+                         weak_ptr_factory_.GetWeakPtr()));
     } else if (!discovery_session_ || !discovery_session_->IsActive()) {
       StartBTDiscoverySession();
     } else {
@@ -549,7 +549,7 @@ void HIDDetectionScreen::ConnectToInputDeviceManager() {
 }
 
 void HIDDetectionScreen::OnGetInputDevicesListForCheck(
-    const base::Callback<void(bool)>& on_check_done,
+    base::OnceCallback<void(bool)> on_check_done,
     std::vector<InputDeviceInfoPtr> devices) {
   std::string pointing_device_id;
   std::string keyboard_device_id;
@@ -569,7 +569,7 @@ void HIDDetectionScreen::OnGetInputDevicesListForCheck(
   UMA_HISTOGRAM_BOOLEAN("HIDDetection.OOBEDialogShown",
                         !all_devices_autodetected);
 
-  on_check_done.Run(!all_devices_autodetected);
+  std::move(on_check_done).Run(!all_devices_autodetected);
 }
 
 void HIDDetectionScreen::OnGetInputDevicesList(
@@ -630,8 +630,8 @@ void HIDDetectionScreen::PowerOff() {
   if (!use_bluetooth) {
     VLOG(1) << "Switching off BT adapter after HID OOBE screen as unused.";
     adapter_->SetPowered(false, base::DoNothing(),
-                         base::Bind(&HIDDetectionScreen::SetPoweredOffError,
-                                    weak_ptr_factory_.GetWeakPtr()));
+                         base::BindOnce(&HIDDetectionScreen::SetPoweredOffError,
+                                        weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
