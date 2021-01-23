@@ -5,7 +5,6 @@
 package org.chromium.ui;
 
 import android.content.Context;
-import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -27,11 +26,8 @@ import android.widget.ListAdapter;
 
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StyleableRes;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
 
@@ -414,44 +410,5 @@ public class UiUtils {
             systemUiVisibility &= ~View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
         }
         rootView.setSystemUiVisibility(systemUiVisibility);
-    }
-
-    /**
-     * Extends {@link AlertDialog.Builder} to work around issues in support library. Note that
-     * any AlertDialogs shown in CustomTabActivity should be created from this class.
-     */
-    public static class CompatibleAlertDialogBuilder extends AlertDialog.Builder {
-        private final boolean mIsInNightMode;
-
-        public CompatibleAlertDialogBuilder(@NonNull Context context) {
-            super(context);
-            mIsInNightMode = isInNightMode(context);
-        }
-
-        public CompatibleAlertDialogBuilder(@NonNull Context context, int themeResId) {
-            super(context, themeResId);
-            mIsInNightMode = isInNightMode(context);
-        }
-
-        @Override
-        public AlertDialog create() {
-            AlertDialog dialog = super.create();
-            // Sets local night mode state to reflect the night mode state of the owner activity.
-            // This is to work around an issue in the support library that the dialog night mode
-            // state is not inheriting the night mode state of the owner activity, and also resets
-            // the night mode state of the owner activity. See https://crbug.com/966002 for details.
-            // TODO(https://crbug.com/966101): Remove this class once support library is updated to
-            // AndroidX.
-            dialog.getDelegate().setLocalNightMode(mIsInNightMode
-                            ? AppCompatDelegate.MODE_NIGHT_YES
-                            : AppCompatDelegate.MODE_NIGHT_NO);
-            return dialog;
-        }
-
-        private static boolean isInNightMode(Context context) {
-            return (context.getResources().getConfiguration().uiMode
-                           & Configuration.UI_MODE_NIGHT_MASK)
-                    == Configuration.UI_MODE_NIGHT_YES;
-        }
     }
 }

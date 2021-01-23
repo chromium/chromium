@@ -14,7 +14,6 @@ import androidx.appcompat.app.AlertDialog;
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.autofill_assistant.metrics.DropOutReason;
 import org.chromium.chrome.browser.autofill_assistant.metrics.OnBoarding;
-import org.chromium.ui.UiUtils;
 
 import java.util.Map;
 
@@ -33,8 +32,8 @@ class DialogOnboardingCoordinator extends BaseOnboardingCoordinator {
 
     @Override
     void initViewImpl(Callback<Boolean> callback) {
-        mDialog = new UiUtils
-                          .CompatibleAlertDialogBuilder(getContext(),
+        mDialog = new AlertDialog
+                          .Builder(getContext(),
                                   org.chromium.chrome.autofill_assistant.R.style
                                           .Theme_Chromium_AlertDialog)
                           .create();

@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
@@ -23,7 +24,6 @@ import org.chromium.content.browser.input.PopupItemType;
 import org.chromium.content.browser.input.SelectPopupDialog;
 import org.chromium.content.browser.input.SelectPopupItem;
 import org.chromium.content.browser.picker.InputDialogContainer;
-import org.chromium.ui.UiUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -140,8 +140,8 @@ public class AssistantViewInteractions {
     @CalledByNative
     private static void showGenericPopup(View contentView, Context context,
             AssistantGenericUiDelegate delegate, String popupIdentifier) {
-        new UiUtils
-                .CompatibleAlertDialogBuilder(context,
+        new AlertDialog
+                .Builder(context,
                         org.chromium.chrome.autofill_assistant.R.style.Theme_Chromium_AlertDialog)
                 .setView(contentView)
                 .setOnDismissListener(unused -> delegate.onGenericPopupDismissed(popupIdentifier))

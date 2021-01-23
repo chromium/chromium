@@ -12,6 +12,7 @@ import android.os.Handler;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.app.AlertDialog;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
@@ -31,7 +32,6 @@ import org.chromium.payments.mojom.PaymentMethodData;
 import org.chromium.payments.mojom.PaymentOptions;
 import org.chromium.payments.mojom.PaymentRequestDetailsUpdate;
 import org.chromium.payments.mojom.PaymentShippingOption;
-import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.util.Collections;
@@ -130,7 +130,7 @@ public class AndroidPaymentApp
                 denyCallback.onResult(ErrorStrings.ACTIVITY_NOT_FOUND);
                 return;
             }
-            new UiUtils.CompatibleAlertDialogBuilder(context, R.style.Theme_Chromium_AlertDialog)
+            new AlertDialog.Builder(context, R.style.Theme_Chromium_AlertDialog)
                     .setTitle(R.string.external_app_leave_incognito_warning_title)
                     .setMessage(R.string.external_payment_app_leave_incognito_warning)
                     .setPositiveButton(

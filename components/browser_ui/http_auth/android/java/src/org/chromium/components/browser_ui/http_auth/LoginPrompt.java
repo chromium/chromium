@@ -16,7 +16,6 @@ import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
 
 import org.chromium.components.browser_ui.widget.text.AlertDialogEditText;
-import org.chromium.ui.UiUtils;
 
 /**
  * HTTP Authentication Dialog
@@ -87,19 +86,17 @@ public class LoginPrompt {
         TextView explanationView = (TextView) v.findViewById(R.id.explanation);
         explanationView.setText(mMessageBody);
 
-        mDialog =
-                new UiUtils
-                        .CompatibleAlertDialogBuilder(mContext, R.style.Theme_Chromium_AlertDialog)
-                        .setTitle(R.string.login_dialog_title)
-                        .setView(v)
-                        .setPositiveButton(R.string.login_dialog_ok_button_label,
-                                (DialogInterface.OnClickListener) (dialog, whichButton)
-                                        -> mObserver.proceed(getUsername(), getPassword()))
-                        .setNegativeButton(R.string.cancel,
-                                (DialogInterface.OnClickListener) (dialog,
-                                        whichButton) -> mObserver.cancel())
-                        .setOnCancelListener(dialog -> mObserver.cancel())
-                        .create();
+        mDialog = new AlertDialog.Builder(mContext, R.style.Theme_Chromium_AlertDialog)
+                          .setTitle(R.string.login_dialog_title)
+                          .setView(v)
+                          .setPositiveButton(R.string.login_dialog_ok_button_label,
+                                  (DialogInterface.OnClickListener) (dialog, whichButton)
+                                          -> mObserver.proceed(getUsername(), getPassword()))
+                          .setNegativeButton(R.string.cancel,
+                                  (DialogInterface.OnClickListener) (dialog,
+                                          whichButton) -> mObserver.cancel())
+                          .setOnCancelListener(dialog -> mObserver.cancel())
+                          .create();
         mDialog.getDelegate().setHandleNativeActionModesEnabled(false);
 
         // Make the IME appear when the dialog is displayed if applicable.

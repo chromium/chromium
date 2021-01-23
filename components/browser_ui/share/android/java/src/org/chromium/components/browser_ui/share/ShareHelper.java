@@ -38,7 +38,6 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.components.browser_ui.share.ShareParams.TargetChosenCallback;
-import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.base.WindowAndroid.IntentCallback;
 
@@ -242,8 +241,8 @@ public class ShareHelper {
 
         final ShareDialogAdapter adapter =
                 new ShareDialogAdapter(context, manager, resolveInfoList);
-        AlertDialog.Builder builder = new UiUtils.CompatibleAlertDialogBuilder(
-                context, R.style.Theme_Chromium_AlertDialog);
+        AlertDialog.Builder builder =
+                new AlertDialog.Builder(context, R.style.Theme_Chromium_AlertDialog);
         builder.setTitle(context.getString(R.string.share_link_chooser_title));
         builder.setAdapter(adapter, null);
 

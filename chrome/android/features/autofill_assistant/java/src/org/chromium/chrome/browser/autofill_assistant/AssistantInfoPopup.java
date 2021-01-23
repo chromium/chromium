@@ -11,7 +11,6 @@ import androidx.appcompat.app.AlertDialog;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.ui.UiUtils;
 
 /**
  * Represents a simple info popup.
@@ -49,8 +48,8 @@ public class AssistantInfoPopup {
 
     @CalledByNative
     public void show(Context context) {
-        AlertDialog.Builder builder = new UiUtils
-                                              .CompatibleAlertDialogBuilder(context,
+        AlertDialog.Builder builder = new AlertDialog
+                                              .Builder(context,
                                                       org.chromium.chrome.autofill_assistant.R.style
                                                               .Theme_Chromium_AlertDialog)
                                               .setTitle(mTitle)
