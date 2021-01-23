@@ -1286,13 +1286,15 @@ bool AXNode::IsEmptyLeaf() const {
 }
 
 bool AXNode::IsLeaf() const {
-  // A node is a leaf if it has no descendants, regardless whether it is ignored
-  // or not.
+  // A node is a leaf if it has no descendants, i.e. if it is at the bottom of
+  // the tree, regardless whether it is ignored or not.
   if (children().empty())
     return true;
 
-  // Leaf nodes with descendants should always be exposed to the platforms'
-  // accessibility layer.
+  // Ignored nodes with any kind of descendants, (ignored or unignored), cannot
+  // be leaves because: A) If some of their descendants are unignored then those
+  // descendants need to be exposed to the platform layer, and B) If all of
+  // their descendants are ignored they are still not at the bottom of the tree.
   if (IsIgnored())
     return false;
 

@@ -486,6 +486,12 @@ class AX_EXPORT AXNode final {
   // that, ignored nodes (leaf or otherwise) do not expose their inner text or
   // hypertext to the platforms' accessibility layer, but they expose the inner
   // text or hypertext of their unignored descendants.
+  //
+  // For example, empty text fields might have a set of unignored nested divs
+  // inside them:
+  // ++kTextField
+  // ++++kGenericContainer
+  // ++++++kGenericContainer
   bool IsEmptyLeaf() const;
 
   // Returns true if this is a leaf node, meaning all its
