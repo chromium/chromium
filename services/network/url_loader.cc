@@ -2194,23 +2194,6 @@ bool URLLoader::ShouldForceIgnoreSiteForCookies(
               request.request_initiator.value(), request.url)) {
     return true;
   }
-  // Try again against the `factory_bound_access_patterns` to also cover the
-  // ActiveTab permission that the extension might have been granted.
-  if (factory_params_->factory_bound_access_patterns) {
-    cors::OriginAccessList factory_bound_origin_access_list;
-    factory_bound_origin_access_list.SetAllowListForOrigin(
-        factory_params_->factory_bound_access_patterns->source_origin,
-        factory_params_->factory_bound_access_patterns->allow_patterns);
-    factory_bound_origin_access_list.SetBlockListForOrigin(
-        factory_params_->factory_bound_access_patterns->source_origin,
-        factory_params_->factory_bound_access_patterns->block_patterns);
-    if (request.request_initiator.has_value() &&
-        cors::OriginAccessList::AccessState::kAllowed ==
-            factory_bound_origin_access_list.CheckAccessState(
-                request.request_initiator.value(), request.url)) {
-      return true;
-    }
-  }
 
   // Convert `site_for_cookies` into an origin (an opaque origin if
   // `net::SiteForCookies::IsNull()` returns true).

@@ -71,7 +71,6 @@ CorsURLLoader::CorsURLLoader(
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
     mojom::URLLoaderFactory* network_loader_factory,
     const OriginAccessList* origin_access_list,
-    const OriginAccessList* factory_bound_origin_access_list,
     PreflightController* preflight_controller,
     const base::flat_set<std::string>* allowed_exempt_headers,
     bool allow_any_cors_exempt_header,
@@ -87,7 +86,6 @@ CorsURLLoader::CorsURLLoader(
       forwarding_client_(std::move(client)),
       traffic_annotation_(traffic_annotation),
       origin_access_list_(origin_access_list),
-      factory_bound_origin_access_list_(factory_bound_origin_access_list),
       preflight_controller_(preflight_controller),
       allowed_exempt_headers_(allowed_exempt_headers),
       skip_cors_enabled_scheme_check_(skip_cors_enabled_scheme_check),
@@ -576,10 +574,8 @@ bool CorsURLLoader::HasSpecialAccessToDestination() const {
     case OriginAccessList::AccessState::kAllowed:
       return true;
     case OriginAccessList::AccessState::kBlocked:
-      return false;
     case OriginAccessList::AccessState::kNotListed:
-      return factory_bound_origin_access_list_->CheckAccessState(request_) ==
-             OriginAccessList::AccessState::kAllowed;
+      return false;
   }
 }
 
