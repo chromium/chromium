@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/optional.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
@@ -345,6 +346,8 @@ net::Error DirectSocketsServiceImpl::ValidateOptions(
   // TODO(crbug.com/1119600): Implement rate limiting.
 
   if (options.remote_port == 443) {
+    base::UmaHistogramEnumeration("DirectSockets.PermissionDeniedFailures",
+                                  FailureType::kCORS);
     // TODO(crbug.com/1119601): Issue a CORS preflight request.
     return net::ERR_UNSAFE_PORT;
   }

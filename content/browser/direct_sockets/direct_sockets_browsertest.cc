@@ -489,12 +489,20 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest, OpenTcp_MDNS) {
 IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest, OpenTcp_CannotEvadeCors) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
 
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(
+      "DirectSockets.PermissionDeniedFailures",
+      DirectSocketsServiceImpl::FailureType::kCORS, 0);
+
   // HTTPS uses port 443.
   const std::string script =
       "openTcp({remoteAddress: '127.0.0.1', remotePort: 443})";
 
   EXPECT_EQ("openTcp failed: NotAllowedError: Permission denied",
             EvalJs(shell(), script));
+  histogram_tester.ExpectBucketCount(
+      "DirectSockets.PermissionDeniedFailures",
+      DirectSocketsServiceImpl::FailureType::kCORS, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest,
@@ -686,12 +694,20 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest, OpenUdp_NotAllowedError) {
 IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest, OpenUdp_CannotEvadeCors) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
 
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(
+      "DirectSockets.PermissionDeniedFailures",
+      DirectSocketsServiceImpl::FailureType::kCORS, 0);
+
   // QUIC uses port 443.
   const std::string script =
       "openUdp({remoteAddress: '127.0.0.1', remotePort: 443})";
 
   EXPECT_EQ("openUdp failed: NotAllowedError: Permission denied",
             EvalJs(shell(), script));
+  histogram_tester.ExpectBucketCount(
+      "DirectSockets.PermissionDeniedFailures",
+      DirectSocketsServiceImpl::FailureType::kCORS, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest,
