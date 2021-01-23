@@ -610,7 +610,7 @@ URLLoader::URLLoader(
 
   SetFetchMetadataHeaders(url_request_.get(), request_mode_,
                           has_user_activation_, request_destination_, nullptr,
-                          *factory_params_);
+                          *factory_params_, origin_access_list_);
 
   if (request.update_first_party_url_on_redirect) {
     url_request_->set_first_party_url_policy(
@@ -1143,7 +1143,8 @@ void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,
   MaybeRemoveSecHeaders(url_request_.get(), redirect_info.new_url);
   SetFetchMetadataHeaders(url_request_.get(), request_mode_,
                           has_user_activation_, request_destination_,
-                          &redirect_info.new_url, *factory_params_);
+                          &redirect_info.new_url, *factory_params_,
+                          origin_access_list_);
 
   url_loader_client_->OnReceiveRedirect(redirect_info, std::move(response));
 }
