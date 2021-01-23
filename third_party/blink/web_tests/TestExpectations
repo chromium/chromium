@@ -5872,3 +5872,6 @@ crbug.com/1168522 external/wpt/focus/iframe-activeelement-after-focusing-out-ifr
 crbug.com/1050549 http/tests/devtools/network/preview-searchable.js [ Pass Failure ]
 crbug.com/1050549 http/tests/devtools/console/console-correct-suggestions.js [ Pass Failure ]
 crbug.com/1050549 http/tests/devtools/extensions/extensions-timeline-api.js [ Pass Failure ]
+
+# Sheriff 2021-01-22
+crbug.com/1169908 http/tests/devtools/profiler/cpu-profiler-bottom-up-large-tree-search.js [ Pass Timeout ]
