@@ -26,8 +26,8 @@ NewUserRestorePrefHandler::NewUserRestorePrefHandler(Profile* profile)
   // base::Unretained() is safe because this class owns |local_restore_pref_|.
   local_restore_pref_->Init(
       kRestoreAppsAndPagesPrefName, profile_->GetPrefs(),
-      base::Bind(&NewUserRestorePrefHandler::OnPreferenceChanged,
-                 base::Unretained(this)));
+      base::BindRepeating(&NewUserRestorePrefHandler::OnPreferenceChanged,
+                          base::Unretained(this)));
 }
 
 NewUserRestorePrefHandler::~NewUserRestorePrefHandler() {

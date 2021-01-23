@@ -192,8 +192,9 @@ void CertProvisioningSchedulerImpl::ScheduleInitialUpdate() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::Bind(&CertProvisioningSchedulerImpl::InitialUpdateCerts,
-                            weak_factory_.GetWeakPtr()));
+      FROM_HERE,
+      base::BindOnce(&CertProvisioningSchedulerImpl::InitialUpdateCerts,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void CertProvisioningSchedulerImpl::ScheduleDailyUpdate() {
@@ -201,8 +202,8 @@ void CertProvisioningSchedulerImpl::ScheduleDailyUpdate() {
 
   base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
-      base::Bind(&CertProvisioningSchedulerImpl::DailyUpdateCerts,
-                 weak_factory_.GetWeakPtr()),
+      base::BindOnce(&CertProvisioningSchedulerImpl::DailyUpdateCerts,
+                     weak_factory_.GetWeakPtr()),
       base::TimeDelta::FromDays(1));
 }
 
@@ -212,8 +213,8 @@ void CertProvisioningSchedulerImpl::ScheduleRetry(
 
   base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
-      base::Bind(&CertProvisioningSchedulerImpl::UpdateOneCertImpl,
-                 weak_factory_.GetWeakPtr(), profile_id),
+      base::BindOnce(&CertProvisioningSchedulerImpl::UpdateOneCertImpl,
+                     weak_factory_.GetWeakPtr(), profile_id),
       kInconsistentDataErrorRetryDelay);
 }
 
@@ -228,8 +229,8 @@ void CertProvisioningSchedulerImpl::ScheduleRenewal(
 
   base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
-      base::Bind(&CertProvisioningSchedulerImpl::InitiateRenewal,
-                 weak_factory_.GetWeakPtr(), profile_id),
+      base::BindOnce(&CertProvisioningSchedulerImpl::InitiateRenewal,
+                     weak_factory_.GetWeakPtr(), profile_id),
       delay);
 }
 
@@ -769,7 +770,7 @@ void CertProvisioningSchedulerImpl::OnVisibleStateChanged() {
   notify_observers_pending_ = true;
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
-      base::Bind(
+      base::BindOnce(
           &CertProvisioningSchedulerImpl::NotifyObserversVisibleStateChanged,
           weak_factory_.GetWeakPtr()));
 }

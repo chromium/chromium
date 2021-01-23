@@ -86,7 +86,7 @@ AuthPolicyCredentialsManager::AuthPolicyCredentialsManager(Profile* profile)
   // have changed.
   AuthPolicyClient::Get()->ConnectToSignal(
       authpolicy::kUserKerberosFilesChangedSignal,
-      base::Bind(
+      base::BindRepeating(
           &AuthPolicyCredentialsManager::OnUserKerberosFilesChangedCallback,
           weak_factory_.GetWeakPtr()),
       base::BindOnce(&AuthPolicyCredentialsManager::OnSignalConnectedCallback,
@@ -208,9 +208,9 @@ void AuthPolicyCredentialsManager::OnGetUserKerberosFilesCallback(
 }
 
 void AuthPolicyCredentialsManager::ScheduleGetUserStatus() {
-  // Unretained is safe here because it is a CancelableClosure and owned by this
-  // object.
-  scheduled_get_user_status_call_.Reset(base::Bind(
+  // Unretained is safe here because it is a CancelableOnceClosure and owned by
+  // this object.
+  scheduled_get_user_status_call_.Reset(base::BindOnce(
       &AuthPolicyCredentialsManager::GetUserStatus, base::Unretained(this)));
   // TODO(rsorokin): This does not re-schedule after wake from sleep
   // (and thus the maximal interval between two calls can be (sleep time +

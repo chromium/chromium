@@ -107,7 +107,7 @@ class AppUpdateWaiter : public apps::AppRegistryCache::Observer {
   std::string id_;
   apps::AppRegistryCache* app_registry_cache_ = nullptr;
   base::OnceClosure callback_;
-  base::Callback<bool(const apps::AppUpdate&)> condition_;
+  base::RepeatingCallback<bool(const apps::AppUpdate&)> condition_;
   bool condition_met_ = false;
   ScopedObserver<apps::AppRegistryCache, apps::AppRegistryCache::Observer>
       app_registry_cache_observer_{this};

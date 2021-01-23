@@ -509,8 +509,8 @@ void Preferences::RegisterProfilePrefs(
 void Preferences::InitUserPrefs(sync_preferences::PrefServiceSyncable* prefs) {
   prefs_ = prefs;
 
-  BooleanPrefMember::NamedChangeCallback callback =
-      base::Bind(&Preferences::OnPreferenceChanged, base::Unretained(this));
+  BooleanPrefMember::NamedChangeCallback callback = base::BindRepeating(
+      &Preferences::OnPreferenceChanged, base::Unretained(this));
 
   performance_tracing_enabled_.Init(::prefs::kPerformanceTracingEnabled, prefs,
                                     callback);

@@ -113,7 +113,7 @@ class AuthPolicyCredentialsManager
   // most once.
   std::set<int> shown_notifications_;
   authpolicy::ErrorType last_error_ = authpolicy::ERROR_NONE;
-  base::CancelableClosure scheduled_get_user_status_call_;
+  base::CancelableOnceClosure scheduled_get_user_status_call_;
 
   base::WeakPtrFactory<AuthPolicyCredentialsManager> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(AuthPolicyCredentialsManager);

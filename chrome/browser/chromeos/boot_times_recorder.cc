@@ -226,12 +226,12 @@ void BootTimesRecorder::Stats::RecordStats(const std::string& name) const {
 
 void BootTimesRecorder::Stats::RecordStatsWithCallback(
     const std::string& name,
-    const base::Closure& callback) const {
+    base::OnceClosure callback) const {
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&BootTimesRecorder::Stats::RecordStatsAsync,
                      base::Owned(new Stats(*this)), name),
-      callback);
+      std::move(callback));
 }
 
 void BootTimesRecorder::Stats::RecordStatsAsync(
@@ -405,7 +405,7 @@ void BootTimesRecorder::OnChromeProcessStart() {
   const char kLogoutStarted[] = "logout-started";
   logout_started_last_stats.RecordStatsWithCallback(
       kLogoutStarted,
-      base::Bind(&BootTimesRecorder::ClearLogoutStartedLastPreference));
+      base::BindOnce(&BootTimesRecorder::ClearLogoutStartedLastPreference));
 }
 
 void BootTimesRecorder::OnLogoutStarted(PrefService* state) {

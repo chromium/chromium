@@ -127,7 +127,7 @@ class BootTimesRecorder : public content::NotificationObserver,
 
     void RecordStats(const std::string& name) const;
     void RecordStatsWithCallback(const std::string& name,
-                                 const base::Closure& callback) const;
+                                 base::OnceClosure callback) const;
 
    private:
     // Runs asynchronously when RecordStats(WithCallback) is called.

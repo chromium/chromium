@@ -61,7 +61,7 @@ class ScanningPathsProviderImplTest : public testing::Test {
     web_ui_ = std::make_unique<content::TestWebUI>();
     web_ui_->set_web_contents(web_contents_.get());
 
-    create_drive_integration_service_ = base::Bind(
+    create_drive_integration_service_ = base::BindRepeating(
         &ScanningPathsProviderImplTest::CreateDriveIntegrationService,
         base::Unretained(this));
     service_factory_for_test_ = std::make_unique<

@@ -1756,9 +1756,9 @@ void FileManagerBrowserTestBase::SetUpInProcessBrowserTestFixture() {
   if (GetOptions().guest_mode == IN_GUEST_MODE)
     return;
 
-  create_drive_integration_service_ =
-      base::Bind(&FileManagerBrowserTestBase::CreateDriveIntegrationService,
-                 base::Unretained(this));
+  create_drive_integration_service_ = base::BindRepeating(
+      &FileManagerBrowserTestBase::CreateDriveIntegrationService,
+      base::Unretained(this));
   service_factory_for_test_ = std::make_unique<
       drive::DriveIntegrationServiceFactory::ScopedFactoryForTest>(
       &create_drive_integration_service_);

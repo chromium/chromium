@@ -41,9 +41,10 @@ class PlatformVerificationFlowTest;
 // All methods must only be called on the UI thread.  Example:
 //   scoped_refptr<PlatformVerificationFlow> verifier =
 //       new PlatformVerificationFlow();
-//   PlatformVerificationFlow::Callback callback = base::Bind(&MyCallback);
+//   PlatformVerificationFlow::ChallengeCallback callback =
+//       base::BindOnce(&MyCallback);
 //   verifier->ChallengePlatformKey(my_web_contents, "my_id", "some_challenge",
-//                                  callback);
+//                                  std::move(callback));
 //
 // This class is RefCountedThreadSafe because it may need to outlive its caller.
 // The attestation flow that needs to happen to establish a certified platform

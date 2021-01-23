@@ -154,8 +154,8 @@ class LorgnetteScannerManagerTest : public testing::Test {
   // process the result.
   void GetScannerNames() {
     lorgnette_scanner_manager_->GetScannerNames(
-        base::Bind(&LorgnetteScannerManagerTest::GetScannerNamesCallback,
-                   base::Unretained(this)));
+        base::BindOnce(&LorgnetteScannerManagerTest::GetScannerNamesCallback,
+                       base::Unretained(this)));
   }
 
   // Calls LorgnetteScannerManager::GetScannerCapabilities() and binds a
@@ -163,8 +163,9 @@ class LorgnetteScannerManagerTest : public testing::Test {
   void GetScannerCapabilities(const std::string& scanner_name) {
     lorgnette_scanner_manager_->GetScannerCapabilities(
         scanner_name,
-        base::Bind(&LorgnetteScannerManagerTest::GetScannerCapabilitiesCallback,
-                   base::Unretained(this)));
+        base::BindOnce(
+            &LorgnetteScannerManagerTest::GetScannerCapabilitiesCallback,
+            base::Unretained(this)));
   }
 
   // Calls LorgnetteScannerManager::Scan() and binds a callback to process the
@@ -175,16 +176,16 @@ class LorgnetteScannerManagerTest : public testing::Test {
         scanner_name, settings, base::NullCallback(),
         base::BindRepeating(&LorgnetteScannerManagerTest::PageCallback,
                             base::Unretained(this)),
-        base::Bind(&LorgnetteScannerManagerTest::ScanCallback,
-                   base::Unretained(this)));
+        base::BindOnce(&LorgnetteScannerManagerTest::ScanCallback,
+                       base::Unretained(this)));
   }
 
   // Calls LorgnetteScannerManager::CancelScan() and binds a callback to process
   // the result.
   void CancelScan() {
     lorgnette_scanner_manager_->CancelScan(
-        base::Bind(&LorgnetteScannerManagerTest::CancelScanCallback,
-                   base::Unretained(this)));
+        base::BindOnce(&LorgnetteScannerManagerTest::CancelScanCallback,
+                       base::Unretained(this)));
   }
 
   // Runs all tasks until the ThreadPool's non-delayed queues are empty.

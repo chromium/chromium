@@ -54,8 +54,8 @@ void CameraPresenceNotifier::RemoveObserver(
 
 void CameraPresenceNotifier::CheckCameraPresence() {
   CameraDetector::StartPresenceCheck(
-      base::Bind(&CameraPresenceNotifier::OnCameraPresenceCheckDone,
-                 weak_factory_.GetWeakPtr()));
+      base::BindOnce(&CameraPresenceNotifier::OnCameraPresenceCheckDone,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void CameraPresenceNotifier::OnCameraPresenceCheckDone() {

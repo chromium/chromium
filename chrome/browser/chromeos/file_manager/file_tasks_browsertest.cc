@@ -87,10 +87,10 @@ void VerifyTasks(int* remaining,
 // Helper to quit a run loop after invoking VerifyTasks().
 void VerifyAsyncTask(int* remaining,
                      Expectation expectation,
-                     const base::Closure& quit_closure,
+                     base::OnceClosure quit_closure,
                      std::unique_ptr<std::vector<FullTaskDescriptor>> result) {
   VerifyTasks(remaining, expectation, std::move(result));
-  quit_closure.Run();
+  std::move(quit_closure).Run();
 }
 
 // Installs a chrome app that handles .tiff.

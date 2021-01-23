@@ -486,7 +486,7 @@ class DriveFileSystemExtensionApiTest : public FileSystemExtensionApiTestBase {
     ASSERT_TRUE(test_cache_root_.CreateUniqueTempDir());
 
     // This callback will get called during Profile creation.
-    create_drive_integration_service_ = base::Bind(
+    create_drive_integration_service_ = base::BindRepeating(
         &DriveFileSystemExtensionApiTest::CreateDriveIntegrationService,
         base::Unretained(this));
     service_factory_for_test_ =
@@ -574,10 +574,10 @@ class MultiProfileDriveFileSystemExtensionApiTest :
     ASSERT_TRUE(tmp_dir_.CreateUniqueTempDir());
 
     // This callback will get called during Profile creation.
-    create_drive_integration_service_ = base::Bind(
-        &MultiProfileDriveFileSystemExtensionApiTest::
-            CreateDriveIntegrationService,
-        base::Unretained(this));
+    create_drive_integration_service_ =
+        base::BindRepeating(&MultiProfileDriveFileSystemExtensionApiTest::
+                                CreateDriveIntegrationService,
+                            base::Unretained(this));
     service_factory_for_test_ =
         std::make_unique<DriveIntegrationServiceFactory::ScopedFactoryForTest>(
             &create_drive_integration_service_);
@@ -655,7 +655,7 @@ class LocalAndDriveFileSystemExtensionApiTest
     ASSERT_TRUE(test_cache_root_.CreateUniqueTempDir());
 
     // This callback will get called during Profile creation.
-    create_drive_integration_service_ = base::Bind(
+    create_drive_integration_service_ = base::BindRepeating(
         &LocalAndDriveFileSystemExtensionApiTest::CreateDriveIntegrationService,
         base::Unretained(this));
     service_factory_for_test_ =

@@ -237,8 +237,9 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
                                       flags & ENABLE_PLAY_STORE);
     NoteTakingHelper::Initialize();
     NoteTakingHelper::Get()->SetProfileWithEnabledLockScreenApps(profile());
-    NoteTakingHelper::Get()->set_launch_chrome_app_callback_for_test(base::Bind(
-        &NoteTakingHelperTest::LaunchChromeApp, base::Unretained(this)));
+    NoteTakingHelper::Get()->set_launch_chrome_app_callback_for_test(
+        base::BindRepeating(&NoteTakingHelperTest::LaunchChromeApp,
+                            base::Unretained(this)));
   }
 
   // Creates an extension.

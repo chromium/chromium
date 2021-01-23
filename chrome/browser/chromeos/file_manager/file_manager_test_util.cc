@@ -128,7 +128,7 @@ namespace {
 // Helper to exit a RunLoop the next time OnVolumeMounted() is invoked.
 class VolumeWaiter : public VolumeManagerObserver {
  public:
-  VolumeWaiter(Profile* profile, const base::Closure& on_mount)
+  VolumeWaiter(Profile* profile, const base::RepeatingClosure& on_mount)
       : profile_(profile), on_mount_(on_mount) {
     VolumeManager::Get(profile_)->AddObserver(this);
   }
@@ -144,7 +144,7 @@ class VolumeWaiter : public VolumeManagerObserver {
 
  private:
   Profile* profile_;
-  base::Closure on_mount_;
+  base::RepeatingClosure on_mount_;
 };
 }  // namespace
 

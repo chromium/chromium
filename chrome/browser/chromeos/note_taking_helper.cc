@@ -356,14 +356,14 @@ void NoteTakingHelper::SetProfileWithEnabledLockScreenApps(Profile* profile) {
   pref_change_registrar_.Init(profile->GetPrefs());
   pref_change_registrar_.Add(
       prefs::kNoteTakingAppsLockScreenAllowlist,
-      base::Bind(&NoteTakingHelper::OnAllowedNoteTakingAppsChanged,
-                 base::Unretained(this)));
+      base::BindRepeating(&NoteTakingHelper::OnAllowedNoteTakingAppsChanged,
+                          base::Unretained(this)));
   OnAllowedNoteTakingAppsChanged();
 }
 
 NoteTakingHelper::NoteTakingHelper()
     : launch_chrome_app_callback_(
-          base::Bind(&apps::LaunchPlatformAppWithAction)),
+          base::BindRepeating(&apps::LaunchPlatformAppWithAction)),
       note_taking_controller_client_(
           std::make_unique<NoteTakingControllerClient>(this)) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

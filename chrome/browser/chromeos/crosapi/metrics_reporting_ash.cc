@@ -47,9 +47,10 @@ MetricsReportingAsh::MetricsReportingAsh(std::unique_ptr<Delegate> delegate,
   pref_change_registrar_.Init(local_state_);
   // base::Unretained() is safe because PrefChangeRegistrar removes all
   // observers when it is destroyed.
-  pref_change_registrar_.Add(metrics::prefs::kMetricsReportingEnabled,
-                             base::Bind(&MetricsReportingAsh::NotifyObservers,
-                                        base::Unretained(this)));
+  pref_change_registrar_.Add(
+      metrics::prefs::kMetricsReportingEnabled,
+      base::BindRepeating(&MetricsReportingAsh::NotifyObservers,
+                          base::Unretained(this)));
 }
 
 MetricsReportingAsh::~MetricsReportingAsh() = default;

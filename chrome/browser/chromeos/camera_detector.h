@@ -28,11 +28,11 @@ class CameraDetector {
   // Checks asynchronously for camera device presence. Only one
   // presence check can be running at a time. Calls |check_done|
   // on current thread when the check has been completed.
-  static void StartPresenceCheck(const base::Closure& check_done);
+  static void StartPresenceCheck(base::OnceClosure check_done);
 
  private:
   // Called back on UI thread after check has been performed.
-  static void OnPresenceCheckDone(const base::Closure& callback, bool present);
+  static void OnPresenceCheckDone(base::OnceClosure callback, bool present);
 
   // Checks for camera presence. Runs on a thread that allows I/O.
   static bool CheckPresence();

@@ -24,8 +24,8 @@ void KioskInfoService::Start(
   exported_object->ExportMethod(
       kKioskAppServiceInterface,
       kKioskAppServiceGetRequiredPlatformVersionMethod,
-      base::Bind(&KioskInfoService::GetKioskAppRequiredPlatformVersion,
-                 weak_ptr_factory_.GetWeakPtr()),
+      base::BindRepeating(&KioskInfoService::GetKioskAppRequiredPlatformVersion,
+                          weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&KioskInfoService::OnExported,
                      weak_ptr_factory_.GetWeakPtr()));
 }

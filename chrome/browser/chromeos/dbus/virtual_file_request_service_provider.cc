@@ -43,8 +43,8 @@ void VirtualFileRequestServiceProvider::Start(
   exported_object->ExportMethod(
       kVirtualFileRequestServiceInterface,
       kVirtualFileRequestServiceHandleReadRequestMethod,
-      base::Bind(&VirtualFileRequestServiceProvider::HandleReadRequest,
-                 weak_ptr_factory_.GetWeakPtr()),
+      base::BindRepeating(&VirtualFileRequestServiceProvider::HandleReadRequest,
+                          weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce([](const std::string& interface_name,
                         const std::string& method_name, bool success) {
         LOG_IF(ERROR, !success)
@@ -53,8 +53,8 @@ void VirtualFileRequestServiceProvider::Start(
   exported_object->ExportMethod(
       kVirtualFileRequestServiceInterface,
       kVirtualFileRequestServiceHandleIdReleasedMethod,
-      base::Bind(&VirtualFileRequestServiceProvider::HandleIdReleased,
-                 weak_ptr_factory_.GetWeakPtr()),
+      base::BindRepeating(&VirtualFileRequestServiceProvider::HandleIdReleased,
+                          weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce([](const std::string& interface_name,
                         const std::string& method_name, bool success) {
         LOG_IF(ERROR, !success)

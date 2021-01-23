@@ -149,9 +149,8 @@ void InputMethodSyncer::Initialize() {
                                  prefs_);
   enabled_imes_syncable_.Init(prefs::kLanguageEnabledImesSyncable, prefs_);
 
-  BooleanPrefMember::NamedChangeCallback callback =
-      base::Bind(&InputMethodSyncer::OnPreferenceChanged,
-                 base::Unretained(this));
+  BooleanPrefMember::NamedChangeCallback callback = base::BindRepeating(
+      &InputMethodSyncer::OnPreferenceChanged, base::Unretained(this));
   preferred_languages_.Init(language::prefs::kPreferredLanguages, prefs_,
                             callback);
   preload_engines_.Init(prefs::kLanguagePreloadEngines,

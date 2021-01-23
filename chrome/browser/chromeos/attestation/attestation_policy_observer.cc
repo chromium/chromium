@@ -23,8 +23,8 @@ AttestationPolicyObserver::AttestationPolicyObserver(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   attestation_subscription_ = cros_settings_->AddSettingsObserver(
       kDeviceAttestationEnabled,
-      base::Bind(&AttestationPolicyObserver::AttestationSettingChanged,
-                 base::Unretained(this)));
+      base::BindRepeating(&AttestationPolicyObserver::AttestationSettingChanged,
+                          base::Unretained(this)));
   Start();
 }
 

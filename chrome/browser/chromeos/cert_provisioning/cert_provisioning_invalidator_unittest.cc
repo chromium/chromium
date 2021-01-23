@@ -28,9 +28,9 @@ class CertProvisioningInvalidationHandlerTest
                 GetScope(),
                 &invalidation_service_,
                 kInvalidatorTopic,
-                base::Bind(&CertProvisioningInvalidationHandlerTest::
-                               OnIncomingInvalidation,
-                           base::Unretained(this)))) {
+                base::BindRepeating(&CertProvisioningInvalidationHandlerTest::
+                                        OnIncomingInvalidation,
+                                    base::Unretained(this)))) {
     EXPECT_NE(nullptr, invalidation_handler_);
 
     EnableInvalidationService();

@@ -388,8 +388,8 @@ void CertProvisioningWorkerImpl::GenerateKey() {
 void CertProvisioningWorkerImpl::GenerateRegularKey() {
   platform_keys_service_->GenerateRSAKey(
       GetPlatformKeysTokenId(cert_scope_), kNonVaKeyModulusLengthBits,
-      base::Bind(&CertProvisioningWorkerImpl::OnGenerateRegularKeyDone,
-                 weak_factory_.GetWeakPtr()));
+      base::BindOnce(&CertProvisioningWorkerImpl::OnGenerateRegularKeyDone,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void CertProvisioningWorkerImpl::OnGenerateRegularKeyDone(
