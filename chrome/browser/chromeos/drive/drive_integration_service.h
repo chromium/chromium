@@ -245,7 +245,7 @@ class DriveIntegrationService : public KeyedService,
 
   // Adds back the drive mount point.
   // Used to implement ClearCacheAndRemountFileSystem().
-  void AddBackDriveMountPoint(const base::Callback<void(bool)>& callback,
+  void AddBackDriveMountPoint(base::OnceCallback<void(bool)> callback,
                               FileError error);
 
   // Unregisters drive mount point, and if |remount_delay| is specified
@@ -336,8 +336,8 @@ class DriveIntegrationServiceFactory
     : public BrowserContextKeyedServiceFactory {
  public:
   // Factory function used by tests.
-  typedef base::Callback<DriveIntegrationService*(Profile* profile)>
-      FactoryCallback;
+  using FactoryCallback =
+      base::RepeatingCallback<DriveIntegrationService*(Profile* profile)>;
 
   // Sets and resets a factory function for tests. See below for why we can't
   // use BrowserContextKeyedServiceFactory::SetTestingFactory().

@@ -27,7 +27,7 @@ class DriveIntegrationServiceBrowserTest : public InProcessBrowserTest {
   }
 
   void SetUpInProcessBrowserTestFixture() override {
-    create_drive_integration_service_ = base::Bind(
+    create_drive_integration_service_ = base::BindRepeating(
         &DriveIntegrationServiceBrowserTest::CreateDriveIntegrationService,
         base::Unretained(this));
     service_factory_for_test_ = std::make_unique<

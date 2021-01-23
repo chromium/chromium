@@ -765,7 +765,7 @@ drivefs::mojom::DriveFs* DriveIntegrationService::GetDriveFsInterface() const {
 }
 
 void DriveIntegrationService::AddBackDriveMountPoint(
-    const base::Callback<void(bool)>& callback,
+    base::OnceCallback<void(bool)> callback,
     FileError error) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(callback);
@@ -774,12 +774,12 @@ void DriveIntegrationService::AddBackDriveMountPoint(
 
   if (error != FILE_ERROR_OK || !enabled_) {
     // Failed to reset, or Drive was disabled during the reset.
-    callback.Run(false);
+    std::move(callback).Run(false);
     return;
   }
 
   AddDriveMountPoint();
-  callback.Run(true);
+  std::move(callback).Run(true);
 }
 
 void DriveIntegrationService::AddDriveMountPoint() {

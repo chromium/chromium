@@ -100,7 +100,7 @@ class DriveFsNativeMessageHost : public extensions::NativeMessageHost,
           std::move(extension_port));
     }
     receiver_.Bind(std::move(std::move(pending_receiver_)));
-    receiver_.set_disconnect_with_reason_handler(base::Bind(
+    receiver_.set_disconnect_with_reason_handler(base::BindOnce(
         &DriveFsNativeMessageHost::OnDisconnect, base::Unretained(this)));
   }
 
