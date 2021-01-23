@@ -6,8 +6,8 @@
 
 #include <memory>
 
-#include "chromeos/assistant/internal/cros_display_connection.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
+#include "chromeos/services/libassistant/display_connection_impl.h"
 #include "chromeos/services/libassistant/public/mojom/speech_recognition_observer.mojom.h"
 #include "libassistant/shared/internal_api/assistant_manager_internal.h"
 
@@ -37,8 +37,7 @@ std::vector<assistant::AndroidAppInfo> ToAndroidAppInfoList(
 
 }  // namespace
 
-class DisplayController::EventObserver
-    : public assistant::AssistantEventObserver {
+class DisplayController::EventObserver : public DisplayConnectionObserver {
  public:
   explicit EventObserver(DisplayController* parent) : parent_(parent) {}
   EventObserver(const EventObserver&) = delete;
@@ -58,7 +57,7 @@ DisplayController::DisplayController(
     mojo::RemoteSet<mojom::SpeechRecognitionObserver>*
         speech_recognition_observers)
     : event_observer_(std::make_unique<EventObserver>(this)),
-      display_connection_(std::make_unique<assistant::CrosDisplayConnection>(
+      display_connection_(std::make_unique<DisplayConnectionImpl>(
           event_observer_.get(),
           /*feedback_ui_enabled=*/true,
           assistant::features::IsMediaSessionIntegrationEnabled())),

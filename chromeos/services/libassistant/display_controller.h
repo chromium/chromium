@@ -19,13 +19,9 @@ class SpeechRecognitionObserver;
 }  // namespace chromeos
 
 namespace chromeos {
-namespace assistant {
-class CrosDisplayConnection;
-}  // namespace assistant
-}  // namespace chromeos
-
-namespace chromeos {
 namespace libassistant {
+
+class DisplayConnectionImpl;
 
 class DisplayController : public mojom::DisplayController,
                           public AssistantManagerObserver {
@@ -55,7 +51,7 @@ class DisplayController : public mojom::DisplayController,
 
   mojo::Receiver<mojom::DisplayController> receiver_{this};
   std::unique_ptr<EventObserver> event_observer_;
-  std::unique_ptr<assistant::CrosDisplayConnection> display_connection_;
+  std::unique_ptr<DisplayConnectionImpl> display_connection_;
 
   // Owned by |LibassistantService|.
   mojo::RemoteSet<mojom::SpeechRecognitionObserver>&
