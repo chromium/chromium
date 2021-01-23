@@ -26,7 +26,8 @@ class AssistantManagerServiceDelegateImpl
   ~AssistantManagerServiceDelegateImpl() override;
 
   // AssistantManagerServiceDelegate implementation:
-  std::unique_ptr<AudioInputHost> CreateAudioInputHost() override;
+  std::unique_ptr<AudioInputHost> CreateAudioInputHost(
+      AudioInputBindings bindings) override;
   std::unique_ptr<CrosPlatformApi> CreatePlatformApi(
       AssistantMediaSession* media_session,
       scoped_refptr<base::SingleThreadTaskRunner> background_thread_task_runner)

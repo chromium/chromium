@@ -35,7 +35,8 @@ LibassistantService::LibassistantService(
   service_controller_->AddAndFireAssistantManagerObserver(
       display_controller_.get());
 
-  platform_api_->SetAudioInputProvider(&platform_api->GetAudioInputProvider())
+  platform_api_
+      ->SetAudioInputProvider(&audio_input_controller_->audio_input_provider())
       .SetAudioOutputProvider(&platform_api->GetAudioOutputProvider())
       .SetAuthProvider(&platform_api->GetAuthProvider())
       .SetFileProvider(&platform_api->GetFileProvider())

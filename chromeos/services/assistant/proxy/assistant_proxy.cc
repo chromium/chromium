@@ -98,12 +98,16 @@ void AssistantProxy::BindControllers(
       display_controller_remote_.BindNewPipeAndPassReceiver(),
       pending_service_controller_remote.InitWithNewPipeAndPassReceiver());
 
-  service_controller_proxy_ = std::make_unique<ServiceControllerProxy>(
-      host, std::move(pending_url_loader_factory),
-      std::move(pending_service_controller_remote));
   conversation_controller_proxy_ =
       std::make_unique<ConversationControllerProxy>(
           std::move(pending_conversation_controller_remote));
+  service_controller_proxy_ = std::make_unique<ServiceControllerProxy>(
+      host, std::move(pending_url_loader_factory),
+      std::move(pending_service_controller_remote));
+
+  audio_input_bindings_ = AudioInputBindings(
+      std::move(pending_audio_input_controller_remote),
+      std::move(pending_audio_stream_factory_delegate_receiver));
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>
@@ -114,6 +118,11 @@ AssistantProxy::background_task_runner() {
 ServiceControllerProxy& AssistantProxy::service_controller() {
   DCHECK(service_controller_proxy_);
   return *service_controller_proxy_;
+}
+
+AudioInputBindings AssistantProxy::ExtractAudioInputBindings() {
+  DCHECK(audio_input_bindings_.has_value());
+  return std::move(audio_input_bindings_.value());
 }
 
 ConversationControllerProxy& AssistantProxy::conversation_controller_proxy() {

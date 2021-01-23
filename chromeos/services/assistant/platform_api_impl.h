@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "chromeos/services/assistant/platform/audio_input_provider_impl.h"
 #include "chromeos/services/assistant/platform/audio_output_provider_impl.h"
 #include "chromeos/services/assistant/platform/file_provider_impl.h"
 #include "chromeos/services/assistant/platform/network_provider_impl.h"
@@ -39,15 +38,11 @@ class PlatformApiImpl : public CrosPlatformApi {
       scoped_refptr<base::SingleThreadTaskRunner> background_task_runner);
   ~PlatformApiImpl() override;
 
-  // assistant_client::PlatformApi overrides
-  AudioInputProviderImpl& GetAudioInputProvider() override;
   assistant_client::AudioOutputProvider& GetAudioOutputProvider() override;
   assistant_client::AuthProvider& GetAuthProvider() override;
   assistant_client::FileProvider& GetFileProvider() override;
   assistant_client::NetworkProvider& GetNetworkProvider() override;
   assistant_client::SystemProvider& GetSystemProvider() override;
-
-  void InitializeAudioInputHost(AudioInputHost& host) override;
 
  private:
   // ChromeOS does not use auth manager, so we don't yet need to implement a
@@ -82,7 +77,6 @@ class PlatformApiImpl : public CrosPlatformApi {
     void Reset() override;
   };
 
-  AudioInputProviderImpl audio_input_provider_;
   AudioOutputProviderImpl audio_output_provider_;
   FakeAuthProvider auth_provider_;
   FileProviderImpl file_provider_;

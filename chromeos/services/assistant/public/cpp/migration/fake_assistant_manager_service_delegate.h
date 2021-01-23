@@ -25,8 +25,9 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_MIGRATION_TEST_SUPPORT)
 
   FakeAssistantManager* assistant_manager();
 
-  // AssistantManagerServiceDelegate:
-  std::unique_ptr<AudioInputHost> CreateAudioInputHost() override;
+  // AssistantManagerServiceDelegate implementation:
+  std::unique_ptr<AudioInputHost> CreateAudioInputHost(
+      AudioInputBindings bindings) override;
   std::unique_ptr<CrosPlatformApi> CreatePlatformApi(
       AssistantMediaSession* media_session,
       scoped_refptr<base::SingleThreadTaskRunner> background_thread_task_runner)

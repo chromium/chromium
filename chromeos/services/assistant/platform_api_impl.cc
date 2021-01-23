@@ -19,7 +19,6 @@
 #include "libassistant/shared/public/platform_factory.h"
 #include "media/audio/audio_device_description.h"
 
-using assistant_client::AudioInputProvider;
 using assistant_client::AudioOutputProvider;
 using assistant_client::AuthProvider;
 using assistant_client::FileProvider;
@@ -82,8 +81,7 @@ PlatformApiImpl::PlatformApiImpl(
     mojo::PendingRemote<device::mojom::BatteryMonitor> battery_monitor,
     scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> background_task_runner)
-    : audio_input_provider_(),
-      audio_output_provider_(media_session,
+    : audio_output_provider_(media_session,
                              background_task_runner,
                              media::AudioDeviceDescription::kDefaultDeviceId) {
   // Only enable native power features if they are supported by the UI.
@@ -97,10 +95,6 @@ PlatformApiImpl::PlatformApiImpl(
 }
 
 PlatformApiImpl::~PlatformApiImpl() = default;
-
-AudioInputProviderImpl& PlatformApiImpl::GetAudioInputProvider() {
-  return audio_input_provider_;
-}
 
 AudioOutputProvider& PlatformApiImpl::GetAudioOutputProvider() {
   return audio_output_provider_;
@@ -120,10 +114,6 @@ NetworkProvider& PlatformApiImpl::GetNetworkProvider() {
 
 SystemProvider& PlatformApiImpl::GetSystemProvider() {
   return *system_provider_;
-}
-
-void PlatformApiImpl::InitializeAudioInputHost(AudioInputHost& host) {
-  host.Initialize(&audio_input_provider_.GetAudioInput());
 }
 
 }  // namespace assistant

@@ -9,6 +9,7 @@
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager.h"
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager_internal.h"
 #include "chromeos/services/assistant//public/cpp/migration/fake_platform_api.h"
+#include "chromeos/services/assistant/proxy/audio_input_bindings.h"
 #include "chromeos/services/assistant/public/cpp/migration/audio_input_host.h"
 
 namespace chromeos {
@@ -24,7 +25,6 @@ class FakeAudioInputHost : public AudioInputHost {
   ~FakeAudioInputHost() override = default;
 
   // AudioInputHost implementation:
-  void Initialize(AudioInputImpl* audio_input) override {}
   void SetMicState(bool mic_open) override {}
   void OnHotwordEnabled(bool enable) override {}
   void OnConversationTurnStarted() override {}
@@ -44,7 +44,8 @@ FakeAssistantManagerServiceDelegate::~FakeAssistantManagerServiceDelegate() =
     default;
 
 std::unique_ptr<AudioInputHost>
-FakeAssistantManagerServiceDelegate::CreateAudioInputHost() {
+FakeAssistantManagerServiceDelegate::CreateAudioInputHost(
+    AudioInputBindings bindings) {
   return std::make_unique<FakeAudioInputHost>();
 }
 

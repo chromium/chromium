@@ -258,9 +258,8 @@ AssistantManagerServiceImpl::AssistantManagerServiceImpl(
   assistant_proxy_->AddSpeechRecognitionObserver(
       speech_recognition_observer_->BindNewPipeAndPassRemote());
 
-  audio_input_host_ = delegate_->CreateAudioInputHost();
-
-  platform_api_->InitializeAudioInputHost(*audio_input_host_);
+  audio_input_host_ = delegate_->CreateAudioInputHost(
+      assistant_proxy_->ExtractAudioInputBindings());
 
   settings_delegate_ =
       std::make_unique<AssistantDeviceSettingsDelegate>(context);

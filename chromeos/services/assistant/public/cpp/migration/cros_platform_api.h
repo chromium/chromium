@@ -8,7 +8,6 @@
 #include "base/macros.h"
 
 namespace assistant_client {
-class AudioInputProvider;
 class AudioOutputProvider;
 class AuthProvider;
 class FileProvider;
@@ -19,10 +18,7 @@ class SystemProvider;
 namespace chromeos {
 namespace assistant {
 
-class AudioInputHost;
-
-// Platform API required by the voice assistant, extended with some methods used
-// when ChromeOS needs to make changes to the platform state.
+// Platform API required by the Google assistant.
 // Note that this no longer inherits from |assistant_client::PlatformApi|,
 // because we are in the process of migrating its functionality from here to the
 // Libassistant mojom service.
@@ -30,14 +26,6 @@ class CrosPlatformApi {
  public:
   CrosPlatformApi() = default;
   virtual ~CrosPlatformApi() = default;
-
-  // Initialize the AudioInputHost.
-  // TODO(b/171748795): Should be gone when the Libassistant V2 migration is
-  // completed.
-  virtual void InitializeAudioInputHost(AudioInputHost&) = 0;
-
-  // Returns the platform's audio input provider.
-  virtual assistant_client::AudioInputProvider& GetAudioInputProvider() = 0;
 
   // Returns the platform's audio output provider.
   virtual assistant_client::AudioOutputProvider& GetAudioOutputProvider() = 0;

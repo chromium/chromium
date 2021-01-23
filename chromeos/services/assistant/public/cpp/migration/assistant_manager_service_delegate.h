@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/single_thread_task_runner.h"
 
 namespace assistant_client {
@@ -22,15 +21,21 @@ namespace assistant {
 class AssistantMediaSession;
 class AudioInputHost;
 class CrosPlatformApi;
+struct AudioInputBindings;
 
 // Interface class that provides factory methods for assistant internal
 // functionality.
 class AssistantManagerServiceDelegate {
  public:
   AssistantManagerServiceDelegate() = default;
+  AssistantManagerServiceDelegate(const AssistantManagerServiceDelegate&) =
+      delete;
+  AssistantManagerServiceDelegate& operator=(
+      const AssistantManagerServiceDelegate&) = delete;
   virtual ~AssistantManagerServiceDelegate() = default;
 
-  virtual std::unique_ptr<AudioInputHost> CreateAudioInputHost() = 0;
+  virtual std::unique_ptr<AudioInputHost> CreateAudioInputHost(
+      AudioInputBindings bindings) = 0;
 
   virtual std::unique_ptr<CrosPlatformApi> CreatePlatformApi(
       AssistantMediaSession* media_session,
@@ -44,9 +49,6 @@ class AssistantManagerServiceDelegate {
   virtual assistant_client::AssistantManagerInternal*
   UnwrapAssistantManagerInternal(
       assistant_client::AssistantManager* assistant_manager) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AssistantManagerServiceDelegate);
 };
 
 }  // namespace assistant

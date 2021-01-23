@@ -5,29 +5,49 @@ import("//build/buildflag_header.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//chromeos/assistant/assistant.gni")
 
-assert(enable_cros_libassistant)
-
 source_set("proxy") {
+  sources = []
+  deps = []
+
+  if (enable_cros_libassistant) {
+    sources += [
+      "assistant_proxy.cc",
+      "assistant_proxy.h",
+      "conversation_controller_proxy.cc",
+      "conversation_controller_proxy.h",
+      "libassistant_service_host.h",
+      "service_controller_proxy.cc",
+      "service_controller_proxy.h",
+    ]
+
+    public_deps = [ "//chromeos/services/libassistant/public/mojom" ]
+
+    deps += [
+      ":audio_input_bindings",
+      "//base",
+      "//chromeos/assistant/internal",
+      "//chromeos/assistant/internal/proto/google3",
+      "//chromeos/constants",
+      "//chromeos/services/assistant/public/cpp",
+      "//chromeos/services/assistant/public/cpp/migration",
+      "//chromeos/services/libassistant",
+      "//services/network/public/cpp",
+    ]
+  }
+}
+
+source_set("audio_input_bindings") {
   sources = [
-    "assistant_proxy.cc",
-    "assistant_proxy.h",
-    "conversation_controller_proxy.cc",
-    "conversation_controller_proxy.h",
-    "libassistant_service_host.h",
-    "service_controller_proxy.cc",
-    "service_controller_proxy.h",
+    "audio_input_bindings.cc",
+    "audio_input_bindings.h",
   ]
 
   public_deps = [ "//chromeos/services/libassistant/public/mojom" ]
 
   deps = [
     "//base",
-    "//chromeos/assistant/internal",
-    "//chromeos/assistant/internal/proto/google3",
     "//chromeos/constants",
     "//chromeos/services/assistant/public/cpp",
-    "//chromeos/services/assistant/public/cpp/migration",
-    "//chromeos/services/libassistant",
     "//services/network/public/cpp",
   ]
 }

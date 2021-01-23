@@ -17,10 +17,12 @@ namespace libassistant {
 
 namespace {
 
+#if !BUILDFLAG(ENABLE_FAKE_ASSISTANT_MICROPHONE)
 audio::DeadStreamDetection ToDeadStreamDetection(bool detect_dead_stream) {
   return detect_dead_stream ? audio::DeadStreamDetection::kEnabled
                             : audio::DeadStreamDetection::kDisabled;
 }
+#endif  // !BUILDFLAG(ENABLE_FAKE_ASSISTANT_MICROPHONE)
 
 }  // namespace
 

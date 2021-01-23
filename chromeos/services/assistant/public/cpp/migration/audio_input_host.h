@@ -12,18 +12,11 @@
 namespace chromeos {
 namespace assistant {
 
-class AudioInputImpl;
-
 // Class that provides the bridge between the ChromeOS UI thread and the
 // Libassistant audio input class.
 class COMPONENT_EXPORT(ASSISTANT_SERVICE) AudioInputHost {
  public:
   virtual ~AudioInputHost() = default;
-
-  // Initialize this class by setting the backend that it's supposed to use.
-  // TODO(b/171748795): Should be gone when the Libassistant V2 migration is
-  // completed.
-  virtual void Initialize(AudioInputImpl* audio_input) = 0;
 
   // Called when the mic state associated with the interaction is changed.
   virtual void SetMicState(bool mic_open) = 0;

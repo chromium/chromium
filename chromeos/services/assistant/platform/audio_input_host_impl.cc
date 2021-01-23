@@ -7,7 +7,8 @@
 #include "base/check.h"
 #include "base/optional.h"
 #include "chromeos/services/assistant/platform/audio_devices.h"
-#include "chromeos/services/assistant/platform/audio_input_impl.h"
+#include "chromeos/services/assistant/proxy/audio_input_bindings.h"
+#include "chromeos/services/assistant/public/cpp/assistant_client.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 
 namespace chromeos {
@@ -15,36 +16,64 @@ namespace assistant {
 
 namespace {
 
-AudioInputImpl::LidState ConvertLidState(
-    chromeos::PowerManagerClient::LidState state) {
+using MojomLidState = chromeos::libassistant::mojom::LidState;
+
+MojomLidState ConvertLidState(chromeos::PowerManagerClient::LidState state) {
   switch (state) {
     case chromeos::PowerManagerClient::LidState::CLOSED:
-      return AudioInputImpl::LidState::kClosed;
+      return MojomLidState::kClosed;
     case chromeos::PowerManagerClient::LidState::OPEN:
-      return AudioInputImpl::LidState::kOpen;
+      return MojomLidState::kOpen;
     case chromeos::PowerManagerClient::LidState::NOT_PRESENT:
       // If there is no lid, it can't be closed.
-      return AudioInputImpl::LidState::kOpen;
+      return MojomLidState::kOpen;
   }
 }
 
 }  // namespace
 
+// Delegate that will fetch an audio stream factory from the |AssistantClient|.
+class AudioStreamFactoryDelegateImpl
+    : public chromeos::libassistant::mojom::AudioStreamFactoryDelegate {
+ public:
+  explicit AudioStreamFactoryDelegateImpl(
+      mojo::PendingReceiver<
+          chromeos::libassistant::mojom::AudioStreamFactoryDelegate>
+          pending_receiver)
+      : receiver_(this, std::move(pending_receiver)) {}
+
+  AudioStreamFactoryDelegateImpl(const AudioStreamFactoryDelegateImpl&) =
+      delete;
+  AudioStreamFactoryDelegateImpl& operator=(
+      const AudioStreamFactoryDelegateImpl&) = delete;
+  ~AudioStreamFactoryDelegateImpl() override = default;
+
+  void GetAudioStreamFactory(GetAudioStreamFactoryCallback callback) override {
+    mojo::PendingRemote<audio::mojom::StreamFactory> result;
+    AssistantClient::Get()->RequestAudioStreamFactory(
+        result.InitWithNewPipeAndPassReceiver());
+    std::move(callback).Run(std::move(result));
+  }
+
+ private:
+  mojo::Receiver<chromeos::libassistant::mojom::AudioStreamFactoryDelegate>
+      receiver_;
+};
+
 chromeos::assistant::AudioInputHostImpl::AudioInputHostImpl(
+    AudioInputBindings bindings,
     CrasAudioHandler* cras_audio_handler,
     chromeos::PowerManagerClient* power_manager_client,
     const std::string& locale)
-    : power_manager_client_(power_manager_client),
+    : remote_(std::move(bindings.pending_audio_input_controller_remote)),
+      power_manager_client_(power_manager_client),
       power_manager_client_observer_(this),
-      audio_devices_(cras_audio_handler, locale) {
+      audio_devices_(cras_audio_handler, locale),
+      audio_stream_factory_delegate_(
+          std::make_unique<AudioStreamFactoryDelegateImpl>(std::move(
+              bindings.pending_audio_stream_factory_delegate_receiver))) {
   DCHECK(power_manager_client_);
-}
 
-AudioInputHostImpl::~AudioInputHostImpl() = default;
-
-void AudioInputHostImpl::Initialize(AudioInputImpl* audio_input) {
-  DCHECK(audio_input);
-  audio_input_ = audio_input;
   audio_devices_observation_.Observe(&audio_devices_);
   power_manager_client_observer_.Observe(power_manager_client_);
   power_manager_client_->GetSwitchStates(
@@ -52,17 +81,19 @@ void AudioInputHostImpl::Initialize(AudioInputImpl* audio_input) {
                      weak_factory_.GetWeakPtr()));
 }
 
+AudioInputHostImpl::~AudioInputHostImpl() = default;
+
 void AudioInputHostImpl::SetMicState(bool mic_open) {
-  audio_input_->SetMicState(mic_open);
+  remote_->SetMicOpen(mic_open);
 }
 
 void AudioInputHostImpl::SetDeviceId(
     const base::Optional<std::string>& device_id) {
-  audio_input_->SetDeviceId(device_id.value_or(""));
+  remote_->SetDeviceId(device_id);
 }
 
 void AudioInputHostImpl::OnConversationTurnStarted() {
-  audio_input_->OnConversationTurnStarted();
+  remote_->OnConversationTurnStarted();
   // Inform power manager of a wake notification when Libassistant
   // recognized hotword and started a conversation. We intentionally
   // avoid using |NotifyUserActivity| because it is not suitable for
@@ -71,16 +102,16 @@ void AudioInputHostImpl::OnConversationTurnStarted() {
 }
 
 void AudioInputHostImpl::OnConversationTurnFinished() {
-  audio_input_->OnConversationTurnFinished();
+  remote_->OnConversationTurnFinished();
 }
 
 void AudioInputHostImpl::OnHotwordEnabled(bool enable) {
-  audio_input_->OnHotwordEnabled(enable);
+  remote_->SetHotwordEnabled(enable);
 }
 
 void AudioInputHostImpl::SetHotwordDeviceId(
     const base::Optional<std::string>& device_id) {
-  audio_input_->SetHotwordDeviceId(device_id.value_or(""));
+  remote_->SetHotwordDeviceId(device_id);
 }
 
 void AudioInputHostImpl::LidEventReceived(
@@ -89,13 +120,13 @@ void AudioInputHostImpl::LidEventReceived(
   // Lid switch event still gets fired during system suspend, which enables
   // us to stop DSP recording correctly when user closes lid after the device
   // goes to sleep.
-  audio_input_->OnLidStateChanged(ConvertLidState(state));
+  remote_->SetLidState(ConvertLidState(state));
 }
 
 void AudioInputHostImpl::OnInitialLidStateReceived(
     base::Optional<chromeos::PowerManagerClient::SwitchStates> switch_states) {
   if (switch_states.has_value())
-    audio_input_->OnLidStateChanged(ConvertLidState(switch_states->lid_state));
+    remote_->SetLidState(ConvertLidState(switch_states->lid_state));
 }
 
 }  // namespace assistant

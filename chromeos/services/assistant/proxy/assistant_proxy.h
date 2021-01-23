@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/threading/thread.h"
+#include "chromeos/services/assistant/proxy/audio_input_bindings.h"
 #include "chromeos/services/libassistant/public/mojom/conversation_controller.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/service.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -64,6 +65,9 @@ class AssistantProxy {
       mojo::PendingRemote<
           chromeos::libassistant::mojom::SpeechRecognitionObserver> observer);
 
+  // Extract the audio input bindings so they can be bound and used.
+  AudioInputBindings ExtractAudioInputBindings();
+
  private:
   using AudioInputControllerMojom =
       chromeos::libassistant::mojom::AudioInputController;
@@ -95,8 +99,11 @@ class AssistantProxy {
   mojo::Remote<LibassistantServiceMojom> libassistant_service_remote_;
   mojo::Remote<DisplayControllerMojom> display_controller_remote_;
 
-  std::unique_ptr<ServiceControllerProxy> service_controller_proxy_;
   std::unique_ptr<ConversationControllerProxy> conversation_controller_proxy_;
+  std::unique_ptr<ServiceControllerProxy> service_controller_proxy_;
+
+  // Will be nullopt after ExtractAudioInputBindings() is called.
+  base::Optional<AudioInputBindings> audio_input_bindings_;
 
   // The thread on which the Libassistant service runs.
   // Warning: must be the last object, so it is destroyed (and flushed) first.

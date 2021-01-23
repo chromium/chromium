@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chromeos/services/assistant/public/cpp/migration/cros_platform_api.h"
 
 namespace chromeos {
@@ -19,20 +18,18 @@ namespace assistant {
 class FakePlatformApi : public CrosPlatformApi {
  public:
   FakePlatformApi();
+  FakePlatformApi(const FakePlatformApi&) = delete;
+  FakePlatformApi& operator=(const FakePlatformApi&) = delete;
   ~FakePlatformApi() override;
 
-  // CrosPlatformApi overrides
-  assistant_client::AudioInputProvider& GetAudioInputProvider() override;
+  // CrosPlatformApi implementation:
   assistant_client::AudioOutputProvider& GetAudioOutputProvider() override;
   assistant_client::AuthProvider& GetAuthProvider() override;
   assistant_client::FileProvider& GetFileProvider() override;
   assistant_client::NetworkProvider& GetNetworkProvider() override;
   assistant_client::SystemProvider& GetSystemProvider() override;
-  void InitializeAudioInputHost(AudioInputHost&) override {}
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(FakePlatformApi);
-
   std::unique_ptr<assistant_client::AudioOutputProvider> audio_output_provider_;
 };
 

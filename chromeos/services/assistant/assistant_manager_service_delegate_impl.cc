@@ -11,6 +11,7 @@
 #include "ash/public/cpp/assistant/assistant_state_base.h"
 #include "chromeos/services/assistant/platform/audio_input_host_impl.h"
 #include "chromeos/services/assistant/platform_api_impl.h"
+#include "chromeos/services/assistant/proxy/assistant_proxy.h"
 #include "chromeos/services/assistant/service_context.h"
 #include "libassistant/shared/internal_api/assistant_manager_internal.h"
 #include "libassistant/shared/public/assistant_manager.h"
@@ -27,9 +28,11 @@ AssistantManagerServiceDelegateImpl::~AssistantManagerServiceDelegateImpl() =
     default;
 
 std::unique_ptr<AudioInputHost>
-AssistantManagerServiceDelegateImpl::CreateAudioInputHost() {
+AssistantManagerServiceDelegateImpl::CreateAudioInputHost(
+    AudioInputBindings bindings) {
   return std::make_unique<AudioInputHostImpl>(
-      context_->cras_audio_handler(), context_->power_manager_client(),
+      std::move(bindings), context_->cras_audio_handler(),
+      context_->power_manager_client(),
       context_->assistant_state()->locale().value());
 }
 

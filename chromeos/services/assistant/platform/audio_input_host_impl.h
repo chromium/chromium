@@ -16,24 +16,31 @@
 #include "base/time/time.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/services/assistant/platform/audio_devices.h"
+#include "chromeos/services/libassistant/public/mojom/audio_input_controller.mojom.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromeos {
 namespace assistant {
 
+class AudioStreamFactoryDelegateImpl;
+struct AudioInputBindings;
+
+// Class that provides the bridge between the ChromeOS Browser thread and the
+// Libassistant audio input mojom service.
 class COMPONENT_EXPORT(ASSISTANT_SERVICE) AudioInputHostImpl
     : public AudioInputHost,
       private chromeos::PowerManagerClient::Observer,
       private AudioDevices::Observer {
  public:
-  AudioInputHostImpl(CrasAudioHandler* cras_audio_handler,
+  AudioInputHostImpl(AudioInputBindings bindings,
+                     CrasAudioHandler* cras_audio_handler,
                      chromeos::PowerManagerClient* power_manager_client,
                      const std::string& locale);
-  AudioInputHostImpl(const AudioInputHostImpl&) = delete;
+  AudioInputHostImpl(const AudioInputHost&) = delete;
   AudioInputHostImpl& operator=(const AudioInputHostImpl&) = delete;
   ~AudioInputHostImpl() override;
 
   // AudioInputHost implementation:
-  void Initialize(AudioInputImpl* audio_input) override;
   void SetMicState(bool mic_open) override;
   void OnHotwordEnabled(bool enable) override;
   void OnConversationTurnStarted() override;
@@ -52,8 +59,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AudioInputHostImpl
   void OnInitialLidStateReceived(
       base::Optional<chromeos::PowerManagerClient::SwitchStates> switch_states);
 
-  // Owned by |PlatformApiImpl| which also owns |this|.
-  AudioInputImpl* audio_input_ = nullptr;
+  mojo::Remote<chromeos::libassistant::mojom::AudioInputController> remote_;
   chromeos::PowerManagerClient* const power_manager_client_;
   base::ScopedObservation<chromeos::PowerManagerClient,
                           chromeos::PowerManagerClient::Observer>
@@ -63,6 +69,9 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AudioInputHostImpl
   // accordingly.
   AudioDevices audio_devices_;
   AudioDevices::ScopedObservation audio_devices_observation_{this};
+
+  std::unique_ptr<AudioStreamFactoryDelegateImpl>
+      audio_stream_factory_delegate_;
 
   base::WeakPtrFactory<AudioInputHostImpl> weak_factory_{this};
 };

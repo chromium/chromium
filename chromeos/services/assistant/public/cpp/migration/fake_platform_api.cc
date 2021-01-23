@@ -72,11 +72,6 @@ FakePlatformApi::FakePlatformApi()
 
 FakePlatformApi::~FakePlatformApi() = default;
 
-assistant_client::AudioInputProvider& FakePlatformApi::GetAudioInputProvider() {
-  NOTIMPLEMENTED();
-  abort();
-}
-
 assistant_client::AudioOutputProvider&
 FakePlatformApi::GetAudioOutputProvider() {
   return *audio_output_provider_.get();

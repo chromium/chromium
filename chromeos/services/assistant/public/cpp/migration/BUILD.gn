@@ -41,6 +41,7 @@ component("test_support") {
     "//base",
     "//chromeos/assistant/internal:test_support",
     "//chromeos/assistant/internal/proto/google3",
+    "//chromeos/services/assistant/proxy:audio_input_bindings",
     "//libassistant/shared/public",
   ]
 }
