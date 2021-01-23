@@ -39,5 +39,5 @@ public abstract class CrashReporterCallback {
      * @param localId the local identifier of the crash that failed to upload.
      * @param failureReason a free text string giving the failure reason.
      */
-    public void onCrashUploadFailed(@NonNull String localId, @NonNull String faulreReason) {}
+    public void onCrashUploadFailed(@NonNull String localId, @NonNull String failureReason) {}
 }
