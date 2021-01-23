@@ -14,6 +14,7 @@
 #include "base/strings/string16.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/tab_group_controller.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -31,11 +32,17 @@ TabGroup::~TabGroup() = default;
 
 void TabGroup::SetVisualData(const tab_groups::TabGroupVisualData& visual_data,
                              bool is_customized) {
+  std::unique_ptr<tab_groups::TabGroupVisualData> old_visuals =
+      std::move(visual_data_);
+  TabGroupChange::VisualsChange visuals;
+  visuals.old_visuals = old_visuals.get();
+  visuals.new_visuals = &visual_data;
   visual_data_ = std::make_unique<tab_groups::TabGroupVisualData>(visual_data);
 
   // Once the visual data is customized, it should stay customized.
   is_customized_ |= is_customized;
-  controller_->ChangeTabGroupVisuals(id_);
+
+  controller_->ChangeTabGroupVisuals(id_, visuals);
 }
 
 base::string16 TabGroup::GetContentString() const {
@@ -56,7 +63,9 @@ base::string16 TabGroup::GetContentString() const {
 void TabGroup::AddTab() {
   if (tab_count_ == 0) {
     controller_->CreateTabGroup(id_);
-    controller_->ChangeTabGroupVisuals(id_);
+    TabGroupChange::VisualsChange visuals;
+    visuals.old_visuals = nullptr;
+    controller_->ChangeTabGroupVisuals(id_, visuals);
   }
   controller_->ChangeTabGroupContents(id_);
   ++tab_count_;

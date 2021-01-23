@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
+#include "components/performance_manager/public/freezing/freezing.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -184,6 +185,9 @@ class BrowserTabStripController : public TabStripController,
   PrefChangeRegistrar local_pref_registrar_;
 
   std::unique_ptr<TabMenuModelFactory> menu_model_factory_;
+
+  std::unique_ptr<performance_manager::freezing::FreezingVoteToken>
+      freezing_token_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_BROWSER_TAB_STRIP_CONTROLLER_H_
