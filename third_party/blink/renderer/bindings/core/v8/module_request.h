@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_MODULE_REQUEST_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_MODULE_REQUEST_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_position.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -26,7 +27,7 @@ struct ImportAssertion {
 // https://tc39.es/proposal-import-assertions/#sec-modulerequest-record
 // Represents a module script's request to import a module given a specifier and
 // list of import assertions.
-struct ModuleRequest {
+struct CORE_EXPORT ModuleRequest {
   String specifier;
   TextPosition position;
   Vector<ImportAssertion> import_assertions;
