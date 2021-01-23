@@ -50,6 +50,7 @@ const char* const kMemoryPressureEventsAllowedArgs[] = {
     "level", "listener_creation_info", nullptr};
 
 const AllowlistEntry kEventArgsAllowlist[] = {
+    // Thread and process names are now recorded in perfetto.
     {"__metadata", "thread_name", nullptr},
     {"__metadata", "process_name", nullptr},
     {"__metadata", "process_uptime_seconds", nullptr},

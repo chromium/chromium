@@ -1686,43 +1686,6 @@ TEST_F(TraceEventTestFixture, ThreadNames) {
   }
 }
 
-TEST_F(TraceEventTestFixture, ThreadNameChanges) {
-  BeginTrace();
-
-  PlatformThread::SetName("");
-  TRACE_EVENT_INSTANT0("drink", "water", TRACE_EVENT_SCOPE_THREAD);
-
-  PlatformThread::SetName("cafe");
-  TRACE_EVENT_INSTANT0("drink", "coffee", TRACE_EVENT_SCOPE_THREAD);
-
-  PlatformThread::SetName("shop");
-  // No event here, so won't appear in combined name.
-
-  PlatformThread::SetName("pub");
-  TRACE_EVENT_INSTANT0("drink", "beer", TRACE_EVENT_SCOPE_THREAD);
-  TRACE_EVENT_INSTANT0("drink", "wine", TRACE_EVENT_SCOPE_THREAD);
-
-  PlatformThread::SetName(" bar");
-  TRACE_EVENT_INSTANT0("drink", "whisky", TRACE_EVENT_SCOPE_THREAD);
-
-  EndTraceAndFlush();
-
-  std::vector<const DictionaryValue*> items =
-      FindTraceEntries(trace_parsed_, "thread_name");
-  EXPECT_EQ(1u, items.size());
-  ASSERT_GT(items.size(), 0u);
-  const DictionaryValue* item = items[0];
-  ASSERT_TRUE(item);
-  int tid;
-  EXPECT_TRUE(item->GetInteger("tid", &tid));
-  EXPECT_EQ(PlatformThread::CurrentId(), static_cast<PlatformThreadId>(tid));
-
-  std::string expected_name = "cafe,pub, bar";
-  std::string tmp;
-  EXPECT_TRUE(item->GetString("args.name", &tmp));
-  EXPECT_EQ(expected_name, tmp);
-}
-
 // Test that the disabled trace categories are included/excluded from the
 // trace output correctly.
 TEST_F(TraceEventTestFixture, DisabledCategories) {
