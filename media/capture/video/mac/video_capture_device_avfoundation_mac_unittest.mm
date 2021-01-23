@@ -9,11 +9,16 @@
 #include "base/bind.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
-#import "media/capture/video/mac/test/mock_video_capture_device_avfoundation_frame_receiver_mac.h"
-#import "media/capture/video/mac/test/video_capture_test_utils_mac.h"
+#include "base/time/time.h"
+#include "media/base/video_types.h"
+#include "media/capture/video/mac/test/mock_video_capture_device_avfoundation_frame_receiver_mac.h"
+#include "media/capture/video/mac/test/pixel_buffer_test_utils_mac.h"
+#include "media/capture/video/mac/test/video_capture_test_utils_mac.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/color_space.h"
 
 using testing::_;
 
@@ -210,6 +215,31 @@ TEST(VideoCaptureDeviceAVFoundationMacTest,
     ASSERT_TRUE([captureDevice startCapture]);
 
     [captureDevice takePhoto];
+  }));
+}
+
+TEST(VideoCaptureDeviceAVFoundationMacTest, ForwardsOddPixelBufferResolution) {
+  // See crbug/1168112.
+  RunTestCase(base::BindOnce([] {
+    testing::NiceMock<MockVideoCaptureDeviceAVFoundationFrameReceiver>
+        frame_receiver;
+    base::scoped_nsobject<VideoCaptureDeviceAVFoundation> captureDevice(
+        [[VideoCaptureDeviceAVFoundation alloc]
+            initWithFrameReceiver:&frame_receiver]);
+
+    gfx::Size size(1280, 719);
+    VideoCaptureFormat format(size, 30, PIXEL_FORMAT_YUY2);
+    std::unique_ptr<ByteArrayPixelBuffer> buffer =
+        CreateYuvsPixelBufferFromSingleRgbColor(size.width(), size.height(), 0,
+                                                0, 0);
+    [captureDevice
+        callLocked:base::BindLambdaForTesting([&] {
+          EXPECT_CALL(frame_receiver, ReceiveFrame(_, _, format, _, _, _, _));
+          [captureDevice processPixelBuffer:buffer->pixel_buffer
+                              captureFormat:format
+                                 colorSpace:gfx::ColorSpace::CreateSRGB()
+                                  timestamp:base::TimeDelta()];
+        })];
   }));
 }
 

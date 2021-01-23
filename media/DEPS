@@ -3,6 +3,7 @@ include_rules = [
   "+cc/base/math_util.h",
   "+cc/paint",
   "+chromeos/audio",
+  "+components/crash/core/common/crash_key.h",
   "+components/system_media_controls/linux/buildflags",
   "+crypto",
   "+device/udev_linux",
