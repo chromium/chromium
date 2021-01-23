@@ -4,7 +4,16 @@
 
 #include "chrome/browser/metrics/desktop_platform_features_metrics_provider.h"
 
+#include <vector>
+
+#include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/read_later/reading_list_model_factory.h"
+#include "components/reading_list/core/reading_list_model.h"
+#include "components/reading_list/features/reading_list_switches.h"
 #include "ui/native_theme/native_theme.h"
 
 namespace {
@@ -34,4 +43,20 @@ void DesktopPlatformFeaturesMetricsProvider::ProvideCurrentSessionData(
                                           : DarkModeStatus::kLight;
   }
   UMA_HISTOGRAM_ENUMERATION("Browser.DarkModeStatus", status);
+
+  // Record how many items are in the reading list.
+  if (base::FeatureList::IsEnabled(reading_list::switches::kReadLater)) {
+    std::vector<Profile*> profiles =
+        g_browser_process->profile_manager()->GetLoadedProfiles();
+    for (Profile* profile : profiles) {
+      ReadingListModel* model =
+          ReadingListModelFactory::GetForBrowserContext(profile);
+      if (model && model->loaded()) {
+        UMA_HISTOGRAM_COUNTS_1000("ReadingList.Unread.Count.OnUMAUpload",
+                                  model->unread_size());
+        UMA_HISTOGRAM_COUNTS_1000("ReadingList.Read.Count.OnUMAUpload",
+                                  model->size() - model->unread_size());
+      }
+    }
+  }
 }

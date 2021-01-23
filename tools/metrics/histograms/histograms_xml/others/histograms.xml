@@ -12598,6 +12598,24 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ReadingList.{ReadStatus}.Count.{Variation}" units="count"
+    expires_after="M92">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    The number of {ReadStatus} items in the reading list. Recorded {Variation}.
+  </summary>
+  <token key="ReadStatus">
+    <variant name="Read" summary="read"/>
+    <variant name="Unread" summary="unread"/>
+  </token>
+  <token key="Variation">
+    <variant name="OnModelLoaded"
+        summary="when the reading list model is loaded"/>
+    <variant name="OnUMAUpload" summary="every UMA upload"/>
+  </token>
+</histogram>
+
 <histogram name="RecoveryComponent.Event" enum="RecoveryComponentEvent"
     expires_after="M77">
   <owner>robertshield@chromium.org</owner>
