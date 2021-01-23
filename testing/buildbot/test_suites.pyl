@@ -3746,7 +3746,7 @@
       }
     },
 
-    'lacros_tast_tests': {
+    'lacros_tast_tests_amd64_generic': {
       'lacros_tast_tests_amd64_generic': {
         'swarming': {
           'idempotent': False,  # https://crbug.com/923426#c27
@@ -3755,7 +3755,6 @@
               'cpu': 'x86',
               'kvm': '1',
               'os': 'Ubuntu-16.04',
-              'pool': 'chrome.tests',
             }
           ],
         },
@@ -3763,6 +3762,9 @@
           'enable': True,
         },
       },
+    },
+
+    'lacros_tast_tests_eve': {
       'lacros_tast_tests_eve': {
         'swarming': {
           'idempotent': False,  # https://crbug.com/923426#c27

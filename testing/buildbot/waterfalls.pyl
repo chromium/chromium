@@ -302,6 +302,7 @@
           'chrome-swarming-pool',
         ],
         'test_suites': {
+          'gtest_tests': 'lacros_tast_tests_eve',
           'isolated_scripts': 'chrome_sizes',
         },
       },
@@ -6258,7 +6259,7 @@
           'chrome',
         ],
         'test_suites': {
-          'gtest_tests': 'lacros_tast_tests',
+          'gtest_tests': 'lacros_tast_tests_amd64_generic',
           'skylab_tests': 'cros_skylab_chrome_critical_x86_64',
         },
         'swarming': {
