@@ -16,7 +16,6 @@
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -31,7 +30,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -45,6 +43,7 @@
 #include "extensions/common/feature_switch.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/switches.h"
+#include "extensions/test/test_content_script_load_waiter.h"
 #include "net/base/filename_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -152,15 +151,14 @@ class ExtensionStartupTestBase : public InProcessBrowserTest {
             ->extension_service();
     ASSERT_EQ(expect_extensions_enabled, service->extensions_enabled());
 
-    content::WindowedNotificationObserver user_scripts_observer(
-        extensions::NOTIFICATION_USER_SCRIPTS_UPDATED,
-        content::NotificationService::AllSources());
     extensions::ExtensionUserScriptManager* manager =
         extensions::ExtensionSystem::Get(browser()->profile())
             ->extension_user_script_manager();
-    if (!manager->script_loader()->initial_load_complete())
-      user_scripts_observer.Wait();
-    ASSERT_TRUE(manager->script_loader()->initial_load_complete());
+
+    extensions::UserScriptLoader* loader = manager->script_loader();
+    if (!loader->initial_load_complete())
+      extensions::ContentScriptLoadWaiter(loader).Wait();
+    ASSERT_TRUE(loader->initial_load_complete());
   }
 
   void TestInjection(bool expect_css, bool expect_script) {
@@ -206,7 +204,6 @@ class ExtensionStartupTestBase : public InProcessBrowserTest {
   int num_expected_extensions_;
 };
 
-
 // ExtensionsStartupTest
 // Ensures that we can startup the browser with --enable-extensions and some
 // extensions installed and see them run and do basic things.
@@ -240,13 +237,17 @@ IN_PROC_BROWSER_TEST_F(ExtensionsStartupTest, DISABLED_NoFileAccess) {
       extension_list.push_back(it->get());
   }
 
+  extensions::ExtensionUserScriptManager* manager =
+      extensions::ExtensionSystem::Get(browser()->profile())
+          ->extension_user_script_manager();
+
+  extensions::UserScriptLoader* loader = manager->script_loader();
+
   for (size_t i = 0; i < extension_list.size(); ++i) {
-    content::WindowedNotificationObserver user_scripts_observer(
-        extensions::NOTIFICATION_USER_SCRIPTS_UPDATED,
-        content::NotificationService::AllSources());
+    extensions::ContentScriptLoadWaiter waiter(loader);
     extensions::util::SetAllowFileAccess(extension_list[i]->id(),
                                          browser()->profile(), false);
-    user_scripts_observer.Wait();
+    waiter.Wait();
   }
 
   TestInjection(false, false);

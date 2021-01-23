@@ -143,10 +143,6 @@ enum NotificationType {
   // found update.
   NOTIFICATION_EXTENSION_UPDATE_FOUND,
 
-  // Sent when there are new user scripts available.  The details are a
-  // pointer to SharedMemory containing the new scripts.
-  // DEPRECATED: Use extensions::UserScriptLoader::Observer::OnScriptsLoaded()
-  NOTIFICATION_USER_SCRIPTS_UPDATED,
   NOTIFICATION_EXTENSIONS_END
 };
 

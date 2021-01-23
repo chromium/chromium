@@ -17,11 +17,8 @@
 #include "build/build_config.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_process_host.h"
 #include "extensions/browser/extensions_browser_client.h"
-#include "extensions/browser/notification_types.h"
 #include "extensions/common/extension_messages.h"
 
 using content::BrowserThread;
@@ -409,11 +406,6 @@ void UserScriptLoader::OnScriptsLoaded(
   }
   changed_hosts_.clear();
 
-  // TODO(hanxi): Remove the NOTIFICATION_USER_SCRIPTS_UPDATED.
-  content::NotificationService::current()->Notify(
-      extensions::NOTIFICATION_USER_SCRIPTS_UPDATED,
-      content::Source<BrowserContext>(browser_context_),
-      content::Details<base::ReadOnlySharedMemoryRegion>(&shared_memory_));
   for (auto& observer : observers_)
     observer.OnScriptsLoaded(this, browser_context_);
 }
