@@ -73,7 +73,6 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
 #include "third_party/blink/renderer/platform/widget/frame_widget.h"
@@ -174,12 +173,9 @@ class PagePopupChromeClient final : public EmptyChromeClient {
     // do not wish to actually do anything.
     if (popup_->closing_)
       return;
-
-    // When the renderer has a compositor thread we need to follow the
-    // normal code path.
-    if (WebTestSupport::IsRunningWebTest() && !Thread::CompositorThread()) {
+    if (WebTestSupport::IsRunningWebTest()) {
       // In single-threaded web tests, the owner frame tree runs the composite
-      // step for the popup. Popup widgets don't run any composite step on their
+      // step for the popup. Popup widgets don't runany composite step on their
       // own. And we don't run popup tests with a compositor thread, so no need
       // to check for that.
       Document& opener_document =

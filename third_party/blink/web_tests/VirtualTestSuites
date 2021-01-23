@@ -789,10 +789,7 @@
   },
   {
     "prefix": "scroll-unification",
-    "bases": ["fast/scrolling/scrollbars",
-              "fast/forms/select-popup",
-              "fast/forms/suggestion-picker",
-              "fast/forms/time"],
+    "bases": ["fast/scrolling/scrollbars"],
     "args": ["--enable-features=ScrollUnification",
              "--enable-threaded-compositing"]
   },
