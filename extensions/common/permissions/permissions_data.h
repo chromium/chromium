@@ -58,11 +58,6 @@ class PermissionsData {
                 // the given page.
   };
 
-  enum class EffectiveHostPermissionsMode {
-    kOmitTabSpecific,
-    kIncludeTabSpecific,
-  };
-
   using TabPermissionsMap = std::map<int, std::unique_ptr<const PermissionSet>>;
 
   // Delegate class to allow different contexts (e.g. browser vs renderer) to
@@ -161,8 +156,7 @@ class PermissionsData {
   // Returns the hosts this extension effectively has access to, including
   // explicit and scriptable hosts, and any hosts on tabs the extension has
   // active tab permissions for.
-  URLPatternSet GetEffectiveHostPermissions(
-      EffectiveHostPermissionsMode mode) const;
+  URLPatternSet GetEffectiveHostPermissions() const;
 
   // TODO(rdevlin.cronin): HasHostPermission() and
   // HasEffectiveAccessToAllHosts() are just forwards for the active

@@ -176,11 +176,6 @@ void PermissionsUpdater::NetworkPermissionsUpdateHelper::UpdatePermissions(
     return;
   }
 
-  std::vector<network::mojom::CorsOriginPatternPtr> allow_list =
-      CreateCorsOriginAccessAllowList(
-          *extension,
-          PermissionsData::EffectiveHostPermissionsMode::kOmitTabSpecific);
-
   NetworkPermissionsUpdateHelper* helper = new NetworkPermissionsUpdateHelper(
       browser_context,
       base::BindOnce(&PermissionsUpdater::NotifyPermissionsUpdated,
@@ -190,7 +185,7 @@ void PermissionsUpdater::NetworkPermissionsUpdateHelper::UpdatePermissions(
   // After an asynchronous call below, the helper will call
   // NotifyPermissionsUpdated if the profile is still valid.
   browser_context->SetCorsOriginAccessListForOrigin(
-      url::Origin::Create(extension->url()), std::move(allow_list),
+      extension->origin(), CreateCorsOriginAccessAllowList(*extension),
       CreateCorsOriginAccessBlockList(*extension),
       base::BindOnce(&NetworkPermissionsUpdateHelper::OnOriginAccessUpdated,
                      helper->weak_factory_.GetWeakPtr()));
@@ -217,12 +212,8 @@ void PermissionsUpdater::NetworkPermissionsUpdateHelper::
                      helper->weak_factory_.GetWeakPtr()));
 
   for (const auto& extension : extensions) {
-    std::vector<network::mojom::CorsOriginPatternPtr> allow_list =
-        CreateCorsOriginAccessAllowList(
-            *extension,
-            PermissionsData::EffectiveHostPermissionsMode::kOmitTabSpecific);
     browser_context->SetCorsOriginAccessListForOrigin(
-        url::Origin::Create(extension->url()), std::move(allow_list),
+        extension->origin(), CreateCorsOriginAccessAllowList(*extension),
         CreateCorsOriginAccessBlockList(*extension), barrier_closure);
   }
 }

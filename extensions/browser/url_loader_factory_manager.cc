@@ -111,9 +111,7 @@ void OverrideFactoryParams(const Extension& extension,
     params->factory_bound_access_patterns->source_origin =
         url::Origin::Create(extension.url());
     params->factory_bound_access_patterns->allow_patterns =
-        CreateCorsOriginAccessAllowList(
-            extension,
-            PermissionsData::EffectiveHostPermissionsMode::kIncludeTabSpecific);
+        CreateCorsOriginAccessAllowList(extension);
     params->factory_bound_access_patterns->block_patterns =
         CreateCorsOriginAccessBlockList(extension);
   }

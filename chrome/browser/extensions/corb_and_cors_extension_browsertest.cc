@@ -2319,7 +2319,10 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
       SCOPED_TRACE("Regular profile's background page");
       std::string fetch_result = FetchViaBackgroundPage(
           cross_site_resource, extension, regular_profile);
-      EXPECT_EQ(kCorsErrorWhenFetching, fetch_result);
+      // TODO(lukasza): Unexpectedly the permission is granted to both the
+      // `regular_profile` and the `incognito_profile` background page.  Once
+      // this is fixed, change EXPECT_NE to EXPECT_EQ below.
+      EXPECT_NE(kCorsErrorWhenFetching, fetch_result);
     }
     {
       SCOPED_TRACE("Incognito profile's background page");
@@ -2440,7 +2443,10 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
       SCOPED_TRACE("Regular profile's background page");
       std::string fetch_result = FetchViaBackgroundPage(
           incognito_resource_url, extension, regular_profile);
-      EXPECT_EQ(kCorsErrorWhenFetching, fetch_result);
+      // TODO(https://crbug.com/1159207): Change to EXPECT_EQ after fixing how
+      // ActiveTab granted to an incognito window propagates to the regular
+      // profile's background page.
+      EXPECT_NE(kCorsErrorWhenFetching, fetch_result);
     }
     {
       SCOPED_TRACE("Incognito profile's background page");
@@ -2490,9 +2496,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
       SCOPED_TRACE("Regular profile's background page");
       std::string fetch_result = FetchViaBackgroundPage(
           incognito_resource_url, extension, regular_profile);
-      // TODO(https://crbug.com/1167262): Change to EXPECT_EQ after fixing the
-      // leak of permissions from incognito profile to regular profile.
-      EXPECT_NE(kCorsErrorWhenFetching, fetch_result);
+      EXPECT_EQ(kCorsErrorWhenFetching, fetch_result);
     }
   }
 }
@@ -2566,11 +2570,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
     SCOPED_TRACE("TEST STEP 2: After granting ActiveTab access.");
     std::string fetch_result =
         FetchViaBackgroundPage(cross_site_resource, extension, regular_profile);
-
-    // TODO(lukasza): https://crbug.com/1159207: Unexpectedly the background
-    // page is not granted access.  Once this is fixed, change EXPECT_NE to
-    // EXPECT_EQ below.
-    EXPECT_NE("nosniff.xml - body\n", fetch_result);
+    EXPECT_EQ("nosniff.xml - body\n", fetch_result);
 
     // There is no separate incognito background page in "spanning" mode.
   }

@@ -515,8 +515,11 @@ void OffTheRecordProfileImpl::SetCorsOriginAccessListForOrigin(
     std::vector<network::mojom::CorsOriginPatternPtr> allow_patterns,
     std::vector<network::mojom::CorsOriginPatternPtr> block_patterns,
     base::OnceClosure closure) {
-  NOTREACHED()
-      << "CorsOriginAccessList should not be modified in incognito profiles";
+  // Forward the request to the real profile (which will refresh the access
+  // patterns for both the main and the incognito profiles).
+  profile_->SetCorsOriginAccessListForOrigin(
+      source_origin, std::move(allow_patterns), std::move(block_patterns),
+      std::move(closure));
 }
 
 content::SharedCorsOriginAccessList*

@@ -165,48 +165,41 @@ TEST(PermissionsDataTest, EffectiveHostPermissions) {
 
   extension = LoadManifest("effective_host_permissions", "empty.json");
   EXPECT_EQ(0u, extension->permissions_data()
-                    ->GetEffectiveHostPermissions(
-                        PermissionsData::EffectiveHostPermissionsMode::
-                            kIncludeTabSpecific)
+                    ->GetEffectiveHostPermissions()
                     .patterns()
                     .size());
   EXPECT_FALSE(hosts.MatchesURL(GURL("http://www.google.com")));
   EXPECT_FALSE(extension->permissions_data()->HasEffectiveAccessToAllHosts());
 
   extension = LoadManifest("effective_host_permissions", "one_host.json");
-  hosts = extension->permissions_data()->GetEffectiveHostPermissions(
-      PermissionsData::EffectiveHostPermissionsMode::kIncludeTabSpecific);
+  hosts = extension->permissions_data()->GetEffectiveHostPermissions();
   EXPECT_TRUE(hosts.MatchesURL(GURL("http://www.google.com")));
   EXPECT_FALSE(hosts.MatchesURL(GURL("https://www.google.com")));
   EXPECT_FALSE(extension->permissions_data()->HasEffectiveAccessToAllHosts());
 
   extension = LoadManifest("effective_host_permissions",
                            "one_host_wildcard.json");
-  hosts = extension->permissions_data()->GetEffectiveHostPermissions(
-      PermissionsData::EffectiveHostPermissionsMode::kIncludeTabSpecific);
+  hosts = extension->permissions_data()->GetEffectiveHostPermissions();
   EXPECT_TRUE(hosts.MatchesURL(GURL("http://google.com")));
   EXPECT_TRUE(hosts.MatchesURL(GURL("http://foo.google.com")));
   EXPECT_FALSE(extension->permissions_data()->HasEffectiveAccessToAllHosts());
 
   extension = LoadManifest("effective_host_permissions", "two_hosts.json");
-  hosts = extension->permissions_data()->GetEffectiveHostPermissions(
-      PermissionsData::EffectiveHostPermissionsMode::kIncludeTabSpecific);
+  hosts = extension->permissions_data()->GetEffectiveHostPermissions();
   EXPECT_TRUE(hosts.MatchesURL(GURL("http://www.google.com")));
   EXPECT_TRUE(hosts.MatchesURL(GURL("http://www.reddit.com")));
   EXPECT_FALSE(extension->permissions_data()->HasEffectiveAccessToAllHosts());
 
   extension = LoadManifest("effective_host_permissions",
                            "https_not_considered.json");
-  hosts = extension->permissions_data()->GetEffectiveHostPermissions(
-      PermissionsData::EffectiveHostPermissionsMode::kIncludeTabSpecific);
+  hosts = extension->permissions_data()->GetEffectiveHostPermissions();
   EXPECT_TRUE(hosts.MatchesURL(GURL("http://google.com")));
   EXPECT_TRUE(hosts.MatchesURL(GURL("https://google.com")));
   EXPECT_FALSE(extension->permissions_data()->HasEffectiveAccessToAllHosts());
 
   extension = LoadManifest("effective_host_permissions",
                            "two_content_scripts.json");
-  hosts = extension->permissions_data()->GetEffectiveHostPermissions(
-      PermissionsData::EffectiveHostPermissionsMode::kIncludeTabSpecific);
+  hosts = extension->permissions_data()->GetEffectiveHostPermissions();
   EXPECT_TRUE(hosts.MatchesURL(GURL("http://google.com")));
   EXPECT_TRUE(hosts.MatchesURL(GURL("http://www.reddit.com")));
   EXPECT_TRUE(extension->permissions_data()
@@ -220,30 +213,26 @@ TEST(PermissionsDataTest, EffectiveHostPermissions) {
   EXPECT_FALSE(extension->permissions_data()->HasEffectiveAccessToAllHosts());
 
   extension = LoadManifest("effective_host_permissions", "all_hosts.json");
-  hosts = extension->permissions_data()->GetEffectiveHostPermissions(
-      PermissionsData::EffectiveHostPermissionsMode::kIncludeTabSpecific);
+  hosts = extension->permissions_data()->GetEffectiveHostPermissions();
   EXPECT_TRUE(hosts.MatchesURL(GURL("http://test/")));
   EXPECT_FALSE(hosts.MatchesURL(GURL("https://test/")));
   EXPECT_TRUE(hosts.MatchesURL(GURL("http://www.google.com")));
   EXPECT_TRUE(extension->permissions_data()->HasEffectiveAccessToAllHosts());
 
   extension = LoadManifest("effective_host_permissions", "all_hosts2.json");
-  hosts = extension->permissions_data()->GetEffectiveHostPermissions(
-      PermissionsData::EffectiveHostPermissionsMode::kIncludeTabSpecific);
+  hosts = extension->permissions_data()->GetEffectiveHostPermissions();
   EXPECT_TRUE(hosts.MatchesURL(GURL("http://test/")));
   EXPECT_TRUE(hosts.MatchesURL(GURL("http://www.google.com")));
   EXPECT_TRUE(extension->permissions_data()->HasEffectiveAccessToAllHosts());
 
   extension = LoadManifest("effective_host_permissions", "all_hosts3.json");
-  hosts = extension->permissions_data()->GetEffectiveHostPermissions(
-      PermissionsData::EffectiveHostPermissionsMode::kIncludeTabSpecific);
+  hosts = extension->permissions_data()->GetEffectiveHostPermissions();
   EXPECT_FALSE(hosts.MatchesURL(GURL("http://test/")));
   EXPECT_TRUE(hosts.MatchesURL(GURL("https://test/")));
   EXPECT_TRUE(hosts.MatchesURL(GURL("http://www.google.com")));
   EXPECT_TRUE(extension->permissions_data()->HasEffectiveAccessToAllHosts());
 
-  // Tab-specific permissions should be included in the effective hosts if and
-  // only if kIncludeTabSpecific is specified.
+  // Tab-specific permissions should always be included.
   GURL tab_url("http://www.example.com/");
   {
     URLPatternSet new_hosts;
@@ -252,29 +241,18 @@ TEST(PermissionsDataTest, EffectiveHostPermissions) {
         1, PermissionSet(APIPermissionSet(), ManifestPermissionSet(),
                          std::move(new_hosts), URLPatternSet()));
   }
-  EXPECT_TRUE(extension->permissions_data()
-                  ->GetEffectiveHostPermissions(
-                      PermissionsData::EffectiveHostPermissionsMode::
-                          kIncludeTabSpecific)
-                  .MatchesURL(tab_url));
+  EXPECT_TRUE(
+      extension->permissions_data()->GetEffectiveHostPermissions().MatchesURL(
+          tab_url));
   extension->permissions_data()->ClearTabSpecificPermissions(1);
   EXPECT_FALSE(
-      extension->permissions_data()
-          ->GetEffectiveHostPermissions(
-              PermissionsData::EffectiveHostPermissionsMode::kOmitTabSpecific)
-          .MatchesURL(tab_url));
+      extension->permissions_data()->GetEffectiveHostPermissions().MatchesURL(
+          tab_url));
 
   extension->permissions_data()->ClearTabSpecificPermissions(1);
-  EXPECT_FALSE(extension->permissions_data()
-                   ->GetEffectiveHostPermissions(
-                       PermissionsData::EffectiveHostPermissionsMode::
-                           kIncludeTabSpecific)
-                   .MatchesURL(tab_url));
-  EXPECT_EQ(
-      extension->permissions_data()->GetEffectiveHostPermissions(
-          PermissionsData::EffectiveHostPermissionsMode::kIncludeTabSpecific),
-      extension->permissions_data()->GetEffectiveHostPermissions(
-          PermissionsData::EffectiveHostPermissionsMode::kOmitTabSpecific));
+  EXPECT_FALSE(
+      extension->permissions_data()->GetEffectiveHostPermissions().MatchesURL(
+          tab_url));
 }
 
 TEST(PermissionsDataTest, SocketPermissions) {

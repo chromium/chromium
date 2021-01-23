@@ -607,11 +607,6 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   virtual void PrepareForInnerWebContentsAttach(
       PrepareForInnerWebContentsAttachCallback callback) = 0;
 
-  // Re-creates loader factories and pushes them to |RenderFrame|.
-  // Used in case we need to add or remove intercepting proxies to the
-  // running renderer, or in case of Network Service connection errors.
-  virtual void UpdateSubresourceLoaderFactories() = 0;
-
   // Returns the type of frame owner element for the FrameTreeNode associated
   // with this RenderFrameHost (e.g., <iframe>, <object>, etc). Note that it
   // returns blink::mojom::FrameOwnerElementType::kNone if the RenderFrameHost

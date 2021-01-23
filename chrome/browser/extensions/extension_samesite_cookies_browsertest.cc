@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/json/json_reader.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -27,6 +28,7 @@
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/value_builder.h"
+#include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
@@ -101,7 +103,7 @@ class ExtensionSameSiteCookiesTest
       delete;
 
   void SetUpOnMainThread() override {
-    constexpr int kMaxNumberOfCookieRequestsFromSingleTest = 6;
+    constexpr int kMaxNumberOfCookieRequestsFromSingleTest = 9;
 
     ExtensionBrowserTest::SetUpOnMainThread();
     extension_dir_ = std::make_unique<TestExtensionDir>();
@@ -130,7 +132,7 @@ class ExtensionSameSiteCookiesTest
   // Sets an array of cookies with various SameSite values.
   // These cookies are set directly into the cookie store, simulating being set
   // from a "strictly same-site" request context.
-  void SetCookies(const std::string& host) {
+  void SetCookies(const std::string& host, Profile* profile) {
     GURL url = test_server()->GetURL(host, "/");
     content::SetCookie(browser()->profile(), url,
                        base::StrCat({kNoneCookie, kSameSiteNoneAttribute}));
@@ -139,6 +141,9 @@ class ExtensionSameSiteCookiesTest
     content::SetCookie(browser()->profile(), url,
                        base::StrCat({kStrictCookie, kSameSiteStrictAttribute}));
     content::SetCookie(browser()->profile(), url, kUnspecifiedCookie);
+  }
+  void SetCookies(const std::string& host) {
+    SetCookies(host, browser()->profile());
   }
 
   // Expect that all cookies, including SameSite cookies, are present.
@@ -542,7 +547,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
 // - the test verifies that the changing permissions are correctly propagated
 // into the SameSite cookie decisions (e.g. in
 // network::URLLoader::ShouldForceIgnoreSiteForCookies).
-IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest, ActiveTabPermissions) {
+IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
+                       ActiveTabPermissions_BackgroundPage) {
   TestExtensionDir extension_dir;
   constexpr char kManifest[] = R"(
       {
@@ -554,14 +560,11 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest, ActiveTabPermissions) {
         },
         "permissions": ["activeTab"],
         "background": {
-          "scripts": ["background.js"]
-        },
-        "web_accessible_resources": ["subframe.html"]
+          "scripts": ["bg_script.js"]
+        }
       } )";
   extension_dir.WriteManifest(kManifest);
-  extension_dir.WriteFile(FILE_PATH_LITERAL("background.js"), "");
-  extension_dir.WriteFile(FILE_PATH_LITERAL("subframe.html"),
-                          "<p>Extension frame</p>");
+  extension_dir.WriteFile(FILE_PATH_LITERAL("bg_script.js"), "");
   const Extension* extension = LoadExtension(extension_dir.UnpackedPath());
   ASSERT_TRUE(extension);
   content::RenderFrameHost* background_page =
@@ -569,6 +572,98 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest, ActiveTabPermissions) {
           ->GetBackgroundHostForExtension(extension->id())
           ->host_contents()
           ->GetMainFrame();
+
+  // Set up a test scenario:
+  // - top-level frame: kActiveTabHost
+  constexpr char kActiveTabHost[] = "active-tab.example";
+  GURL original_document_url =
+      test_server()->GetURL(kActiveTabHost, "/title1.html");
+  ui_test_utils::NavigateToURL(browser(), original_document_url);
+  SetCookies(kActiveTabHost);
+
+  // Based on activeTab, the extension shouldn't be initially granted access to
+  // `kActiveTabHost`.
+  {
+    SCOPED_TRACE("TEST STEP 1: Initial fetch.");
+    std::string cookies = FetchCookies(background_page, kActiveTabHost);
+    ExpectNoSameSiteCookies(cookies);
+  }
+
+  // Do one pass of BrowserAction without granting activeTab permission,
+  // extension still shouldn't have access to `kActiveTabHost`.
+  ExtensionActionRunner::GetForWebContents(web_contents())
+      ->RunAction(extension, false);
+  {
+    SCOPED_TRACE("TEST STEP 2: After BrowserAction without granting access.");
+    std::string cookies = FetchCookies(background_page, kActiveTabHost);
+    ExpectNoSameSiteCookies(cookies);
+  }
+
+  // Granting activeTab permission to the extension should give it access to
+  // `kActiveTabHost`.
+  ExtensionActionRunner::GetForWebContents(web_contents())
+      ->RunAction(extension, true);
+  {
+    // ActiveTab access (just like OOR-CORS access) extends to the background
+    // page.  This is desirable, because
+    // 1) there is no security boundary between A) extension background pages
+    //    and B) extension frames in the tab
+    // 2) it seems best to highlight #1 by simplistically granting extra
+    //    capabilities to the whole extension (rather than forcing the extension
+    //    authors to jump through extra hurdles to utilize the new capability).
+    SCOPED_TRACE("TEST STEP 3: After granting ActiveTab access.");
+    std::string cookies = FetchCookies(background_page, kActiveTabHost);
+    ExpectSameSiteCookies(cookies);
+  }
+
+  // Navigating the tab to a different, same-origin document should retain
+  // extension's access to the origin.
+  GURL another_document_url =
+      test_server()->GetURL(kActiveTabHost, "/title2.html");
+  EXPECT_NE(another_document_url, original_document_url);
+  EXPECT_EQ(url::Origin::Create(another_document_url),
+            url::Origin::Create(original_document_url));
+  ui_test_utils::NavigateToURL(browser(), another_document_url);
+  {
+    SCOPED_TRACE(
+        "TEST STEP 4: After navigating the tab cross-document, "
+        "but still same-origin.");
+    std::string cookies = FetchCookies(background_page, kActiveTabHost);
+    ExpectSameSiteCookies(cookies);
+  }
+
+  // Navigating the tab to a different origin should revoke extension's access
+  // to the tab.
+  GURL cross_origin_url = test_server()->GetURL("other.com", "/title1.html");
+  EXPECT_NE(url::Origin::Create(cross_origin_url),
+            url::Origin::Create(original_document_url));
+  ui_test_utils::NavigateToURL(browser(), cross_origin_url);
+  {
+    SCOPED_TRACE("TEST STEP 5: After navigating the tab cross-origin.");
+    std::string cookies = FetchCookies(background_page, kActiveTabHost);
+    ExpectNoSameSiteCookies(cookies);
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
+                       ActiveTabPermissions_ExtensionSubframeInTab) {
+  TestExtensionDir extension_dir;
+  constexpr char kManifest[] = R"(
+      {
+        "name": "ActiveTab permissions vs SameSite cookies",
+        "version": "1.0",
+        "manifest_version": 2,
+        "browser_action": {
+          "default_title": "activeTab"
+        },
+        "permissions": ["activeTab"],
+        "web_accessible_resources": ["subframe.html"]
+      } )";
+  extension_dir.WriteManifest(kManifest);
+  extension_dir.WriteFile(FILE_PATH_LITERAL("subframe.html"),
+                          "<p>Extension frame</p>");
+  const Extension* extension = LoadExtension(extension_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
 
   // Set up a test scenario:
   // - top-level frame: kActiveTabHost
@@ -596,66 +691,191 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest, ActiveTabPermissions) {
               extension_subframe->GetLastCommittedOrigin());
   }
 
-  // Shouldn't be initially granted based on activeTab.
+  // Based on activeTab, the extension shouldn't be initially granted access to
+  // `kActiveTabHost`.
   {
-    SCOPED_TRACE(
-        "TEST STEP 1a: Extension background page: "
-        "Initial fetch.");
-    std::string cookies = FetchCookies(background_page, kActiveTabHost);
-    ExpectNoSameSiteCookies(cookies);
-  }
-  {
-    SCOPED_TRACE(
-        "TEST STEP 1b: Extension subframe: "
-        "Initial fetch.");
+    SCOPED_TRACE("TEST STEP 1: Initial fetch.");
     std::string cookies = FetchCookies(extension_subframe, kActiveTabHost);
     ExpectNoSameSiteCookies(cookies);
   }
 
   // Do one pass of BrowserAction without granting activeTab permission,
-  // extension shouldn't have access to tab.url.
+  // extension still shouldn't have access to `kActiveTabHost`.
   ExtensionActionRunner::GetForWebContents(web_contents())
       ->RunAction(extension, false);
   {
-    SCOPED_TRACE(
-        "TEST STEP 2a: Extension background page: "
-        "After BrowserAction without granting access.");
-    std::string cookies = FetchCookies(background_page, kActiveTabHost);
-    ExpectNoSameSiteCookies(cookies);
-  }
-  {
-    SCOPED_TRACE(
-        "TEST STEP 2b: Extension subframe: "
-        "After BrowserAction without granting access.");
+    SCOPED_TRACE("TEST STEP 2: After BrowserAction without granting access.");
     std::string cookies = FetchCookies(extension_subframe, kActiveTabHost);
     ExpectNoSameSiteCookies(cookies);
   }
 
-  // Granting to the extension should give it access to page.html.
+  // Granting activeTab permission to the extension should give it access to
+  // `kActiveTabHost`.
   ExtensionActionRunner::GetForWebContents(web_contents())
       ->RunAction(extension, true);
   {
-    // ActiveTab access (just like OOR-CORS access) extends to the background
-    // page.  This is desirable, because
-    // 1) there is no security boundary between A) extension backround pages
+    // ActiveTab should grant access to SameSite cookies to the
+    // `extension_subframe`.
+    SCOPED_TRACE("TEST STEP 3: After granting ActiveTab access.");
+    std::string cookies = FetchCookies(extension_subframe, kActiveTabHost);
+    ExpectSameSiteCookies(cookies);
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
+                       ActiveTabPermissions_ExtensionServiceWorker) {
+  const char kServiceWorker[] = R"(
+      chrome.runtime.onMessage.addListener(
+          function(request, sender, sendResponse) {
+            if (request.url) {
+              fetch(request.url, {method: 'GET', credentials: 'include'})
+                .then(response => response.text())
+                .then(text => sendResponse(text))
+                .catch(err => sendResponse('error: ' + err));
+              return true;
+            }
+          });
+      chrome.test.sendMessage('WORKER_RUNNING');
+  )";
+  auto fetch_via_extension_service_worker =
+      [this](content::RenderFrameHost* extension_frame,
+             const std::string& host) -> std::string {
+    // Build a script that will send a message to the extension service worker,
+    // asking it to perform a `fetch` and reply with the response.
+    const char kFetchTemplate[] = R"(
+        chrome.runtime.sendMessage({url: $1}, function(response) {
+            domAutomationController.send(response);
+        });
+    )";
+    GURL cookie_url = this->test_server()->GetURL(host, kFetchCookiesPath);
+    std::string fetch_script = content::JsReplace(kFetchTemplate, cookie_url);
+
+    // Use `fetch_script` to ask the service worker to perform a `fetch` and
+    // reply with the response.
+    content::DOMMessageQueue queue;
+    content::ExecuteScriptAsync(extension_frame, fetch_script);
+
+    // Provide the HTTP response.
+    url::Origin initiator = extension_frame->GetLastCommittedOrigin();
+    WaitForRequestAndRespondWithCookies(initiator);
+
+    // Read back the response reported by the extension service worker.
+    std::string json;
+    EXPECT_TRUE(queue.WaitForMessage(&json));
+    base::Optional<base::Value> value =
+        base::JSONReader::Read(json, base::JSON_ALLOW_TRAILING_COMMAS);
+    std::string result;
+    EXPECT_TRUE(value->GetAsString(&result));
+    return result;
+  };
+
+  TestExtensionDir extension_dir;
+  constexpr char kManifest[] = R"(
+      {
+        "name": "ActiveTab permissions vs SameSite cookies",
+        "version": "1.0",
+        "manifest_version": 2,
+        "browser_action": {
+          "default_title": "activeTab"
+        },
+        "permissions": ["activeTab"],
+        "background": {"service_worker": "bg_worker.js"}
+      } )";
+  extension_dir.WriteManifest(kManifest);
+  extension_dir.WriteFile(FILE_PATH_LITERAL("bg_worker.js"), kServiceWorker);
+  extension_dir.WriteFile(FILE_PATH_LITERAL("frame.html"),
+                          "<p>Extension frame</p>");
+  ExtensionTestMessageListener worker_listener("WORKER_RUNNING", false);
+  const Extension* extension = LoadExtension(extension_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  EXPECT_TRUE(worker_listener.WaitUntilSatisfied());
+
+  // Set up a test scenario:
+  // - tab1: top-level frame: kActiveTabHost
+  // - tab2: top-level frame: extension (for triggering fetches in the
+  //                                     extension's service worker)
+  constexpr char kActiveTabHost[] = "active-tab.example";
+  GURL original_document_url =
+      test_server()->GetURL(kActiveTabHost, "/title1.html");
+  ui_test_utils::NavigateToURL(browser(), original_document_url);
+  EXPECT_EQ(kActiveTabHost,
+            web_contents()->GetMainFrame()->GetLastCommittedURL().host());
+  SetCookies(kActiveTabHost);
+  GURL extension_frame_url = extension->GetResourceURL("frame.html");
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), extension_frame_url, WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP |
+          ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
+  content::RenderFrameHost* extension_frame =
+      browser()->tab_strip_model()->GetWebContentsAt(1)->GetMainFrame();
+  EXPECT_EQ(extension_frame_url, extension_frame->GetLastCommittedURL());
+
+  // Based on activeTab, the extension shouldn't be initially granted access to
+  // `kActiveTabHost`.
+  {
+    SCOPED_TRACE("TEST STEP 1: Initial fetch.");
+    std::string cookies =
+        fetch_via_extension_service_worker(extension_frame, kActiveTabHost);
+    ExpectNoSameSiteCookies(cookies);
+  }
+
+  // Do one pass of BrowserAction without granting activeTab permission,
+  // extension still shouldn't have access to `kActiveTabHost`.
+  ExtensionActionRunner::GetForWebContents(web_contents())
+      ->RunAction(extension, false);
+  {
+    SCOPED_TRACE("TEST STEP 2: After BrowserAction without granting access.");
+    std::string cookies =
+        fetch_via_extension_service_worker(extension_frame, kActiveTabHost);
+    ExpectNoSameSiteCookies(cookies);
+  }
+
+  // Granting activeTab permission to the extension should give it access to
+  // `kActiveTabHost`.
+  ExtensionActionRunner::GetForWebContents(web_contents())
+      ->RunAction(extension, true);
+  {
+    // ActiveTab access (just like OOR-CORS access) extends to the service
+    // worker of an extension.  This is desirable, because
+    // 1) there is no security boundary between A) extension service worker
     //    and B) extension frames in the tab
     // 2) it seems best to highlight #1 by simplistically granting extra
     //    capabilities to the whole extension (rather than forcing the extension
     //    authors to jump through extra hurdles to utilize the new capability).
-    SCOPED_TRACE(
-        "TEST STEP 3a: Extension background page: "
-        "After granting ActiveTab access.");
-    std::string cookies = FetchCookies(background_page, kActiveTabHost);
+    SCOPED_TRACE("TEST STEP 3: After granting ActiveTab access.");
+    std::string cookies =
+        fetch_via_extension_service_worker(extension_frame, kActiveTabHost);
     ExpectSameSiteCookies(cookies);
   }
+
+  // Navigating the tab to a different, same-origin document should retain
+  // extension's access to the origin.
+  GURL another_document_url =
+      test_server()->GetURL(kActiveTabHost, "/title2.html");
+  EXPECT_NE(another_document_url, original_document_url);
+  EXPECT_EQ(url::Origin::Create(another_document_url),
+            url::Origin::Create(original_document_url));
+  ui_test_utils::NavigateToURL(browser(), another_document_url);
   {
-    // ActiveTab should grant access to SameSite cookies to the
-    // `extension_subframe`.
     SCOPED_TRACE(
-        "TEST STEP 3b: Extension subframe: "
-        "After granting ActiveTab access.");
-    std::string cookies = FetchCookies(extension_subframe, kActiveTabHost);
+        "TEST STEP 4: After navigating the tab cross-document, "
+        "but still same-origin.");
+    std::string cookies =
+        fetch_via_extension_service_worker(extension_frame, kActiveTabHost);
     ExpectSameSiteCookies(cookies);
+  }
+
+  // Navigating the tab to a different origin should revoke extension's access
+  // to the tab.
+  GURL cross_origin_url = test_server()->GetURL("other.com", "/title1.html");
+  EXPECT_NE(url::Origin::Create(cross_origin_url),
+            url::Origin::Create(original_document_url));
+  ui_test_utils::NavigateToURL(browser(), cross_origin_url);
+  {
+    SCOPED_TRACE("TEST STEP 5: After navigating the tab cross-origin.");
+    std::string cookies =
+        fetch_via_extension_service_worker(extension_frame, kActiveTabHost);
+    ExpectNoSameSiteCookies(cookies);
   }
 }
 

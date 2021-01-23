@@ -1321,9 +1321,7 @@ void Dispatcher::UpdateOriginPermissions(const Extension& extension) {
   WebSecurityPolicy::ClearOriginAccessListForOrigin(extension.url());
 
   std::vector<network::mojom::CorsOriginPatternPtr> allow_list =
-      CreateCorsOriginAccessAllowList(
-          extension,
-          PermissionsData::EffectiveHostPermissionsMode::kIncludeTabSpecific);
+      CreateCorsOriginAccessAllowList(extension);
   ExtensionsClient::Get()->AddOriginAccessPermissions(
       extension, IsExtensionActive(extension.id()), &allow_list);
   for (const auto& entry : allow_list) {

@@ -193,18 +193,19 @@ int AccessArray(const volatile int arr[], const volatile int* index) {
 std::unique_ptr<base::ListValue> GetHostPermissions(const Extension* ext,
                                                     bool effective_perm) {
   const PermissionsData* permissions_data = ext->permissions_data();
-  const URLPatternSet& pattern_set =
-      effective_perm ? static_cast<const URLPatternSet&>(
-                           permissions_data->GetEffectiveHostPermissions(
-                               PermissionsData::EffectiveHostPermissionsMode::
-                                   kIncludeTabSpecific))
-                     : permissions_data->active_permissions().explicit_hosts();
+
+  const URLPatternSet* pattern_set = nullptr;
+  URLPatternSet effective_hosts;
+  if (effective_perm) {
+    effective_hosts = permissions_data->GetEffectiveHostPermissions();
+    pattern_set = &effective_hosts;
+  } else {
+    pattern_set = &permissions_data->active_permissions().explicit_hosts();
+  }
 
   auto permissions = std::make_unique<base::ListValue>();
-  for (URLPatternSet::const_iterator perm = pattern_set.begin();
-       perm != pattern_set.end(); ++perm) {
-    permissions->AppendString(perm->GetAsString());
-  }
+  for (const auto& perm : *pattern_set)
+    permissions->AppendString(perm.GetAsString());
 
   return permissions;
 }

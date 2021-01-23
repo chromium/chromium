@@ -9,17 +9,21 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/process_manager.h"
+#include "extensions/common/cors_util.h"
+#include "extensions/common/extension.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -93,12 +97,12 @@ bool ShouldGrantActiveTabOrPrompt(const Extension* extension,
              extension, web_contents);
 }
 
-void UpdateTabSpecificCorsOriginAccessLists(const ExtensionId& extension_id,
-                                            ProcessManager* process_manager) {
-  const std::set<content::RenderFrameHost*>& extension_hosts =
-      process_manager->GetRenderFrameHostsForExtension(extension_id);
-  for (auto* host : extension_hosts)
-    host->UpdateSubresourceLoaderFactories();
+void UpdateTabSpecificCorsOriginAccessLists(
+    const Extension& extension,
+    content::BrowserContext* browser_context) {
+  browser_context->SetCorsOriginAccessListForOrigin(
+      extension.origin(), CreateCorsOriginAccessAllowList(extension),
+      CreateCorsOriginAccessBlockList(extension), base::DoNothing::Once());
 }
 
 }  // namespace
@@ -139,6 +143,8 @@ void ActiveTabPermissionGranter::GrantIfRequested(const Extension* extension) {
   // checking ShouldGrantActiveTabOrPrompt() in order to prevent
   // ShouldGrantActiveTabOrPrompt() from prompting for extensions that don't
   // request the activeTab permission.
+  content::BrowserContext* browser_context =
+      web_contents()->GetBrowserContext();
   if ((permissions_data->HasAPIPermission(APIPermission::kActiveTab) ||
        permissions_data->withheld_permissions().effective_hosts().MatchesURL(
            url)) &&
@@ -146,8 +152,7 @@ void ActiveTabPermissionGranter::GrantIfRequested(const Extension* extension) {
     // Gate activeTab for file urls on extensions having explicit access to file
     // urls.
     int valid_schemes = UserScript::ValidUserScriptSchemes();
-    if (!util::AllowFileAccess(extension->id(),
-                               web_contents()->GetBrowserContext())) {
+    if (!util::AllowFileAccess(extension->id(), browser_context)) {
       valid_schemes &= ~URLPattern::SCHEME_FILE;
     }
     new_hosts.AddOrigin(valid_schemes, url.GetOrigin());
@@ -167,9 +172,7 @@ void ActiveTabPermissionGranter::GrantIfRequested(const Extension* extension) {
     PermissionSet new_permissions(std::move(new_apis), ManifestPermissionSet(),
                                   new_hosts.Clone(), new_hosts.Clone());
     permissions_data->UpdateTabSpecificPermissions(tab_id_, new_permissions);
-    ProcessManager* process_manager =
-        ProcessManager::Get(web_contents()->GetBrowserContext());
-    UpdateTabSpecificCorsOriginAccessLists(extension->id(), process_manager);
+    UpdateTabSpecificCorsOriginAccessLists(*extension, browser_context);
 
     content::NavigationEntry* navigation_entry =
         web_contents()->GetController().GetVisibleEntry();
@@ -179,6 +182,7 @@ void ActiveTabPermissionGranter::GrantIfRequested(const Extension* extension) {
       CreateMessageFunction update_message =
           base::BindRepeating(&CreateUpdateMessage, navigation_entry->GetURL(),
                               extension->id(), new_hosts.Clone(), tab_id_);
+      ProcessManager* process_manager = ProcessManager::Get(browser_context);
       SendMessageToProcesses(
           process_manager->GetRenderFrameHostsForExtension(extension->id()),
           web_contents()->GetMainFrame()->GetProcess(), update_message);
@@ -240,11 +244,12 @@ void ActiveTabPermissionGranter::ClearActiveExtensionsAndNotify() {
 
   std::set<content::RenderFrameHost*> frame_hosts;
   std::vector<std::string> extension_ids;
-  ProcessManager* process_manager =
-      ProcessManager::Get(web_contents()->GetBrowserContext());
+  content::BrowserContext* browser_context =
+      web_contents()->GetBrowserContext();
+  ProcessManager* process_manager = ProcessManager::Get(browser_context);
   for (const scoped_refptr<const Extension>& extension : granted_extensions_) {
     extension->permissions_data()->ClearTabSpecificPermissions(tab_id_);
-    UpdateTabSpecificCorsOriginAccessLists(extension->id(), process_manager);
+    UpdateTabSpecificCorsOriginAccessLists(*extension, browser_context);
 
     extension_ids.push_back(extension->id());
     std::set<content::RenderFrameHost*> extension_frame_hosts =
