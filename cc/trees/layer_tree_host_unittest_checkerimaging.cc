@@ -69,7 +69,7 @@ class LayerTreeHostCheckerImagingTest : public LayerTreeTest {
                             .set_decoding_mode(PaintImage::DecodingMode::kAsync)
                             .TakePaintImage();
     content_layer_client_.add_draw_image(checkerable_image, gfx::Point(0, 0),
-                                         PaintFlags());
+                                         SkSamplingOptions(), PaintFlags());
 
     layer_tree_host()->SetRootLayer(
         FakePictureLayer::Create(&content_layer_client_));

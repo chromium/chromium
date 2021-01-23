@@ -8270,7 +8270,7 @@ class LayerTreeHostTestImageAnimationDrawImage
 
  private:
   void AddImageOp(const PaintImage& image) override {
-    content_layer_client_.add_draw_image(image, gfx::Point(0, 0), PaintFlags());
+    content_layer_client_.add_draw_image(image, gfx::Point(0, 0));
   }
 };
 
@@ -8292,7 +8292,7 @@ class LayerTreeHostTestImageAnimationDrawRecordShader
     : public LayerTreeHostTestImageAnimation {
   void AddImageOp(const PaintImage& image) override {
     auto record = sk_make_sp<PaintOpBuffer>();
-    record->push<DrawImageOp>(image, 0.f, 0.f, nullptr);
+    record->push<DrawImageOp>(image, 0.f, 0.f);
     PaintFlags flags;
     flags.setShader(PaintShader::MakePaintRecord(
         record, SkRect::MakeWH(500, 500), SkTileMode::kClamp,
@@ -8307,7 +8307,7 @@ class LayerTreeHostTestImageAnimationPaintFilter
     : public LayerTreeHostTestImageAnimation {
   void AddImageOp(const PaintImage& image) override {
     auto record = sk_make_sp<PaintOpBuffer>();
-    record->push<DrawImageOp>(image, 0.f, 0.f, nullptr);
+    record->push<DrawImageOp>(image, 0.f, 0.f);
     PaintFlags flags;
     flags.setImageFilter(
         sk_make_sp<RecordPaintFilter>(record, SkRect::MakeWH(500, 500)));
@@ -8383,12 +8383,9 @@ class LayerTreeHostTestImageDecodingHints : public LayerTreeHostTest {
             .set_id(3)
             .set_decoding_mode(PaintImage::DecodingMode::kUnspecified)
             .TakePaintImage();
-    content_layer_client_.add_draw_image(async_image, gfx::Point(0, 0),
-                                         PaintFlags());
-    content_layer_client_.add_draw_image(sync_image, gfx::Point(1, 2),
-                                         PaintFlags());
-    content_layer_client_.add_draw_image(unspecified_image, gfx::Point(3, 4),
-                                         PaintFlags());
+    content_layer_client_.add_draw_image(async_image, gfx::Point(0, 0));
+    content_layer_client_.add_draw_image(sync_image, gfx::Point(1, 2));
+    content_layer_client_.add_draw_image(unspecified_image, gfx::Point(3, 4));
 
     layer_tree_host()->SetRootLayer(
         FakePictureLayer::Create(&content_layer_client_));

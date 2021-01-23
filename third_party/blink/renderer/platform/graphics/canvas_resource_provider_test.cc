@@ -558,8 +558,7 @@ TEST_F(CanvasResourceProviderTest, FlushForImage) {
 
   EXPECT_FALSE(dst_canvas->IsCachingImage(src_content_id));
 
-  cc::PaintFlags flags;
-  dst_canvas->drawImage(paint_image, 0, 0, &flags);
+  dst_canvas->drawImage(paint_image, 0, 0, SkSamplingOptions(), nullptr);
 
   EXPECT_TRUE(dst_canvas->IsCachingImage(src_content_id));
 

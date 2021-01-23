@@ -109,7 +109,8 @@ bool ImageBitmapRenderingContextBase::PushFrame() {
   cc::PaintFlags paint_flags;
   paint_flags.setBlendMode(SkBlendMode::kSrc);
   Host()->ResourceProvider()->Canvas()->drawImage(
-      image->PaintImageForCurrentFrame(), 0, 0, &paint_flags);
+      image->PaintImageForCurrentFrame(), 0, 0, SkSamplingOptions(),
+      &paint_flags);
   scoped_refptr<CanvasResource> resource =
       Host()->ResourceProvider()->ProduceCanvasResource();
   Host()->PushFrame(

@@ -92,7 +92,7 @@ void GenerateBitmapForPaintImage(cc::PaintImage paint_image,
   bitmap->eraseColor(SK_AlphaTRANSPARENT);
   FrameSettingImageProvider image_provider(frame_index, client_id);
   cc::SkiaPaintCanvas canvas(*bitmap, &image_provider);
-  canvas.drawImage(paint_image, 0u, 0u, nullptr);
+  canvas.drawImage(paint_image, 0u, 0u);
 }
 
 }  // namespace
@@ -187,7 +187,7 @@ class BitmapImageTest : public testing::Test {
     bitmap.allocPixels(info, image->Size().Width() * 4);
     bitmap.eraseColor(SK_AlphaTRANSPARENT);
     cc::SkiaPaintCanvas canvas(bitmap);
-    canvas.drawImage(paint_image, 0u, 0u, nullptr);
+    canvas.drawImage(paint_image, 0u, 0u);
     return bitmap;
   }
 

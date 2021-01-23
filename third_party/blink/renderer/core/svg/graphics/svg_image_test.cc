@@ -60,7 +60,7 @@ class SVGImageTest : public testing::Test, private ScopedMockOverlayScrollbars {
     SkiaPaintCanvas canvas(null_canvas.get());
     PaintFlags flags;
     FloatRect dummy_rect(0, 0, 100, 100);
-    image->Draw(&canvas, flags, dummy_rect, dummy_rect,
+    image->Draw(&canvas, flags, dummy_rect, dummy_rect, SkSamplingOptions(),
                 kRespectImageOrientation, Image::kDoNotClampImageToSourceRect,
                 Image::kSyncDecode);
   }

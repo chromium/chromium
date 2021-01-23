@@ -1154,12 +1154,14 @@ bool BaseRenderingContext2D::ShouldDrawImageAntialiased(
          dest_rect.Height() * fabs(height_expansion) < 1;
 }
 
-void BaseRenderingContext2D::DrawImageInternal(cc::PaintCanvas* c,
-                                               CanvasImageSource* image_source,
-                                               Image* image,
-                                               const FloatRect& src_rect,
-                                               const FloatRect& dst_rect,
-                                               const PaintFlags* flags) {
+void BaseRenderingContext2D::DrawImageInternal(
+    cc::PaintCanvas* c,
+    CanvasImageSource* image_source,
+    Image* image,
+    const FloatRect& src_rect,
+    const FloatRect& dst_rect,
+    const SkSamplingOptions& sampling,
+    const PaintFlags* flags) {
   int initial_save_count = c->getSaveCount();
   PaintFlags image_flags = *flags;
 
@@ -1209,7 +1211,7 @@ void BaseRenderingContext2D::DrawImageInternal(cc::PaintCanvas* c,
           image->SizeAsFloat(kRespectImageOrientation), src_rect);
     }
     image_flags.setAntiAlias(ShouldDrawImageAntialiased(dst_rect));
-    image->Draw(c, image_flags, dst_rect, corrected_src_rect,
+    image->Draw(c, image_flags, dst_rect, corrected_src_rect, sampling,
                 respect_orientation, Image::kDoNotClampImageToSourceRect,
                 Image::kSyncDecode);
   } else {
@@ -1309,8 +1311,11 @@ void BaseRenderingContext2D::drawImage(ScriptState* script_state,
       [this, &image_source, &image, &src_rect, dst_rect](
           cc::PaintCanvas* c, const PaintFlags* flags)  // draw lambda
       {
+        SkSamplingOptions sampling(
+            flags ? flags->getFilterQuality() : kNone_SkFilterQuality,
+            SkSamplingOptions::kMedium_asMipmapLinear);
         DrawImageInternal(c, image_source, image.get(), src_rect, dst_rect,
-                          flags);
+                          sampling, flags);
       },
       [this, &dst_rect](const SkIRect& clip_bounds)  // overdraw test lambda
       { return RectContainsTransformedRect(dst_rect, clip_bounds); },

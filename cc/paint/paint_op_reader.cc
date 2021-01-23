@@ -626,6 +626,23 @@ void PaintOpReader::Read(SkM44* matrix) {
   ReadSimple(matrix);
 }
 
+void PaintOpReader::Read(SkSamplingOptions* sampling) {
+  bool useCubic;
+  Read(&useCubic);
+  if (useCubic) {
+    SkCubicResampler cubic;
+    Read(&cubic.B);
+    Read(&cubic.C);
+    *sampling = SkSamplingOptions(cubic);
+  } else {
+    SkFilterMode filter;
+    SkMipmapMode mipmap;
+    Read(&filter);
+    Read(&mipmap);
+    *sampling = SkSamplingOptions(filter, mipmap);
+  }
+}
+
 void PaintOpReader::Read(SkYUVColorSpace* yuv_color_space) {
   uint32_t raw_yuv_color_space = kIdentity_SkYUVColorSpace;
   ReadSimple(&raw_yuv_color_space);

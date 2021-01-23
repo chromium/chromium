@@ -27,15 +27,18 @@ class FakeContentLayerClient : public ContentLayerClient {
   struct ImageData {
     ImageData(PaintImage image,
               const gfx::Point& point,
+              const SkSamplingOptions&,
               const PaintFlags& flags);
     ImageData(PaintImage image,
               const gfx::Transform& transform,
+              const SkSamplingOptions&,
               const PaintFlags& flags);
     ImageData(const ImageData& other);
     ~ImageData();
     PaintImage image;
     gfx::Point point;
     gfx::Transform transform;
+    SkSamplingOptions sampling;
     PaintFlags flags;
   };
 
@@ -70,25 +73,40 @@ class FakeContentLayerClient : public ContentLayerClient {
 
   void add_draw_image(sk_sp<SkImage> image,
                       const gfx::Point& point,
+                      const SkSamplingOptions& sampling,
                       const PaintFlags& flags) {
     add_draw_image(
         PaintImageBuilder::WithDefault()
             .set_id(PaintImage::GetNextId())
             .set_image(std::move(image), PaintImage::GetNextContentId())
             .TakePaintImage(),
-        point, flags);
+        point, sampling, flags);
+  }
+  void add_draw_image(sk_sp<SkImage> image, const gfx::Point& point) {
+    add_draw_image(
+        PaintImageBuilder::WithDefault()
+            .set_id(PaintImage::GetNextId())
+            .set_image(std::move(image), PaintImage::GetNextContentId())
+            .TakePaintImage(),
+        point, SkSamplingOptions(), PaintFlags());
   }
   void add_draw_image(PaintImage image,
                       const gfx::Point& point,
+                      const SkSamplingOptions& sampling,
                       const PaintFlags& flags) {
-    ImageData data(std::move(image), point, flags);
+    ImageData data(std::move(image), point, sampling, flags);
+    draw_images_.push_back(data);
+  }
+  void add_draw_image(PaintImage image, const gfx::Point& point) {
+    ImageData data(std::move(image), point, SkSamplingOptions(), PaintFlags());
     draw_images_.push_back(data);
   }
 
   void add_draw_image_with_transform(PaintImage image,
                                      const gfx::Transform& transform,
+                                     const SkSamplingOptions& sampling,
                                      const PaintFlags& flags) {
-    ImageData data(std::move(image), transform, flags);
+    ImageData data(std::move(image), transform, sampling, flags);
     draw_images_.push_back(data);
   }
 

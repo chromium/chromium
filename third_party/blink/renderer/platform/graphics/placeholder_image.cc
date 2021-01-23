@@ -53,6 +53,7 @@ void DrawIcon(cc::PaintCanvas* canvas,
               const PaintFlags& flags,
               float x,
               float y,
+              const SkSamplingOptions& sampling,
               float scale_factor) {
   // Note that |icon_image| will be a 0x0 image when running
   // blink_platform_unittests.
@@ -67,18 +68,19 @@ void DrawIcon(cc::PaintCanvas* canvas,
       icon_image->PaintImageForCurrentFrame(),
       IntRect(IntPoint::Zero(), icon_image->Size()),
       FloatRect(x, y, scale_factor * kIconWidth, scale_factor * kIconHeight),
-      &flags, SkCanvas::kFast_SrcRectConstraint);
+      sampling, &flags, SkCanvas::kFast_SrcRectConstraint);
 }
 
 void DrawCenteredIcon(cc::PaintCanvas* canvas,
                       const PaintFlags& flags,
                       const FloatRect& dest_rect,
+                      const SkSamplingOptions& sampling,
                       float scale_factor) {
   DrawIcon(
       canvas, flags,
       dest_rect.X() + (dest_rect.Width() - scale_factor * kIconWidth) / 2.0f,
       dest_rect.Y() + (dest_rect.Height() - scale_factor * kIconHeight) / 2.0f,
-      scale_factor);
+      sampling, scale_factor);
 }
 
 FontDescription CreatePlaceholderFontDescription(float scale_factor) {
@@ -248,8 +250,8 @@ PaintImage PlaceholderImage::PaintImageForCurrentFrame() {
 
   PaintRecorder paint_recorder;
   Draw(paint_recorder.beginRecording(FloatRect(dest_rect)), PaintFlags(),
-       FloatRect(dest_rect), FloatRect(dest_rect), kRespectImageOrientation,
-       kClampImageToSourceRect, kSyncDecode);
+       FloatRect(dest_rect), FloatRect(dest_rect), SkSamplingOptions(),
+       kRespectImageOrientation, kClampImageToSourceRect, kSyncDecode);
 
   paint_record_for_current_frame_ = paint_recorder.finishRecordingAsPicture();
   paint_record_content_id_ = PaintImage::GetNextContentId();
@@ -272,6 +274,7 @@ void PlaceholderImage::Draw(cc::PaintCanvas* canvas,
                             const PaintFlags& base_flags,
                             const FloatRect& dest_rect,
                             const FloatRect& src_rect,
+                            const SkSamplingOptions& sampling,
                             RespectImageOrientationEnum respect_orientation,
                             ImageClampingMode image_clamping_mode,
                             ImageDecodingMode decode_mode) {
@@ -294,7 +297,7 @@ void PlaceholderImage::Draw(cc::PaintCanvas* canvas,
   }
 
   if (text_.IsEmpty()) {
-    DrawCenteredIcon(canvas, base_flags, dest_rect,
+    DrawCenteredIcon(canvas, base_flags, dest_rect, sampling,
                      icon_and_text_scale_factor_);
     return;
   }
@@ -313,7 +316,7 @@ void PlaceholderImage::Draw(cc::PaintCanvas* canvas,
           (kIconWidth + 2 * kFeaturePaddingX + kPaddingBetweenIconAndText);
 
   if (dest_rect.Width() < icon_and_text_width) {
-    DrawCenteredIcon(canvas, base_flags, dest_rect,
+    DrawCenteredIcon(canvas, base_flags, dest_rect, sampling,
                      icon_and_text_scale_factor_);
     return;
   }
@@ -340,7 +343,7 @@ void PlaceholderImage::Draw(cc::PaintCanvas* canvas,
   }
 
   DrawIcon(canvas, base_flags, icon_x,
-           feature_y + icon_and_text_scale_factor_ * kIconPaddingY,
+           feature_y + icon_and_text_scale_factor_ * kIconPaddingY, sampling,
            icon_and_text_scale_factor_);
 
   flags.setColor(SkColorSetARGB(0xAB, 0, 0, 0));
@@ -368,7 +371,8 @@ void PlaceholderImage::DrawPattern(
   // Ignore the pattern specifications and just draw a single placeholder image
   // over the whole |dest_rect|. This is done in order to prevent repeated icons
   // from cluttering tiled background images.
-  Draw(context.Canvas(), flags, dest_rect, src_rect, respect_orientation,
+  Draw(context.Canvas(), flags, dest_rect, src_rect,
+       context.ImageSamplingOptions(), respect_orientation,
        kClampImageToSourceRect, kUnspecifiedDecode);
 }
 

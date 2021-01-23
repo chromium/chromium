@@ -323,7 +323,8 @@ scoped_refptr<StaticBitmapImage> FlipImageVertically(
   canvas->translate(0, -input->height());
   cc::PaintFlags paint;
   paint.setBlendMode(SkBlendMode::kSrc);
-  canvas->drawImage(input->PaintImageForCurrentFrame(), 0, 0, &paint);
+  canvas->drawImage(input->PaintImageForCurrentFrame(), 0, 0,
+                    SkSamplingOptions(), &paint);
   return resource_provider->Snapshot(input->CurrentFrameOrientation());
 }
 
@@ -355,7 +356,7 @@ scoped_refptr<StaticBitmapImage> GetImageWithAlphaDisposition(
     cc::PaintFlags paint;
     paint.setBlendMode(SkBlendMode::kSrc);
     resource_provider->Canvas()->drawImage(image->PaintImageForCurrentFrame(),
-                                           0, 0, &paint);
+                                           0, 0, SkSamplingOptions(), &paint);
     return resource_provider->Snapshot(image->CurrentFrameOrientation());
   }
 
@@ -392,14 +393,13 @@ scoped_refptr<StaticBitmapImage> ScaleImage(
         CreateProvider(image->ContextProviderWrapper(), image_info, image,
                        false /* fallback_to_software */);
     if (resource_provider) {
-      cc::PaintFlags paint;
-      paint.setFilterQuality(parsed_options.resize_quality);
+      SkSamplingOptions sampling(parsed_options.resize_quality);
       resource_provider->Canvas()->drawImageRect(
           image->PaintImageForCurrentFrame(),
           SkRect::MakeWH(src_image_info.width(), src_image_info.height()),
           SkRect::MakeWH(parsed_options.resize_width,
                          parsed_options.resize_height),
-          &paint, SkCanvas::kStrict_SrcRectConstraint);
+          sampling, nullptr, SkCanvas::kStrict_SrcRectConstraint);
       return resource_provider->Snapshot(image->CurrentFrameOrientation());
     }
   }
@@ -487,13 +487,12 @@ static scoped_refptr<StaticBitmapImage> CropImageAndApplyColorSpaceConversion(
                        true /* fallback_to_software*/);
     if (!resource_provider)
       return nullptr;
-    cc::PaintFlags paint;
-    resource_provider->Canvas()->drawImageRect(
-        paint_image,
-        SkRect::MakeXYWH(src_rect.X(), src_rect.Y(), src_rect.Width(),
-                         src_rect.Height()),
-        SkRect::MakeWH(src_rect.Width(), src_rect.Height()), &paint,
-        SkCanvas::kStrict_SrcRectConstraint);
+    cc::PaintCanvas* canvas = resource_provider->Canvas();
+    canvas->drawImageRect(paint_image,
+                          SkRect::MakeXYWH(src_rect.X(), src_rect.Y(),
+                                           src_rect.Width(), src_rect.Height()),
+                          SkRect::MakeWH(src_rect.Width(), src_rect.Height()),
+                          SkCanvas::kStrict_SrcRectConstraint);
     result = resource_provider->Snapshot(image->CurrentFrameOrientation());
   }
 
@@ -978,7 +977,7 @@ ScriptPromise ImageBitmap::CreateAsync(ImageElementBase* image,
   SVGImageForContainer::Create(To<SVGImage>(input.get()),
                                FloatSize(input_rect.Size()), 1, NullURL())
       ->Draw(canvas, cc::PaintFlags(), FloatRect(draw_dst_rect),
-             FloatRect(draw_src_rect),
+             FloatRect(draw_src_rect), SkSamplingOptions(),
              // The following will all be ignored.
              kRespectImageOrientation, Image::kDoNotClampImageToSourceRect,
              Image::kSyncDecode);

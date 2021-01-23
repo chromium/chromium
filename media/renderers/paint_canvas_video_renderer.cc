@@ -978,7 +978,6 @@ void PaintCanvasVideoRenderer::Paint(
   cc::PaintFlags video_flags;
   video_flags.setAlpha(flags.getAlpha());
   video_flags.setBlendMode(flags.getBlendMode());
-  video_flags.setFilterQuality(flags.getFilterQuality());
 
   const bool need_rotation = video_transformation.rotation != VIDEO_ROTATION_0;
   const bool need_scaling =
@@ -1044,11 +1043,13 @@ void PaintCanvasVideoRenderer::Paint(
     canvas->drawImageRect(image, gfx::RectToSkRect(video_frame->visible_rect()),
                           SkRect::MakeWH(video_frame->visible_rect().width(),
                                          video_frame->visible_rect().height()),
+                          SkSamplingOptions(flags.getFilterQuality()),
                           &video_flags, SkCanvas::kStrict_SrcRectConstraint);
   } else {
     DCHECK_EQ(video_frame->visible_rect().size(),
               gfx::Size(image.width(), image.height()));
-    canvas->drawImage(image, 0, 0, &video_flags);
+    canvas->drawImage(image, 0, 0, SkSamplingOptions(flags.getFilterQuality()),
+                      &video_flags);
   }
 
   if (need_transform)

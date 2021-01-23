@@ -46,7 +46,7 @@ scoped_refptr<StaticBitmapImage> MakeAccelerated(
   if (!provider || !provider->IsAccelerated())
     return nullptr;
 
-  provider->Canvas()->drawImage(paint_image, 0, 0, nullptr);
+  provider->Canvas()->drawImage(paint_image, 0, 0);
   return provider->Snapshot();
 }
 

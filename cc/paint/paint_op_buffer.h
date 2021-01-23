@@ -532,9 +532,11 @@ class CC_PAINT_EXPORT DrawImageOp final : public PaintOpWithFlags {
  public:
   static constexpr PaintOpType kType = PaintOpType::DrawImage;
   static constexpr bool kIsDrawOp = true;
+  DrawImageOp(const PaintImage& image, SkScalar left, SkScalar top);
   DrawImageOp(const PaintImage& image,
               SkScalar left,
               SkScalar top,
+              const SkSamplingOptions&,
               const PaintFlags* flags);
   ~DrawImageOp();
   static void RasterWithFlags(const DrawImageOp* op,
@@ -553,6 +555,7 @@ class CC_PAINT_EXPORT DrawImageOp final : public PaintOpWithFlags {
   PaintImage image;
   SkScalar left;
   SkScalar top;
+  SkSamplingOptions sampling;
 
  private:
   DrawImageOp();
@@ -569,6 +572,11 @@ class CC_PAINT_EXPORT DrawImageRectOp final : public PaintOpWithFlags {
   DrawImageRectOp(const PaintImage& image,
                   const SkRect& src,
                   const SkRect& dst,
+                  SkCanvas::SrcRectConstraint constraint);
+  DrawImageRectOp(const PaintImage& image,
+                  const SkRect& src,
+                  const SkRect& dst,
+                  const SkSamplingOptions&,
                   const PaintFlags* flags,
                   SkCanvas::SrcRectConstraint constraint);
   ~DrawImageRectOp();
@@ -588,6 +596,7 @@ class CC_PAINT_EXPORT DrawImageRectOp final : public PaintOpWithFlags {
   PaintImage image;
   SkRect src;
   SkRect dst;
+  SkSamplingOptions sampling;
   SkCanvas::SrcRectConstraint constraint;
 
  private:

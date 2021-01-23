@@ -84,7 +84,7 @@ TEST(PaintShaderTest, DecodePaintRecord) {
                                .set_paint_image_generator(generator)
                                .TakePaintImage();
 
-  record->push<DrawImageOp>(paint_image, 0.f, 0.f, nullptr);
+  record->push<DrawImageOp>(paint_image, 0.f, 0.f);
   SkMatrix local_matrix = SkMatrix::Scale(0.5f, 0.5f);
   auto record_shader = PaintShader::MakePaintRecord(
       record, SkRect::MakeWH(100, 100), SkTileMode::kClamp, SkTileMode::kClamp,

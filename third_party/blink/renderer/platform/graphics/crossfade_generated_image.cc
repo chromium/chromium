@@ -45,6 +45,7 @@ CrossfadeGeneratedImage::CrossfadeGeneratedImage(
 
 void CrossfadeGeneratedImage::DrawCrossfade(
     cc::PaintCanvas* canvas,
+    const SkSamplingOptions& sampling,
     const PaintFlags& flags,
     RespectImageOrientationEnum respect_orientation,
     ImageClampingMode clamp_mode,
@@ -69,11 +70,11 @@ void CrossfadeGeneratedImage::DrawCrossfade(
   // RespectImageOrientationEnum from CrossfadeGeneratedImage::draw(). Code was
   // written this way during refactoring to avoid modifying existing behavior,
   // but this warrants further investigation. crbug.com/472634
-  from_image_->Draw(canvas, image_flags, dest_rect, from_image_rect,
+  from_image_->Draw(canvas, image_flags, dest_rect, from_image_rect, sampling,
                     kDoNotRespectImageOrientation, clamp_mode, decode_mode);
   image_flags.setBlendMode(SkBlendMode::kPlus);
   image_flags.setColor(ScaleAlpha(flags.getColor(), percentage_));
-  to_image_->Draw(canvas, image_flags, dest_rect, to_image_rect,
+  to_image_->Draw(canvas, image_flags, dest_rect, to_image_rect, sampling,
                   respect_orientation, clamp_mode, decode_mode);
 }
 
@@ -82,6 +83,7 @@ void CrossfadeGeneratedImage::Draw(
     const PaintFlags& flags,
     const FloatRect& dst_rect,
     const FloatRect& src_rect,
+    const SkSamplingOptions& sampling,
     RespectImageOrientationEnum respect_orientation,
     ImageClampingMode clamp_mode,
     ImageDecodingMode decode_mode) {
@@ -92,7 +94,8 @@ void CrossfadeGeneratedImage::Draw(
   PaintCanvasAutoRestore ar(canvas, true);
   canvas->clipRect(dst_rect);
   canvas->concat(SkMatrix::RectToRect(src_rect, dst_rect));
-  DrawCrossfade(canvas, flags, respect_orientation, clamp_mode, decode_mode);
+  DrawCrossfade(canvas, sampling, flags, respect_orientation, clamp_mode,
+                decode_mode);
 }
 
 void CrossfadeGeneratedImage::DrawTile(
@@ -106,10 +109,10 @@ void CrossfadeGeneratedImage::DrawTile(
   PaintFlags flags = context.FillFlags();
   flags.setBlendMode(SkBlendMode::kSrcOver);
   FloatRect dest_rect((FloatPoint()), crossfade_size_);
-  flags.setFilterQuality(
-      context.ComputeFilterQuality(this, dest_rect, src_rect));
-  DrawCrossfade(context.Canvas(), flags, respect_orientation,
-                kClampImageToSourceRect, kSyncDecode);
+  DrawCrossfade(context.Canvas(),
+                context.ComputeSamplingOptions(this, dest_rect, src_rect),
+                flags, respect_orientation, kClampImageToSourceRect,
+                kSyncDecode);
 }
 
 }  // namespace blink

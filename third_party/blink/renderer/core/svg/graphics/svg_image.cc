@@ -495,6 +495,7 @@ void SVGImage::Draw(cc::PaintCanvas* canvas,
                     const PaintFlags& flags,
                     const FloatRect& dst_rect,
                     const FloatRect& src_rect,
+                    const SkSamplingOptions&,
                     RespectImageOrientationEnum,
                     ImageClampingMode,
                     ImageDecodingMode) {

@@ -1493,7 +1493,7 @@ void CanvasResourceProvider::RestoreBackBuffer(const cc::PaintImage& image) {
   EnsureSkiaCanvas();
   cc::PaintFlags copy_paint;
   copy_paint.setBlendMode(SkBlendMode::kSrc);
-  skia_canvas_->drawImage(image, 0, 0, &copy_paint);
+  skia_canvas_->drawImage(image, 0, 0, SkSamplingOptions(), &copy_paint);
 }
 
 bool CanvasResourceProvider::HasRecordedDrawOps() const {

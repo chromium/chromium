@@ -131,6 +131,7 @@ class PLATFORM_EXPORT BitmapImage final : public Image {
             const cc::PaintFlags&,
             const FloatRect& dst_rect,
             const FloatRect& src_rect,
+            const SkSamplingOptions&,
             RespectImageOrientationEnum,
             ImageClampingMode,
             ImageDecodingMode) override;

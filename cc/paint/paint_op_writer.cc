@@ -352,6 +352,17 @@ void PaintOpWriter::Write(const sk_sp<SkData>& data) {
   }
 }
 
+void PaintOpWriter::Write(const SkSamplingOptions& sampling) {
+  Write(sampling.useCubic);
+  if (sampling.useCubic) {
+    Write(sampling.cubic.B);
+    Write(sampling.cubic.C);
+  } else {
+    Write(sampling.filter);
+    Write(sampling.mipmap);
+  }
+}
+
 void PaintOpWriter::Write(const SkColorSpace* color_space) {
   if (!color_space) {
     WriteSize(static_cast<size_t>(0));

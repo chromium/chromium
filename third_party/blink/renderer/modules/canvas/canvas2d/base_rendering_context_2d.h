@@ -454,6 +454,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public GarbageCollectedMixin,
                          Image*,
                          const FloatRect& src_rect,
                          const FloatRect& dst_rect,
+                         const SkSamplingOptions&,
                          const PaintFlags*);
   void ClipInternal(const Path&, const String& winding_rule_string);
 

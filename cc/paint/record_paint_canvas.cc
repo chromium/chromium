@@ -264,17 +264,19 @@ void RecordPaintCanvas::drawPath(const SkPath& path, const PaintFlags& flags) {
 void RecordPaintCanvas::drawImage(const PaintImage& image,
                                   SkScalar left,
                                   SkScalar top,
+                                  const SkSamplingOptions& sampling,
                                   const PaintFlags* flags) {
   DCHECK(!image.IsPaintWorklet());
-  list_->push<DrawImageOp>(image, left, top, flags);
+  list_->push<DrawImageOp>(image, left, top, sampling, flags);
 }
 
 void RecordPaintCanvas::drawImageRect(const PaintImage& image,
                                       const SkRect& src,
                                       const SkRect& dst,
+                                      const SkSamplingOptions& sampling,
                                       const PaintFlags* flags,
                                       SkCanvas::SrcRectConstraint constraint) {
-  list_->push<DrawImageRectOp>(image, src, dst, flags, constraint);
+  list_->push<DrawImageRectOp>(image, src, dst, sampling, flags, constraint);
 }
 
 void RecordPaintCanvas::drawSkottie(scoped_refptr<SkottieWrapper> skottie,

@@ -50,6 +50,7 @@ class PLATFORM_EXPORT GradientGeneratedImage final : public GeneratedImage {
             const PaintFlags&,
             const FloatRect&,
             const FloatRect&,
+            const SkSamplingOptions&,
             RespectImageOrientationEnum,
             ImageClampingMode,
             ImageDecodingMode) override;

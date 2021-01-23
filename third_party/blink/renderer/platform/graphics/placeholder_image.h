@@ -46,6 +46,7 @@ class PLATFORM_EXPORT PlaceholderImage final : public Image {
             const cc::PaintFlags&,
             const FloatRect& dest_rect,
             const FloatRect& src_rect,
+            const SkSamplingOptions&,
             RespectImageOrientationEnum,
             ImageClampingMode,
             ImageDecodingMode) override;

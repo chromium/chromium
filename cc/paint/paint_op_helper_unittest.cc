@@ -77,7 +77,7 @@ TEST(PaintOpHelper, DrawDRRectToString) {
 }
 
 TEST(PaintOpHelper, DrawImageToString) {
-  DrawImageOp op(PaintImage(), 10.5f, 20.3f, nullptr);
+  DrawImageOp op(PaintImage(), 10.5f, 20.3f);
   std::string str = PaintOpHelper::ToString(&op);
   EXPECT_EQ(
       str,
@@ -93,7 +93,7 @@ TEST(PaintOpHelper, DrawImageToString) {
 
 TEST(PaintOpHelper, DrawImageRectToString) {
   DrawImageRectOp op(PaintImage(), SkRect::MakeXYWH(1, 2, 3, 4),
-                     SkRect::MakeXYWH(5, 6, 7, 8), nullptr,
+                     SkRect::MakeXYWH(5, 6, 7, 8),
                      SkCanvas::kStrict_SrcRectConstraint);
   std::string str = PaintOpHelper::ToString(&op);
   EXPECT_EQ(

@@ -73,6 +73,7 @@ class CC_PAINT_EXPORT PaintOpReader {
   void Read(SkMatrix* matrix);
   void Read(SkM44* matrix);
   void Read(SkImageInfo* info);
+  void Read(SkSamplingOptions* sampling);
   void Read(sk_sp<SkColorSpace>* color_space);
   void Read(SkYUVColorSpace* yuv_color_space);
   void Read(SkYUVAInfo::PlaneConfig* plane_config);
@@ -103,6 +104,12 @@ class CC_PAINT_EXPORT PaintOpReader {
   }
   void Read(SkTileMode* tile_mode) {
     ReadEnum<SkTileMode, SkTileMode::kLastTileMode>(tile_mode);
+  }
+  void Read(SkFilterMode* filter_mode) {
+    ReadEnum<SkFilterMode, SkFilterMode::kLast>(filter_mode);
+  }
+  void Read(SkMipmapMode* mipmap_mode) {
+    ReadEnum<SkMipmapMode, SkMipmapMode::kLast>(mipmap_mode);
   }
 
   void Read(bool* data) {

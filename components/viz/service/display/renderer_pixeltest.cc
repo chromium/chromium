@@ -3914,10 +3914,9 @@ TEST_F(SoftwareRendererPixelTest, PictureDrawQuadDisableImageFiltering) {
 
   std::unique_ptr<cc::FakeRecordingSource> recording =
       cc::FakeRecordingSource::CreateFilledRecordingSource(viewport.size());
-  cc::PaintFlags flags;
-  flags.setFilterQuality(kLow_SkFilterQuality);
-  recording->add_draw_image_with_flags(surface->makeImageSnapshot(),
-                                       gfx::Point(), flags);
+  recording->add_draw_image_with_flags(
+      surface->makeImageSnapshot(), gfx::Point(),
+      SkSamplingOptions(SkFilterMode::kLinear), cc::PaintFlags());
   recording->Rerecord();
   scoped_refptr<cc::RasterSource> raster_source =
       recording->CreateRasterSource();
@@ -3965,10 +3964,9 @@ TEST_F(SoftwareRendererPixelTest, PictureDrawQuadNearestNeighbor) {
 
   std::unique_ptr<cc::FakeRecordingSource> recording =
       cc::FakeRecordingSource::CreateFilledRecordingSource(viewport.size());
-  cc::PaintFlags flags;
-  flags.setFilterQuality(kLow_SkFilterQuality);
-  recording->add_draw_image_with_flags(surface->makeImageSnapshot(),
-                                       gfx::Point(), flags);
+  recording->add_draw_image_with_flags(
+      surface->makeImageSnapshot(), gfx::Point(),
+      SkSamplingOptions(SkFilterMode::kLinear), cc::PaintFlags());
   recording->Rerecord();
   scoped_refptr<cc::RasterSource> raster_source =
       recording->CreateRasterSource();

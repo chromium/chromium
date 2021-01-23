@@ -259,6 +259,7 @@ void BitmapImage::Draw(
     const PaintFlags& flags,
     const FloatRect& dst_rect,
     const FloatRect& src_rect,
+    const SkSamplingOptions& sampling,
     RespectImageOrientationEnum should_respect_image_orientation,
     ImageClampingMode clamp_mode,
     ImageDecodingMode decode_mode) {
@@ -317,7 +318,7 @@ void BitmapImage::Draw(
   uint32_t stable_id = image.stable_id();
   bool is_lazy_generated = image.IsLazyGenerated();
   canvas->drawImageRect(std::move(image), adjusted_src_rect, adjusted_dst_rect,
-                        &flags,
+                        sampling, &flags,
                         WebCoreClampingModeToSkiaRectConstraint(clamp_mode));
 
   if (is_lazy_generated) {

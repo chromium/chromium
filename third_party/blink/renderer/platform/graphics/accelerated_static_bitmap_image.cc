@@ -171,6 +171,7 @@ void AcceleratedStaticBitmapImage::Draw(
     const cc::PaintFlags& flags,
     const FloatRect& dst_rect,
     const FloatRect& src_rect,
+    const SkSamplingOptions& sampling,
     RespectImageOrientationEnum should_respect_image_orientation,
     ImageClampingMode image_clamping_mode,
     ImageDecodingMode decode_mode) {
@@ -184,7 +185,7 @@ void AcceleratedStaticBitmapImage::Draw(
                       .set_decoding_mode(paint_image_decoding_mode)
                       .TakePaintImage();
   }
-  StaticBitmapImage::DrawHelper(canvas, flags, dst_rect, src_rect,
+  StaticBitmapImage::DrawHelper(canvas, flags, dst_rect, src_rect, sampling,
                                 image_clamping_mode,
                                 should_respect_image_orientation, paint_image);
 }
@@ -368,7 +369,7 @@ AcceleratedStaticBitmapImage::ConvertToColorSpace(
     return nullptr;
   }
 
-  provider->Canvas()->drawImage(PaintImageForCurrentFrame(), 0, 0, nullptr);
+  provider->Canvas()->drawImage(PaintImageForCurrentFrame(), 0, 0);
   return provider->Snapshot(orientation_);
 }
 

@@ -18,9 +18,10 @@ MemoryManagedPaintCanvas::~MemoryManagedPaintCanvas() = default;
 void MemoryManagedPaintCanvas::drawImage(const cc::PaintImage& image,
                                          SkScalar left,
                                          SkScalar top,
+                                         const SkSamplingOptions& sampling,
                                          const cc::PaintFlags* flags) {
   DCHECK(!image.IsPaintWorklet());
-  RecordPaintCanvas::drawImage(image, left, top, flags);
+  RecordPaintCanvas::drawImage(image, left, top, sampling, flags);
   UpdateMemoryUsage(image);
 }
 
@@ -28,9 +29,11 @@ void MemoryManagedPaintCanvas::drawImageRect(
     const cc::PaintImage& image,
     const SkRect& src,
     const SkRect& dst,
+    const SkSamplingOptions& sampling,
     const cc::PaintFlags* flags,
     SkCanvas::SrcRectConstraint constraint) {
-  RecordPaintCanvas::drawImageRect(image, src, dst, flags, constraint);
+  RecordPaintCanvas::drawImageRect(image, src, dst, sampling, flags,
+                                   constraint);
   UpdateMemoryUsage(image);
 }
 

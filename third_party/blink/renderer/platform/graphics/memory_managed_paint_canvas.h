@@ -31,10 +31,12 @@ class PLATFORM_EXPORT MemoryManagedPaintCanvas final
   void drawImage(const cc::PaintImage& image,
                  SkScalar left,
                  SkScalar top,
+                 const SkSamplingOptions&,
                  const cc::PaintFlags* flags) override;
   void drawImageRect(const cc::PaintImage& image,
                      const SkRect& src,
                      const SkRect& dst,
+                     const SkSamplingOptions&,
                      const cc::PaintFlags* flags,
                      SkCanvas::SrcRectConstraint constraint) override;
 

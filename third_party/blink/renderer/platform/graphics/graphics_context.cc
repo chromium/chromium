@@ -313,7 +313,7 @@ void GraphicsContext::CompositeRecord(sk_sp<PaintRecord> record,
 
   PaintFlags flags;
   flags.setBlendMode(op);
-  flags.setFilterQuality(
+  SkSamplingOptions sampling(
       static_cast<SkFilterQuality>(ImageInterpolationQuality()));
   canvas_->save();
   canvas_->concat(SkMatrix::RectToRect(src, dest));
@@ -322,7 +322,7 @@ void GraphicsContext::CompositeRecord(sk_sp<PaintRecord> record,
                                            PaintImage::GetNextContentId())
                          .set_id(PaintImage::GetNextId())
                          .TakePaintImage(),
-                     0, 0, &flags);
+                     0, 0, sampling, &flags);
   canvas_->restore();
 }
 
@@ -779,7 +779,6 @@ void GraphicsContext::DrawImage(
   PaintFlags image_flags = ImmutableState()->FillFlags();
   image_flags.setBlendMode(op);
   image_flags.setColor(SK_ColorBLACK);
-  image_flags.setFilterQuality(ComputeFilterQuality(image, dest, src));
 
   // Do not classify the image if the element has any CSS filters.
   if (!has_filter_property) {
@@ -787,8 +786,10 @@ void GraphicsContext::DrawImage(
                                                dest);
   }
 
-  image->Draw(canvas_, image_flags, dest, src, should_respect_image_orientation,
-              Image::kClampImageToSourceRect, decode_mode);
+  image->Draw(canvas_, image_flags, dest, src,
+              ComputeSamplingOptions(image, dest, src),
+              should_respect_image_orientation, Image::kClampImageToSourceRect,
+              decode_mode);
   paint_controller_.SetImagePainted();
 }
 
@@ -816,11 +817,11 @@ void GraphicsContext::DrawImageRRect(
   if (dest.IsEmpty() || visible_src.IsEmpty())
     return;
 
+  SkSamplingOptions sampling =
+      ComputeSamplingOptions(image, dest.Rect(), src_rect);
   PaintFlags image_flags = ImmutableState()->FillFlags();
   image_flags.setBlendMode(op);
   image_flags.setColor(SK_ColorBLACK);
-  image_flags.setFilterQuality(
-      ComputeFilterQuality(image, dest.Rect(), src_rect));
 
   DarkModeFilterHelper::ApplyToImageIfNeeded(this, image, &image_flags,
                                              src_rect, dest.Rect());
@@ -835,13 +836,18 @@ void GraphicsContext::DrawImageRRect(
   }
 
   if (use_shader) {
+    // Temporarily set filter-quality for the shader. <reed>
+    // Should be replaced with explicit sampling parameter passed to
+    // ApplyShader()
+    image_flags.setFilterQuality(
+        ComputeFilterQuality(image, dest.Rect(), src_rect));
     // Shader-based fast path.
     canvas_->drawRRect(dest, image_flags);
   } else {
     // Clip-based fallback.
     PaintCanvasAutoRestore auto_restore(canvas_, true);
     canvas_->clipRRect(dest, image_flags.isAntiAlias());
-    image->Draw(canvas_, image_flags, dest.Rect(), src_rect,
+    image->Draw(canvas_, image_flags, dest.Rect(), src_rect, sampling,
                 respect_orientation, Image::kClampImageToSourceRect,
                 decode_mode);
   }

@@ -66,6 +66,7 @@ class CC_PAINT_EXPORT PaintOpWriter {
   void Write(const PaintFlags& flags);
   void Write(const sk_sp<SkData>& data);
   void Write(const SkColorSpace* data);
+  void Write(const SkSamplingOptions&);
   void Write(const PaintShader* shader, SkFilterQuality quality);
   void Write(const PaintFilter* filter);
   void Write(const sk_sp<SkTextBlob>& blob);
@@ -81,6 +82,8 @@ class CC_PAINT_EXPORT PaintOpWriter {
   void Write(SkFilterQuality filter_quality) { WriteEnum(filter_quality); }
   void Write(SkBlendMode blend_mode) { WriteEnum(blend_mode); }
   void Write(SkTileMode tile_mode) { WriteEnum(tile_mode); }
+  void Write(SkFilterMode filter_mode) { WriteEnum(filter_mode); }
+  void Write(SkMipmapMode mipmap_mode) { WriteEnum(mipmap_mode); }
 
   void Write(bool data) { Write(static_cast<uint8_t>(data)); }
 

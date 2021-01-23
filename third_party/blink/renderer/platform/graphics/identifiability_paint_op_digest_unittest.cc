@@ -425,11 +425,10 @@ TEST(IdentifiabilityPaintOpDigestTest, DigestImageOp) {
   IdentifiabilityPaintOpDigest identifiability_paintop_digest(kSize);
   auto paint_record = sk_make_sp<cc::PaintRecord>();
   paint_record->push<cc::DrawImageOp>(
-      cc::CreateDiscardablePaintImage(gfx::Size(10, 10)), 10.0f, 10.0f,
-      nullptr);
+      cc::CreateDiscardablePaintImage(gfx::Size(10, 10)), 10.0f, 10.0f);
   identifiability_paintop_digest.MaybeUpdateDigest(paint_record,
                                                    /*num_ops_to_visit=*/1);
-  EXPECT_EQ(INT64_C(72317288461381383),
+  EXPECT_EQ(INT64_C(-3447989221783743109),
             identifiability_paintop_digest.GetToken().ToUkmMetricValue());
 
   EXPECT_FALSE(identifiability_paintop_digest.encountered_skipped_ops());

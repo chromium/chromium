@@ -123,7 +123,7 @@ class LayerTreeHostBlendingPixelTest
     gfx::Size bounds(width, height);
     backdrop_client_.set_bounds(bounds);
     backdrop_client_.add_draw_image(backing_store->makeImageSnapshot(),
-                                    gfx::Point(), PaintFlags());
+                                    gfx::Point());
     scoped_refptr<FakePictureLayer> layer =
         FakePictureLayer::Create(&backdrop_client_);
     layer->SetIsDrawable(true);
@@ -146,8 +146,7 @@ class LayerTreeHostBlendingPixelTest
         SkRect::MakeXYWH(1, 0, bounds.width() - 1, bounds.height()), paint);
 
     mask_client_.set_bounds(bounds);
-    mask_client_.add_draw_image(surface->makeImageSnapshot(), gfx::Point(),
-                                PaintFlags());
+    mask_client_.add_draw_image(surface->makeImageSnapshot(), gfx::Point());
 
     scoped_refptr<FakePictureLayer> mask =
         FakePictureLayer::Create(&mask_client_);

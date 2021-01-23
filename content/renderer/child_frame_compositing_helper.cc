@@ -114,7 +114,7 @@ ChildFrameCompositingHelper::PaintContentsToDisplayList() {
                        .set_image(SkImage::MakeFromBitmap(*sad_bitmap),
                                   cc::PaintImage::GetNextContentId())
                        .TakePaintImage();
-      display_list->push<cc::DrawImageOp>(image, x, y, nullptr);
+      display_list->push<cc::DrawImageOp>(image, x, y);
 
       if (device_scale_factor_ != 1.f)
         display_list->push<cc::RestoreOp>();

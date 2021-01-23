@@ -71,12 +71,13 @@ void DrawImageExpectingGrayBoxOnly(PlaceholderImage& image,
                                    const FloatRect& dest_rect) {
   MockPaintCanvas canvas;
   ExpectDrawGrayBox(canvas, dest_rect);
-  EXPECT_CALL(canvas, drawImageRect(_, _, _, _, _)).Times(0);
+  EXPECT_CALL(canvas, drawImageRect(_, _, _, _, _, _)).Times(0);
   EXPECT_CALL(canvas, drawTextBlob(_, _, _, _)).Times(0);
 
   image.Draw(&canvas, PaintFlags(), dest_rect,
-             FloatRect(0.0f, 0.0f, 100.0f, 100.0f), kRespectImageOrientation,
-             Image::kClampImageToSourceRect, Image::kUnspecifiedDecode);
+             FloatRect(0.0f, 0.0f, 100.0f, 100.0f), SkSamplingOptions(),
+             kRespectImageOrientation, Image::kClampImageToSourceRect,
+             Image::kUnspecifiedDecode);
 }
 
 void DrawImageExpectingIconOnly(PlaceholderImage& image,
@@ -101,13 +102,13 @@ void DrawImageExpectingIconOnly(PlaceholderImage& image,
                          FloatNear(scale_factor * kBaseIconWidth, 0.01)),
                 Property(&SkRect::height,
                          FloatNear(scale_factor * kBaseIconHeight, 0.01))),
-          /*flags=*/_, /*constraint=*/_))
+          /*sampling*/ _, /*flags=*/_, /*constraint=*/_))
       .Times(1);
 
   EXPECT_CALL(canvas, drawTextBlob(_, _, _, _)).Times(0);
 
   image.Draw(&canvas, PaintFlags(), dest_rect,
-             FloatRect(0.0f, 0.0f, 100.0f, 100.0f),
+             FloatRect(0.0f, 0.0f, 100.0f, 100.0f), SkSamplingOptions(),
              kDoNotRespectImageOrientation, Image::kClampImageToSourceRect,
              Image::kUnspecifiedDecode);
 }
@@ -171,7 +172,7 @@ void DrawImageExpectingIconAndTextLTR(PlaceholderImage& image,
                          FloatNear(scale_factor * kBaseIconWidth, 0.01)),
                 Property(&SkRect::height,
                          FloatNear(scale_factor * kBaseIconHeight, 0.01))),
-          /*flags=*/_,
+          /*sampling*/ _, /*flags=*/_,
           /*constraint=*/_))
       .Times(1);
 
@@ -197,7 +198,7 @@ void DrawImageExpectingIconAndTextLTR(PlaceholderImage& image,
       }));
 
   image.Draw(&canvas, PaintFlags(), dest_rect,
-             FloatRect(0.0f, 0.0f, 100.0f, 100.0f),
+             FloatRect(0.0f, 0.0f, 100.0f, 100.0f), SkSamplingOptions(),
              kDoNotRespectImageOrientation, Image::kClampImageToSourceRect,
              Image::kUnspecifiedDecode);
 }
@@ -284,14 +285,14 @@ TEST_F(PlaceholderImageTest, FormatPlaceholderText) {
 TEST_F(PlaceholderImageTest, DrawNonIntersectingSrcRect) {
   MockPaintCanvas canvas;
   EXPECT_CALL(canvas, drawRect(_, _)).Times(0);
-  EXPECT_CALL(canvas, drawImageRect(_, _, _, _, _)).Times(0);
+  EXPECT_CALL(canvas, drawImageRect(_, _, _, _, _, _)).Times(0);
   EXPECT_CALL(canvas, drawTextBlob(_, _, _, _)).Times(0);
 
   PlaceholderImage::Create(nullptr, IntSize(800, 600), 0)
       ->Draw(&canvas, PaintFlags(), FloatRect(0.0f, 0.0f, 800.0f, 600.0f),
              // The source rectangle is outside the 800x600 bounds of the image,
              // so nothing should be drawn.
-             FloatRect(1000.0f, 0.0f, 800.0f, 600.0f),
+             FloatRect(1000.0f, 0.0f, 800.0f, 600.0f), SkSamplingOptions(),
              kDoNotRespectImageOrientation, Image::kClampImageToSourceRect,
              Image::kUnspecifiedDecode);
 }
@@ -426,7 +427,7 @@ TEST_F(PlaceholderImageTest, DrawWithOriginalResourceSizeRTL) {
                          FloatNear(kScaleFactor * kBaseIconWidth, 0.01)),
                 Property(&SkRect::height,
                          FloatNear(kScaleFactor * kBaseIconHeight, 0.01))),
-          /*flags=*/_,
+          /*sampling*/ _, /*flags=*/_,
           /*constraint=*/_))
       .Times(1);
 
@@ -450,7 +451,7 @@ TEST_F(PlaceholderImageTest, DrawWithOriginalResourceSizeRTL) {
       }));
 
   image->Draw(&canvas, PaintFlags(), dest_rect,
-              FloatRect(0.0f, 0.0f, 100.0f, 100.0f),
+              FloatRect(0.0f, 0.0f, 100.0f, 100.0f), SkSamplingOptions(),
               kDoNotRespectImageOrientation, Image::kClampImageToSourceRect,
               Image::kUnspecifiedDecode);
 }

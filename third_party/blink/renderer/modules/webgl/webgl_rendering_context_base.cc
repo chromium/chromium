@@ -1847,7 +1847,7 @@ bool WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBuffer(
   cc::PaintFlags paint_flags;
   paint_flags.setBlendMode(SkBlendMode::kSrc);
   resource_provider->Canvas()->drawImage(image->PaintImageForCurrentFrame(), 0,
-                                         0, &paint_flags);
+                                         0, SkSamplingOptions(), &paint_flags);
   return true;
 }
 
@@ -5248,8 +5248,9 @@ scoped_refptr<Image> WebGLRenderingContextBase::DrawImageIntoBuffer(
   // TODO(ccameron): WebGL should produce sRGB images.
   // https://crbug.com/672299
   image->Draw(resource_provider->Canvas(), flags, FloatRect(dest_rect),
-              FloatRect(src_rect), kRespectImageOrientation,
-              Image::kDoNotClampImageToSourceRect, Image::kSyncDecode);
+              FloatRect(src_rect), SkSamplingOptions(),
+              kRespectImageOrientation, Image::kDoNotClampImageToSourceRect,
+              Image::kSyncDecode);
   return resource_provider->Snapshot();
 }
 

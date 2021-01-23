@@ -1,0 +1,154 @@
+Tests layer command log
+
+Canvas log:
+{
+    0 : {
+        commandIndex : 0
+        method : "drawPaint"
+        params : {
+            paint : {
+                blendMode : "Src"
+                color : "#00000000"
+                filterLevel : "None"
+                flags : "none"
+                strokeCap : "Butt"
+                strokeJoin : "Miter"
+                strokeMiter : 4
+                strokeWidth : 0
+                styleName : "Fill"
+            }
+        }
+    }
+    1 : {
+        commandIndex : 1
+        method : "drawRect"
+        params : {
+            paint : {
+                color : "#FF0000FF"
+                filterLevel : "Low"
+                flags : "AntiAlias"
+                strokeCap : "Butt"
+                strokeJoin : "Miter"
+                strokeMiter : 4
+                strokeWidth : 0
+                styleName : "Fill"
+            }
+            rect : {
+                bottom : 100
+                left : 0
+                right : 100
+                top : 0
+            }
+        }
+    }
+    2 : {
+        commandIndex : 2
+        method : "drawRect"
+        params : {
+            paint : {
+                color : "#FFFF0000"
+                filterLevel : "Low"
+                flags : "AntiAlias"
+                strokeCap : "Butt"
+                strokeJoin : "Miter"
+                strokeMiter : 4
+                strokeWidth : 0
+                styleName : "Fill"
+            }
+            rect : {
+                bottom : 50
+                left : 0
+                right : 50
+                top : 0
+            }
+        }
+    }
+    3 : {
+        commandIndex : 3
+        method : "drawImageRect"
+        params : {
+            dst : {
+                bottom : 71
+                left : 0
+                right : 19
+                top : 50
+            }
+            image : {
+                height : 21
+                opaque : false
+                width : 19
+            }
+            paint : {
+                color : "#FF000000"
+                filterLevel : "Medium"
+                flags : "AntiAlias"
+                strokeCap : "Butt"
+                strokeJoin : "Miter"
+                strokeMiter : 4
+                strokeWidth : 0
+                styleName : "Fill"
+            }
+            src : {
+                bottom : 21
+                left : 0
+                right : 19
+                top : 0
+            }
+        }
+    }
+    4 : {
+        commandIndex : 4
+        method : "save"
+        params : undefined
+    }
+    5 : {
+        commandIndex : 5
+        method : "translate"
+        params : {
+            dx : 0
+            dy : 71
+        }
+    }
+    6 : {
+        commandIndex : 6
+        method : "clipRect"
+        params : {
+            SkRegion::Op : "kIntersect_Op"
+            rect : {
+                bottom : 150
+                left : 0
+                right : 300
+                top : 0
+            }
+            softClipEdgeStyle : true
+        }
+    }
+    7 : {
+        commandIndex : 7
+        method : "drawRect"
+        params : {
+            paint : {
+                color : "#7F000000"
+                filterLevel : "None"
+                flags : "AntiAlias"
+                strokeCap : "Butt"
+                strokeJoin : "Miter"
+                strokeMiter : 4
+                strokeWidth : 0
+                styleName : "Fill"
+            }
+            rect : {
+                bottom : 10
+                left : 0
+                right : 10
+                top : 0
+            }
+        }
+    }
+    8 : {
+        commandIndex : 8
+        method : "restore"
+        params : undefined
+    }
+}
+
