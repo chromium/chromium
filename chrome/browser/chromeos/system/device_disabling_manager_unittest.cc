@@ -169,8 +169,8 @@ void DeviceDisablingManagerOOBETest::TearDown() {
 
 void DeviceDisablingManagerOOBETest::CheckWhetherDeviceDisabledDuringOOBE() {
   GetDeviceDisablingManager()->CheckWhetherDeviceDisabledDuringOOBE(
-      base::Bind(&DeviceDisablingManagerOOBETest::OnDeviceDisabledChecked,
-                 base::Unretained(this)));
+      base::BindOnce(&DeviceDisablingManagerOOBETest::OnDeviceDisabledChecked,
+                     base::Unretained(this)));
   run_loop_.Run();
 }
 

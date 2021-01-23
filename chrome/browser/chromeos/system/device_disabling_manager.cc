@@ -66,12 +66,12 @@ void DeviceDisablingManager::Init() {
 
   device_disabled_subscription_ = cros_settings_->AddSettingsObserver(
       kDeviceDisabled,
-      base::Bind(&DeviceDisablingManager::UpdateFromCrosSettings,
-                 weak_factory_.GetWeakPtr()));
+      base::BindRepeating(&DeviceDisablingManager::UpdateFromCrosSettings,
+                          weak_factory_.GetWeakPtr()));
   disabled_message_subscription_ = cros_settings_->AddSettingsObserver(
       kDeviceDisabledMessage,
-      base::Bind(&DeviceDisablingManager::UpdateFromCrosSettings,
-                 weak_factory_.GetWeakPtr()));
+      base::BindRepeating(&DeviceDisablingManager::UpdateFromCrosSettings,
+                          weak_factory_.GetWeakPtr()));
 
   UpdateFromCrosSettings();
 }
@@ -87,13 +87,13 @@ void DeviceDisablingManager::CacheDisabledMessageAndNotify(
 }
 
 void DeviceDisablingManager::CheckWhetherDeviceDisabledDuringOOBE(
-    const DeviceDisabledCheckCallback& callback) {
+    DeviceDisabledCheckCallback callback) {
   if (policy::GetDeviceStateMode() != policy::RESTORE_MODE_DISABLED ||
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableDeviceDisabling)) {
     // Indicate that the device is not disabled if it is not marked as such in
     // local state or device disabling has been turned off by flag.
-    callback.Run(false);
+    std::move(callback).Run(false);
     return;
   }
 
@@ -104,7 +104,7 @@ void DeviceDisablingManager::CheckWhetherDeviceDisabledDuringOOBE(
     browser_policy_connector_->GetInstallAttributes()->ReadImmutableAttributes(
         base::BindOnce(
             &DeviceDisablingManager::CheckWhetherDeviceDisabledDuringOOBE,
-            weak_factory_.GetWeakPtr(), callback));
+            weak_factory_.GetWeakPtr(), std::move(callback)));
     return;
   }
 
@@ -115,7 +115,7 @@ void DeviceDisablingManager::CheckWhetherDeviceDisabledDuringOOBE(
     // prevent spurious disabling. Actual device disabling after OOBE will be
     // handled elsewhere, by checking for disabled state in cros settings.
     LOG(ERROR) << "CheckWhetherDeviceDisabledDuringOOBE() called after OOBE.";
-    callback.Run(false);
+    std::move(callback).Run(false);
     return;
   }
 
@@ -144,7 +144,7 @@ void DeviceDisablingManager::CheckWhetherDeviceDisabledDuringOOBE(
   CacheDisabledMessageAndNotify(disabled_message);
 
   // Indicate that the device is disabled.
-  callback.Run(true);
+  std::move(callback).Run(true);
 }
 
 // static

@@ -82,7 +82,7 @@ TEST_F(UserRemovalManagerTest, TestFailsafeTimer) {
       [](bool* log_out_called) { *log_out_called = true; }, &log_out_called));
 
   // This call starts the timer.
-  user_removal_manager::InitiateUserRemoval(base::Closure());
+  user_removal_manager::InitiateUserRemoval(base::OnceClosure());
 
   // After 55s the timer is not run yet.
   task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(55));

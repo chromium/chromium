@@ -132,7 +132,7 @@ TimeZoneResolverManager::TimeZoneResolverManager() {
   local_state_pref_change_registrar_.Init(g_browser_process->local_state());
   local_state_pref_change_registrar_.Add(
       prefs::kSystemTimezoneAutomaticDetectionPolicy,
-      base::Bind(
+      base::BindRepeating(
           &::chromeos::system::TimeZoneResolverManager::UpdateTimezoneResolver,
           base::Unretained(this)));
 }

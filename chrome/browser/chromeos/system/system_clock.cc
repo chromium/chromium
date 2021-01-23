@@ -46,8 +46,9 @@ void SetShouldUse24HourClock(bool use_24_hour_clock) {
 
 SystemClock::SystemClock() {
   device_settings_observer_ = CrosSettings::Get()->AddSettingsObserver(
-      kSystemUse24HourClock, base::Bind(&SystemClock::OnSystemPrefChanged,
-                                        weak_ptr_factory_.GetWeakPtr()));
+      kSystemUse24HourClock,
+      base::BindRepeating(&SystemClock::OnSystemPrefChanged,
+                          weak_ptr_factory_.GetWeakPtr()));
 
   if (LoginState::IsInitialized())
     LoginState::Get()->AddObserver(this);
@@ -106,9 +107,9 @@ void SystemClock::SetProfile(Profile* profile) {
   PrefService* prefs = profile->GetPrefs();
   user_pref_registrar_.reset(new PrefChangeRegistrar);
   user_pref_registrar_->Init(prefs);
-  user_pref_registrar_->Add(
-      prefs::kUse24HourClock,
-      base::Bind(&SystemClock::UpdateClockType, base::Unretained(this)));
+  user_pref_registrar_->Add(prefs::kUse24HourClock,
+                            base::BindRepeating(&SystemClock::UpdateClockType,
+                                                base::Unretained(this)));
   UpdateClockType();
 }
 

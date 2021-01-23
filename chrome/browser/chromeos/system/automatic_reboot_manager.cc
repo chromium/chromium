@@ -148,12 +148,14 @@ SystemEventTimes GetSystemEventTimes() {
 AutomaticRebootManager::AutomaticRebootManager(const base::TickClock* clock)
     : clock_(clock) {
   local_state_registrar_.Init(g_browser_process->local_state());
-  local_state_registrar_.Add(prefs::kUptimeLimit,
-                             base::Bind(&AutomaticRebootManager::Reschedule,
-                                        base::Unretained(this)));
-  local_state_registrar_.Add(prefs::kRebootAfterUpdate,
-                             base::Bind(&AutomaticRebootManager::Reschedule,
-                                        base::Unretained(this)));
+  local_state_registrar_.Add(
+      prefs::kUptimeLimit,
+      base::BindRepeating(&AutomaticRebootManager::Reschedule,
+                          base::Unretained(this)));
+  local_state_registrar_.Add(
+      prefs::kRebootAfterUpdate,
+      base::BindRepeating(&AutomaticRebootManager::Reschedule,
+                          base::Unretained(this)));
   notification_registrar_.Add(this, chrome::NOTIFICATION_APP_TERMINATING,
       content::NotificationService::AllSources());
 
