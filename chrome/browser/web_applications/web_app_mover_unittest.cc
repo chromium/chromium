@@ -12,11 +12,12 @@
 namespace web_app {
 namespace {
 
-class WebAppMoverTestWithParams : public ::testing::Test,
-                                  public ::testing::WithParamInterface<
-                                      std::pair<const char*, const char*>> {
+class WebAppMoverTestWithPrefixParams
+    : public ::testing::Test,
+      public ::testing::WithParamInterface<
+          std::pair<const char*, const char*>> {
  public:
-  WebAppMoverTestWithParams() {
+  WebAppMoverTestWithPrefixParams() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kMoveWebApp,
           {{features::kMoveWebAppUninstallStartUrlPrefix.name,
@@ -24,15 +25,15 @@ class WebAppMoverTestWithParams : public ::testing::Test,
            {features::kMoveWebAppInstallStartUrl.name, GetParam().second}}}},
         {});
   }
-  ~WebAppMoverTestWithParams() override = default;
+  ~WebAppMoverTestWithPrefixParams() override = default;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-using WebAppMoverTestWithInvalidParams = WebAppMoverTestWithParams;
+using WebAppMoverTestWithInvalidPrefixParams = WebAppMoverTestWithPrefixParams;
 
-TEST_P(WebAppMoverTestWithInvalidParams, VerifyInvalidParams) {
+TEST_P(WebAppMoverTestWithInvalidPrefixParams, VerifyInvalidParams) {
   std::unique_ptr<WebAppMover> mover =
       WebAppMover::CreateIfNeeded(nullptr, nullptr, nullptr, nullptr, nullptr);
   EXPECT_FALSE(mover);
@@ -40,7 +41,7 @@ TEST_P(WebAppMoverTestWithInvalidParams, VerifyInvalidParams) {
 
 INSTANTIATE_TEST_SUITE_P(
     InvalidInputs,
-    WebAppMoverTestWithInvalidParams,
+    WebAppMoverTestWithInvalidPrefixParams,
     ::testing::Values(
         std::make_pair("", ""),
         std::make_pair("test", "test"),
@@ -50,9 +51,9 @@ INSTANTIATE_TEST_SUITE_P(
         std::make_pair("https://www.google.com/foo",
                        "https://www.google.com/foobar")));
 
-using WebAppMoverTestWithValidParams = WebAppMoverTestWithParams;
+using WebAppMoverTestWithValidPrefixParams = WebAppMoverTestWithPrefixParams;
 
-TEST_P(WebAppMoverTestWithValidParams, VerifyValidParams) {
+TEST_P(WebAppMoverTestWithValidPrefixParams, VerifyValidParams) {
   std::unique_ptr<WebAppMover> mover =
       WebAppMover::CreateIfNeeded(nullptr, nullptr, nullptr, nullptr, nullptr);
   EXPECT_TRUE(mover);
@@ -60,8 +61,68 @@ TEST_P(WebAppMoverTestWithValidParams, VerifyValidParams) {
 
 INSTANTIATE_TEST_SUITE_P(
     ValidInputs,
-    WebAppMoverTestWithValidParams,
+    WebAppMoverTestWithValidPrefixParams,
     ::testing::Values(std::make_pair("https://www.google.com/a",
+                                     "https://www.google.com/b")));
+
+class WebAppMoverTestWithPatternParams
+    : public ::testing::Test,
+      public ::testing::WithParamInterface<
+          std::pair<const char*, const char*>> {
+ public:
+  WebAppMoverTestWithPatternParams() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kMoveWebApp,
+          {{features::kMoveWebAppUninstallStartUrlPattern.name,
+            GetParam().first},
+           {features::kMoveWebAppInstallStartUrl.name, GetParam().second}}}},
+        {});
+  }
+  ~WebAppMoverTestWithPatternParams() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+using WebAppMoverTestWithInvalidPatternParams =
+    WebAppMoverTestWithPatternParams;
+
+TEST_P(WebAppMoverTestWithInvalidPatternParams, VerifyInvalidParams) {
+  std::unique_ptr<WebAppMover> mover =
+      WebAppMover::CreateIfNeeded(nullptr, nullptr, nullptr, nullptr, nullptr);
+  EXPECT_FALSE(mover);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    InvalidInputs,
+    WebAppMoverTestWithInvalidPatternParams,
+    ::testing::Values(std::make_pair("", ""),
+                      std::make_pair("test", ""),
+                      std::make_pair("www.google.com/a", ""),
+                      std::make_pair("https://www.google.com/a",
+                                     "https://www.google.com/a"),
+                      std::make_pair("https://www\\.google\\.com/.*",
+                                     "https://www.google.com/a"),
+                      std::make_pair("https://www\\.google\\.com/foo.*",
+                                     "https://www.google.com/foobar"),
+                      std::make_pair(".*", "https://www.google.com/foobar"),
+                      std::make_pair("https://www\\.google\\.com/[a-z]+",
+                                     "https://www.google.com/foobar")));
+
+using WebAppMoverTestWithValidPatternParams = WebAppMoverTestWithPatternParams;
+
+TEST_P(WebAppMoverTestWithValidPatternParams, VerifyValidParams) {
+  std::unique_ptr<WebAppMover> mover =
+      WebAppMover::CreateIfNeeded(nullptr, nullptr, nullptr, nullptr, nullptr);
+  EXPECT_TRUE(mover);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ValidInputs,
+    WebAppMoverTestWithValidPatternParams,
+    ::testing::Values(std::make_pair("https://www\\.google\\.com/a.*",
+                                     "https://www.google.com/b"),
+                      std::make_pair("https://www\\.google\\.com/[ac].*",
                                      "https://www.google.com/b")));
 
 }  // namespace

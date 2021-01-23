@@ -407,6 +407,9 @@ extern const base::Feature kMoveWebApp;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<std::string> kMoveWebAppUninstallStartUrlPrefix;
 COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<std::string>
+    kMoveWebAppUninstallStartUrlPattern;
+COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<std::string> kMoveWebAppInstallStartUrl;
 
 #if BUILDFLAG(ENABLE_NATIVE_NOTIFICATIONS)

@@ -19,25 +19,19 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace web_app {
 namespace {
-class WebAppMoverBrowsertest : public InProcessBrowserTest {
+class WebAppMoverBrowsertestBase : public InProcessBrowserTest {
  public:
-  WebAppMoverBrowsertest() {
+  WebAppMoverBrowsertestBase() {
     suppress_hooks_ = OsIntegrationManager::ScopedSuppressOsHooksForTesting();
-    https_server_.AddDefaultHandlers(GetChromeTestDataDir());
+    embedded_test_server()->AddDefaultHandlers(GetChromeTestDataDir());
     // Since the port is a part of the start_url, this needs to stay consistent
     // between the tests below.
-    CHECK(https_server_.Start(16247));
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kMoveWebApp,
-          {{features::kMoveWebAppUninstallStartUrlPrefix.name,
-            GetMigratingFromUrlPrefix()},
-           {features::kMoveWebAppInstallStartUrl.name,
-            GetMigratingToApp().spec()}}}},
-        {});
+    CHECK(embedded_test_server()->Start(16247));
     switch (GetTestPreCount()) {
       case 1:
         WebAppMover::DisableForTesting();
@@ -52,26 +46,27 @@ class WebAppMoverBrowsertest : public InProcessBrowserTest {
         break;
     }
   }
-  ~WebAppMoverBrowsertest() override = default;
-
-  // InProcessBrowserTest:
-  void SetUp() override { InProcessBrowserTest::SetUp(); }
+  ~WebAppMoverBrowsertestBase() override = default;
 
  protected:
-  std::string GetMigratingFromUrlPrefix() {
-    return https_server_.GetURL("/web_apps/mover/migrate_from/").spec();
-  }
-
   GURL GetMigratingFromAppA() {
-    return https_server_.GetURL("/web_apps/mover/migrate_from/a/index.html");
+    return embedded_test_server()->GetURL(
+        "/web_apps/mover/migrate_from/a/index.html");
   }
 
   GURL GetMigratingFromAppB() {
-    return https_server_.GetURL("/web_apps/mover/migrate_from/b/index.html");
+    return embedded_test_server()->GetURL(
+        "/web_apps/mover/migrate_from/b/index.html");
+  }
+
+  GURL GetMigratingFromAppC() {
+    return embedded_test_server()->GetURL(
+        "/web_apps/mover/migrate_from/c/index.html");
   }
 
   GURL GetMigratingToApp() {
-    return https_server_.GetURL("/web_apps/mover/migrate_to/index.html");
+    return embedded_test_server()->GetURL(
+        "/web_apps/mover/migrate_to/index.html");
   }
 
   AppId InstallApp(GURL url) {
@@ -102,17 +97,34 @@ class WebAppMoverBrowsertest : public InProcessBrowserTest {
   base::OnceClosure completed_callback_;
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   ScopedOsHooksSuppress suppress_hooks_;
-  net::EmbeddedTestServer https_server_;
 };
 
-IN_PROC_BROWSER_TEST_F(WebAppMoverBrowsertest, PRE_TestMigration) {
+class WebAppMoverPrefixBrowsertest : public WebAppMoverBrowsertestBase {
+ public:
+  WebAppMoverPrefixBrowsertest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kMoveWebApp,
+          {{features::kMoveWebAppUninstallStartUrlPrefix.name,
+            embedded_test_server()
+                ->GetURL("/web_apps/mover/migrate_from/")
+                .spec()},
+           {features::kMoveWebAppInstallStartUrl.name,
+            GetMigratingToApp().spec()}}}},
+        {});
+  }
+  ~WebAppMoverPrefixBrowsertest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebAppMoverPrefixBrowsertest, PRE_TestMigration) {
   InstallApp(GetMigratingFromAppA());
   InstallApp(GetMigratingFromAppB());
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppMoverBrowsertest, TestMigration) {
+IN_PROC_BROWSER_TEST_F(WebAppMoverPrefixBrowsertest, TestMigration) {
   // Wait for clean up to complete (this will timeout if we don't run clean up).
   if (!clean_up_completed_) {
     base::RunLoop run_loop;
@@ -122,6 +134,89 @@ IN_PROC_BROWSER_TEST_F(WebAppMoverBrowsertest, TestMigration) {
   ASSERT_EQ(GetProvider().registrar().GetAppIds().size(), 1ul);
   EXPECT_EQ(GetProvider().registrar().GetAppIds().front(),
             GenerateAppIdFromURL(GetMigratingToApp()));
+}
+
+class WebAppMoverPatternBrowsertest : public WebAppMoverBrowsertestBase {
+ public:
+  WebAppMoverPatternBrowsertest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kMoveWebApp,
+          {{features::kMoveWebAppUninstallStartUrlPattern.name,
+            embedded_test_server()
+                ->GetURL("/web_apps/mover/migrate_from/[ac]/.*")
+                .spec()},
+           {features::kMoveWebAppInstallStartUrl.name,
+            GetMigratingToApp().spec()}}}},
+        {});
+  }
+  ~WebAppMoverPatternBrowsertest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebAppMoverPatternBrowsertest, PRE_TestMigration) {
+  InstallApp(GetMigratingFromAppA());
+  InstallApp(GetMigratingFromAppB());
+  InstallApp(GetMigratingFromAppC());
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppMoverPatternBrowsertest, TestMigration) {
+  // Wait for clean up to complete (this will timeout if we don't run clean up).
+  if (!clean_up_completed_) {
+    base::RunLoop run_loop;
+    completed_callback_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+  EXPECT_THAT(GetProvider().registrar().GetAppIds(),
+              testing::UnorderedElementsAre(
+                  GenerateAppIdFromURL(GetMigratingToApp()),
+                  GenerateAppIdFromURL(GetMigratingFromAppB())));
+}
+
+// The WebAppMover requires a full match. This tests that a partial match
+// doesn't trigger migration. If a '.*' is added at the end of the pattern, then
+// the migration would happen.
+class WebAppMoverBadPatternBrowsertest : public WebAppMoverBrowsertestBase {
+ public:
+  WebAppMoverBadPatternBrowsertest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kMoveWebApp,
+          {{features::kMoveWebAppUninstallStartUrlPattern.name,
+            embedded_test_server()
+                ->GetURL("/web_apps/mover/migrate_from/[ac]")
+                .spec()},
+           {features::kMoveWebAppInstallStartUrl.name,
+            GetMigratingToApp().spec()}}}},
+        {});
+  }
+  ~WebAppMoverBadPatternBrowsertest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebAppMoverBadPatternBrowsertest, PRE_TestMigration) {
+  InstallApp(GetMigratingFromAppA());
+  InstallApp(GetMigratingFromAppB());
+  InstallApp(GetMigratingFromAppC());
+  EXPECT_EQ(GetProvider().registrar().GetAppIds().size(), 3ul);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppMoverBadPatternBrowsertest, TestMigration) {
+  // Wait for clean up to complete (this will timeout if we don't run clean up).
+  if (!clean_up_completed_) {
+    base::RunLoop run_loop;
+    completed_callback_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+  EXPECT_EQ(GetProvider().registrar().GetAppIds().size(), 3ul);
+
+  EXPECT_THAT(GetProvider().registrar().GetAppIds(),
+              testing::UnorderedElementsAre(
+                  GenerateAppIdFromURL(GetMigratingFromAppA()),
+                  GenerateAppIdFromURL(GetMigratingFromAppB()),
+                  GenerateAppIdFromURL(GetMigratingFromAppC())));
 }
 
 }  // namespace
