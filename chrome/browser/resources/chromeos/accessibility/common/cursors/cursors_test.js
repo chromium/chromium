@@ -443,23 +443,23 @@ TEST_F(
         let secondLineCursor = new cursors.Cursor(secondLine, -1);
         // The selected node moves to the static text node.
         assertEquals(
-            secondLineCursor.node.parent, secondLineCursor.selectionNode_);
+            secondLineCursor.node.parent, secondLineCursor.selectionNode);
 
         // This selects the entire node via a character offset.
-        assertEquals(6, secondLineCursor.selectionIndex_);
+        assertEquals(6, secondLineCursor.selectionIndex);
 
         // Index into the characters.
         secondLineCursor = new cursors.Cursor(secondLine, 1);
-        assertEquals(7, secondLineCursor.selectionIndex_);
+        assertEquals(7, secondLineCursor.selectionIndex);
 
         // Now, try selecting via node offsets.
         let cursor = new cursors.Cursor(root.firstChild, -1);
-        assertEquals(root, cursor.selectionNode_);
-        assertEquals(0, cursor.selectionIndex_);
+        assertEquals(root, cursor.selectionNode);
+        assertEquals(0, cursor.selectionIndex);
 
         cursor = new cursors.Cursor(root.firstChild.nextSibling, -1);
-        assertEquals(root, cursor.selectionNode_);
-        assertEquals(1, cursor.selectionIndex_);
+        assertEquals(root, cursor.selectionNode);
+        assertEquals(1, cursor.selectionIndex);
       });
     });
 
@@ -492,14 +492,14 @@ TEST_F('AccessibilityExtensionCursorsTest', 'InlineElementOffset', function() {
 
         const ofSelectionNode = root.lastChild.lastChild;
         const cur = new cursors.Cursor(ofSelectionNode, 0);
-        assertEquals('of selection', cur.selectionNode_.name);
-        assertEquals(RoleType.STATIC_TEXT, cur.selectionNode_.role);
-        assertEquals(0, cur.selectionIndex_);
+        assertEquals('of selection', cur.selectionNode.name);
+        assertEquals(RoleType.STATIC_TEXT, cur.selectionNode.role);
+        assertEquals(0, cur.selectionIndex);
 
         const curIntoO = new cursors.Cursor(ofSelectionNode, 1);
-        assertEquals('of selection', curIntoO.selectionNode_.name);
-        assertEquals(RoleType.STATIC_TEXT, curIntoO.selectionNode_.role);
-        assertEquals(1, curIntoO.selectionIndex_);
+        assertEquals('of selection', curIntoO.selectionNode.name);
+        assertEquals(RoleType.STATIC_TEXT, curIntoO.selectionNode.role);
+        assertEquals(1, curIntoO.selectionIndex);
 
         const oRange = new cursors.Range(cur, curIntoO);
         oRange.select();
@@ -628,38 +628,38 @@ TEST_F(
             // Ranges by default surround a node. Ensure it results in a
             // collapsed selection.
             let range = cursors.Range.fromNode(staticText);
-            assertEquals(0, range.start.selectionIndex_);
-            assertEquals(0, range.end.selectionIndex_);
-            assertEquals(paragraph, range.start.selectionNode_);
-            assertEquals(paragraph, range.end.selectionNode_);
+            assertEquals(0, range.start.selectionIndex);
+            assertEquals(0, range.end.selectionIndex);
+            assertEquals(paragraph, range.start.selectionNode);
+            assertEquals(paragraph, range.end.selectionNode);
 
             // Text selection.
             range = new cursors.Range(
                 new cursors.Cursor(staticText, 2),
                 new cursors.Cursor(staticText, 4));
-            assertEquals(2, range.start.selectionIndex_);
-            assertEquals(4, range.end.selectionIndex_);
-            assertEquals(staticText, range.start.selectionNode_);
-            assertEquals(staticText, range.end.selectionNode_);
+            assertEquals(2, range.start.selectionIndex);
+            assertEquals(4, range.end.selectionIndex);
+            assertEquals(staticText, range.start.selectionNode);
+            assertEquals(staticText, range.end.selectionNode);
 
             // Tree selection.
             range = cursors.Range.fromNode(paragraph);
-            assertEquals(0, range.start.selectionIndex_);
-            assertEquals(0, range.end.selectionIndex_);
-            assertEquals(textField, range.start.selectionNode_);
-            assertEquals(textField, range.end.selectionNode_);
+            assertEquals(0, range.start.selectionIndex);
+            assertEquals(0, range.end.selectionIndex);
+            assertEquals(textField, range.start.selectionNode);
+            assertEquals(textField, range.end.selectionNode);
 
             range = cursors.Range.fromNode(otherStaticText);
-            assertEquals(0, range.start.selectionIndex_);
-            assertEquals(0, range.end.selectionIndex_);
-            assertEquals(otherParagraph, range.start.selectionNode_);
-            assertEquals(otherParagraph, range.end.selectionNode_);
+            assertEquals(0, range.start.selectionIndex);
+            assertEquals(0, range.end.selectionIndex);
+            assertEquals(otherParagraph, range.start.selectionNode);
+            assertEquals(otherParagraph, range.end.selectionNode);
 
             range = cursors.Range.fromNode(otherParagraph);
-            assertEquals(1, range.start.selectionIndex_);
-            assertEquals(1, range.end.selectionIndex_);
-            assertEquals(textField, range.start.selectionNode_);
-            assertEquals(textField, range.end.selectionNode_);
+            assertEquals(1, range.start.selectionIndex);
+            assertEquals(1, range.end.selectionIndex);
+            assertEquals(textField, range.start.selectionNode);
+            assertEquals(textField, range.end.selectionNode);
           });
     });
 
@@ -675,19 +675,19 @@ TEST_F(
             const testEditable = function(edit) {
               // Occurs as part of ordinary (non-text) navigation.
               let range = cursors.Range.fromNode(edit);
-              assertEquals(-1, range.start.selectionIndex_);
-              assertEquals(-1, range.end.selectionIndex_);
-              assertEquals(edit, range.start.selectionNode_);
-              assertEquals(edit, range.end.selectionNode_);
+              assertEquals(-1, range.start.selectionIndex);
+              assertEquals(-1, range.end.selectionIndex);
+              assertEquals(edit, range.start.selectionNode);
+              assertEquals(edit, range.end.selectionNode);
 
               // Occurs as a result of explicit text nav e.g. nextCharacter
               // command.
               range = new cursors.Range(
                   new cursors.Cursor(edit, 2), new cursors.Cursor(edit, 3));
-              assertEquals(2, range.start.selectionIndex_);
-              assertEquals(3, range.end.selectionIndex_);
-              assertEquals(edit, range.start.selectionNode_);
-              assertEquals(edit, range.end.selectionNode_);
+              assertEquals(2, range.start.selectionIndex);
+              assertEquals(3, range.end.selectionIndex);
+              assertEquals(edit, range.start.selectionNode);
+              assertEquals(edit, range.end.selectionNode);
             };
 
             const textField = root.firstChild.firstChild;

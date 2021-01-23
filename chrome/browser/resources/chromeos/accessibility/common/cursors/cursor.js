@@ -192,9 +192,8 @@ cursors.Cursor = class {
   /**
    * A node appropriate for making selections.
    * @return {AutomationNode}
-   * @private
    */
-  get selectionNode_() {
+  get selectionNode() {
     let adjustedNode = this.node;
     if (!adjustedNode) {
       return null;
@@ -233,9 +232,8 @@ cursors.Cursor = class {
    * cursors.NODE_INDEX index, the selection index is a node offset e.g. the
    * index in parent. If not, the index is a character offset.
    * @return {number}
-   * @private
    */
-  get selectionIndex_() {
+  get selectionIndex() {
     let adjustedIndex = this.index_;
 
     if (!this.node) {
@@ -272,7 +270,7 @@ cursors.Cursor = class {
       do {
         adjustedIndex = childOfSelection.indexInParent || 0;
         childOfSelection = childOfSelection.parent;
-      } while (childOfSelection && childOfSelection !== this.selectionNode_);
+      } while (childOfSelection && childOfSelection !== this.selectionNode);
     }
     // A character offset into content is the remaining case. It requires no
     // adjustment.

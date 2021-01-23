@@ -207,8 +207,8 @@ cursors.Range = class {
       start = this.end;
       end = this.start;
     }
-    const startNode = start.selectionNode_;
-    const endNode = end.selectionNode_;
+    const startNode = start.selectionNode;
+    const endNode = end.selectionNode;
 
     if (!startNode || !endNode) {
       return;
@@ -219,10 +219,9 @@ cursors.Range = class {
         startNode.root === endNode.root) {
       // We want to adjust to select the entire node for node offsets;
       // otherwise, use the plain character offset.
-      const startIndex = start.selectionIndex_;
-      let endIndex = end.index_ === cursors.NODE_INDEX ?
-          end.selectionIndex_ + 1 :
-          end.selectionIndex_;
+      const startIndex = start.selectionIndex;
+      let endIndex = end.index === cursors.NODE_INDEX ? end.selectionIndex + 1 :
+                                                        end.selectionIndex;
 
       // Richly editables should always set a caret, but not select. This
       // makes it possible to navigate through content editables using
