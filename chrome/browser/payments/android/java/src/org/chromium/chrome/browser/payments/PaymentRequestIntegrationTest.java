@@ -10,21 +10,22 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.payments.test_support.MockPaymentUiServiceBuilder;
 import org.chromium.chrome.browser.payments.test_support.PaymentRequestParamsBuilder;
 import org.chromium.chrome.browser.payments.test_support.ShadowPaymentFeatureList;
 import org.chromium.chrome.browser.payments.ui.PaymentUiService;
 import org.chromium.components.payments.ErrorMessageUtil;
+import org.chromium.components.payments.ErrorMessageUtilJni;
 import org.chromium.components.payments.PayerData;
 import org.chromium.components.payments.PaymentApp;
 import org.chromium.components.payments.PaymentApp.InstrumentDetailsCallback;
@@ -38,6 +39,7 @@ import org.chromium.payments.mojom.PaymentRequest;
 import org.chromium.payments.mojom.PaymentRequestClient;
 import org.chromium.payments.mojom.PaymentResponse;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -46,15 +48,19 @@ import java.util.Set;
  * ChromePaymentRequest and PaymentAppService.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE,
-        shadows = {PaymentRequestIntegrationTest.ShadowErrorMessageUtil.class,
-                ShadowPaymentFeatureList.class})
+@Config(manifest = Config.NONE, shadows = {ShadowPaymentFeatureList.class})
 public class PaymentRequestIntegrationTest {
     private static final String METHOD_NAME = "https://www.chromium.org";
     private static final String STRINGIFIED_DETAILS = "test stringifiedDetails";
 
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.WARN);
+
+    @Rule
+    public JniMocker mJniMocker = new JniMocker();
+
+    @Mock
+    private ErrorMessageUtil.Natives mErrorMessageUtilMock;
 
     private PaymentRequestClient mClient;
     private PaymentAppFactoryInterface mFactory;
@@ -64,17 +70,16 @@ public class PaymentRequestIntegrationTest {
     private boolean mIsUserGesture;
     private boolean mWaitForUpdatedDetails;
 
-    /** The shadow of PaymentFeatureList. Not to use outside the test. */
-    @Implements(ErrorMessageUtil.class)
-    /* package */ static class ShadowErrorMessageUtil {
-        @Implementation
-        public static String getNotSupportedErrorMessage(Set<String> methods) {
-            return "(Mock) Not supported error: " + methods.toString();
-        }
-    }
-
     @Before
     public void setUp() {
+        mJniMocker.mock(ErrorMessageUtilJni.TEST_HOOKS, mErrorMessageUtilMock);
+        Mockito.doAnswer(args -> {
+                   String[] methods = args.getArgument(0);
+                   return "(Mock) Not supported error: " + Arrays.toString(methods);
+               })
+                .when(mErrorMessageUtilMock)
+                .getNotSupportedErrorMessage(Mockito.any());
+
         ShadowPaymentFeatureList.setFeatureEnabled(
                 PaymentFeatureList.WEB_PAYMENTS_SINGLE_APP_UI_SKIP, true);
         PaymentRequestService.resetShowingPaymentRequestForTest();
