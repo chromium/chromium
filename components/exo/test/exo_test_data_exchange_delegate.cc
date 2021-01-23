@@ -14,7 +14,6 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "net/base/filename_util.h"
-#include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/dragdrop/file_info/file_info.h"
 #include "url/gurl.h"
 
@@ -26,7 +25,7 @@ TestDataExchangeDelegate::~TestDataExchangeDelegate() = default;
 
 ui::EndpointType TestDataExchangeDelegate::GetDataTransferEndpointType(
     aura::Window* window) const {
-  return ui::EndpointType::kUnknownVm;
+  return endpoint_type_;
 }
 
 std::vector<ui::FileInfo> TestDataExchangeDelegate::GetFilenames(

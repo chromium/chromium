@@ -7,6 +7,8 @@
 
 #include "components/exo/data_exchange_delegate.h"
 
+#include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
+
 class GURL;
 
 namespace exo {
@@ -35,7 +37,12 @@ class TestDataExchangeDelegate : public DataExchangeDelegate {
 
   void RunSendPickleCallback(std::vector<GURL> urls);
 
+  void set_endpoint_type(ui::EndpointType endpoint_type) {
+    endpoint_type_ = endpoint_type;
+  }
+
  private:
+  ui::EndpointType endpoint_type_ = ui::EndpointType::kUnknownVm;
   SendDataCallback send_pickle_callback_;
 };
 

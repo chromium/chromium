@@ -26,6 +26,7 @@
 #include "components/exo/test/exo_test_data_exchange_delegate.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
+#include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "url/gurl.h"
@@ -69,6 +70,37 @@ class TestDataOfferDelegate : public DataOfferDelegate {
   DndAction dnd_action_ = DndAction::kNone;
 
   DISALLOW_COPY_AND_ASSIGN(TestDataOfferDelegate);
+};
+
+class TestDataTransferPolicyController : ui::DataTransferPolicyController {
+ public:
+  TestDataTransferPolicyController() = default;
+  TestDataTransferPolicyController(TestDataTransferPolicyController&) = delete;
+  TestDataTransferPolicyController& operator=(
+      const TestDataTransferPolicyController&) = delete;
+
+  ui::EndpointType last_src_type() const { return last_src_type_; }
+  ui::EndpointType last_dst_type() const { return last_dst_type_; }
+
+ private:
+  // ui::DataTransferPolicyController:
+  bool IsClipboardReadAllowed(
+      const ui::DataTransferEndpoint* const data_src,
+      const ui::DataTransferEndpoint* const data_dst) override {
+    if (data_src)
+      last_src_type_ = data_src->type();
+    last_dst_type_ = data_dst->type();
+    return true;
+  }
+
+  bool IsDragDropAllowed(const ui::DataTransferEndpoint* const data_src,
+                         const ui::DataTransferEndpoint* const data_dst,
+                         const bool is_drop) override {
+    return true;
+  }
+
+  ui::EndpointType last_src_type_ = ui::EndpointType::kUnknownVm;
+  ui::EndpointType last_dst_type_ = ui::EndpointType::kUnknownVm;
 };
 
 bool ReadString(base::ScopedFD fd, std::string* out) {
@@ -526,6 +558,44 @@ TEST_F(DataOfferTest, AcceptWithNull) {
   TestDataOfferDelegate delegate;
   DataOffer data_offer(&delegate);
   data_offer.Accept(nullptr);
+}
+
+TEST_F(DataOfferTest, SetClipboardDataWithTransferPolicy) {
+  TestDataTransferPolicyController policy_controller;
+  TestDataOfferDelegate delegate;
+  DataOffer data_offer(&delegate);
+
+  TestDataExchangeDelegate data_exchange_delegate;
+  data_exchange_delegate.set_endpoint_type(ui::EndpointType::kCrostini);
+  {
+    ui::ScopedClipboardWriter writer(
+        ui::ClipboardBuffer::kCopyPaste,
+        std::make_unique<ui::DataTransferEndpoint>(ui::EndpointType::kArc));
+    writer.WriteText(base::UTF8ToUTF16("Test data"));
+  }
+
+  auto* window = CreateTestWindowInShellWithBounds(gfx::Rect());
+  data_offer.SetClipboardData(
+      *ui::Clipboard::GetForCurrentThread(),
+      data_exchange_delegate.GetDataTransferEndpointType(window));
+
+  EXPECT_EQ(3u, delegate.mime_types().size());
+  EXPECT_EQ(1u, delegate.mime_types().count("text/plain;charset=utf-8"));
+  EXPECT_EQ(1u, delegate.mime_types().count("text/plain;charset=utf-16"));
+  EXPECT_EQ(1u, delegate.mime_types().count("UTF8_STRING"));
+
+  base::ScopedFD read_pipe;
+  base::ScopedFD write_pipe;
+
+  // Read as utf-8.
+  ASSERT_TRUE(base::CreatePipe(&read_pipe, &write_pipe));
+  data_offer.Receive("text/plain;charset=utf-8", std::move(write_pipe));
+  std::string result;
+  ASSERT_TRUE(ReadString(std::move(read_pipe), &result));
+  EXPECT_EQ("Test data", result);
+
+  EXPECT_EQ(ui::EndpointType::kArc, policy_controller.last_src_type());
+  EXPECT_EQ(ui::EndpointType::kCrostini, policy_controller.last_dst_type());
 }
 
 }  // namespace
