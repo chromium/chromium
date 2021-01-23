@@ -21,6 +21,18 @@ std::unique_ptr<DisplayMode> DisplayMode::Clone() const {
       new DisplayMode(size_, is_interlaced_, refresh_rate_));
 }
 
+bool DisplayMode::operator<(const DisplayMode& other) const {
+  if (size_.GetArea() < other.size_.GetArea())
+    return true;
+  if (size_.GetArea() > other.size_.GetArea())
+    return false;
+  if (size_.width() < other.size_.width())
+    return true;
+  if (size_.width() > other.size_.width())
+    return false;
+  return refresh_rate_ < other.refresh_rate_;
+}
+
 std::string DisplayMode::ToString() const {
   return base::StringPrintf("[%s %srate=%f]", size_.ToString().c_str(),
                             is_interlaced_ ? "interlaced " : "", refresh_rate_);
