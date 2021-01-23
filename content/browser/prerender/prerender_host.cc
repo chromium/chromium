@@ -5,6 +5,7 @@
 #include "content/browser/prerender/prerender_host.h"
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -22,7 +23,10 @@ PrerenderHost::PrerenderHost(
 
 // TODO(https://crbug.com/1132746): Abort ongoing prerendering and notify the
 // mojo capability controller in the destructor.
-PrerenderHost::~PrerenderHost() = default;
+PrerenderHost::~PrerenderHost() {
+  if (!final_status_)
+    RecordFinalStatus(FinalStatus::kDestroyed);
+}
 
 // TODO(https://crbug.com/1132746): Inspect diffs from the current
 // no-state-prefetch implementation. See PrerenderContents::StartPrerendering()
@@ -94,6 +98,7 @@ bool PrerenderHost::ActivatePrerenderedContents(
   // TODO(https://crbug.com/1132752): Notify the mojo capability controller that
   // the prerendered contents get activated.
 
+  RecordFinalStatus(FinalStatus::kActivated);
   return true;
 }
 
@@ -101,6 +106,13 @@ RenderFrameHostImpl* PrerenderHost::GetPrerenderedMainFrameHostForTesting() {
   DCHECK(prerendered_contents_);
   return static_cast<RenderFrameHostImpl*>(
       prerendered_contents_->GetMainFrame());
+}
+
+void PrerenderHost::RecordFinalStatus(FinalStatus status) {
+  DCHECK(!final_status_);
+  final_status_ = status;
+  base::UmaHistogramEnumeration(
+      "Prerender.Experimental.PrerenderHostFinalStatus", status);
 }
 
 }  // namespace content

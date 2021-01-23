@@ -60729,6 +60729,11 @@ Called by update_net_trust_anchors.py.-->
   <int value="63" label="LINK REL NEXT NOT ALLOWED"/>
 </enum>
 
+<enum name="PrerenderHostFinalStatus">
+  <int value="0" label="kActivated"/>
+  <int value="1" label="kDestroyed"/>
+</enum>
+
 <enum name="PrerenderHoverEvent">
   <obsolete>
     deprecated May 10 2012

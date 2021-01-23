@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/optional.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -31,6 +32,14 @@ class WebContents;
 // use the MPArch.
 class CONTENT_EXPORT PrerenderHost final : public WebContentsObserver {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class FinalStatus {
+    kActivated = 0,
+    kDestroyed = 1,
+    kMaxValue = kDestroyed
+  };
+
   PrerenderHost(blink::mojom::PrerenderAttributesPtr attributes,
                 const url::Origin& initiator_origin);
   ~PrerenderHost() override;
@@ -60,7 +69,10 @@ class CONTENT_EXPORT PrerenderHost final : public WebContentsObserver {
   bool is_ready_for_activation() const { return is_ready_for_activation_; }
 
  private:
+  void RecordFinalStatus(FinalStatus status);
+
   const blink::mojom::PrerenderAttributesPtr attributes_;
+  const GlobalFrameRoutingId initiator_render_frame_host_id_;
   const url::Origin initiator_origin_;
 
   // WebContents for prerendering.
@@ -70,6 +82,8 @@ class CONTENT_EXPORT PrerenderHost final : public WebContentsObserver {
 
   // Indicates if `prerendered_contents_` is ready for activation.
   bool is_ready_for_activation_ = false;
+
+  base::Optional<FinalStatus> final_status_;
 };
 
 }  // namespace content

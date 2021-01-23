@@ -38,6 +38,11 @@ class PrerenderHostTest : public RenderViewHostImplTestHarness {
     RenderViewHostImplTestHarness::TearDown();
   }
 
+  void ExpectFinalStatus(PrerenderHost::FinalStatus status) {
+    histogram_tester_.ExpectUniqueSample(
+        "Prerender.Experimental.PrerenderHostFinalStatus", status, 1);
+  }
+
   std::unique_ptr<TestWebContents> CreateWebContents(const GURL& url) {
     std::unique_ptr<TestWebContents> web_contents(TestWebContents::Create(
         browser_context_.get(),
@@ -55,9 +60,10 @@ class PrerenderHostTest : public RenderViewHostImplTestHarness {
 
   std::unique_ptr<TestBrowserContext> browser_context_;
   std::unique_ptr<TestWebContentsDelegate> web_contents_delegate_;
+  base::HistogramTester histogram_tester_;
 };
 
-TEST_F(PrerenderHostTest, PrerenderAndActivate) {
+TEST_F(PrerenderHostTest, Activate) {
   std::unique_ptr<TestWebContents> web_contents =
       CreateWebContents(GURL("https://example.com/"));
   RenderFrameHostImpl* initiator_rfh = web_contents->GetMainFrame();
@@ -89,6 +95,25 @@ TEST_F(PrerenderHostTest, PrerenderAndActivate) {
 
   // Activate.
   EXPECT_TRUE(prerender_host->ActivatePrerenderedContents(*initiator_rfh));
+  ExpectFinalStatus(PrerenderHost::FinalStatus::kActivated);
+}
+
+TEST_F(PrerenderHostTest, DontActivate) {
+  std::unique_ptr<TestWebContents> web_contents =
+      CreateWebContents(GURL("https://example.com/"));
+  RenderFrameHostImpl* initiator_rfh = web_contents->GetMainFrame();
+  ASSERT_TRUE(initiator_rfh);
+
+  const GURL kPrerenderingUrl("https://example.com/next");
+  auto attributes = blink::mojom::PrerenderAttributes::New();
+  attributes->url = kPrerenderingUrl;
+  auto prerender_host = std::make_unique<PrerenderHost>(
+      std::move(attributes), initiator_rfh->GetLastCommittedOrigin());
+
+  // Start the prerendering navigation, but don't activate it.
+  prerender_host->StartPrerendering(browser_context());
+  prerender_host.reset();
+  ExpectFinalStatus(PrerenderHost::FinalStatus::kDestroyed);
 }
 
 }  // namespace
