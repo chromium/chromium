@@ -67,8 +67,6 @@ preprocess_if_expr("preprocess_generated") {
     "elements/viewer-thumbnail-bar.js",
     "elements/viewer-thumbnail.js",
     "elements/viewer-toolbar-dropdown.js",
-    "elements/viewer-zoom-button.js",
-    "elements/viewer-zoom-toolbar.js",
     "pdf_viewer.js",
     "pdf_viewer_shared_style.js",
   ]
@@ -252,7 +250,6 @@ js_library("navigator") {
 
 js_library("toolbar_manager") {
   deps = [
-    "elements:viewer-pdf-toolbar",
     "elements:viewer-zoom-toolbar",
     "//ui/webui/resources/js:util.m",
   ]
@@ -322,7 +319,6 @@ js_library("pdf_viewer") {
     "elements:viewer-pdf-toolbar",
     "elements:viewer-pdf-toolbar-new",
     "elements:viewer-properties-dialog",
-    "elements:viewer-zoom-toolbar",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:event_tracker.m",
     "//ui/webui/resources/js:load_time_data.m",

@@ -6,7 +6,6 @@ import './elements/viewer-error-screen.js';
 import './elements/viewer-password-dialog.js';
 import './elements/viewer-pdf-toolbar.js';
 import './elements/viewer-properties-dialog.js';
-import './elements/viewer-zoom-toolbar.js';
 import './elements/shared-vars.js';
 // <if expr="chromeos">
 import './elements/viewer-ink-host.js';
@@ -377,14 +376,6 @@ export class PDFViewerElement extends PDFViewerBaseElement {
     return /** @type {!ViewerPdfToolbarNewElement} */ (this.$$('#toolbar'));
   }
 
-  /**
-   * @return {!ViewerZoomToolbarElement}
-   * @private
-   */
-  getZoomToolbar_() {
-    return /** @type {!ViewerZoomToolbarElement} */ (this.$$('#zoom-toolbar'));
-  }
-
   /** @override */
   getBackgroundColor() {
     return BACKGROUND_COLOR;
@@ -448,11 +439,6 @@ export class PDFViewerElement extends PDFViewerBaseElement {
       case 'g':
         if (this.toolbarEnabled_ && (e.ctrlKey || e.metaKey) && e.altKey) {
           this.getToolbar_().selectPageNumber();
-        }
-        return;
-      case '\\':
-        if (e.ctrlKey) {
-          this.getZoomToolbar_().fitToggleFromHotKey();
         }
         return;
     }
@@ -794,11 +780,6 @@ export class PDFViewerElement extends PDFViewerBaseElement {
 
   /** @override */
   updateUIForViewportChange() {
-    if (!this.pdfViewerUpdateEnabled_) {
-      this.getZoomToolbar_().shiftForScrollbars(
-          this.viewport.documentHasScrollbars(), this.viewport.scrollbarWidth);
-    }
-
     // Update toolbar elements.
     this.clockwiseRotations_ = this.viewport.getClockwiseRotations();
     this.pageNo_ = this.viewport.getMostVisiblePage() + 1;

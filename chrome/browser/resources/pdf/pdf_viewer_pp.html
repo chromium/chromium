@@ -4,6 +4,18 @@
     visibility: hidden;
     z-index: 2;
   }
+
+  @media(max-height: 200px) {
+    viewer-zoom-toolbar {
+      display: none;
+    }
+  }
+
+  @media(max-width: 300px) {
+    viewer-zoom-toolbar {
+      display: none;
+    }
+  }
 </style>
 
 <div id="sizer"></div>

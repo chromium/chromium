@@ -170,6 +170,27 @@ TEST_F('PrintPreviewPdfViewerTest', 'PageIndicator', function() {
 });
 
 // eslint-disable-next-line no-var
+var PrintPreviewPdfZoomToolbarTest = class extends PrintPreviewTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://print/test_loader.html?module=print_preview/pdf_zoom_toolbar_test.js';
+  }
+
+  /** @override */
+  get suiteName() {
+    return pdf_zoom_toolbar_test.suiteName;
+  }
+};
+
+TEST_F('PrintPreviewPdfZoomToolbarTest', 'Toggle', function() {
+  this.runMochaTest(pdf_zoom_toolbar_test.TestNames.Toggle);
+});
+
+TEST_F('PrintPreviewPdfZoomToolbarTest', 'ForceFitToPage', function() {
+  this.runMochaTest(pdf_zoom_toolbar_test.TestNames.ForceFitToPage);
+});
+
+// eslint-disable-next-line no-var
 var PrintPreviewPolicyTest = class extends PrintPreviewTest {
   /** @override */
   get browsePreload() {

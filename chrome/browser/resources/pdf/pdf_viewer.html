@@ -232,13 +232,6 @@
   </viewer-properties-dialog>
 </template>
 
-<template is="dom-if" if="[[!pdfViewerUpdateEnabled_]]">
-  <viewer-zoom-toolbar id="zoom-toolbar"
-      on-fit-to-changed="onFitToChanged"
-      on-zoom-in="onZoomIn" on-zoom-out="onZoomOut">
-  </viewer-zoom-toolbar>
-</template>
-
 <viewer-error-screen id="error-screen"></viewer-error-screen>
 
 <if expr="chromeos">
