@@ -232,7 +232,7 @@ void CastRenderer::OnGetMultiroomInfo(
     AvPipelineClient audio_client;
     audio_client.waiting_cb = base::BindRepeating(&CastRenderer::OnWaiting,
                                                   weak_factory_.GetWeakPtr());
-    audio_client.eos_cb = base::BindOnce(
+    audio_client.eos_cb = base::BindRepeating(
         &CastRenderer::OnEnded, weak_factory_.GetWeakPtr(), STREAM_AUDIO);
     audio_client.playback_error_cb =
         base::BindRepeating(&CastRenderer::OnError, weak_factory_.GetWeakPtr());
@@ -256,7 +256,7 @@ void CastRenderer::OnGetMultiroomInfo(
     VideoPipelineClient video_client;
     video_client.av_pipeline_client.waiting_cb = base::BindRepeating(
         &CastRenderer::OnWaiting, weak_factory_.GetWeakPtr());
-    video_client.av_pipeline_client.eos_cb = base::BindOnce(
+    video_client.av_pipeline_client.eos_cb = base::BindRepeating(
         &CastRenderer::OnEnded, weak_factory_.GetWeakPtr(), STREAM_VIDEO);
     video_client.av_pipeline_client.playback_error_cb =
         base::BindRepeating(&CastRenderer::OnError, weak_factory_.GetWeakPtr());
