@@ -55,32 +55,33 @@ BUILDFLAG(IS_CHROMEOS_LACROS).
 
 Lacros bugs can be filed under component: OS>LaCrOs.
 
-## GN var and C++ macros for Lacros
+## GN var and C++ macros
 
-### Desired state
+*Note* that this will take effect once target_os flip of lacros-chrome is landed
+with patch [crrev.com/c/2644407](https://crrev.com/c/2644407). For a short while
+please keep using `BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS`
+and `is_chromeos_ash || is_chromeos_lacros` to target both binaries.
 
-- defined(OS_CHROMEOS) is true in C++ for both ash-chrome and lacros-chrome.
-- BUILDFLAG(IS_CHROMEOS_ASH) in C++ is used for ash-chrome specific part.
-- BUILDFLAG(IS_CHROMEOS_LACROS) in C++ is used for lacros-chrome specific part.
-- GN variable is_chromeos is true for both ash-chrome and lacros-chrome.
-- GN variable is_chromeos is equivalent to is_chromeos_ash || is_chromeos_lacros.
-- GN variable is_chormeos_ash is used for ash-chrome specific part.
-- GN variable is_chromeos_lacros is used for lacros-chrome specific part.
+Both lacros and ash are built with gn arg `target_os="chromeos"`. This means
+that C++ macro defined(OS_CHROMEOS) and gn variable is_chromeos are set true for
+both lacros and ash.
 
-### Current state
+### Targeting ash or lacros
+To target lacros or ash separately, use BUILDFLAG(IS_CHROMEOS_LACROS),
+BUILDFLAG(IS_CHROMEOS_ASH) in C++ files and is_chromeos_lacros and
+is_chromeos_ash in gn files.
 
-OS_CHROMEOS is defined and is_chromeos is set only for ash-chrome at the moment.
-We are currently migrating defined(OS_CHROMEOS) to BUILDFLAG(IS_CHROMEOS_ASH),
-see [crbug.com/1052397](https://crbug.com/1052397). Until the migration is
-complete, for parts used by both ash-chrome and lacros-chrome, use
-`BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)` in C++ files and
-`is_chromeos_ash || is_chromeos_lacros` in GN files. After the migration, the
-macros and GN variables should be used according to the above desired state.
+Note that these are not defined globally and must be included manually.
 
-Googlers:
-- [go/lacros-porting](http://go/lacros-porting) has tips on which binary the code should live in.
-- [go/lacros-macros](http://go/lacros-macros) describes the steps for the migration.
-- [go/lacros-build-config](http://go/lacros-build-config) is the original design doc.
+To use the buildflags in C++ files, add #include "build/chromeos_buildflags.h"
+and then also add "//build:chromeos_buildflags" to deps of the target that is
+using the update C++ files inside gn files. See e.g. crrev.com/c/2494186.
+
+To use the gn variables add `import("//build/config/chromeos/ui_mode.gni")`.
+
+Doc for googlers:
+[go/lacros-porting](http://go/lacros-porting) has tips on determining which
+binary (lacros or ash) a feature should live in.
 
 ## Testing
 
