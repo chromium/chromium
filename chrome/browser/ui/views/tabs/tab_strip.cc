@@ -3287,10 +3287,21 @@ void TabStrip::StartResizeLayoutTabsFromTouchTimer() {
 
 void TabStrip::AddMessageLoopObserver() {
   if (!mouse_watcher_) {
+    // Expand the watched region downwards below the bottom of the tabstrip.
+    // This allows users to move the cursor horizontally, to another tab,
+    // without accidentally exiting closing mode if they drift verticaally
+    // slightly out of the tabstrip.
     constexpr int kTabStripAnimationVSlop = 40;
+    // Expand the watched region to the right to cover the NTB. This prevents
+    // the scenario where the user goes to click on the NTB while they're in
+    // closing mode, and closing mode exits just as they reach the NTB.
+    constexpr int kTabStripAnimationHSlop = 60;
     mouse_watcher_ = std::make_unique<views::MouseWatcher>(
         std::make_unique<views::MouseWatcherViewHost>(
-            this, gfx::Insets(0, 0, kTabStripAnimationVSlop, 0)),
+            this,
+            gfx::Insets(0, base::i18n::IsRTL() ? kTabStripAnimationHSlop : 0,
+                        kTabStripAnimationVSlop,
+                        base::i18n::IsRTL() ? 0 : kTabStripAnimationHSlop)),
         this);
   }
   mouse_watcher_->Start(GetWidget()->GetNativeWindow());
