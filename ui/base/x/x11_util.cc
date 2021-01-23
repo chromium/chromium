@@ -27,6 +27,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
@@ -248,6 +249,10 @@ void DrawPixmap(x11::Connection* connection,
                 int dst_y,
                 int width,
                 int height) {
+  // 24 bytes for the PutImage header, an additional 4 bytes in case this is an
+  // extended size request, and an additional 4 bytes in case padding is needed.
+  constexpr size_t kPutImageExtraSize = 32;
+
   const auto* visual_info = connection->GetVisualInfoFromId(visual);
   if (!visual_info)
     return;
@@ -271,19 +276,30 @@ void DrawPixmap(x11::Connection* connection,
   std::vector<uint8_t> vec(row_bytes * height);
   SkPixmap pixmap(image_info, vec.data(), row_bytes);
   skia_pixmap.readPixels(pixmap, src_x, src_y);
-  x11::PutImageRequest put_image_request{
-      .format = x11::ImageFormat::ZPixmap,
-      .drawable = drawable,
-      .gc = gc,
-      .width = width,
-      .height = height,
-      .dst_x = dst_x,
-      .dst_y = dst_y,
-      .left_pad = 0,
-      .depth = visual_info->format->depth,
-      .data = base::RefCountedBytes::TakeVector(&vec),
-  };
-  connection->PutImage(put_image_request);
+
+  DCHECK_GT(connection->MaxRequestSizeInBytes(), kPutImageExtraSize);
+  int rows_per_request =
+      (connection->MaxRequestSizeInBytes() - kPutImageExtraSize) / row_bytes;
+  DCHECK_GT(rows_per_request, 1);
+  for (int row = 0; row < height; row += rows_per_request) {
+    size_t n_rows = std::min<size_t>(rows_per_request, height - row);
+    auto data = base::MakeRefCounted<base::RefCountedStaticMemory>(
+        vec.data() + row * row_bytes, n_rows * row_bytes);
+    connection->PutImage({
+        .format = x11::ImageFormat::ZPixmap,
+        .drawable = drawable,
+        .gc = gc,
+        .width = width,
+        .height = n_rows,
+        .dst_x = dst_x,
+        .dst_y = dst_y + row,
+        .left_pad = 0,
+        .depth = visual_info->format->depth,
+        .data = data,
+    });
+  }
+  // Flush since the PutImage requests depend on |vec| being alive.
+  connection->Flush();
 }
 
 bool IsXInput2Available() {

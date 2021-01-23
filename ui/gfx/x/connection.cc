@@ -184,6 +184,11 @@ Connection::~Connection() {
   xcb_disconnect(connection_);
 }
 
+size_t Connection::MaxRequestSizeInBytes() const {
+  return 4 * std::max<size_t>(extended_max_request_length_,
+                              setup_.maximum_request_length);
+}
+
 XlibDisplayWrapper Connection::GetXlibDisplay(XlibDisplayType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!xlib_display_)
