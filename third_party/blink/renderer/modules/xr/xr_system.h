@@ -427,6 +427,11 @@ class XRSystem final : public EventTargetWithInlineData,
 
   void TryEnsureService();
 
+  // Helper, returns true if immersive AR session creation is supported.
+  // Currently, it checks whether AR is enabled in runtime features, and in web
+  // settings (controlled by enterprise policy).
+  bool IsImmersiveArAllowed();
+
   // Indicates whether use of requestDevice has already been logged.
   bool did_log_supports_immersive_ = false;
 

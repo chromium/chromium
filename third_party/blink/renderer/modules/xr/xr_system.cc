@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/viewport_data.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/fullscreen/scoped_allow_fullscreen.h"
@@ -290,6 +291,16 @@ bool IsFeatureRequested(
     case device::mojom::XRSessionFeatureRequestStatus::kOptionalRejected:
       return false;
   }
+}
+
+bool IsImmersiveArAllowedBySettings(LocalDOMWindow* window) {
+  // If we're unable to get the settings for any reason, we'll treat the AR as
+  // enabled.
+  if (!window->GetFrame()) {
+    return true;
+  }
+
+  return window->GetFrame()->GetSettings()->GetWebXRImmersiveArAllowed();
 }
 
 }  // namespace
@@ -801,11 +812,15 @@ XRSystem* XRSystem::FromIfExists(Document& document) {
 }
 
 XRSystem* XRSystem::From(Document& document) {
+  DVLOG(2) << __func__;
+
   return document.domWindow() ? xr(*document.domWindow()->navigator())
                               : nullptr;
 }
 
 XRSystem* XRSystem::xr(Navigator& navigator) {
+  DVLOG(2) << __func__;
+
   LocalDOMWindow* window = navigator.DomWindow();
   if (!window)
     return nullptr;
@@ -977,10 +992,10 @@ ScriptPromise XRSystem::InternalIsSessionSupported(
                                                         throw_on_unsupported);
 
   if (session_mode == device::mojom::blink::XRSessionMode::kImmersiveAr &&
-      !RuntimeEnabledFeatures::WebXRARModuleEnabled(GetExecutionContext())) {
+      !IsImmersiveArAllowed()) {
     DVLOG(2) << __func__
              << ": Immersive AR session is only supported if WebXRARModule "
-                "feature is enabled";
+                "feature is enabled by a runtime feature and web settings";
     query->Resolve(false);
     return promise;
   }
@@ -1252,7 +1267,7 @@ ScriptPromise XRSystem::requestSession(ScriptState* script_state,
 
   // If the request is for immersive-ar, ensure that feature is enabled.
   if (session_mode == device::mojom::blink::XRSessionMode::kImmersiveAr &&
-      !RuntimeEnabledFeatures::WebXRARModuleEnabled(GetExecutionContext())) {
+      !IsImmersiveArAllowed()) {
     exception_state.ThrowTypeError(
         String::Format(kImmersiveArModeNotValid, "requestSession"));
 
@@ -1685,6 +1700,19 @@ void XRSystem::TryEnsureService() {
   service_.set_disconnect_handler(WTF::Bind(&XRSystem::Dispose,
                                             WrapWeakPersistent(this),
                                             DisposeType::kDisconnected));
+}
+
+bool XRSystem::IsImmersiveArAllowed() {
+  const bool ar_allowed_in_settings =
+      IsImmersiveArAllowedBySettings(DomWindow());
+  const bool ar_enabled =
+      ar_allowed_in_settings &&
+      RuntimeEnabledFeatures::WebXRARModuleEnabled(GetExecutionContext());
+
+  DVLOG(2) << __func__ << ": ar_allowed_in_settings=" << ar_allowed_in_settings
+           << ", ar_enabled=" << ar_enabled;
+
+  return ar_enabled;
 }
 
 void XRSystem::Trace(Visitor* visitor) const {

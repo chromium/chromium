@@ -1328,6 +1328,12 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::BOOLEAN },
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if defined(OS_ANDROID)
+  { key::kWebXRImmersiveArEnabled,
+    prefs::kWebXRImmersiveArEnabled,
+    base::Value::Type::BOOLEAN },
+#endif  // defined(OS_ANDROID)
+
 };
 // clang-format on
 

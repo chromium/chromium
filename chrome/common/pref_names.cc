@@ -3178,4 +3178,11 @@ const char kCartModuleHidden[] = "cart_module_hidden";
 // Boolean pref indicating whether user has removed the cart module on NTP.
 const char kCartModuleRemoved[] = "cart_module_removed";
 #endif
+
+#if defined(OS_ANDROID)
+// Boolean pref controlling whether immersive AR sessions are enabled
+// in WebXR Device API.
+const char kWebXRImmersiveArEnabled[] = "webxr.immersive_ar_enabled";
+#endif
+
 }  // namespace prefs

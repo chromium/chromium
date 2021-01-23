@@ -1016,6 +1016,7 @@
         'DeviceOffHours',
         'SuggestedContentEnabled',
         'DeviceShowLowDiskSpaceNotification',
+        'WebXRImmersiveArEnabled',
       ],
     },
     {
@@ -24386,6 +24387,39 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       When this policy not set or is set to True, the signin interception dialog triggers when a Google account is added on the web, and the user may benefit from moving this account to another (new or existing) profile.
 
       When this is set to False, the signin interception dialog does not trigger.''',
+    },
+    {
+      'name': 'WebXRImmersiveArEnabled',
+      'owners': ['bialpio@chromium.org', 'xr-dev@chromium.org'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': ['android:90-'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': '''Allow creating <ph name="WEBXR_API_NAME_SHORT">WebXR</ph>'s <ph name="WEBXR_AR_SESSION_ENUM_VALUE">"immersive-ar"</ph> sessions''',
+        },
+        {
+          'value': False,
+          'caption': '''Prevent creating <ph name="WEBXR_API_NAME_SHORT">WebXR</ph>'s <ph name="WEBXR_AR_SESSION_ENUM_VALUE">"immersive-ar"</ph> sessions''',
+        },
+      ],
+      'example_value': True,
+      'id': 820,
+      'default': True,
+      'caption': '''Allow creating <ph name="WEBXR_API_NAME_SHORT">WebXR</ph>'s <ph name="WEBXR_AR_SESSION_ENUM_VALUE">"immersive-ar"</ph> sessions''',
+      'tags': ['website-sharing'],
+      'desc': '''Configures whether the sites that the user navigates to are allowed to create immersive Augmented Reality sessions using <ph name="WEBXR_API_NAME">WebXR Device API</ph>.
+
+      When this policy is unset or enabled, the <ph name="WEBXR_API_NAME">WebXR Device API</ph> will accept <ph name="WEBXR_AR_SESSION_ENUM_VALUE">"immersive-ar"</ph> during session creation, thus allowing the users to enter Augmented Reality experiences.
+
+      When this policy is disabled, the <ph name="WEBXR_API_NAME">WebXR Device API</ph> will reject requests to create sessions with mode set to <ph name="WEBXR_AR_SESSION_ENUM_VALUE">"immersive-ar"</ph>. The existing <ph name="WEBXR_AR_SESSION_ENUM_VALUE">"immersive-ar"</ph> sessions (if any) will not be terminated.
+
+      For more details about <ph name="WEBXR_AR_SESSION_ENUM_VALUE">"immersive-ar"</ph> sessions, please see <ph name="WEBXR_AR_MODULE_API_NAME">WebXR Augmented Reality Module</ph> specfication.'''
     }
   ],
 
@@ -25312,6 +25346,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 819,
+  'highest_id_currently_used': 820,
   'highest_atomic_group_id_currently_used': 40
 }

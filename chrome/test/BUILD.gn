@@ -602,6 +602,15 @@ if (is_android) {
       add_unwind_tables_in_apk = true
     }
 
+    if (enable_arcore) {
+      # If AR is supported, we should also include WebXR's AR enterprise policy
+      # browsertest. The test should not be enabled when AR features are not
+      # enabled, since we won't be able to distinguish whether the test cases
+      # are failing due to absence of AR, or due to an issue with propagating
+      # the enterprise policy setting.
+      sources += [ "../browser/android/vr/webxr_policy_browsertest.cc" ]
+    }
+
     data = [
       "$root_gen_dir/chrome/android/chrome_apk_paks/chrome_100_percent.pak",
       "$root_gen_dir/chrome/android/chrome_apk_paks/locales/en-US.pak",

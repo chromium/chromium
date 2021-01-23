@@ -8380,5 +8380,22 @@
         "prefs": {"browser_labs_enabled": {"value": false, "location": "user_profile"}}
       }
     ]
-    }
+  },
+
+  "WebXRImmersiveArEnabled": {
+    "os": ["android"],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "WebXRImmersiveArEnabled": false
+        },
+        "prefs": {
+          "webxr.immersive_ar_enabled": {
+            "value": false,
+            "location": "user_profile"
+          }
+        }
+      }
+    ]
+  }
 }

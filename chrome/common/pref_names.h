@@ -1114,6 +1114,10 @@ extern const char kCartModuleHidden[];
 extern const char kCartModuleRemoved[];
 #endif
 
+#if defined(OS_ANDROID)
+extern const char kWebXRImmersiveArEnabled[];
+#endif
+
 }  // namespace prefs
 
 #endif  // CHROME_COMMON_PREF_NAMES_H_
