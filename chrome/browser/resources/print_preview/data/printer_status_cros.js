@@ -96,6 +96,8 @@ export const ERROR_STRING_KEY_MAP = new Map([
  */
 export function getStatusReasonFromPrinterStatus(printerStatus) {
   if (!printerStatus.printerId) {
+    // TODO(crbug.com/1027400): Remove console log once bug is confirmed fix.
+    console.warn('Received printer status missing printer id');
     return PrinterStatusReason.UNKNOWN_REASON;
   }
 
