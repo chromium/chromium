@@ -64,7 +64,7 @@ void PrerenderObserverList::AddObserver(PrerenderObserver* observer) {
 
 bool PrerenderObserverList::RemoveObserver(PrerenderObserver* observer) {
   prerender_observers_.RemoveObserver(observer);
-  return !prerender_observers_.might_have_observers();
+  return prerender_observers_.empty();
 }
 
 void PrerenderObserverList::SetIsPrerendering(bool is_prerendering) {
