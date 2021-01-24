@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
@@ -52,6 +53,8 @@ import java.util.Set;
 public class PaymentRequestIntegrationTest {
     private static final String METHOD_NAME = "https://www.chromium.org";
     private static final String STRINGIFIED_DETAILS = "test stringifiedDetails";
+    private final ArgumentCaptor<InstrumentDetailsCallback> mPaymentAppCallbackCaptor =
+            ArgumentCaptor.forClass(InstrumentDetailsCallback.class);
 
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.WARN);
@@ -65,8 +68,6 @@ public class PaymentRequestIntegrationTest {
     private PaymentRequestClient mClient;
     private PaymentAppFactoryInterface mFactory;
     private PaymentApp mPaymentApp;
-    private InstrumentDetailsCallback mPaymentAppCallback;
-    private PaymentResponse mPaymentResponse;
     private boolean mIsUserGesture;
     private boolean mWaitForUpdatedDetails;
 
@@ -83,15 +84,9 @@ public class PaymentRequestIntegrationTest {
         ShadowPaymentFeatureList.setFeatureEnabled(
                 PaymentFeatureList.WEB_PAYMENTS_SINGLE_APP_UI_SKIP, true);
         PaymentRequestService.resetShowingPaymentRequestForTest();
+        PaymentAppService.getInstance().resetForTest();
 
         mClient = Mockito.mock(PaymentRequestClient.class);
-        Mockito.doAnswer((args) -> {
-                   mPaymentResponse = args.getArgument(0);
-                   return null;
-               })
-                .when(mClient)
-                .onPaymentResponse(Mockito.any());
-
         mPaymentApp = mockPaymentApp();
         mFactory = Mockito.mock(PaymentAppFactoryInterface.class);
         Mockito.doAnswer((args) -> {
@@ -103,12 +98,12 @@ public class PaymentRequestIntegrationTest {
                })
                 .when(mFactory)
                 .create(Mockito.any());
-        PaymentAppService.getInstance().addFactory(mFactory);
     }
 
     @After
     public void tearDown() {
         PaymentRequestService.resetShowingPaymentRequestForTest();
+        PaymentAppService.getInstance().resetForTest();
     }
 
     private PaymentApp mockPaymentApp() {
@@ -116,15 +111,8 @@ public class PaymentRequestIntegrationTest {
         Set<String> methodNames = new HashSet<>();
         methodNames.add(METHOD_NAME);
         Mockito.doReturn(methodNames).when(app).getInstrumentMethodNames();
+        Mockito.doReturn("testPaymentApp").when(app).getIdentifier();
         Mockito.doReturn(true).when(app).handlesShippingAddress();
-        Mockito.doAnswer((args) -> {
-                   mPaymentAppCallback = args.getArgument(11);
-                   return null;
-               })
-                .when(app)
-                .invokePaymentApp(Mockito.any(), Mockito.any(), Mockito.anyString(),
-                        Mockito.anyString(), Mockito.any(), Mockito.any(), Mockito.any(),
-                        Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
         return app;
     }
 
@@ -138,9 +126,13 @@ public class PaymentRequestIntegrationTest {
     }
 
     private void assertResponse() {
-        Assert.assertNotNull(mPaymentResponse);
-        Assert.assertEquals(METHOD_NAME, mPaymentResponse.methodName);
-        Assert.assertEquals(STRINGIFIED_DETAILS, mPaymentResponse.stringifiedDetails);
+        ArgumentCaptor<PaymentResponse> responseCaptor =
+                ArgumentCaptor.forClass(PaymentResponse.class);
+        Mockito.verify(mClient, Mockito.times(1)).onPaymentResponse(responseCaptor.capture());
+        PaymentResponse response = responseCaptor.getValue();
+        Assert.assertNotNull(response);
+        Assert.assertEquals(METHOD_NAME, response.methodName);
+        Assert.assertEquals(STRINGIFIED_DETAILS, response.stringifiedDetails);
     }
 
     private PaymentRequestParamsBuilder defaultBuilder() {
@@ -148,7 +140,7 @@ public class PaymentRequestIntegrationTest {
     }
 
     private MockPaymentUiServiceBuilder defaultUiServiceBuilder() {
-        return MockPaymentUiServiceBuilder.defaultBuilder(mPaymentApp);
+        return MockPaymentUiServiceBuilder.defaultBuilder();
     }
 
     private PaymentRequestParamsBuilder defaultBuilder(PaymentUiService uiService) {
@@ -163,11 +155,15 @@ public class PaymentRequestIntegrationTest {
     }
 
     private void assertInvokePaymentAppCalled() {
-        Assert.assertNotNull(mPaymentAppCallback);
+        Mockito.verify(mPaymentApp, Mockito.times(1))
+                .invokePaymentApp(Mockito.any(), Mockito.any(), Mockito.anyString(),
+                        Mockito.anyString(), Mockito.any(), Mockito.any(), Mockito.any(),
+                        Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(),
+                        mPaymentAppCallbackCaptor.capture());
     }
 
     private void simulatePaymentAppRespond() {
-        mPaymentAppCallback.onInstrumentDetailsReady(
+        mPaymentAppCallbackCaptor.getValue().onInstrumentDetailsReady(
                 METHOD_NAME, STRINGIFIED_DETAILS, new PayerData());
     }
 

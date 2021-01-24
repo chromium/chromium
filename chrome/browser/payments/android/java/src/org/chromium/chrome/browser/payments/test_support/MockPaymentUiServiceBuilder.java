@@ -14,23 +14,32 @@ import java.util.List;
 
 /** The builder of the mock PaymentUiService. */
 public class MockPaymentUiServiceBuilder {
-    PaymentUiService mPaymentUiService;
+    private final PaymentUiService mPaymentUiService;
+    private final List<PaymentApp> mPaymentApps = new ArrayList<>();
 
-    public static MockPaymentUiServiceBuilder defaultBuilder(PaymentApp app) {
-        return new MockPaymentUiServiceBuilder(app);
+    public static MockPaymentUiServiceBuilder defaultBuilder() {
+        return new MockPaymentUiServiceBuilder();
     }
 
-    public MockPaymentUiServiceBuilder(PaymentApp app) {
+    public MockPaymentUiServiceBuilder() {
         mPaymentUiService = Mockito.mock(PaymentUiService.class);
         Mockito.doReturn(null)
                 .when(mPaymentUiService)
                 .buildPaymentRequestUI(
                         Mockito.anyBoolean(), Mockito.any(), Mockito.any(), Mockito.any());
-        Mockito.doReturn(true).when(mPaymentUiService).hasAvailableApps();
-        List<PaymentApp> apps = new ArrayList<>();
-        apps.add(app);
-        Mockito.doReturn(apps).when(mPaymentUiService).getPaymentApps();
-        Mockito.doReturn(app).when(mPaymentUiService).getSelectedPaymentApp();
+        Mockito.doAnswer((args) -> {
+                   mPaymentApps.addAll(args.getArgument(0));
+                   return null;
+               })
+                .when(mPaymentUiService)
+                .setPaymentApps(Mockito.any());
+        Mockito.doAnswer((args) -> mPaymentApps.size() > 0)
+                .when(mPaymentUiService)
+                .hasAvailableApps();
+        Mockito.doAnswer((args) -> mPaymentApps).when(mPaymentUiService).getPaymentApps();
+        Mockito.doAnswer((args) -> mPaymentApps.get(0))
+                .when(mPaymentUiService)
+                .getSelectedPaymentApp();
     }
 
     public MockPaymentUiServiceBuilder setBuildPaymentRequestUIResult(String result) {
