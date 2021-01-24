@@ -19,7 +19,6 @@ namespace subresource_redirect {
 // The decider agent implementation that allows subresource redirect compression
 // based on robots rules on non-logged-in pages. Currently only handles
 // mainframes.
-// TODO(crbug.com/1148974): Handle subresources in subframes as well.
 // TODO(crbug.com/1149853): Add the logged-in checks.
 class LoginRobotsDeciderAgent : public PublicResourceDeciderAgent {
  public:

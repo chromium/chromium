@@ -67,8 +67,6 @@ LoginRobotsDeciderAgent::ShouldRedirectSubresource(
   DCHECK(url.is_valid());
   if (redirect_result_ != RedirectResult::kRedirectable)
     return redirect_result_;
-  if (!render_frame()->IsMainFrame())
-    return RedirectResult::kIneligibleSubframeResource;
 
   // Trigger the robots rules fetch if needed.
   const auto origin = url::Origin::Create(url);
