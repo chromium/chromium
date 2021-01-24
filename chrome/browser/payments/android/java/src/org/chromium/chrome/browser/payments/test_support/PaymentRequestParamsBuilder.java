@@ -14,7 +14,6 @@ import org.mockito.Mockito;
 
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.payments.ChromePaymentRequestService;
-import org.chromium.chrome.browser.payments.ChromePaymentRequestService.Delegate;
 import org.chromium.chrome.browser.payments.ui.PaymentUiService;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -47,9 +46,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** The builder of the PaymentRequest parameters. */
-public class PaymentRequestParamsBuilder implements Delegate {
+public class PaymentRequestParamsBuilder implements ChromePaymentRequestService.Delegate {
     private final PaymentRequestClient mClient;
-    private final Delegate mDelegate;
+    private final ChromePaymentRequestService.Delegate mDelegate;
     private final RenderFrameHost mRenderFrameHost;
     private final PaymentMethodData[] mMethodData;
     private final PaymentDetails mDetails;
@@ -59,6 +58,7 @@ public class PaymentRequestParamsBuilder implements Delegate {
     private final PaymentUiService mPaymentUiService;
     private final boolean mGoogleBridgeEligible;
     private final PaymentOptions mOptions;
+    private String mSupportedMethod = "https://www.chromium.org";
 
     public static PaymentRequestParamsBuilder defaultBuilder(
             PaymentRequestClient client, PaymentUiService paymentUiService) {
@@ -80,14 +80,18 @@ public class PaymentRequestParamsBuilder implements Delegate {
         Origin origin = Mockito.mock(Origin.class);
         Mockito.doReturn(origin).when(mRenderFrameHost).getLastCommittedOrigin();
         mMethodData = new PaymentMethodData[1];
-        mMethodData[0] = new PaymentMethodData();
-        mMethodData[0].supportedMethod = "https://www.chromium.org";
         mDetails = new PaymentDetails();
         mDetails.id = "testId";
         mDetails.total = new PaymentItem();
         mOptions = new PaymentOptions();
-        mOptions.requestShipping = true;
         mSpec = Mockito.mock(PaymentRequestSpec.class);
+        mGoogleBridgeEligible = false;
+    }
+
+    public PaymentRequest buildAndInit() {
+        mMethodData[0] = new PaymentMethodData();
+        mMethodData[0].supportedMethod = mSupportedMethod;
+
         PaymentCurrencyAmount amount = new PaymentCurrencyAmount();
         amount.currency = "CNY";
         amount.value = "123";
@@ -99,15 +103,21 @@ public class PaymentRequestParamsBuilder implements Delegate {
         Mockito.doReturn(methodDataMap).when(mSpec).getMethodData();
         Mockito.doReturn(mOptions).when(mSpec).getPaymentOptions();
 
-        mGoogleBridgeEligible = false;
-    }
-
-    public PaymentRequest buildAndInit() {
         PaymentRequest request = new MojoPaymentRequestGateKeeper(
                 (client, onClosed)
                         -> new PaymentRequestService(mRenderFrameHost, client, onClosed, this));
         request.init(mClient, mMethodData, mDetails, mOptions, mGoogleBridgeEligible);
         return request;
+    }
+
+    public PaymentRequestParamsBuilder setSupportedMethod(String supportedMethod) {
+        mSupportedMethod = supportedMethod;
+        return this;
+    }
+
+    public PaymentRequestParamsBuilder setRequestShipping(boolean requestShipping) {
+        mOptions.requestShipping = requestShipping;
+        return this;
     }
 
     @Override

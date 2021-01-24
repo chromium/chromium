@@ -136,7 +136,7 @@ public class PaymentRequestIntegrationTest {
     }
 
     private PaymentRequestParamsBuilder defaultBuilder() {
-        return defaultBuilder(defaultUiServiceBuilder().build());
+        return defaultBuilder(defaultUiServiceBuilder().build()).setRequestShipping(true);
     }
 
     private MockPaymentUiServiceBuilder defaultUiServiceBuilder() {
