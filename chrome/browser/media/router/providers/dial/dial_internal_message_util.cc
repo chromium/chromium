@@ -96,12 +96,12 @@ std::string DialReceiverActionToString(DialReceiverAction action) {
 
 std::string DialAppInfoErrorToString(DialAppInfoResultCode error) {
   switch (error) {
-    case DialAppInfoResultCode::kNotFound:
-      return "not_found";
     case DialAppInfoResultCode::kNetworkError:
       return "network_error";
     case DialAppInfoResultCode::kParsingError:
       return "parsing_error";
+    case DialAppInfoResultCode::kHttpError:
+      return "http_error";
     case DialAppInfoResultCode::kOk:
     case DialAppInfoResultCode::kCount:
       NOTREACHED() << "Unexpected DialAppInfoResultCode: "
@@ -277,9 +277,20 @@ mojom::RouteMessagePtr DialInternalMessageUtil::CreateDialAppInfoMessage(
 mojom::RouteMessagePtr DialInternalMessageUtil::CreateDialAppInfoErrorMessage(
     DialAppInfoResultCode result_code,
     const std::string& client_id,
-    int sequence_number) const {
+    int sequence_number,
+    const std::string& error_message,
+    base::Optional<int> http_error_code) const {
+  // The structure of an error message body is defined as chrome.cast.Error in
+  // the Cast SDK.
   base::Value body(base::Value::Type::DICTIONARY);
-  body.SetKey("code", base::Value(DialAppInfoErrorToString(result_code)));
+  body.SetStringKey("code", DialAppInfoErrorToString(result_code));
+  body.SetStringKey("description", error_message);
+  if (result_code == DialAppInfoResultCode::kHttpError) {
+    DCHECK(http_error_code);
+    base::Value details(base::Value::Type::DICTIONARY);
+    details.SetIntKey("http_error_code", *http_error_code);
+    body.SetKey("details", std::move(details));
+  }
   base::Value message =
       CreateDialMessageCommon(DialInternalMessageType::kError, std::move(body),
                               client_id, sequence_number);

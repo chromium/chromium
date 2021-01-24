@@ -175,13 +175,13 @@ class DialActivityManager {
   void OnLaunchSuccess(const MediaRoute::Id& route_id,
                        const std::string& response);
   void OnLaunchError(const MediaRoute::Id& route_id,
-                     int response_code,
-                     const std::string& message);
+                     const std::string& message,
+                     base::Optional<int> http_response_code);
   void OnStopSuccess(const MediaRoute::Id& route_id,
                      const std::string& response);
   void OnStopError(const MediaRoute::Id& route_id,
-                   int response_code,
-                   const std::string& message);
+                   const std::string& message,
+                   base::Optional<int> http_response_code);
 
   void OnInfoFetchedAfterStopError(const MediaRoute::Id& route_id,
                                    const std::string& message,

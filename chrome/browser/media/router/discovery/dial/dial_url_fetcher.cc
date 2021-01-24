@@ -5,6 +5,7 @@
 #include "chrome/browser/media/router/discovery/dial/dial_url_fetcher.h"
 
 #include "base/bind.h"
+#include "base/optional.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -172,9 +173,16 @@ void DialURLFetcher::Start(const GURL& url,
   StartDownload();
 }
 
-void DialURLFetcher::ReportError(int response_code,
-                                 const std::string& message) {
-  std::move(error_cb_).Run(response_code, message);
+void DialURLFetcher::ReportError(const std::string& message) {
+  std::move(error_cb_).Run(message, GetHttpResponseCode());
+}
+
+base::Optional<int> DialURLFetcher::GetHttpResponseCode() const {
+  if (GetResponseHead() && GetResponseHead()->headers) {
+    int code = GetResponseHead()->headers->response_code();
+    return code == -1 ? base::nullopt : base::Optional<int>(code);
+  }
+  return base::nullopt;
 }
 
 void DialURLFetcher::ReportRedirectError(
@@ -185,8 +193,7 @@ void DialURLFetcher::ReportRedirectError(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   loader_.reset();
 
-  // Returning |OK| on error will be treated as unavailable.
-  ReportError(net::Error::OK, "Redirect not allowed");
+  ReportError("Redirect not allowed");
 }
 
 void DialURLFetcher::StartDownload() {
@@ -214,19 +221,18 @@ void DialURLFetcher::ProcessResponse(std::unique_ptr<std::string> response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   int response_code = loader_->NetError();
   if (response_code != net::Error::OK) {
-    ReportError(response_code,
-                base::StringPrintf("HTTP response error: %d", response_code));
+    ReportError(base::StringPrintf("Internal net::Error: %d", response_code));
     return;
   }
 
   // Response for POST and DELETE may be empty.
   if (!response || (method_ == "GET" && response->empty())) {
-    ReportError(response_code, "Missing or empty response");
+    ReportError("Missing or empty response");
     return;
   }
 
   if (!base::IsStringUTF8(*response)) {
-    ReportError(response_code, "Invalid response encoding");
+    ReportError("Invalid response encoding");
     return;
   }
 

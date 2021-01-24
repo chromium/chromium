@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/media/router/discovery/dial/dial_url_fetcher.h"
 #include "url/gurl.h"
@@ -44,7 +45,8 @@ class DeviceDescriptionFetcher {
   void ProcessResponse(const std::string& response);
 
   // Runs |error_cb_| with |message| and clears it.
-  void ReportError(int response_code, const std::string& message);
+  void ReportError(const std::string& message,
+                   base::Optional<int> response_code = base::nullopt);
 
   const GURL device_description_url_;
 

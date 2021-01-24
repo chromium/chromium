@@ -36,7 +36,7 @@ bool IsDiscoveryOnly(const std::string& model_name) {
 SinkAppStatus GetSinkAppStatusFromResponse(const DialAppInfoResult& result) {
   if (!result.app_info) {
     if (result.result_code == DialAppInfoResultCode::kParsingError ||
-        result.result_code == DialAppInfoResultCode::kNotFound) {
+        result.result_code == DialAppInfoResultCode::kHttpError) {
       return SinkAppStatus::kUnavailable;
     } else {
       return SinkAppStatus::kUnknown;

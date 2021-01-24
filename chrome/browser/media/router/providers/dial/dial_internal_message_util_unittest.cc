@@ -238,14 +238,15 @@ TEST_F(DialInternalMessageUtilTest, CreateCustomDialLaunchMessage) {
                       message->message.value());
 }
 
-TEST_F(DialInternalMessageUtilTest, CreateDialAppInfoErrorMessage) {
+TEST_F(DialInternalMessageUtilTest, CreateDialAppInfoParsingErrorMessage) {
   constexpr char kClientId[] = "152127444812943594";
   constexpr char kErrorMessage[] = R"(
   {
     "clientId": "%s",
     "type": "error",
     "message": {
-      "code": "parsing_error"
+      "code": "parsing_error",
+      "description": "XML parsing error"
     },
     "sequenceNumber": %d,
     "timeoutMillis": 0
@@ -253,7 +254,33 @@ TEST_F(DialInternalMessageUtilTest, CreateDialAppInfoErrorMessage) {
   const int kSequenceNumber = 42;
 
   auto message = util_.CreateDialAppInfoErrorMessage(
-      DialAppInfoResultCode::kParsingError, kClientId, kSequenceNumber);
+      DialAppInfoResultCode::kParsingError, kClientId, kSequenceNumber,
+      "XML parsing error");
+  ExpectMessagesEqual(
+      base::StringPrintf(kErrorMessage, kClientId, kSequenceNumber),
+      message->message.value());
+}
+
+TEST_F(DialInternalMessageUtilTest, CreateDialAppInfoHttpErrorMessage) {
+  constexpr char kClientId[] = "152127444812943594";
+  constexpr char kErrorMessage[] = R"(
+  {
+    "clientId": "%s",
+    "type": "error",
+    "message": {
+      "code": "http_error",
+      "description": "",
+      "details": {
+        "http_error_code": 404
+      }
+    },
+    "sequenceNumber": %d,
+    "timeoutMillis": 0
+  })";
+  const int kSequenceNumber = 42;
+
+  auto message = util_.CreateDialAppInfoErrorMessage(
+      DialAppInfoResultCode::kHttpError, kClientId, kSequenceNumber, "", 404);
   ExpectMessagesEqual(
       base::StringPrintf(kErrorMessage, kClientId, kSequenceNumber),
       message->message.value());

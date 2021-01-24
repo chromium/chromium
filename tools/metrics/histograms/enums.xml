@@ -49142,9 +49142,10 @@ Called by update_use_counter_css.py.-->
 
 <enum name="MediaRouterDialFetchAppInfoResult">
   <int value="0" label="Success"/>
-  <int value="1" label="Not found"/>
+  <int value="1" label="(Deprecated) Not found"/>
   <int value="2" label="Network error"/>
   <int value="3" label="Parse error"/>
+  <int value="4" label="HTTP error"/>
 </enum>
 
 <enum name="MediaRouterDialogActivationLocationAndCastMode">
