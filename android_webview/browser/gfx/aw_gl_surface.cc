@@ -87,6 +87,12 @@ void AwGLSurface::SetSize(const gfx::Size& size) {
   size_ = size;
 }
 
+EGLConfig AwGLSurface::GetConfig() {
+  if (!IsANGLEExternalContextAndSurfaceSupported())
+    return nullptr;
+  return gl::GLSurfaceEGL::GetConfig();
+}
+
 void AwGLSurface::MaybeDidPresent(const gfx::PresentationFeedback& feedback) {
   if (!pending_presentation_callback_)
     return;

@@ -370,7 +370,7 @@ void HardwareRendererViz::DrawAndSwap(const HardwareRendererDrawParams& params,
 
   // ANGLE will restore GL context state for us, so we don't need to call
   // GrContext::resetContext().
-  if (gl::GLSurfaceEGL::IsANGLEExternalContextAndSurfaceSupported()) {
+  if (!gl::GLSurfaceEGL::IsANGLEExternalContextAndSurfaceSupported()) {
     DCHECK(output_surface_provider_.shared_context_state());
     output_surface_provider_.shared_context_state()
         ->PessimisticallyResetGrContext();

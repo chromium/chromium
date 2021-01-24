@@ -33,6 +33,7 @@ class AwGLSurface : public gl::GLSurfaceEGL {
               float scale_factor,
               const gfx::ColorSpace& color_space,
               bool has_alpha) override;
+  EGLConfig GetConfig() override;
 
   void SetSize(const gfx::Size& size);
   void MaybeDidPresent(const gfx::PresentationFeedback& feedback);
