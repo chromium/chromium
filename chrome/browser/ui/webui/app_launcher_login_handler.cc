@@ -171,7 +171,7 @@ void AppLauncherLoginHandler::UpdateLogin() {
     bool is_signin_allowed =
         profile->GetOriginalProfile()->GetPrefs()->GetBoolean(
             prefs::kSigninAllowed);
-    if (!profile->IsLegacySupervised() && is_signin_allowed) {
+    if (is_signin_allowed) {
       base::string16 signed_in_link = l10n_util::GetStringUTF16(
           IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK);
       signed_in_link =

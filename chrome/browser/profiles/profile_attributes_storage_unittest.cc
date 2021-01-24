@@ -516,14 +516,12 @@ TEST_F(ProfileAttributesStorageTest, SupervisedUsersAccessors) {
   entry->SetSupervisedUserId("");
   ASSERT_FALSE(entry->IsSupervised());
   ASSERT_FALSE(entry->IsChild());
-  ASSERT_FALSE(entry->IsLegacySupervised());
 
   EXPECT_CALL(observer(), OnProfileSupervisedUserIdChanged(path)).Times(1);
   entry->SetSupervisedUserId("some_supervised_user_id");
   VerifyAndResetCallExpectations();
   ASSERT_TRUE(entry->IsSupervised());
   ASSERT_FALSE(entry->IsChild());
-  ASSERT_TRUE(entry->IsLegacySupervised());
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   EXPECT_CALL(observer(), OnProfileSupervisedUserIdChanged(path)).Times(1);
@@ -531,7 +529,6 @@ TEST_F(ProfileAttributesStorageTest, SupervisedUsersAccessors) {
   VerifyAndResetCallExpectations();
   ASSERT_TRUE(entry->IsSupervised());
   ASSERT_TRUE(entry->IsChild());
-  ASSERT_FALSE(entry->IsLegacySupervised());
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 }
 

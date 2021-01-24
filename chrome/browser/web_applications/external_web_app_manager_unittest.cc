@@ -51,7 +51,6 @@ constexpr char kAppAllUrl[] = "https://www.google.com/all";
 constexpr char kAppChildUrl[] = "https://www.google.com/child";
 constexpr char kAppGuestUrl[] = "https://www.google.com/guest";
 constexpr char kAppManagedUrl[] = "https://www.google.com/managed";
-constexpr char kAppSupervisedUrl[] = "https://www.google.com/supervised";
 constexpr char kAppUnmanagedUrl[] = "https://www.google.com/unmanaged";
 #endif
 
@@ -453,12 +452,6 @@ TEST_F(ExternalWebAppManagerTest, ManagedUser) {
   const auto profile = CreateProfileAndLogin();
   profile->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
   VerifySetOfApps(profile.get(), {GURL(kAppAllUrl), GURL(kAppManagedUrl)});
-}
-
-TEST_F(ExternalWebAppManagerTest, SupervisedUser) {
-  const auto profile = CreateProfileAndLogin();
-  profile->SetSupervisedUserId("asdf");
-  VerifySetOfApps(profile.get(), {GURL(kAppAllUrl), GURL(kAppSupervisedUrl)});
 }
 
 TEST_F(ExternalWebAppManagerTest, UnmanagedUser) {

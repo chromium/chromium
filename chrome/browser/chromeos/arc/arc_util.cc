@@ -178,12 +178,6 @@ bool IsArcAllowedForProfileInternal(const Profile* profile,
     return false;
   }
 
-  if (profile->IsLegacySupervised()) {
-    VLOG_IF(1, should_report_reason)
-        << "Supervised users are not supported in ARC.";
-    return false;
-  }
-
   if (policy_util::IsArcDisabledForEnterprise() &&
       policy_util::IsAccountManaged(profile)) {
     VLOG_IF(1, should_report_reason)

@@ -406,11 +406,6 @@ std::unique_ptr<Profile> Profile::CreateProfile(const base::FilePath& path,
 
   std::unique_ptr<Profile> profile = base::WrapUnique(new ProfileImpl(
       path, delegate, create_mode, creation_time, io_task_runner));
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS) && !defined(OS_ANDROID) && \
-    !BUILDFLAG(IS_CHROMEOS_ASH)
-  if (create_mode == CREATE_MODE_SYNCHRONOUS && profile->IsLegacySupervised())
-    return nullptr;
-#endif
   return profile;
 }
 
@@ -1025,10 +1020,6 @@ bool ProfileImpl::IsChild() const {
 #else
   return false;
 #endif
-}
-
-bool ProfileImpl::IsLegacySupervised() const {
-  return IsSupervised() && !IsChild();
 }
 
 bool ProfileImpl::AllowsBrowserWindows() const {

@@ -285,8 +285,6 @@ class Profile : public content::BrowserContext {
   virtual bool IsSupervised() const = 0;
   // Returns whether the profile is associated with a child account.
   virtual bool IsChild() const = 0;
-  // Returns whether the profile is a legacy supervised user profile.
-  virtual bool IsLegacySupervised() const = 0;
 
   // Returns whether opening browser windows is allowed in this profile. For
   // example, browser windows are not allowed in Sign-in profile on Chrome OS.

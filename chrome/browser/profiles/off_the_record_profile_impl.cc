@@ -358,10 +358,6 @@ bool OffTheRecordProfileImpl::IsChild() const {
   return profile_->IsChild();
 }
 
-bool OffTheRecordProfileImpl::IsLegacySupervised() const {
-  return profile_->IsLegacySupervised();
-}
-
 bool OffTheRecordProfileImpl::AllowsBrowserWindows() const {
   return profile_->AllowsBrowserWindows() &&
          otr_profile_id_.AllowsBrowserWindows();

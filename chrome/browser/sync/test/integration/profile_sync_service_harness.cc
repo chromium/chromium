@@ -302,8 +302,6 @@ bool ProfileSyncServiceHarness::SetupSyncImpl(
     const base::Optional<std::string>& passphrase) {
   DCHECK(encryption_mode == EncryptionSetupMode::kNoEncryption ||
          passphrase.has_value());
-  DCHECK(!profile_->IsLegacySupervised())
-      << "SetupSync should not be used for legacy supervised users.";
 
   if (service() == nullptr) {
     LOG(ERROR) << "SetupSync(): service() is null.";

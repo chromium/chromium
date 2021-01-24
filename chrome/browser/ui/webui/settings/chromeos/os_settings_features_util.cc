@@ -30,10 +30,6 @@ bool ShouldShowParentalControlSettings(const Profile* profile) {
   if (profile->IsGuestSession())
     return false;
 
-  // Settings are for Family Link, not legacy parental controls
-  if (profile->IsLegacySupervised())
-    return false;
-
   return profile->IsChild() ||
          !profile->GetProfilePolicyConnector()->IsManaged();
 }

@@ -50,8 +50,7 @@ PluginVmFeatures::~PluginVmFeatures() = default;
 //   * PluginVmUserId policy.
 bool PluginVmFeatures::IsAllowed(const Profile* profile) {
   // Check that the profile is eligible.
-  if (!profile || profile->IsChild() || profile->IsLegacySupervised() ||
-      profile->IsOffTheRecord() ||
+  if (!profile || profile->IsChild() || profile->IsOffTheRecord() ||
       chromeos::ProfileHelper::IsEphemeralUserProfile(profile) ||
       !chromeos::ProfileHelper::IsRegularProfile(profile) ||
       !chromeos::ProfileHelper::IsPrimaryProfile(profile)) {

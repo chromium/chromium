@@ -211,8 +211,6 @@ void SupervisedUserInternalsMessageHandler::SendBasicInfo() {
 
   base::ListValue* section_profile = AddSection(section_list.get(), "Profile");
   AddSectionEntry(section_profile, "Account", profile->GetProfileUserName());
-  AddSectionEntry(section_profile, "Legacy Supervised",
-                  profile->IsLegacySupervised());
   AddSectionEntry(section_profile, "Child", profile->IsChild());
 
   SupervisedUserURLFilter* filter = GetSupervisedUserService()->GetURLFilter();

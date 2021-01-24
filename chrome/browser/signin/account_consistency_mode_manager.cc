@@ -204,12 +204,6 @@ AccountConsistencyModeManager::ComputeAccountConsistencyMethod(
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  // Legacy supervised users cannot get Dice.
-  // TODO(droger): remove this once legacy supervised users are no longer
-  // supported.
-  if (profile->IsLegacySupervised())
-    return AccountConsistencyMethod::kDisabled;
-
   if (!profile->GetPrefs()->GetBoolean(prefs::kSigninAllowed)) {
     VLOG(1) << "Desktop Identity Consistency disabled as sign-in to Chrome"
                "is not allowed";

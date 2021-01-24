@@ -792,61 +792,57 @@ void ExternalProviderImpl::CreateExternalProviders(
         profile, Manifest::EXTERNAL_PREF, Manifest::EXTERNAL_PREF_DOWNLOAD,
         bundled_extension_creation_flags));
 #endif
-    if (!profile->IsLegacySupervised()) {
 #if defined(OS_WIN)
-      auto registry_provider = std::make_unique<ExternalProviderImpl>(
-          service, new ExternalRegistryLoader, profile,
-          Manifest::EXTERNAL_REGISTRY, Manifest::EXTERNAL_PREF_DOWNLOAD,
-          Extension::NO_FLAGS);
-      registry_provider->set_allow_updates(true);
-      provider_list->push_back(std::move(registry_provider));
+    auto registry_provider = std::make_unique<ExternalProviderImpl>(
+        service, new ExternalRegistryLoader, profile,
+        Manifest::EXTERNAL_REGISTRY, Manifest::EXTERNAL_PREF_DOWNLOAD,
+        Extension::NO_FLAGS);
+    registry_provider->set_allow_updates(true);
+    provider_list->push_back(std::move(registry_provider));
 #else
-      provider_list->push_back(std::make_unique<ExternalProviderImpl>(
-          service,
-          base::MakeRefCounted<ExternalPrefLoader>(
-              chrome::DIR_EXTERNAL_EXTENSIONS, check_admin_permissions_on_mac,
-              nullptr),
-          profile, Manifest::EXTERNAL_PREF, Manifest::EXTERNAL_PREF_DOWNLOAD,
-          bundled_extension_creation_flags));
+    provider_list->push_back(std::make_unique<ExternalProviderImpl>(
+        service,
+        base::MakeRefCounted<ExternalPrefLoader>(
+            chrome::DIR_EXTERNAL_EXTENSIONS, check_admin_permissions_on_mac,
+            nullptr),
+        profile, Manifest::EXTERNAL_PREF, Manifest::EXTERNAL_PREF_DOWNLOAD,
+        bundled_extension_creation_flags));
 
-      // Define a per-user source of external extensions.
+    // Define a per-user source of external extensions.
 #if defined(OS_MAC) || ((defined(OS_LINUX) || defined(OS_CHROMEOS)) && \
                         BUILDFLAG(CHROMIUM_BRANDING))
-      provider_list->push_back(std::make_unique<ExternalProviderImpl>(
-          service,
-          base::MakeRefCounted<ExternalPrefLoader>(
-              chrome::DIR_USER_EXTERNAL_EXTENSIONS, ExternalPrefLoader::NONE,
-              nullptr),
-          profile, Manifest::EXTERNAL_PREF, Manifest::EXTERNAL_PREF_DOWNLOAD,
-          Extension::NO_FLAGS));
-#endif
-#endif
-    }
-  }
-
-  if (!profile->IsLegacySupervised()) {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-    // The default apps are installed as INTERNAL but use the external
-    // extension installer codeflow.
-    provider_list->push_back(std::make_unique<default_apps::Provider>(
-        profile, service,
+    provider_list->push_back(std::make_unique<ExternalProviderImpl>(
+        service,
         base::MakeRefCounted<ExternalPrefLoader>(
-            chrome::DIR_DEFAULT_APPS, ExternalPrefLoader::NONE, nullptr),
-        Manifest::INTERNAL, Manifest::INTERNAL,
-        Extension::FROM_WEBSTORE | Extension::WAS_INSTALLED_BY_DEFAULT));
+            chrome::DIR_USER_EXTERNAL_EXTENSIONS, ExternalPrefLoader::NONE,
+            nullptr),
+        profile, Manifest::EXTERNAL_PREF, Manifest::EXTERNAL_PREF_DOWNLOAD,
+        Extension::NO_FLAGS));
+#endif
+#endif
+  }
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  // The default apps are installed as INTERNAL but use the external
+  // extension installer codeflow.
+  provider_list->push_back(std::make_unique<default_apps::Provider>(
+      profile, service,
+      base::MakeRefCounted<ExternalPrefLoader>(
+          chrome::DIR_DEFAULT_APPS, ExternalPrefLoader::NONE, nullptr),
+      Manifest::INTERNAL, Manifest::INTERNAL,
+      Extension::FROM_WEBSTORE | Extension::WAS_INSTALLED_BY_DEFAULT));
 #endif
 
-    std::unique_ptr<ExternalProviderImpl> drive_migration_provider(
-        new ExternalProviderImpl(
-            service,
-            base::MakeRefCounted<ExtensionMigrator>(
-                profile, extension_misc::kDriveHostedAppId,
-                extension_misc::kDocsOfflineExtensionId),
-            profile, Manifest::EXTERNAL_PREF, Manifest::EXTERNAL_PREF_DOWNLOAD,
-            Extension::FROM_WEBSTORE | Extension::WAS_INSTALLED_BY_DEFAULT));
-    drive_migration_provider->set_auto_acknowledge(true);
-    provider_list->push_back(std::move(drive_migration_provider));
-  }
+  std::unique_ptr<ExternalProviderImpl> drive_migration_provider(
+      new ExternalProviderImpl(
+          service,
+          base::MakeRefCounted<ExtensionMigrator>(
+              profile, extension_misc::kDriveHostedAppId,
+              extension_misc::kDocsOfflineExtensionId),
+          profile, Manifest::EXTERNAL_PREF, Manifest::EXTERNAL_PREF_DOWNLOAD,
+          Extension::FROM_WEBSTORE | Extension::WAS_INSTALLED_BY_DEFAULT));
+  drive_migration_provider->set_auto_acknowledge(true);
+  provider_list->push_back(std::move(drive_migration_provider));
 
   provider_list->push_back(std::make_unique<ExternalProviderImpl>(
       service, base::MakeRefCounted<ExternalComponentLoader>(profile), profile,

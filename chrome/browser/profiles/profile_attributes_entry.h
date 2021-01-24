@@ -112,8 +112,6 @@ class ProfileAttributesEntry {
   bool IsSupervised() const;
   // Returns true if the profile is signed in as a child account.
   bool IsChild() const;
-  // Returns true if the profile is a supervised user but not a child account.
-  bool IsLegacySupervised() const;
   // Returns true if the profile should not be displayed to the user in the
   // list of profiles.
   bool IsOmitted() const;

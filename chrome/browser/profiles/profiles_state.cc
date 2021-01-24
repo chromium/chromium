@@ -270,8 +270,8 @@ bool AreAllNonChildNonSupervisedProfilesLocked() {
     if (entry->IsOmitted())
       continue;
 
-    // Only consider non-child and non-supervised profiles.
-    if (!entry->IsChild() && !entry->IsLegacySupervised()) {
+    // Only consider non-child profiles.
+    if (!entry->IsChild()) {
       at_least_one_regular_profile_present = true;
 
       if (!entry->IsSigninRequired())

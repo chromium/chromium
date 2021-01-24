@@ -185,8 +185,7 @@ bool CrostiniFeatures::CouldBeAllowed(Profile* profile) {
     return false;
   }
 
-  if (!profile || profile->IsChild() || profile->IsLegacySupervised() ||
-      profile->IsOffTheRecord() ||
+  if (!profile || profile->IsChild() || profile->IsOffTheRecord() ||
       chromeos::ProfileHelper::IsEphemeralUserProfile(profile) ||
       chromeos::ProfileHelper::IsLockScreenAppProfile(profile)) {
     VLOG(1) << "Profile is not allowed to run crostini.";
