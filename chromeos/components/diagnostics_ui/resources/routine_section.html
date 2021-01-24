@@ -69,9 +69,17 @@
           hidden="[[isResultButtonHidden_(executionStatus_)]]">
         [[getReportToggleButtonText_(opened)]]
       </cr-button>
-      <cr-button id="runTestsButton" on-click="onRunTestsClicked_"
+      <cr-button id="runTestsButton"
+          hidden$="[[isRunTestsButtonHidden_(isTestRunning,
+              executionStatus_)]]"
+          on-click="onRunTestsClicked_"
           disabled="[[isTestRunning]]">
-          [[runTestsButtonText]]
+        [[runTestsButtonText]]
+      </cr-button>
+      <cr-button id="stopTestsButton"
+          hidden$="[[isStopTestsButtonHidden_(executionStatus_)]]"
+          on-click="stopTests_">
+        [[i18n('stopTestButtonText')]]
       </cr-button>
     </div>
   </div>

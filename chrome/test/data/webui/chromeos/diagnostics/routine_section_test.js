@@ -95,6 +95,17 @@ export function routineSectionTestSuite() {
   }
 
   /**
+   * Returns the Stop tests button.
+   * @return {!CrButtonElement}
+   */
+  function getStopTestsButton() {
+    const button =
+        dx_utils.getStopTestsButtonFromSection(routineSectionElement);
+    assertTrue(!!button);
+    return button;
+  }
+
+  /**
    * Returns the Show/Hide Test Report button.
    * @return {!CrButtonElement}
    */
@@ -144,6 +155,15 @@ export function routineSectionTestSuite() {
   }
 
   /**
+   * Clicks the stop tests button.
+   * @return {!Promise}
+   */
+  function clickStopTestsButton() {
+    getStopTestsButton().click();
+    return flushTasks();
+  }
+
+  /**
    * Clicks the show/hide test report button.
    * @return {!Promise}
    */
@@ -168,6 +188,16 @@ export function routineSectionTestSuite() {
     return routineSectionElement.$.collapse.opened;
   }
 
+  /**
+   * Get currentTestName_ private member for testing.
+   * @suppress {visibility} // access private member
+   * @return {string}
+   */
+  function getCurrentTestName() {
+    assertTrue(!!routineSectionElement);
+    return routineSectionElement.currentTestName_;
+  }
+
   test('ElementRenders', () => {
     return initializeRoutineSection([]).then(() => {
       // Verify the element rendered.
@@ -175,7 +205,7 @@ export function routineSectionTestSuite() {
     });
   });
 
-  test('ClickButtonDisablesButton', () => {
+  test('ClickButtonShowsStopTest', () => {
     /** @type {!Array<!RoutineType>} */
     const routines = [
       chromeos.diagnostics.mojom.RoutineType.kCpuCache,
@@ -189,8 +219,12 @@ export function routineSectionTestSuite() {
           return clickRunTestsButton();
         })
         .then(() => {
-          assertTrue(isRunTestsButtonDisabled());
+          assertFalse(isVisible(getRunTestsButton()));
+          assertTrue(isVisible(getStopTestsButton()));
           assertTrue(routineSectionElement.isTestRunning);
+          dx_utils.assertElementContainsText(
+              getStopTestsButton(),
+              loadTimeData.getString('stopTestButtonText'));
         });
   });
 
@@ -470,6 +504,217 @@ export function routineSectionTestSuite() {
           assertFalse(getStatusTextElement().hidden);
           assertEquals(
               getStatusTextElement().textContent.trim(), 'Test failed');
+        });
+  });
+
+  test('CancelQueuedRoutinesWithRoutineCompleted', () => {
+    /** @type {!Array<!RoutineType>} */
+    const routines = [
+      chromeos.diagnostics.mojom.RoutineType.kCpuCache,
+      chromeos.diagnostics.mojom.RoutineType.kCpuStress,
+    ];
+    routineController.setFakeStandardRoutineResult(
+        chromeos.diagnostics.mojom.RoutineType.kCpuCache,
+        chromeos.diagnostics.mojom.StandardRoutineResult.kTestPassed);
+    routineController.setFakeStandardRoutineResult(
+        chromeos.diagnostics.mojom.RoutineType.kCpuStress,
+        chromeos.diagnostics.mojom.StandardRoutineResult.kTestPassed);
+
+    return initializeRoutineSection(routines)
+        .then(() => clickRunTestsButton())
+        .then(() => {
+          const entries = getEntries();
+          assertEquals(routines.length, entries.length);
+
+          // First routine should be running.
+          assertEquals(routines[0], entries[0].item.routine);
+          assertEquals(ExecutionProgress.kRunning, entries[0].item.progress);
+
+          // Second routine is not started.
+          assertEquals(routines[1], entries[1].item.routine);
+          assertEquals(ExecutionProgress.kNotStarted, entries[1].item.progress);
+          // // Resolve the running test.
+          return routineController.resolveRoutineForTesting();
+        })
+        .then(() => flushTasks())
+        .then(() => {
+          const entries = getEntries();
+          // First routine should be completed.
+          assertEquals(ExecutionProgress.kCompleted, entries[0].item.progress);
+
+          // Second routine should be running.
+          assertEquals(ExecutionProgress.kRunning, entries[1].item.progress);
+        })
+        .then(() => clickStopTestsButton())
+        .then(() => {
+          const entries = getEntries();
+          // First routine should still be completed.
+          assertEquals(ExecutionProgress.kCompleted, entries[0].item.progress);
+          // Second routine should be cancelled.
+          assertEquals(ExecutionProgress.kCancelled, entries[1].item.progress);
+
+          // Badge and status are visible.
+          assertTrue(isVisible(getStatusBadge()));
+          assertTrue(isVisible(getStatusTextElement()));
+
+          // Badge shows that test was stopped.
+          assertEquals(getStatusBadge().badgeType, BadgeType.STOPPED);
+          dx_utils.assertTextContains(
+              getStatusBadge().value,
+              loadTimeData.getString('testStoppedBadgeText'));
+
+          // Status text shows test that was cancelled.
+          assertTrue(isVisible(getStatusTextElement()));
+          dx_utils.assertElementContainsText(
+              getStatusTextElement(),
+              loadTimeData.getStringF(
+                  'testCancelledText', getCurrentTestName()));
+        });
+  });
+
+  test('CancelRunningAndQueuedRoutines', () => {
+    /** @type {!Array<!RoutineType>} */
+    const routines = [
+      chromeos.diagnostics.mojom.RoutineType.kCpuCache,
+      chromeos.diagnostics.mojom.RoutineType.kCpuStress,
+    ];
+    routineController.setFakeStandardRoutineResult(
+        chromeos.diagnostics.mojom.RoutineType.kCpuCache,
+        chromeos.diagnostics.mojom.StandardRoutineResult.kTestPassed);
+    routineController.setFakeStandardRoutineResult(
+        chromeos.diagnostics.mojom.RoutineType.kCpuStress,
+        chromeos.diagnostics.mojom.StandardRoutineResult.kTestPassed);
+
+    return initializeRoutineSection(routines)
+        .then(() => clickRunTestsButton())
+        .then(() => {
+          // Badge and status are visible.
+          assertTrue(isVisible(getStatusBadge()));
+          assertTrue(isVisible(getStatusTextElement()));
+
+          const entries = getEntries();
+          // First routine should be running.
+          assertEquals(routines[0], entries[0].item.routine);
+          assertEquals(ExecutionProgress.kRunning, entries[0].item.progress);
+
+          // Second routine is not started.
+          assertEquals(routines[1], entries[1].item.routine);
+          assertEquals(ExecutionProgress.kNotStarted, entries[1].item.progress);
+        })
+        // Stop running test.
+        .then(() => clickStopTestsButton())
+        .then(() => {
+          // Badge and status are still visible.
+          assertTrue(isVisible(getStatusBadge()));
+          assertTrue(isVisible(getStatusTextElement()));
+
+          const entries = getEntries();
+          // First routine should be cancelled.
+          assertEquals(ExecutionProgress.kCancelled, entries[0].item.progress);
+          // Second routine should be cancelled.
+          assertEquals(ExecutionProgress.kCancelled, entries[1].item.progress);
+
+          // Status text shows test that was cancelled.
+          dx_utils.assertElementContainsText(
+              getStatusTextElement(),
+              loadTimeData.getStringF(
+                  'testCancelledText', getCurrentTestName()));
+        });
+  });
+
+  test('RunAgainShownAfterCancellation', () => {
+    /** @type {!Array<!RoutineType>} */
+    const routines = [
+      chromeos.diagnostics.mojom.RoutineType.kCpuCache,
+      chromeos.diagnostics.mojom.RoutineType.kCpuStress,
+    ];
+    routineController.setFakeStandardRoutineResult(
+        chromeos.diagnostics.mojom.RoutineType.kCpuCache,
+        chromeos.diagnostics.mojom.StandardRoutineResult.kTestPassed);
+    routineController.setFakeStandardRoutineResult(
+        chromeos.diagnostics.mojom.RoutineType.kCpuStress,
+        chromeos.diagnostics.mojom.StandardRoutineResult.kTestPassed);
+
+    return initializeRoutineSection(routines)
+        // Start tests.
+        .then(() => clickRunTestsButton())
+        // Stop running test.
+        .then(() => clickStopTestsButton())
+        .then(() => {
+          // Badge and status are visible.
+          assertTrue(isVisible(getStatusBadge()));
+          assertTrue(isVisible(getStatusTextElement()));
+
+          const entries = getEntries();
+          // First routine should be cancelled.
+          assertEquals(ExecutionProgress.kCancelled, entries[0].item.progress);
+          // Second routine should be cancelled.
+          assertEquals(ExecutionProgress.kCancelled, entries[1].item.progress);
+
+          // Status text shows test that was cancelled.
+          dx_utils.assertElementContainsText(
+              getStatusTextElement(),
+              loadTimeData.getStringF(
+                  'testCancelledText', getCurrentTestName()));
+          // Button is visible and text shows "Run again"
+          assertTrue(isVisible(getRunTestsButton()));
+          dx_utils.assertElementContainsText(
+              getRunTestsButton(),
+              loadTimeData.getString('runAgainButtonText'));
+        });
+  });
+
+  test('RunTestsMultipleTimes', () => {
+    /** @type {!Array<!RoutineType>} */
+    const routines = [
+      chromeos.diagnostics.mojom.RoutineType.kCpuCache,
+    ];
+    routineController.setFakeStandardRoutineResult(
+        chromeos.diagnostics.mojom.RoutineType.kCpuCache,
+        chromeos.diagnostics.mojom.StandardRoutineResult.kTestPassed);
+
+    return initializeRoutineSection(routines)
+        .then(() => clickRunTestsButton())
+        .then(() => routineController.resolveRoutineForTesting())
+        .then(() => flushTasks())
+        .then(() => {
+          // Badge and status are visible.
+          assertTrue(isVisible(getStatusBadge()));
+          assertTrue(isVisible(getStatusTextElement()));
+
+          const entries = getEntries();
+          // First routine should be completed.
+          assertEquals(routines[0], entries[0].item.routine);
+          assertEquals(ExecutionProgress.kCompleted, entries[0].item.progress);
+
+          // Status text shows that a routine succeeded.
+          dx_utils.assertElementContainsText(
+              getStatusTextElement(), loadTimeData.getString('testSuccess'));
+          // Button is visible and text shows "Run again"
+          assertTrue(isVisible(getRunTestsButton()));
+          dx_utils.assertElementContainsText(
+              getRunTestsButton(),
+              loadTimeData.getString('runAgainButtonText'));
+          return clickRunTestsButton();
+        })
+        .then(() => {
+          // Badge and status are visible.
+          assertTrue(isVisible(getStatusBadge()));
+          assertTrue(isVisible(getStatusTextElement()));
+
+          const entries = getEntries();
+          // First routine should be running.
+          assertEquals(ExecutionProgress.kRunning, entries[0].item.progress);
+
+          // Button text should be "Stop test"
+          dx_utils.assertElementContainsText(
+              getStopTestsButton(),
+              loadTimeData.getString('stopTestButtonText'));
+
+          // Status text shows test that is running.
+          dx_utils.assertElementContainsText(
+              getStatusTextElement(),
+              loadTimeData.getStringF('routineNameText', getCurrentTestName()));
         });
   });
 }

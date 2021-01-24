@@ -83,6 +83,18 @@ export function getRunTestsButtonFromSection(element) {
 }
 
 /**
+ * Helper function for getting the Stop Tests button from a routine-section.
+ * @param {?RoutineSectionElement} element
+ * @return {!CrButtonElement}
+ */
+export function getStopTestsButtonFromSection(element) {
+  const button =
+      /** @type {!CrButtonElement} */ (element.$$('#stopTestsButton'));
+  assertTrue(!!button);
+  return button;
+}
+
+/**
  * Helper function for getting the Show/Hide Tests Report button from a
  * routine-section.
  * @param {?RoutineSectionElement} element

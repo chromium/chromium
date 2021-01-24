@@ -71,6 +71,10 @@ class ExecutionContext {
   close() {
     this.routineRunner.$.close();
   }
+
+  cancel() {
+    this.resolver_.resolve(null);
+  }
 }
 
 /**
@@ -88,15 +92,18 @@ export class RoutineListExecutor {
 
     /** @private {?ExecutionContext} */
     this.currentExecutionContext_ = null;
+
+    /** @private {boolean} */
+    this.routinesCancelled_ = false;
   }
 
-  /*
+  /**
    * Executes a list of routines providing a status callback as each test
    * starts and finishes. The return promise will resolve when all tests are
    * completed.
    * @param {!Array<!RoutineType>} routines
-   * @type {!function(!ResultStatusItem)} statusCallback
-   * @param {!Promise}
+   * @param {!function(!ResultStatusItem): void} statusCallback
+   * @return {!Promise<!ExecutionProgress>}
    */
   runRoutines(routines, statusCallback) {
     assert(routines.length > 0);
@@ -106,7 +113,12 @@ export class RoutineListExecutor {
     let promise = Promise.resolve();
     routines.forEach((name) => {
       promise = promise.then(() => {
-        // Notify the status callback that a test started running.
+        // Notify the status callback of the test status.
+        if (this.routinesCancelled_) {
+          statusCallback(
+              new ResultStatusItem(name, ExecutionProgress.kCancelled));
+          return ExecutionProgress.kCancelled;
+        }
         statusCallback(new ResultStatusItem(name, ExecutionProgress.kRunning));
 
         this.currentExecutionContext_ = new ExecutionContext();
@@ -119,11 +131,21 @@ export class RoutineListExecutor {
         // When the test completes, notify the status callback of the
         // result.
         return this.currentExecutionContext_.whenComplete().then((info) => {
-          assert(info.type === name);
-          const status =
-              new ResultStatusItem(name, ExecutionProgress.kCompleted);
-          status.result = info.result;
+          /** @type {!ExecutionProgress} */
+          let progress = ExecutionProgress.kCancelled;
+          /** @type {?RoutineResultInfo} */
+          let result = null;
+
+          if (info !== null) {
+            assert(info.type === name);
+            progress = ExecutionProgress.kCompleted;
+            result = info.result
+          }
+
+          const status = new ResultStatusItem(name, progress);
+          status.result = result;
           statusCallback(status);
+          return progress;
         });
       });
     });
@@ -134,6 +156,13 @@ export class RoutineListExecutor {
   close() {
     if (this.currentExecutionContext_) {
       this.currentExecutionContext_.close();
+    }
+  }
+
+  cancel() {
+    if (this.currentExecutionContext_) {
+      this.routinesCancelled_ = true;
+      this.currentExecutionContext_.cancel();
     }
   }
 }

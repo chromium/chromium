@@ -131,16 +131,15 @@ Polymer({
     this.hasTestFailure_ = false;
 
     this.systemRoutineController_ = getSystemRoutineController();
+    const resultListElem = this.getResultListElem_();
     this.systemRoutineController_.getSupportedRoutines().then((supported) => {
       const filteredRoutines =
           this.routines.filter(routine => supported.routines.includes(routine));
 
-      const resultListElem = this.getResultListElem_();
       resultListElem.initializeTestRun(filteredRoutines);
 
       this.executor_ =
           new RoutineListExecutor(assert(this.systemRoutineController_));
-      this.executionStatus_ = ExecutionProgress.kRunning;
       this.executor_
           .runRoutines(
               filteredRoutines,
@@ -156,13 +155,21 @@ Polymer({
                   this.hasTestFailure_ = true;
                 }
 
-                this.currentTestName_ = getRoutineType(status.routine);
+                // Execution progress is checked here to avoid overwriting the
+                // test name shown in the status text.
+                if (status.progress !== ExecutionProgress.kCancelled) {
+                  this.currentTestName_ = getRoutineType(status.routine);
+                }
+
+                this.executionStatus_ = status.progress;
 
                 resultListElem.onStatusUpdate.call(resultListElem, status);
               })
-          .then(() => {
-            this.executionStatus_ = ExecutionProgress.kCompleted;
+          .then((/** @type {!ExecutionProgress} */ status) => {
+            this.executionStatus_ = status;
             this.isTestRunning = false;
+            this.runTestsButtonText =
+                loadTimeData.getString('runAgainButtonText');
             this.cleanUp_();
           });
     });
@@ -175,6 +182,13 @@ Polymer({
       this.executor_ = null;
     }
     this.systemRoutineController_ = null;
+  },
+
+  /** @protected */
+  stopTests_() {
+    if (this.executor_) {
+      this.executor_.cancel();
+    }
   },
 
   /** @private */
@@ -279,6 +293,23 @@ Polymer({
       badgeText_: badgeText,
       statusText_: statusText
     });
+  },
+
+  /**
+   * @protected
+   * @return {boolean}
+   */
+  isRunTestsButtonHidden_() {
+    return this.isTestRunning &&
+        this.executionStatus_ === ExecutionProgress.kRunning;
+  },
+
+  /**
+   * @protected
+   * @return {boolean}
+   */
+  isStopTestsButtonHidden_() {
+    return this.executionStatus_ !== ExecutionProgress.kRunning;
   },
 
   /** @override */
