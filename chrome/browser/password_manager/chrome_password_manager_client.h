@@ -174,6 +174,7 @@ class ChromePasswordManagerClient
   net::CertStatus GetMainFrameCertStatus() const override;
   void PromptUserToEnableAutosignin() override;
   bool IsIncognito() const override;
+  profile_metrics::BrowserProfileType GetProfileType() const override;
   const password_manager::PasswordManager* GetPasswordManager() const override;
   using password_manager::PasswordManagerClient::GetPasswordFeatureManager;
   const password_manager::PasswordFeatureManager* GetPasswordFeatureManager()

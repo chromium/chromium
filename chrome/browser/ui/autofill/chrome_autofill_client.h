@@ -71,6 +71,7 @@ class ChromeAutofillClient
   const translate::LanguageState* GetLanguageState() override;
   translate::TranslateDriver* GetTranslateDriver() override;
   std::string GetVariationConfigCountryCode() const override;
+  profile_metrics::BrowserProfileType GetProfileType() const override;
   std::unique_ptr<InternalAuthenticator> CreateCreditCardInternalAuthenticator(
       content::RenderFrameHost* rfh) override;
 

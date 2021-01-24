@@ -91,6 +91,13 @@ bool PasswordManagerClient::IsIncognito() const {
   return false;
 }
 
+profile_metrics::BrowserProfileType PasswordManagerClient::GetProfileType()
+    const {
+  // This is an abstract interface and thus never instantiated directly,
+  // therefore it is safe to always return |kRegular| here.
+  return profile_metrics::BrowserProfileType::kRegular;
+}
+
 const PasswordManager* PasswordManagerClient::GetPasswordManager() const {
   return nullptr;
 }
