@@ -6,6 +6,7 @@
 
 #include "media/audio/audio_opus_encoder.h"
 #include "media/base/audio_parameters.h"
+#include "media/base/audio_timestamp_helper.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_encoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_frame_init.h"
@@ -81,11 +82,16 @@ void AudioEncoder::ProcessEncode(Request* request) {
   DCHECK_GT(requested_encodes_, 0);
 
   auto* frame = request->frame.Release();
-
-  base::TimeTicks time =
-      base::TimeTicks() + base::TimeDelta::FromMicroseconds(frame->timestamp());
-
   auto* buffer = frame->buffer();
+
+  // Converting time at the beginning of the frame (aka timestamp) into
+  // time at the end of the frame (aka capture time) that is expected by
+  // media::AudioEncoder.
+  base::TimeTicks capture_time =
+      base::TimeTicks() +
+      base::TimeDelta::FromMicroseconds(frame->timestamp()) +
+      media::AudioTimestampHelper::FramesToTime(buffer->length(),
+                                                active_config_->sample_rate);
   DCHECK(buffer);
   {
     auto audio_bus = media::AudioBus::CreateWrapper(buffer->numberOfChannels());
@@ -95,7 +101,7 @@ void AudioEncoder::ProcessEncode(Request* request) {
       audio_bus->SetChannelData(channel, data);
     }
     audio_bus->set_frames(buffer->length());
-    media_encoder_->EncodeAudio(*audio_bus, time);
+    media_encoder_->EncodeAudio(*audio_bus, capture_time);
   }
 
   frame->close();
