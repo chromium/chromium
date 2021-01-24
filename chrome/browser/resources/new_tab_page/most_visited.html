@@ -4,7 +4,7 @@
     --icon-button-color: var(--google-grey-600);
     --icon-size: 48px;
     --tile-hover-color: rgba(var(--google-grey-900-rgb), .1);
-    --tile-size: 112px;  /* top padding + icon + title margin + title */
+    --tile-size: 112px;
     --title-height: 32px;
   }
 
@@ -15,10 +15,12 @@
       + 1px);
     display: flex;
     flex-wrap: wrap;
-    height: calc(var(--row-count) * 128px);
+    height: calc(var(--row-count) * var(--tile-size));
     justify-content: center;
+    margin-bottom: 8px;
     opacity: 0;
     overflow: hidden;
+    padding: 2px;  /* Padding added so focus rings are not clipped. */
     transition: opacity 300ms ease-in-out;
     width: calc(var(--content-width) + 12px);
   }
@@ -60,11 +62,8 @@
     display: flex;
     flex-direction: column;
     height: var(--tile-size);
-    margin-bottom: 16px;
     opacity: 1;
     outline: none;
-    padding-bottom: 4px;
-    padding-top: 12px;
     position: relative;
     text-decoration: none;
     transition-duration: 300ms;
@@ -87,6 +86,8 @@
     background-color: transparent;
     border: none;
     box-shadow: none;
+    justify-content: unset;
+    padding: 0;
   }
 
   :host(:not([reordering_])) .tile:hover,
@@ -100,8 +101,10 @@
     background-color: var(--ntp-theme-shortcut-background-color);
     border-radius: 50%;
     display: flex;
+    flex-shrink: 0;
     height: var(--icon-size);
     justify-content: center;
+    margin-top: 16px;
     width: var(--icon-size);
   }
 
@@ -117,7 +120,7 @@
     display: flex;
     height: var(--title-height);
     line-height: calc(var(--title-height) / 2);
-    margin-top: 12px;
+    margin-top: 6px;
     padding: 2px 8px;
     width: 88px;
   }
