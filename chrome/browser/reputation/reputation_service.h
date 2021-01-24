@@ -101,9 +101,9 @@ class ReputationService : public KeyedService {
       ReputationCheckCallback callback,
       const std::vector<DomainInfo>& engaged_sites);
 
-  // Set of origins that we've warned about, and the user has explicitly
+  // Set of eTLD+1s that we've warned about, and the user has explicitly
   // ignored.  Used to avoid re-warning the user.
-  std::set<url::Origin> warning_dismissed_origins_;
+  std::set<std::string> warning_dismissed_etld1s_;
 
   Profile* profile_;
 

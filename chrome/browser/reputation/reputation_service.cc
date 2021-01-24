@@ -25,6 +25,7 @@
 #include "components/security_state/core/features.h"
 #include "components/security_state/core/security_state.h"
 #include "components/url_formatter/spoof_checks/top_domains/top500_domains.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/url_constants.h"
 
@@ -92,6 +93,13 @@ bool ShouldSuppressWarning(Profile* profile, const GURL& url) {
   return reputation::IsUrlAllowlistedBySafetyTipsComponent(proto, url);
 }
 
+// Gets the eTLD+1 of the provided hostname, including private registries (e.g.
+// foo.blogspot.com returns blogspot.com.
+std::string GetETLDPlusOneWithPrivateRegistries(const std::string& hostname) {
+  return net::registry_controlled_domains::GetDomainAndRegistry(
+      hostname, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+}
+
 }  // namespace
 
 ReputationService::ReputationService(Profile* profile)
@@ -131,15 +139,18 @@ void ReputationService::GetReputationStatus(const GURL& url,
 }
 
 bool ReputationService::IsIgnored(const GURL& url) const {
-  return warning_dismissed_origins_.count(url::Origin::Create(url)) > 0;
+  return warning_dismissed_etld1s_.count(
+             GetETLDPlusOneWithPrivateRegistries(url.host())) > 0;
 }
 
 void ReputationService::SetUserIgnore(const GURL& url) {
-  warning_dismissed_origins_.insert(url::Origin::Create(url));
+  warning_dismissed_etld1s_.insert(
+      GetETLDPlusOneWithPrivateRegistries(url.host()));
 }
 
 void ReputationService::OnUIDisabledFirstVisit(const GURL& url) {
-  warning_dismissed_origins_.insert(url::Origin::Create(url));
+  warning_dismissed_etld1s_.insert(
+      GetETLDPlusOneWithPrivateRegistries(url.host()));
 }
 
 void ReputationService::SetSensitiveKeywordsForTesting(
