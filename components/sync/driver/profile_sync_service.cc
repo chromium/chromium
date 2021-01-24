@@ -632,10 +632,7 @@ void ProfileSyncService::Shutdown() {
   // All observers must be gone now: All KeyedServices should have unregistered
   // their observers already before, in their own Shutdown(), and all others
   // should have done it now when they got the shutdown notification.
-  // Note: "might_have_observers" sounds like it might be inaccurate, but it can
-  // only return false positives while an iteration over the ObserverList is
-  // ongoing.
-  DCHECK(!observers_.might_have_observers());
+  DCHECK(observers_.empty());
 
   auth_manager_.reset();
 }
@@ -932,7 +929,7 @@ void ProfileSyncService::OnEngineInitialized(
   sync_prefs_.SetBirthday(birthday);
   sync_prefs_.SetBagOfChips(bag_of_chips);
 
-  if (protocol_event_observers_.might_have_observers()) {
+  if (!protocol_event_observers_.empty()) {
     engine_->RequestBufferedProtocolEventsAndEnableForwarding();
   }
 
@@ -1643,7 +1640,7 @@ void ProfileSyncService::RemoveProtocolEventObserver(
     ProtocolEventObserver* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   protocol_event_observers_.RemoveObserver(observer);
-  if (engine_ && !protocol_event_observers_.might_have_observers()) {
+  if (engine_ && protocol_event_observers_.empty()) {
     engine_->DisableProtocolEventForwarding();
   }
 }
