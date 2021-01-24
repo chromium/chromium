@@ -33,7 +33,7 @@ void FilteredOfflineItemObserver::RemoveObserver(const ContentId& id,
 
   it->second->RemoveObserver(observer);
 
-  if (!it->second->might_have_observers())
+  if (it->second->empty())
     observers_.erase(it);
 }
 
