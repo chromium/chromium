@@ -50,6 +50,8 @@ blink_core_sources_loader = [
   "http_refresh_scheduler.h",
   "idleness_detector.cc",
   "idleness_detector.h",
+  "subresource_redirect_util.cc",
+  "subresource_redirect_util.h",
   "image_loader.cc",
   "image_loader.h",
   "importance_attribute.cc",

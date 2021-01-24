@@ -25,7 +25,6 @@
 #include <memory>
 #include <utility>
 
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/web_client_hints_type.h"
 #include "third_party/blink/public/platform/web_url_request.h"
@@ -38,7 +37,6 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/increment_load_event_delay_count.h"
-#include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/frame_owner.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
@@ -53,6 +51,7 @@
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_image.h"
 #include "third_party/blink/renderer/core/loader/importance_attribute.h"
 #include "third_party/blink/renderer/core/loader/lazy_image_helper.h"
+#include "third_party/blink/renderer/core/loader/subresource_redirect_util.h"
 #include "third_party/blink/renderer/core/probe/async_task_id.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
@@ -66,7 +65,6 @@
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loading_log.h"
-#include "third_party/blink/renderer/platform/network/network_state_notifier.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 
@@ -113,42 +111,6 @@ bool CanReuseFromListOfAvailableImages(
   }
 
   return true;
-}
-
-// Returns whether subresource redirect can be attempted for the image fetch.
-// Redirect to other origins could be disabled due to CSP or CORS restrictions.
-bool ShouldEnableSubresourceRedirect(HTMLImageElement* image_element,
-                                     const KURL& url) {
-  // Allow redirection only when DataSaver is enabled and subresource redirect
-  // feature is enabled which allows redirecting to better optimized versions.
-  if (!base::FeatureList::IsEnabled(blink::features::kSubresourceRedirect) ||
-      !GetNetworkStateNotifier().SaveDataEnabled()) {
-    return false;
-  }
-  // Enable subresource redirect only for <img> elements created by parser.
-  // Images created from javascript, fetched via XHR/Fetch API should not be
-  // subresource redirected due to the additional CORB/CORS handling needed for
-  // them.
-  if (!image_element || !image_element->ElementCreatedByParser()) {
-    return false;
-  }
-  // Create a cross origin URL by appending a string to the original host. This
-  // is used to find whether CSP is restricting image fetches from other
-  // origins.
-  KURL cross_origin_url = url;
-  cross_origin_url.SetHost(url.Host() + "crossorigin.com");
-  auto* content_security_policy =
-      image_element->GetExecutionContext()->GetContentSecurityPolicy();
-  if (content_security_policy &&
-      !content_security_policy->AllowImageFromSource(
-          cross_origin_url, cross_origin_url, RedirectStatus::kNoRedirect,
-          ReportingDisposition::kSuppressReporting)) {
-    return false;
-  }
-  // Allow subresource redirect only when cross-origin attribute is not set,
-  // which indicates CORS validation is not triggered for the image.
-  return (GetCrossOriginAttributeValue(image_element->FastGetAttribute(
-              html_names::kCrossoriginAttr)) == kCrossOriginAttributeNotSet);
 }
 
 }  // namespace
