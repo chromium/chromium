@@ -372,7 +372,8 @@ vars = {
 
   # Also, if you change these, update buildtools/DEPS too. Also update the
   # libc++ svn_revision in //buildtools/deps_revisions.gni.
-  'clang_format_revision': '96636aa0e9f047f17447f2d45a094d0b59ed7917',
+  # TODO(crbug.com/1166332) rename to clang_format_revision.
+  'clang_fmt_revision':    '23f18eb6f7b4edee5d127ff25effa07e9c53e5a7',
   'libcxx_revision':       'd9040c75cfea5928c804ab7c235fed06a63f743a',
   'libcxxabi_revision':    '196ba1aaa8ac285d94f4ea8d9836390a45360533',
   'libunwind_revision':    'd999d54f4bca789543a2eb6c995af2d9b5a1f3ed',
@@ -400,8 +401,9 @@ allowed_hosts = [
 
 deps = {
   'src/buildtools/clang_format/script':
-    Var('chromium_git') + '/chromium/llvm-project/cfe/tools/clang-format.git@' +
-    Var('clang_format_revision'),
+    Var('chromium_git') +
+    '/external/github.com/llvm/llvm-project/clang/tools/clang-format.git@' +
+    Var('clang_fmt_revision'),
   'src/buildtools/linux64': {
     'packages': [
       {

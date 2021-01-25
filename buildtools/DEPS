@@ -23,7 +23,8 @@ vars = {
   'reclient_version': 're_client_version:0.17.0.7d283ef',
 
   # When changing these, also update the svn revisions in deps_revisions.gni
-  'clang_format_revision': '96636aa0e9f047f17447f2d45a094d0b59ed7917',
+  # TODO(crbug.com/1166332) rename to clang_format_revision.
+  'clang_fmt_revision':    '23f18eb6f7b4edee5d127ff25effa07e9c53e5a7',
   'libcxx_revision':       'd9040c75cfea5928c804ab7c235fed06a63f743a',
   'libcxxabi_revision':    '196ba1aaa8ac285d94f4ea8d9836390a45360533',
   'libunwind_revision':    'd999d54f4bca789543a2eb6c995af2d9b5a1f3ed',
@@ -31,8 +32,9 @@ vars = {
 
 deps = {
   'clang_format/script':
-    Var('chromium_url') + '/chromium/llvm-project/cfe/tools/clang-format.git@' +
-    Var('clang_format_revision'),
+    Var('chromium_url') +
+    '/external/github.com/llvm/llvm-project/clang/tools/clang-format.git@' +
+    Var('clang_fmt_revision'),
   'linux64': {
     'packages': [
       {
