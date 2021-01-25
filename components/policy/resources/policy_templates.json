@@ -3634,7 +3634,7 @@
       'tags': ['system-security'],
       'desc': '''If this policy is set all specified data types will be excluded from synchronization both for Google Sync as well as for roaming profile synchronization. This can be beneficial to reduce the size of the roaming profile or limit the type of data uploaded to the Google Sync Servers.
 
-      The current data types for this policy are: "bookmarks", "preferences", "passwords", "autofill", "themes", "typedUrls", "extensions", "apps", "tabs", "wifiConfigurations". Those names are case sensitive!''',
+      The current data types for this policy are: "bookmarks", "readingList", "preferences", "passwords", "autofill", "themes", "typedUrls", "extensions", "apps", "tabs", "wifiConfigurations". Those names are case sensitive!''',
     },
     {
       'name': 'RoamingProfileSupportEnabled',
