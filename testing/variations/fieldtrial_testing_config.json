@@ -2943,6 +2943,21 @@
             ]
         }
     ],
+    "FeedPrivacyNoticeCardAutoDismiss": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20210119",
+                    "enable_features": [
+                        "InterestFeedNoticeCardAutoDismiss"
+                    ]
+                }
+            ]
+        }
+    ],
     "FillingPasswordsFromAnyOrigin": [
         {
             "platforms": [
