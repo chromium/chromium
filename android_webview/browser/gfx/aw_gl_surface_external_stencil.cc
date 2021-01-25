@@ -155,7 +155,8 @@ class AwGLSurfaceExternalStencil::FrameBuffer {
   gfx::Size size_;
 };
 
-AwGLSurfaceExternalStencil::AwGLSurfaceExternalStencil() {}
+AwGLSurfaceExternalStencil::AwGLSurfaceExternalStencil(bool is_angle)
+    : AwGLSurface(is_angle) {}
 
 AwGLSurfaceExternalStencil::~AwGLSurfaceExternalStencil() = default;
 

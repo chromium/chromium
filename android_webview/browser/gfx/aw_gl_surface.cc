@@ -13,14 +13,14 @@
 
 namespace android_webview {
 
-AwGLSurface::AwGLSurface() = default;
+AwGLSurface::AwGLSurface(bool is_angle) : is_angle_(is_angle) {}
 
 AwGLSurface::~AwGLSurface() {
   Destroy();
 }
 
 bool AwGLSurface::Initialize(gl::GLSurfaceFormat format) {
-  if (!IsANGLEExternalContextAndSurfaceSupported())
+  if (!is_angle_)
     return true;
 
   Destroy();
@@ -63,7 +63,7 @@ void* AwGLSurface::GetHandle() {
 }
 
 void* AwGLSurface::GetDisplay() {
-  if (!IsANGLEExternalContextAndSurfaceSupported())
+  if (!is_angle_)
     return nullptr;
   return gl::GLSurfaceEGL::GetDisplay();
 }
@@ -88,7 +88,7 @@ void AwGLSurface::SetSize(const gfx::Size& size) {
 }
 
 EGLConfig AwGLSurface::GetConfig() {
-  if (!IsANGLEExternalContextAndSurfaceSupported())
+  if (!is_angle_)
     return nullptr;
   return gl::GLSurfaceEGL::GetConfig();
 }

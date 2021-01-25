@@ -17,7 +17,7 @@ namespace android_webview {
 // GLSurface.
 class AwGLSurface : public gl::GLSurfaceEGL {
  public:
-  AwGLSurface();
+  explicit AwGLSurface(bool is_angle);
 
   // Implement GLSurface.
   bool Initialize(gl::GLSurfaceFormat format) override;
@@ -46,6 +46,7 @@ class AwGLSurface : public gl::GLSurfaceEGL {
   ~AwGLSurface() override;
 
  private:
+  const bool is_angle_;
   PresentationCallback pending_presentation_callback_;
   gfx::Size size_{1, 1};
   EGLSurface surface_ = nullptr;

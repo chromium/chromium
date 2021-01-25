@@ -84,6 +84,7 @@ void OutputSurfaceProviderWebView::InitializeContext() {
   // If EGL supports EGL_ANGLE_external_context_and_surface, then we will create
   // an ANGLE context for the current native GL context.
   const bool is_angle =
+      !enable_vulkan_ &&
       gl::GLSurfaceEGL::IsANGLEExternalContextAndSurfaceSupported();
   // TODO(penghuang): should we support GLRenderer?
   if (is_angle) {
@@ -92,10 +93,10 @@ void OutputSurfaceProviderWebView::InitializeContext() {
   }
   if (renderer_settings_.use_skia_renderer && !enable_vulkan_) {
     // We need to draw to FBO for External Stencil support with SkiaRenderer
-    gl_surface_ = base::MakeRefCounted<AwGLSurfaceExternalStencil>();
+    gl_surface_ = base::MakeRefCounted<AwGLSurfaceExternalStencil>(is_angle);
   } else {
     // TODO(crbug.com/1143279): Should not be needed when vulkan is enabled.
-    gl_surface_ = base::MakeRefCounted<AwGLSurface>();
+    gl_surface_ = base::MakeRefCounted<AwGLSurface>(is_angle);
   }
 
   bool result = gl_surface_->Initialize(gl::GLSurfaceFormat());
