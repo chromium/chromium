@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.video_tutorials.VideoTutorialService;
 import org.chromium.chrome.browser.video_tutorials.VideoTutorialUtils;
 import org.chromium.chrome.browser.video_tutorials.languages.LanguagePickerCoordinator;
 import org.chromium.chrome.browser.video_tutorials.metrics.VideoTutorialMetrics;
+import org.chromium.chrome.browser.video_tutorials.metrics.VideoTutorialMetrics.LanguagePickerAction;
 import org.chromium.chrome.browser.video_tutorials.metrics.VideoTutorialMetrics.UserAction;
 import org.chromium.chrome.browser.video_tutorials.metrics.VideoTutorialMetrics.WatchState;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -80,6 +81,8 @@ class VideoPlayerMediator implements PlaybackStateObserver.Observer {
         if (isShowingVideoPlayer) {
             VideoTutorialMetrics.recordUserAction(
                     mTutorial.featureType, UserAction.BACK_PRESS_WHEN_SHOWING_VIDEO_PLAYER);
+        } else if (isShowingLanguagePicker) {
+            VideoTutorialMetrics.recordLanguagePickerAction(LanguagePickerAction.BACK_PRESS);
         }
 
         return false;

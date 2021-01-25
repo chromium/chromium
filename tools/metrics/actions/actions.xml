@@ -27337,6 +27337,15 @@ should be able to be added at any place in this file.
       label="For tab switcher with tab groups."/>
   <suffix name="TabSwitcherButton" label="For tab switcher button."/>
   <suffix name="TranslateMenuButton" label="For translate menu button."/>
+  <suffix name="VideoTutorial_NTP_ChromeIntro"
+      label="For Chrome intro video tutorial."/>
+  <suffix name="VideoTutorial_NTP_Download"
+      label="For download video tutorial."/>
+  <suffix name="VideoTutorial_NTP_Search" label="For search video tutorial."/>
+  <suffix name="VideoTutorial_NTP_Summary"
+      label="For video tutorial summary card."/>
+  <suffix name="VideoTutorial_NTP_VoiceSearch"
+      label="For voice search video tutorial."/>
   <suffix name="WebUITabStrip" label="For the WebUI tab strip."/>
   <affected-action name="InProductHelp.NotifyEvent.IPH"/>
   <affected-action name="InProductHelp.NotifyUsedEvent.IPH"/>
