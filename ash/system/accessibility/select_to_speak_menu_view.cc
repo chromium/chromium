@@ -87,6 +87,7 @@ SelectToSpeakMenuView::SelectToSpeakMenuView(Delegate* delegate)
                         .CopyAddressTo(&prev_paragraph_button_)
                         .SetID(static_cast<int>(ButtonId::kPrevParagraph))
                         .SetVectorIcon(kSelectToSpeakPrevParagraphIcon)
+                        .SetFlipCanvasOnPaintForRTLUI(true)
                         .SetTooltipText(l10n_util::GetStringUTF16(
                             IDS_ASH_SELECT_TO_SPEAK_PREV_PARAGRAPH))
                         .SetCallback(base::BindRepeating(
@@ -97,6 +98,7 @@ SelectToSpeakMenuView::SelectToSpeakMenuView(Delegate* delegate)
                         .CopyAddressTo(&prev_sentence_button_)
                         .SetID(static_cast<int>(ButtonId::kPrevSentence))
                         .SetVectorIcon(kSelectToSpeakPrevSentenceIcon)
+                        .SetFlipCanvasOnPaintForRTLUI(true)
                         .SetTooltipText(l10n_util::GetStringUTF16(
                             IDS_ASH_SELECT_TO_SPEAK_PREV_SENTENCE))
                         .SetCallback(base::BindRepeating(
@@ -117,6 +119,7 @@ SelectToSpeakMenuView::SelectToSpeakMenuView(Delegate* delegate)
                         .CopyAddressTo(&next_sentence_button_)
                         .SetID(static_cast<int>(ButtonId::kNextSentence))
                         .SetVectorIcon(kSelectToSpeakNextSentenceIcon)
+                        .SetFlipCanvasOnPaintForRTLUI(true)
                         .SetTooltipText(l10n_util::GetStringUTF16(
                             IDS_ASH_SELECT_TO_SPEAK_NEXT_SENTENCE))
                         .SetCallback(base::BindRepeating(
@@ -127,6 +130,7 @@ SelectToSpeakMenuView::SelectToSpeakMenuView(Delegate* delegate)
                         .CopyAddressTo(&next_paragraph_button_)
                         .SetID(static_cast<int>(ButtonId::kNextParagraph))
                         .SetVectorIcon(kSelectToSpeakNextParagraphIcon)
+                        .SetFlipCanvasOnPaintForRTLUI(true)
                         .SetTooltipText(l10n_util::GetStringUTF16(
                             IDS_ASH_SELECT_TO_SPEAK_NEXT_PARAGRAPH))
                         .SetCallback(base::BindRepeating(
@@ -194,13 +198,21 @@ void SelectToSpeakMenuView::OnKeyEvent(ui::KeyEvent* key_event) {
   auto action = SelectToSpeakPanelAction::kNone;
   switch (key_event->key_code()) {
     case ui::KeyboardCode::VKEY_LEFT:
-      action = SelectToSpeakPanelAction::kPreviousSentence;
+      if (base::i18n::IsRTL()) {
+        action = SelectToSpeakPanelAction::kNextSentence;
+      } else {
+        action = SelectToSpeakPanelAction::kPreviousSentence;
+      }
       base::UmaHistogramEnumeration(
           kSentenceNavigationMethodHistogramName,
           CrosSelectToSpeakActivationMethod::kKeyboardShortcut);
       break;
     case ui::KeyboardCode::VKEY_RIGHT:
-      action = SelectToSpeakPanelAction::kNextSentence;
+      if (base::i18n::IsRTL()) {
+        action = SelectToSpeakPanelAction::kPreviousSentence;
+      } else {
+        action = SelectToSpeakPanelAction::kNextSentence;
+      }
       base::UmaHistogramEnumeration(
           kSentenceNavigationMethodHistogramName,
           CrosSelectToSpeakActivationMethod::kKeyboardShortcut);
