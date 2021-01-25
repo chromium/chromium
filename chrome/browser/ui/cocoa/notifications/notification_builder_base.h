@@ -33,7 +33,7 @@
 - (void)setContextMessage:(NSString*)contextMessage;
 - (void)setButtons:(NSString*)primaryButton
     secondaryButton:(NSString*)secondaryButton;
-- (void)setTag:(NSString*)tag;
+- (void)setIdentifier:(NSString*)identifier;
 - (void)setOrigin:(NSString*)origin;
 - (void)setNotificationId:(NSString*)notificationId;
 - (void)setProfileId:(NSString*)profileId;

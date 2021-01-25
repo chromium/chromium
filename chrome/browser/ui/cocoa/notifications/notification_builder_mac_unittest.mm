@@ -21,7 +21,7 @@ TEST(NotificationBuilderMacTest, TestNotificationNoButtons) {
   [builder setTitle:@"Title"];
   [builder setSubTitle:@"https://www.miguel.com"];
   [builder setContextMessage:@""];
-  [builder setTag:@"tag1"];
+  [builder setIdentifier:@"identifier"];
   [builder setIcon:[NSImage imageNamed:@"NSApplicationIcon"]];
   [builder setNotificationId:@"notificationId"];
   [builder setProfileId:@"profileId"];
@@ -39,7 +39,7 @@ TEST(NotificationBuilderMacTest, TestNotificationNoButtons) {
   EXPECT_EQ(nullptr, [notification informativeText]);
   EXPECT_EQ("https://www.miguel.com",
             base::SysNSStringToUTF8([notification subtitle]));
-  EXPECT_EQ("tag1",
+  EXPECT_EQ("identifier",
             base::SysNSStringToUTF8([notification valueForKey:@"identifier"]));
 
   EXPECT_TRUE([notification hasActionButton]);

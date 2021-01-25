@@ -22,7 +22,10 @@
 #include "chrome/browser/ui/cocoa/notifications/notification_constants_mac.h"
 #include "chrome/browser/ui/cocoa/notifications/notification_response_builder_mac.h"
 #include "chrome/common/buildflags.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -32,11 +35,14 @@
 
 using message_center::Notification;
 
-class NotificationPlatformBridgeMacTest : public BrowserWithTestWindowTest {
+class NotificationPlatformBridgeMacTest : public testing::Test {
  public:
-  NotificationPlatformBridgeMacTest() {}
+  NotificationPlatformBridgeMacTest()
+      : profile_manager_(TestingBrowserProcess::GetGlobal()) {}
+
   void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
+    ASSERT_TRUE(profile_manager_.SetUp());
+    profile_ = profile_manager_.CreateTestingProfile("Default");
     notification_center_.reset([[StubNotificationCenter alloc] init]);
     alert_dispatcher_.reset([[StubAlertDispatcher alloc] init]);
   }
@@ -44,7 +50,6 @@ class NotificationPlatformBridgeMacTest : public BrowserWithTestWindowTest {
   void TearDown() override {
     [notification_center_ removeAllDeliveredNotifications];
     [alert_dispatcher_ closeAllNotifications];
-    BrowserWithTestWindowTest::TearDown();
   }
 
  protected:
@@ -116,7 +121,12 @@ class NotificationPlatformBridgeMacTest : public BrowserWithTestWindowTest {
 
   StubAlertDispatcher* alert_dispatcher() { return alert_dispatcher_.get(); }
 
+  TestingProfile* profile() { return profile_; }
+
  private:
+  content::BrowserTaskEnvironment task_environment_;
+  TestingProfileManager profile_manager_;
+  TestingProfile* profile_ = nullptr;
   base::scoped_nsobject<StubNotificationCenter> notification_center_;
   base::scoped_nsobject<StubAlertDispatcher> alert_dispatcher_;
 };
@@ -142,6 +152,42 @@ TEST_F(NotificationPlatformBridgeMacTest, TestDisplayNoButtons) {
 
   if (!base::mac::IsAtLeastOS11())
     EXPECT_NSEQ(@"Close", [delivered_notification otherButtonTitle]);
+}
+
+TEST_F(NotificationPlatformBridgeMacTest, TestIncognitoProfile) {
+  std::unique_ptr<NotificationPlatformBridgeMac> bridge(
+      new NotificationPlatformBridgeMac(notification_center(),
+                                        alert_dispatcher()));
+  std::unique_ptr<Notification> notification =
+      CreateBanner("Title", "Context", "https://gmail.com", nullptr, nullptr);
+
+  TestingProfile::Builder profile_builder;
+  profile_builder.SetPath(profile()->GetPath());
+  profile_builder.SetProfileName(profile()->GetProfileUserName());
+  Profile* incogito_profile = profile_builder.BuildIncognito(profile());
+
+  // Show two notifications with the same id from different profiles.
+  bridge->Display(NotificationHandler::Type::WEB_PERSISTENT, profile(),
+                  *notification, /*metadata=*/nullptr);
+  bridge->Display(NotificationHandler::Type::WEB_PERSISTENT, incogito_profile,
+                  *notification, /*metadata=*/nullptr);
+  EXPECT_EQ(2u, [[notification_center() deliveredNotifications] count]);
+
+  // Close the one for the incognito profile.
+  bridge->Close(incogito_profile, "id1");
+  NSArray* notifications = [notification_center() deliveredNotifications];
+  ASSERT_EQ(1u, [notifications count]);
+
+  // Expect that the remaining notification is for the regular profile.
+  NSUserNotification* remaining_notification = [notifications objectAtIndex:0];
+  EXPECT_EQ(false,
+            [[[remaining_notification userInfo]
+                objectForKey:notification_constants::kNotificationIncognito]
+                boolValue]);
+
+  // Close the one for the regular profile.
+  bridge->Close(profile(), "id1");
+  EXPECT_EQ(0u, [[notification_center() deliveredNotifications] count]);
 }
 
 TEST_F(NotificationPlatformBridgeMacTest, TestDisplayNoSettings) {

@@ -127,12 +127,10 @@
     }
   }
 
-  // Tag
-  if ([toast respondsToSelector:@selector(setIdentifier:)] &&
-      [_notificationData
-          objectForKey:notification_constants::kNotificationTag]) {
-    [toast setValue:[_notificationData
-                        objectForKey:notification_constants::kNotificationTag]
+  // Identifier
+  if ([toast respondsToSelector:@selector(setIdentifier:)]) {
+    [toast setValue:[_notificationData objectForKey:notification_constants::
+                                                        kNotificationIdentifier]
              forKey:@"identifier"];
   }
 

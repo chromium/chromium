@@ -179,24 +179,14 @@ void NotificationPlatformBridgeMac::Display(
     [builder setButtons:buttonOne secondaryButton:buttonTwo];
   }
 
-  [builder setTag:base::SysUTF8ToNSString(notification.id())];
+  std::string identifier = DeriveMacNotificationId(
+      profile->IsOffTheRecord(), GetProfileId(profile), notification.id());
+  [builder setIdentifier:base::SysUTF8ToNSString(identifier)];
+
   // If renotify is needed, delete the notification with the same id
   // from the notification center before displaying this one.
-  // TODO(miguelg): This will need to work for alerts as well via XPC
-  // once supported.
-  if (notification.renotify()) {
-    NSUserNotificationCenter* notification_center =
-        [NSUserNotificationCenter defaultUserNotificationCenter];
-    for (NSUserNotification* existing_notification in
-         [notification_center deliveredNotifications]) {
-      NSString* identifier = [existing_notification valueForKey:@"identifier"];
-      if ([identifier
-              isEqualToString:base::SysUTF8ToNSString(notification.id())]) {
-        [notification_center removeDeliveredNotification:existing_notification];
-        break;
-      }
-    }
-  }
+  if (notification.renotify())
+    Close(profile, notification.id());
 
   [builder setOrigin:base::SysUTF8ToNSString(notification.origin_url().spec())];
   [builder setNotificationId:base::SysUTF8ToNSString(notification.id())];
@@ -221,32 +211,32 @@ void NotificationPlatformBridgeMac::Display(
 
 void NotificationPlatformBridgeMac::Close(Profile* profile,
                                           const std::string& notification_id) {
-  NSString* candidate_id = base::SysUTF8ToNSString(notification_id);
-  NSString* current_profile_id = base::SysUTF8ToNSString(GetProfileId(profile));
+  NSString* notificationId = base::SysUTF8ToNSString(notification_id);
+  NSString* profileId = base::SysUTF8ToNSString(GetProfileId(profile));
+  bool incognito = profile->IsOffTheRecord();
 
-  bool notification_removed = false;
   for (NSUserNotification* toast in
        [notification_center_ deliveredNotifications]) {
-    NSString* toast_id =
+    NSString* toastId =
         [toast.userInfo objectForKey:notification_constants::kNotificationId];
-
-    NSString* persistent_profile_id = [toast.userInfo
+    NSString* toastProfileId = [toast.userInfo
         objectForKey:notification_constants::kNotificationProfileId];
+    BOOL toastIncognito = [[toast.userInfo
+        objectForKey:notification_constants::kNotificationIncognito] boolValue];
 
-    if ([toast_id isEqualToString:candidate_id] &&
-        [persistent_profile_id isEqualToString:current_profile_id]) {
+    if ([notificationId isEqualToString:toastId] &&
+        [profileId isEqualToString:toastProfileId] &&
+        incognito == toastIncognito) {
       [notification_center_ removeDeliveredNotification:toast];
-      notification_removed = true;
-      break;
+      return;
     }
   }
 
   // If no banner existed with that ID try to see if there is an alert
   // in the xpc server.
-  if (!notification_removed) {
-    [alert_dispatcher_ closeNotificationWithId:candidate_id
-                                 withProfileId:current_profile_id];
-  }
+  [alert_dispatcher_ closeNotificationWithId:notificationId
+                                   profileId:profileId
+                                   incognito:incognito];
 }
 
 void NotificationPlatformBridgeMac::GetDisplayed(
@@ -280,9 +270,8 @@ void NotificationPlatformBridgeMac::GetDisplayed(
       },
       std::move(callback), std::move(banners));
 
-  [alert_dispatcher_ getDisplayedAlertsForProfileId:base::SysUTF8ToNSString(
-                                                        GetProfileId(profile))
-                                          incognito:profile->IsOffTheRecord()
+  [alert_dispatcher_ getDisplayedAlertsForProfileId:profileId
+                                          incognito:incognito
                                            callback:std::move(alerts_callback)];
 }
 
@@ -387,9 +376,11 @@ void NotificationPlatformBridgeMac::DisplayServiceShutDown(Profile* profile) {}
 }
 
 - (void)closeNotificationWithId:(NSString*)notificationId
-                  withProfileId:(NSString*)profileId {
+                      profileId:(NSString*)profileId
+                      incognito:(BOOL)incognito {
   [[self serviceProxy] closeNotificationWithId:notificationId
-                                 withProfileId:profileId];
+                                     profileId:profileId
+                                     incognito:incognito];
 }
 
 - (void)closeAllNotifications {
@@ -412,12 +403,12 @@ getDisplayedAlertsForProfileId:(NSString*)profileId
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(copyable_callback, std::move(displayedNotifications),
-                       true /* supports_synchronization */));
+                       /*supports_synchronization=*/true));
   };
 
   [[self serviceProxy] getDisplayedAlertsForProfileId:profileId
-                                         andIncognito:incognito
-                                            withReply:reply];
+                                            incognito:incognito
+                                                reply:reply];
 }
 
 // NotificationReply:

@@ -9,23 +9,20 @@
 #include "base/mac/scoped_nsobject.h"
 #include "base/optional.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/notifications/notification_platform_bridge.h"
 #include "chrome/browser/notifications/notification_platform_bridge_mac_utils.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/cocoa/notifications/notification_builder_mac.h"
 #include "chrome/browser/ui/cocoa/notifications/notification_constants_mac.h"
 #include "chrome/browser/ui/cocoa/notifications/notification_response_builder_mac.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 using message_center::Notification;
 
-class NotificationPlatformBridgeMacUtilsTest
-    : public BrowserWithTestWindowTest {
+class NotificationPlatformBridgeMacUtilsTest : public testing::Test {
  public:
   void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
     response_ = BuildDefaultNotificationResponse();
   }
 
@@ -73,13 +70,11 @@ class NotificationPlatformBridgeMacUtilsTest
     [builder setOrigin:@"https://www.moe.com/"];
     [builder setContextMessage:@""];
     [builder setButtons:@"Button1" secondaryButton:@"Button2"];
-    [builder setTag:@"tag1"];
+    [builder setIdentifier:@"identifier"];
     [builder setIcon:[NSImage imageNamed:@"NSApplicationIcon"]];
     [builder setNotificationId:@"notification_id"];
-    [builder
-        setProfileId:base::SysUTF8ToNSString(
-                         NotificationPlatformBridge::GetProfileId(profile()))];
-    [builder setIncognito:profile()->IsOffTheRecord()];
+    [builder setProfileId:@"Default"];
+    [builder setIncognito:false];
     [builder setCreatorPid:@(getpid())];
     [builder setNotificationType:
                  [NSNumber numberWithInteger:

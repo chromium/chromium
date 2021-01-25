@@ -41,7 +41,7 @@ class NotificationResponseBuilderMacTest : public testing::Test {
     [builder setTitle:@"Title"];
     [builder setSubTitle:@"https://www.miguel.com"];
     [builder setContextMessage:@""];
-    [builder setTag:@"tag1"];
+    [builder setIdentifier:@"identifier"];
     [builder setIcon:[NSImage imageNamed:NSImageNameApplicationIcon]];
     [builder setNotificationId:@"notificationId"];
     [builder setProfileId:@"profileId"];

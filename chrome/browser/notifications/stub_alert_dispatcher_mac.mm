@@ -29,16 +29,21 @@
 }
 
 - (void)closeNotificationWithId:(NSString*)notificationId
-                  withProfileId:(NSString*)profileId {
+                      profileId:(NSString*)profileId
+                      incognito:(BOOL)incognito {
   DCHECK(profileId);
   DCHECK(notificationId);
   for (NSDictionary* toast in _alerts.get()) {
     NSString* toastId =
         [toast objectForKey:notification_constants::kNotificationId];
-    NSString* persistentProfileId =
+    NSString* toastProfileId =
         [toast objectForKey:notification_constants::kNotificationProfileId];
-    if ([toastId isEqualToString:notificationId] &&
-        [persistentProfileId isEqualToString:profileId]) {
+    BOOL toastIncognito = [[toast
+        objectForKey:notification_constants::kNotificationIncognito] boolValue];
+
+    if ([notificationId isEqualToString:toastId] &&
+        [profileId isEqualToString:toastProfileId] &&
+        incognito == toastIncognito) {
       [_alerts removeObject:toast];
       break;
     }

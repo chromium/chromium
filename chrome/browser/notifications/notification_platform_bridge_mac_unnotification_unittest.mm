@@ -254,6 +254,56 @@ TEST_F(UNNotificationPlatformBridgeMacTest, TestDisplayMultipleProfiles) {
   }
 }
 
+TEST_F(UNNotificationPlatformBridgeMacTest, TestIncognitoProfile) {
+  if (@available(macOS 10.14, *)) {
+    Notification notification = CreateNotification();
+
+    TestingProfile::Builder profile_builder;
+    profile_builder.SetPath(profile_->GetPath());
+    profile_builder.SetProfileName(profile_->GetProfileUserName());
+    Profile* incogito_profile = profile_builder.BuildIncognito(profile_);
+
+    // Show two notifications with the same id from different profiles.
+    bridge_->Display(NotificationHandler::Type::WEB_PERSISTENT, profile_,
+                     notification, /*metadata=*/nullptr);
+    bridge_->Display(NotificationHandler::Type::WEB_PERSISTENT,
+                     incogito_profile, notification,
+                     /*metadata=*/nullptr);
+    [center_ getDeliveredNotificationsWithCompletionHandler:^(
+                 NSArray<UNNotification*>* _Nonnull notifications) {
+      EXPECT_EQ(2u, [notifications count]);
+    }];
+
+    // Close the one for the incognito profile.
+    bridge_->Close(incogito_profile, "id1");
+    // Close runs async code that we can't observe, make sure all tasks run.
+    base::RunLoop().RunUntilIdle();
+
+    __block UNNotification* remaining = nullptr;
+    [center_ getDeliveredNotificationsWithCompletionHandler:^(
+                 NSArray<UNNotification*>* _Nonnull notifications) {
+      ASSERT_EQ(1u, [notifications count]);
+      remaining = [notifications objectAtIndex:0];
+    }];
+
+    // Expect that the remaining notification is for the regular profile.
+    EXPECT_EQ(false,
+              [[[[[remaining request] content] userInfo]
+                  objectForKey:notification_constants::kNotificationIncognito]
+                  boolValue]);
+
+    // Close the one for the regular profile.
+    bridge_->Close(profile_, "id1");
+    // Close runs async code that we can't observe, make sure all tasks run.
+    base::RunLoop().RunUntilIdle();
+
+    [center_ getDeliveredNotificationsWithCompletionHandler:^(
+                 NSArray<UNNotification*>* _Nonnull notifications) {
+      EXPECT_EQ(0u, [notifications count]);
+    }];
+  }
+}
+
 TEST_F(UNNotificationPlatformBridgeMacTest, TestNotificationHasIcon) {
   if (@available(macOS 10.14, *)) {
     Notification notification = CreateNotification();

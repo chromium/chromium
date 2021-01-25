@@ -41,15 +41,20 @@
       objectForKey:notification_constants::kNotificationId];
   NSString* profileId = [notification.userInfo
       objectForKey:notification_constants::kNotificationProfileId];
+  BOOL incognito = [[notification.userInfo
+      objectForKey:notification_constants::kNotificationIncognito] boolValue];
   DCHECK(profileId);
   DCHECK(notificationId);
   for (NSUserNotification* toast in _banners.get()) {
     NSString* toastId =
         [toast.userInfo objectForKey:notification_constants::kNotificationId];
-    NSString* persistentProfileId = [toast.userInfo
+    NSString* toastProfileId = [toast.userInfo
         objectForKey:notification_constants::kNotificationProfileId];
-    if ([toastId isEqualToString:notificationId] &&
-        [persistentProfileId isEqualToString:profileId]) {
+    BOOL toastIncognito = [[toast.userInfo
+        objectForKey:notification_constants::kNotificationIncognito] boolValue];
+    if ([notificationId isEqualToString:toastId] &&
+        [profileId isEqualToString:toastProfileId] &&
+        incognito == toastIncognito) {
       [_banners removeObject:toast];
       break;
     }

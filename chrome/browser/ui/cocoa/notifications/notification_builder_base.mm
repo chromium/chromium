@@ -67,11 +67,10 @@
   }
 }
 
-- (void)setTag:(NSString*)tag {
-  if (tag.length) {
-    [_notificationData setObject:tag
-                          forKey:notification_constants::kNotificationTag];
-  }
+- (void)setIdentifier:(NSString*)identifier {
+  DCHECK(identifier.length);
+  [_notificationData setObject:identifier
+                        forKey:notification_constants::kNotificationIdentifier];
 }
 
 - (void)setOrigin:(NSString*)origin {
