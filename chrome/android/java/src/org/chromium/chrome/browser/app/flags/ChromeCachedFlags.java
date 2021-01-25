@@ -13,6 +13,7 @@ import org.chromium.chrome.browser.firstrun.FirstRunUtils;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.CachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.tasks.ConditionalTabStripUtils;
 import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
@@ -109,6 +110,9 @@ public class ChromeCachedFlags {
                 TabUiFeatureUtilities.ENABLE_LAUNCH_BUG_FIX,
                 TabUiFeatureUtilities.ENABLE_LAUNCH_POLISH,
                 TabUiFeatureUtilities.ENABLE_SEARCH_CHIP,
+                ShoppingPersistedTabData.TIME_TO_LIVE_MS,
+                ShoppingPersistedTabData.DISPLAY_TIME_MS,
+                ShoppingPersistedTabData.ENDPOINT,
                 TabUiFeatureUtilities.ENABLE_PRICE_TRACKING,
                 TabUiFeatureUtilities.ENABLE_SEARCH_CHIP_ADAPTIVE,
                 TabUiFeatureUtilities.ZOOMING_MIN_MEMORY,
