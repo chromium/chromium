@@ -938,43 +938,6 @@ cr.define('cr.ui.login', function() {
   };
 
   /**
-   * Shows a warning to the user that the detachable base (keyboard) different
-   * than the one previously used by the user got attached to the device. It
-   * warn the user that the attached base might be untrusted.
-   *
-   * @param {string} username The username of the user with which the error
-   *     bubble is associated. For example, in the account picker screen, it
-   *     identifies the user pod under which the error bubble should be shown.
-   * @param {string} message Error message to show.
-   * @param {string} link Text to use for help link.
-   * @param {number} helpId Help topic Id associated with help link.
-   */
-  DisplayManager.showDetachableBaseChangedWarning = function(
-      username, message, link, helpId) {
-    var error = DisplayManager.createErrorElement_(message, link, helpId);
-
-    var currentScreen = Oobe.getInstance().currentScreen;
-    if (currentScreen &&
-        typeof currentScreen.showDetachableBaseWarningBubble === 'function') {
-      currentScreen.showDetachableBaseWarningBubble(username, error);
-    }
-  };
-
-  /**
-   * Hides the warning bubble shown by {@code showDetachableBaseChangedWarning}.
-   *
-   * @param {string} username The username of the user with wich the warning was
-   *     associated.
-   */
-  DisplayManager.hideDetachableBaseChangedWarning = function(username) {
-    var currentScreen = Oobe.getInstance().currentScreen;
-    if (currentScreen &&
-        typeof currentScreen.hideDetachableBaseWarningBubble === 'function') {
-      currentScreen.hideDetachableBaseWarningBubble(username);
-    }
-  };
-
-  /**
    * Clears error bubble.
    */
   DisplayManager.clearErrors = function() {
