@@ -14661,6 +14661,12 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="2" label="Finished with &quot;Keep Exploring&quot; button"/>
 </enum>
 
+<enum name="CrosSelectToSpeakActivationMethod">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Canceled with menu button"/>
+  <int value="2" label="Canceled with keyboard shortcut"/>
+</enum>
+
 <enum name="CrosSelectToSpeakSpeechPitch">
   <obsolete>
     Deprecated 7/2018 in Issue 866550 in favor of using global Text-to-Speech

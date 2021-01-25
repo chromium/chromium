@@ -328,12 +328,45 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.CrosSelectToSpeak.BubbleDismissMethod"
+    enum="CrosSelectToSpeakActivationMethod" expires_after="2021-11-30">
+  <owner>ajitnarayanan@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    When Select-to-speak is active, the user can dismiss the bubble menu in
+    multiple ways: by clicking the cancel button on the Select-to-speak menu or
+    using keyboard shortcuts. Track the methods here.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.CrosSelectToSpeak.NavigationControls"
     enum="BooleanEnabled" expires_after="2021-11-30">
   <owner>ajitnarayanan@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Whether Select-to-Speak's navigation controls were on when activated.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.CrosSelectToSpeak.ParagraphNavigationMethod"
+    enum="CrosSelectToSpeakActivationMethod" expires_after="2021-11-30">
+  <owner>ajitnarayanan@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    When Select-to-speak is active, the user can navigate between paragraphs in
+    multiple ways: by clicking the navigation buttons on the Select-to-speak
+    menu or using keyboard shortcuts. Track the methods here.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.CrosSelectToSpeak.SentenceNavigationMethod"
+    enum="CrosSelectToSpeakActivationMethod" expires_after="2021-11-30">
+  <owner>ajitnarayanan@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    When Select-to-speak is active, the user can navigate between sentences in
+    multiple ways: by clicking the navigation buttons on the Select-to-speak
+    menu or using keyboard shortcuts. Track the methods here.
   </summary>
 </histogram>
 

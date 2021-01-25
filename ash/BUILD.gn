@@ -896,6 +896,7 @@ component("ash") {
     "system/accessibility/select_to_speak_menu_bubble_controller.h",
     "system/accessibility/select_to_speak_menu_view.cc",
     "system/accessibility/select_to_speak_menu_view.h",
+    "system/accessibility/select_to_speak_metrics_utils.h",
     "system/accessibility/select_to_speak_speed_bubble_controller.cc",
     "system/accessibility/select_to_speak_speed_bubble_controller.h",
     "system/accessibility/select_to_speak_speed_view.cc",
