@@ -41,7 +41,7 @@ void Recorder::Record(const EventBase& event) {
   for (auto& observer : observers_)
     observer.OnRecord(event);
 
-  if (!observers_.might_have_observers()) {
+  if (observers_.empty()) {
     // Other values of EventRecordingState are recorded in
     // StructuredMetricsProvider::OnRecord.
     LogEventRecordingState(EventRecordingState::kProviderMissing);
