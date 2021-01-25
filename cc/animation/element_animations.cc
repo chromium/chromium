@@ -152,7 +152,7 @@ void ElementAnimations::RemoveKeyframeEffect(KeyframeEffect* keyframe_effect) {
 }
 
 bool ElementAnimations::IsEmpty() const {
-  return !keyframe_effects_list_.might_have_observers();
+  return keyframe_effects_list_.empty();
 }
 
 void ElementAnimations::SetNeedsPushProperties() {
@@ -580,7 +580,7 @@ unsigned int ElementAnimations::CountKeyframesForTesting() const {
 }
 
 KeyframeEffect* ElementAnimations::FirstKeyframeEffectForTesting() const {
-  DCHECK(keyframe_effects_list_.might_have_observers());
+  DCHECK(!keyframe_effects_list_.empty());
   return &*keyframe_effects_list_.begin();
 }
 
