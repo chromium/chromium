@@ -64,7 +64,7 @@ class EmptyWebMediaPlayer : public WebMediaPlayer {
   uint64_t AudioDecodedByteCount() const override { return 0; }
   uint64_t VideoDecodedByteCount() const override { return 0; }
   void Paint(cc::PaintCanvas*,
-             const WebRect&,
+             const gfx::Rect&,
              cc::PaintFlags&,
              int already_uploaded_id,
              VideoFrameUploadMetadata*) override {}

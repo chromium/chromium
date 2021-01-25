@@ -88,7 +88,7 @@ class MockWebMediaPlayer : public WebMediaPlayer {
   void SetWouldTaintOrigin(bool taint) { would_taint_origin_ = taint; }
 
   void Paint(cc::PaintCanvas* canvas,
-             const WebRect& rect,
+             const gfx::Rect& rect,
              cc::PaintFlags&,
              int already_uploaded_id,
              VideoFrameUploadMetadata* out_metadata) override {

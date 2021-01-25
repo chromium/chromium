@@ -30,7 +30,6 @@
 #include "third_party/blink/public/platform/url_conversion.h"
 #include "third_party/blink/public/platform/web_media_player_client.h"
 #include "third_party/blink/public/platform/web_media_player_source.h"
-#include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/public/platform/web_surface_layer_bridge.h"
 #include "third_party/blink/public/web/modules/media/webmediaplayer_util.h"
@@ -946,7 +945,7 @@ bool WebMediaPlayerMS::DidLoadingProgress() {
 }
 
 void WebMediaPlayerMS::Paint(cc::PaintCanvas* canvas,
-                             const WebRect& rect,
+                             const gfx::Rect& rect,
                              cc::PaintFlags& flags,
                              int already_uploaded_id,
                              VideoFrameUploadMetadata* out_metadata) {
@@ -962,7 +961,7 @@ void WebMediaPlayerMS::Paint(cc::PaintCanvas* canvas,
     if (!provider)
       return;
   }
-  const gfx::RectF dest_rect(rect.x, rect.y, rect.width, rect.height);
+  const gfx::RectF dest_rect(rect);
   video_renderer_.Paint(frame, canvas, dest_rect, flags, video_transformation_,
                         provider.get());
 }

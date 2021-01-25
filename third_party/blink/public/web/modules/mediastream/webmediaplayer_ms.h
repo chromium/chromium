@@ -126,7 +126,7 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
 
   // Methods for painting.
   void Paint(cc::PaintCanvas* canvas,
-             const WebRect& rect,
+             const gfx::Rect& rect,
              cc::PaintFlags& flags,
              int already_uploaded_id,
              VideoFrameUploadMetadata* out_metadata) override;

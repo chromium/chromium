@@ -148,7 +148,7 @@ class MEDIA_BLINK_EXPORT WebMediaPlayerImpl
   // various APIs and functionalities, including but not limited to: <canvas>,
   // WebGL texImage2D, ImageBitmap, printing and capturing capabilities.
   void Paint(cc::PaintCanvas* canvas,
-             const blink::WebRect& rect,
+             const gfx::Rect& rect,
              cc::PaintFlags& flags,
              int already_uploaded_id,
              VideoFrameUploadMetadata* out_metadata) override;

@@ -65,7 +65,6 @@
 #include "third_party/blink/public/platform/web_media_player_encrypted_media_client.h"
 #include "third_party/blink/public/platform/web_media_player_source.h"
 #include "third_party/blink/public/platform/web_media_source.h"
-#include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_size.h"
@@ -86,7 +85,6 @@
 #endif
 
 using blink::WebMediaPlayer;
-using blink::WebRect;
 using blink::WebString;
 using gpu::gles2::GLES2Interface;
 
@@ -1343,7 +1341,7 @@ bool WebMediaPlayerImpl::DidLoadingProgress() {
 }
 
 void WebMediaPlayerImpl::Paint(cc::PaintCanvas* canvas,
-                               const blink::WebRect& rect,
+                               const gfx::Rect& rect,
                                cc::PaintFlags& flags,
                                int already_uploaded_id,
                                VideoFrameUploadMetadata* out_metadata) {

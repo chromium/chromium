@@ -67,7 +67,6 @@ class WebMediaPlayerSource;
 class WebString;
 class WebURL;
 enum class WebFullscreenVideoStatus;
-struct WebRect;
 
 class WebMediaPlayer {
  public:
@@ -268,7 +267,7 @@ class WebMediaPlayer {
   // |out_metadata|, if not null, is used to return metadata about the frame
   //   that is uploaded during this call.
   virtual void Paint(cc::PaintCanvas*,
-                     const WebRect&,
+                     const gfx::Rect&,
                      cc::PaintFlags&,
                      int already_uploaded_id = -1,
                      VideoFrameUploadMetadata* out_metadata = nullptr) = 0;
