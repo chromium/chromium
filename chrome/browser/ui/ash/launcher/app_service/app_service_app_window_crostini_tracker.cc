@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/chromeos/crosapi/browser_util.h"
 #include "chrome/browser/chromeos/crostini/crostini_features.h"
 #include "chrome/browser/chromeos/crostini/crostini_force_close_watcher.h"
 #include "chrome/browser/chromeos/crostini/crostini_shelf_utils.h"
@@ -83,6 +84,7 @@ void AppServiceAppWindowCrostiniTracker::OnWindowVisibilityChanged(
   // Crostini shouldn't need to know about ARC app windows.
   if (wm::GetTransientParent(window) ||
       arc::GetWindowTaskId(window) != arc::kNoTaskId ||
+      crosapi::browser_util::IsLacrosWindow(window) ||
       plugin_vm::IsPluginVmAppWindow(window)) {
     return;
   }
@@ -203,6 +205,7 @@ std::string AppServiceAppWindowCrostiniTracker::GetShelfAppId(
   // Crostini shouldn't need to know about ARC app windows.
   if (wm::GetTransientParent(window) ||
       arc::GetWindowTaskId(window) != arc::kNoTaskId ||
+      crosapi::browser_util::IsLacrosWindow(window) ||
       plugin_vm::IsPluginVmAppWindow(window)) {
     return std::string();
   }

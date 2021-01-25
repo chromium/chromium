@@ -204,11 +204,17 @@ AppWindowLauncherItemController::GetAppMenuItems(
     auto title = (window && !window->GetTitle().empty()) ? window->GetTitle()
                                                          : app_title;
     gfx::ImageSkia image;
-    const gfx::ImageSkia* app_icon = nullptr;
-    if (window)
-      app_icon = window->GetProperty(aura::client::kAppIconKey);
-    if (app_icon && !app_icon->isNull())
-      image = *app_icon;
+    if (window) {
+      // Prefer the smaller window icon because that fits better inside a menu.
+      const gfx::ImageSkia* icon =
+          window->GetProperty(aura::client::kWindowIconKey);
+      if (!icon || icon->isNull()) {
+        // Fall back to the larger app icon.
+        icon = window->GetProperty(aura::client::kAppIconKey);
+      }
+      if (icon && !icon->isNull())
+        image = *icon;
+    }
     items.push_back({command_id, title, image});
   }
   return items;
