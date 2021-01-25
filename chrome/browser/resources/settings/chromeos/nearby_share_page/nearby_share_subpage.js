@@ -282,8 +282,10 @@ Polymer({
   getHighVisibilityToggleText_(inHighVisibility) {
     // TODO(crbug.com/1154830): Add logic to show how much time the user
     // actually has left.
-    return inHighVisibility ? this.i18n('nearbyShareHighVisibilityOn', 5) :
-                              this.i18nAdvanced('nearbyShareHighVisibilityOff');
+    return inHighVisibility ?
+        this.i18n('nearbyShareHighVisibilityOn', 5) :
+        this.i18nAdvanced(
+            'nearbyShareHighVisibilityOff', {substitutions: ['5']});
   },
 
   /**

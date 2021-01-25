@@ -295,9 +295,7 @@ void AddNearbyShareData(content::WebUIDataSource* html_source) {
       {"nearbyShareHighVisibilityOn",
        IDS_SETTINGS_NEARBY_SHARE_HIGH_VISIBILITY_ON},
       {"nearbyShareHighVisibilityOff",
-       IDS_SETTINGS_NEARBY_SHARE_HIGH_VISIBILITY_OFF},
-      {"nearbyShareHighVisibilityTooltip",
-       IDS_SETTINGS_NEARBY_SHARE_HIGH_VISIBILITY_TOOLTIP}};
+       IDS_SETTINGS_NEARBY_SHARE_HIGH_VISIBILITY_OFF}};
 
   AddLocalizedStringsBulk(html_source, kLocalizedStrings);
 

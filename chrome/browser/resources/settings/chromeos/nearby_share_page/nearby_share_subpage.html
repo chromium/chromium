@@ -51,10 +51,6 @@
         margin: 0;
       }
 
-      #highVisibilityHelpIcon {
-        margin-inline-end: var(--cr-section-padding);
-      }
-
       #highVisibilityContainer cr-toggle {
         margin-inline-start: var(--cr-section-padding);
         padding-inline-end: var(--cr-section-padding);
@@ -138,17 +134,6 @@
           </settings-localized-link>
         </div>
       </div>
-      <iron-icon tabindex="0" id="highVisibilityHelpIcon"
-          icon="cr:help-outline"
-          aria-labelledby="highVisibilityTitle tooltip">
-      </iron-icon>
-      <paper-tooltip id="tooltip"
-          for="highVisibilityHelpIcon"
-          position="bottom"
-          aria-hidden="true"
-          fit-to-visible-bounds>
-        $i18n{nearbyShareHighVisibilityTooltip}
-      </paper-tooltip>
       <div class="separator"></div>
       <cr-toggle
           id="highVisibilityToggle"
