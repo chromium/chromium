@@ -11,7 +11,6 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/win/wincrypt_shim.h"
 #include "build/build_config.h"
@@ -23,7 +22,6 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util_win.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/signin/dice_turn_sync_on_helper.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -619,9 +617,7 @@ class ExistingWinBrowserProfilesSigninUtilTest
                           L"foo@gmail.com",
                           "lst-123456",
                           0,
-                          1) {
-    feature_list_.InitAndDisableFeature(features::kNewProfilePicker);
-  }
+                          1) {}
 
  protected:
   bool SetUpUserDataDirectory() override {
@@ -642,7 +638,6 @@ class ExistingWinBrowserProfilesSigninUtilTest
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   registry_util::RegistryOverrideManager registry_override_;
 };
 

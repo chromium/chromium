@@ -21,7 +21,7 @@
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/profile_picker.h"
+#include "chrome/browser/ui/user_manager.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -95,16 +95,16 @@ void CheckBrowserWindows(const std::vector<std::string>& expected_basepaths) {
 
 void ExpectUserManagerToShow() {
   // If the user manager is not shown yet, wait for the user manager to appear.
-  if (!ProfilePicker::IsOpen()) {
+  if (!UserManager::IsShowing()) {
     base::RunLoop run_loop;
-    ProfilePicker::AddOnProfilePickerOpenedCallbackForTesting(
+    UserManager::AddOnUserManagerShownCallbackForTesting(
         run_loop.QuitClosure());
     run_loop.Run();
   }
-  ASSERT_TRUE(ProfilePicker::IsOpen());
+  ASSERT_TRUE(UserManager::IsShowing());
 
   // We must hide the user manager before the test ends.
-  ProfilePicker::Hide();
+  UserManager::Hide();
 }
 
 }  // namespace
