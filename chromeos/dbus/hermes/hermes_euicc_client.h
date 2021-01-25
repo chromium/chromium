@@ -140,9 +140,12 @@ class COMPONENT_EXPORT(HERMES_CLIENT) HermesEuiccClient {
   virtual void RequestInstalledProfiles(const dbus::ObjectPath& euicc_path,
                                         HermesResponseCallback callback) = 0;
 
-  // Updates pending profiles for Euicc at |euicc_path| from the SMDS server.
-  // This updates pending profiles list prior to returning.
+  // Updates pending profiles for Euicc at |euicc_path| from the SMDS server
+  // using the given |root_smds| server address. Passing an empty |root_smds|
+  // will use default lpa.ds.gsma.com. This updates pending profiles list prior
+  // to returning.
   virtual void RequestPendingProfiles(const dbus::ObjectPath& euicc_path,
+                                      const std::string& root_smds,
                                       HermesResponseCallback callback) = 0;
 
   // Removes the carrier profile with the given |carrier_profile_path| from

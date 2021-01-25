@@ -94,9 +94,12 @@ class HermesEuiccClientImpl : public HermesEuiccClient {
   }
 
   void RequestPendingProfiles(const dbus::ObjectPath& euicc_path,
+                              const std::string& root_smds,
                               HermesResponseCallback callback) override {
     dbus::MethodCall method_call(hermes::kHermesEuiccInterface,
                                  hermes::euicc::kRequestPendingProfiles);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendString(root_smds);
     dbus::ObjectProxy* object_proxy = GetOrCreateProperties(euicc_path).first;
     object_proxy->CallMethodWithErrorResponse(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
@@ -159,6 +162,8 @@ class HermesEuiccClientImpl : public HermesEuiccClient {
                                 dbus::Response* response,
                                 dbus::ErrorResponse* error_response) {
     if (error_response) {
+      NET_LOG(ERROR) << "Profile install failed with error: "
+                     << error_response->GetErrorName();
       std::move(callback).Run(
           HermesResponseStatusFromErrorName(error_response->GetErrorName()),
           nullptr);
@@ -183,6 +188,8 @@ class HermesEuiccClientImpl : public HermesEuiccClient {
                               dbus::Response* response,
                               dbus::ErrorResponse* error_response) {
     if (error_response) {
+      NET_LOG(ERROR) << "Hermes Euicc operation failed with error: "
+                     << error_response->GetErrorName();
       std::move(callback).Run(
           HermesResponseStatusFromErrorName(error_response->GetErrorName()));
       return;

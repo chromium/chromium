@@ -232,6 +232,7 @@ void FakeHermesEuiccClient::RequestInstalledProfiles(
 
 void FakeHermesEuiccClient::RequestPendingProfiles(
     const dbus::ObjectPath& euicc_path,
+    const std::string& root_smds,
     HermesResponseCallback callback) {
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,

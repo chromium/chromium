@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/hermes/fake_hermes_profile_client.h"
 #include "chromeos/dbus/hermes/hermes_response_status.h"
+#include "components/device_event_log/device_event_log.h"
 #include "dbus/bus.h"
 #include "dbus/object_manager.h"
 #include "dbus/property.h"
@@ -174,6 +175,8 @@ class HermesProfileClientImpl : public HermesProfileClient {
                               dbus::Response* response,
                               dbus::ErrorResponse* error_response) {
     if (error_response) {
+      NET_LOG(ERROR) << "Hermes Profile operation failed with error: "
+                     << error_response->GetErrorName();
       std::move(callback).Run(
           HermesResponseStatusFromErrorName(error_response->GetErrorName()));
       return;

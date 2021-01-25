@@ -72,6 +72,7 @@ class COMPONENT_EXPORT(HERMES_CLIENT) FakeHermesEuiccClient
   void RequestInstalledProfiles(const dbus::ObjectPath& euicc_path,
                                 HermesResponseCallback callback) override;
   void RequestPendingProfiles(const dbus::ObjectPath& euicc_path,
+                              const std::string& root_smds,
                               HermesResponseCallback callback) override;
   void UninstallProfile(const dbus::ObjectPath& euicc_path,
                         const dbus::ObjectPath& carrier_profile_path,
