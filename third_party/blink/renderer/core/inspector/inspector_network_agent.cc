@@ -1701,6 +1701,13 @@ void InspectorNetworkAgent::WebTransportCreated(
       std::move(initiator_object));
 }
 
+void InspectorNetworkAgent::WebTransportConnectionEstablished(
+    uint64_t transport_id) {
+  GetFrontend()->webTransportConnectionEstablished(
+      IdentifiersFactory::SubresourceRequestId(transport_id),
+      base::TimeTicks::Now().since_origin().InSecondsF());
+}
+
 void InspectorNetworkAgent::WebTransportClosed(uint64_t transport_id) {
   GetFrontend()->webTransportClosed(
       IdentifiersFactory::SubresourceRequestId(transport_id),

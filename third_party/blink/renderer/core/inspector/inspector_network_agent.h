@@ -200,6 +200,7 @@ class CORE_EXPORT InspectorNetworkAgent final
   void WebTransportCreated(ExecutionContext*,
                            uint64_t transport_id,
                            const KURL& request_url);
+  void WebTransportConnectionEstablished(uint64_t transport_id);
   void WebTransportClosed(uint64_t transport_id);
 
   void SetDevToolsIds(ResourceRequest& request, const FetchInitiatorInfo&);

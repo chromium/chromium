@@ -5548,6 +5548,15 @@ domain Network
       # Request initiator.
       optional Initiator initiator
 
+  # Fired when WebTransport handshake is finished.
+  event webTransportConnectionEstablished
+    parameters
+      # WebTransport identifier.
+      RequestId transportId
+      # Timestamp.
+      MonotonicTime timestamp
+
+  # Fired when WebTransport is disposed.
   event webTransportClosed
     parameters
       # WebTransport identifier.

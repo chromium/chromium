@@ -524,7 +524,8 @@ void QuicTransport::OnConnectionEstablished(
   DVLOG(1) << "QuicTransport::OnConnectionEstablished() this=" << this;
   handshake_client_receiver_.reset();
 
-  // TODO(ricea): Report to devtools.
+  probe::WebTransportConnectionEstablished(GetExecutionContext(),
+                                           inspector_transport_id_);
 
   auto task_runner =
       GetExecutionContext()->GetTaskRunner(TaskType::kNetworking);

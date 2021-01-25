@@ -172,6 +172,7 @@
         "ShouldBypassServiceWorker",
         "ShouldForceCorsPreflight",
         "WebTransportCreated",
+        "WebTransportConnectionEstablished",
         "WebTransportClosed",
         "WillDispatchEventSourceEvent",
         "WillLoadXHR",
