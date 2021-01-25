@@ -436,7 +436,7 @@ void AddClearBrowsingDataStrings(content::WebUIDataSource* html_source,
   AddLocalizedStringsBulk(html_source, kLocalizedStrings);
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 void AddDefaultBrowserStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"defaultBrowser", IDS_SETTINGS_DEFAULT_BROWSER},
@@ -2271,7 +2271,7 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
   html_source->AddString("addSiteExceptionPlaceholder", "[*.]example.com");
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 void AddSystemStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
     {"systemPageTitle", IDS_SETTINGS_SYSTEM},
@@ -2450,12 +2450,13 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   AddChromeOSSettingsStrings(html_source);
+#else
+  AddDefaultBrowserStrings(html_source);
+  AddSystemStrings(html_source);
 #endif
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  AddDefaultBrowserStrings(html_source);
   AddImportDataStrings(html_source);
-  AddSystemStrings(html_source);
 #endif
   AddExtensionsStrings(html_source);
 
