@@ -16,15 +16,14 @@ namespace extensions {
 
 class IncognitoConnectabilityInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
-  typedef base::Callback<void(
-      IncognitoConnectability::ScopedAlertTracker::Mode)>
-      InfoBarCallback;
+  using InfoBarCallback = base::OnceCallback<void(
+      IncognitoConnectability::ScopedAlertTracker::Mode)>;
 
   // Creates a confirmation infobar and delegate and adds the infobar to
   // |infobar_service|.
   static infobars::InfoBar* Create(InfoBarService* infobar_service,
                                    const base::string16& message,
-                                   const InfoBarCallback& callback);
+                                   InfoBarCallback callback);
 
   // Marks the infobar as answered so that the callback is not executed when the
   // delegate is destroyed.
@@ -32,7 +31,7 @@ class IncognitoConnectabilityInfoBarDelegate : public ConfirmInfoBarDelegate {
 
  private:
   IncognitoConnectabilityInfoBarDelegate(const base::string16& message,
-                                         const InfoBarCallback& callback);
+                                         InfoBarCallback callback);
   ~IncognitoConnectabilityInfoBarDelegate() override;
 
   // ConfirmInfoBarDelegate:

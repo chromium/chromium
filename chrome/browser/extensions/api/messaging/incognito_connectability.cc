@@ -106,9 +106,9 @@ void IncognitoConnectability::Query(const Extension* extension,
           l10n_util::GetStringFUTF16(template_id,
                                      base::UTF8ToUTF16(origin.spec()),
                                      base::UTF8ToUTF16(extension->name())),
-          base::Bind(&IncognitoConnectability::OnInteractiveResponse,
-                     weak_factory_.GetWeakPtr(), extension->id(), origin,
-                     infobar_service));
+          base::BindOnce(&IncognitoConnectability::OnInteractiveResponse,
+                         weak_factory_.GetWeakPtr(), extension->id(), origin,
+                         infobar_service));
       break;
     }
 
@@ -124,8 +124,7 @@ void IncognitoConnectability::Query(const Extension* extension,
 IncognitoConnectability::TabContext::TabContext() : infobar(nullptr) {
 }
 
-IncognitoConnectability::TabContext::~TabContext() {
-}
+IncognitoConnectability::TabContext::~TabContext() = default;
 
 void IncognitoConnectability::OnInteractiveResponse(
     const std::string& extension_id,

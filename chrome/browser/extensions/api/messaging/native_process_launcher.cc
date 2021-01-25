@@ -55,7 +55,7 @@ class NativeProcessLauncherImpl : public NativeProcessLauncher {
 
   void Launch(const GURL& origin,
               const std::string& native_host_name,
-              const LaunchedCallback& callback) const override;
+              LaunchedCallback callback) const override;
 
  private:
   class Core : public base::RefCountedThreadSafe<Core> {
@@ -68,7 +68,7 @@ class NativeProcessLauncherImpl : public NativeProcessLauncher {
          const std::string& error_arg);
     void Launch(const GURL& origin,
                 const std::string& native_host_name,
-                const LaunchedCallback& callback);
+                LaunchedCallback callback);
     void Detach();
 
    private:
@@ -77,13 +77,13 @@ class NativeProcessLauncherImpl : public NativeProcessLauncher {
 
     void DoLaunchOnThreadPool(const GURL& origin,
                               const std::string& native_host_name,
-                              const LaunchedCallback& callback);
-    void PostErrorResult(const LaunchedCallback& callback, LaunchResult error);
-    void PostResult(const LaunchedCallback& callback,
+                              LaunchedCallback callback);
+    void PostErrorResult(LaunchedCallback callback, LaunchResult error);
+    void PostResult(LaunchedCallback callback,
                     base::Process process,
                     base::File read_file,
                     base::File write_file);
-    void CallCallbackOnIOThread(const LaunchedCallback& callback,
+    void CallCallbackOnIOThread(LaunchedCallback callback,
                                 LaunchResult result,
                                 base::Process process,
                                 base::File read_file,
@@ -144,19 +144,19 @@ void NativeProcessLauncherImpl::Core::Detach() {
 void NativeProcessLauncherImpl::Core::Launch(
     const GURL& origin,
     const std::string& native_host_name,
-    const LaunchedCallback& callback) {
+    LaunchedCallback callback) {
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&Core::DoLaunchOnThreadPool, this, origin,
-                     native_host_name, callback));
+                     native_host_name, std::move(callback)));
 }
 
 void NativeProcessLauncherImpl::Core::DoLaunchOnThreadPool(
     const GURL& origin,
     const std::string& native_host_name,
-    const LaunchedCallback& callback) {
+    LaunchedCallback callback) {
   if (!NativeMessagingHostManifest::IsValidName(native_host_name)) {
-    PostErrorResult(callback, RESULT_INVALID_NAME);
+    PostErrorResult(std::move(callback), RESULT_INVALID_NAME);
     return;
   }
 
@@ -167,7 +167,7 @@ void NativeProcessLauncherImpl::Core::DoLaunchOnThreadPool(
   if (manifest_path.empty()) {
     LOG(WARNING) << "Can't find manifest for native messaging host "
                  << native_host_name;
-    PostErrorResult(callback, RESULT_NOT_FOUND);
+    PostErrorResult(std::move(callback), RESULT_NOT_FOUND);
     return;
   }
 
@@ -177,7 +177,7 @@ void NativeProcessLauncherImpl::Core::DoLaunchOnThreadPool(
   if (!manifest) {
     LOG(WARNING) << "Failed to load manifest for native messaging host "
                  << native_host_name << ": " << error_message;
-    PostErrorResult(callback, RESULT_NOT_FOUND);
+    PostErrorResult(std::move(callback), RESULT_NOT_FOUND);
     return;
   }
 
@@ -185,19 +185,19 @@ void NativeProcessLauncherImpl::Core::DoLaunchOnThreadPool(
     LOG(WARNING) << "Failed to load manifest for native messaging host "
                  << native_host_name
                  << ": Invalid name specified in the manifest.";
-    PostErrorResult(callback, RESULT_NOT_FOUND);
+    PostErrorResult(std::move(callback), RESULT_NOT_FOUND);
     return;
   }
 
   if (!manifest->allowed_origins().MatchesSecurityOrigin(origin)) {
     // Not an allowed origin.
-    PostErrorResult(callback, RESULT_FORBIDDEN);
+    PostErrorResult(std::move(callback), RESULT_FORBIDDEN);
     return;
   }
 
   if (require_native_initiated_connections_ &&
       !manifest->supports_native_initiated_connections()) {
-    PostErrorResult(callback, RESULT_FORBIDDEN);
+    PostErrorResult(std::move(callback), RESULT_FORBIDDEN);
     return;
   }
 
@@ -210,7 +210,7 @@ void NativeProcessLauncherImpl::Core::DoLaunchOnThreadPool(
 #else  // defined(OS_WIN)
     LOG(WARNING) << "Native messaging host path must be absolute for "
                  << native_host_name;
-    PostErrorResult(callback, RESULT_NOT_FOUND);
+    PostErrorResult(std::move(callback), RESULT_NOT_FOUND);
     return;
 #endif  // !defined(OS_WIN)
   }
@@ -222,7 +222,7 @@ void NativeProcessLauncherImpl::Core::DoLaunchOnThreadPool(
         << "Found manifest, but not the binary for native messaging host "
         << native_host_name << ". Host path specified in the manifest: "
         << host_path.AsUTF8Unsafe();
-    PostErrorResult(callback, RESULT_NOT_FOUND);
+    PostErrorResult(std::move(callback), RESULT_NOT_FOUND);
     return;
   }
 
@@ -288,15 +288,15 @@ void NativeProcessLauncherImpl::Core::DoLaunchOnThreadPool(
   base::File write_file;
   if (NativeProcessLauncher::LaunchNativeProcess(
           command_line, &process, &read_file, &write_file)) {
-    PostResult(callback, std::move(process), std::move(read_file),
+    PostResult(std::move(callback), std::move(process), std::move(read_file),
                std::move(write_file));
   } else {
-    PostErrorResult(callback, RESULT_FAILED_TO_START);
+    PostErrorResult(std::move(callback), RESULT_FAILED_TO_START);
   }
 }
 
 void NativeProcessLauncherImpl::Core::CallCallbackOnIOThread(
-    const LaunchedCallback& callback,
+    LaunchedCallback callback,
     LaunchResult result,
     base::Process process,
     base::File read_file,
@@ -305,30 +305,29 @@ void NativeProcessLauncherImpl::Core::CallCallbackOnIOThread(
   if (detached_)
     return;
 
-  callback.Run(result, std::move(process), std::move(read_file),
-               std::move(write_file));
+  std::move(callback).Run(result, std::move(process), std::move(read_file),
+                          std::move(write_file));
 }
 
-void NativeProcessLauncherImpl::Core::PostErrorResult(
-    const LaunchedCallback& callback,
-    LaunchResult error) {
+void NativeProcessLauncherImpl::Core::PostErrorResult(LaunchedCallback callback,
+                                                      LaunchResult error) {
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&NativeProcessLauncherImpl::Core::CallCallbackOnIOThread,
-                     this, callback, error, base::Process(), base::File(),
-                     base::File()));
+                     this, std::move(callback), error, base::Process(),
+                     base::File(), base::File()));
 }
 
-void NativeProcessLauncherImpl::Core::PostResult(
-    const LaunchedCallback& callback,
-    base::Process process,
-    base::File read_file,
-    base::File write_file) {
+void NativeProcessLauncherImpl::Core::PostResult(LaunchedCallback callback,
+                                                 base::Process process,
+                                                 base::File read_file,
+                                                 base::File write_file) {
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&NativeProcessLauncherImpl::Core::CallCallbackOnIOThread,
-                     this, callback, RESULT_SUCCESS, std::move(process),
-                     std::move(read_file), std::move(write_file)));
+                     this, std::move(callback), RESULT_SUCCESS,
+                     std::move(process), std::move(read_file),
+                     std::move(write_file)));
 }
 
 NativeProcessLauncherImpl::NativeProcessLauncherImpl(
@@ -351,8 +350,8 @@ NativeProcessLauncherImpl::~NativeProcessLauncherImpl() {
 
 void NativeProcessLauncherImpl::Launch(const GURL& origin,
                                        const std::string& native_host_name,
-                                       const LaunchedCallback& callback) const {
-  core_->Launch(origin, native_host_name, callback);
+                                       LaunchedCallback callback) const {
+  core_->Launch(origin, native_host_name, std::move(callback));
 }
 
 }  // namespace
