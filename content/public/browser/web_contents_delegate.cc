@@ -172,6 +172,18 @@ WebContentsDelegate::GetProtocolHandlerSecurityLevel(RenderFrameHost*) {
   return blink::ProtocolHandlerSecurityLevel::kStrict;
 }
 
+void WebContentsDelegate::RequestToLockMouse(WebContents* web_contents,
+                                             bool user_gesture,
+                                             bool last_unlocked_by_target) {
+  web_contents->GotResponseToLockMouseRequest(
+      blink::mojom::PointerLockResult::kUnknownError);
+}
+
+void WebContentsDelegate::RequestKeyboardLock(WebContents* web_contents,
+                                              bool esc_key_locked) {
+  web_contents->GotResponseToKeyboardLockRequest(false);
+}
+
 ColorChooser* WebContentsDelegate::OpenColorChooser(
     WebContents* web_contents,
     SkColor color,
