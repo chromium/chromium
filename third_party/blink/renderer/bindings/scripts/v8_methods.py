@@ -46,6 +46,10 @@ import v8_types
 import v8_utilities
 from v8_utilities import (has_extended_attribute_value, is_unforgeable)
 
+# TODO: Remove this once Python2 is obsoleted.
+if sys.version_info.major != 2:
+    basestring = str
+
 
 def method_is_visible(method, interface_is_partial):
     if 'overloads' in method:

@@ -8,6 +8,7 @@ import sys
 # TODO: Remove this once Python2 is obsoleted.
 if sys.version_info.major != 2:
     long = int
+    basestring = str
 
 
 def make_copy(obj, memo=None):
