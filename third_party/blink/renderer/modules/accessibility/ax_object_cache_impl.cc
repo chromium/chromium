@@ -722,24 +722,35 @@ AXObject* AXObjectCacheImpl::GetOrCreate(AbstractInlineTextBox* inline_text_box,
     return nullptr;
 
   if (!parent) {
-    Node* text_parent = inline_text_box->GetLineLayoutItem().GetNode();
-    DCHECK(text_parent);
-    DCHECK(IsA<Text>(text_parent));
-    parent = GetOrCreate(text_parent);
-    DCHECK(parent);
+    Node* text_parent = inline_text_box->GetNode();
+    if (text_parent) {
+      DCHECK(IsA<Text>(text_parent));
+      parent = GetOrCreate(text_parent);
+    } else {
+      LayoutObject* anonymous_text_parent = inline_text_box->GetLayoutObject();
+      DCHECK(anonymous_text_parent);
+      DCHECK(anonymous_text_parent->IsText());
+      parent = GetOrCreate(anonymous_text_parent);
+    }
+    DCHECK(parent) << "No parent for textbox: " << inline_text_box;
   }
 
   if (AXObject* obj = Get(inline_text_box)) {
-    if (obj->CachedParentObject())
+#if DCHECK_IS_ON()
+    if (obj->CachedParentObject()) {
+      // AXInlineTextbox objects can't get a new parent, unlike other types of
+      // accessible objects that can get a new parent because they moved or
+      // because of aria-owns.
       DCHECK_EQ(obj->CachedParentObject()->GetNode(), parent->GetNode());
+      DCHECK_EQ(obj->CachedParentObject()->GetLayoutObject(),
+                parent->GetLayoutObject());
+    }
+#endif
     obj->SetParent(parent);
     return obj;
   }
 
   AXObject* new_obj = CreateFromInlineTextBox(inline_text_box);
-
-  // Will crash later if we have two objects for the same inlineTextBox.
-  DCHECK(!Get(inline_text_box));
 
   const AXID axid = AssociateAXID(new_obj);
 

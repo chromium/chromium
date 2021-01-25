@@ -227,6 +227,12 @@ Node* AbstractInlineTextBox::GetNode() const {
   return GetLineLayoutItem().GetNode();
 }
 
+LayoutObject* AbstractInlineTextBox::GetLayoutObject() const {
+  if (!GetLineLayoutItem())
+    return nullptr;
+  return GetLineLayoutItem().GetLayoutObject();
+}
+
 void LegacyAbstractInlineTextBox::CharacterWidths(Vector<float>& widths) const {
   if (!inline_text_box_)
     return;

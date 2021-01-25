@@ -1,0 +1,47 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++list
+++++++++listItem
+++++++++++listMarker name='foo­bar'
+++++++++++++staticText name='foo­bar'
+++++++++++++++inlineTextBox name='foo­'
+++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='bar'
+++++++++listItem
+++++++++++listMarker
+++++++++++++staticText name='foo­bar'
+++++++++++++++inlineTextBox name='foo­'
+++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='bar'
+++++++list
+++++++++listItem
+++++++++++listMarker name='foo­bar'
+++++++++++++staticText name='foo­bar'
+++++++++++++++inlineTextBox name='foo­'
+++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='bar'
+++++++++listItem
+++++++++++listMarker
+++++++++++++staticText name='foo­bar'
+++++++++++++++inlineTextBox name='foo­'
+++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='bar'
+++++++list
+++++++++listItem
+++++++++++listMarker name='foo­bar'
+++++++++++++staticText name='foo­bar'
+++++++++++++++inlineTextBox name='foo­bar'
+++++++++listItem
+++++++++++listMarker
+++++++++++++staticText name='foo­bar'
+++++++++++++++inlineTextBox name='foo­bar'
+++++++list
+++++++++listItem
+++++++++++listMarker name='foo­bar'
+++++++++++++staticText name='foo­bar'
+++++++++++++++inlineTextBox name='foo­bar'
+++++++++listItem
+++++++++++listMarker
+++++++++++++staticText name='foo­bar'
+++++++++++++++inlineTextBox name='foo­bar'

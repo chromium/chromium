@@ -330,6 +330,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityCSSMarkerHyphens) {
+  RunCSSTest(FILE_PATH_LITERAL("marker-hyphens.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityCSSTextOverflowEllipsis) {
   RunCSSTest(FILE_PATH_LITERAL("text-overflow-ellipsis.html"));
 }

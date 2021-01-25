@@ -74,6 +74,7 @@ class CORE_EXPORT AbstractInlineTextBox
   virtual unsigned TextOffsetInFormattingContext(unsigned) const = 0;
   virtual Direction GetDirection() const = 0;
   Node* GetNode() const;
+  LayoutObject* GetLayoutObject() const;
   virtual void CharacterWidths(Vector<float>&) const = 0;
   void GetWordBoundaries(Vector<WordBoundaries>&) const;
   virtual String GetText() const = 0;
