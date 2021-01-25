@@ -16,7 +16,6 @@ from xml.etree import ElementTree
 import zipfile
 
 from util import build_utils
-from util import md5_check
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
                                              os.pardir, os.pardir)))
@@ -183,16 +182,7 @@ def main():
       if args.ignore_resources:
         names = [n for n in names if not n.startswith('res')]
 
-    output_paths = [os.path.join(args.output_dir, n) for n in names]
-    output_paths.append(os.path.join(args.output_dir, 'source.info'))
-
-    def on_stale_md5():
-      _PerformExtract(args.aar_file, args.output_dir, set(names))
-
-    md5_check.CallAndRecordIfStale(on_stale_md5,
-                                   input_strings=[aar_info],
-                                   input_paths=[args.aar_file],
-                                   output_paths=output_paths)
+    _PerformExtract(args.aar_file, args.output_dir, set(names))
 
   elif args.command == 'list':
     aar_output_present = args.output != '-' and os.path.isfile(args.output)
