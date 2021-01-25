@@ -866,7 +866,9 @@ def RunTestsInPlatformMode(args, result_sink_client=None):
       raise
     finally:
       if args.isolated_script_test_output:
+        interrupted = 'UNRELIABLE_RESULTS' in global_results_tags
         json_results.GenerateJsonTestResultFormatFile(all_raw_results,
+                                                      interrupted,
                                                       json_file.name,
                                                       indent=2)
       else:
