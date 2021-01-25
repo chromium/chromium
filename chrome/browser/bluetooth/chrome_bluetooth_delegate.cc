@@ -236,7 +236,7 @@ void ChromeBluetoothDelegate::ChooserContextPermissionObserver::
   }
 
   observer_list_.RemoveObserver(observer);
-  if (!observer_list_.might_have_observers())
+  if (observer_list_.empty())
     owning_delegate_->chooser_observers_.erase(observer->GetRenderFrameHost());
   // Previous call destructed this instance. Don't add code after this.
 }
