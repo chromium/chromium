@@ -1241,11 +1241,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Event.Latency.ScrollUpdate.Touch.HandledToRendererSwap2"
-    units="microseconds" expires_after="2020-12-06">
+    units="microseconds" expires_after="2021-12-01">
   <owner>flackr@chromium.org</owner>
+  <owner>input-dev@chromium.org</owner>
   <summary>
     Time between the ScrollUpdate gesture event with touch source, is handled on
     main/impl thread (specified by suffix) and before renderer starts to swap.
+    This is recorded each time a user touch scroll is swapped to the display.
 
     Team: input-dev@chromium.org.
 
@@ -1380,14 +1382,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Event.Latency.ScrollUpdate.Wheel.TimeToHandled2"
-    units="microseconds" expires_after="2021-01-17">
+    units="microseconds" expires_after="2021-12-01">
   <owner>flackr@chromium.org</owner>
+  <owner>input-dev@chromium.org</owner>
   <summary>
     Time between initial creation of a wheel event and the generated
     ScrollUpdate gesture event is handled on main/impl thread (specified by
     suffix). If no swap was induced by the ScrollUpdate gesture event, no
     recording is made. The first GSU of every scrolling sequence is excluded
-    from this metric.
+    from this metric. This is recorded at the point when the frame has been
+    swapped to the screen for every wheel scroll except the first one.
 
     Team: input-dev@chromium.org.
 
