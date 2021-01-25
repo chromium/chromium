@@ -583,7 +583,7 @@ void DiceTurnSyncOnHelper::FinishSyncSetupAndDelete(
         consent_service->SetUrlKeyedAnonymizedDataCollectionEnabled(true);
       break;
     }
-    case LoginUIService::ABORT_SYNC:
+    case LoginUIService::ABORT_SYNC: {
       auto* primary_account_mutator =
           identity_manager_->GetPrimaryAccountMutator();
       DCHECK(primary_account_mutator);
@@ -592,6 +592,12 @@ void DiceTurnSyncOnHelper::FinishSyncSetupAndDelete(
           signin_metrics::SignoutDelete::IGNORE_METRIC);
       AbortAndDelete();
       return;
+    }
+    // No explicit action when the ui gets closed. If the embedder wants the
+    // helper to abort sync in this case, it must redirect this action to
+    // ABORT_SYNC.
+    case LoginUIService::UI_CLOSED:
+      break;
   }
   delete this;
 }

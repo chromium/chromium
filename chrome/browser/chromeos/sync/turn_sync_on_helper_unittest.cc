@@ -157,6 +157,25 @@ TEST_F(TurnSyncOnHelperTest, UserClicksCancel) {
   EXPECT_EQ(0, delegate->show_sync_settings_count_);
 }
 
+TEST_F(TurnSyncOnHelperTest, UserClosesUI) {
+  identity_test_env()->MakeUnconsentedPrimaryAccountAvailable("user@gmail.com");
+
+  auto test_delegate = std::make_unique<TestDelegate>();
+  TestDelegate* delegate = test_delegate.get();
+  TurnSyncOnHelper helper(profile(), std::move(test_delegate));
+
+  // Simulate the first browser window becoming active.
+  BrowserList::SetLastActive(browser());
+
+  // Simulate the user closing the consent UI.
+  helper.OnSyncConfirmationUIClosed(LoginUIService::UI_CLOSED);
+
+  // Setup is not complete and we didn't show settings.
+  EXPECT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSync));
+  EXPECT_FALSE(sync_service_->GetUserSettings()->IsFirstSetupComplete());
+  EXPECT_EQ(0, delegate->show_sync_settings_count_);
+}
+
 TEST_F(TurnSyncOnHelperTest, UserPreviouslyDeclinedSync) {
   identity_test_env()->MakeUnconsentedPrimaryAccountAvailable("user@gmail.com");
   ASSERT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSync));

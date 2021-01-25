@@ -131,6 +131,9 @@ void DiceTurnSyncOnHelperDelegateImpl::SwitchToProfile(Profile* new_profile) {
 void DiceTurnSyncOnHelperDelegateImpl::OnSyncConfirmationUIClosed(
     LoginUIService::SyncConfirmationUIClosedResult result) {
   DCHECK(sync_confirmation_callback_);
+  // Treat closing the ui as an implicit ABORT_SYNC action.
+  if (result == LoginUIService::UI_CLOSED)
+    result = LoginUIService::ABORT_SYNC;
   std::move(sync_confirmation_callback_).Run(result);
 }
 
