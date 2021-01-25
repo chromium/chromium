@@ -5873,3 +5873,7 @@ crbug.com/1169908 http/tests/devtools/profiler/cpu-profiler-bottom-up-large-tree
 
 # Sheriff 2018-01-25
 crbug.com/893869 css3/masking/mask-repeat-space-padding.html [ Failure Pass ]
+crbug.com/1155125 [ Linux ] http/tests/history/replacestate-post-to-get-2.html [ Pass Timeout ]
+
+# DevTools roll
+crbug.com/1134103 http/tests/devtools/unit/view-location.js [ Skip ]
