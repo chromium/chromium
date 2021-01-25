@@ -5,7 +5,6 @@
 #include "chrome/browser/chromeos/phonehub/browser_tabs_metadata_fetcher_impl.h"
 
 #include "base/barrier_closure.h"
-#include "chrome/common/webui_url_constants.h"
 #include "components/favicon/core/history_ui_favicon_request_handler.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/sync_sessions/synced_session.h"
@@ -36,9 +35,9 @@ GetSortedMetadataWithoutFavicons(const sync_sessions::SyncedSession* session) {
 
       GURL tab_url = current_navigation.virtual_url();
 
-      // If the url is incorrectly formatted, is empty, or is
-      // a new tab, do not proceed with storing its metadata.
-      if (!tab_url.is_valid() || tab_url.spec() == chrome::kChromeUINewTabURL)
+      // If the url is incorrectly formatted, or is empty, do not proceed with
+      // storing its metadata.
+      if (!tab_url.is_valid())
         continue;
 
       const base::string16& title = current_navigation.title();
