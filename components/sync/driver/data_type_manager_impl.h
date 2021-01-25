@@ -86,10 +86,8 @@ class DataTypeManagerImpl : public DataTypeManager,
                                 ModelTypeSet types,
                                 DataTypeConfigStateMap* state_map);
 
-  // Prepare the parameters for the configurer's configuration. Returns the set
-  // of types that are already ready for configuration.
-  ModelTypeSet PrepareConfigureParams(
-      ModelTypeConfigurer::ConfigureParams* params);
+  // Prepare the parameters for the configurer's configuration.
+  ModelTypeConfigurer::ConfigureParams PrepareConfigureParams();
 
   // Abort configuration and stop all data types due to configuration errors.
   void Abort(ConfigureStatus status);
@@ -134,8 +132,10 @@ class DataTypeManagerImpl : public DataTypeManager,
                               ModelTypeSet succeeded_configuration_types,
                               ModelTypeSet failed_configuration_types);
 
-  void RecordConfigurationStats(ModelTypeSet types);
-  void RecordConfigurationStatsImpl(ModelType type);
+  void RecordConfigurationStats();
+  void RecordConfigurationStatsImpl(
+      ModelType type,
+      ModelTypeSet same_priority_types_configured_before);
 
   void StopImpl(ShutdownReason reason);
 
@@ -206,8 +206,6 @@ class DataTypeManagerImpl : public DataTypeManager,
     // previously encountered an error and had to be purged.
     // This is a subset of |types|.
     ModelTypeSet first_sync_types;
-    // Types that were already already downloaded at configuration time.
-    ModelTypeSet ready_types;
     // Time at which |types| began downloading.
     base::Time download_start_time;
     // Time at which |types| finished downloading.
@@ -215,9 +213,6 @@ class DataTypeManagerImpl : public DataTypeManager,
     // The set of types that are higher priority, and were therefore blocking
     // the download of |types|.
     ModelTypeSet higher_priority_types_before;
-    // The subset of |types| that were successfully configured. Populated
-    // one-by-one as types finish configuring.
-    ModelTypeSet configured_types;
   };
   base::Optional<AssociationTypesInfo> association_types_info_;
 

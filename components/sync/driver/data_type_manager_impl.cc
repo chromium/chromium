@@ -488,7 +488,7 @@ void DataTypeManagerImpl::ConfigurationCompleted(
     // downloading. Record stats for those.
     association_types_info_->first_sync_types = succeeded_configuration_types;
     association_types_info_->download_ready_time = base::Time::Now();
-    RecordConfigurationStats(association_types_info_->types);
+    RecordConfigurationStats();
   }
   DCHECK(!association_types_info_);
 
@@ -506,13 +506,9 @@ void DataTypeManagerImpl::StartNextConfiguration(
   if (configuration_types_queue_.empty())
     return;
 
-  ModelTypeConfigurer::ConfigureParams config_params;
-  ModelTypeSet ready_types = PrepareConfigureParams(&config_params);
-
   DCHECK(!association_types_info_);
   association_types_info_ = AssociationTypesInfo();
   association_types_info_->types = configuration_types_queue_.front();
-  association_types_info_->ready_types = ready_types;
   association_types_info_->download_start_time = base::Time::Now();
   association_types_info_->higher_priority_types_before =
       higher_priority_types_before;
@@ -528,11 +524,11 @@ void DataTypeManagerImpl::StartNextConfiguration(
   // it to complete. After engine initialization, all configurations pass
   // through the DataTypeManager, and we are careful to never send a new
   // configure request until the current request succeeds.
-  configurer_->ConfigureDataTypes(std::move(config_params));
+  configurer_->ConfigureDataTypes(PrepareConfigureParams());
 }
 
-ModelTypeSet DataTypeManagerImpl::PrepareConfigureParams(
-    ModelTypeConfigurer::ConfigureParams* params) {
+ModelTypeConfigurer::ConfigureParams
+DataTypeManagerImpl::PrepareConfigureParams() {
   // Divide up the types into their corresponding actions:
   // - Types which are newly enabled are downloaded.
   // - Types which have encountered a cryptographer error (crypto_types) are
@@ -618,36 +614,30 @@ ModelTypeSet DataTypeManagerImpl::PrepareConfigureParams(
   DVLOG(1) << "Types " << ModelTypeSetToString(types_to_download)
            << " added; calling ConfigureDataTypes";
 
-  params->reason = last_requested_context_.reason;
-  params->enabled_types = enabled_types;
-  params->to_download = types_to_download;
-  params->to_purge = types_to_purge;
-  params->ready_task = base::BindOnce(
+  ModelTypeConfigurer::ConfigureParams params;
+  params.reason = last_requested_context_.reason;
+  params.enabled_types = enabled_types;
+  params.to_download = types_to_download;
+  params.to_purge = types_to_purge;
+  params.ready_task = base::BindOnce(
       &DataTypeManagerImpl::ConfigurationCompleted,
       weak_ptr_factory_.GetWeakPtr(), configuration_types_queue_.front());
-  params->is_sync_feature_enabled =
+  params.is_sync_feature_enabled =
       last_requested_context_.sync_mode == SyncMode::kFull;
 
-  return Difference(active_types, types_to_download);
+  return params;
 }
 
-void DataTypeManagerImpl::RecordConfigurationStats(ModelTypeSet types) {
+void DataTypeManagerImpl::RecordConfigurationStats() {
   DCHECK(association_types_info_);
   DCHECK(state_ == CONFIGURING);
 
-  for (ModelType type : types) {
+  ModelTypeSet same_priority_types_configured_before;
+  for (ModelType type : association_types_info_->types) {
     if (ProtocolTypes().Has(type)) {
-      RecordConfigurationStatsImpl(type);
+      RecordConfigurationStatsImpl(type, same_priority_types_configured_before);
+      same_priority_types_configured_before.Put(type);
     }
-  }
-
-  // If any pending types weren't covered here, then we're not done yet.
-  if (types != association_types_info_->types) {
-    DCHECK_EQ(association_types_info_->ready_types, types);
-    // The remaining types are still downloading; this method will get called
-    // again (with the full set of types) once the download finishes.
-    DCHECK(association_types_info_->download_ready_time.is_null());
-    return;
   }
 
   association_types_info_.reset();
@@ -674,16 +664,17 @@ void DataTypeManagerImpl::OnSingleDataTypeWillStop(ModelType type,
   }
 }
 
-void DataTypeManagerImpl::RecordConfigurationStatsImpl(ModelType type) {
+void DataTypeManagerImpl::RecordConfigurationStatsImpl(
+    ModelType type,
+    ModelTypeSet same_priority_types_configured_before) {
   DCHECK(association_types_info_);
 
   if (!debug_info_listener_.IsInitialized())
     return;
 
-  if (configuration_stats_.count(type) > 0)
-    return;
+  DCHECK_EQ(configuration_stats_.count(type), 0u);
 
-  AssociationTypesInfo& info = *association_types_info_;
+  const AssociationTypesInfo& info = *association_types_info_;
   configuration_stats_[type].model_type = type;
   if (info.types.Has(type)) {
     // Times in |info| only apply to non-slow types.
@@ -696,8 +687,7 @@ void DataTypeManagerImpl::RecordConfigurationStatsImpl(ModelType type) {
     configuration_stats_[type].high_priority_types_configured_before =
         info.higher_priority_types_before;
     configuration_stats_[type].same_priority_types_configured_before =
-        info.configured_types;
-    info.configured_types.Put(type);
+        same_priority_types_configured_before;
   }
 }
 
