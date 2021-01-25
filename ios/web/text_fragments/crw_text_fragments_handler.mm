@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web/navigation/crw_text_fragments_handler.h"
+#import "ios/web/text_fragments/crw_text_fragments_handler.h"
 
 #import "base/json/json_writer.h"
 #import "base/strings/string_util.h"

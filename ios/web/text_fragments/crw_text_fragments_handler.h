@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_WEB_NAVIGATION_CRW_TEXT_FRAGMENTS_HANDLER_H_
-#define IOS_WEB_NAVIGATION_CRW_TEXT_FRAGMENTS_HANDLER_H_
+#ifndef IOS_WEB_TEXT_FRAGMENTS_CRW_TEXT_FRAGMENTS_HANDLER_H_
+#define IOS_WEB_TEXT_FRAGMENTS_CRW_TEXT_FRAGMENTS_HANDLER_H_
 
 #import <UIKit/UIKit.h>
 
@@ -32,4 +32,4 @@ struct Referrer;
 
 @end
 
-#endif  // IOS_WEB_NAVIGATION_CRW_TEXT_FRAGMENTS_HANDLER_H_
+#endif  // IOS_WEB_TEXT_FRAGMENTS_CRW_TEXT_FRAGMENTS_HANDLER_H_

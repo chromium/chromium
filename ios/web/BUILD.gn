@@ -165,6 +165,7 @@ test("ios_web_unittests") {
     ":ios_web_general_unittests",
     ":ios_web_navigation_unittests",
     ":ios_web_net_unittests",
+    ":ios_web_text_fragments_unittests",
     ":ios_web_web_state_js_unittests",
     ":ios_web_web_state_ui_unittests",
     ":ios_web_web_state_unittests",
@@ -235,8 +236,6 @@ source_set("ios_web_navigation_unittests") {
     ":web",
     "//base",
     "//base/test:test_support",
-    "//components/shared_highlighting/core/common",
-    "//components/ukm:test_support",
     "//components/url_formatter",
     "//ios/net",
     "//ios/testing:ocmock_support",
@@ -258,7 +257,6 @@ source_set("ios_web_navigation_unittests") {
     "//ios/web/web_state/ui:crw_web_view_navigation_proxy",
     "//ios/web/web_state/ui:web_view_handler",
     "//net:test_support",
-    "//services/metrics/public/cpp:ukm_builders",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/ocmock",
@@ -269,7 +267,6 @@ source_set("ios_web_navigation_unittests") {
     "navigation/crw_error_page_helper_unittest.mm",
     "navigation/crw_navigation_item_holder_unittest.mm",
     "navigation/crw_session_storage_unittest.mm",
-    "navigation/crw_text_fragments_handler_unittest.mm",
     "navigation/crw_wk_navigation_states_unittest.mm",
     "navigation/error_retry_state_machine_unittest.mm",
     "navigation/navigation_context_impl_unittest.mm",
@@ -337,6 +334,31 @@ source_set("test_support") {
     "//ios/web",
     "//ios/web/public/session",
   ]
+}
+
+source_set("ios_web_text_fragments_unittests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/shared_highlighting/core/common",
+    "//components/ukm:test_support",
+    "//ios/web/common:features",
+    "//ios/web/public/navigation:referrer",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//ios/web/text_fragments",
+    "//ios/web/web_state:web_state_impl_header",
+    "//ios/web/web_state/ui:web_view_handler",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//url",
+  ]
+
+  sources = [ "text_fragments/crw_text_fragments_handler_unittest.mm" ]
 }
 
 source_set("ios_web_web_state_unittests") {
