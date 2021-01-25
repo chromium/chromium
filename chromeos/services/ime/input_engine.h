@@ -72,10 +72,11 @@ class InputEngine : public mojom::InputChannel {
 
   // TODO(https://crbug.com/837156): Implement a state for the interface.
 
- private:
+ protected:
   // Returns whether the given ime_spec is supported by rulebased engine.
   bool IsImeSupportedByRulebased(const std::string& ime_spec);
 
+ private:
   mojo::ReceiverSet<mojom::InputChannel, std::unique_ptr<InputEngineContext>>
       channel_receivers_;
 
