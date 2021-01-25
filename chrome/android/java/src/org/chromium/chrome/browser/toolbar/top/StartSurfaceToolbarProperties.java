@@ -48,6 +48,8 @@ class StartSurfaceToolbarProperties {
             new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableBooleanPropertyKey NEW_TAB_BUTTON_HIGHLIGHT =
             new PropertyModel.WritableBooleanPropertyKey();
+    public static final PropertyModel.WritableBooleanPropertyKey GRID_TAB_SWITCHER_ENABLED =
+            new PropertyModel.WritableBooleanPropertyKey();
 
     /** When set to true, move identity disc to the start of the toolbar. Can only set to true. */
     public static final PropertyModel.WritableBooleanPropertyKey IDENTITY_DISC_AT_START =
@@ -69,11 +71,11 @@ class StartSurfaceToolbarProperties {
     public static final PropertyModel.WritableFloatPropertyKey TRANSLATION_Y =
             new PropertyModel.WritableFloatPropertyKey();
 
-    public static final PropertyKey[] ALL_KEYS =
-            new PropertyKey[] {NEW_TAB_CLICK_HANDLER, IS_VISIBLE, LOGO_IS_VISIBLE, IS_INCOGNITO,
-                    INCOGNITO_STATE_PROVIDER, ACCESSIBILITY_ENABLED, MENU_IS_VISIBLE,
-                    NEW_TAB_BUTTON_IS_VISIBLE, BUTTONS_CLICKABLE, IDENTITY_DISC_AT_START,
-                    INCOGNITO_SWITCHER_VISIBLE, NEW_TAB_BUTTON_AT_START, IDENTITY_DISC_IS_VISIBLE,
-                    IDENTITY_DISC_CLICK_HANDLER, IDENTITY_DISC_IMAGE, IDENTITY_DISC_DESCRIPTION,
-                    IN_START_SURFACE_MODE, NEW_TAB_BUTTON_HIGHLIGHT, TRANSLATION_Y};
+    public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {NEW_TAB_CLICK_HANDLER,
+            IS_VISIBLE, LOGO_IS_VISIBLE, IS_INCOGNITO, INCOGNITO_STATE_PROVIDER,
+            ACCESSIBILITY_ENABLED, MENU_IS_VISIBLE, NEW_TAB_BUTTON_IS_VISIBLE, BUTTONS_CLICKABLE,
+            GRID_TAB_SWITCHER_ENABLED, IDENTITY_DISC_AT_START, INCOGNITO_SWITCHER_VISIBLE,
+            NEW_TAB_BUTTON_AT_START, IDENTITY_DISC_IS_VISIBLE, IDENTITY_DISC_CLICK_HANDLER,
+            IDENTITY_DISC_IMAGE, IDENTITY_DISC_DESCRIPTION, IN_START_SURFACE_MODE,
+            NEW_TAB_BUTTON_HIGHLIGHT, TRANSLATION_Y};
 }

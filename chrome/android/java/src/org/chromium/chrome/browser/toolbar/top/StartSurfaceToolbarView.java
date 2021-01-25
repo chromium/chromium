@@ -58,6 +58,7 @@ class StartSurfaceToolbarView extends RelativeLayout {
         mLogo = findViewById(R.id.logo);
         mIdentityDiscButton = findViewById(R.id.identity_disc_button);
         updatePrimaryColorAndTint(false);
+        mNewTabButton.setStartSurfaceEnabled(true);
     }
 
     @Override
@@ -80,6 +81,10 @@ class StartSurfaceToolbarView extends RelativeLayout {
                 break;
             }
         }
+    }
+
+    void setGridTabSwitcherEnabled(boolean isGridTabSwitcherEnabled) {
+        mNewTabButton.setGridTabSwitcherEnabled(isGridTabSwitcherEnabled);
     }
 
     /**

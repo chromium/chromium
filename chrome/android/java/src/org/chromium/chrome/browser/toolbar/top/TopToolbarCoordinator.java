@@ -149,12 +149,12 @@ public class TopToolbarCoordinator implements Toolbar {
                         controlContainer.getRootView().findViewById(R.id.tab_switcher_toolbar_stub),
                         userEducationHelper, layoutStateProviderSupplier, identityDiscStateSupplier,
                         overviewThemeColorProvider, overviewModeMenuButtonCoordinator,
-                        identityDiscButtonSupplier);
+                        identityDiscButtonSupplier, isGridTabSwitcherEnabled);
             } else {
                 mTabSwitcherModeCoordinatorPhone = new TabSwitcherModeTTCoordinatorPhone(
                         controlContainer.getRootView().findViewById(R.id.tab_switcher_toolbar_stub),
                         overviewModeMenuButtonCoordinator, isGridTabSwitcherEnabled,
-                        isTabToGtsAnimationEnabled);
+                        isTabToGtsAnimationEnabled, isStartSurfaceEnabled);
             }
         }
         mIsGridTabSwitcherEnabled = isGridTabSwitcherEnabled;

@@ -60,7 +60,7 @@ public class StartSurfaceToolbarCoordinator {
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             ObservableSupplier<Boolean> identityDiscStateSupplier, ThemeColorProvider provider,
             MenuButtonCoordinator menuButtonCoordinator,
-            Supplier<ButtonData> identityDiscButtonSupplier) {
+            Supplier<ButtonData> identityDiscButtonSupplier, boolean isGridTabSwitcherEnabled) {
         mStub = startSurfaceToolbarStub;
 
         layoutStateProviderSupplier.onAvailable(
@@ -77,6 +77,8 @@ public class StartSurfaceToolbarCoordinator {
                         .with(StartSurfaceToolbarProperties.IN_START_SURFACE_MODE, false)
                         .with(StartSurfaceToolbarProperties.MENU_IS_VISIBLE, true)
                         .with(StartSurfaceToolbarProperties.IS_VISIBLE, true)
+                        .with(StartSurfaceToolbarProperties.GRID_TAB_SWITCHER_ENABLED,
+                                isGridTabSwitcherEnabled)
                         .build();
 
         // START_SURFACE_HIDE_INCOGNITO_SWITCH_NO_TAB and START_SURFACE_SHOW_STACK_TAB_SWITCHER

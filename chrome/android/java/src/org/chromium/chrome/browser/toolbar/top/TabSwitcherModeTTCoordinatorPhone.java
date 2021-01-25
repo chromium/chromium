@@ -44,14 +44,16 @@ class TabSwitcherModeTTCoordinatorPhone {
 
     private final boolean mIsGridTabSwitcherEnabled;
     private final boolean mIsTabToGtsAnimationEnabled;
+    private final boolean mIsStartSurfaceEnabled;
 
     TabSwitcherModeTTCoordinatorPhone(ViewStub tabSwitcherToolbarStub,
             MenuButtonCoordinator menuButtonCoordinator, boolean isGridTabSwitcherEnabled,
-            boolean isTabToGtsAnimationEnabled) {
+            boolean isTabToGtsAnimationEnabled, boolean isStartSurfaceEnabled) {
         mTabSwitcherToolbarStub = tabSwitcherToolbarStub;
         mMenuButtonCoordinator = menuButtonCoordinator;
         mIsGridTabSwitcherEnabled = isGridTabSwitcherEnabled;
         mIsTabToGtsAnimationEnabled = isTabToGtsAnimationEnabled;
+        mIsStartSurfaceEnabled = isStartSurfaceEnabled;
     }
 
     /**
@@ -154,7 +156,8 @@ class TabSwitcherModeTTCoordinatorPhone {
 
     private void initializeTabSwitcherToolbar() {
         mTabSwitcherModeToolbar = (TabSwitcherModeTTPhone) mTabSwitcherToolbarStub.inflate();
-        mTabSwitcherModeToolbar.initialize(mIsGridTabSwitcherEnabled, mIsTabToGtsAnimationEnabled);
+        mTabSwitcherModeToolbar.initialize(
+                mIsGridTabSwitcherEnabled, mIsTabToGtsAnimationEnabled, mIsStartSurfaceEnabled);
         mMenuButtonCoordinator.setMenuButton(
                 mTabSwitcherModeToolbar.findViewById(R.id.menu_button_wrapper));
 

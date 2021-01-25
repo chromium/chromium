@@ -48,10 +48,34 @@ public class NewTabButton
                 getContext(), R.color.default_icon_color_tint_list);
         setImageDrawable(VectorDrawableCompat.create(
                 getContext().getResources(), R.drawable.new_tab_icon, getContext().getTheme()));
-        updateDrawableTint();
-        setOnLongClickListener(this);
         mIsTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
         mAccessibilityLayoutEnabled = DeviceClassManager.enableAccessibilityLayout();
+        updateDrawableTint();
+        setOnLongClickListener(this);
+    }
+
+    /**
+     * Set grid-type tab switcher feature flag.
+     * @param isGridTabSwitcherEnabled Whether grid tab switcher is enabled.
+     */
+    public void setGridTabSwitcherEnabled(boolean isGridTabSwitcherEnabled) {
+        if (mIsGridTabSwitcherEnabled == isGridTabSwitcherEnabled) return;
+        mIsGridTabSwitcherEnabled = isGridTabSwitcherEnabled;
+
+        updateDrawableTint();
+        invalidate();
+    }
+
+    /**
+     * Set start surface feature flag.
+     * @param isStartSurfaceEnabled Whether start surface is enabled.
+     */
+    public void setStartSurfaceEnabled(boolean isStartSurfaceEnabled) {
+        if (mIsStartSurfaceEnabled == isStartSurfaceEnabled) return;
+        mIsStartSurfaceEnabled = isStartSurfaceEnabled;
+
+        updateDrawableTint();
+        invalidate();
     }
 
     @Override
@@ -64,12 +88,6 @@ public class NewTabButton
     public void setIncognitoStateProvider(IncognitoStateProvider incognitoStateProvider) {
         mIncognitoStateProvider = incognitoStateProvider;
         mIncognitoStateProvider.addIncognitoStateObserverAndTrigger(this);
-    }
-
-    public void setTabUiFeatureFlags(
-            boolean isGridTabSwitcherEnabled, boolean isStartSurfaceEnabled) {
-        mIsGridTabSwitcherEnabled = isGridTabSwitcherEnabled;
-        mIsStartSurfaceEnabled = isStartSurfaceEnabled;
     }
 
     @Override
