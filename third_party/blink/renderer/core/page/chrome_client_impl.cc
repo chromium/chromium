@@ -789,7 +789,7 @@ void ChromeClientImpl::FullscreenElementChanged(
 
 void ChromeClientImpl::AnimateDoubleTapZoom(const gfx::Point& point,
                                             const gfx::Rect& rect) {
-  web_view_->AnimateDoubleTapZoom(point, WebRect(rect));
+  web_view_->AnimateDoubleTapZoom(point, rect);
 }
 
 void ChromeClientImpl::ClearLayerSelection(LocalFrame* frame) {

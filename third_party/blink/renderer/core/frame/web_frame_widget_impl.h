@@ -132,8 +132,8 @@ class CORE_EXPORT WebFrameWidgetImpl
   WebLocalFrameImpl* LocalRootImpl() const { return local_root_; }
 
   // Returns the bounding box of the block type node touched by the WebPoint.
-  WebRect ComputeBlockBound(const gfx::Point& point_in_root_frame,
-                            bool ignore_clipping) const;
+  gfx::Rect ComputeBlockBound(const gfx::Point& point_in_root_frame,
+                              bool ignore_clipping) const;
 
   virtual void BindLocalRoot(WebLocalFrame&);
 

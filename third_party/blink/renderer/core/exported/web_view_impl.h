@@ -232,7 +232,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
                                  cc::BrowserControlsParams);
 
   // Requests a page-scale animation based on the specified point/rect.
-  void AnimateDoubleTapZoom(const gfx::Point&, const WebRect& block_bounds);
+  void AnimateDoubleTapZoom(const gfx::Point&, const gfx::Rect& block_bounds);
 
   // mojom::blink::PageBroadcast method:
   void SetPageLifecycleState(
@@ -384,7 +384,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
 
   void ComputeScaleAndScrollForBlockRect(
       const gfx::Point& hit_point,
-      const WebRect& block_rect,
+      const gfx::Rect& block_rect,
       float padding,
       float default_scale_when_already_legible,
       float& scale,
@@ -605,9 +605,9 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // while keeping it smaller than page width.
   //
   // This method can only be called if the main frame is local.
-  WebRect WidenRectWithinPageBounds(const WebRect& source,
-                                    int target_margin,
-                                    int minimum_margin);
+  gfx::Rect WidenRectWithinPageBounds(const gfx::Rect& source,
+                                      int target_margin,
+                                      int minimum_margin);
 
   void EnablePopupMouseWheelEventListener(WebLocalFrameImpl* local_root);
   void DisablePopupMouseWheelEventListener();

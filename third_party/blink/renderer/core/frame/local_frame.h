@@ -348,9 +348,9 @@ class CORE_EXPORT LocalFrame final
   // media query value changed.
   void MediaQueryAffectingValueChangedForLocalSubtree(MediaValueChange);
 
-  void WindowSegmentsChanged(const WebVector<WebRect>& window_segments);
+  void WindowSegmentsChanged(const WebVector<gfx::Rect>& window_segments);
   void UpdateCSSFoldEnvironmentVariables(
-      const WebVector<WebRect>& window_segments);
+      const WebVector<gfx::Rect>& window_segments);
 
   String SelectedText() const;
   String SelectedTextForClipboard() const;

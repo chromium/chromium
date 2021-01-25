@@ -309,7 +309,7 @@ WebLocalFrame* WebFrameWidgetImpl::LocalRoot() const {
   return local_root_;
 }
 
-WebRect WebFrameWidgetImpl::ComputeBlockBound(
+gfx::Rect WebFrameWidgetImpl::ComputeBlockBound(
     const gfx::Point& point_in_root_frame,
     bool ignore_clipping) const {
   HitTestLocation location(local_root_->GetFrameView()->ConvertFromRootFrame(
@@ -324,7 +324,7 @@ WebRect WebFrameWidgetImpl::ComputeBlockBound(
 
   Node* node = result.InnerNodeOrImageMapImage();
   if (!node)
-    return WebRect();
+    return gfx::Rect();
 
   // Find the block type node based on the hit node.
   // FIXME: This wants to walk flat tree with
@@ -339,7 +339,7 @@ WebRect WebFrameWidgetImpl::ComputeBlockBound(
     LocalFrame* frame = node->GetDocument().GetFrame();
     return frame->View()->ConvertToRootFrame(absolute_rect);
   }
-  return WebRect();
+  return gfx::Rect();
 }
 
 void WebFrameWidgetImpl::DragTargetDragEnter(
@@ -838,8 +838,7 @@ WebInputEventResult WebFrameWidgetImpl::HandleGestureEvent(
             gfx::Rect(ComputeBlockBound(pos_in_local_frame_root, false));
 
         if (ForMainFrame()) {
-          web_view->AnimateDoubleTapZoom(pos_in_local_frame_root,
-                                         WebRect(block_bounds));
+          web_view->AnimateDoubleTapZoom(pos_in_local_frame_root, block_bounds);
         } else {
           // This sends the tap point and bounds to the main frame renderer via
           // the browser, where their coordinates will be transformed into the

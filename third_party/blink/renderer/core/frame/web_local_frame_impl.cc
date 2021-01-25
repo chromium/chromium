@@ -1800,13 +1800,12 @@ void WebLocalFrameImpl::PrintPagesForTesting(
       canvas, FloatSize(page_size_in_pixels), FloatSize(spool_size_in_pixels));
 }
 
-WebRect WebLocalFrameImpl::GetSelectionBoundsRectForTesting() const {
+gfx::Rect WebLocalFrameImpl::GetSelectionBoundsRectForTesting() const {
   GetFrame()->View()->UpdateLifecycleToLayoutClean(
       DocumentUpdateReason::kSelection);
-  return HasSelection()
-             ? WebRect(PixelSnappedIntRect(
-                   GetFrame()->Selection().AbsoluteUnclippedBounds()))
-             : WebRect();
+  return HasSelection() ? PixelSnappedIntRect(
+                              GetFrame()->Selection().AbsoluteUnclippedBounds())
+                        : gfx::Rect();
 }
 
 gfx::Point WebLocalFrameImpl::GetPositionInViewportForTesting() const {
@@ -2609,18 +2608,19 @@ WebInputMethodController* WebLocalFrameImpl::GetInputMethodController() {
 // "core/editing/serializers/Serialization.cpp".
 static String CreateMarkupInRect(LocalFrame*, const IntPoint&, const IntPoint&);
 
-void WebLocalFrameImpl::ExtractSmartClipData(WebRect rect_in_viewport,
+void WebLocalFrameImpl::ExtractSmartClipData(const gfx::Rect& rect_in_viewport,
                                              WebString& clip_text,
                                              WebString& clip_html,
-                                             WebRect& clip_rect) {
+                                             gfx::Rect& clip_rect) {
   // TODO(mahesh.ma): Check clip_data even after use-zoom-for-dsf is enabled.
-  SmartClipData clip_data = SmartClip(GetFrame()).DataForRect(rect_in_viewport);
+  SmartClipData clip_data =
+      SmartClip(GetFrame()).DataForRect(IntRect(rect_in_viewport));
   clip_text = clip_data.ClipData();
   clip_rect = clip_data.RectInViewport();
 
-  IntPoint start_point(rect_in_viewport.x, rect_in_viewport.y);
-  IntPoint end_point(rect_in_viewport.x + rect_in_viewport.width,
-                     rect_in_viewport.y + rect_in_viewport.height);
+  IntPoint start_point(rect_in_viewport.x(), rect_in_viewport.y());
+  IntPoint end_point(rect_in_viewport.x() + rect_in_viewport.width(),
+                     rect_in_viewport.y() + rect_in_viewport.height());
   clip_html = CreateMarkupInRect(
       GetFrame(), GetFrame()->View()->ViewportToFrame(start_point),
       GetFrame()->View()->ViewportToFrame(end_point));

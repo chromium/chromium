@@ -1343,7 +1343,7 @@ void LocalFrame::MediaQueryAffectingValueChangedForLocalSubtree(
 }
 
 void LocalFrame::WindowSegmentsChanged(
-    const WebVector<WebRect>& window_segments) {
+    const WebVector<gfx::Rect>& window_segments) {
   if (!RuntimeEnabledFeatures::CSSFoldablesEnabled())
     return;
 
@@ -1359,7 +1359,7 @@ void LocalFrame::WindowSegmentsChanged(
 }
 
 void LocalFrame::UpdateCSSFoldEnvironmentVariables(
-    const WebVector<WebRect>& window_segments) {
+    const WebVector<gfx::Rect>& window_segments) {
   DCHECK(RuntimeEnabledFeatures::CSSFoldablesEnabled());
 
   // Update the variable values on the root instance so that documents that
@@ -1376,16 +1376,16 @@ void LocalFrame::UpdateCSSFoldEnvironmentVariables(
     // describes the fold area (note that this may have a zero width or height,
     // but not negative).
     gfx::Rect fold_rect;
-    if (window_segments[0].y == window_segments[1].y) {
-      int fold_width = window_segments[1].x - window_segments[0].width;
+    if (window_segments[0].y() == window_segments[1].y()) {
+      int fold_width = window_segments[1].x() - window_segments[0].width();
       DCHECK_GE(fold_width, 0);
-      fold_rect.SetRect(window_segments[0].width, window_segments[0].y,
-                        fold_width, window_segments[0].height);
-    } else if (window_segments[0].x == window_segments[1].x) {
-      int fold_height = window_segments[1].y - window_segments[0].height;
+      fold_rect.SetRect(window_segments[0].width(), window_segments[0].y(),
+                        fold_width, window_segments[0].height());
+    } else if (window_segments[0].x() == window_segments[1].x()) {
+      int fold_height = window_segments[1].y() - window_segments[0].height();
       DCHECK_GE(fold_height, 0);
-      fold_rect.SetRect(window_segments[0].x, window_segments[0].height,
-                        window_segments[0].width, fold_height);
+      fold_rect.SetRect(window_segments[0].x(), window_segments[0].height(),
+                        window_segments[0].width(), fold_height);
     }
 
     vars.SetVariable(UADefinedVariable::kFoldTop,

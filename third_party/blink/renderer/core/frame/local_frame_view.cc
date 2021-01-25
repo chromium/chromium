@@ -1110,7 +1110,7 @@ void LocalFrameView::RunIntersectionObserverSteps() {
     LayoutObject* layout_object = GetLayoutView();
     IntRect main_frame_dimensions =
         To<LayoutBox>(layout_object)->PixelSnappedLayoutOverflowRect();
-    GetFrame().Client()->OnMainFrameIntersectionChanged(WebRect(
+    GetFrame().Client()->OnMainFrameIntersectionChanged(IntRect(
         0, 0, main_frame_dimensions.Width(), main_frame_dimensions.Height()));
   }
 

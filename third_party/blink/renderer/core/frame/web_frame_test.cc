@@ -3175,9 +3175,9 @@ void SimulatePageScale(WebViewImpl* web_view_impl, float& scale) {
   scale = web_view_impl->PageScaleFactor();
 }
 
-WebRect ComputeBlockBoundHelper(WebViewImpl* web_view_impl,
-                                const gfx::Point& point,
-                                bool ignore_clipping) {
+gfx::Rect ComputeBlockBoundHelper(WebViewImpl* web_view_impl,
+                                  const gfx::Point& point,
+                                  bool ignore_clipping) {
   DCHECK(web_view_impl->MainFrameImpl());
   WebFrameWidgetImpl* widget =
       web_view_impl->MainFrameImpl()->FrameWidgetImpl();
@@ -3210,10 +3210,10 @@ TEST_F(WebFrameTest, DivAutoZoomParamsTest) {
   web_view_helper.GetWebView()->SetPageScaleFactor(0.5f);
   web_view_helper.Resize(gfx::Size(viewport_width, viewport_height));
 
-  WebRect wide_div(200, 100, 400, 150);
-  WebRect tall_div(200, 300, 400, 800);
-  gfx::Point double_tap_point_wide(wide_div.x + 50, wide_div.y + 50);
-  gfx::Point double_tap_point_tall(tall_div.x + 50, tall_div.y + 50);
+  gfx::Rect wide_div(200, 100, 400, 150);
+  gfx::Rect tall_div(200, 300, 400, 800);
+  gfx::Point double_tap_point_wide(wide_div.x() + 50, wide_div.y() + 50);
+  gfx::Point double_tap_point_tall(tall_div.x() + 50, tall_div.y() + 50);
   float scale;
   IntPoint scroll;
 
@@ -3222,15 +3222,15 @@ TEST_F(WebFrameTest, DivAutoZoomParamsTest) {
       double_tap_zoom_already_legible_ratio;
 
   // Test double-tap zooming into wide div.
-  WebRect wide_block_bound = ComputeBlockBoundHelper(
+  gfx::Rect wide_block_bound = ComputeBlockBoundHelper(
       web_view_helper.GetWebView(), double_tap_point_wide, false);
   web_view_helper.GetWebView()->ComputeScaleAndScrollForBlockRect(
       double_tap_point_wide, wide_block_bound, kTouchPointPadding,
       double_tap_zoom_already_legible_scale, scale, scroll);
   // The div should horizontally fill the screen (modulo margins), and
   // vertically centered (modulo integer rounding).
-  EXPECT_NEAR(viewport_width / (float)wide_div.width, scale, 0.1);
-  EXPECT_NEAR(wide_div.x, scroll.X(), 20);
+  EXPECT_NEAR(viewport_width / (float)wide_div.width(), scale, 0.1);
+  EXPECT_NEAR(wide_div.x(), scroll.X(), 20);
   EXPECT_EQ(0, scroll.Y());
 
   SetScaleAndScrollAndLayout(web_view_helper.GetWebView(), scroll, scale);
@@ -3247,15 +3247,15 @@ TEST_F(WebFrameTest, DivAutoZoomParamsTest) {
   SetScaleAndScrollAndLayout(web_view_helper.GetWebView(), gfx::Point(), scale);
 
   // Test double-tap zooming into tall div.
-  WebRect tall_block_bound = ComputeBlockBoundHelper(
+  gfx::Rect tall_block_bound = ComputeBlockBoundHelper(
       web_view_helper.GetWebView(), double_tap_point_tall, false);
   web_view_helper.GetWebView()->ComputeScaleAndScrollForBlockRect(
       double_tap_point_tall, tall_block_bound, kTouchPointPadding,
       double_tap_zoom_already_legible_scale, scale, scroll);
   // The div should start at the top left of the viewport.
-  EXPECT_NEAR(viewport_width / (float)tall_div.width, scale, 0.1);
-  EXPECT_NEAR(tall_div.x, scroll.X(), 20);
-  EXPECT_NEAR(tall_div.y, scroll.Y(), 20);
+  EXPECT_NEAR(viewport_width / (float)tall_div.width(), scale, 0.1);
+  EXPECT_NEAR(tall_div.x(), scroll.X(), 20);
+  EXPECT_NEAR(tall_div.y(), scroll.Y(), 20);
 }
 
 TEST_F(WebFrameTest, DivAutoZoomWideDivTest) {
@@ -3280,8 +3280,8 @@ TEST_F(WebFrameTest, DivAutoZoomWideDivTest) {
       web_view_helper.GetWebView()->MinimumPageScaleFactor() *
       double_tap_zoom_already_legible_ratio;
 
-  WebRect div(0, 100, viewport_width, 150);
-  gfx::Point point(div.x + 50, div.y + 50);
+  gfx::Rect div(0, 100, viewport_width, 150);
+  gfx::Point point(div.x() + 50, div.y() + 50);
   float scale;
   SetScaleAndScrollAndLayout(
       web_view_helper.GetWebView(), gfx::Point(),
@@ -3312,12 +3312,12 @@ TEST_F(WebFrameTest, DivAutoZoomVeryTallTest) {
   web_view_helper.GetWebView()->SetPageScaleFactor(1.0f);
   UpdateAllLifecyclePhases(web_view_helper.GetWebView());
 
-  WebRect div(200, 300, 400, 5000);
-  gfx::Point point(div.x + 50, div.y + 3000);
+  gfx::Rect div(200, 300, 400, 5000);
+  gfx::Point point(div.x() + 50, div.y() + 3000);
   float scale;
   IntPoint scroll;
 
-  WebRect block_bound =
+  gfx::Rect block_bound =
       ComputeBlockBoundHelper(web_view_helper.GetWebView(), point, true);
   web_view_helper.GetWebView()->ComputeScaleAndScrollForBlockRect(
       point, block_bound, 0, 1.0f, scale, scroll);
@@ -3345,10 +3345,10 @@ TEST_F(WebFrameTest, DivAutoZoomMultipleDivsTest) {
 
   web_view_helper.GetWebView()->EnableFakePageScaleAnimationForTesting(true);
 
-  WebRect top_div(200, 100, 200, 150);
-  WebRect bottom_div(200, 300, 200, 150);
-  gfx::Point top_point(top_div.x + 50, top_div.y + 50);
-  gfx::Point bottom_point(bottom_div.x + 50, bottom_div.y + 50);
+  gfx::Rect top_div(200, 100, 200, 150);
+  gfx::Rect bottom_div(200, 300, 200, 150);
+  gfx::Point top_point(top_div.x() + 50, top_div.y() + 50);
+  gfx::Point bottom_point(bottom_div.x() + 50, bottom_div.y() + 50);
   float scale;
   SetScaleAndScrollAndLayout(
       web_view_helper.GetWebView(), gfx::Point(),
@@ -3386,7 +3386,7 @@ TEST_F(WebFrameTest, DivAutoZoomMultipleDivsTest) {
                                         1.1f, false, 0, 0,
                                         cc::BrowserControlsState::kBoth});
 
-  WebRect block_bounds =
+  gfx::Rect block_bounds =
       ComputeBlockBoundHelper(web_view_helper.GetWebView(), top_point, false);
   web_view_helper.GetWebView()->AnimateDoubleTapZoom(IntPoint(top_point),
                                                      block_bounds);
@@ -3414,8 +3414,8 @@ TEST_F(WebFrameTest, DivAutoZoomScaleBoundsTest) {
 
   web_view_helper.GetWebView()->EnableFakePageScaleAnimationForTesting(true);
 
-  WebRect div(200, 100, 200, 150);
-  gfx::Point double_tap_point(div.x + 50, div.y + 50);
+  gfx::Rect div(200, 100, 200, 150);
+  gfx::Point double_tap_point(div.x() + 50, div.y() + 50);
   float scale;
 
   // Test double tap scale bounds.
@@ -3508,8 +3508,8 @@ TEST_F(WebFrameTest, DivAutoZoomScaleLegibleScaleTest) {
       ->GetSettings()
       .SetTextAutosizingEnabled(true);
 
-  WebRect div(200, 100, 200, 150);
-  gfx::Point double_tap_point(div.x + 50, div.y + 50);
+  gfx::Rect div(200, 100, 200, 150);
+  gfx::Point double_tap_point(div.x() + 50, div.y() + 50);
   float scale;
 
   // Test double tap scale bounds.
@@ -3634,8 +3634,8 @@ TEST_F(WebFrameTest, DivAutoZoomScaleFontScaleFactorTest) {
       ->GetSettings()
       .SetAccessibilityFontScaleFactor(accessibility_font_scale_factor);
 
-  WebRect div(200, 100, 200, 150);
-  gfx::Point double_tap_point(div.x + 50, div.y + 50);
+  gfx::Rect div(200, 100, 200, 150);
+  gfx::Point double_tap_point(div.x() + 50, div.y() + 50);
   float scale;
 
   // Test double tap scale bounds.
@@ -3862,8 +3862,8 @@ TEST_F(WebFrameTest, DivScrollIntoEditableTest) {
 
   web_view_helper.GetWebView()->EnableFakePageScaleAnimationForTesting(true);
 
-  WebRect edit_box_with_text(200, 200, 250, 20);
-  WebRect edit_box_with_no_text(200, 250, 250, 20);
+  gfx::Rect edit_box_with_text(200, 200, 250, 20);
+  gfx::Rect edit_box_with_no_text(200, 250, 250, 20);
 
   // Test scrolling the focused node
   // The edit box is shorter and narrower than the viewport when legible.
@@ -3896,10 +3896,11 @@ TEST_F(WebFrameTest, DivScrollIntoEditableTest) {
       need_animation);
   EXPECT_TRUE(need_animation);
   // The edit box should be left aligned with a margin for possible label.
-  int h_scroll = edit_box_with_text.x - left_box_ratio * viewport_width / scale;
+  int h_scroll =
+      edit_box_with_text.x() - left_box_ratio * viewport_width / scale;
   EXPECT_NEAR(h_scroll, scroll.X(), 2);
-  int v_scroll = edit_box_with_text.y -
-                 (viewport_height / scale - edit_box_with_text.height) / 2;
+  int v_scroll = edit_box_with_text.y() -
+                 (viewport_height / scale - edit_box_with_text.height()) / 2;
   EXPECT_NEAR(v_scroll, scroll.Y(), 2);
   EXPECT_NEAR(min_readable_caret_height / caret.height(), scale, 0.1);
 
@@ -3932,10 +3933,10 @@ TEST_F(WebFrameTest, DivScrollIntoEditableTest) {
       need_animation);
   EXPECT_TRUE(need_animation);
   // The edit box should be left aligned.
-  h_scroll = edit_box_with_no_text.x;
+  h_scroll = edit_box_with_no_text.x();
   EXPECT_NEAR(h_scroll, scroll.X(), 2);
-  v_scroll = edit_box_with_no_text.y -
-             (viewport_height / scale - edit_box_with_no_text.height) / 2;
+  v_scroll = edit_box_with_no_text.y() -
+             (viewport_height / scale - edit_box_with_no_text.height()) / 2;
   EXPECT_NEAR(v_scroll, scroll.Y(), 2);
   EXPECT_NEAR(min_readable_caret_height / caret.height(), scale, 0.1);
 
@@ -3974,7 +3975,7 @@ TEST_F(WebFrameTest, DivScrollIntoEditablePreservePageScaleTest) {
   web_view_helper.Resize(gfx::Size(kViewportWidth, kViewportHeight));
   web_view_helper.GetWebView()->EnableFakePageScaleAnimationForTesting(true);
 
-  const WebRect edit_box_with_text(200, 200, 250, 20);
+  const gfx::Rect edit_box_with_text(200, 200, 250, 20);
 
   web_view_helper.GetWebView()->AdvanceFocus(false);
   // Set the caret to the begining of the input box.
@@ -4005,10 +4006,10 @@ TEST_F(WebFrameTest, DivScrollIntoEditablePreservePageScaleTest) {
       need_animation);
   EXPECT_TRUE(need_animation);
   // Edit box and caret should be left alinged
-  int h_scroll = edit_box_with_text.x;
+  int h_scroll = edit_box_with_text.x();
   EXPECT_NEAR(h_scroll, scroll.X(), 1);
-  int v_scroll = edit_box_with_text.y -
-                 (kViewportHeight / scale - edit_box_with_text.height) / 2;
+  int v_scroll = edit_box_with_text.y() -
+                 (kViewportHeight / scale - edit_box_with_text.height()) / 2;
   EXPECT_NEAR(v_scroll, scroll.Y(), 1);
   // Page scale have to be unchanged
   EXPECT_EQ(new_scale, scale);
@@ -4026,8 +4027,8 @@ TEST_F(WebFrameTest, DivScrollIntoEditablePreservePageScaleTest) {
   EXPECT_TRUE(need_animation);
   // Horizontal scroll have to be the same
   EXPECT_NEAR(h_scroll, scroll.X(), 1);
-  v_scroll = edit_box_with_text.y -
-             (kViewportHeight / scale - edit_box_with_text.height) / 2;
+  v_scroll = edit_box_with_text.y() -
+             (kViewportHeight / scale - edit_box_with_text.height()) / 2;
   EXPECT_NEAR(v_scroll, scroll.Y(), 1);
   // Page scale have to be unchanged
   EXPECT_EQ(new_scale, scale);
@@ -4055,7 +4056,7 @@ TEST_F(WebFrameTest, DivScrollIntoEditableTestZoomToLegibleScaleDisabled) {
 
   web_view_helper.GetWebView()->EnableFakePageScaleAnimationForTesting(true);
 
-  WebRect edit_box_with_no_text(200, 250, 250, 20);
+  gfx::Rect edit_box_with_no_text(200, 250, 250, 20);
 
   // Test scrolling the focused node
   // Since we're zoomed out, the caret is considered too small to be legible and
@@ -4086,10 +4087,10 @@ TEST_F(WebFrameTest, DivScrollIntoEditableTestZoomToLegibleScaleDisabled) {
   // The edit box should be left aligned with a margin for possible label.
   EXPECT_TRUE(need_animation);
   int h_scroll =
-      edit_box_with_no_text.x - left_box_ratio * viewport_width / scale;
+      edit_box_with_no_text.x() - left_box_ratio * viewport_width / scale;
   EXPECT_NEAR(h_scroll, scroll.X(), 2);
-  int v_scroll = edit_box_with_no_text.y -
-                 (viewport_height / scale - edit_box_with_no_text.height) / 2;
+  int v_scroll = edit_box_with_no_text.y() -
+                 (viewport_height / scale - edit_box_with_no_text.height()) / 2;
   EXPECT_NEAR(v_scroll, scroll.Y(), 2);
 
   SetScaleAndScrollAndLayout(web_view_helper.GetWebView(), scroll, scale);
@@ -4136,8 +4137,9 @@ TEST_F(WebFrameTest, DivScrollIntoEditableTestWithDeviceScaleFactor) {
 
   web_view_helper.GetWebView()->EnableFakePageScaleAnimationForTesting(true);
 
-  WebRect edit_box_with_text(200 * kDeviceScaleFactor, 200 * kDeviceScaleFactor,
-                             250 * kDeviceScaleFactor, 20 * kDeviceScaleFactor);
+  gfx::Rect edit_box_with_text(
+      200 * kDeviceScaleFactor, 200 * kDeviceScaleFactor,
+      250 * kDeviceScaleFactor, 20 * kDeviceScaleFactor);
   web_view_helper.GetWebView()->AdvanceFocus(false);
 
   // Set the page scale to be smaller than the minimal readable scale.
@@ -4157,10 +4159,10 @@ TEST_F(WebFrameTest, DivScrollIntoEditableTestWithDeviceScaleFactor) {
       need_animation);
   EXPECT_TRUE(need_animation);
   // The edit box wider than the viewport when legible should be left aligned.
-  int h_scroll = edit_box_with_text.x;
+  int h_scroll = edit_box_with_text.x();
   EXPECT_NEAR(h_scroll, scroll.X(), 2);
-  int v_scroll = edit_box_with_text.y -
-                 (viewport_height / scale - edit_box_with_text.height) / 2;
+  int v_scroll = edit_box_with_text.y() -
+                 (viewport_height / scale - edit_box_with_text.height()) / 2;
   EXPECT_NEAR(v_scroll, scroll.Y(), 2);
   EXPECT_NEAR(min_readable_caret_height / caret_bounds.Height(), scale, 0.1);
 }
@@ -5926,7 +5928,7 @@ TEST_F(WebFrameTest, SmartClipData) {
       "initial;\">Price 10,000,000won</div>";
   WebString clip_text;
   WebString clip_html;
-  WebRect clip_rect;
+  gfx::Rect clip_rect;
   RegisterMockedHttpURLLoad("Ahem.ttf");
   RegisterMockedHttpURLLoad("smartclip.html");
   frame_test_helpers::WebViewHelper web_view_helper;
@@ -5934,7 +5936,7 @@ TEST_F(WebFrameTest, SmartClipData) {
   WebLocalFrame* frame = web_view_helper.LocalMainFrame();
   web_view_helper.Resize(gfx::Size(500, 500));
   UpdateAllLifecyclePhases(web_view_helper.GetWebView());
-  WebRect crop_rect(300, 125, 152, 50);
+  gfx::Rect crop_rect(300, 125, 152, 50);
   frame->ExtractSmartClipData(crop_rect, clip_text, clip_html, clip_rect);
   EXPECT_EQ(kExpectedClipText, clip_text);
   EXPECT_EQ(kExpectedClipHtml, clip_html);
@@ -5963,7 +5965,7 @@ TEST_F(WebFrameTest, SmartClipDataWithPinchZoom) {
       "initial;\">Price 10,000,000won</div>";
   WebString clip_text;
   WebString clip_html;
-  WebRect clip_rect;
+  gfx::Rect clip_rect;
   RegisterMockedHttpURLLoad("Ahem.ttf");
   RegisterMockedHttpURLLoad("smartclip.html");
   frame_test_helpers::WebViewHelper web_view_helper;
@@ -5973,7 +5975,7 @@ TEST_F(WebFrameTest, SmartClipDataWithPinchZoom) {
   UpdateAllLifecyclePhases(web_view_helper.GetWebView());
   web_view_helper.GetWebView()->SetPageScaleFactor(1.5);
   web_view_helper.GetWebView()->SetVisualViewportOffset(gfx::PointF(167, 100));
-  WebRect crop_rect(200, 38, 228, 75);
+  gfx::Rect crop_rect(200, 38, 228, 75);
   frame->ExtractSmartClipData(crop_rect, clip_text, clip_html, clip_rect);
   EXPECT_EQ(kExpectedClipText, clip_text);
   EXPECT_EQ(kExpectedClipHtml, clip_html);
@@ -5982,7 +5984,7 @@ TEST_F(WebFrameTest, SmartClipDataWithPinchZoom) {
 TEST_F(WebFrameTest, SmartClipReturnsEmptyStringsWhenUserSelectIsNone) {
   WebString clip_text;
   WebString clip_html;
-  WebRect clip_rect;
+  gfx::Rect clip_rect;
   RegisterMockedHttpURLLoad("Ahem.ttf");
   RegisterMockedHttpURLLoad("smartclip_user_select_none.html");
   frame_test_helpers::WebViewHelper web_view_helper;
@@ -5991,7 +5993,7 @@ TEST_F(WebFrameTest, SmartClipReturnsEmptyStringsWhenUserSelectIsNone) {
   WebLocalFrame* frame = web_view_helper.LocalMainFrame();
   web_view_helper.Resize(gfx::Size(500, 500));
   UpdateAllLifecyclePhases(web_view_helper.GetWebView());
-  WebRect crop_rect(0, 0, 100, 100);
+  gfx::Rect crop_rect(0, 0, 100, 100);
   frame->ExtractSmartClipData(crop_rect, clip_text, clip_html, clip_rect);
   EXPECT_STREQ("", clip_text.Utf8().c_str());
   EXPECT_STREQ("", clip_html.Utf8().c_str());
@@ -6000,7 +6002,7 @@ TEST_F(WebFrameTest, SmartClipReturnsEmptyStringsWhenUserSelectIsNone) {
 TEST_F(WebFrameTest, SmartClipDoesNotCrashPositionReversed) {
   WebString clip_text;
   WebString clip_html;
-  WebRect clip_rect;
+  gfx::Rect clip_rect;
   RegisterMockedHttpURLLoad("Ahem.ttf");
   RegisterMockedHttpURLLoad("smartclip_reversed_positions.html");
   frame_test_helpers::WebViewHelper web_view_helper;
@@ -6010,7 +6012,7 @@ TEST_F(WebFrameTest, SmartClipDoesNotCrashPositionReversed) {
   web_view_helper.Resize(gfx::Size(500, 500));
   UpdateAllLifecyclePhases(web_view_helper.GetWebView());
   // Left upper corner of the rect will be end position in the DOM hierarchy.
-  WebRect crop_rect(30, 110, 400, 250);
+  gfx::Rect crop_rect(30, 110, 400, 250);
   // This should not still crash. See crbug.com/589082 for more details.
   frame->ExtractSmartClipData(crop_rect, clip_text, clip_html, clip_rect);
 }
@@ -12428,7 +12430,7 @@ TEST_F(WebFrameSimTest, DoubleTapZoomWhileScrolled) {
   // contained in the visual viewport.
   {
     gfx::Point point(445, 455);
-    WebRect block_bounds = ComputeBlockBoundHelper(&WebView(), point, false);
+    gfx::Rect block_bounds = ComputeBlockBoundHelper(&WebView(), point, false);
     WebView().AnimateDoubleTapZoom(IntPoint(point), block_bounds);
     EXPECT_TRUE(WebView().FakeDoubleTapAnimationPendingForTesting());
     ScrollOffset new_offset = ToScrollOffset(
@@ -12450,7 +12452,7 @@ TEST_F(WebFrameSimTest, DoubleTapZoomWhileScrolled) {
   // remain on screen.
   {
     gfx::Point point(445, 455);
-    WebRect block_bounds = ComputeBlockBoundHelper(&WebView(), point, false);
+    gfx::Rect block_bounds = ComputeBlockBoundHelper(&WebView(), point, false);
     WebView().AnimateDoubleTapZoom(IntPoint(point), block_bounds);
     EXPECT_TRUE(WebView().FakeDoubleTapAnimationPendingForTesting());
     IntPoint target_offset(

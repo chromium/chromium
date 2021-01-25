@@ -258,19 +258,19 @@ ScreenSpanning MediaValues::CalculateScreenSpanning(LocalFrame* frame) {
   if (!frame->GetWidgetForLocalRoot())
     return ScreenSpanning::kNone;
 
-  WebVector<WebRect> window_segments =
+  WebVector<gfx::Rect> window_segments =
       frame->GetWidgetForLocalRoot()->WindowSegments();
 
   if (window_segments.size() == 2) {
     // If there are two segments and the y value of the segments is the same,
     // we have side-by-side segments which are represented as a single vertical
     // fold.
-    if (window_segments[0].y == window_segments[1].y)
+    if (window_segments[0].y() == window_segments[1].y())
       return ScreenSpanning::kSingleFoldVertical;
 
     // If the x value of the segments is the same, we have stacked segments
     // which are represented as a single horizontal fold.
-    if (window_segments[0].x == window_segments[1].x)
+    if (window_segments[0].x() == window_segments[1].x())
       return ScreenSpanning::kSingleFoldHorizontal;
   }
 

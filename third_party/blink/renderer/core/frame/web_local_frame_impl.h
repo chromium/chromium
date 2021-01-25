@@ -236,10 +236,10 @@ class CORE_EXPORT WebLocalFrameImpl final
   void ReplaceSelection(const WebString&) override;
   void DeleteSurroundingText(int before, int after) override;
   void DeleteSurroundingTextInCodePoints(int before, int after) override;
-  void ExtractSmartClipData(WebRect rect_in_viewport,
+  void ExtractSmartClipData(const gfx::Rect& rect_in_viewport,
                             WebString& clip_text,
                             WebString& clip_html,
-                            WebRect& clip_rect) override;
+                            gfx::Rect& clip_rect) override;
   void SetTextCheckClient(WebTextCheckClient*) override;
   void SetSpellCheckPanelHostClient(WebSpellCheckPanelHostClient*) override;
   WebSpellCheckPanelHostClient* SpellCheckPanelHostClient() const override {
@@ -261,7 +261,7 @@ class CORE_EXPORT WebLocalFrameImpl final
                       bool wrap_within_frame,
                       bool async) override;
   void SetTickmarks(const WebElement& target,
-                    const WebVector<WebRect>& tickmarks) override;
+                    const WebVector<gfx::Rect>& tickmarks) override;
   WebNode ContextMenuNode() const override;
   void CopyImageAtForTesting(const gfx::Point&) override;
   void UsageCountChromeLoadTimes(const WebString& metric) override;
@@ -301,7 +301,7 @@ class CORE_EXPORT WebLocalFrameImpl final
   void PrintPagesForTesting(cc::PaintCanvas*,
                             const gfx::Size& page_size_in_pixels,
                             const gfx::Size& spool_size_in_pixels) override;
-  WebRect GetSelectionBoundsRectForTesting() const override;
+  gfx::Rect GetSelectionBoundsRectForTesting() const override;
   gfx::Point GetPositionInViewportForTesting() const override;
   void WasHidden() override;
   void WasShown() override;

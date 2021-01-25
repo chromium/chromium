@@ -93,7 +93,6 @@ struct WebIsolatedWorldInfo;
 struct WebPrintPageDescription;
 struct WebPrintParams;
 struct WebPrintPresetOptions;
-struct WebRect;
 struct WebScriptSource;
 
 namespace mojom {
@@ -540,10 +539,10 @@ class WebLocalFrame : public WebFrame {
   // pairs in the requested range.
   virtual void DeleteSurroundingTextInCodePoints(int before, int after) = 0;
 
-  virtual void ExtractSmartClipData(WebRect rect_in_viewport,
+  virtual void ExtractSmartClipData(const gfx::Rect& rect_in_viewport,
                                     WebString& clip_text,
                                     WebString& clip_html,
-                                    WebRect& clip_rect) = 0;
+                                    gfx::Rect& clip_rect) = 0;
 
   // Spell-checking support -------------------------------------------------
   virtual void SetTextCheckClient(WebTextCheckClient*) = 0;
@@ -597,7 +596,7 @@ class WebLocalFrame : public WebFrame {
   // given layout object. If this is called with an empty array, the default
   // behavior will be restored.
   virtual void SetTickmarks(const WebElement& target,
-                            const WebVector<WebRect>& tickmarks) = 0;
+                            const WebVector<gfx::Rect>& tickmarks) = 0;
 
   // Context menu -----------------------------------------------------------
 
@@ -789,7 +788,7 @@ class WebLocalFrame : public WebFrame {
   // on transformed text, the rect will still bound the selection but will
   // not be transformed itself. If no selection is present, the rect will be
   // empty ((0,0), (0,0)).
-  virtual WebRect GetSelectionBoundsRectForTesting() const = 0;
+  virtual gfx::Rect GetSelectionBoundsRectForTesting() const = 0;
 
   // Returns the position of the frame's origin relative to the viewport (ie the
   // local root).
