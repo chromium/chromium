@@ -59,7 +59,7 @@ struct OptionsFromDocumentParams {
 // content can be composited as needed.
 struct DidPrintContentParams {
   // A shared memory region for the metafile data.
-  mojo_base.mojom.ReadOnlySharedMemoryRegion metafile_data_region;
+  mojo_base.mojom.ReadOnlySharedMemoryRegion? metafile_data_region;
   // Content id to render frame proxy token mapping for out-of-process
   // subframes.
   map<uint32, mojo_base.mojom.UnguessableToken> subframe_content_info;
@@ -217,6 +217,21 @@ interface PrintPreviewUI {
   // the print preview.
   [EnableIf=enable_print_preview]
   SetOptionsFromDocument(OptionsFromDocumentParams params, int32 request_id);
+
+  // Notifies the browser of preparing to print the document, for cases where
+  // the document will be collected from the individual pages instead of being
+  // provided by an extra metafile at end containing all pages.
+  [EnableIf=enable_print_preview]
+  DidPrepareDocumentForPreview(int32 document_cookie, int32 request_id);
+
+  // Notifies the browser a print preview page has been rendered.
+  [EnableIf=enable_print_preview]
+  DidPreviewPage(DidPreviewPageParams params, int32 request_id);
+
+  // Sends back to the browser the complete rendered document that was requested
+  // by PrintPreview.
+  [EnableIf=enable_print_preview]
+  MetafileReadyForPrinting(DidPreviewDocumentParams params, int32 request_id);
 
   // Tells the browser print preview failed. |document_cookie| is the param to
   // ensure correctness and |request_id| is the id for the preview request.

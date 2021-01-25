@@ -1561,13 +1561,12 @@ PrintRenderFrameHelper::CreatePreviewDocument() {
 
   if (print_pages_params_->params->printed_doc_type ==
       mojom::SkiaDocumentType::kMSKP) {
-    mojom::PreviewIds ids(print_params.preview_request_id,
-                          print_params.preview_ui_id);
     // Want modifiable content of MSKP type to be collected into a document
     // during individual page preview generation (to avoid separate document
     // version for composition), notify to prepare to do this collection.
-    Send(new PrintHostMsg_DidPrepareDocumentForPreview(
-        routing_id(), print_pages_params_->params->document_cookie, ids));
+    preview_ui_->DidPrepareDocumentForPreview(
+        print_pages_params_->params->document_cookie,
+        print_params.preview_request_id);
   }
 
   while (!print_preview_context_.IsFinalPageRendered()) {
@@ -1657,8 +1656,8 @@ bool PrintRenderFrameHelper::FinalizePrintReadyDocument() {
   DCHECK(!is_print_ready_metafile_sent_);
   print_preview_context_.FinalizePrintReadyDocument();
 
-  mojom::DidPreviewDocumentParams preview_params;
-  preview_params.content = mojom::DidPrintContentParams::New();
+  auto preview_params = mojom::DidPreviewDocumentParams::New();
+  preview_params->content = mojom::DidPrintContentParams::New();
 
   // Modifiable content of MSKP type is collected into a document during
   // individual page preview generation, so only need to share a separate
@@ -1667,24 +1666,25 @@ bool PrintRenderFrameHelper::FinalizePrintReadyDocument() {
   MetafileSkia* metafile = print_preview_context_.metafile();
   if (metafile) {
     if (!CopyMetafileDataToReadOnlySharedMem(*metafile,
-                                             preview_params.content.get())) {
+                                             preview_params->content.get())) {
       LOG(ERROR) << "CopyMetafileDataToReadOnlySharedMem failed";
       print_preview_context_.set_error(PREVIEW_ERROR_METAFILE_COPY_FAILED);
       return false;
     }
   }
 
-  preview_params.document_cookie = print_pages_params_->params->document_cookie;
-  preview_params.expected_pages_count =
+  preview_params->document_cookie =
+      print_pages_params_->params->document_cookie;
+  preview_params->expected_pages_count =
       print_preview_context_.pages_rendered_count();
-
-  mojom::PreviewIds ids(print_pages_params_->params->preview_request_id,
-                        print_pages_params_->params->preview_ui_id);
 
   is_print_ready_metafile_sent_ = true;
 
-  Send(new PrintHostMsg_MetafileReadyForPrinting(routing_id(), preview_params,
-                                                 ids));
+  if (preview_ui_) {
+    preview_ui_->MetafileReadyForPrinting(
+        std::move(preview_params),
+        print_pages_params_->params->preview_request_id);
+  }
   return true;
 }
 
@@ -1881,11 +1881,9 @@ void PrintRenderFrameHelper::DidFinishPrinting(PrintingResult result) {
   int cookie =
       print_pages_params_ ? print_pages_params_->params->document_cookie : 0;
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-  mojom::PreviewIds ids;
-  if (print_pages_params_) {
-    ids.ui_id = print_pages_params_->params->preview_ui_id;
-    ids.request_id = print_pages_params_->params->preview_request_id;
-  }
+  int request_id = print_pages_params_
+                       ? print_pages_params_->params->preview_request_id
+                       : -1;
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
   switch (result) {
     case OK:
@@ -1907,17 +1905,17 @@ void PrintRenderFrameHelper::DidFinishPrinting(PrintingResult result) {
         if (notify_browser_of_print_failure_) {
           LOG(ERROR) << "CreatePreviewDocument failed";
           if (preview_ui_)
-            preview_ui_->PrintPreviewFailed(cookie, ids.request_id);
+            preview_ui_->PrintPreviewFailed(cookie, request_id);
         } else {
           if (preview_ui_)
-            preview_ui_->PrintPreviewCancelled(cookie, ids.request_id);
+            preview_ui_->PrintPreviewCancelled(cookie, request_id);
         }
       }
       print_preview_context_.Failed(notify_browser_of_print_failure_);
       break;
     case INVALID_SETTINGS:
       if (preview_ui_)
-        preview_ui_->PrinterSettingsInvalid(cookie, ids.request_id);
+        preview_ui_->PrinterSettingsInvalid(cookie, request_id);
       print_preview_context_.Failed(false);
       break;
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
@@ -2517,23 +2515,24 @@ bool PrintRenderFrameHelper::PreviewPageRendered(
   }
 #endif
 
-  mojom::DidPreviewPageParams preview_page_params;
-  preview_page_params.content = mojom::DidPrintContentParams::New();
-  if (!CopyMetafileDataToReadOnlySharedMem(*metafile,
-                                           preview_page_params.content.get())) {
+  auto preview_page_params = mojom::DidPreviewPageParams::New();
+  preview_page_params->content = mojom::DidPrintContentParams::New();
+  if (!CopyMetafileDataToReadOnlySharedMem(
+          *metafile, preview_page_params->content.get())) {
     LOG(ERROR) << "CopyMetafileDataToReadOnlySharedMem failed";
     print_preview_context_.set_error(PREVIEW_ERROR_METAFILE_COPY_FAILED);
     return false;
   }
 
-  preview_page_params.page_number = page_number;
-  preview_page_params.document_cookie =
+  preview_page_params->page_number = page_number;
+  preview_page_params->document_cookie =
       print_pages_params_->params->document_cookie;
 
-  mojom::PreviewIds ids(print_pages_params_->params->preview_request_id,
-                        print_pages_params_->params->preview_ui_id);
-
-  Send(new PrintHostMsg_DidPreviewPage(routing_id(), preview_page_params, ids));
+  if (preview_ui_) {
+    preview_ui_->DidPreviewPage(
+        std::move(preview_page_params),
+        print_pages_params_->params->preview_request_id);
+  }
   return true;
 }
 

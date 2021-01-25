@@ -5485,8 +5485,6 @@ static_library("browser") {
         "printing/print_preview_data_service.h",
         "printing/print_preview_dialog_controller.cc",
         "printing/print_preview_dialog_controller.h",
-        "printing/print_preview_message_handler.cc",
-        "printing/print_preview_message_handler.h",
         "printing/print_preview_sticky_settings.cc",
         "printing/print_preview_sticky_settings.h",
         "printing/print_view_manager.cc",

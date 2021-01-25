@@ -16,10 +16,13 @@
 #include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/webui/constrained_web_dialog_ui.h"
+#include "chrome/services/printing/public/mojom/pdf_nup_converter.mojom.h"
 #include "components/printing/common/print.mojom.h"
+#include "components/services/print_compositor/public/mojom/print_compositor.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "printing/mojom/print.mojom-forward.h"
 #include "ui/gfx/geometry/rect.h"
@@ -53,6 +56,12 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
   // printing::mojo::PrintPreviewUI:
   void SetOptionsFromDocument(const mojom::OptionsFromDocumentParamsPtr params,
                               int32_t request_id) override;
+  void DidPrepareDocumentForPreview(int32_t document_cookie,
+                                    int32_t request_id) override;
+  void DidPreviewPage(mojom::DidPreviewPageParamsPtr params,
+                      int32_t request_id) override;
+  void MetafileReadyForPrinting(mojom::DidPreviewDocumentParamsPtr params,
+                                int32_t request_id) override;
   void PrintPreviewFailed(int32_t document_cookie, int32_t request_id) override;
   void PrintPreviewCancelled(int32_t document_cookie,
                              int32_t request_id) override;
@@ -217,9 +226,6 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
  private:
   FRIEND_TEST_ALL_PREFIXES(PrintPreviewDialogControllerUnitTest,
                            TitleAfterReload);
-  // TODO(https://crbug.com/1008939): Remove this once all preview UI messages
-  // are moved to print_preview_ui.cc.
-  friend class PrintPreviewMessageHandler;
 
   // Sets the print preview |data|. |index| is zero-based, and can be
   // |COMPLETE_PREVIEW_DOCUMENT_INDEX| to set the entire preview document.
@@ -241,6 +247,26 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
   void NotifyUIPreviewDocumentReady(
       int request_id,
       scoped_refptr<base::RefCountedMemory> data_bytes);
+
+  // Callbacks for print compositor client.
+  void OnPrepareForDocumentToPdfDone(int32_t request_id,
+                                     mojom::PrintCompositor::Status status);
+  void OnCompositePdfPageDone(uint32_t page_number,
+                              int32_t document_cookie,
+                              int32_t request_id,
+                              mojom::PrintCompositor::Status status,
+                              base::ReadOnlySharedMemoryRegion region);
+  void OnNupPdfConvertDone(uint32_t page_number,
+                           int32_t request_id,
+                           mojom::PdfNupConverter::Status status,
+                           base::ReadOnlySharedMemoryRegion region);
+  void OnNupPdfDocumentConvertDone(int32_t request_id,
+                                   mojom::PdfNupConverter::Status status,
+                                   base::ReadOnlySharedMemoryRegion region);
+  void OnCompositeToPdfDone(int document_cookie,
+                            int32_t request_id,
+                            mojom::PrintCompositor::Status status,
+                            base::ReadOnlySharedMemoryRegion region);
 
   base::TimeTicks initial_preview_start_time_;
 
@@ -292,6 +318,8 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
   gfx::Rect printable_area_;
 
   mojo::AssociatedReceiver<mojom::PrintPreviewUI> receiver_{this};
+
+  base::WeakPtrFactory<PrintPreviewUI> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PrintPreviewUI);
 };

@@ -32,8 +32,11 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/pdf/pdf_extension_util.h"
 #include "chrome/browser/printing/background_printing_manager.h"
+#include "chrome/browser/printing/pdf_nup_converter_client.h"
 #include "chrome/browser/printing/print_job_manager.h"
 #include "chrome/browser/printing/print_preview_data_service.h"
+#include "chrome/browser/printing/print_preview_dialog_controller.h"
+#include "chrome/browser/printing/print_view_manager.h"
 #include "chrome/browser/printing/printer_query.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -53,6 +56,8 @@
 #include "chrome/grit/print_preview_resources_map.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
+#include "components/printing/browser/print_composite_client.h"
+#include "components/printing/browser/print_manager_utils.h"
 #include "components/printing/common/print_messages.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_manager/user_manager.h"
@@ -62,6 +67,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "extensions/common/constants.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/nup_parameters.h"
 #include "printing/print_job_constants.h"
@@ -97,6 +103,10 @@ constexpr char kInvalidArgsForDidStartPreview[] =
     "Invalid arguments for DidStartPreview";
 constexpr char kInvalidArgsForDidGetDefaultPageLayout[] =
     "Invalid arguments for DidGetDefaultPageLayout";
+constexpr char kInvalidPageNumberForDidPreviewPage[] =
+    "Invalid page number for DidPreviewPage";
+constexpr char kInvalidPageCountForMetafileReadyForPrinting[] =
+    "Invalid page count for MetafileReadyForPrinting";
 
 PrintPreviewUI::TestDelegate* g_test_delegate = nullptr;
 
@@ -116,6 +126,18 @@ void StopWorker(int document_cookie) {
 
 bool IsValidPageNumber(uint32_t page_number, uint32_t page_count) {
   return page_number < page_count;
+}
+
+bool ShouldUseCompositor(PrintPreviewUI* print_preview_ui) {
+  return IsOopifEnabled() && print_preview_ui->source_is_modifiable();
+}
+
+WebContents* GetInitiator(content::WebUI* web_ui) {
+  PrintPreviewDialogController* dialog_controller =
+      PrintPreviewDialogController::GetInstance();
+  if (!dialog_controller)
+    return nullptr;
+  return dialog_controller->GetInitiator(web_ui->GetWebContents());
 }
 
 // Thread-safe wrapper around a base::flat_map to keep track of mappings from
@@ -602,6 +624,153 @@ void PrintPreviewUI::NotifyUIPreviewDocumentReady(
   handler_->OnPrintPreviewReady(*id_, request_id);
 }
 
+void PrintPreviewUI::OnCompositePdfPageDone(
+    uint32_t page_number,
+    int document_cookie,
+    int32_t request_id,
+    mojom::PrintCompositor::Status status,
+    base::ReadOnlySharedMemoryRegion region) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (ShouldCancelRequest(*id_, request_id))
+    return;
+
+  if (status != mojom::PrintCompositor::Status::kSuccess) {
+    DLOG(ERROR) << "Compositing pdf failed with error " << status;
+    OnPrintPreviewFailed(request_id);
+    return;
+  }
+
+  if (pages_per_sheet_ == 1) {
+    NotifyUIPreviewPageReady(
+        page_number, request_id,
+        base::RefCountedSharedMemoryMapping::CreateFromWholeRegion(region));
+  } else {
+    AddPdfPageForNupConversion(std::move(region));
+    uint32_t current_page_index = GetPageToNupConvertIndex(page_number);
+    if (current_page_index == kInvalidPageIndex)
+      return;
+
+    if (((current_page_index + 1) % pages_per_sheet_) == 0 ||
+        LastPageComposited(page_number)) {
+      uint32_t new_page_number =
+          base::checked_cast<uint32_t>(current_page_index / pages_per_sheet_);
+      DCHECK_NE(new_page_number, kInvalidPageIndex);
+      std::vector<base::ReadOnlySharedMemoryRegion> pdf_page_regions =
+          TakePagesForNupConvert();
+
+      gfx::Rect printable_rect =
+          PageSetup::GetSymmetricalPrintableArea(page_size(), printable_area());
+      if (printable_rect.IsEmpty())
+        return;
+
+      WebContents* web_contents = GetInitiator(web_ui());
+      if (!web_contents)
+        return;
+
+      auto* client = PdfNupConverterClient::FromWebContents(web_contents);
+      DCHECK(client);
+      client->DoNupPdfConvert(
+          document_cookie, pages_per_sheet_, page_size(), printable_rect,
+          std::move(pdf_page_regions),
+          mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+              base::BindOnce(&PrintPreviewUI::OnNupPdfConvertDone,
+                             weak_ptr_factory_.GetWeakPtr(), new_page_number,
+                             request_id),
+              mojom::PdfNupConverter::Status::CONVERSION_FAILURE,
+              base::ReadOnlySharedMemoryRegion()));
+    }
+  }
+}
+
+void PrintPreviewUI::OnNupPdfConvertDone(
+    uint32_t page_number,
+    int32_t request_id,
+    mojom::PdfNupConverter::Status status,
+    base::ReadOnlySharedMemoryRegion region) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (status != mojom::PdfNupConverter::Status::SUCCESS) {
+    DLOG(ERROR) << "Nup pdf page conversion failed with error " << status;
+    OnPrintPreviewFailed(request_id);
+    return;
+  }
+
+  NotifyUIPreviewPageReady(
+      page_number, request_id,
+      base::RefCountedSharedMemoryMapping::CreateFromWholeRegion(region));
+}
+
+void PrintPreviewUI::OnCompositeToPdfDone(
+    int document_cookie,
+    int32_t request_id,
+    mojom::PrintCompositor::Status status,
+    base::ReadOnlySharedMemoryRegion region) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (ShouldCancelRequest(*id_, request_id))
+    return;
+
+  if (status != mojom::PrintCompositor::Status::kSuccess) {
+    DLOG(ERROR) << "Completion of document to pdf failed with error " << status;
+    OnPrintPreviewFailed(request_id);
+    return;
+  }
+
+  if (pages_per_sheet_ == 1) {
+    NotifyUIPreviewDocumentReady(
+        request_id,
+        base::RefCountedSharedMemoryMapping::CreateFromWholeRegion(region));
+  } else {
+    WebContents* web_contents = GetInitiator(web_ui());
+    if (!web_contents)
+      return;
+
+    auto* client = PdfNupConverterClient::FromWebContents(web_contents);
+    DCHECK(client);
+
+    gfx::Rect printable_rect =
+        PageSetup::GetSymmetricalPrintableArea(page_size_, printable_area_);
+    if (printable_rect.IsEmpty())
+      return;
+
+    client->DoNupPdfDocumentConvert(
+        document_cookie, pages_per_sheet_, page_size_, printable_rect,
+        std::move(region),
+        mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+            base::BindOnce(&PrintPreviewUI::OnNupPdfDocumentConvertDone,
+                           weak_ptr_factory_.GetWeakPtr(), request_id),
+            mojom::PdfNupConverter::Status::CONVERSION_FAILURE,
+            base::ReadOnlySharedMemoryRegion()));
+  }
+}
+
+void PrintPreviewUI::OnPrepareForDocumentToPdfDone(
+    int32_t request_id,
+    mojom::PrintCompositor::Status status) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (ShouldCancelRequest(*id_, request_id))
+    return;
+
+  if (status != mojom::PrintCompositor::Status::kSuccess)
+    OnPrintPreviewFailed(request_id);
+}
+
+void PrintPreviewUI::OnNupPdfDocumentConvertDone(
+    int32_t request_id,
+    mojom::PdfNupConverter::Status status,
+    base::ReadOnlySharedMemoryRegion region) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (status != mojom::PdfNupConverter::Status::SUCCESS) {
+    DLOG(ERROR) << "Nup pdf document convert failed with error " << status;
+    OnPrintPreviewFailed(request_id);
+    return;
+  }
+  NotifyUIPreviewDocumentReady(
+      request_id,
+      base::RefCountedSharedMemoryMapping::CreateFromWholeRegion(region));
+}
+
 void PrintPreviewUI::SetInitiatorTitle(const base::string16& job_title) {
   initiator_title_ = job_title;
 }
@@ -820,6 +989,143 @@ void PrintPreviewUI::SetOptionsFromDocument(
     return;
   handler_->SendPrintPresetOptions(params->is_scaling_disabled, params->copies,
                                    params->duplex, request_id);
+}
+
+void PrintPreviewUI::DidPrepareDocumentForPreview(int32_t document_cookie,
+                                                  int32_t request_id) {
+  // Determine if document composition from individual pages with the print
+  // compositor is the desired configuration. Issue a preparation call to the
+  // PrintCompositeClient if that hasn't been done yet. Otherwise, return early.
+  if (!ShouldUseCompositor(this))
+    return;
+
+  WebContents* web_contents = GetInitiator(web_ui());
+  if (!web_contents)
+    return;
+
+  // For case of print preview, page metafile is used to composite into
+  // the document PDF at same time.  Need to indicate that this scenario
+  // is at play for the compositor.
+  auto* client = PrintCompositeClient::FromWebContents(web_contents);
+  DCHECK(client);
+  if (client->GetIsDocumentConcurrentlyComposited(document_cookie))
+    return;
+
+  content::RenderFrameHost* render_frame_host =
+      PrintViewManager::FromWebContents(web_contents)->print_preview_rfh();
+  // |render_frame_host| could be null when the print preview dialog is closed.
+  if (!render_frame_host)
+    return;
+
+  client->DoPrepareForDocumentToPdf(
+      document_cookie, render_frame_host,
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          base::BindOnce(&PrintPreviewUI::OnPrepareForDocumentToPdfDone,
+                         weak_ptr_factory_.GetWeakPtr(), request_id),
+          mojom::PrintCompositor::Status::kCompositingFailure));
+}
+
+void PrintPreviewUI::DidPreviewPage(mojom::DidPreviewPageParamsPtr params,
+                                    int32_t request_id) {
+  uint32_t page_number = params->page_number;
+  const mojom::DidPrintContentParams& content = *params->content;
+  if (page_number == kInvalidPageIndex ||
+      !content.metafile_data_region.IsValid()) {
+    return;
+  }
+
+  if (!OnPendingPreviewPage(page_number)) {
+    receiver_.ReportBadMessage(kInvalidPageNumberForDidPreviewPage);
+    return;
+  }
+
+  if (ShouldUseCompositor(this)) {
+    // Don't bother compositing if this request has been cancelled already.
+    if (ShouldCancelRequest(*id_, request_id))
+      return;
+
+    WebContents* web_contents = GetInitiator(web_ui());
+    if (!web_contents)
+      return;
+
+    auto* client = PrintCompositeClient::FromWebContents(web_contents);
+    DCHECK(client);
+
+    content::RenderFrameHost* render_frame_host =
+        PrintViewManager::FromWebContents(web_contents)->print_preview_rfh();
+    // |render_frame_host| could be null when the print preview dialog is
+    // closed.
+    if (!render_frame_host)
+      return;
+
+    // Use utility process to convert skia metafile to pdf.
+    client->DoCompositePageToPdf(
+        params->document_cookie, render_frame_host, content,
+        mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+            base::BindOnce(&PrintPreviewUI::OnCompositePdfPageDone,
+                           weak_ptr_factory_.GetWeakPtr(), page_number,
+                           params->document_cookie, request_id),
+            mojom::PrintCompositor::Status::kCompositingFailure,
+            base::ReadOnlySharedMemoryRegion()));
+  } else {
+    NotifyUIPreviewPageReady(
+        page_number, request_id,
+        base::RefCountedSharedMemoryMapping::CreateFromWholeRegion(
+            content.metafile_data_region));
+  }
+}
+
+void PrintPreviewUI::MetafileReadyForPrinting(
+    mojom::DidPreviewDocumentParamsPtr params,
+    int32_t request_id) {
+  // Always try to stop the worker.
+  StopWorker(params->document_cookie);
+
+  const bool composite_document_using_individual_pages =
+      ShouldUseCompositor(this);
+  const base::ReadOnlySharedMemoryRegion& metafile =
+      params->content->metafile_data_region;
+
+  // When the Print Compositor is active, the print document is composed from
+  // the individual pages, so |metafile| should be invalid.
+  // When it is inactive, the print document is composed from |metafile|.
+  // So if this comparison succeeds, that means the renderer sent bad data.
+  if (composite_document_using_individual_pages == metafile.IsValid())
+    return;
+
+  if (params->expected_pages_count == 0) {
+    receiver_.ReportBadMessage(kInvalidPageCountForMetafileReadyForPrinting);
+    return;
+  }
+
+  if (composite_document_using_individual_pages) {
+    // Don't bother compositing if this request has been cancelled already.
+    if (ShouldCancelRequest(*id_, request_id))
+      return;
+
+    auto callback = base::BindOnce(&PrintPreviewUI::OnCompositeToPdfDone,
+                                   weak_ptr_factory_.GetWeakPtr(),
+                                   params->document_cookie, request_id);
+
+    WebContents* web_contents = GetInitiator(web_ui());
+    if (!web_contents)
+      return;
+
+    // Page metafile is used to composite into the document at same time.
+    // Need to provide particulars of how many pages are required before
+    // document will be completed.
+    auto* client = PrintCompositeClient::FromWebContents(web_contents);
+    client->DoCompleteDocumentToPdf(
+        params->document_cookie, params->expected_pages_count,
+        mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+            std::move(callback),
+            mojom::PrintCompositor::Status::kCompositingFailure,
+            base::ReadOnlySharedMemoryRegion()));
+  } else {
+    NotifyUIPreviewDocumentReady(
+        request_id,
+        base::RefCountedSharedMemoryMapping::CreateFromWholeRegion(metafile));
+  }
 }
 
 void PrintPreviewUI::PrintPreviewFailed(int32_t document_cookie,

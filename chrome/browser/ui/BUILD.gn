@@ -4605,7 +4605,9 @@ static_library("ui") {
     ]
     deps += [
       "//chrome/common/printing:printing",
+      "//chrome/services/printing/public/mojom",
       "//components/printing/common:mojo_interfaces",
+      "//components/services/print_compositor/public/mojom",
       "//printing/mojom",
       "//services/device/public/cpp/usb",
       "//services/device/public/mojom:usb",
