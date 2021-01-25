@@ -49,7 +49,7 @@ class ViewVisibilityChangedWaiter : public views::ViewObserver {
   base::ScopedObservation<views::View, views::ViewObserver> observation_{this};
 };
 
-// Waits until a first non empty paint for given `url`.
+// Waits until a first non empty paint for given committed `url`.
 class FirstVisuallyNonEmptyPaintObserver : public content::WebContentsObserver {
  public:
   explicit FirstVisuallyNonEmptyPaintObserver(content::WebContents* contents,
@@ -63,18 +63,24 @@ class FirstVisuallyNonEmptyPaintObserver : public content::WebContentsObserver {
     }
     run_loop_.Run();
     EXPECT_TRUE(IsExitConditionSatisfied())
-        << web_contents()->GetVisibleURL() << " != " << url_;
+        << web_contents()->GetLastCommittedURL() << " != " << url_;
   }
 
  private:
   // WebContentsObserver:
   void DidFirstVisuallyNonEmptyPaint() override {
-    if (web_contents()->GetVisibleURL() == url_)
+    if (IsExitConditionSatisfied())
+      run_loop_.Quit();
+  }
+
+  void NavigationEntryCommitted(
+      const content::LoadCommittedDetails& load_details) override {
+    if (IsExitConditionSatisfied())
       run_loop_.Quit();
   }
 
   bool IsExitConditionSatisfied() {
-    return (web_contents()->GetVisibleURL() == url_ &&
+    return (web_contents()->GetLastCommittedURL() == url_ &&
             web_contents()->CompletedFirstVisuallyNonEmptyPaint());
   }
 

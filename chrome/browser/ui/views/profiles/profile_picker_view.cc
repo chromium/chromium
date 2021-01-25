@@ -100,8 +100,8 @@ constexpr base::TimeDelta kExtendedAccountInfoTimeout =
     base::TimeDelta::FromSeconds(10);
 
 constexpr int kSupportedAcceleratorCommands[] = {
-    IDC_CLOSE_TAB, IDC_CLOSE_WINDOW, IDC_EXIT, IDC_FULLSCREEN,
-    IDC_MINIMIZE_WINDOW};
+    IDC_CLOSE_TAB,       IDC_CLOSE_WINDOW, IDC_EXIT,  IDC_FULLSCREEN,
+    IDC_MINIMIZE_WINDOW, IDC_BACK,         IDC_RELOAD};
 
 void ShowCustomizationBubble(SkColor new_profile_color, Browser* browser) {
   views::View* anchor_view = BrowserView::GetBrowserViewForBrowser(browser)
@@ -551,7 +551,8 @@ void ProfilePickerView::SwitchToSyncConfirmation() {
   // the signin screen is no concern any more.
   ShowScreen(new_profile_contents_.get(),
              GURL(chrome::kChromeUISyncConfirmationURL),
-             /*show_toolbar=*/false);
+             /*show_toolbar=*/false,
+             /*enable_navigating_back=*/false);
 
   SyncConfirmationUI* sync_confirmation_ui = static_cast<SyncConfirmationUI*>(
       new_profile_contents_->GetWebUI()->GetController());
@@ -622,6 +623,21 @@ bool ProfilePickerView::AcceleratorPressed(const ui::Accelerator& accelerator) {
     case IDC_MINIMIZE_WINDOW:
       GetWidget()->Minimize();
       break;
+    case IDC_BACK: {
+      NavigateBack();
+      break;
+    }
+    // Always reload bypassing cache.
+    case IDC_RELOAD:
+    case IDC_RELOAD_BYPASSING_CACHE:
+    case IDC_RELOAD_CLEARING_CACHE: {
+      // Sign-in may fail due to connectivity issues, allow reloading.
+      if (IsSigningIn()) {
+        new_profile_contents_->GetController().Reload(
+            content::ReloadType::BYPASSING_CACHE, true);
+      }
+      break;
+    }
     default:
       NOTREACHED() << "Unexpected command_id: " << command_id;
       break;
@@ -715,13 +731,16 @@ void ProfilePickerView::UpdateToolbarColor() {
 
 void ProfilePickerView::ShowScreen(content::WebContents* contents,
                                    const GURL& url,
-                                   bool show_toolbar) {
+                                   bool show_toolbar,
+                                   bool enable_navigating_back) {
   web_view_->SetWebContents(contents);
   web_view_->RequestFocus();
 
   // Change visibility of the toolbar after swapping wc in `web_view_` to make
   // it easier for tests to detect changing of the screen.
   toolbar_->SetVisible(show_toolbar);
+
+  enable_navigating_back_ = enable_navigating_back;
 
   if (!url.is_empty()) {
     // Make sure to load the url as the last step so that the UI state is
@@ -733,19 +752,23 @@ void ProfilePickerView::ShowScreen(content::WebContents* contents,
 }
 
 void ProfilePickerView::BackButtonPressed(const ui::Event& event) {
-  if (!IsSigningIn()) {
-    return;
-  }
+  NavigateBack();
+}
 
-  if (new_profile_contents_->GetController().CanGoBack()) {
-    new_profile_contents_->GetController().GoBack();
+void ProfilePickerView::NavigateBack() {
+  if (!enable_navigating_back_)
+    return;
+
+  if (web_view_->GetWebContents()->GetController().CanGoBack()) {
+    web_view_->GetWebContents()->GetController().GoBack();
     return;
   }
 
   // Move from sign-in back to the previous screen of profile creation.
   // Do not load any url because the desired screen is still loaded in
   // `system_profile_contents_`.
-  ShowScreen(system_profile_contents_.get(), GURL(), /*show_toolbar=*/false);
+  if (IsSigningIn())
+    ShowScreen(system_profile_contents_.get(), GURL(), /*show_toolbar=*/false);
 }
 
 bool ProfilePickerView::IsSigningIn() const {
@@ -767,7 +790,7 @@ void ProfilePickerView::OnRefreshTokenUpdatedForAccount(
   // in some cases (such as managed signed-in), there are further delays before
   // any follow-up UI is shown.
   ShowScreen(new_profile_contents_.get(), GURL(url::kAboutBlankURL),
-             /*show_toolbar=*/true);
+             /*show_toolbar=*/true, /*enable_navigating_back=*/false);
 
   // Set up a timeout for extended account info (which cancels any existing
   // timeout closure).
@@ -883,7 +906,7 @@ void ProfilePickerView::FinishSignedInCreationFlowForSAML() {
   // Free up `new_profile_contents_` to be moved to a new browser window.
   new_profile_contents_->SetDelegate(nullptr);
   ShowScreen(system_profile_contents_.get(), GURL(url::kAboutBlankURL),
-             /*show_toolbar=*/false);
+             /*show_toolbar=*/false, /*enable_navigating_back=*/false);
   FinishSignedInCreationFlowImpl(
       base::BindOnce(&ContinueSAMLSignin, std::move(new_profile_contents_)),
       /*enterprise_sync_consent_needed=*/true);
