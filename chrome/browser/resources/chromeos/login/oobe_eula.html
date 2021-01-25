@@ -15,29 +15,89 @@
 
 <dom-module id="oobe-eula-element">
   <template>
-    <style include="oobe-dialog-host"></style>
+    <style include="oobe-dialog-host">
+      #crosEulaFrame {
+        /* minimal height which allows popup dialogs looks fine. */
+        min-height: 300px;
+      }
+
+      #additionalToS {
+        --oobe-modal-dialog-content-slot-padding-bottom: 0;
+        --oobe-modal-dialog-content-slot-padding-end: 0;
+        --oobe-modal-dialog-content-slot-padding-start: 0;
+        --oobe-modal-dialog-title-slot-padding-bottom: 16px;
+        --oobe-modal-dialog-width: 512px;
+      }
+
+      #additionalChromeToSFrame {
+        height: 300px;
+        padding-inline-end: 20px;
+        padding-inline-start: 20px;
+      }
+
+      #securitySettings,
+      #logging {
+        font-size: 13px;
+        min-height: unset;
+      }
+
+      #footer-more {
+        padding-inline-start: 16px;
+      }
+
+      #additionalTerms,
+      #securitySettings,
+      #logging {
+        margin-top: 16px;
+      }
+
+      #logging {
+        color: rgba(0, 0, 0, 0.54);
+      }
+
+      cr-checkbox {
+        --cr-checkbox-label-padding-start: 16px;
+      }
+
+      #usageStatsLabelContainer {
+        color: var(--google-grey-refresh-700); /* #5F6368 */
+        line-height: 20px;
+      }
+
+      #usageStatsLabel {
+        cursor: pointer;
+      }
+
+      #settings-close-button {
+        padding-inline-end: 18px;
+      }
+    </style>
     <link rel="stylesheet" href="chrome://resources/css/throbber.css">
-    <link rel="stylesheet" href="oobe_eula.css">
-    <oobe-dialog id="eulaLoadingDialog" hidden="[[!eulaLoadingScreenShown]]"
-        title-key="termsOfServiceLoading" role="dialog"
+    <oobe-dialog id="eulaLoadingDialog" for-step="loading" role="dialog"
         aria-label$="[[i18nDynamic(locale, 'termsOfServiceLoading')]]"
         has-buttons>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'termsOfServiceLoading')]]
+      </h1>
       <hd-iron-icon slot="oobe-icon"
           icon1x="oobe-32:googleg" icon2x="oobe-64:googleg">
       </hd-iron-icon>
     </oobe-dialog>
+
     <!-- As this dialog have pre-loading logic that require access to elements,
          dialog is marked as no-lazy. -->
-    <oobe-dialog id="eulaDialog" hidden="[[eulaLoadingScreenShown]]"
-        role="dialog" title-key="oobeEulaSectionTitle"
+    <oobe-dialog id="eulaDialog" for-step="eula" role="dialog"
         aria-label$="[[i18nDynamic(locale, 'oobeEulaSectionTitle')]]"
         aria-describedby="crosEulaFrame" has-buttons no-lazy>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'oobeEulaSectionTitle')]]
+      </h1>
       <hd-iron-icon slot="oobe-icon"
           icon1x="oobe-32:googleg" icon2x="oobe-64:googleg">
       </hd-iron-icon>
       <div slot="footer" class="flex layout vertical">
         <webview id="crosEulaFrame" allowTransparency
-            role="document" class="flex oobe-tos-webview"
+            role="document" class="flex oobe-tos-webview focus-on-show"
             aria-label$="[[i18nDynamic(locale, 'oobeEulaIframeLabel')]]"
             on-contentload="onFrameLoad_">
         </webview>
@@ -73,15 +133,18 @@
       </div>
       <div slot="bottom-buttons">
         <oobe-text-button id="acceptButton" inverse on-click="eulaAccepted_"
-            class="focus-on-show"
             disabled="[[acceptButtonDisabled]]"
             text-key="oobeEulaAcceptAndContinueButtonText">
         </oobe-text-button>
       </div>
     </oobe-dialog>
+
     <oobe-dialog id="securitySettingsDialog" role="dialog" has-buttons
-        title-key="eulaSystemSecuritySettings" hidden
+        for-step="security"
         aria-label$="[[i18nDynamic(locale, 'eulaSystemSecuritySettings')]]">
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'eulaSystemSecuritySettings')]]
+      </h1>
       <hd-iron-icon slot="oobe-icon"
           icon1x="oobe-32:googleg" icon2x="oobe-64:googleg">
       </hd-iron-icon>

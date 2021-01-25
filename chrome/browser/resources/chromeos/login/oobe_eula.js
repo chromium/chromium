@@ -3,6 +3,14 @@
 // found in the LICENSE file.
 
 (function() {
+
+// Enum that describes the current state of the Terms Of Service screen
+const UIState = {
+  LOADING: 'loading',
+  EULA: 'eula',
+  SECURITY: 'security',
+};
+
 const CLEAR_ANCHORS_CONTENT_SCRIPT = {
   code: 'A=Array.from(document.getElementsByTagName("a"));' +
       'for(var i = 0; i < A.length; ++i) {' +
@@ -231,7 +239,11 @@ EulaLoader.instances = {};
 Polymer({
   is: 'oobe-eula-element',
 
-  behaviors: [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
+  behaviors: [
+    OobeI18nBehavior,
+    LoginScreenBehavior,
+    MultiStepBehavior,
+  ],
 
   EXTERNAL_API: [
     'setUsageStats',
@@ -240,14 +252,6 @@ Polymer({
   ],
 
   properties: {
-    /**
-     * Shows "Loading..." section.
-     */
-    eulaLoadingScreenShown: {
-      type: Boolean,
-      value: true,
-    },
-
     /**
      * "Accepot and continue" button is disabled until content is loaded.
      */
@@ -271,13 +275,11 @@ Polymer({
    */
   initialized_: false,
 
-  focus() {
-    if (this.eulaLoadingScreenShown) {
-      this.$.eulaLoadingDialog.focus();
-    } else {
-      this.$.crosEulaFrame.focus();
-    }
+  defaultUIStep() {
+    return UIState.LOADING;
   },
+
+  UI_STEPS: UIState,
 
   /** Called just before the dialog is shown */
   onBeforeShow() {
@@ -325,8 +327,7 @@ Polymer({
    */
   onFrameLoad_() {
     this.acceptButtonDisabled = false;
-    this.eulaLoadingScreenShown = false;
-    this.focus();
+    this.setUIStep(UIState.EULA);
     this.$.eulaDialog.scrollToBottom();
   },
 
@@ -366,7 +367,7 @@ Polymer({
     // This forces frame to reload.
     const onlineEulaUrl = loadTimeData.getString('eulaOnlineUrl');
 
-    this.eulaLoadingScreenShown = true;
+    this.setUIStep(UIState.LOADING);
     this.loadEulaToWebview_(
         this.$.crosEulaFrame, onlineEulaUrl, false /* clear_anchors */);
 
@@ -445,9 +446,7 @@ Polymer({
    * Shows system security settings dialog.
    */
   showSecuritySettingsDialog() {
-    this.$.eulaDialog.hidden = true;
-    this.$.securitySettingsDialog.hidden = false;
-    this.$.securitySettingsDialog.show();
+    this.setUIStep(UIState.SECURITY);
   },
 
   /**
@@ -456,9 +455,9 @@ Polymer({
    * @private
    */
   onSecuritySettingsCloseClicked_() {
-    this.$.securitySettingsDialog.hidden = true;
-    this.$.eulaDialog.hidden = false;
-    this.$.securitySettings.focus();
+    this.setUIStep(UIState.EULA);
+    Polymer.RenderStatus.afterNextRender(
+        this, () => this.$.securitySettings.focus());
   },
 
   /**
@@ -498,8 +497,9 @@ Polymer({
     // returned from the system tray in regular order. Because the webview is
     // the first focusable element of the screen and we want to eliminate extra
     // tab. Reverse tab doesn't need any adjustments here.
-    if (!reverse)
-      this.focus();
+    if (!reverse && this.uiStep == UIState.EULA)
+      Polymer.RenderStatus.afterNextRender(
+          this, () => this.$.crosEulaFrame.focus());
   },
 });
 })();
