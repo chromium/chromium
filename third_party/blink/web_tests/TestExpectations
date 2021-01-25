@@ -5868,3 +5868,6 @@ crbug.com/1050549 http/tests/devtools/extensions/extensions-timeline-api.js [ Pa
 
 # Sheriff 2021-01-22
 crbug.com/1169908 http/tests/devtools/profiler/cpu-profiler-bottom-up-large-tree-search.js [ Pass Timeout ]
+
+# Sheriff 2018-01-25
+crbug.com/893869 [ Mac ] css3/masking/mask-repeat-space-padding.html [ Failure Pass ]
