@@ -21,6 +21,7 @@
 #include "components/history/core/browser/history_database_params.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/test_history_database.h"
+#include "components/policy/core/common/mock_policy_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
@@ -208,7 +209,9 @@ class FlocIdProviderUnitTest : public testing::Test {
         settings_map_.get(), &prefs_, false, "chrome-extension");
 
     privacy_sandbox_settings_ = std::make_unique<PrivacySandboxSettings>(
-        settings_map_.get(), fake_cookie_settings_.get(), &prefs_);
+        settings_map_.get(), fake_cookie_settings_.get(), &prefs_,
+        &mock_policy_service_,
+        /*sync_service=*/nullptr, /*identity_manager=*/nullptr);
 
     task_environment_.RunUntilIdle();
   }
@@ -311,6 +314,7 @@ class FlocIdProviderUnitTest : public testing::Test {
 
   std::unique_ptr<history::HistoryService> history_service_;
   scoped_refptr<FakeCookieSettings> fake_cookie_settings_;
+  testing::NiceMock<policy::MockPolicyService> mock_policy_service_;
   std::unique_ptr<PrivacySandboxSettings> privacy_sandbox_settings_;
   std::unique_ptr<MockFlocIdProvider> floc_id_provider_;
 

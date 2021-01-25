@@ -8,9 +8,14 @@
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/policy/core/common/policy_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/driver/sync_service.h"
+#include "components/sync/driver/sync_service_observer.h"
 #include "net/cookies/cookie_constants.h"
 
 class HostContentSettingsMap;
@@ -29,7 +34,10 @@ class Origin;
 // accessed.
 // TODO (crbug.com/1154686): Move this and other Privacy Sandbox items into
 // components.
-class PrivacySandboxSettings : public KeyedService {
+class PrivacySandboxSettings : public KeyedService,
+                               public policy::PolicyService::Observer,
+                               public syncer::SyncServiceObserver,
+                               public signin::IdentityManager::Observer {
  public:
   class Observer {
    public:
@@ -38,8 +46,10 @@ class PrivacySandboxSettings : public KeyedService {
 
   PrivacySandboxSettings(HostContentSettingsMap* host_content_settings_map,
                          content_settings::CookieSettings* cookie_settings,
-                         PrefService* prefs);
-
+                         PrefService* pref_service,
+                         policy::PolicyService* policy_service,
+                         syncer::SyncService* sync_service,
+                         signin::IdentityManager* identity_manager);
   ~PrivacySandboxSettings() override;
 
   // Determines whether FLoC is allowable in a particular context.
@@ -95,7 +105,49 @@ class PrivacySandboxSettings : public KeyedService {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  // KeyedService:
+  void Shutdown() override;
+
+  // policy::PolicyService::Observer:
+  void OnPolicyUpdated(const policy::PolicyNamespace& ns,
+                       const policy::PolicyMap& previous,
+                       const policy::PolicyMap& current) override;
+
+  // syncer::SyncServiceObserver:
+  void OnStateChanged(syncer::SyncService* sync) override;
+  void OnSyncCycleCompleted(syncer::SyncService* sync) override;
+
+  // signin::IdentityManager::Observer:
+  // TODO(crbug.com/1167680): This is only required to capture failure scenarios
+  // that affect sync, yet aren't reported via SyncServiceObserver.
+  void OnErrorStateOfRefreshTokenUpdatedForAccount(
+      const CoreAccountInfo& account_info,
+      const GoogleServiceAuthError& error) override;
+
  protected:
+  friend class PrivacySandboxSettingsTest;
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTest, ReconciliationOutcome);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTest,
+                           ImmediateReconciliationNoSync);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTest,
+                           ImmediateReconciliationSyncComplete);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTest,
+                           ImmediateReconciliationPersistentSyncError);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTest,
+                           ImmediateReconciliationNoDisable);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTest,
+                           DelayedReconciliationSyncSuccess);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTest,
+                           DelayedReconciliationSyncFailure);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTest,
+                           DelayedReconciliationIdentityFailure);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTest,
+                           DelayedReconciliationSyncIssueThenManaged);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTest,
+                           NoReconciliationAlreadyRun);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTest,
+                           NoReconciliationSandboxSettingsDisabled);
+
   // Determines based on the current features, preferences and provided
   // |cookie_settings| whether Privacy Sandbox APIs are generally allowable for
   // |url| on |top_frame_origin|. Individual APIs may perform additional checks
@@ -106,12 +158,40 @@ class PrivacySandboxSettings : public KeyedService {
       const base::Optional<url::Origin>& top_frame_origin,
       const ContentSettingsForOneType& cookie_settings) const;
 
+  // Inspects the current sync state and settings to determine if the Privacy
+  // Sandbox prefs should be reconciled. Calls ReconcilePrivacySandbox()
+  // immediately if appropriate, or may register sync and identity observers to
+  // call ReconcilePrivacySandbox() later as appropriate.
+  void MaybeReconcilePrivacySandboxPref();
+
+  // Selectively disable the Privacy Sandbox preference based on the local and
+  // synced state. Reconcilliation is only performed once per synced profile.
+  // As the sandbox is default enabled, reconcilliation will only ever opt a
+  // user out of the sandbox.
+  void ReconcilePrivacySandboxPref();
+
+  // Stops any observation of services being performed by this class.
+  void StopObserving();
+
  private:
   base::ObserverList<Observer>::Unchecked observers_;
 
   HostContentSettingsMap* host_content_settings_map_;
   content_settings::CookieSettings* cookie_settings_;
   PrefService* pref_service_;
+  policy::PolicyService* policy_service_;
+  syncer::SyncService* sync_service_;
+  signin::IdentityManager* identity_manager_;
+
+  base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
+      sync_service_observer_{this};
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observer_{this};
+
+  // A manual record of whether policy_service_ is being observerd.
+  // Unfortunately PolicyService does not support scoped observers.
+  bool policy_service_observed_ = false;
 };
 
 #endif  // CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SETTINGS_H_

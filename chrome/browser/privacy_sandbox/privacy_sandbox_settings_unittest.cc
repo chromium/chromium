@@ -9,6 +9,8 @@
 #include "base/util/values/values_util.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -16,7 +18,12 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/content_settings/core/test/content_settings_mock_provider.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
+#include "components/policy/core/common/mock_policy_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/sync/base/user_selectable_type.h"
+#include "components/sync/driver/test_sync_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -47,7 +54,8 @@ class PrivacySandboxSettingsTest : public testing::Test {
     privacy_sandbox_settings_ = std::make_unique<PrivacySandboxSettings>(
         HostContentSettingsMapFactory::GetForProfile(profile()),
         CookieSettingsFactory::GetForProfile(profile()).get(),
-        profile()->GetPrefs());
+        profile()->GetPrefs(), policy_service(), sync_service(),
+        identity_test_env()->identity_manager());
   }
 
   virtual void InitializePrefsBeforeStart() {}
@@ -62,12 +70,12 @@ class PrivacySandboxSettingsTest : public testing::Test {
       ContentSetting managed_cookie_setting,
       std::vector<CookieContentSettingException> managed_cookie_exceptions) {
     // Setup block-third-party-cookies settings.
-    if (block_third_party_cookies) {
-      profile()->GetTestingPrefService()->SetUserPref(
-          prefs::kCookieControlsMode,
-          std::make_unique<base::Value>(static_cast<int>(
-              content_settings::CookieControlsMode::kBlockThirdParty)));
-    }
+    profile()->GetTestingPrefService()->SetUserPref(
+        prefs::kCookieControlsMode,
+        std::make_unique<base::Value>(static_cast<int>(
+            block_third_party_cookies
+                ? content_settings::CookieControlsMode::kBlockThirdParty
+                : content_settings::CookieControlsMode::kOff)));
 
     // Setup cookie content settings.
     auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
@@ -128,14 +136,22 @@ class PrivacySandboxSettingsTest : public testing::Test {
     return privacy_sandbox_settings_.get();
   }
   base::test::ScopedFeatureList* feature_list() { return &feature_list_; }
-
- protected:
-  std::unique_ptr<PrivacySandboxSettings> privacy_sandbox_settings_;
+  syncer::TestSyncService* sync_service() { return &sync_service_; }
+  policy::MockPolicyService* policy_service() { return &mock_policy_service_; }
+  signin::IdentityTestEnvironment* identity_test_env() {
+    return &identity_test_env_;
+  }
 
  private:
   content::BrowserTaskEnvironment browser_task_environment_;
+  signin::IdentityTestEnvironment identity_test_env_;
+  testing::NiceMock<policy::MockPolicyService> mock_policy_service_;
+
   TestingProfile profile_;
   base::test::ScopedFeatureList feature_list_;
+  syncer::TestSyncService sync_service_;
+
+  std::unique_ptr<PrivacySandboxSettings> privacy_sandbox_settings_;
 };
 
 TEST_F(PrivacySandboxSettingsTest, CookieSettingAppliesWhenUiDisabled) {
@@ -531,6 +547,418 @@ TEST_F(PrivacySandboxSettingsTest, FlocDataAccessibleSince) {
 
   EXPECT_EQ(base::Time::Now(),
             privacy_sandbox_settings()->FlocDataAccessibleSince());
+}
+
+TEST_F(PrivacySandboxSettingsTest, ReconciliationOutcome) {
+  // Check that reconciling preferences has the appropriate outcome based on
+  // the current user cookie settings.
+
+  // Blocking 3P cookies should disable.
+  SetupTestState(
+      /*privacy_sandbox_available=*/true,
+      /*privacy_sandbox_enabled=*/true,
+      /*block_third_party_cookies=*/true,
+      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
+      /*user_cookie_exceptions=*/{},
+      /*managed_cookie_setting=*/kNoSetting,
+      /*managed_cookie_exceptions=*/{});
+
+  privacy_sandbox_settings()->ReconcilePrivacySandboxPref();
+
+  EXPECT_FALSE(profile()->GetTestingPrefService()->GetBoolean(
+      prefs::kPrivacySandboxApisEnabled));
+
+  // Blocking all cookies should disable.
+  SetupTestState(
+      /*privacy_sandbox_available=*/true,
+      /*privacy_sandbox_enabled=*/true,
+      /*block_third_party_cookies=*/false,
+      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_BLOCK,
+      /*user_cookie_exceptions=*/{},
+      /*managed_cookie_setting=*/kNoSetting,
+      /*managed_cookie_exceptions=*/{});
+
+  privacy_sandbox_settings()->ReconcilePrivacySandboxPref();
+
+  EXPECT_FALSE(profile()->GetTestingPrefService()->GetBoolean(
+      prefs::kPrivacySandboxApisEnabled));
+
+  // Blocking cookies via content setting exceptions, now matter how broad,
+  // should not disable.
+  SetupTestState(
+      /*privacy_sandbox_available=*/true,
+      /*privacy_sandbox_enabled=*/true,
+      /*block_third_party_cookies=*/false,
+      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
+      /*user_cookie_exceptions=*/{},
+      // /*user_cookie_exceptions=*/
+      // {{"[*.]com", "*", ContentSetting::CONTENT_SETTING_BLOCK}},
+      /*managed_cookie_setting=*/kNoSetting,
+      /*managed_cookie_exceptions=*/{});
+
+  privacy_sandbox_settings()->ReconcilePrivacySandboxPref();
+
+  EXPECT_TRUE(profile()->GetTestingPrefService()->GetBoolean(
+      prefs::kPrivacySandboxApisEnabled));
+
+  // If the user has already expressed control over the privacy sandbox, it
+  // should not be disabled.
+  SetupTestState(
+      /*privacy_sandbox_available=*/true,
+      /*privacy_sandbox_enabled=*/true,
+      /*block_third_party_cookies=*/true,
+      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_BLOCK,
+      /*user_cookie_exceptions=*/{},
+      /*managed_cookie_setting=*/kNoSetting,
+      /*managed_cookie_exceptions=*/{});
+  profile()->GetTestingPrefService()->SetUserPref(
+      prefs::kPrivacySandboxManuallyControlled,
+      std::make_unique<base::Value>(true));
+
+  privacy_sandbox_settings()->ReconcilePrivacySandboxPref();
+
+  EXPECT_TRUE(profile()->GetTestingPrefService()->GetBoolean(
+      prefs::kPrivacySandboxApisEnabled));
+
+  // Allowing cookies should leave the sandbox enabled.
+  SetupTestState(
+      /*privacy_sandbox_available=*/true,
+      /*privacy_sandbox_enabled=*/true,
+      /*block_third_party_cookies=*/false,
+      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
+      /*user_cookie_exceptions=*/{},
+      /*managed_cookie_setting=*/kNoSetting,
+      /*managed_cookie_exceptions=*/{});
+  profile()->GetTestingPrefService()->SetUserPref(
+      prefs::kPrivacySandboxManuallyControlled,
+      std::make_unique<base::Value>(true));
+
+  privacy_sandbox_settings()->ReconcilePrivacySandboxPref();
+
+  EXPECT_TRUE(profile()->GetTestingPrefService()->GetBoolean(
+      prefs::kPrivacySandboxApisEnabled));
+
+  // Reconciliation should not enable the privacy sandbox.
+  SetupTestState(
+      /*privacy_sandbox_available=*/true,
+      /*privacy_sandbox_enabled=*/false,
+      /*block_third_party_cookies=*/false,
+      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
+      /*user_cookie_exceptions=*/{},
+      /*managed_cookie_setting=*/kNoSetting,
+      /*managed_cookie_exceptions=*/{});
+  profile()->GetTestingPrefService()->SetUserPref(
+      prefs::kPrivacySandboxManuallyControlled,
+      std::make_unique<base::Value>(false));
+
+  privacy_sandbox_settings()->ReconcilePrivacySandboxPref();
+
+  EXPECT_FALSE(profile()->GetTestingPrefService()->GetBoolean(
+      prefs::kPrivacySandboxApisEnabled));
+}
+
+TEST_F(PrivacySandboxSettingsTest, ImmediateReconciliationNoSync) {
+  // Check that if the user is not syncing preferences, reconciliation occurs
+  // immediately.
+  SetupTestState(
+      /*privacy_sandbox_available=*/true,
+      /*privacy_sandbox_enabled=*/true,
+      /*block_third_party_cookies=*/true,
+      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_BLOCK,
+      /*user_cookie_exceptions=*/{},
+      /*managed_cookie_setting=*/kNoSetting,
+      /*managed_cookie_exceptions=*/{});
+
+  auto registered_types =
+      sync_service()->GetUserSettings()->GetRegisteredSelectableTypes();
+  registered_types.Remove(syncer::UserSelectableType::kPreferences);
+  sync_service()->GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false, registered_types);
+
+  privacy_sandbox_settings()->MaybeReconcilePrivacySandboxPref();
+
+  EXPECT_TRUE(profile()->GetTestingPrefService()->GetBoolean(
+      prefs::kPrivacySandboxPreferencesReconciled));
+}
+
+TEST_F(PrivacySandboxSettingsTest, ImmediateReconciliationSyncComplete) {
+  // Check that if sync has completed a cycle that reconciliation occurs
+  // immediately.
+  SetupTestState(
+      /*privacy_sandbox_available=*/true,
+      /*privacy_sandbox_enabled=*/true,
+      /*block_third_party_cookies=*/true,
+      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_BLOCK,
+      /*user_cookie_exceptions=*/{},
+      /*managed_cookie_setting=*/kNoSetting,
+      /*managed_cookie_exceptions=*/{});
+
+  sync_service()->SetNonEmptyLastCycleSnapshot();
+
+  privacy_sandbox_settings()->MaybeReconcilePrivacySandboxPref();
+
+  EXPECT_TRUE(profile()->GetTestingPrefService()->GetBoolean(
+      prefs::kPrivacySandboxPreferencesReconciled));
+}
+
+TEST_F(PrivacySandboxSettingsTest, ImmediateReconciliationPersistentSyncError) {
+  // Check that if sync has a persistent error that reconciliation occurs
+  // immediately.
+  SetupTestState(
+      /*privacy_sandbox_available=*/true,
+      /*privacy_sandbox_enabled=*/true,
+      /*block_third_party_cookies=*/true,
+      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_BLOCK,
+      /*user_cookie_exceptions=*/{},
+      /*managed_cookie_setting=*/kNoSetting,
+      /*managed_cookie_exceptions=*/{});
+
+  sync_service()->SetDisableReasons(
+      syncer::SyncService::DISABLE_REASON_UNRECOVERABLE_ERROR);
+
+  privacy_sandbox_settings()->MaybeReconcilePrivacySandboxPref();
+
+  EXPECT_TRUE(profile()->GetTestingPrefService()->GetBoolean(
+      prefs::kPrivacySandboxPreferencesReconciled));
+}
+
+TEST_F(PrivacySandboxSettingsTest, ImmediateReconciliationNoDisable) {
+  // Check that if the local settings would not disable the privacy sandbox
+  // that reconciliation runs.
+  SetupTestState(
+      /*privacy_sandbox_available=*/true,
+      /*privacy_sandbox_enabled=*/false,
+      /*block_third_party_cookies=*/false,
+      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
+      /*user_cookie_exceptions=*/{},
+      /*managed_cookie_setting=*/kNoSetting,
+      /*managed_cookie_exceptions=*/{});
+
+  privacy_sandbox_settings()->MaybeReconcilePrivacySandboxPref();
+
+  EXPECT_TRUE(profile()->GetTestingPrefService()->GetBoolean(
+      prefs::kPrivacySandboxPreferencesReconciled));
+}
+
+TEST_F(PrivacySandboxSettingsTest, DelayedReconciliationSyncSuccess) {
+  // Check that a sync service which has not yet started delays reconciliation
+  // until it has completed a sync cycle.
+  SetupTestState(
+      /*privacy_sandbox_available=*/true,
+      /*privacy_sandbox_enabled=*/true,
+      /*block_third_party_cookies=*/true,
+      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_BLOCK,
+      /*user_cookie_exceptions=*/{},
+      /*managed_cookie_setting=*/kNoSetting,
+      /*managed_cookie_exceptions=*/{});
+
+  sync_service()->SetEmptyLastCycleSnapshot();
+
+  privacy_sandbox_settings()->MaybeReconcilePrivacySandboxPref();
+
+  EXPECT_FALSE(profile()->GetTestingPrefService()->GetBoolean(
+      prefs::kPrivacySandboxPreferencesReconciled));
+
+  sync_service()->SetNonEmptyLastCycleSnapshot();
+  sync_service()->FireSyncCycleCompleted();
+
+  EXPECT_TRUE(profile()->GetTestingPrefService()->GetBoolean(
+      prefs::kPrivacySandboxPreferencesReconciled));
+}
+
+TEST_F(PrivacySandboxSettingsTest, DelayedReconciliationSyncFailure) {
+  // Check that a sync service which has not yet started delays reconciliation
+  // until a persistent error has occurred.
+  SetupTestState(
+      /*privacy_sandbox_available=*/true,
+      /*privacy_sandbox_enabled=*/true,
+      /*block_third_party_cookies=*/true,
+      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_BLOCK,
+      /*user_cookie_exceptions=*/{},
+      /*managed_cookie_setting=*/kNoSetting,
+      /*managed_cookie_exceptions=*/{});
+
+  sync_service()->SetEmptyLastCycleSnapshot();
+
+  privacy_sandbox_settings()->MaybeReconcilePrivacySandboxPref();
+
+  EXPECT_FALSE(profile()->GetTestingPrefService()->GetBoolean(
+      prefs::kPrivacySandboxPreferencesReconciled));
+
+  // A transient sync startup state should not result in reconciliation.
+  sync_service()->SetTransportState(
+      syncer::SyncService::TransportState::START_DEFERRED);
+  sync_service()->FireStateChanged();
+
+  EXPECT_FALSE(profile()->GetTestingPrefService()->GetBoolean(
+      prefs::kPrivacySandboxPreferencesReconciled));
+
+  // A state update after an unrecoverable error should result in
+  // reconciliation.
+  sync_service()->SetDisableReasons(
+      syncer::SyncService::DISABLE_REASON_UNRECOVERABLE_ERROR);
+  sync_service()->FireStateChanged();
+
+  EXPECT_TRUE(profile()->GetTestingPrefService()->GetBoolean(
+      prefs::kPrivacySandboxPreferencesReconciled));
+}
+
+TEST_F(PrivacySandboxSettingsTest, DelayedReconciliationIdentityFailure) {
+  // Check that a sync service which has not yet started delays reconciliation
+  // until a persistent identity error has occurred.
+  SetupTestState(
+      /*privacy_sandbox_available=*/true,
+      /*privacy_sandbox_enabled=*/true,
+      /*block_third_party_cookies=*/true,
+      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_BLOCK,
+      /*user_cookie_exceptions=*/{},
+      /*managed_cookie_setting=*/kNoSetting,
+      /*managed_cookie_exceptions=*/{});
+
+  sync_service()->SetEmptyLastCycleSnapshot();
+
+  privacy_sandbox_settings()->MaybeReconcilePrivacySandboxPref();
+
+  EXPECT_FALSE(profile()->GetTestingPrefService()->GetBoolean(
+      prefs::kPrivacySandboxPreferencesReconciled));
+
+  // An account becoming available should not result in reconciliation.
+  identity_test_env()->MakePrimaryAccountAvailable("test@test.com");
+
+  EXPECT_FALSE(profile()->GetTestingPrefService()->GetBoolean(
+      prefs::kPrivacySandboxPreferencesReconciled));
+
+  // A successful update to refresh tokens should not result in reconciliation.
+  identity_test_env()->SetRefreshTokenForPrimaryAccount();
+
+  EXPECT_FALSE(profile()->GetTestingPrefService()->GetBoolean(
+      prefs::kPrivacySandboxPreferencesReconciled));
+
+  // A persistent authentication error for a non-primary account should not
+  // result in reconciliation.
+  auto non_primary_account =
+      identity_test_env()->MakeAccountAvailable("unrelated@unrelated.com");
+  identity_test_env()->SetRefreshTokenForAccount(
+      non_primary_account.account_id);
+  identity_test_env()->UpdatePersistentErrorOfRefreshTokenForAccount(
+      non_primary_account.account_id,
+      GoogleServiceAuthError(
+          GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS));
+
+  EXPECT_FALSE(profile()->GetTestingPrefService()->GetBoolean(
+      prefs::kPrivacySandboxPreferencesReconciled));
+
+  // A perisistent authentication error for the primary account should result
+  // in reconciliation.
+  identity_test_env()->UpdatePersistentErrorOfRefreshTokenForAccount(
+      identity_test_env()->identity_manager()->GetPrimaryAccountId(),
+      GoogleServiceAuthError(
+          GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS));
+
+  EXPECT_TRUE(profile()->GetTestingPrefService()->GetBoolean(
+      prefs::kPrivacySandboxPreferencesReconciled));
+}
+
+TEST_F(PrivacySandboxSettingsTest, DelayedReconciliationSyncIssueThenManaged) {
+  // Check that if before an initial sync issue is resolved, the cookie settings
+  // are disabled by policy, that reconciliation does not run until the policy
+  // is removed.
+  SetupTestState(
+      /*privacy_sandbox_available=*/true,
+      /*privacy_sandbox_enabled=*/true,
+      /*block_third_party_cookies=*/true,
+      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_BLOCK,
+      /*user_cookie_exceptions=*/{},
+      /*managed_cookie_setting=*/kNoSetting,
+      /*managed_cookie_exceptions=*/{});
+
+  sync_service()->SetEmptyLastCycleSnapshot();
+
+  privacy_sandbox_settings()->MaybeReconcilePrivacySandboxPref();
+
+  EXPECT_FALSE(profile()->GetTestingPrefService()->GetBoolean(
+      prefs::kPrivacySandboxPreferencesReconciled));
+
+  // Apply a management state that is disabling cookies. This should result
+  // in the policy service being observed when the sync issue is resolved.
+  SetupTestState(
+      /*privacy_sandbox_available=*/true,
+      /*privacy_sandbox_enabled=*/true,
+      /*block_third_party_cookies=*/false,
+      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
+      /*user_cookie_exceptions=*/{},
+      /*managed_cookie_setting=*/ContentSetting::CONTENT_SETTING_BLOCK,
+      /*managed_cookie_exceptions=*/{});
+
+  EXPECT_CALL(*policy_service(), AddObserver(policy::POLICY_DOMAIN_CHROME,
+                                             privacy_sandbox_settings()))
+      .Times(1);
+
+  sync_service()->SetNonEmptyLastCycleSnapshot();
+  sync_service()->FireSyncCycleCompleted();
+
+  EXPECT_FALSE(profile()->GetTestingPrefService()->GetBoolean(
+      prefs::kPrivacySandboxPreferencesReconciled));
+
+  // Removing the management state and firing the policy update listener should
+  // result in reconciliation running.
+  SetupTestState(
+      /*privacy_sandbox_available=*/true,
+      /*privacy_sandbox_enabled=*/true,
+      /*block_third_party_cookies=*/false,
+      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
+      /*user_cookie_exceptions=*/{},
+      /*managed_cookie_setting=*/kNoSetting,
+      /*managed_cookie_exceptions=*/{});
+
+  // The HostContentSettingsMap & PrefService are inspected directly, and not
+  // the PolicyMap provided here. The associated browser tests confirm that this
+  // is a valid approach.
+  privacy_sandbox_settings()->OnPolicyUpdated(
+      policy::PolicyNamespace(), policy::PolicyMap(), policy::PolicyMap());
+
+  EXPECT_TRUE(profile()->GetTestingPrefService()->GetBoolean(
+      prefs::kPrivacySandboxPreferencesReconciled));
+}
+
+TEST_F(PrivacySandboxSettingsTest, NoReconciliationAlreadyRun) {
+  // Reconciliation should not run if it is recorded as already occurring.
+  SetupTestState(
+      /*privacy_sandbox_available=*/true,
+      /*privacy_sandbox_enabled=*/true,
+      /*block_third_party_cookies=*/true,
+      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_BLOCK,
+      /*user_cookie_exceptions=*/{},
+      /*managed_cookie_setting=*/kNoSetting,
+      /*managed_cookie_exceptions=*/{});
+
+  profile()->GetTestingPrefService()->SetUserPref(
+      prefs::kPrivacySandboxPreferencesReconciled,
+      std::make_unique<base::Value>(true));
+
+  privacy_sandbox_settings()->MaybeReconcilePrivacySandboxPref();
+
+  // If run, reconciliation would have disabled the sandbox.
+  EXPECT_TRUE(profile()->GetTestingPrefService()->GetBoolean(
+      prefs::kPrivacySandboxApisEnabled));
+}
+
+TEST_F(PrivacySandboxSettingsTest, NoReconciliationSandboxSettingsDisabled) {
+  // Reconciliation should not run if the privacy sandbox settings are not
+  // enabled.
+  SetupTestState(
+      /*privacy_sandbox_available=*/false,
+      /*privacy_sandbox_enabled=*/true,
+      /*block_third_party_cookies=*/true,
+      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_BLOCK,
+      /*user_cookie_exceptions=*/{},
+      /*managed_cookie_setting=*/kNoSetting,
+      /*managed_cookie_exceptions=*/{});
+
+  privacy_sandbox_settings()->MaybeReconcilePrivacySandboxPref();
+
+  EXPECT_FALSE(profile()->GetTestingPrefService()->GetBoolean(
+      prefs::kPrivacySandboxPreferencesReconciled));
 }
 
 class PrivacySandboxSettingsTestCookiesClearOnExitTurnedOff
