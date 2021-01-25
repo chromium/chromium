@@ -43,6 +43,8 @@ def _convert_to_go_swarming_args(args):
     current_arg = args[i]
     if current_arg == '--swarming':
       current_arg = '--server'
+    elif current_arg == '--resultdb':
+      current_arg = '--enable-resultdb'
     go_args.append(current_arg)
     i += 1
     if current_arg in map_flags:
@@ -320,34 +322,12 @@ class BaseTestTriggerer(object):
                                         suffix='.json')
         args_to_pass = self.modify_args(filtered_remaining_args, bot_index,
                                         shard_index, args.shards, json_temp)
-        if args.use_swarming_go:
-          ret = self.run_swarming_go(
-            args_to_pass, verbose, json_temp, shard_index, args.shards,
-            merged_json)
-        else:
-          ret = self.run_swarming(args_to_pass, verbose)
+        ret = self.run_swarming_go(
+          args_to_pass, verbose, json_temp, shard_index, args.shards,
+          merged_json)
         if ret:
           sys.stderr.write('Failed to trigger a task, aborting\n')
           return ret
-
-        if args.use_swarming_go:
-          continue
-
-        # TODO(crbug.com/1127205): remove belows in this block.
-        result_json = self.read_json_from_temp_file(json_temp)
-        if not merged_json:
-          # Copy the entire JSON -- in particular, the "request"
-          # dictionary -- from the first shard. "swarming.py collect" uses
-          # some keys from this dictionary, in particular related to
-          # expiration. It also contains useful debugging information.
-          merged_json = copy.deepcopy(result_json)
-          # However, reset the "tasks" entry to an empty dictionary,
-          # which will be handled specially.
-          merged_json['tasks'] = {}
-        tasks = result_json['tasks']
-        for k, v in tasks.items():
-          v['shard_index'] = shard_index
-          merged_json['tasks'][k + ':%d:%d' % (shard_index, args.shards)] = v
       finally:
         self.delete_temp_file(json_temp)
     self.write_json_to_file(merged_json, args.dump_json)
@@ -377,6 +357,7 @@ class BaseTestTriggerer(object):
 
   @staticmethod
   def add_use_swarming_go_arg(parser):
+    # TODO(crbug.com/1127205): remove this.
     parser.add_argument(
         '--use-swarming-go',
         default=False,

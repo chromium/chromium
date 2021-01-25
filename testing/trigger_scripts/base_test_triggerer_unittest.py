@@ -25,14 +25,14 @@ class UnitTest(fake_filesystem_unittest.TestCase):
         '--swarming', 'x.apphost.com', '--dimension', 'pool', 'ci',
         '--dimension', 'os', 'linux', '--env', 'FOO', 'foo', '--hello',
         '--cipd-package', 'path:name:123', '--scalar', '42',
-        '--optional-dimension', 'os', 'ubuntu', '60'
+        '--optional-dimension', 'os', 'ubuntu', '60', '--resultdb'
     ]
     go_args = base_test_triggerer._convert_to_go_swarming_args(args)
     expected = [
         '--server', 'x.apphost.com', '--dimension', 'pool=ci', '--dimension',
         'os=linux', '--env', 'FOO=foo', '--hello', '--cipd-package',
         'path:name=123', '--scalar', '42', '--optional-dimension',
-        'os=ubuntu:60'
+        'os=ubuntu:60', '--enable-resultdb'
     ]
     self.assertEquals(go_args, expected)
 
@@ -67,17 +67,6 @@ class UnitTest(fake_filesystem_unittest.TestCase):
     for args, ex in invalid_args:
       self.assertRaises(ex, base_test_triggerer._convert_to_go_swarming_args,
                         args)
-
-  def test_arg_parser(self):
-    # Added for https://crbug.com/1143224
-    parser = argparse.ArgumentParser()
-    base_test_triggerer.BaseTestTriggerer.add_use_swarming_go_arg(parser)
-    swarming_args = ['--server', 'x.apphost.com', '--dimension', 'os', 'Linux']
-    args, _ = parser.parse_known_args(swarming_args)
-    self.assertFalse(args.use_swarming_go)
-
-    args, _ = parser.parse_known_args(swarming_args + ['--use-swarming-go'])
-    self.assertTrue(args.use_swarming_go)
 
   def test_trigger_tasks(self):
     parser = base_test_triggerer.BaseTestTriggerer.setup_parser_contract(
