@@ -55,7 +55,7 @@ void AudioEncoder::EncodeAudio(const AudioBus& audio_bus,
           !last_capture_time_.is_null() &&
               ((capture_time - last_capture_time_).InSecondsF() >
                1.5f * audio_bus.frames() / audio_input_params().sample_rate()))
-      << "Possibly frames were skipped, which may result in inaccuarate "
+      << "Possibly frames were skipped, which may result in inaccurate "
          "timestamp calculation.";
 
   last_capture_time_ = capture_time;

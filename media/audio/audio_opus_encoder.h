@@ -77,6 +77,9 @@ class MEDIA_EXPORT AudioOpusEncoder : public AudioEncoder {
   // this will be the number of flushed frames, which is used to compute the
   // timestamp provided in the output |EncodedAudioBuffer|.
   base::Optional<int> number_of_flushed_frames_;
+
+  // Timestamp that should be reported by the next call of encode_callback()
+  base::TimeTicks next_timestamp_;
 };
 
 }  // namespace media

@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
+#include "media/base/audio_timestamp_helper.h"
 #include "media/base/status.h"
 #include "media/base/status_codes.h"
 
@@ -218,6 +219,23 @@ void AudioOpusEncoder::EncodeAudioImpl(const AudioBus& audio_bus,
   if (!opus_encoder_)
     return;
 
+  // If |capture_time| - |audio_bus|'s duration is not equal to the expected
+  // timestamp for the next audio sample. It means there is a gap/overlap,
+  // if it's big enough we flash and start anew, otherwise we ignore it.
+  auto capture_ts = ComputeTimestamp(audio_bus.frames(), capture_time);
+  auto end_of_existing_buffer_ts =
+      next_timestamp_ +
+      AudioTimestampHelper::FramesToTime(fifo_.queued_frames(),
+                                         audio_input_params().sample_rate());
+  base::TimeDelta gap = (capture_ts - end_of_existing_buffer_ts).magnitude();
+  constexpr base::TimeDelta max_gap = base::TimeDelta::FromMilliseconds(1);
+  if (gap > max_gap) {
+    DLOG(ERROR) << "Large gap in sound. Forced flush. "
+                << "Gap/overlap duration: " << gap;
+    FlushImpl();
+    next_timestamp_ = capture_ts;
+  }
+
   // The |fifo_| won't trigger OnFifoOutput() until we have enough frames
   // suitable for the converter.
   fifo_.Push(audio_bus);
@@ -251,11 +269,14 @@ void AudioOpusEncoder::OnFifoOutput(const AudioBus& output_bus,
                converted_params_.frames_per_buffer(), &encoded_data,
                &encoded_data_size)) {
     DCHECK_GT(encoded_data_size, 1u);
-    encode_callback().Run(EncodedAudioBuffer(
-        converted_params_, std::move(encoded_data), encoded_data_size,
-        ComputeTimestamp(
-            number_of_flushed_frames_.value_or(output_bus.frames()),
-            last_capture_time())));
+    auto reported_duration = AudioTimestampHelper::FramesToTime(
+        number_of_flushed_frames_.value_or(output_bus.frames()),
+        audio_input_params().sample_rate());
+
+    encode_callback().Run(
+        EncodedAudioBuffer(converted_params_, std::move(encoded_data),
+                           encoded_data_size, next_timestamp_));
+    next_timestamp_ += reported_duration;
   }
 }
 
