@@ -682,6 +682,7 @@ bool AutocompleteMatch::ShouldBeSkippedForGroupBySearchVsUrl(Type type) {
   return type == AutocompleteMatchType::CLIPBOARD_URL ||
          type == AutocompleteMatchType::CLIPBOARD_TEXT ||
          type == AutocompleteMatchType::CLIPBOARD_IMAGE ||
+         type == AutocompleteMatchType::TILE_NAVSUGGEST ||
          type == AutocompleteMatchType::TILE_SUGGESTION;
 }
 
