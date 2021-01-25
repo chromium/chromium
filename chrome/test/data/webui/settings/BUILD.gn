@@ -360,8 +360,10 @@ js_library("privacy_page_test") {
 
 js_library("privacy_sandbox_test") {
   deps = [
+    ":test_metrics_browser_proxy",
     ":test_open_window_proxy",
     "..:chai_assert",
+    "..:test_util.m",
     "//chrome/browser/resources/settings:settings",
     "//chrome/browser/resources/settings/privacy_sandbox:app",
   ]

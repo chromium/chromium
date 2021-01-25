@@ -78,9 +78,10 @@
     </h2>
   </div>
   <div class="card">
-    <settings-toggle-button id="toggleButton"
+    <settings-toggle-button id="apiToggleButton" class="hr"
         pref="{{prefs.privacy_sandbox.apis_enabled}}"
-        class="hr" label="$i18n{privacySandboxPageHeading}">
+        label="$i18n{privacySandboxPageHeading}"
+        on-change="onApiToggleButtonChange_">
     </settings-toggle-button>
     <div class="cr-row continuation">
         <div class="secondary">$i18n{privacySandboxPageHeading}</div>

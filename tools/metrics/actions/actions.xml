@@ -21132,6 +21132,44 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.PrivacySandbox.ApisDisabled">
+  <owner>rainhard@chromium.org</owner>
+  <owner>sauski@google.com</owner>
+  <owner>msramek@chromium.org</owner>
+  <description>
+    User disables the privacy sandbox APIs in the privacy sandbox page.
+  </description>
+</action>
+
+<action name="Settings.PrivacySandbox.ApisEnabled">
+  <owner>rainhard@chromium.org</owner>
+  <owner>sauski@google.com</owner>
+  <owner>msramek@chromium.org</owner>
+  <description>
+    User enables the privacy sandbox APIs in the privacy sandbox page.
+  </description>
+</action>
+
+<action name="Settings.PrivacySandbox.OpenedFromSettingsParent">
+  <owner>rainhard@chromium.org</owner>
+  <owner>sauski@google.com</owner>
+  <owner>msramek@chromium.org</owner>
+  <description>
+    User clicks the privacy sandbox row in the privacy page to open the privacy
+    sandbox page.
+  </description>
+</action>
+
+<action name="Settings.PrivacySandbox.OpenExplainer">
+  <owner>rainhard@chromium.org</owner>
+  <owner>sauski@google.com</owner>
+  <owner>msramek@chromium.org</owner>
+  <description>
+    User clicks the details button in the privacy sandbox page to see the
+    privacy sandbox explainer.
+  </description>
+</action>
+
 <action name="Settings.SafetyCheck.ChromeCleanerCaretNavigation">
   <owner>rainhard@chromium.org</owner>
   <owner>msramek@chromium.org</owner>

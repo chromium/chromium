@@ -158,10 +158,15 @@ suite('PrivacyPage', function() {
 });
 
 suite('PrivacySandboxSettingsEnabled', function() {
+  /** @type {?TestMetricsBrowserProxy} */
+  let metricsBrowserProxy = null;
   /** @type {!SettingsPrivacyPageElement} */
   let page;
 
   setup(function() {
+    metricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.instance_ = metricsBrowserProxy;
+
     document.body.innerHTML = '';
     page = /** @type {!SettingsPrivacyPageElement} */
         (document.createElement('settings-privacy-page'));
@@ -171,6 +176,14 @@ suite('PrivacySandboxSettingsEnabled', function() {
 
   test('privacySandboxRowVisible', function() {
     assertTrue(isChildVisible(page, '#privacySandboxLinkRow'));
+  });
+
+  test('clickPrivacySandboxElement', async function() {
+    page.$$('#privacySandboxLinkRow').click();
+    // Ensure UMA is logged.
+    assertEquals(
+        'Settings.PrivacySandbox.OpenedFromSettingsParent',
+        await metricsBrowserProxy.whenCalled('recordAction'));
   });
 });
 

@@ -315,6 +315,8 @@ Polymer({
 
   /** @private */
   onPrivacySandboxClick_() {
+    this.metricsBrowserProxy_.recordAction(
+        'Settings.PrivacySandbox.OpenedFromSettingsParent');
     // TODO(crbug/1159942): Replace this with an ordinary OpenWindowProxy call.
     this.shadowRoot.getElementById('privacySandboxLink').click();
   },
