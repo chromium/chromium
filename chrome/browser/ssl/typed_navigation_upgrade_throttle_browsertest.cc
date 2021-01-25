@@ -276,8 +276,14 @@ class TypedNavigationUpgradeThrottleBrowserTest
   void PressEnterAndWaitForNavigations(size_t num_navigations) {
     content::TestNavigationObserver navigation_observer(
         browser()->tab_strip_model()->GetActiveWebContents(), num_navigations);
-    ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_RETURN,
-                                                false, false, false, false));
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](const Browser* browser) {
+              EXPECT_TRUE(ui_test_utils::SendKeyPressSync(
+                  browser, ui::VKEY_RETURN, false, false, false, false));
+            },
+            browser()));
     navigation_observer.Wait();
   }
 
@@ -490,8 +496,8 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
 
   base::HistogramTester histograms;
   // Type "site-with-bad-https.com".
-  const GURL url(kSiteWithBadHttps);
-  TypeUrlAndExpectHttpFallback(url.host(), histograms);
+  const GURL http_url(kSiteWithBadHttps);
+  TypeUrlAndExpectHttpFallback(http_url.host(), histograms);
 
   histograms.ExpectTotalCount(TypedNavigationUpgradeThrottle::kHistogramName,
                               2);
@@ -505,9 +511,23 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
       TypedNavigationUpgradeThrottle::kHistogramName,
       TypedNavigationUpgradeThrottle::Event::kHttpsLoadTimedOut, 0);
 
-  // TODO(meacer): Try again and check that the histogram counts doubled. Doing
-  // that currently fails on lacros because this time the navigation never gets
-  // upgraded (probably because of an issue in the autocomplete logic).
+  // Try again. This time the omnibox will find a history match for the http
+  // URL and navigate directly to it. Histograms shouldn't change.
+  // TODO(crbug.com/1169564): We should try the https URL after a certain
+  // time has passed.
+  TypeUrlAndExpectNoUpgrade(http_url.host(), false);
+
+  histograms.ExpectTotalCount(TypedNavigationUpgradeThrottle::kHistogramName,
+                              2);
+  histograms.ExpectBucketCount(
+      TypedNavigationUpgradeThrottle::kHistogramName,
+      TypedNavigationUpgradeThrottle::Event::kHttpsLoadStarted, 1);
+  histograms.ExpectBucketCount(
+      TypedNavigationUpgradeThrottle::kHistogramName,
+      TypedNavigationUpgradeThrottle::Event::kHttpsLoadFailedWithCertError, 1);
+  histograms.ExpectBucketCount(
+      TypedNavigationUpgradeThrottle::kHistogramName,
+      TypedNavigationUpgradeThrottle::Event::kHttpsLoadTimedOut, 0);
 }
 
 // If the upgraded HTTPS URL is not available because of a net error, we should
@@ -534,9 +554,23 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
       TypedNavigationUpgradeThrottle::kHistogramName,
       TypedNavigationUpgradeThrottle::Event::kHttpsLoadTimedOut, 0);
 
-  // TODO(meacer): Try again and check that the histogram counts doubled. Doing
-  // that currently fails on lacros because this time the navigation never gets
-  // upgraded (probably because of an issue in the autocomplete logic).
+  // Try again. This time the omnibox will find a history match for the http
+  // URL and navigate directly to it. Histograms shouldn't change.
+  // TODO(crbug.com/1169564): We should try the https URL after a certain
+  // time has passed.
+  TypeUrlAndExpectNoUpgrade(http_url.host(), false);
+
+  histograms.ExpectTotalCount(TypedNavigationUpgradeThrottle::kHistogramName,
+                              2);
+  histograms.ExpectBucketCount(
+      TypedNavigationUpgradeThrottle::kHistogramName,
+      TypedNavigationUpgradeThrottle::Event::kHttpsLoadStarted, 1);
+  histograms.ExpectBucketCount(
+      TypedNavigationUpgradeThrottle::kHistogramName,
+      TypedNavigationUpgradeThrottle::Event::kHttpsLoadFailedWithNetError, 1);
+  histograms.ExpectBucketCount(
+      TypedNavigationUpgradeThrottle::kHistogramName,
+      TypedNavigationUpgradeThrottle::Event::kHttpsLoadTimedOut, 0);
 }
 
 class TypedNavigationUpgradeThrottleFastTimeoutBrowserTest
