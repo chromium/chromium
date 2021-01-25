@@ -91,6 +91,18 @@ class VideoCaptureParams {
       viz::FrameSinkId new_frame_sink_id,
       const gfx::Size& new_max_video_size) WARN_UNUSED_RESULT;
 
+  // Called when the dimensions of the display on which recording is happening
+  // is changed due to e.g. display rotation or device scale factor changes. The
+  // given |new_display_size| is in DIPs, and will be used to update the
+  // resolution constraints on the given |capturer|.
+  // The default implementation is to *crash* the service, as this is only valid
+  // when recording a window or a partial region.
+  // Returns true if the video encoder needs to be reconfigured, indicating an
+  // actual change in the video size. False otherwise.
+  virtual bool OnDisplaySizeChanged(
+      mojo::Remote<viz::mojom::FrameSinkVideoCapturer>& capturer,
+      const gfx::Size& new_display_size) WARN_UNUSED_RESULT;
+
  protected:
   explicit VideoCaptureParams(viz::FrameSinkId frame_sink_id,
                               viz::SubtreeCaptureId subtree_capture_id);

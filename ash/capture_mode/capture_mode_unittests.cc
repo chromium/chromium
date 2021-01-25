@@ -1532,6 +1532,30 @@ TEST_F(CaptureModeTest, MultiDisplayWindowRecording) {
   EXPECT_EQ(roots[1]->bounds().size(), test_delegate->GetCurrentVideoSize());
 }
 
+TEST_F(CaptureModeTest, RotateDisplayWhileRecording) {
+  UpdateDisplay("600x800");
+
+  auto* controller =
+      StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kVideo);
+  SelectRegion(gfx::Rect(20, 40, 100, 200));
+  controller->StartVideoRecordingImmediatelyForTesting();
+  EXPECT_TRUE(controller->is_recording_in_progress());
+
+  // Initially the video size matches the un-rotated display size in DIPs.
+  CaptureModeTestApi test_api;
+  test_api.FlushRecordingServiceForTesting();
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+  EXPECT_EQ(gfx::Size(600, 800), test_delegate->GetCurrentVideoSize());
+
+  // Rotate by 90 degree, the video size should be updated to match that.
+  Shell::Get()->display_manager()->SetDisplayRotation(
+      WindowTreeHostManager::GetPrimaryDisplayId(), display::Display::ROTATE_90,
+      display::Display::RotationSource::USER);
+  test_api.FlushRecordingServiceForTesting();
+  EXPECT_EQ(gfx::Size(800, 600), test_delegate->GetCurrentVideoSize());
+}
+
 // Tests the behavior of screen recording with the presence of HDCP secure
 // content on the screen in all capture mode sources (fullscreen, region, and
 // window) depending on the test param.

@@ -496,6 +496,15 @@ void CaptureModeController::StartVideoRecordingImmediatelyForTesting() {
   OnVideoRecordCountDownFinished();
 }
 
+void CaptureModeController::PushNewRootSizeToRecordingService(
+    const gfx::Size& root_size) {
+  DCHECK(is_recording_in_progress_);
+  DCHECK(video_recording_watcher_);
+  DCHECK(recording_service_remote_);
+
+  recording_service_remote_->OnDisplaySizeChanged(root_size);
+}
+
 void CaptureModeController::OnRecordedWindowChangingRoot(
     aura::Window* window,
     aura::Window* new_root) {

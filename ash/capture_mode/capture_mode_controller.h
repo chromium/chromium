@@ -128,6 +128,15 @@ class ASH_EXPORT CaptureModeController
   friend class CaptureModeTestApi;
   friend class VideoRecordingWatcher;
 
+  // Called by |video_recording_watcher_| when the display on which recording is
+  // happening changes its bounds such as on display rotation or device scale
+  // factor changes. In this case we push the new |root_size| in DIPs to the
+  // recording service so that it can update the video size. Note that we do
+  // this only when recording a window or a partial region. When recording a
+  // fullscreen, the capturer can handle these changes and would center and
+  // letter-box the video frames within the requested size.
+  void PushNewRootSizeToRecordingService(const gfx::Size& root_size);
+
   // Called by |video_recording_watcher_| to inform us that the |window| being
   // recorded (i.e. |is_recording_in_progress_| is true) is about to move to a
   // |new_root|. This is needed so we can inform the recording service of this

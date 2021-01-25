@@ -67,6 +67,7 @@ class RecordingService : public mojom::RecordingService,
   void OnRecordedWindowChangingRoot(
       const viz::FrameSinkId& new_frame_sink_id,
       const gfx::Size& new_max_video_size) override;
+  void OnDisplaySizeChanged(const gfx::Size& new_display_size) override;
 
   // viz::mojom::FrameSinkVideoConsumer:
   void OnFrameCaptured(
@@ -93,6 +94,10 @@ class RecordingService : public mojom::RecordingService,
       mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
       mojo::PendingRemote<audio::mojom::StreamFactory> audio_stream_factory,
       std::unique_ptr<VideoCaptureParams> capture_params);
+
+  // Called on the main thread during an on-going recording to reconfigure an
+  // existing video encoder.
+  void ReconfigureVideoEncoder();
 
   // Called on the main thread on |success| from OnStopped() when all video
   // frames have been sent, or from OnEncodingFailure() with |success| set to
