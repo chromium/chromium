@@ -528,8 +528,9 @@ class ScrollLatencyCompositedScrollbarBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// Flaky test on all platforms: https://crbug.com/1122371.
 IN_PROC_BROWSER_TEST_F(ScrollLatencyCompositedScrollbarBrowserTest,
-                       ScrollbarButtonLatency) {
+                       DISABLED_ScrollbarButtonLatency) {
   LoadURL();
 
   RunScrollbarButtonLatencyTest();
