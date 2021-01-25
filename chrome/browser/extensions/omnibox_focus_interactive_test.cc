@@ -453,8 +453,9 @@ IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest, TabFocusStealingFromOopif) {
 }
 
 // Tab focus should not be stolen by the omnibox - https://crbug.com/1127220.
+// TODO(crbug.com/1163630): Flaky test.
 IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest,
-                       TabFocusStealingFromMainFrame) {
+                       DISABLED_TabFocusStealingFromMainFrame) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Open the new tab, focus should be on the location bar.
