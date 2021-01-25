@@ -1048,13 +1048,6 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams& main_params,
   // Enable PCScan once we are certain that FeatureList was initialized.
   EnablePCScanForMallocPartitionsIfNeeded();
 
-  // This is only relevant for PartitionAlloc-Everywhere builds. Temporarily
-  // disabled for non-DCHECK() builds, due to possibly related crashes
-  // (crbug.com/1155905).
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && DCHECK_IS_ON()
-  base::internal::ThreadCacheRegistry::Instance().StartPeriodicPurge();
-#endif
-
   if (should_start_minimal_browser) {
     DVLOG(0) << "Chrome is running in minimal browser mode.";
     return -1;
