@@ -15,6 +15,7 @@
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/common/search/generated_colors_info.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/native_theme/native_theme.h"
 
 namespace {
 
@@ -73,17 +74,17 @@ std::vector<int> GetAvailableColorIndices(
   return available_color_indices;
 }
 
-base::Optional<double> ExtractCurrentColorLightness(
-    ProfileAttributesEntry* current_profile) {
-  if (!current_profile)
-    return base::nullopt;
-  base::Optional<ProfileThemeColors> current_colors =
-      current_profile->GetProfileThemeColorsIfSet();
-  if (!current_colors)
-    return base::nullopt;
+double ExtractCurrentColorLightness(ProfileAttributesEntry* current_profile) {
+  ProfileThemeColors current_colors;
+  if (!current_profile) {
+    current_colors = GetDefaultProfileThemeColors(
+        ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors());
+  } else {
+    current_colors = current_profile->GetProfileThemeColors();
+  }
 
   color_utils::HSL hsl;
-  color_utils::SkColorToHSL(current_colors->profile_highlight_color, &hsl);
+  color_utils::SkColorToHSL(current_colors.profile_highlight_color, &hsl);
   return hsl.l;
 }
 
@@ -175,7 +176,7 @@ chrome_colors::ColorInfo GenerateNewProfileColorWithGenerator(
       used_theme_colors.insert(*current_colors);
   }
 
-  base::Optional<double> current_color_lightness =
+  double current_color_lightness =
       ExtractCurrentColorLightness(current_profile);
 
   // Collect indices of profile colors that match all the filters.
