@@ -26,6 +26,8 @@
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/painter.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -59,6 +61,7 @@ bool CanUseTranslucentTooltipWidget() {
 // TODO(oshima): Consider to use views::Label.
 class TooltipView : public views::View {
  public:
+  METADATA_HEADER(TooltipView);
   TooltipView() : render_text_(gfx::RenderText::CreateRenderText()) {
     SetBorder(views::CreateEmptyBorder(kVerticalPaddingTop, kHorizontalPadding,
                                        kVerticalPaddingBottom,
@@ -70,6 +73,8 @@ class TooltipView : public views::View {
     ResetDisplayRect();
   }
 
+  TooltipView(const TooltipView&) = delete;
+  TooltipView& operator=(const TooltipView&) = delete;
   ~TooltipView() override = default;
 
   // views:View:
@@ -92,8 +97,6 @@ class TooltipView : public views::View {
     view_size.Enlarge(insets.width(), insets.height());
     return view_size;
   }
-
-  const char* GetClassName() const override { return "TooltipView"; }
 
   void SetText(const base::string16& text) {
     render_text_->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
@@ -150,9 +153,10 @@ class TooltipView : public views::View {
 
   std::unique_ptr<gfx::RenderText> render_text_;
   int max_width_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TooltipView);
 };
+
+BEGIN_METADATA(TooltipView, views::View)
+END_METADATA
 
 }  // namespace
 

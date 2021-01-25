@@ -12,7 +12,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/macros.h"
 #include "base/numerics/ranges.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -34,6 +33,8 @@
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
@@ -71,6 +72,9 @@ bool GetColorFromText(const base::string16& text, SkColor* result) {
 // interface.
 class LocatedEventHandlerView : public views::View {
  public:
+  METADATA_HEADER(LocatedEventHandlerView);
+  LocatedEventHandlerView(const LocatedEventHandlerView&) = delete;
+  LocatedEventHandlerView& operator=(const LocatedEventHandlerView&) = delete;
   ~LocatedEventHandlerView() override = default;
 
  protected:
@@ -98,9 +102,10 @@ class LocatedEventHandlerView : public views::View {
       event->SetHandled();
     }
   }
-
-  DISALLOW_COPY_AND_ASSIGN(LocatedEventHandlerView);
 };
+
+BEGIN_METADATA(LocatedEventHandlerView, views::View)
+END_METADATA
 
 void DrawGradientRect(const gfx::Rect& rect,
                       SkColor start_color,
@@ -131,8 +136,12 @@ namespace views {
 // the indicator for the currently selected hue.
 class HueView : public LocatedEventHandlerView {
  public:
+  METADATA_HEADER(HueView);
+
   using HueChangedCallback = base::RepeatingCallback<void(SkScalar)>;
   explicit HueView(const HueChangedCallback& changed_callback);
+  HueView(const HueView&) = delete;
+  HueView& operator=(const HueView&) = delete;
 
   void OnHueChanged(SkScalar hue);
 
@@ -146,8 +155,6 @@ class HueView : public LocatedEventHandlerView {
 
   HueChangedCallback changed_callback_;
   int level_;
-
-  DISALLOW_COPY_AND_ASSIGN(HueView);
 };
 
 HueView::HueView(const HueChangedCallback& changed_callback)
@@ -223,6 +230,9 @@ void HueView::OnPaint(gfx::Canvas* canvas) {
   canvas->DrawPath(right_indicator_path, indicator_flags);
 }
 
+BEGIN_METADATA(HueView, LocatedEventHandlerView)
+END_METADATA
+
 ////////////////////////////////////////////////////////////////////////////////
 // SaturationValueView
 //
@@ -231,10 +241,14 @@ void HueView::OnPaint(gfx::Canvas* canvas) {
 // value.
 class SaturationValueView : public LocatedEventHandlerView {
  public:
+  METADATA_HEADER(SaturationValueView);
+
   using SaturationValueChangedCallback =
       base::RepeatingCallback<void(SkScalar, SkScalar)>;
   explicit SaturationValueView(
       const SaturationValueChangedCallback& changed_callback);
+  SaturationValueView(const SaturationValueView&) = delete;
+  SaturationValueView& operator=(const SaturationValueView&) = delete;
 
   void OnHueChanged(SkScalar hue);
   void OnSaturationValueChanged(SkScalar saturation, SkScalar value);
@@ -250,8 +264,6 @@ class SaturationValueView : public LocatedEventHandlerView {
   SaturationValueChangedCallback changed_callback_;
   SkScalar hue_;
   gfx::Point marker_position_;
-
-  DISALLOW_COPY_AND_ASSIGN(SaturationValueView);
 };
 
 SaturationValueView::SaturationValueView(
@@ -329,18 +341,21 @@ void SaturationValueView::OnPaint(gfx::Canvas* canvas) {
   OnPaintBorder(canvas);
 }
 
+BEGIN_METADATA(SaturationValueView, LocatedEventHandlerView)
+END_METADATA
+
 ////////////////////////////////////////////////////////////////////////////////
 // SelectedColorPatchView
 //
 // A view to simply show the selected color in a rectangle.
 class SelectedColorPatchView : public views::View {
  public:
+  METADATA_HEADER(SelectedColorPatchView);
   SelectedColorPatchView();
+  SelectedColorPatchView(const SelectedColorPatchView&) = delete;
+  SelectedColorPatchView& operator=(const SelectedColorPatchView&) = delete;
 
   void SetColor(SkColor color);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SelectedColorPatchView);
 };
 
 SelectedColorPatchView::SelectedColorPatchView() {
@@ -355,6 +370,9 @@ void SelectedColorPatchView::SetColor(SkColor color) {
     background()->SetNativeControlColor(color);
   SchedulePaint();
 }
+
+BEGIN_METADATA(SelectedColorPatchView, views::View)
+END_METADATA
 
 std::unique_ptr<View> ColorChooser::BuildView() {
   auto view = std::make_unique<View>();

@@ -31,6 +31,8 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 
 namespace {
@@ -40,13 +42,13 @@ const int kScrollAreaHeight = 192;
 // This container has the right Layout() impl to use within a ScrollView.
 class ScrollableView : public views::View {
  public:
-  ScrollableView() {}
-  ~ScrollableView() override {}
+  METADATA_HEADER(ScrollableView);
+  ScrollableView() = default;
+  ScrollableView(const ScrollableView&) = delete;
+  ScrollableView& operator=(const ScrollableView&) = delete;
+  ~ScrollableView() override = default;
 
   void Layout() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScrollableView);
 };
 
 void ScrollableView::Layout() {
@@ -61,6 +63,9 @@ void ScrollableView::Layout() {
 
   views::View::Layout();
 }
+
+BEGIN_METADATA(ScrollableView, views::View)
+END_METADATA
 
 }  // namespace
 

@@ -31,6 +31,8 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 
@@ -94,6 +96,7 @@ void BackgroundBorderAdderImageSource::Draw(gfx::Canvas* canvas) {
 // icon. However, badge could be updated via the UpdateBadge() method.
 class ImageWithBadge : public views::ImageView {
  public:
+  METADATA_HEADER(ImageWithBadge);
   // Constructs a View hierarchy with the a badge positioned in the bottom-right
   // corner of |main_image|. In RTL mode the badge is positioned in the
   // bottom-left corner.
@@ -107,8 +110,8 @@ class ImageWithBadge : public views::ImageView {
   void UpdateBadge(const gfx::ImageSkia& badge_image);
 
  private:
-  gfx::ImageSkia GetMainImage();
-  gfx::ImageSkia GetBadge();
+  gfx::ImageSkia GetMainImage() const;
+  gfx::ImageSkia GetBadge() const;
   void Render();
 
   const gfx::VectorIcon* main_vector_icon_ = nullptr;
@@ -132,7 +135,7 @@ void ImageWithBadge::UpdateBadge(const gfx::ImageSkia& badge_image) {
   Render();
 }
 
-gfx::ImageSkia ImageWithBadge::GetMainImage() {
+gfx::ImageSkia ImageWithBadge::GetMainImage() const {
   if (main_image_skia_)
     return main_image_skia_.value();
   DCHECK(main_vector_icon_);
@@ -141,7 +144,7 @@ gfx::ImageSkia ImageWithBadge::GetMainImage() {
   return gfx::CreateVectorIcon(*main_vector_icon_, kImageSize, color);
 }
 
-gfx::ImageSkia ImageWithBadge::GetBadge() {
+gfx::ImageSkia ImageWithBadge::GetBadge() const {
   if (badge_image_skia_)
     return badge_image_skia_.value();
   // If there is no badge set, fallback to the default globe icon.
@@ -180,6 +183,9 @@ void ImageWithBadge::Render() {
   SetImage(badged_image);
 }
 
+BEGIN_METADATA(ImageWithBadge, views::ImageView)
+END_METADATA
+
 std::unique_ptr<views::View> CreateHeaderImage(int image_id) {
   auto image_view = std::make_unique<NonAccessibleImageView>();
   image_view->SetImage(
@@ -211,6 +217,7 @@ std::unique_ptr<views::Label> CreateDescription() {
 // that a password is being moved from the device to the account.
 class MoveToAccountStoreBubbleView::MovingBannerView : public views::View {
  public:
+  METADATA_HEADER(MovingBannerView);
   MovingBannerView(std::unique_ptr<ImageWithBadge> from_image,
                    std::unique_ptr<ImageWithBadge> to_image);
   ~MovingBannerView() override = default;
@@ -252,6 +259,11 @@ void MoveToAccountStoreBubbleView::MovingBannerView::UpdateFavicon(
   from_view->UpdateBadge(favicon);
   to_view->UpdateBadge(favicon);
 }
+
+BEGIN_NESTED_METADATA(MoveToAccountStoreBubbleView,
+                      MovingBannerView,
+                      views::View)
+END_METADATA
 
 MoveToAccountStoreBubbleView::MoveToAccountStoreBubbleView(
     content::WebContents* web_contents,

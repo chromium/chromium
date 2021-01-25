@@ -15,6 +15,7 @@
 #include "ui/views/controls/link.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 // ExpandableContainerView::DetailsView ----------------------------------------
 ExpandableContainerView::DetailsView::~DetailsView() = default;
@@ -40,10 +41,21 @@ ExpandableContainerView::DetailsView::DetailsView(
   }
 }
 
-void ExpandableContainerView::DetailsView::ToggleExpanded() {
-  expanded_ = !expanded_;
+void ExpandableContainerView::DetailsView::SetExpanded(bool expanded) {
+  if (expanded == expanded_)
+    return;
+  expanded_ = expanded;
   SetVisible(expanded_);
+  OnPropertyChanged(&expanded_, views::kPropertyEffectsPaint);
 }
+
+bool ExpandableContainerView::DetailsView::GetExpanded() const {
+  return expanded_;
+}
+
+BEGIN_NESTED_METADATA(ExpandableContainerView, DetailsView, views::View)
+ADD_PROPERTY_METADATA(bool, Expanded)
+END_METADATA
 
 // ExpandableContainerView -----------------------------------------------------
 
@@ -71,8 +83,11 @@ void ExpandableContainerView::ChildPreferredSizeChanged(views::View* child) {
 }
 
 void ExpandableContainerView::ToggleDetailLevel() {
-  details_view_->ToggleExpanded();
+  const bool expanded = details_view_->GetExpanded();
+  details_view_->SetExpanded(!expanded);
   details_link_->SetText(l10n_util::GetStringUTF16(
-      details_view_->expanded() ? IDS_EXTENSIONS_HIDE_DETAILS
-                                : IDS_EXTENSIONS_SHOW_DETAILS));
+      expanded ? IDS_EXTENSIONS_SHOW_DETAILS : IDS_EXTENSIONS_HIDE_DETAILS));
 }
+
+BEGIN_METADATA(ExpandableContainerView, views::View)
+END_METADATA

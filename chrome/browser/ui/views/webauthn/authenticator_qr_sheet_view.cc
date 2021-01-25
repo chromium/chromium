@@ -11,6 +11,8 @@
 #include "components/qr_code_generator/qr_code_generator.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 
 using QRCode = QRCodeGenerator;
@@ -20,6 +22,8 @@ namespace {
 // QRView displays a QR code.
 class QRView : public views::View {
  public:
+  METADATA_HEADER(QRView);
+
   // kTilePixels is the height and width, in pixels, of a single tile from the
   // QR code.
   static constexpr int kTilePixels = 10;
@@ -48,6 +52,8 @@ class QRView : public views::View {
     qr_tiles_ = code->data;
   }
 
+  QRView(const QRView&) = delete;
+  QRView& operator=(const QRView&) = delete;
   ~QRView() override = default;
 
   void RefreshQRCode(const std::string& qr_string) {
@@ -168,14 +174,16 @@ class QRView : public views::View {
   QRCode qr_;
   base::span<const uint8_t> qr_tiles_;
   int state_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(QRView);
 };
+
+BEGIN_METADATA(QRView, views::View)
+END_METADATA
 
 }  // anonymous namespace
 
 class AuthenticatorQRViewCentered : public views::View {
  public:
+  METADATA_HEADER(AuthenticatorQRViewCentered);
   explicit AuthenticatorQRViewCentered(const std::string& qr_data) {
     views::BoxLayout* layout =
         SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -194,6 +202,9 @@ class AuthenticatorQRViewCentered : public views::View {
 
   QRView* qr_view_;
 };
+
+BEGIN_METADATA(AuthenticatorQRViewCentered, views::View)
+END_METADATA
 
 AuthenticatorQRSheetView::AuthenticatorQRSheetView(
     std::unique_ptr<AuthenticatorQRSheetModel> sheet_model)
