@@ -62,13 +62,27 @@ IN_PROC_BROWSER_TEST_F(TotalInputDelayIntegrationTest, NoInputEvent) {
 }
 
 // Flaky: crbug.com/1163677
-IN_PROC_BROWSER_TEST_F(TotalInputDelayIntegrationTest,
-                       DISABLED_MultipleInputEvents) {
+IN_PROC_BROWSER_TEST_F(TotalInputDelayIntegrationTest, MultipleInputEvents) {
   LoadHTML(R"HTML(
-    <p>Sample website</p>
+    <head>
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0">
+    <style>
+      p {
+        position: absolute;
+        left: 10000px;
+        top: 10000px;
+      }
+    </style>
+  </head>
+  <body>
+    <p>Some text</p>
+  </body>
   )HTML");
 
   StartTracing({"loading"});
+
+  content::WaitForLoadStop(web_contents());
+  content::RenderFrameSubmissionObserver frame_observer(web_contents());
 
   // Simulate user's input.
   content::SimulateMouseClick(web_contents(), 0,
@@ -78,6 +92,20 @@ IN_PROC_BROWSER_TEST_F(TotalInputDelayIntegrationTest,
   content::SimulateMouseClick(web_contents(), 0,
                               blink::WebMouseEvent::Button::kLeft);
 
+  // Simulate some scrolls. The browser needs some time to record input delay
+  // UKM.
+  const double device_pixel_ratio =
+      EvalJs(web_contents(), "window.devicePixelRatio").ExtractDouble();
+  auto ScaledVector2dF = [device_pixel_ratio](float x, float y) {
+    return gfx::Vector2dF(std::floor(x * device_pixel_ratio),
+                          std::floor(y * device_pixel_ratio));
+  };
+  for (int i = 0; i < 10; ++i) {
+    EXPECT_TRUE(ExecJs(web_contents(), "window.scrollTo(0, 5)"));
+    frame_observer.WaitForScrollOffset(ScaledVector2dF(0.f, 5.f));
+  }
+
+  // Navigate to another page.
   ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
 
   // Get all input delay recorded by UKM.
