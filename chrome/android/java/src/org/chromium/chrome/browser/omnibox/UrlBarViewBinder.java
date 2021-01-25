@@ -8,6 +8,7 @@ import android.content.res.Resources;
 import android.text.Editable;
 import android.text.Selection;
 import android.text.TextUtils;
+import android.view.ActionMode;
 
 import androidx.annotation.ColorRes;
 
@@ -30,8 +31,9 @@ class UrlBarViewBinder {
      */
     public static void bind(PropertyModel model, UrlBar view, PropertyKey propertyKey) {
         if (UrlBarProperties.ACTION_MODE_CALLBACK.equals(propertyKey)) {
-            view.setCustomSelectionActionModeCallback(
-                    model.get(UrlBarProperties.ACTION_MODE_CALLBACK));
+            ActionMode.Callback callback = model.get(UrlBarProperties.ACTION_MODE_CALLBACK);
+            if (callback == null && view.getCustomSelectionActionModeCallback() == null) return;
+            view.setCustomSelectionActionModeCallback(callback);
         } else if (UrlBarProperties.ALLOW_FOCUS.equals(propertyKey)) {
             view.setAllowFocus(model.get(UrlBarProperties.ALLOW_FOCUS));
         } else if (UrlBarProperties.AUTOCOMPLETE_TEXT.equals(propertyKey)) {
