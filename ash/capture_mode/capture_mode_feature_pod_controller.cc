@@ -27,8 +27,11 @@ FeaturePodButton* CaptureModeFeaturePodController::CreateButton() {
   DCHECK(!button_);
   button_ = new FeaturePodButton(this, /*is_togglable=*/false);
   button_->SetVectorIcon(kCaptureModeIcon);
-  button_->SetLabel(
-      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_CAPTURE_MODE_BUTTON_LABEL));
+  const auto label_text =
+      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_CAPTURE_MODE_BUTTON_LABEL);
+  button_->SetLabel(label_text);
+  button_->icon_button()->SetTooltipText(label_text);
+  button_->SetLabelTooltip(label_text);
   button_->SetVisible(
       !Shell::Get()->session_controller()->IsUserSessionBlocked());
   return button_;

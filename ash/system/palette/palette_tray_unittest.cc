@@ -13,6 +13,7 @@
 #include "ash/assistant/util/assistant_util.h"
 #include "ash/highlighter/highlighter_controller.h"
 #include "ash/highlighter/highlighter_controller_test_api.h"
+#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/ash_switches.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
@@ -161,10 +162,12 @@ TEST_F(PaletteTrayTest, PaletteTrayWorkflow) {
   // the palette tray button is will not be active.
   PerformTap();
   ASSERT_TRUE(test_api_->tray_bubble_wrapper());
-  test_api_->palette_tool_manager()->ActivateTool(
-      PaletteToolId::CAPTURE_SCREEN);
-  EXPECT_FALSE(test_api_->palette_tool_manager()->IsToolActive(
-      PaletteToolId::CAPTURE_SCREEN));
+  const auto capture_tool_id = features::IsCaptureModeEnabled()
+                                   ? PaletteToolId::ENTER_CAPTURE_MODE
+                                   : PaletteToolId::CAPTURE_SCREEN;
+  test_api_->palette_tool_manager()->ActivateTool(capture_tool_id);
+  EXPECT_FALSE(
+      test_api_->palette_tool_manager()->IsToolActive(capture_tool_id));
   // Wait for the tray bubble widget to close.
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(test_api_->tray_bubble_wrapper());

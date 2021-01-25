@@ -1068,7 +1068,7 @@ TEST_F(AcceleratorControllerTest, GlobalAccelerators) {
 
   // The "Take Screenshot", "Take Partial Screenshot", volume, brightness, and
   // keyboard brightness accelerators are only defined on ChromeOS.
-  {
+  if (!features::IsCaptureModeEnabled()) {
     TestScreenshotDelegate* delegate = GetScreenshotDelegate();
     delegate->set_can_take_screenshot(false);
     EXPECT_TRUE(ProcessInController(
@@ -1734,7 +1734,13 @@ TEST_F(AcceleratorControllerTest, ToggleCapsLockAccelerators) {
     generator->PressLeftButton();
     generator->MoveMouseTo(10, 10);
     generator->ReleaseLeftButton();
-    EXPECT_EQ(1, delegate->handle_take_partial_screenshot_count());
+    if (features::IsCaptureModeEnabled()) {
+      auto* controller = CaptureModeController::Get();
+      EXPECT_TRUE(controller->IsActive());
+      EXPECT_EQ(CaptureModeSource::kRegion, controller->source());
+    } else {
+      EXPECT_EQ(1, delegate->handle_take_partial_screenshot_count());
+    }
 
     // Press Search, Press Alt, Release Search, Release Alt. CapsLock should be
     // triggered.
