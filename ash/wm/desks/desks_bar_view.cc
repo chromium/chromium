@@ -64,7 +64,7 @@ constexpr int kIconAndTextVerticalPadding = 8;
 constexpr int kMiniViewsSpacing = 12;
 
 // Spacing between zero state default desk button and new desk button.
-constexpr int kZeroStateButtonSpacing = 16;
+constexpr int kZeroStateButtonSpacing = 8;
 
 // The local Y coordinate of the zero state desk buttons.
 constexpr int kZeroStateY = 6;
