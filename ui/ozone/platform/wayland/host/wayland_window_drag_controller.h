@@ -46,10 +46,11 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
  public:
   // Constants used to keep track of the drag controller state.
   enum class State {
-    kIdle,      // No DnD session nor drag loop running.
-    kAttached,  // DnD session ongoing but no drag loop running.
-    kDetached,  // Drag loop running. ie: blocked in a Drag() call.
-    kDropped    // Drop event was just received.
+    kIdle,       // No DnD session nor drag loop running.
+    kAttached,   // DnD session ongoing but no drag loop running.
+    kDetached,   // Drag loop running. ie: blocked in a Drag() call.
+    kDropped,    // Drop event was just received.
+    kAttaching,  // About to transition back to |kAttached|.
   };
 
   WaylandWindowDragController(WaylandConnection* connection,
