@@ -16,7 +16,7 @@
 #include "base/task/post_task.h"
 #include "build/build_config.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents_delegate.h"
-#include "components/no_state_prefetch/browser/prerender_manager.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/no_state_prefetch/common/prerender_final_status.h"
 #include "components/no_state_prefetch/common/prerender_util.h"
 #include "components/no_state_prefetch/common/render_frame_prerender_messages.mojom.h"
@@ -53,15 +53,15 @@ class NoStatePrefetchContentsFactoryImpl
  public:
   NoStatePrefetchContents* CreateNoStatePrefetchContents(
       std::unique_ptr<NoStatePrefetchContentsDelegate> delegate,
-      PrerenderManager* prerender_manager,
+      NoStatePrefetchManager* no_state_prefetch_manager,
       content::BrowserContext* browser_context,
       const GURL& url,
       const content::Referrer& referrer,
       const base::Optional<url::Origin>& initiator_origin,
       Origin origin) override {
-    return new NoStatePrefetchContents(std::move(delegate), prerender_manager,
-                                       browser_context, url, referrer,
-                                       initiator_origin, origin);
+    return new NoStatePrefetchContents(
+        std::move(delegate), no_state_prefetch_manager, browser_context, url,
+        referrer, initiator_origin, origin);
   }
 };
 
@@ -125,14 +125,14 @@ NoStatePrefetchContents::Observer::~Observer() {}
 
 NoStatePrefetchContents::NoStatePrefetchContents(
     std::unique_ptr<NoStatePrefetchContentsDelegate> delegate,
-    PrerenderManager* prerender_manager,
+    NoStatePrefetchManager* no_state_prefetch_manager,
     content::BrowserContext* browser_context,
     const GURL& url,
     const content::Referrer& referrer,
     const base::Optional<url::Origin>& initiator_origin,
     Origin origin)
     : prerendering_has_started_(false),
-      prerender_manager_(prerender_manager),
+      no_state_prefetch_manager_(no_state_prefetch_manager),
       delegate_(std::move(delegate)),
       prerender_url_(url),
       referrer_(referrer),
@@ -164,7 +164,7 @@ NoStatePrefetchContents::NoStatePrefetchContents(
       NOTREACHED();
   }
 
-  DCHECK(prerender_manager);
+  DCHECK(no_state_prefetch_manager);
 }
 
 bool NoStatePrefetchContents::Init() {
@@ -207,7 +207,7 @@ void NoStatePrefetchContents::StartPrerendering(
 
   // TODO(davidben): This logic assumes each prerender has at most one
   // process. https://crbug.com/440544
-  prerender_manager()->AddPrerenderProcessHost(
+  no_state_prefetch_manager()->AddPrerenderProcessHost(
       GetRenderViewHost()->GetProcess());
 
   NotifyPrerenderStart();
@@ -247,8 +247,9 @@ NoStatePrefetchContents::~NoStatePrefetchContents() {
          final_status() == FINAL_STATUS_USED);
   DCHECK_NE(ORIGIN_MAX, origin());
 
-  prerender_manager_->RecordFinalStatus(origin(), final_status());
-  prerender_manager_->RecordNetworkBytesConsumed(origin(), network_bytes_);
+  no_state_prefetch_manager_->RecordFinalStatus(origin(), final_status());
+  no_state_prefetch_manager_->RecordNetworkBytesConsumed(origin(),
+                                                         network_bytes_);
 
   if (!no_state_prefetch_contents_)
     return;
@@ -340,7 +341,7 @@ bool NoStatePrefetchContents::CheckURL(const GURL& url) {
     Destroy(FINAL_STATUS_UNSUPPORTED_SCHEME);
     return false;
   }
-  if (prerender_manager_->HasRecentlyBeenNavigatedTo(origin(), url)) {
+  if (no_state_prefetch_manager_->HasRecentlyBeenNavigatedTo(origin(), url)) {
     Destroy(FINAL_STATUS_RECENTLY_VISITED);
     return false;
   }
@@ -474,10 +475,10 @@ void NoStatePrefetchContents::Destroy(FinalStatus final_status) {
   SetFinalStatus(final_status);
 
   prerendering_has_been_cancelled_ = true;
-  prerender_manager_->AddToHistory(this);
-  prerender_manager_->SetPrefetchFinalStatusForUrl(prerender_url_,
-                                                   final_status);
-  prerender_manager_->MoveEntryToPendingDelete(this, final_status);
+  no_state_prefetch_manager_->AddToHistory(this);
+  no_state_prefetch_manager_->SetPrefetchFinalStatusForUrl(prerender_url_,
+                                                           final_status);
+  no_state_prefetch_manager_->MoveEntryToPendingDelete(this, final_status);
 
   if (prerendering_has_started())
     NotifyPrerenderStop();
@@ -526,7 +527,7 @@ void NoStatePrefetchContents::DidGetMemoryUsage(
     // If |final_status_| == |FINAL_STATUS_USED|, then destruction will be
     // handled by the entity that set final_status_.
     if (dump.os_dump().private_footprint_kb * 1024 >
-            prerender_manager_->config().max_bytes &&
+            no_state_prefetch_manager_->config().max_bytes &&
         final_status_ != FINAL_STATUS_USED) {
       Destroy(FINAL_STATUS_MEMORY_LIMIT_EXCEEDED);
     }

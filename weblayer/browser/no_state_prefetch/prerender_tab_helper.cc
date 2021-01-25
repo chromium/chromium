@@ -4,10 +4,10 @@
 
 #include "weblayer/browser/no_state_prefetch/prerender_tab_helper.h"
 
-#include "components/no_state_prefetch/browser/prerender_manager.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
-#include "weblayer/browser/no_state_prefetch/prerender_manager_factory.h"
+#include "weblayer/browser/no_state_prefetch/no_state_prefetch_manager_factory.h"
 
 namespace weblayer {
 
@@ -23,13 +23,13 @@ void PrerenderTabHelper::DidFinishNavigation(
     return;
   }
 
-  prerender::PrerenderManager* prerender_manager =
-      PrerenderManagerFactory::GetForBrowserContext(
+  prerender::NoStatePrefetchManager* no_state_prefetch_manager =
+      NoStatePrefetchManagerFactory::GetForBrowserContext(
           web_contents()->GetBrowserContext());
 
-  if (prerender_manager &&
-      !prerender_manager->IsWebContentsPrerendering(web_contents()))
-    prerender_manager->RecordNavigation(navigation_handle->GetURL());
+  if (no_state_prefetch_manager &&
+      !no_state_prefetch_manager->IsWebContentsPrerendering(web_contents()))
+    no_state_prefetch_manager->RecordNavigation(navigation_handle->GetURL());
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PrerenderTabHelper)

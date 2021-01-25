@@ -33,8 +33,8 @@
 #include "weblayer/browser/feature_list_creator.h"
 #include "weblayer/browser/host_content_settings_map_factory.h"
 #include "weblayer/browser/i18n_util.h"
+#include "weblayer/browser/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "weblayer/browser/no_state_prefetch/prerender_link_manager_factory.h"
-#include "weblayer/browser/no_state_prefetch/prerender_manager_factory.h"
 #include "weblayer/browser/permissions/weblayer_permissions_client.h"
 #include "weblayer/browser/stateful_ssl_host_state_delegate_factory.h"
 #include "weblayer/browser/subresource_filter_profile_context_factory.h"
@@ -118,7 +118,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   TranslateAcceptLanguagesFactory::GetInstance();
   TranslateRankerFactory::GetInstance();
   PrerenderLinkManagerFactory::GetInstance();
-  PrerenderManagerFactory::GetInstance();
+  NoStatePrefetchManagerFactory::GetInstance();
   SubresourceFilterProfileContextFactory::GetInstance();
 #if defined(OS_ANDROID)
   if (MediaRouterFactory::IsFeatureEnabled()) {

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_NO_STATE_PREFETCH_BROWSER_PRERENDER_MANAGER_DELEGATE_H_
-#define COMPONENTS_NO_STATE_PREFETCH_BROWSER_PRERENDER_MANAGER_DELEGATE_H_
+#ifndef COMPONENTS_NO_STATE_PREFETCH_BROWSER_NO_STATE_PREFETCH_MANAGER_DELEGATE_H_
+#define COMPONENTS_NO_STATE_PREFETCH_BROWSER_NO_STATE_PREFETCH_MANAGER_DELEGATE_H_
 
 #include "base/memory/scoped_refptr.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents_delegate.h"
@@ -16,12 +16,12 @@ class CookieSettings;
 
 namespace prerender {
 
-// PrerenderManagerDelegate allows content embedders to override
-// PrerenderManager logic.
-class PrerenderManagerDelegate {
+// NoStatePrefetchManagerDelegate allows content embedders to override
+// NoStatePrefetchManager logic.
+class NoStatePrefetchManagerDelegate {
  public:
-  PrerenderManagerDelegate();
-  virtual ~PrerenderManagerDelegate() = default;
+  NoStatePrefetchManagerDelegate();
+  virtual ~NoStatePrefetchManagerDelegate() = default;
 
   // Checks whether third party cookies should be blocked.
   virtual scoped_refptr<content_settings::CookieSettings>
@@ -48,4 +48,4 @@ class PrerenderManagerDelegate {
 
 }  // namespace prerender
 
-#endif  // COMPONENTS_NO_STATE_PREFETCH_BROWSER_PRERENDER_MANAGER_DELEGATE_H_
+#endif  // COMPONENTS_NO_STATE_PREFETCH_BROWSER_NO_STATE_PREFETCH_MANAGER_DELEGATE_H_

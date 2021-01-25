@@ -5,13 +5,13 @@
 #include "chrome/browser/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 
 #include "chrome/browser/chrome_notification_types.h"
-#include "chrome/browser/prefetch/no_state_prefetch/prerender_manager_factory.h"
+#include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/ui/tab_helpers.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/no_state_prefetch/browser/prerender_histograms.h"
-#include "components/no_state_prefetch/browser/prerender_manager.h"
 #include "content/public/browser/web_contents.h"
 
 namespace prerender {
@@ -21,12 +21,12 @@ NoStatePrefetchContents* ChromeNoStatePrefetchContentsDelegate::FromWebContents(
     content::WebContents* web_contents) {
   if (!web_contents)
     return nullptr;
-  PrerenderManager* prerender_manager =
-      PrerenderManagerFactory::GetForBrowserContext(
+  NoStatePrefetchManager* no_state_prefetch_manager =
+      NoStatePrefetchManagerFactory::GetForBrowserContext(
           web_contents->GetBrowserContext());
-  if (!prerender_manager)
+  if (!no_state_prefetch_manager)
     return nullptr;
-  return prerender_manager->GetNoStatePrefetchContents(web_contents);
+  return no_state_prefetch_manager->GetNoStatePrefetchContents(web_contents);
 }
 
 void ChromeNoStatePrefetchContentsDelegate::OnNoStatePrefetchContentsCreated(

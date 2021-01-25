@@ -64,7 +64,7 @@ NoStatePrefetchContents* PrerenderHandle::contents() const {
 }
 
 PrerenderHandle::PrerenderHandle(
-    PrerenderManager::PrerenderData* prerender_data)
+    NoStatePrefetchManager::PrerenderData* prerender_data)
     : observer_(nullptr) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (prerender_data) {

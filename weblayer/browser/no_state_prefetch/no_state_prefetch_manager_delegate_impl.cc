@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "weblayer/browser/no_state_prefetch/prerender_manager_delegate_impl.h"
+#include "weblayer/browser/no_state_prefetch/no_state_prefetch_manager_delegate_impl.h"
 
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents_delegate.h"
 #include "content/public/browser/browser_context.h"
@@ -14,30 +14,32 @@
 
 namespace weblayer {
 
-PrerenderManagerDelegateImpl::PrerenderManagerDelegateImpl(
+NoStatePrefetchManagerDelegateImpl::NoStatePrefetchManagerDelegateImpl(
     content::BrowserContext* browser_context)
     : browser_context_(browser_context) {}
 
 scoped_refptr<content_settings::CookieSettings>
-PrerenderManagerDelegateImpl::GetCookieSettings() {
+NoStatePrefetchManagerDelegateImpl::GetCookieSettings() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   return CookieSettingsFactory::GetForBrowserContext(browser_context_);
 }
 
 std::unique_ptr<prerender::NoStatePrefetchContentsDelegate>
-PrerenderManagerDelegateImpl::GetNoStatePrefetchContentsDelegate() {
+NoStatePrefetchManagerDelegateImpl::GetNoStatePrefetchContentsDelegate() {
   return std::make_unique<prerender::NoStatePrefetchContentsDelegate>();
 }
 
-bool PrerenderManagerDelegateImpl::IsNetworkPredictionPreferenceEnabled() {
+bool NoStatePrefetchManagerDelegateImpl::
+    IsNetworkPredictionPreferenceEnabled() {
   auto* profile = ProfileImpl::FromBrowserContext(browser_context_);
   DCHECK(profile);
 
   return profile->GetBooleanSetting(SettingType::NETWORK_PREDICTION_ENABLED);
 }
 
-std::string PrerenderManagerDelegateImpl::GetReasonForDisablingPrediction() {
+std::string
+NoStatePrefetchManagerDelegateImpl::GetReasonForDisablingPrediction() {
   return IsNetworkPredictionPreferenceEnabled() ? ""
                                                 : "Disabled by user setting";
 }

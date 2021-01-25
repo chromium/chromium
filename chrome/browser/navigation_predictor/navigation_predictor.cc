@@ -17,10 +17,10 @@
 #include "base/system/sys_info.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service_factory.h"
-#include "chrome/browser/prefetch/no_state_prefetch/prerender_manager_factory.h"
+#include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "components/no_state_prefetch/browser/prerender_manager.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/site_instance.h"
@@ -909,23 +909,23 @@ void NavigationPredictor::MaybePrefetch() {
   if (prefetch_url_.has_value())
     return;
 
-  // Don't prerender if the next navigation started.
+  // Don't prefetch if the next navigation started.
   if (next_navigation_started_)
     return;
 
-  prerender::PrerenderManager* prerender_manager =
-      prerender::PrerenderManagerFactory::GetForBrowserContext(
+  prerender::NoStatePrefetchManager* no_state_prefetch_manager =
+      prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
           browser_context_);
 
-  if (prerender_manager) {
+  if (no_state_prefetch_manager) {
     GURL url_to_prefetch = urls_to_prefetch_.front();
     urls_to_prefetch_.pop_front();
-    Prefetch(prerender_manager, url_to_prefetch);
+    Prefetch(no_state_prefetch_manager, url_to_prefetch);
   }
 }
 
 void NavigationPredictor::Prefetch(
-    prerender::PrerenderManager* prerender_manager,
+    prerender::NoStatePrefetchManager* no_state_prefetch_manager,
     const GURL& url_to_prefetch) {
   DCHECK(!prerender_handle_);
   DCHECK(!prefetch_url_);
@@ -941,8 +941,9 @@ void NavigationPredictor::Prefetch(
       web_contents()->GetController().GetDefaultSessionStorageNamespace();
   gfx::Size size = web_contents()->GetContainerBounds().size();
 
-  prerender_handle_ = prerender_manager->AddPrerenderFromNavigationPredictor(
-      url_to_prefetch, session_storage_namespace, size);
+  prerender_handle_ =
+      no_state_prefetch_manager->AddPrerenderFromNavigationPredictor(
+          url_to_prefetch, session_storage_namespace, size);
 
   // Prerender was prevented for some reason, try next URL.
   if (!prerender_handle_) {

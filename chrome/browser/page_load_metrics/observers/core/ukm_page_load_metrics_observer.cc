@@ -16,7 +16,7 @@
 #include "cc/metrics/ukm_smoothness_data.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
-#include "chrome/browser/prefetch/no_state_prefetch/prerender_manager_factory.h"
+#include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/common/pref_names.h"
@@ -24,7 +24,7 @@
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/metrics/net/network_metrics_provider.h"
-#include "components/no_state_prefetch/browser/prerender_manager.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/no_state_prefetch/browser/prerender_util.h"
 #include "components/no_state_prefetch/common/prerender_final_status.h"
 #include "components/no_state_prefetch/common/prerender_origin.h"
@@ -230,12 +230,12 @@ UkmPageLoadMetricsObserver::ObservePolicy UkmPageLoadMetricsObserver::OnCommit(
   page_transition_ = navigation_handle->GetPageTransition();
   was_cached_ = navigation_handle->WasResponseCached();
   navigation_handle_timing_ = navigation_handle->GetNavigationHandleTiming();
-  prerender::PrerenderManager* const prerender_manager =
-      prerender::PrerenderManagerFactory::GetForBrowserContext(
+  prerender::NoStatePrefetchManager* const no_state_prefetch_manager =
+      prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
           navigation_handle->GetWebContents()->GetBrowserContext());
-  if (prerender_manager) {
+  if (no_state_prefetch_manager) {
     prerender::RecordNoStatePrefetchMetrics(navigation_handle, source_id,
-                                            prerender_manager);
+                                            no_state_prefetch_manager);
   }
   RecordGeneratedNavigationUKM(source_id, navigation_handle->GetURL());
   navigation_is_cross_process_ = !navigation_handle->IsSameProcess();
@@ -1233,10 +1233,10 @@ void UkmPageLoadMetricsObserver::DidActivatePortal(
 void UkmPageLoadMetricsObserver::RecordNoStatePrefetchMetrics(
     content::NavigationHandle* navigation_handle,
     ukm::SourceId source_id) {
-  prerender::PrerenderManager* const prerender_manager =
-      prerender::PrerenderManagerFactory::GetForBrowserContext(
+  prerender::NoStatePrefetchManager* const no_state_prefetch_manager =
+      prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
           navigation_handle->GetWebContents()->GetBrowserContext());
-  if (!prerender_manager)
+  if (!no_state_prefetch_manager)
     return;
 
   const std::vector<GURL>& redirects = navigation_handle->GetRedirectChain();
@@ -1245,21 +1245,23 @@ void UkmPageLoadMetricsObserver::RecordNoStatePrefetchMetrics(
   prerender::FinalStatus final_status;
   prerender::Origin prefetch_origin;
 
-  bool nostate_prefetch_entry_found = prerender_manager->GetPrefetchInformation(
-      navigation_handle->GetURL(), &prefetch_age, &final_status,
-      &prefetch_origin);
+  bool no_state_prefetch_entry_found =
+      no_state_prefetch_manager->GetPrefetchInformation(
+          navigation_handle->GetURL(), &prefetch_age, &final_status,
+          &prefetch_origin);
 
   // Try the URLs from the redirect chain.
-  if (!nostate_prefetch_entry_found) {
+  if (!no_state_prefetch_entry_found) {
     for (const auto& url : redirects) {
-      nostate_prefetch_entry_found = prerender_manager->GetPrefetchInformation(
-          url, &prefetch_age, &final_status, &prefetch_origin);
-      if (nostate_prefetch_entry_found)
+      no_state_prefetch_entry_found =
+          no_state_prefetch_manager->GetPrefetchInformation(
+              url, &prefetch_age, &final_status, &prefetch_origin);
+      if (no_state_prefetch_entry_found)
         break;
     }
   }
 
-  if (!nostate_prefetch_entry_found)
+  if (!no_state_prefetch_entry_found)
     return;
 
   ukm::builders::NoStatePrefetch builder(source_id);

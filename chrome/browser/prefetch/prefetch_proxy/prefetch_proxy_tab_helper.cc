@@ -19,7 +19,7 @@
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service_factory.h"
 #include "chrome/browser/net/prediction_options.h"
-#include "chrome/browser/prefetch/no_state_prefetch/prerender_manager_factory.h"
+#include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_features.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_network_context_client.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_origin_decider.h"
@@ -33,7 +33,7 @@
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_settings.h"
 #include "components/google/core/common/google_util.h"
 #include "components/language/core/browser/pref_names.h"
-#include "components/no_state_prefetch/browser/prerender_manager.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
@@ -305,10 +305,10 @@ void PrefetchProxyTabHelper::DidStartNavigation(
 
   // Don't take any actions during a prerender since it was probably triggered
   // by another instance of this class and we don't want to interfere.
-  prerender::PrerenderManager* prerender_manager =
-      prerender::PrerenderManagerFactory::GetForBrowserContext(profile_);
-  if (prerender_manager &&
-      prerender_manager->IsWebContentsPrerendering(web_contents())) {
+  prerender::NoStatePrefetchManager* no_state_prefetch_manager =
+      prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(profile_);
+  if (no_state_prefetch_manager &&
+      no_state_prefetch_manager->IsWebContentsPrerendering(web_contents())) {
     return;
   }
 
@@ -548,10 +548,10 @@ void PrefetchProxyTabHelper::DidFinishNavigation(
 
   // Don't take any actions during a prerender since it was probably triggered
   // by another instance of this class and we don't want to interfere.
-  prerender::PrerenderManager* prerender_manager =
-      prerender::PrerenderManagerFactory::GetForBrowserContext(profile_);
-  if (prerender_manager &&
-      prerender_manager->IsWebContentsPrerendering(web_contents())) {
+  prerender::NoStatePrefetchManager* no_state_prefetch_manager =
+      prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(profile_);
+  if (no_state_prefetch_manager &&
+      no_state_prefetch_manager->IsWebContentsPrerendering(web_contents())) {
     return;
   }
 
@@ -944,9 +944,9 @@ void PrefetchProxyTabHelper::DoNoStatePrefetch() {
     return;
   }
 
-  prerender::PrerenderManager* prerender_manager =
-      prerender::PrerenderManagerFactory::GetForBrowserContext(profile_);
-  if (!prerender_manager) {
+  prerender::NoStatePrefetchManager* no_state_prefetch_manager =
+      prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(profile_);
+  if (!no_state_prefetch_manager) {
     return;
   }
 
@@ -985,8 +985,8 @@ void PrefetchProxyTabHelper::DoNoStatePrefetch() {
   gfx::Size size = web_contents()->GetContainerBounds().size();
 
   std::unique_ptr<prerender::PrerenderHandle> handle =
-      prerender_manager->AddIsolatedPrerender(url, session_storage_namespace,
-                                              size);
+      no_state_prefetch_manager->AddIsolatedPrerender(
+          url, session_storage_namespace, size);
 
   if (!handle) {
     // Clean up the prefetch response in |service| since it wasn't used.

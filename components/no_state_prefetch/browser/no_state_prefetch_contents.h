@@ -47,7 +47,7 @@ class GlobalMemoryDump;
 
 namespace prerender {
 
-class PrerenderManager;
+class NoStatePrefetchManager;
 
 class NoStatePrefetchContents : public content::NotificationObserver,
                                 public content::WebContentsObserver,
@@ -60,11 +60,12 @@ class NoStatePrefetchContents : public content::NotificationObserver,
     Factory() {}
     virtual ~Factory() {}
 
-    // Ownership is not transferred through this interface as prerender_manager
-    // and browser_context are stored as weak pointers.
+    // Ownership is not transferred through this interface as
+    // no_state_prefetch_manager and browser_context are stored as weak
+    // pointers.
     virtual NoStatePrefetchContents* CreateNoStatePrefetchContents(
         std::unique_ptr<NoStatePrefetchContentsDelegate> delegate,
-        PrerenderManager* prerender_manager,
+        NoStatePrefetchManager* no_state_prefetch_manager,
         content::BrowserContext* browser_context,
         const GURL& url,
         const content::Referrer& referrer,
@@ -128,7 +129,9 @@ class NoStatePrefetchContents : public content::NotificationObserver,
 
   content::RenderViewHost* GetRenderViewHost();
 
-  PrerenderManager* prerender_manager() { return prerender_manager_; }
+  NoStatePrefetchManager* no_state_prefetch_manager() {
+    return no_state_prefetch_manager_;
+  }
 
   const GURL& prerender_url() const { return prerender_url_; }
   bool has_finished_loading() const { return has_finished_loading_; }
@@ -183,7 +186,7 @@ class NoStatePrefetchContents : public content::NotificationObserver,
   std::unique_ptr<content::WebContents> ReleaseNoStatePrefetchContents();
 
   // Sets the final status, calls OnDestroy and adds |this| to the
-  // PrerenderManager's pending deletes list.
+  // NoStatePrefetchManager's pending deletes list.
   void Destroy(FinalStatus reason);
 
   std::unique_ptr<base::DictionaryValue> GetAsValue() const;
@@ -209,7 +212,7 @@ class NoStatePrefetchContents : public content::NotificationObserver,
  protected:
   NoStatePrefetchContents(
       std::unique_ptr<NoStatePrefetchContentsDelegate> delegate,
-      PrerenderManager* prerender_manager,
+      NoStatePrefetchManager* no_state_prefetch_manager,
       content::BrowserContext* browser_context,
       const GURL& url,
       const content::Referrer& referrer,
@@ -271,8 +274,8 @@ class NoStatePrefetchContents : public content::NotificationObserver,
 
   base::ObserverList<Observer>::Unchecked observer_list_;
 
-  // The prerender manager owning this object.
-  PrerenderManager* prerender_manager_;
+  // The prefetch manager owning this object.
+  NoStatePrefetchManager* no_state_prefetch_manager_;
 
   // The delegate that content embedders use to override this class's logic.
   std::unique_ptr<NoStatePrefetchContentsDelegate> delegate_;

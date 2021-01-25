@@ -9,16 +9,16 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/no_state_prefetch/browser/prerender_histograms.h"
-#include "components/no_state_prefetch/browser/prerender_manager.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/url_loader_monitor.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "weblayer/browser/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "weblayer/browser/no_state_prefetch/prerender_link_manager_factory.h"
-#include "weblayer/browser/no_state_prefetch/prerender_manager_factory.h"
 #include "weblayer/browser/profile_impl.h"
 #include "weblayer/browser/tab_impl.h"
 #include "weblayer/public/prerender_controller.h"
@@ -114,10 +114,11 @@ class NoStatePrefetchBrowserTest : public WebLayerBrowserTest {
 #endif
 };
 
-IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, CreatePrerenderManager) {
-  auto* prerender_manager =
-      PrerenderManagerFactory::GetForBrowserContext(GetBrowserContext());
-  EXPECT_TRUE(prerender_manager);
+IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest,
+                       CreateNoStatePrefetchManager) {
+  auto* no_state_prefetch_manager =
+      NoStatePrefetchManagerFactory::GetForBrowserContext(GetBrowserContext());
+  EXPECT_TRUE(no_state_prefetch_manager);
 }
 
 IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, CreatePrerenderLinkManager) {

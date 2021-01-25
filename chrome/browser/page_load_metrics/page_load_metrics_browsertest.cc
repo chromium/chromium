@@ -31,7 +31,7 @@
 #include "chrome/browser/page_load_metrics/observers/service_worker_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/session_restore_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
-#include "chrome/browser/prefetch/no_state_prefetch/prerender_manager_factory.h"
+#include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/prefetch/no_state_prefetch/prerender_test_utils.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
@@ -53,9 +53,9 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/no_state_prefetch/browser/prerender_handle.h"
 #include "components/no_state_prefetch/browser/prerender_histograms.h"
-#include "components/no_state_prefetch/browser/prerender_manager.h"
 #include "components/no_state_prefetch/common/prerender_origin.h"
 #include "components/page_load_metrics/browser/observers/core/uma_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/observers/use_counter_page_load_metrics_observer.h"
@@ -195,15 +195,15 @@ class PageLoadMetricsBrowserTest : public InProcessBrowserTest {
 
   // Triggers nostate prefetch of |url|.
   void TriggerNoStatePrefetch(const GURL& url) {
-    prerender::PrerenderManager* prerender_manager =
-        prerender::PrerenderManagerFactory::GetForBrowserContext(
+    prerender::NoStatePrefetchManager* no_state_prefetch_manager =
+        prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
             browser()->profile());
-    ASSERT_TRUE(prerender_manager);
+    ASSERT_TRUE(no_state_prefetch_manager);
 
     prerender::test_utils::TestNoStatePrefetchContentsFactory*
         no_state_prefetch_contents_factory =
             new prerender::test_utils::TestNoStatePrefetchContentsFactory();
-    prerender_manager->SetNoStatePrefetchContentsFactoryForTest(
+    no_state_prefetch_manager->SetNoStatePrefetchContentsFactoryForTest(
         no_state_prefetch_contents_factory);
 
     content::SessionStorageNamespace* storage_namespace =
@@ -219,8 +219,8 @@ class PageLoadMetricsBrowserTest : public InProcessBrowserTest {
             prerender::FINAL_STATUS_NOSTATE_PREFETCH_FINISHED);
 
     std::unique_ptr<prerender::PrerenderHandle> prerender_handle =
-        prerender_manager->AddPrerenderFromOmnibox(url, storage_namespace,
-                                                   gfx::Size(640, 480));
+        no_state_prefetch_manager->AddPrerenderFromOmnibox(
+            url, storage_namespace, gfx::Size(640, 480));
     ASSERT_EQ(prerender_handle->contents(), test_prerender->contents());
 
     // The final status may be either  FINAL_STATUS_NOSTATE_PREFETCH_FINISHED or

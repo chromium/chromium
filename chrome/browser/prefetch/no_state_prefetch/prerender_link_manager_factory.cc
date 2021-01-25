@@ -4,12 +4,12 @@
 
 #include "chrome/browser/prefetch/no_state_prefetch/prerender_link_manager_factory.h"
 
-#include "chrome/browser/prefetch/no_state_prefetch/prerender_manager_factory.h"
+#include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/no_state_prefetch/browser/prerender_link_manager.h"
-#include "components/no_state_prefetch/browser/prerender_manager.h"
 
 namespace prerender {
 
@@ -29,17 +29,17 @@ PrerenderLinkManagerFactory::PrerenderLinkManagerFactory()
     : BrowserContextKeyedServiceFactory(
           "PrerenderLinkmanager",
           BrowserContextDependencyManager::GetInstance()) {
-  DependsOn(prerender::PrerenderManagerFactory::GetInstance());
+  DependsOn(prerender::NoStatePrefetchManagerFactory::GetInstance());
 }
 
 KeyedService* PrerenderLinkManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* profile) const {
-  PrerenderManager* prerender_manager =
-      PrerenderManagerFactory::GetForBrowserContext(profile);
-  if (!prerender_manager)
+  NoStatePrefetchManager* no_state_prefetch_manager =
+      NoStatePrefetchManagerFactory::GetForBrowserContext(profile);
+  if (!no_state_prefetch_manager)
     return NULL;
   PrerenderLinkManager* prerender_link_manager =
-      new PrerenderLinkManager(prerender_manager);
+      new PrerenderLinkManager(no_state_prefetch_manager);
   return prerender_link_manager;
 }
 

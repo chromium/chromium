@@ -99,7 +99,7 @@
 #include "chrome/browser/plugins/plugin_utils.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
-#include "chrome/browser/prefetch/no_state_prefetch/prerender_manager_factory.h"
+#include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_features.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_service.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_service_factory.h"
@@ -235,7 +235,7 @@
 #include "components/metrics/client_info.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/net_log/chrome_net_log.h"
-#include "components/no_state_prefetch/browser/prerender_manager.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/no_state_prefetch/common/prerender_final_status.h"
 #include "components/no_state_prefetch/common/prerender_url_loader_throttle.h"
 #include "components/no_state_prefetch/common/prerender_util.h"
@@ -2012,14 +2012,14 @@ bool ChromeContentBrowserClient::IsSuitableHost(
 
 bool ChromeContentBrowserClient::MayReuseHost(
     content::RenderProcessHost* process_host) {
-  // If there is currently a prerender in progress for the host provided,
-  // it may not be shared. We require prerenders to be by themselves in a
-  // separate process so that we can monitor their resource usage.
-  prerender::PrerenderManager* prerender_manager =
-      prerender::PrerenderManagerFactory::GetForBrowserContext(
+  // If there is currently a no-state prefetcher in progress for the host
+  // provided, it may not be shared. We require prefetchers to be by themselves
+  // in a separate process so that we can monitor their resource usage.
+  prerender::NoStatePrefetchManager* no_state_prefetch_manager =
+      prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
           process_host->GetBrowserContext());
-  if (prerender_manager &&
-      !prerender_manager->MayReuseProcessHost(process_host)) {
+  if (no_state_prefetch_manager &&
+      !no_state_prefetch_manager->MayReuseProcessHost(process_host)) {
     return false;
   }
 
@@ -4374,11 +4374,11 @@ void ChromeContentBrowserClient::OverridePageVisibilityState(
       WebContents::FromRenderFrameHost(render_frame_host);
   DCHECK(web_contents);
 
-  prerender::PrerenderManager* prerender_manager =
-      prerender::PrerenderManagerFactory::GetForBrowserContext(
+  prerender::NoStatePrefetchManager* no_state_prefetch_manager =
+      prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
           web_contents->GetBrowserContext());
-  if (prerender_manager &&
-      prerender_manager->IsWebContentsPrerendering(web_contents)) {
+  if (no_state_prefetch_manager &&
+      no_state_prefetch_manager->IsWebContentsPrerendering(web_contents)) {
     *visibility_state = content::PageVisibilityState::kHiddenButPainting;
   }
 }

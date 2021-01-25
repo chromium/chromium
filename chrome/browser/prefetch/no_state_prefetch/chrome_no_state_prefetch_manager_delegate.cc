@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/prefetch/no_state_prefetch/chrome_prerender_manager_delegate.h"
+#include "chrome/browser/prefetch/no_state_prefetch/chrome_no_state_prefetch_manager_delegate.h"
 
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/predictors/loading_predictor.h"
@@ -13,23 +13,24 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/common/chrome_features.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
-#include "components/no_state_prefetch/browser/prerender_manager_delegate.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_manager_delegate.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace prerender {
 
-ChromePrerenderManagerDelegate::ChromePrerenderManagerDelegate(Profile* profile)
+ChromeNoStatePrefetchManagerDelegate::ChromeNoStatePrefetchManagerDelegate(
+    Profile* profile)
     : profile_(profile) {}
 
 scoped_refptr<content_settings::CookieSettings>
-ChromePrerenderManagerDelegate::GetCookieSettings() {
+ChromeNoStatePrefetchManagerDelegate::GetCookieSettings() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   return CookieSettingsFactory::GetForProfile(profile_);
 }
 
-void ChromePrerenderManagerDelegate::MaybePreconnect(const GURL& url) {
+void ChromeNoStatePrefetchManagerDelegate::MaybePreconnect(const GURL& url) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (!base::FeatureList::IsEnabled(features::kPrerenderFallbackToPreconnect)) {
@@ -49,16 +50,17 @@ void ChromePrerenderManagerDelegate::MaybePreconnect(const GURL& url) {
 }
 
 std::unique_ptr<NoStatePrefetchContentsDelegate>
-ChromePrerenderManagerDelegate::GetNoStatePrefetchContentsDelegate() {
+ChromeNoStatePrefetchManagerDelegate::GetNoStatePrefetchContentsDelegate() {
   return std::make_unique<ChromeNoStatePrefetchContentsDelegate>();
 }
 
-bool ChromePrerenderManagerDelegate::IsNetworkPredictionPreferenceEnabled() {
+bool ChromeNoStatePrefetchManagerDelegate::
+    IsNetworkPredictionPreferenceEnabled() {
   return GetPredictionStatus() ==
          chrome_browser_net::NetworkPredictionStatus::ENABLED;
 }
 
-bool ChromePrerenderManagerDelegate::IsPredictionDisabledDueToNetwork(
+bool ChromeNoStatePrefetchManagerDelegate::IsPredictionDisabledDueToNetwork(
     Origin origin) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -76,7 +78,8 @@ bool ChromePrerenderManagerDelegate::IsPredictionDisabledDueToNetwork(
          chrome_browser_net::NetworkPredictionStatus::DISABLED_DUE_TO_NETWORK;
 }
 
-std::string ChromePrerenderManagerDelegate::GetReasonForDisablingPrediction() {
+std::string
+ChromeNoStatePrefetchManagerDelegate::GetReasonForDisablingPrediction() {
   auto prediction_status = GetPredictionStatus();
   if (prediction_status ==
       chrome_browser_net::NetworkPredictionStatus::DISABLED_ALWAYS) {
@@ -90,7 +93,7 @@ std::string ChromePrerenderManagerDelegate::GetReasonForDisablingPrediction() {
 }
 
 chrome_browser_net::NetworkPredictionStatus
-ChromePrerenderManagerDelegate::GetPredictionStatus() const {
+ChromeNoStatePrefetchManagerDelegate::GetPredictionStatus() const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   return chrome_browser_net::CanPrefetchAndPrerenderUI(profile_->GetPrefs());
 }

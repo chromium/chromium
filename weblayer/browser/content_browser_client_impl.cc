@@ -23,7 +23,7 @@
 #include "components/embedder_support/switches.h"
 #include "components/error_page/content/browser/net_error_auto_reloader.h"
 #include "components/network_time/network_time_tracker.h"
-#include "components/no_state_prefetch/browser/prerender_manager.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/no_state_prefetch/common/prerender_url_loader_throttle.h"
 #include "components/page_load_metrics/browser/metrics_navigation_throttle.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
@@ -83,7 +83,7 @@
 #include "weblayer/browser/navigation_controller_impl.h"
 #include "weblayer/browser/navigation_error_navigation_throttle.h"
 #include "weblayer/browser/navigation_ui_data_impl.h"
-#include "weblayer/browser/no_state_prefetch/prerender_manager_factory.h"
+#include "weblayer/browser/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "weblayer/browser/no_state_prefetch/prerender_utils.h"
 #include "weblayer/browser/page_specific_content_settings_delegate.h"
 #include "weblayer/browser/password_manager_driver_factory.h"
@@ -503,14 +503,14 @@ ContentBrowserClientImpl::GetOriginsRequiringDedicatedProcess() {
 
 bool ContentBrowserClientImpl::MayReuseHost(
     content::RenderProcessHost* process_host) {
-  // If there is currently a prerender in progress for the host provided,
-  // it may not be shared. We require prerenders to be by themselves in a
-  // separate process so that we can monitor their resource usage.
-  prerender::PrerenderManager* prerender_manager =
-      PrerenderManagerFactory::GetForBrowserContext(
+  // If there is currently a no-state prefetcher in progress for the host
+  // provided, it may not be shared. We require prefetchers to be by themselves
+  // in a separate process so that we can monitor their resource usage.
+  prerender::NoStatePrefetchManager* no_state_prefetch_manager =
+      NoStatePrefetchManagerFactory::GetForBrowserContext(
           process_host->GetBrowserContext());
-  if (prerender_manager &&
-      !prerender_manager->MayReuseProcessHost(process_host)) {
+  if (no_state_prefetch_manager &&
+      !no_state_prefetch_manager->MayReuseProcessHost(process_host)) {
     return false;
   }
 
@@ -526,11 +526,11 @@ void ContentBrowserClientImpl::OverridePageVisibilityState(
       content::WebContents::FromRenderFrameHost(render_frame_host);
   DCHECK(web_contents);
 
-  prerender::PrerenderManager* prerender_manager =
-      PrerenderManagerFactory::GetForBrowserContext(
+  prerender::NoStatePrefetchManager* no_state_prefetch_manager =
+      NoStatePrefetchManagerFactory::GetForBrowserContext(
           web_contents->GetBrowserContext());
-  if (prerender_manager &&
-      prerender_manager->IsWebContentsPrerendering(web_contents)) {
+  if (no_state_prefetch_manager &&
+      no_state_prefetch_manager->IsWebContentsPrerendering(web_contents)) {
     *visibility_state = content::PageVisibilityState::kHiddenButPainting;
   }
 }

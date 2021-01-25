@@ -27,14 +27,14 @@
 #include "chrome/browser/extensions/activity_log/fullstream_ui_policy.h"
 #include "chrome/browser/extensions/api/activity_log_private/activity_log_private_api.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
-#include "chrome/browser/prefetch/no_state_prefetch/prerender_manager_factory.h"
+#include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
-#include "components/no_state_prefetch/browser/prerender_manager.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -681,10 +681,11 @@ void ActivityLog::OnScriptsExecuted(content::WebContents* web_contents,
       action->set_page_incognito(
           web_contents->GetBrowserContext()->IsOffTheRecord());
 
-      const prerender::PrerenderManager* prerender_manager =
-          prerender::PrerenderManagerFactory::GetForBrowserContext(profile_);
-      if (prerender_manager &&
-          prerender_manager->IsWebContentsPrerendering(web_contents))
+      const prerender::NoStatePrefetchManager* no_state_prefetch_manager =
+          prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
+              profile_);
+      if (no_state_prefetch_manager &&
+          no_state_prefetch_manager->IsWebContentsPrerendering(web_contents))
         action->mutable_other()->SetBoolean(constants::kActionPrerender, true);
       for (auto it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
         action->mutable_args()->AppendString(*it2);

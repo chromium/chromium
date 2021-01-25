@@ -15,8 +15,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/no_state_prefetch/browser/prerender_handle.h"
-#include "components/no_state_prefetch/browser/prerender_manager.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/session_storage_namespace.h"
@@ -72,7 +72,7 @@ PrerenderLinkManager::LinkPrerender::~LinkPrerender() {
       << "The PrerenderHandle should be destroyed before its Prerender.";
 }
 
-PrerenderLinkManager::PrerenderLinkManager(PrerenderManager* manager)
+PrerenderLinkManager::PrerenderLinkManager(NoStatePrefetchManager* manager)
     : has_shutdown_(false), manager_(manager) {}
 
 PrerenderLinkManager::~PrerenderLinkManager() {
@@ -80,7 +80,7 @@ PrerenderLinkManager::~PrerenderLinkManager() {
     if (prerender->handle) {
       DCHECK(!prerender->handle->IsPrerendering())
           << "All running prerenders should stop at the same time as the "
-          << "PrerenderManager.";
+          << "NoStatePrefetchManager.";
       prerender->handle.reset();
     }
   }
@@ -192,8 +192,8 @@ void PrerenderLinkManager::StartPrerenders() {
   std::multiset<std::pair<int, int>> running_launcher_and_render_view_routes;
 
   // Scan the list, counting how many prerenders have handles (and so were added
-  // to the PrerenderManager). The count is done for the system as a whole, and
-  // also per launcher.
+  // to the NoStatePrefetchManager). The count is done for the system as a
+  // whole, and also per launcher.
   for (auto it = prerenders_.begin(); it != prerenders_.end(); ++it) {
     std::unique_ptr<LinkPrerender>& prerender = *it;
     // Skip prerenders launched by a prerender.

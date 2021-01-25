@@ -25,16 +25,16 @@ FORWARD_DECLARE_TEST(WebViewTest, NoPrerenderer);
 
 namespace prerender {
 
-class PrerenderManager;
+class NoStatePrefetchManager;
 
 // PrerenderLinkManager implements the API on Link elements for all documents
 // being rendered in this chrome instance.  It receives messages from the
 // renderer indicating addition, cancelation and abandonment of link elements,
-// and controls the PrerenderManager accordingly.
+// and controls the NoStatePrefetchManager accordingly.
 class PrerenderLinkManager : public KeyedService,
                              public PrerenderHandle::Observer {
  public:
-  explicit PrerenderLinkManager(PrerenderManager* manager);
+  explicit PrerenderLinkManager(NoStatePrefetchManager* manager);
   ~PrerenderLinkManager() override;
 
   // Called when a <link rel=prerender ...> element has been inserted into the
@@ -62,7 +62,7 @@ class PrerenderLinkManager : public KeyedService,
   // WebViewTest.NoPrerenderer needs to access the private IsEmpty() method.
   FRIEND_TEST_ALL_PREFIXES(::WebViewTest, NoPrerenderer);
 
-  class PendingPrerenderManager;
+  class PendingNoStatePrefetchManager;
 
   // Used to store state about a requested prerender.
   struct LinkPrerender {
@@ -138,7 +138,7 @@ class PrerenderLinkManager : public KeyedService,
 
   bool has_shutdown_;
 
-  PrerenderManager* const manager_;
+  NoStatePrefetchManager* const manager_;
 
   // All prerenders known to this PrerenderLinkManager. Insertions are always
   // made at the back, so the oldest prerender is at the front, and the youngest

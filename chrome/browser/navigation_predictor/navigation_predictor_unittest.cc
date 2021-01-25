@@ -59,8 +59,8 @@ class TestNavigationPredictor : public NavigationPredictor {
     return 100 * metrics.ratio_area;
   }
 
-  // Blackholes the first prerender.
-  void Prefetch(prerender::PrerenderManager* prerender_manager,
+  // Blackholes the first prefetcher.
+  void Prefetch(prerender::NoStatePrefetchManager* no_state_prefetch_manager,
                 const GURL& url_to_prefetch) override {
     prefetched_url_ = url_to_prefetch;
     calls_to_prefetch_ += 1;

@@ -7,7 +7,7 @@
 #include <string>
 
 #include "base/metrics/field_trial.h"
-#include "components/no_state_prefetch/browser/prerender_manager.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 
 namespace prerender {
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_NO_STATE_PREFETCH_BROWSER_PRERENDER_MANAGER_H_
-#define COMPONENTS_NO_STATE_PREFETCH_BROWSER_PRERENDER_MANAGER_H_
+#ifndef COMPONENTS_NO_STATE_PREFETCH_BROWSER_NO_STATE_PREFETCH_MANAGER_H_
+#define COMPONENTS_NO_STATE_PREFETCH_BROWSER_NO_STATE_PREFETCH_MANAGER_H_
 
 #include <stdint.h>
 
@@ -20,9 +20,9 @@
 #include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_manager_delegate.h"
 #include "components/no_state_prefetch/browser/prerender_config.h"
 #include "components/no_state_prefetch/browser/prerender_histograms.h"
-#include "components/no_state_prefetch/browser/prerender_manager_delegate.h"
 #include "components/no_state_prefetch/common/prerender_final_status.h"
 #include "components/no_state_prefetch/common/prerender_origin.h"
 #include "content/public/browser/render_process_host_observer.h"
@@ -59,20 +59,20 @@ class PrerenderInProcessBrowserTest;
 class PrerenderHandle;
 class PrerenderHistory;
 
-// Observer interface for PrerenderManager events.
-class PrerenderManagerObserver {
+// Observer interface for NoStatePrefetchManager events.
+class NoStatePrefetchManagerObserver {
  public:
-  virtual ~PrerenderManagerObserver();
+  virtual ~NoStatePrefetchManagerObserver();
 
   // Called from the UI thread.
   virtual void OnFirstContentfulPaint() = 0;
 };
 
-// PrerenderManager is responsible for initiating and keeping prerendered
+// NoStatePrefetchManager is responsible for initiating and keeping prerendered
 // views of web pages. All methods must be called on the UI thread unless
 // indicated otherwise.
-class PrerenderManager : public content::RenderProcessHostObserver,
-                         public KeyedService {
+class NoStatePrefetchManager : public content::RenderProcessHostObserver,
+                               public KeyedService {
  public:
   // One or more of these flags must be passed to ClearData() to specify just
   // what data to clear.  See function declaration for more information.
@@ -83,9 +83,10 @@ class PrerenderManager : public content::RenderProcessHostObserver,
   };
 
   // Owned by a BrowserContext object for the lifetime of the browser_context.
-  PrerenderManager(content::BrowserContext* browser_context,
-                   std::unique_ptr<PrerenderManagerDelegate> delegate);
-  ~PrerenderManager() override;
+  NoStatePrefetchManager(
+      content::BrowserContext* browser_context,
+      std::unique_ptr<NoStatePrefetchManagerDelegate> delegate);
+  ~NoStatePrefetchManager() override;
 
   // From KeyedService:
   void Shutdown() override;
@@ -228,7 +229,7 @@ class PrerenderManager : public content::RenderProcessHostObserver,
     return page_load_metric_observer_disabled_;
   }
 
-  void AddObserver(std::unique_ptr<PrerenderManagerObserver> observer);
+  void AddObserver(std::unique_ptr<NoStatePrefetchManagerObserver> observer);
 
   // Notification that a prerender has completed and its bytes should be
   // recorded.
@@ -258,7 +259,7 @@ class PrerenderManager : public content::RenderProcessHostObserver,
   void SetNoStatePrefetchContentsFactoryForTest(
       NoStatePrefetchContents::Factory* no_state_prefetch_contents_factory);
 
-  base::WeakPtr<PrerenderManager> AsWeakPtr();
+  base::WeakPtr<NoStatePrefetchManager> AsWeakPtr();
 
   // Clears the list of recently prefetched URLs. Allows, for example, to reuse
   // the same URL in tests, without running into FINAL_STATUS_DUPLICATE.
@@ -280,7 +281,7 @@ class PrerenderManager : public content::RenderProcessHostObserver,
    public:
     struct OrderByExpiryTime;
 
-    PrerenderData(PrerenderManager* manager,
+    PrerenderData(NoStatePrefetchManager* manager,
                   std::unique_ptr<NoStatePrefetchContents> contents,
                   base::TimeTicks expiry_time);
 
@@ -314,14 +315,14 @@ class PrerenderManager : public content::RenderProcessHostObserver,
     }
 
    private:
-    PrerenderManager* const manager_;
+    NoStatePrefetchManager* const manager_;
     std::unique_ptr<NoStatePrefetchContents> contents_;
 
     // The number of distinct PrerenderHandles created for |this|, including
     // ones that have called PrerenderData::OnHandleNavigatedAway(), but not
     // counting the ones that have called PrerenderData::OnHandleCanceled(). For
-    // pending prerenders, this will always be 1, since the PrerenderManager
-    // only merges handles of running prerenders.
+    // pending prerenders, this will always be 1, since the
+    // NoStatePrefetchManager only merges handles of running prerenders.
     int handle_count_ = 0;
 
     // The time when OnHandleNavigatedAway was called.
@@ -351,7 +352,7 @@ class PrerenderManager : public content::RenderProcessHostObserver,
   friend class test_utils::PrerenderInProcessBrowserTest;
   friend class NoStatePrefetchContents;
   friend class PrerenderHandle;
-  friend class UnitTestPrerenderManager;
+  friend class UnitTestNoStatePrefetchManager;
 
   class OnCloseWebContentsDeleter;
   struct NavigationRecord;
@@ -471,12 +472,12 @@ class PrerenderManager : public content::RenderProcessHostObserver,
   // The configuration.
   Config config_;
 
-  // The browser_context that owns this PrerenderManager.
+  // The browser_context that owns this NoStatePrefetchManager.
   content::BrowserContext* browser_context_;
 
   // The delegate that allows content embedder to override the logic in this
   // class.
-  std::unique_ptr<PrerenderManagerDelegate> delegate_;
+  std::unique_ptr<NoStatePrefetchManagerDelegate> delegate_;
 
   // All running prerenders. Sorted by expiry time, in ascending order.
   PrerenderDataVector active_prerenders_;
@@ -511,7 +512,7 @@ class PrerenderManager : public content::RenderProcessHostObserver,
   const std::unique_ptr<PrerenderHistograms> histograms_;
 
   // The number of bytes transferred over the network for the browser_context
-  // this PrerenderManager is attached to.
+  // this NoStatePrefetchManager is attached to.
   int64_t browser_context_network_bytes_ = 0;
 
   // The value of browser_context_network_bytes_ that was last recorded.
@@ -525,13 +526,13 @@ class PrerenderManager : public content::RenderProcessHostObserver,
 
   bool page_load_metric_observer_disabled_ = false;
 
-  std::vector<std::unique_ptr<PrerenderManagerObserver>> observers_;
+  std::vector<std::unique_ptr<NoStatePrefetchManagerObserver>> observers_;
 
-  base::WeakPtrFactory<PrerenderManager> weak_factory_{this};
+  base::WeakPtrFactory<NoStatePrefetchManager> weak_factory_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(PrerenderManager);
+  DISALLOW_COPY_AND_ASSIGN(NoStatePrefetchManager);
 };
 
 }  // namespace prerender
 
-#endif  // COMPONENTS_NO_STATE_PREFETCH_BROWSER_PRERENDER_MANAGER_H_
+#endif  // COMPONENTS_NO_STATE_PREFETCH_BROWSER_NO_STATE_PREFETCH_MANAGER_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/no_state_prefetch/browser/prerender_manager.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 
 #include <stddef.h>
 
@@ -34,11 +34,11 @@
 #include "base/values.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_manager_delegate.h"
 #include "components/no_state_prefetch/browser/prerender_field_trial.h"
 #include "components/no_state_prefetch/browser/prerender_handle.h"
 #include "components/no_state_prefetch/browser/prerender_histograms.h"
 #include "components/no_state_prefetch/browser/prerender_history.h"
-#include "components/no_state_prefetch/browser/prerender_manager_delegate.h"
 #include "components/no_state_prefetch/browser/prerender_util.h"
 #include "components/no_state_prefetch/common/prerender_final_status.h"
 #include "content/public/browser/browser_thread.h"
@@ -79,12 +79,12 @@ constexpr int kHistoryLength = 100;
 
 }  // namespace
 
-class PrerenderManager::OnCloseWebContentsDeleter
+class NoStatePrefetchManager::OnCloseWebContentsDeleter
     : public content::WebContentsDelegate,
       public base::SupportsWeakPtr<
-          PrerenderManager::OnCloseWebContentsDeleter> {
+          NoStatePrefetchManager::OnCloseWebContentsDeleter> {
  public:
-  OnCloseWebContentsDeleter(PrerenderManager* manager,
+  OnCloseWebContentsDeleter(NoStatePrefetchManager* manager,
                             std::unique_ptr<WebContents> tab)
       : manager_(manager), tab_(std::move(tab)) {
     tab_->SetDelegate(this);
@@ -109,15 +109,15 @@ class PrerenderManager::OnCloseWebContentsDeleter
     // |this| is deleted at this point.
   }
 
-  PrerenderManager* const manager_;
+  NoStatePrefetchManager* const manager_;
   std::unique_ptr<WebContents> tab_;
 
   DISALLOW_COPY_AND_ASSIGN(OnCloseWebContentsDeleter);
 };
 
-PrerenderManagerObserver::~PrerenderManagerObserver() = default;
+NoStatePrefetchManagerObserver::~NoStatePrefetchManagerObserver() = default;
 
-struct PrerenderManager::NavigationRecord {
+struct NoStatePrefetchManager::NavigationRecord {
   NavigationRecord(const GURL& url, base::TimeTicks time, Origin origin)
       : url(url), time(time), origin(origin) {}
 
@@ -127,9 +127,9 @@ struct PrerenderManager::NavigationRecord {
   FinalStatus final_status = FINAL_STATUS_UNKNOWN;
 };
 
-PrerenderManager::PrerenderManager(
+NoStatePrefetchManager::NoStatePrefetchManager(
     content::BrowserContext* browser_context,
-    std::unique_ptr<PrerenderManagerDelegate> delegate)
+    std::unique_ptr<NoStatePrefetchManagerDelegate> delegate)
     : browser_context_(browser_context),
       delegate_(std::move(delegate)),
       no_state_prefetch_contents_factory_(
@@ -144,7 +144,7 @@ PrerenderManager::PrerenderManager(
       base::TimeDelta::FromMilliseconds(kMinTimeBetweenPrerendersMs);
 }
 
-PrerenderManager::~PrerenderManager() {
+NoStatePrefetchManager::~NoStatePrefetchManager() {
   // The earlier call to KeyedService::Shutdown() should have
   // emptied these vectors already.
   DCHECK(active_prerenders_.empty());
@@ -155,7 +155,7 @@ PrerenderManager::~PrerenderManager() {
   }
 }
 
-void PrerenderManager::Shutdown() {
+void NoStatePrefetchManager::Shutdown() {
   DestroyAllContents(FINAL_STATUS_PROFILE_DESTROYED);
   on_close_web_contents_deleters_.clear();
   browser_context_ = nullptr;
@@ -164,7 +164,7 @@ void PrerenderManager::Shutdown() {
 }
 
 std::unique_ptr<PrerenderHandle>
-PrerenderManager::AddPrerenderFromLinkRelPrerender(
+NoStatePrefetchManager::AddPrerenderFromLinkRelPrerender(
     int process_id,
     int route_id,
     const GURL& url,
@@ -206,7 +206,8 @@ PrerenderManager::AddPrerenderFromLinkRelPrerender(
                                             session_storage_namespace);
 }
 
-std::unique_ptr<PrerenderHandle> PrerenderManager::AddPrerenderFromOmnibox(
+std::unique_ptr<PrerenderHandle>
+NoStatePrefetchManager::AddPrerenderFromOmnibox(
     const GURL& url,
     SessionStorageNamespace* session_storage_namespace,
     const gfx::Size& size) {
@@ -216,7 +217,7 @@ std::unique_ptr<PrerenderHandle> PrerenderManager::AddPrerenderFromOmnibox(
 }
 
 std::unique_ptr<PrerenderHandle>
-PrerenderManager::AddPrerenderFromNavigationPredictor(
+NoStatePrefetchManager::AddPrerenderFromNavigationPredictor(
     const GURL& url,
     SessionStorageNamespace* session_storage_namespace,
     const gfx::Size& size) {
@@ -225,7 +226,7 @@ PrerenderManager::AddPrerenderFromNavigationPredictor(
       gfx::Rect(size), session_storage_namespace);
 }
 
-std::unique_ptr<PrerenderHandle> PrerenderManager::AddIsolatedPrerender(
+std::unique_ptr<PrerenderHandle> NoStatePrefetchManager::AddIsolatedPrerender(
     const GURL& url,
     SessionStorageNamespace* session_storage_namespace,
     const gfx::Size& size) {
@@ -236,7 +237,7 @@ std::unique_ptr<PrerenderHandle> PrerenderManager::AddIsolatedPrerender(
 }
 
 std::unique_ptr<PrerenderHandle>
-PrerenderManager::AddPrerenderFromExternalRequest(
+NoStatePrefetchManager::AddPrerenderFromExternalRequest(
     const GURL& url,
     const content::Referrer& referrer,
     SessionStorageNamespace* session_storage_namespace,
@@ -247,7 +248,7 @@ PrerenderManager::AddPrerenderFromExternalRequest(
 }
 
 std::unique_ptr<PrerenderHandle>
-PrerenderManager::AddForcedPrerenderFromExternalRequest(
+NoStatePrefetchManager::AddForcedPrerenderFromExternalRequest(
     const GURL& url,
     const content::Referrer& referrer,
     SessionStorageNamespace* session_storage_namespace,
@@ -257,7 +258,7 @@ PrerenderManager::AddForcedPrerenderFromExternalRequest(
       bounds, session_storage_namespace);
 }
 
-void PrerenderManager::CancelAllPrerenders() {
+void NoStatePrefetchManager::CancelAllPrerenders() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   while (!active_prerenders_.empty()) {
     NoStatePrefetchContents* no_state_prefetch_contents =
@@ -266,8 +267,9 @@ void PrerenderManager::CancelAllPrerenders() {
   }
 }
 
-void PrerenderManager::MoveEntryToPendingDelete(NoStatePrefetchContents* entry,
-                                                FinalStatus final_status) {
+void NoStatePrefetchManager::MoveEntryToPendingDelete(
+    NoStatePrefetchContents* entry,
+    FinalStatus final_status) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(entry);
 
@@ -279,13 +281,13 @@ void PrerenderManager::MoveEntryToPendingDelete(NoStatePrefetchContents* entry,
   PostCleanupTask();
 }
 
-bool PrerenderManager::IsWebContentsPrerendering(
+bool NoStatePrefetchManager::IsWebContentsPrerendering(
     const WebContents* web_contents) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return GetNoStatePrefetchContents(web_contents);
 }
 
-NoStatePrefetchContents* PrerenderManager::GetNoStatePrefetchContents(
+NoStatePrefetchContents* NoStatePrefetchManager::GetNoStatePrefetchContents(
     const content::WebContents* web_contents) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   for (const auto& prerender : active_prerenders_) {
@@ -308,9 +310,9 @@ NoStatePrefetchContents* PrerenderManager::GetNoStatePrefetchContents(
   return nullptr;
 }
 
-NoStatePrefetchContents* PrerenderManager::GetNoStatePrefetchContentsForRoute(
-    int child_id,
-    int route_id) const {
+NoStatePrefetchContents*
+NoStatePrefetchManager::GetNoStatePrefetchContentsForRoute(int child_id,
+                                                           int route_id) const {
   WebContents* web_contents = nullptr;
   RenderViewHost* render_view_host = RenderViewHost::FromID(child_id, route_id);
   web_contents = WebContents::FromRenderViewHost(render_view_host);
@@ -318,7 +320,7 @@ NoStatePrefetchContents* PrerenderManager::GetNoStatePrefetchContentsForRoute(
 }
 
 std::vector<WebContents*>
-PrerenderManager::GetAllNoStatePrefetchingContentsForTesting() const {
+NoStatePrefetchManager::GetAllNoStatePrefetchingContentsForTesting() const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   std::vector<WebContents*> result;
 
@@ -331,8 +333,8 @@ PrerenderManager::GetAllNoStatePrefetchingContentsForTesting() const {
   return result;
 }
 
-bool PrerenderManager::HasRecentlyBeenNavigatedTo(Origin origin,
-                                                  const GURL& url) {
+bool NoStatePrefetchManager::HasRecentlyBeenNavigatedTo(Origin origin,
+                                                        const GURL& url) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   CleanUpOldNavigations(&navigations_, base::TimeDelta::FromMilliseconds(
@@ -345,7 +347,8 @@ bool PrerenderManager::HasRecentlyBeenNavigatedTo(Origin origin,
   return false;
 }
 
-std::unique_ptr<base::DictionaryValue> PrerenderManager::CopyAsValue() const {
+std::unique_ptr<base::DictionaryValue> NoStatePrefetchManager::CopyAsValue()
+    const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   auto dict_value = std::make_unique<base::DictionaryValue>();
@@ -361,7 +364,7 @@ std::unique_ptr<base::DictionaryValue> PrerenderManager::CopyAsValue() const {
   return dict_value;
 }
 
-void PrerenderManager::ClearData(int clear_flags) {
+void NoStatePrefetchManager::ClearData(int clear_flags) {
   DCHECK_GE(clear_flags, 0);
   DCHECK_LT(clear_flags, CLEAR_MAX);
   if (clear_flags & CLEAR_PRERENDER_CONTENTS)
@@ -371,12 +374,12 @@ void PrerenderManager::ClearData(int clear_flags) {
     prerender_history_->Clear();
 }
 
-void PrerenderManager::RecordFinalStatus(Origin origin,
-                                         FinalStatus final_status) const {
+void NoStatePrefetchManager::RecordFinalStatus(Origin origin,
+                                               FinalStatus final_status) const {
   histograms_->RecordFinalStatus(origin, final_status);
 }
 
-void PrerenderManager::RecordNavigation(const GURL& url) {
+void NoStatePrefetchManager::RecordNavigation(const GURL& url) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   navigations_.emplace_back(url, GetCurrentTimeTicks(), ORIGIN_NONE);
@@ -384,15 +387,15 @@ void PrerenderManager::RecordNavigation(const GURL& url) {
                                            kNavigationRecordWindowMs));
 }
 
-struct PrerenderManager::PrerenderData::OrderByExpiryTime {
+struct NoStatePrefetchManager::PrerenderData::OrderByExpiryTime {
   bool operator()(const std::unique_ptr<PrerenderData>& a,
                   const std::unique_ptr<PrerenderData>& b) const {
     return a->expiry_time() < b->expiry_time();
   }
 };
 
-PrerenderManager::PrerenderData::PrerenderData(
-    PrerenderManager* manager,
+NoStatePrefetchManager::PrerenderData::PrerenderData(
+    NoStatePrefetchManager* manager,
     std::unique_ptr<NoStatePrefetchContents> contents,
     base::TimeTicks expiry_time)
     : manager_(manager),
@@ -401,15 +404,16 @@ PrerenderManager::PrerenderData::PrerenderData(
   DCHECK(contents_);
 }
 
-PrerenderManager::PrerenderData::~PrerenderData() = default;
+NoStatePrefetchManager::PrerenderData::~PrerenderData() = default;
 
-void PrerenderManager::PrerenderData::OnHandleCreated(PrerenderHandle* handle) {
+void NoStatePrefetchManager::PrerenderData::OnHandleCreated(
+    PrerenderHandle* handle) {
   DCHECK(contents_);
   ++handle_count_;
   contents_->AddObserver(handle);
 }
 
-void PrerenderManager::PrerenderData::OnHandleNavigatedAway(
+void NoStatePrefetchManager::PrerenderData::OnHandleNavigatedAway(
     PrerenderHandle* handle) {
   DCHECK_LT(0, handle_count_);
   DCHECK(contents_);
@@ -420,7 +424,7 @@ void PrerenderManager::PrerenderData::OnHandleNavigatedAway(
   manager_->SourceNavigatedAway(this);
 }
 
-void PrerenderManager::PrerenderData::OnHandleCanceled(
+void NoStatePrefetchManager::PrerenderData::OnHandleCanceled(
     PrerenderHandle* handle) {
   DCHECK_LT(0, handle_count_);
   DCHECK(contents_);
@@ -432,11 +436,12 @@ void PrerenderManager::PrerenderData::OnHandleCanceled(
 }
 
 std::unique_ptr<NoStatePrefetchContents>
-PrerenderManager::PrerenderData::ReleaseContents() {
+NoStatePrefetchManager::PrerenderData::ReleaseContents() {
   return std::move(contents_);
 }
 
-void PrerenderManager::SourceNavigatedAway(PrerenderData* prerender_data) {
+void NoStatePrefetchManager::SourceNavigatedAway(
+    PrerenderData* prerender_data) {
   // The expiry time of our prerender data will likely change because of
   // this navigation. This requires a re-sort of |active_prerenders_|.
   for (auto it = active_prerenders_.begin(); it != active_prerenders_.end();
@@ -451,11 +456,11 @@ void PrerenderManager::SourceNavigatedAway(PrerenderData* prerender_data) {
   }
 }
 
-bool PrerenderManager::IsLowEndDevice() const {
+bool NoStatePrefetchManager::IsLowEndDevice() const {
   return base::SysInfo::IsLowEndDevice();
 }
 
-bool PrerenderManager::IsPredictionEnabled(Origin origin) {
+bool NoStatePrefetchManager::IsPredictionEnabled(Origin origin) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // <link rel=prerender> and <link rel=next> origins ignore the network state
@@ -477,13 +482,13 @@ bool PrerenderManager::IsPredictionEnabled(Origin origin) {
   return delegate_->IsNetworkPredictionPreferenceEnabled();
 }
 
-void PrerenderManager::MaybePreconnect(Origin origin,
-                                       const GURL& url_arg) const {
+void NoStatePrefetchManager::MaybePreconnect(Origin origin,
+                                             const GURL& url_arg) const {
   delegate_->MaybePreconnect(url_arg);
 }
 
 std::unique_ptr<PrerenderHandle>
-PrerenderManager::AddPrerenderWithPreconnectFallback(
+NoStatePrefetchManager::AddPrerenderWithPreconnectFallback(
     Origin origin,
     const GURL& url_arg,
     const content::Referrer& referrer,
@@ -645,21 +650,21 @@ PrerenderManager::AddPrerenderWithPreconnectFallback(
   return prerender_handle;
 }
 
-void PrerenderManager::StartSchedulingPeriodicCleanups() {
+void NoStatePrefetchManager::StartSchedulingPeriodicCleanups() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (repeating_timer_.IsRunning())
     return;
 
   repeating_timer_.Start(FROM_HERE, kPeriodicCleanupInterval, this,
-                         &PrerenderManager::PeriodicCleanup);
+                         &NoStatePrefetchManager::PeriodicCleanup);
 }
 
-void PrerenderManager::StopSchedulingPeriodicCleanups() {
+void NoStatePrefetchManager::StopSchedulingPeriodicCleanups() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   repeating_timer_.Stop();
 }
 
-void PrerenderManager::PeriodicCleanup() {
+void NoStatePrefetchManager::PeriodicCleanup() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   base::ElapsedTimer resource_timer;
@@ -688,24 +693,24 @@ void PrerenderManager::PeriodicCleanup() {
   CleanUpOldNavigations(&prefetches_, base::TimeDelta::FromMinutes(30));
 }
 
-void PrerenderManager::PostCleanupTask() {
+void NoStatePrefetchManager::PostCleanupTask() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&PrerenderManager::PeriodicCleanup,
+      FROM_HERE, base::BindOnce(&NoStatePrefetchManager::PeriodicCleanup,
                                 weak_factory_.GetWeakPtr()));
 }
 
-base::TimeTicks PrerenderManager::GetExpiryTimeForNewPrerender(
+base::TimeTicks NoStatePrefetchManager::GetExpiryTimeForNewPrerender(
     Origin origin) const {
   return GetCurrentTimeTicks() + config_.time_to_live;
 }
 
-base::TimeTicks PrerenderManager::GetExpiryTimeForNavigatedAwayPrerender()
+base::TimeTicks NoStatePrefetchManager::GetExpiryTimeForNavigatedAwayPrerender()
     const {
   return GetCurrentTimeTicks() + config_.abandon_time_to_live;
 }
 
-void PrerenderManager::DeleteOldEntries() {
+void NoStatePrefetchManager::DeleteOldEntries() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   while (!active_prerenders_.empty()) {
     auto& prerender_data = active_prerenders_.front();
@@ -718,7 +723,7 @@ void PrerenderManager::DeleteOldEntries() {
   }
 }
 
-void PrerenderManager::DeleteToDeletePrerenders() {
+void NoStatePrefetchManager::DeleteToDeletePrerenders() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Delete the items one by one (after removing from the vector) as deleting
   // the WebContents may trigger a call to GetNoStatePrefetchContents(), which
@@ -730,26 +735,26 @@ void PrerenderManager::DeleteToDeletePrerenders() {
   }
 }
 
-base::Time PrerenderManager::GetCurrentTime() const {
+base::Time NoStatePrefetchManager::GetCurrentTime() const {
   return base::Time::Now();
 }
 
-base::TimeTicks PrerenderManager::GetCurrentTimeTicks() const {
+base::TimeTicks NoStatePrefetchManager::GetCurrentTimeTicks() const {
   return tick_clock_->NowTicks();
 }
 
-void PrerenderManager::SetTickClockForTesting(
+void NoStatePrefetchManager::SetTickClockForTesting(
     const base::TickClock* tick_clock) {
   tick_clock_ = tick_clock;
 }
 
-void PrerenderManager::AddObserver(
-    std::unique_ptr<PrerenderManagerObserver> observer) {
+void NoStatePrefetchManager::AddObserver(
+    std::unique_ptr<NoStatePrefetchManagerObserver> observer) {
   observers_.push_back(std::move(observer));
 }
 
 std::unique_ptr<NoStatePrefetchContents>
-PrerenderManager::CreateNoStatePrefetchContents(
+NoStatePrefetchManager::CreateNoStatePrefetchContents(
     const GURL& url,
     const content::Referrer& referrer,
     const base::Optional<url::Origin>& initiator_origin,
@@ -761,12 +766,13 @@ PrerenderManager::CreateNoStatePrefetchContents(
           browser_context_, url, referrer, initiator_origin, origin));
 }
 
-void PrerenderManager::SortActivePrerenders() {
+void NoStatePrefetchManager::SortActivePrerenders() {
   std::sort(active_prerenders_.begin(), active_prerenders_.end(),
             PrerenderData::OrderByExpiryTime());
 }
 
-PrerenderManager::PrerenderData* PrerenderManager::FindPrerenderData(
+NoStatePrefetchManager::PrerenderData*
+NoStatePrefetchManager::FindPrerenderData(
     const GURL& url,
     SessionStorageNamespace* session_storage_namespace) {
   for (const auto& prerender : active_prerenders_) {
@@ -777,8 +783,8 @@ PrerenderManager::PrerenderData* PrerenderManager::FindPrerenderData(
   return nullptr;
 }
 
-PrerenderManager::PrerenderDataVector::iterator
-PrerenderManager::FindIteratorForNoStatePrefetchContents(
+NoStatePrefetchManager::PrerenderDataVector::iterator
+NoStatePrefetchManager::FindIteratorForNoStatePrefetchContents(
     NoStatePrefetchContents* no_state_prefetch_contents) {
   for (auto it = active_prerenders_.begin(); it != active_prerenders_.end();
        ++it) {
@@ -788,7 +794,7 @@ PrerenderManager::FindIteratorForNoStatePrefetchContents(
   return active_prerenders_.end();
 }
 
-bool PrerenderManager::DoesRateLimitAllowPrerender(Origin origin) const {
+bool NoStatePrefetchManager::DoesRateLimitAllowPrerender(Origin origin) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Allow navigation predictor to manage its own rate limit.
@@ -802,14 +808,15 @@ bool PrerenderManager::DoesRateLimitAllowPrerender(Origin origin) const {
          base::TimeDelta::FromMilliseconds(kMinTimeBetweenPrerendersMs);
 }
 
-void PrerenderManager::DeleteOldWebContents() {
+void NoStatePrefetchManager::DeleteOldWebContents() {
   old_web_contents_list_.clear();
 }
 
-bool PrerenderManager::GetPrefetchInformation(const GURL& url,
-                                              base::TimeDelta* prefetch_age,
-                                              FinalStatus* final_status,
-                                              Origin* origin) {
+bool NoStatePrefetchManager::GetPrefetchInformation(
+    const GURL& url,
+    base::TimeDelta* prefetch_age,
+    FinalStatus* final_status,
+    Origin* origin) {
   CleanUpOldNavigations(&prefetches_, base::TimeDelta::FromMinutes(30));
 
   if (prefetch_age)
@@ -833,8 +840,9 @@ bool PrerenderManager::GetPrefetchInformation(const GURL& url,
   return false;
 }
 
-void PrerenderManager::SetPrefetchFinalStatusForUrl(const GURL& url,
-                                                    FinalStatus final_status) {
+void NoStatePrefetchManager::SetPrefetchFinalStatusForUrl(
+    const GURL& url,
+    FinalStatus final_status) {
   for (auto it = prefetches_.rbegin(); it != prefetches_.rend(); ++it) {
     if (it->url == url) {
       it->final_status = final_status;
@@ -843,7 +851,8 @@ void PrerenderManager::SetPrefetchFinalStatusForUrl(const GURL& url,
   }
 }
 
-bool PrerenderManager::HasRecentlyPrefetchedUrlForTesting(const GURL& url) {
+bool NoStatePrefetchManager::HasRecentlyPrefetchedUrlForTesting(
+    const GURL& url) {
   return std::any_of(prefetches_.cbegin(), prefetches_.cend(),
                      [url](const NavigationRecord& r) {
                        return r.url == url &&
@@ -852,14 +861,14 @@ bool PrerenderManager::HasRecentlyPrefetchedUrlForTesting(const GURL& url) {
                      });
 }
 
-void PrerenderManager::OnPrefetchUsed(const GURL& url) {
+void NoStatePrefetchManager::OnPrefetchUsed(const GURL& url) {
   // Loading a prefetched URL resets the revalidation bypass. Remove all
   // matching urls from the prefetch list for more accurate metrics.
   base::EraseIf(prefetches_,
                 [url](const NavigationRecord& r) { return r.url == url; });
 }
 
-void PrerenderManager::CleanUpOldNavigations(
+void NoStatePrefetchManager::CleanUpOldNavigations(
     std::vector<NavigationRecord>* navigations,
     base::TimeDelta max_age) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -874,7 +883,7 @@ void PrerenderManager::CleanUpOldNavigations(
   navigations->erase(navigations->begin(), it);
 }
 
-void PrerenderManager::ScheduleDeleteOldWebContents(
+void NoStatePrefetchManager::ScheduleDeleteOldWebContents(
     std::unique_ptr<WebContents> tab,
     OnCloseWebContentsDeleter* deleter) {
   old_web_contents_list_.push_back(std::move(tab));
@@ -893,15 +902,15 @@ void PrerenderManager::ScheduleDeleteOldWebContents(
   NOTREACHED();
 }
 
-void PrerenderManager::AddToHistory(NoStatePrefetchContents* contents) {
+void NoStatePrefetchManager::AddToHistory(NoStatePrefetchContents* contents) {
   PrerenderHistory::Entry entry(contents->prerender_url(),
                                 contents->final_status(), contents->origin(),
                                 base::Time::Now());
   prerender_history_->AddEntry(entry);
 }
 
-std::unique_ptr<base::ListValue> PrerenderManager::GetActivePrerendersAsValue()
-    const {
+std::unique_ptr<base::ListValue>
+NoStatePrefetchManager::GetActivePrerendersAsValue() const {
   auto list_value = std::make_unique<base::ListValue>();
   for (const auto& prerender : active_prerenders_) {
     auto prerender_value = prerender->contents()->GetAsValue();
@@ -911,7 +920,7 @@ std::unique_ptr<base::ListValue> PrerenderManager::GetActivePrerendersAsValue()
   return list_value;
 }
 
-void PrerenderManager::DestroyAllContents(FinalStatus final_status) {
+void NoStatePrefetchManager::DestroyAllContents(FinalStatus final_status) {
   DeleteOldWebContents();
   while (!active_prerenders_.empty()) {
     NoStatePrefetchContents* contents = active_prerenders_.front()->contents();
@@ -920,7 +929,7 @@ void PrerenderManager::DestroyAllContents(FinalStatus final_status) {
   DeleteToDeletePrerenders();
 }
 
-void PrerenderManager::SkipNoStatePrefetchContentsAndMaybePreconnect(
+void NoStatePrefetchManager::SkipNoStatePrefetchContentsAndMaybePreconnect(
     const GURL& url,
     Origin origin,
     FinalStatus final_status) const {
@@ -949,8 +958,9 @@ void PrerenderManager::SkipNoStatePrefetchContentsAndMaybePreconnect(
       "Consider whether a failed prerender should fallback to preconnect");
 }
 
-void PrerenderManager::RecordNetworkBytesConsumed(Origin origin,
-                                                  int64_t prerender_bytes) {
+void NoStatePrefetchManager::RecordNetworkBytesConsumed(
+    Origin origin,
+    int64_t prerender_bytes) {
   int64_t recent_browser_context_bytes =
       browser_context_network_bytes_ -
       last_recorded_browser_context_network_bytes_;
@@ -960,7 +970,7 @@ void PrerenderManager::RecordNetworkBytesConsumed(Origin origin,
                                           recent_browser_context_bytes);
 }
 
-void PrerenderManager::AddPrerenderProcessHost(
+void NoStatePrefetchManager::AddPrerenderProcessHost(
     content::RenderProcessHost* process_host) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   bool inserted = prerender_process_hosts_.insert(process_host).second;
@@ -968,7 +978,7 @@ void PrerenderManager::AddPrerenderProcessHost(
   process_host->AddObserver(this);
 }
 
-bool PrerenderManager::MayReuseProcessHost(
+bool NoStatePrefetchManager::MayReuseProcessHost(
     content::RenderProcessHost* process_host) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Isolate prerender processes to make the resource monitoring check more
@@ -976,7 +986,7 @@ bool PrerenderManager::MayReuseProcessHost(
   return !base::Contains(prerender_process_hosts_, process_host);
 }
 
-void PrerenderManager::RenderProcessHostDestroyed(
+void NoStatePrefetchManager::RenderProcessHostDestroyed(
     content::RenderProcessHost* host) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   size_t erased = prerender_process_hosts_.erase(host);
@@ -984,16 +994,16 @@ void PrerenderManager::RenderProcessHostDestroyed(
   DCHECK_EQ(1u, erased);
 }
 
-base::WeakPtr<PrerenderManager> PrerenderManager::AsWeakPtr() {
+base::WeakPtr<NoStatePrefetchManager> NoStatePrefetchManager::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-void PrerenderManager::ClearPrefetchInformationForTesting() {
+void NoStatePrefetchManager::ClearPrefetchInformationForTesting() {
   prefetches_.clear();
 }
 
 std::unique_ptr<PrerenderHandle>
-PrerenderManager::AddPrerenderWithPreconnectFallbackForTesting(
+NoStatePrefetchManager::AddPrerenderWithPreconnectFallbackForTesting(
     Origin origin,
     const GURL& url,
     const base::Optional<url::Origin>& initiator_origin) {
@@ -1001,7 +1011,7 @@ PrerenderManager::AddPrerenderWithPreconnectFallbackForTesting(
       origin, url, content::Referrer(), initiator_origin, gfx::Rect(), nullptr);
 }
 
-void PrerenderManager::SetNoStatePrefetchContentsFactoryForTest(
+void NoStatePrefetchManager::SetNoStatePrefetchContentsFactoryForTest(
     NoStatePrefetchContents::Factory* no_state_prefetch_contents_factory) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   no_state_prefetch_contents_factory_.reset(no_state_prefetch_contents_factory);

@@ -20,11 +20,11 @@
 #include "chrome/browser/predictors/autocomplete_action_predictor_factory.h"
 #include "chrome/browser/predictors/predictor_database.h"
 #include "chrome/browser/predictors/predictor_database_factory.h"
-#include "chrome/browser/prefetch/no_state_prefetch/prerender_manager_factory.h"
+#include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/history/core/browser/in_memory_database.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/no_state_prefetch/browser/prerender_handle.h"
-#include "components/no_state_prefetch/browser/prerender_manager.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/omnibox_log.h"
@@ -166,10 +166,10 @@ void AutocompleteActionPredictor::StartPrerendering(
   // are the same, the underlying prerender will be reused.
   std::unique_ptr<prerender::PrerenderHandle> old_prerender_handle =
       std::move(prerender_handle_);
-  prerender::PrerenderManager* prerender_manager =
-      prerender::PrerenderManagerFactory::GetForBrowserContext(profile_);
-  if (prerender_manager) {
-    prerender_handle_ = prerender_manager->AddPrerenderFromOmnibox(
+  prerender::NoStatePrefetchManager* no_state_prefetch_manager =
+      prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(profile_);
+  if (no_state_prefetch_manager) {
+    prerender_handle_ = no_state_prefetch_manager->AddPrerenderFromOmnibox(
         url, session_storage_namespace, size);
   }
   if (old_prerender_handle)

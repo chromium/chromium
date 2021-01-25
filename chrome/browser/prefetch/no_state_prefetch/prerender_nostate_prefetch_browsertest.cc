@@ -24,7 +24,7 @@
 #include "chrome/browser/history/history_test_utils.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor_factory.h"
-#include "chrome/browser/prefetch/no_state_prefetch/prerender_manager_factory.h"
+#include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/prefetch/no_state_prefetch/prerender_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/task_manager/task_manager_browsertest_util.h"
@@ -39,8 +39,8 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/embedder_support/switches.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/no_state_prefetch/browser/prerender_handle.h"
-#include "components/no_state_prefetch/browser/prerender_manager.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/prefs/pref_service.h"
@@ -278,10 +278,10 @@ class NoStatePrefetchBrowserTest
     host_resolver()->AddRule("*", "127.0.0.1");
   }
 
-  void OverridePrerenderManagerTimeTicks() {
+  void OverrideNoStatePrefetchManagerTimeTicks() {
     // The default zero time causes the prerender manager to do strange things.
     clock_.Advance(base::TimeDelta::FromSeconds(1));
-    GetPrerenderManager()->SetTickClockForTesting(&clock_);
+    GetNoStatePrefetchManager()->SetTickClockForTesting(&clock_);
   }
 
   // Block until an AppCache exists for |manifest_url|.
@@ -367,10 +367,11 @@ class NoStatePrefetchBrowserTest
                            expected_final_status, expected_number_of_loads);
   }
 
-  // Returns length of |prerender_manager_|'s history, or SIZE_MAX on failure.
+  // Returns length of |no_state_prefetch_manager_|'s history, or SIZE_MAX on
+  // failure.
   size_t GetHistoryLength() const {
     std::unique_ptr<base::DictionaryValue> prerender_dict =
-        GetPrerenderManager()->CopyAsValue();
+        GetNoStatePrefetchManager()->CopyAsValue();
     if (!prerender_dict)
       return std::numeric_limits<size_t>::max();
     base::ListValue* history_list;
@@ -1307,7 +1308,7 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, RendererCrash) {
           FINAL_STATUS_RENDERER_CRASHED);
   content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
   std::unique_ptr<PrerenderHandle> prerender_handle(
-      GetPrerenderManager()->AddPrerenderFromExternalRequest(
+      GetNoStatePrefetchManager()->AddPrerenderFromExternalRequest(
           GURL(content::kChromeUICrashURL), content::Referrer(),
           storage_namespace, gfx::Rect(kSize)));
   ASSERT_EQ(prerender_handle->contents(), test_prerender->contents());
@@ -1500,8 +1501,9 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, AppCacheHtmlUninitialized) {
 // Checks that prefetching does not if an initialized appcache is mentioned in
 // the html tag.
 IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, AppCacheHtmlInitialized) {
-  base::TimeTicks current_time = GetPrerenderManager()->GetCurrentTimeTicks();
-  OverridePrerenderManagerTimeTicks();
+  base::TimeTicks current_time =
+      GetNoStatePrefetchManager()->GetCurrentTimeTicks();
+  OverrideNoStatePrefetchManagerTimeTicks();
   // Some navigations have already occurred in test setup. In order to track
   // duplicate prefetches correctly the test clock needs to be beyond those
   // navigations.
@@ -1545,8 +1547,9 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, AppCacheHtmlInitialized) {
 // If a page has been cached by another AppCache, the prefetch should be
 // canceled.
 IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, AppCacheRegistered) {
-  base::TimeTicks current_time = GetPrerenderManager()->GetCurrentTimeTicks();
-  OverridePrerenderManagerTimeTicks();
+  base::TimeTicks current_time =
+      GetNoStatePrefetchManager()->GetCurrentTimeTicks();
+  OverrideNoStatePrefetchManagerTimeTicks();
   // Some navigations have already occurred in test setup. In order to track
   // duplicate prefetches correctly the test clock needs to be beyond those
   // navigations.
@@ -1664,7 +1667,7 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, CancelAll) {
   std::unique_ptr<TestPrerender> prerender =
       PrefetchFromURL(url, FINAL_STATUS_CANCELLED, 0);
 
-  GetPrerenderManager()->CancelAllPrerenders();
+  GetNoStatePrefetchManager()->CancelAllPrerenders();
   prerender->WaitForStop();
 
   EXPECT_FALSE(prerender->contents());
@@ -1679,7 +1682,7 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest,
   std::unique_ptr<TestPrerender> prerender =
       PrefetchFromURL(url, FINAL_STATUS_CANCELLED);
 
-  GetPrerenderManager()->CancelAllPrerenders();
+  GetNoStatePrefetchManager()->CancelAllPrerenders();
   prerender->WaitForStop();
 
   EXPECT_FALSE(prerender->contents());
@@ -1710,8 +1713,8 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest,
 
 // Checks that renderers using excessive memory will be terminated.
 IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, PrerenderExcessiveMemory) {
-  ASSERT_TRUE(GetPrerenderManager());
-  GetPrerenderManager()->mutable_config().max_bytes = 100;
+  ASSERT_TRUE(GetNoStatePrefetchManager());
+  GetNoStatePrefetchManager()->mutable_config().max_bytes = 100;
   PrefetchFromURL(
       src_server()->GetURL("/prerender/prerender_excessive_memory.html"),
       FINAL_STATUS_MEMORY_LIMIT_EXCEEDED);

@@ -10,7 +10,7 @@
 #include "base/callback.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
-#include "chrome/browser/prefetch/no_state_prefetch/prerender_manager_factory.h"
+#include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_features.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_from_string_url_loader.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_origin_prober.h"
@@ -21,7 +21,7 @@
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_url_loader.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetched_mainframe_response_container.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/no_state_prefetch/browser/prerender_manager.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
@@ -106,12 +106,12 @@ bool PrefetchProxyURLLoaderInterceptor::MaybeInterceptNoStatePrefetchNavigation(
   content::WebContents* web_contents =
       content::WebContents::FromFrameTreeNodeId(frame_tree_node_id_);
 
-  prerender::PrerenderManager* prerender_manager =
-      prerender::PrerenderManagerFactory::GetForBrowserContext(profile);
-  if (!prerender_manager)
+  prerender::NoStatePrefetchManager* no_state_prefetch_manager =
+      prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(profile);
+  if (!no_state_prefetch_manager)
     return false;
 
-  if (!prerender_manager->IsWebContentsPrerendering(web_contents))
+  if (!no_state_prefetch_manager->IsWebContentsPrerendering(web_contents))
     return false;
 
   PrefetchProxyService* service =

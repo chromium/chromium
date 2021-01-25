@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef WEBLAYER_BROWSER_NO_STATE_PREFETCH_PRERENDER_MANAGER_DELEGATE_IMPL_H_
-#define WEBLAYER_BROWSER_NO_STATE_PREFETCH_PRERENDER_MANAGER_DELEGATE_IMPL_H_
+#ifndef WEBLAYER_BROWSER_NO_STATE_PREFETCH_NO_STATE_PREFETCH_MANAGER_DELEGATE_IMPL_H_
+#define WEBLAYER_BROWSER_NO_STATE_PREFETCH_NO_STATE_PREFETCH_MANAGER_DELEGATE_IMPL_H_
 
 #include "components/content_settings/core/browser/cookie_settings.h"
-#include "components/no_state_prefetch/browser/prerender_manager_delegate.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_manager_delegate.h"
 
 namespace content {
 class BrowserContext;
@@ -14,14 +14,14 @@ class BrowserContext;
 
 namespace weblayer {
 
-class PrerenderManagerDelegateImpl
-    : public prerender::PrerenderManagerDelegate {
+class NoStatePrefetchManagerDelegateImpl
+    : public prerender::NoStatePrefetchManagerDelegate {
  public:
-  explicit PrerenderManagerDelegateImpl(
+  explicit NoStatePrefetchManagerDelegateImpl(
       content::BrowserContext* browser_context);
-  ~PrerenderManagerDelegateImpl() override = default;
+  ~NoStatePrefetchManagerDelegateImpl() override = default;
 
-  // PrerenderManagerDelegate overrides.
+  // NoStatePrefetchManagerDelegate overrides.
   scoped_refptr<content_settings::CookieSettings> GetCookieSettings() override;
   std::unique_ptr<prerender::NoStatePrefetchContentsDelegate>
   GetNoStatePrefetchContentsDelegate() override;
@@ -34,4 +34,4 @@ class PrerenderManagerDelegateImpl
 
 }  // namespace weblayer
 
-#endif  // WEBLAYER_BROWSER_NO_STATE_PREFETCH_PRERENDER_MANAGER_DELEGATE_IMPL_H_
+#endif  // WEBLAYER_BROWSER_NO_STATE_PREFETCH_NO_STATE_PREFETCH_MANAGER_DELEGATE_IMPL_H_

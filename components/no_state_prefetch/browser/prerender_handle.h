@@ -9,19 +9,19 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "components/no_state_prefetch/browser/prerender_manager.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 
 namespace prerender {
 
 class NoStatePrefetchContents;
 
-// A class representing a running prerender to a client of the PrerenderManager.
-// Methods on PrerenderManager which start prerenders return a caller-owned
-// PrerenderHandle* to the client (or NULL if they are unable to start a
-// prerender). Calls on the handle of a prerender that is not running at no-ops.
-// Destroying a handle before a prerender starts will prevent it from ever
-// starting. Destroying a handle while a prerendering is running will stop the
-// prerender, without making any calls to the observer.
+// A class representing a running prerender to a client of the
+// NoStatePrefetchManager. Methods on NoStatePrefetchManager which start
+// prerenders return a caller-owned PrerenderHandle* to the client (or NULL if
+// they are unable to start a prerender). Calls on the handle of a prerender
+// that is not running at no-ops. Destroying a handle before a prerender starts
+// will prevent it from ever starting. Destroying a handle while a prerendering
+// is running will stop the prerender, without making any calls to the observer.
 class PrerenderHandle : public NoStatePrefetchContents::Observer {
  public:
   class Observer {
@@ -71,9 +71,10 @@ class PrerenderHandle : public NoStatePrefetchContents::Observer {
   bool RepresentingSamePrerenderAs(PrerenderHandle* other) const;
 
  private:
-  friend class PrerenderManager;
+  friend class NoStatePrefetchManager;
 
-  explicit PrerenderHandle(PrerenderManager::PrerenderData* prerender_data);
+  explicit PrerenderHandle(
+      NoStatePrefetchManager::PrerenderData* prerender_data);
 
   // From NoStatePrefetchContents::Observer:
   void OnPrerenderStop(
@@ -83,7 +84,7 @@ class PrerenderHandle : public NoStatePrefetchContents::Observer {
 
   Observer* observer_;
 
-  base::WeakPtr<PrerenderManager::PrerenderData> prerender_data_;
+  base::WeakPtr<NoStatePrefetchManager::PrerenderData> prerender_data_;
   base::WeakPtrFactory<PrerenderHandle> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PrerenderHandle);

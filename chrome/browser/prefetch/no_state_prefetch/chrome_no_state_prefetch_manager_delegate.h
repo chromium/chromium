@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PREFETCH_NO_STATE_PREFETCH_CHROME_PRERENDER_MANAGER_DELEGATE_H_
-#define CHROME_BROWSER_PREFETCH_NO_STATE_PREFETCH_CHROME_PRERENDER_MANAGER_DELEGATE_H_
+#ifndef CHROME_BROWSER_PREFETCH_NO_STATE_PREFETCH_CHROME_NO_STATE_PREFETCH_MANAGER_DELEGATE_H_
+#define CHROME_BROWSER_PREFETCH_NO_STATE_PREFETCH_CHROME_NO_STATE_PREFETCH_MANAGER_DELEGATE_H_
 
 #include "chrome/browser/net/prediction_options.h"
-#include "components/no_state_prefetch/browser/prerender_manager_delegate.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_manager_delegate.h"
 #include "components/no_state_prefetch/common/prerender_origin.h"
 
 class Profile;
@@ -17,12 +17,13 @@ class CookieSettings;
 
 namespace prerender {
 
-class ChromePrerenderManagerDelegate : public PrerenderManagerDelegate {
+class ChromeNoStatePrefetchManagerDelegate
+    : public NoStatePrefetchManagerDelegate {
  public:
-  explicit ChromePrerenderManagerDelegate(Profile* profile);
-  ~ChromePrerenderManagerDelegate() override = default;
+  explicit ChromeNoStatePrefetchManagerDelegate(Profile* profile);
+  ~ChromeNoStatePrefetchManagerDelegate() override = default;
 
-  // PrerenderManagerDelegate overrides.
+  // NoStatePrefetchManagerDelegate overrides.
   scoped_refptr<content_settings::CookieSettings> GetCookieSettings() override;
   void MaybePreconnect(const GURL& url) override;
   std::unique_ptr<NoStatePrefetchContentsDelegate>
@@ -38,4 +39,4 @@ class ChromePrerenderManagerDelegate : public PrerenderManagerDelegate {
 
 }  // namespace prerender
 
-#endif  // CHROME_BROWSER_PREFETCH_NO_STATE_PREFETCH_CHROME_PRERENDER_MANAGER_DELEGATE_H_
+#endif  // CHROME_BROWSER_PREFETCH_NO_STATE_PREFETCH_CHROME_NO_STATE_PREFETCH_MANAGER_DELEGATE_H_

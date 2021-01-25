@@ -18,14 +18,14 @@
 #include "chrome/browser/extensions/activity_log/activity_log_task_runner.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
-#include "chrome/browser/prefetch/no_state_prefetch/prerender_manager_factory.h"
+#include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/prefetch/no_state_prefetch/prerender_test_utils.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/no_state_prefetch/browser/prerender_handle.h"
-#include "components/no_state_prefetch/browser/prerender_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
@@ -291,21 +291,21 @@ TEST_F(ActivityLogTest, LogPrerender) {
   ASSERT_TRUE(GetDatabaseEnabled());
   GURL url("http://www.google.com");
 
-  prerender::PrerenderManager* prerender_manager =
-      prerender::PrerenderManagerFactory::GetForBrowserContext(profile());
+  prerender::NoStatePrefetchManager* no_state_prefetch_manager =
+      prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(profile());
 
   const gfx::Size kSize(640, 480);
   std::unique_ptr<prerender::PrerenderHandle> prerender_handle(
-      prerender_manager->AddPrerenderFromOmnibox(
+      no_state_prefetch_manager->AddPrerenderFromOmnibox(
           url,
           web_contents()->GetController().GetDefaultSessionStorageNamespace(),
           kSize));
 
   const std::vector<content::WebContents*> contentses =
-      prerender_manager->GetAllNoStatePrefetchingContentsForTesting();
+      no_state_prefetch_manager->GetAllNoStatePrefetchingContentsForTesting();
   ASSERT_EQ(1U, contentses.size());
   content::WebContents *contents = contentses[0];
-  ASSERT_TRUE(prerender_manager->IsWebContentsPrerendering(contents));
+  ASSERT_TRUE(no_state_prefetch_manager->IsWebContentsPrerendering(contents));
 
   activity_log->OnScriptsExecuted(contents, {{extension->id(), {"script"}}},
                                   url);
@@ -314,7 +314,7 @@ TEST_F(ActivityLogTest, LogPrerender) {
       extension->id(), Action::ACTION_ANY, "", "", "", 0,
       base::BindOnce(ActivityLogTest::Arguments_Prerender));
 
-  prerender_manager->CancelAllPrerenders();
+  no_state_prefetch_manager->CancelAllPrerenders();
 }
 
 TEST_F(ActivityLogTest, ArgUrlExtraction) {

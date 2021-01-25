@@ -5,9 +5,9 @@
 #include "chrome/browser/net/net_export_helper.h"
 
 #include "base/values.h"
-#include "chrome/browser/prefetch/no_state_prefetch/prerender_manager_factory.h"
+#include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/no_state_prefetch/browser/prerender_manager.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -26,10 +26,10 @@ namespace chrome_browser_net {
 
 std::unique_ptr<base::DictionaryValue> GetPrerenderInfo(Profile* profile) {
   std::unique_ptr<base::DictionaryValue> value;
-  prerender::PrerenderManager* prerender_manager =
-      prerender::PrerenderManagerFactory::GetForBrowserContext(profile);
-  if (prerender_manager) {
-    value = prerender_manager->CopyAsValue();
+  prerender::NoStatePrefetchManager* no_state_prefetch_manager =
+      prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(profile);
+  if (no_state_prefetch_manager) {
+    value = no_state_prefetch_manager->CopyAsValue();
   } else {
     value.reset(new base::DictionaryValue());
     value->SetBoolean("enabled", false);

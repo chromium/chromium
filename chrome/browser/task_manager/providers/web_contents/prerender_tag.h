@@ -12,7 +12,7 @@
 namespace task_manager {
 
 // Defines a concrete UserData type for WebContents owned by the
-// PrerenderManager.
+// NoStatePrefetchManager.
 class PrerenderTag : public WebContentsTag {
  public:
   ~PrerenderTag() override;

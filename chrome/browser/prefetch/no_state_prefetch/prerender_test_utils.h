@@ -25,7 +25,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents_delegate.h"
-#include "components/no_state_prefetch/browser/prerender_manager.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/safe_browsing/core/db/test_database_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_widget_host_observer.h"
@@ -85,7 +85,7 @@ class TestNoStatePrefetchContents : public NoStatePrefetchContents,
                                     public content::RenderWidgetHostObserver {
  public:
   TestNoStatePrefetchContents(
-      PrerenderManager* prerender_manager,
+      NoStatePrefetchManager* no_state_prefetch_manager,
       content::BrowserContext* browser_context,
       const GURL& url,
       const content::Referrer& referrer,
@@ -232,18 +232,20 @@ class DestructionWaiter {
   DISALLOW_COPY_AND_ASSIGN(DestructionWaiter);
 };
 
-// Wait until a PrerenderManager has seen a first contentful paint.
-class FirstContentfulPaintManagerWaiter : public PrerenderManagerObserver {
+// Wait until a NoStatePrefetchManager has seen a first contentful paint.
+class FirstContentfulPaintManagerWaiter
+    : public NoStatePrefetchManagerObserver {
  public:
   // Create and return a pointer to a |FirstContentfulPaintManagerWaiter|. The
-  // instance is owned by the |PrerenderManager|.
-  static FirstContentfulPaintManagerWaiter* Create(PrerenderManager* manager);
+  // instance is owned by the |NoStatePrefetchManager|.
+  static FirstContentfulPaintManagerWaiter* Create(
+      NoStatePrefetchManager* manager);
 
   ~FirstContentfulPaintManagerWaiter() override;
 
   void OnFirstContentfulPaint() override;
 
-  // Wait for a first contentful paint to be seen by our PrerenderManager.
+  // Wait for a first contentful paint to be seen by our NoStatePrefetchManager.
   void Wait();
 
  private:
@@ -270,7 +272,7 @@ class TestNoStatePrefetchContentsFactory
 
   NoStatePrefetchContents* CreateNoStatePrefetchContents(
       std::unique_ptr<NoStatePrefetchContentsDelegate> delegate,
-      PrerenderManager* prerender_manager,
+      NoStatePrefetchManager* no_state_prefetch_manager,
       content::BrowserContext* browser_context,
       const GURL& url,
       const content::Referrer& referrer,
@@ -313,14 +315,14 @@ class PrerenderInProcessBrowserTest : virtual public InProcessBrowserTest {
   // already. The path must not be empty.
   std::string MakeAbsolute(const std::string& path);
 
-  bool UrlIsInPrerenderManager(const std::string& html_file) const;
-  bool UrlIsInPrerenderManager(const GURL& url) const;
+  bool UrlIsInNoStatePrefetchManager(const std::string& html_file) const;
+  bool UrlIsInNoStatePrefetchManager(const GURL& url) const;
 
   // Convenience function to get the currently active WebContents in
   // current_browser().
   content::WebContents* GetActiveWebContents() const;
 
-  PrerenderManager* GetPrerenderManager() const;
+  NoStatePrefetchManager* GetNoStatePrefetchManager() const;
 
   TestNoStatePrefetchContents* GetNoStatePrefetchContentsFor(
       const GURL& url) const;

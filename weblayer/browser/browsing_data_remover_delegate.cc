@@ -17,7 +17,7 @@
 #include "weblayer/browser/favicon/favicon_service_impl.h"
 #include "weblayer/browser/favicon/favicon_service_impl_factory.h"
 #include "weblayer/browser/host_content_settings_map_factory.h"
-#include "weblayer/browser/no_state_prefetch/prerender_manager_factory.h"
+#include "weblayer/browser/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "weblayer/browser/safe_browsing/safe_browsing_service.h"
 
 namespace weblayer {
@@ -64,7 +64,7 @@ void BrowsingDataRemoverDelegate::RemoveEmbedderData(
 
   if (remove_mask & content::BrowsingDataRemover::DATA_TYPE_CACHE) {
     browsing_data::RemovePrerenderCacheData(
-        PrerenderManagerFactory::GetForBrowserContext(browser_context_));
+        NoStatePrefetchManagerFactory::GetForBrowserContext(browser_context_));
   }
 
   if (remove_mask & DATA_TYPE_FAVICONS) {

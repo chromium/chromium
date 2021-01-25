@@ -16,14 +16,14 @@
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/prefetch/no_state_prefetch/prerender_manager_factory.h"
+#include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/no_state_prefetch/browser/prerender_manager.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -136,7 +136,7 @@ void FakeSafeBrowsingDatabaseManager::OnCheckBrowseURLDone(const GURL& gurl,
 }
 
 TestNoStatePrefetchContents::TestNoStatePrefetchContents(
-    PrerenderManager* prerender_manager,
+    NoStatePrefetchManager* no_state_prefetch_manager,
     content::BrowserContext* browser_context,
     const GURL& url,
     const content::Referrer& referrer,
@@ -146,7 +146,7 @@ TestNoStatePrefetchContents::TestNoStatePrefetchContents(
     bool ignore_final_status)
     : NoStatePrefetchContents(
           std::make_unique<ChromeNoStatePrefetchContentsDelegate>(),
-          prerender_manager,
+          no_state_prefetch_manager,
           browser_context,
           url,
           referrer,
@@ -345,7 +345,7 @@ void TestPrerender::OnPrerenderStop(NoStatePrefetchContents* contents) {
 
 // static
 FirstContentfulPaintManagerWaiter* FirstContentfulPaintManagerWaiter::Create(
-    PrerenderManager* manager) {
+    NoStatePrefetchManager* manager) {
   auto fcp_waiter = base::WrapUnique(new FirstContentfulPaintManagerWaiter());
   auto* fcp_waiter_ptr = fcp_waiter.get();
   manager->AddObserver(std::move(fcp_waiter));
@@ -393,7 +393,7 @@ void TestNoStatePrefetchContentsFactory::IgnoreNoStatePrefetchContents() {
 NoStatePrefetchContents*
 TestNoStatePrefetchContentsFactory::CreateNoStatePrefetchContents(
     std::unique_ptr<NoStatePrefetchContentsDelegate> delegate,
-    PrerenderManager* prerender_manager,
+    NoStatePrefetchManager* no_state_prefetch_manager,
     content::BrowserContext* browser_context,
     const GURL& url,
     const content::Referrer& referrer,
@@ -405,8 +405,8 @@ TestNoStatePrefetchContentsFactory::CreateNoStatePrefetchContents(
     expected_contents_queue_.pop_front();
   }
   TestNoStatePrefetchContents* contents = new TestNoStatePrefetchContents(
-      prerender_manager, browser_context, url, referrer, initiator_origin,
-      origin, expected.final_status, expected.ignore);
+      no_state_prefetch_manager, browser_context, url, referrer,
+      initiator_origin, origin, expected.final_status, expected.ignore);
   if (expected.handle)
     expected.handle->OnPrerenderCreated(contents);
   return contents;
@@ -460,14 +460,15 @@ std::string PrerenderInProcessBrowserTest::MakeAbsolute(
   return "/" + path;
 }
 
-bool PrerenderInProcessBrowserTest::UrlIsInPrerenderManager(
+bool PrerenderInProcessBrowserTest::UrlIsInNoStatePrefetchManager(
     const std::string& html_file) const {
-  return UrlIsInPrerenderManager(embedded_test_server()->GetURL(html_file));
+  return UrlIsInNoStatePrefetchManager(
+      embedded_test_server()->GetURL(html_file));
 }
 
-bool PrerenderInProcessBrowserTest::UrlIsInPrerenderManager(
+bool PrerenderInProcessBrowserTest::UrlIsInNoStatePrefetchManager(
     const GURL& url) const {
-  return GetPrerenderManager()->FindPrerenderData(
+  return GetNoStatePrefetchManager()->FindPrerenderData(
              url, GetSessionStorageNamespace()) != nullptr;
 }
 
@@ -476,16 +477,17 @@ content::WebContents* PrerenderInProcessBrowserTest::GetActiveWebContents()
   return current_browser()->tab_strip_model()->GetActiveWebContents();
 }
 
-PrerenderManager* PrerenderInProcessBrowserTest::GetPrerenderManager() const {
-  return PrerenderManagerFactory::GetForBrowserContext(
+NoStatePrefetchManager*
+PrerenderInProcessBrowserTest::GetNoStatePrefetchManager() const {
+  return NoStatePrefetchManagerFactory::GetForBrowserContext(
       current_browser()->profile());
 }
 
 TestNoStatePrefetchContents*
 PrerenderInProcessBrowserTest::GetNoStatePrefetchContentsFor(
     const GURL& url) const {
-  PrerenderManager::PrerenderData* prerender_data =
-      GetPrerenderManager()->FindPrerenderData(url, nullptr);
+  NoStatePrefetchManager::PrerenderData* prerender_data =
+      GetNoStatePrefetchManager()->FindPrerenderData(url, nullptr);
   return static_cast<TestNoStatePrefetchContents*>(
       prerender_data ? prerender_data->contents() : nullptr);
 }
@@ -524,24 +526,25 @@ void PrerenderInProcessBrowserTest::SetUpOnMainThread() {
   ExternalProtocolHandler::SetDelegateForTesting(
       external_protocol_handler_delegate_.get());
 
-  // Check that PrerenderManager exists, which is necessary to make sure
+  // Check that NoStatePrefetchManager exists, which is necessary to make sure
   // NoStatePrefetch can be enabled and perceived FCP metrics can be recorded.
-  PrerenderManager* prerender_manager = GetPrerenderManager();
+  NoStatePrefetchManager* no_state_prefetch_manager =
+      GetNoStatePrefetchManager();
   // Use CHECK to fail fast. The ASSERT_* macros in this context are not useful
   // because they only silently exit and make the tests crash later with more
   // complicated symptoms.
-  CHECK(prerender_manager);
+  CHECK(no_state_prefetch_manager);
 
   // Increase the memory allowed in a prerendered page above normal settings.
   // Debug build bots occasionally run against the default limit, and tests
   // were failing because the prerender was canceled due to memory exhaustion.
   // http://crbug.com/93076
-  prerender_manager->mutable_config().max_bytes = 2000 * 1024 * 1024;
+  no_state_prefetch_manager->mutable_config().max_bytes = 2000 * 1024 * 1024;
 
-  prerender_manager->mutable_config().rate_limit_enabled = false;
+  no_state_prefetch_manager->mutable_config().rate_limit_enabled = false;
   CHECK(!no_state_prefetch_contents_factory_);
   no_state_prefetch_contents_factory_ = new TestNoStatePrefetchContentsFactory;
-  prerender_manager->SetNoStatePrefetchContentsFactoryForTest(
+  no_state_prefetch_manager->SetNoStatePrefetchContentsFactoryForTest(
       no_state_prefetch_contents_factory_);
   CHECK(safe_browsing_factory_->test_safe_browsing_service());
 }

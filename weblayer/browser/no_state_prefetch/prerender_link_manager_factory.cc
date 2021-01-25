@@ -5,9 +5,9 @@
 #include "weblayer/browser/no_state_prefetch/prerender_link_manager_factory.h"
 
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/no_state_prefetch/browser/prerender_link_manager.h"
-#include "components/no_state_prefetch/browser/prerender_manager.h"
-#include "weblayer/browser/no_state_prefetch/prerender_manager_factory.h"
+#include "weblayer/browser/no_state_prefetch/no_state_prefetch_manager_factory.h"
 
 namespace weblayer {
 
@@ -28,19 +28,19 @@ PrerenderLinkManagerFactory::PrerenderLinkManagerFactory()
     : BrowserContextKeyedServiceFactory(
           "PrerenderLinkmanager",
           BrowserContextDependencyManager::GetInstance()) {
-  DependsOn(weblayer::PrerenderManagerFactory::GetInstance());
+  DependsOn(weblayer::NoStatePrefetchManagerFactory::GetInstance());
 }
 
 KeyedService* PrerenderLinkManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* browser_context) const {
   DCHECK(browser_context);
 
-  prerender::PrerenderManager* prerender_manager =
-      PrerenderManagerFactory::GetForBrowserContext(browser_context);
-  if (!prerender_manager)
+  prerender::NoStatePrefetchManager* no_state_prefetch_manager =
+      NoStatePrefetchManagerFactory::GetForBrowserContext(browser_context);
+  if (!no_state_prefetch_manager)
     return nullptr;
 
-  return new prerender::PrerenderLinkManager(prerender_manager);
+  return new prerender::PrerenderLinkManager(no_state_prefetch_manager);
 }
 
 content::BrowserContext* PrerenderLinkManagerFactory::GetBrowserContextToUse(
