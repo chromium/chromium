@@ -64,12 +64,6 @@ namespace internal {
 const base::Feature kMetricsReportingFeature{"MetricsReporting",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
-// A feature controlling whether all clients in the OutOfReportingSample group
-// should discard their uploads, regardless of which user consent flow they
-// went through. When disabled, only opt-out users will discard uploads.
-const base::Feature kMetricsDownsampleConsistentlyFeature{
-    "MetricsDownsampleConsistently", base::FEATURE_DISABLED_BY_DEFAULT};
-
 }  // namespace internal
 }  // namespace metrics
 
@@ -98,26 +92,12 @@ void AppendSamplingTrialGroup(const std::string& group_name,
   trial->AppendGroup(group_name, rate);
 }
 
-// Unless the DownsampleConsistently feature is enabled, only clients that were
-// given an opt-out metrics-reporting consent flow are eligible for sampling.
-bool IsClientEligibleForSampling(PrefService* local_state) {
-  return base::FeatureList::IsEnabled(
-             metrics::internal::kMetricsDownsampleConsistentlyFeature) ||
-         metrics::GetMetricsReportingDefaultState(local_state) ==
-             metrics::EnableMetricsDefault::OPT_OUT;
-}
-
 // Implementation of IsClientInSample() that takes a PrefService param.
 bool IsClientInSampleImpl(PrefService* local_state) {
   // Test the MetricsReporting feature for all users to ensure that the trial
   // is reported.
-  bool is_in_sample_group =
-      base::FeatureList::IsEnabled(metrics::internal::kMetricsReportingFeature);
-  // Until the DownsampleConsistently feature is rolled out, only some clients
-  // are eligible for downsampling. Clients that aren't eligible should always
-  // send reports when they have opted to do so, but should still report their
-  // group assignment to the trial controlling downsampling.
-  return is_in_sample_group || !IsClientEligibleForSampling(local_state);
+  return base::FeatureList::IsEnabled(
+      metrics::internal::kMetricsReportingFeature);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -226,11 +206,6 @@ bool ChromeMetricsServicesManagerClient::IsClientInSample() {
 
 // static
 bool ChromeMetricsServicesManagerClient::GetSamplingRatePerMille(int* rate) {
-  // The population that is NOT eligible for sampling in considered "in sample",
-  // but does not have a defined sample rate.
-  if (!IsClientEligibleForSampling(g_browser_process->local_state()))
-    return false;
-
   std::string rate_str = variations::GetVariationParamValueByFeature(
       metrics::internal::kMetricsReportingFeature, kRateParamName);
   if (rate_str.empty())
