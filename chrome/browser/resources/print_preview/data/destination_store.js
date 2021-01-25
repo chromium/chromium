@@ -1043,6 +1043,9 @@ export class DestinationStore extends EventTarget {
           DestinationOrigin.LOCAL, loadTimeData.getString('printToPDF'),
           DestinationConnectionStatus.ONLINE));
     }
+    if (this.typesToSearch_.has(PrinterType.PDF_PRINTER)) {
+      this.typesToSearch_.delete(PrinterType.PDF_PRINTER);
+    }
   }
 
   // <if expr="chromeos">
