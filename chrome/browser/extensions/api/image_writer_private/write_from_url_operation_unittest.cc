@@ -4,6 +4,8 @@
 
 #include "chrome/browser/extensions/api/image_writer_private/write_from_url_operation.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "chrome/browser/extensions/api/image_writer_private/error_messages.h"
@@ -57,19 +59,19 @@ class WriteFromUrlOperationForTest : public WriteFromUrlOperation {
   void Start() {
     PostTask(base::BindOnce(&WriteFromUrlOperation::Start, this));
   }
-  void GetDownloadTarget(const base::Closure& continuation) {
+  void GetDownloadTarget(base::OnceClosure continuation) {
     PostTask(base::BindOnce(&WriteFromUrlOperation::GetDownloadTarget, this,
-                            continuation));
+                            std::move(continuation)));
   }
 
-  void Download(const base::Closure& continuation) {
-    PostTask(
-        base::BindOnce(&WriteFromUrlOperation::Download, this, continuation));
+  void Download(base::OnceClosure continuation) {
+    PostTask(base::BindOnce(&WriteFromUrlOperation::Download, this,
+                            std::move(continuation)));
   }
 
-  void VerifyDownload(const base::Closure& continuation) {
+  void VerifyDownload(base::OnceClosure continuation) {
     PostTask(base::BindOnce(&WriteFromUrlOperation::VerifyDownload, this,
-                            continuation));
+                            std::move(continuation)));
   }
 
   void Cancel() {
@@ -84,7 +86,7 @@ class WriteFromUrlOperationForTest : public WriteFromUrlOperation {
   base::FilePath GetImagePath() { return image_path_; }
 
  private:
-  ~WriteFromUrlOperationForTest() override {}
+  ~WriteFromUrlOperationForTest() override = default;
 };
 
 class ImageWriterWriteFromUrlOperationTest : public ImageWriterUnitTestBase {
@@ -228,7 +230,7 @@ TEST_F(ImageWriterWriteFromUrlOperationTest, VerifyFile) {
     // The OnProgress tasks are posted with priority USER_VISIBLE priority so
     // post the quit closure with the same priority to ensure it doesn't run too
     // soon.
-    operation->VerifyDownload(base::Bind(
+    operation->VerifyDownload(base::BindOnce(
         [](base::OnceClosure quit_closure) {
           content::GetUIThreadTaskRunner({base::TaskPriority::USER_VISIBLE})
               ->PostTask(FROM_HERE, std::move(quit_closure));

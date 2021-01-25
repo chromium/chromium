@@ -99,13 +99,13 @@ class Operation : public base::RefCountedThreadSafe<Operation> {
 
   // Extracts the current file if it's an archive.  The current_file will be set
   // to the extracted file.
-  void Extract(const base::Closure& continuation);
+  void Extract(base::OnceClosure continuation);
 
   // Writes the current file to device_path.
-  void Write(const base::Closure& continuation);
+  void Write(base::OnceClosure continuation);
 
   // Verifies that the current file and device_path contents match.
-  void VerifyWrite(const base::Closure& continuation);
+  void VerifyWrite(base::OnceClosure continuation);
 
   // Completes the operation.
   void Finish();
@@ -132,7 +132,7 @@ class Operation : public base::RefCountedThreadSafe<Operation> {
 
   // Completes the current operation (progress set to 100) and runs the
   // continuation.
-  void CompleteAndContinue(const base::Closure& continuation);
+  void CompleteAndContinue(base::OnceClosure continuation);
 
   // If |file_size| is non-zero, only |file_size| bytes will be read from file,
   // otherwise the entire file will be read.
@@ -181,15 +181,15 @@ class Operation : public base::RefCountedThreadSafe<Operation> {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Unmounts all volumes on |device_path_|.
-  void UnmountVolumes(const base::Closure& continuation);
+  void UnmountVolumes(base::OnceClosure continuation);
   // Starts the write after unmounting.
-  void UnmountVolumesCallback(const base::Closure& continuation,
+  void UnmountVolumesCallback(base::OnceClosure continuation,
                               chromeos::MountError error_code);
   // Starts the ImageBurner write.  Note that target_path is the file path of
   // the device where device_path has been a system device path.
   void StartWriteOnUIThread(const std::string& target_path,
-                            const base::Closure& continuation);
-  void OnBurnFinished(const base::Closure& continuation,
+                            base::OnceClosure continuation);
+  void OnBurnFinished(base::OnceClosure continuation,
                       const std::string& target_path,
                       bool success,
                       const std::string& error);

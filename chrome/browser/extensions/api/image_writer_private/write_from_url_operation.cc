@@ -44,10 +44,11 @@ void WriteFromUrlOperation::StartImpl() {
           &WriteFromUrlOperation::VerifyDownload, this,
           base::BindOnce(
               &WriteFromUrlOperation::Extract, this,
-              base::Bind(&WriteFromUrlOperation::Write, this,
-                         base::Bind(&WriteFromUrlOperation::VerifyWrite, this,
-                                    base::Bind(&WriteFromUrlOperation::Finish,
-                                               this)))))));
+              base::BindOnce(
+                  &WriteFromUrlOperation::Write, this,
+                  base::BindOnce(&WriteFromUrlOperation::VerifyWrite, this,
+                                 base::BindOnce(&WriteFromUrlOperation::Finish,
+                                                this)))))));
 }
 
 void WriteFromUrlOperation::GetDownloadTarget(base::OnceClosure continuation) {

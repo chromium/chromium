@@ -117,7 +117,7 @@ void Operation::OnExtractOpenComplete(const base::FilePath& image_path) {
   image_path_ = image_path;
 }
 
-void Operation::Extract(const base::Closure& continuation) {
+void Operation::Extract(base::OnceClosure continuation) {
   DCHECK(IsRunningInCorrectSequence());
   if (IsCancelled()) {
     return;
@@ -131,8 +131,8 @@ void Operation::Extract(const base::Closure& continuation) {
     properties.temp_dir_path = temp_dir_->GetPath();
     properties.open_callback =
         base::BindOnce(&Operation::OnExtractOpenComplete, this);
-    properties.complete_callback =
-        base::BindOnce(&Operation::CompleteAndContinue, this, continuation);
+    properties.complete_callback = base::BindOnce(
+        &Operation::CompleteAndContinue, this, std::move(continuation));
     properties.failure_callback =
         base::BindOnce(&Operation::OnExtractFailure, this);
     properties.progress_callback =
@@ -140,7 +140,7 @@ void Operation::Extract(const base::Closure& continuation) {
 
     ExtractArchive(std::move(properties));
   } else {
-    PostTask(continuation);
+    PostTask(std::move(continuation));
   }
 }
 
@@ -208,10 +208,10 @@ void Operation::AddCleanUpFunction(base::OnceClosure callback) {
   cleanup_functions_.push_back(std::move(callback));
 }
 
-void Operation::CompleteAndContinue(const base::Closure& continuation) {
+void Operation::CompleteAndContinue(base::OnceClosure continuation) {
   DCHECK(IsRunningInCorrectSequence());
   SetProgress(kProgressComplete);
-  PostTask(continuation);
+  PostTask(std::move(continuation));
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

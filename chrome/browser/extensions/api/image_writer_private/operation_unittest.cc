@@ -59,16 +59,18 @@ class OperationForTest : public Operation {
 
   // Expose internal stages for testing.
   // Also wraps Operation's methods to run on correct sequence.
-  void Extract(const base::Closure& continuation) {
-    PostTask(base::BindOnce(&Operation::Extract, this, continuation));
+  void Extract(base::OnceClosure continuation) {
+    PostTask(
+        base::BindOnce(&Operation::Extract, this, std::move(continuation)));
   }
 
-  void Write(const base::Closure& continuation) {
-    PostTask(base::BindOnce(&Operation::Write, this, continuation));
+  void Write(base::OnceClosure continuation) {
+    PostTask(base::BindOnce(&Operation::Write, this, std::move(continuation)));
   }
 
-  void VerifyWrite(const base::Closure& continuation) {
-    PostTask(base::BindOnce(&Operation::VerifyWrite, this, continuation));
+  void VerifyWrite(base::OnceClosure continuation) {
+    PostTask(
+        base::BindOnce(&Operation::VerifyWrite, this, std::move(continuation)));
   }
 
   void Start() { PostTask(base::BindOnce(&Operation::Start, this)); }
