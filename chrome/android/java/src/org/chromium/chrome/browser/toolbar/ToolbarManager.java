@@ -483,7 +483,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         } else {
             OverrideUrlLoadingDelegate overrideUrlLoadingDelegate =
                     (url, transition, postDataType, postData, incognito)
-                    -> ReturnToChromeExperimentsUtil.willHandleLoadUrlWithPostDataFromStartSurface(
+                    -> ReturnToChromeExperimentsUtil.handleLoadUrlWithPostDataFromStartSurface(
                             new LoadUrlParams(url, transition | PageTransition.FROM_ADDRESS_BAR),
                             postDataType, postData, incognito, startSurfaceParentTabSupplier.get());
             LocationBarCoordinator locationBarCoordinator = new LocationBarCoordinator(
@@ -799,6 +799,15 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             @Override
             public void onSceneChange(Layout layout) {
                 mToolbar.setContentAttached(layout.shouldDisplayContentOverlay());
+
+                if (StartSurfaceConfiguration.handleFocusOnOmnibox(
+                            mActivityTabProvider.get(), layout)) {
+                    setUrlBarFocus(true, OmniboxFocusReason.FOCUS_ON_NEW_TAB);
+                    if (shouldShowCursorInLocationBar()) {
+                        mLocationBar.showUrlBarCursorWithoutFocusAnimations();
+                    }
+                    updateButtonStatus();
+                }
             }
         };
 

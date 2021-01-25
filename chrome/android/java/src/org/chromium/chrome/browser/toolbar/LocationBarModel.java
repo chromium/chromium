@@ -233,7 +233,8 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         if (!hasTab()) return UrlBarData.EMPTY;
 
         String url = getCurrentUrl();
-        if (NativePage.isNativePageUrl(url, isIncognito()) || UrlUtilities.isNTPUrl(url)) {
+        if (NativePage.isNativePageUrl(url, isIncognito()) || UrlUtilities.isNTPUrl(url)
+                || TextUtils.isEmpty(url)) {
             return UrlBarData.EMPTY;
         }
 

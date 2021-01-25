@@ -1704,7 +1704,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 @Override
                 public boolean handleCreateNTPIfNeeded(
                         boolean isNTP, boolean incognito, Tab parentTab) {
-                    boolean shouldShowStart = showStartSurfaceHomeForNTP(isNTP, incognito);
+                    boolean shouldShowStart =
+                            showStartSurfaceHomeForNTP(isNTP, incognito, parentTab);
                     if (shouldShowStart) {
                         mStartSurfaceParentTabSupplier.set(parentTab);
                     }
@@ -2142,20 +2143,29 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         }
     }
 
-    private boolean showStartSurfaceHomeForNTP(boolean isNTP, boolean incognito) {
-        if (isNTP
-                && ReturnToChromeExperimentsUtil.shouldShowStartSurfaceHomeAsNTP(
+    /**
+     * @return Whether opening a new tab is handled by the Start surface. It may show the Start
+     * surface, or open a new tab with the omnibox get focused, depending on the value of
+     * {@link StartSurfaceConfiguration.OMNIBOX_FOCUSED_ON_NEW_TAB}.
+     */
+    private boolean showStartSurfaceHomeForNTP(boolean isNTP, boolean incognito, Tab parentTab) {
+        if (!isNTP
+                || !ReturnToChromeExperimentsUtil.shouldShowStartSurfaceHomeAsNTP(
                         incognito, isTablet())) {
-            getTabModelSelector().selectModel(incognito);
+            return false;
+        }
 
-            if (TabUiFeatureUtilities.supportInstantStart(isTablet())
-                    || (getTabModelSelector().isTabStateInitialized()
-                            && isLayoutManagerCreated())) {
+        getTabModelSelector().selectModel(incognito);
+        if (TabUiFeatureUtilities.supportInstantStart(isTablet())
+                || (getTabModelSelector().isTabStateInitialized() && isLayoutManagerCreated())) {
+            if (StartSurfaceConfiguration.OMNIBOX_FOCUSED_ON_NEW_TAB.getValue()) {
+                ReturnToChromeExperimentsUtil.handleLoadUrlFromStartSurfaceAsNewTab(
+                        null, PageTransition.AUTO_TOPLEVEL, incognito, parentTab);
+            } else {
                 showOverview(StartSurfaceState.SHOWING_HOMEPAGE);
             }
-            return true;
         }
-        return false;
+        return true;
     }
 
     private void updateAccessibilityState(boolean enabled) {

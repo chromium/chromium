@@ -1862,8 +1862,15 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         // possible that this function is called before native initialization when Instant Start
         // is enabled. Keyboard shouldn't be shown here.
         if (isNativeLibraryReady()) {
-            triggerUrlFocusAnimation(
-                    inTabSwitcherMode && !urlHasFocus(), /* shouldShowKeyboard= */ false);
+            boolean hasFocus = inTabSwitcherMode && !urlHasFocus();
+            boolean shouldShowKeyboard = false;
+            // When switching out of the tab switcher and the url has got focused, we don't clear
+            // the focus.
+            if (!inTabSwitcherMode && urlHasFocus()) {
+                hasFocus = true;
+                shouldShowKeyboard = true;
+            }
+            triggerUrlFocusAnimation(hasFocus, shouldShowKeyboard);
         } else {
             mPendingTriggerUrlFocusRequest = true;
         }

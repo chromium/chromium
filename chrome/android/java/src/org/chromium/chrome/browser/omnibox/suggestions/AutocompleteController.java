@@ -125,7 +125,7 @@ public class AutocompleteController {
         // crbug.com/764749
         Log.w(TAG, "starting autocomplete controller..[%b][%b]", profile == null,
                 TextUtils.isEmpty(url));
-        if (profile == null || TextUtils.isEmpty(url)) return;
+        if (profile == null) return;
 
         mNativeAutocompleteControllerAndroid =
                 AutocompleteControllerJni.get().init(AutocompleteController.this, profile);
@@ -174,7 +174,7 @@ public class AutocompleteController {
     public void startZeroSuggest(
             Profile profile, String omniboxText, String url, int pageClassification, String title) {
         assert mListener != null : "Ensure a listener is set prior to calling.";
-        if (profile == null || TextUtils.isEmpty(url)) return;
+        if (profile == null) return;
 
         // Proactively start up a renderer, to reduce the time to display search results,
         // especially if a Service Worker is used. This is done in a PostTask with a

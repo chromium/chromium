@@ -9,6 +9,8 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Log;
 import org.chromium.base.SysUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.compositor.layouts.Layout;
+import org.chromium.chrome.browser.compositor.layouts.StaticLayout;
 import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -19,6 +21,7 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.user_prefs.UserPrefs;
 
 /**
@@ -80,6 +83,11 @@ public class StartSurfaceConfiguration {
                     TRENDY_ENDPOINT_PARAM,
                     "https://trends.google.com/trends/trendingsearches/daily/rss"
                             + "?lite=true&safe=true&geo=");
+
+    private static final String OMNIBOX_FOCUSED_ON_NEW_TAB_PARAM = "omnibox_focused_on_new_tab";
+    public static final BooleanCachedFieldTrialParameter OMNIBOX_FOCUSED_ON_NEW_TAB =
+            new BooleanCachedFieldTrialParameter(ChromeFeatureList.START_SURFACE_ANDROID,
+                    OMNIBOX_FOCUSED_ON_NEW_TAB_PARAM, false);
 
     private static final String STARTUP_UMA_PREFIX = "Startup.Android.";
     private static final String INSTANT_START_SUBFIX = ".Instant";
@@ -171,5 +179,19 @@ public class StartSurfaceConfiguration {
     public static boolean isFeedPlaceholderDense() {
         return SharedPreferencesManager.getInstance().readBoolean(
                 ChromePreferenceKeys.FEED_PLACEHOLDER_DENSE, false);
+    }
+
+    /**
+     * @return Whether the caller should set focus on omnibox. This function returns true only when
+     * {@link OMNIBOX_FOCUSED_ON_NEW_TAB} is enabled.
+     */
+    public static boolean handleFocusOnOmnibox(Tab tab, Layout layout) {
+        if (layout instanceof StaticLayout && tab != null
+                && StartSurfaceUserData.getFocusOnOmnibox(tab)) {
+            assert OMNIBOX_FOCUSED_ON_NEW_TAB.getValue();
+            StartSurfaceUserData.setFocusOnOmnibox(tab, false);
+            return true;
+        }
+        return false;
     }
 }
