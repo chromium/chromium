@@ -21,6 +21,7 @@ ProcessNodeImpl::ProcessNodeImpl(content::ProcessType process_type,
                                  RenderProcessHostProxy render_process_proxy)
     : process_type_(process_type),
       render_process_host_proxy_(std::move(render_process_proxy)) {
+  weak_this_ = weak_factory_.GetWeakPtr();
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
@@ -34,6 +35,7 @@ ProcessNodeImpl::~ProcessNodeImpl() {
 
 void ProcessNodeImpl::Bind(
     mojo::PendingReceiver<mojom::ProcessCoordinationUnit> receiver) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // A RenderProcessHost can be reused if the backing process suddenly dies, in
   // which case we will receive a new receiver from the newly spawned process.
   receiver_.reset();
@@ -42,6 +44,8 @@ void ProcessNodeImpl::Bind(
 
 void ProcessNodeImpl::SetMainThreadTaskLoadIsLow(
     bool main_thread_task_load_is_low) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   main_thread_task_load_is_low_.SetAndMaybeNotify(this,
                                                   main_thread_task_load_is_low);
 }
@@ -139,6 +143,8 @@ const base::flat_set<FrameNodeImpl*>& ProcessNodeImpl::frame_nodes() const {
 }
 
 PageNodeImpl* ProcessNodeImpl::GetPageNodeIfExclusive() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   PageNodeImpl* page_node = nullptr;
   for (auto* frame_node : frame_nodes_) {
     if (!page_node)
@@ -180,7 +186,18 @@ void ProcessNodeImpl::RemoveWorker(WorkerNodeImpl* worker_node) {
 }
 
 void ProcessNodeImpl::set_priority(base::TaskPriority priority) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   priority_.SetAndMaybeNotify(this, priority);
+}
+
+base::WeakPtr<ProcessNodeImpl> ProcessNodeImpl::GetWeakPtrOnUIThread() {
+  // TODO(siggi): Validate thread context.
+  return weak_this_;
+}
+
+base::WeakPtr<ProcessNodeImpl> ProcessNodeImpl::GetWeakPtr() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return weak_factory_.GetWeakPtr();
 }
 
 void ProcessNodeImpl::SetProcessImpl(base::Process process,

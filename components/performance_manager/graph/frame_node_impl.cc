@@ -43,9 +43,11 @@ FrameNodeImpl::FrameNodeImpl(ProcessNodeImpl* process_node,
               .render_process_host_id()
               .value(),
           render_frame_id)) {
-  DETACH_FROM_SEQUENCE(sequence_checker_);
+  weak_this_ = weak_factory_.GetWeakPtr();
+
   DCHECK(process_node);
   DCHECK(page_node);
+  DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
 FrameNodeImpl::~FrameNodeImpl() {
@@ -114,38 +116,47 @@ bool FrameNodeImpl::IsMainFrame() const {
 }
 
 FrameNodeImpl* FrameNodeImpl::parent_frame_node() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return parent_frame_node_;
 }
 
 PageNodeImpl* FrameNodeImpl::page_node() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return page_node_;
 }
 
 ProcessNodeImpl* FrameNodeImpl::process_node() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return process_node_;
 }
 
 int FrameNodeImpl::frame_tree_node_id() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return frame_tree_node_id_;
 }
 
 int FrameNodeImpl::render_frame_id() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return render_frame_id_;
 }
 
 const blink::LocalFrameToken& FrameNodeImpl::frame_token() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return frame_token_;
 }
 
 int32_t FrameNodeImpl::browsing_instance_id() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return browsing_instance_id_;
 }
 
 int32_t FrameNodeImpl::site_instance_id() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return site_instance_id_;
 }
 
 const RenderFrameHostProxy& FrameNodeImpl::render_frame_host_proxy() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return render_frame_host_proxy_;
 }
 
@@ -342,6 +353,16 @@ void FrameNodeImpl::SetPriorityAndReason(
     const PriorityAndReason& priority_and_reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   priority_and_reason_.SetAndMaybeNotify(this, priority_and_reason);
+}
+
+base::WeakPtr<FrameNodeImpl> FrameNodeImpl::GetWeakPtrOnUIThread() {
+  // TODO(siggi): Validate the thread context here.
+  return weak_this_;
+}
+
+base::WeakPtr<FrameNodeImpl> FrameNodeImpl::GetWeakPtr() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return weak_factory_.GetWeakPtr();
 }
 
 void FrameNodeImpl::AddOpenedPage(base::PassKey<PageNodeImpl>,

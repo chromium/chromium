@@ -80,11 +80,20 @@ class ProcessNodeImpl
 
   // Private implementation properties.
   void set_private_footprint_kb(uint64_t private_footprint_kb) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     private_footprint_kb_ = private_footprint_kb;
   }
-  uint64_t private_footprint_kb() const { return private_footprint_kb_; }
-  uint64_t resident_set_kb() const { return resident_set_kb_; }
+  uint64_t private_footprint_kb() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return private_footprint_kb_;
+  }
+  uint64_t resident_set_kb() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return resident_set_kb_;
+  }
   void set_resident_set_kb(uint64_t resident_set_kb) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
     resident_set_kb_ = resident_set_kb;
   }
 
@@ -98,16 +107,32 @@ class ProcessNodeImpl
   // Otherwise, returns nullptr.
   PageNodeImpl* GetPageNodeIfExclusive() const;
 
-  content::ProcessType process_type() const { return process_type_; }
+  content::ProcessType process_type() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return process_type_;
+  }
   // Use process_id() in preference to process().Pid(). It's always valid to
   // access, but will return kNullProcessId when the process is not valid. It
   // will also retain the process ID for a process that has exited.
-  base::ProcessId process_id() const { return process_id_; }
-  const base::Process& process() const { return process_.value(); }
-  base::Time launch_time() const { return launch_time_; }
-  base::Optional<int32_t> exit_status() const { return exit_status_; }
+  base::ProcessId process_id() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return process_id_;
+  }
+  const base::Process& process() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return process_.value();
+  }
+  base::Time launch_time() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return launch_time_;
+  }
+  base::Optional<int32_t> exit_status() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return exit_status_;
+  }
 
   bool main_thread_task_load_is_low() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return main_thread_task_load_is_low_.value();
   }
 
@@ -115,7 +140,10 @@ class ProcessNodeImpl
     return render_process_host_proxy_;
   }
 
-  base::TaskPriority priority() const { return priority_.value(); }
+  base::TaskPriority priority() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return priority_.value();
+  }
 
   // Add |frame_node| to this process.
   void AddFrame(FrameNodeImpl* frame_node);
@@ -133,9 +161,8 @@ class ProcessNodeImpl
 
   void OnAllFramesInProcessFrozenForTesting() { OnAllFramesInProcessFrozen(); }
 
-  base::WeakPtr<ProcessNodeImpl> GetWeakPtr() {
-    return weak_factory_.GetWeakPtr();
-  }
+  base::WeakPtr<ProcessNodeImpl> GetWeakPtrOnUIThread();
+  base::WeakPtr<ProcessNodeImpl> GetWeakPtr();
 
   static PassKey CreatePassKeyForTesting() { return PassKey(); }
 
@@ -171,27 +198,34 @@ class ProcessNodeImpl
   // NodeBase:
   void OnBeforeLeavingGraph() override;
 
-  mojo::Receiver<mojom::ProcessCoordinationUnit> receiver_{this};
+  mojo::Receiver<mojom::ProcessCoordinationUnit> receiver_
+      GUARDED_BY_CONTEXT(sequence_checker_){this};
 
-  uint64_t private_footprint_kb_ = 0u;
-  uint64_t resident_set_kb_ = 0;
+  uint64_t private_footprint_kb_ GUARDED_BY_CONTEXT(sequence_checker_) = 0u;
+  uint64_t resident_set_kb_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
 
-  base::ProcessId process_id_ = base::kNullProcessId;
+  base::ProcessId process_id_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      base::kNullProcessId;
   ObservedProperty::NotifiesAlways<
       base::Process,
       &ProcessNodeObserver::OnProcessLifetimeChange>
-      process_;
+      process_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  base::Time launch_time_;
-  base::Optional<int32_t> exit_status_;
+  base::Time launch_time_ GUARDED_BY_CONTEXT(sequence_checker_);
+  base::Optional<int32_t> exit_status_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  const content::ProcessType process_type_;
+  const content::ProcessType process_type_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // This is used during frame node initialization.
+  // TODO(siggi): It seems unnecessary to initialize this at creation time?
   const RenderProcessHostProxy render_process_host_proxy_;
 
   ObservedProperty::NotifiesOnlyOnChanges<
       bool,
       &ProcessNodeObserver::OnMainThreadTaskLoadIsLow>
-      main_thread_task_load_is_low_{false};
+      main_thread_task_load_is_low_ GUARDED_BY_CONTEXT(sequence_checker_){
+          false};
 
   // Process priority information. This is aggregated from the priority of
   // all workers and frames in a given process.
@@ -199,19 +233,26 @@ class ProcessNodeImpl
       base::TaskPriority,
       base::TaskPriority,
       &ProcessNodeObserver::OnPriorityChanged>
-      priority_{base::TaskPriority::LOWEST};
+      priority_ GUARDED_BY_CONTEXT(sequence_checker_){
+          base::TaskPriority::LOWEST};
 
-  base::flat_set<FrameNodeImpl*> frame_nodes_;
+  base::flat_set<FrameNodeImpl*> frame_nodes_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
-  base::flat_set<WorkerNodeImpl*> worker_nodes_;
+  base::flat_set<WorkerNodeImpl*> worker_nodes_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Inline storage for FrozenFrameAggregator user data.
-  InternalNodeAttachedDataStorage<sizeof(uintptr_t) + 8> frozen_frame_data_;
+  InternalNodeAttachedDataStorage<sizeof(uintptr_t) + 8> frozen_frame_data_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Inline storage for ProcessPriorityAggregator user data.
-  std::unique_ptr<NodeAttachedData> process_priority_data_;
+  std::unique_ptr<NodeAttachedData> process_priority_data_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
-  base::WeakPtrFactory<ProcessNodeImpl> weak_factory_{this};
+  base::WeakPtr<ProcessNodeImpl> weak_this_;
+  base::WeakPtrFactory<ProcessNodeImpl> weak_factory_
+      GUARDED_BY_CONTEXT(sequence_checker_){this};
 
   DISALLOW_COPY_AND_ASSIGN(ProcessNodeImpl);
 };

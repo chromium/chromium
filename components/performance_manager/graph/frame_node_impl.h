@@ -61,8 +61,6 @@ class FrameNodeImpl
       public TypedNodeBase<FrameNodeImpl, FrameNode, FrameNodeObserver>,
       public mojom::DocumentCoordinationUnit {
  public:
-  using PassKey = base::PassKey<FrameNodeImpl>;
-
   static const char kDefaultPriorityReason[];
   static constexpr NodeTypeEnum Type() { return NodeTypeEnum::kFrame; }
 
@@ -100,7 +98,7 @@ class FrameNodeImpl
   // Partial FrameNodbase::TimeDelta time_since_navigatione implementation:
   bool IsMainFrame() const override;
 
-  // Getters for const properties. These can be called from any thread.
+  // Getters for const properties.
   FrameNodeImpl* parent_frame_node() const;
   PageNodeImpl* page_node() const;
   ProcessNodeImpl* process_node() const;
@@ -146,9 +144,8 @@ class FrameNodeImpl
   // Invoked to set the frame priority, and the reason behind it.
   void SetPriorityAndReason(const PriorityAndReason& priority_and_reason);
 
-  base::WeakPtr<FrameNodeImpl> GetWeakPtr() {
-    return weak_factory_.GetWeakPtr();
-  }
+  base::WeakPtr<FrameNodeImpl> GetWeakPtrOnUIThread();
+  base::WeakPtr<FrameNodeImpl> GetWeakPtr();
 
   void SeverOpenedPagesAndMaybeReparentForTesting() {
     SeverOpenedPagesAndMaybeReparent();
@@ -167,8 +164,6 @@ class FrameNodeImpl
       base::PassKey<execution_context::ExecutionContextAccess> key) {
     return &execution_context_;
   }
-
-  static PassKey CreatePassKeyForTesting() { return PassKey(); }
 
  private:
   friend class ExecutionContextPriorityAccess;
@@ -370,7 +365,9 @@ class FrameNodeImpl
   // Inline storage for ExecutionContext.
   std::unique_ptr<NodeAttachedData> execution_context_;
 
-  base::WeakPtrFactory<FrameNodeImpl> weak_factory_{this};
+  base::WeakPtr<FrameNodeImpl> weak_this_;
+  base::WeakPtrFactory<FrameNodeImpl> weak_factory_
+      GUARDED_BY_CONTEXT(sequence_checker_){this};
 
   DISALLOW_COPY_AND_ASSIGN(FrameNodeImpl);
 };

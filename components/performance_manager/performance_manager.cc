@@ -65,7 +65,7 @@ base::WeakPtr<PageNode> PerformanceManager::GetPageNodeForWebContents(
       PerformanceManagerTabHelper::FromWebContents(wc);
   if (!helper)
     return nullptr;
-  return helper->page_node()->GetWeakPtr();
+  return helper->page_node()->GetWeakPtrOnUIThread();
 }
 
 // static
@@ -84,7 +84,7 @@ base::WeakPtr<FrameNode> PerformanceManager::GetFrameNodeForRenderFrameHost(
     DCHECK(!rfh->IsRenderFrameCreated());
     return nullptr;
   }
-  return frame_node->GetWeakPtr();
+  return frame_node->GetWeakPtrOnUIThread();
 }
 
 // static
@@ -99,7 +99,7 @@ PerformanceManager::GetProcessNodeForRenderProcessHost(
   // called indirectly from RenderProcessHost::Init.)
   if (!user_data)
     return nullptr;
-  return user_data->process_node()->GetWeakPtr();
+  return user_data->process_node()->GetWeakPtrOnUIThread();
 }
 
 // static

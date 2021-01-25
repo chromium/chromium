@@ -55,7 +55,7 @@ class WorkerNodeImpl
   // available.
   void OnFinalResponseURLDetermined(const GURL& url);
 
-  // Getters for const properties. These can be called from any thread.
+  // Getters for const properties.
   const std::string& browser_context_id() const;
   WorkerType worker_type() const;
   ProcessNodeImpl* process_node() const;
@@ -69,6 +69,7 @@ class WorkerNodeImpl
   const PriorityAndReason& priority_and_reason() const;
 
   base::WeakPtr<WorkerNodeImpl> GetWeakPtr() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return weak_factory_.GetWeakPtr();
   }
 
@@ -123,31 +124,37 @@ class WorkerNodeImpl
   // The URL of the worker script. This is the final response URL which takes
   // into account redirections. This is initially empty and it is set when
   // OnFinalResponseURLDetermined() is invoked.
-  GURL url_;
+  GURL url_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Frames that are clients of this worker.
-  base::flat_set<FrameNodeImpl*> client_frames_;
+  base::flat_set<FrameNodeImpl*> client_frames_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Other workers that are clients of this worker. See the declaration of
   // WorkerNode for a distinction between client workers and child workers.
-  base::flat_set<WorkerNodeImpl*> client_workers_;
+  base::flat_set<WorkerNodeImpl*> client_workers_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The child workers of this worker. See the declaration of WorkerNode for a
   // distinction between client workers and child workers.
-  base::flat_set<WorkerNodeImpl*> child_workers_;
+  base::flat_set<WorkerNodeImpl*> child_workers_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Worker priority information. Set via ExecutionContextPriorityDecorator.
   ObservedProperty::NotifiesOnlyOnChangesWithPreviousValue<
       PriorityAndReason,
       const PriorityAndReason&,
       &WorkerNodeObserver::OnPriorityAndReasonChanged>
-      priority_and_reason_{PriorityAndReason(base::TaskPriority::LOWEST,
-                                             kDefaultPriorityReason)};
+      priority_and_reason_ GUARDED_BY_CONTEXT(sequence_checker_){
+          PriorityAndReason(base::TaskPriority::LOWEST,
+                            kDefaultPriorityReason)};
 
   // Used by ExecutionContextRegistry mechanism.
-  std::unique_ptr<NodeAttachedData> execution_context_;
+  std::unique_ptr<NodeAttachedData> execution_context_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
-  base::WeakPtrFactory<WorkerNodeImpl> weak_factory_{this};
+  base::WeakPtrFactory<WorkerNodeImpl> weak_factory_
+      GUARDED_BY_CONTEXT(sequence_checker_){this};
 
   DISALLOW_COPY_AND_ASSIGN(WorkerNodeImpl);
 };

@@ -32,11 +32,13 @@ class SystemNodeImpl
   void OnProcessMemoryMetricsAvailable();
 
   base::WeakPtr<SystemNodeImpl> GetWeakPtr() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return weak_factory_.GetWeakPtr();
   }
 
  private:
-  base::WeakPtrFactory<SystemNodeImpl> weak_factory_{this};
+  base::WeakPtrFactory<SystemNodeImpl> weak_factory_
+      GUARDED_BY_CONTEXT(sequence_checker_){this};
 
   DISALLOW_COPY_AND_ASSIGN(SystemNodeImpl);
 };

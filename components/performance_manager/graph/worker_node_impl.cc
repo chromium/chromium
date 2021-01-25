@@ -153,6 +153,7 @@ const base::flat_set<WorkerNodeImpl*>& WorkerNodeImpl::child_workers() const {
 }
 
 const PriorityAndReason& WorkerNodeImpl::priority_and_reason() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return priority_and_reason_.value();
 }
 
