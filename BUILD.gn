@@ -81,6 +81,8 @@ group("gn_all") {
     "//services/service_manager/public/cpp",
     "//skia:skia_unittests",
     "//sql:sql_unittests",
+    "//third_party/angle/src/tests:angle_end2end_tests",
+    "//third_party/angle/src/tests:angle_white_box_tests",
     "//third_party/flatbuffers:flatbuffers_unittests",
     "//third_party/liburlpattern:liburlpattern_unittests",
     "//tools/binary_size:binary_size_trybot_py",
@@ -190,7 +192,6 @@ group("gn_all") {
       "//mojo:mojo_unittests",
       "//net:net_perftests",
       "//storage:storage_unittests",
-      "//third_party/angle/src/tests:angle_end2end_tests",
       "//third_party/angle/src/tests:angle_unittests",
       "//third_party/blink/common:blink_common_unittests",
       "//third_party/blink/renderer/controller:blink_unittests",
@@ -241,7 +242,6 @@ group("gn_all") {
       "//google_apis/gcm:mcs_probe",
       "//media/capture:capture_unittests",
       "//media/cast:cast_unittests",
-      "//third_party/angle/src/tests:angle_white_box_tests",
       "//third_party/catapult/telemetry:bitmaptools($host_toolchain)",
     ]
   } else if (is_ios) {
