@@ -518,8 +518,25 @@ base::Optional<syncer::ModelError> PasswordSyncBridge::MergeSyncData(
                                            base::NumberToString(primary_key),
                                            metadata_change_list.get());
 
+      std::vector<CompromisedCredentials> remote_compromised_credentials;
+      std::vector<CompromisedCredentials> local_compromised_credentials;
+      bool remote_and_local_compromised_credentials_equal = true;
+
+      if (base::FeatureList::IsEnabled(
+              password_manager::features::kSyncingCompromisedCredentials)) {
+        remote_compromised_credentials =
+            CompromisedCredentialsFromEntityChange(remote_entity_change);
+        local_compromised_credentials =
+            password_store_sync_->ReadSecurityIssues(
+                FormPrimaryKey(primary_key));
+        remote_and_local_compromised_credentials_equal =
+            base::ranges::is_permutation(remote_compromised_credentials,
+                                         local_compromised_credentials);
+      }
+
       if (AreLocalAndRemotePasswordsEqual(remote_password_specifics,
-                                          local_password_form)) {
+                                          local_password_form) &&
+          remote_and_local_compromised_credentials_equal) {
         // Passwords are identical, nothing else to do.
         continue;
       }
@@ -542,13 +559,7 @@ base::Optional<syncer::ModelError> PasswordSyncBridge::MergeSyncData(
         if (base::FeatureList::IsEnabled(
                 password_manager::features::kSyncingCompromisedCredentials)) {
           // Check if compromised credentials changed before updating.
-          std::vector<CompromisedCredentials> remote_compromised_credentials =
-              CompromisedCredentialsFromEntityChange(remote_entity_change);
-          std::vector<CompromisedCredentials> local_compromised_credentials =
-              password_store_sync_->ReadSecurityIssues(
-                  FormPrimaryKey(primary_key));
-          if (!base::ranges::is_permutation(remote_compromised_credentials,
-                                            local_compromised_credentials)) {
+          if (!remote_and_local_compromised_credentials_equal) {
             password_store_sync_->UpdateCompromisedCredentialsSync(
                 form, remote_compromised_credentials);
           }
