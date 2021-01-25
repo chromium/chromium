@@ -140,7 +140,6 @@ class CONTENT_EXPORT AuthenticatorCommon {
   // whether or not to return attestation data has been made.
   void OnRegisterResponseAttestationDecided(
       device::AuthenticatorMakeCredentialResponse response_data,
-      bool is_transport_used_internal,
       bool attestation_permitted);
 
   // Callback to handle the async response from a U2fDevice.

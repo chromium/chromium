@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
@@ -1409,10 +1410,10 @@ void AuthenticatorCommon::OnRegisterResponse(
       if (transport_used) {
         request_delegate_->UpdateLastTransportUsed(*transport_used);
         is_transport_used_internal =
-            (*transport_used == device::FidoTransportProtocol::kInternal);
+            *transport_used == device::FidoTransportProtocol::kInternal;
         is_transport_used_cable =
-            (*transport_used ==
-             device::FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy);
+            *transport_used ==
+            device::FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy;
       }
 
       const auto attestation =
@@ -1458,6 +1459,15 @@ void AuthenticatorCommon::OnRegisterResponse(
         // maintained.
         attestation_erasure =
             AttestationErasureOption::kEraseAttestationButIncludeAaguid;
+      } else if (is_transport_used_internal) {
+        // Direct attestation from platform authenticators is known to be
+        // privacy preserving, so we always return it when requested. Also,
+        // counter to what the WebAuthn spec says, we do not erase the AAGUID
+        // even when attestation wasn't requested.
+        attestation_erasure =
+            attestation != device::AttestationConveyancePreference::kNone
+                ? AttestationErasureOption::kIncludeAttestation
+                : AttestationErasureOption::kEraseAttestationButIncludeAaguid;
       } else if (attestation !=
                  device::AttestationConveyancePreference::kNone) {
         awaiting_attestation_response_ = true;
@@ -1466,16 +1476,9 @@ void AuthenticatorCommon::OnRegisterResponse(
             response_data->enterprise_attestation_returned,
             base::BindOnce(
                 &AuthenticatorCommon::OnRegisterResponseAttestationDecided,
-                weak_factory_.GetWeakPtr(), std::move(*response_data),
-                is_transport_used_internal));
+                weak_factory_.GetWeakPtr(), std::move(*response_data)));
       } else if (response_data->IsSelfAttestation()) {
         attestation_erasure = AttestationErasureOption::kIncludeAttestation;
-      } else if (is_transport_used_internal) {
-        // Contrary to what the WebAuthn spec says, for internal (platform)
-        // authenticators we do not erase the AAGUID from authenticatorData,
-        // even if requested attestationConveyancePreference is "none".
-        attestation_erasure =
-            AttestationErasureOption::kEraseAttestationButIncludeAaguid;
       } else {
         attestation_erasure =
             AttestationErasureOption::kEraseAttestationAndAaguid;
@@ -1498,7 +1501,6 @@ void AuthenticatorCommon::OnRegisterResponse(
 
 void AuthenticatorCommon::OnRegisterResponseAttestationDecided(
     device::AuthenticatorMakeCredentialResponse response_data,
-    bool is_transport_used_internal,
     bool attestation_permitted) {
   awaiting_attestation_response_ = false;
   if (!request_) {
@@ -1509,16 +1511,7 @@ void AuthenticatorCommon::OnRegisterResponseAttestationDecided(
 
   AttestationErasureOption attestation_erasure;
   if (!attestation_permitted) {
-    if (is_transport_used_internal) {
-      // For internal (platform) authenticators, we do not erase the
-      // AAGUID from authenticatorData even if the user declines to
-      // share attestation.
-      attestation_erasure =
-          AttestationErasureOption::kEraseAttestationButIncludeAaguid;
-    } else {
-      attestation_erasure =
-          AttestationErasureOption::kEraseAttestationAndAaguid;
-    }
+    attestation_erasure = AttestationErasureOption::kEraseAttestationAndAaguid;
   } else {
     attestation_erasure = AttestationErasureOption::kIncludeAttestation;
   }
