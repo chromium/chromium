@@ -101,9 +101,9 @@ MinMaxSizesResult NGMathOperatorLayoutAlgorithm::ComputeMinMaxSizes(
   float operator_target_size = DisplayOperatorMinHeight(Style());
   shaper.Shape(&Style().GetFont(), operator_target_size, &metrics);
   sizes.Encompass(LayoutUnit(metrics.advance));
-  sizes += BorderScrollbarPadding().InlineSum();
 
-  return {sizes, /* depends_on_percentage_block_size */ false};
+  sizes += BorderScrollbarPadding().InlineSum();
+  return MinMaxSizesResult(sizes, /* depends_on_percentage_block_size */ false);
 }
 
 UChar32 NGMathOperatorLayoutAlgorithm::GetBaseCodePoint() const {

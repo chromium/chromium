@@ -1766,7 +1766,7 @@ MinMaxSizesResult NGInlineNode::ComputeMinMaxSizes(
   // Negative text-indent can make min > max. Ensure min is the minimum size.
   sizes.min_size = std::min(sizes.min_size, sizes.max_size);
 
-  return {sizes, depends_on_percentage_block_size};
+  return MinMaxSizesResult(sizes, depends_on_percentage_block_size);
 }
 
 bool NGInlineNode::UseFirstLineStyle() const {

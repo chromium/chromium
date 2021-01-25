@@ -41,8 +41,7 @@ MinMaxSizesResult NGMathSpaceLayoutAlgorithm::ComputeMinMaxSizes(
 
   MinMaxSizes sizes;
   sizes += BorderScrollbarPadding().InlineSum();
-
-  return {sizes, /* depends_on_percentage_block_size */ false};
+  return MinMaxSizesResult(sizes, /* depends_on_percentage_block_size */ false);
 }
 
 }  // namespace blink

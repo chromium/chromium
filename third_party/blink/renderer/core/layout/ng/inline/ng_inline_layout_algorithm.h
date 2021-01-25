@@ -54,7 +54,7 @@ class CORE_EXPORT NGInlineLayoutAlgorithm final
 
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesInput&) const override {
     NOTREACHED();
-    return {MinMaxSizes(), true};
+    return MinMaxSizesResult();
   }
 
  private:

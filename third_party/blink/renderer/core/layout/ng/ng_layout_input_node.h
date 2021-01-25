@@ -55,6 +55,11 @@ struct MinMaxSizesInput {
 // min/max sizes, and if this calculation will change if the
 // |MinMaxSizesInput::percentage_resolution_block_size| value changes.
 struct MinMaxSizesResult {
+  MinMaxSizesResult() = default;
+  MinMaxSizesResult(MinMaxSizes sizes, bool depends_on_percentage_block_size)
+      : sizes(sizes),
+        depends_on_percentage_block_size(depends_on_percentage_block_size) {}
+
   MinMaxSizes sizes;
   bool depends_on_percentage_block_size = false;
 };

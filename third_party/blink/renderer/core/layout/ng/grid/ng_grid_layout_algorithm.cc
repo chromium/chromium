@@ -108,7 +108,7 @@ MinMaxSizesResult NGGridLayoutAlgorithm::ComputeMinMaxSizes(
 
   // Now the columns should have their used track size and growth limit, each
   // adding up to match the min and max size of the grid respectively.
-  MinMaxSizes grid_min_max_sizes;
+  MinMaxSizes sizes;
 
   // If the track collection does not have any tracks, then we do not want to
   // subtract the grid gap from the last track.
@@ -122,22 +122,21 @@ MinMaxSizesResult NGGridLayoutAlgorithm::ComputeMinMaxSizes(
 
     // Aggregate min/max size contributions for this set of tracks.
     LayoutUnit min_size_contribution = set.BaseSize() + gap;
-    grid_min_max_sizes.min_size += min_size_contribution;
-    grid_min_max_sizes.max_size += set.GrowthLimit() == kIndefiniteSize
-                                       ? min_size_contribution
-                                       : set.GrowthLimit() + gap;
+    sizes.min_size += min_size_contribution;
+    sizes.max_size += set.GrowthLimit() == kIndefiniteSize
+                          ? min_size_contribution
+                          : set.GrowthLimit() + gap;
   }
 
   // Subtract the gap from the end of the last track. Only do this if there is
   // at least one track.
   if (has_tracks)
-    grid_min_max_sizes -= grid_gap;
+    sizes -= grid_gap;
 
-  grid_min_max_sizes += BorderScrollbarPadding().InlineSum();
-
-  // TODO(janewman): determine what cases need depends_on_percentage_block_size
-  // to be set.
-  return {grid_min_max_sizes, /* depends_on_percentage_block_size */ true};
+  // TODO(janewman): Confirm that |input.percentage_resolution_block_size|
+  // isn't used within grid layout.
+  sizes += BorderScrollbarPadding().InlineSum();
+  return MinMaxSizesResult(sizes, /* depends_on_percentage_block_size */ false);
 }
 
 NGGridLayoutAlgorithm::AutoPlacementType

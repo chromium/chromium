@@ -299,7 +299,8 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionInternal(
       MinMaxSizes sizes;
       sizes = ResolveMainInlineLength(space, style, border_padding,
                                       min_max_sizes_func, inline_size);
-      result = {sizes, /* depends_on_percentage_block_size */ false};
+      result = MinMaxSizesResult(sizes,
+                                 /* depends_on_percentage_block_size */ false);
     } else {
       auto IntrinsicBlockSizeFunc = [&]() -> LayoutUnit {
         return min_max_sizes_func(inline_size.IsMinIntrinsic()
@@ -311,7 +312,8 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionInternal(
       sizes = ResolveMainBlockLength(space, style, border_padding, inline_size,
                                      IntrinsicBlockSizeFunc,
                                      LengthResolvePhase::kIntrinsic);
-      result = {sizes, /* depends_on_percentage_block_size */ false};
+      result = MinMaxSizesResult(sizes,
+                                 /* depends_on_percentage_block_size */ false);
     }
   }
 
@@ -360,7 +362,8 @@ MinMaxSizes ComputeMinAndMaxContentContributionForTest(
     const NGBlockNode& child,
     const MinMaxSizes& min_max_sizes) {
   auto MinMaxSizesFunc = [&](MinMaxSizesType) -> MinMaxSizesResult {
-    return {min_max_sizes, false};
+    return MinMaxSizesResult(min_max_sizes,
+                             /* depends_on_percentage_block_size */ false);
   };
   return ComputeMinAndMaxContentContributionInternal(parent_writing_mode, child,
                                                      MinMaxSizesFunc)
@@ -403,7 +406,7 @@ MinMaxSizesResult ComputeMinAndMaxContentContribution(
           child_style.LogicalMinHeight().IsPercentOrCalc() ||
           child_style.LogicalHeight().IsPercentOrCalc() ||
           child_style.LogicalMaxHeight().IsPercentOrCalc();
-      return {result, depends_on_percentage_block_size};
+      return MinMaxSizesResult(result, depends_on_percentage_block_size);
     }
   }
 
@@ -459,8 +462,10 @@ LayoutUnit ComputeInlineSizeForFragmentInternal(
     const NGBoxStrut& border_padding,
     const MinMaxSizes* override_min_max_sizes) {
   auto MinMaxSizesFunc = [&](MinMaxSizesType type) -> MinMaxSizesResult {
-    if (override_min_max_sizes)
-      return {*override_min_max_sizes, false};
+    if (override_min_max_sizes) {
+      return MinMaxSizesResult(*override_min_max_sizes,
+                               /* depends_on_percentage_block_size */ false);
+    }
 
     MinMaxSizesInput input(space.PercentageResolutionBlockSize(), type);
     return node.ComputeMinMaxSizes(space.GetWritingMode(), input, &space);

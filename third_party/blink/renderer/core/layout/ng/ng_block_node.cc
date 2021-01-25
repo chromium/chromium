@@ -744,7 +744,8 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
     // TODO(ikilpatrick): Remove this check.
     if (!box_->GetFrameView()->IsInPerformLayout()) {
       sizes = ComputeMinMaxSizesFromLegacy(input);
-      return {sizes, /* depends_on_percentage_block_size */ false};
+      return MinMaxSizesResult(sizes,
+                               /* depends_on_percentage_block_size */ false);
     }
 
     DCHECK(constraint_space);
@@ -754,7 +755,8 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
     sizes = NGFragment({container_writing_mode, TextDirection::kLtr},
                        layout_result->PhysicalFragment())
                 .InlineSize();
-    return {sizes, /* depends_on_percentage_block_size */ false};
+    return MinMaxSizesResult(sizes,
+                             /* depends_on_percentage_block_size */ false);
   }
 
   // Synthesize a zero space if not provided.
@@ -778,8 +780,8 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
     LayoutUnit size_from_ar = ComputeInlineSizeFromAspectRatio(
         *constraint_space, Style(), border_padding, block_size);
     if (size_from_ar != kIndefiniteSize) {
-      return {{size_from_ar, size_from_ar},
-              Style().LogicalHeight().IsPercentOrCalc()};
+      return MinMaxSizesResult({size_from_ar, size_from_ar},
+                               Style().LogicalHeight().IsPercentOrCalc());
     }
   }
 
@@ -798,7 +800,7 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
                             : box_->IntrinsicLogicalWidths(input.type);
     bool depends_on_percentage_block_size =
         box_->IntrinsicLogicalWidthsDependsOnPercentageBlockSize();
-    return {sizes, depends_on_percentage_block_size};
+    return MinMaxSizesResult(sizes, depends_on_percentage_block_size);
   }
 
   const NGFragmentGeometry fragment_geometry =
@@ -826,7 +828,7 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
     MinMaxSizes sizes = box_->IsTable() && !box_->IsLayoutNGMixin()
                             ? box_->PreferredLogicalWidths()
                             : box_->IntrinsicLogicalWidths(input.type);
-    return {sizes, cache_depends_on_percentage_block_size};
+    return MinMaxSizesResult(sizes, cache_depends_on_percentage_block_size);
   }
 
   box_->SetIntrinsicLogicalWidthsDirty();
@@ -842,7 +844,7 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
         /* child_depends_on_percentage_block_size */ true,
         /* sizes */ nullptr);
 
-    return {sizes, uses_input_percentage_block_size};
+    return MinMaxSizesResult(sizes, uses_input_percentage_block_size);
   }
 
   // Copy the input, and set the new %-block-size.

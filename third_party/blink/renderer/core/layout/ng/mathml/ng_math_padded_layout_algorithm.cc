@@ -120,9 +120,6 @@ MinMaxSizesResult NGMathPaddedLayoutAlgorithm::ComputeMinMaxSizes(
           Node(), BorderScrollbarPadding()))
     return *result;
 
-  MinMaxSizes sizes;
-  bool depends_on_percentage_block_size = false;
-  sizes += BorderScrollbarPadding().InlineSum();
 
   NGBlockNode content = nullptr;
   GatherChildren(&content);
@@ -131,11 +128,14 @@ MinMaxSizesResult NGMathPaddedLayoutAlgorithm::ComputeMinMaxSizes(
       ComputeMinAndMaxContentContribution(Style(), content, input);
   NGBoxStrut content_margins = ComputeMinMaxMargins(Style(), content);
   content_result.sizes += content_margins.InlineSum();
-  depends_on_percentage_block_size |=
+
+  bool depends_on_percentage_block_size =
       content_result.depends_on_percentage_block_size;
+  MinMaxSizes sizes;
   sizes += content_result.sizes;
 
-  return {sizes, depends_on_percentage_block_size};
+  sizes += BorderScrollbarPadding().InlineSum();
+  return MinMaxSizesResult(sizes, depends_on_percentage_block_size);
 }
 
 }  // namespace blink
