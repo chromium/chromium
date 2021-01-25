@@ -120,6 +120,7 @@ class DragDropController;
 class EventClientImpl;
 class EventRewriterControllerImpl;
 class EventTransformationHandler;
+class FullRestoreController;
 class FocusCycler;
 class FrameThrottlingController;
 class HighContrastController;
@@ -697,6 +698,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<DisplaySpeakerController> display_speaker_controller_;
   std::unique_ptr<DragDropController> drag_drop_controller_;
   std::unique_ptr<FocusCycler> focus_cycler_;
+  std::unique_ptr<FullRestoreController> full_restore_controller_;
   std::unique_ptr<HoldingSpaceController> holding_space_controller_;
   std::unique_ptr<HomeScreenController> home_screen_controller_;
   std::unique_ptr<ImeControllerImpl> ime_controller_;
