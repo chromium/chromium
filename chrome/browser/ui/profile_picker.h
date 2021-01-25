@@ -109,6 +109,10 @@ class ProfilePicker {
   // Returns the simple toolbar (embedded in the picker) for testing.
   static views::View* GetToolbarForTesting();
 
+  // Add a callback that will be called the next time the picker is opened.
+  static void AddOnProfilePickerOpenedCallbackForTesting(
+      base::OnceClosure callback);
+
   // Overrides the timeout delay for waiting for extended account info.
   static void SetExtendedAccountInfoTimeoutForTesting(base::TimeDelta timeout);
 

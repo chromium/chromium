@@ -380,7 +380,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerNewProfileManagementBrowserTest,
 
   EXPECT_FALSE(result);
   EXPECT_EQ(2u, active_browser_list_->size());
-  EXPECT_FALSE(UserManager::IsShowing());
+  EXPECT_FALSE(ProfilePicker::IsOpen());
 }
 
 // Test that for a locked last profile, a reopen event opens the User Manager.
@@ -412,8 +412,8 @@ IN_PROC_BROWSER_TEST_F(AppControllerNewProfileManagementBrowserTest,
 
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, active_browser_list_->size());
-  EXPECT_TRUE(UserManager::IsShowing());
-  UserManager::Hide();
+  EXPECT_TRUE(ProfilePicker::IsOpen());
+  ProfilePicker::Hide();
 }
 
 // Test that for a guest last profile, commandDispatch should open UserManager
@@ -446,14 +446,14 @@ IN_PROC_BROWSER_TEST_F(AppControllerNewProfileManagementBrowserTest,
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(1u, active_browser_list_->size());
-  EXPECT_TRUE(UserManager::IsShowing());
-  UserManager::Hide();
+  EXPECT_TRUE(ProfilePicker::IsOpen());
+  ProfilePicker::Hide();
 
   local_state->SetBoolean(prefs::kBrowserGuestModeEnabled, true);
   [ac commandDispatch:item];
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(2u, active_browser_list_->size());
-  EXPECT_FALSE(UserManager::IsShowing());
+  EXPECT_FALSE(ProfilePicker::IsOpen());
 }
 
 // Test that for a guest last profile, a reopen event opens the User Manager.
@@ -481,8 +481,8 @@ IN_PROC_BROWSER_TEST_F(AppControllerNewProfileManagementBrowserTest,
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(1u, active_browser_list_->size());
-  EXPECT_TRUE(UserManager::IsShowing());
-  UserManager::Hide();
+  EXPECT_TRUE(ProfilePicker::IsOpen());
+  ProfilePicker::Hide();
 }
 
 IN_PROC_BROWSER_TEST_F(AppControllerNewProfileManagementBrowserTest,
@@ -544,7 +544,6 @@ IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
 
   EXPECT_FALSE(result);
   EXPECT_EQ(2u, active_browser_list_->size());
-  EXPECT_FALSE(UserManager::IsShowing());
   EXPECT_FALSE(ProfilePicker::IsOpen());
 }
 
@@ -576,7 +575,6 @@ IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, active_browser_list_->size());
   EXPECT_TRUE(ProfilePicker::IsOpen());
-  EXPECT_FALSE(UserManager::IsShowing());
   ProfilePicker::Hide();
 }
 
@@ -636,7 +634,6 @@ IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, active_browser_list_->size());
   EXPECT_TRUE(ProfilePicker::IsOpen());
-  EXPECT_FALSE(UserManager::IsShowing());
   ProfilePicker::Hide();
 }
 
