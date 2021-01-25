@@ -818,6 +818,11 @@ try_.chromium_linux_builder(
     executable = "recipe:presubmit",
     goma_backend = None,
     main_list_view = "try",
+    # Default priority for buildbucket is 30, see
+    # https://chromium.googlesource.com/infra/infra/+/bb68e62b4380ede486f65cd32d9ff3f1bbe288e4/appengine/cr-buildbucket/creation.py#42
+    # This will improve our turnaround time for landing infra/config changes
+    # when addressing outages
+    priority = 25,
     properties = {
         "$depot_tools/presubmit": {
             "runhooks": True,
