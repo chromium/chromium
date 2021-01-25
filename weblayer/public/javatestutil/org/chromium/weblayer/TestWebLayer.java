@@ -10,6 +10,7 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.AndroidRuntimeException;
 import android.view.View;
+import android.webkit.ValueCallback;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -17,6 +18,8 @@ import androidx.annotation.Nullable;
 
 import org.chromium.weblayer_private.interfaces.ObjectWrapper;
 import org.chromium.weblayer_private.test_interfaces.ITestWebLayer;
+
+import java.util.Set;
 
 /**
  * TestWebLayer is responsible for passing messages over a test only AIDL to the
@@ -161,5 +164,14 @@ public final class TestWebLayer {
     public ImageView getSecurityButton(View urlBarView) throws RemoteException {
         return (ImageView) ObjectWrapper.unwrap(
                 mITestWebLayer.getSecurityButton(ObjectWrapper.wrap(urlBarView)), ImageView.class);
+    }
+
+    public void fetchAccessToken(Profile profile, Set<String> scopes,
+            Callback<String> onTokenFetched) throws RemoteException {
+        ValueCallback<String> valueCallback = (String token) -> {
+            onTokenFetched.onResult(token);
+        };
+        mITestWebLayer.fetchAccessToken(profile.getIProfile(), ObjectWrapper.wrap(scopes),
+                ObjectWrapper.wrap(valueCallback));
     }
 }
