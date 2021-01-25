@@ -12,26 +12,26 @@
 namespace blink {
 
 class Navigator;
-class WebID;
+class WebId;
 
-class NavigatorWebID final : public GarbageCollected<NavigatorWebID>,
+class NavigatorWebId final : public GarbageCollected<NavigatorWebId>,
                              public Supplement<Navigator> {
  public:
   static const char kSupplementName[];
 
   // Gets, or creates, NavigatorID supplement on Navigator.
   // See platform/Supplementable.h
-  static NavigatorWebID& From(Navigator&);
+  static NavigatorWebId& From(Navigator&);
 
-  static WebID* id(Navigator&);
-  WebID* id();
+  static WebId* id(Navigator&);
+  WebId* id();
 
   void Trace(Visitor*) const override;
 
-  explicit NavigatorWebID(Navigator&);
+  explicit NavigatorWebId(Navigator&);
 
  private:
-  Member<WebID> web_id_;
+  Member<WebId> web_id_;
 };
 
 }  // namespace blink

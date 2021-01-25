@@ -15,20 +15,20 @@
 
 namespace blink {
 
-class WebIDRequestOptions;
+class WebIdRequestOptions;
 class ExceptionState;
 class ExecutionContext;
 class ScriptPromise;
 class ScriptState;
 
-class WebID final : public ScriptWrappable, public ExecutionContextClient {
+class WebId final : public ScriptWrappable, public ExecutionContextClient {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit WebID(ExecutionContext&);
+  explicit WebId(ExecutionContext&);
 
   // WebID IDL interface.
-  ScriptPromise get(ScriptState*, const WebIDRequestOptions*, ExceptionState&);
+  ScriptPromise get(ScriptState*, const WebIdRequestOptions*, ExceptionState&);
   ScriptPromise provide(ScriptState*, String id_token);
 
   void Trace(blink::Visitor*) const override;

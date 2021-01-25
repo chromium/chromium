@@ -12,7 +12,7 @@
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "url/gurl.h"
 
-class WebIDSigninWindow;
+class WebIdSigninWindow;
 
 namespace content {
 class WebContents;
@@ -21,7 +21,7 @@ class WebContents;
 // Creates and shows a confirmation infobar and delegate and adds the infobar to
 // |infobar_service|. The provided callback is called with appropriate status
 // depending on whether user accepted or denied/closed the infobar.
-void ShowWebIDPermissionInfoBar(
+void ShowWebIdPermissionInfoBar(
     content::WebContents* web_contents,
     const base::string16& message,
     content::IdentityRequestDialogController::InitialApprovalCallback callback);
@@ -30,13 +30,13 @@ void ShowWebIDPermissionInfoBar(
 // the given URL. The provided callback is called when IDP has provided an
 // id_token with the id_token a its argument, or when window is closed by user
 // with an empty string as its argument.
-WebIDSigninWindow* ShowWebIDSigninWindow(
+WebIdSigninWindow* ShowWebIdSigninWindow(
     content::WebContents* initiator_web_contents,
     content::WebContents* idp_web_contents,
     const GURL& idp_signin_url,
     content::IdentityRequestDialogController::IdProviderWindowClosedCallback
         on_done);
 
-void CloseWebIDSigninWindow(WebIDSigninWindow* window);
+void CloseWebIdSigninWindow(WebIdSigninWindow* window);
 
 #endif  // CHROME_BROWSER_UI_WEBID_IDENTITY_DIALOGS_H_

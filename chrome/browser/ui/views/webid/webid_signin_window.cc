@@ -67,12 +67,12 @@ class ModalDialog : public views::DialogDelegateView {
   views::WebView* web_view_;
 };
 
-WebIDSigninWindow::WebIDSigninWindow(
+WebIdSigninWindow::WebIdSigninWindow(
     content::WebContents* initiator_web_contents,
     content::WebContents* idp_web_contents,
     const GURL& provider,
     IdProviderWindowClosedCallback on_done) {
-  // TODO(majidvp): What happens if we are handling multiple concurrent WebID
+  // TODO(majidvp): What happens if we are handling multiple concurrent WebId
   // requests? At the moment we keep creating modal dialogs. This may be fine
   // when these requests belong to different tabs but may break down if they are
   // from the same tab or even share the same |initiator_web_contents| (e.g.,
@@ -90,27 +90,27 @@ WebIDSigninWindow::WebIDSigninWindow(
   // destroyed by `DeleteDelegate()` which is invoked by view hierarchy. Once
   // modal is deleted we should delete the window class as well.
   modal->RegisterDeleteDelegateCallback(
-      base::BindOnce([](WebIDSigninWindow* window) { delete window; },
+      base::BindOnce([](WebIdSigninWindow* window) { delete window; },
                      base::Unretained(this)));
 
   modal_ = modal->Show();
 }
 
-void WebIDSigninWindow::Close() {
+void WebIdSigninWindow::Close() {
   modal_->Close();
 }
 
-WebIDSigninWindow::~WebIDSigninWindow() = default;
+WebIdSigninWindow::~WebIdSigninWindow() = default;
 
-WebIDSigninWindow* ShowWebIDSigninWindow(
+WebIdSigninWindow* ShowWebIdSigninWindow(
     content::WebContents* initiator_web_contents,
     content::WebContents* idp_web_contents,
     const GURL& provider,
     IdProviderWindowClosedCallback on_done) {
-  return new WebIDSigninWindow(initiator_web_contents, idp_web_contents,
+  return new WebIdSigninWindow(initiator_web_contents, idp_web_contents,
                                provider, std::move(on_done));
 }
 
-void CloseWebIDSigninWindow(WebIDSigninWindow* window) {
+void CloseWebIdSigninWindow(WebIdSigninWindow* window) {
   window->Close();
 }

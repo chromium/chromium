@@ -23,10 +23,10 @@ void IdentityDialogController::ShowInitialPermissionDialog(
   // http://crbug.com/1141125
 
   // TODO(majidvp): Use a localized string. http://crbug.com/1141125
-  ShowWebIDPermissionInfoBar(
+  ShowWebIdPermissionInfoBar(
       web_contents,
       base::ASCIIToUTF16(
-          "WebID: Allow Identity provider to learn about this site?"),
+          "WebId: Allow Identity provider to learn about this site?"),
       std::move(callback));
 }
 
@@ -36,7 +36,7 @@ void IdentityDialogController::ShowIdProviderWindow(
     const GURL& idp_signin_url,
     IdProviderWindowClosedCallback callback) {
   signin_window_ =
-      ShowWebIDSigninWindow(initiator_web_contents, idp_web_contents,
+      ShowWebIdSigninWindow(initiator_web_contents, idp_web_contents,
                             idp_signin_url, std::move(callback));
 }
 
@@ -54,7 +54,7 @@ void IdentityDialogController::CloseIdProviderWindow() {
   // TODO(kenrb, majidvp): Not knowing whether this object will be destroyed
   // or not during the callback is problematic. We have to rethink the
   // lifetimes.
-  CloseWebIDSigninWindow(signin_window_);
+  CloseWebIdSigninWindow(signin_window_);
 
   // Do not touch local state here since |this| is now destroyed.
 }

@@ -10,27 +10,27 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
-void ShowWebIDPermissionInfoBar(
+void ShowWebIdPermissionInfoBar(
     content::WebContents* web_contents,
     const base::string16& message,
-    WebIDPermissionInfoBarDelegate::Callback callback) {
+    WebIdPermissionInfoBarDelegate::Callback callback) {
   InfoBarService* infobar_service =
       InfoBarService::FromWebContents(web_contents);
 
-  auto delegate = std::make_unique<WebIDPermissionInfoBarDelegate>(
+  auto delegate = std::make_unique<WebIdPermissionInfoBarDelegate>(
       message, std::move(callback));
   infobar_service->AddInfoBar(
       infobar_service->CreateConfirmInfoBar(std::move(delegate)));
 }
 
-WebIDPermissionInfoBarDelegate::WebIDPermissionInfoBarDelegate(
+WebIdPermissionInfoBarDelegate::WebIdPermissionInfoBarDelegate(
     const base::string16& message,
-    WebIDPermissionInfoBarDelegate::Callback callback)
+    WebIdPermissionInfoBarDelegate::Callback callback)
     : message_(message), callback_(std::move(callback)) {
   DCHECK(callback_);
 }
 
-WebIDPermissionInfoBarDelegate::~WebIDPermissionInfoBarDelegate() {
+WebIdPermissionInfoBarDelegate::~WebIdPermissionInfoBarDelegate() {
   if (callback_) {
     // The infobar has closed without the user expressing an explicit
     // preference. The current request should be denied.
@@ -39,26 +39,26 @@ WebIDPermissionInfoBarDelegate::~WebIDPermissionInfoBarDelegate() {
 }
 
 infobars::InfoBarDelegate::InfoBarIdentifier
-WebIDPermissionInfoBarDelegate::GetIdentifier() const {
+WebIdPermissionInfoBarDelegate::GetIdentifier() const {
   return WEBID_PERMISSION_INFOBAR_DELEGATE;
 }
 
-base::string16 WebIDPermissionInfoBarDelegate::GetMessageText() const {
+base::string16 WebIdPermissionInfoBarDelegate::GetMessageText() const {
   return message_;
 }
 
-base::string16 WebIDPermissionInfoBarDelegate::GetButtonLabel(
+base::string16 WebIdPermissionInfoBarDelegate::GetButtonLabel(
     InfoBarButton button) const {
   return l10n_util::GetStringUTF16((button == BUTTON_OK) ? IDS_PERMISSION_ALLOW
                                                          : IDS_PERMISSION_DENY);
 }
 
-bool WebIDPermissionInfoBarDelegate::Accept() {
+bool WebIdPermissionInfoBarDelegate::Accept() {
   std::move(callback_).Run(UserApproval::kApproved);
   return true;
 }
 
-bool WebIDPermissionInfoBarDelegate::Cancel() {
+bool WebIdPermissionInfoBarDelegate::Cancel() {
   std::move(callback_).Run(UserApproval::kDenied);
   return true;
 }

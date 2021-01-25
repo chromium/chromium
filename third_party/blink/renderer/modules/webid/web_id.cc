@@ -30,7 +30,7 @@ void OnRequestIdToken(ScriptPromiseResolver* resolver,
     case mojom::blink::RequestIdTokenStatus::kErrorTooManyRequests: {
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kAbortError,
-          "Only one WebID request may be outstanding at one time."));
+          "Only one navigator.id.get request may be outstanding at one time."));
       return;
     }
     case mojom::blink::RequestIdTokenStatus::
@@ -89,13 +89,13 @@ void OnProvideIdToken(ScriptPromiseResolver* resolver,
 
 }  // namespace
 
-WebID::WebID(ExecutionContext& context)
+WebId::WebId(ExecutionContext& context)
     : ExecutionContextClient(&context),
       auth_request_(&context),
       auth_response_(&context) {}
 
-ScriptPromise WebID::get(ScriptState* script_state,
-                         const WebIDRequestOptions* options,
+ScriptPromise WebId::get(ScriptState* script_state,
+                         const WebIdRequestOptions* options,
                          ExceptionState& exception_state) {
   if (!options->hasProvider()) {
     exception_state.ThrowTypeError("Invalid parameters: provider required.");
@@ -129,7 +129,7 @@ ScriptPromise WebID::get(ScriptState* script_state,
   return promise;
 }
 
-ScriptPromise WebID::provide(ScriptState* script_state, String id_token) {
+ScriptPromise WebId::provide(ScriptState* script_state, String id_token) {
   BindRemote(auth_response_);
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
@@ -142,7 +142,7 @@ ScriptPromise WebID::provide(ScriptState* script_state, String id_token) {
 }
 
 template <typename Interface>
-void WebID::BindRemote(HeapMojoRemote<Interface>& remote) {
+void WebId::BindRemote(HeapMojoRemote<Interface>& remote) {
   auto* context = GetExecutionContext();
 
   if (remote.is_bound())
@@ -154,17 +154,17 @@ void WebID::BindRemote(HeapMojoRemote<Interface>& remote) {
       remote.BindNewPipeAndPassReceiver(
           context->GetTaskRunner(TaskType::kUserInteraction)));
   remote.set_disconnect_handler(
-      WTF::Bind(&WebID::OnConnectionError, WrapWeakPersistent(this)));
+      WTF::Bind(&WebId::OnConnectionError, WrapWeakPersistent(this)));
 }
 
-void WebID::Trace(blink::Visitor* visitor) const {
+void WebId::Trace(blink::Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
   visitor->Trace(auth_request_);
   visitor->Trace(auth_response_);
 }
 
-void WebID::OnConnectionError() {
+void WebId::OnConnectionError() {
   auth_request_.reset();
   // TODO(majidvp): We should handle connection errors for request and response
   // separately.

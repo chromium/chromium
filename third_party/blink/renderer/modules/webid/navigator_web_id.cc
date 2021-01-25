@@ -11,34 +11,34 @@
 
 namespace blink {
 
-const char NavigatorWebID::kSupplementName[] = "NavigatorWebID";
+const char NavigatorWebId::kSupplementName[] = "NavigatorWebId";
 
-NavigatorWebID& NavigatorWebID::From(Navigator& navigator) {
-  NavigatorWebID* supplement =
-      Supplement<Navigator>::From<NavigatorWebID>(navigator);
+NavigatorWebId& NavigatorWebId::From(Navigator& navigator) {
+  NavigatorWebId* supplement =
+      Supplement<Navigator>::From<NavigatorWebId>(navigator);
   if (!supplement) {
-    supplement = MakeGarbageCollected<NavigatorWebID>(navigator);
-    NavigatorWebID::ProvideTo(navigator, supplement);
+    supplement = MakeGarbageCollected<NavigatorWebId>(navigator);
+    NavigatorWebId::ProvideTo(navigator, supplement);
   }
   return *supplement;
 }
 
-WebID* NavigatorWebID::id(Navigator& navigator) {
-  return NavigatorWebID::From(navigator).id();
+WebId* NavigatorWebId::id(Navigator& navigator) {
+  return NavigatorWebId::From(navigator).id();
 }
 
-WebID* NavigatorWebID::id() {
+WebId* NavigatorWebId::id() {
   return web_id_;
 }
 
-void NavigatorWebID::Trace(Visitor* visitor) const {
+void NavigatorWebId::Trace(Visitor* visitor) const {
   visitor->Trace(web_id_);
   Supplement<Navigator>::Trace(visitor);
 }
 
-NavigatorWebID::NavigatorWebID(Navigator& navigator) {
+NavigatorWebId::NavigatorWebId(Navigator& navigator) {
   if (navigator.DomWindow()) {
-    web_id_ = MakeGarbageCollected<WebID>(*navigator.DomWindow());
+    web_id_ = MakeGarbageCollected<WebId>(*navigator.DomWindow());
   }
 }
 

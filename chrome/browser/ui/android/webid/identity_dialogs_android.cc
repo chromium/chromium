@@ -14,7 +14,7 @@
 
 // Stub implementations for Identity UI on Android.
 
-void ShowWebIDPermissionInfoBar(
+void ShowWebIdPermissionInfoBar(
     content::WebContents* web_contents,
     const base::string16& message,
     content::IdentityRequestDialogController::InitialApprovalCallback
@@ -22,7 +22,7 @@ void ShowWebIDPermissionInfoBar(
   NOTIMPLEMENTED();
 }
 
-WebIDSigninWindow* ShowWebIDSigninWindow(
+WebIdSigninWindow* ShowWebIdSigninWindow(
     content::WebContents* initiator_web_contents,
     content::WebContents* idp_web_contents,
     const GURL& idp_signin_url,
@@ -32,6 +32,6 @@ WebIDSigninWindow* ShowWebIDSigninWindow(
   return nullptr;
 }
 
-void CloseWebIDSigninWindow(WebIDSigninWindow* window) {
+void CloseWebIdSigninWindow(WebIdSigninWindow* window) {
   NOTIMPLEMENTED();
 }

@@ -10237,7 +10237,7 @@ interface WebGLUniformLocation
 interface WebGLVertexArrayObject
     attribute @@toStringTag
     method constructor
-interface WebID
+interface WebId
     attribute @@toStringTag
     method constructor
     method get

@@ -14,15 +14,15 @@
 //
 // Currently it is  used to obtain user approval on initial information exchange
 // between the Relying Party and Identity Provider to exchange informations.
-class WebIDPermissionInfoBarDelegate : public ConfirmInfoBarDelegate {
+class WebIdPermissionInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
   using UserApproval = content::IdentityRequestDialogController::UserApproval;
   using Callback =
       content::IdentityRequestDialogController::InitialApprovalCallback;
 
-  WebIDPermissionInfoBarDelegate(const base::string16& message,
+  WebIdPermissionInfoBarDelegate(const base::string16& message,
                                  Callback callback);
-  ~WebIDPermissionInfoBarDelegate() override;
+  ~WebIdPermissionInfoBarDelegate() override;
 
  private:
   // ConfirmInfoBarDelegate:

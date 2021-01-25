@@ -40,7 +40,7 @@ void FederatedAuthRequestImpl::Create(
   // but FrameServiceBase::origin() should be used thereafter.
   if (!IsSameOriginWithAncestors(host, host->GetLastCommittedOrigin())) {
     mojo::ReportBadMessage(
-        "WebID cannot be invoked from within cross-origin iframes.");
+        "navigator.id.get cannot be invoked from within cross-origin iframes.");
     return;
   }
 

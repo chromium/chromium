@@ -35,7 +35,7 @@ constexpr char kAcceptMimeType[] = "application/json";
 // `Sec-` prefix makes this a forbidden header and cannot be added by
 // JavaScript.
 // See https://fetch.spec.whatwg.org/#forbidden-header-name
-constexpr char kSecWebIDHeader[] = "Sec-WebID";
+constexpr char kSecWebIdHeader[] = "Sec-WebID";
 
 // 1 MiB is an arbitrary upper bound that should account for any reasonable
 // response size that is a part of this protocol.
@@ -184,7 +184,7 @@ void IdpNetworkRequestManager::SendSigninRequest(
   // This header is present mostly for CSRF resistance, but the value could
   // provide a protocol version. This might change if something more useful
   // is needed.
-  resource_request->headers.SetHeader(kSecWebIDHeader, "1.0");
+  resource_request->headers.SetHeader(kSecWebIdHeader, "1.0");
   resource_request->credentials_mode =
       network::mojom::CredentialsMode::kInclude;
   resource_request->trusted_params = network::ResourceRequest::TrustedParams();

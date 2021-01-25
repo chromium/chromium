@@ -8,9 +8,9 @@
   SecureContext,
   Exposed=(Window),
   RuntimeEnabled=WebID
-] interface WebID {
+] interface WebId {
   [CallWith=ScriptState, RaisesException]
-  Promise<DOMString> get(optional WebIDRequestOptions options = {});
+  Promise<DOMString> get(optional WebIdRequestOptions options = {});
   [CallWith=ScriptState]
   Promise<void> provide(optional DOMString id_token = "");
 };
