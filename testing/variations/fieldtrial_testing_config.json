@@ -4448,6 +4448,7 @@
                         "OmniboxHistoryQuickProviderAblateInMemoryURLIndexCacheFile",
                         "OmniboxMaxURLMatches",
                         "OmniboxMaxZeroSuggestMatches",
+                        "OmniboxMostVisitedTiles",
                         "OmniboxOnFocusSuggestionsContextualWebOnContent",
                         "OmniboxTrendingZeroPrefixSuggestionsOnNTP",
                         "OmniboxUIExperimentMaxAutocompleteMatches"
