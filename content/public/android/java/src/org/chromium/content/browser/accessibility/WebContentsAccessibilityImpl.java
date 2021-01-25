@@ -674,7 +674,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
                         AccessibilityNodeInfo.ACTION_ARGUMENT_HTML_ELEMENT_STRING);
                 if (elementType == null) return false;
                 elementType = elementType.toUpperCase(Locale.US);
-                return jumpToElementType(virtualViewId, elementType, true);
+                return jumpToElementType(
+                        virtualViewId, elementType, /*forwards*/ true, /*canWrap*/ false);
             }
             case AccessibilityNodeInfo.ACTION_PREVIOUS_HTML_ELEMENT: {
                 if (arguments == null) return false;
@@ -682,7 +683,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
                         AccessibilityNodeInfo.ACTION_ARGUMENT_HTML_ELEMENT_STRING);
                 if (elementType == null) return false;
                 elementType = elementType.toUpperCase(Locale.US);
-                return jumpToElementType(virtualViewId, elementType, false);
+                return jumpToElementType(virtualViewId, elementType, /*forwards*/ false,
+                        /*canWrap*/ virtualViewId == mCurrentRootId);
             }
             case ACTION_SET_TEXT: {
                 if (!WebContentsAccessibilityImplJni.get().isEditableText(
@@ -897,9 +899,10 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
         }
     }
 
-    private boolean jumpToElementType(int virtualViewId, String elementType, boolean forwards) {
+    private boolean jumpToElementType(
+            int virtualViewId, String elementType, boolean forwards, boolean canWrap) {
         int id = WebContentsAccessibilityImplJni.get().findElementType(mNativeObj,
-                WebContentsAccessibilityImpl.this, virtualViewId, elementType, forwards);
+                WebContentsAccessibilityImpl.this, virtualViewId, elementType, forwards, canWrap);
         if (id == 0) return false;
 
         moveAccessibilityFocusToId(id);
@@ -1986,7 +1989,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
                 WebContentsAccessibilityImpl caller, int id);
         int findElementType(long nativeWebContentsAccessibilityAndroid,
                 WebContentsAccessibilityImpl caller, int startId, String elementType,
-                boolean forwards);
+                boolean forwards, boolean canWrapToLastElement);
         void setTextFieldValue(long nativeWebContentsAccessibilityAndroid,
                 WebContentsAccessibilityImpl caller, int id, String newValue);
         void setSelection(long nativeWebContentsAccessibilityAndroid,

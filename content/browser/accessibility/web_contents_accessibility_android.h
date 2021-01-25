@@ -142,11 +142,15 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   // where |element_type| is a special uppercase string from TalkBack or
   // BrailleBack indicating general categories of web content like
   // "SECTION" or "CONTROL".  Return 0 if not found.
+  // Use |can_wrap_to_last_element| to specify if a backwards search can wrap
+  // around to the last element. This is used to expose the last HTML element
+  // upon swiping backwards into a WebView.
   jint FindElementType(JNIEnv* env,
                        const base::android::JavaParamRef<jobject>& obj,
                        jint start_id,
                        const base::android::JavaParamRef<jstring>& element_type,
-                       jboolean forwards);
+                       jboolean forwards,
+                       jboolean can_wrap_to_last_element);
 
   // Respond to a ACTION_[NEXT/PREVIOUS]_AT_MOVEMENT_GRANULARITY action
   // and move the cursor/selection within the given node id. We keep track
