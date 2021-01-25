@@ -107,6 +107,7 @@ def ci_builder(
         resultdb_bigquery_exports = merged_resultdb_bigquery_exports,
         notifies = notifies,
         experiments = experiments,
+        resultdb_index_by_timestamp = True,
         **kwargs
     )
 
@@ -386,7 +387,6 @@ def fyi_builder(
         builder_group = "chromium.fyi",
         execution_timeout = execution_timeout,
         goma_backend = goma_backend,
-        resultdb_index_by_timestamp = True,
         **kwargs
     )
 
