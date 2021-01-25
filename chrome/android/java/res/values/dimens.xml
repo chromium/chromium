@@ -39,6 +39,8 @@
     <dimen name="tabswitcher_border_frame_transparent_top">3dp</dimen>
     <dimen name="tabswitcher_border_frame_transparent_side">2dp</dimen>
 
+    <!-- Toolbar Phone - padding of the optional button when menu button is present -->
+    <dimen name="toolbar_phone_optional_button_padding">12dp</dimen>
     <!-- Tab title -->
     <dimen name="border_texture_title_fade">24dp</dimen>                    <!-- 40px hdpi -->
     <dimen name="tab_title_favicon_start_padding">10dp</dimen>
