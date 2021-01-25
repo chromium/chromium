@@ -340,7 +340,7 @@ void AboutSigninInternals::OnContentSettingChanged(
 }
 
 void AboutSigninInternals::NotifyObservers() {
-  if (!signin_observers_.might_have_observers())
+  if (signin_observers_.empty())
     return;
 
   std::unique_ptr<base::DictionaryValue> signin_status_value =
