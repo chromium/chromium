@@ -24,7 +24,6 @@ import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AuthException;
 import org.chromium.net.NetworkChangeNotifier;
 
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -112,18 +111,15 @@ public final class ProfileOAuth2TokenServiceDelegate
     }
 
     /**
-     * Called by native to list the active account names in the OS.
+     * Called by the native method
+     * ProfileOAuth2TokenServiceDelegate::GetSystemAccountNames()
+     * to list the active account names on device.
      */
     @CalledByNative
     @VisibleForTesting
     String[] getSystemAccountNames() {
-        // TODO(https://crbug.com/768366): Remove this after adding cache to account manager
-        // facade. This function is called by native code on UI thread.
-        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            List<String> accountNames =
-                    AccountUtils.toAccountNames(mAccountManagerFacade.tryGetGoogleAccounts());
-            return accountNames.toArray(new String[accountNames.size()]);
-        }
+        return AccountUtils.toAccountNames(mAccountManagerFacade.tryGetGoogleAccounts())
+                .toArray(new String[0]);
     }
 
     /**
