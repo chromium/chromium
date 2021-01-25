@@ -27,6 +27,9 @@ namespace {
 
 constexpr int32_t kMaxBufferSize = 32 * 1024 * 1024;
 
+constexpr char kPermissionDeniedHistogramName[] =
+    "DirectSockets.PermissionDeniedFailures";
+
 DirectSocketsServiceImpl::PermissionCallback&
 GetPermissionCallbackForTesting() {
   static base::NoDestructor<DirectSocketsServiceImpl::PermissionCallback>
@@ -160,6 +163,8 @@ class DirectSocketsServiceImpl::ResolveHostAndOpenSocket final
     if (!is_raw_address_ && !is_mdns_name_ && resolved_addresses &&
         ContainNonPubliclyRoutableAddress(*resolved_addresses)) {
       result = net::Error::ERR_NETWORK_ACCESS_DENIED;
+      base::UmaHistogramEnumeration(kPermissionDeniedHistogramName,
+                                    FailureType::kResolvingToNonPublic);
     }
     protocol_ == ProtocolType::kTcp ? OpenTCPSocket(result, resolved_addresses)
                                     : OpenUDPSocket(result, resolved_addresses);
@@ -346,7 +351,7 @@ net::Error DirectSocketsServiceImpl::ValidateOptions(
   // TODO(crbug.com/1119600): Implement rate limiting.
 
   if (options.remote_port == 443) {
-    base::UmaHistogramEnumeration("DirectSockets.PermissionDeniedFailures",
+    base::UmaHistogramEnumeration(kPermissionDeniedHistogramName,
                                   FailureType::kCORS);
     // TODO(crbug.com/1119601): Issue a CORS preflight request.
     return net::ERR_UNSAFE_PORT;

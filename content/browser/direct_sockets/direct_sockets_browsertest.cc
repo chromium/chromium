@@ -56,6 +56,75 @@ struct RecordedCall {
   bool no_delay = false;
 };
 
+constexpr char kPermissionDeniedHistogramName[] =
+    "DirectSockets.PermissionDeniedFailures";
+
+const std::string kIPv4_tests[] = {
+    // 0.0.0.0/8
+    "0.0.0.0", "0.255.255.255",
+    // 10.0.0.0/8
+    "10.0.0.0", "10.255.255.255",
+    // 100.64.0.0/10
+    "100.64.0.0", "100.127.255.255",
+    // 127.0.0.0/8
+    "127.0.0.0", "127.255.255.255",
+    // 169.254.0.0/16
+    "169.254.0.0", "169.254.255.255",
+    // 172.16.0.0/12
+    "172.16.0.0", "172.31.255.255",
+    // 192.0.2.0/24
+    "192.0.2.0", "192.0.2.255",
+    // 192.88.99.0/24
+    "192.88.99.0", "192.88.99.255",
+    // 192.168.0.0/16
+    "192.168.0.0", "192.168.255.255",
+    // 198.18.0.0/15
+    "198.18.0.0", "198.19.255.255",
+    // 198.51.100.0/24
+    "198.51.100.0", "198.51.100.255",
+    // 203.0.113.0/24
+    "203.0.113.0", "203.0.113.255",
+    // 224.0.0.0/8 - 255.0.0.0/8
+    "224.0.0.0", "255.255.255.255"};
+
+const std::string kIPv6_tests[] = {
+    // 0000::/8.
+    // Skip testing ::ffff:/96 explicitly since it will be tested through
+    // mapping Ipv4 Addresses.
+    "0:0:0:0:0:0:0:0", "ff:ffff:ffff:ffff:ffff:ffff:ffff:ffff",
+    // 0100::/8
+    "100:0:0:0:0:0:0:0", "1ff:ffff:ffff:ffff:ffff:ffff:ffff:ffff",
+    // 0200::/7
+    "200:0:0:0:0:0:0:0", "3ff:ffff:ffff:ffff:ffff:ffff:ffff:ffff",
+    // 0400::/6
+    "400:0:0:0:0:0:0:0", "7ff:ffff:ffff:ffff:ffff:ffff:ffff:ffff",
+    // 0800::/5
+    "800:0:0:0:0:0:0:0", "fff:ffff:ffff:ffff:ffff:ffff:ffff:ffff",
+    // 1000::/4
+    "1000:0:0:0:0:0:0:0", "1fff:ffff:ffff:ffff:ffff:ffff:ffff:ffff",
+    // 4000::/3
+    "4000:0:0:0:0:0:0:0", "5fff:ffff:ffff:ffff:ffff:ffff:ffff:ffff",
+    // 6000::/3
+    "6000:0:0:0:0:0:0:0", "7fff:ffff:ffff:ffff:ffff:ffff:ffff:ffff",
+    // 8000::/3
+    "8000:0:0:0:0:0:0:0", "9fff:ffff:ffff:ffff:ffff:ffff:ffff:ffff",
+    // c000::/3
+    "c000:0:0:0:0:0:0:0", "dfff:ffff:ffff:ffff:ffff:ffff:ffff:ffff",
+    // e000::/4
+    "e000:0:0:0:0:0:0:0", "efff:ffff:ffff:ffff:ffff:ffff:ffff:ffff",
+    // f000::/5
+    "f000:0:0:0:0:0:0:0", "f7ff:ffff:ffff:ffff:ffff:ffff:ffff:ffff",
+    // f800::/6
+    "f800:0:0:0:0:0:0:0", "fbff:ffff:ffff:ffff:ffff:ffff:ffff:ffff",
+    // fc00::/7
+    "fc00:0:0:0:0:0:0:0", "fdff:ffff:ffff:ffff:ffff:ffff:ffff:ffff",
+    // fe00::/9
+    "fe00:0:0:0:0:0:0:0", "fe7f:ffff:ffff:ffff:ffff:ffff:ffff:ffff",
+    // fe80::/10
+    "fe80:0:0:0:0:0:0:0", "febf:ffff:ffff:ffff:ffff:ffff:ffff:ffff",
+    // fec0::/10
+    "fec0:0:0:0:0:0:0:0", "feff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"};
+
 class MockHostResolver : public network::mojom::HostResolver {
  public:
   explicit MockHostResolver(
@@ -402,6 +471,39 @@ class DirectSocketsBrowserTest : public ContentBrowserTest {
     return tcp_server_socket_;
   }
 
+  void IPRoutableTest(const std::string& address,
+                      const DirectSocketsServiceImpl::ProtocolType protocol) {
+    EXPECT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
+
+    const char kExampleHostname[] = "mail.example.com";
+    const std::string mapping_rules =
+        base::StringPrintf("MAP %s %s", kExampleHostname, address.c_str());
+
+    MockNetworkContext mock_network_context(net::OK);
+    mock_network_context.set_host_mapping_rules(mapping_rules);
+    DirectSocketsServiceImpl::SetNetworkContextForTesting(
+        &mock_network_context);
+    const std::string type =
+        protocol == DirectSocketsServiceImpl::ProtocolType::kTcp ? "Tcp"
+                                                                 : "Udp";
+    const std::string expected_result = base::StringPrintf(
+        "open%s failed: NotAllowedError: Permission denied", type.c_str());
+
+    base::HistogramTester histogram_tester;
+    histogram_tester.ExpectBucketCount(
+        kPermissionDeniedHistogramName,
+        DirectSocketsServiceImpl::FailureType::kResolvingToNonPublic, 0);
+
+    const std::string script =
+        base::StringPrintf("open%s({remoteAddress: '%s', remotePort: 993})",
+                           type.c_str(), kExampleHostname);
+
+    EXPECT_EQ(expected_result, EvalJs(shell(), script));
+    histogram_tester.ExpectBucketCount(
+        kPermissionDeniedHistogramName,
+        DirectSocketsServiceImpl::FailureType::kResolvingToNonPublic, 1);
+  }
+
  protected:
   void SetUp() override {
     embedded_test_server()->AddDefaultHandlers(GetTestDataFilePath());
@@ -491,7 +593,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest, OpenTcp_CannotEvadeCors) {
 
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectBucketCount(
-      "DirectSockets.PermissionDeniedFailures",
+      kPermissionDeniedHistogramName,
       DirectSocketsServiceImpl::FailureType::kCORS, 0);
 
   // HTTPS uses port 443.
@@ -501,28 +603,32 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest, OpenTcp_CannotEvadeCors) {
   EXPECT_EQ("openTcp failed: NotAllowedError: Permission denied",
             EvalJs(shell(), script));
   histogram_tester.ExpectBucketCount(
-      "DirectSockets.PermissionDeniedFailures",
+      kPermissionDeniedHistogramName,
       DirectSocketsServiceImpl::FailureType::kCORS, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest,
                        OpenTcp_CannotConnectNonPublic) {
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
+  const auto protocol = DirectSocketsServiceImpl::ProtocolType::kTcp;
+  // Tests for the reserved IPv4 ranges. The reserved ranges are tested by
+  // checking the first and last address of each range. These tests cover the
+  // entire IPv4 address range, as well as this range mapped to IPv6.
+  for (const auto& test : kIPv4_tests) {
+    IPRoutableTest(test, protocol);
 
-  const char kExampleHostname[] = "mail.example.com";
-  const char kExampleAddress[] = "127.0.0.1";
-  const std::string mapping_rules =
-      base::StringPrintf("MAP %s %s", kExampleHostname, kExampleAddress);
+    // Check these IPv4 addresses when mapped to IPv6.
+    net::IPAddress address;
+    EXPECT_TRUE(address.AssignFromIPLiteral(test));
+    net::IPAddress mapped_address = net::ConvertIPv4ToIPv4MappedIPv6(address);
+    IPRoutableTest(base::StrCat({"[", mapped_address.ToString(), "]"}),
+                   protocol);
+  }
 
-  MockNetworkContext mock_network_context(net::OK);
-  mock_network_context.set_host_mapping_rules(mapping_rules);
-  DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
-
-  const std::string script = base::StringPrintf(
-      "openTcp({remoteAddress: '%s', remotePort: 993})", kExampleHostname);
-
-  EXPECT_EQ("openTcp failed: NotAllowedError: Permission denied",
-            EvalJs(shell(), script));
+  // Tests for the reserved IPv6 ranges. The reserved ranges are tested by
+  // checking the first and last address of each range. These tests cover the
+  // entire IPv6 address range.
+  for (const auto& test : kIPv6_tests)
+    IPRoutableTest(base::StrCat({"[", test, "]"}), protocol);
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest, OpenTcp_OptionsOne) {
@@ -696,7 +802,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest, OpenUdp_CannotEvadeCors) {
 
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectBucketCount(
-      "DirectSockets.PermissionDeniedFailures",
+      kPermissionDeniedHistogramName,
       DirectSocketsServiceImpl::FailureType::kCORS, 0);
 
   // QUIC uses port 443.
@@ -706,28 +812,32 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest, OpenUdp_CannotEvadeCors) {
   EXPECT_EQ("openUdp failed: NotAllowedError: Permission denied",
             EvalJs(shell(), script));
   histogram_tester.ExpectBucketCount(
-      "DirectSockets.PermissionDeniedFailures",
+      kPermissionDeniedHistogramName,
       DirectSocketsServiceImpl::FailureType::kCORS, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest,
                        OpenUdp_CannotConnectNonPublic) {
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
+  const auto protocol = DirectSocketsServiceImpl::ProtocolType::kUdp;
+  // Tests for the reserved IPv4 ranges. The reserved ranges are tested by
+  // checking the first and last address of each range. These tests cover the
+  // entire IPv4 address range, as well as this range mapped to IPv6.
+  for (const auto& test : kIPv4_tests) {
+    IPRoutableTest(test, protocol);
 
-  const char kExampleHostname[] = "mail.example.com";
-  const char kExampleAddress[] = "127.0.0.1";
-  const std::string mapping_rules =
-      base::StringPrintf("MAP %s %s", kExampleHostname, kExampleAddress);
+    // Check these IPv4 addresses when mapped to IPv6.
+    net::IPAddress address;
+    EXPECT_TRUE(address.AssignFromIPLiteral(test));
+    net::IPAddress mapped_address = net::ConvertIPv4ToIPv4MappedIPv6(address);
+    IPRoutableTest(base::StrCat({"[", mapped_address.ToString(), "]"}),
+                   protocol);
+  }
 
-  MockNetworkContext mock_network_context(net::OK);
-  mock_network_context.set_host_mapping_rules(mapping_rules);
-  DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
-
-  const std::string script = base::StringPrintf(
-      "openUdp({remoteAddress: '%s', remotePort: 993})", kExampleHostname);
-
-  EXPECT_EQ("openUdp failed: NotAllowedError: Permission denied",
-            EvalJs(shell(), script));
+  // Tests for the reserved IPv6 ranges. The reserved ranges are tested by
+  // checking the first and last address of each range. These tests cover the
+  // entire IPv6 address range.
+  for (const auto& test : kIPv6_tests)
+    IPRoutableTest(base::StrCat({"[", test, "]"}), protocol);
 }
 
 }  // namespace content
