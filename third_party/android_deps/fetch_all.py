@@ -414,10 +414,9 @@ def _CreateAarInfos(aar_files):
             raise Exception('Command Failed: {}\n'.format(' '.join(cmd)))
 
 
-def _JetifyAll(files, android_deps):
+def _JetifyAll(files):
     env = os.environ.copy()
     env['JAVA_HOME'] = _JAVA_HOME
-    env['ANDROID_DEPS'] = android_deps
 
     # Don't jetify support lib or androidx.
     EXCLUDE = ('android_arch_', 'androidx_', 'com_android_support_',
@@ -538,11 +537,7 @@ def main():
         logging.info('# Jetify all libraries.')
         aar_files = FindInDirectory(build_libs_dir, '*.aar')
         jar_files = FindInDirectory(build_libs_dir, '*.jar')
-        jetify_android_deps = build_libs_dir
-        if not is_primary_android_deps:
-            jetify_android_deps += ':' + os.path.join(
-                _CHROMIUM_SRC, _PRIMARY_ANDROID_DEPS_DIR, _LIBS_DIR)
-        _JetifyAll(aar_files + jar_files, jetify_android_deps)
+        _JetifyAll(aar_files + jar_files)
 
         logging.info('# Generate Android .aar info files.')
         _CreateAarInfos(aar_files)
