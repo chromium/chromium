@@ -103,18 +103,19 @@ void SettingsPrivateEventRouter::StartOrStopListeningForPrefsChanges() {
         base::CallbackListSubscription subscription =
             chromeos::CrosSettings::Get()->AddSettingsObserver(
                 pref_name.c_str(),
-                base::Bind(&SettingsPrivateEventRouter::OnPreferenceChanged,
-                           base::Unretained(this), pref_name));
+                base::BindRepeating(
+                    &SettingsPrivateEventRouter::OnPreferenceChanged,
+                    base::Unretained(this), pref_name));
         cros_settings_subscription_map_.insert(
             make_pair(pref_name, std::move(subscription)));
 #endif
       } else if (generated_prefs && generated_prefs->HasPref(pref_name)) {
         generated_prefs->AddObserver(pref_name, this);
       } else {
-        FindRegistrarForPref(it.first)
-            ->Add(pref_name,
-                  base::Bind(&SettingsPrivateEventRouter::OnPreferenceChanged,
-                             base::Unretained(this)));
+        FindRegistrarForPref(it.first)->Add(
+            pref_name, base::BindRepeating(
+                           &SettingsPrivateEventRouter::OnPreferenceChanged,
+                           base::Unretained(this)));
       }
     }
   } else if (!should_listen && listening_) {
