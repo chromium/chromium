@@ -301,116 +301,163 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="PageLoad.Clients.AMP.Experimental.PageTiming.InputToNavigation.Subframe"
-    units="ms" expires_after="M78">
+    units="ms" expires_after="M97">
   <owner>bmcquade@chromium.org</owner>
+  <owner>sullivan@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     The time from the user input that triggers the top-level navigation for an
     AMP document to the time that the navigation for the AMP document is
     initiated in the AMP frame. This gives insight into how often AMP documents
     are navigated to via same document navigations without being prerendered.
+
+    This histogram has incomplete data. It expired after M78 and was re-added in
+    M90.
   </summary>
 </histogram>
 
 <histogram
     name="PageLoad.Clients.AMP.Experimental.PageTiming.MainFrameToSubFrameNavigationDelta.Subframe"
-    units="ms" expires_after="M78">
+    units="ms" expires_after="M97">
   <owner>bmcquade@chromium.org</owner>
+  <owner>sullivan@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     The time from the main frame navigation to the subsequent subframe
     navigation for the AMP document. Only recorded for non-same-page
     navigations.
+
+    This histogram has incomplete data. It expired after M78 and was re-added in
+    M90.
   </summary>
 </histogram>
 
 <histogram
     name="PageLoad.Clients.AMP.Experimental.PageTiming.NavigationToInput.Subframe"
-    units="ms" expires_after="M78">
+    units="ms" expires_after="M97">
   <owner>bmcquade@chromium.org</owner>
+  <owner>sullivan@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     The time from navigation in the AMP frame to the user input that triggers
     the top-level navigation for that AMP document. This gives insight into the
     delta between when an AMP frame is prerendered and when it is actually
     displayed for same document navigations.
+
+    This histogram has incomplete data. It expired after M78 and was re-added in
+    M90.
   </summary>
 </histogram>
 
 <histogram
     name="PageLoad.Clients.AMP.InteractiveTiming.FirstInputDelay4.Subframe"
-    units="ms" expires_after="M85">
+    units="ms" expires_after="M97">
   <owner>bmcquade@chromium.org</owner>
+  <owner>sullivan@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     Measures First Input Delay, the duration between the hardware timestamp and
     the start of event processing on the main thread for the first meaningful
     input per navigation, in an AMP subframe document. Recorded on first page
     interaction. See https://goo.gl/tr1oTZ for a detailed explanation. Excludes
     scrolls. Only same-document navigations are included.
+
+    This histogram has incomplete data. It expired after M78 and was re-added in
+    M90.
   </summary>
 </histogram>
 
 <histogram
     name="PageLoad.Clients.AMP.InteractiveTiming.FirstInputDelay4.Subframe.FullNavigation"
-    units="ms" expires_after="M85">
+    units="ms" expires_after="M97">
   <owner>bmcquade@chromium.org</owner>
+  <owner>sullivan@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     Measures First Input Delay, the duration between the hardware timestamp and
     the start of event processing on the main thread for the first meaningful
     input per navigation, in an AMP subframe document. Recorded on first page
     interaction. See https://goo.gl/tr1oTZ for a detailed explanation. Excludes
     scrolls. Only non-same-document navigations are included.
+
+    This histogram has incomplete data. It expired after M78 and was re-added in
+    M90.
   </summary>
 </histogram>
 
 <histogram
     name="PageLoad.Clients.AMP.LayoutInstability.CumulativeShiftScore.Subframe"
-    units="scorex10" expires_after="2019-09-10">
+    units="scorex10" expires_after="M97">
   <owner>bmcquade@chromium.org</owner>
   <owner>skobes@chromium.org</owner>
+  <owner>sullivan@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     Measures the cumulative layout shift score (bit.ly/lsm-explainer) that has
     occurred in the AMP subframe. Recorded for same-document AMP navigations in
     the main frame, at the end of the AMP document lifetime, such as when the
     document is being navigated away from.
+
+    This histogram has incomplete data. It expired after M78 and was re-added in
+    M90.
   </summary>
 </histogram>
 
 <histogram
     name="PageLoad.Clients.AMP.LayoutInstability.CumulativeShiftScore.Subframe.FullNavigation"
-    units="scorex10" expires_after="2019-09-10">
+    units="scorex10" expires_after="M97">
   <owner>bmcquade@chromium.org</owner>
   <owner>skobes@chromium.org</owner>
+  <owner>sullivan@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     Measures the cumulative layout shift score (bit.ly/lsm-explainer) that has
     occurred in the AMP subframe. Recorded for non same-document AMP navigations
     in the main frame, at the end of the AMP document lifetime, such as when the
     document is being navigated away from.
+
+    This histogram has incomplete data. It expired after M78 and was re-added in
+    M90.
   </summary>
 </histogram>
 
 <histogram
     name="PageLoad.Clients.AMP.PaintTiming.InputToFirstContentfulPaint.Subframe"
-    units="ms" expires_after="M85">
+    units="ms" expires_after="M97">
   <owner>bmcquade@chromium.org</owner>
+  <owner>sullivan@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     The time from user input to first &quot;contentful&quot; paint in an AMP
     subframe document. Will be zero or near-zero in cases where the AMP subframe
     document was prerendered. Only same-document navigations are included.
+
+    This histogram has incomplete data. It expired after M78 and was re-added in
+    M90.
   </summary>
 </histogram>
 
 <histogram
     name="PageLoad.Clients.AMP.PaintTiming.InputToFirstContentfulPaint.Subframe.FullNavigation"
-    units="ms" expires_after="M85">
+    units="ms" expires_after="M97">
   <owner>bmcquade@chromium.org</owner>
+  <owner>sullivan@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     The time from user input to first &quot;contentful&quot; paint in an AMP
     subframe document. Only non-same-document navigations are included.
+
+    This histogram has incomplete data. It expired after M78 and was re-added in
+    M90.
   </summary>
 </histogram>
 
 <histogram
     name="PageLoad.Clients.AMP.PaintTiming.InputToLargestContentfulPaint.Subframe"
-    units="ms" expires_after="2020-01-24">
+    units="ms" expires_after="M97">
   <owner>bmcquade@chromium.org</owner>
+  <owner>sullivan@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     The time from user input to largest &quot;contentful&quot; paint in an AMP
     subframe document. Only same-document navigations are included.
@@ -421,13 +468,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
     Will be zero or near-zero in cases where the AMP subframe document was
     prerendered.
+
+    This histogram has incomplete data. It expired after M78 and was re-added in
+    M90.
   </summary>
 </histogram>
 
 <histogram
     name="PageLoad.Clients.AMP.PaintTiming.InputToLargestContentfulPaint.Subframe.FullNavigation"
-    units="ms" expires_after="2020-01-24">
+    units="ms" expires_after="M97">
   <owner>bmcquade@chromium.org</owner>
+  <owner>sullivan@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     The time from user input to largest &quot;contentful&quot; paint in an AMP
     subframe document. Only non-same-document navigations are included.
@@ -435,6 +487,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Excludes any content painted after user input. The value is recorded at the
     end of each page load unless there is an abort or user input before text or
     image paint. See http://bit.ly/fcp_plus_plus for details.
+
+    This histogram has incomplete data. It expired after M78 and was re-added in
+    M90.
   </summary>
 </histogram>
 
@@ -1509,7 +1564,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PageLoad.InteractiveTiming.LongestInputDelay4" units="ms"
-    expires_after="2021-01-23">
+    expires_after="M97">
   <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -1520,7 +1575,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PageLoad.InteractiveTiming.LongestInputTimestamp4" units="ms"
-    expires_after="2021-01-23">
+    expires_after="M97">
   <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
