@@ -12,47 +12,6 @@ import sys
 import time
 
 from util import build_utils
-from util import md5_check
-
-
-def _OnStaleMd5(options, cmd, javac_cmd, files, classpath):
-  if classpath:
-    cmd += ['--classpath']
-    cmd += classpath
-
-  if options.java_srcjars:
-    cmd += ['--source_jars']
-    cmd += options.java_srcjars
-
-  if files:
-    # Use jar_path to ensure paths are relative (needed for goma).
-    files_rsp_path = options.jar_path + '.files_list.txt'
-    with open(files_rsp_path, 'w') as f:
-      f.write(' '.join(files))
-    # Pass source paths as response files to avoid extremely long command lines
-    # that are tedius to debug.
-    cmd += ['--sources']
-    cmd += ['@' + files_rsp_path]
-
-  if javac_cmd:
-    cmd.append('--javacopts')
-    cmd += javac_cmd
-    cmd.append('--')  # Terminate javacopts
-
-  # Use AtomicOutput so that output timestamps are not updated when outputs
-  # are not changed.
-  with build_utils.AtomicOutput(options.jar_path) as output_jar, \
-      build_utils.AtomicOutput(options.generated_jar_path) as generated_jar:
-    cmd += ['--output', output_jar.name, '--gensrc_output', generated_jar.name]
-    logging.debug('Command: %s', cmd)
-    start = time.time()
-    build_utils.CheckOutput(cmd,
-                            print_stdout=True,
-                            fail_on_output=options.warnings_as_errors)
-    end = time.time() - start
-    logging.info('Header compilation took %ss', end)
-
-  logging.info('Completed all steps in _OnStaleMd5')
 
 
 def main(argv):
@@ -148,28 +107,48 @@ def main(argv):
     for arg in options.processor_args:
       javac_cmd.extend(['-A%s' % arg])
 
-  classpath_inputs = (
-      options.bootclasspath + options.classpath + options.processorpath)
+  if options.classpath:
+    cmd += ['--classpath']
+    cmd += options.classpath
 
-  # GN already knows of the java files, so avoid listing individual java files
-  # in the depfile.
-  depfile_deps = classpath_inputs + options.java_srcjars
-  input_paths = depfile_deps + files
+  if options.java_srcjars:
+    cmd += ['--source_jars']
+    cmd += options.java_srcjars
 
-  output_paths = [
-      options.jar_path,
-      options.generated_jar_path,
-  ]
+  if files:
+    # Use jar_path to ensure paths are relative (needed for goma).
+    files_rsp_path = options.jar_path + '.files_list.txt'
+    with open(files_rsp_path, 'w') as f:
+      f.write(' '.join(files))
+    # Pass source paths as response files to avoid extremely long command lines
+    # that are tedius to debug.
+    cmd += ['--sources']
+    cmd += ['@' + files_rsp_path]
 
-  input_strings = cmd + options.classpath + files
+  if javac_cmd:
+    cmd.append('--javacopts')
+    cmd += javac_cmd
+    cmd.append('--')  # Terminate javacopts
 
-  md5_check.CallAndWriteDepfileIfStale(
-      lambda: _OnStaleMd5(options, cmd, javac_cmd, files, options.classpath),
-      options,
-      depfile_deps=depfile_deps,
-      input_paths=input_paths,
-      input_strings=input_strings,
-      output_paths=output_paths)
+  # Use AtomicOutput so that output timestamps are not updated when outputs
+  # are not changed.
+  with build_utils.AtomicOutput(options.jar_path) as output_jar, \
+      build_utils.AtomicOutput(options.generated_jar_path) as generated_jar:
+    cmd += ['--output', output_jar.name, '--gensrc_output', generated_jar.name]
+    logging.debug('Command: %s', cmd)
+    start = time.time()
+    build_utils.CheckOutput(cmd,
+                            print_stdout=True,
+                            fail_on_output=options.warnings_as_errors)
+    end = time.time() - start
+    logging.info('Header compilation took %ss', end)
+
+  if options.depfile:
+    # GN already knows of the java files, so avoid listing individual java files
+    # in the depfile.
+    depfile_deps = (options.bootclasspath + options.classpath +
+                    options.processorpath + options.java_srcjars)
+    build_utils.WriteDepfile(options.depfile, options.jar_path, depfile_deps)
 
 
 if __name__ == '__main__':
