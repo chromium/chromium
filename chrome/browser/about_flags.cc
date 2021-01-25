@@ -1706,7 +1706,6 @@ const FeatureEntry::FeatureParam kStartSurfaceAndroid_SingleSurface_V2[] = {
     {"start_surface_variation", "single"},
     {"show_last_active_tab_only", "true"},
     {"exclude_mv_tiles", "true"},
-    {"show_stack_tab_switcher", "true"},
     {"open_ntp_instead_of_start", "true"}};
 
 const FeatureEntry::FeatureParam
@@ -1719,12 +1718,6 @@ const FeatureEntry::FeatureParam kStartSurfaceAndroid_SingleSurfaceSingleTab[] =
     {{"start_surface_variation", "single"},
      {"show_last_active_tab_only", "true"},
      {"hide_switch_when_no_incognito_tabs", "true"}};
-
-const FeatureEntry::FeatureParam
-    kStartSurfaceAndroid_SingleSurfaceSingleTabStack[] = {
-        {"start_surface_variation", "single"},
-        {"show_last_active_tab_only", "true"},
-        {"show_stack_tab_switcher", "true"}};
 
 const FeatureEntry::FeatureParam
     kStartSurfaceAndroid_SingleSurfaceSingleTabWithoutMvTiles[] = {
@@ -1771,9 +1764,6 @@ const FeatureEntry::FeatureVariation kStartSurfaceAndroidVariations[] = {
      base::size(kStartSurfaceAndroid_SingleSurfaceWithoutMvTiles), nullptr},
     {"Single Surface + Single Tab", kStartSurfaceAndroid_SingleSurfaceSingleTab,
      base::size(kStartSurfaceAndroid_SingleSurfaceSingleTab), nullptr},
-    {"Single Surface + Single Tab + Tabs Stack",
-     kStartSurfaceAndroid_SingleSurfaceSingleTabStack,
-     base::size(kStartSurfaceAndroid_SingleSurfaceSingleTabStack), nullptr},
     {"Single Surface + Single Tab without MV Tiles",
      kStartSurfaceAndroid_SingleSurfaceSingleTabWithoutMvTiles,
      base::size(kStartSurfaceAndroid_SingleSurfaceSingleTabWithoutMvTiles),
