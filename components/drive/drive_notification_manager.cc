@@ -128,7 +128,7 @@ bool DriveNotificationManager::IsPublicTopic(
 void DriveNotificationManager::AddObserver(
     DriveNotificationObserver* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!observers_.might_have_observers()) {
+  if (observers_.empty()) {
     UpdateRegisteredDriveNotifications();
     RestartPollingTimer();
   }
@@ -141,7 +141,7 @@ void DriveNotificationManager::RemoveObserver(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   observers_.RemoveObserver(observer);
 
-  if (!observers_.might_have_observers()) {
+  if (observers_.empty()) {
     CHECK(invalidation_service_->UpdateInterestedTopics(
         this, invalidation::TopicSet()));
     polling_timer_.Stop();
@@ -170,7 +170,7 @@ void DriveNotificationManager::UpdateTeamDriveIds(
     }
   }
 
-  if (set_changed && observers_.might_have_observers()) {
+  if (set_changed && !observers_.empty()) {
     UpdateRegisteredDriveNotifications();
   }
 }
@@ -179,7 +179,7 @@ void DriveNotificationManager::ClearTeamDriveIds() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!team_drive_ids_.empty()) {
     team_drive_ids_.clear();
-    if (observers_.might_have_observers()) {
+    if (!observers_.empty()) {
       UpdateRegisteredDriveNotifications();
     }
   }
