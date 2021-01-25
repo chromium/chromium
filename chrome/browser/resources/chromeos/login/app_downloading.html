@@ -7,18 +7,21 @@
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 
 <link rel="import" href="/components/common_styles.html">
-<link rel="import" href="/components/oobe_dialog.html">
+<link rel="import" href="/components/oobe_adaptive_dialog.html">
 <link rel="import" href="/components/oobe_i18n_behavior.html">
 
 <dom-module id="app-downloading-element">
   <template>
-    <style include="oobe-dialog-host"></style>
-    <link rel="stylesheet" href="app_downloading.css">
-    <oobe-dialog id="app-downloading-dialog" role="dialog" has-buttons
-        subtitle-key="appDownloadingScreenDescription"
+    <style include="oobe-dialog-host">
+      #video-container video {
+        height: 247px;
+        width: 278px;
+      }
+    </style>
+    <oobe-adaptive-dialog id="app-downloading-dialog" role="dialog"
         aria-label$="[[getDialogTitleA11yString_(numOfApps)]]"
         no-footer-padding>
-      <iron-icon src="chrome://oobe/playstore.svg" slot="oobe-icon">
+      <iron-icon src="chrome://oobe/playstore.svg" slot="icon">
       </iron-icon>
       <h1 slot="title" id="title-singular" hidden="[[!hasSingleApp]]">
         [[i18nDynamic(locale, 'appDownloadingScreenTitleSingular')]]
@@ -26,7 +29,11 @@
       <h1 slot="title" id="title-plural" hidden="[[hasSingleApp]]">
         [[i18nDynamic(locale, 'appDownloadingScreenTitlePlural', numOfApps)]]
       </h1>
-      <div id="video-container" slot="footer">
+      <div slot="subtitle">
+        [[i18nDynamic(locale, 'appDownloadingScreenDescription')]]
+      </div>
+      <div id="video-container" slot="content" class="flex layout
+          center-justified horizontal">
         <if expr="chromeos and _google_chrome">
           <video id="video" loop="loop" preload="auto" muted>
             <source src="chrome://oobe/res/arc_app_dowsnloading.mp4"
@@ -34,11 +41,11 @@
           </video>
         </if>
       </div>
-      <div slot="bottom-buttons" class="layout horizontal end-justified">
+      <div slot="bottom-buttons">
         <oobe-next-button id="continue-setup-button"
             text-key="appDownloadingContinueSetup" on-click="onContinue_"
             class="focus-on-show" inverse></oobe-next-button>
       </div>
-    </oobe-dialog>
+    </oobe-adaptive-dialog>
   </template>
 </dom-module>
