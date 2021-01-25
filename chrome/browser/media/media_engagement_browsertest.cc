@@ -22,6 +22,8 @@
 #include "chrome/browser/prefetch/no_state_prefetch/prerender_test_utils.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/sessions/session_restore_test_helper.h"
 #include "chrome/browser/ui/browser.h"
@@ -788,6 +790,9 @@ class MediaEngagementSessionRestoreBrowserTest
 
     std::unique_ptr<ScopedKeepAlive> keep_alive(new ScopedKeepAlive(
         KeepAliveOrigin::SESSION_RESTORE, KeepAliveRestartOption::DISABLED));
+    std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive(
+        new ScopedProfileKeepAlive(profile,
+                                   ProfileKeepAliveOrigin::kBrowserWindow));
     CloseBrowserSynchronously(browser());
 
     chrome::NewEmptyWindow(profile);
