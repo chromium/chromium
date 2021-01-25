@@ -7,7 +7,6 @@
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
-#include "third_party/blink/renderer/modules/mediastream/media_stream_audio_track_underlying_source.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_utils.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track_underlying_source.h"
@@ -29,14 +28,9 @@ MediaStreamTrackProcessor::MediaStreamTrackProcessor(
 }
 
 ReadableStream* MediaStreamTrackProcessor::readable(ScriptState* script_state) {
-  if (source_stream_)
-    return source_stream_;
-
-  if (input_track_->Source()->GetType() == MediaStreamSource::kTypeVideo)
+  DCHECK_EQ(input_track_->Source()->GetType(), MediaStreamSource::kTypeVideo);
+  if (!source_stream_)
     CreateVideoSourceStream(script_state);
-  else
-    CreateAudioSourceStream(script_state);
-
   return source_stream_;
 }
 
@@ -50,28 +44,26 @@ void MediaStreamTrackProcessor::CreateVideoSourceStream(
       script_state, video_underlying_source_, /*high_water_mark=*/0);
 }
 
-void MediaStreamTrackProcessor::CreateAudioSourceStream(
-    ScriptState* script_state) {
-  DCHECK(!source_stream_);
-  audio_underlying_source_ =
-      MakeGarbageCollected<MediaStreamAudioTrackUnderlyingSource>(
-          script_state, input_track_, buffer_size_);
-  source_stream_ = ReadableStream::CreateWithCountQueueingStrategy(
-      script_state, audio_underlying_source_, /*high_water_mark=*/0);
-}
-
 MediaStreamTrackProcessor* MediaStreamTrackProcessor::Create(
     ScriptState* script_state,
     MediaStreamTrack* track,
     uint16_t buffer_size,
     ExceptionState& exception_state) {
   if (!track) {
-    exception_state.ThrowTypeError("Input track cannot be null");
+    exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
+                                      "Input track cannot be null");
     return nullptr;
   }
 
   if (track->readyState() == "ended") {
-    exception_state.ThrowTypeError("Input track cannot be ended");
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Input track cannot be ended");
+    return nullptr;
+  }
+
+  if (track->kind() != "video") {
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                      "Only video tracks are supported");
     return nullptr;
   }
 
@@ -91,7 +83,8 @@ MediaStreamTrackProcessor* MediaStreamTrackProcessor::Create(
     MediaStreamTrack* track,
     ExceptionState& exception_state) {
   if (!track) {
-    exception_state.ThrowTypeError("Input track cannot be null");
+    exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
+                                      "Input track cannot be null");
     return nullptr;
   }
   // Using 1 as default buffer size for video since by default we do not want
@@ -105,7 +98,6 @@ MediaStreamTrackProcessor* MediaStreamTrackProcessor::Create(
 
 void MediaStreamTrackProcessor::Trace(Visitor* visitor) const {
   visitor->Trace(input_track_);
-  visitor->Trace(audio_underlying_source_);
   visitor->Trace(video_underlying_source_);
   visitor->Trace(source_stream_);
   ScriptWrappable::Trace(visitor);
