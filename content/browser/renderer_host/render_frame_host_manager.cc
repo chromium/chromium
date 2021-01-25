@@ -772,7 +772,7 @@ RenderFrameHostImpl* RenderFrameHostManager::GetFrameHostForNavigation(
   // The SiteInstance determines whether to switch RenderFrameHost or not.
   bool use_current_rfh = current_site_instance == dest_site_instance;
 
-  if (!request->IsSameDocument() && frame_tree_node_->IsMainFrame()) {
+  if (frame_tree_node_->IsMainFrame()) {
     request->set_is_cross_browsing_instance(
         !dest_site_instance->IsRelatedSiteInstance(current_site_instance));
   }
@@ -785,7 +785,7 @@ RenderFrameHostImpl* RenderFrameHostManager::GetFrameHostForNavigation(
   // Force using a different RenderFrameHost when RenderDocument is enabled.
   // TODO(arthursonzogni, fergal): Add support for the main frame.
   if (ShouldCreateNewHostForSameSiteSubframe() &&
-      !frame_tree_node_->IsMainFrame() && !request->IsSameDocument() &&
+      !frame_tree_node_->IsMainFrame() &&
       render_frame_host_->has_committed_any_navigation()) {
     use_current_rfh = false;
   }
