@@ -981,14 +981,15 @@ void CompositorFrameReporter::ReportCompositorLatencyTraceEvents() const {
       if (stage.start_time == stage.end_time)
         continue;
       const char* stage_name = GetStageName(stage_type_index);
-      TRACE_EVENT_BEGIN("cc,benchmark", stage_name, trace_track,
-                        stage.start_time);
+      TRACE_EVENT_BEGIN("cc,benchmark", perfetto::StaticString{stage_name},
+                        trace_track, stage.start_time);
       if (stage.stage_type ==
           StageType::kSubmitCompositorFrameToPresentationCompositorFrame) {
         REPORT_VIZ_BREAKDOWN_TRACES([&](base::TimeTicks start_time,
                                         base::TimeTicks end_time,
                                         const char* substage_name) {
-          TRACE_EVENT_BEGIN("cc,benchmark", substage_name, trace_track,
+          TRACE_EVENT_BEGIN("cc,benchmark",
+                            perfetto::StaticString{substage_name}, trace_track,
                             start_time);
           TRACE_EVENT_END("cc,benchmark", trace_track, end_time);
         });

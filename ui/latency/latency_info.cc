@@ -274,7 +274,8 @@ void LatencyInfo::AddLatencyNumberWithTimestampImpl(
         ts = base::TimeTicks::Now();
       }
 
-      TRACE_EVENT_BEGIN(kTraceCategoriesForAsyncEvents, trace_name_str,
+      TRACE_EVENT_BEGIN(kTraceCategoriesForAsyncEvents,
+                        perfetto::StaticString{trace_name_str},
                         perfetto::Track::Global(trace_id_), ts);
     }
 

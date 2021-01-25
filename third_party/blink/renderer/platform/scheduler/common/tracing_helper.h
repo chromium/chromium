@@ -248,7 +248,7 @@ class ProtoStateTracer {
     if (!is_enabled())
       return;
 
-    TRACE_EVENT_BEGIN(category, name_, trace_track,
+    TRACE_EVENT_BEGIN(category, perfetto::StaticString{name_}, trace_track,
                       [value](perfetto::EventContext ctx) {
                         value->AsProtozeroInto(ctx.event());
                       });

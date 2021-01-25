@@ -8,6 +8,7 @@
 #include "base/base_export.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros_internal.h"
+#include "base/tracing_buildflags.h"
 #include "build/build_config.h"
 
 // Needed not for this file, but for every user of the TRACE_EVENT macros for
@@ -25,6 +26,18 @@
 // implementation of trace macros.
 // [1] https://perfetto.dev/docs/instrumentation/track-events
 // TODO(crbug/1006541): Replace this file with the Perfetto client library.
+
+namespace perfetto {
+
+// A wrapper for marking strings that can't be determined to be static at build
+// time, but are in fact static.
+class BASE_EXPORT StaticString final {
+ public:
+  const char* value;
+  explicit operator const char*() const { return value; }
+};
+
+}  // namespace perfetto
 
 // Begin a thread-scoped slice under |category| with the title |name|. Both
 // strings must be static constants. The track event is only recorded if
