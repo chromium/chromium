@@ -138,8 +138,8 @@ class WebRtcScreenCaptureBrowserTestWithPicker
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Real desktop capture is flaky on below platforms.
-#if defined(OS_WIN)
+// TODO(1170479): Real desktop capture is flaky on below platforms.
+#if defined(OS_WIN) || defined(OS_MAC)
 #define MAYBE_ScreenCaptureVideo DISABLED_ScreenCaptureVideo
 #else
 #define MAYBE_ScreenCaptureVideo ScreenCaptureVideo
@@ -196,8 +196,8 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithPicker,
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-// Real desktop capture is flaky on below platforms.
-#if defined(OS_WIN)
+// TODO(1170479): Real desktop capture is flaky on below platforms.
+#if defined(OS_WIN) || defined(OS_MAC)
 #define MAYBE_ScreenCaptureVideoAndAudio DISABLED_ScreenCaptureVideoAndAudio
 // On linux debug bots, it's flaky as well.
 #elif ((defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && !defined(NDEBUG))
