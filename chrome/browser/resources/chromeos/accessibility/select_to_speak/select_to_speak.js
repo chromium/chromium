@@ -1599,10 +1599,15 @@ export class SelectToSpeak {
   onNodeGroupSpeakingCompleted_() {
     const currentNodeGroup = this.getCurrentNodeGroup_();
 
-    // Update the current char index to the end of the text content in this
-    // nodeGroup.
-    const nodeGroupText = (currentNodeGroup && currentNodeGroup.text) || '';
-    this.currentCharIndex_ = nodeGroupText.trimEnd().length;
+    // Update the current char index to the end of the node group. If the
+    // endOffset is undefined, we set the index to the length of the node
+    // group's text.
+    if (currentNodeGroup && currentNodeGroup.endOffset !== undefined) {
+      this.currentCharIndex_ = currentNodeGroup.endOffset;
+    } else {
+      const nodeGroupText = (currentNodeGroup && currentNodeGroup.text) || '';
+      this.currentCharIndex_ = nodeGroupText.length;
+    }
 
     const isLastNodeGroup =
         (this.currentNodeGroupIndex_ === this.currentNodeGroups_.length - 1);

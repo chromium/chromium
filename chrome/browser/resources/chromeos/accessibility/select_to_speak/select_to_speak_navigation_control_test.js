@@ -854,6 +854,48 @@ TEST_F(
           });
     });
 
+TEST_F(
+    'SelectToSpeakNavigationControlTest', 'ResumeFromSelectionEndingInSpace',
+    function() {
+      const bodyHtml = '<p>This is some text with space.</p>';
+      const setFocusCallback = this.newCallback((root) => {
+        const node = this.findTextNode(root, 'This is some text with space.');
+        // Sets the selection to "This ".
+        chrome.automation.setDocumentSelection({
+          anchorObject: node,
+          anchorOffset: 0,
+          focusObject: node,
+          focusOffset: 5
+        });
+      });
+      this.runWithLoadedTree(bodyHtml, (root) => {
+        root.addEventListener(
+            'documentSelectionChanged', this.newCallback((event) => {
+              this.triggerReadSelectedText();
+
+              assertTrue(this.mockTts.currentlySpeaking());
+              assertEquals(this.mockTts.pendingUtterances().length, 1);
+              this.assertEqualsCollapseWhitespace(
+                  this.mockTts.pendingUtterances()[0], 'This');
+
+              // Finishes the current utterance.
+              this.mockTts.finishPendingUtterance();
+
+              // Hitting resume will start from the remaining content of the
+              // paragraph.
+              selectToSpeak.onSelectToSpeakPanelAction_(
+                  chrome.accessibilityPrivate.SelectToSpeakPanelAction.RESUME);
+              assertTrue(this.mockTts.currentlySpeaking());
+              assertEquals(this.mockTts.pendingUtterances().length, 1);
+              this.assertEqualsCollapseWhitespace(
+                  this.mockTts.pendingUtterances()[0],
+                  'is some text with space.');
+            }),
+            false);
+        setFocusCallback(root);
+      });
+    });
+
 TEST_F('SelectToSpeakNavigationControlTest', 'ResizeWhilePlaying', function() {
   const longLine =
       'Second paragraph is longer than 300 pixels and will wrap when resized';
