@@ -2411,7 +2411,6 @@ crbug.com/1078474 external/wpt/css/css-pseudo/active-selection-012.html [ Failur
 crbug.com/932343 external/wpt/css/css-pseudo/active-selection-014.html [ Failure ]
 crbug.com/1078474 external/wpt/css/css-pseudo/selection-intercharacter-011.html [ Failure ]
 crbug.com/1078474 external/wpt/css/css-pseudo/selection-intercharacter-012.html [ Failure ]
-crbug.com/1110512 external/wpt/css/css-pseudo/selection-contenteditable-011.html [ Failure ]
 
 crbug.com/1105958 external/wpt/payment-request/payment-is-showing.https.html [ Timeout ]
 
