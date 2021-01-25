@@ -216,7 +216,7 @@ int64_t ComputeAppCacheResponsePadding(const GURL& response_url,
 }  // namespace
 
 const base::Feature kAppCacheCorruptionRecoveryFeature{
-    "AppCacheCorruptionRecovery", base::FEATURE_DISABLED_BY_DEFAULT};
+    "AppCacheCorruptionRecovery", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Helper class for collecting hosts per frontend when sending notifications
 // so that only one notification is sent for all hosts using the same frontend.
