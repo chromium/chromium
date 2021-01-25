@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Using keyboard while element is focused should trigger :focus-visible; using mouse without moving focus should not cancel it; moving focus using mouse should cancel it. assert_equals: expected "rgb(59, 153, 252)" but got "rgb(0, 100, 0)"
+Harness: the test ran to completion.
+

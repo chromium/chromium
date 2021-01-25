@@ -214039,8 +214039,8 @@
       "3c3141a862df19ad62f343e00b37f248fbd845b1",
       []
      ],
-     "focus-visible-007-expected.txt": [
-      "3cf5e92460f1730161667d6d85714734a51a78f7",
+     "focus-visible-018-expected.txt": [
+      "03555c1638c9b4420565b74bb8236acddd868afb",
       []
      ],
      "focus-within-001-ref.html": [
@@ -307870,7 +307870,7 @@
       ]
      ],
      "focus-visible-007.html": [
-      "9a88a6bb9f0b05825d6735f180f2e7a22063a658",
+      "3b7abf7646222134e80c5ecf3f518d0a5cf80abf",
       [
        null,
        {
@@ -307919,6 +307919,15 @@
        }
       ]
      ],
+     "focus-visible-013.html": [
+      "11cf4d7216a61bc833e4788975252c5829dfc884",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
      "focus-visible-014.html": [
       "6a4aef6e2bdf3c277b52ddb50679bc240b4cf744",
       [
@@ -307937,6 +307946,22 @@
      ],
      "focus-visible-016.html": [
       "080787fb1ee9f4ad96d8dacba051601421435932",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "focus-visible-017.html": [
+      "21b7528f4e060a945ec74d5bf5cf40ea7059246a",
+      [
+       null,
+       {}
+      ]
+     ],
+     "focus-visible-018.html": [
+      "3f3ea8832c0bf798374e692d26478e05d0888f77",
       [
        null,
        {
@@ -430522,7 +430547,7 @@
      ]
     ],
     "audio-encoder.any.js": [
-     "16729935771c810eb8de71ffef5c5c13b51bbfab",
+     "8b918dc0ba0a686cda04b3bdf05f77fba1a931b0",
      [
       "webcodecs/audio-encoder.any.html",
       {
