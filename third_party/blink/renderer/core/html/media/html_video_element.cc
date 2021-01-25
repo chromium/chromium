@@ -177,12 +177,19 @@ void HTMLVideoElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
     MutableCSSPropertyValueSet* style) {
-  if (name == html_names::kWidthAttr)
+  if (name == html_names::kWidthAttr) {
     AddHTMLLengthToStyle(style, CSSPropertyID::kWidth, value);
-  else if (name == html_names::kHeightAttr)
+    const AtomicString& height = FastGetAttribute(html_names::kHeightAttr);
+    if (height)
+      ApplyAspectRatioToStyle(value, height, style);
+  } else if (name == html_names::kHeightAttr) {
     AddHTMLLengthToStyle(style, CSSPropertyID::kHeight, value);
-  else
+    const AtomicString& width = FastGetAttribute(html_names::kWidthAttr);
+    if (width)
+      ApplyAspectRatioToStyle(width, value, style);
+  } else {
     HTMLMediaElement::CollectStyleForPresentationAttribute(name, value, style);
+  }
 }
 
 bool HTMLVideoElement::IsPresentationAttribute(
