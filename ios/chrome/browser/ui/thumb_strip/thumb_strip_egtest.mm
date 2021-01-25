@@ -22,10 +22,6 @@
 #error "This file requires ARC support."
 #endif
 
-using base::test::ios::kWaitForPageLoadTimeout;
-using base::test::ios::kWaitForJSCompletionTimeout;
-using base::test::ios::WaitUntilConditionOrTimeout;
-
 using chrome_test_util::ContentSuggestionCollectionView;
 using chrome_test_util::PrimaryToolbar;
 using chrome_test_util::WebStateScrollViewMatcher;
@@ -159,10 +155,8 @@ id<GREYMatcher> GetAccessibilityValue(__strong NSString** value) {
       performAction:grey_swipeSlowInDirection(kGREYDirectionDown)];
 
   // Make sure that the hider view is visible, and the toolbar is not.
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(PrimaryToolbar(),
-                                          grey_minimumVisiblePercent(1), nil)]
-      assertWithMatcher:grey_nil()];
+  [[EarlGrey selectElementWithMatcher:grey_allOf(PrimaryToolbar(), nil)]
+      assertWithMatcher:grey_notVisible()];
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(@"BrowserViewHiderView")]
       assertWithMatcher:grey_notNil()];
@@ -206,8 +200,8 @@ id<GREYMatcher> GetAccessibilityValue(__strong NSString** value) {
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(@"Hello"),
                                           grey_kindOfClassName(@"GridCell"),
-                                          grey_minimumVisiblePercent(1), nil)]
-      assertWithMatcher:grey_notNil()];
+                                          nil)]
+      assertWithMatcher:grey_minimumVisiblePercent(1)];
 
   // Scroll the web content the other way to close the thumb strip.
   [[EarlGrey selectElementWithMatcher:WebStateScrollViewMatcher()]
@@ -217,8 +211,8 @@ id<GREYMatcher> GetAccessibilityValue(__strong NSString** value) {
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(@"Hello"),
                                           grey_kindOfClassName(@"GridCell"),
-                                          grey_minimumVisiblePercent(1), nil)]
-      assertWithMatcher:grey_nil()];
+                                          nil)]
+      assertWithMatcher:grey_notVisible()];
 }
 
 // Tests that scrolling the web content can open and close the thumb strip.
@@ -242,8 +236,8 @@ id<GREYMatcher> GetAccessibilityValue(__strong NSString** value) {
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(@"New Tab"),
                                           grey_kindOfClassName(@"GridCell"),
-                                          grey_minimumVisiblePercent(1), nil)]
-      assertWithMatcher:grey_notNil()];
+                                          nil)]
+      assertWithMatcher:grey_minimumVisiblePercent(1)];
 
   // Scroll the NTP the other way to close the thumb strip.
   [[EarlGrey selectElementWithMatcher:ContentSuggestionCollectionView()]
@@ -253,8 +247,8 @@ id<GREYMatcher> GetAccessibilityValue(__strong NSString** value) {
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(@"New Tab"),
                                           grey_kindOfClassName(@"GridCell"),
-                                          grey_minimumVisiblePercent(1), nil)]
-      assertWithMatcher:grey_nil()];
+                                          nil)]
+      assertWithMatcher:grey_notVisible()];
 }
 
 // Tests that switching tabs in the peeked state doesn't close the thumb strip.
@@ -292,8 +286,8 @@ id<GREYMatcher> GetAccessibilityValue(__strong NSString** value) {
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(@"Page2"),
                                           grey_kindOfClassName(@"GridCell"),
-                                          grey_minimumVisiblePercent(1), nil)]
-      assertWithMatcher:grey_notNil()];
+                                          nil)]
+      assertWithMatcher:grey_minimumVisiblePercent(1)];
 
   // Switch back to tab one by pressing its thumbnail.
   [[EarlGrey
@@ -307,8 +301,8 @@ id<GREYMatcher> GetAccessibilityValue(__strong NSString** value) {
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(@"Page2"),
                                           grey_kindOfClassName(@"GridCell"),
-                                          grey_minimumVisiblePercent(1), nil)]
-      assertWithMatcher:grey_notNil()];
+                                          nil)]
+      assertWithMatcher:grey_minimumVisiblePercent(1)];
 }
 
 @end

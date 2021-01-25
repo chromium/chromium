@@ -192,6 +192,7 @@ source_set("eg2_tests") {
   testonly = true
   sources = [
     "tab_grid_egtest.mm",
+    "tab_grid_thumb_strip_egtest.mm",
     "tab_grid_transition_egtest.mm",
   ]
 
@@ -199,7 +200,10 @@ source_set("eg2_tests") {
     ":tab_grid_ui_constants",
     "//base",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/fullscreen:feature_flags",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:features",
+    "//ios/chrome/browser/ui/thumb_strip:feature_flags",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
