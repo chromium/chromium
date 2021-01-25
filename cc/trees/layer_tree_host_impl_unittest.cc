@@ -14364,6 +14364,89 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ThumbDragAfterJumpClick) {
   host_impl_ = nullptr;
 }
 
+// Tests that an existing scroll offset animation (for a scrollbar) is aborted
+// before a new one is created.
+TEST_P(ScrollUnifiedLayerTreeHostImplTest,
+       AbortAnimatedScrollBeforeStartingAutoscroll) {
+  LayerTreeSettings settings = DefaultSettings();
+  settings.compositor_threaded_scrollbar_scrolling = true;
+  CreateHostImpl(settings, CreateLayerTreeFrameSink());
+
+  // Setup the viewport.
+  const gfx::Size viewport_size = gfx::Size(360, 600);
+  const gfx::Size content_size = gfx::Size(345, 3800);
+  SetupViewportLayersOuterScrolls(viewport_size, content_size);
+  LayerImpl* scroll_layer = OuterViewportScrollLayer();
+
+  // Set up the scrollbar and its dimensions.
+  LayerTreeImpl* layer_tree_impl = host_impl_->active_tree();
+  auto* scrollbar = AddLayer<PaintedScrollbarLayerImpl>(
+      layer_tree_impl, ScrollbarOrientation::VERTICAL,
+      /*is_left_side_vertical_scrollbar*/ false,
+      /*is_overlay*/ false);
+
+  SetupScrollbarLayer(scroll_layer, scrollbar);
+  const gfx::Size scrollbar_size = gfx::Size(15, 600);
+  scrollbar->SetBounds(scrollbar_size);
+  host_impl_->set_force_smooth_wheel_scrolling_for_testing(true);
+
+  // Set up the thumb dimensions.
+  scrollbar->SetThumbThickness(15);
+  scrollbar->SetThumbLength(50);
+  scrollbar->SetTrackRect(gfx::Rect(0, 15, 15, 575));
+
+  // Set up scrollbar arrows.
+  scrollbar->SetBackButtonRect(
+      gfx::Rect(gfx::Point(345, 0), gfx::Size(15, 15)));
+  scrollbar->SetForwardButtonRect(
+      gfx::Rect(gfx::Point(345, 570), gfx::Size(15, 15)));
+  scrollbar->SetOffsetToTransformParent(gfx::Vector2dF(345, 0));
+
+  TestInputHandlerClient input_handler_client;
+  GetInputHandler().BindToClient(&input_handler_client);
+
+  {
+    // Set up an animated scrollbar autoscroll.
+    GetInputHandler().scrollbar_controller_for_testing()->HandlePointerDown(
+        gfx::PointF(350, 560), /*jump_key_modifier*/ false);
+    auto begin_state = BeginState(gfx::Point(350, 560), gfx::Vector2d(0, 40),
+                                  ui::ScrollInputType::kScrollbar);
+    EXPECT_EQ(
+        ScrollThread::SCROLL_ON_IMPL_THREAD,
+        GetInputHandler()
+            .ScrollBegin(begin_state.get(), ui::ScrollInputType::kScrollbar)
+            .thread);
+    auto update_state = UpdateState(gfx::Point(350, 560), gfx::Vector2dF(0, 40),
+                                    ui::ScrollInputType::kScrollbar);
+    update_state->data()->delta_granularity =
+        ui::ScrollGranularity::kScrollByPixel;
+    GetInputHandler().ScrollUpdate(update_state.get());
+
+    // Autoscroll animations should be active.
+    EXPECT_TRUE(GetInputHandler()
+                    .scrollbar_controller_for_testing()
+                    ->ScrollbarScrollIsActive());
+    EXPECT_TRUE(GetImplAnimationHost()->ImplOnlyScrollAnimatingElement());
+  }
+
+  {
+    // When it's time to kick off the scrollbar autoscroll animation (i.e ~250ms
+    // after pointerdown), the ScrollbarController should ensure that any
+    // existing scroll offset animations are aborted and a new autoscroll
+    // animation is created. Test passes if unit test doesn't hit any DCHECK
+    // failures.
+    GetInputHandler()
+        .scrollbar_controller_for_testing()
+        ->StartAutoScrollAnimation(/*scroll_velocity*/ 800,
+                                   ScrollbarPart::FORWARD_TRACK);
+    EXPECT_TRUE(GetImplAnimationHost()->ImplOnlyScrollAnimatingElement());
+  }
+
+  // Tear down the LayerTreeHostImpl before the InputHandlerClient.
+  host_impl_->ReleaseLayerTreeFrameSink();
+  host_impl_ = nullptr;
+}
+
 // Tests that an animated scrollbar scroll aborts when a different device (like
 // a mousewheel) wants to animate the scroll offset.
 TEST_P(ScrollUnifiedLayerTreeHostImplTest, AnimatedScrollYielding) {
