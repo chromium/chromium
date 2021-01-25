@@ -327,6 +327,12 @@ void ChromeClientImpl::AddMessageToConsole(LocalFrame* local_frame,
                                            unsigned line_number,
                                            const String& source_id,
                                            const String& stack_trace) {
+  if (!message.IsNull()) {
+    local_frame->GetLocalFrameHostRemote().DidAddMessageToConsole(
+        level, message, static_cast<int32_t>(line_number), source_id,
+        stack_trace);
+  }
+
   WebLocalFrameImpl* frame = WebLocalFrameImpl::FromFrame(local_frame);
   if (frame && frame->Client()) {
     frame->Client()->DidAddMessageToConsole(

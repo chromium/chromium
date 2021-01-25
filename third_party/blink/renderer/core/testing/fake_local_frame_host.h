@@ -134,6 +134,12 @@ class FakeLocalFrameHost : public mojom::blink::LocalFrameHost {
   void Detach() override;
   void IssueKeepAliveHandle(
       mojo::PendingReceiver<mojom::blink::KeepAliveHandle> receiver) override;
+  void DidAddMessageToConsole(
+      mojom::blink::ConsoleMessageLevel log_level,
+      const WTF::String& message,
+      int32_t line_no,
+      const WTF::String& source_id,
+      const WTF::String& untrusted_stack_trace) override;
 
  private:
   void BindFrameHostReceiver(mojo::ScopedInterfaceEndpointHandle handle);

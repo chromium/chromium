@@ -68,11 +68,6 @@ class MockFrameHost : public mojom::FrameHost {
     return std::move(last_browser_interface_broker_receiver_);
   }
 
-  void SetDidAddMessageToConsoleCallback(
-      base::OnceCallback<void(const base::string16& msg)> callback) {
-    did_add_message_to_console_callback_ = std::move(callback);
-  }
-
   // The frame in the renderer sends a BrowserInterfaceBroker Receiver to the
   // browser process. The test harness (in MockRenderThread) will stash away
   // those pending Receivers. This sets the pending Receiver that was sent for
@@ -210,17 +205,6 @@ class MockFrameHost : public mojom::FrameHost {
 
   void DidStopLoading() override {}
 
-  void DidAddMessageToConsole(
-      blink::mojom::ConsoleMessageLevel log_level,
-      const base::string16& msg,
-      int32_t line_number,
-      const base::string16& source_id,
-      const base::Optional<base::string16>& untrusted_stack_trace) override {
-    if (did_add_message_to_console_callback_) {
-      std::move(did_add_message_to_console_callback_).Run(msg);
-    }
-  }
-
 #if defined(OS_ANDROID)
   void UpdateUserGestureCarryoverInfo() override {}
 #endif
@@ -229,9 +213,6 @@ class MockFrameHost : public mojom::FrameHost {
   mojom::DidCommitProvisionalLoadParamsPtr last_commit_params_;
   mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
       last_browser_interface_broker_receiver_;
-
-  base::OnceCallback<void(const base::string16& msg)>
-      did_add_message_to_console_callback_;
 
   size_t request_overlay_routing_token_called_ = 0;
   base::Optional<base::UnguessableToken> overlay_routing_token_;
@@ -361,11 +342,6 @@ void TestRenderFrame::BeginNavigation(
 mojom::DidCommitProvisionalLoadParamsPtr
 TestRenderFrame::TakeLastCommitParams() {
   return mock_frame_host_->TakeLastCommitParams();
-}
-
-void TestRenderFrame::SetDidAddMessageToConsoleCallback(
-    base::OnceCallback<void(const base::string16& msg)> callback) {
-  mock_frame_host_->SetDidAddMessageToConsoleCallback(std::move(callback));
 }
 
 mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>

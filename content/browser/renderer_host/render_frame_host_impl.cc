@@ -2683,10 +2683,14 @@ void RenderFrameHostImpl::DidAddMessageToConsole(
     blink::mojom::ConsoleMessageLevel log_level,
     const base::string16& message,
     int32_t line_no,
-    const base::string16& source_id,
+    const base::Optional<base::string16>& source_id,
     const base::Optional<base::string16>& untrusted_stack_trace) {
+  base::string16 updated_source_id;
+  if (source_id.has_value())
+    updated_source_id = *source_id;
   if (delegate_->DidAddMessageToConsole(this, log_level, message, line_no,
-                                        source_id, untrusted_stack_trace)) {
+                                        updated_source_id,
+                                        untrusted_stack_trace)) {
     return;
   }
 
@@ -2700,7 +2704,7 @@ void RenderFrameHostImpl::DidAddMessageToConsole(
       GetSiteInstance()->GetBrowserContext()->IsOffTheRecord();
 
   LogConsoleMessage(log_level, message, line_no, is_builtin_component,
-                    is_off_the_record, source_id);
+                    is_off_the_record, updated_source_id);
 }
 
 void RenderFrameHostImpl::OnCreateChildFrame(

@@ -48,11 +48,6 @@ class TestRenderFrame : public RenderFrameImpl {
 
   mojom::DidCommitProvisionalLoadParamsPtr TakeLastCommitParams();
 
-  // Sets a callback to be run the next time DidAddMessageToConsole
-  // is called (e.g. window.console.log() is called).
-  void SetDidAddMessageToConsoleCallback(
-      base::OnceCallback<void(const base::string16& msg)> callback);
-
   mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
   TakeLastBrowserInterfaceBrokerReceiver();
 

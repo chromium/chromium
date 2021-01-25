@@ -2963,9 +2963,53 @@ TEST_F(RenderViewImplTest, HistoryIsProperlyUpdatedOnShouldClearHistoryList) {
                    view()->HistoryForwardListCount() + 1);
 }
 
+namespace {
+class AddMessageToConsoleMockLocalFrameHost : public LocalFrameHostInterceptor {
+ public:
+  explicit AddMessageToConsoleMockLocalFrameHost(
+      blink::AssociatedInterfaceProvider* provider)
+      : LocalFrameHostInterceptor(provider) {}
+
+  void DidAddMessageToConsole(
+      blink::mojom::ConsoleMessageLevel log_level,
+      const base::string16& msg,
+      int32_t line_number,
+      const base::Optional<base::string16>& source_id,
+      const base::Optional<base::string16>& untrusted_stack_trace) override {
+    if (did_add_message_to_console_callback_) {
+      std::move(did_add_message_to_console_callback_).Run(msg);
+    }
+  }
+
+  void SetDidAddMessageToConsoleCallback(
+      base::OnceCallback<void(const base::string16& msg)> callback) {
+    did_add_message_to_console_callback_ = std::move(callback);
+  }
+
+ private:
+  base::OnceCallback<void(const base::string16& msg)>
+      did_add_message_to_console_callback_;
+};
+}  // namespace
+
+class RenderViewImplAddMessageToConsoleTest : public RenderViewImplTest {
+ public:
+  using MockedTestRenderFrame = MockedLocalFrameHostInterceptorTestRenderFrame<
+      AddMessageToConsoleMockLocalFrameHost>;
+
+  RenderViewImplAddMessageToConsoleTest()
+      : RenderViewImplTest(&MockedTestRenderFrame::CreateTestRenderFrame) {}
+
+  AddMessageToConsoleMockLocalFrameHost* message_mock_frame_host() {
+    return static_cast<MockedTestRenderFrame*>(frame())
+        ->mock_local_frame_host();
+  }
+};
+
 // Tests that there's no UaF after dispatchBeforeUnloadEvent.
 // See https://crbug.com/666714.
-TEST_F(RenderViewImplTest, DispatchBeforeUnloadCanDetachFrame) {
+TEST_F(RenderViewImplAddMessageToConsoleTest,
+       DispatchBeforeUnloadCanDetachFrame) {
   LoadHTML(
       "<script>window.onbeforeunload = function() { "
       "window.console.log('OnBeforeUnload called'); }</script>");
@@ -2974,7 +3018,7 @@ TEST_F(RenderViewImplTest, DispatchBeforeUnloadCanDetachFrame) {
   // log is printed from the beforeunload handler.
   base::RunLoop run_loop;
   bool was_callback_run = false;
-  frame()->SetDidAddMessageToConsoleCallback(
+  message_mock_frame_host()->SetDidAddMessageToConsoleCallback(
       base::BindOnce(base::BindLambdaForTesting([&](const base::string16& msg) {
         // Makes sure this happens during the beforeunload handler.
         EXPECT_EQ(base::UTF8ToUTF16("OnBeforeUnload called"), msg);

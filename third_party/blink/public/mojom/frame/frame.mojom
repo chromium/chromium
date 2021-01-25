@@ -468,6 +468,20 @@ interface LocalFrameHost {
    // Creates and returns a KeepAliveHandle.
   IssueKeepAliveHandle(
       pending_receiver<blink.mojom.KeepAliveHandle> keep_alive_handle);
+
+  // Blink and JavaScript error messages to log to the console, debugger UI, or
+  // error reporting service. |source_id| is usually a URL.
+  // |untrusted_stack_trace| should only be printed or sent to other services;
+  // it's untrusted and should not be parsed to get a structured stack trace.
+  // The stack trace is only present if
+  // FrameNavigationControl.SetWantErrorMessageStackTrace has been called for
+  // this frame and the log_level is kError.
+  DidAddMessageToConsole(
+      ConsoleMessageLevel log_level,
+      mojo_base.mojom.BigString16 msg,
+      int32 line_number,
+      mojo_base.mojom.String16? source_id,
+      mojo_base.mojom.BigString16? untrusted_stack_trace);
 };
 
 // Implemented in Blink, this interface defines frame-specific methods that will

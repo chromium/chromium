@@ -4035,10 +4035,6 @@ void RenderFrameImpl::DidAddMessageToConsole(
           source_line, blink::ConsoleMessageLevelToLogSeverity(message.level));
     }
   }
-
-  GetFrameHost()->DidAddMessageToConsole(
-      message.level, message.text.Utf16(), static_cast<int32_t>(source_line),
-      source_name.Utf16(), blink::WebString::ToOptionalString16(stack_trace));
 }
 
 void RenderFrameImpl::WillSendSubmitEvent(const blink::WebFormElement& form) {
