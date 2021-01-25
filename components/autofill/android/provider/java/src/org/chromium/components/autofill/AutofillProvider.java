@@ -450,7 +450,7 @@ public class AutofillProvider {
         }
         mAutofillTriggeredTimeMillis = System.currentTimeMillis();
 
-        mAutofillManager.notifyNewSessionStarted();
+        mAutofillManager.notifyNewSessionStarted(hasServerPrediction);
     }
 
     /**

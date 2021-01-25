@@ -540,7 +540,7 @@ public class AwAutofillTest {
         }
 
         @Override
-        public void notifyNewSessionStarted() {
+        public void notifyNewSessionStarted(boolean hasServerPrediction) {
             if (DEBUG) Log.i(TAG, "notifyNewSessionStarted");
             mEventQueue.add(AUTOFILL_SESSION_STARTED);
             mCallbackHelper.notifyCalled();
