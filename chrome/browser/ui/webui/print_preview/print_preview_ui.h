@@ -145,17 +145,6 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
   // |page_number| is the expected page.
   bool OnPendingPreviewPage(uint32_t page_number);
 
-  // Notifies the Web UI that the 0-based page |page_number| has been rendered.
-  // |preview_request_id| indicates which request resulted in this response.
-  void OnDidPreviewPage(uint32_t page_number,
-                        scoped_refptr<base::RefCountedMemory> data,
-                        int preview_request_id);
-
-  // Notifies the Web UI renderer that preview data is available.
-  // |preview_request_id| indicates which request resulted in this response.
-  void OnPreviewDataIsAvailable(scoped_refptr<base::RefCountedMemory> data,
-                                int preview_request_id);
-
   // Notifies the Web UI that the print preview failed to render for the request
   // with id = |request_id|.
   void OnPrintPreviewFailed(int request_id);
@@ -228,6 +217,9 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
  private:
   FRIEND_TEST_ALL_PREFIXES(PrintPreviewDialogControllerUnitTest,
                            TitleAfterReload);
+  // TODO(https://crbug.com/1008939): Remove this once all preview UI messages
+  // are moved to print_preview_ui.cc.
+  friend class PrintPreviewMessageHandler;
 
   // Sets the print preview |data|. |index| is zero-based, and can be
   // |COMPLETE_PREVIEW_DOCUMENT_INDEX| to set the entire preview document.
@@ -236,6 +228,19 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
 
   // Clear the existing print preview data.
   void ClearAllPreviewData();
+
+  // Notifies the Web UI that the 0-based page |page_number| has been rendered.
+  // |request_id| indicates which request resulted in this response.
+  void NotifyUIPreviewPageReady(
+      uint32_t page_number,
+      int request_id,
+      scoped_refptr<base::RefCountedMemory> data_bytes);
+
+  // Notifies the Web UI renderer that preview data is available. |request_id|
+  // indicates which request resulted in this response.
+  void NotifyUIPreviewDocumentReady(
+      int request_id,
+      scoped_refptr<base::RefCountedMemory> data_bytes);
 
   base::TimeTicks initial_preview_start_time_;
 

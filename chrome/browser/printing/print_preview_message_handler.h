@@ -15,10 +15,6 @@
 #include "content/public/browser/web_contents_user_data.h"
 #include "printing/mojom/print.mojom-forward.h"
 
-namespace base {
-class RefCountedMemory;
-}
-
 namespace content {
 class RenderFrameHost;
 class WebContents;
@@ -62,16 +58,6 @@ class PrintPreviewMessageHandler
   void OnMetafileReadyForPrinting(content::RenderFrameHost* render_frame_host,
                                   const mojom::DidPreviewDocumentParams& params,
                                   const mojom::PreviewIds& ids);
-
-  void NotifyUIPreviewPageReady(
-      PrintPreviewUI* print_preview_ui,
-      uint32_t page_number,
-      const mojom::PreviewIds& ids,
-      scoped_refptr<base::RefCountedMemory> data_bytes);
-  void NotifyUIPreviewDocumentReady(
-      PrintPreviewUI* print_preview_ui,
-      const mojom::PreviewIds& ids,
-      scoped_refptr<base::RefCountedMemory> data_bytes);
 
   // Callbacks for print compositor client.
   void OnCompositePdfPageDone(uint32_t page_number,

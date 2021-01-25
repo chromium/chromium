@@ -559,6 +559,49 @@ void PrintPreviewUI::ClearAllPreviewData() {
   PrintPreviewDataService::GetInstance()->RemoveEntry(*id_);
 }
 
+void PrintPreviewUI::NotifyUIPreviewPageReady(
+    uint32_t page_number,
+    int request_id,
+    scoped_refptr<base::RefCountedMemory> data_bytes) {
+  if (!data_bytes || !data_bytes->size())
+    return;
+
+  // Don't bother notifying the UI if this request has been cancelled already.
+  if (ShouldCancelRequest(*id_, request_id))
+    return;
+
+  DCHECK_NE(page_number, kInvalidPageIndex);
+  SetPrintPreviewDataForIndex(base::checked_cast<int>(page_number),
+                              std::move(data_bytes));
+
+  if (g_test_delegate)
+    g_test_delegate->DidRenderPreviewPage(web_ui()->GetWebContents());
+  handler_->SendPagePreviewReady(base::checked_cast<int>(page_number), *id_,
+                                 request_id);
+}
+
+void PrintPreviewUI::NotifyUIPreviewDocumentReady(
+    int request_id,
+    scoped_refptr<base::RefCountedMemory> data_bytes) {
+  if (!data_bytes || !data_bytes->size())
+    return;
+
+  // Don't bother notifying the UI if this request has been cancelled already.
+  if (ShouldCancelRequest(*id_, request_id))
+    return;
+
+  if (!initial_preview_start_time_.is_null()) {
+    base::UmaHistogramTimes(
+        "PrintPreview.InitialDisplayTime",
+        base::TimeTicks::Now() - initial_preview_start_time_);
+    initial_preview_start_time_ = base::TimeTicks();
+  }
+
+  SetPrintPreviewDataForIndex(COMPLETE_PREVIEW_DOCUMENT_INDEX,
+                              std::move(data_bytes));
+  handler_->OnPrintPreviewReady(*id_, request_id);
+}
+
 void PrintPreviewUI::SetInitiatorTitle(const base::string16& job_title) {
   initiator_title_ = job_title;
 }
@@ -730,36 +773,6 @@ bool PrintPreviewUI::OnPendingPreviewPage(uint32_t page_number) {
   bool matched = page_number == pages_to_render_[pages_to_render_index_];
   ++pages_to_render_index_;
   return matched;
-}
-
-void PrintPreviewUI::OnDidPreviewPage(
-    uint32_t page_number,
-    scoped_refptr<base::RefCountedMemory> data,
-    int preview_request_id) {
-  DCHECK_NE(page_number, kInvalidPageIndex);
-
-  SetPrintPreviewDataForIndex(base::checked_cast<int>(page_number),
-                              std::move(data));
-
-  if (g_test_delegate)
-    g_test_delegate->DidRenderPreviewPage(web_ui()->GetWebContents());
-  handler_->SendPagePreviewReady(base::checked_cast<int>(page_number), *id_,
-                                 preview_request_id);
-}
-
-void PrintPreviewUI::OnPreviewDataIsAvailable(
-    scoped_refptr<base::RefCountedMemory> data,
-    int preview_request_id) {
-  if (!initial_preview_start_time_.is_null()) {
-    base::UmaHistogramTimes(
-        "PrintPreview.InitialDisplayTime",
-        base::TimeTicks::Now() - initial_preview_start_time_);
-    initial_preview_start_time_ = base::TimeTicks();
-  }
-
-  SetPrintPreviewDataForIndex(COMPLETE_PREVIEW_DOCUMENT_INDEX, std::move(data));
-
-  handler_->OnPrintPreviewReady(*id_, preview_request_id);
 }
 
 void PrintPreviewUI::OnCancelPendingPreviewRequest() {

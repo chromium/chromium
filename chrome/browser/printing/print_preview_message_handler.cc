@@ -13,7 +13,6 @@
 #include "base/bind.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/ref_counted_memory.h"
 #include "base/numerics/safe_conversions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/printing/pdf_nup_converter_client.h"
@@ -164,8 +163,8 @@ void PrintPreviewMessageHandler::OnDidPreviewPage(
             mojom::PrintCompositor::Status::kCompositingFailure,
             base::ReadOnlySharedMemoryRegion()));
   } else {
-    NotifyUIPreviewPageReady(
-        print_preview_ui, page_number, ids,
+    print_preview_ui->NotifyUIPreviewPageReady(
+        page_number, ids.request_id,
         base::RefCountedSharedMemoryMapping::CreateFromWholeRegion(
             content.metafile_data_region));
   }
@@ -219,41 +218,10 @@ void PrintPreviewMessageHandler::OnMetafileReadyForPrinting(
             mojom::PrintCompositor::Status::kCompositingFailure,
             base::ReadOnlySharedMemoryRegion()));
   } else {
-    NotifyUIPreviewDocumentReady(
-        print_preview_ui, ids,
+    print_preview_ui->NotifyUIPreviewDocumentReady(
+        ids.request_id,
         base::RefCountedSharedMemoryMapping::CreateFromWholeRegion(metafile));
   }
-}
-
-void PrintPreviewMessageHandler::NotifyUIPreviewPageReady(
-    PrintPreviewUI* print_preview_ui,
-    uint32_t page_number,
-    const mojom::PreviewIds& ids,
-    scoped_refptr<base::RefCountedMemory> data_bytes) {
-  if (!data_bytes || !data_bytes->size())
-    return;
-
-  // Don't bother notifying the UI if this request has been cancelled already.
-  if (PrintPreviewUI::ShouldCancelRequest(ids.ui_id, ids.request_id))
-    return;
-
-  print_preview_ui->OnDidPreviewPage(page_number, std::move(data_bytes),
-                                     ids.request_id);
-}
-
-void PrintPreviewMessageHandler::NotifyUIPreviewDocumentReady(
-    PrintPreviewUI* print_preview_ui,
-    const mojom::PreviewIds& ids,
-    scoped_refptr<base::RefCountedMemory> data_bytes) {
-  if (!data_bytes || !data_bytes->size())
-    return;
-
-  // Don't bother notifying the UI if this request has been cancelled already.
-  if (PrintPreviewUI::ShouldCancelRequest(ids.ui_id, ids.request_id))
-    return;
-
-  print_preview_ui->OnPreviewDataIsAvailable(std::move(data_bytes),
-                                             ids.request_id);
 }
 
 void PrintPreviewMessageHandler::OnCompositePdfPageDone(
@@ -280,8 +248,8 @@ void PrintPreviewMessageHandler::OnCompositePdfPageDone(
 
   int pages_per_sheet = print_preview_ui->pages_per_sheet();
   if (pages_per_sheet == 1) {
-    NotifyUIPreviewPageReady(
-        print_preview_ui, page_number, ids,
+    print_preview_ui->NotifyUIPreviewPageReady(
+        page_number, ids.request_id,
         base::RefCountedSharedMemoryMapping::CreateFromWholeRegion(region));
   } else {
     print_preview_ui->AddPdfPageForNupConversion(std::move(region));
@@ -336,8 +304,8 @@ void PrintPreviewMessageHandler::OnNupPdfConvertDone(
   if (!print_preview_ui)
     return;
 
-  NotifyUIPreviewPageReady(
-      print_preview_ui, page_number, ids,
+  print_preview_ui->NotifyUIPreviewPageReady(
+      page_number, ids.request_id,
       base::RefCountedSharedMemoryMapping::CreateFromWholeRegion(region));
 }
 
@@ -363,8 +331,8 @@ void PrintPreviewMessageHandler::OnCompositeToPdfDone(
 
   int pages_per_sheet = print_preview_ui->pages_per_sheet();
   if (pages_per_sheet == 1) {
-    NotifyUIPreviewDocumentReady(
-        print_preview_ui, ids,
+    print_preview_ui->NotifyUIPreviewDocumentReady(
+        ids.request_id,
         base::RefCountedSharedMemoryMapping::CreateFromWholeRegion(region));
   } else {
     auto* client = PdfNupConverterClient::FromWebContents(web_contents());
@@ -419,8 +387,8 @@ void PrintPreviewMessageHandler::OnNupPdfDocumentConvertDone(
   if (!print_preview_ui)
     return;
 
-  NotifyUIPreviewDocumentReady(
-      print_preview_ui, ids,
+  print_preview_ui->NotifyUIPreviewDocumentReady(
+      ids.request_id,
       base::RefCountedSharedMemoryMapping::CreateFromWholeRegion(region));
 }
 
