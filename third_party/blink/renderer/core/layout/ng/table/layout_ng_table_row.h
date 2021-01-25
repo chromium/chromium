@@ -69,6 +69,8 @@ class CORE_EXPORT LayoutNGTableRow : public LayoutNGMixin<LayoutBlock>,
     return false;
   }
 
+  PositionWithAffinity PositionForPoint(const PhysicalOffset&) const override;
+
   // LayoutBlock methods end.
 
   // LayoutNGTableRowInterface methods start.

@@ -127,6 +127,12 @@ void LayoutNGTableRow::AddVisualOverflowFromBlockChildren() {
   }
 }
 
+PositionWithAffinity LayoutNGTableRow::PositionForPoint(
+    const PhysicalOffset& offset) const {
+  // LayoutBlock::PositionForPoint is wrong for rows.
+  return LayoutBox::PositionForPoint(offset);
+}
+
 unsigned LayoutNGTableRow::RowIndex() const {
   NOT_DESTROYED();
   unsigned index = 0;
