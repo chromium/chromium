@@ -5,7 +5,6 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/signin/public/base/signin_pref_names.h"
-#import "ios/chrome/browser/chrome_switches.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_app_interface.h"
@@ -47,16 +46,6 @@ using chrome_test_util::SyncSettingsConfirmButton;
 @end
 
 @implementation GoogleServicesSettingsTestCase
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  // Adds the command-line switch to enable support for the BrowserSignin
-  // policy.
-  AppLaunchConfiguration config;
-  config.additional_args.push_back(std::string("--") +
-                                   switches::kInstallBrowserSigninHandler);
-  config.relaunch_policy = NoForceRelaunchAndResetState;
-  return config;
-}
 
 // Opens the Google services settings view, and closes it.
 - (void)testOpenGoogleServicesSettings {

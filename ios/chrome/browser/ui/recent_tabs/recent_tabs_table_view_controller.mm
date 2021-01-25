@@ -14,7 +14,6 @@
 #include "base/strings/sys_string_conversions.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/core/tab_restore_service.h"
-#include "components/signin/public/base/signin_pref_names.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
@@ -24,7 +23,6 @@
 #import "ios/chrome/browser/drag_and_drop/table_view_url_drag_drop_handler.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/metrics/new_tab_page_uma.h"
-#include "ios/chrome/browser/policy/policy_features.h"
 #include "ios/chrome/browser/sessions/live_tab_context_browser_agent.h"
 #include "ios/chrome/browser/sessions/session_util.h"
 #include "ios/chrome/browser/sync/session_sync_service_factory.h"
@@ -32,6 +30,7 @@
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_configurator.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_consumer.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_signin_promo_item.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
 #include "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
@@ -498,8 +497,7 @@ API_AVAILABLE(ios(13.0))
         [self.tableViewModel sectionIsCollapsed:SectionIdentifierOtherDevices];
   }
 
-  if (ShouldInstallBrowserSigninPolicyHandler() &&
-      !self.browserState->GetPrefs()->GetBoolean(prefs::kSigninAllowed)) {
+  if (!signin::IsSigninAllowed(self.browserState->GetPrefs())) {
     // If sign-in is disabled, don't show an illustration or a sign-in promo.
     TableViewTextItem* disabledByOrganizationText =
         [[TableViewTextItem alloc] initWithType:ItemTypeSigninDisabled];

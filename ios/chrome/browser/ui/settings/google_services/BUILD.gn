@@ -147,7 +147,6 @@ source_set("eg2_tests") {
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/signin/public/base",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser:utils",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
     "//ios/chrome/browser/ui/bookmarks:eg_test_support+eg2",

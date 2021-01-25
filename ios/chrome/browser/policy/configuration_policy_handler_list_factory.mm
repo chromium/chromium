@@ -124,17 +124,14 @@ std::unique_ptr<policy::ConfigurationPolicyHandlerList> BuildPolicyHandlerList(
       std::make_unique<autofill::AutofillAddressPolicyHandler>());
   handlers->AddHandler(
       std::make_unique<autofill::AutofillCreditCardPolicyHandler>());
+  handlers->AddHandler(
+      std::make_unique<policy::BrowserSigninPolicyHandler>(chrome_schema));
   handlers->AddHandler(std::make_unique<policy::DefaultSearchPolicyHandler>());
   handlers->AddHandler(
       std::make_unique<safe_browsing::SafeBrowsingPolicyHandler>());
   handlers->AddHandler(
       std::make_unique<bookmarks::ManagedBookmarksPolicyHandler>(
           chrome_schema));
-
-  if (ShouldInstallBrowserSigninPolicyHandler()) {
-    handlers->AddHandler(
-        std::make_unique<policy::BrowserSigninPolicyHandler>(chrome_schema));
-  }
 
   if (ShouldInstallURLBlocklistPolicyHandlers()) {
     handlers->AddHandler(std::make_unique<policy::URLBlocklistPolicyHandler>(

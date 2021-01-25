@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller.h"
 
-#import "base/test/scoped_command_line.h"
 #import "base/test/task_environment.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
@@ -13,7 +12,6 @@
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/chrome_switches.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/prefs/browser_prefs.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
@@ -179,9 +177,6 @@ TEST_F(SettingsTableViewControllerTest, SyncOn) {
 // Verifies that the sign-in setting item is replaced by the managed sign-in
 // item if sign-in is disabled by policy.
 TEST_F(SettingsTableViewControllerTest, SigninDisabled) {
-  base::test::ScopedCommandLine scoped_command_line;
-  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
-      switches::kInstallBrowserSigninHandler);
   chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
   CreateController();
   CheckController();
