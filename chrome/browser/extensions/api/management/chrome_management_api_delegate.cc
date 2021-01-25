@@ -472,9 +472,9 @@ bool ChromeManagementAPIDelegate::CreateAppShortcutFunctionDelegate(
 
   chrome::ShowCreateChromeAppShortcutsDialog(
       browser->window()->GetNativeWindow(), browser->profile(), extension,
-      base::Bind(&extensions::ManagementCreateAppShortcutFunction::
-                     OnCloseShortcutPrompt,
-                 function));
+      base::BindOnce(&extensions::ManagementCreateAppShortcutFunction::
+                         OnCloseShortcutPrompt,
+                     function));
 
   return true;
 }
