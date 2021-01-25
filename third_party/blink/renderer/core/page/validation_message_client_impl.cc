@@ -130,6 +130,9 @@ void ValidationMessageClientImpl::HideValidationMessageImmediately(
 void ValidationMessageClientImpl::Reset(TimerBase*) {
   const Element& anchor = *current_anchor_;
 
+  // Clearing out the pointer does not stop the timer.
+  if (timer_)
+    timer_->Value().Stop();
   timer_ = nullptr;
   current_anchor_ = nullptr;
   message_ = String();
