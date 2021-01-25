@@ -1216,12 +1216,11 @@
       ['#new-folder', false],
     ];
     const folderMenus = [
-      ['#cut', true],
+      ['#cut', false],
       ['#copy', true],
       ['#paste-into-folder', false],
       ['#share-with-linux', true],
-      ['#rename', false],
-      ['#delete', true],
+      ['#delete', false],
       ['#new-folder', true],
     ];
 

@@ -1223,9 +1223,13 @@ util.getEntryLabel = (locationInfo, entry) => {
 };
 
 /**
- * Returns true if specified entry is a special entry such as MyFiles/Downloads,
- * MyFiles/PvmDefault, MyFiles/Camera or Linux files root which cannot be
- * modified such as deleted/cut or renamed.
+ * Returns true if the given |entry| matches any of the special entries:
+ *
+ *  - "My Files"/{Downloads,PvmDefault,Camera} directories, or
+ *  - "Play Files"/{<any-directory>,DCIM/Camera} directories, or
+ *  - "Linux Files" root "/" directory
+ *
+ * which cannot be modified such as deleted/cut or renamed.
  *
  * @param {!VolumeManager} volumeManager
  * @param {(Entry|FakeEntry)} entry Entry or a fake entry.
@@ -1235,11 +1239,11 @@ util.isNonModifiable = (volumeManager, entry) => {
   if (!entry) {
     return false;
   }
+
   if (util.isFakeEntry(entry)) {
     return true;
   }
 
-  // If the entry is not a valid entry.
   if (!volumeManager) {
     return false;
   }
@@ -1249,21 +1253,55 @@ util.isNonModifiable = (volumeManager, entry) => {
     return false;
   }
 
-  if (volumeInfo.volumeType === VolumeManagerCommon.RootType.DOWNLOADS) {
-    if (entry.fullPath === '/Downloads') {
+  const volumeType = volumeInfo.volumeType;
+
+  if (volumeType === VolumeManagerCommon.RootType.DOWNLOADS) {
+    if (!entry.isDirectory) {
+      return false;
+    }
+
+    const fullPath = entry.fullPath;
+
+    if (fullPath === '/Downloads') {
       return true;
     }
-    if (util.isPluginVmEnabled() && entry.fullPath === '/PvmDefault') {
+
+    if (fullPath === '/PvmDefault' && util.isPluginVmEnabled()) {
       return true;
     }
-    if (util.isFilesCameraFolderEnabled() && entry.fullPath === '/Camera') {
+
+    if (fullPath === '/Camera' && util.isFilesCameraFolderEnabled()) {
       return true;
     }
+
+    return false;
   }
 
-  if (volumeInfo.volumeType === VolumeManagerCommon.RootType.CROSTINI &&
-      entry.fullPath === '/') {
-    return true;
+  if (volumeType === VolumeManagerCommon.RootType.ANDROID_FILES) {
+    if (!entry.isDirectory) {
+      return false;
+    }
+
+    const fullPath = entry.fullPath;
+
+    if (fullPath === '/') {
+      return true;
+    }
+
+    const isRootDirectory = fullPath === ('/' + entry.name);
+    if (isRootDirectory) {
+      return true;
+    }
+
+    if (fullPath === '/DCIM/Camera') {
+      return true;
+    }
+
+    return false;
+  }
+
+  if (volumeType === VolumeManagerCommon.RootType.CROSTINI) {
+    return entry.fullPath === '/';
   }
 
   return false;
