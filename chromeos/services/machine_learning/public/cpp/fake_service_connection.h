@@ -47,6 +47,7 @@ class FakeServiceConnectionImpl : public ServiceConnection,
   ~FakeServiceConnectionImpl() override;
 
   // ServiceConnection:
+  mojom::MachineLearningService& GetMachineLearningService() override;
   void BindMachineLearningService(
       mojo::PendingReceiver<mojom::MachineLearningService> receiver) override;
   void Initialize() override;
@@ -244,6 +245,7 @@ class FakeServiceConnectionImpl : public ServiceConnection,
   // Additional receivers bound via `Clone`.
   mojo::ReceiverSet<mojom::MachineLearningService> clone_ml_service_receivers_;
 
+  mojo::Remote<mojom::MachineLearningService> machine_learning_service_;
   mojo::ReceiverSet<mojom::Model> model_receivers_;
   mojo::ReceiverSet<mojom::GraphExecutor> graph_receivers_;
   mojo::ReceiverSet<mojom::TextClassifier> text_classifier_receivers_;

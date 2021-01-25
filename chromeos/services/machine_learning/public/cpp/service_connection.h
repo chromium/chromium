@@ -22,6 +22,11 @@ namespace machine_learning {
 //   // Use ml_service to LoadBuiltinModel(), LoadFlatBufferModel() etc. e.g
 //   ml_service->LoadBuiltinModel(...);
 //
+// Usage for GetMachineLearningService:
+//   chromeos::machine_learning::ServiceConnection::GetInstance()
+//       ->GetMachineLearningService()
+//       .LoadBuiltinModel(...);
+//
 // Usage for Built-in models (will be deprecated soon):
 //   mojo::Remote<chromeos::machine_learning::mojom::Model> model;
 //   chromeos::machine_learning::mojom::BuiltinModelSpecPtr spec =
@@ -50,8 +55,14 @@ class ServiceConnection {
   static ServiceConnection* GetInstance();
   // Overrides the result of GetInstance() for use in tests.
   // Does not take ownership of |fake_service_connection|.
+  // Note: Caller is responsible for calling Initialize() on
+  // `fake_service_connection`.
   static void UseFakeServiceConnectionForTesting(
       ServiceConnection* fake_service_connection);
+
+  // Gets the primordial top-level machine learning service interface.
+  // Must be called from the sequence that the instance is created on.
+  virtual mojom::MachineLearningService& GetMachineLearningService() = 0;
 
   // Binds the receiver to a Clone of the primordial top-level interface.
   // May be called from any sequence.

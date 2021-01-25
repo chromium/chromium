@@ -24,9 +24,18 @@ FakeServiceConnectionImpl::FakeServiceConnectionImpl()
 
 FakeServiceConnectionImpl::~FakeServiceConnectionImpl() {}
 
+mojom::MachineLearningService&
+FakeServiceConnectionImpl::GetMachineLearningService() {
+  DCHECK(machine_learning_service_)
+      << "Call Initialize() before GetMachineLearningService()";
+  return *machine_learning_service_.get();
+}
+
 void FakeServiceConnectionImpl::BindMachineLearningService(
     mojo::PendingReceiver<mojom::MachineLearningService> receiver) {
-  Clone(std::move(receiver));
+  DCHECK(machine_learning_service_)
+      << "Call Initialize() before BindMachineLearningService()";
+  machine_learning_service_->Clone(std::move(receiver));
 }
 
 void FakeServiceConnectionImpl::Clone(
@@ -34,7 +43,10 @@ void FakeServiceConnectionImpl::Clone(
   clone_ml_service_receivers_.Add(this, std::move(receiver));
 }
 
-void FakeServiceConnectionImpl::Initialize() {}
+void FakeServiceConnectionImpl::Initialize() {
+  clone_ml_service_receivers_.Add(
+      this, machine_learning_service_.BindNewPipeAndPassReceiver());
+}
 
 void FakeServiceConnectionImpl::LoadBuiltinModel(
     mojom::BuiltinModelSpecPtr spec,

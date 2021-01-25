@@ -28,6 +28,8 @@ class ServiceConnectionImpl : public ServiceConnection {
   ServiceConnectionImpl();
   ~ServiceConnectionImpl() override = default;
 
+  mojom::MachineLearningService& GetMachineLearningService() override;
+
   void BindMachineLearningService(
       mojo::PendingReceiver<mojom::MachineLearningService> receiver) override;
 
@@ -94,6 +96,15 @@ class ServiceConnectionImpl : public ServiceConnection {
   DISALLOW_COPY_AND_ASSIGN(ServiceConnectionImpl);
 };
 
+mojom::MachineLearningService&
+ServiceConnectionImpl::GetMachineLearningService() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(task_runner_)
+      << "Call Initialize before first use of ServiceConnection.";
+  BindPrimordialMachineLearningServiceIfNeeded();
+  return *machine_learning_service_.get();
+}
+
 void ServiceConnectionImpl::BindMachineLearningService(
     mojo::PendingReceiver<mojom::MachineLearningService> receiver) {
   DCHECK(task_runner_)
@@ -106,8 +117,7 @@ void ServiceConnectionImpl::BindMachineLearningService(
     return;
   }
 
-  BindPrimordialMachineLearningServiceIfNeeded();
-  machine_learning_service_->Clone(std::move(receiver));
+  GetMachineLearningService().Clone(std::move(receiver));
 }
 
 void ServiceConnectionImpl::Initialize() {
