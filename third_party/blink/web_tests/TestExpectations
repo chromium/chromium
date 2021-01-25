@@ -5174,13 +5174,6 @@ crbug.com/1043675 [ Win ] external/wpt/css/filter-effects/backdrop-filter-basic-
 crbug.com/1043675 [ Win ] external/wpt/css/filter-effects/css-filters-animation-opacity.html [ Failure ]
 crbug.com/1043675 [ Win ] svg/custom/svg-root-with-opacity.html [ Failure ]
 
-# TODO(michaelludwig): Rebaseline after landing Skia change
-crbug.com/1169366 css3/filters/effect-reference-colorspace-hw.html [ Pass Failure ]
-crbug.com/1169366 css3/filters/effect-reference-hw.html [ Pass Failure ]
-crbug.com/1169366 css3/filters/effect-reference-subregion-hw.html [ Pass Failure ]
-crbug.com/1169366 css3/filters/effect-reference-zoom-hw.html [ Pass Failure ]
-crbug.com/1169366 svg/dynamic-updates/SVGFESpecularLightingElement-dom-kernelUnitLength-attr.html [ Pass Failure ]
-
 # Required to land DevTools change
 crbug.com/106759 http/tests/devtools/command-line-api-inspect.js [ Pass Failure ]
 crbug.com/106759 http/tests/devtools/sources/debugger-console/debugger-command-line-api.js [ Pass Failure ]
