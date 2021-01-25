@@ -18,6 +18,10 @@
 
 namespace gpu {
 
+constexpr uint32_t kVendorARM = 0x13b5;
+constexpr uint32_t kVendorQualcomm = 0x5143;
+constexpr uint32_t kVendorImagination = 0x1010;
+
 struct GPUInfo;
 class VulkanInfo;
 
