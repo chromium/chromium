@@ -265,12 +265,6 @@ class MockedLocalFrameHostInterceptorTestRenderFrame : public TestRenderFrame {
   std::unique_ptr<MockedLocalFrameHostInterceptor> local_frame_host_;
 };
 
-mojom::CommitNavigationParamsPtr DummyCommitNavigationParams() {
-  mojom::CommitNavigationParamsPtr params = CreateCommitNavigationParams();
-  params->sandbox_flags = network::mojom::WebSandboxFlags::kNone;
-  return params;
-}
-
 }  // namespace
 
 class RenderViewImplTest : public RenderViewTest {
@@ -824,7 +818,7 @@ TEST_F(RenderViewImplTest, OnNavigationHttpPost) {
   post_data->AppendBytes(raw_data, length);
   common_params->post_data = post_data;
 
-  frame()->Navigate(std::move(common_params), DummyCommitNavigationParams());
+  frame()->Navigate(std::move(common_params), CreateCommitNavigationParams());
   base::RunLoop().RunUntilIdle();
 
   auto last_commit_params = frame()->TakeLastCommitParams();
@@ -895,7 +889,7 @@ TEST_F(RenderViewImplUpdateTitleTest, MAYBE_OnNavigationLoadDataWithBaseURL) {
   common_params->transition = ui::PAGE_TRANSITION_TYPED;
   common_params->base_url_for_data_url = GURL("about:blank");
   common_params->history_url_for_data_url = GURL("about:blank");
-  auto commit_params = DummyCommitNavigationParams();
+  auto commit_params = CreateCommitNavigationParams();
   commit_params->data_url_as_string =
       "data:text/html,<html><head><title>Data page</title></head></html>";
   FrameLoadWaiter waiter(frame());
@@ -1283,7 +1277,7 @@ TEST_F(RenderViewImplEnableZoomForDSFTest,
   common_params->transition = ui::PAGE_TRANSITION_TYPED;
 
   provisional_frame->Navigate(std::move(common_params),
-                              DummyCommitNavigationParams());
+                              CreateCommitNavigationParams());
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(device_scale, view()->GetMainRenderFrame()->GetDeviceScaleFactor());
@@ -2142,7 +2136,7 @@ TEST_F(RenderViewImplTest, DroppedNavigationStaysInViewSourceMode) {
   auto common_params = CreateCommonNavigationParams();
   common_params->navigation_type = mojom::NavigationType::DIFFERENT_DOCUMENT;
   common_params->url = GURL("data:text/html,test data");
-  frame()->Navigate(std::move(common_params), DummyCommitNavigationParams());
+  frame()->Navigate(std::move(common_params), CreateCommitNavigationParams());
 
   // A cancellation occurred.
   view()->GetMainRenderFrame()->OnDroppedNavigation();
@@ -2525,7 +2519,7 @@ TEST_F(RenderViewImplTest, NavigateSubframe) {
   common_params->navigation_type = mojom::NavigationType::DIFFERENT_DOCUMENT;
   common_params->transition = ui::PAGE_TRANSITION_TYPED;
   common_params->navigation_start = base::TimeTicks::FromInternalValue(1);
-  auto commit_params = DummyCommitNavigationParams();
+  auto commit_params = CreateCommitNavigationParams();
   commit_params->current_history_list_length = 1;
   commit_params->current_history_list_offset = 0;
   commit_params->pending_history_list_offset = 1;
@@ -2650,7 +2644,7 @@ TEST_F(RendererErrorPageTest, RegularError) {
   common_params->url = GURL("http://example.com/error-page");
   TestRenderFrame* main_frame = static_cast<TestRenderFrame*>(frame());
   main_frame->NavigateWithError(
-      std::move(common_params), DummyCommitNavigationParams(),
+      std::move(common_params), CreateCommitNavigationParams(),
       net::ERR_FILE_NOT_FOUND, net::ResolveErrorInfo(net::OK),
       "A suffusion of yellow.");
 
@@ -2725,7 +2719,7 @@ TEST_F(RenderViewImplTest, BrowserNavigationStart) {
   auto common_params = MakeCommonNavigationParams(-TimeDelta::FromSeconds(1));
 
   FrameLoadWaiter waiter(frame());
-  frame()->Navigate(common_params.Clone(), DummyCommitNavigationParams());
+  frame()->Navigate(common_params.Clone(), CreateCommitNavigationParams());
   waiter.Wait();
   NavigationState* navigation_state = NavigationState::FromDocumentLoader(
       frame()->GetWebFrame()->GetDocumentLoader());
@@ -2743,7 +2737,7 @@ TEST_F(RenderViewImplTest, BrowserNavigationStartSanitized) {
   auto late_common_params = MakeCommonNavigationParams(TimeDelta::FromDays(42));
   late_common_params->method = "POST";
 
-  frame()->Navigate(late_common_params.Clone(), DummyCommitNavigationParams());
+  frame()->Navigate(late_common_params.Clone(), CreateCommitNavigationParams());
   base::RunLoop().RunUntilIdle();
   base::Time after_navigation =
       base::Time::Now() + base::TimeDelta::FromDays(1);
@@ -2763,7 +2757,7 @@ TEST_F(RenderViewImplTest, NavigationStartWhenInitialDocumentWasAccessed) {
 
   auto common_params = MakeCommonNavigationParams(-TimeDelta::FromSeconds(1));
   FrameLoadWaiter waiter(frame());
-  frame()->Navigate(common_params.Clone(), DummyCommitNavigationParams());
+  frame()->Navigate(common_params.Clone(), CreateCommitNavigationParams());
   waiter.Wait();
   NavigationState* navigation_state = NavigationState::FromDocumentLoader(
       frame()->GetWebFrame()->GetDocumentLoader());
@@ -2787,7 +2781,7 @@ TEST_F(RenderViewImplTest, NavigationStartForReload) {
   // The browser navigation_start should not be used because beforeunload will
   // be fired during Navigate.
   FrameLoadWaiter waiter(frame());
-  frame()->Navigate(common_params.Clone(), DummyCommitNavigationParams());
+  frame()->Navigate(common_params.Clone(), CreateCommitNavigationParams());
   waiter.Wait();
 
   // The browser navigation_start is always used.
@@ -2814,7 +2808,7 @@ TEST_F(RenderViewImplTest, NavigationStartForSameProcessHistoryNavigation) {
   common_params_back->navigation_type =
       mojom::NavigationType::HISTORY_DIFFERENT_DOCUMENT;
   GoToOffsetWithParams(-1, back_state, common_params_back.Clone(),
-                       DummyCommitNavigationParams());
+                       CreateCommitNavigationParams());
   NavigationState* navigation_state = NavigationState::FromDocumentLoader(
       frame()->GetWebFrame()->GetDocumentLoader());
 
@@ -2830,7 +2824,7 @@ TEST_F(RenderViewImplTest, NavigationStartForSameProcessHistoryNavigation) {
   common_params_forward->navigation_type =
       mojom::NavigationType::HISTORY_DIFFERENT_DOCUMENT;
   GoToOffsetWithParams(1, forward_state, common_params_forward.Clone(),
-                       DummyCommitNavigationParams());
+                       CreateCommitNavigationParams());
   navigation_state = NavigationState::FromDocumentLoader(
       frame()->GetWebFrame()->GetDocumentLoader());
   EXPECT_EQ(common_params_forward->navigation_start,
@@ -2843,7 +2837,7 @@ TEST_F(RenderViewImplTest, NavigationStartForCrossProcessHistoryNavigation) {
   common_params->navigation_type =
       mojom::NavigationType::HISTORY_DIFFERENT_DOCUMENT;
 
-  auto commit_params = DummyCommitNavigationParams();
+  auto commit_params = CreateCommitNavigationParams();
   commit_params->page_state = blink::PageState::CreateForTesting(
       common_params->url, false, nullptr, nullptr);
   commit_params->nav_entry_id = 42;
@@ -2911,7 +2905,7 @@ TEST_F(RenderViewImplTest, HistoryIsProperlyUpdatedOnNavigation) {
                    view()->HistoryForwardListCount() + 1);
 
   // Receive a CommitNavigation message with history parameters.
-  auto commit_params = DummyCommitNavigationParams();
+  auto commit_params = CreateCommitNavigationParams();
   commit_params->current_history_list_offset = 1;
   commit_params->current_history_list_length = 2;
   frame()->Navigate(CreateCommonNavigationParams(), std::move(commit_params));
@@ -2930,7 +2924,7 @@ TEST_F(RenderViewImplTest, HistoryIsProperlyUpdatedOnHistoryNavigation) {
                    view()->HistoryForwardListCount() + 1);
 
   // Receive a CommitNavigation message with history parameters.
-  auto commit_params = DummyCommitNavigationParams();
+  auto commit_params = CreateCommitNavigationParams();
   commit_params->current_history_list_offset = 1;
   commit_params->current_history_list_length = 25;
   commit_params->pending_history_list_offset = 12;
@@ -2951,7 +2945,7 @@ TEST_F(RenderViewImplTest, HistoryIsProperlyUpdatedOnShouldClearHistoryList) {
                    view()->HistoryForwardListCount() + 1);
 
   // Receive a CommitNavigation message with history parameters.
-  auto commit_params = DummyCommitNavigationParams();
+  auto commit_params = CreateCommitNavigationParams();
   commit_params->current_history_list_offset = 12;
   commit_params->current_history_list_length = 25;
   commit_params->should_clear_history_list = true;

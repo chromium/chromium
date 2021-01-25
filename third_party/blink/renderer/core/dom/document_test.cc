@@ -107,16 +107,6 @@ class DocumentTest : public PageTestBase {
   }
 
   void SetHtmlInnerHTML(const char*);
-
-  void NavigateWithSandbox(const KURL& url) {
-    auto params = WebNavigationParams::CreateWithHTMLStringForTesting(
-        /*html=*/"", url);
-    params->sandbox_flags = network::mojom::blink::WebSandboxFlags::kAll;
-    GetFrame().Loader().CommitNavigation(std::move(params),
-                                         /*extra_data=*/nullptr);
-    test::RunPendingTasks();
-    ASSERT_EQ(url.GetString(), GetDocument().Url().GetString());
-  }
 };
 
 void DocumentTest::SetHtmlInnerHTML(const char* html_content) {
@@ -784,7 +774,8 @@ TEST_F(DocumentTest, ValidationMessageCleanup) {
 }
 
 TEST_F(DocumentTest, SandboxDisablesAppCache) {
-  NavigateWithSandbox(KURL("https://test.com/foobar/document"));
+  NavigateTo(KURL("https://test.com/foobar/document"),
+             {{http_names::kContentSecurityPolicy, "sandbox"}});
 
   GetDocument().Loader()->SetApplicationCacheHostForTesting(
       MakeGarbageCollected<MockApplicationCacheHost>(GetDocument().Loader()));
@@ -865,7 +856,8 @@ TEST_F(DocumentTest, ViewportPropagationNoRecalc) {
 }
 
 TEST_F(DocumentTest, CanExecuteScriptsWithSandboxAndIsolatedWorld) {
-  NavigateWithSandbox(KURL("https://www.example.com/"));
+  NavigateTo(KURL("https://www.example.com/"),
+             {{http_names::kContentSecurityPolicy, "sandbox"}});
 
   LocalFrame* frame = GetDocument().GetFrame();
   frame->GetSettings()->SetScriptEnabled(true);

@@ -208,7 +208,6 @@ struct SameSizeAsDocumentLoader
   Member<ContentSecurityPolicy> content_security_policy;
   mojo::Remote<mojom::blink::ContentSecurityNotifier> content_security_notifier;
   scoped_refptr<SecurityOrigin> origin_to_commit;
-  network::mojom::WebSandboxFlags sandbox_flags;
   WebNavigationType navigation_type;
   DocumentLoadTiming document_load_timing;
   base::TimeTicks time_of_last_data_received;
@@ -332,7 +331,6 @@ DocumentLoader::DocumentLoader(
       origin_to_commit_(params_->origin_to_commit.IsNull()
                             ? nullptr
                             : params_->origin_to_commit.Get()->IsolatedCopy()),
-      sandbox_flags_(params_->sandbox_flags),
       navigation_type_(navigation_type),
       document_load_timing_(*this),
       service_worker_network_provider_(
@@ -452,7 +450,6 @@ DocumentLoader::CreateWebNavigationParamsToCloneDocument() {
   // sandbox flags and various policies are copied separately during commit in
   // CommitNavigation() and CalculateSandboxFlags().
   params->origin_to_commit = window->GetSecurityOrigin();
-  params->sandbox_flags = sandbox_flags_;
   params->origin_agent_cluster = origin_agent_cluster_;
   params->grant_load_local_resources = grant_load_local_resources_;
   // Various attributes that relates to the last "real" navigation that is known
@@ -1633,6 +1630,39 @@ void DocumentLoader::DidCommitNavigation() {
   }
 }
 
+network::mojom::blink::WebSandboxFlags DocumentLoader::CalculateSandboxFlags() {
+  // The snapshot of the FramePolicy taken, when the navigation started. This
+  // contains the sandbox of the parent/opener and also the sandbox of the
+  // iframe element owning this new document.
+  auto sandbox_flags = frame_policy_.sandbox_flags;
+
+  // The new document's response can further restrict sandbox using the
+  // Content-Security-Policy: sandbox directive:
+  sandbox_flags |= content_security_policy_->GetSandboxMask();
+
+  if (archive_) {
+    // The URL of a Document loaded from a MHTML archive is controlled by
+    // the Content-Location header. This would allow UXSS, since
+    // Content-Location can be arbitrarily controlled to control the
+    // Document's URL and origin. Instead, force a Document loaded from a
+    // MHTML archive to be sandboxed, providing exceptions only for creating
+    // new windows.
+    DCHECK(commit_reason_ == CommitReason::kRegular ||
+           commit_reason_ == CommitReason::kInitialization);
+    sandbox_flags |= (network::mojom::blink::WebSandboxFlags::kAll &
+                      ~(network::mojom::blink::WebSandboxFlags::kPopups |
+                        network::mojom::blink::WebSandboxFlags::
+                            kPropagatesToAuxiliaryBrowsingContexts));
+  } else if (commit_reason_ == CommitReason::kXSLT ||
+             commit_reason_ == CommitReason::kJavascriptUrl) {
+    // An XSLT document inherits sandbox flags from the document that create it,
+    // while javascript: URL document reuses the previous document's sandbox
+    // flags.
+    sandbox_flags |= frame_->DomWindow()->GetSandboxFlags();
+  }
+  return sandbox_flags;
+}
+
 scoped_refptr<SecurityOrigin> DocumentLoader::CalculateOrigin(
     Document* owner_document,
     network::mojom::blink::WebSandboxFlags sandbox_flags) {
@@ -1731,7 +1761,8 @@ WindowAgent* GetWindowAgentForOrigin(LocalFrame* frame,
 }
 
 void DocumentLoader::InitializeWindow(Document* owner_document) {
-  auto security_origin = CalculateOrigin(owner_document, sandbox_flags_);
+  auto sandbox_flags = CalculateSandboxFlags();
+  auto security_origin = CalculateOrigin(owner_document, sandbox_flags);
 
   // In some rare cases, we'll re-use a LocalDOMWindow for a new Document. For
   // example, when a script calls window.open("..."), the browser gives
@@ -1790,7 +1821,7 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
 
   SecurityContext& security_context = frame_->DomWindow()->GetSecurityContext();
   security_context.SetContentSecurityPolicy(content_security_policy_.Get());
-  security_context.SetSandboxFlags(sandbox_flags_);
+  security_context.SetSandboxFlags(sandbox_flags);
   // Conceptually, SecurityOrigin doesn't have to be initialized after sandbox
   // flags are applied, but there's a UseCounter in SetSecurityOrigin() that
   // wants to inspect sandbox flags.

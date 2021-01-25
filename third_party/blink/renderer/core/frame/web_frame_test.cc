@@ -7577,7 +7577,6 @@ TEST_F(WebFrameTest, IPAddressSpace) {
     params->policy_container = std::make_unique<WebPolicyContainer>(
         WebPolicyContainerDocumentPolicies(), mojo::NullAssociatedRemote());
     params->policy_container->policies.ip_address_space = value;
-    params->sandbox_flags = network::mojom::WebSandboxFlags::kNone;
     web_view_helper.LocalMainFrame()->CommitNavigation(std::move(params),
                                                        nullptr);
     frame_test_helpers::PumpPendingRequestsForFrameToLoad(

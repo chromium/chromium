@@ -123,7 +123,6 @@ void ImageDocumentTest::CreateDocumentWithoutLoadingImage(int view_width,
 
   auto params = std::make_unique<WebNavigationParams>();
   params->url = KURL("http://www.example.com/image.jpg");
-  params->sandbox_flags = network::mojom::WebSandboxFlags::kNone;
 
   const Vector<unsigned char>& data = JpegImage();
   WebNavigationParams::FillStaticResponse(

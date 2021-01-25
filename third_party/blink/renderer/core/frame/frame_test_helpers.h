@@ -548,9 +548,6 @@ class TestWebFrameClient : public WebLocalFrameClient {
   int FinishedLoadingLayoutCount() const {
     return finished_loading_layout_count_;
   }
-  network::mojom::WebSandboxFlags sandbox_flags() const {
-    return sandbox_flags_;
-  }
 
  private:
   void CommitNavigation(std::unique_ptr<WebNavigationInfo>);
@@ -572,10 +569,6 @@ class TestWebFrameClient : public WebLocalFrameClient {
   int visually_non_empty_layout_count_ = 0;
   int finished_parsing_layout_count_ = 0;
   int finished_loading_layout_count_ = 0;
-
-  // The sandbox flags to use when committing navigations.
-  network::mojom::WebSandboxFlags sandbox_flags_ =
-      network::mojom::WebSandboxFlags::kNone;
 
   base::WeakPtrFactory<TestWebFrameClient> weak_factory_{this};
 };

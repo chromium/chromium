@@ -43,7 +43,6 @@ std::unique_ptr<WebNavigationParams> WebNavigationParams::CreateFromInfo(
       info.initiator_origin_trial_features;
   result->frame_policy = info.frame_policy;
   result->had_transient_activation = info.url_request.HasUserGesture();
-  result->sandbox_flags = info.frame_policy.sandbox_flags;
   return result;
 }
 
@@ -53,7 +52,6 @@ WebNavigationParams::CreateWithHTMLStringForTesting(base::span<const char> html,
                                                     const WebURL& base_url) {
   auto result = std::make_unique<WebNavigationParams>();
   result->url = base_url;
-  result->sandbox_flags = network::mojom::WebSandboxFlags::kNone;
   FillStaticResponse(result.get(), "text/html", "UTF-8", html);
   return result;
 }
@@ -66,7 +64,6 @@ WebNavigationParams::CreateWithHTMLBufferForTesting(
     const KURL& base_url) {
   auto result = std::make_unique<WebNavigationParams>();
   result->url = base_url;
-  result->sandbox_flags = network::mojom::WebSandboxFlags::kNone;
   FillStaticResponse(result.get(), "text/html", "UTF-8",
                      base::make_span(buffer->Data(), buffer->size()));
   return result;

@@ -829,7 +829,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
   // renderer and sent to the browser instead of being measured here.
   mojom::CommitNavigationParamsPtr commit_params =
       mojom::CommitNavigationParams::New(
-          base::nullopt, network::mojom::WebSandboxFlags(), override_user_agent,
+          base::nullopt, override_user_agent,
           /*redirects=*/std::vector<GURL>(),
           /*redirect_response=*/
           std::vector<network::mojom::URLResponseHeadPtr>(),
@@ -950,8 +950,8 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateForCommit(
           base::TimeTicks::Now() /* input_start */);
   mojom::CommitNavigationParamsPtr commit_params =
       mojom::CommitNavigationParams::New(
-          origin, network::mojom::WebSandboxFlags(), is_overriding_user_agent,
-          redirects, std::vector<network::mojom::URLResponseHeadPtr>(),
+          origin, is_overriding_user_agent, redirects,
+          std::vector<network::mojom::URLResponseHeadPtr>(),
           std::vector<net::RedirectInfo>(),
           std::string() /* redirect_response */, original_url,
           method /* original_method */, false /* can_load_local_resources */,
@@ -5490,7 +5490,6 @@ void NavigationRequest::ComputeSandboxFlagsToCommit(
                                  ~network::mojom::WebSandboxFlags::
                                      kPropagatesToAuxiliaryBrowsingContexts;
   }
-  commit_params_->sandbox_flags = *sandbox_flags_to_commit_;
 }
 
 void NavigationRequest::CheckStateTransition(NavigationState state) const {
