@@ -169,6 +169,12 @@ export class TabListElement extends CustomElement {
     this.focusOutlineManager_ = FocusOutlineManager.forDocument(document);
 
     /**
+     * Map of tab IDs to whether or not the tab's thumbnail should be tracked.
+     * @private {!Map<number, boolean>}
+     */
+    this.thumbnailTracker_ = new Map();
+
+    /**
      * An intersection observer is needed to observe which TabElements are
      * currently in view or close to being in view, which will help determine
      * which thumbnails need to be tracked to stay fresh and which can be
@@ -177,8 +183,13 @@ export class TabListElement extends CustomElement {
      */
     this.intersectionObserver_ = new IntersectionObserver(entries => {
       for (const entry of entries) {
-        this.tabsApi_.setThumbnailTracked(
-            entry.target.tab.id, entry.isIntersecting);
+        this.thumbnailTracker_.set(entry.target.tab.id, entry.isIntersecting);
+      }
+
+      if (this.scrollingTimeoutId_ === -1) {
+        // If there is no need to wait for scroll to end, immediately process
+        // and request thumbnails.
+        this.flushThumbnailTracker_();
       }
     }, {
       root: this,
@@ -216,6 +227,17 @@ export class TabListElement extends CustomElement {
     /** @private {!Function} */
     this.windowBlurListener_ = () => this.onWindowBlur_();
 
+    /**
+     * Timeout that is created at every scroll event and is either canceled at
+     * each subsequent scroll event or resolves after a few milliseconds after
+     * the last scroll event.
+     * @private {number}
+     */
+    this.scrollingTimeoutId_ = -1;
+
+    /** @private {!Function} */
+    this.scrollListener_ = (e) => this.onScroll_(e);
+
     /** @private {!Function} */
     this.contextMenuListener_ = e => this.onContextMenu_(e);
 
@@ -236,6 +258,7 @@ export class TabListElement extends CustomElement {
     this.addWebUIListener_(
         'received-keyboard-focus', () => this.onReceivedKeyboardFocus_());
     window.addEventListener('blur', this.windowBlurListener_);
+    this.addEventListener('scroll', this.scrollListener_);
 
     this.newTabButtonElement_.addEventListener('click', () => {
       this.tabsApi_.createNewTab();
@@ -316,6 +339,12 @@ export class TabListElement extends CustomElement {
     }
   }
 
+  /** @private */
+  clearScrollTimeout_() {
+    clearTimeout(this.scrollingTimeoutId_);
+    this.scrollingTimeoutId_ = -1;
+  }
+
   connectedCallback() {
     this.tabStripEmbedderProxy_.getLayout().then(
         layout => this.applyCSSDictionary_(layout));
@@ -367,6 +396,7 @@ export class TabListElement extends CustomElement {
         'visibilitychange', this.documentVisibilityChangeListener_);
     window.removeEventListener('blur', this.windowBlurListener_);
     this.webUIListeners_.forEach(removeWebUIListener);
+    this.removeEventListener('scroll', this.scrollListener_);
   }
 
   /**
@@ -686,6 +716,18 @@ export class TabListElement extends CustomElement {
   }
 
   /**
+   * @param {!Event} e
+   * @private
+   */
+  onScroll_(e) {
+    this.clearScrollTimeout_();
+    this.scrollingTimeoutId_ = setTimeout(() => {
+      this.flushThumbnailTracker_();
+      this.clearScrollTimeout_();
+    }, 100);
+  }
+
+  /**
    * @param {!TabElement} element
    * @param {number} index
    * @param {boolean} pinned
@@ -739,6 +781,14 @@ export class TabListElement extends CustomElement {
     animateElementMoved(
         element, previousDomIndex,
         Array.from(this.unpinnedTabsElement_.children).indexOf(element));
+  }
+
+  /** @private */
+  flushThumbnailTracker_() {
+    this.thumbnailTracker_.forEach((shouldTrack, tabId) => {
+      this.tabsApi_.setThumbnailTracked(tabId, shouldTrack);
+    });
+    this.thumbnailTracker_.clear();
   }
 
   /** @private */

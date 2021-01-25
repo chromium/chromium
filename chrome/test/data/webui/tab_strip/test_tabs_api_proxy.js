@@ -27,6 +27,9 @@ export class TestTabsApiProxy extends TestBrowserProxy {
 
     /** @type {!Array<!TabData>} */
     this.tabs_;
+
+    /** @type {!Map<number, number>} */
+    this.thumbnailRequestCounts_ = new Map();
   }
 
   /** @override */
@@ -58,6 +61,14 @@ export class TestTabsApiProxy extends TestBrowserProxy {
     return Promise.resolve(this.tabs_.slice());
   }
 
+  /**
+   * @param {number} tabId
+   * @return {number}
+   */
+  getThumbnailRequestCount(tabId) {
+    return this.thumbnailRequestCounts_.get(tabId) || 0;
+  }
+
   /** @override */
   groupTab(tabId, groupId) {
     this.methodCalled('groupTab', [tabId, groupId]);
@@ -73,6 +84,10 @@ export class TestTabsApiProxy extends TestBrowserProxy {
     this.methodCalled('moveTab', [tabId, newIndex]);
   }
 
+  resetThumbnailRequestCounts() {
+    this.thumbnailRequestCounts_.clear();
+  }
+
   /** @param {!Object<!TabGroupVisualData>} groupVisualData */
   setGroupVisualData(groupVisualData) {
     this.groupVisualData_ = groupVisualData;
@@ -85,6 +100,10 @@ export class TestTabsApiProxy extends TestBrowserProxy {
 
   /** @override */
   setThumbnailTracked(tabId, thumbnailTracked) {
+    if (thumbnailTracked) {
+      this.thumbnailRequestCounts_.set(
+          tabId, this.getThumbnailRequestCount(tabId) + 1);
+    }
     this.methodCalled('setThumbnailTracked', [tabId, thumbnailTracked]);
   }
 
