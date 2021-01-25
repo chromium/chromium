@@ -3,5 +3,5 @@
 # found in the LICENSE file.
 
 declare_args() {
-  use_wuffs_gif_parser = false
+  use_wuffs_gif_parser = true
 }
