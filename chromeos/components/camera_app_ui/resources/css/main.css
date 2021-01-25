@@ -52,7 +52,8 @@ body {
 }
 
 button,
-input,
+input[type=radio],
+input[type=checkbox],
 label {
   background-color: transparent;
   border-radius: 4px;
@@ -64,7 +65,8 @@ label {
   position: relative;
 }
 
-input {
+input[type=radio],
+input[type=checkbox] {
   -webkit-appearance: none;
 }
 
@@ -874,7 +876,7 @@ body.mirror:not(.streaming) #preview-video {
   transform: scale(-1.03, 1.03);
 }
 
-#preview-metadata {
+#expert-controls {
   font-size: 14px;
   left: 60px;
   position: absolute;
@@ -882,22 +884,26 @@ body.mirror:not(.streaming) #preview-video {
   top: 10px;
 }
 
-.metadata-row {
+.expert-control-row {
   margin-top: 5px;
 }
 
-.metadata-category {
-  background-color: rgba(255, 255, 255, 0.7);
+#expert-controls .title {
+  background-color: rgb(0, 128, 0);
   border-radius: 3px;
-  color: grey;
+  color: white;
   display: inline;
   font-weight: bold;
   padding: 1px 3px 1px 3px;
 }
 
-.mode-on .metadata-category {
-  background-color: rgb(0, 128, 0);
-  color: white;
+#expert-controls input {
+  pointer-events: auto;
+}
+
+#expert-controls .metadata-row:not(.mode-on) .title {
+  background-color: rgba(255, 255, 255, 0.7);
+  color: grey;
 }
 
 .metadata-value {
@@ -924,7 +930,7 @@ body.mirror:not(.streaming) #preview-video {
   top: 0;
 }
 
-body:not(.streaming) #preview-metadata,
+body:not(.streaming) #expert-controls,
 body:not(.streaming) #preview-grid,
 body:not(.streaming) #preview-focus,
 body:not(.streaming) #open-settings,
@@ -933,11 +939,10 @@ body:not(.streaming) #options-group {
   visibility: hidden;
 }
 
-body:not(.expert) #preview-metadata,
-body:not(.expert) #preview-metadata::before,
-body:not(.show-metadata) #preview-metadata,
-body:not(.show-metadata) #preview-metadata::before {
-  visibility: hidden;
+body:not(.expert) #settings-expert,
+body:not(.expert) #expert-controls,
+body:not(.show-metadata) #expert-controls>.metadata-row {
+  display: none;
 }
 
 body:not(.expert) #settings-expert {

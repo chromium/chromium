@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import * as barcodeChip from '../../barcode_chip.js';
+import {assertInstanceof} from '../../chrome_util.js';
 import * as dom from '../../dom.js';
 import {BarcodeScanner} from '../../models/barcode.js';
 import {DeviceOperator, parseMetadata} from '../../mojo/device_operator.js';
@@ -33,11 +34,22 @@ export class Preview {
     this.video_ = dom.get('#preview-video', HTMLVideoElement);
 
     /**
-     * Element that shows the preview metadata.
-     * @type {!HTMLElement}
+     * @type {!HTMLDivElement}
      * @private
      */
-    this.metadata_ = dom.get('#preview-metadata', HTMLElement);
+    this.panSlider_ = dom.get('#pan-slider', HTMLDivElement);
+
+    /**
+     * @type {!HTMLDivElement}
+     * @private
+     */
+    this.tiltSlider_ = dom.get('#tilt-slider', HTMLDivElement);
+
+    /**
+     * @type {!HTMLDivElement}
+     * @private
+     */
+    this.zoomSlider_ = dom.get('#zoom-slider', HTMLDivElement);
 
     /**
      * The observer id for preview metadata.
@@ -82,6 +94,62 @@ export class Preview {
     [state.State.EXPERT, state.State.SCAN_BARCODE].forEach((s) => {
       state.addObserver(s, this.updateScanBarcode_.bind(this));
     });
+
+    this.initPTZOptions_();
+  }
+
+  /**
+   * @private
+   */
+  initPTZOptions_() {
+    const getSliderInput = (slider) =>
+        dom.getFrom(slider, 'input[type=range]', HTMLInputElement);
+    for (const {attr, slider} of
+             [{attr: 'pan', slider: this.panSlider_},
+              {attr: 'tilt', slider: this.tiltSlider_},
+              {attr: 'zoom', slider: this.zoomSlider_}]) {
+      const input = getSliderInput(slider);
+      input.addEventListener('input', () => {
+        const track =
+            assertInstanceof(this.stream, MediaStream).getVideoTracks()[0];
+        track.applyConstraints({advanced: [{[attr]: Number(input.value)}]});
+      });
+    }
+    const ptzUIStates = [
+      state.State.EXPERT,
+      state.State.SHOW_PTZ_OPTIONS,
+      state.State.STREAMING,
+    ];
+    const onStateToggled = () => {
+      if (!ptzUIStates.every((s) => state.get(s))) {
+        [this.panSlider_, this.tiltSlider_, this.zoomSlider_].forEach(
+            (slider) => {
+              slider.hidden = true;
+            });
+        return;
+      }
+      const initSlider = (capability, value, slider) => {
+        if (capability === undefined) {
+          slider.hidden = true;
+          return;
+        }
+        slider.hidden = false;
+        const input = getSliderInput(slider);
+        input.min = capability.min;
+        input.max = capability.max;
+        input.step = capability.step;
+        input.value = value;
+      };
+      const track = this.stream.getVideoTracks()[0];
+      const settings = track.getSettings();
+      const cap = track.getCapabilities();
+      initSlider(cap.pan, settings.pan, this.panSlider_);
+      initSlider(cap.tilt, settings.tilt, this.tiltSlider_);
+      initSlider(cap.zoom, settings.zoom, this.zoomSlider_);
+    };
+    for (const s of ptzUIStates) {
+      state.addObserver(s, onStateToggled);
+    }
   }
 
   /**

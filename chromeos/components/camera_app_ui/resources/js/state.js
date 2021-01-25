@@ -49,6 +49,7 @@ export const State = {
   SCAN_BARCODE: 'scan-barcode',
   SHOULD_HANDLE_INTENT_RESULT: 'should-handle-intent-result',
   SHOW_METADATA: 'show-metadata',
+  SHOW_PTZ_OPTIONS: 'show-ptz-options',
   SCREEN_OFF_AUTO: 'screen-off-auto',
   STREAMING: 'streaming',
   SUSPEND: 'suspend',
