@@ -78,6 +78,11 @@ void FakeBluetoothChooserController::SetBluetoothStatus(
     view()->OnRefreshStateChanged(status == BluetoothStatus::SCANNING);
 }
 
+void FakeBluetoothChooserController::SetBluetoothPermission(
+    bool has_permission) {
+  view()->OnAdapterAuthorizationChanged(has_permission);
+}
+
 void FakeBluetoothChooserController::AddDevice(FakeDevice device) {
   devices_.push_back(device);
   view()->OnOptionAdded(devices_.size() - 1);

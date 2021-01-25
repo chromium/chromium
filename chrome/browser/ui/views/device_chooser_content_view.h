@@ -52,6 +52,7 @@ class DeviceChooserContentView : public views::View,
   void OnOptionRemoved(size_t index) override;
   void OnOptionUpdated(size_t index) override;
   void OnAdapterEnabledChanged(bool enabled) override;
+  void OnAdapterAuthorizationChanged(bool authorized) override;
   void OnRefreshStateChanged(bool refreshing) override;
 
   // Note that there is no way to update the window title - for any given
@@ -81,7 +82,17 @@ class DeviceChooserContentView : public views::View,
 
   std::unique_ptr<ChooserController> chooser_controller_;
 
+  // Boolean reflecting the status of the device adapter. For example if the
+  // user has bluetooth turned on or off on their device. This is used to
+  // ensure the users are always informed as to what is needed to get the
+  // devices working.
   bool adapter_enabled_ = true;
+
+  // Boolean reflecting the browsers authorization state. Currently only
+  // Bluetooth on macOS requires applications to acquire permission. This
+  // is used to ensure the users are always informed as to what is needed
+  // to get the devices working in the browser.
+  bool adapter_authorized_ = true;
 
   views::ScrollView* table_parent_ = nullptr;
   views::Checkbox* select_all_view_ = nullptr;
@@ -91,6 +102,7 @@ class DeviceChooserContentView : public views::View,
   views::LabelButton* re_scan_button_ = nullptr;
   views::Throbber* throbber_ = nullptr;
   views::Label* throbber_label_ = nullptr;
+  views::View* adapter_unauthorized_view_ = nullptr;
 
   bool is_initialized_ = false;
   base::CallbackListSubscription select_all_subscription_;

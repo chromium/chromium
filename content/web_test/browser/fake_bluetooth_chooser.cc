@@ -78,6 +78,9 @@ void FakeBluetoothChooser::SetAdapterPresence(AdapterPresence presence) {
     case AdapterPresence::POWERED_ON:
       event_ptr->type = mojom::ChooserEventType::ADAPTER_ENABLED;
       break;
+    case AdapterPresence::UNAUTHORIZED:
+      event_ptr->type = mojom::ChooserEventType::UNAUTHORIZED;
+      break;
   }
   client_->OnEvent(std::move(event_ptr));
 }

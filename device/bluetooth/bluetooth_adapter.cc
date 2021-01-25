@@ -71,6 +71,14 @@ bool BluetoothAdapter::CanPower() const {
   return IsPresent();
 }
 
+BluetoothAdapter::PermissionStatus BluetoothAdapter::GetOsPermissionStatus()
+    const {
+  // If this is not overridden that means OS permission is not
+  // required on this platform so act as though we already have
+  // permission.
+  return PermissionStatus::kAllowed;
+}
+
 void BluetoothAdapter::SetPowered(bool powered,
                                   base::OnceClosure callback,
                                   ErrorCallback error_callback) {

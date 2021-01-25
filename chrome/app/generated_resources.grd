@@ -10189,6 +10189,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_BLUETOOTH_DEVICE_CHOOSER_TURN_ON_BLUETOOTH_LINK_TEXT" desc="Text of the 'Turn on Bluetooth' link when Bluetooth adapter is turned off.">
         Turn on Bluetooth
       </message>
+      <message name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK_TEXT" desc="Text of the 'Open Preferences' link when browser does not have Bluetooth permission.">
+        Open System Preferences
+      </message>
       <message name="IDS_BLUETOOTH_DEVICE_CHOOSER_RE_SCAN" desc="Text of a button the user can click to start a new scan for Bluetooth devices.">
         Re-scan
       </message>

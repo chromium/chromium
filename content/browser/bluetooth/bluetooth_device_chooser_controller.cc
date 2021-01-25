@@ -302,6 +302,13 @@ void BluetoothDeviceChooserController::GetDevice(
     return;
   }
 
+  if (adapter_->GetOsPermissionStatus() ==
+      device::BluetoothAdapter::PermissionStatus::kDenied) {
+    chooser_->SetAdapterPresence(
+        BluetoothChooser::AdapterPresence::UNAUTHORIZED);
+    return;
+  }
+
   if (!chooser_->CanAskForScanningPermission()) {
     DVLOG(1) << "Closing immediately because Chooser cannot obtain permission.";
     OnBluetoothChooserEvent(BluetoothChooserEvent::DENIED_PERMISSION,

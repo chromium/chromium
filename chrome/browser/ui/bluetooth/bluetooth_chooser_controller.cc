@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/net/referrer.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -27,7 +29,17 @@
 #include "chrome/common/webui_url_constants.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if defined(OS_MAC)
+#include "chrome/browser/external_protocol/external_protocol_handler.h"
+#endif
+
 namespace {
+
+#if defined(OS_MAC)
+static constexpr char kBluetoothSettingsUri[] =
+    "x-apple.systempreferences:com.apple.preference.security?Privacy_"
+    "Bluetooth";
+#endif
 
 Browser* GetBrowser() {
   chrome::ScopedTabbedBrowserDisplayer browser_displayer(
@@ -48,7 +60,11 @@ BluetoothChooserController::BluetoothChooserController(
     : ChooserController(owner,
                         IDS_BLUETOOTH_DEVICE_CHOOSER_PROMPT_ORIGIN,
                         IDS_BLUETOOTH_DEVICE_CHOOSER_PROMPT_EXTENSION_NAME),
-      event_handler_(event_handler) {}
+      event_handler_(event_handler) {
+  if (owner) {
+    frame_tree_node_id_ = owner->GetFrameTreeNodeId();
+  }
+}
 
 BluetoothChooserController::~BluetoothChooserController() {}
 
@@ -131,6 +147,19 @@ void BluetoothChooserController::OpenAdapterOffHelpUrl() const {
 #endif
 }
 
+void BluetoothChooserController::OpenPermissionPreferences() const {
+#if defined(OS_MAC)
+  content::WebContents* web_contents =
+      content::WebContents::FromFrameTreeNodeId(frame_tree_node_id_);
+  if (web_contents) {
+    ExternalProtocolHandler::LaunchUrlWithoutSecurityCheck(
+        GURL(kBluetoothSettingsUri), web_contents);
+  }
+#else
+  NOTREACHED();
+#endif
+}
+
 void BluetoothChooserController::Select(const std::vector<size_t>& indices) {
   DCHECK_EQ(1u, indices.size());
   size_t index = indices[0];
@@ -181,6 +210,11 @@ void BluetoothChooserController::OnAdapterPresenceChanged(
       if (view()) {
         view()->OnAdapterEnabledChanged(
             true /* Bluetooth adapter is turned on */);
+      }
+      break;
+    case content::BluetoothChooser::AdapterPresence::UNAUTHORIZED:
+      if (view()) {
+        view()->OnAdapterAuthorizationChanged(/*authorized=*/false);
       }
       break;
   }

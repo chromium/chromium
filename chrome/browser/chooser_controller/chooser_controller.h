@@ -54,6 +54,10 @@ class ChooserController {
     // Called when the device adapter is turned on or off.
     virtual void OnAdapterEnabledChanged(bool enabled) = 0;
 
+    // Called when the platform level device permission is changed.
+    // Currently only needed on macOS.
+    virtual void OnAdapterAuthorizationChanged(bool authorized);
+
     // Called when refreshing options is in progress or complete.
     virtual void OnRefreshStateChanged(bool refreshing) = 0;
 
@@ -160,6 +164,9 @@ class ChooserController {
 
   // Provide help information when the adapter is off.
   virtual void OpenAdapterOffHelpUrl() const;
+
+  // Navigate user to preferences in order to acquire Bluetooth permission.
+  virtual void OpenPermissionPreferences() const;
 
   // Only one view may be registered at a time.
   void set_view(View* view) { view_ = view; }

@@ -42,6 +42,9 @@ class WebTestBluetoothChooserFactory::Chooser : public BluetoothChooser {
       case AdapterPresence::POWERED_ON:
         factory_->events_.push_back("adapter-enabled");
         break;
+      case AdapterPresence::UNAUTHORIZED:
+        factory_->events_.push_back("unauthorized");
+        break;
     }
   }
 

@@ -34,6 +34,7 @@ enum ChooserEventType {
   DISCOVERING,
   DISCOVERY_IDLE,
   ADD_OR_UPDATE_DEVICE,
+  UNAUTHORIZED,
 };
 
 // FakeBluetoothChooser allows clients to control the global state of the

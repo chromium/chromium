@@ -68,6 +68,10 @@ base::string16 ChooserController::GetTitle() const {
   return title_;
 }
 
+void ChooserController::View::OnAdapterAuthorizationChanged(bool authorized) {
+  NOTREACHED();
+}
+
 bool ChooserController::ShouldShowIconBeforeText() const {
   return false;
 }
@@ -121,5 +125,9 @@ void ChooserController::RefreshOptions() {
 }
 
 void ChooserController::OpenAdapterOffHelpUrl() const {
+  NOTREACHED();
+}
+
+void ChooserController::OpenPermissionPreferences() const {
   NOTREACHED();
 }

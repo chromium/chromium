@@ -71,6 +71,7 @@ class FakeBluetoothChooserController : public ChooserController {
   MOCK_CONST_METHOD0(OpenAdapterOffHelpUrl, void());
 
   void SetBluetoothStatus(BluetoothStatus status);
+  void SetBluetoothPermission(bool has_permission);
   void AddDevice(FakeDevice device);
   void RemoveDevice(size_t index);
   void UpdateDevice(size_t index, FakeDevice new_device);

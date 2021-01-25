@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "build/build_config.h"
 #include "chrome/browser/chooser_controller/fake_bluetooth_chooser_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -81,6 +82,9 @@ class DeviceChooserContentViewTest : public ChromeViewsTestBase {
   ui::TableModel* table_model() { return table_view()->model(); }
   views::View* no_options_view() { return content_view_->no_options_view_; }
   views::View* adapter_off_view() { return content_view_->adapter_off_view_; }
+  views::View* adapter_unauthorized_view() {
+    return content_view_->adapter_unauthorized_view_;
+  }
   views::LabelButton* re_scan_button() {
     return content_view_->ReScanButtonForTesting();
   }
@@ -246,6 +250,30 @@ TEST_F(DeviceChooserContentViewTest, TurnBluetoothOffAndOn) {
   EXPECT_TRUE(re_scan_button()->GetVisible());
   EXPECT_TRUE(re_scan_button()->GetEnabled());
 }
+
+#if defined(OS_MAC)
+TEST_F(DeviceChooserContentViewTest, BluetoothPermissionDenied) {
+  AddUnpairedDevice();
+  controller()->SetBluetoothPermission(/*has_permission=*/false);
+
+  EXPECT_FALSE(table_parent()->GetVisible());
+  EXPECT_FALSE(no_options_view()->GetVisible());
+  EXPECT_FALSE(adapter_off_view()->GetVisible());
+  EXPECT_TRUE(adapter_unauthorized_view()->GetVisible());
+  EXPECT_FALSE(throbber()->GetVisible());
+  EXPECT_TRUE(re_scan_button()->GetVisible());
+  EXPECT_FALSE(re_scan_button()->GetEnabled());
+
+  controller()->RemoveDevice(0);
+  controller()->SetBluetoothPermission(/*has_permission=*/true);
+  ExpectNoDevicesWithMessageVisible();
+  EXPECT_FALSE(adapter_off_view()->GetVisible());
+  EXPECT_FALSE(adapter_unauthorized_view()->GetVisible());
+  EXPECT_FALSE(throbber()->GetVisible());
+  EXPECT_TRUE(re_scan_button()->GetVisible());
+  EXPECT_TRUE(re_scan_button()->GetEnabled());
+}
+#endif
 
 TEST_F(DeviceChooserContentViewTest, ScanForDevices) {
   controller()->SetBluetoothStatus(

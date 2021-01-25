@@ -53,7 +53,7 @@ class CONTENT_EXPORT BluetoothChooser {
 
   // Lets the chooser tell the user the state of the Bluetooth adapter. This
   // defaults to POWERED_ON.
-  enum class AdapterPresence { ABSENT, POWERED_OFF, POWERED_ON };
+  enum class AdapterPresence { ABSENT, POWERED_OFF, POWERED_ON, UNAUTHORIZED };
   virtual void SetAdapterPresence(AdapterPresence presence) {}
 
   // Lets the chooser tell the user whether discovery is happening. This

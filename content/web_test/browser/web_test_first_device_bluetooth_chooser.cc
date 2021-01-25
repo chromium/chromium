@@ -24,6 +24,7 @@ void WebTestFirstDeviceBluetoothChooser::SetAdapterPresence(
       event_handler_.Run(BluetoothChooserEvent::CANCELLED, "");
       break;
     case AdapterPresence::POWERED_ON:
+    case AdapterPresence::UNAUTHORIZED:
       break;
   }
 }
