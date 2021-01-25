@@ -266,8 +266,8 @@ FYI_BUILDERS = {
     },
     'fuchsia-builder-perf-fyi': {
         'additional_compile_targets': [
-            'web_engine_shell', 'web_engine_unittests', 'cast_runner_unittests',
-            'chromedriver', 'chromium_builder_perf'
+            'web_engine_shell_pkg', 'web_engine_unittests',
+            'cast_runner_unittests', 'chromedriver', 'chromium_builder_perf'
         ],
     },
     'lacros-eve-perf-fyi': {

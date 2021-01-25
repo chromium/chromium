@@ -39,8 +39,10 @@
   },
   "fuchsia-builder-perf-fyi": {
     "gn_args": {
+      "ffmpeg_branding": "Chrome",
       "is_chrome_branded": true,
       "is_official_build": true,
+      "proprietary_codecs": true,
       "symbol_level": 1,
       "target_cpu": "arm64",
       "target_os": "fuchsia",

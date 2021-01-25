@@ -2361,7 +2361,7 @@
     ],
 
     'official_goma_fuchsia_arm64_perf': [
-      'official', 'goma', 'minimal_symbols', 'fuchsia', 'arm64',
+      'official', 'goma', 'minimal_symbols', 'fuchsia', 'arm64', 'ffmpeg_branding_chrome', 'proprietary_codecs'
     ],
 
     'official_goma_linux_pgo': [
