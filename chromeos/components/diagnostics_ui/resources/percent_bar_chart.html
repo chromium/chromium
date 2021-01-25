@@ -2,18 +2,11 @@
   #chartName {
     @apply --diagnostics-chart-title-font;
     color: var(--google-grey-700);
+    display: inline-block;
     font-family: Roboto;
     font-size: 13px;
+    height: 20px;
     line-height: 20px;
-    margin-top: 8px;
-  }
-
-  #headerIcon {
-    /*
-     * TODO(joonbug): Replace w/ real colors, and also extend as a property
-     * if dynamic colors.
-     */
-    --iron-icon-fill-color: rgb(26,115,232);
   }
 
   paper-progress {
@@ -33,9 +26,6 @@
     </paper-progress>
   </div>
   <label id="chartName">
-    <template is="dom-if" if="[[headerIcon.length]]">
-      <iron-icon id="headerIcon" icon="[[headerIcon]]"></iron-icon>
-    </template>
     [[header]]
   </label>
 </div>

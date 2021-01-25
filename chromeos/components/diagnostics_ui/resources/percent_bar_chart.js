@@ -28,12 +28,6 @@ Polymer({
       type: String,
     },
 
-    /** @type {string} */
-    headerIcon: {
-      type: String,
-      value: '',
-    },
-
     /** @type {number} */
     value: {
       type: Number,

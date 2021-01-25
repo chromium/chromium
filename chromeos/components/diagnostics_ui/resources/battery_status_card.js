@@ -80,7 +80,7 @@ Polymer({
     /** @protected {string} */
     powerTimeString_: {
       type: String,
-      computed: 'decodeString16_(batteryChargeStatus_.powerTime)',
+      computed: 'getPowerTimeString_(batteryChargeStatus_.powerTime)',
     },
 
     /** @type {boolean} */
@@ -184,13 +184,24 @@ Polymer({
   },
 
   /**
-   * Converts utf16 to a readable string.
-   * @param {!mojoBase.mojom.String16} str16
+   * Get power time string from battery status.
    * @return {string}
-   * @private
+   * @protected
    */
-  decodeString16_(str16) {
-    return mojoString16ToString(str16);
+  getPowerTimeString_() {
+    const powerTimeStr = this.batteryChargeStatus_.powerTime;
+    if (!powerTimeStr || powerTimeStr.data.length === 0) {
+      return '';
+    }
+
+    const timeValue = mojoString16ToString(powerTimeStr);
+    const charging = this.batteryChargeStatus_ &&
+        this.batteryChargeStatus_.powerAdapterStatus ===
+            chromeos.diagnostics.mojom.ExternalPowerSource.kAc;
+
+    return charging ?
+        loadTimeData.getStringF('batteryChargingStatusText', timeValue) :
+        loadTimeData.getStringF('batteryDischargingStatusText', timeValue);
   },
 
   /**
