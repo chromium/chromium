@@ -749,7 +749,8 @@ void LayoutTheme::SetCustomFocusRingColor(const Color& c) {
   has_custom_focus_ring_color_ = true;
 }
 
-Color LayoutTheme::FocusRingColor() const {
+Color LayoutTheme::FocusRingColor(
+    mojom::blink::ColorScheme color_scheme) const {
   return has_custom_focus_ring_color_ ? custom_focus_ring_color_
                                       : GetTheme().PlatformFocusRingColor();
 }

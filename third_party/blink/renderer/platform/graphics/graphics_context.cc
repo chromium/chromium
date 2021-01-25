@@ -428,9 +428,7 @@ void GraphicsContext::DrawFocusRing(const Vector<IntRect>& rects,
                                     const Color& color,
                                     mojom::blink::ColorScheme color_scheme) {
 #if defined(OS_MAC)
-  const Color& inner_color = color_scheme == mojom::blink::ColorScheme::kDark
-                                 ? SkColorSetRGB(0x99, 0xC8, 0xFF)
-                                 : color;
+  const Color& inner_color = color;
 #else
   const Color& inner_color =
       color_scheme == mojom::blink::ColorScheme::kDark ? SK_ColorWHITE : color;

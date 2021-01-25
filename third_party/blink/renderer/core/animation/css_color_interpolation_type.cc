@@ -68,7 +68,9 @@ CSSColorInterpolationType::CreateInterpolableColor(CSSValueID keyword) {
     case CSSValueID::kInternalQuirkInherit:
       return CreateInterpolableColorForIndex(kQuirkInherit);
     case CSSValueID::kWebkitFocusRingColor:
-      return CreateInterpolableColor(LayoutTheme::GetTheme().FocusRingColor());
+      // TODO(crbug.com/929098) Need to pass an appropriate color scheme here.
+      return CreateInterpolableColor(LayoutTheme::GetTheme().FocusRingColor(
+          ComputedStyle::InitialStyle().UsedColorScheme()));
     default:
       DCHECK(StyleColor::IsColorKeyword(keyword));
       // TODO(crbug.com/929098) Need to pass an appropriate color scheme here.

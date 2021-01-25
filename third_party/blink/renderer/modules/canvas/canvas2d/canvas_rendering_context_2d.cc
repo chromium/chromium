@@ -1246,7 +1246,11 @@ void CanvasRenderingContext2D::DrawFocusRing(const Path& path) {
   if (!GetOrCreatePaintCanvas())
     return;
 
-  SkColor color = LayoutTheme::GetTheme().FocusRingColor().Rgb();
+  // TODO(crbug.com/929098) Need to pass an appropriate color scheme here.
+  SkColor color =
+      LayoutTheme::GetTheme()
+          .FocusRingColor(ComputedStyle::InitialStyle().UsedColorScheme())
+          .Rgb();
   const int kFocusRingWidth = 5;
   DrawPlatformFocusRing(path.GetSkPath(), GetPaintCanvas(), color,
                         /*width=*/kFocusRingWidth, /*radius=*/kFocusRingWidth);

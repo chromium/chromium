@@ -155,7 +155,7 @@ Color TextLinkColors::ColorFromCSSValue(const CSSValue& value,
     case CSSValueID::kWebkitActivelink:
       return ActiveLinkColor(color_scheme);
     case CSSValueID::kWebkitFocusRingColor:
-      return LayoutTheme::GetTheme().FocusRingColor();
+      return LayoutTheme::GetTheme().FocusRingColor(color_scheme);
     case CSSValueID::kCurrentcolor:
       return current_color;
     default:
