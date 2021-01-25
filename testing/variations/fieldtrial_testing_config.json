@@ -4577,7 +4577,7 @@
             ]
         }
     ],
-    "OmniboxSpareRenderer": [
+    "OmniboxSpareRendererGWS": [
         {
             "platforms": [
                 "android"
