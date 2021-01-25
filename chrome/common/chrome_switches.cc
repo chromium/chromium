@@ -545,6 +545,11 @@ const char kSupervisedUserId[]              = "managed-user-id";
 // testing purposes.
 const char kSystemLogUploadFrequency[] = "system-log-upload-frequency";
 
+// This flag makes Chrome auto-accept/reject requests to capture the current
+// tab. It should only be used for tests.
+const char kThisTabCaptureAutoAccept[] = "auto-accept-this-tab-capture";
+const char kThisTabCaptureAutoReject[] = "auto-reject-this-tab-capture";
+
 // Passes the name of the current running automated test to Chrome.
 const char kTestName[]                      = "test-name";
 

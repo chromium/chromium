@@ -4,10 +4,12 @@
 
 #include "chrome/browser/ui/views/desktop_capture/get_current_browsing_context_media_dialog.h"
 
+#include "base/command_line.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_manager.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
@@ -90,8 +92,16 @@ class GetCurrentBrowsingContextMediaDialogDelegate
 };
 }  // namespace
 
-GetCurrentBrowsingContextMediaDialog::GetCurrentBrowsingContextMediaDialog() =
-    default;
+GetCurrentBrowsingContextMediaDialog::GetCurrentBrowsingContextMediaDialog()
+    : auto_accept_tab_capture_for_testing_(
+          base::CommandLine::ForCurrentProcess()->HasSwitch(
+              switches::kThisTabCaptureAutoAccept)),
+      auto_reject_tab_capture_for_testing_(
+          base::CommandLine::ForCurrentProcess()->HasSwitch(
+              switches::kThisTabCaptureAutoReject)) {
+  DCHECK(!auto_accept_tab_capture_for_testing_ ||
+         !auto_reject_tab_capture_for_testing_);
+}
 
 GetCurrentBrowsingContextMediaDialog::~GetCurrentBrowsingContextMediaDialog() =
     default;
@@ -121,6 +131,8 @@ void GetCurrentBrowsingContextMediaDialog::Show(
 
   chrome::RecordDialogCreation(
       chrome::DialogIdentifier::CURRENT_BROWSING_CONTEXT_CONFIRMATION_BOX);
+
+  MaybeAutomateUserInput();
 }
 
 std::unique_ptr<views::DialogDelegate>
@@ -169,4 +181,23 @@ GetCurrentBrowsingContextMediaDialog::CreateDialogHost(
   dialog_host->SetOwnedByWidget(true);
   dialog_model_host_for_testing_ = dialog_host.get();
   return dialog_host;
+}
+
+void GetCurrentBrowsingContextMediaDialog::MaybeAutomateUserInput() {
+  if (!auto_accept_tab_capture_for_testing_ &&
+      !auto_reject_tab_capture_for_testing_) {
+    return;
+  }
+
+  // dialog_model_host_for_testing_ outlives the callback here because its
+  // ownership is passed to the widget, when the widget is created, and this
+  // widget cannot get destroyed in a test without going through this callback.
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](views::BubbleDialogModelHost* dialog_host, bool accept) {
+            accept ? dialog_host->Accept() : dialog_host->Cancel();
+          },
+          base::Unretained(dialog_model_host_for_testing_),
+          auto_accept_tab_capture_for_testing_));
 }

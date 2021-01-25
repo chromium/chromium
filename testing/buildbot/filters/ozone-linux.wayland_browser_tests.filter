@@ -3,6 +3,8 @@
 # Failed:
 -All/PopupBrowserTest.MoveClampedToCurrentDisplay/0
 -All/PopupBrowserTest.MoveClampedToCurrentDisplay/1
+-All/WebRtcScreenCaptureBrowserTestWithPicker.ScreenCaptureVideo/0
+-All/WebRtcScreenCaptureBrowserTestWithPicker.ScreenCaptureVideoAndAudio/0
 -AutomationManagerAuraBrowserTest.EventFromAction
 -AutomationManagerAuraBrowserTest.TransientFocusChangesAreSuppressed
 -BrowserActionApiTest.BrowserActionOpenPopupOnPopup
@@ -29,8 +31,6 @@
 -TabHoverCardBubbleViewBrowserTest.WidgetNotVisibleOnMousePressAfterTabFocus
 -TabHoverCardBubbleViewBrowserTest.WidgetVisibleOnKeyPressAfterTabFocus
 -WebRtcDesktopCaptureBrowserTest.RunsScreenshareFromOneTabToAnother
--WebRtcGetDisplayMediaBrowserTestWithPicker.GetDisplayMediaVideo
--WebRtcGetDisplayMediaBrowserTestWithPicker.GetDisplayMediaVideoAndAudio
 -BrowserViewTest.GetAccessibleTabModalDialogTree
 -IconLoaderBrowserTest.LoadGroup
 -PrintBrowserTest.PDFPluginNotKeyboardFocusable

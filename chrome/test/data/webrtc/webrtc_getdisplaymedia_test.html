@@ -18,17 +18,24 @@
     video.srcObject = stream;
     video_track = stream.getVideoTracks()[0];
     video.play();
-    returnToTest("getdisplaymedia-success");
+    returnToTest("capture-success");
   }
 
   function handleError(error) {
     console.log('getUserMedia error: ' + error.name, error);
-    returnToTest("getdisplaymedia-failure");
+    returnToTest("capture-failure");
   }
 
-  function runGetDisplayMedia(constraints) {
-    navigator.mediaDevices.getDisplayMedia(constraints).
-      then(handleSuccess).catch(handleError);
+  function runTestedFunction(testedFunction, constraints) {
+    if (testedFunction == "getDisplayMedia") {
+      navigator.mediaDevices.getDisplayMedia(constraints).
+        then(handleSuccess).catch(handleError);
+    } else if (testedFunction == "getCurrentBrowsingContextMedia") {
+      navigator.mediaDevices.getCurrentBrowsingContextMedia(constraints).
+        then(handleSuccess).catch(handleError);
+    } else {
+      returnToTest("Unexpected test fixture error - unknown function.");
+    }
   }
 
   function hasAudioTrack() {

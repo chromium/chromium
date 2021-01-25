@@ -21,8 +21,8 @@
 
 class GURL;
 struct ScreenshotArea;
-FORWARD_DECLARE_TEST(WebRtcGetDisplayMediaBrowserTestWithPicker,
-                     GetDisplayMediaVideoWithDlp);
+FORWARD_DECLARE_TEST(WebRtcScreenCaptureBrowserTestWithPicker,
+                     ScreenCaptureVideoWithDlp);
 
 namespace aura {
 class Window;
@@ -111,8 +111,8 @@ class DlpContentManager : public DlpWindowObserver::Delegate {
                            GetRestrictionSetForURL);
   FRIEND_TEST_ALL_PREFIXES(DlpContentManagerBrowserTest,
                            ScreenCaptureNotification);
-  FRIEND_TEST_ALL_PREFIXES(::WebRtcGetDisplayMediaBrowserTestWithPicker,
-                           GetDisplayMediaVideoWithDlp);
+  FRIEND_TEST_ALL_PREFIXES(::WebRtcScreenCaptureBrowserTestWithPicker,
+                           ScreenCaptureVideoWithDlp);
   friend class DlpContentManagerTest;
   friend class DlpContentTabHelper;
   friend class MockDlpContentManager;
