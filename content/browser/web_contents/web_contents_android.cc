@@ -662,13 +662,16 @@ void WebContentsAndroid::RequestAccessibilitySnapshot(
   ScopedJavaGlobalRef<jobject> j_callback;
   j_callback.Reset(env, callback);
 
+  // Set a timeout of 2.0 seconds to compute the snapshot of the
+  // accessibility tree because Google Assistant ignores results that
+  // don't come back within 3.0 seconds.
   static_cast<WebContentsImpl*>(web_contents_)
       ->RequestAXTreeSnapshot(
           base::BindOnce(&AXTreeSnapshotCallback, j_callback),
           ui::kAXModeComplete,
           /* exclude_offscreen= */ false,
           /* max_nodes= */ 5000,
-          /* timeout= */ {});
+          /* timeout= */ base::TimeDelta::FromSeconds(2));
 }
 
 ScopedJavaLocalRef<jstring> WebContentsAndroid::GetEncoding(
