@@ -894,17 +894,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_Full_20200214",
-                    "params": {
-                        "availability": "any",
-                        "event_trigger": "name:keyboard_accessory_address_filling_iph_trigger;comparator:<1;window:90;storage:360",
-                        "event_used": "name:keyboard_accessory_address_suggestion_accepted;comparator:<2;window:90;storage:360",
-                        "session_rate": "<1"
-                    },
+                    "name": "Enabled_Full_With_Recover_20201216",
                     "enable_features": [
                         "AutofillKeyboardAccessory",
                         "AutofillManualFallbackAndroid",
-                        "IPH_KeyboardAccessoryAddressFilling",
                         "RecoverFromNeverSaveAndroid"
                     ]
                 }
@@ -3647,6 +3640,28 @@
             ]
         }
     ],
+    "KeyboardAccessoryAddressIPH": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Address_IPH_Enabled",
+                    "params": {
+                        "availability": "any",
+                        "event_trigger": "name:keyboard_accessory_address_filling_iph_trigger;comparator:<10;window:90;storage:360",
+                        "event_used": "name:keyboard_accessory_address_suggestion_accepted;comparator:<2;window:90;storage:360",
+                        "session_rate": "<1"
+                    },
+                    "enable_features": [
+                        "IPH_KeyboardAccessoryAddressFilling"
+                    ],
+                    "disable_features": []
+                }
+            ]
+        }
+    ],
     "KeyboardAccessoryPasswordIPH": [
         {
             "platforms": [
@@ -3679,7 +3694,7 @@
                     "name": "Payment_IPH_Enabled",
                     "params": {
                         "availability": "any",
-                        "event_trigger": "name:keyboard_accessory_payment_filling_iph_trigger;comparator:<1;window:90;storage:360",
+                        "event_trigger": "name:keyboard_accessory_payment_filling_iph_trigger;comparator:<10;window:90;storage:360",
                         "event_used": "name:keyboard_accessory_payment_suggestion_accepted;comparator:<2;window:90;storage:360",
                         "session_rate": "<1"
                     },
@@ -3724,7 +3739,7 @@
                     "name": "Swiping_IPH_Enabled",
                     "params": {
                         "availability": "any",
-                        "event_trigger": "name:keyboard_accessory_bar_swiping_iph_trigger;comparator:<1;window:90;storage:360",
+                        "event_trigger": "name:keyboard_accessory_bar_swiping_iph_trigger;comparator:<10;window:90;storage:360",
                         "event_used": "name:keyboard_accessory_bar_swiped;comparator:<2;window:90;storage:360",
                         "session_rate": "<1"
                     },
