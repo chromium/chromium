@@ -3212,8 +3212,10 @@ void AXNodeObject::AddNodeChildren() {
       continue;
 
     // TODO(crbug.com/1158511) This shouldn't be needed!
-    if (IsDetached())
+    if (IsDetached()) {
+      NOTREACHED();
       return;
+    }
 
     AddChild(child_obj);
   }
