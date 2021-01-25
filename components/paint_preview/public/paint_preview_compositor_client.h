@@ -29,8 +29,11 @@ class PaintPreviewCompositorClient {
   // isn't started.
   virtual const base::Optional<base::UnguessableToken>& Token() const = 0;
 
-  // Adds |closure| as a disconnect handler.
+  // Adds `closure` as a disconnect handler.
   virtual void SetDisconnectHandler(base::OnceClosure closure) = 0;
+
+  // Note the BitmapFor* methods use `clip_rect` values relative to the captured
+  // content.
 
   // mojom::PaintPreviewCompositor API
   virtual void BeginSeparatedFrameComposite(

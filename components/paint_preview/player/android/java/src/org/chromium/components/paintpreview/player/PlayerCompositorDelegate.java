@@ -79,7 +79,8 @@ public interface PlayerCompositorDelegate {
     /**
      * Requests a new bitmap for a frame from the Paint Preview compositor.
      * @param frameGuid The GUID of the frame.
-     * @param clipRect The {@link Rect} for which the bitmap is requested.
+     * @param clipRect The {@link Rect} for which the bitmap is requested. Note: this is relative
+     * to the captured content.
      * @param scaleFactor The scale factor at which the bitmap should be rastered.
      * @param bitmapCallback The callback that receives the bitmap once it's ready. Won't get called
      * if there are any errors.
@@ -93,7 +94,8 @@ public interface PlayerCompositorDelegate {
     /**
      * Requests a new bitmap for a frame from the Paint Preview compositor if {@link mainFrameMode}
      * was passed as true as a parameter in the {@link Factory}
-     * @param clipRect The {@link Rect} for which the bitmap is requested.
+     * @param clipRect The {@link Rect} for which the bitmap is requested. Note: this is relative
+     * to the captured content.
      * @param scaleFactor The scale factor at which the bitmap should be rastered.
      * @param bitmapCallback The callback that receives the bitmap once it's ready. Won't get called
      * if there are any errors.

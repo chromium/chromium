@@ -255,6 +255,31 @@ TEST_F(PaintPreviewRecorderRenderViewTest, TestCaptureInvalidFile) {
   content::RunAllTasksUntilIdle();
 }
 
+TEST_F(PaintPreviewRecorderRenderViewTest, TestCaptureInvalidXYClip) {
+  LoadHTML("<body></body>");
+
+  mojom::PaintPreviewCaptureParamsPtr params =
+      mojom::PaintPreviewCaptureParams::New();
+  auto token = base::UnguessableToken::Create();
+  params->guid = token;
+  params->clip_rect = gfx::Rect(1000000, 1000000, 10, 10);
+  params->is_main_frame = true;
+  params->capture_links = true;
+  params->max_capture_size = 0;
+  base::FilePath skp_path = MakeTestFilePath("test.skp");
+  base::File skp_file(skp_path,
+                      base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
+  params->file = std::move(skp_file);
+
+  content::RenderFrame* frame = GetFrame();
+  PaintPreviewRecorderImpl paint_preview_recorder(frame);
+  paint_preview_recorder.CapturePaintPreview(
+      std::move(params),
+      base::BindOnce(&OnCaptureFinished,
+                     mojom::PaintPreviewStatus::kCaptureFailed, nullptr));
+  content::RunAllTasksUntilIdle();
+}
+
 TEST_F(PaintPreviewRecorderRenderViewTest, TestCaptureMainFrameAndLocalFrame) {
   LoadHTML(
       "<!doctype html>"
@@ -337,6 +362,73 @@ TEST_F(PaintPreviewRecorderRenderViewTest, TestCaptureCustomClipRect) {
   EXPECT_EQ(out_response->links[0]->rect.y(), 20);
   EXPECT_EQ(out_response->links[0]->rect.width(), 40);
   EXPECT_EQ(out_response->links[0]->rect.height(), 30);
+}
+
+TEST_F(PaintPreviewRecorderRenderViewTest, TestCaptureWithClamp) {
+  LoadHTML(
+      "<!doctype html>"
+      "<body>"
+      "  <div style='width: 600px; height: 600px; background-color: #0000ff;'>"
+      "     <div style='width: 300px; height: 300px; background-color: "
+      "          #ffff00; position: relative; left: 150px; top: 150px'></div>"
+      "  </div>"
+      "  <a style='position: absolute; left: 160px; top: 170px; width: 40px; "
+      "   height: 30px;' href='http://www.example.com'>Foo</a>"
+      "</body>");
+
+  auto out_response = mojom::PaintPreviewCaptureResponse::New();
+  content::RenderFrame* frame = GetFrame();
+  const size_t kLarge = 1000000;
+  gfx::Rect clip_rect = gfx::Rect(0, 0, kLarge, kLarge);
+  base::FilePath skp_path = RunCapture(frame, &out_response, true, clip_rect);
+
+  EXPECT_TRUE(out_response->embedding_token.has_value());
+  EXPECT_EQ(frame->GetWebFrame()->GetEmbeddingToken(),
+            out_response->embedding_token.value());
+  EXPECT_EQ(out_response->content_id_to_embedding_token.size(), 0U);
+
+  sk_sp<SkPicture> pic;
+  {
+    base::ScopedAllowBlockingForTesting scope;
+    FileRStream rstream(base::File(
+        skp_path, base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_READ));
+    pic = SkPicture::MakeFromStream(&rstream, nullptr);
+  }
+  EXPECT_LT(pic->cullRect().height(), kLarge);
+  EXPECT_LT(pic->cullRect().width(), kLarge);
+}
+
+TEST_F(PaintPreviewRecorderRenderViewTest, TestCaptureFullIfWidthHeightAre0) {
+  LoadHTML(
+      "<!doctype html>"
+      "<body>"
+      "  <div style='width: 600px; height: 600px; background-color: #0000ff;'>"
+      "     <div style='width: 300px; height: 300px; background-color: "
+      "          #ffff00; position: relative; left: 150px; top: 150px'></div>"
+      "  </div>"
+      "  <a style='position: absolute; left: 160px; top: 170px; width: 40px; "
+      "   height: 30px;' href='http://www.example.com'>Foo</a>"
+      "</body>");
+
+  auto out_response = mojom::PaintPreviewCaptureResponse::New();
+  content::RenderFrame* frame = GetFrame();
+  gfx::Rect clip_rect = gfx::Rect(1, 1, 0, 0);
+  base::FilePath skp_path = RunCapture(frame, &out_response, true, clip_rect);
+
+  EXPECT_TRUE(out_response->embedding_token.has_value());
+  EXPECT_EQ(frame->GetWebFrame()->GetEmbeddingToken(),
+            out_response->embedding_token.value());
+  EXPECT_EQ(out_response->content_id_to_embedding_token.size(), 0U);
+
+  sk_sp<SkPicture> pic;
+  {
+    base::ScopedAllowBlockingForTesting scope;
+    FileRStream rstream(base::File(
+        skp_path, base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_READ));
+    pic = SkPicture::MakeFromStream(&rstream, nullptr);
+  }
+  EXPECT_GT(pic->cullRect().height(), 0U);
+  EXPECT_GT(pic->cullRect().width(), 0U);
 }
 
 TEST_F(PaintPreviewRecorderRenderViewTest, CaptureWithTranslate) {
