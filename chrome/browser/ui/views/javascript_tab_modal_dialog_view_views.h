@@ -35,7 +35,6 @@ class JavaScriptTabModalDialogViewViews
   // views::WidgetDelegate:
   bool ShouldShowCloseButton() const override;
   views::View* GetInitiallyFocusedView() override;
-  ui::ModalType GetModalType() const override;
 
   // views::View:
   void AddedToWidget() override;

@@ -95,6 +95,7 @@ EnterpriseStartupDialogView::EnterpriseStartupDialogView(
   set_draggable(true);
   SetButtons(ui::DIALOG_BUTTON_OK);
   SetExtraView(CreateLogoView());
+  SetModalType(ui::MODAL_TYPE_NONE);
   SetAcceptCallback(
       base::BindOnce(&EnterpriseStartupDialogView::RunDialogCallback,
                      base::Unretained(this), true));
@@ -188,10 +189,6 @@ void EnterpriseStartupDialogView::RunDialogCallback(bool was_accepted) {
 
 bool EnterpriseStartupDialogView::ShouldShowWindowTitle() const {
   return false;
-}
-
-ui::ModalType EnterpriseStartupDialogView::GetModalType() const {
-  return ui::MODAL_TYPE_NONE;
 }
 
 gfx::Size EnterpriseStartupDialogView::CalculatePreferredSize() const {

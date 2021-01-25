@@ -25,6 +25,7 @@ UserManagerProfileDialogDelegate::UserManagerProfileDialogDelegate(
   SetHasWindowSizeControls(true);
   SetTitle(IDS_PROFILES_GAIA_SIGNIN_TITLE);
   SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetModalType(ui::MODAL_TYPE_WINDOW);
   set_use_custom_frame(false);
 
   web_view_ = AddChildView(std::move(web_view));
@@ -84,10 +85,6 @@ void UserManagerProfileDialogDelegate::AddObserver(
 
 void UserManagerProfileDialogDelegate::RemoveObserver(
     web_modal::ModalDialogHostObserver* observer) {}
-
-ui::ModalType UserManagerProfileDialogDelegate::GetModalType() const {
-  return ui::MODAL_TYPE_WINDOW;
-}
 
 void UserManagerProfileDialogDelegate::DeleteDelegate() {
   OnDialogDestroyed();

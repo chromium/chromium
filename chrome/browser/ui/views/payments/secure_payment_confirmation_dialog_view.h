@@ -65,9 +65,6 @@ class SecurePaymentConfirmationDialogView
   void OnModelUpdated() override;
   void HideDialog() override;
 
-  // views::WidgetDelegate:
-  ui::ModalType GetModalType() const override;
-
   // views::DialogDelegate:
   bool ShouldShowCloseButton() const override;
   bool Accept() override;

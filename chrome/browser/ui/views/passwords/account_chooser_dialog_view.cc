@@ -47,6 +47,7 @@ AccountChooserDialogView::AccountChooserDialogView(
       ui::DIALOG_BUTTON_OK,
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_ACCOUNT_CHOOSER_SIGN_IN));
   set_close_on_deactivate(false);
+  SetModalType(ui::MODAL_TYPE_CHILD);
   if (controller_->ShouldShowFooter()) {
     auto* label = SetFootnoteView(std::make_unique<views::Label>(
         l10n_util::GetStringUTF16(IDS_SAVE_PASSWORD_FOOTER),
@@ -78,10 +79,6 @@ void AccountChooserDialogView::ControllerGone() {
   // |controller_| should be kept around.
   GetWidget()->Close();
   controller_ = nullptr;
-}
-
-ui::ModalType AccountChooserDialogView::GetModalType() const {
-  return ui::MODAL_TYPE_CHILD;
 }
 
 base::string16 AccountChooserDialogView::GetWindowTitle() const {

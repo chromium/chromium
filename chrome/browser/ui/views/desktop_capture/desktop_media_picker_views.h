@@ -51,7 +51,6 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
 
   // views::DialogDelegateView:
   gfx::Size CalculatePreferredSize() const override;
-  ui::ModalType GetModalType() const override;
   base::string16 GetWindowTitle() const override;
   bool IsDialogButtonEnabled(ui::DialogButton button) const override;
   views::View* GetInitiallyFocusedView() override;
@@ -68,7 +67,6 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
   DesktopMediaListController* GetSelectedController();
 
   DesktopMediaPickerViews* parent_;
-  ui::ModalType modality_;
 
   views::Label* description_label_ = nullptr;
 

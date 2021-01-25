@@ -30,7 +30,6 @@ class WebAppConfirmationView : public views::DialogDelegateView,
  private:
   // Overridden from views::WidgetDelegate:
   views::View* GetInitiallyFocusedView() override;
-  ui::ModalType GetModalType() const override;
   bool ShouldShowCloseButton() const override;
   void WindowClosing() override;
 

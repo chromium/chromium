@@ -39,7 +39,6 @@ class ExternalProtocolDialog : public views::DialogDelegateView,
   bool ShouldShowCloseButton() const override;
   base::string16 GetWindowTitle() const override;
   views::View* GetContentsView() override;
-  ui::ModalType GetModalType() const override;
   views::Widget* GetWidget() override;
   const views::Widget* GetWidget() const override;
 
@@ -54,7 +53,7 @@ class ExternalProtocolDialog : public views::DialogDelegateView,
   const base::Optional<url::Origin> initiating_origin_;
 
   // The message box whose commands we handle.
-  views::MessageBoxView* message_box_view_;
+  views::MessageBoxView* message_box_view_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(ExternalProtocolDialog);
 };

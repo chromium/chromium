@@ -32,7 +32,6 @@ class AccountChooserDialogView : public views::BubbleDialogDelegateView,
 
  private:
   // WidgetDelegate:
-  ui::ModalType GetModalType() const override;
   base::string16 GetWindowTitle() const override;
   bool ShouldShowCloseButton() const override;
   void WindowClosing() override;

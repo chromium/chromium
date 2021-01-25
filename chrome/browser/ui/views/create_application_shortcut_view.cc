@@ -61,6 +61,7 @@ CreateChromeApplicationShortcutView::CreateChromeApplicationShortcutView(
     const extensions::Extension* app,
     base::OnceCallback<void(bool)> close_callback)
     : CreateChromeApplicationShortcutView(profile, std::move(close_callback)) {
+  SetModalType(ui::MODAL_TYPE_WINDOW);
   // Get shortcut and icon information; needed for creating the shortcut.
   web_app::GetShortcutInfoForApp(
       app, profile,
@@ -207,10 +208,6 @@ bool CreateChromeApplicationShortcutView::IsDialogButtonEnabled(
   return desktop_check_box_->GetChecked() ||
          (menu_check_box_ && menu_check_box_->GetChecked()) ||
          (quick_launch_check_box_ && quick_launch_check_box_->GetChecked());
-}
-
-ui::ModalType CreateChromeApplicationShortcutView::GetModalType() const {
-  return ui::MODAL_TYPE_WINDOW;
 }
 
 base::string16 CreateChromeApplicationShortcutView::GetWindowTitle() const {

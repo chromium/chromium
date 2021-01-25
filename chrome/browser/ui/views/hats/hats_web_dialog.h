@@ -68,7 +68,6 @@ class HatsWebDialog : public ui::WebDialogDelegate,
   views::View* GetContentsView() override;
   views::Widget* GetWidget() override;
   const views::Widget* GetWidget() const override;
-  ui::ModalType GetModalType() const override;
 
   // These are virtual for tests.
   virtual void OnLoadTimedOut();

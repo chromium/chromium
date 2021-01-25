@@ -92,6 +92,8 @@ void SecurePaymentConfirmationDialogView::ShowDialog(
       base::BindOnce(&SecurePaymentConfirmationDialogView::OnDialogClosed,
                      weak_ptr_factory_.GetWeakPtr()));
 
+  SetModalType(ui::MODAL_TYPE_CHILD);
+
   constrained_window::ShowWebModalDialogViews(this, web_contents);
 
   // observer_for_test_ is used in views browsertests.
@@ -182,10 +184,6 @@ void SecurePaymentConfirmationDialogView::UpdateLabelView(
 void SecurePaymentConfirmationDialogView::HideDialog() {
   if (GetWidget())
     GetWidget()->Close();
-}
-
-ui::ModalType SecurePaymentConfirmationDialogView::GetModalType() const {
-  return ui::MODAL_TYPE_CHILD;
 }
 
 bool SecurePaymentConfirmationDialogView::ShouldShowCloseButton() const {

@@ -39,6 +39,7 @@ CryptoModulePasswordDialogView::CryptoModulePasswordDialogView(
         std::move(dialog->callback_).Run(std::string());
       },
       base::Unretained(this)));
+  SetModalType(ui::MODAL_TYPE_WINDOW);
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       views::TEXT, views::CONTROL));
   Init(hostname, slot_name, reason);
@@ -53,10 +54,6 @@ CryptoModulePasswordDialogView::~CryptoModulePasswordDialogView() {
 
 views::View* CryptoModulePasswordDialogView::GetInitiallyFocusedView() {
   return password_entry_;
-}
-
-ui::ModalType CryptoModulePasswordDialogView::GetModalType() const {
-  return ui::MODAL_TYPE_WINDOW;
 }
 
 base::string16 CryptoModulePasswordDialogView::GetWindowTitle() const {

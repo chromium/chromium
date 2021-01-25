@@ -81,6 +81,7 @@ HatsWebDialog::HatsWebDialog(Browser* browser, const std::string& site_id)
           Profile::OTRProfileID::CreateUnique("HaTS:WebDialog"))),
       browser_(browser),
       site_id_(site_id) {
+  SetModalType(ui::MODAL_TYPE_WINDOW);
   set_can_resize(false);
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   otr_profile_->AddObserver(this);
@@ -203,15 +204,11 @@ views::View* HatsWebDialog::GetContentsView() {
 }
 
 views::Widget* HatsWebDialog::GetWidget() {
-  return webview_->GetWidget();
+  return webview_ ? webview_->GetWidget() : nullptr;
 }
 
 const views::Widget* HatsWebDialog::GetWidget() const {
-  return webview_->GetWidget();
-}
-
-ui::ModalType HatsWebDialog::GetModalType() const {
-  return ui::MODAL_TYPE_WINDOW;
+  return webview_ ? webview_->GetWidget() : nullptr;
 }
 
 void HatsWebDialog::OnLoadTimedOut() {

@@ -84,6 +84,7 @@ class BaseDialogContainer : public views::DialogDelegateView {
       : dialog_body_(AddChildView(std::move(dialog_body))),
         close_callback_(close_callback) {
     SetButtons(ui::DIALOG_BUTTON_NONE);
+    SetModalType(kModalType);
   }
   BaseDialogContainer(const BaseDialogContainer&) = delete;
   BaseDialogContainer& operator=(const BaseDialogContainer&) = delete;
@@ -94,7 +95,6 @@ class BaseDialogContainer : public views::DialogDelegateView {
 
  private:
   // Overridden from views::WidgetDelegate:
-  ui::ModalType GetModalType() const override { return kModalType; }
   void WindowClosing() override {
     if (!close_callback_.is_null())
       close_callback_.Run();

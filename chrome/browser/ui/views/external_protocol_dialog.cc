@@ -93,6 +93,7 @@ ExternalProtocolDialog::ExternalProtocolDialog(
   SetCloseCallback(base::BindOnce(
       &ExternalProtocolHandler::RecordHandleStateMetrics,
       false /* checkbox_selected */, ExternalProtocolHandler::BLOCK));
+  SetModalType(ui::MODAL_TYPE_CHILD);
 
   message_box_view_ =
       new views::MessageBoxView(GetMessageTextForOrigin(initiating_origin_));
@@ -175,16 +176,12 @@ views::View* ExternalProtocolDialog::GetContentsView() {
   return message_box_view_;
 }
 
-ui::ModalType ExternalProtocolDialog::GetModalType() const {
-  return ui::MODAL_TYPE_CHILD;
-}
-
 views::Widget* ExternalProtocolDialog::GetWidget() {
-  return message_box_view_->GetWidget();
+  return message_box_view_ ? message_box_view_->GetWidget() : nullptr;
 }
 
 const views::Widget* ExternalProtocolDialog::GetWidget() const {
-  return message_box_view_->GetWidget();
+  return message_box_view_ ? message_box_view_->GetWidget() : nullptr;
 }
 
 void ExternalProtocolDialog::SetRememberSelectionCheckboxCheckedForTesting(

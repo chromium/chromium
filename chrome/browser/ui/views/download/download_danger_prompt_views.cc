@@ -52,7 +52,6 @@ class DownloadDangerPromptViews : public DownloadDangerPrompt,
 
   // views::DialogDelegateView:
   base::string16 GetWindowTitle() const override;
-  ui::ModalType GetModalType() const override;
 
   // download::DownloadItem::Observer:
   void OnDownloadUpdated(download::DownloadItem* download) override;
@@ -86,6 +85,7 @@ DownloadDangerPromptViews::DownloadDangerPromptViews(
                  show_context_
                      ? l10n_util::GetStringUTF16(IDS_CONFIRM_DOWNLOAD)
                      : l10n_util::GetStringUTF16(IDS_CONFIRM_DOWNLOAD_AGAIN));
+  SetModalType(ui::MODAL_TYPE_CHILD);
 
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
@@ -165,10 +165,6 @@ base::string16 DownloadDangerPromptViews::GetWindowTitle() const {
           IDS_CONFIRM_KEEP_DANGEROUS_DOWNLOAD_TITLE);
     }
   }
-}
-
-ui::ModalType DownloadDangerPromptViews::GetModalType() const {
-  return ui::MODAL_TYPE_CHILD;
 }
 
 // download::DownloadItem::Observer:

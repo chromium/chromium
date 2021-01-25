@@ -124,6 +124,7 @@ PasswordReuseModalWarningDialog::PasswordReuseModalWarningDialog(
   show_check_passwords = password_type_.account_type() ==
                          ReusedPasswordAccountType::SAVED_PASSWORD;
 #endif
+  SetModalType(ui::MODAL_TYPE_WINDOW);
   SetShowIcon(true);
   if (password_type.account_type() !=
           ReusedPasswordAccountType::SAVED_PASSWORD ||
@@ -240,10 +241,6 @@ void PasswordReuseModalWarningDialog::CreateGaiaPasswordReuseModalWarningDialog(
 gfx::Size PasswordReuseModalWarningDialog::CalculatePreferredSize() const {
   constexpr int kDialogWidth = 400;
   return gfx::Size(kDialogWidth, GetHeightForWidth(kDialogWidth));
-}
-
-ui::ModalType PasswordReuseModalWarningDialog::GetModalType() const {
-  return ui::MODAL_TYPE_WINDOW;
 }
 
 base::string16 PasswordReuseModalWarningDialog::GetWindowTitle() const {

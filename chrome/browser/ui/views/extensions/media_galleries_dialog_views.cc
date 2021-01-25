@@ -80,6 +80,7 @@ MediaGalleriesDialogViews::MediaGalleriesDialogViews(
   SetAcceptCallback(base::BindOnce(
       [](MediaGalleriesDialogViews* dialog) { dialog->accepted_ = true; },
       base::Unretained(this)));
+  SetModalType(ui::MODAL_TYPE_CHILD);
   SetShowCloseButton(false);
   SetTitle(controller_->GetHeader());
 
@@ -262,10 +263,6 @@ views::View* MediaGalleriesDialogViews::GetContentsView() {
 bool MediaGalleriesDialogViews::IsDialogButtonEnabled(
     ui::DialogButton button) const {
   return button != ui::DIALOG_BUTTON_OK || confirm_available_;
-}
-
-ui::ModalType MediaGalleriesDialogViews::GetModalType() const {
-  return ui::MODAL_TYPE_CHILD;
 }
 
 void MediaGalleriesDialogViews::ShowContextMenuForViewImpl(

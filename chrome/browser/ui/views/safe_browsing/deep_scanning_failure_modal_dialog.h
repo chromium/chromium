@@ -43,9 +43,6 @@ class DeepScanningFailureModalDialog : public views::DialogDelegateView {
   bool IsDialogButtonEnabled(ui::DialogButton button) const override;
   bool ShouldShowCloseButton() const override;
 
-  // views::WidgetDelegate implementation:
-  ui::ModalType GetModalType() const override;
-
  private:
   base::OnceClosure open_now_callback_;
 };

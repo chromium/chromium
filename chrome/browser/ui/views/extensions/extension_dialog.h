@@ -89,7 +89,6 @@ class ExtensionDialog : public views::DialogDelegate,
   extensions::ExtensionViewHost* host() const { return host_.get(); }
 
   // views::DialogDelegate:
-  ui::ModalType GetModalType() const override;
   void WindowClosing() override;
   void DeleteDelegate() override;
   views::Widget* GetWidget() override;

@@ -41,9 +41,6 @@ class AppUninstallDialogView : public apps::UninstallDialog::UiBase,
 
   static AppUninstallDialogView* GetActiveViewForTesting();
 
-  // views::BubbleDialogDelegateView:
-  ui::ModalType GetModalType() const override;
-
  private:
   void InitializeView(Profile* profile,
                       apps::mojom::AppType app_type,

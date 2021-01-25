@@ -88,7 +88,6 @@ class ConstrainedDialogWebView : public views::WebView,
   std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
       views::Widget* widget) override;
   bool ShouldShowCloseButton() const override;
-  ui::ModalType GetModalType() const override;
 
   // views::WebView:
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
@@ -375,6 +374,7 @@ ConstrainedDialogWebView::ConstrainedDialogWebView(
           std::move(delegate),
           &initiator_observer_,
           this)) {
+  SetModalType(ui::MODAL_TYPE_CHILD);
   SetWebContents(GetWebContents());
   AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
   if (!max_size.IsEmpty()) {
@@ -463,10 +463,6 @@ ConstrainedDialogWebView::CreateNonClientFrameView(views::Widget* widget) {
 bool ConstrainedDialogWebView::ShouldShowCloseButton() const {
   // No close button if the dialog doesn't want a title bar.
   return impl_->GetWebDialogDelegate()->ShouldShowDialogTitle();
-}
-
-ui::ModalType ConstrainedDialogWebView::GetModalType() const {
-  return ui::MODAL_TYPE_CHILD;
 }
 
 bool ConstrainedDialogWebView::AcceleratorPressed(

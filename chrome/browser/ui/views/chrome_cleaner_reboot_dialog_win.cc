@@ -52,6 +52,7 @@ ChromeCleanerRebootDialog::ChromeCleanerRebootDialog(
   SetButtonLabel(ui::DIALOG_BUTTON_OK,
                  l10n_util::GetStringUTF16(
                      IDS_CHROME_CLEANUP_REBOOT_PROMPT_RESTART_BUTTON_LABEL));
+  SetModalType(ui::MODAL_TYPE_NONE);
 
   using Controller = safe_browsing::ChromeCleanerRebootDialogController;
   using ControllerClosureFn = void (Controller::*)(void);
@@ -97,10 +98,6 @@ void ChromeCleanerRebootDialog::Show(Browser* browser) {
 }
 
 // WidgetDelegate overrides.
-
-ui::ModalType ChromeCleanerRebootDialog::GetModalType() const {
-  return ui::MODAL_TYPE_NONE;
-}
 
 base::string16 ChromeCleanerRebootDialog::GetWindowTitle() const {
   DCHECK(dialog_controller_);

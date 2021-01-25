@@ -36,7 +36,6 @@ class OneClickSigninDialogView : public views::DialogDelegateView {
   static OneClickSigninDialogView* view_for_testing() { return dialog_view_; }
 
   // Overridden from views::DialogDelegateView:
-  ui::ModalType GetModalType() const override;
   void WindowClosing() override;
   bool Accept() override;
 

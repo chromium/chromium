@@ -36,7 +36,6 @@ class CryptoModulePasswordDialogView : public views::DialogDelegateView,
 
   // views::WidgetDelegate:
   views::View* GetInitiallyFocusedView() override;
-  ui::ModalType GetModalType() const override;
   base::string16 GetWindowTitle() const override;
 
   // views::TextfieldController:

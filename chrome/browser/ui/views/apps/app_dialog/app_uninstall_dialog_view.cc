@@ -104,6 +104,7 @@ AppUninstallDialogView::AppUninstallDialogView(
     : apps::UninstallDialog::UiBase(uninstall_dialog),
       AppDialogView(image),
       profile_(profile) {
+  SetModalType(ui::MODAL_TYPE_WINDOW);
   SetTitle(GetWindowTitleForApp(profile, app_type, app_id, app_name));
 
   SetCloseCallback(base::BindOnce(&AppUninstallDialogView::OnDialogCancelled,
@@ -127,10 +128,6 @@ AppUninstallDialogView::~AppUninstallDialogView() {
 // static
 AppUninstallDialogView* AppUninstallDialogView::GetActiveViewForTesting() {
   return g_app_uninstall_dialog_view;
-}
-
-ui::ModalType AppUninstallDialogView::GetModalType() const {
-  return ui::MODAL_TYPE_WINDOW;
 }
 
 void AppUninstallDialogView::InitializeView(Profile* profile,

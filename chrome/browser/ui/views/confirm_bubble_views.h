@@ -34,7 +34,6 @@ class ConfirmBubbleViews : public views::DialogDelegateView {
   ~ConfirmBubbleViews() override;
 
   // views::WidgetDelegate implementation.
-  ui::ModalType GetModalType() const override;
   base::string16 GetWindowTitle() const override;
   bool ShouldShowCloseButton() const override;
 

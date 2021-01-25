@@ -40,7 +40,6 @@ class TabModalConfirmDialogViews : public TabModalConfirmDialog,
   views::View* GetContentsView() override;
   views::Widget* GetWidget() override;
   const views::Widget* GetWidget() const override;
-  ui::ModalType GetModalType() const override;
 
  private:
   ~TabModalConfirmDialogViews() override;
@@ -57,7 +56,7 @@ class TabModalConfirmDialogViews : public TabModalConfirmDialog,
   std::unique_ptr<TabModalConfirmDialogDelegate> delegate_;
 
   // The message box view whose commands we handle.
-  views::MessageBoxView* message_box_view_;
+  views::MessageBoxView* message_box_view_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(TabModalConfirmDialogViews);
 };

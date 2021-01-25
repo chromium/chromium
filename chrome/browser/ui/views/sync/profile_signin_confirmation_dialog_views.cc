@@ -91,6 +91,7 @@ ProfileSigninConfirmationDialogViews::ProfileSigninConfirmationDialogViews(
   }
   SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
                  l10n_util::GetStringUTF16(IDS_ENTERPRISE_SIGNIN_CANCEL));
+  SetModalType(ui::MODAL_TYPE_WINDOW);
 
   using Delegate = ui::ProfileSigninConfirmationDelegate;
   using DelegateNotifyFn = void (Delegate::*)();
@@ -139,10 +140,6 @@ void ProfileSigninConfirmationDialogViews::ShowDialog(
       profile,
       base::BindOnce(&ProfileSigninConfirmationDialogViews::Show,
                      base::Unretained(browser), username, std::move(delegate)));
-}
-
-ui::ModalType ProfileSigninConfirmationDialogViews::GetModalType() const {
-  return ui::MODAL_TYPE_WINDOW;
 }
 
 void ProfileSigninConfirmationDialogViews::ViewHierarchyChanged(

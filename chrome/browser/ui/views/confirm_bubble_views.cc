@@ -28,6 +28,7 @@
 ConfirmBubbleViews::ConfirmBubbleViews(
     std::unique_ptr<ConfirmBubbleModel> model)
     : model_(std::move(model)) {
+  SetModalType(ui::MODAL_TYPE_WINDOW);
   SetButtonLabel(ui::DIALOG_BUTTON_OK,
                  model_->GetButtonLabel(ui::DIALOG_BUTTON_OK));
   SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
@@ -74,10 +75,6 @@ ConfirmBubbleViews::ConfirmBubbleViews(
 }
 
 ConfirmBubbleViews::~ConfirmBubbleViews() {
-}
-
-ui::ModalType ConfirmBubbleViews::GetModalType() const {
-  return ui::MODAL_TYPE_WINDOW;
 }
 
 base::string16 ConfirmBubbleViews::GetWindowTitle() const {

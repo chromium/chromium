@@ -65,7 +65,8 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
     const DesktopMediaPicker::Params& params,
     DesktopMediaPickerViews* parent,
     std::vector<std::unique_ptr<DesktopMediaList>> source_lists)
-    : parent_(parent), modality_(params.modality) {
+    : parent_(parent) {
+  SetModalType(params.modality);
   SetButtonLabel(ui::DIALOG_BUTTON_OK,
                  l10n_util::GetStringUTF16(IDS_DESKTOP_MEDIA_PICKER_SHARE));
   const ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
@@ -223,7 +224,7 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
 #if defined(OS_MAC)
     // On Mac, MODAL_TYPE_CHILD with a null parent isn't allowed - fall back to
     // MODAL_TYPE_WINDOW.
-    modality_ = ui::MODAL_TYPE_WINDOW;
+    SetModalType(ui::MODAL_TYPE_WINDOW);
 #endif
     widget = CreateDialogWidget(this, params.context, nullptr);
     widget->Show();
@@ -309,10 +310,6 @@ void DesktopMediaPickerDialogView::DetachParent() {
 gfx::Size DesktopMediaPickerDialogView::CalculatePreferredSize() const {
   static const size_t kDialogViewWidth = 600;
   return gfx::Size(kDialogViewWidth, GetHeightForWidth(kDialogViewWidth));
-}
-
-ui::ModalType DesktopMediaPickerDialogView::GetModalType() const {
-  return modality_;
 }
 
 base::string16 DesktopMediaPickerDialogView::GetWindowTitle() const {
@@ -432,7 +429,7 @@ void DesktopMediaPickerDialogView::OnSourceListLayoutChanged() {
   // BubbleDialogDelegateView::SizeToContents() instead of implementing sizing
   // logic in-place.
   const gfx::Size new_size = GetWidget()->GetRootView()->GetPreferredSize();
-  if (modality_ == ui::ModalType::MODAL_TYPE_CHILD) {
+  if (GetModalType() == ui::ModalType::MODAL_TYPE_CHILD) {
     // For the web-modal dialog resize the dialog in place.
     // TODO(pbos): This should ideally use UpdateWebContentsModalDialogPosition
     // to keep the widget centered horizontally. As this dialog is fixed-width

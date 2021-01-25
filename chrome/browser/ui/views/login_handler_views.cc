@@ -104,6 +104,7 @@ class LoginHandlerViews : public LoginHandler {
             dialog->handler_->CancelAuth();
           },
           base::Unretained(this)));
+      SetModalType(ui::MODAL_TYPE_CHILD);
       SetOwnedByWidget(true);
 
       // Create a new LoginView and set the model for it.  The model (password
@@ -136,16 +137,16 @@ class LoginHandlerViews : public LoginHandler {
         handler_->CancelAuth();
     }
 
-    ui::ModalType GetModalType() const override { return ui::MODAL_TYPE_CHILD; }
-
     views::View* GetInitiallyFocusedView() override {
       return login_view_->GetInitiallyFocusedView();
     }
 
     views::View* GetContentsView() override { return login_view_; }
-    views::Widget* GetWidget() override { return login_view_->GetWidget(); }
+    views::Widget* GetWidget() override {
+      return login_view_ ? login_view_->GetWidget() : nullptr;
+    }
     const views::Widget* GetWidget() const override {
-      return login_view_->GetWidget();
+      return login_view_ ? login_view_->GetWidget() : nullptr;
     }
 
    private:

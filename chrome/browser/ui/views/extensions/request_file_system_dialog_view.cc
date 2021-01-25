@@ -43,10 +43,6 @@ void RequestFileSystemDialogView::ShowDialog(
 
 RequestFileSystemDialogView::~RequestFileSystemDialogView() {}
 
-ui::ModalType RequestFileSystemDialogView::GetModalType() const {
-  return ui::MODAL_TYPE_CHILD;
-}
-
 gfx::Size RequestFileSystemDialogView::CalculatePreferredSize() const {
   return gfx::Size(kDialogMaxWidth,
                    children().front()->GetHeightForWidth(kDialogMaxWidth));
@@ -76,6 +72,7 @@ RequestFileSystemDialogView::RequestFileSystemDialogView(
                                    ui::DIALOG_BUTTON_OK));
   SetCancelCallback(base::BindOnce(run_callback, base::Unretained(this),
                                    ui::DIALOG_BUTTON_CANCEL));
+  SetModalType(ui::MODAL_TYPE_CHILD);
 
   DCHECK(!callback_.is_null());
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(

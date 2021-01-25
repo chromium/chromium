@@ -99,10 +99,6 @@ void SigninViewControllerDelegateViews::DeleteDelegate() {
   delete this;
 }
 
-ui::ModalType SigninViewControllerDelegateViews::GetModalType() const {
-  return dialog_modal_type_;
-}
-
 bool SigninViewControllerDelegateViews::ShouldShowCloseButton() const {
   return should_show_close_button_;
 }
@@ -188,7 +184,6 @@ SigninViewControllerDelegateViews::SigninViewControllerDelegateViews(
       browser_(browser),
       content_view_(content_view.release()),
       modal_signin_widget_(nullptr),
-      dialog_modal_type_(dialog_modal_type),
       should_show_close_button_(should_show_close_button) {
   DCHECK(web_contents_);
   DCHECK(browser_);
@@ -202,6 +197,7 @@ SigninViewControllerDelegateViews::SigninViewControllerDelegateViews(
   DCHECK(dialog_modal_type == ui::MODAL_TYPE_CHILD ||
          dialog_modal_type == ui::MODAL_TYPE_WINDOW)
       << "Unsupported dialog modal type " << dialog_modal_type;
+  SetModalType(dialog_modal_type);
 
   if (!wait_for_size)
     DisplayModal();
@@ -250,7 +246,7 @@ void SigninViewControllerDelegateViews::DisplayModal() {
     return;
 
   gfx::NativeWindow window = host_web_contents->GetTopLevelNativeWindow();
-  switch (dialog_modal_type_) {
+  switch (GetModalType()) {
     case ui::MODAL_TYPE_WINDOW:
       modal_signin_widget_ =
           constrained_window::CreateBrowserModalDialogViews(this, window);
@@ -269,7 +265,7 @@ void SigninViewControllerDelegateViews::DisplayModal() {
           modal_signin_widget_->GetNativeWindow(), host_web_contents);
       break;
     default:
-      NOTREACHED() << "Unsupported dialog modal type " << dialog_modal_type_;
+      NOTREACHED() << "Unsupported dialog modal type " << GetModalType();
   }
 
   content_view_->RequestFocus();

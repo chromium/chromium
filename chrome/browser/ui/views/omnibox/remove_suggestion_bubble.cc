@@ -37,6 +37,7 @@ class RemoveSuggestionBubbleDialogDelegateView
     SetButtonLabel(ui::DIALOG_BUTTON_OK, l10n_util::GetStringUTF16(IDS_REMOVE));
     SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
                    l10n_util::GetStringUTF16(IDS_CANCEL));
+    SetModalType(ui::MODAL_TYPE_WINDOW);
 
     auto* layout_manager = SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical));
@@ -88,7 +89,6 @@ class RemoveSuggestionBubbleDialogDelegateView
   }
 
   // views::WidgetDelegate:
-  ui::ModalType GetModalType() const override { return ui::MODAL_TYPE_WINDOW; }
   base::string16 GetWindowTitle() const override {
     return l10n_util::GetStringUTF16(
         IDS_OMNIBOX_REMOVE_SUGGESTION_BUBBLE_TITLE);

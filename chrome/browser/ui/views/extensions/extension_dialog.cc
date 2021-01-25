@@ -83,10 +83,6 @@ void ExtensionDialog::SetMinimumContentsSize(int width, int height) {
   extension_view_->SetPreferredSize(gfx::Size(width, height));
 }
 
-ui::ModalType ExtensionDialog::GetModalType() const {
-  return ui::MODAL_TYPE_WINDOW;
-}
-
 void ExtensionDialog::WindowClosing() {
   if (observer_)
     observer_->ExtensionDialogClosing(this);
@@ -177,6 +173,7 @@ ExtensionDialog::ExtensionDialog(
                  source);
   chrome::RecordDialogCreation(chrome::DialogIdentifier::EXTENSION);
 
+  SetModalType(ui::MODAL_TYPE_WINDOW);
   SetShowTitle(!init_params.title.empty());
   SetTitle(init_params.title);
 

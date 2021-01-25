@@ -53,7 +53,6 @@ class SigninViewControllerDelegateViews
   views::Widget* GetWidget() override;
   const views::Widget* GetWidget() const override;
   void DeleteDelegate() override;
-  ui::ModalType GetModalType() const override;
   bool ShouldShowCloseButton() const override;
 
   // SigninViewControllerDelegate:
@@ -110,7 +109,6 @@ class SigninViewControllerDelegateViews
   Browser* const browser_;              // Not owned.
   views::WebView* content_view_;
   views::Widget* modal_signin_widget_;  // Not owned.
-  ui::ModalType dialog_modal_type_;
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
   bool should_show_close_button_;
 

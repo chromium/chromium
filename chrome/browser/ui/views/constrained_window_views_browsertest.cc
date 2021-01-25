@@ -31,6 +31,7 @@ class TestDialog : public views::DialogDelegateView {
  public:
   TestDialog() {
     SetFocusBehavior(FocusBehavior::ALWAYS);
+    SetModalType(ui::MODAL_TYPE_CHILD);
     GetViewAccessibility().OverrideName("Test dialog");
   }
   ~TestDialog() override {}
@@ -38,8 +39,6 @@ class TestDialog : public views::DialogDelegateView {
   views::View* GetInitiallyFocusedView() override { return this; }
   // Don't delete the delegate yet. Keep it around for inspection later.
   void DeleteDelegate() override {}
-
-  ui::ModalType GetModalType() const override { return ui::MODAL_TYPE_CHILD; }
 
  private:
   DISALLOW_COPY_AND_ASSIGN(TestDialog);

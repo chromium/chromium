@@ -73,10 +73,6 @@ void PaymentRequestDialogView::RequestFocus() {
   view_stack_->RequestFocus();
 }
 
-ui::ModalType PaymentRequestDialogView::GetModalType() const {
-  return ui::MODAL_TYPE_CHILD;
-}
-
 views::View* PaymentRequestDialogView::GetInitiallyFocusedView() {
   return view_stack_;
 }
@@ -473,6 +469,7 @@ PaymentRequestDialogView::PaymentRequestDialogView(
   DCHECK(request->spec());
 
   SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetModalType(ui::MODAL_TYPE_CHILD);
 
   SetCloseCallback(base::BindOnce(&PaymentRequestDialogView::OnDialogClosed,
                                   weak_ptr_factory_.GetWeakPtr()));

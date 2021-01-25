@@ -73,10 +73,6 @@ views::Widget* TabGroupEditorBubbleView::Show(
   return widget;
 }
 
-ui::ModalType TabGroupEditorBubbleView::GetModalType() const {
-  return ui::MODAL_TYPE_NONE;
-}
-
 views::View* TabGroupEditorBubbleView::GetInitiallyFocusedView() {
   return title_field_;
 }
@@ -113,6 +109,7 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
   set_margins(gfx::Insets());
 
   SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetModalType(ui::MODAL_TYPE_NONE);
 
   const base::string16 title = browser_->tab_strip_model()
                                    ->group_model()

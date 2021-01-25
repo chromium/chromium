@@ -118,6 +118,7 @@ CertificateSelector::CertificateSelector(net::ClientCertIdentityList identities,
                                          content::WebContents* web_contents)
     : web_contents_(web_contents) {
   SetCanResize(true);
+  SetModalType(ui::MODAL_TYPE_CHILD);
   CHECK(web_contents_);
 
   view_cert_button_ = SetExtraView(std::make_unique<views::MdTextButton>(
@@ -280,10 +281,6 @@ bool CertificateSelector::IsDialogButtonEnabled(ui::DialogButton button) const {
 views::View* CertificateSelector::GetInitiallyFocusedView() {
   DCHECK(table_);
   return table_;
-}
-
-ui::ModalType CertificateSelector::GetModalType() const {
-  return ui::MODAL_TYPE_CHILD;
 }
 
 void CertificateSelector::ViewCertButtonPressed() {

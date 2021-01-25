@@ -40,6 +40,7 @@ UpdateRecommendedMessageBox::UpdateRecommendedMessageBox() {
                  l10n_util::GetStringUTF16(IDS_RELAUNCH_AND_UPDATE));
   SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
                  l10n_util::GetStringUTF16(IDS_NOT_NOW));
+  SetModalType(ui::MODAL_TYPE_WINDOW);
   SetOwnedByWidget(true);
   SetTitle(IDS_UPDATE_RECOMMENDED_DIALOG_TITLE);
   base::string16 update_message;
@@ -76,10 +77,6 @@ bool UpdateRecommendedMessageBox::ShouldShowWindowTitle() const {
 
 bool UpdateRecommendedMessageBox::ShouldShowCloseButton() const {
   return false;
-}
-
-ui::ModalType UpdateRecommendedMessageBox::GetModalType() const {
-  return ui::MODAL_TYPE_WINDOW;
 }
 
 views::View* UpdateRecommendedMessageBox::GetContentsView() {

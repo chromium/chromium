@@ -66,7 +66,6 @@ class CertificateSelector : public views::DialogDelegateView,
   base::string16 GetWindowTitle() const override;
   bool IsDialogButtonEnabled(ui::DialogButton button) const override;
   views::View* GetInitiallyFocusedView() override;
-  ui::ModalType GetModalType() const override;
 
   // views::TableViewObserver:
   void OnSelectionChanged() override;

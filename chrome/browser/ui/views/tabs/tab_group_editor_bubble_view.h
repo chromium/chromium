@@ -47,7 +47,6 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
       bool stop_context_menu_propagation = false);
 
   // views::BubbleDialogDelegateView:
-  ui::ModalType GetModalType() const override;
   views::View* GetInitiallyFocusedView() override;
   gfx::Rect GetAnchorRect() const override;
 

@@ -33,7 +33,6 @@ class RequestFileSystemDialogView : public views::DialogDelegateView {
                          base::OnceCallback<void(ui::DialogButton)> callback);
 
   // views::DialogDelegate overrides:
-  ui::ModalType GetModalType() const override;
   gfx::Size CalculatePreferredSize() const override;
 
  private:

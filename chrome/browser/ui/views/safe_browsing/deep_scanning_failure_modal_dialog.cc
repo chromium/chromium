@@ -35,6 +35,7 @@ DeepScanningFailureModalDialog::DeepScanningFailureModalDialog(
     base::OnceClosure cancel_callback,
     base::OnceClosure open_now_callback)
     : open_now_callback_(std::move(open_now_callback)) {
+  SetModalType(ui::MODAL_TYPE_CHILD);
   SetTitle(IDS_DEEP_SCANNING_TIMED_OUT_DIALOG_TITLE);
   SetButtonLabel(ui::DIALOG_BUTTON_OK,
                  l10n_util::GetStringUTF16(
@@ -86,10 +87,6 @@ bool DeepScanningFailureModalDialog::IsDialogButtonEnabled(
 
 bool DeepScanningFailureModalDialog::ShouldShowCloseButton() const {
   return false;
-}
-
-ui::ModalType DeepScanningFailureModalDialog::GetModalType() const {
-  return ui::MODAL_TYPE_CHILD;
 }
 
 }  // namespace safe_browsing
