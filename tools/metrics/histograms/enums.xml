@@ -15443,6 +15443,14 @@ metrics consent we also won't be able to send UMA metrics. -->
   </int>
 </enum>
 
+<enum name="CryptohomeDiskCleanupResult">
+  <int value="1" label="Success">Cleanup performed successfully.</int>
+  <int value="2" label="Error">Cleanup failed.</int>
+  <int value="3" label="Skip">
+    Cleanup skipped, enough free space is available.
+  </int>
+</enum>
+
 <enum name="CryptohomeError">
   <int value="1" label="TPM returned TPM_E_FAIL"/>
   <int value="2" label="TCS key load failed"/>
