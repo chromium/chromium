@@ -32,7 +32,7 @@ Call Frames :
     lineNumber : 3
     scriptId : <scriptId>
     lineNumber : 3
-    url : data:text/html,<html><body><script>%0Avar innerFrame = document.createElement('iframe');%0AinnerFrame.src = 'about:blank';%0Adocument.body.appendChild(innerFrame);%0A</script></body></html>
+    url : 
   }
 ]
 

@@ -7,7 +7,7 @@ Priority: Low
 Mime Type: string
 Encoded Data: string
 Decoded Body: 223 B
-Initiator: ​
+Initiator: timeline-network-resource-details.js:18
 URL: anImage.png
 Duration: string
 Request Method: GET

@@ -51,7 +51,7 @@
 
   function dumpLiveLocationsCount() {
     var modelData = Bindings.debuggerWorkspaceBinding._debuggerModelToData.get(script.debuggerModel);
-    var locations = modelData._locations.get(script);
+    var locations = modelData._locations.get(script.scriptId);
     TestRunner.addResult('Live locations count: ' + locations.size);
     TestRunner.addResult('');
   }
