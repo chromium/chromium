@@ -13,18 +13,20 @@
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_usage_info.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 #include "url/origin.h"
 
 using blink::mojom::StorageType;
-using storage::QuotaClient;
+using storage::mojom::QuotaClient;
 
 namespace content {
 namespace {
 void ReportToQuotaStatus(QuotaClient::DeleteOriginDataCallback callback,
-                         bool status) {
-  std::move(callback).Run(status ? blink::mojom::QuotaStatusCode::kOk
-                                 : blink::mojom::QuotaStatusCode::kUnknown);
+                         blink::ServiceWorkerStatusCode status) {
+  std::move(callback).Run((status == blink::ServiceWorkerStatusCode::kOk)
+                              ? blink::mojom::QuotaStatusCode::kOk
+                              : blink::mojom::QuotaStatusCode::kUnknown);
 }
 
 void FindUsageForOrigin(QuotaClient::GetOriginUsageCallback callback,
@@ -35,11 +37,8 @@ void FindUsageForOrigin(QuotaClient::GetOriginUsageCallback callback,
 }  // namespace
 
 ServiceWorkerQuotaClient::ServiceWorkerQuotaClient(
-    ServiceWorkerContextWrapper* context)
-    : context_(context) {
-  DCHECK(context);
-  DETACH_FROM_SEQUENCE(sequence_checker_);
-}
+    ServiceWorkerContextCore& context)
+    : context_(&context) {}
 
 ServiceWorkerQuotaClient::~ServiceWorkerQuotaClient() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -50,7 +49,7 @@ void ServiceWorkerQuotaClient::GetOriginUsage(const url::Origin& origin,
                                               GetOriginUsageCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(type, StorageType::kTemporary);
-  context_->GetStorageUsageForOrigin(
+  context_->registry()->GetStorageUsageForOrigin(
       origin, base::BindOnce(&FindUsageForOrigin, std::move(callback)));
 }
 
@@ -59,7 +58,7 @@ void ServiceWorkerQuotaClient::GetOriginsForType(
     GetOriginsForTypeCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(type, StorageType::kTemporary);
-  context_->GetInstalledRegistrationOrigins(base::nullopt, std::move(callback));
+  context_->registry()->GetRegisteredOrigins(std::move(callback));
 }
 
 void ServiceWorkerQuotaClient::GetOriginsForHost(
@@ -68,7 +67,18 @@ void ServiceWorkerQuotaClient::GetOriginsForHost(
     GetOriginsForHostCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(type, StorageType::kTemporary);
-  context_->GetInstalledRegistrationOrigins(host, std::move(callback));
+  context_->registry()->GetRegisteredOrigins(base::BindOnce(
+      [](const std::string& host, GetOriginsForTypeCallback callback,
+         const std::vector<url::Origin>& all_origins) {
+        std::vector<url::Origin> host_origins;
+        for (auto& origin : all_origins) {
+          if (host != origin.host())
+            continue;
+          host_origins.push_back(origin);
+        }
+        std::move(callback).Run(host_origins);
+      },
+      host, std::move(callback)));
 }
 
 void ServiceWorkerQuotaClient::DeleteOriginData(
@@ -86,7 +96,7 @@ void ServiceWorkerQuotaClient::PerformStorageCleanup(
     PerformStorageCleanupCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(type, StorageType::kTemporary);
-  context_->PerformStorageCleanup(std::move(callback));
+  context_->registry()->PerformStorageCleanup(std::move(callback));
 }
 
 }  // namespace content

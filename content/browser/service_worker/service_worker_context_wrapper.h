@@ -84,8 +84,6 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
       ServiceWorkerRegistry::GetUserDataForAllRegistrationsCallback;
   using GetInstalledRegistrationOriginsCallback =
       base::OnceCallback<void(const std::vector<url::Origin>& origins)>;
-  using GetStorageUsageForOriginCallback =
-      ServiceWorkerRegistry::GetStorageUsageForOriginCallback;
 
   explicit ServiceWorkerContextWrapper(BrowserContext* browser_context);
 
@@ -189,23 +187,6 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   void StopAllServiceWorkers(base::OnceClosure callback) override;
   const base::flat_map<int64_t, ServiceWorkerRunningInfo>&
   GetRunningServiceWorkerInfos() override;
-
-  // Returns a set of origins which have at least one stored registration.
-  // The set doesn't include installing/uninstalling/uninstalled registrations.
-  // When `host_filter` is specified the set only includes origins whose host
-  // matches `host_filter`.
-  // This function can be called from any thread and the callback is called on
-  // that thread.
-  void GetInstalledRegistrationOrigins(
-      base::Optional<std::string> host_filter,
-      GetInstalledRegistrationOriginsCallback callback);
-
-  // Performs internal storage cleanup. Operations to the storage in the past
-  // (e.g. deletion) are usually recorded in disk for a certain period until
-  // compaction happens. This method wipes them out to ensure that the deleted
-  // entries and other traces like log files are removed.
-  // May be called on any thread, and the callback is called on that thread.
-  void PerformStorageCleanup(base::OnceClosure callback);
 
   ServiceWorkerRegistration* GetLiveRegistration(int64_t registration_id);
   ServiceWorkerVersion* GetLiveVersion(int64_t version_id);
@@ -327,12 +308,6 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   void ClearUserDataForAllRegistrationsByKeyPrefix(
       const std::string& key_prefix,
       StatusCallback callback);
-
-  // Returns total resource size stored in the storage for |origin|.
-  // This can be called from any thread and the callback is called on that
-  // thread.
-  void GetStorageUsageForOrigin(const url::Origin& origin,
-                                GetStorageUsageForOriginCallback callback);
 
   // Returns a list of ServiceWorkerRegistration for |origin|. The list includes
   // stored registrations and installing (not stored yet) registrations.
@@ -536,9 +511,6 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
       base::Optional<std::string> host_filter,
       GetInstalledRegistrationOriginsCallback callback,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner_for_callback);
-  void GetStorageUsageForOriginOnUIThread(
-      const url::Origin& origin,
-      GetStorageUsageForOriginCallback callback);
 
   // Observers of |context_core_| which live within content's implementation
   // boundary. Shared with |context_core_|.

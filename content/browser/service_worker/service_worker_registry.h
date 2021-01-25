@@ -237,8 +237,17 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
   void GetUserDataForAllRegistrationsByKeyPrefix(
       const std::string& key_prefix,
       GetUserDataForAllRegistrationsCallback callback);
+
+  // Returns a set of origins which have at least one stored registration.
+  // The set doesn't include installing/uninstalling/uninstalled registrations.
   void GetRegisteredOrigins(GetRegisteredOriginsCallback callback);
+
+  // Performs internal storage cleanup. Operations to the storage in the past
+  // (e.g. deletion) are usually recorded in disk for a certain period until
+  // compaction happens. This method wipes them out to ensure that the deleted
+  // entries and other traces like log files are removed.
   void PerformStorageCleanup(base::OnceClosure callback);
+
   // Disables the internal storage to prepare for error recovery.
   void PrepareForDeleteAndStartOver();
   // Deletes this registry and internal storage, then starts over for error

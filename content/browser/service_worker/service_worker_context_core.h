@@ -18,6 +18,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_threadsafe.h"
+#include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "components/services/storage/public/mojom/service_worker_storage_control.mojom.h"
 #include "content/browser/service_worker/service_worker_info.h"
 #include "content/browser/service_worker/service_worker_process_manager.h"
@@ -28,11 +29,14 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/service_worker_context.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 
 class GURL;
 
 namespace storage {
+class QuotaClientCallbackWrapper;
+class QuotaManagerProxy;
 class SpecialStoragePolicy;
 }  // namespace storage
 
@@ -41,6 +45,7 @@ namespace content {
 class ServiceWorkerContextCoreObserver;
 class ServiceWorkerContextWrapper;
 class ServiceWorkerJobCoordinator;
+class ServiceWorkerQuotaClient;
 class ServiceWorkerRegistration;
 class URLLoaderFactoryGetter;
 
@@ -100,6 +105,7 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   // ServiceWorkerContextCore, the methods of ServiceWorkerContextCoreObserver
   // will be called on the thread which called AddObserver() of |observer_list|.
   ServiceWorkerContextCore(
+      storage::QuotaManagerProxy* quota_manager_proxy,
       storage::SpecialStoragePolicy* special_storage_policy,
       URLLoaderFactoryGetter* url_loader_factory_getter,
       std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
@@ -443,6 +449,26 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   const scoped_refptr<ServiceWorkerContextObserverList> observer_list_;
 
   int next_embedded_worker_id_ = 0;
+
+  // ServiceWorkerQuotaClient assumes that this context always has an associated
+  // ServiceWorkerRegistry, so `quota_client_` must be declared after
+  // `registry_`.
+  //
+  // ServiceWorkerQuotaClient is held via a std::unique_ptr so it can be
+  // transferred (along with any state it may hold) to a different
+  // ServiceWorkerContextCore by the logic kicked off from
+  // ServiceWorkerRegistry::ScheduleDeleteAndStartOver().
+  std::unique_ptr<ServiceWorkerQuotaClient> quota_client_;
+  std::unique_ptr<storage::QuotaClientCallbackWrapper> quota_client_wrapper_;
+
+  // ServiceWorkerQuotaClient's mojo pipe to QuotaManager is disconnected when
+  // the mojo::Receiver is destroyed.
+  //
+  // This receiver is held via a std::unique_ptr so it can be transferred (along
+  // with its mojo pipe) to a different ServiceWorkerContextCore by the logic
+  // kicked off from ServiceWorkerRegistry::ScheduleDeleteAndStartOver().
+  std::unique_ptr<mojo::Receiver<storage::mojom::QuotaClient>>
+      quota_client_receiver_;
 
   base::WeakPtrFactory<ServiceWorkerContextCore> weak_factory_{this};
 
