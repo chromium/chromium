@@ -208,6 +208,19 @@ TEST_F(HintsComponentUtilTest, ProcessOptimizationFilterWithRegexps) {
   EXPECT_TRUE(optimization_filter->Matches(GURL("https://test.com")));
 }
 
+TEST_F(HintsComponentUtilTest, ProcessOptimizationFilterWithExclusionRegexps) {
+  proto::OptimizationFilter optimization_filter_proto;
+  optimization_filter_proto.add_exclusion_regexps("test");
+
+  OptimizationFilterStatus status;
+  std::unique_ptr<OptimizationFilter> optimization_filter =
+      ProcessOptimizationFilter(optimization_filter_proto, &status);
+
+  EXPECT_EQ(status, OptimizationFilterStatus::kCreatedServerFilter);
+  ASSERT_TRUE(optimization_filter);
+  EXPECT_FALSE(optimization_filter->Matches(GURL("https://test.com")));
+}
+
 TEST_F(HintsComponentUtilTest, ProcessOptimizationFilterWithInvalidRegexps) {
   proto::OptimizationFilter optimization_filter_proto;
   optimization_filter_proto.add_regexps("test[");
@@ -227,6 +240,33 @@ TEST_F(HintsComponentUtilTest,
 
   proto::OptimizationFilter optimization_filter_proto;
   optimization_filter_proto.add_regexps("test[");
+  BloomFilter bloom_filter(num_hash_functions, num_bits);
+  bloom_filter.Add("host.com");
+  proto::BloomFilter* bloom_filter_proto =
+      optimization_filter_proto.mutable_bloom_filter();
+  bloom_filter_proto->set_num_hash_functions(num_hash_functions);
+  bloom_filter_proto->set_num_bits(num_bits);
+  std::string blocklist_data(
+      reinterpret_cast<const char*>(&bloom_filter.bytes()[0]),
+      bloom_filter.bytes().size());
+  bloom_filter_proto->set_data(blocklist_data);
+
+  OptimizationFilterStatus status;
+  std::unique_ptr<OptimizationFilter> optimization_filter =
+      ProcessOptimizationFilter(optimization_filter_proto, &status);
+
+  EXPECT_EQ(status, OptimizationFilterStatus::kInvalidRegexp);
+  EXPECT_EQ(nullptr, optimization_filter);
+}
+
+TEST_F(
+    HintsComponentUtilTest,
+    ProcessOptimizationFilterInvalidExclusionRegexpsOverridesBloomFilterStatus) {
+  int num_hash_functions = 7;
+  int num_bits = 1234;
+
+  proto::OptimizationFilter optimization_filter_proto;
+  optimization_filter_proto.add_exclusion_regexps("test[");
   BloomFilter bloom_filter(num_hash_functions, num_bits);
   bloom_filter.Add("host.com");
   proto::BloomFilter* bloom_filter_proto =

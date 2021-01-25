@@ -81,16 +81,15 @@ std::unique_ptr<BloomFilter> ProcessBloomFilter(
 }
 
 // Attempts to construct a valid RegexpList from the given
-// |optimization_filter|. If given, |out_status| will be populated with the
+// |regexps_list|. If given, |out_status| will be populated with the
 // status of the operation. If a valid RegexpList cannot be constructed, nullptr
 // is returned.
 std::unique_ptr<RegexpList> ProcessRegexps(
-    const proto::OptimizationFilter& optimization_filter,
+    const google::protobuf::RepeatedPtrField<std::string>& regexps_list,
     OptimizationFilterStatus* out_status) {
   std::unique_ptr<RegexpList> regexps = std::make_unique<RegexpList>();
-  for (int i = 0; i < optimization_filter.regexps_size(); ++i) {
-    regexps->emplace_back(
-        std::make_unique<re2::RE2>(optimization_filter.regexps(i)));
+  for (int i = 0; i < regexps_list.size(); ++i) {
+    regexps->emplace_back(std::make_unique<re2::RE2>(regexps_list.at(i)));
     if (!regexps->at(i)->ok()) {
       PopulateOptimizationFilterStatusIfSet(
           OptimizationFilterStatus::kInvalidRegexp, out_status);
@@ -164,13 +163,21 @@ std::unique_ptr<OptimizationFilter> ProcessOptimizationFilter(
 
   std::unique_ptr<RegexpList> regexps;
   if (optimization_filter.regexps_size() > 0) {
-    regexps = ProcessRegexps(optimization_filter, out_status);
+    regexps = ProcessRegexps(optimization_filter.regexps(), out_status);
     if (!regexps)
       return nullptr;
   }
 
+  std::unique_ptr<RegexpList> exclusion_regexps;
+  if (optimization_filter.exclusion_regexps_size() > 0) {
+    exclusion_regexps =
+        ProcessRegexps(optimization_filter.exclusion_regexps(), out_status);
+    if (!exclusion_regexps)
+      return nullptr;
+  }
+
   return std::make_unique<OptimizationFilter>(
-      std::move(bloom_filter), std::move(regexps),
+      std::move(bloom_filter), std::move(regexps), std::move(exclusion_regexps),
       optimization_filter.skip_host_suffix_checking());
 }
 

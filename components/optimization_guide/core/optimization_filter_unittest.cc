@@ -31,7 +31,8 @@ std::unique_ptr<RegexpList> CreateRegexps(
 TEST(OptimizationFilterTest, TestMatchesBloomFilter) {
   std::unique_ptr<BloomFilter> bloom_filter(CreateBloomFilter());
   bloom_filter->Add("fooco.co.uk");
-  OptimizationFilter opt_filter(std::move(bloom_filter), nullptr,
+  OptimizationFilter opt_filter(std::move(bloom_filter), /*regexps=*/nullptr,
+                                /*exclusion_regexps=*/nullptr,
                                 /*skip_host_suffix_checking=*/false);
   EXPECT_TRUE(opt_filter.Matches(GURL("http://shopping.fooco.co.uk")));
   EXPECT_TRUE(
@@ -40,10 +41,22 @@ TEST(OptimizationFilterTest, TestMatchesBloomFilter) {
   EXPECT_FALSE(opt_filter.Matches(GURL("https://nonfooco.co.uk")));
 }
 
+TEST(OptimizationFilterTest, TestMatchesBloomFilterChecksRegexpFirst) {
+  std::unique_ptr<RegexpList> exclusion_regexps(CreateRegexps({"shopping"}));
+  std::unique_ptr<BloomFilter> bloom_filter(CreateBloomFilter());
+  bloom_filter->Add("google.com");
+  OptimizationFilter opt_filter(std::move(bloom_filter), /*regexps=*/nullptr,
+                                std::move(exclusion_regexps),
+                                /*skip_host_suffix_checking=*/false);
+  EXPECT_FALSE(opt_filter.Matches(GURL("http://shopping.google.com")));
+  EXPECT_TRUE(opt_filter.Matches(GURL("http://www.google.com")));
+}
+
 TEST(OptimizationFilterTest, TestMatchesBloomFilterSkipHostSuffixChecking) {
   std::unique_ptr<BloomFilter> bloom_filter(CreateBloomFilter());
   bloom_filter->Add("fooco.co.uk");
-  OptimizationFilter opt_filter(std::move(bloom_filter), nullptr,
+  OptimizationFilter opt_filter(std::move(bloom_filter), /*regexps=*/nullptr,
+                                /*exclusion_regexps=*/nullptr,
                                 /*skip_host_suffix_checking=*/true);
   EXPECT_TRUE(opt_filter.Matches(GURL("https://fooco.co.uk/somepath")));
   EXPECT_TRUE(opt_filter.Matches(GURL("https://fooco.co.uk")));
@@ -53,7 +66,8 @@ TEST(OptimizationFilterTest, TestMatchesBloomFilterSkipHostSuffixChecking) {
 
 TEST(OptimizationFilterTest, TestMatchesRegexp) {
   std::unique_ptr<RegexpList> regexps(CreateRegexps({"test"}));
-  OptimizationFilter opt_filter(nullptr, std::move(regexps),
+  OptimizationFilter opt_filter(/*bloom_filter=*/nullptr, std::move(regexps),
+                                /*exclusion_regexps=*/nullptr,
                                 /*skip_host_suffix_checking=*/false);
   EXPECT_TRUE(opt_filter.Matches(GURL("http://test.com")));
   EXPECT_TRUE(opt_filter.Matches(GURL("https://shopping.com/test")));
@@ -63,7 +77,8 @@ TEST(OptimizationFilterTest, TestMatchesRegexp) {
 
 TEST(OptimizationFilterTest, TestMatchesRegexpFragment) {
   std::unique_ptr<RegexpList> regexps(CreateRegexps({"test"}));
-  OptimizationFilter opt_filter(nullptr, std::move(regexps),
+  OptimizationFilter opt_filter(/*bloom_filter=*/nullptr, std::move(regexps),
+                                /*exclusion_regexps=*/nullptr,
                                 /*skip_host_suffix_checking=*/false);
   // Fragments are not matched.
   EXPECT_FALSE(opt_filter.Matches(GURL("https://shopping.com/#test")));
@@ -71,7 +86,8 @@ TEST(OptimizationFilterTest, TestMatchesRegexpFragment) {
 
 TEST(OptimizationFilterTest, TestMatchesRegexpInvalid) {
   std::unique_ptr<RegexpList> regexps(CreateRegexps({"test[", "shop"}));
-  OptimizationFilter opt_filter(nullptr, std::move(regexps),
+  OptimizationFilter opt_filter(/*bloom_filter=*/nullptr, std::move(regexps),
+                                /*exclusion_regexps=*/nullptr,
                                 /*skip_host_suffix_checking=*/false);
   // Invalid regexps are not used
   EXPECT_FALSE(opt_filter.Matches(GURL("https://test.com/")));
@@ -80,7 +96,8 @@ TEST(OptimizationFilterTest, TestMatchesRegexpInvalid) {
 
 TEST(OptimizationFilterTest, TestMatchesRegexpInvalidGURL) {
   std::unique_ptr<RegexpList> regexps(CreateRegexps({"test"}));
-  OptimizationFilter opt_filter(nullptr, std::move(regexps),
+  OptimizationFilter opt_filter(/*bloom_filter=*/nullptr, std::move(regexps),
+                                /*exclusion_regexps=*/nullptr,
                                 /*skip_host_suffix_checking=*/false);
   // Invalid urls are not matched.
   EXPECT_FALSE(opt_filter.Matches(GURL("test")));
@@ -90,7 +107,8 @@ TEST(OptimizationFilterTest, TestMatchesMaxSuffix) {
   std::unique_ptr<BloomFilter> bloom_filter(CreateBloomFilter());
   bloom_filter->Add("one.two.three.four.co.uk");
   bloom_filter->Add("one.two.three.four.five.co.uk");
-  OptimizationFilter opt_filter(std::move(bloom_filter), nullptr,
+  OptimizationFilter opt_filter(std::move(bloom_filter), /*regexps=*/nullptr,
+                                /*exclusion_regexps=*/nullptr,
                                 /*skip_host_suffix_checking=*/false);
   EXPECT_TRUE(opt_filter.Matches(GURL("http://host.one.two.three.four.co.uk")));
   EXPECT_FALSE(
@@ -104,7 +122,8 @@ TEST(OptimizationFilterTest, TestMatchesMinSuffix) {
   std::unique_ptr<BloomFilter> bloom_filter(CreateBloomFilter());
   bloom_filter->Add("abc.tv");
   bloom_filter->Add("xy.tv");
-  OptimizationFilter opt_filter(std::move(bloom_filter), nullptr,
+  OptimizationFilter opt_filter(std::move(bloom_filter), /*regexps=*/nullptr,
+                                /*exclusion_regexps=*/nullptr,
                                 /*skip_host_suffix_checking=*/false);
   EXPECT_TRUE(opt_filter.Matches(GURL("https://abc.tv")));
   EXPECT_TRUE(opt_filter.Matches(GURL("https://host.abc.tv")));
