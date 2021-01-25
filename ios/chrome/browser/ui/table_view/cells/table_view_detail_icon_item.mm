@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/ui/table_view/cells/table_view_detail_icon_item.h"
 
-#include <algorithm>
-
 #import "ios/chrome/browser/ui/settings/cells/settings_cells_constants.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
@@ -51,6 +49,7 @@ const CGFloat kDetailTextTrailingPadding = 6;
     iconImage = [UIImage imageNamed:self.iconImageName];
   }
   [cell setIconImage:iconImage];
+  [cell setTextLayoutConstraintAxis:self.textLayoutConstraintAxis];
 }
 
 @end
@@ -66,7 +65,8 @@ const CGFloat kDetailTextTrailingPadding = 6;
 // limit. They conflict with the standardConstraints.
 @property(nonatomic, strong)
     NSArray<NSLayoutConstraint*>* accessibilityConstraints;
-
+// View containing UILabels |text| and |detailText|.
+@property(nonatomic, strong) UIStackView* textStackView;
 @end
 
 @implementation TableViewDetailIconCell {
@@ -96,7 +96,6 @@ const CGFloat kDetailTextTrailingPadding = 6;
     _textLabel.adjustsFontForContentSizeCategory = YES;
     _textLabel.textColor = UIColor.cr_labelColor;
     _textLabel.backgroundColor = UIColor.clearColor;
-    [contentView addSubview:_textLabel];
 
     _detailTextLabel = [[UILabel alloc] init];
     _detailTextLabel.translatesAutoresizingMaskIntoConstraints = NO;
@@ -105,14 +104,18 @@ const CGFloat kDetailTextTrailingPadding = 6;
     _detailTextLabel.adjustsFontForContentSizeCategory = YES;
     _detailTextLabel.textColor = UIColor.cr_secondaryLabelColor;
     _detailTextLabel.backgroundColor = UIColor.clearColor;
-    [contentView addSubview:_detailTextLabel];
+
+    _textStackView = [[UIStackView alloc]
+        initWithArrangedSubviews:@[ _textLabel, _detailTextLabel ]];
+    _textStackView.translatesAutoresizingMaskIntoConstraints = NO;
+    [contentView addSubview:_textStackView];
 
     // Set up the constraints for when the icon is visible and hidden.  One of
     // these will be active at a time, defaulting to hidden.
-    _iconHiddenConstraint = [_textLabel.leadingAnchor
+    _iconHiddenConstraint = [_textStackView.leadingAnchor
         constraintEqualToAnchor:contentView.leadingAnchor
                        constant:kTableViewHorizontalSpacing];
-    _iconVisibleConstraint = [_textLabel.leadingAnchor
+    _iconVisibleConstraint = [_textStackView.leadingAnchor
         constraintEqualToAnchor:_iconImageView.trailingAnchor
                        constant:kTableViewImagePadding];
 
@@ -125,43 +128,31 @@ const CGFloat kDetailTextTrailingPadding = 6;
     // |_detailTextLabel|, so that it won't break other layouts.
     widthConstraint.priority = UILayoutPriorityDefaultLow;
 
+    NSLayoutConstraint* heightConstraint = [self.contentView.heightAnchor
+        constraintGreaterThanOrEqualToConstant:kChromeTableViewCellHeight];
+    // Don't set the priority to required to avoid clashing with the estimated
+    // height.
+    heightConstraint.priority = UILayoutPriorityRequired - 1;
+
     _standardConstraints = @[
-      // Set up the vertical constraints and align the baselines of the two text
-      // labels.
-      [_textLabel.centerYAnchor
+      [_textStackView.centerYAnchor
           constraintEqualToAnchor:contentView.centerYAnchor],
-      [_textLabel.trailingAnchor
-          constraintLessThanOrEqualToAnchor:_detailTextLabel.leadingAnchor
-                                   constant:-kTableViewHorizontalSpacing],
-      [_detailTextLabel.firstBaselineAnchor
-          constraintEqualToAnchor:_textLabel.firstBaselineAnchor],
-      [_detailTextLabel.trailingAnchor
-          constraintEqualToAnchor:contentView.trailingAnchor
-                         constant:-kDetailTextTrailingPadding],
       widthConstraint,
+      heightConstraint,
     ];
 
     _accessibilityConstraints = @[
-      [_textLabel.topAnchor
-          constraintEqualToAnchor:self.contentView.topAnchor
+      [_textStackView.topAnchor
+          constraintEqualToAnchor:contentView.topAnchor
                          constant:kTableViewLargeVerticalSpacing],
-      [_detailTextLabel.bottomAnchor
-          constraintEqualToAnchor:self.contentView.bottomAnchor
+      [_textStackView.bottomAnchor
+          constraintEqualToAnchor:contentView.bottomAnchor
                          constant:-kTableViewLargeVerticalSpacing],
-      [_textLabel.bottomAnchor
-          constraintEqualToAnchor:_detailTextLabel.topAnchor
-                         constant:-kTableViewLargeVerticalSpacing],
-      [_textLabel.trailingAnchor
-          constraintLessThanOrEqualToAnchor:self.contentView.trailingAnchor
-                                   constant:-kTableViewHorizontalSpacing],
-      [_detailTextLabel.leadingAnchor
-          constraintEqualToAnchor:_textLabel.leadingAnchor],
-      [_detailTextLabel.trailingAnchor
-          constraintLessThanOrEqualToAnchor:contentView.trailingAnchor
-                                   constant:-kTableViewHorizontalSpacing],
+
     ];
 
     [NSLayoutConstraint activateConstraints:@[
+      // Image.
       [_iconImageView.leadingAnchor
           constraintEqualToAnchor:contentView.leadingAnchor
                          constant:kTableViewHorizontalSpacing],
@@ -171,14 +162,19 @@ const CGFloat kDetailTextTrailingPadding = 6;
           constraintEqualToAnchor:_iconImageView.widthAnchor],
       [_iconImageView.centerYAnchor
           constraintEqualToAnchor:contentView.centerYAnchor],
+
+      // Text labels.
+      [_textStackView.trailingAnchor
+          constraintEqualToAnchor:contentView.trailingAnchor
+                         constant:-kDetailTextTrailingPadding],
       _iconHiddenConstraint,
 
-      // Leading constraint for |customSepartor|.
+      // Leading constraint for |customSeparator|.
       [self.customSeparator.leadingAnchor
-          constraintEqualToAnchor:_textLabel.leadingAnchor],
+          constraintEqualToAnchor:_textStackView.leadingAnchor],
     ]];
 
-    AddOptionalVerticalPadding(contentView, _textLabel,
+    AddOptionalVerticalPadding(contentView, _textStackView,
                                kTableViewOneLabelCellVerticalSpacing);
 
     [self updateForAccessibilityContentSizeCategory:
@@ -203,6 +199,20 @@ const CGFloat kDetailTextTrailingPadding = 6;
     _iconHiddenConstraint.active = NO;
     _iconVisibleConstraint.active = YES;
   }
+}
+
+- (void)setTextLayoutConstraintAxis:
+    (UILayoutConstraintAxis)textLayoutConstraintAxis {
+  self.textStackView.axis = textLayoutConstraintAxis;
+  [self updateForAccessibilityContentSizeCategory:
+            UIContentSizeCategoryIsAccessibilityCategory(
+                self.traitCollection.preferredContentSizeCategory)];
+}
+
+#pragma mark - Properties
+
+- (UILayoutConstraintAxis)textLayoutConstraintAxis {
+  return self.textStackView.axis;
 }
 
 #pragma mark - UIView
@@ -247,12 +257,17 @@ const CGFloat kDetailTextTrailingPadding = 6;
     [NSLayoutConstraint deactivateConstraints:_accessibilityConstraints];
     [NSLayoutConstraint activateConstraints:_standardConstraints];
     // detailTextLabel is laid after textLabel and should have a trailing text
-    // alignment with non-accessibility content size category.
-    _detailTextLabel.textAlignment =
-        self.effectiveUserInterfaceLayoutDirection ==
-                UIUserInterfaceLayoutDirectionLeftToRight
-            ? NSTextAlignmentRight
-            : NSTextAlignmentLeft;
+    // alignment with non-accessibility content size category if in horizontal
+    // axis layout.
+    if (_textStackView.axis == UILayoutConstraintAxisHorizontal) {
+      _detailTextLabel.textAlignment =
+          self.effectiveUserInterfaceLayoutDirection ==
+                  UIUserInterfaceLayoutDirectionLeftToRight
+              ? NSTextAlignmentRight
+              : NSTextAlignmentLeft;
+    } else {
+      _detailTextLabel.textAlignment = NSTextAlignmentNatural;
+    }
     _detailTextLabel.numberOfLines = 1;
     _textLabel.numberOfLines = 1;
   }
