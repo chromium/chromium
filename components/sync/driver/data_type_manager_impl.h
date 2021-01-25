@@ -60,14 +60,6 @@ class DataTypeManagerImpl : public DataTypeManager,
 
   bool needs_reconfigure_for_test() const { return needs_reconfigure_; }
 
- protected:
-  // Returns the priority types (control + priority user types).
-  // Virtual for overriding during tests.
-  virtual ModelTypeSet GetPriorityTypes() const;
-
-  // The set of types whose initial download of sync data has completed.
-  ModelTypeSet downloaded_types_;
-
  private:
   enum DataTypeConfigState {
     CONFIGURE_ACTIVE,    // Actively being configured. Data of such types
@@ -153,7 +145,10 @@ class DataTypeManagerImpl : public DataTypeManager,
   // This list is determined at startup by various command line flags.
   const DataTypeController::TypeMap* const controllers_;
 
-  State state_;
+  State state_ = DataTypeManager::STOPPED;
+
+  // The set of types whose initial download of sync data has completed.
+  ModelTypeSet downloaded_types_;
 
   // Types that requested in current configuration cycle.
   ModelTypeSet last_requested_types_;
@@ -173,7 +168,7 @@ class DataTypeManagerImpl : public DataTypeManager,
 
   // Whether an attempt to reconfigure was made while we were busy configuring.
   // The |last_requested_types_| will reflect the newest set of requested types.
-  bool needs_reconfigure_;
+  bool needs_reconfigure_ = false;
 
   // The last time Restart() was called.
   base::Time last_restart_time_;

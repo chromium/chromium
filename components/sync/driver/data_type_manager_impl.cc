@@ -59,11 +59,9 @@ DataTypeManagerImpl::DataTypeManagerImpl(
     const DataTypeEncryptionHandler* encryption_handler,
     ModelTypeConfigurer* configurer,
     DataTypeManagerObserver* observer)
-    : downloaded_types_(initial_types),
-      configurer_(configurer),
+    : configurer_(configurer),
       controllers_(controllers),
-      state_(DataTypeManager::STOPPED),
-      needs_reconfigure_(false),
+      downloaded_types_(initial_types),
       debug_info_listener_(debug_info_listener),
       model_load_manager_(controllers, this),
       observer_(observer),
@@ -343,10 +341,6 @@ void DataTypeManagerImpl::OnAllDataTypesReadyForConfigure() {
   StartNextConfiguration(/*higher_priority_types_before=*/ModelTypeSet());
 }
 
-ModelTypeSet DataTypeManagerImpl::GetPriorityTypes() const {
-  return PriorityUserTypes();
-}
-
 base::queue<ModelTypeSet> DataTypeManagerImpl::PrioritizeTypes(
     const ModelTypeSet& types) {
   // Control types are usually configured before all other types during
@@ -358,7 +352,7 @@ base::queue<ModelTypeSet> DataTypeManagerImpl::PrioritizeTypes(
   ModelTypeSet control_types = ControlTypes();
   control_types.RetainAll(types);
 
-  ModelTypeSet priority_types = GetPriorityTypes();
+  ModelTypeSet priority_types = PriorityUserTypes();
   priority_types.RetainAll(types);
 
   ModelTypeSet regular_types =
