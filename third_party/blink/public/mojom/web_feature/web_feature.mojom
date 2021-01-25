@@ -3106,6 +3106,7 @@ enum WebFeature {
   kPopupElement = 3781,
   kV8HTMLPopupElement_Show_Method = 3782,
   kV8HTMLPopupElement_Hide_Method = 3783,
+  kWindowOpenWithAdditionalBoolParameter = 3784,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

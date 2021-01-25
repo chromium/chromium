@@ -352,6 +352,13 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
                   const String& url_string,
                   const AtomicString& target,
                   const String& features,
+                  bool unused,
+                  ExceptionState&);
+
+  DOMWindow* open(v8::Isolate*,
+                  const String& url_string,
+                  const AtomicString& target,
+                  const String& features,
                   const ImpressionParams* impression_params,
                   ExceptionState&);
 
