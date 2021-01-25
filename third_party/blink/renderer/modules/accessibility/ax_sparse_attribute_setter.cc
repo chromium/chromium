@@ -76,8 +76,6 @@ void SetIntListAttribute(ax::mojom::blink::IntListAttribute attribute,
         object->AXObjectCache().GetOrCreate(associated_element);
     if (!ax_element)
       continue;
-    if (AXObject* parent = ax_element->ParentObject())
-      parent->UpdateChildrenIfNecessary();
     if (!ax_element->AccessibilityIsIgnored())
       ax_ids.push_back(ax_element->AXObjectID());
   }
