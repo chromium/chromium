@@ -163,16 +163,6 @@ class CONTENT_EXPORT ServiceWorkerContext {
   // returns true if it doesn't know (registrations are not yet initialized).
   virtual bool MaybeHasRegistrationForOrigin(const url::Origin& origin) = 0;
 
-  // Returns a set of origins which have at least one stored registration.
-  // The set doesn't include installing/uninstalling/uninstalled registrations.
-  // When |host_filter| is specified the set only includes origins whose host
-  // matches |host_filter|.
-  // This function can be called from any thread and the callback is called on
-  // that thread.
-  virtual void GetInstalledRegistrationOrigins(
-      base::Optional<std::string> host_filter,
-      GetInstalledRegistrationOriginsCallback callback) = 0;
-
   virtual void GetAllOriginsInfo(GetUsageInfoCallback callback) = 0;
 
   // Deletes all registrations in the origin and clears all service workers
@@ -182,13 +172,6 @@ class CONTENT_EXPORT ServiceWorkerContext {
   // that thread.
   virtual void DeleteForOrigin(const url::Origin& origin_url,
                                ResultCallback callback) = 0;
-
-  // Performs internal storage cleanup. Operations to the storage in the past
-  // (e.g. deletion) are usually recorded in disk for a certain period until
-  // compaction happens. This method wipes them out to ensure that the deleted
-  // entries and other traces like log files are removed.
-  // May be called on any thread, and the callback is called on that thread.
-  virtual void PerformStorageCleanup(base::OnceClosure callback) = 0;
 
   // Returns ServiceWorkerCapability describing existence and properties of a
   // Service Worker registration matching |url|. In case the service

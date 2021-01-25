@@ -165,13 +165,9 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
       const std::string& request_uuid) override;
   size_t CountExternalRequestsForTest(const url::Origin& origin) override;
   bool MaybeHasRegistrationForOrigin(const url::Origin& origin) override;
-  void GetInstalledRegistrationOrigins(
-      base::Optional<std::string> host_filter,
-      GetInstalledRegistrationOriginsCallback callback) override;
   void GetAllOriginsInfo(GetUsageInfoCallback callback) override;
   void DeleteForOrigin(const url::Origin& origin,
                        ResultCallback callback) override;
-  void PerformStorageCleanup(base::OnceClosure callback) override;
   void CheckHasServiceWorker(const GURL& url,
                              CheckHasServiceWorkerCallback callback) override;
   void CheckOfflineCapability(const GURL& url,
@@ -193,6 +189,23 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   void StopAllServiceWorkers(base::OnceClosure callback) override;
   const base::flat_map<int64_t, ServiceWorkerRunningInfo>&
   GetRunningServiceWorkerInfos() override;
+
+  // Returns a set of origins which have at least one stored registration.
+  // The set doesn't include installing/uninstalling/uninstalled registrations.
+  // When `host_filter` is specified the set only includes origins whose host
+  // matches `host_filter`.
+  // This function can be called from any thread and the callback is called on
+  // that thread.
+  void GetInstalledRegistrationOrigins(
+      base::Optional<std::string> host_filter,
+      GetInstalledRegistrationOriginsCallback callback);
+
+  // Performs internal storage cleanup. Operations to the storage in the past
+  // (e.g. deletion) are usually recorded in disk for a certain period until
+  // compaction happens. This method wipes them out to ensure that the deleted
+  // entries and other traces like log files are removed.
+  // May be called on any thread, and the callback is called on that thread.
+  void PerformStorageCleanup(base::OnceClosure callback);
 
   ServiceWorkerRegistration* GetLiveRegistration(int64_t registration_id);
   ServiceWorkerVersion* GetLiveVersion(int64_t version_id);
