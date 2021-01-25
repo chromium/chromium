@@ -28,6 +28,11 @@
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
+#include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/clipboard_buffer.h"
+#include "ui/base/clipboard/clipboard_format_type.h"
+#include "ui/base/clipboard/custom_data_helper.h"
+#include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/dragdrop/file_info/file_info.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
@@ -390,6 +395,39 @@ TEST_F(ChromeDataExchangeDelegateTest, HasUrlsInPickle) {
   content::DropData::FileSystemFileInfo::WriteFileSystemFilesToPickle(
       {file_info}, &valid);
   EXPECT_EQ(true, data_exchange_delegate.HasUrlsInPickle(valid));
+}
+
+TEST_F(ChromeDataExchangeDelegateTest, ClipboardFilenamesPickle) {
+  ChromeDataExchangeDelegate data_exchange_delegate;
+  base::Pickle pickle = data_exchange_delegate.CreateClipboardFilenamesPickle(
+      ui::EndpointType::kCrostini, Data("file:///mnt/chromeos/MyFiles/file1\n"
+                                        "file:///mnt/chromeos/MyFiles/file2"));
+  std::unordered_map<base::string16, base::string16> m;
+  ui::ReadCustomDataIntoMap(pickle.data(), pickle.size(), &m);
+  EXPECT_EQ(2, m.size());
+  EXPECT_EQ("exo", base::UTF16ToUTF8(m[STRING16_LITERAL("fs/tag")]));
+  EXPECT_EQ(
+      "filesystem:chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/external/"
+      "Downloads-test%2540example.com-hash/file1\n"
+      "filesystem:chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/external/"
+      "Downloads-test%2540example.com-hash/file2",
+      base::UTF16ToUTF8(m[STRING16_LITERAL("fs/sources")]));
+
+  ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
+  {
+    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
+    writer.WritePickledData(pickle,
+                            ui::ClipboardFormatType::GetWebCustomDataType());
+  }
+
+  std::vector<ui::FileInfo> file_info =
+      data_exchange_delegate.ParseClipboardFilenamesPickle(
+          ui::EndpointType::kDefault, *clipboard);
+  EXPECT_EQ(2, file_info.size());
+  EXPECT_EQ(myfiles_dir_.Append("file1"), file_info[0].path);
+  EXPECT_EQ(myfiles_dir_.Append("file2"), file_info[1].path);
+  EXPECT_EQ(base::FilePath(), file_info[0].display_name);
+  EXPECT_EQ(base::FilePath(), file_info[1].display_name);
 }
 
 }  // namespace chromeos

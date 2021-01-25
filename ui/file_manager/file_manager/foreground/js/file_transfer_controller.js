@@ -1376,8 +1376,8 @@ let FileAsyncData;
       return false;
     }
 
-    // DataTransfer type will be 'fs/tag' when the source was FilesApp, or
-    // 'Files' when the source was any other app.
+    // DataTransfer type will be 'fs/tag' when the source was FilesApp or exo,
+    // or 'Files' when the source was any other app.
     const types = clipboardData.types;
     if (!types || !(types.includes('fs/tag') || types.includes('Files'))) {
       return false;  // Unsupported type of content.

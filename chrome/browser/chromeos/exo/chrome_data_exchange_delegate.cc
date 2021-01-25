@@ -13,6 +13,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -36,6 +37,9 @@
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "ui/aura/window.h"
+#include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/clipboard_buffer.h"
+#include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/dragdrop/file_info/file_info.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
@@ -52,10 +56,17 @@ constexpr char kFileUrlPrefix[] = "file://";
 constexpr char kUriListSeparator[] = "\r\n";
 constexpr char kVmFileScheme[] = "vmfile";
 
+// Mime types used in FilesApp to copy/paste files to clipboard.
+constexpr base::char16 kFilesAppMimeTag[] = STRING16_LITERAL("fs/tag");
+constexpr base::char16 kFilesAppTagExo[] = STRING16_LITERAL("exo");
+constexpr base::char16 kFilesAppMimeSources[] = STRING16_LITERAL("fs/sources");
+constexpr char kFilesAppSeparator[] = "\n";
+constexpr base::char16 kFilesAppSeparator16[] = STRING16_LITERAL("\n");
+
 // We implement our own URLToPath() and PathToURL() rather than use
 // net::FileUrlToFilePath() or net::FilePathToFileURL() since //net code does
 // not support Windows network paths such as //ChromeOS/MyFiles on OS_CHROMEOS.
-bool URLToPath(const std::string& url, std::string* path) {
+bool URLToPath(const base::StringPiece& url, std::string* path) {
   // Must start with 'file://' with at least 1 more char.
   std::string prefix(kFileUrlPrefix);
   if (url.size() <= prefix.size() ||
@@ -134,7 +145,7 @@ void GetFileSystemUrlsFromPickle(
     const storage::FileSystemURL file_system_url =
         file_system_context->CrackURL(file_system_file.url);
     if (file_system_url.is_valid())
-      file_system_urls->push_back(file_system_url);
+      file_system_urls->push_back(std::move(file_system_url));
   }
 }
 
@@ -144,7 +155,7 @@ void SendArcUrls(exo::DataExchangeDelegate::SendDataCallback callback,
   for (const GURL& url : urls) {
     if (!url.is_valid())
       continue;
-    lines.emplace_back(url.spec());
+    lines.push_back(url.spec());
   }
   // Arc requires UTF16 for data.
   base::string16 data =
@@ -186,11 +197,10 @@ std::vector<FileInfo> GetFileInfo(ui::EndpointType source,
     vm_name = plugin_vm::kPluginVmName;
   }
 
-  std::string data_str = std::string(data.begin(), data.end());
-  std::vector<std::string> lines =
-      base::SplitString(data_str, kUriListSeparator, base::TRIM_WHITESPACE,
-                        base::SPLIT_WANT_NONEMPTY);
-  for (const auto& line : lines) {
+  std::string lines = std::string(data.begin(), data.end());
+  for (const base::StringPiece& line :
+       base::SplitStringPiece(lines, kUriListSeparator, base::TRIM_WHITESPACE,
+                              base::SPLIT_WANT_NONEMPTY)) {
     if (line.empty() || line[0] == '#')
       continue;
     std::string path_str;
@@ -280,9 +290,9 @@ void ShareAndSend(ui::EndpointType target,
       // Use path without conversion as default.
       line_to_send = PathToURL(info.path.value());
     }
-    lines_to_send.emplace_back(line_to_send);
+    lines_to_send.push_back(std::move(line_to_send));
     if (share_required && !share_path->IsPathShared(vm_name, info.path))
-      paths_to_share.emplace_back(info.path);
+      paths_to_share.push_back(std::move(info.path));
   }
 
   // Arc uses utf-16 data.
@@ -346,9 +356,8 @@ std::vector<ui::FileInfo> ChromeDataExchangeDelegate::GetFilenames(
     ui::EndpointType source,
     const std::vector<uint8_t>& data) const {
   std::vector<ui::FileInfo> result;
-  std::vector<FileInfo> file_info = GetFileInfo(source, data);
-  for (const auto& info : file_info)
-    result.emplace_back(ui::FileInfo(std::move(info.path), base::FilePath()));
+  for (const auto& info : GetFileInfo(source, data))
+    result.push_back(ui::FileInfo(std::move(info.path), base::FilePath()));
   return result;
 }
 
@@ -407,9 +416,58 @@ void ChromeDataExchangeDelegate::SendPickle(ui::EndpointType target,
 
   std::vector<FileInfo> list;
   for (const auto& url : file_system_urls)
-    list.push_back({url.path(), url});
+    list.push_back({url.path(), std::move(url)});
 
   ShareAndSend(target, std::move(list), std::move(callback));
+}
+
+base::Pickle ChromeDataExchangeDelegate::CreateClipboardFilenamesPickle(
+    ui::EndpointType source,
+    const std::vector<uint8_t>& data) const {
+  std::vector<std::string> filenames;
+  std::vector<FileInfo> file_info = GetFileInfo(source, data);
+  for (const auto& info : file_info) {
+    if (info.url.is_valid())
+      filenames.push_back(info.url.ToGURL().spec());
+  }
+  base::Pickle pickle;
+  ui::WriteCustomDataToPickle(
+      std::unordered_map<base::string16, base::string16>(
+          {{kFilesAppMimeTag, kFilesAppTagExo},
+           {kFilesAppMimeSources, base::UTF8ToUTF16(base::JoinString(
+                                      filenames, kFilesAppSeparator))}}),
+      &pickle);
+  return pickle;
+}
+
+std::vector<ui::FileInfo>
+ChromeDataExchangeDelegate::ParseClipboardFilenamesPickle(
+    ui::EndpointType target,
+    const ui::Clipboard& data) const {
+  std::vector<ui::FileInfo> file_info;
+  const ui::DataTransferEndpoint data_dst(target);
+  base::string16 file_system_url_list;
+  data.ReadCustomData(ui::ClipboardBuffer::kCopyPaste, kFilesAppMimeSources,
+                      &data_dst, &file_system_url_list);
+  if (file_system_url_list.empty())
+    return file_info;
+
+  storage::ExternalMountPoints* mount_points =
+      storage::ExternalMountPoints::GetSystemInstance();
+
+  for (const base::StringPiece16& line : base::SplitStringPiece(
+           file_system_url_list, kFilesAppSeparator16, base::TRIM_WHITESPACE,
+           base::SPLIT_WANT_NONEMPTY)) {
+    if (line.empty() || line[0] == '#')
+      continue;
+    storage::FileSystemURL url = mount_points->CrackURL(GURL(line));
+    if (!url.is_valid()) {
+      LOG(WARNING) << "Invalid clipboard FileSystemURL: " << line;
+      continue;
+    }
+    file_info.push_back(ui::FileInfo(std::move(url.path()), base::FilePath()));
+  }
+  return file_info;
 }
 
 }  // namespace chromeos

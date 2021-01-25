@@ -161,7 +161,8 @@ class Seat : public aura::client::FocusChangeObserver,
                       scoped_refptr<RefCountedScopedClipboardWriter> writer,
                       const SkBitmap& bitmap);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  void OnFilenamesRead(scoped_refptr<RefCountedScopedClipboardWriter> writer,
+  void OnFilenamesRead(ui::EndpointType source,
+                       scoped_refptr<RefCountedScopedClipboardWriter> writer,
                        base::OnceClosure callback,
                        const std::string& mime_type,
                        const std::vector<uint8_t>& data);

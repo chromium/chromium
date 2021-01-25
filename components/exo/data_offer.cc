@@ -299,7 +299,8 @@ void DataOffer::SetDropData(DataExchangeDelegate* data_exchange_delegate,
   }
 }
 
-void DataOffer::SetClipboardData(const ui::Clipboard& data,
+void DataOffer::SetClipboardData(DataExchangeDelegate* data_exchange_delegate,
+                                 const ui::Clipboard& data,
                                  ui::EndpointType endpoint_type) {
   DCHECK_EQ(0u, data_callbacks_.size());
   const ui::DataTransferEndpoint data_dst(endpoint_type);
@@ -339,6 +340,17 @@ void DataOffer::SetClipboardData(const ui::Clipboard& data,
     delegate_->OnOffer(std::string(kImagePngMimeType));
     data_callbacks_.emplace(std::string(kImagePngMimeType),
                             base::BindOnce(&ReadPNGFromClipboard, data_dst));
+  }
+  std::vector<ui::FileInfo> file_info =
+      data_exchange_delegate->ParseClipboardFilenamesPickle(endpoint_type,
+                                                            data);
+  if (!file_info.empty()) {
+    delegate_->OnOffer(std::string(ui::kMimeTypeURIList));
+    data_callbacks_.emplace(
+        std::string(ui::kMimeTypeURIList),
+        base::BindOnce(&DataExchangeDelegate::SendFileInfo,
+                       base::Unretained(data_exchange_delegate), endpoint_type,
+                       std::move(file_info)));
   }
 }
 

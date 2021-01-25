@@ -222,7 +222,7 @@ void DataDevice::SetSelectionToCurrentClipboardData() {
   DCHECK(focused_surface_);
   DataOffer* data_offer = delegate_->OnDataOffer();
   data_offer->SetClipboardData(
-      *ui::Clipboard::GetForCurrentThread(),
+      seat_->data_exchange_delegate(), *ui::Clipboard::GetForCurrentThread(),
       seat_->data_exchange_delegate()->GetDataTransferEndpointType(
           focused_surface_->get()->window()));
   delegate_->OnSelection(*data_offer);

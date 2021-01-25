@@ -21,6 +21,7 @@ class RefCountedMemory;
 }  // namespace base
 
 namespace ui {
+class Clipboard;
 struct FileInfo;
 enum class EndpointType;
 }  // namespace ui
@@ -65,6 +66,20 @@ class DataExchangeDelegate {
   virtual void SendPickle(ui::EndpointType target,
                           const base::Pickle& pickle,
                           SendDataCallback callback) = 0;
+
+  // Reads filenames from text/uri-list |data| which was provided by |source|
+  // endpoint. Translates paths into filesystem URLs suitable for FilesApp by
+  // setting custom mime type fs/tag to 'exo' and fs/sources with
+  // newline-separated filesystem URLs.
+  virtual base::Pickle CreateClipboardFilenamesPickle(
+      ui::EndpointType source,
+      const std::vector<uint8_t>& data) const = 0;
+
+  // Reads clipboard custom data pickle for fs/sources with newline-separated
+  // filesystem URLs to send to |target| endpoint.
+  virtual std::vector<ui::FileInfo> ParseClipboardFilenamesPickle(
+      const ui::EndpointType target,
+      const ui::Clipboard& data) const = 0;
 };
 
 }  // namespace exo

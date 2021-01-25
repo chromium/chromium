@@ -142,10 +142,11 @@ void Seat::SetSelection(DataSource* source) {
     selection_source_->get()->Cancelled();
   }
   selection_source_ = std::make_unique<ScopedDataSource>(source, this);
+  ui::EndpointType endpoint_type =
+      data_exchange_delegate_->GetDataTransferEndpointType(
+          focused_surface->window());
   scoped_refptr<RefCountedScopedClipboardWriter> writer =
-      base::MakeRefCounted<RefCountedScopedClipboardWriter>(
-          data_exchange_delegate_->GetDataTransferEndpointType(
-              focused_surface->window()));
+      base::MakeRefCounted<RefCountedScopedClipboardWriter>(endpoint_type);
 
   base::RepeatingClosure data_read_callback = base::BarrierClosure(
       kMaxClipboardDataTypes,
@@ -162,7 +163,7 @@ void Seat::SetSelection(DataSource* source) {
       base::BindOnce(&Seat::OnImageRead, weak_ptr_factory_.GetWeakPtr(), writer,
                      data_read_callback),
       base::BindOnce(&Seat::OnFilenamesRead, weak_ptr_factory_.GetWeakPtr(),
-                     writer, data_read_callback),
+                     endpoint_type, writer, data_read_callback),
       data_read_callback);
 }
 
@@ -231,10 +232,15 @@ void Seat::OnImageDecoded(base::OnceClosure callback,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void Seat::OnFilenamesRead(
+    ui::EndpointType source,
     scoped_refptr<RefCountedScopedClipboardWriter> writer,
     base::OnceClosure callback,
     const std::string& mime_type,
     const std::vector<uint8_t>& data) {
+  base::Pickle pickle =
+      data_exchange_delegate_->CreateClipboardFilenamesPickle(source, data);
+  writer->WritePickledData(pickle,
+                           ui::ClipboardFormatType::GetWebCustomDataType());
   std::move(callback).Run();
 }
 

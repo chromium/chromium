@@ -34,6 +34,12 @@ class TestDataExchangeDelegate : public DataExchangeDelegate {
   void SendPickle(ui::EndpointType target,
                   const base::Pickle& pickle,
                   SendDataCallback callback) override;
+  base::Pickle CreateClipboardFilenamesPickle(
+      ui::EndpointType source,
+      const std::vector<uint8_t>& data) const override;
+  std::vector<ui::FileInfo> ParseClipboardFilenamesPickle(
+      const ui::EndpointType target,
+      const ui::Clipboard& data) const override;
 
   void RunSendPickleCallback(std::vector<GURL> urls);
 

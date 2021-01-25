@@ -14,6 +14,9 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "net/base/filename_util.h"
+#include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/clipboard_format_type.h"
+#include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/dragdrop/file_info/file_info.h"
 #include "url/gurl.h"
 
@@ -37,7 +40,7 @@ std::vector<ui::FileInfo> TestDataExchangeDelegate::GetFilenames(
            lines, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
     base::FilePath path;
     if (net::FileURLToFilePath(GURL(line), &path))
-      filenames.emplace_back(ui::FileInfo(path, base::FilePath()));
+      filenames.push_back(ui::FileInfo(std::move(path), base::FilePath()));
   }
   return filenames;
 }
@@ -53,7 +56,7 @@ void TestDataExchangeDelegate::SendFileInfo(
     SendDataCallback callback) const {
   std::vector<std::string> lines;
   for (const auto& file : files) {
-    lines.emplace_back("file://" + file.path.value());
+    lines.push_back("file://" + file.path.value());
   }
   std::string result = base::JoinString(lines, "\r\n");
   std::move(callback).Run(base::RefCountedString::TakeString(&result));
@@ -73,11 +76,37 @@ void TestDataExchangeDelegate::SendPickle(ui::EndpointType target,
 void TestDataExchangeDelegate::RunSendPickleCallback(std::vector<GURL> urls) {
   std::vector<std::string> lines;
   for (const auto& url : urls) {
-    lines.emplace_back(url.spec());
+    lines.push_back(url.spec());
   }
   std::string result = base::JoinString(lines, "\r\n");
   std::move(send_pickle_callback_)
       .Run(base::RefCountedString::TakeString(&result));
+}
+
+base::Pickle TestDataExchangeDelegate::CreateClipboardFilenamesPickle(
+    ui::EndpointType source,
+    const std::vector<uint8_t>& data) const {
+  base::Pickle result;
+  result.WriteData(reinterpret_cast<const char*>(data.data()), data.size());
+  return result;
+}
+
+std::vector<ui::FileInfo>
+TestDataExchangeDelegate::ParseClipboardFilenamesPickle(
+    const ui::EndpointType target,
+    const ui::Clipboard& data) const {
+  std::vector<ui::FileInfo> file_info;
+  const ui::DataTransferEndpoint data_dst(target);
+  std::string lines;
+  data.ReadData(ui::ClipboardFormatType::GetWebCustomDataType(), &data_dst,
+                &lines);
+  for (const base::StringPiece& line : base::SplitStringPiece(
+           lines, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
+    base::FilePath path;
+    if (net::FileURLToFilePath(GURL(line), &path))
+      file_info.push_back(ui::FileInfo(std::move(path), base::FilePath()));
+  }
+  return file_info;
 }
 
 }  // namespace exo

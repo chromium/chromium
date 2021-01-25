@@ -25,6 +25,7 @@
 #include "components/exo/test/exo_test_base.h"
 #include "components/exo/test/exo_test_data_exchange_delegate.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
@@ -406,7 +407,7 @@ TEST_F(DataOfferTest, SetClipboardDataPlainText) {
 
   auto* window = CreateTestWindowInShellWithBounds(gfx::Rect());
   data_offer.SetClipboardData(
-      *ui::Clipboard::GetForCurrentThread(),
+      &data_exchange_delegate, *ui::Clipboard::GetForCurrentThread(),
       data_exchange_delegate.GetDataTransferEndpointType(window));
 
   EXPECT_EQ(3u, delegate.mime_types().size());
@@ -450,7 +451,7 @@ TEST_F(DataOfferTest, SetClipboardDataHTML) {
 
   auto* window = CreateTestWindowInShellWithBounds(gfx::Rect());
   data_offer.SetClipboardData(
-      *ui::Clipboard::GetForCurrentThread(),
+      &data_exchange_delegate, *ui::Clipboard::GetForCurrentThread(),
       data_exchange_delegate.GetDataTransferEndpointType(window));
 
   EXPECT_EQ(2u, delegate.mime_types().size());
@@ -485,7 +486,7 @@ TEST_F(DataOfferTest, SetClipboardDataRTF) {
 
   auto* window = CreateTestWindowInShellWithBounds(gfx::Rect());
   data_offer.SetClipboardData(
-      *ui::Clipboard::GetForCurrentThread(),
+      &data_exchange_delegate, *ui::Clipboard::GetForCurrentThread(),
       data_exchange_delegate.GetDataTransferEndpointType(window));
 
   EXPECT_EQ(1u, delegate.mime_types().size());
@@ -517,7 +518,7 @@ TEST_F(DataOfferTest, SetClipboardDataImage) {
 
   auto* window = CreateTestWindowInShellWithBounds(gfx::Rect());
   data_offer.SetClipboardData(
-      *ui::Clipboard::GetForCurrentThread(),
+      &data_exchange_delegate, *ui::Clipboard::GetForCurrentThread(),
       data_exchange_delegate.GetDataTransferEndpointType(window));
 
   EXPECT_EQ(1u, delegate.mime_types().size());
@@ -554,6 +555,37 @@ TEST_F(DataOfferTest, SetClipboardDataImage) {
   EXPECT_EQ(good, result);
 }
 
+TEST_F(DataOfferTest, SetClipboardDataFilenames) {
+  TestDataOfferDelegate delegate;
+  DataOffer data_offer(&delegate);
+
+  base::Pickle pickle;
+  pickle.WriteString("file:///test/path");
+  TestDataExchangeDelegate data_exchange_delegate;
+  {
+    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
+    writer.WritePickledData(pickle,
+                            ui::ClipboardFormatType::GetWebCustomDataType());
+  }
+
+  auto* window = CreateTestWindowInShellWithBounds(gfx::Rect());
+  data_offer.SetClipboardData(
+      &data_exchange_delegate, *ui::Clipboard::GetForCurrentThread(),
+      data_exchange_delegate.GetDataTransferEndpointType(window));
+
+  EXPECT_EQ(1u, delegate.mime_types().size());
+  EXPECT_EQ(1u, delegate.mime_types().count("text/uri-list"));
+
+  base::ScopedFD read_pipe;
+  base::ScopedFD write_pipe;
+  ASSERT_TRUE(base::CreatePipe(&read_pipe, &write_pipe));
+
+  data_offer.Receive("text/uri-list", std::move(write_pipe));
+  std::string result;
+  ASSERT_TRUE(ReadString(std::move(read_pipe), &result));
+  EXPECT_EQ("file:///test/path", result);
+}
+
 TEST_F(DataOfferTest, AcceptWithNull) {
   TestDataOfferDelegate delegate;
   DataOffer data_offer(&delegate);
@@ -576,7 +608,7 @@ TEST_F(DataOfferTest, SetClipboardDataWithTransferPolicy) {
 
   auto* window = CreateTestWindowInShellWithBounds(gfx::Rect());
   data_offer.SetClipboardData(
-      *ui::Clipboard::GetForCurrentThread(),
+      &data_exchange_delegate, *ui::Clipboard::GetForCurrentThread(),
       data_exchange_delegate.GetDataTransferEndpointType(window));
 
   EXPECT_EQ(3u, delegate.mime_types().size());

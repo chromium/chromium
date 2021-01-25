@@ -6,6 +6,7 @@
 
 #include "base/files/file_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/pickle.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "components/exo/data_source.h"
@@ -16,6 +17,7 @@
 #include "components/exo/test/exo_test_data_exchange_delegate.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/events/event.h"
@@ -318,6 +320,30 @@ TEST_F(SeatTest, SetSelectionRTF) {
   std::string clipboard;
   ui::Clipboard::GetForCurrentThread()->ReadRTF(
       ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr, &clipboard);
+
+  EXPECT_EQ(clipboard, std::string("TestData"));
+}
+
+TEST_F(SeatTest, SetSelectionFilenames) {
+  TestSeat seat;
+  Surface focused_surface;
+  seat.set_focused_surface(&focused_surface);
+
+  TestDataSourceDelegate delegate;
+  DataSource source(&delegate);
+  source.Offer("text/uri-list");
+  seat.SetSelection(&source);
+
+  RunReadingTask();
+
+  std::string data;
+  ui::Clipboard::GetForCurrentThread()->ReadData(
+      ui::ClipboardFormatType::GetWebCustomDataType(),
+      /* data_dst = */ nullptr, &data);
+  base::Pickle pickle(data.c_str(), data.size());
+  std::string clipboard;
+  base::PickleIterator iter(pickle);
+  EXPECT_TRUE(iter.ReadString(&clipboard));
 
   EXPECT_EQ(clipboard, std::string("TestData"));
 }
