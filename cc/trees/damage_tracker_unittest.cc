@@ -2325,5 +2325,45 @@ TEST_F(DamageTrackerTest,
                   ->has_damage_from_contributing_content());
 }
 
+TEST_F(DamageTrackerTest, VerifyDamageExpansionWithBackdropBlurFilters) {
+  LayerImpl* root = CreateAndSetUpTestTreeWithTwoSurfaces();
+
+  // Allow us to set damage on child1_.
+  child1_->SetDrawsContent(true);
+
+  FilterOperations filters;
+  filters.Append(FilterOperation::CreateBlurFilter(2.f));
+
+  // Setting the filter will damage the whole surface.
+  ClearDamageForAllSurfaces(root);
+  SetBackdropFilter(child1_, filters);
+  child1_->NoteLayerPropertyChanged();
+  EmulateDrawingOneFrame(root);
+
+  ClearDamageForAllSurfaces(root);
+  root->UnionUpdateRect(gfx::Rect(297, 297, 2, 2));
+  EmulateDrawingOneFrame(root);
+
+  // child1_'s render surface has a size of 206x208 due to the contributions
+  // from grand_child1_ and grand_child2_. The blur filter on child1_ intersects
+  // the damage from root and expands it to (100,100 206x208).
+  gfx::Rect expected_damage_rect = gfx::Rect(100, 100, 206, 208);
+  gfx::Rect root_damage_rect;
+  EXPECT_TRUE(GetRenderSurface(root)->damage_tracker()->GetDamageRectIfValid(
+      &root_damage_rect));
+  EXPECT_EQ(expected_damage_rect, root_damage_rect);
+
+  ClearDamageForAllSurfaces(root);
+  gfx::Rect damage_rect(97, 97, 2, 2);
+  root->UnionUpdateRect(damage_rect);
+  EmulateDrawingOneFrame(root);
+
+  // The blur filter on child1_ doesn't intersect the damage from root so the
+  // damage remains unchanged.
+  EXPECT_TRUE(GetRenderSurface(root)->damage_tracker()->GetDamageRectIfValid(
+      &root_damage_rect));
+  EXPECT_EQ(damage_rect, root_damage_rect);
+}
+
 }  // namespace
 }  // namespace cc
