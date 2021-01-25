@@ -381,11 +381,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Event.Latency.OS" units="microseconds"
-    expires_after="2020-11-01">
+    expires_after="2021-12-01">
   <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
-    Time between input event received by OS and sent to Chrome.
+    Time between input event received by OS and sent to Chrome, recorded for
+    each event when it is received by Chrome.
 
     Warning: This metric may include reports from clients with low-resolution
     clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
