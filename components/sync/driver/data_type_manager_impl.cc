@@ -319,7 +319,6 @@ void DataTypeManagerImpl::Restart() {
     NotifyStart();
 
   configuration_types_queue_ = PrioritizeTypes(last_enabled_types_);
-  association_types_info_.reset();
 
   model_load_manager_.Initialize(
       /*desired_types=*/last_enabled_types_,
@@ -431,8 +430,6 @@ void DataTypeManagerImpl::ProcessReconfigure() {
     return;
   }
 
-  association_types_info_.reset();
-
   // An attempt was made to reconfigure while we were already configuring.
   // This can be because a passphrase was accepted or the user changed the
   // set of desired types. Either way, |last_requested_types_| will contain
@@ -452,6 +449,7 @@ void DataTypeManagerImpl::ProcessReconfigure() {
 }
 
 void DataTypeManagerImpl::ConfigurationCompleted(
+    AssociationTypesInfo association_types_info,
     ModelTypeSet configured_types,
     ModelTypeSet succeeded_configuration_types,
     ModelTypeSet failed_configuration_types) {
@@ -483,14 +481,9 @@ void DataTypeManagerImpl::ConfigurationCompleted(
   DCHECK(configuration_types_queue_.front() == configured_types);
   configuration_types_queue_.pop();
 
-  if (association_types_info_) {
-    // A non-empty |association_types_info_| means there were actually types
-    // downloading. Record stats for those.
-    association_types_info_->first_sync_types = succeeded_configuration_types;
-    association_types_info_->download_ready_time = base::Time::Now();
-    RecordConfigurationStats();
-  }
-  DCHECK(!association_types_info_);
+  association_types_info.first_sync_types = succeeded_configuration_types;
+  association_types_info.download_ready_time = base::Time::Now();
+  RecordConfigurationStats(association_types_info);
 
   if (configuration_types_queue_.empty()) {
     state_ = CONFIGURED;
@@ -506,11 +499,10 @@ void DataTypeManagerImpl::StartNextConfiguration(
   if (configuration_types_queue_.empty())
     return;
 
-  DCHECK(!association_types_info_);
-  association_types_info_ = AssociationTypesInfo();
-  association_types_info_->types = configuration_types_queue_.front();
-  association_types_info_->download_start_time = base::Time::Now();
-  association_types_info_->higher_priority_types_before =
+  AssociationTypesInfo association_types_info;
+  association_types_info.types = configuration_types_queue_.front();
+  association_types_info.download_start_time = base::Time::Now();
+  association_types_info.higher_priority_types_before =
       higher_priority_types_before;
 
   // The engine's state was initially derived from the types detected to have
@@ -524,11 +516,13 @@ void DataTypeManagerImpl::StartNextConfiguration(
   // it to complete. After engine initialization, all configurations pass
   // through the DataTypeManager, and we are careful to never send a new
   // configure request until the current request succeeds.
-  configurer_->ConfigureDataTypes(PrepareConfigureParams());
+  configurer_->ConfigureDataTypes(
+      PrepareConfigureParams(association_types_info));
 }
 
 ModelTypeConfigurer::ConfigureParams
-DataTypeManagerImpl::PrepareConfigureParams() {
+DataTypeManagerImpl::PrepareConfigureParams(
+    const AssociationTypesInfo& association_types_info) {
   // Divide up the types into their corresponding actions:
   // - Types which are newly enabled are downloaded.
   // - Types which have encountered a cryptographer error (crypto_types) are
@@ -619,28 +613,28 @@ DataTypeManagerImpl::PrepareConfigureParams() {
   params.enabled_types = enabled_types;
   params.to_download = types_to_download;
   params.to_purge = types_to_purge;
-  params.ready_task = base::BindOnce(
-      &DataTypeManagerImpl::ConfigurationCompleted,
-      weak_ptr_factory_.GetWeakPtr(), configuration_types_queue_.front());
+  params.ready_task =
+      base::BindOnce(&DataTypeManagerImpl::ConfigurationCompleted,
+                     weak_ptr_factory_.GetWeakPtr(), association_types_info,
+                     configuration_types_queue_.front());
   params.is_sync_feature_enabled =
       last_requested_context_.sync_mode == SyncMode::kFull;
 
   return params;
 }
 
-void DataTypeManagerImpl::RecordConfigurationStats() {
-  DCHECK(association_types_info_);
+void DataTypeManagerImpl::RecordConfigurationStats(
+    const AssociationTypesInfo& association_types_info) {
   DCHECK(state_ == CONFIGURING);
 
   ModelTypeSet same_priority_types_configured_before;
-  for (ModelType type : association_types_info_->types) {
+  for (ModelType type : association_types_info.types) {
     if (ProtocolTypes().Has(type)) {
-      RecordConfigurationStatsImpl(type, same_priority_types_configured_before);
+      RecordConfigurationStatsImpl(association_types_info, type,
+                                   same_priority_types_configured_before);
       same_priority_types_configured_before.Put(type);
     }
   }
-
-  association_types_info_.reset();
 }
 
 void DataTypeManagerImpl::OnSingleDataTypeWillStop(ModelType type,
@@ -665,27 +659,25 @@ void DataTypeManagerImpl::OnSingleDataTypeWillStop(ModelType type,
 }
 
 void DataTypeManagerImpl::RecordConfigurationStatsImpl(
+    const AssociationTypesInfo& association_types_info,
     ModelType type,
     ModelTypeSet same_priority_types_configured_before) {
-  DCHECK(association_types_info_);
-
   if (!debug_info_listener_.IsInitialized())
     return;
 
   DCHECK_EQ(configuration_stats_.count(type), 0u);
 
-  const AssociationTypesInfo& info = *association_types_info_;
   configuration_stats_[type].model_type = type;
-  if (info.types.Has(type)) {
-    // Times in |info| only apply to non-slow types.
+  if (association_types_info.types.Has(type)) {
     configuration_stats_[type].download_wait_time =
-        info.download_start_time - last_restart_time_;
-    if (info.first_sync_types.Has(type)) {
+        association_types_info.download_start_time - last_restart_time_;
+    if (association_types_info.first_sync_types.Has(type)) {
       configuration_stats_[type].download_time =
-          info.download_ready_time - info.download_start_time;
+          association_types_info.download_ready_time -
+          association_types_info.download_start_time;
     }
     configuration_stats_[type].high_priority_types_configured_before =
-        info.higher_priority_types_before;
+        association_types_info.higher_priority_types_before;
     configuration_stats_[type].same_priority_types_configured_before =
         same_priority_types_configured_before;
   }
