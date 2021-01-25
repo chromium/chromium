@@ -415,7 +415,9 @@ FontDescription::Size StyleBuilderConverterBase::ConvertFontSize(
   // have revealed an existing bug with calculated lengths. Investigate.
   const bool is_absolute =
       parent_size.is_absolute || primitive_value.IsMathFunctionValue() ||
-      !To<CSSNumericLiteralValue>(primitive_value).IsFontRelativeLength();
+      !To<CSSNumericLiteralValue>(primitive_value).IsFontRelativeLength() ||
+      To<CSSNumericLiteralValue>(primitive_value).GetType() ==
+          CSSPrimitiveValue::UnitType::kRems;
   return FontDescription::Size(
       0, ComputeFontSize(conversion_data, primitive_value, parent_size),
       is_absolute);
