@@ -23,8 +23,7 @@ bool LayerTreeDebugState::RecordRenderingStats() const {
 }
 
 bool LayerTreeDebugState::ShouldCreateHudLayer() const {
-  return show_fps_counter || ShowDebugRects() || show_web_vital_metrics ||
-         show_smoothness_metrics;
+  return ShowDebugRects() || ShouldDrawHudInfo();
 }
 
 bool LayerTreeDebugState::ShowDebugRects() const {
@@ -42,6 +41,14 @@ bool LayerTreeDebugState::ShowMemoryStats() const {
 
 bool LayerTreeDebugState::ShouldDrawHudInfo() const {
   return show_fps_counter || show_web_vital_metrics || show_smoothness_metrics;
+}
+
+void LayerTreeDebugState::TurnOffHudInfoDisplay() {
+  // Turn off all types of HUD info display. ShouldDrawHudInfo() would return
+  // false after this function.
+  show_fps_counter = false;
+  show_web_vital_metrics = false;
+  show_smoothness_metrics = false;
 }
 
 bool LayerTreeDebugState::Equal(const LayerTreeDebugState& a,

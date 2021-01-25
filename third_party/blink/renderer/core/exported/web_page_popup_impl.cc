@@ -451,6 +451,10 @@ void WebPagePopupImpl::InitializeCompositing(
                                       screen_info,
                                       std::move(ukm_recorder_factory), settings,
                                       /*frame_widget_input_handler=*/nullptr);
+  cc::LayerTreeDebugState debug_state =
+      widget_base_->LayerTreeHost()->GetDebugState();
+  debug_state.TurnOffHudInfoDisplay();
+  widget_base_->LayerTreeHost()->SetDebugState(debug_state);
 }
 
 scheduler::WebRenderWidgetSchedulingState*

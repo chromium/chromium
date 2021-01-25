@@ -65,6 +65,7 @@ class CC_DEBUG_EXPORT LayerTreeDebugState {
   bool ShowDebugRects() const;
   bool ShowMemoryStats() const;
   bool ShouldDrawHudInfo() const;
+  void TurnOffHudInfoDisplay();
 
   static bool Equal(const LayerTreeDebugState& a, const LayerTreeDebugState& b);
 
