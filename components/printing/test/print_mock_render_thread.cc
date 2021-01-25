@@ -41,7 +41,6 @@ bool PrintMockRenderThread::OnMessageReceived(const IPC::Message& msg) {
   IPC_BEGIN_MESSAGE_MAP(PrintMockRenderThread, msg)
 #if BUILDFLAG(ENABLE_PRINTING)
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-    IPC_MESSAGE_HANDLER(PrintHostMsg_DidStartPreview, OnDidStartPreview)
     IPC_MESSAGE_HANDLER(PrintHostMsg_DidPreviewPage, OnDidPreviewPage)
 #endif
 #endif  // BUILDFLAG(ENABLE_PRINTING)
@@ -52,12 +51,6 @@ bool PrintMockRenderThread::OnMessageReceived(const IPC::Message& msg) {
 
 #if BUILDFLAG(ENABLE_PRINTING)
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-void PrintMockRenderThread::OnDidStartPreview(
-    const printing::mojom::DidStartPreviewParams& params,
-    const printing::mojom::PreviewIds& ids) {
-  print_preview_pages_remaining_ = params.page_count;
-}
-
 void PrintMockRenderThread::OnDidPreviewPage(
     const printing::mojom::DidPreviewPageParams& params,
     const printing::mojom::PreviewIds& ids) {
@@ -67,19 +60,10 @@ void PrintMockRenderThread::OnDidPreviewPage(
   print_preview_pages_.emplace_back(
       params.page_number, params.content->metafile_data_region.GetSize());
 }
-
-bool PrintMockRenderThread::ShouldCancelRequest() const {
-  return print_preview_pages_remaining_ == print_preview_cancel_page_number_;
-}
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
 MockPrinter* PrintMockRenderThread::printer() {
   return printer_.get();
-}
-
-void PrintMockRenderThread::set_print_preview_cancel_page_number(
-    uint32_t page) {
-  print_preview_cancel_page_number_ = page;
 }
 
 uint32_t PrintMockRenderThread::print_preview_pages_remaining() const {

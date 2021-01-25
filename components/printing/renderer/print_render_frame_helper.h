@@ -376,13 +376,12 @@ class PrintRenderFrameHelper
   void IPCProcessed();
 
   // Helper method to get page layout in points and fit to page if needed.
-  static void ComputePageLayoutInPointsForCss(
+  static mojom::PageSizeMarginsPtr ComputePageLayoutInPointsForCss(
       blink::WebLocalFrame* frame,
       uint32_t page_index,
       const mojom::PrintParams& default_params,
       bool ignore_css_margins,
-      double* scale_factor,
-      mojom::PageSizeMargins* page_layout_in_points);
+      double* scale_factor);
 
   // Return an array of pages to print given the print |params| and an expected
   // |page_count|. Page numbers are zero-based.

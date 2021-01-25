@@ -66,10 +66,6 @@ bool ShouldUseCompositor(PrintPreviewUI* print_preview_ui) {
   return IsOopifEnabled() && print_preview_ui->source_is_modifiable();
 }
 
-bool IsValidPageNumber(uint32_t page_number, uint32_t page_count) {
-  return page_number < page_count;
-}
-
 }  // namespace
 
 PrintPreviewMessageHandler::PrintPreviewMessageHandler(
@@ -97,39 +93,6 @@ PrintPreviewUI* PrintPreviewMessageHandler::GetPrintPreviewUI(
       static_cast<PrintPreviewUI*>(dialog->GetWebUI()->GetController());
   base::Optional<int32_t> id = preview_ui->GetIDForPrintPreviewUI();
   return (id && *id == preview_ui_id) ? preview_ui : nullptr;
-}
-
-void PrintPreviewMessageHandler::OnDidStartPreview(
-    const mojom::DidStartPreviewParams& params,
-    const mojom::PreviewIds& ids) {
-  if (params.page_count == 0 || params.page_count > kMaxPageCount ||
-      params.pages_to_render.empty()) {
-    NOTREACHED();
-    return;
-  }
-
-  for (uint32_t page_number : params.pages_to_render) {
-    if (!IsValidPageNumber(page_number, params.page_count)) {
-      NOTREACHED();
-      return;
-    }
-  }
-
-  if (!printing::NupParameters::IsSupported(params.pages_per_sheet)) {
-    NOTREACHED();
-    return;
-  }
-
-  if (params.page_size.IsEmpty()) {
-    NOTREACHED();
-    return;
-  }
-
-  PrintPreviewUI* print_preview_ui = GetPrintPreviewUI(ids.ui_id);
-  if (!print_preview_ui)
-    return;
-
-  print_preview_ui->OnDidStartPreview(params, ids.request_id);
 }
 
 void PrintPreviewMessageHandler::OnDidPrepareForDocumentToPdf(
@@ -260,20 +223,6 @@ void PrintPreviewMessageHandler::OnMetafileReadyForPrinting(
         print_preview_ui, ids,
         base::RefCountedSharedMemoryMapping::CreateFromWholeRegion(metafile));
   }
-}
-
-void PrintPreviewMessageHandler::OnDidGetDefaultPageLayout(
-    const mojom::PageSizeMargins& page_layout_in_points,
-    const gfx::Rect& printable_area_in_points,
-    bool has_custom_page_size_style,
-    const mojom::PreviewIds& ids) {
-  PrintPreviewUI* print_preview_ui = GetPrintPreviewUI(ids.ui_id);
-  if (!print_preview_ui)
-    return;
-
-  print_preview_ui->OnDidGetDefaultPageLayout(
-      page_layout_in_points, printable_area_in_points,
-      has_custom_page_size_style, ids.request_id);
 }
 
 void PrintPreviewMessageHandler::NotifyUIPreviewPageReady(
@@ -486,16 +435,6 @@ bool PrintPreviewMessageHandler::OnMessageReceived(
     IPC_MESSAGE_HANDLER(PrintHostMsg_DidPreviewPage, OnDidPreviewPage)
     IPC_MESSAGE_HANDLER(PrintHostMsg_MetafileReadyForPrinting,
                         OnMetafileReadyForPrinting)
-    IPC_MESSAGE_UNHANDLED(handled = false)
-  IPC_END_MESSAGE_MAP()
-  if (handled)
-    return true;
-
-  handled = true;
-  IPC_BEGIN_MESSAGE_MAP(PrintPreviewMessageHandler, message)
-    IPC_MESSAGE_HANDLER(PrintHostMsg_DidStartPreview, OnDidStartPreview)
-    IPC_MESSAGE_HANDLER(PrintHostMsg_DidGetDefaultPageLayout,
-                        OnDidGetDefaultPageLayout)
     IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
   return handled;

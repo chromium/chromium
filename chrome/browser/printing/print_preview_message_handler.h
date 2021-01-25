@@ -24,10 +24,6 @@ class RenderFrameHost;
 class WebContents;
 }
 
-namespace gfx {
-class Rect;
-}
-
 namespace printing {
 
 class PrintPreviewUI;
@@ -57,13 +53,6 @@ class PrintPreviewMessageHandler
   PrintPreviewUI* GetPrintPreviewUI(int preview_ui_id);
 
   // Message handlers.
-  void OnDidGetDefaultPageLayout(
-      const mojom::PageSizeMargins& page_layout_in_points,
-      const gfx::Rect& printable_area_in_points,
-      bool has_custom_page_size_style,
-      const mojom::PreviewIds& ids);
-  void OnDidStartPreview(const mojom::DidStartPreviewParams& params,
-                         const mojom::PreviewIds& ids);
   void OnDidPrepareForDocumentToPdf(content::RenderFrameHost* render_frame_host,
                                     int document_cookie,
                                     const mojom::PreviewIds& ids);

@@ -34,17 +34,16 @@ class PrintMockRenderThread : public content::MockRenderThread {
   // Returns the pseudo-printer instance.
   MockPrinter* printer();
 
-  // Cancel print preview when print preview has |page| remaining pages.
-  void set_print_preview_cancel_page_number(uint32_t page);
-
   // Get the number of pages to generate for print preview.
   uint32_t print_preview_pages_remaining() const;
 
+  // Set the number of pages to generate for print preview.
+  void set_print_preview_pages_remaining(uint32_t page_count) {
+    print_preview_pages_remaining_ = page_count;
+  }
+
   // Get a vector of print preview pages.
   const std::vector<std::pair<uint32_t, uint32_t>>& print_preview_pages() const;
-
-  // Determines whether to cancel a print preview request.
-  bool ShouldCancelRequest() const;
 #endif
 
   MockPrinter* GetPrinter() { return printer_.get(); }
@@ -55,18 +54,12 @@ class PrintMockRenderThread : public content::MockRenderThread {
 
 #if BUILDFLAG(ENABLE_PRINTING)
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-  void OnDidStartPreview(const printing::mojom::DidStartPreviewParams& params,
-                         const printing::mojom::PreviewIds& ids);
   void OnDidPreviewPage(const printing::mojom::DidPreviewPageParams& params,
                         const printing::mojom::PreviewIds& ids);
 #endif
 
   // A mock printer device used for printing tests.
   std::unique_ptr<MockPrinter> printer_;
-
-  // Simulates cancelling print preview if |print_preview_pages_remaining_|
-  // equals this.
-  uint32_t print_preview_cancel_page_number_ = printing::kInvalidPageIndex;
 
   // Number of pages to generate for print preview.
   uint32_t print_preview_pages_remaining_ = 0;

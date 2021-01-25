@@ -144,58 +144,88 @@ void CreatePrintSettingsDictionary(base::DictionaryValue* dict) {
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-// TODO(https://crbug.com/1008939): Remove DidPreviewPageListener once all IPC
-// messages are moved to mojo.
-class DidPreviewPageListener : public IPC::Listener {
- public:
-  explicit DidPreviewPageListener(base::RunLoop* run_loop)
-      : run_loop_(run_loop) {}
-  DidPreviewPageListener(const DidPreviewPageListener&) = delete;
-  DidPreviewPageListener& operator=(const DidPreviewPageListener&) = delete;
-
-  bool OnMessageReceived(const IPC::Message& message) override {
-    if (message.type() == PrintHostMsg_MetafileReadyForPrinting::ID)
-      run_loop_->Quit();
-    return false;
-  }
-
- private:
-  base::RunLoop* const run_loop_;
-};
-
 class FakePrintPreviewUI : public mojom::PrintPreviewUI {
  public:
-  FakePrintPreviewUI() = default;
+  explicit FakePrintPreviewUI(PrintMockRenderThread* thread)
+      : thread_(thread) {}
   ~FakePrintPreviewUI() override = default;
 
   mojo::PendingAssociatedRemote<mojom::PrintPreviewUI> BindReceiver() {
     return receiver_.BindNewEndpointAndPassDedicatedRemote();
   }
-  void SetQuitClosure(base::OnceClosure quit_closure) {
+  // Sets |quit_closure_| to wait until the preview request is failed, canceled,
+  // or invalid.
+  void SetPreviewQuitCallback(base::OnceClosure quit_closure) {
+    // If |preview_status_| is updated, it doesn't need to wait.
+    if (preview_status_ != PreviewStatus::kPreviewStatusNone)
+      return;
     quit_closure_ = std::move(quit_closure);
   }
-
-  bool preview_failed() const { return preview_failed_; }
-  bool preview_cancelled() const { return preview_cancelled_; }
-  bool invalid_printer_setting() const { return invalid_printer_setting_; }
+  // Waits until the preview is started. It's called if |page_count_| is not
+  // updated by DidStartPreview() when PrintHostMsg_DidPrepareDocumentForPreview
+  // or PrintHostMsg_DidPreviewPage is received.
+  void WaitUntilPreviewIsStarted() {
+    base::RunLoop run_loop{base::RunLoop::Type::kNestableTasksAllowed};
+    quit_closure_for_preview_started_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+  // Sets the page number to be cancelled.
+  void set_print_preview_cancel_page_number(uint32_t page) {
+    print_preview_cancel_page_number_ = page;
+  }
+  bool PreviewFailed() const {
+    return preview_status_ == PreviewStatus::kPreviewStatusFailed;
+  }
+  bool PreviewCancelled() const {
+    return preview_status_ == PreviewStatus::kPreviewStatusCancelled;
+  }
+  bool InvalidPrinterSetting() const {
+    return preview_status_ == PreviewStatus::kPreviewStatusInvalidSetting;
+  }
+  uint32_t page_count() const { return page_count_; }
+  mojom::PageSizeMargins* page_layout() const {
+    return page_layout_ ? page_layout_.get() : nullptr;
+  }
+  bool has_custom_page_size_style() const {
+    return has_custom_page_size_style_;
+  }
 
   // mojom::PrintPreviewUI:
   void SetOptionsFromDocument(const mojom::OptionsFromDocumentParamsPtr params,
                               int32_t request_id) override {}
   void PrintPreviewFailed(int32_t document_cookie,
                           int32_t request_id) override {
-    preview_failed_ = true;
+    preview_status_ = PreviewStatus::kPreviewStatusFailed;
     RunQuitClosure();
   }
   void PrintPreviewCancelled(int32_t document_cookie,
                              int32_t request_id) override {
-    preview_cancelled_ = true;
+    preview_status_ = PreviewStatus::kPreviewStatusCancelled;
     RunQuitClosure();
   }
   void PrinterSettingsInvalid(int32_t document_cookie,
                               int32_t request_id) override {
-    invalid_printer_setting_ = true;
+    preview_status_ = PreviewStatus::kPreviewStatusInvalidSetting;
     RunQuitClosure();
+  }
+  void DidGetDefaultPageLayout(mojom::PageSizeMarginsPtr page_layout_in_points,
+                               const gfx::Rect& printable_area_in_points,
+                               bool has_custom_page_size_style,
+                               int32_t request_id) override {
+    page_layout_ = std::move(page_layout_in_points);
+    has_custom_page_size_style_ = has_custom_page_size_style;
+  }
+  void DidStartPreview(mojom::DidStartPreviewParamsPtr params,
+                       int32_t request_id) override {
+    page_count_ = params->page_count;
+    thread_->set_print_preview_pages_remaining(params->page_count);
+    if (quit_closure_for_preview_started_)
+      std::move(quit_closure_for_preview_started_).Run();
+  }
+  // Determines whether to cancel a print preview request.
+  bool ShouldCancelRequest() const {
+    return thread_->print_preview_pages_remaining() ==
+           print_preview_cancel_page_number_;
   }
 
  private:
@@ -205,26 +235,61 @@ class FakePrintPreviewUI : public mojom::PrintPreviewUI {
     std::move(quit_closure_).Run();
   }
 
-  bool preview_failed_ = false;
-  bool preview_cancelled_ = false;
-  bool invalid_printer_setting_ = false;
+  enum PreviewStatus {
+    kPreviewStatusNone = 0,
+    kPreviewStatusFailed,
+    kPreviewStatusCancelled,
+    kPreviewStatusInvalidSetting,
+    kPreviewStatusStarted,
+  };
+
+  PrintMockRenderThread* thread_;
+  PreviewStatus preview_status_ = PreviewStatus::kPreviewStatusNone;
+  uint32_t page_count_ = 0;
+  bool has_custom_page_size_style_ = false;
+  // Simulates cancelling print preview if |print_preview_pages_remaining_|
+  // equals this.
+  uint32_t print_preview_cancel_page_number_ = printing::kInvalidPageIndex;
+  mojom::PageSizeMarginsPtr page_layout_;
   base::OnceClosure quit_closure_;
+  base::OnceClosure quit_closure_for_preview_started_;
 
   mojo::AssociatedReceiver<mojom::PrintPreviewUI> receiver_{this};
+};
+
+// TODO(https://crbug.com/1008939): Remove DidPreviewPageListener once all IPC
+// messages are moved to mojo.
+class DidPreviewPageListener : public IPC::Listener {
+ public:
+  explicit DidPreviewPageListener(base::RunLoop* run_loop,
+                                  FakePrintPreviewUI* preview_ui)
+      : run_loop_(run_loop), preview_ui_(preview_ui) {}
+  DidPreviewPageListener(const DidPreviewPageListener&) = delete;
+  DidPreviewPageListener& operator=(const DidPreviewPageListener&) = delete;
+  ~DidPreviewPageListener() override = default;
+
+  bool OnMessageReceived(const IPC::Message& message) override {
+    if ((message.type() == PrintHostMsg_DidPrepareDocumentForPreview::ID ||
+         message.type() == PrintHostMsg_DidPreviewPage::ID) &&
+        !preview_ui_->page_count()) {
+      preview_ui_->WaitUntilPreviewIsStarted();
+    }
+    if (message.type() == PrintHostMsg_MetafileReadyForPrinting::ID)
+      run_loop_->Quit();
+    return false;
+  }
+
+ private:
+  base::RunLoop* const run_loop_;
+  FakePrintPreviewUI* preview_ui_;
 };
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
 class TestPrintManagerHost
     : public mojom::PrintManagerHostInterceptorForTesting {
  public:
-  TestPrintManagerHost(content::RenderFrame* frame,
-                       PrintMockRenderThread* thread)
-      : printer_(thread->GetPrinter())
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-        ,
-        thread_(thread)
-#endif
-  {
+  TestPrintManagerHost(content::RenderFrame* frame, MockPrinter* printer)
+      : printer_(printer) {
     Init(frame);
   }
   ~TestPrintManagerHost() override = default;
@@ -359,7 +424,7 @@ class TestPrintManagerHost
   void CheckForCancel(int32_t preview_ui_id,
                       int32_t request_id,
                       CheckForCancelCallback callback) override {
-    std::move(callback).Run(thread_->ShouldCancelRequest());
+    std::move(callback).Run(preview_ui_->ShouldCancelRequest());
   }
 #endif
 
@@ -386,6 +451,11 @@ class TestPrintManagerHost
   void SetPrintDialogUserResponse(bool response) {
     print_dialog_user_response_ = response;
   }
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+  void set_preview_ui(FakePrintPreviewUI* preview_ui) {
+    preview_ui_ = preview_ui;
+  }
+#endif
 
  private:
   void Init(content::RenderFrame* frame) {
@@ -409,7 +479,7 @@ class TestPrintManagerHost
   bool is_printed_ = false;
   MockPrinter* printer_;
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-  PrintMockRenderThread* thread_;
+  FakePrintPreviewUI* preview_ui_;
 #endif
   base::OnceClosure quit_closure_;
   // True to simulate user clicking print. False to cancel.
@@ -440,6 +510,9 @@ class PrintRenderFrameHelperTestBase : public content::RenderViewTest {
         static_cast<PrintMockRenderThread*>(render_thread_.get());
 
     content::RenderViewTest::SetUp();
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+    preview_ui_ = std::make_unique<FakePrintPreviewUI>(print_render_thread_);
+#endif
     BindPrintManagerHost(content::RenderFrame::FromWebFrame(GetMainFrame()));
   }
 
@@ -454,8 +527,11 @@ class PrintRenderFrameHelperTestBase : public content::RenderViewTest {
   }
 
   void BindPrintManagerHost(content::RenderFrame* frame) {
-    auto print_manager =
-        std::make_unique<TestPrintManagerHost>(frame, print_render_thread_);
+    auto print_manager = std::make_unique<TestPrintManagerHost>(
+        frame, print_render_thread_->GetPrinter());
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+    print_manager->set_preview_ui(preview_ui_.get());
+#endif
     GetPrintRenderFrameHelperForFrame(frame)->GetPrintManagerHost();
     print_manager->WaitUntilBinding();
     frame_to_print_manager_map_.emplace(frame, std::move(print_manager));
@@ -472,24 +548,18 @@ class PrintRenderFrameHelperTestBase : public content::RenderViewTest {
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   void BindToFakePrintPreviewUI() {
     PrintRenderFrameHelper* frame_helper = GetPrintRenderFrameHelper();
-    frame_helper->SetPrintPreviewUI(preview_ui_.BindReceiver());
+    frame_helper->SetPrintPreviewUI(preview_ui_->BindReceiver());
   }
 
-  void WaitMojoMessages(base::RunLoop* run_loop) {
-    preview_ui()->SetQuitClosure(run_loop->QuitClosure());
+  void SetQuitCallbackForPreviewMojoMessages(base::RunLoop* run_loop) {
+    preview_ui()->SetPreviewQuitCallback(run_loop->QuitClosure());
   }
 
   // The renderer should be done calculating the number of rendered pages
   // according to the specified settings defined in the mock render thread.
   // Verify the page count is correct.
   void VerifyPreviewPageCount(uint32_t expected_count) {
-    const IPC::Message* preview_started_message =
-        render_thread_->sink().GetUniqueMessageMatching(
-            PrintHostMsg_DidStartPreview::ID);
-    ASSERT_TRUE(preview_started_message);
-    PrintHostMsg_DidStartPreview::Param param;
-    PrintHostMsg_DidStartPreview::Read(preview_started_message, &param);
-    EXPECT_EQ(expected_count, std::get<0>(param).page_count);
+    EXPECT_EQ(expected_count, preview_ui()->page_count());
   }
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
@@ -531,10 +601,10 @@ class PrintRenderFrameHelperTestBase : public content::RenderViewTest {
     print_render_frame_helper->InitiatePrintPreview(
         mojo::NullAssociatedRemote(), false);
     base::RunLoop run_loop;
-    DidPreviewPageListener filter(&run_loop);
+    DidPreviewPageListener filter(&run_loop, preview_ui());
     render_thread_->sink().AddFilter(&filter);
     print_render_frame_helper->PrintPreview(dict.Clone());
-    WaitMojoMessages(&run_loop);
+    SetQuitCallbackForPreviewMojoMessages(&run_loop);
     run_loop.Run();
     render_thread_->sink().RemoveFilter(&filter);
   }
@@ -608,12 +678,12 @@ class PrintRenderFrameHelperTestBase : public content::RenderViewTest {
     return it->second.get();
   }
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-  FakePrintPreviewUI* preview_ui() { return &preview_ui_; }
+  FakePrintPreviewUI* preview_ui() { return preview_ui_.get(); }
 #endif
 
  private:
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-  FakePrintPreviewUI preview_ui_;
+  std::unique_ptr<FakePrintPreviewUI> preview_ui_;
 #endif
   // Naked pointer as ownership is with
   // |content::RenderViewTest::render_thread_|.
@@ -943,11 +1013,11 @@ class MAYBE_PrintRenderFrameHelperPreviewTest
 
  protected:
   void VerifyPrintPreviewCancelled(bool expect_cancel) {
-    EXPECT_EQ(expect_cancel, preview_ui()->preview_cancelled());
+    EXPECT_EQ(expect_cancel, preview_ui()->PreviewCancelled());
   }
 
   void VerifyPrintPreviewFailed(bool expect_fail) {
-    EXPECT_EQ(expect_fail, preview_ui()->preview_failed());
+    EXPECT_EQ(expect_fail, preview_ui()->PreviewFailed());
   }
 
   void VerifyPrintPreviewGenerated(bool expect_generated) {
@@ -967,7 +1037,7 @@ class MAYBE_PrintRenderFrameHelperPreviewTest
   }
 
   void VerifyPrintPreviewInvalidPrinterSettings(bool expect_invalid_settings) {
-    EXPECT_EQ(expect_invalid_settings, preview_ui()->invalid_printer_setting());
+    EXPECT_EQ(expect_invalid_settings, preview_ui()->InvalidPrinterSetting());
   }
 
   // |page_number| is 0-based.
@@ -993,23 +1063,18 @@ class MAYBE_PrintRenderFrameHelperPreviewTest
                                int expected_margin_left,
                                int expected_margin_right,
                                bool expected_page_has_print_css) {
-    const IPC::Message* default_page_layout_msg =
-        render_thread_->sink().GetUniqueMessageMatching(
-            PrintHostMsg_DidGetDefaultPageLayout::ID);
-    bool did_get_default_page_layout_msg = !!default_page_layout_msg;
-    EXPECT_TRUE(did_get_default_page_layout_msg);
-    if (!did_get_default_page_layout_msg)
-      return;
-
-    PrintHostMsg_DidGetDefaultPageLayout::Param param;
-    PrintHostMsg_DidGetDefaultPageLayout::Read(default_page_layout_msg, &param);
-    EXPECT_EQ(expected_content_width, std::get<0>(param).content_width);
-    EXPECT_EQ(expected_content_height, std::get<0>(param).content_height);
-    EXPECT_EQ(expected_margin_top, std::get<0>(param).margin_top);
-    EXPECT_EQ(expected_margin_right, std::get<0>(param).margin_right);
-    EXPECT_EQ(expected_margin_left, std::get<0>(param).margin_left);
-    EXPECT_EQ(expected_margin_bottom, std::get<0>(param).margin_bottom);
-    EXPECT_EQ(expected_page_has_print_css, std::get<2>(param));
+    EXPECT_NE(preview_ui()->page_layout(), nullptr);
+    EXPECT_EQ(expected_content_width,
+              preview_ui()->page_layout()->content_width);
+    EXPECT_EQ(expected_content_height,
+              preview_ui()->page_layout()->content_height);
+    EXPECT_EQ(expected_margin_top, preview_ui()->page_layout()->margin_top);
+    EXPECT_EQ(expected_margin_right, preview_ui()->page_layout()->margin_right);
+    EXPECT_EQ(expected_margin_left, preview_ui()->page_layout()->margin_left);
+    EXPECT_EQ(expected_margin_bottom,
+              preview_ui()->page_layout()->margin_bottom);
+    EXPECT_EQ(expected_page_has_print_css,
+              preview_ui()->has_custom_page_size_style());
   }
 };
 
@@ -1532,7 +1597,7 @@ TEST_F(MAYBE_PrintRenderFrameHelperPreviewTest, PrintPreviewCancel) {
   LoadHTML(kLongPageHTML);
 
   const uint32_t kCancelPage = 3;
-  print_render_thread()->set_print_preview_cancel_page_number(kCancelPage);
+  preview_ui()->set_print_preview_cancel_page_number(kCancelPage);
   // Fill in some dummy values.
   base::DictionaryValue dict;
   CreatePrintSettingsDictionary(&dict);

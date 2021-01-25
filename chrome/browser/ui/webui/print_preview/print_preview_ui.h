@@ -31,10 +31,6 @@ class FilePath;
 class RefCountedMemory;
 }
 
-namespace gfx {
-class Rect;
-}
-
 namespace printing {
 
 class PrintPreviewHandler;
@@ -62,6 +58,12 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
                              int32_t request_id) override;
   void PrinterSettingsInvalid(int32_t document_cookie,
                               int32_t request_id) override;
+  void DidGetDefaultPageLayout(mojom::PageSizeMarginsPtr page_layout_in_points,
+                               const gfx::Rect& printable_area_in_points,
+                               bool has_custom_page_size_style,
+                               int32_t request_id) override;
+  void DidStartPreview(mojom::DidStartPreviewParamsPtr params,
+                       int32_t request_id) override;
 
   bool IsBound() const;
 
@@ -137,17 +139,6 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
 
   // Notifies the Web UI of a print preview request with |request_id|.
   virtual void OnPrintPreviewRequest(int request_id);
-
-  // Notifies the Web UI about the properties of the request preview.
-  void OnDidStartPreview(const mojom::DidStartPreviewParams& params,
-                         int request_id);
-
-  // Notifies the Web UI of the default page layout according to the currently
-  // selected printer and page size.
-  void OnDidGetDefaultPageLayout(const mojom::PageSizeMargins& page_layout,
-                                 const gfx::Rect& printable_area,
-                                 bool has_custom_page_size_style,
-                                 int request_id);
 
   // Notifies the Web UI that the 0-based page |page_number| rendering is being
   // processed and an OnPendingPreviewPage() call is imminent. Returns whether

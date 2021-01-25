@@ -63,6 +63,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "extensions/common/constants.h"
 #include "printing/mojom/print.mojom.h"
+#include "printing/nup_parameters.h"
 #include "printing/print_job_constants.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -92,6 +93,11 @@ const char kBasicPrintShortcut[] = "\x28\xE2\x8c\xA5\xE2\x8C\x98\x50\x29";
 const char kBasicPrintShortcut[] = "(Ctrl+Shift+P)";
 #endif
 
+constexpr char kInvalidArgsForDidStartPreview[] =
+    "Invalid arguments for DidStartPreview";
+constexpr char kInvalidArgsForDidGetDefaultPageLayout[] =
+    "Invalid arguments for DidGetDefaultPageLayout";
+
 PrintPreviewUI::TestDelegate* g_test_delegate = nullptr;
 
 void StopWorker(int document_cookie) {
@@ -106,6 +112,10 @@ void StopWorker(int document_cookie) {
         FROM_HERE,
         base::BindOnce(&PrinterQuery::StopWorker, std::move(printer_query)));
   }
+}
+
+bool IsValidPageNumber(uint32_t page_number, uint32_t page_count) {
+  return page_number < page_count;
 }
 
 // Thread-safe wrapper around a base::flat_map to keep track of mappings from
@@ -640,51 +650,76 @@ void PrintPreviewUI::OnPrintPreviewRequest(int request_id) {
   g_print_preview_request_id_map.Get().Set(*id_, request_id);
 }
 
-void PrintPreviewUI::OnDidStartPreview(
-    const mojom::DidStartPreviewParams& params,
-    int request_id) {
-  DCHECK_GT(params.page_count, 0u);
-  DCHECK_LE(params.page_count, kMaxPageCount);
-  DCHECK(!params.pages_to_render.empty());
+void PrintPreviewUI::DidStartPreview(mojom::DidStartPreviewParamsPtr params,
+                                     int32_t request_id) {
+  if (params->page_count == 0 || params->page_count > kMaxPageCount ||
+      params->pages_to_render.empty()) {
+    receiver_.ReportBadMessage(kInvalidArgsForDidStartPreview);
+    return;
+  }
 
-  pages_to_render_ = params.pages_to_render;
+  for (uint32_t page_number : params->pages_to_render) {
+    if (!IsValidPageNumber(page_number, params->page_count)) {
+      receiver_.ReportBadMessage(kInvalidArgsForDidStartPreview);
+      return;
+    }
+  }
+
+  if (!printing::NupParameters::IsSupported(params->pages_per_sheet)) {
+    receiver_.ReportBadMessage(kInvalidArgsForDidStartPreview);
+    return;
+  }
+
+  if (params->page_size.IsEmpty()) {
+    receiver_.ReportBadMessage(kInvalidArgsForDidStartPreview);
+    return;
+  }
+
+  pages_to_render_ = params->pages_to_render;
   pages_to_render_index_ = 0;
-  pages_per_sheet_ = params.pages_per_sheet;
-  page_size_ = params.page_size;
+  pages_per_sheet_ = params->pages_per_sheet;
+  page_size_ = params->page_size;
   ClearAllPreviewData();
 
   if (g_test_delegate)
-    g_test_delegate->DidGetPreviewPageCount(params.page_count);
-  handler_->SendPageCountReady(base::checked_cast<int>(params.page_count),
-                               params.fit_to_page_scaling, request_id);
+    g_test_delegate->DidGetPreviewPageCount(params->page_count);
+  handler_->SendPageCountReady(base::checked_cast<int>(params->page_count),
+                               params->fit_to_page_scaling, request_id);
 }
 
-void PrintPreviewUI::OnDidGetDefaultPageLayout(
-    const mojom::PageSizeMargins& page_layout,
-    const gfx::Rect& printable_area,
+void PrintPreviewUI::DidGetDefaultPageLayout(
+    mojom::PageSizeMarginsPtr page_layout_in_points,
+    const gfx::Rect& printable_area_in_points,
     bool has_custom_page_size_style,
-    int request_id) {
-  if (page_layout.margin_top < 0 || page_layout.margin_left < 0 ||
-      page_layout.margin_bottom < 0 || page_layout.margin_right < 0 ||
-      page_layout.content_width < 0 || page_layout.content_height < 0 ||
-      printable_area.width() <= 0 || printable_area.height() <= 0) {
-    NOTREACHED();
+    int32_t request_id) {
+  if (page_layout_in_points->margin_top < 0 ||
+      page_layout_in_points->margin_left < 0 ||
+      page_layout_in_points->margin_bottom < 0 ||
+      page_layout_in_points->margin_right < 0 ||
+      page_layout_in_points->content_width < 0 ||
+      page_layout_in_points->content_height < 0 ||
+      printable_area_in_points.width() <= 0 ||
+      printable_area_in_points.height() <= 0) {
+    receiver_.ReportBadMessage(kInvalidArgsForDidGetDefaultPageLayout);
     return;
   }
-  // Save printable_area information for N-up conversion.
-  printable_area_ = printable_area;
+  // Save printable_area_in_points information for N-up conversion.
+  printable_area_ = printable_area_in_points;
 
   base::DictionaryValue layout;
-  layout.SetDouble(kSettingMarginTop, page_layout.margin_top);
-  layout.SetDouble(kSettingMarginLeft, page_layout.margin_left);
-  layout.SetDouble(kSettingMarginBottom, page_layout.margin_bottom);
-  layout.SetDouble(kSettingMarginRight, page_layout.margin_right);
-  layout.SetDouble(kSettingContentWidth, page_layout.content_width);
-  layout.SetDouble(kSettingContentHeight, page_layout.content_height);
-  layout.SetInteger(kSettingPrintableAreaX, printable_area.x());
-  layout.SetInteger(kSettingPrintableAreaY, printable_area.y());
-  layout.SetInteger(kSettingPrintableAreaWidth, printable_area.width());
-  layout.SetInteger(kSettingPrintableAreaHeight, printable_area.height());
+  layout.SetDouble(kSettingMarginTop, page_layout_in_points->margin_top);
+  layout.SetDouble(kSettingMarginLeft, page_layout_in_points->margin_left);
+  layout.SetDouble(kSettingMarginBottom, page_layout_in_points->margin_bottom);
+  layout.SetDouble(kSettingMarginRight, page_layout_in_points->margin_right);
+  layout.SetDouble(kSettingContentWidth, page_layout_in_points->content_width);
+  layout.SetDouble(kSettingContentHeight,
+                   page_layout_in_points->content_height);
+  layout.SetInteger(kSettingPrintableAreaX, printable_area_in_points.x());
+  layout.SetInteger(kSettingPrintableAreaY, printable_area_in_points.y());
+  layout.SetInteger(kSettingPrintableAreaWidth,
+                    printable_area_in_points.width());
+  layout.SetInteger(kSettingPrintableAreaHeight,
+                    printable_area_in_points.height());
   handler_->SendPageLayoutReady(layout, has_custom_page_size_style, request_id);
 }
 

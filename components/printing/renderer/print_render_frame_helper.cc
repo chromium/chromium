@@ -253,10 +253,9 @@ double FitPrintParamsToPage(const mojom::PrintParams& page_params,
   return scale_factor;
 }
 
-void CalculatePageLayoutFromPrintParams(
+mojom::PageSizeMarginsPtr CalculatePageLayoutFromPrintParams(
     const mojom::PrintParams& params,
-    double scale_factor,
-    mojom::PageSizeMargins* page_layout_in_points) {
+    double scale_factor) {
   bool fit_to_page = IsPrintScalingOptionFitToPage(params);
   int dpi = GetDPI(params);
   int content_width = params.content_size.width();
@@ -276,6 +275,7 @@ void CalculatePageLayoutFromPrintParams(
   int margin_right =
       params.page_size.width() - content_width - params.margin_left;
 
+  auto page_layout_in_points = mojom::PageSizeMargins::New();
   page_layout_in_points->content_width =
       ConvertUnit(content_width, dpi, kPointsPerInch);
   page_layout_in_points->content_height =
@@ -288,6 +288,7 @@ void CalculatePageLayoutFromPrintParams(
       ConvertUnit(margin_bottom, dpi, kPointsPerInch);
   page_layout_in_points->margin_left =
       ConvertUnit(params.margin_left, dpi, kPointsPerInch);
+  return page_layout_in_points;
 }
 
 void EnsureOrientationMatches(const mojom::PrintParams& css_params,
@@ -1491,7 +1492,7 @@ void PrintRenderFrameHelper::OnFramePreparedForPreviewDocument() {
 
 PrintRenderFrameHelper::CreatePreviewDocumentResult
 PrintRenderFrameHelper::CreatePreviewDocument() {
-  if (!print_pages_params_ || CheckForCancel())
+  if (!print_pages_params_ || CheckForCancel() || !preview_ui_)
     return CREATE_FAIL;
 
   if (print_preview_context_.IsForArc()) {
@@ -1512,13 +1513,13 @@ PrintRenderFrameHelper::CreatePreviewDocument() {
     return CREATE_FAIL;
   }
 
-  mojom::PageSizeMargins default_page_layout;
   double scale_factor = GetScaleFactor(print_params.scale_factor,
                                        !print_preview_context_.IsModifiable());
 
-  ComputePageLayoutInPointsForCss(print_preview_context_.prepared_frame(), 0,
-                                  print_params, ignore_css_margins_,
-                                  &scale_factor, &default_page_layout);
+  mojom::PageSizeMarginsPtr default_page_layout =
+      ComputePageLayoutInPointsForCss(print_preview_context_.prepared_frame(),
+                                      0, print_params, ignore_css_margins_,
+                                      &scale_factor);
   bool has_page_size_style =
       PrintingFrameHasPageSizeStyle(print_preview_context_.prepared_frame(),
                                     print_preview_context_.total_page_count());
@@ -1530,23 +1531,19 @@ PrintRenderFrameHelper::CreatePreviewDocument() {
       ConvertUnit(print_params.printable_area.width(), dpi, kPointsPerInch),
       ConvertUnit(print_params.printable_area.height(), dpi, kPointsPerInch));
 
-  mojom::PreviewIds ids(print_params.preview_request_id,
-                        print_params.preview_ui_id);
-
   // Margins: Send default page layout to browser process.
-  Send(new PrintHostMsg_DidGetDefaultPageLayout(
-      routing_id(), default_page_layout, printable_area_in_points,
-      has_page_size_style, ids));
+  preview_ui_->DidGetDefaultPageLayout(
+      std::move(default_page_layout), printable_area_in_points,
+      has_page_size_style, print_params.preview_request_id);
 
-  Send(new PrintHostMsg_DidStartPreview(
-      routing_id(),
-      mojom::DidStartPreviewParams(
+  preview_ui_->DidStartPreview(
+      mojom::DidStartPreviewParams::New(
           print_preview_context_.total_page_count(),
           print_preview_context_.pages_to_render(),
           print_params.pages_per_sheet,
           GetPdfPageSize(print_params.page_size, dpi),
           GetFitToPageScaleFactor(printable_area_in_points)),
-      ids));
+      print_params.preview_request_id);
   if (CheckForCancel())
     return CREATE_FAIL;
 
@@ -1564,6 +1561,8 @@ PrintRenderFrameHelper::CreatePreviewDocument() {
 
   if (print_pages_params_->params->printed_doc_type ==
       mojom::SkiaDocumentType::kMSKP) {
+    mojom::PreviewIds ids(print_params.preview_request_id,
+                          print_params.preview_ui_id);
     // Want modifiable content of MSKP type to be collected into a document
     // during individual page preview generation (to avoid separate document
     // version for composition), notify to prepare to do this collection.
@@ -2047,19 +2046,18 @@ void PrintRenderFrameHelper::FinishFramePrinting() {
 }
 
 // static - Not anonymous so that platform implementations can use it.
-void PrintRenderFrameHelper::ComputePageLayoutInPointsForCss(
+mojom::PageSizeMarginsPtr
+PrintRenderFrameHelper::ComputePageLayoutInPointsForCss(
     blink::WebLocalFrame* frame,
     uint32_t page_index,
     const mojom::PrintParams& page_params,
     bool ignore_css_margins,
-    double* scale_factor,
-    mojom::PageSizeMargins* page_layout_in_points) {
+    double* scale_factor) {
   double input_scale_factor = *scale_factor;
   mojom::PrintParamsPtr params = CalculatePrintParamsForCss(
       frame, page_index, page_params, ignore_css_margins,
       IsPrintScalingOptionFitToPage(page_params), scale_factor);
-  CalculatePageLayoutFromPrintParams(*params, input_scale_factor,
-                                     page_layout_in_points);
+  return CalculatePageLayoutFromPrintParams(*params, input_scale_factor);
 }
 
 // static - Not anonymous so that platform implementations can use it.
@@ -2304,14 +2302,13 @@ void PrintRenderFrameHelper::PrintPageInternal(const mojom::PrintParams& params,
   // scaling back. Windows uses |page_size_in_dpi| for the actual page size
   // so requires an accurate value.
   gfx::Size original_page_size = params.page_size;
-  mojom::PageSizeMargins page_layout_in_points;
-  ComputePageLayoutInPointsForCss(frame, page_number, params,
-                                  ignore_css_margins_, &css_scale_factor,
-                                  &page_layout_in_points);
+  mojom::PageSizeMarginsPtr page_layout_in_points =
+      ComputePageLayoutInPointsForCss(frame, page_number, params,
+                                      ignore_css_margins_, &css_scale_factor);
 
   gfx::Size page_size;
   gfx::Rect content_area;
-  GetPageSizeAndContentAreaFromPageLayout(page_layout_in_points, &page_size,
+  GetPageSizeAndContentAreaFromPageLayout(*page_layout_in_points, &page_size,
                                           &content_area);
 
   // Calculate the actual page size and content area in dpi.
@@ -2353,7 +2350,7 @@ void PrintRenderFrameHelper::PrintPageInternal(const mojom::PrintParams& params,
     // |page_number| is 0-based, so 1 is added.
     PrintHeaderAndFooter(canvas, page_number + 1, page_count, *frame,
                          final_scale_factor / fudge_factor,
-                         page_layout_in_points, params);
+                         *page_layout_in_points, params);
   }
 
   float webkit_scale_factor =

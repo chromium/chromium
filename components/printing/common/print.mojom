@@ -234,6 +234,21 @@ interface PrintPreviewUI {
   // printer driver is bogus).
   [EnableIf=enable_print_preview]
   PrinterSettingsInvalid(int32 document_cookie, int32 request_id);
+
+  // Notifies the browser of the default page layout according to the currently
+  // selected printer and page size.
+  // |printable_area_in_points| Specifies the printable area in points.
+  // |has_custom_page_size_style| is true when the printing frame has a custom
+  // page size css otherwise false.
+  [EnableIf=enable_print_preview]
+  DidGetDefaultPageLayout(PageSizeMargins page_layout_in_points,
+      gfx.mojom.Rect printable_area_in_points,
+      bool has_custom_page_size_style,
+      int32 request_id);
+
+  // Notifies the browser about the to-be-rendered print preview document.
+  [EnableIf=enable_print_preview]
+  DidStartPreview(DidStartPreviewParams params, int32 request_id);
 };
 
 // Render process interface exposed to the browser to handle most of the
