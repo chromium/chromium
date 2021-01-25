@@ -22,6 +22,7 @@ extern const base::Feature kAndroidMultipleDisplay;
 extern const base::Feature kAndroidNightModeTabReparenting;
 extern const base::Feature kAndroidPartnerCustomizationPhenotype;
 extern const base::Feature kAndroidSearchEngineChoiceNotification;
+extern const base::Feature kAssistantIntentExperimentId;
 extern const base::Feature kAssistantIntentPageUrl;
 extern const base::Feature kAssistantIntentTranslateInfo;
 extern const base::Feature kBackgroundTaskComponentUpdate;

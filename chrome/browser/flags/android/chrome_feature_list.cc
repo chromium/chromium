@@ -131,6 +131,7 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &kAndroidNightModeTabReparenting,
     &kAndroidPartnerCustomizationPhenotype,
     &kAndroidSearchEngineChoiceNotification,
+    &kAssistantIntentExperimentId,
     &kAssistantIntentPageUrl,
     &kAssistantIntentTranslateInfo,
     &kBentoOffline,
@@ -346,6 +347,9 @@ const base::Feature kAndroidPartnerCustomizationPhenotype{
 
 const base::Feature kAndroidSearchEngineChoiceNotification{
     "AndroidSearchEngineChoiceNotification", base::FEATURE_ENABLED_BY_DEFAULT};
+
+const base::Feature kAssistantIntentExperimentId{
+    "AssistantIntentExperimentId", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kAssistantIntentPageUrl{"AssistantIntentPageUrl",
                                             base::FEATURE_DISABLED_BY_DEFAULT};

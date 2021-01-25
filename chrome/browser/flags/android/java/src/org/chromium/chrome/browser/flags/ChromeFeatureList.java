@@ -217,6 +217,7 @@ public abstract class ChromeFeatureList {
             "AndroidPartnerCustomizationPhenotype";
     public static final String ANDROID_SEARCH_ENGINE_CHOICE_NOTIFICATION =
             "AndroidSearchEngineChoiceNotification";
+    public static final String ASSISTANT_INTENT_EXPERIMENT_ID = "AssistantIntentExperimentId";
     public static final String ASSISTANT_INTENT_PAGE_URL = "AssistantIntentPageUrl";
     public static final String ASSISTANT_INTENT_TRANSLATE_INFO = "AssistantIntentTranslateInfo";
     public static final String AUTOFILL_ASSISTANT = "AutofillAssistant";
