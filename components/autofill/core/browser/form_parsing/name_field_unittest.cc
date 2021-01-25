@@ -49,7 +49,7 @@ TEST_F(NameFieldTest, FirstMiddleLast2) {
   ClassifyAndVerify(ParseResult::PARSED);
 }
 
-// Test that a field for a honoric title is parsed correctly.
+// Test that a field for a honorific title is parsed correctly.
 TEST_F(NameFieldTest, HonorificPrefixFirstLast) {
   // With support for two last names, the parsing should find the first name
   // field and the two last name fields.

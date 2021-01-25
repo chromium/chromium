@@ -22,19 +22,19 @@
 namespace autofill {
 
 enum class ParseResult {
-  // The form was succesfully parsed and at least one type was assigned.
+  // The form was successfully parsed and at least one type was assigned.
   PARSED = 0,
   // Not a single type was assigned.
   NOT_PARSED,
   kMaxValue = NOT_PARSED
 };
 
-class FormFieldTest : public testing::Test {
+class FormFieldTestBase {
  public:
-  FormFieldTest(const FormFieldTest&) = delete;
-  FormFieldTest();
-  ~FormFieldTest() override;
-  FormFieldTest& operator=(const FormFieldTest&) = delete;
+  FormFieldTestBase(const FormFieldTestBase&) = delete;
+  FormFieldTestBase();
+  ~FormFieldTestBase();
+  FormFieldTestBase& operator=(const FormFieldTestBase&) = delete;
 
  protected:
   // Add a field with |control_type|, the |name|, the |label| the expected
@@ -44,10 +44,34 @@ class FormFieldTest : public testing::Test {
                         std::string label,
                         ServerFieldType expected_type);
 
+  // Convenience wrapper for text control elements with a maximal length.
+  void AddFormFieldDataWithLength(std::string control_type,
+                                  std::string name,
+                                  std::string label,
+                                  int max_length,
+                                  ServerFieldType expected_type);
+
   // Convenience wrapper for text control elements.
   void AddTextFormFieldData(std::string name,
                             std::string label,
                             ServerFieldType expected_classification);
+
+  // Convenience wrapper for 'select-one' elements with a max length.
+  void AddSelectOneFormFieldDataWithLength(
+      std::string name,
+      std::string label,
+      int max_length,
+      const std::vector<std::string>& options_contents,
+      const std::vector<std::string>& options_values,
+      ServerFieldType expected_type);
+
+  // Convenience wrapper for 'select-one' elements.
+  void AddSelectOneFormFieldData(
+      std::string name,
+      std::string label,
+      const std::vector<std::string>& options_contents,
+      const std::vector<std::string>& options_values,
+      ServerFieldType expected_type);
 
   // Apply parsing and verify the expected types.
   // |parsed| indicates if at least one field could be parsed successfully.
@@ -55,6 +79,9 @@ class FormFieldTest : public testing::Test {
   // means the language is unknown and patterns of all languages are used.
   void ClassifyAndVerify(ParseResult parse_result = ParseResult::PARSED,
                          const LanguageCode& page_language = LanguageCode(""));
+
+  // Test the parsed verifications against the expectations.
+  void TestClassificationExpectations();
 
   // Apply the parsing with a specific parser.
   virtual std::unique_ptr<FormField> Parse(
@@ -70,6 +97,14 @@ class FormFieldTest : public testing::Test {
 
  private:
   uint64_t id_counter_ = 0;
+};
+
+class FormFieldTest : public FormFieldTestBase, public testing::Test {
+ public:
+  FormFieldTest(const FormFieldTest&) = delete;
+  FormFieldTest();
+  ~FormFieldTest() override;
+  FormFieldTest& operator=(const FormFieldTest&) = delete;
 };
 
 }  // namespace autofill
