@@ -5099,13 +5099,13 @@
   },
   {
     "name": "webui-tab-strip",
-    "owners": [ "collinbaker", "johntlee" ],
-    "expiry_milestone": 89
+    "owners": [ "dfried", "collinbaker", "johntlee" ],
+    "expiry_milestone": 92
   },
   {
     "name": "webui-tab-strip-tab-drag-integration",
-    "owners": [ "collinbaker", "johntlee" ],
-    "expiry_milestone": 89
+    "owners": [ "dfried", "collinbaker", "johntlee" ],
+    "expiry_milestone": 92
   },
   {
     "name": "webxr-incubations",
