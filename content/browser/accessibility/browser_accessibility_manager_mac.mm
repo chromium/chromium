@@ -131,8 +131,6 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
   auto native_node = ToBrowserAccessibilityCocoa(node);
   DCHECK(native_node);
 
-  bool focus_changed = GetFocus() != GetLastFocusedNode();
-
   // Refer to |AXObjectCache::postPlatformNotification| in WebKit source code.
   NSString* mac_notification = nullptr;
   switch (event_type) {
@@ -183,8 +181,7 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
       if (!focus)
         break;  // Just fire a notification on the root.
 
-      NSDictionary* user_info =
-          GetUserInfoForSelectedTextChangedNotification(focus_changed);
+      NSDictionary* user_info = GetUserInfoForSelectedTextChangedNotification();
 
       BrowserAccessibilityManager* root_manager = GetRootManager();
       if (!root_manager)
@@ -452,9 +449,8 @@ void BrowserAccessibilityManagerMac::OnAtomicUpdateFinished(
   }
 }
 
-NSDictionary*
-BrowserAccessibilityManagerMac::GetUserInfoForSelectedTextChangedNotification(
-    bool focus_changed) {
+NSDictionary* BrowserAccessibilityManagerMac::
+    GetUserInfoForSelectedTextChangedNotification() {
   NSMutableDictionary* user_info =
       [[[NSMutableDictionary alloc] init] autorelease];
   [user_info setObject:@YES forKey:ui::NSAccessibilityTextStateSyncKey];
@@ -471,7 +467,10 @@ BrowserAccessibilityManagerMac::GetUserInfoForSelectedTextChangedNotification(
   // TODO(mrobinson): Determine definitively what the type of this text
   // selection change is. This requires passing this information here from
   // blink.
-  if (focus_changed) {
+  BrowserAccessibility* focused_accessibility = GetFocus();
+  DCHECK(focused_accessibility);
+
+  if (focused_accessibility != GetLastFocusedNode()) {
     [user_info setObject:@(ui::AXTextStateChangeTypeSelectionMove)
                   forKey:ui::NSAccessibilityTextStateChangeTypeKey];
   } else {
@@ -479,22 +478,19 @@ BrowserAccessibilityManagerMac::GetUserInfoForSelectedTextChangedNotification(
                   forKey:ui::NSAccessibilityTextStateChangeTypeKey];
   }
 
-  int32_t focus_id = ax_tree()->GetUnignoredSelection().focus_object_id;
-  BrowserAccessibility* focus_object = GetFromID(focus_id);
-  if (focus_object) {
-    focus_object = focus_object->PlatformGetClosestPlatformObject();
-    auto native_focus_object = ToBrowserAccessibilityCocoa(focus_object);
-    if (native_focus_object && [native_focus_object instanceActive]) {
-      [user_info setObject:native_focus_object
-                    forKey:ui::NSAccessibilityTextChangeElement];
+  focused_accessibility =
+      focused_accessibility->PlatformGetClosestPlatformObject();
+  auto native_focus_object = ToBrowserAccessibilityCocoa(focused_accessibility);
+  if (native_focus_object && [native_focus_object instanceActive]) {
+    [user_info setObject:native_focus_object
+                  forKey:ui::NSAccessibilityTextChangeElement];
 
-      id selected_text = [native_focus_object selectedTextMarkerRange];
-      if (selected_text) {
-        NSString* const NSAccessibilitySelectedTextMarkerRangeAttribute =
-            @"AXSelectedTextMarkerRange";
-        [user_info setObject:selected_text
-                      forKey:NSAccessibilitySelectedTextMarkerRangeAttribute];
-      }
+    id selected_text = [native_focus_object selectedTextMarkerRange];
+    if (selected_text) {
+      NSString* const NSAccessibilitySelectedTextMarkerRangeAttribute =
+          @"AXSelectedTextMarkerRange";
+      [user_info setObject:selected_text
+                    forKey:NSAccessibilitySelectedTextMarkerRangeAttribute];
     }
   }
 
