@@ -1230,6 +1230,9 @@
   <message name="IDS_SETTINGS_SAFETY_CHECK_PARENT_BUTTON_ARIA_LABEL" desc="Accessibility text for the button with which the user can quickly check whether their safety-related settings are fully protecting them.">
     Run safety check now
   </message>
+  <message name="IDS_SETTINGS_SAFETY_CHECK_PARENT_RUN_AGAIN_BUTTON_ARIA_LABEL" desc="Accessibility text for the button with which the user can run the safety check again.">
+    Run safety check again
+  </message>
   <message name="IDS_SETTINGS_SAFETY_CHECK_ICON_RUNNING_ARIA_LABEL" desc="Accessibility text for a safety check child icon, that indicates that the child check is running.">
     Running
   </message>
