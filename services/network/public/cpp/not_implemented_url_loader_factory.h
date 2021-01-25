@@ -18,9 +18,16 @@ namespace network {
 class COMPONENT_EXPORT(NETWORK_CPP) NotImplementedURLLoaderFactory final
     : public network::mojom::URLLoaderFactory {
  public:
-  NotImplementedURLLoaderFactory();
+  // Returns mojo::PendingRemote to a newly constructed
+  // NotImplementedURLLoaderFactory.  The factory is self-owned - it will delete
+  // itself once there are no more receivers (including the receiver associated
+  // with the returned mojo::PendingRemote and the receivers bound by the Clone
+  // method).
+  static mojo::PendingRemote<network::mojom::URLLoaderFactory> Create();
+
   ~NotImplementedURLLoaderFactory() override;
 
+ private:
   // network::mojom::URLLoaderFactory implementation.
   void CreateLoaderAndStart(
       mojo::PendingReceiver<network::mojom::URLLoader> receiver,
@@ -35,7 +42,14 @@ class COMPONENT_EXPORT(NETWORK_CPP) NotImplementedURLLoaderFactory final
   void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
       override;
 
- private:
+  // Constructs NonNetworkURLLoaderFactoryBase object that will self-delete once
+  // all receivers disconnect (including |factory_receiver| below as well as
+  // receivers that connect via the Clone method).
+  explicit NotImplementedURLLoaderFactory(
+      mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver);
+
+  void OnDisconnect();
+
   mojo::ReceiverSet<network::mojom::URLLoaderFactory> receivers_;
 
   DISALLOW_COPY_AND_ASSIGN(NotImplementedURLLoaderFactory);

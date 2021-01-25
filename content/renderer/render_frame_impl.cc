@@ -6180,7 +6180,7 @@ void RenderFrameImpl::LoadHTMLStringForTesting(const std::string& html,
 
   pending_loader_factories_ = CreateLoaderFactoryBundle(
       blink::ChildPendingURLLoaderFactoryBundle::CreateFromDefaultFactoryImpl(
-          std::make_unique<network::NotImplementedURLLoaderFactory>()),
+          network::NotImplementedURLLoaderFactory::Create()),
       base::nullopt,  // |subresource_overrides|
       {});            // prefetch_loader_factory
 

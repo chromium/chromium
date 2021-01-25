@@ -50,23 +50,19 @@ class BLINK_PLATFORM_EXPORT ChildPendingURLLoaderFactoryBundle
       bool bypass_redirect_checks);
   ~ChildPendingURLLoaderFactoryBundle() override;
 
-  template <typename T>
   static std::unique_ptr<ChildPendingURLLoaderFactoryBundle>
-  CreateFromDefaultFactoryImpl(std::unique_ptr<T> default_factory_impl) {
-    mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_remote;
-    mojo::MakeSelfOwnedReceiver(
-        std::move(default_factory_impl),
-        pending_remote.InitWithNewPipeAndPassReceiver());
-
+  CreateFromDefaultFactoryImpl(
+      mojo::PendingRemote<network::mojom::URLLoaderFactory>
+          pending_default_factory) {
     std::unique_ptr<ChildPendingURLLoaderFactoryBundle> pending_bundle(
         new ChildPendingURLLoaderFactoryBundle(
-            std::move(pending_remote),  // pending_default_factory
-            {},                         // pending_default_network_factory
-            {},                         // pending_scheme_specific_factories
-            {},                         // pending_isolated_world_factories
-            {},                         // direct_network_factory_remote
-            {},                         // pending_prefetch_loader_factory
-            false));                    // bypass_redirect_checks
+            std::move(pending_default_factory),
+            {},       // pending_default_network_factory
+            {},       // pending_scheme_specific_factories
+            {},       // pending_isolated_world_factories
+            {},       // direct_network_factory_remote
+            {},       // pending_prefetch_loader_factory
+            false));  // bypass_redirect_checks
     return pending_bundle;
   }
 

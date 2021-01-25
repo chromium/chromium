@@ -104,10 +104,9 @@ class SharedWorkerHostTest : public testing::Test {
 
     base::Optional<SubresourceLoaderParams> subresource_loader_params =
         SubresourceLoaderParams();
-    mojo::PendingRemote<network::mojom::URLLoaderFactory> loader_factory_remote;
-    mojo::MakeSelfOwnedReceiver(
-        std::make_unique<network::NotImplementedURLLoaderFactory>(),
-        loader_factory_remote.InitWithNewPipeAndPassReceiver());
+    mojo::PendingRemote<network::mojom::URLLoaderFactory>
+        loader_factory_remote =
+            network::NotImplementedURLLoaderFactory::Create();
     subresource_loader_params->pending_appcache_loader_factory =
         std::move(loader_factory_remote);
 
