@@ -772,7 +772,7 @@ const base::Feature kRemoveSupervisedUsersOnStartup{
 
 #if defined(OS_ANDROID)
 const base::Feature kSafetyCheckAndroid{"SafetyCheckAndroid",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
+                                        base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
 #if defined(OS_WIN)
