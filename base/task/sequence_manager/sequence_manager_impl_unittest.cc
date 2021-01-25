@@ -2508,10 +2508,29 @@ class CancelableTask {
     run_times->push_back(clock_->NowTicks());
   }
 
-  void FailTask() { FAIL(); }
+  template <typename... Args>
+  void FailTask(Args...) {
+    FAIL();
+  }
 
   const TickClock* clock_;
   WeakPtrFactory<CancelableTask> weak_factory_{this};
+};
+
+class DestructionCallback {
+ public:
+  explicit DestructionCallback(OnceCallback<void()> on_destroy)
+      : on_destroy_(std::move(on_destroy)) {}
+  ~DestructionCallback() {
+    if (on_destroy_)
+      std::move(on_destroy_).Run();
+  }
+  DestructionCallback(const DestructionCallback&) = delete;
+  DestructionCallback& operator=(const DestructionCallback&) = delete;
+  DestructionCallback(DestructionCallback&&) = default;
+
+ private:
+  OnceCallback<void()> on_destroy_;
 };
 
 }  // namespace
@@ -2549,18 +2568,46 @@ TEST_P(SequenceManagerTest, TaskQueueObserver_SweepCanceledDelayedTasks) {
   sequence_manager()->ReclaimMemory();
 }
 
-TEST_P(SequenceManagerTest, TaskQueueObserver_SweepLastTaskInQueue) {
+TEST_P(SequenceManagerTest, SweepLastTaskInQueue) {
   auto queue = CreateTaskQueue();
   CancelableTask task(mock_tick_clock());
   queue->task_runner()->PostDelayedTask(
       FROM_HERE,
-      BindOnce(&CancelableTask::FailTask, task.weak_factory_.GetWeakPtr()),
+      BindOnce(&CancelableTask::FailTask<>, task.weak_factory_.GetWeakPtr()),
       base::TimeDelta::FromSeconds(1));
 
   // Make sure sweeping away the last task in the queue doesn't end up accessing
   // invalid iterators.
   task.weak_factory_.InvalidateWeakPtrs();
   sequence_manager()->ReclaimMemory();
+}
+
+TEST_P(SequenceManagerTest, CancelledTaskPostAnother) {
+  // This check ensures that a task whose destruction causes another task to be
+  // posted as a side-effect doesn't cause us to access invalid iterators while
+  // sweeping away cancelled tasks.
+  auto queue = CreateTaskQueue();
+  bool did_post = false;
+  auto on_destroy = BindLambdaForTesting([&] {
+    queue->task_runner()->PostDelayedTask(FROM_HERE,
+                                          BindLambdaForTesting([] {}),
+                                          base::TimeDelta::FromSeconds(1));
+    did_post = true;
+  });
+
+  DestructionCallback destruction_observer(std::move(on_destroy));
+  CancelableTask task(mock_tick_clock());
+  queue->task_runner()->PostDelayedTask(
+      FROM_HERE,
+      BindOnce(&CancelableTask::FailTask<DestructionCallback>,
+               task.weak_factory_.GetWeakPtr(),
+               std::move(destruction_observer)),
+      base::TimeDelta::FromSeconds(1));
+
+  task.weak_factory_.InvalidateWeakPtrs();
+  EXPECT_FALSE(did_post);
+  sequence_manager()->ReclaimMemory();
+  EXPECT_TRUE(did_post);
 }
 
 namespace {

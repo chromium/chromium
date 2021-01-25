@@ -1410,25 +1410,33 @@ size_t TaskQueueImpl::DelayedIncomingQueue::PQueue::SweepCancelledTasks(
   // Under the hood a std::priority_queue is a heap implemented top of a
   // std::vector. We poke at that vector directly here to filter out canceled
   // tasks in place.
-  bool task_deleted = false;
   size_t num_high_res_tasks_swept = 0u;
-  auto is_cancelled = [sequence_manager, &num_high_res_tasks_swept,
-                       &task_deleted](const Task& task) {
-    // TODO(crbug.com/1155905): Remove after figuring out
-    // the cause of the crash.
+  auto keep_task = [sequence_manager,
+                    &num_high_res_tasks_swept](const Task& task) {
+    // TODO(crbug.com/1155905): Remove after figuring out the cause of the
+    // crash.
     sequence_manager->RecordCrashKeys(task);
     if (!task.task.IsCancelled())
-      return false;
+      return true;
     if (task.is_high_res)
       num_high_res_tasks_swept++;
-    task_deleted = true;
-    return true;
+    return false;
   };
-  c.erase(std::remove_if(c.begin(), c.end(), is_cancelled), c.end());
 
-  // If we deleted something, re-enforce the heap property.
-  if (task_deleted)
+  // Because task destructors could have a side-effect of posting new tasks, we
+  // move all the cancelled tasks into a temporary container before deleting
+  // them. This is to avoid |c| from changing while c.erase() is running.
+  auto delete_start = std::stable_partition(c.begin(), c.end(), keep_task);
+  std::vector<Task> tasks_to_delete;
+  std::move(delete_start, c.end(), std::back_inserter(tasks_to_delete));
+  c.erase(delete_start, c.end());
+
+  // stable_partition ensures order was not changed if there was nothing to
+  // delete.
+  if (!tasks_to_delete.empty()) {
     ranges::make_heap(c, comp);
+    tasks_to_delete.clear();
+  }
   return num_high_res_tasks_swept;
 }
 
