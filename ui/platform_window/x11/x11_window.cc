@@ -884,6 +884,7 @@ void X11Window::UpdateCursor(
 }
 
 void X11Window::OnBeginForeignDrag(x11::Window window) {
+  notified_enter_ = false;
   source_window_events_ = std::make_unique<ui::XScopedEventSelector>(
       window, x11::EventMask::PropertyChange);
 }
@@ -902,10 +903,8 @@ void X11Window::OnBeforeDragLeave() {
 
 int X11Window::PerformDrop() {
   WmDropHandler* drop_handler = GetWmDropHandler(*this);
-  if (!drop_handler)
+  if (!drop_handler || !notified_enter_)
     return DragDropTypes::DRAG_NONE;
-
-  DCHECK(notified_enter_);
 
   // The drop data has been supplied on entering the window.  The drop handler
   // should have it since then.
