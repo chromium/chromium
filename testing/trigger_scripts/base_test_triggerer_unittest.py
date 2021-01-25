@@ -25,14 +25,13 @@ class UnitTest(fake_filesystem_unittest.TestCase):
         '--swarming', 'x.apphost.com', '--dimension', 'pool', 'ci',
         '--dimension', 'os', 'linux', '--env', 'FOO', 'foo', '--hello',
         '--cipd-package', 'path:name:123', '--scalar', '42',
-        '--optional-dimension', 'os', 'ubuntu', '60', '--resultdb'
+        '--resultdb'
     ]
     go_args = base_test_triggerer._convert_to_go_swarming_args(args)
     expected = [
         '--server', 'x.apphost.com', '--dimension', 'pool=ci', '--dimension',
         'os=linux', '--env', 'FOO=foo', '--hello', '--cipd-package',
-        'path:name=123', '--scalar', '42', '--optional-dimension',
-        'os=ubuntu:60', '--enable-resultdb'
+        'path:name=123', '--scalar', '42', '--enable-resultdb'
     ]
     self.assertEquals(go_args, expected)
 
@@ -50,19 +49,6 @@ class UnitTest(fake_filesystem_unittest.TestCase):
         ], IndexError),
         # expected format: --cipd-package path:name:version
         (['--cipd-package', 'path:name'], ValueError),
-        # expected format: --optional-dimension key value expiry
-        (['--optional-dimension', 'key', 'value'], ValueError),
-        # can only specify one optional dimension
-        ([
-            '--optional-dimension',
-            'k1',
-            'v1',
-            '123',
-            '--optional-dimension',
-            'k2',
-            'v2',
-            '456',
-        ], AssertionError),
     ]
     for args, ex in invalid_args:
       self.assertRaises(ex, base_test_triggerer._convert_to_go_swarming_args,

@@ -114,10 +114,8 @@ def main():
     new_args.extend(['--dimension', 'device_status', 'available'])
 
   new_args.extend([
-      '--optional-dimension',
-      'device_os',
-      current_lkgm,
-      str(PRIMARY_SLICE_EXPIRATION_S),
+      '-optional-dimension',
+      'device_os=%s:%d' % (current_lkgm, PRIMARY_SLICE_EXPIRATION_S),
   ])
   new_args += additional_args[1:]
 
