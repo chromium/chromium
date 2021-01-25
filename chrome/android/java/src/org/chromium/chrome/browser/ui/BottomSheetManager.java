@@ -231,7 +231,7 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements Destroyable
 
             @Override
             public void onEnterFullscreen(Tab tab, FullscreenOptions options) {
-                if (mOverlayPanelManager.get() != null
+                if (mOverlayPanelManager.hasValue()
                         && mOverlayPanelManager.get().getActivePanel() != null) {
                     // TODO(mdjones): This should only apply to contextual search, but contextual
                     //                search is the only implementation. Fix this to only apply to
