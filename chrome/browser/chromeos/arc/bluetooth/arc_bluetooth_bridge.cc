@@ -1157,8 +1157,9 @@ void ArcBluetoothBridge::SetAdapterProperty(
     }
   } else if (property->is_bdname()) {
     auto property_clone = property.Clone();
+    const std::string bdname = property->get_bdname();
     bluetooth_adapter_->SetName(
-        property->get_bdname(),
+        bdname,
         base::BindOnce(&ArcBluetoothBridge::OnSetAdapterProperty,
                        weak_factory_.GetWeakPtr(),
                        mojom::BluetoothStatus::SUCCESS, std::move(property)),
