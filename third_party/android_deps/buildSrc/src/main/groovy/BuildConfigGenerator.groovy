@@ -77,13 +77,6 @@ class BuildConfigGenerator extends DefaultTask {
     boolean skipLicenses
 
     /**
-     * Only pull play services targets into BUILD.gn file.
-     * If the play services target depends on a non-play services target, it will use the target in
-     * //third_party/android_deps/BUILD.gn.
-     */
-    boolean onlyPlayServices
-
-    /**
      * Array with visibility for targets which are not listed in build.gradle
      */
     String[] internalTargetVisibility
@@ -605,7 +598,6 @@ class BuildConfigGenerator extends DefaultTask {
     public boolean excludeDependency(ChromiumDepGraph.DependencyDescription dependency) {
         def onlyAndroidx = (repositoryPath == "third_party/androidx")
         return dependency.exclude || EXISTING_LIBS.get(dependency.id) != null ||
-                (onlyPlayServices && !isPlayServicesTarget(dependency.id)) ||
                 (onlyAndroidx && !dependency.id.startsWith("androidx_")) ||
                 (useDedicatedAndroidxDir && dependency.id == "androidx_legacy_legacy_preference_v14")
     }
