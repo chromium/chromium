@@ -12,7 +12,7 @@
 using ukm::builders::PageLoad;
 
 // http://crbug.com/1098148
-IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, FirstScrollDelay) {
+IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, DISABLED_FirstScrollDelay) {
   LoadHTML(R"HTML(
 <div id="content">
   <p>This is some text</p>
