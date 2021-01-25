@@ -93,7 +93,6 @@ std::string LacrosChromeServiceDelegateImpl::GetChromeVersion() {
 }
 
 void LacrosChromeServiceDelegateImpl::GetFeedbackData(
-    scoped_refptr<base::TaskRunner> callback_task_runner,
     GetFeedbackDataCallback callback) {
   DCHECK(!callback.is_null());
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -103,12 +102,10 @@ void LacrosChromeServiceDelegateImpl::GetFeedbackData(
       system_logs::BuildLacrosSystemLogsFetcher(/*scrub_data=*/true);
   fetcher->Fetch(
       base::BindOnce(&LacrosChromeServiceDelegateImpl::OnSystemInformationReady,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(callback_task_runner), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void LacrosChromeServiceDelegateImpl::GetHistograms(
-    scoped_refptr<base::TaskRunner> callback_task_runner,
     GetHistogramsCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -119,18 +116,14 @@ void LacrosChromeServiceDelegateImpl::GetHistograms(
       base::BindOnce(GetCompressedHistograms),
       base::BindOnce(
           &LacrosChromeServiceDelegateImpl::OnGetCompressedHistograms,
-          weak_ptr_factory_.GetWeakPtr(), std::move(callback_task_runner),
-          std::move(callback)));
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void LacrosChromeServiceDelegateImpl::OnGetCompressedHistograms(
-    scoped_refptr<base::TaskRunner> callback_task_runner,
     GetHistogramsCallback callback,
     const std::string& compressed_histograms) {
   DCHECK(!callback.is_null());
-  callback_task_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), std::move(compressed_histograms)));
+  std::move(callback).Run(compressed_histograms);
 }
 
 GURL LacrosChromeServiceDelegateImpl::GetActiveTabUrl() {
@@ -144,7 +137,6 @@ GURL LacrosChromeServiceDelegateImpl::GetActiveTabUrl() {
 }
 
 void LacrosChromeServiceDelegateImpl::OnSystemInformationReady(
-    scoped_refptr<base::TaskRunner> callback_task_runner,
     GetFeedbackDataCallback callback,
     std::unique_ptr<system_logs::SystemLogsResponse> sys_info) {
   base::Value system_log_entries(base::Value::Type::DICTIONARY);
@@ -169,8 +161,7 @@ void LacrosChromeServiceDelegateImpl::OnSystemInformationReady(
                                       std::move(it.second));
     }
 
-    callback_task_runner->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), std::move(system_log_entries)));
+    DCHECK(!callback.is_null());
+    std::move(callback).Run(std::move(system_log_entries));
   }
 }

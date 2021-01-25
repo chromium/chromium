@@ -309,22 +309,16 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
 
   using GetFeedbackDataCallback = base::OnceCallback<void(base::Value)>;
   // Gets feedback data on the affine sequence.
-  void GetFeedbackDataAffineSequence(
-      scoped_refptr<base::TaskRunner> callback_task_runner,
-      GetFeedbackDataCallback callback);
+  void GetFeedbackDataAffineSequence(GetFeedbackDataCallback callback);
 
   using GetHistogramsCallback = base::OnceCallback<void(const std::string&)>;
   // Gets histograms on the affine sequence.
-  void GetHistogramsAffineSequence(
-      scoped_refptr<base::TaskRunner> callback_task_runner,
-      GetHistogramsCallback callback);
+  void GetHistogramsAffineSequence(GetHistogramsCallback callback);
 
   using GetActiveTabUrlCallback =
       base::OnceCallback<void(const base::Optional<GURL>&)>;
   // Gets Url of the active tab on the affine sequence.
-  void GetActiveTabUrlAffineSequence(
-      scoped_refptr<base::TaskRunner> callback_task_runner,
-      GetActiveTabUrlCallback callback);
+  void GetActiveTabUrlAffineSequence(GetActiveTabUrlCallback callback);
 
   // Returns ash's version of the Crosapi mojo interface version. This
   // determines which interface methods are available. This is safe to call from

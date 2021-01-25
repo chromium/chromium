@@ -8,8 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/memory/scoped_refptr.h"
-#include "base/task_runner.h"
 #include "base/values.h"
 
 class GURL;
@@ -44,13 +42,11 @@ class LacrosChromeServiceDelegate {
   using GetFeedbackDataCallback = base::OnceCallback<void(base::Value)>;
   // Gets lacros feedback data.
   virtual void GetFeedbackData(
-      scoped_refptr<base::TaskRunner> callback_task_runner,
       GetFeedbackDataCallback callback) = 0;
 
   // Gets lacros histograms.
   using GetHistogramsCallback = base::OnceCallback<void(const std::string&)>;
   virtual void GetHistograms(
-      scoped_refptr<base::TaskRunner> callback_task_runner,
       GetHistogramsCallback callback) = 0;
 
   // Gets Url of the active tab if there is any.
