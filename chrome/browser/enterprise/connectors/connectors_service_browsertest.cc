@@ -14,6 +14,7 @@
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_browsertest_base.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "components/enterprise/browser/enterprise_switches.h"
@@ -106,10 +107,7 @@ class ConnectorsServiceProfileBrowserTest
   void SetUpOnMainThread() override {
     safe_browsing::DeepScanningBrowserTestBase::SetUpOnMainThread();
 
-    auto client = std::make_unique<policy::MockCloudPolicyClient>();
-    client->SetDMToken(kFakeProfileDMToken);
-    browser()->profile()->GetUserCloudPolicyManager()->Connect(
-        g_browser_process->local_state(), std::move(client));
+    safe_browsing::SetProfileDMToken(browser()->profile(), kFakeProfileDMToken);
 
     // Set profile/browser affiliation IDs.
     auto* profile_policy_manager =

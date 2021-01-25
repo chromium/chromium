@@ -11,8 +11,11 @@
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
+#include "chrome/browser/profiles/profile.h"
+#include "components/policy/core/common/cloud/cloud_policy_client_registration_helper.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
+#include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -406,5 +409,14 @@ void ClearAnalysisConnector(
   settings_list->Clear();
   prefs->ClearPref(ConnectorScopePref(connector));
 }
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+void SetProfileDMToken(Profile* profile, const std::string& dm_token) {
+  auto client = std::make_unique<policy::MockCloudPolicyClient>();
+  client->SetDMToken(dm_token);
+  profile->GetUserCloudPolicyManager()->Connect(
+      g_browser_process->local_state(), std::move(client));
+}
+#endif
 
 }  // namespace safe_browsing

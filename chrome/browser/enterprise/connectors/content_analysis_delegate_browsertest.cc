@@ -9,8 +9,10 @@
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/common.h"
+#include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/content_analysis_delegate.h"
 #include "chrome/browser/enterprise/connectors/content_analysis_dialog.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
@@ -178,7 +180,8 @@ class MinimalFakeContentAnalysisDelegate : public ContentAnalysisDelegate {
   }
 };
 
-constexpr char kDmToken[] = "dm_token";
+constexpr char kBrowserDMToken[] = "browser_dm_token";
+constexpr char kProfileDMToken[] = "profile_dm_token";
 
 constexpr char kTestUrl[] = "https://google.com";
 
@@ -186,41 +189,68 @@ constexpr char kTestUrl[] = "https://google.com";
 
 // Tests the behavior of the dialog delegate with minimal overriding of methods.
 // Only responses obtained via the BinaryUploadService are faked.
-class ContentAnalysisDelegateBrowserTest
+class ContentAnalysisDelegateBrowserTestBase
     : public safe_browsing::DeepScanningBrowserTestBase,
       public ContentAnalysisDialog::TestObserver {
  public:
-  ContentAnalysisDelegateBrowserTest() {
+  explicit ContentAnalysisDelegateBrowserTestBase(bool machine_scope)
+      : machine_scope_(machine_scope) {
     ContentAnalysisDialog::SetObserverForTesting(this);
+
+    if (!machine_scope) {
+      scoped_feature_list_.InitAndEnableFeature(kPerProfileConnectorsEnabled);
+    }
   }
 
   void EnableUploadsScanningAndReporting() {
-    SetDMTokenForTesting(policy::DMToken::CreateValidTokenForTesting(kDmToken));
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    SetDMTokenForTesting(
+        policy::DMToken::CreateValidTokenForTesting(kBrowserDMToken));
+#else
+    if (machine_scope_) {
+      SetDMTokenForTesting(
+          policy::DMToken::CreateValidTokenForTesting(kBrowserDMToken));
+    } else {
+      safe_browsing::SetProfileDMToken(browser()->profile(), kProfileDMToken);
+    }
+#endif
 
     constexpr char kBlockingScansForDlpAndMalware[] = R"({
-          "service_provider": "google",
-          "enable": [
-            {
-              "url_list": ["*"],
-              "tags": ["dlp", "malware"]
-            }
-          ],
-          "block_until_verdict": 1
-        })";
-    safe_browsing::SetAnalysisConnector(browser()->profile()->GetPrefs(),
-                                        FILE_ATTACHED,
-                                        kBlockingScansForDlpAndMalware);
-    safe_browsing::SetAnalysisConnector(browser()->profile()->GetPrefs(),
-                                        BULK_DATA_ENTRY,
-                                        kBlockingScansForDlpAndMalware);
+      "service_provider": "google",
+      "enable": [
+        {
+          "url_list": ["*"],
+          "tags": ["dlp", "malware"]
+        }
+      ],
+      "block_until_verdict": 1
+    })";
+    safe_browsing::SetAnalysisConnector(
+        browser()->profile()->GetPrefs(), FILE_ATTACHED,
+        kBlockingScansForDlpAndMalware, machine_scope_);
+    safe_browsing::SetAnalysisConnector(
+        browser()->profile()->GetPrefs(), BULK_DATA_ENTRY,
+        kBlockingScansForDlpAndMalware, machine_scope_);
     safe_browsing::SetOnSecurityEventReporting(browser()->profile()->GetPrefs(),
-                                               true);
+                                               /*enabled*/ true,
+                                               /*enabled_event_names*/ {},
+                                               machine_scope_);
 
     client_ = std::make_unique<policy::MockCloudPolicyClient>();
-    client_->SetDMToken(kDmToken);
-    extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(
-        browser()->profile())
-        ->SetBrowserCloudPolicyClientForTesting(client_.get());
+    client_->SetDMToken(machine_scope_ ? kBrowserDMToken : kProfileDMToken);
+    if (machine_scope_) {
+      extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(
+          browser()->profile())
+          ->SetBrowserCloudPolicyClientForTesting(client_.get());
+    } else {
+      extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(
+          browser()->profile())
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+          ->SetBrowserCloudPolicyClientForTesting(client_.get());
+#else
+          ->SetProfileCloudPolicyClientForTesting(client_.get());
+#endif
+    }
     extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(
         browser()->profile())
         ->SetBinaryUploadServiceForTesting(FakeBinaryUploadServiceStorage());
@@ -244,9 +274,25 @@ class ContentAnalysisDelegateBrowserTest
   std::unique_ptr<policy::MockCloudPolicyClient> client_;
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_environment_;
   base::ScopedTempDir temp_dir_;
+  bool machine_scope_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(ContentAnalysisDelegateBrowserTest, Unauthorized) {
+class ContentAnalysisDelegateBrowserTest
+    : public ContentAnalysisDelegateBrowserTestBase,
+      public testing::WithParamInterface<bool> {
+ public:
+  ContentAnalysisDelegateBrowserTest()
+      : ContentAnalysisDelegateBrowserTestBase(GetParam()) {}
+};
+
+INSTANTIATE_TEST_CASE_P(, ContentAnalysisDelegateBrowserTest, testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Unauthorized) {
+  // The reading of the browser DM token is blocking and happens in this test
+  // when checking if the browser is enrolled.
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
   EnableUploadsScanningAndReporting();
 
   ContentAnalysisDelegate::SetFactoryForTesting(
@@ -293,7 +339,7 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDelegateBrowserTest, Unauthorized) {
   ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 2);
 }
 
-IN_PROC_BROWSER_TEST_F(ContentAnalysisDelegateBrowserTest, Files) {
+IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Files) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   // Set up delegate and upload service.
@@ -374,7 +420,11 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDelegateBrowserTest, Files) {
   ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 4);
 }
 
-IN_PROC_BROWSER_TEST_F(ContentAnalysisDelegateBrowserTest, Texts) {
+IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Texts) {
+  // The reading of the browser DM token is blocking and happens in this test
+  // when checking if the browser is enrolled.
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
   // Set up delegate and upload service.
   EnableUploadsScanningAndReporting();
 
@@ -463,23 +513,28 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDelegateBrowserTest, Texts) {
 // - block_large_files
 // - block_unsupported_file_types
 class ContentAnalysisDelegateBlockingSettingBrowserTest
-    : public ContentAnalysisDelegateBrowserTest,
-      public testing::WithParamInterface<bool> {
+    : public ContentAnalysisDelegateBrowserTestBase,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
-  ContentAnalysisDelegateBlockingSettingBrowserTest() = default;
+  ContentAnalysisDelegateBlockingSettingBrowserTest()
+      : ContentAnalysisDelegateBrowserTestBase(machine_scope()) {}
+
+  bool machine_scope() const { return std::get<0>(GetParam()); }
+
+  bool setting_param() const { return std::get<1>(GetParam()); }
 
   // Use a string since the setting value is inserted into a JSON policy.
   const char* bool_setting_value() const {
-    return GetParam() ? "true" : "false";
+    return setting_param() ? "true" : "false";
   }
-  const char* int_setting_value() const { return GetParam() ? "1" : "0"; }
+  const char* int_setting_value() const { return setting_param() ? "1" : "0"; }
 
-  bool expected_result() const { return !GetParam(); }
+  bool expected_result() const { return !setting_param(); }
 };
 
 INSTANTIATE_TEST_SUITE_P(,
                          ContentAnalysisDelegateBlockingSettingBrowserTest,
-                         testing::Bool());
+                         testing::Combine(testing::Bool(), testing::Bool()));
 
 IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
                        BlockPasswordProtected) {
@@ -493,20 +548,21 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
 
   // Set up delegate and upload service.
   EnableUploadsScanningAndReporting();
-  safe_browsing::SetAnalysisConnector(browser()->profile()->GetPrefs(),
-                                      FILE_ATTACHED,
-                                      base::StringPrintf(R"({
-        "service_provider": "google",
-        "enable": [
-          {
-            "url_list": ["*"],
-            "tags": ["dlp"]
-          }
-        ],
-        "block_until_verdict": 1,
-        "block_password_protected": %s
-      })",
-                                                         bool_setting_value()));
+  constexpr char kPasswordProtectedPref[] = R"({
+    "service_provider": "google",
+    "enable": [
+      {
+        "url_list": ["*"],
+        "tags": ["dlp"]
+      }
+    ],
+    "block_until_verdict": 1,
+    "block_password_protected": %s
+  })";
+  safe_browsing::SetAnalysisConnector(
+      browser()->profile()->GetPrefs(), FILE_ATTACHED,
+      base::StringPrintf(kPasswordProtectedPref, bool_setting_value()),
+      machine_scope());
 
   ContentAnalysisDelegate::SetFactoryForTesting(
       base::BindRepeating(&MinimalFakeContentAnalysisDelegate::Create));
@@ -571,20 +627,21 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
 
   // Set up delegate and upload service.
   EnableUploadsScanningAndReporting();
-  safe_browsing::SetAnalysisConnector(browser()->profile()->GetPrefs(),
-                                      FILE_ATTACHED,
-                                      base::StringPrintf(R"({
-        "service_provider": "google",
-        "enable": [
-          {
-            "url_list": ["*"],
-            "tags": ["dlp"]
-          }
-        ],
-        "block_until_verdict": 1,
-        "block_unsupported_file_types": %s
-      })",
-                                                         bool_setting_value()));
+  constexpr char kBlockUnsupportedFileTypesPref[] = R"({
+    "service_provider": "google",
+    "enable": [
+      {
+        "url_list": ["*"],
+        "tags": ["dlp"]
+      }
+    ],
+    "block_until_verdict": 1,
+    "block_unsupported_file_types": %s
+  })";
+  safe_browsing::SetAnalysisConnector(
+      browser()->profile()->GetPrefs(), FILE_ATTACHED,
+      base::StringPrintf(kBlockUnsupportedFileTypesPref, bool_setting_value()),
+      machine_scope());
 
   ContentAnalysisDelegate::SetFactoryForTesting(
       base::BindRepeating(&MinimalFakeContentAnalysisDelegate::Create));
@@ -649,20 +706,21 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
 
   // Set up delegate and upload service.
   EnableUploadsScanningAndReporting();
-  safe_browsing::SetAnalysisConnector(browser()->profile()->GetPrefs(),
-                                      FILE_ATTACHED,
-                                      base::StringPrintf(R"({
-        "service_provider": "google",
-        "enable": [
-          {
-            "url_list": ["*"],
-            "tags": ["dlp", "malware"]
-          }
-        ],
-        "block_until_verdict": 1,
-        "block_large_files": %s
-      })",
-                                                         bool_setting_value()));
+  constexpr char kBlockLargeFilesPref[] = R"({
+    "service_provider": "google",
+    "enable": [
+      {
+        "url_list": ["*"],
+        "tags": ["dlp", "malware"]
+      }
+    ],
+    "block_until_verdict": 1,
+    "block_large_files": %s
+  })";
+  safe_browsing::SetAnalysisConnector(
+      browser()->profile()->GetPrefs(), FILE_ATTACHED,
+      base::StringPrintf(kBlockLargeFilesPref, bool_setting_value()),
+      machine_scope());
 
   ContentAnalysisDelegate::SetFactoryForTesting(
       base::BindRepeating(&MinimalFakeContentAnalysisDelegate::Create));
@@ -731,19 +789,20 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
 
   // Set up delegate and upload service.
   EnableUploadsScanningAndReporting();
-  safe_browsing::SetAnalysisConnector(browser()->profile()->GetPrefs(),
-                                      FILE_ATTACHED,
-                                      base::StringPrintf(R"({
-        "service_provider": "google",
-        "enable": [
-          {
-            "url_list": ["*"],
-            "tags": ["dlp", "malware"]
-          }
-        ],
-        "block_until_verdict": %s
-      })",
-                                                         int_setting_value()));
+  constexpr char kBlockUntilVerdictPref[] = R"({
+    "service_provider": "google",
+    "enable": [
+      {
+        "url_list": ["*"],
+        "tags": ["dlp", "malware"]
+      }
+    ],
+    "block_until_verdict": %s
+  })";
+  safe_browsing::SetAnalysisConnector(
+      browser()->profile()->GetPrefs(), FILE_ATTACHED,
+      base::StringPrintf(kBlockUntilVerdictPref, int_setting_value()),
+      machine_scope());
 
   ContentAnalysisDelegate::SetFactoryForTesting(
       base::BindRepeating(&MinimalFakeContentAnalysisDelegate::Create));
@@ -837,15 +896,31 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
 // requests are already unauthorized. The test parameter represents if the scan
 // is set to be blocking through policy.
 class ContentAnalysisDelegateUnauthorizedBrowserTest
-    : public ContentAnalysisDelegateBrowserTest,
-      public testing::WithParamInterface<bool> {
+    : public ContentAnalysisDelegateBrowserTestBase,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
-  ContentAnalysisDelegateUnauthorizedBrowserTest() = default;
+  ContentAnalysisDelegateUnauthorizedBrowserTest()
+      : ContentAnalysisDelegateBrowserTestBase(machine_scope()) {}
 
-  bool blocking_scan() const { return GetParam(); }
+  bool machine_scope() const { return std::get<0>(GetParam()); }
+  bool blocking_scan() const { return std::get<1>(GetParam()); }
+
+  const char* dm_token() const {
+    return machine_scope() ? kBrowserDMToken : kProfileDMToken;
+  }
 
   void SetUpScanning(bool file_scan) {
-    SetDMTokenForTesting(policy::DMToken::CreateValidTokenForTesting(kDmToken));
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    SetDMTokenForTesting(
+        policy::DMToken::CreateValidTokenForTesting(dm_token()));
+#else
+    if (machine_scope()) {
+      SetDMTokenForTesting(
+          policy::DMToken::CreateValidTokenForTesting(dm_token()));
+    } else {
+      safe_browsing::SetProfileDMToken(browser()->profile(), dm_token());
+    }
+#endif
 
     std::string pref = base::StringPrintf(
         R"({
@@ -862,7 +937,7 @@ class ContentAnalysisDelegateUnauthorizedBrowserTest
 
     safe_browsing::SetAnalysisConnector(
         browser()->profile()->GetPrefs(),
-        file_scan ? FILE_ATTACHED : BULK_DATA_ENTRY, pref);
+        file_scan ? FILE_ATTACHED : BULK_DATA_ENTRY, pref, machine_scope());
     file_scan_ = file_scan;
   }
 
@@ -898,15 +973,19 @@ class ContentAnalysisDelegateUnauthorizedBrowserTest
 
 INSTANTIATE_TEST_SUITE_P(,
                          ContentAnalysisDelegateUnauthorizedBrowserTest,
-                         testing::Bool());
+                         testing::Combine(testing::Bool(), testing::Bool()));
 
 IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateUnauthorizedBrowserTest, Paste) {
+  // The reading of the browser DM token is blocking and happens in this test
+  // when checking if the browser is enrolled.
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
   SetUpScanning(/*file_scan*/ false);
 
   ContentAnalysisDelegate::SetFactoryForTesting(
       base::BindRepeating(&MinimalFakeContentAnalysisDelegate::Create));
 
-  FakeBinaryUploadServiceStorage()->SetAuthForTesting(kDmToken, false);
+  FakeBinaryUploadServiceStorage()->SetAuthForTesting(dm_token(), false);
 
   bool called = false;
   base::RunLoop run_loop;
@@ -946,7 +1025,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateUnauthorizedBrowserTest, Files) {
   ContentAnalysisDelegate::SetFactoryForTesting(
       base::BindRepeating(&MinimalFakeContentAnalysisDelegate::Create));
 
-  FakeBinaryUploadServiceStorage()->SetAuthForTesting(kDmToken, false);
+  FakeBinaryUploadServiceStorage()->SetAuthForTesting(dm_token(), false);
 
   bool called = false;
   base::RunLoop run_loop;

@@ -158,6 +158,13 @@ void SetOnSecurityEventReporting(
 void ClearAnalysisConnector(PrefService* prefs,
                             enterprise_connectors::AnalysisConnector connector);
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+// Helper function to set the profile DM token. It installs a
+// MockCloudPolicyClient with |dm_token| into |profile|'s UserCloudPolicyManager
+// to simulate |profile|'s DM token.
+void SetProfileDMToken(Profile* profile, const std::string& dm_token);
+#endif
+
 }  // namespace safe_browsing
 
 #endif  // CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_DEEP_SCANNING_TEST_UTILS_H_
