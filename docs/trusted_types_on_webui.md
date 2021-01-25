@@ -120,7 +120,7 @@ document.body.appendChild(p);
 #### Use `trustedTypes.createPolicy`
 
 If you don't have control of the HTML file and use of DOM APIs isn't ideal for
-readability, you can use [`trustedTypes.createPolicy`]
+readability, you can [use `trustedTypes.createPolicy`]
 (https://web.dev/trusted-types/#create-a-trusted-type-policy).
 Example code:
 
@@ -203,6 +203,12 @@ disable Trusted Types with following code:
 ```
 source->DisableTrustedTypesCSP();
 ```
+
+## How to add a test for Trusted Types on a WebUI page?
+
+You can add your WebUI page to [this list]
+(https://source.chromium.org/chromium/chromium/src/+/master:chrome/browser/ui/webui/chrome_url_data_manager_browsertest.cc;l=194;drc=de8ade0753244ff6d1ef20cb2a38fe292fe9ba0a) and it will check for
+Trusted Types violations on your WebUI page.
 
 ## Sample CLs
 
