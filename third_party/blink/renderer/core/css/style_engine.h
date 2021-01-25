@@ -293,6 +293,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void EnsureUAStyleForXrOverlay();
   void EnsureUAStyleForElement(const Element&);
   void EnsureUAStyleForPseudoElement(PseudoId);
+  void EnsureUAStyleForForcedColors();
 
   void PlatformColorsChanged();
 
