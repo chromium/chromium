@@ -1339,6 +1339,9 @@ crbug.com/803276 [ Win ] inspector-protocol/memory/sampling-native-profile-parti
 crbug.com/803276 [ Mac ] inspector-protocol/memory/sampling-native-snapshot.js [ Skip ]
 crbug.com/803276 [ Win ] inspector-protocol/memory/sampling-native-snapshot.js [ Skip ]
 
+# For win10, see crbug.com/955109
+crbug.com/538697 [ Win ] printing/webgl-oversized-printing.html [ Failure Crash ]
+
 crbug.com/904592 css3/filters/backdrop-filter-svg.html [ Failure ]
 crbug.com/904592 [ Linux ] virtual/scalefactor200/css3/filters/backdrop-filter-svg.html [ Pass ]
 crbug.com/904592 [ Win ] virtual/scalefactor200/css3/filters/backdrop-filter-svg.html [ Pass ]
